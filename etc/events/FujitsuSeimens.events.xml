@@ -45,7 +45,7 @@
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: fscDdmNewConfig trap received 
+			Fujitsu-Seimens Event: fscDdmNewConfig trap received 
 			fscDdmTrapServerName=%parm[#1]% 
 			fscDdmTrapTime=%parm[#2]% 
 			fscDdmTrapPort=%parm[#3]% 
@@ -100,7 +100,7 @@
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: fscDdmPieceRemoved trap received 
+			Fujitsu-Seimens Event: fscDdmPieceRemoved trap received 
 			fscDdmTrapServerName=%parm[#1]% 
 			fscDdmTrapTime=%parm[#2]% 
 			fscDdmTrapPort=%parm[#3]% 
@@ -155,7 +155,7 @@
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: fscDdmConfigRemoved trap received 
+			Fujitsu-Seimens Event: fscDdmConfigRemoved trap received 
 			fscDdmTrapServerName=%parm[#1]% 
 			fscDdmTrapTime=%parm[#2]% 
 			fscDdmTrapPort=%parm[#3]% 
@@ -210,7 +210,7 @@
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: fscDdmStatusSet trap received 
+			Fujitsu-Seimens Event: fscDdmStatusSet trap received 
 			fscDdmTrapServerName=%parm[#1]% 
 			fscDdmTrapTime=%parm[#2]% 
 			fscDdmTrapPort=%parm[#3]% 
@@ -265,7 +265,7 @@
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: fscDdmUpdateStatus trap received 
+			Fujitsu-Seimens Event: fscDdmUpdateStatus trap received 
 			fscDdmTrapServerName=%parm[#1]% 
 			fscDdmTrapTime=%parm[#2]% 
 			fscDdmTrapPort=%parm[#3]% 
@@ -320,7 +320,7 @@
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: fscDdmPieceRecovered trap received 
+			Fujitsu-Seimens Event: fscDdmPieceRecovered trap received 
 			fscDdmTrapServerName=%parm[#1]% 
 			fscDdmTrapTime=%parm[#2]% 
 			fscDdmTrapPort=%parm[#3]% 
@@ -375,7 +375,7 @@
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: fscDdmRecoverAborted trap received 
+			Fujitsu-Seimens Event: fscDdmRecoverAborted trap received 
 			fscDdmTrapServerName=%parm[#1]% 
 			fscDdmTrapTime=%parm[#2]% 
 			fscDdmTrapPort=%parm[#3]% 
@@ -430,7 +430,7 @@
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: fscDdmReservationConflict trap received 
+			Fujitsu-Seimens Event: fscDdmReservationConflict trap received 
 			fscDdmTrapServerName=%parm[#1]% 
 			fscDdmTrapTime=%parm[#2]% 
 			fscDdmTrapPort=%parm[#3]% 
@@ -485,7 +485,7 @@
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: fscDdmConfigChanged trap received 
+			Fujitsu-Seimens Event: fscDdmConfigChanged trap received 
 			fscDdmTrapServerName=%parm[#1]% 
 			fscDdmTrapTime=%parm[#2]% 
 			fscDdmTrapPort=%parm[#3]% 
@@ -540,7 +540,7 @@
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: fscDdmConfigInvalidated trap received 
+			Fujitsu-Seimens Event: fscDdmConfigInvalidated trap received 
 			fscDdmTrapServerName=%parm[#1]% 
 			fscDdmTrapTime=%parm[#2]% 
 			fscDdmTrapPort=%parm[#3]% 
@@ -595,7 +595,7 @@
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: fscDdmActiveLunChanged trap received 
+			Fujitsu-Seimens Event: fscDdmActiveLunChanged trap received 
 			fscDdmTrapServerName=%parm[#1]% 
 			fscDdmTrapTime=%parm[#2]% 
 			fscDdmTrapPort=%parm[#3]% 
@@ -650,7 +650,7 @@
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: fscDdmPieceFailed trap received 
+			Fujitsu-Seimens Event: fscDdmPieceFailed trap received 
 			fscDdmTrapServerName=%parm[#1]% 
 			fscDdmTrapTime=%parm[#2]% 
 			fscDdmTrapPort=%parm[#3]% 
@@ -705,7 +705,7 @@
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: fscDdmRootFlagChanged trap received 
+			Fujitsu-Seimens Event: fscDdmRootFlagChanged trap received 
 			fscDdmTrapServerName=%parm[#1]% 
 			fscDdmTrapTime=%parm[#2]% 
 			fscDdmTrapPort=%parm[#3]% 
@@ -760,7 +760,7 @@
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: fscDdmForceActive trap received 
+			Fujitsu-Seimens Event: fscDdmForceActive trap received 
 			fscDdmTrapServerName=%parm[#1]% 
 			fscDdmTrapTime=%parm[#2]% 
 			fscDdmTrapPort=%parm[#3]% 
@@ -815,7 +815,7 @@
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: fscDdmNameChanged trap received 
+			Fujitsu-Seimens Event: fscDdmNameChanged trap received 
 			fscDdmTrapServerName=%parm[#1]% 
 			fscDdmTrapTime=%parm[#2]% 
 			fscDdmTrapPort=%parm[#3]% 
@@ -870,7 +870,7 @@
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: fscDdmPathFailed trap received 
+			Fujitsu-Seimens Event: fscDdmPathFailed trap received 
 			fscDdmTrapServerName=%parm[#1]% 
 			fscDdmTrapTime=%parm[#2]% 
 			fscDdmTrapPort=%parm[#3]% 
@@ -925,7 +925,7 @@
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: fscDdmRetry trap received 
+			Fujitsu-Seimens Event: fscDdmRetry trap received 
 			fscDdmTrapServerName=%parm[#1]% 
 			fscDdmTrapTime=%parm[#2]% 
 			fscDdmTrapPort=%parm[#3]% 
@@ -980,7 +980,7 @@
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: fscDdmActivePortChanged trap received 
+			Fujitsu-Seimens Event: fscDdmActivePortChanged trap received 
 			fscDdmTrapServerName=%parm[#1]% 
 			fscDdmTrapTime=%parm[#2]% 
 			fscDdmTrapPort=%parm[#3]% 
@@ -1035,7 +1035,7 @@
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: fscDdmReconfigured trap received 
+			Fujitsu-Seimens Event: fscDdmReconfigured trap received 
 			fscDdmTrapServerName=%parm[#1]% 
 			fscDdmTrapTime=%parm[#2]% 
 			fscDdmTrapPort=%parm[#3]% 
@@ -1090,7 +1090,7 @@
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: fscDdmStatusChanged trap received 
+			Fujitsu-Seimens Event: fscDdmStatusChanged trap received 
 			fscDdmTrapServerName=%parm[#1]% 
 			fscDdmTrapTime=%parm[#2]% 
 			fscDdmTrapPort=%parm[#3]% 
@@ -1145,7 +1145,7 @@
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: fscDdmAutoRecovered trap received 
+			Fujitsu-Seimens Event: fscDdmAutoRecovered trap received 
 			fscDdmTrapServerName=%parm[#1]% 
 			fscDdmTrapTime=%parm[#2]% 
 			fscDdmTrapPort=%parm[#3]% 
@@ -1200,7 +1200,7 @@
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: fscDdmErrorCleared trap received 
+			Fujitsu-Seimens Event: fscDdmErrorCleared trap received 
 			fscDdmTrapServerName=%parm[#1]% 
 			fscDdmTrapTime=%parm[#2]% 
 			fscDdmTrapPort=%parm[#3]% 
@@ -1255,7 +1255,7 @@
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: fscDdmPnPRemove trap received 
+			Fujitsu-Seimens Event: fscDdmPnPRemove trap received 
 			fscDdmTrapServerName=%parm[#1]% 
 			fscDdmTrapTime=%parm[#2]% 
 			fscDdmTrapPort=%parm[#3]% 
@@ -1310,7 +1310,7 @@
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: fscDdmPnPNew trap received 
+			Fujitsu-Seimens Event: fscDdmPnPNew trap received 
 			fscDdmTrapServerName=%parm[#1]% 
 			fscDdmTrapTime=%parm[#2]% 
 			fscDdmTrapPort=%parm[#3]% 
@@ -1365,7 +1365,7 @@
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: fscDdmCluster trap received 
+			Fujitsu-Seimens Event: fscDdmCluster trap received 
 			fscDdmTrapServerName=%parm[#1]% 
 			fscDdmTrapTime=%parm[#2]% 
 			fscDdmTrapPort=%parm[#3]% 
@@ -1430,7 +1430,7 @@
 	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sieDWNewConfig trap received 
+			Fujitsu-Seimens Event: sieDWNewConfig trap received 
 			sieDWTrapServerName=%parm[#1]% 
 			sieDWTrapTime=%parm[#2]% 
 			sieDWTrapGroupID=%parm[#3]% 
@@ -1495,7 +1495,7 @@
 	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sieDWPieceRemoved trap received 
+			Fujitsu-Seimens Event: sieDWPieceRemoved trap received 
 			sieDWTrapServerName=%parm[#1]% 
 			sieDWTrapTime=%parm[#2]% 
 			sieDWTrapGroupID=%parm[#3]% 
@@ -1560,7 +1560,7 @@
 	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sieDWConfigRemoved trap received 
+			Fujitsu-Seimens Event: sieDWConfigRemoved trap received 
 			sieDWTrapServerName=%parm[#1]% 
 			sieDWTrapTime=%parm[#2]% 
 			sieDWTrapGroupID=%parm[#3]% 
@@ -1625,7 +1625,7 @@
 	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sieDWStatusSet trap received 
+			Fujitsu-Seimens Event: sieDWStatusSet trap received 
 			sieDWTrapServerName=%parm[#1]% 
 			sieDWTrapTime=%parm[#2]% 
 			sieDWTrapGroupID=%parm[#3]% 
@@ -1690,7 +1690,7 @@
 	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sieDWUpdateStatus trap received 
+			Fujitsu-Seimens Event: sieDWUpdateStatus trap received 
 			sieDWTrapServerName=%parm[#1]% 
 			sieDWTrapTime=%parm[#2]% 
 			sieDWTrapGroupID=%parm[#3]% 
@@ -1755,7 +1755,7 @@
 	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sieDWPieceRecovered trap received 
+			Fujitsu-Seimens Event: sieDWPieceRecovered trap received 
 			sieDWTrapServerName=%parm[#1]% 
 			sieDWTrapTime=%parm[#2]% 
 			sieDWTrapGroupID=%parm[#3]% 
@@ -1820,7 +1820,7 @@
 	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sieDWRecoverAborted trap received 
+			Fujitsu-Seimens Event: sieDWRecoverAborted trap received 
 			sieDWTrapServerName=%parm[#1]% 
 			sieDWTrapTime=%parm[#2]% 
 			sieDWTrapGroupID=%parm[#3]% 
@@ -1885,7 +1885,7 @@
 	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sieDWReservationConflict trap received 
+			Fujitsu-Seimens Event: sieDWReservationConflict trap received 
 			sieDWTrapServerName=%parm[#1]% 
 			sieDWTrapTime=%parm[#2]% 
 			sieDWTrapGroupID=%parm[#3]% 
@@ -1950,7 +1950,7 @@
 	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sieDWConfigChanged trap received 
+			Fujitsu-Seimens Event: sieDWConfigChanged trap received 
 			sieDWTrapServerName=%parm[#1]% 
 			sieDWTrapTime=%parm[#2]% 
 			sieDWTrapGroupID=%parm[#3]% 
@@ -2015,7 +2015,7 @@
 	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sieDWConfigInvalidated trap received 
+			Fujitsu-Seimens Event: sieDWConfigInvalidated trap received 
 			sieDWTrapServerName=%parm[#1]% 
 			sieDWTrapTime=%parm[#2]% 
 			sieDWTrapGroupID=%parm[#3]% 
@@ -2080,7 +2080,7 @@
 	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sieDWActiveLunChanged trap received 
+			Fujitsu-Seimens Event: sieDWActiveLunChanged trap received 
 			sieDWTrapServerName=%parm[#1]% 
 			sieDWTrapTime=%parm[#2]% 
 			sieDWTrapGroupID=%parm[#3]% 
@@ -2145,7 +2145,7 @@
 	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sieDWPieceFailed trap received 
+			Fujitsu-Seimens Event: sieDWPieceFailed trap received 
 			sieDWTrapServerName=%parm[#1]% 
 			sieDWTrapTime=%parm[#2]% 
 			sieDWTrapGroupID=%parm[#3]% 
@@ -2210,7 +2210,7 @@
 	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sieDWRootFlagChanged trap received 
+			Fujitsu-Seimens Event: sieDWRootFlagChanged trap received 
 			sieDWTrapServerName=%parm[#1]% 
 			sieDWTrapTime=%parm[#2]% 
 			sieDWTrapGroupID=%parm[#3]% 
@@ -2275,7 +2275,7 @@
 	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sieDWNameChanged trap received 
+			Fujitsu-Seimens Event: sieDWNameChanged trap received 
 			sieDWTrapServerName=%parm[#1]% 
 			sieDWTrapTime=%parm[#2]% 
 			sieDWTrapGroupID=%parm[#3]% 
@@ -2340,7 +2340,7 @@
 	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sieDWForceActive trap received 
+			Fujitsu-Seimens Event: sieDWForceActive trap received 
 			sieDWTrapServerName=%parm[#1]% 
 			sieDWTrapTime=%parm[#2]% 
 			sieDWTrapGroupID=%parm[#3]% 
@@ -2405,7 +2405,7 @@
 	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sieDWRefreshFinished trap received 
+			Fujitsu-Seimens Event: sieDWRefreshFinished trap received 
 			sieDWTrapServerName=%parm[#1]% 
 			sieDWTrapTime=%parm[#2]% 
 			sieDWTrapGroupID=%parm[#3]% 
@@ -2470,7 +2470,7 @@
 	%parm[#8]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sieDWDiskRegistered trap received 
+			Fujitsu-Seimens Event: sieDWDiskRegistered trap received 
 			sieDWTrapServerName=%parm[#1]% 
 			sieDWTrapTime=%parm[#2]% 
 			sieDWTrapGroupID=%parm[#3]% 
@@ -2564,7 +2564,7 @@
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniTrapError trap received 
+			Fujitsu-Seimens Event: sniTrapError trap received 
 			sniTrapDesktop=%parm[#1]% 
 			sniTrapTimeInt=%parm[#2]% 
 			sniTrapTimeStr=%parm[#3]% 
@@ -2658,7 +2658,7 @@
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniSmartOK trap received 
+			Fujitsu-Seimens Event: sniSmartOK trap received 
 			sniTrapDesktop=%parm[#1]% 
 			sniTrapTimeInt=%parm[#2]% 
 			sniTrapTimeStr=%parm[#3]% 
@@ -2752,7 +2752,7 @@
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniSmartWarning trap received 
+			Fujitsu-Seimens Event: sniSmartWarning trap received 
 			sniTrapDesktop=%parm[#1]% 
 			sniTrapTimeInt=%parm[#2]% 
 			sniTrapTimeStr=%parm[#3]% 
@@ -2846,7 +2846,7 @@
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniSmartError trap received 
+			Fujitsu-Seimens Event: sniSmartError trap received 
 			sniTrapDesktop=%parm[#1]% 
 			sniTrapTimeInt=%parm[#2]% 
 			sniTrapTimeStr=%parm[#3]% 
@@ -2940,7 +2940,7 @@
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniCoverClosed trap received 
+			Fujitsu-Seimens Event: sniCoverClosed trap received 
 			sniTrapDesktop=%parm[#1]% 
 			sniTrapTimeInt=%parm[#2]% 
 			sniTrapTimeStr=%parm[#3]% 
@@ -3034,7 +3034,7 @@
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniCoverOpened trap received 
+			Fujitsu-Seimens Event: sniCoverOpened trap received 
 			sniTrapDesktop=%parm[#1]% 
 			sniTrapTimeInt=%parm[#2]% 
 			sniTrapTimeStr=%parm[#3]% 
@@ -3128,7 +3128,7 @@
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniCoverSensorincorporated trap received 
+			Fujitsu-Seimens Event: sniCoverSensorincorporated trap received 
 			sniTrapDesktop=%parm[#1]% 
 			sniTrapTimeInt=%parm[#2]% 
 			sniTrapTimeStr=%parm[#3]% 
@@ -3222,7 +3222,7 @@
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniCoverSensorMissing trap received 
+			Fujitsu-Seimens Event: sniCoverSensorMissing trap received 
 			sniTrapDesktop=%parm[#1]% 
 			sniTrapTimeInt=%parm[#2]% 
 			sniTrapTimeStr=%parm[#3]% 
@@ -3316,7 +3316,7 @@
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniCoverRecognition trap received 
+			Fujitsu-Seimens Event: sniCoverRecognition trap received 
 			sniTrapDesktop=%parm[#1]% 
 			sniTrapTimeInt=%parm[#2]% 
 			sniTrapTimeStr=%parm[#3]% 
@@ -3410,7 +3410,7 @@
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniCoverRecognitionMissing trap received 
+			Fujitsu-Seimens Event: sniCoverRecognitionMissing trap received 
 			sniTrapDesktop=%parm[#1]% 
 			sniTrapTimeInt=%parm[#2]% 
 			sniTrapTimeStr=%parm[#3]% 
@@ -3504,7 +3504,7 @@
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniNoShortCurcuit trap received 
+			Fujitsu-Seimens Event: sniNoShortCurcuit trap received 
 			sniTrapDesktop=%parm[#1]% 
 			sniTrapTimeInt=%parm[#2]% 
 			sniTrapTimeStr=%parm[#3]% 
@@ -3598,7 +3598,7 @@
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniShortCurcuit trap received 
+			Fujitsu-Seimens Event: sniShortCurcuit trap received 
 			sniTrapDesktop=%parm[#1]% 
 			sniTrapTimeInt=%parm[#2]% 
 			sniTrapTimeStr=%parm[#3]% 
@@ -3692,7 +3692,7 @@
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniTemperatureOK trap received 
+			Fujitsu-Seimens Event: sniTemperatureOK trap received 
 			sniTrapDesktop=%parm[#1]% 
 			sniTrapTimeInt=%parm[#2]% 
 			sniTrapTimeStr=%parm[#3]% 
@@ -3786,7 +3786,7 @@
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniTemperatureWarning trap received 
+			Fujitsu-Seimens Event: sniTemperatureWarning trap received 
 			sniTrapDesktop=%parm[#1]% 
 			sniTrapTimeInt=%parm[#2]% 
 			sniTrapTimeStr=%parm[#3]% 
@@ -3880,7 +3880,7 @@
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniTemperatureCritical trap received 
+			Fujitsu-Seimens Event: sniTemperatureCritical trap received 
 			sniTrapDesktop=%parm[#1]% 
 			sniTrapTimeInt=%parm[#2]% 
 			sniTrapTimeStr=%parm[#3]% 
@@ -3974,7 +3974,7 @@
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniFanRunning trap received 
+			Fujitsu-Seimens Event: sniFanRunning trap received 
 			sniTrapDesktop=%parm[#1]% 
 			sniTrapTimeInt=%parm[#2]% 
 			sniTrapTimeStr=%parm[#3]% 
@@ -4068,7 +4068,7 @@
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniFanNotRunning trap received 
+			Fujitsu-Seimens Event: sniFanNotRunning trap received 
 			sniTrapDesktop=%parm[#1]% 
 			sniTrapTimeInt=%parm[#2]% 
 			sniTrapTimeStr=%parm[#3]% 
@@ -4162,7 +4162,7 @@
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniFanWornOK trap received 
+			Fujitsu-Seimens Event: sniFanWornOK trap received 
 			sniTrapDesktop=%parm[#1]% 
 			sniTrapTimeInt=%parm[#2]% 
 			sniTrapTimeStr=%parm[#3]% 
@@ -4256,7 +4256,7 @@
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniFanWornWarning trap received 
+			Fujitsu-Seimens Event: sniFanWornWarning trap received 
 			sniTrapDesktop=%parm[#1]% 
 			sniTrapTimeInt=%parm[#2]% 
 			sniTrapTimeStr=%parm[#3]% 
@@ -4350,7 +4350,7 @@
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniFanWornCritical trap received 
+			Fujitsu-Seimens Event: sniFanWornCritical trap received 
 			sniTrapDesktop=%parm[#1]% 
 			sniTrapTimeInt=%parm[#2]% 
 			sniTrapTimeStr=%parm[#3]% 
@@ -4444,7 +4444,7 @@
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniVoltageOk trap received 
+			Fujitsu-Seimens Event: sniVoltageOk trap received 
 			sniTrapDesktop=%parm[#1]% 
 			sniTrapTimeInt=%parm[#2]% 
 			sniTrapTimeStr=%parm[#3]% 
@@ -4538,7 +4538,7 @@
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniVoltageWarning trap received 
+			Fujitsu-Seimens Event: sniVoltageWarning trap received 
 			sniTrapDesktop=%parm[#1]% 
 			sniTrapTimeInt=%parm[#2]% 
 			sniTrapTimeStr=%parm[#3]% 
@@ -4632,7 +4632,7 @@
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniVoltageCritical trap received 
+			Fujitsu-Seimens Event: sniVoltageCritical trap received 
 			sniTrapDesktop=%parm[#1]% 
 			sniTrapTimeInt=%parm[#2]% 
 			sniTrapTimeStr=%parm[#3]% 
@@ -4726,7 +4726,7 @@
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniWatchdogOk trap received 
+			Fujitsu-Seimens Event: sniWatchdogOk trap received 
 			sniTrapDesktop=%parm[#1]% 
 			sniTrapTimeInt=%parm[#2]% 
 			sniTrapTimeStr=%parm[#3]% 
@@ -4820,7 +4820,7 @@
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniWatchdogCritical trap received 
+			Fujitsu-Seimens Event: sniWatchdogCritical trap received 
 			sniTrapDesktop=%parm[#1]% 
 			sniTrapTimeInt=%parm[#2]% 
 			sniTrapTimeStr=%parm[#3]% 
@@ -4914,7 +4914,7 @@
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniInternalError trap received 
+			Fujitsu-Seimens Event: sniInternalError trap received 
 			sniTrapDesktop=%parm[#1]% 
 			sniTrapTimeInt=%parm[#2]% 
 			sniTrapTimeStr=%parm[#3]% 
@@ -5008,7 +5008,7 @@
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniBIOSErrorLogOK trap received 
+			Fujitsu-Seimens Event: sniBIOSErrorLogOK trap received 
 			sniTrapDesktop=%parm[#1]% 
 			sniTrapTimeInt=%parm[#2]% 
 			sniTrapTimeStr=%parm[#3]% 
@@ -5102,7 +5102,7 @@
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniBIOSErrorLogWarning trap received 
+			Fujitsu-Seimens Event: sniBIOSErrorLogWarning trap received 
 			sniTrapDesktop=%parm[#1]% 
 			sniTrapTimeInt=%parm[#2]% 
 			sniTrapTimeStr=%parm[#3]% 
@@ -5196,7 +5196,7 @@
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniBIOSErrorLogCritical trap received 
+			Fujitsu-Seimens Event: sniBIOSErrorLogCritical trap received 
 			sniTrapDesktop=%parm[#1]% 
 			sniTrapTimeInt=%parm[#2]% 
 			sniTrapTimeStr=%parm[#3]% 
@@ -5290,7 +5290,7 @@
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniAOLPOSTCritical trap received 
+			Fujitsu-Seimens Event: sniAOLPOSTCritical trap received 
 			sniTrapDesktop=%parm[#1]% 
 			sniTrapTimeInt=%parm[#2]% 
 			sniTrapTimeStr=%parm[#3]% 
@@ -5384,7 +5384,7 @@
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniAOLWatchdogCritical trap received 
+			Fujitsu-Seimens Event: sniAOLWatchdogCritical trap received 
 			sniTrapDesktop=%parm[#1]% 
 			sniTrapTimeInt=%parm[#2]% 
 			sniTrapTimeStr=%parm[#3]% 
@@ -5478,7 +5478,7 @@
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniAOLCoverOpened trap received 
+			Fujitsu-Seimens Event: sniAOLCoverOpened trap received 
 			sniTrapDesktop=%parm[#1]% 
 			sniTrapTimeInt=%parm[#2]% 
 			sniTrapTimeStr=%parm[#3]% 
@@ -5572,7 +5572,7 @@
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniAOLCPUMissingCritical trap received 
+			Fujitsu-Seimens Event: sniAOLCPUMissingCritical trap received 
 			sniTrapDesktop=%parm[#1]% 
 			sniTrapTimeInt=%parm[#2]% 
 			sniTrapTimeStr=%parm[#3]% 
@@ -5666,7 +5666,7 @@
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniAOLHeartbeatCritical trap received 
+			Fujitsu-Seimens Event: sniAOLHeartbeatCritical trap received 
 			sniTrapDesktop=%parm[#1]% 
 			sniTrapTimeInt=%parm[#2]% 
 			sniTrapTimeStr=%parm[#3]% 
@@ -5760,7 +5760,7 @@
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniFreeDiskSpaceOK trap received 
+			Fujitsu-Seimens Event: sniFreeDiskSpaceOK trap received 
 			sniTrapDesktop=%parm[#1]% 
 			sniTrapTimeInt=%parm[#2]% 
 			sniTrapTimeStr=%parm[#3]% 
@@ -5854,7 +5854,7 @@
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniFreeDiskSpaceWarning trap received 
+			Fujitsu-Seimens Event: sniFreeDiskSpaceWarning trap received 
 			sniTrapDesktop=%parm[#1]% 
 			sniTrapTimeInt=%parm[#2]% 
 			sniTrapTimeStr=%parm[#3]% 
@@ -5948,7 +5948,7 @@
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniFreeDiskSpaceError trap received 
+			Fujitsu-Seimens Event: sniFreeDiskSpaceError trap received 
 			sniTrapDesktop=%parm[#1]% 
 			sniTrapTimeInt=%parm[#2]% 
 			sniTrapTimeStr=%parm[#3]% 
@@ -6042,7 +6042,7 @@
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniMemoryChangesOK trap received 
+			Fujitsu-Seimens Event: sniMemoryChangesOK trap received 
 			sniTrapDesktop=%parm[#1]% 
 			sniTrapTimeInt=%parm[#2]% 
 			sniTrapTimeStr=%parm[#3]% 
@@ -6136,7 +6136,7 @@
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniMemoryChangesWarning trap received 
+			Fujitsu-Seimens Event: sniMemoryChangesWarning trap received 
 			sniTrapDesktop=%parm[#1]% 
 			sniTrapTimeInt=%parm[#2]% 
 			sniTrapTimeStr=%parm[#3]% 
@@ -6230,7 +6230,7 @@
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniMemoryChangesError trap received 
+			Fujitsu-Seimens Event: sniMemoryChangesError trap received 
 			sniTrapDesktop=%parm[#1]% 
 			sniTrapTimeInt=%parm[#2]% 
 			sniTrapTimeStr=%parm[#3]% 
@@ -6324,7 +6324,7 @@
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniDeviceChangesOK trap received 
+			Fujitsu-Seimens Event: sniDeviceChangesOK trap received 
 			sniTrapDesktop=%parm[#1]% 
 			sniTrapTimeInt=%parm[#2]% 
 			sniTrapTimeStr=%parm[#3]% 
@@ -6418,7 +6418,7 @@
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniDeviceChangesWarning trap received 
+			Fujitsu-Seimens Event: sniDeviceChangesWarning trap received 
 			sniTrapDesktop=%parm[#1]% 
 			sniTrapTimeInt=%parm[#2]% 
 			sniTrapTimeStr=%parm[#3]% 
@@ -6512,7 +6512,7 @@
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniDeviceChangesError trap received 
+			Fujitsu-Seimens Event: sniDeviceChangesError trap received 
 			sniTrapDesktop=%parm[#1]% 
 			sniTrapTimeInt=%parm[#2]% 
 			sniTrapTimeStr=%parm[#3]% 
@@ -6606,7 +6606,7 @@
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniAOLVoltage_Fan_TemperatureCritical trap received 
+			Fujitsu-Seimens Event: sniAOLVoltage_Fan_TemperatureCritical trap received 
 			sniTrapDesktop=%parm[#1]% 
 			sniTrapTimeInt=%parm[#2]% 
 			sniTrapTimeStr=%parm[#3]% 
@@ -6700,7 +6700,7 @@
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniAOLLANLeashCritical trap received 
+			Fujitsu-Seimens Event: sniAOLLANLeashCritical trap received 
 			sniTrapDesktop=%parm[#1]% 
 			sniTrapTimeInt=%parm[#2]% 
 			sniTrapTimeStr=%parm[#3]% 
@@ -6794,7 +6794,7 @@
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniAOLProcessorTemperatureCritical trap received 
+			Fujitsu-Seimens Event: sniAOLProcessorTemperatureCritical trap received 
 			sniTrapDesktop=%parm[#1]% 
 			sniTrapTimeInt=%parm[#2]% 
 			sniTrapTimeStr=%parm[#3]% 
@@ -6888,7 +6888,7 @@
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniAOLProcessor0MissingCritical trap received 
+			Fujitsu-Seimens Event: sniAOLProcessor0MissingCritical trap received 
 			sniTrapDesktop=%parm[#1]% 
 			sniTrapTimeInt=%parm[#2]% 
 			sniTrapTimeStr=%parm[#3]% 
@@ -6982,7 +6982,7 @@
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniAOLProcessor1MissingCritical trap received 
+			Fujitsu-Seimens Event: sniAOLProcessor1MissingCritical trap received 
 			sniTrapDesktop=%parm[#1]% 
 			sniTrapTimeInt=%parm[#2]% 
 			sniTrapTimeStr=%parm[#3]% 
@@ -7076,7 +7076,7 @@
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniAOLVoltage_FanCritical trap received 
+			Fujitsu-Seimens Event: sniAOLVoltage_FanCritical trap received 
 			sniTrapDesktop=%parm[#1]% 
 			sniTrapTimeInt=%parm[#2]% 
 			sniTrapTimeStr=%parm[#3]% 
@@ -7170,7 +7170,7 @@
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniAOLVoltageCritical trap received 
+			Fujitsu-Seimens Event: sniAOLVoltageCritical trap received 
 			sniTrapDesktop=%parm[#1]% 
 			sniTrapTimeInt=%parm[#2]% 
 			sniTrapTimeStr=%parm[#3]% 
@@ -7264,7 +7264,7 @@
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniAOLFanCritical trap received 
+			Fujitsu-Seimens Event: sniAOLFanCritical trap received 
 			sniTrapDesktop=%parm[#1]% 
 			sniTrapTimeInt=%parm[#2]% 
 			sniTrapTimeStr=%parm[#3]% 
@@ -7358,7 +7358,7 @@
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniAOLFan_TemperatureCritical trap received 
+			Fujitsu-Seimens Event: sniAOLFan_TemperatureCritical trap received 
 			sniTrapDesktop=%parm[#1]% 
 			sniTrapTimeInt=%parm[#2]% 
 			sniTrapTimeStr=%parm[#3]% 
@@ -7452,7 +7452,7 @@
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniAOLVoltage_TemperatureCritical trap received 
+			Fujitsu-Seimens Event: sniAOLVoltage_TemperatureCritical trap received 
 			sniTrapDesktop=%parm[#1]% 
 			sniTrapTimeInt=%parm[#2]% 
 			sniTrapTimeStr=%parm[#3]% 
@@ -7546,7 +7546,7 @@
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniAOLNICSMBusSlotCritical trap received 
+			Fujitsu-Seimens Event: sniAOLNICSMBusSlotCritical trap received 
 			sniTrapDesktop=%parm[#1]% 
 			sniTrapTimeInt=%parm[#2]% 
 			sniTrapTimeStr=%parm[#3]% 
@@ -7640,7 +7640,7 @@
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniAOLPresencePongCritical trap received 
+			Fujitsu-Seimens Event: sniAOLPresencePongCritical trap received 
 			sniTrapDesktop=%parm[#1]% 
 			sniTrapTimeInt=%parm[#2]% 
 			sniTrapTimeStr=%parm[#3]% 
@@ -7734,7 +7734,7 @@
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniAOLHardwareMonitorCritical trap received 
+			Fujitsu-Seimens Event: sniAOLHardwareMonitorCritical trap received 
 			sniTrapDesktop=%parm[#1]% 
 			sniTrapTimeInt=%parm[#2]% 
 			sniTrapTimeStr=%parm[#3]% 
@@ -7828,7 +7828,7 @@
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniAOL1_5VGTLVoltageCritical trap received 
+			Fujitsu-Seimens Event: sniAOL1_5VGTLVoltageCritical trap received 
 			sniTrapDesktop=%parm[#1]% 
 			sniTrapTimeInt=%parm[#2]% 
 			sniTrapTimeStr=%parm[#3]% 
@@ -7922,7 +7922,7 @@
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniAOLCPUCoreVoltageCritical trap received 
+			Fujitsu-Seimens Event: sniAOLCPUCoreVoltageCritical trap received 
 			sniTrapDesktop=%parm[#1]% 
 			sniTrapTimeInt=%parm[#2]% 
 			sniTrapTimeStr=%parm[#3]% 
@@ -8016,7 +8016,7 @@
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniAOL3_3VStandbyCritical trap received 
+			Fujitsu-Seimens Event: sniAOL3_3VStandbyCritical trap received 
 			sniTrapDesktop=%parm[#1]% 
 			sniTrapTimeInt=%parm[#2]% 
 			sniTrapTimeStr=%parm[#3]% 
@@ -8110,7 +8110,7 @@
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniAOL5VoltageCritical trap received 
+			Fujitsu-Seimens Event: sniAOL5VoltageCritical trap received 
 			sniTrapDesktop=%parm[#1]% 
 			sniTrapTimeInt=%parm[#2]% 
 			sniTrapTimeStr=%parm[#3]% 
@@ -8204,7 +8204,7 @@
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniAOLHardwareMonitorInternalTemperatureCritical trap received 
+			Fujitsu-Seimens Event: sniAOLHardwareMonitorInternalTemperatureCritical trap received 
 			sniTrapDesktop=%parm[#1]% 
 			sniTrapTimeInt=%parm[#2]% 
 			sniTrapTimeStr=%parm[#3]% 
@@ -8298,7 +8298,7 @@
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniAOLCPUDiodeSensorCritical trap received 
+			Fujitsu-Seimens Event: sniAOLCPUDiodeSensorCritical trap received 
 			sniTrapDesktop=%parm[#1]% 
 			sniTrapTimeInt=%parm[#2]% 
 			sniTrapTimeStr=%parm[#3]% 
@@ -8392,7 +8392,7 @@
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniAOLCPUFanCritical trap received 
+			Fujitsu-Seimens Event: sniAOLCPUFanCritical trap received 
 			sniTrapDesktop=%parm[#1]% 
 			sniTrapTimeInt=%parm[#2]% 
 			sniTrapTimeStr=%parm[#3]% 
@@ -8486,7 +8486,7 @@
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniAOLChassisFanCritical trap received 
+			Fujitsu-Seimens Event: sniAOLChassisFanCritical trap received 
 			sniTrapDesktop=%parm[#1]% 
 			sniTrapTimeInt=%parm[#2]% 
 			sniTrapTimeStr=%parm[#3]% 
@@ -8580,7 +8580,7 @@
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniAOL12VoltageCritical trap received 
+			Fujitsu-Seimens Event: sniAOL12VoltageCritical trap received 
 			sniTrapDesktop=%parm[#1]% 
 			sniTrapTimeInt=%parm[#2]% 
 			sniTrapTimeStr=%parm[#3]% 
@@ -8674,7 +8674,7 @@
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniAOL3_3VoltageCritical trap received 
+			Fujitsu-Seimens Event: sniAOL3_3VoltageCritical trap received 
 			sniTrapDesktop=%parm[#1]% 
 			sniTrapTimeInt=%parm[#2]% 
 			sniTrapTimeStr=%parm[#3]% 
@@ -8768,7 +8768,7 @@
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniAOLCPUDiodeCritical trap received 
+			Fujitsu-Seimens Event: sniAOLCPUDiodeCritical trap received 
 			sniTrapDesktop=%parm[#1]% 
 			sniTrapTimeInt=%parm[#2]% 
 			sniTrapTimeStr=%parm[#3]% 
@@ -8862,7 +8862,7 @@
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniAOL2_5VoltageCritical trap received 
+			Fujitsu-Seimens Event: sniAOL2_5VoltageCritical trap received 
 			sniTrapDesktop=%parm[#1]% 
 			sniTrapTimeInt=%parm[#2]% 
 			sniTrapTimeStr=%parm[#3]% 
@@ -8956,7 +8956,7 @@
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniAOLAmbientTemperatureCritical trap received 
+			Fujitsu-Seimens Event: sniAOLAmbientTemperatureCritical trap received 
 			sniTrapDesktop=%parm[#1]% 
 			sniTrapTimeInt=%parm[#2]% 
 			sniTrapTimeStr=%parm[#3]% 
@@ -9050,7 +9050,7 @@
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniAOLRemoteTemperatureCritical trap received 
+			Fujitsu-Seimens Event: sniAOLRemoteTemperatureCritical trap received 
 			sniTrapDesktop=%parm[#1]% 
 			sniTrapTimeInt=%parm[#2]% 
 			sniTrapTimeStr=%parm[#3]% 
@@ -9144,7 +9144,7 @@
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniAOLUndockEventCritical trap received 
+			Fujitsu-Seimens Event: sniAOLUndockEventCritical trap received 
 			sniTrapDesktop=%parm[#1]% 
 			sniTrapTimeInt=%parm[#2]% 
 			sniTrapTimeStr=%parm[#3]% 
@@ -9238,7 +9238,7 @@
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniFreeSystemDiskSpaceOK trap received 
+			Fujitsu-Seimens Event: sniFreeSystemDiskSpaceOK trap received 
 			sniTrapDesktop=%parm[#1]% 
 			sniTrapTimeInt=%parm[#2]% 
 			sniTrapTimeStr=%parm[#3]% 
@@ -9332,7 +9332,7 @@
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniFreeSystemDiskSpaceWarning trap received 
+			Fujitsu-Seimens Event: sniFreeSystemDiskSpaceWarning trap received 
 			sniTrapDesktop=%parm[#1]% 
 			sniTrapTimeInt=%parm[#2]% 
 			sniTrapTimeStr=%parm[#3]% 
@@ -9426,7 +9426,7 @@
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniFreeSystemDiskSpaceError trap received 
+			Fujitsu-Seimens Event: sniFreeSystemDiskSpaceError trap received 
 			sniTrapDesktop=%parm[#1]% 
 			sniTrapTimeInt=%parm[#2]% 
 			sniTrapTimeStr=%parm[#3]% 
@@ -9520,7 +9520,7 @@
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniLeaseExpirationOK trap received 
+			Fujitsu-Seimens Event: sniLeaseExpirationOK trap received 
 			sniTrapDesktop=%parm[#1]% 
 			sniTrapTimeInt=%parm[#2]% 
 			sniTrapTimeStr=%parm[#3]% 
@@ -9614,7 +9614,7 @@
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniLeaseExpirationWarning trap received 
+			Fujitsu-Seimens Event: sniLeaseExpirationWarning trap received 
 			sniTrapDesktop=%parm[#1]% 
 			sniTrapTimeInt=%parm[#2]% 
 			sniTrapTimeStr=%parm[#3]% 
@@ -9708,7 +9708,7 @@
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniLeaseExpirationError trap received 
+			Fujitsu-Seimens Event: sniLeaseExpirationError trap received 
 			sniTrapDesktop=%parm[#1]% 
 			sniTrapTimeInt=%parm[#2]% 
 			sniTrapTimeStr=%parm[#3]% 
@@ -9802,7 +9802,7 @@
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniProcessorChangeOK trap received 
+			Fujitsu-Seimens Event: sniProcessorChangeOK trap received 
 			sniTrapDesktop=%parm[#1]% 
 			sniTrapTimeInt=%parm[#2]% 
 			sniTrapTimeStr=%parm[#3]% 
@@ -9896,7 +9896,7 @@
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniProcessorChangeWarning trap received 
+			Fujitsu-Seimens Event: sniProcessorChangeWarning trap received 
 			sniTrapDesktop=%parm[#1]% 
 			sniTrapTimeInt=%parm[#2]% 
 			sniTrapTimeStr=%parm[#3]% 
@@ -9990,7 +9990,7 @@
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniProcessorChangeError trap received 
+			Fujitsu-Seimens Event: sniProcessorChangeError trap received 
 			sniTrapDesktop=%parm[#1]% 
 			sniTrapTimeInt=%parm[#2]% 
 			sniTrapTimeStr=%parm[#3]% 
@@ -10051,7 +10051,7 @@
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniSMARTFailurePredicted trap received 
+			Fujitsu-Seimens Event: sniSMARTFailurePredicted trap received 
 			sniHdTrapServerName=%parm[#1]% 
 			sniHdTrapTime=%parm[#2]% 
 			sniHdTrapDeviceName=%parm[#3]% 
@@ -10106,7 +10106,7 @@
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniSMARTMonitoringDisabled trap received 
+			Fujitsu-Seimens Event: sniSMARTMonitoringDisabled trap received 
 			sniHdTrapServerName=%parm[#1]% 
 			sniHdTrapTime=%parm[#2]% 
 			sniHdTrapDeviceName=%parm[#3]% 
@@ -10163,7 +10163,7 @@
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sieMPError trap received 
+			Fujitsu-Seimens Event: sieMPError trap received 
 			sieMPTrapServerName=%parm[#1]% 
 			sieMPTrapTime=%parm[#2]% 
 			sieMPTrapGroupID=%parm[#3]% 
@@ -10218,7 +10218,7 @@
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sieMPRetry trap received 
+			Fujitsu-Seimens Event: sieMPRetry trap received 
 			sieMPTrapServerName=%parm[#1]% 
 			sieMPTrapTime=%parm[#2]% 
 			sieMPTrapGroupID=%parm[#3]% 
@@ -10273,7 +10273,7 @@
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sieMPActivePortChanged trap received 
+			Fujitsu-Seimens Event: sieMPActivePortChanged trap received 
 			sieMPTrapServerName=%parm[#1]% 
 			sieMPTrapTime=%parm[#2]% 
 			sieMPTrapGroupID=%parm[#3]% 
@@ -10328,7 +10328,7 @@
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sieMPReconfigured trap received 
+			Fujitsu-Seimens Event: sieMPReconfigured trap received 
 			sieMPTrapServerName=%parm[#1]% 
 			sieMPTrapTime=%parm[#2]% 
 			sieMPTrapGroupID=%parm[#3]% 
@@ -10383,7 +10383,7 @@
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sieMPStatusChanged trap received 
+			Fujitsu-Seimens Event: sieMPStatusChanged trap received 
 			sieMPTrapServerName=%parm[#1]% 
 			sieMPTrapTime=%parm[#2]% 
 			sieMPTrapGroupID=%parm[#3]% 
@@ -10438,7 +10438,7 @@
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sieMPAutoRecovered trap received 
+			Fujitsu-Seimens Event: sieMPAutoRecovered trap received 
 			sieMPTrapServerName=%parm[#1]% 
 			sieMPTrapTime=%parm[#2]% 
 			sieMPTrapGroupID=%parm[#3]% 
@@ -10493,7 +10493,7 @@
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sieMPErrorCleared trap received 
+			Fujitsu-Seimens Event: sieMPErrorCleared trap received 
 			sieMPTrapServerName=%parm[#1]% 
 			sieMPTrapTime=%parm[#2]% 
 			sieMPTrapGroupID=%parm[#3]% 
@@ -10554,7 +10554,7 @@
 	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: mylexAutoRebuildStarted trap received 
+			Fujitsu-Seimens Event: mylexAutoRebuildStarted trap received 
 			mylexTrapServerName=%parm[#1]% 
 			mylexTrapSlotNumber=%parm[#2]% 
 			mylexTrapTime=%parm[#3]% 
@@ -10598,7 +10598,7 @@
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: mylexManualRebuildStarted trap received 
+			Fujitsu-Seimens Event: mylexManualRebuildStarted trap received 
 			mylexTrapServerName=%parm[#1]% 
 			mylexTrapSlotNumber=%parm[#2]% 
 			mylexTrapTime=%parm[#3]%&lt;/p&gt;
@@ -10638,7 +10638,7 @@
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: mylexRebuildDone trap received 
+			Fujitsu-Seimens Event: mylexRebuildDone trap received 
 			mylexTrapServerName=%parm[#1]% 
 			mylexTrapSlotNumber=%parm[#2]% 
 			mylexTrapTime=%parm[#3]%&lt;/p&gt;
@@ -10678,7 +10678,7 @@
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: mylexRebuildCanceled trap received 
+			Fujitsu-Seimens Event: mylexRebuildCanceled trap received 
 			mylexTrapServerName=%parm[#1]% 
 			mylexTrapSlotNumber=%parm[#2]% 
 			mylexTrapTime=%parm[#3]%&lt;/p&gt;
@@ -10730,7 +10730,7 @@
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: mylexRebuildStatus trap received 
+			Fujitsu-Seimens Event: mylexRebuildStatus trap received 
 			mylexTrapServerName=%parm[#1]% 
 			mylexTrapSlotNumber=%parm[#2]% 
 			mylexTrapTime=%parm[#3]% 
@@ -10777,7 +10777,7 @@
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: mylexRebuildError trap received 
+			Fujitsu-Seimens Event: mylexRebuildError trap received 
 			mylexTrapServerName=%parm[#1]% 
 			mylexTrapSlotNumber=%parm[#2]% 
 			mylexTrapTime=%parm[#3]% 
@@ -10818,7 +10818,7 @@
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: mylexRebuildNewDeviceFailed trap received 
+			Fujitsu-Seimens Event: mylexRebuildNewDeviceFailed trap received 
 			mylexTrapServerName=%parm[#1]% 
 			mylexTrapSlotNumber=%parm[#2]% 
 			mylexTrapTime=%parm[#3]%&lt;/p&gt;
@@ -10862,7 +10862,7 @@
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: mylexRebuildLogicalDriveFailed trap received 
+			Fujitsu-Seimens Event: mylexRebuildLogicalDriveFailed trap received 
 			mylexTrapServerName=%parm[#1]% 
 			mylexTrapSlotNumber=%parm[#2]% 
 			mylexTrapTime=%parm[#3]% 
@@ -10903,7 +10903,7 @@
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: mylexParityCheckStarted trap received 
+			Fujitsu-Seimens Event: mylexParityCheckStarted trap received 
 			mylexTrapServerName=%parm[#1]% 
 			mylexTrapSlotNumber=%parm[#2]% 
 			mylexTrapTime=%parm[#3]%&lt;/p&gt;
@@ -10943,7 +10943,7 @@
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: mylexParityCheckDone trap received 
+			Fujitsu-Seimens Event: mylexParityCheckDone trap received 
 			mylexTrapServerName=%parm[#1]% 
 			mylexTrapSlotNumber=%parm[#2]% 
 			mylexTrapTime=%parm[#3]%&lt;/p&gt;
@@ -10983,7 +10983,7 @@
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: mylexParityCheckCanceled trap received 
+			Fujitsu-Seimens Event: mylexParityCheckCanceled trap received 
 			mylexTrapServerName=%parm[#1]% 
 			mylexTrapSlotNumber=%parm[#2]% 
 			mylexTrapTime=%parm[#3]%&lt;/p&gt;
@@ -11035,7 +11035,7 @@
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: mylexParityCheckStatus trap received 
+			Fujitsu-Seimens Event: mylexParityCheckStatus trap received 
 			mylexTrapServerName=%parm[#1]% 
 			mylexTrapSlotNumber=%parm[#2]% 
 			mylexTrapTime=%parm[#3]% 
@@ -11082,7 +11082,7 @@
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: mylexParityCheckError trap received 
+			Fujitsu-Seimens Event: mylexParityCheckError trap received 
 			mylexTrapServerName=%parm[#1]% 
 			mylexTrapSlotNumber=%parm[#2]% 
 			mylexTrapTime=%parm[#3]% 
@@ -11127,7 +11127,7 @@
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: mylexParityCheckLogicalDriveFailed trap received 
+			Fujitsu-Seimens Event: mylexParityCheckLogicalDriveFailed trap received 
 			mylexTrapServerName=%parm[#1]% 
 			mylexTrapSlotNumber=%parm[#2]% 
 			mylexTrapTime=%parm[#3]% 
@@ -11172,7 +11172,7 @@
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: mylexLogicalDriveOffline trap received 
+			Fujitsu-Seimens Event: mylexLogicalDriveOffline trap received 
 			mylexTrapServerName=%parm[#1]% 
 			mylexTrapSlotNumber=%parm[#2]% 
 			mylexTrapTime=%parm[#3]% 
@@ -11217,7 +11217,7 @@
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: mylexLogicalDriveCritical trap received 
+			Fujitsu-Seimens Event: mylexLogicalDriveCritical trap received 
 			mylexTrapServerName=%parm[#1]% 
 			mylexTrapSlotNumber=%parm[#2]% 
 			mylexTrapTime=%parm[#3]% 
@@ -11262,7 +11262,7 @@
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: mylexLogicalDriveOnline trap received 
+			Fujitsu-Seimens Event: mylexLogicalDriveOnline trap received 
 			mylexTrapServerName=%parm[#1]% 
 			mylexTrapSlotNumber=%parm[#2]% 
 			mylexTrapTime=%parm[#3]% 
@@ -11311,7 +11311,7 @@
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: mylexPhysicalDeviceDied trap received 
+			Fujitsu-Seimens Event: mylexPhysicalDeviceDied trap received 
 			mylexTrapServerName=%parm[#1]% 
 			mylexTrapSlotNumber=%parm[#2]% 
 			mylexTrapTime=%parm[#3]% 
@@ -11361,7 +11361,7 @@
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: mylexPhysicalDeviceAlive trap received 
+			Fujitsu-Seimens Event: mylexPhysicalDeviceAlive trap received 
 			mylexTrapServerName=%parm[#1]% 
 			mylexTrapSlotNumber=%parm[#2]% 
 			mylexTrapTime=%parm[#3]% 
@@ -11407,7 +11407,7 @@
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: mylexWriteBackError trap received 
+			Fujitsu-Seimens Event: mylexWriteBackError trap received 
 			mylexTrapServerName=%parm[#1]% 
 			mylexTrapSlotNumber=%parm[#2]% 
 			mylexTrapTime=%parm[#3]% 
@@ -11448,7 +11448,7 @@
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: mylexStateChangeTableFull trap received 
+			Fujitsu-Seimens Event: mylexStateChangeTableFull trap received 
 			mylexTrapServerName=%parm[#1]% 
 			mylexTrapSlotNumber=%parm[#2]% 
 			mylexTrapTime=%parm[#3]%&lt;/p&gt;
@@ -11488,7 +11488,7 @@
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: mylexAdapterDied trap received 
+			Fujitsu-Seimens Event: mylexAdapterDied trap received 
 			mylexTrapServerName=%parm[#1]% 
 			mylexTrapSlotNumber=%parm[#2]% 
 			mylexTrapTime=%parm[#3]%&lt;/p&gt;
@@ -11532,7 +11532,7 @@
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: mylexAutoRebuildStarted2 trap received 
+			Fujitsu-Seimens Event: mylexAutoRebuildStarted2 trap received 
 			mylexTrapServerName=%parm[#1]% 
 			mylexTrapSlotNumber=%parm[#2]% 
 			mylexTrapTime=%parm[#3]% 
@@ -11577,7 +11577,7 @@
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: mylexManualRebuildStarted2 trap received 
+			Fujitsu-Seimens Event: mylexManualRebuildStarted2 trap received 
 			mylexTrapServerName=%parm[#1]% 
 			mylexTrapSlotNumber=%parm[#2]% 
 			mylexTrapTime=%parm[#3]% 
@@ -11622,7 +11622,7 @@
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: mylexRebuildDone2 trap received 
+			Fujitsu-Seimens Event: mylexRebuildDone2 trap received 
 			mylexTrapServerName=%parm[#1]% 
 			mylexTrapSlotNumber=%parm[#2]% 
 			mylexTrapTime=%parm[#3]% 
@@ -11667,7 +11667,7 @@
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: mylexRebuildCanceled2 trap received 
+			Fujitsu-Seimens Event: mylexRebuildCanceled2 trap received 
 			mylexTrapServerName=%parm[#1]% 
 			mylexTrapSlotNumber=%parm[#2]% 
 			mylexTrapTime=%parm[#3]% 
@@ -11712,7 +11712,7 @@
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: mylexRebuildError2 trap received 
+			Fujitsu-Seimens Event: mylexRebuildError2 trap received 
 			mylexTrapServerName=%parm[#1]% 
 			mylexTrapSlotNumber=%parm[#2]% 
 			mylexTrapTime=%parm[#3]% 
@@ -11757,7 +11757,7 @@
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: mylexRebuildNewDeviceFailed2 trap received 
+			Fujitsu-Seimens Event: mylexRebuildNewDeviceFailed2 trap received 
 			mylexTrapServerName=%parm[#1]% 
 			mylexTrapSlotNumber=%parm[#2]% 
 			mylexTrapTime=%parm[#3]% 
@@ -11802,7 +11802,7 @@
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: mylexRebuildLogicalDriveFailed2 trap received 
+			Fujitsu-Seimens Event: mylexRebuildLogicalDriveFailed2 trap received 
 			mylexTrapServerName=%parm[#1]% 
 			mylexTrapSlotNumber=%parm[#2]% 
 			mylexTrapTime=%parm[#3]% 
@@ -11847,7 +11847,7 @@
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: mylexInitializationStarted trap received 
+			Fujitsu-Seimens Event: mylexInitializationStarted trap received 
 			mylexTrapServerName=%parm[#1]% 
 			mylexTrapSlotNumber=%parm[#2]% 
 			mylexTrapTime=%parm[#3]% 
@@ -11892,7 +11892,7 @@
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: mylexInitializationDone trap received 
+			Fujitsu-Seimens Event: mylexInitializationDone trap received 
 			mylexTrapServerName=%parm[#1]% 
 			mylexTrapSlotNumber=%parm[#2]% 
 			mylexTrapTime=%parm[#3]% 
@@ -11937,7 +11937,7 @@
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: mylexInitializationCanceled trap received 
+			Fujitsu-Seimens Event: mylexInitializationCanceled trap received 
 			mylexTrapServerName=%parm[#1]% 
 			mylexTrapSlotNumber=%parm[#2]% 
 			mylexTrapTime=%parm[#3]% 
@@ -11982,7 +11982,7 @@
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: mylexInitializationFailed trap received 
+			Fujitsu-Seimens Event: mylexInitializationFailed trap received 
 			mylexTrapServerName=%parm[#1]% 
 			mylexTrapSlotNumber=%parm[#2]% 
 			mylexTrapTime=%parm[#3]% 
@@ -12027,7 +12027,7 @@
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: mylexSystemDriveCreated trap received 
+			Fujitsu-Seimens Event: mylexSystemDriveCreated trap received 
 			mylexTrapServerName=%parm[#1]% 
 			mylexTrapSlotNumber=%parm[#2]% 
 			mylexTrapTime=%parm[#3]% 
@@ -12072,7 +12072,7 @@
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: mylexSystemDriveDeleted trap received 
+			Fujitsu-Seimens Event: mylexSystemDriveDeleted trap received 
 			mylexTrapServerName=%parm[#1]% 
 			mylexTrapSlotNumber=%parm[#2]% 
 			mylexTrapTime=%parm[#3]% 
@@ -12117,7 +12117,7 @@
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: mylexRaidExpansionStarted trap received 
+			Fujitsu-Seimens Event: mylexRaidExpansionStarted trap received 
 			mylexTrapServerName=%parm[#1]% 
 			mylexTrapSlotNumber=%parm[#2]% 
 			mylexTrapTime=%parm[#3]% 
@@ -12162,7 +12162,7 @@
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: mylexRaidExpansionDone trap received 
+			Fujitsu-Seimens Event: mylexRaidExpansionDone trap received 
 			mylexTrapServerName=%parm[#1]% 
 			mylexTrapSlotNumber=%parm[#2]% 
 			mylexTrapTime=%parm[#3]% 
@@ -12207,7 +12207,7 @@
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: mylexRaidExpansionFailed trap received 
+			Fujitsu-Seimens Event: mylexRaidExpansionFailed trap received 
 			mylexTrapServerName=%parm[#1]% 
 			mylexTrapSlotNumber=%parm[#2]% 
 			mylexTrapTime=%parm[#3]% 
@@ -12252,7 +12252,7 @@
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: mylexSystemDriveBadBlock trap received 
+			Fujitsu-Seimens Event: mylexSystemDriveBadBlock trap received 
 			mylexTrapServerName=%parm[#1]% 
 			mylexTrapSlotNumber=%parm[#2]% 
 			mylexTrapTime=%parm[#3]% 
@@ -12297,7 +12297,7 @@
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: mylexSystemDriveSizeChanged trap received 
+			Fujitsu-Seimens Event: mylexSystemDriveSizeChanged trap received 
 			mylexTrapServerName=%parm[#1]% 
 			mylexTrapSlotNumber=%parm[#2]% 
 			mylexTrapTime=%parm[#3]% 
@@ -12342,7 +12342,7 @@
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: mylexRaidTypeChanged trap received 
+			Fujitsu-Seimens Event: mylexRaidTypeChanged trap received 
 			mylexTrapServerName=%parm[#1]% 
 			mylexTrapSlotNumber=%parm[#2]% 
 			mylexTrapTime=%parm[#3]% 
@@ -12391,7 +12391,7 @@
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: mylexPhysicalDeviceHotspare trap received 
+			Fujitsu-Seimens Event: mylexPhysicalDeviceHotspare trap received 
 			mylexTrapServerName=%parm[#1]% 
 			mylexTrapSlotNumber=%parm[#2]% 
 			mylexTrapTime=%parm[#3]% 
@@ -12441,7 +12441,7 @@
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: mylexPhysicalDeviceHardError trap received 
+			Fujitsu-Seimens Event: mylexPhysicalDeviceHardError trap received 
 			mylexTrapServerName=%parm[#1]% 
 			mylexTrapSlotNumber=%parm[#2]% 
 			mylexTrapTime=%parm[#3]% 
@@ -12491,7 +12491,7 @@
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: mylexPhysicalDeviceSoftError trap received 
+			Fujitsu-Seimens Event: mylexPhysicalDeviceSoftError trap received 
 			mylexTrapServerName=%parm[#1]% 
 			mylexTrapSlotNumber=%parm[#2]% 
 			mylexTrapTime=%parm[#3]% 
@@ -12541,7 +12541,7 @@
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: mylexPhysicalDeviceParityError trap received 
+			Fujitsu-Seimens Event: mylexPhysicalDeviceParityError trap received 
 			mylexTrapServerName=%parm[#1]% 
 			mylexTrapSlotNumber=%parm[#2]% 
 			mylexTrapTime=%parm[#3]% 
@@ -12591,7 +12591,7 @@
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: mylexPhysicalDeviceMiscError trap received 
+			Fujitsu-Seimens Event: mylexPhysicalDeviceMiscError trap received 
 			mylexTrapServerName=%parm[#1]% 
 			mylexTrapSlotNumber=%parm[#2]% 
 			mylexTrapTime=%parm[#3]% 
@@ -12641,7 +12641,7 @@
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: mylexPhysicalDevicePrefailure trap received 
+			Fujitsu-Seimens Event: mylexPhysicalDevicePrefailure trap received 
 			mylexTrapServerName=%parm[#1]% 
 			mylexTrapSlotNumber=%parm[#2]% 
 			mylexTrapTime=%parm[#3]% 
@@ -12691,7 +12691,7 @@
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: mylexPhysicalDeviceUnconfigured trap received 
+			Fujitsu-Seimens Event: mylexPhysicalDeviceUnconfigured trap received 
 			mylexTrapServerName=%parm[#1]% 
 			mylexTrapSlotNumber=%parm[#2]% 
 			mylexTrapTime=%parm[#3]% 
@@ -12741,7 +12741,7 @@
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: mylexPhysicalDeviceAdded trap received 
+			Fujitsu-Seimens Event: mylexPhysicalDeviceAdded trap received 
 			mylexTrapServerName=%parm[#1]% 
 			mylexTrapSlotNumber=%parm[#2]% 
 			mylexTrapTime=%parm[#3]% 
@@ -12791,7 +12791,7 @@
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: mylexPhysicalDeviceRemoved trap received 
+			Fujitsu-Seimens Event: mylexPhysicalDeviceRemoved trap received 
 			mylexTrapServerName=%parm[#1]% 
 			mylexTrapSlotNumber=%parm[#2]% 
 			mylexTrapTime=%parm[#3]% 
@@ -12833,7 +12833,7 @@
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: mylexWriteBackError2 trap received 
+			Fujitsu-Seimens Event: mylexWriteBackError2 trap received 
 			mylexTrapServerName=%parm[#1]% 
 			mylexTrapSlotNumber=%parm[#2]% 
 			mylexTrapTime=%parm[#3]%&lt;/p&gt;
@@ -12877,7 +12877,7 @@
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: mylexGamDriverMissing trap received 
+			Fujitsu-Seimens Event: mylexGamDriverMissing trap received 
 			mylexTrapServerName=%parm[#1]% 
 			mylexTrapSlotNumber=%parm[#2]% 
 			mylexTrapTime=%parm[#3]% 
@@ -12926,7 +12926,7 @@
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: mylexGamDriverIncorrectVersion trap received 
+			Fujitsu-Seimens Event: mylexGamDriverIncorrectVersion trap received 
 			mylexTrapServerName=%parm[#1]% 
 			mylexTrapSlotNumber=%parm[#2]% 
 			mylexTrapTime=%parm[#3]% 
@@ -12976,7 +12976,7 @@
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: mylexSMARTFailurePredicted trap received 
+			Fujitsu-Seimens Event: mylexSMARTFailurePredicted trap received 
 			mylexTrapServerName=%parm[#1]% 
 			mylexTrapSlotNumber=%parm[#2]% 
 			mylexTrapTime=%parm[#3]% 
@@ -13026,7 +13026,7 @@
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: mylexSMARTConfigurationChanged trap received 
+			Fujitsu-Seimens Event: mylexSMARTConfigurationChanged trap received 
 			mylexTrapServerName=%parm[#1]% 
 			mylexTrapSlotNumber=%parm[#2]% 
 			mylexTrapTime=%parm[#3]% 
@@ -13068,7 +13068,7 @@
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: mylexBBUFound trap received 
+			Fujitsu-Seimens Event: mylexBBUFound trap received 
 			mylexTrapServerName=%parm[#1]% 
 			mylexTrapSlotNumber=%parm[#2]% 
 			mylexTrapTime=%parm[#3]%&lt;/p&gt;
@@ -13108,7 +13108,7 @@
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: mylexBBUPowerLow trap received 
+			Fujitsu-Seimens Event: mylexBBUPowerLow trap received 
 			mylexTrapServerName=%parm[#1]% 
 			mylexTrapSlotNumber=%parm[#2]% 
 			mylexTrapTime=%parm[#3]%&lt;/p&gt;
@@ -13148,7 +13148,7 @@
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: mylexBBUPowerOK trap received 
+			Fujitsu-Seimens Event: mylexBBUPowerOK trap received 
 			mylexTrapServerName=%parm[#1]% 
 			mylexTrapSlotNumber=%parm[#2]% 
 			mylexTrapTime=%parm[#3]%&lt;/p&gt;
@@ -13191,7 +13191,7 @@ for which no other trap is currently defined.&lt;/p&gt;&lt;table&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniWpChangeUnknown trap received 
+			Fujitsu-Seimens Event: sniWpChangeUnknown trap received 
 			sniServerName=%parm[#1]% 
 			sniTrapTime=%parm[#2]% 
 			sniWpNotificationType=%parm[#3]%&lt;/p&gt;
@@ -13228,7 +13228,7 @@ with the cluster service.&lt;/p&gt;&lt;table&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniWpChangeClusterNotFoundActive trap received 
+			Fujitsu-Seimens Event: sniWpChangeClusterNotFoundActive trap received 
 			sniServerName=%parm[#1]% 
 			sniTrapTime=%parm[#2]%&lt;/p&gt;
 		</logmsg>
@@ -13264,7 +13264,7 @@ with the cluster service.&lt;/p&gt;&lt;table&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniWpChangeClusterActiveAgain trap received 
+			Fujitsu-Seimens Event: sniWpChangeClusterActiveAgain trap received 
 			sniServerName=%parm[#1]% 
 			sniTrapTime=%parm[#2]%&lt;/p&gt;
 		</logmsg>
@@ -13300,7 +13300,7 @@ with the cluster service.&lt;/p&gt;&lt;table&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniWpChangeClusterNoLongerActive trap received 
+			Fujitsu-Seimens Event: sniWpChangeClusterNoLongerActive trap received 
 			sniServerName=%parm[#1]% 
 			sniTrapTime=%parm[#2]%&lt;/p&gt;
 		</logmsg>
@@ -13339,7 +13339,7 @@ with the cluster service.&lt;/p&gt;&lt;table&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniWpChangeNodeDeleted trap received 
+			Fujitsu-Seimens Event: sniWpChangeNodeDeleted trap received 
 			sniServerName=%parm[#1]% 
 			sniTrapTime=%parm[#2]% 
 			sniWpNotificationNodeName=%parm[#3]%&lt;/p&gt;
@@ -13379,7 +13379,7 @@ with the cluster service.&lt;/p&gt;&lt;table&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniWpChangeNodeAdded trap received 
+			Fujitsu-Seimens Event: sniWpChangeNodeAdded trap received 
 			sniServerName=%parm[#1]% 
 			sniTrapTime=%parm[#2]% 
 			sniWpNotificationNodeName=%parm[#3]%&lt;/p&gt;
@@ -13419,7 +13419,7 @@ with the cluster service.&lt;/p&gt;&lt;table&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniWpChangeNodeState trap received 
+			Fujitsu-Seimens Event: sniWpChangeNodeState trap received 
 			sniServerName=%parm[#1]% 
 			sniTrapTime=%parm[#2]% 
 			sniWpNotificationNodeName=%parm[#3]%&lt;/p&gt;
@@ -13459,7 +13459,7 @@ with the cluster service.&lt;/p&gt;&lt;table&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniWpChangeResourceTypeDeleted trap received 
+			Fujitsu-Seimens Event: sniWpChangeResourceTypeDeleted trap received 
 			sniServerName=%parm[#1]% 
 			sniTrapTime=%parm[#2]% 
 			sniWpNotificationResourceTypeName=%parm[#3]%&lt;/p&gt;
@@ -13499,7 +13499,7 @@ with the cluster service.&lt;/p&gt;&lt;table&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniWpChangeResourceTypeAdded trap received 
+			Fujitsu-Seimens Event: sniWpChangeResourceTypeAdded trap received 
 			sniServerName=%parm[#1]% 
 			sniTrapTime=%parm[#2]% 
 			sniWpNotificationResourceTypeName=%parm[#3]%&lt;/p&gt;
@@ -13539,7 +13539,7 @@ with the cluster service.&lt;/p&gt;&lt;table&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniWpChangeGroupDeleted trap received 
+			Fujitsu-Seimens Event: sniWpChangeGroupDeleted trap received 
 			sniServerName=%parm[#1]% 
 			sniTrapTime=%parm[#2]% 
 			sniWpNotificationGroupName=%parm[#3]%&lt;/p&gt;
@@ -13579,7 +13579,7 @@ with the cluster service.&lt;/p&gt;&lt;table&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniWpChangeGroupAdded trap received 
+			Fujitsu-Seimens Event: sniWpChangeGroupAdded trap received 
 			sniServerName=%parm[#1]% 
 			sniTrapTime=%parm[#2]% 
 			sniWpNotificationGroupName=%parm[#3]%&lt;/p&gt;
@@ -13619,7 +13619,7 @@ with the cluster service.&lt;/p&gt;&lt;table&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniWpChangeGroupState trap received 
+			Fujitsu-Seimens Event: sniWpChangeGroupState trap received 
 			sniServerName=%parm[#1]% 
 			sniTrapTime=%parm[#2]% 
 			sniWpNotificationGroupName=%parm[#3]%&lt;/p&gt;
@@ -13659,7 +13659,7 @@ with the cluster service.&lt;/p&gt;&lt;table&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniWpChangeGroupProperty trap received 
+			Fujitsu-Seimens Event: sniWpChangeGroupProperty trap received 
 			sniServerName=%parm[#1]% 
 			sniTrapTime=%parm[#2]% 
 			sniWpNotificationGroupName=%parm[#3]%&lt;/p&gt;
@@ -13699,7 +13699,7 @@ with the cluster service.&lt;/p&gt;&lt;table&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniWpChangeResourceDeleted trap received 
+			Fujitsu-Seimens Event: sniWpChangeResourceDeleted trap received 
 			sniServerName=%parm[#1]% 
 			sniTrapTime=%parm[#2]% 
 			sniWpNotificationResourceName=%parm[#3]%&lt;/p&gt;
@@ -13739,7 +13739,7 @@ with the cluster service.&lt;/p&gt;&lt;table&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniWpChangeResourceAdded trap received 
+			Fujitsu-Seimens Event: sniWpChangeResourceAdded trap received 
 			sniServerName=%parm[#1]% 
 			sniTrapTime=%parm[#2]% 
 			sniWpNotificationResourceName=%parm[#3]%&lt;/p&gt;
@@ -13779,7 +13779,7 @@ with the cluster service.&lt;/p&gt;&lt;table&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniWpChangeResourceState trap received 
+			Fujitsu-Seimens Event: sniWpChangeResourceState trap received 
 			sniServerName=%parm[#1]% 
 			sniTrapTime=%parm[#2]% 
 			sniWpNotificationResourceName=%parm[#3]%&lt;/p&gt;
@@ -13819,7 +13819,7 @@ with the cluster service.&lt;/p&gt;&lt;table&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniWpChangeResourceProperty trap received 
+			Fujitsu-Seimens Event: sniWpChangeResourceProperty trap received 
 			sniServerName=%parm[#1]% 
 			sniTrapTime=%parm[#2]% 
 			sniWpNotificationResourceName=%parm[#3]%&lt;/p&gt;
@@ -13859,7 +13859,7 @@ with the cluster service.&lt;/p&gt;&lt;table&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniWpChangeRegistryAttributes trap received 
+			Fujitsu-Seimens Event: sniWpChangeRegistryAttributes trap received 
 			sniServerName=%parm[#1]% 
 			sniTrapTime=%parm[#2]% 
 			sniWpNotificationClusterKeyName=%parm[#3]%&lt;/p&gt;
@@ -13899,7 +13899,7 @@ with the cluster service.&lt;/p&gt;&lt;table&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniWpChangeRegistryKey trap received 
+			Fujitsu-Seimens Event: sniWpChangeRegistryKey trap received 
 			sniServerName=%parm[#1]% 
 			sniTrapTime=%parm[#2]% 
 			sniWpNotificationClusterKeyName=%parm[#3]%&lt;/p&gt;
@@ -13939,7 +13939,7 @@ with the cluster service.&lt;/p&gt;&lt;table&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniWpChangeRegistryValue trap received 
+			Fujitsu-Seimens Event: sniWpChangeRegistryValue trap received 
 			sniServerName=%parm[#1]% 
 			sniTrapTime=%parm[#2]% 
 			sniWpNotificationClusterKeyName=%parm[#3]%&lt;/p&gt;
@@ -13979,7 +13979,7 @@ with the cluster service.&lt;/p&gt;&lt;table&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniWpChangeNetworkDeleted trap received 
+			Fujitsu-Seimens Event: sniWpChangeNetworkDeleted trap received 
 			sniServerName=%parm[#1]% 
 			sniTrapTime=%parm[#2]% 
 			sniWpNotificationNetworkName=%parm[#3]%&lt;/p&gt;
@@ -14019,7 +14019,7 @@ with the cluster service.&lt;/p&gt;&lt;table&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniWpChangeNetworkAdded trap received 
+			Fujitsu-Seimens Event: sniWpChangeNetworkAdded trap received 
 			sniServerName=%parm[#1]% 
 			sniTrapTime=%parm[#2]% 
 			sniWpNotificationNetworkName=%parm[#3]%&lt;/p&gt;
@@ -14059,7 +14059,7 @@ with the cluster service.&lt;/p&gt;&lt;table&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniWpChangeNetworkState trap received 
+			Fujitsu-Seimens Event: sniWpChangeNetworkState trap received 
 			sniServerName=%parm[#1]% 
 			sniTrapTime=%parm[#2]% 
 			sniWpNotificationNetworkName=%parm[#3]%&lt;/p&gt;
@@ -14099,7 +14099,7 @@ with the cluster service.&lt;/p&gt;&lt;table&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniWpChangeNetworkProperty trap received 
+			Fujitsu-Seimens Event: sniWpChangeNetworkProperty trap received 
 			sniServerName=%parm[#1]% 
 			sniTrapTime=%parm[#2]% 
 			sniWpNotificationNetworkName=%parm[#3]%&lt;/p&gt;
@@ -14139,7 +14139,7 @@ with the cluster service.&lt;/p&gt;&lt;table&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniWpChangeNetInterfaceDeleted trap received 
+			Fujitsu-Seimens Event: sniWpChangeNetInterfaceDeleted trap received 
 			sniServerName=%parm[#1]% 
 			sniTrapTime=%parm[#2]% 
 			sniWpNotificationNetInterfaceName=%parm[#3]%&lt;/p&gt;
@@ -14179,7 +14179,7 @@ with the cluster service.&lt;/p&gt;&lt;table&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniWpChangeNetInterfaceAdded trap received 
+			Fujitsu-Seimens Event: sniWpChangeNetInterfaceAdded trap received 
 			sniServerName=%parm[#1]% 
 			sniTrapTime=%parm[#2]% 
 			sniWpNotificationNetInterfaceName=%parm[#3]%&lt;/p&gt;
@@ -14219,7 +14219,7 @@ with the cluster service.&lt;/p&gt;&lt;table&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniWpChangeNetInterfaceState trap received 
+			Fujitsu-Seimens Event: sniWpChangeNetInterfaceState trap received 
 			sniServerName=%parm[#1]% 
 			sniTrapTime=%parm[#2]% 
 			sniWpNotificationNetInterfaceName=%parm[#3]%&lt;/p&gt;
@@ -14259,7 +14259,7 @@ with the cluster service.&lt;/p&gt;&lt;table&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniWpChangeNetInterfaceProperty trap received 
+			Fujitsu-Seimens Event: sniWpChangeNetInterfaceProperty trap received 
 			sniServerName=%parm[#1]% 
 			sniTrapTime=%parm[#2]% 
 			sniWpNotificationNetInterfaceName=%parm[#3]%&lt;/p&gt;
@@ -14299,7 +14299,7 @@ with the cluster service.&lt;/p&gt;&lt;table&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniWpNodeUp trap received 
+			Fujitsu-Seimens Event: sniWpNodeUp trap received 
 			sniServerName=%parm[#1]% 
 			sniTrapTime=%parm[#2]% 
 			sniWpNotificationNodeName=%parm[#3]%&lt;/p&gt;
@@ -14339,7 +14339,7 @@ with the cluster service.&lt;/p&gt;&lt;table&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniWpNodeDown trap received 
+			Fujitsu-Seimens Event: sniWpNodeDown trap received 
 			sniServerName=%parm[#1]% 
 			sniTrapTime=%parm[#2]% 
 			sniWpNotificationNodeName=%parm[#3]%&lt;/p&gt;
@@ -14379,7 +14379,7 @@ with the cluster service.&lt;/p&gt;&lt;table&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniWpNodePaused trap received 
+			Fujitsu-Seimens Event: sniWpNodePaused trap received 
 			sniServerName=%parm[#1]% 
 			sniTrapTime=%parm[#2]% 
 			sniWpNotificationNodeName=%parm[#3]%&lt;/p&gt;
@@ -14419,7 +14419,7 @@ with the cluster service.&lt;/p&gt;&lt;table&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniWpNodeJoining trap received 
+			Fujitsu-Seimens Event: sniWpNodeJoining trap received 
 			sniServerName=%parm[#1]% 
 			sniTrapTime=%parm[#2]% 
 			sniWpNotificationNodeName=%parm[#3]%&lt;/p&gt;
@@ -14459,7 +14459,7 @@ with the cluster service.&lt;/p&gt;&lt;table&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniWpGroupOnline trap received 
+			Fujitsu-Seimens Event: sniWpGroupOnline trap received 
 			sniServerName=%parm[#1]% 
 			sniTrapTime=%parm[#2]% 
 			sniWpNotificationGroupName=%parm[#3]%&lt;/p&gt;
@@ -14499,7 +14499,7 @@ with the cluster service.&lt;/p&gt;&lt;table&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniWpGroupPartialOnline trap received 
+			Fujitsu-Seimens Event: sniWpGroupPartialOnline trap received 
 			sniServerName=%parm[#1]% 
 			sniTrapTime=%parm[#2]% 
 			sniWpNotificationGroupName=%parm[#3]%&lt;/p&gt;
@@ -14539,7 +14539,7 @@ with the cluster service.&lt;/p&gt;&lt;table&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniWpGroupPending trap received 
+			Fujitsu-Seimens Event: sniWpGroupPending trap received 
 			sniServerName=%parm[#1]% 
 			sniTrapTime=%parm[#2]% 
 			sniWpNotificationGroupName=%parm[#3]%&lt;/p&gt;
@@ -14579,7 +14579,7 @@ with the cluster service.&lt;/p&gt;&lt;table&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniWpGroupOffline trap received 
+			Fujitsu-Seimens Event: sniWpGroupOffline trap received 
 			sniServerName=%parm[#1]% 
 			sniTrapTime=%parm[#2]% 
 			sniWpNotificationGroupName=%parm[#3]%&lt;/p&gt;
@@ -14619,7 +14619,7 @@ with the cluster service.&lt;/p&gt;&lt;table&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniWpGroupFailed trap received 
+			Fujitsu-Seimens Event: sniWpGroupFailed trap received 
 			sniServerName=%parm[#1]% 
 			sniTrapTime=%parm[#2]% 
 			sniWpNotificationGroupName=%parm[#3]%&lt;/p&gt;
@@ -14659,7 +14659,7 @@ with the cluster service.&lt;/p&gt;&lt;table&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniWpResourceOnline trap received 
+			Fujitsu-Seimens Event: sniWpResourceOnline trap received 
 			sniServerName=%parm[#1]% 
 			sniTrapTime=%parm[#2]% 
 			sniWpNotificationResourceName=%parm[#3]%&lt;/p&gt;
@@ -14699,7 +14699,7 @@ with the cluster service.&lt;/p&gt;&lt;table&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniWpResourceOffline trap received 
+			Fujitsu-Seimens Event: sniWpResourceOffline trap received 
 			sniServerName=%parm[#1]% 
 			sniTrapTime=%parm[#2]% 
 			sniWpNotificationResourceName=%parm[#3]%&lt;/p&gt;
@@ -14739,7 +14739,7 @@ with the cluster service.&lt;/p&gt;&lt;table&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniWpResourceFailed trap received 
+			Fujitsu-Seimens Event: sniWpResourceFailed trap received 
 			sniServerName=%parm[#1]% 
 			sniTrapTime=%parm[#2]% 
 			sniWpNotificationResourceName=%parm[#3]%&lt;/p&gt;
@@ -14779,7 +14779,7 @@ with the cluster service.&lt;/p&gt;&lt;table&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniWpNetworkUp trap received 
+			Fujitsu-Seimens Event: sniWpNetworkUp trap received 
 			sniServerName=%parm[#1]% 
 			sniTrapTime=%parm[#2]% 
 			sniWpNotificationNetworkName=%parm[#3]%&lt;/p&gt;
@@ -14819,7 +14819,7 @@ with the cluster service.&lt;/p&gt;&lt;table&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniWpNetworkDown trap received 
+			Fujitsu-Seimens Event: sniWpNetworkDown trap received 
 			sniServerName=%parm[#1]% 
 			sniTrapTime=%parm[#2]% 
 			sniWpNotificationNetworkName=%parm[#3]%&lt;/p&gt;
@@ -14859,7 +14859,7 @@ with the cluster service.&lt;/p&gt;&lt;table&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniWpNetworkUnavailable trap received 
+			Fujitsu-Seimens Event: sniWpNetworkUnavailable trap received 
 			sniServerName=%parm[#1]% 
 			sniTrapTime=%parm[#2]% 
 			sniWpNotificationNetworkName=%parm[#3]%&lt;/p&gt;
@@ -14899,7 +14899,7 @@ with the cluster service.&lt;/p&gt;&lt;table&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniWpNetInterfaceUp trap received 
+			Fujitsu-Seimens Event: sniWpNetInterfaceUp trap received 
 			sniServerName=%parm[#1]% 
 			sniTrapTime=%parm[#2]% 
 			sniWpNotificationNetInterfaceName=%parm[#3]%&lt;/p&gt;
@@ -14939,7 +14939,7 @@ with the cluster service.&lt;/p&gt;&lt;table&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniWpNetInterfaceFailed trap received 
+			Fujitsu-Seimens Event: sniWpNetInterfaceFailed trap received 
 			sniServerName=%parm[#1]% 
 			sniTrapTime=%parm[#2]% 
 			sniWpNotificationNetInterfaceName=%parm[#3]%&lt;/p&gt;
@@ -14979,7 +14979,7 @@ with the cluster service.&lt;/p&gt;&lt;table&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniWpNetInterfaceUnreachable trap received 
+			Fujitsu-Seimens Event: sniWpNetInterfaceUnreachable trap received 
 			sniServerName=%parm[#1]% 
 			sniTrapTime=%parm[#2]% 
 			sniWpNotificationNetInterfaceName=%parm[#3]%&lt;/p&gt;
@@ -15019,7 +15019,7 @@ with the cluster service.&lt;/p&gt;&lt;table&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniWpNetInterfaceUnavailable trap received 
+			Fujitsu-Seimens Event: sniWpNetInterfaceUnavailable trap received 
 			sniServerName=%parm[#1]% 
 			sniTrapTime=%parm[#2]% 
 			sniWpNotificationNetInterfaceName=%parm[#3]%&lt;/p&gt;
@@ -15057,7 +15057,7 @@ with the cluster service.&lt;/p&gt;&lt;table&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: siePciHotPlugTrapHotRemoval trap received 
+			Fujitsu-Seimens Event: siePciHotPlugTrapHotRemoval trap received 
 			siePciHotPlugTrapServerName=%parm[#1]% 
 			siePciHotPlugTrapPhysicalSlotNumber=%parm[#2]%&lt;/p&gt;
 		</logmsg>
@@ -15092,7 +15092,7 @@ with the cluster service.&lt;/p&gt;&lt;table&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: siePciHotPlugTrapHotReplace trap received 
+			Fujitsu-Seimens Event: siePciHotPlugTrapHotReplace trap received 
 			siePciHotPlugTrapServerName=%parm[#1]% 
 			siePciHotPlugTrapPhysicalSlotNumber=%parm[#2]%&lt;/p&gt;
 		</logmsg>
@@ -15136,7 +15136,7 @@ siePciHotPlugTrapPhysicalSlotNumber object is finished.&lt;/p&gt;&lt;table&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: siePciHotPlugTrapEndHotPlugAction trap received 
+			Fujitsu-Seimens Event: siePciHotPlugTrapEndHotPlugAction trap received 
 			siePciHotPlugTrapServerName=%parm[#1]% 
 			siePciHotPlugTrapPhysicalSlotNumber=%parm[#2]% 
 			siePciHotPlugTrapResult=%parm[#3]% 
@@ -15185,7 +15185,7 @@ siePciHotPlugTrapPhysicalSlotNumber object is finished.&lt;/p&gt;&lt;table&gt;
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sieDeviceHotPlugTrapHotRemoval trap received 
+			Fujitsu-Seimens Event: sieDeviceHotPlugTrapHotRemoval trap received 
 			siePciHotPlugTrapServerName=%parm[#1]% 
 			sieDeviceHotPlugTrapDeviceName=%parm[#2]% 
 			sieDeviceHotPlugTrapAdapterName=%parm[#3]% 
@@ -15235,7 +15235,7 @@ siePciHotPlugTrapPhysicalSlotNumber object is finished.&lt;/p&gt;&lt;table&gt;
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sieDeviceHotPlugTrapHotReplace trap received 
+			Fujitsu-Seimens Event: sieDeviceHotPlugTrapHotReplace trap received 
 			siePciHotPlugTrapServerName=%parm[#1]% 
 			sieDeviceHotPlugTrapDeviceName=%parm[#2]% 
 			sieDeviceHotPlugTrapAdapterName=%parm[#3]% 
@@ -15285,7 +15285,7 @@ siePciHotPlugTrapPhysicalSlotNumber object is finished.&lt;/p&gt;&lt;table&gt;
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sieDeviceHotPlugTrapHotAdd trap received 
+			Fujitsu-Seimens Event: sieDeviceHotPlugTrapHotAdd trap received 
 			siePciHotPlugTrapServerName=%parm[#1]% 
 			sieDeviceHotPlugTrapDeviceName=%parm[#2]% 
 			sieDeviceHotPlugTrapAdapterName=%parm[#3]% 
@@ -15325,7 +15325,7 @@ siePciHotPlugTrapPhysicalSlotNumber object is finished.&lt;/p&gt;&lt;table&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: testTrap trap received 
+			Fujitsu-Seimens Event: testTrap trap received 
 			trapServerName=%parm[#1]% 
 			trapTime=%parm[#2]%&lt;/p&gt;
 		</logmsg>
@@ -15368,7 +15368,7 @@ siePciHotPlugTrapPhysicalSlotNumber object is finished.&lt;/p&gt;&lt;table&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: fanError trap received 
+			Fujitsu-Seimens Event: fanError trap received 
 			trapServerName=%parm[#1]% 
 			trapTime=%parm[#2]% 
 			trapCabinetNumber=%parm[#3]% 
@@ -15414,7 +15414,7 @@ decreased to the normal level.&lt;/p&gt;&lt;table&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: tempOk trap received 
+			Fujitsu-Seimens Event: tempOk trap received 
 			trapServerName=%parm[#1]% 
 			trapTime=%parm[#2]% 
 			trapCabinetNumber=%parm[#3]% 
@@ -15460,7 +15460,7 @@ reached the warning level.&lt;/p&gt;&lt;table&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: tempWarn trap received 
+			Fujitsu-Seimens Event: tempWarn trap received 
 			trapServerName=%parm[#1]% 
 			trapTime=%parm[#2]% 
 			trapCabinetNumber=%parm[#3]% 
@@ -15506,7 +15506,7 @@ The system will shut down and power off if shutdown is enabled.&lt;/p&gt;&lt;tab
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: tempCritical trap received 
+			Fujitsu-Seimens Event: tempCritical trap received 
 			trapServerName=%parm[#1]% 
 			trapTime=%parm[#2]% 
 			trapCabinetNumber=%parm[#3]% 
@@ -15562,7 +15562,7 @@ until the mains returns or the system is switched off.&lt;/p&gt;&lt;table&gt;
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: trapOnBattery trap received 
+			Fujitsu-Seimens Event: trapOnBattery trap received 
 			trapServerName=%parm[#1]% 
 			trapTime=%parm[#2]% 
 			trapMinutesRemaining=%parm[#3]% 
@@ -15605,7 +15605,7 @@ until the mains returns or the system is switched off.&lt;/p&gt;&lt;table&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: trapOnMains trap received 
+			Fujitsu-Seimens Event: trapOnMains trap received 
 			trapServerName=%parm[#1]% 
 			trapTime=%parm[#2]% 
 			trapCabinetNumber=%parm[#3]%&lt;/p&gt;
@@ -15645,7 +15645,7 @@ until the mains returns or the system is switched off.&lt;/p&gt;&lt;table&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: selftestWarning trap received 
+			Fujitsu-Seimens Event: selftestWarning trap received 
 			trapServerName=%parm[#1]% 
 			trapTime=%parm[#2]% 
 			trapCabinetNumber=%parm[#3]%&lt;/p&gt;
@@ -15685,7 +15685,7 @@ until the mains returns or the system is switched off.&lt;/p&gt;&lt;table&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: selftestError trap received 
+			Fujitsu-Seimens Event: selftestError trap received 
 			trapServerName=%parm[#1]% 
 			trapTime=%parm[#2]% 
 			trapCabinetNumber=%parm[#3]%&lt;/p&gt;
@@ -15725,7 +15725,7 @@ until the mains returns or the system is switched off.&lt;/p&gt;&lt;table&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: svCommunicationFailure trap received 
+			Fujitsu-Seimens Event: svCommunicationFailure trap received 
 			trapServerName=%parm[#1]% 
 			trapTime=%parm[#2]% 
 			trapCabinetNumber=%parm[#3]%&lt;/p&gt;
@@ -15762,7 +15762,7 @@ until the condition is removed.&lt;/p&gt;&lt;table&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: scbUnconfiguredUPSDetected trap received 
+			Fujitsu-Seimens Event: scbUnconfiguredUPSDetected trap received 
 			trapServerName=%parm[#1]% 
 			trapTime=%parm[#2]%&lt;/p&gt;
 		</logmsg>
@@ -15798,7 +15798,7 @@ until the condition is removed.&lt;/p&gt;&lt;table&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: scbUPSNotdetected trap received 
+			Fujitsu-Seimens Event: scbUPSNotdetected trap received 
 			trapServerName=%parm[#1]% 
 			trapTime=%parm[#2]%&lt;/p&gt;
 		</logmsg>
@@ -15834,7 +15834,7 @@ until the condition is removed.&lt;/p&gt;&lt;table&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: scbUnconfiguredBBUDetected trap received 
+			Fujitsu-Seimens Event: scbUnconfiguredBBUDetected trap received 
 			trapServerName=%parm[#1]% 
 			trapTime=%parm[#2]%&lt;/p&gt;
 		</logmsg>
@@ -15874,7 +15874,7 @@ until the condition is removed.&lt;/p&gt;&lt;table&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: scbBBUNotdetected trap received 
+			Fujitsu-Seimens Event: scbBBUNotdetected trap received 
 			trapServerName=%parm[#1]% 
 			trapTime=%parm[#2]% 
 			trapCabinetNumber=%parm[#3]%&lt;/p&gt;
@@ -15910,7 +15910,7 @@ until the condition is removed.&lt;/p&gt;&lt;table&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: notEnoughCabinets trap received 
+			Fujitsu-Seimens Event: notEnoughCabinets trap received 
 			trapServerName=%parm[#1]% 
 			trapTime=%parm[#2]%&lt;/p&gt;
 		</logmsg>
@@ -15945,7 +15945,7 @@ until the condition is removed.&lt;/p&gt;&lt;table&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: tooManyCabinets trap received 
+			Fujitsu-Seimens Event: tooManyCabinets trap received 
 			trapServerName=%parm[#1]% 
 			trapTime=%parm[#2]%&lt;/p&gt;
 		</logmsg>
@@ -15990,7 +15990,7 @@ cabinet is switched off.&lt;/p&gt;&lt;table&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: cabinetSwitchedOff trap received 
+			Fujitsu-Seimens Event: cabinetSwitchedOff trap received 
 			trapServerName=%parm[#1]% 
 			trapTime=%parm[#2]% 
 			trapCabinetNumber=%parm[#3]% 
@@ -16037,7 +16037,7 @@ cabinet is switched on.&lt;/p&gt;&lt;table&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: cabinetSwitchedOn trap received 
+			Fujitsu-Seimens Event: cabinetSwitchedOn trap received 
 			trapServerName=%parm[#1]% 
 			trapTime=%parm[#2]% 
 			trapCabinetNumber=%parm[#3]% 
@@ -16082,7 +16082,7 @@ cabinet is switched on.&lt;/p&gt;&lt;table&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: internalError trap received 
+			Fujitsu-Seimens Event: internalError trap received 
 			trapServerName=%parm[#1]% 
 			trapTime=%parm[#2]% 
 			trapObjectNumber=%parm[#3]% 
@@ -16123,7 +16123,7 @@ cabinet is switched on.&lt;/p&gt;&lt;table&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: serverShutdown trap received 
+			Fujitsu-Seimens Event: serverShutdown trap received 
 			trapServerName=%parm[#1]% 
 			trapTime=%parm[#2]% 
 			trapString=%parm[#3]%&lt;/p&gt;
@@ -16167,7 +16167,7 @@ cabinet is switched on.&lt;/p&gt;&lt;table&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: fanCriticalError trap received 
+			Fujitsu-Seimens Event: fanCriticalError trap received 
 			trapServerName=%parm[#1]% 
 			trapTime=%parm[#2]% 
 			trapCabinetNumber=%parm[#3]% 
@@ -16208,7 +16208,7 @@ cabinet is switched on.&lt;/p&gt;&lt;table&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: cabinetNotConfigured trap received 
+			Fujitsu-Seimens Event: cabinetNotConfigured trap received 
 			trapServerName=%parm[#1]% 
 			trapTime=%parm[#2]% 
 			trapCabinetNumber=%parm[#3]%&lt;/p&gt;
@@ -16252,7 +16252,7 @@ cabinet is switched on.&lt;/p&gt;&lt;table&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: powerSupplyRemoved trap received 
+			Fujitsu-Seimens Event: powerSupplyRemoved trap received 
 			trapServerName=%parm[#1]% 
 			trapTime=%parm[#2]% 
 			trapObjectNumber=%parm[#3]% 
@@ -16297,7 +16297,7 @@ cabinet is switched on.&lt;/p&gt;&lt;table&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: powerSupplyAdded trap received 
+			Fujitsu-Seimens Event: powerSupplyAdded trap received 
 			trapServerName=%parm[#1]% 
 			trapTime=%parm[#2]% 
 			trapObjectNumber=%parm[#3]% 
@@ -16342,7 +16342,7 @@ cabinet is switched on.&lt;/p&gt;&lt;table&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: powerSupplyFailed trap received 
+			Fujitsu-Seimens Event: powerSupplyFailed trap received 
 			trapServerName=%parm[#1]% 
 			trapTime=%parm[#2]% 
 			trapObjectNumber=%parm[#3]% 
@@ -16387,7 +16387,7 @@ cabinet is switched on.&lt;/p&gt;&lt;table&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: powerSupplyOk trap received 
+			Fujitsu-Seimens Event: powerSupplyOk trap received 
 			trapServerName=%parm[#1]% 
 			trapTime=%parm[#2]% 
 			trapObjectNumber=%parm[#3]% 
@@ -16428,7 +16428,7 @@ cabinet is switched on.&lt;/p&gt;&lt;table&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: powerSupplyStatusCritical trap received 
+			Fujitsu-Seimens Event: powerSupplyStatusCritical trap received 
 			trapServerName=%parm[#1]% 
 			trapTime=%parm[#2]% 
 			trapCabinetNumber=%parm[#3]%&lt;/p&gt;
@@ -16472,7 +16472,7 @@ cabinet is switched on.&lt;/p&gt;&lt;table&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: fanOk trap received 
+			Fujitsu-Seimens Event: fanOk trap received 
 			trapServerName=%parm[#1]% 
 			trapTime=%parm[#2]% 
 			trapCabinetNumber=%parm[#3]% 
@@ -16517,7 +16517,7 @@ cabinet is switched on.&lt;/p&gt;&lt;table&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: tempSensorBroken trap received 
+			Fujitsu-Seimens Event: tempSensorBroken trap received 
 			trapServerName=%parm[#1]% 
 			trapTime=%parm[#2]% 
 			trapCabinetNumber=%parm[#3]% 
@@ -16554,7 +16554,7 @@ cabinet is switched on.&lt;/p&gt;&lt;table&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: serverManagementDisabled trap received 
+			Fujitsu-Seimens Event: serverManagementDisabled trap received 
 			trapServerName=%parm[#1]% 
 			trapTime=%parm[#2]%&lt;/p&gt;
 		</logmsg>
@@ -16595,7 +16595,7 @@ time to send this trap.&lt;/p&gt;&lt;table&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: trapAcFail trap received 
+			Fujitsu-Seimens Event: trapAcFail trap received 
 			trapServerName=%parm[#1]% 
 			trapTime=%parm[#2]% 
 			trapCabinetNumber=%parm[#3]%&lt;/p&gt;
@@ -16636,7 +16636,7 @@ The system will not run properly.&lt;/p&gt;&lt;table&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: trapDuplicateCabinetId trap received 
+			Fujitsu-Seimens Event: trapDuplicateCabinetId trap received 
 			trapServerName=%parm[#1]% 
 			trapTime=%parm[#2]% 
 			trapCabinetNumber=%parm[#3]%&lt;/p&gt;
@@ -16675,7 +16675,7 @@ for detailed error description.&lt;/p&gt;&lt;table&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: trapEventLog trap received 
+			Fujitsu-Seimens Event: trapEventLog trap received 
 			trapServerName=%parm[#1]% 
 			trapTime=%parm[#2]%&lt;/p&gt;
 		</logmsg>
@@ -16718,7 +16718,7 @@ for detailed error description.&lt;/p&gt;&lt;table&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: tempSensorOk trap received 
+			Fujitsu-Seimens Event: tempSensorOk trap received 
 			trapServerName=%parm[#1]% 
 			trapTime=%parm[#2]% 
 			trapCabinetNumber=%parm[#3]% 
@@ -16759,7 +16759,7 @@ for detailed error description.&lt;/p&gt;&lt;table&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: svCommunicationEstablished trap received 
+			Fujitsu-Seimens Event: svCommunicationEstablished trap received 
 			trapServerName=%parm[#1]% 
 			trapTime=%parm[#2]% 
 			trapCabinetNumber=%parm[#3]%&lt;/p&gt;
@@ -16803,7 +16803,7 @@ for detailed error description.&lt;/p&gt;&lt;table&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: correctableMemErrorAddr trap received 
+			Fujitsu-Seimens Event: correctableMemErrorAddr trap received 
 			trapServerName=%parm[#1]% 
 			trapTime=%parm[#2]% 
 			trapCabinetNumber=%parm[#3]% 
@@ -16848,7 +16848,7 @@ for detailed error description.&lt;/p&gt;&lt;table&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: uncorrectableMemErrorAddr trap received 
+			Fujitsu-Seimens Event: uncorrectableMemErrorAddr trap received 
 			trapServerName=%parm[#1]% 
 			trapTime=%parm[#2]% 
 			trapCabinetNumber=%parm[#3]% 
@@ -16893,7 +16893,7 @@ for detailed error description.&lt;/p&gt;&lt;table&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: correctableMemErrorBank trap received 
+			Fujitsu-Seimens Event: correctableMemErrorBank trap received 
 			trapServerName=%parm[#1]% 
 			trapTime=%parm[#2]% 
 			trapCabinetNumber=%parm[#3]% 
@@ -16938,7 +16938,7 @@ for detailed error description.&lt;/p&gt;&lt;table&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: uncorrectableMemErrorBank trap received 
+			Fujitsu-Seimens Event: uncorrectableMemErrorBank trap received 
 			trapServerName=%parm[#1]% 
 			trapTime=%parm[#2]% 
 			trapCabinetNumber=%parm[#3]% 
@@ -16983,7 +16983,7 @@ for detailed error description.&lt;/p&gt;&lt;table&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: correctableMemErrorModule trap received 
+			Fujitsu-Seimens Event: correctableMemErrorModule trap received 
 			trapServerName=%parm[#1]% 
 			trapTime=%parm[#2]% 
 			trapCabinetNumber=%parm[#3]% 
@@ -17028,7 +17028,7 @@ for detailed error description.&lt;/p&gt;&lt;table&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: uncorrectableMemErrorModule trap received 
+			Fujitsu-Seimens Event: uncorrectableMemErrorModule trap received 
 			trapServerName=%parm[#1]% 
 			trapTime=%parm[#2]% 
 			trapCabinetNumber=%parm[#3]% 
@@ -17069,7 +17069,7 @@ for detailed error description.&lt;/p&gt;&lt;table&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: correctableMemError trap received 
+			Fujitsu-Seimens Event: correctableMemError trap received 
 			trapServerName=%parm[#1]% 
 			trapTime=%parm[#2]% 
 			trapCabinetNumber=%parm[#3]%&lt;/p&gt;
@@ -17109,7 +17109,7 @@ for detailed error description.&lt;/p&gt;&lt;table&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: uncorrectableMemError trap received 
+			Fujitsu-Seimens Event: uncorrectableMemError trap received 
 			trapServerName=%parm[#1]% 
 			trapTime=%parm[#2]% 
 			trapCabinetNumber=%parm[#3]%&lt;/p&gt;
@@ -17153,7 +17153,7 @@ for detailed error description.&lt;/p&gt;&lt;table&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: powerOffTimeReached trap received 
+			Fujitsu-Seimens Event: powerOffTimeReached trap received 
 			trapServerName=%parm[#1]% 
 			trapTime=%parm[#2]% 
 			trapCabinetNumber=%parm[#3]% 
@@ -17194,7 +17194,7 @@ for detailed error description.&lt;/p&gt;&lt;table&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: frontDoorStatusChanged trap received 
+			Fujitsu-Seimens Event: frontDoorStatusChanged trap received 
 			trapServerName=%parm[#1]% 
 			trapTime=%parm[#2]% 
 			trapCabinetNumber=%parm[#3]%&lt;/p&gt;
@@ -17234,7 +17234,7 @@ for detailed error description.&lt;/p&gt;&lt;table&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: housingOpenStatusChanged trap received 
+			Fujitsu-Seimens Event: housingOpenStatusChanged trap received 
 			trapServerName=%parm[#1]% 
 			trapTime=%parm[#2]% 
 			trapCabinetNumber=%parm[#3]%&lt;/p&gt;
@@ -17278,7 +17278,7 @@ for detailed error description.&lt;/p&gt;&lt;table&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniScRedundantFanFailed trap received 
+			Fujitsu-Seimens Event: sniScRedundantFanFailed trap received 
 			trapServerName=%parm[#1]% 
 			trapTime=%parm[#2]% 
 			trapCabinetNumber=%parm[#3]% 
@@ -17323,7 +17323,7 @@ for detailed error description.&lt;/p&gt;&lt;table&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniScRedundantPowerSupplyFailed trap received 
+			Fujitsu-Seimens Event: sniScRedundantPowerSupplyFailed trap received 
 			trapServerName=%parm[#1]% 
 			trapTime=%parm[#2]% 
 			trapObjectNumber=%parm[#3]% 
@@ -17372,7 +17372,7 @@ for detailed error description.&lt;/p&gt;&lt;table&gt;
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniScVoltageOk trap received 
+			Fujitsu-Seimens Event: sniScVoltageOk trap received 
 			trapServerName=%parm[#1]% 
 			trapTime=%parm[#2]% 
 			trapCabinetNumber=%parm[#3]% 
@@ -17422,7 +17422,7 @@ for detailed error description.&lt;/p&gt;&lt;table&gt;
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniScVoltageTooLow trap received 
+			Fujitsu-Seimens Event: sniScVoltageTooLow trap received 
 			trapServerName=%parm[#1]% 
 			trapTime=%parm[#2]% 
 			trapCabinetNumber=%parm[#3]% 
@@ -17472,7 +17472,7 @@ for detailed error description.&lt;/p&gt;&lt;table&gt;
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniScVoltageTooHigh trap received 
+			Fujitsu-Seimens Event: sniScVoltageTooHigh trap received 
 			trapServerName=%parm[#1]% 
 			trapTime=%parm[#2]% 
 			trapCabinetNumber=%parm[#3]% 
@@ -17518,7 +17518,7 @@ for detailed error description.&lt;/p&gt;&lt;table&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniScFanAdded trap received 
+			Fujitsu-Seimens Event: sniScFanAdded trap received 
 			trapServerName=%parm[#1]% 
 			trapTime=%parm[#2]% 
 			trapCabinetNumber=%parm[#3]% 
@@ -17563,7 +17563,7 @@ for detailed error description.&lt;/p&gt;&lt;table&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniScFanRemoved trap received 
+			Fujitsu-Seimens Event: sniScFanRemoved trap received 
 			trapServerName=%parm[#1]% 
 			trapTime=%parm[#2]% 
 			trapCabinetNumber=%parm[#3]% 
@@ -17600,7 +17600,7 @@ for detailed error description.&lt;/p&gt;&lt;table&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniScShutdownCancelled trap received 
+			Fujitsu-Seimens Event: sniScShutdownCancelled trap received 
 			trapServerName=%parm[#1]% 
 			trapTime=%parm[#2]%&lt;/p&gt;
 		</logmsg>
@@ -17639,7 +17639,7 @@ for detailed error description.&lt;/p&gt;&lt;table&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniScCpuSpeedChanged trap received 
+			Fujitsu-Seimens Event: sniScCpuSpeedChanged trap received 
 			trapServerName=%parm[#1]% 
 			trapTime=%parm[#2]% 
 			trapNumValue=%parm[#3]%&lt;/p&gt;
@@ -17680,7 +17680,7 @@ the reason why the power on is performed&lt;/p&gt;&lt;table&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sieScPowerOn trap received 
+			Fujitsu-Seimens Event: sieScPowerOn trap received 
 			trapServerName=%parm[#1]% 
 			trapTime=%parm[#2]% 
 			trapString=%parm[#3]%&lt;/p&gt;
@@ -17717,7 +17717,7 @@ cpu has been found.&lt;/p&gt;&lt;table&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sieScNoBootCpu trap received 
+			Fujitsu-Seimens Event: sieScNoBootCpu trap received 
 			trapServerName=%parm[#1]% 
 			trapTime=%parm[#2]%&lt;/p&gt;
 		</logmsg>
@@ -17757,7 +17757,7 @@ selftest (POST) has reported an error.&lt;/p&gt;&lt;table&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sieScPostError trap received 
+			Fujitsu-Seimens Event: sieScPostError trap received 
 			trapServerName=%parm[#1]% 
 			trapTime=%parm[#2]% 
 			trapString=%parm[#3]%&lt;/p&gt;
@@ -17793,7 +17793,7 @@ selftest (POST) has reported an error.&lt;/p&gt;&lt;table&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sieScSetupEntered trap received 
+			Fujitsu-Seimens Event: sieScSetupEntered trap received 
 			trapServerName=%parm[#1]% 
 			trapTime=%parm[#2]%&lt;/p&gt;
 		</logmsg>
@@ -17832,7 +17832,7 @@ selftest (POST) has reported an error.&lt;/p&gt;&lt;table&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sieScBootError trap received 
+			Fujitsu-Seimens Event: sieScBootError trap received 
 			trapServerName=%parm[#1]% 
 			trapTime=%parm[#2]% 
 			trapString=%parm[#3]%&lt;/p&gt;
@@ -17868,7 +17868,7 @@ selftest (POST) has reported an error.&lt;/p&gt;&lt;table&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sieScBootWatchdogExpired trap received 
+			Fujitsu-Seimens Event: sieScBootWatchdogExpired trap received 
 			trapServerName=%parm[#1]% 
 			trapTime=%parm[#2]%&lt;/p&gt;
 		</logmsg>
@@ -17903,7 +17903,7 @@ selftest (POST) has reported an error.&lt;/p&gt;&lt;table&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sieScSoftwareWatchdogExpired trap received 
+			Fujitsu-Seimens Event: sieScSoftwareWatchdogExpired trap received 
 			trapServerName=%parm[#1]% 
 			trapTime=%parm[#2]%&lt;/p&gt;
 		</logmsg>
@@ -17947,7 +17947,7 @@ HTTP or telnet fails.&lt;/p&gt;&lt;table&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sieScUserAuthenticationFailure trap received 
+			Fujitsu-Seimens Event: sieScUserAuthenticationFailure trap received 
 			trapServerName=%parm[#1]% 
 			trapTime=%parm[#2]% 
 			trapManagementInterfaceNumber=%parm[#3]% 
@@ -17987,7 +17987,7 @@ may be derived).&lt;/p&gt;&lt;table&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sieScDiagnosticBoot trap received 
+			Fujitsu-Seimens Event: sieScDiagnosticBoot trap received 
 			trapServerName=%parm[#1]% 
 			trapTime=%parm[#2]%&lt;/p&gt;
 		</logmsg>
@@ -18022,7 +18022,7 @@ may be derived).&lt;/p&gt;&lt;table&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sieScBootRetryCountZero trap received 
+			Fujitsu-Seimens Event: sieScBootRetryCountZero trap received 
 			trapServerName=%parm[#1]% 
 			trapTime=%parm[#2]%&lt;/p&gt;
 		</logmsg>
@@ -18062,7 +18062,7 @@ This trap will not occur on wrap-around log types.&lt;/p&gt;&lt;table&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sieScMessageLogFull trap received 
+			Fujitsu-Seimens Event: sieScMessageLogFull trap received 
 			trapServerName=%parm[#1]% 
 			trapTime=%parm[#2]% 
 			trapCabinetNumber=%parm[#3]%&lt;/p&gt;
@@ -18106,7 +18106,7 @@ This trap will not occur on wrap-around log types.&lt;/p&gt;&lt;table&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: memErrorModulePrefailure trap received 
+			Fujitsu-Seimens Event: memErrorModulePrefailure trap received 
 			trapServerName=%parm[#1]% 
 			trapTime=%parm[#2]% 
 			trapCabinetNumber=%parm[#3]% 
@@ -18151,7 +18151,7 @@ This trap will not occur on wrap-around log types.&lt;/p&gt;&lt;table&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: memErrorModuleFailing trap received 
+			Fujitsu-Seimens Event: memErrorModuleFailing trap received 
 			trapServerName=%parm[#1]% 
 			trapTime=%parm[#2]% 
 			trapCabinetNumber=%parm[#3]% 
@@ -18196,7 +18196,7 @@ This trap will not occur on wrap-around log types.&lt;/p&gt;&lt;table&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: memErrorModuleReplaced trap received 
+			Fujitsu-Seimens Event: memErrorModuleReplaced trap received 
 			trapServerName=%parm[#1]% 
 			trapTime=%parm[#2]% 
 			trapCabinetNumber=%parm[#3]% 
@@ -18237,7 +18237,7 @@ This trap will not occur on wrap-around log types.&lt;/p&gt;&lt;table&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniScPowerSupplyRedundancyLost trap received 
+			Fujitsu-Seimens Event: sniScPowerSupplyRedundancyLost trap received 
 			trapServerName=%parm[#1]% 
 			trapTime=%parm[#2]% 
 			trapCabinetNumber=%parm[#3]%&lt;/p&gt;
@@ -18281,7 +18281,7 @@ This trap will not occur on wrap-around log types.&lt;/p&gt;&lt;table&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sieScMessageLogWarning trap received 
+			Fujitsu-Seimens Event: sieScMessageLogWarning trap received 
 			trapServerName=%parm[#1]% 
 			trapTime=%parm[#2]% 
 			trapCabinetNumber=%parm[#3]% 
@@ -18326,7 +18326,7 @@ This trap will not occur on wrap-around log types.&lt;/p&gt;&lt;table&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sieScCpuPrefailure trap received 
+			Fujitsu-Seimens Event: sieScCpuPrefailure trap received 
 			trapServerName=%parm[#1]% 
 			trapTime=%parm[#2]% 
 			trapCabinetNumber=%parm[#3]% 
@@ -18368,7 +18368,7 @@ power-good sensor monitoring. The system may stop when this condition occurs.&lt
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sieScPowerFail trap received 
+			Fujitsu-Seimens Event: sieScPowerFail trap received 
 			trapServerName=%parm[#1]% 
 			trapTime=%parm[#2]% 
 			trapCabinetNumber=%parm[#3]%&lt;/p&gt;
@@ -18409,7 +18409,7 @@ to clear the error condition.&lt;/p&gt;&lt;table&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sieScBiosSelftestError trap received 
+			Fujitsu-Seimens Event: sieScBiosSelftestError trap received 
 			trapServerName=%parm[#1]% 
 			trapTime=%parm[#2]% 
 			trapCabinetNumber=%parm[#3]%&lt;/p&gt;
@@ -18446,7 +18446,7 @@ expires when the BIOS selftest cannot be finished in a certain time period.&lt;/
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sieScBiosSelftestWatchdogExpired trap received 
+			Fujitsu-Seimens Event: sieScBiosSelftestWatchdogExpired trap received 
 			trapServerName=%parm[#1]% 
 			trapTime=%parm[#2]%&lt;/p&gt;
 		</logmsg>
@@ -18492,7 +18492,7 @@ it is a generic trap&lt;/p&gt;&lt;table&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniSvGenericTrapForward trap received 
+			Fujitsu-Seimens Event: sniSvGenericTrapForward trap received 
 			sniServerViewServerName=%parm[#1]% 
 			sniServerViewTrapTime=%parm[#2]% 
 			sniServerViewOrigServerName=%parm[#3]% 
@@ -18535,7 +18535,7 @@ a trap ID conflict with SNI Mylex-MIB.&lt;/p&gt;&lt;table&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniSvPagerOff trap received 
+			Fujitsu-Seimens Event: sniSvPagerOff trap received 
 			sniServerViewServerName=%parm[#1]% 
 			sniServerViewTrapTime=%parm[#2]% 
 			sniServerViewNumber=%parm[#3]%&lt;/p&gt;
@@ -18575,7 +18575,7 @@ a trap ID conflict with SNI Mylex-MIB.&lt;/p&gt;&lt;table&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniSvServerStateChanged trap received 
+			Fujitsu-Seimens Event: sniSvServerStateChanged trap received 
 			sniServerViewServerName=%parm[#1]% 
 			sniServerViewTrapTime=%parm[#2]% 
 			sniServerViewState=%parm[#3]%&lt;/p&gt;
@@ -18624,7 +18624,7 @@ the original ServerName and Severity is retained&lt;/p&gt;&lt;table&gt;
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniSvPassThroughTrapForward trap received 
+			Fujitsu-Seimens Event: sniSvPassThroughTrapForward trap received 
 			sniServerViewServerName=%parm[#1]% 
 			sniServerViewTrapTime=%parm[#2]% 
 			sniServerViewOrigServerName=%parm[#3]% 
@@ -18672,7 +18672,7 @@ and Front End.&lt;/p&gt;&lt;table&gt;
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sieSvAlarmServiceCommand trap received 
+			Fujitsu-Seimens Event: sieSvAlarmServiceCommand trap received 
 			sniServerViewServerName=%parm[#1]% 
 			sniServerViewTrapTime=%parm[#2]% 
 			sieServerViewAlarmServiceCommand=%parm[#3]%&lt;/p&gt;
@@ -18714,7 +18714,7 @@ The argument fscSvObjectName may be empty. In that case the SeverView database m
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: fscSvServerAdded trap received 
+			Fujitsu-Seimens Event: fscSvServerAdded trap received 
 			sniServerViewServerName=%parm[#1]% 
 			sniServerViewTrapTime=%parm[#2]% 
 			fscSvObjectName=%parm[#3]%&lt;/p&gt;
@@ -18756,7 +18756,7 @@ The argument fscSvObjectName may be empty. In that case the SeverView database m
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: fscSvServerRemoved trap received 
+			Fujitsu-Seimens Event: fscSvServerRemoved trap received 
 			sniServerViewServerName=%parm[#1]% 
 			sniServerViewTrapTime=%parm[#2]% 
 			fscSvObjectName=%parm[#3]%&lt;/p&gt;
@@ -18798,7 +18798,7 @@ The argument fscSvObjectName may be empty. In that case the SeverView database m
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: fscSvServerChanged trap received 
+			Fujitsu-Seimens Event: fscSvServerChanged trap received 
 			sniServerViewServerName=%parm[#1]% 
 			sniServerViewTrapTime=%parm[#2]% 
 			fscSvObjectName=%parm[#3]%&lt;/p&gt;
@@ -18840,7 +18840,7 @@ The argument fscSvObjectName may be empty. In that case the SeverView database m
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: fscSvServerStatusChanged trap received 
+			Fujitsu-Seimens Event: fscSvServerStatusChanged trap received 
 			sniServerViewServerName=%parm[#1]% 
 			sniServerViewTrapTime=%parm[#2]% 
 			fscSvObjectName=%parm[#3]%&lt;/p&gt;
@@ -18885,7 +18885,7 @@ a group was added to the server list.&lt;/p&gt;&lt;table&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: fscSvGroupAdded trap received 
+			Fujitsu-Seimens Event: fscSvGroupAdded trap received 
 			sniServerViewServerName=%parm[#1]% 
 			sniServerViewTrapTime=%parm[#2]% 
 			fscSvObjectName=%parm[#3]% 
@@ -18931,7 +18931,7 @@ a group was removed from the server list.&lt;/p&gt;&lt;table&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: fscSvGroupRemoved trap received 
+			Fujitsu-Seimens Event: fscSvGroupRemoved trap received 
 			sniServerViewServerName=%parm[#1]% 
 			sniServerViewTrapTime=%parm[#2]% 
 			fscSvObjectName=%parm[#3]% 
@@ -18977,7 +18977,7 @@ a group was changed in the server list.&lt;/p&gt;&lt;table&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: fscSvGroupChanged trap received 
+			Fujitsu-Seimens Event: fscSvGroupChanged trap received 
 			sniServerViewServerName=%parm[#1]% 
 			sniServerViewTrapTime=%parm[#2]% 
 			fscSvObjectName=%parm[#3]% 
@@ -19020,7 +19020,7 @@ The argument fscSvObjectName may be empty. In that case the SeverView database m
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: fscSvExploreServer trap received 
+			Fujitsu-Seimens Event: fscSvExploreServer trap received 
 			sniServerViewServerName=%parm[#1]% 
 			sniServerViewTrapTime=%parm[#2]% 
 			fscSvObjectName=%parm[#3]%&lt;/p&gt;
@@ -19056,7 +19056,7 @@ The argument fscSvObjectName may be empty. In that case the SeverView database m
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: fscAsTestMail trap received 
+			Fujitsu-Seimens Event: fscAsTestMail trap received 
 			sniServerViewServerName=%parm[#1]% 
 			sniServerViewTrapTime=%parm[#2]%&lt;/p&gt;
 		</logmsg>
@@ -19091,7 +19091,7 @@ The argument fscSvObjectName may be empty. In that case the SeverView database m
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: fscAsTestPager trap received 
+			Fujitsu-Seimens Event: fscAsTestPager trap received 
 			sniServerViewServerName=%parm[#1]% 
 			sniServerViewTrapTime=%parm[#2]%&lt;/p&gt;
 		</logmsg>
@@ -19813,7 +19813,7 @@ interaction with the server will be possible&lt;/p&gt;&lt;table&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniNWTrusteeChange trap received 
+			Fujitsu-Seimens Event: sniNWTrusteeChange trap received 
 			sniServerName=%parm[#1]% 
 			sniTrapTime=%parm[#2]%&lt;/p&gt;
 		</logmsg>
@@ -19848,7 +19848,7 @@ interaction with the server will be possible&lt;/p&gt;&lt;table&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniNWOpenScreen trap received 
+			Fujitsu-Seimens Event: sniNWOpenScreen trap received 
 			sniServerName=%parm[#1]% 
 			sniTrapTime=%parm[#2]%&lt;/p&gt;
 		</logmsg>
@@ -19883,7 +19883,7 @@ interaction with the server will be possible&lt;/p&gt;&lt;table&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniNWCloseScreen trap received 
+			Fujitsu-Seimens Event: sniNWCloseScreen trap received 
 			sniServerName=%parm[#1]% 
 			sniTrapTime=%parm[#2]%&lt;/p&gt;
 		</logmsg>
@@ -19918,7 +19918,7 @@ interaction with the server will be possible&lt;/p&gt;&lt;table&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniNWModifyDirEntry trap received 
+			Fujitsu-Seimens Event: sniNWModifyDirEntry trap received 
 			sniServerName=%parm[#1]% 
 			sniTrapTime=%parm[#2]%&lt;/p&gt;
 		</logmsg>
@@ -19957,7 +19957,7 @@ interaction with the server will be possible&lt;/p&gt;&lt;table&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniNWNoRelinquishControl trap received 
+			Fujitsu-Seimens Event: sniNWNoRelinquishControl trap received 
 			sniServerName=%parm[#1]% 
 			sniTrapTime=%parm[#2]% 
 			sniModuleName=%parm[#3]%&lt;/p&gt;
@@ -19993,7 +19993,7 @@ interaction with the server will be possible&lt;/p&gt;&lt;table&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniNWThreadSwitch trap received 
+			Fujitsu-Seimens Event: sniNWThreadSwitch trap received 
 			sniServerName=%parm[#1]% 
 			sniTrapTime=%parm[#2]%&lt;/p&gt;
 		</logmsg>
@@ -20032,7 +20032,7 @@ interaction with the server will be possible&lt;/p&gt;&lt;table&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniNWModuleLoaded trap received 
+			Fujitsu-Seimens Event: sniNWModuleLoaded trap received 
 			sniServerName=%parm[#1]% 
 			sniTrapTime=%parm[#2]% 
 			sniModuleName=%parm[#3]%&lt;/p&gt;
@@ -20068,7 +20068,7 @@ interaction with the server will be possible&lt;/p&gt;&lt;table&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniNWCreateProcess trap received 
+			Fujitsu-Seimens Event: sniNWCreateProcess trap received 
 			sniServerName=%parm[#1]% 
 			sniTrapTime=%parm[#2]%&lt;/p&gt;
 		</logmsg>
@@ -20103,7 +20103,7 @@ interaction with the server will be possible&lt;/p&gt;&lt;table&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniNWDestroyProcess trap received 
+			Fujitsu-Seimens Event: sniNWDestroyProcess trap received 
 			sniServerName=%parm[#1]% 
 			sniTrapTime=%parm[#2]%&lt;/p&gt;
 		</logmsg>
@@ -20138,7 +20138,7 @@ interaction with the server will be possible&lt;/p&gt;&lt;table&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniNWNewPublic trap received 
+			Fujitsu-Seimens Event: sniNWNewPublic trap received 
 			sniServerName=%parm[#1]% 
 			sniTrapTime=%parm[#2]%&lt;/p&gt;
 		</logmsg>
@@ -20173,7 +20173,7 @@ interaction with the server will be possible&lt;/p&gt;&lt;table&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniNWProtocolBind trap received 
+			Fujitsu-Seimens Event: sniNWProtocolBind trap received 
 			sniServerName=%parm[#1]% 
 			sniTrapTime=%parm[#2]%&lt;/p&gt;
 		</logmsg>
@@ -20208,7 +20208,7 @@ interaction with the server will be possible&lt;/p&gt;&lt;table&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniNWProtocolUnbind trap received 
+			Fujitsu-Seimens Event: sniNWProtocolUnbind trap received 
 			sniServerName=%parm[#1]% 
 			sniTrapTime=%parm[#2]%&lt;/p&gt;
 		</logmsg>
@@ -20243,7 +20243,7 @@ interaction with the server will be possible&lt;/p&gt;&lt;table&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniNWAllocateConnection trap received 
+			Fujitsu-Seimens Event: sniNWAllocateConnection trap received 
 			sniServerName=%parm[#1]% 
 			sniTrapTime=%parm[#2]%&lt;/p&gt;
 		</logmsg>
@@ -20278,7 +20278,7 @@ interaction with the server will be possible&lt;/p&gt;&lt;table&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniNWLogoutConnection trap received 
+			Fujitsu-Seimens Event: sniNWLogoutConnection trap received 
 			sniServerName=%parm[#1]% 
 			sniTrapTime=%parm[#2]%&lt;/p&gt;
 		</logmsg>
@@ -20313,7 +20313,7 @@ interaction with the server will be possible&lt;/p&gt;&lt;table&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniNWMLIDRegister trap received 
+			Fujitsu-Seimens Event: sniNWMLIDRegister trap received 
 			sniServerName=%parm[#1]% 
 			sniTrapTime=%parm[#2]%&lt;/p&gt;
 		</logmsg>
@@ -20348,7 +20348,7 @@ interaction with the server will be possible&lt;/p&gt;&lt;table&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniNWMLIDDeRegister trap received 
+			Fujitsu-Seimens Event: sniNWMLIDDeRegister trap received 
 			sniServerName=%parm[#1]% 
 			sniTrapTime=%parm[#2]%&lt;/p&gt;
 		</logmsg>
@@ -20383,7 +20383,7 @@ interaction with the server will be possible&lt;/p&gt;&lt;table&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniNWDataMigration trap received 
+			Fujitsu-Seimens Event: sniNWDataMigration trap received 
 			sniServerName=%parm[#1]% 
 			sniTrapTime=%parm[#2]%&lt;/p&gt;
 		</logmsg>
@@ -20418,7 +20418,7 @@ interaction with the server will be possible&lt;/p&gt;&lt;table&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniNWDataDeMigration trap received 
+			Fujitsu-Seimens Event: sniNWDataDeMigration trap received 
 			sniServerName=%parm[#1]% 
 			sniTrapTime=%parm[#2]%&lt;/p&gt;
 		</logmsg>
@@ -20453,7 +20453,7 @@ interaction with the server will be possible&lt;/p&gt;&lt;table&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniNWQueueAction trap received 
+			Fujitsu-Seimens Event: sniNWQueueAction trap received 
 			sniServerName=%parm[#1]% 
 			sniTrapTime=%parm[#2]%&lt;/p&gt;
 		</logmsg>
@@ -20497,7 +20497,7 @@ console&lt;/p&gt;&lt;table&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniNWAlert trap received 
+			Fujitsu-Seimens Event: sniNWAlert trap received 
 			sniServerName=%parm[#1]% 
 			sniTrapTime=%parm[#2]% 
 			sniModuleName=%parm[#3]% 
@@ -20534,7 +20534,7 @@ console&lt;/p&gt;&lt;table&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniNWCreateObject trap received 
+			Fujitsu-Seimens Event: sniNWCreateObject trap received 
 			sniServerName=%parm[#1]% 
 			sniTrapTime=%parm[#2]%&lt;/p&gt;
 		</logmsg>
@@ -20569,7 +20569,7 @@ console&lt;/p&gt;&lt;table&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniNWDeleteObject trap received 
+			Fujitsu-Seimens Event: sniNWDeleteObject trap received 
 			sniServerName=%parm[#1]% 
 			sniTrapTime=%parm[#2]%&lt;/p&gt;
 		</logmsg>
@@ -20604,7 +20604,7 @@ console&lt;/p&gt;&lt;table&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniNWRenameObject trap received 
+			Fujitsu-Seimens Event: sniNWRenameObject trap received 
 			sniServerName=%parm[#1]% 
 			sniTrapTime=%parm[#2]%&lt;/p&gt;
 		</logmsg>
@@ -20639,7 +20639,7 @@ console&lt;/p&gt;&lt;table&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniNWValueChanged trap received 
+			Fujitsu-Seimens Event: sniNWValueChanged trap received 
 			sniServerName=%parm[#1]% 
 			sniTrapTime=%parm[#2]%&lt;/p&gt;
 		</logmsg>
@@ -20674,7 +20674,7 @@ console&lt;/p&gt;&lt;table&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniNWCloseFile trap received 
+			Fujitsu-Seimens Event: sniNWCloseFile trap received 
 			sniServerName=%parm[#1]% 
 			sniTrapTime=%parm[#2]%&lt;/p&gt;
 		</logmsg>
@@ -20709,7 +20709,7 @@ console&lt;/p&gt;&lt;table&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniNWChangeTime trap received 
+			Fujitsu-Seimens Event: sniNWChangeTime trap received 
 			sniServerName=%parm[#1]% 
 			sniTrapTime=%parm[#2]%&lt;/p&gt;
 		</logmsg>
@@ -20754,7 +20754,7 @@ will be given in the sniInvPollAlarm field&lt;/p&gt;&lt;table&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniInvPollTrapExceeded trap received 
+			Fujitsu-Seimens Event: sniInvPollTrapExceeded trap received 
 			sniServerName=%parm[#1]% 
 			sniTrapTime=%parm[#2]% 
 			sniControlString=%parm[#3]% 
@@ -20801,7 +20801,7 @@ will be given in the sniInvPollAlarm field&lt;/p&gt;&lt;table&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniInvPollTrapUnderflow trap received 
+			Fujitsu-Seimens Event: sniInvPollTrapUnderflow trap received 
 			sniServerName=%parm[#1]% 
 			sniTrapTime=%parm[#2]% 
 			sniControlString=%parm[#3]% 
@@ -20848,7 +20848,7 @@ will be given in the sniInvPollAlarm field&lt;/p&gt;&lt;table&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniInvPollDeltaExceeded trap received 
+			Fujitsu-Seimens Event: sniInvPollDeltaExceeded trap received 
 			sniServerName=%parm[#1]% 
 			sniTrapTime=%parm[#2]% 
 			sniControlString=%parm[#3]% 
@@ -20895,7 +20895,7 @@ will be given in the sniInvPollAlarm field&lt;/p&gt;&lt;table&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniInvDeltaTrapUnderflow trap received 
+			Fujitsu-Seimens Event: sniInvDeltaTrapUnderflow trap received 
 			sniServerName=%parm[#1]% 
 			sniTrapTime=%parm[#2]% 
 			sniControlString=%parm[#3]% 
@@ -20940,7 +20940,7 @@ will be given in the sniInvPollAlarm field&lt;/p&gt;&lt;table&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniInvTrapInvalid trap received 
+			Fujitsu-Seimens Event: sniInvTrapInvalid trap received 
 			sniServerName=%parm[#1]% 
 			sniTrapTime=%parm[#2]% 
 			sniControlString=%parm[#3]% 
@@ -20985,7 +20985,7 @@ will be given in the sniInvPollAlarm field&lt;/p&gt;&lt;table&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniInvTrapValid trap received 
+			Fujitsu-Seimens Event: sniInvTrapValid trap received 
 			sniServerName=%parm[#1]% 
 			sniTrapTime=%parm[#2]% 
 			sniControlString=%parm[#3]% 
@@ -21023,7 +21023,7 @@ interaction with the server will be possible&lt;/p&gt;&lt;table&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniNTDownServer trap received 
+			Fujitsu-Seimens Event: sniNTDownServer trap received 
 			sniServerName=%parm[#1]% 
 			sniTrapTime=%parm[#2]%&lt;/p&gt;
 		</logmsg>
@@ -21058,7 +21058,7 @@ interaction with the server will be possible&lt;/p&gt;&lt;table&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniNTLoginUser trap received 
+			Fujitsu-Seimens Event: sniNTLoginUser trap received 
 			sniServerName=%parm[#1]% 
 			sniTrapTime=%parm[#2]%&lt;/p&gt;
 		</logmsg>
@@ -21093,7 +21093,7 @@ interaction with the server will be possible&lt;/p&gt;&lt;table&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniNTChangeSecurity trap received 
+			Fujitsu-Seimens Event: sniNTChangeSecurity trap received 
 			sniServerName=%parm[#1]% 
 			sniTrapTime=%parm[#2]%&lt;/p&gt;
 		</logmsg>
@@ -21128,7 +21128,7 @@ interaction with the server will be possible&lt;/p&gt;&lt;table&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniNTTrusteeChange trap received 
+			Fujitsu-Seimens Event: sniNTTrusteeChange trap received 
 			sniServerName=%parm[#1]% 
 			sniTrapTime=%parm[#2]%&lt;/p&gt;
 		</logmsg>
@@ -21168,7 +21168,7 @@ eventlog&lt;/p&gt;&lt;table&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniNTAlert trap received 
+			Fujitsu-Seimens Event: sniNTAlert trap received 
 			sniServerName=%parm[#1]% 
 			sniTrapTime=%parm[#2]% 
 			sniControlString=%parm[#3]%&lt;/p&gt;
@@ -21204,7 +21204,7 @@ eventlog&lt;/p&gt;&lt;table&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniNTChangeTime trap received 
+			Fujitsu-Seimens Event: sniNTChangeTime trap received 
 			sniServerName=%parm[#1]% 
 			sniTrapTime=%parm[#2]%&lt;/p&gt;
 		</logmsg>
@@ -21239,7 +21239,7 @@ eventlog&lt;/p&gt;&lt;table&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniNTRegChangeName trap received 
+			Fujitsu-Seimens Event: sniNTRegChangeName trap received 
 			sniServerName=%parm[#1]% 
 			sniTrapTime=%parm[#2]%&lt;/p&gt;
 		</logmsg>
@@ -21274,7 +21274,7 @@ eventlog&lt;/p&gt;&lt;table&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniNTRegChangeAttr trap received 
+			Fujitsu-Seimens Event: sniNTRegChangeAttr trap received 
 			sniServerName=%parm[#1]% 
 			sniTrapTime=%parm[#2]%&lt;/p&gt;
 		</logmsg>
@@ -21309,7 +21309,7 @@ eventlog&lt;/p&gt;&lt;table&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniNTRegChangeLastWrite trap received 
+			Fujitsu-Seimens Event: sniNTRegChangeLastWrite trap received 
 			sniServerName=%parm[#1]% 
 			sniTrapTime=%parm[#2]%&lt;/p&gt;
 		</logmsg>
@@ -21344,7 +21344,7 @@ eventlog&lt;/p&gt;&lt;table&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniNTRegChangeSecurity trap received 
+			Fujitsu-Seimens Event: sniNTRegChangeSecurity trap received 
 			sniServerName=%parm[#1]% 
 			sniTrapTime=%parm[#2]%&lt;/p&gt;
 		</logmsg>
@@ -21379,7 +21379,7 @@ eventlog&lt;/p&gt;&lt;table&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniNTFileChangeName trap received 
+			Fujitsu-Seimens Event: sniNTFileChangeName trap received 
 			sniServerName=%parm[#1]% 
 			sniTrapTime=%parm[#2]%&lt;/p&gt;
 		</logmsg>
@@ -21414,7 +21414,7 @@ eventlog&lt;/p&gt;&lt;table&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniNTFileChangeDirName trap received 
+			Fujitsu-Seimens Event: sniNTFileChangeDirName trap received 
 			sniServerName=%parm[#1]% 
 			sniTrapTime=%parm[#2]%&lt;/p&gt;
 		</logmsg>
@@ -21449,7 +21449,7 @@ eventlog&lt;/p&gt;&lt;table&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniNTFileChangeAttr trap received 
+			Fujitsu-Seimens Event: sniNTFileChangeAttr trap received 
 			sniServerName=%parm[#1]% 
 			sniTrapTime=%parm[#2]%&lt;/p&gt;
 		</logmsg>
@@ -21484,7 +21484,7 @@ eventlog&lt;/p&gt;&lt;table&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniNTFileChangeSize trap received 
+			Fujitsu-Seimens Event: sniNTFileChangeSize trap received 
 			sniServerName=%parm[#1]% 
 			sniTrapTime=%parm[#2]%&lt;/p&gt;
 		</logmsg>
@@ -21519,7 +21519,7 @@ eventlog&lt;/p&gt;&lt;table&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniNTFileChangeLastWrite trap received 
+			Fujitsu-Seimens Event: sniNTFileChangeLastWrite trap received 
 			sniServerName=%parm[#1]% 
 			sniTrapTime=%parm[#2]%&lt;/p&gt;
 		</logmsg>
@@ -21554,7 +21554,7 @@ eventlog&lt;/p&gt;&lt;table&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniNTFileChangeSecurity trap received 
+			Fujitsu-Seimens Event: sniNTFileChangeSecurity trap received 
 			sniServerName=%parm[#1]% 
 			sniTrapTime=%parm[#2]%&lt;/p&gt;
 		</logmsg>
@@ -21589,7 +21589,7 @@ eventlog&lt;/p&gt;&lt;table&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniNTEventLogError trap received 
+			Fujitsu-Seimens Event: sniNTEventLogError trap received 
 			sniServerName=%parm[#1]% 
 			sniTrapTime=%parm[#2]%&lt;/p&gt;
 		</logmsg>
@@ -21624,7 +21624,7 @@ eventlog&lt;/p&gt;&lt;table&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniNTEventLogWarning trap received 
+			Fujitsu-Seimens Event: sniNTEventLogWarning trap received 
 			sniServerName=%parm[#1]% 
 			sniTrapTime=%parm[#2]%&lt;/p&gt;
 		</logmsg>
@@ -21659,7 +21659,7 @@ eventlog&lt;/p&gt;&lt;table&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniNTEventLogInformation trap received 
+			Fujitsu-Seimens Event: sniNTEventLogInformation trap received 
 			sniServerName=%parm[#1]% 
 			sniTrapTime=%parm[#2]%&lt;/p&gt;
 		</logmsg>
@@ -21694,7 +21694,7 @@ eventlog&lt;/p&gt;&lt;table&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniNTEventLogSuccess trap received 
+			Fujitsu-Seimens Event: sniNTEventLogSuccess trap received 
 			sniServerName=%parm[#1]% 
 			sniTrapTime=%parm[#2]%&lt;/p&gt;
 		</logmsg>
@@ -21729,7 +21729,7 @@ eventlog&lt;/p&gt;&lt;table&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: sniNTEventLogFailure trap received 
+			Fujitsu-Seimens Event: sniNTEventLogFailure trap received 
 			sniServerName=%parm[#1]% 
 			sniTrapTime=%parm[#2]%&lt;/p&gt;
 		</logmsg>
@@ -21775,7 +21775,7 @@ changed to 'all', 'subset' or 'local'.&lt;/p&gt;&lt;table&gt;
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: fscHaClClusterInfAvailable trap received 
+			Fujitsu-Seimens Event: fscHaClClusterInfAvailable trap received 
 			fscHaClClusterName=%parm[#1]% 
 			fscHaClSubAgentInfoOperScope=%parm[#2]%&lt;/p&gt;
 		</logmsg>
@@ -21819,7 +21819,7 @@ changed to 'noInformation' 'unknown', or 'other'.&lt;/p&gt;&lt;table&gt;
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: fscHaClClusterInfNotAvailable trap received 
+			Fujitsu-Seimens Event: fscHaClClusterInfNotAvailable trap received 
 			fscHaClClusterName=%parm[#1]% 
 			fscHaClSubAgentInfoOperScope=%parm[#2]%&lt;/p&gt;
 		</logmsg>
@@ -21863,7 +21863,7 @@ for the agent has changed its state.&lt;/p&gt;&lt;table&gt;
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: fscHaClMonitorStateChanged trap received 
+			Fujitsu-Seimens Event: fscHaClMonitorStateChanged trap received 
 			fscHaClClusterName=%parm[#1]% 
 			fscHaClClusterMonitoringState=%parm[#2]%&lt;/p&gt;
 		</logmsg>
@@ -21908,7 +21908,7 @@ for the agent has changed its state.&lt;/p&gt;&lt;table&gt;
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: fscHaClSystemStateChanged trap received 
+			Fujitsu-Seimens Event: fscHaClSystemStateChanged trap received 
 			fscHaClClusterName=%parm[#1]% 
 			fscHaClSystemName=%parm[#2]% 
 			fscHaClSystemState=%parm[#3]%&lt;/p&gt;
@@ -21960,7 +21960,7 @@ for the agent has changed its state.&lt;/p&gt;&lt;table&gt;
 	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: fscHaClApplicationStateChanged trap received 
+			Fujitsu-Seimens Event: fscHaClApplicationStateChanged trap received 
 			fscHaClClusterName=%parm[#1]% 
 			fscHaClApplicationName=%parm[#2]% 
 			fscHaClSystemName=%parm[#3]% 
@@ -22018,7 +22018,7 @@ has changed. &lt;/p&gt;&lt;table&gt;
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: fscHaClResourceStateChanged trap received 
+			Fujitsu-Seimens Event: fscHaClResourceStateChanged trap received 
 			fscHaClClusterName=%parm[#1]% 
 			fscHaClResourceName=%parm[#2]% 
 			fscHaClResourceState=%parm[#3]% 
@@ -22058,7 +22058,7 @@ has changed. &lt;/p&gt;&lt;table&gt;
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: testTrap trap received 
+			Fujitsu-Seimens Event: testTrap trap received 
 			trapServerName=%parm[#1]% 
 			trapTime=%parm[#2]%&lt;/p&gt;
 		</logmsg>
@@ -22101,7 +22101,7 @@ has changed. &lt;/p&gt;&lt;table&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: wsaLarHardwareDefectSet trap received 
+			Fujitsu-Seimens Event: wsaLarHardwareDefectSet trap received 
 			wsaServerName=%parm[#1]% 
 			wsaLarComment=%parm[#2]% 
 			wsaTrapTime=%parm[#3]% 
@@ -22146,7 +22146,7 @@ has changed. &lt;/p&gt;&lt;table&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: wsaLarHardwareDefectUnset trap received 
+			Fujitsu-Seimens Event: wsaLarHardwareDefectUnset trap received 
 			wsaServerName=%parm[#1]% 
 			wsaLarComment=%parm[#2]% 
 			wsaTrapTime=%parm[#3]% 
@@ -22191,7 +22191,7 @@ has changed. &lt;/p&gt;&lt;table&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: wsaLarHardwareErrorSet trap received 
+			Fujitsu-Seimens Event: wsaLarHardwareErrorSet trap received 
 			wsaServerName=%parm[#1]% 
 			wsaLarComment=%parm[#2]% 
 			wsaTrapTime=%parm[#3]% 
@@ -22236,7 +22236,7 @@ has changed. &lt;/p&gt;&lt;table&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: wsaLarHardwareErrorUnset trap received 
+			Fujitsu-Seimens Event: wsaLarHardwareErrorUnset trap received 
 			wsaServerName=%parm[#1]% 
 			wsaLarComment=%parm[#2]% 
 			wsaTrapTime=%parm[#3]% 
@@ -22269,7 +22269,7 @@ has changed. &lt;/p&gt;&lt;table&gt;
 	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: wsaAgentStart trap received 
+			Fujitsu-Seimens Event: wsaAgentStart trap received 
 			wsaServerName=%parm[#1]%&lt;/p&gt;
 		</logmsg>
 	<severity>Indeterminate</severity>
@@ -22311,7 +22311,7 @@ has changed. &lt;/p&gt;&lt;table&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: wsaErrorRepair trap received 
+			Fujitsu-Seimens Event: wsaErrorRepair trap received 
 			wsaServerName=%parm[#1]% 
 			wsaLarComment=%parm[#2]% 
 			wsaTrapTime=%parm[#3]% 
@@ -22356,7 +22356,7 @@ has changed. &lt;/p&gt;&lt;table&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: wsaDefectRepair trap received 
+			Fujitsu-Seimens Event: wsaDefectRepair trap received 
 			wsaServerName=%parm[#1]% 
 			wsaLarComment=%parm[#2]% 
 			wsaTrapTime=%parm[#3]% 
@@ -22397,7 +22397,7 @@ has changed. &lt;/p&gt;&lt;table&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: wsaNodeStatusIntegrated trap received 
+			Fujitsu-Seimens Event: wsaNodeStatusIntegrated trap received 
 			wsaServerName=%parm[#1]% 
 			wsaTrapTime=%parm[#2]% 
 			wsaNodeStatus=%parm[#3]%&lt;/p&gt;
@@ -22437,7 +22437,7 @@ has changed. &lt;/p&gt;&lt;table&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: wsaNodeStatusNotavail trap received 
+			Fujitsu-Seimens Event: wsaNodeStatusNotavail trap received 
 			wsaServerName=%parm[#1]% 
 			wsaTrapTime=%parm[#2]% 
 			wsaNodeStatus=%parm[#3]%&lt;/p&gt;
@@ -22477,7 +22477,7 @@ has changed. &lt;/p&gt;&lt;table&gt;
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: wsaNodeStatusNotrunning trap received 
+			Fujitsu-Seimens Event: wsaNodeStatusNotrunning trap received 
 			wsaServerName=%parm[#1]% 
 			wsaTrapTime=%parm[#2]% 
 			wsaNodeStatus=%parm[#3]%&lt;/p&gt;
@@ -22525,7 +22525,7 @@ has changed. &lt;/p&gt;&lt;table&gt;
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: wsaLUNStateChanged trap received 
+			Fujitsu-Seimens Event: wsaLUNStateChanged trap received 
 			wsaServerName=%parm[#1]% 
 			wsaHw=%parm[#2]% 
 			wsaHwState=%parm[#3]% 
@@ -22575,7 +22575,7 @@ has changed. &lt;/p&gt;&lt;table&gt;
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: wsaRAIDControllerDefect trap received 
+			Fujitsu-Seimens Event: wsaRAIDControllerDefect trap received 
 			wsaServerName=%parm[#1]% 
 			wsaHw=%parm[#2]% 
 			wsaRaidDriver=%parm[#3]% 
@@ -22625,7 +22625,7 @@ has changed. &lt;/p&gt;&lt;table&gt;
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: wsaRAIDDiskDefect trap received 
+			Fujitsu-Seimens Event: wsaRAIDDiskDefect trap received 
 			wsaServerName=%parm[#1]% 
 			wsaHw=%parm[#2]% 
 			wsaRaidDriver=%parm[#3]% 
@@ -22671,7 +22671,7 @@ has changed. &lt;/p&gt;&lt;table&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: wsaEnvironmentHardwareDefectSet trap received 
+			Fujitsu-Seimens Event: wsaEnvironmentHardwareDefectSet trap received 
 			wsaServerName=%parm[#1]% 
 			wsaLarComment=%parm[#2]% 
 			wsaTrapTime=%parm[#3]% 
@@ -22716,7 +22716,7 @@ has changed. &lt;/p&gt;&lt;table&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: wsaEnvironmentHardwareErrorSet trap received 
+			Fujitsu-Seimens Event: wsaEnvironmentHardwareErrorSet trap received 
 			wsaServerName=%parm[#1]% 
 			wsaLarComment=%parm[#2]% 
 			wsaTrapTime=%parm[#3]% 
@@ -22761,7 +22761,7 @@ has changed. &lt;/p&gt;&lt;table&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: wsaEnvironmentRepair trap received 
+			Fujitsu-Seimens Event: wsaEnvironmentRepair trap received 
 			wsaServerName=%parm[#1]% 
 			wsaLarComment=%parm[#2]% 
 			wsaTrapTime=%parm[#3]% 
@@ -22806,7 +22806,7 @@ has changed. &lt;/p&gt;&lt;table&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: wsaStorageHardwareDefectSet trap received 
+			Fujitsu-Seimens Event: wsaStorageHardwareDefectSet trap received 
 			wsaServerName=%parm[#1]% 
 			wsaLarComment=%parm[#2]% 
 			wsaTrapTime=%parm[#3]% 
@@ -22851,7 +22851,7 @@ has changed. &lt;/p&gt;&lt;table&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: wsaStorageHardwareErrorSet trap received 
+			Fujitsu-Seimens Event: wsaStorageHardwareErrorSet trap received 
 			wsaServerName=%parm[#1]% 
 			wsaLarComment=%parm[#2]% 
 			wsaTrapTime=%parm[#3]% 
@@ -22896,7 +22896,7 @@ has changed. &lt;/p&gt;&lt;table&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: wsaStorageRepair trap received 
+			Fujitsu-Seimens Event: wsaStorageRepair trap received 
 			wsaServerName=%parm[#1]% 
 			wsaLarComment=%parm[#2]% 
 			wsaTrapTime=%parm[#3]% 
@@ -22941,7 +22941,7 @@ has changed. &lt;/p&gt;&lt;table&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: wsaControllerHardwareDefectSet trap received 
+			Fujitsu-Seimens Event: wsaControllerHardwareDefectSet trap received 
 			wsaServerName=%parm[#1]% 
 			wsaLarComment=%parm[#2]% 
 			wsaTrapTime=%parm[#3]% 
@@ -22986,7 +22986,7 @@ has changed. &lt;/p&gt;&lt;table&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: wsaControllerHardwareErrorSet trap received 
+			Fujitsu-Seimens Event: wsaControllerHardwareErrorSet trap received 
 			wsaServerName=%parm[#1]% 
 			wsaLarComment=%parm[#2]% 
 			wsaTrapTime=%parm[#3]% 
@@ -23031,7 +23031,7 @@ has changed. &lt;/p&gt;&lt;table&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: wsaControllerRepair trap received 
+			Fujitsu-Seimens Event: wsaControllerRepair trap received 
 			wsaServerName=%parm[#1]% 
 			wsaLarComment=%parm[#2]% 
 			wsaTrapTime=%parm[#3]% 
@@ -23076,7 +23076,7 @@ has changed. &lt;/p&gt;&lt;table&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: wsaMonitoringRuleMatched trap received 
+			Fujitsu-Seimens Event: wsaMonitoringRuleMatched trap received 
 			wsaServerName=%parm[#1]% 
 			wsaLarComment=%parm[#2]% 
 			wsaTrapTime=%parm[#3]% 
@@ -23121,7 +23121,7 @@ has changed. &lt;/p&gt;&lt;table&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: wsaMonitoringRuleInitialized trap received 
+			Fujitsu-Seimens Event: wsaMonitoringRuleInitialized trap received 
 			wsaServerName=%parm[#1]% 
 			wsaLarComment=%parm[#2]% 
 			wsaTrapTime=%parm[#3]% 
@@ -23166,7 +23166,7 @@ has changed. &lt;/p&gt;&lt;table&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: wsaDROperationStarted trap received 
+			Fujitsu-Seimens Event: wsaDROperationStarted trap received 
 			wsaServerName=%parm[#1]% 
 			wsaLarComment=%parm[#2]% 
 			wsaTrapTime=%parm[#3]% 
@@ -23211,7 +23211,7 @@ has changed. &lt;/p&gt;&lt;table&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: wsaDROperationFinished trap received 
+			Fujitsu-Seimens Event: wsaDROperationFinished trap received 
 			wsaServerName=%parm[#1]% 
 			wsaLarComment=%parm[#2]% 
 			wsaTrapTime=%parm[#3]% 
@@ -23256,7 +23256,7 @@ has changed. &lt;/p&gt;&lt;table&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: wsaHardwareDeactiveSet trap received 
+			Fujitsu-Seimens Event: wsaHardwareDeactiveSet trap received 
 			wsaServerName=%parm[#1]% 
 			wsaLarComment=%parm[#2]% 
 			wsaTrapTime=%parm[#3]% 
@@ -23301,7 +23301,7 @@ has changed. &lt;/p&gt;&lt;table&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: wsaHardwareActiveSet trap received 
+			Fujitsu-Seimens Event: wsaHardwareActiveSet trap received 
 			wsaServerName=%parm[#1]% 
 			wsaLarComment=%parm[#2]% 
 			wsaTrapTime=%parm[#3]% 
@@ -23346,7 +23346,7 @@ has changed. &lt;/p&gt;&lt;table&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: wsaHWComponentAttached trap received 
+			Fujitsu-Seimens Event: wsaHWComponentAttached trap received 
 			wsaServerName=%parm[#1]% 
 			wsaLarComment=%parm[#2]% 
 			wsaTrapTime=%parm[#3]% 
@@ -23391,7 +23391,7 @@ has changed. &lt;/p&gt;&lt;table&gt;
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: wsaHWComponentDetached trap received 
+			Fujitsu-Seimens Event: wsaHWComponentDetached trap received 
 			wsaServerName=%parm[#1]% 
 			wsaLarComment=%parm[#2]% 
 			wsaTrapTime=%parm[#3]% 
@@ -23444,7 +23444,7 @@ has changed. &lt;/p&gt;&lt;table&gt;
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: wsaGenLogMessage trap received 
+			Fujitsu-Seimens Event: wsaGenLogMessage trap received 
 			wsaServerName=%parm[#1]% 
 			wsaModule=%parm[#2]% 
 			wsaSeverity=%parm[#3]% 
@@ -23499,7 +23499,7 @@ has changed. &lt;/p&gt;&lt;table&gt;
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: wsaGenLogMessageInfo trap received 
+			Fujitsu-Seimens Event: wsaGenLogMessageInfo trap received 
 			wsaServerName=%parm[#1]% 
 			wsaModule=%parm[#2]% 
 			wsaSeverity=%parm[#3]% 
@@ -23554,7 +23554,7 @@ has changed. &lt;/p&gt;&lt;table&gt;
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: wsaGenLogMessageMinor trap received 
+			Fujitsu-Seimens Event: wsaGenLogMessageMinor trap received 
 			wsaServerName=%parm[#1]% 
 			wsaModule=%parm[#2]% 
 			wsaSeverity=%parm[#3]% 
@@ -23609,7 +23609,7 @@ has changed. &lt;/p&gt;&lt;table&gt;
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: wsaGenLogMessageMajor trap received 
+			Fujitsu-Seimens Event: wsaGenLogMessageMajor trap received 
 			wsaServerName=%parm[#1]% 
 			wsaModule=%parm[#2]% 
 			wsaSeverity=%parm[#3]% 
@@ -23664,7 +23664,7 @@ has changed. &lt;/p&gt;&lt;table&gt;
 	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			Fujistsu-Seimens Event: wsaGenLogMessageCritical trap received 
+			Fujitsu-Seimens Event: wsaGenLogMessageCritical trap received 
 			wsaServerName=%parm[#1]% 
 			wsaModule=%parm[#2]% 
 			wsaSeverity=%parm[#3]% 
