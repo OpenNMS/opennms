@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
-"../../../docs/dtd/docbookx.dtd" [
+"../../docs/dtd/docbookx.dtd" [
 	<!ENTITY bookinfo SYSTEM "bookinfo.xml">
 	<!ENTITY preface SYSTEM "../common/preface.xml">
 	<!ENTITY chap1 SYSTEM "chap1.xml">
