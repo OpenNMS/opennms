@@ -144,7 +144,17 @@ public interface Provisioner {
      * @return Always returns true.  Check for XML-RPC exception.
      */
     boolean addServiceDatabase(String serviceId, int retries, int timeout, int interval, int downTimeInterval, int downTimeDuration, String username, String password, String driver, String url);
-    
+
+    /**
+     * Returns an XML-RPC compatible hash map representing the current configuration (see addService params) for
+     * the matching <code>String</code> <code>serviceId</code>
+     * 
+     * When a service is defined using XML-RPC, the package name and the service name will be the same.
+     * 
+     * @param pkName Name of the polling package i.e. "default" or custom package "FastHTTP"
+     * @param serviceId Name of the service, i.e. "ICMP" or a custom service "FastHTTP"
+     * @return Always returns true.  Check for XML-RPC exception.
+     */
     Map getServiceConfiguration(String pkName, String serviceId);    
 
 }
