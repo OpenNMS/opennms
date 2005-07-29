@@ -35,7 +35,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -225,25 +224,6 @@ public final class JMXDataCollectionConfigFactory {
     }
 
     /**
-     * Converts the internet address to a long value so that it can be compared
-     * using simple opertions. The address is converted in network byte order
-     * (big endin) and allows for comparisions like &lt;, &gt;, &lt;=, &gt;=,
-     * ==, and !=.
-     * 
-     * @param addr
-     *            The address to convert to a long
-     * 
-     * @return The address as a long value.
-     * 
-     */
-    private static long toLong(InetAddress addr) {
-        byte[] baddr = addr.getAddress();
-        long result = ((long) baddr[0] & 0xffL) << 24 | ((long) baddr[1] & 0xffL) << 16 | ((long) baddr[2] & 0xffL) << 8 | ((long) baddr[3] & 0xffL);
-
-        return result;
-    }
-
-    /**
      * This method returns the list of MIB objects associated with a particular
      * system object id, IP address, and ifType for the specified collection.
      * 
@@ -280,9 +260,9 @@ public final class JMXDataCollectionConfigFactory {
         }
         ArrayList list = new ArrayList();
         Mbeans beans = collection.getMbeans();
-        Enumeration enum = beans.enumerateMbean();
-        while (enum.hasMoreElements()) {
-            Mbean mbean = (Mbean)enum.nextElement();
+        Enumeration en = beans.enumerateMbean();
+        while (en.hasMoreElements()) {
+            Mbean mbean = (Mbean)en.nextElement();
             Attrib[] attributes = mbean.getAttrib();
             for (int i = 0; i < attributes.length; i++) {
                 list.add(attributes[i]);
@@ -298,13 +278,12 @@ public final class JMXDataCollectionConfigFactory {
         // 
         org.opennms.netmgt.config.collectd.JmxCollection collection = (org.opennms.netmgt.config.collectd.JmxCollection) m_collectionMap.get(cName);
         
-        ArrayList list = new ArrayList();
         Mbeans beans = collection.getMbeans();
-        Enumeration enum = beans.enumerateMbean();
-        while (enum.hasMoreElements()) {
+        Enumeration en = beans.enumerateMbean();
+        while (en.hasMoreElements()) {
         	BeanInfo beanInfo = new BeanInfo();
         	
-            Mbean mbean = (Mbean)enum.nextElement();
+            Mbean mbean = (Mbean)en.nextElement();
             beanInfo.setMbeanName(mbean.getName());
             beanInfo.setObjectName(mbean.getObjectname());
             beanInfo.setKeyField(mbean.getKeyfield());
@@ -330,11 +309,10 @@ public final class JMXDataCollectionConfigFactory {
         // 
         org.opennms.netmgt.config.collectd.JmxCollection collection = (org.opennms.netmgt.config.collectd.JmxCollection) m_collectionMap.get(cName);
         
-        ArrayList list = new ArrayList();
         Mbeans beans = collection.getMbeans();
-        Enumeration enum = beans.enumerateMbean();
-        while (enum.hasMoreElements()) {
-            Mbean mbean = (Mbean)enum.nextElement();
+        Enumeration en = beans.enumerateMbean();
+        while (en.hasMoreElements()) {
+            Mbean mbean = (Mbean)en.nextElement();
             int count = mbean.getAttribCount();
             String[] attribs = new String[count];
             Attrib[] attributes = mbean.getAttrib();
@@ -344,67 +322,6 @@ public final class JMXDataCollectionConfigFactory {
             map.put(mbean.getObjectname(), attribs);
         }
         return map;
-    }
-
-    /**
-     * Private utility method used by the getMibObjectList() method. This method
-     * takes a group name and a list of MibObject objects as arguments and adds
-     * all of the MibObjects associated with the group to the object list. If
-     * the passed group consists of any additional sub-groups, then this method
-     * will be called recursively for each sub-group until the entire
-     * log.debug("processGroupName: adding MIB objects from group: " +
-     * groupName); group is processed.
-     * 
-     * @param cName
-     *            Collection name
-     * @param groupName
-     *            Name of the group to process
-     * @param ifType
-     *            Interface type
-     * @param mibObjectList
-     *            List of MibObject objects being built.
-     */
-    private void processGroupName(String cName, String groupName, List mibObjectList) {
-        Category log = ThreadCategory.getInstance(getClass());
-
-        // Using the collector name retrieve the group map
-        Map groupMap = (Map) m_collectionGroupMap.get(cName);
-
-        // Next use the groupName to access the Group object
-        Mbean mbean = (Mbean) groupMap.get(groupName);
-
-        // Verify that we have a valid Group object...generate
-        // warning message if not...
-        if (mbean == null) {
-            log.warn("JmxDataCollectionConfigFactory.processGroupName: unable to retrieve group information for group name '" + groupName + "': check DataCollection.xml file.");
-            return;
-        }
-
-        if (log.isDebugEnabled())
-            log.debug("processGroupName:  processing group: " + groupName);
-
-        // Process any sub-groups contained within this group
-/*        
-        List groupNameList = (List) mbean.getIncludeMbeanCollection();
-        Iterator i = groupNameList.iterator();
-        while (i.hasNext()) {
-            processGroupName(cName, (String) i.next(), mibObjectList); // Recursive
-                                                                       // call
-                                                                       // to
-                                                                       // process
-                                                                       // sub-groups
-        }
-*/        
-        boolean addGroupObjects = true;  // not sure about this...
-        if (addGroupObjects) {
-            if (log.isDebugEnabled())
-                log.debug("processGroupName: OIDs from group '" + mbean.getName());
-            List objectList = (List) mbean.getAttribCollection();
-            processObjectList(objectList, mibObjectList);
-        } else {
-            if (log.isDebugEnabled())
-                log.debug("processGroupName: OIDs from group '" + mbean.getName());
-        }
     }
 
     /**
