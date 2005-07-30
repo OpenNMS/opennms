@@ -17,26 +17,38 @@ import javax.servlet.http.HttpSession;
  public class RoleServlet extends javax.servlet.http.HttpServlet implements javax.servlet.Servlet {
     private static final String LIST = "/admin/userGroupView/roles/list.jsp";
 
-    /* (non-Java-doc)
-	 * @see javax.servlet.http.HttpServlet#HttpServlet()
-	 */
-	public RoleServlet() {
+    
+    public RoleServlet() {
 		super();
-	}   	
+        
+	}
+    
+    private interface Action {
+        public String execute(HttpServletRequest request, HttpServletResponse response);
+    }
+    
+    private class ListAction implements Action {
+        public String execute(HttpServletRequest request, HttpServletResponse response) {
+            HttpSession userSession = request.getSession(false);
+
+            List list = new LinkedList();
+            for(int i = 0; i < 11; i++) {
+              list.add(new WebRole());  
+            }
+            userSession.setAttribute("roleList", list);
+            
+            return LIST;
+        }
+        
+    }
 	
 	/* (non-Java-doc)
 	 * @see javax.servlet.http.HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        HttpSession userSession = request.getSession(false);
-
-        List list = new LinkedList();
-        for(int i = 0; i < 10; i++) {
-          list.add("Role "+(i+1));  
-        }
-        userSession.setAttribute("roleList", list);
-        // forward the request for proper display
-        RequestDispatcher dispatcher = this.getServletContext().getRequestDispatcher(LIST);
+        Action action = new ListAction();
+        String display = action.execute(request, response);
+        RequestDispatcher dispatcher = this.getServletContext().getRequestDispatcher(display);
         dispatcher.forward(request, response);
 	}  	
 	

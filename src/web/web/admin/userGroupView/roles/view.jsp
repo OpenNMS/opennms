@@ -40,21 +40,28 @@
 -->
 
 <%@page language="java" contentType="text/html" session="true"%>
+<%@page import="java.util.*"%>
+<%@page import="org.opennms.netmgt.config.*"%>
+<%@page import="org.opennms.netmgt.config.users.*"%>
 <%@ taglib uri="http://java.sun.com/jstl/core" prefix="c" %>
 <html>
 <head>
-<title>List | Role Admin | OpenNMS Web Console</title>
+<title>View Role | Role Admin | OpenNMS Web Console</title>
+<base HREF="<%=org.opennms.web.Util.calculateUrlBase( request )%>" />
 <link rel="stylesheet" type="text/css" href="css/styles.css" />
 </head>
 
 <body marginwidth="0" marginheight="0" LEFTMARGIN="0" RIGHTMARGIN="0"
 	TOPMARGIN="0">
 
+<% String breadcrumb1 = "<a href='admin/index.jsp'>Admin</a>"; %>
+<% String breadcrumb2 = "<a href='admin/userGroupView/index.jsp'>Users, Groups and Roles</a>"; %>
+<% String breadcrumb3 = "View Role"; %>
 <jsp:include page="/includes/header.jsp" flush="false">
 	<jsp:param name="title" value="Role Configuration" />
-	<jsp:param name="breadcrumb" value="<a href='admin/index.jsp'>Admin</a>" />
-	<jsp:param name="breadcrumb" value="<a href='admin/userGroupView/index.jsp'>Users, Groups and Roles</a>" />
-	<jsp:param name="breadcrumb" value="Role List" />
+	<jsp:param name="breadcrumb" value="<%=breadcrumb1%>" />
+	<jsp:param name="breadcrumb" value="<%=breadcrumb2%>" />
+	<jsp:param name="breadcrumb" value="<%=breadcrumb3%>" />
 </jsp:include>
 
 <br />
@@ -62,7 +69,7 @@
 	<tr>
 		<td>&nbsp;</td>
 		<td>
-		<h3>Role Configuration</h3>
+		<h3>View Role</h3>
 		</td>
 	</tr>
 	<tr>
@@ -71,18 +78,12 @@
 		 <table width="100%" border="1" cellspacing="0" cellpadding="2" bordercolor="black">
 
          <tr bgcolor="#999999">
-          <td><b>Name</b></td>
-          <td><b>Supervisor</b></td>
-          <td><b>Currently On Call</b></td>
-          <td><b>Membership Group</b></td>
-          <td><b>Description</b></td>
+          <td width="50%"><b>Name</b></td>
+          <td width="50%"><b>Supervisor</b></td>
 			<c:forEach items="${roleList}" var="role" varStatus="roleStatus">
 				<tr>
-				<td><a href="?action=view&role=<c:out value='${role.name}'/>"><c:out value="${role.name}"/></a></td>
-				<td><c:out value="${role.defaultUser}"/></td>
-				<td><c:out value="${role.currentUser}"/></td>
-				<td><c:out value="${role.membershipGroup}"/></td>
-				<td><c:out value="${role.description}"/></td>
+				<td><c:out value="${roleStatus.count}"/></td>
+				<td><c:out value="${role}"/></td>
 				</tr>
 			</c:forEach>
 		</table>
