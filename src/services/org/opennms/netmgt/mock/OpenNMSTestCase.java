@@ -1382,8 +1382,7 @@ public class OpenNMSTestCase extends TestCase {
     protected void setUp() throws Exception {
         super.setUp();
         MockUtil.println("------------ Begin Test "+getName()+" --------------------------");
-        MockUtil.setupLogging();
-        MockUtil.resetLogLevel();
+        MockLogAppender.setupLogging();
         
         if (m_runSupers) {
         
@@ -1442,7 +1441,7 @@ public class OpenNMSTestCase extends TestCase {
             if (isStartEventd()) m_eventd.stop();
             m_db.drop();
         }
-        assertTrue("Unexpected WARN or ERROR msgs in Log!", MockUtil.noWarningsOrHigherLogged());
+        MockLogAppender.assertNoWarningsOrGreater();
         MockUtil.println("------------ End Test "+getName()+" --------------------------");
 
         super.tearDown();

@@ -32,6 +32,7 @@
 package org.opennms.netmgt.threshd;
 
 
+import org.opennms.netmgt.mock.MockLogAppender;
 import org.opennms.netmgt.mock.MockUtil;
 import org.opennms.netmgt.rrd.RrdUtils;
 
@@ -40,8 +41,7 @@ public class LatencyThresholderTest extends ThresholderTestCase {
     protected void setUp() throws Exception {
         super.setUp();
         
-        MockUtil.setupLogging();
-        MockUtil.resetLogLevel();
+        MockLogAppender.setupLogging();
         
         setupDatabase();
         
@@ -66,7 +66,7 @@ public class LatencyThresholderTest extends ThresholderTestCase {
 
 	protected void tearDown() throws Exception {
         RrdUtils.setStrategy(null);
-        assertTrue("Errors or Warnings in log!", MockUtil.noWarningsOrHigherLogged());
+        MockLogAppender.assertNoWarningsOrGreater();
         super.tearDown();
     }
     

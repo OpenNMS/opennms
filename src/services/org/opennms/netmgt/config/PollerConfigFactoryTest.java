@@ -46,6 +46,7 @@ import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.config.poller.Rrd;
 import org.opennms.netmgt.config.poller.Service;
 import org.opennms.netmgt.mock.MockDatabase;
+import org.opennms.netmgt.mock.MockLogAppender;
 import org.opennms.netmgt.mock.MockUtil;
 
 public class PollerConfigFactoryTest extends TestCase {
@@ -77,8 +78,7 @@ public class PollerConfigFactoryTest extends TestCase {
 
     protected void setUp() throws Exception {
         super.setUp();
-        MockUtil.setupLogging();
-        MockUtil.resetLogLevel();
+        MockLogAppender.setupLogging();
         MockDatabase db = new MockDatabase();
         DatabaseConnectionFactory.setInstance(db);
         
@@ -87,7 +87,7 @@ public class PollerConfigFactoryTest extends TestCase {
     protected void tearDown() throws Exception {
         DatabaseConnectionFactory.setInstance(null);
         super.tearDown();
-        assertTrue("Warnings in Log!", MockUtil.noWarningsOrHigherLogged());
+		MockLogAppender.assertNoWarningsOrGreater();
     }
     
     static class TestPollerConfigManager extends PollerConfigManager {

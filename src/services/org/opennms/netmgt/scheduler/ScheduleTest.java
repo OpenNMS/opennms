@@ -34,7 +34,7 @@ package org.opennms.netmgt.scheduler;
 
 import junit.framework.TestCase;
 
-import org.opennms.netmgt.mock.MockUtil;
+import org.opennms.netmgt.mock.MockLogAppender;
 import org.opennms.netmgt.poller.mock.MockInterval;
 import org.opennms.netmgt.poller.mock.MockScheduler;
 
@@ -87,8 +87,7 @@ public class ScheduleTest extends TestCase {
      */
     protected void setUp() throws Exception {
         super.setUp();
-        MockUtil.setupLogging();
-        MockUtil.resetLogLevel(); 
+        MockLogAppender.setupLogging();
         m_schedulable = new MockSchedulable();
         m_scheduler = new MockScheduler();
         m_interval = new MockInterval(m_scheduler, 1000L);
@@ -99,7 +98,7 @@ public class ScheduleTest extends TestCase {
      * @see TestCase#tearDown()
      */
     protected void tearDown() throws Exception {
-        assertTrue("Unexpected WARN or ERROR msgs in Log!", MockUtil.noWarningsOrHigherLogged());
+        MockLogAppender.assertNoWarningsOrGreater();
         super.tearDown();
     }
     

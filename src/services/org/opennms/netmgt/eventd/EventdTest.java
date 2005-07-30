@@ -35,6 +35,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
+import org.opennms.netmgt.mock.MockLogAppender;
 import org.opennms.netmgt.mock.MockNode;
 import org.opennms.netmgt.mock.MockUtil;
 import org.opennms.netmgt.mock.OpenNMSTestCase;
@@ -55,7 +56,7 @@ public class EventdTest extends OpenNMSTestCase {
     protected void tearDown() throws Exception {
         super.tearDown();
         m_eventd.stop();
-        assertTrue("Unexpected WARN or ERROR msgs in Log!", MockUtil.noWarningsOrHigherLogged());
+        MockLogAppender.assertNoWarningsOrGreater();
     }
         
     public void testPersistEvent() throws Exception {

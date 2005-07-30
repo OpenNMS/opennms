@@ -42,10 +42,10 @@ import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.mock.EventAnticipator;
 import org.opennms.netmgt.mock.MockDatabase;
 import org.opennms.netmgt.mock.MockEventIpcManager;
+import org.opennms.netmgt.mock.MockLogAppender;
 import org.opennms.netmgt.mock.MockNetwork;
 import org.opennms.netmgt.mock.MockPollerConfig;
 import org.opennms.netmgt.mock.MockService;
-import org.opennms.netmgt.mock.MockUtil;
 import org.opennms.netmgt.mock.OutageAnticipator;
 import org.opennms.netmgt.poller.pollables.PollEvent;
 import org.opennms.netmgt.poller.pollables.PollableNetwork;
@@ -81,7 +81,7 @@ public class PollContextTest extends TestCase {
     protected void setUp() throws Exception {
         super.setUp();
         
-        MockUtil.setupLogging();
+        MockLogAppender.setupLogging();
         
         m_mNetwork = new MockNetwork();
         m_mNetwork.addNode(1, "Router");

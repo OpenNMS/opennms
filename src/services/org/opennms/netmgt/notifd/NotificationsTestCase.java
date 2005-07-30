@@ -47,6 +47,7 @@ import org.opennms.netmgt.config.users.Contact;
 import org.opennms.netmgt.config.users.User;
 import org.opennms.netmgt.mock.MockDatabase;
 import org.opennms.netmgt.mock.MockEventIpcManager;
+import org.opennms.netmgt.mock.MockLogAppender;
 import org.opennms.netmgt.mock.MockNetwork;
 import org.opennms.netmgt.mock.MockUtil;
 import org.opennms.netmgt.notifd.mock.MockDestinationPathManager;
@@ -402,8 +403,7 @@ public class NotificationsTestCase extends TestCase {
         super.setUp();
     
         MockUtil.println("################# Running Test "+getName()+" ################");
-        MockUtil.setupLogging();
-        MockUtil.resetLogLevel();
+        MockLogAppender.setupLogging();
         
         m_network = createMockNetwork();
         
@@ -493,7 +493,7 @@ public class NotificationsTestCase extends TestCase {
 
         m_db.drop();
         MockNotificationStrategy.setAnticpator(null);
-        assertTrue("Unexpected Warnings in Log", MockUtil.noWarningsOrHigherLogged());
+        MockLogAppender.assertNoWarningsOrGreater();
         super.tearDown();
     }
     

@@ -7,12 +7,11 @@ package org.opennms.netmgt.eventd.datablock;
 import java.io.StringReader;
 
 import junit.framework.TestCase;
-import junit.framework.TestSuite;
 
 import org.opennms.netmgt.eventd.EventConfigurationManager;
 import org.opennms.netmgt.mock.EventWrapper;
 import org.opennms.netmgt.mock.EventConfWrapper;
-import org.opennms.netmgt.mock.MockUtil;
+import org.opennms.netmgt.mock.MockLogAppender;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Snmp;
 import org.opennms.netmgt.xml.eventconf.Logmsg;
@@ -30,8 +29,7 @@ public class EventConfDataTest extends TestCase {
 	 */
 	
 	protected void setUp() throws Exception {
-		MockUtil.setupLogging(true);
-		MockUtil.resetLogLevel();
+		MockLogAppender.setupLogging(false);
 		
 		String eventconf =
 			"<events xmlns=\"http://xmlns.opennms.org/xsd/eventconf\">\n" +
@@ -202,6 +200,7 @@ public class EventConfDataTest extends TestCase {
 	}
 	
 	public void tearDown() {
+		MockLogAppender.assertNoWarningsOrGreater();
 	}
 	
 

@@ -10,7 +10,7 @@ package org.opennms.web.webtests;
 
 import java.io.File;
 
-import org.opennms.netmgt.mock.MockUtil;
+import org.opennms.netmgt.mock.MockLogAppender;
 
 import net.sourceforge.jwebunit.WebTestCase;
 
@@ -24,7 +24,7 @@ public class ExampleWebTest extends WebTestCase {
     }
     
     public void setUp() throws Exception {
-        MockUtil.setupLogging();
+        MockLogAppender.setupLogging();
         
 	// This test needs to be run from the dist/webapps/opennms directory
         ServletRunner sr = new ServletRunner(new File("WEB-INF/web.xml"), "/opennms");

@@ -36,7 +36,7 @@ import javax.management.MBeanServerFactory;
 
 import junit.framework.TestCase;
 
-import org.opennms.netmgt.mock.MockUtil;
+import org.opennms.netmgt.mock.MockLogAppender;
 
 public class SpringBoardTest extends TestCase {
 
@@ -48,7 +48,7 @@ public class SpringBoardTest extends TestCase {
     }
     
     protected void setUp() throws Exception {
-        MockUtil.setupLogging();
+        MockLogAppender.setupLogging();
         
         m_server = MBeanServerFactory.createMBeanServer("OpenNMS");
     }

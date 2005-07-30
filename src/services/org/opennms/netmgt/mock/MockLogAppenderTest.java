@@ -31,57 +31,114 @@
 //
 package org.opennms.netmgt.mock;
 
+import junit.framework.AssertionFailedError;
 import junit.framework.TestCase;
 
 import org.apache.log4j.Category;
+import org.apache.log4j.Level;
+import org.apache.log4j.spi.LoggingEvent;
 import org.opennms.core.utils.ThreadCategory;
 
 /**
  * @author brozow
  */
 public class MockLogAppenderTest extends TestCase {
-    
-    
     protected void setUp() throws Exception {
         super.setUp();
-        MockUtil.setupLogging(false);
-        MockUtil.resetLogLevel();
+        MockLogAppender.setupLogging(false);
+        MockLogAppender.resetLogLevel();
     }
+	
     protected void tearDown() throws Exception {
         super.tearDown();
     }
+	
     public void testInfo() {
         Category log = ThreadCategory.getInstance();
         log.info("An Info message");
-        assertTrue(MockUtil.noWarningsOrHigherLogged());
+        assertTrue(MockLogAppender.noWarningsOrHigherLogged());
     }
     
     public void testWarn() {
         Category log = ThreadCategory.getInstance();
         log.warn("A warn message");
-        assertFalse(MockUtil.noWarningsOrHigherLogged());
+        assertFalse(MockLogAppender.noWarningsOrHigherLogged());
         
     }
     
     public void testError() {
         Category log = ThreadCategory.getInstance();
         log.error("An error message");
-        assertFalse(MockUtil.noWarningsOrHigherLogged());
+        assertFalse(MockLogAppender.noWarningsOrHigherLogged());
         
     }
     
     public void testInfoWithException() {
         Category log = ThreadCategory.getInstance();
         log.info("An info message with exception", new NullPointerException());
-        assertTrue(MockUtil.noWarningsOrHigherLogged());
+        assertTrue(MockLogAppender.noWarningsOrHigherLogged());
     }
     
     public void testErrorWithException() {
         Category log = ThreadCategory.getInstance();
         log.error("An error message with exception", new NullPointerException());
-        assertFalse(MockUtil.noWarningsOrHigherLogged());
+        assertFalse(MockLogAppender.noWarningsOrHigherLogged());
         
     }
-    
+	
+	public void testInfoMessage() {
+        Category log = ThreadCategory.getInstance();
+        log.info("An Info message");
+        assertTrue(MockLogAppender.noWarningsOrHigherLogged());
 
+		LoggingEvent[] events = MockLogAppender.getEvents();
+		
+		assertEquals("Number of logged events expected", events.length, 1);
+		
+		assertEquals("Logged event level", Level.INFO, events[0].getLevel());
+		assertEquals("Logged message", "An Info message", events[0].getMessage());
+	}
+	
+	public void testWarnLimit() {
+        Category log = ThreadCategory.getInstance();
+        log.info("An Info message");
+        log.warn("A warn message");
+        assertFalse(MockLogAppender.noWarningsOrHigherLogged());
+
+		LoggingEvent[] events = MockLogAppender.getEventsGreaterOrEqual(Level.WARN);
+		
+		assertEquals("Number of logged events expected", events.length, 1);
+		
+		assertEquals("Logged event level", Level.WARN, events[0].getLevel());
+		assertEquals("Logged message", "A warn message", events[0].getMessage());
+	}
+	
+	public void testWarnAssert() throws InterruptedException {
+        Category log = ThreadCategory.getInstance();
+        log.info("An Info message");
+        log.warn("A warn message");
+        assertFalse(MockLogAppender.noWarningsOrHigherLogged());
+
+		try {
+			MockLogAppender.assertNotGreaterOrEqual(Level.WARN);
+		} catch (AssertionFailedError e) {
+			return;
+		}
+		
+		fail("Did not receive excepcted AssertionFailedError from " +
+				"MockLogAppender.assertNotGreatorOrEqual");
+	}
+	
+	public void testErrorAssert() throws InterruptedException {
+        Category log = ThreadCategory.getInstance();
+        log.info("An Info message");
+        log.warn("A warn message");
+        assertFalse(MockLogAppender.noWarningsOrHigherLogged());
+
+		try {
+			MockLogAppender.assertNotGreaterOrEqual(Level.ERROR);
+		} catch (AssertionFailedError e) {
+			fail("Received unexpected AssertionFailedError: " + e);
+		}
+	}
 }

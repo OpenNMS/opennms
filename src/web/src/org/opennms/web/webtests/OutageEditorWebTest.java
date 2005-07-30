@@ -54,6 +54,7 @@ import org.opennms.netmgt.eventd.Eventd;
 import org.opennms.netmgt.mock.MockDatabase;
 import org.opennms.netmgt.mock.MockEventConfigManager;
 import org.opennms.netmgt.mock.MockEventIpcManager;
+import org.opennms.netmgt.mock.MockLogAppender;
 import org.opennms.netmgt.mock.MockNetwork;
 import org.opennms.netmgt.mock.MockUtil;
 
@@ -255,8 +256,7 @@ public class OutageEditorWebTest extends OpenNMSWebTestCase {
     protected void setUp() throws Exception {
         MockUtil.println("------------ Begin Test "+getName()+" --------------------------");
         
-        MockUtil.setupLogging();
-        MockUtil.resetLogLevel();
+        MockLogAppender.setupLogging();
 
         m_network = new MockNetwork();
         m_network.setCriticalService("ICMP");
@@ -297,7 +297,7 @@ public class OutageEditorWebTest extends OpenNMSWebTestCase {
 
         m_servletRunner = new ServletRunner(new StringBufferInputStream(web_xml), "/opennms");
     // 
-      MockUtil.setupLogging();
+      MockLogAppender.setupLogging();
 
         
            ServletUnitClient sc = m_servletRunner.newClient();
@@ -316,7 +316,7 @@ public class OutageEditorWebTest extends OpenNMSWebTestCase {
     protected void tearDown() throws Exception {
         m_servletRunner.shutDown();
         m_eventd.stop();
-        assertTrue("Unexpected WARN or ERROR msgs in Log!", MockUtil.noWarningsOrHigherLogged());
+        MockLogAppender.assertNoWarningsOrGreater();
         m_db.drop();
         MockUtil.println("------------ End Test "+getName()+" --------------------------");
     }

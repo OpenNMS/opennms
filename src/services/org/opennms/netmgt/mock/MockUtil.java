@@ -55,10 +55,6 @@ import org.opennms.netmgt.xml.event.Value;
  * Preferences - Java - Code Style - Code Templates
  */
 public class MockUtil {
-
-    private static boolean s_loggingSetup = false;
-    private static Level m_logLevel = Level.ALL;
-
     public static void addEventParm(Event event, String parmName, int parmValue) {
         addEventParm(event, parmName, String.valueOf(parmValue));
     }
@@ -215,32 +211,7 @@ public class MockUtil {
 		return true;
     }
 
-   public static void setupLogging() {
-        setupLogging(true);
-   }
-
-    public static void setupLogging(boolean toConsole) {
-        if (!s_loggingSetup) {
-            String level = System.getProperty("mock.logLevel", "DEBUG");
-            Properties logConfig = new Properties();
-
-            String consoleAppender = (toConsole ? ", CONSOLE" : "");
-
-            
-            logConfig.put("log4j.appender.CONSOLE", "org.apache.log4j.ConsoleAppender");
-            logConfig.put("log4j.appender.CONSOLE.layout", "org.apache.log4j.PatternLayout");
-            logConfig.put("log4j.appender.CONSOLE.layout.ConversionPattern", "%d %-5p [%t] %c: %m%n");
-            logConfig.put("log4j.appender.MOCK", "org.opennms.netmgt.mock.MockLogAppender");
-
-            logConfig.put("log4j.rootCategory", level+consoleAppender+", MOCK");
-            logConfig.put("log4j.org.snmp4j", "ERROR"+consoleAppender+", MOCK");
-        
-            PropertyConfigurator.configure(logConfig);
-
-        }
-    }
-    
-    static boolean printEnabled() {
+	static boolean printEnabled() {
         return "true".equals(System.getProperty("mock.debug", "true"));
     }
 	
@@ -263,20 +234,6 @@ public class MockUtil {
         while (it.hasNext()) {
             printEvent(prefix, (Event) it.next());
         }
-    }
-    
-    public static void resetLogLevel() {
-        m_logLevel = Level.ALL;
-    }
-
-    public static void receivedLogLevel(Level level) {
-        if (level.isGreaterOrEqual(m_logLevel)) {
-            m_logLevel = level;
-        }
-    }
-    
-    public static boolean noWarningsOrHigherLogged() {
-        return Level.INFO.isGreaterOrEqual(m_logLevel);
     }
 
     /**

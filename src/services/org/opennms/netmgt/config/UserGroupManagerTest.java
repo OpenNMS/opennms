@@ -40,7 +40,7 @@ import java.util.List;
 
 import org.opennms.netmgt.config.groups.Group;
 import org.opennms.netmgt.config.users.User;
-import org.opennms.netmgt.mock.MockUtil;
+import org.opennms.netmgt.mock.MockLogAppender;
 import org.opennms.netmgt.notifd.mock.MockGroupManager;
 import org.opennms.netmgt.notifd.mock.MockUserManager;
 
@@ -173,8 +173,7 @@ private Date sunday;
     }
 
     protected void setUp() throws Exception {
-        MockUtil.setupLogging();
-        MockUtil.resetLogLevel();
+        MockLogAppender.setupLogging();
         m_groupManager = new MockGroupManager(GROUP_MANAGER);
         m_userManager = new MockUserManager(m_groupManager, USER_MANAGER);
         
@@ -198,7 +197,7 @@ private Date sunday;
     }
 
     protected void tearDown() throws Exception {
-        assertTrue("Unexpected Warnings in Log", MockUtil.noWarningsOrHigherLogged());
+        MockLogAppender.assertNoWarningsOrGreater();
         super.tearDown();
     }
     

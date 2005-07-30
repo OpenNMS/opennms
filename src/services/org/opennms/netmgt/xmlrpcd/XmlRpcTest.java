@@ -38,7 +38,7 @@ import org.apache.xmlrpc.WebServer;
 import org.jmock.Mock;
 import org.jmock.MockObjectTestCase;
 import org.jmock.core.Constraint;
-import org.opennms.netmgt.mock.MockUtil;
+import org.opennms.netmgt.mock.MockLogAppender;
 import org.opennms.spring.xmlrpc.XmlRpcProxyFactoryBean;
 import org.opennms.spring.xmlrpc.XmlRpcServiceExporter;
 import org.opennms.spring.xmlrpc.XmlRpcWebServerFactoryBean;
@@ -57,8 +57,7 @@ public class XmlRpcTest extends MockObjectTestCase {
     private XmlRpcServiceExporter m_exporter;
 
     protected void setUp() throws Exception {
-        
-        MockUtil.setupLogging();
+        MockLogAppender.setupLogging();
         
 
         m_mockProvisioner = mock(Provisioner.class);

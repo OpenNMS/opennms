@@ -53,6 +53,7 @@ import org.opennms.netmgt.mock.MockDatabase;
 import org.opennms.netmgt.mock.MockElement;
 import org.opennms.netmgt.mock.MockEventIpcManager;
 import org.opennms.netmgt.mock.MockInterface;
+import org.opennms.netmgt.mock.MockLogAppender;
 import org.opennms.netmgt.mock.MockMonitor;
 import org.opennms.netmgt.mock.MockNetwork;
 import org.opennms.netmgt.mock.MockNode;
@@ -153,8 +154,7 @@ public class PollablesTest extends TestCase {
         
         MockUtil.println("------------ Begin Test "+getName()+" --------------------------");
         
-        MockUtil.setupLogging();
-        MockUtil.resetLogLevel();
+        MockLogAppender.setupLogging();
         
         m_lockCount = 0;
         
@@ -365,7 +365,7 @@ public class PollablesTest extends TestCase {
     protected void tearDown() throws Exception {
         super.tearDown();
         m_eventMgr.finishProcessingEvents();
-        assertTrue("Unexpected WARN or ERROR msgs in Log!", MockUtil.noWarningsOrHigherLogged());
+        MockLogAppender.assertNoWarningsOrGreater();
         m_db.drop();
     }
     

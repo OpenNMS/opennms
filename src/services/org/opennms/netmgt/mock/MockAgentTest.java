@@ -68,8 +68,7 @@ public class MockAgentTest extends TestCase {
 
     protected void setUp() throws Exception {
         MockUtil.println("------------ Begin Test "+getName()+" --------------------------");
-        MockUtil.setupLogging();
-        MockUtil.resetLogLevel();
+        MockLogAppender.setupLogging();
         
         m_network = new MockNetwork();
         m_network.setCriticalService("ICMP");
@@ -111,7 +110,7 @@ public class MockAgentTest extends TestCase {
     protected void tearDown() throws Exception {
         m_proxy.stop();
         
-        assertTrue("Unexpected WARN or ERROR msgs in Log!", MockUtil.noWarningsOrHigherLogged());
+        MockLogAppender.assertNoWarningsOrGreater();
         MockUtil.println("------------ End Test "+getName()+" --------------------------");
 
     }

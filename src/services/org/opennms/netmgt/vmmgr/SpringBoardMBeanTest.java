@@ -34,7 +34,7 @@ package org.opennms.netmgt.vmmgr;
 import java.io.StringReader;
 
 import org.opennms.netmgt.config.ServiceConfigFactory;
-import org.opennms.netmgt.mock.MockUtil;
+import org.opennms.netmgt.mock.MockLogAppender;
 
 import junit.framework.TestCase;
 
@@ -103,7 +103,7 @@ public class SpringBoardMBeanTest extends TestCase {
     "";
 
     protected void setUp() throws Exception {
-        MockUtil.setupLogging();
+        MockLogAppender.setupLogging();
     }
     
     protected void tearDown() throws Exception {

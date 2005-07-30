@@ -43,6 +43,7 @@ import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.config.poller.Outages;
+import org.opennms.netmgt.mock.MockLogAppender;
 import org.opennms.netmgt.mock.MockUtil;
 
 public class PollOutagesConfigManagerTest extends TestCase {
@@ -54,8 +55,7 @@ public class PollOutagesConfigManagerTest extends TestCase {
     }
 
     protected void setUp() throws Exception {
-        MockUtil.setupLogging();
-        MockUtil.resetLogLevel();
+        MockLogAppender.setupLogging();
         
         String xml = "<?xml version=\"1.0\"?>\n" + 
                 "<outages>\n" + 
@@ -107,7 +107,7 @@ public class PollOutagesConfigManagerTest extends TestCase {
     }
 
     protected void tearDown() throws Exception {
-        assertTrue("Unexpected Warnings in Log", MockUtil.noWarningsOrHigherLogged());
+        MockLogAppender.assertNoWarningsOrGreater();
     }
     
     private long getTime(String timeString) throws ParseException {

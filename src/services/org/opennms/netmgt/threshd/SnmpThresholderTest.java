@@ -7,8 +7,8 @@ import java.util.Properties;
 
 import org.jmock.Mock;
 import org.opennms.netmgt.config.ThresholdingConfigFactory;
+import org.opennms.netmgt.mock.MockLogAppender;
 import org.opennms.netmgt.mock.MockNetwork;
-import org.opennms.netmgt.mock.MockUtil;
 import org.opennms.netmgt.poller.monitors.IPv4NetworkInterface;
 import org.opennms.netmgt.rrd.RrdConfig;
 import org.opennms.netmgt.rrd.RrdStrategy;
@@ -28,8 +28,7 @@ public class SnmpThresholderTest extends ThresholderTestCase {
 	protected void setUp() throws Exception {
 		super.setUp();
         
-        MockUtil.setupLogging();
-        MockUtil.resetLogLevel();
+        MockLogAppender.setupLogging();
 //	TODO: Finish pulling up into ThresholderTestCase like LatencyThresholderTest and finish writing the test case!!
         setupDatabase();
 
@@ -59,7 +58,7 @@ public class SnmpThresholderTest extends ThresholderTestCase {
 
 	protected void tearDown() throws Exception {
 		super.tearDown();
-        assertTrue("Errors or Warnings in log!", MockUtil.noWarningsOrHigherLogged());
+        MockLogAppender.assertNoWarningsOrGreater();
 		
 	}
 

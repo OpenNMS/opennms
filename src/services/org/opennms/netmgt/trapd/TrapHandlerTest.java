@@ -14,6 +14,7 @@ import junit.framework.TestSuite;
 import org.opennms.netmgt.mock.EventAnticipator;
 import org.opennms.netmgt.mock.EventWrapper;
 import org.opennms.netmgt.mock.MockEventIpcManager;
+import org.opennms.netmgt.mock.MockLogAppender;
 import org.opennms.netmgt.mock.MockTrapdConfig;
 import org.opennms.netmgt.mock.MockUtil;
 import org.opennms.netmgt.snmp.PropertySettingTestSuite;
@@ -46,8 +47,7 @@ public class TrapHandlerTest extends TestCase {
 	int m_port = 10000; 
 
 	protected void setUp() throws Exception {
-		MockUtil.setupLogging(true);
-		MockUtil.resetLogLevel();
+		MockLogAppender.setupLogging();
 		
 		m_anticipator = new EventAnticipator();
 

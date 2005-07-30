@@ -9,7 +9,7 @@ package org.opennms.netmgt.poller.monitors;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
-import org.opennms.netmgt.mock.MockUtil;
+import org.opennms.netmgt.mock.MockLogAppender;
 import org.opennms.netmgt.snmp.PropertySettingTestSuite;
 import org.opennms.netmgt.snmp.SnmpValue;
 
@@ -32,7 +32,7 @@ public class SnmpMonitorTest extends TestCase {
     }
 
     public void setUp() {
-        MockUtil.setupLogging();
+        MockLogAppender.setupLogging();
     }
 
     public void tearDown() {

@@ -55,6 +55,7 @@ import org.opennms.netmgt.config.PollerConfigManager;
 import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.config.poller.Service;
 import org.opennms.netmgt.mock.MockDatabase;
+import org.opennms.netmgt.mock.MockLogAppender;
 import org.opennms.netmgt.mock.MockUtil;
 import org.opennms.netmgt.rrd.RrdConfig;
 import org.opennms.netmgt.rrd.RrdStrategy;
@@ -125,8 +126,7 @@ public class OpenNMSProvisionerTest extends MockObjectTestCase {
 
     protected void setUp() throws Exception {
         super.setUp();
-        MockUtil.setupLogging();
-        MockUtil.resetLogLevel();
+        MockLogAppender.setupLogging();
         MockDatabase db = new MockDatabase();
         DatabaseConnectionFactory.setInstance(db);
         
@@ -165,7 +165,7 @@ public class OpenNMSProvisionerTest extends MockObjectTestCase {
         
         DatabaseConnectionFactory.setInstance(null);
         super.tearDown();
-        assertTrue("Warnings in Log!", MockUtil.noWarningsOrHigherLogged());
+        MockLogAppender.assertNoWarningsOrGreater();
     }
 
     static class TestPollerConfigManager extends PollerConfigManager {
@@ -370,7 +370,7 @@ public class OpenNMSProvisionerTest extends MockObjectTestCase {
     }
     
     public void testStartingAndStopping() throws Exception {
-        MockUtil.setupLogging();
+        MockLogAppender.setupLogging();
         XmlRpc.debug = true;
         
         Provisioner provisioner = new Provisioner();

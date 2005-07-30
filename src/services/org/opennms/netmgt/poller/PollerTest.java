@@ -49,6 +49,7 @@ import org.opennms.netmgt.mock.MockDatabase;
 import org.opennms.netmgt.mock.MockElement;
 import org.opennms.netmgt.mock.MockEventIpcManager;
 import org.opennms.netmgt.mock.MockInterface;
+import org.opennms.netmgt.mock.MockLogAppender;
 import org.opennms.netmgt.mock.MockNetwork;
 import org.opennms.netmgt.mock.MockNode;
 import org.opennms.netmgt.mock.MockOutageConfig;
@@ -90,8 +91,7 @@ public class PollerTest extends TestCase {
         System.setProperty("mock.logLevel", "DEBUG");
         System.setProperty("mock.debug", "true");
         MockUtil.println("------------ Begin Test "+getName()+" --------------------------");
-        MockUtil.setupLogging();
-        MockUtil.resetLogLevel();
+        MockLogAppender.setupLogging();
 
         m_network = new MockNetwork();
         m_network.setCriticalService("ICMP");
@@ -159,7 +159,7 @@ public class PollerTest extends TestCase {
         m_eventMgr.finishProcessingEvents();
         stopDaemons();
         sleep(200);
-        assertTrue("Unexpected WARN or ERROR msgs in Log!", MockUtil.noWarningsOrHigherLogged());
+		MockLogAppender.assertNoWarningsOrGreater();
         DatabaseConnectionFactory.setInstance(null);
         m_db.drop();
         MockUtil.println("------------ End Test "+getName()+" --------------------------");

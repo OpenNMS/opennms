@@ -31,25 +31,41 @@
 //
 package org.opennms.netmgt.mock;
 
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Properties;
+
+import junit.framework.AssertionFailedError;
+
 import org.apache.log4j.AppenderSkeleton;
+import org.apache.log4j.Level;
+import org.apache.log4j.PropertyConfigurator;
 import org.apache.log4j.spi.LoggingEvent;
 
 /**
  * @author brozow
  */
 public class MockLogAppender extends AppenderSkeleton {
-    
+	private static List s_events = null;
+
+    private static boolean s_loggingSetup = false;
+    private static Level s_logLevel = Level.ALL;
+	
     public MockLogAppender() {
         super();
+		resetEvents();
+		resetLogLevel();
     }
     
     public synchronized void doAppend(LoggingEvent event) {
         super.doAppend(event);
-        MockUtil.receivedLogLevel(event.getLevel());
+        receivedLogLevel(event.getLevel());
     }
 
     protected void append(LoggingEvent event) {
-        // don't actually append.. We are only tracking errors
+		s_events.add(event);
     }
 
     public void close() {
@@ -58,5 +74,87 @@ public class MockLogAppender extends AppenderSkeleton {
     public boolean requiresLayout() {
         return false;
     }
+	
+	public static void resetEvents() {
+		s_events = Collections.synchronizedList(new LinkedList());
+	}
+	
+	public static LoggingEvent[] getEvents() {
+		return (LoggingEvent[]) s_events.toArray(new LoggingEvent[0]);
+	}
+	
+	public static LoggingEvent[] getEventsGreaterOrEqual(Level level) {
+		LinkedList matching = new LinkedList();
+	
+		synchronized (s_events) {
+			for (Iterator i = s_events.iterator(); i.hasNext(); ) {
+				LoggingEvent event = (LoggingEvent) i.next();
+				if (event.getLevel().isGreaterOrEqual(level)) {
+					matching.add(event);
+				}
+			}
+		}
+		
+		return (LoggingEvent[]) matching.toArray(new LoggingEvent[0]);
+	}
 
+	public static void setupLogging() {
+		setupLogging(true);
+	}
+
+    public static void setupLogging(boolean toConsole) {
+		resetLogLevel();
+        if (!s_loggingSetup) {
+            String level = System.getProperty("mock.logLevel", "DEBUG");
+            Properties logConfig = new Properties();
+
+            String consoleAppender = (toConsole ? ", CONSOLE" : "");
+
+            
+            logConfig.put("log4j.appender.CONSOLE", "org.apache.log4j.ConsoleAppender");
+            logConfig.put("log4j.appender.CONSOLE.layout", "org.apache.log4j.PatternLayout");
+            logConfig.put("log4j.appender.CONSOLE.layout.ConversionPattern", "%d %-5p [%t] %c: %m%n");
+            logConfig.put("log4j.appender.MOCK", "org.opennms.netmgt.mock.MockLogAppender");
+
+            logConfig.put("log4j.rootCategory", level+consoleAppender+", MOCK");
+            logConfig.put("log4j.org.snmp4j", "ERROR"+consoleAppender+", MOCK");
+        
+            PropertyConfigurator.configure(logConfig);
+        }
+    }
+    
+    public static void receivedLogLevel(Level level) {
+        if (level.isGreaterOrEqual(s_logLevel)) {
+            s_logLevel = level;
+        }
+    }
+	
+    public static void resetLogLevel() {
+        s_logLevel = Level.ALL;
+    }
+    
+    public static boolean noWarningsOrHigherLogged() {
+        return Level.INFO.isGreaterOrEqual(s_logLevel);
+    }
+
+	public static void assertNotGreaterOrEqual(Level level) throws AssertionFailedError {
+		LoggingEvent[] events = getEventsGreaterOrEqual(level);
+		if (events.length == 0) {
+			return;
+		}
+		
+		StringBuffer message = new StringBuffer("Log messages at or greater than the " +
+				"log level " + level.toString() + " received:");
+
+		for (int i = 0; i < events.length; i++) {
+			message.append("\n\t[" + events[0].getLevel().toString() + "] " +
+					events[0].getMessage().toString());
+		}
+		
+		throw new AssertionFailedError(message.toString());
+	}
+
+	public static void assertNoWarningsOrGreater() throws AssertionFailedError {
+		assertNotGreaterOrEqual(Level.WARN);
+	}
 }
