@@ -138,7 +138,11 @@ public class MockLogAppender extends AppenderSkeleton {
     }
 
 	public static void assertNotGreaterOrEqual(Level level) throws AssertionFailedError {
-		Thread.sleep(500);
+		try {
+			Thread.sleep(500);
+		} catch (InterruptedException e) {
+			// do nothing
+		}
 		LoggingEvent[] events = getEventsGreaterOrEqual(level);
 		if (events.length == 0) {
 			return;
