@@ -73,6 +73,10 @@
   the SNMP version argument to be one of "requested version" vs. "required".
 - Moved capsd plugins to a separate package from capsd.
 - fix namespaces issue with marshalled reports
+- Added a zoom function to the performance results page.  Click on the graph 
+  that you would like to interact with.  Then click drag for the time fram to 
+  examine. This is still in the experimental phase, it works well FireFox and 
+  IE, not with Konquerer or Safari
 
 1.2.2 to 1.2.3
 ----------------------------------------------------------------------
