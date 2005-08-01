@@ -63,7 +63,7 @@
               <attrib name="maxTime"          alias="GRP_maxTime"      type="gauge"/> 
               <attrib name="bytesSent"        alias="GRP_bytesSent"    type="counter"/> 
               <attrib name="bytesReceived"    alias="GRP_bytesRec"     type="counter"/> 
-              <attrib name="processingTime"   alias="GRP_procTime"     type="gauge"/> 
+              <attrib name="processingTime"   alias="GRP_procTime"     type="counter"/> 
               <attrib name="errorCount"       alias="GRP_errors"       type="counter"/> 
           </mbean>  
 
