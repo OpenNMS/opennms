@@ -359,7 +359,6 @@ your distribution.
   	<include name="standard.jar" />
   	<include name="jfree*.jar" />
   	<include name="jcommon*.jar" />
-  	<include name="commons-*.jar" />
   </patternset>
 
   <!-- The includes in this patternset need to match the directories in
