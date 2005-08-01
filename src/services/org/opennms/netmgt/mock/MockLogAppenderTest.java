@@ -56,58 +56,70 @@ public class MockLogAppenderTest extends TestCase {
     public void testInfo() {
         Category log = ThreadCategory.getInstance();
         log.info("An Info message");
-        assertTrue(MockLogAppender.noWarningsOrHigherLogged());
+        assertTrue("Messages were logged with a warning level or higher",
+				MockLogAppender.noWarningsOrHigherLogged());
     }
     
     public void testWarn() {
         Category log = ThreadCategory.getInstance();
         log.warn("A warn message");
-        assertFalse(MockLogAppender.noWarningsOrHigherLogged());
+        assertFalse("Messages were not logged with a warning level or higher",
+				MockLogAppender.noWarningsOrHigherLogged());
         
     }
     
     public void testError() {
         Category log = ThreadCategory.getInstance();
         log.error("An error message");
-        assertFalse(MockLogAppender.noWarningsOrHigherLogged());
+        assertFalse("Messages were not logged with a warning level or higher",
+				MockLogAppender.noWarningsOrHigherLogged());
         
     }
     
     public void testInfoWithException() {
         Category log = ThreadCategory.getInstance();
         log.info("An info message with exception", new NullPointerException());
-        assertTrue(MockLogAppender.noWarningsOrHigherLogged());
+        assertTrue("Messages were logged with a warning level or higher",
+				MockLogAppender.noWarningsOrHigherLogged());
     }
     
     public void testErrorWithException() {
         Category log = ThreadCategory.getInstance();
         log.error("An error message with exception", new NullPointerException());
-        assertFalse(MockLogAppender.noWarningsOrHigherLogged());
-        
+        assertFalse("Messages were not logged with a warning level or higher",
+				MockLogAppender.noWarningsOrHigherLogged());
     }
 	
-	public void testInfoMessage() {
+	public void testInfoMessage() throws InterruptedException {
         Category log = ThreadCategory.getInstance();
         log.info("An Info message");
-        assertTrue(MockLogAppender.noWarningsOrHigherLogged());
+		
+        assertTrue("Messages were logged with a warning level or higher",
+				MockLogAppender.noWarningsOrHigherLogged());
+
+		Thread.sleep(500);
 
 		LoggingEvent[] events = MockLogAppender.getEvents();
 		
-		assertEquals("Number of logged events expected", events.length, 1);
+		assertEquals("Number of logged events", events.length, 1);
 		
 		assertEquals("Logged event level", Level.INFO, events[0].getLevel());
 		assertEquals("Logged message", "An Info message", events[0].getMessage());
 	}
 	
-	public void testWarnLimit() {
+	public void testWarnLimit() throws InterruptedException {
         Category log = ThreadCategory.getInstance();
         log.info("An Info message");
         log.warn("A warn message");
-        assertFalse(MockLogAppender.noWarningsOrHigherLogged());
+		
+        assertFalse("Messages were not logged with a warning level or higher",
+				MockLogAppender.noWarningsOrHigherLogged());
+
+		Thread.sleep(500);
 
 		LoggingEvent[] events = MockLogAppender.getEventsGreaterOrEqual(Level.WARN);
 		
-		assertEquals("Number of logged events expected", events.length, 1);
+		assertEquals("Number of logged events", events.length, 1);
 		
 		assertEquals("Logged event level", Level.WARN, events[0].getLevel());
 		assertEquals("Logged message", "A warn message", events[0].getMessage());
@@ -117,8 +129,7 @@ public class MockLogAppenderTest extends TestCase {
         Category log = ThreadCategory.getInstance();
         log.info("An Info message");
         log.warn("A warn message");
-        assertFalse(MockLogAppender.noWarningsOrHigherLogged());
-
+ 
 		try {
 			MockLogAppender.assertNotGreaterOrEqual(Level.WARN);
 		} catch (AssertionFailedError e) {
@@ -133,7 +144,6 @@ public class MockLogAppenderTest extends TestCase {
         Category log = ThreadCategory.getInstance();
         log.info("An Info message");
         log.warn("A warn message");
-        assertFalse(MockLogAppender.noWarningsOrHigherLogged());
 
 		try {
 			MockLogAppender.assertNotGreaterOrEqual(Level.ERROR);
