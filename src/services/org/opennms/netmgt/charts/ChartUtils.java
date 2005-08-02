@@ -73,6 +73,10 @@ import org.opennms.netmgt.config.charts.Title;
  */
 public class ChartUtils {
     
+    /**
+     * Use this it initialize required factories so that the WebUI doesn't have to.  Can't
+     * wait for Spring.
+     */
     static {
         try {
             DatabaseConnectionFactory.init();
@@ -90,10 +94,25 @@ public class ChartUtils {
         }
     }
 
+    /**
+     * Logging helper method.
+     * 
+     * @return A log4j <code>Category</code>.
+     */
     private static Category log() {
         return ThreadCategory.getInstance(ChartUtils.class);
     }
 
+    /**
+     * This method will returns a JFreeChart bar chart constructed based on XML configuration.
+     * 
+     * @param chartName Name specified in chart-configuration.xml
+     * @return <code>JFreeChart</code> constructed from the chartName
+     * @throws MarshalException
+     * @throws ValidationException
+     * @throws IOException
+     * @throws SQLException
+     */
     public static JFreeChart getBarChart(String chartName) throws MarshalException, ValidationException, IOException, SQLException {
 
         BarChart chartConfig = null;
@@ -104,10 +123,18 @@ public class ChartUtils {
             throw new IllegalArgumentException("getBarChart: Invalid chart name.");
         }
         
+        /*
+         * Get a database connection and create a JDBC based data set.
+         */
         conn = DatabaseConnectionFactory.getInstance().getConnection();
         DefaultCategoryDataset baseDataSet = new DefaultCategoryDataset();
         JDBCCategoryDataset dataSet = null;
         
+        /*
+         * Configuration can contain more than one series.  This loop adds
+         * single series data sets returned from sql query to a base data set
+         * to be displayed in a the chart. 
+         */
         Iterator it = chartConfig.getSeriesDefCollection().iterator();
         while (it.hasNext()) {
             SeriesDef def = (SeriesDef) it.next();
@@ -120,6 +147,7 @@ public class ChartUtils {
             }
         }
 
+        
         PlotOrientation po = (chartConfig.getPlotOrientation() == "horizontal" ? PlotOrientation.HORIZONTAL : PlotOrientation.VERTICAL);
         
         JFreeChart barChart = ChartFactory.createBarChart(chartConfig.getTitle().getValue(),
@@ -130,7 +158,10 @@ public class ChartUtils {
                 chartConfig.getShowLegend(),
                 chartConfig.getShowToolTips(),
                 chartConfig.getShowUrls());
-                
+        
+        /*
+         * Add subtitles.
+         */
         for (it = chartConfig.getSubTitleCollection().iterator(); it.hasNext();) {
             SubTitle subTitle = (SubTitle) it.next();
             Title title = subTitle.getTitle();
@@ -138,7 +169,9 @@ public class ChartUtils {
             barChart.addSubtitle(new TextTitle(value));
         }
         
-
+        /*
+         * Set the series colors and labels
+         */
         CategoryPlot plot = barChart.getCategoryPlot();
         BarRenderer renderer = (BarRenderer)plot.getRenderer();
         
@@ -157,6 +190,15 @@ public class ChartUtils {
         
     }
     
+    /**
+     * Helper method that returns the JFreeChart to an output stream written in JPEG format.
+     * @param chartName
+     * @param out
+     * @throws MarshalException
+     * @throws ValidationException
+     * @throws IOException
+     * @throws SQLException
+     */
     public static void getBarChart(String chartName, OutputStream out) throws MarshalException, ValidationException, IOException, SQLException {
         BarChart chartConfig = getBarChartConfigByName(chartName);
         JFreeChart chart = getBarChart(chartName);
@@ -176,6 +218,16 @@ public class ChartUtils {
         
     }
     
+    /**
+     * Helper method that returns the JFreeChart as a PNG byte array.
+     * 
+     * @param chartName
+     * @return a byte array
+     * @throws MarshalException
+     * @throws ValidationException
+     * @throws IOException
+     * @throws SQLException
+     */
     public static byte[] getBarChartAsPNGByteArray(String chartName) throws MarshalException, ValidationException, IOException, SQLException {
         BarChart chartConfig = getBarChartConfigByName(chartName);
         JFreeChart chart = getBarChart(chartName);
@@ -193,6 +245,16 @@ public class ChartUtils {
         return ChartUtilities.encodeAsPNG(chart.createBufferedImage(hzPixels, vtPixels));
     }
     
+    /**
+     * Helper method used to return a JFreeChart as a buffered Image.
+     * 
+     * @param chartName
+     * @return a <code>BufferedImage</code>
+     * @throws MarshalException
+     * @throws ValidationException
+     * @throws IOException
+     * @throws SQLException
+     */
     public static BufferedImage getChartAsBufferedImage(String chartName) throws MarshalException, ValidationException, IOException, SQLException {
         BarChart chartConfig = getBarChartConfigByName(chartName);
         JFreeChart chart = getBarChart(chartName);
@@ -212,6 +274,15 @@ public class ChartUtils {
         
     }
     
+    /**
+     * Helper method used to retrieve the XML defined BarChart (castor class)
+     * 
+     * @param chartName
+     * @return a derived Castor class: BarChart
+     * @throws MarshalException
+     * @throws ValidationException
+     * @throws IOException
+     */
     public static BarChart getBarChartConfigByName(String chartName) throws MarshalException, ValidationException, IOException {
         Iterator it = getChartCollectionIterator();
         BarChart chart = null;
@@ -223,8 +294,15 @@ public class ChartUtils {
         return null;
     }
     
+    /**
+     * Helper method used to fetch an Iterator for all defined Charts
+     * 
+     * @return <code>BarChart</code> Iterator
+     * @throws IOException
+     * @throws MarshalException
+     * @throws ValidationException
+     */
     public static Iterator getChartCollectionIterator() throws IOException, MarshalException, ValidationException {
-
         return ChartConfigFactory.getInstance().getConfiguration().getBarChartCollection().iterator();
     }
     
