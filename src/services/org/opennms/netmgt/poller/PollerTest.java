@@ -291,7 +291,8 @@ public class PollerTest extends TestCase {
     }
     
     // Test harness that tests any type of node, interface or element.
-    private void testElementDeleted(MockElement element, Event deleteEvent) {
+    private void testElementDeleted(MockElement element) {
+        Event deleteEvent = element.createDeleteEvent();
         m_pollerConfig.setNodeOutageProcessingEnabled(false);
 
         PollAnticipator poll = new PollAnticipator();
@@ -318,32 +319,20 @@ public class PollerTest extends TestCase {
     
     // serviceDeleted: EventConstants.SERVICE_DELETED_EVENT_UEI
     public void testServiceDeleted() {
-
-        
         MockService svc = m_network.getService(1, "192.168.1.1", "SMTP");
-        
-        Event deleteEvent = MockUtil.createServiceDeletedEvent("Test", svc);
-        
-        testElementDeleted(svc, deleteEvent);
-        
-        
+        testElementDeleted(svc);
     }
 
     // interfaceDeleted: EventConstants.INTERFACE_DELETED_EVENT_UEI
     public void testInterfaceDeleted() {
         MockInterface iface = m_network.getInterface(1, "192.168.1.1");
-        Event deleteEvent = MockUtil.createInterfaceDeletedEvent("Test", iface);
-        testElementDeleted(iface, deleteEvent);
+        testElementDeleted(iface);
     }
 
     // nodeDeleted: EventConstants.NODE_DELETED_EVENT_UEI
     public void testNodeDeleted() {
         MockNode node = m_network.getNode(1);
-        Event deleteEvent = MockUtil.createNodeDeletedEvent("Test", node);
-
-        testElementDeleted(node, deleteEvent);
-        
-        
+        testElementDeleted(node);
     }
     
     public void testOutagesClosedOnDelete(MockElement element) {
@@ -355,7 +344,7 @@ public class PollerTest extends TestCase {
         // bring down so we create an outage in the outages table
         anticipateDown(element);
         element.bringDown();
-        verifyAnticipated(5000);
+        verifyIncomingEvents(5000);
         
         m_outageAnticipator.anticipateOutageClosed(element, deleteEvent);
 
@@ -779,11 +768,9 @@ public class PollerTest extends TestCase {
         } catch (InterruptedException e) {
         }
     }
-
+    
     private void verifyAnticipated(long millis) {
-        // make sure the down events are received
-        MockUtil.printEvents("Events we're still waiting for: ", m_anticipator.waitForAnticipated(millis));
-        assertTrue("Expected events not forthcoming", m_anticipator.waitForAnticipated(0).isEmpty());
+        verifyIncomingEvents(millis);
         sleep(2000);
         MockUtil.printEvents("Unanticipated: ", m_anticipator.unanticipatedEvents());
         assertEquals("Received unexpected events", 0, m_anticipator.unanticipatedEvents().size());
@@ -792,6 +779,12 @@ public class PollerTest extends TestCase {
         assertEquals("Wrong number of outages opened", m_outageAnticipator.getExpectedOpens(), m_outageAnticipator.getActualOpens());
         assertEquals("Wrong number of outages in outage table", m_outageAnticipator.getExpectedOutages(), m_outageAnticipator.getActualOutages());
         assertTrue("Created outages don't match the expected outages", m_outageAnticipator.checkAnticipated());
+    }
+
+    private void verifyIncomingEvents(long millis) {
+        // make sure the down events are received
+        MockUtil.printEvents("Events we're still waiting for: ", m_anticipator.waitForAnticipated(millis));
+        assertTrue("Expected events not forthcoming", m_anticipator.waitForAnticipated(0).isEmpty());
     }
 
     
