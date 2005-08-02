@@ -94,7 +94,7 @@ public class MockLogAppenderTest extends TestCase {
         Category log = ThreadCategory.getInstance();
         log.info("An Info message");
 		
-        Thread.sleep(1000);
+        Thread.sleep(10000);
 
         assertTrue("Messages were logged with a warning level or higher",
 				MockLogAppender.noWarningsOrHigherLogged());
