@@ -45,7 +45,6 @@ import org.opennms.netmgt.config.VacuumdConfigFactory;
 import org.opennms.netmgt.config.vacuumd.Action;
 import org.opennms.netmgt.config.vacuumd.Automation;
 import org.opennms.netmgt.config.vacuumd.Trigger;
-import org.opennms.netmgt.mock.MockLogAppender;
 import org.opennms.netmgt.mock.MockNode;
 import org.opennms.netmgt.mock.MockUtil;
 import org.opennms.netmgt.mock.OpenNMSTestCase;
@@ -137,7 +136,6 @@ public class VacuumdTest extends OpenNMSTestCase {
     }
 
     protected void tearDown() throws Exception {
-        MockLogAppender.assertNoWarningsOrGreater();
         super.tearDown();
         MockUtil.println("Sleeping for "+m_tearDownWaitMillis+" millis in tearDown...");
         Thread.sleep(m_tearDownWaitMillis);

@@ -1439,7 +1439,6 @@ public class OpenNMSTestCase extends TestCase {
     protected void tearDown() throws Exception {
         if(m_runSupers) {
             if (isStartEventd()) m_eventd.stop();
-            m_db.drop();
         }
         MockLogAppender.assertNoWarningsOrGreater();
         MockUtil.println("------------ End Test "+getName()+" --------------------------");
