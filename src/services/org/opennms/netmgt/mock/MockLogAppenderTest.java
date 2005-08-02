@@ -94,14 +94,14 @@ public class MockLogAppenderTest extends TestCase {
         Category log = ThreadCategory.getInstance();
         log.info("An Info message");
 		
+        Thread.sleep(1000);
+
         assertTrue("Messages were logged with a warning level or higher",
 				MockLogAppender.noWarningsOrHigherLogged());
 
-		Thread.sleep(500);
-
 		LoggingEvent[] events = MockLogAppender.getEvents();
 		
-		assertEquals("Number of logged events", events.length, 1);
+		assertEquals("Number of logged events", 1, events.length);
 		
 		assertEquals("Logged event level", Level.INFO, events[0].getLevel());
 		assertEquals("Logged message", "An Info message", events[0].getMessage());
@@ -112,14 +112,14 @@ public class MockLogAppenderTest extends TestCase {
         log.info("An Info message");
         log.warn("A warn message");
 		
+        Thread.sleep(1000);
+
         assertFalse("Messages were not logged with a warning level or higher",
 				MockLogAppender.noWarningsOrHigherLogged());
 
-		Thread.sleep(500);
-
 		LoggingEvent[] events = MockLogAppender.getEventsGreaterOrEqual(Level.WARN);
 		
-		assertEquals("Number of logged events", events.length, 1);
+		assertEquals("Number of logged events", 1, events.length);
 		
 		assertEquals("Logged event level", Level.WARN, events[0].getLevel());
 		assertEquals("Logged message", "A warn message", events[0].getMessage());
