@@ -344,13 +344,13 @@ public class PollerTest extends TestCase {
         // bring down so we create an outage in the outages table
         anticipateDown(element);
         element.bringDown();
-        verifyIncomingEvents(5000);
+        verifyAnticipated(5000, false);
         
         m_outageAnticipator.anticipateOutageClosed(element, deleteEvent);
 
         // now delete the service 
-        m_network.removeElement(element);
         m_eventMgr.sendEventToListeners(deleteEvent);
+        m_network.removeElement(element);
         
         verifyAnticipated(5000);
 
@@ -769,11 +769,19 @@ public class PollerTest extends TestCase {
         }
     }
     
+    
     private void verifyAnticipated(long millis) {
-        verifyIncomingEvents(millis);
-        sleep(2000);
-        MockUtil.printEvents("Unanticipated: ", m_anticipator.unanticipatedEvents());
-        assertEquals("Received unexpected events", 0, m_anticipator.unanticipatedEvents().size());
+        verifyAnticipated(millis, true);
+    }
+    private void verifyAnticipated(long millis, boolean checkUnanticapted) {
+        // make sure the down events are received
+        MockUtil.printEvents("Events we're still waiting for: ", m_anticipator.waitForAnticipated(millis));
+        assertTrue("Expected events not forthcoming", m_anticipator.waitForAnticipated(0).isEmpty());
+        if (checkUnanticapted) {
+            sleep(2000);
+            MockUtil.printEvents("Unanticipated: ", m_anticipator.unanticipatedEvents());
+            assertEquals("Received unexpected events", 0, m_anticipator.unanticipatedEvents().size());
+        }
         sleep(1000);
         m_eventMgr.finishProcessingEvents();
         assertEquals("Wrong number of outages opened", m_outageAnticipator.getExpectedOpens(), m_outageAnticipator.getActualOpens());
@@ -781,13 +789,6 @@ public class PollerTest extends TestCase {
         assertTrue("Created outages don't match the expected outages", m_outageAnticipator.checkAnticipated());
     }
 
-    private void verifyIncomingEvents(long millis) {
-        // make sure the down events are received
-        MockUtil.printEvents("Events we're still waiting for: ", m_anticipator.waitForAnticipated(millis));
-        assertTrue("Expected events not forthcoming", m_anticipator.waitForAnticipated(0).isEmpty());
-    }
-
-    
     private void anticipateUp(MockElement element) {
         anticipateUp(element, false);
     }
