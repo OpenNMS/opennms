@@ -115,6 +115,8 @@ public class MockLogAppender extends AppenderSkeleton {
             logConfig.put("log4j.appender.CONSOLE.layout", "org.apache.log4j.PatternLayout");
             logConfig.put("log4j.appender.CONSOLE.layout.ConversionPattern", "%d %-5p [%t] %c: %m%n");
             logConfig.put("log4j.appender.MOCK", "org.opennms.netmgt.mock.MockLogAppender");
+            logConfig.put("log4j.appender.MOCK.layout", "org.apache.log4j.PatternLayout");
+            logConfig.put("log4j.appender.MOCK.layout.ConversionPattern", "%-5p [%t] %c: %m%n");
 
             logConfig.put("log4j.rootCategory", level+consoleAppender+", MOCK");
             logConfig.put("log4j.org.snmp4j", "ERROR"+consoleAppender+", MOCK");
@@ -152,7 +154,7 @@ public class MockLogAppender extends AppenderSkeleton {
 				"log level " + level.toString() + " received:");
 
 		for (int i = 0; i < events.length; i++) {
-			message.append("\n\t[" + events[0].getLevel().toString() + "] " + events[0].fqnOfCategoryClass +": " +
+			message.append("\n\t[" + events[0].getLevel().toString() + "] " + events[0].getLoggerName() +": " +
 					events[0].getMessage());
 		}
 		
