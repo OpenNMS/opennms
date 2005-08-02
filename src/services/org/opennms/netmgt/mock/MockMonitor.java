@@ -69,7 +69,7 @@ public class MockMonitor implements ServiceMonitor {
             if (svc == null) {
                 MockUtil.println("Invalid Poll: " + ipAddr + "/" + m_svcName);
                 m_network.receivedInvalidPoll(ipAddr, m_svcName);
-                throw new RuntimeException("Invalid poll ipAddr is not part of the package");
+                throw new RuntimeException("Invalid poll "+ipAddr+" is not part of the package");
             } else {
                 MockUtil.println("Poll: [" + svc.getInterface().getNode().getLabel() + "/" + ipAddr + "/" + m_svcName + "]");
                 return svc.poll(pkg);
