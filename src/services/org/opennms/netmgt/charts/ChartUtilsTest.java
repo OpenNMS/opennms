@@ -49,7 +49,6 @@ import org.jfree.chart.JFreeChart;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.ChartConfigFactory;
 import org.opennms.netmgt.config.charts.BarChart;
-import org.opennms.netmgt.config.charts.ChartConfiguration;
 import org.opennms.netmgt.mock.OpenNMSTestCase;
 
 
@@ -59,67 +58,43 @@ public class ChartUtilsTest extends OpenNMSTestCase {
     private static final String CHART_CONFIG = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + 
             "<tns:chart-configuration xmlns:tns=\"http://xmlns.opennms.org/xsd/config/charts\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://xmlns.opennms.org/xsd/config/charts ../src/services/org/opennms/netmgt/config/chart-configuration.xsd \">\n" + 
             "\n" + 
-            "  <tns:bar-chart name=\"sample-bar-chart\" variation=\"2d\" domain-axis-label=\"domain label\" show-legend=\"true\" plot-orientation=\"vertical\" draw-bar-outline=\"true\" range-axis-label=\"range label\" show-urls=\"false\"\n" + 
-            "      show-tool-tips=\"false\">\n" + 
+            "  <tns:bar-chart name=\"sample-bar-chart\" \n" + 
+            "   variation=\"2d\" \n" + 
+            "   domain-axis-label=\"Severity\" \n" + 
+            "   show-legend=\"true\" \n" + 
+            "   plot-orientation=\"vertical\" \n" + 
+            "   draw-bar-outline=\"true\" \n" + 
+            "   range-axis-label=\"Count\" \n" + 
+            "   show-urls=\"false\"\n" + 
+            "    show-tool-tips=\"false\">\n" + 
             "      \n" + 
-            "      <tns:jdbc-data-set db-name=\"opennms\" sql=\"select severity, count(*) from alarms group by severity\" />\n" + 
-            "      \n" + 
-            "      <tns:title font=\"SansSerif\" style=\"\" value=\"Sample Bar Chart\" pitch=\"12\" />\n" + 
-            "      \n" + 
-            "      <tns:image-size>\n" + 
-            "        <tns:hz-size>\n" + 
-            "          <tns:pixels>300</tns:pixels>\n" + 
-            "        </tns:hz-size>\n" + 
-            "        <tns:vt-size>\n" + 
-            "          <tns:pixels>300</tns:pixels>\n" + 
-            "        </tns:vt-size>\n" + 
-            "      </tns:image-size>\n" + 
-            "      \n" +
-            "      <tns:sub-title position=\"top\" horizontal-alignment=\"center\">\n" + 
-            "          <tns:title font=\"SansSerif\" style=\"\" value=\"Sample SubTitle\" pitch=\"10\" />\n" + 
-            "      </tns:sub-title>\n" + 
-            "      \n" + 
-            "      <tns:grid-lines visible=\"true\">\n" + 
-            "          <tns:rgb>\n" + 
-            "              <tns:red>\n" + 
-            "                  <tns:rgb-color>255</tns:rgb-color>\n" + 
-            "              </tns:red>\n" + 
-            "              <tns:green>\n" + 
-            "                  <tns:rgb-color>255</tns:rgb-color>\n" + 
-            "              </tns:green>\n" + 
-            "              <tns:blue>\n" + 
-            "                  <tns:rgb-color>255</tns:rgb-color>\n" + 
-            "              </tns:blue>\n" + 
-            "          </tns:rgb>\n" + 
-            "      </tns:grid-lines>\n" + 
-            "      \n" + 
-            "    <tns:series-def number=\"1\">\n" + 
-            "      <tns:rgb>\n" + 
-            "        <tns:red>\n" + 
-            "          <tns:rgb-color>255</tns:rgb-color>\n" + 
-            "        </tns:red>\n" + 
-            "        <tns:green>\n" + 
-            "          <tns:rgb-color>0</tns:rgb-color>\n" + 
-            "        </tns:green>\n" + 
-            "        <tns:blue>\n" + 
-            "          <tns:rgb-color>0</tns:rgb-color>\n" + 
-            "        </tns:blue>\n" + 
-            "      </tns:rgb>\n" + 
-            "    </tns:series-def>\n" + 
-            "    <tns:series-def number=\"2\">\n" + 
-            "      <tns:rgb>\n" + 
-            "        <tns:red>\n" + 
-            "          <tns:rgb-color>255</tns:rgb-color>\n" + 
-            "        </tns:red>\n" + 
-            "        <tns:green>\n" + 
-            "          <tns:rgb-color>200</tns:rgb-color>\n" + 
-            "        </tns:green>\n" + 
-            "        <tns:blue>\n" + 
-            "          <tns:rgb-color>0</tns:rgb-color>\n" + 
-            "        </tns:blue>\n" + 
-            "      </tns:rgb>\n" + 
-            "    </tns:series-def>\n" + 
-            "    <tns:series-def number=\"3\">\n" + 
+            "    <tns:title font=\"SansSerif\" style=\"\" value=\"Alarms\" pitch=\"12\" />\n" + 
+            "    <tns:image-size>\n" + 
+            "      <tns:hz-size>\n" + 
+            "        <tns:pixels>300</tns:pixels>\n" + 
+            "      </tns:hz-size>\n" + 
+            "      <tns:vt-size>\n" + 
+            "        <tns:pixels>300</tns:pixels>\n" + 
+            "      </tns:vt-size>\n" + 
+            "    </tns:image-size>\n" + 
+            "    <tns:sub-title position=\"top\" horizontal-alignment=\"center\">\n" + 
+            "           <tns:title font=\"SansSerif\" style=\"\" value=\"Severity Chart\" pitch=\"10\" />\n" + 
+            "    </tns:sub-title>\n" + 
+            "    <tns:grid-lines visible=\"true\">\n" + 
+            "        <tns:rgb>\n" + 
+            "            <tns:red>\n" + 
+            "                <tns:rgb-color>255</tns:rgb-color>\n" + 
+            "            </tns:red>\n" + 
+            "            <tns:green>\n" + 
+            "                <tns:rgb-color>255</tns:rgb-color>\n" + 
+            "            </tns:green>\n" + 
+            "            <tns:blue>\n" + 
+            "                <tns:rgb-color>255</tns:rgb-color>\n" + 
+            "            </tns:blue>\n" + 
+            "        </tns:rgb>\n" + 
+            "    </tns:grid-lines>\n" + 
+            "    <tns:series-def number=\"1\" series-name=\"Events\" use-labels=\"true\" >\n" + 
+            "     <tns:jdbc-data-set db-name=\"opennms\" sql=\"select eventseverity, count(*) from events where eventseverity &gt; 4 group by eventseverity\" />\n" + 
             "      <tns:rgb>\n" + 
             "        <tns:red>\n" + 
             "          <tns:rgb-color>255</tns:rgb-color>\n" + 
@@ -132,11 +107,24 @@ public class ChartUtilsTest extends OpenNMSTestCase {
             "        </tns:blue>\n" + 
             "      </tns:rgb>\n" + 
             "    </tns:series-def>\n" + 
-            "" +
+            "    <tns:series-def number=\"1\" series-name=\"Alarms\" use-labels=\"true\" >\n" + 
+            "     <tns:jdbc-data-set db-name=\"opennms\" sql=\"select severity, count(*) from alarms where severity &gt; 4 group by severity\" />\n" + 
+            "      <tns:rgb>\n" + 
+            "        <tns:red>\n" + 
+            "          <tns:rgb-color>255</tns:rgb-color>\n" + 
+            "        </tns:red>\n" + 
+            "        <tns:green>\n" + 
+            "          <tns:rgb-color>0</tns:rgb-color>\n" + 
+            "        </tns:green>\n" + 
+            "        <tns:blue>\n" + 
+            "          <tns:rgb-color>0</tns:rgb-color>\n" + 
+            "        </tns:blue>\n" + 
+            "      </tns:rgb>\n" + 
+            "    </tns:series-def>\n" + 
             "  </tns:bar-chart>\n" + 
             "</tns:chart-configuration>\n" + 
             "";
-    private ChartConfiguration m_config;
+//    private ChartConfiguration m_config;
 
     protected void setUp() throws Exception {
         super.setUp();
@@ -188,7 +176,7 @@ public class ChartUtilsTest extends OpenNMSTestCase {
         Reader rdr = new StringReader(CHART_CONFIG);
         ChartConfigFactory.parseXml(rdr);
         rdr.close();        
-        m_config = ChartConfigFactory.getInstance().getConfiguration();
+//        m_config = ChartConfigFactory.getInstance().getConfiguration();
     }
 
     private Category log() {

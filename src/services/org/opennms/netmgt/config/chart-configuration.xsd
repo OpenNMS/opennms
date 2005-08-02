@@ -75,7 +75,6 @@ TODO: XYDataSets
     <element name="bar-chart" >
     		<complexType>
     			<sequence>
-    				<element ref="this:jdbc-data-set" minOccurs="1" maxOccurs="1" />
     				<element ref="this:title" minOccurs="1" maxOccurs="1" />
     				<element ref="this:image-size" minOccurs="1" maxOccurs="1" />
     				<element ref="this:sub-title" minOccurs="0" maxOccurs="unbounded" />
@@ -109,9 +108,12 @@ TODO: XYDataSets
     <element name="series-def" >
     		<complexType>
     			<sequence>
+    				<element ref="this:jdbc-data-set" minOccurs="1" maxOccurs="1" />
 	    			<element ref="this:rgb" minOccurs="0" maxOccurs="1" />
 	    		</sequence>
 	    		<attribute name="number" type="positiveInteger" use="required" />
+	    		<attribute name="series-name" type="string" use="required" />
+	    		<attribute name="use-labels" type="boolean" use="optional" default="true" />
     		</complexType>
     </element>
     

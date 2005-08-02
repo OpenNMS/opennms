@@ -11,14 +11,13 @@
   	show-urls="false"
     show-tool-tips="false">
       
-    <tns:jdbc-data-set db-name="opennms" sql="select severity, count(*) as count from alarms group by severity order by count desc" />
     <tns:title font="SansSerif" style="" value="Alarms" pitch="12" />
     <tns:image-size>
       <tns:hz-size>
-        <tns:pixels>300</tns:pixels>
+        <tns:pixels>400</tns:pixels>
       </tns:hz-size>
       <tns:vt-size>
-        <tns:pixels>300</tns:pixels>
+        <tns:pixels>400</tns:pixels>
       </tns:vt-size>
     </tns:image-size>
     <tns:sub-title position="top" horizontal-alignment="center">
@@ -37,39 +36,28 @@
             </tns:blue>
         </tns:rgb>
     </tns:grid-lines>
-    <tns:series-def number="1">
+    <tns:series-def number="1" series-name="Events" use-labels="true" >
+	  <tns:jdbc-data-set db-name="opennms" sql="select eventseverity, count(*) as count from events where eventseverity &gt; 4 group by eventseverity order by count desc" />
       <tns:rgb>
         <tns:red>
           <tns:rgb-color>255</tns:rgb-color>
         </tns:red>
         <tns:green>
-          <tns:rgb-color>0</tns:rgb-color>
+          <tns:rgb-color>255</tns:rgb-color>
         </tns:green>
         <tns:blue>
           <tns:rgb-color>0</tns:rgb-color>
         </tns:blue>
       </tns:rgb>
     </tns:series-def>
-    <tns:series-def number="2">
+    <tns:series-def number="1" series-name="Alarms" use-labels="true" >
+	  <tns:jdbc-data-set db-name="opennms" sql="select severity, count(*) as count from alarms where severity &gt; 4 group by severity order by count desc" />
       <tns:rgb>
         <tns:red>
           <tns:rgb-color>255</tns:rgb-color>
         </tns:red>
         <tns:green>
-          <tns:rgb-color>200</tns:rgb-color>
-        </tns:green>
-        <tns:blue>
           <tns:rgb-color>0</tns:rgb-color>
-        </tns:blue>
-      </tns:rgb>
-    </tns:series-def>
-    <tns:series-def number="3">
-      <tns:rgb>
-        <tns:red>
-          <tns:rgb-color>255</tns:rgb-color>
-        </tns:red>
-        <tns:green>
-          <tns:rgb-color>255</tns:rgb-color>
         </tns:green>
         <tns:blue>
           <tns:rgb-color>0</tns:rgb-color>

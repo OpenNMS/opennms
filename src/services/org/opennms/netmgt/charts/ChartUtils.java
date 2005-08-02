@@ -49,11 +49,13 @@ import org.exolab.castor.xml.ValidationException;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartUtilities;
 import org.jfree.chart.JFreeChart;
+import org.jfree.chart.labels.CategoryItemLabelGenerator;
+import org.jfree.chart.labels.StandardCategoryItemLabelGenerator;
 import org.jfree.chart.plot.CategoryPlot;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.renderer.category.BarRenderer;
 import org.jfree.chart.title.TextTitle;
-import org.jfree.data.category.CategoryDataset;
+import org.jfree.data.category.DefaultCategoryDataset;
 import org.jfree.data.jdbc.JDBCCategoryDataset;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.ChartConfigFactory;
@@ -96,7 +98,6 @@ public class ChartUtils {
 
         BarChart chartConfig = null;
         Connection conn = null;
-        CategoryDataset dataSet = null;
         chartConfig = getBarChartConfigByName(chartName);
         
         if (chartConfig == null) {
@@ -104,20 +105,33 @@ public class ChartUtils {
         }
         
         conn = DatabaseConnectionFactory.getInstance().getConnection();
-        dataSet = new JDBCCategoryDataset(conn, chartConfig.getJdbcDataSet().getSql());
+        DefaultCategoryDataset baseDataSet = new DefaultCategoryDataset();
+        JDBCCategoryDataset dataSet = null;
         
+        Iterator it = chartConfig.getSeriesDefCollection().iterator();
+        while (it.hasNext()) {
+            SeriesDef def = (SeriesDef) it.next();
+            dataSet = new JDBCCategoryDataset(conn, def.getJdbcDataSet().getSql());
+            
+            for (int i = 0; i < dataSet.getRowCount(); i++) {
+                for (int j = 0; j < dataSet.getColumnCount(); j++) {
+                    baseDataSet.addValue(dataSet.getValue(i, j), def.getSeriesName(), dataSet.getColumnKey(j));
+                }
+            }
+        }
+
         PlotOrientation po = (chartConfig.getPlotOrientation() == "horizontal" ? PlotOrientation.HORIZONTAL : PlotOrientation.VERTICAL);
         
         JFreeChart barChart = ChartFactory.createBarChart(chartConfig.getTitle().getValue(),
                 chartConfig.getDomainAxisLabel(),
                 chartConfig.getRangeAxisLabel(),
-                dataSet,
+                baseDataSet,
                 po,
                 chartConfig.getShowLegend(),
                 chartConfig.getShowToolTips(),
                 chartConfig.getShowUrls());
-        
-        for (Iterator it = chartConfig.getSubTitleCollection().iterator(); it.hasNext();) {
+                
+        for (it = chartConfig.getSubTitleCollection().iterator(); it.hasNext();) {
             SubTitle subTitle = (SubTitle) it.next();
             Title title = subTitle.getTitle();
             String value = title.getValue();
@@ -128,13 +142,15 @@ public class ChartUtils {
         CategoryPlot plot = barChart.getCategoryPlot();
         BarRenderer renderer = (BarRenderer)plot.getRenderer();
         
-
+        CategoryItemLabelGenerator generator = new StandardCategoryItemLabelGenerator();
         SeriesDef[] seriesDefs = chartConfig.getSeriesDef();
         for (int i = 0; i < seriesDefs.length; i++) {
             SeriesDef seriesDef = seriesDefs[i];
             Rgb rgb = seriesDef.getRgb();
-            Paint paint = new Color(rgb.getRed().getRgbColor(), rgb.getBlue().getRgbColor(), rgb.getGreen().getRgbColor());
+            Paint paint = new Color(rgb.getRed().getRgbColor(), rgb.getGreen().getRgbColor(), rgb.getBlue().getRgbColor());
             renderer.setSeriesPaint(i, paint);
+            if (seriesDef.getUseLabels())
+                renderer.setSeriesItemLabelGenerator(i, generator);
         }
 
         return barChart;
