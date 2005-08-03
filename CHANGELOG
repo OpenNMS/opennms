@@ -1,5 +1,7 @@
 1.2.3 to 1.2.4
 ----------------------------------------------------------------------
+- Made a change to prevent duplicate "Update SNMP" links.
+  Bug 1256. Thx Bill.
 - Modified the HttpPlugin to handle replies with a newline.
   Bug 1214. Thx Tobey
 - Added the ability to include %descr% tags in notifications

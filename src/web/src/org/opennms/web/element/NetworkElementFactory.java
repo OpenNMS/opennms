@@ -703,9 +703,10 @@ public class NetworkElementFactory extends Object {
                 rs.close();
                 pstmt.close();
 
-                pstmt = conn.prepareStatement("SELECT issnmpprimary FROM ipinterface WHERE nodeid=? AND ifindex=?");
+                pstmt = conn.prepareStatement("SELECT issnmpprimary FROM ipinterface WHERE nodeid=? AND ifindex=? AND ipaddr=?");
                 pstmt.setInt(1, intfs[i].getNodeId());
                 pstmt.setInt(2, intfs[i].getIfIndex());
+		pstmt.setString(3, intfs[i].getIpAddress());
 
                 rs = pstmt.executeQuery();
 
