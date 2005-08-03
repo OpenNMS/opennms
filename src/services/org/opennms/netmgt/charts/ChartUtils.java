@@ -41,6 +41,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.text.DecimalFormat;
 import java.util.Iterator;
 
 import org.apache.log4j.Category;
@@ -128,7 +129,6 @@ public class ChartUtils {
          */
         conn = DatabaseConnectionFactory.getInstance().getConnection();
         DefaultCategoryDataset baseDataSet = new DefaultCategoryDataset();
-        JDBCCategoryDataset dataSet = null;
         
         /*
          * Configuration can contain more than one series.  This loop adds
@@ -138,7 +138,7 @@ public class ChartUtils {
         Iterator it = chartConfig.getSeriesDefCollection().iterator();
         while (it.hasNext()) {
             SeriesDef def = (SeriesDef) it.next();
-            dataSet = new JDBCCategoryDataset(conn, def.getJdbcDataSet().getSql());
+            JDBCCategoryDataset dataSet = new JDBCCategoryDataset(conn, def.getJdbcDataSet().getSql());
             
             for (int i = 0; i < dataSet.getRowCount(); i++) {
                 for (int j = 0; j < dataSet.getColumnCount(); j++) {
@@ -175,15 +175,16 @@ public class ChartUtils {
         CategoryPlot plot = barChart.getCategoryPlot();
         BarRenderer renderer = (BarRenderer)plot.getRenderer();
         
-        CategoryItemLabelGenerator generator = new StandardCategoryItemLabelGenerator();
+        CategoryItemLabelGenerator generator = new StandardCategoryItemLabelGenerator("{2}", new DecimalFormat("0"));
         SeriesDef[] seriesDefs = chartConfig.getSeriesDef();
+
         for (int i = 0; i < seriesDefs.length; i++) {
             SeriesDef seriesDef = seriesDefs[i];
             Rgb rgb = seriesDef.getRgb();
             Paint paint = new Color(rgb.getRed().getRgbColor(), rgb.getGreen().getRgbColor(), rgb.getBlue().getRgbColor());
             renderer.setSeriesPaint(i, paint);
-            if (seriesDef.getUseLabels())
-                renderer.setSeriesItemLabelGenerator(i, generator);
+            renderer.setSeriesItemLabelsVisible(i, seriesDef.getUseLabels());
+            renderer.setSeriesItemLabelGenerator(i, generator);
         }
 
         return barChart;
