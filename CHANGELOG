@@ -1,5 +1,7 @@
 1.2.3 to 1.2.4
 ----------------------------------------------------------------------
+- Display notification totals for both the logged in user and everyone
+  else. Bug 1257. Thx Bill.
 - Made a change to prevent duplicate "Update SNMP" links.
   Bug 1256. Thx Bill.
 - Modified the HttpPlugin to handle replies with a newline.
