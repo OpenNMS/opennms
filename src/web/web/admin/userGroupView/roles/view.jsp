@@ -41,6 +41,7 @@
 
 <%@page language="java" contentType="text/html" session="true"%>
 <%@ taglib uri="http://java.sun.com/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jstl/fmt" prefix="fmt" %>
 <html>
 <head>
 <title>View Role | Role Admin | OpenNMS Web Console</title>
@@ -52,6 +53,14 @@
 
 	function changeDisplay() {
 		document.displayForm.submit();
+	}
+	
+	function prevMonth() {
+		document.prevMonthForm.submit();
+	}
+	
+	function nextMonth() {
+		document.nextMonthForm.submit();
 	}
 
 </script>
@@ -136,16 +145,60 @@
 			<c:set var="monthlySelected">
 				<c:if test='${param.display == "monthly"}'>selected</c:if>
 			</c:set>
+			<!-- 
 			<select name="display" onchange="changeDisplay()">
 				  <option value="weekly" <c:out value='${weeklySelected}'/>>Weekly</option>
 				  <option value="monthly" <c:out value='${monthlySelected}'/>>Monthly</option>
 			</select>
+			 -->
 		</form>
 		</td>
 	</tr>
 	<tr>
-		<td>&nbsp;</td>
-				
+		<td>&nbsp;
+				<form action="<c:url value='${reqUrl}'/>" method="POST" name="prevMonthForm">
+					<input type="hidden" name="operation" value="view"/>
+					<input type="hidden" name="role" value="<c:out value='${role.name}'/>"/>
+					<input type="hidden" name="month" value="<fmt:formatDate value='${calendar.previousMonth}' type='date' pattern='MM-yyyy'/>"/>
+					<!--  <input type="submit" value="Previous Month" />  -->
+				</form>
+				<form action="<c:url value='${reqUrl}'/>" method="POST" name="nextMonthForm">
+					<input type="hidden" name="operation" value="view"/>
+					<input type="hidden" name="role" value="<c:out value='${role.name}'/>"/>
+					<input type="hidden" name="month" value="<fmt:formatDate value='${calendar.nextMonth}' type='date' pattern='MM-yyyy'/>"/>
+					<!--  <input type="submit" value="Next Month" />  -->
+				</form>
+			</td>
+		<td colspan="4">
+			<table  border="1" cellspacing="0" cellpadding="2" bordercolor="black">
+			<caption>
+				<a href="javascript:prevMonth()">&lt;&lt;&lt;</a>&nbsp;
+				<B><c:out value="${calendar.monthAndYear}"/></B>&nbsp;
+				<a href="javascript:nextMonth()">&gt;&gt;&gt;</a>
+			</caption>
+				<tr>
+				<c:forEach var="day" items="${calendar.weeks[0].days}">
+				<th bgcolor="#999999">
+					<b><c:out value="${day.dayOfWeek}"/></b>
+				</th>
+				</c:forEach>
+				</tr>
+				<c:forEach var="week" items="${calendar.weeks}">
+				<tr>
+					<c:forEach var="day" items="${week.days}">
+					<td>
+					<c:if test="${calendar.month == day.month}">
+						<b><c:out value="${day.dayOfMonth}"/></b><br/>
+						<c:forEach var="entry" items="${day.entries}">
+							<fmt:formatDate value="${entry.startTime}" type="time" pattern="h:mm'&nbsp;'a"/>:&nbsp;<c:out value="${entry.description}"/><br/>
+						</c:forEach>
+					</c:if>
+					</td>
+					</c:forEach>
+				</tr>
+				</c:forEach>
+			</table>
+		</td>				
 	</tr>
 </table>
 <br/>

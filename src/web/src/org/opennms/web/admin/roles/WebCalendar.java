@@ -33,61 +33,14 @@ package org.opennms.web.admin.roles;
 
 import java.util.Date;
 
-public class WebRole {
+public interface WebCalendar {
     
-    private String m_name;
-    private String m_description;
-    private String m_defaultUser;
-    private String m_membershipGroup;
+    public String getMonthAndYear(); 
     
-    private static int sm_count = 1;
+    public Date getPreviousMonth();
     
-    public WebRole() {
-        int count = sm_count++;
-        m_name = "onCall"+count;
-        m_description = "The "+count+"th on call role";
-        m_defaultUser = "defaultUser"+count;
-        m_membershipGroup = "membershipGroup"+count;
-    }
+    public Date getNextMonth();
     
-    public String getDefaultUser() {
-        return m_defaultUser;
-    }
-    public void setDefaultUser(String defaultUser) {
-        m_defaultUser = defaultUser;
-    }
-    public String getDescription() {
-        return m_description;
-    }
-    public void setDescription(String description) {
-        m_description = description;
-    }
-    public String getMembershipGroup() {
-        return m_membershipGroup;
-    }
-    public void setMembershipGroup(String memberShipGroup) {
-        m_membershipGroup = memberShipGroup;
-    }
-    public String getName() {
-        return m_name;
-    }
-    public void setName(String name) {
-        m_name = name;
-    }
-    public String getCurrentUser() {
-        return getDefaultUser();
-    }
-    
-    public WebCalendar getWeeklyCalendar() {
-        return null;
-    }
-    
-    public WebCalendar getMonthlyCalendar() {
-        return getMonthlyCalendar(new Date());
-    }
-
-    public WebCalendar getMonthlyCalendar(Date month) {
-        return new MonthlyCalendar(month);
-    }
+    public Week[] getWeeks();
 
 }

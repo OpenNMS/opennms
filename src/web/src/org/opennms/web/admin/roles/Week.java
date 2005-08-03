@@ -31,63 +31,33 @@
 //
 package org.opennms.web.admin.roles;
 
+import java.util.Calendar;
 import java.util.Date;
 
-public class WebRole {
+public class Week {
     
-    private String m_name;
-    private String m_description;
-    private String m_defaultUser;
-    private String m_membershipGroup;
-    
-    private static int sm_count = 1;
-    
-    public WebRole() {
-        int count = sm_count++;
-        m_name = "onCall"+count;
-        m_description = "The "+count+"th on call role";
-        m_defaultUser = "defaultUser"+count;
-        m_membershipGroup = "membershipGroup"+count;
+    private Calendar m_calendar;
+
+    public Week(Calendar weekBegin) {
+        m_calendar = weekBegin;
     }
     
-    public String getDefaultUser() {
-        return m_defaultUser;
-    }
-    public void setDefaultUser(String defaultUser) {
-        m_defaultUser = defaultUser;
-    }
-    public String getDescription() {
-        return m_description;
-    }
-    public void setDescription(String description) {
-        m_description = description;
-    }
-    public String getMembershipGroup() {
-        return m_membershipGroup;
-    }
-    public void setMembershipGroup(String memberShipGroup) {
-        m_membershipGroup = memberShipGroup;
-    }
-    public String getName() {
-        return m_name;
-    }
-    public void setName(String name) {
-        m_name = name;
-    }
-    public String getCurrentUser() {
-        return getDefaultUser();
-    }
-    
-    public WebCalendar getWeeklyCalendar() {
-        return null;
-    }
-    
-    public WebCalendar getMonthlyCalendar() {
-        return getMonthlyCalendar(new Date());
+    public Week(Date date) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        m_calendar = calendar;
     }
 
-    public WebCalendar getMonthlyCalendar(Date month) {
-        return new MonthlyCalendar(month);
+    public int getWeekOfYear() { return m_calendar.get(Calendar.WEEK_OF_YEAR); }
+    
+    public Day[] getDays() {
+        Calendar day = (Calendar)m_calendar.clone();
+        Day days[] = new Day[7];
+        for(int i = 0; i < 7; i++) {
+            days[i] = new Day(day.getTime());
+            day.add(Calendar.DAY_OF_YEAR, 1);
+        }
+        return days;
     }
 
 }

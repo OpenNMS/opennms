@@ -31,63 +31,48 @@
 //
 package org.opennms.web.admin.roles;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class WebRole {
-    
-    private String m_name;
-    private String m_description;
-    private String m_defaultUser;
-    private String m_membershipGroup;
-    
-    private static int sm_count = 1;
-    
-    public WebRole() {
-        int count = sm_count++;
-        m_name = "onCall"+count;
-        m_description = "The "+count+"th on call role";
-        m_defaultUser = "defaultUser"+count;
-        m_membershipGroup = "membershipGroup"+count;
-    }
-    
-    public String getDefaultUser() {
-        return m_defaultUser;
-    }
-    public void setDefaultUser(String defaultUser) {
-        m_defaultUser = defaultUser;
-    }
-    public String getDescription() {
-        return m_description;
-    }
-    public void setDescription(String description) {
-        m_description = description;
-    }
-    public String getMembershipGroup() {
-        return m_membershipGroup;
-    }
-    public void setMembershipGroup(String memberShipGroup) {
-        m_membershipGroup = memberShipGroup;
-    }
-    public String getName() {
-        return m_name;
-    }
-    public void setName(String name) {
-        m_name = name;
-    }
-    public String getCurrentUser() {
-        return getDefaultUser();
-    }
-    
-    public WebCalendar getWeeklyCalendar() {
-        return null;
-    }
-    
-    public WebCalendar getMonthlyCalendar() {
-        return getMonthlyCalendar(new Date());
+import junit.framework.TestCase;
+
+public class MonthlyCalendarTest extends TestCase {
+
+
+    protected void setUp() throws Exception {
+        super.setUp();
     }
 
-    public WebCalendar getMonthlyCalendar(Date month) {
-        return new MonthlyCalendar(month);
+    protected void tearDown() throws Exception {
+        super.tearDown();
+    }
+    
+    public void testWeekCount() throws Exception {
+        Date aug3 = getDate("2005-08-03");
+        MonthlyCalendar calendar = new MonthlyCalendar(aug3);
+        assertEquals(5, calendar.getWeeks().length);
+        
+        Date july17 = getDate("2005-07-17");
+        calendar = new MonthlyCalendar(july17);
+        assertEquals(6, calendar.getWeeks().length);
+        
+        Date may27 = getDate("2005-05-27");
+        calendar = new MonthlyCalendar(may27);
+        assertEquals(5, calendar.getWeeks().length);
+        
+        Date feb14_04 = getDate("2004-02-14");
+        calendar = new MonthlyCalendar(feb14_04);
+        assertEquals(5, calendar.getWeeks().length);
+        
+        Date feb7_09 = getDate("2009-02-09");
+        calendar = new MonthlyCalendar(feb7_09);
+        assertEquals(4, calendar.getWeeks().length);
+        
+    }
+    
+    private Date getDate(String date) throws ParseException {
+        return new SimpleDateFormat("yyyy-MM-dd").parse(date);
     }
 
 }

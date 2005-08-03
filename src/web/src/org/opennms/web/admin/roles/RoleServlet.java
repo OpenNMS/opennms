@@ -1,6 +1,9 @@
 package org.opennms.web.admin.roles;
 
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -24,7 +27,7 @@ import javax.servlet.http.HttpServletResponse;
 	}
     
     private interface Action {
-        public String execute(HttpServletRequest request, HttpServletResponse response);
+        public String execute(HttpServletRequest request, HttpServletResponse response) throws ServletException;
     }
     
     private class ListAction implements Action {
@@ -36,7 +39,7 @@ import javax.servlet.http.HttpServletResponse;
     }
     
     private class DeleteAction implements Action {
-        public String execute(HttpServletRequest request, HttpServletResponse response) {
+        public String execute(HttpServletRequest request, HttpServletResponse response) throws ServletException {
             m_roleManager.delete(request.getParameter("role"));
             Action list = new ListAction();
             return list.execute(request, response);
@@ -45,9 +48,19 @@ import javax.servlet.http.HttpServletResponse;
     }
     
     private class ViewAction implements Action {
-        public String execute(HttpServletRequest request, HttpServletResponse response) {
-            request.setAttribute("role", m_roleManager.getRole(request.getParameter("role")));
-            return VIEW;
+        
+        public String execute(HttpServletRequest request, HttpServletResponse response) throws ServletException {
+            try {
+                WebRole role = m_roleManager.getRole(request.getParameter("role"));
+                request.setAttribute("role", role);
+                String dateSpec = request.getParameter("month");
+                Date month = (dateSpec == null ? new Date() : new SimpleDateFormat("MM-yyyy").parse(dateSpec));
+                WebCalendar calendar = role.getMonthlyCalendar(month);
+                request.setAttribute("calendar", calendar);
+                return VIEW;
+            } catch (ParseException e) {
+                throw new ServletException("Unable to parse date: "+e.getMessage(), e);
+            }
         }
         
     }

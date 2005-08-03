@@ -31,63 +31,45 @@
 //
 package org.opennms.web.admin.roles;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 
-public class WebRole {
+public class Day {
     
-    private String m_name;
-    private String m_description;
-    private String m_defaultUser;
-    private String m_membershipGroup;
-    
-    private static int sm_count = 1;
-    
-    public WebRole() {
-        int count = sm_count++;
-        m_name = "onCall"+count;
-        m_description = "The "+count+"th on call role";
-        m_defaultUser = "defaultUser"+count;
-        m_membershipGroup = "membershipGroup"+count;
-    }
-    
-    public String getDefaultUser() {
-        return m_defaultUser;
-    }
-    public void setDefaultUser(String defaultUser) {
-        m_defaultUser = defaultUser;
-    }
-    public String getDescription() {
-        return m_description;
-    }
-    public void setDescription(String description) {
-        m_description = description;
-    }
-    public String getMembershipGroup() {
-        return m_membershipGroup;
-    }
-    public void setMembershipGroup(String memberShipGroup) {
-        m_membershipGroup = memberShipGroup;
-    }
-    public String getName() {
-        return m_name;
-    }
-    public void setName(String name) {
-        m_name = name;
-    }
-    public String getCurrentUser() {
-        return getDefaultUser();
-    }
-    
-    public WebCalendar getWeeklyCalendar() {
-        return null;
-    }
-    
-    public WebCalendar getMonthlyCalendar() {
-        return getMonthlyCalendar(new Date());
-    }
+    private Calendar m_calendar;
 
-    public WebCalendar getMonthlyCalendar(Date month) {
-        return new MonthlyCalendar(month);
+    public Day(Calendar calendar) {
+        m_calendar = calendar;
+    }
+    
+    public Day(Date date) {
+        m_calendar = Calendar.getInstance();
+        m_calendar.setTime(date);
+    }
+    
+    public int getMonth() { return m_calendar.get(Calendar.MONTH); }
+
+    public int getDayOfMonth() { return m_calendar.get(Calendar.DAY_OF_MONTH); }
+    
+    public int getDayOfYear() { return m_calendar.get(Calendar.DAY_OF_YEAR); }
+    
+    public String getDayOfWeek() {
+        return new SimpleDateFormat("EEEE").format(m_calendar.getTime());
+    }
+    
+    public Date getTime(int hours, int minutes) {
+        Calendar time = Calendar.getInstance();
+        time.set(m_calendar.get(Calendar.YEAR), m_calendar.get(Calendar.MONTH), m_calendar.get(Calendar.DAY_OF_MONTH), hours, minutes);
+        return time.getTime();
+    }
+    
+    public ScheduleEntry[] getEntries() {
+        ScheduleEntry[] entries = new ScheduleEntry[3];
+        entries[0] = new ScheduleEntry(getTime(0, 0), getTime(9, 0), "defaultUser2");
+        entries[1] = new ScheduleEntry(getTime(9, 0), getTime(15, 0), "mhuot");
+        entries[2] = new ScheduleEntry(getTime(15, 0), getTime(24, 0), "defaultUser2");
+        return entries;
     }
 
 }
