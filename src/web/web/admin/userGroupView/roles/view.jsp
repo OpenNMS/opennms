@@ -40,9 +40,6 @@
 -->
 
 <%@page language="java" contentType="text/html" session="true"%>
-<%@page import="java.util.*"%>
-<%@page import="org.opennms.netmgt.config.*"%>
-<%@page import="org.opennms.netmgt.config.users.*"%>
 <%@ taglib uri="http://java.sun.com/jstl/core" prefix="c" %>
 <html>
 <head>
@@ -51,17 +48,28 @@
 <link rel="stylesheet" type="text/css" href="css/styles.css" />
 </head>
 
+<script language="Javascript" type="text/javascript" >
+
+	function changeDisplay() {
+		document.displayForm.submit();
+	}
+
+</script>
+
+
 <body marginwidth="0" marginheight="0" LEFTMARGIN="0" RIGHTMARGIN="0"
 	TOPMARGIN="0">
 
 <% String breadcrumb1 = "<a href='admin/index.jsp'>Admin</a>"; %>
 <% String breadcrumb2 = "<a href='admin/userGroupView/index.jsp'>Users, Groups and Roles</a>"; %>
-<% String breadcrumb3 = "View Role"; %>
+<% String breadcrumb3 = "<a href='admin/userGroupView/roles'>Role List</a>"; %>
+<% String breadcrumb4 = "View Role"; %>
 <jsp:include page="/includes/header.jsp" flush="false">
 	<jsp:param name="title" value="Role Configuration" />
 	<jsp:param name="breadcrumb" value="<%=breadcrumb1%>" />
 	<jsp:param name="breadcrumb" value="<%=breadcrumb2%>" />
 	<jsp:param name="breadcrumb" value="<%=breadcrumb3%>" />
+	<jsp:param name="breadcrumb" value="<%=breadcrumb4%>" />
 </jsp:include>
 
 <br />
@@ -75,19 +83,69 @@
 	<tr>
 		<td>&nbsp;</td>
 		<td>
+		
 		 <table width="100%" border="1" cellspacing="0" cellpadding="2" bordercolor="black">
-
-         <tr bgcolor="#999999">
-          <td width="50%"><b>Name</b></td>
-          <td width="50%"><b>Supervisor</b></td>
-			<c:forEach items="${roleList}" var="role" varStatus="roleStatus">
-				<tr>
-				<td><c:out value="${roleStatus.count}"/></td>
-				<td><c:out value="${role}"/></td>
-				</tr>
-			</c:forEach>
+	         <tr>
+    		    		<td bgcolor="#999999"><b>Name</b></td>
+				<td><c:out value="${role.name}"/></td>
+    		    		<td bgcolor="#999999"><b>Currently On Call</b></td>
+				<td><c:out value="${role.currentUser}"/></td>
+          	</tr>
+	         <tr>
+    		    		<td bgcolor="#999999"><b>Supervisor</b></td>
+				<td><c:out value="${role.defaultUser}"/></td>
+    		    		<td bgcolor="#999999"><b>Membership Group</b></td>
+				<td><c:out value="${role.membershipGroup}"/></td>
+          	</tr>
 		</table>
 		</td>
+	</tr>
+	<tr align="right">
+		<td>&nbsp;</td>
+		<td>
+		<table border="0">
+		<tr>
+		<td>
+		<form action="<c:url value='${reqUrl}'/>" method="POST" name="editForm">
+			<input type="hidden" name="operation" value="edit"/>
+			<input type="hidden" name="role" value="<c:out value='${role.name}'/>"/>
+			<input type="submit" value="Edit Details" />
+		</form>
+		</td>
+		<td>
+		<form action="<c:url value='${reqUrl}'/>" method="POST" name="doneForm">
+			<input type="submit" value="Done" />
+		</form>
+		</td>
+		</tr>
+		</table>
+		</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td>
+		<h3>Role Schedule</h3>
+		</td>
+		<td>
+		<form action="<c:url value='${reqUrl}'/>" method="POST" name="displayForm">
+			<input type="hidden" name="operation" value="view"/>
+			<input type="hidden" name="role" value="<c:out value='${role.name}'/>"/>
+			<c:set var="weeklySelected">
+				<c:if test='${param.display == "weekly"}'>selected</c:if>
+			</c:set>
+			<c:set var="monthlySelected">
+				<c:if test='${param.display == "monthly"}'>selected</c:if>
+			</c:set>
+			<select name="display" onchange="changeDisplay()">
+				  <option value="weekly" <c:out value='${weeklySelected}'/>>Weekly</option>
+				  <option value="monthly" <c:out value='${monthlySelected}'/>>Monthly</option>
+			</select>
+		</form>
+		</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+				
 	</tr>
 </table>
 <br/>

@@ -31,49 +31,46 @@
 //
 package org.opennms.web.admin.roles;
 
-public class WebRole {
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+
+public class WebRoleManager {
     
-    private String m_name;
-    private String m_description;
-    private String m_defaultUser;
-    private String m_membershipGroup;
+    private Collection m_roles;
     
-    private static int sm_count = 1;
-    
-    public WebRole() {
-        int count = sm_count++;
-        m_name = "onCall"+count;
-        m_description = "The "+count+"th on call role";
-        m_defaultUser = "defaultUser"+count;
-        m_membershipGroup = "membershipGroup"+count;
+    public WebRoleManager() {
+        List list = new LinkedList();
+        for(int i = 0; i < 11; i++) {
+          list.add(new WebRole());  
+        }
+
+        m_roles = list;
     }
     
-    public String getDefaultUser() {
-        return m_defaultUser;
+    public Collection getRoles() {
+        return m_roles;
     }
-    public void setDefaultUser(String defaultUser) {
-        m_defaultUser = defaultUser;
+
+    public void delete(String roleName) {
+        for (Iterator it = m_roles.iterator(); it.hasNext();) {
+            WebRole role = (WebRole) it.next();
+            if (roleName.equals(role.getName())) {
+                it.remove();
+                return;
+            }
+        }
     }
-    public String getDescription() {
-        return m_description;
-    }
-    public void setDescription(String description) {
-        m_description = description;
-    }
-    public String getMembershipGroup() {
-        return m_membershipGroup;
-    }
-    public void setMembershipGroup(String memberShipGroup) {
-        m_membershipGroup = memberShipGroup;
-    }
-    public String getName() {
-        return m_name;
-    }
-    public void setName(String name) {
-        m_name = name;
-    }
-    public String getCurrentUser() {
-        return getDefaultUser();
+
+    public WebRole getRole(String roleName) {
+        for (Iterator it = m_roles.iterator(); it.hasNext();) {
+            WebRole role = (WebRole) it.next();
+            if (roleName.equals(role.getName())) {
+                return role;
+            }
+        }
+        return null;
     }
 
 }

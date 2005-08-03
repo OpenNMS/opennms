@@ -44,8 +44,28 @@
 <html>
 <head>
 <title>List | Role Admin | OpenNMS Web Console</title>
+<base HREF="<%=org.opennms.web.Util.calculateUrlBase( request )%>" />
 <link rel="stylesheet" type="text/css" href="css/styles.css" />
 </head>
+
+<script language="Javascript" type="text/javascript" >
+
+	function doOperation(op, role) {
+		document.roleForm.operation.value=op;
+		document.roleForm.role.value=role;
+		document.roleForm.submit();
+	}
+	
+	function doDelete(role) {
+		doOperation("delete", role);
+	}
+	
+	function doView(role) {
+		doOperation("view", role);
+	}
+
+</script>
+
 
 <body marginwidth="0" marginheight="0" LEFTMARGIN="0" RIGHTMARGIN="0"
 	TOPMARGIN="0">
@@ -56,6 +76,12 @@
 	<jsp:param name="breadcrumb" value="<a href='admin/userGroupView/index.jsp'>Users, Groups and Roles</a>" />
 	<jsp:param name="breadcrumb" value="Role List" />
 </jsp:include>
+
+<form action="<c:url value='${reqUrl}'/>" method="POST" name="roleForm">
+	<input type="hidden" name="operation" />
+	<input type="hidden" name="role" />
+</form>
+
 
 <br />
 <table>
@@ -71,14 +97,20 @@
 		 <table width="100%" border="1" cellspacing="0" cellpadding="2" bordercolor="black">
 
          <tr bgcolor="#999999">
+          <td/>
           <td><b>Name</b></td>
           <td><b>Supervisor</b></td>
           <td><b>Currently On Call</b></td>
           <td><b>Membership Group</b></td>
           <td><b>Description</b></td>
 			<c:forEach items="${roleList}" var="role" varStatus="roleStatus">
+				<c:set var="deleteUrl" value="javascript:doDelete('${role.name}')" />
+				<c:set var="viewUrl" value="javascript:doView('${role.name}')" />
+				<c:set var="confirmScript" value="return confirm('Are you sure you want to delete the role ${role.name}?')"/>
+				
 				<tr>
-				<td><a href="?action=view&role=<c:out value='${role.name}'/>"><c:out value="${role.name}"/></a></td>
+				<td><a href="<c:out value='${deleteUrl}'/>" onclick="<c:out value='${confirmScript}'/>"><img src="images/trash.gif" alt="<c:out value='Delete ${role.name}'/>"></a></td>
+				<td><a href="<c:out value='${viewUrl}'/>"><c:out value="${role.name}"/></a></td>
 				<td><c:out value="${role.defaultUser}"/></td>
 				<td><c:out value="${role.currentUser}"/></td>
 				<td><c:out value="${role.membershipGroup}"/></td>
