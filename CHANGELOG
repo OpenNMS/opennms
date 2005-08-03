@@ -1,5 +1,7 @@
 1.2.3 to 1.2.4
 ----------------------------------------------------------------------
+- fixed an issue where secondary IP addresses would be set when
+  they were not included in collectd. Bug 1178. Thx again Bill.
 - Added a new feature to fine tune RESOLVED messages in 
   notifications. Bug 1087. Thx Bill.
 - Added HC counters.

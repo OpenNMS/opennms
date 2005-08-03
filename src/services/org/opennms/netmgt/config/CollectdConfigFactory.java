@@ -419,7 +419,9 @@ public final class CollectdConfigFactory {
         has_specific = hasSpecificUrl(iface, pkg, has_specific);
         boolean has_range_exclude = hasExcludeRange(pkg, addr, has_specific);
 
-        return has_specific || (has_range_include && !has_range_exclude);
+        boolean packagePassed = has_specific || (has_range_include && !has_range_exclude);
+        log.debug("interfaceInPackage: Interface " + iface + " passed filter and specific/range for package " + pkg.getName() + "?: " + packagePassed);
+        return packagePassed;
     }
 
 
@@ -527,9 +529,9 @@ public final class CollectdConfigFactory {
 
         if (log.isDebugEnabled())
             if (primaryIf != null)
-                log.debug("determinePrimarySnmpInterface: selected primary SNMP interface: " + primaryIf.getHostAddress());
+                log.debug("determinePrimarySnmpInterface: candidate primary SNMP interface: " + primaryIf.getHostAddress());
             else
-                log.debug("determinePrimarySnmpInterface: no primary SNMP interface found");
+                log.debug("determinePrimarySnmpInterface: no candidate primary SNMP interface found");
         return primaryIf;
     }
 
@@ -671,12 +673,12 @@ private boolean hasIncludeRange(long addr, Enumeration eincs) {
         java.util.List ipList = (java.util.List) m_pkgIpMap.get(pkg);
         if (ipList != null && ipList.size() > 0) {
             filterPassed = ipList.contains(iface);
+        } else {
+            log.debug("interfaceInFilter: ipList contains no data");
         }
 
-        if (log.isDebugEnabled())
-            log.debug("interfaceInPackage: Interface " + iface
-                    + " passed filter for package " + pkg.getName() + "?: "
-                    + filterPassed);
+        if (!filterPassed)
+            log.debug("interfaceInFilter: Interface " + iface + " passed filter for package " + pkg.getName() + "?: false");
         return filterPassed;
     }
 }
