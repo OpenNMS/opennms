@@ -197,13 +197,30 @@ public class HttpPlugin extends AbstractTcpPlugin {
             BufferedReader lineRdr = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
             socket.getOutputStream().write(m_queryString.getBytes());
-            String line = null;
+            char [] cbuf = new char[ 1024 ];
+            int chars = 0;
             StringBuffer response = new StringBuffer();
-            while ((line = lineRdr.readLine()) != null) {
-                response.append(line).append(System.getProperty("line.separator"));
-            }
+            try
+            {
+                while ((chars = lineRdr.read( cbuf, 0, 1024)) != -1)
+                {
+                   String line = new String( cbuf, 0, chars );
+                   log.debug( "Read: " + line.length() + " bytes: [" + line.toString() + "] from socket." );
+                   response.append( line );
+                }
 
-            if (response.toString() != null && response.toString().indexOf(m_responseString) > -1) {
+            }
+            catch( java.net.SocketTimeoutException timeoutEx )
+            {
+                if ( timeoutEx.bytesTransferred > 0 )
+                {
+                   String line = new String( cbuf, 0, timeoutEx.bytesTransferred );
+                   log.debug( "Read: " + line.length() + " bytes: [" + line.toString() + "] from socket @ timeout!" );
+                   response.append(line);
+                }
+            }
+            if (response.toString() != null && response.toString().indexOf(m_responseString) > -1) 
+            {
                 if (m_checkReturnCode) {
                     StringTokenizer t = new StringTokenizer(response.toString());
                     t.nextToken();

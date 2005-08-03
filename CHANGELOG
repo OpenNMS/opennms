@@ -1,5 +1,10 @@
 1.2.3 to 1.2.4
 ----------------------------------------------------------------------
+- Modified the HttpPlugin to handle replies with a newline.
+  Bug 1214. Thx Tobey
+- Added the ability to include %descr% tags in notifications
+  that reflect the description of the event that caused them.
+  Bug 1183. Thx Vincent.
 - fixed an issue where secondary IP addresses would be set when
   they were not included in collectd. Bug 1178. Thx again Bill.
 - Added a new feature to fine tune RESOLVED messages in 
