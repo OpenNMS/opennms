@@ -79,6 +79,10 @@ public class NotificationTask extends Thread {
      */
     private User m_user;
 
+    /**The autoNotify info for the usersnotified table
+     */
+    private String m_autoNotify;
+
     /**
      * The row id that will be used for the row inserted into the notifications
      * table
@@ -111,14 +115,15 @@ public class NotificationTask extends Thread {
     /**
      * Constructor, initializes some information
      * 
-     * @param someParams
-     *            the parameters from Notify
+     * @param someParams the parameters from
+     * Notify
      */
-    public NotificationTask(Notifd notifd, long sendTime, Map someParams, List siblings) throws SQLException {
+    public NotificationTask(Notifd notifd, long sendTime, Map someParams, List siblings, String autoNotify) throws SQLException {
         m_notifd = notifd;
         m_sendTime = sendTime;
         m_params = new HashMap(someParams);
         m_siblings = siblings;
+        m_autoNotify = autoNotify;
 
     }
 
@@ -160,6 +165,13 @@ public class NotificationTask extends Thread {
     public void setUser(User aUser) {
         m_user = aUser;
     }
+
+    /**Sets the autoNotify info for the usersnotified table
+     * @param String autoNotify
+     */
+    public void setAutoNotify(String autoNotify) {
+        m_autoNotify = autoNotify;
+    } 
 
     /**
      * Sets the group id that will be inserted into the row in notifications
@@ -211,7 +223,7 @@ public class NotificationTask extends Thread {
                             cntct = m_notifd.getUserManager().getContactInfo(m_user.getUserId(), m_commands[i].getName());
                         }
                         try {
-                            m_notifd.getNotificationManager().updateNoticeWithUserInfo(m_user.getUserId(), m_notifyId, m_commands[i].getName(), cntct);
+                            m_notifd.getNotificationManager().updateNoticeWithUserInfo(m_user.getUserId(), m_notifyId, m_commands[i].getName(), cntct, m_autoNotify);
                         } catch (SQLException e) {
                             log.error("Could not insert notice info into database, aborting send notice...", e);
                             continue;
@@ -298,5 +310,4 @@ public class NotificationTask extends Thread {
 
         return value;
     }
-
 }

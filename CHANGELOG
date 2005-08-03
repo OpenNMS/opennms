@@ -1,5 +1,7 @@
 1.2.3 to 1.2.4
 ----------------------------------------------------------------------
+- Added a new feature to fine tune RESOLVED messages in 
+  notifications. Bug 1087. Thx Bill.
 - Added HC counters.
 - Corrected an error with BGP4 standard events.
 - Added Netgear events.

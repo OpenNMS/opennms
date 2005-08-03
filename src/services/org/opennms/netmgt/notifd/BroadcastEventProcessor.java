@@ -213,8 +213,16 @@ public final class BroadcastEventProcessor implements EventListener {
     }
 
     private void sendResolvedNotifications(Collection notifIDs, Event event, String acknowledge, String[] match, String resolutionPrefix) throws Exception {
+        Category log = ThreadCategory.getInstance(getClass());
         for (Iterator it = notifIDs.iterator(); it.hasNext();) {
             int notifId = ((Integer) it.next()).intValue();
+            boolean wa = false;
+            if(notifId < 0) {
+                notifId *= -1;
+                wa = true;
+                log.debug("Conditional autoNotify for notifId " + notifId);
+            }
+            final boolean wasAcked = wa;
             final Map parmMap = rebuildParameterMap(notifId, resolutionPrefix);
 
             String queueID = getNotificationManager().getQueueForNotification(notifId);
@@ -223,13 +231,23 @@ public final class BroadcastEventProcessor implements EventListener {
             RowProcessor acknowledgeNotification = new RowProcessor() {
                 public void processRow(ResultSet rs) throws SQLException {
                     String userID = rs.getString("userID");
-                    String cmd = rs.getString("media");
-                    List cmdList = (List) userNotifitcations.get(userID);
-                    if (cmdList == null) {
-                        cmdList = new ArrayList();
-                        userNotifitcations.put(userID, cmdList);
+                    String contactInfo = rs.getString("contactinfo");
+                    String autoNotifyChar = rs.getString("autonotify");
+                    if(userID.equals("email-address")) {
+                        userID = contactInfo;
                     }
-                    cmdList.add(cmd);
+                    String cmd = rs.getString("media");
+                    if(autoNotifyChar == null) {
+                        autoNotifyChar = "C";
+                    }
+                    if(autoNotifyChar.equals("Y") || (autoNotifyChar.equals("C") && !wasAcked)) {
+                        List cmdList = (List) userNotifitcations.get(userID);
+                        if (cmdList == null) {
+                            cmdList = new ArrayList();
+                            userNotifitcations.put(userID, cmdList);
+                        }
+                        cmdList.add(cmd);
+                    }
                 }
             };
             getNotificationManager().forEachUserNotification(notifId, acknowledgeNotification);
@@ -238,6 +256,7 @@ public final class BroadcastEventProcessor implements EventListener {
                 String userID = (String) userIt.next();
                 List cmdList = (List) userNotifitcations.get(userID);
                 String[] cmds = (String[]) cmdList.toArray(new String[cmdList.size()]);
+                log.debug("Sending " + resolutionPrefix + " notification to userID = " + userID + " for notice ID " + notifId);
                 sendResolvedNotificationsToUser(queueID, userID, cmds, parmMap);
             }
 
@@ -250,13 +269,13 @@ public final class BroadcastEventProcessor implements EventListener {
         long now = System.currentTimeMillis();
 
         if (m_notifd.getUserManager().hasUser(targetName)) {
-            NotificationTask newTask = makeUserTask(now, params, noticeId, targetName, commands, null);
+            NotificationTask newTask = makeUserTask(now, params, noticeId, targetName, commands, null, null);
 
             if (newTask != null) {
                 noticeQueue.put(new Long(now), newTask);
             }
         } else if (targetName.indexOf("@") > -1) {
-            NotificationTask newTask = makeEmailTask(now, params, noticeId, targetName, commands, null);
+            NotificationTask newTask = makeEmailTask(now, params, noticeId, targetName, commands, null, null);
 
             if (newTask != null) {
                 noticeQueue.put(new Long(now), newTask);
@@ -626,11 +645,24 @@ public final class BroadcastEventProcessor implements EventListener {
      * 
      */
     private void processTargets(Target[] targets, List targetSiblings, NoticeQueue noticeQueue, long startTime, Map params, int noticeId) throws IOException, MarshalException, ValidationException {
+        Category log = ThreadCategory.getInstance(getClass());
         for (int i = 0; i < targets.length; i++) {
             String interval = (targets[i].getInterval() == null ? "0s" : targets[i].getInterval());
 
             String targetName = targets[i].getName();
-            ThreadCategory.getInstance(getClass()).debug("Processing target " + targetName + ":" + interval);
+            String autoNotify = targets[i].getAutoNotify();
+            if(autoNotify != null) {
+                if(autoNotify.equalsIgnoreCase("on")) {
+                    autoNotify = "Y";
+                } else if(autoNotify.equalsIgnoreCase("off")) {
+                    autoNotify = "N";
+                } else {
+                    autoNotify = "C";
+                }
+            } else {
+                autoNotify = "C";
+            }
+            log.debug("Processing target " + targetName + ":" + interval);
 
             long curSendTime = 0;
 
@@ -640,7 +672,7 @@ public final class BroadcastEventProcessor implements EventListener {
 
                 if (users != null && users.length > 0) {
                     for (int j = 0; j < users.length; j++) {
-                        NotificationTask newTask = makeUserTask(startTime + curSendTime, params, noticeId, users[j], targets[i].getCommand(), targetSiblings);
+                        NotificationTask newTask = makeUserTask(startTime + curSendTime, params, noticeId, users[j], targets[i].getCommand(), targetSiblings, autoNotify);
 
                         if (newTask != null) {
                             noticeQueue.put(new Long(startTime + curSendTime), newTask);
@@ -650,24 +682,23 @@ public final class BroadcastEventProcessor implements EventListener {
                         }
                     }
                 } else {
-                    ThreadCategory.getInstance(getClass()).debug("Not sending notice, no users specified for group " + group.getName());
+                        log.debug("Not sending notice, no users specified for group " + group.getName());
                 }
             } else if (m_notifd.getUserManager().hasUser(targetName)) {
-                NotificationTask newTask = makeUserTask(startTime + curSendTime, params, noticeId, targetName, targets[i].getCommand(), targetSiblings);
+                NotificationTask newTask = makeUserTask(startTime + curSendTime, params, noticeId, targetName, targets[i].getCommand(), targetSiblings, autoNotify);
 
                 if (newTask != null) {
                     noticeQueue.put(new Long(startTime + curSendTime), newTask);
                     targetSiblings.add(newTask);
                 }
             } else if (targetName.indexOf("@") > -1) {
-                NotificationTask newTask = makeEmailTask(startTime + curSendTime, params, noticeId, targetName, targets[i].getCommand(), targetSiblings);
+                NotificationTask newTask = makeEmailTask(startTime + curSendTime, params, noticeId, targetName, targets[i].getCommand(), targetSiblings, autoNotify);
 
                 if (newTask != null) {
                     noticeQueue.put(new Long(startTime + curSendTime), newTask);
                     targetSiblings.add(newTask);
                 }
             } else {
-                Category log = ThreadCategory.getInstance(getClass());
                 log.warn("Unrecognized target '" + targetName + "' contained in destinationPaths.xml. Please check the configuration.");
             }
         }
@@ -687,11 +718,11 @@ public final class BroadcastEventProcessor implements EventListener {
     /**
      * 
      */
-    private NotificationTask makeUserTask(long sendTime, Map parameters, int noticeId, String targetName, String[] commandList, List siblings) throws IOException, MarshalException, ValidationException {
+    private NotificationTask makeUserTask(long sendTime, Map parameters, int noticeId, String targetName, String[] commandList, List siblings, String autoNotify) throws IOException, MarshalException, ValidationException {
         NotificationTask task = null;
 
         try {
-            task = new NotificationTask(m_notifd, sendTime, parameters, siblings);
+            task = new NotificationTask(m_notifd, sendTime, parameters, siblings, autoNotify);
 
             User user = m_notifd.getUserManager().getUser(targetName);
 
@@ -710,6 +741,7 @@ public final class BroadcastEventProcessor implements EventListener {
             task.setUser(user);
             task.setCommands(commands);
             task.setNoticeId(noticeId);
+            task.setAutoNotify(autoNotify);
         } catch (SQLException e) {
             ThreadCategory.getInstance(getClass()).error("Couldn't create user notification task", e);
         }
@@ -720,11 +752,11 @@ public final class BroadcastEventProcessor implements EventListener {
     /**
      * 
      */
-    private NotificationTask makeEmailTask(long sendTime, Map parameters, int noticeId, String address, String[] commandList, List siblings) throws IOException, MarshalException, ValidationException {
+    private NotificationTask makeEmailTask(long sendTime, Map parameters, int noticeId, String address, String[] commandList, List siblings, String autoNotify) throws IOException, MarshalException, ValidationException {
         NotificationTask task = null;
 
         try {
-            task = new NotificationTask(m_notifd, sendTime, parameters, siblings);
+            task = new NotificationTask(m_notifd, sendTime, parameters, siblings, autoNotify);
 
             User user = new User();
             user.setUserId(address);
@@ -743,6 +775,7 @@ public final class BroadcastEventProcessor implements EventListener {
             task.setUser(user);
             task.setCommands(commands);
             task.setNoticeId(noticeId);
+            task.setAutoNotify(autoNotify);
         } catch (SQLException e) {
             ThreadCategory.getInstance(getClass()).error("Couldn't create email notification task", e);
         }

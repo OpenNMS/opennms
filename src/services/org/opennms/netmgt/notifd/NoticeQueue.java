@@ -41,6 +41,10 @@ import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
+import org.apache.log4j.Category;
+
+import org.opennms.core.utils.ThreadCategory;
+
 /**
  * This is a data class designed to hold NotificationTasks in an ordered map
  * that can handle collisions.
@@ -69,6 +73,7 @@ public class NoticeQueue extends TreeMap {
     }
 
     public Object put(Object key, Object task) {
+        Category log = ThreadCategory.getInstance(getClass());
         Object result = null;
 
         // see if there is a collision
@@ -87,7 +92,18 @@ public class NoticeQueue extends TreeMap {
         } else {
             result = super.put(key, task);
         }
-
+        if (log.isDebugEnabled()) {
+            if (task instanceof NotificationTask) {
+                NotificationTask notice = (NotificationTask) task;
+                if(notice.getNotifyId() == -1) {
+                    log.debug("autoNotify task queued");
+                } else {
+                    log.debug("task queued for notifyID " + notice.getNotifyId());
+                }
+            } else {
+                log.debug("task is not an instance of NotificationTask");
+            }
+        }
         return result;
     }
 
