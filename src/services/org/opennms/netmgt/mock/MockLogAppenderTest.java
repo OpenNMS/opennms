@@ -99,7 +99,8 @@ public class MockLogAppenderTest extends TestCase {
         assertTrue("Messages were logged with a warning level or higher",
 				MockLogAppender.noWarningsOrHigherLogged());
 
-		LoggingEvent[] events = MockLogAppender.getEvents();
+//		LoggingEvent[] events = MockLogAppender.getEvents();
+		LoggingEvent[] events = MockLogAppender.getEventsGreaterOrEqual(Level.ALL);
 		
 		assertEquals("Number of logged events", 1, events.length);
 		
