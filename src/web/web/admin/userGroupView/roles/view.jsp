@@ -49,6 +49,23 @@
 <link rel="stylesheet" type="text/css" href="css/styles.css" />
 </head>
 
+<!--  swiped this and images/new.gif from webcalendar.sf.net -->
+<style type="text/css">
+
+.new {
+  border-width: 0px;
+  float: right;
+}
+
+.date {
+  border-width: 0px;
+  float: left;
+}
+
+</style>
+
+
+
 <script language="Javascript" type="text/javascript" >
 
 	function changeDisplay() {
@@ -139,24 +156,6 @@
 		<td>
 		<h3>Role Schedule</h3>
 		</td>
-		<td>
-		<form action="<c:url value='${reqUrl}'/>" method="POST" name="displayForm">
-			<input type="hidden" name="operation" value="view"/>
-			<input type="hidden" name="role" value="<c:out value='${role.name}'/>"/>
-			<c:set var="weeklySelected">
-				<c:if test='${param.display == "weekly"}'>selected</c:if>
-			</c:set>
-			<c:set var="monthlySelected">
-				<c:if test='${param.display == "monthly"}'>selected</c:if>
-			</c:set>
-			<!-- 
-			<select name="display" onchange="changeDisplay()">
-				  <option value="weekly" <c:out value='${weeklySelected}'/>>Weekly</option>
-				  <option value="monthly" <c:out value='${monthlySelected}'/>>Monthly</option>
-			</select>
-			 -->
-		</form>
-		</td>
 	</tr>
 	<tr>
 		<td>&nbsp;
@@ -164,13 +163,11 @@
 					<input type="hidden" name="operation" value="view"/>
 					<input type="hidden" name="role" value="<c:out value='${role.name}'/>"/>
 					<input type="hidden" name="month" value="<fmt:formatDate value='${calendar.previousMonth}' type='date' pattern='MM-yyyy'/>"/>
-					<!--  <input type="submit" value="Previous Month" />  -->
 				</form>
 				<form action="<c:url value='${reqUrl}'/>" method="POST" name="nextMonthForm">
 					<input type="hidden" name="operation" value="view"/>
 					<input type="hidden" name="role" value="<c:out value='${role.name}'/>"/>
 					<input type="hidden" name="month" value="<fmt:formatDate value='${calendar.nextMonth}' type='date' pattern='MM-yyyy'/>"/>
-					<!--  <input type="submit" value="Next Month" />  -->
 				</form>
 			</td>
 		<td colspan="4">
@@ -192,7 +189,7 @@
 					<c:forEach var="day" items="${week.days}">
 					<td>
 					<c:if test="${calendar.month == day.month}">
-						<b><c:out value="${day.dayOfMonth}"/></b><br/>
+						<b class="date"><c:out value="${day.dayOfMonth}"/></b><a class="new" href=""><img src="images/new.gif"/></a>
 						<c:forEach var="entry" items="${day.entries}">
 							<fmt:formatDate value="${entry.startTime}" type="time" pattern="h:mm'&nbsp;'a"/>:&nbsp;<c:out value="${entry.description}"/><br/>
 						</c:forEach>
@@ -209,13 +206,6 @@
 		<td>
 		<table border="0">
 		<tr>
-		<td>
-		<form action="<c:url value='${reqUrl}'/>" method="POST" name="editForm">
-			<input type="hidden" name="operation" value="editSchedule"/>
-			<input type="hidden" name="role" value="<c:out value='${role.name}'/>"/>
-			<input type="submit" value="Edit Schedule" />
-		</form>
-		</td>
 		<td>
 		<form action="<c:url value='${reqUrl}'/>" method="POST" name="doneForm">
 			<input type="submit" value="Done" />

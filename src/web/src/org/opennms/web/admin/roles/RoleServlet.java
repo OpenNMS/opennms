@@ -111,24 +111,6 @@ import javax.servlet.http.HttpServletResponse;
         
     }
     
-    private class EditScheduleAction implements Action {
-        
-        public String execute(HttpServletRequest request, HttpServletResponse response) throws ServletException {
-            try {
-                WebRole role = getRoleManager().getRole(request.getParameter("role"));
-                request.setAttribute("role", role);
-                String dateSpec = request.getParameter("month");
-                Date month = (dateSpec == null ? new Date() : new SimpleDateFormat("MM-yyyy").parse(dateSpec));
-                WebCalendar calendar = role.getCalendar(month);
-                request.setAttribute("calendar", calendar);
-                return EDIT_SCHED;
-            } catch (ParseException e) {
-                throw new ServletException("Unable to parse date: "+e.getMessage(), e);
-            }
-        }
-        
-    }
-    
     protected void doIt(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String reqUrl = request.getServletPath();
         request.setAttribute("reqUrl", reqUrl);
@@ -150,8 +132,6 @@ import javax.servlet.http.HttpServletResponse;
             return new EditDetailsAction();
         else if ("saveDetails".equals(op))
             return new SaveDetailsAction();
-        else if ("editSchedule".equals(op))
-            return new EditScheduleAction();
         else
             return new ListAction();
     }
