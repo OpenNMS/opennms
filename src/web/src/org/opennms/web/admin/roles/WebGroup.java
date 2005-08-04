@@ -32,50 +32,40 @@
 package org.opennms.web.admin.roles;
 
 import java.util.Collection;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
 
-public class WebRoleManager {
-    
-    private Collection m_roles;
-    
-    public WebRoleManager() {
-        List list = new LinkedList();
-        for(int i = 0; i < 11; i++) {
-          list.add(new WebRole());  
-        }
+public class WebGroup {
 
-        m_roles = list;
+    private String m_name;
+    
+    static private int count = 1;
+    
+    public WebGroup() {
+        m_name = "membershipGroup"+count++;
     }
     
-    public Collection getRoles() {
-        return m_roles;
+    public String getName() {
+        return m_name;
     }
-
-    public void delete(String roleName) {
-        for (Iterator it = m_roles.iterator(); it.hasNext();) {
-            WebRole role = (WebRole) it.next();
-            if (roleName.equals(role.getName())) {
-                it.remove();
-                return;
-            }
+    
+    public String toString() {
+        return ""+getName();
+    }
+    
+    public Collection getUsers() {
+        return new WebUserManager().getUsers();
+    }
+    
+    public boolean equals(Object obj) {
+        if (obj instanceof WebGroup) {
+            WebGroup u = (WebGroup)obj;
+            return m_name.equals(u.m_name);
         }
+        return false;
     }
 
-    public WebRole getRole(String roleName) {
-        for (Iterator it = m_roles.iterator(); it.hasNext();) {
-            WebRole role = (WebRole) it.next();
-            if (roleName.equals(role.getName())) {
-                return role;
-            }
-        }
-        return null;
+    public int hashCode() {
+        return m_name.hashCode();
     }
 
-    public void save() {
-        // TODO Auto-generated method stub
-        
-    }
 
 }

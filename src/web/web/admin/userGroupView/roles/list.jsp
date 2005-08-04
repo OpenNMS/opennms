@@ -103,7 +103,7 @@
           <td><b>Currently On Call</b></td>
           <td><b>Membership Group</b></td>
           <td><b>Description</b></td>
-			<c:forEach items="${roleList}" var="role" varStatus="roleStatus">
+			<c:forEach var="role" items="${roleManager.roles}">
 				<c:set var="deleteUrl" value="javascript:doDelete('${role.name}')" />
 				<c:set var="viewUrl" value="javascript:doView('${role.name}')" />
 				<c:set var="confirmScript" value="return confirm('Are you sure you want to delete the role ${role.name}?')"/>

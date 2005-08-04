@@ -106,6 +106,10 @@
     		    		<td bgcolor="#999999"><b>Membership Group</b></td>
 				<td><c:out value="${role.membershipGroup}"/></td>
           	</tr>
+          	<tr>
+    		    		<td bgcolor="#999999"><b>Description</b></td>
+				<td colspan="3"><c:out value="${role.description}"/></td>
+          	</tr>
 		</table>
 		</td>
 	</tr>

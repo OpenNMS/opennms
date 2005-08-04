@@ -82,11 +82,11 @@ public class WebRole {
         return null;
     }
     
-    public WebCalendar getMonthlyCalendar() {
-        return getMonthlyCalendar(new Date());
+    public WebCalendar getCalendar() {
+        return getCalendar(new Date());
     }
 
-    public WebCalendar getMonthlyCalendar(Date month) {
+    public WebCalendar getCalendar(Date month) {
         return new MonthlyCalendar(month);
     }
 

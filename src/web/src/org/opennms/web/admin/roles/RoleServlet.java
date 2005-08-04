@@ -15,17 +15,14 @@ import javax.servlet.http.HttpServletResponse;
  *
  */
  public class RoleServlet extends javax.servlet.http.HttpServlet implements javax.servlet.Servlet {
+    private static final String TEST = "/admin/userGroupView/test.jsp";
     private static final String LIST = "/admin/userGroupView/roles/list.jsp";
     private static final String VIEW = "/admin/userGroupView/roles/view.jsp";
     private static final String EDIT_DETAILS = "/admin/userGroupView/roles/editDetails.jsp";
     private static final String EDIT_SCHED = "/admin/userGroupView/roles/editSchedule.jsp";
-    private WebRoleManager m_roleManager;
-
     
     public RoleServlet() {
 		super();
-        m_roleManager = new WebRoleManager();
-        
 	}
     
     private interface Action {
@@ -34,7 +31,7 @@ import javax.servlet.http.HttpServletResponse;
     
     private class ListAction implements Action {
         public String execute(HttpServletRequest request, HttpServletResponse response) {
-            request.setAttribute("roleList", m_roleManager.getRoles());
+            request.setAttribute("roleList", getRoleManager().getRoles());
             return LIST;
         }
         
@@ -42,7 +39,7 @@ import javax.servlet.http.HttpServletResponse;
     
     private class DeleteAction implements Action {
         public String execute(HttpServletRequest request, HttpServletResponse response) throws ServletException {
-            m_roleManager.delete(request.getParameter("role"));
+            getRoleManager().delete(request.getParameter("role"));
             Action list = new ListAction();
             return list.execute(request, response);
         }
@@ -53,11 +50,14 @@ import javax.servlet.http.HttpServletResponse;
         
         public String execute(HttpServletRequest request, HttpServletResponse response) throws ServletException {
             try {
-                WebRole role = m_roleManager.getRole(request.getParameter("role"));
-                request.setAttribute("role", role);
+                WebRole role = (WebRole)request.getAttribute("role");
+                if (role == null) {
+                    role = getRoleManager().getRole(request.getParameter("role"));
+                    request.setAttribute("role", role);
+                }
                 String dateSpec = request.getParameter("month");
                 Date month = (dateSpec == null ? new Date() : new SimpleDateFormat("MM-yyyy").parse(dateSpec));
-                WebCalendar calendar = role.getMonthlyCalendar(month);
+                WebCalendar calendar = role.getCalendar(month);
                 request.setAttribute("calendar", calendar);
                 return VIEW;
             } catch (ParseException e) {
@@ -71,11 +71,11 @@ import javax.servlet.http.HttpServletResponse;
         
         public String execute(HttpServletRequest request, HttpServletResponse response) throws ServletException {
             try {
-                WebRole role = m_roleManager.getRole(request.getParameter("role"));
+                WebRole role = getRoleManager().getRole(request.getParameter("role"));
                 request.setAttribute("role", role);
                 String dateSpec = request.getParameter("month");
                 Date month = (dateSpec == null ? new Date() : new SimpleDateFormat("MM-yyyy").parse(dateSpec));
-                WebCalendar calendar = role.getMonthlyCalendar(month);
+                WebCalendar calendar = role.getCalendar(month);
                 request.setAttribute("calendar", calendar);
                 return EDIT_DETAILS;
             } catch (ParseException e) {
@@ -85,15 +85,43 @@ import javax.servlet.http.HttpServletResponse;
         
     }
     
+    private class SaveDetailsAction implements Action {
+        
+        public String execute(HttpServletRequest request, HttpServletResponse response) throws ServletException {
+//            try {
+//                WebRole role = getRoleManager().getRole(request.getParameter("role"));
+//                request.setAttribute("role", role);
+//                String dateSpec = request.getParameter("month");
+//                Date month = (dateSpec == null ? new Date() : new SimpleDateFormat("MM-yyyy").parse(dateSpec));
+//                WebCalendar calendar = role.getMonthlyCalendar(month);
+//                request.setAttribute("calendar", calendar);
+//                return EDIT_DETAILS;
+//            } catch (ParseException e) {
+//                throw new ServletException("Unable to parse date: "+e.getMessage(), e);
+//            }
+            if (request.getParameter("save") != null) {
+                WebRole role = getRoleManager().getRole(request.getParameter("role"));
+                request.setAttribute("role", role);
+                role.setName(request.getParameter("roleName"));
+                role.setDefaultUser(request.getParameter("roleUser"));
+                role.setMembershipGroup(request.getParameter("roleGroup"));
+                role.setDescription(request.getParameter("roleDescr"));
+                getRoleManager().save();
+            }
+            return new ViewAction().execute(request, response);
+        }
+        
+    }
+    
     private class EditScheduleAction implements Action {
         
         public String execute(HttpServletRequest request, HttpServletResponse response) throws ServletException {
             try {
-                WebRole role = m_roleManager.getRole(request.getParameter("role"));
+                WebRole role = getRoleManager().getRole(request.getParameter("role"));
                 request.setAttribute("role", role);
                 String dateSpec = request.getParameter("month");
                 Date month = (dateSpec == null ? new Date() : new SimpleDateFormat("MM-yyyy").parse(dateSpec));
-                WebCalendar calendar = role.getMonthlyCalendar(month);
+                WebCalendar calendar = role.getCalendar(month);
                 request.setAttribute("calendar", calendar);
                 return EDIT_SCHED;
             } catch (ParseException e) {
@@ -120,6 +148,8 @@ import javax.servlet.http.HttpServletResponse;
             return new ViewAction();
         else if ("editDetails".equals(op))
             return new EditDetailsAction();
+        else if ("saveDetails".equals(op))
+            return new SaveDetailsAction();
         else if ("editSchedule".equals(op))
             return new EditScheduleAction();
         else
@@ -138,5 +168,21 @@ import javax.servlet.http.HttpServletResponse;
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         doIt(request, response);
-	}   	  	    
+	}
+
+    public void init() throws ServletException {
+        super.init();
+
+        getServletContext().setAttribute("roleManager", new WebRoleManager());
+        getServletContext().setAttribute("userManager", new WebUserManager());
+        getServletContext().setAttribute("groupManager", new WebGroupManager());
+        
+
+    }
+
+    private WebRoleManager getRoleManager() {
+        return (WebRoleManager)getServletContext().getAttribute("roleManager");
+    }
+    
+    
 }

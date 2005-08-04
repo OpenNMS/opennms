@@ -31,51 +31,36 @@
 //
 package org.opennms.web.admin.roles;
 
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-
-public class WebRoleManager {
+public class WebUser {
     
-    private Collection m_roles;
+    private String m_name;
     
-    public WebRoleManager() {
-        List list = new LinkedList();
-        for(int i = 0; i < 11; i++) {
-          list.add(new WebRole());  
-        }
-
-        m_roles = list;
+    static private int count = 1;
+    
+    public WebUser() {
+        m_name = "defaultUser"+count++;
     }
     
-    public Collection getRoles() {
-        return m_roles;
+    public String getName() {
+        return m_name;
+    }
+    
+    public String toString() {
+        return m_name;
     }
 
-    public void delete(String roleName) {
-        for (Iterator it = m_roles.iterator(); it.hasNext();) {
-            WebRole role = (WebRole) it.next();
-            if (roleName.equals(role.getName())) {
-                it.remove();
-                return;
-            }
+    public boolean equals(Object obj) {
+        if (obj instanceof WebUser) {
+            WebUser u = (WebUser)obj;
+            return m_name.equals(u.m_name);
         }
+        return false;
     }
 
-    public WebRole getRole(String roleName) {
-        for (Iterator it = m_roles.iterator(); it.hasNext();) {
-            WebRole role = (WebRole) it.next();
-            if (roleName.equals(role.getName())) {
-                return role;
-            }
-        }
-        return null;
+    public int hashCode() {
+        return m_name.hashCode();
     }
-
-    public void save() {
-        // TODO Auto-generated method stub
-        
-    }
+    
+    
 
 }

@@ -32,50 +32,25 @@
 package org.opennms.web.admin.roles;
 
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-public class WebRoleManager {
+public class WebUserManager {
     
-    private Collection m_roles;
+    private Collection m_users;
     
-    public WebRoleManager() {
+    public WebUserManager() {
         List list = new LinkedList();
         for(int i = 0; i < 11; i++) {
-          list.add(new WebRole());  
+          list.add(new WebUser());  
         }
 
-        m_roles = list;
+        m_users = list;
+
     }
     
-    public Collection getRoles() {
-        return m_roles;
-    }
-
-    public void delete(String roleName) {
-        for (Iterator it = m_roles.iterator(); it.hasNext();) {
-            WebRole role = (WebRole) it.next();
-            if (roleName.equals(role.getName())) {
-                it.remove();
-                return;
-            }
-        }
-    }
-
-    public WebRole getRole(String roleName) {
-        for (Iterator it = m_roles.iterator(); it.hasNext();) {
-            WebRole role = (WebRole) it.next();
-            if (roleName.equals(role.getName())) {
-                return role;
-            }
-        }
-        return null;
-    }
-
-    public void save() {
-        // TODO Auto-generated method stub
-        
+    public Collection getUsers() {
+        return m_users;
     }
 
 }
