@@ -17,6 +17,8 @@ import javax.servlet.http.HttpServletResponse;
  public class RoleServlet extends javax.servlet.http.HttpServlet implements javax.servlet.Servlet {
     private static final String LIST = "/admin/userGroupView/roles/list.jsp";
     private static final String VIEW = "/admin/userGroupView/roles/view.jsp";
+    private static final String EDIT_DETAILS = "/admin/userGroupView/roles/editDetails.jsp";
+    private static final String EDIT_SCHED = "/admin/userGroupView/roles/editSchedule.jsp";
     private WebRoleManager m_roleManager;
 
     
@@ -65,6 +67,42 @@ import javax.servlet.http.HttpServletResponse;
         
     }
     
+    private class EditDetailsAction implements Action {
+        
+        public String execute(HttpServletRequest request, HttpServletResponse response) throws ServletException {
+            try {
+                WebRole role = m_roleManager.getRole(request.getParameter("role"));
+                request.setAttribute("role", role);
+                String dateSpec = request.getParameter("month");
+                Date month = (dateSpec == null ? new Date() : new SimpleDateFormat("MM-yyyy").parse(dateSpec));
+                WebCalendar calendar = role.getMonthlyCalendar(month);
+                request.setAttribute("calendar", calendar);
+                return EDIT_DETAILS;
+            } catch (ParseException e) {
+                throw new ServletException("Unable to parse date: "+e.getMessage(), e);
+            }
+        }
+        
+    }
+    
+    private class EditScheduleAction implements Action {
+        
+        public String execute(HttpServletRequest request, HttpServletResponse response) throws ServletException {
+            try {
+                WebRole role = m_roleManager.getRole(request.getParameter("role"));
+                request.setAttribute("role", role);
+                String dateSpec = request.getParameter("month");
+                Date month = (dateSpec == null ? new Date() : new SimpleDateFormat("MM-yyyy").parse(dateSpec));
+                WebCalendar calendar = role.getMonthlyCalendar(month);
+                request.setAttribute("calendar", calendar);
+                return EDIT_SCHED;
+            } catch (ParseException e) {
+                throw new ServletException("Unable to parse date: "+e.getMessage(), e);
+            }
+        }
+        
+    }
+    
     protected void doIt(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String reqUrl = request.getServletPath();
         request.setAttribute("reqUrl", reqUrl);
@@ -80,6 +118,10 @@ import javax.servlet.http.HttpServletResponse;
             return new DeleteAction();
         else if ("view".equals(op))
             return new ViewAction();
+        else if ("editDetails".equals(op))
+            return new EditDetailsAction();
+        else if ("editSchedule".equals(op))
+            return new EditScheduleAction();
         else
             return new ListAction();
     }

@@ -116,7 +116,7 @@
 		<tr>
 		<td>
 		<form action="<c:url value='${reqUrl}'/>" method="POST" name="editForm">
-			<input type="hidden" name="operation" value="edit"/>
+			<input type="hidden" name="operation" value="editDetails"/>
 			<input type="hidden" name="role" value="<c:out value='${role.name}'/>"/>
 			<input type="submit" value="Edit Details" />
 		</form>
@@ -200,6 +200,28 @@
 			</table>
 		</td>				
 	</tr>
+	<tr align="right">
+		<td>&nbsp;</td>
+		<td>
+		<table border="0">
+		<tr>
+		<td>
+		<form action="<c:url value='${reqUrl}'/>" method="POST" name="editForm">
+			<input type="hidden" name="operation" value="editSchedule"/>
+			<input type="hidden" name="role" value="<c:out value='${role.name}'/>"/>
+			<input type="submit" value="Edit Schedule" />
+		</form>
+		</td>
+		<td>
+		<form action="<c:url value='${reqUrl}'/>" method="POST" name="doneForm">
+			<input type="submit" value="Done" />
+		</form>
+		</td>
+		</tr>
+		</table>
+		</td>
+	</tr>
+	
 </table>
 <br/>
 <jsp:include page="/includes/footer.jsp" flush="false" />
