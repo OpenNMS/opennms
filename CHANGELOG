@@ -1,5 +1,7 @@
 1.2.3 to 1.2.4
 ----------------------------------------------------------------------
+- Colored the background of notification IDs to match the severity
+  of the event that triggered the notice. Bug 1262. Thx Eugene
 - Display notification totals for both the logged in user and everyone
   else. Bug 1257. Thx Bill.
 - Made a change to prevent duplicate "Update SNMP" links.
