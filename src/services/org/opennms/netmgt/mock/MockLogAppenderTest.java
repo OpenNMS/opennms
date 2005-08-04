@@ -47,6 +47,7 @@ public class MockLogAppenderTest extends TestCase {
         super.setUp();
         MockLogAppender.setupLogging(false);
         MockLogAppender.resetLogLevel();
+		Thread.sleep(500);
     }
 	
     protected void tearDown() throws Exception {
