@@ -70,17 +70,20 @@ import javax.servlet.http.HttpServletResponse;
     private class EditDetailsAction implements Action {
         
         public String execute(HttpServletRequest request, HttpServletResponse response) throws ServletException {
-            try {
-                WebRole role = getRoleManager().getRole(request.getParameter("role"));
-                request.setAttribute("role", role);
-                String dateSpec = request.getParameter("month");
-                Date month = (dateSpec == null ? new Date() : new SimpleDateFormat("MM-yyyy").parse(dateSpec));
-                WebCalendar calendar = role.getCalendar(month);
-                request.setAttribute("calendar", calendar);
-                return EDIT_DETAILS;
-            } catch (ParseException e) {
-                throw new ServletException("Unable to parse date: "+e.getMessage(), e);
-            }
+            WebRole role = getRoleManager().getRole(request.getParameter("role"));
+            request.setAttribute("role", role);
+            return EDIT_DETAILS;
+        }
+        
+    }
+    
+    private class NewAction implements Action {
+        
+        public String execute(HttpServletRequest request, HttpServletResponse response) throws ServletException {
+            WebRole role = new WebRole();
+            role.setName("NewRole");
+            request.setAttribute("role", role);
+            return EDIT_DETAILS;
         }
         
     }
@@ -88,19 +91,14 @@ import javax.servlet.http.HttpServletResponse;
     private class SaveDetailsAction implements Action {
         
         public String execute(HttpServletRequest request, HttpServletResponse response) throws ServletException {
-//            try {
-//                WebRole role = getRoleManager().getRole(request.getParameter("role"));
-//                request.setAttribute("role", role);
-//                String dateSpec = request.getParameter("month");
-//                Date month = (dateSpec == null ? new Date() : new SimpleDateFormat("MM-yyyy").parse(dateSpec));
-//                WebCalendar calendar = role.getMonthlyCalendar(month);
-//                request.setAttribute("calendar", calendar);
-//                return EDIT_DETAILS;
-//            } catch (ParseException e) {
-//                throw new ServletException("Unable to parse date: "+e.getMessage(), e);
-//            }
             if (request.getParameter("save") != null) {
-                WebRole role = getRoleManager().getRole(request.getParameter("role"));
+                String roleName = request.getParameter("role");
+                WebRole role = getRoleManager().getRole(roleName);
+                if (role == null) {
+                    // this is a new role so create a new on and add it to the roleManager
+                    role = new WebRole();
+                    getRoleManager().addRole(role);
+                }
                 request.setAttribute("role", role);
                 role.setName(request.getParameter("roleName"));
                 role.setDefaultUser(request.getParameter("roleUser"));
@@ -146,6 +144,8 @@ import javax.servlet.http.HttpServletResponse;
             return new DeleteAction();
         else if ("view".equals(op))
             return new ViewAction();
+        else if ("new".equals(op))
+            return new NewAction();
         else if ("editDetails".equals(op))
             return new EditDetailsAction();
         else if ("saveDetails".equals(op))

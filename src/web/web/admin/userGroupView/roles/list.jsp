@@ -94,6 +94,10 @@
 	<tr>
 		<td>&nbsp;</td>
 		<td>
+		 <form action="<c:url value='${reqUrl}'/>" method="POST" name="newForm">
+		 	<input name="operation" type="hidden" value="new"/>
+		 	<input type="submit" value="New Role"/>
+		 </form>
 		 <table width="100%" border="1" cellspacing="0" cellpadding="2" bordercolor="black">
 
          <tr bgcolor="#999999">

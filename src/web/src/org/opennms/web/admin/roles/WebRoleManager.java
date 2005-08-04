@@ -78,4 +78,11 @@ public class WebRoleManager {
         
     }
 
+    public void addRole(WebRole role) {
+        if (getRole(role.getName()) != null)
+            throw new IllegalArgumentException("Role with name "+role.getName()+" already exists.");
+        
+        m_roles.add(role);
+    }
+
 }
