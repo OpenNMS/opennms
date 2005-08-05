@@ -136,6 +136,11 @@ public class HttpPlugin extends AbstractTcpPlugin {
     public static final String QUERY_STRING = "GET / HTTP/1.0\r\n\r\n";
 
     /**
+     * The query to send to the HTTP server
+     */
+    public static final String DEFAULT_URL = "/";
+
+    /**
      * A string to look for in the response from the server
      */
     public static final String RESPONSE_STRING = "HTTP/";
@@ -191,7 +196,10 @@ public class HttpPlugin extends AbstractTcpPlugin {
     protected boolean checkProtocol(Socket socket, ConnectionConfig config) throws IOException {
         boolean isAServer = false;
 
+	m_queryString = "GET " + config.getKeyedString("url", DEFAULT_URL) + " HTTP/1.0\r\n\r\n";
+
         Category log = ThreadCategory.getInstance(getClass());
+        log.debug( "Query: " + m_queryString);
 
         try {
             BufferedReader lineRdr = new BufferedReader(new InputStreamReader(socket.getInputStream()));
@@ -222,10 +230,16 @@ public class HttpPlugin extends AbstractTcpPlugin {
             if (response.toString() != null && response.toString().indexOf(m_responseString) > -1) 
             {
                 if (m_checkReturnCode) {
+		    int maxRetCode = 399;
+		    if (DEFAULT_URL.equals(config.getKeyedString("url", DEFAULT_URL)))
+		    {
+			maxRetCode = 600;
+		    }	
                     StringTokenizer t = new StringTokenizer(response.toString());
                     t.nextToken();
                     int rVal = Integer.parseInt(t.nextToken());
-                    if (rVal >= 99 && rVal <= 600)
+            	    log.debug(getPluginName() + ": Request returned code: " + rVal);
+                    if (rVal >= 99 && rVal <= maxRetCode )
                         isAServer = true;
                 } else {
                     isAServer = true;

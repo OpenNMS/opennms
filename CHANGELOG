@@ -1,5 +1,7 @@
 1.2.3 to 1.2.4
 ----------------------------------------------------------------------
+- Added the ability to use a URL in the HTTP and HTTPS Monitors.
+  Bug 848.
 - Colored the background of notification IDs to match the severity
   of the event that triggered the notice. Bug 1262. Thx Eugene
 - Display notification totals for both the logged in user and everyone
