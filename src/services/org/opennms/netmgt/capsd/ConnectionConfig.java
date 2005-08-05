@@ -57,6 +57,10 @@ public class ConnectionConfig {
     public InetSocketAddress getSocketAddress() {
         return new InetSocketAddress(getInetAddress(), getPort());
     }
+    
+    public void setQualifiers(Map qualifiers) {
+        m_qualifiers = qualifiers;
+    }
 
     /**
      * @return Returns the address.
