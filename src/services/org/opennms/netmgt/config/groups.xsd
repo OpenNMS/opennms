@@ -27,6 +27,8 @@
         <element maxOccurs="1" minOccurs="1" ref="typ:header"/>
 
         <element maxOccurs="1" minOccurs="0" ref="this:groups"/>
+
+        <element maxOccurs="1" minOccurs="0" ref="this:roles"/>
       </sequence>
     </complexType>
   </element>
@@ -48,9 +50,37 @@
 
         <element maxOccurs="unbounded" minOccurs="0" name="user" type="string"/>
 
-        <element maxOccurs="unbounded" minOccurs="0" name="duty-schedule"
-                 type="string"/>
+        <element maxOccurs="unbounded" minOccurs="0" name="duty-schedule" type="string"/>
       </sequence>
     </complexType>
   </element>
+  
+    <element name="roles">
+    <complexType>
+      <sequence>
+        <element maxOccurs="unbounded" minOccurs="1" ref="this:role"/>
+      </sequence>
+    </complexType>
+  </element>
+
+  <element name="role">
+    <complexType>
+      <sequence>
+        <element maxOccurs="unbounded" minOccurs="0" ref="this:schedule"/>
+      </sequence>
+	  <attribute name="name" type="string" use="required"/>
+	  <attribute name="membership-group" type="string" use="required"/>
+	  <attribute name="superviser" type="string" use="required"/>
+	  <attribute name="description" type="string" use="optional"/>
+    </complexType>
+  </element>
+
+  <element name="schedule">
+    <complexType>
+      <complexContent>
+        <extension base="typ:basicSchedule"/>
+      </complexContent>
+    </complexType>
+  </element>
+  
 </schema>

@@ -37,7 +37,7 @@ import java.util.Date;
 
 import junit.framework.TestCase;
 
-public class MonthlyCalendarTest extends TestCase {
+public class RolesTest extends TestCase {
 
 
     protected void setUp() throws Exception {
@@ -46,6 +46,10 @@ public class MonthlyCalendarTest extends TestCase {
 
     protected void tearDown() throws Exception {
         super.tearDown();
+    }
+    
+    public void testRoles() {
+        
     }
     
     public void testWeekCount() throws Exception {

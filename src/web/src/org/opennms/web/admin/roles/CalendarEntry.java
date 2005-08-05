@@ -33,13 +33,13 @@ package org.opennms.web.admin.roles;
 
 import java.util.Date;
 
-public class ScheduleEntry {
+public class CalendarEntry {
     
     Date m_start;
     Date m_end;
     String m_descr;
     
-    public ScheduleEntry(Date start, Date end, String descr) {
+    public CalendarEntry(Date start, Date end, String descr) {
         m_start = start;
         m_end = end;
         m_descr = descr;

@@ -68,11 +68,11 @@ public class Day {
         return time.getTime();
     }
     
-    public ScheduleEntry[] getEntries() {
-        ScheduleEntry[] entries = new ScheduleEntry[3];
-        entries[0] = new ScheduleEntry(getTime(0, 0), getTime(9, 0), "defaultUser2");
-        entries[1] = new ScheduleEntry(getTime(9, 0), getTime(15, 0), "mhuot");
-        entries[2] = new ScheduleEntry(getTime(15, 0), getTime(24, 0), "defaultUser2");
+    public CalendarEntry[] getEntries() {
+        CalendarEntry[] entries = new CalendarEntry[3];
+        entries[0] = new CalendarEntry(getTime(0, 0), getTime(9, 0), "defaultUser2");
+        entries[1] = new CalendarEntry(getTime(9, 0), getTime(15, 0), "mhuot");
+        entries[2] = new CalendarEntry(getTime(15, 0), getTime(24, 0), "defaultUser2");
         return entries;
     }
 

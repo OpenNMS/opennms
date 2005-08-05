@@ -94,7 +94,7 @@ import javax.servlet.http.HttpServletResponse;
                 Date endDate = getDateParameters("end", request);
                 request.setAttribute("startDate", startDate);
                 request.setAttribute("endDate", endDate);
-                return new ViewAction().execute(request, response);
+                return TEST;
             } catch (ParseException e) {
                 throw new ServletException("Unable to parse date: "+e.getMessage(), e);
             }
