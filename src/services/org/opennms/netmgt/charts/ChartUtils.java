@@ -118,7 +118,7 @@ public class ChartUtils {
      */
     public static JFreeChart getBarChart(String chartName) throws MarshalException, ValidationException, IOException, SQLException {
 
-        ChartConfigFactory.reload();
+        //ChartConfigFactory.reload();
         
         BarChart chartConfig = null;
         chartConfig = getBarChartConfigByName(chartName);
