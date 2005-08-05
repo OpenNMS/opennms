@@ -43,6 +43,10 @@ public class WebGroup {
         m_name = "membershipGroup"+count++;
     }
     
+    public WebGroup(String name) {
+        m_name = name;
+    }
+    
     public String getName() {
         return m_name;
     }

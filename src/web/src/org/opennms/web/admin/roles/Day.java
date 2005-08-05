@@ -48,6 +48,10 @@ public class Day {
         m_calendar.setTime(date);
     }
     
+    public Date getDate() {
+        return m_calendar.getTime();
+    }
+    
     public int getMonth() { return m_calendar.get(Calendar.MONTH); }
 
     public int getDayOfMonth() { return m_calendar.get(Calendar.DAY_OF_MONTH); }

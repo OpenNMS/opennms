@@ -62,8 +62,8 @@ public class WebRole {
     public void setDescription(String description) {
         m_description = description;
     }
-    public String getMembershipGroup() {
-        return m_membershipGroup;
+    public WebGroup getMembershipGroup() {
+        return new WebGroup(m_membershipGroup);
     }
     public void setMembershipGroup(String memberShipGroup) {
         m_membershipGroup = memberShipGroup;

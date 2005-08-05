@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Map;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -19,7 +20,7 @@ import javax.servlet.http.HttpServletResponse;
     private static final String LIST = "/admin/userGroupView/roles/list.jsp";
     private static final String VIEW = "/admin/userGroupView/roles/view.jsp";
     private static final String EDIT_DETAILS = "/admin/userGroupView/roles/editDetails.jsp";
-    private static final String EDIT_SCHED = "/admin/userGroupView/roles/editSchedule.jsp";
+    private static final String ADD_ENTRY = "/admin/userGroupView/roles/addEntry.jsp";
     
     public RoleServlet() {
 		super();
@@ -63,6 +64,56 @@ import javax.servlet.http.HttpServletResponse;
             } catch (ParseException e) {
                 throw new ServletException("Unable to parse date: "+e.getMessage(), e);
             }
+        }
+        
+    }
+    
+    private class AddEntryAction implements Action {
+        
+        public String execute(HttpServletRequest request, HttpServletResponse response) throws ServletException {
+            try {
+                WebRole role = getRoleManager().getRole(request.getParameter("role"));
+                request.setAttribute("role", role);
+                Date date = new SimpleDateFormat("MM-dd-yyyy").parse(request.getParameter("date"));
+                request.setAttribute("date", date);
+                return ADD_ENTRY;
+            } catch (ParseException e) {
+                throw new ServletException("Unable to parse date: "+e.getMessage(), e);
+            }
+        }
+        
+    }
+    
+    private class SaveEntryAction implements Action {
+        
+        public String execute(HttpServletRequest request, HttpServletResponse response) throws ServletException {
+            try {
+                WebRole role = getRoleManager().getRole(request.getParameter("role"));
+                request.setAttribute("role", role);
+                Date startDate = getDateParameters("start", request);
+                Date endDate = getDateParameters("end", request);
+                request.setAttribute("startDate", startDate);
+                request.setAttribute("endDate", endDate);
+                return new ViewAction().execute(request, response);
+            } catch (ParseException e) {
+                throw new ServletException("Unable to parse date: "+e.getMessage(), e);
+            }
+        }
+
+        private Date getDateParameters(String prefix, HttpServletRequest request) throws ParseException {
+            StringBuffer buf = new StringBuffer();
+            buf.append(request.getParameter(prefix+"Month"));
+            buf.append('-');
+            buf.append(request.getParameter(prefix+"Date"));
+            buf.append('-');
+            buf.append(request.getParameter(prefix+"Year"));
+            buf.append(' ');
+            buf.append(request.getParameter(prefix+"Hour"));
+            buf.append(':');
+            buf.append(request.getParameter(prefix+"Minute"));
+            buf.append(' ');
+            buf.append(request.getParameter(prefix+"AmOrPm"));
+            return new SimpleDateFormat("M-d-yyyy h:m a").parse(buf.toString());
         }
         
     }
@@ -132,6 +183,10 @@ import javax.servlet.http.HttpServletResponse;
             return new EditDetailsAction();
         else if ("saveDetails".equals(op))
             return new SaveDetailsAction();
+        else if ("addEntry".equals(op))
+            return new AddEntryAction();
+        else if ("saveEntry".equals(op))
+            return new SaveEntryAction();
         else
             return new ListAction();
     }

@@ -79,6 +79,12 @@
 	function nextMonth() {
 		document.nextMonthForm.submit();
 	}
+	
+	function addEntry(date) {
+		document.addEntryForm.date.value = date;
+		document.addEntryForm.submit();
+		
+	}
 
 </script>
 
@@ -169,6 +175,11 @@
 					<input type="hidden" name="role" value="<c:out value='${role.name}'/>"/>
 					<input type="hidden" name="month" value="<fmt:formatDate value='${calendar.nextMonth}' type='date' pattern='MM-yyyy'/>"/>
 				</form>
+				<form action="<c:url value='${reqUrl}'/>" method="POST" name="addEntryForm">
+					<input type="hidden" name="operation" value="addEntry"/>
+					<input type="hidden" name="role" value="<c:out value='${role.name}'/>"/>
+					<input type="hidden" name="date"/>
+				</form>
 			</td>
 		<td colspan="4">
 			<table  border="1" cellspacing="0" cellpadding="2" bordercolor="black">
@@ -189,7 +200,8 @@
 					<c:forEach var="day" items="${week.days}">
 					<td>
 					<c:if test="${calendar.month == day.month}">
-						<b class="date"><c:out value="${day.dayOfMonth}"/></b><a class="new" href=""><img src="images/new.gif"/></a>
+						<c:set var="href">javascript:addEntry('<fmt:formatDate value='${day.date}' type='date' pattern='MM-dd-yyyy'/>')</c:set>
+						<b class="date"><c:out value="${day.dayOfMonth}"/></b><a class="new" href="<c:out value='${href}' escapeXml='false'/>"><img src="images/new.gif"/></a>
 						<c:forEach var="entry" items="${day.entries}">
 							<fmt:formatDate value="${entry.startTime}" type="time" pattern="h:mm'&nbsp;'a"/>:&nbsp;<c:out value="${entry.description}"/><br/>
 						</c:forEach>
