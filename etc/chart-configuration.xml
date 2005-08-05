@@ -7,17 +7,18 @@
   	show-legend="true" 
   	plot-orientation="vertical" 
   	draw-bar-outline="true" 
-  	range-axis-label="Count" 
+  	range-axis-label="Count"
+  	sub-label-class="org.opennms.netmgt.charts.SeveritySubLabels" 
   	show-urls="false"
     show-tool-tips="false">
       
     <tns:title font="SansSerif" style="" value="Alarms" pitch="12" />
     <tns:image-size>
       <tns:hz-size>
-        <tns:pixels>600</tns:pixels>
+        <tns:pixels>450</tns:pixels>
       </tns:hz-size>
       <tns:vt-size>
-        <tns:pixels>400</tns:pixels>
+        <tns:pixels>300</tns:pixels>
       </tns:vt-size>
     </tns:image-size>
     <tns:sub-title position="top" horizontal-alignment="center">
@@ -81,10 +82,10 @@
     <tns:title font="SansSerif" style="" value="Last 7 Days Outages" pitch="12" />
     <tns:image-size>
       <tns:hz-size>
-        <tns:pixels>600</tns:pixels>
+        <tns:pixels>450</tns:pixels>
       </tns:hz-size>
       <tns:vt-size>
-        <tns:pixels>400</tns:pixels>
+        <tns:pixels>300</tns:pixels>
       </tns:vt-size>
     </tns:image-size>
     <tns:sub-title position="top" horizontal-alignment="center">
@@ -132,8 +133,5 @@
       </tns:rgb>
     </tns:series-def>
   </tns:bar-chart>
-
-
-
 
 </tns:chart-configuration>

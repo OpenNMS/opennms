@@ -43,6 +43,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.text.DecimalFormat;
 import java.util.Iterator;
+import java.util.List;
 
 import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
@@ -50,6 +51,7 @@ import org.exolab.castor.xml.ValidationException;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartUtilities;
 import org.jfree.chart.JFreeChart;
+import org.jfree.chart.axis.ExtendedCategoryAxis;
 import org.jfree.chart.labels.CategoryItemLabelGenerator;
 import org.jfree.chart.labels.StandardCategoryItemLabelGenerator;
 import org.jfree.chart.plot.CategoryPlot;
@@ -116,25 +118,143 @@ public class ChartUtils {
      */
     public static JFreeChart getBarChart(String chartName) throws MarshalException, ValidationException, IOException, SQLException {
 
+        ChartConfigFactory.reload();
+        
         BarChart chartConfig = null;
-        Connection conn = null;
         chartConfig = getBarChartConfigByName(chartName);
         
         if (chartConfig == null) {
             throw new IllegalArgumentException("getBarChart: Invalid chart name.");
         }
         
-        /*
-         * Get a database connection and create a JDBC based data set.
-         */
-        conn = DatabaseConnectionFactory.getInstance().getConnection();
-        DefaultCategoryDataset baseDataSet = new DefaultCategoryDataset();
+        DefaultCategoryDataset baseDataSet = buildCategoryDataSet(chartConfig);        
+        JFreeChart barChart = createBarChart(chartConfig, baseDataSet);
+        addSubTitles(chartConfig, barChart);
+
+        String subLabelClass = chartConfig.getSubLabelClass();
+        if(subLabelClass != null) {
+            addSubLabels(barChart, subLabelClass);
+        }
         
+
+        customizeSeries(barChart, chartConfig);
+
+        return barChart;
+        
+    }
+
+    /**
+     * @param barChart TODO
+     * @param subLabelClass
+     */
+    private static void addSubLabels(JFreeChart barChart, String subLabelClass) {
+        ExtendedCategoryAxis subLabels;
+        CategoryPlot plot = barChart.getCategoryPlot();
+        try {
+            subLabels = (ExtendedCategoryAxis) Class.forName(subLabelClass).newInstance();
+            List cats = plot.getCategories();
+            for(int i=0; i<cats.size(); i++) {
+                subLabels.addSubLabel((Comparable)cats.get(i), cats.get(i).toString());
+            }
+            plot.setDomainAxis(subLabels);
+        } catch (InstantiationException e) {
+            log().error("getBarChart: Couldn't instantiate configured CategorySubLabels class: "+subLabelClass, e);
+        } catch (IllegalAccessException e) {
+            log().error("getBarChart: Couldn't instantiate configured CategorySubLabels class: "+subLabelClass, e);
+        } catch (ClassNotFoundException e) {
+            log().error("getBarChart: Couldn't instantiate configured CategorySubLabels class: "+subLabelClass, e);
+        }
+    }
+
+    /**
+     * @param barChart TODO
+     * @param chartConfig
+     */
+    private static void customizeSeries(JFreeChart barChart, BarChart chartConfig) {
+        
+        /*
+         * Set the series colors and labels
+         */
+        CategoryItemLabelGenerator itemLabelGenerator = new StandardCategoryItemLabelGenerator("{2}", new DecimalFormat("0"));
+        SeriesDef[] seriesDefs = chartConfig.getSeriesDef();
+        CustomSeriesColors seriesColors = null;
+        
+        if (chartConfig.getSeriesColorClass() != null) {
+            try {
+                seriesColors = (CustomSeriesColors) Class.forName(chartConfig.getSeriesColorClass()).newInstance();
+            } catch (InstantiationException e) {
+                log().error("getBarChart: Couldn't instantiate configured CustomSeriesColors class: "+seriesColors, e);
+            } catch (IllegalAccessException e) {
+                log().error("getBarChart: Couldn't instantiate configured CustomSeriesColors class: "+seriesColors, e);
+            } catch (ClassNotFoundException e) {
+                log().error("getBarChart: Couldn't instantiate configured CustomSeriesColors class: "+seriesColors, e);
+            }
+        }
+
+        for (int i = 0; i < seriesDefs.length; i++) {
+            SeriesDef seriesDef = seriesDefs[i];
+            Paint paint = Color.BLACK;
+            if (seriesColors != null) {
+                Comparable cat = (Comparable)((BarRenderer)barChart.getCategoryPlot().getRenderer()).getPlot().getCategories().get(i);
+                paint = seriesColors.getPaint(cat);
+            } else {
+                Rgb rgb = seriesDef.getRgb();
+                paint = new Color(rgb.getRed().getRgbColor(), rgb.getGreen().getRgbColor(), rgb.getBlue().getRgbColor());
+            }
+            ((BarRenderer)barChart.getCategoryPlot().getRenderer()).setSeriesPaint(i, paint);
+            ((BarRenderer)barChart.getCategoryPlot().getRenderer()).setSeriesItemLabelsVisible(i, seriesDef.getUseLabels());
+            ((BarRenderer)barChart.getCategoryPlot().getRenderer()).setSeriesItemLabelGenerator(i, itemLabelGenerator);
+        }
+    }
+
+    /**
+     * @param chartConfig
+     * @param barChart
+     */
+    private static void addSubTitles(BarChart chartConfig, JFreeChart barChart) {
+        Iterator it;
+        /*
+         * Add subtitles.
+         */
+        for (it = chartConfig.getSubTitleCollection().iterator(); it.hasNext();) {
+            SubTitle subTitle = (SubTitle) it.next();
+            Title title = subTitle.getTitle();
+            String value = title.getValue();
+            barChart.addSubtitle(new TextTitle(value));
+        }
+    }
+
+    /**
+     * @param chartConfig
+     * @param baseDataSet
+     * @return
+     */
+    private static JFreeChart createBarChart(BarChart chartConfig, DefaultCategoryDataset baseDataSet) {
+        PlotOrientation po = (chartConfig.getPlotOrientation() == "horizontal" ? PlotOrientation.HORIZONTAL : PlotOrientation.VERTICAL);        
+        JFreeChart barChart = ChartFactory.createBarChart(chartConfig.getTitle().getValue(),
+                chartConfig.getDomainAxisLabel(),
+                chartConfig.getRangeAxisLabel(),
+                baseDataSet,
+                po,
+                chartConfig.getShowLegend(),
+                chartConfig.getShowToolTips(),
+                chartConfig.getShowUrls());
+        return barChart;
+    }
+
+    /**
+     * @param chartConfig
+     * @param baseDataSet
+     * @throws SQLException
+     */
+    private static DefaultCategoryDataset buildCategoryDataSet(BarChart chartConfig) throws SQLException {
+        DefaultCategoryDataset baseDataSet = new DefaultCategoryDataset();
         /*
          * Configuration can contain more than one series.  This loop adds
          * single series data sets returned from sql query to a base data set
          * to be displayed in a the chart. 
          */
+        Connection conn = DatabaseConnectionFactory.getInstance().getConnection();
         Iterator it = chartConfig.getSeriesDefCollection().iterator();
         while (it.hasNext()) {
             SeriesDef def = (SeriesDef) it.next();
@@ -146,49 +266,7 @@ public class ChartUtils {
                 }
             }
         }
-
-        
-        PlotOrientation po = (chartConfig.getPlotOrientation() == "horizontal" ? PlotOrientation.HORIZONTAL : PlotOrientation.VERTICAL);
-        
-        JFreeChart barChart = ChartFactory.createBarChart(chartConfig.getTitle().getValue(),
-                chartConfig.getDomainAxisLabel(),
-                chartConfig.getRangeAxisLabel(),
-                baseDataSet,
-                po,
-                chartConfig.getShowLegend(),
-                chartConfig.getShowToolTips(),
-                chartConfig.getShowUrls());
-        
-        /*
-         * Add subtitles.
-         */
-        for (it = chartConfig.getSubTitleCollection().iterator(); it.hasNext();) {
-            SubTitle subTitle = (SubTitle) it.next();
-            Title title = subTitle.getTitle();
-            String value = title.getValue();
-            barChart.addSubtitle(new TextTitle(value));
-        }
-        
-        /*
-         * Set the series colors and labels
-         */
-        CategoryPlot plot = barChart.getCategoryPlot();
-        BarRenderer renderer = (BarRenderer)plot.getRenderer();
-        
-        CategoryItemLabelGenerator generator = new StandardCategoryItemLabelGenerator("{2}", new DecimalFormat("0"));
-        SeriesDef[] seriesDefs = chartConfig.getSeriesDef();
-
-        for (int i = 0; i < seriesDefs.length; i++) {
-            SeriesDef seriesDef = seriesDefs[i];
-            Rgb rgb = seriesDef.getRgb();
-            Paint paint = new Color(rgb.getRed().getRgbColor(), rgb.getGreen().getRgbColor(), rgb.getBlue().getRgbColor());
-            renderer.setSeriesPaint(i, paint);
-            renderer.setSeriesItemLabelsVisible(i, seriesDef.getUseLabels());
-            renderer.setSeriesItemLabelGenerator(i, generator);
-        }
-
-        return barChart;
-        
+        return baseDataSet;
     }
     
     /**

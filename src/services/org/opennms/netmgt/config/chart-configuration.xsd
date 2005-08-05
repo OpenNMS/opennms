@@ -84,6 +84,8 @@ TODO: XYDataSets
     			<attribute name="name" type="string" use="required" />
     			<attribute name="domain-axis-label" type="string" use="required" />
     			<attribute name="range-axis-label" type="string" use="required" />
+    			<attribute name="sub-label-class" type="string" use="optional" />
+    			<attribute name="series-color-class" type="string" use="optional" />
     			<attribute name="draw-bar-outline" type="boolean" use="optional" default="true"/>
     			<attribute name="show-legend" type="boolean" use="optional" default="true"/>
     			<attribute name="show-tool-tips" type="boolean" use="optional" default="false"/>
