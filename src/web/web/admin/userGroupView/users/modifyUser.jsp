@@ -239,7 +239,7 @@
     <table width="100%" border="0" cellspacing="0" cellpadding="2" >
       <tr>
         <td width="50%" valign="top">
-          <p><input id="resetPassword" type="button" value="Reset Password" onClick="resetPassword()" /></p>
+          <p><input type="button" value="Reset Password" onClick="resetPassword()" /></p>
 
           <p><table width="100%" border="0" cellspacing="0" cellpadding="2">
             <tr>
