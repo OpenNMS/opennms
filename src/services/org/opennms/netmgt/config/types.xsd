@@ -47,10 +47,17 @@
     </annotation>
 
     <complexType>
-      <attribute name="day" use="optional">
+    
+      <attribute name="id" use="optional" type="string">
         <annotation>
-          <documentation>day the outage applies</documentation>
+          <documentation>
+          	an identifier for this event used for reference in the web gui.  If this
+          	identifer is not assigned it will be assigned an identifer by web gui.
+          </documentation>
         </annotation>
+      </attribute>
+          	
+      <attribute name="day" use="optional">
 
         <simpleType>
           <restriction base="string">

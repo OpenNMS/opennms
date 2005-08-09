@@ -51,6 +51,7 @@ import org.opennms.netmgt.config.users.User;
 import org.opennms.netmgt.config.users.Userinfo;
 import org.opennms.netmgt.config.users.Users;
 import org.opennms.netmgt.mock.MockDatabase;
+import org.opennms.netmgt.mock.MockLogAppender;
 import org.opennms.netmgt.mock.MockNetwork;
 import org.opennms.netmgt.mock.MockUtil;
 import org.opennms.web.admin.users.parsers.DutySchedule;
@@ -71,7 +72,7 @@ public class ModifyUserWebTest extends OpenNMSWebTestCase {
 
     private File m_outagesFile;
     
-    private String m_usersFile = "../../etc/users.xml";
+    private String m_usersFile = "work/deploy/etc/users.xml";
     
     public static void main(String[] args) {
         junit.textui.TestRunner.run(ScheduleEditorWebTest.class);
@@ -79,19 +80,19 @@ public class ModifyUserWebTest extends OpenNMSWebTestCase {
 
     protected void setUp() throws Exception {
         MockUtil.println("------------ Begin Test " + getName() + " --------------------------");
+        MockLogAppender.setupLogging();
         
         // save of the users.xml file so we can restore it after the test
         copyFile(m_usersFile, m_usersFile+"."+getName()+"-sav");
         
-        m_servletRunner = new ServletRunner(new File("WEB-INF/web.xml"));
-        ServletUnitClient client = m_servletRunner.newClient();
+        m_servletRunner = new ServletRunner(new File(".deployables/opennms/WEB-INF/web.xml"), "/opennms");
 
         m_servletClient = m_servletRunner.newClient();
         
         m_testResponder = new TestDialogResponder();
         m_servletClient.setDialogResponder(m_testResponder);
         
-        getTestContext().setBaseUrl("http://localhost:8080/");
+        getTestContext().setBaseUrl("http://localhost:8080/opennms");
 
         getTestContext().setWebClient(m_servletClient);
         getTestContext().setAuthorization("admin", "OpenNMS Administrator");

@@ -54,6 +54,7 @@ import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.config.common.BasicSchedule;
 import org.opennms.netmgt.config.common.Header;
 import org.opennms.netmgt.config.users.Contact;
 import org.opennms.netmgt.config.users.DutySchedule;
@@ -628,6 +629,7 @@ public abstract class UserManager {
 
         if (roleid == null) throw new NullPointerException("roleid is null");
         
+        
         Collection schedules = user.getOncallScheduleCollection();
         
         for(Iterator it = schedules.iterator(); it.hasNext();) {
@@ -672,28 +674,19 @@ public abstract class UserManager {
         
         return (String[]) usersScheduledForRole.toArray(new String[usersScheduledForRole.size()]);
     }
+    
+    public BasicSchedule[] getSchedules(User user) {
+        return user.getOncallSchedule();
+    }
 
     public boolean hasRole(String roleid) throws MarshalException, ValidationException, IOException {
-        update();
-        
-        List usersWithRole = new ArrayList();
-        
-        Iterator i = m_users.values().iterator();
-        
-        while (i.hasNext()) {
-            User user = (User)i.next();
-            if (userHasRole(user, roleid)) {
-                return true;
-            }
-        }
-        
-        return false;
-
+        return m_groupManager.getRole(roleid) != null;
     }
+    
     public int countUsersWithRole(String roleid) throws MarshalException, ValidationException, IOException {
         String[] users = getUsersWithRole(roleid);
         if (users == null) return 0;
         return users.length;
     }
-
+    
 }

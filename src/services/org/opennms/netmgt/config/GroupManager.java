@@ -39,6 +39,7 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -56,6 +57,9 @@ import org.opennms.netmgt.config.common.Header;
 import org.opennms.netmgt.config.groups.Group;
 import org.opennms.netmgt.config.groups.Groupinfo;
 import org.opennms.netmgt.config.groups.Groups;
+import org.opennms.netmgt.config.groups.Role;
+import org.opennms.netmgt.config.groups.Roles;
+import org.opennms.netmgt.config.groups.Schedule;
 import org.opennms.netmgt.config.users.DutySchedule;
 
 import org.apache.log4j.Category;
@@ -79,6 +83,7 @@ public abstract class GroupManager {
      * A mapping of Group object by name
      */
     private Map m_groups;
+    private Map m_roles;
     private Header m_oldHeader;
 
     /**
@@ -98,6 +103,16 @@ public abstract class GroupManager {
             m_groups.put(curGroup.getName(), curGroup);
         }
         buildDutySchedules(m_groups);
+        
+        Roles roles = groupinfo.getRoles();
+        m_roles = new HashMap();
+        if (roles != null) {
+            Iterator it = roles.getRoleCollection().iterator();
+            while(it.hasNext()) {
+                Role role = (Role)it.next();
+                m_roles.put(role.getName(), role);
+            }
+        }
     }
 
     /**
@@ -189,9 +204,17 @@ public abstract class GroupManager {
             Group grp = (Group) iter.next();
             groups.addGroup(grp);
         }
+        
+        Roles roles = new Roles();
+        Iterator it = m_roles.values().iterator();
+        while(it.hasNext()) {
+            Role role = (Role)it.next();
+            roles.addRole(role);
+        }
     
         Groupinfo groupinfo = new Groupinfo();
         groupinfo.setGroups(groups);
+        groupinfo.setRoles(roles);
         groupinfo.setHeader(header);
     
         m_oldHeader = header;
@@ -316,9 +339,23 @@ public abstract class GroupManager {
                 group = (Group) m_groups.get((String) iterator.next());
                 group.removeUser(name);
             }
+            
+            Iterator it = m_roles.values().iterator();
+            while(it.hasNext()) {
+                Role role = (Role)it.next();
+                Iterator j = role.getScheduleCollection().iterator();
+                while(j.hasNext()) {
+                    Schedule sched = (Schedule)j.next();
+                    if (name.equals(sched.getName())) {
+                        j.remove();
+                    }
+                }
+            }
         } else {
             throw new Exception("GroupFactory:delete Invalid user name:" + name);
         }
+        
+        
         // Saves into "groups.xml" file
         saveGroups();
     }
@@ -390,8 +427,29 @@ public abstract class GroupManager {
             }
             m_groups.clear();
             m_groups = map;
+            
+            Iterator it = m_roles.values().iterator();
+            while(it.hasNext()) {
+                Role role = (Role)it.next();
+                Iterator j = role.getScheduleCollection().iterator();
+                while(j.hasNext()) {
+                    Schedule sched = (Schedule)j.next();
+                    if (oldName.equals(sched.getName())) {
+                        sched.setName(newName);
+                    }
+                }
+            }
+            
             saveGroups();
         }
+    }
+
+    public String[] getRoles() {
+        return (String[]) m_roles.keySet().toArray(new String[m_roles.keySet().size()]);
+    }
+    
+    public Role getRole(String roleName) {
+        return (Role)m_roles.get(roleName);
     }
 
 }

@@ -39,6 +39,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.opennms.netmgt.config.groups.Group;
+import org.opennms.netmgt.config.groups.Role;
 import org.opennms.netmgt.config.users.User;
 import org.opennms.netmgt.mock.MockLogAppender;
 import org.opennms.netmgt.notifd.mock.MockGroupManager;
@@ -73,7 +74,50 @@ public class UserGroupManagerTest extends TestCase {
     "            <comments>The group things escalate to</comments>\n" +
     "            <user>upUser</user>" + 
     "        </group>\n" + 
-    "    </groups>\n" + 
+    "    </groups>\n" +
+    "  <roles>\n" + 
+    "    <role superviser=\"admin\" name=\"oncall\" description=\"The On Call Schedule\" membership-group=\"InitialGroup\">\n" + 
+    "      <schedule name=\"brozow\" type=\"weekly\">\n" + 
+    "         <time day=\"sunday\" begins=\"09:00:00\" ends=\"17:00:00\"/>\n" + 
+    "         <time day=\"monday\" begins=\"09:00:00\" ends=\"17:00:00\"/>\n" + 
+    "         <time day=\"wednesday\" begins=\"09:00:00\" ends=\"17:00:00\"/>\n" + 
+    "         <time day=\"friday\" begins=\"09:00:00\" ends=\"17:00:00\"/>\n" + 
+    "      </schedule>\n" + 
+    "      <schedule name=\"admin\" type=\"weekly\">\n" + 
+    "         <time day=\"sunday\" begins=\"00:00:00\" ends=\"23:59:59\"/>\n" + 
+    "         <time day=\"tuesday\" begins=\"09:00:00\" ends=\"17:00:00\"/>\n" + 
+    "         <time day=\"thursday\" begins=\"09:00:00\" ends=\"17:00:00\"/>\n" + 
+    "         <time day=\"saturday\" begins=\"09:00:00\" ends=\"17:00:00\"/>\n" + 
+    "      </schedule>\n" + 
+    "      <schedule name=\"oncall\" type=\"weekly\">\n" + 
+    "         <time day=\"sunday\"    begins=\"00:00:00\" ends=\"09:00:00\"/>\n" + 
+    "         <time day=\"sunday\"    begins=\"17:00:00\" ends=\"23:59:59\"/>\n" + 
+    "         <time day=\"monday\"    begins=\"00:00:00\" ends=\"09:00:00\"/>\n" + 
+    "         <time day=\"monday\"    begins=\"17:00:00\" ends=\"23:59:59\"/>\n" + 
+    "         <time day=\"tuesday\"   begins=\"00:00:00\" ends=\"09:00:00\"/>\n" + 
+    "         <time day=\"tuesday\"   begins=\"17:00:00\" ends=\"23:59:59\"/>\n" + 
+    "         <time day=\"wednesday\" begins=\"00:00:00\" ends=\"09:00:00\"/>\n" + 
+    "         <time day=\"wednesday\" begins=\"17:00:00\" ends=\"23:59:59\"/>\n" + 
+    "         <time day=\"thursday\"  begins=\"00:00:00\" ends=\"09:00:00\"/>\n" + 
+    "         <time day=\"thursday\"  begins=\"17:00:00\" ends=\"23:59:59\"/>\n" + 
+    "         <time day=\"friday\"    begins=\"00:00:00\" ends=\"09:00:00\"/>\n" + 
+    "         <time day=\"friday\"    begins=\"17:00:00\" ends=\"23:59:59\"/>\n" + 
+    "         <time day=\"saturday\"  begins=\"00:00:00\" ends=\"09:00:00\"/>\n" + 
+    "         <time day=\"saturday\"  begins=\"17:00:00\" ends=\"23:59:59\"/>\n" + 
+    "      </schedule>\n" + 
+    "    </role>\n" +
+    "    <role superviser=\"admin\" name=\"unscheduled\" description=\"The Unscheduled Schedule\" membership-group=\"UpGroup\">\n" + 
+    "           <schedule name=\"upUser\" type=\"weekly\">" +
+    "               <time day=\"sunday\" begins=\"00:00:00\" ends=\"23:59:59\"/>\n" + 
+    "               <time day=\"monday\" begins=\"00:00:00\" ends=\"23:59:59\"/>\n" + 
+    "               <time day=\"tuesday\" begins=\"00:00:00\" ends=\"23:59:59\"/>\n" + 
+    "               <time day=\"wednesday\" begins=\"00:00:00\" ends=\"23:59:59\"/>\n" + 
+    "               <time day=\"thursday\" begins=\"00:00:00\" ends=\"23:59:59\"/>\n" + 
+    "               <time day=\"friday\" begins=\"00:00:00\" ends=\"23:59:59\"/>\n" + 
+    "               <time day=\"saturday\" begins=\"00:00:00\" ends=\"23:59:59\"/>\n" + 
+    "           </schedule>" +
+    "    </role>\n" +
+    "  </roles>\n" + 
     "</groupinfo>\n" + 
     "";
 public static final String USER_MANAGER = "<?xml version=\"1.0\"?>\n" + 
@@ -163,6 +207,9 @@ private User admin;
 private User upUser;
 private User david;
 
+private Role oncall;
+private Role unscheduled;
+
 private Date night;
 private Date day;
 private Date sunday;
@@ -193,7 +240,14 @@ private Date sunday;
         david = m_userManager.getUser("david");
         assertNotNull(david);
         assertEquals("david", david.getUserId());
+        
+        oncall = m_groupManager.getRole("oncall");
+        assertNotNull(oncall);
+        assertEquals("oncall", oncall.getName());
 
+        unscheduled = m_groupManager.getRole("unscheduled");
+        assertNotNull(unscheduled);
+        assertEquals("unscheduled", unscheduled.getName());
     }
 
     protected void tearDown() throws Exception {
@@ -272,6 +326,10 @@ private Date sunday;
 
     }
     
+    public void testGetRoles() {
+        assertRoles(m_groupManager.getRoles(), new Role[] { oncall, unscheduled });
+    }
+    
     public void testUserHasRole() throws Exception {
         assertTrue(m_userManager.userHasRole(brozow, "oncall"));
         assertTrue(m_userManager.userHasRole(admin, "oncall"));
@@ -281,7 +339,7 @@ private Date sunday;
     
     public void testGetUsersWithRole() throws Exception {
         String[] userNames = m_userManager.getUsersWithRole("oncall");
-        assertMembership(userNames, new User[] { brozow, admin, david });
+        assertUsers(userNames, new User[] { brozow, admin, david });
         
     }
     
@@ -316,17 +374,32 @@ private Date sunday;
     
     public void testGetUsersScheduledForRole() throws Exception {
         String[] nightUserNames = m_userManager.getUsersScheduledForRole("oncall", night);
-        assertMembership(nightUserNames, new User[]{ david });
+        assertUsers(nightUserNames, new User[]{ david });
         
         String[] dayUserNames = m_userManager.getUsersScheduledForRole("oncall", day);
-        assertMembership(dayUserNames, new User[]{ brozow });
+        assertUsers(dayUserNames, new User[]{ brozow });
         
         String[] sundayUserNames = m_userManager.getUsersScheduledForRole("oncall", sunday);
-        assertMembership(sundayUserNames, new User[] { brozow, admin });
+        assertUsers(sundayUserNames, new User[] { brozow, admin });
         
     }
+    
+    private void assertRoles(String[] roleNames, Role[] expected) {
+        if (expected == null)
+            assertNull("Expected null list", roleNames);
+        
+        assertNotNull("Unexpected null user list", roleNames);
+        assertEquals("Unexpected number of users", expected.length, roleNames.length);
+        
+        List nameList = Arrays.asList(roleNames);
+        for(int i = 0; i < expected.length; i++) {
+            Role r = expected[i];
+            assertTrue("Expected user "+r.getName()+" in list "+nameList, nameList.contains(r.getName()));
+        }
+    }
 
-    private void assertMembership(String[] userNames, User[] expected) {
+
+    private void assertUsers(String[] userNames, User[] expected) {
         if (expected == null)
             assertNull("Expected null list", userNames);
         

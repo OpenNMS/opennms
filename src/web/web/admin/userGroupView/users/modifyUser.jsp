@@ -42,11 +42,10 @@
 <%@page language="java" contentType = "text/html" session = "true" %>
 <%@page import="java.util.*"%>
 <%@page import="java.text.*"%>
-<%@page import="javax.servlet.*"%>
-<%@page import="javax.servlet.http.*"%>
 <%@page import="org.opennms.netmgt.config.*"%>
 <%@page import="org.opennms.netmgt.config.common.*"%>
 <%@page import="org.opennms.netmgt.config.users.*"%>
+<%@page import="org.opennms.netmgt.config.groups.*"%>
 <%
 
         HttpSession userSession = request.getSession(false);
@@ -357,7 +356,7 @@
                 <input type="text" size="35" id="textPin" name="textPin" value='<%=(textPin == null ? "":textPin)%>'/>
               </td>
             </tr>
-          </table></p>
+          </table>
         </td>
         <td width="15">&nbsp;&nbsp;</td>
         <td width="50%" valign="top">
@@ -447,7 +446,7 @@ int i = 0;
           </table>
         </td>
       </tr>
-    </table></p>
+    </table>
 
     <p><input id="addSchedulesButton" type="button" name="addSchedule" value="Add This Many Schedules" onclick="addDutySchedules()"/>
       <select name="numSchedules" value="3" size="1">
@@ -463,7 +462,7 @@ int i = 0;
 
     <p><input id="removeSchedulesButton" type="button" name="addSchedule" value="Remove Checked Schedules" onclick="removeDutySchedules()"/></p>
     
-     <%OncallSchedule[] schedules = user.getOncallSchedule();
+     <%BasicSchedule[] schedules = userFactory.getSchedules(user);
         %>
   	<input type="hidden" id="oncallScheduleCount" name="oncallScheduleCount" value="<%=schedules.length%>"/>
   	<input type="hidden" id="schedAction" name="schedAction" value="" />
@@ -483,7 +482,7 @@ int i = 0;
             </tr>
             <%
             	for (int schedIndex = 0; schedIndex < schedules.length; schedIndex++) {
-            		OncallSchedule schedule = (OncallSchedule) schedules[schedIndex];
+            		BasicSchedule schedule = (BasicSchedule) schedules[schedIndex];
         		    Time[] times = schedule.getTime();
 	            String schedPrefix = "oncallSchedule[" + schedIndex + "]";
 	            for (int timeIndex = 0; timeIndex < times.length; timeIndex++) {

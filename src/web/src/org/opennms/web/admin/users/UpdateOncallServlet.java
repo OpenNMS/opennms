@@ -44,6 +44,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.opennms.netmgt.config.UserFactory;
+import org.opennms.netmgt.config.UserManager;
+import org.opennms.netmgt.config.common.BasicSchedule;
 import org.opennms.netmgt.config.common.Time;
 import org.opennms.netmgt.config.users.OncallSchedule;
 import org.opennms.netmgt.config.users.User;
@@ -80,11 +83,12 @@ public class UpdateOncallServlet extends HttpServlet {
             time.setBegins("00:00:00");
             time.setEnds("00:00:00");
             
+            
             user.getOncallSchedule(schedIndex).addTime(time);
         } else if ("addSchedule".equals(action)) {
             String newType = request.getParameter("addOncallType");
             
-            OncallSchedule sched = new OncallSchedule();
+            BasicSchedule sched = createSchedule(user);
             sched.setName("new");
             sched.setType(newType);
             Time time = new Time();
@@ -104,7 +108,8 @@ public class UpdateOncallServlet extends HttpServlet {
                 time.setEnds(day);
             }
             sched.addTime(time);
-            user.addOncallSchedule(sched);
+            
+            addSchedule(user, sched);
         } else if ("deleteSchedule".equals(action)) {
             int schedIndex = Integer.parseInt(request.getParameter("schedIndex"));
             user.getOncallScheduleCollection().remove(schedIndex);
@@ -116,5 +121,15 @@ public class UpdateOncallServlet extends HttpServlet {
         // forward the request for proper display
         RequestDispatcher dispatcher = this.getServletContext().getRequestDispatcher("/admin/userGroupView/users/modifyUser.jsp");
         dispatcher.forward(request, response);
+    }
+
+    private void addSchedule(User user, BasicSchedule sched) {
+        user.addOncallSchedule((OncallSchedule)sched);
+    }
+
+    private BasicSchedule createSchedule(User user) {
+        OncallSchedule sched =  new OncallSchedule();
+        return sched;
+        
     }
 }
