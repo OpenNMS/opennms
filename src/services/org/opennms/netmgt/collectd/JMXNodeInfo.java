@@ -43,7 +43,7 @@ import java.util.*;
 public class JMXNodeInfo {
     private int m_nodeId;
 
-    private List m_oidList;
+    private Map m_oidList;
     private HashMap m_mbeans;
 
     private HashMap m_dsList;
@@ -75,7 +75,7 @@ public class JMXNodeInfo {
         m_dsList = dsList;
     }
 
-    public void setAttributeList(List oidList) {
+    public void setAttributeMap(Map oidList) {
         m_oidList = oidList;
     }
 
@@ -83,7 +83,7 @@ public class JMXNodeInfo {
         return m_dsList;
     }
 
-    public List getAttributeList() {
+    public Map getAttributeMap() {
         return m_oidList;
     }
 } // end class

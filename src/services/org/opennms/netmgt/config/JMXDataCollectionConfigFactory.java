@@ -184,7 +184,6 @@ public final class JMXDataCollectionConfigFactory {
             m_singleton = new JMXDataCollectionConfigFactory(cfgFile.getPath());
         } catch (Exception e) {
             // TODO Auto-generated catch block
-            e.printStackTrace();
             m_singleton = new JMXDataCollectionConfigFactory("/opt/opennms/rrd/response/jmx/");
         }
 
@@ -240,7 +239,7 @@ public final class JMXDataCollectionConfigFactory {
      * 
      * @return a list of MIB objects
      */
-    public List getAttributeList(String cName, String aSysoid, String anAddress) {
+    public Map getAttributeMap(String cName, String aSysoid, String anAddress) {
         Category log = ThreadCategory.getInstance(getClass());
 
         if (log.isDebugEnabled())
@@ -249,26 +248,32 @@ public final class JMXDataCollectionConfigFactory {
         if (aSysoid == null) {
             if (log.isDebugEnabled())
                 log.debug("getMibObjectList: aSysoid parameter is NULL...");
-            return new ArrayList();
+            return new HashMap();
         }
 
         // Retrieve the appropriate Collection object
         // 
         org.opennms.netmgt.config.collectd.JmxCollection collection = (org.opennms.netmgt.config.collectd.JmxCollection) m_collectionMap.get(cName);
         if (collection == null) {
-            return new ArrayList();
+            return new HashMap();
         }
-        ArrayList list = new ArrayList();
+        
+        HashMap map = new HashMap();
+        
         Mbeans beans = collection.getMbeans();
+        
+        
         Enumeration en = beans.enumerateMbean();
         while (en.hasMoreElements()) {
+        	   ArrayList list = new ArrayList();
             Mbean mbean = (Mbean)en.nextElement();
             Attrib[] attributes = mbean.getAttrib();
             for (int i = 0; i < attributes.length; i++) {
-                list.add(attributes[i]);
+            	 list.add(attributes[i]);
             }
+            map.put(mbean.getObjectname(), list);
         }
-        return list;
+        return map;
     }
     
     public HashMap getMBeanInfo(String cName) {

@@ -39,6 +39,8 @@ import java.util.TreeMap;
 
 
 public class JMXCollectorEntry extends TreeMap {
+	
+	private String objectName;
     
     /**
      * <P>
@@ -79,8 +81,10 @@ public class JMXCollectorEntry extends TreeMap {
      *            collected JMX data is relevant. NOTE: NULL if the collected
      *            JMX data is for the node.
      */
-    public JMXCollectorEntry(String[] vars, String[] types) {
+    public JMXCollectorEntry(String objectName, String[] vars, String[] types) {
         this();
+        
+        this.objectName = objectName;
         
         for (int i = 0; i < vars.length;i++ ) {
             put(vars[i], types[i]);
@@ -93,4 +97,12 @@ public class JMXCollectorEntry extends TreeMap {
     public Set attributeNames() {
         return super.keySet();
     }
+
+	public String getObjectName() {
+		return objectName;
+	}
+
+	public void setObjectName(String objectName) {
+		this.objectName = objectName;
+	}
 }

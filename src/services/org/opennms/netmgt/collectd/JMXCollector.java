@@ -41,7 +41,7 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Set;
 import java.util.StringTokenizer;
 
@@ -413,9 +413,10 @@ public abstract class JMXCollector implements ServiceCollector {
         // remote agent which are to be stored in the node-level RRD file.
         // These objects pertain to the node itself not any individual
         // interfaces.
-        List attrList = JMXDataCollectionConfigFactory.getInstance().getAttributeList(collectionName, serviceName, ipAddr.getHostAddress());
-        nodeInfo.setAttributeList(attrList);
-        HashMap dsList = buildDataSourceList(collectionName, attrList);
+        Map attrMap = JMXDataCollectionConfigFactory.getInstance().getAttributeMap(collectionName, serviceName, ipAddr.getHostAddress());
+        nodeInfo.setAttributeMap(attrMap);
+       
+        HashMap dsList = buildDataSourceList(collectionName, attrMap);
         nodeInfo.setDsMap(dsList);
         nodeInfo.setMBeans(JMXDataCollectionConfigFactory.getInstance().getMBeanInfo(collectionName));
 
@@ -463,7 +464,6 @@ public abstract class JMXCollector implements ServiceCollector {
         InetAddress ipaddr         = (InetAddress) iface.getAddress();
         String      collectionName = (String) iface.getAttribute("collectionName");
         JMXNodeInfo nodeInfo       = (JMXNodeInfo) iface.getAttribute(NODE_INFO_KEY);
-        HashMap     list           = nodeInfo.getDsMap();
         HashMap     mbeans         = nodeInfo.getMBeans();
         String      collDir        = serviceName;
         
@@ -478,8 +478,6 @@ public abstract class JMXCollector implements ServiceCollector {
             String port         = ParameterMap.getKeyedString( map, "port",           null);
             String friendlyName = ParameterMap.getKeyedString( map, "friendly-name",  port);
             
-            InetAddress ipv4Addr = (InetAddress)iface.getAddress();
-            
             connection = getMBeanServerConnection(map, ipaddr);
             
             if (connection == null) {
@@ -488,7 +486,7 @@ public abstract class JMXCollector implements ServiceCollector {
             
             MBeanServerConnection mbeanServer = connection.getMBeanServer();
             
-            int serviceStatus = COLLECTION_FAILED;
+//            int serviceStatus = COLLECTION_FAILED;
             
             if (useFriendlyName) {
                 collDir = friendlyName;
@@ -516,13 +514,16 @@ public abstract class JMXCollector implements ServiceCollector {
                                 ObjectName oName = new ObjectName(objectName);
                                 if (mbeanServer.isRegistered(oName)) {
                                    AttributeList attrList = (AttributeList) mbeanServer.getAttributes(oName,attrNames);
-                                   updateRRDs(collectionName, iface, attrList, collDir, null, null);
+                                   updateRRDs(objectName, collectionName, iface, attrList, collDir, null, null);
                                 }
                             } catch (InstanceNotFoundException e2) {
                                 log.error("Unable to retrieve attributes from " + objectName);
                             }
                         }
                         else {
+                        	/*
+                        	 * This section is for ObjectNames that use the '*' wildcard
+                        	 */
                             Set mbeanSet = mbeanServer.queryNames(new ObjectName(objectName),null);
                             for (Iterator objectNameIter = mbeanSet.iterator(); objectNameIter.hasNext();) {
                                 ObjectName oName = (ObjectName)objectNameIter.next();
@@ -535,7 +536,8 @@ public abstract class JMXCollector implements ServiceCollector {
                                          */
                                         if (mbeanServer.isRegistered(oName)) {
                                             AttributeList attrList = (AttributeList) mbeanServer.getAttributes(oName, attrNames);
-                                            updateRRDs(collectionName, 
+                                            updateRRDs(objectName,
+                                            		    collectionName, 
                                                        iface, 
                                                        attrList, 
                                                        collDir,
@@ -559,7 +561,8 @@ public abstract class JMXCollector implements ServiceCollector {
                                         if (!found) {
                                             if (mbeanServer.isRegistered(oName)) {
                                                 AttributeList attrList = (AttributeList) mbeanServer.getAttributes(oName, attrNames);
-                                                updateRRDs(collectionName, 
+                                                updateRRDs(objectName,
+                                                		    collectionName, 
                                                            iface, 
                                                            attrList, 
                                                            collDir,
@@ -573,7 +576,7 @@ public abstract class JMXCollector implements ServiceCollector {
                                 }
                             }
                         }
-                        serviceStatus = COLLECTION_SUCCEEDED;
+                        //serviceStatus = COLLECTION_SUCCEEDED;
                     }
                     break;
                 }
@@ -670,7 +673,8 @@ public abstract class JMXCollector implements ServiceCollector {
      *                Thrown if the data source list for the interface is null.
      */
 
-    private boolean updateRRDs(String           collectionName, 
+    private boolean updateRRDs(String           objectName,
+    		                      String           collectionName, 
                                NetworkInterface iface,
                                AttributeList    attributeList,
                                String           collectionDir,
@@ -705,7 +709,8 @@ public abstract class JMXCollector implements ServiceCollector {
         try {
             for (int i = 0; i < attributeList.size(); i++) {
                 Attribute attribute = (Attribute) attributeList.get(i);
-                RRDDataSource ds = (RRDDataSource) dsMap.get(attribute.getName());
+                RRDDataSource ds = (RRDDataSource) dsMap.get(objectName + "|" + attribute.getName());
+                
                 if (keyField == null) {
                     try {
                         createRRD(collectionName, ipaddr, nodeRepository, ds, collectionDir, null);
@@ -781,16 +786,18 @@ public abstract class JMXCollector implements ServiceCollector {
      * @throws Exception
      */
 
-    public String getRRDValue(RRDDataSource ds, JMXCollectorEntry collectorEntry)
+    public String getRRDValue_isthis_used_(RRDDataSource ds, JMXCollectorEntry collectorEntry)
      throws IllegalArgumentException {
+    	
         Category log = ThreadCategory.getInstance(getClass());
-        String dsVal = null;
+        
+        log.debug("getRRDValue: " + ds.getName());
 
         // Make sure we have an actual object id value.
         if (ds.getOid() == null)
             return null;
 
-        return (String) collectorEntry.get(ds.getOid());
+        return (String) collectorEntry.get(collectorEntry + "|" + ds.getOid());
     }
 
     /**
@@ -806,11 +813,13 @@ public abstract class JMXCollector implements ServiceCollector {
      * @return list of RRDDataSource objects
      */
 
-    private HashMap buildDataSourceList(String collectionName, List attributeList) {
+    private HashMap buildDataSourceList(String collectionName, Map attributeMap) {
 
         // Log4j category
         //
         Category log = ThreadCategory.getInstance(getClass());
+        
+        log.debug("buildDataSourceList - ***");
 
         // Retrieve the RRD expansion data source list which contains all
         // the expansion data source's. Use this list as a basis
@@ -825,77 +834,88 @@ public abstract class JMXCollector implements ServiceCollector {
         // sources pertinent to it.
         //
 
-        Iterator o = attributeList.iterator();
-        while (o.hasNext()) {
-            Attrib attr = (Attrib) o.next();
-            RRDDataSource ds = null;
+        log.debug("attributeMap size: " + attributeMap.size());
+        Iterator objNameIter = attributeMap.keySet().iterator();
+        while (objNameIter.hasNext()) {
+        	   String objectName = objNameIter.next().toString();
+        	   
+        	   log.debug("ObjectName: " + objectName);
+        	   
+        	    ArrayList list = (ArrayList)attributeMap.get(objectName);
+        	    log.debug("Attributes: " + list.size());
+        	    
+        	    Iterator iter = list.iterator();
+        	    while (iter.hasNext()) {
+                    Attrib attr = (Attrib) iter.next();
+                    RRDDataSource ds = null;
 
-            // Verify that this object has an appropriate "integer" data type
-            // which can be stored in an RRD database file (must map to one of
-            // the supported RRD data source types: COUNTER or GAUGE).
-            String ds_type = RRDDataSource.mapType(attr.getType());
-            if (ds_type != null) {
-                // Passed!! Create new data source instance for this MBean
-                // object
-                // Assign heartbeat using formula (2 * step) and hard code
-                // min & max values to "U" ("unknown").
-                ds = new RRDDataSource();
-                ds.setHeartbeat(2 * JMXDataCollectionConfigFactory
-                        .getInstance().getStep(collectionName));
-                // For completeness, adding a minval option to the variable.
-                String ds_minval = attr.getMinval();
-                if (ds_minval == null) {
-                    ds_minval = "U";
-                }
-                ds.setMax(ds_minval);
+                    // Verify that this object has an appropriate "integer" data type
+                    // which can be stored in an RRD database file (must map to one of
+                    // the supported RRD data source types: COUNTER or GAUGE).
+                    String ds_type = RRDDataSource.mapType(attr.getType());
+                    if (ds_type != null) {
+                        // Passed!! Create new data source instance for this MBean
+                        // object
+                        // Assign heartbeat using formula (2 * step) and hard code
+                        // min & max values to "U" ("unknown").
+                        ds = new RRDDataSource();
+                        ds.setHeartbeat(2 * JMXDataCollectionConfigFactory
+                                .getInstance().getStep(collectionName));
+                        // For completeness, adding a minval option to the variable.
+                        String ds_minval = attr.getMinval();
+                        if (ds_minval == null) {
+                            ds_minval = "U";
+                        }
+                        ds.setMax(ds_minval);
 
-                // In order to handle counter wraps, we need to set a max
-                // value for the variable.
-                String ds_maxval = attr.getMaxval();
-                if (ds_maxval == null) {
-                    ds_maxval = "U";
-                }
+                        // In order to handle counter wraps, we need to set a max
+                        // value for the variable.
+                        String ds_maxval = attr.getMaxval();
+                        if (ds_maxval == null) {
+                            ds_maxval = "U";
+                        }
 
-                ds.setMax(ds_maxval);
-                ds.setInstance(collectionName);
+                        ds.setMax(ds_maxval);
+                        ds.setInstance(collectionName);
 
-                // Truncate MBean object name/alias if it exceeds 19 char max
-                // for
-                // RRD data source names.
-                String ds_name = attr.getAlias();
-                if (ds_name.length() > MAX_DS_NAME_LENGTH) {
-                    if (log.isEnabledFor(Priority.WARN))
-                        log.warn("buildDataSourceList: alias '"
-                                        + attr.getAlias()
-                                        + "' exceeds 19 char maximum for RRD data source names, truncating.");
-                    char[] temp = ds_name.toCharArray();
-                    ds_name = String.copyValueOf(temp, 0, MAX_DS_NAME_LENGTH);
-                }
-                ds.setName(ds_name);
+                        // Truncate MBean object name/alias if it exceeds 19 char max
+                        // for
+                        // RRD data source names.
+                        String ds_name = attr.getAlias();
+                        if (ds_name.length() > MAX_DS_NAME_LENGTH) {
+                            if (log.isEnabledFor(Priority.WARN))
+                                log.warn("buildDataSourceList: alias '"
+                                                + attr.getAlias()
+                                                + "' exceeds 19 char maximum for RRD data source names, truncating.");
+                            char[] temp = ds_name.toCharArray();
+                            ds_name = String.copyValueOf(temp, 0, MAX_DS_NAME_LENGTH);
+                        }
+                        ds.setName(ds_name);
 
-                // Map MBean object data type to RRD data type
-                ds.setType(ds_type);
+                        // Map MBean object data type to RRD data type
+                        ds.setType(ds_type);
 
-                // Assign the data source object identifier and instance
-                //ds.setName(attr.getName());
-                ds.setOid(attr.getName());
+                        // Assign the data source object identifier and instance
+                        //ds.setName(attr.getName());
+                        ds.setOid(attr.getName());
 
-                if (log.isDebugEnabled())
-                    log.debug("buildDataSourceList: ds_name: " + ds.getName()
-                            + " ds_oid: " + ds.getOid() + "."
-                            + ds.getInstance() + " ds_max: " + ds.getMax()
-                            + " ds_min: " + ds.getMin());
+            //            if (log.isDebugEnabled())
+                            log.debug("buildDataSourceList: ds_name: " + ds.getName()
+                                    + " ds_oid: " + ds.getOid() + "."
+                                    + ds.getInstance() + " ds_max: " + ds.getMax()
+                                    + " ds_min: " + ds.getMin());
 
-                // Add the new data source to the list
-                dsList.put(attr.getName(), ds);
-            } else if (log.isEnabledFor(Priority.WARN)) {
-                log.warn("buildDataSourceList: Data type '"
-                                + attr.getType()
-                                + "' not supported.  Only integer-type data may be stored in RRD.");
-                log.warn("buildDataSourceList: MBean object '"
-                        + attr.getAlias()
-                        + "' will not be mapped to RRD data source.");
-            }
+                        // Add the new data source to the list
+                        dsList.put(objectName + "|" + attr.getName(), ds);
+                    } else if (log.isEnabledFor(Priority.WARN)) {
+                        log.warn("buildDataSourceList: Data type '"
+                                        + attr.getType()
+                                        + "' not supported.  Only integer-type data may be stored in RRD.");
+                        log.warn("buildDataSourceList: MBean object '"
+                                + attr.getAlias()
+                                + "' will not be mapped to RRD data source.");
+                    }
+        	    }
         }
 
         return dsList;
