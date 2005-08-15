@@ -38,14 +38,14 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
+import junit.framework.TestCase;
+
 import org.opennms.netmgt.config.groups.Group;
 import org.opennms.netmgt.config.groups.Role;
 import org.opennms.netmgt.config.users.User;
 import org.opennms.netmgt.mock.MockLogAppender;
 import org.opennms.netmgt.notifd.mock.MockGroupManager;
 import org.opennms.netmgt.notifd.mock.MockUserManager;
-
-import junit.framework.TestCase;
 
 public class UserGroupManagerTest extends TestCase {
     
@@ -89,7 +89,7 @@ public class UserGroupManagerTest extends TestCase {
     "         <time day=\"thursday\" begins=\"09:00:00\" ends=\"17:00:00\"/>\n" + 
     "         <time day=\"saturday\" begins=\"09:00:00\" ends=\"17:00:00\"/>\n" + 
     "      </schedule>\n" + 
-    "      <schedule name=\"oncall\" type=\"weekly\">\n" + 
+    "      <schedule name=\"david\" type=\"weekly\">\n" + 
     "         <time day=\"sunday\"    begins=\"00:00:00\" ends=\"09:00:00\"/>\n" + 
     "         <time day=\"sunday\"    begins=\"17:00:00\" ends=\"23:59:59\"/>\n" + 
     "         <time day=\"monday\"    begins=\"00:00:00\" ends=\"09:00:00\"/>\n" + 
@@ -134,12 +134,6 @@ public static final String USER_MANAGER = "<?xml version=\"1.0\"?>\n" +
     "           <user-comments>Test User</user-comments>\n" +
     "           <password>21232F297A57A5A743894A0E4A801FC3</password>\n" +
     "           <contact type=\"email\" info=\"brozow@opennms.org\"/>\n" + 
-    "           <oncall-schedule name=\"oncall\" type=\"weekly\">" +
-    "               <time day=\"sunday\" begins=\"09:00:00\" ends=\"17:00:00\"/>\n" + 
-    "               <time day=\"monday\" begins=\"09:00:00\" ends=\"17:00:00\"/>\n" + 
-    "               <time day=\"wednesday\" begins=\"09:00:00\" ends=\"17:00:00\"/>\n" + 
-    "               <time day=\"friday\" begins=\"09:00:00\" ends=\"17:00:00\"/>\n" + 
-    "           </oncall-schedule>" +
     "       </user>\n" + 
     "       <user>\n" + 
     "           <user-id>admin</user-id>\n" + 
@@ -147,12 +141,6 @@ public static final String USER_MANAGER = "<?xml version=\"1.0\"?>\n" +
     "           <user-comments>Default administrator, do not delete</user-comments>\n" +
     "           <password>21232F297A57A5A743894A0E4A801FC3</password>\n" +
     "           <contact type=\"email\" info=\"admin@opennms.org\"/>\n" + 
-    "           <oncall-schedule name=\"oncall\" type=\"weekly\">" +
-    "               <time day=\"sunday\" begins=\"00:00:00\" ends=\"23:59:59\"/>\n" + 
-    "               <time day=\"tuesday\" begins=\"09:00:00\" ends=\"17:00:00\"/>\n" + 
-    "               <time day=\"thursday\" begins=\"09:00:00\" ends=\"17:00:00\"/>\n" + 
-    "               <time day=\"saturday\" begins=\"09:00:00\" ends=\"17:00:00\"/>\n" + 
-    "           </oncall-schedule>" +
     "       </user>\n" + 
     "       <user>\n" + 
     "           <user-id>upUser</user-id>\n" + 
@@ -160,15 +148,6 @@ public static final String USER_MANAGER = "<?xml version=\"1.0\"?>\n" +
     "           <user-comments>Default administrator, do not delete</user-comments>\n" +
     "           <password>21232F297A57A5A743894A0E4A801FC3</password>\n" +
     "           <contact type=\"email\" info=\"up@opennms.org\"/>\n" + 
-    "           <oncall-schedule name=\"unscheduled\" type=\"weekly\">" +
-    "               <time day=\"sunday\" begins=\"00:00:00\" ends=\"23:59:59\"/>\n" + 
-    "               <time day=\"monday\" begins=\"00:00:00\" ends=\"23:59:59\"/>\n" + 
-    "               <time day=\"tuesday\" begins=\"00:00:00\" ends=\"23:59:59\"/>\n" + 
-    "               <time day=\"wednesday\" begins=\"00:00:00\" ends=\"23:59:59\"/>\n" + 
-    "               <time day=\"thursday\" begins=\"00:00:00\" ends=\"23:59:59\"/>\n" + 
-    "               <time day=\"friday\" begins=\"00:00:00\" ends=\"23:59:59\"/>\n" + 
-    "               <time day=\"saturday\" begins=\"00:00:00\" ends=\"23:59:59\"/>\n" + 
-    "           </oncall-schedule>" +
     "       </user>\n" + 
     "       <user>\n" + 
     "           <user-id>david</user-id>\n" + 
@@ -179,22 +158,6 @@ public static final String USER_MANAGER = "<?xml version=\"1.0\"?>\n" +
     "           <contact type=\"numericPage\" info=\"6789\" serviceProvider=\"ATT\"/>\n" + 
     "           <contact type=\"textPage\" info=\"9876\" serviceProvider=\"Sprint\"/>\n" + 
     "           <duty-schedule>MoTuWeThFrSaSu800-2300</duty-schedule>\n" + 
-    "           <oncall-schedule name=\"oncall\" type=\"weekly\">" +
-    "               <time day=\"sunday\"    begins=\"00:00:00\" ends=\"09:00:00\"/>\n" + 
-    "               <time day=\"sunday\"    begins=\"17:00:00\" ends=\"23:59:59\"/>\n" + 
-    "               <time day=\"monday\"    begins=\"00:00:00\" ends=\"09:00:00\"/>\n" + 
-    "               <time day=\"monday\"    begins=\"17:00:00\" ends=\"23:59:59\"/>\n" + 
-    "               <time day=\"tuesday\"   begins=\"00:00:00\" ends=\"09:00:00\"/>\n" + 
-    "               <time day=\"tuesday\"   begins=\"17:00:00\" ends=\"23:59:59\"/>\n" + 
-    "               <time day=\"wednesday\" begins=\"00:00:00\" ends=\"09:00:00\"/>\n" + 
-    "               <time day=\"wednesday\" begins=\"17:00:00\" ends=\"23:59:59\"/>\n" + 
-    "               <time day=\"thursday\"  begins=\"00:00:00\" ends=\"09:00:00\"/>\n" + 
-    "               <time day=\"thursday\"  begins=\"17:00:00\" ends=\"23:59:59\"/>\n" + 
-    "               <time day=\"friday\"    begins=\"00:00:00\" ends=\"09:00:00\"/>\n" + 
-    "               <time day=\"friday\"    begins=\"17:00:00\" ends=\"23:59:59\"/>\n" + 
-    "               <time day=\"saturday\"  begins=\"00:00:00\" ends=\"09:00:00\"/>\n" + 
-    "               <time day=\"saturday\"  begins=\"17:00:00\" ends=\"23:59:59\"/>\n" + 
-    "           </oncall-schedule>" +
     "       </user>\n" + 
     "   </users>\n" + 
     "</userinfo>\n" + 
@@ -343,6 +306,33 @@ private Date sunday;
         
     }
     
+    public void testUserScheduledForRoleNew() throws Exception {
+        Date[] dates = new Date[] {night, day, sunday};
+        for (int i = 0; i < dates.length; i++) {
+            testUsersScheduledForRolesAt(dates[i]);
+        }
+    }
+    
+    private void testUsersScheduledForRolesAt(Date date) throws Exception {
+        String[] roles = m_groupManager.getRoles();
+        for (int i = 0; i < roles.length; i++) {
+            testUsersScheduleForRoleAt(roles[i], date);
+            
+        }
+    }
+
+    private void testUsersScheduleForRoleAt(String role, Date date) throws Exception {
+        for (Iterator it = m_userManager.getUserNames().iterator(); it.hasNext();) {
+            String userId = (String) it.next();
+            User u = m_userManager.getUser(userId);
+            testUserScheduledForRoleAt(u, role, date);
+        }
+    }
+
+    private void testUserScheduledForRoleAt(User u, String role, Date date) throws Exception {
+        assertEquals("Unexpected value "+u.getUserId()+" for role "+role+" at "+date, m_userManager.isUserScheduledForRole(u, role, date), m_userManager.isUserScheduledForRole(u, role, date));
+    }
+
     public void testUserScheduledForRole() throws Exception {
         // day and night are mondays at 11 am and 11 pm respectively
         
@@ -411,23 +401,6 @@ private Date sunday;
             User u = expected[i];
             assertTrue("Expected user "+u.getUserId()+" in list "+nameList, nameList.contains(u.getUserId()));
         }
-    }
-
-    private String toString(List users) {
-        StringBuffer buf = new StringBuffer("[");
-        boolean first = true;
-        for (Iterator it = users.iterator(); it.hasNext();) {
-            User user = (User) it.next();
-            if (first)
-                first = false;
-            else
-                buf.append(" ");
-            buf.append(user.getUserId());
-                
-                    
-        }
-        buf.append("]");
-        return buf.toString();
     }
     
 

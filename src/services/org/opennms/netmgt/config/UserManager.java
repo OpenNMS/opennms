@@ -54,11 +54,9 @@ import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.EventConstants;
-import org.opennms.netmgt.config.common.BasicSchedule;
 import org.opennms.netmgt.config.common.Header;
 import org.opennms.netmgt.config.users.Contact;
 import org.opennms.netmgt.config.users.DutySchedule;
-import org.opennms.netmgt.config.users.OncallSchedule;
 import org.opennms.netmgt.config.users.User;
 import org.opennms.netmgt.config.users.Userinfo;
 import org.opennms.netmgt.config.users.Users;
@@ -624,40 +622,24 @@ public abstract class UserManager {
         return (String[]) usersWithRole.toArray(new String[usersWithRole.size()]);
         
     }
+    
     public boolean userHasRole(User user, String roleid) throws FileNotFoundException, MarshalException, ValidationException, IOException {
         update();
-
+        
         if (roleid == null) throw new NullPointerException("roleid is null");
         
-        
-        Collection schedules = user.getOncallScheduleCollection();
-        
-        for(Iterator it = schedules.iterator(); it.hasNext();) {
-            OncallSchedule sched = (OncallSchedule)it.next();
-            if (roleid.equals(sched.getName())) {
-                return true;
-            }
-        }
-        
-        return false;
+        return m_groupManager.userHasRole(user.getUserId(), roleid);
     }
     
     public boolean isUserScheduledForRole(User user, String roleid, Date time) throws FileNotFoundException, MarshalException, ValidationException, IOException {
         update();
-
-        Collection schedules = user.getOncallScheduleCollection();
         
-        for(Iterator it = schedules.iterator(); it.hasNext();) {
-            OncallSchedule sched = (OncallSchedule)it.next();
-            if (roleid.equals(sched.getName())) {
-                if (BasicScheduleUtils.isTimeInSchedule(time, sched)) {
-                    return true;
-                }
-            }
-        }
+        if (roleid == null) throw new NullPointerException("roleid is null");
         
-        return false;
+        return m_groupManager.isUserScheduledForRole(user.getUserId(), roleid, time);
+    
     }
+    
     public String[] getUsersScheduledForRole(String roleid, Date time) throws MarshalException, ValidationException, IOException {
         update();
         
@@ -675,10 +657,6 @@ public abstract class UserManager {
         return (String[]) usersScheduledForRole.toArray(new String[usersScheduledForRole.size()]);
     }
     
-    public BasicSchedule[] getSchedules(User user) {
-        return user.getOncallSchedule();
-    }
-
     public boolean hasRole(String roleid) throws MarshalException, ValidationException, IOException {
         return m_groupManager.getRole(roleid) != null;
     }

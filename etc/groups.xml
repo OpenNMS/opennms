@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<groupinfo>
+<groupinfo  xmlns="http://xmlns.opennms.org/xsd/groups">
     <header>
         <rev>1.3</rev>
         <created>Wednesday, February 6, 2002 10:10:00 AM EST</created>
@@ -32,4 +32,28 @@
 	    <user>admin</user>
         </group>
     </groups>
+    <roles> 
+		<role superviser="admin" name="oncall" description="The On Call Schedule" membership-group="InitialGroup"> 
+			<schedule name="tempuser" type="weekly">
+			   <time day="sunday"    begins="08:00:00" ends="23:00:00"/>
+			   <time day="monday"    begins="08:00:00" ends="23:00:00"/>
+			   <time day="tuesday"   begins="08:00:00" ends="23:00:00"/>
+			   <time day="wednesday" begins="08:00:00" ends="23:00:00"/>
+			   <time day="thursday"  begins="08:00:00" ends="23:00:00"/>
+			   <time day="friday"    begins="08:00:00" ends="23:00:00"/>
+			   <time day="saturday"  begins="08:00:00" ends="23:00:00"/>
+			</schedule>
+			<schedule name="tempuser" type="monthly">
+				<time day="7"  begins="09:00:00" ends="20:00:00" />
+				<time day="14" begins="09:00:00" ends="20:00:00" />
+				<time day="21" begins="09:00:00" ends="20:00:00" />
+				<time day="28" begins="09:00:00" ends="20:00:00" />
+			</schedule>
+			<schedule name="tempuser" type="specific">
+				<time begins="21-Apr-2005 10:00:00" ends="21-Apr-2005 18:00:00" />
+				<time begins="22-Apr-2005 10:00:00" ends="22-Apr-2005 18:00:00" />
+				<time begins="23-Apr-2005 10:00:00" ends="23-Apr-2005 18:00:00" />
+			</schedule>
+	    </role>
+  </roles> 
 </groupinfo>

@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Map;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -32,7 +31,6 @@ import javax.servlet.http.HttpServletResponse;
     
     private class ListAction implements Action {
         public String execute(HttpServletRequest request, HttpServletResponse response) {
-            request.setAttribute("roleList", getRoleManager().getRoles());
             return LIST;
         }
         
@@ -208,15 +206,15 @@ import javax.servlet.http.HttpServletResponse;
     public void init() throws ServletException {
         super.init();
 
-        getServletContext().setAttribute("roleManager", new WebRoleManager());
-        getServletContext().setAttribute("userManager", new WebUserManager());
-        getServletContext().setAttribute("groupManager", new WebGroupManager());
+        getServletContext().setAttribute("roleManager", AppContext.getRoleManager());
+        getServletContext().setAttribute("userManager", AppContext.getUserManager());
+        getServletContext().setAttribute("groupManager", AppContext.getGroupManager());
         
 
     }
 
     private WebRoleManager getRoleManager() {
-        return (WebRoleManager)getServletContext().getAttribute("roleManager");
+        return AppContext.getRoleManager();
     }
     
     

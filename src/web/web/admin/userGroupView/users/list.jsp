@@ -138,10 +138,12 @@
 
     <p>Click on the <i>User ID</i> link to view detailed information about a user.</p>
 
-    <p><table><tr>
+    <table>
+    <tr>
       <td valign="center"><a id="doNewUser" href="javascript:addNewUser()"><img src="images/add1.gif" alt="Add new user" border="0"></a></td>
       <td valign="center"><a href="javascript:addNewUser()">Add New User</a></td>
-    </tr></table></p>
+    </tr>
+    </table>
 
      <table width="100%" border="1" cellspacing="0" cellpadding="2" bordercolor="black">
 

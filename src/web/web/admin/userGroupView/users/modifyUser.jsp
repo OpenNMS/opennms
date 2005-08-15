@@ -43,20 +43,16 @@
 <%@page import="java.util.*"%>
 <%@page import="java.text.*"%>
 <%@page import="org.opennms.netmgt.config.*"%>
-<%@page import="org.opennms.netmgt.config.common.*"%>
 <%@page import="org.opennms.netmgt.config.users.*"%>
-<%@page import="org.opennms.netmgt.config.groups.*"%>
 <%
 
         HttpSession userSession = request.getSession(false);
-        Map users;
         User user = null;
         String userid = "";
         UserFactory userFactory;
         try {
             UserFactory.init();
             userFactory = UserFactory.getInstance();
-            users = userFactory.getUsers();
         } catch (Exception e) {
             throw new ServletException("UserFactory:modify() " + e);
         }
@@ -165,42 +161,6 @@
         document.modifyUser.submit();
     }
     
-    function addCallSchedule()
-    {
-          document.modifyUser.redirect.value="/admin/userGroupView/users/updateOncall";
-          document.modifyUser.schedAction.value="addSchedule";
-          document.modifyUser.action="admin/userGroupView/users/updateUser#oncall";
-          document.modifyUser.submit();
-    }
-    
-    function deleteSchedule(schedIndex)
-    {
-          document.modifyUser.redirect.value="/admin/userGroupView/users/updateOncall";
-          document.modifyUser.schedAction.value="deleteSchedule";
-          document.modifyUser.schedIndex.value=schedIndex;
-          document.modifyUser.action="admin/userGroupView/users/updateUser#oncall";
-          document.modifyUser.submit();
-    }
-    
-    function deleteTime(schedIndex, timeIndex)
-    {
-          document.modifyUser.redirect.value="/admin/userGroupView/users/updateOncall";
-          document.modifyUser.schedAction.value="deleteTime";
-          document.modifyUser.schedIndex.value=schedIndex;
-          document.modifyUser.schedTimeIndex.value=timeIndex;
-          document.modifyUser.action="admin/userGroupView/users/updateUser#oncall";
-          document.modifyUser.submit();
-    }
-    
-    function addTime(schedIndex)
-    {
-          document.modifyUser.redirect.value="/admin/userGroupView/users/updateOncall";
-          document.modifyUser.schedAction.value="addTime";
-          document.modifyUser.schedIndex.value=schedIndex;
-          document.modifyUser.action="admin/userGroupView/users/updateUser#oncall";
-          document.modifyUser.submit();
-    }
-
 </script>
 
 <body marginwidth="0" marginheight="0" LEFTMARGIN="0" RIGHTMARGIN="0" TOPMARGIN="0">
@@ -461,101 +421,6 @@ int i = 0;
     </p>
 
     <p><input id="removeSchedulesButton" type="button" name="addSchedule" value="Remove Checked Schedules" onclick="removeDutySchedules()"/></p>
-    
-     <%BasicSchedule[] schedules = userFactory.getSchedules(user);
-        %>
-  	<input type="hidden" id="oncallScheduleCount" name="oncallScheduleCount" value="<%=schedules.length%>"/>
-  	<input type="hidden" id="schedAction" name="schedAction" value="" />
-  	<input type="hidden" id="schedIndex" name="schedIndex" value="" />
-  	<input type="hidden" id="schedTimeIndex" name="schedTimeIndex" value=""/>
-  	
-  	<p><b><a name="oncall"/>Oncall Schedules</b></p>
-  	
-  	
-  	<table width="100%" border="1" cellspacing="0" cellpadding="2" >
-            <tr bgcolor="#999999">
-              <td width="1%">&nbsp;</td>
-              <td><b>Role Name</b></td>
-              <td><b>Type</b></td>
-              <td colspan="3"><b>Times</b></td>
-              <td width="1%">&nbsp;</td>
-            </tr>
-            <%
-            	for (int schedIndex = 0; schedIndex < schedules.length; schedIndex++) {
-            		BasicSchedule schedule = (BasicSchedule) schedules[schedIndex];
-        		    Time[] times = schedule.getTime();
-	            String schedPrefix = "oncallSchedule[" + schedIndex + "]";
-	            for (int timeIndex = 0; timeIndex < times.length; timeIndex++) {
-		            Time time = times[timeIndex];
-		            String timePrefix = schedPrefix + ".time[" + timeIndex + "]";
-            %>
-            			<tr>
-            <%
-            		if (timeIndex == 0) {
-            %>
-              			<td rowSpan="<%= times.length+1 %>">
-              			    <input type="hidden" id="<%= schedPrefix %>.timeCount" name="<%= schedPrefix %>.timeCount" value="<%= times.length %>" />
-              				<input type="button" id="<%= schedPrefix %>.doDelete" name="doDeleteSchedule" value="Delete" onclick="deleteSchedule(<%= schedIndex %>)"/>
-              			</td>
-            	  			<td rowSpan="<%= times.length+1 %>" >
-            	  				<input id="<%= schedPrefix %>.name" type="text" name="<%= schedPrefix %>.name" value="<%= schedule.getName() %>" />
-            	  			</td>
-            	  			<td rowSpan="<%= times.length+1 %>" id="<%= schedPrefix %>.type">
-            	  			    <input type="hidden" id="<%= schedPrefix %>.type" name="<%= schedPrefix %>.type" value="<%= schedule.getType() %>"/>
-            	  				<%= schedule.getType() %>
-            	  			</td>
-            <%
-            		}
-            %>
-            				<td>
-            				<% 
-            				if ("weekly".equals(schedule.getType())) {
-                          %>
-            					<select id="<%=timePrefix%>.day" name="<%=timePrefix%>.day">
-            					  <option value="sunday" <%= "sunday".equals(time.getDay()) ? "selected=\"true\"" : ""  %>>Sun</option>
-            					  <option value="monday" <%= "monday".equals(time.getDay()) ? "selected=\"true\"" : ""  %>>Mon</option>
-            					  <option value="tuesday" <%= "tuesday".equals(time.getDay()) ? "selected=\"true\"" : ""  %>>Tue</option>
-            					  <option value="wednesday" <%= "wednesday".equals(time.getDay()) ? "selected=\"true\"" : ""  %>>Wed</option>
-            					  <option value="thursday" <%= "thursday".equals(time.getDay()) ? "selected=\"true\"" : ""  %>>Thu</option>
-            					  <option value="friday" <%= "friday".equals(time.getDay()) ? "selected=\"true\"" : ""  %>>Fri</option>
-            					  <option value="saturday" <%= "saturday".equals(time.getDay()) ? "selected=\"true\"" : ""  %>>Sat</option>
-            					</select>
-            				<%
-            				} else if ("monthly".equals(schedule.getType())) {
-                         %>
-            					<input type="text" id="<%=timePrefix%>.day" name="<%=timePrefix%>.day" value="<%= time.getDay() %>" size="3" />
-                         <%        
-            				}
-                         %>
-            				</td>           	  
-            				<td>
-            					<input type="text" id="<%=timePrefix%>.begins" name="<%=timePrefix%>.begins" value="<%= time.getBegins() %>"/>
-            				</td>           	  
-            				<td>
-            					<input type="text" id="<%=timePrefix%>.ends" name="<%=timePrefix%>.ends" value="<%= time.getEnds() %>"/>
-            				</td>
-            				<td>
-            					<input type="button" id="<%=timePrefix%>.doDeleteTime" name="<%=timePrefix%>.doDeleteTime" value="Delete Time" onclick="deleteTime(<%= schedIndex %>, <%= timeIndex %>)"/>
-            				</td>  
-            		      
-            			</tr>	  
-        <%
-        		}
-        %>
-              <tr>
-                <td colspan="4"><input type="button" id="<%= schedPrefix %>.addTime" name="<%= schedPrefix %>.addTime" value="Add Time" onclick="addTime(<%= schedIndex %>)"/></td>
-              </tr>
-        <% 
-  	     }
-    		%>
-     </table>  
-     <select id="addOncallType" name="addOncallType">
-		<option value="specific">Specific Dates</option>
-		<option value="monthly">Monthly</option>
-		<option value="weekly">Weekly</option>
-	</select>
-     <input type="button" id="addOncallSchedule" name="addOncallSchedule" value="Add Oncall Schedule" onclick="addCallSchedule()" /> 
-
     <p><input id="saveUserButton" type="button" name="finish" value="Finish" onclick="saveUser()"/>&nbsp;&nbsp;&nbsp;<input id="cancelButton" type="button" name="cancel" value="Cancel" onclick="cancelUser()"/></p>
   </tr>
 </table>

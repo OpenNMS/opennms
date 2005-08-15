@@ -55,17 +55,7 @@
         <element maxOccurs="unbounded" minOccurs="0" name="duty-schedule"
                  type="string"/>
 
-        <element maxOccurs="unbounded" minOccurs="0"
-                 ref="this:oncall-schedule"/>
       </sequence>
-    </complexType>
-  </element>
-
-  <element name="oncall-schedule">
-    <complexType>
-      <complexContent>
-        <extension base="typ:basicSchedule"/>
-      </complexContent>
     </complexType>
   </element>
 

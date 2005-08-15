@@ -39,7 +39,6 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -48,10 +47,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
+import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.common.Header;
 import org.opennms.netmgt.config.groups.Group;
@@ -61,9 +62,6 @@ import org.opennms.netmgt.config.groups.Role;
 import org.opennms.netmgt.config.groups.Roles;
 import org.opennms.netmgt.config.groups.Schedule;
 import org.opennms.netmgt.config.users.DutySchedule;
-
-import org.apache.log4j.Category;
-import org.opennms.core.utils.ThreadCategory;
 
 
 /**
@@ -450,6 +448,43 @@ public abstract class GroupManager {
     
     public Role getRole(String roleName) {
         return (Role)m_roles.get(roleName);
+    }
+
+    public boolean userHasRole(String userId, String roleid) {
+        Role role = getRole(roleid);
+        Iterator j = role.getScheduleCollection().iterator();
+        while(j.hasNext()) {
+            Schedule sched = (Schedule)j.next();
+            if (userId.equals(sched.getName())) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    public List getUserSchedulesForRole(String userId, String roleid) {
+        List scheds = new ArrayList();
+        Role role = getRole(roleid);
+        Iterator j = role.getScheduleCollection().iterator();
+        while(j.hasNext()) {
+            Schedule sched = (Schedule)j.next();
+            if (userId.equals(sched.getName())) {
+                scheds.add(sched);
+            }
+        }
+        return scheds;
+        
+    }
+
+    public boolean isUserScheduledForRole(String userId, String roleid, Date time) {
+        List scheds = getUserSchedulesForRole(userId, roleid);
+        for (Iterator it = scheds.iterator(); it.hasNext();) {
+            Schedule sched = (Schedule) it.next();
+            if (BasicScheduleUtils.isTimeInSchedule(time, sched)) {
+                return true;
+            }
+        }
+        return false;
     }
 
 }
