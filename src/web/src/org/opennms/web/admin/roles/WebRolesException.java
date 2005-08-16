@@ -31,16 +31,22 @@
 //
 package org.opennms.web.admin.roles;
 
-import java.util.Collection;
+public class WebRolesException extends RuntimeException {
 
-public interface WebRoleManager {
-    
-    public Collection getRoles();
+    public WebRolesException() {
+        super();
+    }
 
-    public void deleteRole(String roleName);
+    public WebRolesException(String message) {
+        super(message);
+    }
 
-    public WebRole getRole(String roleName);
+    public WebRolesException(String message, Throwable cause) {
+        super(message, cause);
+    }
 
-    public void saveRole(WebRole role);
+    public WebRolesException(Throwable cause) {
+        super(cause);
+    }
 
 }

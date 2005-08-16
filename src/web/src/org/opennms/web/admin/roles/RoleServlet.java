@@ -38,7 +38,7 @@ import javax.servlet.http.HttpServletResponse;
     
     private class DeleteAction implements Action {
         public String execute(HttpServletRequest request, HttpServletResponse response) throws ServletException {
-            getRoleManager().delete(request.getParameter("role"));
+            getRoleManager().deleteRole(request.getParameter("role"));
             Action list = new ListAction();
             return list.execute(request, response);
         }
@@ -146,14 +146,13 @@ import javax.servlet.http.HttpServletResponse;
                 if (role == null) {
                     // this is a new role so create a new on and add it to the roleManager
                     role = new WebRole();
-                    getRoleManager().addRole(role);
                 }
                 request.setAttribute("role", role);
                 role.setName(request.getParameter("roleName"));
                 role.setDefaultUser(getUserManager().getUser(request.getParameter("roleUser")));
                 role.setMembershipGroup(getGroupManager().getGroup(request.getParameter("roleGroup")));
                 role.setDescription(request.getParameter("roleDescr"));
-                getRoleManager().save();
+                getRoleManager().saveRole(role);
             }
             return new ViewAction().execute(request, response);
         }
@@ -209,9 +208,9 @@ import javax.servlet.http.HttpServletResponse;
         try {
             AppContext.init();
             
-            getServletContext().setAttribute("roleManager", AppContext.getRoleManager());
-            getServletContext().setAttribute("userManager", AppContext.getUserManager());
-            getServletContext().setAttribute("groupManager", AppContext.getGroupManager());
+            getServletContext().setAttribute("roleManager", AppContext.getWebRoleManager());
+            getServletContext().setAttribute("userManager", AppContext.getWebUserManager());
+            getServletContext().setAttribute("groupManager", AppContext.getWebGroupManager());
         } catch (Exception e) {
             throw new ServletException("Error initializing RolesServlet", e);
         }
@@ -220,15 +219,15 @@ import javax.servlet.http.HttpServletResponse;
     }
 
     private WebRoleManager getRoleManager() {
-        return AppContext.getRoleManager();
+        return AppContext.getWebRoleManager();
     }
     
     private WebUserManager getUserManager() {
-        return AppContext.getUserManager();
+        return AppContext.getWebUserManager();
     }
 
     private WebGroupManager getGroupManager() {
-        return AppContext.getGroupManager();
+        return AppContext.getWebGroupManager();
     }
 
 }

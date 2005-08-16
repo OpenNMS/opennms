@@ -32,34 +32,11 @@
 package org.opennms.web.admin.roles;
 
 import java.util.Collection;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
 
-public class WebUserManager {
+public interface WebUserManager {
     
-    private Collection m_users;
-    
-    public WebUserManager() {
-        List list = new LinkedList();
-        for(int i = 0; i < 11; i++) {
-          list.add(new WebUser());  
-        }
+    public Collection getUsers();
 
-        m_users = list;
-
-    }
-    
-    public Collection getUsers() {
-        return m_users;
-    }
-    
-    public WebUser getUser(String name) {
-        for (Iterator it = m_users.iterator(); it.hasNext();) {
-            WebUser user = (WebUser) it.next();
-            if (user.getName().equals(name)) return user;
-        }
-        return null;
-    }
+    public WebUser getUser(String name);
 
 }

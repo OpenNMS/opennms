@@ -36,34 +36,29 @@ import org.opennms.netmgt.config.UserFactory;
 
 public class AppContext {
     
-    private static WebRoleManager s_roleManager = null;
-    private static WebUserManager s_userManager = null;
-    private static WebGroupManager s_groupManager = null;
-    
+    private static Manager s_manager = null;
     public static void init() throws Exception {
         GroupFactory.init();
         UserFactory.init();
     }
     
-    public static WebRoleManager getRoleManager() {
-        if (s_roleManager == null)
-            s_roleManager = new WebRoleManager(GroupFactory.getInstance());
+    private static Manager getManager() {
+        if (s_manager == null)
+            s_manager = new Manager(GroupFactory.getInstance(), UserFactory.getInstance());
         
-        return s_roleManager;
-    }
-
-    public static WebUserManager getUserManager() {
-        if (s_userManager == null)
-            s_userManager = new WebUserManager();
-        
-        return s_userManager;
+        return s_manager;
     }
     
-    public static WebGroupManager getGroupManager() {
-        if (s_groupManager == null)
-            s_groupManager = new WebGroupManager();
-        
-        return s_groupManager;
+    public static WebRoleManager getWebRoleManager() {
+        return getManager();
+    }
+
+    public static WebUserManager getWebUserManager() {
+        return getManager();
+    }
+    
+    public static WebGroupManager getWebGroupManager() {
+        return getManager();
     }
 
 }

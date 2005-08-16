@@ -43,6 +43,10 @@ public class WebRole {
     public WebRole() {
     }
     
+    public WebRole(String name) {
+        m_name = name;
+    }
+
     public WebUser getDefaultUser() {
         return m_defaultUser;
     }
@@ -64,9 +68,11 @@ public class WebRole {
     public String getName() {
         return m_name;
     }
+    
     public void setName(String name) {
         m_name = name;
     }
+
     public WebUser getCurrentUser() {
         return getDefaultUser();
     }

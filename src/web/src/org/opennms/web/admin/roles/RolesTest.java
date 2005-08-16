@@ -182,7 +182,7 @@ public static final String USER_MANAGER = "<?xml version=\"1.0\"?>\n" +
     }
     
     public void testRoles() {
-        WebRoleManager roleMgr = AppContext.getRoleManager();
+        WebRoleManager roleMgr = AppContext.getWebRoleManager();
         assertNotNull(roleMgr);
         assertNotNull(roleMgr.getRoles());
         

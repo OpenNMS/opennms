@@ -36,12 +36,7 @@ import java.util.Collection;
 public class WebGroup {
 
     private String m_name;
-    
-    static private int count = 1;
-    
-    public WebGroup() {
-        m_name = "membershipGroup"+count++;
-    }
+    private Collection m_users;
     
     public WebGroup(String name) {
         m_name = name;
@@ -56,7 +51,11 @@ public class WebGroup {
     }
     
     public Collection getUsers() {
-        return new WebUserManager().getUsers();
+        return m_users;
+    }
+    
+    protected void setUsers(Collection users) {
+        m_users = users;
     }
     
     public boolean equals(Object obj) {

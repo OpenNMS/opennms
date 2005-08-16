@@ -1021,6 +1021,12 @@ your distribution.
   <copy todir="${install.prefix}${install.dir}/etc">
    <fileset dir="${build.dir}/etc"/>
   </copy>
+  <mkdir dir="${install.prefix}${install.servlet.dir}/WEB-INF/classes"/>
+  <copy todir="${install.prefix}${install.servlet.dir}/WEB-INF/classes">
+    <fileset dir="${build.dir}/etc">
+      <include name="castor.properties"/> 
+   </fileset>
+  </copy>
  </target>
 
  <target name="install.contrib" depends="prep,copy.contrib">
@@ -1782,5 +1788,11 @@ OpenNMS as part of the post-install.
     <arg value="${install.etc.dir}/log4j.properties"/>
     <arg value="log4j.properties"/>
   </exec>
+  <exec executable="ln" dir="${install.prefix}${install.servlet.dir}/WEB-INF/classes"
+ 		failonerror="true">
+ 	    <arg value="-sf"/>
+ 	    <arg value="${install.etc.dir}/castor.properties"/>
+ 	    <arg value="castor.properties"/>
+   </exec>
  </target>
 </project>

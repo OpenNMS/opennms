@@ -321,6 +321,12 @@ public abstract class GroupManager {
     
         saveGroups();
     }
+    
+    public void saveRole(Role role) throws Exception {
+        m_roles.put(role.getName(), role);
+        saveGroups();
+    }
+
 
     /**
      * Removes the user from the list of groups. Then overwrites to the
@@ -377,6 +383,21 @@ public abstract class GroupManager {
         // Saves into "groups.xml" file
         saveGroups();
     }
+    
+    public void deleteRole(String name) throws Exception {
+        if (name != null && !name.equals("")) {
+            if (m_roles.containsKey(name)) {
+                m_roles.remove(name);
+            }
+            else 
+                throw new Exception("GroupFacotry:deleteRole Role doesn't exist: "+name);
+        }
+        else
+            throw new Exception("GroupFactory:deleteRole Invalid role name: "+name);
+        
+        saveGroups();
+    }
+
 
     /**
      * Renames the group from the list of groups. Then overwrites to the
@@ -490,5 +511,7 @@ public abstract class GroupManager {
         }
         return false;
     }
+
+
 
 }

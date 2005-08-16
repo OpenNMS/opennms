@@ -35,10 +35,8 @@ public class WebUser {
     
     private String m_name;
     
-    static private int count = 1;
-    
-    public WebUser() {
-        m_name = "defaultUser"+count++;
+    public WebUser(String name) {
+        m_name = name;
     }
     
     public String getName() {
@@ -48,7 +46,7 @@ public class WebUser {
     public String toString() {
         return m_name;
     }
-
+    
     public boolean equals(Object obj) {
         if (obj instanceof WebUser) {
             WebUser u = (WebUser)obj;
