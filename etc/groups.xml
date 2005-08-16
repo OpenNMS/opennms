@@ -33,7 +33,7 @@
         </group>
     </groups>
     <roles> 
-		<role superviser="admin" name="oncall" description="The On Call Schedule" membership-group="InitialGroup"> 
+		<role supervisor="admin" name="oncall" description="The On Call Schedule" membership-group="InitialGroup"> 
 			<schedule name="tempuser" type="weekly">
 			   <time day="sunday"    begins="08:00:00" ends="23:00:00"/>
 			   <time day="monday"    begins="08:00:00" ends="23:00:00"/>
