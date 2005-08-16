@@ -666,5 +666,6 @@ public abstract class UserManager {
         if (users == null) return 0;
         return users.length;
     }
+    public abstract boolean isUpdateNeeded();
     
 }

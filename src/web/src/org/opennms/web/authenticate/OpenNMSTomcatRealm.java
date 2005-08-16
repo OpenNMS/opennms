@@ -55,6 +55,7 @@ import org.opennms.core.resource.Vault;
 import org.opennms.core.utils.BundleLists;
 import org.opennms.netmgt.ConfigFileConstants;
 import org.opennms.netmgt.config.UserFactory;
+import org.opennms.netmgt.config.UserManager;
 import org.opennms.netmgt.config.users.User;
 
 /**
@@ -146,8 +147,8 @@ public class OpenNMSTomcatRealm extends Object implements Realm {
         this.principals = new HashMap();
 
         try {
-            UserFactory.getInstance().reload();
-            UserFactory factory = UserFactory.getInstance();
+            UserFactory.init();
+            UserManager factory = UserFactory.getInstance();
             this.log.debug("Reloaded the users.xml file into memory");
 
             Map map = factory.getUsers();

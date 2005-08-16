@@ -42,6 +42,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.opennms.netmgt.config.UserFactory;
+import org.opennms.netmgt.config.UserManager;
 import org.opennms.netmgt.config.users.User;
 
 /**
@@ -59,7 +60,7 @@ public class SaveUserServlet extends HttpServlet {
 
             // now save to the xml file
             try {
-                UserFactory userFactory = UserFactory.getInstance();
+                UserManager userFactory = UserFactory.getInstance();
                 userFactory.saveUser(newUser.getUserId(), newUser);
             } catch (Exception e) {
                 throw new ServletException("Error saving user " + newUser.getUserId(), e);

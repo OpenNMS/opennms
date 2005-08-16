@@ -32,6 +32,7 @@
 package org.opennms.web.admin.roles;
 
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -51,6 +52,15 @@ public class WebGroupManager {
     
     public Collection getGroups() {
         return m_groups;
+    }
+
+    public WebGroup getGroup(String groupName) {
+        for (Iterator it = m_groups.iterator(); it.hasNext();) {
+            WebGroup group = (WebGroup) it.next();
+            if (group.getName().equals(groupName)) return group;
+        }
+        
+        return null;
     }
 
 }

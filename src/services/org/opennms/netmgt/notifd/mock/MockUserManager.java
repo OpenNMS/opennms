@@ -86,4 +86,8 @@ public class MockUserManager extends UserManager {
         }
     }
 
+    public boolean isUpdateNeeded() {
+        return updateNeeded;
+    }
+
 }

@@ -40,6 +40,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.opennms.netmgt.config.GroupFactory;
+import org.opennms.netmgt.config.GroupManager;
 
 /**
  * A servlet that handles renaming an existing group
@@ -55,7 +56,7 @@ public class RenameGroupServlet extends HttpServlet {
         // now save to the xml file
         try {
             GroupFactory.init();
-            GroupFactory groupFactory = GroupFactory.getInstance();
+            GroupManager groupFactory = GroupFactory.getInstance();
             groupFactory.renameGroup(groupName, newName);
         } catch (Exception e) {
             throw new ServletException("Error renaming group " + groupName + " to " + newName, e);

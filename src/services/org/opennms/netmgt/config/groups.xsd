@@ -70,7 +70,7 @@
       </sequence>
 	  <attribute name="name" type="string" use="required"/>
 	  <attribute name="membership-group" type="string" use="required"/>
-	  <attribute name="superviser" type="string" use="required"/>
+	  <attribute name="supervisor" type="string" use="required"/>
 	  <attribute name="description" type="string" use="optional"/>
     </complexType>
   </element>

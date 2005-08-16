@@ -55,7 +55,7 @@ public class UserFactory extends UserManager {
     /**
      * The static singleton instance of the UserFactory
      */
-    private static UserFactory instance;
+    private static UserManager instance;
 
     // private static ViewFactory viewFactory;
 
@@ -81,17 +81,21 @@ public class UserFactory extends UserManager {
 
     /**
      * Initializes the factory
+     * @throws IOException 
+     * @throws FileNotFoundException 
+     * @throws ValidationException 
+     * @throws MarshalException 
      */
-    public UserFactory() {
+    public UserFactory() throws MarshalException, ValidationException, FileNotFoundException, IOException {
         super(GroupFactory.getInstance());
+        reload();
     }
 
     public static synchronized void init() throws IOException, FileNotFoundException, MarshalException, ValidationException {
-
-        if (!initialized) {
-            
+        
+        if (instance == null || !initialized) {
             GroupFactory.init();
-            getInstance().reload();
+            instance = new UserFactory();
             initialized = true;
         }
 
@@ -103,13 +107,13 @@ public class UserFactory extends UserManager {
      * 
      * @return the single user factory instance
      */
-    static synchronized public UserFactory getInstance() {
-
-        if (instance == null || !initialized) {
-            instance = new UserFactory();
-        }
-
+    static synchronized public UserManager getInstance() {
         return instance;
+    }
+    
+    static synchronized public void setInstance(UserManager mgr) {
+        initialized = true;
+        instance = mgr;
     }
 
     /**

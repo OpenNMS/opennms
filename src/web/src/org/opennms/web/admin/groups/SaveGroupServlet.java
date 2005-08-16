@@ -42,6 +42,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.opennms.netmgt.config.GroupFactory;
+import org.opennms.netmgt.config.GroupManager;
 import org.opennms.netmgt.config.groups.Group;
 
 /**
@@ -60,7 +61,7 @@ public class SaveGroupServlet extends HttpServlet {
             if (newGroup != null) {
                 // now save to the xml file
                 try {
-                    GroupFactory groupFactory = GroupFactory.getInstance();
+                    GroupManager groupFactory = GroupFactory.getInstance();
                     groupFactory.saveGroup(newGroup.getName(), newGroup);
                 } catch (Exception e) {
                     throw new ServletException("Error saving group " + newGroup.getName(), e);

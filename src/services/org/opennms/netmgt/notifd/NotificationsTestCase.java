@@ -224,6 +224,13 @@ public class NotificationsTestCase extends TestCase {
                 "    </header>\n" + 
                 "    <groups>\n" + 
                 "        <group>\n" + 
+                "            <name>All</name>\n" + 
+                "            <comments>The group that contains all users</comments>\n" + 
+                "            <user>admin</user>" + 
+                "            <user>brozow</user>" + 
+                "            <user>david</user>" + 
+                "        </group>\n" + 
+                "        <group>\n" + 
                 "            <name>InitialGroup</name>\n" + 
                 "            <comments>The group that gets notified first</comments>\n" + 
                 "            <user>admin</user>" + 
@@ -246,7 +253,50 @@ public class NotificationsTestCase extends TestCase {
                 "            <user>brozow</user>" +
                 "           <duty-schedule>MoTuWeThFrSaSu800-2300</duty-schedule>\n" + 
                 "        </group>\n" + 
-                "    </groups>\n" + 
+                "    </groups>\n" +
+                "    <roles>\n" +
+                "      <role name=\"oncall\" supervisor=\"admin\" description=\"oncall role\" membership-group=\"All\">" + 
+                "           <schedule name=\"brozow\" type=\"weekly\">" +
+                "               <time day=\"sunday\" begins=\"09:00:00\" ends=\"17:00:00\"/>\n" + 
+                "               <time day=\"monday\" begins=\"09:00:00\" ends=\"17:00:00\"/>\n" + 
+                "               <time day=\"wednesday\" begins=\"09:00:00\" ends=\"17:00:00\"/>\n" + 
+                "               <time day=\"friday\" begins=\"09:00:00\" ends=\"17:00:00\"/>\n" + 
+                "           </schedule>\n" +
+                "           <schedule name=\"admin\" type=\"weekly\">" +
+                "               <time day=\"sunday\" begins=\"00:00:00\" ends=\"23:59:59\"/>\n" + 
+                "               <time day=\"tuesday\" begins=\"09:00:00\" ends=\"17:00:00\"/>\n" + 
+                "               <time day=\"thursday\" begins=\"09:00:00\" ends=\"17:00:00\"/>\n" + 
+                "               <time day=\"saturday\" begins=\"09:00:00\" ends=\"17:00:00\"/>\n" + 
+                "           </schedule>" +
+                "           <schedule name=\"david\" type=\"weekly\">" +
+                "               <time day=\"sunday\"    begins=\"00:00:00\" ends=\"09:00:00\"/>\n" + 
+                "               <time day=\"sunday\"    begins=\"17:00:00\" ends=\"23:59:59\"/>\n" + 
+                "               <time day=\"monday\"    begins=\"00:00:00\" ends=\"09:00:00\"/>\n" + 
+                "               <time day=\"monday\"    begins=\"17:00:00\" ends=\"23:59:59\"/>\n" + 
+                "               <time day=\"tuesday\"   begins=\"00:00:00\" ends=\"09:00:00\"/>\n" + 
+                "               <time day=\"tuesday\"   begins=\"17:00:00\" ends=\"23:59:59\"/>\n" + 
+                "               <time day=\"wednesday\" begins=\"00:00:00\" ends=\"09:00:00\"/>\n" + 
+                "               <time day=\"wednesday\" begins=\"17:00:00\" ends=\"23:59:59\"/>\n" + 
+                "               <time day=\"thursday\"  begins=\"00:00:00\" ends=\"09:00:00\"/>\n" + 
+                "               <time day=\"thursday\"  begins=\"17:00:00\" ends=\"23:59:59\"/>\n" + 
+                "               <time day=\"friday\"    begins=\"00:00:00\" ends=\"09:00:00\"/>\n" + 
+                "               <time day=\"friday\"    begins=\"17:00:00\" ends=\"23:59:59\"/>\n" + 
+                "               <time day=\"saturday\"  begins=\"00:00:00\" ends=\"09:00:00\"/>\n" + 
+                "               <time day=\"saturday\"  begins=\"17:00:00\" ends=\"23:59:59\"/>\n" + 
+                "           </schedule>" +
+                "       </role>\n" +
+                "       <role name=\"onDuty\" supervisor=\"admin\" description=\"onDuty role\" membership-group=\"All\">" +
+                "           <schedule name=\"brozow\" type=\"weekly\">" +
+                "               <time day=\"sunday\" begins=\"06:00:00\" ends=\"07:00:00\"/>\n" + 
+                "               <time day=\"monday\" begins=\"06:00:00\" ends=\"07:00:00\"/>\n" + 
+                "               <time day=\"tuesday\" begins=\"06:00:00\" ends=\"07:00:00\"/>\n" + 
+                "               <time day=\"wednesday\" begins=\"06:00:00\" ends=\"07:00:00\"/>\n" + 
+                "               <time day=\"thursday\" begins=\"06:00:00\" ends=\"07:00:00\"/>\n" + 
+                "               <time day=\"friday\" begins=\"06:00:00\" ends=\"07:00:00\"/>\n" + 
+                "               <time day=\"saturday\" begins=\"06:00:00\" ends=\"07:00:00\"/>\n" + 
+                "           </schedule>\n" +
+                "       </role>\n" +
+                "   </roles>\n" +
                 "</groupinfo>\n" + 
                 "";
     public static final String USER_MANAGER = "<?xml version=\"1.0\"?>\n" + 
@@ -263,21 +313,6 @@ public class NotificationsTestCase extends TestCase {
                 "           <user-comments>Test User</user-comments>\n" +
                 "           <password>21232F297A57A5A743894A0E4A801FC3</password>\n" +
                 "           <contact type=\"email\" info=\"brozow@opennms.org\"/>\n" + 
-                "           <oncall-schedule name=\"oncall\" type=\"weekly\">" +
-                "               <time day=\"sunday\" begins=\"09:00:00\" ends=\"17:00:00\"/>\n" + 
-                "               <time day=\"monday\" begins=\"09:00:00\" ends=\"17:00:00\"/>\n" + 
-                "               <time day=\"wednesday\" begins=\"09:00:00\" ends=\"17:00:00\"/>\n" + 
-                "               <time day=\"friday\" begins=\"09:00:00\" ends=\"17:00:00\"/>\n" + 
-                "           </oncall-schedule>" +
-                "           <oncall-schedule name=\"onDuty\" type=\"weekly\">" +
-                "               <time day=\"sunday\" begins=\"06:00:00\" ends=\"07:00:00\"/>\n" + 
-                "               <time day=\"monday\" begins=\"06:00:00\" ends=\"07:00:00\"/>\n" + 
-                "               <time day=\"tuesday\" begins=\"06:00:00\" ends=\"07:00:00\"/>\n" + 
-                "               <time day=\"wednesday\" begins=\"06:00:00\" ends=\"07:00:00\"/>\n" + 
-                "               <time day=\"thursday\" begins=\"06:00:00\" ends=\"07:00:00\"/>\n" + 
-                "               <time day=\"friday\" begins=\"06:00:00\" ends=\"07:00:00\"/>\n" + 
-                "               <time day=\"saturday\" begins=\"06:00:00\" ends=\"07:00:00\"/>\n" + 
-                "           </oncall-schedule>" +
                 "       </user>\n" + 
                 "       <user>\n" + 
                 "           <user-id>admin</user-id>\n" + 
@@ -285,12 +320,6 @@ public class NotificationsTestCase extends TestCase {
                 "           <user-comments>Default administrator, do not delete</user-comments>\n" +
                 "           <password>21232F297A57A5A743894A0E4A801FC3</password>\n" +
                 "           <contact type=\"email\" info=\"admin@opennms.org\"/>\n" + 
-                "           <oncall-schedule name=\"oncall\" type=\"weekly\">" +
-                "               <time day=\"sunday\" begins=\"00:00:00\" ends=\"23:59:59\"/>\n" + 
-                "               <time day=\"tuesday\" begins=\"09:00:00\" ends=\"17:00:00\"/>\n" + 
-                "               <time day=\"thursday\" begins=\"09:00:00\" ends=\"17:00:00\"/>\n" + 
-                "               <time day=\"saturday\" begins=\"09:00:00\" ends=\"17:00:00\"/>\n" + 
-                "           </oncall-schedule>" +
                 "       </user>\n" + 
                 "       <user>\n" + 
                 "           <user-id>upUser</user-id>\n" + 
@@ -308,22 +337,6 @@ public class NotificationsTestCase extends TestCase {
                 "           <contact type=\"numericPage\" info=\"6789\" serviceProvider=\"ATT\"/>\n" + 
                 "           <contact type=\"textPage\" info=\"9876\" serviceProvider=\"Sprint\"/>\n" + 
 //                "           <duty-schedule>MoTuWeThFrSaSu800-2300</duty-schedule>\n" + 
-                "           <oncall-schedule name=\"oncall\" type=\"weekly\">" +
-                "               <time day=\"sunday\"    begins=\"00:00:00\" ends=\"09:00:00\"/>\n" + 
-                "               <time day=\"sunday\"    begins=\"17:00:00\" ends=\"23:59:59\"/>\n" + 
-                "               <time day=\"monday\"    begins=\"00:00:00\" ends=\"09:00:00\"/>\n" + 
-                "               <time day=\"monday\"    begins=\"17:00:00\" ends=\"23:59:59\"/>\n" + 
-                "               <time day=\"tuesday\"   begins=\"00:00:00\" ends=\"09:00:00\"/>\n" + 
-                "               <time day=\"tuesday\"   begins=\"17:00:00\" ends=\"23:59:59\"/>\n" + 
-                "               <time day=\"wednesday\" begins=\"00:00:00\" ends=\"09:00:00\"/>\n" + 
-                "               <time day=\"wednesday\" begins=\"17:00:00\" ends=\"23:59:59\"/>\n" + 
-                "               <time day=\"thursday\"  begins=\"00:00:00\" ends=\"09:00:00\"/>\n" + 
-                "               <time day=\"thursday\"  begins=\"17:00:00\" ends=\"23:59:59\"/>\n" + 
-                "               <time day=\"friday\"    begins=\"00:00:00\" ends=\"09:00:00\"/>\n" + 
-                "               <time day=\"friday\"    begins=\"17:00:00\" ends=\"23:59:59\"/>\n" + 
-                "               <time day=\"saturday\"  begins=\"00:00:00\" ends=\"09:00:00\"/>\n" + 
-                "               <time day=\"saturday\"  begins=\"17:00:00\" ends=\"23:59:59\"/>\n" + 
-                "           </oncall-schedule>" +
                 "       </user>\n" + 
                 "   </users>\n" + 
                 "</userinfo>\n" + 

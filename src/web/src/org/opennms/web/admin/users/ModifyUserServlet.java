@@ -42,6 +42,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.opennms.netmgt.config.UserFactory;
+import org.opennms.netmgt.config.UserManager;
 import org.opennms.netmgt.config.users.User;
 
 /**
@@ -57,7 +58,7 @@ public class ModifyUserServlet extends HttpServlet {
 
         try {
             UserFactory.init();
-            UserFactory userFactory = UserFactory.getInstance();
+            UserManager userFactory = UserFactory.getInstance();
             User user = userFactory.getUser(request.getParameter("userID"));
             userSession.setAttribute("user.modifyUser.jsp", user);
         } catch (Exception e) {

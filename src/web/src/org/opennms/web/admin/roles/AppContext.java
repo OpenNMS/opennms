@@ -31,21 +31,38 @@
 //
 package org.opennms.web.admin.roles;
 
+import org.opennms.netmgt.config.GroupFactory;
+import org.opennms.netmgt.config.UserFactory;
+
 public class AppContext {
     
-    private static WebRoleManager s_roleManager = new WebRoleManager();
-    private static WebUserManager s_userManager = new WebUserManager();
-    private static WebGroupManager s_groupManager = new WebGroupManager();
+    private static WebRoleManager s_roleManager = null;
+    private static WebUserManager s_userManager = null;
+    private static WebGroupManager s_groupManager = null;
     
-    public static WebRoleManager getRoleManager() {
-        return s_roleManager;
+    public static void init() throws Exception {
+        GroupFactory.init();
+        UserFactory.init();
     }
     
+    public static WebRoleManager getRoleManager() {
+        if (s_roleManager == null)
+            s_roleManager = new WebRoleManager(GroupFactory.getInstance());
+        
+        return s_roleManager;
+    }
+
     public static WebUserManager getUserManager() {
+        if (s_userManager == null)
+            s_userManager = new WebUserManager();
+        
         return s_userManager;
     }
     
     public static WebGroupManager getGroupManager() {
+        if (s_groupManager == null)
+            s_groupManager = new WebGroupManager();
+        
         return s_groupManager;
     }
 

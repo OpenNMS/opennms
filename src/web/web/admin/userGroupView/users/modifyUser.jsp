@@ -49,7 +49,7 @@
         HttpSession userSession = request.getSession(false);
         User user = null;
         String userid = "";
-        UserFactory userFactory;
+        UserManager userFactory;
         try {
             UserFactory.init();
             userFactory = UserFactory.getInstance();

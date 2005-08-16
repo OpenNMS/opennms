@@ -55,7 +55,7 @@ public class GroupFactory extends GroupManager {
     /**
      * The static singleton instance object
      */
-    private static GroupFactory s_instance;
+    private static GroupManager s_instance;
 
     /**
      * Boolean indicating if the init() method has been called
@@ -74,16 +74,22 @@ public class GroupFactory extends GroupManager {
 
     /**
      * Constructor which parses the file
+     * @throws IOException 
+     * @throws FileNotFoundException 
+     * @throws ValidationException 
+     * @throws MarshalException 
      */
-    public GroupFactory() {
+    public GroupFactory() throws MarshalException, ValidationException, FileNotFoundException, IOException {
+        reload();
     }
 
     public static synchronized void init() throws IOException, FileNotFoundException, MarshalException, ValidationException {
 
-        if (!s_initialized) {
-            getInstance().reload();
+        if (s_instance == null || !s_initialized) {
+            s_instance = new GroupFactory();
             s_initialized = true;
         }
+
     }
 
     /**
@@ -92,13 +98,13 @@ public class GroupFactory extends GroupManager {
      * 
      * @return the single group factory instance
      */
-    public static synchronized GroupFactory getInstance() {
-
-        if (s_instance == null || !s_initialized) {
-            s_instance = new GroupFactory();
-        }
-
+    public static synchronized GroupManager getInstance() {
         return s_instance;
+    }
+    
+    public static synchronized void setInstance(GroupManager mgr) {
+        s_initialized = true;
+        s_instance = mgr;
     }
 
     /**

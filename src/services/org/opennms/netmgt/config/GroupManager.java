@@ -442,8 +442,12 @@ public abstract class GroupManager {
         }
     }
 
-    public String[] getRoles() {
+    public String[] getRoleNames() {
         return (String[]) m_roles.keySet().toArray(new String[m_roles.keySet().size()]);
+    }
+    
+    public Collection getRoles() {
+        return m_roles.values();
     }
     
     public Role getRole(String roleName) {

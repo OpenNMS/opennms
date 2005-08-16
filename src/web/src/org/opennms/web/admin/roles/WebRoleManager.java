@@ -31,46 +31,55 @@
 //
 package org.opennms.web.admin.roles;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
+
+import org.opennms.netmgt.config.GroupManager;
+import org.opennms.netmgt.config.groups.Role;
 
 public class WebRoleManager {
     
-    private Collection m_roles;
+    private GroupManager m_groupManager;
     
-    public WebRoleManager() {
-        List list = new LinkedList();
-        for(int i = 0; i < 11; i++) {
-          list.add(new WebRole());  
+    class ManagedRole extends WebRole {
+        Role m_role;
+        ManagedRole(Role role) {
+           m_role = role;
+           super.setName(role.getName());
+           super.setDescription(role.getDescription());
         }
+    }
 
-        m_roles = list;
+    public WebRoleManager(GroupManager groupManager) {
+        m_groupManager = groupManager;
     }
     
     public Collection getRoles() {
-        return m_roles;
+        Collection roles = m_groupManager.getRoles();
+        List webRoles = new ArrayList(roles.size());
+        for (Iterator it = roles.iterator(); it.hasNext();) {
+            Role role = (Role) it.next();
+            webRoles.add(new ManagedRole(role));
+        }
+        return webRoles;
     }
 
     public void delete(String roleName) {
-        for (Iterator it = m_roles.iterator(); it.hasNext();) {
-            WebRole role = (WebRole) it.next();
-            if (roleName.equals(role.getName())) {
-                it.remove();
-                return;
-            }
-        }
+//        for (Iterator it = m_roles.iterator(); it.hasNext();) {
+//            WebRole role = (WebRole) it.next();
+//            if (roleName.equals(role.getName())) {
+//                it.remove();
+//                return;
+//            }
+//        }
+        throw new RuntimeException("WebRoleManager.delete is not yet implemented!");
     }
 
     public WebRole getRole(String roleName) {
-        for (Iterator it = m_roles.iterator(); it.hasNext();) {
-            WebRole role = (WebRole) it.next();
-            if (roleName.equals(role.getName())) {
-                return role;
-            }
-        }
-        return null;
+        Role role = m_groupManager.getRole(roleName);
+        return (role == null ? null : new ManagedRole(role));
     }
 
     public void save() {
@@ -81,8 +90,8 @@ public class WebRoleManager {
     public void addRole(WebRole role) {
         if (getRole(role.getName()) != null)
             throw new IllegalArgumentException("Role with name "+role.getName()+" already exists.");
-        
-        m_roles.add(role);
+
+        throw new RuntimeException("WebRoleManager.addRole not yet implemented!");
     }
 
 }

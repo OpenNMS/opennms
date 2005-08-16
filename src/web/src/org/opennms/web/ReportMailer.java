@@ -46,6 +46,7 @@ import org.opennms.core.utils.JavaMailer;
 import org.opennms.core.utils.JavaMailerException;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.UserFactory;
+import org.opennms.netmgt.config.UserManager;
 import org.opennms.netmgt.utils.StreamUtils;
 import org.opennms.report.availability.AvailabilityReport;
 
@@ -67,7 +68,7 @@ public class ReportMailer extends Object implements Runnable {
 
     protected String finalEmailAddr;
 
-    protected UserFactory userFactory;
+    protected UserManager userFactory;
 
     protected String filename;
 

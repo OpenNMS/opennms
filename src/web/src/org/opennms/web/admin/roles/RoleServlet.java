@@ -150,8 +150,8 @@ import javax.servlet.http.HttpServletResponse;
                 }
                 request.setAttribute("role", role);
                 role.setName(request.getParameter("roleName"));
-                role.setDefaultUser(request.getParameter("roleUser"));
-                role.setMembershipGroup(request.getParameter("roleGroup"));
+                role.setDefaultUser(getUserManager().getUser(request.getParameter("roleUser")));
+                role.setMembershipGroup(getGroupManager().getGroup(request.getParameter("roleGroup")));
                 role.setDescription(request.getParameter("roleDescr"));
                 getRoleManager().save();
             }
@@ -206,9 +206,15 @@ import javax.servlet.http.HttpServletResponse;
     public void init() throws ServletException {
         super.init();
 
-        getServletContext().setAttribute("roleManager", AppContext.getRoleManager());
-        getServletContext().setAttribute("userManager", AppContext.getUserManager());
-        getServletContext().setAttribute("groupManager", AppContext.getGroupManager());
+        try {
+            AppContext.init();
+            
+            getServletContext().setAttribute("roleManager", AppContext.getRoleManager());
+            getServletContext().setAttribute("userManager", AppContext.getUserManager());
+            getServletContext().setAttribute("groupManager", AppContext.getGroupManager());
+        } catch (Exception e) {
+            throw new ServletException("Error initializing RolesServlet", e);
+        }
         
 
     }
@@ -217,5 +223,12 @@ import javax.servlet.http.HttpServletResponse;
         return AppContext.getRoleManager();
     }
     
-    
+    private WebUserManager getUserManager() {
+        return AppContext.getUserManager();
+    }
+
+    private WebGroupManager getGroupManager() {
+        return AppContext.getGroupManager();
+    }
+
 }

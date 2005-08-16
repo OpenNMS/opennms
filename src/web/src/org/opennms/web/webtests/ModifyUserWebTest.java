@@ -85,7 +85,7 @@ public class ModifyUserWebTest extends OpenNMSWebTestCase {
 
         // We need to do this to ensure that the factory reloads the new users.xml file
         UserFactory.init();
-        UserFactory.getInstance().reload();
+        UserFactory.getInstance().getUserNames();
 
 
     }

@@ -40,6 +40,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.opennms.netmgt.config.GroupFactory;
+import org.opennms.netmgt.config.GroupManager;
 
 /**
  * A servlet that handles deleting an existing group
@@ -54,7 +55,7 @@ public class DeleteGroupServlet extends HttpServlet {
         // now save to the xml file
         try {
             GroupFactory.init();
-            GroupFactory groupFactory = GroupFactory.getInstance();
+            GroupManager groupFactory = GroupFactory.getInstance();
             groupFactory.deleteGroup(groupName);
         } catch (Exception e) {
             throw new ServletException("Error deleting group " + groupName, e);

@@ -42,6 +42,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.opennms.netmgt.config.GroupFactory;
+import org.opennms.netmgt.config.GroupManager;
 import org.opennms.netmgt.config.groups.Group;
 
 /**
@@ -57,7 +58,7 @@ public class ModifyGroupServlet extends HttpServlet {
 
         try {
             GroupFactory.init();
-            GroupFactory groupFactory = GroupFactory.getInstance();
+            GroupManager groupFactory = GroupFactory.getInstance();
             Group group = groupFactory.getGroup(request.getParameter("groupName"));
             userSession.setAttribute("group.modifyGroup.jsp", group);
         } catch (Exception e) {

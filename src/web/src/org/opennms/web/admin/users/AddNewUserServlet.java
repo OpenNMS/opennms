@@ -42,6 +42,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.opennms.netmgt.config.UserFactory;
+import org.opennms.netmgt.config.UserManager;
 import org.opennms.netmgt.config.users.User;
 
 /**
@@ -57,7 +58,7 @@ public class AddNewUserServlet extends HttpServlet {
         } catch (Exception e) {
             throw new ServletException("AddNewUserServlet: Error initialising user factory." + e);
         }
-        UserFactory userFactory = UserFactory.getInstance();
+        UserManager userFactory = UserFactory.getInstance();
 
         String userID = request.getParameter("userID");
         String password = request.getParameter("pass1");

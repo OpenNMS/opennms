@@ -37,23 +37,16 @@ public class WebRole {
     
     private String m_name;
     private String m_description;
-    private String m_defaultUser;
-    private String m_membershipGroup;
-    
-    private static int sm_count = 1;
+    private WebUser m_defaultUser;
+    private WebGroup m_membershipGroup;
     
     public WebRole() {
-        int count = sm_count++;
-        m_name = "onCall"+count;
-        m_description = "The "+count+"th on call role";
-        m_defaultUser = "defaultUser"+count;
-        m_membershipGroup = "membershipGroup"+count;
     }
     
-    public String getDefaultUser() {
+    public WebUser getDefaultUser() {
         return m_defaultUser;
     }
-    public void setDefaultUser(String defaultUser) {
+    public void setDefaultUser(WebUser defaultUser) {
         m_defaultUser = defaultUser;
     }
     public String getDescription() {
@@ -63,9 +56,9 @@ public class WebRole {
         m_description = description;
     }
     public WebGroup getMembershipGroup() {
-        return new WebGroup(m_membershipGroup);
+        return m_membershipGroup;
     }
-    public void setMembershipGroup(String memberShipGroup) {
+    public void setMembershipGroup(WebGroup memberShipGroup) {
         m_membershipGroup = memberShipGroup;
     }
     public String getName() {
@@ -74,7 +67,7 @@ public class WebRole {
     public void setName(String name) {
         m_name = name;
     }
-    public String getCurrentUser() {
+    public WebUser getCurrentUser() {
         return getDefaultUser();
     }
     

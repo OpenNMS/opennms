@@ -76,7 +76,7 @@ public class UserGroupManagerTest extends TestCase {
     "        </group>\n" + 
     "    </groups>\n" +
     "  <roles>\n" + 
-    "    <role superviser=\"admin\" name=\"oncall\" description=\"The On Call Schedule\" membership-group=\"InitialGroup\">\n" + 
+    "    <role supervisor=\"admin\" name=\"oncall\" description=\"The On Call Schedule\" membership-group=\"InitialGroup\">\n" + 
     "      <schedule name=\"brozow\" type=\"weekly\">\n" + 
     "         <time day=\"sunday\" begins=\"09:00:00\" ends=\"17:00:00\"/>\n" + 
     "         <time day=\"monday\" begins=\"09:00:00\" ends=\"17:00:00\"/>\n" + 
@@ -106,7 +106,7 @@ public class UserGroupManagerTest extends TestCase {
     "         <time day=\"saturday\"  begins=\"17:00:00\" ends=\"23:59:59\"/>\n" + 
     "      </schedule>\n" + 
     "    </role>\n" +
-    "    <role superviser=\"admin\" name=\"unscheduled\" description=\"The Unscheduled Schedule\" membership-group=\"UpGroup\">\n" + 
+    "    <role supervisor=\"admin\" name=\"unscheduled\" description=\"The Unscheduled Schedule\" membership-group=\"UpGroup\">\n" + 
     "           <schedule name=\"upUser\" type=\"weekly\">" +
     "               <time day=\"sunday\" begins=\"00:00:00\" ends=\"23:59:59\"/>\n" + 
     "               <time day=\"monday\" begins=\"00:00:00\" ends=\"23:59:59\"/>\n" + 
@@ -290,7 +290,7 @@ private Date sunday;
     }
     
     public void testGetRoles() {
-        assertRoles(m_groupManager.getRoles(), new Role[] { oncall, unscheduled });
+        assertRoles(m_groupManager.getRoleNames(), new Role[] { oncall, unscheduled });
     }
     
     public void testUserHasRole() throws Exception {
@@ -314,7 +314,7 @@ private Date sunday;
     }
     
     private void testUsersScheduledForRolesAt(Date date) throws Exception {
-        String[] roles = m_groupManager.getRoles();
+        String[] roles = m_groupManager.getRoleNames();
         for (int i = 0; i < roles.length; i++) {
             testUsersScheduleForRoleAt(roles[i], date);
             

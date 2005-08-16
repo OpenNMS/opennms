@@ -40,6 +40,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.opennms.netmgt.config.UserFactory;
+import org.opennms.netmgt.config.UserManager;
 
 /**
  * A servlet that handles deleting an existing user
@@ -54,7 +55,7 @@ public class DeleteUserServlet extends HttpServlet {
         // now save to the xml file
         try {
             UserFactory.init();
-            UserFactory userFactory = UserFactory.getInstance();
+            UserManager userFactory = UserFactory.getInstance();
             userFactory.deleteUser(userID);
         } catch (Exception e) {
             throw new ServletException("Error deleting user " + userID, e);
