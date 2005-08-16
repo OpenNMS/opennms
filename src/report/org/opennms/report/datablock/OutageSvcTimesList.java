@@ -52,6 +52,11 @@ import java.util.List;
  */
 public class OutageSvcTimesList extends ArrayList {
     /**
+     * 
+     */
+    private static final long serialVersionUID = -4701288568774571119L;
+
+    /**
      * The time from which the current outtime 'm_outTime' is calculated
      */
     private long m_outTimeSince;

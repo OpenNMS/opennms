@@ -49,6 +49,11 @@ package org.opennms.core.queue;
  */
 public class FifoQueueException extends Exception {
     /**
+     * 
+     */
+    private static final long serialVersionUID = 4596596920225763462L;
+
+    /**
      * Constructs a default instance of the exception with no message.
      */
     public FifoQueueException() {

@@ -49,6 +49,11 @@ public class InsufficientInformationException extends Exception {
     /**
      * 
      */
+    private static final long serialVersionUID = 8687696175850117574L;
+
+    /**
+     * 
+     */
     public InsufficientInformationException() {
         super();
         // FIXME Auto-generated constructor stub

@@ -46,6 +46,11 @@ package org.opennms.protocols.snmp.asn1;
  */
 public class AsnDecodingException extends Exception {
     /**
+     * 
+     */
+    private static final long serialVersionUID = -617170785194301839L;
+
+    /**
      * The default exception constructor
      */
     public AsnDecodingException() {

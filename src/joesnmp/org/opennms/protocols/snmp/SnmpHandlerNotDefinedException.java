@@ -47,6 +47,11 @@ package org.opennms.protocols.snmp;
  */
 public class SnmpHandlerNotDefinedException extends RuntimeException {
     /**
+     * 
+     */
+    private static final long serialVersionUID = -5889651086542092511L;
+
+    /**
      * The exception constructor
      * 
      * @param why

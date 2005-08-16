@@ -49,6 +49,11 @@ public class FailedOperationException extends Exception {
     /**
      * 
      */
+    private static final long serialVersionUID = 7378694261384243882L;
+
+    /**
+     * 
+     */
     public FailedOperationException() {
         super();
         // FIXME Auto-generated constructor stub

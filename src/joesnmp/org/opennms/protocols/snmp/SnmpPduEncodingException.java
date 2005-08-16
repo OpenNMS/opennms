@@ -44,6 +44,11 @@ package org.opennms.protocols.snmp;
  */
 public class SnmpPduEncodingException extends Exception {
     /**
+     * 
+     */
+    private static final long serialVersionUID = 4251105118752643982L;
+
+    /**
      * The default exception constructor
      * 
      */

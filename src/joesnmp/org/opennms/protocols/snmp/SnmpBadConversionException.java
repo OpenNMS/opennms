@@ -48,6 +48,10 @@ import java.io.PrintWriter;
  */
 public class SnmpBadConversionException extends Exception {
     /**
+     * 
+     */
+    private static final long serialVersionUID = 5888208447180460071L;
+    /**
      * The original exception that caused this exception to be generated.
      */
     private final Exception m_chained;
