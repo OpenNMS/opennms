@@ -136,7 +136,7 @@ public class NotificationsTestCase extends TestCase {
                 "        <parameter name=\"trapHost\" value=\"localhost\" />\n"+
                 "        <parameter name=\"trapPort\" value=\"161\" />\n"+
                 "        <parameter name=\"trapCommunity\" value=\"public\" />\n"+
-                "        <parameter name=\"trapEnterprise\" value=\"public\" />\n"+
+                "        <parameter name=\"trapEnterprise\" value=\".1.3.6.1.4.1.5813\" />\n"+
                 "        <parameter name=\"trapGeneric\" value=\"6\" />\n"+
                 "        <parameter name=\"trapSpecific\" value=\"1\" />\n"+
                 "        <parameter name=\"trapVarbind\" value=\"%uei%\" />\n"+
