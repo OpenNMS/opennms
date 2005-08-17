@@ -117,13 +117,30 @@ public class NotificationsTestCase extends TestCase {
                 "                </handler-class>\n" + 
                 "        </queue>\n" + 
                 "</notifd-configuration>";
-    private static final String NOTIFICATION_MANAGER = "<?xml version=\"1.0\"?>\n" + 
+    private static final String NOTIFICATIONS = "<?xml version=\"1.0\"?>\n" + 
                 "<notifications xmlns=\"http://xmlns.opennms.org/xsd/notifications\">\n" + 
                 "    <header>\n" + 
                 "        <rev>1.2</rev>\n" + 
                 "        <created>Wednesday, February 6, 2002 10:10:00 AM EST</created>\n" + 
                 "        <mstation>localhost</mstation>\n" + 
                 "    </header>\n" + 
+                "    <notification name=\"snmpTrap\" status=\"on\">\n" + 
+                "        <uei>uei.opennms.org/nodes/nodeDown</uei>\n" + 
+                "        <rule>IPADDR IPLIKE *.*.*.*</rule>\n" + 
+                "        <destinationPath>trapNotifier</destinationPath>\n" + 
+                "        <text-message>All services are down on node %nodeid%.</text-message>\n" + 
+                "        <subject>node %nodeid% down.</subject>\n" + 
+                "        <numeric-message>111-%noticeid%</numeric-message>\n" + 
+                "        <parameter name=\"trapVersion\" value=\"v1\" />\n"+
+                "        <parameter name=\"trapTransport\" value=\"UDP\" />\n"+
+                "        <parameter name=\"trapHost\" value=\"localhost\" />\n"+
+                "        <parameter name=\"trapPort\" value=\"161\" />\n"+
+                "        <parameter name=\"trapCommunity\" value=\"public\" />\n"+
+                "        <parameter name=\"trapEnterprise\" value=\"public\" />\n"+
+                "        <parameter name=\"trapGeneric\" value=\"6\" />\n"+
+                "        <parameter name=\"trapSpecific\" value=\"1\" />\n"+
+                "        <parameter name=\"trapVarbind\" value=\"%uei%\" />\n"+
+                "    </notification>\n" + 
                 "    <notification name=\"nodeDown\" status=\"on\">\n" + 
                 "        <uei>uei.opennms.org/nodes/nodeDown</uei>\n" + 
                 "        <rule>IPADDR IPLIKE *.*.*.*</rule>\n" + 
@@ -215,7 +232,7 @@ public class NotificationsTestCase extends TestCase {
                 "    </notification>" +
                 "</notifications>\n" + 
                 "";
-    public static final String GROUP_MANAGER = "<?xml version=\"1.0\"?>\n" + 
+    public static final String GROUPS = "<?xml version=\"1.0\"?>\n" + 
                 "<groupinfo>\n" + 
                 "    <header>\n" + 
                 "        <rev>1.3</rev>\n" + 
@@ -299,7 +316,7 @@ public class NotificationsTestCase extends TestCase {
                 "   </roles>\n" +
                 "</groupinfo>\n" + 
                 "";
-    public static final String USER_MANAGER = "<?xml version=\"1.0\"?>\n" + 
+    public static final String USERS = "<?xml version=\"1.0\"?>\n" + 
                 "<userinfo xmlns=\"http://xmlns.opennms.org/xsd/users\">\n" + 
                 "   <header>\n" + 
                 "       <rev>.9</rev>\n" + 
@@ -307,6 +324,13 @@ public class NotificationsTestCase extends TestCase {
                 "       <mstation>master.nmanage.com</mstation>\n" + 
                 "   </header>\n" + 
                 "   <users>\n" + 
+                "       <user>\n" + 
+                "           <user-id>trapd</user-id>\n" + 
+                "           <full-name>SNMP Trapd</full-name>\n" + 
+                "           <user-comments>User that receives trap notifications</user-comments>\n" +
+                "           <password>21232F297A57A5A743894A0E4A801FC3</password>\n" +
+                "           <contact type=\"snmpTrap\" info=\"Destination for SNMP Trap/Notifications\"/>\n" + 
+                "       </user>\n" + 
                 "       <user>\n" + 
                 "           <user-id>brozow</user-id>\n" + 
                 "           <full-name>Mathew Brozowski</full-name>\n" + 
@@ -341,13 +365,19 @@ public class NotificationsTestCase extends TestCase {
                 "   </users>\n" + 
                 "</userinfo>\n" + 
                 "";
-    private static final String PATH_MANAGER = "<?xml version=\"1.0\"?>\n" + 
+    private static final String DESTINATION_PATHS = "<?xml version=\"1.0\"?>\n" + 
                 "<destinationPaths>\n" + 
                 "    <header>\n" + 
                 "        <rev>1.2</rev>\n" + 
                 "        <created>Wednesday, February 6, 2002 10:10:00 AM EST</created>\n" + 
                 "        <mstation>localhost</mstation>\n" + 
                 "    </header>\n" + 
+                "    <path name=\"trapNotifier\" initial-delay=\"0s\">\n" + 
+                "        <target>\n" + 
+                "            <name>trapd</name>\n" + 
+                "            <command>snmpTrap</command>\n" + 
+                "        </target>\n" + 
+                "    </path>\n" + 
                 "    <path name=\"OnCall\" initial-delay=\"0s\">\n" + 
                 "        <target>\n" + 
                 "            <name>oncall</name>\n" + 
@@ -386,13 +416,45 @@ public class NotificationsTestCase extends TestCase {
                 "    </path>\n" + 
                 "</destinationPaths>\n" + 
                 "";
-    private static final String CMD_MANAGER = "<?xml version=\"1.0\"?>\n" + 
+    private static final String NOTIFICATION_COMMANDS = "<?xml version=\"1.0\"?>\n" + 
                 "<notification-commands>\n" + 
                 "    <header>\n" + 
                 "        <ver>.9</ver>\n" + 
                 "        <created>Wednesday, February 6, 2002 10:10:00 AM EST</created>\n" + 
                 "        <mstation>master.nmanage.com</mstation>\n" + 
                 "    </header>\n" + 
+                "    <command binary=\"false\">\n" + 
+                "        <name>snmpTrap</name>\n" + 
+                "        <execute>org.opennms.netmgt.notifd.SnmpTrapNotificationStrategy</execute>\n" + 
+                "        <comment>Class for sending notifications as SNMP Traps</comment>\n" + 
+                "        <argument streamed=\"false\">\n" + 
+                "            <switch>trapVersion</switch>\n" + 
+                "        </argument>\n" + 
+                "        <argument streamed=\"false\">\n" + 
+                "            <switch>trapTransport</switch>\n" + 
+                "        </argument>\n" + 
+                "        <argument streamed=\"false\">\n" + 
+                "            <switch>trapHost</switch>\n" + 
+                "        </argument>\n" + 
+                "        <argument streamed=\"false\">\n" + 
+                "            <switch>trapPort</switch>\n" + 
+                "        </argument>\n" + 
+                "        <argument streamed=\"false\">\n" + 
+                "            <switch>trapCommunity</switch>\n" + 
+                "        </argument>\n" + 
+                "        <argument streamed=\"false\">\n" + 
+                "            <switch>trapEnterprise</switch>\n" + 
+                "        </argument>\n" + 
+                "        <argument streamed=\"false\">\n" + 
+                "            <switch>trapGeneric</switch>\n" + 
+                "        </argument>\n" + 
+                "        <argument streamed=\"false\">\n" + 
+                "            <switch>trapSpecific</switch>\n" + 
+                "        </argument>\n" + 
+                "        <argument streamed=\"false\">\n" + 
+                "            <switch>trapVarbind</switch>\n" + 
+                "        </argument>\n" + 
+                "    </command>\n" + 
                 "    <command binary=\"false\">\n" + 
                 "        <name>mockNotifier</name>\n" + 
                 "        <execute>org.opennms.netmgt.notifd.mock.MockNotificationStrategy</execute>\n" + 
@@ -431,9 +493,9 @@ public class NotificationsTestCase extends TestCase {
         m_groupManager = createGroupManager();
         m_userManager = createUserManager(m_groupManager);
         
-        m_destinationPathManager = new MockDestinationPathManager(PATH_MANAGER);        
-        m_notificationCommandManger = new MockNotificationCommandManager(CMD_MANAGER);
-        m_notificationManager = new MockNotificationManager(m_notifdConfig, m_db, NOTIFICATION_MANAGER);
+        m_destinationPathManager = new MockDestinationPathManager(DESTINATION_PATHS);        
+        m_notificationCommandManger = new MockNotificationCommandManager(NOTIFICATION_COMMANDS);
+        m_notificationManager = new MockNotificationManager(m_notifdConfig, m_db, NOTIFICATIONS);
         
         m_anticipator = new NotificationAnticipator();
         MockNotificationStrategy.setAnticpator(m_anticipator);
@@ -493,11 +555,11 @@ public class NotificationsTestCase extends TestCase {
     }
 
     private MockUserManager createUserManager(MockGroupManager groupManager) throws MarshalException, ValidationException {
-        return new MockUserManager(groupManager, USER_MANAGER);
+        return new MockUserManager(groupManager, USERS);
     }
 
     private MockGroupManager createGroupManager() throws MarshalException, ValidationException {
-        return new MockGroupManager(GROUP_MANAGER);
+        return new MockGroupManager(GROUPS);
     }
 
     protected void tearDown() throws Exception {
@@ -556,10 +618,6 @@ public class NotificationsTestCase extends TestCase {
         
     }
     
-    private void verifyAnticipated(int waitTime) {
-        verifyAnticipated(0, waitTime);
-    }
-
     protected void verifyAnticipated(long lastNotifyTime, long waitTime) {
         verifyAnticipated(lastNotifyTime, waitTime, 1000);
     }

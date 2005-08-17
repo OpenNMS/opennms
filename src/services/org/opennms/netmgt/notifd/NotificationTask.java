@@ -46,7 +46,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.SortedMap;
 
 import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
@@ -98,14 +97,6 @@ public class NotificationTask extends Thread {
      */
     private long m_sendTime;
 
-    /**
-     */
-    private List m_siblings;
-
-    /**
-     */
-    private SortedMap m_notifTree;
-
     private Notifd m_notifd;
 
     /**
@@ -118,7 +109,6 @@ public class NotificationTask extends Thread {
         m_notifd = notifd;
         m_sendTime = sendTime;
         m_params = new HashMap(someParams);
-        m_siblings = siblings;
 
     }
 
@@ -249,13 +239,13 @@ public class NotificationTask extends Thread {
             }
         } else {
             // remove all the related notices that have yet to be sent
-            for (int i = 0; i < m_siblings.size(); i++) {
-                NotificationTask task = (NotificationTask) m_siblings.get(i);
+            //for (int i = 0; i < m_siblings.size(); i++) {
+            //    NotificationTask task = (NotificationTask) m_siblings.get(i);
 
                 // FIXME: Reported on discuss list and not found to ever
                 // be initialized anywhere.
                 // m_notifTree.remove(task);
-            }
+            //}
         }
     }
 

@@ -562,6 +562,8 @@ public final class BroadcastEventProcessor implements EventListener {
         for (int i = 0; i < parameters.length; i++) {
             paramMap.put(parameters[i].getName(), parameters[i].getValue());
         }
+        
+//        recursivelyExpandMapValues(paramMap);
 
         // expand the event parameters for the messages
         String text = (notification.getTextMessage() != null ? notification.getTextMessage() : "No text message supplied.");
@@ -625,7 +627,19 @@ public final class BroadcastEventProcessor implements EventListener {
         return expanded;
     }
 
-    /**
+/*    private static void recursivelyExpandMapValues(Map map) {
+        Set keySet = map.keySet();
+        
+        for (Iterator it = keySet.iterator(); it.hasNext();) {
+            String key = (String) it.next();
+            String value = 
+        }
+        
+        for (int i=0; i < map.size(); i++) {
+            String value = map.
+        }
+    }
+*/    /**
      * 
      */
     private void processTargets(Target[] targets, List targetSiblings, NoticeQueue noticeQueue, long startTime, Map params, int noticeId) throws IOException, MarshalException, ValidationException {

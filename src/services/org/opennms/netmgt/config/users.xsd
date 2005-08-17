@@ -64,7 +64,7 @@
       <attribute name="type" use="required">
         <simpleType>
           <restriction base="string">
-            <pattern value="(xmppAddress|email|pagerEmail|textPage|numericPage)"/>
+            <pattern value="(xmppAddress|email|pagerEmail|textPage|numericPage|snmpTrap)"/>
           </restriction>
         </simpleType>
       </attribute>
