@@ -82,7 +82,7 @@ public class NotificationsTestCase extends TestCase {
                 "        outstanding-notices-sql=\"SELECT notifyid FROM notifications where notifyId = ? AND respondTime is not null\"\n" + 
                 "        acknowledge-id-sql=\"SELECT notifyid FROM notifications WHERE eventuei=? AND nodeid=? AND interfaceid=? AND serviceid=?\"\n" + 
                 "        acknowledge-update-sql=\"UPDATE notifications SET answeredby=?, respondtime=? WHERE notifyId=?\"\n" + 
-                "   match-all=\"false\">\n" + 
+                "   match-all=\"true\">\n" + 
                 "        \n" + 
                 "   <auto-acknowledge notify = \"true\" uei=\"uei.opennms.org/nodes/serviceResponsive\" \n" + 
                 "                          acknowledge=\"uei.opennms.org/nodes/serviceUnresponsive\">\n" + 
@@ -134,12 +134,12 @@ public class NotificationsTestCase extends TestCase {
                 "        <parameter name=\"trapVersion\" value=\"v1\" />\n"+
                 "        <parameter name=\"trapTransport\" value=\"UDP\" />\n"+
                 "        <parameter name=\"trapHost\" value=\"localhost\" />\n"+
-                "        <parameter name=\"trapPort\" value=\"161\" />\n"+
+                "        <parameter name=\"trapPort\" value=\"162\" />\n"+
                 "        <parameter name=\"trapCommunity\" value=\"public\" />\n"+
                 "        <parameter name=\"trapEnterprise\" value=\".1.3.6.1.4.1.5813\" />\n"+
                 "        <parameter name=\"trapGeneric\" value=\"6\" />\n"+
                 "        <parameter name=\"trapSpecific\" value=\"1\" />\n"+
-                "        <parameter name=\"trapVarbind\" value=\"%uei%\" />\n"+
+                "        <parameter name=\"trapVarbind\" value=\"Node: %nodelabel%\" />\n"+
                 "    </notification>\n" + 
                 "    <notification name=\"nodeDown\" status=\"on\">\n" + 
                 "        <uei>uei.opennms.org/nodes/nodeDown</uei>\n" + 

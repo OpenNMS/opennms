@@ -39,8 +39,8 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.log4j.Category;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.core.utils.Argument;
+import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpTrapBuilder;
@@ -107,6 +107,7 @@ public class SnmpTrapNotificationStrategy implements NotificationStrategy {
         
         InetAddress agentAddress = getHostInetAddress();
         pdu.setAgentAddress(agentAddress);
+        pdu.addVarBind(SnmpObjId.get(".1.3.6.1.4.1.5813.20.1"), SnmpUtils.getValueFactory().getOctetString(getVarbind().getBytes()));
         
         pdu.send(agentAddress.getHostAddress(), getPort(), getCommunity());
     }
@@ -133,6 +134,7 @@ public class SnmpTrapNotificationStrategy implements NotificationStrategy {
         if (isGeneric) {
             pdu.addVarBind(SnmpObjId.get(".1.3.6.1.6.3.1.1.4.3.0"), SnmpUtils.getValueFactory().getObjectId(enterpriseId));
         }
+        pdu.addVarBind(SnmpObjId.get(".1.3.6.1.4.1.5813.20.1"), SnmpUtils.getValueFactory().getOctetString(getVarbind().getBytes()));
 
         pdu.send(getHostInetAddress().getHostAddress(), getPort(), getCommunity());
     }
@@ -224,6 +226,20 @@ public class SnmpTrapNotificationStrategy implements NotificationStrategy {
     }
 
     /**
+     * Helper method to get the trap specific id argument.
+     * @return
+     */
+    private String getVarbind() {
+        String switchValue = getSwitchValue("trapVarbind");
+        
+        if (switchValue == null) {
+            log().info("getVarbind: trapVarbind argument not specified, defaulting to: \"OpenNMS Trap Notification\".");
+            return "OpenNMS Trap Notification";
+        }
+        return switchValue;
+    }
+
+    /**
      * Helper method to look into the Argument list and return the associaated value.
      * If the value is an empty String, this method returns null.
      * @param argSwitch
@@ -237,7 +253,7 @@ public class SnmpTrapNotificationStrategy implements NotificationStrategy {
                 value = arg.getValue();
             }
         }
-        if (value.equals(""))
+        if (value != null && value.equals(""))
             value = null;
         
         return value;

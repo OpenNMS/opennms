@@ -55,6 +55,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.log4j.Category;
 import org.apache.regexp.RE;
@@ -601,8 +602,11 @@ public final class BroadcastEventProcessor implements EventListener {
             paramMap.put(NotificationManager.PARAM_SUBJECT, subjectLine);
         else
             paramMap.put(NotificationManager.PARAM_SUBJECT, finalSubjectLine);
+        
+        expandMapValues(paramMap, event);
 
         return paramMap;
+        
     }
 
     /**
@@ -627,19 +631,22 @@ public final class BroadcastEventProcessor implements EventListener {
         return expanded;
     }
 
-/*    private static void recursivelyExpandMapValues(Map map) {
+    private static void expandMapValues(Map map, Event event) {
         Set keySet = map.keySet();
-        
+
         for (Iterator it = keySet.iterator(); it.hasNext();) {
             String key = (String) it.next();
-            String value = 
+            String mapValue = (String)map.get(key);
+            if (mapValue == null) {
+                continue;
+            }
+            String expandedValue = EventUtil.expandParms((String)map.get(key), event);
+            map.put(key, (expandedValue != null ? expandedValue : map.get(key)));
         }
         
-        for (int i=0; i < map.size(); i++) {
-            String value = map.
-        }
     }
-*/    /**
+    
+    /**
      * 
      */
     private void processTargets(Target[] targets, List targetSiblings, NoticeQueue noticeQueue, long startTime, Map params, int noticeId) throws IOException, MarshalException, ValidationException {

@@ -117,7 +117,7 @@ public class NotifdTest extends NotificationsTestCase {
         //bring node down now
         m_eventMgr.sendEventToListeners(node.createDownEvent(downDate));
 
-        verifyAnticipated(finishedDowns, 500);
+        verifyAnticipated(finishedDowns, 2000);
         
         m_anticipator.reset();
         
@@ -128,7 +128,7 @@ public class NotifdTest extends NotificationsTestCase {
         //bring node back up now
         m_eventMgr.sendEventToListeners(node.createUpEvent(upDate));
 
-        verifyAnticipated(finishedUps, 500);
+        verifyAnticipated(finishedUps, 2000);
 
     }
     
