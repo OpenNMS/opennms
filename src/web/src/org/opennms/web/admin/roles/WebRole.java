@@ -31,9 +31,10 @@
 //
 package org.opennms.web.admin.roles;
 
+import java.util.Collection;
 import java.util.Date;
 
-public class WebRole {
+public abstract class WebRole {
     
     private String m_name;
     private String m_description;
@@ -73,9 +74,7 @@ public class WebRole {
         m_name = name;
     }
 
-    public WebUser getCurrentUser() {
-        return getDefaultUser();
-    }
+    abstract public Collection getCurrentUsers();
     
     public WebCalendar getWeeklyCalendar() {
         return null;
@@ -85,8 +84,6 @@ public class WebRole {
         return getCalendar(new Date());
     }
 
-    public WebCalendar getCalendar(Date month) {
-        return new MonthlyCalendar(month);
-    }
+    abstract public WebCalendar getCalendar(Date month);
 
 }

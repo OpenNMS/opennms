@@ -31,19 +31,27 @@
 //
 package org.opennms.web.admin.roles;
 
+import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Collection;
 import java.util.Date;
+import java.util.Iterator;
 
+import junit.framework.TestCase;
+
+import org.exolab.castor.xml.MarshalException;
+import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.config.GroupFactory;
 import org.opennms.netmgt.config.GroupManager;
 import org.opennms.netmgt.config.UserFactory;
 import org.opennms.netmgt.config.UserManager;
+import org.opennms.netmgt.config.groups.Group;
+import org.opennms.netmgt.config.groups.Role;
+import org.opennms.netmgt.config.users.User;
 import org.opennms.netmgt.mock.MockLogAppender;
 import org.opennms.netmgt.notifd.mock.MockGroupManager;
 import org.opennms.netmgt.notifd.mock.MockUserManager;
-
-import junit.framework.TestCase;
 
 public class RolesTest extends TestCase {
     
@@ -163,6 +171,9 @@ public static final String USER_MANAGER = "<?xml version=\"1.0\"?>\n" +
 
     private GroupManager m_groupManager;
     private UserManager m_userManager;
+    private WebRoleManager m_roleMgr;
+    private WebGroupManager m_groupMgr;
+    private WebUserManager m_userMgr;
 
 
     protected void setUp() throws Exception {
@@ -175,23 +186,78 @@ public static final String USER_MANAGER = "<?xml version=\"1.0\"?>\n" +
         GroupFactory.setInstance(m_groupManager);
         UserFactory.setInstance(m_userManager);
         
+        m_roleMgr = AppContext.getWebRoleManager();
+        m_groupMgr = AppContext.getWebGroupManager();
+        m_userMgr = AppContext.getWebUserManager();
+
     }
 
     protected void tearDown() throws Exception {
         super.tearDown();
     }
     
-    public void testRoles() {
-        WebRoleManager roleMgr = AppContext.getWebRoleManager();
-        assertNotNull(roleMgr);
-        assertNotNull(roleMgr.getRoles());
+    public void testRoles() throws Exception {
+        assertNotNull(m_roleMgr);
+        assertNotNull(m_roleMgr.getRoles());
         
-        assertEquals(m_groupManager.getRoleNames().length, roleMgr.getRoles().size());
+        String[] roleNames = m_groupManager.getRoleNames();
+        assertEquals(roleNames.length, m_roleMgr.getRoles().size());
+        for (int i = 0; i < roleNames.length; i++) {
+            String roleName = roleNames[i];
+            Role role = m_groupManager.getRole(roleName);
+            WebRole webRole = m_roleMgr.getRole(roleName);
+            assertNotNull(webRole);
+            assertRole(role, webRole);
+        }
         
+        for (Iterator it = m_groupManager.getGroupNames().iterator(); it.hasNext();) {
+            String groupName = (String) it.next();
+            Group group = m_groupManager.getGroup(groupName);
+            WebGroup webGroup = m_groupMgr.getGroup(groupName);
+            assertGroup(group, webGroup);
+        }
         
+        for (Iterator it = m_userManager.getUserNames().iterator(); it.hasNext();) {
+            String userName = (String) it.next();
+            User user = m_userManager.getUser(userName);
+            WebUser webUser = m_userMgr.getUser(userName);
+            assertUser(user, webUser);
+        }
+        
+        WebRole oncall = m_roleMgr.getRole("oncall");
+        assertEquals("oncall", oncall.getName());
+        assertEquals(m_groupMgr.getGroup("InitialGroup"), oncall.getMembershipGroup());
         
     }
     
+    private void assertUser(User user, WebUser webUser) {
+        assertEquals(user.getUserId(), webUser.getName());
+    }
+
+    private void assertGroup(Group group, WebGroup webGroup) throws Exception {
+        assertEquals(group.getName(), webGroup.getName());
+        Collection userNames = group.getUserCollection();
+        assertEquals(userNames.size(), webGroup.getUsers().size());
+        for (Iterator it = webGroup.getUsers().iterator(); it.hasNext();) {
+            WebUser user = (WebUser) it.next();
+            assertTrue(userNames.contains(user.getName()));
+            assertUser(m_userManager.getUser(user.getName()), user);
+            
+        }
+    }
+
+    private void assertRole(Role role, WebRole webRole) {
+        assertEquals(role.getName(), webRole.getName());
+        assertEquals(role.getDescription(), webRole.getDescription());
+        assertNotNull(webRole.getMembershipGroup());
+        assertEquals(role.getMembershipGroup(), webRole.getMembershipGroup().getName());
+        assertNotNull(webRole.getDefaultUser());
+        assertEquals(role.getSupervisor(), webRole.getDefaultUser().getName());
+        //assertTrue(m_groupManager.isUserScheduledForRole(webRole.getCurrentUser().getName(), webRole.getName(), new Date()));
+    }
+    
+    
+
     public void testWeekCount() throws Exception {
         Date aug3 = getDate("2005-08-03");
         MonthlyCalendar calendar = new MonthlyCalendar(aug3);

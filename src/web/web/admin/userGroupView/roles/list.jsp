@@ -116,7 +116,11 @@
 				<td><a href="<c:out value='${deleteUrl}'/>" onclick="<c:out value='${confirmScript}'/>"><img src="images/trash.gif" alt="<c:out value='Delete ${role.name}'/>"></a></td>
 				<td><a href="<c:out value='${viewUrl}'/>"><c:out value="${role.name}"/></a></td>
 				<td><c:out value="${role.defaultUser}"/></td>
-				<td><c:out value="${role.currentUser}"/></td>
+				<td>
+					<c:forEach var="scheduledUser" items="${role.currentUsers}">
+						<c:out value="${scheduledUser}"/>
+					</c:forEach>	
+				</td>
 				<td><c:out value="${role.membershipGroup}"/></td>
 				<td><c:out value="${role.description}"/></td>
 				</tr>

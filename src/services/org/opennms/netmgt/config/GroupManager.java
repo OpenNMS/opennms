@@ -487,12 +487,24 @@ public abstract class GroupManager {
         return false;
     }
     
+    public List getSchedulesForRoleAt(String roleId, Date time) {
+        Role role = getRole(roleId);
+        List schedules = new ArrayList();
+        for (Iterator it = role.getScheduleCollection().iterator(); it.hasNext();) {
+            Schedule sched = (Schedule) it.next();
+            if (BasicScheduleUtils.isTimeInSchedule(time, sched)) {
+                schedules.add(sched);
+            }
+        }
+        return schedules;
+    }
+    
     public List getUserSchedulesForRole(String userId, String roleid) {
         List scheds = new ArrayList();
         Role role = getRole(roleid);
-        Iterator j = role.getScheduleCollection().iterator();
-        while(j.hasNext()) {
-            Schedule sched = (Schedule)j.next();
+        Iterator it = role.getScheduleCollection().iterator();
+        while(it.hasNext()) {
+            Schedule sched = (Schedule)it.next();
             if (userId.equals(sched.getName())) {
                 scheds.add(sched);
             }
@@ -508,6 +520,19 @@ public abstract class GroupManager {
             if (BasicScheduleUtils.isTimeInSchedule(time, sched)) {
                 return true;
             }
+        }
+        
+        // if no user is scheduled then the supervisor is schedule by default 
+        Role role = getRole(roleid);
+        if (userId.equals(role.getSupervisor())) {
+            for (Iterator it = role.getScheduleCollection().iterator(); it.hasNext();) {
+                Schedule sched = (Schedule) it.next();
+                if (BasicScheduleUtils.isTimeInSchedule(time, sched)) {
+                    // we found another scheduled user
+                    return false;
+                }
+            }
+            return true;
         }
         return false;
     }

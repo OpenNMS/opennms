@@ -36,6 +36,7 @@ import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
@@ -130,6 +131,25 @@ public class Manager implements WebRoleManager, WebUserManager, WebGroupManager 
         }
     }
     
+    private Collection getUsersScheduleForRole(WebRole role, Date time) {
+        try {
+            String[] users = m_userManager.getUsersScheduledForRole(role.getName(), new Date());
+            List webUsers = new ArrayList(users.length);
+            for (int i = 0; i < users.length; i++) {
+                webUsers.add(getWebUser(users[i]));
+            }
+            return webUsers;
+            
+        } catch (MarshalException e) {
+            throw new WebRolesException("Error marshalling users.xml config file", e);
+        } catch (ValidationException e) {
+            throw new WebRolesException("Error validating users.xml config file", e);
+        } catch (IOException e) {
+            throw new WebRolesException("Error reading users.xml config file", e);
+        }
+
+    }
+    
     private WebRole getWebRole(Role role) {
         return new ManagedRole(role);
     }
@@ -175,6 +195,10 @@ public class Manager implements WebRoleManager, WebUserManager, WebGroupManager 
         mgdRole.setMembershipGroup(webRole.getMembershipGroup());
         
         return mgdRole;
+    }
+    
+    public WebRole createRole() {
+        return new ManagedRole();
     }
     
     class ManagedRole extends WebRole {
@@ -240,6 +264,12 @@ public class Manager implements WebRoleManager, WebUserManager, WebGroupManager 
                 throw new WebRolesException("Unable to save role "+getName()+". "+e.getMessage(), e);
             }
             
+        }
+        public Collection getCurrentUsers() {
+            return getUsersScheduleForRole(this, new Date());
+        }
+        public WebCalendar getCalendar(Date month) {
+            return new MonthlyCalendar(month);
         }
         
         

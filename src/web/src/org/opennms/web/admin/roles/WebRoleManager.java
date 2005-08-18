@@ -43,4 +43,6 @@ public interface WebRoleManager {
 
     public void saveRole(WebRole role);
 
+    public WebRole createRole();
+
 }

@@ -100,7 +100,11 @@
     		    		<td bgcolor="#999999"><b>Name</b></td>
 				<td><input name="roleName" type="text" value="<c:out value='${role.name}'/>"/></td>
     		    		<td bgcolor="#999999"><b>Currently On Call</b></td>
-				<td><c:out value="${role.currentUser}"/></td>
+				<td>
+					<c:forEach var="scheduledUser" items="${role.currentUsers}">
+						<c:out value="${scheduledUser}"/>
+					</c:forEach>	
+				</td>
           	</tr>
 	         <tr>
     		    		<td bgcolor="#999999"><b>Supervisor</b></td>

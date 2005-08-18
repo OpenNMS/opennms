@@ -129,7 +129,7 @@ import javax.servlet.http.HttpServletResponse;
     private class NewAction implements Action {
         
         public String execute(HttpServletRequest request, HttpServletResponse response) throws ServletException {
-            WebRole role = new WebRole();
+            WebRole role = getRoleManager().createRole();
             role.setName("NewRole");
             request.setAttribute("role", role);
             return EDIT_DETAILS;
@@ -145,7 +145,7 @@ import javax.servlet.http.HttpServletResponse;
                 WebRole role = getRoleManager().getRole(roleName);
                 if (role == null) {
                     // this is a new role so create a new on and add it to the roleManager
-                    role = new WebRole();
+                    role = getRoleManager().createRole();
                 }
                 request.setAttribute("role", role);
                 role.setName(request.getParameter("roleName"));

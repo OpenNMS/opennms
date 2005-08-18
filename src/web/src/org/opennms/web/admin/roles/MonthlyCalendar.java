@@ -38,21 +38,15 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 
+import org.opennms.web.admin.roles.Manager.ManagedRole;
+
 public class MonthlyCalendar extends AbstractWebCalendar {
     
     private GregorianCalendar m_calendar;
 
-    public MonthlyCalendar() {
-        this(new GregorianCalendar());
-    }
-
     public MonthlyCalendar(Date date) {
         m_calendar = new GregorianCalendar();
         m_calendar.setTime(date);
-    }
-    
-    public MonthlyCalendar(GregorianCalendar calendar) {
-        m_calendar = calendar;
     }
     
     public int getMonth() {
