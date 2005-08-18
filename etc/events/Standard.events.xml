@@ -22,7 +22,7 @@
 the BGP FSM enters the ESTABLISHED state.&lt;/p&gt;&lt;table&gt;
         &lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-        bgpPeerRemoteAddr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        bgpPeerLastError&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
         %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
         &lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
@@ -38,7 +38,7 @@ the BGP FSM enters the ESTABLISHED state.&lt;/p&gt;&lt;table&gt;
         </descr>
                 <logmsg dest='logndisplay'>&lt;p&gt;
                         bgpEstablished trap received 
-                        bgpPeerRemoteAddr=%parm[#1]% 
+                        bgpPeerLastError=%parm[#1]% 
                         bgpPeerState=%parm[#2]%&lt;/p&gt;
                 </logmsg>
         <severity>Normal</severity>
@@ -66,7 +66,7 @@ when the BGP FSM moves from a higher numbered
 state to a lower numbered state.&lt;/p&gt;&lt;table&gt;
         &lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
-        bgpPeerRemoteAddr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+        bgpPeerLastError&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
         %parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
         &lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
@@ -82,7 +82,7 @@ state to a lower numbered state.&lt;/p&gt;&lt;table&gt;
         </descr>
                 <logmsg dest='logndisplay'>&lt;p&gt;
                         bgpBackwardTransition trap received 
-                        bgpPeerRemoteAddr=%parm[#1]% 
+                        bgpPeerLastError=%parm[#1]% 
                         bgpPeerState=%parm[#2]%&lt;/p&gt;
                 </logmsg>
         <severity>Warning</severity>
