@@ -124,6 +124,11 @@ public class OpenNMSTomcatRealm extends Object implements Realm {
      * contains a <code>List</code> value of authorized user names.
      */
     protected Map magicRoleMapping = new HashMap();
+    
+    /**
+     * Indicates that the user factory has been initialized
+     */
+    protected boolean initialized = false;
 
     /**
      * Create a new instance.
@@ -204,6 +209,8 @@ public class OpenNMSTomcatRealm extends Object implements Realm {
         } catch (Exception e) {
             this.log.error("Unexpected exception parsing users.xml file", e);
         }
+        
+        initialized = true;
     }
 
     /**
@@ -409,6 +416,8 @@ public class OpenNMSTomcatRealm extends Object implements Realm {
      */
     protected boolean isParseNecessary() {
         boolean necessary = false;
+        
+        if (!initialized) return true;
 
         if (UserFactory.getInstance().isUpdateNeeded()) {
             necessary = true;
