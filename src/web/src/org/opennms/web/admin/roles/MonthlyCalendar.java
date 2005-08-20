@@ -38,8 +38,6 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 
-import org.opennms.web.admin.roles.Manager.ManagedRole;
-
 public class MonthlyCalendar extends AbstractWebCalendar {
     
     private GregorianCalendar m_calendar;

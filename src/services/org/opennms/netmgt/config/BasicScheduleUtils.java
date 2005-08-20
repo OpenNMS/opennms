@@ -38,6 +38,7 @@ import java.util.Date;
 import java.util.Enumeration;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import org.apache.log4j.Category;
@@ -161,6 +162,7 @@ public class BasicScheduleUtils {
             outCal.set(Calendar.HOUR_OF_DAY, tempCal.get(Calendar.HOUR_OF_DAY));
             outCal.set(Calendar.MINUTE, tempCal.get(Calendar.MINUTE));
             outCal.set(Calendar.SECOND, tempCal.get(Calendar.SECOND));
+            outCal.set(Calendar.MILLISECOND, 0);
         } else if (timeStr.length() == BasicScheduleUtils.FORMAT2.length()) {
             SimpleDateFormat format = new SimpleDateFormat(BasicScheduleUtils.FORMAT2);
     
@@ -181,6 +183,7 @@ public class BasicScheduleUtils {
             outCal.set(Calendar.HOUR_OF_DAY, tempCal.get(Calendar.HOUR_OF_DAY));
             outCal.set(Calendar.MINUTE, tempCal.get(Calendar.MINUTE));
             outCal.set(Calendar.SECOND, tempCal.get(Calendar.SECOND));
+            outCal.set(Calendar.MILLISECOND, 0);
         }
     }
     
@@ -189,8 +192,6 @@ public class BasicScheduleUtils {
         return (Integer)m_dayOfWeekMap.get(dayName);
     }
     
-    
-
     public static Calendar getEndOfSchedule(BasicSchedule out) {
         long curCalTime = System.currentTimeMillis();
         Calendar cal = new GregorianCalendar();
@@ -267,6 +268,100 @@ public class BasicScheduleUtils {
         Calendar cal = Calendar.getInstance();
         cal.setTime(time);
         return isTimeInSchedule(cal, sched);
+    }
+    
+    public static boolean isWeekly(Time time) {
+        return time.getDay() != null && getDayOfWeekIndex(time.getDay()) != null;
+    }
+    
+    public static boolean isMonthly(Time time) {
+        return time.getDay() != null && getDayOfWeekIndex(time.getDay()) == null; 
+    }
+    
+    public static boolean isSpecific(Time time) {
+        return time.getDay() == null;
+    }
+    
+    public static Date getSpecificTime(String specificString) {
+        Calendar cal = Calendar.getInstance();
+        setOutCalTime(cal, specificString);
+        return cal.getTime();
+    }
+
+    public static Date getMonthlyTime(Date referenceTime, String day, String timeString) {
+        Calendar ref = Calendar.getInstance();
+        ref.setTime(referenceTime);
+        ref.set(Calendar.DAY_OF_MONTH, Integer.parseInt(day));
+        setOutCalTime(ref, timeString);
+        return ref.getTime();
+    }
+    
+    public static Date getWeeklyTime(Date referenceTime, String day, String timeString) {
+        Calendar ref = Calendar.getInstance();
+        ref.setTime(referenceTime);
+        ref.set(Calendar.DAY_OF_WEEK, getDayOfWeekIndex(day).intValue());
+        setOutCalTime(ref, timeString);
+        return ref.getTime();
+    }
+    
+    public static TimeInterval getInterval(Date ref, Time time) {
+        if (isWeekly(time)) {
+            return new TimeInterval(getWeeklyTime(ref, time.getDay(), time.getBegins()), getWeeklyTime(ref, time.getDay(), time.getEnds()));
+        } else if (isMonthly(time)) {
+            return new TimeInterval(getMonthlyTime(ref, time.getDay(), time.getBegins()), getMonthlyTime(ref, time.getDay(), time.getEnds()));
+        } else {
+            return new TimeInterval(getSpecificTime(time.getBegins()), getSpecificTime(time.getEnds()));
+        }
+    }
+    
+    public static Date nextWeek(Date date) {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        cal.add(Calendar.DAY_OF_YEAR, 7);
+        return cal.getTime();
+    }
+    
+    public static Date nextMonth(Date date) {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        cal.add(Calendar.MONTH, 1);
+        return cal.getTime();
+    }
+    
+    public static TimeIntervalSequence getIntervals(Date start, Date end, Time time) {
+        TimeIntervalSequence seq = new TimeIntervalSequence();
+        if (isWeekly(time)) {
+            Date done = nextWeek(end);
+            for(Date ref = start; done.after(ref); ref = nextWeek(ref)) {
+                seq.addInterval(getInterval(ref, time));
+            }
+        } else if (isMonthly(time)) {
+            Date done = nextMonth(end);
+            for(Date ref = start; done.after(ref); ref = nextMonth(ref)) {
+                seq.addInterval(getInterval(ref, time));
+            }
+        } else {
+            seq.addInterval(getInterval(start, time));
+        }
+        seq.bound(start, end);
+        return seq;
+    }
+    
+    public static TimeIntervalSequence getIntervals(TimeInterval interval, Time time) {
+        return getIntervals(interval.getStart(), interval.getEnd(), time);
+    }
+    
+    public static TimeIntervalSequence getIntervalsCovering(Date start, Date end, BasicSchedule sched) {
+        TimeIntervalSequence seq = new TimeIntervalSequence();
+        for (Iterator it = sched.getTimeCollection().iterator(); it.hasNext();) {
+            Time time = (Time) it.next();
+            seq.addAll(getIntervals(start, end, time));
+        }
+        return seq;
+    }
+    
+    public static TimeIntervalSequence getIntervalsCovering(TimeInterval interval, BasicSchedule sched) {
+        return getIntervalsCovering(interval.getStart(), interval.getEnd(), sched);
     }
 
 }

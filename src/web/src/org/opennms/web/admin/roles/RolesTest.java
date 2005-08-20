@@ -31,7 +31,6 @@
 //
 package org.opennms.web.admin.roles;
 
-import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
@@ -40,8 +39,6 @@ import java.util.Iterator;
 
 import junit.framework.TestCase;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.config.GroupFactory;
 import org.opennms.netmgt.config.GroupManager;
 import org.opennms.netmgt.config.UserFactory;
@@ -253,8 +250,21 @@ public static final String USER_MANAGER = "<?xml version=\"1.0\"?>\n" +
         assertEquals(role.getMembershipGroup(), webRole.getMembershipGroup().getName());
         assertNotNull(webRole.getDefaultUser());
         assertEquals(role.getSupervisor(), webRole.getDefaultUser().getName());
-        //assertTrue(m_groupManager.isUserScheduledForRole(webRole.getCurrentUser().getName(), webRole.getName(), new Date()));
+        Collection scheduledUsers = webRole.getCurrentUsers();
+        for (Iterator it = scheduledUsers.iterator(); it.hasNext();) {
+            WebUser currentUser = (WebUser) it.next();
+            assertTrue(m_groupManager.isUserScheduledForRole(currentUser.getName(), webRole.getName(), new Date()));
+        }
     }
+    
+    /* Calendar TODOs
+     * Add a new schedule to a role
+     * Convert schedules into entries
+     * - get schedules that overlap a day
+     * - convert schedules list into segments/intervals 
+     * --- 
+     * 
+     */
     
     
 
