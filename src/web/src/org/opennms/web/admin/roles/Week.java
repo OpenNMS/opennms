@@ -34,15 +34,22 @@ package org.opennms.web.admin.roles;
 import java.util.Calendar;
 import java.util.Date;
 
+import org.opennms.netmgt.config.GroupManager;
+import org.opennms.netmgt.config.groups.Role;
+
 public class Week {
     
     private Calendar m_calendar;
+    private Role m_role;
+    private GroupManager m_groupManager;
 
     public Week(Calendar weekBegin) {
         m_calendar = weekBegin;
     }
     
-    public Week(Date date) {
+    public Week(Date date, Role role, GroupManager groupManager) {
+        m_role = role;
+        m_groupManager = groupManager;
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(date);
         m_calendar = calendar;
@@ -54,7 +61,7 @@ public class Week {
         Calendar day = (Calendar)m_calendar.clone();
         Day days[] = new Day[7];
         for(int i = 0; i < 7; i++) {
-            days[i] = new Day(day.getTime());
+            days[i] = new Day(day.getTime(), m_role, m_groupManager);
             day.add(Calendar.DAY_OF_YEAR, 1);
         }
         return days;

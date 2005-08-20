@@ -537,6 +537,28 @@ public abstract class GroupManager {
         return false;
     }
 
+    public OwnedIntervalSequence getRoleScheduleEntries(String roleid, Date start, Date end) {
+        OwnedIntervalSequence schedEntries = new OwnedIntervalSequence();
+        Role role = getRole(roleid);
+        for (int i = 0; i < role.getScheduleCount(); i++) {
+            Schedule sched = (Schedule) role.getSchedule(i);
+            Owner owner = new Owner(roleid, sched.getName(), i);
+            schedEntries.addAll(BasicScheduleUtils.getIntervalsCovering(start, end, sched, owner));
+        }
+        
+        OwnedIntervalSequence defaultEntries = new OwnedIntervalSequence(new OwnedInterval(start, end));
+        defaultEntries.removeAll(schedEntries);
+        Owner supervisor = new Owner(roleid, role.getSupervisor());
+        for (Iterator it = defaultEntries.iterator(); it.hasNext();) {
+            OwnedInterval interval = (OwnedInterval) it.next();
+            interval.addOwner(supervisor);
+        }
+        
+        schedEntries.addAll(defaultEntries);
+        return schedEntries;
+        
+    }
+
 
 
 }

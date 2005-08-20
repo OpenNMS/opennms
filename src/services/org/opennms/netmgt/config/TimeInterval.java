@@ -94,7 +94,7 @@ public class TimeInterval implements Comparable {
     // I don't implement Comparable because this relation is not consistent with equals
     public int compareTo(Object o) {
         TimeInterval t = (TimeInterval)o;
-        if (t.m_end.before(m_start))
+        if (t.m_end.before(m_start) || t.m_end.equals(m_start))
             return 1;
         if (t.m_start.after(m_end) || t.m_start.equals(m_end))
             return -1;

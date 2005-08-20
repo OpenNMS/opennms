@@ -38,11 +38,18 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 
+import org.opennms.netmgt.config.GroupManager;
+import org.opennms.netmgt.config.groups.Role;
+
 public class MonthlyCalendar extends AbstractWebCalendar {
     
     private GregorianCalendar m_calendar;
+    private Role m_role;
+    private GroupManager m_groupManager;
 
-    public MonthlyCalendar(Date date) {
+    public MonthlyCalendar(Date date, Role role, GroupManager groupManager) {
+        m_role = role;
+        m_groupManager = groupManager;
         m_calendar = new GregorianCalendar();
         m_calendar.setTime(date);
     }
@@ -81,7 +88,7 @@ public class MonthlyCalendar extends AbstractWebCalendar {
         Calendar weekBegin = getDateOfFirstWeek();
         List weeks = new ArrayList(6);
         do {
-            weeks.add(new Week(weekBegin.getTime()));
+            weeks.add(new Week(weekBegin.getTime(), m_role, m_groupManager));
             weekBegin.add(Calendar.DAY_OF_YEAR, 7);
         } while (isThisMonth(weekBegin));
         

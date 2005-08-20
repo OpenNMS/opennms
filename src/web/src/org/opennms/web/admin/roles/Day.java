@@ -32,18 +32,27 @@
 package org.opennms.web.admin.roles;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
+
+import org.opennms.netmgt.config.GroupManager;
+import org.opennms.netmgt.config.OwnedInterval;
+import org.opennms.netmgt.config.OwnedIntervalSequence;
+import org.opennms.netmgt.config.Owner;
+import org.opennms.netmgt.config.groups.Role;
 
 public class Day {
     
     private Calendar m_calendar;
+    private Role m_role;
+    private GroupManager m_groupManager;
 
-    public Day(Calendar calendar) {
-        m_calendar = calendar;
-    }
-    
-    public Day(Date date) {
+    public Day(Date date, Role role, GroupManager groupManager) {
+        m_role = role;
+        m_groupManager = groupManager;
         m_calendar = Calendar.getInstance();
         m_calendar.setTime(date);
     }
@@ -69,11 +78,31 @@ public class Day {
     }
     
     public CalendarEntry[] getEntries() {
-        CalendarEntry[] entries = new CalendarEntry[3];
-        entries[0] = new CalendarEntry(getTime(0, 0), getTime(9, 0), "defaultUser2");
-        entries[1] = new CalendarEntry(getTime(9, 0), getTime(15, 0), "mhuot");
-        entries[2] = new CalendarEntry(getTime(15, 0), getTime(24, 0), "defaultUser2");
-        return entries;
+        List entries = new ArrayList();
+        
+        OwnedIntervalSequence schedEntries = m_groupManager.getRoleScheduleEntries(m_role.getName(), getTime(0,0), getTime(24,0));
+        
+        for (Iterator it = schedEntries.iterator(); it.hasNext();) {
+            OwnedInterval schedEntry = (OwnedInterval) it.next();
+            CalendarEntry entry = new CalendarEntry(schedEntry.getStart(), schedEntry.getEnd(), ownerString(schedEntry.getOwners()));
+            entries.add(entry);
+        }
+        
+        return (CalendarEntry[]) entries.toArray(new CalendarEntry[entries.size()]);
+    }
+
+    private String ownerString(List owners) {
+        boolean first = true;
+        StringBuffer buf = new StringBuffer();
+        for (Iterator it = owners.iterator(); it.hasNext();) {
+            Owner owner = (Owner) it.next();
+            if (first)
+                first = false;
+            else 
+                buf.append(", ");
+            buf.append(owner.getUser());
+        }
+        return buf.toString();
     }
 
 }

@@ -56,9 +56,10 @@ public class BasicScheduleUtilsTest extends IntervalTestCase {
             "           </schedule>";
         Schedule simpleSchedule = (Schedule)Unmarshaller.unmarshal(Schedule.class, new StringReader(schedSpec));
         
-        TimeIntervalSequence intervals = BasicScheduleUtils.getIntervalsCovering(aug(18), simpleSchedule);
+        Owner owner = new Owner("unnamed", "simple", 0);
+        OwnedIntervalSequence intervals = BasicScheduleUtils.getIntervalsCovering(aug(18), simpleSchedule, owner);
         assertNotNull(intervals);
-        assertTimeIntervalSequence(new TimeInterval[0], intervals);
+        assertTimeIntervalSequence(new OwnedInterval[0], intervals);
 
     }
 
@@ -69,9 +70,10 @@ public class BasicScheduleUtilsTest extends IntervalTestCase {
             "           </schedule>";
         Schedule simpleSchedule = (Schedule)Unmarshaller.unmarshal(Schedule.class, new StringReader(schedSpec));
         
-        TimeIntervalSequence intervals = BasicScheduleUtils.getIntervalsCovering(aug(18), simpleSchedule);
+        Owner owner = new Owner("unnamed", "simple", 0);
+        OwnedIntervalSequence intervals = BasicScheduleUtils.getIntervalsCovering(aug(18), simpleSchedule, owner);
         assertNotNull(intervals);
-        assertTimeIntervalSequence(new TimeInterval[] { aug(18, 13, 14) }, intervals);
+        assertTimeIntervalSequence(new OwnedInterval[] { owned(owner, aug(18, 13, 14)) }, intervals);
 
     }
     
@@ -83,9 +85,10 @@ public class BasicScheduleUtilsTest extends IntervalTestCase {
             "           </schedule>";
         Schedule simpleSchedule = (Schedule)Unmarshaller.unmarshal(Schedule.class, new StringReader(schedSpec));
         
-        TimeIntervalSequence intervals = BasicScheduleUtils.getIntervalsCovering(aug(18), simpleSchedule);
+        Owner owner = new Owner("unnamed", "double", 0);
+        TimeIntervalSequence intervals = BasicScheduleUtils.getIntervalsCovering(aug(18), simpleSchedule, owner);
         assertNotNull(intervals);
-        assertTimeIntervalSequence(new TimeInterval[] { aug(18, 13, 14), aug(18, 16, 17) }, intervals);
+        assertTimeIntervalSequence(new TimeInterval[] { owned(owner, aug(18, 13, 14)), owned(owner, aug(18, 16, 17)) }, intervals);
 
     }
     
@@ -100,13 +103,14 @@ public class BasicScheduleUtilsTest extends IntervalTestCase {
             "           </schedule>";
         Schedule simpleSchedule = (Schedule)Unmarshaller.unmarshal(Schedule.class, new StringReader(schedSpec));
         
-        TimeIntervalSequence intervals = BasicScheduleUtils.getIntervalsCovering(aug(18), simpleSchedule);
+        Owner owner = new Owner("unnamed", "complex", 0);
+       TimeIntervalSequence intervals = BasicScheduleUtils.getIntervalsCovering(aug(18), simpleSchedule, owner);
         assertNotNull(intervals);
 
         TimeInterval[] expected = {
-                aug(18, 13, 14),
-                aug(18, 16, 17),
-                aug(18, 19, 20),
+                owned(owner, aug(18, 13, 14)),
+                owned(owner, aug(18, 16, 17)),
+                owned(owner, aug(18, 19, 20)),
         };
         
         assertTimeIntervalSequence(expected, intervals);
@@ -120,9 +124,10 @@ public class BasicScheduleUtilsTest extends IntervalTestCase {
             "           </schedule>";
         Schedule simpleSchedule = (Schedule)Unmarshaller.unmarshal(Schedule.class, new StringReader(schedSpec));
         
-        TimeInterval interval = BasicScheduleUtils.getInterval(new Date(), simpleSchedule.getTime(0));
+        Owner owner = new Owner("unnamed", "simple", 0, 0);
+        TimeInterval interval = BasicScheduleUtils.getInterval(new Date(), simpleSchedule.getTime(0), owner);
         assertNotNull(interval);
-        assertInterval(aug(18, 13, 14), interval);
+        assertInterval(owned(owner, aug(18, 13, 14)), interval);
         
     }
     
@@ -133,9 +138,10 @@ public class BasicScheduleUtilsTest extends IntervalTestCase {
             "           </schedule>";
         Schedule simpleSchedule = (Schedule)Unmarshaller.unmarshal(Schedule.class, new StringReader(schedSpec));
         
-        TimeInterval interval = BasicScheduleUtils.getInterval(aug(18).getStart(), simpleSchedule.getTime(0));
+        Owner owner = new Owner("unnamed", "simple", 0, 0);
+        TimeInterval interval = BasicScheduleUtils.getInterval(aug(18).getStart(), simpleSchedule.getTime(0), owner);
         assertNotNull(interval);
-        assertInterval(aug(18, 13, 14), interval);
+        assertInterval(owned(owner, aug(18, 13, 14)), interval);
         
     }
 
@@ -146,9 +152,10 @@ public class BasicScheduleUtilsTest extends IntervalTestCase {
             "           </schedule>";
         Schedule simpleSchedule = (Schedule)Unmarshaller.unmarshal(Schedule.class, new StringReader(schedSpec));
         
-        TimeInterval interval = BasicScheduleUtils.getInterval(aug(18).getStart(), simpleSchedule.getTime(0));
+        Owner owner = new Owner("unnamed", "simple", 0, 0);
+        TimeInterval interval = BasicScheduleUtils.getInterval(aug(18).getStart(), simpleSchedule.getTime(0), owner);
         assertNotNull(interval);
-        assertInterval(aug(18, 13, 14), interval);
+        assertInterval(owned(owner, aug(18, 13, 14)), interval);
         
     }
     
@@ -159,14 +166,15 @@ public class BasicScheduleUtilsTest extends IntervalTestCase {
             "           </schedule>";
         Schedule simpleSchedule = (Schedule)Unmarshaller.unmarshal(Schedule.class, new StringReader(schedSpec));
         
-        TimeIntervalSequence intervals = BasicScheduleUtils.getIntervals(aug(4, 13, 25, 12), simpleSchedule.getTime(0));
+        Owner owner = new Owner("unnamed", "simple", 0, 0);
+        TimeIntervalSequence intervals = BasicScheduleUtils.getIntervals(aug(4, 13, 25, 12), simpleSchedule.getTime(0), owner);
         assertNotNull(intervals);
         
         TimeInterval[] expected = {
-                aug(4, 13, 14), // start of requested interval overlaps this one
-                aug(11, 11, 14),
-                aug(18, 11, 14),
-                aug(25, 11, 12) // end of requested interval overlaps this one
+                owned(owner, aug(4, 13, 14)), // start of requested interval overlaps this one
+                owned(owner, aug(11, 11, 14)),
+                owned(owner, aug(18, 11, 14)),
+                owned(owner, aug(25, 11, 12)) // end of requested interval overlaps this one
         };
         
         assertTimeIntervalSequence(expected, intervals);
@@ -179,20 +187,23 @@ public class BasicScheduleUtilsTest extends IntervalTestCase {
             "           </schedule>";
         Schedule simpleSchedule = (Schedule)Unmarshaller.unmarshal(Schedule.class, new StringReader(schedSpec));
         
-        TimeIntervalSequence intervals = BasicScheduleUtils.getIntervals(interval(6 /* june */, 7, 13, 11 /* nov */, 7, 12), simpleSchedule.getTime(0));
+        Owner owner = new Owner("unnamed", "simple", 0, 0);
+        TimeIntervalSequence intervals = BasicScheduleUtils.getIntervals(interval(6 /* june */, 7, 13, 11 /* nov */, 7, 12), simpleSchedule.getTime(0), owner);
         assertNotNull(intervals);
         
         TimeInterval[] expected = {
-                jun(7, 13, 14),
-                jul(7, 11, 14),
-                aug(7, 11, 14),
-                sep(7, 11, 14),
-                oct(7, 11, 14),
-                nov(7, 11, 12),
+                owned(owner, jun(7, 13, 14)),
+                owned(owner, jul(7, 11, 14)),
+                owned(owner, aug(7, 11, 14)),
+                owned(owner, sep(7, 11, 14)),
+                owned(owner, oct(7, 11, 14)),
+                owned(owner, nov(7, 11, 12)),
         };
         
         assertTimeIntervalSequence(expected, intervals);
     }
+    
+    
 
 }
  

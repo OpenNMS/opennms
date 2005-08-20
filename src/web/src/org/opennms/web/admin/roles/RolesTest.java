@@ -37,10 +37,12 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
 
-import junit.framework.TestCase;
-
 import org.opennms.netmgt.config.GroupFactory;
 import org.opennms.netmgt.config.GroupManager;
+import org.opennms.netmgt.config.IntervalTestCase;
+import org.opennms.netmgt.config.OwnedIntervalSequence;
+import org.opennms.netmgt.config.Owner;
+import org.opennms.netmgt.config.TimeInterval;
 import org.opennms.netmgt.config.UserFactory;
 import org.opennms.netmgt.config.UserManager;
 import org.opennms.netmgt.config.groups.Group;
@@ -50,7 +52,7 @@ import org.opennms.netmgt.mock.MockLogAppender;
 import org.opennms.netmgt.notifd.mock.MockGroupManager;
 import org.opennms.netmgt.notifd.mock.MockUserManager;
 
-public class RolesTest extends TestCase {
+public class RolesTest extends IntervalTestCase {
     
     public static final String GROUP_MANAGER = "<?xml version=\"1.0\"?>\n" + 
     "<groupinfo>\n" + 
@@ -79,7 +81,7 @@ public class RolesTest extends TestCase {
     "        </group>\n" + 
     "    </groups>\n" +
     "  <roles>\n" + 
-    "    <role supervisor=\"admin\" name=\"oncall\" description=\"The On Call Schedule\" membership-group=\"InitialGroup\">\n" + 
+    "    <role supervisor=\"brozow\" name=\"oncall\" description=\"The On Call Schedule\" membership-group=\"InitialGroup\">\n" + 
     "      <schedule name=\"brozow\" type=\"weekly\">\n" + 
     "         <time day=\"sunday\" begins=\"09:00:00\" ends=\"17:00:00\"/>\n" + 
     "         <time day=\"monday\" begins=\"09:00:00\" ends=\"17:00:00\"/>\n" + 
@@ -87,37 +89,37 @@ public class RolesTest extends TestCase {
     "         <time day=\"friday\" begins=\"09:00:00\" ends=\"17:00:00\"/>\n" + 
     "      </schedule>\n" + 
     "      <schedule name=\"admin\" type=\"weekly\">\n" + 
-    "         <time day=\"sunday\" begins=\"00:00:00\" ends=\"23:59:59\"/>\n" + 
+    "         <time day=\"sunday\" begins=\"00:00:00\" ends=\"23:00:00\"/>\n" + 
     "         <time day=\"tuesday\" begins=\"09:00:00\" ends=\"17:00:00\"/>\n" + 
     "         <time day=\"thursday\" begins=\"09:00:00\" ends=\"17:00:00\"/>\n" + 
     "         <time day=\"saturday\" begins=\"09:00:00\" ends=\"17:00:00\"/>\n" + 
     "      </schedule>\n" + 
     "      <schedule name=\"david\" type=\"weekly\">\n" + 
     "         <time day=\"sunday\"    begins=\"00:00:00\" ends=\"09:00:00\"/>\n" + 
-    "         <time day=\"sunday\"    begins=\"17:00:00\" ends=\"23:59:59\"/>\n" + 
+    "         <time day=\"sunday\"    begins=\"17:00:00\" ends=\"23:00:00\"/>\n" + 
     "         <time day=\"monday\"    begins=\"00:00:00\" ends=\"09:00:00\"/>\n" + 
-    "         <time day=\"monday\"    begins=\"17:00:00\" ends=\"23:59:59\"/>\n" + 
+    "         <time day=\"monday\"    begins=\"17:00:00\" ends=\"23:00:00\"/>\n" + 
     "         <time day=\"tuesday\"   begins=\"00:00:00\" ends=\"09:00:00\"/>\n" + 
-    "         <time day=\"tuesday\"   begins=\"17:00:00\" ends=\"23:59:59\"/>\n" + 
+    "         <time day=\"tuesday\"   begins=\"17:00:00\" ends=\"23:00:00\"/>\n" + 
     "         <time day=\"wednesday\" begins=\"00:00:00\" ends=\"09:00:00\"/>\n" + 
-    "         <time day=\"wednesday\" begins=\"17:00:00\" ends=\"23:59:59\"/>\n" + 
+    "         <time day=\"wednesday\" begins=\"17:00:00\" ends=\"23:00:00\"/>\n" + 
     "         <time day=\"thursday\"  begins=\"00:00:00\" ends=\"09:00:00\"/>\n" + 
-    "         <time day=\"thursday\"  begins=\"17:00:00\" ends=\"23:59:59\"/>\n" + 
+    "         <time day=\"thursday\"  begins=\"17:00:00\" ends=\"23:00:00\"/>\n" + 
     "         <time day=\"friday\"    begins=\"00:00:00\" ends=\"09:00:00\"/>\n" + 
-    "         <time day=\"friday\"    begins=\"17:00:00\" ends=\"23:59:59\"/>\n" + 
+    "         <time day=\"friday\"    begins=\"17:00:00\" ends=\"23:00:00\"/>\n" + 
     "         <time day=\"saturday\"  begins=\"00:00:00\" ends=\"09:00:00\"/>\n" + 
-    "         <time day=\"saturday\"  begins=\"17:00:00\" ends=\"23:59:59\"/>\n" + 
+    "         <time day=\"saturday\"  begins=\"17:00:00\" ends=\"23:00:00\"/>\n" + 
     "      </schedule>\n" + 
     "    </role>\n" +
     "    <role supervisor=\"admin\" name=\"unscheduled\" description=\"The Unscheduled Schedule\" membership-group=\"UpGroup\">\n" + 
     "           <schedule name=\"upUser\" type=\"weekly\">" +
-    "               <time day=\"sunday\" begins=\"00:00:00\" ends=\"23:59:59\"/>\n" + 
-    "               <time day=\"monday\" begins=\"00:00:00\" ends=\"23:59:59\"/>\n" + 
-    "               <time day=\"tuesday\" begins=\"00:00:00\" ends=\"23:59:59\"/>\n" + 
-    "               <time day=\"wednesday\" begins=\"00:00:00\" ends=\"23:59:59\"/>\n" + 
-    "               <time day=\"thursday\" begins=\"00:00:00\" ends=\"23:59:59\"/>\n" + 
-    "               <time day=\"friday\" begins=\"00:00:00\" ends=\"23:59:59\"/>\n" + 
-    "               <time day=\"saturday\" begins=\"00:00:00\" ends=\"23:59:59\"/>\n" + 
+    "               <time day=\"sunday\" begins=\"00:00:00\" ends=\"23:00:00\"/>\n" + 
+    "               <time day=\"monday\" begins=\"00:00:00\" ends=\"23:00:00\"/>\n" + 
+    "               <time day=\"tuesday\" begins=\"00:00:00\" ends=\"23:00:00\"/>\n" + 
+    "               <time day=\"wednesday\" begins=\"00:00:00\" ends=\"23:00:00\"/>\n" + 
+    "               <time day=\"thursday\" begins=\"00:00:00\" ends=\"23:00:00\"/>\n" + 
+    "               <time day=\"friday\" begins=\"00:00:00\" ends=\"23:00:00\"/>\n" + 
+    "               <time day=\"saturday\" begins=\"00:00:00\" ends=\"23:00:00\"/>\n" + 
     "           </schedule>" +
     "    </role>\n" +
     "  </roles>\n" + 
@@ -227,6 +229,49 @@ public static final String USER_MANAGER = "<?xml version=\"1.0\"?>\n" +
         
     }
     
+    public void testWeekCount() throws Exception {
+        Date aug3 = getDate("2005-08-03");
+        MonthlyCalendar calendar = new MonthlyCalendar(aug3, null, null);
+        assertEquals(5, calendar.getWeeks().length);
+        
+        Date july17 = getDate("2005-07-17");
+        calendar = new MonthlyCalendar(july17, null, null);
+        assertEquals(6, calendar.getWeeks().length);
+        
+        Date may27 = getDate("2005-05-27");
+        calendar = new MonthlyCalendar(may27, null, null);
+        assertEquals(5, calendar.getWeeks().length);
+        
+        Date feb14_04 = getDate("2004-02-14");
+        calendar = new MonthlyCalendar(feb14_04, null, null);
+        assertEquals(5, calendar.getWeeks().length);
+        
+        Date feb7_09 = getDate("2009-02-09");
+        calendar = new MonthlyCalendar(feb7_09, null, null);
+        assertEquals(4, calendar.getWeeks().length);
+        
+    }
+    
+    public void testTimeIntervals() throws Exception {
+        OwnedIntervalSequence intervals = m_groupManager.getRoleScheduleEntries("oncall", getDate("2005-08-18"), getDate("2005-08-19"));
+        
+        assertNotNull(intervals);
+        
+        Owner brozow = new Owner("oncall", "brozow", 1, 1);
+        Owner admin = new Owner("oncall", "admin", 1, 1);
+        Owner david = new Owner("oncall", "david", 1, 1);
+        TimeInterval[] expected = {
+                owned(david, aug(18, 0, 9)),
+                owned(admin, aug(18, 9, 17)),
+                owned(david, aug(18, 17, 23)),
+                owned(brozow, aug(18, 23, 24)), // brozow is the supervisor and this period is unschedule
+        };
+        
+        assertTimeIntervalSequence(expected, intervals);
+
+        
+    }
+    
     private void assertUser(User user, WebUser webUser) {
         assertEquals(user.getUserId(), webUser.getName());
     }
@@ -256,43 +301,11 @@ public static final String USER_MANAGER = "<?xml version=\"1.0\"?>\n" +
             assertTrue(m_groupManager.isUserScheduledForRole(currentUser.getName(), webRole.getName(), new Date()));
         }
     }
-    
-    /* Calendar TODOs
-     * Add a new schedule to a role
-     * Convert schedules into entries
-     * - get schedules that overlap a day
-     * - convert schedules list into segments/intervals 
-     * --- 
-     * 
-     */
-    
-    
 
-    public void testWeekCount() throws Exception {
-        Date aug3 = getDate("2005-08-03");
-        MonthlyCalendar calendar = new MonthlyCalendar(aug3);
-        assertEquals(5, calendar.getWeeks().length);
-        
-        Date july17 = getDate("2005-07-17");
-        calendar = new MonthlyCalendar(july17);
-        assertEquals(6, calendar.getWeeks().length);
-        
-        Date may27 = getDate("2005-05-27");
-        calendar = new MonthlyCalendar(may27);
-        assertEquals(5, calendar.getWeeks().length);
-        
-        Date feb14_04 = getDate("2004-02-14");
-        calendar = new MonthlyCalendar(feb14_04);
-        assertEquals(5, calendar.getWeeks().length);
-        
-        Date feb7_09 = getDate("2009-02-09");
-        calendar = new MonthlyCalendar(feb7_09);
-        assertEquals(4, calendar.getWeeks().length);
-        
-    }
-    
     private Date getDate(String date) throws ParseException {
         return new SimpleDateFormat("yyyy-MM-dd").parse(date);
     }
+    
+    
 
 }

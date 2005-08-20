@@ -31,21 +31,28 @@
 //
 package org.opennms.netmgt.config;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
-import java.util.List;
 
-import sun.tools.tree.NewInstanceExpression;
+
 
 
 
 public class TimeIntervalSequenceTest extends IntervalTestCase {
     
 
-
+    public void testPreceeds() throws Exception {
+        TimeInterval first = new TimeInterval(new Date(0), date("18-08-2005 00:00:00"));
+        TimeInterval second = aug(18);
+        assertTrue(first.preceeds(second));
+        assertFalse(second.preceeds(first));
+    }
+    
+    public void testFollows() throws Exception {
+        TimeInterval first = new TimeInterval(new Date(0), date("18-08-2005 00:00:00"));
+        TimeInterval second = aug(18);
+        assertTrue(second.follows(first));
+        assertFalse(first.follows(second));
+    }
 
     public void testEmptySequence() {
         TimeIntervalSequence seq = new TimeIntervalSequence();
@@ -300,235 +307,6 @@ public class TimeIntervalSequenceTest extends IntervalTestCase {
         seq.addInterval(aug(22, 8, 17));
 
         assertEquals(aug(18, 8, 22, 17), seq.getBounds());
-    }
-    
-    private class OwnedInterval extends TimeInterval {
-        private List m_owners;
-        
-        public OwnedInterval(OwnedInterval owned) {
-            this(owned.getOwners(), owned.getStart(), owned.getEnd());
-        }
-
-        public OwnedInterval(TimeInterval interval) {
-            this(interval.getStart(), interval.getEnd());
-        }
-        
-        public OwnedInterval(String owner, TimeInterval interval) {
-            this(owner, interval.getStart(), interval.getEnd());
-        }
-        
-        public OwnedInterval(List owners, TimeInterval interval) {
-            this(owners, interval.getStart(), interval.getEnd());
-        }
-        
-        public OwnedInterval(Date start, Date end) {
-            this(Collections.EMPTY_LIST, start, end);
-        }
-        
-        public OwnedInterval(String owner, Date start, Date end) {
-            this(Collections.singletonList(owner), start, end);
-        }
-        
-        public OwnedInterval(List owners, Date start, Date end) {
-            super(start, end);
-            m_owners = new ArrayList(owners);
-            Collections.sort(m_owners);
-        }
-        
-        public List getOwners() { return m_owners; }
-        
-        public void addOwner(String owner) { m_owners.add(owner); Collections.sort(m_owners); }
-        
-        public void removeOwner(String owner) { m_owners.remove(owner); }
-        
-        public void addOwners(List owners) { m_owners.addAll(owners); Collections.sort(m_owners); }
-        
-        public void removeOwners(List owners) { m_owners.removeAll(owners); }
-        
-        public boolean isOwner(String owner) { return m_owners.contains(owner); }
-        
-        public boolean isOwned() { return !m_owners.isEmpty(); }
-        
-        public String toString() {
-            String ownerString = "";
-            if (m_owners.isEmpty()) {
-                ownerString = "UNOWNED";
-            } else {
-                for(int i = 0; i < m_owners.size(); i++) {
-                    if (i != 0) ownerString += ",";
-                    ownerString += m_owners.get(i);
-                }
-            }
-            return ownerString+super.toString();
-        }
-        
-        public int hashCode() { return 123; }
-        
-        public boolean equals(Object o) {
-            if (o instanceof OwnedInterval) {
-                OwnedInterval owned = (OwnedInterval) o;
-                return super.equals(owned) && m_owners.equals(owned.m_owners);
-            }
-            return false;
-        }
-        
-    }
-
-    public class OwnedIntervalSequence extends TimeIntervalSequence {
-
-        public OwnedIntervalSequence() {
-            super();
-        }
-
-        public OwnedIntervalSequence(OwnedInterval interval) {
-            super(interval);
-        }
-        
-        protected Collection combineIntervals(TimeInterval currInt, TimeInterval newInt) {
-            OwnedInterval currInterval = (OwnedInterval)currInt;
-            OwnedInterval newInterval = (OwnedInterval) newInt;
-            
-            List newIntervals = new ArrayList(3);
-            
-            // Time Intervals stored locally so we can add them in order
-            OwnedInterval firstSeg = null;
-            OwnedInterval midSeg = null;
-            OwnedInterval thirdSeg = null;
-            
-            // start and end of the middle segment is computed as we examine the first and last segments
-            Date midSegStart;
-            Date midSegEnd;
-            
-            // first we deal with the segment 1
-            if (currInterval.getStart().equals(newInterval.getStart())) {
-                // we have no first seg so the mid seg starts at the common top
-                midSegStart = currInterval.getStart();
-            } else {
-                // this implies there is a top segment
-                if (currInterval.getStart().before(newInterval.getStart())) {
-                    // first seg is the top of the currinterval
-                    firstSeg = new OwnedInterval(currInterval.getOwners(), currInterval.getStart(), newInterval.getStart());
-                    midSegStart = newInterval.getStart();
-                } else {
-                    // first seg is the top of new interval
-                    firstSeg = new OwnedInterval(newInterval.getOwners(), newInterval.getStart(), currInterval.getStart());
-                    midSegStart = currInterval.getStart();
-                }
-            }
-            
-            // next we deal with segment 3
-            if (currInterval.getEnd().equals(newInterval.getEnd())) {
-                midSegEnd = currInterval.getEnd();
-            } else {
-                // this implies we have a third seg
-                if (currInterval.getEnd().after(newInterval.getEnd())) {
-                    // third seg is the bottom of the curr interval
-                    thirdSeg = new OwnedInterval(currInterval.getOwners(), newInterval.getEnd(), currInterval.getEnd());
-                    midSegEnd = newInterval.getEnd();
-                } else {
-                    // third seg is the bottom of the new interval
-                    thirdSeg = new OwnedInterval(newInterval.getOwners(), currInterval.getEnd(), newInterval.getEnd());
-                    midSegEnd = currInterval.getEnd();
-                }
-            }
-            
-            // now we create the middle seg with combined ownership
-            midSeg = new OwnedInterval(currInterval.getOwners(), midSegStart, midSegEnd);
-            midSeg.addOwners(newInterval.getOwners());
-            
-            if (firstSeg != null) newIntervals.add(firstSeg);
-            if (midSeg != null) newIntervals.add(midSeg);
-            if (thirdSeg != null) newIntervals.add(thirdSeg);
-            
-            
-            return newIntervals;
-        }
-
-        protected TimeInterval createInterval(Date start, Date end) {
-            return new OwnedInterval(start, end);
-        }
-
-        protected TimeIntervalSequence createTail(TimeInterval interval) {
-            return new OwnedIntervalSequence((OwnedInterval)interval);
-        }
-
-        protected Collection separateIntervals(TimeInterval origInt, TimeInterval removedInt) {
-            OwnedInterval origInterval = (OwnedInterval) origInt;
-            OwnedInterval removedInterval = (OwnedInterval) removedInt;
-            
-            // if the original is owned and no owners will be removed keep in intact
-            List reducedOwners = new ArrayList(origInterval.getOwners());
-            reducedOwners.removeAll(removedInterval.getOwners());
-            if (origInterval.isOwned() && reducedOwners.equals(origInterval.getOwners())) {
-                // the removedInterval did not have any owners in common with the orignal interval 
-                // so leave the interval intact
-                return Collections.singletonList(origInterval);
-            }
-            
-            // if we got here then there is some onwership change in the original interval
-            
-            // there are potentially three new intervals
-            OwnedInterval firstSeg = null;
-            OwnedInterval midSeg = null;
-            OwnedInterval lastSeg = null;
-            
-            Date midSegStart = null;
-            Date midSegEnd = null;
-            
-            // first the first Segment
-            if (origInterval.getStart().before(removedInterval.getStart())) {
-                // then we have a firstSeg that has the original ownership
-                // this causes the midSeg to start at the start of the removed interval
-                midSegStart = removedInterval.getStart();
-                firstSeg = new OwnedInterval(origInterval.getOwners(), origInterval.getStart(), midSegStart);
-            } else {
-                // there is no first seg so set mid seg to start at top of original interval
-                midSegStart = origInterval.getStart();
-            }
-
-            
-            // now the last segment
-            if (removedInterval.getEnd().before(origInterval.getEnd())) {
-                midSegEnd = removedInterval.getEnd();
-                lastSeg = new OwnedInterval(origInterval.getOwners(), midSegEnd, origInterval.getEnd());
-            } else {
-                midSegEnd = origInterval.getEnd();
-            }
-            
-            // we only add the midSegment if there are remaining owners
-            if (!reducedOwners.isEmpty())
-                midSeg = new OwnedInterval(reducedOwners, midSegStart, midSegEnd);
-            
-            List newIntervals = new ArrayList(3);
-            if (firstSeg != null) newIntervals.add(firstSeg);
-            if (midSeg != null) newIntervals.add(midSeg);
-            if (lastSeg != null) newIntervals.add(lastSeg);
-            
-            return newIntervals;
-        }
-
-    }
-
-    
-    private OwnedInterval owned(String owner, TimeInterval interval) {
-        return (owner == null ? new OwnedInterval(interval) : new OwnedInterval(owner, interval));
-    }
-    
-    private OwnedInterval owned(TimeInterval interval) {
-        return owned(null, interval);
-    }
-    
-    private OwnedInterval ownedOne(TimeInterval interval) {
-        return owned("one", interval);
-    }
-    
-    private OwnedInterval ownedTwo(TimeInterval interval) {
-        return owned("two", interval);
-    }
-    
-    private OwnedInterval ownedOneAndTwo(TimeInterval interval) {
-        String[] owners = new String[] { "one", "two" };
-        return new OwnedInterval(Arrays.asList(owners), interval);
     }
     
     public void testExtensionAdd() throws Exception {

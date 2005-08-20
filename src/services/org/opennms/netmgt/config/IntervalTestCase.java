@@ -33,6 +33,7 @@ package org.opennms.netmgt.config;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.Iterator;
 
@@ -42,7 +43,7 @@ public class IntervalTestCase extends TestCase {
 
     DateFormat m_dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
 
-    private Date date(String dateStr) throws Exception {
+    protected Date date(String dateStr) throws Exception {
         return m_dateFormat.parse(dateStr);
     }
     
@@ -124,6 +125,27 @@ public class IntervalTestCase extends TestCase {
 
     protected void assertInterval(TimeInterval expected, TimeInterval actual) {
         assertEquals(expected, actual);
+    }
+
+    protected OwnedInterval owned(Object owner, TimeInterval interval) {
+        return (owner == null ? new OwnedInterval(interval) : new OwnedInterval(owner, interval));
+    }
+
+    protected OwnedInterval owned(TimeInterval interval) {
+        return owned(null, interval);
+    }
+
+    protected OwnedInterval ownedOne(TimeInterval interval) {
+        return owned("one", interval);
+    }
+
+    protected OwnedInterval ownedTwo(TimeInterval interval) {
+        return owned("two", interval);
+    }
+
+    protected OwnedInterval ownedOneAndTwo(TimeInterval interval) {
+        String[] owners = new String[] { "one", "two" };
+        return new OwnedInterval(Arrays.asList(owners), interval);
     }
 
 }

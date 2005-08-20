@@ -269,7 +269,7 @@ public class Manager implements WebRoleManager, WebUserManager, WebGroupManager 
             return getUsersScheduleForRole(this, new Date());
         }
         public WebCalendar getCalendar(Date month) {
-            return new MonthlyCalendar(month);
+            return new MonthlyCalendar(month, m_role, m_groupManager);
         }
         
         

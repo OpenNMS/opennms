@@ -38,7 +38,6 @@ import java.util.Date;
 import java.util.Enumeration;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 import org.apache.log4j.Category;
@@ -304,13 +303,13 @@ public class BasicScheduleUtils {
         return ref.getTime();
     }
     
-    public static TimeInterval getInterval(Date ref, Time time) {
+    public static OwnedInterval getInterval(Date ref, Time time, Owner owner) {
         if (isWeekly(time)) {
-            return new TimeInterval(getWeeklyTime(ref, time.getDay(), time.getBegins()), getWeeklyTime(ref, time.getDay(), time.getEnds()));
+            return new OwnedInterval(owner, getWeeklyTime(ref, time.getDay(), time.getBegins()), getWeeklyTime(ref, time.getDay(), time.getEnds()));
         } else if (isMonthly(time)) {
-            return new TimeInterval(getMonthlyTime(ref, time.getDay(), time.getBegins()), getMonthlyTime(ref, time.getDay(), time.getEnds()));
+            return new OwnedInterval(owner, getMonthlyTime(ref, time.getDay(), time.getBegins()), getMonthlyTime(ref, time.getDay(), time.getEnds()));
         } else {
-            return new TimeInterval(getSpecificTime(time.getBegins()), getSpecificTime(time.getEnds()));
+            return new OwnedInterval(owner, getSpecificTime(time.getBegins()), getSpecificTime(time.getEnds()));
         }
     }
     
@@ -328,40 +327,41 @@ public class BasicScheduleUtils {
         return cal.getTime();
     }
     
-    public static TimeIntervalSequence getIntervals(Date start, Date end, Time time) {
-        TimeIntervalSequence seq = new TimeIntervalSequence();
+    public static OwnedIntervalSequence getIntervals(Date start, Date end, Time time, Owner owner) {
+        OwnedIntervalSequence seq = new OwnedIntervalSequence();
         if (isWeekly(time)) {
             Date done = nextWeek(end);
             for(Date ref = start; done.after(ref); ref = nextWeek(ref)) {
-                seq.addInterval(getInterval(ref, time));
+                seq.addInterval(getInterval(ref, time, owner));
             }
         } else if (isMonthly(time)) {
             Date done = nextMonth(end);
             for(Date ref = start; done.after(ref); ref = nextMonth(ref)) {
-                seq.addInterval(getInterval(ref, time));
+                seq.addInterval(getInterval(ref, time, owner));
             }
         } else {
-            seq.addInterval(getInterval(start, time));
+            seq.addInterval(getInterval(start, time, owner));
         }
         seq.bound(start, end);
         return seq;
     }
     
-    public static TimeIntervalSequence getIntervals(TimeInterval interval, Time time) {
-        return getIntervals(interval.getStart(), interval.getEnd(), time);
+    public static OwnedIntervalSequence getIntervals(TimeInterval interval, Time time, Owner owner) {
+        return getIntervals(interval.getStart(), interval.getEnd(), time, owner);
     }
     
-    public static TimeIntervalSequence getIntervalsCovering(Date start, Date end, BasicSchedule sched) {
-        TimeIntervalSequence seq = new TimeIntervalSequence();
-        for (Iterator it = sched.getTimeCollection().iterator(); it.hasNext();) {
-            Time time = (Time) it.next();
-            seq.addAll(getIntervals(start, end, time));
+    public static OwnedIntervalSequence getIntervalsCovering(Date start, Date end, BasicSchedule sched, Owner owner) {
+        OwnedIntervalSequence seq = new OwnedIntervalSequence();
+        for (int i = 0; i < sched.getTimeCount(); i++) {
+            Time time = (Time) sched.getTime(i);
+            Owner thisOwner = owner.addTimeIndex(i);
+            seq.addAll(getIntervals(start, end, time, thisOwner));
         }
         return seq;
     }
     
-    public static TimeIntervalSequence getIntervalsCovering(TimeInterval interval, BasicSchedule sched) {
-        return getIntervalsCovering(interval.getStart(), interval.getEnd(), sched);
+    public static OwnedIntervalSequence getIntervalsCovering(TimeInterval interval, BasicSchedule sched, Owner owner) {
+        return getIntervalsCovering(interval.getStart(), interval.getEnd(), sched, owner);
     }
 
 }
