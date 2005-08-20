@@ -57,7 +57,7 @@ public class CalendarEntryTest extends TestCase {
     private String m_supervisor;
     private Schedule m_simpleSchedule;
 
-    protected void setUp() throws Exception {
+    protected void xsetUp() throws Exception {
         super.setUp();
         MockLogAppender.setupLogging();
         
@@ -121,7 +121,7 @@ public class CalendarEntryTest extends TestCase {
         m_entrySet = new CalendarEntrySet(m_dayStart, m_dayEnd, m_supervisor);
     }
 
-    protected void tearDown() throws Exception {
+    protected void xtearDown() throws Exception {
         super.tearDown();
         MockLogAppender.assertNoWarningsOrGreater();
     }
