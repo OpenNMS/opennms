@@ -78,17 +78,21 @@ public class Day {
     }
     
     public CalendarEntry[] getEntries() {
-        List entries = new ArrayList();
-        
-        OwnedIntervalSequence schedEntries = m_groupManager.getRoleScheduleEntries(m_role.getName(), getTime(0,0), getTime(24,0));
-        
-        for (Iterator it = schedEntries.iterator(); it.hasNext();) {
-            OwnedInterval schedEntry = (OwnedInterval) it.next();
-            CalendarEntry entry = new CalendarEntry(schedEntry.getStart(), schedEntry.getEnd(), ownerString(schedEntry.getOwners()));
-            entries.add(entry);
+        try {
+            List entries = new ArrayList();
+            
+            OwnedIntervalSequence schedEntries = m_groupManager.getRoleScheduleEntries(m_role.getName(), getTime(0,0), getTime(24,0));
+            
+            for (Iterator it = schedEntries.iterator(); it.hasNext();) {
+                OwnedInterval schedEntry = (OwnedInterval) it.next();
+                CalendarEntry entry = new CalendarEntry(schedEntry.getStart(), schedEntry.getEnd(), ownerString(schedEntry.getOwners()), schedEntry.getOwners());
+                entries.add(entry);
+            }
+            
+            return (CalendarEntry[]) entries.toArray(new CalendarEntry[entries.size()]);
+        } catch (Exception e) {
+            throw new WebRolesException("Unable to get schedule entries", e);
         }
-        
-        return (CalendarEntry[]) entries.toArray(new CalendarEntry[entries.size()]);
     }
 
     private String ownerString(List owners) {

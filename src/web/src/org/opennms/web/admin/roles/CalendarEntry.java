@@ -32,17 +32,20 @@
 package org.opennms.web.admin.roles;
 
 import java.util.Date;
+import java.util.List;
 
 public class CalendarEntry {
     
     Date m_start;
     Date m_end;
     String m_descr;
+    List m_labels;
     
-    public CalendarEntry(Date start, Date end, String descr) {
+    public CalendarEntry(Date start, Date end, String descr, List labels) {
         m_start = start;
         m_end = end;
         m_descr = descr;
+        m_labels = labels;
     }
 
     public Date getStartTime() { return m_start; }
@@ -50,4 +53,6 @@ public class CalendarEntry {
     public Date getEndTime() { return m_end; }
     
     public String getDescription() { return m_descr; }
+    
+    public List getLabels() { return m_labels; }
 }

@@ -162,6 +162,7 @@ public class DestinationWizardServlet extends HttpServlet {
             // and creating new targets as necessary
             String userTargets[] = request.getParameterValues("users");
             String groupTargets[] = request.getParameterValues("groups");
+            String roleTargets[] = request.getParameterValues("roles");
             String emailTargets[] = request.getParameterValues("emails");
 
             Path newPath = (Path) user.getAttribute("newPath");
@@ -210,6 +211,26 @@ public class DestinationWizardServlet extends HttpServlet {
                     // see if this target already exists
                     for (int j = 0; j < existingTargets.length; j++) {
                         if (groupTargets[k].equals(existingTargets[j].getName())) {
+                            target = existingTargets[j];
+                            break;
+                        }
+                    }
+
+                    if (index == -1)
+                        newPath.addTarget(target);
+                    else
+                        newPath.getEscalate(index).addTarget(target);
+                }
+            }
+
+            if (roleTargets != null) {
+                for (int k = 0; k < roleTargets.length; k++) {
+                    Target target = new Target();
+                    target.setName(roleTargets[k]);
+
+                    // see if this target already exists
+                    for (int j = 0; j < existingTargets.length; j++) {
+                        if (roleTargets[k].equals(existingTargets[j].getName())) {
                             target = existingTargets[j];
                             break;
                         }

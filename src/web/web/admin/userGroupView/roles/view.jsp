@@ -85,6 +85,12 @@
 		document.addEntryForm.submit();
 		
 	}
+	
+	function editEntry(schedIndex, timeIndex) {
+		document.editEntryForm.schedIndex.value = schedIndex;
+		document.editEntryForm.timeIndex.value = timeIndex;
+		document.editEntryForm.submit();
+	}
 
 </script>
 
@@ -184,6 +190,12 @@
 					<input type="hidden" name="role" value="<c:out value='${role.name}'/>"/>
 					<input type="hidden" name="date"/>
 				</form>
+				<form action="<c:url value='${reqUrl}'/>" method="POST" name="editEntryForm">
+					<input type="hidden" name="operation" value="editEntry"/>
+					<input type="hidden" name="role" value="<c:out value='${role.name}'/>"/>
+					<input type="hidden" name="schedIndex"/>
+					<input type="hidden" name="timeIndex"/>
+				</form>
 			</td>
 		<td colspan="4">
 			<table  border="1" cellspacing="0" cellpadding="2" bordercolor="black">
@@ -204,10 +216,11 @@
 					<c:forEach var="day" items="${week.days}">
 					<td>
 					<c:if test="${calendar.month == day.month}">
-						<c:set var="href">javascript:addEntry('<fmt:formatDate value='${day.date}' type='date' pattern='MM-dd-yyyy'/>')</c:set>
-						<b class="date"><c:out value="${day.dayOfMonth}"/></b><a class="new" href="<c:out value='${href}' escapeXml='false'/>"><img src="images/new.gif"/></a>
+						<c:set var="newHref">javascript:addEntry('<fmt:formatDate value='${day.date}' type='date' pattern='MM-dd-yyyy'/>')</c:set>
+						<b class="date"><c:out value="${day.dayOfMonth}"/></b><a class="new" href="<c:out value='${newHref}' escapeXml='false'/>"><img src="images/new.gif"/></a>
+						<br/>
 						<c:forEach var="entry" items="${day.entries}">
-							<fmt:formatDate value="${entry.startTime}" type="time" pattern="h:mm'&nbsp;'a"/>:&nbsp;<c:out value="${entry.description}"/><br/>
+							<fmt:formatDate value="${entry.startTime}" type="time" pattern="h:mm'&nbsp;'a"/>:<c:forEach var="owner" items="${entry.labels}"><c:set var="editHref">javascript:editEntry(<c:out value="${owner.schedIndex}"/>,<c:out value="${owner.timeIndex}"/>)</c:set>&nbsp;<c:choose><c:when test="${owner.supervisor}">unscheduled</c:when><c:otherwise><a href="<c:out value='${editHref}' escapeXml='false'/>"><c:out value="${owner.user}"/></a></c:otherwise></c:choose></c:forEach><br/>
 						</c:forEach>
 					</c:if>
 					</td>

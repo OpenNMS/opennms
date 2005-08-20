@@ -31,8 +31,14 @@
 //
 package org.opennms.web.admin.roles;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
+
+import org.opennms.netmgt.config.common.Time;
+import org.opennms.netmgt.config.groups.Schedule;
 
 public abstract class WebRole {
     
@@ -40,6 +46,8 @@ public abstract class WebRole {
     private String m_description;
     private WebUser m_defaultUser;
     private WebGroup m_membershipGroup;
+    private List m_newEntries = new ArrayList();;
+    
     
     public WebRole() {
     }
@@ -73,6 +81,10 @@ public abstract class WebRole {
     public void setName(String name) {
         m_name = name;
     }
+    
+    abstract public Schedule getSchedule(int schedIndex);
+    
+    abstract public Time getTime(int schedIndex, int timeIndex);
 
     abstract public Collection getCurrentUsers();
     
@@ -85,5 +97,16 @@ public abstract class WebRole {
     }
 
     abstract public WebCalendar getCalendar(Date month);
+
+    public void addEntry(WebSchedEntry entry) {
+        
+        m_newEntries.add(entry);
+    }
+    
+    public Collection getNewEntries() {
+        return m_newEntries;
+    }
+    
+    
 
 }

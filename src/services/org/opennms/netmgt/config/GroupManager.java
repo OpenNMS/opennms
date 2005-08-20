@@ -475,7 +475,9 @@ public abstract class GroupManager {
         return (Role)m_roles.get(roleName);
     }
 
-    public boolean userHasRole(String userId, String roleid) {
+    public boolean userHasRole(String userId, String roleid) throws MarshalException, ValidationException, IOException {
+        update();
+
         Role role = getRole(roleid);
         Iterator j = role.getScheduleCollection().iterator();
         while(j.hasNext()) {
@@ -487,7 +489,9 @@ public abstract class GroupManager {
         return false;
     }
     
-    public List getSchedulesForRoleAt(String roleId, Date time) {
+    public List getSchedulesForRoleAt(String roleId, Date time) throws MarshalException, ValidationException, IOException {
+        update();
+
         Role role = getRole(roleId);
         List schedules = new ArrayList();
         for (Iterator it = role.getScheduleCollection().iterator(); it.hasNext();) {
@@ -499,7 +503,9 @@ public abstract class GroupManager {
         return schedules;
     }
     
-    public List getUserSchedulesForRole(String userId, String roleid) {
+    public List getUserSchedulesForRole(String userId, String roleid) throws MarshalException, ValidationException, IOException {
+        update();
+
         List scheds = new ArrayList();
         Role role = getRole(roleid);
         Iterator it = role.getScheduleCollection().iterator();
@@ -513,7 +519,9 @@ public abstract class GroupManager {
         
     }
 
-    public boolean isUserScheduledForRole(String userId, String roleid, Date time) {
+    public boolean isUserScheduledForRole(String userId, String roleid, Date time) throws MarshalException, ValidationException, IOException {
+        update();
+
         List scheds = getUserSchedulesForRole(userId, roleid);
         for (Iterator it = scheds.iterator(); it.hasNext();) {
             Schedule sched = (Schedule) it.next();
@@ -537,7 +545,9 @@ public abstract class GroupManager {
         return false;
     }
 
-    public OwnedIntervalSequence getRoleScheduleEntries(String roleid, Date start, Date end) {
+    public OwnedIntervalSequence getRoleScheduleEntries(String roleid, Date start, Date end) throws MarshalException, ValidationException, IOException {
+        update();
+
         OwnedIntervalSequence schedEntries = new OwnedIntervalSequence();
         Role role = getRole(roleid);
         for (int i = 0; i < role.getScheduleCount(); i++) {

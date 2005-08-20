@@ -44,8 +44,10 @@ import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.config.GroupManager;
 import org.opennms.netmgt.config.UserManager;
+import org.opennms.netmgt.config.common.Time;
 import org.opennms.netmgt.config.groups.Group;
 import org.opennms.netmgt.config.groups.Role;
+import org.opennms.netmgt.config.groups.Schedule;
 import org.opennms.netmgt.config.users.User;
 
 public class Manager implements WebRoleManager, WebUserManager, WebGroupManager {
@@ -133,6 +135,7 @@ public class Manager implements WebRoleManager, WebUserManager, WebGroupManager 
     
     private Collection getUsersScheduleForRole(WebRole role, Date time) {
         try {
+            
             String[] users = m_userManager.getUsersScheduledForRole(role.getName(), new Date());
             List webUsers = new ArrayList(users.length);
             for (int i = 0; i < users.length; i++) {
@@ -254,6 +257,12 @@ public class Manager implements WebRoleManager, WebUserManager, WebGroupManager 
                 if (m_flags.get(NAME))
                     role.setName(super.getName());
                 
+                Collection newEntries = getNewEntries();
+                for (Iterator it = newEntries.iterator(); it.hasNext();) {
+                    WebSchedEntry entry = (WebSchedEntry) it.next();
+                    entry.update(role);
+                }
+                
                 if (m_role != null) {
                     m_groupManager.saveGroups();
                 } else {
@@ -266,10 +275,22 @@ public class Manager implements WebRoleManager, WebUserManager, WebGroupManager 
             
         }
         public Collection getCurrentUsers() {
+            if (m_role == null)
+                return Collections.EMPTY_LIST;
             return getUsersScheduleForRole(this, new Date());
         }
         public WebCalendar getCalendar(Date month) {
             return new MonthlyCalendar(month, m_role, m_groupManager);
+        }
+        public Schedule getSchedule(int schedIndex) {
+            return m_role.getSchedule(schedIndex);
+        }
+        public Time getTime(int schedIndex, int timeIndex) {
+            return getSchedule(schedIndex).getTime(timeIndex);
+        }
+        public void addEntry(String user, Date startDate, Date endDate) {
+            // TODO Auto-generated method stub
+            
         }
         
         

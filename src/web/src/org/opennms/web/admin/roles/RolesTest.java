@@ -288,7 +288,7 @@ public static final String USER_MANAGER = "<?xml version=\"1.0\"?>\n" +
         }
     }
 
-    private void assertRole(Role role, WebRole webRole) {
+    private void assertRole(Role role, WebRole webRole) throws Exception {
         assertEquals(role.getName(), webRole.getName());
         assertEquals(role.getDescription(), webRole.getDescription());
         assertNotNull(webRole.getMembershipGroup());

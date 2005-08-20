@@ -10,6 +10,10 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.opennms.netmgt.config.BasicScheduleUtils;
+import org.opennms.netmgt.config.common.Time;
+import org.opennms.netmgt.config.groups.Schedule;
+
 /**
  * Servlet implementation class for Servlet: RoleServlet
  *
@@ -19,7 +23,10 @@ import javax.servlet.http.HttpServletResponse;
     private static final String LIST = "/admin/userGroupView/roles/list.jsp";
     private static final String VIEW = "/admin/userGroupView/roles/view.jsp";
     private static final String EDIT_DETAILS = "/admin/userGroupView/roles/editDetails.jsp";
-    private static final String ADD_ENTRY = "/admin/userGroupView/roles/addEntry.jsp";
+    private static final String ADD_ENTRY = "/admin/userGroupView/roles/editSpecific.jsp";
+    private static final String EDIT_WEEKLY = "/admin/userGroupView/roles/editWeekly.jsp";
+    private static final String EDIT_MONTHLY = "/admin/userGroupView/roles/editMonthly.jsp";
+    private static final String EDIT_SPECIFIC = "/admin/userGroupView/roles/editSpecific.jsp";
     
     public RoleServlet() {
 		super();
@@ -73,11 +80,45 @@ import javax.servlet.http.HttpServletResponse;
                 WebRole role = getRoleManager().getRole(request.getParameter("role"));
                 request.setAttribute("role", role);
                 Date date = new SimpleDateFormat("MM-dd-yyyy").parse(request.getParameter("date"));
-                request.setAttribute("date", date);
+                request.setAttribute("start", date);
+                request.setAttribute("end", date);
+                request.setAttribute("schedIndex", "-1");
+                request.setAttribute("timeIndex", "-1");
                 return ADD_ENTRY;
             } catch (ParseException e) {
                 throw new ServletException("Unable to parse date: "+e.getMessage(), e);
             }
+        }
+        
+    }
+    
+    private class EditEntryAction implements Action {
+        
+        public String execute(HttpServletRequest request, HttpServletResponse response) throws ServletException {
+            WebRole role = getRoleManager().getRole(request.getParameter("role"));
+            request.setAttribute("role", role);
+            
+            int schedIndex = Integer.parseInt(request.getParameter("schedIndex"));
+            request.setAttribute("schedIndex", request.getParameter("schedIndex"));
+            
+            int timeIndex = Integer.parseInt(request.getParameter("timeIndex"));
+            request.setAttribute("timeIndex", request.getParameter("timeIndex"));
+            
+            Schedule schedule = role.getSchedule(schedIndex);
+            request.setAttribute("schedule", schedule);
+            Time time = role.getTime(schedIndex, timeIndex);
+            request.setAttribute("time", time);
+            
+            if (BasicScheduleUtils.isWeekly(time))
+                return EDIT_WEEKLY;
+            else if (BasicScheduleUtils.isMonthly(time))
+                return EDIT_MONTHLY;
+            else {
+                request.setAttribute("start", BasicScheduleUtils.getSpecificTime(time.getBegins()));
+                request.setAttribute("end", BasicScheduleUtils.getSpecificTime(time.getEnds()));
+                return EDIT_SPECIFIC;
+            }
+            
         }
         
     }
@@ -88,11 +129,19 @@ import javax.servlet.http.HttpServletResponse;
             try {
                 WebRole role = getRoleManager().getRole(request.getParameter("role"));
                 request.setAttribute("role", role);
+                String user = request.getParameter("roleUser");
                 Date startDate = getDateParameters("start", request);
                 Date endDate = getDateParameters("end", request);
-                request.setAttribute("startDate", startDate);
-                request.setAttribute("endDate", endDate);
-                return TEST;
+                int schedIndex = getIntParameter("schedIndex", request);
+                int timeIndex = getIntParameter("timeIndex", request);
+                
+                WebSchedEntry entry = new WebSchedEntry(schedIndex, timeIndex, user, startDate, endDate);
+                
+                role.addEntry(entry);
+                
+                getRoleManager().saveRole(role);
+                
+                return new ViewAction().execute(request, response);
             } catch (ParseException e) {
                 throw new ServletException("Unable to parse date: "+e.getMessage(), e);
             }
@@ -112,6 +161,10 @@ import javax.servlet.http.HttpServletResponse;
             buf.append(' ');
             buf.append(request.getParameter(prefix+"AmOrPm"));
             return new SimpleDateFormat("M-d-yyyy h:m a").parse(buf.toString());
+        }
+        
+        public int getIntParameter(String name, HttpServletRequest request) {
+            return Integer.parseInt(request.getParameter(name));
         }
         
     }
@@ -147,14 +200,16 @@ import javax.servlet.http.HttpServletResponse;
                     // this is a new role so create a new on and add it to the roleManager
                     role = getRoleManager().createRole();
                 }
-                request.setAttribute("role", role);
                 role.setName(request.getParameter("roleName"));
                 role.setDefaultUser(getUserManager().getUser(request.getParameter("roleUser")));
                 role.setMembershipGroup(getGroupManager().getGroup(request.getParameter("roleGroup")));
                 role.setDescription(request.getParameter("roleDescr"));
                 getRoleManager().saveRole(role);
+                request.setAttribute("role", getRoleManager().getRole(request.getParameter("roleName")));
+                return new ViewAction().execute(request, response);
+            } else {
+                return new ListAction().execute(request, response);
             }
-            return new ViewAction().execute(request, response);
         }
         
     }
@@ -182,6 +237,8 @@ import javax.servlet.http.HttpServletResponse;
             return new SaveDetailsAction();
         else if ("addEntry".equals(op))
             return new AddEntryAction();
+        else if ("editEntry".equals(op))
+            return new EditEntryAction();
         else if ("saveEntry".equals(op))
             return new SaveEntryAction();
         else

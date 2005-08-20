@@ -39,7 +39,7 @@
 
 -->
 
-<%@page language="java" contentType="text/html" session="true" import="java.util.*,org.opennms.web.Util,org.opennms.netmgt.config.*,org.opennms.netmgt.config.destinationPaths.*" %>
+<%@page language="java" contentType="text/html" session="true" import="java.util.*,org.opennms.web.Util,org.opennms.netmgt.config.*,org.opennms.netmgt.config.groups.*,org.opennms.netmgt.config.destinationPaths.*" %>
 
 <%!
     public void init() throws ServletException {
@@ -187,12 +187,17 @@
           <td>&nbsp;</td>
           <td valign="top"><h4>Send to Selected Groups:</h4></td>
           <td>&nbsp;</td>
+          <td valign="top"><h4>Send to Selected Roles:</h4></td>
+          <td>&nbsp;</td>
           <td valign="top"><h4>Send to Email Addresses:</h4></td>
         </tr>
         <tr>
           <td valign="top">Highlight each user that needs to receive the notice.</td>
           <td>&nbsp;</td>
           <td valign="top">Highlight each group that needs to receive the notice. Each user in the group
+              will receive the notice.</td>
+          <td>&nbsp;</td>
+          <td valign="top">Highlight each role that needs to receive the notice. The users scheduled for the time that the notification comes in
               will receive the notice.</td>
           <td>&nbsp;</td>
           <td valign="top">Add any email addresses you want the notice to be sent to.</td>
@@ -222,6 +227,22 @@
                 { 
                   String key = (String)iterator.next();
                   if ( ((Boolean)groups.get(key)).booleanValue() ) {  %>
+                    <option selected VALUE=<%=key%>><%=key%></option>
+            <%    } else { %>
+                    <option VALUE=<%=key%>><%=key%></option>
+            <%    }
+               } %>
+            </select>
+           </td>
+           <td>&nbsp;</td>
+          <td width="25%" valign="top" align="left">
+            <select WIDTH="200" STYLE="width: 200px" NAME="roles" SIZE="10" multiple>
+             <% Map roles = getRoles(targets);
+                iterator = roles.keySet().iterator();
+                while(iterator.hasNext()) 
+                { 
+                  String key = (String)iterator.next();
+                  if ( ((Boolean)roles.get(key)).booleanValue() ) {  %>
                     <option selected VALUE=<%=key%>><%=key%></option>
             <%    } else { %>
                     <option VALUE=<%=key%>><%=key%></option>
@@ -343,6 +364,28 @@
         return allGroups;
     }
     
+public Map getRoles(Collection targets) throws ServletException {
+	try {
+		Map rolesMap = new TreeMap();;
+      
+		Collection targetNames = getTargetNames(targets);
+      
+		Iterator i = GroupFactory.getInstance().getRoles().iterator();
+		while(i.hasNext()) {
+			Role role = (Role)i.next();
+			String key = role.getName();
+			if (targetNames.contains(key)) {
+				rolesMap.put(key, new Boolean(true));
+			} else {
+				rolesMap.put(key, new Boolean(false));
+			}
+		}
+      
+		return rolesMap;
+	} catch (Exception e) { 
+		throw new ServletException("could not get list of all groups.", e);
+	}
+}
     public Map getEmails(Collection targets)
       throws ServletException
     {
