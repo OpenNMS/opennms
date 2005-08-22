@@ -45,7 +45,7 @@
 <%@page import="org.opennms.netmgt.config.*" %>
 <%@page import="org.opennms.netmgt.config.users.*" %>
 <%
-	UserFactory userFactory;
+	UserManager userFactory;
   	Map users = null;
 	
 	try
