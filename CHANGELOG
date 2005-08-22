@@ -1,5 +1,6 @@
 1.2.3 to 1.2.4
 ----------------------------------------------------------------------
+- Fixed a problem with acknowledging events. Bug 1290
 - Added the ability to use a URL in the HTTP and HTTPS Monitors.
   Bug 848.
 - Colored the background of notification IDs to match the severity
