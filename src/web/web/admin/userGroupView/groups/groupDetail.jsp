@@ -46,7 +46,7 @@
 	try
   	{
 		GroupFactory.init();
-		GroupFactory groupFactory = GroupFactory.getInstance();
+		GroupManager groupFactory = GroupFactory.getInstance();
       		group = groupFactory.getGroup(groupName);
   	}
 	catch (Exception e)

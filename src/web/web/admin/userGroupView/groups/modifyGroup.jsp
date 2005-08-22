@@ -446,7 +446,7 @@
         try
         {
 	  UserFactory.init();
-          UserFactory userFactory = UserFactory.getInstance();
+          UserManager userFactory = UserFactory.getInstance();
           List userNames = userFactory.getUserNames();
           
           for (int i = 0; i < userNames.size(); i++)

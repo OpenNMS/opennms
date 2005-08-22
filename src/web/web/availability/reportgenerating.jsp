@@ -39,10 +39,10 @@
 
 -->
 
-<%@page language="java" contentType="text/html" session="true" import="java.util.*,org.opennms.netmgt.config.UserFactory" %>
+<%@page language="java" contentType="text/html" session="true" import="java.util.*,org.opennms.netmgt.config.*" %>
 
 <%!
-    protected UserFactory userFactory;
+    protected UserManager userFactory;
 
     public void init() throws ServletException {
         try { 				

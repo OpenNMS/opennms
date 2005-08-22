@@ -41,7 +41,7 @@
 
 <%@page language="java" contentType = "text/html" session = "true"  import="org.opennms.netmgt.config.*, java.util.*,org.opennms.netmgt.config.groups.*"%>
 <%
-	GroupFactory groupFactory = null;
+	GroupManager groupFactory = null;
 	Map groups = null;
 	
   	try

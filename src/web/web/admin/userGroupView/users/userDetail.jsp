@@ -42,7 +42,7 @@
 <%@page language="java" contentType = "text/html" session = "true"  import="org.opennms.netmgt.config.*, java.util.*,java.text.*,org.opennms.netmgt.config.users.*"%>
 <%
 	User user = null;
-	UserFactory userFactory = UserFactory.getInstance();
+	UserManager userFactory = UserFactory.getInstance();
   	String userID = request.getParameter("userID");
 	try
   	{

@@ -406,7 +406,7 @@
         try
         {
             UserFactory.init();
-            UserFactory userFactory = UserFactory.getInstance();
+            UserManager userFactory = UserFactory.getInstance();
             List userNames = userFactory.getUserNames();
             
             if(userNames != null)
@@ -492,7 +492,7 @@
         try
         {
             GroupFactory.init();
-            GroupFactory groupFactory = GroupFactory.getInstance();
+            GroupManager groupFactory = GroupFactory.getInstance();
             List groupNames = groupFactory.getGroupNames();
             
             for (int i = 0; i < groupNames.size(); i++)
