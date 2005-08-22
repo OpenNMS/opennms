@@ -5,6 +5,27 @@
         <created>Wednesday, February 6, 2002 10:10:00 AM EST</created>
         <mstation>localhost</mstation>
     </header>
+    <!-- Sample notification using SNMP Traps (this sample uses a destination path called "trapNotifier")
+    <notification name="snmpTrap" status="on">
+    	<uei>uei.opennms.org/nodes/nodeDown</uei>
+    	<rule>IPADDR IPLIKE *.*.*.*</rule>
+    	<destinationPath>trapNotifier</destinationPath>
+    	<text-message>
+    		All services are down on node %nodeid%.
+    	</text-message>
+    	<subject>node %nodeid% down.</subject>
+    	<numeric-message>111-%noticeid%</numeric-message>
+    	<parameter name="trapVersion" value="v1" />
+    	<parameter name="trapTransport" value="UDP" />
+    	<parameter name="trapHost" value="my-trap-host.mydomain.org" />
+    	<parameter name="trapPort" value="162" />
+    	<parameter name="trapCommunity" value="public" />
+    	<parameter name="trapEnterprise" value=".1.3.6.1.4.1.5813" />
+    	<parameter name="trapGeneric" value="6" />
+    	<parameter name="trapSpecific" value="1" />
+    	<parameter name="trapVarbind" value="Node: %nodelabel%" />
+    </notification>
+    -->
     <notification name="serviceUnresponsive" status="on">
         <uei>uei.opennms.org/nodes/serviceUnresponsive</uei>
         <rule>IPADDR IPLIKE *.*.*.*</rule>
