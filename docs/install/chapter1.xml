@@ -97,7 +97,9 @@
         <glossdef>
           <para>A minimum of 256 MB of RAM, although 512 MB is strongly
           recommended. The OpenNMS Java Virtual Machine benefits from large
-          amounts of memory, up to 2 GB.</para>
+          amounts of memory, up to 2 GB, and more if using a 64-bit processor.
+          Given a budget choice between more RAM and a faster CPU, choose more
+          RAM.</para>
         </glossdef>
       </glossentry>
 
@@ -118,6 +120,10 @@
           <filename>/opt/OpenNMS/etc</filename> or
           <filename>/etc/opennms</filename>) to change those settings. For a
           minimum system, 800 MB to 1 GB should be sufficient.</para>
+
+          <para><emphasis role="bold">Note</emphasis>: Unless it is a very
+          small system, do not use RAID-5 with OpenNMS. RAID-1 or RAID-1+0 is
+          recommended if using RAID.</para>
         </glossdef>
       </glossentry>
     </glosslist>

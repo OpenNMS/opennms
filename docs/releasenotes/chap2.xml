@@ -12,6 +12,153 @@
   version 1.1.5 continues that progress.</para>
 
   <section>
+    <title>Changes in OpenNMS 1.2.4</title>
+
+    <section>
+      <title>New Features</title>
+
+      <bridgehead>The Use of "~" For Regular Expressions</bridgehead>
+
+      <para>The ability to access the OpenNMS database via rules and filters
+      is pretty powerful. With this release you can use the "~" character to
+      imbed regular expressions on the right hand side of the rule or filter.
+      Previously, the "~" character meant the same as "like". Note that this
+      feature requires PostgreSQL 7.4 or higher. Earlier version will behave
+      just like "like".</para>
+
+      <bridgehead>RESOLVED Behavior Options</bridgehead>
+
+      <para>Currently, when a "down" event notification is auto-acknowledged
+      with an "up" event, a "RESOLVED" message gets sent to anyone who got the
+      original "down" notice. However, if the problem is manually
+      acknowledged, the "RESOLVED" message is not sent. </para>
+
+      <para>With the release, when you configure a destination path, you can
+      choose "on", "auto" or "off".</para>
+
+      <para>"on" will send RESOLVED notices to anyone who got the down
+      notice.</para>
+
+      <para>"auto" will send RESOLVED notices to anyone who got the down
+      notice, and the notice was auto-acknowledged (default).</para>
+
+      <para>"off" will not send RESOLVED notices to anyone.</para>
+
+      <para>Hats off to Bill for this one.</para>
+
+      <bridgehead>The Ability to use %descr% in Notifications</bridgehead>
+
+      <para>Suppose you have a SNMP Trap event that comes in with a huge
+      description, including all the varbinds, etc. If you want to make a
+      notification that triggers on that event, you will need to recreate or
+      copy the description from the event into the notice. With this release,
+      you can simply use %descr% to include the triggering event description
+      in the notice.</para>
+
+      <para>Thanks to Vincent for this addition.</para>
+
+      <bridgehead>New "url" Parameter in the HTTP and HTTPS
+      Plugins</bridgehead>
+
+      <para>Prior to this release, it was hard to add service checks for web
+      sites outside of the "root" directory. Now there is a "url" parameter to
+      help with this. Suppose I wanted to monitor a wiki that was at
+      "http://10.1.1.1/wiki". I'd add the following to
+      capsd-configuration.xml:</para>
+
+      <programlisting>        &lt;protocol-plugin protocol="HTTP-Wiki" class-name="org.opennms.netmgt.capsd.HttpPlugin" scan="on" user-defined="false"&gt;
+                &lt;property key="port" value="80"/&gt;
+                &lt;property key="url" value="/wiki"/&gt;
+                &lt;property key="timeout" value="3000"/&gt;
+                &lt;property key="retry" value="2"/&gt;
+        &lt;/protocol-plugin&gt;</programlisting>
+
+      <para>Then I would need to add a similar entry to
+      poller-configuration.xml:</para>
+
+      <programlisting>                &lt;service name="HTTP-Wiki" interval="300000" user-defined="false" status="on"&gt;
+                        &lt;parameter key="retry" value="1"/&gt;
+                        &lt;parameter key="timeout" value="3000"/&gt;
+                        &lt;parameter key="port" value="80"/&gt;
+                        &lt;parameter key="url" value="/wiki"/&gt;
+                &lt;/service&gt;</programlisting>
+
+      <para>Don't forget the monitor line in the bottom section:</para>
+
+      <programlisting>        &lt;monitor service="HTTP-Wiki"    class-name="org.opennms.netmgt.poller.monitors.HttpMonitor"/&gt;
+</programlisting>
+
+      <para>This will test each server for a "/wiki" URL, and if the return
+      code is less the 400 the test will pass. Note that this will not work on
+      password protected URLs like the one OpenNMS uses. That will be
+      addressed in a new monitor coming in the next release (Basic AUTH
+      support).</para>
+    </section>
+
+    <section>
+      <title>Bug Fixes</title>
+
+      <para>A number of small bug fixes have been added:</para>
+
+      <itemizedlist>
+        <listitem>
+          <para>A typo in the Schedule Outages GUI for "thusday" has been
+          corrected.</para>
+        </listitem>
+
+        <listitem>
+          <para>Fixed an issue with acknowledging events via the GUI</para>
+        </listitem>
+
+        <listitem>
+          <para>Corrected a case where multiple "Update SNMP" links would
+          appear</para>
+        </listitem>
+
+        <listitem>
+          <para>Modified the HTTP/HTTPS plugins to handle replies that
+          included a newline (Thanks Tobey)</para>
+        </listitem>
+
+        <listitem>
+          <para>Fixed an issue where interfaces could be marked as "Secondary"
+          even if they were excluded from collectd (Thanks Bill)</para>
+        </listitem>
+      </itemizedlist>
+    </section>
+
+    <section>
+      <title>Configuration Changes</title>
+
+      <para>A number of configurations have been added:</para>
+
+      <itemizedlist>
+        <listitem>
+          <para>Added support for RFC1628, the UPS MIB</para>
+        </listitem>
+
+        <listitem>
+          <para>Added MGE UPS collections and reports</para>
+        </listitem>
+
+        <listitem>
+          <para>Added SystemEdge and Fujitsu-Siemens events, as well as new
+          MGE-UPS event definitions.</para>
+        </listitem>
+
+        <listitem>
+          <para>Added Netgear events.</para>
+        </listitem>
+
+        <listitem>
+          <para>64-bit counter support for ifHCInOctets and ifHCOutOctets was
+          added.</para>
+        </listitem>
+      </itemizedlist>
+    </section>
+  </section>
+
+  <section>
     <title>Changes in OpenNMS 1.2.3</title>
 
     <section>
@@ -23,7 +170,7 @@
       included in this release. Accessed from the Admin menu, it allows one to
       configure weekly, monthly and specific poll-outages from the webUI. A
       poll outage is where polling will stop for a particular set of devices
-      or a package. </para>
+      or a package.</para>
 
       <para>Choose "Scheduled Outages" from the admin page, and the GUI will
       display the currently configured outages. You can edit those or create
