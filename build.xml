@@ -1022,11 +1022,13 @@ your distribution.
    <fileset dir="${build.dir}/etc"/>
   </copy>
   <mkdir dir="${install.prefix}${install.servlet.dir}/WEB-INF/classes"/>
+<!--
   <copy todir="${install.prefix}${install.servlet.dir}/WEB-INF/classes">
     <fileset dir="${build.dir}/etc">
       <include name="castor.properties"/> 
    </fileset>
   </copy>
+-->
  </target>
 
  <target name="install.contrib" depends="prep,copy.contrib">
