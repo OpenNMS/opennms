@@ -307,7 +307,6 @@
       <description>Redirect to this sibling URL on success.</description>
     </init-param>
   </servlet>
-  
   <servlet>
     <servlet-name>importAssets</servlet-name>
     <servlet-class>org.opennms.web.asset.ImportAssetsServlet</servlet-class>
@@ -668,6 +667,11 @@
     <servlet-class>org.opennms.web.admin.nodeManagement.SnmpGetNodesServlet</servlet-class>
   </servlet>
   <servlet>
+    <!-- servlet for grabbing SNMP interface information -->
+    <servlet-name>snmpGetInterfaces</servlet-name>
+    <servlet-class>org.opennms.web.admin.nodeManagement.SnmpGetInterfacesServlet</servlet-class>
+  </servlet>
+  <servlet>
     <!-- servlet for grabbing node, interface and service information -->
     <servlet-name>getNodes</servlet-name>
     <servlet-class>org.opennms.web.admin.nodeManagement.GetNodesServlet</servlet-class>
@@ -686,6 +690,11 @@
     <!-- servlet for managing and unmanaging interfaces and services -->
     <servlet-name>snmpManageNodes</servlet-name>
     <servlet-class>org.opennms.web.admin.nodeManagement.SnmpManageNodesServlet</servlet-class>
+  </servlet>
+  <servlet>
+    <!-- servlet for configuring SNMP parameters -->
+    <servlet-name>snmpConfig</servlet-name>
+    <servlet-class>org.opennms.web.admin.nodeManagement.SnmpConfigServlet</servlet-class>
   </servlet>
   
   <!-- servlets for editing the poller configuration files -->
@@ -1186,6 +1195,10 @@
     <url-pattern>/admin/snmpGetNodes</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
+    <servlet-name>snmpGetInterfaces</servlet-name>
+    <url-pattern>/admin/snmpGetInterfaces</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
     <servlet-name>getNodes</servlet-name>
     <url-pattern>/admin/getNodes</url-pattern>
   </servlet-mapping>
@@ -1200,6 +1213,10 @@
   <servlet-mapping>
     <servlet-name>snmpManageNodes</servlet-name>
     <url-pattern>/admin/changeCollectStatus</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>snmpConfig</servlet-name>
+    <url-pattern>/admin/snmpConfig</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
     <servlet-name>pollerConfig</servlet-name>
@@ -1270,6 +1287,10 @@
   <error-page>
     <exception-type>org.opennms.web.notification.NoticeIdNotFoundException</exception-type>
     <location>/errors/noticeidnotfound.jsp</location>
+  </error-page>
+  <error-page>
+    <exception-type>org.opennms.web.outage.OutageIdNotFoundException</exception-type>
+    <location>/errors/outageidnotfound.jsp</location>
   </error-page>
   <error-page>
     <exception-type>java.lang.SecurityException</exception-type>

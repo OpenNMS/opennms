@@ -64,6 +64,7 @@ import org.opennms.netmgt.filter.node.AIplikeExprPart;
 import org.opennms.netmgt.filter.node.ALessThanEqualExprPart;
 import org.opennms.netmgt.filter.node.ALessThanExprPart;
 import org.opennms.netmgt.filter.node.ALikeExprPart;
+import org.opennms.netmgt.filter.node.ATildelikeExprPart;
 import org.opennms.netmgt.filter.node.ANotEqualExprPart;
 import org.opennms.netmgt.filter.node.ANotExprPart;
 import org.opennms.netmgt.filter.node.AOctetListOctet;
@@ -507,6 +508,23 @@ public class SQLTranslation extends DepthFirstAdapter {
             m_where.append(convertString(node.getQuotedString().getText()));
         }
         outALikeExprPart(node);
+    }
+
+    public void caseATildelikeExprPart(ATildelikeExprPart node) {
+        inATildelikeExprPart(node);
+        if (node.getIdent() != null) {
+            node.getIdent().apply(this);
+            m_where.append(validateIdent(node.getIdent().getText()));
+        }
+        if (node.getTildelike() != null) {
+            node.getTildelike().apply(this);
+            m_where.append(" ~ ");
+        }
+        if (node.getQuotedString() != null) {
+            node.getQuotedString().apply(this);
+            m_where.append(convertString(node.getQuotedString().getText()));
+        }
+        outATildelikeExprPart(node);
     }
 
     public void caseAIplikeExprPart(AIplikeExprPart node) {

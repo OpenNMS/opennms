@@ -3805,4 +3805,29 @@ with respect to security because a user has logged into it.&lt;/p&gt;&lt;table&g
 	<severity>Indeterminate</severity>
 </event>
 <!-- End of auto generated data from MIB: UMSEVENT-MIB -->
+<!-- Events from IBM Converged Power System HSC -->
+<event>
+	<mask>
+		<maskelement>
+	   		<mename>id</mename>
+   			<mevalue>.1.3.6.1.4.1.2.6.42</mevalue>
+  		</maskelement>
+  		<maskelement>
+   			<mename>generic</mename>
+   			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>3</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/IBM/traps/cpsSystemNotifyTrap</uei>
+	<event-label>Converged Power System Trap: cpsSystemNotifyTrap</event-label>
+	<descr>&lt;p&gt;A problem has been added to a problem log on a converged power system.&lt;/p&gt;
+	&lt;p&gt;%parm[#1]%&lt;/p&gt;
+	</descr>
+	<logmsg dest='logndisplay'>&lt;p&gt;Problem log trap received from a Converged Power System&lt;/p&gt;</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<!-- end of Events from IBM Converged Power System HSC -->
 </events>

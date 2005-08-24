@@ -260,6 +260,13 @@ public class SnmpObjectId extends Object implements SnmpSyntax, Cloneable, Seria
     public int getLength() {
         return m_data.length;
     }
+    
+    /**
+     * Returns the value of the last object identifier component value
+     */
+    public int getLastIdentifier() {
+        return m_data[m_data.length-1];
+    }
 
     /**
      * Gets the array of object identifiers from the object. The instance is

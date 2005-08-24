@@ -8,8 +8,6 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
-// Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
-//
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2 of the License, or
@@ -95,6 +93,7 @@ public abstract class NotificationManager {
     public static final String PARAM_SUBJECT = "-subject";
     public static final String PARAM_EMAIL = "-email";
     public static final String PARAM_PAGER_EMAIL = "-pemail";
+    public static final String PARAM_XMPP_ADDRESS = "-xmpp";
     public static final String PARAM_TEXT_PAGER_PIN = "-tp";
     public static final String PARAM_NUM_PAGER_PIN = "-np";
     NotifdConfigManager m_configManager;
@@ -191,7 +190,7 @@ public abstract class NotificationManager {
     
             String sql = getInterfaceFilter(notif.getRule());
     
-            ThreadCategory.getInstance(getClass()).debug("getSQL Returned SQL for Notification: " + notif.getName() + ": " + sql);
+            // ThreadCategory.getInstance(getClass()).debug("getSQL Returned SQL for Notification: " + notif.getName() + ": " + sql);
     
             connection = getConnection();
             Statement stmt = connection.createStatement();
@@ -360,20 +359,22 @@ public abstract class NotificationManager {
      * 
      */
     public Collection acknowledgeNotice(Event event, String uei, String[] matchList) throws SQLException, IOException, MarshalException, ValidationException {
-        // get the notification id and see if only one is returned
+        Category log = ThreadCategory.getInstance(getClass());
         Connection connection = null;
         Collection notifIDs = new LinkedList();
 
         try {
+            // First get most recent eventid from notifications 
+            // that match the matchList, then get all notifications
+            // with this eventid
             connection = getConnection();
-            StringBuffer sql = new StringBuffer("SELECT notifyid FROM notifications WHERE eventuei=? AND respondTime is null ");
-    
+            int eventID = 0;
+            boolean wasAcked = false;
+            StringBuffer sql = new StringBuffer("SELECT eventid FROM notifications WHERE eventuei=? ");
             for (int i = 0; i < matchList.length; i++) {
                 sql.append("AND ").append(matchList[i]).append("=? ");
             }
-    
-            sql.append("ORDER BY pagetime");
-    
+            sql.append("ORDER BY eventid desc limit 1");
             PreparedStatement statement = connection.prepareStatement(sql.toString());
             statement.setString(1, uei);
     
@@ -392,24 +393,51 @@ public abstract class NotificationManager {
             }
     
             ResultSet results = statement.executeQuery();
+            if (results != null && results.next()) {
+                eventID = results.getInt(1);
+                log.debug("EventID for notice(s) to be acked: " + eventID);
+
+
+                sql = new StringBuffer("SELECT notifyid, answeredby, respondtime FROM notifications WHERE eventID=?");
     
-            // count how many rows were returned, if there is even one then the
-            // page
-            // has been responded too.
+                statement = connection.prepareStatement(sql.toString());
+                statement.setInt(1, eventID);
     
-            if (results != null) {
-                while (results.next()) {
-                    int notifID = results.getInt(1);
-                    notifIDs.add(new Integer(notifID));
-                    PreparedStatement update = connection.prepareStatement(getConfigManager().getConfiguration().getAcknowledgeUpdateSql());
+                results = statement.executeQuery();
     
-                    update.setString(1, "auto-acknowledged");
-                    update.setTimestamp(2, new Timestamp((new Date()).getTime()));
-                    update.setInt(3, notifID);
+                if (results != null) {
+                    while (results.next()) {
+                        int notifID = results.getInt(1);
+                        String ansBy = results.getString(2);
+                        Timestamp ts = results.getTimestamp(3);
+                        if(ansBy == null) {
+                            ansBy = "auto-acknowledged";
+                            ts = new Timestamp((new Date()).getTime());
+                        } else if(ansBy.indexOf("auto-acknowledged") > -1) {
+                            log.debug("Notice has previously been auto-acknowledged. Skipping...");
+                            continue;
+                        } else {
+                            wasAcked = true;
+                            ansBy = ansBy + "/auto-acknowledged";
+                        }
+                        log.debug("Matching DOWN notifyID = " + notifID + ", was acked by user = " + wasAcked + ", ansBy = " +ansBy);
+                        PreparedStatement update = connection.prepareStatement(getConfigManager().getConfiguration().getAcknowledgeUpdateSql());
     
-                    update.executeUpdate();
-                    update.close();
+                        update.setString(1, ansBy);
+                        update.setTimestamp(2, ts);
+                        update.setInt(3, notifID);
+    
+                        update.executeUpdate();
+                        update.close();
+                        if(wasAcked) {
+                            notifIDs.add(new Integer(-1 * notifID));
+                        } else {
+                            notifIDs.add(new Integer(notifID));
+                        }
+                    }
                 }
+            } else {
+                log.debug("No matching DOWN eventID found");
             }
     
             statement.close();
@@ -493,12 +521,14 @@ public abstract class NotificationManager {
     /**
      * 
      */
-    public void updateNoticeWithUserInfo(String userId, int noticeId, String media, String contactInfo) throws SQLException {
+    public void updateNoticeWithUserInfo(String userId, int noticeId, String media, String contactInfo, String autoNotify) throws SQLException {
+        Category log = ThreadCategory.getInstance(getClass());
         if (noticeId < 0) return;
+        log.debug("updating usersnotified: User = " + userId + ", notice ID = " + noticeId + ", conctactinfo = " + contactInfo + ", media = " + media + ", autoNotify = " + autoNotify);
         Connection connection = null;
         try {
             connection = getConnection();
-            PreparedStatement insert = connection.prepareStatement("INSERT INTO usersNotified (userid, notifyid, notifytime, media, contactinfo) values (?,?,?,?,?)");
+            PreparedStatement insert = connection.prepareStatement("INSERT INTO usersNotified (userid, notifyid, notifytime, media, contactinfo, autonotify) values (?,?,?,?,?,?)");
     
             insert.setString(1, userId);
             insert.setInt(2, noticeId);
@@ -507,6 +537,7 @@ public abstract class NotificationManager {
     
             insert.setString(4, media);
             insert.setString(5, contactInfo);
+            insert.setString(6, autoNotify);
     
             insert.executeUpdate();
             insert.close();
@@ -781,7 +812,7 @@ public abstract class NotificationManager {
         final Map parmMap = new HashMap();
         Querier querier = new Querier(m_dbConnectionFactory, "select notifications.*, service.* from notifications left outer join service on notifications.serviceID = service.serviceID  where notifyId = ?") {
             public void processRow(ResultSet rs) throws SQLException {
-                parmMap.put(NotificationManager.PARAM_TEXT_MSG, rs.getObject("textMsg"));
+                parmMap.put(NotificationManager.PARAM_TEXT_MSG, resolutionPrefix+rs.getObject("textMsg"));
                 parmMap.put(NotificationManager.PARAM_NUM_MSG, rs.getObject("numericMsg"));
                 parmMap.put(NotificationManager.PARAM_SUBJECT, resolutionPrefix+rs.getObject("subject"));
                 parmMap.put(NotificationManager.PARAM_NODE, rs.getObject("nodeID").toString());

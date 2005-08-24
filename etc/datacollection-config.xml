@@ -2,7 +2,7 @@
 <datacollection-config
 	rrdRepository = "@install.share.dir@/rrd/snmp/">
 	<snmp-collection name="default"
-		maxVarsPerPdu = "50"
+		maxVarsPerPdu = "10"
 		snmpStorageFlag = "select">
 		<rrd step = "300">
 			<rra>RRA:AVERAGE:0.5:1:8928</rra>
@@ -21,8 +21,9 @@
 				<mibObj oid=".1.3.6.1.2.1.2.2.1.16" instance="ifIndex" alias="ifOutOctets"   type="counter"/>
                                 <mibObj oid=".1.3.6.1.2.1.2.2.1.18" instance="ifIndex" alias="ifOutNUcastPkts" type="counter"/>
                                 <mibObj oid=".1.3.6.1.2.1.2.2.1.19" instance="ifIndex" alias="ifOutDiscards"   type="counter"/>
-				<mibObj oid=".1.3.6.1.2.1.2.2.1.19" instance="ifIndex" alias="ifOutDiscards" type="counter"/>
 				<mibObj oid=".1.3.6.1.2.1.2.2.1.20" instance="ifIndex" alias="ifOutErrors"   type="counter"/>
+                                <mibObj oid=".1.3.6.1.2.1.31.1.1.1.6" instance="ifIndex" alias="ifHCInOctets"  type="counter"/>
+                                <mibObj oid=".1.3.6.1.2.1.31.1.1.1.10" instance="ifIndex" alias="ifHCOutOctets" type="counter"/>
 			</group>
 			<group 	name = "mib2-host-resources-storage" ifType = "ignore">
 				<!-- Note that hrStorage is really a table -->
@@ -44,24 +45,50 @@
 				<mibObj oid=".1.3.6.1.2.1.10.132.4.1.2" instance="0" alias="coffeePotLevel"    type="integer"/>
 				<mibObj oid=".1.3.6.1.2.1.10.132.4.1.6" instance="0" alias="coffeePotTemperature"    type="integer"/>
 			</group>
+             		<group name="mib2-tcp" ifType="ignore">
+		                 <mibObj oid=".1.3.6.1.2.1.6.5" instance="0" alias="tcpActiveOpens" type="Counter32"/>
+		                 <mibObj oid=".1.3.6.1.2.1.6.6" instance="0" alias="tcpPassiveOpens" type="Counter32"/>
+	               		 <mibObj oid=".1.3.6.1.2.1.6.7" instance="0" alias="tcpAttemptFails" type="Counter32"/>
+		                 <mibObj oid=".1.3.6.1.2.1.6.8" instance="0" alias="tcpEstabResets" type="Counter32"/>
+		                 <mibObj oid=".1.3.6.1.2.1.6.9" instance="0" alias="tcpCurrEstab" type="Counter32"/>
+		                 <mibObj oid=".1.3.6.1.2.1.6.10" instance="0" alias="tcpInSegs" type="Counter32"/>
+		                 <mibObj oid=".1.3.6.1.2.1.6.11" instance="0" alias="tcpOutSegs" type="Counter32"/>
+		                 <mibObj oid=".1.3.6.1.2.1.6.12" instance="0" alias="tcpRetransSegs" type="Counter32"/>
+		                 <mibObj oid=".1.3.6.1.2.1.6.14" instance="0" alias="tcpInErrors" type="Counter32"/>
+		                 <mibObj oid=".1.3.6.1.2.1.6.15" instance="0" alias="tcpOutRsts" type="Counter32"/>
+ 			</group>
+             		<group name="mib2-ups-rfc1628" ifType="ignore">
+				<mibObj oid=".1.3.6.1.2.1.33.1.2.2" instance="0" alias="upsSecondsOnBattery" type="Integer32" />
+				<mibObj oid=".1.3.6.1.2.1.33.1.2.3" instance="0" alias="upsEstMinsRemain" type="Integer32" />
+				<mibObj oid=".1.3.6.1.2.1.33.1.2.4" instance="0" alias="upsEstChargeRemain" type="Integer32" />
+				<mibObj oid=".1.3.6.1.2.1.33.1.2.5" instance="0" alias="upsBatteryVoltage" type="Integer32" />
+				<mibObj oid=".1.3.6.1.2.1.33.1.2.6" instance="0" alias="upsBatteryCurrent" type="Integer32" />
+				<mibObj oid=".1.3.6.1.2.1.33.1.2.7" instance="0" alias="upsBatteryTemp" type="Integer32" />
+ 			</group>
                         <group  name = "printer-usage" ifType = "ignore">
                                 <mibObj oid="1.3.6.1.2.1.43.10.2.1.4.1"    instance="1" alias="lifeCount" type="Gauge" />
                                 <mibObj oid="1.3.6.1.2.1.43.10.2.1.5.1"    instance="1" alias="powerOnCount" type="Gauge" />
                         </group>
-			<group name = "windows-host" ifType = "ignore">
-				<mibObj oid=".1.3.6.1.2.1.25.3.3.1.2" instance="1" alias="cpuPercentBusy" type="integer" />
-				<!-- Drive information is from the hrStorage table. -->
-				<!-- I'm cheating and assuming that the second and third -->
-				<!-- entries refer to Drive_C and Drive_D -->
-				<mibObj oid=".1.3.6.1.2.1.25.2.3.1.4" instance="2" alias="unitsDriveC" type="integer" />
-				<mibObj oid=".1.3.6.1.2.1.25.2.3.1.5" instance="2" alias="sizeDriveC" type="integer" />
-				<mibObj oid=".1.3.6.1.2.1.25.2.3.1.6" instance="2" alias="usedDriveC" type="integer" />
-				<mibObj oid=".1.3.6.1.2.1.25.2.3.1.4" instance="3" alias="unitsDriveD" type="integer" />
-				<mibObj oid=".1.3.6.1.2.1.25.2.3.1.5" instance="3" alias="sizeDriveD" type="integer" />
-				<mibObj oid=".1.3.6.1.2.1.25.2.3.1.6" instance="3" alias="usedDriveD" type="integer" />
-				<!-- Memory in KBytes -->
-				<mibObj oid=".1.3.6.1.2.1.25.2.2" instance="0" alias="memorySize" type="integer" />
-			</group>
+                        <group name = "windows-host" ifType = "ignore">
+                                <mibObj oid=".1.3.6.1.2.1.25.3.3.1.2" instance="1" alias="cpuPercentBusy" type="integer" />
+                                <!-- Drive information is from the hrStorage table. -->
+                                <!-- I'm cheating and assuming that the second and third -->
+                                <!-- entries refer to Drive_C and Drive_D -->
+                                <mibObj oid=".1.3.6.1.2.1.25.2.3.1.3" instance="2" alias="hrDescDisk2"  type="string"/>
+                                <mibObj oid=".1.3.6.1.2.1.25.2.3.1.4" instance="2" alias="hrUnitsDisk2" type="integer" />
+                                <mibObj oid=".1.3.6.1.2.1.25.2.3.1.5" instance="2" alias="hrSizeDisk2" type="integer" />
+                                <mibObj oid=".1.3.6.1.2.1.25.2.3.1.6" instance="2" alias="hrUsedDisk2" type="integer" />
+                                <mibObj oid=".1.3.6.1.2.1.25.2.3.1.3" instance="3" alias="hrDescDisk3"  type="string"/>
+                                <mibObj oid=".1.3.6.1.2.1.25.2.3.1.4" instance="3" alias="hrUnitsDisk3" type="integer" />
+                                <mibObj oid=".1.3.6.1.2.1.25.2.3.1.5" instance="3" alias="hrSizeDisk3" type="integer" />
+                                <mibObj oid=".1.3.6.1.2.1.25.2.3.1.6" instance="3" alias="hrUsedDisk3" type="integer" />
+                                <mibObj oid=".1.3.6.1.2.1.25.2.3.1.3" instance="4" alias="hrDescDisk4"  type="string"/>
+                                <mibObj oid=".1.3.6.1.2.1.25.2.3.1.4" instance="4" alias="hrUnitsDisk4" type="integer" />
+                                <mibObj oid=".1.3.6.1.2.1.25.2.3.1.5" instance="4" alias="hrSizeDisk4" type="integer" />
+                                <mibObj oid=".1.3.6.1.2.1.25.2.3.1.6" instance="4" alias="hrUsedDisk4" type="integer" />
+                                <!-- Memory in KBytes -->
+                                <mibObj oid=".1.3.6.1.2.1.25.2.2" instance="0" alias="memorySize" type="integer" />
+                        </group>
 
 			<!-- APC mibs -->
                         <group  name = "APC" ifType = "ignore">
@@ -336,8 +363,16 @@
 
 			<!-- MGE UPS MIBs -->
 			<group name = "mge.max.stats.1" ifType="ignore">
-				<mibObj oid=".1.3.6.1.4.1.705.1.6.2.1.5"    instance="1" alias="inVmax" type="Gauge32" />
-				<mibObj oid=".1.3.6.1.4.1.705.1.6.2.1.4"    instance="1" alias="inVmin" type="Gauge32" />
+				<mibObj oid=".1.3.6.1.4.1.705.1.5.1"  instance="0" alias="mgeBattRemainTime" type="INTEGER" />
+				<mibObj oid=".1.3.6.1.4.1.705.1.5.2"  instance="0" alias="mgeBattLevel" type="INTEGER" /> 
+				<mibObj oid=".1.3.6.1.4.1.705.1.5.3"  instance="0" alias="mgeBattRechargeTime" type="INTEGER" />
+				<mibObj oid=".1.3.6.1.4.1.705.1.5.4"  instance="0" alias="mgeBattRechargeLvl" type="INTEGER" />
+				<mibObj oid=".1.3.6.1.4.1.705.1.5.5"  instance="0" alias="mgeBattVoltage" type="INTEGER" /> 
+				<mibObj oid=".1.3.6.1.4.1.705.1.5.6"  instance="0" alias="mgeBattCurrent" type="INTEGER" /> 
+				<mibObj oid=".1.3.6.1.4.1.705.1.5.7"  instance="0" alias="mgeBattTemperature" type="INTEGER" />
+				<mibObj oid=".1.3.6.1.4.1.705.1.5.8"  instance="0" alias="mgeBattFullRechTime" type="INTEGER" />
+				<mibObj oid=".1.3.6.1.4.1.705.1.8.1"  instance="0" alias="mgeEnvAmbientTemp" type="INTEGER" />
+				<mibObj oid=".1.3.6.1.4.1.705.1.8.2"  instance="0" alias="mgeEnvAmbientHumid" type="INTEGER" />
 			</group>
 
 			<!-- Microsoft MIBs -->
@@ -359,14 +394,34 @@
                         </group>
 
 			<!-- Net-SNMP MIBs -->
-                        <group  name = "net-snmp-root-disk" ifType = "ignore">
-                                <mibObj oid=".1.3.6.1.4.1.2021.9.1.6" instance="1" alias="ns-disk-root-tot"    type="gauge"/>
-                                <mibObj oid=".1.3.6.1.4.1.2021.9.1.7" instance="1" alias="ns-disk-root-avail"    type="gauge"/>
-                                <mibObj oid=".1.3.6.1.4.1.2021.9.1.8" instance="1" alias="ns-disk-root-used"    type="gauge"/>
-                                <mibObj oid=".1.3.6.1.4.1.2021.9.1.9" instance="1" alias="ns-disk-root-pct"    type="gauge"/>
+                        <group  name = "net-snmp-disk" ifType = "ignore">
+                                <mibObj oid=".1.3.6.1.4.1.2021.9.1.2" instance="1" alias="ns-disk-1-name"    type="string"/>
+                                <mibObj oid=".1.3.6.1.4.1.2021.9.1.6" instance="1" alias="ns-disk-1-tot"    type="gauge"/>
+                                <mibObj oid=".1.3.6.1.4.1.2021.9.1.7" instance="1" alias="ns-disk-1-avail"    type="gauge"/>
+                                <mibObj oid=".1.3.6.1.4.1.2021.9.1.8" instance="1" alias="ns-disk-1-used"    type="gauge"/>
+                                <mibObj oid=".1.3.6.1.4.1.2021.9.1.9" instance="1" alias="ns-disk-1-pct"    type="gauge"/>
+                                <mibObj oid=".1.3.6.1.4.1.2021.9.1.2" instance="2" alias="ns-disk-2-name"    type="string"/>
+                                <mibObj oid=".1.3.6.1.4.1.2021.9.1.6" instance="2" alias="ns-disk-2-tot"    type="gauge"/>
+                                <mibObj oid=".1.3.6.1.4.1.2021.9.1.7" instance="2" alias="ns-disk-2-avail"    type="gauge"/>
+                                <mibObj oid=".1.3.6.1.4.1.2021.9.1.8" instance="2" alias="ns-disk-2-used"    type="gauge"/>
+                                <mibObj oid=".1.3.6.1.4.1.2021.9.1.9" instance="2" alias="ns-disk-2-pct"    type="gauge"/>
+                                <mibObj oid=".1.3.6.1.4.1.2021.9.1.2" instance="3" alias="ns-disk-3-name"    type="string"/>
+                                <mibObj oid=".1.3.6.1.4.1.2021.9.1.6" instance="3" alias="ns-disk-3-tot"    type="gauge"/>
+                                <mibObj oid=".1.3.6.1.4.1.2021.9.1.7" instance="3" alias="ns-disk-3-avail"    type="gauge"/>
+                                <mibObj oid=".1.3.6.1.4.1.2021.9.1.8" instance="3" alias="ns-disk-3-used"    type="gauge"/>
+                                <mibObj oid=".1.3.6.1.4.1.2021.9.1.9" instance="3" alias="ns-disk-3-pct"    type="gauge"/>
+                                <mibObj oid=".1.3.6.1.4.1.2021.9.1.2" instance="4" alias="ns-disk-4-name"    type="string"/>
+                                <mibObj oid=".1.3.6.1.4.1.2021.9.1.6" instance="4" alias="ns-disk-4-tot"    type="gauge"/>
+                                <mibObj oid=".1.3.6.1.4.1.2021.9.1.7" instance="4" alias="ns-disk-4-avail"    type="gauge"/>
+                                <mibObj oid=".1.3.6.1.4.1.2021.9.1.8" instance="4" alias="ns-disk-4-used"    type="gauge"/>
+                                <mibObj oid=".1.3.6.1.4.1.2021.9.1.9" instance="4" alias="ns-disk-4-pct"    type="gauge"/>
+                                <mibObj oid=".1.3.6.1.4.1.2021.9.1.2" instance="5" alias="ns-disk-5-name"    type="string"/>
+                                <mibObj oid=".1.3.6.1.4.1.2021.9.1.6" instance="5" alias="ns-disk-5-tot"    type="gauge"/>
+                                <mibObj oid=".1.3.6.1.4.1.2021.9.1.7" instance="5" alias="ns-disk-5-avail"    type="gauge"/>
+                                <mibObj oid=".1.3.6.1.4.1.2021.9.1.8" instance="5" alias="ns-disk-5-used"    type="gauge"/>
+                                <mibObj oid=".1.3.6.1.4.1.2021.9.1.9" instance="5" alias="ns-disk-5-pct"    type="gauge"/>
                         </group>
-			<!-- The above group assumes that the first disk directive in
-			     the snmpd.conf file is for root -->
+
 			<group name="ucd-loadavg" ifType="ignore">
 				<mibObj oid=".1.3.6.1.4.1.2021.10.1.5" instance="1" alias="loadavg1" type="integer" /> 
 				<mibObj oid=".1.3.6.1.4.1.2021.10.1.5" instance="2" alias="loadavg5" type="integer" /> 
@@ -466,6 +521,140 @@
                         </group>
 
 			<!-- SNMP Informant MIBs -->
+                        <group  name="snmpinformant-cpu" ifType="ignore">
+				<mibObj oid=".1.3.6.1.4.1.9600.1.1.5.1.2.1" instance="48" alias="sinfCpuPtDPCTime0" type="Gauge32" />
+				<mibObj oid=".1.3.6.1.4.1.9600.1.1.5.1.3.1" instance="48" alias="sinfCpuPtIntTime0" type="Gauge32" />
+				<mibObj oid=".1.3.6.1.4.1.9600.1.1.5.1.4.1" instance="48" alias="sinfCpuPtPrivTime0" type="Gauge32" />
+				<mibObj oid=".1.3.6.1.4.1.9600.1.1.5.1.5.1" instance="48" alias="sinfCpuPtProcTime0" type="Gauge32" />
+				<mibObj oid=".1.3.6.1.4.1.9600.1.1.5.1.6.1" instance="48" alias="sinfCpuPtUserTime0" type="Gauge32" />
+				<mibObj oid=".1.3.6.1.4.1.9600.1.1.5.1.7.1" instance="48" alias="sinfCpuAPCBypPSec0" type="Gauge32" />
+				<mibObj oid=".1.3.6.1.4.1.9600.1.1.5.1.8.1" instance="48" alias="sinfCpuDPCBypPSec0" type="Gauge32" />
+				<mibObj oid=".1.3.6.1.4.1.9600.1.1.5.1.9.1" instance="48" alias="sinfCpuDPCRate0" type="Gauge32" />
+				<mibObj oid=".1.3.6.1.4.1.9600.1.1.5.1.10.1" instance="48" alias="sinfCpuDPCsQPSec0" type="Gauge32" />
+				<mibObj oid=".1.3.6.1.4.1.9600.1.1.5.1.11.1" instance="48" alias="sinfCpuIntPSec0" type="Gauge32" />
+				<mibObj oid=".1.3.6.1.4.1.9600.1.1.5.1.2.1" instance="49" alias="sinfCpuPtDPCTime1" type="Gauge32" />
+				<mibObj oid=".1.3.6.1.4.1.9600.1.1.5.1.3.1" instance="49" alias="sinfCpuPtIntTime1" type="Gauge32" />
+				<mibObj oid=".1.3.6.1.4.1.9600.1.1.5.1.4.1" instance="49" alias="sinfCpuPtPrivTime1" type="Gauge32" />
+				<mibObj oid=".1.3.6.1.4.1.9600.1.1.5.1.5.1" instance="49" alias="sinfCpuPtProcTime1" type="Gauge32" />
+				<mibObj oid=".1.3.6.1.4.1.9600.1.1.5.1.6.1" instance="49" alias="sinfCpuPtUserTime1" type="Gauge32" />
+				<mibObj oid=".1.3.6.1.4.1.9600.1.1.5.1.7.1" instance="49" alias="sinfCpuAPCBypPSec1" type="Gauge32" />
+				<mibObj oid=".1.3.6.1.4.1.9600.1.1.5.1.8.1" instance="49" alias="sinfCpuDPCBypPSec1" type="Gauge32" />
+				<mibObj oid=".1.3.6.1.4.1.9600.1.1.5.1.9.1" instance="49" alias="sinfCpuDPCRate1" type="Gauge32" />
+				<mibObj oid=".1.3.6.1.4.1.9600.1.1.5.1.10.1" instance="49" alias="sinfCpuDPCsQPSec1" type="Gauge32" />
+				<mibObj oid=".1.3.6.1.4.1.9600.1.1.5.1.11.1" instance="49" alias="sinfCpuIntPSec1" type="Gauge32" />
+				<mibObj oid=".1.3.6.1.4.1.9600.1.1.5.1.2.1" instance="50" alias="sinfCpuPtDPCTime2" type="Gauge32" />
+				<mibObj oid=".1.3.6.1.4.1.9600.1.1.5.1.3.1" instance="50" alias="sinfCpuPtIntTime2" type="Gauge32" />
+				<mibObj oid=".1.3.6.1.4.1.9600.1.1.5.1.4.1" instance="50" alias="sinfCpuPtPrivTime2" type="Gauge32" />
+				<mibObj oid=".1.3.6.1.4.1.9600.1.1.5.1.5.1" instance="50" alias="sinfCpuPtProcTime2" type="Gauge32" />
+				<mibObj oid=".1.3.6.1.4.1.9600.1.1.5.1.6.1" instance="50" alias="sinfCpuPtUserTime2" type="Gauge32" />
+				<mibObj oid=".1.3.6.1.4.1.9600.1.1.5.1.7.1" instance="50" alias="sinfCpuAPCBypPSec2" type="Gauge32" />
+				<mibObj oid=".1.3.6.1.4.1.9600.1.1.5.1.8.1" instance="50" alias="sinfCpuDPCBypPSec2" type="Gauge32" />
+				<mibObj oid=".1.3.6.1.4.1.9600.1.1.5.1.9.1" instance="50" alias="sinfCpuDPCRate2" type="Gauge32" />
+				<mibObj oid=".1.3.6.1.4.1.9600.1.1.5.1.10.1" instance="50" alias="sinfCpuDPCsQPSec2" type="Gauge32" />
+				<mibObj oid=".1.3.6.1.4.1.9600.1.1.5.1.11.1" instance="50" alias="sinfCpuIntPSec2" type="Gauge32" />
+				<mibObj oid=".1.3.6.1.4.1.9600.1.1.5.1.2.1" instance="51" alias="sinfCpuPtDPCTime3" type="Gauge32" />
+				<mibObj oid=".1.3.6.1.4.1.9600.1.1.5.1.3.1" instance="51" alias="sinfCpuPtIntTime3" type="Gauge32" />
+				<mibObj oid=".1.3.6.1.4.1.9600.1.1.5.1.4.1" instance="51" alias="sinfCpuPtPrivTime3" type="Gauge32" />
+				<mibObj oid=".1.3.6.1.4.1.9600.1.1.5.1.5.1" instance="51" alias="sinfCpuPtProcTime3" type="Gauge32" />
+				<mibObj oid=".1.3.6.1.4.1.9600.1.1.5.1.6.1" instance="51" alias="sinfCpuPtUserTime3" type="Gauge32" />
+				<mibObj oid=".1.3.6.1.4.1.9600.1.1.5.1.7.1" instance="51" alias="sinfCpuAPCBypPSec3" type="Gauge32" />
+				<mibObj oid=".1.3.6.1.4.1.9600.1.1.5.1.8.1" instance="51" alias="sinfCpuDPCBypPSec3" type="Gauge32" />
+				<mibObj oid=".1.3.6.1.4.1.9600.1.1.5.1.9.1" instance="51" alias="sinfCpuDPCRate3" type="Gauge32" />
+				<mibObj oid=".1.3.6.1.4.1.9600.1.1.5.1.10.1" instance="51" alias="sinfCpuDPCsQPSec3" type="Gauge32" />
+				<mibObj oid=".1.3.6.1.4.1.9600.1.1.5.1.11.1" instance="51" alias="sinfCpuIntPSec3" type="Gauge32" />
+				<mibObj oid=".1.3.6.1.4.1.9600.1.1.5.1.2.6.95.84.111.116.97" instance="108" alias="sinfCpuPtDPCTimeTl" type="Gauge32" />
+				<mibObj oid=".1.3.6.1.4.1.9600.1.1.5.1.3.6.95.84.111.116.97" instance="108" alias="sinfCpuPtIntTimeTl" type="Gauge32" />
+				<mibObj oid=".1.3.6.1.4.1.9600.1.1.5.1.4.6.95.84.111.116.97" instance="108" alias="sinfCpuPtPrivTimeTl" type="Gauge32" />
+				<mibObj oid=".1.3.6.1.4.1.9600.1.1.5.1.5.6.95.84.111.116.97" instance="108" alias="sinfCpuPtProcTimeTl" type="Gauge32" />
+				<mibObj oid=".1.3.6.1.4.1.9600.1.1.5.1.6.6.95.84.111.116.97" instance="108" alias="sinfCpuPtUserTimeTl" type="Gauge32" />
+				<mibObj oid=".1.3.6.1.4.1.9600.1.1.5.1.7.6.95.84.111.116.97" instance="108" alias="sinfCpuAPCBypPSecTl" type="Gauge32" />
+				<mibObj oid=".1.3.6.1.4.1.9600.1.1.5.1.8.6.95.84.111.116.97" instance="108" alias="sinfCpuDPCBypPSecTl" type="Gauge32" />
+				<mibObj oid=".1.3.6.1.4.1.9600.1.1.5.1.9.6.95.84.111.116.97" instance="108" alias="sinfCpuDPCRateTl" type="Gauge32" />
+				<mibObj oid=".1.3.6.1.4.1.9600.1.1.5.1.10.6.95.84.111.116.97" instance="108" alias="sinfCpuDPCsQPSecTl" type="Gauge32" />
+				<mibObj oid=".1.3.6.1.4.1.9600.1.1.5.1.11.6.95.84.111.116.97" instance="108" alias="sinfCpuIntPSecTl" type="Gauge32" />
+			</group>
+                        <group  name="snmpinformant-disk" ifType="ignore">
+				<mibObj oid=".1.3.6.1.4.1.9600.1.1.1.1.2.2.67" instance="58" alias="sinfDskPtReadTimeC" type="Gauge32" />
+				<mibObj oid=".1.3.6.1.4.1.9600.1.1.1.1.3.2.67" instance="58" alias="sinfDskPtDiskTimeC" type="Gauge32" />
+				<mibObj oid=".1.3.6.1.4.1.9600.1.1.1.1.4.2.67" instance="58" alias="sinfDskPtWrtTimeC" type="Gauge32" />
+				<mibObj oid=".1.3.6.1.4.1.9600.1.1.1.1.5.2.67" instance="58" alias="sinfDskPtFreeSpcC" type="Gauge32" />
+				<mibObj oid=".1.3.6.1.4.1.9600.1.1.1.1.6.2.67" instance="58" alias="sinfDskPtIdleTimeC" type="Gauge32" />
+				<mibObj oid=".1.3.6.1.4.1.9600.1.1.1.1.7.2.67" instance="58" alias="sinfDskAvgQLgthC" type="Gauge32" />
+				<mibObj oid=".1.3.6.1.4.1.9600.1.1.1.1.8.2.67" instance="58" alias="sinfDskAvgRdQLgthC" type="Gauge32" />
+				<mibObj oid=".1.3.6.1.4.1.9600.1.1.1.1.9.2.67" instance="58" alias="sinfDskAvgWtQLgthC" type="Gauge32" />
+				<mibObj oid=".1.3.6.1.4.1.9600.1.1.1.1.10.2.67" instance="58" alias="sinfDskAvgSecRdC" type="Gauge32" />
+				<mibObj oid=".1.3.6.1.4.1.9600.1.1.1.1.11.2.67" instance="58" alias="sinfDskAvgSecTranC" type="Gauge32" />
+				<mibObj oid=".1.3.6.1.4.1.9600.1.1.1.1.12.2.67" instance="58" alias="sinfDskAvgSecWtC" type="Gauge32" />
+				<mibObj oid=".1.3.6.1.4.1.9600.1.1.1.1.13.2.67" instance="58" alias="sinfDskCurrQLgthC" type="Gauge32" />
+				<mibObj oid=".1.3.6.1.4.1.9600.1.1.1.1.14.2.67" instance="58" alias="sinfDskBytesSecC" type="Gauge32" />
+				<mibObj oid=".1.3.6.1.4.1.9600.1.1.1.1.15.2.67" instance="58" alias="sinfDskRdByteSecC" type="Gauge32" />
+				<mibObj oid=".1.3.6.1.4.1.9600.1.1.1.1.16.2.67" instance="58" alias="sinfDskRdsSecC" type="Gauge32" />
+				<mibObj oid=".1.3.6.1.4.1.9600.1.1.1.1.17.2.67" instance="58" alias="sinfDskTransSecC" type="Gauge32" />
+				<mibObj oid=".1.3.6.1.4.1.9600.1.1.1.1.18.2.67" instance="58" alias="sinfDskWtByteSecC" type="Gauge32" />
+				<mibObj oid=".1.3.6.1.4.1.9600.1.1.1.1.19.2.67" instance="58" alias="sinfDskWtsPerSecC" type="Gauge32" />
+				<mibObj oid=".1.3.6.1.4.1.9600.1.1.1.1.20.2.67" instance="58" alias="sinfDskFreeMBC" type="Gauge32" />
+				<mibObj oid=".1.3.6.1.4.1.9600.1.1.1.1.21.2.67" instance="58" alias="sinfDskSplitIOSecC" type="Gauge32" />
+				<mibObj oid=".1.3.6.1.4.1.9600.1.1.1.1.2.2.68" instance="58" alias="sinfDskPtReadTimeD" type="Gauge32" />
+				<mibObj oid=".1.3.6.1.4.1.9600.1.1.1.1.3.2.68" instance="58" alias="sinfDskPtDiskTimeD" type="Gauge32" />
+				<mibObj oid=".1.3.6.1.4.1.9600.1.1.1.1.4.2.68" instance="58" alias="sinfDskPtWrtTimeD" type="Gauge32" />
+				<mibObj oid=".1.3.6.1.4.1.9600.1.1.1.1.5.2.68" instance="58" alias="sinfDskPtFreeSpcD" type="Gauge32" />
+				<mibObj oid=".1.3.6.1.4.1.9600.1.1.1.1.6.2.68" instance="58" alias="sinfDskPtIdleTimeD" type="Gauge32" />
+				<mibObj oid=".1.3.6.1.4.1.9600.1.1.1.1.7.2.68" instance="58" alias="sinfDskAvgQLgthD" type="Gauge32" />
+				<mibObj oid=".1.3.6.1.4.1.9600.1.1.1.1.8.2.68" instance="58" alias="sinfDskAvgRdQLgthD" type="Gauge32" />
+				<mibObj oid=".1.3.6.1.4.1.9600.1.1.1.1.9.2.68" instance="58" alias="sinfDskAvgWtQLgthD" type="Gauge32" />
+				<mibObj oid=".1.3.6.1.4.1.9600.1.1.1.1.10.2.68" instance="58" alias="sinfDskAvgSecRdD" type="Gauge32" />
+				<mibObj oid=".1.3.6.1.4.1.9600.1.1.1.1.11.2.68" instance="58" alias="sinfDskAvgSecTranD" type="Gauge32" />
+				<mibObj oid=".1.3.6.1.4.1.9600.1.1.1.1.12.2.68" instance="58" alias="sinfDskAvgSecWtD" type="Gauge32" />
+				<mibObj oid=".1.3.6.1.4.1.9600.1.1.1.1.13.2.68" instance="58" alias="sinfDskCurrQLgthD" type="Gauge32" />
+				<mibObj oid=".1.3.6.1.4.1.9600.1.1.1.1.14.2.68" instance="58" alias="sinfDskBytesSecD" type="Gauge32" />
+				<mibObj oid=".1.3.6.1.4.1.9600.1.1.1.1.15.2.68" instance="58" alias="sinfDskRdByteSecD" type="Gauge32" />
+				<mibObj oid=".1.3.6.1.4.1.9600.1.1.1.1.16.2.68" instance="58" alias="sinfDskRdsSecD" type="Gauge32" />
+				<mibObj oid=".1.3.6.1.4.1.9600.1.1.1.1.17.2.68" instance="58" alias="sinfDskTransSecD" type="Gauge32" />
+				<mibObj oid=".1.3.6.1.4.1.9600.1.1.1.1.18.2.68" instance="58" alias="sinfDskWtByteSecD" type="Gauge32" />
+				<mibObj oid=".1.3.6.1.4.1.9600.1.1.1.1.19.2.68" instance="58" alias="sinfDskWtsPerSecD" type="Gauge32" />
+				<mibObj oid=".1.3.6.1.4.1.9600.1.1.1.1.20.2.68" instance="58" alias="sinfDskFreeMBD" type="Gauge32" />
+				<mibObj oid=".1.3.6.1.4.1.9600.1.1.1.1.21.2.68" instance="58" alias="sinfDskSplitIOSecD" type="Gauge32" />
+				<mibObj oid=".1.3.6.1.4.1.9600.1.1.1.1.2.2.69" instance="58" alias="sinfDskPtReadTimeE" type="Gauge32" />
+				<mibObj oid=".1.3.6.1.4.1.9600.1.1.1.1.3.2.69" instance="58" alias="sinfDskPtDiskTimeE" type="Gauge32" />
+				<mibObj oid=".1.3.6.1.4.1.9600.1.1.1.1.4.2.69" instance="58" alias="sinfDskPtWrtTimeE" type="Gauge32" />
+				<mibObj oid=".1.3.6.1.4.1.9600.1.1.1.1.5.2.69" instance="58" alias="sinfDskPtFreeSpcE" type="Gauge32" />
+				<mibObj oid=".1.3.6.1.4.1.9600.1.1.1.1.6.2.69" instance="58" alias="sinfDskPtIdleTimeE" type="Gauge32" />
+				<mibObj oid=".1.3.6.1.4.1.9600.1.1.1.1.7.2.69" instance="58" alias="sinfDskAvgQLgthE" type="Gauge32" />
+				<mibObj oid=".1.3.6.1.4.1.9600.1.1.1.1.8.2.69" instance="58" alias="sinfDskAvgRdQLgthE" type="Gauge32" />
+				<mibObj oid=".1.3.6.1.4.1.9600.1.1.1.1.9.2.69" instance="58" alias="sinfDskAvgWtQLgthE" type="Gauge32" />
+				<mibObj oid=".1.3.6.1.4.1.9600.1.1.1.1.10.2.69" instance="58" alias="sinfDskAvgSecRdE" type="Gauge32" />
+				<mibObj oid=".1.3.6.1.4.1.9600.1.1.1.1.11.2.69" instance="58" alias="sinfDskAvgSecTranE" type="Gauge32" />
+				<mibObj oid=".1.3.6.1.4.1.9600.1.1.1.1.12.2.69" instance="58" alias="sinfDskAvgSecWtE" type="Gauge32" />
+				<mibObj oid=".1.3.6.1.4.1.9600.1.1.1.1.13.2.69" instance="58" alias="sinfDskCurrQLgthE" type="Gauge32" />
+				<mibObj oid=".1.3.6.1.4.1.9600.1.1.1.1.14.2.69" instance="58" alias="sinfDskBytesSecE" type="Gauge32" />
+				<mibObj oid=".1.3.6.1.4.1.9600.1.1.1.1.15.2.69" instance="58" alias="sinfDskRdByteSecE" type="Gauge32" />
+				<mibObj oid=".1.3.6.1.4.1.9600.1.1.1.1.16.2.69" instance="58" alias="sinfDskRdsSecE" type="Gauge32" />
+				<mibObj oid=".1.3.6.1.4.1.9600.1.1.1.1.17.2.69" instance="58" alias="sinfDskTransSecE" type="Gauge32" />
+				<mibObj oid=".1.3.6.1.4.1.9600.1.1.1.1.18.2.69" instance="58" alias="sinfDskWtByteSecE" type="Gauge32" />
+				<mibObj oid=".1.3.6.1.4.1.9600.1.1.1.1.19.2.69" instance="58" alias="sinfDskWtsPerSecE" type="Gauge32" />
+				<mibObj oid=".1.3.6.1.4.1.9600.1.1.1.1.20.2.69" instance="58" alias="sinfDskFreeMBE" type="Gauge32" />
+				<mibObj oid=".1.3.6.1.4.1.9600.1.1.1.1.21.2.69" instance="58" alias="sinfDskSplitIOSecE" type="Gauge32" />
+				<mibObj oid=".1.3.6.1.4.1.9600.1.1.1.1.2.6.95.84.111.116.97" instance="108" alias="sinfDskPtReadTimeTl" type="Gauge32" />
+				<mibObj oid=".1.3.6.1.4.1.9600.1.1.1.1.3.6.95.84.111.116.97" instance="108" alias="sinfDskPtDiskTimeTl" type="Gauge32" />
+				<mibObj oid=".1.3.6.1.4.1.9600.1.1.1.1.4.6.95.84.111.116.97" instance="108" alias="sinfDskPtWrtTimeTl" type="Gauge32" />
+				<mibObj oid=".1.3.6.1.4.1.9600.1.1.1.1.5.6.95.84.111.116.97" instance="108" alias="sinfDskPtFreeSpcTl" type="Gauge32" />
+				<mibObj oid=".1.3.6.1.4.1.9600.1.1.1.1.6.6.95.84.111.116.97" instance="108" alias="sinfDskPtIdleTimeTl" type="Gauge32" />
+				<mibObj oid=".1.3.6.1.4.1.9600.1.1.1.1.7.6.95.84.111.116.97" instance="108" alias="sinfDskAvgQLgthTl" type="Gauge32" />
+				<mibObj oid=".1.3.6.1.4.1.9600.1.1.1.1.8.6.95.84.111.116.97" instance="108" alias="sinfDskAvgRdQLgthTl" type="Gauge32" />
+				<mibObj oid=".1.3.6.1.4.1.9600.1.1.1.1.9.6.95.84.111.116.97" instance="108" alias="sinfDskAvgWtQLgthTl" type="Gauge32" />
+				<mibObj oid=".1.3.6.1.4.1.9600.1.1.1.1.10.6.95.84.111.116.97" instance="108" alias="sinfDskAvgSecRdTl" type="Gauge32" />
+				<mibObj oid=".1.3.6.1.4.1.9600.1.1.1.1.11.6.95.84.111.116.97" instance="108" alias="sinfDskAvgSecTranTl" type="Gauge32" />
+				<mibObj oid=".1.3.6.1.4.1.9600.1.1.1.1.12.6.95.84.111.116.97" instance="108" alias="sinfDskAvgSecWtTl" type="Gauge32" />
+				<mibObj oid=".1.3.6.1.4.1.9600.1.1.1.1.13.6.95.84.111.116.97" instance="108" alias="sinfDskCurrQLgthTl" type="Gauge32" />
+				<mibObj oid=".1.3.6.1.4.1.9600.1.1.1.1.14.6.95.84.111.116.97" instance="108" alias="sinfDskBytesSecTl" type="Gauge32" />
+				<mibObj oid=".1.3.6.1.4.1.9600.1.1.1.1.15.6.95.84.111.116.97" instance="108" alias="sinfDskRdByteSecTl" type="Gauge32" />
+				<mibObj oid=".1.3.6.1.4.1.9600.1.1.1.1.16.6.95.84.111.116.97" instance="108" alias="sinfDskRdsSecTl" type="Gauge32" />
+				<mibObj oid=".1.3.6.1.4.1.9600.1.1.1.1.17.6.95.84.111.116.97" instance="108" alias="sinfDskTransSecTl" type="Gauge32" />
+				<mibObj oid=".1.3.6.1.4.1.9600.1.1.1.1.18.6.95.84.111.116.97" instance="108" alias="sinfDskWtByteSecTl" type="Gauge32" />
+				<mibObj oid=".1.3.6.1.4.1.9600.1.1.1.1.19.6.95.84.111.116.97" instance="108" alias="sinfDskWtsPerSecTl" type="Gauge32" />
+				<mibObj oid=".1.3.6.1.4.1.9600.1.1.1.1.20.6.95.84.111.116.97" instance="108" alias="sinfDskFreeMBTl" type="Gauge32" />
+				<mibObj oid=".1.3.6.1.4.1.9600.1.1.1.1.21.6.95.84.111.116.97" instance="108" alias="sinfDskSplitIOSecTl" type="Gauge32" />
+                        </group>
                         <group  name="snmpinformant-memory" ifType="ignore">
                                 <mibObj oid=".1.3.6.1.4.1.9600.1.1.2.3" instance="0" alias="sinfMemAvailMB" type="Gauge" />
                                 <mibObj oid=".1.3.6.1.4.1.9600.1.1.2.4" instance="0" alias="sinfMemComBytes" type="Gauge" />
@@ -506,6 +695,7 @@
 				<sysoidMask>.1.3.6.1.4.1.</sysoidMask>
 				<collect>
 					<includeGroup>mib2-interfaces</includeGroup>
+					<includeGroup>mib2-tcp</includeGroup>
 				</collect>
 			</systemDef>		
 
@@ -513,6 +703,7 @@
 				<sysoidMask>.1.3.6.1.4.1.318.</sysoidMask>
                                 <collect>
                                         <includeGroup>APC</includeGroup>
+                                        <includeGroup>mib2-ups-rfc1628</includeGroup>
 				</collect>
                         </systemDef>
 			
@@ -616,6 +807,14 @@
                                 </collect>
                         </systemDef>
 
+			<systemDef name = "MGE UPS">
+				<sysoidMask>.1.3.6.1.4.1.705.</sysoidMask>
+                                <collect>
+                                        <includeGroup>mib2-ups-rfc1628</includeGroup>
+                                        <includeGroup>mge.max.stats.1</includeGroup>
+				</collect>
+                        </systemDef>
+
 			<systemDef name = "Microsoft Windows NT/2000">
 				<sysoidMask>.1.3.6.1.4.1.311.1.1.3.1.</sysoidMask>
 				<collect>
@@ -624,6 +823,8 @@
 					<includeGroup>compaq-insight-manager-stats</includeGroup>
 					<includeGroup>domino-stats</includeGroup>
                                         <includeGroup>microsoft-http</includeGroup>
+                                        <includeGroup>snmpinformant-cpu</includeGroup>
+                                        <includeGroup>snmpinformant-disk</includeGroup>
                                         <includeGroup>snmpinformant-memory</includeGroup>
                                         <includeGroup>snmpinformant-processes</includeGroup>
 					<includeGroup>windows-host</includeGroup>
@@ -636,7 +837,7 @@
 					<includeGroup>mib2-host-resources-storage</includeGroup> 
 					<includeGroup>mib2-host-resources-system</includeGroup> 
 					<includeGroup>mib2-host-resources-memory</includeGroup> 
-					<includeGroup>net-snmp-root-disk</includeGroup> 
+					<includeGroup>net-snmp-disk</includeGroup> 
 					<includeGroup>ucd-loadavg</includeGroup> 
 					<includeGroup>ucd-memory</includeGroup> 
 					<includeGroup>ucd-sysstat</includeGroup> 
@@ -649,7 +850,7 @@
 					<includeGroup>mib2-host-resources-storage</includeGroup> 
 					<includeGroup>mib2-host-resources-system</includeGroup> 
 					<includeGroup>mib2-host-resources-memory</includeGroup> 
-					<includeGroup>net-snmp-root-disk</includeGroup> 
+					<includeGroup>net-snmp-disk</includeGroup> 
 					<includeGroup>ucd-loadavg</includeGroup> 
 					<includeGroup>ucd-memory</includeGroup> 
 					<includeGroup>ucd-sysstat</includeGroup> 

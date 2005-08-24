@@ -143,11 +143,6 @@ final class SnmpCollector implements ServiceCollector {
                                                                             // interfaces.ifNumber
 
     /**
-     * RRD data source name max length.
-     */
-    private static final int MAX_DS_NAME_LENGTH = 19;
-
-    /**
      * Valid values for the 'snmpStorageFlag' attribute in datacollection-config
      * xml file.
      * 
@@ -159,8 +154,6 @@ final class SnmpCollector implements ServiceCollector {
     private static String SNMP_STORAGE_ALL = "all";
 
     private static String SNMP_STORAGE_SELECT = "select";
-
-    private static final String RRD_ERROR = "RRD_ERROR";
 
     /**
      * This defines the default maximum number of variables the collector is
@@ -957,6 +950,9 @@ final class SnmpCollector implements ServiceCollector {
             Iterator iter = ifMap.values().iterator();
             while (iter.hasNext() && !hasInterfaceOids) {
                 IfInfo ifInfo = (IfInfo) iter.next();
+                if (ifInfo.getType() < 1) {
+                    continue;
+                }
                 if (!ifInfo.getOidList().isEmpty())
                     hasInterfaceOids = true;
             }
@@ -1227,13 +1223,13 @@ final class SnmpCollector implements ServiceCollector {
      * @return TRUE if new RRD file created, FALSE if RRD file was not created
      *         because it already existed.
      */
-    public boolean createRRD(String collectionName, InetAddress ipaddr, String directory, RRDDataSource ds) throws RrdException {
+/*    public boolean createRRD(String collectionName, InetAddress ipaddr, String directory, RRDDataSource ds) throws RrdException {
         String creator = "primary SNMP interface " + ipaddr.getHostAddress();
         int step = DataCollectionConfigFactory.getInstance().getStep(collectionName);
         List rraList = DataCollectionConfigFactory.getInstance().getRRAList(collectionName);
 
         return RrdUtils.createRRD(creator, directory, ds.getName(), step, ds.getType(), ds.getHeartbeat(), ds.getMin(), ds.getMax(), rraList);
-    }
+    }*/
 
     /**
      * This method is responsible for building an RRDTool style 'update' command
@@ -1299,7 +1295,7 @@ final class SnmpCollector implements ServiceCollector {
             //
             Iterator iter = nodeInfo.getDsList().iterator();
             while (iter.hasNext()) {
-                RRDDataSource ds = (RRDDataSource) iter.next();
+                DataSource ds = (DataSource) iter.next();
 
                 try {
 
@@ -1309,15 +1305,12 @@ final class SnmpCollector implements ServiceCollector {
                         if (log.isDebugEnabled())
                             log.debug("updateRRDs: Skipping update, no data retrieved for nodeId: " + nodeInfo.getNodeId() + " datasource: " + ds.getName());
                     } else {
-                        // Call createRRD() to create RRD if it doesn't already
-                        // exist
-                        //
-                        createRRD(collectionName, ipaddr, nodeRepository, ds);
-                        RrdUtils.updateRRD(ipaddr.getHostAddress(), nodeRepository, ds.getName(), dsVal);
+                        //createRRD(collectionName, ipaddr, nodeRepository, ds);
+			if(ds.performUpdate(collectionName, ipaddr.getHostAddress(), nodeRepository, ds.getName(), dsVal)) {
+	                    log.warn("updateRRDs: ds.performUpdate() failed for node: " + nodeInfo.getNodeId() + " datasource: " + ds.getName());
+			    rrdError = true;
+			}
                     }
-                } catch (RrdException e) {
-                    if (log.isEnabledFor(Priority.ERROR))
-                        log.error("updateRRDs: " + e.getMessage());
                 } catch (IllegalArgumentException e) {
                     log.warn("getRRDValue: " + e.getMessage());
                     // Set rrdError flag
@@ -1393,7 +1386,7 @@ final class SnmpCollector implements ServiceCollector {
                 //
                 Iterator i = ifInfo.getDsList().iterator();
                 while (i.hasNext()) {
-                    RRDDataSource ds = (RRDDataSource) i.next();
+                    DataSource ds = (DataSource) i.next();
 
                     // Build path to interface RRD repository. createRRD() will
                     // make the
@@ -1415,13 +1408,12 @@ final class SnmpCollector implements ServiceCollector {
                             // Call createRRD() to create RRD if it doesn't
                             // already exist
                             //
-                            createRRD(collectionName, ipaddr, ifRepository, ds);
-                            RrdUtils.updateRRD(ipaddr.getHostAddress(), ifRepository, ds.getName(), dsVal);
+                            //createRRD(collectionName, ipaddr, ifRepository, ds);
+                            if(ds.performUpdate(collectionName, ipaddr.getHostAddress(), ifRepository, ds.getName(), dsVal)) {
+				log.warn("updateRRDs: ds.performUpdate() failed for node/ifindex: " + nodeInfo.getNodeId() + "/" + ifIndex + " datasource: " + ds.getName());
+				rrdError = true;
+			    }
 
-                        }
-                    } catch (RrdException e) {
-                        if (log.isEnabledFor(Priority.ERROR)) {
-                            log.error("updateRRDs: " + e.getMessage());
                         }
                     } catch (IllegalArgumentException e) {
                         log.warn("buildRRDUpdateCmd: " + e.getMessage());
@@ -1444,7 +1436,7 @@ final class SnmpCollector implements ServiceCollector {
      * @return
      * @throws Exception
      */
-    public String getRRDValue(RRDDataSource ds, SNMPCollectorEntry collectorEntry) throws IllegalArgumentException {
+    public String getRRDValue(DataSource ds, SNMPCollectorEntry collectorEntry) throws IllegalArgumentException {
         Category log = ThreadCategory.getInstance(getClass());
         String dsVal = null;
 
@@ -1467,42 +1459,8 @@ final class SnmpCollector implements ServiceCollector {
 
         if (log.isDebugEnabled())
             log.debug("issueRRDUpdate: name:oid:value -  " + ds.getName() + ":" + fullOid + ":" + snmpVar.toString());
-
-        // RRD only supports the storage of integer data types. If we see a
-        // data type other than those listed below an error will be logged
-        // and no RRD update will take place.
-        // Am I missing any SNMP data types here?
-        switch (snmpVar.typeId()) {
-        case SnmpSMI.SMI_INTEGER:
-            return snmpVar.toString();
-        case SnmpSMI.SMI_COUNTER32:
-            return snmpVar.toString();
-        case SnmpSMI.SMI_COUNTER64:
-            return snmpVar.toString();
-        case SnmpSMI.SMI_GAUGE32:
-            return snmpVar.toString();
-        // *NOTE* Same as SnmpSMI.SMI_GAUGE32
-        // case SnmpSMI.SMI_UNSIGNED32:
-        // dsValue = ((SnmpUInt32)snmpVar).getValue();
-        // break;
-        case SnmpSMI.SMI_TIMETICKS:
-            return "" + (((SnmpTimeTicks) snmpVar).getValue());
-        case SnmpSMI.SMI_STRING:
-            String dsValue = ((SnmpOctetString) snmpVar).toString();
-
-            // Validate that the octet string value represents an
-            // integer/double value, otherwise it can't be stored in the RRD
-            // database
-            try {
-                new Double(dsValue);
-                return dsValue;
-            } catch (NumberFormatException nfE) {
-                throw new IllegalArgumentException("number format exception attempting to convert octet string value '" + dsValue + "' to a numeric value for data source '" + ds.getName() + "'");
-
-            }
-        default:
-            throw new IllegalArgumentException("SNMP value of data source '" + ds.getName() + "' is not one of the supported data types by RRD, invalid typeID: " + snmpVar.typeId() + " Valid RRD data types are:  COUNTER, GAUGE, DERIVE, & ABSOLUTE.  Please check content of 'DataCollection.xml' file.");
-        }
+	
+	return ds.getStorableValue(snmpVar);
     }
 
     /**
@@ -1536,61 +1494,15 @@ final class SnmpCollector implements ServiceCollector {
         Iterator o = oidList.iterator();
         while (o.hasNext()) {
             MibObject obj = (MibObject) o.next();
-            RRDDataSource ds = null;
+	    DataSource ds = DataSource.dataSourceForMibObject(obj, collectionName);
+	    if(ds!=null) {
+		// Add the new data source to the list
+		dsList.add(ds);
+	    } else if(log.isEnabledFor(Priority.WARN)) {
+		log.warn("buildDataSourceList: Data type '" + obj.getType() + "' not supported.");
+		log.warn("buildDataSourceList: MIB object '" + obj.getAlias() + "' will not be mapped to a data source.");
+	    }
 
-            // Verify that this object has an appropriate "integer" data type
-            // which can be stored in an RRD database file (must map to one of
-            // the supported RRD data source types: COUNTER or GAUGE).
-            String ds_type = RRDDataSource.mapType(obj.getType());
-            if (ds_type != null) {
-                // Passed!! Create new data source instance for this MIB object
-                // Assign heartbeat using formula (2 * step) and hard code
-                // min & max values to "U" ("unknown").
-                ds = new RRDDataSource();
-                ds.setHeartbeat(2 * DataCollectionConfigFactory.getInstance().getStep(collectionName));
-                // For completeness, adding a minval option to the variable.
-
-                String ds_minval = obj.getMinval();
-                if (ds_minval == null) {
-                    ds_minval = "U";
-                }
-                ds.setMax(ds_minval);
-
-                // In order to handle counter wraps, we need to set a max
-                // value for the variable.
-
-                String ds_maxval = obj.getMaxval();
-                if (ds_maxval == null) {
-                    ds_maxval = "U";
-                }
-                ds.setMax(ds_maxval);
-
-                // Truncate MIB object name/alias if it exceeds 19 char max for
-                // RRD data source names.
-                String ds_name = obj.getAlias();
-                if (ds_name.length() > MAX_DS_NAME_LENGTH) {
-                    if (log.isEnabledFor(Priority.WARN))
-                        log.warn("buildDataSourceList: Mib object name/alias '" + obj.getAlias() + "' exceeds 19 char maximum for RRD data source names, truncating.");
-                    char[] temp = ds_name.toCharArray();
-                    ds_name = String.copyValueOf(temp, 0, MAX_DS_NAME_LENGTH);
-                }
-                ds.setName(ds_name);
-
-                // Map MIB object data type to RRD data type
-                ds.setType(ds_type);
-
-                // Assign the data source object identifier and instance
-                ds.setOid(obj.getOid());
-                ds.setInstance(obj.getInstance());
-                if (log.isDebugEnabled())
-                    log.debug("buildDataSourceList: ds_name: " + ds.getName() + " ds_oid: " + ds.getOid() + "." + ds.getInstance() + " ds_max: " + ds.getMax() + " ds_min: " + ds.getMin());
-
-                // Add the new data source to the list
-                dsList.add(ds);
-            } else if (log.isEnabledFor(Priority.WARN)) {
-                log.warn("buildDataSourceList: Data type '" + obj.getType() + "' not supported.  Only integer-type data may be stored in RRD.");
-                log.warn("buildDataSourceList: MIB object '" + obj.getAlias() + "' will not be mapped to RRD data source.");
-            }
         }
 
         return dsList;

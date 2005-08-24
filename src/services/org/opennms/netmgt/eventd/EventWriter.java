@@ -461,6 +461,14 @@ final class EventWriter {
         // eventParms
         set(m_eventInsStmt, 11, (event.getParms() != null) ? Parameter.format(event.getParms()) : null);
 
+		// grab the ifIndex out of the parms if it is defined	
+		if (event.getIfIndex() != null) {
+			if (event.getParms() != null) {
+				Parameter.format(event.getParms());
+			}
+		}
+	
+
         // eventCreateTime
         java.sql.Timestamp eventCreateTime = new java.sql.Timestamp((new java.util.Date()).getTime());
         m_eventInsStmt.setTimestamp(12, eventCreateTime);
@@ -585,7 +593,7 @@ final class EventWriter {
 
         // eventSource
         set(m_eventInsStmt, 33, Constants.format(event.getSource(), EVENT_SOURCE_FIELD_SIZE));
-
+		
         // execute
         m_eventInsStmt.executeUpdate();
 
