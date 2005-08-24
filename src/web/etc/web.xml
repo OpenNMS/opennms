@@ -307,8 +307,7 @@
       <description>Redirect to this sibling URL on success.</description>
     </init-param>
   </servlet>
-  
-<!--  <servlet>
+  <servlet>
     <servlet-name>importAssets</servlet-name>
     <servlet-class>org.opennms.web.asset.ImportAssetsServlet</servlet-class>
     <init-param>
@@ -317,7 +316,6 @@
       <description>Redirect to this sibling URL on success.</description>
     </init-param>
   </servlet>
--->
   <servlet>
     <servlet-name>exportAssets</servlet-name>
     <servlet-class>org.opennms.web.asset.ExportAssetsServlet</servlet-class>
@@ -1159,12 +1157,10 @@
     <servlet-name>modifyAsset</servlet-name>
     <url-pattern>/asset/modifyAsset</url-pattern>
   </servlet-mapping>
-<!--
   <servlet-mapping>
     <servlet-name>importAssets</servlet-name>
     <url-pattern>/admin/asset/import/*</url-pattern>
   </servlet-mapping>
--->
   <servlet-mapping>
     <servlet-name>exportAssets</servlet-name>
     <url-pattern>/admin/asset/assets.csv</url-pattern>
