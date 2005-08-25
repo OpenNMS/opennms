@@ -37,6 +37,7 @@
         		<user>tempuser</user>
         	</group>
     </groups>
+<!--  These role time formats are not valid.  They must be revised.
     <roles> 
 		<role supervisor="admin" name="oncall" description="The On Call Schedule" membership-group="TempGroup"> 
 			<schedule name="tempuser" type="specific">
@@ -47,5 +48,6 @@
 				<time begins="03-Sep-2005 10:00:00" ends="07-Sep-2005 18:00:00" />
 			</schedule>
 	    </role>
-  </roles> 
+  </roles>
+--> 
 </groupinfo>
