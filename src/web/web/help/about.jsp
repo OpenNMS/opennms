@@ -159,6 +159,14 @@
         </pre>
       </p>
 
+      <h3>OSI Certified Open Source Software</h3>
+
+      <table><tr>
+         <td><img source="images/osi-certified.png"></td>
+         <td>This software is OSI Certified Open Source Software.<BR>
+             OSI Certified is a certification mark of the Open Source Initiative.</td>
+      </tr></table>
+
       <h3>Supporting Applications</h3>
 
 	<table>
