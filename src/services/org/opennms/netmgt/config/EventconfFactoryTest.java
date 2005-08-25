@@ -11,16 +11,13 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-import junit.framework.TestCase;
-
 import org.opennms.netmgt.mock.OpenNMSTestCase;
+import org.opennms.netmgt.xml.eventconf.AlarmData;
 import org.opennms.netmgt.xml.eventconf.Event;
 
 /**
  * @author brozow
  * 
- * TODO To change the template for this generated type comment go to Window -
- * Preferences - Java - Code Style - Code Templates
  */
 public class EventconfFactoryTest extends OpenNMSTestCase {
 
@@ -28,9 +25,7 @@ public class EventconfFactoryTest extends OpenNMSTestCase {
      * @see TestCase#setUp()
      */
     protected void setUp() throws Exception {
-        // FIXME: This is unstatisfactory becaues it relies on the installation
-//        EventconfFactory.init();
-//        EventconfFactory.getInstance();
+        super.setUp();
     }
 
     /*
@@ -44,7 +39,6 @@ public class EventconfFactoryTest extends OpenNMSTestCase {
         // FIXME: This is because the below test is commented out
     }
 
-    // FIXME: This test fail because it relies on an installation.
     public void xtestGetEventsByLabel() {
         List events = EventconfFactory.getInstance().getEventsByLabel();
 
@@ -68,7 +62,16 @@ public class EventconfFactoryTest extends OpenNMSTestCase {
     
     public void testGetAlarmType() {
         Event event = new Event();
+        AlarmData data = new AlarmData();
+        data.setAlarmType(2);
+        data.setClearUei("uei.opennms.org.testUei");
+        data.setReductionKey("reduceme");
+        event.setAlarmData(data);
+        
         int i = event.getAlarmData().getAlarmType();
+        assertEquals(2, i);
+        assertTrue("uei.opennms.org.testUei".equals(event.getAlarmData().getClearUei()));
+        assertTrue("reduceme".equals(event.getAlarmData().getReductionKey()));
     }
 
 }
