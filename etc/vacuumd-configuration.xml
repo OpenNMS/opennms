@@ -22,10 +22,11 @@
        AND eventtime &lt; now() - interval '6 weeks';
     </statement>
     <automations>
-<!-- Remark thise for now until I get them right.
+<!-- Remark these for now until I get them right.
            <automation name="autoEscalate" interval="10000" trigger-name="selectWithCounter" auto-event-name="escalationEvent" action-name="escalate" active="true" />
            <automation name="cleanUpAlarms" interval="300000" action-name="deleteDayOldAlarms" active="true" />
 -->
+           <automation name="cosmicClear" interval="30000" trigger-name="selectResolvers" action-name="clearProblems" active="true" />
     </automations>
     <triggers>
            <trigger name="selectAll" operator="&gt;=" row-count="1" >
@@ -34,10 +35,17 @@
            <trigger name="selectWithCounter" >
                <statement>SELECT alarmid FROM alarms WHERE counter &gt;= 2</statement>
            </trigger>
+    		  <trigger name="selectResolvers" operator="&gt;=" row-count="1" >
+        	      <statement>SELECT * FROM alarms WHERE alarmType=2</statement>
+          </trigger>
     </triggers>
     <actions>
            <action name="clear" >
                <statement>UPDATE alarms SET severity=2 WHERE alarmid = ${alarmid}</statement>
+           </action>
+           <action name="clearProblems" >
+               <statement>UPDATE alarms SET severity=2 WHERE alarmType=1 AND severity > 2 AND eventUei = ${clearUei} AND dpName = ${dpName} and nodeID = ${nodeID} and ipaddr = ${ipaddr} and serviceID = ${serviceID}</statement> 
+               <!-- <statement>UPDATE alarms SET severity=2 WHERE alarmType=1 AND severity > 2 AND dpName = ${dpName} and nodeID = ${nodeID} and ipaddr = ${ipaddr} and serviceID = ${serviceID}</statement> -->
            </action>
            <action name="escalate" >
                <statement>UPDATE alarms SET severity = severity+1 WHERE alarmid = ${alarmid} and severity &lt; 7 and alarmAckUser is null</statement>

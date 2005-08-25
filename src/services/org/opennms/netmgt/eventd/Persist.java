@@ -112,7 +112,7 @@ class Persist {
 
     private static final int EVENT_OPERACTION_MENU_FIELD_SIZE = 64;
 
-    private static final int EVENT_NOTIFICATION_FIELD_SIZE = 128;
+//    private static final int EVENT_NOTIFICATION_FIELD_SIZE = 128;
 
     private static final int EVENT_TTICKET_FIELD_SIZE = 128;
 
@@ -162,8 +162,6 @@ class Persist {
     protected PreparedStatement m_upDateStmt;
 
     protected PreparedStatement m_updateEventStmt;
-
-    private PreparedStatement m_getAlarmIdStmt;
 
     /**
      * Sets the statement up for a String value.
@@ -369,10 +367,10 @@ class Persist {
         Category log = ThreadCategory.getInstance(AlarmWriter.class);
                 
         if (log.isDebugEnabled()) {
-            log.debug("Persist.isReductionNeeded: reductionKey: "+event.getReductionKey());
+            log.debug("Persist.isReductionNeeded: reductionKey: "+event.getAlarmData().getReductionKey());
         }
 
-        m_reductionQuery.setString(1, event.getReductionKey());
+        m_reductionQuery.setString(1, event.getAlarmData().getReductionKey());
 
         ResultSet rs = m_reductionQuery.executeQuery();
         int alarmId = -1;
@@ -391,7 +389,7 @@ class Persist {
         
         java.sql.Timestamp eventTime = getEventTime(event, log);
         m_upDateStmt.setTimestamp(2, eventTime);
-        m_upDateStmt.setString(3, event.getReductionKey());
+        m_upDateStmt.setString(3, event.getAlarmData().getReductionKey());
 
         if (log.isDebugEnabled())
             log.debug("Persist.updateAlarm: reducing event: "+event.getDbid()+ "into alarm: ");
@@ -453,70 +451,76 @@ class Persist {
         m_insStmt.setInt(6, svcId);
 
         //Column 7, reductionKey
-        m_insStmt.setString(7, event.getReductionKey());
+        m_insStmt.setString(7, event.getAlarmData().getReductionKey());
         
-        //Column 8, counter
-        m_insStmt.setInt(8, 1);
+        //Column 8, alarmType
+        m_insStmt.setInt(8, event.getAlarmData().getAlarmType());
         
-        //Column 9, serverity
-        set(m_insStmt, 9, Constants.getSeverity(event.getSeverity()));
+        //Column 9, counter
+        m_insStmt.setInt(9, 1);
+        
+        //Column 10, serverity
+        set(m_insStmt, 10, Constants.getSeverity(event.getSeverity()));
 
-        //Column 10, lastEventId
-        m_insStmt.setInt(10, event.getDbid());
+        //Column 11, lastEventId
+        m_insStmt.setInt(11, event.getDbid());
         
-        //Column 11, firstEventTime
+        //Column 12, firstEventTime
         java.sql.Timestamp eventTime = getEventTime(event, log);
-        m_insStmt.setTimestamp(11, eventTime);
-        
-        //Column 12, lastEventTime
         m_insStmt.setTimestamp(12, eventTime);
         
-        //Column 13, description
-        set(m_insStmt, 13, Constants.format(event.getDescr(), EVENT_DESCR_FIELD_SIZE));
+        //Column 13, lastEventTime
+        m_insStmt.setTimestamp(13, eventTime);
+        
+        //Column 14, description
+        set(m_insStmt, 14, Constants.format(event.getDescr(), EVENT_DESCR_FIELD_SIZE));
 
-        //Column 14, logMsg
+        //Column 15, logMsg
         if (event.getLogmsg() != null) {
             // set log message
-            set(m_insStmt, 14, Constants.format(event.getLogmsg().getContent(), EVENT_LOGMSG_FIELD_SIZE));
+            set(m_insStmt, 15, Constants.format(event.getLogmsg().getContent(), EVENT_LOGMSG_FIELD_SIZE));
         } else {
-            m_insStmt.setNull(14, Types.VARCHAR);
+            m_insStmt.setNull(15, Types.VARCHAR);
         }
 
-        //Column 15, operInstruct
-        set(m_insStmt, 15, Constants.format(event.getOperinstruct(), EVENT_OPERINSTRUCT_FIELD_SIZE));
+        //Column 16, operInstruct
+        set(m_insStmt, 16, Constants.format(event.getOperinstruct(), EVENT_OPERINSTRUCT_FIELD_SIZE));
         
-        //Column 16, tticketId
-        //Column 17, tticketState
+        //Column 17, tticketId
+        //Column 18, tticketState
         if (event.getTticket() != null) {
-            set(m_insStmt, 16, Constants.format(event.getTticket().getContent(), EVENT_TTICKET_FIELD_SIZE));
+            set(m_insStmt, 17, Constants.format(event.getTticket().getContent(), EVENT_TTICKET_FIELD_SIZE));
             int ttstate = 0;
             if (event.getTticket().getState().equals("on"))
                 ttstate = 1;
-            set(m_insStmt, 17, ttstate);
+            set(m_insStmt, 18, ttstate);
         } else {
-            m_insStmt.setNull(16, Types.VARCHAR);
-            m_insStmt.setNull(17, Types.INTEGER);
+            m_insStmt.setNull(17, Types.VARCHAR);
+            m_insStmt.setNull(18, Types.INTEGER);
         }
 
-        //Column 18, mouseOverText
-        set(m_insStmt, 18, Constants.format(event.getMouseovertext(), EVENT_MOUSEOVERTEXT_FIELD_SIZE));
+        //Column 19, mouseOverText
+        set(m_insStmt, 19, Constants.format(event.getMouseovertext(), EVENT_MOUSEOVERTEXT_FIELD_SIZE));
 
-        //Column 19, suppressedUntil
+        //Column 20, suppressedUntil
         //FIXME:
-        m_insStmt.setTimestamp(19, eventTime);
+        m_insStmt.setTimestamp(20, eventTime);
         
-        //Column 20, suppressedUser
-        m_insStmt.setString(20, null);
+        //Column 21, suppressedUser
+        m_insStmt.setString(21, null);
         
-        //Column 21, suppressedTime
+        //Column 22, suppressedTime
         //FIXME:
-        m_insStmt.setTimestamp(21, eventTime);
+        m_insStmt.setTimestamp(22, eventTime);
         
-        //Column 22, alarmAckUser
-        m_insStmt.setString(22, null);
+        //Column 23, alarmAckUser
+        m_insStmt.setString(23, null);
         
-        //Column 23, alarmAckTime
-        m_insStmt.setTimestamp(23, eventTime);
+        //Column 24, alarmAckTime
+        m_insStmt.setTimestamp(24, eventTime);
+        
+        //Column 25, clearUie
+        m_insStmt.setString(25, Constants.format(event.getAlarmData().getClearUei(), EVENT_UEI_FIELD_SIZE));
         
         if (log.isDebugEnabled())
             log.debug("m_insStmt is: "+m_insStmt.toString());

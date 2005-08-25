@@ -728,7 +728,7 @@ public class OpenNMSTestCase extends TestCase {
             "           Node %parm[nodelabel]% is down.\n" + 
             "       </logmsg>\n" + 
             "       <severity>Major</severity>\n" +
-            "       <reductionKey>%uei%:%dpname%:%nodeid%</reductionKey>"+
+            "        <alarm-data reduction-key=\"%uei%:%dpname%:%nodeid%\" alarm-type=\"1\" />\n"+
             "   </event>\n" + 
             "   <event>\n" + 
             "       <uei>uei.opennms.org/nodes/nodeGainedInterface</uei>\n" + 
@@ -867,6 +867,7 @@ public class OpenNMSTestCase extends TestCase {
             "           Node %parm[nodelabel]% is up.\n" + 
             "       </logmsg>\n" + 
             "       <severity>Cleared</severity>\n" + 
+            "       <alarm-data reduction-key=\"%uei%:%dpname%:%nodeid%\" alarm-type=\"2\" clear-uei=\"uei.opennms.org/nodes/nodeDown\" />\n"+
             "   </event>\n" + 
             "   <event>\n" + 
             "       <uei>uei.opennms.org/nodes/primarySnmpInterfaceChanged</uei>\n" + 
@@ -1253,7 +1254,7 @@ public class OpenNMSTestCase extends TestCase {
             "            Received unformatted enterprise event (enterprise:%id% generic:%generic% specific:%specific%). %parm[##]% args: %parm[all]%\n" + 
             "        </logmsg>\n" + 
             "        <severity>Normal</severity>\n" + 
-            "        <reductionKey>%source%:%snmphost%:%id%:%generic%:%specific%</reductionKey>\n" + 
+            "        <alarm-data reduction-key=\"%source%:%snmphost%:%id%:%generic%:%specific%\" alarm-type=\"2\" />\n"+
             "    </event>\n" + 
             "    <event>\n" + 
             "        <uei>uei.opennms.org/default/trap</uei>\n" + 

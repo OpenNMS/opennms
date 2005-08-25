@@ -13,6 +13,7 @@ import java.util.List;
 
 import junit.framework.TestCase;
 
+import org.opennms.netmgt.mock.OpenNMSTestCase;
 import org.opennms.netmgt.xml.eventconf.Event;
 
 /**
@@ -21,7 +22,7 @@ import org.opennms.netmgt.xml.eventconf.Event;
  * TODO To change the template for this generated type comment go to Window -
  * Preferences - Java - Code Style - Code Templates
  */
-public class EventconfFactoryTest extends TestCase {
+public class EventconfFactoryTest extends OpenNMSTestCase {
 
     /*
      * @see TestCase#setUp()
@@ -63,6 +64,11 @@ public class EventconfFactoryTest extends TestCase {
             assertEquals("Lists unequals at index " + i, beforeSort.get(i), afterSort.get(i));
         }
 
+    }
+    
+    public void testGetAlarmType() {
+        Event event = new Event();
+        int i = event.getAlarmData().getAlarmType();
     }
 
 }

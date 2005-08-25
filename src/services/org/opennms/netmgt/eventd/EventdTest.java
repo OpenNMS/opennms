@@ -39,6 +39,7 @@ import org.opennms.netmgt.mock.MockLogAppender;
 import org.opennms.netmgt.mock.MockNode;
 import org.opennms.netmgt.mock.MockUtil;
 import org.opennms.netmgt.mock.OpenNMSTestCase;
+import org.opennms.netmgt.xml.event.AlarmData;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Logmsg;
 public class EventdTest extends OpenNMSTestCase {
@@ -176,8 +177,14 @@ public class EventdTest extends OpenNMSTestCase {
     private void sendNodeDownEvent(String reductionKey, MockNode node) {
         Event e = MockUtil.createNodeDownEvent("Test", node);
         
-        if (reductionKey != null)
-            e.setReductionKey(reductionKey);
+        if (reductionKey != null) {
+            AlarmData data = new AlarmData();
+            data.setAlarmType(1);
+            data.setReductionKey(reductionKey);
+            e.setAlarmData(data);
+        } else {
+            e.setAlarmData(null);
+        }
         
         Logmsg logmsg = new Logmsg();
         logmsg.setDest("logndisplay");

@@ -47,7 +47,7 @@
         </descr>
         <logmsg dest='logndisplay'>Agent Interface Down (linkDown Trap) enterprise:%id% (%id%) on interface %parm[#1]%</logmsg>
         <severity>Minor</severity>
-        <reductionKey>%uei%:%dpname%:%nodeid%:%interface%</reductionKey>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" />
     </event>
     <event>
         <mask>
@@ -65,7 +65,7 @@
         </descr>
         <logmsg dest='logndisplay'>Agent Interface Up (linkUp Trap) enterprise:%id% (%id%) on interface %parm[#1]%</logmsg>
         <severity>Normal</severity>
-        <reductionKey>%uei%:%dpname%:%nodeid%:%interface%</reductionKey>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" clear-uei="uei.opennms.org/generic/traps/SNMP_Link_Down" />
     </event>
     <event>
         <mask>
@@ -82,7 +82,7 @@
         </descr>
         <logmsg dest='logndisplay'>Incorrect Community Name (authenticationFailure Trap) enterprise:%id% (%id%) args(%parm[##]%):%parm[all]%</logmsg>
         <severity>Warning</severity>
-        <reductionKey>%uei%:%dpname%:%nodeid%</reductionKey>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="1" />
     </event>
     <event>
         <mask>
@@ -118,7 +118,7 @@
             Received unformatted enterprise event (enterprise:%id% generic:%generic% specific:%specific%). %parm[##]% args: %parm[all]%
         </logmsg>
         <severity>Normal</severity>
-        <reductionKey>%source%:%snmphost%:%id%:%generic%:%specific%</reductionKey>
+        <alarm-data reduction-key="%source%:%snmphost%:%id%:%generic%:%specific%" alarm-type="2" />
     </event>
     <event>
         <uei>uei.opennms.org/default/trap</uei>
@@ -129,7 +129,7 @@
         </descr>
         <logmsg dest='logndisplay'>An SNMP Trap with no matching configuration was received from interface %interface%.</logmsg>
         <severity>Indeterminate</severity>
-        <reductionKey>%uei%:%dpname%:%nodeid%:%interface%:%id%:%generic%:%specific%</reductionKey>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%id%:%generic%:%specific%" alarm-type="1" />
     </event>
     <event>
         <uei>uei.opennms.org/default/event</uei>
@@ -140,6 +140,6 @@
         </descr>
         <logmsg dest='logndisplay'>An event with no matching configuration was received from interface %interface%.</logmsg>
         <severity>Indeterminate</severity>
-        <reductionKey>%uei%:%dpname%:%nodeid%:%interface%</reductionKey>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" />
     </event>
 </events>

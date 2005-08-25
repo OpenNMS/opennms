@@ -751,7 +751,11 @@ create index userid_notifyid_idx on usersNotified(userID, notifyID);
 --# ipAddr      : IP Address of node's interface
 --# serviceID   : A reference to the service represented by the alarm.
 --# reductionKey: Used with nodeID and serviceID to match an event and
---#               increment the counter column
+--#               increment the counter column.  Set by configuring the
+--#               optional alarm-data elment in the eventConf.xml file.
+--# alarmType   : Customizable column designed for use in automations and
+--#               can be set in the eventConf.xml file by configuring the
+--#               optional alarm-data element.
 --# counter     : Incremented by the AlarmWriter instead of inserting
 --#               a new row when matched node, service, and reductionKey
 --# severity    : Severity of the Alarm... Initially set by the event
@@ -772,6 +776,8 @@ create index userid_notifyid_idx on usersNotified(userID, notifyID);
 --# suppressedTime : time the alarm was suppressed
 --# alarmAckUser : user that acknowledged the alarm
 --# alarmAckTime : time user Ack'd the alarm
+--# clearUei	   : Populated if alarm is a resolving alarm and can used
+--#             : to clear problem alarms.
 --########################################################################
 
 create table alarms (
@@ -782,6 +788,7 @@ create table alarms (
 	ipaddr				VARCHAR(16),
 	serviceID			INTEGER,
 	reductionKey			VARCHAR(256),
+	alarmType			INTEGER,
     counter              INTEGER NOT NULL,
 	severity				INTEGER NOT NULL,
 	lastEventID			INTEGER, CONSTRAINT fk_eventIDak2 FOREIGN KEY (lastEventID)  REFERENCES events (eventID) ON DELETE CASCADE,
@@ -797,7 +804,8 @@ create table alarms (
 	suppressedUser		VARCHAR(256),
 	suppressedTime		TIMESTAMP WITHOUT TIME ZONE,
 	alarmAckUser			VARCHAR(256),
-	alarmAckTime			TIMESTAMP WITHOUT TIME ZONE
+	alarmAckTime			TIMESTAMP WITHOUT TIME ZONE,
+	clearUei				VARCHAR(256)
 );
 
 CREATE INDEX alarm_uei_idx ON alarms(eventUei);

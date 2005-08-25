@@ -82,12 +82,12 @@ public final class EventdConstants {
     public final static String SQL_DB_ALARM_INS_EVENT =
             "INSERT" +
             "  INTO alarms (alarmID, eventUei, dpName, nodeID, ipaddr, " +
-            "               serviceID, reductionKey, counter, severity, " +
+            "               serviceID, reductionKey, alarmType, counter, severity, " +
             "               lastEventID, firstEventTime, lastEventTime, " +
             "               description, logMsg, operInstruct, tticketID, " +
             "               tticketState, mouseOverText, suppressedUntil, " +
-            "               suppressedUser, suppressedTime, alarmAckUser, alarmAckTime) " +
-            "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+            "               suppressedUser, suppressedTime, alarmAckUser, alarmAckTime, clearUei) " +
+            "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 
     /**
      * The SQL string used by eventd to update number of duplicate events in

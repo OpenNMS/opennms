@@ -43,6 +43,7 @@ package org.opennms.netmgt.eventd;
 
 import java.util.Enumeration;
 
+import org.opennms.netmgt.xml.event.AlarmData;
 import org.opennms.netmgt.xml.event.Autoaction;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Logmsg;
@@ -100,8 +101,11 @@ public final class EventExpander {
      * '.1.3.6.1.4.1.18.1.1.6'. When a event lookup is done based on the EID, a
      * lookup with both the partial and the full EID is done
      */
+/*
+ * This is never used
+ * TODO: delete this code
     private final static String ENTERPRISE_PRE = ".1.3.6.1.4.1";
-
+*/
     /**
      * The default event UEI - if the event lookup into the 'event.conf' fails,
      * the event is loaded with information from this default UEI
@@ -112,8 +116,11 @@ public final class EventExpander {
      * The default trap UEI - if the trap lookup into the 'event.conf' fails,
      * the trap event is loaded with information from this default UEI
      */
+/*
+ * This is never used
+ * TODO: delete this code soon
     private final static String DEFAULT_TRAP_UEI = "uei.opennms.org/default/trap";
-
+*/
     /**
      * private constructor
      */
@@ -516,10 +523,10 @@ public final class EventExpander {
         }
         
         // reductionKey
-        if (event.getReductionKey() != null) {
-            strRet = EventUtil.expandParms(event.getReductionKey(), event);
+        if (event.getAlarmData() != null) {
+            strRet = EventUtil.expandParms(event.getAlarmData().getReductionKey(), event);
             if (strRet != null) {
-                event.setReductionKey(strRet);
+                event.getAlarmData().setReductionKey(strRet);
                 strRet = null;
             }
         }
@@ -676,10 +683,18 @@ public final class EventExpander {
                 e.setMouseovertext(econf.getMouseovertext());
 
             // Copy the reductionKey
-            if (EventConfigurationManager.isSecureTag("reductionKey"))
-                e.setReductionKey(null);
-            if (e.getReductionKey() == null && econf.getReductionKey() != null)
-                e.setReductionKey(econf.getReductionKey());
+            // TODO:  This isSecureTag call needs some research.  "You keep using that word.  I don't think it means what you think it means."
+            //        It looks to me like there should be an else here.  I could be wrong.
+            if (EventConfigurationManager.isSecureTag("reduction-key") && EventConfigurationManager.isSecureTag("alarm-type") && EventConfigurationManager.isSecureTag("clear-uei"))
+                e.setAlarmData(null);
+            
+            if (e.getAlarmData() == null && econf.getAlarmData() != null) {
+                AlarmData alarmData = new AlarmData();
+                alarmData.setAlarmType(econf.getAlarmData().getAlarmType());
+                alarmData.setReductionKey(econf.getAlarmData().getReductionKey());
+                alarmData.setClearUei(econf.getAlarmData().getClearUei());
+                e.setAlarmData(alarmData);
+            }
 
         } // end fill of event using econf
 

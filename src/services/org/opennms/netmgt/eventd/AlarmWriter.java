@@ -110,7 +110,7 @@ final class AlarmWriter extends Persist {
             // "donotpersist" then simply return, the uei is not to be
             // persisted to the database
             String logdest = event.getLogmsg().getDest();
-            if (logdest.equals("donotpersist") || event.getReductionKey() == null) {
+            if (logdest.equals("donotpersist") || event.getAlarmData() == null) {
                 log.debug("AlarmWriter: uei '" + event.getUei() + "' marked as 'doNotPersist' or reductionKey is null.");
                 return;
             } else {

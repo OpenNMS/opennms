@@ -79,7 +79,8 @@ public class VacuumdTest extends OpenNMSTestCase {
         "    </statement>\n" +
         "    <automations>\n" + 
         "           <automation name=\"autoEscalate\" interval=\"10000\" trigger-name=\"selectWithCounter\" auto-event-name=\"escalationEvent\" action-name=\"escalate\" active=\"true\" />\n" + 
-        "           <automation name=\"cleanUpAlarms\" interval=\"300000\" action-name=\"deleteDayOldAlarms\" active=\"true\" />\n" + 
+        "           <automation name=\"cleanUpAlarms\" interval=\"300000\" action-name=\"deleteDayOldAlarms\" active=\"true\" />\n" +
+        "           <automation name=\"cosmicClear\" interval=\"30000\" trigger-name=\"selectResolvers\" action-name=\"clearProblems\" active=\"true\" />\n" + 
         "    </automations>\n" + 
         "    <triggers>\n" + 
         "           <trigger name=\"selectAll\" operator=\"&gt;=\" row-count=\"1\" >\n" + 
@@ -88,10 +89,17 @@ public class VacuumdTest extends OpenNMSTestCase {
         "           <trigger name=\"selectWithCounter\" >\n" + 
         "               <statement>SELECT alarmid FROM alarms WHERE counter &gt;= 2</statement>\n" + 
         "           </trigger>\n" + 
+        "           <trigger name=\"selectResolvers\" operator=\"&gt;=\" row-count=\"1\" >\n" + 
+        "               <statement>SELECT * FROM alarms WHERE alarmType=2</statement>\n" + 
+        "           </trigger>\n" + 
         "    </triggers>\n" + 
         "    <actions>\n" + 
         "           <action name=\"clear\" >\n" + 
         "               <statement>UPDATE alarms SET severity=2 WHERE alarmid = ${alarmid}</statement>\n" + 
+        "           </action>\n" + 
+        "           <action name=\"clearProblems\" >\n" + 
+        "               <statement>UPDATE alarms SET severity=2 WHERE alarmType=1 AND severity > 2 AND eventUei = ${clearUei} AND dpName = ${dpName} and nodeID = ${nodeID} and ipaddr = ${ipaddr} and serviceID = ${serviceID}</statement>\n" + 
+//        "               <statement>UPDATE alarms SET severity=2 WHERE alarmType=1 AND severity > 2 AND dpName = ${dpName} and nodeID = ${nodeID} and ipaddr = ${ipaddr} and serviceID = ${serviceID}</statement>\n" + 
         "           </action>\n" + 
         "           <action name=\"escalate\" >\n" + 
         "               <statement>UPDATE alarms SET severity = severity+1 WHERE alarmid = ${alarmid} and alarmAckUser is null and severity &lt; 7</statement>\n" + 
@@ -128,11 +136,6 @@ public class VacuumdTest extends OpenNMSTestCase {
 
         MockUtil.println("------------ Finished setup for: "+getName()+" --------------------------");
         
-    }
-
-    private void bringNodeDownCreatingEvent() {
-        MockNode node = m_network.getNode(1);
-        m_eventd.processEvent(node.createDownEvent());
     }
 
     protected void tearDown() throws Exception {
@@ -178,7 +181,7 @@ public class VacuumdTest extends OpenNMSTestCase {
 
         
         //Get an alarm in the db
-        bringNodeDownCreatingEvent();
+        bringNodeDownCreatingEvent(1);
         Thread.sleep(500);
         /*
          * Changes to the automations to the VACUUMD_CONFIG will
@@ -189,7 +192,7 @@ public class VacuumdTest extends OpenNMSTestCase {
 
 
         //Create another node down event
-        bringNodeDownCreatingEvent();
+        bringNodeDownCreatingEvent(1);
         /*
          * Sleep and wait for the alarm to be written
          */
@@ -211,7 +214,7 @@ public class VacuumdTest extends OpenNMSTestCase {
      * Simple test on a helper method.
      */
     public final void testGetAutomations() {
-        assertEquals(2, VacuumdConfigFactory.getInstance().getAutomations().size());
+        assertEquals(3, VacuumdConfigFactory.getInstance().getAutomations().size());
     }
     
     public final void testGetAutoEvents() {
@@ -222,7 +225,7 @@ public class VacuumdTest extends OpenNMSTestCase {
      * Simple test on a helper method.
      */
     public final void testGetTriggers() {
-        assertEquals(2,VacuumdConfigFactory.getInstance().getTriggers().size());
+        assertEquals(3,VacuumdConfigFactory.getInstance().getTriggers().size());
     }
     
     /**
@@ -230,7 +233,7 @@ public class VacuumdTest extends OpenNMSTestCase {
      */
     public final void testGetActions() {
         AutomationProcessor ap = new AutomationProcessor();
-        assertEquals(4,VacuumdConfigFactory.getInstance().getActions().size());
+        assertEquals(5,VacuumdConfigFactory.getInstance().getActions().size());
         assertEquals(2, ap.getTokenCount(VacuumdConfigFactory.getInstance().getAction("delete").getStatement().getContent()));
     }
     
@@ -269,7 +272,7 @@ public class VacuumdTest extends OpenNMSTestCase {
         
         //Get all the triggers defined in the config
         ArrayList triggers = (ArrayList)VacuumdConfigFactory.getInstance().getTriggers();
-        assertEquals(2, triggers.size());
+        assertEquals(3, triggers.size());
 
         Querier q = null;
 
@@ -293,13 +296,13 @@ public class VacuumdTest extends OpenNMSTestCase {
 
         final int major = 6;
         
-        bringNodeDownCreatingEvent();
+        bringNodeDownCreatingEvent(1);
         Thread.sleep(500);
         
         assertEquals(1, verifyInitialAlarmState());
         assertEquals(major, getSingleResultSeverity());
 
-        bringNodeDownCreatingEvent();
+        bringNodeDownCreatingEvent(1);
         Thread.sleep(500);
 
         AutomationProcessor ap = new AutomationProcessor();
@@ -312,7 +315,7 @@ public class VacuumdTest extends OpenNMSTestCase {
     
     public final void testRunAutomationWithNoTrigger() throws InterruptedException, SQLException {
         
-        bringNodeDownCreatingEvent();
+        bringNodeDownCreatingEvent(1);
         Thread.sleep(500);
         
         assertEquals(1, verifyInitialAlarmState());
@@ -321,6 +324,56 @@ public class VacuumdTest extends OpenNMSTestCase {
         ap.setAutomation(VacuumdConfigFactory.getInstance().getAutomation("cleanUpAlarms"));
         Thread.sleep(2000);
         assertTrue(ap.runAutomation(VacuumdConfigFactory.getInstance().getAutomation("cleanUpAlarms")));
+    }
+    
+    /**
+     * This tests the capabilities of the cosmicClear autmation as shipped in the standard build.
+     * @throws InterruptedException 
+     */
+    public final void testCosmicClearAutomation() throws InterruptedException {
+                
+        bringNodeDownCreatingEvent(1);
+        bringNodeDownCreatingEvent(2);
+        Thread.sleep(500);
+        bringNodeUpCreatingEvent(1);
+        Thread.sleep(500);
+        
+        SingleResultQuerier srq = new SingleResultQuerier(m_db, "select clearUei from alarms where eventUei = \'uei.opennms.org/nodes/nodeUp\'");
+        srq.execute();
+        String result = (String)srq.getResult();
+        MockUtil.println(result);
+        assertTrue("uei.opennms.org/nodes/nodeDown".equals(result));
+        
+        srq = new SingleResultQuerier(m_db, "select count(*) from alarms");
+        srq.execute();
+        Integer rows = (Integer)srq.getResult();
+        assertEquals(3, rows.intValue());
+
+        srq = new SingleResultQuerier(m_db, "select count(*) from alarms where severity = 2");
+        srq.execute();
+        rows = (Integer)srq.getResult();
+        assertEquals(1, rows.intValue());
+
+        srq = new SingleResultQuerier(m_db, "select count(*) from alarms where severity > 2");
+        srq.execute();
+        rows = (Integer)srq.getResult();
+        assertEquals(2, rows.intValue());
+
+        AutomationProcessor ap = new AutomationProcessor();
+        ap.setAutomation(VacuumdConfigFactory.getInstance().getAutomation("cosmicClear"));
+        ap.run();
+        Thread.sleep(1000);
+        
+        srq = new SingleResultQuerier(m_db, "select count(*) from alarms where severity = 2");
+        srq.execute();
+        rows = (Integer)srq.getResult();
+        assertEquals(2, rows.intValue());
+
+        srq = new SingleResultQuerier(m_db, "select count(*) from alarms where severity > 2");
+        srq.execute();
+        rows = (Integer)srq.getResult();
+        assertEquals(1, rows.intValue());
+        
     }
 
     /**
@@ -352,7 +405,12 @@ public class VacuumdTest extends OpenNMSTestCase {
         //TODO Implement runUpdate().
     }
     
-
+    public final void testGetTriggerSqlWithNoTriggerDefined() {
+        Automation auto = VacuumdConfigFactory.getInstance().getAutomation("cleanUpAlarms");
+        assertEquals(null, AutomationProcessor.getTriggerSQL(auto));
+        
+    }
+    
     /**
      * Really only elminated some duplication here.  This
      * method verifys that there is one alarm in the database
@@ -411,10 +469,14 @@ public class VacuumdTest extends OpenNMSTestCase {
         return severity;
     }
     
-    public final void testGetTriggerSqlWithNoTriggerDefined() {
-        Automation auto = VacuumdConfigFactory.getInstance().getAutomation("cleanUpAlarms");
-        assertEquals(null, AutomationProcessor.getTriggerSQL(auto));
-        
-    }    
+    private void bringNodeDownCreatingEvent(int nodeid) {
+        MockNode node = m_network.getNode(nodeid);
+        m_eventd.processEvent(node.createDownEvent());
+    }
+
+    private void bringNodeUpCreatingEvent(int nodeid) {
+        MockNode node = m_network.getNode(nodeid);
+        m_eventd.processEvent(node.createUpEvent());
+    }
 
 }

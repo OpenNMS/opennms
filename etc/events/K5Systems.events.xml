@@ -14,7 +14,7 @@
 			Node %nodelabel% is failing.
 		</logmsg>
 		<severity>Minor</severity>
-		<reductionKey>%uei%:%dpname%:%nodeid%</reductionKey>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="1" />
 	</event>
 	<event>
 		<uei>uei.k5systems.com/analysis/inBounds</uei>
@@ -30,6 +30,6 @@
 			Node %nodelabel% is no longer failing.
 		</logmsg>
 		<severity>Normal</severity>
-		<reductionKey>%uei%:%dpname%:%nodeid%</reductionKey>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="2" clear-uei="uei.k5systems.com/analysis/outOfBounds"/>
 	</event>
 </events>

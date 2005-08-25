@@ -36,7 +36,6 @@ package org.opennms.netmgt.config;
 
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.Collection;
@@ -84,25 +83,6 @@ public final class VacuumdConfigFactory {
 
     private static Reader m_configReader;
 
-    /**
-     * @deprecated
-     * Private constructor
-     * 
-     * @exception java.io.IOException
-     *                Thrown if the specified config file cannot be read
-     * @exception org.exolab.castor.xml.MarshalException
-     *                Thrown if the file does not conform to the schema.
-     * @exception org.exolab.castor.xml.ValidationException
-     *                Thrown if the contents do not match the required schema.
-     */
-    private VacuumdConfigFactory(String configFile) throws IOException, MarshalException, ValidationException {
-        InputStream cfgIn = new FileInputStream(configFile);
-
-        m_config = (VacuumdConfiguration) Unmarshaller.unmarshal(VacuumdConfiguration.class, new InputStreamReader(cfgIn));
-        cfgIn.close();
-
-    }
-    
     /**
      * Private constructor
      * @param rdr Reader

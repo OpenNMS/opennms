@@ -259,11 +259,12 @@
           </annotation>
         </element>
 
-        <element maxOccurs="1" minOccurs="0" name="reductionKey" type="string">
+        <element ref="this:alarm-data" minOccurs="0" maxOccurs="1" >
           <annotation>
-            <documentation>The alarm reduction key</documentation>
+            <documentation>Data used to create an event.</documentation>
           </annotation>
         </element>
+
       </sequence>
 
       <attribute name="uuid" type="string" use="optional"/>
@@ -646,4 +647,16 @@
       </simpleContent>
     </complexType>
   </element>
+
+  <element name="alarm-data">
+    <annotation>
+      <documentation>This element is used for converting events into alarms.</documentation>
+    </annotation>
+    <complexType>
+      <attribute name="reduction-key" type="string" use="required" />
+      <attribute name="alarm-type" type="positiveInteger" use="required" />
+      <attribute name="clear-uei" type="string" use="optional" />
+    </complexType>
+  </element>
+
 </schema>
