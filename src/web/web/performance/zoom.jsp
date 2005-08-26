@@ -171,8 +171,8 @@
             <%-- handle external values, if any --%>
             <% String externalValuesParm = this.encodeExternalValuesAsParmString(nodeId, intf, graphs[i]); %>
             
-	    <div id='zoomBox' style='position:absolute; overflow:none; left:0px; top:0px; width:0px; height:0px; visibility:visible; background:red; filter:alpha(opacity=50); -moz-opacity:0.5;'></div>
-	    <div id='zoomSensitiveZone' style='position:absolute; overflow:none; left:0px; top:0px; width:0px; height:0px; visibility:visible; cursor:crosshair; background:blue; filter:alpha(opacity=0); -moz-opacity:0;' oncontextmenu='return false'></div>
+	    <div id='zoomSensitiveZone' style='position:absolute; overflow:none; left:0px; top:0px; width:0px; height:0px; visibility:visible; cursor:crosshair; background:blue; filter:alpha(opacity=0); -moz-opacity:0; -khtml-opacity:0; opacity:0;' oncontextmenu='return false'></div>
+	    <div id='zoomBox' style='position:absolute; overflow:none; left:0px; top:0px; width:0px; height:0px; visibility:visible; background:red; filter:alpha(opacity=50); -moz-opacity:0.5; -khtml-opacity:.5; opacity:0.5;'></div>
             <tr>
 
               <td align="center">
@@ -874,20 +874,20 @@ function onMouseDownEvent(e) {
   if ((gMouseObj.leftButtonPressed()) && (!gMouseObj.dragging)) {
    gMouseObj.dragging = true;
    gMouseObj.saveCurrentToStartPosition();
-   gZoomGraphObj.drawSelection(gMouseObj.currentX, gMouseObj.currentY, gMouseObj.currentX, gMouseObj.currentY);
+   gZoomGraphObj.drawSelection(gMouseObj.currentX, gZoomGraphObj.zoomSensitiveZoneTop, gMouseObj.currentX, gZoomGraphObj.zoomSensitiveZoneBottom);
   } else if (gMouseObj.rightButtonPressed()) {
    var test = true;
   }
  }
 }
 
-/*+++++++++++++++++++++++++++  onMouseMouveEvent  +++++++++++++++++++++++++++*/
+/*+++++++++++++++++++++++++++  onMouseMoveEvent  +++++++++++++++++++++++++++*/
 
 function onMouseMouveEvent(e) {
  gMouseObj.setEvent(e);
  if (gMouseObj.dragging) {
   gMouseObj.getCurrentPosition();
-  gZoomGraphObj.drawSelection(gMouseObj.startedX, gMouseObj.startedY, gMouseObj.currentX, gMouseObj.currentY);
+  gZoomGraphObj.drawSelection(gMouseObj.startedX, gZoomGraphObj.zoomSensitiveZoneTop, gMouseObj.currentX, gZoomGraphObj.zoomSensitiveZoneBottom);
  }
 }
 
