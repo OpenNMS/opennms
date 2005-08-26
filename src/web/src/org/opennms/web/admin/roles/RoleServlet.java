@@ -19,7 +19,7 @@ import org.opennms.netmgt.config.groups.Schedule;
  *
  */
  public class RoleServlet extends javax.servlet.http.HttpServlet implements javax.servlet.Servlet {
-    private static final String TEST = "/admin/userGroupView/test.jsp";
+
     private static final String LIST = "/admin/userGroupView/roles/list.jsp";
     private static final String VIEW = "/admin/userGroupView/roles/view.jsp";
     private static final String EDIT_DETAILS = "/admin/userGroupView/roles/editDetails.jsp";
@@ -129,19 +129,22 @@ import org.opennms.netmgt.config.groups.Schedule;
             try {
                 WebRole role = getRoleManager().getRole(request.getParameter("role"));
                 request.setAttribute("role", role);
-                String user = request.getParameter("roleUser");
-                Date startDate = getDateParameters("start", request);
-                Date endDate = getDateParameters("end", request);
-                int schedIndex = getIntParameter("schedIndex", request);
-                int timeIndex = getIntParameter("timeIndex", request);
-                
-                WebSchedEntry entry = new WebSchedEntry(schedIndex, timeIndex, user, startDate, endDate);
-                
-                role.addEntry(entry);
-                
-                getRoleManager().saveRole(role);
-                
+                if (request.getParameter("save") != null) {
+                    
+                    String user = request.getParameter("roleUser");
+                    Date startDate = getDateParameters("start", request);
+                    Date endDate = getDateParameters("end", request);
+                    int schedIndex = getIntParameter("schedIndex", request);
+                    int timeIndex = getIntParameter("timeIndex", request);
+                    
+                    WebSchedEntry entry = new WebSchedEntry(schedIndex, timeIndex, user, startDate, endDate);
+                    
+                    role.addEntry(entry);
+                    
+                    getRoleManager().saveRole(role);
+                }
                 return new ViewAction().execute(request, response);
+                
             } catch (ParseException e) {
                 throw new ServletException("Unable to parse date: "+e.getMessage(), e);
             }

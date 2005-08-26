@@ -31,7 +31,6 @@
 //
 package org.opennms.web.admin.roles;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
