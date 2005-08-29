@@ -134,11 +134,21 @@ import org.opennms.netmgt.config.groups.Schedule;
                 request.setAttribute("role", role);
                 if (request.getParameter("save") != null) {
                     
-                    String user = request.getParameter("roleUser");
-                    Date startDate = getDateParameters("start", request);
-                    Date endDate = getDateParameters("end", request);
                     int schedIndex = getIntParameter("schedIndex", request);
                     int timeIndex = getIntParameter("timeIndex", request);
+                    Date startDate = getDateParameters("start", request);
+                    Date endDate = getDateParameters("end", request);
+                    if (startDate.equals(endDate)) {
+                        request.setAttribute("error", "The start time and the end time must not be the same!");
+                        request.setAttribute("scheduledUser", request.getParameter("roleUser"));
+                        request.setAttribute("start", startDate);
+                        request.setAttribute("end", endDate);
+                        request.setAttribute("schedIndex", request.getParameter("schedIndex"));
+                        request.setAttribute("timeIndex", request.getParameter("timeIndex"));
+                        return EDIT_SPECIFIC;
+                    }
+                    
+                    String user = request.getParameter("roleUser");
                     
                     WebSchedEntry entry = new WebSchedEntry(schedIndex, timeIndex, user, startDate, endDate);
                     

@@ -304,6 +304,7 @@ public class BasicScheduleUtils {
     }
     
     public static OwnedInterval getInterval(Date ref, Time time, Owner owner) {
+        OwnedIntervalSequence seq = new OwnedIntervalSequence();
         if (isWeekly(time)) {
             return new OwnedInterval(owner, getWeeklyTime(ref, time.getDay(), time.getBegins()), getWeeklyTime(ref, time.getDay(), time.getEnds()));
         } else if (isMonthly(time)) {
@@ -329,6 +330,10 @@ public class BasicScheduleUtils {
     
     public static OwnedIntervalSequence getIntervals(Date start, Date end, Time time, Owner owner) {
         OwnedIntervalSequence seq = new OwnedIntervalSequence();
+        
+        // return an empty list for entries that have a zero length interval specified
+        if (time.getBegins().equals(time.getEnds())) return seq;
+        
         if (isWeekly(time)) {
             Date done = nextWeek(end);
             for(Date ref = start; done.after(ref); ref = nextWeek(ref)) {

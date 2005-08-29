@@ -86,6 +86,12 @@
 	<tr>
 		<td>&nbsp;</td>
 		<td>
+		<div class="error"><c:out value="${error}"/></div>
+		</td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td>
 		 <table width="100%" border="1" cellspacing="0" cellpadding="2" bordercolor="black">
 	         <tr>
     		    		<td bgcolor="#999999"><b>Role</b></td>
