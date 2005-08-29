@@ -95,7 +95,7 @@
 					<select name="roleUser">
 					<c:forEach var="user" items="${role.membershipGroup.users}">
 						<c:choose>
-							<c:when test="${user == scheduleEntry.user}"><option selected><c:out value="${user}"/></option></c:when>
+							<c:when test="${user == scheduledUser}"><option selected><c:out value="${user}"/></option></c:when>
 							<c:otherwise><option><c:out value="${user}"/></option></c:otherwise>
 						</c:choose>
 					</c:forEach>

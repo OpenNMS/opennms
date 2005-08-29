@@ -79,6 +79,7 @@ import org.opennms.netmgt.config.groups.Schedule;
             try {
                 WebRole role = getRoleManager().getRole(request.getParameter("role"));
                 request.setAttribute("role", role);
+                request.setAttribute("scheduledUser", role.getDefaultUser().getName());
                 Date date = new SimpleDateFormat("MM-dd-yyyy").parse(request.getParameter("date"));
                 request.setAttribute("start", date);
                 request.setAttribute("end", date);
@@ -108,7 +109,9 @@ import org.opennms.netmgt.config.groups.Schedule;
             request.setAttribute("schedule", schedule);
             Time time = role.getTime(schedIndex, timeIndex);
             request.setAttribute("time", time);
-            
+
+            request.setAttribute("scheduledUser", schedule.getName());
+
             if (BasicScheduleUtils.isWeekly(time))
                 return EDIT_WEEKLY;
             else if (BasicScheduleUtils.isMonthly(time))
