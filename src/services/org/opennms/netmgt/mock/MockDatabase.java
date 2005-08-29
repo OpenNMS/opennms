@@ -379,13 +379,13 @@ public class MockDatabase implements DbConnectionFactory, EventWriter {
     }
 
     private boolean serviceDefined(String svcName) {
-        Querier querier = new Querier(this, "select serviceId from service where serviceName = ?;");
+        Querier querier = new Querier(this, "select serviceId from service where serviceName = ?");
         querier.execute(svcName);
         return querier.getCount() > 0;
     }
     
     public String getNextOutageIdStatement() {
-        return "select next value for outageNxtId from seqQueryTable;";
+        return "select next value for outageNxtId from seqQueryTable";
     }
     
     public Integer getNextOutageId() {
@@ -400,7 +400,7 @@ public class MockDatabase implements DbConnectionFactory, EventWriter {
     }
     
     public String getNextEventIdStatement() {
-        return "select next value for eventNxtId from seqQueryTable;";
+        return "select next value for eventNxtId from seqQueryTable";
     }
     
     public Integer getNextEventId() {
@@ -408,7 +408,7 @@ public class MockDatabase implements DbConnectionFactory, EventWriter {
     }
     
     public String getNextServiceIdStatement() {
-        return "select next value for serviceNxtId from seqQueryTable;";
+        return "select next value for serviceNxtId from seqQueryTable";
     }
     
     public Integer getNextServiceId() {
@@ -417,13 +417,13 @@ public class MockDatabase implements DbConnectionFactory, EventWriter {
     
     public Integer getServiceID(String serviceName) {
         if (serviceName == null) return new Integer(-1);
-        SingleResultQuerier querier = new SingleResultQuerier(this, "select serviceId from service where serviceName = ?;");
+        SingleResultQuerier querier = new SingleResultQuerier(this, "select serviceId from service where serviceName = ?");
         querier.execute(serviceName);
         return (Integer)querier.getResult();
     }
     
     public String getServiceName(int serviceId) {
-        SingleResultQuerier querier = new SingleResultQuerier(this, "select serviceName from service where serviceId = ?;");
+        SingleResultQuerier querier = new SingleResultQuerier(this, "select serviceName from service where serviceId = ?");
         querier.execute(new Integer(serviceId));
         return (String)querier.getResult();
     }
@@ -439,7 +439,7 @@ public class MockDatabase implements DbConnectionFactory, EventWriter {
     public int countOutagesForService(MockService svc, String criteria) {
         String critSql = (criteria == null ? "" : " and "+criteria);
         Object[] values = { new Integer(svc.getNodeId()), svc.getIpAddr(), new Integer(svc.getId()) };
-        return countRows("select * from outages where nodeId = ? and ipAddr = ? and serviceId = ?"+critSql+";", values);
+        return countRows("select * from outages where nodeId = ? and ipAddr = ? and serviceId = ?"+critSql, values);
     }
 
     public void createOutage(MockService svc, Event svcLostEvent) {
@@ -522,7 +522,7 @@ public class MockDatabase implements DbConnectionFactory, EventWriter {
     }
 
     public char getServiceStatus(MockService svc) {
-        SingleResultQuerier querier = new SingleResultQuerier(this, "select status from ifServices where nodeId = ? and ipAddr = ? and serviceID = ?;");
+        SingleResultQuerier querier = new SingleResultQuerier(this, "select status from ifServices where nodeId = ? and ipAddr = ? and serviceID = ?");
         querier.execute(new Integer(svc.getNodeId()), svc.getIpAddr(), new Integer(svc.getId()));
         String result = (String)querier.getResult();
         if (result == null || "".equals(result)) {
@@ -537,7 +537,7 @@ public class MockDatabase implements DbConnectionFactory, EventWriter {
     }
     
     public char getInterfaceStatus(MockInterface iface) {
-        SingleResultQuerier querier = new SingleResultQuerier(this, "select isManaged from ipInterface where nodeId = ? and ipAddr = ?;");
+        SingleResultQuerier querier = new SingleResultQuerier(this, "select isManaged from ipInterface where nodeId = ? and ipAddr = ?");
         querier.execute(new Integer(iface.getNodeId()), iface.getIpAddr());
         String result = (String)querier.getResult();
         if (result == null || "".equals(result)) {
@@ -556,7 +556,7 @@ public class MockDatabase implements DbConnectionFactory, EventWriter {
     
     public int countOutages(String criteria) {
         String critSql = (criteria == null ? "" : " where "+criteria);
-        return countRows("select * from outages"+critSql+";");
+        return countRows("select * from outages"+critSql);
     }
     
     public int countOutagesForInterface(MockInterface iface) {
@@ -570,7 +570,7 @@ public class MockDatabase implements DbConnectionFactory, EventWriter {
     public int countOutagesForInterface(MockInterface iface, String criteria) {
         String critSql = (criteria == null ? "" : " and "+criteria);
         Object[] values = { new Integer(iface.getNodeId()), iface.getIpAddr() };
-        return countRows("select * from outages where nodeId = ? and ipAddr = ? "+critSql+";", values);
+        return countRows("select * from outages where nodeId = ? and ipAddr = ? "+critSql, values);
     }
     
     public boolean hasOpenOutage(MockService svc) {
@@ -629,7 +629,7 @@ public class MockDatabase implements DbConnectionFactory, EventWriter {
      * @return
      */
     public String getNextNotifIdSql() {
-        return "select next value for notifNxtId from seqQueryTable;";
+        return "select next value for notifNxtId from seqQueryTable";
     }
 
     /**
@@ -656,13 +656,13 @@ public class MockDatabase implements DbConnectionFactory, EventWriter {
     }
 
     public Integer getAlarmCount(String reductionKey) {
-        SingleResultQuerier querier = new SingleResultQuerier(this, "select counter from alarms where reductionKey = ?;");
+        SingleResultQuerier querier = new SingleResultQuerier(this, "select counter from alarms where reductionKey = ?");
         querier.execute(reductionKey);
         return (Integer)querier.getResult();
     }
 
     public Integer getAlarmId(String reductionKey) {
-        SingleResultQuerier querier = new SingleResultQuerier(this, "select alarmid from alarms where reductionKey = ?;");
+        SingleResultQuerier querier = new SingleResultQuerier(this, "select alarmid from alarms where reductionKey = ?");
         querier.execute(reductionKey);
         return (Integer)querier.getResult();
     }
