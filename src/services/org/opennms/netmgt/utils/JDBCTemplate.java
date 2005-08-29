@@ -35,6 +35,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
+import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.DbConnectionFactory;
 
 /**
@@ -81,25 +82,32 @@ abstract public class JDBCTemplate {
          try {
              doExecute(values);
          } catch (SQLException e) {
-             String vals = "[";
-             for(int i = 0; i < values.length; i++) {
-                 if (i != 0)
-                     vals += ", ";
-                 vals += values[i];
-             }
-             vals += "]";
+             String vals = argsToString(values);
              throw new RuntimeException("Problem executing statement: "+m_sql+" with values "+vals, e);
          }
      }
+
+    private String argsToString(Object[] values) {
+        String vals = "[";
+         for(int i = 0; i < values.length; i++) {
+             if (i != 0)
+                 vals += ", ";
+             vals += values[i];
+         }
+         vals += "]";
+        return vals;
+    }
 
     private void doExecute(Object values[]) throws SQLException {
         
         Connection conn = m_db.getConnection();
          try {
+             
              PreparedStatement stmt = conn.prepareStatement(m_sql);
              for(int i = 0; i < values.length; i++) {
                  stmt.setObject(i+1, values[i]);
              }
+             //ThreadCategory.getInstance(getClass()).debug("SQL: "+m_sql+" with vals "+argsToString(values));
              executeStmt(stmt);
          } finally {
              conn.close();

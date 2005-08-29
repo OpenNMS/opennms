@@ -128,7 +128,7 @@ public class ThresholderTestCase extends MockObjectTestCase {
 		m_network.addInterface("192.168.1.5");
 		m_network.addService("SMTP");
 		m_network.addService("HTTP");
-		MockDatabase db = new MockDatabase();
+		MockDatabase db = new MockDatabase(getName());
 		db.populate(m_network);
 		DatabaseConnectionFactory.setInstance(db);
 	}

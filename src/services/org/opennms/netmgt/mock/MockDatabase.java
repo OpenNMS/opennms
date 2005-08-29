@@ -60,14 +60,20 @@ public class MockDatabase implements DbConnectionFactory, EventWriter {
 
 
     private Server m_server;
+    private String m_dbName = "test";
 
-    public MockDatabase() {
+    public MockDatabase(String dbName) {
+        m_dbName = dbName;
         try {
             Class.forName("org.hsqldb.jdbcDriver" );
         } catch (Exception e) {
             throw new RuntimeException("Unable to locate hypersonic driver");
         }
         create();
+    }
+    
+    public MockDatabase() {
+        this("test");
     }
     
     public void create() {
@@ -91,7 +97,7 @@ public class MockDatabase implements DbConnectionFactory, EventWriter {
                    "lastCapsdPoll   timestamp," +
                    //"constraint fk_dpName foreign key (dpName) references distPoller," +
                    "constraint pk_nodeID primary key (nodeID)" +
-        ")");
+        ");");
         
         update("create table ipInterface (" +
                    "nodeID integer, " +
@@ -125,7 +131,7 @@ public class MockDatabase implements DbConnectionFactory, EventWriter {
                    "serviceID integer, " +
                    "serviceName varchar(32) not null, " +
                    "constraint pk_serviceID primary key (serviceID)" +
-        ")");
+        ");");
         
         update("create table ifServices (" +
                    "nodeID          integer, " +
@@ -179,7 +185,7 @@ public class MockDatabase implements DbConnectionFactory, EventWriter {
                    "alarmID             integer," +
                    "constraint pk_eventID primary key (eventID)," +
                    "constraint fk_nodeID6 foreign key (nodeID) references node ON DELETE CASCADE" +
-        ")");
+        ");");
         
         update("create table outages (" +
                    "outageID        integer," +
@@ -195,7 +201,7 @@ public class MockDatabase implements DbConnectionFactory, EventWriter {
                    "constraint fk_eventID2 foreign key (svcRegainedEventID) references events (eventID) ON DELETE CASCADE," +
                    "constraint fk_nodeID4 foreign key (nodeID) references node (nodeID) ON DELETE CASCADE," +
                    "constraint fk_serviceID2 foreign key (serviceID) references service (serviceID) ON DELETE CASCADE" +
-        ")");
+        ");");
         
         update("create table notifications (" + 
                 "       textMsg      varchar(4000) not null," + 
@@ -214,7 +220,7 @@ public class MockDatabase implements DbConnectionFactory, EventWriter {
                 "                   constraint pk_notifyID primary key (notifyID)," + 
                 "                   constraint fk_nodeID7 foreign key (nodeID) references node (nodeID) ON DELETE CASCADE," + 
                 "                   constraint fk_eventID3 foreign key (eventID) references events (eventID) ON DELETE CASCADE" + 
-                "       )");
+                "       );");
         
         update("create table usersNotified (\n" + 
                 "        userID          varchar(256) not null," + 
@@ -250,28 +256,30 @@ public class MockDatabase implements DbConnectionFactory, EventWriter {
         "   suppressedTime      TIMESTAMP,\n" +
         "   alarmAckUser        VARCHAR(256),\n" +
         "   alarmAckTime        TIMESTAMP,\n" +
-        "   clearUei            VARCHAR(256)," +
-        "             CONSTRAINT pk_alarmID primary key (alarmID),"+
-        "             CONSTRAINT fk_nodeIDak FOREIGN KEY (nodeID) REFERENCES node (nodeID) ON DELETE CASCADE,"+
-        "             CONSTRAINT fk_eventIDak2 FOREIGN KEY (lastEventID)  REFERENCES events (eventID) ON DELETE CASCADE"+
+        "   clearUei            VARCHAR(256),\n" +
+        "             CONSTRAINT pk_alarmID primary key (alarmID),\n"+
+        "             CONSTRAINT fk_nodeIDak FOREIGN KEY (nodeID) REFERENCES node (nodeID) ON DELETE CASCADE,\n"+
+        "             CONSTRAINT fk_eventIDak2 FOREIGN KEY (lastEventID)  REFERENCES events (eventID) ON DELETE CASCADE\n"+
         ");");
         
-        update("CREATE UNIQUE INDEX alarm_reductionkey_idx ON alarms(reductionKey)");
-        update("create sequence outageNxtId start with 1");
-        update("create sequence eventNxtId start with 1");
-        update("create sequence serviceNxtId start with 1");
-        update("create sequence alarmNxtId start with 1");
-        update("create sequence notifNxtId start with 1");
-        update("create table seqQueryTable (row integer)");
-        update("insert into seqQueryTable (row) values (0)");
+        update("CREATE UNIQUE INDEX alarm_reductionkey_idx ON alarms(reductionKey);");
+        update("create sequence outageNxtId start with 1;");
+        update("create sequence eventNxtId start with 1;");
+        update("create sequence serviceNxtId start with 1;");
+        update("create sequence alarmNxtId start with 1;");
+        update("create sequence notifNxtId start with 1;");
+        update("create table seqQueryTable (row integer);");
+        update("insert into seqQueryTable (row) values (0);");
         
-        update("CREATE ALIAS iplike FOR \"org.opennms.netmgt.config.SnmpPeerFactory.verifyIpMatch\"");
-        update("CREATE ALIAS greatest FOR \"java.lang.Math.max\"");
-        update("CREATE ALIAS least FOR \"java.lang.Math.min\"");
+        update("CREATE ALIAS iplike FOR \"org.opennms.netmgt.config.SnmpPeerFactory.verifyIpMatch\";");
+        update("CREATE ALIAS greatest FOR \"java.lang.Math.max\";");
+        update("CREATE ALIAS least FOR \"java.lang.Math.min\";");
     }
     
     public void startServer() {
         m_server = new Server();
+        m_server.setPort(9001);
+        m_server.setTrace(true);
         m_server.setDatabasePath(0, "mem:test");
         synchronized(m_server) {
             m_server.start();
@@ -282,7 +290,7 @@ public class MockDatabase implements DbConnectionFactory, EventWriter {
     public void drop() {
         if (m_server != null)
             m_server.stop();
-        update("shutdown");
+        update("shutdown;");
     }
     
     public void populate(MockNetwork network) {
@@ -302,16 +310,19 @@ public class MockDatabase implements DbConnectionFactory, EventWriter {
         };
         network.visit(dbCreater);
         
+        
     }
     
     public void writeNode(MockNode node) {
         Object[] values = { new Integer(node.getNodeId()), node.getLabel(), new Timestamp(System.currentTimeMillis()) };
-        update("insert into node (nodeID, nodeLabel, nodeCreateTime) values (?, ?, ?)", values);
+        update("insert into node (nodeID, nodeLabel, nodeCreateTime) values (?, ?, ?);", values);
         
     }
 
     public Connection getConnection() throws SQLException {
-        Connection c = DriverManager.getConnection("jdbc:hsqldb:mem:test", "sa", "");
+        String dbURL = "jdbc:hsqldb:mem:"+m_dbName;
+        //String dbURL = "jdbc:hsqldb:file:/tmp/test;shutdown=true";
+        Connection c = DriverManager.getConnection(dbURL, "sa", "");
         return c;
     }
     
@@ -334,13 +345,13 @@ public class MockDatabase implements DbConnectionFactory, EventWriter {
 
     public void writeInterface(MockInterface iface) {
         int ifIndex = writeSnmpInterface(iface);
-		Object[] values = { new Integer(iface.getNodeId()), iface.getIpAddr(), new Integer(ifIndex), (ifIndex == 1 ? "P" : "N") };
-        update("insert into ipInterface (nodeID, ipAddr, ifIndex, isSnmpPrimary) values (?, ?, ?, ?)", values);
+		Object[] values = { new Integer(iface.getNodeId()), iface.getIpAddr(), new Integer(ifIndex), (ifIndex == 1 ? "P" : "N"), "A" };
+        update("insert into ipInterface (nodeID, ipAddr, ifIndex, isSnmpPrimary, isManaged) values (?, ?, ?, ?, ?);", values);
     }
 
     public int writeSnmpInterface(MockInterface iface) {
         Object[] values = { new Integer(iface.getNodeId()), iface.getIpAddr(), iface.getIfAlias() };
-        update("insert into snmpInterface (nodeID, ipAddr, snmpifAlias) values (?, ?, ?)", values);
+        update("insert into snmpInterface (nodeID, ipAddr, snmpifAlias) values (?, ?, ?);", values);
 		return 1;
     }
 
@@ -350,11 +361,11 @@ public class MockDatabase implements DbConnectionFactory, EventWriter {
             Object[] svcValues = { new Integer(svc.getId()), svcName };
             //Object[] svcValues = { getNextServiceId(), svcName };
             getNextServiceId();
-            update("insert into service (serviceID, serviceName) values (?, ?)", svcValues);
+            update("insert into service (serviceID, serviceName) values (?, ?);", svcValues);
         }
         
         Object[] values = { new Integer(svc.getNodeId()), svc.getIpAddr(), new Integer(svc.getId()), "A" };
-        update("insert into ifServices (nodeID, ipAddr, serviceID, status) values (?, ?, ?, ?)", values);
+        update("insert into ifServices (nodeID, ipAddr, serviceID, status) values (?, ?, ?, ?);", values);
     }
     
     public int countRows(String sql) {
@@ -368,13 +379,13 @@ public class MockDatabase implements DbConnectionFactory, EventWriter {
     }
 
     private boolean serviceDefined(String svcName) {
-        Querier querier = new Querier(this, "select serviceId from service where serviceName = ?");
+        Querier querier = new Querier(this, "select serviceId from service where serviceName = ?;");
         querier.execute(svcName);
         return querier.getCount() > 0;
     }
     
     public String getNextOutageIdStatement() {
-        return "select next value for outageNxtId from seqQueryTable";
+        return "select next value for outageNxtId from seqQueryTable;";
     }
     
     public Integer getNextOutageId() {
@@ -397,7 +408,7 @@ public class MockDatabase implements DbConnectionFactory, EventWriter {
     }
     
     public String getNextServiceIdStatement() {
-        return "select next value for serviceNxtId from seqQueryTable";
+        return "select next value for serviceNxtId from seqQueryTable;";
     }
     
     public Integer getNextServiceId() {
@@ -406,13 +417,13 @@ public class MockDatabase implements DbConnectionFactory, EventWriter {
     
     public Integer getServiceID(String serviceName) {
         if (serviceName == null) return new Integer(-1);
-        SingleResultQuerier querier = new SingleResultQuerier(this, "select serviceId from service where serviceName = ?");
+        SingleResultQuerier querier = new SingleResultQuerier(this, "select serviceId from service where serviceName = ?;");
         querier.execute(serviceName);
         return (Integer)querier.getResult();
     }
     
     public String getServiceName(int serviceId) {
-        SingleResultQuerier querier = new SingleResultQuerier(this, "select serviceName from service where serviceId = ?");
+        SingleResultQuerier querier = new SingleResultQuerier(this, "select serviceName from service where serviceId = ?;");
         querier.execute(new Integer(serviceId));
         return (String)querier.getResult();
     }
@@ -428,7 +439,7 @@ public class MockDatabase implements DbConnectionFactory, EventWriter {
     public int countOutagesForService(MockService svc, String criteria) {
         String critSql = (criteria == null ? "" : " and "+criteria);
         Object[] values = { new Integer(svc.getNodeId()), svc.getIpAddr(), new Integer(svc.getId()) };
-        return countRows("select * from outages where nodeId = ? and ipAddr = ? and serviceId = ?"+critSql, values);
+        return countRows("select * from outages where nodeId = ? and ipAddr = ? and serviceId = ?"+critSql+";", values);
     }
 
     public void createOutage(MockService svc, Event svcLostEvent) {
@@ -445,7 +456,7 @@ public class MockDatabase implements DbConnectionFactory, EventWriter {
                 time, // ifLostService
                };
         
-        update("insert into outages (outageId, svcLostEventId, nodeId, ipAddr, serviceId, ifLostService) values (?, ?, ?, ?, ?, ?)", values);
+        update("insert into outages (outageId, svcLostEventId, nodeId, ipAddr, serviceId, ifLostService) values (?, ?, ?, ?, ?, ?);", values);
         
     }
     
@@ -463,7 +474,7 @@ public class MockDatabase implements DbConnectionFactory, EventWriter {
                 new Integer(svc.getId()),       // serviceID
                };
         
-        update("UPDATE outages set svcRegainedEventID=?, ifRegainedService=? where (nodeid = ? AND ipAddr = ? AND serviceID = ? and (ifRegainedService IS NULL))", values);
+        update("UPDATE outages set svcRegainedEventID=?, ifRegainedService=? where (nodeid = ? AND ipAddr = ? AND serviceID = ? and (ifRegainedService IS NULL));", values);
     }
     
 
@@ -502,7 +513,7 @@ public class MockDatabase implements DbConnectionFactory, EventWriter {
                 "Y",
         };
         e.setDbid(eventId.intValue());
-        update("insert into events (eventId, eventSource, eventUei, eventCreateTime, eventTime, eventSeverity, nodeId, ipAddr, serviceId, eventDpName, eventLog, eventDisplay) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", values);
+        update("insert into events (eventId, eventSource, eventUei, eventCreateTime, eventTime, eventSeverity, nodeId, ipAddr, serviceId, eventDpName, eventLog, eventDisplay) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);", values);
     }
     
     public void setServiceStatus(MockService svc, char newStatus) {
@@ -511,7 +522,7 @@ public class MockDatabase implements DbConnectionFactory, EventWriter {
     }
 
     public char getServiceStatus(MockService svc) {
-        SingleResultQuerier querier = new SingleResultQuerier(this, "select status from ifServices where nodeId = ? and ipAddr = ? and serviceID = ?");
+        SingleResultQuerier querier = new SingleResultQuerier(this, "select status from ifServices where nodeId = ? and ipAddr = ? and serviceID = ?;");
         querier.execute(new Integer(svc.getNodeId()), svc.getIpAddr(), new Integer(svc.getId()));
         String result = (String)querier.getResult();
         if (result == null || "".equals(result)) {
@@ -522,11 +533,11 @@ public class MockDatabase implements DbConnectionFactory, EventWriter {
 
     public void setInterfaceStatus(MockInterface iface, char newStatus) {
         Object[] values = { String.valueOf(newStatus), new Integer(iface.getNodeId()), iface.getIpAddr() };
-        update("update ipInterface set isManaged = ? where nodeId = ? and ipAddr = ?", values);
+        update("update ipInterface set isManaged = ? where nodeId = ? and ipAddr = ?;", values);
     }
     
     public char getInterfaceStatus(MockInterface iface) {
-        SingleResultQuerier querier = new SingleResultQuerier(this, "select isManaged from ipInterface where nodeId = ? and ipAddr = ?");
+        SingleResultQuerier querier = new SingleResultQuerier(this, "select isManaged from ipInterface where nodeId = ? and ipAddr = ?;");
         querier.execute(new Integer(iface.getNodeId()), iface.getIpAddr());
         String result = (String)querier.getResult();
         if (result == null || "".equals(result)) {
@@ -545,7 +556,7 @@ public class MockDatabase implements DbConnectionFactory, EventWriter {
     
     public int countOutages(String criteria) {
         String critSql = (criteria == null ? "" : " where "+criteria);
-        return countRows("select * from outages"+critSql);
+        return countRows("select * from outages"+critSql+";");
     }
     
     public int countOutagesForInterface(MockInterface iface) {
@@ -559,7 +570,7 @@ public class MockDatabase implements DbConnectionFactory, EventWriter {
     public int countOutagesForInterface(MockInterface iface, String criteria) {
         String critSql = (criteria == null ? "" : " and "+criteria);
         Object[] values = { new Integer(iface.getNodeId()), iface.getIpAddr() };
-        return countRows("select * from outages where nodeId = ? and ipAddr = ? "+critSql, values);
+        return countRows("select * from outages where nodeId = ? and ipAddr = ? "+critSql+";", values);
     }
     
     public boolean hasOpenOutage(MockService svc) {
@@ -610,8 +621,8 @@ public class MockDatabase implements DbConnectionFactory, EventWriter {
      */
     public void reparentInterface(String ipAddr, int oldNode, int newNode) {
         Object[] values = { new Integer(newNode), new Integer(oldNode), ipAddr };
-        update("update ipInterface set nodeId = ? where nodeId = ? and ipAddr = ?", values);
-        update("update ifServices set nodeId = ? where nodeId = ? and ipAddr = ?", values);
+        update("update ipInterface set nodeId = ? where nodeId = ? and ipAddr = ?;", values);
+        update("update ifServices set nodeId = ? where nodeId = ? and ipAddr = ?;", values);
     }
 
     /**
@@ -626,7 +637,7 @@ public class MockDatabase implements DbConnectionFactory, EventWriter {
      */
     public void acknowledgeNoticesForEvent(Event e) {
         Object[] values = { new Timestamp(System.currentTimeMillis()), new Integer(e.getDbid()) };
-        update ("update notifications set respondTime = ? where eventID = ? and respondTime is null", values);
+        update ("update notifications set respondTime = ? where eventID = ? and respondTime is null;", values);
     }
 
     /**
@@ -635,7 +646,7 @@ public class MockDatabase implements DbConnectionFactory, EventWriter {
      */
     public Collection findNoticesForEvent(Event event) {
         final List notifyIds = new LinkedList();
-        Querier loadExisting = new Querier(this, "select notifyId from notifications where eventID = ?") {
+        Querier loadExisting = new Querier(this, "select notifyId from notifications where eventID = ?") {;
             public void processRow(ResultSet rs) throws SQLException {
                 notifyIds.add(rs.getObject(1));
             }
@@ -645,13 +656,13 @@ public class MockDatabase implements DbConnectionFactory, EventWriter {
     }
 
     public Integer getAlarmCount(String reductionKey) {
-        SingleResultQuerier querier = new SingleResultQuerier(this, "select counter from alarms where reductionKey = ?");
+        SingleResultQuerier querier = new SingleResultQuerier(this, "select counter from alarms where reductionKey = ?;");
         querier.execute(reductionKey);
         return (Integer)querier.getResult();
     }
 
     public Integer getAlarmId(String reductionKey) {
-        SingleResultQuerier querier = new SingleResultQuerier(this, "select alarmid from alarms where reductionKey = ?");
+        SingleResultQuerier querier = new SingleResultQuerier(this, "select alarmid from alarms where reductionKey = ?;");
         querier.execute(reductionKey);
         return (Integer)querier.getResult();
     }
