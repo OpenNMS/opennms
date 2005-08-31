@@ -83,55 +83,6 @@ public class EventConfData extends Object {
     private LinkedHashMap m_ueiToKeyListMap;
 
     /**
-     * Purely used for debugging
-     */
-    private void dumpEventMap() {
-        Category log = ThreadCategory.getInstance(EventConfData.class);
-        log.debug("Size of the map: " + m_eventMap.size());
-
-        Iterator entryIterator = m_eventMap.entrySet().iterator();
-        while (entryIterator.hasNext()) {
-            Map.Entry entry = (Map.Entry) entryIterator.next();
-            EventKey key = (EventKey) entry.getKey();
-            Object value = entry.getValue();
-
-            if (log.isDebugEnabled()) {
-                log.debug("Eventkey: " + key.toString() + " looks up: " + value);
-                log.debug("Eventkey: " + key.toString() + " looks up: " + m_eventMap.get(key));
-            }
-        }
-    }
-
-    /**
-     * See if there is a match for the event from the list of event keys
-     * 
-     * @return the eventconf entry if a match is found
-     */
-    private org.opennms.netmgt.xml.eventconf.Event getMatchInKeyList(List keylist, org.opennms.netmgt.xml.event.Event event) {
-        // dumpEventMap();
-        Iterator keysIter = keylist.iterator();
-        while (keysIter.hasNext()) {
-            EventKey eventKey = (EventKey) keysIter.next();
-
-            boolean keyMatchFound = eventMatchesKey(eventKey, event);
-
-            // if a match was found, return the config
-            if (keyMatchFound) {
-                org.opennms.netmgt.xml.eventconf.Event matchedEvent = (org.opennms.netmgt.xml.eventconf.Event) m_eventMap.get(eventKey);
-                if (matchedEvent != null) {
-                    Category log = ThreadCategory.getInstance(EventConfData.class);
-                    if (log.isDebugEnabled())
-                        log.debug("Match found using key: " + eventKey.toString());
-                }
-
-                return matchedEvent;
-            }
-        }
-
-        return null;
-    }
-
-    /**
      * Check whether the event matches the passed key
      * 
      * @return true if the event matches the passed key
@@ -163,9 +114,11 @@ public class EventConfData extends Object {
      * ending with a '%' only need to be a substring of the eventvalue for the
      * eventvalue to pass the mask
      * 
+     * Enhanced 2005/08/31 to allow regular expression in eventconf.
+     * 
      * @return true if the values passes the mask
      */
-    private boolean eventValuePassesMaskValue(String eventvalue, List maskValues) {
+    protected boolean eventValuePassesMaskValue(String eventvalue, List maskValues) {
         boolean maskMatch = false;
 
         Iterator valiter = maskValues.iterator();
@@ -175,6 +128,9 @@ public class EventConfData extends Object {
                 int len = keyvalue.length();
                 if (keyvalue.equals(eventvalue)) {
                     maskMatch = true;
+                } else if (keyvalue.charAt(0) == '~'){
+                    if (eventvalue.matches(keyvalue.substring(1)))
+                        maskMatch = true;
                 } else if (keyvalue.charAt(len - 1) == '%') {
                     if (eventvalue.startsWith(keyvalue.substring(0, len - 1)))
                         maskMatch = true;

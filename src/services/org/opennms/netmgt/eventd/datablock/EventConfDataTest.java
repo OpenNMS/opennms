@@ -5,6 +5,8 @@
 package org.opennms.netmgt.eventd.datablock;
 
 import java.io.StringReader;
+import java.util.ArrayList;
+import java.util.List;
 
 import junit.framework.TestCase;
 
@@ -203,7 +205,15 @@ public class EventConfDataTest extends TestCase {
 		MockLogAppender.assertNoWarningsOrGreater();
 	}
 	
-
+	public void testEventValuePassesMaskValue() {
+        List maskList = new ArrayList(1);
+        String eventValue = "George Clinton, father of funk";
+        maskList.add(0, "~^Bill.*Clinton.*funk$");
+        EventConfData ecd = new EventConfData();
+        assertFalse(ecd.eventValuePassesMaskValue(eventValue, maskList));
+        maskList.set(0, "~^George.*Clinton.*funk$");
+        assertTrue(ecd.eventValuePassesMaskValue(eventValue, maskList));
+    }
 	
 	public void testV1TrapNewSuspect() throws Exception {
 		anticipateAndSend(null, "v1", null, 6, 1);

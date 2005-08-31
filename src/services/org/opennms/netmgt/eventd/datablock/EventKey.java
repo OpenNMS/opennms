@@ -61,6 +61,11 @@ import java.util.Map;
  */
 public class EventKey extends LinkedHashMap implements Serializable, Comparable {
     /**
+     * 
+     */
+    private static final long serialVersionUID = 3498941419429346315L;
+
+    /**
      * The UEI xml tag
      */
     public static final String TAG_UEI = "uei";
@@ -187,8 +192,6 @@ public class EventKey extends LinkedHashMap implements Serializable, Comparable 
 
                 String name = maskelement.getMename();
 
-                // List value = new
-                // EventMaskValueList(Arrays.asList(maskelement.getMevalue()));
                 EventMaskValueList value = new EventMaskValueList();
                 String[] mevalues = maskelement.getMevalue();
                 for (int index = 0; index < mevalues.length; index++) {
