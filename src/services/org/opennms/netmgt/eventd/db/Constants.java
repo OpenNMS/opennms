@@ -294,5 +294,38 @@ public class Constants {
         }
         return rc;
     }
+    
+    /**
+     * Returns a severity constant as a printable string.
+     * 
+     * @param sev
+     * @return A capitalized String representing severity.
+     */
+    public static String getSeverityString(int sev) {
+        String retString = null;
+        switch (sev) {
+        case SEV_CLEARED :
+            retString = "Cleared";
+            break;
+        case SEV_CRITICAL :
+            retString = "Critical";
+            break;
+        case SEV_MAJOR :
+            retString = "Major";
+            break;
+        case SEV_MINOR :
+            retString = "Minor";
+            break;
+        case SEV_NORMAL :
+            retString = "Normal";
+            break;
+        case SEV_WARNING :
+            retString = "Warning";
+            break;
+        default :
+            retString = "Indeterminate";
+        }
+        return retString;
+    }
 
 }

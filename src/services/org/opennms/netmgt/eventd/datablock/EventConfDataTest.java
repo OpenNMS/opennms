@@ -213,6 +213,9 @@ public class EventConfDataTest extends TestCase {
         assertFalse(ecd.eventValuePassesMaskValue(eventValue, maskList));
         maskList.set(0, "~^George.*Clinton.*funk$");
         assertTrue(ecd.eventValuePassesMaskValue(eventValue, maskList));
+        eventValue = "Is FoxTel On Air";
+        maskList.set(0, "~.*Fox[Tt]el.*");
+        assertTrue(ecd.eventValuePassesMaskValue(eventValue, maskList));
     }
 	
 	public void testV1TrapNewSuspect() throws Exception {

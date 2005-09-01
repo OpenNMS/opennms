@@ -52,7 +52,6 @@ import org.opennms.core.utils.Base64;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.DatabaseConnectionFactory;
-import org.opennms.netmgt.config.DbConnectionFactory;
 import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
@@ -253,8 +252,6 @@ public final class EventUtil {
 	 * delimited by ATTRIB_DELIM
 	 */
 	final static char ATTRIB_DELIM = ',';
-
-        private static DbConnectionFactory m_dbConn;
 
 	/**
 	 * Converts the value of a parm ('Value') of the instance to a string
