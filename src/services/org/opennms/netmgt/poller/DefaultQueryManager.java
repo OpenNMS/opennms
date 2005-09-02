@@ -462,23 +462,34 @@ public class DefaultQueryManager implements QueryManager {
     }
 
     public void resolveOutage(int nodeId, String ipAddr, String svcName, int dbId, String time) {
-        try {
-            log().info("resolving outage for "+nodeId+":"+ipAddr+":"+svcName+" with resolution "+dbId+":"+time);
-            int serviceId = getServiceID(svcName);
-
-            String sql = "update outages set svcRegainedEventId=?, ifRegainedService=? where nodeId = ? and ipAddr = ? and serviceId = ? and ifRegainedService is null";
-            
-            Object values[] = {
-                    new Integer(dbId),
-                    convertEventTimeToTimeStamp(time),
-                    new Integer(nodeId),
-                    ipAddr,
-                    new Integer(serviceId),
-            };
-            Updater updater = new Updater(m_dbConnectionFactory, sql);
-            updater.execute(values);
-        } catch (Exception e) {
-            log().fatal(" Error resolving outage for "+nodeId+":"+ipAddr+":"+svcName, e);
+        int attempt = 1;
+        boolean notUpdated = true;
+        
+        while (attempt < 2 && notUpdated) {
+            try {
+                log().info("resolving outage for "+nodeId+":"+ipAddr+":"+svcName+" with resolution "+dbId+":"+time);
+                int serviceId = getServiceID(svcName);
+                
+                String sql = "update outages set svcRegainedEventId=?, ifRegainedService=? where nodeId = ? and ipAddr = ? and serviceId = ? and ifRegainedService is null";
+                
+                Object values[] = {
+                        new Integer(dbId),
+                        convertEventTimeToTimeStamp(time),
+                        new Integer(nodeId),
+                        ipAddr,
+                        new Integer(serviceId),
+                };
+                Updater updater = new Updater(m_dbConnectionFactory, sql);
+                updater.execute(values);
+                notUpdated = false;
+            } catch (Exception e) {
+                if (attempt > 1) {
+                    log().fatal("resolveOutage: Second and final attempt failed resolving outage for "+nodeId+":"+ipAddr+":"+svcName, e);
+                } else {
+                    log().info("resolveOutage: first attempt failed resolving outage for "+nodeId+":"+ipAddr+":"+svcName, e);
+                }
+            }
+            attempt++;
         }
     }
     
