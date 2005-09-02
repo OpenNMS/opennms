@@ -5,6 +5,7 @@
 #
 # required library for perl module OpenNMS::DbUtil and for discoverLink.pl
 # these files are required for service linkd
+# Ready to release
 
 use DBI;
 use DBD::Pg;
