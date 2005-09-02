@@ -35,7 +35,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.DbConnectionFactory;
 
 /**
@@ -101,15 +100,19 @@ abstract public class JDBCTemplate {
     private void doExecute(Object values[]) throws SQLException {
         
         Connection conn = m_db.getConnection();
+        PreparedStatement stmt = null;
          try {
              
-             PreparedStatement stmt = conn.prepareStatement(m_sql);
+             stmt = conn.prepareStatement(m_sql);
              for(int i = 0; i < values.length; i++) {
                  stmt.setObject(i+1, values[i]);
              }
              //ThreadCategory.getInstance(getClass()).debug("SQL: "+m_sql+" with vals "+argsToString(values));
              executeStmt(stmt);
          } finally {
+             if (stmt != null)
+                 stmt.close();
+             
              conn.close();
          }
     }
