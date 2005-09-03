@@ -35,6 +35,7 @@
 package org.opennms.netmgt.collectd;
 
 import org.opennms.netmgt.rrd.RRDDataSource;
+import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpValue;
 
 
@@ -123,7 +124,7 @@ public abstract class DataSource {
 		else
 			instance = this.getInstance();
 
-		return this.getOid() + "." + instance;
+        return SnmpObjId.get(getOid(), instance).toString();
 	}
 	/**
 	 * This method is used to assign the object's identifier.
