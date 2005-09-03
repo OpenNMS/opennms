@@ -1259,7 +1259,7 @@ final class SnmpCollector implements ServiceCollector {
         else
             instance = ds.getInstance();
 
-        String fullOid = ds.getOid() + "." + instance;
+        String fullOid = SnmpObjId.get(ds.getOid(), instance).toString();
 
         SnmpValue snmpVar = collectorEntry.getValue(fullOid);
         if (snmpVar == null)
