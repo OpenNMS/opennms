@@ -72,6 +72,7 @@ public class JoeSnmpWalker extends SnmpWalker {
         
         public void reset() {
             m_nextPdu = new SnmpPduRequest(SnmpPduRequest.GETNEXT);
+            m_nextPdu.setRequestId(SnmpPduPacket.nextSequence());
         }
 
         public SnmpPduPacket getPdu() {
@@ -102,6 +103,7 @@ public class JoeSnmpWalker extends SnmpWalker {
         
         public void reset() {
             m_bulkPdu = new SnmpPduBulk();
+            m_bulkPdu.setRequestId(SnmpPduPacket.nextSequence());
         }
 
         public SnmpPduPacket getPdu() {
