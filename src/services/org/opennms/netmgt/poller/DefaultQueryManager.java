@@ -422,7 +422,7 @@ public class DefaultQueryManager implements QueryManager {
     
     public void openOutage(String outageIdSQL, int nodeId, String ipAddr, String svcName, int dbId, String time) {
         
-        int attempt = 1;
+        int attempt = 0;
         boolean notUpdated = true;
         int serviceId = getServiceID(svcName);
         
@@ -462,7 +462,7 @@ public class DefaultQueryManager implements QueryManager {
     }
 
     public void resolveOutage(int nodeId, String ipAddr, String svcName, int dbId, String time) {
-        int attempt = 1;
+        int attempt = 0;
         boolean notUpdated = true;
         
         while (attempt < 2 && notUpdated) {
