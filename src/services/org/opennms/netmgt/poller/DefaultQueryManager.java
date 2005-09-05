@@ -97,6 +97,7 @@ public class DefaultQueryManager implements QueryManager {
         Category log = log();
         java.sql.Connection dbConn = null;
         PreparedStatement stmt = null;
+        ResultSet rs = null;
         try {
             dbConn = getConnection();
 
@@ -106,7 +107,7 @@ public class DefaultQueryManager implements QueryManager {
             stmt.setString(2, ipAddr);
             stmt.setString(3, serviceName);
 
-            ResultSet rs = stmt.executeQuery();
+            rs = stmt.executeQuery();
             while (rs.next()) {
                 return rs.getInt(1) > 0;
             }
@@ -116,21 +117,19 @@ public class DefaultQueryManager implements QueryManager {
         } catch (SQLException sqlE) {
             log.error("SQLException during check to see if nodeid/ip/service is active", sqlE);
         } finally {
-            // close the statement
-            if (stmt != null)
-                try {
+            try {
+                // close the result set
+                if (rs != null)
+                    rs.close();
+                // close the statement
+                if (stmt != null)
                     stmt.close();
-                } catch (SQLException sqlE) {
-                }
-            ;
-
-            // close the connection
-            if (dbConn != null)
-                try {
+                // close the connection
+                if (dbConn != null)
                     dbConn.close();
-                } catch (SQLException sqlE) {
-                }
-            ;
+            } catch (SQLException sqlE) {                
+            }
+
         }
         return false;
     }
@@ -146,12 +145,14 @@ public class DefaultQueryManager implements QueryManager {
      */
     public List getActiveServiceIdsForInterface(String ipaddr) throws SQLException {
         java.sql.Connection dbConn = getConnection();
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
         try {
             List serviceIds = new ArrayList();
             Category log = log();
-            PreparedStatement stmt = dbConn.prepareStatement(DefaultQueryManager.SQL_FETCH_IFSERVICES_TO_POLL);
+            stmt = dbConn.prepareStatement(DefaultQueryManager.SQL_FETCH_IFSERVICES_TO_POLL);
             stmt.setString(1, ipaddr);
-            ResultSet rs = stmt.executeQuery();
+            rs = stmt.executeQuery();
             if (log.isDebugEnabled())
                 log.debug("restartPollingInterfaceHandler: retrieve active service to poll on interface: " + ipaddr);
 
@@ -160,6 +161,10 @@ public class DefaultQueryManager implements QueryManager {
             }
             return serviceIds;
         } finally {
+            if (rs != null)
+                rs.close();
+            if (stmt != null)
+                stmt.close();
             dbConn.close();
         }
     }
@@ -175,6 +180,7 @@ public class DefaultQueryManager implements QueryManager {
         int nodeid = -1;
         java.sql.Connection dbConn = null;
         Statement stmt = null;
+        ResultSet rs = null;
         try {
             // Get datbase connection from the factory
             dbConn = getConnection();
@@ -182,21 +188,20 @@ public class DefaultQueryManager implements QueryManager {
             // Issue query and extract nodeLabel from result set
             stmt = dbConn.createStatement();
             String sql = "SELECT node.nodeid FROM node, ipinterface WHERE ipinterface.ipaddr='" + ipaddr + "' AND ipinterface.nodeid=node.nodeid";
-            ResultSet rs = stmt.executeQuery(sql);
+            rs = stmt.executeQuery(sql);
             if (rs.next()) {
                 nodeid = rs.getInt(1);
                 if (log.isDebugEnabled())
                     log.debug("getNodeLabel: ipaddr=" + ipaddr + " nodeid=" + nodeid);
             }
         } finally {
-            // Close the statement
-            if (stmt != null) {
-                try {
+            try {
+                if (rs != null)
+                    rs.close();
+                if (stmt != null)
                     stmt.close();
-                } catch (Exception e) {
-                    if (log.isDebugEnabled())
-                        log.debug("getNodeLabel: an exception occured closing the SQL statement", e);
-                }
+            } catch (Exception e) {
+                    log.debug("getNodeLabel: an exception occured closing the SQL statement", e);
             }
 
             // Close the database connection
@@ -224,27 +229,29 @@ public class DefaultQueryManager implements QueryManager {
         String nodeLabel = null;
         java.sql.Connection dbConn = null;
         Statement stmt = null;
+        ResultSet rs = null;
         try {
             // Get datbase connection from the factory
             dbConn = getConnection();
 
             // Issue query and extract nodeLabel from result set
             stmt = dbConn.createStatement();
-            ResultSet rs = stmt.executeQuery("SELECT nodelabel FROM node WHERE nodeid=" + String.valueOf(nodeId));
+            rs = stmt.executeQuery("SELECT nodelabel FROM node WHERE nodeid=" + String.valueOf(nodeId));
             if (rs.next()) {
                 nodeLabel = (String) rs.getString("nodelabel");
                 if (log.isDebugEnabled())
                     log.debug("getNodeLabel: nodeid=" + nodeId + " nodelabel=" + nodeLabel);
             }
         } finally {
-            // Close the statement
-            if (stmt != null) {
-                try {
+            
+            try {
+                if (rs != null)
+                    rs.close();
+                if (stmt != null)
                     stmt.close();
-                } catch (Exception e) {
-                    if (log.isDebugEnabled())
-                        log.debug("getNodeLabel: an exception occured closing the SQL statement", e);
-                }
+            } catch (Exception e) {
+                if (log.isDebugEnabled())
+                    log.debug("getNodeLabel: an exception occured closing the SQL statement", e);
             }
 
             // Close the database connection
@@ -269,24 +276,30 @@ public class DefaultQueryManager implements QueryManager {
     public int getServiceCountForInterface(String ipaddr) throws SQLException {
         Category log = log();
         java.sql.Connection dbConn = getConnection();
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        int count = -1;
         try {
-            int count = -1;
             // Count active services to poll
-            PreparedStatement stmt = dbConn.prepareStatement(DefaultQueryManager.SQL_COUNT_IFSERVICES_TO_POLL);
+            stmt = dbConn.prepareStatement(DefaultQueryManager.SQL_COUNT_IFSERVICES_TO_POLL);
 
             stmt.setString(1, ipaddr);
 
-            ResultSet rs = stmt.executeQuery();
+            rs = stmt.executeQuery();
             while (rs.next()) {
                 count = rs.getInt(1);
                 if (log.isDebugEnabled())
                     log.debug("restartPollingInterfaceHandler: count active ifservices to poll for interface: " + ipaddr);
             }
-            stmt.close();
-            return count;
         } finally {
-            dbConn.close();
+            if (rs != null)
+                rs.close();
+            if (stmt != null)
+                stmt.close();
+            if (dbConn != null)
+                dbConn.close();
         }
+        return count;
     }
 
     /**
@@ -315,7 +328,15 @@ public class DefaultQueryManager implements QueryManager {
             IfKey key = new IfKey(rs.getInt(1), rs.getString(2));
             ifkeys.add(key);
         }
-        rs.close();
+        
+        //Clean-up
+        if (rs != null)
+            rs.close();
+        if (stmt != null)
+            stmt.close();
+        if (dbConn != null)
+            dbConn.close();
+        
         return ifkeys;
     }
 
@@ -338,6 +359,7 @@ public class DefaultQueryManager implements QueryManager {
             return svcLostDate;
         }
 
+        PreparedStatement outagesQuery = null;
         ResultSet outagesResult = null;
         Timestamp regainedDate = null;
         Timestamp lostDate = null;
@@ -346,7 +368,7 @@ public class DefaultQueryManager implements QueryManager {
         try {
             dbConn = getConnection();
             // get the outage information for this service on this ip address
-            PreparedStatement outagesQuery = dbConn.prepareStatement(DefaultQueryManager.SQL_RETRIEVE_SERVICE_STATUS);
+            outagesQuery = dbConn.prepareStatement(DefaultQueryManager.SQL_RETRIEVE_SERVICE_STATUS);
 
             // add the values for the main query
             outagesQuery.setInt(1, nodeId);
@@ -376,14 +398,15 @@ public class DefaultQueryManager implements QueryManager {
         } catch (SQLException sqlE) {
             log.error("SQL exception while retrieving last known service status for " + ipAddr + "/" + svcName);
         } finally {
-            if (outagesResult != null) {
-                try {
+            try {
+                if (outagesResult != null)
                     outagesResult.close();
-                    if (dbConn != null)
-                        dbConn.close();
-                } catch (SQLException slqE) {
-                    // Do nothing
-                }
+                if (outagesQuery != null)
+                    outagesQuery.close();
+                if (dbConn != null)
+                    dbConn.close();
+            } catch (SQLException slqE) {
+                // Do nothing
             }
         }
 
