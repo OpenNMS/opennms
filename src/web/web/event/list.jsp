@@ -260,7 +260,11 @@
 
       <table width="100%" cellspacing="1" cellpadding="2" border="0" bordercolor="black">
         <tr bgcolor="#999999">
+          <% if ( parms.ackType == EventFactory.AcknowledgeType.UNACKNOWLEDGED ) { %>
           <td width="1%"><b>Ack</b></td>
+          <% } else { %>
+          <td width="1%"><b>UnAck</b></td>
+          <% } %>
           <td width="1%"> <%=this.makeSortLink( parms, EventFactory.SortStyle.ID,        EventFactory.SortStyle.REVERSE_ID,        "id",        "ID" )%></td>
           <td width="10%"><%=this.makeSortLink( parms, EventFactory.SortStyle.SEVERITY,  EventFactory.SortStyle.REVERSE_SEVERITY,  "severity",  "Severity"  )%></td>
           <td width="19%"><%=this.makeSortLink( parms, EventFactory.SortStyle.TIME,      EventFactory.SortStyle.REVERSE_TIME,      "time",      "Time"      )%></td>

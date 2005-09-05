@@ -4,7 +4,7 @@
                 version='1.0'>
 
 <!-- ********************************************************************
-     $Id: biblio.xsl,v 1.27 2004/01/29 13:59:00 nwalsh Exp $
+     $Id: biblio.xsl,v 1.32 2004/10/17 20:15:55 nwalsh Exp $
      ********************************************************************
 
      This file is part of the XSL DocBook Stylesheet distribution.
@@ -32,11 +32,20 @@
           <xsl:call-template name="l10n.language"/>
         </xsl:attribute>
         <xsl:attribute name="format">
-          <xsl:call-template name="page.number.format"/>
+          <xsl:call-template name="page.number.format">
+            <xsl:with-param name="master-reference" select="$master-reference"/>
+          </xsl:call-template>
         </xsl:attribute>
-        <xsl:if test="$double.sided != 0">
-          <xsl:attribute name="initial-page-number">auto-odd</xsl:attribute>
-        </xsl:if>
+        <xsl:attribute name="initial-page-number">
+          <xsl:call-template name="initial.page.number">
+            <xsl:with-param name="master-reference" select="$master-reference"/>
+          </xsl:call-template>
+        </xsl:attribute>
+        <xsl:attribute name="force-page-count">
+          <xsl:call-template name="force.page.count">
+            <xsl:with-param name="master-reference" select="$master-reference"/>
+          </xsl:call-template>
+        </xsl:attribute>
         <xsl:attribute name="hyphenation-character">
           <xsl:call-template name="gentext">
             <xsl:with-param name="key" select="'hyphenation-character'"/>
@@ -126,14 +135,30 @@
 <!-- ==================================================================== -->
 
 <xsl:template match="biblioentry">
-  <xsl:variable name="id"><xsl:call-template name="object.id"/></xsl:variable>
+  <xsl:param name="label">
+    <xsl:call-template name="biblioentry.label"/>
+  </xsl:param>
+
+  <xsl:variable name="id">
+    <xsl:call-template name="object.id"/>
+  </xsl:variable>
+
   <xsl:choose>
     <xsl:when test="string(.) = ''">
       <xsl:variable name="bib" select="document($bibliography.collection,.)"/>
       <xsl:variable name="entry" select="$bib/bibliography/*[@id=$id][1]"/>
       <xsl:choose>
         <xsl:when test="$entry">
-          <xsl:apply-templates select="$entry"/>
+	  <xsl:choose>
+	    <xsl:when test="$bibliography.numbered != 0">
+	      <xsl:apply-templates select="$entry">
+		<xsl:with-param name="label" select="$label"/>
+	      </xsl:apply-templates>
+	    </xsl:when>
+	    <xsl:otherwise>
+	      <xsl:apply-templates select="$entry"/>
+	    </xsl:otherwise>
+	  </xsl:choose>
         </xsl:when>
         <xsl:otherwise>
           <xsl:message>
@@ -154,7 +179,7 @@
     <xsl:otherwise>
       <fo:block id="{$id}" xsl:use-attribute-sets="normal.para.spacing"
                 start-indent="0.5in" text-indent="-0.5in">
-        <xsl:call-template name="biblioentry.label"/>
+	<xsl:copy-of select="$label"/>
         <xsl:apply-templates mode="bibliography.mode"/>
       </fo:block>
     </xsl:otherwise>
@@ -162,14 +187,30 @@
 </xsl:template>
 
 <xsl:template match="bibliomixed">
-  <xsl:variable name="id"><xsl:call-template name="object.id"/></xsl:variable>
+  <xsl:param name="label">
+    <xsl:call-template name="biblioentry.label"/>
+  </xsl:param>
+
+  <xsl:variable name="id">
+    <xsl:call-template name="object.id"/>
+  </xsl:variable>
+
   <xsl:choose>
     <xsl:when test="string(.) = ''">
       <xsl:variable name="bib" select="document($bibliography.collection,.)"/>
       <xsl:variable name="entry" select="$bib/bibliography/*[@id=$id][1]"/>
       <xsl:choose>
         <xsl:when test="$entry">
-          <xsl:apply-templates select="$entry"/>
+	  <xsl:choose>
+	    <xsl:when test="$bibliography.numbered != 0">
+	      <xsl:apply-templates select="$entry">
+		<xsl:with-param name="label" select="$label"/>
+	      </xsl:apply-templates>
+	    </xsl:when>
+	    <xsl:otherwise>
+	      <xsl:apply-templates select="$entry"/>
+	    </xsl:otherwise>
+	  </xsl:choose>
         </xsl:when>
         <xsl:otherwise>
           <xsl:message>
@@ -190,7 +231,7 @@
     <xsl:otherwise>
       <fo:block id="{$id}" xsl:use-attribute-sets="normal.para.spacing"
                 start-indent="0.5in" text-indent="-0.5in">
-        <xsl:call-template name="biblioentry.label"/>
+	<xsl:copy-of select="$label"/>
         <xsl:apply-templates mode="bibliomixed.mode"/>
       </fo:block>
     </xsl:otherwise>
@@ -452,6 +493,13 @@
 <!-- ================================================== -->
 
 <xsl:template match="corpauthor" mode="bibliography.mode">
+  <fo:inline>
+    <xsl:apply-templates mode="bibliography.mode"/>
+    <xsl:value-of select="$biblioentry.item.separator"/>
+  </fo:inline>
+</xsl:template>
+
+<xsl:template match="corpcredit" mode="bibliography.mode">
   <fo:inline>
     <xsl:apply-templates mode="bibliography.mode"/>
     <xsl:value-of select="$biblioentry.item.separator"/>
@@ -902,6 +950,12 @@
 </xsl:template>
 
 <xsl:template match="corpauthor" mode="bibliomixed.mode">
+  <fo:inline>
+    <xsl:apply-templates mode="bibliomixed.mode"/>
+  </fo:inline>
+</xsl:template>
+
+<xsl:template match="corpcredit" mode="bibliomixed.mode">
   <fo:inline>
     <xsl:apply-templates mode="bibliomixed.mode"/>
   </fo:inline>

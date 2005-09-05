@@ -34,13 +34,16 @@
 
 package org.opennms.netmgt.eventd.jmx;
 
+public interface EventdMBean {
+    public void init();
 
-public interface EventdMBean
-{
-	public void init();
-	public void start();
-	public void stop();
-	public int getStatus();
-	public String status();
-	public String getStatusText();
+    public void start();
+
+    public void stop();
+
+    public int getStatus();
+
+    public String status();
+
+    public String getStatusText();
 }

@@ -1,10 +1,10 @@
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
                 xmlns:exsl="http://exslt.org/common"
-		version="1.0"
+                version="1.0"
                 exclude-result-prefixes="exsl">
 
 <!-- ********************************************************************
-     $Id: chunk-code.xsl,v 1.4 2003/11/30 19:42:23 bobstayton Exp $
+     $Id: chunk-code.xsl,v 1.10 2004/10/14 17:11:02 xmldoc Exp $
      ********************************************************************
 
      This file is part of the XSL DocBook Stylesheet distribution.
@@ -242,9 +242,10 @@
              |preceding::refentry[1]
              |preceding::colophon[1]
              |preceding::article[1]
-             |preceding::bibliography[1]
-             |preceding::glossary[1]
-             |preceding::index[$generate.index != 0][1]
+             |preceding::bibliography[parent::article or parent::book or parent::part][1]
+             |preceding::glossary[parent::article or parent::book or parent::part][1]
+             |preceding::index[$generate.index != 0]
+	                       [parent::article or parent::book or parent::part][1]
              |preceding::setindex[$generate.index != 0][1]
              |ancestor::set
              |ancestor::book[1]
@@ -326,9 +327,10 @@
              |following::reference[1]
              |following::refentry[1]
              |following::colophon[1]
-             |following::bibliography[1]
-             |following::glossary[1]
-             |following::index[$generate.index != 0][1]
+             |following::bibliography[parent::article or parent::book or parent::part][1]
+             |following::glossary[parent::article or parent::book or parent::part][1]
+             |following::index[$generate.index != 0]
+	                       [parent::article or parent::book or parent::part][1]
              |following::article[1]
              |following::setindex[$generate.index != 0][1]
              |descendant::book[1]
@@ -336,9 +338,10 @@
              |descendant::chapter[1]
              |descendant::appendix[1]
              |descendant::article[1]
-             |descendant::bibliography[1]
-             |descendant::glossary[1]
-             |descendant::index[$generate.index != 0][1]
+             |descendant::bibliography[parent::article or parent::book or parent::part][1]
+             |descendant::glossary[parent::article or parent::book or parent::part][1]
+             |descendant::index[$generate.index != 0]
+	                       [parent::article or parent::book or parent::part][1]
              |descendant::colophon[1]
              |descendant::setindex[$generate.index != 0][1]
              |descendant::part[1]
@@ -385,9 +388,10 @@
              |preceding::refentry[1]
              |preceding::colophon[1]
              |preceding::article[1]
-             |preceding::bibliography[1]
-             |preceding::glossary[1]
-             |preceding::index[$generate.index != 0][1]
+             |preceding::bibliography[parent::article or parent::book or parent::part][1]
+             |preceding::glossary[parent::article or parent::book or parent::part][1]
+             |preceding::index[$generate.index != 0]
+	                       [parent::article or parent::book or parent::part][1]
              |preceding::setindex[$generate.index != 0][1]
              |ancestor::set
              |ancestor::book[1]
@@ -426,9 +430,10 @@
              |following::reference[1]
              |following::refentry[1]
              |following::colophon[1]
-             |following::bibliography[1]
-             |following::glossary[1]
-             |following::index[$generate.index != 0][1]
+             |following::bibliography[parent::article or parent::book or parent::part][1]
+             |following::glossary[parent::article or parent::book or parent::part][1]
+             |following::index[$generate.index != 0]
+	                       [parent::article or parent::book][1]
              |following::article[1]
              |following::setindex[$generate.index != 0][1]
              |descendant::book[1]
@@ -436,9 +441,10 @@
              |descendant::chapter[1]
              |descendant::appendix[1]
              |descendant::article[1]
-             |descendant::bibliography[1]
-             |descendant::glossary[1]
-             |descendant::index[$generate.index != 0][1]
+             |descendant::bibliography[parent::article or parent::book][1]
+             |descendant::glossary[parent::article or parent::book or parent::part][1]
+             |descendant::index[$generate.index != 0]
+	                       [parent::article or parent::book][1]
              |descendant::colophon[1]
              |descendant::setindex[$generate.index != 0][1]
              |descendant::part[1]
@@ -517,7 +523,7 @@
                      |article
                      |reference|refentry
                      |book/glossary|article/glossary|part/glossary
-                     |book/bibliography|article/bibliography
+                     |book/bibliography|article/bibliography|part/bibliography
                      |colophon">
   <xsl:choose>
     <xsl:when test="$onechunk != 0 and parent::*">
@@ -549,7 +555,8 @@
 
 <xsl:template match="setindex
                      |book/index
-                     |article/index">
+                     |article/index
+                     |part/index">
   <!-- some implementations use completely empty index tags to indicate -->
   <!-- where an automatically generated index should be inserted. so -->
   <!-- if the index is completely empty, skip it. -->
@@ -570,31 +577,113 @@
     </xsl:if>
 
     <xsl:if test="contains($toc.params, 'figure')">
-      <xsl:call-template name="list.of.titles">
-        <xsl:with-param name="titles" select="'figure'"/>
-        <xsl:with-param name="nodes" select=".//figure"/>
-      </xsl:call-template>
+      <xsl:choose>
+        <xsl:when test="$chunk.separate.lots != '0'">
+          <xsl:call-template name="make.lot.chunk">
+            <xsl:with-param name="type" select="'figure'"/>
+            <xsl:with-param name="lot">
+              <xsl:call-template name="list.of.titles">
+                <xsl:with-param name="titles" select="'figure'"/>
+                <xsl:with-param name="nodes" select=".//figure"/>
+              </xsl:call-template>
+            </xsl:with-param>
+          </xsl:call-template>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:call-template name="list.of.titles">
+            <xsl:with-param name="titles" select="'figure'"/>
+            <xsl:with-param name="nodes" select=".//figure"/>
+          </xsl:call-template>
+        </xsl:otherwise>
+      </xsl:choose>
     </xsl:if>
 
     <xsl:if test="contains($toc.params, 'table')">
-      <xsl:call-template name="list.of.titles">
-        <xsl:with-param name="titles" select="'table'"/>
-        <xsl:with-param name="nodes" select=".//table"/>
-      </xsl:call-template>
+      <xsl:choose>
+        <xsl:when test="$chunk.separate.lots != '0'">
+          <xsl:call-template name="make.lot.chunk">
+            <xsl:with-param name="type" select="'table'"/>
+            <xsl:with-param name="lot">
+              <xsl:call-template name="list.of.titles">
+                <xsl:with-param name="titles" select="'table'"/>
+                <xsl:with-param name="nodes" select=".//table"/>
+              </xsl:call-template>
+            </xsl:with-param>
+          </xsl:call-template>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:call-template name="list.of.titles">
+            <xsl:with-param name="titles" select="'table'"/>
+            <xsl:with-param name="nodes" select=".//table"/>
+          </xsl:call-template>
+        </xsl:otherwise>
+      </xsl:choose>
     </xsl:if>
 
     <xsl:if test="contains($toc.params, 'example')">
-      <xsl:call-template name="list.of.titles">
-        <xsl:with-param name="titles" select="'example'"/>
-        <xsl:with-param name="nodes" select=".//example"/>
-      </xsl:call-template>
+      <xsl:choose>
+        <xsl:when test="$chunk.separate.lots != '0'">
+          <xsl:call-template name="make.lot.chunk">
+            <xsl:with-param name="type" select="'example'"/>
+            <xsl:with-param name="lot">
+              <xsl:call-template name="list.of.titles">
+                <xsl:with-param name="titles" select="'example'"/>
+                <xsl:with-param name="nodes" select=".//example"/>
+              </xsl:call-template>
+            </xsl:with-param>
+          </xsl:call-template>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:call-template name="list.of.titles">
+            <xsl:with-param name="titles" select="'example'"/>
+            <xsl:with-param name="nodes" select=".//example"/>
+          </xsl:call-template>
+        </xsl:otherwise>
+      </xsl:choose>
     </xsl:if>
 
     <xsl:if test="contains($toc.params, 'equation')">
-      <xsl:call-template name="list.of.titles">
-        <xsl:with-param name="titles" select="'equation'"/>
-        <xsl:with-param name="nodes" select=".//equation[title]"/>
-      </xsl:call-template>
+      <xsl:choose>
+        <xsl:when test="$chunk.separate.lots != '0'">
+          <xsl:call-template name="make.lot.chunk">
+            <xsl:with-param name="type" select="'equation'"/>
+            <xsl:with-param name="lot">
+              <xsl:call-template name="list.of.titles">
+                <xsl:with-param name="titles" select="'equation'"/>
+                <xsl:with-param name="nodes" select=".//equation"/>
+              </xsl:call-template>
+            </xsl:with-param>
+          </xsl:call-template>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:call-template name="list.of.titles">
+            <xsl:with-param name="titles" select="'equation'"/>
+            <xsl:with-param name="nodes" select=".//equation"/>
+          </xsl:call-template>
+        </xsl:otherwise>
+      </xsl:choose>
+    </xsl:if>
+
+    <xsl:if test="contains($toc.params, 'procedure')">
+      <xsl:choose>
+        <xsl:when test="$chunk.separate.lots != '0'">
+          <xsl:call-template name="make.lot.chunk">
+            <xsl:with-param name="type" select="'procedure'"/>
+            <xsl:with-param name="lot">
+              <xsl:call-template name="list.of.titles">
+                <xsl:with-param name="titles" select="'procedure'"/>
+                <xsl:with-param name="nodes" select=".//procedure[title]"/>
+              </xsl:call-template>
+            </xsl:with-param>
+          </xsl:call-template>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:call-template name="list.of.titles">
+            <xsl:with-param name="titles" select="'procedure'"/>
+            <xsl:with-param name="nodes" select=".//procedure[title]"/>
+          </xsl:call-template>
+        </xsl:otherwise>
+      </xsl:choose>
     </xsl:if>
   </xsl:variable>
 
@@ -607,7 +696,9 @@
               <xsl:with-param name="base.dir" select="$base.dir"/>
               <xsl:with-param name="base.name">
                 <xsl:call-template name="dbhtml-dir"/>
-                <xsl:apply-templates select="." mode="recursive-chunk-filename"/>
+                <xsl:apply-templates select="." mode="recursive-chunk-filename">
+                  <xsl:with-param name="recursive" select="true()"/>
+                </xsl:apply-templates>
                 <xsl:text>-toc</xsl:text>
                 <xsl:value-of select="$html.ext"/>
               </xsl:with-param>
@@ -633,6 +724,71 @@
         <xsl:copy-of select="$lots"/>
       </xsl:otherwise>
     </xsl:choose>
+  </xsl:if>
+</xsl:template>
+
+<xsl:template name="make.lot.chunk">
+  <xsl:param name="type" select="''"/>
+  <xsl:param name="lot"/>
+
+  <xsl:if test="string($lot) != ''">
+    <xsl:variable name="filename">
+      <xsl:call-template name="make-relative-filename">
+        <xsl:with-param name="base.dir" select="$base.dir"/>
+        <xsl:with-param name="base.name">
+          <xsl:call-template name="dbhtml-dir"/>
+          <xsl:value-of select="$type"/>
+          <xsl:text>-toc</xsl:text>
+          <xsl:value-of select="$html.ext"/>
+        </xsl:with-param>
+      </xsl:call-template>
+    </xsl:variable>
+
+    <xsl:variable name="href">
+      <xsl:call-template name="make-relative-filename">
+        <xsl:with-param name="base.name">
+          <xsl:call-template name="dbhtml-dir"/>
+          <xsl:value-of select="$type"/>
+          <xsl:text>-toc</xsl:text>
+          <xsl:value-of select="$html.ext"/>
+        </xsl:with-param>
+      </xsl:call-template>
+    </xsl:variable>
+
+    <xsl:call-template name="write.chunk">
+      <xsl:with-param name="filename" select="$filename"/>
+      <xsl:with-param name="content">
+        <xsl:call-template name="chunk-element-content">
+          <xsl:with-param name="prev" select="/foo"/>
+          <xsl:with-param name="next" select="/foo"/>
+          <xsl:with-param name="nav.context" select="'toc'"/>
+          <xsl:with-param name="content">
+            <xsl:copy-of select="$lot"/>
+          </xsl:with-param>
+        </xsl:call-template>
+      </xsl:with-param>
+      <xsl:with-param name="quiet" select="$chunk.quietly"/>
+    </xsl:call-template>
+    <!-- And output a link to this file -->
+    <div>
+      <xsl:attribute name="class">
+        <xsl:text>ListofTitles</xsl:text>
+      </xsl:attribute>
+      <a href="{$href}">
+        <xsl:call-template name="gentext">
+          <xsl:with-param name="key">
+            <xsl:choose>
+              <xsl:when test="$type='table'">ListofTables</xsl:when>
+              <xsl:when test="$type='figure'">ListofFigures</xsl:when>
+              <xsl:when test="$type='equation'">ListofEquations</xsl:when>
+              <xsl:when test="$type='example'">ListofExamples</xsl:when>
+              <xsl:when test="$type='procedure'">ListofProcedures</xsl:when>
+              <xsl:otherwise>ListofUnknown</xsl:otherwise>
+            </xsl:choose>
+          </xsl:with-param>
+        </xsl:call-template>
+      </a>
+    </div>
   </xsl:if>
 </xsl:template>
 
@@ -819,5 +975,26 @@
 </xsl:template>
 
 <!-- ====================================================================== -->
+
+<!-- Resolve xml:base attributes -->
+<xsl:template match="@fileref">
+  <!-- need a check for absolute urls -->
+  <xsl:choose>
+    <xsl:when test="contains(., ':')">
+      <!-- it has a uri scheme so it is an absolute uri -->
+      <xsl:value-of select="."/>
+    </xsl:when>
+    <xsl:otherwise>
+      <!-- its a relative uri -->
+      <xsl:call-template name="relative-uri">
+        <xsl:with-param name="destdir">
+          <xsl:call-template name="dbhtml-dir">
+            <xsl:with-param name="context" select=".."/>
+          </xsl:call-template>
+        </xsl:with-param>
+      </xsl:call-template>
+    </xsl:otherwise>
+  </xsl:choose>
+</xsl:template>
 
 </xsl:stylesheet>

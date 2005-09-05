@@ -128,7 +128,7 @@
 			<para>
 				The poller daemon uses poller plugins for polling managed interfaces for
 				the current status of the services supported by the interface.  A poller 
-				plugin is a	Java class which implements the org.opennms.netmgt.poller.ServiceMonitor 
+				plugin is a	Java class which implements the org.opennms.netmgt.poller.monitors.ServiceMonitor 
 				interface.  The interface defines the following methods which must be 
 				implemented in the plugin:
 				<programlisting>
@@ -145,7 +145,7 @@
 		Called by the poller daemon during shutdown.  This provides a 
 		mechanism for the plugin to release any acquired resources. 
 	
-	public void initialize(org.opennms.netmgt.poller.NetworkInterface iface);
+	public void initialize(org.opennms.netmgt.poller.monitors.NetworkInterface iface);
 	
 		Called by the poller daemon whenever the poller learns of a new
 		interface which supports the service polled by the plugin.  
@@ -226,7 +226,7 @@
 				Consider the following poller-configuration.xml &lt;monitor&gt; entry for the
 				FTP service:	
 				<programlisting>
-	&lt;monitor service="FTP"  	class-name="org.opennms.netmgt.poller.FtpMonitor"/&gt;
+	&lt;monitor service="FTP"  	class-name="org.opennms.netmgt.poller.monitors.FtpMonitor"/&gt;
 				</programlisting>
 			</para>
 			<para>

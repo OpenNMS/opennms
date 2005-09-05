@@ -7,6 +7,8 @@
 			<sequence>
 				<element ref="auto-acknowledge" minOccurs="0" maxOccurs="unbounded"/>
                                 <element ref="queue" minOccurs="1" maxOccurs="unbounded"/>
+				<element name="outage-calendar" type="string" minOccurs="0" maxOccurs="unbounded"/>
+
 			</sequence>
                         <attribute name="status" type="string" use="required"/>
 			<attribute name="pages-sent" type="string" use="required"/>
@@ -24,9 +26,10 @@
                         <sequence>
                                 <element name="match" type="string" minOccurs="1" maxOccurs="unbounded"/>
                         </sequence>
+                        <attribute name="resolution-prefix" type="string" default="RESOLVED: " />
                         <attribute name="uei" type="string" use="required"/>
                         <attribute name="acknowledge" type="string" use="required"/>
-                        <attribute name="clear" type="boolean" use="optional"/>
+                        <attribute name="notify" type="boolean" default = "true" use="optional"/>
                 </complexType>
         </element>
         

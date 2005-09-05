@@ -54,7 +54,8 @@ import org.opennms.netmgt.config.service.ServiceConfiguration;
 import org.xml.sax.InputSource;
 
 /**
- * <p>This factory class is designed to be the main interface between the service
+ * <p>
+ * This factory class is designed to be the main interface between the service
  * configuration information and the users of the information. When initialized
  * the factory loads the configuration from the file system, allowing access to
  * the information by others. The <code>init<code> method may be called by more
@@ -71,146 +72,126 @@ import org.xml.sax.InputSource;
  * @author <a href="http://www.opennms.org/">OpenNMS</a>
  *
  */
-public final class ServiceConfigFactory
-{
-	/**
-	 * The singleton instance of this factory
-	 */
-	private static ServiceConfigFactory	m_singleton = null;
+public final class ServiceConfigFactory {
+    /**
+     * The singleton instance of this factory
+     */
+    private static ServiceConfigFactory m_singleton = null;
 
-	/**
-	 * This member is set to true if the configuration file
-	 * has been loaded.
-	 */
-	private static boolean			m_loaded = false;
+    /**
+     * This member is set to true if the configuration file has been loaded.
+     */
+    private static boolean m_loaded = false;
 
-	/**
-	 * The loaded configuration after is has been unmarhsalled
-	 * by castor.
-	 */
-	private ServiceConfiguration		m_config;
+    /**
+     * The loaded configuration after is has been unmarhsalled by castor.
+     */
+    private ServiceConfiguration m_config;
 
-	/**
-	 * Private constructor. This constructor used to load the 
-	 * specified configuration file and initialized an instance
-	 * of the class.
-	 *
-	 * @param configFile	The name of the configuration file.
-	 *
-	 * @exception java.io.IOException Thrown if the specified config
-	 * 	file cannot be read
-	 * @exception org.exolab.castor.xml.MarshalException Thrown if the 
-	 * 	file does not conform to the schema.
-	 * @exception org.exolab.castor.xml.ValidationException Thrown if 
-	 *	the contents do not match the required schema.
-	 */
-	private ServiceConfigFactory(String configFile)
-		throws 	IOException,
-			MarshalException, 
-			ValidationException
-	{
-		InputSource cfgIn = new InputSource(new FileInputStream(configFile));
-		cfgIn.setSystemId(configFile);
+    /**
+     * Private constructor. This constructor used to load the specified
+     * configuration file and initialized an instance of the class.
+     * 
+     * @param configFile
+     *            The name of the configuration file.
+     * 
+     * @exception java.io.IOException
+     *                Thrown if the specified config file cannot be read
+     * @exception org.exolab.castor.xml.MarshalException
+     *                Thrown if the file does not conform to the schema.
+     * @exception org.exolab.castor.xml.ValidationException
+     *                Thrown if the contents do not match the required schema.
+     */
+    private ServiceConfigFactory(String configFile) throws IOException, MarshalException, ValidationException {
+        InputSource cfgIn = new InputSource(new FileInputStream(configFile));
+        cfgIn.setSystemId(configFile);
 
-		// load the config
-		//
-		m_config = (ServiceConfiguration) Unmarshaller.unmarshal(ServiceConfiguration.class, cfgIn);
-	}
+        // load the config
+        //
+        m_config = (ServiceConfiguration) Unmarshaller.unmarshal(ServiceConfiguration.class, cfgIn);
+    }
 
-	/**
-	 * Load the config from the default config file and create the 
-	 * singleton instance of this factory.
-	 *
-	 * @exception java.io.IOException Thrown if the specified config
-	 * 	file cannot be read
-	 * @exception org.exolab.castor.xml.MarshalException Thrown if the 
-	 * 	file does not conform to the schema.
-	 * @exception org.exolab.castor.xml.ValidationException Thrown if 
-	 *	the contents do not match the required schema.
-	 */
-	public static synchronized void init()
-		throws 	IOException,
-			MarshalException, 
-			ValidationException
-	{
-		if (m_loaded)
-		{
-			// init already called - return
-			// to reload, reload() will need to be called
-			return;
-		}
+    /**
+     * Load the config from the default config file and create the singleton
+     * instance of this factory.
+     * 
+     * @exception java.io.IOException
+     *                Thrown if the specified config file cannot be read
+     * @exception org.exolab.castor.xml.MarshalException
+     *                Thrown if the file does not conform to the schema.
+     * @exception org.exolab.castor.xml.ValidationException
+     *                Thrown if the contents do not match the required schema.
+     */
+    public static synchronized void init() throws IOException, MarshalException, ValidationException {
+        if (m_loaded) {
+            // init already called - return
+            // to reload, reload() will need to be called
+            return;
+        }
 
-		File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.SERVICE_CONF_FILE_NAME);
+        File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.SERVICE_CONF_FILE_NAME);
 
-		Category log = ThreadCategory.getInstance(ServiceConfigFactory.class);
-		if(log.isDebugEnabled())
-			log.debug("ServiceConfigFactory.init: config file path " + cfgFile.getPath());
-		
-		m_singleton = new ServiceConfigFactory(cfgFile.getPath());
-		m_loaded    = true;
-	}
+        Category log = ThreadCategory.getInstance(ServiceConfigFactory.class);
+        if (log.isDebugEnabled())
+            log.debug("ServiceConfigFactory.init: config file path " + cfgFile.getPath());
 
-	/**
-	 * Reload the config from the default config file
-	 *
-	 * @exception java.io.IOException Thrown if the specified config
-	 * 	file cannot be read/loaded
-	 * @exception org.exolab.castor.xml.MarshalException Thrown if the 
-	 * 	file does not conform to the schema.
-	 * @exception org.exolab.castor.xml.ValidationException Thrown if 
-	 *	the contents do not match the required schema.
-	 */
-	public static synchronized void reload()
-		throws 	IOException,
-			MarshalException, 
-			ValidationException
-	{
-		m_singleton = null;
-		m_loaded    = false;
+        m_singleton = new ServiceConfigFactory(cfgFile.getPath());
+        m_loaded = true;
+    }
 
-		init();
-	}
+    /**
+     * Reload the config from the default config file
+     * 
+     * @exception java.io.IOException
+     *                Thrown if the specified config file cannot be read/loaded
+     * @exception org.exolab.castor.xml.MarshalException
+     *                Thrown if the file does not conform to the schema.
+     * @exception org.exolab.castor.xml.ValidationException
+     *                Thrown if the contents do not match the required schema.
+     */
+    public static synchronized void reload() throws IOException, MarshalException, ValidationException {
+        m_singleton = null;
+        m_loaded = false;
 
-	/**
-	 * Returns the currently defined singleton instance of the
-	 * factory. There is only one instance of the configuration
-	 * information, and it will not change unless the
-	 * <code>reload</code> method is called.
-	 *
-	 * @return The singular instance of the factory class.
-	 *
-	 * @throws java.lang.IllegalStateException Thrown if the factory
-	 * 	has not yet been initialized.
-	 *
-	 */
-	public static synchronized ServiceConfigFactory getInstance()
-	{
-		if(!m_loaded)
-			throw new IllegalStateException("Factory not initialized");
+        init();
+    }
 
-		return m_singleton;
-	}
+    /**
+     * Returns the currently defined singleton instance of the factory. There is
+     * only one instance of the configuration information, and it will not
+     * change unless the <code>reload</code> method is called.
+     * 
+     * @return The singular instance of the factory class.
+     * 
+     * @throws java.lang.IllegalStateException
+     *             Thrown if the factory has not yet been initialized.
+     * 
+     */
+    public static synchronized ServiceConfigFactory getInstance() {
+        if (!m_loaded)
+            throw new IllegalStateException("Factory not initialized");
 
-	/**
-	 * Returns an array of all the defined configuration
-	 * information for the <em>Services</em>. 
-	 * If there are no defined services an array of 
-	 * length zero is returned to the caller.
-	 *
-	 * @return An array holding a reference to all the Service
-	 * 	configuration instances.
-	 *
-	 */
-	public Service[] getServices()
-	{
-		int count = m_config.getServiceCount();
-		Service[] slist = new Service[count];
+        return m_singleton;
+    }
 
-		count = 0;
-		Enumeration esvc = m_config.enumerateService();
-		while(esvc.hasMoreElements())
-			slist[count++] = (Service)esvc.nextElement();
+    /**
+     * Returns an array of all the defined configuration information for the
+     * <em>Services</em>. If there are no defined services an array of length
+     * zero is returned to the caller.
+     * 
+     * @return An array holding a reference to all the Service configuration
+     *         instances.
+     * 
+     */
+    public Service[] getServices() {
+        int count = m_config.getServiceCount();
+        Service[] slist = new Service[count];
 
-		return slist;
-	}
+        count = 0;
+        Enumeration esvc = m_config.enumerateService();
+        while (esvc.hasMoreElements())
+            slist[count++] = (Service) esvc.nextElement();
+
+        return slist;
+    }
 }

@@ -33,36 +33,78 @@
 //
 package org.opennms.netmgt.outage.jmx;
 
-public class Outaged
-	implements OutagedMBean
-{
-	public void init()
-	{
-		org.opennms.netmgt.outage.OutageManager.getInstance().init();
-	}
+import java.io.IOException;
+import java.lang.reflect.UndeclaredThrowableException;
 
-	public void start()
-	{
-		org.opennms.netmgt.outage.OutageManager.getInstance().start();
-	}
+import org.apache.log4j.Category;
+import org.exolab.castor.xml.MarshalException;
+import org.exolab.castor.xml.ValidationException;
+import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.config.DatabaseConnectionFactory;
+import org.opennms.netmgt.config.OutageManagerConfigFactory;
+import org.opennms.netmgt.eventd.EventIpcManager;
+import org.opennms.netmgt.eventd.EventIpcManagerFactory;
+import org.opennms.netmgt.outage.OutageManager;
 
-	public void stop()
-	{
-		org.opennms.netmgt.outage.OutageManager.getInstance().stop();
-	}
+public class Outaged implements OutagedMBean {
+    
+    public void init() {
+        
+        Category log = ThreadCategory.getInstance(getClass());
+        
+        EventIpcManagerFactory.init();
+        EventIpcManager eventMgr = EventIpcManagerFactory.getInstance().getManager();
+        getOutageManager().setEventMgr(eventMgr);
+        
+        
+        try {
+            OutageManagerConfigFactory.reload();
+            getOutageManager().setOutageMgrConfig(OutageManagerConfigFactory.getInstance());
 
-	public int getStatus()
-	{
-		return org.opennms.netmgt.outage.OutageManager.getInstance().getStatus();
-	}
+            DatabaseConnectionFactory.init();
 
-	public String status()
-	{
-		return org.opennms.core.fiber.Fiber.STATUS_NAMES[getStatus()];
-	}
+        } catch (MarshalException ex) {
+            log.error("Failed to load outage configuration", ex);
+            throw new UndeclaredThrowableException(ex);
+        } catch (ValidationException ex) {
+            log.error("Failed to load outage configuration", ex);
+            throw new UndeclaredThrowableException(ex);
+        } catch (IOException ex) {
+            log.error("Failed to load outage configuration", ex);
+            throw new UndeclaredThrowableException(ex);
+        } catch (ClassNotFoundException ex) {
+            log.error("Failed to load database connection factory configuration", ex);
+            throw new UndeclaredThrowableException(ex);
+        }
+        
+        
+        getOutageManager().setDbConnectionFactory(DatabaseConnectionFactory.getInstance());
+        getOutageManager().init();
+    }
 
-	public String getStatusText()
-	{
-		return org.opennms.core.fiber.Fiber.STATUS_NAMES[getStatus()];
-	}
+    public void start() {
+        getOutageManager().start();
+    }
+
+    public void stop() {
+        getOutageManager().stop();
+    }
+
+    public int getStatus() {
+        return getOutageManager().getStatus();
+    }
+
+    public String status() {
+        return org.opennms.core.fiber.Fiber.STATUS_NAMES[getStatus()];
+    }
+
+    public String getStatusText() {
+        return org.opennms.core.fiber.Fiber.STATUS_NAMES[getStatus()];
+    }
+    
+    private OutageManager getOutageManager() {
+        return OutageManager.getInstance();
+    }
+
+
 }

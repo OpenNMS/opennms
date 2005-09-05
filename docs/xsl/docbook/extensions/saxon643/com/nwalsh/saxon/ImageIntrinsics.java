@@ -9,7 +9,7 @@ import java.util.StringTokenizer;
 /**
  * <p>Saxon extension to examine intrinsic size of images</p>
  *
- * <p>$Id: ImageIntrinsics.java,v 1.2 2004/03/04 16:27:38 nwalsh Exp $</p>
+ * <p>$Id: ImageIntrinsics.java,v 1.3 2004/09/05 11:32:30 xmldoc Exp $</p>
  *
  * <p>Copyright (C) 2002 Norman Walsh.</p>
  *
@@ -26,7 +26,7 @@ import java.util.StringTokenizer;
  * @author Norman Walsh
  * <a href="mailto:ndw@nwalsh.com">ndw@nwalsh.com</a>
  *
- * @version $Id: ImageIntrinsics.java,v 1.2 2004/03/04 16:27:38 nwalsh Exp $
+ * @version $Id: ImageIntrinsics.java,v 1.3 2004/09/05 11:32:30 xmldoc Exp $
  *
  */
 public class ImageIntrinsics implements ImageObserver {
@@ -40,6 +40,7 @@ public class ImageIntrinsics implements ImageObserver {
    * <p>Constructor for ImageIntrinsics</p>
    */
   public ImageIntrinsics(String imageFn) {
+    System.setProperty("java.awt.headless","true");
     image = Toolkit.getDefaultToolkit().getImage (imageFn);
     width = image.getWidth(this);
 

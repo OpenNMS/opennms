@@ -34,41 +34,32 @@
 
 package org.opennms.netmgt.actiond.jmx;
 
+public class Actiond implements ActiondMBean {
+    public void init() {
+        org.opennms.netmgt.actiond.Actiond actiond = org.opennms.netmgt.actiond.Actiond.getInstance();
+        actiond.init();
+    }
 
-public class Actiond
-	implements ActiondMBean
-{
-	public void init()
-	{
-		org.opennms.netmgt.actiond.Actiond actiond = org.opennms.netmgt.actiond.Actiond.getInstance();
-		actiond.init();
-	}
+    public void start() {
+        org.opennms.netmgt.actiond.Actiond actiond = org.opennms.netmgt.actiond.Actiond.getInstance();
+        actiond.start();
+    }
 
-	public void start()
-	{
-		org.opennms.netmgt.actiond.Actiond actiond = org.opennms.netmgt.actiond.Actiond.getInstance();
-		actiond.start();
-	}
+    public void stop() {
+        org.opennms.netmgt.actiond.Actiond actiond = org.opennms.netmgt.actiond.Actiond.getInstance();
+        actiond.stop();
+    }
 
-	public void stop()
-	{
-		org.opennms.netmgt.actiond.Actiond actiond = org.opennms.netmgt.actiond.Actiond.getInstance();
-		actiond.stop();
-	}
+    public int getStatus() {
+        org.opennms.netmgt.actiond.Actiond actiond = org.opennms.netmgt.actiond.Actiond.getInstance();
+        return actiond.getStatus();
+    }
 
-	public int getStatus()
-	{
-		org.opennms.netmgt.actiond.Actiond actiond = org.opennms.netmgt.actiond.Actiond.getInstance();
-		return actiond.getStatus();
-	}
+    public String status() {
+        return org.opennms.core.fiber.Fiber.STATUS_NAMES[getStatus()];
+    }
 
-	public String status()
-	{
-		return org.opennms.core.fiber.Fiber.STATUS_NAMES[getStatus()];
-	}
-
-	public String getStatusText()
-	{
-		return org.opennms.core.fiber.Fiber.STATUS_NAMES[getStatus()];
-	}
+    public String getStatusText() {
+        return org.opennms.core.fiber.Fiber.STATUS_NAMES[getStatus()];
+    }
 }

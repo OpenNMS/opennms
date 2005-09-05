@@ -46,60 +46,51 @@ import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
 
 /**
- * This is an utility class used to format the event correlation
- * info - to be inserted into the 'events' table - it simply returns the
- * correlation as an 'XML' block
- *
- * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy</A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
- *
+ * This is an utility class used to format the event correlation info - to be
+ * inserted into the 'events' table - it simply returns the correlation as an
+ * 'XML' block
+ * 
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * 
  * @see org.opennms.netmgt.eventd.db.Constants#VALUE_TRUNCATE_INDICATOR
  */
-public class Correlation
-{
-	/**
-	 * Format the correlation block to have the xml
-	 *
-	 * @param ec	the correlation
-	 * @param sz	the size to which the formatted string is to be limited to(usually the size of the column in the database)
-	 *
-	 * @return the formatted event correlation
-	 */
-	public static String format(org.opennms.netmgt.xml.event.Correlation ec, int sz)
-	{
-		StringWriter out = new StringWriter();
-		try
-		{
-			Marshaller.marshal(ec, out);
-		}
-		catch(MarshalException e)
-		{
-			ThreadCategory.getInstance(Correlation.class).error("Failed to convert new event to XML", e);
-			return null;
-		}
-		catch(ValidationException e)
-		{
-			ThreadCategory.getInstance(Correlation.class).error("Failed to convert new event to XML", e);
-			return null;
-		}
+public class Correlation {
+    /**
+     * Format the correlation block to have the xml
+     * 
+     * @param ec
+     *            the correlation
+     * @param sz
+     *            the size to which the formatted string is to be limited
+     *            to(usually the size of the column in the database)
+     * 
+     * @return the formatted event correlation
+     */
+    public static String format(org.opennms.netmgt.xml.event.Correlation ec, int sz) {
+        StringWriter out = new StringWriter();
+        try {
+            Marshaller.marshal(ec, out);
+        } catch (MarshalException e) {
+            ThreadCategory.getInstance(Correlation.class).error("Failed to convert new event to XML", e);
+            return null;
+        } catch (ValidationException e) {
+            ThreadCategory.getInstance(Correlation.class).error("Failed to convert new event to XML", e);
+            return null;
+        }
 
-		String outstr = out.getBuffer().toString();
-		if(outstr.length() >= sz)
-		{
-			StringBuffer	buf = new StringBuffer(outstr);
+        String outstr = out.getBuffer().toString();
+        if (outstr.length() >= sz) {
+            StringBuffer buf = new StringBuffer(outstr);
 
-			buf.setLength(sz-4);
-			buf.append(Constants.VALUE_TRUNCATE_INDICATOR);
+            buf.setLength(sz - 4);
+            buf.append(Constants.VALUE_TRUNCATE_INDICATOR);
 
-			return buf.toString();
-		}
-		else
-		{
-			return outstr;
-		}
+            return buf.toString();
+        } else {
+            return outstr;
+        }
 
-
-	}
+    }
 
 }
-

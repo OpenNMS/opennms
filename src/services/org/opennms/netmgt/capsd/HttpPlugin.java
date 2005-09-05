@@ -58,41 +58,42 @@ import org.opennms.core.utils.ThreadCategory;
 
 /**
  * <P>
- * This class is designed to be used by the capabilities daemon to test for the existance of an
- * HTTP server on remote interfaces. The class implements the Plugin interface that allows it
- * to be used along with other plugins by the daemon.
+ * This class is designed to be used by the capabilities daemon to test for the
+ * existance of an HTTP server on remote interfaces. The class implements the
+ * Plugin interface that allows it to be used along with other plugins by the
+ * daemon.
  * 
- * This plugin generates a HTTP GET request and checks the return code returned by the remote
- * host to determine if it supports the protocol.
+ * This plugin generates a HTTP GET request and checks the return code returned
+ * by the remote host to determine if it supports the protocol.
  * 
- * The remote host's response will be deemed valid if the return code falls in the 100 to 599
- * range (inclusive).
+ * The remote host's response will be deemed valid if the return code falls in
+ * the 100 to 599 range (inclusive).
  * 
- * This is based on the following information from RFC 1945 (HTTP 1.0) HTTP 1.0 GET return
- * codes: 1xx: Informational - Not used, future use 2xx: Success 3xx: Redirection 4xx: Client
- * error 5xx: Server error
+ * This is based on the following information from RFC 1945 (HTTP 1.0) HTTP 1.0
+ * GET return codes: 1xx: Informational - Not used, future use 2xx: Success 3xx:
+ * Redirection 4xx: Client error 5xx: Server error
  * </P>
  * 
- * This plugin generates a HTTP GET request and checks the return code returned by the remote
- * host to determine if it supports the protocol.
+ * This plugin generates a HTTP GET request and checks the return code returned
+ * by the remote host to determine if it supports the protocol.
  * 
- * The remote host's response will be deemed valid if the return code falls in the 100 to 599
- * range (inclusive).
+ * The remote host's response will be deemed valid if the return code falls in
+ * the 100 to 599 range (inclusive).
  * 
- * This is based on the following information from RFC 1945 (HTTP 1.0) HTTP 1.0 GET return
- * codes: 1xx: Informational - Not used, future use 2xx: Success 3xx: Redirection 4xx: Client
- * error 5xx: Server error
+ * This is based on the following information from RFC 1945 (HTTP 1.0) HTTP 1.0
+ * GET return codes: 1xx: Informational - Not used, future use 2xx: Success 3xx:
+ * Redirection 4xx: Client error 5xx: Server error
  * </P>
  * 
- * This plugin generates a HTTP GET request and checks the return code returned by the remote
- * host to determine if it supports the protocol.
+ * This plugin generates a HTTP GET request and checks the return code returned
+ * by the remote host to determine if it supports the protocol.
  * 
- * The remote host's response will be deemed valid if the return code falls in the 100 to 599
- * range (inclusive).
+ * The remote host's response will be deemed valid if the return code falls in
+ * the 100 to 599 range (inclusive).
  * 
- * This is based on the following information from RFC 1945 (HTTP 1.0) HTTP 1.0 GET return
- * codes: 1xx: Informational - Not used, future use 2xx: Success 3xx: Redirection 4xx: Client
- * error 5xx: Server error
+ * This is based on the following information from RFC 1945 (HTTP 1.0) HTTP 1.0
+ * GET return codes: 1xx: Informational - Not used, future use 2xx: Success 3xx:
+ * Redirection 4xx: Client error 5xx: Server error
  * </P>
  * 
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya </A>
@@ -100,7 +101,7 @@ import org.opennms.core.utils.ThreadCategory;
  * @author <A HREF="http://www.opennsm.org">OpenNMS </A>
  * 
  * @version 1.1.1.1
- *  
+ * 
  */
 public class HttpPlugin extends AbstractTcpPlugin {
 
@@ -111,10 +112,11 @@ public class HttpPlugin extends AbstractTcpPlugin {
 
     /**
      * <P>
-     * The default ports on which the host is checked to see if it supports HTTP.
+     * The default ports on which the host is checked to see if it supports
+     * HTTP.
      * </P>
      */
-    private static final int[] DEFAULT_PORTS = { 80, 8080, 8888};
+    private static final int[] DEFAULT_PORTS = { 80, 8080, 8888 };
 
     /**
      * Default number of retries for HTTP requests.
@@ -183,8 +185,8 @@ public class HttpPlugin extends AbstractTcpPlugin {
     /**
      * @param sChannel
      * @param isAServer
-     * @return @throws
-     *         IOException
+     * @return
+     * @throws IOException
      */
     protected boolean checkProtocol(Socket socket, ConnectionConfig config) throws IOException {
         boolean isAServer = false;
@@ -206,7 +208,8 @@ public class HttpPlugin extends AbstractTcpPlugin {
                     StringTokenizer t = new StringTokenizer(response.toString());
                     t.nextToken();
                     int rVal = Integer.parseInt(t.nextToken());
-                    if (rVal >= 99 && rVal <= 600) isAServer = true;
+                    if (rVal >= 99 && rVal <= 600)
+                        isAServer = true;
                 } else {
                     isAServer = true;
                 }
@@ -234,4 +237,3 @@ public class HttpPlugin extends AbstractTcpPlugin {
         return list;
     }
 }
-

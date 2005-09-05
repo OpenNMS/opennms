@@ -4,7 +4,7 @@
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:doc="http://nwalsh.com/xsl/documentation/1.0" xmlns="http://www.w3.org/1999/xhtml" version="1.0" exclude-result-prefixes="doc">
 
 <!-- ********************************************************************
-     $Id: manifest.xsl,v 1.4 2003/11/30 19:42:23 bobstayton Exp $
+     $Id: manifest.xsl,v 1.6 2004/11/17 20:53:00 kosek Exp $
      ********************************************************************
 
      This file is part of the XSL DocBook Stylesheet distribution.
@@ -35,7 +35,7 @@
   </xsl:call-template>
 </xsl:template>
 
-<xsl:template match="set|book|part|preface|chapter|appendix                      |article                      |reference|refentry                      |sect1|sect2|sect3|sect4|sect5                      |section                      |book/glossary|article/glossary                      |book/bibliography|article/bibliography                      |book/index|article/index                      |colophon" mode="enumerate-files">
+<xsl:template match="set|book|part|preface|chapter|appendix                      |article                      |reference|refentry                      |sect1|sect2|sect3|sect4|sect5                      |section                      |book/glossary|article/glossary|part/glossary                      |book/bibliography|article/bibliography|part/bibliography                      |colophon" mode="enumerate-files">
   <xsl:variable name="ischunk"><xsl:call-template name="chunk"/></xsl:variable>
   <xsl:if test="$ischunk='1'">
     <xsl:call-template name="make-relative-filename">
@@ -52,6 +52,27 @@
 </xsl:text>
   </xsl:if>
   <xsl:apply-templates select="*" mode="enumerate-files"/>
+</xsl:template>
+
+<xsl:template match="book/index|article/index|part/index" mode="enumerate-files">
+  <xsl:if test="$htmlhelp.output != 1">
+    <xsl:variable name="ischunk"><xsl:call-template name="chunk"/></xsl:variable>
+    <xsl:if test="$ischunk='1'">
+      <xsl:call-template name="make-relative-filename">
+        <xsl:with-param name="base.dir">
+          <xsl:if test="$manifest.in.base.dir = 0">
+            <xsl:value-of select="$base.dir"/>
+          </xsl:if>
+        </xsl:with-param>
+        <xsl:with-param name="base.name">
+          <xsl:apply-templates mode="chunk-filename" select="."/>
+        </xsl:with-param>
+      </xsl:call-template>
+      <xsl:text>
+</xsl:text>
+    </xsl:if>
+    <xsl:apply-templates select="*" mode="enumerate-files"/>
+  </xsl:if>
 </xsl:template>
 
 <xsl:template match="legalnotice" mode="enumerate-files">

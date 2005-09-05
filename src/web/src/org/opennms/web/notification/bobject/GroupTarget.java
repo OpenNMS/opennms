@@ -35,89 +35,101 @@ package org.opennms.web.notification.bobject;
 import java.util.ArrayList;
 import java.util.List;
 
-
-/**A NotificationTarget representing a user target
- * parsed from the notifications.xml.
+/**
+ * A NotificationTarget representing a user target parsed from the
+ * notifications.xml.
  * 
- * @author <A HREF="mailto:jason@opennms.org">Jason Johns</A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
+ * @author <A HREF="mailto:jason@opennms.org">Jason Johns </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  * 
  * @version 1.1.1.1
-*/
-public class GroupTarget extends NotificationTarget
-{
-	/**The userId of the target
-	*/
-	private String m_groupName;
-	
-	/**The User object associated with this target
-	*/
-	private List m_userTargets;
-	
-	/**The command name to use to contact this user
-	*/
-	private String m_commandName;
-	
-	/**Default Constructor
-	*/
-	public GroupTarget()
-	{
-		m_userTargets = new ArrayList();
-	}
-	
-	/**Sets the userId for this target
-	   @param name the group name.
-	*/
-	public void setGroupName(String name)
-	{
-		m_groupName = name;
-	}
-	
-	/**Returns the userId for this target
-	   @return the group name.
-	*/
-	public String getGroupName()
-	{
-		return m_groupName;
-	}
-	
-	/**Sets the command name for this target
-	   @param commandName the command name.
-	*/
-	public void setCommandName(String commandName)
-	{
-		m_commandName = commandName;
-	}
-	
-	/**Returns the command name for this target
-	   @return the command name.
-	*/
-	public String getCommandName()
-	{
-		return m_commandName;
-	}
-	
-	/**Adds a user target to this group target
-	   @param target a user target to be added.
-	*/
-	public void addUserTarget(UserTarget target)
-	{
-		m_userTargets.add(target);
-	}
-	
-	/**Returns the list of UserTargets in this group target
-	   @return the list of user targets.
-	*/
-	public List getUserTargets()
-	{
-		return m_userTargets;
-	}
-	
-	/**Returns the type of the target
-	   @return the target type, compare to NotificationTask.TARGET_TYPE_USER.
-	*/
-	public int getType()
-	{
-		return TARGET_TYPE_GROUP;
-	}
+ */
+public class GroupTarget extends NotificationTarget {
+    /**
+     * The userId of the target
+     */
+    private String m_groupName;
+
+    /**
+     * The User object associated with this target
+     */
+    private List m_userTargets;
+
+    /**
+     * The command name to use to contact this user
+     */
+    private String m_commandName;
+
+    /**
+     * Default Constructor
+     */
+    public GroupTarget() {
+        m_userTargets = new ArrayList();
+    }
+
+    /**
+     * Sets the userId for this target
+     * 
+     * @param name
+     *            the group name.
+     */
+    public void setGroupName(String name) {
+        m_groupName = name;
+    }
+
+    /**
+     * Returns the userId for this target
+     * 
+     * @return the group name.
+     */
+    public String getGroupName() {
+        return m_groupName;
+    }
+
+    /**
+     * Sets the command name for this target
+     * 
+     * @param commandName
+     *            the command name.
+     */
+    public void setCommandName(String commandName) {
+        m_commandName = commandName;
+    }
+
+    /**
+     * Returns the command name for this target
+     * 
+     * @return the command name.
+     */
+    public String getCommandName() {
+        return m_commandName;
+    }
+
+    /**
+     * Adds a user target to this group target
+     * 
+     * @param target
+     *            a user target to be added.
+     */
+    public void addUserTarget(UserTarget target) {
+        m_userTargets.add(target);
+    }
+
+    /**
+     * Returns the list of UserTargets in this group target
+     * 
+     * @return the list of user targets.
+     */
+    public List getUserTargets() {
+        return m_userTargets;
+    }
+
+    /**
+     * Returns the type of the target
+     * 
+     * @return the target type, compare to NotificationTask.TARGET_TYPE_USER.
+     */
+    public int getType() {
+        return TARGET_TYPE_GROUP;
+    }
 }

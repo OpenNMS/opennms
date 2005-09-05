@@ -11,7 +11,7 @@
 <refsynopsisdiv>
 <src:fragment id='ebnf.assignment.frag'>
 <xsl:param condition="html" name="ebnf.assignment">
-<tt>::=</tt>
+<code>::=</code>
 </xsl:param>
 <xsl:param condition="fo" name="ebnf.assignment"
            xmlns:fo="http://www.w3.org/1999/XSL/Format">

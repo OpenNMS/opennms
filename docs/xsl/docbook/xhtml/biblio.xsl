@@ -4,7 +4,7 @@
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns="http://www.w3.org/1999/xhtml" version="1.0">
 
 <!-- ********************************************************************
-     $Id: biblio.xsl,v 1.22 2004/02/13 21:03:36 bobstayton Exp $
+     $Id: biblio.xsl,v 1.24 2004/10/17 20:15:55 nwalsh Exp $
      ********************************************************************
 
      This file is part of the XSL DocBook Stylesheet distribution.
@@ -73,6 +73,10 @@
 <!-- ==================================================================== -->
 
 <xsl:template match="biblioentry">
+  <xsl:param name="label">
+    <xsl:call-template name="biblioentry.label"/>
+  </xsl:param>
+
   <xsl:variable name="id">
     <xsl:call-template name="object.id"/>
   </xsl:variable>
@@ -83,7 +87,16 @@
       <xsl:variable name="entry" select="$bib/bibliography/*[@id=$id][1]"/>
       <xsl:choose>
         <xsl:when test="$entry">
-          <xsl:apply-templates select="$entry"/>
+	  <xsl:choose>
+	    <xsl:when test="$bibliography.numbered != 0">
+	      <xsl:apply-templates select="$entry">
+		<xsl:with-param name="label" select="$label"/>
+	      </xsl:apply-templates>
+	    </xsl:when>
+	    <xsl:otherwise>
+	      <xsl:apply-templates select="$entry"/>
+	    </xsl:otherwise>
+	  </xsl:choose>
         </xsl:when>
         <xsl:otherwise>
           <xsl:message>
@@ -95,7 +108,7 @@
           <div class="{name(.)}">
             <xsl:call-template name="anchor"/>
             <p>
-              <xsl:call-template name="biblioentry.label"/>
+	      <xsl:copy-of select="$label"/>
               <xsl:text>Error: no bibliography entry: </xsl:text>
               <xsl:value-of select="$id"/>
               <xsl:text> found in </xsl:text>
@@ -109,7 +122,7 @@
       <div class="{name(.)}">
         <xsl:call-template name="anchor"/>
         <p>
-          <xsl:call-template name="biblioentry.label"/>
+	  <xsl:copy-of select="$label"/>
           <xsl:apply-templates mode="bibliography.mode"/>
         </p>
       </div>
@@ -118,6 +131,10 @@
 </xsl:template>
 
 <xsl:template match="bibliomixed">
+  <xsl:param name="label">
+    <xsl:call-template name="biblioentry.label"/>
+  </xsl:param>
+
   <xsl:variable name="id">
     <xsl:call-template name="object.id"/>
   </xsl:variable>
@@ -128,7 +145,16 @@
       <xsl:variable name="entry" select="$bib/bibliography/*[@id=$id][1]"/>
       <xsl:choose>
         <xsl:when test="$entry">
-          <xsl:apply-templates select="$entry"/>
+	  <xsl:choose>
+	    <xsl:when test="$bibliography.numbered != 0">
+	      <xsl:apply-templates select="$entry">
+		<xsl:with-param name="label" select="$label"/>
+	      </xsl:apply-templates>
+	    </xsl:when>
+	    <xsl:otherwise>
+	      <xsl:apply-templates select="$entry"/>
+	    </xsl:otherwise>
+	  </xsl:choose>
         </xsl:when>
         <xsl:otherwise>
           <xsl:message>
@@ -140,7 +166,7 @@
           <div class="{name(.)}">
             <xsl:call-template name="anchor"/>
             <p>
-              <xsl:call-template name="biblioentry.label"/>
+	      <xsl:copy-of select="$label"/>
               <xsl:text>Error: no bibliography entry: </xsl:text>
               <xsl:value-of select="$id"/>
               <xsl:text> found in </xsl:text>
@@ -154,7 +180,7 @@
       <div class="{name(.)}">
         <xsl:call-template name="anchor"/>
         <p class="{name(.)}">
-          <xsl:call-template name="biblioentry.label"/>
+	  <xsl:copy-of select="$label"/>
           <xsl:apply-templates mode="bibliomixed.mode"/>
         </p>
       </div>
@@ -441,6 +467,13 @@
 <!-- ================================================== -->
 
 <xsl:template match="corpauthor" mode="bibliography.mode">
+  <span class="{name(.)}">
+    <xsl:apply-templates mode="bibliography.mode"/>
+    <xsl:value-of select="$biblioentry.item.separator"/>
+  </span>
+</xsl:template>
+
+<xsl:template match="corpcredit" mode="bibliography.mode">
   <span class="{name(.)}">
     <xsl:apply-templates mode="bibliography.mode"/>
     <xsl:value-of select="$biblioentry.item.separator"/>
@@ -838,6 +871,12 @@
 </xsl:template>
 
 <xsl:template match="corpauthor" mode="bibliomixed.mode">
+  <span class="{name(.)}">
+    <xsl:apply-templates mode="bibliomixed.mode"/>
+  </span>
+</xsl:template>
+
+<xsl:template match="corpcredit" mode="bibliomixed.mode">
   <span class="{name(.)}">
     <xsl:apply-templates mode="bibliomixed.mode"/>
   </span>

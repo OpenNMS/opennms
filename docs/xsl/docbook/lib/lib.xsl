@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <!-- ********************************************************************
-     $Id: lib.xweb,v 1.2 2002/05/12 11:11:08 nwalsh Exp $
+     $Id: lib.xweb,v 1.7 2004/09/24 20:38:02 bobstayton Exp $
      ********************************************************************
 
      This file is part of the XSL DocBook Stylesheet distribution.
@@ -13,7 +12,6 @@
      ******************************************************************** -->
 
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:src="http://nwalsh.com/xmlns/litprog/fragment" exclude-result-prefixes="src" version="1.0">
-
 
 <xsl:template name="dot.count">
   <!-- Returns the number of "." characters in a string -->
@@ -31,8 +29,6 @@
     </xsl:otherwise>
   </xsl:choose>
 </xsl:template>
-
-
 <xsl:template name="copy-string">
   <!-- returns 'count' copies of 'string' -->
   <xsl:param name="string"/>
@@ -55,8 +51,6 @@
     </xsl:otherwise>
   </xsl:choose>
 </xsl:template>
-
-
 <xsl:template name="string.subst">
   <xsl:param name="string"/>
   <xsl:param name="target"/>
@@ -78,8 +72,6 @@
     </xsl:otherwise>
   </xsl:choose>
 </xsl:template>
-
-
 <xsl:template name="xpointer.idref">
   <xsl:param name="xpointer">http://...</xsl:param>
   <xsl:choose>
@@ -94,8 +86,6 @@
     <!-- otherwise it's a pointer to some other document -->
   </xsl:choose>
 </xsl:template>
-
-
 <xsl:template name="length-magnitude">
   <xsl:param name="length" select="'0pt'"/>
 
@@ -109,8 +99,6 @@
     </xsl:when>
   </xsl:choose>
 </xsl:template>
-
-
 <xsl:template name="length-units">
   <xsl:param name="length" select="'0pt'"/>
   <xsl:param name="default.units" select="'px'"/>
@@ -133,8 +121,6 @@
     </xsl:otherwise>
   </xsl:choose>
 </xsl:template>
-
-
 <xsl:template name="length-spec">
   <xsl:param name="length" select="'0pt'"/>
   <xsl:param name="default.units" select="'px'"/>
@@ -166,8 +152,6 @@
     </xsl:otherwise>
   </xsl:choose>
 </xsl:template>
-
-
 <xsl:template name="length-in-points">
   <xsl:param name="length" select="'0pt'"/>
   <xsl:param name="em.size" select="10"/>
@@ -197,7 +181,7 @@
       <xsl:value-of select="$magnitude * 72.0"/>
     </xsl:when>
     <xsl:when test="$units = 'pc'">
-      <xsl:value-of select="$magnitude div 6.0 * 72.0"/>
+      <xsl:value-of select="$magnitude * 12.0"/>
     </xsl:when>
     <xsl:when test="$units = 'px'">
       <xsl:value-of select="$magnitude div $pixels.per.inch * 72.0"/>
@@ -214,10 +198,8 @@
     </xsl:otherwise>
   </xsl:choose>
 </xsl:template>
-
-
 <xsl:template name="pi-attribute">
-  <xsl:param name="pis" select="processing-instruction('')"/>
+  <xsl:param name="pis" select="processing-instruction('BOGUS_PI')"/>
   <xsl:param name="attribute">filename</xsl:param>
   <xsl:param name="count">1</xsl:param>
 
@@ -229,9 +211,12 @@
       <xsl:variable name="pi">
         <xsl:value-of select="$pis[$count]"/>
       </xsl:variable>
+      <xsl:variable name="pivalue">
+        <xsl:value-of select="concat(' ', normalize-space($pi))"/>
+      </xsl:variable>
       <xsl:choose>
-        <xsl:when test="contains($pi,concat($attribute, '='))">
-          <xsl:variable name="rest" select="substring-after($pi,concat($attribute,'='))"/>
+        <xsl:when test="contains($pivalue,concat(' ', $attribute, '='))">
+          <xsl:variable name="rest" select="substring-after($pivalue,concat(' ', $attribute,'='))"/>
           <xsl:variable name="quote" select="substring($rest,1,1)"/>
           <xsl:value-of select="substring-before(substring($rest,2),$quote)"/>
         </xsl:when>
@@ -246,8 +231,6 @@
     </xsl:otherwise>
   </xsl:choose>
 </xsl:template>
-
-
 <xsl:template name="lookup.key">
   <xsl:param name="key" select="''"/>
   <xsl:param name="table" select="''"/>
@@ -274,8 +257,6 @@
     </xsl:choose>
   </xsl:if>
 </xsl:template>
-
-
 <xsl:template name="xpath.location">
   <xsl:param name="node" select="."/>
   <xsl:param name="path" select="''"/>
@@ -299,8 +280,6 @@
     </xsl:otherwise>
   </xsl:choose>
 </xsl:template>
-
-
 <xsl:template name="comment-escape-string">
   <xsl:param name="string" select="''"/>
 
@@ -316,8 +295,6 @@
     <xsl:text> </xsl:text>
   </xsl:if>
 </xsl:template>
-
-
 <xsl:template name="comment-escape-string.recursive">
   <xsl:param name="string" select="''"/>
   <xsl:choose>
@@ -333,8 +310,6 @@
     </xsl:otherwise>
   </xsl:choose>
 </xsl:template>
-
-
 <xsl:template name="count.uri.path.depth">
   <xsl:param name="filename" select="''"/>
   <xsl:param name="count" select="0"/>
@@ -351,8 +326,6 @@
     </xsl:otherwise>
   </xsl:choose>
 </xsl:template>
-
-
 <xsl:template name="trim.common.uri.paths">
   <xsl:param name="uriA" select="''"/>
   <xsl:param name="uriB" select="''"/>
@@ -378,6 +351,5 @@
     </xsl:otherwise>
   </xsl:choose>
 </xsl:template>
-
 
 </xsl:stylesheet>

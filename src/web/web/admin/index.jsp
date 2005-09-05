@@ -82,6 +82,12 @@
     document.manageSnmp.submit();
   }
   
+  function snmpConfigPost()
+  {
+    document.snmpConfig.action="admin/snmpConfig.jsp";
+    document.snmpConfig.submit();
+  }
+  
   function networkConnection()
   {
     document.networkConnection.submit();
@@ -128,6 +134,10 @@
   <input type="hidden"/>
 </FORM>
 
+<FORM METHOD="POST" NAME="snmpConfig" ACTION="admin/snmpConfig">
+  <input type="hidden"/>
+</FORM>
+
 <table width="100%" cellspacing="0" cellpadding="0" border="0">
   <tr>
     <td> &nbsp; </td>
@@ -142,11 +152,11 @@
       <p>
         <a HREF="admin/notification/index.jsp">Configure Notifications</a>
       <p>
-        <a HREF="admin/assetLocation/index.jsp">Configure Asset Location</a>
-      <p>
         <a HREF="javascript:submitPost()">Manage and Unmanage Interfaces and Services</a>
       <p>
         <a HREF="javascript:snmpManagePost()">Configure SNMP Data Collection per Interface</a>
+      <p>
+        <a HREF="javascript:snmpConfigPost()">Configure SNMP Community Names by IP</a>
       <p>
         <a HREF="javascript:addInterfacePost()">Add Interface</a>
       <p>
@@ -156,7 +166,8 @@
       <p>
         <a HREF="admin/asset/index.jsp">Import and Export Asset Information</a>
       <p>
-      	<a HREF="admin/confman/index.jsp">Application Configuration Management</a>
+        <a HREF="admin/sched-outages/index.jsp">Scheduled Outages</a>
+      <p>
 
       <!-- security link -->
       
@@ -230,6 +241,10 @@
 	to configure which non-IP interfaces are used in SNMP Data Collection.
 	</P>
 
+	<P><B>Configure SNMP Community Names by IP</b>: This interface will allow you
+	to configure the Community String used in SNMP Data Collection.
+	</P>
+
         <p><b>Add Interface</b> is an interface to add an interface to the database. If the 
             IP address of the interface is contained in the ipAddrTable of an existing node, 
             the interface will be added into the node. Otherwise, a new node will be created.
@@ -250,6 +265,11 @@
             database applications, and details for using the Import and Export
             functionalities can be found through this link as well.
         </p>
+
+	<p><b>Scheduled Outages</b> provides an interface for adding and editing scheduled 
+	    outages.  You can pause notifications, polling, thresholding and data collection 
+            (or any combination of the four) for any interface/node for any time.  
+	</p>
 
         <p><b>Notification Status</b> provides both a visual reminder as to whether your users 
             are being paged/emailed when important network events are received, as well as 

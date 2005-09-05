@@ -8,29 +8,29 @@
         outstanding-notices-sql="SELECT notifyid FROM notifications where notifyId = ? AND respondTime is not null"
         acknowledge-id-sql="SELECT notifyid FROM notifications WHERE eventuei=? AND nodeid=? AND interfaceid=? AND serviceid=?"
         acknowledge-update-sql="UPDATE notifications SET answeredby=?, respondtime=? WHERE notifyId=?"
-	match-all="false">
+	match-all="true">
         
-	<auto-acknowledge uei="uei.opennms.org/nodes/serviceResponsive" 
+	<auto-acknowledge resolution-prefix="RESOLVED: " uei="uei.opennms.org/nodes/serviceResponsive" 
                           acknowledge="uei.opennms.org/nodes/serviceUnresponsive">
                           <match>nodeid</match>
                           <match>interfaceid</match>
                           <match>serviceid</match>
         </auto-acknowledge>
 	
-        <auto-acknowledge uei="uei.opennms.org/nodes/nodeRegainedService" 
+        <auto-acknowledge resolution-prefix="RESOLVED: " uei="uei.opennms.org/nodes/nodeRegainedService" 
                           acknowledge="uei.opennms.org/nodes/nodeLostService">
                           <match>nodeid</match>
                           <match>interfaceid</match>
                           <match>serviceid</match>
         </auto-acknowledge>
         
-        <auto-acknowledge uei="uei.opennms.org/nodes/interfaceUp" 
+        <auto-acknowledge resolution-prefix="RESOLVED: " uei="uei.opennms.org/nodes/interfaceUp" 
                           acknowledge="uei.opennms.org/nodes/interfaceDown">
                           <match>nodeid</match>
                           <match>interfaceid</match>
         </auto-acknowledge>
         
-        <auto-acknowledge uei="uei.opennms.org/nodes/nodeUp" 
+        <auto-acknowledge resolution-prefix="RESOLVED: " uei="uei.opennms.org/nodes/nodeUp" 
                           acknowledge="uei.opennms.org/nodes/nodeDown">
                           <match>nodeid</match>
         </auto-acknowledge>

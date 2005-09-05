@@ -32,36 +32,94 @@
 
 package org.opennms.netmgt.poller.jmx;
 
-public class Pollerd
-	implements PollerdMBean
-{
-	public void init()
-	{
-		org.opennms.netmgt.poller.Poller.getInstance().init();
-	}
+import java.io.IOException;
 
-	public void start()
-	{
-		org.opennms.netmgt.poller.Poller.getInstance().start();
-	}
+import org.apache.log4j.Category;
+import org.exolab.castor.xml.MarshalException;
+import org.exolab.castor.xml.ValidationException;
+import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.config.DatabaseConnectionFactory;
+import org.opennms.netmgt.config.PollOutagesConfigFactory;
+import org.opennms.netmgt.config.PollerConfigFactory;
+import org.opennms.netmgt.eventd.EventIpcManager;
+import org.opennms.netmgt.eventd.EventIpcManagerFactory;
+import org.opennms.netmgt.poller.Poller;
 
-	public void stop()
-	{
-		org.opennms.netmgt.poller.Poller.getInstance().stop();
-	}
+public class Pollerd implements PollerdMBean {
+    public final static String LOG4J_CATEGORY = "OpenNMS.Pollers";
 
-	public int getStatus()
-	{
-		return org.opennms.netmgt.poller.Poller.getInstance().getStatus();
-	}
+    public void init() {
+        // Set the category prefix
+        ThreadCategory.setPrefix(LOG4J_CATEGORY);
 
-	public String status()
-	{
-		return org.opennms.core.fiber.Fiber.STATUS_NAMES[getStatus()];
-	}
 
-	public String getStatusText()
-	{
-		return org.opennms.core.fiber.Fiber.STATUS_NAMES[getStatus()];
-	}
+        Category log = ThreadCategory.getInstance();
+        try {
+            PollerConfigFactory.init();
+            PollOutagesConfigFactory.init();
+            DatabaseConnectionFactory.init();
+        } catch (MarshalException e) {
+            log.error("Could not unmarshall configuration", e);
+        } catch (ValidationException e) {
+            log.error("validation error ", e);
+        } catch (IOException e) {
+            log.error("IOException: ", e);
+        } catch (ClassNotFoundException e) {
+            log.error("Unable to locate class ", e);
+        }
+
+        org.opennms.netmgt.poller.Poller poller = getPoller();
+        poller.setPollerConfig(PollerConfigFactory.getInstance());
+        poller.setPollOutagesConfig(PollOutagesConfigFactory.getInstance());
+        poller.setDbConnectionFactory(DatabaseConnectionFactory.getInstance());
+
+        EventIpcManagerFactory.init();
+        EventIpcManager mgr = EventIpcManagerFactory.getInstance().getManager();
+        poller.setEventManager(mgr);
+        poller.init();
+    }
+
+    public void start() {
+        // Set the category prefix
+        ThreadCategory.setPrefix(LOG4J_CATEGORY);
+
+        getPoller().start();
+    }
+
+    public void stop() {
+        // Set the category prefix
+        ThreadCategory.setPrefix(LOG4J_CATEGORY);
+
+        getPoller().stop();
+    }
+
+    public int getStatus() {
+        // Set the category prefix
+        ThreadCategory.setPrefix(LOG4J_CATEGORY);
+        Category log = ThreadCategory.getInstance();
+
+        return getPoller().getStatus();
+    }
+
+    public String status() {
+        // Set the category prefix
+        ThreadCategory.setPrefix(LOG4J_CATEGORY);
+
+        return org.opennms.core.fiber.Fiber.STATUS_NAMES[getStatus()];
+    }
+
+    public String getStatusText() {
+        // Set the category prefix
+        ThreadCategory.setPrefix(LOG4J_CATEGORY);
+
+        return org.opennms.core.fiber.Fiber.STATUS_NAMES[getStatus()];
+    }
+
+    private Poller getPoller() {
+        // Set the category prefix
+        ThreadCategory.setPrefix(LOG4J_CATEGORY);
+
+        return org.opennms.netmgt.poller.Poller.getInstance();
+    }
+
 }

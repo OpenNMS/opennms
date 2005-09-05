@@ -1,7 +1,7 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2002-2004 The OpenNMS Group, Inc.  All rights reserved.
+// OpenNMS(R) is Copyright (C) 2002-2005 The OpenNMS Group, Inc.  All rights reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included code and modified
 // code that was published under the GNU General Public License. Copyrights for modified 
 // and included code are below.
@@ -53,8 +53,10 @@ import org.opennms.netmgt.ConfigFileConstants;
 class RrdConfig {
 
     private static Properties m_properties = null;
+
     /**
      * This loads the configuration file.
+     * 
      * @return a Properties object representing the configuration properties
      * @throws IOException
      */
@@ -68,64 +70,82 @@ class RrdConfig {
             m_properties = properties;
         }
         return m_properties;
- 
+
     }
-    
+
     /**
      * Get a string valued property, returning default value if it is not set.
-     * @param name the property name
-     * @param defaultVal the default value to use if the property is not set
+     * 
+     * @param name
+     *            the property name
+     * @param defaultVal
+     *            the default value to use if the property is not set
      * @return the value of the property
      */
     public static String getProperty(String name, String defaultVal) {
         Category log = ThreadCategory.getInstance(RrdConfig.class);
-        
+
         try {
             return getProperties().getProperty(name, defaultVal);
         } catch (IOException e) {
-            log.error("Unable to read property "+name+" returning defaultValue: "+defaultVal, e);
+            log.error("Unable to read property " + name + " returning defaultValue: " + defaultVal, e);
             return defaultVal;
         }
-        
+
     }
-    
+
     /**
-     * Get a boolean valued property, returning default value if it is not set or is
-     * set to an invalid value.
-     * @param name the property name
-     * @param defaultVal the default value to use if the property is not set
+     * Get a boolean valued property, returning default value if it is not set
+     * or is set to an invalid value.
+     * 
+     * @param name
+     *            the property name
+     * @param defaultVal
+     *            the default value to use if the property is not set
      * @return the value of the property
      */
     public static boolean getProperty(String name, boolean defaultVal) {
         return "true".equalsIgnoreCase(getProperty(name, (defaultVal ? "true" : "false")));
     }
-    
+
     /**
-     * Get a int valued property, returning default value if it is not set or is set 
-     * to an invalid value.
-     * @param name the property name
-     * @param defaultVal the default value to use if the property is not set
+     * Get a int valued property, returning default value if it is not set or is
+     * set to an invalid value.
+     * 
+     * @param name
+     *            the property name
+     * @param defaultVal
+     *            the default value to use if the property is not set
      * @return the value of the property
      */
     public static int getProperty(String name, int defaultVal) {
-        String val = getProperty(name, (String)null);
+        String val = getProperty(name, (String) null);
         if (val != null) {
-            try { return Integer.decode(val).intValue(); } catch (NumberFormatException e) {}
+            try {
+                return Integer.decode(val).intValue();
+            } catch (NumberFormatException e) {
+            }
         }
         return defaultVal;
     }
 
     /**
-     * Get a long valued property, returning default value if it is not set or is set
-     * to an invalid  value
-     * @param name the property name
-     * @param defaultVal the default value to use if the property is not set
+     * Get a long valued property, returning default value if it is not set or
+     * is set to an invalid value
+     * 
+     * @param name
+     *            the property name
+     * @param defaultVal
+     *            the default value to use if the property is not set
      * @return the value of the property
      */
     public static long getProperty(String name, long defaultVal) {
-        String val = getProperty(name, (String)null);
+        String val = getProperty(name, (String) null);
         if (val != null) {
-            try { return Long.decode(val).longValue(); } catch (NumberFormatException e) {}
+            try {
+                return Long.decode(val).longValue();
+            } catch (NumberFormatException e) {
+            }
         }
         return defaultVal;
     }

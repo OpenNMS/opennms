@@ -5,7 +5,9 @@
 </refmeta>
 <refnamediv>
 <refname>menuchoice.separator</refname>
-<refpurpose></refpurpose>
+<refpurpose>Separator between items of a <sgmltag>menuchoice</sgmltag>
+other than <sgmltag>guimenuitem</sgmltag> and
+<sgmltag>guisubmenu</sgmltag></refpurpose>
 </refnamediv>
 
 <refsynopsisdiv>

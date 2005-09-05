@@ -5,7 +5,7 @@
                 version="1.0">
 
 <!-- ********************************************************************
-     $Id: table.xsl,v 1.14 2003/11/30 19:45:09 bobstayton Exp $
+     $Id: table.xsl,v 1.16 2004/10/24 09:44:56 kosek Exp $
      ********************************************************************
 
      This file is part of the XSL DocBook Stylesheet distribution.
@@ -89,9 +89,11 @@
     <xsl:when test="$entry/@spanname">
       <xsl:variable name="spanname" select="$entry/@spanname"/>
       <xsl:variable name="spanspec"
-                    select="$entry/ancestor::tgroup/spanspec[@spanname=$spanname]"/>
+                    select="($entry/ancestor::tgroup/spanspec[@spanname=$spanname]
+                             |$entry/ancestor::entrytbl/spanspec[@spanname=$spanname])[last()]"/>
       <xsl:variable name="colspec"
-                    select="$entry/ancestor::tgroup/colspec[@colname=$spanspec/@namest]"/>
+                    select="($entry/ancestor::tgroup/colspec[@colname=$spanspec/@namest]
+                             |$entry/ancestor::entrytbl/colspec[@colname=$spanspec/@namest])[last()]"/>
       <xsl:call-template name="colspec.colnum">
         <xsl:with-param name="colspec" select="$colspec"/>
       </xsl:call-template>
@@ -99,7 +101,8 @@
     <xsl:when test="$entry/@colname">
       <xsl:variable name="colname" select="$entry/@colname"/>
       <xsl:variable name="colspec"
-                    select="$entry/ancestor::tgroup/colspec[@colname=$colname]"/>
+                    select="($entry/ancestor::tgroup/colspec[@colname=$colname]
+                             |$entry/ancestor::entrytbl/colspec[@colname=$colname])[last()]"/>
       <xsl:call-template name="colspec.colnum">
         <xsl:with-param name="colspec" select="$colspec"/>
       </xsl:call-template>
@@ -107,7 +110,8 @@
     <xsl:when test="$entry/@namest">
       <xsl:variable name="namest" select="$entry/@namest"/>
       <xsl:variable name="colspec"
-                    select="$entry/ancestor::tgroup/colspec[@colname=$namest]"/>
+                    select="($entry/ancestor::tgroup/colspec[@colname=$namest]
+                             |$entry/ancestor::entrytbl/colspec[@colname=$namest])[last()]"/>
       <xsl:call-template name="colspec.colnum">
         <xsl:with-param name="colspec" select="$colspec"/>
       </xsl:call-template>
@@ -165,7 +169,8 @@ or 0 (the empty string)</para>
   <xsl:param name="entry" select="."/>
   <xsl:variable name="spanname" select="$entry/@spanname"/>
   <xsl:variable name="spanspec"
-                select="$entry/ancestor::tgroup/spanspec[@spanname=$spanname]"/>
+                select="($entry/ancestor::tgroup/spanspec[@spanname=$spanname]
+                         |$entry/ancestor::entrytbl/spanspec[@spanname=$spanname])[last()]"/>
 
   <xsl:variable name="namest">
     <xsl:choose>
@@ -192,14 +197,16 @@ or 0 (the empty string)</para>
   <xsl:variable name="scol">
     <xsl:call-template name="colspec.colnum">
       <xsl:with-param name="colspec"
-                      select="$entry/ancestor::tgroup/colspec[@colname=$namest]"/>
+                      select="($entry/ancestor::tgroup/colspec[@colname=$namest]
+                               |$entry/ancestor::entrytbl/colspec[@colname=$namest])[last()]"/>
     </xsl:call-template>
   </xsl:variable>
 
   <xsl:variable name="ecol">
     <xsl:call-template name="colspec.colnum">
       <xsl:with-param name="colspec"
-                      select="$entry/ancestor::tgroup/colspec[@colname=$nameend]"/>
+                      select="($entry/ancestor::tgroup/colspec[@colname=$nameend]
+                               |$entry/ancestor::entrytbl/colspec[@colname=$nameend])[last()]"/>
     </xsl:call-template>
   </xsl:variable>
 
@@ -247,6 +254,9 @@ or 0 (the empty string)</para>
   <xsl:param name="attribute" select="'colsep'"/>
 
   <xsl:variable name="tgroup" select="$row/ancestor::tgroup[1]"/>
+
+  <xsl:variable name="table" select="($tgroup/ancestor::table
+                                     |$tgroup/ancestor::informaltable)[1]"/>
 
   <xsl:variable name="entry.value">
     <xsl:call-template name="get-attribute">
@@ -325,6 +335,13 @@ or 0 (the empty string)</para>
     </xsl:call-template>
   </xsl:variable>
 
+  <xsl:variable name="table.value">
+    <xsl:call-template name="get-attribute">
+      <xsl:with-param name="element" select="$table"/>
+      <xsl:with-param name="attribute" select="$attribute"/>
+    </xsl:call-template>
+  </xsl:variable>
+
   <xsl:variable name="default.value">
     <!-- This section used to say that rowsep and colsep have defaults based -->
     <!-- on the frame setting. Further reflection and closer examination of the -->
@@ -346,6 +363,12 @@ or 0 (the empty string)</para>
     </xsl:when>
     <xsl:when test="$row.value != ''">
       <xsl:value-of select="$row.value"/>
+    </xsl:when>
+    <xsl:when test="$tgroup.value != ''">
+      <xsl:value-of select="$tgroup.value"/>
+    </xsl:when>
+    <xsl:when test="$table.value != ''">
+      <xsl:value-of select="$table.value"/>
     </xsl:when>
     <xsl:when test="$span.value != ''">
       <xsl:value-of select="$span.value"/>

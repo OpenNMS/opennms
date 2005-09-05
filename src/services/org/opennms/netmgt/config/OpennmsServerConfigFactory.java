@@ -43,146 +43,128 @@ import org.opennms.netmgt.ConfigFileConstants;
 import org.opennms.netmgt.config.server.LocalServer;
 
 /**
- * This is the singleton class used to load the configuration for
- * the OpenNMS OutageManager from the outage-configuration xml file.
- *
- * <strong>Note:</strong>Users of this class should make sure the 
- * <em>init()</em> is called before calling any other method to ensure
- * the config is loaded before accessing other convenience methods.
- *
- * @author <a href="mailto:jamesz@opennms.com">James Zuo</a>
- * @author <a href="http://www.opennms.org/">OpenNMS</a>
+ * This is the singleton class used to load the configuration for the OpenNMS
+ * OutageManager from the outage-configuration xml file.
+ * 
+ * <strong>Note: </strong>Users of this class should make sure the
+ * <em>init()</em> is called before calling any other method to ensure the
+ * config is loaded before accessing other convenience methods.
+ * 
+ * @author <a href="mailto:jamesz@opennms.com">James Zuo </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
  */
-public final class OpennmsServerConfigFactory
-{
-	/**
-	 * The singleton instance of this factory
-	 */
-	private static OpennmsServerConfigFactory	m_singleton=null;
+public final class OpennmsServerConfigFactory {
+    /**
+     * The singleton instance of this factory
+     */
+    private static OpennmsServerConfigFactory m_singleton = null;
 
-	/**
-	 * The config class loaded from the config file
-	 */
-	private LocalServer			m_config;
+    /**
+     * The config class loaded from the config file
+     */
+    private LocalServer m_config;
 
-	/**
-	 * This member is set to true if the configuration file
-	 * has been loaded.
-	 */
-	private static boolean				m_loaded=false;
+    /**
+     * This member is set to true if the configuration file has been loaded.
+     */
+    private static boolean m_loaded = false;
 
-	/**
-	 * Private constructor
-	 *
-	 * @exception java.io.IOException Thrown if the specified config
-	 * 	file cannot be read
-	 * @exception org.exolab.castor.xml.MarshalException Thrown if the 
-	 * 	file does not conform to the schema.
-	 * @exception org.exolab.castor.xml.ValidationException Thrown if 
-	 *	the contents do not match the required schema.
-	 */
-	private OpennmsServerConfigFactory(String configFile)
-		throws 	IOException,
-			MarshalException, 
-			ValidationException
-	{
-		InputStream cfgIn = new FileInputStream(configFile);
+    /**
+     * Private constructor
+     * 
+     * @exception java.io.IOException
+     *                Thrown if the specified config file cannot be read
+     * @exception org.exolab.castor.xml.MarshalException
+     *                Thrown if the file does not conform to the schema.
+     * @exception org.exolab.castor.xml.ValidationException
+     *                Thrown if the contents do not match the required schema.
+     */
+    private OpennmsServerConfigFactory(String configFile) throws IOException, MarshalException, ValidationException {
+        InputStream cfgIn = new FileInputStream(configFile);
 
-		m_config = (LocalServer) Unmarshaller.unmarshal(LocalServer.class, new InputStreamReader(cfgIn));
-		cfgIn.close();
+        m_config = (LocalServer) Unmarshaller.unmarshal(LocalServer.class, new InputStreamReader(cfgIn));
+        cfgIn.close();
 
-	}
+    }
 
-	/**
-	 * Load the config from the default config file and create the 
-	 * singleton instance of this factory.
-	 *
-	 * @exception java.io.IOException Thrown if the specified config
-	 * 	file cannot be read
-	 * @exception org.exolab.castor.xml.MarshalException Thrown if the 
-	 * 	file does not conform to the schema.
-	 * @exception org.exolab.castor.xml.ValidationException Thrown if 
-	 *	the contents do not match the required schema.
-	 */
-	public static synchronized void init()
-		throws 	IOException,
-			MarshalException, 
-			ValidationException
-	{
-		if (m_loaded)
-		{
-			// init already called - return
-			// to reload, reload() will need to be called
-			return;
-		}
+    /**
+     * Load the config from the default config file and create the singleton
+     * instance of this factory.
+     * 
+     * @exception java.io.IOException
+     *                Thrown if the specified config file cannot be read
+     * @exception org.exolab.castor.xml.MarshalException
+     *                Thrown if the file does not conform to the schema.
+     * @exception org.exolab.castor.xml.ValidationException
+     *                Thrown if the contents do not match the required schema.
+     */
+    public static synchronized void init() throws IOException, MarshalException, ValidationException {
+        if (m_loaded) {
+            // init already called - return
+            // to reload, reload() will need to be called
+            return;
+        }
 
-		File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.OPENNMS_SERVER_CONFIG_FILE_NAME);
+        File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.OPENNMS_SERVER_CONFIG_FILE_NAME);
 
-		m_singleton = new OpennmsServerConfigFactory(cfgFile.getPath());
+        m_singleton = new OpennmsServerConfigFactory(cfgFile.getPath());
 
-		m_loaded = true;
-	}
+        m_loaded = true;
+    }
 
-	/**
-	 * Reload the config from the default config file
-	 *
-	 * @exception java.io.IOException Thrown if the specified config
-	 * 	file cannot be read/loaded
-	 * @exception org.exolab.castor.xml.MarshalException Thrown if the 
-	 * 	file does not conform to the schema.
-	 * @exception org.exolab.castor.xml.ValidationException Thrown if 
-	 *	the contents do not match the required schema.
-	 */
-	public static synchronized void reload()
-		throws 	IOException,
-			MarshalException, 
-			ValidationException
-	{
-		m_singleton = null;
-		m_loaded    = false;
+    /**
+     * Reload the config from the default config file
+     * 
+     * @exception java.io.IOException
+     *                Thrown if the specified config file cannot be read/loaded
+     * @exception org.exolab.castor.xml.MarshalException
+     *                Thrown if the file does not conform to the schema.
+     * @exception org.exolab.castor.xml.ValidationException
+     *                Thrown if the contents do not match the required schema.
+     */
+    public static synchronized void reload() throws IOException, MarshalException, ValidationException {
+        m_singleton = null;
+        m_loaded = false;
 
-		init();
-	}
+        init();
+    }
 
-	/**
-	 * Return the singleton instance of this factory.
-	 *
-	 * @return The current factory instance.
-	 *
-	 * @throws java.lang.IllegalStateException Thrown if the factory
-	 * 	has not yet been initialized.
-	 */
-	public static synchronized OpennmsServerConfigFactory getInstance()
-	{
-		if(!m_loaded)
-			throw new IllegalStateException("The factory has not been initialized");
+    /**
+     * Return the singleton instance of this factory.
+     * 
+     * @return The current factory instance.
+     * 
+     * @throws java.lang.IllegalStateException
+     *             Thrown if the factory has not yet been initialized.
+     */
+    public static synchronized OpennmsServerConfigFactory getInstance() {
+        if (!m_loaded)
+            throw new IllegalStateException("The factory has not been initialized");
 
-		return m_singleton;
-	}
+        return m_singleton;
+    }
 
-	/**
-	 * Return the local opennms server name.
-	 *
-	 * @return the name of the local opennms server
-	 */
-	public synchronized String getServerName()
-	{
-		return m_config.getServerName();
-	}
+    /**
+     * Return the local opennms server name.
+     * 
+     * @return the name of the local opennms server
+     */
+    public synchronized String getServerName() {
+        return m_config.getServerName();
+    }
 
-        /**
-	 * Return the boolean flag verify server to determine if poller what 
-	 * to use server to restrict services to poll.
-	 *
-	 * @return boolean flag 
-	 */
-	public synchronized boolean verifyServer()
-	{
-		String flag = m_config.getVerifyServer();
-                if (flag.equals("true"))
-                        return true;
-                else
-                        return false;
-	}
+    /**
+     * Return the boolean flag verify server to determine if poller what to use
+     * server to restrict services to poll.
+     * 
+     * @return boolean flag
+     */
+    public synchronized boolean verifyServer() {
+        String flag = m_config.getVerifyServer();
+        if (flag.equals("true"))
+            return true;
+        else
+            return false;
+    }
 
 }

@@ -14,7 +14,12 @@
 
 <refsect1><title>Description</title>
 
-<para>FIXME:</para>
+<para>In the FO stylesheet, if this parameter is non-zero then the
+<property>shade.verbatim.style</property> properties will be applied
+to verbatim environments.</para>
+
+<para>In the HTML stylesheet, this parameter is now deprecated. Use
+CSS instead.</para>
 
 </refsect1>
 </refentry>

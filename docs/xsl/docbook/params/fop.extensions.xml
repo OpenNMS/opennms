@@ -19,5 +19,7 @@
 extensions will be used. At present, this consists of PDF bookmarks.
 </para>
 
+<para>This parameter can also affect which graphics file formats
+are supported</para>
 </refsect1>
 </refentry>

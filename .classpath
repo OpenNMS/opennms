@@ -47,8 +47,20 @@
 	<classpathentry kind="lib" path="lib/mailapi.jar"/>
 	<classpathentry kind="lib" path="lib/imap.jar"/>
 	<classpathentry kind="lib" path="lib/activation.jar"/>
-	<classpathentry kind="lib" path="lib/sshtools.jar"/>
-	<classpathentry kind="lib" path="lib/commons-net-1.2.2.jar"/>
 	<classpathentry sourcepath="ECLIPSE_HOME/plugins/org.eclipse.jdt.source_3.0.0/src/org.junit_3.8.1/junitsrc.zip" kind="var" path="JUNIT_HOME/junit.jar"/>
+	<classpathentry kind="lib" path="lib/hsqldb.jar"/>
+	<classpathentry kind="lib" path="lib/jradius-client.jar"/>
+	<classpathentry kind="lib" path="lib/jmta.jar"/>
+	<classpathentry kind="lib" path="lib/smack.jar"/>
+	<classpathentry kind="lib" path="lib/smackx.jar"/>
+	<classpathentry kind="lib" path="devlib/xmlParserAPIs.jar"/>
+	<classpathentry kind="lib" path="devlib/Tidy.jar"/>
+	<classpathentry kind="lib" path="devlib/httpunit.jar"/>
+	<classpathentry kind="lib" path="devlib/js.jar"/>
+	<classpathentry kind="lib" path="devlib/jwebunit-1.2.jar"/>
+	<classpathentry kind="lib" path="devlib/nekohtml.jar"/>
+	<classpathentry kind="lib" path="devlib/servlet.jar"/>
+	<classpathentry kind="lib" path="devlib/jasper-compiler.jar"/>
+	<classpathentry kind="lib" path="devlib/jasper-runtime.jar"/>
 	<classpathentry kind="output" path="work/opennms/classes"/>
 </classpath>

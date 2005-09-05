@@ -1,11 +1,11 @@
 <html><head>
       <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-   <title>Profiling DocBook documents</title><meta name="generator" content="DocBook XSL Stylesheets V1.64.1"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="article" lang="en"><div class="titlepage"><div><div><h1 class="title"><a name="d0e1"></a>Profiling DocBook documents</h1></div><div><h3 class="subtitle"><i>An easy way to personalize your content for several target audiences</i></h3></div><div><div class="author"><h3 class="author"><span class="firstname">Jirka</span> <span class="surname">Kosek</span></h3><div class="affiliation"><div class="address"><p>E-mail:&nbsp;<tt class="email">&lt;<a href="mailto:jirka@kosek.cz">jirka@kosek.cz</a>&gt;</tt><br>
+   <title>Profiling DocBook documents</title><meta name="generator" content="DocBook XSL Stylesheets V1.67.1"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="article" lang="en"><div class="titlepage"><div><div><h1 class="title"><a name="d0e1"></a>Profiling DocBook documents</h1></div><div><h3 class="subtitle"><i>An easy way to personalize your content for several target audiences</i></h3></div><div><div class="author"><h3 class="author"><span class="firstname">Jirka</span> <span class="surname">Kosek</span></h3><div class="affiliation"><div class="address"><p>E-mail:&nbsp;<code class="email">&lt;<a href="mailto:jirka@kosek.cz">jirka@kosek.cz</a>&gt;</code><br>
 <span class="otheraddr">Web:&nbsp;<a href="http://www.kosek.cz" target="_top">http://www.kosek.cz</a><br>
 </span><br>
 </p></div></div></div></div><div><p class="releaseinfo">
 $Id: profiling.xml,v 1.3 2002/03/14 14:19:38 nwalsh Exp $
-</p></div><div><p class="copyright">Copyright &copy; 2001 Ji&#345;&iacute; Kosek</p></div></div><div></div><hr></div><div class="toc"><p><b>Table of Contents</b></p><dl><dt><span class="section"><a href="#d0e37">Introduction</a></span></dt><dt><span class="section"><a href="#d0e44">$0 solution</a></span></dt><dt><span class="section"><a href="#d0e85">Usage</a></span></dt><dt><span class="section"><a href="#d0e251">Single pass profiling</a></span></dt><dt><span class="section"><a href="#d0e277">Conclusion</a></span></dt></dl></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d0e37"></a>Introduction</h2></div></div><div></div></div><p>There are many situations when we need to generate several
+</p></div><div><p class="copyright">Copyright &copy; 2001 Ji&#345;&iacute; Kosek</p></div></div><hr></div><div class="toc"><p><b>Table of Contents</b></p><dl><dt><span class="section"><a href="#d0e37">Introduction</a></span></dt><dt><span class="section"><a href="#d0e44">$0 solution</a></span></dt><dt><span class="section"><a href="#d0e85">Usage</a></span></dt><dt><span class="section"><a href="#d0e251">Single pass profiling</a></span></dt><dt><span class="section"><a href="#d0e277">Conclusion</a></span></dt></dl></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d0e37"></a>Introduction</h2></div></div></div><p>There are many situations when we need to generate several
 versions of document with slightly different content from the single
 source. User guide for program with both Windows and Linux port will
 differ only in several topics related to installation and
@@ -22,14 +22,14 @@ Software will automatically filter out excess parts of document and
 pass rest of it to rendering engine. However, if your budget is
 limited you can not use commercial solutions. In the following text I
 will show you simple but flexible profiling solution based on freely
-available technologies.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d0e44"></a>$0 solution</h2></div></div><div></div></div><p>In the document we mark parts targeted for particular platform
+available technologies.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d0e44"></a>$0 solution</h2></div></div></div><p>In the document we mark parts targeted for particular platform
 or user group. When generating final output version of document we
 must do profiling i.e. personalization for particular target audience.
 Only some parts of document are processed. DocBook has built in
 support for marking document parts &#8211; on almost every element you
-can use attributes like <tt class="sgmltag-attribute">os</tt>, <tt class="sgmltag-attribute">userlevel</tt> and <tt class="sgmltag-attribute">arch</tt>. We can store identifier of operating
+can use attributes like <code class="sgmltag-attribute">os</code>, <code class="sgmltag-attribute">userlevel</code> and <code class="sgmltag-attribute">arch</code>. We can store identifier of operating
 system, user group or hardware architecture here. You can also store
-profiling information into some general use attribute like <tt class="sgmltag-attribute">role</tt>. <a href="#ex.doc" title="Example&nbsp;1.&nbsp;Sample DocBook document with profiling information">Example&nbsp;1, &#8220;Sample DocBook document with profiling information&#8221;</a>
+profiling information into some general use attribute like <code class="sgmltag-attribute">role</code>. <a href="#ex.doc" title="Example&nbsp;1.&nbsp;Sample DocBook document with profiling information">Example&nbsp;1, &#8220;Sample DocBook document with profiling information&#8221;</a>
 shows how document with profiling information might
 look like.</p><div class="example"><a name="ex.doc"></a><p class="title"><b>Example&nbsp;1.&nbsp;Sample DocBook document with profiling information</b></p><pre class="programlisting">&lt;?xml version='1.0' encoding='iso-8859-1'?&gt;
 &lt;!DOCTYPE chapter PUBLIC '-//OASIS//DTD DocBook XML V4.1.2//EN'
@@ -94,15 +94,15 @@ and tools. I decided to use XSLT stylesheet. Writing necessary filter
 is very easy in XSLT and many users have XSLT processor already
 installed. Profiling stylesheet is part of standard XSL stylesheets
 distribution and can be found in file
-<tt class="filename">profiling/profile.xsl</tt>.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d0e85"></a>Usage</h2></div></div><div></div></div><p>If you want to generate Unix specific guide from our sample
+<code class="filename">profiling/profile.xsl</code>.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d0e85"></a>Usage</h2></div></div></div><p>If you want to generate Unix specific guide from our sample
 document (<a href="#ex.doc" title="Example&nbsp;1.&nbsp;Sample DocBook document with profiling information">Example&nbsp;1, &#8220;Sample DocBook document with profiling information&#8221;</a>) you can do it in the following
-way. (We assume, that command <span><b class="command">saxon</b></span> is able to run
+way. (We assume, that command <span><strong class="command">saxon</strong></span> is able to run
 XSLT processor on your machine. You can use your preffered XSLT
-processor instead.)</p><pre class="screen"><span><b class="command">saxon</b></span> <tt class="option">-o</tt> unixsample.xml sample.xml profile.xsl "os=unix"</pre><p>We are processing source document
-<tt class="filename">sample.xml</tt> with profiling stylesheet
-<tt class="filename">profile.xsl</tt>. Result of transformation is stored
-in file <tt class="filename">unixsample.xml</tt>. By setting parameter
-<i class="parameter"><tt>os</tt></i> to value <tt class="literal">unix</tt>, we tell
+processor instead.)</p><pre class="screen"><span><strong class="command">saxon</strong></span> <code class="option">-o</code> unixsample.xml sample.xml profile.xsl "os=unix"</pre><p>We are processing source document
+<code class="filename">sample.xml</code> with profiling stylesheet
+<code class="filename">profile.xsl</code>. Result of transformation is stored
+in file <code class="filename">unixsample.xml</code>. By setting parameter
+<em class="parameter"><code>os</code></em> to value <code class="literal">unix</code>, we tell
 that only general and Unix specific parts of document should be copied
 to the result document. If you will look at generated result, you will
 notice that this is correct DocBook document:</p><pre class="programlisting">&lt;?xml version="1.0" encoding="utf-8"?&gt;
@@ -130,34 +130,34 @@ stylesheet have correct document type declaration (DOCTYPE). Without
 it some tools would not be able to process them further. On the result
 of filtering you can run common tools &#8211; for example DSSSL or XSL
 stylesheets.</p><p>Stylesheet support several attributes for specifying profiling
-values. They are summarized in the following list.</p><div class="variablelist"><dl><dt><span class="term"><i class="parameter"><tt>profile.os</tt></i></span></dt><dd><p>This parameter is used for specifying operating system (<tt class="sgmltag-attribute">os</tt> attribute) for which you want get
-profiled version of document.</p></dd><dt><span class="term"><i class="parameter"><tt>profile.userlevel</tt></i></span></dt><dd><p>This parameter is used for specifying user level (<tt class="sgmltag-attribute">userlevel</tt> attribute) for which you want get
-profiled version of document.</p></dd><dt><span class="term"><i class="parameter"><tt>profile.arch</tt></i></span></dt><dd><p>This parameter is used for specifying hardware architecture (<tt class="sgmltag-attribute">arch</tt> attribute) for which you want get
-profiled version of document.</p></dd><dt><span class="term"><i class="parameter"><tt>profile.condition</tt></i>, </span><span class="term"><i class="parameter"><tt>profile.conformance</tt></i>, </span><span class="term"><i class="parameter"><tt>profile.revision</tt></i>, </span><span class="term"><i class="parameter"><tt>profile.revisionflag</tt></i>, </span><span class="term"><i class="parameter"><tt>profile.security</tt></i>, </span><span class="term"><i class="parameter"><tt>profile.vendor</tt></i>, </span><span class="term"><i class="parameter"><tt>profile.role</tt></i>, </span><span class="term"><i class="parameter"><tt>profile.lang</tt></i></span></dt><dd><p>These parameters can be used to specify target profile for
-corresponding attributes.</p></dd><dt><span class="term"><i class="parameter"><tt>profile.attribute</tt></i></span></dt><dd><p>Name of attribute on which profiling should be based. It can be
+values. They are summarized in the following list.</p><div class="variablelist"><dl><dt><span class="term"><em class="parameter"><code>profile.os</code></em></span></dt><dd><p>This parameter is used for specifying operating system (<code class="sgmltag-attribute">os</code> attribute) for which you want get
+profiled version of document.</p></dd><dt><span class="term"><em class="parameter"><code>profile.userlevel</code></em></span></dt><dd><p>This parameter is used for specifying user level (<code class="sgmltag-attribute">userlevel</code> attribute) for which you want get
+profiled version of document.</p></dd><dt><span class="term"><em class="parameter"><code>profile.arch</code></em></span></dt><dd><p>This parameter is used for specifying hardware architecture (<code class="sgmltag-attribute">arch</code> attribute) for which you want get
+profiled version of document.</p></dd><dt><span class="term"><em class="parameter"><code>profile.condition</code></em>, </span><span class="term"><em class="parameter"><code>profile.conformance</code></em>, </span><span class="term"><em class="parameter"><code>profile.revision</code></em>, </span><span class="term"><em class="parameter"><code>profile.revisionflag</code></em>, </span><span class="term"><em class="parameter"><code>profile.security</code></em>, </span><span class="term"><em class="parameter"><code>profile.vendor</code></em>, </span><span class="term"><em class="parameter"><code>profile.role</code></em>, </span><span class="term"><em class="parameter"><code>profile.lang</code></em></span></dt><dd><p>These parameters can be used to specify target profile for
+corresponding attributes.</p></dd><dt><span class="term"><em class="parameter"><code>profile.attribute</code></em></span></dt><dd><p>Name of attribute on which profiling should be based. It can be
 used if profiling information is stored in other attributes then
-<tt class="sgmltag-attribute">os</tt>, <tt class="sgmltag-attribute">userlevel</tt> and <tt class="sgmltag-attribute">arch</tt>.</p></dd><dt><span class="term"><i class="parameter"><tt>profile.value</tt></i></span></dt><dd><p>This parameter is used for specifying value for attribute
-selected by <i class="parameter"><tt>attr</tt></i> parameter.</p><p>E.g. setting <tt class="literal">profile.attribute=os</tt> and
-<tt class="literal">profile.value=unix</tt> is same as setting
-<tt class="literal">os=unix</tt>.</p></dd><dt><span class="term"><i class="parameter"><tt>profile.separator</tt></i></span></dt><dd><p>Separator for multiple target audience identifiers. Default is
-<tt class="literal">;</tt>.</p></dd></dl></div><p>Current implementation is able to handle multiple profiling
+<code class="sgmltag-attribute">os</code>, <code class="sgmltag-attribute">userlevel</code> and <code class="sgmltag-attribute">arch</code>.</p></dd><dt><span class="term"><em class="parameter"><code>profile.value</code></em></span></dt><dd><p>This parameter is used for specifying value for attribute
+selected by <em class="parameter"><code>attr</code></em> parameter.</p><p>E.g. setting <code class="literal">profile.attribute=os</code> and
+<code class="literal">profile.value=unix</code> is same as setting
+<code class="literal">os=unix</code>.</p></dd><dt><span class="term"><em class="parameter"><code>profile.separator</code></em></span></dt><dd><p>Separator for multiple target audience identifiers. Default is
+<code class="literal">;</code>.</p></dd></dl></div><p>Current implementation is able to handle multiple profiling
 targets in one attribute. In that case you must separate identifiers
 by semicolon:</p><pre class="programlisting">&lt;para os="unix;mac;win"&gt;...&lt;/para&gt;</pre><p>It is possible to use different separator than semicolon by
-setting <i class="parameter"><tt>sep</tt></i> parameter. There cann't be spaces
+setting <em class="parameter"><code>sep</code></em> parameter. There cann't be spaces
 between separator and target names.</p><p>You can also perform profiling based on several profiling
 attributes in a single step as stylesheet can handle all parameters
 simultaneously. For example to get hypothetical guide for Windows
-beginners, you can run profiling like this:</p><pre class="screen"><span><b class="command">saxon</b></span> <tt class="option">-o</tt> xsample.xml sample.xml profile.xsl "profile.os=win" "profile.userlevel=beginner"</pre><p>As you can see above described profiling process can be used to
-substitute SGML marked sections mechanism which is missing in XML.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d0e251"></a>Single pass profiling</h2></div></div><div></div></div><p>If you are using XSL stylesheets version 1.50 and later with
+beginners, you can run profiling like this:</p><pre class="screen"><span><strong class="command">saxon</strong></span> <code class="option">-o</code> xsample.xml sample.xml profile.xsl "profile.os=win" "profile.userlevel=beginner"</pre><p>As you can see above described profiling process can be used to
+substitute SGML marked sections mechanism which is missing in XML.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d0e251"></a>Single pass profiling</h2></div></div></div><p>If you are using XSL stylesheets version 1.50 and later with
 EXSLT enabled XSLT processor (Saxon, xsltproc, Xalan) you can do
 profiling and transformation to HTML or FO in a single step. To do this
-use stylesheet with prefix <tt class="filename">profile-</tt> instead of
-normal one (e.g. <tt class="filename">profile-docbook.xsl</tt>,
-<tt class="filename">profile-chunk.xsl</tt> or
-<tt class="filename">profile-htmlhelp.xsl</tt>). For example to get HTML
-version of profiled document use:</p><pre class="screen"><span><b class="command">saxon</b></span> <tt class="option">-o</tt> sample.html sample.xml .../html/profile-docbook.xsl "profile.os=win" "profile.userlevel=beginner"</pre><p>No additional processing is necessary. If you want to use
+use stylesheet with prefix <code class="filename">profile-</code> instead of
+normal one (e.g. <code class="filename">profile-docbook.xsl</code>,
+<code class="filename">profile-chunk.xsl</code> or
+<code class="filename">profile-htmlhelp.xsl</code>). For example to get HTML
+version of profiled document use:</p><pre class="screen"><span><strong class="command">saxon</strong></span> <code class="option">-o</code> sample.html sample.xml .../html/profile-docbook.xsl "profile.os=win" "profile.userlevel=beginner"</pre><p>No additional processing is necessary. If you want to use
 profiling with your customized stylesheets import profiling-able
-stylesheet instead of normal one.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d0e277"></a>Conclusion</h2></div></div><div></div></div><p>Profiling is necessary in many larger DocBook applications. It
+stylesheet instead of normal one.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d0e277"></a>Conclusion</h2></div></div></div><p>Profiling is necessary in many larger DocBook applications. It
 can be quite easily implemented by simple XSLT stylesheet which is
 presented here. This mechanism can also be used to simulate behavior
 of marked sections known from SGML.</p></div></div></body></html>

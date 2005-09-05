@@ -34,143 +34,129 @@
 
 package org.opennms.protocols.snmp;
 
-
 /**
- * Defines a SNMPv1 32-bit gauge object. The object is a 
- * 32-bit unsigned value that may increase or decrease but
- * does not wrap as a SnmpCounter32.
- *
- * The object inherients and uses most of the methods defined
- * by the SnmpUInt32 class. This class does not define any 
- * specific data, but is instead used to override the ASN.1 type
- * of the base class.
- *
- * @author <a href="mailto:weave@oculan.com">Brian Weaver</a>
+ * Defines a SNMPv1 32-bit gauge object. The object is a 32-bit unsigned value
+ * that may increase or decrease but does not wrap as a SnmpCounter32.
+ * 
+ * The object inherients and uses most of the methods defined by the SnmpUInt32
+ * class. This class does not define any specific data, but is instead used to
+ * override the ASN.1 type of the base class.
+ * 
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
  */
-public class SnmpGauge32
-	extends SnmpUInt32
-{
-	/**
-	 * for serialzation support
-	 */
-	static final long serialVersionUID = 6399350821456655314L;
+public class SnmpGauge32 extends SnmpUInt32 {
+    /**
+     * for serialzation support
+     */
+    static final long serialVersionUID = 6399350821456655314L;
 
-	/**
-	 * Defines the ASN.1 type for this object.
-	 *
-	 */
-	public static final byte ASNTYPE = SnmpSMI.SMI_GAUGE32;
+    /**
+     * Defines the ASN.1 type for this object.
+     * 
+     */
+    public static final byte ASNTYPE = SnmpSMI.SMI_GAUGE32;
 
-	/**
-	 * Constructs the default counter object.
-	 * The initial value is defined
-	 * by the super class default constructor
-	 */
-	public SnmpGauge32( )
-	{
-		super();
-	}
-	
-	/**
-	 * Constructs the object with the specified
-	 * value.
-	 *
-	 * @param value	The default value for the object.
-	 */
-	public SnmpGauge32(long value)
-	{
-		super(value);
-	}
+    /**
+     * Constructs the default counter object. The initial value is defined by
+     * the super class default constructor
+     */
+    public SnmpGauge32() {
+        super();
+    }
 
-	/**
-	 * Constructs the object with the specified value.
-	 *
-	 * @param value	The default value for the object.
-	 *
-	 */
-	public SnmpGauge32(Long value)
-	{
-		super(value);
-	}
+    /**
+     * Constructs the object with the specified value.
+     * 
+     * @param value
+     *            The default value for the object.
+     */
+    public SnmpGauge32(long value) {
+        super(value);
+    }
 
-	/**
-	 * Constructs a new object with the same value
-	 * as the passed object.
-	 *
-	 * @param second	The object to recover values from.
-	 *
-	 */
-	public SnmpGauge32(SnmpGauge32 second)
-	{
-		super(second);
-	}
+    /**
+     * Constructs the object with the specified value.
+     * 
+     * @param value
+     *            The default value for the object.
+     * 
+     */
+    public SnmpGauge32(Long value) {
+        super(value);
+    }
 
-	/**
-	 * Constructs a new object with the value
-	 * constained in the SnmpUInt32 object.
-	 *
-	 * @param uint32 The SnmpUInt32 object to copy.
-	 *
-	 */
-	public SnmpGauge32(SnmpUInt32 uint32)
-	{
-		super(uint32);
-	}
+    /**
+     * Constructs a new object with the same value as the passed object.
+     * 
+     * @param second
+     *            The object to recover values from.
+     * 
+     */
+    public SnmpGauge32(SnmpGauge32 second) {
+        super(second);
+    }
 
-	/**
-	 * <p>Simple class constructor that is used to create an initialize
-	 * the new instance with the unsigned value decoded from the 
-	 * passed String argument. If the decoded argument is malformed,
-	 * null, or evaluates to a negative value then an exception is 
-	 * generated.</p>
-	 *
-	 * @param value	The string encoded value.
-	 *
-	 * @throws java.lang.NumberFormatException Thrown if the passed value is
-	 *	malformed and cannot be parsed.
-	 * @throws java.lang.IllegalArgumentException Throws if the passed value 
-	 *	evaluates to a negative value.
-	 * @throws java.lang.NullPointerException Throws if the passed value is
-	 *	a null reference.
-	 */
-	public SnmpGauge32(String value)
-	{
-		super(value);
-	}
+    /**
+     * Constructs a new object with the value constained in the SnmpUInt32
+     * object.
+     * 
+     * @param uint32
+     *            The SnmpUInt32 object to copy.
+     * 
+     */
+    public SnmpGauge32(SnmpUInt32 uint32) {
+        super(uint32);
+    }
 
-	/**
-	 * Returns the ASN.1 type specific to this object.
-	 *
-	 * @return The ASN.1 value for this object.
-	 */
-	public byte typeId()
-	{
-		return ASNTYPE;
-	}
+    /**
+     * <p>
+     * Simple class constructor that is used to create an initialize the new
+     * instance with the unsigned value decoded from the passed String argument.
+     * If the decoded argument is malformed, null, or evaluates to a negative
+     * value then an exception is generated.
+     * </p>
+     * 
+     * @param value
+     *            The string encoded value.
+     * 
+     * @throws java.lang.NumberFormatException
+     *             Thrown if the passed value is malformed and cannot be parsed.
+     * @throws java.lang.IllegalArgumentException
+     *             Throws if the passed value evaluates to a negative value.
+     * @throws java.lang.NullPointerException
+     *             Throws if the passed value is a null reference.
+     */
+    public SnmpGauge32(String value) {
+        super(value);
+    }
 
+    /**
+     * Returns the ASN.1 type specific to this object.
+     * 
+     * @return The ASN.1 value for this object.
+     */
+    public byte typeId() {
+        return ASNTYPE;
+    }
 
-	/**
-	 * Creates a new object that is a duplicate of the
-	 * current object.
-	 *
-	 * @return The newly created duplicate object.
-	 *
-	 */
-	public SnmpSyntax duplicate() 
-	{
-		return new SnmpGauge32(this);
-	}
+    /**
+     * Creates a new object that is a duplicate of the current object.
+     * 
+     * @return The newly created duplicate object.
+     * 
+     */
+    public SnmpSyntax duplicate() {
+        return new SnmpGauge32(this);
+    }
 
-	/**
-	 * Creates a new object that is a duplicate of the
-	 * current object.
-	 *
-	 * @return The newly created duplicate object.
-	 *
-	 */
-	public Object clone()
-	{
-		return new SnmpGauge32(this);
-	}
+    /**
+     * Creates a new object that is a duplicate of the current object.
+     * 
+     * @return The newly created duplicate object.
+     * 
+     */
+    public Object clone() {
+        return new SnmpGauge32(this);
+    }
 
 }

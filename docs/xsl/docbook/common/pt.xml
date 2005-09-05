@@ -19,13 +19,13 @@
    <l:gentext key="bibliography" text="Bibliografia"/>
    <l:gentext key="Book" text="Livro"/>
    <l:gentext key="book" text="Livro"/>
-   <l:gentext key="CAUTION" text="CAUTELA"/>
-   <l:gentext key="Caution" text="Cautela"/>
-   <l:gentext key="caution" text="Cautela"/>
+   <l:gentext key="CAUTION" text="CUIDADO"/>
+   <l:gentext key="Caution" text="Cuidado"/>
+   <l:gentext key="caution" text="Cuidado"/>
    <l:gentext key="Chapter" text="Cap&#237;tulo"/>
    <l:gentext key="chapter" text="cap&#237;tulo"/>
-   <l:gentext key="Colophon" text="Colophon"/>
-   <l:gentext key="colophon" text="Colophon"/>
+   <l:gentext key="Colophon" text="Ficha T&#233;cnica"/>
+   <l:gentext key="colophon" text="Ficha T&#233;cnica"/>
    <l:gentext key="Copyright" text="Copyright"/>
    <l:gentext key="copyright" text="Copyright"/>
    <l:gentext key="Dedication" text="Dedicat&#243;ria"/>
@@ -68,13 +68,13 @@
    <l:gentext key="preface" text="Pref&#225;cio"/>
    <l:gentext key="Procedure" text="Procedimento"/>
    <l:gentext key="procedure" text="Procedimento"/>
-   <l:gentext key="ProductionSet" text="Production"/>
+   <l:gentext key="ProductionSet" text="Produ&#231;&#227;o"/>
    <l:gentext key="PubDate" text="Editado"/>
    <l:gentext key="pubdate" text="Editado"/>
    <l:gentext key="Published" text="Publicado"/>
    <l:gentext key="published" text="Publicado"/>
-   <l:gentext key="Qandadiv" text="Q &amp; A" lang="en"/>
-   <l:gentext key="qandadiv" text="Q &amp; A" lang="en"/>
+   <l:gentext key="Qandadiv" text="P &amp; R"/>
+   <l:gentext key="qandadiv" text="P &amp; R"/>
    <l:gentext key="Question" text="P:"/>
    <l:gentext key="question" text="P:"/>
    <l:gentext key="RefEntry" text=""/>
@@ -91,11 +91,11 @@
    <l:gentext key="revhistory" text="Historial de Revis&#245;es"/>
    <l:gentext key="revision" text="Revis&#227;o"/>
    <l:gentext key="Revision" text="Revis&#227;o"/>
-   <l:gentext key="sect1" text="Section"/>
-   <l:gentext key="sect2" text="Section"/>
-   <l:gentext key="sect3" text="Section"/>
-   <l:gentext key="sect4" text="Section"/>
-   <l:gentext key="sect5" text="Section"/>
+   <l:gentext key="sect1" text="Sec&#231;&#227;o"/>
+   <l:gentext key="sect2" text="Sec&#231;&#227;o"/>
+   <l:gentext key="sect3" text="Sec&#231;&#227;o"/>
+   <l:gentext key="sect4" text="Sec&#231;&#227;o"/>
+   <l:gentext key="sect5" text="Sec&#231;&#227;o"/>
    <l:gentext key="section" text="sec&#231;&#227;o"/>
    <l:gentext key="Section" text="Sec&#231;&#227;o"/>
    <l:gentext key="see" text="Ver"/>
@@ -103,12 +103,12 @@
    <l:gentext key="seealso" text="Ver Tamb&#233;m"/>
    <l:gentext key="Seealso" text="ver tamb&#233;m"/>
    <l:gentext key="SeeAlso" text="Ver Tamb&#233;m"/>
-   <l:gentext key="set" text="Set"/>
-   <l:gentext key="Set" text="Set"/>
-   <l:gentext key="setindex" text="Set Index"/>
-   <l:gentext key="SetIndex" text="Set Index"/>
-   <l:gentext key="Sidebar" text="Sidebar"/>
-   <l:gentext key="sidebar" text="sidebar"/>
+   <l:gentext key="set" text="Conjunto"/>
+   <l:gentext key="Set" text="Conjunto"/>
+   <l:gentext key="setindex" text="&#205;ndice de Conjuntos"/>
+   <l:gentext key="SetIndex" text="&#205;ndice de Conjuntos"/>
+   <l:gentext key="Sidebar" text="Barra Lateral"/>
+   <l:gentext key="sidebar" text="barra lateral"/>
    <l:gentext key="step" text="passo"/>
    <l:gentext key="Step" text="Passo"/>
    <l:gentext key="Table" text="Tabela"/>
@@ -121,7 +121,7 @@
    <l:gentext key="WARNING" text="ATEN&#199;&#195;O"/>
    <l:gentext key="and" text="e"/>
    <l:gentext key="by" text="por"/>
-   <l:gentext key="called" text="called" lang="en"/>
+   <l:gentext key="called" text="chamado"/>
    <l:gentext key="Edited" text="Editado"/>
    <l:gentext key="edited" text="Editado"/>
    <l:gentext key="Editedby" text="Editado por"/>
@@ -129,57 +129,57 @@
    <l:gentext key="in" text="in"/>
    <l:gentext key="lastlistcomma" text=","/>
    <l:gentext key="listcomma" text=","/>
-   <l:gentext key="nonexistantelement" text="non-existant element"/>
+   <l:gentext key="nonexistantelement" text="elemento n&#227;o existente"/>
    <l:gentext key="notes" text="Notas"/>
    <l:gentext key="Notes" text="Notas"/>
    <l:gentext key="Pgs" text="P&#225;ginas"/>
    <l:gentext key="pgs" text="P&#225;ginas"/>
-   <l:gentext key="Revisedby" text="Revised by: "/>
-   <l:gentext key="revisedby" text="Revised by: "/>
+   <l:gentext key="Revisedby" text="Revisto por: "/>
+   <l:gentext key="revisedby" text="Revisto por: "/>
    <l:gentext key="TableNotes" text="Notas"/>
    <l:gentext key="tablenotes" text="Notas"/>
    <l:gentext key="TableofContents" text="&#205;ndice"/>
    <l:gentext key="tableofcontents" text="&#205;ndice"/>
-   <l:gentext key="the" text="" lang="en"/>
-   <l:gentext key="unexpectedelementname" text="Unexpected element name"/>
-   <l:gentext key="unsupported" text="unsupported"/>
-   <l:gentext key="xrefto" text="xref to"/>
+   <l:gentext key="the" text=""/>
+   <l:gentext key="unexpectedelementname" text="Nome de elemento inesperado"/>
+   <l:gentext key="unsupported" text="n&#227;o suportado"/>
+   <l:gentext key="xrefto" text="refer&#234;ncia cruzada para"/>
    <l:gentext key="listofequations" text="Lista de Equa&#231;&#245;es"/>
    <l:gentext key="ListofEquations" text="Lista de Equa&#231;&#245;es"/>
    <l:gentext key="ListofExamples" text="Lista de Exemplos"/>
    <l:gentext key="listofexamples" text="Lista de Exemplos"/>
    <l:gentext key="ListofFigures" text="Lista de Figuras"/>
    <l:gentext key="listoffigures" text="Lista de Figuras"/>
-   <l:gentext key="ListofProcedures" text="List of Procedures" lang="en"/>
-   <l:gentext key="listofprocedures" text="List of Procedures" lang="en"/>
+   <l:gentext key="ListofProcedures" text="Lista de Procedimentos"/>
+   <l:gentext key="listofprocedures" text="Lista de Procedimentos"/>
    <l:gentext key="listoftables" text="Lista de Tabelas"/>
    <l:gentext key="ListofTables" text="Lista de Tabelas"/>
-   <l:gentext key="ListofUnknown" text="List of ???"/>
-   <l:gentext key="listofunknown" text="List of ???"/>
-   <l:gentext key="nav-home" text="Home"/>
-   <l:gentext key="nav-next" text="Next"/>
-   <l:gentext key="nav-next-sibling" text="Fast Forward"/>
-   <l:gentext key="nav-prev" text="Prev"/>
-   <l:gentext key="nav-prev-sibling" text="Fast Backward"/>
-   <l:gentext key="nav-up" text="Up"/>
-   <l:gentext key="nav-toc" text="ToC" lang="en"/>
-   <l:gentext key="Draft" text="Draft"/>
-   <l:gentext key="above" text="above"/>
-   <l:gentext key="below" text="below"/>
-   <l:gentext key="sectioncalled" text="the section called"/>
-   <l:gentext key="index symbols" text="Symbols"/>
+   <l:gentext key="ListofUnknown" text="Lista de Desconhecido"/>
+   <l:gentext key="listofunknown" text="Lista de Desconhecido"/>
+   <l:gentext key="nav-home" text="In&#237;cio"/>
+   <l:gentext key="nav-next" text="Pr&#243;ximo"/>
+   <l:gentext key="nav-next-sibling" text="Pr&#243;xima Parte"/>
+   <l:gentext key="nav-prev" text="Anterior"/>
+   <l:gentext key="nav-prev-sibling" text="Parte Anterior"/>
+   <l:gentext key="nav-up" text="Subir"/>
+   <l:gentext key="nav-toc" text="&#205;ndice"/>
+   <l:gentext key="Draft" text="Rascunho"/>
+   <l:gentext key="above" text="acima"/>
+   <l:gentext key="below" text="abaixo"/>
+   <l:gentext key="sectioncalled" text="a sec&#231;&#227;o chamada"/>
+   <l:gentext key="index symbols" text="S&#237;mbolos"/>
    <l:gentext key="lowercase.alpha" text="abcdefghijklmnopqrstuvwxyz"/>
    <l:gentext key="uppercase.alpha" text="ABCDEFGHIJKLMNOPQRSTUVWXYZ"/>
    <l:dingbat key="startquote" text="&#8220;"/>
    <l:dingbat key="endquote" text="&#8221;"/>
    <l:dingbat key="nestedstartquote" text="&#8216;"/>
    <l:dingbat key="nestedendquote" text="&#8217;"/>
-   <l:dingbat key="singlestartquote" text="&#8216;" lang="en"/>
-   <l:dingbat key="singleendquote" text="&#8217;" lang="en"/>
+   <l:dingbat key="singlestartquote" text="&#8216;"/>
+   <l:dingbat key="singleendquote" text="&#8217;"/>
    <l:dingbat key="bullet" text="&#8226;"/>
-   <l:gentext key="hyphenation-character" text="-" lang="en"/>
-   <l:gentext key="hyphenation-push-character-count" text="2" lang="en"/>
-   <l:gentext key="hyphenation-remain-character-count" text="2" lang="en"/>
+   <l:gentext key="hyphenation-character" text="-"/>
+   <l:gentext key="hyphenation-push-character-count" text="2"/>
+   <l:gentext key="hyphenation-remain-character-count" text="2"/>
 
    <l:context name="styles">
       <l:template name="person-name" text="first-last"/>
@@ -208,6 +208,8 @@
       <l:template name="equation" text="Equa&#231;&#227;o %n. %t"/>
       <l:template name="example" text="Exemplo %n. %t"/>
       <l:template name="figure" text="Figura %n. %t"/>
+      <l:template name="foil" text="%t" lang="en"/>
+      <l:template name="foilgroup" text="%t" lang="en"/>
       <l:template name="formalpara" text="%t"/>
       <l:template name="glossary" text="%t"/>
       <l:template name="glossdiv" text="%t"/>
@@ -234,7 +236,7 @@
       <l:template name="procedure" text="%t"/>
       <l:template name="procedure.formal" text="Procedimento&#160;%n.&#160;%t"/>
       <l:template name="productionset" text="%t"/>
-      <l:template name="productionset.formal" text="Production&#160;%n"/>
+      <l:template name="productionset.formal" text="Produ&#231;&#227;o&#160;%n"/>
       <l:template name="qandadiv" text="%t"/>
       <l:template name="qandaentry" text="%t"/>
       <l:template name="qandaset" text="%t"/>
@@ -351,6 +353,8 @@
       <l:template name="equation" text="%t"/>
       <l:template name="example" text="%t"/>
       <l:template name="figure" text="%t"/>
+      <l:template name="foil" text="%t" lang="en"/>
+      <l:template name="foilgroup" text="%t" lang="en"/>
       <l:template name="formalpara" text="%t"/>
       <l:template name="glossary" text="%t"/>
       <l:template name="glossdiv" text="%t"/>
@@ -388,10 +392,14 @@
       <l:template name="tip" text="%t"/>
       <l:template name="toc" text="%t"/>
       <l:template name="variablelist" text="%t"/>
-      <l:template name="varlistentry" text="%n"/>
+      <l:template name="varlistentry" text=""/>
       <l:template name="warning" text="%t"/>
+      <l:template name="olink.document.citation" text=" in %o" lang="en"/>
+      <l:template name="olink.page.citation" text=" (page %p)" lang="en"/>
       <l:template name="page.citation" text=" [%p]"/>
       <l:template name="page" text="(page %p)" lang="en"/>
+      <l:template name="docname" text=" in %o" lang="en"/>
+      <l:template name="docnamelong" text=" in the document titled %o" lang="en"/>
       <l:template name="pageabbrev" text="(p. %p)" lang="en"/>
       <l:template name="Page" text="Page %p" lang="en"/>
       <l:template name="bridgehead" text="&#8220;%t&#8221;"/>
@@ -418,8 +426,8 @@
       <l:template name="figure" text="Figura&#160;%n"/>
       <l:template name="part" text="Parte&#160;%n"/>
       <l:template name="procedure" text="Procedimento&#160;%n"/>
-      <l:template name="productionset" text="Production&#160;%n"/>
-      <l:template name="qandadiv" text="Q &amp; A&#160;%n"/>
+      <l:template name="productionset" text="Produ&#231;&#227;o&#160;%n"/>
+      <l:template name="qandadiv" text="P &amp; R&#160;%n"/>
       <l:template name="qandaentry" text="P:&#160;%n"/>
       <l:template name="question" text="P:&#160;%n"/>
       <l:template name="sect1" text="Sec&#231;&#227;o&#160;%n"/>
@@ -440,26 +448,26 @@
       <l:template name="figure" text="Figura&#160;%n, &#8220;%t&#8221;"/>
       <l:template name="part" text="Parte&#160;%n, &#8220;%t&#8221;"/>
       <l:template name="procedure" text="Procedimento&#160;%n, &#8220;%t&#8221;"/>
-      <l:template name="productionset" text="Production&#160;%n, &#8220;%t&#8221;"/>
-      <l:template name="qandadiv" text="Q &amp; A&#160;%n, &#8220;%t&#8221;"/>
-      <l:template name="refsect1" text="the section called &#8220;%t&#8221;"/>
-      <l:template name="refsect2" text="the section called &#8220;%t&#8221;"/>
-      <l:template name="refsect3" text="the section called &#8220;%t&#8221;"/>
-      <l:template name="refsection" text="the section called &#8220;%t&#8221;"/>
+      <l:template name="productionset" text="Produ&#231;&#227;o&#160;%n, &#8220;%t&#8221;"/>
+      <l:template name="qandadiv" text="P &amp; R&#160;%n, &#8220;%t&#8221;"/>
+      <l:template name="refsect1" text="a sec&#231;&#227;o chamada &#8220;%t&#8221;"/>
+      <l:template name="refsect2" text="a sec&#231;&#227;o chamada &#8220;%t&#8221;"/>
+      <l:template name="refsect3" text="a sec&#231;&#227;o chamada &#8220;%t&#8221;"/>
+      <l:template name="refsection" text="a sec&#231;&#227;o chamada &#8220;%t&#8221;"/>
       <l:template name="sect1" text="Sec&#231;&#227;o&#160;%n, &#8220;%t&#8221;"/>
       <l:template name="sect2" text="Sec&#231;&#227;o&#160;%n, &#8220;%t&#8221;"/>
       <l:template name="sect3" text="Sec&#231;&#227;o&#160;%n, &#8220;%t&#8221;"/>
       <l:template name="sect4" text="Sec&#231;&#227;o&#160;%n, &#8220;%t&#8221;"/>
       <l:template name="sect5" text="Sec&#231;&#227;o&#160;%n, &#8220;%t&#8221;"/>
       <l:template name="section" text="Sec&#231;&#227;o&#160;%n, &#8220;%t&#8221;"/>
-      <l:template name="simplesect" text="the section called &#8220;%t&#8221;"/>
+      <l:template name="simplesect" text="a sec&#231;&#227;o chamada &#8220;%t&#8221;"/>
       <l:template name="table" text="Tabela&#160;%n, &#8220;%t&#8221;"/>
    </l:context>
 
    <l:context name="authorgroup">
       <l:template name="sep" text=", "/>
       <l:template name="sep2" text=" e "/>
-      <l:template name="seplast" text=", e "/>
+      <l:template name="seplast" text=" e "/>
    </l:context>
 
    <l:context name="glossary">

@@ -7,7 +7,7 @@
 <bookinfo>
 <title>HTML Parameter Reference</title>
 <releaseinfo role="meta">
-$Id: param.xweb,v 1.75 2003/11/29 21:45:22 kosek Exp $
+$Id: param.xweb,v 1.85 2004/11/23 06:55:03 xmldoc Exp $
 </releaseinfo>
 <author>
   <surname>Walsh</surname>
@@ -94,6 +94,7 @@ to be incomplete. Don't forget to read the source, too :-)</para>
 &process.source.toc;
 &process.empty.source.toc;
 &bridgehead.in.toc;
+&simplesect.in.toc;
 &manual.toc;
 &toc.list.type;
 &toc.section.depth;
@@ -101,6 +102,9 @@ to be incomplete. Don't forget to read the source, too :-)</para>
 &generate.toc;
 &generate.section.toc.level;
 &generate.index;
+&index.on.type;
+&index.on.role;
+&index.prefer.titleabbrev;
 </reference>
 
 <reference><title>Extensions</title>
@@ -110,6 +114,7 @@ to be incomplete. Don't forget to read the source, too :-)</para>
 &linenumbering.width;
 &tablecolumns.extension;
 &textinsert.extension;
+&textdata.default.encoding;
 &graphicsize.extension;
 &use.extensions;
 </reference>
@@ -121,8 +126,10 @@ to be incomplete. Don't forget to read the source, too :-)</para>
 &preface.autolabel;
 &qandadiv.autolabel;
 &section.autolabel;
+&section.autolabel.max.depth;
 &section.label.includes.component.label;
 &label.from.part;
+&component.label.includes.part.label;
 </reference>
 
 <!--
@@ -207,6 +214,12 @@ to be incomplete. Don't forget to read the source, too :-)</para>
 &use.local.olink.style;
 &current.docid;
 &olink.doctitle;
+&olink.debug;
+&olink.properties;
+&olink.lang.fallback.sequence;
+&insert.olink.page.number;
+&insert.olink.pdf.frag;
+&prefer.internal.olink;
 &link.mailto.url;
 &ulink.target;
 &olink.fragid;
@@ -263,6 +276,7 @@ to be incomplete. Don't forget to read the source, too :-)</para>
 </reference>
 
 <reference><title>Graphics</title>
+&img.src.path;
 &graphic.default.extension;
 &default.image.width;
 &nominal.image.width;
@@ -294,6 +308,7 @@ to be incomplete. Don't forget to read the source, too :-)</para>
 &manifest.in.base.dir;
 &chunk.toc;
 &chunk.tocs.and.lots;
+&chunk.separate.lots;
 &chunk.section.depth;
 &chunk.first.sections;
 &chunk.quietly;
@@ -405,7 +420,7 @@ around all these parameters.</para>
                 version='1.0'>
 
 <!-- ********************************************************************
-     $Id: param.xweb,v 1.75 2003/11/29 21:45:22 kosek Exp $
+     $Id: param.xweb,v 1.85 2004/11/23 06:55:03 xmldoc Exp $
      ********************************************************************
 
      This file is part of the XSL DocBook Stylesheet distribution.
@@ -444,8 +459,10 @@ around all these parameters.</para>
 <src:fragref linkend="chunk.section.depth.frag"/>
 <src:fragref linkend="chunk.toc.frag"/>
 <src:fragref linkend="chunk.tocs.and.lots.frag"/>
+<src:fragref linkend="chunk.separate.lots.frag"/>
 <src:fragref linkend="citerefentry.link.frag"/>
 <src:fragref linkend="collect.xref.targets.frag"/>
+<src:fragref linkend="component.label.includes.part.label.frag"/>
 <src:fragref linkend="css.decoration.frag"/>
 <src:fragref linkend="current.docid.frag"/>
 <src:fragref linkend="default.float.class.frag"/>
@@ -545,6 +562,10 @@ around all these parameters.</para>
 <src:fragref linkend="htmlhelp.title.frag"/>
 <src:fragref linkend="htmlhelp.use.hhk.frag"/>
 <src:fragref linkend="htmlhelp.window.geometry.frag"/>
+<src:fragref linkend="img.src.path.frag"/>
+<src:fragref linkend="index.on.role.frag"/>
+<src:fragref linkend="index.on.type.frag"/>
+<src:fragref linkend="index.prefer.titleabbrev.frag"/>
 <src:fragref linkend="ignore.image.scaling.frag"/>
 <src:fragref linkend="inherit.keywords.frag"/>
 <src:fragref linkend="l10n.gentext.default.language.frag"/>
@@ -573,6 +594,12 @@ around all these parameters.</para>
 <src:fragref linkend="nominal.image.width.frag"/>
 <src:fragref linkend="nominal.table.width.frag"/>
 <src:fragref linkend="olink.base.uri.frag"/>
+<src:fragref linkend="olink.debug.frag"/>
+<src:fragref linkend="olink.properties.frag"/>
+<src:fragref linkend="insert.olink.page.number.frag"/>
+<src:fragref linkend="insert.olink.pdf.frag.frag"/>
+<src:fragref linkend="prefer.internal.olink.frag"/>
+<src:fragref linkend="olink.lang.fallback.sequence.frag"/>
 <src:fragref linkend="olink.doctitle.frag"/>
 <src:fragref linkend="olink.fragid.frag"/>
 <src:fragref linkend="olink.outline.ext.frag"/>
@@ -615,12 +642,14 @@ around all these parameters.</para>
 <src:fragref linkend="runinhead.default.title.end.punct.frag"/>
 <src:fragref linkend="runinhead.title.end.punct.frag"/>
 <src:fragref linkend="section.autolabel.frag"/>
+<src:fragref linkend="section.autolabel.max.depth.frag"/>
 <src:fragref linkend="section.label.includes.component.label.frag"/>
 <src:fragref linkend="segmentedlist.as.table.frag"/>
 <src:fragref linkend="shade.verbatim.frag"/>
 <src:fragref linkend="shade.verbatim.style.frag"/>
 <src:fragref linkend="show.comments.frag"/>
 <src:fragref linkend="show.revisionflag.frag"/>
+<src:fragref linkend="simplesect.in.toc.frag"/>
 <src:fragref linkend="spacing.paras.frag"/>
 <src:fragref linkend="suppress.footer.navigation.frag"/>
 <src:fragref linkend="suppress.header.navigation.frag"/>
@@ -637,6 +666,7 @@ around all these parameters.</para>
 <src:fragref linkend="tablecolumns.extension.frag"/>
 <src:fragref linkend="target.database.document.frag"/>
 <src:fragref linkend="targets.filename.frag"/>
+<src:fragref linkend="textdata.default.encoding.frag"/>
 <src:fragref linkend="tex.math.delims.frag"/>
 <src:fragref linkend="tex.math.file.frag"/>
 <src:fragref linkend="tex.math.in.alt.frag"/>

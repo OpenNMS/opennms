@@ -32,45 +32,39 @@
 
 package org.opennms.web.parsers;
 
-/** This exception is used to indicate that an exception has occured during
-  * the parsing of an xml file. It extends from RuntimeException to allow
-  * the existing parsers to remain unchanged (runtime exceptions don't have
-  * to be caught) but to allow new parsers to gain a debug advantage. This
-  * should be changed to extend from Exception when all existing parsers can
-  * be changed.
-  * 
-  * @author <A HREF="mailto:jason@opennms.org">Jason Johns</A>
-  * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
-  * @version 1.1.1.1  
-*/
-public class XMLParseException extends RuntimeException
-{
-	private Throwable rootCause;
-	
-	public XMLParseException() 
-	{
-		super();
-	}
-	
-	public XMLParseException(String message) 
-	{
-		super(message);
-	}
-	
-	public XMLParseException(String message, Throwable rootCause) 
-	{
-		super(message);
-		this.rootCause = rootCause;
-	}
-	
-	public XMLParseException(Throwable rootCause)
-	{
-		super(rootCause.getLocalizedMessage());
-		this.rootCause = rootCause;
-	}
-	
-	public Throwable getRootCause() 
-	{
-		return rootCause;
-	}
-}	
+/**
+ * This exception is used to indicate that an exception has occured during the
+ * parsing of an xml file. It extends from RuntimeException to allow the
+ * existing parsers to remain unchanged (runtime exceptions don't have to be
+ * caught) but to allow new parsers to gain a debug advantage. This should be
+ * changed to extend from Exception when all existing parsers can be changed.
+ * 
+ * @author <A HREF="mailto:jason@opennms.org">Jason Johns </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @version 1.1.1.1
+ */
+public class XMLParseException extends RuntimeException {
+    private Throwable rootCause;
+
+    public XMLParseException() {
+        super();
+    }
+
+    public XMLParseException(String message) {
+        super(message);
+    }
+
+    public XMLParseException(String message, Throwable rootCause) {
+        super(message);
+        this.rootCause = rootCause;
+    }
+
+    public XMLParseException(Throwable rootCause) {
+        super(rootCause.getLocalizedMessage());
+        this.rootCause = rootCause;
+    }
+
+    public Throwable getRootCause() {
+        return rootCause;
+    }
+}

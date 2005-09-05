@@ -5,7 +5,7 @@
                 version='1.0'>
 
 <!-- ********************************************************************
-     $Id: autotoc.xsl,v 1.17 2004/01/29 13:37:33 nwalsh Exp $
+     $Id: autotoc.xsl,v 1.20 2004/11/23 08:31:35 xmldoc Exp $
      ********************************************************************
 
      This file is part of the XSL DocBook Stylesheet distribution.
@@ -106,7 +106,7 @@
 
   <xsl:variable name="nodes" select="section|sect1|refentry
                                      |article|bibliography|glossary
-                                     |appendix"/>
+                                     |appendix|index"/>
   <xsl:if test="$nodes">
     <fo:block id="toc...{$id}"
               xsl:use-attribute-sets="toc.margin.properties">
@@ -314,7 +314,9 @@
 
   <xsl:call-template name="toc.line"/>
 
-  <xsl:variable name="nodes" select="section|sect1"/>
+  <xsl:variable name="nodes" select="section|sect1
+				     |simplesect[$simplesect.in.toc != 0]
+				     |refentry"/>
 
   <xsl:if test="$toc.section.depth &gt; 0 and $nodes">
     <fo:block id="toc.{$cid}.{$id}"

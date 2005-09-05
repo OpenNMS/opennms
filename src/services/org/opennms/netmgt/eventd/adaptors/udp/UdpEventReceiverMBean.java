@@ -36,31 +36,29 @@ import javax.management.InstanceNotFoundException;
 import javax.management.MalformedObjectNameException;
 
 /**
- *
- * @author <a href="mailto:weave@oculan.com">Brian Weaver</a>
- * @author <a href="http://www.oculan.com">Oculan Corporation</a>
- *
+ * 
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.oculan.com">Oculan Corporation </a>
+ * 
  */
-public interface UdpEventReceiverMBean
-{
-	public void init();
-	public void destroy();
+public interface UdpEventReceiverMBean {
+    public void init();
 
-	public void start();
-	public void stop();
+    public void destroy();
 
-	public void setPort(Integer port);
-	public Integer getPort();
-	
-	public int getStatus();
+    public void start();
 
-	public void addEventHandler(String name)
-		throws MalformedObjectNameException,
-			InstanceNotFoundException;
-	
-	public void removeEventHandler(String name)
-		throws MalformedObjectNameException,
-			InstanceNotFoundException;
-	
-	public void setLogPrefix(String prefix);
+    public void stop();
+
+    public void setPort(Integer port);
+
+    public Integer getPort();
+
+    public int getStatus();
+
+    public void addEventHandler(String name) throws MalformedObjectNameException, InstanceNotFoundException;
+
+    public void removeEventHandler(String name) throws MalformedObjectNameException, InstanceNotFoundException;
+
+    public void setLogPrefix(String prefix);
 }

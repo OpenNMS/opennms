@@ -5,7 +5,7 @@
                 version='1.0'>
 
 <!-- ********************************************************************
-     $Id: gentext.xsl,v 1.26 2003/11/30 19:45:09 bobstayton Exp $
+     $Id: gentext.xsl,v 1.32 2004/08/09 00:25:02 bobstayton Exp $
      ********************************************************************
 
      This file is part of the XSL DocBook Stylesheet distribution.
@@ -71,8 +71,11 @@
 <xsl:template match="section|sect1|sect2|sect3|sect4|sect5|simplesect
                      |bridgehead"
               mode="object.title.template">
+  <xsl:variable name="is.numbered">
+    <xsl:call-template name="label.this.section"/>
+  </xsl:variable>
   <xsl:choose>
-    <xsl:when test="$section.autolabel != 0">
+    <xsl:when test="$is.numbered != 0">
       <xsl:call-template name="gentext.template">
         <xsl:with-param name="context" select="'title-numbered'"/>
         <xsl:with-param name="name">
@@ -93,7 +96,7 @@
 
 <xsl:template match="procedure" mode="object.title.template">
   <xsl:choose>
-    <xsl:when test="$formal.procedures != 0">
+    <xsl:when test="$formal.procedures != 0 and title">
       <xsl:call-template name="gentext.template">
         <xsl:with-param name="context" select="'title'"/>
         <xsl:with-param name="name">
@@ -132,7 +135,7 @@
 
 <xsl:template match="section|sect1|sect2|sect3|sect4|sect5" 
               mode="is.autonumber">
-  <xsl:value-of select="$section.autolabel"/>
+  <xsl:call-template name="label.this.section"/>
 </xsl:template>
 
 <xsl:template match="figure|example|table|equation" mode="is.autonumber">
@@ -293,6 +296,7 @@
   <xsl:param name="purpose"/>
   <xsl:param name="xrefstyle"/>
   <xsl:param name="referrer"/>
+  <xsl:param name="verbose" select="1"/>
 
   <xsl:variable name="template">
     <xsl:choose>
@@ -331,7 +335,7 @@
   </xsl:message>
 -->
 
-  <xsl:if test="$template = ''">
+  <xsl:if test="$template = '' and $verbose != 0">
     <xsl:message>
       <xsl:text>object.xref.markup: empty xref template</xsl:text>
       <xsl:text> for linkend="</xsl:text>
@@ -347,10 +351,13 @@
     <xsl:with-param name="xrefstyle" select="$xrefstyle"/>
     <xsl:with-param name="referrer" select="$referrer"/>
     <xsl:with-param name="template" select="$template"/>
+    <xsl:with-param name="verbose" select="$verbose"/>
   </xsl:call-template>
 </xsl:template>
 
 <xsl:template match="listitem" mode="object.xref.markup">
+  <xsl:param name="verbose" select="1"/>
+
   <xsl:choose>
     <xsl:when test="parent::orderedlist">
       <xsl:variable name="template">
@@ -360,14 +367,14 @@
         <xsl:with-param name="template" select="$template"/>
       </xsl:call-template>
     </xsl:when>
-    <xsl:otherwise>
+    <xsl:when test="$verbose != 0">
       <xsl:message>
         <xsl:text>Xref is only supported to listitems in an</xsl:text>
         <xsl:text> orderedlist: </xsl:text>
         <xsl:value-of select="@id"/>
       </xsl:message>
       <xsl:text>???</xsl:text>
-    </xsl:otherwise>
+    </xsl:when>
   </xsl:choose>
 </xsl:template>
 
@@ -417,11 +424,13 @@
   <xsl:param name="allow-anchors" select="'0'"/>
   <xsl:param name="title" select="''"/>
   <xsl:param name="subtitle" select="''"/>
+  <xsl:param name="docname" select="''"/>
   <xsl:param name="label" select="''"/>
   <xsl:param name="pagenumber" select="''"/>
   <xsl:param name="purpose"/>
   <xsl:param name="xrefstyle"/>
   <xsl:param name="referrer"/>
+  <xsl:param name="verbose"/>
 
   <xsl:choose>
     <xsl:when test="contains($template, '%')">
@@ -441,6 +450,7 @@
                 <xsl:otherwise>
                   <xsl:apply-templates select="." mode="title.markup">
                     <xsl:with-param name="allow-anchors" select="$allow-anchors"/>
+                    <xsl:with-param name="verbose" select="$verbose"/>
                   </xsl:apply-templates>
                 </xsl:otherwise>
               </xsl:choose>
@@ -497,6 +507,23 @@
             </xsl:with-param>
           </xsl:apply-templates>
         </xsl:when>
+        <xsl:when test="$candidate = 'o'">
+          <!-- olink target document title -->
+          <xsl:apply-templates select="." mode="insert.olink.docname.markup">
+            <xsl:with-param name="purpose" select="$purpose"/>
+            <xsl:with-param name="xrefstyle" select="$xrefstyle"/>
+            <xsl:with-param name="docname">
+              <xsl:choose>
+                <xsl:when test="$docname != ''">
+                  <xsl:copy-of select="$docname"/>
+                </xsl:when>
+                <xsl:otherwise>
+                  <xsl:apply-templates select="." mode="olink.docname.markup"/>
+                </xsl:otherwise>
+              </xsl:choose>
+            </xsl:with-param>
+          </xsl:apply-templates>
+        </xsl:when>
         <xsl:when test="$candidate = 'd'">
           <xsl:apply-templates select="." mode="insert.direction.markup">
             <xsl:with-param name="purpose" select="$purpose"/>
@@ -545,11 +572,13 @@
         <xsl:with-param name="allow-anchors" select="$allow-anchors"/>
         <xsl:with-param name="title" select="$title"/>
         <xsl:with-param name="subtitle" select="$subtitle"/>
+        <xsl:with-param name="docname" select="$docname"/>
         <xsl:with-param name="label" select="$label"/>
         <xsl:with-param name="pagenumber" select="$pagenumber"/>
         <xsl:with-param name="purpose" select="$purpose"/>
         <xsl:with-param name="xrefstyle" select="$xrefstyle"/>
         <xsl:with-param name="referrer" select="$referrer"/>
+        <xsl:with-param name="verbose" select="$verbose"/>
       </xsl:call-template>
     </xsl:when>
     <xsl:otherwise>
@@ -567,6 +596,7 @@
   <xsl:param name="lang">
     <xsl:call-template name="l10n.language"/>
   </xsl:param>
+  <xsl:param name="target.elem" select="local-name(.)"/>
 
   <!-- parse xrefstyle to get parts -->
   <xsl:variable name="parts"
@@ -599,7 +629,12 @@
 
   <xsl:variable name="pagetype">
     <xsl:choose>
-      <xsl:when test="$insert.xref.page.number = 'no'">
+      <xsl:when test="$insert.olink.page.number = 'no' and
+                      local-name($referrer) = 'olink'">
+        <!-- suppress page numbers -->
+      </xsl:when>
+      <xsl:when test="$insert.xref.page.number = 'no' and
+                      local-name($referrer) != 'olink'">
         <!-- suppress page numbers -->
       </xsl:when>
       <xsl:when test="contains($parts, 'nopage')">
@@ -620,10 +655,40 @@
     </xsl:choose>
   </xsl:variable>
 
+  <xsl:variable name="docnametype">
+    <xsl:choose>
+      <xsl:when test="($olink.doctitle = 0 or
+                       $olink.doctitle = 'no') and
+                      local-name($referrer) = 'olink'">
+        <!-- suppress docname -->
+      </xsl:when>
+      <xsl:when test="contains($parts, 'nodocname')">
+         <xsl:text>nodocname</xsl:text>
+      </xsl:when>
+      <xsl:when test="contains($parts, 'docnamelong')">
+         <xsl:text>docnamelong</xsl:text>
+      </xsl:when>
+      <xsl:when test="contains($parts, 'docname')">
+         <xsl:text>docname</xsl:text>
+      </xsl:when>
+    </xsl:choose>
+  </xsl:variable>
+
   <xsl:if test="$labeltype != ''">
     <xsl:choose>
       <xsl:when test="$labeltype = 'labelname'">
-        <xsl:call-template name="gentext"/>
+        <xsl:call-template name="gentext">
+          <xsl:with-param name="key">
+            <xsl:choose>
+              <xsl:when test="local-name($referrer) = 'olink'">
+                <xsl:value-of select="$target.elem"/>
+              </xsl:when>
+              <xsl:otherwise>
+                <xsl:value-of select="local-name(.)"/>
+              </xsl:otherwise>
+            </xsl:choose>
+          </xsl:with-param>
+        </xsl:call-template>
       </xsl:when>
       <xsl:when test="$labeltype = 'labelnumber'">
         <xsl:text>%n</xsl:text>
@@ -632,7 +697,14 @@
         <xsl:call-template name="gentext.template">
           <xsl:with-param name="context" select="'xref-number'"/>
           <xsl:with-param name="name">
-            <xsl:call-template name="xpath.location"/>
+            <xsl:choose>
+              <xsl:when test="local-name($referrer) = 'olink'">
+                <xsl:value-of select="$target.elem"/>
+              </xsl:when>
+              <xsl:otherwise>
+                <xsl:call-template name="xpath.location"/>
+              </xsl:otherwise>
+            </xsl:choose>
           </xsl:with-param>
           <xsl:with-param name="purpose" select="$purpose"/>
           <xsl:with-param name="xrefstyle" select="$xrefstyle"/>
@@ -674,18 +746,20 @@
     </xsl:choose>
   </xsl:if>
   
+  <!-- special case: use regular xref template if just turning off page -->
+  <xsl:if test="($pagetype = 'nopage' or $docnametype = 'nodocname')
+                  and local-name($referrer) != 'olink'
+                  and $labeltype = '' 
+                  and $titletype = ''">
+    <xsl:apply-templates select="." mode="object.xref.template">
+      <xsl:with-param name="purpose" select="$purpose"/>
+      <xsl:with-param name="xrefstyle" select="$xrefstyle"/>
+      <xsl:with-param name="referrer" select="$referrer"/>
+    </xsl:apply-templates>
+  </xsl:if>
+
   <xsl:if test="$pagetype != ''">
     <xsl:choose>
-      <!-- special case: use regular xref template -->
-      <xsl:when test="$pagetype = 'nopage' 
-                      and $labeltype = '' 
-                      and $titletype = ''">
-        <xsl:apply-templates select="." mode="object.xref.template">
-          <xsl:with-param name="purpose" select="$purpose"/>
-          <xsl:with-param name="xrefstyle" select="$xrefstyle"/>
-          <xsl:with-param name="referrer" select="$referrer"/>
-        </xsl:apply-templates>
-      </xsl:when>
       <xsl:when test="$pagetype = 'page'">
         <xsl:call-template name="gentext.template">
           <xsl:with-param name="context" select="'xref'"/>
@@ -711,6 +785,26 @@
 
   </xsl:if>
 
+  <!-- Add reference to other document title -->
+  <xsl:if test="$docnametype != '' and local-name($referrer) = 'olink'">
+    <!-- Any separator should be in the gentext template -->
+    <xsl:choose>
+      <xsl:when test="$docnametype = 'docnamelong'">
+        <xsl:call-template name="gentext.template">
+          <xsl:with-param name="context" select="'xref'"/>
+          <xsl:with-param name="name" select="'docnamelong'"/>
+        </xsl:call-template>
+      </xsl:when>
+      <xsl:when test="$docnametype = 'docname'">
+        <xsl:call-template name="gentext.template">
+          <xsl:with-param name="context" select="'xref'"/>
+          <xsl:with-param name="name" select="'docname'"/>
+        </xsl:call-template>
+      </xsl:when>
+    </xsl:choose>
+
+  </xsl:if>
+  
 </xsl:template>
 
 </xsl:stylesheet>

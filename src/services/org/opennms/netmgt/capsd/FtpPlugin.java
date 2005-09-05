@@ -1,7 +1,7 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2002-2004 The OpenNMS Group, Inc. All rights reserved.
+// OpenNMS(R) is Copyright (C) 2002-2005 The OpenNMS Group, Inc. All rights reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included code and modified
 // code that was published under the GNU General Public License. Copyrights for modified
 // and included code are below.
@@ -54,9 +54,10 @@ import org.opennms.core.utils.ThreadCategory;
 
 /**
  * <P>
- * This class is designed to be used by the capabilities daemon to test for the existance of an
- * FTP server on remote interfaces. The class implements the Plugin interface that allows it to
- * be used along with other plugins by the daemon.
+ * This class is designed to be used by the capabilities daemon to test for the
+ * existance of an FTP server on remote interfaces. The class implements the
+ * Plugin interface that allows it to be used along with other plugins by the
+ * daemon.
  * </P>
  * 
  * @author <A HREF="mailto:tarus@opennms.org">Tarus </A>
@@ -64,7 +65,7 @@ import org.opennms.core.utils.ThreadCategory;
  * @author <A HREF="mailto:weave@oculan.com">Weave </A>
  * @author <A HREF="http://www.opennms.org">OpenNMS </A>
  * 
- *  
+ * 
  */
 public final class FtpPlugin extends AbstractTcpPlugin {
 
@@ -86,10 +87,10 @@ public final class FtpPlugin extends AbstractTcpPlugin {
     private final static int DEFAULT_TIMEOUT = 5000; // in milliseconds
 
     /**
-     * The regular expression test used to determine if the reply is a multi line reply. A
-     * multi line reply is one that each line, but the last, is in the form of "ddd-" where
-     * 'ddd' is the result code.
-     *  
+     * The regular expression test used to determine if the reply is a multi
+     * line reply. A multi line reply is one that each line, but the last, is in
+     * the form of "ddd-" where 'ddd' is the result code.
+     * 
      */
     private static final RE MULTILINE_RESULT;
 
@@ -123,8 +124,8 @@ public final class FtpPlugin extends AbstractTcpPlugin {
      * @param config
      * @param log
      * @param isAServer
-     * @return @throws
-     *         IOException
+     * @return
+     * @throws IOException
      */
     protected boolean checkProtocol(Socket socket, ConnectionConfig config) throws IOException {
 
@@ -140,9 +141,9 @@ public final class FtpPlugin extends AbstractTcpPlugin {
             // be a banner, but go ahead and check for multiline response
             // in the form of:
             //
-            // 	221-You have transferred 0 bytes in 0 files.
-            //	221-Total traffic for this session was 102 bytes in 0 transfers.
-            //	221 Thank you for using the FTP service on nethost0.
+            // 221-You have transferred 0 bytes in 0 files.
+            // 221-Total traffic for this session was 102 bytes in 0 transfers.
+            // 221 Thank you for using the FTP service on nethost0.
             //
             String result = null;
             do {
@@ -172,11 +173,13 @@ public final class FtpPlugin extends AbstractTcpPlugin {
                 // response will give us what we want. Consider the following
                 // reponse for example:
                 //
-                // 	221-You have transferred 0 bytes in 0 files.
-                //	221-Total traffic for this session was 102 bytes in 0 transfers.
-                //	221 Thank you for using the FTP service on nethost0.
+                // 221-You have transferred 0 bytes in 0 files.
+                // 221-Total traffic for this session was 102 bytes in 0
+                // transfers.
+                // 221 Thank you for using the FTP service on nethost0.
                 //
-                // In this case the final line of the response contains the return
+                // In this case the final line of the response contains the
+                // return
                 // code we are looking for.
                 do {
                     result = lineRdr.readLine();
@@ -190,7 +193,8 @@ public final class FtpPlugin extends AbstractTcpPlugin {
 
                 t = new StringTokenizer(result);
                 rc = Integer.parseInt(t.nextToken());
-                if (rc > 99 && rc < 600) isAServer = true;
+                if (rc > 99 && rc < 600)
+                    isAServer = true;
 
             }
 
@@ -203,4 +207,3 @@ public final class FtpPlugin extends AbstractTcpPlugin {
         return isAServer;
     }
 }
-

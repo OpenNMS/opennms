@@ -50,194 +50,190 @@ import org.opennms.web.MissingParameterException;
 import org.opennms.web.ReportMailer;
 
 /**
- * @author <A HREF="mailto:jacinta@opennms.org">Jacinta Remedios</A>
- * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski</A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
+ * @author <A HREF="mailto:jacinta@opennms.org">Jacinta Remedios </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
-public class AvailabilityServlet extends HttpServlet
-{
-	static Category log = Category.getInstance(AvailabilityServlet.class.getName());
-	protected String xslFileName;
-	protected String pdfxslFileName;
-	protected String svgxslFileName;
+public class AvailabilityServlet extends HttpServlet {
+    static Category log = Category.getInstance(AvailabilityServlet.class.getName());
 
-	// For the purpose of mailing out reports.
-        protected String redirectSuccess;
-        protected String redirectFailure;
-        protected String redirectNoEmail;
-        protected String scriptGenerateReport;
-        protected String scriptMailReport;
-        protected String useScript;
-        protected String logo;
-	
-	public void init() throws ServletException {
-		ServletConfig config = this.getServletConfig();
+    protected String xslFileName;
 
-                this.redirectSuccess = config.getInitParameter("redirect.success");
-                this.redirectFailure = config.getInitParameter("redirect.failure");
-                this.redirectNoEmail = config.getInitParameter("redirect.noEmail");
+    protected String pdfxslFileName;
 
-                this.scriptGenerateReport = config.getInitParameter("script.generateReport");
-                this.scriptMailReport = config.getInitParameter("script.mailReport");
-                this.useScript = config.getInitParameter("script.useScript");
-                this.logo = config.getInitParameter("report.logo");
+    protected String svgxslFileName;
 
-                if( this.redirectSuccess == null ) {
-                        throw new ServletException("Missing required init parameter: redirect.success");
+    // For the purpose of mailing out reports.
+    protected String redirectSuccess;
+
+    protected String redirectFailure;
+
+    protected String redirectNoEmail;
+
+    protected String scriptGenerateReport;
+
+    protected String scriptMailReport;
+
+    protected String useScript;
+
+    protected String logo;
+
+    public void init() throws ServletException {
+        ServletConfig config = this.getServletConfig();
+
+        this.redirectSuccess = config.getInitParameter("redirect.success");
+        this.redirectFailure = config.getInitParameter("redirect.failure");
+        this.redirectNoEmail = config.getInitParameter("redirect.noEmail");
+
+        this.scriptGenerateReport = config.getInitParameter("script.generateReport");
+        this.scriptMailReport = config.getInitParameter("script.mailReport");
+        this.useScript = config.getInitParameter("script.useScript");
+        this.logo = config.getInitParameter("report.logo");
+
+        if (this.redirectSuccess == null) {
+            throw new ServletException("Missing required init parameter: redirect.success");
+        }
+
+        if (this.redirectFailure == null) {
+            throw new ServletException("Missing required init parameter: redirect.failure");
+        }
+
+        if (this.redirectNoEmail == null) {
+            throw new ServletException("Missing required init parameter: redirect.noEmail");
+        }
+
+        if (this.scriptGenerateReport == null) {
+            throw new ServletException("Missing required init parameter: script.generateReport");
+        }
+
+        if (this.scriptMailReport == null) {
+            throw new ServletException("Missing required init parameter: script.mailReport");
+        }
+
+        if (this.useScript == null) {
+            throw new ServletException("Missing required init parameter: script.useScript");
+        }
+
+        this.xslFileName = config.getInitParameter("xslt.filename");
+        this.pdfxslFileName = config.getInitParameter("pdf.xslt.filename");
+        this.svgxslFileName = config.getInitParameter("svg.xslt.filename");
+
+        if (this.xslFileName == null) {
+            throw new UnavailableException("Require an xslt.filename init parameter.");
+        }
+
+        if (this.pdfxslFileName == null) {
+            throw new UnavailableException("Require an pdf.xslt.filename init parameter.");
+        }
+
+        if (this.svgxslFileName == null) {
+            throw new UnavailableException("Require an svg.xslt.filename init parameter.");
+        }
+    }
+
+    public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        String view = request.getParameter("view");
+        String format = request.getParameter("format");
+        String category = request.getParameter("category");
+        String username = request.getRemoteUser();
+        ServletConfig config = this.getServletConfig();
+
+        if (view == null) {
+            throw new MissingParameterException("view");
+        }
+
+        if (format == null) {
+            throw new MissingParameterException("format");
+        }
+
+        if (category == null) {
+            throw new MissingParameterException("category");
+        }
+
+        if (username == null) {
+            username = "";
+        }
+
+        // TODO: Rework this so that initialise doesn't get called and the nasty
+        // if then else is done better
+        try {
+
+            // Report to be displayed in HTML format.
+            if (format.equals("HTML")) {
+                ReportMailer reportMailer = new ReportMailer();
+                SimpleDateFormat fmt = new SimpleDateFormat("yyyyMMdd");
+                String catFileName = category.replace(' ', '-');
+                String filename = ConfigFileConstants.getHome() + "/share/reports/AVAIL-HTML-" + catFileName + fmt.format(new java.util.Date()) + ".html";
+                reportMailer.initialise(filename, username, scriptGenerateReport, scriptMailReport, category, "HTML");
+                reportMailer.setLogoUrl(logo);
+                reportMailer.setCategoryName(category);
+                reportMailer.setFormat("HTML");
+
+                // call setter on flag to use the script else use JavaMail
+                reportMailer.setUseScript("true".equalsIgnoreCase(useScript));
+                String emailAddr = reportMailer.getEmailAddress();
+                if (emailAddr == null || emailAddr.trim().length() == 0) {
+                    response.sendRedirect(this.redirectNoEmail);
+                    return;
                 }
+                new Thread(reportMailer).start();
+                response.sendRedirect(redirectSuccess);
+            }
+            // Report to be displayed in PDF format.
+            else if (format.equals("PDF")) {
+                ReportMailer reportMailer = new ReportMailer();
+                SimpleDateFormat fmt = new SimpleDateFormat("yyyyMMdd");
+                String catFileName = category.replace(' ', '-');
+                String filename = ConfigFileConstants.getHome() + "/share/reports/AVAIL-PDF-" + catFileName + fmt.format(new java.util.Date()) + ".pdf";
+                reportMailer.initialise(filename, username, scriptGenerateReport, scriptMailReport, category, "PDF");
+                reportMailer.setLogoUrl(logo);
+                reportMailer.setCategoryName(category);
+                reportMailer.setFormat("PDF");
 
-                if( this.redirectFailure == null ) {
-                        throw new ServletException("Missing required init parameter: redirect.failure");
+                // call setter on flag to use the script else use JavaMail
+                reportMailer.setUseScript("true".equalsIgnoreCase(useScript));
+                String emailAddr = reportMailer.getEmailAddress();
+                if (emailAddr == null || emailAddr.trim().length() == 0) {
+                    response.sendRedirect(this.redirectNoEmail);
+                    return;
                 }
+                new Thread(reportMailer).start();
+                response.sendRedirect(redirectSuccess);
+            } else if (format.equals("SVG")) {
+                ReportMailer reportMailer = new ReportMailer();
+                SimpleDateFormat fmt = new SimpleDateFormat("yyyyMMdd");
+                String catFileName = category.replace(' ', '-');
+                String filename = ConfigFileConstants.getHome() + "/share/reports/AVAIL-SVG-" + catFileName + fmt.format(new java.util.Date()) + ".pdf";
+                reportMailer.initialise(filename, username, scriptGenerateReport, scriptMailReport, category, "SVG");
+                reportMailer.setLogoUrl(logo);
+                reportMailer.setCategoryName(category);
+                reportMailer.setFormat("SVG");
 
-                if( this.redirectNoEmail == null ) {
-                        throw new ServletException("Missing required init parameter: redirect.noEmail");
+                // call setter on flag to use the script else use JavaMail
+                reportMailer.setUseScript("true".equalsIgnoreCase(useScript));
+                String emailAddr = reportMailer.getEmailAddress();
+                if (emailAddr == null || emailAddr.trim().length() == 0) {
+                    response.sendRedirect(this.redirectNoEmail);
+                    return;
                 }
+                new Thread(reportMailer).start();
+                response.sendRedirect(redirectSuccess);
+            }
+        } catch (Exception e) {
+            throw new ServletException("AvailabilityServlet: ", e);
+        }
+    }
 
-                if( this.scriptGenerateReport == null ) {
-                        throw new ServletException("Missing required init parameter: script.generateReport");
-                }
+    /**
+     * @deprecated Should use {@link org.opennms.web.Util#streamToStream 
+     *             Util.streamToStream} instead.
+     */
+    protected void streamToStream(Reader in, Writer out) throws IOException {
+        char[] b = new char[100];
+        int length;
 
-                if( this.scriptMailReport == null ) {
-                        throw new ServletException("Missing required init parameter: script.mailReport");
-                }
-                
-                if( this.useScript == null) {
-                    throw new ServletException("Missing required init parameter: script.useScript");
-                }
-
-		this.xslFileName = config.getInitParameter( "xslt.filename" );
-		this.pdfxslFileName = config.getInitParameter( "pdf.xslt.filename" );
-		this.svgxslFileName = config.getInitParameter( "svg.xslt.filename" );
-
-		if( this.xslFileName == null ) {
-		    throw new UnavailableException( "Require an xslt.filename init parameter." );
-		}
-
-		if( this.pdfxslFileName == null ) {
-		    throw new UnavailableException( "Require an pdf.xslt.filename init parameter." );
-		}
-
-		if( this.svgxslFileName == null ) {
-		    throw new UnavailableException( "Require an svg.xslt.filename init parameter." );
-		}
-	}
-
-
-	public void doGet( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException {
-		String view = request.getParameter( "view" );
-		String format = request.getParameter( "format" );
-		String category = request.getParameter( "category" );
-		String username = request.getRemoteUser();
-		ServletConfig config = this.getServletConfig();
-        
-		
-		if( view == null ) {
-			throw new MissingParameterException( "view" );            
-		}
-
-		if( format == null) {
-			throw new MissingParameterException( "format" );
-		}
-
-		if( category == null) {
-			throw new MissingParameterException( "category" );
-		}
-
-		if( username == null ) {
-			username = "";
-		}
-
-		//TODO: Rework this so that initialise doesn't get called and the nasty if then else is done better
-		try 
-		{
-
-			// Report to be displayed in HTML format.
-			if(format.equals("HTML"))		
-			{
-				ReportMailer reportMailer = new ReportMailer();
-				SimpleDateFormat fmt = new SimpleDateFormat("yyyyMMdd");
-				String catFileName = category.replace(' ', '-');
-				String filename = ConfigFileConstants.getHome() + "/share/reports/AVAIL-HTML-" + catFileName+ fmt.format(new java.util.Date()) +".html";
-				reportMailer.initialise(filename, username, scriptGenerateReport, scriptMailReport, category, "HTML");
-				reportMailer.setLogoUrl(logo);
-				reportMailer.setCategoryName(category);
-				reportMailer.setFormat("HTML");
-				
-				//call setter on flag to use the script else use JavaMail
-				reportMailer.setUseScript( "true".equalsIgnoreCase(useScript));
-				String emailAddr = reportMailer.getEmailAddress();
-				if(emailAddr == null || emailAddr.trim().length() == 0)
-				{
-					response.sendRedirect(this.redirectNoEmail);
-					return;
-				}
-				new Thread(reportMailer).start();
-				response.sendRedirect(redirectSuccess);
-			}
-			// Report to be displayed in PDF format.
-			else if(format.equals("PDF"))	
-			{
-				ReportMailer reportMailer = new ReportMailer();
-				SimpleDateFormat fmt = new SimpleDateFormat("yyyyMMdd");
-				String catFileName = category.replace(' ', '-');
-				String filename = ConfigFileConstants.getHome() + "/share/reports/AVAIL-PDF-" + catFileName + fmt.format(new java.util.Date()) +".pdf";
-				reportMailer.initialise(filename, username, scriptGenerateReport, scriptMailReport, category, "PDF");
-				reportMailer.setLogoUrl(logo);
-				reportMailer.setCategoryName(category);
-				reportMailer.setFormat("PDF");
-
-				//call setter on flag to use the script else use JavaMail
-				reportMailer.setUseScript( "true".equalsIgnoreCase(useScript));
-				String emailAddr = reportMailer.getEmailAddress();
-				if(emailAddr == null || emailAddr.trim().length() == 0)
-				{
-					response.sendRedirect(this.redirectNoEmail);
-					return;
-				}
-				new Thread(reportMailer).start();
-				response.sendRedirect(redirectSuccess);
-			}
-			else if(format.equals("SVG"))
-			{
-				ReportMailer reportMailer = new ReportMailer();
-				SimpleDateFormat fmt = new SimpleDateFormat("yyyyMMdd");
-				String catFileName = category.replace(' ', '-');
-				String filename = ConfigFileConstants.getHome() + "/share/reports/AVAIL-SVG-" + catFileName + fmt.format(new java.util.Date()) +".pdf";
-				reportMailer.initialise(filename, username, scriptGenerateReport, scriptMailReport, category, "SVG");
-				reportMailer.setLogoUrl(logo);
-				reportMailer.setCategoryName(category);
-				reportMailer.setFormat("SVG");
-
-				//call setter on flag to use the script else use JavaMail
-				reportMailer.setUseScript( "true".equalsIgnoreCase(useScript));
-				String emailAddr = reportMailer.getEmailAddress();
-				if(emailAddr == null || emailAddr.trim().length() == 0) 
-				{
-					response.sendRedirect(this.redirectNoEmail);
-					return;
-				}
-				new Thread(reportMailer).start();
-				response.sendRedirect(redirectSuccess);
-			}
-		}
-		catch( Exception e ) {
-			throw new ServletException( "AvailabilityServlet: ", e );
-		}
-	}
-
-	/** 
-	 * @deprecated Should use {@link org.opennms.web.Util#streamToStream 
-	 * Util.streamToStream} instead.
-	 */
-	protected void streamToStream( Reader in, Writer out ) throws IOException 
-	{
-		char[] b = new char[100];
-		int length;
-
-		while((length = in.read(b)) != -1) 
-		{
-			out.write(b, 0, length);
-		}
-	}
+        while ((length = in.read(b)) != -1) {
+            out.write(b, 0, length);
+        }
+    }
 }

@@ -11,8 +11,8 @@
    <l:gentext key="abstract" text="Samenvatting"/>
    <l:gentext key="Answer" text="Antwoord:"/>
    <l:gentext key="answer" text="Antwoord:"/>
-   <l:gentext key="Appendix" text="Aanhangsel"/>
-   <l:gentext key="appendix" text="aanhangsel"/>
+   <l:gentext key="Appendix" text="Bijlage"/>
+   <l:gentext key="appendix" text="Bijlage"/>
    <l:gentext key="Article" text="Artikel"/>
    <l:gentext key="article" text="Artikel"/>
    <l:gentext key="Bibliography" text="Literatuurlijst"/>
@@ -188,7 +188,7 @@
    <l:context name="title">
       <l:template name="abstract" text="%t"/>
       <l:template name="answer" text="%t"/>
-      <l:template name="appendix" text="Aanhangsel %n. %t"/>
+      <l:template name="appendix" text="Bijlage %n. %t"/>
       <l:template name="article" text="%t"/>
       <l:template name="authorblurb" text="%t"/>
       <l:template name="bibliodiv" text="%t"/>
@@ -208,6 +208,8 @@
       <l:template name="equation" text="Vergelijking %n. %t"/>
       <l:template name="example" text="Voorbeeld %n. %t"/>
       <l:template name="figure" text="Figuur %n. %t"/>
+      <l:template name="foil" text="%t" lang="en"/>
+      <l:template name="foilgroup" text="%t" lang="en"/>
       <l:template name="formalpara" text="%t"/>
       <l:template name="glossary" text="%t"/>
       <l:template name="glossdiv" text="%t"/>
@@ -276,7 +278,7 @@
    </l:context>
 
    <l:context name="title-numbered">
-      <l:template name="appendix" text="Aanhangsel %n. %t"/>
+      <l:template name="appendix" text="Bijlage %n. %t"/>
       <l:template name="article/appendix" text="%n.&#160;%t" lang="en"/>
       <l:template name="bridgehead" text="%n. %t"/>
       <l:template name="chapter" text="Hoofdstuk %n. %t"/>
@@ -351,6 +353,8 @@
       <l:template name="equation" text="%t"/>
       <l:template name="example" text="%t"/>
       <l:template name="figure" text="%t"/>
+      <l:template name="foil" text="%t" lang="en"/>
+      <l:template name="foilgroup" text="%t" lang="en"/>
       <l:template name="formalpara" text="%t"/>
       <l:template name="glossary" text="%t"/>
       <l:template name="glossdiv" text="%t"/>
@@ -390,8 +394,12 @@
       <l:template name="variablelist" text="%t"/>
       <l:template name="varlistentry" text="%n"/>
       <l:template name="warning" text="%t"/>
+      <l:template name="olink.document.citation" text=" in %o" lang="en"/>
+      <l:template name="olink.page.citation" text=" (page %p)" lang="en"/>
       <l:template name="page.citation" text=" [%p]"/>
       <l:template name="page" text="(page %p)" lang="en"/>
+      <l:template name="docname" text=" in %o" lang="en"/>
+      <l:template name="docnamelong" text=" in the document titled %o" lang="en"/>
       <l:template name="pageabbrev" text="(p. %p)" lang="en"/>
       <l:template name="Page" text="Page %p" lang="en"/>
       <l:template name="bridgehead" text="de paragraaf &#8220;%t&#8221;"/>
@@ -410,7 +418,7 @@
 
    <l:context name="xref-number">
       <l:template name="answer" text="Antwoord:&#160;%n"/>
-      <l:template name="appendix" text="Aanhangsel&#160;%n"/>
+      <l:template name="appendix" text="Bijlage&#160;%n"/>
       <l:template name="bridgehead" text="Paragraaf&#160;%n"/>
       <l:template name="chapter" text="Hoofdstuk&#160;%n"/>
       <l:template name="equation" text="Vergelijking&#160;%n"/>
@@ -432,7 +440,7 @@
    </l:context>
 
    <l:context name="xref-number-and-title">
-      <l:template name="appendix" text="Aanhangsel&#160;%n, %t"/>
+      <l:template name="appendix" text="Bijlage&#160;%n, %t"/>
       <l:template name="bridgehead" text="Paragraaf&#160;%n, &#8220;%t&#8221;"/>
       <l:template name="chapter" text="Hoofdstuk&#160;%n, %t"/>
       <l:template name="equation" text="Vergelijking&#160;%n, &#8220;%t&#8221;"/>

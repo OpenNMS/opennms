@@ -35,31 +35,28 @@
 package org.opennms.netmgt.eventd;
 
 /**
- *
- * @author 	<A HREF="mailto:weave@oculan.com">Brian Weaver</A>
- * @author	<A HREF="http://www.opennms.org">OpenNMS.org</A>
+ * 
+ * @author <A HREF="mailto:weave@oculan.com">Brian Weaver </A>
+ * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
  */
-public final class EventIpcException extends Exception
-{
-	/**
-	 * Default class constructor. Constructs a new exception with 
-	 * a default message.
-	 */
-	public EventIpcException()
-	{
-		super("EventIpcException");
-	}
-	
-	/**
-	 * Constructs a new exception with the passed string as 
-	 * the message encapsulated in the exception.
-	 *
-	 * @param s	The exception's message.
-	 *
-	 */
-	public EventIpcException(String s)
-	{
-		super(s);
-	}
-}
+public final class EventIpcException extends Exception {
+    /**
+     * Default class constructor. Constructs a new exception with a default
+     * message.
+     */
+    public EventIpcException() {
+        super("EventIpcException");
+    }
 
+    /**
+     * Constructs a new exception with the passed string as the message
+     * encapsulated in the exception.
+     * 
+     * @param s
+     *            The exception's message.
+     * 
+     */
+    public EventIpcException(String s) {
+        super(s);
+    }
+}

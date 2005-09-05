@@ -4,7 +4,7 @@
 <reference>
 <referenceinfo>
 <releaseinfo role="meta">
-$Id: titlepage.xsl,v 1.5 2004/01/29 12:14:06 nwalsh Exp $
+$Id: titlepage.xsl,v 1.7 2004/04/25 10:35:01 kosek Exp $
 </releaseinfo>
 <author><surname>Walsh</surname>
 <firstname>Norman</firstname></author>

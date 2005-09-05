@@ -1,7 +1,7 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2004 The OpenNMS Group, Inc.  All rights reserved.
+// OpenNMS(R) is Copyright (C) 2005 The OpenNMS Group, Inc.  All rights reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included code and modified
 // code that was published under the GNU General Public License. Copyrights for modified 
 // and included code are below.
@@ -42,81 +42,116 @@ import java.util.Set;
  * Provides set functionality for ints.
  */
 public class IntSet {
-    
+
     Set set = new HashSet();
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see java.util.Collection#add(java.lang.Object)
      */
     public boolean add(int n) {
         return set.add(new Integer(n));
     }
-    /* (non-Javadoc)
+
+    /*
+     * (non-Javadoc)
+     * 
      * @see java.util.Collection#addAll(java.util.Collection)
      */
     public boolean addAll(IntSet s) {
         return set.addAll(s.set);
     }
-    /* (non-Javadoc)
+
+    /*
+     * (non-Javadoc)
+     * 
      * @see java.util.Collection#clear()
      */
     public void clear() {
         set.clear();
     }
-    /* (non-Javadoc)
+
+    /*
+     * (non-Javadoc)
+     * 
      * @see java.util.Collection#contains(java.lang.Object)
      */
     public boolean contains(int n) {
         return set.contains(new Integer(n));
     }
-    /* (non-Javadoc)
+
+    /*
+     * (non-Javadoc)
+     * 
      * @see java.util.Collection#containsAll(java.util.Collection)
      */
     public boolean containsAll(IntSet s) {
         return set.containsAll(s.set);
     }
-    /* (non-Javadoc)
+
+    /*
+     * (non-Javadoc)
+     * 
      * @see java.util.Collection#isEmpty()
      */
     public boolean isEmpty() {
         return set.isEmpty();
     }
-    /* (non-Javadoc)
+
+    /*
+     * (non-Javadoc)
+     * 
      * @see java.util.Collection#iterator()
      */
     public Iterator iterator() {
         return set.iterator();
     }
-    /* (non-Javadoc)
+
+    /*
+     * (non-Javadoc)
+     * 
      * @see java.util.Collection#remove(java.lang.Object)
      */
     public boolean remove(int n) {
         return set.remove(new Integer(n));
     }
-    /* (non-Javadoc)
+
+    /*
+     * (non-Javadoc)
+     * 
      * @see java.util.Collection#removeAll(java.util.Collection)
      */
     public boolean removeAll(IntSet s) {
         return set.remove(s.set);
     }
-    /* (non-Javadoc)
+
+    /*
+     * (non-Javadoc)
+     * 
      * @see java.util.Collection#retainAll(java.util.Collection)
      */
     public boolean retainAll(IntSet s) {
         return set.retainAll(s.set);
     }
-    /* (non-Javadoc)
+
+    /*
+     * (non-Javadoc)
+     * 
      * @see java.util.Collection#size()
      */
     public int size() {
         return set.size();
     }
-    /* (non-Javadoc)
+
+    /*
+     * (non-Javadoc)
+     * 
      * @see java.util.Collection#toArray()
      */
     public int[] toArray() {
         int[] array = new int[size()];
-        
+
         int i = 0;
         for (Iterator it = set.iterator(); it.hasNext(); i++) {
             Integer element = (Integer) it.next();

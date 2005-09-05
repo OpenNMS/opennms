@@ -1,51 +1,57 @@
 README for the DocBook Stylesheets
+$Id: README,v 1.5 2004/11/09 18:18:48 xmldoc Exp $
 
-These are XSL stylesheets for the DocBook XML DTD. (They would
-also work for the DocBook DTD, modulo certain namecase problems
-and the fact that there aren't (yet) any XSL implementations
-that work with SGML source documents.)
-
-As of version 1.0, most of the elements in DocBook are handled
-in some way or another, usually reasonably, but there's still
-lots of work to be done.
+These are XSL stylesheets for transforming DocBook XML document
+instances into various output formats. (They would also work for
+transforming DocBook SGML document instances, modulo certain
+namecase problems and the fact that there aren't (yet) any XSL
+implementations that work with SGML source documents.)
 
 For more information, see http://docbook.sourceforge.net/
 
 Manifest
 --------
 
+BUGS        about known problems
+INSTALL     executable script for generating a catalog.xml file
 README      this file
-TODO        planned features not yet implemented (may be incomplete :-)
-BUGS        known problems (may also be incomplete :-)
+RELEASE*    per-release cumulative summaries of user-visible changes
+TODO        about planned features not yet implemented
 VERSION     the current version number (note that this is an XSL stylesheet,
             included by both fo/docbook.xsl and html/docbook.xsl)
-WhatsNew    changes since the last public release (for a complete list
-            of changes, see the ChangeLog file(s))
-common/	    contains code common to both stylesheets
+WhatsNew    changes since the last public release (for cumulative lists of
+            changes, see the ChangeLog files in each subdirectory)
+common/     contains code common to both the HTML and FO stylesheets
 doc/        documentation
 docsrc/     documentation sources
+eclipse/    stylesheet that produces Eclipse Help
 extensions/ Java extensions
 fo/         stylesheets that produce XSL FO
-html/	    stylesheets that produce HTML
-htmlhelp/   stylesheets that produce HTML Help 
+html/       stylesheets that produce HTML
+htmlhelp/   stylesheets that produce HTML Help
 images/     images
 javahelp/   stylesheets that produce Java Help
 lib/        contains schema-independent functions
+manpages/   stylesheets for producing groff/nroff man pages
+profiling/  stylesheets for profiling (omitting/including conditional text) 
 template/   contains templates for building stylesheet customization layers
 xhtml/      stylesheets that produce XHTML
 
 Changes
 -------
 
-See the ChangeLog in each directory for additional information
-about the specific changes.
+See the ChangeLog in each subdirectory for cumulative lists of all changes.
 
 See WhatsNew for changes since the last release.
+
+See the RELEASE-NOTES.html or RELEASE-NOTES.txt file for per-release
+cumulative summaries of significant user-visible changes.
 
 Installation
 ------------
 
-Unpack the distribution somewhere.
+Unpack the distribution somewhere. Run the INSTALL script and follow the
+instructions it generates.
 
 Use
 ---
@@ -53,10 +59,13 @@ Use
 Process your DocBook documents with one of the following stylesheets
 using your favorite XSLT processor:
 
-  xhtml/docbook.xsl     - for XHTML
   html/docbook.xsl      - for HTML (as a single file)
-  html/chunk.xsl        - for HTML (multiple files)
+  html/chunk.xsl        - for HTML (chunked into multiple files)
+  html/onechunk.xsl     - for HTML (chunked output in single file)
+  xhtml/                - for XHTML versions above the above
   fo/docbook.xsl        - for XSL FO
+  manpages/docbook.xsl  - for groff/nroff man pages
+  eclipse/eclipse.xsl   - for Eclipse Help
   htmlhelp/htmlhelp.xsl - for HTML Help
   javahelp/javahelp.xsl - for JavaHelp
 

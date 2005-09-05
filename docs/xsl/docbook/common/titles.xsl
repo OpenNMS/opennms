@@ -5,7 +5,7 @@
                 version='1.0'>
 
 <!-- ********************************************************************
-     $Id: titles.xsl,v 1.26 2004/01/29 14:18:46 nwalsh Exp $
+     $Id: titles.xsl,v 1.30 2004/10/28 21:57:50 nwalsh Exp $
      ********************************************************************
 
      This file is part of the XSL DocBook Stylesheet distribution.
@@ -44,7 +44,7 @@ title of the element. This does not include the label.
       <xsl:apply-templates select="parent::*" mode="title.markup"/>
     </xsl:when>
     <xsl:otherwise>
-      <xsl:if test="$verbose">
+      <xsl:if test="$verbose != 0">
         <xsl:message>
           <xsl:text>Request for title of element with no title: </xsl:text>
           <xsl:value-of select="name(.)"/>
@@ -464,11 +464,12 @@ title of the element. This does not include the label.
   </xsl:choose>
 </xsl:template>
 
-<xsl:template match="preface|chapter|appendix" mode="titleabbrev.markup">
+<xsl:template match="book|preface|chapter|appendix" mode="titleabbrev.markup">
   <xsl:param name="allow-anchors" select="0"/>
   <xsl:param name="verbose" select="1"/>
 
   <xsl:variable name="titleabbrev" select="(docinfo/titleabbrev
+                                           |bookinfo/titleabbrev
                                            |info/titleabbrev
                                            |prefaceinfo/titleabbrev
                                            |chapterinfo/titleabbrev
@@ -565,7 +566,22 @@ title of the element. This does not include the label.
 <!-- ============================================================ -->
 
 <xsl:template match="*" mode="no.anchor.mode">
-  <xsl:apply-templates mode="no.anchor.mode"/>
+  <!-- Switch to normal mode if no links -->
+  <xsl:choose>
+    <xsl:when test="descendant-or-self::footnote or
+                    descendant-or-self::anchor or
+                    descendant-or-self::ulink or
+                    descendant-or-self::link or
+                    descendant-or-self::olink or
+                    descendant-or-self::xref or
+                    descendant-or-self::indexterm">
+
+      <xsl:apply-templates mode="no.anchor.mode"/>
+    </xsl:when>
+    <xsl:otherwise>
+      <xsl:apply-templates select="."/>
+    </xsl:otherwise>
+  </xsl:choose>
 </xsl:template>
 
 <xsl:template match="footnote" mode="no.anchor.mode">
@@ -593,7 +609,73 @@ title of the element. This does not include the label.
 </xsl:template>
 
 <xsl:template match="xref" mode="no.anchor.mode">
-  <!-- FIXME: this should generate the text without the link... -->
+  <xsl:variable name="targets" select="key('id',@linkend)"/>
+  <xsl:variable name="target" select="$targets[1]"/>
+  <xsl:variable name="refelem" select="local-name($target)"/>
+  
+  <xsl:call-template name="check.id.unique">
+    <xsl:with-param name="linkend" select="@linkend"/>
+  </xsl:call-template>
+
+  <xsl:choose>
+    <xsl:when test="count($target) = 0">
+      <xsl:message>
+        <xsl:text>XRef to nonexistent id: </xsl:text>
+        <xsl:value-of select="@linkend"/>
+      </xsl:message>
+      <xsl:text>???</xsl:text>
+    </xsl:when>
+
+    <xsl:when test="@endterm">
+      <xsl:variable name="etargets" select="key('id',@endterm)"/>
+      <xsl:variable name="etarget" select="$etargets[1]"/>
+      <xsl:choose>
+	<xsl:when test="count($etarget) = 0">
+	  <xsl:message>
+            <xsl:value-of select="count($etargets)"/>
+            <xsl:text>Endterm points to nonexistent ID: </xsl:text>
+            <xsl:value-of select="@endterm"/>
+	  </xsl:message>
+	  <xsl:text>???</xsl:text>
+	</xsl:when>
+	<xsl:otherwise>
+	  <xsl:apply-templates select="$etarget" mode="endterm"/>
+	</xsl:otherwise>
+      </xsl:choose>
+    </xsl:when>
+
+    <xsl:when test="$target/@xreflabel">
+      <xsl:call-template name="xref.xreflabel">
+	<xsl:with-param name="target" select="$target"/>
+      </xsl:call-template>
+    </xsl:when>
+
+    <xsl:otherwise>
+      <xsl:apply-templates select="$target" mode="xref-to-prefix"/>
+
+      <xsl:if test="$target/title or $target/*/title">
+	<xsl:attribute name="title">
+	  <xsl:apply-templates select="$target" mode="xref-title"/>
+	</xsl:attribute>
+      </xsl:if>
+
+      <xsl:apply-templates select="$target" mode="xref-to">
+	<xsl:with-param name="referrer" select="."/>
+	<xsl:with-param name="xrefstyle">
+	  <xsl:choose>
+	    <xsl:when test="@role and not(@xrefstyle) and $use.role.as.xrefstyle != 0">
+	      <xsl:value-of select="@role"/>
+	    </xsl:when>
+	    <xsl:otherwise>
+	      <xsl:value-of select="@xrefstyle"/>
+	    </xsl:otherwise>
+	  </xsl:choose>
+	</xsl:with-param>
+      </xsl:apply-templates>
+
+      <xsl:apply-templates select="$target" mode="xref-to-suffix"/>
+    </xsl:otherwise>
+  </xsl:choose>
 </xsl:template>
 
 <!-- ============================================================ -->

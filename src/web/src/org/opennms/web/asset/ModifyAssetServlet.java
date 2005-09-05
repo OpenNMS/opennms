@@ -44,63 +44,55 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.opennms.web.MissingParameterException;
-
 import org.opennms.netmgt.capsd.EventUtils;
 import org.opennms.netmgt.utils.EventProxy;
 import org.opennms.netmgt.utils.TcpEventProxy;
 import org.opennms.netmgt.xml.event.Event;
+import org.opennms.web.MissingParameterException;
 
-
-public class ModifyAssetServlet extends HttpServlet
-{
+public class ModifyAssetServlet extends HttpServlet {
     protected AssetModel model;
-
 
     public void init() throws ServletException {
         this.model = new AssetModel();
     }
-  
 
-    public void doPost( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException {
-        String nodeIdString = request.getParameter( "node" );
-        String isNewString = request.getParameter( "isnew" );
-        
-        if( nodeIdString == null ) {
-          throw new MissingParameterException( "node", new String[] { "node", "isnew" } ); 
-        }
-        
-        if( isNewString == null ) {
-          throw new MissingParameterException( "isnew", new String[] { "node", "isnew" } ); 
-        }
-        
-        int nodeId = Integer.parseInt( nodeIdString );
-        boolean isNew = Boolean.valueOf( isNewString ).booleanValue();
+    public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        String nodeIdString = request.getParameter("node");
+        String isNewString = request.getParameter("isnew");
 
-        Asset asset = this.parms2Asset( request, nodeId );
+        if (nodeIdString == null) {
+            throw new MissingParameterException("node", new String[] { "node", "isnew" });
+        }
+
+        if (isNewString == null) {
+            throw new MissingParameterException("isnew", new String[] { "node", "isnew" });
+        }
+
+        int nodeId = Integer.parseInt(nodeIdString);
+        boolean isNew = Boolean.valueOf(isNewString).booleanValue();
+
+        Asset asset = this.parms2Asset(request, nodeId);
 
         Event evnt = EventUtils.createAssetInfoChangedEvent("OpenNMS.WebUI", nodeId, -1L);
         sendEvent(evnt);
 
-        try {        
-            if( isNew ) {
-              this.model.createAsset( asset );
+        try {
+            if (isNew) {
+                this.model.createAsset(asset);
+            } else {
+                this.model.modifyAsset(asset);
             }
-            else {
-              this.model.modifyAsset( asset );
-            }
-            
-            response.sendRedirect( "modify.jsp?node=" + nodeId );
-        }
-        catch( SQLException e ) {
-            throw new ServletException( "database error", e );
+
+            response.sendRedirect("modify.jsp?node=" + nodeId);
+        } catch (SQLException e) {
+            throw new ServletException("database error", e);
         }
     }
 
-
-    protected Asset parms2Asset( HttpServletRequest request, int nodeId ) {
+    protected Asset parms2Asset(HttpServletRequest request, int nodeId) {
         Asset asset = new Asset();
-        
+
         asset.setNodeId(nodeId);
         asset.setCategory(this.stripBadCharacters(request.getParameter("category")));
         asset.setManufacturer(this.stripBadCharacters(request.getParameter("manufacturer")));
@@ -134,42 +126,36 @@ public class ModifyAssetServlet extends HttpServlet
         asset.setMaintContract(this.stripBadCharacters(request.getParameter("maintcontract")));
         asset.setVendorAssetNumber(this.stripBadCharacters(request.getParameter("vendorassetnumber")));
         asset.setMaintContractExpires(this.stripBadCharacters(request.getParameter("maintcontractexpires")));
-	asset.setDisplayCategory(this.stripBadCharacters(request.getParameter("displaycategory")));
-	asset.setNotifyCategory(this.stripBadCharacters(request.getParameter("notifycategory")));
-	asset.setPollerCategory(this.stripBadCharacters(request.getParameter("pollercategory")));
-	asset.setThresholdCategory(this.stripBadCharacters(request.getParameter("thresholdcategory")));
+        asset.setDisplayCategory(this.stripBadCharacters(request.getParameter("displaycategory")));
+        asset.setNotifyCategory(this.stripBadCharacters(request.getParameter("notifycategory")));
+        asset.setPollerCategory(this.stripBadCharacters(request.getParameter("pollercategory")));
+        asset.setThresholdCategory(this.stripBadCharacters(request.getParameter("thresholdcategory")));
         asset.setComments(this.stripBadCharacters(request.getParameter("comments")));
-        
+
         asset.setUserLastModified(request.getRemoteUser());
         asset.setLastModifiedDate(new Date());
-        
-        return( asset );
+
+        return (asset);
     }
 
+    public String stripBadCharacters(String s) {
+        if (s != null) {
+            s = s.replace('\n', ' ');
+            s = s.replace('\f', ' ');
+            s = s.replace('\r', ' ');
+            s = s.replace(',', ' ');
+        }
 
-    public String stripBadCharacters( String s ) {
-	if( s != null ) {
-	    s = s.replace( '\n', ' ' );
-            s = s.replace( '\f', ' ' );
-            s = s.replace( '\r', ' ' );
-	    s = s.replace( ',', ' ' );
-	}
+        return (s);
+    }
 
-	return( s );
-    }        
-
-    private void sendEvent(Event event) throws ServletException
-    {
-        try
-        {
+    private void sendEvent(Event event) throws ServletException {
+        try {
             EventProxy eventProxy = new TcpEventProxy();
             eventProxy.send(event);
-        }
-        catch(Exception e)
-        {
+        } catch (Exception e) {
             throw new ServletException("Could not send event " + event.getUei(), e);
         }
     }
 
-}            
-
+}

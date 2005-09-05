@@ -44,127 +44,119 @@
 
 package org.opennms.protocols.snmp;
 
-
 /**
- * The SnmpOpaque class is an extension of the octet string
- * class and is used to pass opaque data. Opaque data is 
- * information that isn't interperted by the manager in 
- * general. 
- *
- * @author	<a href="mailto:weave@oculan.com">Brian Weaver</a>
- * @version	1.1.1.1
- *
+ * The SnmpOpaque class is an extension of the octet string class and is used to
+ * pass opaque data. Opaque data is information that isn't interperted by the
+ * manager in general.
+ * 
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @version 1.1.1.1
+ * 
  */
-public class SnmpOpaque extends SnmpOctetString
-{
-	/**
-	 * Required for version control of serialzation format.
-	 */
-	static final long serialVersionUID = -6031084829130590165L;
+public class SnmpOpaque extends SnmpOctetString {
+    /**
+     * Required for version control of serialzation format.
+     */
+    static final long serialVersionUID = -6031084829130590165L;
 
-	/**
-	 * The ASN.1 type for this class.
-	 */
-	public static final byte ASNTYPE = SnmpSMI.SMI_OPAQUE;
+    /**
+     * The ASN.1 type for this class.
+     */
+    public static final byte ASNTYPE = SnmpSMI.SMI_OPAQUE;
 
-	/**
-	 * The default constructor for this class.
-	 *
-	 */
-	public SnmpOpaque( )
-	{
-		super();
-	}
+    /**
+     * The default constructor for this class.
+     * 
+     */
+    public SnmpOpaque() {
+        super();
+    }
 
-	/**
-	 * Constructs an opaque object with the passed data.
-	 *
-	 * @param data	The opaque data.
-	 *
-	 */
-	public SnmpOpaque(byte[] data)
-	{
-		super(data);
-	}
-	
-	/**
-	 * Constructs an object that is a duplicate of the passed object.
-	 *
-	 * @param second The object to be duplicated.
-	 *
-	 */
-	public SnmpOpaque(SnmpOpaque second)
-	{
-		super(second);
-	}
+    /**
+     * Constructs an opaque object with the passed data.
+     * 
+     * @param data
+     *            The opaque data.
+     * 
+     */
+    public SnmpOpaque(byte[] data) {
+        super(data);
+    }
 
-	/**
-	 * Constructs an object that is a duplicate of the passed object.
-	 *
-	 * @param second The object to be duplicated.
-	 *
-	 */
-	public SnmpOpaque(SnmpOctetString second)
-	{
-		super(second);
-	}
+    /**
+     * Constructs an object that is a duplicate of the passed object.
+     * 
+     * @param second
+     *            The object to be duplicated.
+     * 
+     */
+    public SnmpOpaque(SnmpOpaque second) {
+        super(second);
+    }
 
-	/**
-	 * Returns the defined ASN.1 type identifier.
-	 *
-	 * @return The ASN.1 identifier.
-	 *
-	 */
-	public byte typeId()
-	{
-		return ASNTYPE;
-	}
+    /**
+     * Constructs an object that is a duplicate of the passed object.
+     * 
+     * @param second
+     *            The object to be duplicated.
+     * 
+     */
+    public SnmpOpaque(SnmpOctetString second) {
+        super(second);
+    }
 
-	/**
-	 * Returns a duplicate of the current object.
-	 *
-	 * @return A duplicate of self
-	 *
-	 */
-	public SnmpSyntax duplicate() 
-	{
-		return new SnmpOpaque(this);
-	}
+    /**
+     * Returns the defined ASN.1 type identifier.
+     * 
+     * @return The ASN.1 identifier.
+     * 
+     */
+    public byte typeId() {
+        return ASNTYPE;
+    }
 
-	/**
-	 * Returns a duplicate of the current object.
-	 *
-	 * @return A duplicate of self
-	 *
-	 */
-	public Object clone()
-	{
-		return new SnmpOpaque(this);
-	}
+    /**
+     * Returns a duplicate of the current object.
+     * 
+     * @return A duplicate of self
+     * 
+     */
+    public SnmpSyntax duplicate() {
+        return new SnmpOpaque(this);
+    }
 
-	/**
-	 * Returns a string representation of the object.
-	 *
-	 */
-	public String toString()
-	{
-		//
-		// format the string for hex
-		//
-		byte[] data = getString();
-		StringBuffer b = new StringBuffer();
-		//b.append("SNMP Opaque [length = " + data.length + ", fmt = HEX] = [");
-		for(int i = 0; i < data.length; ++i)
-		{
-			int x = (int)data[i] & 0xff;
-			if(x < 16)
-				b.append('0');
-			b.append(Integer.toString(x,16).toUpperCase());
-			
-			if(i < data.length)
-				b.append(' ');
-		}
-		//b.append(']');
-		return b.toString();
-	}
+    /**
+     * Returns a duplicate of the current object.
+     * 
+     * @return A duplicate of self
+     * 
+     */
+    public Object clone() {
+        return new SnmpOpaque(this);
+    }
+
+    /**
+     * Returns a string representation of the object.
+     * 
+     */
+    public String toString() {
+        //
+        // format the string for hex
+        //
+        byte[] data = getString();
+        StringBuffer b = new StringBuffer();
+        // b.append("SNMP Opaque [length = " + data.length + ", fmt = HEX] =
+        // [");
+        for (int i = 0; i < data.length; ++i) {
+            int x = (int) data[i] & 0xff;
+            if (x < 16)
+                b.append('0');
+            b.append(Integer.toString(x, 16).toUpperCase());
+
+            if (i < data.length)
+                b.append(' ');
+        }
+        // b.append(']');
+        return b.toString();
+    }
 }

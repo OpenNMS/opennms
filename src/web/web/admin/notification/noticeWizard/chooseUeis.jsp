@@ -39,7 +39,7 @@
 
 -->
 
-<%@page language="java" contentType="text/html" session="true" import="java.util.*,org.opennms.web.admin.notification.noticeWizard.*,org.opennms.netmgt.config.*,org.opennms.netmgt.config.notifications.*,org.opennms.core.utils.BundleLists,org.opennms.netmgt.ConfigFileConstants,java.io.*" %>
+<%@page language="java" contentType="text/html" session="true" import="java.util.*,org.opennms.web.admin.notification.noticeWizard.*,org.opennms.netmgt.config.*,org.opennms.netmgt.config.notifications.*,org.opennms.core.utils.BundleLists,org.opennms.netmgt.ConfigFileConstants,java.io.*,org.opennms.netmgt.xml.eventconf.Event" %>
 
 <%!
     public void init() throws ServletException {
@@ -144,35 +144,39 @@
     public String buildEventSelect(Notification notice)
       throws IOException, FileNotFoundException
     {
-        Map events = EventconfFactory.getInstance().getEventLabels();
+        List events = EventconfFactory.getInstance().getEventsByLabel();
         StringBuffer buffer = new StringBuffer();
         
         List excludeList = getExcludeList();
+	TreeMap sortedMap = new TreeMap();
 
-        Iterator i = events.keySet().iterator();
+        Iterator i = events.iterator();
 
         while(i.hasNext()) //for (int i = 0; i < events.size(); i++)
         {
-            String uei = (String)i.next();
-            System.out.println(uei);
+            Event e = (Event)i.next();
+            String uei = e.getUei();
+            //System.out.println(uei);
 
-            String label = (String)events.get(uei);
-            System.out.println(label);
+            String label = e.getEventLabel();
+            //System.out.println(label);
 
             String trimmedUei = stripUei(uei);
-            System.out.println(trimmedUei);
+            //System.out.println(trimmedUei);
             
-            if (!excludeList.contains(trimmedUei))
-            {
-            if (uei.equals(notice.getUei()))
-            {
-                    buffer.append("<option selected VALUE=" + uei + ">" + label + "</option>");
+            if (!excludeList.contains(trimmedUei)) {
+		sortedMap.put(label,uei);
             }
-            else
-            {
-                    buffer.append("<option value=" + uei + ">" + label + "</option>");
-                }
-            }
+	}
+	i=sortedMap.keySet().iterator();
+	while(i.hasNext()) {
+		String label=(String)i.next();
+		String uei=(String)sortedMap.get(label);
+		if (uei.equals(notice.getUei())) {
+			buffer.append("<option selected VALUE=" + uei + ">" + label + "</option>");
+		} else {
+			buffer.append("<option value=" + uei + ">" + label + "</option>");
+		}
         }
         
         return buffer.toString();

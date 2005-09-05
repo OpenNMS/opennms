@@ -38,99 +38,86 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 
-/** 
+/**
  * This class is used to hold an email address
- *
- * @author <A HREF="mailto:jason@opennms.org">Jason</A>
- * @author <A HREF="http://www.opennsm.org">OpenNMS</A>
+ * 
+ * @author <A HREF="mailto:jason@opennms.org">Jason </A>
+ * @author <A HREF="http://www.opennsm.org">OpenNMS </A>
  */
-public class EmailAddress
-{
-        private String address;
-        private String username;
-        private String server;
-        private String domain;
-        private String tld;
-        
-        public EmailAddress()
-        {
+public class EmailAddress {
+    private String address;
+
+    private String username;
+
+    private String server;
+
+    private String domain;
+
+    private String tld;
+
+    public EmailAddress() {
+    }
+
+    public EmailAddress(String newAddress) {
+        address = newAddress;
+        username = address.substring(0, address.indexOf("@"));
+
+        String addressTail = address.substring(address.indexOf("@") + 1, address.length());
+        StringTokenizer tokens = new StringTokenizer(addressTail, ".");
+
+        List tokenList = new ArrayList();
+        while (tokens.hasMoreTokens()) {
+            tokenList.add(tokens.nextToken());
         }
-        
-        public EmailAddress(String newAddress)
-        {
-                address = newAddress;
-                username = address.substring(0, address.indexOf("@"));
-                
-                String addressTail = address.substring( address.indexOf("@")+1, address.length() );
-                StringTokenizer tokens = new StringTokenizer(addressTail, ".");
-                
-                List tokenList = new ArrayList();
-                while( tokens.hasMoreTokens() )
-                {
-                        tokenList.add( tokens.nextToken() );
-                }
-                
-                //walk this list backward filling in tld, domain and server
-                tld = (String)tokenList.get( tokenList.size()-1);
-                domain = (String)tokenList.get( tokenList.size()-2);
-                
-                if (tokenList.size()-3 >= 0)
-                {
-                        String serverParts = (String)tokenList.get( tokenList.size()-3);
-                        for (int i = tokenList.size()-4; i >= 0; i--)
-                        {
-                                serverParts = (String)tokenList.get(i) + "." + serverParts;
-                        }
-                        server = serverParts;
-                }
-                else 
-                {
-                        server = null;
-                }
+
+        // walk this list backward filling in tld, domain and server
+        tld = (String) tokenList.get(tokenList.size() - 1);
+        domain = (String) tokenList.get(tokenList.size() - 2);
+
+        if (tokenList.size() - 3 >= 0) {
+            String serverParts = (String) tokenList.get(tokenList.size() - 3);
+            for (int i = tokenList.size() - 4; i >= 0; i--) {
+                serverParts = (String) tokenList.get(i) + "." + serverParts;
+            }
+            server = serverParts;
+        } else {
+            server = null;
         }
-        
-        public String getAddress()
-        {
-                return username + "@" + (server!=null?server+".":"") + domain + "." + tld;
-        }
-        
-        public String getUsername()
-        {
-                return username;
-        }
-        
-        public String getServer()
-        {
-                return server;
-        }
-        
-        public String getDomain()
-        {
-                return domain;
-        }
-        
-        public String getTld()
-        {
-                return tld;
-        }
-        
-        public void setUsername(String name)
-        {
-                username = name;
-        }
-        
-        public void setServer(String newServer)
-        {
-                server = newServer;
-        }
-        
-        public void setDomain(String newDomain)
-        {
-                domain = newDomain;
-        }
-        
-        public void setTld(String newTld)
-        {
-                tld = newTld;
-        }
+    }
+
+    public String getAddress() {
+        return username + "@" + (server != null ? server + "." : "") + domain + "." + tld;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public String getServer() {
+        return server;
+    }
+
+    public String getDomain() {
+        return domain;
+    }
+
+    public String getTld() {
+        return tld;
+    }
+
+    public void setUsername(String name) {
+        username = name;
+    }
+
+    public void setServer(String newServer) {
+        server = newServer;
+    }
+
+    public void setDomain(String newDomain) {
+        domain = newDomain;
+    }
+
+    public void setTld(String newTld) {
+        tld = newTld;
+    }
 }

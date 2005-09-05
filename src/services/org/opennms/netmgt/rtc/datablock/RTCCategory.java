@@ -43,123 +43,117 @@ import org.opennms.netmgt.config.categories.Category;
 
 /**
  * This class is used to encapsulate a category in the categories xml file.
- *
- * @author 	<A HREF="mailto:sowmya@opennms.org">Sowmya Nataraj</A>
- * @author	<A HREF="http://www.opennms.org">OpenNMS.org</A>
+ * 
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Nataraj </A>
+ * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
  */
-public class RTCCategory extends Category
-{
-	/**
-	 * The 'effective' rule
-	 */
-	private String	m_effectiveRule;
+public class RTCCategory extends Category {
+    /**
+     * The 'effective' rule
+     */
+    private String m_effectiveRule;
 
-	/**
-	 * The nodes list - list of node ids
-	 */
-	private List	m_nodes;
+    /**
+     * The nodes list - list of node ids
+     */
+    private List m_nodes;
 
-	/**
-	 * The default constructor - initializes the values
-	 */
-	public RTCCategory(Category cat, String commonRule)
-	{
-		setLabel(cat.getLabel());
-		setComment(cat.getComment());
-		setRule(cat.getRule());
-		setNormal(cat.getNormal());
-		setWarning(cat.getWarning());
-		setService(cat.getService());
+    /**
+     * The default constructor - initializes the values
+     */
+    public RTCCategory(Category cat, String commonRule) {
+        setLabel(cat.getLabel());
+        setComment(cat.getComment());
+        setRule(cat.getRule());
+        setNormal(cat.getNormal());
+        setWarning(cat.getWarning());
+        setService(cat.getService());
 
-		m_effectiveRule = "(" + commonRule + ") & (" + cat.getRule() + ")";
+        m_effectiveRule = "(" + commonRule + ") & (" + cat.getRule() + ")";
 
-		m_nodes = Collections.synchronizedList(new ArrayList());
-	}
+        m_nodes = Collections.synchronizedList(new ArrayList());
+    }
 
-	/**
-	 * Add to the nodes in this category
-	 *
-	 * @param node		the node to add
-	 */
-	public void addNode(RTCNode node)
-	{
-		Long longnodeid = new Long(node.getNodeID());
+    /**
+     * Add to the nodes in this category
+     * 
+     * @param node
+     *            the node to add
+     */
+    public void addNode(RTCNode node) {
+        Long longnodeid = new Long(node.getNodeID());
 
-		if(!m_nodes.contains(longnodeid))
-			m_nodes.add(longnodeid);
-	}
-	
-	/**
-	 * Add to the nodes in this category
-	 *
-	 * @param nodeid	the nodeid to add
-	 */
-	public void addNode(long nodeid)
-	{
-		Long longnodeid = new Long(nodeid);
+        if (!m_nodes.contains(longnodeid))
+            m_nodes.add(longnodeid);
+    }
 
-		if(!m_nodes.contains(longnodeid))
-			m_nodes.add(longnodeid);
-	}
-	
-	/**
-	 * Delete from the nodes in this category
-	 *
-	 * @param nodeid	the nodeid to delete
-	 */
-	public void deleteNode(long nodeid)
-	{
-		Long longnodeid = new Long(nodeid);
+    /**
+     * Add to the nodes in this category
+     * 
+     * @param nodeid
+     *            the nodeid to add
+     */
+    public void addNode(long nodeid) {
+        Long longnodeid = new Long(nodeid);
 
-		m_nodes.remove(longnodeid);
-	}
-	
-	/**
-	 * Returns true if the service is in the services list in this category or if service list is null
-         *
-         * @return true if the service is in the services list in this category or if service list is null
-         */
-	public boolean containsService(String svcname)
-	{
-		if (getServiceCount() <= 0)
-		{
-			// service list is null - so include all services
-			return true;
-		}
+        if (!m_nodes.contains(longnodeid))
+            m_nodes.add(longnodeid);
+    }
 
-		boolean found = false;
+    /**
+     * Delete from the nodes in this category
+     * 
+     * @param nodeid
+     *            the nodeid to delete
+     */
+    public void deleteNode(long nodeid) {
+        Long longnodeid = new Long(nodeid);
 
-		Enumeration enum = enumerateService();
-		while(enum.hasMoreElements())
-		{
-			String svc = (String)enum.nextElement();
-			if (svc.equals(svcname))
-			{
-				found = true;
-				break;
-			}
-        	}
+        m_nodes.remove(longnodeid);
+    }
 
-		return found;
-	}
+    /**
+     * Returns true if the service is in the services list in this category or
+     * if service list is null
+     * 
+     * @return true if the service is in the services list in this category or
+     *         if service list is null
+     */
+    public boolean containsService(String svcname) {
+        if (getServiceCount() <= 0) {
+            // service list is null - so include all services
+            return true;
+        }
 
-	/**
-	 * Return the 'effective' category rule
-	 *
-	 * @return the 'effective' category rule
-	 */
-	public String getEffectiveRule()
-	{
-		return m_effectiveRule;
-	}
+        boolean found = false;
 
-	/**
-	 * Get the node ids in this category
-	 *
-	 * @return the list of node ids in this category
-	 */
-	public List getNodes()
-	{
-		return m_nodes;
-	}
+        Enumeration en = enumerateService();
+        while (en.hasMoreElements()) {
+            String svc = (String) en.nextElement();
+            if (svc.equals(svcname)) {
+                found = true;
+                break;
+            }
+        }
+
+        return found;
+    }
+
+    /**
+     * Return the 'effective' category rule
+     * 
+     * @return the 'effective' category rule
+     */
+    public String getEffectiveRule() {
+        return m_effectiveRule;
+    }
+
+    /**
+     * Get the node ids in this category
+     * 
+     * @return the list of node ids in this category
+     */
+    public List getNodes() {
+        return m_nodes;
+    }
 }

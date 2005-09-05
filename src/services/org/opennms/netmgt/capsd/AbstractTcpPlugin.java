@@ -1,7 +1,7 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2002-2004 The OpenNMS Group, Inc. All rights reserved.
+// OpenNMS(R) is Copyright (C) 2002-2005 The OpenNMS Group, Inc. All rights reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included code and modified
 // code that was published under the GNU General Public License. Copyrights for modified
 // and included code are below.
@@ -58,12 +58,12 @@ import org.opennms.netmgt.utils.ParameterMap;
 // TODO need to completely javadoc this class
 
 /**
- * Implements the basic functionality of a Tcp based servicethat can be discovered by OpenNMS.
- * It extends the AbstractPlugin class and provides methods for creating the sockets and
- * dealing with timeouts and reteries.
+ * Implements the basic functionality of a Tcp based servicethat can be
+ * discovered by OpenNMS. It extends the AbstractPlugin class and provides
+ * methods for creating the sockets and dealing with timeouts and reteries.
  * 
  * @author Matt Brozowski
- *  
+ * 
  */
 public abstract class AbstractTcpPlugin extends AbstractPlugin {
 
@@ -82,7 +82,8 @@ public abstract class AbstractTcpPlugin extends AbstractPlugin {
     }
 
     protected AbstractTcpPlugin(String protocol, int defaultPort, int defaultTimeout, int defaultRetry) {
-        if (protocol == null) throw new NullPointerException("protocol is null");
+        if (protocol == null)
+            throw new NullPointerException("protocol is null");
 
         m_protocolName = protocol;
         m_defaultPort = defaultPort;
@@ -92,21 +93,23 @@ public abstract class AbstractTcpPlugin extends AbstractPlugin {
 
     /**
      * <P>
-     * Test to see if the passed host-port pair is the endpoint for an Citrix server. If there
-     * is an Citrix server at that destination then a value of true is returned from the
-     * method. Otherwise a false value is returned to the caller.
+     * Test to see if the passed host-port pair is the endpoint for an Citrix
+     * server. If there is an Citrix server at that destination then a value of
+     * true is returned from the method. Otherwise a false value is returned to
+     * the caller.
      * </P>
      * 
      * @param config
-     *  
-     * @return True if server supports Citrix on the specified port, false otherwise
+     * 
+     * @return True if server supports Citrix on the specified port, false
+     *         otherwise
      */
     final protected boolean checkConnection(ConnectionConfig config) {
         // get a log to send errors
         //
         Category log = ThreadCategory.getInstance(getClass());
 
-        //don't let the user set the timeout to 0, an infinite loop will occur
+        // don't let the user set the timeout to 0, an infinite loop will occur
         // if the server is down
         int timeout = (config.getTimeout() == 0 ? 10 : config.getTimeout());
 
@@ -153,7 +156,8 @@ public abstract class AbstractTcpPlugin extends AbstractPlugin {
                 log.warn(getPluginName() + ": Undeclared throwable exception caught contacting host " + config.getInetAddress().getHostAddress(), t);
                 isAServer = false;
             } finally {
-                if (socket != null) closeSocket(socket, config);
+                if (socket != null)
+                    closeSocket(socket, config);
             }
         }
 
@@ -166,7 +170,8 @@ public abstract class AbstractTcpPlugin extends AbstractPlugin {
 
     protected void closeSocket(Socket socket, ConnectionConfig config) {
         try {
-            if (socket != null) socket.close();
+            if (socket != null)
+                socket.close();
         } catch (IOException e) {
 
         }
@@ -179,7 +184,8 @@ public abstract class AbstractTcpPlugin extends AbstractPlugin {
     }
 
     protected List getConnectionConfigList(Map qualifiers, InetAddress address) {
-        if (m_defaultPort == -1) throw new IllegalStateException("m_defaultPort == -1");
+        if (m_defaultPort == -1)
+            throw new IllegalStateException("m_defaultPort == -1");
 
         int port = getKeyedInteger(qualifiers, "port", m_defaultPort);
         return Collections.singletonList(createConnectionConfig(address, port));
@@ -212,8 +218,8 @@ public abstract class AbstractTcpPlugin extends AbstractPlugin {
     }
 
     /**
-     * Returns the name of the protocol that this plugin checks on the target system for
-     * support.
+     * Returns the name of the protocol that this plugin checks on the target
+     * system for support.
      * 
      * @return The protocol name for this plugin.
      */
@@ -222,8 +228,8 @@ public abstract class AbstractTcpPlugin extends AbstractPlugin {
     }
 
     /**
-     * Returns true if the protocol defined by this plugin is supported. If the protocol is not
-     * supported then a false value is returned to the caller.
+     * Returns true if the protocol defined by this plugin is supported. If the
+     * protocol is not supported then a false value is returned to the caller.
      * 
      * @param address
      *            The address to check for support.
@@ -235,10 +241,11 @@ public abstract class AbstractTcpPlugin extends AbstractPlugin {
     }
 
     /**
-     * Returns true if the protocol defined by this plugin is supported. If the protocol is not
-     * supported then a false value is returned to the caller. The qualifier map passed to the
-     * method is used by the plugin to return additional information by key-name. These
-     * key-value pairs can be added to service events if needed.
+     * Returns true if the protocol defined by this plugin is supported. If the
+     * protocol is not supported then a false value is returned to the caller.
+     * The qualifier map passed to the method is used by the plugin to return
+     * additional information by key-name. These key-value pairs can be added to
+     * service events if needed.
      * 
      * @param address
      *            The address to check for support.
@@ -255,7 +262,8 @@ public abstract class AbstractTcpPlugin extends AbstractPlugin {
             ConnectionConfig config = (ConnectionConfig) it.next();
             populateConnectionConfig(config, qualifiers);
             if (checkConnection(config)) {
-                if (qualifiers != null) saveConfig(qualifiers, config);
+                if (qualifiers != null)
+                    saveConfig(qualifiers, config);
                 return true;
             }
         }
@@ -278,7 +286,8 @@ public abstract class AbstractTcpPlugin extends AbstractPlugin {
     }
 
     final protected void saveKeyedInteger(Map qualifiers, String key, int value) {
-        if (qualifiers != null && !qualifiers.containsKey(key)) qualifiers.put(key, new Integer(value));
+        if (qualifiers != null && !qualifiers.containsKey(key))
+            qualifiers.put(key, new Integer(value));
     }
 
     /**

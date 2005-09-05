@@ -35,35 +35,31 @@
 //
 package org.opennms.protocols.snmp.asn1;
 
-
 /**
- * The AsnDecodingException is generated whenever an error
- * occurs in ASN.1 decoding of data types. The errors are
- * generally buffer underflow errors (insufficent data).
- * Other errors include malformed ASN.1 Types.
- *
- * @author	<a href="http://www.opennms.org">OpenNMS</a>
- * @author	<a href="mailto:weave@oculan.com">Brian Weaver</a>
- * @version	1.1.1.1
+ * The AsnDecodingException is generated whenever an error occurs in ASN.1
+ * decoding of data types. The errors are generally buffer underflow errors
+ * (insufficent data). Other errors include malformed ASN.1 Types.
+ * 
+ * @author <a href="http://www.opennms.org">OpenNMS </a>
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @version 1.1.1.1
  */
-public class AsnDecodingException extends Exception
-{
-	/**
-	 * The default exception constructor
-	 */
-	public AsnDecodingException( )
-	{
-		super();
-	}
+public class AsnDecodingException extends Exception {
+    /**
+     * The default exception constructor
+     */
+    public AsnDecodingException() {
+        super();
+    }
 
-	/**
-	 * The exception constructor
-	 *
-	 * @param why The reason the exception is being raised
-	 *
-	 */
-	public AsnDecodingException(String why)
-	{
-		super(why);
-	}
+    /**
+     * The exception constructor
+     * 
+     * @param why
+     *            The reason the exception is being raised
+     * 
+     */
+    public AsnDecodingException(String why) {
+        super(why);
+    }
 }

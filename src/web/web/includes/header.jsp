@@ -36,9 +36,10 @@
     java.util.Date now = new java.util.Date(); 
     String date = dateFormatter.format( now );
     String time = timeFormatter.format( now );
-    File file = new File("/opt/OpenNMS/etc/map.enable");
+    File file = new File("@install.etc.dir@/map.enable");
 
 %>
+
 <!-- Header -->
 <table width="100%" border="0" cellspacing="0" cellpadding="2" background="images/logo-background.gif">
   <tr> 
@@ -146,12 +147,7 @@
                   <a href="map/index.jsp">Map</a>&nbsp;|&nbsp;
             <%  } %>
 <% } %>
-                                      
-            <%  if( "inventory".equals( location ) ) { %>
-                  Inventory&nbsp;|&nbsp;
-            <%  } else { %>
-                  <a href="conf/index.jsp">Inventory</a>&nbsp;|&nbsp;
-            <%  } %>
+        
     
 <% if( request.isUserInRole( Authentication.ADMIN_ROLE )) { %>
             <%-- Admin --%>                               

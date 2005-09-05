@@ -34,34 +34,27 @@
 
 package org.opennms.netmgt.dhcpd.jmx;
 
-public class Dhcpd 
-	implements DhcpdMBean
-{
-	public void start()
-	{
-		org.opennms.netmgt.dhcpd.Dhcpd dhcpd = org.opennms.netmgt.dhcpd.Dhcpd.getInstance();
-		dhcpd.start();
-	} 
+public class Dhcpd implements DhcpdMBean {
+    public void start() {
+        org.opennms.netmgt.dhcpd.Dhcpd dhcpd = org.opennms.netmgt.dhcpd.Dhcpd.getInstance();
+        dhcpd.start();
+    }
 
-	public void stop()
-	{
-		org.opennms.netmgt.dhcpd.Dhcpd dhcpd = org.opennms.netmgt.dhcpd.Dhcpd.getInstance();
-		dhcpd.stop();
-	} 
+    public void stop() {
+        org.opennms.netmgt.dhcpd.Dhcpd dhcpd = org.opennms.netmgt.dhcpd.Dhcpd.getInstance();
+        dhcpd.stop();
+    }
 
-	public int getStatus()
-	{
-		org.opennms.netmgt.dhcpd.Dhcpd dhcpd = org.opennms.netmgt.dhcpd.Dhcpd.getInstance();
-		return dhcpd.getStatus();
-	} 
+    public int getStatus() {
+        org.opennms.netmgt.dhcpd.Dhcpd dhcpd = org.opennms.netmgt.dhcpd.Dhcpd.getInstance();
+        return dhcpd.getStatus();
+    }
 
-	public String status()
-	{
-		return org.opennms.core.fiber.Fiber.STATUS_NAMES[getStatus()];
-	}
+    public String status() {
+        return org.opennms.core.fiber.Fiber.STATUS_NAMES[getStatus()];
+    }
 
-	public String getStatusText()
-	{
-		return org.opennms.core.fiber.Fiber.STATUS_NAMES[getStatus()];
-	}
+    public String getStatusText() {
+        return org.opennms.core.fiber.Fiber.STATUS_NAMES[getStatus()];
+    }
 }

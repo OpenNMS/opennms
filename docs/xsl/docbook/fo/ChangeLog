@@ -1,3 +1,395 @@
+2004-12-02  Robert Stayton <bobstayton@users.sourceforge.net>
+
+	* table.xsl: Added missing col parameter to table.cell.properties template.
+
+2004-11-27  Robert Stayton <bobstayton@users.sourceforge.net>
+
+	* table.xsl: Inherited cell properties now passed to table.cell.properties template
+	so they can be overridden by a customization.
+
+2004-11-26  Robert Stayton <bobstayton@users.sourceforge.net>
+
+	* table.xsl: Added support for bgcolor PI on table row element.
+
+2004-11-24  Robert Stayton <bobstayton@users.sourceforge.net>
+
+	* titlepage.xsl: Fixed handling of abstract title.
+
+2004-11-23  Michael Smith <xmldoc@users.sourceforge.net>
+
+	* autotoc.xsl: RFE #1069397 Add new parameter simplesect.in.toc
+	
+		  - default value of 0 causes simplesect to be omitted from TOCs
+		  - to cause simplesect to be included in TOCs, you must set the
+		    value of simplesect.in.toc to 1
+	
+		note from Norm:
+	
+		  Simplesect elements aren't supposed to appear in the ToC at
+		  all. Ugh. The Definitive Guide doesn't really explain that
+		  very well.
+	
+		  The use case for simplesect is when, for example, every
+		  chapter in a book ends with "Exercises" or "For More
+		  Information" sections and you don't want those to appear in
+		  the ToC.
+
+	* param.ent, param.xweb: RFE #1069397 Add new parameter simplesect.in.toc
+	
+	  - default value of 0 causes simplesect to be omitted from TOCs
+	  - to cause simplesect to be included in TOCs, you must set the
+	    value of simplesect.in.toc to 1
+	
+	note from Norm:
+	
+	  Simplesect elements aren't supposed to appear in the ToC at
+	  all. Ugh. The Definitive Guide doesn't really explain that
+	  very well.
+	
+	  The use case for simplesect is when, for example, every
+	  chapter in a book ends with "Exercises" or "For More
+	  Information" sections and you don't want those to appear in
+	  the ToC.
+
+2004-11-21  Jirka Kosek <kosek@users.sourceforge.net>
+
+	* sections.xsl: It is not possible to use variable reference in template match. I change it back and preserved intended semantics. But there might be more elegant way to do it, I did't have time to investigate it, I just wanted to process my document :-(
+
+2004-11-20  Michael Smith <xmldoc@users.sourceforge.net>
+
+	* lists.xsl: bug #1007414 & patch #971730 - passivetex outputs "* 0.60 + 1em"
+	garbage in lists (reported by Alex Roitman and James William Pye)
+	
+	::PROBLEM
+	  Literal stuff "* 0.60 + 1em" showing up in listitem PDF output
+	  generated through passivetex
+	
+	::CAUSE
+	  Logic that outputs non-constant size expressions like "4em *
+	  0.60 + 1em" was added to stylesheets to improve look of list
+	  formatting. But passivetex can only handle constant sizes; so,
+	  instead of doing the math, it spits out the literal expressions
+	  in output.
+	
+	::FIX
+	  Added workaround - some conditional logic to fall back to
+	  constant values if passivetex.extensions param is non-zero.
+	
+	::AFFECTED AREAS
+	  Should only affect FO output when passivetex.extensions is non-zero
+
+2004-11-18  Robert Stayton <bobstayton@users.sourceforge.net>
+
+	* component.xsl: Moved the literal attributes from component.title to the
+	component.title.properties attribute-set so they can be customized.
+
+2004-11-17  Robert Stayton <bobstayton@users.sourceforge.net>
+
+	* pi.xsl: Fix bug in dbfo-need for XEP output.
+
+2004-11-16  Robert Stayton <bobstayton@users.sourceforge.net>
+
+	* lists.xsl: Added glossdef's first para to special handling in fo:list-item-body.
+
+2004-11-11  Robert Stayton <bobstayton@users.sourceforge.net>
+
+	* sections.xsl: Fixed /section template to work with rootid parameter.
+
+2004-11-04  Robert Stayton <bobstayton@users.sourceforge.net>
+
+	* formal.xsl: Fixed dbfo keep-together PI for tables.
+
+2004-10-30  Robert Stayton <bobstayton@users.sourceforge.net>
+
+	* admon.xsl: Change admon.graphic.width template to a mode so that different
+	admonitions can have different graphical widths.
+
+2004-10-29  Robert Stayton <bobstayton@users.sourceforge.net>
+
+	* table.xsl: Applied patch #991939 to enable dbfo table-width on entrytbl.
+
+2004-10-24  Jirka Kosek <kosek@users.sourceforge.net>
+
+	* inline.xsl: Fixed bug #977874. Remark/comment is rendered as a block/inline depending on its context.
+
+2004-10-23  Norman Walsh <nwalsh@users.sourceforge.net>
+
+	* inline.xsl: Patch #1027078: Support role=strong on emphasis
+
+2004-10-22  Norman Walsh <nwalsh@users.sourceforge.net>
+
+	* component.xsl: Bug #1050205; scale component titles if the component is a child of a section
+
+2004-10-20  Jirka Kosek <kosek@users.sourceforge.net>
+
+	* param.ent, param.xweb, verbatim.xsl: Added new parameter hyphenate.verbatim that can be used to turn on "intelligent" wrapping of verbatim environments.
+
+2004-10-17  Norman Walsh <nwalsh@users.sourceforge.net>
+
+	* biblio.xsl: Bug 992905: fixed ugly interaction between bibliography.collection and bibliography.number
+
+2004-10-04  Robert Stayton <bobstayton@users.sourceforge.net>
+
+	* docbook.xsl: Fixed missing titlepage and TOC in PDF bookmarks.
+
+2004-10-03  Jirka Kosek <kosek@users.sourceforge.net>
+
+	* footnote.xsl: Removed unintentionally inserted space after footnote mark
+
+2004-09-24  Robert Stayton <bobstayton@users.sourceforge.net>
+
+	* xref.xsl: Fixed bug in select expression.
+
+2004-09-20  Norman Walsh <nwalsh@users.sourceforge.net>
+
+	* inline.xsl: Support package element
+
+2004-09-19  Robert Stayton <bobstayton@users.sourceforge.net>
+
+	* block.xsl: In abstract, only call title template if it has a title child.
+
+	* block.xsl: Removed obsolete 'title' param call in abstract template.
+
+	* titlepage.xsl: Removed obsolete title parameter usage from abstract's template.
+
+	* titlepage.xsl: Removed obsolete 'title' parameter usage from legalnotice template call.
+
+	* xref.xsl: Added default params to olink.outline template.
+
+2004-09-02  Robert Stayton <bobstayton@users.sourceforge.net>
+
+	* biblio.xsl, component.xsl, division.xsl, glossary.xsl, index.xsl, pagesetup.xsl, refentry.xsl, sections.xsl, toc.xsl: 
+	Added templates to set initial-page-number and force-page-count
+	for page-sequences so they can be customized.
+
+	* xref.xsl: fixed bug in listitem xref-to.
+
+2004-09-01  Jirka Kosek <kosek@users.sourceforge.net>
+
+	* footnote.xsl, xref.xsl: Footnote numbers doesn't count <ulink url="..."/>
+
+2004-08-30  Robert Stayton <bobstayton@users.sourceforge.net>
+
+	* autoidx.xsl: Fixed bug where an indexterm seealso turned off the primary page number.
+
+2004-08-26  Jirka Kosek <kosek@users.sourceforge.net>
+
+	* autoidx-ng.xsl: Sort language is taken from document not from system environment
+
+2004-08-26  Robert Stayton <bobstayton@users.sourceforge.net>
+
+	* param.ent, param.xweb: Added component.label.includes.part.label parameter.
+
+2004-08-19  Jirka Kosek <kosek@users.sourceforge.net>
+
+	* footnote.xsl, xref.xsl: Numbering and formatting of normal and ulink footnotes has been unifyed.
+
+2004-08-17  Robert Stayton <bobstayton@users.sourceforge.net>
+
+	* component.xsl: article/appendix title now uses object.title.markup to get number labels.
+
+2004-08-16  Robert Stayton <bobstayton@users.sourceforge.net>
+
+	* graphics.xsl: add eps to the filenames extensions support by fop.
+
+2004-08-15  Robert Stayton <bobstayton@users.sourceforge.net>
+
+	* pagesetup.xsl, param.ent, param.xweb: Added footnote.sep.leader.properties attribute set.
+
+	* sections.xsl: Added support for @renderas in section and sect1 et al.
+
+2004-08-14  Robert Stayton <bobstayton@users.sourceforge.net>
+
+	* lists.xsl: Output ids on segmentedlist blocks so links can work.
+
+2004-08-13  Robert Stayton <bobstayton@users.sourceforge.net>
+
+	* footnote.xsl: RFE 782817, added support for @label in footnote.
+
+	* titlepage.xsl: Add id to legalnotice block so can be linked to.
+
+2004-08-12  Robert Stayton <bobstayton@users.sourceforge.net>
+
+	* biblio.xsl, component.xsl, division.xsl, glossary.xsl, index.xsl, pagesetup.xsl, refentry.xsl, sections.xsl, toc.xsl: 
+	Added master-reference parameter to page.number.format template
+	to permit customizations to use the master-reference instead of element.
+
+2004-08-11  Robert Stayton <bobstayton@users.sourceforge.net>
+
+	* biblio.xsl, titlepage.xsl: Added support for 4.3 corpcredit element.
+
+	* formal.xsl: Added support for a dbfo keep-together PI for formal objects
+	so one can be broken if very long and the default keep-together
+	is not appropriate.
+
+	* graphics.xsl: Removed PDF from fop image support, and added EPS to fop image support.
+
+	* graphics.xsl: Made file extension selection case insensitive, and updated
+	the list of graphics extensions.
+
+	* lists.xsl: Fixed bug 958433: simplelist table error in FOP.
+	Also added support for a PI to set the table width.
+
+2004-08-09  Robert Stayton <bobstayton@users.sourceforge.net>
+
+	* docbook.xsl, fo.xsl, param.ent, param.xweb, xref.xsl: 
+	Extended full olink support to FO output.
+
+2004-07-25  Norman Walsh <nwalsh@users.sourceforge.net>
+
+	* lists.xsl: Allow calloutlist to have block content before the first callout
+
+2004-07-22  Robert Stayton <bobstayton@users.sourceforge.net>
+
+	* graphics.xsl: Added missing id to mediaobject fo:block.
+
+2004-06-29  Robert Stayton <bobstayton@users.sourceforge.net>
+
+	* pi.xsl: Turn off dbfo-need when using FOP because it doesn't work with fop.
+
+2004-06-27  Robert Stayton <bobstayton@users.sourceforge.net>
+
+	* pi.xsl: Added dbfo-need processing instruction to provide soft page breaks.
+
+2004-06-26  Robert Stayton <bobstayton@users.sourceforge.net>
+
+	* graphics.xsl: @fileref now resolves xml:base attributes.
+
+	* graphics.xsl: Changed @fileref processing to support xml:base.
+
+2004-06-21  Robert Stayton <bobstayton@users.sourceforge.net>
+
+	* formal.xsl: Use informaltable.properties, informalfigure.properties,
+	informalexample.properties, informalequation.properties
+	to allow separate formatting if needed.
+
+	* param.ent, param.xweb: Fixed names of informal*.properties.
+
+	* param.ent, param.xweb: Added informal.figure.properties, informal.table.properties,
+	informal.equation.properties, and informal.example.properties
+	so each element can be formatted individually if needed.
+
+2004-06-20  Robert Stayton <bobstayton@users.sourceforge.net>
+
+	* param.ent, param.xweb: Added section.autolabel.max.depth parameter to control
+	the depth of section numbering.
+
+2004-06-14  Jirka Kosek <kosek@users.sourceforge.net>
+
+	* autoidx-ng.xsl: Updated i18n indexing method to support new type attribute and index.on.type parameter
+
+2004-06-14  Robert Stayton <bobstayton@users.sourceforge.net>
+
+	* autoidx.xsl: Process multiple seealso's when they are present in an indexterm.
+
+2004-06-13  Robert Stayton <bobstayton@users.sourceforge.net>
+
+	* autoidx.xsl: Added support for $index.on.type for new 'type' attribute
+	for indexterm and index.
+
+	* param.ent, param.xweb: Added index.on.type to support new 'type' attribute in
+	indexterm and index.
+
+2004-05-26  Robert Stayton <bobstayton@users.sourceforge.net>
+
+	* graphics.xsl: Added implementation of existing but unused
+	$default.image.width parameter for graphics.
+
+2004-05-25  Norman Walsh <nwalsh@users.sourceforge.net>
+
+	* inline.xsl: Support DocBook NG 'tag' element
+
+2004-05-22  Robert Stayton <bobstayton@users.sourceforge.net>
+
+	* table.xsl: Added placeholder templates table.cell.properties and
+	table.cell.block.properties to enable adding properties
+	to any fo:table-cell or the cell's fo:block.
+
+2004-05-20  Robert Stayton <bobstayton@users.sourceforge.net>
+
+	* pagesetup.xsl: Also fixed footer.column.widths for single-sided output.
+
+	* pagesetup.xsl: Fixed header.column.widths for single-sided output.
+
+2004-05-16  Jirka Kosek <kosek@users.sourceforge.net>
+
+	* autoidx-ng.xsl: Added support for index.on.role into internatinalized indexing
+
+2004-05-16  Robert Stayton <bobstayton@users.sourceforge.net>
+
+	* footnote.xsl: Added text-align="{$alignment}" to footnote body properties so it doesn't
+	inherit a center or right alignment from its paragraph.
+
+	* pagesetup.xsl: FOP now supports xsl-foonote-separator region to draw the horiz rule.
+
+2004-05-07  Robert Stayton <bobstayton@users.sourceforge.net>
+
+	* autotoc.xsl: Added 'index' to selected nodes for component.toc. Since it is
+	permitted by the DTD, it should be in the TOC.
+
+2004-04-29  Robert Stayton <bobstayton@users.sourceforge.net>
+
+	* biblio.xsl, component.xsl, division.xsl, glossary.xsl, index.xsl, refentry.xsl, sections.xsl, toc.xsl: 
+	Added force-page-count="end-on-even" to each page-sequence when
+	double-sided output so last page of document ends on even page.
+
+2004-04-21  Jirka Kosek <kosek@users.sourceforge.net>
+
+	* formal.xsl: Apply informal.object.properties to informal objects.
+
+	* table.xsl: Recent versions of XEP work much better without this workaround.
+
+2004-04-18  Robert Stayton <bobstayton@users.sourceforge.net>
+
+	* autoidx.xsl: Add support for generating an index containing only
+	those terms with a matching role attribute.
+
+	* param.ent, param.xweb: Added index.on.role parameter.
+
+2004-04-12  Robert Stayton <bobstayton@users.sourceforge.net>
+
+	* htmltbl.xsl: Now HTML tables have their id attribute so links from
+	the list of tables and xrefs to the tables work.
+
+2004-04-11  Robert Stayton <bobstayton@users.sourceforge.net>
+
+	* autotoc.xsl: Fixes bug #814589, so that refentry in an appendix is now
+	listed in the table of contents.
+
+	* pdf2index: Applied patch from contributor to fix number sorting.
+
+	* verbatim.xsl: Fixed bug #875943 where programlisting and literallayout were not
+	getting an id attribute in the fo output.
+
+2004-04-10  Robert Stayton <bobstayton@users.sourceforge.net>
+
+	* lists.xsl: Fixed bug #699224 where nested lists had too much space between last nested
+	item and next outer item.
+
+	* pagesetup.xsl: Fixed bug #800335 where single-sided output was getting mirrored margins.
+
+	* qandaset.xsl: Fixed bug #695030 where revhistory in qandaentry messed up list-block.
+
+2004-04-08  Jirka Kosek <kosek@users.sourceforge.net>
+
+	* xep.xsl: Only first author in the document gets into PDF metainformation. Not all authors which are 1st childs of their parents (e.g. author in biblioentry).
+
+2004-04-01  Jirka Kosek <kosek@users.sourceforge.net>
+
+	* autoidx.xsl, index.xsl: Fixed bugs # 925117 and #894564 related to XEP index support.
+
+2004-03-25  Jirka Kosek <kosek@users.sourceforge.net>
+
+	* component.xsl, param.ent, param.xweb: Added new attribute set component.title.properties for easy modifications of component's title formatting in FO output.
+
+	* graphics.xsl: Support default textdata encoding also on files included via imagedata and inlinegraphics.
+
+	* verbatim.xsl: wrap property for monospaced verbatim environments moved to attribute set so it can be overriden in customization layer.
+
+2004-03-24  Jirka Kosek <kosek@users.sourceforge.net>
+
+	* graphics.xsl, param.ent, param.xweb: Added Saxon support for encoding attribute on textdata. Added new parameter textdata.default.encoding which specifies encoding when encoding attribute on textdata is missing.
+
 2004-03-04  Norman Walsh <nwalsh@users.sourceforge.net>
 
 	* formal.xsl, table.xsl: Use table.table.properties on tables

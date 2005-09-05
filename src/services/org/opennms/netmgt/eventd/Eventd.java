@@ -67,426 +67,375 @@ import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.EventReceipt;
 
 /**
- * <p>Eventd listens for events from the discovery, capsd, trapd processes
- * and sends events to the Master Station when queried for.</p>
- *
- * <p>Eventd receives events sent in as XML, looks up the event.conf and
- * adds information to these events and stores them to the db. It also
- * reconverts them back to XML to be sent to other processes like 'actiond'</p>
- *
- * <p>Process like trapd, capsd etc. that are local to the distributed poller
- * send events to the eventd. Events can also be sent via TCP or UDP to eventd.</p>
- *
- * <p>Eventd listens for incoming events, loads info from the 'event.conf', 
- * adds events to the database and sends the events added to the database
- * to subscribed listeners. It also maintains a servicename to serviceid mapping
- * from the services table so as to prevent a database lookup for each incoming event</P>
- *
- * <P>The number of threads that processes events is configurable via the eventd
- * configuration xml</P>
- *
- * @author 	<A HREF="mailto:sowmya@opennms.org">Sowmya Nataraj</A>
- * @author	<A HREF="http://www.opennms.org">OpenNMS.org</A>
+ * <p>
+ * Eventd listens for events from the discovery, capsd, trapd processes and
+ * sends events to the Master Station when queried for.
+ * </p>
+ * 
+ * <p>
+ * Eventd receives events sent in as XML, looks up the event.conf and adds
+ * information to these events and stores them to the db. It also reconverts
+ * them back to XML to be sent to other processes like 'actiond'
+ * </p>
+ * 
+ * <p>
+ * Process like trapd, capsd etc. that are local to the distributed poller send
+ * events to the eventd. Events can also be sent via TCP or UDP to eventd.
+ * </p>
+ * 
+ * <p>
+ * Eventd listens for incoming events, loads info from the 'event.conf', adds
+ * events to the database and sends the events added to the database to
+ * subscribed listeners. It also maintains a servicename to serviceid mapping
+ * from the services table so as to prevent a database lookup for each incoming
+ * event
+ * </P>
+ * 
+ * <P>
+ * The number of threads that processes events is configurable via the eventd
+ * configuration xml
+ * </P>
+ * 
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Nataraj </A>
+ * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
  */
-public final class Eventd 
-	implements PausableFiber,
-	org.opennms.netmgt.eventd.adaptors.EventHandler
-{
-	/** 
-	 * The log4j category used to log debug messsages
-	 * and statements.
-	 */
-	public static final String LOG4J_CATEGORY = "OpenNMS.Eventd";
+public final class Eventd implements PausableFiber, org.opennms.netmgt.eventd.adaptors.EventHandler {
+    /**
+     * The log4j category used to log debug messsages and statements.
+     */
+    public static final String LOG4J_CATEGORY = "OpenNMS.Eventd";
 
-	/**
-	 * Singleton instance of this class
-	 */
-	private static final Eventd	m_singleton = new Eventd();
+    /**
+     * Singleton instance of this class
+     */
+    private static final Eventd m_singleton = new Eventd();
 
-	/**
-	 * The service table map
-	 */
-	private static Map		m_serviceTableMap;
+    /**
+     * The service table map
+     */
+    private static Map m_serviceTableMap;
 
-	/**
-	 * The handler for events coming in through TCP
-	 */
-	private EventReceiver		m_tcpReceiver;
+    /**
+     * The handler for events coming in through TCP
+     */
+    private EventReceiver m_tcpReceiver;
 
-	/**
-	 * The handler for events coming in through UDP
-	 */
-	private EventReceiver		m_udpReceiver;
+    /**
+     * The handler for events coming in through UDP
+     */
+    private EventReceiver m_udpReceiver;
 
-	/**
-	 * <P>Contains dotted-decimal representation of the IP address
-	 * where Eventd is running.  Used when eventd sends events out</P>
-	 */
-	private String 			m_address = null;
+    /**
+     * <P>
+     * Contains dotted-decimal representation of the IP address where Eventd is
+     * running. Used when eventd sends events out
+     * </P>
+     */
+    private String m_address = null;
 
-	/**
-	 * The current status of this fiber
-	 */
-	private int			m_status;
+    /**
+     * The current status of this fiber
+     */
+    private int m_status;
 
+    static {
+        // map of service names to service identifer
+        m_serviceTableMap = Collections.synchronizedMap(new HashMap());
+    }
 
-	static
-	{
-		// map of service names to service identifer
-		m_serviceTableMap = Collections.synchronizedMap(new HashMap());
-	}
+    /**
+     * Constuctor creates the localhost address(to be used eventually when
+     * eventd originates events during correlation) and the broadcast queue
+     */
+    public Eventd() {
+        try {
+            m_address = InetAddress.getLocalHost().getHostAddress();
+        } catch (UnknownHostException uhE) {
+            Category log = ThreadCategory.getInstance(getClass());
 
-	/**
-	 * Constuctor creates the localhost address(to be used eventually when
-	 * eventd originates events during correlation) and the broadcast queue
-	 */
-	public Eventd()
-	{
-		try
-		{
-			m_address = InetAddress.getLocalHost().getHostAddress();
-		}
-		catch(UnknownHostException uhE)
-		{
-			Category log = ThreadCategory.getInstance(getClass());
+            m_address = "localhost";
+            log.warn("Could not lookup the host name for the local host machine, address set to localhost", uhE);
+        }
 
-			m_address = "localhost";
-			log.warn("Could not lookup the host name for the local host machine, address set to localhost", uhE);
-		}
+        m_status = START_PENDING;
+    }
 
-		m_status = START_PENDING;
-	}
+    /**
+     * Stops all the eventd threads
+     */
+    public void stop() {
+        m_status = STOP_PENDING;
 
-	/**
-	 * Stops all the eventd threads
-	 */
-	public void stop()
-	{
-		m_status = STOP_PENDING;
+        Category log = ThreadCategory.getInstance();
+        if (log.isDebugEnabled())
+            log.debug("Beginning shutdown process");
 
-		Category log = ThreadCategory.getInstance();
-		if(log.isDebugEnabled())
-			log.debug("Beginning shutdown process");
+        //
+        // Stop listener threads
+        //
+        if (log.isDebugEnabled())
+            log.debug("calling shutdown on tcp/udp listener threads");
 
-		//
-		// Stop listener threads
-		//
-		if(log.isDebugEnabled())
-			log.debug("calling shutdown on tcp/udp listener threads");
+        m_tcpReceiver.stop();
+        m_udpReceiver.stop();
 
-		m_tcpReceiver.stop();
-		m_udpReceiver.stop();
+        if (log.isDebugEnabled())
+            log.debug("shutdown on tcp/udp listener threads returned");
 
-		if(log.isDebugEnabled())
-			log.debug("shutdown on tcp/udp listener threads returned");
+        m_status = STOPPED;
 
-		m_status = STOPPED;
+        if (log.isDebugEnabled())
+            log.debug("Eventd shutdown complete");
+    }
 
-		if(log.isDebugEnabled())
-			log.debug("Eventd shutdown complete");
-	}
-	
-	/**
-	 * Returns a name/id for this process
-	 */
-	public String getName()
-	{
-		return "OpenNMS.Eventd";
-	}
+    /**
+     * Returns a name/id for this process
+     */
+    public String getName() {
+        return "OpenNMS.Eventd";
+    }
 
-	/**
-	 * Returns the current status
-	 */
-	public synchronized int getStatus()
-	{
-		return m_status;
-	}
+    /**
+     * Returns the current status
+     */
+    public synchronized int getStatus() {
+        return m_status;
+    }
 
-	public void init()
-	{
-		ThreadCategory.setPrefix(LOG4J_CATEGORY);
-		Category log = ThreadCategory.getInstance();
+    public void init() {
+        ThreadCategory.setPrefix(LOG4J_CATEGORY);
+        Category log = ThreadCategory.getInstance();
 
-		// load the eventd configuration
-		EventdConfigFactory eFactory = null;
-		try
-		{
-			EventdConfigFactory.reload();
-			eFactory = EventdConfigFactory.getInstance();
-		}
-                catch(FileNotFoundException ex)
-                {
-                        log.error("Failed to load eventd configuration. File Not Found:", ex);
-                        throw new UndeclaredThrowableException(ex);
-                }
-		catch(MarshalException ex)
-		{
-			log.error("Failed to load eventd configuration", ex);
-			throw new UndeclaredThrowableException(ex);
-		}
-		catch(ValidationException ex)
-		{
-			log.error("Failed to load eventd configuration", ex);
-			throw new UndeclaredThrowableException(ex);
-		}
-		catch(IOException ex)
-		{
-			log.error("Failed to load eventd configuration", ex);
-			throw new UndeclaredThrowableException(ex);
-		}
+        // load the eventd configuration
+        EventdConfigFactory eFactory = null;
+        try {
+            EventdConfigFactory.reload();
+            eFactory = EventdConfigFactory.getInstance();
+        } catch (FileNotFoundException ex) {
+            log.error("Failed to load eventd configuration. File Not Found:", ex);
+            throw new UndeclaredThrowableException(ex);
+        } catch (MarshalException ex) {
+            log.error("Failed to load eventd configuration", ex);
+            throw new UndeclaredThrowableException(ex);
+        } catch (ValidationException ex) {
+            log.error("Failed to load eventd configuration", ex);
+            throw new UndeclaredThrowableException(ex);
+        } catch (IOException ex) {
+            log.error("Failed to load eventd configuration", ex);
+            throw new UndeclaredThrowableException(ex);
+        }
 
-		// Get a database connection and create the service table map
-		//
-		java.sql.Connection tempConn = null;
-		try
-		{
-			DatabaseConnectionFactory.init();
-			tempConn = DatabaseConnectionFactory.getInstance().getConnection();
+        // Get a database connection and create the service table map
+        //
+        java.sql.Connection tempConn = null;
+        try {
+            DatabaseConnectionFactory.init();
+            tempConn = DatabaseConnectionFactory.getInstance().getConnection();
 
-			// create the service table map
-			//
-			PreparedStatement stmt = tempConn.prepareStatement(EventdConstants.SQL_DB_SVC_TABLE_READ);
-			ResultSet rset = stmt.executeQuery();
-			while(rset.next())
-			{
-				int svcid      = rset.getInt(1);
-				String svcname = rset.getString(2);
-				
-				m_serviceTableMap.put(svcname, new Integer(svcid));
-			}
+            // create the service table map
+            //
+            PreparedStatement stmt = tempConn.prepareStatement(EventdConstants.SQL_DB_SVC_TABLE_READ);
+            ResultSet rset = stmt.executeQuery();
+            while (rset.next()) {
+                int svcid = rset.getInt(1);
+                String svcname = rset.getString(2);
 
-			rset.close();
-			stmt.close();
-		}
-		catch (IOException ie)
-		{
-			log.fatal("IOException getting database connection", ie);
-			throw new UndeclaredThrowableException(ie);
-		}
-		catch (MarshalException me)
-		{
-			log.fatal("Marshall Exception getting database connection", me);
-			throw new UndeclaredThrowableException(me);
-		}
-		catch (ValidationException ve)
-		{
-			log.fatal("Validation Exception getting database connection", ve);
-			throw new UndeclaredThrowableException(ve);
-		}
-		catch (SQLException sqlE)
-		{
-			throw new UndeclaredThrowableException(sqlE);
-		}
-		catch (ClassNotFoundException cnfE)
-		{
-			throw new UndeclaredThrowableException(cnfE);
-		}
-		finally
-		{
-			try
-			{
-				if(tempConn != null)
-					tempConn.close();
-			} 
-			catch(SQLException sqlE) 
-			{
-				log.warn("An error occured closing the database connection, ignoring", sqlE);
-			}
-		}
+                m_serviceTableMap.put(svcname, new Integer(svcid));
+            }
 
-		// load configuration(eventconf)
-		//
-		try
-		{
-			File configFile = ConfigFileConstants.getFile(ConfigFileConstants.EVENT_CONF_FILE_NAME);
-			EventConfigurationManager.loadConfiguration(configFile.getPath());
-		}
-		catch(MarshalException ex)
-		{
-			log.error("Failed to load eventd configuration", ex);
-			throw new UndeclaredThrowableException(ex);
-		}
-		catch(ValidationException ex)
-		{
-			log.error("Failed to load eventd configuration", ex);
-			throw new UndeclaredThrowableException(ex);
-		}
-		catch(IOException ex)
-		{
-			log.error("Failed to load events configuration", ex);
-			throw new UndeclaredThrowableException(ex);
-		}
+            rset.close();
+            stmt.close();
+        } catch (IOException ie) {
+            log.fatal("IOException getting database connection", ie);
+            throw new UndeclaredThrowableException(ie);
+        } catch (MarshalException me) {
+            log.fatal("Marshall Exception getting database connection", me);
+            throw new UndeclaredThrowableException(me);
+        } catch (ValidationException ve) {
+            log.fatal("Validation Exception getting database connection", ve);
+            throw new UndeclaredThrowableException(ve);
+        } catch (SQLException sqlE) {
+            throw new UndeclaredThrowableException(sqlE);
+        } catch (ClassNotFoundException cnfE) {
+            throw new UndeclaredThrowableException(cnfE);
+        } finally {
+            try {
+                if (tempConn != null)
+                    tempConn.close();
+            } catch (SQLException sqlE) {
+                log.warn("An error occured closing the database connection, ignoring", sqlE);
+            }
+        }
 
-		//
-		// Create all the threads
-		//
+        // load configuration(eventconf)
+        //
+        try {
+            File configFile = ConfigFileConstants.getFile(ConfigFileConstants.EVENT_CONF_FILE_NAME);
+            EventConfigurationManager.loadConfiguration(configFile.getPath());
+        } catch (MarshalException ex) {
+            log.error("Failed to load eventd configuration", ex);
+            throw new UndeclaredThrowableException(ex);
+        } catch (ValidationException ex) {
+            log.error("Failed to load eventd configuration", ex);
+            throw new UndeclaredThrowableException(ex);
+        } catch (IOException ex) {
+            log.error("Failed to load events configuration", ex);
+            throw new UndeclaredThrowableException(ex);
+        }
 
-		m_tcpReceiver = null;
-		m_udpReceiver = null;
-		try
-		{
-			String timeoutReq = eFactory.getSocketSoTimeoutRequired();
-			m_tcpReceiver = new TcpEventReceiver(eFactory.getTCPPort());
-			m_udpReceiver = new UdpEventReceiver(eFactory.getUDPPort());
+        //
+        // Create all the threads
+        //
 
-			m_tcpReceiver.addEventHandler(this);
-			m_udpReceiver.addEventHandler(this);
+        m_tcpReceiver = null;
+        m_udpReceiver = null;
+        try {
+            String timeoutReq = eFactory.getSocketSoTimeoutRequired();
+            m_tcpReceiver = new TcpEventReceiver(eFactory.getTCPPort());
+            m_udpReceiver = new UdpEventReceiver(eFactory.getUDPPort());
 
-		}
-		catch (IOException e)
-		{
-			log.error("Error starting up the TCP/UDP threads of eventd",e);
-			throw new UndeclaredThrowableException(e);
-		}
-		
+            m_tcpReceiver.addEventHandler(this);
+            m_udpReceiver.addEventHandler(this);
 
-		//
-		// Start all the threads
-		//
+        } catch (IOException e) {
+            log.error("Error starting up the TCP/UDP threads of eventd", e);
+            throw new UndeclaredThrowableException(e);
+        }
 
-		if(log.isDebugEnabled())
-			log.debug("EventIpcManagerFactory init");
+        //
+        // Start all the threads
+        //
 
-		EventIpcManagerFactory.init();
-	}
+        if (log.isDebugEnabled())
+            log.debug("EventIpcManagerFactory init");
 
-	/**
-	 * Read the eventd configuration xml, create and start all the subthreads
-	 */
-	public void start()
-	{
-		m_status = STARTING;
+        EventIpcManagerFactory.init();
+    }
 
-		ThreadCategory.setPrefix(LOG4J_CATEGORY);
-		Category log = ThreadCategory.getInstance();
+    /**
+     * Read the eventd configuration xml, create and start all the subthreads
+     */
+    public void start() {
+        m_status = STARTING;
 
-		m_tcpReceiver.start();
-		m_udpReceiver.start();
+        ThreadCategory.setPrefix(LOG4J_CATEGORY);
+        Category log = ThreadCategory.getInstance();
 
-		if(log.isDebugEnabled())
-		{
-			log.debug("Listener threads started");
-		}
+        m_tcpReceiver.start();
+        m_udpReceiver.start();
 
-		if(log.isDebugEnabled())
-		{
-			log.debug("Eventd running");
-		}
+        if (log.isDebugEnabled()) {
+            log.debug("Listener threads started");
+        }
 
-		m_status = RUNNING;
-	}
+        if (log.isDebugEnabled()) {
+            log.debug("Eventd running");
+        }
 
-	/**
-	 * Pauses all the threads
-	 */
-	public void pause()
-	{
-		if (m_status != RUNNING)
-			return;
+        m_status = RUNNING;
+    }
 
-		m_status = PAUSE_PENDING;
+    /**
+     * Pauses all the threads
+     */
+    public void pause() {
+        if (m_status != RUNNING)
+            return;
 
-		Category log = ThreadCategory.getInstance();
+        m_status = PAUSE_PENDING;
 
-		// pause the listening threads
-		//
-		//if(log.isDebugEnabled())
-		//	log.debug("Calling pause thread on tcp/udp listeners");
+        Category log = ThreadCategory.getInstance();
 
-		//m_tcpReceiver.pause();
-		//m_udpReceiver.pause();
+        // pause the listening threads
+        //
+        // if(log.isDebugEnabled())
+        // log.debug("Calling pause thread on tcp/udp listeners");
 
-		//if(log.isDebugEnabled())
-		//	log.debug("tcp/udp listeners paused");
+        // m_tcpReceiver.pause();
+        // m_udpReceiver.pause();
 
-	     	if(log.isDebugEnabled())
-			log.debug("Finished pausing all threads");
-		
-		m_status = PAUSED;
-	}
+        // if(log.isDebugEnabled())
+        // log.debug("tcp/udp listeners paused");
 
-	/**
-	 * Resumes all the threads
-	 */
-	public void resume()
-	{
-		if (m_status != PAUSED)
-			return;
+        if (log.isDebugEnabled())
+            log.debug("Finished pausing all threads");
 
-		m_status = RESUME_PENDING;
+        m_status = PAUSED;
+    }
 
-		Category log = ThreadCategory.getInstance();
+    /**
+     * Resumes all the threads
+     */
+    public void resume() {
+        if (m_status != PAUSED)
+            return;
 
-		//if(log.isDebugEnabled())
-		//	log.debug("Calling resume thread on tcp/udp listeners");
+        m_status = RESUME_PENDING;
 
-		//m_tcpReceiver.resume();
-		//m_udpReceiver.resume();
+        Category log = ThreadCategory.getInstance();
 
-		//if(log.isDebugEnabled())
-		//	log.debug("TCP/UDP Listener threads resumed");
+        // if(log.isDebugEnabled())
+        // log.debug("Calling resume thread on tcp/udp listeners");
 
-		//if(log.isDebugEnabled())
-		//	log.debug("Event handlers resumed");
+        // m_tcpReceiver.resume();
+        // m_udpReceiver.resume();
 
-		if(log.isDebugEnabled())
-			log.debug("Finished resuming ");
+        // if(log.isDebugEnabled())
+        // log.debug("TCP/UDP Listener threads resumed");
 
-		m_status = RUNNING;
-	}
+        // if(log.isDebugEnabled())
+        // log.debug("Event handlers resumed");
 
-	/**
-	 * Used to retrieve the local host address.  The address
-	 * of the machine on which Eventd is running.
-	 *
-	 * @return The local machines hostname.
-	 */
-	public String getLocalHostAddress()
-	{
-		return m_address;
-	}
+        if (log.isDebugEnabled())
+            log.debug("Finished resuming ");
 
-	/**
-	 * Return the service id for the name passed
-	 *
-	 * @param svcname	the service name whose service id is required
-	 *
-	 * @return the service id for the name passed, -1 if not found
-	 */
-	public static synchronized int getServiceID(String svcname)
-	{
-		Integer i = (Integer)m_serviceTableMap.get(svcname);
-		if ( i != null)
-		{
-			return i.intValue();
-		}
-		else
-		{
-			return -1;
-		}
-	}
-	
-	/**
-	 * Add the svcname/svcid mapping to the servicetable map
-	 */
-	public static synchronized void addServiceMapping(String svcname, int serviceid)
-	{
-		m_serviceTableMap.put(svcname, new Integer(serviceid));
-	}
+        m_status = RUNNING;
+    }
 
-	public static Eventd getInstance()
-	{
-		return m_singleton;
-	}
+    /**
+     * Used to retrieve the local host address. The address of the machine on
+     * which Eventd is running.
+     * 
+     * @return The local machines hostname.
+     */
+    public String getLocalHostAddress() {
+        return m_address;
+    }
 
-	public boolean processEvent(Event event)
-	{
-		EventIpcManagerFactory.getInstance().getManager().sendNow(event);
-		return true;
-	}
+    /**
+     * Return the service id for the name passed
+     * 
+     * @param svcname
+     *            the service name whose service id is required
+     * 
+     * @return the service id for the name passed, -1 if not found
+     */
+    public static synchronized int getServiceID(String svcname) {
+        Integer i = (Integer) m_serviceTableMap.get(svcname);
+        if (i != null) {
+            return i.intValue();
+        } else {
+            return -1;
+        }
+    }
 
-	public void receiptSent(EventReceipt event)
-	{
-		// do nothing
-	}
+    /**
+     * Add the svcname/svcid mapping to the servicetable map
+     */
+    public static synchronized void addServiceMapping(String svcname, int serviceid) {
+        m_serviceTableMap.put(svcname, new Integer(serviceid));
+    }
+
+    public static Eventd getInstance() {
+        return m_singleton;
+    }
+
+    public boolean processEvent(Event event) {
+        EventIpcManagerFactory.getInstance().getManager().sendNow(event);
+        return true;
+    }
+
+    public void receiptSent(EventReceipt event) {
+        // do nothing
+    }
 }

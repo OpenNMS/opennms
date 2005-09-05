@@ -60,7 +60,7 @@ import java.net.Socket;
  * @author <A HREF="mailto:jason@opennms.org">Jason </A>
  * @author <A HREF="http://www.opennsm.org">OpenNMS </A>
  * 
- *  
+ * 
  */
 public final class CitrixPlugin extends AbstractTcpPlugin {
 
@@ -98,8 +98,8 @@ public final class CitrixPlugin extends AbstractTcpPlugin {
     /**
      * @param socket
      * @param isAServer
-     * @return @throws
-     *         IOException
+     * @return
+     * @throws IOException
      */
     protected boolean checkProtocol(Socket socket, ConnectionConfig config) throws IOException {
         boolean isAServer = false;
@@ -119,4 +119,3 @@ public final class CitrixPlugin extends AbstractTcpPlugin {
         return isAServer;
     }
 }
-

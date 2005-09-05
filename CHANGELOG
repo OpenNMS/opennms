@@ -1,5 +1,136 @@
+1.2.2 to 1.2.3
+----------------------------------------------------------------------
+- A few small documentation fixes, including bug 1204 (thanks Chris)
+  and bug 1185.
+- Change the $echo variable in opennms.sh to $opennms_echo.  This should
+  take care of problems people were seeing on Mandrake.
+- Added data collections for TCP stats.
+- Modified isReady for PollableService as a work around for hung polling.
+- Added some SNMP Informant collections, reports and thresholds.
+- Added NORTEL Contivity events. Bug 1223. Thx Julian
+- Added some new Foundry event definitions. Bug 1234. Thx Ted
+- Added the --color attribute to jRobin graphs. Bug 1239. Thx Gerald
+- Tweaked the availability report format from suggestions from the
+  list.
+- Removed the possibility that 0.0.0.0 would show up as the IP
+  address for a service in the ifservices table. Thx Bill
+- Applied final version of poll outage editor. Bug 1116. Thx Craig
+
+1.2.1 to 1.2.2
+----------------------------------------------------------------------
+- Fixed an issue with the webUI and null issnmpprimary values.
+
+1.2.0 to 1.2.1
+----------------------------------------------------------------------
+- Fix source RPM builds ("srpm" build target).  Bug 1112.  Thanks, Tarus.
+- An Admin GUI is now available to modify snmp-config.xml. Bug 1167
+  Thx Gerald
+- Added the ability to remove "secondary" status from interfaces
+  via the SNMP Collection Admin UI, and added a direct link
+  from the node admin page to the particular node's configuration
+  page.
+- Applied the patch to help with 30 second outages. Bug 1180. 
+  Thx Tobey
+- Added package name to Interface page for admins. Bug 1044. Thx Bill
+- Extended the varbind matching in Notifications. Bug 1032. Thx Wiktor
+- Added mib2.packets report. Bug 1179. Thx Andy
+- Made some improvements to the node page. Bug 1018. Thx Bill
+- Added notification selection to top of page. Bug 1017. Thx Bill
+- Added nodeid to modify asset page. Bug 785
+- Added a new and improved DHCP poller. Bug 663. Thx Bill
+- Added a more descriptive error message when an invalid outage ID
+  is entered in the webUI. Bug 498
+- Added display of ifAlias in an event or notification.  It uses the nodeid
+  and the ipaddr to find it.  Use %ifalias% to see this in the event or 
+  notification.  Bug 1140
+- Fix the opennms init script so that it works properly with chkconfig.
+  Bug 1177.  Thanks Julian Gomez <JulianJose.Gomez@getronics.com>.
+- Fixed the Configure SNMP Data Collection per Interface UI to be
+  much faster and to handle null issnmpprimary values.
+- Initialize begin and end times in isTimeInOutage so days of week is
+  properly handled when passing a date that's not 'now.' Bug 1170.
+- Reset TreeMap in last month top 20 outage calculations
+  before accumulating outages for each service. Bug 945.
+- Move the column constraints in create.sql to be at the end of table
+  definitions, instead of immediately after the constrained column and
+  update the installer to allow this.  Unit tests included.  Bug 1159.
+- Have build.sh prefer the JRE at $JAVA_HOME/bin/java if JAVA_HOME is set.
+  Bug 1154.  Thanks Chris Abernethy <opennms@obado.net>.
+- Clean up the text of the <fail> tasks in build.xml so they are more clear.
+  Bug 1155.  Thanks Chris Abernethy <opennms@obado.net>.
+- Add Poll outage editor contributed by Craig Miskell.
+- Fixed an issue with Unresponsive services being considered up
+  even with unresponsiveness set to false. Bug 1151.
+- Added a focus to the add interface page. Bug 1148. Thx Craig.
+- Added a Linksys event to stop stupid connection traps.
+- Addressed issue with DHCP poller not closing connections. Bug 1101
+  Thx Bill.
+- Added XMPP Notifications (Jabber) to OpenNMS. Bug 1168. Thanks Chris
+- Added the ability to gather and display SNMP text properties in 
+  reports. Bug 1115. Thx Craig.
+- Changed snmpIfAlias column size to 256. Bug 1127
+- Modified MockPollConfig to share code with PollOutageConfigFactory. Bug 1122.
+- Write test for and fixed midnight outages in PollOutageConfigManager.
+  Bug 1122.
+- Fix GETBULK in SnmpIfCollector to handle cases where indices are not
+  contiguous.  Fixed ArrayIndexOutOfBound exceptions. Bug 1141
+- Add RESOLVED: to body of email and pager msgs.  Unit tests include. Bug 1134.
+  Thnx mhuot and bill ayres.
+- Fix the /usr/bin/opennms (or /usr/local/bin/opennms) script created by
+  opennms.spec.in so that it passes arguments to opennms.sh.  Bug 1136.
+  Thanks to Chris Abernethy <opennms@obado.net> for reporting this bug.
+- Fix some small documentation bugs.  Bugs 1137 and 1138 and an email to
+  opennms-discuss.  Thanks Chris Abernethy <opennms@obado.net> and
+  Austin Tuan <ystuan@gmail.com>.
+- Fixed notifications so that they use local time instead of GMT time.  Also
+  fixed the same problem in the webUI for data like the last service scan time
+  on the interface page.  Bug 1114.  Thanks to Bill Ayers <ayres@net.orst.edu>
+  and Craig Miskell <craig.miskell@agresearch.co.nz>.
+
+1.1.5 to 1.2.0
+----------------------------------------------------------------------
+- Added new SystemDef for Cisco PIX. Thx Ted. Bug 1047.
+- Removed deleted nodes from the list of nodes available for
+  choosing SNMP data collection. Thx Bill. Bug 1043
+- Added a dependency for a lib required by Java on FC3. Bug 1068
+- Added some corrections to the release notes. Thx Scott. Bug 965
+
 1.1.4 to 1.1.5
 ----------------------------------------------------------------------
+- Added support for ifAlias. Thx Mike and Bill. Bug 598.
+- Added Patrol Events
+- Relabeled hpux.cpu report from Swap to CPU. Thx Jason
+- Changed the label to "UnAck" when looking at acknowledged events.
+  Bug 927
+- Added a quick link to KSC reports from the main page.
+- Added a test to avoid a nullPointerException during data collection.
+  Thx David. Bug 841
+- Corrected an issue with notification/event matching. Bug 740.
+- Added a check for improperly formatted v2 traps.
+- Deprecated many of the "standard" events that are no longer needed.
+- Added a new UEI named MATCH-ANY-UEI. When used in a notification
+  rule, it will return "true" for any UEI. Useful for getting
+  notifications on all events to a single devices or group of
+  devices.
+- Added definitions for MGE UPS traps.
+- Added definitions for Network Appliance traps.
+- Removed the need for an ifIndex for SNMP data collection. Once the
+  service is discovered, a rescan may be necessary. Thx Bill.
+- Added a fix for notifications with an IP address of 0.0.0.0. 
+  Bug 1016. Thx Bill.
+- Added a null pointer fix for categories. Bug 1015. Thx Bill.
+- Added an event for Snort traps. Thx Deven
+- Added Netbotz events.
+- Added a bunch more event definitions. Thx Mike and Jonathan
+- Added new Compaq event definitions. Thx Mike
+- Added a number of new graphs for Net-SNMP collections.
+  Thx Robert and Ray.
+- Totally reworked and reordered datacollection-config.xml and
+  snmp-graph.properties to make them easier to manage.
+- Removed mib2-interfaces from SystemDefs to prevent double-polling.
+- Added the event UEI to the event detail.
+- Added a test for the Dell OpenManage service, and if available,
+  an OpenManage link will appear on the webUI node page.
 - Removed the cisco.pixcpu report as a duplicate of avgBsy5. Thx Alex
   Bug 925.
 - Made the Netware mask more generic. Thx Wes. Bug 880

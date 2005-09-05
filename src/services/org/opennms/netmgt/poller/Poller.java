@@ -38,928 +38,629 @@
 
 package org.opennms.netmgt.poller;
 
-import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.util.Collections;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
 
 import org.apache.log4j.Category;
 import org.apache.log4j.Priority;
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.fiber.PausableFiber;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.config.CapsdConfigFactory;
-import org.opennms.netmgt.config.DatabaseConnectionFactory;
-import org.opennms.netmgt.config.PollOutagesConfigFactory;
-import org.opennms.netmgt.config.PollerConfigFactory;
-import org.opennms.netmgt.config.poller.Monitor;
-import org.opennms.netmgt.config.poller.PollerConfiguration;
+import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.config.DbConnectionFactory;
+import org.opennms.netmgt.config.PollOutagesConfig;
+import org.opennms.netmgt.config.PollerConfig;
+import org.opennms.netmgt.config.poller.Package;
+import org.opennms.netmgt.eventd.EventIpcManager;
+import org.opennms.netmgt.poller.monitors.ServiceMonitor;
+import org.opennms.netmgt.poller.pollables.DbPollEvent;
+import org.opennms.netmgt.poller.pollables.PollEvent;
+import org.opennms.netmgt.poller.pollables.PollStatus;
+import org.opennms.netmgt.poller.pollables.PollableElement;
+import org.opennms.netmgt.poller.pollables.PollableNetwork;
+import org.opennms.netmgt.poller.pollables.PollableNode;
+import org.opennms.netmgt.poller.pollables.PollableService;
+import org.opennms.netmgt.poller.pollables.PollableServiceConfig;
+import org.opennms.netmgt.poller.pollables.PollableVisitor;
+import org.opennms.netmgt.poller.pollables.PollableVisitorAdaptor;
+import org.opennms.netmgt.scheduler.Schedule;
 import org.opennms.netmgt.scheduler.Scheduler;
+import org.opennms.netmgt.utils.Querier;
+import org.opennms.netmgt.utils.Updater;
+import org.opennms.netmgt.xml.event.Event;
+import org.opennms.netmgt.xml.event.Parm;
+import org.opennms.netmgt.xml.event.Parms;
+import org.opennms.netmgt.xml.event.Value;
 
-public final class Poller
-	implements PausableFiber
-{
-	private final static String LOG4J_CATEGORY	= "OpenNMS.Pollers";
+public final class Poller implements PausableFiber {
 
-	private final static String SQL_RETRIEVE_INTERFACES = "SELECT nodeid,ipaddr FROM ifServices, service WHERE ifServices.serviceid = service.serviceid AND service.servicename = ? AND ifServices.status='A'";
+    private final static Poller m_singleton = new Poller();
 
-	private final static String SQL_RETRIEVE_SERVICE_IDS = "SELECT serviceid,servicename  FROM service";
-	
-	private final static String SQL_RETRIEVE_SERVICE_STATUS = "SELECT ifregainedservice,iflostservice FROM outages WHERE nodeid = ? AND ipaddr = ? AND serviceid = ? AND iflostservice = (SELECT max(iflostservice) FROM outages WHERE nodeid = ? AND ipaddr = ? AND serviceid = ?)";
+    private int m_status = START_PENDING;
 
-	/**
-	 * Integer constant for passing in to PollableNode.getNodeLock() method
-	 * in order to indicate that the method should block until node lock is 
-	 * available.
-	 */
-	private static int WAIT_FOREVER = 0;
+    private boolean m_initialized = false;
 
-	private final static Poller 	m_singleton	= new Poller();
+    private Map m_svcNameToId = new HashMap();
 
-	/** 
-	 * Holds map of service names to service identifiers
-	 */
-	private final static Map 	m_serviceIds 	= new HashMap();
-	
-	/**
-	 * List of all PollableService objects.
-	 */
-	private List			m_pollableServices;
-	
-	private Scheduler		m_scheduler;
+    private Map m_svcIdToName = new HashMap();
 
-	private int			m_status;
+    private Scheduler m_scheduler = null;;
 
-	private BroadcastEventProcessor	m_receiver;
+    private PollerEventProcessor m_receiver;
 
-	/**
-	 * Map of 'PollableNode' objects keyed by nodeId
-	*/
-	private Map 			m_pollableNodes;
-		
-	/**  
-	 * Map of all available 'ServiceMonitor' objects indexed by 
-	 * service name
-		*/
-	private static Map 		m_svcMonitors;
-	
-	private Poller()
-	{
-		m_scheduler = null;
-		m_status    = START_PENDING;
-		m_svcMonitors = Collections.synchronizedMap(new TreeMap());
-		m_pollableServices = Collections.synchronizedList(new LinkedList());
-		m_pollableNodes = Collections.synchronizedMap(new HashMap());
-	}
+    private PollableNetwork m_network = new PollableNetwork(new DefaultPollContext(this));
 
-	public synchronized void init()
-	{
-		// Set the category prefix
-		ThreadCategory.setPrefix(LOG4J_CATEGORY);
-		
-		// get the category logger 
-		Category log = ThreadCategory.getInstance();
+    private QueryManager m_queryMgr = new DefaultQueryManager();
 
-		// Load up the configuration for the 
-		// poller(s). Use this to start everything
-		//
-		try
-		{
-			PollerConfigFactory.reload();
-		}
-		catch(MarshalException ex)
-		{
-			if(log.isEnabledFor(Priority.FATAL))
-				log.fatal("start: Failed to load poller configuration", ex);
-			throw new UndeclaredThrowableException(ex);
-		}
-		catch(ValidationException ex)
-		{
-			if(log.isEnabledFor(Priority.FATAL))
-				log.fatal("start: Failed to load poller configuration", ex);
-			throw new UndeclaredThrowableException(ex);
-		}
-		catch(IOException ex)
-		{
-			if(log.isEnabledFor(Priority.FATAL))
-				log.fatal("start: Failed to load poller configuration", ex);
-			throw new UndeclaredThrowableException(ex);
-		}
-		
-		// Load up the configuration for the poll outages. 
-		//
-		try
-		{
-			PollOutagesConfigFactory.reload();
-		}
-		catch(MarshalException ex)
-		{
-			if(log.isEnabledFor(Priority.FATAL))
-				log.fatal("start: Failed to load poll-outage configuration", ex);
-			throw new UndeclaredThrowableException(ex);
-		}
-		catch(ValidationException ex)
-		{
-			if(log.isEnabledFor(Priority.FATAL))
-				log.fatal("start: Failed to load poll-outage configuration", ex);
-			throw new UndeclaredThrowableException(ex);
-		}
-		catch(IOException ex)
-		{
-			if(log.isEnabledFor(Priority.FATAL))
-				log.fatal("start: Failed to load poll-outage configuration", ex);
-			throw new UndeclaredThrowableException(ex);
-		}
-		
-		
-		// Initialize the Capsd configuration factory 
-		// Necessary for testing if an interface is managed/unmanaged
-		//
-		try
-		{
-			CapsdConfigFactory.reload();
-		}
-		catch(MarshalException ex)
-		{
-			if(log.isEnabledFor(Priority.FATAL))
-				log.fatal("start: Failed to load Capsd configuration", ex);
-			throw new UndeclaredThrowableException(ex);
-		}
-		catch(ValidationException ex)
-		{
-			if(log.isEnabledFor(Priority.FATAL))
-				log.fatal("start: Failed to load Capsd configuration", ex);
-			throw new UndeclaredThrowableException(ex);
-		}
-		catch(IOException ex)
-		{
-			if(log.isEnabledFor(Priority.FATAL))
-				log.fatal("start: Failed to load Capsd configuration", ex);
-			throw new UndeclaredThrowableException(ex);
-		}
-		
-		if (log.isDebugEnabled())
-			log.debug("start: Testing database connection");
+    private PollerConfig m_pollerConfig;
 
-		// Make sure we can connect to the database and load
-		// the services table so we can easily convert from
-		// service name to service id
-		//
-		java.sql.Connection ctest = null;
-		ResultSet rs = null;
-		try
-		{
-			DatabaseConnectionFactory.init();
-			ctest = DatabaseConnectionFactory.getInstance().getConnection();
-			
-			PreparedStatement loadStmt= ctest.prepareStatement(SQL_RETRIEVE_SERVICE_IDS);
-			
-			// go ahead and load the service table 
-			//
-			rs = loadStmt.executeQuery();
-			while(rs.next())
-			{
-				Integer id = new Integer(rs.getInt(1));
-				String name = rs.getString(2);
+    private PollOutagesConfig m_pollOutagesConfig;
 
-				m_serviceIds.put(name, id);
-			}
-		}
-		catch (IOException iE)
-		{
-			if(log.isEnabledFor(Priority.FATAL))
-				log.fatal("start: IOException getting database connection", iE);
-			throw new UndeclaredThrowableException(iE);
-		}
-		catch (MarshalException mE)
-		{
-			if(log.isEnabledFor(Priority.FATAL))
-				log.fatal("start: Marshall Exception getting database connection", mE);
-			throw new UndeclaredThrowableException(mE);
-		}
-		catch (ValidationException vE)
-		{
-			if(log.isEnabledFor(Priority.FATAL))
-				log.fatal("start: Validation Exception getting database connection", vE);
-			throw new UndeclaredThrowableException(vE);
-		}
-		catch (SQLException sqlE)
-		{
-			if(log.isEnabledFor(Priority.FATAL))
-				log.fatal("start: Error accessing database.", sqlE);
-			throw new UndeclaredThrowableException(sqlE);
-		}
-		catch (ClassNotFoundException cnfE)
-		{
-			if(log.isEnabledFor(Priority.FATAL))
-				log.fatal("start: Error accessing database.", cnfE);
-			throw new UndeclaredThrowableException(cnfE);
-		}
-		finally
-		{
-			if (rs != null)
-			{
-				try
-				{
-					rs.close();
-				}
-				catch(Exception e)
-				{
-					if(log.isInfoEnabled())
-						log.info("start: an error occured closing the result set", e);
-				}
-			}
-			if(ctest != null)
-			{
-				try
-				{
-					ctest.close();
-				}
-				catch(Exception e)
-				{
-					if(log.isInfoEnabled())
-						log.info("start: an error occured closing the SQL connection", e);
-				}
-			}
-		}
+    private EventIpcManager m_eventMgr;
 
-		// serviceUnresponsive behavior enabled/disabled?
-		if (log.isDebugEnabled())
-		{
-			if (PollerConfigFactory.getInstance().serviceUnresponsiveEnabled())
-			{
-				log.debug("start: serviceUnresponsive behavior: enabled");
-			}
-			else
-			{
-				log.debug("start: serviceUnresponsive behavior: disabled");
-			}
-		}
-		
-		// Load up an instance of each monitor from the config
-		// so that the event processor will have them for
-		// new incomming events to create pollable service objects.
-		//
-		if (log.isDebugEnabled())
-			log.debug("start: Loading monitors");
-		PollerConfiguration pConfig = PollerConfigFactory.getInstance().getConfiguration();
-		Enumeration eiter = pConfig.enumerateMonitor();
-		while(eiter.hasMoreElements())
-		{
-			Monitor monitor = (Monitor)eiter.nextElement();
-			try
-			{
-				if(log.isDebugEnabled())
-				{
-					log.debug("start: Loading monitor "
-						  + monitor.getService()
-						  + ", classname "
-						  + monitor.getClassName());
-				}
-				Class mc = Class.forName(monitor.getClassName());
-				ServiceMonitor sm = (ServiceMonitor)mc.newInstance();
-				
-				// Attempt to initialize the service monitor
-				//
-				Map properties = null; // properties not currently used
-				sm.initialize(properties);
-				
-				m_svcMonitors.put(monitor.getService(), sm);
-			}
-			catch(Throwable t)
-			{
-				if(log.isEnabledFor(Priority.WARN))
-				{
-					log.warn("start: Failed to load monitor " + monitor.getClassName()
-						 + " for service " + monitor.getService(), t);
-				}
-			}
-		}
+    private DbConnectionFactory m_dbConnectionFactory;
 
-		// Create a scheduler
-		//
-		try
-		{
-			if(log.isDebugEnabled())
-				log.debug("start: Creating poller scheduler");
+    public static final String EVENT_SOURCE = "OpenNMS.Poller";
 
-			m_scheduler = new Scheduler("Poller", pConfig.getThreads());	
-		}
-		catch(RuntimeException e)
-		{
-			if(log.isEnabledFor(Priority.FATAL))
-				log.fatal("start: Failed to create poller scheduler", e);
-			throw e;
-		}
+    public synchronized void init() {
 
-		if(log.isDebugEnabled())
-			log.debug("start: Scheduling existing interfaces");
+        // get the category logger
+        Category log = ThreadCategory.getInstance(getClass());
+        
+        // set the DbConnectionFactory in the QueryManager
+        m_queryMgr.setDbConnectionFactory(m_dbConnectionFactory);
 
-		// Schedule the interfaces currently in the database
-		//
-		try
-		{
-			scheduleExistingInterfaces();
-		}
-		catch(SQLException sqlE)
-		{
-			if(log.isEnabledFor(Priority.ERROR))
-				log.error("start: Failed to schedule existing interfaces", sqlE);
-		}
-		
-		// Create an event receiver. The receiver will
-		// receive events, process them, creates network
-		// interfaces, and schedulers them.
-		//
-		try
-		{
-			if(log.isDebugEnabled())
-				log.debug("start: Creating event broadcast event processor");
+        // create service name to id maps
+        createServiceMaps();
 
-			m_receiver = new BroadcastEventProcessor(m_pollableServices);
-		}
-		catch(Throwable t)
-		{
-			if(log.isEnabledFor(Priority.FATAL))
-				log.fatal("start: Failed to initialized the broadcast event receiver", t);
+        // serviceUnresponsive behavior enabled/disabled?
+        log.debug("init: serviceUnresponsive behavior: " + (getPollerConfig().serviceUnresponsiveEnabled() ? "enabled" : "disabled"));
 
-			throw new UndeclaredThrowableException(t);
-		}
-	}
-	
-	public synchronized void start()
-	{
-		m_status = STARTING;
+        createScheduler();
+        
+        try {
+            log.debug("init: Closing outages for unmanaged services");
+            
+            closeOutagesForUnmanagedServices();
+        } catch (Exception e) {
+            log.error("init: Failed to close ouates for unmanage services", e);
+        }
+        
 
-		// Set the category prefix
-		ThreadCategory.setPrefix(LOG4J_CATEGORY);
-		
-		// get the category logger 
-		Category log = ThreadCategory.getInstance();
+        // Schedule the interfaces currently in the database
+        //
+        try {
+            log.debug("start: Scheduling existing interfaces");
 
-		if (log.isDebugEnabled())
-			log.debug("start: Initializing PollerConfigFactory");
+            scheduleExistingServices();
+        } catch (Exception sqlE) {
+            log.error("start: Failed to schedule existing interfaces", sqlE);
+        }
 
-		// start the scheduler
-		//
-		try
-		{
-			if(log.isDebugEnabled())
-				log.debug("start: Starting poller scheduler");
+        // Create an event receiver. The receiver will
+        // receive events, process them, creates network
+        // interfaces, and schedulers them.
+        //
+        try {
+            log.debug("start: Creating event broadcast event processor");
 
-			m_scheduler.start();
-		}
-		catch(RuntimeException e)
-		{
-			if(log.isEnabledFor(Priority.FATAL))
-				log.fatal("start: Failed to start scheduler", e);
-			throw e;
-		}
+            m_receiver = new PollerEventProcessor(this);
+        } catch (Throwable t) {
+            log.fatal("start: Failed to initialized the broadcast event receiver", t);
 
-		// Set the status of the service as running.
-		//
-		m_status = RUNNING;
+            throw new UndeclaredThrowableException(t);
+        }
 
-		if (log.isDebugEnabled())
-			log.debug("start: Poller running");
-	}
-	
-	public synchronized void stop()
-	{
-		m_status    = STOP_PENDING;
-		m_scheduler.stop();
-		m_receiver.close();
+        m_initialized = true;
 
-                Iterator iter = m_svcMonitors.values().iterator();
-                while (iter.hasNext())
-                {
-                        ServiceMonitor sm = (ServiceMonitor)iter.next();
-                        sm.release();
+    }
+
+    /**
+     * 
+     */
+    private void closeOutagesForUnmanagedServices() {
+        Timestamp closeTime = new Timestamp((new java.util.Date()).getTime());
+
+        final String DB_CLOSE_OUTAGES_FOR_UNMANAGED_SERVICES = "UPDATE outages set ifregainedservice = ? where outageid in (select outages.outageid from outages, ifservices where ((outages.nodeid = ifservices.nodeid) AND (outages.ipaddr = ifservices.ipaddr) AND (outages.serviceid = ifservices.serviceid) AND ((ifservices.status = 'D') OR (ifservices.status = 'F') OR (ifservices.status = 'U')) AND (outages.ifregainedservice IS NULL)))";
+        Updater svcUpdater = new Updater(m_dbConnectionFactory, DB_CLOSE_OUTAGES_FOR_UNMANAGED_SERVICES);
+        svcUpdater.execute(closeTime);
+        
+        final String DB_CLOSE_OUTAGES_FOR_UNMANAGED_INTERFACES = "UPDATE outages set ifregainedservice = ? where outageid in (select outages.outageid from outages, ipinterface where ((outages.nodeid = ipinterface.nodeid) AND (outages.ipaddr = ipinterface.ipaddr) AND ((ipinterface.ismanaged = 'F') OR (ipinterface.ismanaged = 'U')) AND (outages.ifregainedservice IS NULL)))";
+        Updater ifUpdater = new Updater(m_dbConnectionFactory, DB_CLOSE_OUTAGES_FOR_UNMANAGED_INTERFACES);
+        ifUpdater.execute(closeTime);
+        
+
+
+    }
+    
+    public void closeOutagesForNode(Date closeDate, int eventId, int nodeId) {
+        Timestamp closeTime = new Timestamp(closeDate.getTime());
+        final String DB_CLOSE_OUTAGES_FOR_NODE = "UPDATE outages set ifregainedservice = ?, svcRegainedEventId = ? where outages.nodeId = ? AND (outages.ifregainedservice IS NULL)";
+        Updater svcUpdater = new Updater(m_dbConnectionFactory, DB_CLOSE_OUTAGES_FOR_NODE);
+        svcUpdater.execute(closeTime, new Integer(eventId), new Integer(nodeId));
+    }
+    
+    public void closeOutagesForInterface(Date closeDate, int eventId, int nodeId, String ipAddr) {
+        Timestamp closeTime = new Timestamp(closeDate.getTime());
+        final String DB_CLOSE_OUTAGES_FOR_IFACE = "UPDATE outages set ifregainedservice = ?, svcRegainedEventId = ? where outages.nodeId = ? AND outages.ipAddr = ? AND (outages.ifregainedservice IS NULL)";
+        Updater svcUpdater = new Updater(m_dbConnectionFactory, DB_CLOSE_OUTAGES_FOR_IFACE);
+        svcUpdater.execute(closeTime, new Integer(eventId), new Integer(nodeId), ipAddr);
+    }
+    
+    public void closeOutagesForService(Date closeDate, int eventId, int nodeId, String ipAddr, String serviceName) {
+        Timestamp closeTime = new Timestamp(closeDate.getTime());
+        final String DB_CLOSE_OUTAGES_FOR_SERVICE = "UPDATE outages set ifregainedservice = ?, svcRegainedEventId = ? where outageid in (select outages.outageid from outages, service where outages.nodeid = ? AND outages.ipaddr = ? AND outages.serviceid = service.serviceId AND service.servicename = ? AND outages.ifregainedservice IS NULL)";
+        Updater svcUpdater = new Updater(m_dbConnectionFactory, DB_CLOSE_OUTAGES_FOR_SERVICE);
+        svcUpdater.execute(closeTime, new Integer(eventId), new Integer(nodeId), ipAddr, serviceName);
+    }
+
+    private void createScheduler() {
+
+        Category log = ThreadCategory.getInstance(getClass());
+        // Create a scheduler
+        //
+        try {
+            log.debug("init: Creating poller scheduler");
+
+            m_scheduler = new Scheduler("Poller", getPollerConfig().getThreads());
+        } catch (RuntimeException e) {
+            log.fatal("init: Failed to create poller scheduler", e);
+            throw e;
+        }
+    }
+
+    /**
+     * 
+     */
+    private void createServiceMaps() {
+        // load the serviceId to serviceName tables
+        getQueryMgr().buildServiceNameToIdMaps(m_svcNameToId, m_svcIdToName);
+    }
+
+    public synchronized void start() {
+        m_status = STARTING;
+
+        // get the category logger
+        Category log = ThreadCategory.getInstance(getClass());
+
+        // start the scheduler
+        //
+        try {
+            if (log.isDebugEnabled())
+                log.debug("start: Starting poller scheduler");
+
+            m_scheduler.start();
+        } catch (RuntimeException e) {
+            if (log.isEnabledFor(Priority.FATAL))
+                log.fatal("start: Failed to start scheduler", e);
+            throw e;
+        }
+
+        // Set the status of the service as running.
+        //
+        m_status = RUNNING;
+
+        if (log.isDebugEnabled())
+            log.debug("start: Poller running");
+    }
+
+    public synchronized void stop() {
+        m_status = STOP_PENDING;
+        m_scheduler.stop();
+        m_receiver.close();
+
+        Iterator iter = getServiceMonitors().values().iterator();
+        while (iter.hasNext()) {
+            ServiceMonitor sm = (ServiceMonitor) iter.next();
+            sm.release();
+        }
+        m_scheduler = null;
+        m_status = STOPPED;
+        Category log = ThreadCategory.getInstance(getClass());
+        if (log.isDebugEnabled())
+            log.debug("stop: Poller stopped");
+    }
+
+    public synchronized void pause() {
+        if (m_status != RUNNING)
+            return;
+
+        m_status = PAUSE_PENDING;
+        m_scheduler.pause();
+        m_status = PAUSED;
+
+        Category log = ThreadCategory.getInstance(getClass());
+        if (log.isDebugEnabled())
+            log.debug("pause: Poller paused");
+    }
+
+    public synchronized void resume() {
+        if (m_status != PAUSED)
+            return;
+
+        m_status = RESUME_PENDING;
+        m_scheduler.resume();
+        m_status = RUNNING;
+
+        Category log = ThreadCategory.getInstance(getClass());
+        if (log.isDebugEnabled())
+            log.debug("resume: Poller resumed");
+    }
+
+    public synchronized int getStatus() {
+        return m_status;
+    }
+
+    public String getName() {
+        return "OpenNMS.Poller";
+    }
+
+    public static Poller getInstance() {
+        return m_singleton;
+    }
+
+    public Scheduler getScheduler() {
+        return m_scheduler;
+    }
+
+    public ServiceMonitor getServiceMonitor(String svcName) {
+        return getPollerConfig().getServiceMonitor(svcName);
+    }
+
+    public PollableNetwork getNetwork() {
+        return m_network;
+    }
+
+    static private class InitCause extends PollableVisitorAdaptor {
+        private PollEvent m_cause;
+
+        public void setCause(PollEvent cause) {
+            m_cause = cause;
+        }
+        
+        public void visitElement(PollableElement element) {
+            if (!element.hasOpenOutage())
+                element.setCause(m_cause);
+        }
+    }
+
+    private void scheduleExistingServices() throws Exception {
+        Category log = ThreadCategory.getInstance(getClass());
+        
+        int count = scheduleMatchingServices(null);
+        
+        m_network.recalculateStatus();
+        m_network.resetStatusChanged();
+        
+        // Debug dump pollable network
+        //
+        if (log.isDebugEnabled()) {
+            log.debug("scheduleExistingServices: dumping content of pollable network: ");
+            m_network.dump();
+        }
+        
+
+    }
+    
+    public void scheduleService(final int nodeId, final String ipAddr, final String svcName) {
+        final Category log = ThreadCategory.getInstance(getClass());
+        try {
+            PollableNode node;
+            synchronized (m_network) {
+                node = m_network.getNode(nodeId);
+                if (node == null) {
+                    node = m_network.createNode(nodeId);
                 }
-		m_scheduler = null;
-		m_status    = STOPPED;
-		Category log = ThreadCategory.getInstance();
-		if (log.isDebugEnabled())
-			log.debug("stop: Poller stopped");
-	}
+            }
 
-	public synchronized void pause()
-	{
-		if(m_status != RUNNING)
-			return;
+            final PollableNode svcNode = node;
+            Runnable r = new Runnable() {
+                public void run() {
+                    int matchCount = scheduleMatchingServices("ifServices.nodeId = "+nodeId+" AND ifServices.ipAddr = '"+ipAddr+"' AND service.serviceName = '"+svcName+"'");
+                    if (matchCount > 0) {
+                        svcNode.recalculateStatus();
+                        svcNode.resetStatusChanged();
+                    } else {
+                        log.warn("Attempt to schedule service "+nodeId+"/"+ipAddr+"/"+svcName+" found no active service");
+                    }
+                }
+            };
+            node.withTreeLock(r);
 
-		m_status = PAUSE_PENDING;
-		m_scheduler.pause();
-		m_status = PAUSED;
+        } catch (Exception e) {
+            log.error("Unable to schedule service "+nodeId+"/"+ipAddr+"/"+svcName, e);
+        }
+    }
+    
+    private int scheduleMatchingServices(String criteria) {
+        final Category log = ThreadCategory.getInstance();
+        String sql = "SELECT ifServices.nodeId AS nodeId, ifServices.ipAddr AS ipAddr, " +
+                "ifServices.serviceId AS serviceId, service.serviceName AS serviceName, " +
+                "outages.svcLostEventId AS svcLostEventId, events.eventUei AS svcLostEventUei, " +
+                "outages.ifLostService AS ifLostService, outages.ifRegainedService AS ifRegainedService " +
+        "FROM ifServices " +
+        "JOIN service ON ifServices.serviceId = service.serviceId " +
+        "LEFT OUTER JOIN outages ON " +
+        "ifServices.nodeId = outages.nodeId AND " +
+        "ifServices.ipAddr = outages.ipAddr AND " +
+        "ifServices.serviceId = outages.serviceId AND " +
+        "ifRegainedService IS NULL " +
+        "LEFT OUTER JOIN events ON outages.svcLostEventId = events.eventid " +
+        "WHERE ifServices.status = 'A'" +
+        (criteria == null ? "" : " AND "+criteria);
+       
+        
+        
+        Querier querier = new Querier(m_dbConnectionFactory, sql) {
+            public void processRow(ResultSet rs) throws SQLException {
+                scheduleService(rs.getInt("nodeId"), rs.getString("ipAddr"), rs.getString("serviceName"), 
+                                (Number)rs.getObject("svcLostEventId"), rs.getTimestamp("ifLostService"), 
+                                rs.getString("svcLostEventUei"));
+            }
+        };
+        querier.execute();
+        
+        
+        return querier.getCount();
 
-		Category log = ThreadCategory.getInstance();
-		if (log.isDebugEnabled())
-			log.debug("pause: Poller paused");
-	}
+    }
 
-	public synchronized void resume()
-	{
-		if(m_status != PAUSED)
-			return;
+    private void scheduleService(int nodeId, String ipAddr, String serviceName, Number svcLostEventId, Date date, String svcLostUei) {
+        Category log = ThreadCategory.getInstance();
 
-		m_status = RESUME_PENDING;
-		m_scheduler.resume();
-		m_status = RUNNING;
+        Package pkg = findPackageForService(ipAddr, serviceName);
+        if (pkg == null) {
+            log.warn("Active service "+serviceName+" on "+ipAddr+" not configured for any package");
+            return;
+        }
+        
+        ServiceMonitor monitor = m_pollerConfig.getServiceMonitor(serviceName);
+        if (monitor == null) {
+            log.info("Could not find service monitor associated with service "+serviceName);
+            return;
+        }
+        
+        InetAddress addr;
+        try {
+            addr = InetAddress.getByName(ipAddr);
+        } catch (UnknownHostException e) {
+            log.error("Could not convert "+ipAddr+" as an InetAddress "+ipAddr);
+            return;
+        }
+        
+        PollableService svc = m_network.createService(nodeId, addr, serviceName);
+        PollableServiceConfig pollConfig = new PollableServiceConfig(svc, m_pollerConfig, m_pollOutagesConfig, pkg, m_scheduler);
+        svc.setPollConfig(pollConfig);
+        synchronized(svc) {
+            if (svc.getSchedule() == null) {
+                Schedule schedule = new Schedule(svc, pollConfig, m_scheduler);
+                svc.setSchedule(schedule);
+            }
+        }
+        
+        
+        if (svcLostEventId == null) 
+            svc.updateStatus(PollStatus.STATUS_UP);
+        else {
+            svc.updateStatus(PollStatus.STATUS_DOWN);
+            
+            InitCause causeSetter = new InitCause();
+            PollEvent cause = new DbPollEvent(svcLostEventId.intValue(), date);
+            causeSetter.setCause(cause);
+            
+            if (EventConstants.NODE_LOST_SERVICE_EVENT_UEI.equals(svcLostUei)) {
+                svc.visit(causeSetter);
+            } else if (EventConstants.INTERFACE_DOWN_EVENT_UEI.equals(svcLostUei)) {
+                svc.getInterface().visit(causeSetter);
+            } else if (EventConstants.NODE_DOWN_EVENT_UEI.equals(svcLostUei)) {
+                svc.getNode().visit(causeSetter);
+            }
+        }
+        
+        svc.schedule();
 
-		Category log = ThreadCategory.getInstance();
-		if (log.isDebugEnabled())
-			log.debug("resume: Poller resumed");
-	}
+    }
 
-	public synchronized int getStatus()
-	{
-		return m_status;
-	}
+    private Package findPackageForService(String ipAddr, String serviceName) {
+        Enumeration en = m_pollerConfig.enumeratePackage();
+        Package lastPkg = null;
+        while (en.hasMoreElements()) {
+            Package pkg = (Package)en.nextElement();
+            if (pollableServiceInPackage(ipAddr, serviceName, pkg))
+                lastPkg = pkg;
+        }
+        return lastPkg;
+        
+    }
+    private boolean pollableServiceInPackage(String ipAddr, String serviceName, Package pkg) {
+        if (!m_pollerConfig.serviceInPackageAndEnabled(serviceName, pkg)) return false;
+        
+        boolean inPkg = m_pollerConfig.interfaceInPackage(ipAddr, pkg);
+        if (inPkg) return true;
+        
+        if (m_initialized) {
+            m_pollerConfig.rebuildPackageIpListMap();
+            return m_pollerConfig.interfaceInPackage(ipAddr, pkg);
+        }
+        
+        return false;
+    }
+    
+    public boolean packageIncludesIfAndSvc(Package pkg, String ipAddr, String svcName) {
+        Category log = ThreadCategory.getInstance();
 
-	public String getName()
-	{
-		return "OpenNMS.Poller";
-	}
+        if (!getPollerConfig().serviceInPackageAndEnabled(svcName, pkg)) {
+            if (log.isDebugEnabled())
+                log.debug("packageIncludesIfAndSvc: address/service: " + ipAddr + "/" + svcName + " not scheduled, service is not enabled or does not exist in package: " + pkg.getName());
+            return false;
+        }
 
-	public static Poller getInstance()
-	{
-		return m_singleton;
-	}
-	
-	public Scheduler getScheduler()
-	{
-		return m_scheduler;
-	}
-	
-	public ServiceMonitor getServiceMonitor(String svcName)
-	{
-		return (ServiceMonitor)m_svcMonitors.get(svcName);
-	}
-	
-	public List getPollableServiceList()
-	{
-		return m_pollableServices;
-	}
-	
-	public PollableNode getNode(int nodeId)
-	{
-		Integer key = new Integer(nodeId);
-		boolean nodeInMap = m_pollableNodes.containsKey(key);
-		
-		if (nodeInMap)
-		{
-			return (PollableNode)m_pollableNodes.get(key);
+        // Is the interface in the package?
+        //
+        if (!getPollerConfig().interfaceInPackage(ipAddr, pkg)) {
+
+            if (m_initialized) {
+                getPollerConfig().rebuildPackageIpListMap();
+                if (!getPollerConfig().interfaceInPackage(ipAddr, pkg)) {
+                    if (log.isDebugEnabled())
+                        log.debug("packageIncludesIfAndSvc: interface " + ipAddr + " gained service " + svcName + ", but the interface was not in package: " + pkg.getName());
+                    return false;
+                }
+            } else {
+                if (log.isDebugEnabled())
+                    log.debug("packageIncludesIfAndSvc: address/service: " + ipAddr + "/" + svcName + " not scheduled, interface does not belong to package: " + pkg.getName());
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * @return
+     */
+    PollerConfig getPollerConfig() {
+        return m_pollerConfig;
+    }
+
+    /**
+     * @param instance
+     */
+    public void setPollerConfig(PollerConfig pollerConfig) {
+        m_pollerConfig = pollerConfig;
+    }
+
+    PollOutagesConfig getPollOutagesConfig() {
+        return m_pollOutagesConfig;
+    }
+
+    public void setPollOutagesConfig(PollOutagesConfig pollOutagesConfig) {
+        m_pollOutagesConfig = pollOutagesConfig;
+    }
+
+    public EventIpcManager getEventManager() {
+        return m_eventMgr;
+    }
+
+    public void setEventManager(EventIpcManager eventMgr) {
+        m_eventMgr = eventMgr;
+    }
+
+    /**
+     * @return Returns the m_svcMonitors.
+     */
+    private Map getServiceMonitors() {
+        return getPollerConfig().getServiceMonitors();
+    }
+
+    int getServiceIdByName(String svcName) {
+        Integer id = (Integer) m_svcNameToId.get(svcName);
+        return (id == null ? -1 : id.intValue());
+    }
+
+    String getServiceNameById(int svcId) {
+        return (String) m_svcIdToName.get(new Integer(svcId));
+    }
+
+    /**
+     * @param queryMgr
+     *            The queryMgr to set.
+     */
+    void setQueryMgr(QueryManager queryMgr) {
+        m_queryMgr = queryMgr;
+    }
+
+    /**
+     * @return Returns the queryMgr.
+     */
+    QueryManager getQueryMgr() {
+        return m_queryMgr;
+    }
+
+    /**
+     * @param instance
+     */
+    public void setDbConnectionFactory(DbConnectionFactory dbConnectionFactory) {
+        m_dbConnectionFactory = dbConnectionFactory;
+    }
+
+    public Event createEvent(String uei, int nodeId, InetAddress address, String svcName, java.util.Date date) {
+        Category log = ThreadCategory.getInstance(getClass());
+    
+        if (log.isDebugEnabled())
+            log.debug("createEvent: uei = " + uei + " nodeid = " + nodeId);
+    
+        // create the event to be sent
+        Event newEvent = new Event();
+        newEvent.setUei(uei);
+        newEvent.setSource(Poller.EVENT_SOURCE);
+        newEvent.setNodeid((long) nodeId);
+        if (address != null)
+            newEvent.setInterface(address.getHostAddress());
+    
+        if (svcName != null)
+            newEvent.setService(svcName);
+    
+        try {
+            newEvent.setHost(InetAddress.getLocalHost().getHostName());
+        } catch (UnknownHostException uhE) {
+            newEvent.setHost("unresolved.host");
+            log.warn("Failed to resolve local hostname", uhE);
+        }
+    
+        // Set event time
+        newEvent.setTime(EventConstants.formatToString(date));
+    
+        // For node level events (nodeUp/nodeDown) retrieve the
+        // node's nodeLabel value and add it as a parm
+        if (uei.equals(EventConstants.NODE_UP_EVENT_UEI) || uei.equals(EventConstants.NODE_DOWN_EVENT_UEI)) {
+            String nodeLabel = null;
+            try {
+                nodeLabel = getQueryMgr().getNodeLabel(nodeId);
+            } catch (SQLException sqlE) {
+                // Log a warning
+                log.warn("Failed to retrieve node label for nodeid " + nodeId, sqlE);
+            }
+    
+            if (nodeLabel == null) {
+                // This should never happen but if it does just
+                // use nodeId for the nodeLabel so that the
+                // event description has something to display.
+                nodeLabel = String.valueOf(nodeId);
+            }
+    
+            // Add appropriate parms
+            Parms eventParms = new Parms();
+    
+            // Add nodelabel parm
+            Parm eventParm = new Parm();
+            eventParm.setParmName(EventConstants.PARM_NODE_LABEL);
+            Value parmValue = new Value();
+            parmValue.setContent(nodeLabel);
+            eventParm.setValue(parmValue);
+            eventParms.addParm(eventParm);
+    
+            // Add Parms to the event
+            newEvent.setParms(eventParms);
+        }
+    
+        return newEvent;
+    }
+
+    public void refreshServicePackages() {
+	PollableVisitor visitor = new PollableVisitorAdaptor() {
+		public void visitService(PollableService service) {
+			service.refreshConfig();
 		}
-		else
-		{
-			return null;
-		}
-	}
-	
-	public void addNode(PollableNode pNode)
-	{
-		m_pollableNodes.put(new Integer(pNode.getNodeId()), pNode);
-		Category log = ThreadCategory.getInstance();
-		log.debug("Poller.addNode: adding pollable node with id: " + pNode.getNodeId() + " new size: " + m_pollableNodes.size());
-	}
-	
-	public void removeNode(int nodeId)
-	{
-		m_pollableNodes.remove(new Integer(nodeId));
-	}
-	
-	private void scheduleExistingInterfaces()
-		throws SQLException
-	{
-		// get the category logger 
-		//
-		Category log = ThreadCategory.getInstance();
-		
-		PollerConfigFactory pollerCfgFactory = PollerConfigFactory.getInstance();
+	};
+	m_network.visit(visitor);
+    }
 
-		// Database connection
-		java.sql.Connection dbConn = null;
-
-		PreparedStatement stmt = null;
-		try
-		{
-			dbConn = DatabaseConnectionFactory.getInstance().getConnection();
-
-			stmt = dbConn.prepareStatement(SQL_RETRIEVE_INTERFACES);
-		
-			// Loop through loaded monitors and schedule for each one present
-			//
-			Set svcNames = m_svcMonitors.keySet();
-			Iterator i = svcNames.iterator();
-			while (i.hasNext())
-			{
-				String svcName = (String)i.next();
-				ServiceMonitor monitor = (ServiceMonitor)m_svcMonitors.get(svcName);
-				
-				if(log.isDebugEnabled())
-					log.debug("scheduleExistingInterfaces: Scheduling existing interfaces for monitor: " + svcName);
-
-				// Retrieve list of interfaces from the database which 
-				// support the service polled by this monitor
-				//
-				try
-				{
-					if(log.isDebugEnabled())
-						log.debug("scheduleExistingInterfaces: dbConn = " + dbConn + ", svcName = " + svcName);
-
-					stmt.setString(1, svcName);    	// Service name
-					ResultSet rs = stmt.executeQuery();
-
-					// Iterate over result set and schedule each interface/service
-					// pair which passes the criteria
-					//
-					while (rs.next())
-					{
-						int nodeId = rs.getInt(1);
-						String ipAddress = rs.getString(2);
-
-						PollerConfiguration pConfig = pollerCfgFactory.getConfiguration();
-						Enumeration epkgs = pConfig.enumeratePackage();
-						
-						// Compare interface/service pair against each poller package
-						// For each match, create new PollableService object and 
-						// schedule it for polling.
-						//
-						while(epkgs.hasMoreElements())
-						{
-							org.opennms.netmgt.config.poller.Package pkg = (org.opennms.netmgt.config.poller.Package)epkgs.nextElement();
-
-							// Make certain the the current service is in the package
-							// and enabled!
-							//
-							if (!pollerCfgFactory.serviceInPackageAndEnabled(svcName, pkg))
-							{
-								if (log.isDebugEnabled())
-									log.debug("scheduleExistingInterfaces: address/service: " + 
-											ipAddress + "/" + svcName + 
-											" not scheduled, service is not enabled or does not exist in package: " + 
-											pkg.getName());
-								continue;
-							}
-
-							// Is the interface in the package?
-							//
-							if (!pollerCfgFactory.interfaceInPackage(ipAddress, pkg))
-							{
-								if (log.isDebugEnabled())
-									log.debug("scheduleExistingInterfaces: address/service: " + 
-											ipAddress + "/" + svcName + 
-											" not scheduled, interface does not belong to package: " + 
-											pkg.getName());
-								continue;
-							}
-							
-							//
-							// getServiceLostDate() method will return the date a service 
-							// was lost if the service was last known to be unavailable or
-							// will return null if the service was last known to be 
-							// available...based on outage information on the 'outages' table.
-							Date svcLostDate = getServiceLostDate(dbConn, nodeId, ipAddress, svcName);
-							int lastKnownStatus = -1;
-							if (svcLostDate != null)
-							{
-								lastKnownStatus = ServiceMonitor.SERVICE_UNAVAILABLE;
-								if (log.isDebugEnabled())
-									log.debug("scheduleExistingInterfaces: address= " + ipAddress + 
-											" svc= " + svcName + 
-											" lastKnownStatus= unavailable" + 
-											" svcLostDate= " + svcLostDate);
-							}
-							else
-							{
-								lastKnownStatus = ServiceMonitor.SERVICE_AVAILABLE;
-								if (log.isDebugEnabled())
-									log.debug("scheduleExistingInterfaces: address= " + ipAddress + 
-											" svc= " + svcName + " lastKnownStatus= available");
-							}
-							
-							// Criteria checks have all been padded...update Node Outage 
-							// Hierarchy and create new service for polling
-							//
-							PollableNode pNode = null;
-							PollableInterface pInterface = null;
-							PollableService pSvc = null;
-							boolean ownLock = false;
-							boolean nodeCreated = false;
-							boolean interfaceCreated = false;
-							
-							try
-							{
-								// Does the node already exist in the poller's pollable node map?
-								//
-								pNode = this.getNode(nodeId);
-								if (pNode == null)
-								{
-									// Nope...so we need to create it
-									pNode = new PollableNode(nodeId);
-									nodeCreated = true;
-								}
-								else
-								{
-									// Obtain node lock
-									//
-									ownLock = pNode.getNodeLock(WAIT_FOREVER);
-								}
-								
-								// Does the interface exist in the pollable node?
-								//
-								pInterface = pNode.getInterface(ipAddress);
-								if (pInterface == null)
-								{
-									// Create the PollableInterface
-									pInterface = new PollableInterface(pNode, InetAddress.getByName(ipAddress));
-									interfaceCreated = true;
-								}
-
-								// Create a new PollableService representing this node, interface,
-								// service and package pairing
-								//
-								pSvc = new PollableService(pInterface,
-												svcName,
-												pkg,
-												lastKnownStatus,
-												svcLostDate);
-
-								// Initialize the service monitor with the pollable service 
-								//
-								monitor.initialize(pSvc);
-				
-								// Add new service to the pollable services list.
-								//
-								m_pollableServices.add(pSvc);
-								
-								// Add the service to the PollableInterface object
-								//
-								// WARNING:  The PollableInterface stores services in a map
-								//           keyed by service name, therefore, only the LAST
-								//           PollableService aded to the interface for a 
-								//           particular service will be represented in the
-								//           map.  THIS IS BY DESIGN.
-								//
-								// NOTE:     addService() calls recalculateStatus() on the interface
-								log.debug("scheduleExistingInterfaces: adding pollable service to service list of interface: " + ipAddress);
-								pInterface.addService(pSvc);
-									
-								if (interfaceCreated)
-								{
-									// Add the interface to the node
-									//
-									// NOTE:  addInterface() calls recalculateStatus() on the node
-									if (log.isDebugEnabled())
-										log.debug("scheduleExistingInterfaces: adding new pollable interface "
-												 + ipAddress + " to pollable node " + nodeId);
-									pNode.addInterface(pInterface);
-								}
-								else
-								{
-									// Recalculate node status
-									//
-									pNode.recalculateStatus();
-								}
-								
-								if (nodeCreated)
-								{
-									// Add the node to the node map
-									//
-									if (log.isDebugEnabled())
-										log.debug("scheduleExistingInterfaces: adding new pollable node: " + 
-												nodeId);
-									this.addNode(pNode);
-								}
-								
-								// Schedule the service
-								//
-								m_scheduler.schedule(pSvc, pSvc.recalculateInterval());
-							} 
-							catch(UnknownHostException ex)
-							{
-								log.error("scheduleExistingInterfaces: Failed to schedule interface " + ipAddress + 
-												" for service monitor " + svcName + ", illegal address", ex);
-							}
-							catch(InterruptedException ie)
-							{
-								log.error("scheduleExistingInterfaces: Failed to schedule interface " + ipAddress + 
-												" for service monitor " + svcName + ", thread interrupted", ie);
-							}
-							catch(RuntimeException rE)
-							{
-								log.warn("scheduleExistingInterfaces: Unable to schedule " + 
-										ipAddress + " for service monitor " + svcName + 
-										", reason: " + rE.getMessage());
-							}
-							catch(Throwable t)
-							{
-								log.error("scheduleExistingInterfaces: Uncaught exception, failed to schedule interface "
-										+ ipAddress + " for service monitor " + svcName, t);
-							}
-							finally
-							{
-								if (ownLock)
-								{
-									try
-									{
-										pNode.releaseNodeLock();
-									}
-									catch (InterruptedException iE)
-									{
-										log.error("scheduleExistingInterfaces: Failed to release node lock on nodeid " + 
-												pNode.getNodeId() + ", thread interrupted.");
-									}
-								}
-								
-							}
-						} // end while more packages exist
-					} // end while more interfaces in result set
-
-					rs.close();
-				}
-				catch (SQLException sqle)
-				{
-					log.warn("scheduleExistingInterfaces: SQL exception while querying ipInterface table", sqle);
-					throw sqle;
-				}
-			} // end while more service monitors exist
-
-			// Debug dump pollable node map content
-			//
-			if (log.isDebugEnabled())
-			{
-				log.debug("scheduleExistingInterfaces: dumping content of pollable node map: " );
-				Iterator j = m_pollableNodes.values().iterator();
-				while (j.hasNext())
-				{
-					PollableNode pNode = (PollableNode)j.next();
-					log.debug("	nodeid=" + pNode.getNodeId() + " status=" + Pollable.statusType[pNode.getStatus()] );
-					Iterator k = pNode.getInterfaces().iterator();
-					while(k.hasNext())
-					{
-						PollableInterface pIf = (PollableInterface)k.next();
-						log.debug("		interface=" + pIf.getAddress().getHostAddress() + " status=" + Pollable.statusType[pIf.getStatus()]);
-
-						Iterator s = pIf.getServices().iterator();
-						while(s.hasNext())
-						{
-							PollableService pSvc = (PollableService)s.next();
-							log.debug("			service=" + pSvc.getServiceName() + " status=" + Pollable.statusType[pSvc.getStatus()]);
-						}
-					}
-				}
-			}
-		}
-		finally
-		{
-			if (stmt != null)
-			{
-				try
-				{
-					stmt.close();
-				}
-				catch (Exception e)
-				{
-					if(log.isDebugEnabled())
-						log.debug("scheduleExistingInterfaces: an exception occured closing the SQL statement", e);
-				}
-			}
-
-			if(dbConn != null)
-			{
-				try
-				{
-					dbConn.close();
-				}
-				catch(Throwable t)
-				{
-					if(log.isDebugEnabled())
-						log.debug("scheduleExistingInterfaces: an exception occured closing the SQL connection", t);
-				}
-			}
-		}
-	}
-	
-	/**
-	 * Determines the last known status of a ipaddr/service pair based on outage information
-	 * from the 'outages' table and if the last known status is UNAVAILABLE returns a 
-	 * date object representing when the service was lost.  If last known status is 
-	 * AVAILABLE null is returned.
-	 *
-	 * @param dbConn	Database connection
-	 * @param nodeId	Node identifier
-	 * @param ipAddr	IP address
-	 * @param svcName	service name
-	 * 
-	 * @return Date object representing the time the service was lost if the service is 
-	 * UNAVAILABLE or null if the service is AVAILABLE.
-	 */
-	public static final Date getServiceLostDate(Connection dbConn, int nodeId, String ipAddr, String svcName)
-	{
-		Category log = ThreadCategory.getInstance(Poller.class);
-		log.debug("getting last known status for address: " + ipAddr + " service: " + svcName);
-		
-		Date svcLostDate = null;
-		// Convert service name to service identifier
-		//
-		Integer temp = (Integer)m_serviceIds.get(svcName);
-		int serviceId = -1;
-		if (temp != null)
-			serviceId = temp.intValue();
-		else
-		{
-			log.warn("Failed to retrieve service identifier for interface " + ipAddr + " and service '" + svcName + "'");
-			return svcLostDate;
-		}
-		
-		ResultSet outagesResult = null;
-		Timestamp regainedDate = null;
-		Timestamp lostDate = null;
-			
-		try
-		{
-			//get the outage information for this service on this ip address
-			PreparedStatement outagesQuery = dbConn.prepareStatement(SQL_RETRIEVE_SERVICE_STATUS);
-			
-			//add the values for the main query
-			outagesQuery.setInt(1, nodeId);
-			outagesQuery.setString(2, ipAddr);
-			outagesQuery.setInt(3, serviceId);
-			
-			//add the values for the subquery
-			outagesQuery.setInt(4, nodeId);
-			outagesQuery.setString(5, ipAddr);
-			outagesQuery.setInt(6, serviceId);
-			
-			outagesResult = outagesQuery.executeQuery();
-			
-			//if there was a result then the service has been down before,
-			if (outagesResult.next())
-			{
-				regainedDate = outagesResult.getTimestamp(1);
-				lostDate  = outagesResult.getTimestamp(2);
-				log.debug("getServiceLastKnownStatus: lostDate: " + lostDate);
-			}
-			//the service has never been down, need to use current date for both
-			else
-			{
-				Date currentDate = new Date(System.currentTimeMillis());
-				regainedDate = new Timestamp(currentDate.getTime());
-				lostDate = lostDate = new Timestamp(currentDate.getTime());
-			}
-		} 
-		catch (SQLException sqlE)
-		{
-			log.error("SQL exception while retrieving last known service status for " + ipAddr + "/" + svcName);
-		}
-		finally
-		{
-			if (outagesResult != null)
-			{
-				try
-				{
-					outagesResult.close();
-				}
-				catch (SQLException slqE)
-				{
-					// Do nothing
-				}
-			}
-		}
-		
-		// Now use retrieved outage times to determine current status
-		// of the service.  If there was an error and we were unable
-		// to retrieve the outage times the default of AVAILABLE will
-		// be returned.
-		//
-		if (lostDate != null)
-		{
-			// If the service was never regained then simply 
-			// assign the svc lost date.
-			if (regainedDate == null)
-			{				
-				svcLostDate = new Date(lostDate.getTime());
-				log.debug("getServiceLastKnownStatus: svcLostDate: " + svcLostDate);
-			}
-		}
-		
-		return svcLostDate;
-	}
 }

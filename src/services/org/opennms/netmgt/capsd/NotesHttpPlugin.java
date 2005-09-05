@@ -36,16 +36,17 @@ package org.opennms.netmgt.capsd;
 
 /**
  * <P>
- * This class is designed to be used by the capabilities daemon to test for the existance of an
- * Lotus Notes HTTP server on remote interfaces. The class implements the Plugin interface that
- * allows it to be used along with other plugins by the daemon.
+ * This class is designed to be used by the capabilities daemon to test for the
+ * existance of an Lotus Notes HTTP server on remote interfaces. The class
+ * implements the Plugin interface that allows it to be used along with other
+ * plugins by the daemon.
  * </P>
  * 
  * @author <A HREF="mailto:jason@opennms.org">Jason </A>
  * @author <A HREF="http://www.opennsm.org">OpenNMS </A>
  * 
  * @version 1.1.1.1
- *  
+ * 
  */
 public class NotesHttpPlugin extends HttpPlugin {
 

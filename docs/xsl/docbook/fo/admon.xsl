@@ -4,7 +4,7 @@
                 version='1.0'>
 
 <!-- ********************************************************************
-     $Id: admon.xsl,v 1.7 2003/05/07 06:10:42 bobstayton Exp $
+     $Id: admon.xsl,v 1.8 2004/10/30 07:24:56 bobstayton Exp $
      ********************************************************************
 
      This file is part of the XSL DocBook Stylesheet distribution.
@@ -24,7 +24,7 @@
   </xsl:choose>
 </xsl:template>
 
-<xsl:template name="admon.graphic.width">
+<xsl:template match="*" mode="admon.graphic.width">
   <xsl:param name="node" select="."/>
   <xsl:text>36pt</xsl:text>
 </xsl:template>
@@ -64,7 +64,7 @@
     <xsl:call-template name="object.id"/>
   </xsl:variable>
   <xsl:variable name="graphic.width">
-     <xsl:call-template name="admon.graphic.width"/>
+     <xsl:apply-templates select="." mode="admon.graphic.width"/>
   </xsl:variable>
 
   <fo:block id="{$id}">

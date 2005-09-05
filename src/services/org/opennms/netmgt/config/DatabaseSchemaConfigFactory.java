@@ -106,12 +106,10 @@ public final class DatabaseSchemaConfigFactory {
      * @exception org.exolab.castor.xml.ValidationException
      *                Thrown if the contents do not match the required schema.
      */
-    private DatabaseSchemaConfigFactory(String configFile) throws IOException,
-            MarshalException, ValidationException {
+    private DatabaseSchemaConfigFactory(String configFile) throws IOException, MarshalException, ValidationException {
         InputStream cfgIn = new FileInputStream(configFile);
 
-        m_config = (DatabaseSchema) Unmarshaller.unmarshal(
-                DatabaseSchema.class, new InputStreamReader(cfgIn));
+        m_config = (DatabaseSchema) Unmarshaller.unmarshal(DatabaseSchema.class, new InputStreamReader(cfgIn));
         cfgIn.close();
 
         Table primary = getPrimaryTable();
@@ -127,9 +125,7 @@ public final class DatabaseSchemaConfigFactory {
             // for each table not already in the set
             while (e.hasMoreElements()) {
                 Table t = (Table) e.nextElement();
-                if (!joinableSet.contains(t.getName())
-                        && (t.getVisable() == null || t.getVisable()
-                                .equalsIgnoreCase("true"))) {
+                if (!joinableSet.contains(t.getName()) && (t.getVisable() == null || t.getVisable().equalsIgnoreCase("true"))) {
                     Enumeration ejoin = t.enumerateJoin();
                     // for each join does it join a table in the set?
                     while (ejoin.hasMoreElements()) {
@@ -160,16 +156,14 @@ public final class DatabaseSchemaConfigFactory {
      * @exception org.exolab.castor.xml.ValidationException
      *                Thrown if the contents do not match the required schema.
      */
-    public static synchronized void init() throws IOException,
-            MarshalException, ValidationException {
+    public static synchronized void init() throws IOException, MarshalException, ValidationException {
         if (m_loaded) {
             // init already called - return
             // to reload, reload() will need to be called
             return;
         }
 
-        File cfgFile = ConfigFileConstants
-                .getFile(ConfigFileConstants.DB_SCHEMA_FILE_NAME);
+        File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.DB_SCHEMA_FILE_NAME);
 
         m_singleton = new DatabaseSchemaConfigFactory(cfgFile.getPath());
 
@@ -186,8 +180,7 @@ public final class DatabaseSchemaConfigFactory {
      * @exception org.exolab.castor.xml.ValidationException
      *                Thrown if the contents do not match the required schema.
      */
-    public static synchronized void reload() throws IOException,
-            MarshalException, ValidationException {
+    public static synchronized void reload() throws IOException, MarshalException, ValidationException {
         m_singleton = null;
         m_loaded = false;
 
@@ -204,8 +197,7 @@ public final class DatabaseSchemaConfigFactory {
      */
     public static synchronized DatabaseSchemaConfigFactory getInstance() {
         if (!m_loaded)
-            throw new IllegalStateException(
-                    "The factory has not been initialized");
+            throw new IllegalStateException("The factory has not been initialized");
 
         return m_singleton;
     }
@@ -230,8 +222,7 @@ public final class DatabaseSchemaConfigFactory {
         Enumeration e = getDatabaseSchema().enumerateTable();
         while (e.hasMoreElements()) {
             Table t = (Table) e.nextElement();
-            if (t.getVisable() == null
-                    || t.getVisable().equalsIgnoreCase("true")) {
+            if (t.getVisable() == null || t.getVisable().equalsIgnoreCase("true")) {
                 if (t.getKey() != null && t.getKey().equals("primary")) {
                     return t;
                 }
@@ -251,8 +242,7 @@ public final class DatabaseSchemaConfigFactory {
         Enumeration e = getDatabaseSchema().enumerateTable();
         while (e.hasMoreElements()) {
             Table t = (Table) e.nextElement();
-            if (t.getVisable() == null
-                    || t.getVisable().equalsIgnoreCase("true")) {
+            if (t.getVisable() == null || t.getVisable().equalsIgnoreCase("true")) {
                 if (t.getName() != null && t.getName().equals(name)) {
                     return t;
                 }
@@ -269,7 +259,7 @@ public final class DatabaseSchemaConfigFactory {
      *            name of the column to search for
      * @return the table containing column 'colName', null if colName is not a
      *         valid column or if is not visible.
-     *  
+     * 
      */
     public Table findTableByVisableColumn(String colName) {
         Table table = null;
@@ -280,8 +270,7 @@ public final class DatabaseSchemaConfigFactory {
             Enumeration ecol = t.enumerateColumn();
             while (ecol.hasMoreElements()) {
                 Column col = (Column) ecol.nextElement();
-                if (col.getVisable() == null
-                        || col.getVisable().equalsIgnoreCase("true")) {
+                if (col.getVisable() == null || col.getVisable().equalsIgnoreCase("true")) {
                     if (col.getName().equalsIgnoreCase(colName)) {
                         table = t;
                         break OUTER;
@@ -320,8 +309,7 @@ public final class DatabaseSchemaConfigFactory {
             Join j = joins[i];
             if (i != 0)
                 buf.append(" AND ");
-            buf.append(i == 0 ? t.getName() : joins[i - 1].getTable()).append(
-                    '.').append(j.getColumn());
+            buf.append(i == 0 ? t.getName() : joins[i - 1].getTable()).append('.').append(j.getColumn());
             buf.append(" = ");
             buf.append(j.getTable()).append('.').append(j.getTableColumn());
         }
@@ -365,8 +353,7 @@ public final class DatabaseSchemaConfigFactory {
 
         Join j = (Join) m_primaryJoins.get(t.getName());
         List joins = new LinkedList();
-        while (j != null && j.getTable() != null
-                && !j.getTable().equals(primary.getName())) {
+        while (j != null && j.getTable() != null && !j.getTable().equals(primary.getName())) {
             joins.add(j);
             j = (Join) m_primaryJoins.get(j.getTable());
         }

@@ -57,665 +57,587 @@ import org.opennms.netmgt.config.CapsdConfigFactory;
 import org.opennms.netmgt.config.DatabaseConnectionFactory;
 
 /**
- * This class implements a simple scheduler to ensure
- * that Capsd rescans occurs at the expected intervals. 
- *
- * @author <a href="mailto:mike@opennms.org">Mike Davidson</a>
- * @author <a href="http://www.opennms.org/">OpenNMS</a>
- *
+ * This class implements a simple scheduler to ensure that Capsd rescans occurs
+ * at the expected intervals.
+ * 
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * 
  */
-final class Scheduler
-	implements Runnable, PausableFiber
-{
-	/**
-	 * The prefix for the fiber name.
-	 */
-	private static final String	FIBER_NAME 		= "Capsd Scheduler";
+final class Scheduler implements Runnable, PausableFiber {
+    /**
+     * The prefix for the fiber name.
+     */
+    private static final String FIBER_NAME = "Capsd Scheduler";
 
-	/** 
-	 * SQL used to retrieve list of nodes from the node table.
-	 */
-	private static final String 	SQL_RETRIEVE_NODES 	= "SELECT nodeid FROM node WHERE nodetype != 'D'";
-	
-	/**
-	 * SQL used to retrieve the last poll time for all the 
-	 * managed interfaces belonging to a particular node.
-	 */
-	private static final String	SQL_GET_LAST_POLL_TIME	= "SELECT iplastcapsdpoll FROM ipinterface WHERE nodeid=? AND (ismanaged = 'M' OR ismanaged = 'N')";
+    /**
+     * SQL used to retrieve list of nodes from the node table.
+     */
+    private static final String SQL_RETRIEVE_NODES = "SELECT nodeid FROM node WHERE nodetype != 'D'";
 
-	/**
-	 * Special identifier used in place of a valid node id in order
-	 * to schedule an SMB reparenting using the rescan scheduler.
-	 */
-	private static final int SMB_REPARENTING_IDENTIFIER = -1;
-	
-	/**
-	 * The name of this fiber.
-	 */
-	private String	m_name;
+    /**
+     * SQL used to retrieve the last poll time for all the managed interfaces
+     * belonging to a particular node.
+     */
+    private static final String SQL_GET_LAST_POLL_TIME = "SELECT iplastcapsdpoll FROM ipinterface WHERE nodeid=? AND (ismanaged = 'M' OR ismanaged = 'N')";
 
-	/**
-	 * The status for this fiber.
-	 */
-	private int	m_status;
+    /**
+     * Special identifier used in place of a valid node id in order to schedule
+     * an SMB reparenting using the rescan scheduler.
+     */
+    private static final int SMB_REPARENTING_IDENTIFIER = -1;
 
-	/**
-	 * The worker thread that executes this instance.
-	 */
-	private Thread	m_worker;
+    /**
+     * The name of this fiber.
+     */
+    private String m_name;
 
-	/**
-	 * List of NodeInfo objects representing each of the nodes
-	 * in the database capability of being scheduled.
-	 */
-	private List 	m_knownNodes;
+    /**
+     * The status for this fiber.
+     */
+    private int m_status;
 
-	/**
-	 * The configured interval (in milliseconds) between rescans
-	 */
-	private long	m_interval;
-	
-	/**
-	 * The configured initial sleep (in milliseconds) prior to scheduling rescans
-	 */
-	private long	m_initialSleep;
-	
-	/**
-	 * The rescan queue where new RescanProcessor objects are
-	 * enqueued for execution.
-	 */
-	private FifoQueue m_rescanQ;
-	
-	/**
-	 * This class encapsulates the information about a node necessary
-	 * to schedule the node for rescans.
-	 */
-	final class NodeInfo
-	{
-		int 		m_nodeId;
-		Timestamp 	m_lastScanned;
-		long 		m_interval;
-		boolean 	m_scheduled;
-		
-		NodeInfo(int nodeId, Timestamp lastScanned, long interval)
-		{
-			m_nodeId = nodeId;
-			m_lastScanned = lastScanned;
-			m_interval = interval;
-			m_scheduled = false;
-		}
-		
-		NodeInfo(int nodeId, Date lastScanned, long interval)
-		{
-			m_nodeId = nodeId;
-			m_lastScanned = new Timestamp(lastScanned.getTime());
-			m_interval = interval;
-			m_scheduled = false;
-		}
-		
-		boolean isScheduled()
-		{
-			return m_scheduled;
-		}
-		
-		int getNodeId()
-		{
-			return m_nodeId;
-		}
-		
-		Timestamp getLastScanned()
-		{
-			return m_lastScanned;
-		}
-		
-		long getRescanInterval()
-		{
-			return m_interval;
-		}
-		
-		void setScheduled(boolean scheduled)
-		{
-			m_scheduled = scheduled;
-		}
-		
-		void setLastScanned(Date lastScanned)
-		{
-			m_lastScanned = new Timestamp(lastScanned.getTime());
-		}
-		
-		void setLastScanned(Timestamp lastScanned)
-		{
-			m_lastScanned = lastScanned;
-		}
-		
-		boolean timeForRescan()
-		{ 
-			if (System.currentTimeMillis() >= (m_lastScanned.getTime() + m_interval))
-				return true;
-			else
-				return false;
-		}
-	}
-	
-	/**
-	 * Constructs a new instance of the scheduler. 
-	 *
-	 */
-	Scheduler(FifoQueue rescanQ)
-		throws SQLException
-	{
-		m_rescanQ = rescanQ;
-		
-		m_name = FIBER_NAME;
-		m_status = START_PENDING;
-		m_worker = null;
-		
-		m_knownNodes = Collections.synchronizedList(new LinkedList());
-		Category log = ThreadCategory.getInstance(getClass());
-		
-		// Get rescan interval from configuration factory
-		//
-		m_interval = CapsdConfigFactory.getInstance().getRescanFrequency();
-		if (log.isDebugEnabled())
-			log.debug("Scheduler: rescan interval(millis): " + m_interval);
-		
-		// Get initial rescan sleep time from configuration factory
-		//
-		m_initialSleep = CapsdConfigFactory.getInstance().getInitialSleepTime();
-		if (log.isDebugEnabled())
-			log.debug("Scheduler: initial rescan sleep time(millis): " + m_initialSleep);
-		
-		// Schedule SMB Reparenting using special nodeId (-1)
-		//
-		// Schedule this node in such a way that it will be
-		// scheduled immediately and SMB reparenting will take place
-		Date lastSmbReparenting = new Date();
-		lastSmbReparenting.setTime(System.currentTimeMillis() - m_interval);
-		
-		if (log.isDebugEnabled())
-			log.debug("Scheduler: scheduling SMB reparenting...");
-		NodeInfo smbInfo = new NodeInfo(SMB_REPARENTING_IDENTIFIER, lastSmbReparenting, m_interval);
-		m_knownNodes.add(smbInfo);
-		
-		// Load actual known nodes from the database
-		//
-		loadKnownNodes();
-		if (log.isDebugEnabled())
-			log.debug("Scheduler: done loading known nodes, node count: " + m_knownNodes.size());
-	}
+    /**
+     * The worker thread that executes this instance.
+     */
+    private Thread m_worker;
 
-	/**
-	 * Builds a list of NodeInfo objects representing each of the
-	 * nodes in the database capable of being scheduled for rescan.
-	 *
-	 * @throws SQLException if there is a problem accessing the database.
-	 */
-	private void loadKnownNodes()
-		throws SQLException
-	{
-		Category log = ThreadCategory.getInstance(getClass());
-		
-		Connection db = null;
-		
-		PreparedStatement nodeStmt = null;
-		PreparedStatement ifStmt = null;
-		try
-		{
-			db = DatabaseConnectionFactory.getInstance().getConnection();
-			// Prepare SQL statements in advance
-			//
-			nodeStmt = db.prepareStatement(SQL_RETRIEVE_NODES);
-			ifStmt = db.prepareStatement(SQL_GET_LAST_POLL_TIME);
-		
-			// Retrieve non-deleted nodes from the node table in the database
-			//
-			ResultSet rs = nodeStmt.executeQuery();
-		
-			while (rs.next())
-			{
-				// Retrieve an interface from the ipInterface table in
-				// the database for its last polled/scanned time
-				
-				int nodeId = rs.getInt(1);
-				ifStmt.setInt(1, nodeId);  // set nodeid
-				if (log.isDebugEnabled())
-					log.debug("loadKnownNodes: retrieved nodeid " + nodeId + ", now getting last poll time.");
-			
-				ResultSet rset = ifStmt.executeQuery();
-				if (rset.next())
-				{
-					Timestamp lastPolled = rset.getTimestamp(1);
-					if(lastPolled != null && rset.wasNull() == false)
-					{
-						if (log.isDebugEnabled())
-							log.debug("loadKnownNodes: adding node " + nodeId + " with last poll time " + lastPolled);
-						NodeInfo nodeInfo = new NodeInfo(nodeId, lastPolled, m_interval);
-						m_knownNodes.add(nodeInfo);
-					}
-				}
-				else
-				{
-					if (log.isDebugEnabled())
-						log.debug("Node w/ nodeid " + nodeId + " has no managed interfaces from which to retrieve a last poll time...it will not be scheduled.");
-				}
-			}
-		}
-		finally
-		{
-			try
-			{
-				if (nodeStmt != null)
-					nodeStmt.close();
-			}
-			catch(Exception e) { } 
+    /**
+     * List of NodeInfo objects representing each of the nodes in the database
+     * capability of being scheduled.
+     */
+    private List m_knownNodes;
 
-			try
-			{
-				if (ifStmt != null)
-					ifStmt.close();
-			}
-			catch(Exception e) { }
+    /**
+     * The configured interval (in milliseconds) between rescans
+     */
+    private long m_interval;
 
-			try
-			{
-				if(db != null)
-					db.close();
-			}
-			catch(Exception e) { }
-		}
-			
-	}
-	
-	/** 
-	 * Creates a NodeInfo object representing the specified node and
-	 * adds it to the known node list for scheduling.
-	 * 
-	 * @param nodeId 	Id of node to be scheduled
-	 *
-	 * @throws SQLException if there is any problem accessing the database
-	 */
-	void scheduleNode(int nodeId)
-		throws SQLException
-	{
-		Category log = ThreadCategory.getInstance(getClass());
+    /**
+     * The configured initial sleep (in milliseconds) prior to scheduling
+     * rescans
+     */
+    private long m_initialSleep;
 
-		// Retrieve last poll time for the node from the ipInterface
-		// table.
-		Connection db = null;
-		try
-		{
-			db = DatabaseConnectionFactory.getInstance().getConnection();
-			PreparedStatement ifStmt = db.prepareStatement(SQL_GET_LAST_POLL_TIME);
-			ifStmt.setInt(1, nodeId);
-			ResultSet rset = ifStmt.executeQuery();
-			if (rset.next())
-			{
-				Timestamp lastPolled = rset.getTimestamp(1);
-				if(lastPolled != null && rset.wasNull() == false)
-				{
-					if (log.isDebugEnabled())
-						log.debug("scheduleNode: adding node " + nodeId + " with last poll time " + lastPolled);
-					m_knownNodes.add(new NodeInfo(nodeId, lastPolled, m_interval));
-				}
-			}
-			else
-				log.warn("scheduleNode: Failed to retrieve last polled time from database for nodeid " + nodeId);
-		}
-		finally
-		{
-			if(db != null)
-			{
-				try { db.close(); }
-				catch(Exception e) { }
-			}
-		}
-	}
-	
-	/** 
-	 * Removes the specified node from the known node list.
-	 * 
-	 * @param nodeId 	Id of node to be removed.
-	 */
-	void unscheduleNode(int nodeId)
-	{		
-		synchronized(m_knownNodes)
-		{
-			Iterator iter = m_knownNodes.iterator();
-			while(iter.hasNext())
-			{
-				NodeInfo nodeInfo = (NodeInfo)iter.next();
-				if (nodeInfo.getNodeId() == nodeId)
-				{
-					ThreadCategory.getInstance(getClass()).debug("unscheduleNode: removing node " + nodeId + " from the scheduler.");
-					m_knownNodes.remove(nodeInfo);
-					break;
-				}
-			}
-		}
-	}
-	
-	/** 
-	 * Creates a NodeInfo object representing the specified node and
-	 * adds it to the rescan queue for immediate rescanning. 
-	 * 
-	 * @param nodeId 	Id of node to be rescanned
-	 */
-	void forceRescan(int nodeId)
-	{
-		Scheduler.NodeInfo nodeInfo = new Scheduler.NodeInfo(nodeId, null, -1);
-		try
-		{
-			m_rescanQ.add(new RescanProcessor(nodeInfo, true));
-		}
-		catch (FifoQueueException e)
-		{
-			ThreadCategory.getInstance(getClass()).error("forceRescan: Failed to add node " + nodeId + " to the rescan queue.", e);
-		}
-		catch (InterruptedException e)
-		{
-			ThreadCategory.getInstance(getClass()).error("forceRescan: Failed to add node " + nodeId + " to the rescan queue.", e);
-		}
-	}
-	
-	/**
-	 * Starts the fiber.
-	 *
-	 * @throws java.lang.IllegalStateException Thrown if the fiber is
-	 * 	already running.
-	 */
-	public synchronized void start()
-	{
-		if(m_worker != null)
-			throw new IllegalStateException("The fiber has already run or is running");
+    /**
+     * The rescan queue where new RescanProcessor objects are enqueued for
+     * execution.
+     */
+    private FifoQueue m_rescanQ;
 
-		Category log = ThreadCategory.getInstance(getClass());
+    /**
+     * This class encapsulates the information about a node necessary to
+     * schedule the node for rescans.
+     */
+    final class NodeInfo {
+        int m_nodeId;
 
-		m_worker = new Thread(this, getName());
-		m_worker.start();
-		m_status = STARTING;
+        Timestamp m_lastScanned;
 
-		if (log.isDebugEnabled())
-			log.debug("Scheduler.start: scheduler started");
-	}
+        long m_interval;
 
-	/**
-	 * Stops the fiber. If the fiber has never been run
-	 * then an exception is generated.
-	 *
-	 * @throws java.lang.IllegalStateException Throws if the fiber 
-	 * 	has never been started.
-	 */
-	public synchronized void stop()
-	{
-		if(m_worker == null)
-			throw new IllegalStateException("The fiber has never been started");
+        boolean m_scheduled;
 
-		Category log = ThreadCategory.getInstance(getClass());
+        NodeInfo(int nodeId, Timestamp lastScanned, long interval) {
+            m_nodeId = nodeId;
+            m_lastScanned = lastScanned;
+            m_interval = interval;
+            m_scheduled = false;
+        }
 
-		m_status = STOP_PENDING;
-		m_worker.interrupt();
+        NodeInfo(int nodeId, Date lastScanned, long interval) {
+            m_nodeId = nodeId;
+            m_lastScanned = new Timestamp(lastScanned.getTime());
+            m_interval = interval;
+            m_scheduled = false;
+        }
 
-		log.debug("Scheduler.stop: scheduler stopped");
-	}
+        boolean isScheduled() {
+            return m_scheduled;
+        }
 
-	/**
-	 * Pauses the scheduler if it is current running. If the fiber
-	 * has not been run or has already stopped then an exception
-	 * is generated.
-	 *
-	 * @throws java.lang.IllegalStateException Throws if the operation could
-	 * 	not be completed due to the fiber's state.
-	 */
-	public synchronized void pause()
-	{
-		if(m_worker == null)
-			throw new IllegalStateException("The fiber has never been started");
+        int getNodeId() {
+            return m_nodeId;
+        }
 
-		if(m_status == STOPPED || m_status == STOP_PENDING)
-			throw new IllegalStateException("The fiber is not running or a stop is pending");
+        Timestamp getLastScanned() {
+            return m_lastScanned;
+        }
 
-		if(m_status == PAUSED)
-			return;
+        long getRescanInterval() {
+            return m_interval;
+        }
 
-		m_status = PAUSE_PENDING;
-		notifyAll();
-	}
+        void setScheduled(boolean scheduled) {
+            m_scheduled = scheduled;
+        }
 
-	/**
-	 * Resumes the scheduler if it has been paused. If the fiber
-	 * has not been run or has already stopped then an exception
-	 * is generated.
-	 *
-	 * @throws java.lang.IllegalStateException Throws if the operation could
-	 * 	not be completed due to the fiber's state.
-	 */
-	public synchronized void resume()
-	{
-		if(m_worker == null)
-			throw new IllegalStateException("The fiber has never been started");
+        void setLastScanned(Date lastScanned) {
+            m_lastScanned = new Timestamp(lastScanned.getTime());
+        }
 
-		if(m_status == STOPPED || m_status == STOP_PENDING)
-			throw new IllegalStateException("The fiber is not running or a stop is pending");
+        void setLastScanned(Timestamp lastScanned) {
+            m_lastScanned = lastScanned;
+        }
 
-		if(m_status == RUNNING)
-			return;
+        boolean timeForRescan() {
+            if (System.currentTimeMillis() >= (m_lastScanned.getTime() + m_interval))
+                return true;
+            else
+                return false;
+        }
+    }
 
-		m_status = RESUME_PENDING;
-		notifyAll();
-	}
+    /**
+     * Constructs a new instance of the scheduler.
+     * 
+     */
+    Scheduler(FifoQueue rescanQ) throws SQLException {
+        m_rescanQ = rescanQ;
 
-	/**
-	 * Returns the current of this fiber.
-	 *
-	 * @return The current status.
-	 */
-	public synchronized int getStatus()
-	{
-		if(m_worker != null && m_worker.isAlive() == false)
-			m_status = STOPPED;
-		return m_status;
-	}
+        m_name = FIBER_NAME;
+        m_status = START_PENDING;
+        m_worker = null;
 
-	/**
-	 * Returns the name of this fiber.
-	 *
-	 */
-	public String getName()
-	{
-		return FIBER_NAME;
-	}
+        m_knownNodes = Collections.synchronizedList(new LinkedList());
+        Category log = ThreadCategory.getInstance(getClass());
 
-	/**
-	 * The main method of the scheduler. This method is responsible
-	 * for checking the runnable queues for ready objects and 
-	 * then enqueuing them into the thread pool for execution.
-	 *
-	 */
-	public void run()
-	{
-		Category log = ThreadCategory.getInstance(getClass());
+        // Get rescan interval from configuration factory
+        //
+        m_interval = CapsdConfigFactory.getInstance().getRescanFrequency();
+        if (log.isDebugEnabled())
+            log.debug("Scheduler: rescan interval(millis): " + m_interval);
 
-		synchronized(this)
-		{
-			m_status = RUNNING;
-		}
-		
-		if (log.isDebugEnabled())
-			log.debug("Scheduler.run: scheduler running");
+        // Get initial rescan sleep time from configuration factory
+        //
+        m_initialSleep = CapsdConfigFactory.getInstance().getInitialSleepTime();
+        if (log.isDebugEnabled())
+            log.debug("Scheduler: initial rescan sleep time(millis): " + m_initialSleep);
 
-		// Loop until a fatal exception occurs or until
-		// the thread is interrupted.
-		//
-		boolean firstPass = true;
-		for(;;)
-		{
-			// Status check
-			//
-			synchronized(this)
-			{
-				if(m_status != RUNNING		 &&
-				   m_status != PAUSED		 &&
-				   m_status != PAUSE_PENDING	 &&
-				   m_status != RESUME_PENDING)
-				{
-					if (log.isDebugEnabled())
-						log.debug("Scheduler.run: status = " + m_status + ", time to exit");
-					break;
-				}
-			}
+        // Schedule SMB Reparenting using special nodeId (-1)
+        //
+        // Schedule this node in such a way that it will be
+        // scheduled immediately and SMB reparenting will take place
+        Date lastSmbReparenting = new Date();
+        lastSmbReparenting.setTime(System.currentTimeMillis() - m_interval);
 
-			// If this is the first pass we want to pause momentarily
-			// This allows the rest of the background processes to come 
-			// up and stabilize before we start generating events from rescans.
-			//
-			if (firstPass)
-			{
-				firstPass = false;
-				synchronized(this)
-				{
-					try
-					{
-						if (log.isDebugEnabled())
-							log.debug("Scheduler.run: initial sleep configured for " + m_initialSleep + "ms...sleeping...");
-						wait(m_initialSleep);
-					}
-					catch(InterruptedException ex)
-					{
-						if (log.isDebugEnabled())
-							log.debug("Scheduler.run: interrupted exception during initial sleep...exiting.");
-						break; // exit for loop
-					}
-				}
-			}
-			
-			// iterate over the known node list, add any
-			// nodes ready for rescan to the rescan queue
-			// for processing.
-			//
-			int added = 0;
-			
-			synchronized(m_knownNodes)
-			{
-				if (log.isDebugEnabled())
-					log.debug("Scheduler.run: iterating over known nodes list to schedule...");
-				Iterator iter = m_knownNodes.iterator();
-				while (iter.hasNext())
-				{
-					NodeInfo node = (NodeInfo)iter.next();
-					
-					// Don't schedule if already scheduled
-					if (node.isScheduled())
-						continue;
-				
-					// Don't schedule if its not time for rescan yet
-					if (!node.timeForRescan())
-						continue;
-					
-					// Must be time for a rescan!
-					//
-					try
-					{
-						node.setScheduled(true); // Mark node as scheduled
-						
-						// Special Case...perform SMB reparenting if nodeid
-						// of the scheduled node is -1
-						//
-						if (node.getNodeId() == SMB_REPARENTING_IDENTIFIER)
-						{
-							if (log.isDebugEnabled())
-								log.debug("Scheduler.run: time for reparenting via SMB...");
-									
-							Connection db = null;
-							try
-							{
-								db = DatabaseConnectionFactory.getInstance().getConnection();
-			
-								ReparentViaSmb reparenter = new ReparentViaSmb(db);
-								try 
-								{
-									reparenter.sync();
-								}
-								catch (SQLException sqlE)
-								{
-									log.error("Unexpected database error during SMB reparenting", sqlE);
-								}
-								catch (Throwable t)
-								{
-									log.error("Unexpected error during SMB reparenting", t);
-								}
-							}
-							catch (SQLException sqlE)
-							{
-								log.error("Unable to get database connection from the factory.", sqlE);
-							}
-							finally
-							{
-								if(db != null)
-								{
-									try { db.close(); }
-									catch(Exception e) { }
-								}
-							}
-									
-							// Update the schedule information for the SMB reparenting node
-							// 
-							node.setLastScanned(new Date());
-							node.setScheduled(false);
-							
-							if (log.isDebugEnabled())
-								log.debug("Scheduler.run: SMB reparenting completed...");
-						}
-						// Otherwise just create a new RescanProcessor object
-						// and add it to the rescan queue for execution
-						//
-						else
-						{
-							if (log.isDebugEnabled())
-								log.debug("Scheduler.run: adding node " + node.getNodeId() + " to the rescan queue.");
-							m_rescanQ.add(new RescanProcessor(node, false));
-							added++;
-						}
-					}
-					catch(InterruptedException ex)
-					{
-						log.info("Scheduler.schedule: failed to add new node to rescan queue", ex);
-						throw new UndeclaredThrowableException(ex);
-					}
-					catch(FifoQueueException ex)
-					{
-						log.info("Scheduler.schedule: failed to add new node to rescan queue", ex);
-						throw new UndeclaredThrowableException(ex);
-					}
-				}
-			}
-			
-			// Wait for 60 seconds if there were no nodes 
-			// added to the rescan queue during this loop, 
-			// otherwise just start over.
-			//
-			synchronized(this)
-			{
-				if(added == 0)
-				{
-					try
-					{
-						wait(60000);
-					}
-					catch(InterruptedException ex)
-					{
-						break; // exit for loop
-					}
-				}
-			}
+        if (log.isDebugEnabled())
+            log.debug("Scheduler: scheduling SMB reparenting...");
+        NodeInfo smbInfo = new NodeInfo(SMB_REPARENTING_IDENTIFIER, lastSmbReparenting, m_interval);
+        m_knownNodes.add(smbInfo);
 
-		} // end for(;;)
+        // Load actual known nodes from the database
+        //
+        loadKnownNodes();
+        if (log.isDebugEnabled())
+            log.debug("Scheduler: done loading known nodes, node count: " + m_knownNodes.size());
+    }
 
-		log.debug("Scheduler.run: scheduler exiting, state = STOPPED");
-		synchronized(this)
-		{
-			m_status = STOPPED;
-		}
+    /**
+     * Builds a list of NodeInfo objects representing each of the nodes in the
+     * database capable of being scheduled for rescan.
+     * 
+     * @throws SQLException
+     *             if there is a problem accessing the database.
+     */
+    private void loadKnownNodes() throws SQLException {
+        Category log = ThreadCategory.getInstance(getClass());
 
-	} // end run
+        Connection db = null;
+
+        PreparedStatement nodeStmt = null;
+        PreparedStatement ifStmt = null;
+        try {
+            db = DatabaseConnectionFactory.getInstance().getConnection();
+            // Prepare SQL statements in advance
+            //
+            nodeStmt = db.prepareStatement(SQL_RETRIEVE_NODES);
+            ifStmt = db.prepareStatement(SQL_GET_LAST_POLL_TIME);
+
+            // Retrieve non-deleted nodes from the node table in the database
+            //
+            ResultSet rs = nodeStmt.executeQuery();
+
+            while (rs.next()) {
+                // Retrieve an interface from the ipInterface table in
+                // the database for its last polled/scanned time
+
+                int nodeId = rs.getInt(1);
+                ifStmt.setInt(1, nodeId); // set nodeid
+                if (log.isDebugEnabled())
+                    log.debug("loadKnownNodes: retrieved nodeid " + nodeId + ", now getting last poll time.");
+
+                ResultSet rset = ifStmt.executeQuery();
+                if (rset.next()) {
+                    Timestamp lastPolled = rset.getTimestamp(1);
+                    if (lastPolled != null && rset.wasNull() == false) {
+                        if (log.isDebugEnabled())
+                            log.debug("loadKnownNodes: adding node " + nodeId + " with last poll time " + lastPolled);
+                        NodeInfo nodeInfo = new NodeInfo(nodeId, lastPolled, m_interval);
+                        m_knownNodes.add(nodeInfo);
+                    }
+                } else {
+                    if (log.isDebugEnabled())
+                        log.debug("Node w/ nodeid " + nodeId + " has no managed interfaces from which to retrieve a last poll time...it will not be scheduled.");
+                }
+            }
+        } finally {
+            try {
+                if (nodeStmt != null)
+                    nodeStmt.close();
+            } catch (Exception e) {
+            }
+
+            try {
+                if (ifStmt != null)
+                    ifStmt.close();
+            } catch (Exception e) {
+            }
+
+            try {
+                if (db != null)
+                    db.close();
+            } catch (Exception e) {
+            }
+        }
+
+    }
+
+    /**
+     * Creates a NodeInfo object representing the specified node and adds it to
+     * the known node list for scheduling.
+     * 
+     * @param nodeId
+     *            Id of node to be scheduled
+     * 
+     * @throws SQLException
+     *             if there is any problem accessing the database
+     */
+    void scheduleNode(int nodeId) throws SQLException {
+        Category log = ThreadCategory.getInstance(getClass());
+
+        // Retrieve last poll time for the node from the ipInterface
+        // table.
+        Connection db = null;
+        try {
+            db = DatabaseConnectionFactory.getInstance().getConnection();
+            PreparedStatement ifStmt = db.prepareStatement(SQL_GET_LAST_POLL_TIME);
+            ifStmt.setInt(1, nodeId);
+            ResultSet rset = ifStmt.executeQuery();
+            if (rset.next()) {
+                Timestamp lastPolled = rset.getTimestamp(1);
+                if (lastPolled != null && rset.wasNull() == false) {
+                    if (log.isDebugEnabled())
+                        log.debug("scheduleNode: adding node " + nodeId + " with last poll time " + lastPolled);
+                    m_knownNodes.add(new NodeInfo(nodeId, lastPolled, m_interval));
+                }
+            } else
+                log.warn("scheduleNode: Failed to retrieve last polled time from database for nodeid " + nodeId);
+        } finally {
+            if (db != null) {
+                try {
+                    db.close();
+                } catch (Exception e) {
+                }
+            }
+        }
+    }
+
+    /**
+     * Removes the specified node from the known node list.
+     * 
+     * @param nodeId
+     *            Id of node to be removed.
+     */
+    void unscheduleNode(int nodeId) {
+        synchronized (m_knownNodes) {
+            Iterator iter = m_knownNodes.iterator();
+            while (iter.hasNext()) {
+                NodeInfo nodeInfo = (NodeInfo) iter.next();
+                if (nodeInfo.getNodeId() == nodeId) {
+                    ThreadCategory.getInstance(getClass()).debug("unscheduleNode: removing node " + nodeId + " from the scheduler.");
+                    m_knownNodes.remove(nodeInfo);
+                    break;
+                }
+            }
+        }
+    }
+
+    /**
+     * Creates a NodeInfo object representing the specified node and adds it to
+     * the rescan queue for immediate rescanning.
+     * 
+     * @param nodeId
+     *            Id of node to be rescanned
+     */
+    void forceRescan(int nodeId) {
+        Scheduler.NodeInfo nodeInfo = new Scheduler.NodeInfo(nodeId, null, -1);
+        try {
+            m_rescanQ.add(new RescanProcessor(nodeInfo, true));
+        } catch (FifoQueueException e) {
+            ThreadCategory.getInstance(getClass()).error("forceRescan: Failed to add node " + nodeId + " to the rescan queue.", e);
+        } catch (InterruptedException e) {
+            ThreadCategory.getInstance(getClass()).error("forceRescan: Failed to add node " + nodeId + " to the rescan queue.", e);
+        }
+    }
+
+    /**
+     * Starts the fiber.
+     * 
+     * @throws java.lang.IllegalStateException
+     *             Thrown if the fiber is already running.
+     */
+    public synchronized void start() {
+        if (m_worker != null)
+            throw new IllegalStateException("The fiber has already run or is running");
+
+        Category log = ThreadCategory.getInstance(getClass());
+
+        m_worker = new Thread(this, getName());
+        m_worker.start();
+        m_status = STARTING;
+
+        if (log.isDebugEnabled())
+            log.debug("Scheduler.start: scheduler started");
+    }
+
+    /**
+     * Stops the fiber. If the fiber has never been run then an exception is
+     * generated.
+     * 
+     * @throws java.lang.IllegalStateException
+     *             Throws if the fiber has never been started.
+     */
+    public synchronized void stop() {
+        if (m_worker == null)
+            throw new IllegalStateException("The fiber has never been started");
+
+        Category log = ThreadCategory.getInstance(getClass());
+
+        m_status = STOP_PENDING;
+        m_worker.interrupt();
+
+        log.debug("Scheduler.stop: scheduler stopped");
+    }
+
+    /**
+     * Pauses the scheduler if it is current running. If the fiber has not been
+     * run or has already stopped then an exception is generated.
+     * 
+     * @throws java.lang.IllegalStateException
+     *             Throws if the operation could not be completed due to the
+     *             fiber's state.
+     */
+    public synchronized void pause() {
+        if (m_worker == null)
+            throw new IllegalStateException("The fiber has never been started");
+
+        if (m_status == STOPPED || m_status == STOP_PENDING)
+            throw new IllegalStateException("The fiber is not running or a stop is pending");
+
+        if (m_status == PAUSED)
+            return;
+
+        m_status = PAUSE_PENDING;
+        notifyAll();
+    }
+
+    /**
+     * Resumes the scheduler if it has been paused. If the fiber has not been
+     * run or has already stopped then an exception is generated.
+     * 
+     * @throws java.lang.IllegalStateException
+     *             Throws if the operation could not be completed due to the
+     *             fiber's state.
+     */
+    public synchronized void resume() {
+        if (m_worker == null)
+            throw new IllegalStateException("The fiber has never been started");
+
+        if (m_status == STOPPED || m_status == STOP_PENDING)
+            throw new IllegalStateException("The fiber is not running or a stop is pending");
+
+        if (m_status == RUNNING)
+            return;
+
+        m_status = RESUME_PENDING;
+        notifyAll();
+    }
+
+    /**
+     * Returns the current of this fiber.
+     * 
+     * @return The current status.
+     */
+    public synchronized int getStatus() {
+        if (m_worker != null && m_worker.isAlive() == false)
+            m_status = STOPPED;
+        return m_status;
+    }
+
+    /**
+     * Returns the name of this fiber.
+     * 
+     */
+    public String getName() {
+        return FIBER_NAME;
+    }
+
+    /**
+     * The main method of the scheduler. This method is responsible for checking
+     * the runnable queues for ready objects and then enqueuing them into the
+     * thread pool for execution.
+     * 
+     */
+    public void run() {
+        Category log = ThreadCategory.getInstance(getClass());
+
+        synchronized (this) {
+            m_status = RUNNING;
+        }
+
+        if (log.isDebugEnabled())
+            log.debug("Scheduler.run: scheduler running");
+
+        // Loop until a fatal exception occurs or until
+        // the thread is interrupted.
+        //
+        boolean firstPass = true;
+        for (;;) {
+            // Status check
+            //
+            synchronized (this) {
+                if (m_status != RUNNING && m_status != PAUSED && m_status != PAUSE_PENDING && m_status != RESUME_PENDING) {
+                    if (log.isDebugEnabled())
+                        log.debug("Scheduler.run: status = " + m_status + ", time to exit");
+                    break;
+                }
+            }
+
+            // If this is the first pass we want to pause momentarily
+            // This allows the rest of the background processes to come
+            // up and stabilize before we start generating events from rescans.
+            //
+            if (firstPass) {
+                firstPass = false;
+                synchronized (this) {
+                    try {
+                        if (log.isDebugEnabled())
+                            log.debug("Scheduler.run: initial sleep configured for " + m_initialSleep + "ms...sleeping...");
+                        wait(m_initialSleep);
+                    } catch (InterruptedException ex) {
+                        if (log.isDebugEnabled())
+                            log.debug("Scheduler.run: interrupted exception during initial sleep...exiting.");
+                        break; // exit for loop
+                    }
+                }
+            }
+
+            // iterate over the known node list, add any
+            // nodes ready for rescan to the rescan queue
+            // for processing.
+            //
+            int added = 0;
+
+            synchronized (m_knownNodes) {
+                if (log.isDebugEnabled())
+                    log.debug("Scheduler.run: iterating over known nodes list to schedule...");
+                Iterator iter = m_knownNodes.iterator();
+                while (iter.hasNext()) {
+                    NodeInfo node = (NodeInfo) iter.next();
+
+                    // Don't schedule if already scheduled
+                    if (node.isScheduled())
+                        continue;
+
+                    // Don't schedule if its not time for rescan yet
+                    if (!node.timeForRescan())
+                        continue;
+
+                    // Must be time for a rescan!
+                    //
+                    try {
+                        node.setScheduled(true); // Mark node as scheduled
+
+                        // Special Case...perform SMB reparenting if nodeid
+                        // of the scheduled node is -1
+                        //
+                        if (node.getNodeId() == SMB_REPARENTING_IDENTIFIER) {
+                            if (log.isDebugEnabled())
+                                log.debug("Scheduler.run: time for reparenting via SMB...");
+
+                            Connection db = null;
+                            try {
+                                db = DatabaseConnectionFactory.getInstance().getConnection();
+
+                                ReparentViaSmb reparenter = new ReparentViaSmb(db);
+                                try {
+                                    reparenter.sync();
+                                } catch (SQLException sqlE) {
+                                    log.error("Unexpected database error during SMB reparenting", sqlE);
+                                } catch (Throwable t) {
+                                    log.error("Unexpected error during SMB reparenting", t);
+                                }
+                            } catch (SQLException sqlE) {
+                                log.error("Unable to get database connection from the factory.", sqlE);
+                            } finally {
+                                if (db != null) {
+                                    try {
+                                        db.close();
+                                    } catch (Exception e) {
+                                    }
+                                }
+                            }
+
+                            // Update the schedule information for the SMB
+                            // reparenting node
+                            // 
+                            node.setLastScanned(new Date());
+                            node.setScheduled(false);
+
+                            if (log.isDebugEnabled())
+                                log.debug("Scheduler.run: SMB reparenting completed...");
+                        }
+                        // Otherwise just create a new RescanProcessor object
+                        // and add it to the rescan queue for execution
+                        //
+                        else {
+                            if (log.isDebugEnabled())
+                                log.debug("Scheduler.run: adding node " + node.getNodeId() + " to the rescan queue.");
+                            m_rescanQ.add(new RescanProcessor(node, false));
+                            added++;
+                        }
+                    } catch (InterruptedException ex) {
+                        log.info("Scheduler.schedule: failed to add new node to rescan queue", ex);
+                        throw new UndeclaredThrowableException(ex);
+                    } catch (FifoQueueException ex) {
+                        log.info("Scheduler.schedule: failed to add new node to rescan queue", ex);
+                        throw new UndeclaredThrowableException(ex);
+                    }
+                }
+            }
+
+            // Wait for 60 seconds if there were no nodes
+            // added to the rescan queue during this loop,
+            // otherwise just start over.
+            //
+            synchronized (this) {
+                if (added == 0) {
+                    try {
+                        wait(60000);
+                    } catch (InterruptedException ex) {
+                        break; // exit for loop
+                    }
+                }
+            }
+
+        } // end for(;;)
+
+        log.debug("Scheduler.run: scheduler exiting, state = STOPPED");
+        synchronized (this) {
+            m_status = STOPPED;
+        }
+
+    } // end run
 
 }

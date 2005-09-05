@@ -34,36 +34,107 @@
 
 package org.opennms.netmgt.notifd.jmx;
 
-public class Notifd
-	implements NotifdMBean
-{
-	public void init()
-	{
-		org.opennms.netmgt.notifd.Notifd.getInstance().init();
-	}
+import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.config.DatabaseConnectionFactory;
+import org.opennms.netmgt.config.DestinationPathFactory;
+import org.opennms.netmgt.config.GroupFactory;
+import org.opennms.netmgt.config.NotifdConfigFactory;
+import org.opennms.netmgt.config.NotificationCommandFactory;
+import org.opennms.netmgt.config.NotificationFactory;
+import org.opennms.netmgt.config.PollOutagesConfigFactory;
+import org.opennms.netmgt.config.UserFactory;
+import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 
-	public void start()
-	{
-		org.opennms.netmgt.notifd.Notifd.getInstance().start();
-	}
+public class Notifd implements NotifdMBean {
+    public void init() {
+        EventIpcManagerFactory.init();
 
-	public void stop()
-	{
-		org.opennms.netmgt.notifd.Notifd.getInstance().stop();
-	}
+        try {
+            NotifdConfigFactory.init();
+        } catch (Throwable t) {
+            ThreadCategory.getInstance(getClass()).warn("start: Failed to init NotifdConfigFactory.", t);
+        }
+        
+        try {
+            NotificationFactory.init();
+        } catch( Throwable t) {
+            ThreadCategory.getInstance(getClass()).warn("start: Failed to init NotificationFactory.", t);
+        }
+        
+        try {
+            DatabaseConnectionFactory.init();
+        } catch (Exception e) {
+            ThreadCategory.getInstance(getClass()).warn("start: Failed to init database connection factory.", e);
+        }
 
-	public int getStatus()
-	{
-		return org.opennms.netmgt.notifd.Notifd.getInstance().getStatus();
-	}
+        try {
+            GroupFactory.init();
+        } catch (Exception e) {
+            ThreadCategory.getInstance(getClass()).warn("start: Failed to init group factory.", e);
+        }
 
-	public String status()
-	{
-		return org.opennms.core.fiber.Fiber.STATUS_NAMES[getStatus()];
-	}
+        try {
+            UserFactory.init();
+        } catch (Exception e) {
+            ThreadCategory.getInstance(getClass()).warn("start: Failed to init user factory.", e);
+        }
+        
+        try {
+            DestinationPathFactory.init();
+        } catch (Exception e) {
+            ThreadCategory.getInstance(getClass()).warn("start: Failed to init destination path factory.", e);
+        }
+        
+        try {
+            NotificationCommandFactory.init();
+        } catch (Exception e) {
+            ThreadCategory.getInstance(getClass()).warn("start: Failed to init notification command factory.", e);            
+        }
 
-	public String getStatusText()
-	{
-		return org.opennms.core.fiber.Fiber.STATUS_NAMES[getStatus()];
-	}
+        try {
+            PollOutagesConfigFactory.init();
+        } catch (Exception e) {
+            ThreadCategory.getInstance(getClass()).warn("start: Failed to init poll outage config factory.", e);
+        }
+
+        getNotifd().setDbConnectionFactory(DatabaseConnectionFactory.getInstance());
+        getNotifd().setEventManager(EventIpcManagerFactory.getInstance().getManager());
+        
+        getNotifd().setConfigManager(NotifdConfigFactory.getInstance());
+        getNotifd().setNotificationManager(NotificationFactory.getInstance());
+        getNotifd().setGroupManager(GroupFactory.getInstance());
+        getNotifd().setUserManager(UserFactory.getInstance());
+        getNotifd().setDestinationPathManager(DestinationPathFactory.getInstance());
+        getNotifd().setNotificationCommandManager(NotificationCommandFactory.getInstance());
+        getNotifd().setPollOutagesConfigManager(PollOutagesConfigFactory.getInstance());
+        getNotifd().init();
+        
+    }
+
+    /**
+     * @return
+     */
+    private org.opennms.netmgt.notifd.Notifd getNotifd() {
+        return org.opennms.netmgt.notifd.Notifd.getInstance();
+    }
+
+    public void start() {
+        getNotifd().start();
+    }
+
+    public void stop() {
+        getNotifd().stop();
+    }
+
+    public int getStatus() {
+        return getNotifd().getStatus();
+    }
+
+    public String status() {
+        return org.opennms.core.fiber.Fiber.STATUS_NAMES[getStatus()];
+    }
+
+    public String getStatusText() {
+        return org.opennms.core.fiber.Fiber.STATUS_NAMES[getStatus()];
+    }
 }

@@ -1,11 +1,16 @@
 <?xml version='1.0'?>
+<!DOCTYPE xsl:stylesheet [
+<!ENTITY primary   'normalize-space(concat(primary/@sortas, primary[not(@sortas)]))'>
+<!ENTITY secondary 'normalize-space(concat(secondary/@sortas, secondary[not(@sortas)]))'>
+<!ENTITY tertiary  'normalize-space(concat(tertiary/@sortas, tertiary[not(@sortas)]))'>
+]>
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
                 xmlns:fo="http://www.w3.org/1999/XSL/Format"
                 xmlns:rx="http://www.renderx.com/XSL/Extensions"
                 version='1.0'>
 
 <!-- ********************************************************************
-     $Id: index.xsl,v 1.26 2003/12/16 00:30:49 bobstayton Exp $
+     $Id: index.xsl,v 1.30 2004/09/02 04:13:53 bobstayton Exp $
      ********************************************************************
 
      This file is part of the XSL DocBook Stylesheet distribution.
@@ -65,11 +70,22 @@
       <xsl:call-template name="l10n.language"/>
     </xsl:attribute>
     <xsl:attribute name="format">
-      <xsl:call-template name="page.number.format"/>
+      <xsl:call-template name="page.number.format">
+        <xsl:with-param name="master-reference" select="$master-reference"/>
+      </xsl:call-template>
     </xsl:attribute>
-    <xsl:if test="$double.sided != 0">
-      <xsl:attribute name="initial-page-number">auto-odd</xsl:attribute>
-    </xsl:if>
+
+    <xsl:attribute name="initial-page-number">
+      <xsl:call-template name="initial.page.number">
+        <xsl:with-param name="master-reference" select="$master-reference"/>
+      </xsl:call-template>
+    </xsl:attribute>
+
+    <xsl:attribute name="force-page-count">
+      <xsl:call-template name="force.page.count">
+        <xsl:with-param name="master-reference" select="$master-reference"/>
+      </xsl:call-template>
+    </xsl:attribute>
 
     <xsl:attribute name="hyphenation-character">
       <xsl:call-template name="gentext">
@@ -150,11 +166,22 @@
       <xsl:call-template name="l10n.language"/>
     </xsl:attribute>
     <xsl:attribute name="format">
-      <xsl:call-template name="page.number.format"/>
+      <xsl:call-template name="page.number.format">
+        <xsl:with-param name="master-reference" select="$master-reference"/>
+      </xsl:call-template>
     </xsl:attribute>
-    <xsl:if test="$double.sided != 0">
-      <xsl:attribute name="initial-page-number">auto-odd</xsl:attribute>
-    </xsl:if>
+
+    <xsl:attribute name="initial-page-number">
+      <xsl:call-template name="initial.page.number">
+        <xsl:with-param name="master-reference" select="$master-reference"/>
+      </xsl:call-template>
+    </xsl:attribute>
+
+    <xsl:attribute name="force-page-count">
+      <xsl:call-template name="force.page.count">
+        <xsl:with-param name="master-reference" select="$master-reference"/>
+      </xsl:call-template>
+    </xsl:attribute>
 
     <xsl:attribute name="hyphenation-character">
       <xsl:call-template name="gentext">
@@ -275,15 +302,15 @@
     <xsl:choose>
       <xsl:when test="$xep.extensions != 0">
         <xsl:attribute name="rx:key">
-          <xsl:value-of select="primary"/>
+          <xsl:value-of select="&primary;"/>
           <xsl:if test="@significance='preferred'"><xsl:value-of select="$significant.flag"/></xsl:if>
           <xsl:if test="secondary">
             <xsl:text>, </xsl:text>
-            <xsl:value-of select="secondary"/>
+            <xsl:value-of select="&secondary;"/>
           </xsl:if>
           <xsl:if test="tertiary">
             <xsl:text>, </xsl:text>
-            <xsl:value-of select="tertiary"/>
+            <xsl:value-of select="&tertiary;"/>
           </xsl:if>
         </xsl:attribute>
       </xsl:when>
@@ -316,15 +343,15 @@
           <xsl:value-of select="@id"/>
         </xsl:attribute>
         <xsl:attribute name="rx:key">
-          <xsl:value-of select="primary"/>
+          <xsl:value-of select="&primary;"/>
           <xsl:if test="@significance='preferred'"><xsl:value-of select="$significant.flag"/></xsl:if>
           <xsl:if test="secondary">
             <xsl:text>, </xsl:text>
-            <xsl:value-of select="secondary"/>
+            <xsl:value-of select="&secondary;"/>
           </xsl:if>
           <xsl:if test="tertiary">
             <xsl:text>, </xsl:text>
-            <xsl:value-of select="tertiary"/>
+            <xsl:value-of select="&tertiary;"/>
           </xsl:if>
         </xsl:attribute>
       </rx:begin-index-range>

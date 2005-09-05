@@ -82,14 +82,20 @@
 
 <xsl:template name="article.titlepage">
   <fo:block xmlns:fo="http://www.w3.org/1999/XSL/Format" font-family="{$title.fontset}">
-    <fo:block text-align="center">
-    <xsl:call-template name="article.titlepage.before.recto"/>
-    <xsl:call-template name="article.titlepage.recto"/>
-    </fo:block>
-    <fo:block>
-    <xsl:call-template name="article.titlepage.before.verso"/>
-    <xsl:call-template name="article.titlepage.verso"/>
-    </fo:block>
+    <xsl:variable name="recto.content">
+      <xsl:call-template name="article.titlepage.before.recto"/>
+      <xsl:call-template name="article.titlepage.recto"/>
+    </xsl:variable>
+    <xsl:if test="normalize-space($recto.content) != ''">
+      <fo:block text-align="center"><xsl:copy-of select="$recto.content"/></fo:block>
+    </xsl:if>
+    <xsl:variable name="verso.content">
+      <xsl:call-template name="article.titlepage.before.verso"/>
+      <xsl:call-template name="article.titlepage.verso"/>
+    </xsl:variable>
+    <xsl:if test="normalize-space($verso.content) != ''">
+      <fo:block><xsl:copy-of select="$verso.content"/></fo:block>
+    </xsl:if>
     <xsl:call-template name="article.titlepage.separator"/>
   </fo:block>
 </xsl:template>
@@ -249,14 +255,20 @@
 
 <xsl:template name="set.titlepage">
   <fo:block xmlns:fo="http://www.w3.org/1999/XSL/Format">
-    <fo:block>
-    <xsl:call-template name="set.titlepage.before.recto"/>
-    <xsl:call-template name="set.titlepage.recto"/>
-    </fo:block>
-    <fo:block>
-    <xsl:call-template name="set.titlepage.before.verso"/>
-    <xsl:call-template name="set.titlepage.verso"/>
-    </fo:block>
+    <xsl:variable name="recto.content">
+      <xsl:call-template name="set.titlepage.before.recto"/>
+      <xsl:call-template name="set.titlepage.recto"/>
+    </xsl:variable>
+    <xsl:if test="normalize-space($recto.content) != ''">
+      <fo:block><xsl:copy-of select="$recto.content"/></fo:block>
+    </xsl:if>
+    <xsl:variable name="verso.content">
+      <xsl:call-template name="set.titlepage.before.verso"/>
+      <xsl:call-template name="set.titlepage.verso"/>
+    </xsl:variable>
+    <xsl:if test="normalize-space($verso.content) != ''">
+      <fo:block><xsl:copy-of select="$verso.content"/></fo:block>
+    </xsl:if>
     <xsl:call-template name="set.titlepage.separator"/>
   </fo:block>
 </xsl:template>
@@ -428,14 +440,20 @@
 
 <xsl:template name="book.titlepage">
   <fo:block xmlns:fo="http://www.w3.org/1999/XSL/Format">
-    <fo:block>
-    <xsl:call-template name="book.titlepage.before.recto"/>
-    <xsl:call-template name="book.titlepage.recto"/>
-    </fo:block>
-    <fo:block>
-    <xsl:call-template name="book.titlepage.before.verso"/>
-    <xsl:call-template name="book.titlepage.verso"/>
-    </fo:block>
+    <xsl:variable name="recto.content">
+      <xsl:call-template name="book.titlepage.before.recto"/>
+      <xsl:call-template name="book.titlepage.recto"/>
+    </xsl:variable>
+    <xsl:if test="normalize-space($recto.content) != ''">
+      <fo:block><xsl:copy-of select="$recto.content"/></fo:block>
+    </xsl:if>
+    <xsl:variable name="verso.content">
+      <xsl:call-template name="book.titlepage.before.verso"/>
+      <xsl:call-template name="book.titlepage.verso"/>
+    </xsl:variable>
+    <xsl:if test="normalize-space($verso.content) != ''">
+      <fo:block><xsl:copy-of select="$verso.content"/></fo:block>
+    </xsl:if>
     <xsl:call-template name="book.titlepage.separator"/>
   </fo:block>
 </xsl:template>
@@ -587,14 +605,20 @@
 
 <xsl:template name="part.titlepage">
   <fo:block xmlns:fo="http://www.w3.org/1999/XSL/Format">
-    <fo:block>
-    <xsl:call-template name="part.titlepage.before.recto"/>
-    <xsl:call-template name="part.titlepage.recto"/>
-    </fo:block>
-    <fo:block>
-    <xsl:call-template name="part.titlepage.before.verso"/>
-    <xsl:call-template name="part.titlepage.verso"/>
-    </fo:block>
+    <xsl:variable name="recto.content">
+      <xsl:call-template name="part.titlepage.before.recto"/>
+      <xsl:call-template name="part.titlepage.recto"/>
+    </xsl:variable>
+    <xsl:if test="normalize-space($recto.content) != ''">
+      <fo:block><xsl:copy-of select="$recto.content"/></fo:block>
+    </xsl:if>
+    <xsl:variable name="verso.content">
+      <xsl:call-template name="part.titlepage.before.verso"/>
+      <xsl:call-template name="part.titlepage.verso"/>
+    </xsl:variable>
+    <xsl:if test="normalize-space($verso.content) != ''">
+      <fo:block><xsl:copy-of select="$verso.content"/></fo:block>
+    </xsl:if>
     <xsl:call-template name="part.titlepage.separator"/>
   </fo:block>
 </xsl:template>
@@ -705,14 +729,20 @@
 
 <xsl:template name="partintro.titlepage">
   <fo:block xmlns:fo="http://www.w3.org/1999/XSL/Format">
-    <fo:block>
-    <xsl:call-template name="partintro.titlepage.before.recto"/>
-    <xsl:call-template name="partintro.titlepage.recto"/>
-    </fo:block>
-    <fo:block>
-    <xsl:call-template name="partintro.titlepage.before.verso"/>
-    <xsl:call-template name="partintro.titlepage.verso"/>
-    </fo:block>
+    <xsl:variable name="recto.content">
+      <xsl:call-template name="partintro.titlepage.before.recto"/>
+      <xsl:call-template name="partintro.titlepage.recto"/>
+    </xsl:variable>
+    <xsl:if test="normalize-space($recto.content) != ''">
+      <fo:block><xsl:copy-of select="$recto.content"/></fo:block>
+    </xsl:if>
+    <xsl:variable name="verso.content">
+      <xsl:call-template name="partintro.titlepage.before.verso"/>
+      <xsl:call-template name="partintro.titlepage.verso"/>
+    </xsl:variable>
+    <xsl:if test="normalize-space($verso.content) != ''">
+      <fo:block><xsl:copy-of select="$verso.content"/></fo:block>
+    </xsl:if>
     <xsl:call-template name="partintro.titlepage.separator"/>
   </fo:block>
 </xsl:template>
@@ -887,14 +917,20 @@
 
 <xsl:template name="reference.titlepage">
   <fo:block xmlns:fo="http://www.w3.org/1999/XSL/Format">
-    <fo:block>
-    <xsl:call-template name="reference.titlepage.before.recto"/>
-    <xsl:call-template name="reference.titlepage.recto"/>
-    </fo:block>
-    <fo:block>
-    <xsl:call-template name="reference.titlepage.before.verso"/>
-    <xsl:call-template name="reference.titlepage.verso"/>
-    </fo:block>
+    <xsl:variable name="recto.content">
+      <xsl:call-template name="reference.titlepage.before.recto"/>
+      <xsl:call-template name="reference.titlepage.recto"/>
+    </xsl:variable>
+    <xsl:if test="normalize-space($recto.content) != ''">
+      <fo:block><xsl:copy-of select="$recto.content"/></fo:block>
+    </xsl:if>
+    <xsl:variable name="verso.content">
+      <xsl:call-template name="reference.titlepage.before.verso"/>
+      <xsl:call-template name="reference.titlepage.verso"/>
+    </xsl:variable>
+    <xsl:if test="normalize-space($verso.content) != ''">
+      <fo:block><xsl:copy-of select="$verso.content"/></fo:block>
+    </xsl:if>
     <xsl:call-template name="reference.titlepage.separator"/>
   </fo:block>
 </xsl:template>
@@ -1023,14 +1059,20 @@
 
 <xsl:template name="refsynopsisdiv.titlepage">
   <fo:block xmlns:fo="http://www.w3.org/1999/XSL/Format">
-    <fo:block>
-    <xsl:call-template name="refsynopsisdiv.titlepage.before.recto"/>
-    <xsl:call-template name="refsynopsisdiv.titlepage.recto"/>
-    </fo:block>
-    <fo:block>
-    <xsl:call-template name="refsynopsisdiv.titlepage.before.verso"/>
-    <xsl:call-template name="refsynopsisdiv.titlepage.verso"/>
-    </fo:block>
+    <xsl:variable name="recto.content">
+      <xsl:call-template name="refsynopsisdiv.titlepage.before.recto"/>
+      <xsl:call-template name="refsynopsisdiv.titlepage.recto"/>
+    </xsl:variable>
+    <xsl:if test="normalize-space($recto.content) != ''">
+      <fo:block><xsl:copy-of select="$recto.content"/></fo:block>
+    </xsl:if>
+    <xsl:variable name="verso.content">
+      <xsl:call-template name="refsynopsisdiv.titlepage.before.verso"/>
+      <xsl:call-template name="refsynopsisdiv.titlepage.verso"/>
+    </xsl:variable>
+    <xsl:if test="normalize-space($verso.content) != ''">
+      <fo:block><xsl:copy-of select="$verso.content"/></fo:block>
+    </xsl:if>
     <xsl:call-template name="refsynopsisdiv.titlepage.separator"/>
   </fo:block>
 </xsl:template>
@@ -1085,14 +1127,20 @@
 
 <xsl:template name="refsection.titlepage">
   <fo:block xmlns:fo="http://www.w3.org/1999/XSL/Format">
-    <fo:block>
-    <xsl:call-template name="refsection.titlepage.before.recto"/>
-    <xsl:call-template name="refsection.titlepage.recto"/>
-    </fo:block>
-    <fo:block>
-    <xsl:call-template name="refsection.titlepage.before.verso"/>
-    <xsl:call-template name="refsection.titlepage.verso"/>
-    </fo:block>
+    <xsl:variable name="recto.content">
+      <xsl:call-template name="refsection.titlepage.before.recto"/>
+      <xsl:call-template name="refsection.titlepage.recto"/>
+    </xsl:variable>
+    <xsl:if test="normalize-space($recto.content) != ''">
+      <fo:block><xsl:copy-of select="$recto.content"/></fo:block>
+    </xsl:if>
+    <xsl:variable name="verso.content">
+      <xsl:call-template name="refsection.titlepage.before.verso"/>
+      <xsl:call-template name="refsection.titlepage.verso"/>
+    </xsl:variable>
+    <xsl:if test="normalize-space($verso.content) != ''">
+      <fo:block><xsl:copy-of select="$verso.content"/></fo:block>
+    </xsl:if>
     <xsl:call-template name="refsection.titlepage.separator"/>
   </fo:block>
 </xsl:template>
@@ -1147,14 +1195,20 @@
 
 <xsl:template name="refsect1.titlepage">
   <fo:block xmlns:fo="http://www.w3.org/1999/XSL/Format">
-    <fo:block>
-    <xsl:call-template name="refsect1.titlepage.before.recto"/>
-    <xsl:call-template name="refsect1.titlepage.recto"/>
-    </fo:block>
-    <fo:block>
-    <xsl:call-template name="refsect1.titlepage.before.verso"/>
-    <xsl:call-template name="refsect1.titlepage.verso"/>
-    </fo:block>
+    <xsl:variable name="recto.content">
+      <xsl:call-template name="refsect1.titlepage.before.recto"/>
+      <xsl:call-template name="refsect1.titlepage.recto"/>
+    </xsl:variable>
+    <xsl:if test="normalize-space($recto.content) != ''">
+      <fo:block><xsl:copy-of select="$recto.content"/></fo:block>
+    </xsl:if>
+    <xsl:variable name="verso.content">
+      <xsl:call-template name="refsect1.titlepage.before.verso"/>
+      <xsl:call-template name="refsect1.titlepage.verso"/>
+    </xsl:variable>
+    <xsl:if test="normalize-space($verso.content) != ''">
+      <fo:block><xsl:copy-of select="$verso.content"/></fo:block>
+    </xsl:if>
     <xsl:call-template name="refsect1.titlepage.separator"/>
   </fo:block>
 </xsl:template>
@@ -1209,14 +1263,20 @@
 
 <xsl:template name="refsect2.titlepage">
   <fo:block xmlns:fo="http://www.w3.org/1999/XSL/Format">
-    <fo:block>
-    <xsl:call-template name="refsect2.titlepage.before.recto"/>
-    <xsl:call-template name="refsect2.titlepage.recto"/>
-    </fo:block>
-    <fo:block>
-    <xsl:call-template name="refsect2.titlepage.before.verso"/>
-    <xsl:call-template name="refsect2.titlepage.verso"/>
-    </fo:block>
+    <xsl:variable name="recto.content">
+      <xsl:call-template name="refsect2.titlepage.before.recto"/>
+      <xsl:call-template name="refsect2.titlepage.recto"/>
+    </xsl:variable>
+    <xsl:if test="normalize-space($recto.content) != ''">
+      <fo:block><xsl:copy-of select="$recto.content"/></fo:block>
+    </xsl:if>
+    <xsl:variable name="verso.content">
+      <xsl:call-template name="refsect2.titlepage.before.verso"/>
+      <xsl:call-template name="refsect2.titlepage.verso"/>
+    </xsl:variable>
+    <xsl:if test="normalize-space($verso.content) != ''">
+      <fo:block><xsl:copy-of select="$verso.content"/></fo:block>
+    </xsl:if>
     <xsl:call-template name="refsect2.titlepage.separator"/>
   </fo:block>
 </xsl:template>
@@ -1271,14 +1331,20 @@
 
 <xsl:template name="refsect3.titlepage">
   <fo:block xmlns:fo="http://www.w3.org/1999/XSL/Format">
-    <fo:block>
-    <xsl:call-template name="refsect3.titlepage.before.recto"/>
-    <xsl:call-template name="refsect3.titlepage.recto"/>
-    </fo:block>
-    <fo:block>
-    <xsl:call-template name="refsect3.titlepage.before.verso"/>
-    <xsl:call-template name="refsect3.titlepage.verso"/>
-    </fo:block>
+    <xsl:variable name="recto.content">
+      <xsl:call-template name="refsect3.titlepage.before.recto"/>
+      <xsl:call-template name="refsect3.titlepage.recto"/>
+    </xsl:variable>
+    <xsl:if test="normalize-space($recto.content) != ''">
+      <fo:block><xsl:copy-of select="$recto.content"/></fo:block>
+    </xsl:if>
+    <xsl:variable name="verso.content">
+      <xsl:call-template name="refsect3.titlepage.before.verso"/>
+      <xsl:call-template name="refsect3.titlepage.verso"/>
+    </xsl:variable>
+    <xsl:if test="normalize-space($verso.content) != ''">
+      <fo:block><xsl:copy-of select="$verso.content"/></fo:block>
+    </xsl:if>
     <xsl:call-template name="refsect3.titlepage.separator"/>
   </fo:block>
 </xsl:template>
@@ -1337,14 +1403,20 @@
 
 <xsl:template name="dedication.titlepage">
   <fo:block xmlns:fo="http://www.w3.org/1999/XSL/Format">
-    <fo:block>
-    <xsl:call-template name="dedication.titlepage.before.recto"/>
-    <xsl:call-template name="dedication.titlepage.recto"/>
-    </fo:block>
-    <fo:block>
-    <xsl:call-template name="dedication.titlepage.before.verso"/>
-    <xsl:call-template name="dedication.titlepage.verso"/>
-    </fo:block>
+    <xsl:variable name="recto.content">
+      <xsl:call-template name="dedication.titlepage.before.recto"/>
+      <xsl:call-template name="dedication.titlepage.recto"/>
+    </xsl:variable>
+    <xsl:if test="normalize-space($recto.content) != ''">
+      <fo:block><xsl:copy-of select="$recto.content"/></fo:block>
+    </xsl:if>
+    <xsl:variable name="verso.content">
+      <xsl:call-template name="dedication.titlepage.before.verso"/>
+      <xsl:call-template name="dedication.titlepage.verso"/>
+    </xsl:variable>
+    <xsl:if test="normalize-space($verso.content) != ''">
+      <fo:block><xsl:copy-of select="$verso.content"/></fo:block>
+    </xsl:if>
     <xsl:call-template name="dedication.titlepage.separator"/>
   </fo:block>
 </xsl:template>
@@ -1436,14 +1508,20 @@
 
 <xsl:template name="preface.titlepage">
   <fo:block xmlns:fo="http://www.w3.org/1999/XSL/Format">
-    <fo:block>
-    <xsl:call-template name="preface.titlepage.before.recto"/>
-    <xsl:call-template name="preface.titlepage.recto"/>
-    </fo:block>
-    <fo:block>
-    <xsl:call-template name="preface.titlepage.before.verso"/>
-    <xsl:call-template name="preface.titlepage.verso"/>
-    </fo:block>
+    <xsl:variable name="recto.content">
+      <xsl:call-template name="preface.titlepage.before.recto"/>
+      <xsl:call-template name="preface.titlepage.recto"/>
+    </xsl:variable>
+    <xsl:if test="normalize-space($recto.content) != ''">
+      <fo:block><xsl:copy-of select="$recto.content"/></fo:block>
+    </xsl:if>
+    <xsl:variable name="verso.content">
+      <xsl:call-template name="preface.titlepage.before.verso"/>
+      <xsl:call-template name="preface.titlepage.verso"/>
+    </xsl:variable>
+    <xsl:if test="normalize-space($verso.content) != ''">
+      <fo:block><xsl:copy-of select="$verso.content"/></fo:block>
+    </xsl:if>
     <xsl:call-template name="preface.titlepage.separator"/>
   </fo:block>
 </xsl:template>
@@ -1612,14 +1690,20 @@
 
 <xsl:template name="chapter.titlepage">
   <fo:block xmlns:fo="http://www.w3.org/1999/XSL/Format" font-family="{$title.fontset}">
-    <fo:block margin-left="{$title.margin.left}">
-    <xsl:call-template name="chapter.titlepage.before.recto"/>
-    <xsl:call-template name="chapter.titlepage.recto"/>
-    </fo:block>
-    <fo:block>
-    <xsl:call-template name="chapter.titlepage.before.verso"/>
-    <xsl:call-template name="chapter.titlepage.verso"/>
-    </fo:block>
+    <xsl:variable name="recto.content">
+      <xsl:call-template name="chapter.titlepage.before.recto"/>
+      <xsl:call-template name="chapter.titlepage.recto"/>
+    </xsl:variable>
+    <xsl:if test="normalize-space($recto.content) != ''">
+      <fo:block margin-left="{$title.margin.left}"><xsl:copy-of select="$recto.content"/></fo:block>
+    </xsl:if>
+    <xsl:variable name="verso.content">
+      <xsl:call-template name="chapter.titlepage.before.verso"/>
+      <xsl:call-template name="chapter.titlepage.verso"/>
+    </xsl:variable>
+    <xsl:if test="normalize-space($verso.content) != ''">
+      <fo:block><xsl:copy-of select="$verso.content"/></fo:block>
+    </xsl:if>
     <xsl:call-template name="chapter.titlepage.separator"/>
   </fo:block>
 </xsl:template>
@@ -1796,14 +1880,20 @@
 
 <xsl:template name="appendix.titlepage">
   <fo:block xmlns:fo="http://www.w3.org/1999/XSL/Format">
-    <fo:block>
-    <xsl:call-template name="appendix.titlepage.before.recto"/>
-    <xsl:call-template name="appendix.titlepage.recto"/>
-    </fo:block>
-    <fo:block>
-    <xsl:call-template name="appendix.titlepage.before.verso"/>
-    <xsl:call-template name="appendix.titlepage.verso"/>
-    </fo:block>
+    <xsl:variable name="recto.content">
+      <xsl:call-template name="appendix.titlepage.before.recto"/>
+      <xsl:call-template name="appendix.titlepage.recto"/>
+    </xsl:variable>
+    <xsl:if test="normalize-space($recto.content) != ''">
+      <fo:block><xsl:copy-of select="$recto.content"/></fo:block>
+    </xsl:if>
+    <xsl:variable name="verso.content">
+      <xsl:call-template name="appendix.titlepage.before.verso"/>
+      <xsl:call-template name="appendix.titlepage.verso"/>
+    </xsl:variable>
+    <xsl:if test="normalize-space($verso.content) != ''">
+      <fo:block><xsl:copy-of select="$verso.content"/></fo:block>
+    </xsl:if>
     <xsl:call-template name="appendix.titlepage.separator"/>
   </fo:block>
 </xsl:template>
@@ -1963,14 +2053,20 @@
 
 <xsl:template name="section.titlepage">
   <fo:block xmlns:fo="http://www.w3.org/1999/XSL/Format">
-    <fo:block>
-    <xsl:call-template name="section.titlepage.before.recto"/>
-    <xsl:call-template name="section.titlepage.recto"/>
-    </fo:block>
-    <fo:block>
-    <xsl:call-template name="section.titlepage.before.verso"/>
-    <xsl:call-template name="section.titlepage.verso"/>
-    </fo:block>
+    <xsl:variable name="recto.content">
+      <xsl:call-template name="section.titlepage.before.recto"/>
+      <xsl:call-template name="section.titlepage.recto"/>
+    </xsl:variable>
+    <xsl:if test="normalize-space($recto.content) != ''">
+      <fo:block><xsl:copy-of select="$recto.content"/></fo:block>
+    </xsl:if>
+    <xsl:variable name="verso.content">
+      <xsl:call-template name="section.titlepage.before.verso"/>
+      <xsl:call-template name="section.titlepage.verso"/>
+    </xsl:variable>
+    <xsl:if test="normalize-space($verso.content) != ''">
+      <fo:block><xsl:copy-of select="$verso.content"/></fo:block>
+    </xsl:if>
     <xsl:call-template name="section.titlepage.separator"/>
   </fo:block>
 </xsl:template>
@@ -2128,14 +2224,20 @@
 
 <xsl:template name="sect1.titlepage">
   <fo:block xmlns:fo="http://www.w3.org/1999/XSL/Format">
-    <fo:block>
-    <xsl:call-template name="sect1.titlepage.before.recto"/>
-    <xsl:call-template name="sect1.titlepage.recto"/>
-    </fo:block>
-    <fo:block>
-    <xsl:call-template name="sect1.titlepage.before.verso"/>
-    <xsl:call-template name="sect1.titlepage.verso"/>
-    </fo:block>
+    <xsl:variable name="recto.content">
+      <xsl:call-template name="sect1.titlepage.before.recto"/>
+      <xsl:call-template name="sect1.titlepage.recto"/>
+    </xsl:variable>
+    <xsl:if test="normalize-space($recto.content) != ''">
+      <fo:block><xsl:copy-of select="$recto.content"/></fo:block>
+    </xsl:if>
+    <xsl:variable name="verso.content">
+      <xsl:call-template name="sect1.titlepage.before.verso"/>
+      <xsl:call-template name="sect1.titlepage.verso"/>
+    </xsl:variable>
+    <xsl:if test="normalize-space($verso.content) != ''">
+      <fo:block><xsl:copy-of select="$verso.content"/></fo:block>
+    </xsl:if>
     <xsl:call-template name="sect1.titlepage.separator"/>
   </fo:block>
 </xsl:template>
@@ -2293,14 +2395,20 @@
 
 <xsl:template name="sect2.titlepage">
   <fo:block xmlns:fo="http://www.w3.org/1999/XSL/Format">
-    <fo:block>
-    <xsl:call-template name="sect2.titlepage.before.recto"/>
-    <xsl:call-template name="sect2.titlepage.recto"/>
-    </fo:block>
-    <fo:block>
-    <xsl:call-template name="sect2.titlepage.before.verso"/>
-    <xsl:call-template name="sect2.titlepage.verso"/>
-    </fo:block>
+    <xsl:variable name="recto.content">
+      <xsl:call-template name="sect2.titlepage.before.recto"/>
+      <xsl:call-template name="sect2.titlepage.recto"/>
+    </xsl:variable>
+    <xsl:if test="normalize-space($recto.content) != ''">
+      <fo:block><xsl:copy-of select="$recto.content"/></fo:block>
+    </xsl:if>
+    <xsl:variable name="verso.content">
+      <xsl:call-template name="sect2.titlepage.before.verso"/>
+      <xsl:call-template name="sect2.titlepage.verso"/>
+    </xsl:variable>
+    <xsl:if test="normalize-space($verso.content) != ''">
+      <fo:block><xsl:copy-of select="$verso.content"/></fo:block>
+    </xsl:if>
     <xsl:call-template name="sect2.titlepage.separator"/>
   </fo:block>
 </xsl:template>
@@ -2458,14 +2566,20 @@
 
 <xsl:template name="sect3.titlepage">
   <fo:block xmlns:fo="http://www.w3.org/1999/XSL/Format">
-    <fo:block>
-    <xsl:call-template name="sect3.titlepage.before.recto"/>
-    <xsl:call-template name="sect3.titlepage.recto"/>
-    </fo:block>
-    <fo:block>
-    <xsl:call-template name="sect3.titlepage.before.verso"/>
-    <xsl:call-template name="sect3.titlepage.verso"/>
-    </fo:block>
+    <xsl:variable name="recto.content">
+      <xsl:call-template name="sect3.titlepage.before.recto"/>
+      <xsl:call-template name="sect3.titlepage.recto"/>
+    </xsl:variable>
+    <xsl:if test="normalize-space($recto.content) != ''">
+      <fo:block><xsl:copy-of select="$recto.content"/></fo:block>
+    </xsl:if>
+    <xsl:variable name="verso.content">
+      <xsl:call-template name="sect3.titlepage.before.verso"/>
+      <xsl:call-template name="sect3.titlepage.verso"/>
+    </xsl:variable>
+    <xsl:if test="normalize-space($verso.content) != ''">
+      <fo:block><xsl:copy-of select="$verso.content"/></fo:block>
+    </xsl:if>
     <xsl:call-template name="sect3.titlepage.separator"/>
   </fo:block>
 </xsl:template>
@@ -2623,14 +2737,20 @@
 
 <xsl:template name="sect4.titlepage">
   <fo:block xmlns:fo="http://www.w3.org/1999/XSL/Format">
-    <fo:block>
-    <xsl:call-template name="sect4.titlepage.before.recto"/>
-    <xsl:call-template name="sect4.titlepage.recto"/>
-    </fo:block>
-    <fo:block>
-    <xsl:call-template name="sect4.titlepage.before.verso"/>
-    <xsl:call-template name="sect4.titlepage.verso"/>
-    </fo:block>
+    <xsl:variable name="recto.content">
+      <xsl:call-template name="sect4.titlepage.before.recto"/>
+      <xsl:call-template name="sect4.titlepage.recto"/>
+    </xsl:variable>
+    <xsl:if test="normalize-space($recto.content) != ''">
+      <fo:block><xsl:copy-of select="$recto.content"/></fo:block>
+    </xsl:if>
+    <xsl:variable name="verso.content">
+      <xsl:call-template name="sect4.titlepage.before.verso"/>
+      <xsl:call-template name="sect4.titlepage.verso"/>
+    </xsl:variable>
+    <xsl:if test="normalize-space($verso.content) != ''">
+      <fo:block><xsl:copy-of select="$verso.content"/></fo:block>
+    </xsl:if>
     <xsl:call-template name="sect4.titlepage.separator"/>
   </fo:block>
 </xsl:template>
@@ -2788,14 +2908,20 @@
 
 <xsl:template name="sect5.titlepage">
   <fo:block xmlns:fo="http://www.w3.org/1999/XSL/Format">
-    <fo:block>
-    <xsl:call-template name="sect5.titlepage.before.recto"/>
-    <xsl:call-template name="sect5.titlepage.recto"/>
-    </fo:block>
-    <fo:block>
-    <xsl:call-template name="sect5.titlepage.before.verso"/>
-    <xsl:call-template name="sect5.titlepage.verso"/>
-    </fo:block>
+    <xsl:variable name="recto.content">
+      <xsl:call-template name="sect5.titlepage.before.recto"/>
+      <xsl:call-template name="sect5.titlepage.recto"/>
+    </xsl:variable>
+    <xsl:if test="normalize-space($recto.content) != ''">
+      <fo:block><xsl:copy-of select="$recto.content"/></fo:block>
+    </xsl:if>
+    <xsl:variable name="verso.content">
+      <xsl:call-template name="sect5.titlepage.before.verso"/>
+      <xsl:call-template name="sect5.titlepage.verso"/>
+    </xsl:variable>
+    <xsl:if test="normalize-space($verso.content) != ''">
+      <fo:block><xsl:copy-of select="$verso.content"/></fo:block>
+    </xsl:if>
     <xsl:call-template name="sect5.titlepage.separator"/>
   </fo:block>
 </xsl:template>
@@ -2970,14 +3096,20 @@
 
 <xsl:template name="simplesect.titlepage">
   <fo:block xmlns:fo="http://www.w3.org/1999/XSL/Format">
-    <fo:block>
-    <xsl:call-template name="simplesect.titlepage.before.recto"/>
-    <xsl:call-template name="simplesect.titlepage.recto"/>
-    </fo:block>
-    <fo:block>
-    <xsl:call-template name="simplesect.titlepage.before.verso"/>
-    <xsl:call-template name="simplesect.titlepage.verso"/>
-    </fo:block>
+    <xsl:variable name="recto.content">
+      <xsl:call-template name="simplesect.titlepage.before.recto"/>
+      <xsl:call-template name="simplesect.titlepage.recto"/>
+    </xsl:variable>
+    <xsl:if test="normalize-space($recto.content) != ''">
+      <fo:block><xsl:copy-of select="$recto.content"/></fo:block>
+    </xsl:if>
+    <xsl:variable name="verso.content">
+      <xsl:call-template name="simplesect.titlepage.before.verso"/>
+      <xsl:call-template name="simplesect.titlepage.verso"/>
+    </xsl:variable>
+    <xsl:if test="normalize-space($verso.content) != ''">
+      <fo:block><xsl:copy-of select="$verso.content"/></fo:block>
+    </xsl:if>
     <xsl:call-template name="simplesect.titlepage.separator"/>
   </fo:block>
 </xsl:template>
@@ -3108,14 +3240,20 @@
 
 <xsl:template name="bibliography.titlepage">
   <fo:block xmlns:fo="http://www.w3.org/1999/XSL/Format">
-    <fo:block>
-    <xsl:call-template name="bibliography.titlepage.before.recto"/>
-    <xsl:call-template name="bibliography.titlepage.recto"/>
-    </fo:block>
-    <fo:block>
-    <xsl:call-template name="bibliography.titlepage.before.verso"/>
-    <xsl:call-template name="bibliography.titlepage.verso"/>
-    </fo:block>
+    <xsl:variable name="recto.content">
+      <xsl:call-template name="bibliography.titlepage.before.recto"/>
+      <xsl:call-template name="bibliography.titlepage.recto"/>
+    </xsl:variable>
+    <xsl:if test="normalize-space($recto.content) != ''">
+      <fo:block><xsl:copy-of select="$recto.content"/></fo:block>
+    </xsl:if>
+    <xsl:variable name="verso.content">
+      <xsl:call-template name="bibliography.titlepage.before.verso"/>
+      <xsl:call-template name="bibliography.titlepage.verso"/>
+    </xsl:variable>
+    <xsl:if test="normalize-space($verso.content) != ''">
+      <fo:block><xsl:copy-of select="$verso.content"/></fo:block>
+    </xsl:if>
     <xsl:call-template name="bibliography.titlepage.separator"/>
   </fo:block>
 </xsl:template>
@@ -3185,14 +3323,20 @@
 
 <xsl:template name="bibliodiv.titlepage">
   <fo:block xmlns:fo="http://www.w3.org/1999/XSL/Format">
-    <fo:block>
-    <xsl:call-template name="bibliodiv.titlepage.before.recto"/>
-    <xsl:call-template name="bibliodiv.titlepage.recto"/>
-    </fo:block>
-    <fo:block>
-    <xsl:call-template name="bibliodiv.titlepage.before.verso"/>
-    <xsl:call-template name="bibliodiv.titlepage.verso"/>
-    </fo:block>
+    <xsl:variable name="recto.content">
+      <xsl:call-template name="bibliodiv.titlepage.before.recto"/>
+      <xsl:call-template name="bibliodiv.titlepage.recto"/>
+    </xsl:variable>
+    <xsl:if test="normalize-space($recto.content) != ''">
+      <fo:block><xsl:copy-of select="$recto.content"/></fo:block>
+    </xsl:if>
+    <xsl:variable name="verso.content">
+      <xsl:call-template name="bibliodiv.titlepage.before.verso"/>
+      <xsl:call-template name="bibliodiv.titlepage.verso"/>
+    </xsl:variable>
+    <xsl:if test="normalize-space($verso.content) != ''">
+      <fo:block><xsl:copy-of select="$verso.content"/></fo:block>
+    </xsl:if>
     <xsl:call-template name="bibliodiv.titlepage.separator"/>
   </fo:block>
 </xsl:template>
@@ -3259,14 +3403,20 @@
 
 <xsl:template name="glossary.titlepage">
   <fo:block xmlns:fo="http://www.w3.org/1999/XSL/Format">
-    <fo:block>
-    <xsl:call-template name="glossary.titlepage.before.recto"/>
-    <xsl:call-template name="glossary.titlepage.recto"/>
-    </fo:block>
-    <fo:block>
-    <xsl:call-template name="glossary.titlepage.before.verso"/>
-    <xsl:call-template name="glossary.titlepage.verso"/>
-    </fo:block>
+    <xsl:variable name="recto.content">
+      <xsl:call-template name="glossary.titlepage.before.recto"/>
+      <xsl:call-template name="glossary.titlepage.recto"/>
+    </xsl:variable>
+    <xsl:if test="normalize-space($recto.content) != ''">
+      <fo:block><xsl:copy-of select="$recto.content"/></fo:block>
+    </xsl:if>
+    <xsl:variable name="verso.content">
+      <xsl:call-template name="glossary.titlepage.before.verso"/>
+      <xsl:call-template name="glossary.titlepage.verso"/>
+    </xsl:variable>
+    <xsl:if test="normalize-space($verso.content) != ''">
+      <fo:block><xsl:copy-of select="$verso.content"/></fo:block>
+    </xsl:if>
     <xsl:call-template name="glossary.titlepage.separator"/>
   </fo:block>
 </xsl:template>
@@ -3336,14 +3486,20 @@
 
 <xsl:template name="glossdiv.titlepage">
   <fo:block xmlns:fo="http://www.w3.org/1999/XSL/Format">
-    <fo:block>
-    <xsl:call-template name="glossdiv.titlepage.before.recto"/>
-    <xsl:call-template name="glossdiv.titlepage.recto"/>
-    </fo:block>
-    <fo:block>
-    <xsl:call-template name="glossdiv.titlepage.before.verso"/>
-    <xsl:call-template name="glossdiv.titlepage.verso"/>
-    </fo:block>
+    <xsl:variable name="recto.content">
+      <xsl:call-template name="glossdiv.titlepage.before.recto"/>
+      <xsl:call-template name="glossdiv.titlepage.recto"/>
+    </xsl:variable>
+    <xsl:if test="normalize-space($recto.content) != ''">
+      <fo:block><xsl:copy-of select="$recto.content"/></fo:block>
+    </xsl:if>
+    <xsl:variable name="verso.content">
+      <xsl:call-template name="glossdiv.titlepage.before.verso"/>
+      <xsl:call-template name="glossdiv.titlepage.verso"/>
+    </xsl:variable>
+    <xsl:if test="normalize-space($verso.content) != ''">
+      <fo:block><xsl:copy-of select="$verso.content"/></fo:block>
+    </xsl:if>
     <xsl:call-template name="glossdiv.titlepage.separator"/>
   </fo:block>
 </xsl:template>
@@ -3411,14 +3567,20 @@
 
 <xsl:template name="index.titlepage">
   <fo:block xmlns:fo="http://www.w3.org/1999/XSL/Format">
-    <fo:block>
-    <xsl:call-template name="index.titlepage.before.recto"/>
-    <xsl:call-template name="index.titlepage.recto"/>
-    </fo:block>
-    <fo:block>
-    <xsl:call-template name="index.titlepage.before.verso"/>
-    <xsl:call-template name="index.titlepage.verso"/>
-    </fo:block>
+    <xsl:variable name="recto.content">
+      <xsl:call-template name="index.titlepage.before.recto"/>
+      <xsl:call-template name="index.titlepage.recto"/>
+    </xsl:variable>
+    <xsl:if test="normalize-space($recto.content) != ''">
+      <fo:block><xsl:copy-of select="$recto.content"/></fo:block>
+    </xsl:if>
+    <xsl:variable name="verso.content">
+      <xsl:call-template name="index.titlepage.before.verso"/>
+      <xsl:call-template name="index.titlepage.verso"/>
+    </xsl:variable>
+    <xsl:if test="normalize-space($verso.content) != ''">
+      <fo:block><xsl:copy-of select="$verso.content"/></fo:block>
+    </xsl:if>
     <xsl:call-template name="index.titlepage.separator"/>
   </fo:block>
 </xsl:template>
@@ -3477,14 +3639,20 @@
 
 <xsl:template name="indexdiv.titlepage">
   <fo:block xmlns:fo="http://www.w3.org/1999/XSL/Format">
-    <fo:block>
-    <xsl:call-template name="indexdiv.titlepage.before.recto"/>
-    <xsl:call-template name="indexdiv.titlepage.recto"/>
-    </fo:block>
-    <fo:block>
-    <xsl:call-template name="indexdiv.titlepage.before.verso"/>
-    <xsl:call-template name="indexdiv.titlepage.verso"/>
-    </fo:block>
+    <xsl:variable name="recto.content">
+      <xsl:call-template name="indexdiv.titlepage.before.recto"/>
+      <xsl:call-template name="indexdiv.titlepage.recto"/>
+    </xsl:variable>
+    <xsl:if test="normalize-space($recto.content) != ''">
+      <fo:block><xsl:copy-of select="$recto.content"/></fo:block>
+    </xsl:if>
+    <xsl:variable name="verso.content">
+      <xsl:call-template name="indexdiv.titlepage.before.verso"/>
+      <xsl:call-template name="indexdiv.titlepage.verso"/>
+    </xsl:variable>
+    <xsl:if test="normalize-space($verso.content) != ''">
+      <fo:block><xsl:copy-of select="$verso.content"/></fo:block>
+    </xsl:if>
     <xsl:call-template name="indexdiv.titlepage.separator"/>
   </fo:block>
 </xsl:template>
@@ -3544,14 +3712,20 @@
 
 <xsl:template name="setindex.titlepage">
   <fo:block xmlns:fo="http://www.w3.org/1999/XSL/Format">
-    <fo:block>
-    <xsl:call-template name="setindex.titlepage.before.recto"/>
-    <xsl:call-template name="setindex.titlepage.recto"/>
-    </fo:block>
-    <fo:block>
-    <xsl:call-template name="setindex.titlepage.before.verso"/>
-    <xsl:call-template name="setindex.titlepage.verso"/>
-    </fo:block>
+    <xsl:variable name="recto.content">
+      <xsl:call-template name="setindex.titlepage.before.recto"/>
+      <xsl:call-template name="setindex.titlepage.recto"/>
+    </xsl:variable>
+    <xsl:if test="normalize-space($recto.content) != ''">
+      <fo:block><xsl:copy-of select="$recto.content"/></fo:block>
+    </xsl:if>
+    <xsl:variable name="verso.content">
+      <xsl:call-template name="setindex.titlepage.before.verso"/>
+      <xsl:call-template name="setindex.titlepage.verso"/>
+    </xsl:variable>
+    <xsl:if test="normalize-space($verso.content) != ''">
+      <fo:block><xsl:copy-of select="$verso.content"/></fo:block>
+    </xsl:if>
     <xsl:call-template name="setindex.titlepage.separator"/>
   </fo:block>
 </xsl:template>
@@ -3610,14 +3784,20 @@
 
 <xsl:template name="colophon.titlepage">
   <fo:block xmlns:fo="http://www.w3.org/1999/XSL/Format">
-    <fo:block>
-    <xsl:call-template name="colophon.titlepage.before.recto"/>
-    <xsl:call-template name="colophon.titlepage.recto"/>
-    </fo:block>
-    <fo:block>
-    <xsl:call-template name="colophon.titlepage.before.verso"/>
-    <xsl:call-template name="colophon.titlepage.verso"/>
-    </fo:block>
+    <xsl:variable name="recto.content">
+      <xsl:call-template name="colophon.titlepage.before.recto"/>
+      <xsl:call-template name="colophon.titlepage.recto"/>
+    </xsl:variable>
+    <xsl:if test="normalize-space($recto.content) != ''">
+      <fo:block><xsl:copy-of select="$recto.content"/></fo:block>
+    </xsl:if>
+    <xsl:variable name="verso.content">
+      <xsl:call-template name="colophon.titlepage.before.verso"/>
+      <xsl:call-template name="colophon.titlepage.verso"/>
+    </xsl:variable>
+    <xsl:if test="normalize-space($verso.content) != ''">
+      <fo:block><xsl:copy-of select="$verso.content"/></fo:block>
+    </xsl:if>
     <xsl:call-template name="colophon.titlepage.separator"/>
   </fo:block>
 </xsl:template>
@@ -3661,14 +3841,20 @@
 
 <xsl:template name="table.of.contents.titlepage">
   <fo:block xmlns:fo="http://www.w3.org/1999/XSL/Format">
-    <fo:block>
-    <xsl:call-template name="table.of.contents.titlepage.before.recto"/>
-    <xsl:call-template name="table.of.contents.titlepage.recto"/>
-    </fo:block>
-    <fo:block>
-    <xsl:call-template name="table.of.contents.titlepage.before.verso"/>
-    <xsl:call-template name="table.of.contents.titlepage.verso"/>
-    </fo:block>
+    <xsl:variable name="recto.content">
+      <xsl:call-template name="table.of.contents.titlepage.before.recto"/>
+      <xsl:call-template name="table.of.contents.titlepage.recto"/>
+    </xsl:variable>
+    <xsl:if test="normalize-space($recto.content) != ''">
+      <fo:block><xsl:copy-of select="$recto.content"/></fo:block>
+    </xsl:if>
+    <xsl:variable name="verso.content">
+      <xsl:call-template name="table.of.contents.titlepage.before.verso"/>
+      <xsl:call-template name="table.of.contents.titlepage.verso"/>
+    </xsl:variable>
+    <xsl:if test="normalize-space($verso.content) != ''">
+      <fo:block><xsl:copy-of select="$verso.content"/></fo:block>
+    </xsl:if>
     <xsl:call-template name="table.of.contents.titlepage.separator"/>
   </fo:block>
 </xsl:template>
@@ -3706,14 +3892,20 @@
 
 <xsl:template name="list.of.tables.titlepage">
   <fo:block xmlns:fo="http://www.w3.org/1999/XSL/Format">
-    <fo:block>
-    <xsl:call-template name="list.of.tables.titlepage.before.recto"/>
-    <xsl:call-template name="list.of.tables.titlepage.recto"/>
-    </fo:block>
-    <fo:block>
-    <xsl:call-template name="list.of.tables.titlepage.before.verso"/>
-    <xsl:call-template name="list.of.tables.titlepage.verso"/>
-    </fo:block>
+    <xsl:variable name="recto.content">
+      <xsl:call-template name="list.of.tables.titlepage.before.recto"/>
+      <xsl:call-template name="list.of.tables.titlepage.recto"/>
+    </xsl:variable>
+    <xsl:if test="normalize-space($recto.content) != ''">
+      <fo:block><xsl:copy-of select="$recto.content"/></fo:block>
+    </xsl:if>
+    <xsl:variable name="verso.content">
+      <xsl:call-template name="list.of.tables.titlepage.before.verso"/>
+      <xsl:call-template name="list.of.tables.titlepage.verso"/>
+    </xsl:variable>
+    <xsl:if test="normalize-space($verso.content) != ''">
+      <fo:block><xsl:copy-of select="$verso.content"/></fo:block>
+    </xsl:if>
     <xsl:call-template name="list.of.tables.titlepage.separator"/>
   </fo:block>
 </xsl:template>
@@ -3751,14 +3943,20 @@
 
 <xsl:template name="list.of.figures.titlepage">
   <fo:block xmlns:fo="http://www.w3.org/1999/XSL/Format">
-    <fo:block>
-    <xsl:call-template name="list.of.figures.titlepage.before.recto"/>
-    <xsl:call-template name="list.of.figures.titlepage.recto"/>
-    </fo:block>
-    <fo:block>
-    <xsl:call-template name="list.of.figures.titlepage.before.verso"/>
-    <xsl:call-template name="list.of.figures.titlepage.verso"/>
-    </fo:block>
+    <xsl:variable name="recto.content">
+      <xsl:call-template name="list.of.figures.titlepage.before.recto"/>
+      <xsl:call-template name="list.of.figures.titlepage.recto"/>
+    </xsl:variable>
+    <xsl:if test="normalize-space($recto.content) != ''">
+      <fo:block><xsl:copy-of select="$recto.content"/></fo:block>
+    </xsl:if>
+    <xsl:variable name="verso.content">
+      <xsl:call-template name="list.of.figures.titlepage.before.verso"/>
+      <xsl:call-template name="list.of.figures.titlepage.verso"/>
+    </xsl:variable>
+    <xsl:if test="normalize-space($verso.content) != ''">
+      <fo:block><xsl:copy-of select="$verso.content"/></fo:block>
+    </xsl:if>
     <xsl:call-template name="list.of.figures.titlepage.separator"/>
   </fo:block>
 </xsl:template>
@@ -3796,14 +3994,20 @@
 
 <xsl:template name="list.of.examples.titlepage">
   <fo:block xmlns:fo="http://www.w3.org/1999/XSL/Format">
-    <fo:block>
-    <xsl:call-template name="list.of.examples.titlepage.before.recto"/>
-    <xsl:call-template name="list.of.examples.titlepage.recto"/>
-    </fo:block>
-    <fo:block>
-    <xsl:call-template name="list.of.examples.titlepage.before.verso"/>
-    <xsl:call-template name="list.of.examples.titlepage.verso"/>
-    </fo:block>
+    <xsl:variable name="recto.content">
+      <xsl:call-template name="list.of.examples.titlepage.before.recto"/>
+      <xsl:call-template name="list.of.examples.titlepage.recto"/>
+    </xsl:variable>
+    <xsl:if test="normalize-space($recto.content) != ''">
+      <fo:block><xsl:copy-of select="$recto.content"/></fo:block>
+    </xsl:if>
+    <xsl:variable name="verso.content">
+      <xsl:call-template name="list.of.examples.titlepage.before.verso"/>
+      <xsl:call-template name="list.of.examples.titlepage.verso"/>
+    </xsl:variable>
+    <xsl:if test="normalize-space($verso.content) != ''">
+      <fo:block><xsl:copy-of select="$verso.content"/></fo:block>
+    </xsl:if>
     <xsl:call-template name="list.of.examples.titlepage.separator"/>
   </fo:block>
 </xsl:template>
@@ -3841,14 +4045,20 @@
 
 <xsl:template name="list.of.equations.titlepage">
   <fo:block xmlns:fo="http://www.w3.org/1999/XSL/Format">
-    <fo:block>
-    <xsl:call-template name="list.of.equations.titlepage.before.recto"/>
-    <xsl:call-template name="list.of.equations.titlepage.recto"/>
-    </fo:block>
-    <fo:block>
-    <xsl:call-template name="list.of.equations.titlepage.before.verso"/>
-    <xsl:call-template name="list.of.equations.titlepage.verso"/>
-    </fo:block>
+    <xsl:variable name="recto.content">
+      <xsl:call-template name="list.of.equations.titlepage.before.recto"/>
+      <xsl:call-template name="list.of.equations.titlepage.recto"/>
+    </xsl:variable>
+    <xsl:if test="normalize-space($recto.content) != ''">
+      <fo:block><xsl:copy-of select="$recto.content"/></fo:block>
+    </xsl:if>
+    <xsl:variable name="verso.content">
+      <xsl:call-template name="list.of.equations.titlepage.before.verso"/>
+      <xsl:call-template name="list.of.equations.titlepage.verso"/>
+    </xsl:variable>
+    <xsl:if test="normalize-space($verso.content) != ''">
+      <fo:block><xsl:copy-of select="$verso.content"/></fo:block>
+    </xsl:if>
     <xsl:call-template name="list.of.equations.titlepage.separator"/>
   </fo:block>
 </xsl:template>
@@ -3886,14 +4096,20 @@
 
 <xsl:template name="list.of.procedures.titlepage">
   <fo:block xmlns:fo="http://www.w3.org/1999/XSL/Format">
-    <fo:block>
-    <xsl:call-template name="list.of.procedures.titlepage.before.recto"/>
-    <xsl:call-template name="list.of.procedures.titlepage.recto"/>
-    </fo:block>
-    <fo:block>
-    <xsl:call-template name="list.of.procedures.titlepage.before.verso"/>
-    <xsl:call-template name="list.of.procedures.titlepage.verso"/>
-    </fo:block>
+    <xsl:variable name="recto.content">
+      <xsl:call-template name="list.of.procedures.titlepage.before.recto"/>
+      <xsl:call-template name="list.of.procedures.titlepage.recto"/>
+    </xsl:variable>
+    <xsl:if test="normalize-space($recto.content) != ''">
+      <fo:block><xsl:copy-of select="$recto.content"/></fo:block>
+    </xsl:if>
+    <xsl:variable name="verso.content">
+      <xsl:call-template name="list.of.procedures.titlepage.before.verso"/>
+      <xsl:call-template name="list.of.procedures.titlepage.verso"/>
+    </xsl:variable>
+    <xsl:if test="normalize-space($verso.content) != ''">
+      <fo:block><xsl:copy-of select="$verso.content"/></fo:block>
+    </xsl:if>
     <xsl:call-template name="list.of.procedures.titlepage.separator"/>
   </fo:block>
 </xsl:template>
@@ -3931,14 +4147,20 @@
 
 <xsl:template name="list.of.unknowns.titlepage">
   <fo:block xmlns:fo="http://www.w3.org/1999/XSL/Format">
-    <fo:block>
-    <xsl:call-template name="list.of.unknowns.titlepage.before.recto"/>
-    <xsl:call-template name="list.of.unknowns.titlepage.recto"/>
-    </fo:block>
-    <fo:block>
-    <xsl:call-template name="list.of.unknowns.titlepage.before.verso"/>
-    <xsl:call-template name="list.of.unknowns.titlepage.verso"/>
-    </fo:block>
+    <xsl:variable name="recto.content">
+      <xsl:call-template name="list.of.unknowns.titlepage.before.recto"/>
+      <xsl:call-template name="list.of.unknowns.titlepage.recto"/>
+    </xsl:variable>
+    <xsl:if test="normalize-space($recto.content) != ''">
+      <fo:block><xsl:copy-of select="$recto.content"/></fo:block>
+    </xsl:if>
+    <xsl:variable name="verso.content">
+      <xsl:call-template name="list.of.unknowns.titlepage.before.verso"/>
+      <xsl:call-template name="list.of.unknowns.titlepage.verso"/>
+    </xsl:variable>
+    <xsl:if test="normalize-space($verso.content) != ''">
+      <fo:block><xsl:copy-of select="$verso.content"/></fo:block>
+    </xsl:if>
     <xsl:call-template name="list.of.unknowns.titlepage.separator"/>
   </fo:block>
 </xsl:template>

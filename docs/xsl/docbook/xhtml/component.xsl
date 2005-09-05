@@ -4,7 +4,7 @@
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns="http://www.w3.org/1999/xhtml" version="1.0">
 
 <!-- ********************************************************************
-     $Id: component.xsl,v 1.22 2004/01/29 13:24:05 nwalsh Exp $
+     $Id: component.xsl,v 1.23 2004/10/22 12:51:26 nwalsh Exp $
      ********************************************************************
 
      This file is part of the XSL DocBook Stylesheet distribution.
@@ -17,7 +17,26 @@
 
 <xsl:template name="component.title">
   <xsl:param name="node" select="."/>
-  <h2 class="title">
+
+  <xsl:variable name="level">
+    <xsl:choose>
+      <xsl:when test="ancestor::section">
+	<xsl:value-of select="count(ancestor::section)+1"/>
+      </xsl:when>
+      <xsl:when test="ancestor::sect5">6</xsl:when>
+      <xsl:when test="ancestor::sect4">5</xsl:when>
+      <xsl:when test="ancestor::sect3">4</xsl:when>
+      <xsl:when test="ancestor::sect2">3</xsl:when>
+      <xsl:when test="ancestor::sect1">2</xsl:when>
+      <xsl:otherwise>1</xsl:otherwise>
+    </xsl:choose>
+  </xsl:variable>
+
+  <!-- Let's handle the case where a component (bibliography, for example)
+       occurs inside a section; will we need parameters for this? -->
+
+  <xsl:element name="h{$level+1}" namespace="http://www.w3.org/1999/xhtml">
+    <xsl:attribute name="class">title</xsl:attribute>
     <xsl:call-template name="anchor">
       <xsl:with-param name="node" select="$node"/>
       <xsl:with-param name="conditional" select="0"/>
@@ -25,7 +44,7 @@
     <xsl:apply-templates select="$node" mode="object.title.markup">
       <xsl:with-param name="allow-anchors" select="1"/>
     </xsl:apply-templates>
-  </h2>
+  </xsl:element>
 </xsl:template>
 
 <xsl:template name="component.subtitle">

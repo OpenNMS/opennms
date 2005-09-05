@@ -11,7 +11,7 @@ import org.apache.xalan.extensions.ExpressionContext;
 /**
  * <p>Saxon extension to examine intrinsic size of images</p>
  *
- * <p>$Id: ImageIntrinsics.java,v 1.1 2002/05/08 02:12:29 nwalsh Exp $</p>
+ * <p>$Id: ImageIntrinsics.java,v 1.2 2004/09/05 11:32:31 xmldoc Exp $</p>
  *
  * <p>Copyright (C) 2002 Norman Walsh.</p>
  *
@@ -28,7 +28,7 @@ import org.apache.xalan.extensions.ExpressionContext;
  * @author Norman Walsh
  * <a href="mailto:ndw@nwalsh.com">ndw@nwalsh.com</a>
  *
- * @version $Id: ImageIntrinsics.java,v 1.1 2002/05/08 02:12:29 nwalsh Exp $
+ * @version $Id: ImageIntrinsics.java,v 1.2 2004/09/05 11:32:31 xmldoc Exp $
  *
  */
 public class ImageIntrinsics implements ImageObserver {
@@ -42,6 +42,7 @@ public class ImageIntrinsics implements ImageObserver {
    * <p>Constructor for ImageIntrinsics</p>
    */
   public ImageIntrinsics(ExpressionContext context, String imageFn) {
+    System.setProperty("java.awt.headless","true");
     image = Toolkit.getDefaultToolkit().getImage (imageFn);
     width = image.getWidth(this);
 

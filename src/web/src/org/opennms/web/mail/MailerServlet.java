@@ -49,87 +49,85 @@ import org.apache.log4j.Category;
 import org.opennms.web.MissingParameterException;
 import org.opennms.web.Util;
 
-
 /**
- * @author <A HREF="mailto:jacinta@opennms.org">Jacinta Remedios</A>
- * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski</A> 
- * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
+ * @author <A HREF="mailto:jacinta@opennms.org">Jacinta Remedios </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
-public class MailerServlet extends HttpServlet
-{
+public class MailerServlet extends HttpServlet {
     protected static final String[] REQUIRED_FIELDS = new String[] { "sendto", "subject", "username", "msg" };
+
     protected Category log = Category.getInstance("WEB.MAIL");
-    
+
     protected String redirectSuccess;
+
     protected String mailProgram;
-    
+
     public void init() throws ServletException {
         ServletConfig config = this.getServletConfig();
-        
+
         this.redirectSuccess = config.getInitParameter("redirect.success");
         this.mailProgram = config.getInitParameter("mail.program");
-        
-        if( this.redirectSuccess == null ) {
+
+        if (this.redirectSuccess == null) {
             throw new ServletException("Missing required init parameter: redirect.success");
         }
-        
-        if( this.mailProgram == null ) {
+
+        if (this.mailProgram == null) {
             throw new ServletException("Missing required init parameter: mail.program");
         }
     }
-    
 
-    public void doPost( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException {
-        String sendto   = request.getParameter("sendto");
-        String subject  = request.getParameter("subject");
-        String msg      = request.getParameter("msg");
+    public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        String sendto = request.getParameter("sendto");
+        String subject = request.getParameter("subject");
+        String msg = request.getParameter("msg");
         String username = request.getRemoteUser();
 
-        this.log.debug( "To: " + sendto + ", Subject: " + subject + ", message: " + msg + ", username: " + username );        
+        this.log.debug("To: " + sendto + ", Subject: " + subject + ", message: " + msg + ", username: " + username);
 
-        if( sendto == null) {
-            throw new MissingParameterException( "sendto", REQUIRED_FIELDS );
+        if (sendto == null) {
+            throw new MissingParameterException("sendto", REQUIRED_FIELDS);
         }
 
-        if( subject == null) {
-            throw new MissingParameterException( "subject", REQUIRED_FIELDS );
+        if (subject == null) {
+            throw new MissingParameterException("subject", REQUIRED_FIELDS);
         }
 
-        if( msg == null) {
-            throw new MissingParameterException( "msg", REQUIRED_FIELDS );
+        if (msg == null) {
+            throw new MissingParameterException("msg", REQUIRED_FIELDS);
         }
-        
-        if( username == null ) {
+
+        if (username == null) {
             username = "";
         }
 
-        String[] cmdArgs = { this.mailProgram , "-s" , subject, sendto };
-        Process process = Runtime.getRuntime().exec( cmdArgs );
-        
-        //send the message to the stdin of the mail command
+        String[] cmdArgs = { this.mailProgram, "-s", subject, sendto };
+        Process process = Runtime.getRuntime().exec(cmdArgs);
+
+        // send the message to the stdin of the mail command
         PrintWriter stdinWriter = new PrintWriter(process.getOutputStream());
-        stdinWriter.print( msg );
+        stdinWriter.print(msg);
         stdinWriter.close();
 
-        //get the stderr to see if the command failed
+        // get the stderr to see if the command failed
         BufferedReader err = new BufferedReader(new InputStreamReader(process.getErrorStream()));
 
-        if( err.ready() ) {
-            //get the error message
-            StringWriter tempErr = new StringWriter();            
+        if (err.ready()) {
+            // get the error message
+            StringWriter tempErr = new StringWriter();
             Util.streamToStream(err, tempErr);
             String errorMessage = tempErr.toString();
-            
-            //log the error message
+
+            // log the error message
             this.log.warn("Read from stderr: " + errorMessage);
-            
-            //send the error message to the client
-            response.setContentType( "text/plain" );
-            PrintWriter out = response.getWriter();            
-            Util.streamToStream( new StringReader(errorMessage), out );
-            out.close();            
-        }
-        else {
+
+            // send the error message to the client
+            response.setContentType("text/plain");
+            PrintWriter out = response.getWriter();
+            Util.streamToStream(new StringReader(errorMessage), out);
+            out.close();
+        } else {
             response.sendRedirect(this.redirectSuccess);
         }
     }

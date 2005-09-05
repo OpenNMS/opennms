@@ -12,7 +12,7 @@
    <l:gentext key="Answer" text="A:"/>
    <l:gentext key="answer" text="A:"/>
    <l:gentext key="Appendix" text="Appendix"/>
-   <l:gentext key="appendix" text="appendix"/>
+   <l:gentext key="appendix" text="Appendix"/>
    <l:gentext key="Article" text="Article"/>
    <l:gentext key="article" text="Article"/>
    <l:gentext key="Bibliography" text="Bibliography"/>
@@ -23,7 +23,7 @@
    <l:gentext key="Caution" text="Caution"/>
    <l:gentext key="caution" text="Caution"/>
    <l:gentext key="Chapter" text="Chapter"/>
-   <l:gentext key="chapter" text="chapter"/>
+   <l:gentext key="chapter" text="Chapter"/>
    <l:gentext key="Colophon" text="Colophon"/>
    <l:gentext key="colophon" text="Colophon"/>
    <l:gentext key="Copyright" text="Copyright"/>
@@ -208,6 +208,8 @@
       <l:template name="equation" text="Equation&#160;%n.&#160;%t"/>
       <l:template name="example" text="Example&#160;%n.&#160;%t"/>
       <l:template name="figure" text="Figure&#160;%n.&#160;%t"/>
+      <l:template name="foil" text="%t"/>
+      <l:template name="foilgroup" text="%t"/>
       <l:template name="formalpara" text="%t"/>
       <l:template name="glossary" text="%t"/>
       <l:template name="glossdiv" text="%t"/>
@@ -351,6 +353,8 @@
       <l:template name="equation" text="%t"/>
       <l:template name="example" text="%t"/>
       <l:template name="figure" text="%t"/>
+      <l:template name="foil" text="%t"/>
+      <l:template name="foilgroup" text="%t"/>
       <l:template name="formalpara" text="%t"/>
       <l:template name="glossary" text="%t"/>
       <l:template name="glossdiv" text="%t"/>
@@ -390,8 +394,12 @@
       <l:template name="variablelist" text="%t"/>
       <l:template name="varlistentry" text="%n"/>
       <l:template name="warning" text="%t"/>
+      <l:template name="olink.document.citation" text=" in %o"/>
+      <l:template name="olink.page.citation" text=" (page %p)"/>
       <l:template name="page.citation" text=" [%p]"/>
       <l:template name="page" text="(page %p)"/>
+      <l:template name="docname" text=" in %o"/>
+      <l:template name="docnamelong" text=" in the document titled %o"/>
       <l:template name="pageabbrev" text="(p. %p)"/>
       <l:template name="Page" text="Page %p"/>
       <l:template name="bridgehead" text="the section called &#8220;%t&#8221;"/>

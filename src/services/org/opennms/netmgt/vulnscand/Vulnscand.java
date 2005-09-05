@@ -48,309 +48,264 @@ import org.opennms.netmgt.config.DatabaseConnectionFactory;
 import org.opennms.netmgt.config.VulnscandConfigFactory;
 
 /**
-* <P>Vulnerability scanning daemon. This process is used to provide
-* continual scans of target interfaces that identify possible
-* security holes. The vulnerability scanner that this version uses
-* to identify security flaws is Nessus 1.1.X (www.nessus.org).</P>
-*
-* <P>This code is adapted from the capsd code because its behavior
-* is quite similar; it continually scans the target ranges, enters
-* the scan results into a database table, and also supports rescans
-* whose threads are pulled from a separate thread pool so that they
-* occur immediately.</P>
-*
-* @author <A HREF="mailto:seth@opennms.org">Seth Leger</A>
-* @author <A HREF="http://www.opennms.org/">OpenNMS</A>
-*
-*/
-public class Vulnscand implements PausableFiber
-{
-	/**
-	* The log4j category used to log messages.
-	*/
-	private static final String 	LOG4J_CATEGORY		= "OpenNMS.Vulnscand";
+ * <P>
+ * Vulnerability scanning daemon. This process is used to provide continual
+ * scans of target interfaces that identify possible security holes. The
+ * vulnerability scanner that this version uses to identify security flaws is
+ * Nessus 1.1.X (www.nessus.org).
+ * </P>
+ * 
+ * <P>
+ * This code is adapted from the capsd code because its behavior is quite
+ * similar; it continually scans the target ranges, enters the scan results into
+ * a database table, and also supports rescans whose threads are pulled from a
+ * separate thread pool so that they occur immediately.
+ * </P>
+ * 
+ * @author <A HREF="mailto:seth@opennms.org">Seth Leger </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * 
+ */
+public class Vulnscand implements PausableFiber {
+    /**
+     * The log4j category used to log messages.
+     */
+    private static final String LOG4J_CATEGORY = "OpenNMS.Vulnscand";
 
-	/**
-	* The prefix for the fiber name.
-	*/
-	private static final String	FIBER_NAME 		= "Vulnscand";
+    /**
+     * The prefix for the fiber name.
+     */
+    private static final String FIBER_NAME = "Vulnscand";
 
-	/**
-	* Singleton instance of the Vulnscand class
-	*/
-	private static final Vulnscand	m_singleton = new Vulnscand();
+    /**
+     * Singleton instance of the Vulnscand class
+     */
+    private static final Vulnscand m_singleton = new Vulnscand();
 
-	/**
-	* Current status of this fiber
-	*/
-	private int				m_status;
+    /**
+     * Current status of this fiber
+     */
+    private int m_status;
 
-	/**
-	* Database synchronization lock for synchronizing write access
-	* to the database between the SpecificScanProcessor and
-	* RescanProcessor thread pools
-	*/
-	private static Object			m_dbSyncLock = new Object();
+    /**
+     * Database synchronization lock for synchronizing write access to the
+     * database between the SpecificScanProcessor and RescanProcessor thread
+     * pools
+     */
+    private static Object m_dbSyncLock = new Object();
 
-	/**
-	* <P>Contains dotted-decimal representation of the IP address
-	* where Vulnscand is running.  Used when vulnscand sends events out</P>
-	*/
-	private static String 			m_address = null;
+    /**
+     * <P>
+     * Contains dotted-decimal representation of the IP address where Vulnscand
+     * is running. Used when vulnscand sends events out
+     * </P>
+     */
+    private static String m_address = null;
 
-	/**
-	* Rescan scheduler thread
-	*/
-	private Scheduler			m_scheduler;
+    /**
+     * Rescan scheduler thread
+     */
+    private Scheduler m_scheduler;
 
-	/**
-	* Event receiver.
-	*/
-	private BroadcastEventProcessor		m_receiver;
+    /**
+     * Event receiver.
+     */
+    private BroadcastEventProcessor m_receiver;
 
-	/**
-	* The pool of threads that are used to executed the
-	* SpecificScanProcessor instances queued by the
-	* event processor (BroadcastEventProcessor).
-	*/
-	private RunnableConsumerThreadPool m_specificScanRunner;
+    /**
+     * The pool of threads that are used to executed the SpecificScanProcessor
+     * instances queued by the event processor (BroadcastEventProcessor).
+     */
+    private RunnableConsumerThreadPool m_specificScanRunner;
 
-	/**
-	* The pool of threads that are used to executed
-	* RescanProcessor instances queued by the rescan
-	* scheduler thread.
-	*/
-	private RunnableConsumerThreadPool m_scheduledScanRunner;
+    /**
+     * The pool of threads that are used to executed RescanProcessor instances
+     * queued by the rescan scheduler thread.
+     */
+    private RunnableConsumerThreadPool m_scheduledScanRunner;
 
-	/**
-	* <P>Static initialization</P>
-	*/
-	static
-	{
-		try
-		{
-			m_address = InetAddress.getLocalHost().getHostAddress();
-		}
-		catch(UnknownHostException uhE)
-		{
-			m_address = "localhost";
-			ThreadCategory.getInstance(LOG4J_CATEGORY).warn("Could not lookup the host name for the local host machine, address set to \"localhost\"", uhE);
-		}
-	} // end static class initialization
+    /**
+     * <P>
+     * Static initialization
+     * </P>
+     */
+    static {
+        try {
+            m_address = InetAddress.getLocalHost().getHostAddress();
+        } catch (UnknownHostException uhE) {
+            m_address = "localhost";
+            ThreadCategory.getInstance(LOG4J_CATEGORY).warn("Could not lookup the host name for the local host machine, address set to \"localhost\"", uhE);
+        }
+    } // end static class initialization
 
+    /**
+     * Constructs the Vulnscand objec
+     */
+    public Vulnscand() {
+        m_scheduler = null;
+        m_status = START_PENDING;
+    }
 
-	/**
-	* Constructs the Vulnscand objec
-	*/
-	public Vulnscand()
-	{
-		m_scheduler = null;
-		m_status = START_PENDING;
-	}
+    /**
+     * Stop the Vulnscand threads.
+     */
+    public void stop() {
+        m_status = STOP_PENDING;
 
-	/**
-	* Stop the Vulnscand threads.
-	*/
-	public void stop()
-	{
-		m_status = STOP_PENDING;
+        // Stop the broadcast event receiver
+        //
+        m_receiver.close();
 
-		// Stop the broadcast event receiver
-		//
-		m_receiver.close();
+        // Stop the Suspect Event Processor thread pool
+        //
+        m_specificScanRunner.stop();
 
-		// Stop the Suspect Event Processor thread pool
-		//
-		m_specificScanRunner.stop();
+        // Stop the Rescan Processor thread pool
+        //
+        m_scheduledScanRunner.stop();
 
-		// Stop the Rescan Processor thread pool
-		//
-		m_scheduledScanRunner.stop();
+        m_status = STOPPED;
+    }
 
-		m_status = STOPPED;
-	}
+    /**
+     * Start the Vulnscand threads.
+     */
+    public void start() {
+        ThreadCategory.setPrefix(LOG4J_CATEGORY);
 
-	/**
-	* Start the Vulnscand threads.
-	*/
-	public void start()
-	{
-		ThreadCategory.setPrefix(LOG4J_CATEGORY);
+        Category log = ThreadCategory.getInstance();
 
-		Category log = ThreadCategory.getInstance();
+        m_status = STARTING;
 
-		m_status = STARTING;
+        // Initialize the Vulnscand configuration factory.
+        //
+        try {
+            VulnscandConfigFactory.reload();
+        } catch (MarshalException ex) {
+            log.error("Failed to load Vulnscand configuration", ex);
+            throw new UndeclaredThrowableException(ex);
+        } catch (ValidationException ex) {
+            log.error("Failed to load Vulnscand configuration", ex);
+            throw new UndeclaredThrowableException(ex);
+        } catch (IOException ex) {
+            log.error("Failed to load Vulnscand configuration", ex);
+            throw new UndeclaredThrowableException(ex);
+        }
 
-		// Initialize the Vulnscand configuration factory.
-		//
-		try
-		{
-			VulnscandConfigFactory.reload();
-		}
-		catch(MarshalException ex)
-		{
-			log.error("Failed to load Vulnscand configuration", ex);
-			throw new UndeclaredThrowableException(ex);
-		}
-		catch(ValidationException ex)
-		{
-			log.error("Failed to load Vulnscand configuration", ex);
-			throw new UndeclaredThrowableException(ex);
-		}
-		catch(IOException ex)
-		{
-			log.error("Failed to load Vulnscand configuration", ex);
-			throw new UndeclaredThrowableException(ex);
-		}
+        // Initialize the Database configuration factory
+        //
+        try {
+            DatabaseConnectionFactory.init();
+        } catch (IOException ie) {
+            log.fatal("IOException loading database config", ie);
+            throw new UndeclaredThrowableException(ie);
+        } catch (MarshalException me) {
+            log.fatal("Marshall Exception loading database config", me);
+            throw new UndeclaredThrowableException(me);
+        } catch (ValidationException ve) {
+            log.fatal("Validation Exception loading database config", ve);
+            throw new UndeclaredThrowableException(ve);
+        } catch (ClassNotFoundException ce) {
+            log.fatal("Class lookup failure loading database config", ce);
+            throw new UndeclaredThrowableException(ce);
+        }
 
-		// Initialize the Database configuration factory
-		//
-		try
-		{
-			DatabaseConnectionFactory.init();
-		}
-		catch (IOException ie)
-		{
-			log.fatal("IOException loading database config", ie);
-			throw new UndeclaredThrowableException(ie);
-		}
-		catch (MarshalException me)
-		{
-			log.fatal("Marshall Exception loading database config", me);
-			throw new UndeclaredThrowableException(me);
-		}
-		catch (ValidationException ve)
-		{
-			log.fatal("Validation Exception loading database config", ve);
-			throw new UndeclaredThrowableException(ve);
-		}
-		catch (ClassNotFoundException ce)
-		{
-			log.fatal("Class lookup failure loading database config", ce);
-			throw new UndeclaredThrowableException(ce);
-		}
+        // Create the specific and scheduled scan pools
+        //
+        m_specificScanRunner = new RunnableConsumerThreadPool("Vulnscand Scan Pool", 0.6f, 1.0f, VulnscandConfigFactory.getInstance().getMaxSuspectThreadPoolSize());
 
+        m_scheduledScanRunner = new RunnableConsumerThreadPool("Vulnscand Rescan Pool", 0.6f, 1.0f, VulnscandConfigFactory.getInstance().getMaxRescanThreadPoolSize());
 
-		// Create the specific and scheduled scan pools
-		//
-		m_specificScanRunner = new RunnableConsumerThreadPool(
-			"Vulnscand Scan Pool",
-			0.6f,
-			1.0f,
-			VulnscandConfigFactory.getInstance().getMaxSuspectThreadPoolSize()
-		);
+        // Start the suspect event and rescan thread pools
+        //
+        if (log.isDebugEnabled())
+            log.debug("start: Starting runnable thread pools...");
 
-		m_scheduledScanRunner = new RunnableConsumerThreadPool(
-			"Vulnscand Rescan Pool",
-			0.6f,
-			1.0f,
-			VulnscandConfigFactory.getInstance().getMaxRescanThreadPoolSize()
-		);
+        m_specificScanRunner.start();
+        m_scheduledScanRunner.start();
 
-		// Start the suspect event and rescan thread pools
-		//
-		if(log.isDebugEnabled()) log.debug("start: Starting runnable thread pools...");
+        // Create and start the rescan scheduler
+        //
+        if (log.isDebugEnabled())
+            log.debug("start: Creating rescan scheduler");
+        try {
+            // During instantiation, the scheduler will load the
+            // list of known nodes from the database
+            m_scheduler = new Scheduler(m_scheduledScanRunner.getRunQueue());
+        } catch (SQLException sqlE) {
+            log.error("Failed to initialize the rescan scheduler.", sqlE);
+            throw new UndeclaredThrowableException(sqlE);
+        } catch (Throwable t) {
+            log.error("Failed to initialize the rescan scheduler.", t);
+            throw new UndeclaredThrowableException(t);
+        }
+        m_scheduler.start();
 
-		m_specificScanRunner.start();
-		m_scheduledScanRunner.start();
+        // Create an event receiver.
+        //
+        try {
+            if (log.isDebugEnabled())
+                log.debug("start: Creating event broadcast event receiver");
 
-		// Create and start the rescan scheduler
-		//
-		if(log.isDebugEnabled())
-			log.debug("start: Creating rescan scheduler");
-		try
-		{
-			// During instantiation, the scheduler will load the
-			// list of known nodes from the database
-			m_scheduler = new Scheduler(m_scheduledScanRunner.getRunQueue());
-		}
-		catch(SQLException sqlE)
-		{
-			log.error("Failed to initialize the rescan scheduler.", sqlE);
-			throw new UndeclaredThrowableException(sqlE);
-		}
-		catch(Throwable t)
-		{
-			log.error("Failed to initialize the rescan scheduler.", t);
-			throw new UndeclaredThrowableException(t);
-		}
-		m_scheduler.start();
+            m_receiver = new BroadcastEventProcessor(m_specificScanRunner.getRunQueue(), m_scheduler);
+        } catch (Throwable t) {
+            log.error("Failed to initialized the broadcast event receiver", t);
+            throw new UndeclaredThrowableException(t);
+        }
 
-		// Create an event receiver.
-		//
-		try
-		{
-			if(log.isDebugEnabled())
-				log.debug("start: Creating event broadcast event receiver");
+        m_status = RUNNING;
+    }
 
-			m_receiver = new BroadcastEventProcessor(m_specificScanRunner.getRunQueue(),
-								m_scheduler);
-		}
-		catch(Throwable t)
-		{
-			log.error("Failed to initialized the broadcast event receiver", t);
-			throw new UndeclaredThrowableException(t);
-		}
+    public void pause() {
+        Category log = ThreadCategory.getInstance(getClass());
 
-		m_status = RUNNING;
-	}
+        if (log.isDebugEnabled())
+            log.debug("pause: Cannot pause vulnscand, status is unchanged");
+    }
 
-	public void pause()
-	{
-		Category log = ThreadCategory.getInstance(getClass());
+    public void resume() {
+        if (m_status != PAUSED)
+            return;
 
-		if(log.isDebugEnabled()) log.debug("pause: Cannot pause vulnscand, status is unchanged");
-	}
+        m_status = RESUME_PENDING;
 
-	public void resume()
-	{
-		if(m_status != PAUSED)
-			return;
+        Category log = ThreadCategory.getInstance(getClass());
 
-		m_status = RESUME_PENDING;
+        // TBD - Resume all threads
 
-		Category log = ThreadCategory.getInstance(getClass());
+        m_status = RUNNING;
 
-		// TBD - Resume all threads
+        if (log.isDebugEnabled())
+            log.debug("resume: Finished resuming all threads");
+    }
 
-		m_status = RUNNING;
+    /**
+     * Returns a name/id for this process
+     */
+    public String getName() {
+        return "OpenNMS.Vulnscand";
+    }
 
-		if(log.isDebugEnabled())
-			log.debug("resume: Finished resuming all threads");
-	}
+    /**
+     * Returns the current status
+     */
+    public synchronized int getStatus() {
+        return m_status;
+    }
 
-	/**
-	* Returns a name/id for this process
-	*/
-	public String getName()
-	{
-		return "OpenNMS.Vulnscand";
-	}
+    /**
+     * Used to retrieve the local host name/address. The name/address of the
+     * machine on which Vulnscand is running.
+     */
+    public static String getLocalHostAddress() {
+        return m_address;
+    }
 
-	/**
-	* Returns the current status
-	*/
-	public synchronized int getStatus()
-	{
-		return m_status;
-	}
+    public static Vulnscand getInstance() {
+        return m_singleton;
+    }
 
-	/**
-	* Used to retrieve the local host name/address.  The name/address
-	* of the machine on which Vulnscand is running.
-	*/
-	public static String getLocalHostAddress()
-	{
-		return m_address;
-	}
-
-	public static Vulnscand getInstance()
-	{
-		return m_singleton;
-	}
-
-	static Object getDbSyncLock()
-	{
-		return m_dbSyncLock;
-	}
+    static Object getDbSyncLock() {
+        return m_dbSyncLock;
+    }
 } // end Vulnscand class

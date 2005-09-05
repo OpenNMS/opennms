@@ -4,7 +4,7 @@
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns="http://www.w3.org/1999/xhtml" version="1.0">
 
 <!-- ********************************************************************
-     $Id: formal.xsl,v 1.16 2003/08/27 23:58:14 nwalsh Exp $
+     $Id: formal.xsl,v 1.18 2004/04/11 22:41:29 bobstayton Exp $
      ********************************************************************
 
      This file is part of the XSL DocBook Stylesheet distribution.
@@ -53,11 +53,15 @@
 
 <xsl:template name="formal.object.heading">
   <xsl:param name="object" select="."/>
+  <xsl:param name="title">
+    <xsl:apply-templates select="$object" mode="object.title.markup">
+      <xsl:with-param name="allow-anchors" select="1"/>
+    </xsl:apply-templates>
+  </xsl:param>
+
   <p class="title">
     <b>
-      <xsl:apply-templates select="$object" mode="object.title.markup">
-        <xsl:with-param name="allow-anchors" select="1"/>
-      </xsl:apply-templates>
+      <xsl:copy-of select="$title"/>
     </b>
   </p>
 </xsl:template>
@@ -156,6 +160,11 @@
     <xsl:otherwise>
       <xsl:copy>
         <xsl:copy-of select="@*"/>
+	<xsl:if test="not(@id)">
+	  <xsl:attribute name="id">
+	    <xsl:call-template name="object.id"/>
+	  </xsl:attribute>
+	</xsl:if>
         <xsl:call-template name="htmlTable"/>
       </xsl:copy>
     </xsl:otherwise>

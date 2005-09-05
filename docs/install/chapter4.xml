@@ -1,71 +1,102 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <chapter>
-  <title>Upgrading OpenNMS from Previous Versions</title>
+  <title>Getting Started with OpenNMS</title>
 
   <section>
-    <title>Basic Locations for OpenNMS Data</title>
+    <title>Configuring Discovery</title>
 
-    <para>Upgrades from a previous version of OpenNMS to a current one usually
-    just involve installing a new package for your particular distribution.
-    </para>
+    <para>OpenNMS has a default host discovery configuration that probably
+    does not fit your organization. Edit
+    <filename>$OPENNMS_HOME/etc/discovery-configuration.xml</filename>. You'll
+    see something like this:</para>
 
-    <para>For RPM-based distributions, this is pretty simple using the
-    <computeroutput>rpm -Uvh [package name]</computeroutput> command.</para>
+    <para><programlisting>&lt;discovery-configuration threads="1" packets-per-second="1"
+        initial-sleep-time="300000" restart-sleep-time="86400000"
+        retries="3" timeout="800"&gt;
 
-    <para>OpenNMS stores data in three locations: the
-    <filename>$OPENNMS_HOME/etc</filename> directory, the PostgreSQL database,
-    and in RRD files (which live in
-    <filename>$OPENNMS_HOME/share</filename>).</para>
+        &lt;include-range retries="2" timeout="3000"&gt;
+                &lt;begin&gt;192.168.0.1&lt;/begin&gt;
+                &lt;end&gt;192.168.0.254&lt;/end&gt;
+        &lt;/include-range&gt;
 
-    <para>If the default structure of a file in "etc" has changed between
-    versions, RPM will create a "<filename>.rpmnew</filename>" version of that
-    file. You will need to look at the changes between your file and the new
-    one and merge them manually, at the moment.</para>
+        &lt;include-url&gt;file:/opt/OpenNMS/etc/include&lt;/include-url&gt;
 
-    <para>In addition, the OpenNMS installer may attempt to make changes to
-    the database. These should be automatic, but as with the best laid plans
-    things may go wrong.</para>
+&lt;/discovery-configuration&gt;
+</programlisting></para>
 
-    <para>Finally, the installer should not touch the RRD files. Unless you
-    are moving from RRDTool to jRobin, you should not have to worry about
-    them.</para>
+    <para>You will most likely want to change the beginning and end ranges
+    (within the <code>&lt;begin&gt;</code> and <code>&lt;end&gt;</code> tags,
+    respectively). And you can add multiple <code>&lt;include-range&gt;</code>
+    entries to fit your needs. If you would rather list the individual hosts
+    that you want to have discovered, you can insert
+    <code>&lt;specific&gt;</code> tags above the
+    <code>&lt;include-range&gt;</code> tag or place them in the file referrred
+    to by <code>&lt;include-url&gt;</code>, one IP address per line. Lastly,
+    if you prefer to use the web interface to add hosts for OpenNMS to
+    monitor, you can comment out the contents of this file completely (put
+    "<code>&lt;!--</code>" before the first line and "<code>--&gt;</code>"
+    after the last line). </para>
   </section>
 
   <section>
-    <title>Before Upgrading - Make a Backup</title>
+    <title>Start PostgreSQL, Tomcat4, and OpenNMS</title>
 
-    <para>Things can go wrong on upgrades, so it is always a good idea to make
-    a backup of important information before attempting the upgrade.</para>
+    <para>This is an example and may vary based on your operating
+    system:</para>
 
-    <para>For OpenNMS, you should do two things:</para>
+    <para><programlisting><computeroutput># </computeroutput><command>/etc/init.d/postgres start
+</command><computeroutput># </computeroutput><command>/etc/init.d/tomcat4 start
+</command><computeroutput># </computeroutput><command>$OPENNMS_HOME/bin/opennms start
+</command></programlisting></para>
 
-    <orderedlist>
-      <listitem>
-        <para>Copy the contents of the <filename>$OPENNMS_HOME/etc</filename>
-        directory to a safe location. Should an issue arise with any new
-        files, you will want to be able to recover your originals.</para>
-      </listitem>
+    <para>If your operating system does not have a startup script for
+    PostgreSQL or Tomcat4, you would execute something like this:</para>
 
-      <listitem>
-        <para>Make a backup of the postgres database. Using the
-        <filename>pg_dumpall </filename>command you can dump the entire
-        contents of the database to a file:</para>
+    <programlisting><computeroutput># </computeroutput><command>sudo -u postgres /usr/local/pgsql/bin/pg_ctl -D /usr/local/pgsql/data start
+</command><computeroutput># </computeroutput><command>/usr/local/tomcat/bin/startup.sh</command></programlisting>
+  </section>
 
-        <para><programlisting>pg_dumpall &gt; old_data</programlisting></para>
+  <section>
+    <title>Login to the web application</title>
 
-        <para>will copy all of the data to a file called
-        <filename>old_data</filename>. You will want to run this as the
-        "postgres" user:</para>
+    <para>Point your browser at
+    <filename>http://&lt;host&gt;:8080/opennms/</filename> (port 8180 on
+    Debian Linux). The initial user name is "<code>admin</code>" and the
+    password is "<code>admin</code>".</para>
+  </section>
 
-        <para><programlisting>sudo -u postgres pg_dumpall &gt; old_data</programlisting></para>
+  <section>
+    <title>Configure OpenNMS to Start Automatically at Boot Time</title>
 
-        <para>To restore, run the command:</para>
+    <para>If everything looks good, you can configure OpenNMS to start
+    automatically at boot time. By default on most platforms OpenNMS does not
+    start automatically until you configure it to do so.</para>
 
-        <para><programlisting>sudo -u postgres psql -U postgres -f old_data template1</programlisting></para>
-      </listitem>
-    </orderedlist>
+    <section>
+      <title>Configuring Automatic Startup on Debian Linux</title>
 
-    <para>As mentioned earlier, there should be no need to backup the RRD
-    files during an upgrade.</para>
+      <para>This is enabled automatically when you install the Debian
+      packages.</para>
+    </section>
+
+    <section>
+      <title>Configuring Automatic Startup on RPM-based Linux
+      Distributions</title>
+
+      <para>The OpenNMS packages add an init script in
+      <filename>/etc</filename> (usually <filename>/etc/init.d</filename>),
+      however you need to execute <filename>chkconfig</filename> to enable the
+      service to start automatically:</para>
+
+      <programlisting><computeroutput># </computeroutput><command>chkconfig --add opennms</command></programlisting>
+    </section>
+
+    <section>
+      <title>Configuring Automatic Startup on Solaris</title>
+
+      <programlisting><computeroutput># </computeroutput><command>ln -s $OPENNMS_HOME/bin/opennms /etc/init.d/opennms</command><computeroutput>
+# </computeroutput><command>ln -s ../init.d/opennms /etc/rc3.d/S99opennms
+</command><computeroutput># </computeroutput><command>ln -s ../init.d/opennms /etc/rc3.d/K01opennms</command></programlisting>
+    </section>
   </section>
 </chapter>

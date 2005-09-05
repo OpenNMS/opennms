@@ -60,126 +60,101 @@ import org.opennms.netmgt.xml.event.Event;
 
 /**
  * A servlet that handles adding a new interface
- *
- * @author <A HREF="mailto:jamesz@opennms.com">James Zuo</A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
+ * 
+ * @author <A HREF="mailto:jamesz@opennms.com">James Zuo </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
-public class AddNewInterfaceServlet extends HttpServlet
-{
-        private static final String SQL_INTERFACE_EXIST = "SELECT nodeid FROM ipinterface WHERE ipaddr = ? "
-                                                        + "AND ismanaged in ('M', 'A', 'U', 'F')"; 
-        /**
-         * The value used as the source of the event
-         */
-        final static String EVENT_SOURCE_VALUE = "Web UI";
+public class AddNewInterfaceServlet extends HttpServlet {
+    private static final String SQL_INTERFACE_EXIST = "SELECT nodeid FROM ipinterface WHERE ipaddr = ? " + "AND ismanaged in ('M', 'A', 'U', 'F')";
 
-        public void init() throws ServletException
-        {
-	        try
-	        {
-		        DatabaseConnectionFactory.init();
-	        }
-	        catch(Exception e)
-	        {
-		        throw new ServletException ("AddNewInterfaceServlet: Error initialising database connection factory." + e);
-	        }
+    /**
+     * The value used as the source of the event
+     */
+    final static String EVENT_SOURCE_VALUE = "Web UI";
 
+    public void init() throws ServletException {
+        try {
+            DatabaseConnectionFactory.init();
+        } catch (Exception e) {
+            throw new ServletException("AddNewInterfaceServlet: Error initialising database connection factory." + e);
         }
 
-        public void doPost( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException 
-        {
-                int nodeId = -1;
-       	        String ipAddress = request.getParameter("ipAddress");
-	
-                try 
-                {
-                        nodeId = getNodeId(ipAddress);
-                } catch (SQLException sqlE)
-                {
-                        throw new ServletException("AddInterfaceServlet: failed to query if the ipaddress already exists", sqlE);
-                }
-        
-                if (nodeId != -1)
-                {
-                        RequestDispatcher dispatcher = this.getServletContext().getRequestDispatcher("/admin/newInterface.jsp?action=redo");
-                        dispatcher.forward( request, response);
-                }
-                else
-                {
-                        createAndSendNewSuspectInterfaceEvent(ipAddress);
-	
-	                //forward the request for proper display
-                        RequestDispatcher dispatcher = this.getServletContext().getRequestDispatcher("/admin/interfaceAdded.jsp");
-                        dispatcher.forward( request, response);
-                }
+    }
+
+    public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        int nodeId = -1;
+        String ipAddress = request.getParameter("ipAddress");
+
+        try {
+            nodeId = getNodeId(ipAddress);
+        } catch (SQLException sqlE) {
+            throw new ServletException("AddInterfaceServlet: failed to query if the ipaddress already exists", sqlE);
         }
 
-        private void createAndSendNewSuspectInterfaceEvent(String ipaddr)
-                throws ServletException
-        {
-                Event event = new Event();
-                event.setSource(EVENT_SOURCE_VALUE);
-                event.setUei(EventConstants.NEW_SUSPECT_INTERFACE_EVENT_UEI);
-                event.setInterface(ipaddr);
+        if (nodeId != -1) {
+            RequestDispatcher dispatcher = this.getServletContext().getRequestDispatcher("/admin/newInterface.jsp?action=redo");
+            dispatcher.forward(request, response);
+        } else {
+            createAndSendNewSuspectInterfaceEvent(ipAddress);
 
-                try
-                {
-                        event.setHost(InetAddress.getLocalHost().getHostName());
-                }
-                catch (UnknownHostException uhE)
-                {
-                        event.setHost("unresolved.host");
-                }
+            // forward the request for proper display
+            RequestDispatcher dispatcher = this.getServletContext().getRequestDispatcher("/admin/interfaceAdded.jsp");
+            dispatcher.forward(request, response);
+        }
+    }
 
-                event.setTime(EventConstants.formatToString(new java.util.Date()));
-                
-                try
-                {
-                        EventProxy eventProxy = new TcpEventProxy();
-                        eventProxy.send(event);
-                }
-                catch (Exception e)
-                {
-                        throw new ServletException("Could not send event " + event.getUei(), e);
-                }
+    private void createAndSendNewSuspectInterfaceEvent(String ipaddr) throws ServletException {
+        Event event = new Event();
+        event.setSource(EVENT_SOURCE_VALUE);
+        event.setUei(EventConstants.NEW_SUSPECT_INTERFACE_EVENT_UEI);
+        event.setInterface(ipaddr);
+
+        try {
+            event.setHost(InetAddress.getLocalHost().getHostName());
+        } catch (UnknownHostException uhE) {
+            event.setHost("unresolved.host");
         }
 
-        private int getNodeId(String ipaddr) throws SQLException
-        {
-                int nodeId = -1;
+        event.setTime(EventConstants.formatToString(new java.util.Date()));
 
-                Connection conn = null;
-                PreparedStatement stmt = null;
-
-                try
-                {
-                        conn = DatabaseConnectionFactory.getInstance().getConnection();
-                        stmt = conn.prepareStatement(SQL_INTERFACE_EXIST);
-                        stmt.setString(1, ipaddr);
-                        
-                        ResultSet rs = stmt.executeQuery();
-                        if (rs.next())
-                        {
-                                nodeId = rs.getInt(1);
-                        }
-                        return nodeId;
-                }
-                finally {
-                        if (stmt != null)
-                        {
-                                try 
-                                {
-                                        stmt.close();
-                                } catch (SQLException e1) {}
-                        }
-                        if (conn != null)
-                        {
-                                try 
-                                {
-                                        conn.close();
-                                } catch (SQLException e2) {}
-                        }
-                }
+        try {
+            EventProxy eventProxy = new TcpEventProxy();
+            eventProxy.send(event);
+        } catch (Exception e) {
+            throw new ServletException("Could not send event " + event.getUei(), e);
         }
-    
+    }
+
+    private int getNodeId(String ipaddr) throws SQLException {
+        int nodeId = -1;
+
+        Connection conn = null;
+        PreparedStatement stmt = null;
+
+        try {
+            conn = DatabaseConnectionFactory.getInstance().getConnection();
+            stmt = conn.prepareStatement(SQL_INTERFACE_EXIST);
+            stmt.setString(1, ipaddr);
+
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                nodeId = rs.getInt(1);
+            }
+            return nodeId;
+        } finally {
+            if (stmt != null) {
+                try {
+                    stmt.close();
+                } catch (SQLException e1) {
+                }
+            }
+            if (conn != null) {
+                try {
+                    conn.close();
+                } catch (SQLException e2) {
+                }
+            }
+        }
+    }
+
 }

@@ -35,97 +35,80 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * This is a data class for storing mask elements for the <mask> tag
- * of an event configuration.
- *
- * @author <A HREF="mailto:jason@opennms.org">Jason Johns</A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
- *
+ * This is a data class for storing mask elements for the <mask>tag of an event
+ * configuration.
+ * 
+ * @author <A HREF="mailto:jason@opennms.org">Jason Johns </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * 
  * @version 1.1.1.1
- *
+ * 
  * @deprecated Replaced by a Castor-generated implementation.
- *
+ * 
  * @see org.opennms.netmgt.xml.eventconf.Maskelement
- *
+ * 
  */
-public class MaskElement implements Cloneable
-{
-	/**
-	*/
-	public static final String ELEMENT_NAME_VALUES[] = {"uei",
-							    "source",
-							    "host",
-							    "snmphost",
-							    "nodeid",
-							    "interface",
-							    "service",
-							    "eid"};
-	
-	/**
-	*/
-	private String m_elementName;
-	
-	/**
-	*/
-	private List m_elementValues;
-	
-	/**Default constructor, intializes the member variables.
-	*/
-	public MaskElement()
-	{
-		m_elementValues = new ArrayList();
-	}
-	
-	/**
-	*/
-	public Object clone()
-	{
-		try
-		{
-			super.clone();
-		}
-		catch(CloneNotSupportedException e)
-		{
-			return null;
-		}
-		
-		MaskElement newElement = new MaskElement();
-		
-		newElement.setElementName(m_elementName);
-		
-		for (int i = 0; i < m_elementValues.size(); i++)
-		{
-			newElement.addElementValue( (String)m_elementValues.get(i));
-		}
-		
-		return newElement;
-	}
-	
-	/**
-	*/
-	public void setElementName(String name)
-	{
-		m_elementName = name;
-	}
-	
-	/**
-	*/
-	public String getElementName()
-	{
-		return m_elementName;
-	}
-	
-	/**
-	*/
-	public void addElementValue(String value)
-	{
-		m_elementValues.add(value);
-	}
-	
-	/**
-	*/
-	public List getElementValues()
-	{
-		return m_elementValues;
-	}
+public class MaskElement implements Cloneable {
+    /**
+     */
+    public static final String ELEMENT_NAME_VALUES[] = { "uei", "source", "host", "snmphost", "nodeid", "interface", "service", "eid" };
+
+    /**
+     */
+    private String m_elementName;
+
+    /**
+     */
+    private List m_elementValues;
+
+    /**
+     * Default constructor, intializes the member variables.
+     */
+    public MaskElement() {
+        m_elementValues = new ArrayList();
+    }
+
+    /**
+     */
+    public Object clone() {
+        try {
+            super.clone();
+        } catch (CloneNotSupportedException e) {
+            return null;
+        }
+
+        MaskElement newElement = new MaskElement();
+
+        newElement.setElementName(m_elementName);
+
+        for (int i = 0; i < m_elementValues.size(); i++) {
+            newElement.addElementValue((String) m_elementValues.get(i));
+        }
+
+        return newElement;
+    }
+
+    /**
+     */
+    public void setElementName(String name) {
+        m_elementName = name;
+    }
+
+    /**
+     */
+    public String getElementName() {
+        return m_elementName;
+    }
+
+    /**
+     */
+    public void addElementValue(String value) {
+        m_elementValues.add(value);
+    }
+
+    /**
+     */
+    public List getElementValues() {
+        return m_elementValues;
+    }
 }

@@ -20,11 +20,12 @@ For more information consult the README file included in
 your distribution.
   </description>
 
+	
   <!-- overrride with site-specific settings (first proprety set wins) -->
   <property file="build.properties"/>
  
   <!-- versioning options -->
-  <property name="product.version" value="1.1.5"/>
+  <property name="product.version" value="1.2.3"/>
   <property name="product.release" value="0"/>
   <property name="product.snapshot" value="true"/>
   <property name="product.fullversion"
@@ -77,10 +78,11 @@ your distribution.
   <property name="install.source.dir" value="${source.dir}/install"/>
   <property name="web.source.dir" value="${source.dir}/web/src"/>
 
-  <!-- Italian Adventures Properties -->
-  <property name="base.perllib.dir" value="${source.dir}/coreperl"/>
-  <property name="base.discoveryservice.dir" value="${services.source.dir}/org/opennms/netmgt/linkd"/>
-  <!-- End Italian Adventures Properties -->
+  <!-- test results directory -->
+  <property name="test.xml.dir" value="${build.dir}/test-results" />
+  <property name="mock.logLevel" value="WARN" />
+  <property name="mock.debug" value="false" />
+  <property name="mock.rundbtests" value="false" />
 
   <!-- docs source directory -->
   <property name="docs.source.dir" value="${basedir}/docs"/>
@@ -189,11 +191,14 @@ your distribution.
     <pathelement path="${packaged.lib.dir}/jrobin-1.4.0.jar"/>
     <pathelement path="${packaged.lib.dir}/mailapi.jar"/>
     <pathelement path="${packaged.lib.dir}/smtp.jar"/>
-    <pathelement path="${packaged.lib.dir}/sshtools.jar"/>
-    <pathelement path="${packaged.lib.dir}/commons-net-1.2.2.jar"/>
+    <pathelement path="${packaged.lib.dir}/jradius-client.jar"/>
+    <pathelement path="${packaged.lib.dir}/smack.jar"/>
+    <pathelement path="${packaged.lib.dir}/smackx.jar"/>
 <!--  	<pathelement path="${packaged.lib.dir}/imap.jar"/> -->
 <!--  	<pathelement path="${packaged.lib.dir}/pop3.jar"/> -->
     <pathelement path="${packaged.lib.dir}/activation.jar"/>
+    <pathelement path="${packaged.lib.dir}/jmta.jar"/>
+    <pathelement path="/System/Library/Java"/>
   </path>
 
   <!-- The jars listed for Class-Path in the MANIFEST.MF for the installer's
@@ -275,6 +280,12 @@ your distribution.
     <include name="jcifs.jar" />
     <include name="ldap.jar" />
     <include name="jrobin*.jar" />
+  	<include name="activation.jar" />
+  	<include name="imap.jar" />
+  	<include name="jmta.jar" />
+  	<include name="mailapi.jar" />
+  	<include name="pop3.jar" />
+  	<include name="smtp.jar" />
   </patternset>
 
   <!-- The includes in this patternset need to match the directories in
@@ -325,6 +336,7 @@ your distribution.
       <pathelement location="${dev.lib.dir}/cpptasks.jar"/>
     </classpath>
   </taskdef>
+
 
   <!-- PREP target -->
   <target name="prep" depends="platform.check, java.check" unless="prep.done">
@@ -511,29 +523,41 @@ your distribution.
 
   <target name="platform.default" unless="build.platform.define">
     <fail>
-      build.xml does not support your operating system.
+      Your operating system is not supported by the build system.  See the
+      platform.* targets in the build.xml file for details on supported
+      platforms.  You can try to work around this error by modifying an
+      existing platform or creating your own (and don't forget to add it
+      to the depends list in the platform.check target).
     </fail>
   </target>
 
   <target name="java.check">
     <condition property="java.versionokay">
+    	  <or>
       <contains string="${java.vm.version}" substring="1.4."/>
+    	  <contains string="${java.vm.version}" substring="1.5."/>
+    	  </or>
     </condition>
 
     <fail unless="java.versionokay">
-      java version is not 1.4
+      Your Java version (${java.vm.version}) is not supported.  The
+      build system is currently designed and tested to work with Java
+      versions 1.4 and 1.5.  You can try to work around this error by
+      modifying the java.check target in the build.xml file.
     </fail>
   </target>
 
-  <target name="compile.check" depends="prep,perl.check">
+  <target name="compile.check" depends="prep">
     <condition property="compile.check.postgresql.include">
       <available file="${build.postgresql.include.dir}/postgres.h"/>
     </condition>
    
     <fail unless="compile.check.postgresql.include">
       Could not find postgres.h include file in ${build.postgresql.include.dir}.
-      Set build.postgresql.include.dir to the directory that contains 
-      postgres.h.  See README.build for details.
+      Please make sure that you have the PostgreSQL development files installed
+      or, if they are installed in a non-standard location, you may need to
+      set the build.postgresql.include.dir property to the directory that
+      contains postgres.h.  See README.build for details on setting properties.
     </fail>
 
     <condition property="compile.check.rrdtool.include">
@@ -542,8 +566,10 @@ your distribution.
    
     <fail unless="compile.check.rrdtool.include">
       Could not find rrd.h include file in ${build.rrdtool.include.dir}.
-      Set build.rrdtool.include.dir to the directory that contains rrd.h.
-      See README.build for details.
+      Please make sure that you have the rrdtool development files installed
+      or, if they are installed in a non-standard location, you may need
+      to set the build.rrdtool.include.dir property to the directory that
+      contains rrd.h.  See README.build for details on setting properties.
     </fail>
 
     <condition property="compile.check.rrdtool.lib">
@@ -555,9 +581,15 @@ your distribution.
    
     <fail unless="compile.check.rrdtool.lib">
       Could not find librrd.a or librrd.so library in ${build.rrdtool.lib.dir}.
-      Set build.rrdtool.lib.dir to the directory that contains librrd.a or
-      librrd.so.  See README.build for details.
+      Please make sure that you have the rrdtool development files installed
+      or, if they are installed in a non-standard location, you may need
+      to set the build.rrdtool.lib.dir property to the directory that
+      contains librrd.a or librrd.so.  See README.build for details on setting
+      properties.
     </fail>
+
+    <available property="apple.apis.present" classname="com.apple.cocoa.foundation.NSArray" classpathref="libraries.java.path" />
+
   </target>
  
  <target name="info" depends="prep"
@@ -622,15 +654,13 @@ your distribution.
  <target name="all" depends="compile, jar"
 	 description="build everything (except documentation)"/>
  
- <target name="test" depends="junit.compile, test.jsp"/>
-
  <!-- CLEAN targets -->
- <target name="clean" depends="prep">
+ <target name="clean" depends="prep, clean.dist">
    <delete dir="${build.dir}"/>
  </target>
 
  <!-- archive/package targets -->
- <target name="rpm" depends="prep, rpm.check, rpm.prepare"
+ <target name="rpm" depends="prep, rpm.check, all, test, rpm.prepare"
 	 description="Build an RPM package">
   <exec dir="${build.rpm.dir}" executable="${rpm.build.executable}"
 	failonerror="true">
@@ -643,7 +673,7 @@ your distribution.
    <arg value="--define"/>
    <arg value="_tmppath ${build.rpm.dir}/tmp"/>
    <arg value="--define"/>
-   <arg value="snapshot ${opennms.snapshot}"/>
+   <arg value="snapshot ${product.snapshot}"/>
    <arg value="--define"/>
    <arg value="date ${DSTAMP}"/>
    <arg value="--define"/>
@@ -655,7 +685,7 @@ your distribution.
   </exec>
  </target>
  
- <target name="srpm" depends="prep, rpm.check, release.source, rpm.prepare"
+ <target name="srpm" depends="prep, rpm.check, release.source.tar, rpm.prepare"
 	 description="Build an RPM and a source RPM package">
   <copy todir="${build.rpm.dir}/SOURCES"
 	file="${build.release.dir}/${release.source.archive.prefix}.tar.gz"/>
@@ -708,9 +738,9 @@ your distribution.
 
  <target name="rpm.check">
    <fail unless="rpm.platform">
-     You must set rpm.platform to one of the platforms listed in
-     tools/packages/opennms/opennms.spec.in.  E.g.:
-         ./build.sh -Drpm.platform=linux-i386-fedora-1 rpm
+     You must set the rpm.platform property to one of the platforms listed in
+     tools/packages/opennms/opennms.spec.in.  See README.build for details on
+     setting properties.
    </fail>
  </target>
 
@@ -740,9 +770,9 @@ your distribution.
 
  <target name="tar.source.dist" depends="prepare.dist" unless="skip.dist">
    <tar destfile="${build.release.dir}/${dist.source.archive.prefix}.tar">
-     <fileset dir="${basedir}">
+     <tarfileset dir="${basedir}">
        <patternset refid="source.dirs" />
-     </fileset>
+     </tarfileset>
    </tar>
  </target>
 
@@ -808,7 +838,10 @@ your distribution.
        includes="${release.docs.dir}/"/>
  </target>
 
- <target name="release.prepare.source" depends="prep">
+ <target name="release.source" depends="release.source.tar,
+					release.source.zip"/>
+
+ <target name="release.source.copy" depends="prep">
   <mkdir dir="${build.dir}/${release.source.dir}"/>
   <copy todir="${build.dir}/${release.source.dir}">
    <fileset dir="${basedir}">
@@ -822,11 +855,19 @@ your distribution.
   </copy>
  </target>
  
- <target name="release.source" depends="release.prepare.source">
+ <target name="release.source.prep">
   <mkdir dir="${build.release.dir}"/>
+ </target>
+
+ <target name="release.source.tar" depends="release.source.copy,
+					    release.source.prep">
   <tar tarfile="${build.release.dir}/${release.source.archive.prefix}.tar.gz"
        basedir="${build.dir}" longfile="gnu" compression="gzip"
        includes="${release.source.dir}/"/>
+ </target>
+
+ <target name="release.source.zip" depends="release.source.copy,
+					    release.source.prep">
   <zip zipfile="${build.release.dir}/${release.source.archive.prefix}.zip"
        basedir="${build.dir}"
        includes="${release.source.dir}/"/>
@@ -1061,7 +1102,7 @@ OpenNMS as part of the post-install.
  <!-- COMPILE targets -->
  
  <target name="compile" depends="compile.check, java.compile, jicmp.compile,
-				 jrrd.compile, postgresql.compile, perl.compile"
+				 jrrd.compile, postgresql.compile"
 	 description="compile all code"/>
 
  <target name="java.compile" depends="prep,sources">
@@ -1077,6 +1118,8 @@ OpenNMS as part of the post-install.
    </src>
    <include name="**/*.java"/>
    <exclude name="**/*Test.java"/>
+   <exclude name="**/mock/*.java"/>
+   <exclude name="**/*Growl*" unless="apple.apis.present"/>
   </javac>
   <copy todir="${build.classes.dir}">
    <fileset dir="${build.sablecc.source.dir}">
@@ -1171,8 +1214,8 @@ OpenNMS as part of the post-install.
 
  <!-- tests -->
 
- <target name="test.jsp" depends="install.jsp"
-	 description="compile the JSPs" unless="wasrpm">
+ <target name="jsp.compile" depends="install"
+	 description="compile the JSPs" >
    <mkdir dir="${build.dir}/jsp-source"/>
    <mkdir dir="${build.dir}/jsp-classes"/>
    <jspc srcdir="${install.prefix}${install.servlet.dir}" destdir="${build.dir}/jsp-source"> 
@@ -1224,25 +1267,92 @@ OpenNMS as part of the post-install.
     <path refid="sources.java.path"/>
    </src>
    <include name="**/*Test.java"/>
+   <include name="**/mock/*.java"/>
    <classpath>
      <path refid="libraries.java.path"/>
      <pathelement location="${dev.lib.dir}/junit.jar"/>
+     <pathelement location="${packaged.lib.dir}/hsqldb.jar"/>
+     <pathelement location="${build.classes.dir}"/>
    </classpath>
   </javac>
-  <junit printsummary="withOutAndErr" filtertrace="off">
+</target>
+
+<target name="test" depends="prep, java.compile, junit.compile"
+  description="Run all the unit tests" unless="skip.tests">
+  <delete dir="${test.xml.dir}"/>
+  <mkdir dir="${test.xml.dir}"/>
+  <junit errorProperty="test.failed" failureProperty="test.failed">
      <classpath>
        <path refid="libraries.java.path"/>
        <pathelement location="${dev.lib.dir}/junit.jar"/>
+       <pathelement location="${packaged.lib.dir}/hsqldb.jar"/>
+       <pathelement location="${packaged.lib.dir}/${postgresql.jar}"/>
        <pathelement location="${build.classes.dir}" />
        <pathelement location="${build.tests.dir}" />
      </classpath>
-     <batchtest fork="true" todir="${basedir}">
-	<fileset dir="${basedir}/src/services">
-          <include name="**/*Test.java"/>
-          <exclude name="**/AllTests.java"/>
-	</fileset>
-      </batchtest>
+     <formatter type="brief" usefile="false" />
+     <formatter type="xml" />
+     <batchtest todir="${test.xml.dir}">
+         <fileset dir="${source.dir}/services">
+            <include name="**/*Test.java" />
+            <exclude name="**/AllTests.java" /> 
+         </fileset>
+         <fileset dir="${source.dir}/install">
+            <include name="**/*Test.java" />
+         </fileset>
+        <fileset dir="${source.dir}/core">
+           <include name="**/*Test.java" />
+        </fileset>
+     </batchtest>
+     <sysproperty key="mock.logLevel" value="${mock.logLevel}" />
+     <sysproperty key="mock.debug" value="${mock.debug}" />
+     <sysproperty key="mock.rundbtests" value="${mock.rundbtests}" />
   </junit>
+  <condition property="continue.build">
+    <or>
+     <isset property="ignoreFailedTests" />
+     <not> <isset property="test.failed" /></not>
+    </or>
+  </condition>
+  <fail unless="continue.build" >
+     Unit Tests Failed.  Check the test results in ${test.xml.dir}.
+     To ignore failed tests, set the ignoreFailedTests property to true.
+     See README.build for details on setting properties.
+  </fail>
+</target>
+
+<target name="runTest" depends="prep, java.compile, junit.compile"
+        description="Run a single unit test class">
+  <fail unless="test.class">
+    You need to define the test.class property to indicate which test
+    to run.  See README.build for details on setting properties.
+  </fail>
+  <junit errorProperty="test.failed" failureProperty="test.failed">
+     <classpath>
+       <path refid="libraries.java.path"/>
+       <pathelement location="${dev.lib.dir}/junit.jar"/>
+       <pathelement location="${packaged.lib.dir}/hsqldb.jar"/>
+       <pathelement location="${packaged.lib.dir}/${postgresql.jar}"/>
+       <pathelement location="${build.classes.dir}" />
+       <pathelement location="${build.tests.dir}" />
+     </classpath>
+     <formatter type="plain" usefile="false" />
+     <test name="${test.class}"/>
+     <sysproperty key="mock.logLevel" value="${mock.logLevel}" />
+     <sysproperty key="mock.debug" value="${mock.debug}" />
+     <sysproperty key="mock.rundbtests" value="${mock.rundbtests}" />
+  </junit>
+  <condition property="continue.build">
+    <or>
+     <isset property="ignoreFailedTests" />
+     <not> <isset property="test.failed" /></not>
+    </or>
+  </condition>
+  <fail unless="continue.build" >
+     Unit Tests Failed.  Check the test results in ${test.xml.dir}.
+     To ignore failed tests, set the ignoreFailedTests property to true.
+     See README.build for details on setting properties.
+  </fail>
 </target>
 
  <!-- JAR targets -->
@@ -1346,8 +1456,12 @@ OpenNMS as part of the post-install.
 	   bottom="Generated by ${user.name} on ${TODAY} ${TSTAMP}."
 	   splitindex="true"
 	   failonerror="true"
-	   classpathref="libraries.java.path"
 	   maxmemory="128m">
+  <classpath>
+   <path refid="libraries.java.path"/>
+   <pathelement location="${dev.lib.dir}/junit.jar"/>
+   <pathelement location="${packaged.lib.dir}/hsqldb.jar"/>
+  </classpath>
   <sourcepath>
    <path refid="sources.java.path"/>
   </sourcepath>
@@ -1394,7 +1508,7 @@ OpenNMS as part of the post-install.
   <mkdir dir="${build.docs.dir}"/>
   <style basedir="${build.filter.docs.dir}"
 	destdir="${build.docs.dir}"
-	style="${docs.source.dir}/xsl/docbook/html/docbook.xsl"
+	style="${docs.source.dir}/common/html-docbook.xsl"
 	includes="*/book.xml"/>
  </target>
  
@@ -1409,15 +1523,16 @@ OpenNMS as part of the post-install.
   </condition>
  </target>
 
- <target name="docs.fot.uptodate" depends="prep">
-  <uptodate property="fot.is.uptodate"
-	    targetfile="${build.docs.dir}/releasenotes/book.fot">
-   <srcfiles dir="${docs.source.dir}">
+ <target name="docs.fot.uptodate" depends="prep,copy.docs">
+  <uptodate property="fot.is.uptodate">
+   <srcfiles dir="${build.filter.docs.dir}">
     <include name="**/book.xml"/>
     <include name="**/bookinfo.xml"/>
     <include name="**/preface.xml"/>
     <include name="**/chap*.xml"/>
    </srcfiles>
+   <mapper type="regexp" from="^(.*)/[^/]+$$"
+           to="${build.docs.dir}/\1/book.fot"/>
   </uptodate>
  </target>
 
@@ -1426,7 +1541,7 @@ OpenNMS as part of the post-install.
   <mkdir dir="${build.docs.dir}"/>
   <style basedir="${build.filter.docs.dir}"
 	destdir="${build.docs.dir}"
-	style="${docs.source.dir}/xsl/docbook/fo/docbook.xsl"
+	style="${docs.source.dir}/common/fo-docbook.xsl"
 	includes="**/book.xml"
 	classpath="${packaged.lib.dir}/xalan231.jar"
 	extension=".fot"
@@ -1490,41 +1605,13 @@ OpenNMS as part of the post-install.
     <include name="opennms_*.jar" />
    </fileset>
   </copy>
- </target>
-
-<!-- Italian Adventures Section for Perl -->
-<!-- replace proper dir name in perl files -->
- <target name="replace.perl">
-  <replace file="${base.perllib.dir}/DbUtil/DbUtil.pm" token="@install.etc.dir@" value="${install.etc.dir}" />
-  <replace file="${base.discoveryservice.dir}/discoverLink.pl" token="@install.etc.dir@" value="${install.etc.dir}" />
-  <replace file="${base.discoveryservice.dir}/discoverLink.pl" token="@install.logs.dir@" value="${install.logs.dir}" />	
-  <replace file="${base.discoveryservice.dir}/discoverLink.pl" token="@install.bin.dir@" value="${install.bin.dir}" />	
- </target>
-
- <!-- test perl for required library -->
- <target name="perl.check">
-	<exec executable="perl" failonerror="true">
-		<arg line="check.depends.perl.pl"/>
-	</exec>
- </target>
-
-<!-- install perl library and copy -->
- <target name="perl.compile" depends="replace.perl">
-	<fixcrlf srcdir="${base.perllib.dir}/DbUtil"/>
-	<chmod dir="${base.perllib.dir}/DbUtil" perm="a+x"/>
-	<fixcrlf srcdir="${base.perllib.dir}/DbUtil/t"/>
-	<chmod dir="${base.perllib.dir}/DbUtil/t" perm="a+x"/>
-	<fixcrlf srcdir="${base.discoveryservice.dir}" includes="discoverLink.pl"/>
-	<chmod dir="${base.discoveryservice.dir}" perm="a+x" includes="discoverLink.pl"/>
-	<exec executable="perl" failonerror="true" dir="${base.perllib.dir}/DbUtil">
-		<arg line="Makefile.PL"/>
-	</exec>
- 	<exec executable="make" failonerror="true" dir="${base.perllib.dir}/DbUtil"/>
- 	<exec executable="make" failonerror="true" dir="${base.perllib.dir}/DbUtil">
-		<arg line="install"/>
-	</exec>
-	<copy file="${base.discoveryservice.dir}/discoverLink.pl" todir="${install.bin.dir}"/>
-	<fixcrlf srcdir="${install.bin.dir}" includes="discoverLink.pl"/>
-	<chmod dir="${install.bin.dir}" perm="a+x" includes="discoverLink.pl"/>
+  <mkdir dir="${install.prefix}${install.servlet.dir}/WEB-INF/classes"/>
+  <exec executable="ln"
+        dir="${install.prefix}${install.servlet.dir}/WEB-INF/classes"
+	failonerror="true">
+    <arg value="-sf"/>
+    <arg value="${install.etc.dir}/log4j.properties"/>
+    <arg value="log4j.properties"/>
+  </exec>
  </target>
 </project>

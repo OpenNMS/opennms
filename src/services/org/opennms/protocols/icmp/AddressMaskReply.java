@@ -41,162 +41,149 @@ package org.opennms.protocols.icmp;
 import org.opennms.protocols.ip.OC16ChecksumProducer;
 
 /**
- * This is the implementation of an ICMP Address Mask Reply
- * object. The object can be stored in a buffer to send or
- * loaded from a received buffer. The class is marked final
- * since it is not intended to be extended.
- *
- * @author	Brian Weaver <weave@oculan.com>
- *
+ * This is the implementation of an ICMP Address Mask Reply object. The object
+ * can be stored in a buffer to send or loaded from a received buffer. The class
+ * is marked final since it is not intended to be extended.
+ * 
+ * @author Brian Weaver <weave@oculan.com>
+ * 
  */
-public final class AddressMaskReply 
-	extends ICMPHeader
-{
-	/**
-	 * The address mask
-	 */
-	private int m_mask;
+public final class AddressMaskReply extends ICMPHeader {
+    /**
+     * The address mask
+     */
+    private int m_mask;
 
-	/**
-	 * Creates a new ICMP Address Mask Request object.
-	 *
-	 */
-	public AddressMaskReply( )
-	{
-		super(ICMPHeader.TYPE_ADDRESS_MASK_REPLY, (byte)0);
-		m_mask = 0;
-	}
+    /**
+     * Creates a new ICMP Address Mask Request object.
+     * 
+     */
+    public AddressMaskReply() {
+        super(ICMPHeader.TYPE_ADDRESS_MASK_REPLY, (byte) 0);
+        m_mask = 0;
+    }
 
-	/**
-	 * Creates a new ICMP Address mask reply from
-	 * the spcified data at the specific offset.
-	 *
-	 * @param buf	The buffer containing the data.
-	 * @param offset The start of the icmp data.
-	 *
-	 * @exception java.lang.IndexOutOfBoundsException Thrown if there
-	 *	is not sufficent data in the buffer.
-	 * @exception java.lang.IllegalArgumentException Thrown if the ICMP type
-	 *	is not an Address Mask reply.
-	 */
-	public AddressMaskReply(byte[] buf, int offset)
-	{
-		super();
-		loadFromBuffer(buf, offset);
-	}
+    /**
+     * Creates a new ICMP Address mask reply from the spcified data at the
+     * specific offset.
+     * 
+     * @param buf
+     *            The buffer containing the data.
+     * @param offset
+     *            The start of the icmp data.
+     * 
+     * @exception java.lang.IndexOutOfBoundsException
+     *                Thrown if there is not sufficent data in the buffer.
+     * @exception java.lang.IllegalArgumentException
+     *                Thrown if the ICMP type is not an Address Mask reply.
+     */
+    public AddressMaskReply(byte[] buf, int offset) {
+        super();
+        loadFromBuffer(buf, offset);
+    }
 
-	/**
-	 * Computes the ones compliment 16-bit checksum for
-	 * the ICMP message.
-	 *
-	 */
-	public final void computeChecksum( )
-	{
-		OC16ChecksumProducer summer = new OC16ChecksumProducer();
-		super.computeChecksum(summer);
-		
-		summer.add(m_mask);
-		setChecksum(summer.getChecksum());
-	}
+    /**
+     * Computes the ones compliment 16-bit checksum for the ICMP message.
+     * 
+     */
+    public final void computeChecksum() {
+        OC16ChecksumProducer summer = new OC16ChecksumProducer();
+        super.computeChecksum(summer);
 
-	/**
-	 * Writes the ICMP address mask reply out to the specified
-	 * buffer at the starting offset. If the buffer
-	 * does not have sufficent data to store the 
-	 * information then an IndexOutOfBoundsException is
-	 * thrown.
-	 *
-	 * @param buf		The storage buffer.
-	 * @param offset	The location to start in buf.
-	 *
-	 * @return The new offset after storing to the buffer.
-	 *
-	 * @exception java.lang.IndexOutOfBoundsException Thrown if the buffer
-	 *	does not have enough storage space.
-	 *
-	 */
-	public final int storeToBuffer(byte[] buf, int offset)
-	{
-		if(buf.length < (offset + 12))
-			throw new IndexOutOfBoundsException("Array index overflow in buffer build");
+        summer.add(m_mask);
+        setChecksum(summer.getChecksum());
+    }
 
-		computeChecksum();
-		offset = super.storeToBuffer(buf, offset);
+    /**
+     * Writes the ICMP address mask reply out to the specified buffer at the
+     * starting offset. If the buffer does not have sufficent data to store the
+     * information then an IndexOutOfBoundsException is thrown.
+     * 
+     * @param buf
+     *            The storage buffer.
+     * @param offset
+     *            The location to start in buf.
+     * 
+     * @return The new offset after storing to the buffer.
+     * 
+     * @exception java.lang.IndexOutOfBoundsException
+     *                Thrown if the buffer does not have enough storage space.
+     * 
+     */
+    public final int storeToBuffer(byte[] buf, int offset) {
+        if (buf.length < (offset + 12))
+            throw new IndexOutOfBoundsException("Array index overflow in buffer build");
 
-		//
-		// add in the 32-bit zero mask
-		//
-		buf[offset++] = (byte)((m_mask >> 24) & 0xff);
-		buf[offset++] = (byte)((m_mask >> 16) & 0xff);
-		buf[offset++] = (byte)((m_mask >> 8)  & 0xff);
-		buf[offset++] = (byte)(m_mask & 0xff);
+        computeChecksum();
+        offset = super.storeToBuffer(buf, offset);
 
-		return offset;
-	}
+        //
+        // add in the 32-bit zero mask
+        //
+        buf[offset++] = (byte) ((m_mask >> 24) & 0xff);
+        buf[offset++] = (byte) ((m_mask >> 16) & 0xff);
+        buf[offset++] = (byte) ((m_mask >> 8) & 0xff);
+        buf[offset++] = (byte) (m_mask & 0xff);
 
-	/**
-	 * Reads the ICMP Address Mask Reqeust from the specified 
-	 * buffer and sets the internal fields equal to the data. 
-	 * If the buffer does not have sufficent data to restore the
-	 * header then an IndexOutOfBoundsException is thrown
-	 * by the method. If the buffer does not contain an
-	 * address mask reqeust then an IllegalArgumentException
-	 * is thrown.
-	 *
-	 * @param buf	The buffer to read the data from.
-	 * @param offset The offset to start reading data.
-	 *
-	 * @return The new offset after reading the data.
-	 *
-	 * @exception java.lang.IndexOutOfBoundsException Thrown if there
-	 *	is not sufficent data in the buffer.
-	 * @exception java.lang.IllegalArgumentException Thrown if the ICMP type
-	 *	is not an Address Mask reply.
-	 */
-	public final int loadFromBuffer(byte[] buf, int offset)
-	{
-		if(buf.length < (offset + 12))
-			throw new IndexOutOfBoundsException("Insufficient data to load ICMP header");
+        return offset;
+    }
 
-		offset = super.loadFromBuffer(buf, offset);
+    /**
+     * Reads the ICMP Address Mask Reqeust from the specified buffer and sets
+     * the internal fields equal to the data. If the buffer does not have
+     * sufficent data to restore the header then an IndexOutOfBoundsException is
+     * thrown by the method. If the buffer does not contain an address mask
+     * reqeust then an IllegalArgumentException is thrown.
+     * 
+     * @param buf
+     *            The buffer to read the data from.
+     * @param offset
+     *            The offset to start reading data.
+     * 
+     * @return The new offset after reading the data.
+     * 
+     * @exception java.lang.IndexOutOfBoundsException
+     *                Thrown if there is not sufficent data in the buffer.
+     * @exception java.lang.IllegalArgumentException
+     *                Thrown if the ICMP type is not an Address Mask reply.
+     */
+    public final int loadFromBuffer(byte[] buf, int offset) {
+        if (buf.length < (offset + 12))
+            throw new IndexOutOfBoundsException("Insufficient data to load ICMP header");
 
-		if(getType() != TYPE_ADDRESS_MASK_REPLY)
-			throw new IllegalArgumentException("The buffer did not contain an Address Mask Reply");
+        offset = super.loadFromBuffer(buf, offset);
 
-		//
-		// get the mask
-		//
-		m_mask = (byteToInt(buf[offset++]) << 24)  |
-			 (byteToInt(buf[offset++]) << 16)  |
-			 (byteToInt(buf[offset++]) <<  8)  |
-			 byteToInt(buf[offset++]);
+        if (getType() != TYPE_ADDRESS_MASK_REPLY)
+            throw new IllegalArgumentException("The buffer did not contain an Address Mask Reply");
 
-		return offset;
-	}
-	
-	/**
-	 * Used to get the IPv4 32-bit address mask.
-	 */
-	public final int getAddressMask( )
-	{
-		return m_mask;
-	}
+        //
+        // get the mask
+        //
+        m_mask = (byteToInt(buf[offset++]) << 24) | (byteToInt(buf[offset++]) << 16) | (byteToInt(buf[offset++]) << 8) | byteToInt(buf[offset++]);
 
-	/**
-	 * Used to set the IPv4 32-bit address mask.
-	 */
-	public final void setAddressMask(int mask)
-	{
-		m_mask = mask;
-	}
+        return offset;
+    }
 
-	/**
-	 * Converts the object to a stream of bytes.
-	 */
-	public final byte[] toBytes()
-	{
-		byte[] buf = new byte[12];
-		storeToBuffer(buf, 0);
-		return buf;
-	}
+    /**
+     * Used to get the IPv4 32-bit address mask.
+     */
+    public final int getAddressMask() {
+        return m_mask;
+    }
+
+    /**
+     * Used to set the IPv4 32-bit address mask.
+     */
+    public final void setAddressMask(int mask) {
+        m_mask = mask;
+    }
+
+    /**
+     * Converts the object to a stream of bytes.
+     */
+    public final byte[] toBytes() {
+        byte[] buf = new byte[12];
+        storeToBuffer(buf, 0);
+        return buf;
+    }
 }

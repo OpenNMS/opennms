@@ -20,5 +20,7 @@ extensions will be used. XEP extensions consists of PDF bookmarks,
 document information and better index processing.
 </para>
 
+<para>This parameter can also affect which graphics file formats
+are supported</para>
 </refsect1>
 </refentry>

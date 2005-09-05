@@ -6,7 +6,41 @@
 
   <para>Here is the list of known issues in this release of OpenNMS.</para>
 
-  <sect1>
+  <section>
+    <title>Invalid Symbolic Link on Some Distros</title>
+
+    <para>On Mandrake 10, and perhaps others, the symbolic link created in
+    <filename>/etc/init.d</filename> for opennms doesn't seem to work. Do the
+    following:</para>
+
+    <para><programlisting># rm /etc/init.d/opennms
+# ln -s /opt/OpenNMS/bin/opennms.sh /etc/init.d/opennms</programlisting></para>
+  </section>
+
+  <section>
+    <title>The Installer is No Longer Automatic as of 1.1.5</title>
+
+    <para>I expect this to be the biggest question on the discussion lists. As
+    of 1.1.5, the installer must be run manually after the packages are
+    installed. Please see the <ulink
+    url="https://sourceforge.net/docman/display_doc.php?docid=23937&amp;group_id=4141">documentation</ulink>
+    for more information.</para>
+  </section>
+
+  <section>
+    <title>Special Note for KSC Report Users</title>
+
+    <para>With 1.1.5 a new format has been created for SNMP graphs in the
+    snmp-graph.properties file. An attempt has been made to organize the
+    different reports, and so default reports like "bits" are now prefixed by
+    "mib2" (i.e. the report is now mib2.bits).</para>
+
+    <para>If you have KSC reports on bits, errors, etc., you will need to edit
+    the <filename>ksc-performance-reports.xml</filename> file and replace the
+    old names with the new ones.</para>
+  </section>
+
+  <section>
     <title>Necessary Changes to Tomcat for 1.1.4 for Upgrades</title>
 
     <para>In 1.1.4 the way OpenNMS configures Tomcat4 has changed. All of the
@@ -32,7 +66,7 @@
 
       <listitem>
         <para>Locate the server.xml file, usually in $TOMCAT4_HOME/conf
-        directory (/var/tomcat4/conf for many distributions).  Remove the four
+        directory (/var/tomcat4/conf for many distributions). Remove the four
         &lt;context&gt; lines that refer to OpenNMS:</para>
 
         <para><programlisting>      &lt;Context path="/opennms" docBase="opennms" debug="0" reloadable="true"&gt;
@@ -45,9 +79,9 @@
     <para>You should then be able to restart Tomcat and everything should work
     just fine. Note that this does not apply to new installs, just
     upgrades.</para>
-  </sect1>
+  </section>
 
-  <sect1 id="chap3sect2">
+  <section id="chap3sect2">
     <title>New Requirements for Tomcat and PostgreSQL</title>
 
     <para>Version 1.1.2 and beyond of OpenNMS will require at a minimum Tomcat
@@ -94,8 +128,8 @@ TOMCAT_USER="root"</programlisting>
 
     <para>Edit <filename>pg_hba.conf</filename> (host based authentication) to
     allow all users to access the database from the local host by
-    un-commenting and/or adding these lines (do not add the last line if
-    your system does not support IPv6):</para>
+    un-commenting and/or adding these lines (do not add the last line if your
+    system does not support IPv6):</para>
 
     <para><programlisting># TYPE  DATABASE    USER        IP-ADDRESS        IP-MASK           METHOD
 
@@ -113,5 +147,5 @@ host    all         all         ::1               ffff:ffff:ffff:ffff:ffff:ffff:
     <para>Note that this opens up Postgres to all users on the system (as long
     as they know the database password). Contact your database administrator
     if you want to limit this to a specific user, like root.</para>
-  </sect1>
+  </section>
 </chapter>

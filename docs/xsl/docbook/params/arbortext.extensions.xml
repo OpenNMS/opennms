@@ -18,6 +18,8 @@
 <ulink url="http://www.arbortext.com/">Arbortext</ulink>
 extensions will be used.
 </para>
+<para>This parameter can also affect which graphics file formats
+are supported</para>
 
 </refsect1>
 </refentry>

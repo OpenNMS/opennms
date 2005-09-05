@@ -32,115 +32,121 @@
 
 package org.opennms.web.element;
 
+public class Interface {
+    int m_nodeId;
 
-public class Interface
-{
-        int     m_nodeId;
-        int     m_ifIndex;
-        int     m_ipStatus;
-        String  m_ipHostName;
-        String  m_ipAddr;
-        char    m_isManaged;
-        String  m_ipLastCapsdPoll;
+    int m_ifIndex;
 
-        String  m_snmpIpAdEntNetMask;
-        String  m_snmpPhysAddr;
-        String  m_snmpIfDescr;
-        String  m_snmpIfName;
-        int     m_snmpIfIndex;
-        int     m_snmpIfType;
-        int     m_snmpIfOperStatus;
-        int     m_snmpIfSpeed;
-        int     m_snmpIfAdminStatus;
+    int m_ipStatus;
 
-        public int getNodeId()
-        {
-                return m_nodeId;
-        }
+    String m_ipHostName;
 
-        public int getIfIndex()
-        {
-                return m_ifIndex;
-        }
+    String m_ipAddr;
 
-        public int getIpStatus()
-        {
-                return m_ipStatus;
-        }
+    char m_isManaged;
 
-        public String getHostname()
-        {
-                return m_ipHostName;
-        }
+    String m_ipLastCapsdPoll;
 
-        public String getIpAddress()
-        {
-                return m_ipAddr;
-        }
+    String m_snmpIpAdEntNetMask;
 
-        public char isManagedChar()
-        {
-                return m_isManaged;
-        }
+    String m_snmpPhysAddr;
 
-        public String getLastCapsdPoll()
-        {
-                return m_ipLastCapsdPoll;
-        }
-        
-        public int getSnmpIfIndex()
-        {
-            return m_snmpIfIndex;
-        }
-        
-        public String getSnmpIpAdEntNetMask()
-        {
-                return m_snmpIpAdEntNetMask;
-        }
+    String m_snmpIfDescr;
 
-        public String getPhysicalAddress()
-        {
-                return m_snmpPhysAddr;
-        }
+    String m_snmpIfName;
 
-        public String getSnmpIfDescription()
-        {
-                return m_snmpIfDescr;
-        }
+    int m_snmpIfIndex;
 
-        public String getSnmpIfName()
-        {
-                return m_snmpIfName;
-        }
+    int m_snmpIfType;
 
-        public int getSnmpIfType()
-        {
-                return m_snmpIfType;
-        }
+    int m_snmpIfOperStatus;
 
-        public int getSnmpIfOperStatus()
-        {
-                return m_snmpIfOperStatus;
-        }
-        
-        public int getSnmpIfSpeed()
-        {
-                return m_snmpIfSpeed;
-        }
+    int m_snmpIfSpeed;
 
-        public int getSnmpIfAdminStatus()
-        {
-                return m_snmpIfAdminStatus;
-        }
+    int m_snmpIfAdminStatus;
+    
+    String m_snmpIfAlias;
 
-        public String toString() 
-        {
-                return m_ipHostName;
-        }
-        
-        public boolean isManaged()
-        {
-                return (m_isManaged == 'M');
-        }
-        
+    String m_isSnmpPrimary;
+
+    public int getNodeId() {
+        return m_nodeId;
+    }
+
+    public int getIfIndex() {
+        return m_ifIndex;
+    }
+
+    public int getIpStatus() {
+        return m_ipStatus;
+    }
+
+    public String getHostname() {
+        return m_ipHostName;
+    }
+
+    public String getIpAddress() {
+        return m_ipAddr;
+    }
+
+    public char isManagedChar() {
+        return m_isManaged;
+    }
+
+    public String getLastCapsdPoll() {
+        return m_ipLastCapsdPoll;
+    }
+
+    public int getSnmpIfIndex() {
+        return m_snmpIfIndex;
+    }
+
+    public String getSnmpIpAdEntNetMask() {
+        return m_snmpIpAdEntNetMask;
+    }
+
+    public String getPhysicalAddress() {
+        return m_snmpPhysAddr;
+    }
+
+    public String getSnmpIfDescription() {
+        return m_snmpIfDescr;
+    }
+
+    public String getSnmpIfName() {
+        return m_snmpIfName;
+    }
+
+    public int getSnmpIfType() {
+        return m_snmpIfType;
+    }
+
+    public int getSnmpIfOperStatus() {
+        return m_snmpIfOperStatus;
+    }
+
+    public int getSnmpIfSpeed() {
+        return m_snmpIfSpeed;
+    }
+
+    public int getSnmpIfAdminStatus() {
+        return m_snmpIfAdminStatus;
+    }
+
+    public String toString() {
+        return m_ipHostName;
+    }
+
+    public boolean isManaged() {
+        return (m_isManaged == 'M');
+    }
+
+    public String getSnmpIfAlias() {
+        return m_snmpIfAlias;
+    }
+
+    public String getIsSnmpPrimary() {
+        return m_isSnmpPrimary;
+    }
+
 }

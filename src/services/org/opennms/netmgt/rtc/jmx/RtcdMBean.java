@@ -34,12 +34,16 @@
 
 package org.opennms.netmgt.rtc.jmx;
 
-public interface RtcdMBean
-{
-	public void init();
-	public void start();
-	public void stop();
-	public int getStatus();
-	public String status();
-	public String getStatusText();
+public interface RtcdMBean {
+    public void init();
+
+    public void start();
+
+    public void stop();
+
+    public int getStatus();
+
+    public String status();
+
+    public String getStatusText();
 }

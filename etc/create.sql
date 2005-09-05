@@ -1,6 +1,6 @@
 --# create.sql -- SQL to build the initial tables for the OpenNMS Project
 --#
---# Copyright (C) 2004 The OpenNMS Group, Inc., Inc.  All rights reserved.
+--# Copyright (C) 2005 The OpenNMS Group, Inc., Inc.  All rights reserved.
 --# Parts Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 --#
 --# This program is free software; you can redistribute it and/or modify
@@ -77,7 +77,8 @@ create index server_name_idx on serverMap(serverName);
 
 create table serviceMap (
 	ipAddr			varchar(16) not null,
-	serviceMapName		varchar(32) not null );
+	serviceMapName		varchar(32) not null
+);
 create index servicemap_name_idx on serviceMap(serviceMapName);
 create index serviceMap_ipaddr_idx on serviceMap(ipAddr);
 
@@ -105,8 +106,7 @@ create index serviceMap_ipaddr_idx on serviceMap(ipAddr);
 --########################################################################
 
 create table distPoller (
-	dpName			varchar(12),
-				constraint pk_dpName primary key (dpName),
+	dpName			varchar(12) not null,
 	dpIP			varchar(16) not null,
 	dpComment		varchar(256),
 	dpDiscLimit		numeric(5,2),
@@ -114,7 +114,10 @@ create table distPoller (
 	dpLastEventPull		timestamp without time zone,
 	dpLastPackagePush	timestamp without time zone,
 	dpAdminState 		integer,
-	dpRunState		integer );
+	dpRunState		integer,
+
+	constraint pk_dpName primary key (dpName)
+);
 
 --########################################################################
 --# node Table - Contains information on nodes discovered and potentially
@@ -154,10 +157,8 @@ create table distPoller (
 --########################################################################
 
 create table node (
-	nodeID		integer,
-			constraint pk_nodeID primary key (nodeID),
+	nodeID		integer not null,
 	dpName		varchar(12),
-			constraint fk_dpName foreign key (dpName) references distPoller,
 	nodeCreateTime	timestamp without time zone not null,
 	nodeParentID	integer,
 	nodeType	char(1),
@@ -171,7 +172,11 @@ create table node (
         nodeNetBIOSName varchar(16),
 	nodeDomainName  varchar(16),
 	operatingSystem varchar(64),
-	lastCapsdPoll   timestamp without time zone );
+	lastCapsdPoll   timestamp without time zone,
+
+	constraint pk_nodeID primary key (nodeID),
+	constraint fk_dpName foreign key (dpName) references distPoller
+);
 
 create index node_id_type_idx on node(nodeID, nodeType);
 create index node_label_idx on node(nodeLabel);
@@ -215,14 +220,16 @@ create index node_label_idx on node(nodeLabel);
 
 create table ipInterface (
 	nodeID			integer,
-				constraint fk_nodeID1 foreign key (nodeID) references node ON DELETE CASCADE,
 	ipAddr			varchar(16) not null,
 	ifIndex			integer,
 	ipHostname		varchar(256),
 	isManaged		char(1),
 	ipStatus		integer,
 	ipLastCapsdPoll		timestamp without time zone,
-	isSnmpPrimary           char(1) );
+	isSnmpPrimary           char(1),
+
+	constraint fk_nodeID1 foreign key (nodeID) references node ON DELETE CASCADE
+);
 
 create index ipinterface_nodeid_ipaddr_ismanaged_idx on ipInterface(nodeID, ipAddr, isManaged);
 create index ipinterface_ipaddr_ismanaged_idx on ipInterface(ipAddr, isManaged);
@@ -259,6 +266,8 @@ create index ipinterface_nodeid_idx on ipInterface(nodeID);
 --#  snmpIfOperStatus   : SNMP MIB-2 ifTable.ifEntry.ifOperStatus
 --#                       Value is interface's current operational status
 --#                       1 = Up, 2 = Down, 3 = Testing
+--#  snmpIfAlias		: SNMP MIB-2 ifXTable.ifXEntry.ifAlias
+--#			  Value is interface's device alias
 --#
 --# NOTE:  Although not marked as "not null" the snmpIfIndex field
 --#        should never be null.  This table is considered to be uniquely
@@ -269,7 +278,6 @@ create index ipinterface_nodeid_idx on ipInterface(nodeID);
 
 create table snmpInterface (
 	nodeID			integer,
-				constraint fk_nodeID2 foreign key (nodeID) references node ON DELETE CASCADE,
 	ipAddr			varchar(16) not null,
 	snmpIpAdEntNetMask	varchar(16),
 	snmpPhysAddr		char(12),
@@ -279,7 +287,11 @@ create table snmpInterface (
 	snmpIfName		varchar(32),
 	snmpIfSpeed		integer,
 	snmpIfAdminStatus	integer,
-	snmpIfOperStatus	integer );
+	snmpIfOperStatus	integer,
+	snmpIfAlias		varchar(256),
+
+	constraint fk_nodeID2 foreign key (nodeID) references node ON DELETE CASCADE
+);
 
 create index snmpinterface_nodeid_ifindex_idx on snmpinterface(nodeID, snmpIfIndex);
 create index snmpinterface_nodeid_idx on snmpinterface(nodeID);
@@ -296,9 +308,11 @@ create index snmpinterface_ipaddr_idx on snmpinterface(ipaddr);
 --########################################################################
 
 create table service (
-	serviceID		integer,
-				constraint pk_serviceID primary key (serviceID),
-	serviceName		varchar(32) not null );
+	serviceID		integer not null,
+	serviceName		varchar(32) not null,
+
+	constraint pk_serviceID primary key (serviceID)
+);
 
 --########################################################################
 --# ifServices Table - Contains a mapping of interfaces to services available
@@ -334,17 +348,19 @@ create table service (
 
 create table ifServices (
 	nodeID			integer,
-				constraint fk_nodeID3 foreign key (nodeID) references node ON DELETE CASCADE,
 	ipAddr			varchar(16) not null,
 	ifIndex			integer,
 	serviceID		integer,
-				constraint fk_serviceID1 foreign key (serviceID) references service ON DELETE CASCADE,
 	lastGood		timestamp without time zone,
 	lastFail		timestamp without time zone,
 	qualifier		char(16),
 	status         		char(1),
 	source			char(1),
-	notify                  char(1) );
+	notify                  char(1),
+
+	constraint fk_nodeID3 foreign key (nodeID) references node ON DELETE CASCADE,
+	constraint fk_serviceID1 foreign key (serviceID) references service ON DELETE CASCADE
+);
 
 create index ifservices_nodeid_ipaddr_status on ifservices(nodeID, ipAddr, status);
 create index ifservices_nodeid_status on ifservices(nodeid, status);
@@ -445,11 +461,9 @@ create index ifservices_nodeid_serviceid_idx on ifservices(nodeID, serviceID);
 --##################################################################
 
 create table events (
-	eventID			integer,
-				constraint pk_eventID primary key (eventID),
+	eventID			integer not null,
 	eventUei		varchar(256) not null,
 	nodeID			integer,
-				constraint fk_nodeID6 foreign key (nodeID) references node ON DELETE CASCADE,
 	eventTime		timestamp without time zone not null,
 	eventHost		varchar(256),
 	eventSource		varchar(128) not null,
@@ -479,8 +493,11 @@ create table events (
 	eventLog		char(1) not null,
 	eventDisplay		char(1) not null,
 	eventAckUser		varchar(256),
-	eventAckTime		timestamp without time zone
-        );
+	eventAckTime		timestamp without time zone,
+
+	constraint pk_eventID primary key (eventID),
+	constraint fk_nodeID6 foreign key (nodeID) references node ON DELETE CASCADE
+);
 
 create index events_uei_idx on events(eventUei);
 create index events_nodeid_idx on events(nodeID);
@@ -514,20 +531,21 @@ create index events_acktime_idx on events(eventAckTime);
 --########################################################################
 
 create table outages (
-
-	outageID		integer,
-				constraint pk_outageID primary key (outageID),
+	outageID		integer not null,
 	svcLostEventID		integer,
-				constraint fk_eventID1 foreign key (svcLostEventID) references events (eventID) ON DELETE CASCADE,
 	svcRegainedEventID	integer,
-				constraint fk_eventID2 foreign key (svcRegainedEventID) references events (eventID) ON DELETE CASCADE,
 	nodeID			integer,
-					constraint fk_nodeID4 foreign key (nodeID) references node (nodeID) ON DELETE CASCADE,
 	ipAddr			varchar(16) not null,
 	serviceID		integer,
-				constraint fk_serviceID2 foreign key (serviceID) references service (serviceID) ON DELETE CASCADE,
 	ifLostService		timestamp without time zone not null,
-	ifRegainedService	timestamp without time zone );
+	ifRegainedService	timestamp without time zone,
+
+	constraint pk_outageID primary key (outageID),
+	constraint fk_eventID1 foreign key (svcLostEventID) references events (eventID) ON DELETE CASCADE,
+	constraint fk_eventID2 foreign key (svcRegainedEventID) references events (eventID) ON DELETE CASCADE,
+	constraint fk_nodeID4 foreign key (nodeID) references node (nodeID) ON DELETE CASCADE,
+	constraint fk_serviceID2 foreign key (serviceID) references service (serviceID) ON DELETE CASCADE
+);
 
 create index outages_svclostid_idx on outages(svcLostEventID);
 create index outages_svcregainedid_idx on outages(svcRegainedEventID);
@@ -568,8 +586,7 @@ create index outages_regainedservice_idx on outages(ifRegainedService);
 --########################################################################
 
 create table vulnerabilities (
-	vulnerabilityID		integer,
-				constraint pk_vulnerabilityID primary key (vulnerabilityID),
+	vulnerabilityID		integer not null,
 	nodeID			integer,
 	ipAddr			varchar(16),
 	serviceID		integer,
@@ -584,7 +601,10 @@ create table vulnerabilities (
 	descr			text,
 	port			integer,
 	protocol		varchar(32),
-	cveEntry		varchar(14) );
+	cveEntry		varchar(14),
+
+	constraint pk_vulnerabilityID primary key (vulnerabilityID)
+);
 
 create index vulnerabilities_nodeid_idx on vulnerabilities(nodeID);
 create index vulnerabilities_ipaddr_idx on vulnerabilities(ipAddr);
@@ -664,20 +684,23 @@ create unique index vulnplugins_plugin_idx on vulnPlugins(pluginID, pluginSubID)
 
 create table notifications (
        textMsg      varchar(4000) not null,
+       subject      varchar(256),
        numericMsg   varchar(256),
-       notifyID	    integer,
-       			constraint pk_notifyID primary key (notifyID),
+       notifyID	    integer not null,
        pageTime     timestamp without time zone,
        respondTime  timestamp without time zone,
        answeredBy   varchar(256),
        nodeID	    integer,
-       			constraint fk_nodeID7 foreign key (nodeID) references node (nodeID) ON DELETE CASCADE,
        interfaceID  varchar(16),
        serviceID    integer,
+       queueID		varchar(256),
        eventID      integer,
-       			constraint fk_eventID3 foreign key (eventID) references events (eventID) ON DELETE CASCADE,
-       eventUEI     varchar(256) not null
-       );
+       eventUEI     varchar(256) not null,
+
+       constraint pk_notifyID primary key (notifyID),
+       constraint fk_nodeID7 foreign key (nodeID) references node (nodeID) ON DELETE CASCADE,
+       constraint fk_eventID3 foreign key (eventID) references events (eventID) ON DELETE CASCADE
+);
 
 create index notifications_ipaddr_idx on notifications(interfaceID);
 create index notifications_serviceid_idx on notifications(serviceID);
@@ -701,10 +724,11 @@ create index notifications_answeredby_idx on notifications(answeredBy);
 create table usersNotified (
         userID          varchar(256) not null,
         notifyID        integer,
-			constraint fk_notifID2 foreign key (notifyID) references notifications (notifyID) ON DELETE CASCADE,
         notifyTime      timestamp without time zone,
         media           varchar(32),
-        contactinfo     varchar(64)
+        contactinfo     varchar(64),
+
+	constraint fk_notifID2 foreign key (notifyID) references notifications (notifyID) ON DELETE CASCADE
 );
 
 create index userid_notifyid_idx on usersNotified(userID, notifyID);
@@ -758,7 +782,6 @@ create index userid_notifyid_idx on usersNotified(userID, notifyID);
 
 create table assets (
         nodeID          integer,
-			constraint fk_nodeID5 foreign key (nodeID) references node (nodeID),
         category        varchar(64) not null,
         manufacturer    varchar(64),
         vendor          varchar(64),
@@ -797,8 +820,10 @@ create table assets (
         notifyCategory   varchar(64),
         pollerCategory   varchar(64),
         thresholdCategory   varchar(64),
-        comment         varchar(1024)
-       );
+        comment         varchar(1024),
+
+	constraint fk_nodeID5 foreign key (nodeID) references node ON DELETE CASCADE
+);
 
 
 --##################################################################
@@ -845,347 +870,3 @@ create sequence vulnNxtId minvalue 1;
 --##################################################################
 insert into distPoller (dpName, dpIP, dpComment, dpDiscLimit, dpLastNodePull, dpLastEventPull, dpLastPackagePush, dpAdminState, dpRunState) values ('localhost', '127.0.0.1', 'This is the default poller.', 0.10, null, null, null, 1, 1);
 
---########################################################################
---# Italian Adventures Tables
---#
---# 07/12/04
---# author rssntn67@yahoo.it
---# 10/08/04
---# creato il file e le tabelle
---# rev. rssntn67@yahoo.it
---# 18/08/04 
---# eliminato createtime dalle tabelle
---# sufficiente il createtime della tabella node
---#
---########################################################################
-
-drop table atinterface cascade;
-drop table stpnode cascade;
-drop table stpinterface cascade;
-drop table iprouteinterface cascade;
-drop table datalinkinterface cascade;
-drop table inventory cascade;
-
---########################################################################
---#
---# atInterface table -- This table maintains a record of ip address to mac 
---#                  address among  interfaces. It reflect information from mib-2
---#                  arp table
---#	at interface is now deprecated .iso.org.dod.internet.mgmt.mib-2.at.atTable.atEntry
---#                  OID: .1.3.6.1.2.1.3.1.1
---#	so support is for .iso.org.dod.internet.mgmt.mib-2.ip.ipNetToMediaTable.ipNetToMediaEntry 
---#                  OID: .1.3.6.1.2.1.4.22.1	
---#					
---# This table provides the following information:
---#
---#  nodeid            : Unique integer identifier of the node
---#  ipAddr            : Ip address identifier of the node
---#  atPhysAddr        : Mac address identifier for the node
---#  status            : Flag indicating the status of the entry.
---#                      'A' - Active
---#                      'N' - Not Active
---#                      'D' - Deleted
---#  sourceNodeid      : The nodeid from which information have been retrivied.
---#  ifindex           : The SNMP ifindex on which this info was recorded.
---#  lastPollTime    : The last time when this information was retrived
---#
---########################################################################
-
-create table atinterface (
-    nodeid	   integer not null,
-    constraint fk_ar_nodeID1 foreign key (nodeid) references node,
-    ipAddr	   varchar(16) not null,
-    atPhysAddr	   varchar(12) not null,
-    status	   char(1) not null,
-    sourceNodeid   integer not null,
-    ifindex	   integer not null,
-    lastPollTime timestamp not null
-);
-
-create index atinterface_node_ipaddr_idx on atinterface(nodeid,ipaddr);
-create index atinterface_atphysaddr_idx on atinterface(atphysaddr);
-
---########################################################################
---#
---# stpNode table -- This table maintains a record of general bridge interface.
---#                  It reflect information from the mib-2 bridge mib 
---# 		         support .iso.org.dod.internet.mgmt.mib-2.dot1dBridge
---#                  OID: .1.3.6.1.2.1.17	
---#					
---# This table provides the following information:
---#
---#  nodeid   	              : Unique integer identifier of the node
---#  baseBridgeAddress        : The MAC address used by this bridge when it must
---#                             be referred to in a unique fashion.
---#  baseNumPorts             : The number of ports controlled by the bridge entity.
---#  baseType				  : Indicates what type of bridging this bridge can
---#                             perform.
---#						        '1' unknown
---#						        '2' transparent-only
---#						        '3' sourceroute-only
---#                             '4' srt
---#  stpProtocolSpecification : An indication of what version of the Spanning
---#                             Tree Protocol is being run. 
---#						        '1' unknown
---#						        '2' decLb100
---#						        '3' ieee8011d
---#  stpPriority              : The value of the write-able portion of the Bridge
---#                             ID, i.e., the first two octets of the (8 octet
---#                             long) Bridge ID. The other (last) 6 octets of the
---#                             Bridge ID are given by the value of dot1dBaseBridgeAddress.
---#  stpDesignatedRoot        : The bridge identifier of the root of the spanning
---#                             tree as determined by the Spanning Tree Protocol
---#                             as executed by this node.
---#  stpRootCost              : The cost of the path to the root as seen from this bridge.
---#  stpRootPort              : The port number of the port which offers the
---#                             lowest cost path from this bridge to the root bridge.
---#  status                   : Flag indicating the status of the entry.
---#                             'A' - Active
---#                             'N' - Not Active
---#                             'D' - Deleted
---#  lastPollTime             : The last time when this information was retrived
---#  baseVlan                 : Unique integer identifier VLAN for which this info is valid
---#
---########################################################################
-
-create table stpnode (
-    nodeid		     integer not null,
-	constraint fk_ar_nodeID2 foreign key (nodeid) references node,
-    baseBridgeAddress	     varchar(12) not null,
-    baseNumPorts             integer,
-    basetype                 integer,
-    stpProtocolSpecification integer,
-    stpPriority              integer,
-    stpdesignatedroot        varchar(16) not null,
-    stprootcost              integer,
-    stprootport              integer,
-    status		     char(1) not null,
-    lastPollTime             timestamp not null,
-    basevlan                 integer not null
-);
-
-alter table stpnode add constraint pk_stpnode primary key (nodeid,basevlan);
-create index stpnode_baseBridgeAddress_idx on stpnode(baseBridgeAddress);
-create index stpnode_stpdesignatedroot_idx on stpnode(stpdesignatedroot);
-
---########################################################################
---#
---# stpInterface table -- This table maintains a record of STP interface.
---#                  It reflect information from mib-2
---#                  bridge mib and subinterface STP table
---#					 support .iso.org.dod.internet.mgmt.mib-2.dot1dBridge
---#                  OID: .1.3.6.1.2.1.17	
---#					
---# This table provides the following information:
---#
---#  nodeid   	              : Unique integer identifier of the node
---#  ifIndex                  : interface ifindex corresponding to bridge port number
---#  bridgePort               : bridge port number identifier
---#  stpPortState             : integer that reflect thestp staus of the bridge port
---#						        '1' disabled
---#						        '2' blocking
---#						        '3' listening
---#						        '4' learning
---#						        '5' forwarding
---#						        '6' broken
---#  stpPortPathCost          : The contribution of this port to the path cost of
---#                             paths towards the spanning tree root which include
---#                             this port.
---#  stpPortDesignatedRoot    : the unique Bridge Identifier of the Bridge
---#                             recorded as the Root in the Configuration BPDUs
---#                             transmitted by the Designated Bridge for the
---#                             segment to which the port is attached.  
---#  stpPortDesignatedCost    : The path cost of the Designated Port of the
---#                             segment connected to this port. This value is
---#                             compared to the Root Path Cost field in received
---#                             bridge PDUs.
---#  stpPortDesignatedBridge  : The Bridge Identifier of the bridge which this
---#                             port considers to be the Designated Bridge for
---#                             this port's segment.
---#  stpPortDesignatedPort    : The Port Identifier of the port on the Designated
---#                             Bridge for this port's segment.
---#  status                   : Flag indicating the status of the entry.
---#                             'A' - Active
---#                             'N' - Not Active
---#                             'D' - Deleted
---#  lastPollTime          : The last time when this information was retrived
---#  stpVlan                  : Unique integer identifier VLAN for which this info is valid
---#                             value '0' means that the port is a trunk port
---#
---########################################################################
-
-create table stpinterface (
-    nodeid	            integer not null,
-	constraint fk_ar_nodeID3 foreign key (nodeid) references node,
-    bridgeport              integer not null,
-    ifindex                 integer not null,
-    stpportstate            integer,
-    stpportpathcost         integer,
-    stpportdesignatedroot   varchar(16),
-    stpportdesignatedcost   integer,
-    stpportdesignatedbridge varchar(16),
-    stpportdesignatedport   varchar(4),
-    status       	    char(1) not null,
-    lastPollTime         timestamp not null,
-    stpvlan                 integer not null
-);
-
-create index stpinterface_node_ifindex_idx on stpinterface(nodeid,ifindex);
-create index stpinterface_node_idx on stpinterface(nodeid);
-create index stpinterface_stpvlan_idx on stpinterface(stpvlan);
-create index stpinterface_stpdesbridge_idx on stpinterface(stpportdesignatedbridge);
-
---########################################################################
---#
---# ipRouteInterface table -- This table maintains a record of ip route info on routers.
---#                           It reflect information from mib-2
---#                           ipRouteTable mib 
---#					          support .iso.org.dod.internet.mgmt.mib-2.ip.ipRouteTable.ipRouteEntry
---#                           OID: .1.3.6.1.2.1.4.21.1	
---#					
---# This table provides the following information:
---#
---#  nodeid   	       : Unique integer identifier of the node
---#  routeDest         : The destination IP address of this route. An
---#                      entry with a value of 0.0.0.0 is considered a default route.
---#  routeMask         : Indicate the mask to be logical-ANDed with the
---#                      destination address before being compared to the
---#                      value in the ipRouteDest field.
---#  routeNextHop      : The IP address of the next hop of this route.
---#                      (In the case of a route bound to an interface
---#                      which is realized via a broadcast media, the value
---#                      of this field is the agent's IP address on that
---#                      interface.)
---#  routeifIndex      : The index value which uniquely identifies the
---#                      local interface through which the next hop of this
---#                      route should be reached. 
---#  routeMetric1      : The primary routing metric for this route. The
---#                      semantics of this metric are determined by the
---#                      routing-protocol specified in the route's
---#                      ipRouteProto value. If this metric is not used,
---#                      its value should be set to -1.
---#  routeMetric2      : An alternate routing metric for this route.
---#  routeMetric3      : An alternate routing metric for this route.
---#  routeMetric4      : An alternate routing metric for this route.
---#  routeMetric5      : An alternate routing metric for this route.
---#  routeType         : The type of route.
---#						 '1' other
---#						 '2' invalid
---#						 '3' direct
---#						 '4' indirect
---#  routeProto        : The routing mechanism via which this route was learned. 
---#						 '1' other
---#						 '2' local
---#						 '3' netmgmt
---#						 '4' icmp
---#						 '5' egp
---#						 '6' ggp
---#						 '7' hello
---#						 '8' rip
---#						 '9' is-is
---#						 '10' es-is
---#						 '11' ciscolgrp
---#						 '12' bbnSpfIgp
---#						 '13' ospf
---#						 '14' bgp
---#  status            : Flag indicating the status of the entry.
---#                      'A' - Active
---#                      'N' - Not Active
---#                      'D' - Deleted
---#  lastPollTime      : The last time when this information was retrived
---#
---########################################################################
-
-create table iprouteinterface (
-    nodeid		    integer not null,
-	constraint fk_ar_nodeID4 foreign key (nodeid) references node,
-    routeDest               varchar(16) not null,
-    routeMask               varchar(16) not null,
-    routeNextHop            varchar(16) not null,
-    routeifindex            integer not null,
-    routemetric1            integer,
-    routemetric2            integer,
-    routemetric3            integer,
-    routemetric4            integer,
-    routemetric5            integer,
-    routetype               integer,
-    routeproto              integer,
-    status		    char(1) not null,
-    lastPollTime            timestamp not null
-);
-
-alter table iprouteinterface add constraint pk_iprouteinterface primary key (nodeid,routedest);
-create index iprouteinterface_node_ifdex_idx on iprouteinterface(nodeid,routeifindex);
-create index iprouteinterface_rnh_idx on iprouteinterface(routenexthop);
-
---########################################################################
---#
---# dataLinkInterface table -- This table maintains a record of data link info 
---#                            among  the interfaces. 
---#                            Data is calculated using info from other tables
---#
---# This table provides the following information:
---#
---#  nodeid            : Unique integer identifier for the linked node 
---#  IfIndex           : SNMP index of interface connected to the link on the node, 
---# 		             is null if it doesn't support SNMP.
---#  nodeparentid      : Unique integer identifier for linking node
---#  parentIfIndex     : SNMP index of interface linked on the parent node.
---#  linkTypeId        : SNMP Link type identification number
---#  status            : Flag indicating the status of the entry.
---#                      'A' - Active
---#                      'N' - Not Active
---#                      'D' - Deleted
---#  lastPollTime      : The last time when this information was retrived
---#
---########################################################################
-
-create table datalinkinterface (
-    nodeid	     integer not null,
-	constraint fk_ar_nodeID5 foreign key (nodeid) references node,
-    ifindex          integer not null,
-    nodeparentid     integer not null,
-	constraint fk_ar_nodeID6 foreign key (nodeparentid) references node,
-    parentIfIndex    integer not null,
-    status	     char(1) not null,
-    lastPollTime timestamp not null
-);
-
-create index dlint_node_idx on datalinkinterface(nodeid);
-create index dlint_node_ifindex_idx on datalinkinterface(nodeid,ifindex);
-create index dlint_nodeparent_idx on datalinkinterface(nodeparentid);
-create index dlint_nodeparent_paifindex_idx on datalinkinterface(nodeparentid,parentifindex);
-
---########################################################################
---#
---# inventory table -- This table maintains inventories 
---#                  of switch nodes.
---#
---# This table provides the following information:
---#
---#  nodeid            : Unique integer identifier for the linked node. 
---#  name			   : Name that describes the category of the inventory.
---#  createtime        : The timestamp of the creation of the inventory.
---#  lastpolltime      : The timestamp of last download of the inventory.
---#  pathtofile        : The path where the inventory file is stored.
---#  status            : Flag indicating the status of the entry.
---#                      'A' - Active
---#                      'N' - Not Active
---#                      'D' - Deleted: when the status of the node associated 
---# 						   is Deleted
---#
---########################################################################
-
-create table inventory (
-        nodeid		integer not null,
-				constraint fk_ar_nodeID7 foreign key (nodeID)	references node,
-        name 	varchar(30) not null,
-        createtime   timestamp not null,
-	    lastpolltime   timestamp not null,
-        pathtofile varchar(256) not null,
-	    status char(1) not null
-        );
-
-create index inventory_nodeid_name_idx on inventory(nodeid,name);
-create index inventory_lastpolltime_idx on inventory(lastpolltime);
-create index inventory_status_idx on inventory(status);

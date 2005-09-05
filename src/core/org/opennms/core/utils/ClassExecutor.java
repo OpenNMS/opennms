@@ -33,39 +33,44 @@
 package org.opennms.core.utils;
 
 import java.util.List;
+
 import org.apache.log4j.Category;
 import org.opennms.netmgt.notifd.NotificationStrategy;
 
-/**Implementation of Executor strategy that instantiates a Java class.
+/**
+ * Implementation of Executor strategy that instantiates a Java class.
  * 
- * @author <A HREF="mailto:david@opennms.org">David Hustace</A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
- *
+ * @author <A HREF="mailto:david@opennms.org">David Hustace </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * 
  */
-public class ClassExecutor implements ExecutorStrategy
-{
-	/**This method calls the send method of the specified class in @param className.
-	   @param Java className of the notification sender plug-in
-	   @param arguments a list of Argument objects that need to be passed to the class
-	   @return int, the return code of the send method of the plug-in
-	*/
-	public int execute(String className, List arguments)
-	{
-		int returnCode = 0;
-		Category log = ThreadCategory.getInstance(getClass());
-		
-		log.debug("Going for the class instance: " + className);
-		NotificationStrategy ns = null;
-		try {
-			ns = (NotificationStrategy) Class.forName(className).newInstance();
-			log.debug(className + " class created: "+ ns.getClass() );
-		} catch (Exception e) {
-			log.error("Execption creating notification strategy class: "+className ,e);
-			returnCode = 1;
-		}
-		
-		returnCode = ns.send(arguments);
-		return returnCode;
-	}
+public class ClassExecutor implements ExecutorStrategy {
+    /**
+     * This method calls the send method of the specified class in
+     * 
+     * @param className.
+     * @param Java
+     *            className of the notification sender plug-in
+     * @param arguments
+     *            a list of Argument objects that need to be passed to the class
+     * @return int, the return code of the send method of the plug-in
+     */
+    public int execute(String className, List arguments) {
+        int returnCode = 0;
+        Category log = ThreadCategory.getInstance(getClass());
+
+        log.debug("Going for the class instance: " + className);
+        NotificationStrategy ns = null;
+        try {
+            ns = (NotificationStrategy) Class.forName(className).newInstance();
+            log.debug(className + " class created: " + ns.getClass());
+        } catch (Exception e) {
+            log.error("Execption creating notification strategy class: " + className, e);
+            returnCode = 1;
+        }
+
+        returnCode = ns.send(arguments);
+        return returnCode;
+    }
 
 }

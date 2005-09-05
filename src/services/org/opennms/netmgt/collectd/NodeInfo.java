@@ -37,61 +37,54 @@ package org.opennms.netmgt.collectd;
 import java.util.List;
 
 /**
- * This class encapsulates all of the node-level data required by
- * the SNMP data collector in order to successfully perform data
- * collection for a scheduled primary SNMP interface.
- *
- * @author <a href="mailto:mike@opennms.org">Mike Davidson</a>
- * @author <a href="http://www.opennms.org/">OpenNMS</a>
+ * This class encapsulates all of the node-level data required by the SNMP data
+ * collector in order to successfully perform data collection for a scheduled
+ * primary SNMP interface.
+ * 
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
  */
-final class NodeInfo
-{
-	private int 	m_nodeId;
-	private int 	m_primarySnmpIfIndex;
-	private List 	m_oidList;
-	private List	m_dsList;
-	
-	
-	public NodeInfo(int nodeId, int primaryIfIndex)
-	{
-		m_nodeId = nodeId;
-		m_primarySnmpIfIndex = primaryIfIndex;
-		m_oidList = null;
-		m_dsList = null;
-	}
-	
-	public int getNodeId()
-	{
-		return m_nodeId;
-	}
-	
-	public void setNodeId(int nodeId)
-	{
-		m_nodeId = nodeId;
-	}
-	
-	public int getPrimarySnmpIfIndex()
-	{
-		return m_primarySnmpIfIndex;
-	}
-	
-	public void setDsList(List dsList)
-	{
-		m_dsList = dsList;
-	}
-	
-	public void setOidList(List oidList)
-	{
-		m_oidList = oidList;
-	}
-	
-	public List getDsList()
-	{
-		return m_dsList;
-	}
-	
-	public List getOidList()
-	{
-		return m_oidList;
-	}
+final class NodeInfo {
+    private int m_nodeId;
+
+    private int m_primarySnmpIfIndex;
+
+    private List m_oidList;
+
+    private List m_dsList;
+
+    public NodeInfo(int nodeId, int primaryIfIndex) {
+        m_nodeId = nodeId;
+        m_primarySnmpIfIndex = primaryIfIndex;
+        m_oidList = null;
+        m_dsList = null;
+    }
+
+    public int getNodeId() {
+        return m_nodeId;
+    }
+
+    public void setNodeId(int nodeId) {
+        m_nodeId = nodeId;
+    }
+
+    public int getPrimarySnmpIfIndex() {
+        return m_primarySnmpIfIndex;
+    }
+
+    public void setDsList(List dsList) {
+        m_dsList = dsList;
+    }
+
+    public void setOidList(List oidList) {
+        m_oidList = oidList;
+    }
+
+    public List getDsList() {
+        return m_dsList;
+    }
+
+    public List getOidList() {
+        return m_oidList;
+    }
 } // end class

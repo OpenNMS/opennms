@@ -1,0 +1,1181 @@
+<events>
+<!-- Event definitions for traps from  ALTEON-TRAP-MIB -->
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.1872.2.1.13</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>1</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Alteon/traps/altSwPrimaryPowerSupplyFailure</uei>
+	<event-label>ALTEON-TRAP-MIB defined trap event: altSwPrimaryPowerSupplyFailure</event-label>
+	<descr>
+&lt;p&gt;A altSwPrimaryPowerSupplyFailure trap signifies that the 
+primary power supply failed.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Alteon Event: Alteon Event: altSwPrimaryPowerSupplyFailure trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Minor</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.1872.2.1.13</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>2</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Alteon/traps/altSwRedunPowerSupplyFailure</uei>
+	<event-label>ALTEON-TRAP-MIB defined trap event: altSwRedunPowerSupplyFailure</event-label>
+	<descr>
+&lt;p&gt;A altSwRedunPowerSupplyFailure trap signifies that the 
+redundant power supply failed.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Alteon Event: Alteon Event: altSwRedunPowerSupplyFailure trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Minor</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.1872.2.1.13</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>3</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Alteon/traps/altSwDefGwUp</uei>
+	<event-label>ALTEON-TRAP-MIB defined trap event: altSwDefGwUp</event-label>
+	<descr>
+&lt;p&gt;A altSwDefGwUp trap signifies that the default
+gateway is alive.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ipCurCfgGwIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ipCurCfgGwAddr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sysName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sysLocation&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sysContact&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Alteon Event: altSwDefGwUp trap received 
+			ipCurCfgGwIndex=%parm[#1]% 
+			ipCurCfgGwAddr=%parm[#2]% 
+			sysName=%parm[#3]% 
+			sysLocation=%parm[#4]% 
+			sysContact=%parm[#5]%&lt;/p&gt;
+		</logmsg>
+	<severity>Cleared</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.1872.2.1.13</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>4</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Alteon/traps/altSwDefGwDown</uei>
+	<event-label>ALTEON-TRAP-MIB defined trap event: altSwDefGwDown</event-label>
+	<descr>
+&lt;p&gt;A altSwDefGwDown trap signifies that the default
+gateway is down.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ipCurCfgGwIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ipCurCfgGwAddr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sysName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sysLocation&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sysContact&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Alteon Event: altSwDefGwDown trap received 
+			ipCurCfgGwIndex=%parm[#1]% 
+			ipCurCfgGwAddr=%parm[#2]% 
+			sysName=%parm[#3]% 
+			sysLocation=%parm[#4]% 
+			sysContact=%parm[#5]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.1872.2.1.13</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>5</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Alteon/traps/altSwDefGwInService</uei>
+	<event-label>ALTEON-TRAP-MIB defined trap event: altSwDefGwInService</event-label>
+	<descr>
+&lt;p&gt;A altSwDefGwEnabled trap signifies that the default
+gateway is up and in service.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ipCurCfgGwIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ipCurCfgGwAddr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sysName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sysLocation&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sysContact&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Alteon Event: altSwDefGwInService trap received 
+			ipCurCfgGwIndex=%parm[#1]% 
+			ipCurCfgGwAddr=%parm[#2]% 
+			sysName=%parm[#3]% 
+			sysLocation=%parm[#4]% 
+			sysContact=%parm[#5]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.1872.2.1.13</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Alteon/traps/altSwDefGwNotInService</uei>
+	<event-label>ALTEON-TRAP-MIB defined trap event: altSwDefGwNotInService</event-label>
+	<descr>
+&lt;p&gt;A altSwDefGwDisabled trap signifies that the default
+gateway is alive but not in service.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ipCurCfgGwIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	ipCurCfgGwAddr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sysName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sysLocation&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sysContact&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Alteon Event: altSwDefGwNotInService trap received 
+			ipCurCfgGwIndex=%parm[#1]% 
+			ipCurCfgGwAddr=%parm[#2]% 
+			sysName=%parm[#3]% 
+			sysLocation=%parm[#4]% 
+			sysContact=%parm[#5]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.1872.2.1.13</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>7</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Alteon/traps/altSwSlbRealServerUp</uei>
+	<event-label>ALTEON-TRAP-MIB defined trap event: altSwSlbRealServerUp</event-label>
+	<descr>
+&lt;p&gt;A altSwSlbRealServerUp trap signifies that the real
+server is up and operational.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbCurCfgRealServerIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbCurCfgRealServerIpAddr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbCurCfgRealServerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sysName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sysLocation&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sysContact&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Alteon Event: altSwSlbRealServerUp trap received 
+			slbCurCfgRealServerIndex=%parm[#1]% 
+			slbCurCfgRealServerIpAddr=%parm[#2]% 
+			slbCurCfgRealServerName=%parm[#3]% 
+			sysName=%parm[#4]% 
+			sysLocation=%parm[#5]% 
+			sysContact=%parm[#6]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.1872.2.1.13</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>8</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Alteon/traps/altSwSlbRealServerDown</uei>
+	<event-label>ALTEON-TRAP-MIB defined trap event: altSwSlbRealServerDown</event-label>
+	<descr>
+&lt;p&gt;A altSwSlbRealServerDown trap signifies that the real
+server is down and out of service.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbCurCfgRealServerIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbCurCfgRealServerIpAddr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbCurCfgRealServerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sysName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sysLocation&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sysContact&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Alteon Event: altSwSlbRealServerDown trap received 
+			slbCurCfgRealServerIndex=%parm[#1]% 
+			slbCurCfgRealServerIpAddr=%parm[#2]% 
+			slbCurCfgRealServerName=%parm[#3]% 
+			sysName=%parm[#4]% 
+			sysLocation=%parm[#5]% 
+			sysContact=%parm[#6]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.1872.2.1.13</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>9</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Alteon/traps/altSwSlbRealServerMaxConnReached</uei>
+	<event-label>ALTEON-TRAP-MIB defined trap event: altSwSlbRealServerMaxConnReached</event-label>
+	<descr>
+&lt;p&gt;A altSwSlbRealServerMaxConnReached trap signifies that the 
+real server has reached maximum connections.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbCurCfgRealServerIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbCurCfgRealServerIpAddr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbCurCfgRealServerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sysName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sysLocation&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sysContact&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Alteon Event: altSwSlbRealServerMaxConnReached trap received 
+			slbCurCfgRealServerIndex=%parm[#1]% 
+			slbCurCfgRealServerIpAddr=%parm[#2]% 
+			slbCurCfgRealServerName=%parm[#3]% 
+			sysName=%parm[#4]% 
+			sysLocation=%parm[#5]% 
+			sysContact=%parm[#6]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.1872.2.1.13</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>10</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Alteon/traps/altSwSlbBkupRealServerAct</uei>
+	<event-label>ALTEON-TRAP-MIB defined trap event: altSwSlbBkupRealServerAct</event-label>
+	<descr>
+&lt;p&gt;A altSwSlbBkupRealServerAct trap signifies that the 
+backup real server is activated due to availablity of the
+primary real server.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbCurCfgRealServerIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbCurCfgRealServerIpAddr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbCurCfgRealServerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sysName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sysLocation&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sysContact&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Alteon Event: altSwSlbBkupRealServerAct trap received 
+			slbCurCfgRealServerIndex=%parm[#1]% 
+			slbCurCfgRealServerIpAddr=%parm[#2]% 
+			slbCurCfgRealServerName=%parm[#3]% 
+			sysName=%parm[#4]% 
+			sysLocation=%parm[#5]% 
+			sysContact=%parm[#6]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.1872.2.1.13</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>11</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Alteon/traps/altSwSlbBkupRealServerDeact</uei>
+	<event-label>ALTEON-TRAP-MIB defined trap event: altSwSlbBkupRealServerDeact</event-label>
+	<descr>
+&lt;p&gt;A altSwSlbBkupRealServerDeact trap signifies that the 
+backup real server is deactivated due to the primary real 
+server is available.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbCurCfgRealServerIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbCurCfgRealServerIpAddr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbCurCfgRealServerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sysName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sysLocation&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sysContact&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Alteon Event: altSwSlbBkupRealServerDeact trap received 
+			slbCurCfgRealServerIndex=%parm[#1]% 
+			slbCurCfgRealServerIpAddr=%parm[#2]% 
+			slbCurCfgRealServerName=%parm[#3]% 
+			sysName=%parm[#4]% 
+			sysLocation=%parm[#5]% 
+			sysContact=%parm[#6]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.1872.2.1.13</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>12</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Alteon/traps/altSwSlbBkupRealServerActOverflow</uei>
+	<event-label>ALTEON-TRAP-MIB defined trap event: altSwSlbBkupRealServerActOverflow</event-label>
+	<descr>
+&lt;p&gt;A altSwSlbBkupRealServerActOverflow trap signifies 
+that the backup real server is deactivated due to the primary 
+real server is overflowed.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbCurCfgRealServerIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbCurCfgRealServerIpAddr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbCurCfgRealServerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sysName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sysLocation&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sysContact&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Alteon Event: altSwSlbBkupRealServerActOverflow trap received 
+			slbCurCfgRealServerIndex=%parm[#1]% 
+			slbCurCfgRealServerIpAddr=%parm[#2]% 
+			slbCurCfgRealServerName=%parm[#3]% 
+			sysName=%parm[#4]% 
+			sysLocation=%parm[#5]% 
+			sysContact=%parm[#6]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.1872.2.1.13</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>13</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Alteon/traps/altSwSlbBkupRealServerDeactOverflow</uei>
+	<event-label>ALTEON-TRAP-MIB defined trap event: altSwSlbBkupRealServerDeactOverflow</event-label>
+	<descr>
+&lt;p&gt;A altSwSlbBkupRealServerDeactOverflow trap signifies 
+that the backup real server is deactivated due to the primary 
+real server is out from overflow situation.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbCurCfgRealServerIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbCurCfgRealServerIpAddr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbCurCfgRealServerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sysName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sysLocation&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sysContact&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Alteon Event: altSwSlbBkupRealServerDeactOverflow trap received 
+			slbCurCfgRealServerIndex=%parm[#1]% 
+			slbCurCfgRealServerIpAddr=%parm[#2]% 
+			slbCurCfgRealServerName=%parm[#3]% 
+			sysName=%parm[#4]% 
+			sysLocation=%parm[#5]% 
+			sysContact=%parm[#6]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.1872.2.1.13</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>14</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Alteon/traps/altSwSlbFailoverStandby</uei>
+	<event-label>ALTEON-TRAP-MIB defined trap event: altSwSlbFailoverStandby</event-label>
+	<descr>
+&lt;p&gt;A altSwSlbFailoverStandby trap signifies that the switch
+is now a standby switch.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Alteon Event: altSwSlbFailoverStandby trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.1872.2.1.13</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>15</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Alteon/traps/altSwSlbFailoverActive</uei>
+	<event-label>ALTEON-TRAP-MIB defined trap event: altSwSlbFailoverActive</event-label>
+	<descr>
+&lt;p&gt;A altSwSlbFailoverActive trap signifies that the switch
+is now an active switch.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Alteon Event: altSwSlbFailoverActive trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.1872.2.1.13</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>16</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Alteon/traps/altSwSlbFailoverSwitchUp</uei>
+	<event-label>ALTEON-TRAP-MIB defined trap event: altSwSlbFailoverSwitchUp</event-label>
+	<descr>
+&lt;p&gt;A altSwSlbFailoverSwitchUp trap signifies that the failover
+switch is alive.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Alteon Event: altSwSlbFailoverSwitchUp trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Cleared</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.1872.2.1.13</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>17</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Alteon/traps/altSwSlbFailoverSwitchDown</uei>
+	<event-label>ALTEON-TRAP-MIB defined trap event: altSwSlbFailoverSwitchDown</event-label>
+	<descr>
+&lt;p&gt;A altSwSlbFailoverSwitchDown trap signifies that the failover
+switch is down.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Alteon Event: altSwSlbFailoverSwitchDown trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Minor</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.1872.2.1.13</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>18</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Alteon/traps/altSwfltFilterFired</uei>
+	<event-label>ALTEON-TRAP-MIB defined trap event: altSwfltFilterFired</event-label>
+	<descr>
+&lt;p&gt;A altSwfltFilterFired trap signifies that the packet 
+received on a switch port matches the filter rule.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	fltCurCfgIndx&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	fltCurCfgPortIndx&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sysName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sysLocation&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sysContact&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Alteon Event: altSwfltFilterFired trap received 
+			fltCurCfgIndx=%parm[#1]% 
+			fltCurCfgPortIndx=%parm[#2]% 
+			sysName=%parm[#3]% 
+			sysLocation=%parm[#4]% 
+			sysContact=%parm[#5]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.1872.2.1.13</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>19</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Alteon/traps/altSwSlbRealServerServiceUp</uei>
+	<event-label>ALTEON-TRAP-MIB defined trap event: altSwSlbRealServerServiceUp</event-label>
+	<descr>
+&lt;p&gt;A altSwSlbRealServerServiceUp trap signifies that the 
+service port of the real server is up and operational.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbCurCfgRealServerIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbCurCfgRealServerIpAddr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbCurCfgRealServerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbCurCfgVirtServiceRealPort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sysName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sysLocation&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sysContact&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Alteon Event: altSwSlbRealServerServiceUp trap received 
+			slbCurCfgRealServerIndex=%parm[#1]% 
+			slbCurCfgRealServerIpAddr=%parm[#2]% 
+			slbCurCfgRealServerName=%parm[#3]% 
+			slbCurCfgVirtServiceRealPort=%parm[#4]% 
+			sysName=%parm[#5]% 
+			sysLocation=%parm[#6]% 
+			sysContact=%parm[#7]%&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.1872.2.1.13</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>20</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Alteon/traps/altSwSlbRealServerServiceDown</uei>
+	<event-label>ALTEON-TRAP-MIB defined trap event: altSwSlbRealServerServiceDown</event-label>
+	<descr>
+&lt;p&gt;A altSwSlbRealServerServiceDown trap signifies that the 
+service port of the real server is down and out of service.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbCurCfgRealServerIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbCurCfgRealServerIpAddr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbCurCfgRealServerName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	slbCurCfgVirtServiceRealPort&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sysName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sysLocation&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sysContact&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Alteon Event: altSwSlbRealServerServiceDown trap received 
+			slbCurCfgRealServerIndex=%parm[#1]% 
+			slbCurCfgRealServerIpAddr=%parm[#2]% 
+			slbCurCfgRealServerName=%parm[#3]% 
+			slbCurCfgVirtServiceRealPort=%parm[#4]% 
+			sysName=%parm[#5]% 
+			sysLocation=%parm[#6]% 
+			sysContact=%parm[#7]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.1872.2.1.13</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>21</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Alteon/traps/altSwVrrpNewMaster</uei>
+	<event-label>ALTEON-TRAP-MIB defined trap event: altSwVrrpNewMaster</event-label>
+	<descr>
+&lt;p&gt;The newMaster trap indicates that the sending agent
+has transitioned to 'Master' state.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	vrrpCurCfgVirtRtrIndx&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	vrrpCurCfgVirtRtrAddr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sysName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sysLocation&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sysContact&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Alteon Event: altSwVrrpNewMaster trap received 
+			vrrpCurCfgVirtRtrIndx=%parm[#1]% 
+			vrrpCurCfgVirtRtrAddr=%parm[#2]% 
+			sysName=%parm[#3]% 
+			sysLocation=%parm[#4]% 
+			sysContact=%parm[#5]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.1872.2.1.13</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>22</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Alteon/traps/altSwVrrpNewBackup</uei>
+	<event-label>ALTEON-TRAP-MIB defined trap event: altSwVrrpNewBackup</event-label>
+	<descr>
+&lt;p&gt;The newBackup trap indicates that the sending agent
+has transitioned to 'Backup' state.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	vrrpCurCfgVirtRtrIndx&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	vrrpCurCfgVirtRtrAddr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sysName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sysLocation&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sysContact&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Alteon Event: altSwVrrpNewBackup trap received 
+			vrrpCurCfgVirtRtrIndx=%parm[#1]% 
+			vrrpCurCfgVirtRtrAddr=%parm[#2]% 
+			sysName=%parm[#3]% 
+			sysLocation=%parm[#4]% 
+			sysContact=%parm[#5]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.1872.2.1.13</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>23</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Alteon/traps/altSwVrrpAuthFailure</uei>
+	<event-label>ALTEON-TRAP-MIB defined trap event: altSwVrrpAuthFailure</event-label>
+	<descr>
+&lt;p&gt;A vrrpAuthFailure trap signifies that a packet has
+been received from a router whose authentication key
+or authentication type conflicts with this router's
+authentication key or authentication type. Implementation
+of this trap is optional.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	vrrpCurCfgIfIndx&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	vrrpCurCfgIfPasswd&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sysName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sysLocation&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sysContact&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Alteon Event: altSwVrrpAuthFailure trap received 
+			vrrpCurCfgIfIndx=%parm[#1]% 
+			vrrpCurCfgIfPasswd=%parm[#2]% 
+			sysName=%parm[#3]% 
+			sysLocation=%parm[#4]% 
+			sysContact=%parm[#5]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.1872.2.1.13</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>24</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Alteon/traps/altSwLoginFailure</uei>
+	<event-label>ALTEON-TRAP-MIB defined trap event: altSwLoginFailure</event-label>
+	<descr>
+&lt;p&gt;A altSwLoginFailure trap signifies that someone failed to
+enter a valid username/password combination.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	altSwTrapDisplayString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sysName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sysLocation&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sysContact&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Alteon Event: altSwLoginFailure trap received 
+			altSwTrapDisplayString=%parm[#1]% 
+			sysName=%parm[#2]% 
+			sysLocation=%parm[#3]% 
+			sysContact=%parm[#4]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.1872.2.1.13</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>27</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/Alteon/traps/altSwTempExceedThreshold</uei>
+	<event-label>ALTEON-TRAP-MIB defined trap event: altSwTempExceedThreshold</event-label>
+	<descr>
+&lt;p&gt;A altSwTempExceedThreshold trap signifies that the
+switch temperature has exceeded maximum safety limits.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	altSwTrapDisplayString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sysName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sysLocation&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	sysContact&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Alteon Event: altSwTempExceedThreshold trap received 
+			altSwTrapDisplayString=%parm[#1]% 
+			sysName=%parm[#2]% 
+			sysLocation=%parm[#3]% 
+			sysContact=%parm[#4]%&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<!-- End of auto generated data from MIB: ALTEON-TRAP-MIB -->
+</events>

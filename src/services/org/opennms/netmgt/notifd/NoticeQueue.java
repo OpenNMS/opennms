@@ -41,129 +41,104 @@ import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
-/**This is a data class designed to hold NotificationTasks
- * in an ordered map that can handle collisions.
+/**
+ * This is a data class designed to hold NotificationTasks in an ordered map
+ * that can handle collisions.
  * 
- * @author <A HREF="mailto:jason@opennms.org">Jason Johns</A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
- *
+ * @author <A HREF="mailto:jason@opennms.org">Jason Johns </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * 
  * @version 1.1.1.1
  * 
  */
-public class NoticeQueue extends TreeMap
-{
-	public NoticeQueue()
-	{
-		super();
-	}
-	
-	public NoticeQueue(Comparator c)
-	{
-		super(c);
-	}
-	
-	public NoticeQueue(Map m)
-	{
-		super(m);
-	}
-	
-	public NoticeQueue(SortedMap m)
-	{
-		super(m);
-	}
-	
-	public Object put(Object key, Object task)
-	{
-		Object result = null;
-		
-		//see if there is a collision
-		if (super.containsKey(key))
-		{
-			Object o = super.get(key);
-			if (o instanceof NotificationTask)
-			{
-				List duplicate = new ArrayList();
-				duplicate.add(o);
-				duplicate.add(task);
-				
-				result = super.put(key, duplicate);
-			}
-			else if (o instanceof List)
-			{
-				((List)o).add(task);
-				result = o;
-			}
-		}
-		else
-		{
-			result = super.put(key, task);
-		}
-		
-		return result;
-	}
-	
-	public Object remove(Object task)
-	{
-		Object result = null;
-		
-		if (task instanceof NotificationTask)
-		{
-			NotificationTask notice = (NotificationTask)task;
-			Long key = new Long(notice.getSendTime());
-			
-			Object o = get(key);
-			
-			if (o instanceof NotificationTask)
-			{
-				result = super.remove(key);
-			}
-			else if (o instanceof List)
-			{
-				((List)o).remove(task);
-				result = task;
-			}
-		}
-		else
-		{
-			result = super.remove(task);
-		}
-		
-		return result;
-	}
-	
-	public Collection values()
-	{
-		Collection originals = super.values();
-		Collection expanded = new ArrayList();
-		
-		Iterator i = originals.iterator();
-		while(i.hasNext())
-		{
-			Object next = i.next();
-			if (next instanceof NotificationTask)
-			{
-				expanded.add(next);
-			}
-			else if (next instanceof List)
-			{
-				expanded.addAll( (List)next );
-			}
-		}
-		
-		return expanded;
-	}
-	
-	public String toString()
-	{
-		Collection values = values();
-		StringBuffer buffer = new StringBuffer();
-		
-		Iterator i = values.iterator();
-		while(i.hasNext())
-		{
-			buffer.append(i.next().toString() + System.getProperty("line.separator"));
-		}
-		
-		return buffer.toString();
-	}
+public class NoticeQueue extends TreeMap {
+    public NoticeQueue() {
+        super();
+    }
+
+    public NoticeQueue(Comparator c) {
+        super(c);
+    }
+
+    public NoticeQueue(Map m) {
+        super(m);
+    }
+
+    public NoticeQueue(SortedMap m) {
+        super(m);
+    }
+
+    public Object put(Object key, Object task) {
+        Object result = null;
+
+        // see if there is a collision
+        if (super.containsKey(key)) {
+            Object o = super.get(key);
+            if (o instanceof NotificationTask) {
+                List duplicate = new ArrayList();
+                duplicate.add(o);
+                duplicate.add(task);
+
+                result = super.put(key, duplicate);
+            } else if (o instanceof List) {
+                ((List) o).add(task);
+                result = o;
+            }
+        } else {
+            result = super.put(key, task);
+        }
+
+        return result;
+    }
+
+    public Object remove(Object task) {
+        Object result = null;
+
+        if (task instanceof NotificationTask) {
+            NotificationTask notice = (NotificationTask) task;
+            Long key = new Long(notice.getSendTime());
+
+            Object o = get(key);
+
+            if (o instanceof NotificationTask) {
+                result = super.remove(key);
+            } else if (o instanceof List) {
+                ((List) o).remove(task);
+                result = task;
+            }
+        } else {
+            result = super.remove(task);
+        }
+
+        return result;
+    }
+
+    public Collection values() {
+        Collection originals = super.values();
+        Collection expanded = new ArrayList();
+
+        Iterator i = originals.iterator();
+        while (i.hasNext()) {
+            Object next = i.next();
+            if (next instanceof NotificationTask) {
+                expanded.add(next);
+            } else if (next instanceof List) {
+                expanded.addAll((List) next);
+            }
+        }
+
+        return expanded;
+    }
+
+    public String toString() {
+        Collection values = values();
+        StringBuffer buffer = new StringBuffer();
+
+        Iterator i = values.iterator();
+        while (i.hasNext()) {
+            buffer.append(i.next().toString() + System.getProperty("line.separator"));
+        }
+
+        return buffer.toString();
+    }
 }

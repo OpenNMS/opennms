@@ -37,176 +37,170 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * <pre>This contains a list of service lost/regained set/pair. 
- *
- * Also maintains the outage/down time each time it is calculated and the time
- * from which this was calculated - this is done so when the view outage time for
- * a window is calculated, the same calculations are not done on the node multiple
- * times
- *
- * @author 	<A HREF="mailto:jacinta@oculan.com">Jacinta Remedios</A>
- * @author	<A HREF="http://www.oculan.com">oculan.org</A>
- *
+ * <pre>
+ * This contains a list of service lost/regained set/pair. 
+ * 
+ *  Also maintains the outage/down time each time it is calculated and the time
+ *  from which this was calculated - this is done so when the view outage time for
+ *  a window is calculated, the same calculations are not done on the node multiple
+ *  times
+ * 
+ *  @author 	&lt;A HREF=&quot;mailto:jacinta@oculan.com&quot;&gt;Jacinta Remedios&lt;/A&gt;
+ *  @author	&lt;A HREF=&quot;http://www.oculan.com&quot;&gt;oculan.org&lt;/A&gt;
+ * 
+ * 
  */
-public class OutageSvcTimesList extends ArrayList
-{
-	/**
-	 * The time from which the current outtime 'm_outTime' is calculated
-	 */
-	private long	m_outTimeSince;
+public class OutageSvcTimesList extends ArrayList {
+    /**
+     * The time from which the current outtime 'm_outTime' is calculated
+     */
+    private long m_outTimeSince;
 
-	/**
-	 * The  outage time computed since 'm_outTimeSince'
-	 */
-	private long	m_outTime;
+    /**
+     * The outage time computed since 'm_outTimeSince'
+     */
+    private long m_outTime;
 
-	/**
-	 * The  outage time computed during business hours.
-	 */
-	private long	m_busOutTime;
+    /**
+     * The outage time computed during business hours.
+     */
+    private long m_busOutTime;
 
-	/**
-	 * Default constructor
-	 *
-	 * @see java.util.ArrayList#ArrayList()
-	 */
-	public OutageSvcTimesList()
-	{
-		super();
-		
-		m_outTimeSince = -1;
+    /**
+     * Default constructor
+     * 
+     * @see java.util.ArrayList#ArrayList()
+     */
+    public OutageSvcTimesList() {
+        super();
 
-		m_outTime=0;
-	}
+        m_outTimeSince = -1;
 
-	/**
-	 * Constructor
-	 *
-	 * @see java.util.ArrayList#ArrayList(int initCapacity)
-	 */
-	public OutageSvcTimesList(int initialCapacity)
-	{
-		super(initialCapacity);
-		
-		m_outTimeSince = -1;
+        m_outTime = 0;
+    }
 
-		m_outTime=0;
-	}
+    /**
+     * Constructor
+     * 
+     * @see java.util.ArrayList#ArrayList(int initCapacity)
+     */
+    public OutageSvcTimesList(int initialCapacity) {
+        super(initialCapacity);
 
-	/**
-	 * Add a new servicetime entry
-	 *
-	 * @param losttime	time at which service was lost
-	 * @param regainedtime	time at which service was regained
-	 */
-	public void addSvcTime(long losttime, long regainedtime)
-	{
-		if (regainedtime < losttime)
-			return;
+        m_outTimeSince = -1;
 
-		add(new Outage(losttime, regainedtime));
-	}
+        m_outTime = 0;
+    }
 
-	/**
-	 * Add a new service time entry
-	 *
-	 * @param losttime	time at which service was lost
-	 */
-	public void addSvcTime(long losttime)
-	{
-		add(new Outage(losttime));
-	}
+    /**
+     * Add a new servicetime entry
+     * 
+     * @param losttime
+     *            time at which service was lost
+     * @param regainedtime
+     *            time at which service was regained
+     */
+    public void addSvcTime(long losttime, long regainedtime) {
+        if (regainedtime < losttime)
+            return;
 
-	/**
-	 * Calculate the total downtime in this list of service times for
-	 * the last 'rollinWindow' time starting at 'curTime'
-	 *
-	 * @param curTime	the current time from which the down time is to be calculated
-	 * @param rollingWindow	the last window for which the downtime is to be calculated
-	 *
-	 * @return total down time in service times in this list
-	 */
-	public long getDownTime(long curTime, long rollingWindow)
-	{
-		// calculate effective start time
-		long startTime = curTime - rollingWindow;
-		m_outTimeSince = startTime;
+        add(new Outage(losttime, regainedtime));
+    }
 
-		m_outTime=0;
+    /**
+     * Add a new service time entry
+     * 
+     * @param losttime
+     *            time at which service was lost
+     */
+    public void addSvcTime(long losttime) {
+        add(new Outage(losttime));
+    }
 
-		Iterator iter = iterator();
-		while(iter.hasNext())
-		{
-			Outage svcTime = (Outage)iter.next();
-			long outtime = svcTime.getDownTime(curTime, rollingWindow);
-			if(outtime > 0)
-				m_outTime += outtime;
-		}
+    /**
+     * Calculate the total downtime in this list of service times for the last
+     * 'rollinWindow' time starting at 'curTime'
+     * 
+     * @param curTime
+     *            the current time from which the down time is to be calculated
+     * @param rollingWindow
+     *            the last window for which the downtime is to be calculated
+     * 
+     * @return total down time in service times in this list
+     */
+    public long getDownTime(long curTime, long rollingWindow) {
+        // calculate effective start time
+        long startTime = curTime - rollingWindow;
+        m_outTimeSince = startTime;
 
-		return m_outTime;
-	}
+        m_outTime = 0;
 
-	/**
-	 * Returns a list of outage / out-since pairs for the rolling window specified
-	 *
-	 * @param curTime       the current time from which the down time is to be calculated
-         * @param rollingWindow the last window for which the downtime is to be calculated
-	 * 
-	 */
-	public List getServiceOutages(String nodeName, long curTime, long rollingWindow)
-	{
-		if(nodeName == null)
-			return null;
-		
-		// for each individual outage, get the downtime
-		// 
-                // calculate effective start time
-                long startTime = curTime - rollingWindow;
-		List retList = new ArrayList();
+        Iterator iter = iterator();
+        while (iter.hasNext()) {
+            Outage svcTime = (Outage) iter.next();
+            long outtime = svcTime.getDownTime(curTime, rollingWindow);
+            if (outtime > 0)
+                m_outTime += outtime;
+        }
 
-                Iterator iter = iterator();
-                while(iter.hasNext())
-                {
-                        Outage svcTime = (Outage)iter.next();
+        return m_outTime;
+    }
 
-			// ignore if the outage doesnt fall within the window.
-			//
-			if(svcTime.getRegainedTime() > 0)
-			{
-				if(svcTime.getRegainedTime() <= startTime)
-					continue;
-			}
-			else
-			{ 
-				if(svcTime.getLostTime() > curTime)
-					continue;
-			}
+    /**
+     * Returns a list of outage / out-since pairs for the rolling window
+     * specified
+     * 
+     * @param curTime
+     *            the current time from which the down time is to be calculated
+     * @param rollingWindow
+     *            the last window for which the downtime is to be calculated
+     * 
+     */
+    public List getServiceOutages(String nodeName, long curTime, long rollingWindow) {
+        if (nodeName == null)
+            return null;
 
-			long outFrom = startTime;
-			if(startTime < svcTime.getLostTime())
-			{
-				outFrom = svcTime.getLostTime();
-			}
-                        long outtime = svcTime.getDownTime(curTime, rollingWindow);
-			OutageSince outageSince = null;
-                        if(outtime > 0)
-				outageSince = new OutageSince(nodeName, outFrom, outtime);
-			if(outageSince != null)
-				retList.add(outageSince);
-	 	}
+        // for each individual outage, get the downtime
+        // 
+        // calculate effective start time
+        long startTime = curTime - rollingWindow;
+        List retList = new ArrayList();
 
-                return retList;	
-	}
+        Iterator iter = iterator();
+        while (iter.hasNext()) {
+            Outage svcTime = (Outage) iter.next();
 
-	public String toString()
-	{
-		String retVal = "";
-		ArrayList rpt = this;
-		for (int i = 0;i < rpt.size();i++)
-		{
-			retVal += " \n" + ((Outage)rpt.get(i)).toString();
-		}
-		return retVal ;
-	}
+            // ignore if the outage doesnt fall within the window.
+            //
+            if (svcTime.getRegainedTime() > 0) {
+                if (svcTime.getRegainedTime() <= startTime)
+                    continue;
+            } else {
+                if (svcTime.getLostTime() > curTime)
+                    continue;
+            }
+
+            long outFrom = startTime;
+            if (startTime < svcTime.getLostTime()) {
+                outFrom = svcTime.getLostTime();
+            }
+            long outtime = svcTime.getDownTime(curTime, rollingWindow);
+            OutageSince outageSince = null;
+            if (outtime > 0)
+                outageSince = new OutageSince(nodeName, outFrom, outtime);
+            if (outageSince != null)
+                retList.add(outageSince);
+        }
+
+        return retList;
+    }
+
+    public String toString() {
+        String retVal = "";
+        ArrayList rpt = this;
+        for (int i = 0; i < rpt.size(); i++) {
+            retVal += " \n" + ((Outage) rpt.get(i)).toString();
+        }
+        return retVal;
+    }
 }
-

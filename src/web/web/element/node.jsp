@@ -40,20 +40,15 @@
 
 -->
 
-<%@page language="java" contentType="text/html" session="true" import="org.opennms.web.element.*,java.util.*,org.opennms.web.authenticate.Authentication,java.net.*,org.opennms.netmgt.utils.IPSorter,org.opennms.web.performance.*,org.opennms.web.response.*" %>
+<%@page language="java" contentType="text/html" session="true" import="org.opennms.web.element.*,java.util.*,org.opennms.web.authenticate.Authentication,org.opennms.web.event.*,java.net.*,org.opennms.netmgt.utils.IPSorter,org.opennms.web.performance.*,org.opennms.web.response.*" %>
 
 <%!
     protected int telnetServiceId;
     protected int httpServiceId;
-    protected int rdpServiceId;
-    protected int vncServiceId;
+    protected int dellServiceId;
+    protected int snmpServiceId;
     protected PerformanceModel perfModel;
     protected ResponseTimeModel rtModel;
-
-    public static HashMap statusMap;
-    public String getStatusString( char c ) {
-        return( (String)this.statusMap.get( new Character(c) ));
-    }
     
     public void init() throws ServletException {
         this.statusMap = new HashMap();
@@ -83,17 +78,24 @@
         }
 
         try {
-            this.rdpServiceId = NetworkElementFactory.getServiceIdFromName("RDP");
+            this.dellServiceId = NetworkElementFactory.getServiceIdFromName("Dell-OpenManage");
         }
         catch( Exception e ) {
-            throw new ServletException( "Could not determine the RDP service ID", e );
+            throw new ServletException( "Could not determine the Dell-OpenManage service ID", e );
         }
 
         try {
-            this.vncServiceId = NetworkElementFactory.getServiceIdFromName("VNC");
+            this.snmpServiceId = NetworkElementFactory.getServiceIdFromName("SNMP");
         }
         catch( Exception e ) {
-            throw new ServletException( "Could not determine the VNC service ID", e );
+            throw new ServletException( "Could not determine the Dell-OpenManage service ID", e );
+        }
+
+        try {
+            this.perfModel = new PerformanceModel( org.opennms.core.resource.Vault.getHomeDir() );
+        }
+        catch( Exception e ) {
+            throw new ServletException( "Could not initialize the PerformanceModel", e );
         }
 
         try {
@@ -162,87 +164,29 @@
         }
     }
 
-    //find the RDP interfaces, if any
-    String rdpIp = null;
-    Service[] rdpServices = NetworkElementFactory.getServicesOnNode(nodeId, this.rdpServiceId);
+    //find the Dell-OpenManage interfaces, if any
+    String dellIp = null;
+    Service[] dellServices = NetworkElementFactory.getServicesOnNode(nodeId, this.dellServiceId);
 
-    if( rdpServices != null && rdpServices.length > 0 ) {
+    if( dellServices != null && dellServices.length > 0 ) {
         ArrayList ips = new ArrayList();
-        for( int i=0; i < rdpServices.length; i++ ) {
-            ips.add(InetAddress.getByName(rdpServices[i].getIpAddress()));
+        for( int i=0; i < dellServices.length; i++ ) {
+            ips.add(InetAddress.getByName(dellServices[i].getIpAddress()));
         }
 
         InetAddress lowest = IPSorter.getLowestInetAddress(ips);
 
         if( lowest != null ) {
-            rdpIp = lowest.getHostAddress();
+            dellIp = lowest.getHostAddress();
         }
     }
 
-    //find the VNC interfaces, if any
-    String vncIp = null;
-    Service[] vncServices = NetworkElementFactory.getServicesOnNode(nodeId, this.vncServiceId);
+    //find if SNMP is on this node 
+    boolean isSnmp = false;
+    Service[] snmpServices = NetworkElementFactory.getServicesOnNode(nodeId, this.snmpServiceId);
 
-    if( vncServices != null && vncServices.length > 0 ) {
-        ArrayList ips = new ArrayList();
-        for( int i=0; i < vncServices.length; i++ ) {
-            ips.add(InetAddress.getByName(vncServices[i].getIpAddress()));
-        }
-
-        InetAddress lowest = IPSorter.getLowestInetAddress(ips);
-
-        if( lowest != null ) {
-            vncIp = lowest.getHostAddress();
-        }
-    }
-
-    // find links
-    Map linkMap = new HashMap();
-    DataLinkInterface[] dl_if = null;
-    Interface[] intf_dbs = null;
-    boolean isParent = ExtendedNetworkElementFactory.isParentNode(nodeId);
-	    
-    if ( isParent ) {
-       dl_if = ExtendedNetworkElementFactory.getDataLinksFromNodeParent(nodeId);
-    } else {
-       dl_if = ExtendedNetworkElementFactory.getDataLinks(nodeId);
-    }
-
-    for (int i=0; i<dl_if.length;i++){
-	   int nodelinkedId = 0;
-  	   int nodelinkedIf = 0;
-  	   Integer ifindexmap = null;
-  	   String iplinkaddress = null;
-       Vector ifs = new Vector();
-
-       if (isParent) {
-           nodelinkedId = dl_if[i].get_nodeId();
-           nodelinkedIf = dl_if[i].get_ifindex();
-       	   iplinkaddress = dl_if[i].get_ipaddr();
-       	   ifindexmap = new Integer(dl_if[i].get_parentifindex());
-       } else {
-           nodelinkedId = dl_if[i].get_nodeparentid();
-           nodelinkedIf = dl_if[i].get_parentifindex();
-       	   iplinkaddress = dl_if[i].get_parentipaddr();
-       	   ifindexmap = new Integer(dl_if[i].get_ifindex());
-       }
-       Interface iface = null;
-       if (nodelinkedIf == 0) {
-       		iface = NetworkElementFactory.getInterface(nodelinkedId,iplinkaddress);
-       } else {
-      		iface = NetworkElementFactory.getInterface(nodelinkedId,iplinkaddress,nodelinkedIf);
-       }
-       if (linkMap.containsKey(ifindexmap)){
-	        ifs = (Vector)linkMap.get(ifindexmap);
-	   } 
-	   ifs.addElement(iface);
-	   linkMap.put(ifindexmap,ifs);
-    }
-
-    boolean isBridge = ExtendedNetworkElementFactory.isBridgeNode(nodeId);
-
-    boolean isRouteIP = ExtendedNetworkElementFactory.isRouteInfoNode(nodeId);
-
+    if( snmpServices != null && snmpServices.length > 0 ) 
+	isSnmp = true;
 %>
 
 <html>
@@ -250,28 +194,6 @@
   <title><%=node_db.getLabel()%> | Node | OpenNMS Web Console</title>
   <base HREF="<%=org.opennms.web.Util.calculateUrlBase( request )%>" />
   <link rel="stylesheet" type="text/css" href="includes/styles.css" />
-<% if( rdpIp != null ) { %>
-  <script type="text/javascript">
-  // only for iexplorer 
-  // 1 - mstsc application must be installed on windows client 
-  // 2 - mstsc path must be in PATH environment variable
-  // 3 - activex control execution not signed must be enable or enable it for "intranet zone" only on internet explorer settings
-  var clientRDPNAme = "mstsc.exe";
-  var paramPrefix = "/v:";
-  var paramSuffix = "";
-  
-  function launchRdpCLient()
-  {
-	if (typeof ActiveXObject != "undefined")
-	{
-		var oShell = new ActiveXObject("WScript.Shell");
-		oShell.run (clientRDPNAme + " " + paramPrefix + "<%=rdpIp%>" + paramSuffix,1);  
-	}
-	else
-		alert("ActiveXObject is not supported\nThis features is supported only by Internet Explorer on windows clients.");
-  }
-  </script>
-<% } %>  
 </head>
 
 <body marginwidth="0" marginheight="0" LEFTMARGIN="0" RIGHTMARGIN="0" TOPMARGIN="0">
@@ -296,9 +218,20 @@
 
       <p>
         <a href="event/list?filter=node%3D<%=nodeId%>">View Events</a>
-        &nbsp;&nbsp;&nbsp;<a href="conf/inventorylist.jsp?node=<%=nodeId%>">Inventory</a>
-        &nbsp;&nbsp;&nbsp;<a href="asset/detail.jsp?node=<%=nodeId%>">Asset Info</a>
+        &nbsp;&nbsp;&nbsp;<a href="asset/modify.jsp?node=<%=nodeId%>">Asset Info</a>
          
+        <% if( telnetIp != null ) { %>
+          &nbsp;&nbsp;&nbsp;<a href="telnet://<%=telnetIp%>">Telnet</a>
+        <% } %>
+
+        <% if( httpIp != null ) { %>
+          &nbsp;&nbsp;&nbsp;<a href="http://<%=httpIp%>">HTTP</a>
+        <% } %>
+
+        <% if( dellIp != null ) { %>
+          &nbsp;&nbsp;&nbsp;<a href="https://<%=dellIp%>:1311">OpenManage</a>
+        <% } %>
+
         <% if(this.rtModel.isQueryableNode(nodeId)) { %>
           &nbsp;&nbsp;&nbsp;<a href="response/addIntfFromNode?endUrl=response%2FaddReportsToUrl&node=<%=nodeId%>&relativetime=lastday">Response Time</a>
         <% } %>
@@ -311,25 +244,16 @@
         <% if( request.isUserInRole( Authentication.ADMIN_ROLE )) { %> 
           &nbsp;&nbsp;&nbsp;<a href="admin/nodemanagement/index.jsp?node=<%=nodeId%>">Admin</a>
         <% } %>
-        
-        <br>
-        
-        <% if( telnetIp != null ) { %>
-          <a href="telnet://<%=telnetIp%>">Telnet</a>&nbsp;&nbsp;&nbsp;
-        <% } %>
 
-        <% if( httpIp != null ) { %>
-          <a href="http://<%=httpIp%>">HTTP</a>&nbsp;&nbsp;&nbsp;
-        <% } %>
+           <% if ( isSnmp && request.isUserInRole("OpenNMS Administrator"))  { %>
+              <% for( int i=0; i < intfs.length; i++ ) { %>
+                <% if( "P".equals( intfs[i].getIsSnmpPrimary() )) { %>
+                      &nbsp;&nbsp;&nbsp;<a href="admin/updateSnmp.jsp?node=<%=nodeId%>&ipaddr=<%=intfs[i].getIpAddress()%>">Update SNMP</a>
+                <% } %>
+              <% } %>
+           <% } %>
 
-        <% if( rdpIp != null ) { %>
-          <a href="javascript:launchRdpCLient();">RDP</a>&nbsp;&nbsp;&nbsp;
-        <% } %>
 
-        <% if( vncIp != null ) { %>
-          <a href="http://<%=vncIp%>:5800">VNC</a>&nbsp;&nbsp;&nbsp;
-        <% } %>
-        
       </p>
 
       <table width="100%" border="0" cellspacing="0" cellpadding="0">
@@ -345,79 +269,15 @@
                 <td>Status</td>
                 <td><%=(this.getStatusString(node_db.getNodeType())!=null ? this.getStatusString(node_db.getNodeType()) : "Unknown")%></td>
               </tr>
-         <% if( isRouteIP ) { %>
-              <tr>
-              <td colspan="2" ><b><a href="element/routeipnode.jsp?node=<%=nodeId%>"> View Node Ip Route Info</a></b></td>
-		</tr>
-         <% }%>
-         <% if( isBridge ) { %>
-              <tr>
-              <td colspan="2" ><b><a href="element/bridgenode.jsp?node=<%=nodeId%>">View Node Bridge/STP Info</a></b></td>
-		</tr>
-         <% }%>
-
             </table>
             <br>
             
-            <!-- Interface box -->
-            <table width="100%" border="1" cellspacing="0" cellpadding="2" bordercolor="black" BGCOLOR="#cccccc">
-              <tr bgcolor="#999999">
-                <td><b>Interfaces</b></td> 
-                <td><b>Linked Node/Interface</b></td> 
-              </tr>
-              <% for( int i=0; i < intfs.length; i++ ) { %>
-					<% Vector ifl =(Vector)linkMap.get(new Integer(intfs[i].getIfIndex()));%>
-				<tr>
-                <% if( "0.0.0.0".equals( intfs[i].getIpAddress() )) { %>
-                    <td>
-                      <a href="element/interface.jsp?node=<%=nodeId%>&intf=<%=intfs[i].getIpAddress()%>&ifindex=<%=intfs[i].getIfIndex()%>">Non-IP</a>
-                      <%=" (ifIndex: "+intfs[i].getIfIndex()+"-"+intfs[i].getSnmpIfDescription()+")"%>
-                    </td>
-                <% } else { %>  
-                    <td>
-                      <a href="element/interface.jsp?node=<%=nodeId%>&intf=<%=intfs[i].getIpAddress()%>"><%=intfs[i].getIpAddress()%></a>
-                      <%=intfs[i].getIpAddress().equals(intfs[i].getHostname()) ? "" : "(" + intfs[i].getHostname() + ")"%>
-                    </td>
-                <% } %>
-				<% if (ifl == null || ifl.size() == 0) {%>
-			    <td>&nbsp;</td>
-				<% } else { %>
-                    <td>
-			            <table width="100%" border="0" cellspacing="0" cellpadding="2" bordercolor="white" BGCOLOR="#cccccc">
-                        <tr>
-					<% for (int j=0; j<ifl.size();j++) { 
-						Interface lkif =(Interface)ifl.elementAt(j); 
-					%>
-                        <tr>
-                         <td width="48%">
-                    	  <a href="element/node.jsp?node=<%=lkif.getNodeId()%>"><%=NetworkElementFactory.getNodeLabel(lkif.getNodeId())%></a>
-                    	 </td>
-		    			 <td>&nbsp;</td>
-                         <td width="48%">
-            		    <% if( "0.0.0.0".equals( lkif.getIpAddress() )) { %>
-                    	  <a href="element/interface.jsp?node=<%=lkif.getNodeId()%>&intf=<%=lkif.getIpAddress()%>&ifindex=<%=lkif.getIfIndex()%>">Non-IP</a>
-                      	  <%=" (ifIndex: "+lkif.getIfIndex()+"-"+lkif.getSnmpIfDescription()+")"%>
-                		<% } else { %>  
-                      	  <a href="element/interface.jsp?node=<%=lkif.getNodeId()%>&intf=<%=lkif.getIpAddress()%>"><%=lkif.getIpAddress()%></a>
-                	    <% } %>
-                    <%}%>
-                         </td>
-                        </tr>
-                    	</table>
-                    </td>
-                <%}%>
-               </tr>
-            <% } %>
-            </table>
-
-            <br>
-
             <!-- Availability box -->
             <jsp:include page="/includes/nodeAvailability-box.jsp" flush="false" />
             <br>
             
             <!-- node desktop information box -->
-
+            
             <!-- SNMP box, if info available --> 
             <% if( node_db.getNodeSysId() != null ) { %>
               <table width="100%" border="1" cellspacing="0" cellpadding="2" bordercolor="black" BGCOLOR="#cccccc">
@@ -448,6 +308,32 @@
               <br>
             <% } %>
             
+            <!-- Interface box -->
+            <table width="100%" border="1" cellspacing="0" cellpadding="2" bordercolor="black" BGCOLOR="#cccccc">
+              <tr bgcolor="#999999">
+                <td><b>Interfaces</b></td> 
+              </tr>
+              <% for( int i=0; i < intfs.length; i++ ) { %>
+                <% if( "0.0.0.0".equals( intfs[i].getIpAddress() )) { %>
+                  <tr>
+                    <td>
+                      <a href="element/interface.jsp?node=<%=nodeId%>&intf=<%=intfs[i].getIpAddress()%>&ifindex=<%=intfs[i].getIfIndex()%>">Non-IP</a>
+                      <%=" (ifIndex: "+intfs[i].getIfIndex()+"-"+intfs[i].getSnmpIfDescription()+")"%>
+                    </td>
+                  </tr>
+                <% } else { %>  
+                  <tr>
+                    <td>
+                      <a href="element/interface.jsp?node=<%=nodeId%>&intf=<%=intfs[i].getIpAddress()%>"><%=intfs[i].getIpAddress()%></a>
+                      <%=intfs[i].getIpAddress().equals(intfs[i].getHostname()) ? "" : "(" + intfs[i].getHostname() + ")"%>
+                    </td>
+                  </tr>
+                <% } %>
+              <% } %>
+            </table>
+
+            <br>
+
             <table width="100%" border="1" cellspacing="0" cellpadding="2" bordercolor="black" BGCOLOR="#cccccc">
               
             </table>
@@ -471,12 +357,6 @@
             
             <!-- Recent outages box -->
             <jsp:include page="/includes/nodeOutages-box.jsp" flush="false" />
-            <br>
-            <!-- Active Inventory box -->
-            <jsp:include page="/includes/nodeInventory-box.jsp" flush="false">
-              <jsp:param name="node" value="<%=nodeId%>" />
-              <jsp:param name="nodelabel" value="<%=node_db.getLabel()%>" />
-            </jsp:include>
          </td>
        </tr>
      </table>
@@ -491,3 +371,12 @@
 
 </body>
 </html>
+
+<%!
+    public static HashMap statusMap;
+
+    
+    public String getStatusString( char c ) {
+        return( (String)this.statusMap.get( new Character(c) ));
+    }
+%>

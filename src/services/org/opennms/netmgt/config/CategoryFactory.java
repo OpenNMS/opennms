@@ -51,539 +51,498 @@ import org.opennms.netmgt.config.categories.Categorygroup;
 import org.opennms.netmgt.config.categories.Catinfo;
 
 /**
- * This is the singleton class used to load the  configuration
- * from the categories.xml. This provides convenience methods to
- * get the configured categories and their information, add/delete categories
- * from category groups.
- *
- * <strong>Note:</strong>Users of this class should make sure the 
- * <em>init()</em> is called before calling any other method to ensure
- * the config is loaded before accessing other convenience methods.
- *
- * @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj</a>
- * @author <a href="http://www.opennms.org/">OpenNMS</a>
+ * This is the singleton class used to load the configuration from the
+ * categories.xml. This provides convenience methods to get the configured
+ * categories and their information, add/delete categories from category groups.
+ * 
+ * <strong>Note: </strong>Users of this class should make sure the
+ * <em>init()</em> is called before calling any other method to ensure the
+ * config is loaded before accessing other convenience methods.
+ * 
+ * @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
  */
-public final class CategoryFactory
-{
-	/**
-	 * The singleton instance of this factory
-	 */
-	private static CategoryFactory		m_singleton=null;
+public final class CategoryFactory {
+    /**
+     * The singleton instance of this factory
+     */
+    private static CategoryFactory m_singleton = null;
 
-	/**
-	 * The config class loaded from the config file
-	 */
-	private Catinfo		 		m_config;
+    /**
+     * The config class loaded from the config file
+     */
+    private Catinfo m_config;
 
-	/**
-	 * This member is set to true if the configuration file
-	 * has been loaded.
-	 */
-	private static boolean			m_loaded=false;
+    /**
+     * This member is set to true if the configuration file has been loaded.
+     */
+    private static boolean m_loaded = false;
 
-	/**
-	 * Private constructor
-	 *
-	 * @exception java.io.IOException Thrown if the specified config
-	 * 	file cannot be read
-	 * @exception org.exolab.castor.xml.MarshalException Thrown if the 
-	 * 	file does not conform to the schema.
-	 * @exception org.exolab.castor.xml.ValidationException Thrown if 
-	 *	the contents do not match the required schema.
-	 *	
-	 */
-	private CategoryFactory(String configFile)
-		throws 	IOException,
-			MarshalException, 
-			ValidationException
-	{
-		InputStream cfgIn = new FileInputStream(configFile);
+    /**
+     * Private constructor
+     * 
+     * @exception java.io.IOException
+     *                Thrown if the specified config file cannot be read
+     * @exception org.exolab.castor.xml.MarshalException
+     *                Thrown if the file does not conform to the schema.
+     * @exception org.exolab.castor.xml.ValidationException
+     *                Thrown if the contents do not match the required schema.
+     * 
+     */
+    private CategoryFactory(String configFile) throws IOException, MarshalException, ValidationException {
+        InputStream cfgIn = new FileInputStream(configFile);
 
-		m_config = (Catinfo) Unmarshaller.unmarshal(Catinfo.class, new InputStreamReader(cfgIn));
-		cfgIn.close();
-	}
+        m_config = (Catinfo) Unmarshaller.unmarshal(Catinfo.class, new InputStreamReader(cfgIn));
+        cfgIn.close();
+    }
 
-	/**
-	 * Load the config from the default config file and create the 
-	 * singleton instance of this factory.
-	 *
-	 * @exception java.io.IOException Thrown if the specified config
-	 * 	file cannot be read
-	 * @exception org.exolab.castor.xml.MarshalException Thrown if the 
-	 * 	file does not conform to the schema.
-	 * @exception org.exolab.castor.xml.ValidationException Thrown if 
-	 *	the contents do not match the required schema.
-	 */
-	public static synchronized void init()
-		throws 	IOException,
-			MarshalException, 
-			ValidationException
-	{
-		if (m_loaded)
-		{
-			// init already called - return
-			// to reload, reload() will need to be called
-			return;
-		}
+    /**
+     * Load the config from the default config file and create the singleton
+     * instance of this factory.
+     * 
+     * @exception java.io.IOException
+     *                Thrown if the specified config file cannot be read
+     * @exception org.exolab.castor.xml.MarshalException
+     *                Thrown if the file does not conform to the schema.
+     * @exception org.exolab.castor.xml.ValidationException
+     *                Thrown if the contents do not match the required schema.
+     */
+    public static synchronized void init() throws IOException, MarshalException, ValidationException {
+        if (m_loaded) {
+            // init already called - return
+            // to reload, reload() will need to be called
+            return;
+        }
 
-		File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.CATEGORIES_CONF_FILE_NAME);
+        File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.CATEGORIES_CONF_FILE_NAME);
 
-		m_singleton = new CategoryFactory(cfgFile.getPath());
+        m_singleton = new CategoryFactory(cfgFile.getPath());
 
-		m_loaded = true;
-	}
+        m_loaded = true;
+    }
 
-	/**
-	 * Reload the config from the default config file
-	 *
-	 * @exception java.io.IOException Thrown if the specified config
-	 * 	file cannot be read/loaded
-	 * @exception org.exolab.castor.xml.MarshalException Thrown if the 
-	 * 	file does not conform to the schema.
-	 * @exception org.exolab.castor.xml.ValidationException Thrown if 
-	 *	the contents do not match the required schema.
-	 */
-	public static synchronized void reload()
-		throws 	IOException,
-			MarshalException, 
-			ValidationException
-	{
-		m_singleton = null;
-		m_loaded    = false;
+    /**
+     * Reload the config from the default config file
+     * 
+     * @exception java.io.IOException
+     *                Thrown if the specified config file cannot be read/loaded
+     * @exception org.exolab.castor.xml.MarshalException
+     *                Thrown if the file does not conform to the schema.
+     * @exception org.exolab.castor.xml.ValidationException
+     *                Thrown if the contents do not match the required schema.
+     */
+    public static synchronized void reload() throws IOException, MarshalException, ValidationException {
+        m_singleton = null;
+        m_loaded = false;
 
-		init();
-	}
+        init();
+    }
 
-	/**
-	 * Return the singleton instance of this factory.
-	 *
-	 * @return The current factory instance.
-	 *
-	 * @throws java.lang.IllegalStateException Thrown if the factory
-	 * 	has not yet been initialized.
-	 */
-	public static synchronized CategoryFactory getInstance()
-	{
-		if(!m_loaded)
-			throw new IllegalStateException("The factory has not been initialized");
+    /**
+     * Return the singleton instance of this factory.
+     * 
+     * @return The current factory instance.
+     * 
+     * @throws java.lang.IllegalStateException
+     *             Thrown if the factory has not yet been initialized.
+     */
+    public static synchronized CategoryFactory getInstance() {
+        if (!m_loaded)
+            throw new IllegalStateException("The factory has not been initialized");
 
-		return m_singleton;
-	}
+        return m_singleton;
+    }
 
-	/**
-	 * Return the categories configuration.
-	 *
-	 * @return the categories configuration
-	 */
-	public synchronized Catinfo getConfig()
-	{
-		return m_config;
-	}
+    /**
+     * Return the categories configuration.
+     * 
+     * @return the categories configuration
+     */
+    public synchronized Catinfo getConfig() {
+        return m_config;
+    }
 
-	/**
-	 * Add a categorygroup.
-	 *
-	 * @param group		category group to be added
-	 */
-	public synchronized void addCategoryGroup(Categorygroup group)
-	{
-		m_config.addCategorygroup(group);
-	}
+    /**
+     * Add a categorygroup.
+     * 
+     * @param group
+     *            category group to be added
+     */
+    public synchronized void addCategoryGroup(Categorygroup group) {
+        m_config.addCategorygroup(group);
+    }
 
-	/**
-	 * Replace categorygroup.
-	 *
-	 * @param group		category group to be replaced
-	 *
-	 * @return true if categorygroup is successfully replaced 
-	 */
-	public synchronized boolean replaceCategoryGroup(Categorygroup group)
-	{
-		boolean replaced = false;
+    /**
+     * Replace categorygroup.
+     * 
+     * @param group
+     *            category group to be replaced
+     * 
+     * @return true if categorygroup is successfully replaced
+     */
+    public synchronized boolean replaceCategoryGroup(Categorygroup group) {
+        boolean replaced = false;
 
-		String groupname = group.getName();
+        String groupname = group.getName();
 
-		int numCgs = m_config.getCategorygroupCount();
-		for (int i=0; i < numCgs; i++)
-		{
-			Categorygroup oldCg = m_config.getCategorygroup(i);
-			if (oldCg.getName().equals(groupname))
-			{
-				m_config.setCategorygroup(i, group);
-				replaced = true;
-				break;
-			}
-		}
+        int numCgs = m_config.getCategorygroupCount();
+        for (int i = 0; i < numCgs; i++) {
+            Categorygroup oldCg = m_config.getCategorygroup(i);
+            if (oldCg.getName().equals(groupname)) {
+                m_config.setCategorygroup(i, group);
+                replaced = true;
+                break;
+            }
+        }
 
-		return replaced;
-	}
+        return replaced;
+    }
 
-	/**
-	 * Delete a categorygroup.
-	 *
-	 * @param group		category group to be removed
-	 *
-	 * @return true if categorygroup is successfully deleted
-	 */
-	public synchronized boolean deleteCategoryGroup(Categorygroup group)
-	{
-		return m_config.removeCategorygroup(group);
-	}
+    /**
+     * Delete a categorygroup.
+     * 
+     * @param group
+     *            category group to be removed
+     * 
+     * @return true if categorygroup is successfully deleted
+     */
+    public synchronized boolean deleteCategoryGroup(Categorygroup group) {
+        return m_config.removeCategorygroup(group);
+    }
 
-	/**
-	 * Delete a categorygroup.
-	 *
-	 * @param groupname	category group to be removed
-	 *
-	 * @return true if categorygroup is successfully deleted
-	 */
-	public synchronized boolean deleteCategoryGroup(String groupname)
-	{
-		boolean deleted = false;
+    /**
+     * Delete a categorygroup.
+     * 
+     * @param groupname
+     *            category group to be removed
+     * 
+     * @return true if categorygroup is successfully deleted
+     */
+    public synchronized boolean deleteCategoryGroup(String groupname) {
+        boolean deleted = false;
 
-		Enumeration enumCG = m_config.enumerateCategorygroup();
-		while(enumCG.hasMoreElements())
-		{
-			Categorygroup cg = (Categorygroup)enumCG.nextElement();
-			if (cg.getName().equals(groupname))
-			{
-				deleted = m_config.removeCategorygroup(cg);
-				
-				// make sure you break from the enumeration
-				break;
-			}
-		}
+        Enumeration enumCG = m_config.enumerateCategorygroup();
+        while (enumCG.hasMoreElements()) {
+            Categorygroup cg = (Categorygroup) enumCG.nextElement();
+            if (cg.getName().equals(groupname)) {
+                deleted = m_config.removeCategorygroup(cg);
 
-		return deleted;
-	}
+                // make sure you break from the enumeration
+                break;
+            }
+        }
 
-	/**
-	 * Add category to a categorygroup.
-	 *
-	 * @param groupname	category group to which category is to be added
-	 * @param cat		category to be added
-	 *
-	 * @return true if category is successfully added to the specified category group
-	 */
-	public synchronized boolean addCategory(String groupname, Category cat)
-	{
-		boolean added = false;
+        return deleted;
+    }
 
-		Enumeration enumCG = m_config.enumerateCategorygroup();
-		while(enumCG.hasMoreElements())
-		{
-			Categorygroup cg = (Categorygroup)enumCG.nextElement();
-			if (cg.getName().equals(groupname))
-			{
-				// get categories and add 
-				Categories cats = cg.getCategories();
-				cats.addCategory(cat);
-				
-				added = true;
-				break;
-			}
-		}
+    /**
+     * Add category to a categorygroup.
+     * 
+     * @param groupname
+     *            category group to which category is to be added
+     * @param cat
+     *            category to be added
+     * 
+     * @return true if category is successfully added to the specified category
+     *         group
+     */
+    public synchronized boolean addCategory(String groupname, Category cat) {
+        boolean added = false;
 
-		return added;
-	}
+        Enumeration enumCG = m_config.enumerateCategorygroup();
+        while (enumCG.hasMoreElements()) {
+            Categorygroup cg = (Categorygroup) enumCG.nextElement();
+            if (cg.getName().equals(groupname)) {
+                // get categories and add
+                Categories cats = cg.getCategories();
+                cats.addCategory(cat);
 
-	/**
-	 * Replace category in a categorygroup.
-	 *
-	 * @param groupname	category group to which category is to be added
-	 * @param cat		category to be replaced
-	 *
-	 * @return true if category is successfully replaced in the specified category group
-	 */
-	public synchronized boolean replaceCategory(String groupname, Category cat)
-	{
-		boolean replaced = false;
+                added = true;
+                break;
+            }
+        }
 
-		Enumeration enumCG = m_config.enumerateCategorygroup();
-		while(enumCG.hasMoreElements())
-		{
-			Categorygroup cg = (Categorygroup)enumCG.nextElement();
-			if (cg.getName().equals(groupname))
-			{
-				String catlabel = cat.getLabel();
+        return added;
+    }
 
-				// get categories and replace 
-				Categories cats = cg.getCategories();
+    /**
+     * Replace category in a categorygroup.
+     * 
+     * @param groupname
+     *            category group to which category is to be added
+     * @param cat
+     *            category to be replaced
+     * 
+     * @return true if category is successfully replaced in the specified
+     *         category group
+     */
+    public synchronized boolean replaceCategory(String groupname, Category cat) {
+        boolean replaced = false;
 
-				int numCats = cats.getCategoryCount();
-				for (int i=0; i < numCats; i++)
-				{
-					Category oldCat = cats.getCategory(i);
-					if (oldCat.getLabel().equals(catlabel))
-					{
-						cats.setCategory(i, cat);
-						replaced = true;
-						break;
-					}
-				}
-				
-			}
-		}
+        Enumeration enumCG = m_config.enumerateCategorygroup();
+        while (enumCG.hasMoreElements()) {
+            Categorygroup cg = (Categorygroup) enumCG.nextElement();
+            if (cg.getName().equals(groupname)) {
+                String catlabel = cat.getLabel();
 
-		return replaced;
-	}
+                // get categories and replace
+                Categories cats = cg.getCategories();
 
-	/**
-	 * Delete category from a categorygroup.
-	 *
-	 * @param groupname	category group from which category is to be removed
-	 * @param cat		category to be deleted
-	 *
-	 * @return true if category is successfully deleted from the specified category group
-	 */
-	public synchronized boolean deleteCategory(String groupname, Category cat)
-	{
-		boolean deleted = false;
+                int numCats = cats.getCategoryCount();
+                for (int i = 0; i < numCats; i++) {
+                    Category oldCat = cats.getCategory(i);
+                    if (oldCat.getLabel().equals(catlabel)) {
+                        cats.setCategory(i, cat);
+                        replaced = true;
+                        break;
+                    }
+                }
 
-		Enumeration enumCG = m_config.enumerateCategorygroup();
-		while(enumCG.hasMoreElements())
-		{
-			Categorygroup cg = (Categorygroup)enumCG.nextElement();
-			if (cg.getName().equals(groupname))
-			{
-				// get categories and delete 
-				Categories cats = cg.getCategories();
-				cats.removeCategory(cat);
-				
-				deleted = true;
-				break;
-			}
-		}
+            }
+        }
 
-		return deleted;
-	}
+        return replaced;
+    }
 
-	/**
-	 * Delete category from a categorygroup.
-	 *
-	 * @param groupname	category group from which category is to be removed
-	 * @param catlabel	label of the category to be deleted
-	 *
-	 * @return true if category is successfully deleted from the specified category group
-	 */
-	public synchronized boolean deleteCategory(String groupname, String catlabel)
-	{
-		boolean deleted = false;
+    /**
+     * Delete category from a categorygroup.
+     * 
+     * @param groupname
+     *            category group from which category is to be removed
+     * @param cat
+     *            category to be deleted
+     * 
+     * @return true if category is successfully deleted from the specified
+     *         category group
+     */
+    public synchronized boolean deleteCategory(String groupname, Category cat) {
+        boolean deleted = false;
 
-		Enumeration enumCG = m_config.enumerateCategorygroup();
-		while(enumCG.hasMoreElements())
-		{
-			Categorygroup cg = (Categorygroup)enumCG.nextElement();
-			if (cg.getName().equals(groupname))
-			{
-				// get categories and delete 
-				Categories cats = cg.getCategories();
+        Enumeration enumCG = m_config.enumerateCategorygroup();
+        while (enumCG.hasMoreElements()) {
+            Categorygroup cg = (Categorygroup) enumCG.nextElement();
+            if (cg.getName().equals(groupname)) {
+                // get categories and delete
+                Categories cats = cg.getCategories();
+                cats.removeCategory(cat);
 
-				Enumeration enumCat = cats.enumerateCategory();
-				while(enumCat.hasMoreElements())
-				{
-					Category cat = (Category)enumCat.nextElement();
-					if (cat.getLabel().equals(catlabel))
-					{
-						cats.removeCategory(cat);
-				
-						// make sure you break from the enumeration
-						deleted = true;
-						break;
-					}
-				}
+                deleted = true;
+                break;
+            }
+        }
 
-			}
-		}
+        return deleted;
+    }
 
-		return deleted;
-	}
+    /**
+     * Delete category from a categorygroup.
+     * 
+     * @param groupname
+     *            category group from which category is to be removed
+     * @param catlabel
+     *            label of the category to be deleted
+     * 
+     * @return true if category is successfully deleted from the specified
+     *         category group
+     */
+    public synchronized boolean deleteCategory(String groupname, String catlabel) {
+        boolean deleted = false;
 
-	/**
-	 * Return the category specified by name.
-	 *
-	 * @return the category specified by name, null if not found
-	 */
-	public synchronized Category getCategory(String name)
-	{
-		Enumeration enumCG = m_config.enumerateCategorygroup();
-		while(enumCG.hasMoreElements())
-		{
-			Categorygroup cg = (Categorygroup)enumCG.nextElement();
+        Enumeration enumCG = m_config.enumerateCategorygroup();
+        while (enumCG.hasMoreElements()) {
+            Categorygroup cg = (Categorygroup) enumCG.nextElement();
+            if (cg.getName().equals(groupname)) {
+                // get categories and delete
+                Categories cats = cg.getCategories();
 
-			// go through the categories
-			Categories cats = cg.getCategories();
+                Enumeration enumCat = cats.enumerateCategory();
+                while (enumCat.hasMoreElements()) {
+                    Category cat = (Category) enumCat.nextElement();
+                    if (cat.getLabel().equals(catlabel)) {
+                        cats.removeCategory(cat);
 
-			Enumeration enumCat = cats.enumerateCategory();
-			while(enumCat.hasMoreElements())
-			{
-				Category cat = (Category)enumCat.nextElement();
-				if (cat.getLabel().equals(name))
-				{
-					return cat;
-				}
-			}
-		}
+                        // make sure you break from the enumeration
+                        deleted = true;
+                        break;
+                    }
+                }
 
-		return null;
-	}
+            }
+        }
 
-	/**
-	 * Return the normal value for the specified category.
-	 *
-	 * @param catlabel	the label for the category whose normal value is needed
-	 *
-	 * @return the normal value for the specified category, -1 if category is not found
-	 */
-	public synchronized double getNormal(String catlabel)
-	{
-		Enumeration enumCG = m_config.enumerateCategorygroup();
-		while(enumCG.hasMoreElements())
-		{
-			Categorygroup cg = (Categorygroup)enumCG.nextElement();
+        return deleted;
+    }
 
-			// go through the categories
-			Categories cats = cg.getCategories();
+    /**
+     * Return the category specified by name.
+     * 
+     * @return the category specified by name, null if not found
+     */
+    public synchronized Category getCategory(String name) {
+        Enumeration enumCG = m_config.enumerateCategorygroup();
+        while (enumCG.hasMoreElements()) {
+            Categorygroup cg = (Categorygroup) enumCG.nextElement();
 
-			Enumeration enumCat = cats.enumerateCategory();
-			while(enumCat.hasMoreElements())
-			{
-				Category cat = (Category)enumCat.nextElement();
-				if (cat.getLabel().equals(catlabel))
-				{
-					return cat.getNormal();
-				}
-			}
-		}
-		
-		return -1.0;
-	}
+            // go through the categories
+            Categories cats = cg.getCategories();
 
-	/**
-	 * Return the warning value for the specified category.
-	 *
-	 * @param catlabel	the label for the category whose warning value is needed
-	 *
-	 * @return the warning value for the specified category, -1 if category is not found
-	 */
-	public synchronized double getWarning(String catlabel)
-	{
-		Enumeration enumCG = m_config.enumerateCategorygroup();
-		while(enumCG.hasMoreElements())
-		{
-			Categorygroup cg = (Categorygroup)enumCG.nextElement();
+            Enumeration enumCat = cats.enumerateCategory();
+            while (enumCat.hasMoreElements()) {
+                Category cat = (Category) enumCat.nextElement();
+                if (cat.getLabel().equals(name)) {
+                    return cat;
+                }
+            }
+        }
 
-			// go through the categories
-			Categories cats = cg.getCategories();
+        return null;
+    }
 
-			Enumeration enumCat = cats.enumerateCategory();
-			while(enumCat.hasMoreElements())
-			{
-				Category cat = (Category)enumCat.nextElement();
-				if (cat.getLabel().equals(catlabel))
-				{
-					return cat.getWarning();
-				}
-			}
-		}
-		
-		return -1.0;
-	}
+    /**
+     * Return the normal value for the specified category.
+     * 
+     * @param catlabel
+     *            the label for the category whose normal value is needed
+     * 
+     * @return the normal value for the specified category, -1 if category is
+     *         not found
+     */
+    public synchronized double getNormal(String catlabel) {
+        Enumeration enumCG = m_config.enumerateCategorygroup();
+        while (enumCG.hasMoreElements()) {
+            Categorygroup cg = (Categorygroup) enumCG.nextElement();
 
-	/**
-	 * Return the services list for the specified category.
-	 *
-	 * @param catlabel	the label for the category whose services list is needed
-	 *
-	 * @return the services list for the specified category, null if category is not found
-	 */
-	public synchronized String[] getServices(String catlabel)
-	{
-		Enumeration enumCG = m_config.enumerateCategorygroup();
-		while(enumCG.hasMoreElements())
-		{
-			Categorygroup cg = (Categorygroup)enumCG.nextElement();
+            // go through the categories
+            Categories cats = cg.getCategories();
 
-			// go through the categories
-			Categories cats = cg.getCategories();
+            Enumeration enumCat = cats.enumerateCategory();
+            while (enumCat.hasMoreElements()) {
+                Category cat = (Category) enumCat.nextElement();
+                if (cat.getLabel().equals(catlabel)) {
+                    return cat.getNormal();
+                }
+            }
+        }
 
-			Enumeration enumCat = cats.enumerateCategory();
-			while(enumCat.hasMoreElements())
-			{
-				Category cat = (Category)enumCat.nextElement();
-				if (cat.getLabel().equals(catlabel))
-				{
-					return cat.getService();
-				}
-			}
-		}
-		
-		return null;
-	}
+        return -1.0;
+    }
 
-	/**
-	 * Return the rule for the specified category.
-	 *
-	 * @param catlabel	the label for the category whose services list is needed
-	 *
-	 * @return the rule for the specified category, null if the category is not found
-	 */
-	public synchronized String getRule(String catlabel)
-	{
-		Enumeration enumCG = m_config.enumerateCategorygroup();
-		while(enumCG.hasMoreElements())
-		{
-			Categorygroup cg = (Categorygroup)enumCG.nextElement();
+    /**
+     * Return the warning value for the specified category.
+     * 
+     * @param catlabel
+     *            the label for the category whose warning value is needed
+     * 
+     * @return the warning value for the specified category, -1 if category is
+     *         not found
+     */
+    public synchronized double getWarning(String catlabel) {
+        Enumeration enumCG = m_config.enumerateCategorygroup();
+        while (enumCG.hasMoreElements()) {
+            Categorygroup cg = (Categorygroup) enumCG.nextElement();
 
-			// go through the categories
-			Categories cats = cg.getCategories();
+            // go through the categories
+            Categories cats = cg.getCategories();
 
-			Enumeration enumCat = cats.enumerateCategory();
-			while(enumCat.hasMoreElements())
-			{
-				Category cat = (Category)enumCat.nextElement();
-				if (cat.getLabel().equals(catlabel))
-				{
-					return cat.getRule();
-				}
-			}
-		}
-		
-		return null;
-	}
+            Enumeration enumCat = cats.enumerateCategory();
+            while (enumCat.hasMoreElements()) {
+                Category cat = (Category) enumCat.nextElement();
+                if (cat.getLabel().equals(catlabel)) {
+                    return cat.getWarning();
+                }
+            }
+        }
 
-	/**
-	 * Return the effective rule for the specified category.  The category
-	 * rule ANDed with the rule of the category group that the category 
-	 * belongs to.
-	 *
-	 * @param catlabel	the label for the category whose effective rule is needed
-	 *
-	 * @return the effective rule for the specified category, null if the category is not found
-	 */
-	public synchronized String getEffectiveRule(String catlabel)
-	{
-		Enumeration enumCG = m_config.enumerateCategorygroup();
-		while(enumCG.hasMoreElements())
-		{
-			Categorygroup cg = (Categorygroup)enumCG.nextElement();
+        return -1.0;
+    }
 
-			// go through the categories
-			Categories cats = cg.getCategories();
+    /**
+     * Return the services list for the specified category.
+     * 
+     * @param catlabel
+     *            the label for the category whose services list is needed
+     * 
+     * @return the services list for the specified category, null if category is
+     *         not found
+     */
+    public synchronized String[] getServices(String catlabel) {
+        Enumeration enumCG = m_config.enumerateCategorygroup();
+        while (enumCG.hasMoreElements()) {
+            Categorygroup cg = (Categorygroup) enumCG.nextElement();
 
-			Enumeration enumCat = cats.enumerateCategory();
-			while(enumCat.hasMoreElements())
-			{
-				Category cat = (Category)enumCat.nextElement();
-				if (cat.getLabel().equals(catlabel))
-				{
-					String catRule = "(" + cg.getCommon().getRule() + ") & (" + cat.getRule() + ")";
-					return catRule;
-				}
-			}
-		}
-		
-		return null;
-	}
+            // go through the categories
+            Categories cats = cg.getCategories();
+
+            Enumeration enumCat = cats.enumerateCategory();
+            while (enumCat.hasMoreElements()) {
+                Category cat = (Category) enumCat.nextElement();
+                if (cat.getLabel().equals(catlabel)) {
+                    return cat.getService();
+                }
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Return the rule for the specified category.
+     * 
+     * @param catlabel
+     *            the label for the category whose services list is needed
+     * 
+     * @return the rule for the specified category, null if the category is not
+     *         found
+     */
+    public synchronized String getRule(String catlabel) {
+        Enumeration enumCG = m_config.enumerateCategorygroup();
+        while (enumCG.hasMoreElements()) {
+            Categorygroup cg = (Categorygroup) enumCG.nextElement();
+
+            // go through the categories
+            Categories cats = cg.getCategories();
+
+            Enumeration enumCat = cats.enumerateCategory();
+            while (enumCat.hasMoreElements()) {
+                Category cat = (Category) enumCat.nextElement();
+                if (cat.getLabel().equals(catlabel)) {
+                    return cat.getRule();
+                }
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Return the effective rule for the specified category. The category rule
+     * ANDed with the rule of the category group that the category belongs to.
+     * 
+     * @param catlabel
+     *            the label for the category whose effective rule is needed
+     * 
+     * @return the effective rule for the specified category, null if the
+     *         category is not found
+     */
+    public synchronized String getEffectiveRule(String catlabel) {
+        Enumeration enumCG = m_config.enumerateCategorygroup();
+        while (enumCG.hasMoreElements()) {
+            Categorygroup cg = (Categorygroup) enumCG.nextElement();
+
+            // go through the categories
+            Categories cats = cg.getCategories();
+
+            Enumeration enumCat = cats.enumerateCategory();
+            while (enumCat.hasMoreElements()) {
+                Category cat = (Category) enumCat.nextElement();
+                if (cat.getLabel().equals(catlabel)) {
+                    String catRule = "(" + cg.getCommon().getRule() + ") & (" + cat.getRule() + ")";
+                    return catRule;
+                }
+            }
+        }
+
+        return null;
+    }
 
 }

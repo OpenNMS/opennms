@@ -1,7 +1,7 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2002-2004 The OpenNMS Group, Inc.  All rights reserved.
+// OpenNMS(R) is Copyright (C) 2002-2005 The OpenNMS Group, Inc.  All rights reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included code and modified
 // code that was published under the GNU General Public License. Copyrights for modified 
 // and included code are below.
@@ -38,49 +38,60 @@
 
 package org.opennms.netmgt.vacuumd.jmx;
 
-
 /**
- * Implementws the VacuumdMBead interface and delegeates the mbean implementation
- * to the single Vacuumd. 
+ * Implementws the VacuumdMBead interface and delegeates the mbean
+ * implementation to the single Vacuumd.
  */
 public class Vacuumd implements VacuumdMBean {
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.opennms.netmgt.vacuumd.jmx.VacuumdMBean#init()
      */
     public void init() {
         org.opennms.netmgt.vacuumd.Vacuumd.getSingleton().init();
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.opennms.netmgt.vacuumd.jmx.VacuumdMBean#start()
      */
     public void start() {
         org.opennms.netmgt.vacuumd.Vacuumd.getSingleton().start();
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.opennms.netmgt.vacuumd.jmx.VacuumdMBean#stop()
      */
     public void stop() {
         org.opennms.netmgt.vacuumd.Vacuumd.getSingleton().stop();
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.opennms.netmgt.vacuumd.jmx.VacuumdMBean#getStatus()
      */
     public int getStatus() {
         return org.opennms.netmgt.vacuumd.Vacuumd.getSingleton().getStatus();
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.opennms.netmgt.vacuumd.jmx.VacuumdMBean#status()
      */
     public String status() {
         return org.opennms.core.fiber.Fiber.STATUS_NAMES[getStatus()];
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see org.opennms.netmgt.vacuumd.jmx.VacuumdMBean#getStatusText()
      */
     public String getStatusText() {

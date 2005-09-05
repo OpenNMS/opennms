@@ -3,7 +3,7 @@
                 version='1.0'>
 
 <!-- ********************************************************************
-     $Id: autotoc.xsl,v 1.28 2004/01/29 13:27:04 nwalsh Exp $
+     $Id: autotoc.xsl,v 1.33 2004/11/23 06:55:03 xmldoc Exp $
      ********************************************************************
 
      This file is part of the XSL DocBook Stylesheet distribution.
@@ -154,9 +154,11 @@
   <xsl:call-template name="make.toc">
     <xsl:with-param name="toc-context" select="$toc-context"/>
     <xsl:with-param name="toc.title.p" select="$toc.title.p"/>
-    <xsl:with-param name="nodes" select="section|sect1|refentry
+    <xsl:with-param name="nodes" select="section|sect1
+                                         |simplesect[$simplesect.in.toc != 0]
+                                         |refentry
                                          |article|bibliography|glossary
-                                         |appendix
+                                         |appendix|index
                                          |bridgehead[not(@renderas)
                                                      and $bridgehead.in.toc != 0]
                                          |.//bridgehead[@renderas='sect1'
@@ -336,7 +338,10 @@
 
   <xsl:call-template name="subtoc">
     <xsl:with-param name="toc-context" select="$toc-context"/>
-    <xsl:with-param name="nodes" select="section|sect1|glossary|bibliography|index
+    <xsl:with-param name="nodes" select="section|sect1
+                                         |simplesect[$simplesect.in.toc != 0]
+                                         |refentry
+                                         |glossary|bibliography|index
                                          |bridgehead[$bridgehead.in.toc != 0]"/>
   </xsl:call-template>
 </xsl:template>
@@ -381,6 +386,14 @@
 </xsl:template>
 
 <xsl:template match="sect5" mode="toc">
+  <xsl:param name="toc-context" select="."/>
+
+  <xsl:call-template name="subtoc">
+    <xsl:with-param name="toc-context" select="$toc-context"/>
+  </xsl:call-template>
+</xsl:template>
+
+<xsl:template match="simplesect" mode="toc">
   <xsl:param name="toc-context" select="."/>
 
   <xsl:call-template name="subtoc">
@@ -447,16 +460,20 @@
   </xsl:variable>
 
   <xsl:element name="{$toc.listitem.type}">
-    <a>
-      <xsl:attribute name="href">
-        <xsl:call-template name="href.target"/>
-      </xsl:attribute>
-      <xsl:copy-of select="$title"/>
-    </a>
-    <xsl:if test="$annotate.toc != 0">
-      <xsl:text> - </xsl:text>
-      <xsl:value-of select="refnamediv/refpurpose"/>
-    </xsl:if>
+    <span class='refentrytitle'>
+      <a>
+        <xsl:attribute name="href">
+          <xsl:call-template name="href.target"/>
+        </xsl:attribute>
+        <xsl:copy-of select="$title"/>
+      </a>
+    </span>
+    <span class='refpurpose'>
+      <xsl:if test="$annotate.toc != 0">
+        <xsl:text> - </xsl:text>
+        <xsl:value-of select="refnamediv/refpurpose"/>
+      </xsl:if>
+    </span>
   </xsl:element>
 </xsl:template>
 

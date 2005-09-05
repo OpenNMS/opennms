@@ -35,80 +35,72 @@
 package org.opennms.netmgt.eventd;
 
 /**
- *
- * @author 	<A HREF="mailto:sowmya@opennms.org">Sowmya Nataraj</A>
- * @author	<A HREF="http://www.opennms.org">OpenNMS.org</A>
+ * 
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Nataraj </A>
+ * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
  */
-public class EventIpcManagerFactory
-{
-	/**
-	 * The singleton instance of this factory
-	 */
-	private static EventIpcManagerFactory	m_singleton=null;
+public class EventIpcManagerFactory {
+    /**
+     * The singleton instance of this factory
+     */
+    private static EventIpcManagerFactory m_singleton = null;
 
-	/**
-	 * This member is set to true if init() has been called
-	 */
-	private static boolean			m_loaded=false;
+    /**
+     * This member is set to true if init() has been called
+     */
+    private static boolean m_loaded = false;
 
-	/**
-	 * The default EventIpcManager
-	 */
-	private EventIpcManagerDefaultImpl	m_defIpcManager; 
+    /**
+     * The default EventIpcManager
+     */
+    private EventIpcManagerDefaultImpl m_defIpcManager;
 
-	/**
-	 * Private constructor
-	 */
-	private EventIpcManagerFactory()
-	{
-		m_defIpcManager = new EventIpcManagerDefaultImpl();
-	}
+    /**
+     * Private constructor
+     */
+    private EventIpcManagerFactory() {
+        m_defIpcManager = new EventIpcManagerDefaultImpl();
+    }
 
-	/**
-	 * Create the singleton instance of this factory
-	 */
-	public static synchronized void init()
-	{
-		if (m_loaded)
-		{
-			// init already called - return
-			return;
-		}
+    /**
+     * Create the singleton instance of this factory
+     */
+    public static synchronized void init() {
+        if (m_loaded) {
+            // init already called - return
+            return;
+        }
 
-		m_singleton = new EventIpcManagerFactory();
+        m_singleton = new EventIpcManagerFactory();
 
-		m_loaded = true;
-	}
+        m_loaded = true;
+    }
 
-	/**
-	 * Return the singleton instance of this factory.
-	 *
-	 * @return The current factory instance.
-	 *
-	 * @throws java.lang.IllegalStateException Thrown if the factory
-	 * 	has not yet been initialized.
-	 */
-	public static synchronized EventIpcManagerFactory getInstance()
-	{
-		if(!m_loaded)
-			throw new IllegalStateException("The factory has not been initialized");
+    /**
+     * Return the singleton instance of this factory.
+     * 
+     * @return The current factory instance.
+     * 
+     * @throws java.lang.IllegalStateException
+     *             Thrown if the factory has not yet been initialized.
+     */
+    public static synchronized EventIpcManagerFactory getInstance() {
+        if (!m_loaded)
+            throw new IllegalStateException("The factory has not been initialized");
 
-		return m_singleton;
-	}
+        return m_singleton;
+    }
 
-	/**
-	 * Returns an implementation of the default EventIpcManager class
-	 */
-	public EventIpcManagerDefaultImpl getManager()
-	{
-		return m_defIpcManager;
-	}
+    /**
+     * Returns an implementation of the default EventIpcManager class
+     */
+    public EventIpcManagerDefaultImpl getManager() {
+        return m_defIpcManager;
+    }
 
-
-	//
-	// Will eventually have methods to get instances of managers to
-	// communicate across VMs
-	//
+    //
+    // Will eventually have methods to get instances of managers to
+    // communicate across VMs
+    //
 
 }
-

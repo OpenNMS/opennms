@@ -1,3 +1,11 @@
+2004-11-17  Jirka Kosek <kosek@users.sourceforge.net>
+
+	* htmlhelp-common.xsl: Removed reference to index HTML pages from manifest if the output format is HTML Help
+
+2004-08-19  Jirka Kosek <kosek@users.sourceforge.net>
+
+	* htmlhelp-common.xsl: Added several patches from W. Borgert
+
 2004-02-19  Jirka Kosek <kosek@users.sourceforge.net>
 
 	* htmlhelp-common.xsl: Added anchors to bibliodivs

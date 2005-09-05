@@ -35,98 +35,90 @@ package org.opennms.web.notification;
 import java.util.Date;
 
 /**
- * NoticeSentTo Bean, containing data from the usersNotified table for a single user/notice pair.
+ * NoticeSentTo Bean, containing data from the usersNotified table for a single
+ * user/notice pair.
  */
-public class NoticeSentTo 
-{	
-	/**
-         * User this notice was sent to
-         */ 
-	public String m_userId;
-        
-	/**
-         * Time the notice was sent to the user in milliseconds.
-	 */
-        public long m_time;
-        
-        /**
-         * Contact info.
-	 */
-        public String m_contactInfo;
-        
-	/**
-         * The type of notification mechanism.
-	 */
-        public String m_media;
-        
-	/**
-	 * Default Constructor
-	 */
-	public NoticeSentTo()
-	{
-	}
-        
-        /**
-	 * 
-	 */
-        public void setUserId(String userid)
-        {
-                m_userId = userid;
-        }
-        
-        /**
-	 * 
-	 */
-        public String getUserId()
-        {
-                return m_userId;
-        }
-        
-        /**
-	 * 
-	 */
-        public void setTime(long time) //no see!
-        {
-                m_time = time;
-        }
-        
-        /**
-	 * 
-	 */
-        public Date getTime()
-        {
-                return new Date(m_time);
-        }
-        
-        /**
-	 * 
-	 */
-        public void setMedia(String media)
-        {
-                m_media = media;
-        }
-        
-        /**
-	 * 
-	 */
-        public String getMedia()
-        {
-                return m_media;
-        }
-        
-        /**
-	 * 
-	 */
-        public void setContactInfo(String contact)
-        {
-                m_contactInfo = contact;
-        }
-        
-        /**
-	 * 
-	 */
-        public String getContactInfo()
-        {
-                return m_contactInfo;
-        }
+public class NoticeSentTo {
+    /**
+     * User this notice was sent to
+     */
+    public String m_userId;
+
+    /**
+     * Time the notice was sent to the user in milliseconds.
+     */
+    public long m_time;
+
+    /**
+     * Contact info.
+     */
+    public String m_contactInfo;
+
+    /**
+     * The type of notification mechanism.
+     */
+    public String m_media;
+
+    /**
+     * Default Constructor
+     */
+    public NoticeSentTo() {
+    }
+
+    /**
+     * 
+     */
+    public void setUserId(String userid) {
+        m_userId = userid;
+    }
+
+    /**
+     * 
+     */
+    public String getUserId() {
+        return m_userId;
+    }
+
+    /**
+     * 
+     */
+    public void setTime(long time) // no see!
+    {
+        m_time = time;
+    }
+
+    /**
+     * 
+     */
+    public Date getTime() {
+        return new Date(m_time);
+    }
+
+    /**
+     * 
+     */
+    public void setMedia(String media) {
+        m_media = media;
+    }
+
+    /**
+     * 
+     */
+    public String getMedia() {
+        return m_media;
+    }
+
+    /**
+     * 
+     */
+    public void setContactInfo(String contact) {
+        m_contactInfo = contact;
+    }
+
+    /**
+     * 
+     */
+    public String getContactInfo() {
+        return m_contactInfo;
+    }
 }

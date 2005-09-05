@@ -4,7 +4,7 @@
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:src="http://nwalsh.com/xmlns/litprog/fragment" exclude-result-prefixes="src" version="1.0">
 
 <!-- ********************************************************************
-     $Id: param.xweb,v 1.75 2003/11/29 21:45:22 kosek Exp $
+     $Id: param.xweb,v 1.85 2004/11/23 06:55:03 xmldoc Exp $
      ********************************************************************
 
      This file is part of the XSL DocBook Stylesheet distribution.
@@ -32,7 +32,7 @@
 <xsl:param name="callout.defaultcolumn" select="'60'"/>
 <xsl:param name="callout.graphics.extension" select="'.png'"/>
 <xsl:param name="callout.graphics" select="'1'"/>
-<xsl:param name="callout.graphics.number.limit" select="'10'"/>
+<xsl:param name="callout.graphics.number.limit" select="'15'"/>
 <xsl:param name="callout.graphics.path" select="'images/callouts/'"/>
 <xsl:param name="callout.list.table" select="'1'"/>
 <xsl:param name="callout.unicode" select="0"/>
@@ -45,8 +45,10 @@
 <xsl:param name="chunk.section.depth" select="1"/>
 <xsl:param name="chunk.toc" select="''"/>
 <xsl:param name="chunk.tocs.and.lots" select="0"/>
+<xsl:param name="chunk.separate.lots" select="0"/>
 <xsl:param name="citerefentry.link" select="'0'"/>
 <xsl:param name="collect.xref.targets" select="'no'"/>
+<xsl:param name="component.label.includes.part.label" select="0"/>
 <xsl:param name="css.decoration" select="1"/>
 <xsl:param name="current.docid" select="''"/> 
 <xsl:param name="default.float.class" select="'before'"/>
@@ -57,7 +59,7 @@
 <xsl:param name="ebnf.table.bgcolor" select="'#F5DCB3'"/>
 <xsl:param name="ebnf.table.border" select="1"/>
 <xsl:param name="ebnf.assignment">
-<tt>::=</tt>
+<code>::=</code>
 </xsl:param>
 
 <xsl:param name="ebnf.statement.terminator"/>
@@ -176,6 +178,10 @@ set       toc,title
 <xsl:param name="htmlhelp.title" select="''"/>
 <xsl:param name="htmlhelp.use.hhk" select="0"/>
 <xsl:param name="htmlhelp.window.geometry"/>
+<xsl:param name="img.src.path"/>
+<xsl:param name="index.on.role" select="0"/>
+<xsl:param name="index.on.type" select="0"/>
+<xsl:param name="index.prefer.titleabbrev" select="0"/>
 <xsl:param name="ignore.image.scaling" select="0"/>
 <xsl:param name="inherit.keywords" select="'1'"/>
 <xsl:param name="l10n.gentext.default.language" select="'en'"/>
@@ -204,7 +210,14 @@ set       toc,title
 <xsl:param name="nominal.image.width" select="6 * $pixels.per.inch"/>
 <xsl:param name="nominal.table.width" select="'6in'"/>
 <xsl:param name="olink.base.uri" select="''"/> 
-<xsl:param name="olink.doctitle" select="0"/> 
+<xsl:param name="olink.debug" select="0"/>
+<xsl:attribute-set name="olink.properties">
+</xsl:attribute-set>
+<xsl:param name="insert.olink.page.number">no</xsl:param>
+<xsl:param name="insert.olink.pdf.frag" select="0"/>
+<xsl:param name="prefer.internal.olink" select="0"/>
+<xsl:param name="olink.lang.fallback.sequence" select="''"/> 
+<xsl:param name="olink.doctitle" select="no"/> 
 <xsl:param name="olink.fragid" select="'fragid='"/>
 <xsl:param name="olink.outline.ext" select="'.olink'"/>
 <xsl:param name="olink.pubid" select="'pubid='"/>
@@ -246,6 +259,7 @@ set       toc,title
 <xsl:param name="runinhead.default.title.end.punct" select="'.'"/>
 <xsl:param name="runinhead.title.end.punct" select="'.!?:'"/>
 <xsl:param name="section.autolabel" select="0"/>
+<xsl:param name="section.autolabel.max.depth" select="8"/>
 <xsl:param name="section.label.includes.component.label" select="0"/>
 <xsl:param name="segmentedlist.as.table" select="0"/>
 <xsl:param name="shade.verbatim" select="0"/>
@@ -256,6 +270,7 @@ set       toc,title
 
 <xsl:param name="show.comments">1</xsl:param>
 <xsl:param name="show.revisionflag">0</xsl:param>
+<xsl:param name="simplesect.in.toc" select="0"/>
 <xsl:param name="spacing.paras" select="'0'"/>
 <xsl:param name="suppress.footer.navigation">0</xsl:param>
 <xsl:param name="suppress.header.navigation">0</xsl:param>
@@ -274,6 +289,7 @@ set       toc,title
 <xsl:param name="tablecolumns.extension" select="'1'"/>
 <xsl:param name="target.database.document" select="''"/>
 <xsl:param name="targets.filename" select="'target.db'"/>
+<xsl:param name="textdata.default.encoding" select="''"/>
 <xsl:param name="tex.math.delims" select="'1'"/>
 <xsl:param name="tex.math.file" select="'tex-math-equations.tex'"/>
 <xsl:param name="tex.math.in.alt" select="''"/>

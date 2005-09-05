@@ -38,65 +38,61 @@
 
 package org.opennms.netmgt.eventd.db;
 
-
 /**
- * This is an utility class used to format the event forward
- * info - to be inserted into the 'events' table
- *
- * @author <A HREF="mailto:weave@oculan.com">Brian Weaver</A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
+ * This is an utility class used to format the event forward info - to be
+ * inserted into the 'events' table
+ * 
+ * @author <A HREF="mailto:weave@oculan.com">Brian Weaver </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
-public class Forward
-{
-	/**
-	 * Format each forward entry
-	 *
-	 * @param fwd	the entry
-	 *
-	 * @return the formatted string
-	 */
-	public static String format(org.opennms.netmgt.xml.event.Forward fwd)
-	{
-		String text  = fwd.getContent();
-		String state = fwd.getState();
-		
-		String how = fwd.getMechanism();
+public class Forward {
+    /**
+     * Format each forward entry
+     * 
+     * @param fwd
+     *            the entry
+     * 
+     * @return the formatted string
+     */
+    public static String format(org.opennms.netmgt.xml.event.Forward fwd) {
+        String text = fwd.getContent();
+        String state = fwd.getState();
 
-		return  Constants.escape(text, Constants.DB_ATTRIB_DELIM) 
-			+ Constants.DB_ATTRIB_DELIM + state + Constants.DB_ATTRIB_DELIM + how;
-			
-	}
-	
-	/**
-	 * Format the array of forward entries of the event
-	 *
-	 * @param forwards	the list
-	 * @param sz		the size to which the formatted string is to be limited to(usually the size of the column in the database)
-	 *
-	 * @return the formatted string
-	 */
-	public static String format(org.opennms.netmgt.xml.event.Forward[] forwards, int sz)
-	{
-		StringBuffer	buf = new StringBuffer();
-		boolean		first = true;
-		
-		for (int index=0; index<forwards.length; index++)
-		{
-			if(!first)
-				buf.append(Constants.MULTIPLE_VAL_DELIM);
-			else
-				first = false;
+        String how = fwd.getMechanism();
 
-			buf.append(Constants.escape(format(forwards[index]), Constants.MULTIPLE_VAL_DELIM));
-		}
-		
-		if(buf.length() >= sz)
-		{
-			buf.setLength(sz-4);
-			buf.append(Constants.VALUE_TRUNCATE_INDICATOR);
-		}
-		
-		return buf.toString();
-	}
+        return Constants.escape(text, Constants.DB_ATTRIB_DELIM) + Constants.DB_ATTRIB_DELIM + state + Constants.DB_ATTRIB_DELIM + how;
+
+    }
+
+    /**
+     * Format the array of forward entries of the event
+     * 
+     * @param forwards
+     *            the list
+     * @param sz
+     *            the size to which the formatted string is to be limited
+     *            to(usually the size of the column in the database)
+     * 
+     * @return the formatted string
+     */
+    public static String format(org.opennms.netmgt.xml.event.Forward[] forwards, int sz) {
+        StringBuffer buf = new StringBuffer();
+        boolean first = true;
+
+        for (int index = 0; index < forwards.length; index++) {
+            if (!first)
+                buf.append(Constants.MULTIPLE_VAL_DELIM);
+            else
+                first = false;
+
+            buf.append(Constants.escape(format(forwards[index]), Constants.MULTIPLE_VAL_DELIM));
+        }
+
+        if (buf.length() >= sz) {
+            buf.setLength(sz - 4);
+            buf.append(Constants.VALUE_TRUNCATE_INDICATOR);
+        }
+
+        return buf.toString();
+    }
 }
-

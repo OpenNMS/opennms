@@ -45,28 +45,26 @@ import org.opennms.web.outage.OutageModel;
 import org.opennms.web.outage.OutageSummary;
 
 /**
- * this class encapsulates the issue of generating a Collection of
- * Nodes and somehow transforming them into an appropriate class that
- * the DocumentGenerator knows how to deal with.  (i.e. I can make
- * MapNodes myself, as seen in getTestNodes() or I can get the node
- * data from some external source and convert it into the appropriate
- * context as seen in getOpenNMSNodes()
- *
- * @author <A HREF="mailto:dglidden@opennms.org">Derek Glidden</A>
- * @author <A HREF="http://www.nksi.com/">NKSi</A>
+ * this class encapsulates the issue of generating a Collection of Nodes and
+ * somehow transforming them into an appropriate class that the
+ * DocumentGenerator knows how to deal with. (i.e. I can make MapNodes myself,
+ * as seen in getTestNodes() or I can get the node data from some external
+ * source and convert it into the appropriate context as seen in
+ * getOpenNMSNodes()
+ * 
+ * @author <A HREF="mailto:dglidden@opennms.org">Derek Glidden </A>
+ * @author <A HREF="http://www.nksi.com/">NKSi </A>
  */
 
 public class MapNodeFactory {
 
-
     /**
-     * log a message.  for now, just spit to System.err
+     * log a message. for now, just spit to System.err
      */
 
     private void log(String message) {
         System.err.println(message);
     }
-
 
     /**
      * hide how we're really getting our node data
@@ -76,10 +74,9 @@ public class MapNodeFactory {
         return getOpenNMSNodes();
     }
 
-
     /**
-     * get node data from OpenNMS and massage it into the appropriate
-     * form for the MapNode class
+     * get node data from OpenNMS and massage it into the appropriate form for
+     * the MapNode class
      */
 
     public Vector getOpenNMSNodes() {
@@ -90,24 +87,23 @@ public class MapNodeFactory {
 
         try {
             OutageSummary[] summaries = oModel.getCurrentOutageSummaries();
-            for(int i = 0; i < summaries.length; i++) {
+            for (int i = 0; i < summaries.length; i++) {
                 OutageSummary summary = summaries[i];
                 int nodeId = summary.getNodeId();
                 outages.add(new Integer(nodeId));
             }
-        } catch(Exception e) {
+        } catch (Exception e) {
             log("Exception in NodeFactory.getOpenNMSNodes()");
             log("Exception in OutageModel.getCurrentOutageSummaries()");
             log(e.toString());
         }
-
 
         CategoryModel cModel;
 
         AssetModel aModel = new AssetModel();
 
         // create and add a rootnode with NodeID of 0 to represent the
-        // OpenNMS server.  this is kind of ugly and could be changed
+        // OpenNMS server. this is kind of ugly and could be changed
         // without disturbing anyone if someone thinks of a better way
         // of representing this "root" node
 
@@ -122,12 +118,11 @@ public class MapNodeFactory {
 
         try {
             onmsNodes = NetworkElementFactory.getAllNodes();
-        } catch(SQLException e) {
+        } catch (SQLException e) {
             log("Exception in NodeFactory.getOpenNMSNodes()");
             log("SQLException in NodeFactory.getOpenNMSNodes()");
             log(e.toString());
         }
-
 
         // we're inlining this logic here instead of calling
         // getAsset() for each node, since that generates a lot of
@@ -136,7 +131,7 @@ public class MapNodeFactory {
         Asset[] assetarray = null;
         try {
             assetarray = aModel.getAllAssets();
-        } catch(Exception e) {
+        } catch (Exception e) {
             log("Exception in NodeFactory.getOpenNMSNodes()");
             log("Exception in AssetMode.getAsset()");
             log(e.toString());
@@ -144,19 +139,19 @@ public class MapNodeFactory {
 
         Hashtable assets = new Hashtable();
 
-        for(int i = 0; i < assetarray.length; i++) {
+        for (int i = 0; i < assetarray.length; i++) {
             Asset a = assetarray[i];
             assets.put(new Integer(a.getNodeId()), a);
         }
 
-        for(int i = 0; i < onmsNodes.length; i++) {
+        for (int i = 0; i < onmsNodes.length; i++) {
             Node n = onmsNodes[i];
             MapNode mn = new MapNode();
             Asset asset;
             double overallRtcValue = 0.0;
             boolean isNew = false;
 
-            if(assets.containsKey(new Integer(n.getNodeId()))) {
+            if (assets.containsKey(new Integer(n.getNodeId()))) {
                 asset = (Asset) assets.get(new Integer(n.getNodeId()));
             } else {
                 asset = new Asset();
@@ -169,7 +164,7 @@ public class MapNodeFactory {
 
                 cModel = CategoryModel.getInstance();
                 overallRtcValue = cModel.getNodeAvailability(n.getNodeId());
-            } catch(Exception e) {
+            } catch (Exception e) {
                 log("Exception in NodeFactory.getOpenNMSNodes()");
                 log("Exception in CategoryModel.getInstance()");
                 log(e.toString());
@@ -180,14 +175,14 @@ public class MapNodeFactory {
             mn.setNodeParent(n.getNodeParent());
             mn.setRTC(overallRtcValue);
 
-            if(isNew) {
+            if (isNew) {
                 mn.setIconName("unspecified");
             } else {
                 mn.setIconName(asset.getCategory().toLowerCase());
             }
             // mn.setIconName("other");
 
-            if(outages.contains(new Integer(n.getNodeId()))) {
+            if (outages.contains(new Integer(n.getNodeId()))) {
                 mn.setStatus("Outage");
             } else {
                 mn.setStatus("Up");
@@ -199,11 +194,10 @@ public class MapNodeFactory {
         return nodes;
     }
 
-
     /**
-     * generate a bunch of made-up nodes with generic node data in
-     * them.  This won't really work as expected anymore because the
-     * IPAddress display has been replaced with RTC display.
+     * generate a bunch of made-up nodes with generic node data in them. This
+     * won't really work as expected anymore because the IPAddress display has
+     * been replaced with RTC display.
      */
 
     public Vector getTestNodes() {
@@ -218,7 +212,7 @@ public class MapNodeFactory {
         onms.setStatus("up");
         nodes.add(onms);
 
-        for(int i = 1; i <= 4; i++) {
+        for (int i = 1; i <= 4; i++) {
             MapNode n = new MapNode();
 
             n.setNodeID(i);
@@ -231,7 +225,7 @@ public class MapNodeFactory {
             nodes.add(n);
         }
 
-        for(int i = 5; i <= 5; i++) {
+        for (int i = 5; i <= 5; i++) {
             MapNode n = new MapNode();
 
             n.setNodeID(i);
@@ -244,7 +238,7 @@ public class MapNodeFactory {
             nodes.add(n);
         }
 
-        for(int i = 6; i <= 7; i++) {
+        for (int i = 6; i <= 7; i++) {
             MapNode n = new MapNode();
 
             n.setNodeID(i);
@@ -257,7 +251,7 @@ public class MapNodeFactory {
             nodes.add(n);
         }
 
-        for(int i = 8; i <= 10; i++) {
+        for (int i = 8; i <= 10; i++) {
             MapNode n = new MapNode();
 
             n.setNodeID(i);
@@ -270,7 +264,7 @@ public class MapNodeFactory {
             nodes.add(n);
         }
 
-        for(int i = 11; i <= 11; i++) {
+        for (int i = 11; i <= 11; i++) {
             MapNode n = new MapNode();
 
             n.setNodeID(i);
@@ -283,7 +277,7 @@ public class MapNodeFactory {
             nodes.add(n);
         }
 
-        for(int i = 12; i <= 12; i++) {
+        for (int i = 12; i <= 12; i++) {
             MapNode n = new MapNode();
 
             n.setNodeID(i);
@@ -296,7 +290,7 @@ public class MapNodeFactory {
             nodes.add(n);
         }
 
-        for(int i = 13; i <= 14; i++) {
+        for (int i = 13; i <= 14; i++) {
             MapNode n = new MapNode();
 
             n.setNodeID(i);
@@ -309,7 +303,7 @@ public class MapNodeFactory {
             nodes.add(n);
         }
 
-        for(int i = 15; i <= 16; i++) {
+        for (int i = 15; i <= 16; i++) {
             MapNode n = new MapNode();
 
             n.setNodeID(i);
@@ -322,7 +316,7 @@ public class MapNodeFactory {
             nodes.add(n);
         }
 
-        for(int i = 17; i <= 21; i++) {
+        for (int i = 17; i <= 21; i++) {
             MapNode n = new MapNode();
 
             n.setNodeID(i);
@@ -335,7 +329,7 @@ public class MapNodeFactory {
             nodes.add(n);
         }
 
-        for(int i = 22; i <= 23; i++) {
+        for (int i = 22; i <= 23; i++) {
             MapNode n = new MapNode();
 
             n.setNodeID(i);
@@ -348,7 +342,7 @@ public class MapNodeFactory {
             nodes.add(n);
         }
 
-        for(int i = 24; i <= 27; i++) {
+        for (int i = 24; i <= 27; i++) {
             MapNode n = new MapNode();
 
             n.setNodeID(i);
@@ -361,7 +355,7 @@ public class MapNodeFactory {
             nodes.add(n);
         }
 
-        for(int i = 28; i <= 36; i++) {
+        for (int i = 28; i <= 36; i++) {
             MapNode n = new MapNode();
 
             n.setNodeID(i);
@@ -373,7 +367,6 @@ public class MapNodeFactory {
 
             nodes.add(n);
         }
-
 
         return nodes;
     }

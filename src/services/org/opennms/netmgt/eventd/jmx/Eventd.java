@@ -34,37 +34,28 @@
 
 package org.opennms.netmgt.eventd.jmx;
 
+public class Eventd implements EventdMBean {
+    public void init() {
+        org.opennms.netmgt.eventd.Eventd.getInstance().init();
+    }
 
-public class Eventd
-	implements EventdMBean
-{
-	public void init()
-	{
-		org.opennms.netmgt.eventd.Eventd.getInstance().init();
-	}
+    public void start() {
+        org.opennms.netmgt.eventd.Eventd.getInstance().start();
+    }
 
-	public void start()
-	{
-		org.opennms.netmgt.eventd.Eventd.getInstance().start();
-	}
+    public void stop() {
+        org.opennms.netmgt.eventd.Eventd.getInstance().stop();
+    }
 
-	public void stop()
-	{
-		org.opennms.netmgt.eventd.Eventd.getInstance().stop();
-	}
+    public int getStatus() {
+        return org.opennms.netmgt.eventd.Eventd.getInstance().getStatus();
+    }
 
-	public int getStatus()
-	{
-		return org.opennms.netmgt.eventd.Eventd.getInstance().getStatus();
-	}
+    public String status() {
+        return org.opennms.core.fiber.Fiber.STATUS_NAMES[getStatus()];
+    }
 
-	public String status()
-	{
-		return org.opennms.core.fiber.Fiber.STATUS_NAMES[getStatus()];
-	}
-
-	public String getStatusText()
-	{
-		return org.opennms.core.fiber.Fiber.STATUS_NAMES[getStatus()];
-	}
+    public String getStatusText() {
+        return org.opennms.core.fiber.Fiber.STATUS_NAMES[getStatus()];
+    }
 }

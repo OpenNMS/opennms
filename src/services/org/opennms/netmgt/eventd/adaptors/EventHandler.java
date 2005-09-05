@@ -38,15 +38,14 @@ import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.EventReceipt;
 
 /**
- * This interface provides the contract that implementor must 
- * implement in order to receive events from adaptors.
- *
- * @author <a href="mailto:weave@oculan.com">Brian Weaver</a>
- * @author <a href="http;//www.opennms.org">OpenNMS</a>
+ * This interface provides the contract that implementor must implement in order
+ * to receive events from adaptors.
+ * 
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http;//www.opennms.org">OpenNMS </a>
  */
-public interface EventHandler
-{
-	public boolean processEvent(Event event);
+public interface EventHandler {
+    public boolean processEvent(Event event);
 
-	public void receiptSent(EventReceipt receipt);
+    public void receiptSent(EventReceipt receipt);
 }

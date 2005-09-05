@@ -69,544 +69,460 @@ import org.opennms.netmgt.config.discovery.Specific;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 
 /**
- * This class is the main interface to the OpenNMS discovery service.
- * The class implements the <em>singleton</em> design pattern, in that there
- * is only one instance in any given virtual machine.  The service delays
- * the reading of configuration information until the service is started.
- *
- * @author <a href="mailto:weave@oculan.com">Brian Weaver</a>
- * @author <a href="http://www.opennms.org/">OpenNMS.org</a>
- *
+ * This class is the main interface to the OpenNMS discovery service. The class
+ * implements the <em>singleton</em> design pattern, in that there is only one
+ * instance in any given virtual machine. The service delays the reading of
+ * configuration information until the service is started.
+ * 
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS.org </a>
+ * 
  */
-public final class Discovery
-	implements PausableFiber
-{
-	/**
-	 * The log4j category used to log messages.
-	 */
-	private static final String 	LOG4J_CATEGORY	= "OpenNMS.Discovery";
-	
-	/**
-	 * The string indicating the start of the comments in a
-	 * line containing the IP address in a file URL
-	 */
-	private final static String COMMENT_STR		= " #";
+public final class Discovery implements PausableFiber {
+    /**
+     * The log4j category used to log messages.
+     */
+    private static final String LOG4J_CATEGORY = "OpenNMS.Discovery";
 
-	/**
-	 * This character at the start of a line indicates a comment line in a URL file
-	 */
-	private final static char COMMENT_CHAR		= '#';
+    /**
+     * The string indicating the start of the comments in a line containing the
+     * IP address in a file URL
+     */
+    private final static String COMMENT_STR = " #";
 
-	/**
-	 * The singular instance of the discovery service.
-	 */
-	private static final Discovery	m_singleton = new Discovery();
+    /**
+     * This character at the start of a line indicates a comment line in a URL
+     * file
+     */
+    private final static char COMMENT_CHAR = '#';
 
-	/**
-	 * The IP Generator queue
-	 */
-	private IPGenerator		m_generator;
+    /**
+     * The singular instance of the discovery service.
+     */
+    private static final Discovery m_singleton = new Discovery();
 
-	/**
-	 * The fiber that generates and sends suspect events
-	 */
-	private SuspectEventGenerator	m_eventWriter;
-	
-	/**
-	 * The class instance used to recieve new events from
-	 * for the system.
-	 */
-	private BroadcastEventProcessor	m_eventReader;
+    /**
+     * The IP Generator queue
+     */
+    private IPGenerator m_generator;
 
-	/**
-	 * The ICMP Poller Manager class. This manager iterates
-	 * over the address range, using the IPGenerator, checking
-	 * for available systems.
-	 */
-	private PingManager		m_manager;
+    /**
+     * The fiber that generates and sends suspect events
+     */
+    private SuspectEventGenerator m_eventWriter;
 
-	/**
-	 * The current status of this fiber
-	 */
-	private int			m_status;
+    /**
+     * The class instance used to recieve new events from for the system.
+     */
+    private BroadcastEventProcessor m_eventReader;
 
-	/**
-	 * Constructs a new discovery instance.
-	 */
-	private Discovery()
-	{
-		m_generator = null;
-		m_eventWriter = null;
-		m_eventReader = null;
-		m_manager = null;
-		m_status      = START_PENDING;
-	}
+    /**
+     * The ICMP Poller Manager class. This manager iterates over the address
+     * range, using the IPGenerator, checking for available systems.
+     */
+    private PingManager m_manager;
 
-	/**
-	 * <pre>The file URL is read and a 'specific IP' is added for each entry
-	 * in this file. Each line in the URL file can be one of -
-	 * <IP><space>#<comments>
-	 * or
-	 * <IP>
-	 * or
-	 * #<comments>
-	 *
-	 * Lines starting with a '#' are ignored and so are characters after
-	 * a '<space>#' in a line.</pre>
-	 *
-	 * @param specifics	the list to add to
-	 * @param url		the URL file 
-	 * @param timeout	the timeout for all entries in this URL
-	 * @param retries	the retries for all entries in this URL
-	 */
-	private boolean addToSpecificsFromURL(List specifics, String url, long timeout, int retries)
-	{
-		boolean bRet = true;
+    /**
+     * The current status of this fiber
+     */
+    private int m_status;
 
-		try
-		{
-			// open the file indicated by the url
-			URL fileURL = new URL(url);
-			
-			File file = new File(fileURL.getFile());
-		
-			//check to see if the file exists
-			if(file.exists())
-			{
-				BufferedReader buffer = new BufferedReader(new FileReader(file));
-			
-				String ipLine = null;
-				String specIP =null;
-		
-				// get each line of the file and turn it into a specific range
-				while( (ipLine = buffer.readLine()) != null )
-				{
-					ipLine = ipLine.trim();
-					if (ipLine.length() == 0 || ipLine.charAt(0) == COMMENT_CHAR)
-					{
-						// blank line or skip comment
-						continue;
-					}
+    /**
+     * Constructs a new discovery instance.
+     */
+    private Discovery() {
+        m_generator = null;
+        m_eventWriter = null;
+        m_eventReader = null;
+        m_manager = null;
+        m_status = START_PENDING;
+    }
 
-					// check for comments after IP
-					int comIndex = ipLine.indexOf(COMMENT_STR);
-					if (comIndex == -1)
-					{
-						specIP = ipLine;
-					}
-					else 
-					{
-						specIP = ipLine.substring(0, comIndex);
-						ipLine = ipLine.trim();
-					}
+    /**
+     * <pre>
+     * The file URL is read and a 'specific IP' is added for each entry
+     *  in this file. Each line in the URL file can be one of -
+     *  &lt;IP&gt;&lt;space&gt;#&lt;comments&gt;
+     *  or
+     *  &lt;IP&gt;
+     *  or
+     *  #&lt;comments&gt;
+     * 
+     *  Lines starting with a '#' are ignored and so are characters after
+     *  a '&lt;space&gt;#' in a line.
+     * </pre>
+     * 
+     * @param specifics
+     *            the list to add to
+     * @param url
+     *            the URL file
+     * @param timeout
+     *            the timeout for all entries in this URL
+     * @param retries
+     *            the retries for all entries in this URL
+     */
+    private boolean addToSpecificsFromURL(List specifics, String url, long timeout, int retries) {
+        boolean bRet = true;
 
-					try
-					{
-						specifics.add(new IPPollAddress(specIP, timeout, retries));
-					}
-					catch(UnknownHostException e)
-					{
-						ThreadCategory.getInstance().warn("Unknown host \'" + specIP + "\' read from URL \'" + url.toString() + "\': address ignored");
-					}
-					
-					specIP = null;
-				}
-			
-				buffer.close();
-			}
-			else
-			{
-				// log something
-				ThreadCategory.getInstance().warn("URL does not exist: " + url.toString());
-				bRet = true;
-			}
-		}
-		catch(MalformedURLException e)
-		{
-			ThreadCategory.getInstance().error("Error reading URL: " + url.toString() + ": " + e.getLocalizedMessage());
-			bRet = false;
-		}
-		catch(FileNotFoundException e)
-		{
-			ThreadCategory.getInstance().error("Error reading URL: " + url.toString() + ": " + e.getLocalizedMessage());
-			bRet = false;
-		}
-		catch(IOException e)
-		{
-			ThreadCategory.getInstance().error("Error reading URL: " + url.toString() + ": " + e.getLocalizedMessage());
-			bRet = false;
-		}
-		
-		
-		return bRet;
-	}
+        try {
+            // open the file indicated by the url
+            URL fileURL = new URL(url);
 
+            File file = new File(fileURL.getFile());
 
-	public synchronized void init()
-	{
-		if(m_manager != null)
-			throw new IllegalStateException("The discovery service is already running");
+            // check to see if the file exists
+            if (file.exists()) {
+                BufferedReader buffer = new BufferedReader(new FileReader(file));
 
-		ThreadCategory.setPrefix(LOG4J_CATEGORY);
-		Category log = ThreadCategory.getInstance();
+                String ipLine = null;
+                String specIP = null;
 
-		// Initialize the Database configuration factory and verify
-		// that we can get a database connection.
-		//
-		java.sql.Connection ctest = null;
-		try
-		{
-			DatabaseConnectionFactory.init();
-			ctest = DatabaseConnectionFactory.getInstance().getConnection();
-		}
-		catch (IOException ie)
-		{
-			log.fatal("IOException getting database connection", ie);
-			throw new UndeclaredThrowableException(ie);
-		}
-		catch (MarshalException me)
-		{
-			log.fatal("Marshall Exception getting database connection", me);
-			throw new UndeclaredThrowableException(me);
-		}
-		catch (ValidationException ve)
-		{
-			log.fatal("Validation Exception getting database connection", ve);
-			throw new UndeclaredThrowableException(ve);
-		}
-		catch (SQLException sqlE)
-		{
-			log.fatal("SQL Exception getting database connection", sqlE);
-			throw new UndeclaredThrowableException(sqlE);
-		}
-		catch (ClassNotFoundException cnfE)
-		{
-			log.fatal("Class Not Found Exception getting database connection", cnfE);
-			throw new UndeclaredThrowableException(cnfE);
-		}
-		finally
-		{
-			try
-			{
-				if(ctest != null)
-					ctest.close();
-			}
-			catch(Exception e) { }
-		}
-		
-		// Initialize discovery configuration factory
-		DiscoveryConfigFactory dFactory = null;
-		try
-		{
-			DiscoveryConfigFactory.reload();
-			dFactory = DiscoveryConfigFactory.getInstance();
-		}
-		catch(MarshalException ex)
-		{
-			ThreadCategory.getInstance().error("Failed to load discovery configuration", ex);
-			throw new UndeclaredThrowableException(ex);
-		}
-		catch(ValidationException ex)
-		{
-			ThreadCategory.getInstance().error("Failed to load discovery configuration", ex);
-			throw new UndeclaredThrowableException(ex);
-		}
-		catch(IOException ex)
-		{
-			ThreadCategory.getInstance().error("Failed to load discovery configuration", ex);
-			throw new UndeclaredThrowableException(ex);
-		}
-		
-		// Get the discovery configuration from the factory.
-		//
-		DiscoveryConfiguration cfg = dFactory.getConfiguration();
-		
-		//
-		// build the lists
-		//
-		List specifics = new LinkedList();
-		List includes = new LinkedList();
+                // get each line of the file and turn it into a specific range
+                while ((ipLine = buffer.readLine()) != null) {
+                    ipLine = ipLine.trim();
+                    if (ipLine.length() == 0 || ipLine.charAt(0) == COMMENT_CHAR) {
+                        // blank line or skip comment
+                        continue;
+                    }
 
-		Enumeration e = cfg.enumerateSpecific();
-		while(e.hasMoreElements())
-		{
-			Specific s = (Specific)e.nextElement();
+                    // check for comments after IP
+                    int comIndex = ipLine.indexOf(COMMENT_STR);
+                    if (comIndex == -1) {
+                        specIP = ipLine;
+                    } else {
+                        specIP = ipLine.substring(0, comIndex);
+                        ipLine = ipLine.trim();
+                    }
 
-			long timeout = 800L;
-			if(s.hasTimeout())
-				timeout = s.getTimeout();
-			else if(cfg.hasTimeout())
-				timeout = cfg.getTimeout();
+                    try {
+                        specifics.add(new IPPollAddress(specIP, timeout, retries));
+                    } catch (UnknownHostException e) {
+                        ThreadCategory.getInstance().warn("Unknown host \'" + specIP + "\' read from URL \'" + url.toString() + "\': address ignored");
+                    }
 
-			int retries = 3;
-			if(s.hasRetries())
-				retries = s.getRetries();
-			else if(cfg.hasRetries())
-				retries = cfg.getRetries();
+                    specIP = null;
+                }
 
-			try
-			{
-				specifics.add(new IPPollAddress(s.getContent(), timeout, retries));
-			}
-			catch(UnknownHostException uhE)
-			{
-				ThreadCategory.getInstance().warn("Failed to convert address " + s.getContent(), uhE);
-			}
-		}
+                buffer.close();
+            } else {
+                // log something
+                ThreadCategory.getInstance().warn("URL does not exist: " + url.toString());
+                bRet = true;
+            }
+        } catch (MalformedURLException e) {
+            ThreadCategory.getInstance().error("Error reading URL: " + url.toString() + ": " + e.getLocalizedMessage());
+            bRet = false;
+        } catch (FileNotFoundException e) {
+            ThreadCategory.getInstance().error("Error reading URL: " + url.toString() + ": " + e.getLocalizedMessage());
+            bRet = false;
+        } catch (IOException e) {
+            ThreadCategory.getInstance().error("Error reading URL: " + url.toString() + ": " + e.getLocalizedMessage());
+            bRet = false;
+        }
 
-		e = cfg.enumerateIncludeRange();
-		while(e.hasMoreElements())
-		{
-			IncludeRange ir = (IncludeRange)e.nextElement();
+        return bRet;
+    }
 
-			long timeout = 800L;
-			if(ir.hasTimeout())
-				timeout = ir.getTimeout();
-			else if(cfg.hasTimeout())
-				timeout = cfg.getTimeout();
+    public synchronized void init() {
+        if (m_manager != null)
+            throw new IllegalStateException("The discovery service is already running");
 
-			int retries = 3;
-			if(ir.hasRetries())
-				retries = ir.getRetries();
-			else if(cfg.hasRetries())
-				retries = cfg.getRetries();
+        ThreadCategory.setPrefix(LOG4J_CATEGORY);
+        Category log = ThreadCategory.getInstance();
 
-			try
-			{
-				includes.add(new IPPollRange(ir.getBegin(), ir.getEnd(), timeout, retries));
-			}
-			catch(UnknownHostException uhE)
-			{
-				ThreadCategory.getInstance().warn("Failed to convert address range ("+ir.getBegin()+", "+ir.getEnd()+")", uhE);
-			}
-		}
+        // Initialize the Database configuration factory and verify
+        // that we can get a database connection.
+        //
+        java.sql.Connection ctest = null;
+        try {
+            DatabaseConnectionFactory.init();
+            ctest = DatabaseConnectionFactory.getInstance().getConnection();
+        } catch (IOException ie) {
+            log.fatal("IOException getting database connection", ie);
+            throw new UndeclaredThrowableException(ie);
+        } catch (MarshalException me) {
+            log.fatal("Marshall Exception getting database connection", me);
+            throw new UndeclaredThrowableException(me);
+        } catch (ValidationException ve) {
+            log.fatal("Validation Exception getting database connection", ve);
+            throw new UndeclaredThrowableException(ve);
+        } catch (SQLException sqlE) {
+            log.fatal("SQL Exception getting database connection", sqlE);
+            throw new UndeclaredThrowableException(sqlE);
+        } catch (ClassNotFoundException cnfE) {
+            log.fatal("Class Not Found Exception getting database connection", cnfE);
+            throw new UndeclaredThrowableException(cnfE);
+        } finally {
+            try {
+                if (ctest != null)
+                    ctest.close();
+            } catch (Exception e) {
+            }
+        }
 
-		// add addresses from the URL specified to specifics
-		//
-		e = cfg.enumerateIncludeUrl();
-		while(e.hasMoreElements())
-		{
-			IncludeUrl url = (IncludeUrl)e.nextElement();
+        // Initialize discovery configuration factory
+        DiscoveryConfigFactory dFactory = null;
+        try {
+            DiscoveryConfigFactory.reload();
+            dFactory = DiscoveryConfigFactory.getInstance();
+        } catch (MarshalException ex) {
+            ThreadCategory.getInstance().error("Failed to load discovery configuration", ex);
+            throw new UndeclaredThrowableException(ex);
+        } catch (ValidationException ex) {
+            ThreadCategory.getInstance().error("Failed to load discovery configuration", ex);
+            throw new UndeclaredThrowableException(ex);
+        } catch (IOException ex) {
+            ThreadCategory.getInstance().error("Failed to load discovery configuration", ex);
+            throw new UndeclaredThrowableException(ex);
+        }
 
-			long timeout = 800L;
-			if(url.hasTimeout())
-				timeout = url.getTimeout();
-			else if(cfg.hasTimeout())
-				timeout = cfg.getTimeout();
+        // Get the discovery configuration from the factory.
+        //
+        DiscoveryConfiguration cfg = dFactory.getConfiguration();
 
-			int retries = 3;
-			if(url.hasRetries())
-				retries = url.getRetries();
-			else if(cfg.hasRetries())
-				retries = cfg.getRetries();
+        //
+        // build the lists
+        //
+        List specifics = new LinkedList();
+        List includes = new LinkedList();
 
-			addToSpecificsFromURL(specifics, url.getContent(), timeout, retries);
-		}
+        Enumeration e = cfg.enumerateSpecific();
+        while (e.hasMoreElements()) {
+            Specific s = (Specific) e.nextElement();
 
-		// Setup the exclusion range.
-		//
-		DiscoveredIPMgr.setExclusionList(cfg.getExcludeRange());
+            long timeout = 800L;
+            if (s.hasTimeout())
+                timeout = s.getTimeout();
+            else if (cfg.hasTimeout())
+                timeout = cfg.getTimeout();
 
-		// Setup the specifics list.
-		//
-		DiscoveredIPMgr.setSpecificsList(specifics); 
-		
-		// Build a generator
-		m_generator = new IPGenerator(specifics,
-					      includes,
-					      cfg.getInitialSleepTime(),
-					      cfg.getRestartSleepTime());
+            int retries = 3;
+            if (s.hasRetries())
+                retries = s.getRetries();
+            else if (cfg.hasRetries())
+                retries = cfg.getRetries();
 
-		// initialize the EventIpcManagerFactory
-		EventIpcManagerFactory.init();
+            try {
+                specifics.add(new IPPollAddress(s.getContent(), timeout, retries));
+            } catch (UnknownHostException uhE) {
+                ThreadCategory.getInstance().warn("Failed to convert address " + s.getContent(), uhE);
+            }
+        }
 
-		// A queue for responses
-		//
-		FifoQueue responsive = new FifoQueueImpl();
+        e = cfg.enumerateIncludeRange();
+        while (e.hasMoreElements()) {
+            IncludeRange ir = (IncludeRange) e.nextElement();
 
-		try
-		{
-			m_eventWriter = new SuspectEventGenerator(responsive, cfg.getRestartSleepTime());
-		}
-		catch(Exception ex)
-		{
-			ThreadCategory.getInstance().error("Failed to create event writer", ex);
-			throw new UndeclaredThrowableException(ex);
-		}
+            long timeout = 800L;
+            if (ir.hasTimeout())
+                timeout = ir.getTimeout();
+            else if (cfg.hasTimeout())
+                timeout = cfg.getTimeout();
 
-		try
-		{
-			m_eventReader = new BroadcastEventProcessor();
-		}
-		catch(Exception ex)
-		{
-			try
-			{
-				m_eventWriter.stop();
-			}
-			catch(Exception exx) { }
+            int retries = 3;
+            if (ir.hasRetries())
+                retries = ir.getRetries();
+            else if (cfg.hasRetries())
+                retries = cfg.getRetries();
 
-			ThreadCategory.getInstance().error("Failed to create event reader", ex);
-			throw new UndeclaredThrowableException(ex);
-		}
+            try {
+                includes.add(new IPPollRange(ir.getBegin(), ir.getEnd(), timeout, retries));
+            } catch (UnknownHostException uhE) {
+                ThreadCategory.getInstance().warn("Failed to convert address range (" + ir.getBegin() + ", " + ir.getEnd() + ")", uhE);
+            }
+        }
 
-		try
-		{
-			m_manager = new PingManager(m_generator,
-						    responsive,
-						    (short)0xbeef,
-						    cfg.getThreads(),
-						    cfg.getPacketsPerSecond());
+        // add addresses from the URL specified to specifics
+        //
+        e = cfg.enumerateIncludeUrl();
+        while (e.hasMoreElements()) {
+            IncludeUrl url = (IncludeUrl) e.nextElement();
 
-		}
-		catch(Exception ex)
-		{
-			ThreadCategory.getInstance().error("Failed to create ping manager", ex);
-			throw new UndeclaredThrowableException(ex);
-		}
-	}
+            long timeout = 800L;
+            if (url.hasTimeout())
+                timeout = url.getTimeout();
+            else if (cfg.hasTimeout())
+                timeout = cfg.getTimeout();
 
-	/**
-	 * <p>This method is used to start the discovery process. When called
-	 * the discovery configuration file is parsed and the internal state
-	 * for discovery is setup. If the discovery process has already started
-	 * then an exception is generated.</p>
-	 *
-	 * <p>The discovery process may be restarted if, and only if, is has first
-	 * been stopped.</p>
-	 *
-	 * @throws java.lang.IllegalStateException Thrown if the service is already running.
-	 * @throws java.lang.reflect.UndeclaredThrowableException Thrown if an
-	 * 	error occurs that is not recoverable.
-	 *
-	 */
-	public synchronized void start()
-	{
-		m_status = STARTING;
+            int retries = 3;
+            if (url.hasRetries())
+                retries = url.getRetries();
+            else if (cfg.hasRetries())
+                retries = cfg.getRetries();
 
-		ThreadCategory.setPrefix(LOG4J_CATEGORY);
+            addToSpecificsFromURL(specifics, url.getContent(), timeout, retries);
+        }
 
-		try
-		{
-			m_eventWriter.start();
-		}
-		catch(Exception ex)
-		{
-			ThreadCategory.getInstance().error("Failed to create event writer", ex);
-			throw new UndeclaredThrowableException(ex);
-		}
+        // Setup the exclusion range.
+        //
+        DiscoveredIPMgr.setExclusionList(cfg.getExcludeRange());
 
-		try
-		{
-			m_manager.start();
-		}
-		catch(Exception ex)
-		{
-			try
-			{
-				m_eventWriter.stop();
-			}
-			catch(Exception exx) { }
+        // Setup the specifics list.
+        //
+        DiscoveredIPMgr.setSpecificsList(specifics);
 
-			ThreadCategory.getInstance().error("Failed to create ping manager", ex);
-			throw new UndeclaredThrowableException(ex);
-		}
+        // Build a generator
+        m_generator = new IPGenerator(specifics, includes, cfg.getInitialSleepTime(), cfg.getRestartSleepTime());
 
+        // initialize the EventIpcManagerFactory
+        EventIpcManagerFactory.init();
 
-		m_status = RUNNING;
-	}
+        // A queue for responses
+        //
+        FifoQueue responsive = new FifoQueueImpl();
 
-	/**
-	 * Stops the current discovery process. After a 
-	 * successful call this method the discovery process
-	 * may be restared.
-	 *
-	 */
-	public synchronized void stop()
-	{
-		m_status      = STOP_PENDING;
+        try {
+            m_eventWriter = new SuspectEventGenerator(responsive, cfg.getRestartSleepTime());
+        } catch (Exception ex) {
+            ThreadCategory.getInstance().error("Failed to create event writer", ex);
+            throw new UndeclaredThrowableException(ex);
+        }
 
-		try
-		{
-			if(m_eventReader != null)
-			{
-				m_eventReader.close();
-			}
-		}
-		catch(Exception e) { }
+        try {
+            m_eventReader = new BroadcastEventProcessor();
+        } catch (Exception ex) {
+            try {
+                m_eventWriter.stop();
+            } catch (Exception exx) {
+            }
 
-		try
-		{
-			if(m_eventWriter != null)
-			{
-				m_eventWriter.stop();
-			}
-		}
-		catch(Exception e) { }
+            ThreadCategory.getInstance().error("Failed to create event reader", ex);
+            throw new UndeclaredThrowableException(ex);
+        }
 
-		m_eventWriter = null;
-		m_eventReader = null;
-		m_generator   = null;
+        try {
+            m_manager = new PingManager(m_generator, responsive, (short) 0xbeef, cfg.getThreads(), cfg.getPacketsPerSecond());
 
-		try
-		{
-			if(m_manager != null)
-				m_manager.stop();
-		}
-		catch(Exception e) { }
-		m_manager = null;
-		m_status = STOPPED;
-	}
+        } catch (Exception ex) {
+            ThreadCategory.getInstance().error("Failed to create ping manager", ex);
+            throw new UndeclaredThrowableException(ex);
+        }
+    }
 
-	/**
-	 * Returns the current status of the discovery process.
-	 */
-	public synchronized int getStatus()
-	{
-		return m_status;
-	}
+    /**
+     * <p>
+     * This method is used to start the discovery process. When called the
+     * discovery configuration file is parsed and the internal state for
+     * discovery is setup. If the discovery process has already started then an
+     * exception is generated.
+     * </p>
+     * 
+     * <p>
+     * The discovery process may be restarted if, and only if, is has first been
+     * stopped.
+     * </p>
+     * 
+     * @throws java.lang.IllegalStateException
+     *             Thrown if the service is already running.
+     * @throws java.lang.reflect.UndeclaredThrowableException
+     *             Thrown if an error occurs that is not recoverable.
+     * 
+     */
+    public synchronized void start() {
+        m_status = STARTING;
 
-	/**
-	 * Returns the name of this fiber.
-	 */
-	public String getName()
-	{
-		return "OpenNMS.Discovery";
-	}
+        ThreadCategory.setPrefix(LOG4J_CATEGORY);
 
-	/**
-	 * Pauses the discovery process if its currently running
-	 */
-	public synchronized void pause()
-	{
-		if(m_status != RUNNING)
-			return;
+        try {
+            m_eventWriter.start();
+        } catch (Exception ex) {
+            ThreadCategory.getInstance().error("Failed to create event writer", ex);
+            throw new UndeclaredThrowableException(ex);
+        }
 
-		m_status = PAUSE_PENDING;
+        try {
+            m_manager.start();
+        } catch (Exception ex) {
+            try {
+                m_eventWriter.stop();
+            } catch (Exception exx) {
+            }
 
-		m_manager.pause();
-		m_status = PAUSED;
-	}
+            ThreadCategory.getInstance().error("Failed to create ping manager", ex);
+            throw new UndeclaredThrowableException(ex);
+        }
 
-	/**
-	 * Resumes the discovery process if its currently paused
-	 */
-	public synchronized void resume()
-	{
-		if(m_status != PAUSED)
-			return;
+        m_status = RUNNING;
+    }
 
-		m_status = RESUME_PENDING;
-		m_manager.resume();
-		m_status = RUNNING;
-	}
+    /**
+     * Stops the current discovery process. After a successful call this method
+     * the discovery process may be restared.
+     * 
+     */
+    public synchronized void stop() {
+        m_status = STOP_PENDING;
 
-	/**
-	 * Returns the singulare instance of the 
-	 * discovery process
-	 */
-	public static Discovery getInstance()
-	{
-		return m_singleton;
-	}
+        try {
+            if (m_eventReader != null) {
+                m_eventReader.close();
+            }
+        } catch (Exception e) {
+        }
+
+        try {
+            if (m_eventWriter != null) {
+                m_eventWriter.stop();
+            }
+        } catch (Exception e) {
+        }
+
+        m_eventWriter = null;
+        m_eventReader = null;
+        m_generator = null;
+
+        try {
+            if (m_manager != null)
+                m_manager.stop();
+        } catch (Exception e) {
+        }
+        m_manager = null;
+        m_status = STOPPED;
+    }
+
+    /**
+     * Returns the current status of the discovery process.
+     */
+    public synchronized int getStatus() {
+        return m_status;
+    }
+
+    /**
+     * Returns the name of this fiber.
+     */
+    public String getName() {
+        return "OpenNMS.Discovery";
+    }
+
+    /**
+     * Pauses the discovery process if its currently running
+     */
+    public synchronized void pause() {
+        if (m_status != RUNNING)
+            return;
+
+        m_status = PAUSE_PENDING;
+
+        m_manager.pause();
+        m_status = PAUSED;
+    }
+
+    /**
+     * Resumes the discovery process if its currently paused
+     */
+    public synchronized void resume() {
+        if (m_status != PAUSED)
+            return;
+
+        m_status = RESUME_PENDING;
+        m_manager.resume();
+        m_status = RUNNING;
+    }
+
+    /**
+     * Returns the singulare instance of the discovery process
+     */
+    public static Discovery getInstance() {
+        return m_singleton;
+    }
 }

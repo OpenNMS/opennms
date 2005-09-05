@@ -1,3 +1,12 @@
+2004-11-04  Michael Smith <xmldoc@users.sourceforge.net>
+
+	* publishing.xml: XML text declaration, added missing required "encoding" pseudo-attribute
+
+2004-11-03  Robert Stayton <bobstayton@users.sourceforge.net>
+
+	* publishing.xml: Added important caveat that the tools information is outdated and referred
+	them to DocBook XSL: The Complete Guide.
+
 2003-10-29  Jirka Kosek <kosek@users.sourceforge.net>
 
 	* htmlhelp.xml: Corrected parameter name

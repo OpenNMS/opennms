@@ -36,37 +36,32 @@
 
 package org.opennms.core.queue;
 
-
 /**
- * <p>The root of all exceptions dealing with queues that
- * implement the {@link FifoQueue FifoQueue} interface. This
- * exception is the general purpose exception that is thrown
- * when a queue error occurs.</p>
- *
- * @author <a href="mailto:weave@oculan.com">Brian Weaver</a>
- * @author <a href="http://www.opennms.org/">OpenNMS.org</a>
- *
+ * <p>
+ * The root of all exceptions dealing with queues that implement the
+ * {@link FifoQueue FifoQueue}interface. This exception is the general purpose
+ * exception that is thrown when a queue error occurs.
+ * </p>
+ * 
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS.org </a>
+ * 
  */
-public class FifoQueueException
-	extends Exception
-{
-	/**
-	 * Constructs a default instance of the exception
-	 * with no message.
-	 */
-	public FifoQueueException()
-	{
-		super();
-	}
+public class FifoQueueException extends Exception {
+    /**
+     * Constructs a default instance of the exception with no message.
+     */
+    public FifoQueueException() {
+        super();
+    }
 
-	/**
-	 * Constructs a new instace of the exception with
-	 * the specific message.
-	 *
-	 * @param why	The message associated with the exception
-	 */
-	public FifoQueueException(String why)
-	{
-		super(why);
-	}
+    /**
+     * Constructs a new instace of the exception with the specific message.
+     * 
+     * @param why
+     *            The message associated with the exception
+     */
+    public FifoQueueException(String why) {
+        super(why);
+    }
 }

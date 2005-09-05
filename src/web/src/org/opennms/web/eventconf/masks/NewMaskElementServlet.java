@@ -44,31 +44,27 @@ import javax.servlet.http.HttpSession;
 
 import org.opennms.web.eventconf.bobject.MaskElement;
 
-
 /**
  * A servlet that handles adding a new Mask Element to an Event's mask
- *
- * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski</A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
+ * 
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
-public class NewMaskElementServlet extends HttpServlet
-{
-    public void doPost( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException 
-    {
-       	HttpSession user = request.getSession(false);
-    
-    	if (user != null)
-	{
-		List maskElements = (List)user.getAttribute("maskElements.editMask.jsp");
-		
-		MaskElement newElement = new MaskElement();
-		newElement.setElementName("uei");
-		
-		maskElements.add(newElement);
-	}
-	
-	//forward the request for proper display
+public class NewMaskElementServlet extends HttpServlet {
+    public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        HttpSession user = request.getSession(false);
+
+        if (user != null) {
+            List maskElements = (List) user.getAttribute("maskElements.editMask.jsp");
+
+            MaskElement newElement = new MaskElement();
+            newElement.setElementName("uei");
+
+            maskElements.add(newElement);
+        }
+
+        // forward the request for proper display
         RequestDispatcher dispatcher = this.getServletContext().getRequestDispatcher("/admin/eventconf/masks/editMask.jsp");
-        dispatcher.forward( request, response );
+        dispatcher.forward(request, response);
     }
 }

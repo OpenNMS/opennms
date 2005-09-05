@@ -2,9 +2,11 @@
 #  $Id$
 #
 %{!?version:%define version @product.version@}
-%{!?release:%define release @product.release.stamp@}
+%{!?plain_release:%define plain_release @product.release.stamp@}
+%{!?release:%define release %{plain_release}}
+%{!?releasenumber:%define releasenumber @product.release@}
 %{!?instprefix:%define instprefix @rpm.install.dir@}
-%{!?packagedir:%define packagedir @ant.project.name@-%version-%release}
+%{!?packagedir:%define packagedir @ant.project.name@-%version-%{releasenumber}}
 %{!?dbuser:%define dbuser @rpm.database.user@}
 %{!?dbpass:%define dbpass @rpm.database.password@}
 %{!?dbname:%define dbname @rpm.database.name@}
@@ -12,9 +14,10 @@
 %{!?sharedir:%define sharedir /var/opennms}
 %{!?logdir:%define logdir /var/log/opennms}
 %{!?pidfile:%define pidfile /var/run/opennms.pid}
-%{!?tomcatdir:%define tomcatdir /var/tomcat4}
 %{!?pglibdir:%define pglibdir %instprefix/lib}
 %{!?tomcatserverlibs:%define tomcatserverlibs @install.tomcat.serverlibs@}
+%{!?webappsdir:%define webappsdir %instprefix/webapps}
+%{!?servletdir:%define servletdir %webappsdir/opennms}
 
 # build type modifiers
 %{!?standalone:%define standalone 1}
@@ -50,6 +53,15 @@
 %define requires	postgresql-server >= 7.2, compat-libstdc++, j2sdk >= 1.4
 %define webapp_requires tomcat4 >= 4.1.18
 %define release_pkg     %{release}_fc2
+%define platform_match	true
+%endif
+
+%if "%{platform}" == "linux-i386-fedora-3"
+%define	initdir		/etc
+%define psql_service	postgresql
+%define requires	postgresql-server >= 7.2, compat-libstdc++, j2sdk >= 1.4, xorg-x11-deprecated-libs
+%define webapp_requires tomcat4 >= 4.1.18
+%define release_pkg     %{release}_fc3
 %define platform_match	true
 %endif
 
@@ -134,6 +146,15 @@
 %define platform_match	true
 %endif
 
+%if "%{platform}" == "linux-i386-rhel-4"
+%define	initdir		/etc
+%define psql_service	rhdb
+%define requires	postgresql-server >= 7.2, compat-libstdc++, j2sdk >= 1.4
+%define webapp_requires tomcat4 >= 4.1.18
+%define release_pkg     %{release}_rhel4
+%define platform_match	true
+%endif
+
 %if "%{platform}" == "linux-i386-suse-7"
 %define	initdir		/etc/rc.d
 %define psql_service	postgres
@@ -146,7 +167,6 @@
 %if "%{platform}" == "linux-i386-suse-8"
 %define	initdir		/etc
 %define psql_service	postgresql
-%define tomcatdir	/opt/jakarta/tomcat
 %define requires	postgresql >= 7.2, postgresql-server >= 7.2, java2 >= 1.4
 %define webapp_requires tomcat >= 4.1.18, tomcat < 5
 %define release_pkg     %{release}_suse8
@@ -156,7 +176,6 @@
 %if "%{platform}" == "linux-i386-suse-9"
 %define	initdir		/etc
 %define psql_service	postgresql
-%define tomcatdir	/opt/jakarta/tomcat
 %define requires	postgresql >= 7.2, postgresql-server >= 7.2, java2 >= 1.4
 %define webapp_requires tomcat >= 4.1.18, tomcat < 5
 %define release_pkg     %{release}_suse9
@@ -166,9 +185,6 @@
 %if "%{platform_match}" != "true"
 %error error - platform macro (or rpm.platform property when building from ant) not defined or set to an invalid platform.
 %endif
-
-%define webappsdir	%{tomcatdir}/webapps
-%define servletdir	%{instprefix}/webapps/%{name}
 
 %if "%{buildtests}" == "true"
 %define buildtests	1
@@ -194,7 +210,7 @@ Version:		%version
 Copyright:		LGPL/GPL
 Group:			Applications/System
 
-Source:			%{name}-source-%{version}-%{release}.tar.gz
+Source:			%{name}-source-%{version}-%{plain_release}.tar.gz
 URL:			ftp://opennms.org/pub/releases/OpenNMS/
 BuildRoot:		%{_tmppath}/%{name}-%{version}-root
 
@@ -227,7 +243,7 @@ The web UI for OpenNMS.
 %prep
 
 %if %{standalone}
-tar -xvzf $RPM_SOURCE_DIR/%{name}-source-%{version}-%{release}.tar.gz -C $RPM_BUILD_DIR
+tar -xvzf $RPM_SOURCE_DIR/%{name}-source-%{version}-%{plain_release}.tar.gz -C $RPM_BUILD_DIR
 %define setupdir %{packagedir}/source
 %else
 %define setupdir @root.source@
@@ -260,12 +276,12 @@ fi
 echo "=== RUNNING INSTALL ==="
 sh ./build.sh $COMPILER_FLAG -Dinstall.prefix=$RPM_BUILD_ROOT \
     -Dinstall.dir=%{instprefix} -Dinstall.init.dir=%{initdir}/init.d \
-    -Dinstall.webapps.dir=%{webappsdir} \
-    -Dinstall.servlet.dir=%{servletdir} \
+    -Dinstall.webapps.dir=%{webappsdir} -Dinstall.servlet.dir=%{servletdir} \
     -Dinstall.share.dir=%{sharedir} -Dinstall.postgresql.dir=%{pglibdir} \
     -Dinstall.postgresql.service=%{psql_service} \
     -Dinstall.logs.dir=%{logdir} -Dinstall.pid.file=%{pidfile} \
-    -Dfilter.overwrite="yes" -Disrpm="true" \
+    -Dfilter.overwrite="yes" -Disrpm="true" -Dproduct.snapshot=%{snapshot} \
+    -Dproduct.release=%{releasenumber} \
     $EXTRA_TARGETS install || exit $?
 echo "=== INSTALL COMPLETED ==="
 
@@ -277,7 +293,7 @@ mkdir -p $RPM_BUILD_ROOT%{_bindir}
 cat > $RPM_BUILD_ROOT%{_bindir}/opennms <<EOF
 #!/bin/sh -
 
-exec %{instprefix}/bin/opennms.sh "$@"
+exec %{instprefix}/bin/opennms.sh "\$@"
 EOF
 
 ### XXX is this needed?  (Most of) the current scripts don't use OPENNMS_HOME.
@@ -313,26 +329,21 @@ rm -rf $RPM_BUILD_ROOT%{instprefix}/etc/README.build
 ln -sf %{logdir} $RPM_BUILD_ROOT%{instprefix}/logs
 ln -sf %{sharedir} $RPM_BUILD_ROOT%{instprefix}/share
 
-### ${tomcatdir}
-
-mkdir -p $RPM_BUILD_ROOT%{tomcatdir}/server/lib
-jars="`echo \"%{tomcatserverlibs}\" | sed 's/:/ /g'`"
-for jar in $jars; do
-	ln -sf %{instprefix}/lib/$jar \
-	    $RPM_BUILD_ROOT%{tomcatdir}/server/lib/$jar
-done
-
-mkdir -p $RPM_BUILD_ROOT%{servletdir}/WEB-INF/classes
-ln -sf %{instprefix}/etc/log4j.properties $RPM_BUILD_ROOT%{servletdir}/WEB-INF/classes
-
 pushd $RPM_BUILD_ROOT
 find $RPM_BUILD_ROOT%{instprefix}/etc ! -type d | \
     sed -e "s,^$RPM_BUILD_ROOT,%config(noreplace) ," | \
     sort > %{_tmppath}/files.etc
+find $RPM_BUILD_ROOT%{instprefix}/etc -type d | \
+    sed -e "s,^$RPM_BUILD_ROOT,%dir ," | \
+    sort >> %{_tmppath}/files.etc
 
-(find $RPM_BUILD_ROOT%{webappsdir} ! -type d ; find $RPM_BUILD_ROOT%{servletdir} ! -type d ) | \
-    sed -e "s,^$RPM_BUILD_ROOT,," | grep -v '/WEB-INF/web.xml' | \
+find $RPM_BUILD_ROOT%{webappsdir} ! -type d | \
+    sed -e "s,^$RPM_BUILD_ROOT,," | \
+    grep -v '/WEB-INF/web\.xml$' | \
     sort > %{_tmppath}/files.webapp
+find $RPM_BUILD_ROOT%{webappsdir} -type d | \
+    sed -e "s,^$RPM_BUILD_ROOT,%dir ," | \
+    sort >> %{_tmppath}/files.webapp
 popd
 
 %clean
@@ -348,7 +359,6 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root)	%{profiledir}/%{name}.sh
 %attr(755,root,root)	%{_bindir}/*
 %attr(755,root,root)	%{instprefix}/bin
-%dir			%{instprefix}/etc
 			%{instprefix}/contrib
 %if "%builddocs" == "1"
 %attr(755,root,root)	%{instprefix}/docs
@@ -367,41 +377,10 @@ rm -rf $RPM_BUILD_ROOT
 
 %files webapp -f %{_tmppath}/files.webapp
 %defattr(644 root root 755)
-%{tomcatdir}/server
 %config %{servletdir}/WEB-INF/web.xml
 
-%pre
-
-@runjava.contents@
-
-# Do the equivalent to: %{instprefix}/bin/runjava -q -s -n
-
-# quiet mode, "-q"
-exec 3>/dev/null
-
-# dryrun mode, "-n"
-dryrun=1
-
-# search mode, "-s"
-setupJava
-if [ $? -ne 0 ]; then
-    echo "A suitable Java Runtime Environment could not be found." >&2
-    echo "Please set and export the JAVA_HOME environment variable to" >&2
-    echo "point where your JDK is installed." >&2
-    exit 1
-fi
 
 %post
-
-echo -e "- executing runjava to choose a Java Runtime Environment... \c"
-%{instprefix}/bin/runjava -q -s
-if [ $? -ne 0 ]; then
-    echo "A suitable Java Runtime Environment could not be found." >&2
-    echo "Please set and export the JAVA_HOME environment variable to" >&2
-    echo "point where your JDK is installed." >&2
-    exit 1
-fi
-echo "done"
 
 echo -e "- moving *.sql.rpmnew files (if any)... \c"
 if [ `ls %{instprefix}/etc/*.sql.rpmnew 2>/dev/null | wc -l` -gt 0 ]; then
@@ -410,42 +389,6 @@ if [ `ls %{instprefix}/etc/*.sql.rpmnew 2>/dev/null | wc -l` -gt 0 ]; then
 	done
 fi
 echo "done"
-
-echo -e "- running the installer... \c"
-%{instprefix}/bin/install -r -disU >> %{logdir}/install.log 2>&1
-if [ $? -ne 0 ]; then
-    echo "Error running installer, see %{logdir}/install.log for details." >&2
-    exit 1
-fi
-echo "done"
-
-
-# add the OpenNMS init
-
-if [ -x /sbin/chkconfig ]; then
-    chkconfig="/sbin/chkconfig"
-elif [ -x "`which chkconfig 2>&1`" ]; then
-    chkconfig="`which chkconfig 2>&1`"
-else
-    chkconfig=""
-fi
-
-echo -e "- adding OpenNMS init script using 'chkconfig'... \c"
-if [ -n "$chkconfig" ]; then
-    if $chkconfig --add opennms > /dev/null; then 
-       echo "done"
-    else
-       echo "Warn: Couldn't add OpenNMS to init scripts." >&2
-       echo "      To make OpenNMS startup automatically," >&2
-       echo "      resolve these errors.  Consult the chkconfig" >&2
-       echo "      man pages.  If you are using insserv, this maybe" >&2
-       echo "      a postgresql dependency problem." >&2
-    fi
-else
-    echo "Warn: Couldn't find the chkconfig script to configure" >&2
-    echo "      OpenNMS to start automatically.  You'll need to" >&2
-    echo "      configure this your self." >&2
-fi
 
 echo -e "- checking for old update files... \c"
 
@@ -463,43 +406,18 @@ else
 	echo "done"
 fi
 
-%preun
+rm -f %{instprefix}/etc/configured
 
-if [ $1 != 0 ]; then
-    # Do nothing
-    exit 0
-fi
-
-echo "- Stopping OpenNMS... "
-%{initdir}/init.d/opennms stop
-echo "- Stopping OpenNMS... done"
-
-echo -e "- adding OpenNMS init script using 'chkconfig'... \c"
-if [ -x /sbin/chkconfig ]; then
-    /sbin/chkconfig --del opennms > /dev/null
-else
-    if [ -x `which chkconfig 2>&1` ]; then
-	`which chkconfig` --del opennms > /dev/null
-    fi
-fi
-echo "done"
-
-%pre webapp
-
-echo -e "- executing runjava to check the Java Runtime Environment... \c"
-%{instprefix}/bin/runjava -c || exit 1
-echo "done"
-
-echo -e "- clearing out the Tomcat work directory... \c"
-rm -rf %{tomcatdir}/work/* >/dev/null 2>&1 || :
-echo "done"
-
-%post webapp
-
-echo -e "- executing the installer for the webapp... \c"
-echo "done"
+echo ""
+echo " *** Installation complete.  You must still run the installer and"
+echo " *** make a few other changes before you start OpenNMS.  See the"
+echo " *** install guide and release notes for details."
 
 %changelog
+* Thu Jan 20 2005 DJ Gregor <dj@opennms.org>
+- Remove much of the automatic bits that were performed at
+  install time.
+
 * Tue Sep 28 2004 Matt Brozowski <brozow@opennms.org>
 - Modified to use opennms.xml rather than changes to server.xml
 

@@ -9,7 +9,7 @@
 </refnamediv>
 
 <refsynopsisdiv>
-<src:fragment id='callout.graphics.number.limit.frag'><xsl:param name="callout.graphics.number.limit" select="'10'"/></src:fragment>
+<src:fragment id='callout.graphics.number.limit.frag'><xsl:param name="callout.graphics.number.limit" select="'15'"/></src:fragment>
 </refsynopsisdiv>
 
 <refsect1><title>Description</title>

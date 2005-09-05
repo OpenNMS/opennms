@@ -7,7 +7,7 @@
                 version='1.0'>
 
 <!-- ********************************************************************
-     $Id: pi.xsl,v 1.5 2003/09/23 17:47:56 bobstayton Exp $
+     $Id: pi.xsl,v 1.6 2004/09/17 16:45:48 bobstayton Exp $
      ********************************************************************
 
      This file is part of the XSL DocBook Stylesheet distribution.
@@ -61,13 +61,20 @@
   </xsl:variable>
 
   <xsl:variable name="date">
-    <xsl:if test="function-available('date:date-time')">
-      <xsl:value-of select="date:date-time()"/>
-    </xsl:if>
+    <xsl:choose>
+      <xsl:when test="function-available('date:date-time')">
+        <xsl:value-of select="date:date-time()"/>
+      </xsl:when>
+      <xsl:when test="function-available('date:dateTime')">
+        <!-- Xalan quirk -->
+        <xsl:value-of select="date:dateTime()"/>
+      </xsl:when>
+    </xsl:choose>
   </xsl:variable>
 
   <xsl:choose>
-    <xsl:when test="function-available('date:date-time')">
+    <xsl:when test="function-available('date:date-time') or
+                    function-available('date:dateTime')">
       <xsl:call-template name="datetime.format">
         <xsl:with-param name="date" select="$date"/>
         <xsl:with-param name="format" select="$format"/>

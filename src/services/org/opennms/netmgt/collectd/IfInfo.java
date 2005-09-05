@@ -37,83 +37,75 @@ package org.opennms.netmgt.collectd;
 import java.util.List;
 
 /**
- * This class encapsulates all the information required by the 
- * SNMP collector in order to perform data collection for an 
- * individual interface and store that data in an appropriately 
- * named RRD file.  
- *
- * @author <a href="mailto:mike@opennms.org">Mike Davidson</a>
- * @author <a href="http://www.opennms.org/">OpenNMS</a>
+ * This class encapsulates all the information required by the SNMP collector in
+ * order to perform data collection for an individual interface and store that
+ * data in an appropriately named RRD file.
+ * 
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
  */
-final class IfInfo
-{
-	private int	m_index;
-	private int 	m_type;
-	private String	m_label;
-	private String	m_collType;
-	private boolean m_isPrimary;
-	
-	private List	m_oidList;
-	private List	m_dsList;
-	
-	public IfInfo(int ifIndex, int ifType, String ifLabel, String collType)
-	{
-		m_index = ifIndex;
-		m_type = ifType;
-		m_label = ifLabel;
-		m_collType = collType;
-		m_isPrimary = false;
-		m_oidList = null;
-		m_dsList = null;
-	}
-	
-	public void setIsPrimary(boolean isPrimary)
-	{
-		m_isPrimary = isPrimary;
-	}
-	
-	public void setDsList(List dsList)
-	{
-		m_dsList = dsList;
-	}
-	
-	public void setOidList(List oidList)
-	{
-		m_oidList = oidList;
-	}
-	
-	public int getIndex()
-	{
-		return m_index;
-	}
-	
-	public int getType()
-	{
-		return m_type;
-	}
-	
-	public String getLabel()
-	{
-		return m_label;
-	}
-	
-	public String getCollType()
-	{
-		return m_collType;
-	}
-	
-	public boolean getIsPrimary()
-	{
-		return m_isPrimary;
-	}
-	
-	public List getDsList()
-	{
-		return m_dsList;
-	}
-	
-	public List getOidList()
-	{
-		return m_oidList;
-	}
+final class IfInfo {
+    private int m_index;
+
+    private int m_type;
+
+    private String m_label;
+
+    private String m_collType;
+
+    private boolean m_isPrimary;
+
+    private List m_oidList;
+
+    private List m_dsList;
+
+    public IfInfo(int ifIndex, int ifType, String ifLabel, String collType) {
+        m_index = ifIndex;
+        m_type = ifType;
+        m_label = ifLabel;
+        m_collType = collType;
+        m_isPrimary = false;
+        m_oidList = null;
+        m_dsList = null;
+    }
+
+    public void setIsPrimary(boolean isPrimary) {
+        m_isPrimary = isPrimary;
+    }
+
+    public void setDsList(List dsList) {
+        m_dsList = dsList;
+    }
+
+    public void setOidList(List oidList) {
+        m_oidList = oidList;
+    }
+
+    public int getIndex() {
+        return m_index;
+    }
+
+    public int getType() {
+        return m_type;
+    }
+
+    public String getLabel() {
+        return m_label;
+    }
+
+    public String getCollType() {
+        return m_collType;
+    }
+
+    public boolean getIsPrimary() {
+        return m_isPrimary;
+    }
+
+    public List getDsList() {
+        return m_dsList;
+    }
+
+    public List getOidList() {
+        return m_oidList;
+    }
 } // end class

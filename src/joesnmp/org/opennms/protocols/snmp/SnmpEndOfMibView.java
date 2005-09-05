@@ -44,92 +44,82 @@
 
 package org.opennms.protocols.snmp;
 
-
 /**
- * The SnmpEndOfMibView object is typically returned by an
- * SNMPv2 agent when there is no lexagraphically next object
- * identifier in its tables. The object is an SNMPv2 error
- * condition. This condition can be returned to a manager 
- * on a variable by variable basis.
- *
+ * The SnmpEndOfMibView object is typically returned by an SNMPv2 agent when
+ * there is no lexagraphically next object identifier in its tables. The object
+ * is an SNMPv2 error condition. This condition can be returned to a manager on
+ * a variable by variable basis.
+ * 
  * @see SnmpVarBind
- *
- * @author	<a href="mailto:weave@oculan.com">Brian Weaver</a>
- * @version	1.1.1.1
- *
+ * 
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @version 1.1.1.1
+ * 
  */
-public class SnmpEndOfMibView extends SnmpV2Error
-{
-	/**
-	 * Required for version control on serialization support.
-	 *
-	 */
-	static final long serialVersionUID = 1186449358464703772L;
+public class SnmpEndOfMibView extends SnmpV2Error {
+    /**
+     * Required for version control on serialization support.
+     * 
+     */
+    static final long serialVersionUID = 1186449358464703772L;
 
-	/**
-	 * The ASN.1 value that defines this 
-	 * variable.
-	 *
-	 */
-	public static final byte ASNTYPE = SnmpSMI.SMI_ENDOFMIBVIEW;
+    /**
+     * The ASN.1 value that defines this variable.
+     * 
+     */
+    public static final byte ASNTYPE = SnmpSMI.SMI_ENDOFMIBVIEW;
 
-	/**
-	 * The default class construtor.
-	 */
-	public SnmpEndOfMibView( )
-	{
-		super();
-	}
-	
-	/**
-	 * The class copy constructor.
-	 *
-	 * @param second	The object to copy into self.
-	 */
-	public SnmpEndOfMibView(SnmpEndOfMibView second)
-	{
-		super(second);
-	}
+    /**
+     * The default class construtor.
+     */
+    public SnmpEndOfMibView() {
+        super();
+    }
 
-	/**
-	 * Returns the ASN.1 type for this particular
-	 * object.
-	 *
-	 * @return ASN.1 identifier
-	 *
-	 */
-	public byte typeId()
-	{
-		return ASNTYPE;
-	}
+    /**
+     * The class copy constructor.
+     * 
+     * @param second
+     *            The object to copy into self.
+     */
+    public SnmpEndOfMibView(SnmpEndOfMibView second) {
+        super(second);
+    }
 
-	/**
-	 * Returns a duplicate object of self. 
-	 *
-	 * @return A duplicate of self
-	 */
-	public SnmpSyntax duplicate()
-	{
-		return new SnmpEndOfMibView(this);
-	}
+    /**
+     * Returns the ASN.1 type for this particular object.
+     * 
+     * @return ASN.1 identifier
+     * 
+     */
+    public byte typeId() {
+        return ASNTYPE;
+    }
 
-	/**
-	 * Returns a duplicate object of self. 
-	 *
-	 * @return A duplicate of self
-	 */
-	public Object clone()
-	{
-		return new SnmpEndOfMibView(this);
-	}
+    /**
+     * Returns a duplicate object of self.
+     * 
+     * @return A duplicate of self
+     */
+    public SnmpSyntax duplicate() {
+        return new SnmpEndOfMibView(this);
+    }
 
-	/**
-	 * Returns the string representation of the object.
-	 *
-	 */
-	public String toString()
-	{
-		return "SNMP End-of-MIB-View";
-	}
+    /**
+     * Returns a duplicate object of self.
+     * 
+     * @return A duplicate of self
+     */
+    public Object clone() {
+        return new SnmpEndOfMibView(this);
+    }
+
+    /**
+     * Returns the string representation of the object.
+     * 
+     */
+    public String toString() {
+        return "SNMP End-of-MIB-View";
+    }
 
 }

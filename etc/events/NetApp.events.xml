@@ -1,0 +1,2451 @@
+<events>
+<!-- Start of auto generated data from MIB: NETWORK-APPLIANCE-MIB -->
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.789</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>2</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/networkappliance/traps/userDefined</uei>
+	<event-label>NETWORK-APPLIANCE-MIB defined trap event: userDefined</event-label>
+	<descr>
+&lt;p&gt;A polling-style trap built using the 'snmp traps'
+command on the filer.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Net-App Event: userDefined trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.789</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/networkappliance/traps/dhmNoticeDegradedIO</uei>
+	<event-label>NETWORK-APPLIANCE-MIB defined trap event: dhmNoticeDegradedIO</event-label>
+	<descr>
+&lt;p&gt;Disk Health Monitor -
+Reported a Disk Degraded-I/O  Event&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Net-App Event: dhmNoticeDegradedIO trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Minor</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.789</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>7</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/networkappliance/traps/dhmNoticePFAEvent</uei>
+	<event-label>NETWORK-APPLIANCE-MIB defined trap event: dhmNoticePFAEvent</event-label>
+	<descr>
+&lt;p&gt;Disk Health Monitor -
+Reported a Disk Predictive-Failure Event&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Net-App Event: dhmNoticePFAEvent trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Minor</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.789</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>11</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/networkappliance/traps/emergencyTrap</uei>
+	<event-label>NETWORK-APPLIANCE-MIB defined trap event: emergencyTrap</event-label>
+	<descr>
+&lt;p&gt;A user-defined trap indicating an extremely urgent
+situation, usually indicating that the system has
+failed and is shutting down.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Net-App Event: emergencyTrap trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Critical</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.789</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>12</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/networkappliance/traps/alertTrap</uei>
+	<event-label>NETWORK-APPLIANCE-MIB defined trap event: alertTrap</event-label>
+	<descr>
+&lt;p&gt;A user-defined trap indicating a condition that
+should be corrected immediately, such as a failed disk.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Net-App Event: alertTrap trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Major</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.789</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>13</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/networkappliance/traps/criticalTrap</uei>
+	<event-label>NETWORK-APPLIANCE-MIB defined trap event: criticalTrap</event-label>
+	<descr>
+&lt;p&gt;A user-defined trap indicating a critical condition,
+such as a hard device error.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Net-App Event: criticalTrap trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Major</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.789</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>14</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/networkappliance/traps/errorTrap</uei>
+	<event-label>NETWORK-APPLIANCE-MIB defined trap event: errorTrap</event-label>
+	<descr>
+&lt;p&gt;A user-defined trap indicating an error condition,
+such as a mistake in a configuration file.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Net-App Event: errorTrap trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Minor</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.789</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>15</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/networkappliance/traps/warningTrap</uei>
+	<event-label>NETWORK-APPLIANCE-MIB defined trap event: warningTrap</event-label>
+	<descr>
+&lt;p&gt;A user-defined trap indicating a condition which
+is not an error, but which may require special handling.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Net-App Event: warningTrap trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.789</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>16</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/networkappliance/traps/notificationTrap</uei>
+	<event-label>NETWORK-APPLIANCE-MIB defined trap event: notificationTrap</event-label>
+	<descr>
+&lt;p&gt;A user-defined trap meant to provide notification,
+such as an hourly uptime message.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Net-App Event: notificationTrap trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.789</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>17</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/networkappliance/traps/informationalTrap</uei>
+	<event-label>NETWORK-APPLIANCE-MIB defined trap event: informationalTrap</event-label>
+	<descr>
+&lt;p&gt;A user-defined trap used for informational purposes.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Net-App Event: informationalTrap trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.789</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>18</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/networkappliance/traps/dbgTrap</uei>
+	<event-label>NETWORK-APPLIANCE-MIB defined trap event: dbgTrap</event-label>
+	<descr>
+&lt;p&gt;A user-defined trap used for debugging purposes.
+This trap was previously mis-documented as being trap
+number 17, with the name debugTrap.  It has always,
+actually, been trap 18.  The name change is to avoid
+issues with environments that already have a record
+for debugTrap.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Net-App Event: dbgTrap trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.789</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>21</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/networkappliance/traps/diskFailedShutdown</uei>
+	<event-label>NETWORK-APPLIANCE-MIB defined trap event: diskFailedShutdown</event-label>
+	<descr>
+&lt;p&gt;System is shutting down because the system has been
+running in degraded mode for 24 hours.
+The trap includes a string describing the failed disk.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Net-App Event: diskFailedShutdown trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Critical</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.789</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>22</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/networkappliance/traps/diskFailed</uei>
+	<event-label>NETWORK-APPLIANCE-MIB defined trap event: diskFailed</event-label>
+	<descr>
+&lt;p&gt;One or more disks failed.
+The trap includes a string describing the failed disk(s).&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Net-App Event: diskFailed trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Major</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.789</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>26</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/networkappliance/traps/diskRepaired</uei>
+	<event-label>NETWORK-APPLIANCE-MIB defined trap event: diskRepaired</event-label>
+	<descr>
+&lt;p&gt;The failed disks have been repaired.
+This trap is a placeholder -
+it is not currently sent by ONTAP.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Net-App Event: diskRepaired trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Cleared</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.789</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>31</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/networkappliance/traps/fanFailureShutdown</uei>
+	<event-label>NETWORK-APPLIANCE-MIB defined trap event: fanFailureShutdown</event-label>
+	<descr>
+&lt;p&gt;Critical chassis or cpu fans have failed and the system
+is shutting down.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Net-App Event: fanFailureShutdown trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Critical</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.789</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>33</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/networkappliance/traps/fanFailed</uei>
+	<event-label>NETWORK-APPLIANCE-MIB defined trap event: fanFailed</event-label>
+	<descr>
+&lt;p&gt;One or more chassis fans failed.
+The trap includes a string describing the failed fan(s).&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Net-App Event: fanFailed trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Major</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.789</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>35</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/networkappliance/traps/fanWarning</uei>
+	<event-label>NETWORK-APPLIANCE-MIB defined trap event: fanWarning</event-label>
+	<descr>
+&lt;p&gt;One or more chassis or cpu fans are in warning state.
+The trap includes a string describing the fan(s) in
+the warning state.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Net-App Event: fanWarning trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Minor</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.789</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>36</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/networkappliance/traps/fanRepaired</uei>
+	<event-label>NETWORK-APPLIANCE-MIB defined trap event: fanRepaired</event-label>
+	<descr>
+&lt;p&gt;All fans are repaired.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Net-App Event: fanRepaired trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Cleared</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.789</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>41</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/networkappliance/traps/powerSupplyFailureShutdown</uei>
+	<event-label>NETWORK-APPLIANCE-MIB defined trap event: powerSupplyFailureShutdown</event-label>
+	<descr>
+&lt;p&gt;Critical power supplies or power rails failed and
+the system is shutting down.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Net-App Event: powerSupplyFailureShutdown trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Critical</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.789</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>43</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/networkappliance/traps/powerSupplyFailed</uei>
+	<event-label>NETWORK-APPLIANCE-MIB defined trap event: powerSupplyFailed</event-label>
+	<descr>
+&lt;p&gt;One or more redundant power supplies failed.
+Include in the trap a string describing
+the failed power supply(ies).&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Net-App Event: powerSupplyFailed trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Major</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.789</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>45</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/networkappliance/traps/powerSupplyWarning</uei>
+	<event-label>NETWORK-APPLIANCE-MIB defined trap event: powerSupplyWarning</event-label>
+	<descr>
+&lt;p&gt;One or more power supplies or power rails in
+warning state. Include in the trap a string describing
+the power supply(ies) or the power rail(s) in the
+warning state.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Net-App Event: powerSupplyWarning trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Minor</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.789</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>46</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/networkappliance/traps/powerSupplyRepaired</uei>
+	<event-label>NETWORK-APPLIANCE-MIB defined trap event: powerSupplyRepaired</event-label>
+	<descr>
+&lt;p&gt;Previously-failed power supplies or power rails have been
+repaired.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Net-App Event: powerSupplyRepaired trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Cleared</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.789</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>55</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/networkappliance/traps/cpuTooBusy</uei>
+	<event-label>NETWORK-APPLIANCE-MIB defined trap event: cpuTooBusy</event-label>
+	<descr>
+&lt;p&gt;CPU utilization exceeds 90%.
+This trap is not enabled by default.
+To enable this trap set the registry
+entry options.monitor.cpu.enable to on. 
+Note that as the threshold for this trap is
+checked once a minute it is possible to receive
+multiple instances of this trap in a short time.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Net-App Event: cpuTooBusy trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.789</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>56</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/networkappliance/traps/cpuOk</uei>
+	<event-label>NETWORK-APPLIANCE-MIB defined trap event: cpuOk</event-label>
+	<descr>
+&lt;p&gt;CPU utilization has dropped back below 90%.
+This trap is a placeholder -
+it is not currently sent by ONTAP.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Net-App Event: cpuOk trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Cleared</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.789</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>62</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/networkappliance/traps/nvramBatteryDischarged</uei>
+	<event-label>NETWORK-APPLIANCE-MIB defined trap event: nvramBatteryDischarged</event-label>
+	<descr>
+&lt;p&gt;The NVRAM battery is fully discharged.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Net-App Event: nvramBatteryDischarged trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Major</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.789</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>63</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/networkappliance/traps/nvramBatteryLow</uei>
+	<event-label>NETWORK-APPLIANCE-MIB defined trap event: nvramBatteryLow</event-label>
+	<descr>
+&lt;p&gt;The charge in the NVRAM battery is low.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Net-App Event: nvramBatteryLow trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Minor</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.789</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>72</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/networkappliance/traps/clusterNodeFailed</uei>
+	<event-label>NETWORK-APPLIANCE-MIB defined trap event: clusterNodeFailed</event-label>
+	<descr>
+&lt;p&gt;A node in a Cluster FailOver configuration failed.
+Its partner will assume service for the failed node.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Net-App Event: clusterNodeFailed trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.789</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>75</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/networkappliance/traps/clusterNodeTakenOver</uei>
+	<event-label>NETWORK-APPLIANCE-MIB defined trap event: clusterNodeTakenOver</event-label>
+	<descr>
+&lt;p&gt;The partner has taken over for a failed cluster node.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Net-App Event: clusterNodeTakenOver trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.789</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>76</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/networkappliance/traps/clusterNodeRepaired</uei>
+	<event-label>NETWORK-APPLIANCE-MIB defined trap event: clusterNodeRepaired</event-label>
+	<descr>
+&lt;p&gt;A cluster node has resumed operation.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Net-App Event: clusterNodeRepaired trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Cleared</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.789</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>82</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/networkappliance/traps/volumeFull</uei>
+	<event-label>NETWORK-APPLIANCE-MIB defined trap event: volumeFull</event-label>
+	<descr>
+&lt;p&gt;At least one volume is more than 98% full.
+The string sent with the trap gives the 
+name of the volume or volumes which exceed
+the threshold.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Net-App Event: volumeFull trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Minor</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.789</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>85</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/networkappliance/traps/volumeNearlyFull</uei>
+	<event-label>NETWORK-APPLIANCE-MIB defined trap event: volumeNearlyFull</event-label>
+	<descr>
+&lt;p&gt;At least one volume is more than 95% full.
+The string sent with the trap gives the 
+name of the volume or volumes which exceed
+the threshold.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Net-App Event: volumeNearlyFull trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.789</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>86</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/networkappliance/traps/volumeRepaired</uei>
+	<event-label>NETWORK-APPLIANCE-MIB defined trap event: volumeRepaired</event-label>
+	<descr>
+&lt;p&gt;All volumes are now under 95% full.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Net-App Event: volumeRepaired trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Cleared</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.789</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>91</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/networkappliance/traps/overTempShutdown</uei>
+	<event-label>NETWORK-APPLIANCE-MIB defined trap event: overTempShutdown</event-label>
+	<descr>
+&lt;p&gt;System temperature is too high to continue
+operating.  The system is shutting down.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Net-App Event: overTempShutdown trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Critical</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.789</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>95</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/networkappliance/traps/overTemp</uei>
+	<event-label>NETWORK-APPLIANCE-MIB defined trap event: overTemp</event-label>
+	<descr>
+&lt;p&gt;System temperature is too high and in the
+warning level.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Net-App Event: overTemp trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Minor</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.789</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>96</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/networkappliance/traps/overTempRepaired</uei>
+	<event-label>NETWORK-APPLIANCE-MIB defined trap event: overTempRepaired</event-label>
+	<descr>
+&lt;p&gt;System temperature has returned to an
+acceptable value.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Net-App Event: overTempRepaired trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Cleared</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.789</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>103</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/networkappliance/traps/shelfFault</uei>
+	<event-label>NETWORK-APPLIANCE-MIB defined trap event: shelfFault</event-label>
+	<descr>
+&lt;p&gt;A disk storage shelf reported a fault, probably due
+to a problem with drive placement, fans, power,
+or temperature.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Net-App Event: shelfFault trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.789</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>106</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/networkappliance/traps/shelfRepaired</uei>
+	<event-label>NETWORK-APPLIANCE-MIB defined trap event: shelfRepaired</event-label>
+	<descr>
+&lt;p&gt;A previously-reported shelf fault is now corrected.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Net-App Event: shelfRepaired trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Cleared</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.789</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>111</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/networkappliance/traps/globalStatusNonRecoverable</uei>
+	<event-label>NETWORK-APPLIANCE-MIB defined trap event: globalStatusNonRecoverable</event-label>
+	<descr>
+&lt;p&gt;The appliance's overall status changed to
+'nonRecoverable', indicating a problem so severe
+that the appliance is shutting down.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Net-App Event: globalStatusNonRecoverable trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Critical</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.789</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>113</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/networkappliance/traps/globalStatusCritical</uei>
+	<event-label>NETWORK-APPLIANCE-MIB defined trap event: globalStatusCritical</event-label>
+	<descr>
+&lt;p&gt;The appliance's overall status changed to 'critical',
+indicating a problem that needs immediate attention.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Net-App Event: globalStatusCritical trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Critical</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.789</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>115</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/networkappliance/traps/globalStatusNonCritical</uei>
+	<event-label>NETWORK-APPLIANCE-MIB defined trap event: globalStatusNonCritical</event-label>
+	<descr>
+&lt;p&gt;The appliance's overall status changed to 'nonCritical',
+indicating a problem that needs attention.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Net-App Event: globalStatusNonCritical trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Minor</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.789</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>116</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/networkappliance/traps/globalStatusOk</uei>
+	<event-label>NETWORK-APPLIANCE-MIB defined trap event: globalStatusOk</event-label>
+	<descr>
+&lt;p&gt;The appliance's overall status returned to normal.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Net-App Event: globalStatusOk trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Cleared</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.789</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>126</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/networkappliance/traps/softQuotaExceeded</uei>
+	<event-label>NETWORK-APPLIANCE-MIB defined trap event: softQuotaExceeded</event-label>
+	<descr>
+&lt;p&gt;A user has exceeded their soft quota limit.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Net-App Event: softQuotaExceeded trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.789</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>127</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/networkappliance/traps/softQuotaNormal</uei>
+	<event-label>NETWORK-APPLIANCE-MIB defined trap event: softQuotaNormal</event-label>
+	<descr>
+&lt;p&gt;A user is safely back under their soft quota limit.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Net-App Event: softQuotaNormal trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Cleared</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.789</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>134</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/networkappliance/traps/autosupportSendError</uei>
+	<event-label>NETWORK-APPLIANCE-MIB defined trap event: autosupportSendError</event-label>
+	<descr>
+&lt;p&gt;Unable to send autosupport.
+The trap includes a string describing the reason for the failure.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Net-App Event: autosupportSendError trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Minor</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.789</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>135</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/networkappliance/traps/autosupportConfigurationError</uei>
+	<event-label>NETWORK-APPLIANCE-MIB defined trap event: autosupportConfigurationError</event-label>
+	<descr>
+&lt;p&gt;Autosupport may be configured incorrectly.
+The trap includes a string describing the mis-configuration.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Net-App Event: autosupportConfigurationError trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Minor</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.789</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>136</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/networkappliance/traps/autosupportSent</uei>
+	<event-label>NETWORK-APPLIANCE-MIB defined trap event: autosupportSent</event-label>
+	<descr>
+&lt;p&gt;Autosupport was sent successfully.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Net-App Event: autosupportSent trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.789</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>142</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/networkappliance/traps/upsLinePowerOff</uei>
+	<event-label>NETWORK-APPLIANCE-MIB defined trap event: upsLinePowerOff</event-label>
+	<descr>
+&lt;p&gt;UPS: Input line power has failed and UPS is now on battery.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Net-App Event: upsLinePowerOff trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Major</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.789</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>143</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/networkappliance/traps/upsBatteryCritical</uei>
+	<event-label>NETWORK-APPLIANCE-MIB defined trap event: upsBatteryCritical</event-label>
+	<descr>
+&lt;p&gt;UPS: Battery exhausted, system is shutting down.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Net-App Event: upsBatteryCritical trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Critical</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.789</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>145</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/networkappliance/traps/upsBatteryWarning</uei>
+	<event-label>NETWORK-APPLIANCE-MIB defined trap event: upsBatteryWarning</event-label>
+	<descr>
+&lt;p&gt;UPS: Warning: Time left on battery is getting critical.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Net-App Event: upsBatteryWarning trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Major</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.789</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>146</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/networkappliance/traps/upsLinePowerRetored</uei>
+	<event-label>NETWORK-APPLIANCE-MIB defined trap event: upsLinePowerRetored</event-label>
+	<descr>
+&lt;p&gt;UPS:  Input line power has been restored and UPS is now off battery.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Net-App Event: upsLinePowerRetored trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Cleared</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.789</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>151</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/networkappliance/traps/appEmergency</uei>
+	<event-label>NETWORK-APPLIANCE-MIB defined trap event: appEmergency</event-label>
+	<descr>
+&lt;p&gt;The application encountered an extremely urgent
+situation and requires an immediate response.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Net-App Event: appEmergency trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Major</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.789</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>152</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/networkappliance/traps/appAlert</uei>
+	<event-label>NETWORK-APPLIANCE-MIB defined trap event: appAlert</event-label>
+	<descr>
+&lt;p&gt;The application is in a condition that should 
+be corrected immediately.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Net-App Event: appAlert trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Major</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.789</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>153</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/networkappliance/traps/appCritical</uei>
+	<event-label>NETWORK-APPLIANCE-MIB defined trap event: appCritical</event-label>
+	<descr>
+&lt;p&gt;The application encountered a critical condition.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Net-App Event: appCritical trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Major</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.789</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>154</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/networkappliance/traps/appError</uei>
+	<event-label>NETWORK-APPLIANCE-MIB defined trap event: appError</event-label>
+	<descr>
+&lt;p&gt;The application encountered an error condition.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Net-App Event: appError trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Minor</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.789</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>155</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/networkappliance/traps/appWarning</uei>
+	<event-label>NETWORK-APPLIANCE-MIB defined trap event: appWarning</event-label>
+	<descr>
+&lt;p&gt;The application is in a condition which is not an 
+error, but which may require special handling.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Net-App Event: appWarning trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.789</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>156</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/networkappliance/traps/appNotice</uei>
+	<event-label>NETWORK-APPLIANCE-MIB defined trap event: appNotice</event-label>
+	<descr>
+&lt;p&gt;The application is notifing of a certain event.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Net-App Event: appNotice trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.789</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>157</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/networkappliance/traps/appInfo</uei>
+	<event-label>NETWORK-APPLIANCE-MIB defined trap event: appInfo</event-label>
+	<descr>
+&lt;p&gt;The application's message is meant for informational 
+purposes.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Net-App Event: appInfo trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.789</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>158</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/networkappliance/traps/appTrap</uei>
+	<event-label>NETWORK-APPLIANCE-MIB defined trap event: appTrap</event-label>
+	<descr>
+&lt;p&gt;The application requires to be debugged.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Net-App Event: appTrap trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.789</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>162</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/networkappliance/traps/alfFilewrap</uei>
+	<event-label>NETWORK-APPLIANCE-MIB defined trap event: alfFilewrap</event-label>
+	<descr>
+&lt;p&gt;The internal audit file has wrapped. You are currently losing event
+records.Warning the user&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Net-App Event: alfFilewrap trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Minor</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.789</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>166</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/networkappliance/traps/alfFileSaved</uei>
+	<event-label>NETWORK-APPLIANCE-MIB defined trap event: alfFileSaved</event-label>
+	<descr>
+&lt;p&gt;The internal audit log has been autosaved to an external evt file.
+Notifying the user.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Net-App Event: alfFileSaved trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.789</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>167</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/networkappliance/traps/alfFileNearlyFull</uei>
+	<event-label>NETWORK-APPLIANCE-MIB defined trap event: alfFileNearlyFull</event-label>
+	<descr>
+&lt;p&gt;The internal audit log file is nearly full. The file is going to 
+wrap. Notifying the user&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Net-App Event: alfFileNearlyFull trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.789</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>176</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/networkappliance/traps/quotaExceeded</uei>
+	<event-label>NETWORK-APPLIANCE-MIB defined trap event: quotaExceeded</event-label>
+	<descr>
+&lt;p&gt;One of the quota limits has been exceeded.
+The trap includes a string describing the specific event
+which triggered the trap.  The string is structured
+in the following form:
+
+	Quota Event: status=exceeded, type={hard|soft|threshold},
+	user={username}, volume={volume}, limit_item={files|disk},
+	limit_value={#files|#kilobytes}
+	[ , treeid={tree-id} ] [ , vfiler={vfiler} ]
+
+An example of a complete message would be:
+
+	Quota Event: status=exceeded, type=soft,
+	user=admin, volume=vol1, limit_item=disk, limit_value=1000000,
+	treeid=8
+
+Additional key=value items may, in the future, be appended
+to this message.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Net-App Event: quotaExceeded trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.789</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>177</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/networkappliance/traps/quotaNormal</uei>
+	<event-label>NETWORK-APPLIANCE-MIB defined trap event: quotaNormal</event-label>
+	<descr>
+&lt;p&gt;One of the quota limits has gone back down to a normal level.
+The trap includes a string describing the specific event
+which triggered the trap.  The string is structured
+in the following form:
+
+	Quota Event: status=normal, type={hard|soft|threshold},
+	user={username}, volume={volume}, limit_item={files|disk},
+	limit_value={#files|#kilobytes}
+	[ , treeid={tree-id} ] [ , vfiler={vfiler} ]
+
+An example of a complete message would be:
+
+	Quota Event: status=normal, type=soft,
+	user=admin, volume=vol1, limit_item=disk, limit_value=1000000,
+	treeid=8
+
+Additional key=value items may, in the future, be appended
+to this message.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Net-App Event: quotaNormal trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Cleared</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.789</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>187</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/networkappliance/traps/waflDirFull</uei>
+	<event-label>NETWORK-APPLIANCE-MIB defined trap event: waflDirFull</event-label>
+	<descr>
+&lt;p&gt;The directory has been filled to its limit&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Net-App Event: waflDirFull trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Minor</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.789</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>192</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/networkappliance/traps/eccSummary</uei>
+	<event-label>NETWORK-APPLIANCE-MIB defined trap event: eccSummary</event-label>
+	<descr>
+&lt;p&gt;Memory ECC: number of new correctable ECC errors&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Net-App Event: eccSummary trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Minor</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.789</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>195</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/networkappliance/traps/eccMasked</uei>
+	<event-label>NETWORK-APPLIANCE-MIB defined trap event: eccMasked</event-label>
+	<descr>
+&lt;p&gt;Memory ECC: High frequency of ECC errors&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Net-App Event: eccMasked trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Major</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.789</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>204</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/networkappliance/traps/ftpdError</uei>
+	<event-label>NETWORK-APPLIANCE-MIB defined trap event: ftpdError</event-label>
+	<descr>
+&lt;p&gt;Ftp daemon: service stopped&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Net-App Event: ftpdError trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Minor</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.789</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>206</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/networkappliance/traps/ftpdMaxConnNotice</uei>
+	<event-label>NETWORK-APPLIANCE-MIB defined trap event: ftpdMaxConnNotice</event-label>
+	<descr>
+&lt;p&gt;Ftp daemon: number of connections hits maximum number&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Net-App Event: ftpdMaxConnNotice trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Minor</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.789</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>216</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/networkappliance/traps/ftpdMaxConnThresholdNotice</uei>
+	<event-label>NETWORK-APPLIANCE-MIB defined trap event: ftpdMaxConnThresholdNotice</event-label>
+	<descr>
+&lt;p&gt;Ftp daemon: number of connections nearly hits maximum number&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Net-App Event: ftpdMaxConnThresholdNotice trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.789</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>224</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/networkappliance/traps/scsitgtPartnerPathMisconfigured</uei>
+	<event-label>NETWORK-APPLIANCE-MIB defined trap event: scsitgtPartnerPathMisconfigured</event-label>
+	<descr>
+&lt;p&gt;SCSI Target: FCP Partner Path Misconfigured&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Net-App Event: scsitgtPartnerPathMisconfigured trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.789</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>226</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/networkappliance/traps/scsitgtThrottleNotice</uei>
+	<event-label>NETWORK-APPLIANCE-MIB defined trap event: scsitgtThrottleNotice</event-label>
+	<descr>
+&lt;p&gt;SCSI Target: Throttle limit event notification&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Net-App Event: scsitgtThrottleNotice trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.789</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>237</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/networkappliance/traps/vifPrimaryLinkFailed</uei>
+	<event-label>NETWORK-APPLIANCE-MIB defined trap event: vifPrimaryLinkFailed</event-label>
+	<descr>
+&lt;p&gt;Vif: The primary Interface on a Single mode vif has failed&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Net-App Event: vifPrimaryLinkFailed trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Minor</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.789</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>238</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/networkappliance/traps/vifAllLinksFailed</uei>
+	<event-label>NETWORK-APPLIANCE-MIB defined trap event: vifAllLinksFailed</event-label>
+	<descr>
+&lt;p&gt;Vif: All the links of the vif have failed&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Net-App Event: vifAllLinksFailed trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Major</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.789</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>245</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/networkappliance/traps/vfStopped</uei>
+	<event-label>NETWORK-APPLIANCE-MIB defined trap event: vfStopped</event-label>
+	<descr>
+&lt;p&gt;A vFiler has stopped.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Net-App Event: vfStopped trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Minor</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.789</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>246</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/networkappliance/traps/vfStarted</uei>
+	<event-label>NETWORK-APPLIANCE-MIB defined trap event: vfStarted</event-label>
+	<descr>
+&lt;p&gt;A vFiler has started.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Net-App Event: vfStarted trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.789</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>254</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/networkappliance/traps/vscanVirusDetectedError</uei>
+	<event-label>NETWORK-APPLIANCE-MIB defined trap event: vscanVirusDetectedError</event-label>
+	<descr>
+&lt;p&gt;VScan: Vscan scanner has detected a virus on the Filer&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Net-App Event: vscanVirusDetectedError trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.789</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>255</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/networkappliance/traps/vscanDisConnection</uei>
+	<event-label>NETWORK-APPLIANCE-MIB defined trap event: vscanDisConnection</event-label>
+	<descr>
+&lt;p&gt;VScan: There has been a connection to the vscan servers dropped&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Net-App Event: vscanDisConnection trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.789</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>256</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/networkappliance/traps/vscanConfigurationChange</uei>
+	<event-label>NETWORK-APPLIANCE-MIB defined trap event: vscanConfigurationChange</event-label>
+	<descr>
+&lt;p&gt;VScan: There has been a change to the vscan configuration&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Net-App Event: vscanConfigurationChange trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.789</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>266</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/networkappliance/traps/vscanServerUpgrade</uei>
+	<event-label>NETWORK-APPLIANCE-MIB defined trap event: vscanServerUpgrade</event-label>
+	<descr>
+&lt;p&gt;VScan: The Vscan server has been upgraded&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Net-App Event: vscanServerUpgrade trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.789</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>272</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/networkappliance/traps/volumeRestrictedByMirrorBigIo</uei>
+	<event-label>NETWORK-APPLIANCE-MIB defined trap event: volumeRestrictedByMirrorBigIo</event-label>
+	<descr>
+&lt;p&gt;A volume that experienced a medium error during reconstruction 
+is restricted and marked wafl-inconsistent, but starting 
+wafliron has failed. This trap is issued to alert operator 
+that a volume is not accessible and wafliron must be started 
+to allow access to it.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Net-App Event: volumeRestrictedByMirrorBigIo trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.789</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>274</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/networkappliance/traps/volumeInconsistentUmount</uei>
+	<event-label>NETWORK-APPLIANCE-MIB defined trap event: volumeInconsistentUmount</event-label>
+	<descr>
+&lt;p&gt;This trap is issued when we unmount a volume due to an 
+inconsistency.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Net-App Event: volumeInconsistentUmount trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.789</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>275</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/networkappliance/traps/volumeStateChanged</uei>
+	<event-label>NETWORK-APPLIANCE-MIB defined trap event: volumeStateChanged</event-label>
+	<descr>
+&lt;p&gt;Volume is being taken offline or being restricted. 
+The string sent with trap specifies name of affected volume 
+and its state.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Net-App Event: volumeStateChanged trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.789</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>276</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/networkappliance/traps/volumeOnline</uei>
+	<event-label>NETWORK-APPLIANCE-MIB defined trap event: volumeOnline</event-label>
+	<descr>
+&lt;p&gt;Volume is online now. The string sent with trap specifies 
+name of volume which is online now.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Net-App Event: volumeOnline trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Cleared</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.789</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>283</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/networkappliance/traps/rmcCardNeedsReplacement</uei>
+	<event-label>NETWORK-APPLIANCE-MIB defined trap event: rmcCardNeedsReplacement</event-label>
+	<descr>
+&lt;p&gt;Remote Management Controller card needs replacement. The trap 
+includes a string specifying the reason for replacement&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Net-App Event: rmcCardNeedsReplacement trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Minor</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.789</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>284</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/networkappliance/traps/rmcCardMissingCables</uei>
+	<event-label>NETWORK-APPLIANCE-MIB defined trap event: rmcCardMissingCables</event-label>
+	<descr>
+&lt;p&gt;Remote Management Controller card is missing its internal 
+cable, or LAN cable or power supply cable. The trap includes 
+a string specifing the missing component.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Net-App Event: rmcCardMissingCables trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Minor</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.789</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>304</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/networkappliance/traps/volumeRestrictedRootConflict</uei>
+	<event-label>NETWORK-APPLIANCE-MIB defined trap event: volumeRestrictedRootConflict</event-label>
+	<descr>
+&lt;p&gt;Volume is restricted due to a root volume conflict. The 
+string sent with trap specifies name of conflicting volume 
+which is being restricted.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Net-App Event: volumeRestrictedRootConflict trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.789</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>314</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/networkappliance/traps/volumeOfflineTooBig</uei>
+	<event-label>NETWORK-APPLIANCE-MIB defined trap event: volumeOfflineTooBig</event-label>
+	<descr>
+&lt;p&gt;Volume can not be brought online because its raw size is 
+larger than maximum allowed size. The string sent with trap 
+specifies name of affected volume and its raw size, and 
+maximum allowed size.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Net-App Event: volumeOfflineTooBig trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.789</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>324</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/networkappliance/traps/volumeOffline</uei>
+	<event-label>NETWORK-APPLIANCE-MIB defined trap event: volumeOffline</event-label>
+	<descr>
+&lt;p&gt;Volume is being taken offline. The string sent with trap 
+specifies name of affected volume and reason for being 
+taken offline.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Net-App Event: volumeOffline trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.789</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>334</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/networkappliance/traps/volumeRestricted</uei>
+	<event-label>NETWORK-APPLIANCE-MIB defined trap event: volumeRestricted</event-label>
+	<descr>
+&lt;p&gt;Volume is being restricted. The string sent with trap 
+specifies name of affected volume and reason for being 
+restricted.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Net-App Event: volumeRestricted trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.789</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>344</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/networkappliance/traps/volumeDegradedDirty</uei>
+	<event-label>NETWORK-APPLIANCE-MIB defined trap event: volumeDegradedDirty</event-label>
+	<descr>
+&lt;p&gt;Volume is degraded and has dirty parity. WAFL_check must be 
+run on this volume before it can be brought online. The string
+sent with trap specifies name of affected volume.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Net-App Event: volumeDegradedDirty trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Minor</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.789</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>354</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/networkappliance/traps/volumeError</uei>
+	<event-label>NETWORK-APPLIANCE-MIB defined trap event: volumeError</event-label>
+	<descr>
+&lt;p&gt;This trap is issued when a volume can not be brought online 
+due to an error.  The string sent with trap specifies name of 
+affected volume and error description.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Net-App Event: volumeError trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Minor</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.789</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>364</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/networkappliance/traps/snapmirrorSyncFailed</uei>
+	<event-label>NETWORK-APPLIANCE-MIB defined trap event: snapmirrorSyncFailed</event-label>
+	<descr>
+&lt;p&gt;Synchronous SnapMirror failed and went into asynchronous mode.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Net-App Event: snapmirrorSyncFailed trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Minor</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.789</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>366</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/networkappliance/traps/snapmirrorSyncOk</uei>
+	<event-label>NETWORK-APPLIANCE-MIB defined trap event: snapmirrorSyncOk</event-label>
+	<descr>
+&lt;p&gt;Synchronous SnapMirror went into synchronous mode.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			Net-App Event: snapmirrorSyncOk trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Cleared</severity>
+</event>
+<!-- End of auto generated data from MIB: NETWORK-APPLIANCE-MIB -->
+</events>

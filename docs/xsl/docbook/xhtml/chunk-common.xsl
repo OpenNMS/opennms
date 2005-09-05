@@ -4,7 +4,7 @@
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns="http://www.w3.org/1999/xhtml" version="1.0">
 
 <!-- ********************************************************************
-     $Id: chunk-common.xsl,v 1.36 2003/12/15 20:50:38 nwalsh Exp $
+     $Id: chunk-common.xsl,v 1.41 2004/10/23 11:51:10 nwalsh Exp $
      ********************************************************************
 
      This file is part of the XSL DocBook Stylesheet distribution.
@@ -25,12 +25,12 @@
        The root element
        appendix
        article
-       bibliography  in article or book
+       bibliography  in article or part or book
        book
        chapter
        colophon
-       glossary      in article or book
-       index         in article or book
+       glossary      in article or part or book
+       index         in article or part or book
        part
        preface
        refentry
@@ -99,9 +99,9 @@
     <xsl:when test="name($node)='part'">1</xsl:when>
     <xsl:when test="name($node)='reference'">1</xsl:when>
     <xsl:when test="name($node)='refentry'">1</xsl:when>
-    <xsl:when test="name($node)='index'                     and (name($node/parent::*) = 'article'                          or name($node/parent::*) = 'book')">1</xsl:when>
-    <xsl:when test="name($node)='bibliography'                     and (name($node/parent::*) = 'article'                          or name($node/parent::*) = 'book')">1</xsl:when>
-    <xsl:when test="name($node)='glossary'                     and (name($node/parent::*) = 'article'                          or name($node/parent::*) = 'book')">1</xsl:when>
+    <xsl:when test="name($node)='index' and $generate.index != 0                     and (name($node/parent::*) = 'article'                     or name($node/parent::*) = 'book'                     or name($node/parent::*) = 'part'                     )">1</xsl:when>
+    <xsl:when test="name($node)='bibliography'                     and (name($node/parent::*) = 'article'                     or name($node/parent::*) = 'book'                     or name($node/parent::*) = 'part'                     )">1</xsl:when>
+    <xsl:when test="name($node)='glossary'                     and (name($node/parent::*) = 'article'                     or name($node/parent::*) = 'book'                     or name($node/parent::*) = 'part'                     )">1</xsl:when>
     <xsl:when test="name($node)='colophon'">1</xsl:when>
     <xsl:when test="name($node)='book'">1</xsl:when>
     <xsl:when test="name($node)='set'">1</xsl:when>
@@ -542,7 +542,7 @@
     <xsl:call-template name="head.content"/>
 
     <xsl:if test="$home">
-      <link rel="home">
+      <link rel="start">
         <xsl:attribute name="href">
           <xsl:call-template name="href.target">
             <xsl:with-param name="object" select="$home"/>
@@ -568,7 +568,7 @@
     </xsl:if>
 
     <xsl:if test="$prev">
-      <link rel="previous">
+      <link rel="prev">
         <xsl:attribute name="href">
           <xsl:call-template name="href.target">
             <xsl:with-param name="object" select="$prev"/>
@@ -768,8 +768,8 @@
               </td>
               <td width="20%" align="center">
                 <xsl:choose>
-                  <xsl:when test="count($up)&gt;0">
-                    <a accesskey="u">
+                  <xsl:when test="count($up)&gt;0                     and generate-id($up) != generate-id($home)">
+		    <a accesskey="u">
                       <xsl:attribute name="href">
                         <xsl:call-template name="href.target">
                           <xsl:with-param name="object" select="$up"/>
@@ -914,6 +914,8 @@
   <xsl:param name="content">
     <xsl:apply-imports/>
   </xsl:param>
+
+  <xsl:call-template name="user.preroot"/>
 
   <html>
     <xsl:call-template name="html.head">

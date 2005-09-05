@@ -8,7 +8,7 @@
                 version='1.0'>
 
 <!-- ********************************************************************
-     $Id: titlepage.xsl,v 1.5 2004/01/29 12:14:06 nwalsh Exp $
+     $Id: titlepage.xsl,v 1.7 2004/04/25 10:35:01 kosek Exp $
      ********************************************************************
 
      This file is part of the XSL DocBook Stylesheet distribution.
@@ -22,7 +22,7 @@
 <doc:reference xmlns="">
 <referenceinfo>
 <releaseinfo role="meta">
-$Id: titlepage.xsl,v 1.5 2004/01/29 12:14:06 nwalsh Exp $
+$Id: titlepage.xsl,v 1.7 2004/04/25 10:35:01 kosek Exp $
 </releaseinfo>
 <author><surname>Walsh</surname>
 <firstname>Norman</firstname></author>
@@ -182,17 +182,16 @@ and <quote>verso</quote> sides of the title page.</para>
     <xsl:element name="{@t:wrapper}">
       <xsl:apply-templates select="@*" mode="copy.literal.atts"/>
       <xsl:text>&#xA;    </xsl:text>
-      <xsl:element name="{@t:wrapper}">
-        <xsl:apply-templates select="t:titlepage-content[@t:side='recto']/@*"
-                             mode="copy.literal.atts"/>
-        <xsl:text>&#xA;    </xsl:text>
+      <xsl:element name="xsl:variable">
+        <xsl:attribute name="name">recto.content</xsl:attribute>
+        <xsl:text>&#xA;      </xsl:text>
         <xsl:element name="xsl:call-template">
           <xsl:attribute name="name">
             <xsl:value-of select="@t:element"/>
             <xsl:text>.titlepage.before.recto</xsl:text>
           </xsl:attribute>
         </xsl:element>
-        <xsl:text>&#xA;    </xsl:text>
+        <xsl:text>&#xA;      </xsl:text>
         <xsl:element name="xsl:call-template">
           <xsl:attribute name="name">
             <xsl:value-of select="@t:element"/>
@@ -202,22 +201,47 @@ and <quote>verso</quote> sides of the title page.</para>
         <xsl:text>&#xA;    </xsl:text>
       </xsl:element>
       <xsl:text>&#xA;    </xsl:text>
-      <xsl:element name="{@t:wrapper}">
-        <xsl:apply-templates select="t:titlepage-content[@t:side='verso']/@*"
-                             mode="copy.literal.atts"/>
+      <xsl:element name="xsl:if">
+        <xsl:attribute name="test">normalize-space($recto.content) != ''</xsl:attribute>
+        <xsl:text>&#xA;      </xsl:text>
+        <xsl:element name="{@t:wrapper}">
+          <xsl:apply-templates select="t:titlepage-content[@t:side='recto']/@*"
+                               mode="copy.literal.atts"/>
+          <xsl:element name="xsl:copy-of">
+            <xsl:attribute name="select">$recto.content</xsl:attribute>
+          </xsl:element>
+        </xsl:element>
         <xsl:text>&#xA;    </xsl:text>
+      </xsl:element>
+      <xsl:text>&#xA;    </xsl:text>
+      <xsl:element name="xsl:variable">
+        <xsl:attribute name="name">verso.content</xsl:attribute>
+        <xsl:text>&#xA;      </xsl:text>
         <xsl:element name="xsl:call-template">
           <xsl:attribute name="name">
             <xsl:value-of select="@t:element"/>
             <xsl:text>.titlepage.before.verso</xsl:text>
           </xsl:attribute>
         </xsl:element>
-        <xsl:text>&#xA;    </xsl:text>
+        <xsl:text>&#xA;      </xsl:text>
         <xsl:element name="xsl:call-template">
           <xsl:attribute name="name">
             <xsl:value-of select="@t:element"/>
             <xsl:text>.titlepage.verso</xsl:text>
           </xsl:attribute>
+        </xsl:element>
+        <xsl:text>&#xA;    </xsl:text>
+      </xsl:element>
+      <xsl:text>&#xA;    </xsl:text>
+      <xsl:element name="xsl:if">
+        <xsl:attribute name="test">normalize-space($verso.content) != ''</xsl:attribute>
+        <xsl:text>&#xA;      </xsl:text>
+        <xsl:element name="{@t:wrapper}">
+          <xsl:apply-templates select="t:titlepage-content[@t:side='verso']/@*"
+                               mode="copy.literal.atts"/>
+          <xsl:element name="xsl:copy-of">
+            <xsl:attribute name="select">$verso.content</xsl:attribute>
+          </xsl:element>
         </xsl:element>
         <xsl:text>&#xA;    </xsl:text>
       </xsl:element>

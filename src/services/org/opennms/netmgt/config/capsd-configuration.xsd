@@ -51,6 +51,19 @@
 				</simpleType>
 			</attribute>
 			
+			<!-- Determine if deleting an service propagates to deleting the interface
+				 if the service is the only one remaining on the interface. Likewise for 
+				 the only interface on a node.
+		 	-->
+			<attribute name="delete-propagation-enabled" type="string" use="required">
+				<simpleType>
+					<restriction base="string">
+						<pattern value="(true|false)"/>
+					</restriction>
+				</simpleType>
+			</attribute>
+			
+			
 			<!-- Flag which indicates if an external XMLRPC server has to be notified with
                              any event process errors
                         -->

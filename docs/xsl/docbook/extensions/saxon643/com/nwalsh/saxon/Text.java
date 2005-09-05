@@ -9,18 +9,23 @@ import java.io.IOException;
 import java.io.FileNotFoundException;
 import java.net.URL;
 import java.net.MalformedURLException;
+
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerConfigurationException;
-import com.icl.saxon.*;
-import com.icl.saxon.style.*;
-import com.icl.saxon.expr.*;
-import com.icl.saxon.output.*;
+import javax.xml.transform.URIResolver;
+import javax.xml.transform.Source;
+
+import com.icl.saxon.Context;
+import com.icl.saxon.style.StyleElement;
+import com.icl.saxon.output.Outputter;
+import com.icl.saxon.expr.Expression;
+
 import org.xml.sax.AttributeList;
 
 /**
  * <p>Saxon extension element for inserting text
  *
- * <p>$Id: Text.java,v 1.2 2004/03/01 22:21:53 kosek Exp $</p>
+ * <p>$Id: Text.java,v 1.4 2004/10/29 12:44:51 nwalsh Exp $</p>
  *
  * <p>Copyright (C) 2000 Norman Walsh.</p>
  *
@@ -37,7 +42,7 @@ import org.xml.sax.AttributeList;
  * @author Norman Walsh
  * <a href="mailto:ndw@nwalsh.com">ndw@nwalsh.com</a>
  *
- * @version $Id: Text.java,v 1.2 2004/03/01 22:21:53 kosek Exp $
+ * @version $Id: Text.java,v 1.4 2004/10/29 12:44:51 nwalsh Exp $
  *
  */
 public class Text extends StyleElement {
@@ -94,6 +99,9 @@ public class Text extends StyleElement {
    *
    * <p>Processing this element inserts the contents of the URL named
    * by the href attribute into the result tree as plain text.</p>
+   * 
+   * <p>Optional encoding attribute can specify encoding of resource.
+   * If not specified default system encoding is used.</p>
    *
    */
   public void process( Context context ) throws TransformerException {
@@ -102,21 +110,48 @@ public class Text extends StyleElement {
     String hrefAtt = getAttribute("href");
     Expression hrefExpr = makeAttributeValueTemplate(hrefAtt);
     String href = hrefExpr.evaluateAsString(context);
+
+    String encodingAtt = getAttribute("encoding");
+    Expression encodingExpr = makeAttributeValueTemplate(encodingAtt);
+    String encoding = encodingExpr.evaluateAsString(context);
+
+    String baseURI = context.getContextNodeInfo().getBaseURI();
+
+    URIResolver resolver = context.getController().getURIResolver();
+
+    if (resolver != null) {
+      Source source = resolver.resolve(href, baseURI);
+      href = source.getSystemId();
+    }
+
+    URL baseURL = null;
     URL fileURL = null;
 
     try {
+      baseURL = new URL(baseURI);
+    } catch (MalformedURLException e0) {
+      // what the!?
+      baseURL = null;
+    }
+
+    try {
       try {
-	fileURL = new URL(href);
+        fileURL = new URL(baseURL, href);
       } catch (MalformedURLException e1) {
-	try {
-	  fileURL = new URL("file:" + href);
-	} catch (MalformedURLException e2) {
-	  System.out.println("Cannot open " + href);
-	  return;
-	}
+        try {
+          fileURL = new URL(baseURL, "file:" + href);
+        } catch (MalformedURLException e2) {
+          System.out.println("Cannot open " + href);
+          return;
+        }
       }
 
-      InputStreamReader isr = new InputStreamReader(fileURL.openStream());
+      InputStreamReader isr = null;
+      if (encoding.equals("") == true)
+        isr = new InputStreamReader(fileURL.openStream());
+      else
+        isr = new InputStreamReader(fileURL.openStream(), encoding);
+
       BufferedReader is = new BufferedReader(isr);
 
       final int BUFFER_SIZE = 4096;
@@ -126,44 +161,39 @@ public class Text extends StyleElement {
       int i = 0;
       int carry = -1;
 
-      while ((len = is.read(chars)) > 0) 
-      {
-	// various new lines are normalized to LF to prevent blank lines between lines
-	int nlen = 0;
-	for (i=0; i<len; i++)
-	{
-	  // is current char CR?
-	  if (chars[i] == '\r')
-	  {
-	    if (i < (len - 1))
-	    {
-       	      // skip it if next char is LF
-	      if (chars[i+1] == '\n') continue;
+      while ((len = is.read(chars)) > 0) {
+        // various new lines are normalized to LF to prevent blank lines
+	// between lines
+
+        int nlen = 0;
+        for (i=0; i<len; i++) {
+          // is current char CR?
+          if (chars[i] == '\r') {
+            if (i < (len - 1)) {
+              // skip it if next char is LF
+              if (chars[i+1] == '\n') continue;
               // single CR -> LF to normalize MAC line endings
               nchars[nlen] = '\n';
-	      nlen++;
+              nlen++;
               continue;
-	    }
-	    else
-	    {
-	      // if CR is last char of buffer we must look ahead
-	      carry = is.read();
+            } else {
+              // if CR is last char of buffer we must look ahead
+              carry = is.read();
               nchars[nlen] = '\n';
               nlen++;
-	      if (carry == '\n')
-	      {
+              if (carry == '\n') {
                 carry = -1;
               }
               break;
-	    }
-	  }
-	  nchars[nlen] = chars[i];
-	  nlen++;
-	}
-	out.writeContent(nchars, 0, nlen);
+            }
+          }
+          nchars[nlen] = chars[i];
+          nlen++;
+        }
+        out.writeContent(nchars, 0, nlen);
         // handle look aheaded character
-	if (carry != -1) out.writeContent(String.valueOf((char)carry));
-	carry = -1;
+        if (carry != -1) out.writeContent(String.valueOf((char)carry));
+        carry = -1;
       }
       is.close();
     } catch (Exception e) {

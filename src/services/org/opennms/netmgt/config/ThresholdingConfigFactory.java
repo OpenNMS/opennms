@@ -57,187 +57,169 @@ import org.opennms.netmgt.config.threshd.Group;
 import org.opennms.netmgt.config.threshd.ThresholdingConfig;
 
 /**
- * This class is the main respository for thresholding 
- * configuration information used by the thresholding daemon..
- * When this class is loaded it reads the thresholding 
- * configuration into memory.
- *
- * <strong>Note:</strong>Users of this class should make sure the 
- * <em>init()</em> is called before calling any other method to ensure
- * the config is loaded before accessing other convenience methods.
- *
- * @author <a href="mailto:mike@opennms.org">Mike Davidson</a>
- * @author <a href="http://www.opennms.org/">OpenNMS</a>
- *
+ * This class is the main respository for thresholding configuration information
+ * used by the thresholding daemon.. When this class is loaded it reads the
+ * thresholding configuration into memory.
+ * 
+ * <strong>Note: </strong>Users of this class should make sure the
+ * <em>init()</em> is called before calling any other method to ensure the
+ * config is loaded before accessing other convenience methods.
+ * 
+ * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
+ * @author <a href="http://www.opennms.org/">OpenNMS </a>
+ * 
  */
-public final class ThresholdingConfigFactory
-{
-	/**
-	 * The singleton instance of this factory
-	 */
-	private static ThresholdingConfigFactory		m_singleton=null;
+public final class ThresholdingConfigFactory {
+    /**
+     * The singleton instance of this factory
+     */
+    private static ThresholdingConfigFactory m_singleton = null;
 
-	/**
-	 * The config class loaded from the config file
-	 */
-	private  ThresholdingConfig				m_config;
+    /**
+     * The config class loaded from the config file
+     */
+    private ThresholdingConfig m_config;
 
-	/**
-	 * This member is set to true if the configuration file
-	 * has been loaded.
-	 */
-	private static boolean					m_loaded=false;
+    /**
+     * This member is set to true if the configuration file has been loaded.
+     */
+    private static boolean m_loaded = false;
 
-	/**
-	 * Map of org.opennms.netmgt.config.threshd.Group objects indexed
-	 * by group name.
-	 */
-	private Map						m_groupMap;
-	
-	/**
-	 * Private constructor
-	 *
-	 * @exception java.io.IOException Thrown if the specified config
-	 * 	file cannot be read
-	 * @exception org.exolab.castor.xml.MarshalException Thrown if the 
-	 * 	file does not conform to the schema.
-	 * @exception org.exolab.castor.xml.ValidationException Thrown if 
-	 *	the contents do not match the required schema.
-	 */
-	private ThresholdingConfigFactory(String configFile)
-		throws 	IOException,
-			MarshalException, 
-			ValidationException
-	{
-		InputStream cfgIn = new FileInputStream(configFile);
+    /**
+     * Map of org.opennms.netmgt.config.threshd.Group objects indexed by group
+     * name.
+     */
+    private Map m_groupMap;
 
-		m_config = (ThresholdingConfig) Unmarshaller.unmarshal(ThresholdingConfig.class, new InputStreamReader(cfgIn));
-		cfgIn.close();
+    /**
+     * Private constructor
+     * 
+     * @exception java.io.IOException
+     *                Thrown if the specified config file cannot be read
+     * @exception org.exolab.castor.xml.MarshalException
+     *                Thrown if the file does not conform to the schema.
+     * @exception org.exolab.castor.xml.ValidationException
+     *                Thrown if the contents do not match the required schema.
+     */
+    private ThresholdingConfigFactory(String configFile) throws IOException, MarshalException, ValidationException {
+        InputStream cfgIn = new FileInputStream(configFile);
 
-		// Build map of org.opennms.netmgt.config.threshd.Group objects
-		// indexed by group name.
-		//
-		// This is parsed and built at initialization for 
-		// faster processing at run-timne.
-		// 
-		m_groupMap = new HashMap();
-		
-		Iterator iter = m_config.getGroupCollection().iterator();
-		while (iter.hasNext())
-		{
-			Group group = (Group)iter.next();
-			m_groupMap.put(group.getName(), group);
-		}
-	}
+        m_config = (ThresholdingConfig) Unmarshaller.unmarshal(ThresholdingConfig.class, new InputStreamReader(cfgIn));
+        cfgIn.close();
 
-	/**
-	 * Load the config from the default config file and create the 
-	 * singleton instance of this factory.
-	 *
-	 * @exception java.io.IOException Thrown if the specified config
-	 * 	file cannot be read
-	 * @exception org.exolab.castor.xml.MarshalException Thrown if the 
-	 * 	file does not conform to the schema.
-	 * @exception org.exolab.castor.xml.ValidationException Thrown if 
-	 *	the contents do not match the required schema.
-	 */
-	public static synchronized void init()
-		throws 	IOException,
-			MarshalException, 
-			ValidationException
-	{
-		if (m_loaded)
-		{
-			// init already called - return
-			// to reload, reload() will need to be called
-			return;
-		}
+        // Build map of org.opennms.netmgt.config.threshd.Group objects
+        // indexed by group name.
+        //
+        // This is parsed and built at initialization for
+        // faster processing at run-timne.
+        // 
+        m_groupMap = new HashMap();
 
-		File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.THRESHOLDING_CONF_FILE_NAME);
+        Iterator iter = m_config.getGroupCollection().iterator();
+        while (iter.hasNext()) {
+            Group group = (Group) iter.next();
+            m_groupMap.put(group.getName(), group);
+        }
+    }
 
-		ThreadCategory.getInstance(ThresholdingConfigFactory.class).debug("init: config file path: " + cfgFile.getPath());
-		
-		m_singleton = new ThresholdingConfigFactory(cfgFile.getPath());
+    /**
+     * Load the config from the default config file and create the singleton
+     * instance of this factory.
+     * 
+     * @exception java.io.IOException
+     *                Thrown if the specified config file cannot be read
+     * @exception org.exolab.castor.xml.MarshalException
+     *                Thrown if the file does not conform to the schema.
+     * @exception org.exolab.castor.xml.ValidationException
+     *                Thrown if the contents do not match the required schema.
+     */
+    public static synchronized void init() throws IOException, MarshalException, ValidationException {
+        if (m_loaded) {
+            // init already called - return
+            // to reload, reload() will need to be called
+            return;
+        }
 
-		m_loaded = true;
-	}
+        File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.THRESHOLDING_CONF_FILE_NAME);
 
-	/**
-	 * Reload the config from the default config file
-	 *
-	 * @exception java.io.IOException Thrown if the specified config
-	 * 	file cannot be read/loaded
-	 * @exception org.exolab.castor.xml.MarshalException Thrown if the 
-	 * 	file does not conform to the schema.
-	 * @exception org.exolab.castor.xml.ValidationException Thrown if 
-	 *	the contents do not match the required schema.
-	 */
-	public static synchronized void reload()
-		throws 	IOException,
-			MarshalException, 
-			ValidationException
-	{
-		m_singleton = null;
-		m_loaded    = false;
+        ThreadCategory.getInstance(ThresholdingConfigFactory.class).debug("init: config file path: " + cfgFile.getPath());
 
-		init();
-	}
+        m_singleton = new ThresholdingConfigFactory(cfgFile.getPath());
 
-	/**
-	 * Return the singleton instance of this factory.
-	 *
-	 * @return The current factory instance.
-	 *
-	 * @throws java.lang.IllegalStateException Thrown if the factory
-	 * 	has not yet been initialized.
-	 */
-	public static synchronized ThresholdingConfigFactory getInstance()
-	{
-		if(!m_loaded)
-			throw new IllegalStateException("The factory has not been initialized");
+        m_loaded = true;
+    }
 
-		return m_singleton;
-	}
+    /**
+     * Reload the config from the default config file
+     * 
+     * @exception java.io.IOException
+     *                Thrown if the specified config file cannot be read/loaded
+     * @exception org.exolab.castor.xml.MarshalException
+     *                Thrown if the file does not conform to the schema.
+     * @exception org.exolab.castor.xml.ValidationException
+     *                Thrown if the contents do not match the required schema.
+     */
+    public static synchronized void reload() throws IOException, MarshalException, ValidationException {
+        m_singleton = null;
+        m_loaded = false;
 
-	/**
-	 * Retrieves the configured path to the RRD file repository
-	 * for the specified thresholding group.
-	 *
-	 * @param groupName	Group name to lookup
-	 *
-	 * @return RRD repository path.
-	 * 
-	 * @throws IllegalArgumentException if group name does not exist
-	 *   	in the group map.
-	 */
-	public String getRrdRepository(String groupName)
-	{
-		Group group = (Group)m_groupMap.get(groupName);
-		if (group == null)
-			throw new IllegalArgumentException("Group does not exist.");
-			
-		return group.getRrdRepository();
-	}
-	
-	/** 
-	 * Retrieves a Collection object consisting of all the
-	 * org.opennms.netmgt.config.Threshold objects which make
-	 * up the specified thresholding group.
-	 *
-	 * @param groupName	Group name to lookup
-	 *
-	 * @return Collection consisting of all the Threshold objects 
-	 * 	for the specified group..
-	 * 
-	 * @throws IllegalArgumentException if group name does not exist
-	 *   	in the group map.
-	 */
-	public Collection getThresholds(String groupName)
-	{
-		Group group = (Group)m_groupMap.get(groupName);
-		if (group == null)
-			throw new IllegalArgumentException("Group does not exist.");
-			
-		return group.getThresholdCollection();
-	}
+        init();
+    }
+
+    /**
+     * Return the singleton instance of this factory.
+     * 
+     * @return The current factory instance.
+     * 
+     * @throws java.lang.IllegalStateException
+     *             Thrown if the factory has not yet been initialized.
+     */
+    public static synchronized ThresholdingConfigFactory getInstance() {
+        if (!m_loaded)
+            throw new IllegalStateException("The factory has not been initialized");
+
+        return m_singleton;
+    }
+
+    /**
+     * Retrieves the configured path to the RRD file repository for the
+     * specified thresholding group.
+     * 
+     * @param groupName
+     *            Group name to lookup
+     * 
+     * @return RRD repository path.
+     * 
+     * @throws IllegalArgumentException
+     *             if group name does not exist in the group map.
+     */
+    public String getRrdRepository(String groupName) {
+        Group group = (Group) m_groupMap.get(groupName);
+        if (group == null)
+            throw new IllegalArgumentException("Group does not exist.");
+
+        return group.getRrdRepository();
+    }
+
+    /**
+     * Retrieves a Collection object consisting of all the
+     * org.opennms.netmgt.config.Threshold objects which make up the specified
+     * thresholding group.
+     * 
+     * @param groupName
+     *            Group name to lookup
+     * 
+     * @return Collection consisting of all the Threshold objects for the
+     *         specified group..
+     * 
+     * @throws IllegalArgumentException
+     *             if group name does not exist in the group map.
+     */
+    public Collection getThresholds(String groupName) {
+        Group group = (Group) m_groupMap.get(groupName);
+        if (group == null)
+            throw new IllegalArgumentException("Group does not exist.");
+
+        return group.getThresholdCollection();
+    }
 }

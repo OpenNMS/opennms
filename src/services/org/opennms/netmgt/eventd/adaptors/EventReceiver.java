@@ -37,38 +37,35 @@ package org.opennms.netmgt.eventd.adaptors;
 import org.opennms.core.fiber.InitializableFiber;
 
 /**
- * This interface defines the contract that every type
- * of adaptor event receiver must fulfill. Every
- * reciever is a fiber and will run independently of
- * other receivers in the system. When an event is received
- * by an instance of this interface it will pass the new
- * event to the <code>EventHandler.event()</code> method.
- *
- * @author <a href="mailto:weave@oculan.com">Brian Weaver</a>
- * @author <a href="http;//www.opennms.org">OpenNMS</a>
- *
+ * This interface defines the contract that every type of adaptor event receiver
+ * must fulfill. Every reciever is a fiber and will run independently of other
+ * receivers in the system. When an event is received by an instance of this
+ * interface it will pass the new event to the <code>EventHandler.event()</code>
+ * method.
+ * 
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
+ * @author <a href="http;//www.opennms.org">OpenNMS </a>
+ * 
  */
-public interface EventReceiver
-	extends InitializableFiber
-{
-	/**
-	 * Adds a new event handler to receiver. When new
-	 * events are received the decoded event is passed
-	 * to the handler.
-	 *
-	 * @param handler	A reference to an event handler
-	 *
-	 */
-	public void addEventHandler(EventHandler handler);
+public interface EventReceiver extends InitializableFiber {
+    /**
+     * Adds a new event handler to receiver. When new events are received the
+     * decoded event is passed to the handler.
+     * 
+     * @param handler
+     *            A reference to an event handler
+     * 
+     */
+    public void addEventHandler(EventHandler handler);
 
-	/**
-	 * Removes an event handler from the list of handler
-	 * called when an event is received. The handler is
-	 * removed based upon the method <code>equals()</code>
-	 * inherieted from the <code>Object</code> class.
-	 *
-	 * @param handler	A reference to the event handler.
-	 *
-	 */
-	public void removeEventHandler(EventHandler handler);
+    /**
+     * Removes an event handler from the list of handler called when an event is
+     * received. The handler is removed based upon the method
+     * <code>equals()</code> inherieted from the <code>Object</code> class.
+     * 
+     * @param handler
+     *            A reference to the event handler.
+     * 
+     */
+    public void removeEventHandler(EventHandler handler);
 }

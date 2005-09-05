@@ -36,9 +36,10 @@ package org.opennms.netmgt.vmmgr;
 
 import java.util.List;
 
-public interface ManagerMBean
-{
-	public List status();
-	public void stop();
-	public void doSystemExit();
+public interface ManagerMBean {
+    public List status();
+
+    public void stop();
+
+    public void doSystemExit();
 }

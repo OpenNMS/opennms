@@ -13,7 +13,7 @@
 
 <%
     String location = (String)request.getParameter( "location" );
-    File file = new File("/opt/OpenNMS/etc/map.enable");
+    File file = new File("@install.etc.dir@/map.enable");
 %>
 
 <!-- Footer -->
@@ -79,12 +79,6 @@
               <a href="report/index.jsp">Reports</a>&nbsp;|&nbsp;
         <%  } %>
 
-        <%  if( "inventory".equals( location ) ) { %>
-              Inventory&nbsp;|&nbsp;
-        <%  } else { %>
-              <a href="conf/index.jsp">Inventory</a>&nbsp;|&nbsp;
-        <%  } %>
-
 <% if( file.exists() ) { %>
         <%-- Map --%>                               
         <%  if( "map".equals( location ) ) { %>
@@ -114,7 +108,7 @@
   </tr>
   <tr> 
     <td align="center" >
-      <font  SIZE="-1">OpenNMS <a href="help/about.jsp">Copyright</a> &copy; 2002-2004 <a HREF="http://www.opennms.com/">The OpenNMS Group, Inc.</a> OpenNMS&reg; is a registered trademark of <a href="http://www.opennms.com">The OpenNMS Group, Inc.</a> </font>
+      <font  SIZE="-1">OpenNMS <a href="help/about.jsp">Copyright</a> &copy; 2002-2005 <a HREF="http://www.opennms.com/">The OpenNMS Group, Inc.</a> OpenNMS&reg; is a registered trademark of <a href="http://www.opennms.com">The OpenNMS Group, Inc.</a> </font>
     </td>
   </tr>
 </table>

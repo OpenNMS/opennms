@@ -67,18 +67,19 @@ import org.opennms.core.utils.ThreadCategory;
  * @author <A HREF="mailto:jason@opennms.org">Jason </A>
  * @author <A HREF="http://www.opennsm.org">OpenNMS </A>
  * 
- *  
+ * 
  */
 public final class DominoIIOPPlugin extends AbstractTcpPlugin {
 
     /**
-     * Encapsulates the configuration characteristics unique to a DominoIIOP connection
+     * Encapsulates the configuration characteristics unique to a DominoIIOP
+     * connection
      * 
      * @author Matt Brozowski
      * 
      */
     public static class DominoConnectionConfig extends ConnectionConfig {
-        
+
         int m_iorPort;
 
         /**
@@ -90,7 +91,7 @@ public final class DominoIIOPPlugin extends AbstractTcpPlugin {
          */
         public DominoConnectionConfig(InetAddress inetAddress, int port) {
             super(inetAddress, port);
-            
+
         }
 
         public int getIorPort() {
@@ -151,13 +152,17 @@ public final class DominoIIOPPlugin extends AbstractTcpPlugin {
     protected ConnectionConfig createConnectionConfig(InetAddress address, int port) {
         return new DominoConnectionConfig(address, port);
     }
-    /* (non-Javadoc)
-     * @see org.opennms.netmgt.capsd.AbstractTcpPlugin#populateConnectionConfig(org.opennms.netmgt.capsd.ConnectionConfig, java.util.Map)
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.opennms.netmgt.capsd.AbstractTcpPlugin#populateConnectionConfig(org.opennms.netmgt.capsd.ConnectionConfig,
+     *      java.util.Map)
      */
     protected void populateConnectionConfig(ConnectionConfig connConfig, Map qualifiers) {
         super.populateConnectionConfig(connConfig, qualifiers);
 
-        DominoConnectionConfig config = (DominoConnectionConfig)connConfig;
+        DominoConnectionConfig config = (DominoConnectionConfig) connConfig;
         config.setIorPort(getKeyedInteger(qualifiers, "ior-port", DEFAULT_IORPORT));
 
     }
@@ -178,7 +183,8 @@ public final class DominoIIOPPlugin extends AbstractTcpPlugin {
         } catch (FileNotFoundException e) {
             return true;
         } catch (Exception e) {
-            if (log.isDebugEnabled()) log.debug("DominoIIOPMonitor: failed to get the corba IOR from " + config.getInetAddress().getHostAddress());
+            if (log.isDebugEnabled())
+                log.debug("DominoIIOPMonitor: failed to get the corba IOR from " + config.getInetAddress().getHostAddress());
             return false;
         }
     }
@@ -212,7 +218,8 @@ public final class DominoIIOPPlugin extends AbstractTcpPlugin {
         }
         dis.close();
 
-        if (!IOR.startsWith("IOR:")) throw new IOException("Invalid IOR: " + IOR);
+        if (!IOR.startsWith("IOR:"))
+            throw new IOException("Invalid IOR: " + IOR);
 
         return IOR;
     }

@@ -39,13 +39,16 @@
 
 package org.opennms.netmgt.scriptd.jmx;
 
+public interface ScriptdMBean {
+    public void init();
 
-public interface ScriptdMBean
-{
-	public void init();
-	public void start();
-	public void stop();
-	public int getStatus();
-	public String getStatusText();
-	public String status();
+    public void start();
+
+    public void stop();
+
+    public int getStatus();
+
+    public String getStatusText();
+
+    public String status();
 }

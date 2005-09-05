@@ -45,24 +45,22 @@ import org.opennms.web.admin.groups.parsers.Group;
 
 /**
  * A servlet that handles adding a new group
- *
- * @author <A HREF="mailto:jason@opennms.org">Jason Johns</A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
+ * 
+ * @author <A HREF="mailto:jason@opennms.org">Jason Johns </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
-public class AddNewGroupServlet extends HttpServlet
-{
-    public void doPost( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException 
-    {
-       	String groupName = request.getParameter("groupName");
-	
-	Group newGroup = new Group();
-	newGroup.setGroupName(groupName);
-	
-	HttpSession userSession = request.getSession(false);
-	userSession.setAttribute("group.modifyGroup.jsp", newGroup);
-	
-	//forward the request for proper display
+public class AddNewGroupServlet extends HttpServlet {
+    public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        String groupName = request.getParameter("groupName");
+
+        Group newGroup = new Group();
+        newGroup.setGroupName(groupName);
+
+        HttpSession userSession = request.getSession(false);
+        userSession.setAttribute("group.modifyGroup.jsp", newGroup);
+
+        // forward the request for proper display
         RequestDispatcher dispatcher = this.getServletContext().getRequestDispatcher("/admin/userGroupView/groups/modifyGroup.jsp");
-        dispatcher.forward( request, response );
+        dispatcher.forward(request, response);
     }
 }

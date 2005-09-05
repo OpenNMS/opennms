@@ -86,7 +86,7 @@
   <tr>
     <td>&nbsp;</td>
     <td colspan="3">
-      <h2><%=nodeLabel%></h2>
+      <h2><%=nodeLabel%> ( nodeID=<%=nodeId%> ) </h2>
       <p><a href="element/node.jsp?node=<%=nodeId%>">General Information</a></p>
       <%-- Handle the SNMP information if any --%> 
       <% if( node_db.getNodeSysId() != null ) { %>
@@ -124,6 +124,21 @@
         <input type="hidden" name="isnew" value="<%=isNew%>" />
 
         <table width="100%" cellspacing="0" cellpadding="2" border="0">
+	  <tr>
+	    <td colspan="6"><h3>Configuration Categories</h3></td>
+	  </tr>
+	  <tr>
+	    <td>Display Category</td>
+	    <td><input type="text" name="displaycategory" value="<%=asset.getDisplayCategory()%>" size="20" maxlength="64"/></td>
+	    <td>Notification Category</td>
+	    <td><input type="text" name="notifycategory"  value="<%=asset.getNotifyCategory()%>" size="20" maxlength="64"/></td>
+	  </tr>
+	  <tr>
+	    <td>Poller Category</td>
+	    <td><input type="text" name="pollercategory" value="<%=asset.getPollerCategory()%>" size="20" maxlength="64"/></td>
+	    <td>Threshold Category</td>
+	    <td><input type="text" name="thresholdcategory"  value="<%=asset.getThresholdCategory()%>" size="20" maxlength="64"/></td>
+	  </tr>
           <tr>
             <td colspan="6"><h3>Identification</h3></td>
           </tr>
@@ -240,21 +255,6 @@
             <td>Maint Phone</td>
             <td><input type="text" name="supportphone" value="<%=asset.getSupportPhone()%>" size="20" maxlength="64"/></td>
           </tr>
-	  <tr>
-	    <td colspan="6"><h3>Configuration Categories</h3></td>
-	  </tr>
-	  <tr>
-	    <td>Display Category</td>
-	    <td><input type="text" name="displaycategory" value="<%=asset.getDisplayCategory()%>" size="20" maxlength="64"/></td>
-	    <td>Notification Category</td>
-	    <td><input type="text" name="notifycategory"  value="<%=asset.getNotifyCategory()%>" size="20" maxlength="64"/></td>
-	  </tr>
-	  <tr>
-	    <td>Poller Category</td>
-	    <td><input type="text" name="pollercategory" value="<%=asset.getPollerCategory()%>" size="20" maxlength="64"/></td>
-	    <td>Threshold Category</td>
-	    <td><input type="text" name="thresholdcategory"  value="<%=asset.getThresholdCategory()%>" size="20" maxlength="64"/></td>
-	  </tr>
           <tr>
             <td colspan="6"><h3>Comments</h3></td>
           </tr>

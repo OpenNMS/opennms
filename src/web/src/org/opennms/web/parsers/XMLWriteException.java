@@ -32,20 +32,22 @@
 
 package org.opennms.web.parsers;
 
-/**This exception is used to indicate that the an xml file
-   was not able to be written to a file.
-   
-   @author <A HREF="mailto:jason@opennms.org">Jason Johns</A>
-   @author <A HREF="http://www.opennms.org/">OpenNMS</A>
-   @version 1.1.1.1  
-*/
-public class XMLWriteException extends Exception
-{
-    /**Default constructor, calls the Exception constructor.
-       @param detail information about the exception
+/**
+ * This exception is used to indicate that the an xml file was not able to be
+ * written to a file.
+ * 
+ * @author <A HREF="mailto:jason@opennms.org">Jason Johns </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @version 1.1.1.1
+ */
+public class XMLWriteException extends Exception {
+    /**
+     * Default constructor, calls the Exception constructor.
+     * 
+     * @param detail
+     *            information about the exception
      */
-    public XMLWriteException(String detail)
-    {
-	super(detail);
+    public XMLWriteException(String detail) {
+        super(detail);
     }
 }

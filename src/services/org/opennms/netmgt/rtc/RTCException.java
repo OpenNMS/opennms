@@ -36,31 +36,28 @@ package org.opennms.netmgt.rtc;
 
 /**
  * The RTCException class is thrown by the RTC.
- *
- * @author 	<A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy</A>
- * @author	<A HREF="http://www.opennms.org">OpenNMS.org</A>
+ * 
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
+ * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
  */
-public final class RTCException extends Exception
-{
-	/**
-	 * Default class constructor. Constructs a new exception with 
-	 * a default message.
-	 */
-	public RTCException()
-	{
-		super("RTCException");
-	}
-	
-	/**
-	 * Constructs a new exception with the passed string as 
-	 * the message encapsulated in the exception.
-	 *
-	 * @param s	The exception's message.
-	 *
-	 */
-	public RTCException(String s)
-	{
-		super(s);
-	}
-}
+public final class RTCException extends Exception {
+    /**
+     * Default class constructor. Constructs a new exception with a default
+     * message.
+     */
+    public RTCException() {
+        super("RTCException");
+    }
 
+    /**
+     * Constructs a new exception with the passed string as the message
+     * encapsulated in the exception.
+     * 
+     * @param s
+     *            The exception's message.
+     * 
+     */
+    public RTCException(String s) {
+        super(s);
+    }
+}

@@ -40,21 +40,18 @@ import org.opennms.netmgt.xml.event.Event;
 /**
  * The interface to be implemented by all services that wish to receive events
  * from Eventd.
- *
- * @author 	<A HREF="mailto:weave@oculan.com">Brian Weaver</A>
- * @author	<A HREF="http://www.opennms.org">OpenNMS.org</A>
+ * 
+ * @author <A HREF="mailto:weave@oculan.com">Brian Weaver </A>
+ * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
  */
-public interface EventListener
-{
-	/**
-	 * Return the id of the listener
-	 */
-	public String getName();
+public interface EventListener {
+    /**
+     * Return the id of the listener
+     */
+    public String getName();
 
-	/**
-	 * Process a sent event.
-	 */
-	public void onEvent(Event e);
+    /**
+     * Process a sent event.
+     */
+    public void onEvent(Event e);
 }
-
-

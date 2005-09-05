@@ -53,45 +53,47 @@ import org.opennms.netmgt.utils.RelaxedX509TrustManager;
 
 /**
  * <P>
- * This class is designed to be used by the capabilities daemon to test for the existance of an
- * HTTPS server on remote interfaces. The class implements the Plugin interface that allows it
- * to be used along with other plugins by the daemon.
+ * This class is designed to be used by the capabilities daemon to test for the
+ * existance of an HTTPS server on remote interfaces. The class implements the
+ * Plugin interface that allows it to be used along with other plugins by the
+ * daemon.
  * 
- * This plugin generates a HTTP GET request and checks the return code returned by the remote
- * host to determine if it supports the protocol.
+ * This plugin generates a HTTP GET request and checks the return code returned
+ * by the remote host to determine if it supports the protocol.
  * 
- * The remote host's response will be deemed valid if the return code falls in the 100 to 599
- * range (inclusive).
+ * The remote host's response will be deemed valid if the return code falls in
+ * the 100 to 599 range (inclusive).
  * 
- * This is based on the following information from RFC 1945 (HTTP 1.0) HTTP 1.0 GET return
- * codes: 1xx: Informational - Not used, future use 2xx: Success 3xx: Redirection 4xx: Client
- * error 5xx: Server error
+ * This is based on the following information from RFC 1945 (HTTP 1.0) HTTP 1.0
+ * GET return codes: 1xx: Informational - Not used, future use 2xx: Success 3xx:
+ * Redirection 4xx: Client error 5xx: Server error
  * </P>
  * 
- * This plugin generates a HTTP GET request and checks the return code returned by the remote
- * host to determine if it supports the protocol.
+ * This plugin generates a HTTP GET request and checks the return code returned
+ * by the remote host to determine if it supports the protocol.
  * 
- * The remote host's response will be deemed valid if the return code falls in the 100 to 599
- * range (inclusive).
+ * The remote host's response will be deemed valid if the return code falls in
+ * the 100 to 599 range (inclusive).
  * 
- * This is based on the following information from RFC 1945 (HTTP 1.0) HTTP 1.0 GET return
- * codes: 1xx: Informational - Not used, future use 2xx: Success 3xx: Redirection 4xx: Client
- * error 5xx: Server error
+ * This is based on the following information from RFC 1945 (HTTP 1.0) HTTP 1.0
+ * GET return codes: 1xx: Informational - Not used, future use 2xx: Success 3xx:
+ * Redirection 4xx: Client error 5xx: Server error
  * </P>
  * 
  * @author <A HREF="mailto:jason@opennms.org">Jason </A>
  * @author <A HREF="http://www.opennsm.org">OpenNMS </A>
  * 
- *  
+ * 
  */
 public class HttpsPlugin extends HttpPlugin {
 
     /**
      * <P>
-     * The default ports on which the host is checked to see if it supports HTTP.
+     * The default ports on which the host is checked to see if it supports
+     * HTTP.
      * </P>
      */
-    private static final int[] DEFAULT_PORTS = { 443};
+    private static final int[] DEFAULT_PORTS = { 443 };
 
     /**
      * Default number of retries for HTTP requests.
@@ -116,11 +118,11 @@ public class HttpsPlugin extends HttpPlugin {
     protected Socket wrapSocket(Socket socket, ConnectionConfig config) throws Exception {
         Socket sslSocket;
 
-        //set up the certificate validation. USING THIS SCHEME WILL ACCEPT ALL
+        // set up the certificate validation. USING THIS SCHEME WILL ACCEPT ALL
         // CERTIFICATES
         SSLSocketFactory sslSF = null;
         javax.net.ssl.KeyManager[] km = null;
-        TrustManager[] tm = { new RelaxedX509TrustManager()};
+        TrustManager[] tm = { new RelaxedX509TrustManager() };
         SSLContext sslContext = SSLContext.getInstance("SSL");
         sslContext.init(null, tm, new java.security.SecureRandom());
         sslSF = sslContext.getSocketFactory();
@@ -129,4 +131,3 @@ public class HttpsPlugin extends HttpPlugin {
     }
 
 }
-

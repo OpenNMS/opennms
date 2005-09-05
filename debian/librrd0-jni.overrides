@@ -1,3 +1,0 @@
-librrd0-jni: binary-or-shlib-defines-rpath
-librrd0-jni: library-not-linked-against-libc
-librrd0-jni: sharedobject-in-library-directory-not-actually-a-shlib

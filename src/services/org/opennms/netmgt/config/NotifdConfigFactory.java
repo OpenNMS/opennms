@@ -45,241 +45,149 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.StringWriter;
+import java.io.Reader;
 
 import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.Marshaller;
-import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.ConfigFileConstants;
-import org.opennms.netmgt.EventConstants;
-import org.opennms.netmgt.config.notifd.NotifdConfiguration;
-import org.opennms.netmgt.eventd.EventIpcManagerFactory;
-import org.opennms.netmgt.xml.event.Event;
-
+import org.opennms.netmgt.notifd.BroadcastEventProcessor;
 /**
-*/
-public class NotifdConfigFactory
-{
-	/**
-	 * Singleton instance
-	 */
-	private static NotifdConfigFactory instance;
-	
-	/**
-	 * Input stream for the general Notifd configuration xml
-	*/
-	protected static InputStream configIn;
-	
-	/**
-	 * Boolean indicating if the init() method has been called
-	 */
-	private static boolean initialized = false;
-        
-        /**
-         *
-         */
-        private static NotifdConfiguration configuration;
-	
-	/**
-	 *
-	 */
-        private static File m_notifdConfFile;
-        
-        /**
-         *
-	 */
-	private static long m_lastModified;
-	
-	/**
-	 *
-	 */
-	private NotifdConfigFactory()
-	{
-	}
-	
-	/**
-	 *
-	 */
-	static synchronized public NotifdConfigFactory getInstance()
-	{
-		if (!initialized)
-			return null;
-		
-		if (instance == null)
-		{
-			instance = new NotifdConfigFactory();
-		}
-		
-		return instance;
-	}
-        
-        /**
-	 *
-	 */
-	public static synchronized void init()
-		throws IOException, FileNotFoundException, MarshalException, ValidationException
-	{
-		if (!initialized)
-		{
-			reload();
-			initialized = true;
-		}
-	}
-	
-	/**
-	 *
-	 */
-	public static synchronized void reload()
-		throws IOException, MarshalException, ValidationException
-	{
-                m_notifdConfFile = ConfigFileConstants.getFile(ConfigFileConstants.NOTIFD_CONFIG_FILE_NAME);
-                        
-                InputStream configIn = new FileInputStream(m_notifdConfFile);
-                m_lastModified = m_notifdConfFile.lastModified();
-                
-                configuration = (NotifdConfiguration) Unmarshaller.unmarshal(NotifdConfiguration.class, new InputStreamReader(configIn));
-                configIn.close();
+ */
+public class NotifdConfigFactory extends NotifdConfigManager {
+    /**
+     * Singleton instance
+     */
+    private static NotifdConfigFactory instance;
+
+    /**
+     * Boolean indicating if the init() method has been called
+     */
+    private static boolean initialized = false;
+
+    /**
+     * 
+     */
+    private File m_notifdConfFile;
+
+    /**
+     * 
+     */
+    private long m_lastModified;
+
+    /**
+     * 
+     */
+    private NotifdConfigFactory() {
+    }
+
+    /**
+     * 
+     */
+    static synchronized public NotifdConfigFactory getInstance() {
+        if (!initialized)
+            throw new IllegalStateException("init() not called.");
+
+        return instance;
+    }
+
+    /**
+     * 
+     */
+    public static synchronized void init() throws IOException, FileNotFoundException, MarshalException, ValidationException {
+        if (!initialized) {
+            instance = new NotifdConfigFactory();
+            instance.reload();
+            initialized = true;
         }
-	
-	/**
-	 *
-	 */
-	public static NotifdConfiguration getConfiguration()
-                throws IOException, MarshalException, ValidationException
-	{
-		if (!initialized)
-			return null;
-		
-                updateFromFile();
-                
-		return configuration;
-	}
-	
-	/**
-	 *
-	 */
-	public static String getNotificationStatus()
-                throws IOException, MarshalException, ValidationException
-	{
-		if (!initialized)
-			return null;
-		
-                updateFromFile();
-                
-		return configuration.getStatus();
-	}
-	
-	/**
-	 *
-	 */
-	public static boolean getNotificationMatch()
-                throws IOException, MarshalException, ValidationException
-	{
-		if (!initialized)
-			return false;
-		
-                updateFromFile();
-                
-		return configuration.getMatchAll();
-	}
-	
-	/**
-	 * Gets a nicely formatted string for the Web UI to display
-	 * @return On, Off, or Unknown depending on status
-	 */
-	public static String getPrettyStatus()
-                throws IOException, MarshalException, ValidationException
-	{
-		if (!initialized)
-			return "Unknown";
-		
-		String status = "Unknown";
-		
-		status = getNotificationStatus();
-		
-		if (status.equals("on"))
-			status = "On";
-		else if (status.equals("off"))
-			status = "Off";
-		
-		return status;
-	}
-        
-        /**
-         * Turns the notifd service on
-         */
-        public void turnNotifdOn()
-                throws MarshalException, ValidationException, IOException
-        {
-                sendEvent("uei.opennms.org/internal/notificationsTurnedOn");
-                configuration.setStatus("on");
-		
-                saveCurrent();
+    }
+
+    /**
+     * @throws IOException
+     * @throws FileNotFoundException
+     * @throws MarshalException
+     * @throws ValidationException
+     */
+    public synchronized void reload() throws IOException, FileNotFoundException, MarshalException, ValidationException {
+        m_notifdConfFile = ConfigFileConstants.getFile(ConfigFileConstants.NOTIFD_CONFIG_FILE_NAME);
+
+        InputStream configIn = new FileInputStream(m_notifdConfFile);
+        m_lastModified = m_notifdConfFile.lastModified();
+
+        Reader reader = new InputStreamReader(configIn);
+        parseXml(reader);
+    }
+
+    /**
+     * Gets a nicely formatted string for the Web UI to display
+     * 
+     * @return On, Off, or Unknown depending on status
+     * 
+     * TODO: Pull up into base class but keep this reference for the
+     * webapp until singleton is removed.
+     */
+    public static String getPrettyStatus() throws IOException, MarshalException, ValidationException {
+        if (!initialized)
+            return "Unknown";
+
+        String status = "Unknown";
+
+        status = NotifdConfigFactory.getInstance().getNotificationStatus();
+
+        if (status.equals("on"))
+            status = "On";
+        else if (status.equals("off"))
+            status = "Off";
+
+        return status;
+    }
+
+    /**
+     * Turns the notifd service on
+     * TODO: this was pulled up into the base class but is still here
+     * because of a reference from the webapp.  Fix up by renaming the
+     * method in the base class can calling that method from here.
+     */
+    public void turnNotifdOn() throws MarshalException, ValidationException, IOException {
+        sendEvent("uei.opennms.org/internal/notificationsTurnedOn");
+        configuration.setStatus("on");
+
+        saveCurrent();
+    }
+
+    /**
+     * Turns the notifd service off
+     * TODO: this was pulled up into the base class but is still here
+     * because of a reference from the webapp.  Fix up by renaming the
+     * method in the base class can calling that method from here.
+     */
+    public void turnNotifdOff() throws MarshalException, ValidationException, IOException {
+        sendEvent("uei.opennms.org/internal/notificationsTurnedOff");
+        configuration.setStatus("off");
+
+        saveCurrent();
+    }
+
+    /**
+     * @param xml
+     * @throws IOException
+     */
+    protected void saveXml(String xml) throws IOException {
+        if (xml != null) {
+            FileWriter fileWriter = new FileWriter(m_notifdConfFile);
+            fileWriter.write(xml);
+            fileWriter.flush();
+            fileWriter.close();
         }
-        
-        /**
-         * Turns the notifd service off
-         */
-        public void turnNotifdOff()
-                throws MarshalException, ValidationException, IOException
-        {
-                sendEvent("uei.opennms.org/internal/notificationsTurnedOff");
-                configuration.setStatus("off");
-		
-                saveCurrent();
+    }
+
+    /**
+     * 
+     */
+    protected void update() throws IOException, MarshalException, ValidationException {
+        if (m_lastModified != m_notifdConfFile.lastModified()) {
+            NotifdConfigFactory.getInstance().reload();
         }
-        
-        /**
-         *
-         */
-        private void sendEvent(String uei)
-        {
-                Event event = new Event();
-                event.setUei(uei);
-                event.setSource("NotifdConfigFactory");
-		
-		event.setTime(EventConstants.formatToString(new java.util.Date()));
-                
-		try
-		{
-                	EventIpcManagerFactory.getInstance().getManager().sendNow(event);
-		}
-		catch (Throwable t)
-		{
-		}
-        }
-        
-        /**
-         *
-         */
-        public synchronized void saveCurrent()
-                throws MarshalException, ValidationException, IOException
-        {
-                //marshall to a string first, then write the string to the file. This way the original config
-                //isn't lost if the xml from the marshall is hosed.
-                StringWriter stringWriter = new StringWriter();
-                Marshaller.marshal( configuration, stringWriter );
-                if (stringWriter.toString()!=null)
-                {
-			FileWriter fileWriter = new FileWriter(m_notifdConfFile);
-                        fileWriter.write(stringWriter.toString());
-                        fileWriter.flush();
-                        fileWriter.close();
-                }
-                
-                reload();
-        }
-        
-        /**
-         *
-         */
-        private static void updateFromFile()
-                throws IOException, MarshalException, ValidationException
-        {
-                if (m_lastModified != m_notifdConfFile.lastModified())
-		{
-			reload();
-		}
-        }
+    }
+
+
 }

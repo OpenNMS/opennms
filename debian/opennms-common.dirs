@@ -1,7 +1,0 @@
-etc/opennms
-usr/share/lintian/overrides
-usr/share/opennms/bin
-usr/share/opennms/lib/scripts
-usr/share/opennms/lib/updates
-var/lib/opennms
-var/log/opennms

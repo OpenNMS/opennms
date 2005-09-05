@@ -6,7 +6,7 @@
                 version='1.0'>
 
 <!-- ********************************************************************
-     $Id: footnote.xsl,v 1.12 2003/08/28 20:51:58 bobstayton Exp $
+     $Id: footnote.xsl,v 1.17 2004/10/03 18:48:12 kosek Exp $
      ********************************************************************
 
      This file is part of the XSL DocBook Stylesheet distribution.
@@ -17,7 +17,7 @@
 
 <xsl:template name="format.footnote.mark">
   <xsl:param name="mark" select="'?'"/>
-  <fo:inline font-size="90%">
+  <fo:inline xsl:use-attribute-sets="superscript.properties">
     <xsl:choose>
       <xsl:when test="$fop.extensions != 0">
         <xsl:attribute name="vertical-align">super</xsl:attribute>
@@ -52,6 +52,7 @@
                           font-size="{$footnote.font.size}"
                           font-weight="normal"
                           font-style="normal"
+                          text-align="{$alignment}"
                           margin-left="0pc">
           <xsl:apply-templates/>
         </fo:footnote-body>
@@ -71,6 +72,9 @@
 
 <xsl:template match="footnote" mode="footnote.number">
   <xsl:choose>
+    <xsl:when test="string-length(@label) != 0">
+      <xsl:value-of select="@label"/>
+    </xsl:when>
     <xsl:when test="ancestor::tgroup">
       <xsl:variable name="tfnum">
         <xsl:number level="any" from="table|informaltable" format="1"/>
@@ -87,10 +91,13 @@
       </xsl:choose>
     </xsl:when>
     <xsl:otherwise>
-      <xsl:variable name="pfoot" select="preceding::footnote"/>
-      <xsl:variable name="ptfoot" select="preceding::tgroup//footnote"/>
-      <xsl:variable name="fnum" select="count($pfoot) - count($ptfoot) + 1"/>
-
+      <xsl:variable name="fnum">
+        <!-- FIXME: list in @from is probably not complete -->
+        <xsl:number level="any" 
+                    from="chapter|appendix|preface|article|refentry|bibliography" 
+                    count="footnote[not(@label)][not(ancestor::tgroup)]|ulink[$ulink.footnotes != 0][node()][@url != .][not(ancestor::footnote)]" 
+                    format="1"/>
+      </xsl:variable>
       <xsl:choose>
         <xsl:when test="string-length($footnote.number.symbols) &gt;= $fnum">
           <xsl:value-of select="substring($footnote.number.symbols, $fnum, 1)"/>

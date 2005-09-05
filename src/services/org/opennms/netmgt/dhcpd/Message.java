@@ -46,52 +46,44 @@ import java.net.InetAddress;
 
 import edu.bucknell.net.JDHCP.DHCPMessage;
 
-public final class Message
-	implements Serializable
-{
-	private DHCPMessage	m_dhcpmsg;
-	private InetAddress	m_target;
+public final class Message implements Serializable {
+    private DHCPMessage m_dhcpmsg;
 
-	Message() // server and serialization only
-	{
-		m_dhcpmsg = null;
-		m_target  = null;
-	}
+    private InetAddress m_target;
 
-	public Message(InetAddress target, DHCPMessage msg)
-	{
-		m_dhcpmsg = msg;
-		m_target  = target;
-	}
+    Message() // server and serialization only
+    {
+        m_dhcpmsg = null;
+        m_target = null;
+    }
 
-	public InetAddress getAddress()
-	{
-		return m_target;
-	}
+    public Message(InetAddress target, DHCPMessage msg) {
+        m_dhcpmsg = msg;
+        m_target = target;
+    }
 
-	public DHCPMessage getMessage()
-	{
-		return m_dhcpmsg;
-	}
+    public InetAddress getAddress() {
+        return m_target;
+    }
 
-	private void writeObject(ObjectOutputStream out)
-		throws IOException
-	{
-		out.writeObject(m_target);
+    public DHCPMessage getMessage() {
+        return m_dhcpmsg;
+    }
 
-		byte[] buf = m_dhcpmsg.externalize();
-		out.writeInt(buf.length);
-		out.write(buf);
-	}
+    private void writeObject(ObjectOutputStream out) throws IOException {
+        out.writeObject(m_target);
 
-	private void readObject(ObjectInputStream in)
-		throws IOException, ClassNotFoundException
-	{
-		m_target = (InetAddress)in.readObject();
+        byte[] buf = m_dhcpmsg.externalize();
+        out.writeInt(buf.length);
+        out.write(buf);
+    }
 
-		byte[] buf = new byte[in.readInt()];
-		in.read(buf, 0, buf.length);
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        m_target = (InetAddress) in.readObject();
 
-		m_dhcpmsg = new DHCPMessage(buf);
-	}
+        byte[] buf = new byte[in.readInt()];
+        in.read(buf, 0, buf.length);
+
+        m_dhcpmsg = new DHCPMessage(buf);
+    }
 }

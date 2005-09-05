@@ -9,28 +9,68 @@
 			<doNotOverride>script</doNotOverride>
 		</security>
 	</global>
-		<event-file>@install.etc.dir@/events/ia.events.xml</event-file>
         <event-file>@install.etc.dir@/events/3Com.events.xml</event-file>
         <event-file>@install.etc.dir@/events/ADIC-v2.events.xml</event-file>
+        <event-file>@install.etc.dir@/events/Alteon.events.xml</event-file>
         <event-file>@install.etc.dir@/events/APC.events.xml</event-file>
+        <event-file>@install.etc.dir@/events/APC.Best.events.xml</event-file>
+        <event-file>@install.etc.dir@/events/APC.Exide.events.xml</event-file>
         <event-file>@install.etc.dir@/events/BackupExec.events.xml</event-file>
         <event-file>@install.etc.dir@/events/BEA.events.xml</event-file>
+        <event-file>@install.etc.dir@/events/BlackBerryServer.events.xml</event-file>
         <event-file>@install.etc.dir@/events/Brocade.events.xml</event-file>
-        <event-file>@install.etc.dir@/events/CIM.events.xml</event-file>
+        <event-file>@install.etc.dir@/events/Cisco2.events.xml</event-file>
+        <event-file>@install.etc.dir@/events/Cisco.5300dchan.events.xml</event-file>
         <event-file>@install.etc.dir@/events/Cisco.events.xml</event-file>
+	<!-- CIM.events.xml has been deprecated by CPQHPIM.events.xml -->
+        <event-file>@install.etc.dir@/events/CPQHPIM.events.xml</event-file>
+        <event-file>@install.etc.dir@/events/Clarent.events.xml</event-file>
+        <event-file>@install.etc.dir@/events/Clarinet.events.xml</event-file>
+        <event-file>@install.etc.dir@/events/Cricket.events.xml</event-file>
         <event-file>@install.etc.dir@/events/DellOpenManage.events.xml</event-file>
         <event-file>@install.etc.dir@/events/Fore.events.xml</event-file>
         <event-file>@install.etc.dir@/events/FoundryNetworks.events.xml</event-file>
+        <event-file>@install.etc.dir@/events/Groupwise.events.xml</event-file>
         <event-file>@install.etc.dir@/events/HP.events.xml</event-file>
         <event-file>@install.etc.dir@/events/IBM.events.xml</event-file>
+        <event-file>@install.etc.dir@/events/IEEE802dot11.events.xml</event-file>
         <event-file>@install.etc.dir@/events/Intel.events.xml</event-file>
+        <event-file>@install.etc.dir@/events/Linksys.events.xml</event-file>
+        <event-file>@install.etc.dir@/events/MGE-UPS.events.xml</event-file>
         <event-file>@install.etc.dir@/events/Microsoft.events.xml</event-file>
+	<event-file>@install.etc.dir@/events/Mylex.events.xml</event-file>
+        <event-file>@install.etc.dir@/events/NetApp.events.xml</event-file>
+        <event-file>@install.etc.dir@/events/Netbotz.events.xml</event-file>
+        <event-file>@install.etc.dir@/events/Nokia.events.xml</event-file>
+        <event-file>@install.etc.dir@/events/NORTEL.Contivity.events.xml</event-file>
         <event-file>@install.etc.dir@/events/Novell.events.xml</event-file>
         <event-file>@install.etc.dir@/events/Oracle.events.xml</event-file>
+        <event-file>@install.etc.dir@/events/Patrol.events.xml</event-file>
+        <event-file>@install.etc.dir@/events/Quintum.events.xml</event-file>
+        <event-file>@install.etc.dir@/events/Redline.events.xml</event-file>
+        <event-file>@install.etc.dir@/events/Sensaphone.events.xml</event-file>
+        <event-file>@install.etc.dir@/events/Snort.events.xml</event-file>
         <event-file>@install.etc.dir@/events/SonicWall.events.xml</event-file>
+        <event-file>@install.etc.dir@/events/Symbol.events.xml</event-file>
+        <event-file>@install.etc.dir@/events/Uptime.events.xml</event-file>
         <event-file>@install.etc.dir@/events/Xerox.events.xml</event-file>
+
         <event-file>@install.etc.dir@/events/Standard.events.xml</event-file>
-	<event-file>@install.etc.dir@/events/Mylex.events.xml</event-file>
+        <event>
+                <uei>MATCH-ANY-UEI</uei>
+                <event-label>OpenNMS defined event: MATCH-ANY-UEI</event-label>
+                <descr>
+                        &lt;p&gt;This UEI will never be generated, but exists
+                        so that notifications can match any UEI for a
+                        particular filter rule. Useful to see all events for
+                        a particular node via notifications.
+                        &lt;/p&gt;
+                </descr>
+                <logmsg dest='logonly'>
+                        MATCH-ANY-UEI event.
+                </logmsg>
+                <severity>Indeterminate</severity>
+        </event>
 	<event>
 		<uei>uei.opennms.org/internal/capsd/discPause</uei>
 		<event-label>OpenNMS-defined internal event: capsd discPause</event-label>
@@ -55,6 +95,19 @@
 			Capsd is ready for Discovery to resume scheduling nodes.
 		</logmsg>
 		<severity>Indeterminate</severity>
+	</event>
+	<event>
+		<uei>uei.opennms.org/internal/capsd/snmpConflictsWithDb</uei>
+		<event-label>OpenNMS-defined capsd event: snmpConflictsWithDb</event-label>
+		<descr>
+			&lt;p&gt;During a rescan the ip interfaces as determined by snmp
+			conflict with the ip interfaces listed in the database for this node.
+			&lt;/p&gt;
+		</descr>
+		<logmsg dest='logndisplay'>
+			IP interfaces as determined by SNMP disagree with the database.
+		</logmsg>
+		<severity>Warning</severity>
 	</event>
 	<event>
 		<uei>uei.opennms.org/internal/capsd/forceRescan</uei>
@@ -357,6 +410,22 @@
 		</descr>
 		<logmsg dest='logndisplay'>
 			&lt;p&gt;The ScriptD configuration files have changed.&lt;/p&gt;
+		</logmsg>
+		<severity>Major</severity>
+	</event>
+	<event>
+		<uei>uei.opennms.org/internal/configureSNMP</uei>
+		<event-label>OpenNMS-defined internal event: configureSNMP</event-label>
+		<descr>
+			&lt;p&gt;SNMP definition for IP address
+                        %parm[firstIPAddress]%-%parm[lastIPAddress]% has been
+                        updated with community string
+                        &quot;%parm[communityString]%&quot;&lt;/p&gt;
+		</descr>
+		<logmsg dest='logonly'>
+			&lt;p&gt;SNMP community string
+                        &quot;%parm[communityString]%&quot; has been defined
+                        for IP %parm[firstIPAddress]%-%parm[lastIPAddress]%.&lt;/p&gt;
 		</logmsg>
 		<severity>Major</severity>
 	</event>

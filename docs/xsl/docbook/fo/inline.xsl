@@ -1,4 +1,17 @@
 <?xml version='1.0'?>
+<!DOCTYPE xsl:stylesheet [
+  <!ENTITY comment.block.parents "parent::answer|parent::appendix|parent::article|parent::bibliodiv|
+                                  parent::bibliography|parent::blockquote|parent::caution|parent::chapter|
+                                  parent::glossary|parent::glossdiv|parent::important|parent::index|
+                                  parent::indexdiv|parent::listitem|parent::note|parent::orderedlist|
+                                  parent::partintro|parent::preface|parent::procedure|parent::qandadiv|
+                                  parent::qandaset|parent::question|parent::refentry|parent::refnamediv|
+                                  parent::refsect1|parent::refsect2|parent::refsect3|parent::refsection|
+                                  parent::refsynopsisdiv|parent::sect1|parent::sect2|parent::sect3|parent::sect4|
+                                  parent::sect5|parent::section|parent::setindex|parent::sidebar|
+                                  parent::simplesect|parent::taskprerequisites|parent::taskrelated|
+                                  parent::tasksummary|parent::warning">
+]>
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
                 xmlns:fo="http://www.w3.org/1999/XSL/Format"
                 xmlns:xlink='http://www.w3.org/1999/xlink'
@@ -6,7 +19,7 @@
                 version='1.0'>
 
 <!-- ********************************************************************
-     $Id: inline.xsl,v 1.34 2004/03/04 13:35:26 nwalsh Exp $
+     $Id: inline.xsl,v 1.38 2004/10/24 10:42:29 kosek Exp $
      ********************************************************************
 
      This file is part of the XSL DocBook Stylesheet distribution.
@@ -461,6 +474,10 @@
   <xsl:call-template name="inline.monoseq"/>
 </xsl:template>
 
+<xsl:template match="package">
+  <xsl:call-template name="inline.charseq"/>
+</xsl:template>
+
 <xsl:template match="parameter">
   <xsl:call-template name="inline.italicmonoseq"/>
 </xsl:template>
@@ -537,12 +554,14 @@
 <xsl:template match="emphasis">
   <xsl:variable name="depth">
     <xsl:call-template name="dot.count">
-      <xsl:with-param name="string"><xsl:number level="multiple"/></xsl:with-param>
+      <xsl:with-param name="string">
+	<xsl:number level="multiple"/>
+      </xsl:with-param>
     </xsl:call-template>
   </xsl:variable>
 
   <xsl:choose>
-    <xsl:when test="@role='bold'">
+    <xsl:when test="@role='bold' or @role='strong'">
       <xsl:call-template name="inline.boldseq"/>
     </xsl:when>
     <xsl:when test="@role='underline'">
@@ -740,7 +759,7 @@
   </xsl:choose>
 </xsl:template>
 
-<xsl:template match="sgmltag">
+<xsl:template match="sgmltag|tag">
   <xsl:variable name="class">
     <xsl:choose>
       <xsl:when test="@class">
@@ -948,11 +967,19 @@
 
 <!-- ==================================================================== -->
 
-<xsl:template match="comment|remark">
+<xsl:template match="comment[&comment.block.parents;]|remark[&comment.block.parents;]">
   <xsl:if test="$show.comments != 0">
     <fo:block font-style="italic">
       <xsl:call-template name="inline.charseq"/>
     </fo:block>
+  </xsl:if>
+</xsl:template>
+
+<xsl:template match="comment|remark">
+  <xsl:if test="$show.comments != 0">
+    <fo:inline font-style="italic">
+      <xsl:call-template name="inline.charseq"/>
+    </fo:inline>
   </xsl:if>
 </xsl:template>
 

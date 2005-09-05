@@ -1,3 +1,370 @@
+2004-11-23  Michael Smith <xmldoc@users.sourceforge.net>
+
+	* autotoc.xsl, param.ent, param.xweb: RFE #1069397 Add new parameter simplesect.in.toc
+	
+	  - default value of 0 causes simplesect to be omitted from TOCs
+	  - to cause simplesect to be included in TOCs, you must set the
+	    value of simplesect.in.toc to 1
+	
+	note from Norm:
+	
+	  Simplesect elements aren't supposed to appear in the ToC at
+	  all. Ugh. The Definitive Guide doesn't really explain that
+	  very well.
+	
+	  The use case for simplesect is when, for example, every
+	  chapter in a book ends with "Exercises" or "For More
+	  Information" sections and you don't want those to appear in
+	  the ToC.
+
+	* refentry.xsl: Patch #1057029 - Fix titleabbrev warnings in reference (patch from
+	anatoly techtonik)
+
+	* sections.xsl: Bug #1068455 (Invalid h7, h8, etc. generated for deeply nested sections)
+	
+	::CAUSE
+	  Stylesheet HTML heading-generation didn't anticipate that some
+	  jokers like to nest sections really, really deep. Not naming any
+	  names...
+	
+	::FIX
+	  Refined logic to safely handle documents produced by the "I can
+	  nest sections deeper than you can" crowd
+
+2004-11-19  Michael Smith <xmldoc@users.sourceforge.net>
+
+	* sections.xsl: Bug #1066753 -- subtitle is severely broken (reported by Sam Steingold)
+	
+	::PROBLEM
+	  In (X)HTML output, subtitle for the simplesect element generates an
+	  h2 head, no matter at what level in the sectioning hiearchy the
+	  simplesect occurs; end up with cases where a simplesect is
+	  output with (for example), an h4 title but a h2 subtitle
+	
+	::CAUSE and FIX
+	  No template for simplesect/subtitle in the set of templates that
+	  call the section.subtitle named template, so stylesheets fell
+	  back to using the titlepage.mode template for subtitle
+	
+	::FIX
+	  Added simplesect/subtitle to the set of templates that
+	  call the section.subtitle named template.
+	
+	::AFFECTS
+	  Only affects (X)HTML output of simplesect/subtitle; nothing else
+
+2004-11-17  Jirka Kosek <kosek@users.sourceforge.net>
+
+	* Makefile.param, autoidx.xsl, docbook.xsl, param.ent, param.xweb: 
+	Added new parameter index.prefer.titleabbrev. When set to 1, index references will use titleabbrev instead of title when available.
+
+	* manifest.xsl: Removed reference to index HTML pages from manifest if the output format is HTML Help
+
+2004-11-13  Robert Stayton <bobstayton@users.sourceforge.net>
+
+	* autotoc.xsl: Fixed bugs in simplesect handling.
+
+2004-11-09  Michael Smith <xmldoc@users.sourceforge.net>
+
+	* synop.xsl: Revert change for tracker #1008804 (command in cmdsynopsis is not indented)
+	Will re-implement (correctly) for next release.
+
+2004-11-08  Michael Smith <xmldoc@users.sourceforge.net>
+
+	* inline.xsl: Replace <tt></tt> output with <code></code>
+
+2004-10-30  Robert Stayton <bobstayton@users.sourceforge.net>
+
+	* admon.xsl: Change admon.graphic.width template to a mode so that different
+	admonitions can have different graphical widths.
+
+2004-10-29  Norman Walsh <nwalsh@users.sourceforge.net>
+
+	* verbatim.xsl: Deprecated shade.verbatim
+
+2004-10-25  Michael Smith <xmldoc@users.sourceforge.net>
+
+	* autotoc.xsl: Request #585543 (Quickref-style reference ToC)
+	
+	Wrapped ToC refentrytitle/refname and refpurpose in
+	span with class values. This makes it possible to style
+	them using a CSS stylesheet containing something like below.
+	
+	Implementing tablular look for FO output will have to wait...
+	
+	div.toc {
+	  padding-bottom: 20px;
+	}
+	
+	div.toc dt, div.toc li {
+	  clear: both;
+	}
+	
+	div.toc span.refentrytitle {
+	  float: left;
+	  text-align: left;
+	}
+	
+	div.toc span.refpurpose {
+	  float: right;
+	  width: 65%;
+	  text-align: left;
+	}
+	
+	hr {
+	  clear: both;
+	}
+
+	* synop.xsl: Feature Request #1008804 (command in cmdsynopsis is not indented)
+	
+	Added some CSS magic to enable the requested effect; this change:
+	
+	  - makes all cmdsynopses monospaced
+	
+	  - creates CSS floats that make a hanging indent (aka tabular
+	    presentation) for cmdysnopsis; command name appears first
+	    column, everything else (arg/group/synopfragment) goes to
+	    second column
+	
+	Probably should also add parameters to toggle behavior on/off...
+
+2004-10-24  Jirka Kosek <kosek@users.sourceforge.net>
+
+	* glossary.xsl: Fixed bug #1031851. Target of link is computed by href.target template.
+
+	* inline.xsl: Fixed bug #977874. Remark/comment is rendered as a block/inline depending on its context.
+
+2004-10-23  Norman Walsh <nwalsh@users.sourceforge.net>
+
+	* chunk-common.xsl: Patch #1037326: Don't generate up link when up=home in chunker
+
+	* inline.xsl: Patch #1027078: Support role=strong on emphasis; use strong/em instead of b/i
+
+2004-10-22  Norman Walsh <nwalsh@users.sourceforge.net>
+
+	* component.xsl: Bug #1050205; scale component titles if the component is a child of a section
+
+2004-10-20  Jirka Kosek <kosek@users.sourceforge.net>
+
+	* Makefile.param: Added new parameter hyphenate.verbatim that can be used to turn on "intelligent" wrapping of verbatim environments.
+
+2004-10-17  Norman Walsh <nwalsh@users.sourceforge.net>
+
+	* biblio.xsl: Bug 992905: fixed ugly interaction between bibliography.collection and bibliography.number
+
+2004-10-14  Michael Smith <xmldoc@users.sourceforge.net>
+
+	* chunk-code.xsl, chunk-common.xsl, manifest.xsl: Bug #1046371 - chunk children of Part
+	
+	Problem:
+	  Glossary, Bibliography, and Index were not getting chunked when
+	  they occurred as children of Part. They should be, because other
+	  components (Chapter, Article, Appendix, etc.) within Part are
+	  chunked.
+	
+	Fix:
+	  Added code to have Part chunked in same manner as Book and
+	  Article.
+	
+	Areas affected:
+	  Chunking (no effect on non-chunked output) + manifest
+	
+	Notes:
+	  Discovered a different bug when testing this (bug #1047151):
+	  content of indexes within components sometimes end up being
+	  identical to content of the master index for the whole division
+	  they are a part of (e.g., the whole Book or Set)
+
+2004-09-20  Norman Walsh <nwalsh@users.sourceforge.net>
+
+	* inline.xsl: Support package element
+
+2004-09-19  Robert Stayton <bobstayton@users.sourceforge.net>
+
+	* xref.xsl: Added a class attribute to anchors for olink cross references.
+
+2004-09-13  Robert Stayton <bobstayton@users.sourceforge.net>
+
+	* xref.xsl: Fixed bug in olink resolution.
+
+2004-08-26  Jirka Kosek <kosek@users.sourceforge.net>
+
+	* autoidx-ng.xsl: Sort language is taken from document not from system environment
+
+2004-08-26  Robert Stayton <bobstayton@users.sourceforge.net>
+
+	* param.ent, param.xweb: Added component.label.includes.part.label parameter.
+
+2004-08-19  Jirka Kosek <kosek@users.sourceforge.net>
+
+	* Makefile.param: Numbering and formatting of normal and ulink footnotes has been unifyed.
+
+2004-08-15  Robert Stayton <bobstayton@users.sourceforge.net>
+
+	* sections.xsl: Add support for @renderas to section and sect1 et al headings.
+
+2004-08-14  Robert Stayton <bobstayton@users.sourceforge.net>
+
+	* lists.xsl: Add call to anchor template for seglistitem so it can be linked to.
+
+	* lists.xsl: Added class attributes for segmentedlist elements for table presentation.
+
+	* lists.xsl: Fix bug #983042 to make segmentedlist HTML markup more semantic
+	and available to CSS styles.
+
+2004-08-13  Robert Stayton <bobstayton@users.sourceforge.net>
+
+	* chunk-code.xsl: Fixed bug #967909 incorrect 'next' link for index in chapter.
+
+	* chunk-common.xsl: index is defined as chunk only if $generate.index != 0.
+
+	* chunk-common.xsl, docbook.xsl, graphics.xsl, titlepage.xsl: 
+	Bug 955623: Added user.preroot placeholder template to permit xsl-stylesheet
+	and other PIs and comments to be output before the HTML root element.
+
+	* footnote.xsl: RFE 782817, added support for @label in footnote.
+
+	* titlepage.xsl: Non-chunked legalnotice now gets an <a name="id"> so it can be
+	referenced with xref or link.
+
+2004-08-12  Robert Stayton <bobstayton@users.sourceforge.net>
+
+	* graphics.xsl, param.ent, param.xweb: For RFE 790517, added parameter img.src.path as a prefix
+	to HTML img src attributes.
+
+2004-08-11  Robert Stayton <bobstayton@users.sourceforge.net>
+
+	* biblio.xsl, titlepage.xsl: Added support for 4.3 corpcredit element.
+
+	* chunk-common.xsl: Changed link rel="home" to rel="start", and
+	link rel="previous" to rel="prev", per W3C HTML 4.01 spec.
+
+	* graphics.xsl: Made file extension selection case insensitive.
+
+2004-08-09  Robert Stayton <bobstayton@users.sourceforge.net>
+
+	* docbook.xsl: Now includes common/olink.xsl after olink rewrite.
+
+	* param.ent, param.xweb, xref.xsl: Rewrote olink templates to support new features.
+
+2004-08-06  Robert Stayton <bobstayton@users.sourceforge.net>
+
+	* graphics.xsl: Fixed bug where ximg:getDepth was using $nominal.image.width instead of depth.
+
+	* table.xsl: Fixed Bug #840187 entrytbl needs width="100%" on the table element.
+
+2004-07-25  Norman Walsh <nwalsh@users.sourceforge.net>
+
+	* lists.xsl: Allow calloutlist to have block content before the first callout
+
+2004-07-18  Robert Stayton <bobstayton@users.sourceforge.net>
+
+	* titlepage.xsl: Added collabname in titlepage.mode.
+
+2004-06-26  Robert Stayton <bobstayton@users.sourceforge.net>
+
+	* chunk-code.xsl, graphics.xsl: @fileref now resolves xml:base attributes.
+
+	* graphics.xsl: Changed @fileref processing to support xml:base.
+
+2004-06-20  Robert Stayton <bobstayton@users.sourceforge.net>
+
+	* param.ent, param.xweb: Added section.autolabel.max.depth parameter.
+
+2004-06-14  Jirka Kosek <kosek@users.sourceforge.net>
+
+	* Makefile.param, autoidx-ng.xsl: Updated i18n indexing method to support new type attribute and index.on.type parameter
+
+2004-06-14  Robert Stayton <bobstayton@users.sourceforge.net>
+
+	* xref.xsl: Added support for xrefstyle attrib in olinks.
+
+2004-06-13  Robert Stayton <bobstayton@users.sourceforge.net>
+
+	* autoidx.xsl: Removed extraneous 'see' template under teriary seealso processing.
+
+	* autoidx.xsl: Added support for index.on.type to support new type attribute
+	on indexterm an index.
+
+	* chunk-code.xsl: Fixed bug in generated filename for separate TOC chunk.
+
+	* param.ent, param.xweb: Added index.on.type parameter to support new 'type' attribute
+	on indexterms and index.
+
+2004-05-28  Robert Stayton <bobstayton@users.sourceforge.net>
+
+	* autoidx.xsl: Fix for bug #893438: only first seealso processed.
+
+	* xref.xsl: Remove spurious error messages during xref target collection for olinks.
+
+2004-05-25  Norman Walsh <nwalsh@users.sourceforge.net>
+
+	* block.xsl: Move blockquote attributions over a bit
+
+2004-05-17  Robert Stayton <bobstayton@users.sourceforge.net>
+
+	* autoidx.xsl: Fixed bug in Symbols section when index.on.role value used.
+
+2004-05-16  Jirka Kosek <kosek@users.sourceforge.net>
+
+	* autoidx-ng.xsl: Added support for index.on.role into internatinalized indexing
+
+2004-05-07  Robert Stayton <bobstayton@users.sourceforge.net>
+
+	* autotoc.xsl: Added 'index' to selected nodes for component.toc. Since it is
+	permitted by the DTD, it should be in the TOC.
+
+2004-04-26  Robert Stayton <bobstayton@users.sourceforge.net>
+
+	* lists.xsl: Fix for procedure not getting an anchor if it has a title.
+
+2004-04-21  Robert Stayton <bobstayton@users.sourceforge.net>
+
+	* chunk-code.xsl: Add make.lot.chunk template to generate separate LoT files.
+
+2004-04-19  Robert Stayton <bobstayton@users.sourceforge.net>
+
+	* chunk-code.xsl: Changed make.lots to support the new chunk.separate.lots parameter.
+
+	* param.ent, param.xweb: Added chunk.separate.lots parameter.
+
+	* xref.xsl: Now reports proper error if $current.docid parameter used
+	but the value is not found in target database.
+
+2004-04-18  Robert Stayton <bobstayton@users.sourceforge.net>
+
+	* autoidx.xsl: Add support for generating an index containing only
+	those terms with a matching role attribute.
+
+	* param.ent, param.xweb: Added index.on.role parameter.
+
+2004-04-11  Robert Stayton <bobstayton@users.sourceforge.net>
+
+	* admon.xsl: Fixed bug #872941 where admonition graphic 'alt' text was not translated.
+
+	* autotoc.xsl: Fixes bug #814589, so that refentry in an appendix is now
+	listed in the table of contents.
+
+	* formal.xsl: Fixed bug #881546 where an HTML table was not getting
+	a generated ID so the link to it from the TOC failed.
+
+	* formal.xsl: Added title parameter to formal.object.heading since the
+	match="abstract" template is trying to use it with such
+	a parameter.
+
+2004-03-25  Jirka Kosek <kosek@users.sourceforge.net>
+
+	* graphics.xsl: Support default textdata encoding also on files included via imagedata and inlinegraphics.
+
+2004-03-25  Norman Walsh <nwalsh@users.sourceforge.net>
+
+	* graphics.xsl: Fix typo in attribute quoting
+
+2004-03-24  Jirka Kosek <kosek@users.sourceforge.net>
+
+	* Makefile.param, graphics.xsl, param.ent, param.xweb: 
+	Added Saxon support for encoding attribute on textdata. Added new parameter textdata.default.encoding which specifies encoding when encoding attribute on textdata is missing.
+
 2004-02-13  Robert Stayton <bobstayton@users.sourceforge.net>
 
 	* biblio.xsl, glossary.xsl, index.xsl: Removed obsolete component.title.mode templates.

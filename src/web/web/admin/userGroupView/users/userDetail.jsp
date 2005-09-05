@@ -141,6 +141,15 @@
                     
                     <tr>
                       <td width="10%" valign="top">
+                        <b>XMPP Address:</b>
+                      </td>
+                      <td width="90%" valign="top">
+                        <%=userFactory.getXMPPAddress(userID)%>
+                      </td>
+                    </tr>
+
+                    <tr>
+                      <td width="10%" valign="top">
                         <b>Numerical Service:</b>
                       </td>
                       <td width="90%" valign="top">

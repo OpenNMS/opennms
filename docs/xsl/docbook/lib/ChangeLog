@@ -1,3 +1,11 @@
+2004-09-24  Robert Stayton <bobstayton@users.sourceforge.net>
+
+	* lib.xweb: Fixed param prototype to remove Saxon8 warning.
+
+2004-08-11  Robert Stayton <bobstayton@users.sourceforge.net>
+
+	* lib.xweb: Fixed problem of PI name suffix being matched instead of whole name.
+
 2003-04-05  Adam Di Carlo <adicarlo@users.sourceforge.net>
 
 	* lib.xweb: a pica is 12 points, rather than a sixth of an inch

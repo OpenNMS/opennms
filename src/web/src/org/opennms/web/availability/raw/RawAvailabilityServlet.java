@@ -49,70 +49,64 @@ import org.opennms.report.availability.AvailabilityReport;
 import org.opennms.web.MissingParameterException;
 
 /**
- * @author <A HREF="mailto:jacinta@opennms.org">Jacinta Remedios</A>
- * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski</A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
+ * @author <A HREF="mailto:jacinta@opennms.org">Jacinta Remedios </A>
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
-public class RawAvailabilityServlet extends HttpServlet
-{
-        static Category log = Category.getInstance(RawAvailabilityServlet.class.getName());
+public class RawAvailabilityServlet extends HttpServlet {
+    static Category log = Category.getInstance(RawAvailabilityServlet.class.getName());
 
-        public void init() throws ServletException 
-	{
+    public void init() throws ServletException {
+    }
+
+    public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        String category = request.getParameter("category");
+        String username = request.getRemoteUser();
+        ServletConfig config = this.getServletConfig();
+
+        if (category == null) {
+            throw new MissingParameterException("category");
         }
 
-        public void doGet( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException 
-	{
-                String category = request.getParameter( "category" );
-                String username = request.getRemoteUser();
-                ServletConfig config = this.getServletConfig();
-
-                if( category == null) {
-                        throw new MissingParameterException( "category" );
-                }
-
-                if( username == null ) {
-                        username = "";
-                }
-
-                try
-                {
-                        //String url = config.getServletContext().getRealPath(request.getRequestURI());
-                        String url = config.getServletContext().getRealPath("/availability/availabilityRaw");
-                        int index = url.indexOf("/availability/availabilityRaw");
-                        String urlReplace = url.substring(0, index);
-                        urlReplace += "/images/logo.gif";
-
-                        AvailabilityReport report = new AvailabilityReport(username);
-                        report.getReportData(urlReplace, category, "all");
-
-                        if(log.isDebugEnabled())
-                                log.info("Generated Report Data... ");
-
-			Reader xml = new FileReader( Vault.getHomeDir() + "/share/reports/AvailReport.xml" );
-			Writer out = response.getWriter();
-
-			response.setContentType( "text/xml" );
-			this.streamToStream( xml, out );
-			out.close();
-                }
-                catch( Exception e ) {
-                        throw new ServletException( "AvailabilityServlet: ", e );
-                }
+        if (username == null) {
+            username = "";
         }
 
-        /**
-         * @deprecated Should use {@link org.opennms.web.Util#streamToStream
-         * Util.streamToStream} instead.
-         */
-        protected void streamToStream( Reader in, Writer out ) throws IOException
-        {
-                char[] b = new char[100];
-                int length;
+        try {
+            // String url =
+            // config.getServletContext().getRealPath(request.getRequestURI());
+            String url = config.getServletContext().getRealPath("/availability/availabilityRaw");
+            int index = url.indexOf("/availability/availabilityRaw");
+            String urlReplace = url.substring(0, index);
+            urlReplace += "/images/logo.gif";
 
-                while((length = in.read(b)) != -1)
-                {
-                        out.write(b, 0, length);
-                }
+            AvailabilityReport report = new AvailabilityReport(username);
+            report.getReportData(urlReplace, category, "all");
+
+            if (log.isDebugEnabled())
+                log.info("Generated Report Data... ");
+
+            Reader xml = new FileReader(Vault.getHomeDir() + "/share/reports/AvailReport.xml");
+            Writer out = response.getWriter();
+
+            response.setContentType("text/xml");
+            this.streamToStream(xml, out);
+            out.close();
+        } catch (Exception e) {
+            throw new ServletException("AvailabilityServlet: ", e);
         }
+    }
+
+    /**
+     * @deprecated Should use {@link org.opennms.web.Util#streamToStream
+     *             Util.streamToStream} instead.
+     */
+    protected void streamToStream(Reader in, Writer out) throws IOException {
+        char[] b = new char[100];
+        int length;
+
+        while ((length = in.read(b)) != -1) {
+            out.write(b, 0, length);
+        }
+    }
 }

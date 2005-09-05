@@ -46,6 +46,7 @@ import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.Writer;
 import java.lang.reflect.UndeclaredThrowableException;
+import java.net.ConnectException;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
@@ -57,141 +58,154 @@ import org.opennms.netmgt.xml.event.Events;
 import org.opennms.netmgt.xml.event.Log;
 
 /**
- * This is the interface used to send events into the event subsystem -
- * It is typically used by the poller framework plugins that perform
- * service monitoring to send out aprropriate events. Can also be used by
- * capsd, discovery etc.
- *
- * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy</A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
- *
+ * This is the interface used to send events into the event subsystem - It is
+ * typically used by the poller framework plugins that perform service
+ * monitoring to send out aprropriate events. Can also be used by capsd,
+ * discovery etc.
+ * 
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * 
  */
 public final class TcpEventProxy implements EventProxy {
-    private static final int		s_default_port = 5817;
-    private static final InetAddress	s_default_host;
+    private static final int s_default_port = 5817;
 
-    private InetAddress	m_target;
-    private int		m_port;
+    private static final InetAddress s_default_host;
+
+    private InetAddress m_target;
+
+    private int m_port;
 
     static {
-	try {
-	    s_default_host = InetAddress.getByName("127.0.0.1");
-	} catch(UnknownHostException e) {
-	    throw new UndeclaredThrowableException(e);
-	}
+        try {
+            s_default_host = InetAddress.getByName("127.0.0.1");
+        } catch (UnknownHostException e) {
+            throw new UndeclaredThrowableException(e);
+        }
     }
 
     public TcpEventProxy() {
-	this(s_default_host, s_default_port);
+        this(s_default_host, s_default_port);
     }
 
     public TcpEventProxy(int port) {
-	this(s_default_host, port);
+        this(s_default_host, port);
     }
 
     public TcpEventProxy(InetAddress target) {
-	this(target, s_default_port);
+        this(target, s_default_port);
     }
 
     public TcpEventProxy(InetAddress target, int port) {
-	m_port = port;
-	m_target = target;
+        m_port = port;
+        m_target = target;
     }
 
     /**
      * This method is called to send the event out
-     *
-     * @param event the event to be sent out
-     *
-     * @exception UndeclaredThrowableException thrown if the send fails
-     *                                         for any reason
+     * 
+     * @param event
+     *            the event to be sent out
+     * 
+     * @exception UndeclaredThrowableException
+     *                thrown if the send fails for any reason
      */
-    public void send(Event event) throws UndeclaredThrowableException{
+    public void send(Event event) throws EventProxyException {
 	Log elog = new Log();
 	Events events = new Events();
 	events.addEvent(event);
 	elog.setEvents(events);
-	    
+
 	send(elog);
     }
 
     /**
-     * This method is called to send an event log containing multiple
-     * events out.
-     *
-     * @param eventLog the events to be sent out
-     *
-     * @exception UndeclaredThrowableException thrown if the send fails
-     *                                         for any reason
+     * This method is called to send an event log containing multiple events
+     * out.
+     * 
+     * @param eventLog
+     *            the events to be sent out
+     * 
+     * @exception UndeclaredThrowableException
+     *                thrown if the send fails for any reason
      */
-    public void send(Log eventLog) throws UndeclaredThrowableException {
-	try {
-	    Connection connection = new Connection(m_target, m_port);
-	    Writer writer = connection.getWriter();
-	    Marshaller.marshal(eventLog, writer);
-	    writer.flush();
-	    connection.close();
-	} catch (Throwable t) {
-	    throw new UndeclaredThrowableException(t);
-	}
+    public void send(Log eventLog) throws EventProxyException {
+        try {
+            Connection connection = new Connection(m_target, m_port);
+            Writer writer = connection.getWriter();
+            Marshaller.marshal(eventLog, writer);
+            writer.flush();
+            connection.close();
+        } catch (Exception e) {
+	    throw new EventProxyException("Exception while sending event: " +
+					  e.getMessage(), e);
+        }
     }
 
     public class Connection {
-	private Socket		m_sock;
-	private Writer		m_writer;
-	private Reader		m_reader;
-	private Thread		m_rdrThread;
+        private Socket m_sock;
 
-	public Connection(InetAddress target, int port) throws IOException {
-	    // get a socket and set the timeout
-	    //
-	    m_sock = new Socket(target, port);
-	    m_sock.setSoTimeout(500);
+        private Writer m_writer;
 
-	    m_writer = new OutputStreamWriter(
-		       new BufferedOutputStream(m_sock.getOutputStream()));
-	    m_reader = new InputStreamReader(m_sock.getInputStream());
-	    m_rdrThread = new Thread("TcpEventProxy Input Discarder") {
-		    public void run() {
-			int ch = 0;
-			while (ch != -1) {
-			    try {
-				ch = m_reader.read();
-			    } catch(InterruptedIOException e) { 
-				ch = 0;
-			    } catch(IOException e) {
-				ch = -1;
-			    }
-			}
-		    } // end run()
-		};
+        private Reader m_reader;
 
-	    m_rdrThread.setDaemon(true);
-	    m_rdrThread.start();
-	}
+        private Thread m_rdrThread;
 
-	public Writer getWriter() {
-	    return m_writer;
-	}
+        public Connection(InetAddress target, int port) throws IOException {
+            // get a socket and set the timeout
+            //
+	    try {
+                m_sock = new Socket(target, port);
+            } catch (ConnectException e) {
+	 	ConnectException n = new ConnectException("Could not connect to event daemon at " + target + " on port " + Integer.toString(port) + ": " + e.getMessage());
+		n.initCause(e);
+	        throw n;
+            }
+            m_sock.setSoTimeout(500);
 
-	public void close() {
-	    if (m_sock != null) {
-		try {
-		    m_sock.close();
-		} catch(IOException e) {
-		    ThreadCategory.getInstance(getClass()).warn("Error closing socket", e);
-		}
-	    }
+            m_writer = new OutputStreamWriter(new BufferedOutputStream(m_sock.getOutputStream()));
+            m_reader = new InputStreamReader(m_sock.getInputStream());
+            m_rdrThread = new Thread("TcpEventProxy Input Discarder") {
+                public void run() {
+                    int ch = 0;
+                    while (ch != -1) {
+                        try {
+                            ch = m_reader.read();
+                        } catch (InterruptedIOException e) {
+                            ch = 0;
+                        } catch (IOException e) {
+                            ch = -1;
+                        }
+                    }
+                } // end run()
+            };
 
-	    m_sock = null;
+            m_rdrThread.setDaemon(true);
+            m_rdrThread.start();
+        }
 
-	    if (m_rdrThread.isAlive()) {
-		m_rdrThread.interrupt();
-	    }
-	}
+        public Writer getWriter() {
+            return m_writer;
+        }
 
-	protected void finalize() throws Throwable {
-	    close();
-	}
+        public void close() {
+            if (m_sock != null) {
+                try {
+                    m_sock.close();
+                } catch (IOException e) {
+                    ThreadCategory.getInstance(getClass()).warn("Error closing socket", e);
+                }
+            }
+
+            m_sock = null;
+
+            if (m_rdrThread.isAlive()) {
+                m_rdrThread.interrupt();
+            }
+        }
+
+        protected void finalize() throws Throwable {
+            close();
+        }
     }
 }

@@ -36,28 +36,40 @@ import java.util.Date;
 
 /**
  * A JavaBean for holding information about a single outage.
- *
- * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski</A> 
+ * 
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
  */
 public class Outage {
     protected int outageId;
+
     protected int nodeId;
+
     protected String ipAddress;
+
     protected String hostname;
+
     protected String nodeLabel;
+
     protected int serviceId;
+
     protected String serviceName;
+
     protected Date lostServiceTime;
+
     protected Date regainedServiceTime;
+
     protected Integer lostServiceEventId;
+
     protected Integer regainedServiceEventId;
+
     protected Integer lostServiceNotificationId;
+
     protected String lostServiceNotificationAcknowledgedBy;
 
-    protected Outage() {}
-    
-    
-    protected Outage( int outageId, int nodeId, String nodeLabel, String ipAddress, String hostname, int serviceId, String serviceName, Date lostServiceTime, Date regainedServiceTime, Integer lostServiceEventId, Integer regainedServiceEventId, Integer lostServiceNotificationId, String lostServiceNotificationAcknowledgedBy ) {
+    protected Outage() {
+    }
+
+    protected Outage(int outageId, int nodeId, String nodeLabel, String ipAddress, String hostname, int serviceId, String serviceName, Date lostServiceTime, Date regainedServiceTime, Integer lostServiceEventId, Integer regainedServiceEventId, Integer lostServiceNotificationId, String lostServiceNotificationAcknowledgedBy) {
         this.outageId = outageId;
         this.nodeId = nodeId;
         this.nodeLabel = nodeLabel;
@@ -73,84 +85,72 @@ public class Outage {
         this.lostServiceNotificationAcknowledgedBy = lostServiceNotificationAcknowledgedBy;
     }
 
-
     public int getId() {
         return this.outageId;
     }
 
     public int getNodeId() {
-        return( this.nodeId );
+        return (this.nodeId);
     }
-
 
     public String getIpAddress() {
-        return( this.ipAddress );
+        return (this.ipAddress);
     }
-
 
     /** can be null */
     public String getHostname() {
-        return( this.hostname );
+        return (this.hostname);
     }
-
 
     /** can be null */
     public String getNodeLabel() {
-        return( this.nodeLabel );
+        return (this.nodeLabel);
     }
-
 
     public int getServiceId() {
-        return( this.serviceId );
+        return (this.serviceId);
     }
-
 
     /** can be null */
     public String getServiceName() {
-        return( this.serviceName );
+        return (this.serviceName);
     }
-
 
     public Date getLostServiceTime() {
-        return( this.lostServiceTime );
+        return (this.lostServiceTime);
     }
-
 
     /** can be null */
     public Date getRegainedServiceTime() {
         return this.regainedServiceTime;
     }
 
-
     /** can be null */
-    public Integer getLostServiceEventId() {    
+    public Integer getLostServiceEventId() {
         return this.lostServiceEventId;
     }
-    
-    
+
     /** can be null */
-    public Integer getRegainedServiceEventId() {        
+    public Integer getRegainedServiceEventId() {
         return this.regainedServiceEventId;
     }
-    
 
     /** can be null */
-    public Integer getLostServiceNotificationId() {                
+    public Integer getLostServiceNotificationId() {
         return this.lostServiceNotificationId;
     }
-    
 
     /** can be null */
-    public String getLostServiceNotificationAcknowledgedBy() {                
+    public String getLostServiceNotificationAcknowledgedBy() {
         return this.lostServiceNotificationAcknowledgedBy;
     }
 
-
-    /** @deprecated Please use {@link #getLostServiceTime getLostServiceTimeInstead} */
+    /**
+     * @deprecated Please use
+     *             {@link #getLostServiceTime getLostServiceTimeInstead}
+     */
     public Date getTimeDown() {
-        return( this.getLostServiceTime() );
+        return (this.getLostServiceTime());
     }
 
 }
-
-

@@ -4,7 +4,7 @@
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns="http://www.w3.org/1999/xhtml" version="1.0">
 
 <!-- ********************************************************************
-     $Id: glossary.xsl,v 1.17 2004/02/13 21:03:36 bobstayton Exp $
+     $Id: glossary.xsl,v 1.18 2004/10/24 09:04:08 kosek Exp $
      ********************************************************************
 
      This file is part of the XSL DocBook Stylesheet distribution.
@@ -194,7 +194,12 @@ GlossEntry ::=
       </xsl:call-template>
       <xsl:choose>
         <xsl:when test="$target">
-          <a href="#{@otherterm}">
+          <a>
+            <xsl:attribute name="href">
+              <xsl:call-template name="href.target">
+                <xsl:with-param name="object" select="$target"/>
+              </xsl:call-template>
+            </xsl:attribute>
             <xsl:apply-templates select="$target" mode="xref-to"/>
           </a>
         </xsl:when>
@@ -236,7 +241,12 @@ GlossEntry ::=
 
   <xsl:choose>
     <xsl:when test="$target">
-      <a href="#{@otherterm}">
+      <a>
+        <xsl:attribute name="href">
+          <xsl:call-template name="href.target">
+            <xsl:with-param name="object" select="$target"/>
+          </xsl:call-template>
+        </xsl:attribute>
         <xsl:apply-templates select="$target" mode="xref-to"/>
       </a>
     </xsl:when>

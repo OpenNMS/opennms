@@ -52,21 +52,20 @@ import org.opennms.netmgt.rrd.RrdUtils;
 import org.opennms.netmgt.utils.RrdFileConstants;
 import org.opennms.web.Util;
 
-
 /**
- * A servlet that creates a custom graph of network performance data
- * using the <a href="http://www.rrdtool.org/">RRDTool</a>.
+ * A servlet that creates a custom graph of network performance data using the
+ * <a href="http://www.rrdtool.org/">RRDTool </a>.
  * 
- * <p>This servlet executes an <em>rrdtool graph</em> command
- * in another process, piping its PNG file to standard out.  The
- * servlet then reads that PNG file and returns it on the
- * <code>ServletOutputStream</code>. </p>
- *
- * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski</A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
+ * <p>
+ * This servlet executes an <em>rrdtool graph</em> command in another process,
+ * piping its PNG file to standard out. The servlet then reads that PNG file and
+ * returns it on the <code>ServletOutputStream</code>.
+ * </p>
+ * 
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
-public class RRDAdHocGraphServlet extends HttpServlet
-{
+public class RRDAdHocGraphServlet extends HttpServlet {
     /**
      * The working directory as specifed in the rrdtool-graph properties file.
      */
@@ -78,18 +77,15 @@ public class RRDAdHocGraphServlet extends HttpServlet
      */
     protected String commandPrefix;
 
-
     /**
      * The mime type of the image we will return.
      */
     protected String mimeType;
 
-
     /**
      * Holds the information specified in the rrdtool-graph properties file.
      */
     protected Properties properties;
-
 
     /**
      * Initializes this servlet by reading the rrdtool-graph properties file.
@@ -99,75 +95,72 @@ public class RRDAdHocGraphServlet extends HttpServlet
             String propertiesFilename = Vault.getHomeDir() + this.getServletConfig().getInitParameter("rrd-properties");
 
             this.properties = new Properties();
-            this.properties.load( new FileInputStream( propertiesFilename ));
-            
+            this.properties.load(new FileInputStream(propertiesFilename));
+
             RrdUtils.graphicsInitialize();
-        }
-        catch( FileNotFoundException e ) {
-            throw new ServletException( "Could not find configuration file", e );
-        }
-        catch( IOException e ) {
-            throw new ServletException( "Could not load configuration file", e );
-        } catch (RrdException  e) {
-            throw new ServletException( "Could not initialize graphing system", e);
+        } catch (FileNotFoundException e) {
+            throw new ServletException("Could not find configuration file", e);
+        } catch (IOException e) {
+            throw new ServletException("Could not load configuration file", e);
+        } catch (RrdException e) {
+            throw new ServletException("Could not initialize graphing system", e);
         }
 
-        this.workDir = new File( this.properties.getProperty( "command.input.dir" ));
-        this.commandPrefix = this.properties.getProperty( "command.prefix" );
-        this.mimeType = this.properties.getProperty( "output.mime" );
+        this.workDir = new File(this.properties.getProperty("command.input.dir"));
+        this.commandPrefix = this.properties.getProperty("command.prefix");
+        this.mimeType = this.properties.getProperty("output.mime");
     }
 
-
     /**
-     * Checks the parameters passed to this servlet, and if all are okay, executes
-     * the RRDTool command in another process and pipes its PNG output to the
-     * <code>ServletOutputStream</code> back to the requesting web browser.
+     * Checks the parameters passed to this servlet, and if all are okay,
+     * executes the RRDTool command in another process and pipes its PNG output
+     * to the <code>ServletOutputStream</code> back to the requesting web
+     * browser.
      */
-    public void doGet( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException {
-        String rrdDir = request.getParameter( "rrddir" );
-        String start  = request.getParameter( "start" );
-        String end    = request.getParameter( "end" );
+    public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        String rrdDir = request.getParameter("rrddir");
+        String start = request.getParameter("start");
+        String end = request.getParameter("end");
 
-        if( rrdDir == null || start == null || end == null ) {
-            response.setContentType( "image/png" );
-            Util.streamToStream( this.getServletContext().getResourceAsStream( "/images/rrd/missingparams.png"), response.getOutputStream() );
+        if (rrdDir == null || start == null || end == null) {
+            response.setContentType("image/png");
+            Util.streamToStream(this.getServletContext().getResourceAsStream("/images/rrd/missingparams.png"), response.getOutputStream());
             return;
         }
-        
-        if( !RrdFileConstants.isValidRRDName(rrdDir) ) {
+
+        if (!RrdFileConstants.isValidRRDName(rrdDir)) {
             this.log("Illegal RRD directory: " + rrdDir);
             throw new IllegalArgumentException("Illegal RRD directory: " + rrdDir);
         }
 
         // begin inserted code
-        String command = createAdHocCommand( request, rrdDir, start, end );
+        String command = createAdHocCommand(request, rrdDir, start, end);
 
-        if(command == null) {
-            response.setContentType( "image/png" );
-            Util.streamToStream( this.getServletContext().getResourceAsStream( "/images/rrd/missingparams.png"), response.getOutputStream() );
+        if (command == null) {
+            response.setContentType("image/png");
+            Util.streamToStream(this.getServletContext().getResourceAsStream("/images/rrd/missingparams.png"), response.getOutputStream());
             return;
         }
-        
+
         InputStream tempIn = null;
         ServletOutputStream out = response.getOutputStream();
         try {
-            
-            this.log( "Executing RRD command in this directory: " + workDir );
-            this.log( command );
-            
-            
+
+            this.log("Executing RRD command in this directory: " + workDir);
+            this.log(command);
+
             tempIn = RrdUtils.createGraph(command, workDir);
-            
+
         } catch (RrdException e) {
-            this.log("Read from stderr: "+e.getMessage());
-            response.setContentType( "image/png" );
-            Util.streamToStream( this.getServletContext().getResourceAsStream( "/images/rrd/error.png"), out );
+            this.log("Read from stderr: " + e.getMessage());
+            response.setContentType("image/png");
+            Util.streamToStream(this.getServletContext().getResourceAsStream("/images/rrd/error.png"), out);
         }
-        
+
         if (tempIn != null) {
-            response.setContentType( this.mimeType );
-            Util.streamToStream( tempIn, out );
-            
+            response.setContentType(this.mimeType);
+            Util.streamToStream(tempIn, out);
+
             tempIn.close();
         }
         out.close();
@@ -175,66 +168,65 @@ public class RRDAdHocGraphServlet extends HttpServlet
         // end inserted code
     }
 
+    protected String createAdHocCommand(HttpServletRequest request, String rrdDir, String start, String end) {
+        String title = this.properties.getProperty("adhoc.command.title");
+        String ds = this.properties.getProperty("adhoc.command.ds");
+        String graphline = this.properties.getProperty("adhoc.command.graphline");
 
-    protected String createAdHocCommand( HttpServletRequest request, String rrdDir, String start, String end ) {
-        String title = this.properties.getProperty( "adhoc.command.title" );
-        String ds = this.properties.getProperty( "adhoc.command.ds" );
-        String graphline = this.properties.getProperty( "adhoc.command.graphline" );
+        // remember rrdtool wants the time in seconds, not milliseconds;
+        // java.util.Date.getTime() returns milliseconds, so divide by 1000
+        String starttime = Long.toString(Long.parseLong(start) / 1000);
+        String endtime = Long.toString(Long.parseLong(end) / 1000);
 
-        //remember rrdtool wants the time in seconds, not milliseconds;
-        //java.util.Date.getTime() returns milliseconds, so divide by 1000
-        String starttime = Long.toString( Long.parseLong(start)/1000 );
-        String endtime   = Long.toString( Long.parseLong(end)/1000 );
+        String graphtitle = request.getParameter("title");
 
-        String graphtitle = request.getParameter( "title" );
-
-        if( graphtitle == null ) {
+        if (graphtitle == null) {
             return null;
         }
 
         StringBuffer buf = new StringBuffer();
-        buf.append( this.commandPrefix );
-        buf.append( " " );
-        buf.append( title );
+        buf.append(this.commandPrefix);
+        buf.append(" ");
+        buf.append(title);
 
-        String dsNames[] = request.getParameterValues( "ds" );
-        String dsAggregFxns[] = request.getParameterValues( "agfunction" );
-        String colors[] = request.getParameterValues( "color" );
-        String dsTitles[] = request.getParameterValues( "dstitle" );
-        String dsStyles[] = request.getParameterValues( "style" );
+        String dsNames[] = request.getParameterValues("ds");
+        String dsAggregFxns[] = request.getParameterValues("agfunction");
+        String colors[] = request.getParameterValues("color");
+        String dsTitles[] = request.getParameterValues("dstitle");
+        String dsStyles[] = request.getParameterValues("style");
 
-        if( dsNames == null || dsAggregFxns == null || colors == null || dsTitles == null || dsStyles == null ) {
+        if (dsNames == null || dsAggregFxns == null || colors == null || dsTitles == null || dsStyles == null) {
             return null;
         }
 
-        for( int i=0; i < dsNames.length; i++ ){
-            String dsAbbrev = "ds" + Integer.toString( i );
- 
+        for (int i = 0; i < dsNames.length; i++) {
+            String dsAbbrev = "ds" + Integer.toString(i);
+
             String dsName = dsNames[i];
-            String rrd = this.workDir + File.separator + rrdDir + File.separator + dsNames[i] + RrdFileConstants.RRD_SUFFIX;              
+            String rrd = rrdDir + File.separator + dsNames[i] + RrdFileConstants.RRD_SUFFIX;
             String dsAggregFxn = dsAggregFxns[i];
             String color = colors[i];
             String dsTitle = dsTitles[i];
             String dsStyle = dsStyles[i];
 
-            buf.append( " " );
-            buf.append( MessageFormat.format( ds, new String[] {rrd, starttime, endtime, graphtitle, dsAbbrev, dsName, dsAggregFxn, dsStyle, color, dsTitle} ));
+            buf.append(" ");
+            buf.append(MessageFormat.format(ds, new String[] { rrd, starttime, endtime, graphtitle, dsAbbrev, dsName, dsAggregFxn, dsStyle, color, dsTitle }));
         }
 
-        for( int i=0; i < dsNames.length; i++ ){
-            String dsAbbrev = "ds" + Integer.toString( i );
+        for (int i = 0; i < dsNames.length; i++) {
+            String dsAbbrev = "ds" + Integer.toString(i);
 
             String dsName = dsNames[i];
-            String rrd = rrdDir + File.separator + dsNames[i] + RrdFileConstants.RRD_SUFFIX;              
+            String rrd = rrdDir + File.separator + dsNames[i] + RrdFileConstants.RRD_SUFFIX;
             String dsAggregFxn = dsAggregFxns[i];
             String color = colors[i];
             String dsTitle = dsTitles[i];
             String dsStyle = dsStyles[i];
 
-            buf.append( " " );
-            buf.append( MessageFormat.format( graphline, new String[] {rrd, starttime, endtime, graphtitle, dsAbbrev, dsName, dsAggregFxn, dsStyle, color, dsTitle} ));
+            buf.append(" ");
+            buf.append(MessageFormat.format(graphline, new String[] { rrd, starttime, endtime, graphtitle, dsAbbrev, dsName, dsAggregFxn, dsStyle, color, dsTitle }));
         }
 
-        return MessageFormat.format( buf.toString(), new String[] {"bogus-rrd", starttime, endtime, graphtitle } );
+        return MessageFormat.format(buf.toString(), new String[] { "bogus-rrd", starttime, endtime, graphtitle });
     }
 }

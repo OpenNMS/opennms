@@ -53,257 +53,228 @@ import org.opennms.netmgt.config.OpennmsServerConfigFactory;
 import org.opennms.netmgt.config.XmlrpcdConfigFactory;
 
 /**
- * <p>The Xmlrpcd receives events selectively and sends notification
- * to an external XMLRPC server via the XMLRPC protocol.</p>
- *
- * @author 	<A HREF="mailto:jamesz@opennms.com">James Zuo</A>
- * @author	<A HREF="http://www.opennms.org">OpenNMS.org</A>
+ * <p>
+ * The Xmlrpcd receives events selectively and sends notification to an external
+ * XMLRPC server via the XMLRPC protocol.
+ * </p>
+ * 
+ * @author <A HREF="mailto:jamesz@opennms.com">James Zuo </A>
+ * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
  */
-public class Xmlrpcd
-	implements PausableFiber
-{
-	/**
-	 * The name of the logging category for Xmlrpcd.
-	 */
-	private static final String	LOG4J_CATEGORY = "OpenNMS.Xmlrpcd";
+public class Xmlrpcd implements PausableFiber {
+    /**
+     * The name of the logging category for Xmlrpcd.
+     */
+    private static final String LOG4J_CATEGORY = "OpenNMS.Xmlrpcd";
 
-	/**
-	 * The singlton instance.
-	 */
-	private static final Xmlrpcd	m_singleton = new Xmlrpcd();
+    /**
+     * The singlton instance.
+     */
+    private static final Xmlrpcd m_singleton = new Xmlrpcd();
 
-	/**
-	 * The name of this service.
-	 */
-	private String			m_name;
+    /**
+     * The name of this service.
+     */
+    private String m_name;
 
-	/**
-	 * The last status sent to the service control manager.
-	 */
-	private int			m_status = START_PENDING;
-	
-	/**
-	 * The communication queue
-	 */
-	private FifoQueue		m_eventlogQ;
+    /**
+     * The last status sent to the service control manager.
+     */
+    private int m_status = START_PENDING;
 
-	/**
-	 * The queue processing thread
-	 */
-	private EventQueueProcessor	m_processor;
+    /**
+     * The communication queue
+     */
+    private FifoQueue m_eventlogQ;
 
-        /**
-         * The class instance used to recieve new events from
-         * for the system.
-         */
-        private BroadcastEventProcessor m_eventReceiver;
+    /**
+     * The queue processing thread
+     */
+    private EventQueueProcessor m_processor;
 
-	/**
-	 * <P>Constructs a new Xmlrpcd object that receives events subscribed
-         * by the external XMLRPC server and sends corresponding message to 
-	 * the external XMLRPC server via XMLRPC protocol. 
-	 */
-	public Xmlrpcd()
-	{
-		m_name    = "OpenNMS.Xmlrpcd";
-	}
+    /**
+     * The class instance used to recieve new events from for the system.
+     */
+    private BroadcastEventProcessor m_eventReceiver;
 
-	public synchronized void init()
-	{
-		ThreadCategory.setPrefix(LOG4J_CATEGORY);
+    /**
+     * <P>
+     * Constructs a new Xmlrpcd object that receives events subscribed by the
+     * external XMLRPC server and sends corresponding message to the external
+     * XMLRPC server via XMLRPC protocol.
+     */
+    public Xmlrpcd() {
+        m_name = "OpenNMS.Xmlrpcd";
+    }
 
-		Category log = ThreadCategory.getInstance();
+    public synchronized void init() {
+        ThreadCategory.setPrefix(LOG4J_CATEGORY);
 
-		if(log.isDebugEnabled())
-			log.debug("start: Creating the xmlrpc event queue processor");
-		
-                // set up the event queue processor
-		m_eventlogQ  = new FifoQueueImpl();
+        Category log = ThreadCategory.getInstance();
 
-                try
-		{
-			if(log.isDebugEnabled())
-				log.debug("start: Initializing the xmlrpcd config factory");
+        if (log.isDebugEnabled())
+            log.debug("start: Creating the xmlrpc event queue processor");
 
-			XmlrpcdConfigFactory.reload();
-                        OpennmsServerConfigFactory.reload();
-                        
-			XmlrpcdConfigFactory xFactory = XmlrpcdConfigFactory.getInstance();
-                        boolean verifyServer = OpennmsServerConfigFactory.getInstance().verifyServer();
-                        String localServer = null;
+        // set up the event queue processor
+        m_eventlogQ = new FifoQueueImpl();
 
-                        if (verifyServer)
-                                localServer = OpennmsServerConfigFactory.getInstance().getServerName();
-                        
-                        Enumeration eventEnum = xFactory.getEventEnumeration();
-                        m_eventReceiver = new BroadcastEventProcessor(m_eventlogQ, xFactory.getMaxQueueSize(), eventEnum);
-		        
-                        m_processor = new EventQueueProcessor( m_eventlogQ, 
-                                                               xFactory.getXmlrpcServer(),
-                                                               xFactory.getRetries(),
-                                                               xFactory.getElapseTime(),
-                                                               verifyServer,
-                                                               localServer,
-                                                               xFactory.getMaxQueueSize());
+        try {
+            if (log.isDebugEnabled())
+                log.debug("start: Initializing the xmlrpcd config factory");
 
-		}
-		catch( MarshalException e )
-		{
-			log.error("Failed to load configuration", e);
-			throw new UndeclaredThrowableException(e);
-		}
-		catch( ValidationException e )
-		{
-			log.error("Failed to load configuration", e);
-			throw new UndeclaredThrowableException(e);
-		}
-		catch( IOException e )
-		{
-			log.error("Failed to load configuration", e);
-			throw new UndeclaredThrowableException(e);
-		}
-                catch ( Throwable t)
-                {
-                        log.error("Failed to load configuration", t);
-                }
-	}
-    
-	/**
-	 *
-	 * @exception java.lang.reflect.UndeclaredThrowableException if an
-	 * unexpected database, or IO exception occurs. 
-	 *
-	 */
-	public synchronized void start()
-	{
-		m_status = STARTING;
+            XmlrpcdConfigFactory.reload();
+            OpennmsServerConfigFactory.reload();
 
-		ThreadCategory.setPrefix(LOG4J_CATEGORY);
+            XmlrpcdConfigFactory xFactory = XmlrpcdConfigFactory.getInstance();
+            boolean verifyServer = OpennmsServerConfigFactory.getInstance().verifyServer();
+            String localServer = null;
 
-		Category log = ThreadCategory.getInstance();
+            if (verifyServer)
+                localServer = OpennmsServerConfigFactory.getInstance().getServerName();
 
-		if(log.isDebugEnabled())
-			log.debug("start: Initializing the xmlrpcd config factory");
+            Enumeration eventEnum = xFactory.getEventEnumeration();
+            m_eventReceiver = new BroadcastEventProcessor(m_eventlogQ, xFactory.getMaxQueueSize(), eventEnum);
 
-		m_processor.start();
+            m_processor = new EventQueueProcessor(m_eventlogQ, xFactory.getXmlrpcServer(), xFactory.getRetries(), xFactory.getElapseTime(), verifyServer, localServer, xFactory.getMaxQueueSize());
 
-		m_status = RUNNING;
+        } catch (MarshalException e) {
+            log.error("Failed to load configuration", e);
+            throw new UndeclaredThrowableException(e);
+        } catch (ValidationException e) {
+            log.error("Failed to load configuration", e);
+            throw new UndeclaredThrowableException(e);
+        } catch (IOException e) {
+            log.error("Failed to load configuration", e);
+            throw new UndeclaredThrowableException(e);
+        } catch (Throwable t) {
+            log.error("Failed to load configuration", t);
+        }
+    }
 
-		if(log.isDebugEnabled())
-			log.debug("start: xmlrpcd ready to process events");
+    /**
+     * 
+     * @exception java.lang.reflect.UndeclaredThrowableException
+     *                if an unexpected database, or IO exception occurs.
+     * 
+     */
+    public synchronized void start() {
+        m_status = STARTING;
 
-	}
-    
-	/**
-	 * Pauses Xmlrpcd
-	 */
-	public void pause()
-	{
-		if(m_status != RUNNING)
-			return;
+        ThreadCategory.setPrefix(LOG4J_CATEGORY);
 
-		m_status = PAUSE_PENDING;
+        Category log = ThreadCategory.getInstance();
 
-		Category log = ThreadCategory.getInstance(getClass());
+        if (log.isDebugEnabled())
+            log.debug("start: Initializing the xmlrpcd config factory");
 
-		if(log.isDebugEnabled())
-			log.debug("Calling pause on processor");
+        m_processor.start();
 
-		m_processor.pause();
+        m_status = RUNNING;
 
-		if(log.isDebugEnabled())
-			log.debug("Processor paused");
+        if (log.isDebugEnabled())
+            log.debug("start: xmlrpcd ready to process events");
 
-		m_status = PAUSED;
+    }
 
-	     	if(log.isDebugEnabled())
-			log.debug("Xmlrpcd paused");
-	}
+    /**
+     * Pauses Xmlrpcd
+     */
+    public void pause() {
+        if (m_status != RUNNING)
+            return;
 
-	/**
-	 * Resumes Xmlrpcd
-	 */
-	public void resume()
-	{
-		if(m_status != PAUSED)
-			return;
+        m_status = PAUSE_PENDING;
 
-		m_status = RESUME_PENDING;
+        Category log = ThreadCategory.getInstance(getClass());
 
-		Category log = ThreadCategory.getInstance(getClass());
+        if (log.isDebugEnabled())
+            log.debug("Calling pause on processor");
 
-		if(log.isDebugEnabled())
-			log.debug("Calling resume on processor");
+        m_processor.pause();
 
-		m_processor.resume();
+        if (log.isDebugEnabled())
+            log.debug("Processor paused");
 
-		if(log.isDebugEnabled())
-			log.debug("Processor resumed");
+        m_status = PAUSED;
 
-		m_status = RUNNING;
+        if (log.isDebugEnabled())
+            log.debug("Xmlrpcd paused");
+    }
 
-		if(log.isDebugEnabled())
-			log.debug("Xmlrpcd resumed");
-	}
-	
-	
-	/**
-	 * Stops the currently running service. If the service is
-	 * not running then the command is silently discarded.
-	 */
-	public synchronized void stop()
-	{
-		Category log = ThreadCategory.getInstance(getClass());
+    /**
+     * Resumes Xmlrpcd
+     */
+    public void resume() {
+        if (m_status != PAUSED)
+            return;
 
-		m_status = STOP_PENDING;
+        m_status = RESUME_PENDING;
 
-		// shutdown and wait on the background processing thread to exit.
-		if(log.isDebugEnabled())
-			log.debug("exit: closing communication paths.");
+        Category log = ThreadCategory.getInstance(getClass());
 
-		if(log.isDebugEnabled())
-				log.debug("stop: Stopping queue processor.");
+        if (log.isDebugEnabled())
+            log.debug("Calling resume on processor");
 
-		// interrupt the processor daemon thread
-		m_processor.stop();
+        m_processor.resume();
 
-		m_status = STOPPED;
+        if (log.isDebugEnabled())
+            log.debug("Processor resumed");
 
-		if(log.isDebugEnabled())
-				log.debug("stop: Xmlrpcd stopped");
-	}
+        m_status = RUNNING;
 
+        if (log.isDebugEnabled())
+            log.debug("Xmlrpcd resumed");
+    }
 
-	/**
-	 * Returns the current status of the service.
-	 *
-	 * @return The service's status.
-	 */
-	public synchronized int getStatus()
-	{
-		return m_status;
-	}
+    /**
+     * Stops the currently running service. If the service is not running then
+     * the command is silently discarded.
+     */
+    public synchronized void stop() {
+        Category log = ThreadCategory.getInstance(getClass());
 
+        m_status = STOP_PENDING;
 
-	/**
-	 * Returns the name of the service.
-	 *
-	 * @return The service's name.
-	 */
-	public String getName()
-	{
-		return m_name;
-	}
+        // shutdown and wait on the background processing thread to exit.
+        if (log.isDebugEnabled())
+            log.debug("exit: closing communication paths.");
 
+        if (log.isDebugEnabled())
+            log.debug("stop: Stopping queue processor.");
 
-	/**
-	 * Returns the singular instance of the xmlrpcd
-	 * daemon. There can be only one instance of this
-	 * service per virtual machine.
-	 */
-	public static Xmlrpcd getInstance()
-	{
-		return m_singleton;
-	}
+        // interrupt the processor daemon thread
+        m_processor.stop();
+
+        m_status = STOPPED;
+
+        if (log.isDebugEnabled())
+            log.debug("stop: Xmlrpcd stopped");
+    }
+
+    /**
+     * Returns the current status of the service.
+     * 
+     * @return The service's status.
+     */
+    public synchronized int getStatus() {
+        return m_status;
+    }
+
+    /**
+     * Returns the name of the service.
+     * 
+     * @return The service's name.
+     */
+    public String getName() {
+        return m_name;
+    }
+
+    /**
+     * Returns the singular instance of the xmlrpcd daemon. There can be only
+     * one instance of this service per virtual machine.
+     */
+    public static Xmlrpcd getInstance() {
+        return m_singleton;
+    }
 
 }

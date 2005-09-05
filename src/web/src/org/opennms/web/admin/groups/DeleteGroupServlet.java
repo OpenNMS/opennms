@@ -41,32 +41,25 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.opennms.netmgt.config.GroupFactory;
 
-
 /**
  * A servlet that handles deleting an existing group
- *
- * @author <A HREF="mailto:jason@opennms.org">Jason Johns</A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
+ * 
+ * @author <A HREF="mailto:jason@opennms.org">Jason Johns </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
-public class DeleteGroupServlet extends HttpServlet
-{
-    public void doPost( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException 
-    {
-       	String groupName = request.getParameter("groupName");
-	
-        //now save to the xml file
-	try 
-	{
-		GroupFactory.init();
-                GroupFactory groupFactory = GroupFactory.getInstance();
-		groupFactory.deleteGroup(groupName);
-	}
-	catch( Exception e) 
-	{
-		throw new ServletException( "Error deleting group " + groupName, e );
-	}
-	
-	
-	response.sendRedirect( "list.jsp" );
+public class DeleteGroupServlet extends HttpServlet {
+    public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        String groupName = request.getParameter("groupName");
+
+        // now save to the xml file
+        try {
+            GroupFactory.init();
+            GroupFactory groupFactory = GroupFactory.getInstance();
+            groupFactory.deleteGroup(groupName);
+        } catch (Exception e) {
+            throw new ServletException("Error deleting group " + groupName, e);
+        }
+
+        response.sendRedirect("list.jsp");
     }
 }

@@ -35,197 +35,182 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * This is a data class for storing event configuration information
- * as parsed from the eventconf.xml file
- *
- * @author <A HREF="mailto:jason@opennms.org">Jason Johns</A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
- *
+ * This is a data class for storing event configuration information as parsed
+ * from the eventconf.xml file
+ * 
+ * @author <A HREF="mailto:jason@opennms.org">Jason Johns </A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * 
  * @version 1.1.1.1
- *
+ * 
  * @deprecated Replaced by a Castor-generated implementation.
- *
+ * 
  * @see org.opennms.netmgt.xml.eventconf.Correlation
- *
+ * 
  */
-public class Correlation implements Cloneable
-{
-	/**The different path values for a correlation. If this array changes
-	   please update the CORRELATION_PATH_DEFAULT_INDEX member if needed.
-	*/
-	public static final String CORRELATION_PATH_VALUES[] = {"suppressDuplicates",
-		                                                "cancellingEvent",
-								"suppressAndCancel",
-							 	"pathOutage"};
-	
-	/**The index into the CORRELATION_PATH_VALUES array indicating
-	   the default value of a new correlation. If the values array
-	   changes please update this index if needed.
-	*/
-	public static final int CORRELATION_PATH_DEFAULT_INDEX = 0;
-	
-	/**The different state values for a correlation. If this array changes
-	   please update the CORRELATION_STATE_DEFAULT_INDEX member if needed.
-	*/
-	public static final String CORRELATION_STATE_VALUES[] = {"on","off"};
-	
-	/**The index into the CORRELATION_STATE_VALUES array indicating
-	   the default state of a new correlation. If the values array
-	   changes please update this index if needed.
-	*/
-	public static final int CORRELATION_STATE_DEFAULT_INDEX = 0;
-	
-	/**
-	*/
-	private List m_cuei;
-	
-	/**
-	*/
-	private String m_cmin;
-	
-	/**
-	*/
-	private String m_cmax;
-	
-	/**
-	*/
-	private String m_ctime;
-	
-	/**
-	*/
-	private String m_path;
-	
-	/**
-	*/
-	private String m_state;
-	
-	/**Default constructor, intializes the member variables.
-	*/
-	public Correlation()
-	{
-		m_cuei = new ArrayList();
-		m_path = CORRELATION_PATH_VALUES[CORRELATION_PATH_DEFAULT_INDEX];
-		m_state = CORRELATION_STATE_VALUES[CORRELATION_STATE_DEFAULT_INDEX];
-	}
-	
-	/**
-	*/
-	public Object clone()
-	{
-		try
-		{
-			super.clone();
-		}
-		catch(CloneNotSupportedException e)
-		{
-			return null;
-		}
-		
-		Correlation newCorrelation = new Correlation();
-		
-		newCorrelation.setCorrelationMin(m_cmin);
-		newCorrelation.setCorrelationMax(m_cmax);
-		newCorrelation.setCorrelationTime(m_ctime);
-		newCorrelation.setCorrelationPath(m_path);
-		newCorrelation.setState(m_state);
-		
-		for (int i = 0; i < m_cuei.size(); i++)
-		{
-			newCorrelation.addCorrelationUEI( (String)m_cuei.get(i));
-		}
-		
-		return newCorrelation;
-	}
-	
-	/**
-	*/
-	public void addCorrelationUEI(String uei)
-	{
-		m_cuei.add(uei);
-	}
-	
-	/**
-	*/
-	public List getCorrelationUEIs()
-	{
-		return m_cuei;
-	}
-	
-	/**
-	*/
-	public void setCorrelationMin(String cmin)
-	{
-		m_cmin = cmin;
-	}
-	
-	/**
-	*/
-	public String getCorrelationMin()
-	{
-		return m_cmin;
-	}
-	
-	/**
-	*/
-	public void setCorrelationMax(String cmax)
-	{
-		m_cmax = cmax;
-	}
-	
-	/**
-	*/
-	public String getCorrelationMax()
-	{
-		return m_cmax;
-	}
-	
-	/**
-	*/
-	public void setCorrelationTime(String ctime)
-	{
-		m_ctime = ctime;
-	}
-	
-	/**
-	*/
-	public String getCorrelationTime()
-	{
-		return m_ctime;
-	}
-	
-	/**
-	*/
-	public void setCorrelationPath(String path)
-	{
-		/*
-		if (index < 0 || index > CORRELATION_PATH_VALUES.length)
-			throw new InvalidParameterException("The correlation path index("+index+") must be >= 0 and <= " + CORRELATION_PATH_VALUES.length);
-		*/
-		m_path = path;
-	}
-	
-	/**
-	*/
-	public void setState(String state)
-	{
-		/*
-		if (index < 0 || index > CORRELATION_STATE_VALUES.length)
-			throw new InvalidParameterException("The correlation state index("+index+") must be >= 0 and <= " + CORRELATION_STATE_VALUES.length);
-		*/
-		m_state = state;
-	}
-	
-	/**
-	*/
-	public String getCorrelationPath()
-	{
-		return m_path;
-	}
-	
-	/**
-	*/
-	public String getState()
-	{
-		return m_state;
-	}
+public class Correlation implements Cloneable {
+    /**
+     * The different path values for a correlation. If this array changes please
+     * update the CORRELATION_PATH_DEFAULT_INDEX member if needed.
+     */
+    public static final String CORRELATION_PATH_VALUES[] = { "suppressDuplicates", "cancellingEvent", "suppressAndCancel", "pathOutage" };
+
+    /**
+     * The index into the CORRELATION_PATH_VALUES array indicating the default
+     * value of a new correlation. If the values array changes please update
+     * this index if needed.
+     */
+    public static final int CORRELATION_PATH_DEFAULT_INDEX = 0;
+
+    /**
+     * The different state values for a correlation. If this array changes
+     * please update the CORRELATION_STATE_DEFAULT_INDEX member if needed.
+     */
+    public static final String CORRELATION_STATE_VALUES[] = { "on", "off" };
+
+    /**
+     * The index into the CORRELATION_STATE_VALUES array indicating the default
+     * state of a new correlation. If the values array changes please update
+     * this index if needed.
+     */
+    public static final int CORRELATION_STATE_DEFAULT_INDEX = 0;
+
+    /**
+     */
+    private List m_cuei;
+
+    /**
+     */
+    private String m_cmin;
+
+    /**
+     */
+    private String m_cmax;
+
+    /**
+     */
+    private String m_ctime;
+
+    /**
+     */
+    private String m_path;
+
+    /**
+     */
+    private String m_state;
+
+    /**
+     * Default constructor, intializes the member variables.
+     */
+    public Correlation() {
+        m_cuei = new ArrayList();
+        m_path = CORRELATION_PATH_VALUES[CORRELATION_PATH_DEFAULT_INDEX];
+        m_state = CORRELATION_STATE_VALUES[CORRELATION_STATE_DEFAULT_INDEX];
+    }
+
+    /**
+     */
+    public Object clone() {
+        try {
+            super.clone();
+        } catch (CloneNotSupportedException e) {
+            return null;
+        }
+
+        Correlation newCorrelation = new Correlation();
+
+        newCorrelation.setCorrelationMin(m_cmin);
+        newCorrelation.setCorrelationMax(m_cmax);
+        newCorrelation.setCorrelationTime(m_ctime);
+        newCorrelation.setCorrelationPath(m_path);
+        newCorrelation.setState(m_state);
+
+        for (int i = 0; i < m_cuei.size(); i++) {
+            newCorrelation.addCorrelationUEI((String) m_cuei.get(i));
+        }
+
+        return newCorrelation;
+    }
+
+    /**
+     */
+    public void addCorrelationUEI(String uei) {
+        m_cuei.add(uei);
+    }
+
+    /**
+     */
+    public List getCorrelationUEIs() {
+        return m_cuei;
+    }
+
+    /**
+     */
+    public void setCorrelationMin(String cmin) {
+        m_cmin = cmin;
+    }
+
+    /**
+     */
+    public String getCorrelationMin() {
+        return m_cmin;
+    }
+
+    /**
+     */
+    public void setCorrelationMax(String cmax) {
+        m_cmax = cmax;
+    }
+
+    /**
+     */
+    public String getCorrelationMax() {
+        return m_cmax;
+    }
+
+    /**
+     */
+    public void setCorrelationTime(String ctime) {
+        m_ctime = ctime;
+    }
+
+    /**
+     */
+    public String getCorrelationTime() {
+        return m_ctime;
+    }
+
+    /**
+     */
+    public void setCorrelationPath(String path) {
+        /*
+         * if (index < 0 || index > CORRELATION_PATH_VALUES.length) throw new
+         * InvalidParameterException("The correlation path index("+index+") must
+         * be >= 0 and <= " + CORRELATION_PATH_VALUES.length);
+         */
+        m_path = path;
+    }
+
+    /**
+     */
+    public void setState(String state) {
+        /*
+         * if (index < 0 || index > CORRELATION_STATE_VALUES.length) throw new
+         * InvalidParameterException("The correlation state index("+index+")
+         * must be >= 0 and <= " + CORRELATION_STATE_VALUES.length);
+         */
+        m_state = state;
+    }
+
+    /**
+     */
+    public String getCorrelationPath() {
+        return m_path;
+    }
+
+    /**
+     */
+    public String getState() {
+        return m_state;
+    }
 }

@@ -38,8 +38,8 @@
 
 package org.opennms.netmgt.outage;
 
-import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -49,403 +49,394 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.log4j.Category;
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.concurrent.RunnableConsumerThreadPool;
 import org.opennms.core.fiber.PausableFiber;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.config.DatabaseConnectionFactory;
-import org.opennms.netmgt.config.OutageManagerConfigFactory;
+import org.opennms.netmgt.config.DbConnectionFactory;
+import org.opennms.netmgt.config.OutageManagerConfig;
+import org.opennms.netmgt.eventd.EventIpcManager;
 
 /**
  * The OutageManager receives events selectively and maintains a historical
  * archive of each outage for all devices in the database
- *
- * @author 	<A HREF="mailto:sowmya@opennms.org">Sowmya Nataraj</A>
- * @author 	<A HREF="mailto:mike@opennms.org">Mike Davidson</A>
- * @author	<A HREF="http://www.opennms.org">OpenNMS.org</A>
+ * 
+ * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Nataraj </A>
+ * @author <A HREF="mailto:mike@opennms.org">Mike Davidson </A>
+ * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
  */
-public final class OutageManager implements PausableFiber
-{
-	/** 
-	 * The log4j category used to log debug messsages
-	 * and statements.
-	 */
-	private static final String LOG4J_CATEGORY	= "OpenNMS.Outage";
+public final class OutageManager implements PausableFiber {
+    /**
+     * The log4j category used to log debug messsages and statements.
+     */
+    private static final String LOG4J_CATEGORY = "OpenNMS.Outage";
 
-	/**
-	 * The singleton instance of this class
-	 */
-	private static final OutageManager m_singleton	= new OutageManager();
+    /**
+     * The singleton instance of this class
+     */
+    private static final OutageManager m_singleton = new OutageManager();
+    
+    
 
-	/**
-	 * The number of threads that must be started.
-	 */
-	private static final int NUM_THREADS		= 2;
+    /**
+     * The number of threads that must be started.
+     */
+    private static final int NUM_THREADS = 2;
 
-	/**
-	 * The service table map
-	 */
-	private Map			m_serviceTableMap;
+    /**
+     * The service table map
+     */
+    private Map m_serviceTableMap;
 
-	/**
-	 * The events receiver
-	 */
-	private BroadcastEventProcessor	m_eventReceiver;
+    /**
+     * The Network where nodes, interfaces and services live
+     */
+    private BasicNetwork m_network;
 
-	/**
-	 * The RunnableConsumerThreadPool that runs writers
-	 * that update the database
-	 */
-	private RunnableConsumerThreadPool	m_writerPool;
-	
-	/**
-	 * Current status of this fiber
-	 */
-	private int			m_status;
+    /**
+     * The events receiver
+     */
+    private OutageMgrEventProcessor m_eventReceiver;
 
-	/**
-	 * Build the servicename to serviceid map - this map is used so as to
-	 * avoid a database lookup for each incoming event
-	 */
-	private void buildServiceTableMap(java.sql.Connection dbConn)
-			throws SQLException
-	{
-		// map of service names to service identifer
-		m_serviceTableMap = Collections.synchronizedMap(new HashMap());
+    /**
+     * The RunnableConsumerThreadPool that runs writers that update the database
+     */
+    private RunnableConsumerThreadPool m_writerPool;
+    
+    /**
+     * The EventIpcManager to use for sending and receiving events
+     */
+    private EventIpcManager m_eventMgr;
 
-		PreparedStatement stmt = dbConn.prepareStatement(OutageConstants.SQL_DB_SVC_TABLE_READ);
-		ResultSet rset = stmt.executeQuery();
-		while(rset.next())
-		{
-			long svcid     = rset.getLong(1);
-			String svcname = rset.getString(2);
+    /**
+     * Current status of this fiber
+     */
+    private int m_status;
 
-			m_serviceTableMap.put(svcname, new Long(svcid));
-		}
+    private OutageManagerConfig m_outageMgrConfig;
+    
+    private DbConnectionFactory m_dbConnFactory;
 
-		rset.close();
-		stmt.close();
-	}
+    /**
+     * Build the servicename to serviceid map - this map is used so as to avoid
+     * a database lookup for each incoming event
+     */
+    private void buildServiceTableMap(java.sql.Connection dbConn) throws SQLException {
+        // map of service names to service identifer
+        m_serviceTableMap = Collections.synchronizedMap(new HashMap());
 
-	/**
-	 * Close the currently open outages for services and interfaces that are
-	 * currently unmanaged
-	 */
-	private void closeOutages(java.sql.Connection dbConn)
-			throws SQLException
-	{
-		Category log = ThreadCategory.getInstance(getClass());
+        PreparedStatement stmt = dbConn.prepareStatement(OutageConstants.SQL_DB_SVC_TABLE_READ);
+        ResultSet rset = stmt.executeQuery();
+        while (rset.next()) {
+            long svcid = rset.getLong(1);
+            String svcname = rset.getString(2);
 
-		if (log.isDebugEnabled())
-			log.debug("OutageManager getting ready to close currently open outages for unmanaged services and interfaces ..");
+            m_serviceTableMap.put(svcname, new Long(svcid));
+        }
 
-		// get the time to which regained times are to be set
-		Timestamp closeTime = new Timestamp((new java.util.Date()).getTime());
+        rset.close();
+        stmt.close();
+    }
 
-		// prepare statements
-		PreparedStatement closeForServicesStmt = dbConn.prepareStatement(OutageConstants.DB_CLOSE_OUTAGES_FOR_UNMANAGED_SERVICES);
-		PreparedStatement closeForInterfacesStmt = dbConn.prepareStatement(OutageConstants.DB_CLOSE_OUTAGES_FOR_UNMANAGED_INTERFACES);
+    /**
+     * Close the currently open outages for services and interfaces that are
+     * currently unmanaged
+     */
+    private void closeOutages(java.sql.Connection dbConn) throws SQLException {
+        Category log = ThreadCategory.getInstance(getClass());
 
-		// set the time
-		closeForServicesStmt.setTimestamp(1, closeTime);
-		closeForInterfacesStmt.setTimestamp(1, closeTime);
+        if (log.isDebugEnabled())
+            log.debug("OutageManager getting ready to close currently open outages for unmanaged services and interfaces ..");
 
-		// close outages in ifservices
-		int num = closeForServicesStmt.executeUpdate();
+        // get the time to which regained times are to be set
+        Timestamp closeTime = new Timestamp((new java.util.Date()).getTime());
 
-		if (log.isDebugEnabled())
-			log.debug("OutageManager closed " + num + " outages for unmanaged services");
+        // prepare statements
+        PreparedStatement closeForServicesStmt = dbConn.prepareStatement(OutageConstants.DB_CLOSE_OUTAGES_FOR_UNMANAGED_SERVICES);
+        PreparedStatement closeForInterfacesStmt = dbConn.prepareStatement(OutageConstants.DB_CLOSE_OUTAGES_FOR_UNMANAGED_INTERFACES);
 
-		// close outages in ipinterface
-		num = closeForInterfacesStmt.executeUpdate();
+        // set the time
+        closeForServicesStmt.setTimestamp(1, closeTime);
+        closeForInterfacesStmt.setTimestamp(1, closeTime);
 
-		if (log.isDebugEnabled())
-			log.debug("OutageManager closed " + num + " outages for unmanaged interfaces");
+        // close outages in ifservices
+        int num = closeForServicesStmt.executeUpdate();
 
-		// close all db resources
-		closeForInterfacesStmt.close();
-		closeForServicesStmt.close();
+        if (log.isDebugEnabled())
+            log.debug("OutageManager closed " + num + " outages for unmanaged services");
 
-		if (log.isDebugEnabled())
-		log.debug("OutageManager closed currently open outages for unmanaged services and interfaces");
-	}
+        // close outages in ipinterface
+        num = closeForInterfacesStmt.executeUpdate();
 
-	/**
-	 * The constructor for the OutageManager 
-	 * 
-	 */
-	public OutageManager()
-	{
-		m_status = START_PENDING;
-	}
+        if (log.isDebugEnabled())
+            log.debug("OutageManager closed " + num + " outages for unmanaged interfaces");
 
-	/**
-	 * Returns a name/id for this process
-	 */
-	public String getName()
-	{
-		return "OpenNMS.OutageManager";
-	}
+        // close all db resources
+        closeForInterfacesStmt.close();
+        closeForServicesStmt.close();
 
-	/**
-	 * Returns the current status
-	 */
-	public int getStatus()
-	{
-		return m_status;
-	}
+        if (log.isDebugEnabled())
+            log.debug("OutageManager closed currently open outages for unmanaged services and interfaces");
+    }
 
-	public void init()
-	{
-		ThreadCategory.setPrefix(LOG4J_CATEGORY);
+    /**
+     * The constructor for the OutageManager
+     * 
+     */
+    public OutageManager() {
+        m_status = START_PENDING;
+    }
 
-		Category log = ThreadCategory.getInstance(getClass());
+    /**
+     * Returns a name/id for this process
+     */
+    public String getName() {
+        return "OpenNMS.OutageManager";
+    }
 
-		// load the outage configuration and get the required attributes
-		int numWriters = 1;
-		try
-		{
-			OutageManagerConfigFactory.reload();
-			OutageManagerConfigFactory oFactory = OutageManagerConfigFactory.getInstance();
+    /**
+     * Returns the current status
+     */
+    public int getStatus() {
+        return m_status;
+    }
+    
+    public EventIpcManager getEventMgr() {
+        return m_eventMgr;
+    }
+    
+    public void setEventMgr(EventIpcManager eventMgr) {
+        m_eventMgr = eventMgr;
+    }
 
-			// get number of threads
-			numWriters = oFactory.getWriters();
+    public void init() {
+        ThreadCategory.setPrefix(LOG4J_CATEGORY);
 
-		}
-		catch(MarshalException ex)
-		{
-			log.error("Failed to load outage configuration", ex);
-			throw new UndeclaredThrowableException(ex);
-		}
-		catch(ValidationException ex)
-		{
-			log.error("Failed to load outage configuration", ex);
-			throw new UndeclaredThrowableException(ex);
-		}
-		catch(IOException ex)
-		{
-			log.error("Failed to load outage configuration", ex);
-			throw new UndeclaredThrowableException(ex);
-		}
+        Category log = ThreadCategory.getInstance(getClass());
+        
+        if (m_eventMgr == null)
+            throw new IllegalStateException("OutageManager.m_eventMgr is not set");
+        
+        if (m_outageMgrConfig == null)  
+            throw new IllegalStateException("OutageManager.m_outageMgrConfig is not set");
+        
+        m_network = new BasicNetwork(getGetNextOutageID());
 
-		//
-		// Make sure we can connect to the database
-		// - Close the open outages for unmanaged interfaces and services
-		// - build a mapping of service name to service id from the service table
-		//
-		java.sql.Connection conn = null;
-		try
-		{
-			DatabaseConnectionFactory.init();
-			conn = DatabaseConnectionFactory.getInstance().getConnection();
+        // load the outage configuration and get the required attributes
+        int numWriters = getNumWriters();
 
-			// close open outages for unmanaged entities
-			closeOutages(conn);
+        //
+        // Make sure we can connect to the database
+        // - Close the open outages for unmanaged interfaces and services
+        // - build a mapping of service name to service id from the service
+        // table
+        //
+        java.sql.Connection conn = null;
+        try {
+            conn = getConnection();
 
-			// build the service table map
-			buildServiceTableMap(conn);
-		}
-		catch (IOException ie)
-		{
-			log.fatal("IOException getting database connection", ie);
-			throw new UndeclaredThrowableException(ie);
-		}
-		catch (MarshalException me)
-		{
-			log.fatal("Marshall Exception getting database connection", me);
-			throw new UndeclaredThrowableException(me);
-		}
-		catch (ValidationException ve)
-		{
-			log.fatal("Validation Exception getting database connection", ve);
-			throw new UndeclaredThrowableException(ve);
-		}
-		catch (SQLException sqlE)
-		{
-			log.fatal("Error closing outages for unmanaged services and interfaces or building servicename to serviceid mapping",sqlE);
-			throw new UndeclaredThrowableException(sqlE);
-		}
-		catch (ClassNotFoundException cnfE)
-		{
-			log.fatal("Failed to load database driver", cnfE);
-			throw new UndeclaredThrowableException(cnfE);
-		}
-		finally
-		{
-			if(conn != null)
-			{
-				try { conn.close(); } catch(Exception e) { } 
-			}
-		}
+            // close open outages for unmanaged entities
+            closeOutages(conn);
 
-		m_writerPool = new RunnableConsumerThreadPool("Outage Writer Pool", 0.6f, 1.0f, numWriters);
+            // build the service table map
+            buildServiceTableMap(conn);
+        } catch (SQLException sqlE) {
+            log.fatal("Error closing outages for unmanaged services and interfaces or building servicename to serviceid mapping", sqlE);
+            throw new UndeclaredThrowableException(sqlE);
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.close();
+                } catch (Exception e) {
+                }
+            }
+        }
 
-		if (log.isDebugEnabled())
-			log.debug("Created writer pool");
-                                                                   
-		m_eventReceiver = new BroadcastEventProcessor(m_writerPool.getRunQueue());
-		if (log.isDebugEnabled())
-			log.debug("Created event receiver");
-                                                                   
+        m_writerPool = new RunnableConsumerThreadPool("Outage Writer Pool", 0.6f, 1.0f, numWriters);
 
-		log.info("OutageManager ready to accept events");
-	}
+        if (log.isDebugEnabled())
+            log.debug("Created writer pool");
 
-	/** 
-	 * Read the configuration xml, create and start all the subthreads.
-	 */
-	public void start()
-	{
-		ThreadCategory.setPrefix(LOG4J_CATEGORY);
+        m_eventReceiver = new OutageMgrEventProcessor(this, m_writerPool.getRunQueue());
+        if (log.isDebugEnabled())
+            log.debug("Created event receiver");
 
-		Category log = ThreadCategory.getInstance(getClass());
+        log.info("OutageManager ready to accept events");
+    }
 
-		m_status = STARTING;
+    Connection getConnection() throws SQLException {
+        return m_dbConnFactory.getConnection();
+    }
+    
+    public void setDbConnectionFactory(DbConnectionFactory dbConnFactory) {
+        m_dbConnFactory = dbConnFactory;
+    }
 
-		//
-		// Start all the threads
-		//
-		if(log.isDebugEnabled())
-		{
-			log.debug("Starting writer pool");
-		}
+    public void setOutageMgrConfig(OutageManagerConfig config) {
+        m_outageMgrConfig = config;
+    }
+    
+    public OutageManagerConfig getOutageMgrConfig() {
+        return m_outageMgrConfig;
+    }
 
-		m_writerPool.start();
+    /**
+     * @param numWriters
+     * @param log
+     * @return
+     */
+    private int getNumWriters() {
+        Category log = ThreadCategory.getInstance(getClass());
 
-		//
-		// Subscribe to eventd
-		//
-		try
-		{
-			m_eventReceiver.start();
-		}
-		catch( Throwable t)
-		{
-			m_writerPool.stop();
-			if(log.isDebugEnabled())
-				log.debug("Writer pool shutdown");
+        int numWriters = 1;
+        numWriters = m_outageMgrConfig.getWriters();
+        return numWriters;
+    }
 
-			throw new UndeclaredThrowableException(t);
-		}
+    /**
+     * Read the configuration xml, create and start all the subthreads.
+     */
+    public void start() {
+        ThreadCategory.setPrefix(LOG4J_CATEGORY);
 
-		m_status = RUNNING;
+        Category log = ThreadCategory.getInstance(getClass());
 
-		if(log.isDebugEnabled())
-		{
-			log.debug("Outage Writer threads started");
-		}
+        m_status = STARTING;
 
-		log.info("OutageManager ready to accept events");
-	}
+        //
+        // Start all the threads
+        //
+        if (log.isDebugEnabled()) {
+            log.debug("Starting writer pool");
+        }
 
+        m_writerPool.start();
 
-	/**
-	 * Pauses all the threads
-	 */
-	public void pause()
-	{
-		if (m_status != RUNNING)
-			return;
+        //
+        // Subscribe to eventd
+        //
+        try {
+            m_eventReceiver.start();
+        } catch (Throwable t) {
+            m_writerPool.stop();
+            if (log.isDebugEnabled())
+                log.debug("Writer pool shutdown");
 
-		m_status = PAUSE_PENDING;
+            throw new UndeclaredThrowableException(t);
+        }
 
-		Category log = ThreadCategory.getInstance(getClass());
+        m_status = RUNNING;
 
-		m_status = PAUSED;
+        if (log.isDebugEnabled()) {
+            log.debug("Outage Writer threads started");
+        }
 
-	     	if(log.isDebugEnabled())
-			log.debug("Finished pausing all threads");
-	}
+        log.info("OutageManager ready to accept events");
+    }
 
-	/**
-	 * Resumes all the threads
-	 */
-	public void resume()
-	{
-		if (m_status != PAUSED)
-			return;
+    /**
+     * Pauses all the threads
+     */
+    public void pause() {
+        if (m_status != RUNNING)
+            return;
 
-		m_status = RESUME_PENDING;
+        m_status = PAUSE_PENDING;
 
-		Category log = ThreadCategory.getInstance(getClass());
+        Category log = ThreadCategory.getInstance(getClass());
 
-		m_status = RUNNING;
-		
-		if(log.isDebugEnabled())
-			log.debug("Finished resuming ");
-	}
-	
-	/**
-	 * Stops all the threads
-	 */
-	public void stop()
-	{
-		m_status = STOP_PENDING;
+        m_status = PAUSED;
 
-		Category log = ThreadCategory.getInstance(getClass());
+        if (log.isDebugEnabled())
+            log.debug("Finished pausing all threads");
+    }
 
-		try
-		{
-			if(log.isDebugEnabled())
-				log.debug("Beginning shutdown process");
+    /**
+     * Resumes all the threads
+     */
+    public void resume() {
+        if (m_status != PAUSED)
+            return;
 
-			//
-			// Close connection to the event subsystem and free associated resources.
-			//
-			m_eventReceiver.close();
+        m_status = RESUME_PENDING;
 
-			if(log.isDebugEnabled())
-				log.debug("sending shutdown to writers");
-	
-			m_writerPool.stop();
+        Category log = ThreadCategory.getInstance(getClass());
 
-			if(log.isDebugEnabled())
-				log.debug("Outage Writers shutdown");
+        m_status = RUNNING;
 
-			m_status = STOPPED;
+        if (log.isDebugEnabled())
+            log.debug("Finished resuming ");
+    }
 
-			log.info("OutageManager shutdown complete");
-		}
-		catch (Exception e)
-		{
-			log.error(e.getLocalizedMessage(),e);
-		}
-	}
+    /**
+     * Stops all the threads
+     */
+    public void stop() {
+        m_status = STOP_PENDING;
 
-	/**
-	 * Return the service id for the name passed
-	 *
-	 * @param svcname	the service name whose service id is required
-	 *
-	 * @return the service id for the name passed, -1 if not found
-	 */
-	public synchronized long getServiceID(String svcname)
-	{
-		Long val = (Long)m_serviceTableMap.get(svcname);
-		if ( val != null)
-		{
-			return val.longValue();
-		}
-		else
-		{
-			return -1;
-		}
-	}
-	
-	/**
-	 * Add the svcname/svcid mapping to the servicetable map
-	 */
-	public synchronized void addServiceMapping(String svcname, long serviceid)
-	{
-		m_serviceTableMap.put(svcname, new Long(serviceid));
-	}
+        Category log = ThreadCategory.getInstance(getClass());
 
-	/**
-	 * Return a handle to the OutageManager
-	 */
-	public static OutageManager getInstance()
-	{
-		return m_singleton;
-	}
+        try {
+            if (log.isDebugEnabled())
+                log.debug("Beginning shutdown process");
+
+            //
+            // Close connection to the event subsystem and free associated
+            // resources.
+            //
+            m_eventReceiver.close();
+
+            if (log.isDebugEnabled())
+                log.debug("sending shutdown to writers");
+
+            m_writerPool.stop();
+
+            if (log.isDebugEnabled())
+                log.debug("Outage Writers shutdown");
+
+            m_status = STOPPED;
+
+            log.info("OutageManager shutdown complete");
+        } catch (Exception e) {
+            log.error(e.getLocalizedMessage(), e);
+        }
+    }
+
+    /**
+     * Return the service id for the name passed
+     * 
+     * @param svcname
+     *            the service name whose service id is required
+     * 
+     * @return the service id for the name passed, -1 if not found
+     */
+    public synchronized long getServiceID(String svcname) {
+        Long val = (Long) m_serviceTableMap.get(svcname);
+        if (val != null) {
+            return val.longValue();
+        } else {
+            return -1;
+        }
+    }
+
+    /**
+     * Add the svcname/svcid mapping to the servicetable map
+     */
+    public synchronized void addServiceMapping(String svcname, long serviceid) {
+        m_serviceTableMap.put(svcname, new Long(serviceid));
+    }
+
+    /**
+     * Return a handle to the OutageManager
+     */
+    public static OutageManager getInstance() {
+        return m_singleton;
+    }
+
+    public String getGetNextOutageID() {
+        return m_outageMgrConfig.getGetNextOutageID();
+    }
+    
+    public BasicNetwork getNetwork() {
+        return m_network;
+    }
 }

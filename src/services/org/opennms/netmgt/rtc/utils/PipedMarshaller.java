@@ -46,84 +46,64 @@ import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.xml.rtc.EuiLevel;
 
-
 /**
  * The class that marshalls the object to be sent to a PipedReader
- *
- * @author 	<A HREF="mailto:weave@oculan.com">Brian Weaver</A>
- * @author	<A HREF="http://www.opennms.org">OpenNMS.org</A>
+ * 
+ * @author <A HREF="mailto:weave@oculan.com">Brian Weaver </A>
+ * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
  */
-public class PipedMarshaller
-{
-	private EuiLevel	m_objToMarshall;
+public class PipedMarshaller {
+    private EuiLevel m_objToMarshall;
 
-	private class MarshalThread
-		implements Runnable
-	{
-		private PipedWriter		m_out;
-		private PipedReader		m_in;
-		private EuiLevel		m_obj;
+    private class MarshalThread implements Runnable {
+        private PipedWriter m_out;
 
-		MarshalThread(EuiLevel inp)
-			throws IOException
-		{
-			m_obj = inp;
-			m_out = new PipedWriter();
-			m_in  = new PipedReader(m_out);
-		}
-		
-		public void run()
-		{
-			try
-			{
-				Marshaller.marshal(m_obj, m_out);
-				m_out.flush();
-				m_out.close();
-			}
-			catch(MarshalException e)
-			{
-				ThreadCategory.getInstance(this.getClass()).error("Failed to convert category to xml", e);
-				throw new UndeclaredThrowableException(e);
-			}
-			catch(ValidationException e)
-			{
-				ThreadCategory.getInstance(this.getClass()).error("Failed to convert category to xml", e);
-				throw new UndeclaredThrowableException(e);
-			}
-			catch(IOException e)
-			{
-				ThreadCategory.getInstance(this.getClass()).error("Failed to convert category to xml", e);
-				throw new UndeclaredThrowableException(e);
-			}
-		}
+        private PipedReader m_in;
 
-		Reader getReader()
-		{
-			return m_in;
-		}
-	}
+        private EuiLevel m_obj;
 
-	public PipedMarshaller(EuiLevel toMarshall)
-	{
-		m_objToMarshall = toMarshall;
-	}
+        MarshalThread(EuiLevel inp) throws IOException {
+            m_obj = inp;
+            m_out = new PipedWriter();
+            m_in = new PipedReader(m_out);
+        }
 
-	public Reader getReader()
-		throws IOException
-	{
-		Reader inr = null;
-		try
-		{
-			MarshalThread m = new MarshalThread(m_objToMarshall);
-			Thread t = new Thread(m, "PipedMarshaller");
-			t.start();
+        public void run() {
+            try {
+                Marshaller.marshal(m_obj, m_out);
+                m_out.flush();
+                m_out.close();
+            } catch (MarshalException e) {
+                ThreadCategory.getInstance(this.getClass()).error("Failed to convert category to xml", e);
+                throw new UndeclaredThrowableException(e);
+            } catch (ValidationException e) {
+                ThreadCategory.getInstance(this.getClass()).error("Failed to convert category to xml", e);
+                throw new UndeclaredThrowableException(e);
+            } catch (IOException e) {
+                ThreadCategory.getInstance(this.getClass()).error("Failed to convert category to xml", e);
+                throw new UndeclaredThrowableException(e);
+            }
+        }
 
-			return m.getReader();
-		}
-		catch(IOException e)
-		{
-			throw e;
-		}
-	}
+        Reader getReader() {
+            return m_in;
+        }
+    }
+
+    public PipedMarshaller(EuiLevel toMarshall) {
+        m_objToMarshall = toMarshall;
+    }
+
+    public Reader getReader() throws IOException {
+        Reader inr = null;
+        try {
+            MarshalThread m = new MarshalThread(m_objToMarshall);
+            Thread t = new Thread(m, "PipedMarshaller");
+            t.start();
+
+            return m.getReader();
+        } catch (IOException e) {
+            throw e;
+        }
+    }
 }
-

@@ -3,7 +3,7 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2002-2004 The OpenNMS Group, Inc.  All rights reserved.
+// OpenNMS(R) is Copyright (C) 2002-2005 The OpenNMS Group, Inc.  All rights reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included code and modified
 // code that was published under the GNU General Public License. Copyrights for modified 
 // and included code are below.
@@ -41,7 +41,7 @@
 
 -->
 
-<%@page language="java" contentType="text/html" session="true" import="org.opennms.web.element.*,java.util.*,org.opennms.web.event.*,org.opennms.web.performance.*,org.opennms.netmgt.utils.IfLabel,org.opennms.web.response.*" %>
+<%@page language="java" contentType="text/html" session="true" import="org.opennms.netmgt.config.PollerConfigFactory,org.opennms.web.element.*,java.util.*,org.opennms.web.event.*,org.opennms.web.performance.*,org.opennms.netmgt.utils.IfLabel,org.opennms.web.response.*" %>
 
 <%!
     protected int telnetServiceId;
@@ -115,12 +115,10 @@
     }
 
     Interface intf_db = null;
-    AtInterface atif_db = null;
     
     //see if we know the ifindex
     if (ifindexString == null) {
         intf_db = NetworkElementFactory.getInterface( nodeId, ipAddr );
-        atif_db = ExtendedNetworkElementFactory.getAtInterface(nodeId, ipAddr);
     }
     else {
         intf_db = NetworkElementFactory.getInterface( nodeId, ipAddr, ifindex );
@@ -151,6 +149,9 @@
     if( httpService != null  ) {
         httpIp = ipAddr;
     }
+    PollerConfigFactory.init();
+    PollerConfigFactory pollerCfgFactory = PollerConfigFactory.getInstance();
+    pollerCfgFactory.rebuildPackageIpListMap();
 
 %>
 
@@ -234,6 +235,10 @@ function doDelete() {
          <% } %>
          
         &nbsp;&nbsp;&nbsp;<a href="element/rescan.jsp?node=<%=nodeId%>&ipaddr=<%=ipAddr%>">Rescan</a>      
+
+        <% if (request.isUserInRole("OpenNMS Administrator") && hasSNMPData(intf_db) && "P".equals(intf_db.getIsSnmpPrimary())) { %>
+         &nbsp;&nbsp;&nbsp;<a href="admin/updateSnmp.jsp?node=<%=nodeId%>&ipaddr=<%=ipAddr%>">Update SNMP</a>
+         <% } %>
       </p>
 
       <% if (request.isUserInRole("OpenNMS Administrator")) { %>
@@ -255,9 +260,26 @@ function doDelete() {
                 <td>Polling Status</td>
                 <td><%=ElementUtil.getInterfaceStatusString(intf_db)%></td>
               </tr>
+              <% if(ElementUtil.getInterfaceStatusString(intf_db).equals("Managed") && request.isUserInRole("OpenNMS Administrator")) {
+                  List inPkgs = pollerCfgFactory.getAllPackageMatches(ipAddr);
+                  Iterator pkgiter = inPkgs.iterator();
+                  while (pkgiter.hasNext()) { %>
+                      <tr>
+                          <td>Polling Package</td>
+                          <td><%= (String) pkgiter.next()%></td>
+                      </tr>
+                  <% } %>
+              <% } %>
               <tr>
                 <td>Interface Index</td> 
-                <td><%=intf_db.getIfIndex()%></td>
+                <td>
+                  <% int ifIndex = intf_db.getIfIndex(); %>
+                  <% if( ifIndex > 0 ) {  %>
+                    <%=ifIndex%>
+                  <% } else { %>
+                    &nbsp;
+                  <% } %>
+                </td>
               </tr>
               <tr> 
                 <td>Last Service Scan</td>
@@ -269,8 +291,6 @@ function doDelete() {
                   <% String macAddr = intf_db.getPhysicalAddress(); %>
                   <% if( macAddr != null && macAddr.trim().length() > 0 ) { %>
                     <%=macAddr%>
-                  <% } else if ( atif_db != null && atif_db.get_physaddr().trim().length() > 0 ) { %>
-                  <%=atif_db.get_physaddr()%>
                   <% } else { %>
                     &nbsp;
                   <% } %>
@@ -278,11 +298,7 @@ function doDelete() {
               </tr>
             </table>
             <br>
-
-            <!-- Node Link box -->
-            <jsp:include page="/includes/interfaceLink-box.jsp" flush="false" />
-            <br>            
-
+            
             <!-- SNMP box, if info available -->
             <% if( hasSNMPData(intf_db) ) { %>
                   <table width="100%" border="1" cellspacing="0" cellpadding="2" bordercolor="black" bgcolor="#cccccc">
@@ -317,6 +333,11 @@ function doDelete() {
                       <td>Description</td>
                       <td><%=(intf_db.getSnmpIfDescription() == null) ? "&nbsp;" : intf_db.getSnmpIfDescription()%></td>
                     </tr>
+                    <tr>
+                      <td>Alias</td>
+                      <td><%=(intf_db.getSnmpIfAlias() == null) ? "&nbsp;" : intf_db.getSnmpIfAlias()%></td>
+                    </tr>
+
                   </table>
                   <br>
             <% } %>
@@ -362,13 +383,6 @@ function doDelete() {
             
           </td>
 
-        </tr>
-		<tr>
-		<td colspan="3">
-            <!-- STP Info box -->
-            <jsp:include page="/includes/interfaceSTP-box.jsp" flush="false" />
-            <br>
-        </td>
         </tr>
       </table>
 
@@ -620,6 +634,9 @@ function doDelete() {
           return true;
       
       if (intf_db.getSnmpIfOperStatus() > 0)
+          return true;
+
+      if (intf_db.getSnmpIfAlias() != null)
           return true;
       
       return false;

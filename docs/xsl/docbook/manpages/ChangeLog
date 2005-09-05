@@ -1,3 +1,19 @@
+2004-11-22  <twaugh@users.sourceforge.net>
+
+	* docbook.xsl: Use ASCII escape sequence for '&nbsp;'.
+
+2004-10-21  Michael Smith <xmldoc@users.sourceforge.net>
+
+	* docbook.xsl: Bug #1049155 (support Emphasis tag in man/groff output)
+	
+	Added support for converting <emphasis>foo</emphasis> to groff italic
+	and <emphasis role='bold'>foo</emphasis> to bold.
+	
+	Controlled by emphasis.propagates.style param, but not documented
+	yet using litprog system. Will do that next (planning to add some
+	other parameter-controllable options for hyphenation and
+	handling of line spacing).
+
 2004-02-04  <twaugh@users.sourceforge.net>
 
 	* docbook.xsl, lists.xsl: Place-holder implementation for simplelist.

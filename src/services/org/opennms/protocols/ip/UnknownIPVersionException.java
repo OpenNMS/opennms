@@ -34,23 +34,18 @@
 
 package org.opennms.protocols.ip;
 
-
 /**
- * This exception is thrown when the IP version is not supported
- * by the IPHeader class.
- *
- * @author <a href="mailto:weave@oculan.com">Brian Weaver</a>
+ * This exception is thrown when the IP version is not supported by the IPHeader
+ * class.
+ * 
+ * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
  */
-public class UnknownIPVersionException
-	extends RuntimeException
-{
-	public UnknownIPVersionException( )
-	{
-		super();
-	}
+public class UnknownIPVersionException extends RuntimeException {
+    public UnknownIPVersionException() {
+        super();
+    }
 
-	public UnknownIPVersionException(String why)
-	{
-		super(why);
-	}
+    public UnknownIPVersionException(String why) {
+        super(why);
+    }
 }
