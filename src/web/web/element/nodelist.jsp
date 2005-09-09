@@ -44,6 +44,7 @@
     Node[] nodes = null;
     String nameParm = request.getParameter( "nodename" );
     String ipLikeParm = request.getParameter( "iplike" );
+    String macLikeParm = request.getParameter( "maclike" );
     String serviceParm = request.getParameter( "service" );
 
     if( nameParm != null ) {
@@ -55,6 +56,16 @@
     else if( serviceParm != null ) {
         int serviceId = Integer.parseInt( serviceParm );
         nodes = NetworkElementFactory.getNodesWithService( serviceId );
+    }
+    else if( macLikeParm != null ) {
+		AtInterface [] atifs = null;
+		atifs = ExtendedNetworkElementFactory.getAtInterfacesFromPhysaddr(macLikeParm);
+	    nodes = new Node[atifs.length];
+		if (atifs != null) {
+		    for (int i=0; i<atifs.length; i++) {
+			   nodes[i] = NetworkElementFactory.getNode(atifs[i].get_nodeId());
+		    }
+		}
     }
     else {
         nodes = NetworkElementFactory.getAllNodes();

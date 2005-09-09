@@ -64,7 +64,7 @@
       <p>
         <table width="50%" border="0" cellpadding="2" cellspacing="0" >
           <form action="map/map.jsp" method="GET">
-          <tr>
+          <!--tr>
             <td>Map Type:</td>
             <td><select name="type">
                   <option value="tree">Tree-like map</option>
@@ -77,7 +77,7 @@
                   <option value="svg">SVG</option>
                   <option value="png">PNG Imagemap</option>
                 </select></td>
-          </tr>
+          </tr-->
           <tr>
             <td>View "fullscreen":</td>
             <td><select name="fullscreen">
@@ -97,19 +97,19 @@
                 </select></td>
           </tr>
           <tr>
-             <td colspan="2"><input type="submit" value="view map"/></td>
+             <td colspan="2"><input type="submit" value="View"/></td>
           </tr>
           </form>
         </table>
       </p>      
 
-      <p>
+      <!--p>
         <table width="50%" border="0" cellpadding="2" cellspacing="0">
           <tr>
             <td><a href="map/parent.jsp">Set Parent&lt;-&gt;Child Relationships</a></td>
           </tr>
         </table>
-      </p>
+      </p-->
     </td>
 
     <td>&nbsp;</td>
@@ -118,21 +118,10 @@
       <h3>Mapping</h3>
 
       <p>
-         The mapping function retrieves nodes from the database and
-         generates a map for them.  It can be viewed as an SVG image
-         embedded in a webpage or it can be viewed as a PNG image in a
-         webpage if you do not have an SVG viewer for your browser.
+         Mapping provides the management of maps representing the status (links beetwen nodes, status,
+         availability ecc.) of a subset of nodes monitored by the system.
          </p>
 
-      <p>
-         The built-in conversion from SVG to PNG format can take quite
-         a bit of memory if there are a lot of nodes on your network
-         and there is some chance of failure.
-      </p>
-
-      <p>Use the "Set Parent-Child Relationships" link to establish a
-      heirarchy for your nodes so they do not all appear at the same
-      "level".</p>
     </td>
 
     <td>&nbsp;</td>

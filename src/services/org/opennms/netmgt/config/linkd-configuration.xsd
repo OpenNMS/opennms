@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema"
+	targetNamespace="http://xmlns.opennms.org/xsd/config/linkd">
+
+	<element name="linkd-configuration">
+		<complexType>
+			<sequence>
+				<!--- vlan section to support MVLAN STP -->
+				<element ref="vlans" minOccurs="1" maxOccurs="1"/>
+			</sequence>
+			<!--- the initial sleep time in msec before starting collection -->
+			<attribute name="initial_sleep_time" type="long" use="required"/>
+			<!--- Time interval in msec to poll snmp device on a node -->
+			<attribute name="snmp_poll_interval" type="long" use="required"/>
+			<!--- Time interval in msec to start link discovery -->
+			<attribute name="discovery_link_interval" type="long" use="required"/>
+			<!--- the max number of threads used for polling snmp devices-->
+			<attribute name="threads" type="int" use="required"/>
+		</complexType>
+	</element>
+	<element name="vlans">
+		<complexType>
+			<sequence>
+				<!--- for every vendor get vlan oid to get vlan on device -->
+				<element ref="vendor" minOccurs="1" maxOccurs="unbounded"/>
+			</sequence>
+		</complexType>
+	</element>
+
+	<element name="vendor">
+		<complexType>
+			<sequence>
+				<!--- vendor sysoid mask vs vendors vlan oid-->
+				<element name="sysoidMask" type="string" minOccurs="1" maxOccurs="1"/>
+				<element name="vlanoid" type="string" minOccurs="1" maxOccurs="1"/>
+			</sequence>
+			<!--- the vendor name identifier -->
+			<attribute name="vendor_name" type="string" use="required"/>
+		</complexType>
+	</element>
+
+</schema>

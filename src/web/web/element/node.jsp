@@ -189,6 +189,56 @@
 	isSnmp = true;
 %>
 
+<%
+    // find links
+    Map linkMap = new HashMap();
+    DataLinkInterface[] dl_if = null;
+    Interface[] intf_dbs = null;
+    boolean isParent = ExtendedNetworkElementFactory.isParentNode(nodeId);
+	    
+    if ( isParent ) {
+       dl_if = ExtendedNetworkElementFactory.getDataLinksFromNodeParent(nodeId);
+    } else {
+       dl_if = ExtendedNetworkElementFactory.getDataLinks(nodeId);
+    }
+
+    for (int i=0; i<dl_if.length;i++){
+	   int nodelinkedId = 0;
+  	   int nodelinkedIf = 0;
+  	   Integer ifindexmap = null;
+  	   String iplinkaddress = null;
+       Vector ifs = new Vector();
+
+       if (isParent) {
+           nodelinkedId = dl_if[i].get_nodeId();
+           nodelinkedIf = dl_if[i].get_ifindex();
+       	   iplinkaddress = dl_if[i].get_ipaddr();
+       	   ifindexmap = new Integer(dl_if[i].get_parentifindex());
+       } else {
+           nodelinkedId = dl_if[i].get_nodeparentid();
+           nodelinkedIf = dl_if[i].get_parentifindex();
+       	   iplinkaddress = dl_if[i].get_parentipaddr();
+       	   ifindexmap = new Integer(dl_if[i].get_ifindex());
+       }
+       Interface iface = null;
+       if (nodelinkedIf == 0) {
+       		iface = NetworkElementFactory.getInterface(nodelinkedId,iplinkaddress);
+       } else {
+      		iface = NetworkElementFactory.getInterface(nodelinkedId,iplinkaddress,nodelinkedIf);
+       }
+       if (linkMap.containsKey(ifindexmap)){
+	        ifs = (Vector)linkMap.get(ifindexmap);
+	   } 
+	   ifs.addElement(iface);
+	   linkMap.put(ifindexmap,ifs);
+    }
+
+    boolean isBridge = ExtendedNetworkElementFactory.isBridgeNode(nodeId);
+
+    boolean isRouteIP = ExtendedNetworkElementFactory.isRouteInfoNode(nodeId);
+
+%>
+
 <html>
 <head>
   <title><%=node_db.getLabel()%> | Node | OpenNMS Web Console</title>
@@ -218,7 +268,8 @@
 
       <p>
         <a href="event/list?filter=node%3D<%=nodeId%>">View Events</a>
-        &nbsp;&nbsp;&nbsp;<a href="asset/modify.jsp?node=<%=nodeId%>">Asset Info</a>
+        &nbsp;&nbsp;&nbsp;<a href="asset/detail.jsp?node=<%=nodeId%>">Asset Info</a>
+        &nbsp;&nbsp;&nbsp;<a href="conf/inventorylist.jsp?node=<%=nodeId%>">Inventory</a>
          
         <% if( telnetIp != null ) { %>
           &nbsp;&nbsp;&nbsp;<a href="telnet://<%=telnetIp%>">Telnet</a>
@@ -269,9 +320,73 @@
                 <td>Status</td>
                 <td><%=(this.getStatusString(node_db.getNodeType())!=null ? this.getStatusString(node_db.getNodeType()) : "Unknown")%></td>
               </tr>
+         <% if( isRouteIP ) { %>
+              <tr>
+              <td colspan="2" ><b><a href="element/routeipnode.jsp?node=<%=nodeId%>"> View Node Ip Route Info</a></b></td>
+		</tr>
+         <% }%>
+         <% if( isBridge ) { %>
+              <tr>
+              <td colspan="2" ><b><a href="element/bridgenode.jsp?node=<%=nodeId%>">View Node Bridge/STP Info</a></b></td>
+		</tr>
+         <% }%>
+
             </table>
             <br>
             
+            <!-- Interface box -->
+            <table width="100%" border="1" cellspacing="0" cellpadding="2" bordercolor="black" BGCOLOR="#cccccc">
+              <tr bgcolor="#999999">
+                <td><b>Interfaces</b></td> 
+                <td><b>Linked Node/Interface</b></td> 
+              </tr>
+              <% for( int i=0; i < intfs.length; i++ ) { %>
+					<% Vector ifl =(Vector)linkMap.get(new Integer(intfs[i].getIfIndex()));%>
+				<tr>
+                <% if( "0.0.0.0".equals( intfs[i].getIpAddress() )) { %>
+                    <td>
+                      <a href="element/interface.jsp?node=<%=nodeId%>&intf=<%=intfs[i].getIpAddress()%>&ifindex=<%=intfs[i].getIfIndex()%>">Non-IP</a>
+                      <%=" (ifIndex: "+intfs[i].getIfIndex()+"-"+intfs[i].getSnmpIfDescription()+")"%>
+                    </td>
+                <% } else { %>  
+                    <td>
+                      <a href="element/interface.jsp?node=<%=nodeId%>&intf=<%=intfs[i].getIpAddress()%>"><%=intfs[i].getIpAddress()%></a>
+                      <%=intfs[i].getIpAddress().equals(intfs[i].getHostname()) ? "" : "(" + intfs[i].getHostname() + ")"%>
+                    </td>
+                <% } %>
+				<% if (ifl == null || ifl.size() == 0) {%>
+			    <td>&nbsp;</td>
+				<% } else { %>
+                    <td>
+			            <table width="100%" border="0" cellspacing="0" cellpadding="2" bordercolor="white" BGCOLOR="#cccccc">
+                        <tr>
+					<% for (int j=0; j<ifl.size();j++) { 
+						Interface lkif =(Interface)ifl.elementAt(j); 
+					%>
+                        <tr>
+                         <td width="48%">
+                    	  <a href="element/node.jsp?node=<%=lkif.getNodeId()%>"><%=NetworkElementFactory.getNodeLabel(lkif.getNodeId())%></a>
+                    	 </td>
+		    			 <td>&nbsp;</td>
+                         <td width="48%">
+            		    <% if( "0.0.0.0".equals( lkif.getIpAddress() )) { %>
+                    	  <a href="element/interface.jsp?node=<%=lkif.getNodeId()%>&intf=<%=lkif.getIpAddress()%>&ifindex=<%=lkif.getIfIndex()%>">Non-IP</a>
+                      	  <%=" (ifIndex: "+lkif.getIfIndex()+"-"+lkif.getSnmpIfDescription()+")"%>
+                		<% } else { %>  
+                      	  <a href="element/interface.jsp?node=<%=lkif.getNodeId()%>&intf=<%=lkif.getIpAddress()%>"><%=lkif.getIpAddress()%></a>
+                	    <% } %>
+                    <%}%>
+                         </td>
+                        </tr>
+                    	</table>
+                    </td>
+                <%}%>
+               </tr>
+            <% } %>
+            </table>
+
+            <br>
+
             <!-- Availability box -->
             <jsp:include page="/includes/nodeAvailability-box.jsp" flush="false" />
             <br>
@@ -308,32 +423,6 @@
               <br>
             <% } %>
             
-            <!-- Interface box -->
-            <table width="100%" border="1" cellspacing="0" cellpadding="2" bordercolor="black" BGCOLOR="#cccccc">
-              <tr bgcolor="#999999">
-                <td><b>Interfaces</b></td> 
-              </tr>
-              <% for( int i=0; i < intfs.length; i++ ) { %>
-                <% if( "0.0.0.0".equals( intfs[i].getIpAddress() )) { %>
-                  <tr>
-                    <td>
-                      <a href="element/interface.jsp?node=<%=nodeId%>&intf=<%=intfs[i].getIpAddress()%>&ifindex=<%=intfs[i].getIfIndex()%>">Non-IP</a>
-                      <%=" (ifIndex: "+intfs[i].getIfIndex()+"-"+intfs[i].getSnmpIfDescription()+")"%>
-                    </td>
-                  </tr>
-                <% } else { %>  
-                  <tr>
-                    <td>
-                      <a href="element/interface.jsp?node=<%=nodeId%>&intf=<%=intfs[i].getIpAddress()%>"><%=intfs[i].getIpAddress()%></a>
-                      <%=intfs[i].getIpAddress().equals(intfs[i].getHostname()) ? "" : "(" + intfs[i].getHostname() + ")"%>
-                    </td>
-                  </tr>
-                <% } %>
-              <% } %>
-            </table>
-
-            <br>
-
             <table width="100%" border="1" cellspacing="0" cellpadding="2" bordercolor="black" BGCOLOR="#cccccc">
               
             </table>
@@ -357,6 +446,12 @@
             
             <!-- Recent outages box -->
             <jsp:include page="/includes/nodeOutages-box.jsp" flush="false" />
+            <br>
+            <!-- Active Inventory box -->
+            <jsp:include page="/includes/nodeInventory-box.jsp" flush="false">
+              <jsp:param name="node" value="<%=nodeId%>" />
+              <jsp:param name="nodelabel" value="<%=node_db.getLabel()%>" />
+            </jsp:include>
          </td>
        </tr>
      </table>

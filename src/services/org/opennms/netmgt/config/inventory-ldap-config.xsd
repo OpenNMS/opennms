@@ -1,0 +1,64 @@
+<?xml version="1.0"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema"
+	targetNamespace="http://xmlns.opennms.org/xsd/config/inventory/plugin/ldap">
+
+	<element name="ldap-config">
+		<complexType>
+			<sequence>
+				<!-- Maps IP addresses to specific SNMP parms (retries, timeouts...) -->
+				<element ref="definition" minOccurs="0" maxOccurs="unbounded"/>
+
+			</sequence>
+		</complexType>
+	</element>
+
+	<!-- Provides a mechanism for associating one or more specific IP addresses
+		 and/or IP address ranges with a set of SNMP parms which will be used in 
+		 place of the default values during SNMP data collection.
+	-->
+	<element name="definition">
+		<complexType>
+			<sequence>
+				<!-- reference to the sequence of ldap attributes -->
+				<element ref="attributes" minOccurs="0" maxOccurs="1"/>
+				<element ref="correspondence" minOccurs="0" maxOccurs="unbounded"/>
+			</sequence>
+			<attribute name="name" type="string" use="required"/>
+			<!-- SearchBase string overrides the default value-->
+			<attribute name="searchbase" type="string" use="required"/>
+			<!-- SearchFilter string (overrides the default value)-->
+			<attribute name="searchfilter" type="string" use="required"/>
+			<!-- Bind Ldap Distinguished Name string -->
+			<attribute name="ldapDn" type="string" use="optional"/>
+			<!-- Bind Ldap password string -->
+			<attribute name="password" type="string" use="required"/>
+			<!-- Ldap Port string -->
+			<attribute name="port" type="int" use="optional"/>
+			<!-- If set, forces LDAP data collection to the specified version. -->
+			<attribute name="version" type="string" use="optional">
+				<simpleType>
+					<restriction base="string">
+						<pattern value="(v2|v3)"/>
+					</restriction>
+				</simpleType>
+			</attribute>
+		</complexType>
+	</element>
+	
+	<element name="correspondence">
+		<complexType>
+			<attribute name="item-tree" type="string" use="required"/>
+			<attribute name="asset-field" type="string" use="required"/>
+		</complexType>
+	</element>
+
+
+	<element name="attributes">
+	     <complexType>
+			<sequence>
+				<element name="attrib" type="string" minOccurs="1" maxOccurs="unbounded"/>
+			</sequence>
+		</complexType>
+	</element>
+</schema>
+

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<linkd-configuration threads="30" initial_sleep_time="3600000" snmp_poll_interval="1800000" discovery_link_interval="3600000">
+  <vlans>
+	<vendor vendor_name="Bay Networks">
+		<sysoidMask>.1.3.6.1.4.1.45.</sysoidMask>
+		   <vlanoid>.1.3.6.1.2.1.17.7.1.4.2.1.2</vlanoid>
+	</vendor>
+	<vendor vendor_name="cisco">
+		<sysoidMask>.1.3.6.1.4.1.9.</sysoidMask>
+  		   <vlanoid>.1.3.6.1.4.1.9.9.46.1.3.1.1.2</vlanoid>
+	</vendor>
+  </vlans>
+</linkd-configuration>

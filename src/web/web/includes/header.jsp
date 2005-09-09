@@ -148,6 +148,11 @@
             <%  } %>
 <% } %>
         
+            <%  if( "inventory".equals( location ) ) { %>
+                  Inventory&nbsp;|&nbsp;
+            <%  } else { %>
+                  <a href="conf/index.jsp">Inventory</a>&nbsp;|&nbsp;
+            <%  } %>
     
 <% if( request.isUserInRole( Authentication.ADMIN_ROLE )) { %>
             <%-- Admin --%>                               

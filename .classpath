@@ -62,5 +62,7 @@
 	<classpathentry kind="lib" path="devlib/servlet.jar"/>
 	<classpathentry kind="lib" path="devlib/jasper-compiler.jar"/>
 	<classpathentry kind="lib" path="devlib/jasper-runtime.jar"/>
+	<classpathentry kind="lib" path="lib/sshtools.jar"/>
+	<classpathentry kind="lib" path="lib/commons-net-1.2.2.jar"/>
 	<classpathentry kind="output" path="work/opennms/classes"/>
 </classpath>

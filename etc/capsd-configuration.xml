@@ -171,6 +171,25 @@
                  <property key="secret" value="opennms"/>
                  <property key="retry" value="2"/>
     	</protocol-plugin>
+	<protocol-plugin protocol="Bridge-TPO" class-name="org.opennms.netmgt.capsd.SnmpPlugin" scan="on" user-defined="false">
+		<property key="vbname" value=".1.3.6.1.2.1.17.1.3"/>
+		<property key="vbvalue" value="2"/>
+		<property key="timeout" value="2000"/>
+		<property key="retry" value="3"/>
+	</protocol-plugin>
+	<protocol-plugin protocol="Bridge-SRO" class-name="org.opennms.netmgt.capsd.SnmpPlugin" scan="on" user-defined="false">
+		<property key="vbname" value=".1.3.6.1.2.1.17.1.3"/>
+		<property key="vbvalue" value="3"/>
+		<property key="timeout" value="2000"/>
+		<property key="retry" value="3"/>
+	</protocol-plugin>
+	<protocol-plugin protocol="Bridge-SRT" class-name="org.opennms.netmgt.capsd.SnmpPlugin" scan="on" user-defined="false">
+		<property key="vbname" value=".1.3.6.1.2.1.17.1.3"/>
+		<property key="vbvalue" value="4"/>
+		<property key="timeout" value="2000"/>
+		<property key="retry" value="3"/>
+	</protocol-plugin-->
+	
 	<smb-config>
 		<smb-auth user="guest" password="guest" type="domain">WORKGROUP</smb-auth>
 	</smb-config>

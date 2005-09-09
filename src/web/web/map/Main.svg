@@ -1,0 +1,433 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!-- <?xml version="1.0" standalone="yes"?> -->
+
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 20010904//EN"
+    "http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd" [
+	<!ATTLIST svg
+	xmlns:a3 CDATA #IMPLIED
+		a3:scriptImplementation CDATA #IMPLIED
+>
+	<!ATTLIST script
+	a3:scriptImplementation CDATA #IMPLIED
+>
+]>
+<svg  xmlns:a3="http://ns.adobe.com/AdobeSVGViewerExtensions/3.0/" a3:scriptImplementation="Adobe" onload="load(evt);hideAll(evt);" xmlns:xlink="http://www.w3.org/1999/xlink" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg-20000303-stylable" enableZoomAndPanControls="false">
+	<script type="text/ecmascript" a3:scriptImplementation="Adobe" xlink:href="Point2D.js"/>
+	<script type="text/ecmascript" a3:scriptImplementation="Adobe" xlink:href="ApplicationMap.js"/>
+	<script type="text/ecmascript" a3:scriptImplementation="Adobe" xlink:href="Debug.js"/>
+	<script type="text/ecmascript" a3:scriptImplementation="Adobe" xlink:href="SVGElement.js"/>
+	<script type="text/ecmascript" a3:scriptImplementation="Adobe" xlink:href="Map.js"/>	
+	<script type="text/ecmascript" a3:scriptImplementation="Adobe" xlink:href="Link.js"/>
+	<script type="text/ecmascript" a3:scriptImplementation="Adobe" xlink:href="Semaphore.js"/>
+	<script type="text/ecmascript" a3:scriptImplementation="Adobe" xlink:href="Label.js"/>
+	<script type="text/ecmascript" a3:scriptImplementation="Adobe" xlink:href="MapElement.js"/>
+	<script type="text/ecmascript" a3:scriptImplementation="Adobe" xlink:href="pick_color.js"/>	
+	
+	
+<!-- script added for the menu-->
+	<script type="text/ecmascript" a3:scriptImplementation="Adobe" xlink:href="menu.js"/>
+<!--scripts added for selection-lists -->
+	<script type="text/ecmascript" a3:scriptImplementation="Adobe" xlink:href="selectionBox/helper_functions.js" />
+	<script type="text/ecmascript" a3:scriptImplementation="Adobe" xlink:href="selectionBox/mapApp.js" />
+	<script type="text/ecmascript" a3:scriptImplementation="Adobe" xlink:href="selectionBox/selectionList.js" />
+	<script type="text/ecmascript" a3:scriptImplementation="Adobe" xlink:href="selectionBox/Node.js"/>		
+	<script type="text/ecmascript" a3:scriptImplementation="Adobe" xlink:href="selectionBox/ElemMap.js"/>			
+
+	<script type="text/ecmascript" a3:scriptImplementation="Adobe"><![CDATA[
+		
+		//************* global variables begin **************
+		
+		//interval for refreshing nodes attributes (availability, status...): 2 minutes is the default value
+		var refreshNodesIntervalInSec=120; 
+		
+		// colorSemaphoreBy must be 'A' (by availability) or 'S' (by status)
+		var colorSemaphoreBy='S';
+		var A_BEST_COLOR = "green";
+		var A_GOOD_COLOR = "yellow";
+		var A_BAD_COLOR = "red";
+		var A_UNKNOWN_COLOR= "white";
+		var S_ACTIVE_COLOR = "green";
+		var S_DELETED_COLOR = "grey";
+		var S_OUTAGED_COLOR = "red";	
+		var S_UNKNOWN_COLOR = "white";
+		
+		
+		var IMAGES_FOLDER = "images";
+		var IMAGES_BACKGROUND_FOLDER = IMAGES_FOLDER+"/background/";
+		var IMAGES_ELEMENTS_FOLDER = IMAGES_FOLDER+"/elements/";
+		var DEFAULT_ICON = "unspecified";
+		var DEFAULT_BG_COLOR = "ffffff";
+		var MAP_NOT_OPENED = 1;
+		var NEW_MAP = 2;
+	
+		var map = new Map("#"+DEFAULT_BG_COLOR, "", "Background", "100%", "100%", 0, 0);
+		var node = svgDocument.getElementById("Application");
+		node.appendChild(map.getSvgNode());
+		node = map.getSvgNode();
+		
+		//svgdoc is necessary to run the color-picker
+		var svgdoc = svgDocument;
+		
+		var deletingMapElem=false;
+		var addingMapElemNeighbors=false;
+		var settingMapElemIcon=false;
+		//var deletingLink=false;
+		
+		// a currentMapId = MAP_NOT_OPENED indicates that no Maps are opened. 
+		var currentMapId=MAP_NOT_OPENED;
+		var currentMapBackGround="#"+DEFAULT_BG_COLOR;
+		var currentMapAccess="", currentMapName="", currentMapOwner="", currentMapUserlast="", currentMapCreatetime="", currentMapLastmodtime="";
+ 
+		// int containing the number of loading at the moment
+		var loading=0;
+		
+		//string containing a string form of the current map saved. this is used to test if the map is changed
+		var savedMapString; 
+
+		//global selectionLists for NODES and MAPS
+		var selNodes; 
+		var nodes;
+		var nodeSorts; 
+		var nodeSortAss;
+		var mynodesResult = new nodesResult();
+		
+		var selMaps;
+		var maps;
+		var mapSorts;
+		var mapSortAss;
+		var mymapsResult = new mapsResult();		
+		var myMapApp = new mapApp();
+		
+		
+		
+		//global selectionList for MAP BACKGROUND IMAGES
+		var selBGImages; 
+		var BGImages;
+		var BGImagesSorts; 
+		var BGImagesSortAss;
+		var myBGImagesResult = new BGImagesResult();
+		
+		
+		//global selectionList for MAP ELEMENT' ICONS
+		var selMEIcons; 
+		var MEIcons;
+		var MEIconsSorts; 
+		var MEIconsSortAss;
+		var myMEIconsResult = new MEIconsResult();		
+	
+	
+	
+		// ************* global variables end **************
+		
+		// ************** LOAD AND INITIALIZE THE APPLICATION ********************
+		function load(evt)
+		{
+		//initialize the array for the selection lists (for nodes, maps and background images)
+		nodes= [" "];
+		nodeSorts = [null];
+		maps= [" "];
+		mapSorts = [null];
+		BGImages= [" ","napoli","italia","campania"];
+		BGImagesSorts= [null, IMAGES_BACKGROUND_FOLDER+"napoli.gif",IMAGES_BACKGROUND_FOLDER+"italia.gif",IMAGES_BACKGROUND_FOLDER+"campania.jpg"];
+		
+		MEIcons= ["","desktop","infrastructure","laptop", "opennms","other", "printer", "server", "telephony","unspecified", "map"];
+		MEIconsSorts= [null, IMAGES_ELEMENTS_FOLDER+"desktop.svg", IMAGES_ELEMENTS_FOLDER+"infrastructure.svg", IMAGES_ELEMENTS_FOLDER+"laptop.svg", IMAGES_ELEMENTS_FOLDER+"opennnms.svg", IMAGES_ELEMENTS_FOLDER+"other.svg", IMAGES_ELEMENTS_FOLDER+"printer.svg", IMAGES_ELEMENTS_FOLDER+"server.svg", IMAGES_ELEMENTS_FOLDER+"telephony.svg", IMAGES_ELEMENTS_FOLDER+"unspecified.svg",IMAGES_ELEMENTS_FOLDER+"map.gif"];
+		
+		
+		BGImagesSortAss = assArrayPopulate(BGImages,BGImagesSorts);		
+		MEIconsSortAss = assArrayPopulate(MEIcons,MEIconsSorts);		
+		
+		// load MAPS and NODES from the server.
+		InitApplication();
+		LoadMaps();
+		LoadNodes();
+
+
+		savedMapString = getMapString();
+		}
+		
+	]]></script>
+
+	<desc>
+		<!-- put a description here -->
+		Opennms Map Application
+	</desc>
+
+	<!-- ******** M E N U ********* -->	
+	<svg id="WorkPanel" x="800" width="200" height="200">
+
+	
+	// ********* map informations *********
+	<text id="MapInfo" display="none" x="3" y="50">Map info
+	</text>	
+
+
+	<rect x="0" y="0" id="toolbar" width="100%" height="20px" fill="black" />
+
+	<!-- ***** Map submenu ******-->
+	<g id="MapMenu" display="none" >
+	 <rect id="mapRect" x="0" y="0" width="50" height="20" stroke="blue" fill="black" stroke-width="1" /> 
+	 <text id="mapText" x="8" y="13" fill="white" font-size="11">Map</text> 
+	 <rect onmouseover="openMapMenu(evt); elemHide(evt,'setBackgroundMapColorGroup'); elemHide(evt,'colorNodesByStatusGroup');elemHide(evt,'colorNodesByAvailGroup'); elemHide(evt,'setBackgroundMapImageGroup')" onmouseout="elemColor(evt,'mapRect',upColor)" onclick="setMenuOpenFlag(evt, 'Map');" x="0" y="0" width="50" height="20" style="fill:green;fill-opacity:0"/>
+	</g>
+	<g id="MapChoices" display="none" onmouseover="elemColor(evt,'mapRect',downColor)" onmouseout="elemColor(evt,'mapRect',upColor)">
+		<g id="newMapGroup"  > 
+		 <rect id="New" x="0" y="21" width="100" height="20" stroke="blue" fill="black" stroke-width="1" /> 
+		 <text id="newText" x="10" y="34" fill="white" font-size="10">New</text> 
+		 <rect onmouseover="elemColor(evt,'New',downColor); elemHide(evt,'setBackgroundMapColorGroup'); elemHide(evt,'colorNodesByStatusGroup');elemHide(evt,'colorNodesByAvailGroup'); elemHide(evt,'setBackgroundMapImageGroup')" onmouseout="elemColor(evt,'New',upColor)" onclick="newMap();hideAll(evt);menuOpenFlag=false;" x="0" y="21" width="100" height="20" style="fill:green;fill-opacity:0"/>
+		</g>	
+		
+		<g id="openMapGroup" > 
+		 <rect id="Open" x="0" y="41" width="100" height="20" stroke="blue" fill="black" stroke-width="1" /> 
+		 <text id="openText" x="10" y="54" fill="white" font-size="10">Open</text> 
+		 <rect x="0" y="41" width="100" height="20" onmouseover="elemColor(evt,'Open',downColor); elemHide(evt,'setBackgroundMapColorGroup'); elemHide(evt,'colorNodesByStatusGroup');elemHide(evt,'colorNodesByAvailGroup'); elemHide(evt,'setBackgroundMapImageGroup')" onmouseout="elemColor(evt,'Open',upColor)" onclick="addMapsList();hideAll(evt);menuOpenFlag=false;" style="fill:green;fill-opacity:0"/>
+		</g>		
+
+		<g id="renameMapGroup"> 
+		 <rect id="Rename" x="0" y="61" width="100" height="20" stroke="blue" fill="black" stroke-width="1" /> 
+		 <text id="renameText" x="10" y="74" fill="white" font-size="10">Rename</text> 
+		 <rect  x="0" y="61" width="100" height="20" onmouseover="elemColor(evt,'Rename',downColor); elemHide(evt,'setBackgroundMapColorGroup'); elemHide(evt,'colorNodesByStatusGroup');elemHide(evt,'colorNodesByAvailGroup'); elemHide(evt,'setBackgroundMapImageGroup')" onmouseout="elemColor(evt,'Rename',upColor)" onclick="addRenameMapBox(); hideAll(evt);menuOpenFlag=false;" style="fill:green;fill-opacity:0"/>
+		</g>	
+		
+		<g id="deleteMapGroup" > 
+		 <rect id="Delete" x="0" y="81" width="100" height="20" stroke="blue" fill="black" stroke-width="1" /> 
+		 <text id="deleteText" x="10" y="94" fill="white" font-size="10">Delete</text> 
+		 <rect x="0" y="81" width="100" height="20"  onmouseover="elemColor(evt,'Delete',downColor); elemHide(evt,'setBackgroundMapColorGroup'); elemHide(evt,'colorNodesByStatusGroup');elemHide(evt,'colorNodesByAvailGroup'); elemHide(evt,'setBackgroundMapImageGroup')" onmouseout="elemColor(evt,'Delete',upColor)" onclick="deleteMap();hideAll(evt);menuOpenFlag=false;clearTopInfo();clearDownInfo();" style="fill:green;fill-opacity:0"/>
+		</g>
+
+		<g id="saveMapGroup"  > 
+		 <rect id="Save" x="0" y="101" width="100" height="20" stroke="blue" fill="black" stroke-width="1" /> 
+		 <text id="saveText" x="10" y="114" fill="white" font-size="10">Save</text> 
+		 <rect x="0" y="101" width="100" height="20" onmouseover="elemColor(evt,'Save',downColor); elemHide(evt,'setBackgroundMapColorGroup'); elemHide(evt,'colorNodesByStatusGroup');elemHide(evt,'colorNodesByAvailGroup'); elemHide(evt,'setBackgroundMapImageGroup')" onmouseout="elemColor(evt,'Save',upColor)" onclick="saveMap();hideAll(evt);menuOpenFlag=false;" style="fill:green;fill-opacity:0"/>
+		</g> 
+
+		<g id="clearMapGroup" > 
+		 <rect id="Clear" x="0" y="121" width="100" height="20" stroke="blue" fill="black" stroke-width="1" /> 
+		 <text id="clearText" x="10" y="134" fill="white" font-size="10">Clear</text> 
+		 <rect x="0" y="121" width="100" height="20"  onmouseover="elemColor(evt,'Clear',downColor); elemHide(evt,'setBackgroundMapColorGroup'); elemHide(evt,'colorNodesByStatusGroup');elemHide(evt,'colorNodesByAvailGroup'); elemHide(evt,'setBackgroundMapImageGroup')" onmouseout="elemColor(evt,'Clear',upColor)" onclick="clearMap();hideAll(evt);menuOpenFlag=false;clearTopInfo();clearDownInfo();" style="fill:green;fill-opacity:0"/>
+		</g>
+
+		
+		<g id="closeMapGroup"  >  
+		 <rect id="Close" x="0" y="181" width="100" height="20" stroke="blue" fill="black" stroke-width="1" /> 
+		 <text id="closeText" x="10" y="194" fill="white" font-size="10">Close</text> 
+		 <rect x="0" y="181" width="100" height="20" onmouseover="elemColor(evt,'Close',downColor); elemHide(evt,'setBackgroundMapColorGroup'); elemHide(evt,'colorNodesByStatusGroup');elemHide(evt,'colorNodesByAvailGroup'); elemHide(evt,'setBackgroundMapImageGroup')" onmouseout="elemColor(evt,'Close',upColor)" onclick="close();hideAll(evt);menuOpenFlag=false;" style="fill:green;fill-opacity:0"/>
+		</g> 
+		
+		<g id="setBackgroundMapGroup" > 
+		 <rect id="setBackground" x="0" y="141" width="100" height="20" stroke="blue" fill="black" stroke-width="1" /> 
+		 <text id="backgroundText" x="10" y="154" fill="white" font-size="10">Set Background...</text> 
+		 <rect x="0" y="141" width="100" height="20" onmouseover="elemHide(evt,'colorNodesByStatusGroup');elemHide(evt,'colorNodesByAvailGroup');elemColor(evt,'setBackground',downColor); elemShow(evt,'setBackgroundMapColorGroup'); elemShow(evt,'setBackgroundMapImageGroup')" onmouseout="elemColor(evt,'setBackground',upColor); " style="fill:green;fill-opacity:0"/>
+			<g id="setBackgroundMapColorGroup" display="none"> 
+			 <rect id="setBackgroundColor" x="96" y="140" width="100" height="20" stroke="blue" fill="black" stroke-width="1" /> 
+			 <text id="backgroundColorText" x="103" y="153" fill="white" font-size="10">Color</text> 
+			 <rect x="96" y="140" width="100" height="20"  onmouseover="elemColor(evt,'setBackgroundColor',downColor)" onmouseout="elemColor(evt,'setBackgroundColor',upColor)" onclick="setBackground(0);  hideAll(evt);menuOpenFlag=false;clearTopInfo();clearDownInfo();" style="fill:green;fill-opacity:0"/>
+			</g>
+			<g id="setBackgroundMapImageGroup" display="none"> 
+			 <rect id="setBackgroundImage" x="96" y="160" width="100" height="20" stroke="blue" fill="black" stroke-width="1" /> 
+			 <text id="backgroundImageText" x="103" y="173" fill="white" font-size="10">Image</text> 
+			 <rect x="96" y="160" width="100" height="20"  onmouseover="elemColor(evt,'setBackgroundImage',downColor)" onmouseout="elemColor(evt,'setBackgroundImage',upColor)" onclick="addBGImagesList();hideAll(evt);menuOpenFlag=false;" style="fill:green;fill-opacity:0"/>
+			</g>			
+		</g>
+		<g id="colorNodesByGroup" > 
+		 <rect id="colorNodes" x="0" y="161" width="100" height="20" stroke="blue" fill="black" stroke-width="1" /> 
+		 <text id="colorNodesText" x="10" y="174" fill="white" font-size="10">View by...</text> 
+		 <rect x="0" y="161" width="100" height="20" onmouseover="elemHide(evt,'setBackgroundMapColorGroup'); elemHide(evt,'setBackgroundMapImageGroup');  elemColor(evt,'colorNodes',downColor); elemShow(evt,'colorNodesByStatusGroup'); elemShow(evt,'colorNodesByAvailGroup')" onmouseout="elemColor(evt,'colorNodes',upColor); " style="fill:green;fill-opacity:0"/>
+			<g id="colorNodesByStatusGroup" display="none"> 
+			 <rect id="colorNodesByStatus" x="96" y="160" width="100" height="20" stroke="blue" fill="black" stroke-width="1" /> 
+			 <text id="colorNodesByStatusText" x="103" y="173" fill="white" font-size="10">Status</text> 
+			 <rect x="96" y="160" width="100" height="20"  onmouseover="elemColor(evt,'colorNodesByStatus',downColor)" onmouseout="elemColor(evt,'colorNodesByStatus',upColor)" onclick="colorSemaphoreBy='S';refreshMapElements(); elemHide(evt,'colorByAvailDescription'); elemShow(evt,'colorByStatusDescription'); hideAll(evt);menuOpenFlag=false;clearTopInfo();clearDownInfo();" style="fill:green;fill-opacity:0"/>
+			</g>
+			<g id="colorNodesByAvailGroup" display="none"> 
+			 <rect id="colorNodesByAvail" x="96" y="180" width="100" height="20" stroke="blue" fill="black" stroke-width="1" /> 
+			 <text id="colorNodesByAvailText" x="103" y="193" fill="white" font-size="10">Availability</text> 
+			 <rect x="96" y="180" width="100" height="20"  onmouseover="elemColor(evt,'colorNodesByAvail',downColor)" onmouseout="elemColor(evt,'colorNodesByAvail',upColor)" onclick="colorSemaphoreBy='A';refreshMapElements(); elemShow(evt,'colorByAvailDescription'); elemHide(evt,'colorByStatusDescription');hideAll(evt);menuOpenFlag=false;" style="fill:green;fill-opacity:0"/>
+			</g>			
+		</g>		
+		
+
+
+	</g>
+	
+	
+	<rect  style="fill:green;fill-opacity:0"/>
+	
+	<!-- ***** Node submenu ******-->
+	<g id="NodeMenu" display="none" >
+	 <rect id="nodeRect" x="51" y="0" width="50" height="20" stroke="blue" fill="black" stroke-width="1" /> 
+	 <text id="nodeText" x="58" y="13" fill="white" font-size="11">Node</text> 
+	 <rect x="51" y="0" width="50" height="20" onmouseover="openNodeMenu(evt); elemHide(evt,'setBackgroundMapColorGroup'); elemHide(evt,'colorNodesByStatusGroup');elemHide(evt,'colorNodesByAvailGroup'); elemHide(evt,'setBackgroundMapImageGroup')" onmouseout="elemColor(evt,'nodeRect',upColor)" onclick="setMenuOpenFlag(evt, 'Node')" style="fill:green;fill-opacity:0"/>
+	</g>
+	<g id="NodeChoices" display="none" >
+		<g id="addNodeGroup"  onmouseover="elemColor(evt,'Add',downColor)" onmouseout="elemColor(evt,'Add',upColor)" onclick="addMapElementList();hideAll(evt);menuOpenFlag=false;"> 
+		 <rect id="Add" x="51" y="21" width="100" height="20" stroke="blue" fill="black" stroke-width="1" /> 
+		 <text id="addText" x="58" y="34" fill="white" font-size="10">Add</text> 
+		 <rect x="51" y="21" width="100" height="20"  onmouseover="elemColor(evt,'nodeRect',downColor)" onmouseout="elemColor(evt,'nodeRect',upColor)" style="fill:green;fill-opacity:0"/>
+		</g> 
+		<g id="addNodeRangeGroup"  onmouseover="elemColor(evt,'AddNodeRange',downColor)" onmouseout="elemColor(evt,'AddNodeRange',upColor)" onclick="addRangeBox();hideAll(evt);menuOpenFlag=false;"> 
+		 <rect id="AddNodeRange" x="51" y="41" width="100" height="20" stroke="blue" fill="black" stroke-width="1" /> 
+		 <text id="addNodeRangeText" x="58" y="54" fill="white" font-size="10">Add Node Range</text> 
+		 <rect x="51" y="41" width="100" height="20"  onmouseover="elemColor(evt,'nodeRect',downColor)" onmouseout="elemColor(evt,'nodeRect',upColor)" style="fill:green;fill-opacity:0"/>
+		</g>		
+		<g id="addNeighGroup"> 
+		 <rect id="AddNeigh" x="51" y="61" width="100" height="20" stroke="blue" fill="black" stroke-width="1" /> 
+		 <text id="addNeighText" x="58" y="74" fill="white" font-size="10">Add Neighbors</text> 
+		 <rect  x="51" y="61" width="100" height="20" onmouseover="elemColor(evt,'AddNeigh',downColor)" onmouseout="elemColor(evt,'AddNeigh',upColor)"  onclick="addMapElementNeigh(); hideAll(evt);menuOpenFlag=false;" style="fill:green;fill-opacity:0"/>
+		</g> 		
+		<g id="addNodeNeighGroup" > 
+		 <rect id="AddNodeNeigh" x="51" y="81" width="100" height="20" stroke="blue" fill="black" stroke-width="1" /> 
+		 <text id="addNodeNeighText" x="58" y="94" fill="white" font-size="10">Add with Neighbors</text> 
+		 <rect  x="51" y="81" width="100" height="20" onmouseover="elemColor(evt,'AddNodeNeigh',downColor)" onmouseout="elemColor(evt,'AddNodeNeigh',upColor)"  onclick="addMapElementNeighList();hideAll(evt);menuOpenFlag=false;" style="fill:green;fill-opacity:0"/>
+		</g> 
+		<g id="addMapGroup" > 
+		 <rect id="AddMap" x="51" y="101" width="100" height="20" stroke="blue" fill="black" stroke-width="1" /> 
+		 <text id="addMapText" x="58" y="114" fill="white" font-size="10">Add Map as Node</text> 
+		 <rect  x="51" y="101" width="100" height="20" onmouseover="elemColor(evt,'AddMap',downColor)" onmouseout="elemColor(evt,'AddMap',upColor)"  onclick="addMapAsNodeList();hideAll(evt);menuOpenFlag=false;" style="fill:green;fill-opacity:0"/>
+		</g>	
+		
+		<g id="setIconGroup"  > 
+		 <rect id="SetIcon" x="51" y="121" width="100" height="20" stroke="blue" fill="black" stroke-width="1" /> 
+		 <text id="setIconText" x="58" y="134" fill="white" font-size="10">Set Icon</text> 
+		 <rect  x="51" y="121" width="100" height="20" onmouseover="elemColor(evt,'SetIcon',downColor)" onmouseout="elemColor(evt,'SetIcon',upColor)" onclick="addIconList();hideAll(evt);menuOpenFlag=false;" style="fill:green;fill-opacity:0"/>
+		</g> 		
+		<g id="deleteNodeGroup"  > 
+		 <rect id="DeleteNode" x="51" y="141" width="100" height="20" stroke="blue" fill="black" stroke-width="1" /> 
+		 <text id="deleteNodeText" x="58" y="154" fill="white" font-size="10">Delete</text> 
+		 <rect  x="51" y="141" width="100" height="20" onmouseover="elemColor(evt,'DeleteNode',downColor)" onmouseout="elemColor(evt,'DeleteNode',upColor)" onclick="deleteMapElement();hideAll(evt);menuOpenFlag=false;" style="fill:green;fill-opacity:0"/>
+		</g> 
+	</g>
+	<!-- ******** end   M E N U ********* -->	
+    </svg>
+    
+    	<svg a3:scriptImplementation="Adobe" x="800" y="210" width="200" height="110" id="TopInfo">
+		<text id="TopInfoText" x="5" y="20"></text>
+		<g id="nodes" />
+		<g id="maps" />
+		<g id="bgimages" />
+		<g id="meicons" />
+	</svg>
+	<svg a3:scriptImplementation="Adobe" x="800" y="321" width="200" height="100" id="DownInfo">
+		<text id="DownInfoText" x="5" y="20"></text>
+
+	</svg>	
+
+	<svg id="ApplicationSvg"  width="800" height="100%">
+	
+			<svg a3:scriptImplementation="Adobe" width="100%" height="100%">
+				<g id="Application">
+				</g>
+			</svg>	
+	</svg>
+	
+	<svg>
+		<g id="LoadingText" x="40%" y="50%" display="none">
+		<rect  x="40%" y="40%" fill="white" stroke="white" width="60" height="20"  />
+		<text  x="40%" y="40%">
+		<tspan    dx="3" dy="13">Loading...
+		</tspan>
+		</text>
+		</g>
+	</svg>
+
+	<svg>
+		<g id="RefreshingText" x="40%" y="50%"  display="none">
+		<rect  x="40%" y="40%" fill="white" stroke="white" width="75" height="20"  />
+		<text  x="40%" y="40%">
+		<tspan    dx="3" dy="13">Refreshing...
+		</tspan>
+		</text>
+		</g>
+	</svg>	
+	
+	<!-- svg for changing the background color of the map -->
+
+	<svg  x="800" y="250">
+	    <g id="pickColor" />
+
+	</svg>
+	
+	<svg  x="805" y="470"  width="200" height="100">
+	    <g id="colorByStatusDescription" x="5">
+	    	<text x="1" y="15">
+	    	    Status View
+	    	</text>
+	    	<circle cx="15" cy="30" r="5" fill="green" stroke="black"/>
+	    	<text x="25" y="33">
+	    	    = Up
+	    	</text>	    	
+	    	<circle cx="15" cy="50" r="5" fill="red" stroke="black"/>
+	    	<text x="25" y="53">
+	    	    = Outaged
+	    	</text>	    	
+	    	<circle cx="15" cy="70" r="5" fill="grey" stroke="black"/>
+	    	<text x="25" y="73">
+	    	    = Deleted
+	    	</text>	
+	    	<circle cx="15" cy="90" r="5" fill="white" stroke="black"/>
+	    	<text x="25" y="93">
+	    	    = Unknown
+	    	</text>		    		    	
+	    </g>
+
+	</svg>
+	
+	<svg  x="805" y="470" width="200" height="100">
+	    <g id="colorByAvailDescription" display="none" x="5">
+	      
+		<text x="1" y="15">
+	    	    Availability View
+	    	</text>
+	    	
+	    	<circle cx="15" cy="30" r="5" fill="green" stroke="black"/>
+	    	<text x="25" y="33">
+	    	    = Best
+	    	</text>	    	
+	    	<circle cx="15" cy="50" r="5" fill="yellow" stroke="black"/>
+	    	<text x="25" y="53">
+	    	    = Good
+	    	</text>	    	
+	    	<circle cx="15" cy="70" r="5" fill="red" stroke="black"/>
+	    	<text x="25" y="73">
+	    	    = Bad
+	    	</text>		
+	    	<circle cx="15" cy="90" r="5" fill="white" stroke="black"/>
+	    	<text x="25" y="93">
+	    	    = Unknown
+	    	</text>		    	    	
+	    	
+	    </g>
+	</svg>	
+	
+	<script>
+	
+	var begin;
+	var actual;
+	var reloadseconds=0;
+	var secondsSinceBegin=0; 
+	function startRefreshNodesTime() { 
+		begin=(new Date()).getTime();
+		countdown(); 
+	} 
+	function countdown() {
+	
+		actual= (new Date()).getTime();
+		secondsSinceBegin=(actual-begin)/1000;
+		reloadseconds=Math.round(refreshNodesIntervalInSec-secondsSinceBegin);
+		if (refreshNodesIntervalInSec>=secondsSinceBegin) 
+			{ var timer=setTimeout("countdown()",1000);
+			  window.status="Next Nodes Refresh: "+((reloadseconds-(reloadseconds%60))/(60))+ "'."+(reloadseconds%60)+"''";
+			} else 
+			{
+			 window.status="";
+			 RefreshNodes();
+			 } 
+		}	
+	
+
+	
+	</script>
+	
+	
+     </svg>
+
+

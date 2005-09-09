@@ -1,0 +1,45 @@
+Napoli, 8 Settembre 2005
+OpenNMS Italian Adventures
+ 
+This is only a test version and must be considered a pre-release.
+
+You can build opennms IA in the same way of opennms HEAD branch.
+
+The OpenNMS version this release is based on is: 1.2.3-1.
+
+Contents of OpenNMS IA:
+
+We introduce a new service named linkd.
+This service polls snmp nodes to get information about;
+ mac/ip addresses assosations
+ Spanning Tree Protocol
+ Bridge Mac Address Table
+ Ip Routing Table
+
+This informations are used bylinkd to discovery links (at Data Link Level of ISO/OSI standard)
+among nodes.
+
+Previus informations are saved into new tables in Db and can be
+visualized on web interface looking for node.
+
+Strictly related to this new service is provided an extention
+of originally map built in OpenNMS. 
+You can access them using map.enable stuff.
+
+Another service buid in OpenNMS IA is the inventory.
+Originally this service was written to store and compare
+router/switch configuration as also to save operating system.
+
+This process is useful to poll and get inventory info
+from nodes and to saving them into XML files.
+Look to xml configuration file and examples provided.
+
+Also this information are stored in new db tables
+and is provided integrated web user interface.
+
+Some inventory collection are automatically saved in asset info
+table.
+
+Another stuff regard the user interface Asset Location where you can create
+Building and Room and assigning nodes to them.
+

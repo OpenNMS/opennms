@@ -1,0 +1,50 @@
+<?xml version="1.0"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema"
+	targetNamespace="http://xmlns.opennms.org/xsd/assetLocation">
+
+	<element name="assetLocations">
+		<complexType>
+			<sequence>
+				<element ref="header" minOccurs="1" maxOccurs="1"/>
+				<element ref="building" minOccurs="1" maxOccurs="unbounded"/>
+			</sequence>
+
+		</complexType>
+	</element>
+
+	<element name="header">
+		<complexType>
+			<sequence>
+				<element name="rev" type="string" minOccurs="1" maxOccurs="1"/>
+
+				<!-- creation time in the 'dow mon dd hh:mm:ss zzz yyyy' format -->
+				<element name="created" type="string" minOccurs="1" maxOccurs="1"/>
+
+				<element name="mstation" type="string" minOccurs="1" maxOccurs="1"/>
+			</sequence>
+		</complexType>
+	</element>
+
+	<element name="building">
+		<complexType>
+			<sequence>
+				<element ref="room" type="string" minOccurs="0" maxOccurs="unbounded"/>
+                		<element name="City" type="string" minOccurs="0" maxOccurs="1"/>
+                		<element name="State" type="string" minOccurs="0" maxOccurs="1"/>
+                		<element name="ZIP" type="string" minOccurs="0" maxOccurs="1"/>
+                		<element name="Address1" type="string" minOccurs="0" maxOccurs="1"/>
+                		<element name="Address2" type="string" minOccurs="0" maxOccurs="1"/>
+			</sequence>
+                	<attribute name="name" type="string" use="required"/>
+		</complexType>
+	</element>
+
+	<element name="room">
+		<complexType>
+                	<attribute name="RoomID" type="string" use="required"/>
+                	<attribute name="Floor" type="string" use="optional"/>
+		</complexType>
+	</element>
+
+</schema>
+

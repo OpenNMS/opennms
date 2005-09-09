@@ -1,0 +1,63 @@
+//
+// Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
+//  
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 2 of the License, or
+// (at your option) any later version.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software 
+// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+// 
+// For more information contact: 
+//	Brian Weaver	<weave@opennms.org>
+//	http://www.opennms.org/
+//
+//
+//
+
+package org.opennms.netmgt.inventory;
+
+/**
+ * <P>The Pollable class...</P>
+ * 
+ * @author <A HREF="mailto:mike@opennms.org">Mike</A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
+ *
+ */
+public interface Pollable
+{
+	/** 
+	 * Status of the pollable object.
+	 * 
+	 * WARNING:  Don't change the integer value of these constants.
+	 *           They are set up to correspond to the integer values
+	 * 	     of the GroupMonitor.DOWNLOAD_SUCCESS, and
+	 *  	     GroupMonitor.DOWNLOAD_FAILURE, 
+	 */
+	public static final int		STATUS_UNKNOWN = 0;
+	public static final int 	STATUS_UP      = 1;
+	public static final int		STATUS_DOWN    = 2;
+	
+	public static final String[]  statusType = {"Unknown", "Up", "Down"};
+	
+	/*
+	 * Returns TRUE if object has changed status as 
+	 * result of last poll()
+	 */
+	public boolean  statusChanged();
+	
+	/**
+	 * Returns current status of the object 
+	 */
+	public int	getStatus();
+	
+
+}
+

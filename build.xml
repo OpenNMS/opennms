@@ -286,6 +286,8 @@ your distribution.
   	<include name="mailapi.jar" />
   	<include name="pop3.jar" />
   	<include name="smtp.jar" />
+  	<include name="sshtools.jar" />
+  	<include name="commons-net-1.2.2.jar" />
   </patternset>
 
   <!-- The includes in this patternset need to match the directories in

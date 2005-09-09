@@ -102,6 +102,15 @@
           </tr>
 
           <tr>
+            <td colspan="2">Mac Address like:</td>
+          </tr>
+          <tr>
+            <form action="element/nodelist.jsp" method="GET">          
+              <td><input type="text" name="maclike" /></td>
+              <td><input type="submit" value="Search"/></td>                
+            </form>
+          </tr>
+          <tr>
             <td colspan="2">Providing service:</td>
           </tr>
           <tr>
@@ -191,6 +200,20 @@
             <li>192.168.*.*
             <li>192.168.0-255.0-255
             <li>192.168.0,1,2,3-255.*
+        </ul>
+      </p>
+
+      <p>Searching by MAC address is very simple, just put all or a part of 
+         Mac address exadecimal digit in the search box.
+      </p>
+        
+      <p>For example, the following search fields are all valid and would each
+         find all the nodes having mac address containing the research field:
+      
+        <ul>
+            <li>001239ab67
+            <li>001239ab
+            <li>ab67
         </ul>
       </p>
 

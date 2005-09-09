@@ -79,6 +79,12 @@
               <a href="report/index.jsp">Reports</a>&nbsp;|&nbsp;
         <%  } %>
 
+        <%  if( "inventory".equals( location ) ) { %>
+              Inventory&nbsp;|&nbsp;
+        <%  } else { %>
+              <a href="conf/index.jsp">Inventory</a>&nbsp;|&nbsp;
+        <%  } %>
+
 <% if( file.exists() ) { %>
         <%-- Map --%>                               
         <%  if( "map".equals( location ) ) { %>

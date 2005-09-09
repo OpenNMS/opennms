@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<maps-configuration rescan-frequency="10000">
+    <header>
+        <rev>0.1</rev>
+        <created>gioved&#xec; 7 ottobre 2004 15.21.35 CEST</created>
+        <mstation>localhost</mstation>
+    </header>
+    <plugins>
+        <maps-plugin name="default" class-name="org.opennms.web.map.plugins.DefaultPlugin">
+            <property key="test1" value=""/>
+            <property key="test2" value=""/>
+        </maps-plugin>
+        <maps-plugin name="STP" class-name="org.opennms.web.map.plugins.StpPlugin">
+            <property key="stp1" value=""/>
+            <property key="stp2" value=""/>
+        </maps-plugin>
+        <maps-plugin name="VLan" class-name="org.opennms.web.map.plugins.VLanPlugin">
+            <property key="vlan1" value=""/>
+            <property key="vlan2" value=""/>
+        </maps-plugin>
+    </plugins>
+</maps-configuration>

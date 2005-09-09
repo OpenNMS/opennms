@@ -1,4 +1,4 @@
-#!@install.perl.bin@
+#!/usr/bin/perl
 
 use strict;
 use Getopt::Mixed "nextOption";
@@ -27,11 +27,12 @@ use vars qw(
 
 $VERSION = '0.2';
 $VERBOSE = 0;
-$ZONE    = 'GMT';
+$ZONE    = strftime("%Z", localtime);
+$ZONE    = 'EST' unless defined $ZONE;
 
 @SEVERITIES = ( undef, 'Indeterminate', 'Cleared', 'Normal', 'Warning', 'Minor', 'Major', 'Critical' );
 	
-Getopt::Mixed::init('h help>h d=s descr>d i=s interface>i n=i nodeid>n p=s parm>p s=s service>s t=s  u=s uei>u V version>V v verbose>v x=s severity>x o=s operinstr>o');
+Getopt::Mixed::init('h help>h d=s descr>d i=s interface>i n=i nodeid>n p=s parm>p s=s service>s t=s timezone>t zone>t u=s uei>u V version>V v verbose>v x=s severity>x o=s operinstr>o');
 while (my ($option, $value) = nextOption()) {
 
         $SERVICE   = $value if ($option eq "s");
@@ -40,6 +41,7 @@ while (my ($option, $value) = nextOption()) {
         $DESCR     = $value if ($option eq "d");
         $SEVERITY  = $value if ($option eq "x");
 	$VERBOSE   = 1      if ($option eq "v");
+	$ZONE      = $value if ($option eq "t");
 	$OPERINSTR = $value if ($option eq "o");
 	push(@PARMS, parse_parm($value)) if ($option eq "p");
 
@@ -127,7 +129,7 @@ if (defined $SERVICE) {
 	($SERVICE) = simple_parse($SERVICE);
 }
 
-my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = gmtime(time);
+my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime(time);
 $year += 1900;
 my $month = $mon;
 $min   = sprintf("%02d", $min);
@@ -224,6 +226,7 @@ Options:
          --nodeid, -n      node identifier (numeric)
          --interface, -i   IP address of the interface
          --descr, -d       a description for the event browser
+         --operinstr, -o        operator instruction
          --severity, -x    the severity of the event (numeric or name)
                            1 = Indeterminate
                            2 = Cleared (unimplemented at this time)
@@ -239,8 +242,8 @@ Example:
         Force discovery of a node
 
         send-event.pl \\
-        --interface 172.16.1.1
         uei.opennms.org/internal/discovery/newSuspect \\
+        --interface 172.16.1.1
 
 END
 }
