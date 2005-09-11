@@ -81,7 +81,7 @@ public class LogMessageMatchesAnyFilter extends Object implements Filter {
     public String getSql() {
         StringBuffer buffer = new StringBuffer(" (");
 
-        buffer.append("UPPER(ALARMLOGMSG) LIKE '%");
+        buffer.append("UPPER(logMsg) LIKE '%");
         buffer.append(getQueryString().toUpperCase());
         buffer.append("%'");
         buffer.append(")");

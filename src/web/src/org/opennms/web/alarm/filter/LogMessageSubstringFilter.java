@@ -46,7 +46,7 @@ public class LogMessageSubstringFilter extends Object implements Filter {
     }
 
     public String getSql() {
-        return (" UPPER(ALARMLOGMSG) LIKE '%" + this.substring.toUpperCase() + "%'");
+        return (" UPPER(logMsg) LIKE '%" + this.substring.toUpperCase() + "%'");
     }
 
     public String getDescription() {
