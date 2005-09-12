@@ -280,7 +280,7 @@
 	  <td>&nbsp;</td>
           <td><b>Ackd</b></td>
           <td><b>Ackd Time</b></td>
-	  <td>&nbsp;</td>
+	  <td><b>UEI</b></td>
 	  <td>&nbsp;</td>
 	  <td>&nbsp;</td>
 	  <td>&nbsp;</td>
@@ -403,9 +403,20 @@
           <td valign="top">
             <%=alarms[i].isAcknowledged() ? org.opennms.netmgt.EventConstants.formatToUIString(alarms[i].getAcknowledgeTime()) : "&nbsp;"%>
           </td>
-	   <td>&nbsp;</td>
-	   <td>&nbsp;</td>
-	   <td>&nbsp;</td>
+	  <td colspan=3>
+            <% if(alarms[i].getUei() != null) { %>
+              <% org.opennms.web.alarm.filter.Filter exactUEIFilter = new ExactUEIFilter(alarms[i].getUei()); %>
+                <%=alarms[i].getUei()%>
+              <% if( !parms.filters.contains( exactUEIFilter )) { %>
+                <nobr>
+                  <a href="<%=this.makeLink( parms, exactUEIFilter, true)%>" class="filterLink" title="Show only events with this UEI"><%=addPositiveFilterString%></a>
+                  <a href="<%=this.makeLink( parms, new NegativeExactUEIFilter(alarms[i].getUei()), true)%>" class="filterLink" title="Do not show events for this UEI"><%=addNegativeFilterString%></a>
+                </nobr>
+              <% } %>
+            <% } else { %>
+              &nbsp;
+            <% } %>
+          </td>
 	   <td>&nbsp;</td>
         </tr>
         <tr valign="top" class="<%=(i%2 == 0) ? "eventlist-odd" : "eventlist-even"%>">
