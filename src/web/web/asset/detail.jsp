@@ -53,7 +53,7 @@
 
 <html>
 <head>
-  <title>Modify | Asset | OpenNMS Web Console</title>
+  <title>Detail | Asset | OpenNMS Web Console</title>
   <base HREF="<%=org.opennms.web.Util.calculateUrlBase( request )%>" />
   <link rel="stylesheet" type="text/css" href="includes/styles.css" />
 </head>
@@ -62,7 +62,7 @@
 <% String breadcrumb1 = "<a href='asset/index.jsp' >Assets</a>"; %>
 <% String breadcrumb2="Detail"; %>
 <jsp:include page="/includes/header.jsp" flush="false" >
-  <jsp:param name="title" value="Modify Asset" />
+  <jsp:param name="title" value="Detail Asset" />
   <jsp:param name="breadcrumb" value="<%=breadcrumb1%>" />
   <jsp:param name="breadcrumb" value="<%=breadcrumb2%>" />
 </jsp:include>
@@ -86,19 +86,19 @@
         <table width="100%" border="1" cellspacing="0" cellpadding="2" bordercolor="black">
           <tr>
             <td> System Id </td>
-            <td> <%=node_db.getNodeSysId()%> </td>
+            <td><%=node_db.getNodeSysId()%> </td>
             <td> System Name </td>
-            <td> <%=node_db.getNodeSysName()%> </td>
+            <td>&nbsp;<%=(node_db.getNodeSysName()!=null)?node_db.getNodeSysName():""%> </td>
           </tr>
           <tr>
             <td> System Location </td>
-            <td> <%=node_db.getNodeSysLocn()%> </td>
+            <td>&nbsp;<%=(node_db.getNodeSysLocn()!=null)?node_db.getNodeSysLocn():""%> </td>
             <td> System Contact </td>
-            <td> <%=node_db.getNodeSysContact()%> </td>
+            <td>&nbsp;<%=(node_db.getNodeSysContact()!=null)?node_db.getNodeSysContact():""%> </td>
           </tr>
           <tr>
             <td> System Description </td>
-            <td> <%=node_db.getNodeSysDescr()%> </td>
+            <td> <%=(node_db.getNodeSysDescr()!=null)?node_db.getNodeSysDescr():"&nbsp;"%> </td>
 	            <td>&nbsp; </td>
     	        <td>&nbsp; </td>
           </tr>
@@ -121,23 +121,23 @@
         <table width="100%" cellspacing="0" cellpadding="2" border="1" bgcolor="#cccccc" bordercolor="#000000">
           <tr>
             <td width="5%" bgcolor="#999999">Description</td>
-            <td colspan="3">&nbsp;<%=asset.getDescription()%></td>
+            <td colspan="3">&nbsp;<%=(asset.getDescription()!=null)?asset.getDescription():""%></td>
             <td width="5%" bgcolor="#999999">Category</td>
-            <td>&nbsp;<%=asset.getCategory()%></td>
+            <td>&nbsp;<%=(asset.getCategory()!=null)?asset.getCategory():""%></td>
           </tr>
           <tr>
             <td bgcolor="#999999">Manufacturer</td>
-            <td>&nbsp;<%=asset.getManufacturer()%></td>
+            <td>&nbsp;<%=(asset.getManufacturer()!=null)?asset.getManufacturer():""%></td>
             <td bgcolor="#999999">Model Number</td>
-            <td>&nbsp;<%=asset.getModelNumber()%></td>
+            <td>&nbsp;<%=(asset.getModelNumber()!=null)?asset.getModelNumber():""%></td>
             <td bgcolor="#999999">Serial Number</td>
-            <td>&nbsp;<%=asset.getSerialNumber()%></td>
+            <td>&nbsp;<%=(asset.getSerialNumber()!=null)?asset.getSerialNumber():""%></td>
           </tr>
           <tr>
             <td bgcolor="#999999">Asset Number</td>
-            <td>&nbsp;<%=asset.getAssetNumber()%></td>
+            <td>&nbsp;<%=(asset.getAssetNumber()!=null)?asset.getAssetNumber():""%></td>
             <td bgcolor="#999999">Date Installed</td>
-            <td>&nbsp;<%=asset.getDateInstalled()%></td>
+            <td>&nbsp;<%=(asset.getDateInstalled()!=null)?asset.getDateInstalled():""%></td>
             <td bgcolor="#999999">Operating System</td>
 	    <% String os = asset.getOperatingSystem();
 		if(os == null || os.equals(""))

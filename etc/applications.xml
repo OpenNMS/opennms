@@ -1,0 +1,2 @@
+<?xml version="1.0"?><!DOCTYPE applications[	<!ELEMENT applications (application*)>	<!ELEMENT application (name, cpuType, minFrequency, minRam, minDiskSpace, hwPeripheral*,swApplication*)>	<!ELEMENT name (#PCDATA)>	<!ELEMENT cpuType (#PCDATA)>	<!ELEMENT minFrequency (#PCDATA)>	<!ELEMENT minRam (#PCDATA)>	<!ELEMENT minDiskSpace (#PCDATA)>	<!ELEMENT hwPeripheral (#PCDATA)>	<!ELEMENT swApplication (#PCDATA)>	<!ATTLIST swApplication id CDATA #REQUIRED>]><applications>
+</applications>

@@ -95,17 +95,17 @@
             <td> System Id </td>
             <td> <%=node_db.getNodeSysId()%> </td>
             <td> System Name </td>
-            <td> <%=node_db.getNodeSysName()%> </td>
+            <td>&nbsp;<%=(node_db.getNodeSysName()!=null)?node_db.getNodeSysName():""%> </td>
           </tr>
           <tr>
             <td> System Location </td>
-            <td> <%=node_db.getNodeSysLocn()%> </td>
+            <td>&nbsp;<%=(node_db.getNodeSysLocn()!=null)?node_db.getNodeSysLocn():""%> </td>
             <td> System Contact </td>
-            <td> <%=node_db.getNodeSysContact()%> </td>
+            <td>&nbsp;<%=(node_db.getNodeSysContact()!=null)?node_db.getNodeSysContact():""%> </td>
           </tr>
           <tr>
             <td> System Description </td>
-            <td> <%=node_db.getNodeSysDescr()%> </td>
+            <td>&nbsp;<%=(node_db.getNodeSysDescr()!=null)?node_db.getNodeSysDescr():""%> </td>
 	            <td>&nbsp; </td>
     	        <td>&nbsp; </td>
           </tr>
