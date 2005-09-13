@@ -1,0 +1,23 @@
+<?xml version="1.0" ?>
+<plugin-configuration>
+	<exchange prompt="Password:" errorprompt="" command="1234"/>
+	<exchange prompt="&gt;" errorprompt="Password:" command="terminal length 0"/>
+	<exchange prompt="&gt;" errorprompt="" command="ena"/>
+	<exchange prompt="Password:" errorprompt="" command="1234"/>
+
+	<item-mapping command="Show Version">
+		<exchange prompt="#" errorprompt="Password:" command="show ver"/>
+		<correspondence item-name="IOS" filter-command="/opt/OpenNMS/etc/inventory/ios.sh" timeout="30000">
+			<assettable-column>operatingsystem</assettable-column>
+		</correspondence>
+		<correspondence item-name="show ver" filter-command="/opt/OpenNMS/etc/inventory/show-ver.sh" timeout="30000"/>
+	</item-mapping>
+ 	<item-mapping command="show conf">
+		<exchange prompt="#" errorprompt="Password:" command="show conf"/> 
+		<correspondence item-name="saved configuration" filter-command="/opt/OpenNMS/etc/inventory/show-conf.sh" timeout="30000" />
+	</item-mapping>
+ 	<item-mapping  command="show run">
+		<exchange prompt="#" errorprompt="Password:" command="show run"/>
+		<correspondence item-name="running configuration" filter-command="/opt/OpenNMS/etc/inventory/show-run.sh" timeout="30000" />
+	</item-mapping>
+</plugin-configuration>
