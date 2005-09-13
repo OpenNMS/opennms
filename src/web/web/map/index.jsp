@@ -58,7 +58,7 @@
   <tr>
     <td>&nbsp;</td>
 
-    <td>
+    <td valign="top">
       <h3>Mapping</h3>    
 
       <p>
@@ -120,7 +120,23 @@
       <p>
          Mapping provides the management of maps representing the status (links beetwen nodes, status,
          availability ecc.) of a subset of nodes monitored by the system.
+         You can create your personal view of the system, just creating a map containing the nodes you
+         are interested to. 
+       </p>
+       
+       <p>  
+         Also, you can include one or more <i>map nodes</i> into your map. A <i>map node</i> is
+         a map (previousely created) containing another subset (not compulsorily disjoined from your map)
+         of nodes of system. By this instrument, you can monitor your system grouping nodes in costumized 
+         way and easily to jump from a map to another with a double-click.
+        </p>
+        
+        <p>
+         At last, you can change the layout of your map, modifying its background, icons of the nodes 
+         (by default, the icon corrensponding to the asset category of the nodes) etc.
          </p>
+         <br>
+         <br>
 
     </td>
 

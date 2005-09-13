@@ -55,6 +55,7 @@ public class StpNode
 	int     stprootcost,
 	int     stprootport,
 	int     basevlan,
+	String  basevlanname,
 	String  basebridgeaddress,
 	String  stpdesignatedroot,
 	String  lastPollTime,
@@ -70,6 +71,7 @@ public class StpNode
 				m_stprootcost = stprootcost;
 				m_stprootcost = stprootport;
 				m_basevlan = basevlan;
+				m_basevlanname = basevlanname;
                 m_basebridgeaddress = basebridgeaddress;
                 m_stpdesignatedroot = stpdesignatedroot;
                 m_lastPollTime = lastPollTime; 
@@ -176,7 +178,8 @@ public class StpNode
         public int get_stprootnodeid() {
             return m_stprootnodeid;
         }
-		/**
+
+        /**
 		 * @return Returns the m_basevlanname.
 		 */
 		public String getBaseVlanName() {

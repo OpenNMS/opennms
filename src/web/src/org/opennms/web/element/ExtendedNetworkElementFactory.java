@@ -851,6 +851,11 @@ public class ExtendedNetworkElementFactory {
                 node.m_basevlan = ((Integer) element).intValue();
             }
 
+            element = rs.getString("basevlanname");
+            if (element != null) {
+                node.m_basevlanname = (String) element;
+            }
+
             element = new Integer(rs.getInt("stppriority"));
             if (element != null) {
                 node.m_stppriority = ((Integer) element).intValue();
@@ -941,7 +946,7 @@ public class ExtendedNetworkElementFactory {
             node.m_parentipaddress = getIpAddress(node.get_nodeparentid(), node
                     .get_parentifindex());
 
-            if (node.get_ifindex() == 0) {
+            if (node.get_ifindex() == -1 ) {
                 node.m_ipaddress = getIpAddress(node.get_nodeId());
             } else {
                 node.m_ipaddress = getIpAddress(node.get_nodeId(), node

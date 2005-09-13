@@ -48,9 +48,6 @@ public class Factory {
         int count =0;
         if(rs.next()){
         	count = rs.getInt(1);
-        }else {
-            // TODO add log information                
-        	assert false;
         }
         rs.close();
         statement.close();

@@ -79,7 +79,7 @@
 <% } %>
 
 <!-- Body -->
-    <embed src="map/Main.svg"  width="100%" height="100%" type="image/xml+svg">
+    <embed src="map/Main.svg"  width="100%" height="100%" type="image/xml+svg" pluginspage="http://www.adobe.com/svg/viewer/install/">
 	</embed>
 
 <% if(fullscreen.equals("n")) { %>

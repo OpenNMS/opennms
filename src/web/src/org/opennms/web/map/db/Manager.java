@@ -99,9 +99,6 @@ public class Manager {
                 count = statement.executeUpdate();
                 rs.close();
                 statement.close();
-            } else {
-                // TODO add log information    
-                assert false;
             }
         } catch (SQLException ex) {
             try {
@@ -230,9 +227,6 @@ public class Manager {
                     ResultSet rsStmt = stmtID.executeQuery(sqlGetMapNxtId);
                     if (rsStmt.next()) {
                         nxtid = rsStmt.getInt(1);
-                    } else {
-                        // TODO add log information
-                        assert false;
                     }
                     rsStmt.close();
                     stmtID.close();
@@ -267,9 +261,6 @@ public class Manager {
                 count = statement.executeUpdate();
 
                 statement.close();
-            } else {
-                // TODO add log information                
-                assert false;
             }
             rs.close();
             stmtCT.close();

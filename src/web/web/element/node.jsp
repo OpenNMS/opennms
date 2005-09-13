@@ -193,7 +193,7 @@
     // find links
     Map linkMap = new HashMap();
     DataLinkInterface[] dl_if = null;
-    Interface[] intf_dbs = null;
+ 
     boolean isParent = ExtendedNetworkElementFactory.isParentNode(nodeId);
 	    
     if ( isParent ) {
@@ -204,7 +204,7 @@
 
     for (int i=0; i<dl_if.length;i++){
 	   int nodelinkedId = 0;
-  	   int nodelinkedIf = 0;
+  	   int nodelinkedIf = -1;
   	   Integer ifindexmap = null;
   	   String iplinkaddress = null;
        Vector ifs = new Vector();
@@ -221,20 +221,20 @@
        	   ifindexmap = new Integer(dl_if[i].get_ifindex());
        }
        Interface iface = null;
-       if (nodelinkedIf == 0) {
-       		iface = NetworkElementFactory.getInterface(nodelinkedId,iplinkaddress);
-       } else {
-      		iface = NetworkElementFactory.getInterface(nodelinkedId,iplinkaddress,nodelinkedIf);
-       }
-       if (linkMap.containsKey(ifindexmap)){
-	        ifs = (Vector)linkMap.get(ifindexmap);
+       if (nodelinkedIf == -1) {
+	       iface = NetworkElementFactory.getInterface(nodelinkedId,iplinkaddress);
+	   } else {
+	   	   iface = NetworkElementFactory.getInterface(nodelinkedId,iplinkaddress,nodelinkedIf);
+	   }
+	   
+	   if (linkMap.containsKey(ifindexmap)){
+		   ifs = (Vector)linkMap.get(ifindexmap);
 	   } 
 	   ifs.addElement(iface);
 	   linkMap.put(ifindexmap,ifs);
-    }
+   }
 
     boolean isBridge = ExtendedNetworkElementFactory.isBridgeNode(nodeId);
-
     boolean isRouteIP = ExtendedNetworkElementFactory.isRouteInfoNode(nodeId);
 
 %>
@@ -268,8 +268,8 @@
 
       <p>
         <a href="event/list?filter=node%3D<%=nodeId%>">View Events</a>
-        &nbsp;&nbsp;&nbsp;<a href="asset/detail.jsp?node=<%=nodeId%>">Asset Info</a>
         &nbsp;&nbsp;&nbsp;<a href="conf/inventorylist.jsp?node=<%=nodeId%>">Inventory</a>
+        &nbsp;&nbsp;&nbsp;<a href="asset/detail.jsp?node=<%=nodeId%>">Asset Info</a>
          
         <% if( telnetIp != null ) { %>
           &nbsp;&nbsp;&nbsp;<a href="telnet://<%=telnetIp%>">Telnet</a>
@@ -341,7 +341,14 @@
                 <td><b>Linked Node/Interface</b></td> 
               </tr>
               <% for( int i=0; i < intfs.length; i++ ) { %>
-					<% Vector ifl =(Vector)linkMap.get(new Integer(intfs[i].getIfIndex()));%>
+					<% 
+					Vector ifl =null;
+					if (intfs[i].getIfIndex() == 0 ) {
+ 					  ifl =(Vector)linkMap.get(new Integer(-1));
+					} else {
+ 					  ifl =(Vector)linkMap.get(new Integer(intfs[i].getIfIndex()));
+					}
+					%>
 				<tr>
                 <% if( "0.0.0.0".equals( intfs[i].getIpAddress() )) { %>
                     <td>
@@ -392,7 +399,7 @@
             <br>
             
             <!-- node desktop information box -->
-            
+
             <!-- SNMP box, if info available --> 
             <% if( node_db.getNodeSysId() != null ) { %>
               <table width="100%" border="1" cellspacing="0" cellpadding="2" bordercolor="black" BGCOLOR="#cccccc">

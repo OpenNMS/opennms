@@ -187,8 +187,8 @@ public class AssetLocationFactory {
 			}
 		}
 		if (i == build.length)
-			return (int) - 1;
-		return (int) i;
+			return -1;
+		return i;
 
 	}
 
@@ -254,8 +254,8 @@ public class AssetLocationFactory {
 			}
 		}
 		if (i == lroom.length)
-			return (int) - 1;
-		return (int) i;
+			return -1;
+		return i;
 	}
 
 	public Map getAssetNode(String building, String room) throws SQLException {
@@ -310,7 +310,7 @@ public class AssetLocationFactory {
 			IOException,
 			ClassNotFoundException {
 
-		m_assetLocations.removeBuilding(getBuildingInt(building));
+		m_assetLocations.removeBuilding(getBuilding(building));
 
 		if (building == null || userLastModified == null) {
 			throw new IllegalArgumentException("Cannot take null parameters.");
@@ -358,7 +358,7 @@ public class AssetLocationFactory {
 			IOException,
 			ClassNotFoundException {
 		while (getBuildingInt(build.getName()) != -1) {
-			m_assetLocations.removeBuilding(getBuildingInt(build.getName()));
+			m_assetLocations.removeBuilding(build);
 		}
 
 		m_assetLocations.addBuilding(build);
@@ -392,7 +392,7 @@ public class AssetLocationFactory {
 
 		if (oldBuild != null)
 			while (getBuildingInt(oldBuildName) != -1) {
-				m_assetLocations.removeBuilding(getBuildingInt(oldBuildName));
+				m_assetLocations.removeBuilding(oldBuild);
 			}
 
 		m_assetLocations.addBuilding(newBuild);
@@ -451,7 +451,7 @@ public class AssetLocationFactory {
 			ClassNotFoundException {
 
 		m_assetLocations.getBuilding(getBuildingInt(building)).removeRoom(
-			getRoomInt(building, room));
+			getRoom(building, room));
 
 		if (building == null || room == null || userLastModified == null) {
 			throw new IllegalArgumentException("Cannot take null parameters.");
@@ -495,7 +495,7 @@ public class AssetLocationFactory {
 			ClassNotFoundException {
 		while (getRoomInt(building, room.getRoomID()) != -1) {
 			m_assetLocations.getBuilding(getBuildingInt(building)).removeRoom(
-				getRoomInt(building, room.getRoomID()));
+				room);
 		}
 
 		m_assetLocations.getBuilding(getBuildingInt(building)).addRoom(room);
@@ -533,7 +533,7 @@ public class AssetLocationFactory {
 			while (getRoomInt(building, oldRoomName) != -1) {
 				m_assetLocations.getBuilding(
 					getBuildingInt(building)).removeRoom(
-					getRoomInt(building, oldRoomName));
+					oldRoom);
 			}
 
 		m_assetLocations.getBuilding(getBuildingInt(building)).addRoom(room);

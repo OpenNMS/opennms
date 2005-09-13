@@ -292,7 +292,7 @@ final class DiscoveryLink implements ReadyRunnable {
 
 			SnmpCollection snmpcoll = curNode.getSnmpCollection();
 			if (snmpcoll == null) {
-			if (log.isDebugEnabled())
+				if (log.isDebugEnabled())
 				log
 						.debug("run: no snmp collection found for node "
 								+ all_snmplinknodes[i].getNodeId()

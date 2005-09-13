@@ -169,9 +169,7 @@
         <a HREF="admin/asset/index.jsp">Import and Export Asset Information</a>
       <p>
         <a HREF="admin/sched-outages/index.jsp">Scheduled Outages</a>
-      <p>
-      	<a HREF="admin/confman/index.jsp">Application Configuration Management</a>
-
+  
       <!-- security link -->
       
       <FORM METHOD="POST" NAME="notificationStatus" ACTION="admin/updateNotificationStatus">

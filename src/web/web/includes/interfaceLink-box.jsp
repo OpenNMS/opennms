@@ -105,31 +105,43 @@
     <%  if (isParent) { %>
       <td><a href="element/node.jsp?node=<%=dl_if[i].get_nodeId()%>"><%=NetworkElementFactory.getNodeLabel(dl_if[i].get_nodeId())%></a></td>
       <% if( "0.0.0.0".equals( dl_if[i].get_ipaddr() )) { %>
-        <% if ( dl_if[i].get_ifindex() == 0) {
-             iface = NetworkElementFactory.getInterface(dl_if[i].get_nodeId(),dl_if[i].get_ipaddr());
-           } else {
-      		 iface = NetworkElementFactory.getInterface(dl_if[i].get_nodeId(),dl_if[i].get_ipaddr(),dl_if[i].get_ifindex());
-           }
-        %>
-      <td><a href="element/interface.jsp?node=<%=dl_if[i].get_nodeId()%>&intf=<%=dl_if[i].get_ipaddr()%>&ifindex=<%=dl_if[i].get_ifindex()%>">Non-IP</a>
-          <%=" (ifIndex: "+dl_if[i].get_ifindex()+"-"+iface.getSnmpIfDescription()+")"%>
-      <% } else { %>  
-      <td><a href="element/interface.jsp?node=<%=dl_if[i].get_nodeId()%>&intf=<%=dl_if[i].get_ipaddr()%>"><%=dl_if[i].get_ipaddr()%></a></td>
-      <% } %>
-    <%  } else { %>
+		        <% if ( dl_if[i].get_ifindex() == 0) {
+		             iface = NetworkElementFactory.getInterface(dl_if[i].get_nodeId(),dl_if[i].get_ipaddr());
+		           } else {
+		      		 iface = NetworkElementFactory.getInterface(dl_if[i].get_nodeId(),dl_if[i].get_ipaddr(),dl_if[i].get_ifindex());
+		           }
+		        %>
+	      	<td><a href="element/interface.jsp?node=<%=dl_if[i].get_nodeId()%>&intf=<%=dl_if[i].get_ipaddr()%>&ifindex=<%=dl_if[i].get_ifindex()%>">Non-IP</a>
+	          <%=" (ifIndex: "+dl_if[i].get_ifindex()+"-"+iface.getSnmpIfDescription()+")"%>
+		<% } else { %>  
+	      <td>
+	      		<%if(dl_if[i].get_ipaddr()!=null){%>
+	   			<a href="element/interface.jsp?node=<%=dl_if[i].get_nodeId()%>&intf=<%=dl_if[i].get_ipaddr()%>"><%=dl_if[i].get_ipaddr()%></a>
+	   			<%}else{
+	   				out.print("&nbsp;");
+	   			}%>
+	   		</td>
+	      <% } %>
+    <%  } else { // if isn't parent%>
          <td><a href="element/node.jsp?node=<%=dl_if[i].get_nodeparentid()%>"><%=NetworkElementFactory.getNodeLabel(dl_if[i].get_nodeparentid())%></a></td>
 
       <% if( "0.0.0.0".equals( dl_if[i].get_parentipaddr() )) { %>
-        <% if ( dl_if[i].get_parentifindex() == 0) {
-             iface = NetworkElementFactory.getInterface(dl_if[i].get_nodeparentid(),dl_if[i].get_parentipaddr());
-           } else {
-      		 iface = NetworkElementFactory.getInterface(dl_if[i].get_nodeparentid(),dl_if[i].get_parentipaddr(),dl_if[i].get_parentifindex());
-           }
-        %>
+		        <% if ( dl_if[i].get_parentifindex() == 0) {
+		             iface = NetworkElementFactory.getInterface(dl_if[i].get_nodeparentid(),dl_if[i].get_parentipaddr());
+		           } else {
+		      		 iface = NetworkElementFactory.getInterface(dl_if[i].get_nodeparentid(),dl_if[i].get_parentipaddr(),dl_if[i].get_parentifindex());
+		           }
+		        %>
       <td><a href="element/interface.jsp?node=<%=dl_if[i].get_nodeparentid()%>&intf=<%=dl_if[i].get_parentipaddr()%>&ifindex=<%=dl_if[i].get_parentifindex()%>">Non-IP</a>
           <%=" (ifIndex: "+dl_if[i].get_parentifindex()+"-"+iface.getSnmpIfDescription()+")"%>
       <% } else { %>  
-      <td><a href="element/interface.jsp?node=<%=dl_if[i].get_nodeparentid()%>&intf=<%=dl_if[i].get_parentipaddr()%>"><%=dl_if[i].get_parentipaddr()%></a></td>
+      <td>
+      		    <%if(dl_if[i].get_parentipaddr()!=null){%>
+	   			 <a href="element/interface.jsp?node=<%=dl_if[i].get_nodeparentid()%>&intf=<%=dl_if[i].get_parentipaddr()%>"><%=dl_if[i].get_parentipaddr()%></a>
+	   			<%}else{
+	   				out.print("&nbsp;");
+	   			}%>      
+     </td>
       <% } %>
     <% } %>
 

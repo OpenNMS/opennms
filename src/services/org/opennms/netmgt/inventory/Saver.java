@@ -101,7 +101,6 @@ public class Saver {
 			 */
 	private void init(String newInventory)throws MarshalException, ValidationException {
 		Category log = ThreadCategory.getInstance(getClass());
-		log.debug(newInventory);
 		org.opennms.netmgt.config.inventory.parser.Inventory newInvent = (org.opennms.netmgt.config.inventory.parser.Inventory) Unmarshaller.unmarshal(org.opennms.netmgt.config.inventory.parser.Inventory.class,new StringReader(newInventory));
 		List newPathListTmp = new ArrayList();
 		newPathListTmp.add(newInvent.getName());
@@ -508,7 +507,7 @@ public class Saver {
 						FileWriter fileout = new FileWriter(newPathToFile);
 						BufferedWriter filebufwri = new BufferedWriter(fileout);
 						PrintWriter printout = new PrintWriter(filebufwri);
-						printout.println(newInventory);
+						printout.print(newInventory);
 						printout.close();
 					 }
 				 }

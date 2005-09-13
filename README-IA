@@ -49,4 +49,20 @@ OpenNMS Italian Adventures
 Some bug fixed.
 But Not yet completly stable version!!!!!
 
+Napoli, 13 Settembre 2005
+OpenNMS Italian Adventures
+
+Built OpenNMS from Source on RH8
+JAVA VERSION
+[root@oiarusso etc]# $JAVA_HOME/bin/java -version
+java version "1.4.2"
+Java(TM) 2 Runtime Environment, Standard Edition (build 1.4.2-b28)
+Java HotSpot(TM) Client VM (build 1.4.2-b28, mixed mode)
+
+Note That Installation is not complete becouse installer doesn't parse:
+create sequence mapNxtId maxvalue -1 increment -1;
+
+you have to run it by hand for the moment.
+
+Have EveryOne a Good Time
 

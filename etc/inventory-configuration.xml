@@ -1,19 +1,6 @@
 <?xml version="1.0"?>
 <inventory-configuration threads="30" refreshListTime="28800000" sendEachSuccessEvent="true" fileRepository="/var/opennms/inventory">
 
-<package name="classe 10">
-        <filter>IPADDR IPLIKE *.*.*.*</filter>
-        <specific>10.0.0.1</specific>
-        <!--include-range begin="10.0.0.0" end="10.0.0.254"/ -->
-	  <group name="WinHwInventory" interval="14400000" send-events="true" compare="true">
-            <parameter key="path" value="/hw_inventory.xml"/>
-	    	<parameter key="port" value="16341"/>
-	    	<parameter key="xslt-file" value="/opt/OpenNMS/etc/inventory/hw-handle.xslt"/>
-		<parameter key="plugin-conf-file" value="/opt/OpenNMS/etc/inventory/hardware.xml"/>
-         </group>
-	   <downtime begin="0" end="7200000" interval="1800000"/>
-	  <downtime begin="7200000" delete="true"/>
-   </package>
 <package name="ssh">
         <filter>IPADDR IPLIKE *.*.*.*</filter>
         <specific>10.0.0.5</specific>
@@ -66,44 +53,10 @@
 
 
 
- <package name="classe 192">
-        <filter>IPADDR IPLIKE *.*.*.*</filter>
-        <specific>0.0.0.0</specific>
-        <include-range begin="192.168.201.0" end="192.168.201.254"/>
-	     <group name="WinHwInventory" interval="14400000" send-events="true" compare="true">
-            <parameter key="path" value="/hw_inventory.xml"/>
-	    	<parameter key="port" value="16341"/>
-	    	<parameter key="xslt-file" value="/opt/OpenNMS/etc/inventory/hw-handle.xslt"/>
-		<parameter key="plugin-conf-file" value="/opt/OpenNMS/etc/inventory/hardware.xml"/>
-	    </group>
-	    <group name="WinSwInventory" interval="14400000" send-events="true" compare="true">
-            <parameter key="path" value="/sw_inventory.xml"/>
-	    	<parameter key="port" value="16341"/>
-	    	<parameter key="xslt-file" value="/opt/OpenNMS/etc/inventory/sw-handle.xslt"/>
-           </group>
-	    <group name="MachineInfoInventory" interval="14400000" send-events="true" compare="true">
-            <parameter key="path" value="/machine_info.xml"/>
-	    	<parameter key="port" value="16341"/>
-	    	<parameter key="xslt-file" value="/opt/OpenNMS/etc/inventory/machineinfo-handle.xslt"/>
-	    </group>
-	     <group name="AccountsInventory" interval="14400000" send-events="true" compare="true">
-            <parameter key="path" value="/accounts.xml"/>
-	    	<parameter key="port" value="16341"/>
-	    	<parameter key="xslt-file" value="/opt/OpenNMS/etc/inventory/accounts-handle.xslt"/>
-		<parameter key="plugin-conf-file" value="/opt/OpenNMS/etc/inventory/accounts.xml"/>
-	    </group>
-        <downtime begin="0" end="7200000" interval="1800000"/>
-	  <downtime begin="7200000" delete="true"/>
-   </package>
-
 <monitor group="SshInventory" required-service="SSH" class-name="org.opennms.netmgt.inventory.SshInventoryMonitor" inventory-type="Ssh" visualization="text"/>
 <monitor group="LdapInventory" required-service="LDAP" class-name="org.opennms.netmgt.inventory.LdapInventoryMonitor" inventory-type="Ldap" visualization="tree"/>
 <monitor group="CiscoInterfacesInventory" required-service="Telnet" class-name="org.opennms.netmgt.inventory.TelnetInventoryMonitor" inventory-type="Cisco show conf" visualization="text"/>
 <monitor group="CiscoIOSInventory" required-service="Telnet" class-name="org.opennms.netmgt.inventory.TelnetInventoryMonitor" inventory-type="Cisco show ver" visualization="text"/>
-<monitor group="MachineInfoInventory" required-service="WinAgentProvider" class-name="org.opennms.netmgt.inventory.WinAgentInventoryMonitor" inventory-type="machine info" visualization="tree"/>
-<monitor group="WinHwInventory" required-service="WinAgentProvider" class-name="org.opennms.netmgt.inventory.WinAgentInventoryMonitor" inventory-type="hardware" visualization="text"/>
-<monitor group="WinSwInventory" required-service="WinAgentProvider" class-name="org.opennms.netmgt.inventory.WinAgentInventoryMonitor" inventory-type="software" visualization="tree"/>
-<monitor group="AccountsInventory" required-service="WinAgentProvider" class-name="org.opennms.netmgt.inventory.WinAgentInventoryMonitor" inventory-type="accounts" visualization="tree"/>
 
 <visualization type="tree" class-name="org.opennms.web.inventory.TreeVisualization"/>
 <visualization type="text" class-name="org.opennms.web.inventory.TextVisualization"/>

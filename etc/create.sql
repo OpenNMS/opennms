@@ -1216,7 +1216,7 @@ create index dlint_nodeparent_paifindex_idx on datalinkinterface(nodeparentid,pa
 --#
 --########################################################################
 
-create table inventory(
+create table inventory (
         nodeid		integer not null,
 				constraint fk_ar_nodeID7 foreign key (nodeID)	references node,
         name 	varchar(30) not null,
@@ -1301,6 +1301,6 @@ create table element (
 
 alter table element add constraint pk_element primary key (mapId,elementId);
 
-create sequence mapNxtId maxvalue -1 increment -1;
+#create sequence mapNxtId maxvalue -1 increment -1;
 ALTER TABLE map ADD constraint mapid check (mapid <= 0);
 ALTER TABLE element add constraint elementid check (elementid <> 0);

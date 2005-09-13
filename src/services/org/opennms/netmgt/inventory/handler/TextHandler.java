@@ -7,6 +7,7 @@ package org.opennms.netmgt.inventory.handler;
 import java.io.*;
 import java.util.*;
 
+
 import org.opennms.netmgt.config.inventory.parser.*;
 import org.opennms.netmgt.config.inventory.plugin.*;
 import org.exolab.castor.xml.Marshaller;
@@ -114,12 +115,19 @@ public class TextHandler implements DataHandler {
 			}
 		}
 		StringWriter sw = new StringWriter();
+
 		try{
 			Marshaller.marshal(inv,sw);
 		}catch(Exception e){
 			throw new IllegalStateException(e.getMessage());
 		}
 
+		try{
+		sw.close();
+		}catch(IOException io){
+			throw new IllegalStateException(io.getMessage());
+		}
+		
 		return sw.toString();
 	}
 	
@@ -139,6 +147,7 @@ public class TextHandler implements DataHandler {
         standardInput.close();
         String line;
         String lineSeparator = System.getProperty("line.separator");
+
         while ((line = standardOutput.readLine()) != null) {
             retString +=  line+lineSeparator;
         }

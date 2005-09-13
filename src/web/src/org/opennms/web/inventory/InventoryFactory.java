@@ -80,7 +80,7 @@ public class InventoryFactory {
 	   Connection dbConn = null;
 	   PreparedStatement pStat = null;
 	   ResultSet resSet = null;
-	   final String SQL_QUERY = "select * from inventory where nodeid=?";
+	   final String SQL_QUERY = "select * from inventory where nodeid=? ";
 	   dbConn = Vault.getDbConnection();
 	   pStat = dbConn.prepareStatement(SQL_QUERY);
 	   pStat.setInt(1,nodeId);
@@ -90,7 +90,27 @@ public class InventoryFactory {
 	   pStat.close();
 	   return inventories;
 	}
-	 
+
+	public Inventory[] getActiveInventoryOnNode(int nodeId, java.util.Date time)throws SQLException{
+
+		if (time == null) {
+            throw new IllegalArgumentException("Cannot take null parameters.");
+        }
+		   Connection dbConn = null;
+		   PreparedStatement pStat = null;
+		   ResultSet resSet = null;
+		   final String SQL_QUERY = "select * from inventory where nodeid=? AND status = 'A' AND lastpolltime >= ? ";
+		   dbConn = Vault.getDbConnection();
+		   pStat = dbConn.prepareStatement(SQL_QUERY);
+		   pStat.setInt(1,nodeId);
+           pStat.setTimestamp(2, new Timestamp(time.getTime()));
+		   resSet = pStat.executeQuery();
+		   Inventory[] inventories = rsToInventory(resSet);
+		   resSet.close();
+		   pStat.close();
+		   return inventories;
+		}
+
     public int getCountInventories(String inventoryCategory)throws SQLException{
 	  int countRecords=0;
 	  Connection dbConn = null;
