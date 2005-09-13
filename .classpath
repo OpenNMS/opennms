@@ -4,7 +4,7 @@
 	<classpathentry excluding="**/classlist" kind="src" path="src/install"/>
 	<classpathentry excluding="**/classlist" kind="src" path="src/joesnmp"/>
 	<classpathentry excluding="**/classlist" kind="src" path="src/report"/>
-	<classpathentry excluding="**/classlist" kind="src" path="src/services"/>
+	<classpathentry excluding="**/Growl*.java|**/classlist" kind="src" path="src/services"/>
 	<classpathentry excluding="**/classlist" kind="src" path="src/web/src"/>
 	<classpathentry kind="src" path="work/castor"/>
 	<classpathentry kind="src" path="work/sablecc"/>
