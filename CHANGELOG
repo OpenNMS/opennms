@@ -1,5 +1,9 @@
 1.2.4 to 1.2.5
 ----------------------------------------------------------------------
+- Fixes to build.xml to make it easier to specify compiler options for
+  explicitly setting the target architecture for the JNI code and the
+  PostgreSQL module (build.jni.compiler.arg and build.postgresql.compiler.arg,
+  respectively).  Thanks to Jonathan Sartin who submitted a patch.  Bug 1331.
 - Fix for building on FreeBSD.  Should now be able to do it by creating
   a build.properties file (see the release notes for details).  Thanks
   to Dennis Berger and Brent Verner for supplying patches.  Bug 1315.

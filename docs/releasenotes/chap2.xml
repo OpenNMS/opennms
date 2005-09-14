@@ -26,6 +26,19 @@
     <section>
       <title>New Features</title>
 
+      <bridgehead>Simplify building on 32bit/64bit architectures</bridgehead>
+
+      <para>Some new options were added to <filename>build.xml</filename> to
+      simplify support of specifying the target architecture for which
+      the C files are compiled.   They are
+      <varname>build.jni.compiler.arg</varname> for JNI code and
+      <varname>build.postgresql.compiler.arg</varname> for the
+      PostgreSQL iplike module.  You would use something like "-m32" or
+      "-m64" to force compilation of 32 bit or 64 bit binaries.  Note that
+      the options may differ for your platform and/or version of GCC.  See
+      your GCC man page for details.  Thanks to Jonathan Sartin who
+      submitted a patch.  Bug 1331.</para>
+
       <bridgehead>Support for building on FreeBSD</bridgehead>
 
       <para>Some bugs have been fixed, and OpenNMS can now compile and run

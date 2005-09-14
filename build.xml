@@ -1135,7 +1135,9 @@ OpenNMS as part of the post-install.
 	outfile="${build.jicmp.dir}/jicmp-build"
 	outputfileproperty="build.jicmp.output.lib">
       <compiler name="gcc">
-	 <compilerarg value="-D${build.platform.define}"/>
+	<compilerarg value="-D${build.platform.define}"/>
+	<compilerarg value="${build.jni.compiler.arg}"
+		     if="build.jni.compiler.arg"/>
       </compiler>
       <linker name="gcc"/>
       <fileset dir="${build.jicmp.dir}" includes="IcmpSocket.c"/>
@@ -1165,6 +1167,8 @@ OpenNMS as part of the post-install.
 	outputfileproperty="build.jrrd.output.lib">
       <compiler name="gcc">
         <compilerarg value="-D${build.platform.define}"/>
+	<compilerarg value="${build.jni.compiler.arg}"
+		     if="build.jni.compiler.arg"/>
       </compiler>
       <linker name="gcc">
 	<linkerarg value="${build.jrrd.linker.arg}"
@@ -1195,6 +1199,8 @@ OpenNMS as part of the post-install.
 	outfile="${build.postgresql.dir}/iplike-build"
 	outputfileproperty="build.postgresql.output.lib">
       <compiler name="gcc">
+	<compilerarg value="${build.postgresql.compiler.arg}"
+		     if="build.postgresql.compiler.arg"/>
       </compiler>
       <fileset dir="${build.postgresql.dir}" includes="iplike.c"/>
       <includepath path="${build.postgresql.include.dir}"/>
