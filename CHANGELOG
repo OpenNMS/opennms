@@ -1,3 +1,10 @@
+1.2.4 to 1.2.5
+----------------------------------------------------------------------
+- Fix some small bugs in JavaMailer.  Fixed the default recipient address
+  by placing square brackets around the IP address to make it a valid
+  domain-literal per RFC 2822.  Also fix a logging bug where the subject
+  was logged twice instead of logging the subject and the message contents.
+
 1.2.3 to 1.2.4
 ----------------------------------------------------------------------
 - Fixed a problem with acknowledging events. Bug 1290

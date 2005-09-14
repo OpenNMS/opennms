@@ -4,12 +4,43 @@
 
   <subtitle>Changes in This OpenNMS</subtitle>
 
+<!--
   <para>OpenNMS 1.1.0 represents a refinement of the functionality introduced
   in 1.0.0. The 1.1 tree is a development, or "unstable" tree, implementing a
   number of new features but without the testing that went into 1.0. When 1.1
   is mature enough, it will become 1.2, the next production or "stable"
   release. Release 1.1.4 was a major step toward that next stable release, and
   version 1.1.5 continues that progress.</para>
+-->
+
+  <para>OpenNMS 1.2.5 is the most recent production, or "stable", release.
+  It is the sixth release in the stable branch of OpenNMS.  Changes to the
+  stable branch are limited to bug fixes and simple improvements.  The 1.3
+  tree is a development, or "unstable" tree, where most new features are
+  implemented, but without the testing that goes into 1.2.  When 1.3 is
+  mature enough, it will become OpenNMS 1.4, the next stable version.</para>
+
+  <section>
+    <title>Changes in OpenNMS 1.2.5</title>
+
+    <section>
+      <title>New Features</title>
+
+      <para>XXX fill me in.</para>
+    </section>
+
+    <section>
+      <title>Bug Fixes</title>
+
+      <para>A number of small bug fixes have been added:</para>
+
+      <itemizedlist>
+        <listitem>
+          <para>Some minor bugs in the JavaMailer have been fixed.</para>
+        </listitem>
+      </itemizedlist>
+    </section>
+  </section>
 
   <section>
     <title>Changes in OpenNMS 1.2.4</title>
