@@ -70,6 +70,7 @@
 #include <errno.h>
 
 #if defined(__FreeBSD__)
+#include "byteswap.h"
 #include <sys/time.h>
 #endif
 

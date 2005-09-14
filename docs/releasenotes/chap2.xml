@@ -26,7 +26,19 @@
     <section>
       <title>New Features</title>
 
-      <para>XXX fill me in.</para>
+      <bridgehead>Support for building on FreeBSD</bridgehead>
+
+      <para>Some bugs have been fixed, and OpenNMS can now compile and run
+      on FreeBSD.  Thanks to Dennis Berger and Brent Verner for supplying
+      patches (bug 1315).  You should be able to compile for FreeBSD with
+      the following build.properties file, assuming that you have used the
+      ports tree to install RRDTool and PostgreSQL:</para>
+
+      <programlisting>build.postgresql.include.dir=/usr/local/include/postgresql/server
+build.postgresql.include2.dir=/usr/local/include
+build.rrdtool.include.dir=/usr/local/include
+build.rrdtool.lib.dir=/usr/local/lib
+build.rrdtool.bin=/usr/local/bin/rrdtool</programlisting>
     </section>
 
     <section>

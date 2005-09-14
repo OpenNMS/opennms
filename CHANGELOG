@@ -1,5 +1,8 @@
 1.2.4 to 1.2.5
 ----------------------------------------------------------------------
+- Fix for building on FreeBSD.  Should now be able to do it by creating
+  a build.properties file (see the release notes for details).  Thanks
+  to Dennis Berger and Brent Verner for supplying patches.  Bug 1315.
 - Fix some small bugs in JavaMailer.  Fixed the default recipient address
   by placing square brackets around the IP address to make it a valid
   domain-literal per RFC 2822.  Also fix a logging bug where the subject

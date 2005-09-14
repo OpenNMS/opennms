@@ -1207,6 +1207,8 @@ OpenNMS as part of the post-install.
       </compiler>
       <fileset dir="${build.postgresql.dir}" includes="iplike.c"/>
       <includepath path="${build.postgresql.include.dir}"/>
+      <includepath path="${build.postgresql.include2.dir}"
+		   if="build.postgresql.include2.dir"/>
     </cc>
     <copy file="${build.postgresql.output.lib}"
           tofile="${build.postgresql.dir}/iplike.${build.soext}"/>
