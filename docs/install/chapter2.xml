@@ -128,7 +128,7 @@
   </section>
 
   <section>
-    <title>Prerequisite Package: Tomcat4</title>
+    <title>Prerequisite Package: Tomcat4 (version 4.1 or greater)</title>
 
     <para><ulink
     url="http://jakarta.apache.org/tomcat/index.html">Tomcat</ulink> is part
