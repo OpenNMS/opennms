@@ -61,6 +61,11 @@ build.rrdtool.bin=/usr/local/bin/rrdtool</programlisting>
 
       <itemizedlist>
         <listitem>
+          <para>Fixed a number of documentation mistakes pointed out
+	  by Austin Tuan.  Thank you very much, Austin!  Bug 1303.</para>
+        </listitem>
+
+        <listitem>
           <para>Some minor bugs in the JavaMailer have been fixed.</para>
         </listitem>
       </itemizedlist>

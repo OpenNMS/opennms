@@ -17,7 +17,7 @@
       OpenNMS depends on are required before the OpenNMS package can be
       installed. You should be able to find those packages on the distribution
       CDs that came with your system. For some of the more obscure packages,
-      like <filename>metamail</filename>, you can visit the OpenNMS <ulink
+      you can visit the OpenNMS <ulink
       url="ftp://ftp.opennms.org">FTP</ulink> site and check in the
       <filename>/pub/dependencies</filename> directory. In addition, sites
       like <ulink url="http://distro.ibiblio.org/">Ibiblio</ulink> and <ulink
@@ -32,7 +32,7 @@
       <para>This can happen for a a number of reasons. You can run
       "<code>opennms -v status</code>" a few times after getting this error to
       see if OpenNMS eventually starts itself completely and if not, to see
-      which daemons never start up completely. Hare are some of the likely
+      which daemons never start up completely. Here are some of the likely
       causes of this problem:</para>
 
       <orderedlist>
@@ -51,7 +51,7 @@
 
         <listitem>
           <para>Database is not running. If only about half or less of the
-          daemons are shown as running. You can check for this condition by
+          daemons are shown as running, you can check for this condition by
           looking for <code>FATAL</code> errors in the log files. You'll see
           something like "<code>Error accessing database</code>" in the
           logs.</para>
@@ -154,8 +154,8 @@
       a "context" to that file, however this is no longer needed in OpenNMS
       1.1.4. In fact, if you are upgrading from 1.1.3 or earlier, you must
       manually remove this "context" from <filename>server.xml</filename> (it
-      is not done automatically when upgrading). Here is what it looks like
-      looks like:</para>
+      is not done automatically when upgrading). Here is what it looks
+      like:</para>
 
       <programlisting>&lt;!-- Example Server Configuration File --&gt;
 &lt;Server ...
@@ -322,7 +322,7 @@ opennms=# </computeroutput><command>ALTER TABLE node_old_11033991291234 RENAME T
 
       <para>You can use the "\d" command within <filename>psql</filename> to
       see what other tables exist in your database. You can use
-      "<filename>SELECT count(*) from table</filename>;" (fill in the table
+      "<code>SELECT count(*) from table;</code>" (fill in the table
       name for "table") to get a count of rows in any table. If you have empty
       tables, you can just drop them. If you have multiple tables with data,
       you will have to decide which table of data you want to keep or merge

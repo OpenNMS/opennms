@@ -89,6 +89,14 @@
     not <filename>/usr/include/pgsql/server</filename>, you will need to
     create a <filename>build.properties</filename> file.</para>
 
+    <note>
+      <para>Compiling the RRDtool code is not optional at this time.  Even
+      if you plan to to use JRobin, the RRDtool code cannot easily be
+      excluded from the build process, so you will need to have RRDtool
+      installed.  Enhancement bug 1335 plans to make this RRDtool requirement
+      optional.</para>
+    </note>
+
     <para>You can be lazy and let the build process tell you if it cannot find
     any of these components.</para>
 

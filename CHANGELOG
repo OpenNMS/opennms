@@ -1,5 +1,7 @@
 1.2.4 to 1.2.5
 ----------------------------------------------------------------------
+- Fixed a number of documentation mistakes pointed out by Austin Tuan.
+  Thank you very much, Austin!  Bug 1303.
 - Fixes to build.xml to make it easier to specify compiler options for
   explicitly setting the target architecture for the JNI code and the
   PostgreSQL module (build.jni.compiler.arg and build.postgresql.compiler.arg,
