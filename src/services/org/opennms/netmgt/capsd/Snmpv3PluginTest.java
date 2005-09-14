@@ -257,7 +257,7 @@ public class Snmpv3PluginTest extends OpenNMSTestCase {
         monitor.initialize(iface);
 
         if (m_runAssertions) {
-            int result = monitor.poll(iface, new HashMap(), new Package());
+            int result = monitor.checkStatus(iface, new HashMap(), new Package());
             assertEquals(ServiceMonitor.SERVICE_AVAILABLE, result);
         }
     }
@@ -280,7 +280,7 @@ public class Snmpv3PluginTest extends OpenNMSTestCase {
         monitor.initialize(iface, SnmpConstants.version1);
 
         if (m_runAssertions) {
-            int result = monitor.poll(iface, new HashMap(), new Package());
+            int result = monitor.checkStatus(iface, new HashMap(), new Package());
             assertEquals(ServiceMonitor.SERVICE_AVAILABLE, result);
         }
     }

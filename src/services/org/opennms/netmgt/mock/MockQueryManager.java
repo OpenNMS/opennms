@@ -37,7 +37,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.opennms.netmgt.config.DbConnectionFactory;
@@ -64,11 +63,6 @@ public class MockQueryManager implements QueryManager {
 
     public boolean activeServiceExists(String whichEvent, int nodeId, String ipAddr, String serviceName) {
         return m_network.getService(nodeId, ipAddr, serviceName) != null;
-    }
-
-    public void buildServiceNameToIdMaps(Map nameToId, Map idToName) {
-        nameToId.putAll(m_network.getNameToIdMap());
-        idToName.putAll(m_network.getIdToNameMap());
     }
 
     public List getActiveServiceIdsForInterface(final String ipaddr) throws SQLException {
@@ -125,13 +119,13 @@ public class MockQueryManager implements QueryManager {
     public Date getServiceLostDate(int nodeId, String ipAddr, String svcName, int serviceId) {
         return null;
     }
-    public void openOutage(String outageIdSQL, int nodeId, String ipAddr, int serviceId, int dbid, String time) {
+    public void openOutage(String outageIdSQL, int nodeId, String ipAddr, String svcName, int dbid, String time) {
         // TODO Auto-generated method stub
 
     }
     
     
-    public void resolveOutage(int nodeId, String ipAddr, int serviceId, int dbid, String time) {
+    public void resolveOutage(int nodeId, String ipAddr, String svcName, int dbid, String time) {
         // TODO Auto-generated method stub
 
     }

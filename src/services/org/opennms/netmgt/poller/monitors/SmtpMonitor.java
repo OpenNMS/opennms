@@ -63,6 +63,8 @@ import org.apache.log4j.Priority;
 import org.apache.regexp.RE;
 import org.apache.regexp.RESyntaxException;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.config.poller.Package;
+import org.opennms.netmgt.poller.pollables.PollStatus;
 import org.opennms.netmgt.utils.ParameterMap;
 
 /**
@@ -156,7 +158,7 @@ final public class SmtpMonitor extends IPv4LatencyMonitor {
      *         should be supressed.
      * 
      */
-    public int poll(NetworkInterface iface, Map parameters, org.opennms.netmgt.config.poller.Package pkg) {
+    public int checkStatus(NetworkInterface iface, Map parameters, org.opennms.netmgt.config.poller.Package pkg) {
         // Get interface address from NetworkInterface
         //
         if (iface.getType() != NetworkInterface.TYPE_IPV4)
@@ -176,7 +178,7 @@ final public class SmtpMonitor extends IPv4LatencyMonitor {
             log.info("poll: RRD repository not specified in parameters, latency data will not be stored.");
         }
         if (dsName == null) {
-            dsName = DS_NAME;
+            dsName = DEFAULT_DSNAME;
         }
 
         // Get interface address from NetworkInterface
@@ -385,4 +387,9 @@ final public class SmtpMonitor extends IPv4LatencyMonitor {
         //
         return serviceStatus;
     }
+    
+    public PollStatus poll(NetworkInterface iface, Map parameters, Package pkg) {
+        return PollStatus.getPollStatus(checkStatus(iface, parameters, pkg));
+    }
+
 }

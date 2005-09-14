@@ -49,7 +49,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collections;
 import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -93,11 +92,6 @@ public final class Collectd extends ServiceDaemon {
      * Singleton instance of the Collectd class
      */
     private final static Collectd m_singleton = new Collectd();
-
-    /**
-     * Holds map of service names to service identifiers
-     */
-    private final static Map m_serviceIds = new HashMap();
 
     /**
      * List of all CollectableService objects.
@@ -160,7 +154,6 @@ public final class Collectd extends ServiceDaemon {
         CollectdConfiguration config = cCfgFactory.getConfiguration();
 
         instantiateCollectors(log, config);
-        buildServiceIdMap(log);
         createScheduler(log, config);
         ReadyRunnable interfaceScheduler = buildSchedule(log);
         m_scheduler.schedule(interfaceScheduler, 0);
@@ -223,71 +216,6 @@ public final class Collectd extends ServiceDaemon {
             if (log.isEnabledFor(Priority.FATAL))
                 log.fatal("init: Failed to create collectd scheduler", e);
             throw e;
-        }
-    }
-
-    private void buildServiceIdMap(final Category log) {
-        // Make sure we can connect to the database and load
-        // the services table so we can easily convert from
-        // service name to service id
-        //
-        if (log.isDebugEnabled())
-            log.debug("start: Testing database connection");
-
-        java.sql.Connection ctest = null;
-        ResultSet rs = null;
-        try {
-            DatabaseConnectionFactory.init();
-            ctest = DatabaseConnectionFactory.getInstance().getConnection();
-
-            PreparedStatement loadStmt = ctest.prepareStatement(SQL_RETRIEVE_SERVICE_IDS);
-
-            // go ahead and load the service table
-            //
-            rs = loadStmt.executeQuery();
-            while (rs.next()) {
-                Integer id = new Integer(rs.getInt(1));
-                String name = rs.getString(2);
-
-                m_serviceIds.put(name, id);
-            }
-        } catch (IOException iE) {
-            if (log.isEnabledFor(Priority.FATAL))
-                log.fatal("start: IOException getting database connection", iE);
-            throw new UndeclaredThrowableException(iE);
-        } catch (MarshalException mE) {
-            if (log.isEnabledFor(Priority.FATAL))
-                log.fatal("start: Marshall Exception getting database connection", mE);
-            throw new UndeclaredThrowableException(mE);
-        } catch (ValidationException vE) {
-            if (log.isEnabledFor(Priority.FATAL))
-                log.fatal("start: Validation Exception getting database connection", vE);
-            throw new UndeclaredThrowableException(vE);
-        } catch (SQLException sqlE) {
-            if (log.isEnabledFor(Priority.FATAL))
-                log.fatal("start: Error accessing database.", sqlE);
-            throw new UndeclaredThrowableException(sqlE);
-        } catch (ClassNotFoundException cnfE) {
-            if (log.isEnabledFor(Priority.FATAL))
-                log.fatal("start: Error accessing database.", cnfE);
-            throw new UndeclaredThrowableException(cnfE);
-        } finally {
-            if (rs != null) {
-                try {
-                    rs.close();
-                } catch (Exception e) {
-                    if (log.isInfoEnabled())
-                        log.info("start: an error occured closing the result set", e);
-                }
-            }
-            if (ctest != null) {
-                try {
-                    ctest.close();
-                } catch (Exception e) {
-                    if (log.isInfoEnabled())
-                        log.info("start: an error occured closing the SQL connection", e);
-                }
-            }
         }
     }
 

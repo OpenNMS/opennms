@@ -64,7 +64,7 @@ public class MockPollerConfigTest extends TestCase {
         network.addService("HTTP");
         network.addInterface("192.168.1.2");
 
-        m_pollerConfig = new MockPollerConfig();
+        m_pollerConfig = new MockPollerConfig(network);
         m_pollerConfig.addPackage("TestPackage");
         m_pollerConfig.addDowntime(1000L, 0L, -1L, false);
         m_pollerConfig.setDefaultPollInterval(1000L);

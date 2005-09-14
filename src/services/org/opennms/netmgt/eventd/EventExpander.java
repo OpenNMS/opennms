@@ -100,7 +100,7 @@ public final class EventExpander {
      * '.1.3.6.1.4.1.18.1.1.6'. When a event lookup is done based on the EID, a
      * lookup with both the partial and the full EID is done
      */
-    private final static String ENTERPRISE_PRE = ".1.3.6.1.4.1";
+//    private final static String ENTERPRISE_PRE = ".1.3.6.1.4.1";
 
     /**
      * The default event UEI - if the event lookup into the 'event.conf' fails,
@@ -112,7 +112,7 @@ public final class EventExpander {
      * The default trap UEI - if the trap lookup into the 'event.conf' fails,
      * the trap event is loaded with information from this default UEI
      */
-    private final static String DEFAULT_TRAP_UEI = "uei.opennms.org/default/trap";
+//    private final static String DEFAULT_TRAP_UEI = "uei.opennms.org/default/trap";
 
     /**
      * private constructor

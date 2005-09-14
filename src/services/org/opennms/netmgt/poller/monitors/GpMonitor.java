@@ -45,6 +45,8 @@ import java.util.Map;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.config.poller.Package;
+import org.opennms.netmgt.poller.pollables.PollStatus;
 import org.opennms.netmgt.utils.ExecRunner;
 import org.opennms.netmgt.utils.ParameterMap;
 
@@ -100,7 +102,7 @@ final public class GpMonitor extends IPv4LatencyMonitor {
      * @throws java.lang.RuntimeException
      *             Thrown if the interface experiences error during the poll.
      */
-    public int poll(NetworkInterface iface, Map parameters, org.opennms.netmgt.config.poller.Package pkg) {
+    public int checkStatus(NetworkInterface iface, Map parameters, org.opennms.netmgt.config.poller.Package pkg) {
         //
         // Process parameters
         //
@@ -220,6 +222,10 @@ final public class GpMonitor extends IPv4LatencyMonitor {
         //
         log.debug("poll: GP - serviceStatus= " + serviceStatus + "  " + ipv4Addr.getHostAddress());
         return serviceStatus;
+    }
+    
+    public PollStatus poll(NetworkInterface iface, Map parameters, Package pkg) {
+        return PollStatus.getPollStatus(checkStatus(iface, parameters, pkg));
     }
 
 }

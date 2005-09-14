@@ -132,7 +132,7 @@ public class PollablesTest extends TestCase {
         }
 
         public PollStatus poll() {
-            return PollStatus.getPollStatus(m_monitor.poll(m_service.getNetInterface(), m_properties, m_package));
+            return PollStatus.getPollStatus(m_monitor.checkStatus(m_service.getNetInterface(), m_properties, m_package));
         }
         
         
@@ -200,7 +200,7 @@ public class PollablesTest extends TestCase {
         m_pollContext.setEventMgr(m_eventMgr);
         m_pollContext.setMockNetwork(m_mockNetwork);
         
-        m_pollerConfig = new MockPollerConfig();
+        m_pollerConfig = new MockPollerConfig(m_mockNetwork);
         m_pollerConfig.setNodeOutageProcessingEnabled(true);
         m_pollerConfig.setCriticalService("ICMP");
         m_pollerConfig.addPackage("TestPackage");
@@ -608,7 +608,7 @@ public class PollablesTest extends TestCase {
         assertTime(4500);
         assertNotDeleted(pDot3Http);
         
-        m_anticipator.anticipateEvent(MockUtil.createServiceEvent("Test", EventConstants.DELETE_SERVICE_EVENT_UEI, mDot3Http));
+        m_anticipator.anticipateEvent(MockUtil.createServiceEvent("Test", EventConstants.DELETE_SERVICE_EVENT_UEI, mDot3Http, null));
         
         m_scheduler.next();
         

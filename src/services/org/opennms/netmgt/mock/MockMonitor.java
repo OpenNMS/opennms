@@ -39,6 +39,7 @@ import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.poller.monitors.NetworkInterface;
 import org.opennms.netmgt.poller.monitors.ServiceMonitor;
+import org.opennms.netmgt.poller.pollables.PollStatus;
 
 public class MockMonitor implements ServiceMonitor {
 
@@ -61,7 +62,7 @@ public class MockMonitor implements ServiceMonitor {
     public void initialize(PollerConfig config, Map parameters) {
     }
 
-    public int poll(NetworkInterface iface, Map parameters, Package pkg) {
+    public int checkStatus(NetworkInterface iface, Map parameters, Package pkg) {
         synchronized(m_network) {
             String ipAddr = ((InetAddress) iface.getAddress()).getHostAddress();
             int nodeId = m_network.getNodeIdForInterface(ipAddr);
@@ -81,6 +82,10 @@ public class MockMonitor implements ServiceMonitor {
     }
 
     public void release(NetworkInterface iface) {
+    }
+
+    public PollStatus poll(NetworkInterface iface, Map parameters, Package pkg) {
+        return PollStatus.getPollStatus(checkStatus(iface, parameters, pkg));
     }
 
 }

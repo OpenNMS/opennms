@@ -39,8 +39,9 @@
 package org.opennms.netmgt.config;
 
 import java.io.File;
-import java.io.FileInputStream;
+import java.io.FileReader;
 import java.io.IOException;
+import java.io.Reader;
 import java.util.Enumeration;
 
 import org.apache.log4j.Category;
@@ -51,7 +52,6 @@ import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.ConfigFileConstants;
 import org.opennms.netmgt.config.service.Service;
 import org.opennms.netmgt.config.service.ServiceConfiguration;
-import org.xml.sax.InputSource;
 
 /**
  * <p>
@@ -103,11 +103,20 @@ public final class ServiceConfigFactory {
      *                Thrown if the contents do not match the required schema.
      */
     private ServiceConfigFactory(String configFile) throws IOException, MarshalException, ValidationException {
-        InputSource cfgIn = new InputSource(new FileInputStream(configFile));
-        cfgIn.setSystemId(configFile);
+        FileReader cfgIn = new FileReader(configFile);
 
         // load the config
         //
+        parseXml(cfgIn);
+        
+        cfgIn.close();
+    }
+    
+    public ServiceConfigFactory(Reader rdr) throws MarshalException, ValidationException {
+        parseXml(rdr);
+    }
+
+    private void parseXml(Reader cfgIn) throws MarshalException, ValidationException {
         m_config = (ServiceConfiguration) Unmarshaller.unmarshal(ServiceConfiguration.class, cfgIn);
     }
 
@@ -172,6 +181,11 @@ public final class ServiceConfigFactory {
             throw new IllegalStateException("Factory not initialized");
 
         return m_singleton;
+    }
+    
+    public static synchronized void setInstance(ServiceConfigFactory instance) {
+        m_loaded = true;
+        m_singleton = instance;
     }
 
     /**

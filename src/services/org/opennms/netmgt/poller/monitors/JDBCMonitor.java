@@ -52,6 +52,8 @@ import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.DBTools;
 import org.opennms.netmgt.config.PollerConfig;
+import org.opennms.netmgt.config.poller.Package;
+import org.opennms.netmgt.poller.pollables.PollStatus;
 import org.opennms.netmgt.utils.ParameterMap;
 
 /**
@@ -197,7 +199,7 @@ final public class JDBCMonitor extends IPv4LatencyMonitor {
      *      href="http://manuals.sybase.com/onlinebooks/group-jc/jcg0550e/prjdbc/@Generic__BookTextView/9332;pt=1016#X">Error
      *      codes for JConnect </a>
      */
-    public int poll(NetworkInterface iface, Map parameters, org.opennms.netmgt.config.poller.Package pkg) {
+    public int checkStatus(NetworkInterface iface, Map parameters, org.opennms.netmgt.config.poller.Package pkg) {
         Category log = ThreadCategory.getInstance(getClass());
 
         // Asume that the service is down
@@ -241,7 +243,7 @@ final public class JDBCMonitor extends IPv4LatencyMonitor {
             log.info("poll: RRD repository not specified in parameters, latency data will not be stored.");
         }
         if (dsName == null) {
-            dsName = DS_NAME;
+            dsName = DEFAULT_DSNAME;
         }
 
         for (int attempts = 0; attempts <= retries; attempts++) {
@@ -312,4 +314,9 @@ final public class JDBCMonitor extends IPv4LatencyMonitor {
         }
         return status;
     }
+    
+    public PollStatus poll(NetworkInterface iface, Map parameters, Package pkg) {
+        return PollStatus.getPollStatus(checkStatus(iface, parameters, pkg));
+    }
+
 } // End of class

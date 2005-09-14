@@ -93,11 +93,6 @@ public final class Threshd extends ServiceDaemon {
     private final static Threshd m_singleton = new Threshd();
 
     /**
-     * Holds map of service names to service identifiers
-     */
-    private final static Map m_serviceIds = new HashMap();
-
-    /**
      * List of all ThresholdableService objects.
      */
     private List m_thresholdableServices;
@@ -158,7 +153,7 @@ public final class Threshd extends ServiceDaemon {
         // Initialize the ThresholdingConfigFactory
         //
         try {
-            ThresholdingConfigFactory.reload();
+            ThresholdingConfigFactory.init();
 
         } catch (MarshalException ex) {
             if (log.isEnabledFor(Priority.FATAL))
@@ -177,7 +172,7 @@ public final class Threshd extends ServiceDaemon {
         // Load up the configuration for the scheduled outages.
         //
         try {
-            PollOutagesConfigFactory.reload();
+            PollOutagesConfigFactory.init();
         } catch (MarshalException ex) {
             if (log.isEnabledFor(Priority.FATAL))
                 log.fatal("start: Failed to load poll-outage configuration", ex);
@@ -192,68 +187,6 @@ public final class Threshd extends ServiceDaemon {
             throw new UndeclaredThrowableException(ex);
         }
 
-        // Make sure we can connect to the database and load
-        // the services table so we can easily convert from
-        // service name to service id
-        //
-        if (log.isDebugEnabled())
-            log.debug("start: Testing database connection");
-
-        java.sql.Connection ctest = null;
-        ResultSet rs = null;
-        try {
-            DatabaseConnectionFactory.init();
-            ctest = DatabaseConnectionFactory.getInstance().getConnection();
-
-            PreparedStatement loadStmt = ctest.prepareStatement(SQL_RETRIEVE_SERVICE_IDS);
-
-            // go ahead and load the service table
-            //
-            rs = loadStmt.executeQuery();
-            while (rs.next()) {
-                Integer id = new Integer(rs.getInt(1));
-                String name = rs.getString(2);
-
-                m_serviceIds.put(name, id);
-            }
-        } catch (IOException iE) {
-            if (log.isEnabledFor(Priority.FATAL))
-                log.fatal("start: IOException getting database connection", iE);
-            throw new UndeclaredThrowableException(iE);
-        } catch (MarshalException mE) {
-            if (log.isEnabledFor(Priority.FATAL))
-                log.fatal("start: Marshall Exception getting database connection", mE);
-            throw new UndeclaredThrowableException(mE);
-        } catch (ValidationException vE) {
-            if (log.isEnabledFor(Priority.FATAL))
-                log.fatal("start: Validation Exception getting database connection", vE);
-            throw new UndeclaredThrowableException(vE);
-        } catch (SQLException sqlE) {
-            if (log.isEnabledFor(Priority.FATAL))
-                log.fatal("start: Error accessing database.", sqlE);
-            throw new UndeclaredThrowableException(sqlE);
-        } catch (ClassNotFoundException cnfE) {
-            if (log.isEnabledFor(Priority.FATAL))
-                log.fatal("start: Error accessing database.", cnfE);
-            throw new UndeclaredThrowableException(cnfE);
-        } finally {
-            if (rs != null) {
-                try {
-                    rs.close();
-                } catch (Exception e) {
-                    if (log.isInfoEnabled())
-                        log.info("start: an error occured closing the result set", e);
-                }
-            }
-            if (ctest != null) {
-                try {
-                    ctest.close();
-                } catch (Exception e) {
-                    if (log.isInfoEnabled())
-                        log.info("start: an error occured closing the SQL connection", e);
-                }
-            }
-        }
 
         if (log.isDebugEnabled())
             log.debug("start: Loading thresholders");

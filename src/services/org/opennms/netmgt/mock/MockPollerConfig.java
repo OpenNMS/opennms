@@ -47,13 +47,14 @@ import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.config.BasicScheduleUtils;
 import org.opennms.netmgt.config.PollOutagesConfigManager;
 import org.opennms.netmgt.config.PollerConfig;
+import org.opennms.netmgt.config.common.Time;
 import org.opennms.netmgt.config.poller.Downtime;
 import org.opennms.netmgt.config.poller.Interface;
 import org.opennms.netmgt.config.poller.Outage;
 import org.opennms.netmgt.config.poller.Outages;
 import org.opennms.netmgt.config.poller.Package;
+import org.opennms.netmgt.config.poller.Parameter;
 import org.opennms.netmgt.config.poller.Service;
-import org.opennms.netmgt.config.common.Time;
 import org.opennms.netmgt.poller.monitors.ServiceMonitor;
 
 public class MockPollerConfig extends PollOutagesConfigManager implements PollerConfig {
@@ -77,8 +78,13 @@ public class MockPollerConfig extends PollOutagesConfigManager implements Poller
     private boolean m_serviceUnresponsiveEnabled = false;
 
     private String m_nextOutageIdSql;
+
+    private Service m_currentSvc;
+
+    private MockNetwork m_network;
     
-    public MockPollerConfig() {
+    public MockPollerConfig(MockNetwork network) {
+        m_network = network;
         setConfig(new Outages());
     }
 
@@ -157,6 +163,7 @@ public class MockPollerConfig extends PollOutagesConfigManager implements Poller
             service.setName(name);
             service.setInterval(interval);
             m_currentPkg.addService(service);
+            m_currentSvc = service;
         }
         addServiceMonitor(name, monitor);
     }
@@ -180,6 +187,11 @@ public class MockPollerConfig extends PollOutagesConfigManager implements Poller
         m_currentPkg.setName(name);
 
         m_pkgs.add(m_currentPkg);
+    }
+    
+    public void addMonitor(String svcName, String className) {
+        addServiceMonitor(svcName, new MockMonitor(m_network, svcName));
+        
     }
 
     public Enumeration enumeratePackage() {
@@ -378,9 +390,28 @@ public class MockPollerConfig extends PollOutagesConfigManager implements Poller
         
     }
 
-    public void update() throws IOException, MarshalException, ValidationException {
-        // TODO Auto-generated method stub
+    public Service getServiceInPackage(String svcName, Package pkg) {
+        return findService(pkg, svcName);
+    }
+    
+    public void update() {
         
     }
+    
+    public void save() {
+        
+    }
+
+    public void addParameter(String key, String value) {
+        Parameter param = new Parameter();
+        param.setKey(key);
+        param.setValue(value);
+        m_currentSvc.addParameter(param);
+    }
+    
+    public void addPackage(Package pkg) {
+        m_pkgs.add(pkg);
+    }
+
 
 }

@@ -172,8 +172,6 @@ final class RescanProcessor implements Runnable {
      */
     private final static String SQL_RETRIEVE_SERVICE_IDS = "SELECT serviceid,servicename  FROM service";
 
-    final static Map m_serviceNames = new HashMap();
-
     /**
      * Information necessary to schedule the node.
      */
@@ -1378,6 +1376,7 @@ final class RescanProcessor implements Runnable {
 
         java.sql.Connection ctest = null;
         ResultSet rs = null;
+        Map serviceNames = new HashMap();
         try {
             ctest = DatabaseConnectionFactory.getInstance().getConnection();
             PreparedStatement loadStmt = ctest.prepareStatement(SQL_RETRIEVE_SERVICE_IDS);
@@ -1388,7 +1387,7 @@ final class RescanProcessor implements Runnable {
             while (rs.next()) {
                 Integer id = new Integer(rs.getInt(1));
                 String name = rs.getString(2);
-                m_serviceNames.put(id, name);
+                serviceNames.put(id, name);
             }
         } // end try
         catch (Throwable t) {
@@ -1405,7 +1404,7 @@ final class RescanProcessor implements Runnable {
 
         for (int i = 0; i < dbSupportedServices.length; i++) {
             Integer id = new Integer(dbSupportedServices[i].getServiceId());
-            String sn = (m_serviceNames.get(id)).toString();
+            String sn = (serviceNames.get(id)).toString();
 
             DbIfServiceEntry ifSvcEntry = DbIfServiceEntry.get(node.getNodeId(), ifaddr, dbSupportedServices[i].getServiceId());
             if (log.isDebugEnabled())

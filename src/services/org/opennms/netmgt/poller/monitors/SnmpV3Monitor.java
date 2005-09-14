@@ -42,6 +42,8 @@ import java.util.Map;
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.SnmpPeerFactory;
+import org.opennms.netmgt.config.poller.Package;
+import org.opennms.netmgt.poller.pollables.PollStatus;
 import org.opennms.netmgt.utils.ParameterMap;
 import org.opennms.netmgt.utils.SnmpHelpers;
 import org.snmp4j.PDU;
@@ -115,7 +117,7 @@ final public class SnmpV3Monitor extends SnmpMonitorStrategy {
         return;
     }
 
-    public int poll(NetworkInterface iface, Map parameters, org.opennms.netmgt.config.poller.Package pkg) {
+    public int checkStatus(NetworkInterface iface, Map parameters, org.opennms.netmgt.config.poller.Package pkg) {
 
         int status = SERVICE_UNAVAILABLE;
         // Retrieve this interface's SNMP peer object
@@ -236,6 +238,10 @@ final public class SnmpV3Monitor extends SnmpMonitorStrategy {
             }
         }
         return status;
+    }
+    
+    public PollStatus poll(NetworkInterface iface, Map parameters, Package pkg) {
+        return PollStatus.getPollStatus(checkStatus(iface, parameters, pkg));
     }
 
 }

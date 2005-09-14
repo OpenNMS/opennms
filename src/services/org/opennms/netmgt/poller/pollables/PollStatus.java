@@ -65,10 +65,12 @@ public class PollStatus {
     
     int m_statusCode;
     String m_statusName;
+    String m_reason;
     
     private PollStatus(int statusCode, String statusName) {
         m_statusCode = statusCode;
         m_statusName = statusName;
+        m_reason = null;
     }
     
     public boolean isUp() {
@@ -81,6 +83,30 @@ public class PollStatus {
     
     public String toString() {
         return m_statusName;
+    }
+
+    public String getReason() {
+        return m_reason;
+    }
+
+    public void setReason(String reason) {
+        m_reason = reason;
+    }
+
+    public int getStatusCode() {
+        return m_statusCode;
+    }
+
+    public void setStatusCode(int statusCode) {
+        m_statusCode = statusCode;
+    }
+
+    public String getStatusName() {
+        return m_statusName;
+    }
+
+    public void setStatusName(String statusName) {
+        m_statusName = statusName;
     }
 
 }

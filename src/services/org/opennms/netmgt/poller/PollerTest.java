@@ -31,12 +31,20 @@
 //
 package org.opennms.netmgt.poller;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.StringReader;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 
 import junit.framework.TestCase;
 
+import org.exolab.castor.xml.MarshalException;
+import org.exolab.castor.xml.ValidationException;
+import org.opennms.netmgt.config.CapsdConfigManager;
+import org.opennms.netmgt.config.DatabaseConnectionFactory;
+import org.opennms.netmgt.eventd.EventUtil;
 import org.opennms.netmgt.mock.EventAnticipator;
 import org.opennms.netmgt.mock.MockDatabase;
 import org.opennms.netmgt.mock.MockElement;
@@ -55,6 +63,7 @@ import org.opennms.netmgt.mock.PollAnticipator;
 import org.opennms.netmgt.poller.monitors.ServiceMonitor;
 import org.opennms.netmgt.utils.Querier;
 import org.opennms.netmgt.xml.event.Event;
+import org.opennms.netmgt.xmlrpcd.OpenNMSProvisioner;
 
 public class PollerTest extends TestCase {
 
@@ -106,8 +115,9 @@ public class PollerTest extends TestCase {
         
         m_db = new MockDatabase();
         m_db.populate(m_network);
+        DatabaseConnectionFactory.setInstance(m_db);
         
-        m_pollerConfig = new MockPollerConfig();
+        m_pollerConfig = new MockPollerConfig(m_network);
         m_pollerConfig.setNextOutageIdSql(m_db.getNextOutageIdStatement());
         m_pollerConfig.setNodeOutageProcessingEnabled(true);
         m_pollerConfig.setCriticalService("ICMP");
@@ -149,6 +159,7 @@ public class PollerTest extends TestCase {
         stopDaemons();
         sleep(200);
         assertTrue("Unexpected WARN or ERROR msgs in Log!", MockUtil.noWarningsOrHigherLogged());
+        DatabaseConnectionFactory.setInstance(null);
         m_db.drop();
         MockUtil.println("------------ End Test "+getName()+" --------------------------");
     }
@@ -215,6 +226,16 @@ public class PollerTest extends TestCase {
     private void resetAnticipated() {
         m_anticipator.reset();
         m_outageAnticipator.reset();
+    }
+    
+    public void testNodeLostServiceWithReason() {
+        m_pollerConfig.setNodeOutageProcessingEnabled(true);
+        
+        MockService svc = m_network.getService(1, "192.168.1.1", "ICMP");
+        Event e = svc.createDownEvent();
+        String reasonParm = "eventReason";
+        String val = EventUtil.getNamedParmValue("parm["+ reasonParm +"]", e);
+        assertEquals("Service Not Responding.", val);
     }
 
     public void testCritSvcStatusPropagation() {
@@ -380,7 +401,7 @@ public class PollerTest extends TestCase {
         MockNode node1 = m_network.getNode(1);
         MockNode node2 = m_network.getNode(2);
 
-        MockInterface dotOne = m_network.getInterface(1, "192.168.1.1");
+        //MockInterface dotOne = m_network.getInterface(1, "192.168.1.1");
         MockInterface dotTwo = m_network.getInterface(1, "192.168.1.2");
         MockInterface dotThree = m_network.getInterface(2, "192.168.1.3");
         
@@ -649,27 +670,29 @@ public class PollerTest extends TestCase {
     // send a nodeGainedService event:
     // EventConstants.NODE_GAINED_SERVICE_EVENT_UEI
     public void testSendNodeGainedService() {
-        testSendNodeGainedService(false);
+        m_pollerConfig.setNodeOutageProcessingEnabled(false);
+
+        startDaemons();
+        testSendNodeGainedService("SMTP");
     }
     
     public void testSendNodeGainedServiceNodeOutages() {
-        testSendNodeGainedService(true);
-    }
-    
-    public void testSendNodeGainedService(boolean nodeOutageProcessing) {
-
-        m_pollerConfig.setNodeOutageProcessingEnabled(nodeOutageProcessing);
+        m_pollerConfig.setNodeOutageProcessingEnabled(true);
 
         startDaemons();
+        testSendNodeGainedService("SMTP");
+    }
+    
+    public void testSendNodeGainedService(String svcName) {
 
         MockNode node = m_network.addNode(99, "TestNode");
         m_db.writeNode(node);
         MockInterface iface = m_network.addInterface(99, "10.1.1.1");
         m_db.writeInterface(iface);
-        MockService element = m_network.addService(99, "10.1.1.1", "HTTP");
+        MockService element = m_network.addService(99, "10.1.1.1", svcName);
         m_db.writeService(element);
         m_pollerConfig.addService(element);
-        MockService smtp = m_network.addService(99, "10.1.1.1", "SMTP");
+        MockService smtp = m_network.addService(99, "10.1.1.1", "HTTP");
         m_db.writeService(smtp);
         m_pollerConfig.addService(smtp);
 
@@ -695,9 +718,28 @@ public class PollerTest extends TestCase {
         verifyAnticipated(10000);
 
     }
+    
+    public void testNodeGainedDynamicService() throws Exception {
+        m_pollerConfig.setNodeOutageProcessingEnabled(true);
+
+        startDaemons();
+        
+        OpenNMSProvisioner provisioner = new OpenNMSProvisioner();
+        provisioner.setPollerConfig(m_pollerConfig);
+        provisioner.setCapsdConfig(new TestCapsdConfigManager());
+        
+        provisioner.addServiceDNS("MyDNS", 3, 100, 1000, 500, 3000, 53, "www.opennms.org");
+
+        assertNotNull("The service id for MyDNS is null", m_db.getServiceID("MyDNS"));
+        MockUtil.println("The service id for MyDNS is: "+m_db.getServiceID("MyDNS").toString());
+        
+        testSendNodeGainedService("MyDNS");
+
+        
+    }
 
     public void testSuspendPollingResumeService() {
-        long start = System.currentTimeMillis();
+        //long start = System.currentTimeMillis();
 
         MockService svc = m_network.getService(1, "192.168.1.2", "SMTP");
 
@@ -788,10 +830,10 @@ public class PollerTest extends TestCase {
         }
     }
     
-    private void anticipateDownEvent(MockElement element) {
+/*    private void anticipateDownEvent(MockElement element) {
         m_anticipator.anticipateEvent(element.createDownEvent());
     }
-    
+*/    
     private void anticipateServicesUp(MockElement node) {
         MockVisitor eventCreator = new MockVisitorAdapter() {
             public void visitService(MockService svc) {
@@ -830,6 +872,40 @@ public class PollerTest extends TestCase {
         element.visit(markCritSvcDown);
 
     }
+    
+    private static final String CAPSD_CONFIG = "\n" +
+    "<capsd-configuration max-suspect-thread-pool-size=\"2\" max-rescan-thread-pool-size=\"3\"\n" +
+    "   delete-propagation-enabled=\"true\">\n" +
+    "   <protocol-plugin protocol=\"ICMP\" class-name=\"org.opennms.netmgt.capsd.plugins.LdapPlugin\"/>\n" +
+    "   <protocol-plugin protocol=\"SMTP\" class-name=\"org.opennms.netmgt.capsd.plugins.LdapPlugin\"/>\n" +
+    "   <protocol-plugin protocol=\"HTTP\" class-name=\"org.opennms.netmgt.capsd.plugins.LdapPlugin\"/>\n" +
+    "</capsd-configuration>\n";
+
+    
+    class TestCapsdConfigManager extends CapsdConfigManager {
+        private String m_xml;
+
+        public TestCapsdConfigManager() throws MarshalException, ValidationException, IOException {
+            super(new StringReader(CAPSD_CONFIG));
+            setNextSvcIdSql(m_db.getNextServiceIdStatement());
+            save();
+        }
+        
+        protected void saveXml(String xml) throws IOException {
+            m_xml = xml;
+        }
+
+        protected void update() throws IOException, FileNotFoundException, MarshalException, ValidationException {
+            loadXml(new StringReader(m_xml));
+        }
+        
+        public String getXml() {
+            return m_xml;
+        }
+
+        
+    }
+
     
     
     class OutageChecker extends Querier { 

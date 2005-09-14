@@ -204,7 +204,7 @@
 			<attribute name="interval" type="long" use="required"/>
 
 			<!--- marker to say if service is user defined, used specifically for UI purposes -->
-			<attribute name="user-defined" use="optional">
+			<attribute name="user-defined" use="optional" default="false">
 				<simpleType>
 					<restriction base="string">
 						<pattern value="(true|false)"/>
@@ -213,7 +213,7 @@
 			</attribute>
 
 			<!--- status of the service, service is polled only if on -->
-			<attribute name="status" use="optional">
+			<attribute name="status" use="optional" default="on">
 				<simpleType>
 					<restriction base="string">
 						<pattern value="(on|off)"/>

@@ -158,12 +158,12 @@ public class PollableInterface extends PollableContainer {
             
     }
     public Event createDownEvent(Date date) {
-        return getContext().createEvent(EventConstants.INTERFACE_DOWN_EVENT_UEI, getNodeId(), getAddress(), null, date);
+        return getContext().createEvent(EventConstants.INTERFACE_DOWN_EVENT_UEI, getNodeId(), getAddress(), null, date, getStatus().getReason());
     }
     
     
     public Event createUpEvent(Date date) {
-        return getContext().createEvent(EventConstants.INTERFACE_UP_EVENT_UEI, getNodeId(), getAddress(), null, date);
+        return getContext().createEvent(EventConstants.INTERFACE_UP_EVENT_UEI, getNodeId(), getAddress(), null, date, getStatus().getReason());
     }
     
     public String toString() { return getNode()+":"+getIpAddr(); }

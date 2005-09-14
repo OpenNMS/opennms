@@ -39,7 +39,6 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 import junit.framework.TestCase;
 
@@ -158,7 +157,7 @@ public class MockNetworkTest extends TestCase {
                 m_serviceCount++;
                 IPv4NetworkInterface addr = new MockNetworkInterface(service.getInterface().getIpAddr());
                 ServiceMonitor monitor = m_pollerConfig.getServiceMonitor(service.getName());
-                int pollResult = monitor.poll(addr, new HashMap(), m_pollerConfig.getPackage("TestPackage"));
+                int pollResult = monitor.checkStatus(addr, new HashMap(), m_pollerConfig.getPackage("TestPackage"));
                 assertEquals(m_expectedStatus, pollResult);
             } catch (UnknownHostException e) {
                 throw new RuntimeException("Unknownhost ", e);
@@ -179,7 +178,7 @@ public class MockNetworkTest extends TestCase {
     private void anticipateServiceEvents(final EventAnticipator anticipator, MockElement element, final String uei) {
         MockVisitor eventSetter = new MockVisitorAdapter() {
             public void visitService(MockService svc) {
-                Event event = MockUtil.createServiceEvent("Test", uei, svc);
+                Event event = MockUtil.createServiceEvent("Test", uei, svc, null);
                 anticipator.anticipateEvent(event);
             }
         };
@@ -204,7 +203,7 @@ public class MockNetworkTest extends TestCase {
         
         m_eventMgr = new MockEventIpcManager();
 
-        m_pollerConfig = new MockPollerConfig();
+        m_pollerConfig = new MockPollerConfig(m_network);
         m_pollerConfig.addPackage("TestPackage");
         m_pollerConfig.addDowntime(1000L, 0L, -1L, false);
         m_pollerConfig.setDefaultPollInterval(1000L);
@@ -268,8 +267,8 @@ public class MockNetworkTest extends TestCase {
     }
 
     public void testEventListeners() {
-        Event sentEvent = MockUtil.createEvent("Test", EventConstants.NODE_GAINED_SERVICE_EVENT_UEI, 1, "192.168.1.1", "NEW");
-        Event sentEvent2 = MockUtil.createEvent("Test", EventConstants.NODE_REGAINED_SERVICE_EVENT_UEI, 1, "192.168.1.1", "NEW");
+        Event sentEvent = MockUtil.createEvent("Test", EventConstants.NODE_GAINED_SERVICE_EVENT_UEI, 1, "192.168.1.1", "NEW", null);
+        Event sentEvent2 = MockUtil.createEvent("Test", EventConstants.NODE_REGAINED_SERVICE_EVENT_UEI, 1, "192.168.1.1", "NEW", null);
 
         class MockListener implements EventListener {
             private Event receivedEvent;
@@ -342,7 +341,7 @@ public class MockNetworkTest extends TestCase {
 
         MockVisitor lostSvcSender = new MockVisitorAdapter() {
             public void visitService(MockService svc) {
-                Event event = MockUtil.createEvent("Test", EventConstants.NODE_LOST_SERVICE_EVENT_UEI, svc.getNodeId(), svc.getIpAddr(), svc.getName());
+                Event event = MockUtil.createEvent("Test", EventConstants.NODE_LOST_SERVICE_EVENT_UEI, svc.getNodeId(), svc.getIpAddr(), svc.getName(), String.valueOf(ServiceMonitor.SERVICE_UNAVAILABLE));
                 m_eventMgr.sendNow(event);
             }
         };
@@ -356,7 +355,7 @@ public class MockNetworkTest extends TestCase {
 
         MockVisitor gainedSvcSender = new MockVisitorAdapter() {
             public void visitService(MockService svc) {
-                Event event = MockUtil.createEvent("Test", EventConstants.NODE_REGAINED_SERVICE_EVENT_UEI, svc.getNodeId(), svc.getIpAddr(), svc.getName());
+                Event event = MockUtil.createEvent("Test", EventConstants.NODE_REGAINED_SERVICE_EVENT_UEI, svc.getNodeId(), svc.getIpAddr(), svc.getName(), null);
                 m_eventMgr.sendNow(event);
             }
         };
@@ -382,7 +381,7 @@ public class MockNetworkTest extends TestCase {
         IPv4NetworkInterface addr = new MockNetworkInterface("1.1.1.1");
         ServiceMonitor monitor = m_pollerConfig.getServiceMonitor("ICMP");
         try {
-            monitor.poll(addr, new HashMap(), m_pollerConfig.getPackage("TestPackage"));
+            monitor.checkStatus(addr, new HashMap(), m_pollerConfig.getPackage("TestPackage"));
             fail("expected exception");
         } catch (Exception e) {
             // expected this
@@ -474,14 +473,7 @@ public class MockNetworkTest extends TestCase {
         assertTrue(queryManager.activeServiceExists("Test", 1, "192.168.1.1", "ICMP"));
         assertFalse(queryManager.activeServiceExists("Test", 1, "192.168.1.17", "ICMP"));
 
-        Map nameToIdMap = new HashMap();
-        Map idToNameMap = new HashMap();
-        queryManager.buildServiceNameToIdMaps(nameToIdMap, idToNameMap);
-
         MockService service = m_network.getService(1, "192.168.1.1", "SMTP");
-        int serviceId = service.getId();
-        assertEquals(service.getName(), idToNameMap.get(new Integer(serviceId)));
-        assertEquals(serviceId, ((Integer) nameToIdMap.get(service.getName())).intValue());
 
         MockInterface iface = m_network.getInterface(1, "192.168.1.2");
         Collection expectedSvcs = iface.getServices();

@@ -9,12 +9,12 @@ maintained
 
 	<service>
 		<name>:Name=XSLTProcessor</name>
-		<class-name>mx4j.adaptor.http.XSLTProcessor</class-name>
+		<class-name>mx4j.tools.adaptor.http.XSLTProcessor</class-name>
 	</service>
 
 	<service>
 		<name>:Name=HttpAdaptor</name>
-		<class-name>mx4j.adaptor.http.HttpAdaptor</class-name>
+		<class-name>mx4j.tools.adaptor.http.HttpAdaptor</class-name>
 		<attribute>
 			<name>Port</name>
 			<value type="java.lang.Integer">8180</value>
@@ -32,7 +32,7 @@ maintained
 
 	<service>
 		<name>:Name=HttpAdaptorMgmt</name>
-		<class-name>mx4j.adaptor.http.HttpAdaptor</class-name>
+		<class-name>mx4j.tools.adaptor.http.HttpAdaptor</class-name>
 		<attribute>
 			<name>Port</name>
 			<value type="java.lang.Integer">8181</value>
@@ -162,7 +162,14 @@ maintained
                 <invoke at="status" pass="0" method="status"/>
                 <invoke at="stop" pass="0" method="stop"/>
         </service>
+        <service>
+                <name>OpenNMS:Name=Provisioner</name>
+                <class-name>org.opennms.netmgt.xmlrpcd.jmx.Provisioner</class-name>
+                <invoke pass="0" method="init"/>
+                <invoke pass="1" method="start"/>
+                <invoke at="status" pass="0" method="status"/>
+                <invoke at="stop" pass="0" method="stop"/>
+        </service>
 -->
-
 </service-configuration>
 

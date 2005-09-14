@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+
+	<bean id="xmlrpcd" class="org.opennms.netmgt.xmlrpcd.Xmlrpcd">
+	
+	</bean>
+	
+	<!-- An adapter to register beans as mbeans -->
+	<bean id="mbeanRegister"
+		class="org.springframework.jmx.export.MBeanExporter">
+		<property name="beans">
+			<map>
+				<entry key="OpenNMS:Name=Xmlrpcd">
+					<ref local="xmlrpcd" />
+				</entry>
+			</map>
+		</property>
+	</bean>
+
+</beans>

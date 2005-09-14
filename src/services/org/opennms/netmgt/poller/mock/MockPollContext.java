@@ -110,9 +110,9 @@ public class MockPollContext implements PollContext, EventListener {
     
     
 
-    public Event createEvent(String uei, int nodeId, InetAddress address, String svcName, Date date) {
+    public Event createEvent(String uei, int nodeId, InetAddress address, String svcName, Date date, String reason) {
         String eventTime = EventConstants.formatToString(date);
-        Event e = MockUtil.createEvent("Test", uei, nodeId, (address == null ? null : address.getHostAddress()), svcName);
+        Event e = MockUtil.createEvent("Test", uei, nodeId, (address == null ? null : address.getHostAddress()), svcName, reason);
         e.setCreationTime(eventTime);
         e.setTime(eventTime);
         return e;

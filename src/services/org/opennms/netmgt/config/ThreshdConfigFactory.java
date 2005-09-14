@@ -404,6 +404,10 @@ public final class ThreshdConfigFactory extends ThreshdConfigManager {
         boolean has_specific = false;
         boolean has_range_include = false;
         boolean has_range_exclude = false;
+        
+        // if there are NO include rances then treat act as if the user include
+        // the range 0.0.0.0 - 255.255.255.255
+        has_range_include = pkg.getIncludeRangeCount() == 0;
 
         long addr = IPSorter.convertToLong(iface);
         Enumeration eincs = pkg.enumerateIncludeRange();
