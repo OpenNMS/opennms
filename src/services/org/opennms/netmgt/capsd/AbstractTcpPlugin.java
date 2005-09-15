@@ -273,6 +273,7 @@ public abstract class AbstractTcpPlugin extends AbstractPlugin {
     }
 
     protected void populateConnectionConfig(ConnectionConfig config, Map qualifiers) {
+        config.setQualifiers(qualifiers);
         config.setTimeout(getKeyedInteger(qualifiers, "timeout", m_defaultTimeout));
         config.setRetry(getKeyedInteger(qualifiers, "retry", m_defaultRetry));
     }

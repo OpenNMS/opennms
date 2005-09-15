@@ -15,15 +15,15 @@
 			<mevalue>1</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/vendor/MGE/traps/upsmgBatteryFault</uei>
+	<uei>uei.opennms.org/mib2opennms/upsmgBatteryFault</uei>
 	<event-label>MG-SNMP-UPS-MIB defined trap event: upsmgBatteryFault</event-label>
 	<descr>
 &lt;p&gt;Trap UPS Battery entering Fault status.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			MGE UPS Event: upsmgBatteryFault trap received&lt;/p&gt;
+			MGE Event: upsmgBatteryFault trap received&lt;/p&gt;
 		</logmsg>
-	<severity>Major</severity>
+	<severity>Minor</severity>
 </event>
 <event>
 	<mask>
@@ -40,13 +40,13 @@
 			<mevalue>2</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/vendor/MGE/traps/upsmgBatteryOK</uei>
+	<uei>uei.opennms.org/mib2opennms/upsmgBatteryOK</uei>
 	<event-label>MG-SNMP-UPS-MIB defined trap event: upsmgBatteryOK</event-label>
 	<descr>
 &lt;p&gt;Trap UPS Battery returned to OK status.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			MGE UPS Event: upsmgBatteryOK trap received&lt;/p&gt;
+			MGE Event: upsmgBatteryOK trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Cleared</severity>
 </event>
@@ -65,13 +65,13 @@
 			<mevalue>3</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/vendor/MGE/traps/upsmgBatteryReplacementIndicated</uei>
+	<uei>uei.opennms.org/mib2opennms/upsmgBatteryReplacementIndicated</uei>
 	<event-label>MG-SNMP-UPS-MIB defined trap event: upsmgBatteryReplacementIndicated</event-label>
 	<descr>
 &lt;p&gt;Trap UPS battery need to be replaced.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			MGE UPS Event: upsmgBatteryReplacementIndicated trap received&lt;/p&gt;
+			MGE Event: upsmgBatteryReplacementIndicated trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
 </event>
@@ -90,15 +90,15 @@
 			<mevalue>4</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/vendor/MGE/traps/upsmgBatteryReplacementNotIndicated</uei>
-	<event-label>MG-SNMP-UPS-MIB defined trap event: upsmgBatteryReplacementNotIndicated</event-label>
+	<uei>uei.opennms.org/mib2opennms/upsmgBatteryReplaceNotIndicated</uei>
+	<event-label>MG-SNMP-UPS-MIB defined trap event: upsmgBatteryReplaceNotIndicated</event-label>
 	<descr>
 &lt;p&gt;Trap UPS battery does not need to be replaced.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			MGE UPS Event: upsmgBatteryReplacementNotIndicated trap received&lt;/p&gt;
+			MGE Event: upsmgBatteryReplaceNotIndicated trap received&lt;/p&gt;
 		</logmsg>
-	<severity>Normal</severity>
+	<severity>Cleared</severity>
 </event>
 <event>
 	<mask>
@@ -115,7 +115,7 @@
 			<mevalue>5</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/vendor/MGE/traps/upsmgAtLowBattery</uei>
+	<uei>uei.opennms.org/mib2opennms/upsmgAtLowBattery</uei>
 	<event-label>MG-SNMP-UPS-MIB defined trap event: upsmgAtLowBattery</event-label>
 	<descr>
 &lt;p&gt;Trap UPS battery reached low condition.&lt;/p&gt;&lt;table&gt;
@@ -129,7 +129,7 @@
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			MGE UPS Event: upsmgAtLowBattery trap received 
+			MGE Event: upsmgAtLowBattery trap received 
 			upsmgBatteryRemainingTime=%parm[#1]% 
 			upsmgBatteryLevel=%parm[#2]%&lt;/p&gt;
 		</logmsg>
@@ -150,7 +150,7 @@
 			<mevalue>6</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/vendor/MGE/traps/upsmgFromLowBattery</uei>
+	<uei>uei.opennms.org/mib2opennms/upsmgFromLowBattery</uei>
 	<event-label>MG-SNMP-UPS-MIB defined trap event: upsmgFromLowBattery</event-label>
 	<descr>
 &lt;p&gt;Trap UPS battery returned from low condition.&lt;/p&gt;&lt;table&gt;
@@ -164,7 +164,7 @@
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			MGE UPS Event: upsmgFromLowBattery trap received 
+			MGE Event: upsmgFromLowBattery trap received 
 			upsmgBatteryRemainingTime=%parm[#1]% 
 			upsmgBatteryLevel=%parm[#2]%&lt;/p&gt;
 		</logmsg>
@@ -185,15 +185,15 @@
 			<mevalue>7</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/vendor/MGE/traps/upsmgChargerFault</uei>
+	<uei>uei.opennms.org/mib2opennms/upsmgChargerFault</uei>
 	<event-label>MG-SNMP-UPS-MIB defined trap event: upsmgChargerFault</event-label>
 	<descr>
 &lt;p&gt;Trap UPS battery charger is not active.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			MGE UPS Event: upsmgChargerFault trap received&lt;/p&gt;
+			MGE Event: upsmgChargerFault trap received&lt;/p&gt;
 		</logmsg>
-	<severity>Major</severity>
+	<severity>Minor</severity>
 </event>
 <event>
 	<mask>
@@ -210,13 +210,13 @@
 			<mevalue>8</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/vendor/MGE/traps/upsmgChargerOK</uei>
+	<uei>uei.opennms.org/mib2opennms/upsmgChargerOK</uei>
 	<event-label>MG-SNMP-UPS-MIB defined trap event: upsmgChargerOK</event-label>
 	<descr>
 &lt;p&gt;Trap UPS battery charger is active.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			MGE UPS Event: upsmgChargerOK trap received&lt;/p&gt;
+			MGE Event: upsmgChargerOK trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Cleared</severity>
 </event>
@@ -235,7 +235,7 @@
 			<mevalue>9</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/vendor/MGE/traps/upsmgAtLowCondition</uei>
+	<uei>uei.opennms.org/mib2opennms/upsmgAtLowCondition</uei>
 	<event-label>MG-SNMP-UPS-MIB defined trap event: upsmgAtLowCondition</event-label>
 	<descr>
 &lt;p&gt;Trap UPS entering low condition.&lt;/p&gt;&lt;table&gt;
@@ -249,7 +249,7 @@
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			MGE UPS Event: upsmgAtLowCondition trap received 
+			MGE Event: upsmgAtLowCondition trap received 
 			upsmgBatteryRemainingTime=%parm[#1]% 
 			upsmgBatteryLevel=%parm[#2]%&lt;/p&gt;
 		</logmsg>
@@ -270,7 +270,7 @@
 			<mevalue>10</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/vendor/MGE/traps/upsmgFromLowCondition</uei>
+	<uei>uei.opennms.org/mib2opennms/upsmgFromLowCondition</uei>
 	<event-label>MG-SNMP-UPS-MIB defined trap event: upsmgFromLowCondition</event-label>
 	<descr>
 &lt;p&gt;Trap UPS exiting low condition.&lt;/p&gt;&lt;table&gt;
@@ -284,7 +284,7 @@
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			MGE UPS Event: upsmgFromLowCondition trap received 
+			MGE Event: upsmgFromLowCondition trap received 
 			upsmgBatteryRemainingTime=%parm[#1]% 
 			upsmgBatteryLevel=%parm[#2]%&lt;/p&gt;
 		</logmsg>
@@ -305,7 +305,7 @@
 			<mevalue>11</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/vendor/MGE/traps/upsmgOnBattery</uei>
+	<uei>uei.opennms.org/mib2opennms/upsmgOnBattery</uei>
 	<event-label>MG-SNMP-UPS-MIB defined trap event: upsmgOnBattery</event-label>
 	<descr>
 &lt;p&gt;Trap UPS is on Battery.&lt;/p&gt;&lt;table&gt;
@@ -319,7 +319,7 @@
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			MGE UPS Event: upsmgOnBattery trap received 
+			MGE Event: upsmgOnBattery trap received 
 			upsmgBatteryRemainingTime=%parm[#1]% 
 			upsmgBatteryLevel=%parm[#2]%&lt;/p&gt;
 		</logmsg>
@@ -340,7 +340,7 @@
 			<mevalue>12</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/vendor/MGE/traps/upsmgReturnFromBattery</uei>
+	<uei>uei.opennms.org/mib2opennms/upsmgReturnFromBattery</uei>
 	<event-label>MG-SNMP-UPS-MIB defined trap event: upsmgReturnFromBattery</event-label>
 	<descr>
 &lt;p&gt;Trap UPS returned from battery.&lt;/p&gt;&lt;table&gt;
@@ -354,7 +354,7 @@
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			MGE UPS Event: upsmgReturnFromBattery trap received 
+			MGE Event: upsmgReturnFromBattery trap received 
 			upsmgBatteryRemainingTime=%parm[#1]% 
 			upsmgBatteryLevel=%parm[#2]%&lt;/p&gt;
 		</logmsg>
@@ -375,15 +375,15 @@
 			<mevalue>13</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/vendor/MGE/traps/upsmgOnByPass</uei>
+	<uei>uei.opennms.org/mib2opennms/upsmgOnByPass</uei>
 	<event-label>MG-SNMP-UPS-MIB defined trap event: upsmgOnByPass</event-label>
 	<descr>
 &lt;p&gt;Trap UPS is on by pass.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			MGE UPS Event: upsmgOnByPass trap received&lt;/p&gt;
+			MGE Event: upsmgOnByPass trap received&lt;/p&gt;
 		</logmsg>
-	<severity>Major</severity>
+	<severity>Minor</severity>
 </event>
 <event>
 	<mask>
@@ -400,13 +400,13 @@
 			<mevalue>14</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/vendor/MGE/traps/upsmgReturnFromByPass</uei>
+	<uei>uei.opennms.org/mib2opennms/upsmgReturnFromByPass</uei>
 	<event-label>MG-SNMP-UPS-MIB defined trap event: upsmgReturnFromByPass</event-label>
 	<descr>
 &lt;p&gt;Trap UPS return from by pass.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			MGE UPS Event: upsmgReturnFromByPass trap received&lt;/p&gt;
+			MGE Event: upsmgReturnFromByPass trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Cleared</severity>
 </event>
@@ -425,15 +425,15 @@
 			<mevalue>15</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/vendor/MGE/traps/upsmgByPassUnavailable</uei>
+	<uei>uei.opennms.org/mib2opennms/upsmgByPassUnavailable</uei>
 	<event-label>MG-SNMP-UPS-MIB defined trap event: upsmgByPassUnavailable</event-label>
 	<descr>
 &lt;p&gt;Trap UPS by pass unavailable.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			MGE UPS Event: upsmgByPassUnavailable trap received&lt;/p&gt;
+			MGE Event: upsmgByPassUnavailable trap received&lt;/p&gt;
 		</logmsg>
-	<severity>Major</severity>
+	<severity>Minor</severity>
 </event>
 <event>
 	<mask>
@@ -450,13 +450,13 @@
 			<mevalue>16</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/vendor/MGE/traps/upsmgByPassAvailable</uei>
+	<uei>uei.opennms.org/mib2opennms/upsmgByPassAvailable</uei>
 	<event-label>MG-SNMP-UPS-MIB defined trap event: upsmgByPassAvailable</event-label>
 	<descr>
 &lt;p&gt;Trap UPS by pass available.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			MGE UPS Event: upsmgByPassAvailable trap received&lt;/p&gt;
+			MGE Event: upsmgByPassAvailable trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Cleared</severity>
 </event>
@@ -475,13 +475,13 @@
 			<mevalue>17</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/vendor/MGE/traps/upsmgUtilityFailure</uei>
+	<uei>uei.opennms.org/mib2opennms/upsmgUtilityFailure</uei>
 	<event-label>MG-SNMP-UPS-MIB defined trap event: upsmgUtilityFailure</event-label>
 	<descr>
 &lt;p&gt;Trap UPS utility power failed.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			MGE UPS Event: upsmgUtilityFailure trap received&lt;/p&gt;
+			MGE Event: upsmgUtilityFailure trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Major</severity>
 </event>
@@ -500,13 +500,13 @@
 			<mevalue>18</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/vendor/MGE/traps/upsmgUtilityRestored</uei>
+	<uei>uei.opennms.org/mib2opennms/upsmgUtilityRestored</uei>
 	<event-label>MG-SNMP-UPS-MIB defined trap event: upsmgUtilityRestored</event-label>
 	<descr>
 &lt;p&gt;Trap UPS utility power restored.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			MGE UPS Event: upsmgUtilityRestored trap received&lt;/p&gt;
+			MGE Event: upsmgUtilityRestored trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Cleared</severity>
 </event>
@@ -525,13 +525,13 @@
 			<mevalue>19</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/vendor/MGE/traps/upsmgOnBoost</uei>
+	<uei>uei.opennms.org/mib2opennms/upsmgOnBoost</uei>
 	<event-label>MG-SNMP-UPS-MIB defined trap event: upsmgOnBoost</event-label>
 	<descr>
 &lt;p&gt;Trap UPS is on boost.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			MGE UPS Event: upsmgOnBoost trap received&lt;/p&gt;
+			MGE Event: upsmgOnBoost trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Warning</severity>
 </event>
@@ -550,13 +550,13 @@
 			<mevalue>20</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/vendor/MGE/traps/upsmgReturnFromBoost</uei>
+	<uei>uei.opennms.org/mib2opennms/upsmgReturnFromBoost</uei>
 	<event-label>MG-SNMP-UPS-MIB defined trap event: upsmgReturnFromBoost</event-label>
 	<descr>
 &lt;p&gt;Trap UPS has returned from boost.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			MGE UPS Event: upsmgReturnFromBoost trap received&lt;/p&gt;
+			MGE Event: upsmgReturnFromBoost trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Cleared</severity>
 </event>
@@ -575,13 +575,13 @@
 			<mevalue>21</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/vendor/MGE/traps/upsmgOverLoad</uei>
+	<uei>uei.opennms.org/mib2opennms/upsmgOverLoad</uei>
 	<event-label>MG-SNMP-UPS-MIB defined trap event: upsmgOverLoad</event-label>
 	<descr>
 &lt;p&gt;Trap UPS has overload condition.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			MGE UPS Event: upsmgOverLoad trap received&lt;/p&gt;
+			MGE Event: upsmgOverLoad trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Major</severity>
 </event>
@@ -600,13 +600,13 @@
 			<mevalue>22</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/vendor/MGE/traps/upsmgLoadOK</uei>
+	<uei>uei.opennms.org/mib2opennms/upsmgLoadOK</uei>
 	<event-label>MG-SNMP-UPS-MIB defined trap event: upsmgLoadOK</event-label>
 	<descr>
 &lt;p&gt;Trap UPS quit overload condition.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			MGE UPS Event: upsmgLoadOK trap received&lt;/p&gt;
+			MGE Event: upsmgLoadOK trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Cleared</severity>
 </event>
@@ -625,15 +625,15 @@
 			<mevalue>23</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/vendor/MGE/traps/upsmgOverTemperature</uei>
+	<uei>uei.opennms.org/mib2opennms/upsmgOverTemperature</uei>
 	<event-label>MG-SNMP-UPS-MIB defined trap event: upsmgOverTemperature</event-label>
 	<descr>
 &lt;p&gt;Trap UPS has overtemperature condition.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			MGE UPS Event: upsmgOverTemperature trap received&lt;/p&gt;
+			MGE Event: upsmgOverTemperature trap received&lt;/p&gt;
 		</logmsg>
-	<severity>Major</severity>
+	<severity>Minor</severity>
 </event>
 <event>
 	<mask>
@@ -650,13 +650,13 @@
 			<mevalue>24</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/vendor/MGE/traps/upsmgTemperatureOK</uei>
+	<uei>uei.opennms.org/mib2opennms/upsmgTemperatureOK</uei>
 	<event-label>MG-SNMP-UPS-MIB defined trap event: upsmgTemperatureOK</event-label>
 	<descr>
 &lt;p&gt;Trap UPS quit overtemperature condition.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			MGE UPS Event: upsmgTemperatureOK trap received&lt;/p&gt;
+			MGE Event: upsmgTemperatureOK trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Cleared</severity>
 </event>
@@ -675,7 +675,7 @@
 			<mevalue>25</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/vendor/MGE/traps/upsmgOnToStart</uei>
+	<uei>uei.opennms.org/mib2opennms/upsmgOnToStart</uei>
 	<event-label>MG-SNMP-UPS-MIB defined trap event: upsmgOnToStart</event-label>
 	<descr>
 &lt;p&gt;Trap UPS on sequence started.&lt;/p&gt;&lt;table&gt;
@@ -706,13 +706,13 @@
 	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			MGE UPS Event: upsmgOnToStart trap received 
+			MGE Event: upsmgOnToStart trap received 
 			mgreceptacleIndex=%parm[#1]% 
 			mgreceptacleState=%parm[#2]% 
 			mgreceptacleOnDelay=%parm[#3]% 
 			mgreceptacleRestartDelay=%parm[#4]%&lt;/p&gt;
 		</logmsg>
-	<severity>Indeterminate</severity>
+	<severity>Normal</severity>
 </event>
 <event>
 	<mask>
@@ -729,7 +729,7 @@
 			<mevalue>26</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/vendor/MGE/traps/upsmgOnAbort</uei>
+	<uei>uei.opennms.org/mib2opennms/upsmgOnAbort</uei>
 	<event-label>MG-SNMP-UPS-MIB defined trap event: upsmgOnAbort</event-label>
 	<descr>
 &lt;p&gt;Trap UPS on sequence cancelled.&lt;/p&gt;&lt;table&gt;
@@ -743,11 +743,11 @@
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			MGE UPS Event: upsmgOnAbort trap received 
+			MGE Event: upsmgOnAbort trap received 
 			mgreceptacleIndex=%parm[#1]% 
 			mgreceptacleOnDelay=%parm[#2]%&lt;/p&gt;
 		</logmsg>
-	<severity>Indeterminate</severity>
+	<severity>Warning</severity>
 </event>
 <event>
 	<mask>
@@ -764,7 +764,7 @@
 			<mevalue>27</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/vendor/MGE/traps/upsmgOnInProgress</uei>
+	<uei>uei.opennms.org/mib2opennms/upsmgOnInProgress</uei>
 	<event-label>MG-SNMP-UPS-MIB defined trap event: upsmgOnInProgress</event-label>
 	<descr>
 &lt;p&gt;Trap UPS on sequence in progress in ups.&lt;/p&gt;&lt;table&gt;
@@ -791,12 +791,12 @@
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			MGE UPS Event: upsmgOnInProgress trap received 
+			MGE Event: upsmgOnInProgress trap received 
 			mgreceptacleIndex=%parm[#1]% 
 			mgreceptacleState=%parm[#2]% 
 			mgreceptacleBootUpDuration=%parm[#3]%&lt;/p&gt;
 		</logmsg>
-	<severity>Indeterminate</severity>
+	<severity>Normal</severity>
 </event>
 <event>
 	<mask>
@@ -813,7 +813,7 @@
 			<mevalue>28</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/vendor/MGE/traps/upsmgOnComplete</uei>
+	<uei>uei.opennms.org/mib2opennms/upsmgOnComplete</uei>
 	<event-label>MG-SNMP-UPS-MIB defined trap event: upsmgOnComplete</event-label>
 	<descr>
 &lt;p&gt;Trap UPS on sequence completed.&lt;/p&gt;&lt;table&gt;
@@ -827,11 +827,11 @@
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			MGE UPS Event: upsmgOnComplete trap received 
+			MGE Event: upsmgOnComplete trap received 
 			mgreceptacleIndex=%parm[#1]% 
 			mgreceptacleOnDelay=%parm[#2]%&lt;/p&gt;
 		</logmsg>
-	<severity>Indeterminate</severity>
+	<severity>Normal</severity>
 </event>
 <event>
 	<mask>
@@ -848,7 +848,7 @@
 			<mevalue>29</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/vendor/MGE/traps/upsmgOffToStart</uei>
+	<uei>uei.opennms.org/mib2opennms/upsmgOffToStart</uei>
 	<event-label>MG-SNMP-UPS-MIB defined trap event: upsmgOffToStart</event-label>
 	<descr>
 &lt;p&gt;Trap UPS off sequence started.&lt;/p&gt;&lt;table&gt;
@@ -883,14 +883,14 @@
 	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			MGE UPS Event: upsmgOffToStart trap received 
+			MGE Event: upsmgOffToStart trap received 
 			mgreceptacleIndex=%parm[#1]% 
 			mgreceptacleState=%parm[#2]% 
 			mgreceptacleOffDelay=%parm[#3]% 
 			mgreceptacleShutoffTimer=%parm[#4]% 
 			upsmgConfigSysShutDuration=%parm[#5]%&lt;/p&gt;
 		</logmsg>
-	<severity>Indeterminate</severity>
+	<severity>Warning</severity>
 </event>
 <event>
 	<mask>
@@ -907,7 +907,7 @@
 			<mevalue>30</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/vendor/MGE/traps/upsmgOffAbort</uei>
+	<uei>uei.opennms.org/mib2opennms/upsmgOffAbort</uei>
 	<event-label>MG-SNMP-UPS-MIB defined trap event: upsmgOffAbort</event-label>
 	<descr>
 &lt;p&gt;Trap UPS off sequence cancelled.&lt;/p&gt;&lt;table&gt;
@@ -921,11 +921,11 @@
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			MGE UPS Event: upsmgOffAbort trap received 
+			MGE Event: upsmgOffAbort trap received 
 			mgreceptacleIndex=%parm[#1]% 
 			mgreceptacleOffDelay=%parm[#2]%&lt;/p&gt;
 		</logmsg>
-	<severity>Indeterminate</severity>
+	<severity>Normal</severity>
 </event>
 <event>
 	<mask>
@@ -942,7 +942,7 @@
 			<mevalue>31</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/vendor/MGE/traps/upsmgOffInProgress</uei>
+	<uei>uei.opennms.org/mib2opennms/upsmgOffInProgress</uei>
 	<event-label>MG-SNMP-UPS-MIB defined trap event: upsmgOffInProgress</event-label>
 	<descr>
 &lt;p&gt;Trap UPS off sequence in progress in ups.&lt;/p&gt;&lt;table&gt;
@@ -969,12 +969,12 @@
 	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			MGE UPS Event: upsmgOffInProgress trap received 
+			MGE Event: upsmgOffInProgress trap received 
 			mgreceptacleIndex=%parm[#1]% 
 			mgreceptacleState=%parm[#2]% 
 			mgreceptacleShutdownDuration=%parm[#3]%&lt;/p&gt;
 		</logmsg>
-	<severity>Indeterminate</severity>
+	<severity>Minor</severity>
 </event>
 <event>
 	<mask>
@@ -991,7 +991,7 @@
 			<mevalue>32</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/vendor/MGE/traps/upsmgOffComplete</uei>
+	<uei>uei.opennms.org/mib2opennms/upsmgOffComplete</uei>
 	<event-label>MG-SNMP-UPS-MIB defined trap event: upsmgOffComplete</event-label>
 	<descr>
 &lt;p&gt;Trap UPS off sequence completed.&lt;/p&gt;&lt;table&gt;
@@ -1005,11 +1005,11 @@
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			MGE UPS Event: upsmgOffComplete trap received 
+			MGE Event: upsmgOffComplete trap received 
 			mgreceptacleIndex=%parm[#1]% 
 			mgreceptacleOffDelay=%parm[#2]%&lt;/p&gt;
 		</logmsg>
-	<severity>Indeterminate</severity>
+	<severity>Normal</severity>
 </event>
 <event>
 	<mask>
@@ -1026,7 +1026,7 @@
 			<mevalue>33</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/vendor/MGE/traps/upsmgToggleToStart</uei>
+	<uei>uei.opennms.org/mib2opennms/upsmgToggleToStart</uei>
 	<event-label>MG-SNMP-UPS-MIB defined trap event: upsmgToggleToStart</event-label>
 	<descr>
 &lt;p&gt;Trap UPS toggle (off/on) sequence started.&lt;/p&gt;&lt;table&gt;
@@ -1040,7 +1040,7 @@
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			MGE UPS Event: upsmgToggleToStart trap received 
+			MGE Event: upsmgToggleToStart trap received 
 			mgreceptacleIndex=%parm[#1]% 
 			mgreceptacleToggleDelay=%parm[#2]%&lt;/p&gt;
 		</logmsg>
@@ -1061,7 +1061,7 @@
 			<mevalue>34</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/vendor/MGE/traps/upsmgToggleAbort</uei>
+	<uei>uei.opennms.org/mib2opennms/upsmgToggleAbort</uei>
 	<event-label>MG-SNMP-UPS-MIB defined trap event: upsmgToggleAbort</event-label>
 	<descr>
 &lt;p&gt;Trap UPS toggle (off/on) sequence cancelled.&lt;/p&gt;&lt;table&gt;
@@ -1075,11 +1075,11 @@
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			MGE UPS Event: upsmgToggleAbort trap received 
+			MGE Event: upsmgToggleAbort trap received 
 			mgreceptacleIndex=%parm[#1]% 
 			mgreceptacleToggleDelay=%parm[#2]%&lt;/p&gt;
 		</logmsg>
-	<severity>Indeterminate</severity>
+	<severity>Normal</severity>
 </event>
 <event>
 	<mask>
@@ -1096,7 +1096,7 @@
 			<mevalue>35</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/vendor/MGE/traps/upsmgToggleInProgress</uei>
+	<uei>uei.opennms.org/mib2opennms/upsmgToggleInProgress</uei>
 	<event-label>MG-SNMP-UPS-MIB defined trap event: upsmgToggleInProgress</event-label>
 	<descr>
 &lt;p&gt;Trap UPS toggle (off/on) sequence in progress in ups.&lt;/p&gt;&lt;table&gt;
@@ -1110,11 +1110,11 @@
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			MGE UPS Event: upsmgToggleInProgress trap received 
+			MGE Event: upsmgToggleInProgress trap received 
 			mgreceptacleIndex=%parm[#1]% 
 			mgreceptacleToggleDuration=%parm[#2]%&lt;/p&gt;
 		</logmsg>
-	<severity>Indeterminate</severity>
+	<severity>Normal</severity>
 </event>
 <event>
 	<mask>
@@ -1131,7 +1131,7 @@
 			<mevalue>36</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/vendor/MGE/traps/upsmgToggleComplete</uei>
+	<uei>uei.opennms.org/mib2opennms/upsmgToggleComplete</uei>
 	<event-label>MG-SNMP-UPS-MIB defined trap event: upsmgToggleComplete</event-label>
 	<descr>
 &lt;p&gt;Trap UPS toggle (off/on) sequence completed.&lt;/p&gt;&lt;table&gt;
@@ -1145,11 +1145,11 @@
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			MGE UPS Event: upsmgToggleComplete trap received 
+			MGE Event: upsmgToggleComplete trap received 
 			mgreceptacleIndex=%parm[#1]% 
 			mgreceptacleToggleDuration=%parm[#2]%&lt;/p&gt;
 		</logmsg>
-	<severity>Indeterminate</severity>
+	<severity>Normal</severity>
 </event>
 <event>
 	<mask>
@@ -1166,15 +1166,15 @@
 			<mevalue>37</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/vendor/MGE/traps/upsmgCommunicationFailure</uei>
+	<uei>uei.opennms.org/mib2opennms/upsmgCommunicationFailure</uei>
 	<event-label>MG-SNMP-UPS-MIB defined trap event: upsmgCommunicationFailure</event-label>
 	<descr>
 &lt;p&gt;Trap UPS serial communication failed.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			MGE UPS Event: upsmgCommunicationFailure trap received&lt;/p&gt;
+			MGE Event: upsmgCommunicationFailure trap received&lt;/p&gt;
 		</logmsg>
-	<severity>Minor</severity>
+	<severity>Warning</severity>
 </event>
 <event>
 	<mask>
@@ -1191,13 +1191,13 @@
 			<mevalue>38</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/vendor/MGE/traps/upsmgCommunicationRestored</uei>
+	<uei>uei.opennms.org/mib2opennms/upsmgCommunicationRestored</uei>
 	<event-label>MG-SNMP-UPS-MIB defined trap event: upsmgCommunicationRestored</event-label>
 	<descr>
 &lt;p&gt;Trap UPS serial communication restored.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			MGE UPS Event: upsmgCommunicationRestored trap received&lt;/p&gt;
+			MGE Event: upsmgCommunicationRestored trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Cleared</severity>
 </event>
@@ -1216,13 +1216,13 @@
 			<mevalue>39</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/vendor/MGE/traps/upsmgInputBad</uei>
+	<uei>uei.opennms.org/mib2opennms/upsmgInputBad</uei>
 	<event-label>MG-SNMP-UPS-MIB defined trap event: upsmgInputBad</event-label>
 	<descr>
 &lt;p&gt;Trap UPS input has bad condition.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			MGE UPS Event: upsmgInputBad trap received&lt;/p&gt;
+			MGE Event: upsmgInputBad trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
 </event>
@@ -1241,13 +1241,13 @@
 			<mevalue>40</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/vendor/MGE/traps/upsmgInputOK</uei>
+	<uei>uei.opennms.org/mib2opennms/upsmgInputOK</uei>
 	<event-label>MG-SNMP-UPS-MIB defined trap event: upsmgInputOK</event-label>
 	<descr>
 &lt;p&gt;Trap UPS input quit bad condition.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			MGE UPS Event: upsmgInputOK trap received&lt;/p&gt;
+			MGE Event: upsmgInputOK trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Cleared</severity>
 </event>
@@ -1266,13 +1266,13 @@
 			<mevalue>41</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/vendor/MGE/traps/upsmgBatteryUnavailable</uei>
+	<uei>uei.opennms.org/mib2opennms/upsmgBatteryUnavailable</uei>
 	<event-label>MG-SNMP-UPS-MIB defined trap event: upsmgBatteryUnavailable</event-label>
 	<descr>
 &lt;p&gt;Trap UPS battery is unavailable.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			MGE UPS Event: upsmgBatteryUnavailable trap received&lt;/p&gt;
+			MGE Event: upsmgBatteryUnavailable trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
 </event>
@@ -1291,13 +1291,13 @@
 			<mevalue>42</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/vendor/MGE/traps/upsmgBatteryAvailable</uei>
+	<uei>uei.opennms.org/mib2opennms/upsmgBatteryAvailable</uei>
 	<event-label>MG-SNMP-UPS-MIB defined trap event: upsmgBatteryAvailable</event-label>
 	<descr>
 &lt;p&gt;Trap UPS battery return from unavailable condition.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			MGE UPS Event: upsmgBatteryAvailable trap received&lt;/p&gt;
+			MGE Event: upsmgBatteryAvailable trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Cleared</severity>
 </event>
@@ -1316,7 +1316,7 @@
 			<mevalue>43</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/vendor/MGE/traps/upsmgAtLowRecharge</uei>
+	<uei>uei.opennms.org/mib2opennms/upsmgAtLowRecharge</uei>
 	<event-label>MG-SNMP-UPS-MIB defined trap event: upsmgAtLowRecharge</event-label>
 	<descr>
 &lt;p&gt;Trap UPS waiting for battery charging condition.&lt;/p&gt;&lt;table&gt;
@@ -1330,11 +1330,11 @@
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			MGE UPS Event: upsmgAtLowRecharge trap received 
+			MGE Event: upsmgAtLowRecharge trap received 
 			upsmgBatteryRemainingTime=%parm[#1]% 
 			upsmgBatteryLevel=%parm[#2]%&lt;/p&gt;
 		</logmsg>
-	<severity>Minor</severity>
+	<severity>Warning</severity>
 </event>
 <event>
 	<mask>
@@ -1351,7 +1351,7 @@
 			<mevalue>44</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/vendor/MGE/traps/upsmgFromLowRecharge</uei>
+	<uei>uei.opennms.org/mib2opennms/upsmgFromLowRecharge</uei>
 	<event-label>MG-SNMP-UPS-MIB defined trap event: upsmgFromLowRecharge</event-label>
 	<descr>
 &lt;p&gt;Trap UPS reached battery charging condition.&lt;/p&gt;&lt;table&gt;
@@ -1365,11 +1365,11 @@
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			MGE UPS Event: upsmgFromLowRecharge trap received 
+			MGE Event: upsmgFromLowRecharge trap received 
 			upsmgBatteryRemainingTime=%parm[#1]% 
 			upsmgBatteryLevel=%parm[#2]%&lt;/p&gt;
 		</logmsg>
-	<severity>Cleared</severity>
+	<severity>Normal</severity>
 </event>
 <event>
 	<mask>
@@ -1386,13 +1386,13 @@
 			<mevalue>45</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/vendor/MGE/traps/upsmgDiagnosticTestFail</uei>
+	<uei>uei.opennms.org/mib2opennms/upsmgDiagnosticTestFail</uei>
 	<event-label>MG-SNMP-UPS-MIB defined trap event: upsmgDiagnosticTestFail</event-label>
 	<descr>
 &lt;p&gt;Trap UPS self test failed.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			MGE UPS Event: upsmgDiagnosticTestFail trap received&lt;/p&gt;
+			MGE Event: upsmgDiagnosticTestFail trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
 </event>
@@ -1411,13 +1411,13 @@
 			<mevalue>46</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/vendor/MGE/traps/upsmgDiagnosticTestOK</uei>
+	<uei>uei.opennms.org/mib2opennms/upsmgDiagnosticTestOK</uei>
 	<event-label>MG-SNMP-UPS-MIB defined trap event: upsmgDiagnosticTestOK</event-label>
 	<descr>
 &lt;p&gt;Trap UPS self test succeeded.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			MGE UPS Event: upsmgDiagnosticTestOK trap received&lt;/p&gt;
+			MGE Event: upsmgDiagnosticTestOK trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
 </event>
@@ -1436,13 +1436,13 @@
 			<mevalue>47</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/vendor/MGE/traps/upsmgBatteryTestOK</uei>
+	<uei>uei.opennms.org/mib2opennms/upsmgBatteryTestOK</uei>
 	<event-label>MG-SNMP-UPS-MIB defined trap event: upsmgBatteryTestOK</event-label>
 	<descr>
 &lt;p&gt;Trap UPS passed battery test.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			MGE UPS Event: upsmgBatteryTestOK trap received&lt;/p&gt;
+			MGE Event: upsmgBatteryTestOK trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Normal</severity>
 </event>
@@ -1461,13 +1461,13 @@
 			<mevalue>48</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/vendor/MGE/traps/upsmgBatteryTestFail</uei>
+	<uei>uei.opennms.org/mib2opennms/upsmgBatteryTestFail</uei>
 	<event-label>MG-SNMP-UPS-MIB defined trap event: upsmgBatteryTestFail</event-label>
 	<descr>
 &lt;p&gt;Trap UPS failed battery test.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			MGE UPS Event: upsmgBatteryTestFail trap received&lt;/p&gt;
+			MGE Event: upsmgBatteryTestFail trap received&lt;/p&gt;
 		</logmsg>
 	<severity>Minor</severity>
 </event>
@@ -1486,7 +1486,7 @@
 			<mevalue>49</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/vendor/MGE/traps/upsmgExternalAlarmActive</uei>
+	<uei>uei.opennms.org/mib2opennms/upsmgExternalAlarmActive</uei>
 	<event-label>MG-SNMP-UPS-MIB defined trap event: upsmgExternalAlarmActive</event-label>
 	<descr>
 &lt;p&gt;Trap UPS enter environment external alarm.&lt;/p&gt;&lt;table&gt;
@@ -1500,11 +1500,11 @@
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			MGE UPS Event: upsmgExternalAlarmActive trap received 
+			MGE Event: upsmgExternalAlarmActive trap received 
 			mgextAlarmIndex=%parm[#1]% 
 			mgextAlarmUID=%parm[#2]%&lt;/p&gt;
 		</logmsg>
-	<severity>Minor</severity>
+	<severity>Warning</severity>
 </event>
 <event>
 	<mask>
@@ -1521,7 +1521,7 @@
 			<mevalue>50</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/vendor/MGE/traps/upsmgExternalAlarmInactive</uei>
+	<uei>uei.opennms.org/mib2opennms/upsmgExternalAlarmInactive</uei>
 	<event-label>MG-SNMP-UPS-MIB defined trap event: upsmgExternalAlarmInactive</event-label>
 	<descr>
 &lt;p&gt;Trap UPS exit environment external alarm.&lt;/p&gt;&lt;table&gt;
@@ -1535,7 +1535,7 @@
 	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			MGE UPS Event: upsmgExternalAlarmInactive trap received 
+			MGE Event: upsmgExternalAlarmInactive trap received 
 			mgextAlarmIndex=%parm[#1]% 
 			mgextAlarmUID=%parm[#2]%&lt;/p&gt;
 		</logmsg>
@@ -1556,15 +1556,15 @@
 			<mevalue>51</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/vendor/MGE/traps/upsmgOnBuck</uei>
+	<uei>uei.opennms.org/mib2opennms/upsmgOnBuck</uei>
 	<event-label>MG-SNMP-UPS-MIB defined trap event: upsmgOnBuck</event-label>
 	<descr>
 &lt;p&gt;Trap UPS is on buck.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			MGE UPS Event: upsmgOnBuck trap received&lt;/p&gt;
+			MGE Event: upsmgOnBuck trap received&lt;/p&gt;
 		</logmsg>
-	<severity>Indeterminate</severity>
+	<severity>Warning</severity>
 </event>
 <event>
 	<mask>
@@ -1581,15 +1581,315 @@
 			<mevalue>52</mevalue>
 		</maskelement>
 	</mask>
-	<uei>uei.opennms.org/vendor/MGE/traps/upsmgReturnFromBuck</uei>
+	<uei>uei.opennms.org/mib2opennms/upsmgReturnFromBuck</uei>
 	<event-label>MG-SNMP-UPS-MIB defined trap event: upsmgReturnFromBuck</event-label>
 	<descr>
 &lt;p&gt;Trap UPS has returned from buck.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
 	</descr>
 		<logmsg dest='logndisplay'>&lt;p&gt;
-			MGE UPS Event: upsmgReturnFromBuck trap received&lt;/p&gt;
+			MGE Event: upsmgReturnFromBuck trap received&lt;/p&gt;
 		</logmsg>
-	<severity>Indeterminate</severity>
+	<severity>Cleared</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.705.1.11</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>53</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/mib2opennms/upsmgEnvironComFailure</uei>
+	<event-label>MG-SNMP-UPS-MIB defined trap event: upsmgEnvironComFailure</event-label>
+	<descr>
+&lt;p&gt;Environment Probe communication failure.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			MGE Event: upsmgEnvironComFailure trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.705.1.11</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>54</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/mib2opennms/upsmgEnvironComOK</uei>
+	<event-label>MG-SNMP-UPS-MIB defined trap event: upsmgEnvironComOK</event-label>
+	<descr>
+&lt;p&gt;Environment Probe communication restored.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			MGE Event: upsmgEnvironComOK trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.705.1.11</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>55</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/mib2opennms/upsmgEnvironTemperatureLow</uei>
+	<event-label>MG-SNMP-UPS-MIB defined trap event: upsmgEnvironTemperatureLow</event-label>
+	<descr>
+&lt;p&gt;Temperature is below low threshold.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			MGE Event: upsmgEnvironTemperatureLow trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.705.1.11</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>56</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/mib2opennms/upsmgEnvironTemperatureHigh</uei>
+	<event-label>MG-SNMP-UPS-MIB defined trap event: upsmgEnvironTemperatureHigh</event-label>
+	<descr>
+&lt;p&gt;Temperature is above high threshold.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			MGE Event: upsmgEnvironTemperatureHigh trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Minor</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.705.1.11</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>57</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/mib2opennms/upsmgEnvironTemperatureOK</uei>
+	<event-label>MG-SNMP-UPS-MIB defined trap event: upsmgEnvironTemperatureOK</event-label>
+	<descr>
+&lt;p&gt;Temperature is in normal range.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			MGE Event: upsmgEnvironTemperatureOK trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Cleared</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.705.1.11</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>58</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/mib2opennms/upsmgEnvironHumidityLow</uei>
+	<event-label>MG-SNMP-UPS-MIB defined trap event: upsmgEnvironHumidityLow</event-label>
+	<descr>
+&lt;p&gt;Humidity is below low threshold.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			MGE Event: upsmgEnvironHumidityLow trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Warning</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.705.1.11</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>59</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/mib2opennms/upsmgEnvironHumidityHigh</uei>
+	<event-label>MG-SNMP-UPS-MIB defined trap event: upsmgEnvironHumidityHigh</event-label>
+	<descr>
+&lt;p&gt;Humidity is above high threshold.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			MGE Event: upsmgEnvironHumidityHigh trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Minor</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.705.1.11</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>60</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/mib2opennms/upsmgEnvironHumidityOK</uei>
+	<event-label>MG-SNMP-UPS-MIB defined trap event: upsmgEnvironHumidityOK</event-label>
+	<descr>
+&lt;p&gt;Humidity is in normal range.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			MGE Event: upsmgEnvironHumidityOK trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Cleared</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.705.1.11</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>61</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/mib2opennms/upsmgEnvironInput1Closed</uei>
+	<event-label>MG-SNMP-UPS-MIB defined trap event: upsmgEnvironInput1Closed</event-label>
+	<descr>
+&lt;p&gt;Input #1 is Closed.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			MGE Event: upsmgEnvironInput1Closed trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.705.1.11</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>62</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/mib2opennms/upsmgEnvironInput1Open</uei>
+	<event-label>MG-SNMP-UPS-MIB defined trap event: upsmgEnvironInput1Open</event-label>
+	<descr>
+&lt;p&gt;Input #1 is Open.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			MGE Event: upsmgEnvironInput1Open trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.705.1.11</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>63</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/mib2opennms/upsmgEnvironInput2Closed</uei>
+	<event-label>MG-SNMP-UPS-MIB defined trap event: upsmgEnvironInput2Closed</event-label>
+	<descr>
+&lt;p&gt;Input #2 is Closed.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			MGE Event: upsmgEnvironInput2Closed trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.705.1.11</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+		<maskelement>
+			<mename>specific</mename>
+			<mevalue>64</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/mib2opennms/upsmgEnvironInput2Open</uei>
+	<event-label>MG-SNMP-UPS-MIB defined trap event: upsmgEnvironInput2Open</event-label>
+	<descr>
+&lt;p&gt;Input #2 is Open.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			MGE Event: upsmgEnvironInput2Open trap received&lt;/p&gt;
+		</logmsg>
+	<severity>Normal</severity>
 </event>
 <!-- End of auto generated data from MIB: MG-SNMP-UPS-MIB -->
 </events>

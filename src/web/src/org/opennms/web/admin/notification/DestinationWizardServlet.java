@@ -307,15 +307,20 @@ public class DestinationWizardServlet extends HttpServlet {
             }
 
             for (int i = 0; i < targets.length; i++) {
+                String name = targets[i].getName();
                 // don't overwrite the email target command
                 if (targets[i].getName().indexOf("@") == -1) {
                     targets[i].clearCommand();
-                    String name = targets[i].getName();
                     String commands[] = request.getParameterValues(name + "Commands");
                     for (int j = 0; j < commands.length; j++) {
                         targets[i].addCommand(commands[j]);
                     }
                 }
+                String autoNotify[] =  request.getParameterValues(name + "AutoNotify");
+                if(autoNotify[0] == null) {
+                    autoNotify[0] = "auto";
+                }
+                targets[i].setAutoNotify(autoNotify[0]);
             }
 
             redirectString.append(SOURCE_PAGE_OUTLINE);
@@ -390,6 +395,7 @@ public class DestinationWizardServlet extends HttpServlet {
 
         newTarget.setName(target.getName());
         newTarget.setInterval(target.getInterval());
+        newTarget.setAutoNotify(target.getAutoNotify());
 
         for (int i = 0; i < target.getCommand().length; i++) {
             newTarget.addCommand(target.getCommand()[i]);

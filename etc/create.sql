@@ -727,6 +727,8 @@ create index notifications_answeredby_idx on notifications(answeredBy);
 --#               page, numeric page, email, etc...
 --# contactInfo : A field for storing the information used to contact the user,
 --#               e.g. an email address, the phone number and pin of the pager...
+--# autonotify	: A character to determine how auto acknowledge is handled for
+--#               this entry
 --#
 --########################################################################
 
@@ -736,6 +738,7 @@ create table usersNotified (
         notifyTime      timestamp without time zone,
         media           varchar(32),
         contactinfo     varchar(64),
+        autonotify      char(1),
 
 	constraint fk_notifID2 foreign key (notifyID) references notifications (notifyID) ON DELETE CASCADE
 );

@@ -75,7 +75,7 @@ public class TaskCreationTest extends NotificationsTestCase {
 
     public void testMakeEmailTask() throws Exception {
         long startTime = System.currentTimeMillis();
-        NotificationTask task = m_eventProcessor.makeEmailTask(startTime, m_params, 1, "brozow@opennms.org", m_commands, new LinkedList());
+        NotificationTask task = m_eventProcessor.makeEmailTask(startTime, m_params, 1, "brozow@opennms.org", m_commands, new LinkedList(), null);
         assertNotNull(task);
         assertEquals("brozow@opennms.org", task.getEmail());
         assertEquals(startTime, task.getSendTime());
@@ -85,7 +85,7 @@ public class TaskCreationTest extends NotificationsTestCase {
 
     public void testMakeUserTask() throws Exception {
         long startTime = System.currentTimeMillis();
-        NotificationTask task = m_eventProcessor.makeUserTask(startTime, m_params, 1, "brozow", m_commands, new LinkedList());
+        NotificationTask task = m_eventProcessor.makeUserTask(startTime, m_params, 1, "brozow", m_commands, new LinkedList(), null);
         assertNotNull(task);
         assertEquals("brozow@opennms.org", task.getEmail());
         assertEquals(startTime, task.getSendTime());
@@ -95,7 +95,7 @@ public class TaskCreationTest extends NotificationsTestCase {
 
     public void testMakeGroupTasks() throws Exception {
         long startTime = System.currentTimeMillis();
-        NotificationTask[] tasks = m_eventProcessor.makeGroupTasks(startTime, m_params, 1, "EscalationGroup", m_commands, new LinkedList(), 1000);
+        NotificationTask[] tasks = m_eventProcessor.makeGroupTasks(startTime, m_params, 1, "EscalationGroup", m_commands, new LinkedList(), null, 1000);
         assertNotNull(tasks);
         assertEquals(2, tasks.length);
         assertEquals("brozow@opennms.org", tasks[0].getEmail());
@@ -115,7 +115,7 @@ public class TaskCreationTest extends NotificationsTestCase {
         
         Date day = new SimpleDateFormat("dd-MMM-yyyy HH:mm:ss").parse("21-FEB-2005 11:59:56");
         long dayTime = day.getTime();
-        NotificationTask[] dayTasks = m_eventProcessor.makeGroupTasks(dayTime, m_params, 1, "EscalationGroup", m_commands, new LinkedList(), 1000);
+        NotificationTask[] dayTasks = m_eventProcessor.makeGroupTasks(dayTime, m_params, 1, "EscalationGroup", m_commands, new LinkedList(), null, 1000);
         assertNotNull(dayTasks);
         assertEquals(2, dayTasks.length);
         assertEquals("brozow@opennms.org", dayTasks[0].getEmail());
@@ -125,7 +125,7 @@ public class TaskCreationTest extends NotificationsTestCase {
         
         Date night = new SimpleDateFormat("dd-MMM-yyyy HH:mm:ss").parse("21-FEB-2005 23:00:00");
         long nightTime = night.getTime();
-        NotificationTask[] nightTasks = m_eventProcessor.makeGroupTasks(nightTime, m_params, 1, "EscalationGroup", m_commands, new LinkedList(), 1000);
+        NotificationTask[] nightTasks = m_eventProcessor.makeGroupTasks(nightTime, m_params, 1, "EscalationGroup", m_commands, new LinkedList(), null, 1000);
         assertNotNull(nightTasks);
         assertEquals(2, nightTasks.length);
         assertEquals("brozow@opennms.org", nightTasks[0].getEmail());
@@ -137,7 +137,7 @@ public class TaskCreationTest extends NotificationsTestCase {
     public void testMakeRoleTasks() throws Exception {
         Date day = new SimpleDateFormat("dd-MMM-yyyy HH:mm:ss").parse("21-FEB-2005 11:59:56");
         long dayTime = day.getTime();
-        NotificationTask[] tasks = m_eventProcessor.makeRoleTasks(dayTime, m_params, 1, "oncall", m_commands, new LinkedList(), 1000);
+        NotificationTask[] tasks = m_eventProcessor.makeRoleTasks(dayTime, m_params, 1, "oncall", m_commands, new LinkedList(), null, 1000);
         assertNotNull(tasks);
         assertEquals(1, tasks.length);
         assertEquals("brozow@opennms.org", tasks[0].getEmail());
@@ -145,7 +145,7 @@ public class TaskCreationTest extends NotificationsTestCase {
         
         Date sunday = new SimpleDateFormat("dd-MMM-yyyy HH:mm:ss").parse("30-JAN-2005 11:59:56"); // sunday
         long sundayTime = sunday.getTime();
-        NotificationTask[] sundayTasks = m_eventProcessor.makeRoleTasks(sundayTime, m_params, 1, "oncall", m_commands, new LinkedList(), 1000);
+        NotificationTask[] sundayTasks = m_eventProcessor.makeRoleTasks(sundayTime, m_params, 1, "oncall", m_commands, new LinkedList(), null, 1000);
         assertNotNull(sundayTasks);
         assertEquals(2, sundayTasks.length);
         assertEquals("brozow@opennms.org", sundayTasks[0].getEmail());

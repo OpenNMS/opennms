@@ -138,6 +138,11 @@ public class HttpPlugin extends AbstractTcpPlugin {
     public static final String QUERY_STRING = "GET / HTTP/1.0\r\n\r\n";
 
     /**
+     * The query to send to the HTTP server
+     */
+    public static final String DEFAULT_URL = "/";
+
+    /**
      * A string to look for in the response from the server
      */
     public static final String RESPONSE_STRING = "HTTP/";
@@ -193,24 +198,50 @@ public class HttpPlugin extends AbstractTcpPlugin {
     protected boolean checkProtocol(Socket socket, ConnectionConfig config) throws IOException {
         boolean isAServer = false;
 
+	m_queryString = "GET " + config.getKeyedString("url", DEFAULT_URL) + " HTTP/1.0\r\n\r\n";
+
         Category log = ThreadCategory.getInstance(getClass());
+        log.debug( "Query: " + m_queryString);
 
         try {
             BufferedReader lineRdr = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
             socket.getOutputStream().write(m_queryString.getBytes());
-            String line = null;
+            char [] cbuf = new char[ 1024 ];
+            int chars = 0;
             StringBuffer response = new StringBuffer();
-            while ((line = lineRdr.readLine()) != null) {
-                response.append(line).append(System.getProperty("line.separator"));
-            }
+            try
+            {
+                while ((chars = lineRdr.read( cbuf, 0, 1024)) != -1)
+                {
+                   String line = new String( cbuf, 0, chars );
+                   log.debug( "Read: " + line.length() + " bytes: [" + line.toString() + "] from socket." );
+                   response.append( line );
+                }
 
-            if (response.toString() != null && response.toString().indexOf(m_responseString) > -1) {
+            }
+            catch( java.net.SocketTimeoutException timeoutEx )
+            {
+                if ( timeoutEx.bytesTransferred > 0 )
+                {
+                   String line = new String( cbuf, 0, timeoutEx.bytesTransferred );
+                   log.debug( "Read: " + line.length() + " bytes: [" + line.toString() + "] from socket @ timeout!" );
+                   response.append(line);
+                }
+            }
+            if (response.toString() != null && response.toString().indexOf(m_responseString) > -1) 
+            {
                 if (m_checkReturnCode) {
+		    int maxRetCode = 399;
+		    if (DEFAULT_URL.equals(config.getKeyedString("url", DEFAULT_URL)))
+		    {
+			maxRetCode = 600;
+		    }	
                     StringTokenizer t = new StringTokenizer(response.toString());
                     t.nextToken();
                     int rVal = Integer.parseInt(t.nextToken());
-                    if (rVal >= 99 && rVal <= 600)
+            	    log.debug(getPluginName() + ": Request returned code: " + rVal);
+                    if (rVal >= 99 && rVal <= maxRetCode )
                         isAServer = true;
                 } else {
                     isAServer = true;

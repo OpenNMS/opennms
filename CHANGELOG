@@ -78,6 +78,37 @@
   examine. This is still in the experimental phase, it works well FireFox and 
   IE, not with Konquerer or Safari
 
+1.2.3 to 1.2.4
+----------------------------------------------------------------------
+- Fixed a problem with acknowledging events. Bug 1290
+- Added the ability to use a URL in the HTTP and HTTPS Monitors.
+  Bug 848.
+- Colored the background of notification IDs to match the severity
+  of the event that triggered the notice. Bug 1262. Thx Eugene
+- Display notification totals for both the logged in user and everyone
+  else. Bug 1257. Thx Bill.
+- Made a change to prevent duplicate "Update SNMP" links.
+  Bug 1256. Thx Bill.
+- Modified the HttpPlugin to handle replies with a newline.
+  Bug 1214. Thx Tobey
+- Added the ability to include %descr% tags in notifications
+  that reflect the description of the event that caused them.
+  Bug 1183. Thx Vincent.
+- fixed an issue where secondary IP addresses would be set when
+  they were not included in collectd. Bug 1178. Thx again Bill.
+- Added a new feature to fine tune RESOLVED messages in 
+  notifications. Bug 1087. Thx Bill.
+- Added HC counters.
+- Corrected an error with BGP4 standard events.
+- Added Netgear events.
+- Listed all the parameters in an unformatted event.
+- Added SystemEdge and Fujitsu-Seimens events, as well as new MGE-UPS
+  event definitions.
+- Added MGE UPS collections and reports.
+- Make the tilde "~" character work in filters and rules. This
+  allows for regular expressions in SQL queries in Postgres 7.4+
+- Added support for RFC1628, the UPS MIB
+
 1.2.2 to 1.2.3
 ----------------------------------------------------------------------
 - A few small documentation fixes, including bug 1204 (thanks Chris)

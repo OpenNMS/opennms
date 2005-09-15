@@ -473,7 +473,7 @@ public class ResponseTimeModel extends Object {
         }
         boolean isQueryable = false;
         ArrayList intfList = getQueryableInterfacesForNode(nodeId);
-        if (intfList != null) {
+        if (intfList != null && !intfList.isEmpty()) {
             isQueryable = true;
         }
         return isQueryable;

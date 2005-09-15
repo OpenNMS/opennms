@@ -69,14 +69,23 @@
         </tr>
         <tr>
           <td>
+            <%
+                int count = this.model.getOutstandingNoticeCount(request.getRemoteUser());
+                String format = this.formatter.format( count );
+                out.println( java.text.MessageFormat.format( format, new Object[] { new Integer(count) } ));
+             %>
+          </td>
+        </tr>
+        <tr>
+          <td>
             <a href="notification/browse?acktype=unack">Check All Open Notices</a>
           </td>
         </tr>
         <tr>
           <td>
             <%
-                int count = this.model.getOutstandingNoticeCount(request.getRemoteUser());
-                String format = this.formatter.format( count );
+                count = this.model.getOutstandingNoticeCount();
+                format = this.formatter.format( count );
                 out.println( java.text.MessageFormat.format( format, new Object[] { new Integer(count) } ));
              %>
           </td>

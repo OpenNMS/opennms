@@ -55,7 +55,7 @@
     <section>
       <title>Installing on Solaris</title>
 
-      <para>Download the appropriate package for your Linux distribution from
+      <para>Download the appropriate package for your Solaris version from
       the OpenNMS <ulink
       url="http://sourceforge.net/project/showfiles.php?group_id=4141">Files</ulink>
       section on SourceForge.</para>

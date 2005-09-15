@@ -228,6 +228,7 @@ public class MockDatabase implements DbConnectionFactory, EventWriter {
                 "        notifyTime      timestamp," + 
                 "        media           varchar(32)," + 
                 "        contactinfo     varchar(64)," + 
+                "        autonotify         char(1)," + 
                 "           constraint fk_notifID2 foreign key (notifyID) references notifications (notifyID) ON DELETE CASCADE" + 
                 ");");
         

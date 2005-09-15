@@ -116,7 +116,9 @@
 
     <td>
     <h2><%=(newPath.getName()!=null ? "Editing path: " + newPath.getName() + "<br>" : "")%></h2>
-    <h3>Choose the commands to use for each user and group. More than one command can be choosen for each.</h3>
+    <h3>Choose the commands to use for each user and group. More than one command can be choosen
+        for each (except for email addresses). Also choose the desired behavior for automatic
+        notification on "UP" events.</h3>
     <form METHOD="POST" NAME="commands" ACTION="admin/notification/destinationWizard" >
       <%=Util.makeHiddenTags(request)%>
       <input type="hidden" name="sourcePage" value="chooseCommands.jsp"/>
@@ -165,13 +167,18 @@
         
         for (int i = 0; i < targets.length; i++)
         {
-              //don't let user pick commands for email addresses
-              if (targets[i].getName().indexOf("@")==-1)
-              {
             buffer.append("<tr><td>").append(targets[i].getName()).append("</td>");
-            buffer.append("<td>").append(buildCommandSelect(path, index, targets[i].getName())).append("</td>");
+            // don't let user pick commands for email addresses
+            if (targets[i].getName().indexOf("@")==-1)
+            {
+                buffer.append("<td>").append(buildCommandSelect(path, index, targets[i].getName())).append("</td>");
+            }
+            else
+            {
+                buffer.append("<td>").append("email adddress").append("</td>");
+            }
+            buffer.append("<td>").append(buildAutoNotifySelect(targets[i].getName(), targets[i].getAutoNotify())).append("<td>");
             buffer.append("</tr>");
-              }
         }
         } catch (Exception e)
         {
@@ -221,5 +228,30 @@
         buffer.append("</select>");
         
         return buffer.toString();
+    }
+
+    public String buildAutoNotifySelect(String name, String currValue)
+    {
+          String values[] = {"off", "auto", "on"};
+          StringBuffer buffer = new StringBuffer("<select size=\"3\" NAME=\"" + name  + "AutoNotify\">");
+          String defaultOption = "auto";
+ 
+          if(currValue == null || currValue.equals("")) {
+              currValue = defaultOption;
+          }
+          for (int i = 0; i < values.length; i++)
+          {
+             if (values[i].equalsIgnoreCase(currValue))
+             {
+                 buffer.append("<option selected VALUE=\"" + values[i] + "\">").append(values[i]).append("</option>");
+             }
+             else
+             {
+                  buffer.append("<option VALUE=\"" + values[i] + "\">").append(values[i]).append("</option>");
+             }
+          }
+          buffer.append("</select>");
+          
+          return buffer.toString();
     }
 %>

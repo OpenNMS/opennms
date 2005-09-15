@@ -84,6 +84,7 @@ Build file for OpenNMS' sablecc-generated Java files.
     <include name="org/opennms/netmgt/filter/node/ALessThanEqualExprPart.java"/>
     <include name="org/opennms/netmgt/filter/node/ALessThanExprPart.java"/>
     <include name="org/opennms/netmgt/filter/node/ALikeExprPart.java"/>
+    <include name="org/opennms/netmgt/filter/node/ATildelikeExprPart.java"/>
     <include name="org/opennms/netmgt/filter/node/ANotEqualExprPart.java"/>
     <include name="org/opennms/netmgt/filter/node/ANotExprPart.java"/>
     <include name="org/opennms/netmgt/filter/node/AOctetListOctet.java"/>
@@ -119,6 +120,7 @@ Build file for OpenNMS' sablecc-generated Java files.
     <include name="org/opennms/netmgt/filter/node/TLessThanEqual.java"/>
     <include name="org/opennms/netmgt/filter/node/TLessThan.java"/>
     <include name="org/opennms/netmgt/filter/node/TLike.java"/>
+    <include name="org/opennms/netmgt/filter/node/TTildelike.java"/>
     <include name="org/opennms/netmgt/filter/node/TLparen.java"/>
     <include name="org/opennms/netmgt/filter/node/TNotEqual.java"/>
     <include name="org/opennms/netmgt/filter/node/TNot.java"/>
@@ -162,6 +164,7 @@ Build file for OpenNMS' sablecc-generated Java files.
     <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/node/ALessThanEqualExprPart.java" type="file"/>
     <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/node/ALessThanExprPart.java" type="file"/>
     <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/node/ALikeExprPart.java" type="file"/>
+    <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/node/ATildelikeExprPart.java" type="file"/>
     <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/node/ANotEqualExprPart.java" type="file"/>
     <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/node/ANotExprPart.java" type="file"/>
     <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/node/AOctetListOctet.java" type="file"/>
@@ -197,6 +200,7 @@ Build file for OpenNMS' sablecc-generated Java files.
     <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/node/TLessThanEqual.java" type="file"/>
     <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/node/TLessThan.java" type="file"/>
     <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/node/TLike.java" type="file"/>
+    <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/node/TTildelike.java" type="file"/>
     <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/node/TLparen.java" type="file"/>
     <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/node/TNotEqual.java" type="file"/>
     <available file="${build.sablecc.source.dir}/org/opennms/netmgt/filter/node/TNot.java" type="file"/>

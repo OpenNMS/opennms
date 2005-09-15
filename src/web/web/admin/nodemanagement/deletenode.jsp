@@ -150,7 +150,7 @@
              this action. In that case, the directory will need to be removed manually.
 	  </p>
           <p><b>Note:</b> If the IP address of any of the node's interfaces is still configured for discovery, the node  
-             willbe discovered again. To prevent this, either remove the IP address from the discovery range or unmanage  
+             will be discovered again. To prevent this, either remove the IP address from the discovery range or unmanage  
              the device instead of deleting it.
           </p>
           </td>

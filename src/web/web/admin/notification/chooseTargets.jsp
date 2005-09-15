@@ -98,7 +98,8 @@
         else if (document.targets.emails.length>0)
         {
             selectAllEmails();
-            document.targets.nextPage.value="pathOutline.jsp";
+            // document.targets.nextPage.value="pathOutline.jsp";
+            document.targets.nextPage.value="chooseCommands.jsp";
             document.targets.submit();
         }
         else

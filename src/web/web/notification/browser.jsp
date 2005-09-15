@@ -42,7 +42,7 @@
 
 -->
 
-<%@page language="java" contentType="text/html" session="true" import="org.opennms.web.notification.*,org.opennms.web.element.*,java.util.*,java.sql.SQLException" %>
+<%@page language="java" contentType="text/html" session="true" import="org.opennms.web.notification.*,org.opennms.web.element.*,java.util.*,java.sql.SQLException,org.opennms.web.event.*,org.opennms.web.event.filter.*" %>
 
 <%--
   This page is written to be the display (view) portion of the NotificationQueryServlet
@@ -53,6 +53,16 @@
   2) parms: an org.opennms.web.notification.NoticeQueryParms object that holds all the 
      parameters used to make this query
 --%>
+<%!
+   public String getBgColor(Notification n) {
+	   String bgcolor="#cccccc";
+	   try {
+		return EventUtil.getSeverityColor(EventFactory.getEvent(n.getEventId()).getSeverity());
+	   } catch (Exception e) {
+	   	return bgcolor;
+	   }
+   }
+%>
 
 <%
     //required attributes
@@ -259,7 +269,7 @@
             </nobr>
           </td>
           <% } %>
-          <td valign="top" rowspan="2" >
+          <td bgcolor="<%=getBgColor(notices[i])%>" valign="top" rowspan="2" >
             <a href="notification/detail.jsp?notice=<%=notices[i].getId()%>"><%=notices[i].getId()%></a>
           </td>
           <td>

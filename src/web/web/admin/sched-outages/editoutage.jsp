@@ -571,7 +571,7 @@ for(int i=0; i<interfaceList.length; i++) {
 	<option value="monday">Mon</option>
 	<option value="tuesday">Tue</option>
 	<option value="wednesday">Wed</option>
-	<option value="thurday">Thu</option>
+	<option value="thursday">Thu</option>
 	<option value="friday">Fri</option>
 	<option value="saturday">Sat</option>
     </select>
