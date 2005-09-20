@@ -441,9 +441,8 @@ public final class CollectdConfigFactory {
         //
 
         long addr = IPSorter.convertToLong(iface);
-        Enumeration eincs = pkg.enumerateIncludeRange();
 
-        boolean has_range_include = hasIncludeRange(addr, eincs);
+        boolean has_range_include = hasIncludeRange(pkg, addr);
         boolean has_specific = hasSpecific(pkg, addr);
 
         has_specific = hasSpecificUrl(iface, pkg, has_specific);
@@ -679,8 +678,12 @@ private boolean hasSpecific(Package pkg, long addr) {
     return has_specific;
 }
 
-private boolean hasIncludeRange(long addr, Enumeration eincs) {
-    boolean has_range_include = false;
+private boolean hasIncludeRange(Package pkg, long addr) {
+    // if there are NO include rances then treat act as if the user include
+    // the range 0.0.0.0 - 255.255.255.255
+    boolean has_range_include = pkg.getIncludeRangeCount() == 0;
+
+    Enumeration eincs = pkg.enumerateIncludeRange();
     while (!has_range_include && eincs.hasMoreElements()) {
         IncludeRange rng = (IncludeRange) eincs.nextElement();
         long start = IPSorter.convertToLong(rng.getBegin());

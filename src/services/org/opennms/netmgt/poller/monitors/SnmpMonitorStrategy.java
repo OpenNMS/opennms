@@ -61,7 +61,7 @@ abstract public class SnmpMonitorStrategy extends IPv4Monitor {
     
     private Category log = ThreadCategory.getInstance(getClass());
 
-    abstract public int poll(NetworkInterface iface, Map parameters, Package pkg) ;
+    abstract public int checkStatus(NetworkInterface iface, Map parameters, Package pkg) ;
     
     /**
      * Verifies that the result of the SNMP query meets the criteria specified

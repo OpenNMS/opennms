@@ -34,13 +34,16 @@ package org.opennms.netmgt.xmlrpcd;
 import java.net.MalformedURLException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.CapsdConfig;
 import org.opennms.netmgt.config.DatabaseConnectionFactory;
 import org.opennms.netmgt.config.PollerConfig;
@@ -51,6 +54,8 @@ import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.config.poller.Parameter;
 import org.opennms.netmgt.config.poller.Rrd;
 import org.opennms.netmgt.config.poller.Service;
+import org.opennms.netmgt.eventd.EventIpcManager;
+import org.opennms.netmgt.xml.event.Event;
 
 public class OpenNMSProvisioner implements Provisioner {
     
@@ -80,13 +85,17 @@ private static class Parm {
 }
 
 private CapsdConfig m_capsdConfig;
+private PollerConfig m_pollerConfig;
+private EventIpcManager m_eventManager;
+
+
+
 //    def _checkRetries(self, retries):
 //        # Check if the retries value is valid
 //        if not isinstance(retries, int):
 //            self.Fault(FAULT_DATA_INVALID)
 //        if retries < 0: #or retries > 3:
 //            self.Fault(FAULT_DATA_INVALID)
-private PollerConfig m_pollerConfig;
     
     private void checkRetries(int retries) {
         if (retries < 0)
@@ -197,7 +206,11 @@ private PollerConfig m_pollerConfig;
 //        if code < 100 or code > 599:
 //            self.Fault(FAULT_DATA_INVALID)
     
-    private void checkResponseCode(int code) {
+    private void checkResponseCode(String response) {
+        if (response == null || response.equals(""))
+            return;
+            
+        int code = Integer.parseInt(response);
         if (code < 100 || code > 599)
             throw new IllegalArgumentException("Illegal response code "+code+". Must be between 100 and 599");
     }
@@ -284,7 +297,7 @@ private PollerConfig m_pollerConfig;
     private boolean addService(String serviceId, int retries, int timeout, int interval, int downTimeInterval, int downTimeDuration, String monitor, String plugin, Parm[] entries) {
         String pkgName = serviceId;
 
-        Package pkg = getPackage(pkgName, downTimeInterval, downTimeDuration);
+        Package pkg = getPackage(pkgName, interval, downTimeInterval, downTimeDuration);
 
         Properties parms = new Properties();
         parms.setProperty("retry", ""+retries);
@@ -325,6 +338,12 @@ private PollerConfig m_pollerConfig;
             m_capsdConfig.save();
             syncServices();
             m_pollerConfig.save();
+
+            Event event = new Event();
+            event.setUei(EventConstants.SCHEDOUTAGES_CHANGED_EVENT_UEI);
+            event.setSource("OpenNMSProvisioner");
+            m_eventManager.sendNow(event);
+            
         } catch (Exception e) {
             throw new RuntimeException("Error saving poller or capsd configuration", e);
         }
@@ -378,7 +397,7 @@ private PollerConfig m_pollerConfig;
         }
         return null;
     }
-    private Package getPackage(String pkgName, int downTimeInterval, int downTimeDuration) {
+    private Package getPackage(String pkgName, int interval, int downTimeInterval, int downTimeDuration) {
         Package pkg = m_pollerConfig.getPackage(pkgName);
         if (pkg == null) {
             pkg = new Package();
@@ -401,7 +420,10 @@ private PollerConfig m_pollerConfig;
         dt.setBegin(0);
         dt.setEnd(downTimeDuration);
         dt.setInterval(downTimeInterval);
-        pkg.setDowntime(new Downtime[] { dt });
+        Downtime dt2 = new Downtime();
+        dt2.setBegin(downTimeDuration);
+        dt2.setInterval(interval);
+        pkg.setDowntime(new Downtime[] { dt, dt2 });
         return pkg;
     }
 
@@ -451,17 +473,18 @@ private PollerConfig m_pollerConfig;
         return addService(serviceId, retry, timeout, interval, downTimeInterval, downTimeDuration, TCP_MONITOR, TCP_PLUGIN, parm);
     }
 
-    public boolean addServiceHTTP(String serviceId, int retry, int timeout, int interval, int downTimeInterval, int downTimeDuration, int port, int response, String responseText, String url) throws MalformedURLException {
+    // TODO: HttpMonitor BackLevel
+    public boolean addServiceHTTP(String serviceId, int retry, int timeout, int interval, int downTimeInterval, int downTimeDuration, int port, String response, String responseText, String url/*, String auth, String agent*/) throws MalformedURLException {
 //        System.err.println("Called OpenNMSProvisioner.addServiceHTTP("+
 //                           serviceId+", "+
-//                           retries+", "+
+//                           retry+", "+
 //                           timeout+", "+
 //                           interval+", "+
 //                           downTimeInterval+", "+
 //                           downTimeDuration+", "+
 //                           port+", "+
-//                           responseCode+", "+
-//                           contentCheck+", "+
+//                           response+", "+
+//                           responseText+", "+
 //                           url+
 //                           ")");
         validateSchedule(retry, timeout, interval, downTimeInterval, downTimeDuration);
@@ -470,17 +493,23 @@ private PollerConfig m_pollerConfig;
         checkContentCheck(responseText);
         checkUrl(url);
         
-        Parm[] parm = new Parm[] {
-                new Parm("port", port),
-                new Parm("response", response),
-                new Parm("response text", responseText),
-                new Parm("url", url),
-        };
+        // temporary
+        String auth = null;
+        String agent = null;
         
-        return addService(serviceId, retry, timeout, interval, downTimeInterval, downTimeDuration, HTTP_MONITOR, HTTP_PLUGIN, parm);
+        List parmList = new ArrayList();
+        parmList.add(new Parm("port", port));
+        parmList.add(new Parm("response", response));
+        parmList.add(new Parm("response text", responseText));
+        parmList.add(new Parm("url", url));
+        if (auth != null) parmList.add(new Parm("basic-authentication", auth));
+        if (agent != null) parmList.add(new Parm("user-agent", agent));
+        
+        return addService(serviceId, retry, timeout, interval, downTimeInterval, downTimeDuration, HTTP_MONITOR, HTTP_PLUGIN, (Parm[]) parmList.toArray(new Parm[parmList.size()]));
     }
 
-    public boolean addServiceHTTPS(String serviceId, int retry, int timeout, int interval, int downTimeInterval, int downTimeDuration, int port, int response, String responseText, String url) throws MalformedURLException {
+    // TODO: HttpMonitor BackLevel
+    public boolean addServiceHTTPS(String serviceId, int retry, int timeout, int interval, int downTimeInterval, int downTimeDuration, int port, String response, String responseText, String url/*, String auth, String agent*/) throws MalformedURLException {
 //        System.err.println("Called OpenNMSProvisioner.addServiceHTTPS("+
 //                           serviceId+", "+
 //                           retries+", "+
@@ -499,14 +528,19 @@ private PollerConfig m_pollerConfig;
         checkContentCheck(responseText);
         checkUrl(url);
         
-        Parm[] parm = new Parm[] {
-                new Parm("port", port),
-                new Parm("response", response),
-                new Parm("response text", responseText),
-                new Parm("url", url),
-        };
+        // temporary
+        String auth = null;
+        String agent = null;
         
-        return addService(serviceId, retry, timeout, interval, downTimeInterval, downTimeDuration, HTTPS_MONITOR, HTTPS_PLUGIN, parm);
+        List parmList = new ArrayList();
+        parmList.add(new Parm("port", port));
+        parmList.add(new Parm("response", response));
+        parmList.add(new Parm("response text", responseText));
+        parmList.add(new Parm("url", url));
+        if (auth != null) parmList.add(new Parm("basic-authentication", auth));
+        if (agent != null) parmList.add(new Parm("user-agent", agent));
+        
+        return addService(serviceId, retry, timeout, interval, downTimeInterval, downTimeDuration, HTTPS_MONITOR, HTTPS_PLUGIN, (Parm[]) parmList.toArray(new Parm[parmList.size()]));
     }
 
     public boolean addServiceDatabase(String serviceId, int retry, int timeout, int interval, int downTimeInterval, int downTimeDuration, String user, String password, String driver, String url)   {
@@ -569,8 +603,10 @@ private PollerConfig m_pollerConfig;
             } else if ("port".equals(key)) {
                 val = Integer.decode(valStr);
             } else if ("response".equals(key)) {
-                val = Integer.decode(valStr);
+                val = valStr;
             } else if ("response text".equals(key)) {
+                key = "response_text";
+            } else if ("response-text".equals(key)) {
                 key = "response_text";
             }
             
@@ -580,9 +616,11 @@ private PollerConfig m_pollerConfig;
         for(int i = 0; i < pkg.getDowntimeCount(); i++) {
             Downtime dt = pkg.getDowntime(i);
             String suffix = (i == 0 ? "" : ""+i);
-            m.put("downtime_interval"+suffix, new Integer((int)dt.getInterval()));
-            int duration = (!dt.hasEnd() ? Integer.MAX_VALUE : (int)(dt.getEnd() - dt.getBegin()));
-            m.put("downtime_duration"+suffix, new Integer(duration));
+            if ((dt.hasEnd()) || (dt.getDelete() != null && !"false".equals(dt.getDelete()))) {
+                m.put("downtime_interval"+suffix, new Integer((int)dt.getInterval()));
+                int duration = (!dt.hasEnd() ? Integer.MAX_VALUE : (int)(dt.getEnd() - dt.getBegin()));
+                m.put("downtime_duration"+suffix, new Integer(duration));
+            }   
         }
         
         return m;
@@ -593,6 +631,9 @@ private PollerConfig m_pollerConfig;
     }
     public void setPollerConfig(PollerConfig pollerConfig) {
         m_pollerConfig = pollerConfig;
+    }
+    public void setEventManager(EventIpcManager eventManager) {
+        m_eventManager = eventManager;
     }
 
 }

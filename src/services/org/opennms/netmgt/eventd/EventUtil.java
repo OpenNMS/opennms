@@ -498,155 +498,230 @@ public final class EventUtil {
 		} else if (parm.equals(TAG_MOUSEOVERTEXT)) {
 			retParmVal = event.getMouseovertext();
 		} else if (parm.equals(PARMS_VALUES)) {
-			if (event.getParms() != null
-					&& event.getParms().getParmCount() <= 0)
-				retParmVal = null;
-
-			else {
-				StringBuffer ret = new StringBuffer();
-
-				Parms parms = event.getParms();
-				Enumeration en = parms.enumerateParm();
-				while (en.hasMoreElements()) {
-					Parm evParm = (Parm) en.nextElement();
-					Value parmValue = evParm.getValue();
-					if (parmValue == null)
-						continue;
-
-					String parmValueStr = getValueAsString(parmValue);
-					if (parmValueStr == null)
-						continue;
-
-					if (ret.length() == 0) {
-						ret.append(parmValueStr);
-					} else {
-						ret.append(SPACE_DELIM + parmValueStr);
-					}
-				}
-
-				retParmVal = ret.toString();
-			}
+			retParmVal = getAllParmValues(event);
 		} else if (parm.equals(PARMS_NAMES)) {
-			if (event.getParms() != null
-					&& event.getParms().getParmCount() <= 0)
-				retParmVal = null;
-
-			else {
-				StringBuffer ret = new StringBuffer();
-
-				Parms parms = event.getParms();
-				if (parm != null) {
-					Enumeration en = parms.enumerateParm();
-					while (en.hasMoreElements()) {
-						Parm evParm = (Parm) en.nextElement();
-						String parmName = evParm.getParmName();
-						if (parmName == null)
-							continue;
-
-						if (ret.length() == 0) {
-							ret.append(parmName.trim());
-						} else {
-							ret.append(SPACE_DELIM + parmName.trim());
-						}
-					}
-				}
-
-				retParmVal = ret.toString();
-			}
+			retParmVal = getAllParmNames(event);
 		} else if (parm.equals(PARMS_ALL)) {
-			if (event.getParms() != null
-					&& event.getParms().getParmCount() <= 0)
-				retParmVal = null;
-
-			else {
-				StringBuffer ret = new StringBuffer();
-
-				Parms parms = event.getParms();
-				if (parms != null) {
-					Enumeration en = parms.enumerateParm();
-					while (en.hasMoreElements()) {
-						Parm evParm = (Parm) en.nextElement();
-						String parmName = evParm.getParmName();
-						if (parmName == null)
-							continue;
-
-						Value parmValue = evParm.getValue();
-						if (parmValue == null)
-							continue;
-
-						String parmValueStr = getValueAsString(parmValue);
-						if (ret.length() != 0) {
-							ret.append(SPACE_DELIM);
-						}
-
-						ret.append(parmName.trim() + NAME_VAL_DELIM + "\""
-								+ parmValueStr + "\"");
-					}
-				}
-
-				retParmVal = ret.toString();
-			}
+			retParmVal = getAllParamValues(event);
 		} else if (parm.equals(NUM_PARMS_STR)) {
-			if (event.getParms() != null) {
-				int count = event.getParms().getParmCount();
-				retParmVal = String.valueOf(count);
-			}
+			retParmVal = getParmCount(event);
 		} else if (parm.startsWith(PARM_NUM_PREFIX)) {
-			Parms eventParms = event.getParms();
-			int end = parm.lastIndexOf(PARM_END_SUFFIX);
-			if (end != -1 && eventParms != null) {
-				// Get the value between the '#' and ']'
-				String eparmname = parm.substring(PARM_NUM_PREFIX_LENGTH, end);
-				int parmNum = -1;
-				try {
-					parmNum = Integer.parseInt(eparmname);
-				} catch (NumberFormatException nfe) {
-					parmNum = -1;
-					retParmVal = null;
-				}
-
-				if (parmNum > 0 && parmNum <= eventParms.getParmCount()) {
-					Parm evParm = eventParms.getParm(parmNum - 1);
-
-					// get parm value
-					Value eparmval = evParm.getValue();
-					if (eparmval != null) {
-						retParmVal = getValueAsString(eparmval);
-					}
-				} else {
-					retParmVal = null;
-				}
-			}
+			retParmVal = getNumParmValue(parm, event);
 		} else if (parm.startsWith(PARM_BEGIN)) {
 			if (parm.length() > PARM_BEGIN_LENGTH) {
-				int end = parm.indexOf(PARM_END_SUFFIX, PARM_BEGIN_LENGTH);
-				if (end != -1) {
-					// Get the value between the '[' and ']'
-					String eparmname = parm.substring(PARM_BEGIN_LENGTH, end);
-
-					Parms parms = event.getParms();
-					if (parms != null) {
-						Enumeration en = parms.enumerateParm();
-						while (en.hasMoreElements()) {
-							Parm evParm = (Parm) en.nextElement();
-							String parmName = evParm.getParmName();
-							if (parmName != null
-									&& parmName.trim().equals(eparmname)) {
-								// get parm value
-								Value eparmval = evParm.getValue();
-								if (eparmval != null) {
-									retParmVal = getValueAsString(eparmval);
-									break;
-								}
-							}
-						}
-					}
-				}
+				retParmVal = getNamedParmValue(parm, event);
 			}
 		}
 
 		return (retParmVal == null ? null : retParmVal.trim());
 	}
+
+    /**
+     * Helper method.
+     * 
+     * @param event
+     * @return All event parameter values as a String.
+     */
+    private static String getAllParmValues(Event event) {
+        String retParmVal = null;
+        if (event.getParms() != null && event.getParms().getParmCount() <= 0)
+        	retParmVal = null;
+
+        else {
+        	StringBuffer ret = new StringBuffer();
+
+        	Parms parms = event.getParms();
+        	Enumeration en = parms.enumerateParm();
+        	while (en.hasMoreElements()) {
+        		Parm evParm = (Parm) en.nextElement();
+        		Value parmValue = evParm.getValue();
+        		if (parmValue == null)
+        			continue;
+
+        		String parmValueStr = getValueAsString(parmValue);
+        		if (parmValueStr == null)
+        			continue;
+
+        		if (ret.length() == 0) {
+        			ret.append(parmValueStr);
+        		} else {
+        			ret.append(SPACE_DELIM + parmValueStr);
+        		}
+        	}
+
+        	retParmVal = ret.toString();
+        }
+        return retParmVal;
+    }
+
+    /**
+     * Helper method.
+     * @param event
+     * @return The names of all the event paramenters.
+     */
+    private static String getAllParmNames(Event event) {
+        String retParmVal = null;
+        if (event.getParms() != null
+        		&& event.getParms().getParmCount() <= 0)
+        	retParmVal = null;
+
+        else {
+        	StringBuffer ret = new StringBuffer();
+
+        	Parms parms = event.getParms();
+
+         //Fixed a bug here, used to check "parm" for null (before this method was created during refactoring)
+         // pretty parms was the intented variable to test.
+        	if (parms != null) {
+        		Enumeration en = parms.enumerateParm();
+        		while (en.hasMoreElements()) {
+        			Parm evParm = (Parm) en.nextElement();
+        			String parmName = evParm.getParmName();
+        			if (parmName == null)
+        				continue;
+
+        			if (ret.length() == 0) {
+        				ret.append(parmName.trim());
+        			} else {
+        				ret.append(SPACE_DELIM + parmName.trim());
+        			}
+        		}
+        	}
+
+        	retParmVal = ret.toString();
+        }
+        return retParmVal;
+    }
+
+    /**
+     * Helper method.
+     * 
+     * @param event
+     * @return All event parameter values as a String
+     */
+    private static String getAllParamValues(Event event) {
+        String retParmVal = null;
+        if (event.getParms() != null
+        		&& event.getParms().getParmCount() <= 0)
+        	retParmVal = null;
+
+        else {
+        	StringBuffer ret = new StringBuffer();
+
+        	Parms parms = event.getParms();
+        	if (parms != null) {
+        		Enumeration en = parms.enumerateParm();
+        		while (en.hasMoreElements()) {
+        			Parm evParm = (Parm) en.nextElement();
+        			String parmName = evParm.getParmName();
+        			if (parmName == null)
+        				continue;
+
+        			Value parmValue = evParm.getValue();
+        			if (parmValue == null)
+        				continue;
+
+        			String parmValueStr = getValueAsString(parmValue);
+        			if (ret.length() != 0) {
+        				ret.append(SPACE_DELIM);
+        			}
+
+        			ret.append(parmName.trim() + NAME_VAL_DELIM + "\""
+        					+ parmValueStr + "\"");
+        		}
+        	}
+
+        	retParmVal = ret.toString();
+        }
+        return retParmVal;
+    }
+
+    /**
+     * Helper method.
+     * 
+     * @param event
+     * @return The number of parmaters attached to an event
+     */
+    private static String getParmCount(Event event) {
+        String retParmVal = null;
+        if (event.getParms() != null) {
+        	int count = event.getParms().getParmCount();
+        	retParmVal = String.valueOf(count);
+        }
+        return retParmVal;
+    }
+
+    /**
+     * Helper method.
+     * 
+     * @param parm
+     * @param event
+     * @return The value of a parameter based on its ordinal position in the event's list of parameters
+     */
+    private static String getNumParmValue(String parm, Event event) {
+        String retParmVal = null;
+        Parms eventParms = event.getParms();
+        int end = parm.lastIndexOf(PARM_END_SUFFIX);
+        if (end != -1 && eventParms != null) {
+        	// Get the value between the '#' and ']'
+        	String eparmname = parm.substring(PARM_NUM_PREFIX_LENGTH, end);
+        	int parmNum = -1;
+        	try {
+        		parmNum = Integer.parseInt(eparmname);
+        	} catch (NumberFormatException nfe) {
+        		parmNum = -1;
+        		retParmVal = null;
+        	}
+
+        	if (parmNum > 0 && parmNum <= eventParms.getParmCount()) {
+        		Parm evParm = eventParms.getParm(parmNum - 1);
+
+        		// get parm value
+        		Value eparmval = evParm.getValue();
+        		if (eparmval != null) {
+        			retParmVal = getValueAsString(eparmval);
+        		}
+        	} else {
+        		retParmVal = null;
+        	}
+        }
+        return retParmVal;
+    }
+
+    /**
+     * Helper method.
+     * 
+     * @param parm
+     * @param event
+     * @return A parameter's value as a String using the parameter's name..
+     */
+    public static String getNamedParmValue(String parm, Event event) {
+        String retParmVal = null;
+        int end = parm.indexOf(PARM_END_SUFFIX, PARM_BEGIN_LENGTH);
+        if (end != -1) {
+        	// Get the value between the '[' and ']'
+        	String eparmname = parm.substring(PARM_BEGIN_LENGTH, end);
+
+        	Parms parms = event.getParms();
+        	if (parms != null) {
+        		Enumeration en = parms.enumerateParm();
+        		while (en.hasMoreElements()) {
+        			Parm evParm = (Parm) en.nextElement();
+        			String parmName = evParm.getParmName();
+        			if (parmName != null
+        					&& parmName.trim().equals(eparmname)) {
+        				// get parm value
+        				Value eparmval = evParm.getValue();
+        				if (eparmval != null) {
+        					retParmVal = getValueAsString(eparmval);
+        					break;
+        				}
+        			}
+        		}
+        	}
+        }
+        return retParmVal;
+    }
 
 	/**
 	 * Expand the value if it has parms in one of the following formats -

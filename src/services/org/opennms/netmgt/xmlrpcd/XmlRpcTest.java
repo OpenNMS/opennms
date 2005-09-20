@@ -164,10 +164,11 @@ public class XmlRpcTest extends MockObjectTestCase {
         String url = "http://www.opennms.org";
         m_mockProvisioner.expects(once())
         .method("addServiceHTTP")
-        .with(new Constraint[]{ eq("RS-HTTP-1"), eq(3), eq(1000), eq(300000), eq(30000), eq(300000), eq(80), eq(200), eq("Login"), eq(url) })
+        .with(new Constraint[]{ eq("RS-HTTP-1"), eq(3), eq(1000), eq(300000), eq(30000), eq(300000), eq(80), eq("200"), eq("Login"), eq(url)/*, eq("user:pw"), eq("OpenNMS Monitor") */})
         .will(returnValue(true));
         
-        boolean retVal = m_proxy.addServiceHTTP("RS-HTTP-1", 3, 1000, 300000, 30000, 300000, 80, 200, "Login", url);
+        // TODO: HttpMonitor BackLevel
+        boolean retVal = m_proxy.addServiceHTTP("RS-HTTP-1", 3, 1000, 300000, 30000, 300000, 80, "200", "Login", url/*, "user:pw", "OpenNMS Monitor"*/);
         
         assertTrue(retVal);
     }
@@ -177,11 +178,12 @@ public class XmlRpcTest extends MockObjectTestCase {
         MalformedURLException urlException = getMalformedUrlException(url);
         m_mockProvisioner.expects(once())
         .method("addServiceHTTP")
-        .with(new Constraint[]{ eq("RS-HTTP-1"), eq(3), eq(1000), eq(300000), eq(30000), eq(300000), eq(80), eq(200), eq("Login"), eq(url) })
+        .with(new Constraint[]{ eq("RS-HTTP-1"), eq(3), eq(1000), eq(300000), eq(30000), eq(300000), eq(80), eq("200"), eq("Login"), eq(url)/*, eq("user:pw"), eq("OpenNMS Monitor") */})
         .will(throwException(urlException));
         
         try {
-            boolean retVal = m_proxy.addServiceHTTP("RS-HTTP-1", 3, 1000, 300000, 30000, 300000, 80, 200, "Login", url);
+            // TODO: HttpMonitor BackLevel
+            boolean retVal = m_proxy.addServiceHTTP("RS-HTTP-1", 3, 1000, 300000, 30000, 300000, 80, "200", "Login", url/*, "user:pw", "OpenNMS Monitor"*/);
             fail("Expected exception");
         } catch (MalformedURLException e) {
             assertEquals(urlException.getMessage(), e.getMessage());
@@ -202,10 +204,11 @@ public class XmlRpcTest extends MockObjectTestCase {
         String url = "https://www.opennms.org";
         m_mockProvisioner.expects(once())
         .method("addServiceHTTPS")
-        .with(new Constraint[]{ eq("RS-HTTPS-1"), eq(3), eq(1000), eq(300000), eq(30000), eq(300000), eq(80), eq(200), eq("Login"), eq(url) })
+        .with(new Constraint[]{ eq("RS-HTTPS-1"), eq(3), eq(1000), eq(300000), eq(30000), eq(300000), eq(80), eq("200"), eq("Login"), eq(url)/*, eq("user:pw"), eq("OpenNMS Monitor") */})
         .will(returnValue(true));
         
-        boolean retVal = m_proxy.addServiceHTTPS("RS-HTTPS-1", 3, 1000, 300000, 30000, 300000, 80, 200, "Login", url);
+        // TODO: HttpMonitor BackLevel
+        boolean retVal = m_proxy.addServiceHTTPS("RS-HTTPS-1", 3, 1000, 300000, 30000, 300000, 80, "200", "Login", url/*, "user:pw", "OpenNMS Monitor"*/);
         
         assertTrue(retVal);
     }

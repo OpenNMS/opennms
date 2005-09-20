@@ -39,6 +39,7 @@ package org.opennms.netmgt.poller.monitors;
 import java.util.Map;
 
 import org.opennms.netmgt.config.PollerConfig;
+import org.opennms.netmgt.poller.pollables.PollStatus;
 
 /**
  * <p>
@@ -250,5 +251,18 @@ public interface ServiceMonitor {
      * @see #SERVICE_AVAILABLE
      * @see #SERVICE_UNAVAILABLE
      */
-    public int poll(NetworkInterface iface, Map parameters, org.opennms.netmgt.config.poller.Package pkg);
+    public int checkStatus(NetworkInterface iface, Map parameters, org.opennms.netmgt.config.poller.Package pkg);
+    
+    /**
+     * New implementation of the poll method.
+     * 
+     * @param iface
+     * @param parameters
+     * @param pkg
+     * @return
+     * <P>
+     * Returns a PollStatus object that contains the ServiceMonitor status as well as a reason to be used when creating outages.
+     * </P>
+     */
+    public PollStatus poll(NetworkInterface iface, Map parameters, org.opennms.netmgt.config.poller.Package pkg);
 }

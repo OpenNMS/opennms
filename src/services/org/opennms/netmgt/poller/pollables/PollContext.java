@@ -69,7 +69,7 @@ public interface PollContext {
      * @param date
      * @return
      */
-    public Event createEvent(String uei, int nodeId, InetAddress address, String svcName, Date date);
+    public Event createEvent(String uei, int nodeId, InetAddress address, String svcName, Date date, String reason);
 
     /**
      * @param outage

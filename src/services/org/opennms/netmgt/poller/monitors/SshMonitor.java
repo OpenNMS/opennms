@@ -54,6 +54,8 @@ import java.util.Map;
 import org.apache.log4j.Category;
 import org.apache.log4j.Priority;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.config.poller.Package;
+import org.opennms.netmgt.poller.pollables.PollStatus;
 import org.opennms.netmgt.utils.ParameterMap;
 
 /**
@@ -108,7 +110,7 @@ final public class SshMonitor extends IPv4LatencyMonitor {
      * @throws java.lang.RuntimeException
      *             Thrown if the interface experiences errors during the poll.
      */
-    public int poll(NetworkInterface iface, Map parameters, org.opennms.netmgt.config.poller.Package pkg) {
+    public int checkStatus(NetworkInterface iface, Map parameters, org.opennms.netmgt.config.poller.Package pkg) {
         //
         // Process parameters
         //
@@ -129,7 +131,7 @@ final public class SshMonitor extends IPv4LatencyMonitor {
             log.info("poll: RRD repository not specified in parameters, latency data will not be stored.");
         }
         if (dsName == null) {
-            dsName = DS_NAME;
+            dsName = DEFAULT_DSNAME;
         }
 
         // Port
@@ -251,6 +253,10 @@ final public class SshMonitor extends IPv4LatencyMonitor {
         // return the status of the service
         //
         return serviceStatus;
+    }
+
+    public PollStatus poll(NetworkInterface iface, Map parameters, Package pkg) {
+        return PollStatus.getPollStatus(checkStatus(iface, parameters, pkg));
     }
 
 }

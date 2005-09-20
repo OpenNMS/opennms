@@ -349,7 +349,7 @@
         </annotation>
       </attribute>
 
-      <attribute name="user-defined" use="optional">
+      <attribute name="user-defined" use="optional" default="false">
         <annotation>
           <documentation>Specifies if the service is user defined. Used
           specifically for UI purposes.</documentation>
@@ -362,7 +362,7 @@
         </simpleType>
       </attribute>
 
-      <attribute name="status" use="optional">
+      <attribute name="status" use="optional" default="on">
         <annotation>
           <documentation>Status of the service. The service is polled only if
           this is set to 'on'.</documentation>

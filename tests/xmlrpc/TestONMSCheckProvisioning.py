@@ -334,7 +334,7 @@ class TestAddServiceHTTP(ONMSServiceTest):
                  'downtime_interval' : mintomilis(1),
                  'downtime_duration' : mintomilis(1),
                  'port'              : 1,
-                 'response'          : 100,
+                 'response'          : '100',
                  'response_text'     : '',
                  'url'               : '/index.html' }
     
@@ -351,7 +351,7 @@ class TestAddServiceHTTPS(ONMSServiceTest):
                  'downtime_interval' : mintomilis(1),
                  'downtime_duration' : mintomilis(1),
                  'port'              : 1,
-                 'response'          : 100,
+                 'response'          : '100',
                  'response_text'     : '',
                  'url'               : '/index.html' }
     
@@ -377,16 +377,18 @@ if __name__ == '__main__':
     testRunner = unittest.TextTestRunner(verbosity=2)
     #print "\nTesting system calls"
     #testRunner.run(unittest.makeSuite(TestSystemCalls))
-    print "\nTesting TestAddServiceICMP"
-    testRunner.run(unittest.makeSuite(TestAddServiceICMP))
-    print "\nTesting TestAddServiceDNS"
-    testRunner.run(unittest.makeSuite(TestAddServiceDNS))
-    print "\nTesting TestAddServiceTCP"
-    testRunner.run(unittest.makeSuite(TestAddServiceTCP))
     print "\nTesting TestAddServiceHTTP"
     testRunner.run(unittest.makeSuite(TestAddServiceHTTP))
-    print "\nTesting TestAddServiceHTTPS"
-    testRunner.run(unittest.makeSuite(TestAddServiceHTTPS))
-    print "\nTesting TestAddServiceDatabase"
-    testRunner.run(unittest.makeSuite(TestAddServiceDatabase))
+    #print "\nTesting TestAddServiceICMP"
+    #testRunner.run(unittest.makeSuite(TestAddServiceICMP))
+    #print "\nTesting TestAddServiceDNS"
+    #testRunner.run(unittest.makeSuite(TestAddServiceDNS))
+    #print "\nTesting TestAddServiceTCP"
+    #testRunner.run(unittest.makeSuite(TestAddServiceTCP))
+    #print "\nTesting TestAddServiceHTTP"
+    #testRunner.run(unittest.makeSuite(TestAddServiceHTTP))
+    #print "\nTesting TestAddServiceHTTPS"
+    #testRunner.run(unittest.makeSuite(TestAddServiceHTTPS))
+    #print "\nTesting TestAddServiceDatabase"
+    #testRunner.run(unittest.makeSuite(TestAddServiceDatabase))
     

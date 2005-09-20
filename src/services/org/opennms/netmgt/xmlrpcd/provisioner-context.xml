@@ -10,6 +10,14 @@
 		<property name="staticMethod"><value>org.opennms.netmgt.config.CapsdConfigFactory.init</value></property>
 	</bean>
 	
+	<bean id="eventIpcManager-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+		<property name="staticMethod"><value>org.opennms.netmgt.eventd.EventIpcManagerFactory.init</value></property>
+	</bean>
+	
+	<bean id="eventManager" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" depends-on="eventIpcManager-init">
+		<property name="staticMethod"><value>org.opennms.netmgt.eventd.EventIpcManagerFactory.getIpcManager</value></property>
+	</bean>
+
 	<bean id="pollerConfig" class="org.opennms.netmgt.config.PollerConfigFactory"
 		depends-on="pollerConfigFactory-init"
 		factory-method="getInstance"/>
@@ -25,6 +33,9 @@
 		</property>
 		<property name="capsdConfig">
 			<ref bean="capsdConfig"/>
+		</property>
+		<property name="eventManager">
+			<ref bean="eventManager"/>
 		</property>
 	</bean>
 	

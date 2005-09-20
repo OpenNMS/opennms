@@ -186,11 +186,11 @@ public class PollableNode extends PollableContainer {
     }
     
     public Event createDownEvent(Date date) {
-        return getContext().createEvent(EventConstants.NODE_DOWN_EVENT_UEI, getNodeId(), null, null, date);
+        return getContext().createEvent(EventConstants.NODE_DOWN_EVENT_UEI, getNodeId(), null, null, date, getStatus().getReason());
     }
     
     public Event createUpEvent(Date date) {
-        return getContext().createEvent(EventConstants.NODE_UP_EVENT_UEI, getNodeId(), null, null, date);
+        return getContext().createEvent(EventConstants.NODE_UP_EVENT_UEI, getNodeId(), null, null, date, getStatus().getReason());
     }
     
     public String toString() { return String.valueOf(getNodeId()); }

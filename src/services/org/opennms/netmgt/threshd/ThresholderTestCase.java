@@ -143,7 +143,7 @@ public class ThresholderTestCase extends MockObjectTestCase {
 
 	private void ensureEventAfterFetches(int count, String dsName, String uei) {
 	    if (uei != null) {
-	        Event event = MockUtil.createServiceEvent("Test", uei, m_network.getService(1, "192.168.1.1", "ICMP"));
+	        Event event = MockUtil.createServiceEvent("Test", uei, m_network.getService(1, "192.168.1.1", "ICMP"), null);
 	        Parms parms = new Parms();
 	        Parm parm = new Parm();
 	        parm.setParmName("ds");

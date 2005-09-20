@@ -834,7 +834,7 @@
 			impacted until this outage is resolved.&lt;/p&gt;
 		</descr>
 		<logmsg dest='logndisplay'>
-			%service% outage identified on interface %interface%.
+			%service% outage identified on interface %interface% with reason code: %parm[eventReason]%.
 		</logmsg>
 		<severity>Minor</severity>
         <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%service%" alarm-type="1" />

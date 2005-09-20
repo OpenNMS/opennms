@@ -105,8 +105,8 @@ public class DefaultPollContext implements PollContext, EventListener {
     /* (non-Javadoc)
      * @see org.opennms.netmgt.poller.pollables.PollContext#createEvent(java.lang.String, int, java.net.InetAddress, java.lang.String, java.util.Date)
      */
-    public Event createEvent(String uei, int nodeId, InetAddress address, String svcName, Date date) {
-        return m_poller.createEvent(uei, nodeId, address, svcName, date);
+    public Event createEvent(String uei, int nodeId, InetAddress address, String svcName, Date date, String reason) {
+        return m_poller.createEvent(uei, nodeId, address, svcName, date, reason);
     }
 
     public void openOutage(PollableService svc, final PollEvent svcLostEvent) {

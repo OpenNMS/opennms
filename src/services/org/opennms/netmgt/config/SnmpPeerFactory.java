@@ -622,36 +622,53 @@ public final class SnmpPeerFactory {
         String hostOctets[] = hostAddress.split("\\.", 0);
         String matchOctets[] = ipMatch.split("\\.", 0);
         for (int i = 0; i < 4; i++) {
-            if (!matchOctet(hostOctets[i], matchOctets[i]))
+            if (!matchNumericListOrRange(hostOctets[i], matchOctets[i]))
                 return false;
         }
         return true;
     }
-
-    public static boolean matchOctet(String hostOctet, String patternOctet) {
+    
+    /**
+    * Use this method to match ranges, lists, and specific number strings
+    * such as:
+    * "200-300" or "200,300,501-700"
+    * "*" matches any
+    * This method is commonly used for matching IP octets or ports
+    * 
+    * @param value
+    * @param patterns
+    * @return
+    */
+    public static boolean matchNumericListOrRange(String value, String patterns) {
         
-        String patternList[] = patternOctet.split(",", 0);
+        String patternList[] = patterns.split(",", 0);
         for (int i = 0; i < patternList.length; i++) {
-            if (matchRange(hostOctet, patternList[i]))
+            if (matchRange(value, patternList[i]))
                 return true;
         }
         return false;
     }
 
-    public static boolean matchRange(String hostOctet, String patternRange) {
-        int dashCount = countChar('-', patternRange);
+    /**
+    * Helper method in support of matchNumericListOrRange
+    * @param value
+    * @param pattern
+    * @return
+    */
+    public static boolean matchRange(String value, String pattern) {
+        int dashCount = countChar('-', pattern);
         
-        if ("*".equals(patternRange))
+        if ("*".equals(pattern))
             return true;
         else if (dashCount == 0)
-            return hostOctet.equals(patternRange);
+            return value.equals(pattern);
         else if (dashCount > 1)
             return false;
         else if (dashCount == 1) {
-            String ar[] = patternRange.split("-");
+            String ar[] = pattern.split("-");
             int rangeBegin = Integer.parseInt(ar[0]);
             int rangeEnd = Integer.parseInt(ar[1]);
-            int ip = Integer.parseInt(hostOctet);
+            int ip = Integer.parseInt(value);
             return (ip >= rangeBegin && ip <= rangeEnd);
         }
         return false;

@@ -285,7 +285,7 @@ public class NotifdTest extends NotificationsTestCase {
         
         long interval = computeInterval();
 
-        Event event = MockUtil.createServiceEvent("Test", "uei.opennms.org/tests/nodeTimeTest", svc);
+        Event event = MockUtil.createServiceEvent("Test", "uei.opennms.org/tests/nodeTimeTest", svc, null);
         
         Date date = EventConstants.parseToDate(event.getTime());
         String dateString = DateFormat.getDateTimeInstance(DateFormat.FULL,

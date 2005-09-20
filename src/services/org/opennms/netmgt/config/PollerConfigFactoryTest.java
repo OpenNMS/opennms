@@ -31,6 +31,7 @@
 //
 package org.opennms.netmgt.config;
 
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.Collections;
@@ -42,12 +43,15 @@ import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.config.poller.Downtime;
 import org.opennms.netmgt.config.poller.Filter;
+import org.opennms.netmgt.config.poller.IncludeRange;
 import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.config.poller.Rrd;
 import org.opennms.netmgt.config.poller.Service;
 import org.opennms.netmgt.mock.MockDatabase;
 import org.opennms.netmgt.mock.MockLogAppender;
+import org.opennms.netmgt.mock.MockNetwork;
 import org.opennms.netmgt.mock.MockUtil;
+import org.opennms.netmgt.mock.OpenNMSTestCase;
 
 public class PollerConfigFactoryTest extends TestCase {
 
@@ -79,7 +83,36 @@ public class PollerConfigFactoryTest extends TestCase {
     protected void setUp() throws Exception {
         super.setUp();
         MockLogAppender.setupLogging();
+        
+        DatabaseSchemaConfigFactory dscf = new DatabaseSchemaConfigFactory(new FileReader("etc/database-schema.xml"));
+        DatabaseSchemaConfigFactory.setInstance(dscf);
+        
+        MockNetwork network = new MockNetwork();
+        network.setCriticalService("ICMP");
+        network.addNode(1, "Router");
+        network.addInterface("192.168.1.1");
+        network.addService("ICMP");
+        network.addService("SMTP");
+        network.addInterface("192.168.1.2");
+        network.addService("ICMP");
+        network.addService("SMTP");
+        network.addNode(2, "Server");
+        network.addInterface("192.168.1.3");
+        network.addService("ICMP");
+        network.addService("HTTP");
+        network.addNode(3, "Firewall");
+        network.addInterface("192.168.1.4");
+        network.addService("SMTP");
+        network.addService("HTTP");
+        network.addInterface("192.168.1.5");
+        network.addService("SMTP");
+        network.addService("HTTP");
+        network.addInterface("192.169.1.5");
+        network.addService("SMTP");
+        network.addService("HTTP");
+        
         MockDatabase db = new MockDatabase();
+        db.populate(network);
         DatabaseConnectionFactory.setInstance(db);
         
     }
@@ -109,10 +142,10 @@ public class PollerConfigFactoryTest extends TestCase {
             m_xml = xml;
         }
 
-        protected List getIpList(Package pkg) {
-            return Collections.EMPTY_LIST;
-        }
-        
+//        protected List getIpList(Package pkg) {
+//            return Collections.EMPTY_LIST;
+//        }
+//        
         public String getXml() {
             return m_xml;
         }
@@ -146,12 +179,32 @@ public class PollerConfigFactoryTest extends TestCase {
         dt.setBegin(0);
         pkg.addDowntime(dt);
         
+        IncludeRange inclde = new IncludeRange();
+        inclde.setBegin("192.169.0.0");
+        inclde.setEnd("192.169.255.255");
+        pkg.addIncludeRange(inclde);
+        
         factory.addPackage(pkg);
         factory.save();
         
         assertNotNull(factory.getPackage("TestPkg"));
         
-        assertNotNull(new TestPollerConfigManager(factory.getXml(), "localhost", false).getPackage("TestPkg"));
+        TestPollerConfigManager newFactory = new TestPollerConfigManager(factory.getXml(), "localhost", false);
+        Package p = newFactory.getPackage("TestPkg");
+        assertNotNull(p);
+        assertTrue(newFactory.interfaceInPackage("192.169.1.5", p));
+        assertFalse(newFactory.interfaceInPackage("192.168.1.5", p));
+        
+    }
+    
+    public void testInterfaceInPackage() throws Exception {
+        TestPollerConfigManager factory = new TestPollerConfigManager(POLLER_CONFIG, "localhost", false);
+        Package pkg = factory.getPackage("default");
+        assertNotNull("Unable to find pkg default", pkg);
+        
+        assertTrue("Expected 192.168.1.1 to be in the package", factory.interfaceInPackage("192.168.1.1", pkg));
+        
+        
         
     }
 

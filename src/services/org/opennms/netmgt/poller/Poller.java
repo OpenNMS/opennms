@@ -565,7 +565,7 @@ public class Poller extends ServiceDaemon {
         m_dbConnectionFactory = dbConnectionFactory;
     }
 
-    public Event createEvent(String uei, int nodeId, InetAddress address, String svcName, java.util.Date date) {
+    public Event createEvent(String uei, int nodeId, InetAddress address, String svcName, java.util.Date date, String reason) {
         Category log = ThreadCategory.getInstance(getClass());
     
         if (log.isDebugEnabled())
@@ -592,6 +592,21 @@ public class Poller extends ServiceDaemon {
         // Set event time
         newEvent.setTime(EventConstants.formatToString(date));
     
+        // For service lost events (nodeLostService) retrieve the 
+        // reason parameter
+        Parms eventParms = new Parms();
+        Parm eventParm = new Parm();
+        Value parmValue = new Value();
+        
+        if (uei.equals(EventConstants.NODE_LOST_SERVICE_EVENT_UEI)) {
+            eventParm = new Parm();
+            eventParm.setParmName(EventConstants.PARM_LOSTSERVICE_REASON);
+            parmValue = new Value();
+            parmValue.setContent(reason);
+            eventParm.setValue(parmValue);
+            eventParms.addParm(eventParm);
+        }
+        
         // For node level events (nodeUp/nodeDown) retrieve the
         // node's nodeLabel value and add it as a parm
         if (uei.equals(EventConstants.NODE_UP_EVENT_UEI) || uei.equals(EventConstants.NODE_DOWN_EVENT_UEI)) {
@@ -610,20 +625,17 @@ public class Poller extends ServiceDaemon {
                 nodeLabel = String.valueOf(nodeId);
             }
     
-            // Add appropriate parms
-            Parms eventParms = new Parms();
-    
             // Add nodelabel parm
-            Parm eventParm = new Parm();
+            eventParm = new Parm();
             eventParm.setParmName(EventConstants.PARM_NODE_LABEL);
-            Value parmValue = new Value();
+            parmValue = new Value();
             parmValue.setContent(nodeLabel);
             eventParm.setValue(parmValue);
-            eventParms.addParm(eventParm);
-    
-            // Add Parms to the event
-            newEvent.setParms(eventParms);
+            eventParms.addParm(eventParm);    
         }
+        // Add Parms to the event
+        if (eventParms.getParmCount() > 0)
+            newEvent.setParms(eventParms);
     
         return newEvent;
     }

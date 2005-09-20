@@ -68,7 +68,7 @@ abstract public class IPv4LatencyMonitor implements ServiceMonitor {
     /**
      * RRD data source name which doubles as the RRD file name.
      */
-    static String DS_NAME = "response-time";
+    static String DEFAULT_DSNAME = "response-time";
 
     private PollerConfig m_pollerConfig;
 
@@ -263,4 +263,5 @@ abstract public class IPv4LatencyMonitor implements ServiceMonitor {
             }
         }
     }
+    
 }

@@ -73,40 +73,44 @@ public class MockUtil {
         parms.addParm(parm);
     }
     
+    public static Event createNodeLostServiceEvent(String source, MockService svc, String reason) {
+        return createServiceEvent(source, EventConstants.NODE_LOST_SERVICE_EVENT_UEI, svc, reason);
+    }
+    
     public static Event createNodeLostServiceEvent(String source, MockService svc) {
-        return createServiceEvent(source, EventConstants.NODE_LOST_SERVICE_EVENT_UEI, svc);
+        return createServiceEvent(source, EventConstants.NODE_LOST_SERVICE_EVENT_UEI, svc, null);
     }
 
     public static Event createNodeRegainedServiceEvent(String source, MockService svc) {
-        return createServiceEvent(source, EventConstants.NODE_REGAINED_SERVICE_EVENT_UEI, svc);
+        return createServiceEvent(source, EventConstants.NODE_REGAINED_SERVICE_EVENT_UEI, svc, null);
     }
     
-    public static Event createServiceUnresponsiveEvent(String source, MockService svc) {
-        return createServiceEvent(source, EventConstants.SERVICE_UNRESPONSIVE_EVENT_UEI, svc);
+    public static Event createServiceUnresponsiveEvent(String source, MockService svc, String reason) {
+        return createServiceEvent(source, EventConstants.SERVICE_UNRESPONSIVE_EVENT_UEI, svc, reason);
     }
 
     public static Event createServiceResponsiveEvent(String source, MockService svc) {
-        return createServiceEvent(source, EventConstants.SERVICE_RESPONSIVE_EVENT_UEI, svc);
+        return createServiceEvent(source, EventConstants.SERVICE_RESPONSIVE_EVENT_UEI, svc, null);
     }
     
     public static Event createNodeGainedServiceEvent(String source, MockService svc) {
-        return createServiceEvent(source, EventConstants.NODE_GAINED_SERVICE_EVENT_UEI, svc);
+        return createServiceEvent(source, EventConstants.NODE_GAINED_SERVICE_EVENT_UEI, svc, null);
     }
     
     public static Event createServiceDeletedEvent(String source, MockService svc) {
-        return createServiceEvent(source, EventConstants.SERVICE_DELETED_EVENT_UEI, svc);
+        return createServiceEvent(source, EventConstants.SERVICE_DELETED_EVENT_UEI, svc, null);
     }
     
     public static Event createSuspendPollingServiceEvent(String source, MockService svc) {
-        return createServiceEvent(source, EventConstants.SUSPEND_POLLING_SERVICE_EVENT_UEI, svc);
+        return createServiceEvent(source, EventConstants.SUSPEND_POLLING_SERVICE_EVENT_UEI, svc, null);
     }
     
     public static Event createResumePollingServiceEvent(String source, MockService svc) {
-        return createServiceEvent(source, EventConstants.RESUME_POLLING_SERVICE_EVENT_UEI, svc);
+        return createServiceEvent(source, EventConstants.RESUME_POLLING_SERVICE_EVENT_UEI, svc, null);
     }
     
-    public static Event createServiceEvent(String source, String uei, MockService svc) {
-        return createEvent(source, uei, svc.getNodeId(), svc.getIpAddr(), svc.getName());
+    public static Event createServiceEvent(String source, String uei, MockService svc, String reason) {
+        return createEvent(source, uei, svc.getNodeId(), svc.getIpAddr(), svc.getName(), reason);
     }
     
     public static Event createInterfaceDownEvent(String source, MockInterface iface) {
@@ -122,7 +126,7 @@ public class MockUtil {
     }
     
     public static Event createInterfaceEvent(String source, String uei, MockInterface iface) {
-        return createEvent(source, uei, iface.getNodeId(), iface.getIpAddr(), null);
+        return createEvent(source, uei, iface.getNodeId(), iface.getIpAddr(), null, null);
     }
     
     public static Event createNodeDownEvent(String source, MockNode node) {
@@ -138,19 +142,30 @@ public class MockUtil {
     }
     
     public static Event createNodeEvent(String source, String uei, MockNode node) {
-        return createEvent(source, uei, node.getNodeId(), null, null);
+        return createEvent(source, uei, node.getNodeId(), null, null, null);
     }
     
     public static void setEventTime(Event event, Date date) {
         event.setTime(EventConstants.formatToString(date));
     }
     
-    public static Event createEvent(String source, String uei, int nodeId, String ipAddr, String svcName) {
+    public static Event createEvent(String source, String uei, int nodeId, String ipAddr, String svcName, String reason) {
         
         Event event = createEvent(source, uei);
         event.setNodeid(nodeId);
         event.setInterface(ipAddr);
         event.setService(svcName);
+        
+        if (reason != null) {
+            Parms eventParms = new Parms();
+            Parm eventParm = new Parm();
+            Value parmValue = new Value();
+            eventParm.setParmName(EventConstants.PARM_LOSTSERVICE_REASON);
+            parmValue.setContent(reason);
+            eventParm.setValue(parmValue);
+            eventParms.addParm(eventParm);
+            event.setParms(eventParms);
+        }
         return event;
     }
 
@@ -165,7 +180,7 @@ public class MockUtil {
     }
 
     public static Event createReparentEvent(String source, String ipAddr, int oldNode, int newNode) {
-        Event event = createEvent(source, EventConstants.INTERFACE_REPARENTED_EVENT_UEI, oldNode, ipAddr, null);
+        Event event = createEvent(source, EventConstants.INTERFACE_REPARENTED_EVENT_UEI, oldNode, ipAddr, null, null);
         
         addEventParm(event, EventConstants.PARM_OLD_NODEID, oldNode);
         addEventParm(event, EventConstants.PARM_NEW_NODEID, newNode);

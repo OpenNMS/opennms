@@ -69,10 +69,10 @@ public class SnmpPeerFactoryTest extends OpenNMSTestCase {
     }
     
     public void testMatchOctet() {
-        assertTrue(SnmpPeerFactory.matchOctet("192", "191,192,193"));
-        assertFalse(SnmpPeerFactory.matchOctet("192", "190,191,194"));
-        assertTrue(SnmpPeerFactory.matchOctet("192", "10,172,190-193"));
-        assertFalse(SnmpPeerFactory.matchOctet("192", "10,172,193-199"));
+        assertTrue(SnmpPeerFactory.matchNumericListOrRange("192", "191,192,193"));
+        assertFalse(SnmpPeerFactory.matchNumericListOrRange("192", "190,191,194"));
+        assertTrue(SnmpPeerFactory.matchNumericListOrRange("192", "10,172,190-193"));
+        assertFalse(SnmpPeerFactory.matchNumericListOrRange("192", "10,172,193-199"));
     }
     
     public void testVerifyIpMatch() {

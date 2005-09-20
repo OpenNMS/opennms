@@ -182,7 +182,7 @@ public class MockService extends MockElement {
      * @return
      */
     public Event createDownEvent() {
-        return MockUtil.createNodeLostServiceEvent("Test", this);
+        return MockUtil.createNodeLostServiceEvent("Test", this, "Service Not Responding.");
     }
 
     /**
@@ -203,7 +203,7 @@ public class MockService extends MockElement {
      * @return
      */
     public Event createUnresponsiveEvent() {
-        return MockUtil.createServiceUnresponsiveEvent("Test", this);
+        return MockUtil.createServiceUnresponsiveEvent("Test", this, String.valueOf(ServiceMonitor.SERVICE_UNAVAILABLE));
     }
 
     /**

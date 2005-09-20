@@ -395,7 +395,11 @@ abstract public class PollerConfigManager implements PollerConfig {
         boolean has_specific = false;
         boolean has_range_include = false;
         boolean has_range_exclude = false;
-    
+ 
+        // if there are NO include rances then treat act as if the user include
+        // the range 0.0.0.0 - 255.255.255.255
+        has_range_include = pkg.getIncludeRangeCount() == 0;
+        
         long addr = IPSorter.convertToLong(iface);
         Enumeration eincs = pkg.enumerateIncludeRange();
         while (!has_range_include && eincs.hasMoreElements()) {
@@ -470,7 +474,7 @@ abstract public class PollerConfigManager implements PollerConfig {
                 // Ok its in the package. Now check the
                 // status of the service
                 String status = tsvc.getStatus();
-                if (status.equals("on"))
+                if (status == null || status.equals("on"))
                     result = true;
             }
         }

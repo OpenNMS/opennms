@@ -133,7 +133,7 @@ public class PollablesTest extends TestCase {
         }
 
         public PollStatus poll() {
-            return PollStatus.getPollStatus(m_monitor.poll(m_service.getNetInterface(), m_properties, m_package));
+            return PollStatus.getPollStatus(m_monitor.checkStatus(m_service.getNetInterface(), m_properties, m_package));
         }
         
         
@@ -608,7 +608,7 @@ public class PollablesTest extends TestCase {
         assertTime(4500);
         assertNotDeleted(pDot3Http);
         
-        m_anticipator.anticipateEvent(MockUtil.createServiceEvent("Test", EventConstants.DELETE_SERVICE_EVENT_UEI, mDot3Http));
+        m_anticipator.anticipateEvent(MockUtil.createServiceEvent("Test", EventConstants.DELETE_SERVICE_EVENT_UEI, mDot3Http, null));
         
         m_scheduler.next();
         

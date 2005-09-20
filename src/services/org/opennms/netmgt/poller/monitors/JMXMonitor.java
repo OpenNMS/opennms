@@ -57,7 +57,7 @@ public abstract class JMXMonitor extends IPv4LatencyMonitor {
     /* (non-Javadoc)
      * @see org.opennms.netmgt.poller.monitors.ServiceMonitor#poll(org.opennms.netmgt.poller.monitors.NetworkInterface, java.util.Map, org.opennms.netmgt.config.poller.Package)
      */
-    public int poll(NetworkInterface iface, Map map, Package pkg) {
+    public int checkStatus(NetworkInterface iface, Map map, Package pkg) {
 
         Category       log           = ThreadCategory.getInstance(getClass());
         boolean        res           = false;

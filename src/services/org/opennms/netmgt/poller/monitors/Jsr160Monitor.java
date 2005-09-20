@@ -33,6 +33,8 @@ package org.opennms.netmgt.poller.monitors;
 import java.net.InetAddress;
 import java.util.Map;
 
+import org.opennms.netmgt.config.poller.Package;
+import org.opennms.netmgt.poller.pollables.PollStatus;
 import org.opennms.protocols.jmx.connectors.ConnectionWrapper;
 import org.opennms.protocols.jmx.connectors.Jsr160ConnectionFactory;
 
@@ -52,4 +54,9 @@ public class Jsr160Monitor extends JMXMonitor {
     public ConnectionWrapper getMBeanServerConnection(Map parameterMap, InetAddress address) {
         return Jsr160ConnectionFactory.getMBeanServerConnection(parameterMap, address);
     }
+    
+    public PollStatus poll(NetworkInterface iface, Map parameters, Package pkg) {
+        return PollStatus.getPollStatus(checkStatus(iface, parameters, pkg));
+    }
+
 }

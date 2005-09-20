@@ -44,6 +44,7 @@ import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.config.CapsdConfigManager;
 import org.opennms.netmgt.config.DatabaseConnectionFactory;
+import org.opennms.netmgt.eventd.EventUtil;
 import org.opennms.netmgt.mock.EventAnticipator;
 import org.opennms.netmgt.mock.MockDatabase;
 import org.opennms.netmgt.mock.MockElement;
@@ -227,6 +228,16 @@ public class PollerTest extends TestCase {
     private void resetAnticipated() {
         m_anticipator.reset();
         m_outageAnticipator.reset();
+    }
+    
+    public void testNodeLostServiceWithReason() {
+        m_pollerConfig.setNodeOutageProcessingEnabled(true);
+        
+        MockService svc = m_network.getService(1, "192.168.1.1", "ICMP");
+        Event e = svc.createDownEvent();
+        String reasonParm = "eventReason";
+        String val = EventUtil.getNamedParmValue("parm["+ reasonParm +"]", e);
+        assertEquals("Service Not Responding.", val);
     }
 
     public void testCritSvcStatusPropagation() {
@@ -707,11 +718,13 @@ public class PollerTest extends TestCase {
         provisioner.setPollerConfig(m_pollerConfig);
         provisioner.setCapsdConfig(new TestCapsdConfigManager());
         
+        provisioner.setEventManager(m_eventMgr);
         provisioner.addServiceDNS("MyDNS", 3, 100, 1000, 500, 3000, 53, "www.opennms.org");
 
         assertNotNull("The service id for MyDNS is null", m_db.getServiceID("MyDNS"));
         MockUtil.println("The service id for MyDNS is: "+m_db.getServiceID("MyDNS").toString());
         
+        m_anticipator.reset();
         testSendNodeGainedService("MyDNS");
 
         

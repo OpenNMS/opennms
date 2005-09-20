@@ -77,6 +77,9 @@
   that you would like to interact with.  Then click drag for the time fram to 
   examine. This is still in the experimental phase, it works well FireFox and 
   IE, not with Konquerer or Safari
+- Merged feature-xmlrpc-branch.  This includes enhancements made to the XML-RPC
+  API as well as a new HttpMonitor that allows for virtual host, url, and page
+  content matching; litterals as well as reqular expressions.
 
 1.2.3 to 1.2.4
 ----------------------------------------------------------------------

@@ -47,6 +47,7 @@ import org.opennms.netmgt.mock.MockNetwork;
 import org.opennms.netmgt.mock.MockPollerConfig;
 import org.opennms.netmgt.mock.MockService;
 import org.opennms.netmgt.mock.OutageAnticipator;
+import org.opennms.netmgt.poller.monitors.ServiceMonitor;
 import org.opennms.netmgt.poller.pollables.PollEvent;
 import org.opennms.netmgt.poller.pollables.PollableNetwork;
 import org.opennms.netmgt.poller.pollables.PollableService;
@@ -198,21 +199,21 @@ public class PollContextTest extends TestCase {
 
     public void testCreateEvent() throws Exception {
         Date date = new Date();
-        Event nodeEvent = m_pollContext.createEvent(EventConstants.NODE_DOWN_EVENT_UEI, 1, null, null, date);
+        Event nodeEvent = m_pollContext.createEvent(EventConstants.NODE_DOWN_EVENT_UEI, 1, null, null, date, String.valueOf(ServiceMonitor.SERVICE_UNAVAILABLE));
         assertEquals(EventConstants.NODE_DOWN_EVENT_UEI, nodeEvent.getUei());
         assertEquals(1L, nodeEvent.getNodeid());
         assertEquals(null, nodeEvent.getInterface());
         assertEquals(null, nodeEvent.getService());
         assertEquals(date.toString(), EventConstants.parseToDate(nodeEvent.getTime()).toString());
         
-        Event ifEvent = m_pollContext.createEvent(EventConstants.INTERFACE_UP_EVENT_UEI, 1, InetAddress.getByName("192.168.1.1"), null, date);
+        Event ifEvent = m_pollContext.createEvent(EventConstants.INTERFACE_UP_EVENT_UEI, 1, InetAddress.getByName("192.168.1.1"), null, date, null);
         assertEquals(EventConstants.INTERFACE_UP_EVENT_UEI, ifEvent.getUei());
         assertEquals(1L, ifEvent.getNodeid());
         assertEquals("192.168.1.1", ifEvent.getInterface());
         assertEquals(null, ifEvent.getService());
         assertEquals(date.toString(), EventConstants.parseToDate(ifEvent.getTime()).toString());
         
-        Event svcEvent = m_pollContext.createEvent(EventConstants.NODE_GAINED_SERVICE_EVENT_UEI, 1, InetAddress.getByName("192.168.1.1"), "ICMP", date);
+        Event svcEvent = m_pollContext.createEvent(EventConstants.NODE_GAINED_SERVICE_EVENT_UEI, 1, InetAddress.getByName("192.168.1.1"), "ICMP", date, null);
         assertEquals(EventConstants.NODE_GAINED_SERVICE_EVENT_UEI, svcEvent.getUei());
         assertEquals(1L, svcEvent.getNodeid());
         assertEquals("192.168.1.1", svcEvent.getInterface());

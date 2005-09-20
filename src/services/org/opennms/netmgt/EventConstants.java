@@ -664,6 +664,11 @@ public class EventConstants {
      * The status to indicate which kind of external xmlrpc command to invoke.
      */
     public final static String PARM_SOURCE_EVENT_STATUS = "eventStatus";
+    
+    /**
+     * Used for retaining the reason from a monitor determines SERVICE_UNAVAILABLE
+     */
+    public final static String PARM_LOSTSERVICE_REASON = "eventReason";
 
     //
     // End event parms
