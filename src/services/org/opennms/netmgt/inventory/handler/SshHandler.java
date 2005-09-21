@@ -74,7 +74,11 @@ public class SshHandler implements DataHandler {
 						found=true;
 						dataItem += matcher.group();
 					}
-			item.setDataitem(dataItem);
+			String[] lines = dataItem.split("\n");
+			Dataitem dI = new Dataitem();
+			dI.setLine(lines);
+			item.setDataitem(dI);
+			//item.setDataitem(dataItem);
 			if(found){
 				inv.addItem(item);
 				}

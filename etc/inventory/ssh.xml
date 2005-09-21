@@ -1,13 +1,11 @@
 <?xml version="1.0" ?>
 <ssh-config>
- <session name="Operating System" user="root" password="dedalo199">
-	<command>cat version |awk  {'print $1 " " $2 " " $3 " " $5 " " $6 " " $7 " " $8 " " $9 " " $10 " " $11 " " $12 " " $13'}</command>
-	<correspondence item-name="OS">
-		<assettable-column>operatingsystem</assettable-column>
-	</correspondence>
+ <session name="Operating System" user="root" password="kloss1">
+	<command>cat /proc/version |awk  {'print $1 " " $2 " " $3 " " $5 " " $6 " " $7 " " $8 " " $9 " " $10 " " $11 " " $12 " " $13'}</command>
+	<correspondence item-name="OS" asset-field="operatingsystem" reg-expression="^.{63}"/>
  </session>
- <session name="Processor" user="root" password="dedalo199">
+ <session name="Processor" user="root" password="kloss1">
 	<command>cat /proc/cpuinfo </command>
-	<correspondence item-name="info"/>
+	<correspondence item-name="info" reg-expression="^.*"/>
  </session>
 </ssh-config>

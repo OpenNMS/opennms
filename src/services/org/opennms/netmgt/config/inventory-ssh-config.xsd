@@ -25,6 +25,7 @@
 	<element name="correspondence">
 		<complexType>
 			<attribute name="item-name" type="string" use="required"/>
+			<!--standard (java.util.regex) regular expression for item value handling-->
 			<attribute name="reg-expression" type="string" use="required" />
 			<attribute name="asset-field" type="string" use="optional" />
 		</complexType>

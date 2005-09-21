@@ -69,12 +69,13 @@ public class Saver {
 		}
 	}
 		
-	private String getDataItemValue(List itemTreeList){
+	private Dataitem getDataItem(List itemTreeList){
 		Item item = (Item) newItemMap.get(itemTreeList);
 		if(item!=null)
 		   return item.getDataitem();
-		else return "";
+		else return null;
 	}
+
 		
 	private void visit(Item currItem, List path, List list, Map itemMap){
 				List tmpPathList=new ArrayList(path);
@@ -84,7 +85,7 @@ public class Saver {
 						list.add(tmpPathList);
 						String assetField = currItem.getAssetField();
 						if(assetField!=null){
-							asset.put(assetField,getDataItemValue(tmpPathList));
+							asset.put(assetField,getDataItem(tmpPathList));
 						}
 				}else{
 			
@@ -136,7 +137,12 @@ public class Saver {
 					categoryFound=true;
 				if(currDbColumn.equals("userlastmodified"))
 					userLastModFound=true;
-				String dataItem = (String) asset.get(currDbColumn);
+				Dataitem dI = (Dataitem) asset.get(currDbColumn);
+				String dataItem = "";
+				String[]line = dI.getLine();
+				for(int i=0; i<line.length; i++){
+					dataItem+=line[i]+"\n";
+				}
 				strFields+=","+currDbColumn;
 				strValues+=",'"+dataItem+"'";
 				}
@@ -224,6 +230,11 @@ public class Saver {
 				nodeDirectory_repository = directory_repository + nodeId;
 
 			} catch (SQLException s) {
+				try{
+					dbConn.rollback();
+				}catch(SQLException sqle){
+					log.error("Unable to rollback on db. "+sqle);
+				}
 				log.error("Unable to read from DB");
 				saveMessage =
 					"Unable to save "+inventoryType+" configuration.<br>";
@@ -257,6 +268,11 @@ public class Saver {
 				newPathToFile = newDirRep + path+"["+ObjectformatDate.format(currTimeDate)+"]";
 			} catch (SQLException s) {
 				log.error("Unable to read from DB");
+				try{
+					dbConn.rollback();
+				}catch(SQLException sqle){
+					log.error("Unable to rollback on db. "+sqle);
+				}
 				saveMessage =
 					"Unable to save "+inventoryType+" configuration.<br>";
 				return InventoryMonitor.CONFIGURATION_NOT_SAVED;
@@ -278,6 +294,11 @@ public class Saver {
 			} catch (SQLException s) {
 				log.error("Unable to read from DB");
 				log.error(s);
+				try{
+					dbConn.rollback();
+				}catch(SQLException sqle){
+					log.error("Unable to rollback on db. "+sqle);
+				}
 				saveMessage = "Unable to save "+inventoryType+" configuration.<br>";
 				return InventoryMonitor.CONFIGURATION_NOT_SAVED;
 			}
@@ -295,7 +316,12 @@ public class Saver {
 						stmt.setString(2, inventoryType);
 						stmt.executeUpdate();
 					} catch (SQLException s) {
-						log.error("Unable to update DB");
+						log.error("Unable to update DB" + s);
+						try{
+							dbConn.rollback();
+						}catch(SQLException sqle){
+							log.error("Unable to rollback on db. "+sqle);
+						}
 						saveMessage = "Unable to save "+inventoryType+" configuration.<br>";
 						return InventoryMonitor.CONFIGURATION_NOT_SAVED;
 					}
@@ -313,6 +339,11 @@ public class Saver {
 					} catch (SQLException s) {
 						log.error("Unable to insert in DB");
 						log.error(s);
+						try{
+							dbConn.rollback();
+						}catch(SQLException sqle){
+							log.error("Unable to rollback on db. "+sqle);
+						}
 						saveMessage = "Unable to save "+inventoryType+" configuration.<br>";
 						return InventoryMonitor.CONFIGURATION_NOT_SAVED;
 					}
@@ -332,6 +363,11 @@ public class Saver {
 					} catch (SQLException s) {
 						log.error("Unable to update DB");
 						log.error(s);
+						try{
+							dbConn.rollback();
+						}catch(SQLException sqle){
+							log.error("Unable to rollback on db. "+sqle);
+						}
 						saveMessage = "Unable to save "+inventoryType+" configuration.<br>";
 						return InventoryMonitor.CONFIGURATION_NOT_SAVED;
 					}
@@ -339,7 +375,12 @@ public class Saver {
 				try{
 					dbConn.commit();
 				}catch(SQLException s){
-					log.error("Unable to commit to DB");
+					log.error("Unable to commit to DB "+s);
+					try{
+						dbConn.rollback();
+					}catch(SQLException sqle){
+						log.error("Unable to rollback on db. "+sqle);
+					}
 					return InventoryMonitor.CONFIGURATION_NOT_SAVED;
 				}
 			}else{
@@ -357,6 +398,11 @@ public class Saver {
 			} catch (SQLException s) {
 				log.error("Unable to insert in DB");
 				log.error(s);
+				try{
+					dbConn.rollback();
+				}catch(SQLException sqle){
+					log.error("Unable to rollback on db. "+sqle);
+				}
 				saveMessage = "Unable to save "+inventoryType+" configuration.<br>";
 				return InventoryMonitor.CONFIGURATION_NOT_SAVED;
 			}
@@ -376,6 +422,11 @@ public class Saver {
 			} catch (SQLException s) {
 				log.error("Unable to write into DB");
 				log.error(s);
+				try{
+					dbConn.rollback();
+				}catch(SQLException sqle){
+					log.error("Unable to rollback on db. "+sqle);
+				}
 				saveMessage = "Unable to save "+inventoryType+" configuration.<br>";
 				return InventoryMonitor.CONFIGURATION_NOT_SAVED;
 			}
@@ -393,7 +444,12 @@ public class Saver {
 					while(dbColumnIter.hasNext()){
 						counter++;
 						String currDbColumn = (String) dbColumnIter.next();
-						String dataItem = (String) asset.get(currDbColumn);
+						Dataitem dI = (Dataitem) asset.get(currDbColumn);
+						String[] line = dI.getLine();
+						String dataItem = "";
+						for(int i=0;i<line.length;i++){
+							dataItem+=line[i]+"\n";
+						}
 						dataItem=dataItem.replaceAll("[ \t]+"," ");
 						queryParam += currDbColumn+"='"+dataItem+"',";
 						}
@@ -407,6 +463,11 @@ public class Saver {
 						}
 					} catch (SQLException s) {
 							log.error("Unable to update DB" + s);
+							try{
+								dbConn.rollback();
+							}catch(SQLException sqle){
+								log.error("Unable to rollback on db. "+sqle);
+							}
 							saveMessage = "Unable to save "+inventoryType+" configuration.<br>";
 							return InventoryMonitor.CONFIGURATION_NOT_SAVED;
 					 }
@@ -419,6 +480,11 @@ public class Saver {
 					} catch (SQLException s) {
 						log.error("Unable to insert in DB");
 						log.error(s);
+						try{
+							dbConn.rollback();
+						}catch(SQLException sqle){
+							log.error("Unable to rollback on db. "+sqle);
+						}
 						saveMessage = "Unable to save "+inventoryType+" configuration.<br>";
 						return InventoryMonitor.CONFIGURATION_NOT_SAVED;
 					}
@@ -427,7 +493,12 @@ public class Saver {
 			try{
 				dbConn.commit();
 				}catch(SQLException sqle){
-					log.error("Unable to save into DB");
+					log.error("Unable to save into DB" + sqle);
+					try{
+						dbConn.rollback();
+					}catch(SQLException sqlex){
+						log.error("Unable to rollback on db. "+sqlex);
+					}
 					saveMessage = "Unable to save "+inventoryType+" configuration.<br>";
 					return InventoryMonitor.CONFIGURATION_NOT_SAVED;
 				}

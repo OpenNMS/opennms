@@ -72,7 +72,7 @@
 			tmpStatus="Not Active";
 		constraints.put("status", tmpStatus);
    }
-   int sort = InventoryComparator.NODE_LABEL_SORT;
+   int sort = InventoryComparator.LAST_POLL_TIME_SORT;
    if(request.getParameter( "sort" )!=null){
    	sort = Integer.parseInt(request.getParameter( "sort" ));
    }
@@ -108,9 +108,10 @@
  <table width="100%" cellspacing="0" cellpadding="2" border="0" align="center"><tr><td>&nbsp;</td><td>
 <table width="100%" cellspacing="0" cellpadding="4" border="1"  align="center">
   <tr align="center" bgcolor="#999999">
-    <td style="font-weight: bold; color: black;text-align: center;"><a href="<%=request.getContextPath()%>/conf/inventorylist.jsp?sort=<%=InventoryComparator.CATEGORY_SORT%>&node=<%=nodeIdString%>&pagesize=<%=pageSize%>&offset=<%=offset%>" title="Sort by inventory category (case insensitive)">Category</a></td>
+    <td style="font-weight: bold; color: black;text-align: center;">Node</td>
     <td style="font-weight: bold; color: black;text-align: center;"><a href="<%=request.getContextPath()%>/conf/inventorylist.jsp?sort=<%=InventoryComparator.LAST_POLL_TIME_SORT%>&node=<%=nodeIdString%>&pagesize=<%=pageSize%>&offset=<%=offset%>" title="Sort by last poll time (decr.)">Last Poll Time</a></td>
     <td style="font-weight: bold; color: black;text-align: center;"><a href="<%=request.getContextPath()%>/conf/inventorylist.jsp?sort=<%=InventoryComparator.CREATE_TIME_SORT%>&node=<%=nodeIdString%>&pagesize=<%=pageSize%>&offset=<%=offset%>" title="Sort by create time (decr.)">Create Time</a></td>
+    <td style="font-weight: bold; color: black;text-align: center;"><a href="<%=request.getContextPath()%>/conf/inventorylist.jsp?sort=<%=InventoryComparator.CATEGORY_SORT%>&node=<%=nodeIdString%>&pagesize=<%=pageSize%>&offset=<%=offset%>" title="Sort by inventory category (case insensitive)">Inventory Category</a></td>
     <td style="font-weight: bold; color: black;text-align: center;"><a href="<%=request.getContextPath()%>/conf/inventorylist.jsp?sort=<%=InventoryComparator.STATUS_SORT%>&node=<%=nodeIdString%>&pagesize=<%=pageSize%>&offset=<%=offset%>" title="Sort by status">Status</a></td>
   </tr>
 
@@ -132,16 +133,17 @@ for(int t = offset; t < ((n <(offset + pageSize))? n : offset + pageSize); t++)
 		currStatus="Deleted (Node)";
 	String inventName = inventories[t].getName();
 	%>
-    <td><a href="<%=request.getContextPath()%>/conf/showinventory.jsp?file=<%=pathFile%>&category=<%=inventName%>&lastpolltime=<%=lastPollTime%>&nodelabel=<%=nodeLabel%>"> <%=inventName%></a></td>
+    <td><a href="<%=request.getContextPath()%>/conf/showinventory.jsp?file=<%=pathFile%>&category=<%=inventName%>&lastpolltime=<%=lastPollTime%>&nodelabel=<%=nodeLabel%>"> <%=nodeLabel%></a></td>
     <td><%=lastPollTime%></td>
     <td><%=inventories[t].getCreateTime()%></td>
+    <td><%=inventName%></td>
     <td align="center"><%=currStatus%></td>
   </tr>
     <%
 }
 %>
 <tr> 
-          <td colspan="4" align="center" bgcolor="#999999">
+          <td colspan="5" align="center" bgcolor="#999999">
 <%
 		/*int npage = n / pageSize;
 		if (n%pageSize != 0) npage++;
@@ -194,7 +196,7 @@ for(int t = offset; t < ((n <(offset + pageSize))? n : offset + pageSize); t++)
 }
 else
 	{
-	out.println("<h3>&nbsp;No inventory found.</h3>");
+	out.println("<h3>&nbsp;Inventories not Found.</h3>");
 	}
 
 
@@ -281,7 +283,7 @@ else
     	    <tr>
     	       <td>&nbsp;</td>
 	       <td>&nbsp;
-    	           No search constraint defined
+    	           No search constraints defined
     	       </td>
     	    </td>
 	    <%}
@@ -304,9 +306,10 @@ if(n >0)
  <table width="100%" cellspacing="0" cellpadding="2" border="0" align="center"><tr><td>&nbsp;</td><td>
 <table width="100%" cellspacing="0" cellpadding="4" border="1" align="center">
   <tr align="center" bgcolor="#999999">
-    <td style="font-weight: bold; color: black;text-align: center;"><a href="<%=request.getContextPath()%>/conf/inventorylist.jsp?sort=<%=InventoryComparator.CATEGORY_SORT%>&relativetime=<%=lastPollTimeInt%>&status=<%=status%>&name=<%=name%>&iplike=<%=ipLikeParm%>&nodename=<%=nameParm%>&pagesize=<%=pageSize%>&offset=<%=offset%>" title="sort by inventory category">Category</a></td> 
+    <td style="font-weight: bold; color: black;text-align: center;"><a href="<%=request.getContextPath()%>/conf/inventorylist.jsp?sort=<%=InventoryComparator.NODE_LABEL_SORT%>&relativetime=<%=lastPollTimeInt%>&status=<%=status%>&name=<%=name%>&iplike=<%=ipLikeParm%>&nodename=<%=nameParm%>&pagesize=<%=pageSize%>&offset=<%=offset%>" title="sort by node label (case insensitive)">Node</a></td> 
     <td style="font-weight: bold; color: black;text-align: center;"><a href="<%=request.getContextPath()%>/conf/inventorylist.jsp?sort=<%=InventoryComparator.LAST_POLL_TIME_SORT%>&relativetime=<%=lastPollTimeInt%>&status=<%=status%>&name=<%=name%>&iplike=<%=ipLikeParm%>&nodename=<%=nameParm%>&pagesize=<%=pageSize%>&offset=<%=offset%>" title="sort by last poll time (decr.)">Last Poll Time</a></td> 
     <td style="font-weight: bold; color: black;text-align: center;"><a href="<%=request.getContextPath()%>/conf/inventorylist.jsp?sort=<%=InventoryComparator.CREATE_TIME_SORT%>&relativetime=<%=lastPollTimeInt%>&status=<%=status%>&name=<%=name%>&iplike=<%=ipLikeParm%>&nodename=<%=nameParm%>&pagesize=<%=pageSize%>&offset=<%=offset%>" title="sort by create time (decr.)">Create Time</a></td> 
+    <td style="font-weight: bold; color: black;text-align: center;"><a href="<%=request.getContextPath()%>/conf/inventorylist.jsp?sort=<%=InventoryComparator.CATEGORY_SORT%>&relativetime=<%=lastPollTimeInt%>&status=<%=status%>&name=<%=name%>&iplike=<%=ipLikeParm%>&nodename=<%=nameParm%>&pagesize=<%=pageSize%>&offset=<%=offset%>" title="sort by inventory category">Inventory Category</a></td> 
     <td style="font-weight: bold; color: black;text-align: center;"><a href="<%=request.getContextPath()%>/conf/inventorylist.jsp?sort=<%=InventoryComparator.STATUS_SORT%>&relativetime=<%=lastPollTimeInt%>&status=<%=status%>&name=<%=name%>&iplike=<%=ipLikeParm%>&nodename=<%=nameParm%>&pagesize=<%=pageSize%>&offset=<%=offset%>" title="sort by status">Status</a></td> 
   </tr>
 
@@ -328,16 +331,17 @@ for(int t = offset; t < ((n <(offset + pageSize))? n : offset + pageSize); t++)
 		currStatus="Deleted (Node)";
 	String inventName = inventories[t].getName();
 	%>
-    <td><a href="<%=request.getContextPath()%>/conf/showinventory.jsp?file=<%=pathFile%>&category=<%=inventName%>&lastpolltime=<%=lastPollTime%>&nodelabel=<%=nodeLabel%>"> <%=inventName%></a></td>
+    <td><a href="<%=request.getContextPath()%>/conf/showinventory.jsp?file=<%=pathFile%>&category=<%=inventName%>&lastpolltime=<%=lastPollTime%>&nodelabel=<%=nodeLabel%>"> <%=nodeLabel%></a></td>
     <td><%=lastPollTime%></td>
     <td><%=inventories[t].getCreateTime()%></td>
+    <td><%=inventName%></td>
     <td align="center"><%=currStatus%></td>
   </tr>
     <%
 }
 %>
 <tr> 
-          <td colspan="4" align="center" bgcolor="#999999">
+          <td colspan="5" align="center" bgcolor="#999999">
 <%
 		int npage = n / pageSize;
 		if (n%pageSize != 0) npage++;
