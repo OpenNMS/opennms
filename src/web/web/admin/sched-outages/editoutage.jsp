@@ -500,7 +500,7 @@ for(int i=0; i<nodeList.length; i++) {
 <b>Interfaces:</b><BR>
 <select name="newInterface">
         <%
-	org.opennms.web.element.Interface[] allInterfaces=NetworkElementFactory.getAllInterfaces();
+	org.opennms.web.element.Interface[] allInterfaces=NetworkElementFactory.getAllInterfaces(false);
 	Arrays.sort(allInterfaces, new Comparator() {
 		public int compare(Object o1, Object o2) {
 			org.opennms.web.element.Interface i1=(org.opennms.web.element.Interface)o1;

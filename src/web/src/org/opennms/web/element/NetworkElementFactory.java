@@ -408,7 +408,19 @@ public class NetworkElementFactory extends Object {
         return intfs;
     }
 
+    /*
+     * Returns all interfaces, including their SNMP information
+     */
     public static Interface[] getAllInterfaces() throws SQLException {
+        return getAllInterfaces(true);
+    }
+
+    /*
+     * Returns all interfaces, but only includes snmp data if includeSNMP is true
+     * This may be useful for pages that don't need snmp data and don't want to execute
+     * a sub-query per interface!
+     */
+    public static Interface[] getAllInterfaces(boolean includeSNMP) throws SQLException {
         Interface[] intfs = null;
         Connection conn = Vault.getDbConnection();
 
@@ -421,7 +433,9 @@ public class NetworkElementFactory extends Object {
             rs.close();
             stmt.close();
 
-            augmentInterfacesWithSnmpData(intfs, conn);
+            if(includeSNMP) {
+                augmentInterfacesWithSnmpData(intfs, conn);
+            }            
         } finally {
             Vault.releaseDbConnection(conn);
         }
