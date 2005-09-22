@@ -16,7 +16,7 @@
   domain-literal per RFC 2822.  Also fix a logging bug where the subject
   was logged twice instead of logging the subject and the message contents.
 - Performance enhancement for the Scheduled outages editing page. Bug 1340.
-  Thanks, MikeJ!
+  Thanks, Craig M.!
 
 1.2.3 to 1.2.4
 ----------------------------------------------------------------------
