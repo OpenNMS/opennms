@@ -39,16 +39,13 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.Vector;
 
-import org.apache.xmlrpc.XmlRpc;
-import org.apache.xmlrpc.XmlRpcClient;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.jmock.Mock;
 import org.jmock.MockObjectTestCase;
-import org.opennms.netmgt.config.CapsdConfigFactory;
 import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.config.CapsdConfigFactory;
 import org.opennms.netmgt.config.CapsdConfigManager;
 import org.opennms.netmgt.config.DatabaseConnectionFactory;
 import org.opennms.netmgt.config.PollerConfigFactory;
@@ -56,13 +53,12 @@ import org.opennms.netmgt.config.PollerConfigManager;
 import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.config.poller.Service;
 import org.opennms.netmgt.mock.MockDatabase;
-import org.opennms.netmgt.mock.MockLogAppender;
 import org.opennms.netmgt.mock.MockEventIpcManager;
+import org.opennms.netmgt.mock.MockLogAppender;
 import org.opennms.netmgt.mock.MockUtil;
 import org.opennms.netmgt.rrd.RrdConfig;
 import org.opennms.netmgt.rrd.RrdStrategy;
 import org.opennms.netmgt.rrd.RrdUtils;
-import org.opennms.netmgt.xmlrpcd.jmx.Provisioner;
 
 public class OpenNMSProvisionerTest extends MockObjectTestCase {
 
@@ -339,8 +335,7 @@ public class OpenNMSProvisionerTest extends MockObjectTestCase {
     public void testAddServiceHTTP() throws Exception {
         expectUpdateEvent();
         expectRrdInitialize();
-        // TODO: HttpMonitor BackLevel
-        m_provisioner.addServiceHTTP("MyHTTP", 22, 2222, 22222, 222, 222222, 212, "202", "Home", "/index.html"/*, null, null*/);
+        m_provisioner.addServiceHTTP("MyHTTP", 22, 2222, 22222, 222, 222222, 212, "202", "Home", "/index.html", null, null);
         checkHTTPConfiguration("MyHTTP", "MyHTTP", 22, 2222, 22222, 222, 222222, 212, "202", "Home", "/index.html");
         verifyEvents();
     }
@@ -348,8 +343,7 @@ public class OpenNMSProvisionerTest extends MockObjectTestCase {
     public void testAddServiceHTTPNoResponseCode() throws Exception {
         expectUpdateEvent();
         expectRrdInitialize();
-        // TODO: HttpMonitor BackLevel
-        m_provisioner.addServiceHTTP("MyHTTP", 22, 2222, 22222, 222, 222222, 212, "", "Home", "/index.html"/*, "", ""*/);
+        m_provisioner.addServiceHTTP("MyHTTP", 22, 2222, 22222, 222, 222222, 212, "", "Home", "/index.html", "", "");
         checkHTTPConfiguration("MyHTTP", "MyHTTP", 22, 2222, 22222, 222, 222222, 212, "", "Home", "/index.html");
         verifyEvents();
     }
@@ -366,8 +360,7 @@ public class OpenNMSProvisionerTest extends MockObjectTestCase {
     public void testAddServiceHTTPS() throws Exception {
         expectUpdateEvent();
         expectRrdInitialize();
-        // TODO: HttpMonitor BackLevel
-        m_provisioner.addServiceHTTPS("MyHTTPS", 33, 3333, 33333, 333, 333333, 313, "303", "Secure", "/secure.html"/*, "", ""*/);
+        m_provisioner.addServiceHTTPS("MyHTTPS", 33, 3333, 33333, 333, 333333, 313, "303", "Secure", "/secure.html", "", "");
         checkHTTPSConfiguration("MyHTTPS", "MyHTTPS", 33, 3333, 33333, 333, 333333, 313, "303", "Secure", "/secure.html");
         verifyEvents();
     }
