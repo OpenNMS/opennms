@@ -335,7 +335,7 @@ public class OpenNMSProvisionerTest extends MockObjectTestCase {
     public void testAddServiceHTTP() throws Exception {
         expectUpdateEvent();
         expectRrdInitialize();
-        m_provisioner.addServiceHTTP("MyHTTP", 22, 2222, 22222, 222, 222222, 212, "202", "Home", "/index.html", null, null);
+        m_provisioner.addServiceHTTP("MyHTTP", 22, 2222, 22222, 222, 222222, 212, "202", "Home", "/index.html", null, null, null);
         checkHTTPConfiguration("MyHTTP", "MyHTTP", 22, 2222, 22222, 222, 222222, 212, "202", "Home", "/index.html");
         verifyEvents();
     }
@@ -343,7 +343,7 @@ public class OpenNMSProvisionerTest extends MockObjectTestCase {
     public void testAddServiceHTTPNoResponseCode() throws Exception {
         expectUpdateEvent();
         expectRrdInitialize();
-        m_provisioner.addServiceHTTP("MyHTTP", 22, 2222, 22222, 222, 222222, 212, "", "Home", "/index.html", "", "");
+        m_provisioner.addServiceHTTP("MyHTTP", 22, 2222, 22222, 222, 222222, 212, "", "Home", "/index.html", "user", "pw", "");
         checkHTTPConfiguration("MyHTTP", "MyHTTP", 22, 2222, 22222, 222, 222222, 212, "", "Home", "/index.html");
         verifyEvents();
     }
@@ -360,7 +360,7 @@ public class OpenNMSProvisionerTest extends MockObjectTestCase {
     public void testAddServiceHTTPS() throws Exception {
         expectUpdateEvent();
         expectRrdInitialize();
-        m_provisioner.addServiceHTTPS("MyHTTPS", 33, 3333, 33333, 333, 333333, 313, "303", "Secure", "/secure.html", "", "");
+        m_provisioner.addServiceHTTPS("MyHTTPS", 33, 3333, 33333, 333, 333333, 313, "303", "Secure", "/secure.html", "user", "pw", "");
         checkHTTPSConfiguration("MyHTTPS", "MyHTTPS", 33, 3333, 33333, 333, 333333, 313, "303", "Secure", "/secure.html");
         verifyEvents();
     }

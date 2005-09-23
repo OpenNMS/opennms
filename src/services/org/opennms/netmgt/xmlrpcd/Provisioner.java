@@ -107,7 +107,7 @@ public interface Provisioner {
      * @param downTimeDuration <code>int</> the amount of time in milliseconds the downtime polling interval is in effect
      * @return Always returns true.  Check for XML-RPC exception.
      */
-    boolean addServiceHTTP(String serviceId, int retries, int timeout, int interval, int downTimeInterval, int downTimeDuration, int port, String responseCode, String contentCheck, String url, String auth, String agent) throws MalformedURLException;
+    boolean addServiceHTTP(String serviceId, int retries, int timeout, int interval, int downTimeInterval, int downTimeDuration, int port, String responseCode, String contentCheck, String url, String user, String passwd, String agent) throws MalformedURLException;
 
     /**
      * This method defines a new package and HTTPS service using the <code>serviceId</code> as the name of the
@@ -125,7 +125,7 @@ public interface Provisioner {
      * @param downTimeDuration <code>int</> the amount of time in milliseconds the downtime polling interval is in effect
      * @return Always returns true.  Check for XML-RPC exception.
      */
-    boolean addServiceHTTPS(String serviceId, int retries, int timeout, int interval, int downTimeInterval, int downTimeDuration, int port, String responseCode, String contentCheck, String url, String auth, String agent) throws MalformedURLException;
+    boolean addServiceHTTPS(String serviceId, int retries, int timeout, int interval, int downTimeInterval, int downTimeDuration, int port, String responseCode, String contentCheck, String url, String user, String passwd, String agent) throws MalformedURLException;
 
     /**
      * This method defines a new package and Database(JDBC) service using the <code>serviceId</code> as the name of the

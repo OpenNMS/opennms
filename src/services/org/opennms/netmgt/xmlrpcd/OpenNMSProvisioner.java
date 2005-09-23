@@ -473,7 +473,7 @@ private EventIpcManager m_eventManager;
         return addService(serviceId, retry, timeout, interval, downTimeInterval, downTimeDuration, TCP_MONITOR, TCP_PLUGIN, parm);
     }
 
-    public boolean addServiceHTTP(String serviceId, int retry, int timeout, int interval, int downTimeInterval, int downTimeDuration, int port, String response, String responseText, String url, String auth, String agent) throws MalformedURLException {
+    public boolean addServiceHTTP(String serviceId, int retry, int timeout, int interval, int downTimeInterval, int downTimeDuration, int port, String response, String responseText, String url, String user, String passwd, String agent) throws MalformedURLException {
 //        System.err.println("Called OpenNMSProvisioner.addServiceHTTP("+
 //                           serviceId+", "+
 //                           retry+", "+
@@ -492,6 +492,8 @@ private EventIpcManager m_eventManager;
         checkContentCheck(responseText);
         checkUrl(url);
         
+        String auth = (user == null ? null : user+":"+passwd);
+        
         List parmList = new ArrayList();
         parmList.add(new Parm("port", port));
         parmList.add(new Parm("response", response));
@@ -503,7 +505,7 @@ private EventIpcManager m_eventManager;
         return addService(serviceId, retry, timeout, interval, downTimeInterval, downTimeDuration, HTTP_MONITOR, HTTP_PLUGIN, (Parm[]) parmList.toArray(new Parm[parmList.size()]));
     }
 
-    public boolean addServiceHTTPS(String serviceId, int retry, int timeout, int interval, int downTimeInterval, int downTimeDuration, int port, String response, String responseText, String url, String auth, String agent) throws MalformedURLException {
+    public boolean addServiceHTTPS(String serviceId, int retry, int timeout, int interval, int downTimeInterval, int downTimeDuration, int port, String response, String responseText, String url, String user, String passwd, String agent) throws MalformedURLException {
 //        System.err.println("Called OpenNMSProvisioner.addServiceHTTPS("+
 //                           serviceId+", "+
 //                           retries+", "+
@@ -522,6 +524,8 @@ private EventIpcManager m_eventManager;
         checkContentCheck(responseText);
         checkUrl(url);
         
+        String auth = (user == null ? null : user+":"+passwd);
+
         List parmList = new ArrayList();
         parmList.add(new Parm("port", port));
         parmList.add(new Parm("response", response));
