@@ -83,6 +83,15 @@
 %define platform_match  true
 %endif
 
+%if "%{platform}" == "linux-x64-fedora-4"
+%define initdir         /etc
+%define psql_service    postgresql
+%define requires        postgresql-server >= 7.2, j2sdk >= 1.4, xorg-x11-deprecated-libs
+%define webapp_requires tomcat4 >= 4.1.18
+%define release_pkg     %{release}_fc4x64
+%define platform_match  true
+%endif
+
 %if "%{platform}" == "linux-i386-mandrake-7"
 %define	initdir		/etc
 %define psql_service	postgresql
