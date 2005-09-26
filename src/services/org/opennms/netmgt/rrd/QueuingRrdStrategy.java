@@ -578,7 +578,9 @@ class QueuingRrdStrategy implements RrdStrategy, Runnable {
                 filesWithSignificantWork.addLast(op.getFileName());
             else
                 filesWithInsignificantWork.addLast(op.getFileName());
-        } else if (!PRIORITIZE_SIGS || (op.isSignificant() && hasOnlyInsignificant(pendingOperations))) {
+        } else if (PRIORITIZE_SIGS && op.isSignificant() && hasOnlyInsignificant(pendingOperations)) {
+            // only do this when we are prioritizing as this bumps files from inSig
+            // up to insig
             // promote the file to the significant list if this is the first
             // significant
             filesWithSignificantWork.addLast(op.getFileName());
