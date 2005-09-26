@@ -65,7 +65,6 @@ import org.opennms.netmgt.config.DataCollectionConfigFactory;
 import org.opennms.netmgt.config.DatabaseConnectionFactory;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.poller.monitors.NetworkInterface;
-import org.opennms.netmgt.rrd.RRDDataSource;
 import org.opennms.netmgt.rrd.RrdException;
 import org.opennms.netmgt.rrd.RrdUtils;
 import org.opennms.netmgt.utils.AlphaNumeric;
@@ -76,7 +75,6 @@ import org.opennms.netmgt.utils.ParameterMap;
 import org.opennms.netmgt.utils.SnmpResponseHandler;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.protocols.snmp.SnmpObjectId;
-import org.opennms.protocols.snmp.SnmpOctetString;
 import org.opennms.protocols.snmp.SnmpPduBulk;
 import org.opennms.protocols.snmp.SnmpPduPacket;
 import org.opennms.protocols.snmp.SnmpPduRequest;
@@ -84,7 +82,6 @@ import org.opennms.protocols.snmp.SnmpPeer;
 import org.opennms.protocols.snmp.SnmpSMI;
 import org.opennms.protocols.snmp.SnmpSession;
 import org.opennms.protocols.snmp.SnmpSyntax;
-import org.opennms.protocols.snmp.SnmpTimeTicks;
 import org.opennms.protocols.snmp.SnmpVarBind;
 
 /**
@@ -835,8 +832,10 @@ final class SnmpCollector implements ServiceCollector {
 
         // Retrieve interface count and it to the interface's attributes
         // for retrieval during poll()
+        //
+        // To save start up time we wait and use the data retrieved during collect
         // 
-        iface.setAttribute(INTERFACE_COUNT_KEY, new Integer(getInterfaceCount(peer)));
+        //iface.setAttribute(INTERFACE_COUNT_KEY, new Integer(getInterfaceCount(peer)));
 
         if (log.isDebugEnabled())
             log.debug("initialize: initialization completed for " + ipAddr.getHostAddress());
@@ -1566,6 +1565,13 @@ final class SnmpCollector implements ServiceCollector {
         // Get SnmpPeer object for this interface
         //
         SnmpPeer peer = SnmpPeerFactory.getInstance().getPeer(addr);
+        
+        // if we come back is v1 then don't even try v2
+        if (peer.getParameters().getVersion() == SnmpSMI.SNMPV1) {
+            log.info("testSnmpV2Support: Address "+addr+" configured to use SNMPv1.  Not bothering to do a V1 test.");
+            return false;
+        }
+        
 
         // Force version to SNMPv2
         peer.getParameters().setVersion(SnmpSMI.SNMPV2);
