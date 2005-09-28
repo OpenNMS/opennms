@@ -44,6 +44,7 @@
         <event-file>@install.etc.dir@/events/NetApp.events.xml</event-file>
         <event-file>@install.etc.dir@/events/Netbotz.events.xml</event-file>
         <event-file>@install.etc.dir@/events/Netgear.events.xml</event-file>
+        <event-file>@install.etc.dir@/events/Netscreen.events.xml</event-file>
         <event-file>@install.etc.dir@/events/Nokia.events.xml</event-file>
         <event-file>@install.etc.dir@/events/NORTEL.Contivity.events.xml</event-file>
         <event-file>@install.etc.dir@/events/Novell.events.xml</event-file>

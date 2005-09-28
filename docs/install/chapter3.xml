@@ -243,6 +243,8 @@
         specify the exact JRE you want OpenNMS to use:</para>
 
         <programlisting><computeroutput># </computeroutput><command>$OPENNMS_HOME/bin/runjava -S &lt;path to JRE&gt;</command></programlisting>
+
+	<para>Note that you will need the path to the "java" executable - i.e. the file named "java" - usually in $JAVA_HOME/bin.</para>
       </section>
     </section>
 
