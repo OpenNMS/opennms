@@ -215,8 +215,7 @@ doStart(){
     esac
 
 
-    $JAVA_CMD -classpath $APP_CLASSPATH -Dopennms.home=$OPENNMS_HOME \
-	org.opennms.netmgt.vmmgr.DatabaseChecker
+    $JAVA_CMD -Dopennms.home=$OPENNMS_HOME -jar $BOOTSTRAP check
     if [ $? -ne 0 ]; then
 	echo "OpenNMS runs better if you start up the database first." >&2
 	return 1
@@ -238,12 +237,10 @@ doStart(){
 
     if [ "$SERVICE" = "" ]; then
 	APP_VM_PARMS="$JPDA $MANAGER_OPTIONS"
-	APP_CLASS="$MANAGER_CLASS"
 	APP_PARMS_BEFORE="start"
 
     else
 	APP_VM_PARMS="$CONTROLLER_OPTIONS"
-	APP_CLASS="$CONTROLLER_CLASS"
 	APP_PARMS_BEFORE="start $SERVICE"
     fi
 
@@ -253,7 +250,7 @@ doStart(){
 	echo "begin ulimit settings:" >> "$REDIRECT"
 	ulimit -a >> "$REDIRECT"
 	echo "end ulimit settings" >> "$REDIRECT"
-	CMD="$JAVA_CMD -classpath $APP_CLASSPATH $APP_VM_PARMS $APP_CLASS $APP_PARMS_BEFORE "$@" $APP_PARMS_AFTER"
+	CMD="$JAVA_CMD $APP_VM_PARMS -jar $BOOTSTRAP $APP_PARMS_BEFORE "$@" $APP_PARMS_AFTER"
 	echo "Executing command: $CMD" >> "$REDIRECT"
 	$CMD >>"$REDIRECT" 2>&1 &
 	echo $! > "$OPENNMS_PIDFILE"
@@ -284,10 +281,9 @@ doStart(){
 doPause(){
     if doStatus; then
 	APP_VM_PARMS="$CONTROLLER_OPTIONS"
-	APP_CLASS="$CONTROLLER_CLASS"
 	APP_PARMS_BEFORE="-u $INVOKE_URL pause $SERVICE"
 	if [ -z "$NOEXECUTE" ]; then
-	    $JAVA_CMD -classpath $APP_CLASSPATH $APP_VM_PARMS $APP_CLASS $APP_PARMS_BEFORE "$@" $APP_PARMS_AFTER
+	    $JAVA_CMD $APP_VM_PARMS -jar $BOOTSTRAP $APP_PARMS_BEFORE "$@" $APP_PARMS_AFTER
 	fi
     else
 	echo "OpenNMS is not running."
@@ -297,10 +293,9 @@ doPause(){
 doResume(){
     if doStatus; then
 	APP_VM_PARMS="$CONTROLLER_OPTIONS"
-	APP_CLASS="$CONTROLLER_CLASS"
 	APP_PARMS_BEFORE="-u $INVOKE_URL resume $SERVICE"
 	if [ -z "$NOEXECUTE" ]; then
-	    $JAVA_CMD -classpath $APP_CLASSPATH $APP_VM_PARMS $APP_CLASS $APP_PARMS_BEFORE "$@" $APP_PARMS_AFTER
+	    $JAVA_CMD $APP_VM_PARMS -jar $BOOTSTRAP $APP_PARMS_BEFORE "$@" $APP_PARMS_AFTER
 	fi
     else
 	echo "OpenNMS is not running."
@@ -336,9 +331,8 @@ doStop() {
 
 	if [ -z "$NOEXECUTE" ]; then
 	    APP_VM_PARMS="$CONTROLLER_OPTIONS"
-	    APP_CLASS="$CONTROLLER_CLASS"
 	    APP_PARMS_BEFORE="-u $INVOKE_URL stop $SERVICE"
-	    $JAVA_CMD -classpath $APP_CLASSPATH $APP_VM_PARMS $APP_CLASS $APP_PARMS_BEFORE "$@" $APP_PARMS_AFTER
+	    $JAVA_CMD $APP_VM_PARMS -jar $BOOTSTRAP $APP_PARMS_BEFORE "$@" $APP_PARMS_AFTER
 	fi
 
 	sleep 5
@@ -352,9 +346,8 @@ doStop() {
 doKill(){
     if doStatus; then
 	APP_VM_PARMS="$CONTROLLER_OPTIONS"
-	APP_CLASS="$CONTROLLER_CLASS"
 	APP_PARMS_BEFORE="-u $INVOKE_URL exit"
-	$JAVA_CMD -classpath $APP_CLASSPATH $APP_VM_PARMS $APP_CLASS $APP_PARMS_BEFORE "$@" $APP_PARMS_AFTER
+	$JAVA_CMD $APP_VM_PARMS -jar $BOOTSTRAP $APP_PARMS_BEFORE "$@" $APP_PARMS_AFTER
     fi
 
     pid="`test -f $OPENNMS_PIDFILE && cat $OPENNMS_PIDFILE`"
@@ -376,9 +369,8 @@ doStatus(){
 
     if [ -z "$NOEXECUTE" ]; then
 	APP_VM_PARMS="$CONTROLLER_OPTIONS"
-	APP_CLASS="$CONTROLLER_CLASS"
 	APP_PARMS_BEFORE="-u $INVOKE_URL $STATUS_VERBOSE status"
-	$JAVA_CMD -classpath $APP_CLASSPATH $APP_VM_PARMS $APP_CLASS $APP_PARMS_BEFORE "$@" $APP_PARMS_AFTER
+	$JAVA_CMD $APP_VM_PARMS -jar $BOOTSTRAP $APP_PARMS_BEFORE "$@" $APP_PARMS_AFTER
     fi
 }
 
@@ -423,16 +415,19 @@ cd "$OPENNMS_HOME" || { echo "could not \"cd $OPENNMS_HOME\"" >&2; exit 1; }
 # define needed for grep to find opennms easily
 JAVA_CMD="$OPENNMS_HOME/bin/runjava -r $RUNJAVA_OPTIONS --"
 
-if [ x"$ADDITIONAL_CLASSPATH" != x"" ]; then
-    APP_CLASSPATH="$ADDITIONAL_CLASSPATH:$OPENNMS_HOME/etc"
-else
-    APP_CLASSPATH="$OPENNMS_HOME/etc"
-fi
-for jar in $OPENNMS_HOME/lib/*.jar; do
-    APP_CLASSPATH="$APP_CLASSPATH:$jar"
-done
+#
+#if [ x"$ADDITIONAL_CLASSPATH" != x"" ]; then
+#    APP_CLASSPATH="$ADDITIONAL_CLASSPATH:$OPENNMS_HOME/etc"
+#else
+#    APP_CLASSPATH="$OPENNMS_HOME/etc"
+#fi
+#for jar in $OPENNMS_HOME/lib/*.jar; do
+#    APP_CLASSPATH="$APP_CLASSPATH:$jar"
+#done
+#
 
-MANAGER_CLASS=org.opennms.netmgt.vmmgr.Manager
+BOOTSTRAP="$OPENNMS_HOME/lib/opennms_bootstrap.jar"
+
 MANAGER_OPTIONS="-DOPENNMSLAUNCH"
 MANAGER_OPTIONS="$MANAGER_OPTIONS -Dopennms.home=$OPENNMS_HOME"
 MANAGER_OPTIONS="$MANAGER_OPTIONS -Djcifs.properties=$OPENNMS_HOME/etc/jcifs.properties"
@@ -451,7 +446,6 @@ if [ -n "$HOTSPOT" -a "$HOTSPOT" = true ] ; then
     JAVA_CMD="$JAVA_CMD -server"
 fi
 
-CONTROLLER_CLASS=org.opennms.netmgt.vmmgr.Manager
 CONTROLLER_OPTIONS="-Dopennms.home=$OPENNMS_HOME"
 CONTROLLER_OPTIONS="$CONTROLLER_OPTIONS -Dlog4j.configuration=log4j.properties"
 

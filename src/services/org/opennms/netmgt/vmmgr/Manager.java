@@ -532,6 +532,16 @@ public class Manager implements ManagerMBean {
                 log.error("error invoking status command", t);
 		System.exit(1);
             }
+	} else if ("check".equals(command)) {
+	    try {
+		DatabaseChecker checker = new DatabaseChecker();
+		checker.check();
+            } catch (Throwable t) {
+                log.error("error invoking check command", t);
+		System.err.println(t);
+		System.exit(1);
+            }
+	    System.exit(0);
 	} else if ("exit".equals(command)) {
             try {
                 URL invoke = new URL(invokeUrl + "&operation=doSystemExit");

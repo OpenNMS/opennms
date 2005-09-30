@@ -92,7 +92,7 @@ public class DatabaseChecker {
     
 
     /**
-     * Private constructor
+     * Protected constructor
      * 
      * @exception java.io.IOException
      *                Thrown if the specified config file cannot be read
@@ -101,7 +101,7 @@ public class DatabaseChecker {
      * @exception org.exolab.castor.xml.ValidationException
      *                Thrown if the contents do not match the required schema.
      */
-    private DatabaseChecker(String configFile) throws IOException,
+    protected DatabaseChecker(String configFile) throws IOException,
 						      MarshalException,
 						      ValidationException,
 						      ClassNotFoundException {
@@ -149,7 +149,7 @@ public class DatabaseChecker {
      *                Thrown if the contents do not match the required schema.
      * 
      */
-    private DatabaseChecker() throws IOException,
+    protected DatabaseChecker() throws IOException,
 				     MarshalException,
 				     ValidationException,
 				     ClassNotFoundException {

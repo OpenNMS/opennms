@@ -75,6 +75,7 @@ your distribution.
   <property name="postgresql.source.dir" value="${source.dir}/postgresql"/>
   <property name="report.source.dir" value="${source.dir}/report"/>
   <property name="services.source.dir" value="${source.dir}/services"/>
+  <property name="bootstrap.source.dir" value="${source.dir}/bootstrap"/>
   <property name="install.source.dir" value="${source.dir}/install"/>
   <property name="web.source.dir" value="${source.dir}/web/src"/>
 
@@ -167,6 +168,7 @@ your distribution.
     <pathelement path="${core.source.dir}"/>
     <pathelement path="${joesnmp.source.dir}"/>
     <pathelement path="${services.source.dir}"/>
+    <pathelement path="${bootstrap.source.dir}"/>
     <pathelement path="${web.source.dir}"/>
     <pathelement path="${report.source.dir}"/>
     <pathelement path="${install.source.dir}"/>
@@ -1493,7 +1495,8 @@ OpenNMS as part of the post-install.
  <!-- JAR targets -->
  <target name="jar" depends="opennms_core.jar, opennms_joesnmp.jar,
 			     opennms_web.jar, opennms_common.jar,
-			     opennms_services.jar, opennms_install.jar"
+			     opennms_services.jar, opennms_bootstrap.jar,
+			     opennms_install.jar"
 	 description="create jar files"/>
  
  <target name="jar.copyxml" depends="prep">
@@ -1536,6 +1539,15 @@ OpenNMS as part of the post-install.
   </jar>
  </target>
 
+ <target name="opennms_bootstrap.jar" depends="prep,java.compile">
+  <mkdir dir="${build.jar.dir}"/>
+  <jar jarfile="${build.jar.dir}/opennms_bootstrap.jar"
+       manifest="${bootstrap.source.dir}/org/opennms/bootstrap/MANIFEST.MF">
+   <fileset dir="${build.classes.dir}"
+	    includesfile="${bootstrap.source.dir}/classlist"/>
+  </jar>
+ </target>
+
  <target name="opennms_web.jar" depends="prep,java.compile">
   <mkdir dir="${build.jar.dir}"/>
   <jar jarfile="${build.jar.dir}/opennms_web.jar">
@@ -1564,6 +1576,7 @@ OpenNMS as part of the post-install.
      <excludesfile name="${core.source.dir}/classlist"/>
      <excludesfile name="${joesnmp.source.dir}/classlist"/>
      <excludesfile name="${services.source.dir}/classlist"/>
+     <excludesfile name="${bootstrap.source.dir}/classlist"/>
      <excludesfile name="${web.source.dir}/classlist"/>
      <excludesfile name="${install.source.dir}/classlist"/>
      <exclude name="**/MANIFEST.MF"/>
@@ -1593,10 +1606,12 @@ OpenNMS as part of the post-install.
 	   failonerror="true"
 	   classpathref="libraries.java.path"
 	   maxmemory="128m">
+  <link href="http://java.sun.com/j2se/1.4.2/docs/api/"/>
+  <link href="http://jakarta.apache.org/log4j/docs/api/"/>
   <classpath>
    <path refid="libraries.java.path"/>
-   <pathelement location="${dev.lib.dir}/junit.jar"/>
-   <pathelement location="${packaged.lib.dir}/hsqldb.jar"/>
+   <path refid="test.path"/>
+   <path refid="webtest.path"/>
   </classpath>
   <sourcepath>
    <path refid="sources.java.path"/>
@@ -1619,6 +1634,9 @@ OpenNMS as part of the post-install.
     <include name="**/*.java"/>
    </srcfileset>
    <srcfileset dir="${services.source.dir}">
+    <include name="**/*.java"/>
+   </srcfileset>
+   <srcfileset dir="${bootstrap.source.dir}">
     <include name="**/*.java"/>
    </srcfileset>
    <srcfileset dir="${web.source.dir}">

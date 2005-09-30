@@ -149,7 +149,12 @@ public final class Interface {
      *             if the library doesn't exist
      */
     private Interface() throws SecurityException, UnsatisfiedLinkError {
-        System.loadLibrary("jrrd");
+	String property = System.getProperty("opennms.library.jrrd");
+	if (property != null) {
+	    System.load(property);
+	} else {
+	    System.loadLibrary("jrrd");
+	}
     }
 
     /**

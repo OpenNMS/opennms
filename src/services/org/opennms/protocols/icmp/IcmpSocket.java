@@ -74,9 +74,11 @@ public final class IcmpSocket {
     // take unecessary resources from an application that
     // is not going to use ICMP.
     //
+    /*
     static {
         System.loadLibrary("jicmp");
     }
+    */
 
     /**
      * Constructs a new socket that is able to send and receive ICMP messages.
@@ -89,6 +91,13 @@ public final class IcmpSocket {
      *                correctly.
      */
     public IcmpSocket() throws IOException {
+	String property = System.getProperty("opennms.library.jicmp");
+	if (property != null) {
+	    System.load(property);
+	} else {
+	    System.loadLibrary("jicmp");
+	}
+
         m_rawFd = new FileDescriptor();
         initSocket();
     }

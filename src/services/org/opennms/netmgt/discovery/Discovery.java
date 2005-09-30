@@ -157,6 +157,8 @@ public final class Discovery extends ServiceDaemon {
      *            the retries for all entries in this URL
      */
     private boolean addToSpecificsFromURL(List specifics, String url, long timeout, int retries) {
+        Category log = ThreadCategory.getInstance();
+
         boolean bRet = true;
 
         try {
@@ -192,7 +194,7 @@ public final class Discovery extends ServiceDaemon {
                     try {
                         specifics.add(new IPPollAddress(specIP, timeout, retries));
                     } catch (UnknownHostException e) {
-                        ThreadCategory.getInstance().warn("Unknown host \'" + specIP + "\' read from URL \'" + url.toString() + "\': address ignored");
+                        log.warn("Unknown host \'" + specIP + "\' read from URL \'" + url.toString() + "\': address ignored");
                     }
 
                     specIP = null;
@@ -201,17 +203,17 @@ public final class Discovery extends ServiceDaemon {
                 buffer.close();
             } else {
                 // log something
-                ThreadCategory.getInstance().warn("URL does not exist: " + url.toString());
+                log.warn("URL does not exist: " + url.toString());
                 bRet = true;
             }
         } catch (MalformedURLException e) {
-            ThreadCategory.getInstance().error("Error reading URL: " + url.toString() + ": " + e.getLocalizedMessage());
+            log.error("Error reading URL: " + url.toString() + ": " + e.getLocalizedMessage());
             bRet = false;
         } catch (FileNotFoundException e) {
-            ThreadCategory.getInstance().error("Error reading URL: " + url.toString() + ": " + e.getLocalizedMessage());
+            log.error("Error reading URL: " + url.toString() + ": " + e.getLocalizedMessage());
             bRet = false;
         } catch (IOException e) {
-            ThreadCategory.getInstance().error("Error reading URL: " + url.toString() + ": " + e.getLocalizedMessage());
+            log.error("Error reading URL: " + url.toString() + ": " + e.getLocalizedMessage());
             bRet = false;
         }
 
@@ -219,11 +221,13 @@ public final class Discovery extends ServiceDaemon {
     }
 
     public synchronized void init() {
-        if (m_manager != null)
-            throw new IllegalStateException("The discovery service is already running");
-
         ThreadCategory.setPrefix(LOG4J_CATEGORY);
         Category log = ThreadCategory.getInstance();
+
+	if (m_manager != null) {
+	    log.error("The discovery service is already running and init() was called");
+            throw new IllegalStateException("The discovery service is already running");
+	}
 
         // Initialize the Database configuration factory and verify
         // that we can get a database connection.
@@ -249,8 +253,9 @@ public final class Discovery extends ServiceDaemon {
             throw new UndeclaredThrowableException(cnfE);
         } finally {
             try {
-                if (ctest != null)
+                if (ctest != null) {
                     ctest.close();
+		}
             } catch (Exception e) {
             }
         }
@@ -261,13 +266,13 @@ public final class Discovery extends ServiceDaemon {
             DiscoveryConfigFactory.reload();
             dFactory = DiscoveryConfigFactory.getInstance();
         } catch (MarshalException ex) {
-            ThreadCategory.getInstance().error("Failed to load discovery configuration", ex);
+            log.error("Failed to load discovery configuration", ex);
             throw new UndeclaredThrowableException(ex);
         } catch (ValidationException ex) {
-            ThreadCategory.getInstance().error("Failed to load discovery configuration", ex);
+            log.error("Failed to load discovery configuration", ex);
             throw new UndeclaredThrowableException(ex);
         } catch (IOException ex) {
-            ThreadCategory.getInstance().error("Failed to load discovery configuration", ex);
+            log.error("Failed to load discovery configuration", ex);
             throw new UndeclaredThrowableException(ex);
         }
 
@@ -286,21 +291,23 @@ public final class Discovery extends ServiceDaemon {
             Specific s = (Specific) e.nextElement();
 
             long timeout = 800L;
-            if (s.hasTimeout())
+            if (s.hasTimeout()) {
                 timeout = s.getTimeout();
-            else if (cfg.hasTimeout())
+	    } else if (cfg.hasTimeout()) {
                 timeout = cfg.getTimeout();
+	    }
 
             int retries = 3;
-            if (s.hasRetries())
+            if (s.hasRetries()) {
                 retries = s.getRetries();
-            else if (cfg.hasRetries())
+	    } else if (cfg.hasRetries()) {
                 retries = cfg.getRetries();
+	    }
 
             try {
                 specifics.add(new IPPollAddress(s.getContent(), timeout, retries));
             } catch (UnknownHostException uhE) {
-                ThreadCategory.getInstance().warn("Failed to convert address " + s.getContent(), uhE);
+                log.warn("Failed to convert address " + s.getContent(), uhE);
             }
         }
 
@@ -309,21 +316,23 @@ public final class Discovery extends ServiceDaemon {
             IncludeRange ir = (IncludeRange) e.nextElement();
 
             long timeout = 800L;
-            if (ir.hasTimeout())
+            if (ir.hasTimeout()) {
                 timeout = ir.getTimeout();
-            else if (cfg.hasTimeout())
+	    } else if (cfg.hasTimeout()) {
                 timeout = cfg.getTimeout();
+	    }
 
             int retries = 3;
-            if (ir.hasRetries())
+            if (ir.hasRetries()) {
                 retries = ir.getRetries();
-            else if (cfg.hasRetries())
+	    } else if (cfg.hasRetries()) {
                 retries = cfg.getRetries();
+	    }
 
             try {
                 includes.add(new IPPollRange(ir.getBegin(), ir.getEnd(), timeout, retries));
             } catch (UnknownHostException uhE) {
-                ThreadCategory.getInstance().warn("Failed to convert address range (" + ir.getBegin() + ", " + ir.getEnd() + ")", uhE);
+                log.warn("Failed to convert address range (" + ir.getBegin() + ", " + ir.getEnd() + ")", uhE);
             }
         }
 
@@ -334,18 +343,21 @@ public final class Discovery extends ServiceDaemon {
             IncludeUrl url = (IncludeUrl) e.nextElement();
 
             long timeout = 800L;
-            if (url.hasTimeout())
+            if (url.hasTimeout()) {
                 timeout = url.getTimeout();
-            else if (cfg.hasTimeout())
+	    } else if (cfg.hasTimeout()) {
                 timeout = cfg.getTimeout();
+	    }
 
             int retries = 3;
-            if (url.hasRetries())
+            if (url.hasRetries()) {
                 retries = url.getRetries();
-            else if (cfg.hasRetries())
+	    } else if (cfg.hasRetries()) {
                 retries = cfg.getRetries();
+	    }
 
-            addToSpecificsFromURL(specifics, url.getContent(), timeout, retries);
+            addToSpecificsFromURL(specifics, url.getContent(), timeout,
+				  retries);
         }
 
         // Setup the exclusion range.
@@ -357,7 +369,9 @@ public final class Discovery extends ServiceDaemon {
         DiscoveredIPMgr.setSpecificsList(specifics);
 
         // Build a generator
-        m_generator = new IPGenerator(specifics, includes, cfg.getInitialSleepTime(), cfg.getRestartSleepTime());
+        m_generator = new IPGenerator(specifics, includes,
+				      cfg.getInitialSleepTime(),
+				      cfg.getRestartSleepTime());
 
         // initialize the EventIpcManagerFactory
         EventIpcManagerFactory.init();
@@ -367,9 +381,11 @@ public final class Discovery extends ServiceDaemon {
         FifoQueue responsive = new FifoQueueImpl();
 
         try {
-            m_eventWriter = new SuspectEventGenerator(responsive, cfg.getRestartSleepTime());
+            m_eventWriter =
+		new SuspectEventGenerator(responsive,
+					  cfg.getRestartSleepTime());
         } catch (Exception ex) {
-            ThreadCategory.getInstance().error("Failed to create event writer", ex);
+            log.error("Failed to create event writer", ex);
             throw new UndeclaredThrowableException(ex);
         }
 
@@ -381,15 +397,17 @@ public final class Discovery extends ServiceDaemon {
             } catch (Exception exx) {
             }
 
-            ThreadCategory.getInstance().error("Failed to create event reader", ex);
+	    log.error("Failed to create event reader", ex);
             throw new UndeclaredThrowableException(ex);
         }
 
         try {
-            m_manager = new PingManager(m_generator, responsive, (short) 0xbeef, cfg.getThreads(), cfg.getPacketsPerSecond());
-
-        } catch (Exception ex) {
-            ThreadCategory.getInstance().error("Failed to create ping manager", ex);
+            m_manager = new PingManager(m_generator, responsive,
+					(short) 0xbeef, cfg.getThreads(),
+					cfg.getPacketsPerSecond());
+        } catch (Throwable ex) {
+	    ex.printStackTrace();
+	    log.error("Failed to create ping manager in init()", ex);
             throw new UndeclaredThrowableException(ex);
         }
     }
@@ -414,14 +432,20 @@ public final class Discovery extends ServiceDaemon {
      * 
      */
     public synchronized void start() {
-        setStatus(STARTING);
-
         ThreadCategory.setPrefix(LOG4J_CATEGORY);
+        Category log = ThreadCategory.getInstance();
+
+	if (m_manager == null) {
+	    log.error("The discovery service has not been initialized and start() was called");
+            throw new IllegalStateException("The discovery service has not been successfully initialized");
+	}
+
+        setStatus(STARTING);
 
         try {
             m_eventWriter.start();
         } catch (Exception ex) {
-            ThreadCategory.getInstance().error("Failed to create event writer", ex);
+            log.error("Failed to start event writer", ex);
             throw new UndeclaredThrowableException(ex);
         }
 
@@ -433,7 +457,7 @@ public final class Discovery extends ServiceDaemon {
             } catch (Exception exx) {
             }
 
-            ThreadCategory.getInstance().error("Failed to create ping manager", ex);
+            log.error("Failed to start ping manager", ex);
             throw new UndeclaredThrowableException(ex);
         }
 
@@ -467,8 +491,9 @@ public final class Discovery extends ServiceDaemon {
         m_generator = null;
 
         try {
-            if (m_manager != null)
+            if (m_manager != null) {
                 m_manager.stop();
+	    }
         } catch (Exception e) {
         }
         m_manager = null;
@@ -486,10 +511,20 @@ public final class Discovery extends ServiceDaemon {
      * Pauses the discovery process if its currently running
      */
     public synchronized void pause() {
-        if (!isRunning())
+        ThreadCategory.setPrefix(LOG4J_CATEGORY);
+        Category log = ThreadCategory.getInstance();
+
+        if (!isRunning()) {
+	    log.warn("The discovery service is not running but pause() was called");
             return;
+	}
 
         setStatus(PAUSE_PENDING);
+
+	if (m_manager == null) {
+	    log.error("The discovery service has not been initialized and pause() was called");
+            throw new IllegalStateException("The discovery service has not been successfully initialized");
+	}
 
         m_manager.pause();
         setStatus(PAUSED);
@@ -499,8 +534,18 @@ public final class Discovery extends ServiceDaemon {
      * Resumes the discovery process if its currently paused
      */
     public synchronized void resume() {
-        if (!isPaused())
+        ThreadCategory.setPrefix(LOG4J_CATEGORY);
+        Category log = ThreadCategory.getInstance();
+
+        if (!isPaused()) {
+	    log.warn("The discovery service is not paused but resume() was called");
             return;
+	}
+
+	if (m_manager == null) {
+	    log.error("The discovery service has not been initialized and resume() was called");
+            throw new IllegalStateException("The discovery service has not been successfully initialized");
+	}
 
         setStatus(RESUME_PENDING);
         m_manager.resume();

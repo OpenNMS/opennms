@@ -39,6 +39,7 @@
 package org.opennms.netmgt.discovery;
 
 import java.io.IOException;
+import java.lang.reflect.UndeclaredThrowableException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.NoRouteToHostException;
@@ -187,11 +188,13 @@ final class PingManager implements Runnable, PausableFiber {
                 long expire = System.currentTimeMillis() + addr.getTimeout();
                 while (m_status != STOP_PENDING && !m_signaled) {
                     long wtime = expire - System.currentTimeMillis();
-                    if (wtime <= 0)
+                    if (wtime <= 0) {
                         break;
+		    }
 
-                    if (log.isDebugEnabled())
+                    if (log.isDebugEnabled()) {
                         log.debug("poll: try#: " + tries + " - sending ping to address " + addr.getAddress().getHostAddress());
+		    }
 
                     m_socket.send(sendPkt);
                     this.wait(wtime);
@@ -216,7 +219,8 @@ final class PingManager implements Runnable, PausableFiber {
          *            The Thread ID stored in the Packet.
          * 
          */
-        Pinger(IcmpSocket socket, QuantumSemaphore semaphore, FifoQueue addrQ, short filterId, long tid) {
+        Pinger(IcmpSocket socket, QuantumSemaphore semaphore, FifoQueue addrQ,
+	       short filterId, long tid) {
             m_socket = socket;
             m_semaphore = semaphore;
             m_addressQ = addrQ;
@@ -240,8 +244,9 @@ final class PingManager implements Runnable, PausableFiber {
          * 
          */
         public synchronized void start() {
-            if (m_worker != null)
+            if (m_worker != null) {
                 throw new IllegalStateException("The fiber is running or has already run");
+	    }
 
             m_worker = new Thread(this, getName());
             m_worker.start();
@@ -257,8 +262,9 @@ final class PingManager implements Runnable, PausableFiber {
          *             Thrown if the fiber has never been started.
          */
         public synchronized void stop() {
-            if (m_worker == null)
+            if (m_worker == null) {
                 throw new IllegalStateException("The fiber has never run");
+	    }
 
             m_status = STOP_PENDING;
             m_worker.interrupt();
@@ -279,8 +285,9 @@ final class PingManager implements Runnable, PausableFiber {
          * 
          */
         public synchronized void pause() {
-            if (m_worker == null || m_worker.isAlive() == false)
+            if (m_worker == null || m_worker.isAlive() == false) {
                 throw new IllegalStateException("The fiber is not running");
+	    }
 
             m_status = PAUSED;
             notifyAll();
@@ -290,8 +297,9 @@ final class PingManager implements Runnable, PausableFiber {
          * Resumes a currently paused fiber.
          */
         public synchronized void resume() {
-            if (m_worker == null || m_worker.isAlive() == false)
+            if (m_worker == null || m_worker.isAlive() == false) {
                 throw new IllegalStateException("The fiber is not running");
+	    }
 
             m_status = RUNNING;
             notifyAll();
@@ -312,8 +320,9 @@ final class PingManager implements Runnable, PausableFiber {
          * @return The status of the Fiber.
          */
         public synchronized int getStatus() {
-            if (m_worker != null && !m_worker.isAlive())
+            if (m_worker != null && !m_worker.isAlive()) {
                 m_status = STOPPED;
+	    }
 
             return m_status;
         }
@@ -359,19 +368,22 @@ final class PingManager implements Runnable, PausableFiber {
                 for (;;) {
                     synchronized (this) {
                         while (m_status == PAUSED) {
-                            if (log.isDebugEnabled())
+                            if (log.isDebugEnabled()) {
                                 log.debug("run: fiber paused, waiting");
+			    }
 
                             wait();
 
-                            if (log.isDebugEnabled())
+                            if (log.isDebugEnabled()) {
                                 log.debug("run: fiber wait is over");
+			    }
 
                             continue;
                         }
 
-                        if (m_status != RUNNING)
+                        if (m_status != RUNNING) {
                             break;
+			}
                     }
 
                     IPPollAddress addr = (IPPollAddress) m_addressQ.remove();
@@ -385,20 +397,23 @@ final class PingManager implements Runnable, PausableFiber {
                             m_target = addr.getAddress();
                             m_signaled = false;
 
-                            if (log.isDebugEnabled())
+                            if (log.isDebugEnabled()) {
                                 log.debug("run: starting poll");
+			    }
 
                             // MUST HAVE LOCK TO CALL POLL!
                             //
                             try {
                                 poll(addr);
 
-                                if (log.isDebugEnabled())
+                                if (log.isDebugEnabled()) {
                                     log.debug("run: poll completed");
+				}
                             } catch (NoRouteToHostException ex) {
                                 log.warn("Check discovery configuration, cannot poll broadcast addresses (addr = " + m_target + ")");
-                                if (log.isDebugEnabled())
+                                if (log.isDebugEnabled()) {
                                     log.debug("run: poll cancelled, invalid address " + m_target, ex);
+				}
                             }
 
                             m_target = null;
@@ -408,15 +423,17 @@ final class PingManager implements Runnable, PausableFiber {
                     }
                 }
             } catch (Throwable t) {
-                if (m_status != STOP_PENDING)
+                if (m_status != STOP_PENDING) {
                     log.fatal("run: Error in ping thread, exiting", t);
-                else
+		} else {
                     log.info("run: pinging thread exiting", t);
+		}
                 return;
             } finally {
                 m_status = STOPPED;
-                if (log.isDebugEnabled())
+                if (log.isDebugEnabled()) {
                     log.debug("run: status set to stopped");
+		}
             }
         }
 
@@ -430,8 +447,9 @@ final class PingManager implements Runnable, PausableFiber {
          * @return True if the thread is currently targeting the passed address.
          */
         public synchronized boolean isPinging(InetAddress addr) {
-            if (addr == null)
+            if (addr == null) {
                 return false;
+	    }
             return addr.equals(m_target);
         }
 
@@ -474,12 +492,20 @@ final class PingManager implements Runnable, PausableFiber {
      *             Thrown if the ICMP socket cannot be constructed.
      * 
      */
-    PingManager(FifoQueue addressQ, FifoQueue discoveredQ, short filterId, int threads, int pktsPerSecond) throws IOException {
-        if (threads < 1)
-            throw new IllegalArgumentException("The number of thread must be greater than zero");
+    protected PingManager(FifoQueue addressQ, FifoQueue discoveredQ,
+			  short filterId, int threads, int pktsPerSecond)
+	throws IOException {
+        Category log = ThreadCategory.getInstance(getClass());
 
-        if (pktsPerSecond < 1)
+        if (threads < 1) {
+	    log.error("The number of PingManager threads must be greater than zero");
+            throw new IllegalArgumentException("The number of threads must be greater than zero");
+	}
+
+        if (pktsPerSecond < 1) {
+	    log.error("The number of PingManager packets per second must be greater than zero");
             throw new IllegalArgumentException("The number of packets per second must be greater than zero");
+	}
 
         // Save the filter id for thread nameing
         //
@@ -487,7 +513,16 @@ final class PingManager implements Runnable, PausableFiber {
 
         // Open a new raw ICMP socket
         //
-        m_socket = new IcmpSocket();
+	try {
+	    m_socket = new IcmpSocket();
+	} catch (NoClassDefFoundError e) {
+	    log.error("NoClassDefFoundError while creating an IcmpSocket.  " +
+		      "Most likely failed to load libjicmp.so.", e);
+	    throw e;
+	} catch (Throwable t) {
+	    log.error("Throwable received while creating an IcmpSocket", t);
+	    throw new UndeclaredThrowableException(t, t.getMessage());
+	}
 
         // Create the timed semaphore
         //
@@ -519,8 +554,9 @@ final class PingManager implements Runnable, PausableFiber {
      * 
      */
     public synchronized void start() {
-        if (m_worker != null)
+        if (m_worker != null) {
             throw new IllegalStateException("The fiber is already running or has already run");
+	}
 
         m_status = STARTING;
         m_worker = new Thread(this, getName());
@@ -528,8 +564,9 @@ final class PingManager implements Runnable, PausableFiber {
         m_worker.start();
 
         m_icmpReceiver.start();
-        for (int x = 0; x < m_pingers.length; x++)
+        for (int x = 0; x < m_pingers.length; x++) {
             m_pingers[x].start();
+	}
     }
 
     /**
@@ -556,16 +593,19 @@ final class PingManager implements Runnable, PausableFiber {
 
         // stop the worker
         //
-        if (m_worker == null)
+        if (m_worker == null) {
             throw new IllegalStateException("The fiber was never started");
+	}
 
         if (m_worker.isAlive()) {
-            if (m_status != STOPPED)
+            if (m_status != STOPPED) {
                 m_status = STOP_PENDING;
+	    }
 
             m_worker.interrupt();
-        } else if (m_status != STOPPED)
+        } else if (m_status != STOPPED) {
             m_status = STOPPED;
+	}
 
         m_socket.close();
     }
@@ -580,12 +620,14 @@ final class PingManager implements Runnable, PausableFiber {
      *             Thrown if the fiber is not running.
      */
     public synchronized void pause() {
-        if (m_worker == null || m_worker.isAlive() == false)
+        if (m_worker == null || m_worker.isAlive() == false) {
             throw new IllegalStateException("The fiber is not running");
+	}
 
         if (m_status == RUNNING) {
-            for (int x = 0; x < m_pingers.length; x++)
+            for (int x = 0; x < m_pingers.length; x++) {
                 m_pingers[x].pause();
+	    }
 
             m_icmpReceiver.pause();
             m_status = PAUSED;
@@ -603,13 +645,15 @@ final class PingManager implements Runnable, PausableFiber {
      * 
      */
     public synchronized void resume() {
-        if (m_worker == null || m_worker.isAlive() == false)
+        if (m_worker == null || m_worker.isAlive() == false) {
             throw new IllegalStateException("The fiber is not running");
+	}
 
         if (m_status == PAUSED) {
             m_icmpReceiver.resume();
-            for (int x = 0; x < m_pingers.length; x++)
+            for (int x = 0; x < m_pingers.length; x++) {
                 m_pingers[x].resume();
+	    }
             m_status = RUNNING;
         }
         notifyAll();
@@ -622,8 +666,9 @@ final class PingManager implements Runnable, PausableFiber {
      * 
      */
     public synchronized int getStatus() {
-        if (m_worker != null && !m_worker.isAlive())
+        if (m_worker != null && !m_worker.isAlive()) {
             m_status = STOPPED;
+	}
 
         return m_status;
     }
@@ -683,8 +728,9 @@ final class PingManager implements Runnable, PausableFiber {
                             }
                         }
 
-                        if (doAdd)
+                        if (doAdd) {
                             m_discoveredQ.add(r);
+			}
                     }
                 } catch (Exception e) {
                     log.error("Unexpected Exception occurred in the PingManager.", e);
