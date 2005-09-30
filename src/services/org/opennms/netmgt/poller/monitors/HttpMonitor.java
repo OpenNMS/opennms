@@ -104,6 +104,7 @@ final public class HttpMonitor extends IPv4LatencyMonitor {
     private String m_reason = null;
 
     public PollStatus poll(NetworkInterface iface, Map parameters, Package pkg) {
+        //FIXME: make sure that we create a NEW status constant or call a getPollStatus that takes a reason
         PollStatus pollStatus = PollStatus.getPollStatus(checkStatus(iface, parameters, pkg));
         pollStatus.setReason(m_reason);
         return pollStatus;

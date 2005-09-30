@@ -125,6 +125,7 @@ final public class HttpsMonitor extends IPv4LatencyMonitor {
      * 
      */
     public int checkStatus(NetworkInterface iface, Map parameters, org.opennms.netmgt.config.poller.Package pkg) {
+        // FIXME: make HttpsMonitir have all the same featurs of HttpMonitor
         //
         // Get interface address from NetworkInterface
         //
@@ -370,6 +371,7 @@ final public class HttpsMonitor extends IPv4LatencyMonitor {
     }
 
     public PollStatus poll(NetworkInterface iface, Map parameters, Package pkg) {
+        // FIXME make it return a status code
         return PollStatus.getPollStatus(checkStatus(iface, parameters, pkg));
     }
 

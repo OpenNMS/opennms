@@ -62,6 +62,9 @@ public class PollStatus {
             return STATUS_DOWN;
         }
     }
+
+    // FIXME: add a getPollStatus that takes a reason code
+
     
     int m_statusCode;
     String m_statusName;
