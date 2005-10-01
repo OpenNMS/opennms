@@ -1,4 +1,4 @@
-<!--
+<%--
 
 //
 // This file is part of the OpenNMS(R) Application.
@@ -12,6 +12,7 @@
 //
 // Modifications:
 //
+// 2005 Sep 30: Hacked up to use CSS for layout. -- DJ Gregor
 // 2004 Jan 15: Added node admin function.
 // 2003 Feb 07: Fixed URLEncoder issues.
 // 2003 Feb 01: Added response time link (Bug #684) and HTTP link (Bug #469).
@@ -38,7 +39,7 @@
 //      http://www.opennms.org/
 //      http://www.opennms.com///
 
--->
+--%>
 
 <%@page language="java" contentType="text/html" session="true" import="org.opennms.web.element.*,java.util.*,org.opennms.web.authenticate.Authentication,org.opennms.web.event.*,java.net.*,org.opennms.netmgt.utils.IPSorter,org.opennms.web.performance.*,org.opennms.web.response.*" %>
 
@@ -196,7 +197,11 @@
   <link rel="stylesheet" type="text/css" href="css/styles.css" />
 </head>
 
+<!--
 <body marginwidth="0" marginheight="0" LEFTMARGIN="0" RIGHTMARGIN="0" TOPMARGIN="0">
+-->
+
+<body>
 
 <% String breadcrumb1 = "<a href='element/index.jsp'>Search</a>"; %>
 <% String breadcrumb2 = "Node"; %>
@@ -206,85 +211,136 @@
   <jsp:param name="breadcrumb" value="<%=breadcrumb2%>" />
 </jsp:include>
 
+<!--
 <br>
+-->
 
 <!-- Body -->
+<div id="node">
+<!--
 <table width="100%" border="0" cellspacing="0" cellpadding="2" >
   <tr>
     <td>&nbsp;</td>
+-->
 
+<!--
     <td width="100%" valign="top" >
+-->
       <h2>Node: <%=node_db.getLabel()%></h2>
 
-      <p>
+      <div id="linkbar">
+      <ul>
+        <li>
         <a href="event/list?filter=node%3D<%=nodeId%>">View Events</a>
-        &nbsp;&nbsp;&nbsp;<a href="asset/modify.jsp?node=<%=nodeId%>">Asset Info</a>
+	</li>
+	<li>
+        <a href="asset/modify.jsp?node=<%=nodeId%>">Asset Info</a>
+	</li>
          
         <% if( telnetIp != null ) { %>
-          &nbsp;&nbsp;&nbsp;<a href="telnet://<%=telnetIp%>">Telnet</a>
+	  <li>
+          <a href="telnet://<%=telnetIp%>">Telnet</a>
+	  </li>
         <% } %>
 
         <% if( httpIp != null ) { %>
-          &nbsp;&nbsp;&nbsp;<a href="http://<%=httpIp%>">HTTP</a>
+	  <li>
+          <a href="http://<%=httpIp%>">HTTP</a>
+	  </li>
         <% } %>
 
         <% if( dellIp != null ) { %>
-          &nbsp;&nbsp;&nbsp;<a href="https://<%=dellIp%>:1311">OpenManage</a>
+	  <li>
+          <a href="https://<%=dellIp%>:1311">OpenManage</a>
+	  </li>
         <% } %>
 
         <% if(this.rtModel.isQueryableNode(nodeId)) { %>
-          &nbsp;&nbsp;&nbsp;<a href="response/addIntfFromNode?endUrl=response%2FaddReportsToUrl&node=<%=nodeId%>&relativetime=lastday">Response Time</a>
+	  <li>
+          <a href="response/addIntfFromNode?endUrl=response%2FaddReportsToUrl&node=<%=nodeId%>&relativetime=lastday">Response Time</a>
+	  </li>
         <% } %>
         
         <% if(this.perfModel.isQueryableNode(nodeId)) { %>
-          &nbsp;&nbsp;&nbsp;<a href="performance/addIntfFromNode?endUrl=performance%2FaddReportsToUrl&node=<%=nodeId%>&relativetime=lastday">SNMP Performance</a>
+	  <li>
+          <a href="performance/addIntfFromNode?endUrl=performance%2FaddReportsToUrl&node=<%=nodeId%>&relativetime=lastday">SNMP Performance</a>
+	  </li>
         <% } %>
         
-        &nbsp;&nbsp;&nbsp;<a href="element/rescan.jsp?node=<%=nodeId%>">Rescan</a>      
+	<li>
+        <a href="element/rescan.jsp?node=<%=nodeId%>">Rescan</a>      
+	</li>
         <% if( request.isUserInRole( Authentication.ADMIN_ROLE )) { %> 
-          &nbsp;&nbsp;&nbsp;<a href="admin/nodemanagement/index.jsp?node=<%=nodeId%>">Admin</a>
+	  <li>
+          <a href="admin/nodemanagement/index.jsp?node=<%=nodeId%>">Admin</a>
+	  </li>
         <% } %>
 
            <% if ( isSnmp && request.isUserInRole("OpenNMS Administrator"))  { %>
               <% for( int i=0; i < intfs.length; i++ ) { %>
                 <% if( "P".equals( intfs[i].getIsSnmpPrimary() )) { %>
-                      &nbsp;&nbsp;&nbsp;<a href="admin/updateSnmp.jsp?node=<%=nodeId%>&ipaddr=<%=intfs[i].getIpAddress()%>">Update SNMP</a>
+		      <li>
+                      <a href="admin/updateSnmp.jsp?node=<%=nodeId%>&ipaddr=<%=intfs[i].getIpAddress()%>">Update SNMP</a>
+		      </li>
                 <% } %>
               <% } %>
            <% } %>
 
 
-      </p>
+      </ul>
+      </div>
 
+
+<!--
       <table width="100%" border="0" cellspacing="0" cellpadding="0">
         <tr>
           <td valign="top" width="48%">
+-->
+
+	<span id="contentleft">
+
+<!--      <div id="nodeboxes"> -->
 
             <!-- general info box -->
+<!--
             <table width="100%" border="1" cellspacing="0" cellpadding="2" bordercolor="black" BGCOLOR="#cccccc">
               <tr bgcolor="#999999">
                 <td colspan="2" ><b>General</b></td> 
+-->
+            <table class="first">
+              <tbody><tr>
+                <td class="header" colspan="2">General</td> 
               </tr>
               <tr> 
                 <td>Status</td>
                 <td><%=(this.getStatusString(node_db.getNodeType())!=null ? this.getStatusString(node_db.getNodeType()) : "Unknown")%></td>
               </tr>
-            </table>
-            <br>
+            </tbody></table>
+
+<!--            <br/> -->
             
             <!-- Availability box -->
             <jsp:include page="/includes/nodeAvailability-box.jsp" flush="false" />
-            <br>
+
+<!--            <br/> -->
             
             <!-- node desktop information box -->
             
             <!-- SNMP box, if info available --> 
             <% if( node_db.getNodeSysId() != null ) { %>
+<!--
               <table width="100%" border="1" cellspacing="0" cellpadding="2" bordercolor="black" BGCOLOR="#cccccc">
                 <tr bgcolor="#999999">
+-->
+	      <table>
+	      <tbody><tr>
+<!--
                   <td colspan="2"><b>SNMP Attributes</b></td>
+-->
+                  <td class="header" colspan="2">SNMP Attributes</td>
                 </tr>
                 <tr>
+		  <!-- XXX should get rid of width... replace with a class? -->
                   <td width="10%">Name:</td>
                   <td><%=(node_db.getNodeSysName() == null) ? "&nbsp;" : node_db.getNodeSysName()%></td>
                 </tr>
@@ -302,16 +358,24 @@
                 </tr>
                 <tr>
                   <td valign="top" width="10%">Description:</td>
+<!-- XXX why the colspan=3?
                   <td valign="top" colspan="3"><%=(node_db.getNodeSysDescr() == null) ? "&nbsp;" : node_db.getNodeSysDescr()%> </td>
+-->
+                  <td valign="top"><%=(node_db.getNodeSysDescr() == null) ? "&nbsp;" : node_db.getNodeSysDescr()%> </td>
                 </tr>
               </table>  
-              <br>
+<!--              <br/> -->
             <% } %>
             
             <!-- Interface box -->
+<!--
             <table width="100%" border="1" cellspacing="0" cellpadding="2" bordercolor="black" BGCOLOR="#cccccc">
               <tr bgcolor="#999999">
                 <td><b>Interfaces</b></td> 
+-->
+	      <table>
+	      <tbody><tr>
+                <td class="header">Interfaces</td> 
               </tr>
               <% for( int i=0; i < intfs.length; i++ ) { %>
                 <% if( "0.0.0.0".equals( intfs[i].getIpAddress() )) { %>
@@ -332,17 +396,28 @@
               <% } %>
             </table>
 
+<!-- XXX so, yeah.... a <br> and an empty table???
             <br>
 
             <table width="100%" border="1" cellspacing="0" cellpadding="2" bordercolor="black" BGCOLOR="#cccccc">
               
             </table>
-            
-          </td>
+-->
 
+<!--            
+          </td>
+-->
+	</span>
+
+
+<!--
           <td>&nbsp;</td>
 
           <td valign="top" width="48%">
+-->
+
+	<span id="contentright">
+
             <!-- events list  box -->
             <% String eventHeader = "<a href='event/list?filter=" + URLEncoder.encode("node=" + nodeId) + "'>Recent Events</a>"; %>
             <% String moreEventsUrl = "event/list?filter=" + URLEncoder.encode("node=" + nodeId); %>
@@ -353,19 +428,27 @@
               <jsp:param name="header" value="<%=eventHeader%>" />
               <jsp:param name="moreUrl" value="<%=moreEventsUrl%>" />
             </jsp:include>
-            <br>
+<!--            <br/> -->
             
             <!-- Recent outages box -->
             <jsp:include page="/includes/nodeOutages-box.jsp" flush="false" />
+<!--
          </td>
        </tr>
      </table>
-    
+-->
+
+</span>
+</div>
+
+
+<!--    
     <td>&nbsp;</td>
   </tr>
 </table>
+-->
 
-<br>
+<!--<br/>-->
 
 <jsp:include page="/includes/footer.jsp" flush="false" />
 

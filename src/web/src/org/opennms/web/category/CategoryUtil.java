@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2005 Sep 30: Added getCategoryClass for CSS conversion. -- DJ Gregor
+
 // Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -132,4 +136,23 @@ public class CategoryUtil extends Object {
         return (color);
     }
 
+    /**
+     * Determine the CSS class to use for a given value and thresholds.
+     */
+    public static String getCategoryClass(double normal, double warning,
+					  double value) {
+        String m_good = "availgood";
+        String m_warn = "availwarn";
+        String m_crit = "availcrit";
+
+        String _class = m_crit;
+
+        if (value >= normal) {
+            _class = m_good;
+        } else if (value >= warning) {
+            _class = m_warn;
+        }
+
+        return (_class);
+    }
 }

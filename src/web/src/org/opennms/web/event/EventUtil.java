@@ -8,6 +8,11 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2005 Sep 30: Added getSeverityClass and supporting code for
+//              CSS conversion. -- DJ Gregor
+//
 // Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -63,6 +68,8 @@ import org.opennms.web.event.filter.AlarmIDFilter;
 public abstract class EventUtil extends Object {
     protected static final HashMap colors;
 
+    protected static final HashMap classes;
+
     protected static final HashMap labels;
 
     protected static final HashMap sortStyles;
@@ -86,6 +93,15 @@ public abstract class EventUtil extends Object {
         severities.add(new Integer(Event.MINOR_SEVERITY));
         severities.add(new Integer(Event.MAJOR_SEVERITY));
         severities.add(new Integer(Event.CRITICAL_SEVERITY));
+
+        classes = new java.util.HashMap();
+        classes.put(new Integer(Event.INDETERMINATE_SEVERITY), "sev_indeterminate");
+        classes.put(new Integer(Event.CLEARED_SEVERITY), "sev_cleared");
+        classes.put(new Integer(Event.NORMAL_SEVERITY), "sev_normal");
+        classes.put(new Integer(Event.WARNING_SEVERITY), "sev_warning");
+        classes.put(new Integer(Event.MINOR_SEVERITY), "sev_minor");
+        classes.put(new Integer(Event.MAJOR_SEVERITY), "sev_major");
+        classes.put(new Integer(Event.CRITICAL_SEVERITY), "sev_critical");
 
         colors = new java.util.HashMap();
         colors.put(new Integer(Event.INDETERMINATE_SEVERITY), "lightblue");
@@ -155,6 +171,10 @@ public abstract class EventUtil extends Object {
 
     public static String getSeverityColor(int severity) {
         return ((String) colors.get(new Integer(severity)));
+    }
+
+    public static String getSeverityClass(int severity) {
+        return ((String) classes.get(new Integer(severity)));
     }
 
     public static String getSeverityLabel(int severity) {

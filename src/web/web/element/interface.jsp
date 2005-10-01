@@ -1,4 +1,4 @@
-<!--
+<%--
 
 //
 // This file is part of the OpenNMS(R) Application.
@@ -12,6 +12,7 @@
 //
 // Modifications:
 //
+// 2005 Sep 30: Hacked up to use CSS for layout. -- DJ Gregor
 // 2003 Oct 07: Corrected issue with selecting non-IP interface SNMP data.
 // 2003 Sep 25: Fixed SNMP Performance link issue.
 // 2003 Feb 07: Fixed URLEncoder issues.
@@ -39,7 +40,7 @@
 //      http://www.opennms.org/
 //      http://www.opennms.com///
 
--->
+--%>
 
 <%@page language="java" contentType="text/html" session="true" import="org.opennms.netmgt.config.PollerConfigFactory,org.opennms.netmgt.config.PollerConfig,org.opennms.web.element.*,java.util.*,org.opennms.web.event.*,org.opennms.web.performance.*,org.opennms.netmgt.utils.IfLabel,org.opennms.web.response.*" %>
 
@@ -173,7 +174,12 @@ function doDelete() {
 }
 </script>
 <% } %>
+
+<!--
 <body marginwidth="0" marginheight="0" LEFTMARGIN="0" RIGHTMARGIN="0" TOPMARGIN="0">
+-->
+
+<body>
 
 <% String breadcrumb1 = "<a href='element/index.jsp'>Search</a>"; %>
 <% String breadcrumb2 = "<a href='element/node.jsp?node=" + nodeId  + "'>Node</a>"; %>
@@ -185,14 +191,20 @@ function doDelete() {
   <jsp:param name="breadcrumb" value="<%=breadcrumb3%>" />
 </jsp:include>
 
+<!--
 <br>
+-->
 
 <!-- Body -->
+<div id="interface">
+
+<!--
 <table width="100%" border="0" cellspacing="0" cellpadding="2" >
   <tr>
     <td>&nbsp;</td>
-
     <td width="100%" valign="top" >
+-->
+
       <h2>Interface: <%=intf_db.getIpAddress()%> <%=intf_db.getIpAddress().equals(intf_db.getHostname()) ? "" : "(" + intf_db.getHostname() + ")"%></h2>
 
         <% if (request.isUserInRole("OpenNMS Administrator")) { %>
@@ -202,55 +214,87 @@ function doDelete() {
       <input type="hidden" name="ifindex" value="<%=(ifindexString == null ? "" : ifindexString)%>">
       <input type="hidden" name="intf" value="<%=ipAddr%>">
       <% } %>
-      <p>
+
+      <div id="linkbar">
+      <ul>
+	<li>
         <a href="<%=eventUrl%>">View Events</a>
+	</li>
 
         <% if( telnetIp != null ) { %>
-          &nbsp;&nbsp;&nbsp;<a href="telnet://<%=telnetIp%>">Telnet</a>
+	  <li>
+          <a href="telnet://<%=telnetIp%>">Telnet</a>
+	  </li>
         <% } %>
         
         <% if( httpIp != null ) { %>
-          &nbsp;&nbsp;&nbsp;<a href="http://<%=httpIp%>">HTTP</a>
+	  <li>
+          <a href="http://<%=httpIp%>">HTTP</a>
+	  </li>
         <% } %>
         
         <% if(this.rtModel.isQueryableInterface(ipAddr)) { %>
-          &nbsp;&nbsp;&nbsp;<a href="response/addReportsToUrl?node=<%=nodeId%>&intf=<%=ipAddr%>&relativetime=lastday">Response Time</a>
+	  <li>
+          <a href="response/addReportsToUrl?node=<%=nodeId%>&intf=<%=ipAddr%>&relativetime=lastday">Response Time</a>
+	  </li>
         <% } %>
 
         <% if(hasSNMPData(intf_db) && ifindexString == null) { %>
               <% String ifLabel = IfLabel.getIfLabel(nodeId, ipAddr); %>
           <% if(ifLabel != null && this.perfModel.isQueryableInterface(nodeId, ifLabel)) { %>
-            &nbsp;&nbsp;&nbsp;<a href="performance/addReportsToUrl?node=<%=nodeId%>&intf=<%=ifLabel%>&relativetime=lastday">SNMP Performance</a>
+	    <li>
+            <a href="performance/addReportsToUrl?node=<%=nodeId%>&intf=<%=ifLabel%>&relativetime=lastday">SNMP Performance</a>
+	    </li>
           <% } %>
         <% } %>
         <% if(hasSNMPData(intf_db) && ifindexString != null) { %>
               <% String ifLabel = IfLabel.getIfLabelfromIfIndex(nodeId, ipAddr, ifindexString); %>
           <% if(ifLabel != null && this.perfModel.isQueryableInterface(nodeId, ifLabel)) { %>
-            &nbsp;&nbsp;&nbsp;<a href="performance/addReportsToUrl?node=<%=nodeId%>&intf=<%=ifLabel%>&relativetime=lastday">SNMP Performance</a>
+	    <li>
+            <a href="performance/addReportsToUrl?node=<%=nodeId%>&intf=<%=ifLabel%>&relativetime=lastday">SNMP Performance</a>
+	    </li>
           <% } %>
         <% } %>
         
         <% if (request.isUserInRole("OpenNMS Administrator")) { %>
-         &nbsp;&nbsp;&nbsp;<a href="admin/deleteInterface" onClick="return doDelete()">Delete</a>
+	 <li>
+         <a href="admin/deleteInterface" onClick="return doDelete()">Delete</a>
+	 </li>
          <% } %>
          
-        &nbsp;&nbsp;&nbsp;<a href="element/rescan.jsp?node=<%=nodeId%>&ipaddr=<%=ipAddr%>">Rescan</a>      
+	<li>
+        <a href="element/rescan.jsp?node=<%=nodeId%>&ipaddr=<%=ipAddr%>">Rescan</a>      
+        </li>
 
         <% if (request.isUserInRole("OpenNMS Administrator") && hasSNMPData(intf_db) && "P".equals(intf_db.getIsSnmpPrimary())) { %>
-         &nbsp;&nbsp;&nbsp;<a href="admin/updateSnmp.jsp?node=<%=nodeId%>&ipaddr=<%=ipAddr%>">Update SNMP</a>
+	 <li>
+         <a href="admin/updateSnmp.jsp?node=<%=nodeId%>&ipaddr=<%=ipAddr%>">Update SNMP</a>
+	 </li>
          <% } %>
-      </p>
+      </ul>
+      </div>
 
       <% if (request.isUserInRole("OpenNMS Administrator")) { %>
       </form>
       <% } %>
+
+<!--
       <table width="100%" border="0" cellspacing="0" cellpadding="0">
         <tr>
           <td valign="top" width="48%">
+-->
+
+	<span id="contentleft">
+
             <!-- general info box -->
+<!--
             <table width="100%" border="1" cellspacing="0" cellpadding="2" bordercolor="black" BGCOLOR="#cccccc">
               <tr bgcolor="#999999">
                 <td colspan="2" ><b>General</b></td> 
+-->
+	    <table class="first">
+              <tr>
+                <td class="header" colspan="2">General</td>
               </tr>
               <tr>
                 <td>Node</td> 
@@ -297,13 +341,18 @@ function doDelete() {
                 </td>
               </tr>
             </table>
-            <br>
+<!--            <br>-->
             
             <!-- SNMP box, if info available -->
             <% if( hasSNMPData(intf_db) ) { %>
+<!--
                   <table width="100%" border="1" cellspacing="0" cellpadding="2" bordercolor="black" bgcolor="#cccccc">
                     <tr bgcolor="#999999">
                       <td colspan="2"><b>SNMP Attributes</b></td> 
+-->
+		  <table>
+		    <tr>
+                      <td class="header" colspan="2">SNMP Attributes</td>
                     </tr>
                     <tr> 
                       <td>Subnet Mask</td>
@@ -339,13 +388,18 @@ function doDelete() {
                     </tr>
 
                   </table>
-                  <br>
+<!--                  <br> -->
             <% } %>
 
             <!-- services box -->
+<!--
             <table width="100%" border="1" cellspacing="0" cellpadding="2" bordercolor="black" BGCOLOR="#cccccc">
               <tr bgcolor="#999999">
                 <td><b>Services</b></td> 
+-->
+	    <table>
+	      <tr>
+	        <td class="header">Services</td>
               </tr>
               <% for( int i=0; i < services.length; i++ ) { %>
                 <tr>
@@ -353,17 +407,24 @@ function doDelete() {
                 </tr>
               <% } %>
             </table>
-            <br>
+<!--            <br>-->
 
             <!-- Availability box -->
             <jsp:include page="/includes/interfaceAvailability-box.jsp" flush="false" />
-            <br>
-            
+<!--            <br>-->
+
+</span>
+       
+<!--     
           </td>
 
           <td>&nbsp;</td>
 
           <td valign="top" width="48%">
+-->
+
+<span id="contentright">
+
             <!-- interface desktop information box -->
           
             <!-- events list box -->
@@ -376,7 +437,7 @@ function doDelete() {
               <jsp:param name="header" value="<%=eventHeader%>" />
               <jsp:param name="moreUrl" value="<%=moreEventsUrl%>" />
             </jsp:include>
-            <br>
+<!--            <br>-->
             
             <!-- Recent outages box -->
             <jsp:include page="/includes/interfaceOutages-box.jsp" flush="false" />
@@ -386,13 +447,18 @@ function doDelete() {
         </tr>
       </table>
 
+<!--
     </td>
     
     <td>&nbsp;</td>
   </tr>
 </table>
 
-<br>
+-->
+
+</span>
+
+</div>
 
 <jsp:include page="/includes/footer.jsp" flush="false" />
 

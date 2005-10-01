@@ -1,4 +1,4 @@
-<!--
+<%--
 
 //
 // This file is part of the OpenNMS(R) Application.
@@ -9,6 +9,10 @@
 // and included code are below.
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+//
+// Modifications:
+//
+// 2005 Sep 30: Hacked up to use CSS for layout. -- DJ Gregor
 //
 // Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
@@ -32,7 +36,7 @@
 //      http://www.opennms.com/
 //
 
--->
+--%>
 
 <%-- 
   This page is included by other JSPs to create a table containing
@@ -150,21 +154,27 @@
     }
 </script>
 
+<div id="include-eventlist">
+
 <form action="event/acknowledge" method="POST" name="acknowledge_form">
 <input type="hidden" name="redirect" value="<%=request.getContextPath() + request.getServletPath() + "?" + request.getQueryString()%>" />
 <input type="hidden" name="action" value="<%=org.opennms.web.event.AcknowledgeEventServlet.ACKNOWLEDGE_ACTION%>" />
 
 
+<!--
 <table width="100%" border="1" cellspacing="0" cellpadding="2" bordercolor="black" BGCOLOR="#cccccc">
      <tr bgcolor="#999999">
-       <td colspan="4"><b><%=header%></b></td>
+-->
+<table>
+     <tr>
+       <td class="header" colspan="4"><%=header%></td>
      </tr>
 
 <%
    for( int i=0; i < events.length; i++ ) {
        int severity = events[i].getSeverity();
 %>
-     <tr>        
+     <tr>
        <td>
          <nobr>
            <input type="checkbox" name="event" value="<%=events[i].getId()%>" />
@@ -172,7 +182,7 @@
          </nobr>
        </td>
        <td><%=org.opennms.netmgt.EventConstants.formatToUIString(events[i].getTime())%></td>
-       <td bgcolor="<%=EventUtil.getSeverityColor(severity)%>"><%=EventUtil.getSeverityLabel(severity)%></td>
+       <td class="<%=EventUtil.getSeverityClass(severity)%>"><%=EventUtil.getSeverityLabel(severity)%></td>
        <td><%=events[i].getLogMessage()%></td>
      </tr>
 <% } %>
@@ -197,3 +207,6 @@
      </tr>
       
 </table>
+</form>
+
+</div>

@@ -1,4 +1,11 @@
 <%--
+
+  Modifications:
+
+  2005 Sep 30: Hacked up to use CSS for layout. -- DJ Gregor
+
+--%>
+<%--
   This page is included by other JSPs to create a uniform header. 
   It expects that a <base> tag has been set in the including page
   that directs all URLs to be relative to the servlet context.
@@ -41,140 +48,238 @@
 %>
 
 <!-- Header -->
+
+<div id="header">
+<div id="headertop">
+<!--
 <table width="100%" border="0" cellspacing="0" cellpadding="2" id="header" background="images/logo-background.gif">
+-->
+
+
+
+<!--
   <tr> 
     <td WIDTH="30%">
+-->
+
+<span id="headerlogo">
       <a href="index.jsp"><img src="images/logo.png" hspace="0" vspace="0" border="0" alt="OpenNMS Web Console Home"></a>
+</span>
+
+<!--
     </td>
     <td ALIGN="center">
       <b><%=title%></b>
     </td>
+-->
+
+<span id="headertitle">
+      <%=title%>
+</span>
+
+<!--
     <td width="20%" ALIGN="right" >
-      <b>[<%=request.getRemoteUser()%>]</b><br>
-      <%String status = "Unknown";
-        try
-        {
+-->
+
+<span id="headerinfo">
+
+<div id="outer">
+ <div id="middle">
+  <div id="inner">
+
+<!--      <b>[<%=request.getRemoteUser()%>]</b><br> -->
+      [<%=request.getRemoteUser()%>]<br>
+
+      <%
+        String status;
+        try {
             status = NotifdConfigFactory.getInstance().getPrettyStatus();
-        } catch (Exception e) { /*if factory can't be initialized, status is already 'Unknown'*/ }
+        } catch (Exception e) {
+            status = "<font color=\"ff0000\">Unknown</font>";
+	}
       %>
-      <b>Notices 
-      <%if (status.equals("Unknown")) { %>
-        <font color="FF0000"><%=status%></font>
-      <% } else { %>
-        <%=status%>
-      <% } %>
-      </b><br/>
-      <font face="arial" size="-1"><b><%=date%><br/>
-      <%=time%></b></font>
+      Notices <%= status %><br/>
+      <div id="headerdate">
+        <%=date%><br/>
+        <%=time%>
+      </div>
+<!--
     </td>
   </tr>
+-->
+  </div>
+ </div>
+</div>
+</span>
+
+<div class="spacer">
+     &nbsp;
+</div>
+
+</div>
+
+<!--
   <tr bgcolor="white">
     <td COLSPAN="3" ALIGN="center" >
       <table width="100%" border="0" cellspacing="0" cellpadding="0" id="sub-header">
         <tr>
           <td align="left">      
-            <font SIZE="-1" FACE="arial">
+-->
+
+<span id="headernavbar">
+          <span id="headernavbarleft">
+	    <!-- XXX this should go -->
+<!--            <font SIZE="-1" FACE="arial"> -->
             <a href="index.jsp">Home</a> 
             <% for( int i = 0; i < breadcrumbs.length; i++ ) { %> &gt; <%=breadcrumbs[i]%> <% } %>
-            </font>
+	    <!-- XXX this should go, too -->
+<!--            </font> -->
+	  </span>
+
+<!--
           </td>
+-->
+
+          <span id="headernavbarright">
+
+<!--
           <td align="right">
-          <font SIZE="-1" FACE="arial">
+-->
+
+
+	  <!-- XXX this should go -->
+<!--          <font SIZE="-1" FACE="arial">-->
+   	  <div id="navbar">
+	  <ul>
+	    <li>
             <%-- Node List --%>
             <%  if( "nodelist".equals( location ) ) { %>
-                  Node List&nbsp;|&nbsp;
+                  Node List
             <%  } else { %>
-                  <a href="element/nodelist.jsp">Node List</a>&nbsp;|&nbsp;
+                  <a href="element/nodelist.jsp">Node List</a>
             <%  } %>
+	    </li>
 
+	    <li>
             <%-- Element Search --%>
             <%  if( "element".equals( location ) ) { %>
-                  Search&nbsp;|&nbsp;
+                  Search
             <%  } else { %>
-                  <a href="element/index.jsp">Search</a>&nbsp;|&nbsp;
+                  <a href="element/index.jsp">Search</a>
             <%  } %>    
+	    </li>
     
+	    <li>
             <%-- Outages --%>
             <%  if( "outages".equals( location ) ) { %>
-                  Outages&nbsp;|&nbsp;
+                  Outages
             <%  } else { %>
-                  <a href="outage/index.jsp">Outages</a>&nbsp;|&nbsp;
+                  <a href="outage/index.jsp">Outages</a>
             <%  } %>
+	    </li>
 
+	    <li>
             <%-- Events --%>
             <%  if( "event".equals( location ) ) { %>
-                  Events&nbsp;|&nbsp;
+                  Events
             <%  } else { %>
-                  <a href="event/index.jsp">Events</a>&nbsp;|&nbsp;
+                  <a href="event/index.jsp">Events</a>
             <%  } %>    
+	    </li>
 
+	    <li>
             <%-- Alarms --%>
             <%  if( "alarm".equals( location ) ) { %>
-                  Alarms&nbsp;|&nbsp;
+                  Alarms
             <%  } else { %>
-                  <a href="alarm/index.jsp">Alarms</a>&nbsp;|&nbsp;
+                  <a href="alarm/index.jsp">Alarms</a>
             <%  } %>    
+	    </li>
 
+	    <li>
             <%-- Notification --%>                               
             <%  if( "notification".equals( location ) ) { %>
-                  Notification&nbsp;|&nbsp;
+                  Notification
             <%  } else { %>
-                  <a href="notification/index.jsp">Notification</a>&nbsp;|&nbsp;
+                  <a href="notification/index.jsp">Notification</a>
             <%  } %>
+	    </li>
             
+	    <li>
             <%-- Assets --%>                               
             <%  if( "asset".equals( location ) ) { %>
-                  Assets&nbsp;|&nbsp;
+                  Assets
             <%  } else { %>
-                  <a href="asset/index.jsp">Assets</a>&nbsp;|&nbsp;
+                  <a href="asset/index.jsp">Assets</a>
             <%  } %>
+	    </li>
 
 <%--
+	    <li>
             <%-- Security -- % >                               
             <%  if( "security".equals( location ) ) { %>
-                  Security&nbsp;|&nbsp;
+                  Security
             <%  } else { %>
-                  <a href="security.jsp">Security</a>&nbsp;|&nbsp;
+                  <a href="security.jsp">Security</a>
             <%  } %>
+	    </li>
 --%>        
 
+	    <li>
             <%-- Report --%>                               
             <%  if( "report".equals( location ) ) { %>
-                  Reports&nbsp;|&nbsp;
+                  Reports
             <%  } else { %>
-                  <a href="report/index.jsp">Reports</a>&nbsp;|&nbsp;
+                  <a href="report/index.jsp">Reports</a>
             <%  } %>
+	    </li>
         
 
 <% if( file.exists() ) { %>
+	    <li>
             <%-- Map --%>                               
             <%  if( "map".equals( location ) ) { %>
-                  Map&nbsp;|&nbsp;
+                  Map
             <%  } else { %>
-                  <a href="map/index.jsp">Map</a>&nbsp;|&nbsp;
+                  <a href="map/index.jsp">Map</a>
             <%  } %>
+	    </li>
 <% } %>
         
     
 <% if( request.isUserInRole( Authentication.ADMIN_ROLE )) { %>
+	    <li>
             <%-- Admin --%>                               
             <%  if( "admin".equals( location ) ) { %>
-                  Admin&nbsp;|&nbsp;
+                  Admin
             <%  } else { %>
-                  <a href="admin/index.jsp">Admin</a>&nbsp;|&nbsp;
+                  <a href="admin/index.jsp">Admin</a>
             <%  } %>
+	    </li>
 <% } %>
     
+	    <li class="last">
             <%-- Help --%>                               
             <%  if( "help".equals( location ) ) { %>
                   Help
             <%  } else { %>
                   <a href="help/index.jsp">Help</a>
             <%  } %>
+	    </li>
+	    </ul>
+	  </div>
+	  <!-- XXX this should go, too -->
           </font>
+</span>
+</span>
+
+</div>
+
+<!--
           </td>
         </tr>
       </table>
     </td>
   </tr>
 </table>
+-->

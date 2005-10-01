@@ -1,4 +1,4 @@
-<!--
+<%--
 
 //
 // This file is part of the OpenNMS(R) Application.
@@ -9,6 +9,10 @@
 // and included code are below.
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+//
+// Modifications:
+//
+// 2005 Sep 30: Hacked up to use CSS for layout. -- DJ Gregor
 //
 // Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
@@ -32,7 +36,7 @@
 //      http://www.opennms.com/
 //
 
--->
+--%>
 
 <%-- 
   This page is included by other JSPs to create a box containing an
@@ -69,19 +73,35 @@
     Outage[] outages = this.model.getOutagesForNode(nodeId, yesterday);
 %>
 
+<!--
 <table width="100%" border="1" cellspacing="0" cellpadding="2" id="nodeOutages" bordercolor="black" BGCOLOR="#cccccc">
-  
+-->
+<table id="nodeOutages" cellpadding="2" width="100%">
+<tbody>
+
 
 <% if(outages.length == 0) { %>
   <tr>
+<!--
     <td BGCOLOR="#999999" colspan="5">There have been no outages on this node in the last 24 hours.</b></a></td>
+-->
+<!-- XXX should this be header, instead? -->
+    <td class="headerplain" colspan="5">There have been no outages on this node in the last 24 hours.</td>
   </tr>
 <% } else { %>
   <tr> 
+<!--
     <td BGCOLOR="#999999" colspan="5"><b>Recent Outages</b></td>
+-->
+<!-- XXX should this be header, instead? -->
+    <td class="headerplain" colspan="5">Recent Outages</td>
   </tr>
 
+<!--
   <tr bgcolor="#999999">
+-->
+  <tr>
+    <!-- should be able to get rid of the bold -->
     <td><b>Interface</b></td>
     <td><b>Service</b></td>
     <td><b>Lost</b></td>
@@ -105,4 +125,5 @@
   <% } %>
 <% } %>
 
+</tbody>
 </table>      

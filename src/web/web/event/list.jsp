@@ -1,4 +1,4 @@
-<!--
+<%--
 
 //
 // This file is part of the OpenNMS(R) Application.
@@ -12,6 +12,7 @@
 //
 // Modifications:
 //
+// 2005 Sep 30: Hacked up to use CSS for layout. -- DJ Gregor
 // 2004 Feb 11: remove the extra 'limit' parameter in the base URL.
 // 2003 Sep 04: Added a check to allow for deleted node events to display.
 // 2003 Feb 07: Fixed URLEncoder issues.
@@ -40,7 +41,7 @@
 //      http://www.opennms.org/
 //      http://www.opennms.com///
 
--->
+--%>
 
 <%@page language="java" contentType="text/html" session="true" import="org.opennms.web.event.*,java.util.*,java.sql.SQLException,org.opennms.web.authenticate.Authentication,org.opennms.web.event.filter.*" %>
 
@@ -163,7 +164,11 @@
   </script>
 </head>
 
+<!--
 <body marginwidth="0" marginheight="0" leftmargin="0" rightmargin="0" topmargin="0">
+-->
+
+<body>
 
 <% String breadcrumb1 = "<a href= 'event/index.jsp' title='Events System Page'>Events</a>"; %>
 <% String breadcrumb2 = "List"; %>
@@ -173,25 +178,46 @@
   <jsp:param name="breadcrumb" value="<%=breadcrumb2%>" />
 </jsp:include>
 
+<!--
 <br/>
+-->
 
 <!-- Body -->
+<div id="eventlist">
+
+<!--
 <table width="100%" border="0" cellspacing="0" cellpadding="2" >
   <tr>
     <td>&nbsp;</td>
 
     <td>
+-->
+
       <!-- menu -->
+      <div id="linkbar">
+      <ul>
+      <li>
       <a href="<%=this.makeLink( parms, new ArrayList())%>" title="Remove all search constraints" >View all events</a>
-      &nbsp;&nbsp;&nbsp;<a href="event/advsearch.jsp" title="More advanced searching and sorting options">Advanced Search</a>      
-      &nbsp;&nbsp;&nbsp;<a href="javascript: void window.open('<%=org.opennms.web.Util.calculateUrlBase(request)%>/event/severity.jsp','', 'fullscreen=no,toolbar=no,status=no,menubar=no,scrollbars=no,resizable=yes,directories=no,location=no,width=525,height=158')" title="Open a window explaining the event severities">Severity Legend</a>      
+      </li>
+      <li>
+      <a href="event/advsearch.jsp" title="More advanced searching and sorting options">Advanced Search</a>      
+      </li>
+      <li>
+      <a href="javascript: void window.open('<%=org.opennms.web.Util.calculateUrlBase(request)%>/event/severity.jsp','', 'fullscreen=no,toolbar=no,status=no,menubar=no,scrollbars=no,resizable=yes,directories=no,location=no,width=525,height=158')" title="Open a window explaining the event severities">Severity Legend</a>      </li>
       
       <% if( parms.ackType == EventFactory.AcknowledgeType.UNACKNOWLEDGED ) { %> 
-        &nbsp;&nbsp;&nbsp;<a href="javascript: void document.acknowledge_by_filter_form.submit()" onclick="return confirm('Are you sure you want to acknowledge all events in the current search including those not shown on your screen?  (<%=eventCount%> total events)')" title="Acknowledge all events that match the current search constraints, even those not shown on the screen">Acknowledge entire search</a>
+        <li>
+	<a href="javascript: void document.acknowledge_by_filter_form.submit()" onclick="return confirm('Are you sure you want to acknowledge all events in the current search including those not shown on your screen?  (<%=eventCount%> total events)')" title="Acknowledge all events that match the current search constraints, even those not shown on the screen">Acknowledge entire search</a>
+	</li>
       <% } else { %>
-        &nbsp;&nbsp;&nbsp;<a href="javascript: void document.acknowledge_by_filter_form.submit()" onclick="return confirm('Are you sure you want to unacknowledge all events in the current search including those not shown on your screen)?  (<%=eventCount%> total events)')" title="Unacknowledge all events that match the current search constraints, even those not shown on the screen">Unacknowledge entire search</a>               
+        <li>
+	<a href="javascript: void document.acknowledge_by_filter_form.submit()" onclick="return confirm('Are you sure you want to unacknowledge all events in the current search including those not shown on your screen)?  (<%=eventCount%> total events)')" title="Unacknowledge all events that match the current search constraints, even those not shown on the screen">Unacknowledge entire search</a>
+	</li>
       <% } %>
-      <!-- end menu -->      
+      </ul>
+      </div>
+      <!-- end menu -->
+
 
       <!-- hidden form for acknowledging the result set --> 
       <form action="event/acknowledgeByFilter" method="POST" name="acknowledge_by_filter_form">    
@@ -200,10 +226,12 @@
         <%=org.opennms.web.Util.makeHiddenTags(request)%>
       </form>      
 
-      
+<!--      
       <table width="100%" border="0" cellspacing="2" cellpadding="0" >
         <tr>
           <td width="50%" valign="top">
+-->
+	<div id="contentleft">
             <jsp:include page="/event/querypanel.jsp" flush="false" />
           
             <% if( eventCount > 0 ) { %>
@@ -215,9 +243,15 @@
                 <jsp:param name="multiple" value="<%=parms.multiple%>"   />
               </jsp:include>
             <% } %>          
+	 </div>
+
+<!--
           </td>
           
           <td width="50%" valign="top">          
+-->
+
+	<div id="contentright">
             <% if( parms.filters.size() > 0 || parms.ackType == EventFactory.AcknowledgeType.UNACKNOWLEDGED || parms.ackType == EventFactory.AcknowledgeType.ACKNOWLEDGED ) { %>
               <% int length = parms.filters.size(); %>
 
@@ -249,9 +283,15 @@
                 </ol>
               </p>           
             <% } %>
+	  </div>
+<!--
           </td>
         </tr>
     </table>
+-->
+
+    <div class="spacer">
+    </div>
 
     <form action="event/acknowledge" method="POST" name="acknowledge_form">
       <input type="hidden" name="redirectParms" value="<%=request.getQueryString()%>" />
@@ -259,6 +299,7 @@
       <%=org.opennms.web.Util.makeHiddenTags(request)%>
 
       <table>
+      <tbody>
         <tr class="eventlist-head">
           <% if ( parms.ackType == EventFactory.AcknowledgeType.UNACKNOWLEDGED ) { %>
           <td width="1%"><b>Ack</b></td>
@@ -410,6 +451,7 @@
           <% } %>
           </td>
         </tr>
+      </tbody>
       </table>
       </form>
 
@@ -418,12 +460,17 @@
         <a HREF="admin/events.jsp" title="Acknowledge or Unacknowledge All Events">[Acknowledge or Unacknowledge All Events]</a>
       <% } %>--%>
 
+<!--
     </td>
     <td>&nbsp;</td>
   </tr>
 </table>
+-->
+</div>
 
+<!--
 <br>
+-->
 
 <jsp:include page="/includes/bookmark.jsp" flush="false" />
 <jsp:include page="/includes/footer.jsp" flush="false" />
