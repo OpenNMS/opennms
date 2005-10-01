@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<inventory-configuration threads="30" refreshListTime="28800000" sendEachSuccessEvent="true" fileRepository="/var/opennms/inventory">
+<inventory-configuration threads="30" refreshListTime="28800000" sendEachSuccessEvent="true" fileRepository="@install.share.dir@/inventory">
 
 <package name="ssh">
         <filter>IPADDR IPLIKE *.*.*.*</filter>
@@ -9,7 +9,7 @@
 	    	<parameter key="port" value="22"/>
 		<parameter key="timeout" value="1"/>
 		<parameter key="session" value="ls"/>
-		<parameter key="plugin-conf-file" value="/opt/OpenNMS/etc/inventory/ssh.xml"/>
+		<parameter key="plugin-conf-file" value="@install.etc.dir@/inventory/ssh.xml"/>
 	    </group>
         <downtime begin="0" end="7200000" interval="1800000"/>
 	  <downtime begin="7200000" delete="true"/>
@@ -22,7 +22,7 @@
 		<parameter key="retry" value="1"/>		
 		<parameter key="timeout" value="3"/>
             <parameter key="definition-name" value="def 1"/>
-		<parameter key="plugin-conf-file" value="/opt/OpenNMS/etc/inventory/ldap-config.xml"/>
+		<parameter key="plugin-conf-file" value="@install.etc.dir@/inventory/ldap-config.xml"/>
          </group>
 	   <downtime begin="0" end="7200000" interval="1800000"/>
 	  <downtime begin="7200000" delete="true"/>
@@ -37,7 +37,7 @@
 		<parameter key="timeout" value="1"/>
 		<parameter key="command" value="show ver"/>
 		<parameter key="item" value="IOS"/>
-		<parameter key="plugin-conf-file" value="/opt/OpenNMS/etc/inventory/cisco.xml"/>
+		<parameter key="plugin-conf-file" value="@install.etc.dir@/inventory/cisco.xml"/>
 	    </group>
 	    <group name="CiscoInterfacesInventory" interval="14400000" send-events="true" compare="true">
 		<parameter key="path" value="/cisco_inverfaces.xml"/>
@@ -45,7 +45,7 @@
 		<parameter key="timeout" value="1"/>
 		<parameter key="command" value="show conf"/>
 		<parameter key="item" value="INTERFACES"/>
-		<parameter key="plugin-conf-file" value="/opt/OpenNMS/etc/inventory/cisco.xml"/>
+		<parameter key="plugin-conf-file" value="@install.etc.dir@/inventory/cisco.xml"/>
 	    </group>
         <downtime begin="0" end="7200000" interval="1800000"/>
 	  <downtime begin="7200000" delete="true"/>

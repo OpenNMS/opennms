@@ -11,18 +11,11 @@
 	<element name="item">
 		<complexType>
 			<choice>
-				<element ref="item" minOccurs="1" maxOccurs="unbounded"/>
-				<element ref="dataitem" minOccurs="1" maxOccurs="1"/>
+				<element ref="item" type="string" minOccurs="1" maxOccurs="unbounded"/>
+				<element name="dataitem" type="string" minOccurs="1" maxOccurs="1"/>
 			</choice>
 			<attribute name="name" type="string" use="required"/>
 			<attribute name="asset-field" type="string"/>
-		</complexType>
-	</element>
-	<element name="dataitem">
-		<complexType>
-			<sequence>
-				<element name="line" type="string" minOccurs="1" maxOccurs="unbounded"/>
-			</sequence>
 		</complexType>
 	</element>
 </schema>

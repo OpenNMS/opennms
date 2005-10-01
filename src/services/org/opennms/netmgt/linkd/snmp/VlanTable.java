@@ -258,7 +258,7 @@ public class VlanTable implements SnmpHandler {
 							if (log.isDebugEnabled()) {
 								log.debug("VlanTable: get SNMP Alias: "
 										+ vblist[i].getName()
-										+ "  Vars[y]: " + vblist[i].toString() + "; ifindex: " + index);
+										+ "  Vars[y]: " + vblist[i].toString() + "; vlanindex: " + index);
 							}
 							vlanEnt.put(VLAN_INDEX,index);
 							vlanEnt.put(VLAN_NAME,vblist[i].getValue());

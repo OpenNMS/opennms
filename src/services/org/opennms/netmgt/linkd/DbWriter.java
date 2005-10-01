@@ -149,22 +149,19 @@ public class DbWriter implements Runnable {
 						.get(IpNetToMediaTableEntry.INTM_PHYSADDR);
 				SnmpIPAddress ipaddress = (SnmpIPAddress) ent
 						.get(IpNetToMediaTableEntry.INTM_NETADDR);
+				if (log.isDebugEnabled())
+					log.debug(" store: parsing ipNetToMediaTableEntry ipaddr/physaddr/ifindex" + ipaddress + "/" + physaddr + "/" + ifindex);
 				try {
 					stmt = dbConn.prepareStatement(SQL_GET_NODEID);
 					stmt.setString(1, ipaddress.toString());
 
 					rs = stmt.executeQuery();
-					if (rs.getFetchSize() > 1) {
-						if (log.isEnabledFor(Priority.WARN))
-							log.warn("found " + rs.getFetchSize() + "nodeid for ipaddress "
-									+ ipaddress + " go next row; database inconsistency.");
-						continue;
-					}
+
 					if (!rs.next()) {
 						rs.close();
 						stmt.close();
 						if (log.isEnabledFor(Priority.WARN))
-							log.warn("no nodeid find for ipaddress "
+							log.warn("store: parsing ipNetToMediaTableEntry no nodeid find for ipaddress "
 									+ ipaddress + " go next row.");
 						continue;
 					}
@@ -172,7 +169,7 @@ public class DbWriter implements Runnable {
 					nodeid = rs.getInt(ndx++);
 					if (rs.wasNull()) {
 						if (log.isEnabledFor(Priority.WARN))
-						log.warn("no nodeid find for ipaddress "
+						log.warn("store: parsing ipNetToMediaTableEntry no nodeid find for ipaddress "
 								+ ipaddress + " go next row.");
 						continue;
 					}
@@ -232,6 +229,8 @@ public class DbWriter implements Runnable {
 		if (m_snmpnode.getSnmpCollection().hasRouteTable()) {
 			ite = m_snmpnode.getSnmpCollection().getIpRouteTable().getEntries()
 					.iterator();
+			if (log.isDebugEnabled())
+				log.debug(" store: saving ipRouteTableEntry to iprouteinterface table in DB");
 			while (ite.hasNext()) {
 				IpRouteTableEntry ent = (IpRouteTableEntry) ite.next();
 
@@ -257,7 +256,7 @@ public class DbWriter implements Runnable {
 						.get(IpRouteTableEntry.IP_ROUTE_TYPE);
 				SnmpInt32 routeproto = (SnmpInt32) ent
 						.get(IpRouteTableEntry.IP_ROUTE_PROTO);
-
+				
 				DbIpRouteInterfaceEntry iprouteInterfaceEntry = DbIpRouteInterfaceEntry
 						.get(dbConn, m_snmpnode.getNodeId(), routedest
 								.toString());
@@ -311,6 +310,8 @@ public class DbWriter implements Runnable {
 						.getVlanName(vlanindex);
 
 				if (snmpVlanColl.hasDot1dBase()) {
+					if (log.isDebugEnabled())
+						log.debug(" store: saving Dot1dBase in stpnode table in DB");
 
 					Dot1dBaseGroup dod1db = (Dot1dBaseGroup) snmpVlanColl
 							.getDot1dBase();
@@ -361,6 +362,9 @@ public class DbWriter implements Runnable {
 					dbStpNodeEntry.updateBaseVlanName(vlanname);
 
 					if (snmpVlanColl.hasDot1dStp()) {
+						if (log.isDebugEnabled())
+							log.debug(" store: saving Dot1dStp in stpnode table in DB");
+						
 						Dot1dStpGroup dod1stp = (Dot1dStpGroup) snmpVlanColl
 								.getDot1dStp();
 						SnmpInt32 protospec = (SnmpInt32) dod1stp
@@ -410,6 +414,8 @@ public class DbWriter implements Runnable {
 
 					if (snmpVlanColl.hasDot1dBasePortTable()) {
 						Iterator sub_ite = snmpVlanColl.getDot1dBasePortTable().getEntries().iterator();
+						if (log.isDebugEnabled())
+							log.debug(" store: saving Dot1dBasePortTable in stpinterface table in DB");
 						while (sub_ite.hasNext()) {
 							Dot1dBasePortTableEntry dot1dbaseptentry = (Dot1dBasePortTableEntry) sub_ite
 									.next();
@@ -448,6 +454,8 @@ public class DbWriter implements Runnable {
 					}
 
 					if (snmpVlanColl.hasDot1dStpPortTable()) {
+						if (log.isDebugEnabled())
+							log.debug(" store: saving Dot1dStpPortTable in stpinterface table in DB");
 						Iterator sub_ite = snmpVlanColl.getDot1dStpPortTable().getEntries().iterator();
 						while (sub_ite.hasNext()) {
 							Dot1dStpPortTableEntry dot1dstpptentry = (Dot1dStpPortTableEntry) sub_ite
@@ -580,8 +588,8 @@ public class DbWriter implements Runnable {
 		i = stmt.executeUpdate();
 		if (log.isDebugEnabled())
 			log
-					.debug("update atinterface: updated to NOT ACTIVE status"
-							+ i + " rows for nodeid"
+					.debug("update atinterface: updated to NOT ACTIVE status "
+							+ i + " rows for nodeid "
 							+ m_snmpnode.getNodeId() + ".");
 
 		stmt.close();

@@ -49,6 +49,7 @@ import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.linkd.snmp.*;
 import org.opennms.netmgt.scheduler.ReadyRunnable;
 import org.opennms.netmgt.utils.BarrierSignaler;
+import org.opennms.protocols.snmp.SnmpParameters;
 import org.opennms.protocols.snmp.SnmpPeer;
 import org.opennms.protocols.snmp.SnmpSMI;
 import org.opennms.protocols.snmp.SnmpSession;
@@ -79,8 +80,6 @@ final class SnmpCollection implements ReadyRunnable {
 	/** 
 	 * The Vlan OID used to collect the Vlan IDs
 	 */
-// for debug only
-//	private String m_vlanoid = ".1.3.6.1.4.1.9.9.46.1.3.1.1.4.1";
 	private String m_vlanoid = null;
 	/**
 	 * The ipnettomedia table information
@@ -183,7 +182,7 @@ final class SnmpCollection implements ReadyRunnable {
 		String localhost = "10.3.2.216";
 		InetAddress ip = InetAddress.getByName(localhost);
 		SnmpPeer peer = new SnmpPeer(ip);
-		SnmpCollection snmpCollector = new SnmpCollection(peer);
+		SnmpCollection snmpCollector = new SnmpCollection(peer,".1.3.6.1.4.1.9.9.46.1.3.1.1.4.1");
 		snmpCollector.run();
 		java.util.Iterator itr = snmpCollector.getVlanTable().getEntries().iterator();
 		System.out.println("number of vlan entities = "
@@ -323,10 +322,9 @@ final class SnmpCollection implements ReadyRunnable {
 
 				int numSignalers = 3;
 				if (m_vlanoid == null) {
-					log
-					.debug("SnmpCollection.run: no vlan oid set for host: "
-							+ m_address.getHostAddress()
-							+ " Skipping VlanTable Download");
+					if (log.isInfoEnabled()) 
+						log.info("SnmpCollection.run: no VlanTable oid set for host: "
+								+ m_address.getHostAddress());
 					numSignalers--;
 					m_vlanTable = null;
 				}
@@ -390,8 +388,15 @@ final class SnmpCollection implements ReadyRunnable {
 					log.debug("SnmpCollection.run: community: "
 							+ m_peer.getParameters().getReadCommunity() + "@"
 							+ vlan);
+					SnmpParameters snmpP = m_peer.getParameters();
+					SnmpPeer vlanPeer = new SnmpPeer(m_peer.getPeer());
+					vlanPeer.setParameters(snmpP);
+					SnmpParameters vlanSnmpP = vlanPeer.getParameters();
+					vlanSnmpP.setReadCommunity(snmpP.getReadCommunity() + "@"
+							+ vlan);
+
 					SnmpVlanCollection snmpvlancollection = new SnmpVlanCollection(
-							m_peer, vlan);
+							vlanPeer);
 					snmpvlancollection.run();
 					if (!snmpvlancollection.failed())
 						m_snmpvlaninfo.add(snmpvlancollection);

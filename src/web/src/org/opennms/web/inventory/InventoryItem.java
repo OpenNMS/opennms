@@ -7,7 +7,7 @@
 package org.opennms.web.inventory;
 
 
-import org.opennms.netmgt.config.inventory.parser.*;
+import org.opennms.netmgt.config.inventory.parser.Item;
 
 /**
  * @author maurizio
@@ -17,7 +17,7 @@ public class InventoryItem {
 	private int numRows=0;
 	private int numColumn=0;
 	private String name=null;
-	private String dataitem="";
+	private String dataitem=null;
 
 	public static final int EQUAL_STATUS=0;
 	public static final int ADDED_STATUS=1;
@@ -41,11 +41,7 @@ public class InventoryItem {
 	
 	public InventoryItem(Item it, int status, int numColumn){
 		this.name=it.getName();
-		Dataitem dI= it.getDataitem();
-		String[] line = dI.getLine();
-		for(int i=0;i<line.length;i++){
-			this.dataitem+=line[i]+"\n";	
-		}
+		this.dataitem = it.getDataitem();
 		this.status=status;
 		this.numColumn = numColumn;
 		calculateNewLine();

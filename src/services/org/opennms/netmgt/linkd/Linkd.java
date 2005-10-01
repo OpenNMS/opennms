@@ -138,11 +138,12 @@ public class Linkd implements PausableFiber {
 		try {
 			dbConn = DatabaseConnectionFactory.getInstance().getConnection();
 			if (log.isDebugEnabled()) {
-				log.debug("init: Loading nodes fron database");
+				log.debug("init: Loading nodes from database");
 			}
 			try {
 				snmpprimaryip2nodes = LinkdConfigFactory.getInstance()
 						.getLinkableSnmpNodes(dbConn);
+				LinkdConfigFactory.getInstance().updateDeletedNodes(dbConn);
 			} catch (UnknownHostException h) {
 				if (log.isEnabledFor(Priority.WARN))
 					log

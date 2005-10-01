@@ -95,31 +95,19 @@ public class TextHandler implements DataHandler {
 					throw new IllegalStateException("Unable to execute filter command "+filterCommand+" \n "+io);
 				}
 			}
-			String lineSeparator = System.getProperty("line.separator");
+			
 			if(itemSeparator!=null){
 				Vector dataItemVec = mySplit(dataItem,itemSeparator);
 				for(int i=0;i<dataItemVec.size();i++){
 					Item newItem = new Item();
 					newItem.setName(itemName+"("+i+")");
-					Vector linesVec = mySplit(((String) dataItemVec.get(i)), lineSeparator);
-					String[] lines = (String[]) linesVec.toArray(new String[0]); 
-					Dataitem dI = new Dataitem();
-					dI.setLine(lines);
-					newItem.setDataitem(dI);
-					//newItem.setDataitem((String) dataItemVec.get(i));
+					newItem.setDataitem((String) dataItemVec.get(i));
 					inv.addItem(newItem);
 				}
 			}else{
 				Item newItem = new Item();
 				newItem.setName(itemName);
-				
-				Vector linesVec = mySplit(((String) dataItem), lineSeparator);
-				String[] lines = (String[]) linesVec.toArray(new String[0]); 
-
-				Dataitem dI = new Dataitem();
-				dI.setLine(lines);
-				newItem.setDataitem(dI);
-				//newItem.setDataitem(dataItem);
+				newItem.setDataitem(dataItem);
 				if(assetField!=null){
 					newItem.setAssetField(assetField);
 				}

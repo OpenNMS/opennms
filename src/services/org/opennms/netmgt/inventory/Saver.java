@@ -69,13 +69,12 @@ public class Saver {
 		}
 	}
 		
-	private Dataitem getDataItem(List itemTreeList){
+	private String getDataItemValue(List itemTreeList){
 		Item item = (Item) newItemMap.get(itemTreeList);
 		if(item!=null)
 		   return item.getDataitem();
-		else return null;
+		else return "";
 	}
-
 		
 	private void visit(Item currItem, List path, List list, Map itemMap){
 				List tmpPathList=new ArrayList(path);
@@ -85,7 +84,7 @@ public class Saver {
 						list.add(tmpPathList);
 						String assetField = currItem.getAssetField();
 						if(assetField!=null){
-							asset.put(assetField,getDataItem(tmpPathList));
+							asset.put(assetField,getDataItemValue(tmpPathList));
 						}
 				}else{
 			
@@ -137,12 +136,7 @@ public class Saver {
 					categoryFound=true;
 				if(currDbColumn.equals("userlastmodified"))
 					userLastModFound=true;
-				Dataitem dI = (Dataitem) asset.get(currDbColumn);
-				String dataItem = "";
-				String[]line = dI.getLine();
-				for(int i=0; i<line.length; i++){
-					dataItem+=line[i]+"\n";
-				}
+				String dataItem = (String) asset.get(currDbColumn);
 				strFields+=","+currDbColumn;
 				strValues+=",'"+dataItem+"'";
 				}
@@ -444,12 +438,7 @@ public class Saver {
 					while(dbColumnIter.hasNext()){
 						counter++;
 						String currDbColumn = (String) dbColumnIter.next();
-						Dataitem dI = (Dataitem) asset.get(currDbColumn);
-						String[] line = dI.getLine();
-						String dataItem = "";
-						for(int i=0;i<line.length;i++){
-							dataItem+=line[i]+"\n";
-						}
+						String dataItem = (String) asset.get(currDbColumn);
 						dataItem=dataItem.replaceAll("[ \t]+"," ");
 						queryParam += currDbColumn+"='"+dataItem+"',";
 						}

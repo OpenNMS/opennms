@@ -151,6 +151,10 @@ public class LinkdConfigFactory {
 		sysOidMask2vlanOid = new HashMap();
 		snmpprimaryip2nodes = new HashMap();
 
+        File cfgFile = ExtendedConfigFileConstants.getFile(ExtendedConfigFileConstants.LINKD_CONF_FILE_NAME);
+
+        ThreadCategory.getInstance(LinkdConfigFactory.class).debug("init: config file path: " + cfgFile.getPath());
+
 		if (!initialized) {
 			reload();
 			initialized = true;
@@ -294,7 +298,7 @@ public class LinkdConfigFactory {
 			sysOidMask2vlanOid = getVlanOidFromSysOidMask();
 		} catch (Throwable t) {
 			if (log.isEnabledFor(Priority.WARN)) {
-				log.warn("init: Failed to load sysoidmash2vlanoid from linkd configuration file " + t);
+				log.warn("getLinkableSnmpNodes: Failed to load sysoidmash2vlanoid from linkd configuration file " + t);
 			}
 		}
 		Set ks = sysOidMask2vlanOid.keySet();
@@ -302,7 +306,7 @@ public class LinkdConfigFactory {
 		PreparedStatement ps = dbConn.prepareStatement(SQL_SELECT_SNMP_NODES_1);
 
 		ResultSet rs = ps.executeQuery();
-		if(log.isDebugEnabled()) log.debug("found " + rs.getFetchSize() + " snmp primary ip nodes with query " + SQL_SELECT_SNMP_NODES_1);
+		if(log.isDebugEnabled()) log.debug("getLinkableSnmpNodes: searching snmp primary ip nodes with query " + SQL_SELECT_SNMP_NODES_1);
 
 		while (rs.next()) {
 			int nodeid = rs.getInt("nodeid");
@@ -314,12 +318,12 @@ public class LinkdConfigFactory {
 			Iterator it = ks.iterator();
 			while (it.hasNext()) {
 				String sysoidmask = (String) it.next();
-				if(log.isDebugEnabled()) log.debug("searching vlanoid for node/sysoid: " + nodeid + "/" + sysoid + "; parsing sys oid mask: "+ sysoidmask );
+				if(log.isDebugEnabled()) log.debug("getLinkableSnmpNodes: searching vlanoid for node/sysoid " + nodeid + "/" + sysoid + "; matching sys oid mask: "+ sysoidmask );
 				if (node.getSysOid().startsWith(sysoidmask)) {
 					node
 							.setVlanOid((String) sysOidMask2vlanOid
 									.get(sysoidmask));
-					if(log.isDebugEnabled()) log.debug("setting vlanoid: " + node.getVlanOid() + " for node " + nodeid);
+					if(log.isDebugEnabled()) log.debug("getLinkableSnmpNodes: found vlanoid: " + node.getVlanOid() + " for node " + nodeid);
 					break;
 				}
 			}
@@ -329,25 +333,30 @@ public class LinkdConfigFactory {
 		rs.close();
 		ps.close();
 
+		int firstQuerySize = snmpprimaryip2nodes.size();
+		if(log.isDebugEnabled()) log.debug("getLinkableSnmpNodes: found " + firstQuerySize + " snmp primary ip nodes with previus query");
 
 		//select snmp device active but no polled		
 		ps = dbConn.prepareStatement(SQL_SELECT_SNMP_NODES_2);
 
 		rs = ps.executeQuery();
-		if(log.isDebugEnabled()) log.debug("found " + rs.getFetchSize() + " snmp primary ip nodes with query " + SQL_SELECT_SNMP_NODES_2);
+		if(log.isDebugEnabled()) log.debug("getLinkableSnmpNodes: searching snmp primary ip nodes with query " + SQL_SELECT_SNMP_NODES_2);
 		while (rs.next()) {
 			int nodeid = rs.getInt("nodeid");
 			String ipaddr = rs.getString("ipaddr");
-			LinkableSnmpNode node = new LinkableSnmpNode(nodeid, ipaddr, rs
-					.getString("nodesysoid"));
+			String sysoid = rs.getString("nodesysoid");
+			if (sysoid == null) sysoid = "-1";
+			LinkableSnmpNode node = new LinkableSnmpNode(nodeid, ipaddr, sysoid);
 			node.setSnmpPeer(SnmpPeerFactory.getInstance().getPeer(InetAddress.getByName(ipaddr)));
 			Iterator it = ks.iterator();
 			while (it.hasNext()) {
 				String sysoidmask = (String) it.next();
+				if(log.isDebugEnabled()) log.debug("getLinkableSnmpNodes: searching vlanoid for node/sysoid " + nodeid + "/" + sysoid + "; matching sys oid mask: "+ sysoidmask );
 				if (node.getSysOid().startsWith(sysoidmask)) {
 					node
 							.setVlanOid((String) sysOidMask2vlanOid
 									.get(sysoidmask));
+					if(log.isDebugEnabled()) log.debug("getLinkableSnmpNodes: found vlanoid: " + node.getVlanOid() + " for node " + nodeid);
 					break;
 				}
 			}
@@ -356,47 +365,54 @@ public class LinkdConfigFactory {
 
 		rs.close();
 		ps.close();
+		int secondQuerySize = snmpprimaryip2nodes.size() - firstQuerySize;
 
-		if(log.isDebugEnabled()) log.debug("found " + snmpprimaryip2nodes.size() + " snmp primary ip nodes");
+		if(log.isDebugEnabled()) log.debug("getLinkableSnmpNodes: found " + secondQuerySize + " snmp primary ip nodes with previus query");
+		if(log.isDebugEnabled()) log.debug("getLinkableSnmpNodes: globally " + snmpprimaryip2nodes.size() + " snmp primary ip nodes");
+		return snmpprimaryip2nodes;
 		
+	}
+	
+	public void updateDeletedNodes(Connection dbConn) throws SQLException {
+
+        Category log = ThreadCategory.getInstance();
 
 		// update atinterface
 		int i = 0;
-		ps = dbConn.prepareStatement(SQL_UPDATE_ATINTERFACE_D);
+		PreparedStatement ps = dbConn.prepareStatement(SQL_UPDATE_ATINTERFACE_D);
 		i = ps.executeUpdate();
 		if (log.isEnabledFor(Priority.WARN)) {
-			log.warn("init: update atinterface status to D rows: " + i);
+			log.warn("updateDeletedNodes: " + SQL_UPDATE_ATINTERFACE_D + "rows: " + i);
 		}
 
 		// update stpnode
 		ps = dbConn.prepareStatement(SQL_UPDATE_STPNODE_D);
 		i = ps.executeUpdate();
 		if (log.isEnabledFor(Priority.WARN)) {
-			log.warn("init: update stpnode status to D rows: " + i);
+			log.warn("updateDeletedNodes: " + SQL_UPDATE_STPNODE_D + "rows: " + i);
 		}
 
 		// update stpinterface
 		ps = dbConn.prepareStatement(SQL_UPDATE_STPINTERFACE_D);
 		i = ps.executeUpdate();
 		if (log.isEnabledFor(Priority.WARN)) {
-			log.warn("init: update stpinterface status to D rows: " + i);
+			log.warn("updateDeletedNodes: " + SQL_UPDATE_STPINTERFACE_D + "rows: " + i);
 		}
 
 		// update iprouteinterface
 		ps = dbConn.prepareStatement(SQL_UPDATE_IPROUTEINTERFACE_D);
 		i = ps.executeUpdate();
 		if (log.isEnabledFor(Priority.WARN)) {
-			log.warn("init: update iprouteinterface status to D rows: " + i);
+			log.warn("updateDeletedNodes: " + SQL_UPDATE_IPROUTEINTERFACE_D + "rows: " + i);
 		}
 
 		// update datalinkinterface
 		ps = dbConn.prepareStatement(SQL_UPDATE_DATALINKINTERFACE_D);
 		i = ps.executeUpdate();
 		if (log.isEnabledFor(Priority.WARN)) {
-			log.warn("init: update datalinkinterface status to D rows: " + i);
+			log.warn("updateDeletedNodes: " + SQL_UPDATE_DATALINKINTERFACE_D + "rows: " + i);
 		}
 	
-		return snmpprimaryip2nodes;
 	}
 	
 	public LinkableSnmpNode GetLinkableSnmpNode(Connection dbConn, int nodeid)throws SQLException, UnknownHostException {

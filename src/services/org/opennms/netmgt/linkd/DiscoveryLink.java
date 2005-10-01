@@ -368,6 +368,8 @@ final class DiscoveryLink implements ReadyRunnable {
 		Iterator ite = null;
 
 		// first of all get backbone links between switches using STP info
+		if (log.isDebugEnabled())
+			log.debug("store: try to found backbone ethernet links among SNMP bridge nodes");
 
 		for (int i = 0; i < m_snmplinknodes.length; i++) {
 			LinkableSnmpNode curNode = m_snmplinknodes[i];
@@ -395,26 +397,21 @@ final class DiscoveryLink implements ReadyRunnable {
 
 			if (log.isDebugEnabled())
 				log
-						.debug("store: parsing element "
-								+ i
-								+ " with correspondant nodeid "
+						.debug("store: parsing nodeid "
 								+ m_snmplinknodes[i].getNodeId()
-								+ " and snmpprimary ip address "
+								+ " with snmpprimary ip address "
 								+ m_snmplinknodes[i].getSnmpPrimaryIpAddr()
-								+ " with vlan table: " 
-								+ m_snmplinknodes[i].getSnmpCollection().hasVlanTable()
 								);
 
 			if (!m_snmplinknodes[i].getSnmpCollection().hasVlanTable()) {
 				if (log.isDebugEnabled())
 					log
-							.debug("store: no vlan table found fo node "
-									+ m_snmplinknodes[i].getNodeId()
-									+ " and snmpprimary ip address "
-									+ m_snmplinknodes[i].getSnmpPrimaryIpAddr()
-									+ " skipping bridge stuff " 
-									);
+							.debug("store: no vlan table found for previus node. Skipping ");
 				continue;
+			} else {
+				if (log.isDebugEnabled())
+					log
+							.debug("store: vlan table found for previus node. Analyzing ");
 			}
 			Helper curBridgeHelper = null;
 			if (m_helper
@@ -429,7 +426,51 @@ final class DiscoveryLink implements ReadyRunnable {
 			while (ite.hasNext()) {
 				SnmpVlanCollection snmpVlanColl = (SnmpVlanCollection) ite
 						.next();
+				// test if is root bridge so exiting!!!!!!
+				if (snmpVlanColl.hasDot1dStp()) {
+					Dot1dStpGroup stpGroup = snmpVlanColl.getDot1dStp();
+					SnmpOctetString designatedroot = (SnmpOctetString) stpGroup.get(Dot1dStpGroup.STP_DESIGNATED_ROOT);
 
+					// need to be changed in String Type
+					StringBuffer sbuf = new StringBuffer();
+			        byte[] bytes = designatedroot.getString();
+			        for (int subi = 0; subi < bytes.length; subi++) {
+			        	sbuf.append(Integer.toHexString(((int) bytes[subi] >> 4) & 0xf));
+			            sbuf.append(Integer.toHexString((int) bytes[subi] & 0xf));
+			        }
+			        String designatedRoot = sbuf.toString().trim();
+					// first check on Linkable Snmp Node if designated
+					// bridge is it self
+
+					if (isStpBridgeIdentifierOfLinkableSnmpNode(
+							m_snmplinknodes[i], designatedRoot)) {
+						if (log.isDebugEnabled())
+							log.debug("store: designated root is the bridge itself.... skipping");
+						continue;
+					} 
+					
+					if (isStpBridgeIdentifiesAndNodeIdInSnmpInterface(
+							dbConn, m_snmplinknodes[i].getNodeId(),
+							designatedRoot)) {
+						if (log.isDebugEnabled())
+							log.debug("store: designated root is the bridge itself.... skipping");
+							continue;
+					} 
+					
+					if (isStpBridgeIdetifierAndNodeIdInAtInterface(
+							dbConn, m_snmplinknodes[i].getNodeId(),
+							designatedRoot)) {
+						if (log.isDebugEnabled())
+							log.debug("store: designated root is the bridge itself.... skipping");
+						continue;
+					}
+					if (log.isDebugEnabled())
+						log.debug("store: designated root is no the bridge itself.... working now on stp bride intefaces");
+				}
+				
+				//
+				
+				
 				if (snmpVlanColl.hasDot1dStpPortTable()) {
 					Iterator sub_ite = snmpVlanColl.getDot1dStpPortTable()
 							.getEntries().iterator();
@@ -474,20 +515,21 @@ final class DiscoveryLink implements ReadyRunnable {
 						
 						if (log.isDebugEnabled())
 							log
-									.debug("store: bridging info for nodeid "
-											+ m_snmplinknodes[i].getNodeId()
-											+ " and bridge port "
+									.debug("store: parsing bridge port "
 											+ stpbridgeport.getValue() 
-											+ " stp designated bridge "
+											+ " with stp designated bridge "
 											+ stpPortDesignatedBridge
-											+ " stp designated port " 
+											+ " and with stp designated port " 
 											+ stpPortDesignatedPort
 											);
 				        
 						// first check on Linkable Snmp Node if designated
 						// bridge is it self
-						if (isStpPortDesignatedBridgeOfLinkableSnmpNode(
+
+						if (isStpBridgeIdentifierOfLinkableSnmpNode(
 								m_snmplinknodes[i], stpPortDesignatedBridge)) {
+							if (log.isDebugEnabled())
+								log.debug("store: designated bridge for bridge port is bridge itself");
 							if (curBridgeHelper
 									.hasBridgeScaleFactorCalculated())
 								continue;
@@ -501,9 +543,11 @@ final class DiscoveryLink implements ReadyRunnable {
 							// this is necessary becouse some switch has
 							// odd SNMP STP implementation
 
-						} else if (isStpDesignatedBridgeNodeIdInSnmpInterface(
+						} else if (isStpBridgeIdentifiesAndNodeIdInSnmpInterface(
 								dbConn, m_snmplinknodes[i].getNodeId(),
 								stpPortDesignatedBridge)) {
+							if (log.isDebugEnabled())
+								log.debug("store: designated bridge for bridge port is bridge itself");
 							if (curBridgeHelper
 									.hasBridgeScaleFactorCalculated())
 								continue;
@@ -512,9 +556,11 @@ final class DiscoveryLink implements ReadyRunnable {
 											stpbridgeport.getValue(),
 											stpPortDesignatedPort));
 
-						} else if (isStpPortDesignatedBridgeNodeIdInAtInterface(
+						} else if (isStpBridgeIdetifierAndNodeIdInAtInterface(
 								dbConn, m_snmplinknodes[i].getNodeId(),
 								stpPortDesignatedBridge)) {
+							if (log.isDebugEnabled())
+								log.debug("store: designated bridge for bridge port is bridge itself");
 							if (curBridgeHelper
 									.hasBridgeScaleFactorCalculated())
 								continue;
@@ -524,6 +570,8 @@ final class DiscoveryLink implements ReadyRunnable {
 											stpPortDesignatedPort));
 						} else {
 							// this is a backbone port so adding to helper class
+							if (log.isDebugEnabled())
+								log.debug("store: designated bridge for bridge port is an other bridge, backbone port found ");
 							curBridgeHelper
 									.addBackBoneBridgePorts(stpbridgeport
 											.getValue());
@@ -573,7 +621,7 @@ final class DiscoveryLink implements ReadyRunnable {
 								}
 								designatednode = getLinkableNodeFromNodeId(designatednodeid);
 							}
-							// set the bridge scale factor unles in not yet
+							// set the bridge scale factor unless in not yet
 							// calculated
 							if (!curBridgeHelper
 									.hasBridgeScaleFactorCalculated()) {
@@ -669,10 +717,14 @@ final class DiscoveryLink implements ReadyRunnable {
 		}
 
 		// second find mac address on ports
+		if (log.isDebugEnabled())
+			log.debug("store: try to found  ethernet links on SNMP bridge nodes");
 		for (int i = 0; i < m_snmplinknodes.length; i++) {
 			if (!m_snmplinknodes[i].getSnmpCollection().hasVlanTable())
 				continue;
 
+			if (log.isDebugEnabled())
+				log.debug("store: parsing node bridge " + m_snmplinknodes[i].getNodeId() + "with SNMP primary ip" + m_snmplinknodes[i].getSnmpPrimaryIpAddr());
 			ite = m_snmplinknodes[i].getSnmpCollection().getVlanSnmpList()
 					.iterator();
 			Helper curBridgeHelper = null;
@@ -725,8 +777,9 @@ final class DiscoveryLink implements ReadyRunnable {
 				            sbuf.append(Integer.toHexString((int) bytes[subi] & 0xf));
 				        }
 				        String macAddress = sbuf.toString().trim();
+						if (log.isDebugEnabled())
+							log.debug("store: parsing macaddress" + macAddress + " learned on bridge port " + fdbport.getValue());
 
-						
 						// now find on which switch ports where learned current mac
 				        // address, verify root path cost
 						// if some switch has higher than mac address is owned by it
@@ -750,7 +803,7 @@ final class DiscoveryLink implements ReadyRunnable {
 									log
 											.debug("store: no nodeid found for mac address "
 													+ macaddress.toString()
-													+ "on snmp interface");
+													+ " on snmp interface");
 
 								// try to find address on at interface info
 								nodeid = getNodeidFromMacAddressInAtInterface(
@@ -760,7 +813,7 @@ final class DiscoveryLink implements ReadyRunnable {
 										log
 												.debug("store: no nodeid found for mac address "
 														+ macaddress.toString()
-														+ "on atinterface - nothing to save to db");
+														+ " on atinterface - nothing to save to db");
 									continue; // no saving info if no nodeid
 									// found
 								}
@@ -985,7 +1038,7 @@ final class DiscoveryLink implements ReadyRunnable {
 		int i = stmt.executeUpdate();
 		if (log.isDebugEnabled())
 			log
-					.debug("update datalinkinterface: updated to NOT ACTIVE status"
+					.debug("update datalinkinterface: updated to NOT ACTIVE status "
 							+ i + " rows ");
 		
 		stmt.close();
@@ -1250,17 +1303,9 @@ final class DiscoveryLink implements ReadyRunnable {
 
 	}
 
-	private boolean isStpPortDesignatedBridgeOfLinkableSnmpNode(
+	private boolean isStpBridgeIdentifierOfLinkableSnmpNode(
 			LinkableSnmpNode node, String stpPortDesignatedBridge) {
 
-		Category log = ThreadCategory.getInstance(getClass());
-		if (log.isDebugEnabled())
-			log
-					.debug("isStpPortDesignatedBridgeOfLinkableNOde: getting info for: "
-							+ node.getNodeId()
-							+ "/"
-							+ stpPortDesignatedBridge);
-        
 		Iterator ite = node.getSnmpCollection().getVlanSnmpList().iterator();
 		while (ite.hasNext()) {
 			SnmpVlanCollection snmpVlanColl = (SnmpVlanCollection) ite.next();
@@ -1316,7 +1361,7 @@ final class DiscoveryLink implements ReadyRunnable {
 		return false;
 	}
 
-	private boolean isStpDesignatedBridgeNodeIdInSnmpInterface(
+	private boolean isStpBridgeIdentifiesAndNodeIdInSnmpInterface(
 			Connection dbConn, int nodeid,
 			String stpPortDesignatedBridge) throws SQLException {
 
@@ -1515,7 +1560,7 @@ final class DiscoveryLink implements ReadyRunnable {
 		return ifindex;
 	}
 
-	private boolean isStpPortDesignatedBridgeNodeIdInAtInterface(
+	private boolean isStpBridgeIdetifierAndNodeIdInAtInterface(
 			Connection dbConn, int nodeid,
 			String stpPortDesignatedBridge) throws SQLException {
 
@@ -1586,7 +1631,7 @@ final class DiscoveryLink implements ReadyRunnable {
 
 		if (log.isDebugEnabled())
 			log
-					.debug("isStpPortDesignatedBridgeOfAtInterfaceNodeId: found nodeid in atinterface"
+					.debug("isStpPortDesignatedBridgeOfAtInterfaceNodeId: found nodeid "
 							+ nodeid
 							+ " for stp bridge address "
 							+ stpBridgeAddress);
@@ -1606,7 +1651,7 @@ final class DiscoveryLink implements ReadyRunnable {
 		stmt = dbConn.prepareStatement(SQL_GET_NODEID_ATINTERFACE);
 		stmt.setString(1, macAddress);
 		if (log.isDebugEnabled())
-			log.debug("getNodeidFromMacAddressInAtInterface: executing query"
+			log.debug("getNodeidFromMacAddressInAtInterface: executing query "
 					+ stmt.toString());
 
 		ResultSet rs = stmt.executeQuery();
@@ -1632,7 +1677,7 @@ final class DiscoveryLink implements ReadyRunnable {
 
 		if (log.isDebugEnabled())
 			log
-					.debug("getNodeidFromMacAddressInAtInterface: found nodeid in atinterface"
+					.debug("getNodeidFromMacAddressInAtInterface: found nodeid "
 							+ nodeid
 							+ " for mac address "
 							+ macAddress);
@@ -1651,20 +1696,19 @@ final class DiscoveryLink implements ReadyRunnable {
 			String stpPortDesignatedBridge) {
 
 		Category log = ThreadCategory.getInstance(getClass());
+		if (log.isDebugEnabled())
+			log
+					.debug("getLinkableNodeFromStpPortDesignatedBridge: parsing linkable nodes to find owner of stp bridg identifier "
+							+ stpPortDesignatedBridge
+							);
 
 		for (int j = 0; j < m_snmplinknodes.length; j++) {
 			if (log.isDebugEnabled())
 				log
-						.debug("getLinkableNodeFromStpPortDesignatedBridge: cursor "
-								+ j
-								+ " with correspondant nodeid "
+						.debug("getLinkableNodeFromStpPortDesignatedBridge: parsing nodeid "
 								+ m_snmplinknodes[j].getNodeId()
-								+ " and snmpprimary ip address "
+								+ " with snmpprimary ip address "
 								+ m_snmplinknodes[j].getSnmpPrimaryIpAddr()
-								+ " snmp collection " 
-								+ m_snmplinknodes[j].getSnmpCollection()
-								+ " vlan table " 
-								+ m_snmplinknodes[j].getSnmpCollection().hasVlanTable()
 								);
 
 			if (!m_snmplinknodes[j].getSnmpCollection().hasVlanTable()) {
@@ -1696,6 +1740,13 @@ final class DiscoveryLink implements ReadyRunnable {
 					
 					if (baseBridgeAddr.equals(
 							stpPortDesignatedBridge.substring(4)))
+						if (log.isDebugEnabled())
+							log
+									.debug("getLinkableNodeFromStpPortDesignatedBridge: using Dot1dBase found nodeid "
+											+ m_snmplinknodes[j].getNodeId()
+											+ " for stp bridge identifier "
+											+ stpPortDesignatedBridge
+											);
 						return m_snmplinknodes[j];
 				}
 
@@ -1723,6 +1774,13 @@ final class DiscoveryLink implements ReadyRunnable {
 						if (curMacAddress
 								.equals(stpPortDesignatedBridge.substring(4))
 								&& curfdbstatus.getValue() == SNMP_DOT1D_FDB_STATUS_SELF) {
+							if (log.isDebugEnabled())
+								log
+										.debug("getLinkableNodeFromStpPortDesignatedBridge: using Dot1dTpFdbTable found nodeid "
+												+ m_snmplinknodes[j].getNodeId()
+												+ " for stp bridge identifier "
+												+ stpPortDesignatedBridge
+												);
 							return m_snmplinknodes[j];
 						}
 					}
@@ -1892,62 +1950,75 @@ final class DiscoveryLink implements ReadyRunnable {
 
 	private int calculateBridgeScaleFactor(int stpport,
 			String stpPortDesignatedPort) {
-		return (Integer.parseInt(stpPortDesignatedPort, 16) - stpport);
+		Category log = ThreadCategory.getInstance(getClass());
+		int bridgeScaleFactor = Integer.parseInt(stpPortDesignatedPort, 16) - stpport;
+		if (log.isDebugEnabled()) log.debug("calculateBridgeScaleFactor: bridge scale factor is " + bridgeScaleFactor);
+		return bridgeScaleFactor;
 	}
 
 	private int calculateBridgeScaleFactor(Connection dbConn,
 			LinkableSnmpNode node) throws SQLException {
-		if (!node.getSnmpCollection().hasVlanTable())
-			return 0;
-		Iterator ite = node.getSnmpCollection().getVlanSnmpList().iterator();
-		while (ite.hasNext()) {
-			SnmpVlanCollection snmpVlanColl = (SnmpVlanCollection) ite.next();
-			if (snmpVlanColl.hasDot1dStpPortTable()) {
-				Iterator sub_ite = snmpVlanColl.getDot1dStpPortTable()
-						.getEntries().iterator();
-				while (sub_ite.hasNext()) {
-					Dot1dStpPortTableEntry dot1dstpptentry = (Dot1dStpPortTableEntry) sub_ite
-							.next();
-					SnmpOctetString stpportdesignatedbridge = (SnmpOctetString) dot1dstpptentry
-							.get(Dot1dStpPortTableEntry.STP_PORT_DESIGNATED_BRIDGE);
-					StringBuffer sbuf = new StringBuffer();
-					byte[] bytes = stpportdesignatedbridge.getString();
+		Category log = ThreadCategory.getInstance(getClass());
+		int bridgeScaleFactor = 0;
+		if (node.getSnmpCollection().hasVlanTable()) {
+			Iterator ite = node.getSnmpCollection().getVlanSnmpList()
+					.iterator();
+			while (ite.hasNext()) {
+				SnmpVlanCollection snmpVlanColl = (SnmpVlanCollection) ite
+						.next();
+				if (snmpVlanColl.hasDot1dStpPortTable()) {
+					Iterator sub_ite = snmpVlanColl.getDot1dStpPortTable()
+							.getEntries().iterator();
+					while (sub_ite.hasNext()) {
+						Dot1dStpPortTableEntry dot1dstpptentry = (Dot1dStpPortTableEntry) sub_ite
+								.next();
+						SnmpOctetString stpportdesignatedbridge = (SnmpOctetString) dot1dstpptentry
+								.get(Dot1dStpPortTableEntry.STP_PORT_DESIGNATED_BRIDGE);
+						StringBuffer sbuf = new StringBuffer();
+						byte[] bytes = stpportdesignatedbridge.getString();
 
-			        for (int i = 0; i < bytes.length; i++) {
-			        	sbuf.append(Integer.toHexString(((int) bytes[i] >> 4) & 0xf));
-			            sbuf.append(Integer.toHexString((int) bytes[i] & 0xf));
-			        }
-			        String stpPortDesignatedBridge = sbuf.toString().trim();
+						for (int i = 0; i < bytes.length; i++) {
+							sbuf.append(Integer
+									.toHexString(((int) bytes[i] >> 4) & 0xf));
+							sbuf.append(Integer
+									.toHexString((int) bytes[i] & 0xf));
+						}
+						String stpPortDesignatedBridge = sbuf.toString().trim();
 
-					SnmpInt32 stpport = (SnmpInt32) dot1dstpptentry
-							.get(Dot1dStpPortTableEntry.STP_PORT);
-					
-					SnmpOctetString stpportdesignatedport = (SnmpOctetString) dot1dstpptentry
-							.get(Dot1dStpPortTableEntry.STP_PORT_DESIGNATED_PORT);
+						SnmpInt32 stpport = (SnmpInt32) dot1dstpptentry
+								.get(Dot1dStpPortTableEntry.STP_PORT);
 
-					sbuf = new StringBuffer();
-			        bytes = stpportdesignatedport.getString();
-			        for (int i = 0; i < bytes.length; i++) {
-			        	sbuf.append(Integer.toHexString(((int) bytes[i] >> 4) & 0xf));
-			            sbuf.append(Integer.toHexString((int) bytes[i] & 0xf));
-			        }
-			        String stpPortDesignatedPort = sbuf.toString().trim();
+						SnmpOctetString stpportdesignatedport = (SnmpOctetString) dot1dstpptentry
+								.get(Dot1dStpPortTableEntry.STP_PORT_DESIGNATED_PORT);
 
-			        if (isStpPortDesignatedBridgeOfLinkableSnmpNode(node,
-							stpPortDesignatedBridge)
-							|| isStpDesignatedBridgeNodeIdInSnmpInterface(
-									dbConn, node.getNodeId(),
-									stpPortDesignatedBridge)
-							|| isStpPortDesignatedBridgeNodeIdInAtInterface(
-									dbConn, node.getNodeId(),
-									stpPortDesignatedBridge)) {
-						return (Integer.parseInt(stpportdesignatedport
-								.toString(), 16) - stpport.getValue());
+						sbuf = new StringBuffer();
+						bytes = stpportdesignatedport.getString();
+						for (int i = 0; i < bytes.length; i++) {
+							sbuf.append(Integer
+									.toHexString(((int) bytes[i] >> 4) & 0xf));
+							sbuf.append(Integer
+									.toHexString((int) bytes[i] & 0xf));
+						}
+						String stpPortDesignatedPort = sbuf.toString().trim();
+
+						if (isStpBridgeIdentifierOfLinkableSnmpNode(node,
+								stpPortDesignatedBridge)
+								|| isStpBridgeIdentifiesAndNodeIdInSnmpInterface(
+										dbConn, node.getNodeId(),
+										stpPortDesignatedBridge)
+								|| isStpBridgeIdetifierAndNodeIdInAtInterface(
+										dbConn, node.getNodeId(),
+										stpPortDesignatedBridge)) {
+							bridgeScaleFactor = (Integer.parseInt(
+									stpportdesignatedport.toString(), 16) - stpport
+									.getValue());
+						}
 					}
 				}
 			}
 		}
-		return 0;
+		if (log.isDebugEnabled()) log.debug("calculateBridgeScaleFactor: bridge scale factor is " + bridgeScaleFactor);
+		return bridgeScaleFactor;
 	}
 
 	public Scheduler getScheduler() {

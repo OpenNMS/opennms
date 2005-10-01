@@ -124,14 +124,9 @@ final class SnmpVlanCollection implements ReadyRunnable {
 	 *            The SnmpPeer object to collect from.
 	 *  
 	 */
-	SnmpVlanCollection(SnmpPeer peer, String vlan) {
+	SnmpVlanCollection(SnmpPeer peer) {
 		
 		m_peer = peer;
-		m_vlan = vlan;
-		SnmpParameters snmpP = m_peer.getParameters();
-		snmpP.setReadCommunity(snmpP.getReadCommunity() + "@"
-				+ vlan);
-		m_peer.setParameters(snmpP);
 		m_address = m_peer.getPeer();
 		m_dot1dbase = null;
 		m_dot1dbaseTable = null;
@@ -145,7 +140,10 @@ final class SnmpVlanCollection implements ReadyRunnable {
 		String localhost = "10.3.2.216";
 		InetAddress ip = InetAddress.getByName(localhost);
 		SnmpPeer peer = new SnmpPeer(ip);
-		SnmpVlanCollection snmpVlanCollector = new SnmpVlanCollection(peer,"1");
+		SnmpParameters snmpP = peer.getParameters();
+		snmpP.setReadCommunity(snmpP.getReadCommunity() + "@1");
+
+		SnmpVlanCollection snmpVlanCollector = new SnmpVlanCollection(peer);
 		snmpVlanCollector.run();
 
 		java.util.List macslist = snmpVlanCollector.m_dot1dtpFdbtable.getEntries();

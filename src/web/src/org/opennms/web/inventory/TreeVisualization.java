@@ -65,13 +65,7 @@ public class TreeVisualization implements Visualization {
 	
 	private void visit(Item it, int code){
 		if(it.getItemCount()<=0){
-			String dataItem ="";
-			Dataitem dI= it.getDataitem();
-			String[] line = dI.getLine();
-			for(int i=0;i<line.length;i++){
-				dataItem+=line[i]+"\n";	
-			}
-			
+			String dataItem = it.getDataitem();
 			if(!(dataItem.trim()).equals("")){
 				dataItem=": "+dataItem;
 			}
