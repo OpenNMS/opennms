@@ -18,67 +18,66 @@ import java.util.Properties;
 import java.util.StringTokenizer;
 
 public class Bootstrap {
+    private static FileFilter m_dirFilter = new FileFilter() {
+            public boolean accept(File pathname) {
+                return pathname.isDirectory();
+            }
+        };
 
-    public static ClassLoader loadClasses(String dirStr)
+    private static FilenameFilter m_jarFilter = new FilenameFilter() {
+            public boolean accept(File dir, String name) {
+                return name.endsWith(".jar");
+            }
+        };
+
+    public static ClassLoader loadClasses(String dirStr, boolean recursive)
 		throws MalformedURLException {
 	LinkedList urls = new LinkedList();
 
 	StringTokenizer toke = new StringTokenizer(dirStr, File.pathSeparator);
 	while (toke.hasMoreTokens()) {
 	    String token = (String) toke.nextToken();
-	    loadClasses(new File(token), urls);
+	    loadClasses(new File(token), recursive, urls);
 	}
 
 	return newClassLoader(urls);
     }
 
-    public static ClassLoader loadClasses(File dir)
+    public static ClassLoader loadClasses(File dir, boolean recursive)
 		throws MalformedURLException {
 	LinkedList urls = new LinkedList();
-	loadClasses(dir, urls);
+	loadClasses(dir, recursive, urls);
 	return newClassLoader(urls);
     }
 
     public static ClassLoader newClassLoader(LinkedList urls) {
 	URL[] urlsArray = (URL[]) urls.toArray(new URL[0]);
 
-        URLClassLoader UrlCL = URLClassLoader.newInstance(urlsArray);
-
-	return UrlCL;
+	return URLClassLoader.newInstance(urlsArray);
     }
 
-    public static void loadClasses(File dir, LinkedList urls)
-		throws MalformedURLException {
-        FileFilter dirFilter = new FileFilter() {
-            public boolean accept(File pathname) {
-                return pathname.isDirectory();
-            }
-        };
 
-	//System.out.println("adding directory: " + dir.toURL());
+    public static void loadClasses(File dir, boolean recursive, LinkedList urls)
+		throws MalformedURLException {
+	// Add the directory
 	urls.add(dir.toURL());
 
-        File[] dirlist = dir.listFiles(dirFilter);
-	if (dirlist == null) {
-	    //	    System.out.println("File.listFiles returned null: " + dir);
-	    return;
+	if (recursive) {
+	    // Descend into sub-directories
+	    File[] dirlist = dir.listFiles(m_dirFilter);
+	    if (dirlist != null) {
+		for (int i = 0; i < dirlist.length; i++) {
+		    loadClasses(dirlist[i], recursive, urls);
+		}
+	    }
 	}
-        for (int i = 0; i < dirlist.length; i++) {
-            //ClassPather.loadClasses(dirlist[i], urls);
-        }
 
-        // It is also possible to filter the list of returned files.
-        // This example does not return any files that ends with `.jar'.
-        FilenameFilter jarFilter = new FilenameFilter() {
-            public boolean accept(File dir, String name) {
-                return name.endsWith(".jar");
-            }
-        };
-
-        File[] children = dir.listFiles(jarFilter);
-        for (int i = 0; i < children.length; i++) {
-	    //System.out.println("adding jar: " + children[i].toURL());
-	    urls.add(children[i].toURL());
+	// Add individual JAR files
+        File[] children = dir.listFiles(m_jarFilter);
+	if (children != null) {
+	    for (int i = 0; i < children.length; i++) {
+		urls.add(children[i].toURL());
+	    }
 	}
     }
 
@@ -88,12 +87,9 @@ public class Bootstrap {
 	try {
 	    String classFile = Bootstrap.class.getName().replace('.', '/') +
 		".class";
-	    //System.out.println("classFile: " + classFile);
 	    URL url = l.getResource(classFile);
-	    //System.out.println("url: " + url);
 	    if (url.getProtocol().equals("jar")) {
 		URL subUrl = new URL(url.getFile());
-		//System.out.println("subUrl: " + subUrl);
 		if (subUrl.getProtocol().equals("file")) {
 		    String filePath = subUrl.getFile();
 		    int i = filePath.lastIndexOf('!');
@@ -175,9 +171,11 @@ public class Bootstrap {
 			       parent.getPath());
 	}
 
+	/*
 	if (!propertiesLoaded) {
 	    System.err.println("Warning: Could not find boot properties file.");
 	}
+	*/
 
 	String dir = System.getProperty("opennms.classpath");
 	if (dir == null) {
@@ -187,21 +185,32 @@ public class Bootstrap {
 		System.getProperty(opennmsHomeProperty) +
 		File.separator + "etc";
 	}
-	ClassLoader cl = Bootstrap.loadClasses(dir);
+	ClassLoader cl = Bootstrap.loadClasses(dir, false);
     
-	String path;
+	URL url;
 
 	if (System.getProperty("opennms.library.jicmp") == null) {
-	    path = cl.getResource(System.mapLibraryName("jicmp")).getPath();
-	    if (path != null) {
-		System.setProperty("opennms.library.jicmp", path);
+	    url = cl.getResource(System.mapLibraryName("jicmp"));
+	    if (url != null) {
+		System.setProperty("opennms.library.jicmp", url.getPath());
 	    }
 	}
 
 	if (System.getProperty("opennms.library.jrrd") == null) {
-	    path = cl.getResource(System.mapLibraryName("jrrd")).getPath();
-	    if (path != null) {
-		System.setProperty("opennms.library.jrrd", path);
+	    url = cl.getResource(System.mapLibraryName("jrrd"));
+	    if (url != null) {
+		System.setProperty("opennms.library.jrrd", url.getPath());
+	    }
+	}
+
+	if (System.getProperty("log4j.configuration") == null) {
+	    System.setProperty("log4j.configuration", "log4j.properties");
+	}
+
+	if (System.getProperty("jcifs.properties") == null) {
+	    url = cl.getResource("jcifs.properties");
+	    if (url != null) {
+		System.setProperty("jcifs.properties", url.getPath());
 	    }
 	}
 

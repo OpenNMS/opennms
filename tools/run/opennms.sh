@@ -26,6 +26,11 @@
 #  For info on the "BEGIN INIT INFO" section, see:
 #      http://www.suse.de/~mmj/Package-Conventions/
 #
+# Modifications:
+#
+# 2005 Oct 01: Removed `date` from a few echo commands and redirected
+#              a few error messages to stderr. -- DJ Gregor
+#
 
 #### ------------> DO NOT CHANGE VARIABLES IN THIS FILE <------------- ####
 #### Create $OPENNMS_HOME/etc/opennms.conf and put overrides in there. ####
@@ -308,7 +313,7 @@ doCheck() {
 	exit 0
     fi
 
-    echo `date`": OpenNMS is not running... Restarting"
+    echo "OpenNMS is not running... Restarting" >&2
     $OPENNMS_HOME/bin/opennms.sh start
 
     exit 1
@@ -317,7 +322,7 @@ doCheck() {
 doStop() {
     doStatus
     if [ $? -eq 3 ]; then
-	echo "`date`: trying to stop OpenNMS but it's already stopped."
+	echo "Trying to stop OpenNMS but it's already stopped." >&2
 	return 7   # LSB says: 7 - program is not running
     fi
 
@@ -428,9 +433,10 @@ JAVA_CMD="$OPENNMS_HOME/bin/runjava -r $RUNJAVA_OPTIONS --"
 
 BOOTSTRAP="$OPENNMS_HOME/lib/opennms_bootstrap.jar"
 
-MANAGER_OPTIONS="-DOPENNMSLAUNCH"
+#MANAGER_OPTIONS="-DOPENNMSLAUNCH"
+MANAGER_OPTIONS=""
 MANAGER_OPTIONS="$MANAGER_OPTIONS -Dopennms.home=$OPENNMS_HOME"
-MANAGER_OPTIONS="$MANAGER_OPTIONS -Djcifs.properties=$OPENNMS_HOME/etc/jcifs.properties"
+#MANAGER_OPTIONS="$MANAGER_OPTIONS -Djcifs.properties=$OPENNMS_HOME/etc/jcifs.properties"
 MANAGER_OPTIONS="$MANAGER_OPTIONS -Xmx${JAVA_HEAP_SIZE}m"
 
 if [ -n "$USE_INCGC" -a "$USE_INCGC" = true ] ; then
@@ -447,7 +453,7 @@ if [ -n "$HOTSPOT" -a "$HOTSPOT" = true ] ; then
 fi
 
 CONTROLLER_OPTIONS="-Dopennms.home=$OPENNMS_HOME"
-CONTROLLER_OPTIONS="$CONTROLLER_OPTIONS -Dlog4j.configuration=log4j.properties"
+#CONTROLLER_OPTIONS="$CONTROLLER_OPTIONS -Dlog4j.configuration=log4j.properties"
 
 TEST=0
 NOEXECUTE=""
