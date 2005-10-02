@@ -1,4 +1,4 @@
-<!--
+<%--
 
 //
 // This file is part of the OpenNMS(R) Application.
@@ -9,6 +9,10 @@
 // and included code are below.
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+//
+// Modifications:
+//
+// 2005 Oct 01: Convert to use CSS for layout. -- DJ Gregor
 //
 // Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
@@ -32,7 +36,7 @@
 //      http://www.opennms.com/
 //
 
--->
+--%>
 
 <script language="Javascript" type="text/javascript">
 <!--
@@ -61,8 +65,13 @@ function addbookmark()
 //-->
 </script>
 
+<div id="include-bookmark">
 <form NAME="bookmark" ACTION="javascript:addbookmark()">
-	<table>
+<!--
+ 	<table>
 	<tr><td><input type="SUBMIT" value="Bookmark the results"/></td></tr>
 	</table>
+-->
+        <input type="SUBMIT" value="Bookmark the results"/>
 </form>
+</div>

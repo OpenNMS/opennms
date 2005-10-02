@@ -1,4 +1,4 @@
-<!--
+<%--
 
 //
 // This file is part of the OpenNMS(R) Application.
@@ -12,6 +12,8 @@
 //
 // Modifications:
 //
+// 2005 Oct 01: Convert to use CSS for layout. -- DJ Gregor
+// 2005 Oct 01: Refactor relative date code. -- DJ Gregor
 // 2003 Feb 28: Corrected day/week/month/year reports on some browsers.
 // 2003 Feb 07: Fixed URLEncoder issues.
 // 2003 Feb 28: Added day/week/month/year reports.
@@ -39,7 +41,7 @@
 //      http://www.opennms.com/
 //
 
--->
+--%>
 
 <%@page language="java" contentType="text/html" session="true" import="org.opennms.web.*,org.opennms.web.performance.*,org.opennms.web.graph.*,java.util.*,java.io.*,org.opennms.web.element.NetworkElementFactory" %>
 
@@ -54,6 +56,13 @@
         catch( Exception e ) {
             throw new ServletException( "Could not initialize the PerformanceModel", e );
         }
+
+        m_periods = new TimePeriod[] {
+            new TimePeriod("lastday", "Last Day", Calendar.DATE, -1),
+            new TimePeriod("lastweek", "Last Week", Calendar.DATE, -7),
+            new TimePeriod("lastmonth", "Last Month", Calendar.DATE, -31),
+            new TimePeriod("lastyear", "Last Year", Calendar.DATE, -366)
+	};
     }
 %>
 
@@ -77,38 +86,21 @@
     //see if the start and end time were explicitly set as params    
     String start = request.getParameter( "start" );
     String end   = request.getParameter( "end" );
-    
-    if( start == null || end == null ) {
-        String relativeTime = request.getParameter("relativetime");
+
+    String relativeTime = request.getParameter("relativetime");
         
-        //only support last 24 hours in this version, need to clean up
-        //this code by making a comman date param API, LJK 04/30/2002
-        if(relativeTime != null ) {
-	    if(relativeTime.equals("lastweek")) {
-               java.util.Calendar cal = new java.util.GregorianCalendar();
-               end = Long.toString(cal.getTime().getTime());
-               cal.add( java.util.Calendar.DATE, -7 );
-               start = Long.toString(cal.getTime().getTime());        
-            }
-	    else if(relativeTime.equals("lastmonth")) {
-               java.util.Calendar cal = new java.util.GregorianCalendar();
-               end = Long.toString(cal.getTime().getTime());
-               cal.add( java.util.Calendar.DATE, -31 );
-               start = Long.toString(cal.getTime().getTime());        
-            }
-	    else if(relativeTime.equals("lastyear")) {
-               java.util.Calendar cal = new java.util.GregorianCalendar();
-               end = Long.toString(cal.getTime().getTime());
-               cal.add( java.util.Calendar.DATE, -366 );
-               start = Long.toString(cal.getTime().getTime());        
-            }
-            else {
-               java.util.Calendar cal = new java.util.GregorianCalendar();
-               end = Long.toString(cal.getTime().getTime());
-               cal.add( java.util.Calendar.DATE, -1 );
-               start = Long.toString(cal.getTime().getTime());
-            }
-        }
+    if ((start == null || end == null) && relativeTime != null) {
+	TimePeriod period = m_periods[0]; // default to the first one
+	for (int i = 0; i < m_periods.length; i++) {
+	    if (relativeTime.equals(m_periods[i].getId())) {
+		period = m_periods[i];
+		break;
+	    }
+	}
+        Calendar cal = new GregorianCalendar();
+        end = Long.toString(cal.getTime().getTime());
+        cal.add(period.getOffsetField(), period.getOffsetAmount());
+        start = Long.toString(cal.getTime().getTime());        
     }
     
     if( start == null || end == null ) {
@@ -180,20 +172,26 @@
     <link rel="stylesheet" type="text/css" href="css/styles.css" />
 </head>
 
+<!--
 <body marginwidth="0" marginheight="0" LEFTMARGIN="0" RIGHTMARGIN="0" TOPMARGIN="0">
+-->
+<body>
 
 <% String breadcrumb1 = "<a href='report/index.jsp'>Reports</a>"; %>
 <% String breadcrumb2 = "<a href='performance/index.jsp'>Performance</a>"; %>
 <% String breadcrumb3 = "Results"; %>
 <jsp:include page="/includes/header.jsp" flush="false" >
-<jsp:param name="title" value="Performance Results" />
-<jsp:param name="breadcrumb" value="<%=breadcrumb1%>" />
-<jsp:param name="breadcrumb" value="<%=breadcrumb2%>" />
-<jsp:param name="breadcrumb" value="<%=breadcrumb3%>" />
+  <jsp:param name="title" value="Performance Results" />
+  <jsp:param name="breadcrumb" value="<%=breadcrumb1%>" />
+  <jsp:param name="breadcrumb" value="<%=breadcrumb2%>" />
+  <jsp:param name="breadcrumb" value="<%=breadcrumb3%>" />
 </jsp:include>
 
 <br/>
 
+<div id="performance-results">
+
+<!--
 <table width="100%" cellpadding="0" cellspacing="0" border="0">
   <tr>
     <td align="center">
@@ -201,12 +199,15 @@
         <tr>
           <td>&nbsp;</td>
           <td align="center">
+-->
             <h3>
               Node: <a href="element/node.jsp?node=<%=nodeId%>"><%=NetworkElementFactory.getNodeLabel(nodeId)%></a><br/>
               <% if(intf != null ) { %>
                 Interface: <%=this.model.getHumanReadableNameForIfLabel(nodeId, intf)%>
               <% } %>
             </h3>
+
+<!--
           </td>
           <td>&nbsp;</td>
         </tr>
@@ -219,48 +220,11 @@
   </tr>
   
   <tr><td align="center">
-      <FORM NAME="reltimeform">
-	<% String relativetime = request.getParameter("relativetime"); %>
+-->
 
-        <%  
-        if(relativetime == null ) {
-           relativetime = "unknown";
-        } %>
+    <% printRelativeTimeForm(out, relativeTime, nodeId, intf, reports); %>
 
-        <%
-            String reportList = "";
-	    for( int i=0; i < reports.length; i++ ) {
-		reportList = reportList + "&reports=" + reports[i];
-	    }
-	%>
-
-        <table>
-	<tr>
-           <td align="center" width="80">Last Day</td>
-           <td align="center" width="80">Last Week</td>
-           <td align="center" width="80">Last Month</td>
-           <td align="center" width="80">Last Year</td>
-        </tr>   
-          <tr>
-            <td align="center">
-              <input type="radio" name="rtstatus" <%=(relativetime.equals("lastday") ? "checked" : "")%> 
-               onclick="top.location = '/opennms/performance/results.jsp?relativetime=lastday&intf=<%=intf%>&node=<%=nodeId%><%=reportList%>'" ></input><br>
-            </td>
-            <td align="center">
-              <input type="radio" name="rtstatus" <%=(relativetime.equals("lastweek") ? "checked" : "")%>
-               onclick="top.location = '/opennms/performance/results.jsp?relativetime=lastweek&intf=<%=intf%>&node=<%=nodeId%><%=reportList%>'" ></input><br>
-            </td>
-            <td align="center">
-              <input type="radio" name="rtstatus" <%=(relativetime.equals("lastmonth") ? "checked" : "")%>
-               onclick="top.location = '/opennms/performance/results.jsp?relativetime=lastmonth&intf=<%=intf%>&node=<%=nodeId%><%=reportList%>'" ></input><br>
-            </td>
-            <td align="center">
-              <input type="radio" name="rtstatus" <%=(relativetime.equals("lastyear") ? "checked" : "")%>
-               onclick="top.location = '/opennms/performance/results.jsp?relativetime=lastyear&intf=<%=intf%>&node=<%=nodeId%><%=reportList%>'" ></input><br>
-            </td>
-          </tr>
-        </table>
-        </FORM>
+<!--
   </td>
   </tr>
 
@@ -269,6 +233,7 @@
   </tr>
   
   <tr>
+
     <td align="center"><h3>Interface Performance Data</h3></td>
   </tr>
 
@@ -281,6 +246,12 @@
             <b>To</b> <%=endDate%>
           </td>
         </tr>
+-->
+
+	<h3>Interface Performance Data</h3>
+        <b>From</b> <%=startDate%> <br/>
+        <b>To</b> <%=endDate%> <br/>
+
 
         <% if(graphs.length > 0) { %>
           <% for(int i=0; i < graphs.length; i++ ) { %>
@@ -290,19 +261,27 @@
                         
             <%-- handle external values, if any --%>
             <% String externalValuesParm = this.encodeExternalValuesAsParmString(nodeId, intf, graphs[i]); %>
-            
+
+<!--            
             <tr>
               <td align="center">
+-->
                 <a href="/opennms/performance/zoom.jsp?intf=<%=intf%>&node=<%=nodeId%>&reports=<%=graphs[i].getName()%>&start=<%=start%>&end=<%=end%>"><img src="snmp/performance/graph.png?props=<%=nodeId%>/strings.properties&report=<%=graphs[i].getName()%>&start=<%=start%>&end=<%=end%>&<%=rrdParm%>&<%=externalValuesParm%>intf=<%=intf%>&node=<%=nodeId%>"/></a>
+		<br/>
+<!--
               </td>
             </tr>
+-->
           <% } %>
         <% } else { %>
+<!--
             <tr>
               <td align="center">No SNMP performance data has been gathered at this level</td>
             </tr>
+-->
+              No SNMP performance data has been gathered at this level
         <% } %>
-
+<!--
       </table>
     </td>
   </tr>
@@ -312,47 +291,11 @@
   </tr>
 
   <tr><td align="center">
-      <FORM NAME="reltimeform">
+-->
 
-        <%
-        if(relativetime == null ) {
-           relativetime = "unknown";
-        } %>
+    <% printRelativeTimeForm(out, relativeTime, nodeId, intf, reports); %>
 
-        <%
-            reportList = "";
-            for( int i=0; i < reports.length; i++ ) {
-                reportList = reportList + "&reports=" + reports[i];
-            }
-        %>
-
-        <table>
-        <tr>
-           <td align="center" width="80">Last Day</td>
-           <td align="center" width="80">Last Week</td>
-           <td align="center" width="80">Last Month</td>
-           <td align="center" width="80">Last Year</td>
-        </tr>
-          <tr>
-            <td align="center">
-              <input type="radio" name="rtstatus" <%=(relativetime.equals("lastday") ? "checked" : "")%>
-               onclick="top.location = '/opennms/performance/results.jsp?relativetime=lastday&intf=<%=intf%>&node=<%=nodeId%><%=reportList%>'" ></input><br>
-            </td>
-            <td align="center">
-              <input type="radio" name="rtstatus" <%=(relativetime.equals("lastweek") ? "checked" : "")%>
-               onclick="top.location = '/opennms/performance/results.jsp?relativetime=lastweek&intf=<%=intf%>&node=<%=nodeId%><%=reportList%>'" ></input><br>
-            </td>
-            <td align="center">
-              <input type="radio" name="rtstatus" <%=(relativetime.equals("lastmonth") ? "checked" : "")%>
-               onclick="top.location = '/opennms/performance/results.jsp?relativetime=lastmonth&intf=<%=intf%>&node=<%=nodeId%><%=reportList%>'" ></input><br>
-            </td>
-            <td align="center">
-              <input type="radio" name="rtstatus" <%=(relativetime.equals("lastyear") ? "checked" : "")%>
-               onclick="top.location = '/opennms/performance/results.jsp?relativetime=lastyear&intf=<%=intf%>&node=<%=nodeId%><%=reportList%>'" ></input><br>
-            </td>
-          </tr>
-        </table>
-        </FORM>
+<!--
   </td>
   </tr>
 
@@ -365,7 +308,9 @@
 
   <tr>
     <td align="center">
+-->
     <jsp:include page="/includes/bookmark.jsp" flush="false" />
+<!--
     </td>
   </tr>
 
@@ -376,6 +321,9 @@
 </table>
 
 <br/>
+-->
+
+</div>
 
 <jsp:include page="/includes/footer.jsp" flush="false" />
 
@@ -493,4 +441,101 @@
 
         return speed;
     }
+
+    public class TimePeriod {
+    	   private String m_id = null;
+	   private String m_name = null;
+	   private int m_offsetField = Calendar.DATE;
+	   private int m_offsetAmount = -1;
+
+	   public TimePeriod() {
+	   }
+
+	   public TimePeriod(String id, String name, int offsetField,
+	   	  	     int offsetAmount) {
+	   	  m_id = id;
+		  m_name = name;
+		  m_offsetField = offsetField;
+		  m_offsetAmount = offsetAmount;
+	   }
+
+	   public String getId() {
+	   	  return m_id;
+	   }
+
+	   public void setId(String id) {
+	   	  m_id = id;
+	   }
+
+	   public String getName() {
+	   	  return m_name;
+	   }
+
+	   public void setName(String name) {
+	   	  m_name = name;
+	   }
+
+	   public int getOffsetField() {
+	   	  return m_offsetField;
+	   }
+
+	   public void setOffsetField(int offsetField) {
+	   	  m_offsetField = offsetField;
+	   }
+
+	   public int getOffsetAmount() {
+	   	  return m_offsetAmount;
+	   }
+
+	   public void setOffsetAmount(int offsetAmount) {
+	   	  m_offsetAmount = offsetAmount;
+	   }
+    }
+
+    private TimePeriod[] m_periods;
+
+    private void printRelativeTimeForm(JspWriter out, String relativetime,
+    	 		       int nodeId, String intf, String[] reports)
+			       throws IOException {
+   	if (relativetime == null) {
+            relativetime = "unknown";
+        }
+
+        String reportList = "";
+	for (int i = 0; i < reports.length; i++) {
+	    reportList = reportList + "&reports=" + reports[i];
+	}
+
+	out.println("    <div align=\"center\">");
+	out.println("      <form name=\"reltimeform\">");
+	out.println("        <table class=\"periods\">");
+	out.println("	       <tbody>");
+
+	out.println("	         <tr>");
+	for (int i = 0; i < m_periods.length; i++) {
+	    out.println("	           <td>" + m_periods[i].getName() +
+	    		"</td>");
+	}
+	out.println("	         </tr>");
+
+	out.println("	         <tr>");
+	for (int i = 0; i < m_periods.length; i++) {
+	    out.println("	           <td>" +
+	    	        "<input type=\"radio\" name=\"rtstatus\"" +
+			(relativetime.equals(m_periods[i].getId()) ?
+			    " checked" : "") +
+			" onclick=\"top.location = " +
+			"'/opennms/performance/results.jsp?" +
+			"relativetime=" + m_periods[i].getId() +
+			"&intf=" + intf +
+			"&node=" + nodeId +
+			reportList + "'\"/></td>");
+	}
+	out.println("	         </tr>");
+	out.println("	       </tbody>");
+	out.println("        </table>");
+	out.println("      </form>");
+	out.println("    </div>");
+    }
+
 %>

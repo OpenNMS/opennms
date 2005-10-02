@@ -8,8 +8,11 @@
 <%@ page import="org.opennms.netmgt.config.charts.BarChart" %>
 
 <%--Align images in the center of the page --%>
+<!--
 <p ALIGN=CENTER >
+-->
 
+<div id="include-charts">
 <%--Get collection of charts --%>
 <%
 Iterator it = ChartUtils.getChartCollectionIterator();
@@ -21,4 +24,8 @@ while (it.hasNext()) {
 <%
 }
 %>
+
+</div>
+<!--
 </p>
+-->
