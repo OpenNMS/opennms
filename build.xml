@@ -333,7 +333,7 @@ your distribution.
   <!-- Files in ${packaged.lib.dir} that are copied into
        ${install.servlet.dir}/WEB-INF/lib.
        Note: opennms_*.jar from ${build.jar.dir} is also copied.  -->
-  <patternset id="web.jars">
+  <patternset id="web.packaged.jars">
     <include name="castor*.jar" />
     <include name="fop0205.jar" />
     <include name="jms*.jar" />
@@ -350,18 +350,27 @@ your distribution.
     <include name="jcifs.jar" />
     <include name="ldap.jar" />
     <include name="jrobin*.jar" />
-  	<include name="activation.jar" />
-  	<include name="imap.jar" />
-  	<include name="jmta.jar" />
-  	<include name="mailapi.jar" />
-  	<include name="pop3.jar" />
-  	<include name="smtp.jar" />
-  	<include name="oro*.jar" />
-  	<include name="jstl.jar" />
-  	<include name="standard.jar" />
-  	<include name="jfree*.jar" />
-  	<include name="jcommon*.jar" />
+    <include name="activation.jar" />
+    <include name="imap.jar" />
+    <include name="jmta.jar" />
+    <include name="mailapi.jar" />
+    <include name="pop3.jar" />
+    <include name="smtp.jar" />
+    <include name="oro*.jar" />
+    <include name="jstl.jar" />
+    <include name="standard.jar" />
+    <include name="jfree*.jar" />
+    <include name="jcommon*.jar" />
   </patternset>
+
+  <patternset id="web.opennms.jars">
+    <include name="opennms_common.jar"/>
+    <include name="opennms_core.jar"/>
+    <include name="opennms_joesnmp.jar"/>
+    <include name="opennms_services.jar"/>
+    <include name="opennms_web.jar"/>
+  </patternset>
+
 
   <!-- The includes in this patternset need to match the directories in
        the <fop> tasks for the pdf.docs target, along with the common
@@ -1794,10 +1803,10 @@ OpenNMS as part of the post-install.
   <mkdir dir="${install.prefix}${install.servlet.dir}/WEB-INF/lib"/>
   <copy todir="${install.prefix}${install.servlet.dir}/WEB-INF/lib">
    <fileset dir="${packaged.lib.dir}">
-    <patternset refid="web.jars"/>    
+    <patternset refid="web.packaged.jars"/>    
    </fileset>
    <fileset dir="${install.prefix}${install.dir}/lib">
-    <include name="opennms_*.jar" />
+    <patternset refid="web.opennms.jars"/>    
    </fileset>
   </copy>
   <mkdir dir="${install.prefix}${install.servlet.dir}/WEB-INF/classes"/>
