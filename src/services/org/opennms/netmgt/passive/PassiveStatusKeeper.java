@@ -39,10 +39,10 @@ import org.opennms.netmgt.poller.pollables.PollStatus;
 
 public class PassiveStatusKeeper extends ServiceDaemon {
     
-    private static Map m_statusTable = new HashMap();
+    private static Map m_statusTable = null;
 
     public void init() {
-        
+        m_statusTable = new HashMap();
     }
 
     public void start() {
@@ -73,7 +73,8 @@ public class PassiveStatusKeeper extends ServiceDaemon {
     }
 
     public static Object getStatus(String nodeLabel, String ipAddr, String svcName) {
-        PollStatus status = (PollStatus) m_statusTable.get(nodeLabel+":"+ipAddr+":"+svcName);
+        //FIXME: Throw a log or exception here if this method is called and the this class hasn't been initialized
+        PollStatus status = (PollStatus) (m_statusTable == null ? PollStatus.STATUS_UNKNOWN : m_statusTable.get(nodeLabel+":"+ipAddr+":"+svcName));
         return (status == null ? PollStatus.STATUS_UNKNOWN : status);
     }
 

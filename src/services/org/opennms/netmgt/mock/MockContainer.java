@@ -38,7 +38,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.opennms.netmgt.poller.monitors.ServiceMonitor;
+import org.opennms.netmgt.poller.ServiceMonitor;
 
 /**
  * @author brozow

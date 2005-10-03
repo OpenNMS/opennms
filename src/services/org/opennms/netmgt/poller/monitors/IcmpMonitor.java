@@ -57,6 +57,7 @@ import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.ping.Packet;
 import org.opennms.netmgt.ping.Reply;
 import org.opennms.netmgt.ping.ReplyReceiver;
+import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.poller.pollables.PollStatus;
 import org.opennms.netmgt.utils.ParameterMap;
 import org.opennms.protocols.icmp.IcmpSocket;

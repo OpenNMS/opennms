@@ -62,6 +62,7 @@ import org.apache.regexp.RE;
 import org.apache.regexp.RESyntaxException;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.poller.Package;
+import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.poller.pollables.PollStatus;
 import org.opennms.netmgt.utils.ParameterMap;
 

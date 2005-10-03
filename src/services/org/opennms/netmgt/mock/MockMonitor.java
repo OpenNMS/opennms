@@ -37,8 +37,8 @@ import java.util.Map;
 
 import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.config.poller.Package;
+import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.poller.monitors.NetworkInterface;
-import org.opennms.netmgt.poller.monitors.ServiceMonitor;
 import org.opennms.netmgt.poller.pollables.PollStatus;
 
 public class MockMonitor implements ServiceMonitor {

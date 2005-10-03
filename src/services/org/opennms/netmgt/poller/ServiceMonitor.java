@@ -34,11 +34,13 @@
 //      http://www.opennms.com/
 //
 
-package org.opennms.netmgt.poller.monitors;
+package org.opennms.netmgt.poller;
 
 import java.util.Map;
 
 import org.opennms.netmgt.config.PollerConfig;
+import org.opennms.netmgt.poller.monitors.NetworkInterface;
+import org.opennms.netmgt.poller.monitors.NetworkInterfaceNotSupportedException;
 import org.opennms.netmgt.poller.pollables.PollStatus;
 
 /**

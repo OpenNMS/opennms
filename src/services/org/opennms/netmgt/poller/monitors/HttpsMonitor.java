@@ -65,6 +65,7 @@ import javax.net.ssl.TrustManager;
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.poller.Package;
+import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.poller.pollables.PollStatus;
 import org.opennms.netmgt.utils.ParameterMap;
 import org.opennms.netmgt.utils.RelaxedX509TrustManager;

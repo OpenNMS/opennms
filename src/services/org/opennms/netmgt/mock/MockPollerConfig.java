@@ -57,7 +57,7 @@ import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.config.poller.Parameter;
 import org.opennms.netmgt.config.poller.PollerConfiguration;
 import org.opennms.netmgt.config.poller.Service;
-import org.opennms.netmgt.poller.monitors.ServiceMonitor;
+import org.opennms.netmgt.poller.ServiceMonitor;
 
 public class MockPollerConfig extends PollOutagesConfigManager implements PollerConfig {
 

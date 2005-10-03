@@ -45,13 +45,14 @@ import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.config.poller.Parameter;
 import org.opennms.netmgt.mock.MockLogAppender;
 import org.opennms.netmgt.mock.MockUtil;
+import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.poller.pollables.PollStatus;
 import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.Parms;
 import org.opennms.netmgt.xml.event.Value;
 public class HttpMonitorTest extends TestCase {
 
-    private boolean m_runTests = false;
+    private boolean m_runTests = true;
 
 
     protected void setUp() throws Exception {

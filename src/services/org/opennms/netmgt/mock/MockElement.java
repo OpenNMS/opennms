@@ -34,7 +34,7 @@ package org.opennms.netmgt.mock;
 
 import java.util.Date;
 
-import org.opennms.netmgt.poller.monitors.ServiceMonitor;
+import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.xml.event.Event;
 
 /**

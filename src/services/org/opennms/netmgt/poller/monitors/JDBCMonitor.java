@@ -191,10 +191,10 @@ final public class JDBCMonitor extends IPv4LatencyMonitor {
      * @throws java.lang.RuntimeException
      *             Thrown if an unrecoverable error occurs that prevents the
      *             interface from being monitored.
-     * @see org.opennms.netmgt.poller.monitors.ServiceMonitor#SURPRESS_EVENT_MASK
-     * @see org.opennms.netmgt.poller.monitors.ServiceMonitor#SERVICE_AVAILABLE
-     * @see org.opennms.netmgt.poller.monitors.ServiceMonitor#SERVICE_UNAVAILABLE
-     * @see org.opennms.netmgt.poller.monitors.ServiceMonitor#SERVICE_UNRESPONSIVE
+     * @see org.opennms.netmgt.poller.ServiceMonitor#SURPRESS_EVENT_MASK
+     * @see org.opennms.netmgt.poller.ServiceMonitor#SERVICE_AVAILABLE
+     * @see org.opennms.netmgt.poller.ServiceMonitor#SERVICE_UNAVAILABLE
+     * @see org.opennms.netmgt.poller.ServiceMonitor#SERVICE_UNRESPONSIVE
      * @see <a
      *      href="http://manuals.sybase.com/onlinebooks/group-jc/jcg0550e/prjdbc/@Generic__BookTextView/9332;pt=1016#X">Error
      *      codes for JConnect </a>

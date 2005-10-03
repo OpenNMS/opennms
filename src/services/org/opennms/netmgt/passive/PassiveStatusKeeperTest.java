@@ -83,7 +83,7 @@ public class PassiveStatusKeeperTest extends MockObjectTestCase {
         m_psk.init();
         m_psk.start();
         
-     //   assertEquals(PollStatus.STATUS_UNKNOWN, PassiveStatusKeeper.getStatus(nodeLabel, ipAddr, svcName));
+        assertEquals(PollStatus.STATUS_UNKNOWN, PassiveStatusKeeper.getStatus(nodeLabel, ipAddr, svcName));
         
     }
 

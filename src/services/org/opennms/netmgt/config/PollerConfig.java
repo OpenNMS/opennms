@@ -42,7 +42,7 @@ import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.config.poller.PollerConfiguration;
 import org.opennms.netmgt.config.poller.Service;
-import org.opennms.netmgt.poller.monitors.ServiceMonitor;
+import org.opennms.netmgt.poller.ServiceMonitor;
 
 /**
  * @author brozow

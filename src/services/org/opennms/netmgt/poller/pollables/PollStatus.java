@@ -31,7 +31,7 @@
 //
 package org.opennms.netmgt.poller.pollables;
 
-import org.opennms.netmgt.poller.monitors.ServiceMonitor;
+import org.opennms.netmgt.poller.ServiceMonitor;
 
 /**
  * Represents the status of a node, interface or services
@@ -51,6 +51,10 @@ public class PollStatus {
     
     public static final PollStatus STATUS_UNKNOWN = new PollStatus(ServiceMonitor.SERVICE_UNKNOWN, "Unknown");
     
+    int m_statusCode;
+    String m_statusName;
+    String m_reason;
+    
     public static PollStatus getPollStatus(int status) {
         switch (status) {
         case ServiceMonitor.SERVICE_AVAILABLE:
@@ -63,17 +67,44 @@ public class PollStatus {
         }
     }
 
-    // FIXME: add a getPollStatus that takes a reason code
+    public static PollStatus getPollStatus(int status, String reason) {
+        String statusName = null;
+        
+        switch(status) {
+        case ServiceMonitor.SERVICE_AVAILABLE:
+            statusName = "Up";
+            break;
+        case ServiceMonitor.SERVICE_UNRESPONSIVE:
+            statusName = "Unresponsive";
+            break;
+        case ServiceMonitor.SERVICE_UNAVAILABLE:
+        default:
+            statusName = "Down";
+        }
+        return new PollStatus(status, statusName, reason);
+        
+    }
 
-    
-    int m_statusCode;
-    String m_statusName;
-    String m_reason;
-    
     private PollStatus(int statusCode, String statusName) {
+        this(statusCode, statusName, null);
+    }
+    
+    public PollStatus(int statusCode, String statusName, String reason) {
         m_statusCode = statusCode;
         m_statusName = statusName;
-        m_reason = null;
+        m_reason = reason;
+    }
+    
+    public boolean equals(PollStatus status) {
+        if (m_statusCode == status.getStatusCode()) {
+            if (m_statusName.equals(status.getStatusName())) {
+                //funky to avoid null pointer exception
+                if (m_reason == null && status.getReason() == null || (m_reason != null && status.getReason() != null && m_reason.equals(status.getReason()))) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
     
     public boolean isUp() {

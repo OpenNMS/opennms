@@ -42,6 +42,7 @@ import java.net.InetAddress;
 import java.util.Map;
 
 import org.opennms.netmgt.config.PollerConfig;
+import org.opennms.netmgt.poller.ServiceMonitor;
 
 /**
  * <p>

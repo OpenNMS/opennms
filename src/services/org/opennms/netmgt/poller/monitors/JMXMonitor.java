@@ -39,6 +39,7 @@ import javax.naming.InitialContext;
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.poller.Package;
+import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.utils.ParameterMap;
 import org.opennms.protocols.jmx.connectors.ConnectionWrapper;
 
