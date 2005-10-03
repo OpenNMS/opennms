@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 02 Oct 2005: Use File.separator to join file path components instead of "/". -- DJ Gregor
 // 12 Nov 2002: Added response time reports to webUI.
 //
 // Original coda base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -70,7 +71,8 @@ import org.opennms.web.graph.PrefabGraph;
  * @author <a href="http://www.opennms.org">OpenNMS </a>
  */
 public class ResponseTimeModel extends Object {
-    public static final String RRDTOOL_GRAPH_PROPERTIES_FILENAME = "/etc/response-graph.properties";
+    public static final String RRDTOOL_GRAPH_PROPERTIES_FILENAME =
+		File.separator + "etc" + File.separator + "response-graph.properties";
 
     public static final String INTERFACE_GRAPH_TYPE = "interface";
 

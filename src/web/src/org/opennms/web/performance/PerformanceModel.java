@@ -8,6 +8,11 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 02 Oct 2005: Use File.separator to join file path components instead of "/". -- DJ Gregor
+//
+//
 // Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -63,7 +68,8 @@ import org.opennms.web.graph.PrefabGraph;
  * @author <a href="http://www.opennms.org">OpenNMS </a>
  */
 public class PerformanceModel extends Object {
-    public static final String RRDTOOL_GRAPH_PROPERTIES_FILENAME = "/etc/snmp-graph.properties";
+    public static final String RRDTOOL_GRAPH_PROPERTIES_FILENAME =
+		File.separator + "etc" + File.separator + "snmp-graph.properties";
 
     public static final String INTERFACE_GRAPH_TYPE = "interface";
 
