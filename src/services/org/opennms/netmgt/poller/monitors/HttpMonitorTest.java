@@ -52,7 +52,7 @@ import org.opennms.netmgt.xml.event.Parms;
 import org.opennms.netmgt.xml.event.Value;
 public class HttpMonitorTest extends TestCase {
 
-    private boolean m_runTests = true;
+    private boolean m_runTests = false;
 
 
     protected void setUp() throws Exception {
