@@ -52,13 +52,12 @@ import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.config.SnmpPeerFactory;
+import org.opennms.netmgt.poller.NetworkInterface;
+import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpValue;
-import org.opennms.netmgt.config.poller.Package;
-import org.opennms.netmgt.poller.ServiceMonitor;
-import org.opennms.netmgt.poller.pollables.PollStatus;
 import org.opennms.netmgt.utils.ParameterMap;
 
 /**
@@ -274,10 +273,6 @@ final public class SnmpMonitor extends SnmpMonitorStrategy {
         }
 
         return status;
-    }
-    
-    public PollStatus poll(NetworkInterface iface, Map parameters, Package pkg) {
-        return PollStatus.getPollStatus(checkStatus(iface, parameters, pkg));
     }
 
 }

@@ -37,9 +37,7 @@
 
 package org.opennms.netmgt.poller.monitors;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.InterruptedIOException;
 import java.io.OutputStream;
 import java.net.ConnectException;
@@ -52,11 +50,11 @@ import java.util.Map;
 import org.apache.log4j.Category;
 import org.apache.log4j.Priority;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.config.poller.Package;
+import org.opennms.netmgt.poller.NetworkInterface;
+import org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException;
 import org.opennms.netmgt.poller.nrpe.CheckNrpe;
 import org.opennms.netmgt.poller.nrpe.NrpeException;
 import org.opennms.netmgt.poller.nrpe.NrpePacket;
-import org.opennms.netmgt.poller.pollables.PollStatus;
 import org.opennms.netmgt.utils.ParameterMap;
 
 /**
@@ -77,7 +75,8 @@ final public class NrpeMonitor extends IPv4LatencyMonitor {
     /**
      * Default port.
      */
-    private static final int DEFAULT_PORT = -1;
+    //Commented out because it is not currently used in this monitor
+    //private static final int DEFAULT_PORT = -1;
 
     /**
      * Default retries.
@@ -150,7 +149,8 @@ final public class NrpeMonitor extends IPv4LatencyMonitor {
 
         // BannerMatch
         //
-        String strBannerMatch = (String) parameters.get("banner");
+        //Commented out because it is not currently referenced in this monitor
+        //String strBannerMatch = (String) parameters.get("banner");
 
         // Get the address instance.
         //
@@ -276,10 +276,6 @@ final public class NrpeMonitor extends IPv4LatencyMonitor {
         // return the status of the service
         //
         return serviceStatus;
-    }
-
-    public PollStatus poll(NetworkInterface iface, Map parameters, Package pkg) {
-        return PollStatus.getPollStatus(checkStatus(iface, parameters, pkg));
     }
 
 }

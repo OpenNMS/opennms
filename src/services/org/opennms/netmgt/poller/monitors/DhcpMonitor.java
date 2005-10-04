@@ -47,10 +47,10 @@ import java.util.Map;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.dhcpd.Dhcpd;
+import org.opennms.netmgt.poller.NetworkInterface;
+import org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException;
 import org.opennms.netmgt.poller.ServiceMonitor;
-import org.opennms.netmgt.poller.pollables.PollStatus;
 import org.opennms.netmgt.utils.ParameterMap;
 
 /**
@@ -160,8 +160,4 @@ final public class DhcpMonitor extends IPv4LatencyMonitor {
         return serviceStatus;
     }
     
-    public PollStatus poll(NetworkInterface iface, Map parameters, Package pkg) {
-        return PollStatus.getPollStatus(checkStatus(iface, parameters, pkg));
-    }
-
 }

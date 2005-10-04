@@ -39,8 +39,6 @@ package org.opennms.netmgt.poller;
 import java.util.Map;
 
 import org.opennms.netmgt.config.PollerConfig;
-import org.opennms.netmgt.poller.monitors.NetworkInterface;
-import org.opennms.netmgt.poller.monitors.NetworkInterfaceNotSupportedException;
 import org.opennms.netmgt.poller.pollables.PollStatus;
 
 /**
@@ -191,7 +189,7 @@ public interface ServiceMonitor {
      *                Thrown if an unrecoverable error occurs that prevents the
      *                interface from being monitored.
      * @exception
-     *                org.opennms.netmgt.poller.monitors.NetworkInterfaceNotSupportedException
+     *                org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException
      *                Thrown if the passed interface is invalid for this
      *                monitor.
      * 

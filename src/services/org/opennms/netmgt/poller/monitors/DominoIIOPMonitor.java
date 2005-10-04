@@ -57,8 +57,8 @@ import java.util.Map;
 import org.apache.log4j.Category;
 import org.apache.log4j.Priority;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.config.poller.Package;
-import org.opennms.netmgt.poller.pollables.PollStatus;
+import org.opennms.netmgt.poller.NetworkInterface;
+import org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException;
 import org.opennms.netmgt.utils.ParameterMap;
 
 /**
@@ -162,7 +162,7 @@ final public class DominoIIOPMonitor extends IPv4Monitor {
         // do it the right way won't be able to connect anyway
         //
         try {
-            String IOR = retrieveIORText(ipv4Addr.getHostAddress(), IORport);
+            retrieveIORText(ipv4Addr.getHostAddress(), IORport);
         } catch (FileNotFoundException e) {
             // This is an expected exception
             //
@@ -278,8 +278,4 @@ final public class DominoIIOPMonitor extends IPv4Monitor {
         return IOR;
     }
     
-    public PollStatus poll(NetworkInterface iface, Map parameters, Package pkg) {
-        return PollStatus.getPollStatus(checkStatus(iface, parameters, pkg));
-    }
-
 }

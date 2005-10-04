@@ -34,11 +34,12 @@
 //      http://www.opennms.com/
 //
 
-package org.opennms.netmgt.poller.monitors;
+package org.opennms.netmgt.poller;
 
 import java.net.InetAddress;
 import java.util.HashMap;
 import java.util.Map;
+
 
 /**
  * <P>

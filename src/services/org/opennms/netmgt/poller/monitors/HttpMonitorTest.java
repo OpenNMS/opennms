@@ -45,6 +45,7 @@ import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.config.poller.Parameter;
 import org.opennms.netmgt.mock.MockLogAppender;
 import org.opennms.netmgt.mock.MockUtil;
+import org.opennms.netmgt.poller.IPv4NetworkInterface;
 import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.poller.pollables.PollStatus;
 import org.opennms.netmgt.xml.event.Parm;
@@ -174,7 +175,6 @@ public class HttpMonitorTest extends TestCase {
         ServiceMonitor monitor = new HttpMonitor();
         Package pkg = new Package();
         IPv4NetworkInterface iface;
-        PollStatus status;
         
         p.setKey("port");
         p.setValue("80");
@@ -196,7 +196,7 @@ public class HttpMonitorTest extends TestCase {
         m.put(p.getKey(), p.getValue());
         
         iface = new IPv4NetworkInterface(InetAddress.getByName("www.opennms.org"));
-        status = monitor.poll(iface, m, pkg);
+        monitor.poll(iface, m, pkg);
         
     }
     
@@ -384,7 +384,6 @@ public class HttpMonitorTest extends TestCase {
         ServiceMonitor monitor = new HttpMonitor();
         Package pkg = new Package();
         IPv4NetworkInterface iface;
-        PollStatus status;
         
         p.setKey("port");
         p.setValue("80");
@@ -405,7 +404,7 @@ public class HttpMonitorTest extends TestCase {
                 
         //Try on opennms.org
         iface = new IPv4NetworkInterface(InetAddress.getByName("www.opennms.org"));
-        status = monitor.poll(iface, m, pkg);        
+        monitor.poll(iface, m, pkg);        
         
     }
 

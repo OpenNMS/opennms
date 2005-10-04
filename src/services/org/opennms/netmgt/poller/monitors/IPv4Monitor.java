@@ -42,7 +42,11 @@ import java.net.InetAddress;
 import java.util.Map;
 
 import org.opennms.netmgt.config.PollerConfig;
+import org.opennms.netmgt.config.poller.Package;
+import org.opennms.netmgt.poller.NetworkInterface;
+import org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException;
 import org.opennms.netmgt.poller.ServiceMonitor;
+import org.opennms.netmgt.poller.pollables.PollStatus;
 
 /**
  * <p>
@@ -129,7 +133,7 @@ abstract public class IPv4Monitor implements ServiceMonitor {
      *                Thrown if an unrecoverable error occurs that prevents the
      *                interface from being monitored.
      * @exception
-     *                org.opennms.netmgt.poller.monitors.NetworkInterfaceNotSupportedException
+     *                org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException
      *                Thrown if the passed interface is invalid for this
      *                monitor.
      * 
@@ -165,4 +169,10 @@ abstract public class IPv4Monitor implements ServiceMonitor {
         return;
     }
     
+    protected String m_reason = null;
+    public PollStatus poll(NetworkInterface iface, Map parameters, Package pkg) {
+        //FIXME: make sure that we create a NEW status constant or call a getPollStatus that takes a reason
+        PollStatus pollStatus = PollStatus.getPollStatus(checkStatus(iface, parameters, pkg), m_reason);
+        return pollStatus;
+    }
 }

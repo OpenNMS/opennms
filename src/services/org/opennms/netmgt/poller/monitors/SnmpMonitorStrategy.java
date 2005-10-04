@@ -37,9 +37,8 @@ import java.math.BigInteger;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-import org.apache.log4j.Category;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.poller.Package;
+import org.opennms.netmgt.poller.NetworkInterface;
 import org.opennms.netmgt.snmp.SnmpValue;
 
 /**
@@ -59,7 +58,11 @@ abstract public class SnmpMonitorStrategy extends IPv4Monitor {
     protected static final String NOT_EQUAL = "!=";
     protected static final String MATCHES = "~";
     
-    private Category log = ThreadCategory.getInstance(getClass());
+    /*
+     * TODO: Use it or loose it.
+     * Commented out because it is not currently used in this monitor
+     */
+    //private Category log = ThreadCategory.getInstance(getClass());
 
     abstract public int checkStatus(NetworkInterface iface, Map parameters, Package pkg) ;
     

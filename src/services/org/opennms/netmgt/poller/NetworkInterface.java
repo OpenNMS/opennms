@@ -30,7 +30,7 @@
 //      http://www.opennms.com/
 //
 
-package org.opennms.netmgt.poller.monitors;
+package org.opennms.netmgt.poller;
 
 /**
  * <P>

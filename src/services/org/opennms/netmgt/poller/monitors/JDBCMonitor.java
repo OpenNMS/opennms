@@ -52,8 +52,8 @@ import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.DBTools;
 import org.opennms.netmgt.config.PollerConfig;
-import org.opennms.netmgt.config.poller.Package;
-import org.opennms.netmgt.poller.pollables.PollStatus;
+import org.opennms.netmgt.poller.NetworkInterface;
+import org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException;
 import org.opennms.netmgt.utils.ParameterMap;
 
 /**
@@ -132,7 +132,7 @@ final public class JDBCMonitor extends IPv4LatencyMonitor {
      * @throws java.lang.RuntimeException
      *             Thrown if an unrecoverable error occurs that prevents the
      *             interface from being monitored.
-     * @throws org.opennms.netmgt.poller.monitors.NetworkInterfaceNotSupportedException
+     * @throws org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException
      *             Thrown if the passed interface is invalid for this monitor.
      */
     public void initialize(NetworkInterface iface) {
@@ -313,10 +313,6 @@ final public class JDBCMonitor extends IPv4LatencyMonitor {
             }
         }
         return status;
-    }
-    
-    public PollStatus poll(NetworkInterface iface, Map parameters, Package pkg) {
-        return PollStatus.getPollStatus(checkStatus(iface, parameters, pkg));
     }
 
 } // End of class

@@ -46,10 +46,9 @@ import jcifs.netbios.NbtAddress;
 import org.apache.log4j.Category;
 import org.apache.log4j.Priority;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.config.poller.Package;
+import org.opennms.netmgt.poller.NetworkInterface;
+import org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException;
 import org.opennms.netmgt.poller.ServiceMonitor;
-import org.opennms.netmgt.poller.pollables.PollStatus;
-import org.opennms.netmgt.utils.ParameterMap;
 
 /**
  * <P>
@@ -68,13 +67,21 @@ final public class SmbMonitor extends IPv4Monitor {
     /**
      * Default retries.
      */
-    private static final int DEFAULT_RETRY = 0;
+    /*
+     * TODO: Use it or loose it.
+     * Commented out because it is not currently used in this monitor
+     */
+    //private static final int DEFAULT_RETRY = 0;
 
     /**
      * Default timeout. Specifies how long (in milliseconds) to block waiting
      * for data from the monitored interface.
      */
-    private static final int DEFAULT_TIMEOUT = 5000;
+    /*
+     * TODO: Use it or loose it.
+     * Commented out because it is not currently used in this monitor
+     */
+    //private static final int DEFAULT_TIMEOUT = 5000;
 
     /**
      * <P>
@@ -105,10 +112,14 @@ final public class SmbMonitor extends IPv4Monitor {
         //
         Category log = ThreadCategory.getInstance(getClass());
 
-        // get parameters
         //
-        int retry = ParameterMap.getKeyedInteger(parameters, "retry", DEFAULT_RETRY);
-        int timeout = ParameterMap.getKeyedInteger(parameters, "timeout", DEFAULT_TIMEOUT);
+        /*
+         * TODO: Use it or loose it.
+         * Commented out because it is not currently used in this monitor
+         */
+        // get parameters
+        //int retry = ParameterMap.getKeyedInteger(parameters, "retry", DEFAULT_RETRY);
+        //int timeout = ParameterMap.getKeyedInteger(parameters, "timeout", DEFAULT_TIMEOUT);
 
         // Extract the address
         //
@@ -121,7 +132,11 @@ final public class SmbMonitor extends IPv4Monitor {
         // Attempt to retrieve NetBIOS name of this interface in order
         // to determine if SMB is supported.
         //
-        NbtAddress nbtAddr = null;
+        /*
+         * TODO: Use it or loose it.
+         * Commented out because it is not currently used in this monitor
+         */
+        //NbtAddress nbtAddr = null;
         try {
             // Debugging only
             /*
@@ -148,8 +163,17 @@ final public class SmbMonitor extends IPv4Monitor {
             // to getNodeType() will however throw UnknownHostException
             // if the Netbios name is not resolved.
             //
-            nbtAddr = NbtAddress.getByName(ipv4Addr.getHostAddress());
-            int nodeType = nbtAddr.getNodeType();
+            /*
+             * TODO: Use it or loose it.
+             * Commented out because it is not currently used in this monitor
+             */
+            //nbtAddr = NbtAddress.getByName(ipv4Addr.getHostAddress());
+            NbtAddress.getByName(ipv4Addr.getHostAddress());
+            /*
+             * TODO: Use it or loose it.
+             * Commented out because it is not currently used in this monitor
+             */
+            //int nodeType = nbtAddr.getNodeType();
 
             /*
              * if(log.isDebugEnabled()) { log.debug("Successfully created
@@ -175,10 +199,6 @@ final public class SmbMonitor extends IPv4Monitor {
         // return the status of the service
         //
         return serviceStatus;
-    }
-    
-    public PollStatus poll(NetworkInterface iface, Map parameters, Package pkg) {
-        return PollStatus.getPollStatus(checkStatus(iface, parameters, pkg));
     }
 
 }

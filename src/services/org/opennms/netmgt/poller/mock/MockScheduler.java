@@ -44,7 +44,11 @@ import org.opennms.netmgt.scheduler.ScheduleTimer;
 public class MockScheduler implements ScheduleTimer {
     
     private MockTimer m_timer;
-    private long m_currentTime = 0;
+    /*
+     * TODO: Use it or loose it.
+     * Commented out because it is not currently used in this monitor
+     */
+    //private long m_currentTime = 0;
     private SortedMap m_scheduleEntries = new TreeMap();
 
     public MockScheduler() {

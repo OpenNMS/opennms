@@ -31,14 +31,12 @@
 package org.opennms.netmgt.poller.monitors;
 
 import java.net.InetAddress;
-import java.net.URL;
 import java.util.Map;
-
-import javax.naming.InitialContext;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.poller.Package;
+import org.opennms.netmgt.poller.NetworkInterface;
 import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.utils.ParameterMap;
 import org.opennms.protocols.jmx.connectors.ConnectionWrapper;
@@ -61,8 +59,12 @@ public abstract class JMXMonitor extends IPv4LatencyMonitor {
     public int checkStatus(NetworkInterface iface, Map map, Package pkg) {
 
         Category       log           = ThreadCategory.getInstance(getClass());
-        boolean        res           = false;
-        InitialContext ctx           = null;
+        /*
+         * TODO: Use it or loose it.
+         * Commented out because it is not currently used in this monitor
+         */
+        //boolean        res           = false;
+        //InitialContext ctx           = null;
         int            serviceStatus = ServiceMonitor.SERVICE_UNAVAILABLE;
         String         dsName        = null;
         InetAddress    ipv4Addr      = (InetAddress)iface.getAddress();
@@ -78,14 +80,23 @@ public abstract class JMXMonitor extends IPv4LatencyMonitor {
 
             long t0 = 0;
             for (int attempts=0; attempts <= retry && serviceStatus != ServiceMonitor.SERVICE_AVAILABLE; attempts++)    {
-                URL jmxLink = null;
+                /*
+                 * TODO: Use it or loose it.
+                 * Commented out because it is not currently used in this monitor
+                 */
+                //URL jmxLink = null;
                 try {
                     
                      t0 = System.currentTimeMillis();
                     
                      connection = getMBeanServerConnection(map, ipv4Addr);
                      if (connection != null) {
-                         Integer result = connection.getMBeanServer().getMBeanCount();
+                         /*
+                          * TODO: Use it or loose it.
+                          * Commented out because it is not currently used in this monitor
+                          */
+                         //Integer result = connection.getMBeanServer().getMBeanCount();
+                         connection.getMBeanServer().getMBeanCount();
                          serviceStatus = ServiceMonitor.SERVICE_AVAILABLE;
                        
                          long responseTime = System.currentTimeMillis() - t0;

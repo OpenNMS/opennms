@@ -64,9 +64,9 @@ import org.apache.log4j.Category;
 import org.opennms.core.utils.Base64;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.SnmpPeerFactory;
-import org.opennms.netmgt.config.poller.Package;
+import org.opennms.netmgt.poller.NetworkInterface;
+import org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException;
 import org.opennms.netmgt.poller.ServiceMonitor;
-import org.opennms.netmgt.poller.pollables.PollStatus;
 import org.opennms.netmgt.utils.ParameterMap;
 
 /**
@@ -102,14 +102,6 @@ final public class HttpMonitor extends IPv4LatencyMonitor {
      */
     private static final int DEFAULT_TIMEOUT = 3000; // 3 second timeout on read()
     
-    private String m_reason = null;
-
-    public PollStatus poll(NetworkInterface iface, Map parameters, Package pkg) {
-        //FIXME: make sure that we create a NEW status constant or call a getPollStatus that takes a reason
-        PollStatus pollStatus = PollStatus.getPollStatus(checkStatus(iface, parameters, pkg), m_reason);
-        return pollStatus;
-    }
-
     /**
      * Poll the specified address for HTTP service availability.
      * 
@@ -470,8 +462,8 @@ final public class HttpMonitor extends IPv4LatencyMonitor {
      * @param response
      * @return
      */
-    private boolean isResponseParameterStrict(int response) {
+/*    private boolean isResponseParameterStrict(int response) {
         return (response > 99 && response < 600);
     }
-
+*/
 }

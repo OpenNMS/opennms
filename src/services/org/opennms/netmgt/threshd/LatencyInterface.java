@@ -10,7 +10,7 @@ import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.threshd.Threshold;
-import org.opennms.netmgt.poller.monitors.NetworkInterface;
+import org.opennms.netmgt.poller.NetworkInterface;
 import org.opennms.netmgt.utils.RrdFileConstants;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;

@@ -9,7 +9,7 @@ import org.jmock.Mock;
 import org.opennms.netmgt.config.ThresholdingConfigFactory;
 import org.opennms.netmgt.mock.MockLogAppender;
 import org.opennms.netmgt.mock.MockNetwork;
-import org.opennms.netmgt.poller.monitors.IPv4NetworkInterface;
+import org.opennms.netmgt.poller.IPv4NetworkInterface;
 import org.opennms.netmgt.rrd.RrdConfig;
 import org.opennms.netmgt.rrd.RrdStrategy;
 import org.opennms.netmgt.rrd.RrdUtils;

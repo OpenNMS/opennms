@@ -39,16 +39,19 @@ package org.opennms.netmgt.poller.monitors;
 import java.net.InetAddress;
 import java.util.Map;
 
+import net.sourceforge.jradiusclient.RadiusAttribute;
+import net.sourceforge.jradiusclient.RadiusAttributeValues;
+import net.sourceforge.jradiusclient.RadiusClient;
+import net.sourceforge.jradiusclient.RadiusPacket;
+import net.sourceforge.jradiusclient.exception.InvalidParameterException;
+import net.sourceforge.jradiusclient.exception.RadiusException;
+import net.sourceforge.jradiusclient.util.ChapUtil;
+
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.config.poller.Package;
-import org.opennms.netmgt.poller.ServiceMonitor;
-import org.opennms.netmgt.poller.pollables.PollStatus;
+import org.opennms.netmgt.poller.NetworkInterface;
+import org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException;
 import org.opennms.netmgt.utils.ParameterMap;
-
-import net.sourceforge.jradiusclient.*;
-import net.sourceforge.jradiusclient.exception.*;
-import net.sourceforge.jradiusclient.util.*;
 
 
 /**
@@ -258,10 +261,6 @@ final public class RadiusAuthMonitor extends IPv4LatencyMonitor {
         System.arraycopy(ChapUtil.chapEncrypt(chapIdentifier, plainText.getBytes(),chapChallenge),
                          0, chapPassword, 1, 16);
         return chapPassword;
-    }
-
-    public PollStatus poll(NetworkInterface iface, Map parameters, Package pkg) {
-        return PollStatus.getPollStatus(checkStatus(iface, parameters, pkg));
     }
 
 } 

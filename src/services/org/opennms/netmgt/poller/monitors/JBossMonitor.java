@@ -33,8 +33,6 @@ package org.opennms.netmgt.poller.monitors;
 import java.net.InetAddress;
 import java.util.Map;
 
-import org.opennms.netmgt.config.poller.Package;
-import org.opennms.netmgt.poller.pollables.PollStatus;
 import org.opennms.protocols.jmx.connectors.ConnectionWrapper;
 import org.opennms.protocols.jmx.connectors.JBossConnectionFactory;
 
@@ -53,10 +51,6 @@ public class JBossMonitor extends JMXMonitor {
      */
     public ConnectionWrapper getMBeanServerConnection(Map parameterMap, InetAddress address) {
         return  JBossConnectionFactory.getMBeanServerConnection(parameterMap, address);
-    }
-    
-    public PollStatus poll(NetworkInterface iface, Map parameters, Package pkg) {
-        return PollStatus.getPollStatus(checkStatus(iface, parameters, pkg));
     }
 
 }

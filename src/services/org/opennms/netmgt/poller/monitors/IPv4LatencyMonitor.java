@@ -47,7 +47,11 @@ import org.apache.log4j.Category;
 import org.apache.log4j.Priority;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.PollerConfig;
+import org.opennms.netmgt.config.poller.Package;
+import org.opennms.netmgt.poller.NetworkInterface;
+import org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException;
 import org.opennms.netmgt.poller.ServiceMonitor;
+import org.opennms.netmgt.poller.pollables.PollStatus;
 import org.opennms.netmgt.rrd.RrdException;
 import org.opennms.netmgt.rrd.RrdUtils;
 
@@ -161,7 +165,7 @@ abstract public class IPv4LatencyMonitor implements ServiceMonitor {
      *                Thrown if an unrecoverable error occurs that prevents the
      *                interface from being monitored.
      * @exception
-     *                org.opennms.netmgt.poller.monitors.NetworkInterfaceNotSupportedException
+     *                org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException
      *                Thrown if the passed interface is invalid for this
      *                monitor.
      * 
@@ -212,7 +216,6 @@ abstract public class IPv4LatencyMonitor implements ServiceMonitor {
      * @return true if RRD file successfully created, false otherwise
      */
     public boolean createRRD(String repository, InetAddress addr, String dsName, org.opennms.netmgt.config.poller.Package pkg) throws RrdException {
-        Category log = ThreadCategory.getInstance(this.getClass());
 
         List rraList = getPollerConfig().getRRAList(pkg);
 
@@ -264,5 +267,12 @@ abstract public class IPv4LatencyMonitor implements ServiceMonitor {
             }
         }
     }
-    
+
+    protected String m_reason = null;
+    public PollStatus poll(NetworkInterface iface, Map parameters, Package pkg) {
+        //FIXME: make sure that we create a NEW status constant or call a getPollStatus that takes a reason
+        PollStatus pollStatus = PollStatus.getPollStatus(checkStatus(iface, parameters, pkg), m_reason);
+        return pollStatus;
+    }
+
 }
