@@ -123,6 +123,14 @@ class QueuingRrdStrategy implements RrdStrategy, Runnable {
     static final int WRITE_THREADS = RrdConfig.getProperty("org.opennms.rrd.queuing.writethreads", 2);
 
     private static final boolean QUEUE_CREATES = RrdConfig.getProperty("org.opennms.rrd.queuing.queuecreates", true);
+    
+    private static final boolean PRIORITIZE_SIGS = RrdConfig.getProperty("org.opennms.rrd.queuing.prioritizeSignificatUpdates", true);
+
+    private static final long INSIG_HIGH_WATER_MARK = RrdConfig.getProperty("org.opennms.rrd.queuing.inSigHighWaterMark", 0L);
+
+    private static final long SIG_HIGH_WATER_MARK = RrdConfig.getProperty("org.opennms.rrd.queuing.sigHighWaterMark", 0L);
+
+    private static final long QUEUE_HIGH_WATER_MARK = RrdConfig.getProperty("org.opennms.rrd.queuing.queueHighWaterMark", 0L);
 
     private static final long MODULUS = RrdConfig.getProperty("org.opennms.rrd.queuing.modulus", 10000L);
 
@@ -438,6 +446,21 @@ class QueuingRrdStrategy implements RrdStrategy, Runnable {
      */
     public void addOperation(Operation op) {
         synchronized (this) {
+            if (queueIsFull()) {
+                log().error("RRD Data Queue is Full!! Discarding operation for file "+op.getFileName());
+                return;
+            }
+            
+            if (op.isSignificant() && sigQueueIsFull()) {
+                log().error("RRD Data Significant Queue is Full!! Discarding operation for file "+op.getFileName());
+                return;
+            }
+            
+            if (!op.isSignificant() && inSigQueueIsFull()) {
+                log().error("RRD Insignificant Data Queue is Full!! Discarding operation for file "+op.getFileName());
+                return;
+            }
+            
             storeAssignment(op);
 
             totalOperationsPending++;
@@ -447,6 +470,32 @@ class QueuingRrdStrategy implements RrdStrategy, Runnable {
             notifyAll();
             ensureThreadsStarted();
         }
+    }
+
+    
+    private Category log() {
+        return Category.getInstance(LOG4J_CATEGORY);
+    }
+
+    private boolean queueIsFull() {
+        if (QUEUE_HIGH_WATER_MARK <= 0)
+            return false;
+        else
+            return totalOperationsPending >= QUEUE_HIGH_WATER_MARK;
+    }
+
+    private boolean sigQueueIsFull() {
+        if (SIG_HIGH_WATER_MARK <= 0)
+            return false;
+        else
+            return totalOperationsPending >= SIG_HIGH_WATER_MARK;
+    }
+
+    private boolean inSigQueueIsFull() {
+        if (INSIG_HIGH_WATER_MARK <= 0)
+            return false;
+        else
+            return totalOperationsPending >= INSIG_HIGH_WATER_MARK;
     }
 
     /**
@@ -523,12 +572,15 @@ class QueuingRrdStrategy implements RrdStrategy, Runnable {
             pendingFileOperations.put(op.getFileName(), pendingOperations);
 
             // add the file to the correct list based on what type of work we
-            // are addig
-            if (op.isSignificant())
+            // are adding.  (if we aren't prioritizing then every file is counted as
+            // signficant
+            if (!PRIORITIZE_SIGS || op.isSignificant())
                 filesWithSignificantWork.addLast(op.getFileName());
             else
                 filesWithInsignificantWork.addLast(op.getFileName());
-        } else if (op.isSignificant() && hasOnlyInsignificant(pendingOperations)) {
+        } else if (PRIORITIZE_SIGS && op.isSignificant() && hasOnlyInsignificant(pendingOperations)) {
+            // only do this when we are prioritizing as this bumps files from inSig
+            // up to insig
             // promote the file to the significant list if this is the first
             // significant
             filesWithSignificantWork.addLast(op.getFileName());
@@ -545,6 +597,9 @@ class QueuingRrdStrategy implements RrdStrategy, Runnable {
      * 
      */
     private synchronized void promoteAgedFiles() {
+        
+        // no need to do this is we aren't prioritizing
+        if (!PRIORITIZE_SIGS) return;
 
         // the num seconds to update files is 0 then use unfair prioritization
         if (MAX_INSIG_UPDATE_SECONDS == 0 || filesWithInsignificantWork.isEmpty())
