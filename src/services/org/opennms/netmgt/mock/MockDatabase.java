@@ -647,7 +647,7 @@ public class MockDatabase implements DbConnectionFactory, EventWriter {
      */
     public Collection findNoticesForEvent(Event event) {
         final List notifyIds = new LinkedList();
-        Querier loadExisting = new Querier(this, "select notifyId from notifications where eventID = ?") {;
+        Querier loadExisting = new Querier(this, "select notifyId from notifications where eventID = ?") {
             public void processRow(ResultSet rs) throws SQLException {
                 notifyIds.add(rs.getObject(1));
             }

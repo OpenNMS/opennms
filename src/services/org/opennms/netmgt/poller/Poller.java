@@ -89,7 +89,7 @@ public class Poller extends ServiceDaemon {
 
     private Map m_svcIdToName = new HashMap();
 
-    private Scheduler m_scheduler = null;;
+    private Scheduler m_scheduler = null;
 
     private PollerEventProcessor m_receiver;
 

@@ -143,7 +143,7 @@ public class PollableNetwork extends PollableContainer {
         public void visitService(PollableService pSvc) {
             m_log.debug("         service=" + pSvc.getSvcName() + " status=" + pSvc.getStatus());
         }
-    };
+    }
 
 
     
