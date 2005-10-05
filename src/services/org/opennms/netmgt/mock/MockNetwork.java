@@ -59,8 +59,6 @@ public class MockNetwork extends MockContainer {
 
     private MockNode m_currentNode;
 
-    private long m_defaultInterval = 1234L;
-
     private Map m_idToNameMap = new HashMap();
 
     private int m_invalidPollCount;
