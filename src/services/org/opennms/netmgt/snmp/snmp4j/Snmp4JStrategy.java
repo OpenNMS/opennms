@@ -253,7 +253,9 @@ public class Snmp4JStrategy implements SnmpStrategy {
             } else if (responseEvent.getResponse().get(0).getSyntax() == SMIConstants.SYNTAX_NULL) {
                 values[0] = null;
             } else if (responseEvent.getError() != null) {
-                log().warn("send: Error during getNext operation.  Error: "+responseEvent.getError().getLocalizedMessage());
+                log().warn("send: Error during get operation.  Error: "+responseEvent.getError().getLocalizedMessage());
+            } else if (responseEvent.getResponse().getType() == PDU.REPORT) {
+                log().warn("send: Error during get operation.  Report returned with varbinds: "+responseEvent.getResponse().getVariableBindings());
             } else if (responseEvent.getResponse().getVariableBindings().size() < 1) {
                 log().warn("send: Received PDU with 0 varbinds.");
             } else {
