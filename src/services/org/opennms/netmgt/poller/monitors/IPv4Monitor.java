@@ -177,6 +177,7 @@ abstract public class IPv4Monitor implements ServiceMonitor {
     }
     
     public PollStatus poll(NetworkInterface iface, Map parameters, Package pkg) {
-        return PollStatus.getPollStatus(checkStatus(iface, parameters, pkg));
+        String reason = "Reasons not yet supported by "+getClass().getName()+". Please help us by submitting a patch! See HttpMonitor for an example.";
+        return PollStatus.getPollStatus(checkStatus(iface, parameters, pkg), reason);
     }
 }
