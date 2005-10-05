@@ -62,7 +62,7 @@ public class MockMonitor implements ServiceMonitor {
     public void initialize(PollerConfig config, Map parameters) {
     }
 
-    public int checkStatus(NetworkInterface iface, Map parameters, Package pkg) {
+    public PollStatus poll(NetworkInterface iface, Map parameters, Package pkg) {
         synchronized(m_network) {
             String ipAddr = ((InetAddress) iface.getAddress()).getHostAddress();
             int nodeId = m_network.getNodeIdForInterface(ipAddr);
@@ -73,7 +73,7 @@ public class MockMonitor implements ServiceMonitor {
                 throw new RuntimeException("Invalid poll "+ipAddr+" is not part of the package");
             } else {
                 MockUtil.println("Poll: [" + svc.getInterface().getNode().getLabel() + "/" + ipAddr + "/" + m_svcName + "]");
-                return svc.poll(pkg);
+                return PollStatus.getPollStatus(svc.poll(pkg), "Test status for "+svc);
             }
         }
     }
@@ -82,10 +82,6 @@ public class MockMonitor implements ServiceMonitor {
     }
 
     public void release(NetworkInterface iface) {
-    }
-
-    public PollStatus poll(NetworkInterface iface, Map parameters, Package pkg) {
-        return PollStatus.getPollStatus(checkStatus(iface, parameters, pkg), null);
     }
 
 }

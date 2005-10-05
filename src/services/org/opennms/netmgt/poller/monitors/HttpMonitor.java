@@ -67,6 +67,7 @@ import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.poller.NetworkInterface;
 import org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException;
 import org.opennms.netmgt.poller.ServiceMonitor;
+import org.opennms.netmgt.poller.pollables.PollStatus;
 import org.opennms.netmgt.utils.ParameterMap;
 
 /**
@@ -119,7 +120,7 @@ final public class HttpMonitor extends IPv4LatencyMonitor {
      * @return The availibility of the interface and if a transition event should be supressed.
      *  
      */
-    public int checkStatus(NetworkInterface iface, Map parameters, org.opennms.netmgt.config.poller.Package pkg) {
+    public PollStatus poll(NetworkInterface iface, Map parameters, org.opennms.netmgt.config.poller.Package pkg) {
         
         //
         // Get interface address from NetworkInterface
@@ -137,6 +138,7 @@ final public class HttpMonitor extends IPv4LatencyMonitor {
         // Cycle through the port list
         //
         int serviceStatus = ServiceMonitor.SERVICE_UNAVAILABLE;
+        String reason = null;
         int currentPort = -1;
         long responseTime = -1;
         for (int portIndex = 0; portIndex < getPorts(parameters).length && serviceStatus != ServiceMonitor.SERVICE_AVAILABLE; portIndex++) {
@@ -202,7 +204,7 @@ final public class HttpMonitor extends IPv4LatencyMonitor {
                             sb.append(". Expecting: ");
                             sb.append(getResponse(parameters));
                             sb.append(".");
-                            m_reason = sb.toString();
+                            reason = sb.toString();
                         }
                     }
 
@@ -246,31 +248,31 @@ final public class HttpMonitor extends IPv4LatencyMonitor {
                         //
                         if (!bResponseTextFound) {
                             serviceStatus = ServiceMonitor.SERVICE_UNAVAILABLE;
-                            m_reason = "Matching text: ["+getResponseText(parameters)+"] not found in body of HTTP response";
+                            reason = "Matching text: ["+getResponseText(parameters)+"] not found in body of HTTP response";
                         }
                     }
                 } catch (NoRouteToHostException e) {
                     e.fillInStackTrace();
                     log().info("checkStatus: No route to host exception for address " + getIpv4Addr(iface), e);
                     portIndex = getPorts(parameters).length; // Will cause outer for(;;) to terminate
-                    m_reason = "No route to host exception";
+                    reason = "No route to host exception";
                     break; // Break out of inner for(;;)
                 } catch (InterruptedIOException e) {
                     // Ignore
                     log().info("checkStatus: did not connect to host within timeout: " + getTimeout(parameters) + " attempt: " + attempts);
-                    m_reason = "HTTP connection timeout";
+                    reason = "HTTP connection timeout";
                 } catch (ConnectException e) {
                     // Connection Refused. Continue to retry.
                     //
                     e.fillInStackTrace();
                     log().warn("Connection exception for " + getIpv4Addr(iface) + ":" + getPorts(parameters)[portIndex]);
-                    m_reason = "HTTP connection exception on port: "+getPorts(parameters)[portIndex];
+                    reason = "HTTP connection exception on port: "+getPorts(parameters)[portIndex];
                 } catch (IOException e) {
                     // Ignore
                     //
                     e.fillInStackTrace();
                     log().warn("IOException while polling address " + getIpv4Addr(iface), e);
-                    m_reason = "IOException while polling address: "+getIpv4Addr(iface);
+                    reason = "IOException while polling address: "+getIpv4Addr(iface);
                 } finally {
                     try {
                         // Close the socket
@@ -303,8 +305,8 @@ final public class HttpMonitor extends IPv4LatencyMonitor {
 
             // Add to parameter map
             parameters.put("qualifier", testedPorts.toString());
-            m_reason += "/Ports: "+testedPorts.toString();
-            log().debug("checkStatus: Reason: \""+m_reason+"\"");
+            reason += "/Ports: "+testedPorts.toString();
+            log().debug("checkStatus: Reason: \""+reason+"\"");
         } else if (serviceStatus == ServiceMonitor.SERVICE_AVAILABLE) {
             parameters.put("qualifier", Integer.toString(currentPort));
 
@@ -321,7 +323,7 @@ final public class HttpMonitor extends IPv4LatencyMonitor {
         //
         // return the status of the service
         //
-        return serviceStatus;
+        return PollStatus.getPollStatus(serviceStatus, reason);
     }
 
     private boolean isVerbose(Map parameters) {

@@ -133,7 +133,8 @@ public class PollablesTest extends TestCase {
         }
 
         public PollStatus poll() {
-            return PollStatus.getPollStatus(m_monitor.checkStatus(m_service.getNetInterface(), m_properties, m_package));
+            PollStatus s = m_monitor.poll(m_service.getNetInterface(), m_properties, m_package);
+            return PollStatus.getPollStatus(s.getStatusCode(), s.getReason());
         }
         
         

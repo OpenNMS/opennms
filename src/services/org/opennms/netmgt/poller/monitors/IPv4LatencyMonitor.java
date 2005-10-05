@@ -47,11 +47,8 @@ import org.apache.log4j.Category;
 import org.apache.log4j.Priority;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.PollerConfig;
-import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.poller.NetworkInterface;
 import org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException;
-import org.opennms.netmgt.poller.ServiceMonitor;
-import org.opennms.netmgt.poller.pollables.PollStatus;
 import org.opennms.netmgt.rrd.RrdException;
 import org.opennms.netmgt.rrd.RrdUtils;
 
@@ -69,7 +66,7 @@ import org.opennms.netmgt.rrd.RrdUtils;
  * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
  *
  */
-abstract public class IPv4LatencyMonitor implements ServiceMonitor {
+abstract public class IPv4LatencyMonitor extends IPv4Monitor {
     /**
      * RRD data source name which doubles as the RRD file name.
      */
@@ -266,13 +263,6 @@ abstract public class IPv4LatencyMonitor implements ServiceMonitor {
                 throw new RuntimeException(msg, e);
             }
         }
-    }
-
-    protected String m_reason = null;
-    public PollStatus poll(NetworkInterface iface, Map parameters, Package pkg) {
-        //FIXME: make sure that we create a NEW status constant or call a getPollStatus that takes a reason
-        PollStatus pollStatus = PollStatus.getPollStatus(checkStatus(iface, parameters, pkg), m_reason);
-        return pollStatus;
     }
 
 }

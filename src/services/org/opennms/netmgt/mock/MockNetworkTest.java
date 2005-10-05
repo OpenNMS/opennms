@@ -52,6 +52,7 @@ import org.opennms.netmgt.poller.IPv4NetworkInterface;
 import org.opennms.netmgt.poller.IfKey;
 import org.opennms.netmgt.poller.QueryManager;
 import org.opennms.netmgt.poller.ServiceMonitor;
+import org.opennms.netmgt.poller.pollables.PollStatus;
 import org.opennms.netmgt.xml.event.Event;
 
 /**
@@ -132,11 +133,11 @@ public class MockNetworkTest extends TestCase {
     }
 
     class StatusChecker extends MockVisitorAdapter {
-        int m_expectedStatus;
+        PollStatus m_expectedStatus;
 
         int m_serviceCount = 0;
 
-        public StatusChecker(int status) {
+        public StatusChecker(PollStatus status) {
             m_expectedStatus = status;
         }
 
@@ -148,7 +149,7 @@ public class MockNetworkTest extends TestCase {
             m_serviceCount = 0;
         }
 
-        public void setExpectedStatus(int status) {
+        public void setExpectedStatus(PollStatus status) {
             m_expectedStatus = status;
         }
 
@@ -157,7 +158,7 @@ public class MockNetworkTest extends TestCase {
                 m_serviceCount++;
                 IPv4NetworkInterface addr = new MockNetworkInterface(service.getInterface().getIpAddr());
                 ServiceMonitor monitor = m_pollerConfig.getServiceMonitor(service.getName());
-                int pollResult = monitor.checkStatus(addr, new HashMap(), m_pollerConfig.getPackage("TestPackage"));
+                PollStatus pollResult = monitor.poll(addr, new HashMap(), m_pollerConfig.getPackage("TestPackage"));
                 assertEquals(m_expectedStatus, pollResult);
             } catch (UnknownHostException e) {
                 throw new RuntimeException("Unknownhost ", e);
@@ -210,8 +211,8 @@ public class MockNetworkTest extends TestCase {
         m_pollerConfig.populatePackage(m_network);
         m_pollerConfig.setPollInterval("ICMP", 500L);
         
-        m_upChecker = new StatusChecker(ServiceMonitor.SERVICE_AVAILABLE);
-        m_downChecker = new StatusChecker(ServiceMonitor.SERVICE_UNAVAILABLE);
+        m_upChecker = new StatusChecker(PollStatus.STATUS_UP);
+        m_downChecker = new StatusChecker(PollStatus.STATUS_DOWN);
 
     }
 
@@ -249,8 +250,6 @@ public class MockNetworkTest extends TestCase {
 
     public void testCreateServices() {
 
-        MockNode router = m_network.getNode(1);
-        MockNode server = m_network.getNode(2);
         MockInterface rtrIface = m_network.getInterface(1, "192.168.1.2");
         MockInterface svrIface = m_network.getInterface(2, "192.168.1.3");
         MockService icmpSvc = m_network.getService(1, "192.168.1.2", "ICMP");
@@ -381,7 +380,7 @@ public class MockNetworkTest extends TestCase {
         IPv4NetworkInterface addr = new MockNetworkInterface("1.1.1.1");
         ServiceMonitor monitor = m_pollerConfig.getServiceMonitor("ICMP");
         try {
-            monitor.checkStatus(addr, new HashMap(), m_pollerConfig.getPackage("TestPackage"));
+            monitor.poll(addr, new HashMap(), m_pollerConfig.getPackage("TestPackage"));
             fail("expected exception");
         } catch (Exception e) {
             // expected this
@@ -472,8 +471,6 @@ public class MockNetworkTest extends TestCase {
 
         assertTrue(queryManager.activeServiceExists("Test", 1, "192.168.1.1", "ICMP"));
         assertFalse(queryManager.activeServiceExists("Test", 1, "192.168.1.17", "ICMP"));
-
-        MockService service = m_network.getService(1, "192.168.1.1", "SMTP");
 
         MockInterface iface = m_network.getInterface(1, "192.168.1.2");
         Collection expectedSvcs = iface.getServices();

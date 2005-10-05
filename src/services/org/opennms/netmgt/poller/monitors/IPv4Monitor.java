@@ -169,10 +169,14 @@ abstract public class IPv4Monitor implements ServiceMonitor {
         return;
     }
     
-    protected String m_reason = null;
+    /**
+     * @deprecated implement poll instead and provide a reason in your status
+     */
+    public int checkStatus(NetworkInterface iface, Map parameters, Package pkg) {
+        return ServiceMonitor.SERVICE_UNKNOWN;
+    }
+    
     public PollStatus poll(NetworkInterface iface, Map parameters, Package pkg) {
-        //FIXME: make sure that we create a NEW status constant or call a getPollStatus that takes a reason
-        PollStatus pollStatus = PollStatus.getPollStatus(checkStatus(iface, parameters, pkg), m_reason);
-        return pollStatus;
+        return PollStatus.getPollStatus(checkStatus(iface, parameters, pkg));
     }
 }
