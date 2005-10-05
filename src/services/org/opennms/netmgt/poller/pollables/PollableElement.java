@@ -84,7 +84,7 @@ abstract public class PollableElement {
         m_statusChanged = statusChanged;
     }
     public void updateStatus(PollStatus newStatus) {
-        if (getStatus() != newStatus) {
+        if (!getStatus().equals(newStatus)) {
             
             ThreadCategory.getInstance(getClass()).info("Changing status of PollableElement "+this+" from "+getStatus()+" to "+newStatus);
             setStatus(newStatus);

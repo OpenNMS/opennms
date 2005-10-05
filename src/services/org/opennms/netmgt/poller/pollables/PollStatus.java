@@ -95,14 +95,9 @@ public class PollStatus {
         m_reason = reason;
     }
     
-    public boolean equals(PollStatus status) {
-        if (m_statusCode == status.getStatusCode()) {
-            if (m_statusName.equals(status.getStatusName())) {
-                //funky to avoid null pointer exception
-                if (m_reason == null && status.getReason() == null || (m_reason != null && status.getReason() != null && m_reason.equals(status.getReason()))) {
-                    return true;
-                }
-            }
+    public boolean equals(Object o) {
+        if (o instanceof PollStatus) {
+            return m_statusCode == ((PollStatus)o).m_statusCode;
         }
         return false;
     }
@@ -112,7 +107,7 @@ public class PollStatus {
     }
     
     public boolean isDown() {
-        return this == STATUS_DOWN;
+        return this.equals(STATUS_DOWN);
     }
     
     public String toString() {

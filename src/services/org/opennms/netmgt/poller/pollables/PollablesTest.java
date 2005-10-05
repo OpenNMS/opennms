@@ -882,6 +882,16 @@ public class PollablesTest extends TestCase {
         
     }
     
+    public void testNoEventsOnNoOutages() throws Exception {
+        
+        // poll expecting no events
+        pDot1Smtp.doPoll();
+        m_network.processStatusChange(new Date());
+
+        verifyAnticipated();
+
+    }
+    
     
     public void testPollService() throws Exception {
 

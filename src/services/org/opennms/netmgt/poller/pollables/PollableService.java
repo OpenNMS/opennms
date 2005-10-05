@@ -202,7 +202,7 @@ public class PollableService extends PollableElement implements ReadyRunnable {
 
     public void processStatusChange(Date date) {
         if (getContext().isServiceUnresponsiveEnabled()) {
-            if (isStatusChanged() && getStatus() == PollStatus.STATUS_UNRESPONSIVE) {
+            if (isStatusChanged() && getStatus().equals(PollStatus.STATUS_UNRESPONSIVE)) {
                 getContext().sendEvent(createUnresponsiveEvent(date));
                 // FIXME: use equals here rather than ==
                 if (m_oldStatus.equals(PollStatus.STATUS_UP))
@@ -222,13 +222,12 @@ public class PollableService extends PollableElement implements ReadyRunnable {
     public void updateStatus(PollStatus newStatus) {
         
         if (!getContext().isServiceUnresponsiveEnabled()) {
-            // FIXME: use equals here rather than ==
             if (newStatus.equals(PollStatus.STATUS_UNRESPONSIVE))
                 newStatus = PollStatus.STATUS_DOWN;
         }
         
         PollStatus currentStatus = getStatus();
-        if (currentStatus != newStatus) {
+        if (!currentStatus.equals(newStatus)) {
             m_oldStatus = getStatus();
             setStatusChangeTime(m_pollConfig.getCurrentTime());
         }
@@ -236,7 +235,7 @@ public class PollableService extends PollableElement implements ReadyRunnable {
         
         super.updateStatus(newStatus);
         
-        if (currentStatus != newStatus) {
+        if (!currentStatus.equals(newStatus)) {
             getSchedule().adjustSchedule();
         }
     }

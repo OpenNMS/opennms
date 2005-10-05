@@ -85,7 +85,7 @@ public class MockMonitor implements ServiceMonitor {
     }
 
     public PollStatus poll(NetworkInterface iface, Map parameters, Package pkg) {
-        return PollStatus.getPollStatus(checkStatus(iface, parameters, pkg));
+        return PollStatus.getPollStatus(checkStatus(iface, parameters, pkg), null);
     }
 
 }

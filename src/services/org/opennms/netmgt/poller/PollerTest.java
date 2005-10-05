@@ -37,6 +37,7 @@ import java.io.StringReader;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.Date;
 
 import junit.framework.TestCase;
 
@@ -528,8 +529,17 @@ public class PollerTest extends TestCase {
         
         verifyAnticipated(8000);
     }
+ 
+    public void testNoEventsOnNoOutages() throws Exception {
+        
+        testElementDownUp(m_network.getService(1, "192.168.1.1", "SMTP"));
+        
+        resetAnticipated();
+        verifyAnticipated(8000, true);
 
 
+    }
+    
     public void testPolling() throws Exception {
 
         m_pollerConfig.setNodeOutageProcessingEnabled(false);
