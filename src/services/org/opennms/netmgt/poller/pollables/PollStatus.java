@@ -68,28 +68,18 @@ public class PollStatus {
     }
 
     public static PollStatus getPollStatus(int status, String reason) {
-        String statusName = null;
-        
-        switch(status) {
-        case ServiceMonitor.SERVICE_AVAILABLE:
-            statusName = "Up";
-            break;
-        case ServiceMonitor.SERVICE_UNRESPONSIVE:
-            statusName = "Unresponsive";
-            break;
-        case ServiceMonitor.SERVICE_UNAVAILABLE:
-        default:
-            statusName = "Down";
-        }
-        return new PollStatus(status, statusName, reason);
-        
+        return new PollStatus(getPollStatus(status), reason);
+    }
+    
+    private PollStatus(PollStatus s, String reason) {
+        this(s.getStatusCode(), s.getStatusName(), reason);
     }
 
     private PollStatus(int statusCode, String statusName) {
         this(statusCode, statusName, null);
     }
     
-    public PollStatus(int statusCode, String statusName, String reason) {
+    private PollStatus(int statusCode, String statusName, String reason) {
         m_statusCode = statusCode;
         m_statusName = statusName;
         m_reason = reason;
