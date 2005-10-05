@@ -34,7 +34,7 @@ package org.opennms.netmgt.mock;
 
 import java.util.Date;
 
-import org.opennms.netmgt.poller.ServiceMonitor;
+import org.opennms.netmgt.poller.pollables.PollStatus;
 import org.opennms.netmgt.xml.event.Event;
 
 /**
@@ -56,17 +56,17 @@ abstract public class MockElement {
 
     // test
     public void bringDown() {
-        setServicePollStatus(ServiceMonitor.SERVICE_UNAVAILABLE);
+        setServicePollStatus(PollStatus.STATUS_DOWN);
     }
 
     // test
     public void bringUp() {
-        setServicePollStatus(ServiceMonitor.SERVICE_AVAILABLE);
+        setServicePollStatus(PollStatus.STATUS_UP);
     }
     
     // test
     public void bringUnresponsive() {
-        setServicePollStatus(ServiceMonitor.SERVICE_UNRESPONSIVE);
+        setServicePollStatus(PollStatus.STATUS_UNRESPONSIVE);
     }
 
     // impl
@@ -90,7 +90,7 @@ abstract public class MockElement {
     abstract public int getPollCount();
 
     // test
-    abstract public int getPollStatus();
+    abstract public PollStatus getPollStatus();
 
     // model
     public void moveTo(MockContainer newParent) {
@@ -110,7 +110,7 @@ abstract public class MockElement {
     }
 
     // test
-    private void setServicePollStatus(final int newStatus) {
+    private void setServicePollStatus(final PollStatus newStatus) {
         MockVisitor statusSetter = new MockVisitorAdapter() {
             public void visitService(MockService svc) {
                 svc.setPollStatus(newStatus);

@@ -452,17 +452,17 @@ public class MockNetworkTest extends TestCase {
     public void testPollStatus() {
         MockNode node = m_network.getNode(1);
         MockInterface iface = m_network.getInterface(1, "192.168.1.2");
-        assertEquals(ServiceMonitor.SERVICE_AVAILABLE, node.getPollStatus());
-        assertEquals(ServiceMonitor.SERVICE_AVAILABLE, iface.getPollStatus());
+        assertEquals(PollStatus.STATUS_UP, node.getPollStatus());
+        assertEquals(PollStatus.STATUS_UP, iface.getPollStatus());
         node.bringDown();
-        assertEquals(ServiceMonitor.SERVICE_UNAVAILABLE, node.getPollStatus());
-        assertEquals(ServiceMonitor.SERVICE_UNAVAILABLE, iface.getPollStatus());
+        assertEquals(PollStatus.STATUS_DOWN, node.getPollStatus());
+        assertEquals(PollStatus.STATUS_DOWN, iface.getPollStatus());
         iface.bringUp();
-        assertEquals(ServiceMonitor.SERVICE_AVAILABLE, node.getPollStatus());
-        assertEquals(ServiceMonitor.SERVICE_AVAILABLE, iface.getPollStatus());
+        assertEquals(PollStatus.STATUS_UP, node.getPollStatus());
+        assertEquals(PollStatus.STATUS_UP, iface.getPollStatus());
         node.bringUp();
-        assertEquals(ServiceMonitor.SERVICE_AVAILABLE, node.getPollStatus());
-        assertEquals(ServiceMonitor.SERVICE_AVAILABLE, iface.getPollStatus());
+        assertEquals(PollStatus.STATUS_UP, node.getPollStatus());
+        assertEquals(PollStatus.STATUS_UP, iface.getPollStatus());
     }
 
     public void testQueryManager() throws Exception {

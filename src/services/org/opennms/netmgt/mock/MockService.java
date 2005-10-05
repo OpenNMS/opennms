@@ -41,6 +41,7 @@ import java.util.Set;
 
 import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.poller.ServiceMonitor;
+import org.opennms.netmgt.poller.pollables.PollStatus;
 import org.opennms.netmgt.xml.event.Event;
 
 /**
@@ -55,7 +56,7 @@ public class MockService extends MockElement {
     
     private Set m_pollingPkgNames = new HashSet();
 
-    private int m_pollStatus;
+    private PollStatus m_pollStatus;
 
     private int m_serviceId;
 
@@ -63,13 +64,11 @@ public class MockService extends MockElement {
 
     private List m_triggers = new ArrayList();
 
-    private Event m_outageEvent;
-
    public MockService(MockInterface iface, String svcName, int serviceId) {
         super(iface);
         m_svcName = svcName;
         m_serviceId = serviceId;
-        m_pollStatus = ServiceMonitor.SERVICE_AVAILABLE;
+        m_pollStatus = PollStatus.STATUS_UP;
         m_pollCount = 0;
 
     }
@@ -134,12 +133,12 @@ public class MockService extends MockElement {
     }
 
     // test
-    public int getPollStatus() {
+    public PollStatus getPollStatus() {
         return m_pollStatus;
     }
 
     // test
-    public int poll(Package pkg) {
+    public PollStatus poll(Package pkg) {
         m_pollCount++;
         m_pollingPkgNames.add(pkg.getName());
         
@@ -164,7 +163,7 @@ public class MockService extends MockElement {
     }
 
     //  test
-    public void setPollStatus(int status) {
+    public void setPollStatus(PollStatus status) {
         m_pollStatus = status;
     }
 
@@ -190,13 +189,6 @@ public class MockService extends MockElement {
      */
     public Event createUpEvent() {
         return MockUtil.createNodeRegainedServiceEvent("Test", this);
-    }
-
-    /**
-     * @param outageOpened
-     */
-    public void setOutageEvent(Event outageOpened) {
-        m_outageEvent = outageOpened;
     }
 
     /**

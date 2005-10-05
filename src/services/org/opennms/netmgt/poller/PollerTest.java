@@ -37,7 +37,6 @@ import java.io.StringReader;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.util.Date;
 
 import junit.framework.TestCase;
 
@@ -62,6 +61,7 @@ import org.opennms.netmgt.mock.MockVisitor;
 import org.opennms.netmgt.mock.MockVisitorAdapter;
 import org.opennms.netmgt.mock.OutageAnticipator;
 import org.opennms.netmgt.mock.PollAnticipator;
+import org.opennms.netmgt.poller.pollables.PollStatus;
 import org.opennms.netmgt.utils.Querier;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xmlrpcd.OpenNMSProvisioner;
@@ -816,7 +816,7 @@ public class PollerTest extends TestCase {
     }
     
     private void anticipateUp(MockElement element, boolean force) {
-        if (force || element.getPollStatus() != ServiceMonitor.SERVICE_AVAILABLE) {
+        if (force || !element.getPollStatus().equals(PollStatus.STATUS_UP)) {
             Event event = element.createUpEvent();
             m_anticipator.anticipateEvent(event);
             m_outageAnticipator.anticipateOutageClosed(element, event);
@@ -828,7 +828,7 @@ public class PollerTest extends TestCase {
     }
     
     private void anticipateDown(MockElement element, boolean force) {
-        if (force || element.getPollStatus() != ServiceMonitor.SERVICE_UNAVAILABLE) {
+        if (force || !element.getPollStatus().equals(PollStatus.STATUS_DOWN)) {
             Event event = element.createDownEvent();
             m_anticipator.anticipateEvent(event);
             m_outageAnticipator.anticipateOutageOpened(element, event);

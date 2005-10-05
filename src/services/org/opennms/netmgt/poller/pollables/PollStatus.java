@@ -71,6 +71,10 @@ public class PollStatus {
         return new PollStatus(getPollStatus(status), reason);
     }
     
+    public static PollStatus getPollStatus(PollStatus status, String reason) {
+        return new PollStatus(status, reason);
+    }
+    
     private PollStatus(PollStatus s, String reason) {
         this(s.getStatusCode(), s.getStatusName(), reason);
     }

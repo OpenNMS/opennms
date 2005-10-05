@@ -38,7 +38,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.opennms.netmgt.poller.ServiceMonitor;
+import org.opennms.netmgt.poller.pollables.PollStatus;
 
 /**
  * @author brozow
@@ -101,14 +101,14 @@ abstract public class MockContainer extends MockElement {
     }
 
     // FIXME: where should this live?
-    public int getPollStatus() {
+    public PollStatus getPollStatus() {
         Iterator it = m_members.values().iterator();
         while (it.hasNext()) {
             MockElement element = (MockElement) it.next();
-            if (element.getPollStatus() == ServiceMonitor.SERVICE_AVAILABLE)
-                return ServiceMonitor.SERVICE_AVAILABLE;
+            if (element.getPollStatus().isUp())
+                return PollStatus.STATUS_UP;
         }
-        return ServiceMonitor.SERVICE_UNAVAILABLE;
+        return PollStatus.STATUS_DOWN;
     }
 
     // FIXME: make a generic poll listener

@@ -34,7 +34,7 @@ package org.opennms.netmgt.mock;
 
 import java.util.List;
 
-import org.opennms.netmgt.poller.ServiceMonitor;
+import org.opennms.netmgt.poller.pollables.PollStatus;
 import org.opennms.netmgt.xml.event.Event;
 
 /**
@@ -89,20 +89,20 @@ public class MockInterface extends MockContainer {
     }
 
     // FIXME: model?
-    public int getPollStatus() {
+    public PollStatus getPollStatus() {
         final String critSvcName = getNetwork().getCriticalService();
         final MockService critSvc = getService(critSvcName);
         class IFStatusCalculator extends MockVisitorAdapter {
-            int status = ServiceMonitor.SERVICE_UNAVAILABLE;
+            PollStatus status = PollStatus.STATUS_DOWN;
 
-            public int getStatus() {
+            public PollStatus getStatus() {
                 return status;
             }
 
             public void visitService(MockService svc) {
                 if (critSvc == null || critSvc.equals(svc)) {
-                    if (svc.getPollStatus() == ServiceMonitor.SERVICE_AVAILABLE)
-                        status = ServiceMonitor.SERVICE_AVAILABLE;
+                    if (svc.getPollStatus().isUp())
+                        status = PollStatus.STATUS_UP;
                 }
             }
 
