@@ -89,7 +89,7 @@ public class MockQueryManager implements QueryManager {
 
             public void visitService(MockService s) {
 
-                if (s.getName().equals(svcName)) {
+                if (s.getSvcName().equals(svcName)) {
                     int nodeId = s.getInterface().getNode().getNodeId();
                     String ipAddr = s.getInterface().getIpAddr();
                     ifKeys.add(new IfKey(nodeId, ipAddr));

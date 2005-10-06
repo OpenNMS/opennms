@@ -32,6 +32,8 @@
 
 package org.opennms.netmgt.mock;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.List;
 
 import org.opennms.netmgt.poller.pollables.PollStatus;
@@ -45,12 +47,19 @@ import org.opennms.netmgt.xml.event.Event;
  */
 public class MockInterface extends MockContainer {
 
-    String m_ipAddr;
+    private String m_ipAddr;
 	private String m_ifAlias;
+    private InetAddress m_inetAddr;
+    
 
     public MockInterface(MockNode node, String ipAddr) {
         super(node);
         m_ipAddr = ipAddr;
+        try {
+            m_inetAddr = InetAddress.getByName(ipAddr);
+        } catch (UnknownHostException e) {
+            throw new IllegalArgumentException("unable to convert "+ipAddr+" to an InetAddress: "+e.getMessage());
+        }
     }
 
     // model
@@ -168,6 +177,10 @@ public class MockInterface extends MockContainer {
      */
     public String getIfAlias() {
         return m_ifAlias;
+    }
+
+    public InetAddress getAddress() {
+        return m_inetAddr;
     }
     
 

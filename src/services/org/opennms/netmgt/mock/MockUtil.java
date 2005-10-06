@@ -110,7 +110,7 @@ public class MockUtil {
     }
     
     public static Event createServiceEvent(String source, String uei, MockService svc, String reason) {
-        return createEvent(source, uei, svc.getNodeId(), svc.getIpAddr(), svc.getName(), reason);
+        return createEvent(source, uei, svc.getNodeId(), svc.getIpAddr(), svc.getSvcName(), reason);
     }
     
     public static Event createInterfaceDownEvent(String source, MockInterface iface) {

@@ -119,7 +119,7 @@ public class MockDatabaseTest extends TestCase {
                 assertNotNull(svc);
                 assertEquals(svc.getNodeId(), nodeId);
                 assertEquals(svc.getIpAddr(), ipAddr);
-                assertEquals(svc.getName(), serviceName);
+                assertEquals(svc.getSvcName(), serviceName);
                 assertEquals(svc.getId(), serviceId);
                 assertEquals("A", status);
             }

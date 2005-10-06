@@ -49,6 +49,7 @@ import net.sourceforge.jradiusclient.util.ChapUtil;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.NetworkInterface;
 import org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException;
 import org.opennms.netmgt.utils.ParameterMap;
@@ -124,9 +125,6 @@ final public class RadiusAuthMonitor extends IPv4LatencyMonitor {
      * authentication Request actually succeeds. A failed authentication 
      * request will result in SERVICE_UNAVILABLE, although the radius 
      * server may actually be up. 
-     *
-     * @param iface
-     *            The interface to poll
      * @param parameters
      *            Parameters to pass when polling the interface Currently
      *            recognized Map keys:
@@ -141,6 +139,9 @@ final public class RadiusAuthMonitor extends IPv4LatencyMonitor {
      *            <li>authport - port to poll for radius authentication
      *            <li>acctport - radius accounting port - used by
      *            </ul>
+     * @param iface
+     *            The interface to poll
+     *
      * @return int An status code that shows the status of the service
      *
      * @see org.opennms.netmgt.poller.ServiceMonitor#SURPRESS_EVENT_MASK
@@ -149,7 +150,9 @@ final public class RadiusAuthMonitor extends IPv4LatencyMonitor {
      * @see org.opennms.netmgt.poller.ServiceMonitor#SERVICE_UNRESPONSIVE
      *
      */
-    public int checkStatus(NetworkInterface iface, Map parameters, org.opennms.netmgt.config.poller.Package pkg) {
+    public int checkStatus(MonitoredService svc, Map parameters, org.opennms.netmgt.config.poller.Package pkg) {
+        NetworkInterface iface = svc.getNetInterface();
+
         Category log = ThreadCategory.getInstance(getClass());
 
         // Asume that the service is down

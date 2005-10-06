@@ -52,6 +52,7 @@ import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.DBTools;
 import org.opennms.netmgt.config.PollerConfig;
+import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.NetworkInterface;
 import org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException;
 import org.opennms.netmgt.utils.ParameterMap;
@@ -127,23 +128,19 @@ final public class JDBCMonitor extends IPv4LatencyMonitor {
      * This method is called when an interface that support the service is added
      * to the scheduling service.
      * 
-     * @param iface
-     *            The network interface to poll
      * @throws java.lang.RuntimeException
      *             Thrown if an unrecoverable error occurs that prevents the
      *             interface from being monitored.
      * @throws org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException
      *             Thrown if the passed interface is invalid for this monitor.
      */
-    public void initialize(NetworkInterface iface) {
+    public void initialize(MonitoredService svc) {
+
+        super.initialize(svc);
         Category log = ThreadCategory.getInstance(getClass());
-        if (!(iface.getAddress() instanceof InetAddress)) {
-            throw new NetworkInterfaceNotSupportedException(getClass().getName() + ": Address type not supported");
-        }
         if (log.isDebugEnabled()) {
             log.debug(getClass().getName() + ": initialize");
         }
-        return;
     }
 
     /**
@@ -151,14 +148,11 @@ final public class JDBCMonitor extends IPv4LatencyMonitor {
      * This method is the called whenever an interface is being removed from the
      * scheduler. For now this method is just an 'adaptor', does nothing
      * 
-     * @param iface
-     *            The network interface that was being monitored.
-     * 
      * @throws java.lang.RuntimeException
      *             Thrown if an unrecoverable error occurs that prevents the
      *             interface from being monitored.
      */
-    public void release(NetworkInterface iface) {
+    public void release(MonitoredService svc) {
         Category log = ThreadCategory.getInstance(getClass());
         if (log.isDebugEnabled()) {
             log.debug(getClass().getName() + ": Shuting down plugin");
@@ -172,9 +166,6 @@ final public class JDBCMonitor extends IPv4LatencyMonitor {
      * href="http://www.sybase.com/detail_list/1,6902,2912,00.html">JConnect
      * version </a> or the plugin will not be able to tell exactly if the
      * service is up or not.
-     * 
-     * @param iface
-     *            The interface to poll
      * @param parameters
      *            Parameters to pass when polling the interface Currently
      *            recognized Map keys:
@@ -187,6 +178,9 @@ final public class JDBCMonitor extends IPv4LatencyMonitor {
      *            <li>driver - The JDBC driver to use
      *            <li>url - The vendor specific jdbc URL
      *            </ul>
+     * @param iface
+     *            The interface to poll
+     * 
      * @return int An status code that shows the status of the service
      * @throws java.lang.RuntimeException
      *             Thrown if an unrecoverable error occurs that prevents the
@@ -199,7 +193,9 @@ final public class JDBCMonitor extends IPv4LatencyMonitor {
      *      href="http://manuals.sybase.com/onlinebooks/group-jc/jcg0550e/prjdbc/@Generic__BookTextView/9332;pt=1016#X">Error
      *      codes for JConnect </a>
      */
-    public int checkStatus(NetworkInterface iface, Map parameters, org.opennms.netmgt.config.poller.Package pkg) {
+    public int checkStatus(MonitoredService svc, Map parameters, org.opennms.netmgt.config.poller.Package pkg) {
+        NetworkInterface iface = svc.getNetInterface();
+
         Category log = ThreadCategory.getInstance(getClass());
 
         // Asume that the service is down

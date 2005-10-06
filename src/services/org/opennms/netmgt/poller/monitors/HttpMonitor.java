@@ -65,6 +65,7 @@ import org.apache.log4j.Category;
 import org.opennms.core.utils.Base64;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.SnmpPeerFactory;
+import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.NetworkInterface;
 import org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException;
 import org.opennms.netmgt.poller.ServiceMonitor;
@@ -112,17 +113,15 @@ public class HttpMonitor extends IPv4LatencyMonitor {
      * sent to the interface. The response is parsed and a return code extracted and verified.
      * Provided that the interface's response is valid we set the service status to
      * SERVICE_AVAILABLE and return.
-     * 
-     * @param iface
-     *            The network interface to test the service on.
      * @param parameters
      *            The package parameters (timeout, retry, and others) to be used for this poll.
      * 
      * @return The availibility of the interface and if a transition event should be supressed.
      *  
      */
-    public PollStatus poll(NetworkInterface iface, Map parameters, org.opennms.netmgt.config.poller.Package pkg) {
-        
+    public PollStatus poll(MonitoredService svc, Map parameters, org.opennms.netmgt.config.poller.Package pkg) {
+        NetworkInterface iface = svc.getNetInterface();
+
         //
         // Get interface address from NetworkInterface
         //

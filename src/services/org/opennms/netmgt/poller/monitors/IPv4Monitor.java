@@ -43,6 +43,7 @@ import java.util.Map;
 
 import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.config.poller.Package;
+import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.NetworkInterface;
 import org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException;
 import org.opennms.netmgt.poller.ServiceMonitor;
@@ -126,9 +127,6 @@ abstract public class IPv4Monitor implements ServiceMonitor {
      * scheduling.
      * </P>
      * 
-     * @param iface
-     *            The network interface to be added to the scheduler.
-     * 
      * @exception java.lang.RuntimeException
      *                Thrown if an unrecoverable error occurs that prevents the
      *                interface from being monitored.
@@ -138,7 +136,9 @@ abstract public class IPv4Monitor implements ServiceMonitor {
      *                monitor.
      * 
      */
-    public void initialize(NetworkInterface iface) {
+    public void initialize(MonitoredService svc) {
+        NetworkInterface iface = svc.getNetInterface();
+
         if (!(iface.getAddress() instanceof InetAddress))
             throw new NetworkInterfaceNotSupportedException("Address type not supported");
         return;
@@ -158,26 +158,24 @@ abstract public class IPv4Monitor implements ServiceMonitor {
      * logged, but the interface will still be discarded for garbage collection.
      * </P>
      * 
-     * @param iface
-     *            The network interface that was being monitored.
-     * 
      * @exception java.lang.RuntimeException
      *                Thrown if an unrecoverable error occurs that prevents the
      *                interface from being monitored.
      */
-    public void release(NetworkInterface iface) {
+    public void release(MonitoredService svc) {
         return;
     }
     
     /**
+     * @param svc TODO
      * @deprecated implement poll instead and provide a reason in your status
      */
-    public int checkStatus(NetworkInterface iface, Map parameters, Package pkg) {
+    public int checkStatus(MonitoredService svc, Map parameters, Package pkg) {
         return ServiceMonitor.SERVICE_UNKNOWN;
     }
     
-    public PollStatus poll(NetworkInterface iface, Map parameters, Package pkg) {
+    public PollStatus poll(MonitoredService svc, Map parameters, Package pkg) {
         String reason = "Reasons not yet supported by "+getClass().getName()+". Please help us by submitting a patch! See HttpMonitor for an example.";
-        return PollStatus.getPollStatus(checkStatus(iface, parameters, pkg), reason);
+        return PollStatus.getPollStatus(checkStatus(svc, parameters, pkg), reason);
     }
 }

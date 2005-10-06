@@ -181,9 +181,7 @@ public interface ServiceMonitor {
      * the framework will log an error and discard the interface from
      * scheduling.
      * </P>
-     * 
-     * @param iface
-     *            The network interface to be added to the scheduler.
+     * @param svc TODO
      * 
      * @exception java.lang.RuntimeException
      *                Thrown if an unrecoverable error occurs that prevents the
@@ -194,7 +192,7 @@ public interface ServiceMonitor {
      *                monitor.
      * 
      */
-    public void initialize(NetworkInterface iface);
+    public void initialize(MonitoredService svc);
 
     /**
      * <P>
@@ -209,15 +207,13 @@ public interface ServiceMonitor {
      * If an exception is thrown during the release the exception will be
      * logged, but the interface will still be discarded for garbage collection.
      * </P>
-     * 
-     * @param iface
-     *            The network interface that was being monitored.
+     * @param svc TODO
      * 
      * @exception java.lang.RuntimeException
      *                Thrown if an unrecoverable error occurs that prevents the
      *                interface from being monitored.
      */
-    public void release(NetworkInterface iface);
+    public void release(MonitoredService svc);
 
     /**
      * <P>
@@ -233,9 +229,7 @@ public interface ServiceMonitor {
      * additional down event. The plug-in can surpress the generation of the
      * default events by setting the surpress event bit in the returned integer.
      * </P>
-     * 
-     * @param iface
-     *            The network interface to test the service on.
+     * @param svc TODO
      * @param parameters
      *            The package parameters (timeout, retry, etc...) to be used for
      *            this poll.
@@ -251,5 +245,5 @@ public interface ServiceMonitor {
      * @see #SERVICE_AVAILABLE
      * @see #SERVICE_UNAVAILABLE
      */
-    public PollStatus poll(NetworkInterface iface, Map parameters, org.opennms.netmgt.config.poller.Package pkg);
+    public PollStatus poll(MonitoredService svc, Map parameters, org.opennms.netmgt.config.poller.Package pkg);
 }

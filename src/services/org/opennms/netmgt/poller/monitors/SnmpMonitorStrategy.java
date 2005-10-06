@@ -38,7 +38,7 @@ import java.util.Map;
 import java.util.regex.Pattern;
 
 import org.opennms.netmgt.config.poller.Package;
-import org.opennms.netmgt.poller.NetworkInterface;
+import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.snmp.SnmpValue;
 
 /**
@@ -64,7 +64,8 @@ abstract public class SnmpMonitorStrategy extends IPv4Monitor {
      */
     //private Category log = ThreadCategory.getInstance(getClass());
 
-    abstract public int checkStatus(NetworkInterface iface, Map parameters, Package pkg) ;
+    abstract public int checkStatus(MonitoredService svc, Map parameters, Package pkg) ;
+    
     
     /**
      * Verifies that the result of the SNMP query meets the criteria specified

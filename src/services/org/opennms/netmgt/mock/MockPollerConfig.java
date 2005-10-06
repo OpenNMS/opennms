@@ -176,7 +176,7 @@ public class MockPollerConfig extends PollOutagesConfigManager implements Poller
     }
 
     public void addService(MockService svc) {
-        addService(svc.getName(), m_defaultPollInterval, new MockMonitor(svc.getNetwork(), svc.getName()));
+        addService(svc.getSvcName(), m_defaultPollInterval, new MockMonitor(svc.getNetwork(), svc.getSvcName()));
         m_currentPkg.addSpecific(svc.getIpAddr());
     }
 

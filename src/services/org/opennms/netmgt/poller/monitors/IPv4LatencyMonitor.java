@@ -47,6 +47,7 @@ import org.apache.log4j.Category;
 import org.apache.log4j.Priority;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.PollerConfig;
+import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.NetworkInterface;
 import org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException;
 import org.opennms.netmgt.rrd.RrdException;
@@ -143,38 +144,6 @@ abstract public class IPv4LatencyMonitor extends IPv4Monitor {
 
     /**
      * <P>
-     * This method is called whenever a new interface that supports the plug-in
-     * service is added to the scheduling system. The plug-in has the option to
-     * load and/or associate configuration information with the interface before
-     * the framework begins scheduling the new device.
-     * </P>
-     * 
-     * <P>
-     * Should a monitor exception be thrown during an initialization call then
-     * the framework will log an error and discard the interface from
-     * scheduling.
-     * </P>
-     * 
-     * @param iface
-     *            The network interface to be added to the scheduler.
-     * 
-     * @exception java.lang.RuntimeException
-     *                Thrown if an unrecoverable error occurs that prevents the
-     *                interface from being monitored.
-     * @exception
-     *                org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException
-     *                Thrown if the passed interface is invalid for this
-     *                monitor.
-     * 
-     */
-    public void initialize(NetworkInterface iface) {
-        if (!(iface.getAddress() instanceof InetAddress))
-            throw new NetworkInterfaceNotSupportedException("Address type not supported");
-        return;
-    }
-
-    /**
-     * <P>
      * This method is the called whenever an interface is being removed from the
      * scheduler. For example, if a service is determined as being no longer
      * supported then this method will be invoked to cleanup any information
@@ -187,14 +156,11 @@ abstract public class IPv4LatencyMonitor extends IPv4Monitor {
      * logged, but the interface will still be discarded for garbage collection.
      * </P>
      * 
-     * @param iface
-     *            The network interface that was being monitored.
-     * 
      * @exception java.lang.RuntimeException
      *                Thrown if an unrecoverable error occurs that prevents the
      *                interface from being monitored.
      */
-    public void release(NetworkInterface iface) {
+    public void release(MonitoredService svc) {
         return;
     }
 

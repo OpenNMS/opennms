@@ -79,6 +79,10 @@ public class PollableInterface extends PollableContainer {
         return getNode().getNodeId();
     }
 
+    public String getNodeLabel() {
+        return getNode().getNodeLabel();
+    }
+
     public PollableService createService(final String svcName) {
         
         final PollableService[] retVal = new PollableService[1];
@@ -225,6 +229,7 @@ public class PollableInterface extends PollableContainer {
         firstNode.withTreeLock(lockSecondNodeAndRun);
         
     }
+
 
 
 }

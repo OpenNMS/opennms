@@ -54,6 +54,7 @@ import java.util.Map;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.NetworkInterface;
 import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.utils.ParameterMap;
@@ -123,12 +124,11 @@ final public class LdapMonitor extends IPv4Monitor {
      * 
      * Provided that the interface's response is valid we set the service status
      * to SERVICE_AVAILABLE and return.
-     * 
-     * @param iface
-     *            The network interface to test the service on.
      * @param parameters
      *            The package parameters (timeout, retry, etc...) to be used for
      *            this poll.
+     * @param iface
+     *            The network interface to test the service on.
      * 
      * @return The availibility of the interface and if a transition event
      *         should be supressed.
@@ -136,7 +136,9 @@ final public class LdapMonitor extends IPv4Monitor {
      * @throws java.lang.RuntimeException
      *             Thrown if the interface experiences errors during the poll.
      */
-    public int checkStatus(NetworkInterface iface, Map parameters, org.opennms.netmgt.config.poller.Package pkg) {
+    public int checkStatus(MonitoredService svc, Map parameters, org.opennms.netmgt.config.poller.Package pkg) {
+        NetworkInterface iface = svc.getNetInterface();
+
         Category log = ThreadCategory.getInstance(getClass());
         int serviceStatus = ServiceMonitor.SERVICE_UNAVAILABLE;
 

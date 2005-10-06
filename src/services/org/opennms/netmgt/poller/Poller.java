@@ -46,7 +46,6 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -313,7 +312,7 @@ public class Poller extends ServiceDaemon {
     private void scheduleExistingServices() throws Exception {
         Category log = ThreadCategory.getInstance(getClass());
         
-        int count = scheduleMatchingServices(null);
+        scheduleMatchingServices(null);
         
         m_network.recalculateStatus();
         m_network.resetStatusChanged();
@@ -363,7 +362,6 @@ public class Poller extends ServiceDaemon {
     }
     
     private int scheduleMatchingServices(String criteria) {
-        final Category log = ThreadCategory.getInstance();
         String sql = "SELECT ifServices.nodeId AS nodeId, node.nodeLabel AS nodeLabel, ifServices.ipAddr AS ipAddr, " +
                 "ifServices.serviceId AS serviceId, service.serviceName AS serviceName, " +
                 "outages.svcLostEventId AS svcLostEventId, events.eventUei AS svcLostEventUei, " +

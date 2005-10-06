@@ -50,6 +50,7 @@ import org.opennms.netmgt.config.poller.Service;
 import org.opennms.netmgt.eventd.EventListener;
 import org.opennms.netmgt.poller.IPv4NetworkInterface;
 import org.opennms.netmgt.poller.IfKey;
+import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.QueryManager;
 import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.poller.pollables.PollStatus;
@@ -154,15 +155,10 @@ public class MockNetworkTest extends TestCase {
         }
 
         public void visitService(MockService service) {
-            try {
-                m_serviceCount++;
-                IPv4NetworkInterface addr = new MockNetworkInterface(service.getInterface().getIpAddr());
-                ServiceMonitor monitor = m_pollerConfig.getServiceMonitor(service.getName());
-                PollStatus pollResult = monitor.poll(addr, new HashMap(), m_pollerConfig.getPackage("TestPackage"));
-                assertEquals(m_expectedStatus, pollResult);
-            } catch (UnknownHostException e) {
-                throw new RuntimeException("Unknownhost ", e);
-            }
+            m_serviceCount++;
+            ServiceMonitor monitor = m_pollerConfig.getServiceMonitor(service.getSvcName());
+            PollStatus pollResult = monitor.poll(service, new HashMap(), m_pollerConfig.getPackage("TestPackage"));
+            assertEquals(m_expectedStatus, pollResult);
         }
     }
 
@@ -256,9 +252,9 @@ public class MockNetworkTest extends TestCase {
         MockService icmpSvc2 = m_network.getService(1, "192.168.1.1", "ICMP");
         MockService httpSvc = m_network.getService(2, "192.168.1.3", "HTTP");
 
-        assertEquals("ICMP", icmpSvc.getName());
+        assertEquals("ICMP", icmpSvc.getSvcName());
         assertEquals(rtrIface, icmpSvc.getInterface());
-        assertEquals("HTTP", httpSvc.getName());
+        assertEquals("HTTP", httpSvc.getSvcName());
         assertEquals(svrIface, httpSvc.getInterface());
 
         assertTrue(icmpSvc.getId() == icmpSvc2.getId());
@@ -340,7 +336,7 @@ public class MockNetworkTest extends TestCase {
 
         MockVisitor lostSvcSender = new MockVisitorAdapter() {
             public void visitService(MockService svc) {
-                Event event = MockUtil.createEvent("Test", EventConstants.NODE_LOST_SERVICE_EVENT_UEI, svc.getNodeId(), svc.getIpAddr(), svc.getName(), String.valueOf(ServiceMonitor.SERVICE_UNAVAILABLE));
+                Event event = MockUtil.createEvent("Test", EventConstants.NODE_LOST_SERVICE_EVENT_UEI, svc.getNodeId(), svc.getIpAddr(), svc.getSvcName(), String.valueOf(ServiceMonitor.SERVICE_UNAVAILABLE));
                 m_eventMgr.sendNow(event);
             }
         };
@@ -354,7 +350,7 @@ public class MockNetworkTest extends TestCase {
 
         MockVisitor gainedSvcSender = new MockVisitorAdapter() {
             public void visitService(MockService svc) {
-                Event event = MockUtil.createEvent("Test", EventConstants.NODE_REGAINED_SERVICE_EVENT_UEI, svc.getNodeId(), svc.getIpAddr(), svc.getName(), null);
+                Event event = MockUtil.createEvent("Test", EventConstants.NODE_REGAINED_SERVICE_EVENT_UEI, svc.getNodeId(), svc.getIpAddr(), svc.getSvcName(), null);
                 m_eventMgr.sendNow(event);
             }
         };
@@ -374,13 +370,13 @@ public class MockNetworkTest extends TestCase {
         assertEquals(1, anticipator.unanticipatedEvents().size());
 
     }
-
+    
     public void testInvalidPoll() throws UnknownHostException {
         m_network.resetInvalidPollCount();
-        IPv4NetworkInterface addr = new MockNetworkInterface("1.1.1.1");
+        MonitoredService svc = new MockMonitoredService(1, "InvalidNode", "1.1.1.1", "ICMP");
         ServiceMonitor monitor = m_pollerConfig.getServiceMonitor("ICMP");
         try {
-            monitor.poll(addr, new HashMap(), m_pollerConfig.getPackage("TestPackage"));
+            monitor.poll(svc, new HashMap(), m_pollerConfig.getPackage("TestPackage"));
             fail("expected exception");
         } catch (Exception e) {
             // expected this

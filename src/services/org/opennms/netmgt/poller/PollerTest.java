@@ -865,7 +865,7 @@ public class PollerTest extends TestCase {
     private void bringDownCritSvcs(MockElement element) {
         MockVisitor markCritSvcDown = new MockVisitorAdapter() {
             public void visitService(MockService svc) {
-                if ("ICMP".equals(svc.getName())) {
+                if ("ICMP".equals(svc.getSvcName())) {
                     svc.bringDown();
                 }
             }

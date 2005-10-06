@@ -56,6 +56,7 @@ import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.ping.Packet;
 import org.opennms.netmgt.ping.Reply;
 import org.opennms.netmgt.ping.ReplyReceiver;
+import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.NetworkInterface;
 import org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException;
 import org.opennms.netmgt.poller.ServiceMonitor;
@@ -256,18 +257,19 @@ final public class IcmpMonitor extends IPv4LatencyMonitor {
      * utilized for passing poll requests and receiving poll replies from
      * discovery. All exchanges are SOAP/XML compliant.
      * </P>
-     * 
-     * @param iface
-     *            The network interface to test the service on.
      * @param parameters
      *            The package parameters (timeout, retry, etc...) to be used for
      *            this poll.
+     * @param iface
+     *            The network interface to test the service on.
      * 
      * @return The availibility of the interface and if a transition event
      *         should be supressed.
      * 
      */
-    public int checkStatus(NetworkInterface iface, Map parameters, org.opennms.netmgt.config.poller.Package pkg) {
+    public int checkStatus(MonitoredService svc, Map parameters, org.opennms.netmgt.config.poller.Package pkg) {
+        NetworkInterface iface = svc.getNetInterface();
+
         // Get interface address from NetworkInterface
         //
         if (iface.getType() != NetworkInterface.TYPE_IPV4)

@@ -44,8 +44,9 @@ import junit.framework.TestCase;
 import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.config.poller.Parameter;
 import org.opennms.netmgt.mock.MockLogAppender;
+import org.opennms.netmgt.mock.MockMonitoredService;
 import org.opennms.netmgt.mock.MockUtil;
-import org.opennms.netmgt.poller.IPv4NetworkInterface;
+import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.poller.pollables.PollStatus;
 import org.opennms.netmgt.xml.event.Parm;
@@ -91,7 +92,8 @@ public class HttpMonitorTest extends TestCase {
         
         ServiceMonitor monitor = new HttpMonitor();
         Package pkg = new Package();
-        IPv4NetworkInterface iface = new IPv4NetworkInterface(InetAddress.getByName("1.1.1.1"));
+        MonitoredService svc = getMonitoredService(99, "1.1.1.1", "HTTP");
+
         
         p.setKey("port");
         p.setValue("80");
@@ -105,7 +107,7 @@ public class HttpMonitorTest extends TestCase {
         p.setValue("2000");
         m.put(p.getKey(), p.getValue());
         
-        PollStatus status = monitor.poll(iface, m, pkg);        
+        PollStatus status = monitor.poll(svc, m, pkg);        
         MockUtil.println("Reason: "+status.getReason());
         assertEquals(ServiceMonitor.SERVICE_UNAVAILABLE, status.getStatusCode());
         assertNotNull(status.getReason());
@@ -121,7 +123,8 @@ public class HttpMonitorTest extends TestCase {
         
         ServiceMonitor monitor = new HttpMonitor();
         Package pkg = new Package();
-        IPv4NetworkInterface iface = new IPv4NetworkInterface(InetAddress.getByName("www.opennms.org"));
+        MonitoredService svc = getMonitoredService(3, "www.opennms.org", "HTTP");
+
         
         p.setKey("port");
         p.setValue("80");
@@ -139,7 +142,7 @@ public class HttpMonitorTest extends TestCase {
         p.setValue("100-299");
         m.put(p.getKey(), p.getValue());
         
-        PollStatus status = monitor.poll(iface, m, pkg);        
+        PollStatus status = monitor.poll(svc, m, pkg);        
         MockUtil.println("Reason: "+status.getReason());
         assertEquals(ServiceMonitor.SERVICE_UNAVAILABLE, status.getStatusCode());
         assertNotNull(status.getReason());
@@ -149,7 +152,7 @@ public class HttpMonitorTest extends TestCase {
         m.put(p.getKey(), p.getValue());
         
         monitor = new HttpMonitor();
-        status = monitor.poll(iface, m, pkg);        
+        status = monitor.poll(svc, m, pkg);        
         MockUtil.println("Reason: "+status.getReason());
         assertEquals(ServiceMonitor.SERVICE_AVAILABLE, status.getStatusCode());
         assertNull(status.getReason());
@@ -159,7 +162,7 @@ public class HttpMonitorTest extends TestCase {
         m.put(p.getKey(), p.getValue());
         
         monitor = new HttpMonitor();
-        status = monitor.poll(iface, m, pkg);        
+        status = monitor.poll(svc, m, pkg);        
         MockUtil.println("Reason: "+status.getReason());
         assertEquals(ServiceMonitor.SERVICE_AVAILABLE, status.getStatusCode());
         assertNull(status.getReason());
@@ -174,7 +177,6 @@ public class HttpMonitorTest extends TestCase {
         
         ServiceMonitor monitor = new HttpMonitor();
         Package pkg = new Package();
-        IPv4NetworkInterface iface;
         
         p.setKey("port");
         p.setValue("80");
@@ -195,8 +197,8 @@ public class HttpMonitorTest extends TestCase {
                 
         m.put(p.getKey(), p.getValue());
         
-        iface = new IPv4NetworkInterface(InetAddress.getByName("www.opennms.org"));
-        monitor.poll(iface, m, pkg);
+        MonitoredService svc = getMonitoredService(3, "www.opennms.org", "HTTP");
+        monitor.poll(svc, m, pkg);
         
     }
     
@@ -210,8 +212,8 @@ public class HttpMonitorTest extends TestCase {
         
         ServiceMonitor monitor = new HttpMonitor();
         Package pkg = new Package();
-        IPv4NetworkInterface iface = new IPv4NetworkInterface(InetAddress.getByName("www.opennms.org"));
-        
+        MonitoredService svc = getMonitoredService(3, "www.opennms.org", "HTTP");
+
         p.setKey("port");
         p.setValue("80");
         m.put(p.getKey(), p.getValue());
@@ -239,7 +241,7 @@ public class HttpMonitorTest extends TestCase {
         p.setValue("www.opennms.com");
         m.put(p.getKey(), p.getValue());
 
-        status = monitor.poll(iface, m, pkg);        
+        status = monitor.poll(svc, m, pkg);        
         MockUtil.println("Reason: "+status.getReason());
         assertEquals(ServiceMonitor.SERVICE_UNAVAILABLE, status.getStatusCode());
         assertNotNull(status.getReason());
@@ -250,7 +252,7 @@ public class HttpMonitorTest extends TestCase {
 
         MockUtil.println("\nliteral text check: \"consulting\"");
         monitor = new HttpMonitor();
-        status = monitor.poll(iface, m, pkg);
+        status = monitor.poll(svc, m, pkg);
         MockUtil.println("Reason: "+status.getReason());
         assertEquals(ServiceMonitor.SERVICE_AVAILABLE, status.getStatusCode());
         assertNull(status.getReason());
@@ -261,7 +263,7 @@ public class HttpMonitorTest extends TestCase {
 
         MockUtil.println("\nregex check: \".*[Cc]consulting.*\"");
         monitor = new HttpMonitor();
-        status = monitor.poll(iface, m, pkg);
+        status = monitor.poll(svc, m, pkg);
         MockUtil.println("Reason: "+status.getReason());
         assertEquals(ServiceMonitor.SERVICE_AVAILABLE, status.getStatusCode());
         assertNull(status.getReason());
@@ -282,6 +284,10 @@ public class HttpMonitorTest extends TestCase {
     }
     
     
+    private MonitoredService getMonitoredService(int nodeId, String hostname, String svcName) throws UnknownHostException {
+        return new MockMonitoredService(nodeId, hostname, InetAddress.getByName(hostname).getHostAddress(), svcName);
+    }
+    
     public void testBasicAuthentication() throws UnknownHostException {
         
         if (m_runTests == false) return;
@@ -292,7 +298,7 @@ public class HttpMonitorTest extends TestCase {
         
         ServiceMonitor monitor = new HttpMonitor();
         Package pkg = new Package();
-        IPv4NetworkInterface iface = new IPv4NetworkInterface(InetAddress.getByName("localhost"));
+        MonitoredService svc = getMonitoredService(1, "localhost", "HTTP");
         
         p.setKey("port");
         p.setValue("8080");
@@ -322,7 +328,7 @@ public class HttpMonitorTest extends TestCase {
         p.setValue("admin:admin");
         m.put(p.getKey(), p.getValue());
         
-        status = monitor.poll(iface, m, pkg);
+        status = monitor.poll(svc, m, pkg);
         MockUtil.println("Reason: "+status.getReason());
         assertEquals(ServiceMonitor.SERVICE_AVAILABLE, status.getStatusCode());
         assertNull(status.getReason());
@@ -339,7 +345,7 @@ public class HttpMonitorTest extends TestCase {
         
         ServiceMonitor monitor = new HttpsMonitor();
         Package pkg = new Package();
-        IPv4NetworkInterface iface = new IPv4NetworkInterface(InetAddress.getByName("support.opennms.org"));
+        MonitoredService svc = getMonitoredService(1, "support.opennms.org", "HTTPS");
         
         p.setKey("port");
         p.setValue("443");
@@ -369,7 +375,7 @@ public class HttpMonitorTest extends TestCase {
         p.setValue("xxx:xxx");
         m.put(p.getKey(), p.getValue());
         
-        status = monitor.poll(iface, m, pkg);
+        status = monitor.poll(svc, m, pkg);
         MockUtil.println("Reason: "+status.getReason());
         assertEquals(ServiceMonitor.SERVICE_AVAILABLE, status.getStatusCode());
         assertNull(status.getReason());
@@ -385,7 +391,7 @@ public class HttpMonitorTest extends TestCase {
         
         ServiceMonitor monitor = new HttpMonitor();
         Package pkg = new Package();
-        IPv4NetworkInterface iface = new IPv4NetworkInterface(InetAddress.getByName("www.opennms.org"));
+        MonitoredService svc = getMonitoredService(3, "www.opennms.org", "HTTP");
         
         p.setKey("url");
         //found I needed the trailing "/" on this url
@@ -417,7 +423,7 @@ public class HttpMonitorTest extends TestCase {
 //        p.setValue("true");
 //        m.put(p.getKey(), p.getValue());
         
-        status = monitor.poll(iface, m, pkg);
+        status = monitor.poll(svc, m, pkg);
         MockUtil.println("Reason: "+status.getReason());
         assertEquals(ServiceMonitor.SERVICE_AVAILABLE, status.getStatusCode());
         assertNull(status.getReason());
@@ -434,7 +440,7 @@ public class HttpMonitorTest extends TestCase {
         
         ServiceMonitor monitor = new HttpMonitor();
         Package pkg = new Package();
-        IPv4NetworkInterface iface;
+        MonitoredService svc = getMonitoredService(3, "www.opennms.org", "HTTP");
         
         p.setKey("port");
         p.setValue("80");
@@ -461,9 +467,7 @@ public class HttpMonitorTest extends TestCase {
         m.put(p.getKey(), p.getValue());
 
         //Try on opennms.org
-        iface = new IPv4NetworkInterface(InetAddress.getByName("opennms.org"));
-        PollStatus status = monitor.poll(iface, m, pkg);
-        assertEquals(ServiceMonitor.SERVICE_AVAILABLE, status.getStatusCode());
+        monitor.poll(svc, m, pkg);        
         
     }
 

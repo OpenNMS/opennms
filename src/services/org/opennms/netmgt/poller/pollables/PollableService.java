@@ -38,6 +38,7 @@ import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.poller.IPv4NetworkInterface;
+import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.NetworkInterface;
 import org.opennms.netmgt.scheduler.PostponeNecessary;
 import org.opennms.netmgt.scheduler.ReadyRunnable;
@@ -49,13 +50,11 @@ import org.opennms.netmgt.xml.event.Event;
  *
  * @author brozow
  */
-public class PollableService extends PollableElement implements ReadyRunnable {
+public class PollableService extends PollableElement implements ReadyRunnable, MonitoredService {
 
     private String m_svcName;
     private PollConfig m_pollConfig;
     private IPv4NetworkInterface m_netInterface;
-    private boolean m_unresponsive;
-    private boolean m_unresponsiveEventPending;
     private PollStatus m_oldStatus;
     private Schedule m_schedule;
     private long m_statusChangeTime = 0L;
@@ -105,6 +104,10 @@ public class PollableService extends PollableElement implements ReadyRunnable {
     public int getNodeId() {
         return getInterface().getNodeId();
     }
+    
+    public String getNodeLabel() {
+        return getInterface().getNodeLabel();
+    }
 
 
     protected void visitThis(PollableVisitor v) {
@@ -126,22 +129,6 @@ public class PollableService extends PollableElement implements ReadyRunnable {
         PollStatus newStatus = m_pollConfig.poll();
         updateStatus(newStatus);
         return getStatus();
-    }
-
-    private void setUnresponsive(boolean unresponsive) {
-        m_unresponsive = unresponsive;
-    }
-    
-    private boolean isUnresponsive() {
-        return m_unresponsive;
-    }
-    
-    private void setUnresponsiveEventPending(boolean pending) {
-        m_unresponsiveEventPending = pending;
-    }
-    
-    private boolean isUnresponsiveEventPending() {
-        return m_unresponsiveEventPending;
     }
 
     /**

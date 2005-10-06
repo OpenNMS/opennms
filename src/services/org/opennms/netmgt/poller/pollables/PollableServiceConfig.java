@@ -72,7 +72,7 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
         m_configService = findService(pkg);
         
         ServiceMonitor monitor = m_pollerConfig.getServiceMonitor(m_service.getSvcName());
-        monitor.initialize(m_service.getNetInterface());
+        monitor.initialize(m_service);
     }
 
     /**
@@ -80,7 +80,6 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
      * @return
      */
     private Service findService(Package pkg) {
-        Service svc = null;
         Enumeration esvc = m_pkg.enumerateService();
         while (esvc.hasMoreElements()) {
             Service s = (Service) esvc.nextElement();
@@ -96,7 +95,7 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
     public PollStatus poll() {
         ServiceMonitor monitor = m_pollerConfig.getServiceMonitor(m_service.getSvcName());
         ThreadCategory.getInstance(getClass()).debug("Polling "+m_service+" using pkg "+m_pkg.getName());
-        PollStatus result = monitor.poll(m_service.getNetInterface(), getParameters(), m_pkg);
+        PollStatus result = monitor.poll(m_service, getParameters(), m_pkg);
         ThreadCategory.getInstance(getClass()).debug("Finish polling "+m_service+" using pkg "+m_pkg.getName()+" result ="+result);
         return result;
     }

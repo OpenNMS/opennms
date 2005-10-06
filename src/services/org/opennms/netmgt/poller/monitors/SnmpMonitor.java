@@ -52,6 +52,7 @@ import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.config.SnmpPeerFactory;
+import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.NetworkInterface;
 import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
@@ -157,22 +158,19 @@ final public class SnmpMonitor extends SnmpMonitorStrategy {
      * NetworkInterface object for polling.
      * </P>
      * 
-     * @param iface
-     *            The network interface to be initialized.
-     * 
      * @exception RuntimeException
      *                Thrown if an unrecoverable error occurs that prevents the
      *                interface from being monitored.
      */
-    public void initialize(NetworkInterface iface) {
+    public void initialize(MonitoredService svc) {
+        NetworkInterface iface = svc.getNetInterface();
         // Log4j category
         //
         Category log = ThreadCategory.getInstance(getClass());
 
         // Get interface address from NetworkInterface
         //
-        if (iface.getType() != NetworkInterface.TYPE_IPV4)
-            throw new RuntimeException("Unsupported interface type, only TYPE_IPV4 currently supported");
+        super.initialize(svc);
 
         InetAddress ipAddr = (InetAddress) iface.getAddress();
 
@@ -198,12 +196,11 @@ final public class SnmpMonitor extends SnmpMonitorStrategy {
      * The poll() method is responsible for polling the specified address for
      * SNMP service availability.
      * </P>
-     * 
-     * @param iface
-     *            The network interface to test the service on.
      * @param parameters
      *            The package parameters (timeout, retry, etc...) to be used for
      *            this poll.
+     * @param iface
+     *            The network interface to test the service on.
      * 
      * @return The availability of the interface and if a transition event
      *         should be supressed.
@@ -211,7 +208,9 @@ final public class SnmpMonitor extends SnmpMonitorStrategy {
      * @exception RuntimeException
      *                Thrown for any uncrecoverable errors.
      */
-    public int checkStatus(NetworkInterface iface, Map parameters, org.opennms.netmgt.config.poller.Package pkg) {
+    public int checkStatus(MonitoredService svc, Map parameters, org.opennms.netmgt.config.poller.Package pkg) {
+        NetworkInterface iface = svc.getNetInterface();
+
         // Log4j category
         //
         Category log = ThreadCategory.getInstance(getClass());

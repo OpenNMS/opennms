@@ -36,6 +36,7 @@ import java.util.Map;
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.poller.Package;
+import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.NetworkInterface;
 import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.utils.ParameterMap;
@@ -56,7 +57,9 @@ public abstract class JMXMonitor extends IPv4LatencyMonitor {
     /* (non-Javadoc)
      * @see org.opennms.netmgt.poller.monitors.ServiceMonitor#poll(org.opennms.netmgt.poller.monitors.NetworkInterface, java.util.Map, org.opennms.netmgt.config.poller.Package)
      */
-    public int checkStatus(NetworkInterface iface, Map map, Package pkg) {
+    public int checkStatus(MonitoredService svc, Map map, Package pkg) {
+        NetworkInterface iface = svc.getNetInterface();
+
 
         Category       log           = ThreadCategory.getInstance(getClass());
         /*

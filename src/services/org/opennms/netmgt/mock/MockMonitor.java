@@ -37,6 +37,7 @@ import java.util.Map;
 
 import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.config.poller.Package;
+import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.NetworkInterface;
 import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.poller.pollables.PollStatus;
@@ -56,14 +57,15 @@ public class MockMonitor implements ServiceMonitor {
         m_svcName = svcName;
     }
 
-    public void initialize(NetworkInterface iface) {
+    public void initialize(MonitoredService svc) {
     }
 
     public void initialize(PollerConfig config, Map parameters) {
     }
 
-    public PollStatus poll(NetworkInterface iface, Map parameters, Package pkg) {
+    public PollStatus poll(MonitoredService monSvc, Map parameters, Package pkg) {
         synchronized(m_network) {
+            NetworkInterface iface = monSvc.getNetInterface();
             String ipAddr = ((InetAddress) iface.getAddress()).getHostAddress();
             int nodeId = m_network.getNodeIdForInterface(ipAddr);
             MockService svc = m_network.getService(nodeId, ipAddr, m_svcName);
@@ -81,7 +83,7 @@ public class MockMonitor implements ServiceMonitor {
     public void release() {
     }
 
-    public void release(NetworkInterface iface) {
+    public void release(MonitoredService svc) {
     }
 
 }

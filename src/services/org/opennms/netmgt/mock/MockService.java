@@ -32,6 +32,7 @@ package org.opennms.netmgt.mock;
 //     http://www.opennms.com/
 //
 
+import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -40,6 +41,9 @@ import java.util.List;
 import java.util.Set;
 
 import org.opennms.netmgt.config.poller.Package;
+import org.opennms.netmgt.poller.IPv4NetworkInterface;
+import org.opennms.netmgt.poller.MonitoredService;
+import org.opennms.netmgt.poller.NetworkInterface;
 import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.poller.pollables.PollStatus;
 import org.opennms.netmgt.xml.event.Event;
@@ -47,10 +51,8 @@ import org.opennms.netmgt.xml.event.Event;
 /**
  * @author brozow
  * 
- * TODO To change the template for this generated type comment go to Window -
- * Preferences - Java - Code Style - Code Templates
  */
-public class MockService extends MockElement {
+public class MockService extends MockElement implements MonitoredService {
 
     private int m_pollCount;
     
@@ -63,6 +65,8 @@ public class MockService extends MockElement {
     private String m_svcName;
 
     private List m_triggers = new ArrayList();
+
+    private NetworkInterface m_netAddr;
 
    public MockService(MockInterface iface, String svcName, int serviceId) {
         super(iface);
@@ -99,7 +103,7 @@ public class MockService extends MockElement {
     }
 
     // model
-    public String getName() {
+    public String getSvcName() {
         return m_svcName;
     }
 
@@ -174,7 +178,7 @@ public class MockService extends MockElement {
     }
     
     public String toString() {
-        return "Svc["+getNodeLabel()+"/"+getIpAddr()+"/"+getName()+"]";
+        return "Svc["+getNodeLabel()+"/"+getIpAddr()+"/"+getSvcName()+"]";
     }
 
     /**
@@ -207,6 +211,17 @@ public class MockService extends MockElement {
     
     public Event createDeleteEvent() {
         return MockUtil.createServiceDeletedEvent("Test", this);
+    }
+
+    public NetworkInterface getNetInterface() {
+        if (m_netAddr == null)
+            m_netAddr = new IPv4NetworkInterface(getAddress());
+        
+        return m_netAddr;
+    }
+
+    public InetAddress getAddress() {
+        return getInterface().getAddress();    
     }
 
 }
