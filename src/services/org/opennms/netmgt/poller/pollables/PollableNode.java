@@ -108,16 +108,23 @@ public class PollableNode extends PollableContainer {
 
     }
     private int m_nodeId;
+    private String m_nodeLabel;
     private Lock m_lock = new Lock();
 
-    public PollableNode(PollableNetwork network, int nodeId) {
+    public PollableNode(PollableNetwork network, int nodeId, String nodeLabel) {
         super(network);
         m_nodeId = nodeId;
+        m_nodeLabel = nodeLabel;
     }
 
     public int getNodeId() {
         return m_nodeId;
     }
+    
+    public String getNodeLabel() {
+        return m_nodeLabel;
+    }
+
     
     public PollableInterface createInterface(final InetAddress addr) {
         final PollableInterface[] retVal = new PollableInterface[1];
@@ -225,4 +232,5 @@ public class PollableNode extends PollableContainer {
         withTreeLock(r);
         return retVal[0];
     }
+
 }

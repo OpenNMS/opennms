@@ -142,7 +142,7 @@ public class PollContextTest extends TestCase {
         m_pollContext = new DefaultPollContext(m_poller);
         
         m_pNetwork = new PollableNetwork(m_pollContext);
-        m_pSvc = m_pNetwork.createService(1, InetAddress.getByName("192.168.1.1"), "ICMP");
+        m_pSvc = m_pNetwork.createService(1, "Router", InetAddress.getByName("192.168.1.1"), "ICMP");
 
         m_poller.init();
 

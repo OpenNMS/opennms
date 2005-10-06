@@ -52,6 +52,7 @@ import java.util.List;
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.capsd.EventUtils;
 import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.eventd.EventIpcManager;
 import org.opennms.netmgt.eventd.EventListener;
@@ -195,8 +196,16 @@ final class PollerEventProcessor implements EventListener {
         String ipAddr = event.getInterface();
         int nodeId = (int) event.getNodeid();
         String svcName = event.getService();
+        
+        String nodeLabel = EventUtils.getParm(event, EventConstants.PARM_NODE_LABEL);
+        
+        try {
+            nodeLabel = getPoller().getQueryMgr().getNodeLabel(nodeId);
+        } catch (Exception e) {
+            log.error("Unable to retrieve nodeLabel for node "+nodeId, e);
+        }
 
-        getPoller().scheduleService(nodeId, ipAddr, svcName);
+        getPoller().scheduleService(nodeId, nodeLabel, ipAddr, svcName);
         
     }
 

@@ -59,8 +59,8 @@ public class PollableNetwork extends PollableContainer {
         return m_context;
     }
 
-    public PollableNode createNode(int nodeId) {
-        PollableNode node = new PollableNode(this, nodeId);
+    public PollableNode createNode(int nodeId, String nodeLabel) {
+        PollableNode node = new PollableNode(this, nodeId, nodeLabel);
         addMember(node);
         return node;
     }
@@ -73,10 +73,10 @@ public class PollableNetwork extends PollableContainer {
         return getMemberCount();
     }
     
-    public PollableInterface createInterface(int nodeId, InetAddress addr) {
+    public PollableInterface createInterface(int nodeId, String nodeLabel, InetAddress addr) {
         PollableNode node = getNode(nodeId);
         if (node == null)
-            node = createNode(nodeId);
+            node = createNode(nodeId, nodeLabel);
         return node.createInterface(addr);
     }
 
@@ -85,12 +85,12 @@ public class PollableNetwork extends PollableContainer {
         return (node == null ? null : node.getInterface(addr));
     }
 
-    public PollableService createService(int nodeId, InetAddress addr, String svcName) {
+    public PollableService createService(int nodeId, String nodeLabel, InetAddress addr, String svcName) {
         PollableNode node;
         synchronized(this) {
             node = getNode(nodeId);
             if (node == null)
-                node = createNode(nodeId);
+                node = createNode(nodeId, nodeLabel);
         }
         return node.createService(addr, svcName);
         

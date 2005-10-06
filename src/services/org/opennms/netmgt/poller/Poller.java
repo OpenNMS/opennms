@@ -85,10 +85,6 @@ public class Poller extends ServiceDaemon {
 
     private boolean m_initialized = false;
 
-    private Map m_svcNameToId = new HashMap();
-
-    private Map m_svcIdToName = new HashMap();
-
     private Scheduler m_scheduler = null;
 
     private PollerEventProcessor m_receiver;
@@ -332,14 +328,18 @@ public class Poller extends ServiceDaemon {
 
     }
     
-    public void scheduleService(final int nodeId, final String ipAddr, final String svcName) {
+    public void scheduleService(final int nodeId, final String nodeLabel, final String ipAddr, final String svcName) {
         final Category log = ThreadCategory.getInstance(getClass());
         try {
+            /*
+             * Do this here so that we can use the treeLock for this node as we
+             * add its service and schedule it
+             */
             PollableNode node;
             synchronized (m_network) {
                 node = m_network.getNode(nodeId);
                 if (node == null) {
-                    node = m_network.createNode(nodeId);
+                    node = m_network.createNode(nodeId, nodeLabel);
                 }
             }
 
@@ -364,11 +364,12 @@ public class Poller extends ServiceDaemon {
     
     private int scheduleMatchingServices(String criteria) {
         final Category log = ThreadCategory.getInstance();
-        String sql = "SELECT ifServices.nodeId AS nodeId, ifServices.ipAddr AS ipAddr, " +
+        String sql = "SELECT ifServices.nodeId AS nodeId, node.nodeLabel AS nodeLabel, ifServices.ipAddr AS ipAddr, " +
                 "ifServices.serviceId AS serviceId, service.serviceName AS serviceName, " +
                 "outages.svcLostEventId AS svcLostEventId, events.eventUei AS svcLostEventUei, " +
                 "outages.ifLostService AS ifLostService, outages.ifRegainedService AS ifRegainedService " +
         "FROM ifServices " +
+        "JOIN node ON ifServices.nodeId = node.nodeId " +
         "JOIN service ON ifServices.serviceId = service.serviceId " +
         "LEFT OUTER JOIN outages ON " +
         "ifServices.nodeId = outages.nodeId AND " +
@@ -383,7 +384,7 @@ public class Poller extends ServiceDaemon {
         
         Querier querier = new Querier(m_dbConnectionFactory, sql) {
             public void processRow(ResultSet rs) throws SQLException {
-                scheduleService(rs.getInt("nodeId"), rs.getString("ipAddr"), rs.getString("serviceName"), 
+                scheduleService(rs.getInt("nodeId"), rs.getString("nodeLabel"), rs.getString("ipAddr"), rs.getString("serviceName"), 
                                 (Number)rs.getObject("svcLostEventId"), rs.getTimestamp("ifLostService"), 
                                 rs.getString("svcLostEventUei"));
             }
@@ -395,7 +396,7 @@ public class Poller extends ServiceDaemon {
 
     }
 
-    private void scheduleService(int nodeId, String ipAddr, String serviceName, Number svcLostEventId, Date date, String svcLostUei) {
+    private void scheduleService(int nodeId, String nodeLabel, String ipAddr, String serviceName, Number svcLostEventId, Date date, String svcLostUei) {
         Category log = ThreadCategory.getInstance();
 
         Package pkg = findPackageForService(ipAddr, serviceName);
@@ -418,7 +419,7 @@ public class Poller extends ServiceDaemon {
             return;
         }
         
-        PollableService svc = m_network.createService(nodeId, addr, serviceName);
+        PollableService svc = m_network.createService(nodeId, nodeLabel, addr, serviceName);
         PollableServiceConfig pollConfig = new PollableServiceConfig(svc, m_pollerConfig, m_pollOutagesConfig, pkg, m_scheduler);
         svc.setPollConfig(pollConfig);
         synchronized(svc) {

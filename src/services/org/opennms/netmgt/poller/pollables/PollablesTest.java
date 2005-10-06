@@ -119,34 +119,6 @@ public class PollablesTest extends TestCase {
         junit.textui.TestRunner.run(PollablesTest.class);
     }
 
-    private class MockPollConfig implements PollConfig {
-        PollableService m_service;
-        MockMonitor m_monitor;
-        Properties m_properties = new Properties();
-        Package m_package;
-        
-        public MockPollConfig(MockNetwork network, PollableService service) {
-            m_service = service;
-            m_monitor = new MockMonitor(network, m_service.getSvcName());
-            m_package = new Package();
-            m_package.setName("Fake");
-        }
-
-        public PollStatus poll() {
-            PollStatus s = m_monitor.poll(m_service.getNetInterface(), m_properties, m_package);
-            return PollStatus.getPollStatus(s.getStatusCode(), s.getReason());
-        }
-        
-        
-        public long getCurrentTime() {
-            return System.currentTimeMillis();
-        }
-
-        public void refresh() {
-            // TODO Auto-generated method stub
-            
-        }
-    }
     /*
      * @see TestCase#setUp()
      */
@@ -271,8 +243,9 @@ public class PollablesTest extends TestCase {
         
         final PollableNetwork pNetwork = new PollableNetwork(pollContext);
         
-        String sql = "select ifServices.nodeId as nodeId, ifServices.ipAddr as ipAddr, ifServices.serviceId as serviceId, service.serviceName as serviceName, outages.svcLostEventId as svcLostEventId, events.eventUei as svcLostEventUei, outages.ifLostService as ifLostService, outages.ifRegainedService as ifRegainedService " +
+        String sql = "select ifServices.nodeId as nodeId, node.nodeLabel as nodeLabel, ifServices.ipAddr as ipAddr, ifServices.serviceId as serviceId, service.serviceName as serviceName, outages.svcLostEventId as svcLostEventId, events.eventUei as svcLostEventUei, outages.ifLostService as ifLostService, outages.ifRegainedService as ifRegainedService " +
                 "from ifServices " +
+                "join node on ifServices.nodeId = node.nodeId " +
                 "join service on ifServices.serviceId = service.serviceId " +
                 "left outer join outages on " +
                 "ifServices.nodeId = outages.nodeId and " +
@@ -287,6 +260,7 @@ public class PollablesTest extends TestCase {
         Querier querier = new Querier(db, sql) {
             public void processRow(ResultSet rs) throws SQLException {
                 int nodeId = rs.getInt("nodeId");
+                String nodeLabel = rs.getString("nodeLabel");
                 String ipAddr = rs.getString("ipAddr");
                 String serviceName = rs.getString("serviceName");
                 Package pkg = findPackageForService(ipAddr, serviceName);
@@ -297,7 +271,7 @@ public class PollablesTest extends TestCase {
                 
                 try {
                     
-                    PollableService svc = pNetwork.createService(nodeId, InetAddress.getByName(ipAddr), serviceName);
+                    PollableService svc = pNetwork.createService(nodeId, nodeLabel, InetAddress.getByName(ipAddr), serviceName);
                     PollableServiceConfig pollConfig = new PollableServiceConfig(svc, pollerConfig, pollOutageConfig, pkg, scheduler);
                     svc.setPollConfig(pollConfig);
                     synchronized (svc) {
@@ -372,10 +346,11 @@ public class PollablesTest extends TestCase {
     
     public void testCreateNode() {
         int nodeId = 99;
-        PollableNode node = m_network.createNode(nodeId);
+        PollableNode node = m_network.createNode(nodeId, "WebServer99");
         assertNotNull("node is null", node);
 
         assertEquals(99, node.getNodeId());
+        assertEquals("WebServer99", node.getNodeLabel());
         assertEquals(node, m_network.getNode(nodeId));
         
         assertEquals(m_network, node.getNetwork());
@@ -385,7 +360,7 @@ public class PollablesTest extends TestCase {
         int nodeId = 99;
         InetAddress addr = InetAddress.getByName("192.168.1.99");
 
-        PollableInterface iface = m_network.createInterface(nodeId, addr);
+        PollableInterface iface = m_network.createInterface(nodeId, "WebServer99", addr);
         assertNotNull("iface is null", iface);
         assertEquals(addr, iface.getAddress());
         assertEquals(nodeId, iface.getNodeId());
@@ -394,6 +369,7 @@ public class PollablesTest extends TestCase {
         PollableNode node = iface.getNode();
         assertNotNull("node is null", node);
         assertEquals(nodeId, node.getNodeId());
+        assertEquals("WebServer99", node.getNodeLabel());
         assertEquals(node, m_network.getNode(nodeId));
         
         assertEquals(m_network, iface.getNetwork());
@@ -404,7 +380,7 @@ public class PollablesTest extends TestCase {
         InetAddress addr = InetAddress.getByName("192.168.1.99");
         String svcName = "HTTP-99";
         
-        PollableService svc = m_network.createService(nodeId, addr, svcName);
+        PollableService svc = m_network.createService(nodeId, "WebServer99", addr, svcName);
         assertNotNull("svc is null", svc);
         assertEquals(svcName, svc.getSvcName());
         assertEquals(addr, svc.getAddress());
@@ -420,6 +396,7 @@ public class PollablesTest extends TestCase {
         PollableNode node = svc.getNode();
         assertNotNull("node is null", node);
         assertEquals(nodeId, node.getNodeId());
+        assertEquals("WebServer99", node.getNodeLabel());
         assertEquals(node, m_network.getNode(nodeId));
         
         assertEquals(m_network, svc.getNetwork());
@@ -541,9 +518,6 @@ public class PollablesTest extends TestCase {
     }
     
     public void testDeleteNode() throws Exception {
-        InetAddress dot1 = InetAddress.getByName("192.168.1.1");
-        InetAddress dot2 = InetAddress.getByName("192.168.1.2");
-        
         pNode1.delete();
         
         assertDeleted(pDot1Icmp);
@@ -674,7 +648,6 @@ public class PollablesTest extends TestCase {
         mNode2.bringDown();
         mDot2.bringUp();
 
-        Date d = new Date();
         pDot1Icmp.doPoll();
         m_network.processStatusChange(new Date());
         pDot2Icmp.doPoll();
