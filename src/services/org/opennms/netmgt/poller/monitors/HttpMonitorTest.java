@@ -345,7 +345,7 @@ public class HttpMonitorTest extends TestCase {
         
         ServiceMonitor monitor = new HttpsMonitor();
         Package pkg = new Package();
-        MonitoredService svc = getMonitoredService(1, "support.opennms.org", "HTTPS");
+        MonitoredService svc = getMonitoredService(1, "localhost", "HTTPS");
         
         p.setKey("port");
         p.setValue("443");
@@ -368,11 +368,11 @@ public class HttpMonitorTest extends TestCase {
         m.put(p.getKey(), p.getValue());
         
         p.setKey("url");
-        p.setValue("/");
+        p.setValue("/opennms/event/list");
         m.put(p.getKey(), p.getValue());
 
         p.setKey("basic-authentication");
-        p.setValue("xxx:xxx");
+        p.setValue("admin:admin");
         m.put(p.getKey(), p.getValue());
         
         status = monitor.poll(svc, m, pkg);
