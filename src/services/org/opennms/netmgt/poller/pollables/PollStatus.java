@@ -96,6 +96,10 @@ public class PollStatus {
         return false;
     }
     
+    public int hashCode() {
+        return m_statusCode;
+    }
+
     public boolean isUp() {
         return !isDown();
     }
