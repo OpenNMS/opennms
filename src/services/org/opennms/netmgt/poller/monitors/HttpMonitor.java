@@ -55,6 +55,7 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.NoRouteToHostException;
 import java.net.Socket;
+import java.net.SocketException;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.StringTokenizer;
@@ -80,7 +81,7 @@ import org.opennms.netmgt.utils.ParameterMap;
  * @author <A HREF="mailto:mike@opennms.org">Mike </A>
  *  
  */
-final public class HttpMonitor extends IPv4LatencyMonitor {
+public class HttpMonitor extends IPv4LatencyMonitor {
 
     /**
      * Default HTTP ports.
@@ -151,13 +152,9 @@ final public class HttpMonitor extends IPv4LatencyMonitor {
             for (int attempts = 0; attempts <= getRetries(parameters) && serviceStatus != ServiceMonitor.SERVICE_AVAILABLE; attempts++) {
                 Socket socket = null;
                 try {
-                    //
-                    // create a connected socket
-                    //
-                    socket = new Socket();
+                    socket = createSocket(iface, parameters, currentPort);
                     socket.connect(new InetSocketAddress(getIpv4Addr(iface), currentPort), getTimeout(parameters));
-                    socket.setSoTimeout(getTimeout(parameters));
-
+                    socket = wrapSocket(socket);
                     log().debug("HttpMonitor: connected to host: " + getIpv4Addr(iface) + " on port: " + currentPort);
 
                     // We're connected, so upgrade status to unresponsive
@@ -326,6 +323,20 @@ final public class HttpMonitor extends IPv4LatencyMonitor {
         return PollStatus.getPollStatus(serviceStatus, reason);
     }
 
+    protected Socket wrapSocket(Socket socket) throws IOException {
+        return socket;
+    }
+
+    protected Socket createSocket(NetworkInterface iface, Map parameters, int currentPort) throws IOException, SocketException {
+        Socket socket;
+        //
+        // create a connected socket
+        //
+        socket = new Socket();
+        socket.setSoTimeout(getTimeout(parameters));
+        return socket;
+    }
+
     private boolean isVerbose(Map parameters) {
         final String verbose = ParameterMap.getKeyedString(parameters, "verbose", null);
         return (verbose != null && verbose.equalsIgnoreCase("true")) ? true : false;
@@ -423,7 +434,7 @@ final public class HttpMonitor extends IPv4LatencyMonitor {
         return ParameterMap.getKeyedString(parameters, "rrd-repository", null);
     }
 
-    private Category log() {
+    protected Category log() {
         return ThreadCategory.getInstance(getClass());
     }
 
@@ -431,7 +442,7 @@ final public class HttpMonitor extends IPv4LatencyMonitor {
         return ParameterMap.getKeyedString(parameters, "url", DEFAULT_URL);
     }
 
-    private int[] getPorts(Map parameters) {
+    protected int[] getPorts(Map parameters) {
         return ParameterMap.getKeyedIntegerArray(parameters, "port", DEFAULT_PORTS);
     }
 

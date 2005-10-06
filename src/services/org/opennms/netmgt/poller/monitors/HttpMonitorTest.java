@@ -292,10 +292,10 @@ public class HttpMonitorTest extends TestCase {
         
         ServiceMonitor monitor = new HttpMonitor();
         Package pkg = new Package();
-        IPv4NetworkInterface iface = new IPv4NetworkInterface(InetAddress.getByName("192.168.0.1"));
+        IPv4NetworkInterface iface = new IPv4NetworkInterface(InetAddress.getByName("localhost"));
         
         p.setKey("port");
-        p.setValue("80");
+        p.setValue("8080");
         m.put(p.getKey(), p.getValue());
         
         p.setKey("retry");
@@ -307,11 +307,15 @@ public class HttpMonitorTest extends TestCase {
         m.put(p.getKey(), p.getValue());
         
         p.setKey("response");
-        p.setValue("100-399");
+        p.setValue("100-302");
         m.put(p.getKey(), p.getValue());
                 
         p.setKey("verbose");
         p.setValue("true");
+        m.put(p.getKey(), p.getValue());
+        
+        p.setKey("url");
+        p.setValue("/opennms/event/list");
         m.put(p.getKey(), p.getValue());
 
         p.setKey("basic-authentication");
@@ -325,6 +329,53 @@ public class HttpMonitorTest extends TestCase {
         
     }
     
+    public void testBasicAuthenticationWithHttps() throws UnknownHostException {
+        
+        if (m_runTests == false) return;
+        
+        Map m = Collections.synchronizedMap(new TreeMap());
+        Parameter p = new Parameter();
+        PollStatus status = null;
+        
+        ServiceMonitor monitor = new HttpsMonitor();
+        Package pkg = new Package();
+        IPv4NetworkInterface iface = new IPv4NetworkInterface(InetAddress.getByName("support.opennms.org"));
+        
+        p.setKey("port");
+        p.setValue("443");
+        m.put(p.getKey(), p.getValue());
+        
+        p.setKey("retry");
+        p.setValue("1");
+        m.put(p.getKey(), p.getValue());
+        
+        p.setKey("timeout");
+        p.setValue("2000");
+        m.put(p.getKey(), p.getValue());
+        
+        p.setKey("response");
+        p.setValue("100-302");
+        m.put(p.getKey(), p.getValue());
+                
+        p.setKey("verbose");
+        p.setValue("true");
+        m.put(p.getKey(), p.getValue());
+        
+        p.setKey("url");
+        p.setValue("/");
+        m.put(p.getKey(), p.getValue());
+
+        p.setKey("basic-authentication");
+        p.setValue("xxx:xxx");
+        m.put(p.getKey(), p.getValue());
+        
+        status = monitor.poll(iface, m, pkg);
+        MockUtil.println("Reason: "+status.getReason());
+        assertEquals(ServiceMonitor.SERVICE_AVAILABLE, status.getStatusCode());
+        assertNull(status.getReason());
+        
+    }
+
     public void testWithUrl() throws UnknownHostException {
         if (m_runTests == false) return;
         
@@ -397,14 +448,22 @@ public class HttpMonitorTest extends TestCase {
         p.setValue("1000");
         m.put(p.getKey(), p.getValue());
 
-        //Try on opennms.org with vhost opennms.com
         p.setKey("host name");
-        p.setValue("zztop.opennms.com");
+        p.setValue("opennms.com");
         m.put(p.getKey(), p.getValue());
-                
+        
+        p.setKey("url");
+        p.setValue("/solutions/");
+        m.put(p.getKey(), p.getValue());
+
+        p.setKey("response-text");
+        p.setValue("~.*[Cc]onsulting.*");
+        m.put(p.getKey(), p.getValue());
+
         //Try on opennms.org
-        iface = new IPv4NetworkInterface(InetAddress.getByName("www.opennms.org"));
-        monitor.poll(iface, m, pkg);        
+        iface = new IPv4NetworkInterface(InetAddress.getByName("opennms.org"));
+        PollStatus status = monitor.poll(iface, m, pkg);
+        assertEquals(ServiceMonitor.SERVICE_AVAILABLE, status.getStatusCode());
         
     }
 
