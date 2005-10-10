@@ -40,7 +40,7 @@
         <event-file>@install.etc.dir@/events/Linksys.events.xml</event-file>
         <event-file>@install.etc.dir@/events/MGE-UPS.events.xml</event-file>
         <event-file>@install.etc.dir@/events/Microsoft.events.xml</event-file>
-	<event-file>@install.etc.dir@/events/Mylex.events.xml</event-file>
+        <event-file>@install.etc.dir@/events/Mylex.events.xml</event-file>
         <event-file>@install.etc.dir@/events/NetApp.events.xml</event-file>
         <event-file>@install.etc.dir@/events/Netbotz.events.xml</event-file>
         <event-file>@install.etc.dir@/events/Netgear.events.xml</event-file>
@@ -56,6 +56,7 @@
         <event-file>@install.etc.dir@/events/Snort.events.xml</event-file>
         <event-file>@install.etc.dir@/events/SonicWall.events.xml</event-file>
         <event-file>@install.etc.dir@/events/Symbol.events.xml</event-file>
+        <event-file>@install.etc.dir@/events/Symbol-WS5000.events.xml</event-file>
         <event-file>@install.etc.dir@/events/SystemEdge.events.xml</event-file>
         <event-file>@install.etc.dir@/events/Uptime.events.xml</event-file>
         <event-file>@install.etc.dir@/events/Xerox.events.xml</event-file>

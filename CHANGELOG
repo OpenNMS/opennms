@@ -18,6 +18,7 @@
   was logged twice instead of logging the subject and the message contents.
 - Performance enhancement for the Scheduled outages editing page. Bug 1340.
   Thanks, Craig M.!
+- Added Symbol WS5000 events and updated eventconf.xml  
 
 1.2.3 to 1.2.4
 ----------------------------------------------------------------------
