@@ -201,7 +201,7 @@ public class MockNetwork extends MockContainer {
     }
 
     // model
-    public void removeElement(MockElement element) {
+    public synchronized void removeElement(MockElement element) {
         MockContainer parent = element.getParent();
         parent.removeMember(element);
     }

@@ -317,14 +317,16 @@ public class PollerTest extends TestCase {
         poll.waitForAnticipated(1000L);
 
         // now delete the node and send a nodeDeleted event
-        m_network.resetInvalidPollCount();
         m_network.removeElement(element);
         m_eventMgr.sendEventToListeners(deleteEvent);
+
+        // reset the poll count and wait to see if any polls on the removed element happened
+        m_network.resetInvalidPollCount();
 
         // now ensure that no invalid polls have occurred
         sleep(3000);
 
-        assertEquals(0, m_network.getInvalidPollCount());
+        assertEquals("Received a poll for an element that doesn't exist", 0, m_network.getInvalidPollCount());
 
     }
     
