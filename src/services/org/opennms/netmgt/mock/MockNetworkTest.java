@@ -375,12 +375,7 @@ public class MockNetworkTest extends TestCase {
         m_network.resetInvalidPollCount();
         MonitoredService svc = new MockMonitoredService(1, "InvalidNode", "1.1.1.1", "ICMP");
         ServiceMonitor monitor = m_pollerConfig.getServiceMonitor("ICMP");
-        try {
-            monitor.poll(svc, new HashMap(), m_pollerConfig.getPackage("TestPackage"));
-            fail("expected exception");
-        } catch (Exception e) {
-            // expected this
-        }
+        monitor.poll(svc, new HashMap(), m_pollerConfig.getPackage("TestPackage"));
         assertEquals(1, m_network.getInvalidPollCount());
 
     }
