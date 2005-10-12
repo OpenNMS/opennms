@@ -153,6 +153,8 @@ public abstract class SnmpWalker {
     protected void handleTimeout(String msg) {
         m_error = true;
         m_tracker.setTimedOut(true);
+	System.err.println("SnmpWalker.handleTimeout "+msg);
+	Thread.dumpStack();
         log().info(getName()+": Timeout retrieving "+getName()+" for "+m_address+": "+msg);
         finish();
     }
