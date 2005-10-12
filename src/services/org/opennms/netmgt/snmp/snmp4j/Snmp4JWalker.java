@@ -165,11 +165,6 @@ public class Snmp4JWalker extends SnmpWalker {
         
         
     }
-
-   public void handleTimeout(String msg) {
-	super.handleTimeout(msg);
-        Thread.dumpStack();
-   }
     
     private Snmp m_session;
     private Target m_tgt;

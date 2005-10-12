@@ -86,8 +86,6 @@ import org.snmp4j.smi.UdpAddress;
 import org.snmp4j.smi.VariableBinding;
 import org.snmp4j.transport.DefaultUdpTransportMapping;
 
-import org.snmp4j.log.*;
-
 public class Snmp4JStrategy implements SnmpStrategy {
 
     public static Map m_registrations = new HashMap();
@@ -99,7 +97,7 @@ public class Snmp4JStrategy implements SnmpStrategy {
     //Initialize for v3 communications
     private static void initialize() {
         if (!m_initialized) {
-  //          LogFactory.setLogFactory(new Log4jLogFactory());
+//            LogFactory.setLogFactory(new Log4jLogFactory());
             
             MPv3.setEnterpriseID(5813);
             USM usm = new USM(SecurityProtocols.getInstance(), new OctetString(MPv3.createLocalEngineID()), 0);
