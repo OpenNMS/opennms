@@ -89,8 +89,8 @@ public class PollerTest extends TestCase {
     //
 
     public void setUp() {
-        System.setProperty("mock.logLevel", "DEBUG");
-        System.setProperty("mock.debug", "true");
+//        System.setProperty("mock.logLevel", "DEBUG");
+//        System.setProperty("mock.debug", "true");
         MockUtil.println("------------ Begin Test "+getName()+" --------------------------");
         MockLogAppender.setupLogging();
 
