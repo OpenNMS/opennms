@@ -80,6 +80,9 @@
 - Merged feature-xmlrpc-branch.  This includes enhancements made to the XML-RPC
   API as well as a new HttpMonitor that allows for virtual host, url, and page
   content matching; litterals as well as reqular expressions.
+- Fixed issue where xmpp notifications were only being sent to one user in goup
+  notifications - Bug 1329.
+- Added xmpp group (chat room) notifications - Bug 1246
 
 1.2.3 to 1.2.4
 ----------------------------------------------------------------------
