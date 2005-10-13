@@ -19,6 +19,9 @@
 - Performance enhancement for the Scheduled outages editing page. Bug 1340.
   Thanks, Craig M.!
 - Added Symbol WS5000 events and updated eventconf.xml  
+- Fixed issue where xmpp notifications were only being sent to one user in goup
+  notifications - Bug 1329.
+- Added xmpp group (chat room) notifications - Bug 1246
 
 1.2.3 to 1.2.4
 ----------------------------------------------------------------------

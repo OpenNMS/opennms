@@ -17,11 +17,11 @@ import org.opennms.netmgt.config.NotificationManager;
 
 /**
  * Implements NotificationStragey pattern used to send notifications using the
- * XMPP message protocol.
+ * XMPP message protocol
  * 
- * @author <A HREF="mailto:opennms@obado.net">Chris Abernethy </A>
+ * @author <A HREF="mailto:jonathan@opennms.org">Jonathan Sartin </A>
  */
-public class XMPPNotificationStrategy implements NotificationStrategy {
+public class XMPPGroupNotificationStrategy implements NotificationStrategy {
 
 	/**
 	 * String used to identify the user to whom the XMPP message will be sent.
@@ -66,7 +66,7 @@ public class XMPPNotificationStrategy implements NotificationStrategy {
 	/**
 	 * 
 	 */
-	public XMPPNotificationStrategy() {
+	public XMPPGroupNotificationStrategy() {
 	}
 
 	/*
@@ -82,7 +82,7 @@ public class XMPPNotificationStrategy implements NotificationStrategy {
 
 			XMPPNotificationManager xmppManager = XMPPNotificationManager.getInstance();
 
-			xmppManager.sendMessage(parsedArgs[XMPP_TO],parsedArgs[XMPP_MESSAGE]);
+			xmppManager.sendGroupChat(parsedArgs[XMPP_TO],parsedArgs[XMPP_MESSAGE]);
 
 		} catch (Exception e) {
 			ThreadCategory.getInstance(getClass()).error(e.getMessage());
