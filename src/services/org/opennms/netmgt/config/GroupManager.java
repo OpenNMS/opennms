@@ -203,6 +203,7 @@ public abstract class GroupManager {
             groups.addGroup(grp);
         }
         
+        
         Roles roles = new Roles();
         Iterator it = m_roles.values().iterator();
         while(it.hasNext()) {
@@ -212,7 +213,8 @@ public abstract class GroupManager {
     
         Groupinfo groupinfo = new Groupinfo();
         groupinfo.setGroups(groups);
-        groupinfo.setRoles(roles);
+        if (roles.getRoleCount() > 0)
+            groupinfo.setRoles(roles);
         groupinfo.setHeader(header);
     
         m_oldHeader = header;
