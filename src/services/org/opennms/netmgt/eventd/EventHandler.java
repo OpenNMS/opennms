@@ -137,7 +137,7 @@ final class EventHandler implements Runnable {
                 if (parms != null) {
                     log.debug("  parms {");
                     for (int x = 0; x < parms.length; x++) {
-                        if ((parms[x].getParmName().trim() != null) && (parms[x].getValue().getContent().trim() != null)) {
+                        if ((parms[x].getParmName() != null) && (parms[x].getValue().getContent() != null)) {
                             log.debug("    (" + parms[x].getParmName().trim() + ", " + parms[x].getValue().getContent().trim() + ")");
                         }
                     }
