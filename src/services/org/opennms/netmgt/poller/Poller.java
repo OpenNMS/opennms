@@ -600,7 +600,7 @@ public class Poller extends ServiceDaemon {
             eventParm = new Parm();
             eventParm.setParmName(EventConstants.PARM_LOSTSERVICE_REASON);
             parmValue = new Value();
-            parmValue.setContent(reason);
+            parmValue.setContent(reason == null ? "Unknown" : reason);
             eventParm.setValue(parmValue);
             eventParms.addParm(eventParm);
         }
