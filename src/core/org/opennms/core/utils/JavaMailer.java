@@ -17,6 +17,7 @@ import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.NoSuchProviderException;
 import javax.mail.Session;
+import javax.mail.Transport;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
@@ -26,8 +27,6 @@ import javax.mail.internet.MimeMultipart;
 import org.apache.log4j.Category;
 
 import alt.dev.jmta.JMTA;
-
-import com.sun.mail.smtp.SMTPTransport;
 
 /**
  * Sends an email message using the Java Mail API
@@ -312,9 +311,9 @@ public class JavaMailer {
      * @throws JavaMailerException
      */
     private void localMtaSend(Session session, Message _msg) throws JavaMailerException {
-        SMTPTransport t = null;
+        Transport t = null;
         try {
-            t = (SMTPTransport) session.getTransport(_transport);
+            t = (Transport)session.getTransport(_transport);
             if (_authenticate)
                 t.connect(_mailHost, _user, _password);
             else
@@ -326,7 +325,6 @@ public class JavaMailer {
         } catch (MessagingException e) {
             throw new JavaMailerException("Java Mailer messaging exception: ", e);
         } finally {
-            System.out.println("Response: " + t.getLastServerResponse());
             try {
                 t.close();
             } catch (MessagingException e1) {
