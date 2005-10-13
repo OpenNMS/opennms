@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://xmlns.opennms.org/xsd/config/virtual"
+	xmlns:tns="http://xmlns.opennms.org/xsd/config/virtual" xmlns:this="http://xmlns.opennms.org/xsd/config/virtual">
+	<element name="passive-status-configuration" >
+		<complexType>
+			<sequence>
+				<element ref="this:passive-status-uei" minOccurs="0" maxOccurs="unbounded" >
+				</element>
+			</sequence>
+		</complexType>
+	</element>
+	<element name="passive-status-uei">
+		<complexType>
+			<attribute name="key" type="string" use="required" />
+			<attribute name="value" type="string" use="required" />
+		</complexType>
+	</element>
+</schema>

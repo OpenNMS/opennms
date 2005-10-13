@@ -177,6 +177,7 @@
 		<castor-gen file="${castor.config.dir}/views.xsd" srcpackage="org.opennms.netmgt.config.views" />
 		<castor-gen file="${castor.config.dir}/viewsdisplay.xsd" srcpackage="org.opennms.netmgt.config.viewsdisplay" />
 		<castor-gen file="${castor.config.dir}/webui-colors.xsd" srcpackage="org.opennms.netmgt.config.webuiColors" />
+		<castor-gen file="${castor.config.dir}/passive-status-configuration.xsd" srcpackage="org.opennms.netmgt.config.virtual" />
 
 	</target>
 

@@ -54,6 +54,7 @@
         <event-file>@install.etc.dir@/events/Snort.events.xml</event-file>
         <event-file>@install.etc.dir@/events/SonicWall.events.xml</event-file>
         <event-file>@install.etc.dir@/events/Symbol.events.xml</event-file>
+        <event-file>@install.etc.dir@/events/Symbol-WS5000.events.xml</event-file>
         <event-file>@install.etc.dir@/events/SystemEdge.events.xml</event-file>
         <event-file>@install.etc.dir@/events/Uptime.events.xml</event-file>
         <event-file>@install.etc.dir@/events/Xerox.events.xml</event-file>
@@ -1093,49 +1094,56 @@
 		<severity>Normal</severity>
 	</event>
 	<event>
-                <mask>  
-                        <maskelement>   
-                                <mename>id</mename>   
-                                <mevalue>.1.3.6.1.4.1.5813.1</mevalue>
-                        </maskelement>  
-                        <maskelement>   
-                                <mename>generic</mename>   
-                                <mevalue>6</mevalue>  
-                        </maskelement>
-                        <maskelement>
-                                <mename>specific</mename>
-                                <mevalue>1</mevalue>
-                        </maskelement>
-                </mask>
-                <uei>uei.opennms.org/traps/forwardedEvent</uei>
-                <event-label>OpenNMS-defined SNMP Trap: forwardedEvent</event-label>
-                <descr>
-                        &lt;p&gt;An OpenNMS Event has been received as an SNMP Trap with
-                        the following information:&lt;/p&gt;
-                        &lt;UL&gt;
-                        &lt;LI&gt;Database ID: %parm[#1]%
-                        &lt;LI&gt;Distributed Poller Name: %parm[#2]%
-                        &lt;LI&gt;Event Creation Time: %parm[#3]%
-                        &lt;LI&gt;Master Station: %parm[#4]%
-                        &lt;LI&gt;UEI: %parm[#5]%
-                        &lt;LI&gt;Source: %parm[#6]%
-                        &lt;LI&gt;Node ID: %parm[#7]%
-                        &lt;LI&gt;Time: %parm[#8]%
-                        &lt;LI&gt;Host: %parm[#9]%
-                        &lt;LI&gt;Interface: %parm[#10]%
-                        &lt;LI&gt;SNMP Host: %parm[#11]%
-                        &lt;LI&gt;Service: %parm[#12]%
-                        &lt;LI&gt;Description: %parm[#13]%
-                        &lt;LI&gt;Severity: %parm[#14]%
-                        &lt;LI&gt;Path Outage: %parm[#15]%
-                        &lt;LI&gt;Operator Instructions: %parm[#16]%
-                        &lt;/UL&gt;
-                </descr>                
-                <logmsg dest='logndisplay'>                        
-                        &lt;p&gt;An OpenNMS Event has been received as an SNMP Trap with UEI:
-                        %parm[#5]%.&lt;/p&gt;
-                </logmsg>
-                <severity>Normal</severity>
-        </event>
+		<uei>uei.opennms.org/services/passiveServiceStatus</uei>
+		<event-label>OpenNMS-defined service event: passiveServiceStatus</event-label>
+		<descr>
+			&lt;p&gt;Status information for service %service% has been updated.&lt;/p&gt;
+		</descr>
+		<logmsg dest='logndisplay'>
+			&lt;p&gt;Status information for service %service% has been updated.&lt;/p&gt;
+		</logmsg>
+		<severity>Normal</severity>
+		<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%service%" />
+	</event>
+	<event>
+		<mask>
+			<maskelement>
+				<mename>id</mename>
+				<mevalue>.1.3.6.1.4.1.5813.1</mevalue>
+			</maskelement>
+			<maskelement>
+				<mename>generic</mename>
+				<mevalue>6</mevalue>
+			</maskelement>
+			<maskelement>
+				<mename>specific</mename>
+				<mevalue>1</mevalue>
+			</maskelement>
+		</mask>
+		<uei>uei.opennms.org/traps/forwardedEvent</uei>
+		<event-label>
+			OpenNMS-defined SNMP Trap: forwardedEvent
+		</event-label>
+		<descr>
+			&lt;p&gt;An OpenNMS Event has been received as an SNMP Trap
+			with the following information:&lt;/p&gt; &lt;UL&gt;
+			&lt;LI&gt;Database ID: %parm[#1]% &lt;LI&gt;Distributed
+			Poller Name: %parm[#2]% &lt;LI&gt;Event Creation Time:
+			%parm[#3]% &lt;LI&gt;Master Station: %parm[#4]%
+			&lt;LI&gt;UEI: %parm[#5]% &lt;LI&gt;Source: %parm[#6]%
+			&lt;LI&gt;Node ID: %parm[#7]% &lt;LI&gt;Time: %parm[#8]%
+			&lt;LI&gt;Host: %parm[#9]% &lt;LI&gt;Interface: %parm[#10]%
+			&lt;LI&gt;SNMP Host: %parm[#11]% &lt;LI&gt;Service:
+			%parm[#12]% &lt;LI&gt;Description: %parm[#13]%
+			&lt;LI&gt;Severity: %parm[#14]% &lt;LI&gt;Path Outage:
+			%parm[#15]% &lt;LI&gt;Operator Instructions: %parm[#16]%
+			&lt;/UL&gt;
+		</descr>
+		<logmsg dest='logndisplay'>
+			&lt;p&gt;An OpenNMS Event has been received as an SNMP Trap
+			with UEI: %parm[#5]%.&lt;/p&gt;
+		</logmsg>
+		<severity>Normal</severity>
+	</event>
 	<event-file>@install.etc.dir@/events/default.events.xml</event-file>
 </events>

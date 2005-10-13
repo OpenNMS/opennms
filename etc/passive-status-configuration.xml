@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tns:passiveStatus-configuration xmlns:tns="http://www.example.org/xsd/passive-status-configuration"
+                                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <tns:passive-status-uei key="passiveStatus" value="uei.opennms.org/services/passiveServiceStatus"/>
+</tns:passiveStatus-configuration>

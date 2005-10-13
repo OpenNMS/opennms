@@ -202,6 +202,11 @@ public final class ConfigFileConstants {
     public static final int CHART_CONFIG_FILE_NAME;
     
     /**
+     * JFree Chart configuration file
+     */
+    public static final int PASSIVE_CONFIG_FILE_NAME;
+    
+    /**
      * The config file for specifying JMX MBeans
      */
     public static final int JMX_DATA_COLLECTION_CONF_FILE_NAME;
@@ -461,9 +466,11 @@ public final class ConfigFileConstants {
 
         JMX_DATA_COLLECTION_CONF_FILE_NAME = 56;
         
+        PASSIVE_CONFIG_FILE_NAME = 57;
+        
         // Allocate and build the mapping of identifiers to names
         //
-        FILE_ID_TO_NAME = new String[57];
+        FILE_ID_TO_NAME = new String[58];
 
         FILE_ID_TO_NAME[DB_CONFIG_FILE_NAME] = "opennms-database.xml";
         FILE_ID_TO_NAME[JMS_CONFIG_FILE_NAME] = "opennms-jms.xml";
@@ -540,6 +547,8 @@ public final class ConfigFileConstants {
         FILE_ID_TO_NAME[CHART_CONFIG_FILE_NAME] = "chart-configuration.xml";
 
         FILE_ID_TO_NAME[JMX_DATA_COLLECTION_CONF_FILE_NAME] = "jmx-datacollection-config.xml";
+        
+        FILE_ID_TO_NAME[PASSIVE_CONFIG_FILE_NAME] = "passive-status-configuration.xml";
     }
 
     /**
@@ -589,8 +598,6 @@ public final class ConfigFileConstants {
      * 
      */
     public static final File getFile(int id) throws IOException {
-        Category log = ThreadCategory.getInstance(ConfigFileConstants.class);
-
         // Recover the home directory from the system properties.
         //
         String home = getHome();
@@ -599,7 +606,7 @@ public final class ConfigFileConstants {
         //
         File fhome = new File(home);
         if (!fhome.exists()) {
-            log.warn("getFile: The specified home directory does not exist");
+            log().warn("getFile: The specified home directory does not exist");
             throw new FileNotFoundException("The OpenNMS home directory \"" + home + "\" does not exist");
         }
 
@@ -613,6 +620,10 @@ public final class ConfigFileConstants {
         }
 
         return frfile;
+    }
+
+    private static Category log() {
+        return ThreadCategory.getInstance(ConfigFileConstants.class);
     }
 
     /**
@@ -643,8 +654,6 @@ public final class ConfigFileConstants {
      * 
      */
     public static final File getConfigFileByName(String fname) throws IOException {
-        Category log = ThreadCategory.getInstance(ConfigFileConstants.class);
-
         // Recover the home directory from the system properties.
         //
         String home = getHome();
@@ -653,7 +662,7 @@ public final class ConfigFileConstants {
         //
         File fhome = new File(home);
         if (!fhome.exists()) {
-            log.warn("getConfigFileByName: The specified home directory does not exist");
+            log().warn("getConfigFileByName: The specified home directory does not exist");
             throw new FileNotFoundException("The OpenNMS home directory \"" + home + "\" does not exist");
         }
 
@@ -671,7 +680,7 @@ public final class ConfigFileConstants {
     public static final String getHome() {
         String home = System.getProperty("opennms.home");
         if (home == null) {
-            ThreadCategory.getInstance(ConfigFileConstants.class).warn("getConfigFileByName: The \"opennms.home\" property was not set, falling back to /opt/OpenNMS");
+            log().warn("getConfigFileByName: The \"opennms.home\" property was not set, falling back to /opt/OpenNMS");
             home = File.separator + "opt" + File.separator + "OpenNMS";
         }
         // Remove the trailing slash if necessary
