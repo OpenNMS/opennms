@@ -1,5 +1,6 @@
 1.2.4 to 1.2.5
 ----------------------------------------------------------------------
+- Updated Novell Events.
 - Added Netscreen Events.
 - Added AirDefense events and updated Symbol events.
 - Removed the first two varbinds from an SNMP v2 Trap. Bug 733
