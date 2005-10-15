@@ -54,7 +54,7 @@
         <event-file>@install.etc.dir@/events/Snort.events.xml</event-file>
         <event-file>@install.etc.dir@/events/SonicWall.events.xml</event-file>
         <event-file>@install.etc.dir@/events/Symbol.events.xml</event-file>
-        <event-file>@install.etc.dir@/events/Symbol-WS5000.events.xml</event-file>
+<!--        <event-file>@install.etc.dir@/events/Symbol-WS5000.events.xml</event-file> -->
         <event-file>@install.etc.dir@/events/SystemEdge.events.xml</event-file>
         <event-file>@install.etc.dir@/events/Uptime.events.xml</event-file>
         <event-file>@install.etc.dir@/events/Xerox.events.xml</event-file>
@@ -1103,7 +1103,7 @@
 			&lt;p&gt;Status information for service %service% has been updated.&lt;/p&gt;
 		</logmsg>
 		<severity>Normal</severity>
-		<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%service%" />
+		<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%service%" alarm-type="1"/>
 	</event>
 	<event>
 		<mask>
