@@ -748,7 +748,7 @@ public final class SnmpPeerFactory {
      * @return
      */
     private int determineMaxRequestSize(Definition def) {
-        return (def.getMaxRequestSize() == 0 ? (m_config.getMaxRequestSize() == 0 ? SnmpAgentConfig.DEFAULT_MAX_REQUEST_SIZE : m_config.getMaxRequestSize()) : SnmpAgentConfig.DEFAULT_MAX_REQUEST_SIZE);
+        return (def.getMaxRequestSize() == 0 ? (m_config.getMaxRequestSize() == 0 ? SnmpAgentConfig.DEFAULT_MAX_REQUEST_SIZE : m_config.getMaxRequestSize()) : def.getMaxRequestSize());
     }
 
     /**
@@ -848,7 +848,7 @@ public final class SnmpPeerFactory {
      */
     private int determinePort(Definition def) {
         int port = 161;
-        return (def.getPort() == 0 ? (m_config.getPort() == 0 ? port : m_config.getPort()) : port);
+        return (def.getPort() == 0 ? (m_config.getPort() == 0 ? port : m_config.getPort()) : def.getPort());
     }
 
     /**
@@ -858,12 +858,12 @@ public final class SnmpPeerFactory {
      */
     private long determineTimeout(Definition def) {
         long timeout = SnmpAgentConfig.DEFAULT_TIMEOUT;
-        return (long)(def.getTimeout() == 0 ? (m_config.getTimeout() == 0 ? timeout : m_config.getTimeout()) : timeout);
+        return (long)(def.getTimeout() == 0 ? (m_config.getTimeout() == 0 ? timeout : m_config.getTimeout()) : def.getTimeout());
     }
 
     private int determineRetries(Definition def) {        
         int retries = SnmpAgentConfig.DEFAULT_RETRIES;
-        return (def.getRetry() == 0 ? (m_config.getRetry() == 0 ? retries : m_config.getRetry()) : retries);
+        return (def.getRetry() == 0 ? (m_config.getRetry() == 0 ? retries : m_config.getRetry()) : def.getRetry());
     }
 
     /**
