@@ -120,11 +120,16 @@ public class SnmpAgentConfig {
         buff.append(", Community: "+m_readCommunity);
         buff.append(", Timeout: "+m_timeout);
         buff.append(", Retries: "+m_retries);
+        buff.append(", MaxVarsPerPdu: "+m_maxVarsPerPdu);
         buff.append(", Max request size: "+m_maxRequestSize);
         buff.append(", Version: "+m_version);
         if (m_version == VERSION3) {
             buff.append(", Security level: "+m_securityLevel);
             buff.append(", Security name: "+m_securityName);
+            buff.append(", auth-passphrase: "+m_authPassPhrase);
+            buff.append(", auth-protocol: "+m_authProtocol);
+            buff.append(", priv-passprhase: "+m_privPassPhrase);
+            buff.append(", priv-protocol: "+m_PrivProtocol);
         }
         buff.append("]");
         return buff.toString();
