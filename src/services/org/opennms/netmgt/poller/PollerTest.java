@@ -139,6 +139,7 @@ public class PollerTest extends TestCase {
         m_eventMgr.setEventWriter(m_db);
         m_eventMgr.setEventAnticipator(m_anticipator);
         m_eventMgr.addEventListener(m_outageAnticipator);
+        m_eventMgr.setSynchronous(false);
         
         m_poller = new Poller();
         m_poller.setEventManager(m_eventMgr);

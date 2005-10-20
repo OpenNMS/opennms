@@ -94,6 +94,8 @@ public class MockEventIpcManager implements EventIpcManager {
 
     private int m_eventDelay = 0;
 
+    private boolean m_synchronous = true;
+
     public MockEventIpcManager() {
         m_anticipator = new EventAnticipator();
     }
@@ -155,6 +157,14 @@ public class MockEventIpcManager implements EventIpcManager {
         broadcastNow(event);
     }
 
+    public void setSynchronous(boolean syncState) {
+        m_synchronous = syncState;
+    }
+    
+    public boolean isSynchronous() {
+        return m_synchronous;
+    }
+    
     public synchronized void sendNow(final Event event) {
         m_pendingEvents++;
         MockUtil.println("StartEvent processing: m_pendingEvents = "+m_pendingEvents);
@@ -178,9 +188,12 @@ public class MockEventIpcManager implements EventIpcManager {
             }
         };
         
-        Thread thread = new Thread(r);
-        thread.start();
-//        r.run();
+        if (isSynchronous()) {
+            r.run();
+        } else {
+            Thread thread = new Thread(r);
+            thread.start();
+        }
     }
 
     public void sendNow(Log eventLog) {

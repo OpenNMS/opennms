@@ -669,6 +669,14 @@ public class EventConstants {
      * Used for retaining the reason from a monitor determines SERVICE_UNAVAILABLE
      */
     public final static String PARM_LOSTSERVICE_REASON = "eventReason";
+    
+    /**
+     * Parms used for passive status events sent to the PassiveServiceKeeper
+     */
+    public final static String PARM_PASSIVE_NODE_LABEL = "passiveNodeLabel";
+    public final static String PARM_PASSIVE_IPADDR = "passiveIpAddr";
+    public final static String PARM_PASSIVE_SERVICE_NAME = "passiveServiceName";
+    public final static String PARM_PASSIVE_SERVICE_STATUS = "passiveStatus";
 
     //
     // End event parms

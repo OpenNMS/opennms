@@ -31,39 +31,62 @@
 //
 package org.opennms.netmgt.virtual;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.Category;
+import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.capsd.EventUtils;
 import org.opennms.netmgt.config.PassiveStatusConfigFactory;
+import org.opennms.netmgt.config.virtual.PassiveStatusUei;
 import org.opennms.netmgt.daemon.ServiceDaemon;
 import org.opennms.netmgt.eventd.EventIpcManager;
 import org.opennms.netmgt.eventd.EventListener;
+import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.poller.pollables.PollStatus;
 import org.opennms.netmgt.xml.event.Event;
+import org.opennms.netmgt.xml.event.Parm;
+import org.opennms.netmgt.xml.event.Parms;
 
 public class PassiveStatusKeeper extends ServiceDaemon implements EventListener {
     
-    private static Map m_statusTable = null;
-    private static boolean m_initialized = false;
-    private static PassiveStatusKeeper m_instance = new PassiveStatusKeeper();
+    private static boolean s_initialized = false;
+    private static PassiveStatusKeeper s_instance = new PassiveStatusKeeper();
 
+    private Map m_statusTable = null;
+    private EventIpcManager m_eventMgr;
+
+    
     public PassiveStatusKeeper() {
-        createMessageSelectorAndSubscribe();
     }
-    public static PassiveStatusKeeper getInstance() {
-        if (!m_initialized) {
+    
+    public PassiveStatusKeeper(EventIpcManager eventMgr) {
+        setEventManager(eventMgr);
+    }
+    
+    public synchronized static void setInstance(PassiveStatusKeeper psk) {
+        s_instance = psk;
+    }
+    
+    public synchronized static PassiveStatusKeeper getInstance() {
+        if (s_instance == null) {
             throw new IllegalStateException("PassiveStatusKeeper has not been initialized.");
         }
-        return m_instance;
+        return s_instance;
     }
 
-    private EventIpcManager m_eventMgr;
     
     public void init() {
-        if (!m_initialized) {
+        if (!s_initialized) {
+            createMessageSelectorAndSubscribe();
             m_statusTable = new HashMap();
-            m_initialized = true;
+            s_initialized = true;
             setStatus(START_PENDING);
         }
     }
@@ -74,8 +97,15 @@ public class PassiveStatusKeeper extends ServiceDaemon implements EventListener 
 
     public void stop() {
         setStatus(STOP_PENDING);
-        m_statusTable = null;
         setStatus(STOPPED);
+    }
+    
+    public void destroy() {
+        setStatus(STOPPED);
+        s_initialized = false;
+        s_instance = null;
+        m_eventMgr = null;
+        m_statusTable = null;
     }
 
     public String getName() {
@@ -93,20 +123,66 @@ public class PassiveStatusKeeper extends ServiceDaemon implements EventListener 
         m_statusTable.put(nodeLabel+":"+ipAddr+":"+svcName, pollStatus);
     }
 
-    public Object getStatus(String nodeLabel, String ipAddr, String svcName) {
+    public PollStatus getStatus(String nodeLabel, String ipAddr, String svcName) {
         //FIXME: Throw a log or exception here if this method is called and the this class hasn't been initialized
         PollStatus status = (PollStatus) (m_statusTable == null ? PollStatus.STATUS_UNKNOWN : m_statusTable.get(nodeLabel+":"+ipAddr+":"+svcName));
         return (status == null ? PollStatus.STATUS_UNKNOWN : status);
     }
 
     private void createMessageSelectorAndSubscribe() {
-        List ueis = PassiveStatusConfigFactory.getInstance().getConfig().getPassiveStatusUeiCollection();
+        List passiveStatusUeis = PassiveStatusConfigFactory.getInstance().getConfig().getPassiveStatusUeiCollection();
+        List ueis = new ArrayList();
+        for (Iterator it = passiveStatusUeis.iterator(); it.hasNext();) {
+            PassiveStatusUei psu = (PassiveStatusUei) it.next();
+            ueis.add(psu.getValue());
+        }
         // Subscribe to eventd
         getEventManager().addEventListener(this, ueis);
     }
 
     public void onEvent(Event e) {
-        // TODO Auto-generated method stub
+        if (isPassiveStatusEvent(e)) {
+            log().debug("onEvent: received valid registered passive status event: "+e);
+            setStatus(EventUtils.getParm(e, EventConstants.PARM_PASSIVE_NODE_LABEL), EventUtils.getParm(e, EventConstants.PARM_PASSIVE_IPADDR), EventUtils.getParm(e, EventConstants.PARM_PASSIVE_SERVICE_NAME), determinePollStatus(e));
+        } else {
+            log().debug("onEvent: received Invalid registered passive status event: "+e);
+        }
+    }
+
+    private PollStatus determinePollStatus(Event e) {
+        String status = EventUtils.getParm(e, EventConstants.PARM_PASSIVE_SERVICE_STATUS);
+        
+        if (status.equalsIgnoreCase("Up")) {
+            return PollStatus.getPollStatus(ServiceMonitor.SERVICE_AVAILABLE, e.getLogmsg().getContent());
+        } else if(status.equalsIgnoreCase("Down")) {
+            return PollStatus.getPollStatus(ServiceMonitor.SERVICE_UNAVAILABLE, e.getLogmsg().getContent());
+        } else if(status.equalsIgnoreCase("Unknown")) {
+            return PollStatus.getPollStatus(ServiceMonitor.SERVICE_UNKNOWN, e.getLogmsg().getContent());
+        } else if(status.equalsIgnoreCase("Unresponsive")) {
+            return PollStatus.getPollStatus(ServiceMonitor.SERVICE_UNRESPONSIVE, e.getLogmsg().getContent());
+        } else {
+            return PollStatus.getPollStatus(ServiceMonitor.SERVICE_UNKNOWN, e.getLogmsg().getContent());
+        }
+    }
+
+    private boolean isPassiveStatusEvent(Event e) {
+        String labels[] = { EventConstants.PARM_PASSIVE_NODE_LABEL, EventConstants.PARM_PASSIVE_IPADDR, EventConstants.PARM_PASSIVE_SERVICE_NAME, EventConstants.PARM_PASSIVE_SERVICE_STATUS };
+        Parms parms = e.getParms();
+        if (parms != null) {
+            List labelList = getParmsLabels(parms);
+            if (labelList.containsAll(Arrays.asList(labels)))
+                return true;
+        }
+        return false;
+    }
+
+    private List getParmsLabels(Parms parms) {
+        List labels = new ArrayList();
+        Collection parmColl = parms.getParmCollection();
+        for (Iterator it = parmColl.iterator(); it.hasNext();) {
+            labels.add(((Parm) it.next()).getParmName());
+        }
+        return labels;
     }
 
     public EventIpcManager getEventManager() {
@@ -126,6 +202,10 @@ public class PassiveStatusKeeper extends ServiceDaemon implements EventListener 
 
     public void setEventMgr(EventIpcManager eventMgr) {
         m_eventMgr = eventMgr;
+    }
+
+    private Category log() {
+        return ThreadCategory.getInstance(PassiveStatusKeeper.class);
     }
 
 }
