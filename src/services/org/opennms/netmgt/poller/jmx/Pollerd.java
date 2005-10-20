@@ -96,7 +96,6 @@ public class Pollerd implements PollerdMBean {
     public int getStatus() {
         // Set the category prefix
         ThreadCategory.setPrefix(LOG4J_CATEGORY);
-        Category log = ThreadCategory.getInstance();
 
         return getPoller().getStatus();
     }
