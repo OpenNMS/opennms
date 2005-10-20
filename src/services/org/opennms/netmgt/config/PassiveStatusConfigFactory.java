@@ -39,12 +39,16 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.ConfigFileConstants;
 import org.opennms.netmgt.config.virtual.PassiveStatusConfiguration;
+import org.opennms.netmgt.config.virtual.PassiveStatusUei;
 
 /**
  * This is the singleton class used to load the configuration from the
@@ -58,11 +62,11 @@ import org.opennms.netmgt.config.virtual.PassiveStatusConfiguration;
  * @author <a href="mailto:david@opennms.org">David Hustace </a>
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
  */
-public final class PassiveStatusConfigFactory {
+public final class PassiveStatusConfigFactory implements PassiveStatusConfig {
     /**
      * The singleton instance of this factory
      */
-    private static PassiveStatusConfigFactory m_singleton = null;
+    private static PassiveStatusConfig m_singleton = null;
 
     /**
      * The config class loaded from the config file
@@ -150,14 +154,14 @@ public final class PassiveStatusConfigFactory {
      * @throws java.lang.IllegalStateException
      *             Thrown if the factory has not yet been initialized.
      */
-    public static synchronized PassiveStatusConfigFactory getInstance() {
+    public static synchronized PassiveStatusConfig getInstance() {
         if (!m_loaded)
             throw new IllegalStateException("getInstance: The factory has not been initialized");
 
         return m_singleton;
     }
 
-	public static void setInstance(PassiveStatusConfigFactory singleton) {
+	public static void setInstance(PassiveStatusConfig singleton) {
 		m_singleton=singleton;
 		m_loaded=true;
 	}
@@ -169,6 +173,16 @@ public final class PassiveStatusConfigFactory {
      */
     public synchronized PassiveStatusConfiguration getConfig() {
         return m_config;
+    }
+
+    public List getUEIList() {
+        List passiveStatusUeis = getConfig().getPassiveStatusUeiCollection();
+        List ueis = new ArrayList();
+        for (Iterator it = passiveStatusUeis.iterator(); it.hasNext();) {
+            PassiveStatusUei psu = (PassiveStatusUei) it.next();
+            ueis.add(psu.getValue());
+        }
+        return ueis;
     }
 
 }

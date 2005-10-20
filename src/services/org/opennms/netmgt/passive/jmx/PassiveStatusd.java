@@ -31,39 +31,87 @@
 //
 package org.opennms.netmgt.passive.jmx;
 
-import org.opennms.core.fiber.Fiber;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
+import java.io.IOException;
+
+import org.apache.log4j.Category;
+import org.exolab.castor.xml.MarshalException;
+import org.exolab.castor.xml.ValidationException;
+import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.config.PassiveStatusConfigFactory;
+import org.opennms.netmgt.eventd.EventIpcManager;
+import org.opennms.netmgt.eventd.EventIpcManagerFactory;
+import org.opennms.netmgt.virtual.PassiveStatusKeeper;
 
 public class PassiveStatusd implements PassiveStatusdMBean {
 
-    private ClassPathXmlApplicationContext m_context;
-    int m_status = Fiber.START_PENDING;
-    
-    // used only for testing
-    ApplicationContext getContext() {
-        return m_context;
-    }
+    public final static String LOG4J_CATEGORY = "OpenNMS.PassiveStatus";
 
     public void init() {
+        // Set the category prefix
+        ThreadCategory.setPrefix(LOG4J_CATEGORY);
+
+
+        Category log = ThreadCategory.getInstance();
+        try {
+            PassiveStatusConfigFactory.init();
+        } catch (MarshalException e) {
+            log.error("Could not unmarshall configuration", e);
+        } catch (ValidationException e) {
+            log.error("validation error ", e);
+        } catch (IOException e) {
+            log.error("IOException: ", e);
+        }
+        
+        EventIpcManagerFactory.init();
+        EventIpcManager mgr = EventIpcManagerFactory.getIpcManager();
+
+        PassiveStatusKeeper keeper = getPassiveStatusKeeper();
+        keeper.setConfig(PassiveStatusConfigFactory.getInstance());
+        keeper.setEventManager(mgr);
+        keeper.init();
     }
 
     public void start() {
-        m_status = Fiber.STARTING;
-        m_context = new ClassPathXmlApplicationContext("/org/opennms/netmgt/passive/passive-context.xml");
-        m_status = Fiber.RUNNING;
+        // Set the category prefix
+        ThreadCategory.setPrefix(LOG4J_CATEGORY);
+
+        getPassiveStatusKeeper().start();
     }
 
     public void stop() {
-        m_status = Fiber.STOP_PENDING;
-        m_context.close();
-        
-        
-        m_status = Fiber.STOPPED;
+        // Set the category prefix
+        ThreadCategory.setPrefix(LOG4J_CATEGORY);
+
+        getPassiveStatusKeeper().stop();
+    }
+
+    public int getStatus() {
+        // Set the category prefix
+        ThreadCategory.setPrefix(LOG4J_CATEGORY);
+
+        return getPassiveStatusKeeper().getStatus();
     }
 
     public String status() {
-        return Fiber.STATUS_NAMES[m_status];
+        // Set the category prefix
+        ThreadCategory.setPrefix(LOG4J_CATEGORY);
+
+        return org.opennms.core.fiber.Fiber.STATUS_NAMES[getStatus()];
     }
+
+    public String getStatusText() {
+        // Set the category prefix
+        ThreadCategory.setPrefix(LOG4J_CATEGORY);
+
+        return org.opennms.core.fiber.Fiber.STATUS_NAMES[getStatus()];
+    }
+
+    private PassiveStatusKeeper getPassiveStatusKeeper() {
+        // Set the category prefix
+        ThreadCategory.setPrefix(LOG4J_CATEGORY);
+
+        return PassiveStatusKeeper.getInstance();
+    }
+
 
 }

@@ -43,8 +43,7 @@ import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.capsd.EventUtils;
-import org.opennms.netmgt.config.PassiveStatusConfigFactory;
-import org.opennms.netmgt.config.virtual.PassiveStatusUei;
+import org.opennms.netmgt.config.PassiveStatusConfig;
 import org.opennms.netmgt.daemon.ServiceDaemon;
 import org.opennms.netmgt.eventd.EventIpcManager;
 import org.opennms.netmgt.eventd.EventListener;
@@ -56,11 +55,12 @@ import org.opennms.netmgt.xml.event.Parms;
 
 public class PassiveStatusKeeper extends ServiceDaemon implements EventListener {
     
-    private static boolean s_initialized = false;
     private static PassiveStatusKeeper s_instance = new PassiveStatusKeeper();
 
     private Map m_statusTable = null;
     private EventIpcManager m_eventMgr;
+    private PassiveStatusConfig m_config;
+    private boolean m_initialized = false;
 
     
     public PassiveStatusKeeper() {
@@ -75,20 +75,25 @@ public class PassiveStatusKeeper extends ServiceDaemon implements EventListener 
     }
     
     public synchronized static PassiveStatusKeeper getInstance() {
-        if (s_instance == null) {
-            throw new IllegalStateException("PassiveStatusKeeper has not been initialized.");
-        }
         return s_instance;
     }
 
     
     public void init() {
-        if (!s_initialized) {
+        if (!m_initialized) {
+            checkPreRequisites();
             createMessageSelectorAndSubscribe();
             m_statusTable = new HashMap();
-            s_initialized = true;
+            m_initialized = true;
             setStatus(START_PENDING);
         }
+    }
+
+    private void checkPreRequisites() {
+        if (m_config == null)
+            throw new IllegalStateException("config has not been set");
+        if (m_eventMgr == null)
+            throw new IllegalStateException("eventManager has not been set");
     }
 
     public void start() {
@@ -102,9 +107,9 @@ public class PassiveStatusKeeper extends ServiceDaemon implements EventListener 
     
     public void destroy() {
         setStatus(STOPPED);
-        s_initialized = false;
-        s_instance = null;
+        m_initialized = false;
         m_eventMgr = null;
+        m_config = null;
         m_statusTable = null;
     }
 
@@ -120,7 +125,13 @@ public class PassiveStatusKeeper extends ServiceDaemon implements EventListener 
     }
 
     public void setStatus(String nodeLabel, String ipAddr, String svcName, PollStatus pollStatus) {
+        checkInit();
         m_statusTable.put(nodeLabel+":"+ipAddr+":"+svcName, pollStatus);
+    }
+
+    private void checkInit() {
+        if (!m_initialized)
+            throw new IllegalStateException("the service has not been intialized");
     }
 
     public PollStatus getStatus(String nodeLabel, String ipAddr, String svcName) {
@@ -130,14 +141,8 @@ public class PassiveStatusKeeper extends ServiceDaemon implements EventListener 
     }
 
     private void createMessageSelectorAndSubscribe() {
-        List passiveStatusUeis = PassiveStatusConfigFactory.getInstance().getConfig().getPassiveStatusUeiCollection();
-        List ueis = new ArrayList();
-        for (Iterator it = passiveStatusUeis.iterator(); it.hasNext();) {
-            PassiveStatusUei psu = (PassiveStatusUei) it.next();
-            ueis.add(psu.getValue());
-        }
         // Subscribe to eventd
-        getEventManager().addEventListener(this, ueis);
+        getEventManager().addEventListener(this, m_config.getUEIList());
     }
 
     public void onEvent(Event e) {
@@ -186,22 +191,19 @@ public class PassiveStatusKeeper extends ServiceDaemon implements EventListener 
     }
 
     public EventIpcManager getEventManager() {
-        if (m_eventMgr == null) {
-            throw new IllegalStateException("getEventManager: EventIpcManager not set in PassiveStatusKeeper.");
-        }
         return m_eventMgr;
     }
 
     public void setEventManager(EventIpcManager eventMgr) {
         m_eventMgr = eventMgr;
     }
-
-    public EventIpcManager getEventMgr() {
-        return m_eventMgr;
+    
+    public PassiveStatusConfig getConfig() {
+        return m_config;
     }
-
-    public void setEventMgr(EventIpcManager eventMgr) {
-        m_eventMgr = eventMgr;
+    
+    public void setConfig(PassiveStatusConfig config) {
+        m_config = config;
     }
 
     private Category log() {

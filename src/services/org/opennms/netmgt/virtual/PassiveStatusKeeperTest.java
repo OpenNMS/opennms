@@ -92,11 +92,27 @@ public class PassiveStatusKeeperTest extends MockObjectTestCase {
         Reader rdr = new StringReader(passiveStatusConfiguration);
         PassiveStatusConfigFactory.setInstance(new PassiveStatusConfigFactory(rdr));
         
-        m_psk = new PassiveStatusKeeper(m_eventMgr);
+        m_psk = PassiveStatusKeeper.getInstance();
+        m_psk.setEventManager(m_eventMgr);
+        m_psk.setConfig(PassiveStatusConfigFactory.getInstance());
+        
         m_psk.init();
         m_psk.start();
         
-}
+    }
+
+    protected void tearDown() throws Exception {
+        m_eventMgr.finishProcessingEvents();
+        m_psk.stop();
+        m_psk.destroy();
+        sleep(200);
+        MockLogAppender.assertNoWarningsOrGreater();
+        DatabaseConnectionFactory.setInstance(null);
+        m_db.drop();
+        MockUtil.println("------------ End Test "+getName()+" --------------------------");
+        super.tearDown();
+    }
+    
 
     private void createAnticipators() {
         m_anticipator = new EventAnticipator();
@@ -139,17 +155,6 @@ public class PassiveStatusKeeperTest extends MockObjectTestCase {
         }
     }
 
-    protected void tearDown() throws Exception {
-        m_eventMgr.finishProcessingEvents();
-        m_psk.destroy();
-        sleep(200);
-        MockLogAppender.assertNoWarningsOrGreater();
-        DatabaseConnectionFactory.setInstance(null);
-        m_db.drop();
-        MockUtil.println("------------ End Test "+getName()+" --------------------------");
-        super.tearDown();
-    }
-    
 
     public void testSetStatus() {
         String nodeLabel = "localhost";
@@ -174,7 +179,11 @@ public class PassiveStatusKeeperTest extends MockObjectTestCase {
         testSetStatus(nodeLabel, ipAddr, svcName);
 
         m_psk.stop();
+        m_psk.destroy();
         
+        
+        m_psk.setEventManager(m_eventMgr);
+        m_psk.setConfig(PassiveStatusConfigFactory.getInstance());
         m_psk.init();
         m_psk.start();
         
