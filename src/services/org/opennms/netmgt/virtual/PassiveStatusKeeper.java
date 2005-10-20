@@ -137,7 +137,7 @@ public class PassiveStatusKeeper extends ServiceDaemon implements EventListener 
     public PollStatus getStatus(String nodeLabel, String ipAddr, String svcName) {
         //FIXME: Throw a log or exception here if this method is called and the this class hasn't been initialized
         PollStatus status = (PollStatus) (m_statusTable == null ? PollStatus.STATUS_UNKNOWN : m_statusTable.get(nodeLabel+":"+ipAddr+":"+svcName));
-        return (status == null ? PollStatus.STATUS_UNKNOWN : status);
+        return (status == null ? PollStatus.STATUS_UP : status);
     }
 
     private void createMessageSelectorAndSubscribe() {
