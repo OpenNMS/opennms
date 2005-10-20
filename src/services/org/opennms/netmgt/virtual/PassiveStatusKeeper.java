@@ -31,6 +31,8 @@
 //
 package org.opennms.netmgt.virtual;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -43,12 +45,14 @@ import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.capsd.EventUtils;
+import org.opennms.netmgt.config.DbConnectionFactory;
 import org.opennms.netmgt.config.PassiveStatusConfig;
 import org.opennms.netmgt.daemon.ServiceDaemon;
 import org.opennms.netmgt.eventd.EventIpcManager;
 import org.opennms.netmgt.eventd.EventListener;
 import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.poller.pollables.PollStatus;
+import org.opennms.netmgt.utils.Querier;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.Parms;
@@ -61,6 +65,8 @@ public class PassiveStatusKeeper extends ServiceDaemon implements EventListener 
     private EventIpcManager m_eventMgr;
     private PassiveStatusConfig m_config;
     private boolean m_initialized = false;
+
+    private DbConnectionFactory m_dbConnectionFactory;
 
     
     public PassiveStatusKeeper() {
@@ -80,13 +86,32 @@ public class PassiveStatusKeeper extends ServiceDaemon implements EventListener 
 
     
     public void init() {
-        if (!m_initialized) {
-            checkPreRequisites();
-            createMessageSelectorAndSubscribe();
-            m_statusTable = new HashMap();
-            m_initialized = true;
-            setStatus(START_PENDING);
-        }
+        if (m_initialized) return;
+        
+        checkPreRequisites();
+        createMessageSelectorAndSubscribe();
+        
+        m_statusTable = new HashMap();
+        
+        String sql = "select node.nodeLabel AS nodeLabel, outages.ipAddr AS ipAddr, service.serviceName AS serviceName " +
+                "FROM outages " +
+                "JOIN node ON outages.nodeId = node.nodeId " +
+                "JOIN service ON outages.serviceId = service.serviceId " +
+                "WHERE outages.ifRegainedService is NULL";
+        
+        Querier querier = new Querier(m_dbConnectionFactory, sql) {
+        
+            public void processRow(ResultSet rs) throws SQLException {
+                m_statusTable.put(rs.getString("nodeLabel")+":"+rs.getString("ipAddr")+":"+rs.getString("serviceName"), PollStatus.STATUS_DOWN);
+            }
+        
+        };
+        querier.execute();
+        
+        
+        
+        m_initialized = true;
+        setStatus(START_PENDING);
     }
 
     private void checkPreRequisites() {
@@ -94,6 +119,8 @@ public class PassiveStatusKeeper extends ServiceDaemon implements EventListener 
             throw new IllegalStateException("config has not been set");
         if (m_eventMgr == null)
             throw new IllegalStateException("eventManager has not been set");
+        if (m_dbConnectionFactory == null)
+            throw new IllegalStateException("dbConnectionFactory has not been set");
     }
 
     public void start() {
@@ -205,7 +232,15 @@ public class PassiveStatusKeeper extends ServiceDaemon implements EventListener 
     public void setConfig(PassiveStatusConfig config) {
         m_config = config;
     }
-
+    
+    public DbConnectionFactory getDbConnectoinFactory() {
+        return m_dbConnectionFactory;
+    }
+    
+    public void setDbConnectionFactory(DbConnectionFactory dbConnectionFactory) {
+        m_dbConnectionFactory = dbConnectionFactory;
+    }
+    
     private Category log() {
         return ThreadCategory.getInstance(PassiveStatusKeeper.class);
     }
