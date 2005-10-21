@@ -7,6 +7,29 @@
   <para>Here is the list of known issues in this release of OpenNMS.</para>
 
   <section>
+    <title>OpenNMS Won't Start - Complains about Configuration Files</title>
+
+    <para>If you are upgrading from a 1.2 system to 1.3, we have changed the
+    version of castor and thus any files that are modified via the GUI
+    (including <filename>poller-configuration.xml</filename>,
+    <filename>capsd-configuration.xml</filename>,
+    <filename>users.xml</filename>, <filename>groups.xml</filename>,
+    <filename>notifications.xml</filename>, etc.) will need to be run through
+    the xml parser script before OpenNMS will start without an error.</para>
+
+    <para><programlisting># $OPENNMS_HOME/bin/xml.parser.pl -w [filename]</programlisting></para>
+  </section>
+
+  <section>
+    <title>Tomcat Won't Start</title>
+
+    <para>If you are upgrading from a 1.2 system to 1.3, make sure you run the
+    webapp portion of the installer script. This should correctly set the new
+    symlinks. If not, remove any invalid symlinks from
+    <filename>$TOMCAT4_HOME/server/lib</filename>.</para>
+  </section>
+
+  <section>
     <title>Invalid Symbolic Link on Some Distros</title>
 
     <para>On Mandrake 10, and perhaps others, the symbolic link created in

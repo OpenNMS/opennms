@@ -4,6 +4,17 @@
 
   <subtitle>About This Release</subtitle>
 
+  <para>Release 1.3.0 is the first "development" release on the road to
+  version 1.4.0. As a development release, it should be considered unstable
+  for use in production environments, but you are encouraged to try it out. It
+  contains a number of features such as a new alarms subsystem, automations
+  via vacuumd, SNMP version 3 support, JMX data collection and more. Please,
+  please note the "in progress" nature of this release, as large amounts of
+  code have been rewritten. Unless you have a commercial support agreement or
+  are just very brave, don't use it in production.</para>
+
+  <para>The code word for 1.3.0 is "wererabbit"</para>
+
   <para>Release 1.2.4 is yet another maintenance release for OpenNMS. It
   includes a few minor bug fixes, some new configurations, and a couple of
   small features.</para>

@@ -12,6 +12,149 @@
   version 1.1.5 continues that progress.</para>
 
   <section>
+    <title>Changes in OpenNMS 1.3.0</title>
+
+    <section>
+      <title>New Features</title>
+
+      <para>As with many open source projects, the OpenNMS documentation could
+      be better. For many of the new and somewhat complex features in this
+      development release, please refer to the Wiki page for that particular
+      feature.</para>
+
+      <bridgehead>SNMP version 3 Support</bridgehead>
+
+      <para>Support for SNMP version 3, both Authentication and Privacy, for
+      polling and data collection. Trap support is soon to follow. For
+      detailed information see:</para>
+
+      <para><ulink
+      url="http://www.opennms.org/wiki/index.php?page=SnmpV3Configuration">http://www.opennms.org/wiki/index.php?page=SnmpV3Configuration</ulink></para>
+
+      <bridgehead>JMX Polling and Data Collection</bridgehead>
+
+      <para>OpenNMS is written in Java. We like Java. But one of the
+      shortcomings is that it is hard to determine what resources are being
+      used within the virtual machine. The java process might be using 512 MB,
+      but how much of that is the actual application within the machine using?
+      Close to all of it? Very little?</para>
+
+      <para>The new JMX poller and data collector will allow for this
+      information from within the virtual machine to be used in pollers and
+      collectors. Also note this is our first non-SNMP based data
+      collector.</para>
+
+      <para>More Information: <ulink
+      url="http://www.opennms.org/wiki/index.php?page=JMXConfiguration">http://www.opennms.org/wiki/index.php?page=JMXConfiguration</ulink></para>
+
+      <para>Serious kudos to Mike Jamison for his work on bringing this to
+      OpenNMS.</para>
+
+      <bridgehead>Alarms</bridgehead>
+
+      <para>What happens if you get lots of the same event? It has the ability
+      to clog up the event browser. In the office there is a Linksys router
+      that sends an SNMP trap on every network connection (over 100,000 a day
+      sometimes).</para>
+
+      <para>The new alarms system will allow important events to be "reduced"
+      into alarms. If an event comes in with the same "reduction key" as a
+      previous event, the alarm will increment the "count" of events, yet it
+      will still only take up a single line in the alarm browser. Clicking on
+      the count will bring up the event browser with just the events that have
+      been reduced.</para>
+
+      <para>More Information: <ulink
+      url="http://www.opennms.org/wiki/index.php?page=Alarms">http://www.opennms.org/wiki/index.php?page=Alarms</ulink></para>
+
+      <bridgehead>Automations</bridgehead>
+
+      <para>OpenNMS provides you with a more robust solution by automating its
+      behavior to meet the requirements of your business or organization. For
+      example, say you have an alarm with the severity of Minor that has not
+      been acknowledged in the last 20 minutes you might want to escalate the
+      severity. As of version 1.2, OpenNMS has a daemon that runs SQL
+      statements on an interval called Vacuumd. Its configuration has been
+      enhanced with a configuration that now allows configuration of processes
+      we're calling Automations that are defined by Triggers and
+      Actions.</para>
+
+      <para>More Information: <ulink
+      url="http://www.opennms.org/wiki/index.php?page=Automations">http://www.opennms.org/wiki/index.php?page=Automations</ulink></para>
+
+      <bridgehead>Roles</bridgehead>
+
+      <para>This is a new feature for managing Notifications. If you have,
+      say, an On-Call role where the users change over time, this feature
+      allows you to schedule them in advance and OpenNMS will manage that
+      schedule for you.</para>
+
+      <para>More Information: <ulink
+      url="http://www.opennms.org/wiki/index.php?page=Roles">http://www.opennms.org/wiki/index.php?page=Roles</ulink></para>
+
+      <bridgehead>Group Duty Schedules</bridgehead>
+
+      <para>Bill Ayres wrote a nifty feature called Group Duty Schedules. You
+      add them just as you would add Duty Schedules to users. If a Group is
+      listed as a target in a destination path, the duty schedule will apply
+      to the whole group (individual users and roles also in the target are
+      not affected).</para>
+
+      <para>The best part of this feature is that the notices are still
+      created (and will show up on the main page). However, if a notice that
+      is created while a group is off duty has not been acknowledged by the
+      time they come on duty, it will be sent. So if there are, say, a group
+      of servers that you wish to monitor but don't wish to be paged about in
+      the middle of the night, you can use this feature so you know about them
+      when you come back on duty the next business day.</para>
+
+      <bridgehead>New HTTP Monitor</bridgehead>
+
+      <para>The HTTP Monitor has been improved to handle virtual domains,
+      different clients, etc. It was based in large part on work done by
+      Erasmo Zubillaga (Bug 919).</para>
+
+      <para>More Information: <ulink
+      url="http://www.opennms.org/wiki/index.php?page=HttpMonitor">http://www.opennms.org/wiki/index.php?page=HttpMonitor</ulink></para>
+
+      <bridgehead>JFreeChart Support</bridgehead>
+
+      <para>You will notice that on the front page of the OpenNMS webUI there
+      are a number of charts displaying information from the OpenNMS database.
+      OpenNMS now supports a JFreeChart integration. It currently only
+      supports bar charts, and the configuration is controlled by the
+      <filename>chart-configuration.xml </filename>file.</para>
+
+      <para>More Information: <ulink
+      url="http://www.opennms.org/wiki/index.php?page=JFreeChartSupport">http://www.opennms.org/wiki/index.php?page=JFreeChartSupport</ulink></para>
+
+      <bridgehead>Zoom Feature for RRDs</bridgehead>
+
+      <para>Borrowed from Cacit, Mike Huot has created the ability to zoom in
+      on RRD graphs within OpenNMS. Simply click on a graph to bring it up in
+      a new window, and then drag the mouse to highlight the region you want
+      to zoom. You can zoom in multiple times. Hit the back button on your
+      browser to zoom out.</para>
+
+      <bridgehead>New Look to Availability Reports</bridgehead>
+
+      <para>Jonathan Sartin has made some nice changes to the Availability
+      Reports look. Instead of bar graphs you get a calendar with colored
+      circles representing the availability level with the actual availability
+      number inside the circle. Just choose "Calendar" format when generating
+      the reports to see the new style.</para>
+    </section>
+
+    <section>
+      <title>Bug Fixes</title>
+
+      <para>There have been entire sections of OpenNMS rewritten to accomodate
+      the new features and to make the product more scalable. Please visit the
+      <filename>CHANGELOG</filename> for a better list.</para>
+    </section>
+  </section>
+
+  <section>
     <title>Changes in OpenNMS 1.2.4</title>
 
     <section>
@@ -31,7 +174,7 @@
       <para>Currently, when a "down" event notification is auto-acknowledged
       with an "up" event, a "RESOLVED" message gets sent to anyone who got the
       original "down" notice. However, if the problem is manually
-      acknowledged, the "RESOLVED" message is not sent. </para>
+      acknowledged, the "RESOLVED" message is not sent.</para>
 
       <para>With the release, when you configure a destination path, you can
       choose "on", "auto" or "off".</para>
