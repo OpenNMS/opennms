@@ -95,6 +95,12 @@
             document.targets.nextPage.value="chooseCommands.jsp";
             document.targets.submit();
         }
+        else if (document.targets.roles.selectedIndex >= 0)
+        {
+        		selectAllEmails();
+            document.targets.nextPage.value="chooseCommands.jsp";
+            document.targets.submit();
+        }
         else if (document.targets.emails.length>0)
         {
             selectAllEmails();

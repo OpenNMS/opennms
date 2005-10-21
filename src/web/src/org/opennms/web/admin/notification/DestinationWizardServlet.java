@@ -32,6 +32,7 @@
 
 package org.opennms.web.admin.notification;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
@@ -44,6 +45,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.exolab.castor.xml.MarshalException;
+import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.config.DestinationPathFactory;
 import org.opennms.netmgt.config.destinationPaths.Escalate;
 import org.opennms.netmgt.config.destinationPaths.Path;
@@ -74,6 +77,17 @@ public class DestinationWizardServlet extends HttpServlet {
     private String SOURCE_PAGE_ESCALATE_ADD = "addEscalation.jsp";
 
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        try {
+            DestinationPathFactory.init();
+        } catch (MarshalException e1) {
+            throw new ServletException("Exception initializing DestinationPatchFactory "+e1.getMessage(), e1);
+        } catch (ValidationException e1) {
+            throw new ServletException("Exception initializing DestinationPatchFactory "+e1.getMessage(), e1);
+        } catch (FileNotFoundException e1) {
+            throw new ServletException("Exception initializing DestinationPatchFactory "+e1.getMessage(), e1);
+        } catch (IOException e1) {
+            throw new ServletException("Exception initializing DestinationPatchFactory "+e1.getMessage(), e1);
+        }
         String sourcePage = request.getParameter("sourcePage");
         HttpSession user = request.getSession(true);
         StringBuffer redirectString = new StringBuffer();
