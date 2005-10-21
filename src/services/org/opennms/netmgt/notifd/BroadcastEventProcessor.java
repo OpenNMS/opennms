@@ -667,22 +667,29 @@ public final class BroadcastEventProcessor implements EventListener {
             long curSendTime = 0;
 
             if (m_notifd.getGroupManager().hasGroup((targetName))) {
+                long next = -1;
                 Group group = m_notifd.getGroupManager().getGroup(targetName);
-                String[] users = group.getUser();
+                next = m_notifd.getGroupManager().groupNextOnDuty(group.getName(), Calendar.getInstance());
+                if (next >= 0) {
+                    log.debug("The group " + group.getName() + " is on duty in " + next + " millisec.");
+                    String[] users = group.getUser();
 
-                if (users != null && users.length > 0) {
-                    for (int j = 0; j < users.length; j++) {
-                        NotificationTask newTask = makeUserTask(startTime + curSendTime, params, noticeId, users[j], targets[i].getCommand(), targetSiblings, autoNotify);
+                    if (users != null && users.length > 0) {
+                        for (int j = 0; j < users.length; j++) {
+                            NotificationTask newTask = makeUserTask(next + startTime + curSendTime, params, noticeId, users[j], targets[i].getCommand(), targetSiblings, autoNotify);
 
-                        if (newTask != null) {
-                            noticeQueue.put(new Long(startTime + curSendTime), newTask);
-                            targetSiblings.add(newTask);
+                            if (newTask != null) {
+                                noticeQueue.put(new Long(next + startTime + curSendTime), newTask);
+                                targetSiblings.add(newTask);
 
-                            curSendTime += TimeConverter.convertToMillis(interval);
+                                curSendTime += TimeConverter.convertToMillis(interval);
+                            }
                         }
+                    } else {
+                        log.debug("Not sending notice, no users specified for group " + group.getName());
                     }
                 } else {
-                        log.debug("Not sending notice, no users specified for group " + group.getName());
+                    log.debug("The group " + group.getName() + " is not on duty. No notification will be sent to this group.");
                 }
             } else if (m_notifd.getUserManager().hasUser(targetName)) {
                 NotificationTask newTask = makeUserTask(startTime + curSendTime, params, noticeId, targetName, targets[i].getCommand(), targetSiblings, autoNotify);

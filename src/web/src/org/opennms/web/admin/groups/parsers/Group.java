@@ -62,6 +62,11 @@ public class Group implements Cloneable {
     private String m_groupComments;
 
     /**
+     * The group info for the group
+     */
+     private GroupInfo m_groupInfo;
+
+    /**
      * The list of users in the group
      */
     private List m_users;
@@ -79,6 +84,7 @@ public class Group implements Cloneable {
         m_groupName = "";
         m_groupComments = "";
         m_users = new ArrayList();
+        m_groupInfo = new GroupInfo();
     }
 
     /**
@@ -112,6 +118,24 @@ public class Group implements Cloneable {
      */
     public synchronized void removePropertyChangeListener(PropertyChangeListener listener) {
         m_propChange.removePropertyChangeListener(listener);
+    }
+
+    /**
+     * Returns the group information for this group
+     * 
+     * @return the group info
+     */
+    public GroupInfo getGroupInfo() {
+        return m_groupInfo;
+    }
+
+    /**
+     * Sets the group information for this group
+     * 
+     * @param someInfo the group info
+     */
+    public void setGroupInfo(GroupInfo someInfo) {
+        m_groupInfo = someInfo;
     }
 
     /**

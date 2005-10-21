@@ -34,6 +34,7 @@ package org.opennms.web.admin.groups;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Enumeration;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -41,9 +42,10 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+// import org.opennms.netmgt.config.groups.Group;
 
-import org.opennms.web.admin.groups.parsers.Group;
-import org.opennms.web.admin.groups.parsers.GroupInfo;
+import org.opennms.web.admin.groups.parsers.*;
+import org.opennms.web.admin.users.parsers.DutySchedule;
 
 /**
  * A servlet that handles removing duty schedules from a group

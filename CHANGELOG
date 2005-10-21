@@ -1,5 +1,6 @@
 1.2.4 to 1.2.5
 ----------------------------------------------------------------------
+- Added group duty schedules. Bug 1147. Thx Bill
 - Updated Novell Events.
 - Added Netscreen Events.
 - Added AirDefense events and updated Symbol events.

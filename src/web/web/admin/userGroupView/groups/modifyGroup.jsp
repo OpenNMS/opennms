@@ -61,6 +61,43 @@
     
     function validate()
     {
+        for (var c = 0; c < document.modifyGroup.dutySchedules.value; c++)
+        {
+            var beginName= "duty" + c + "Begin";
+            var endName  = "duty" + c + "End";
+
+            var beginValue = new Number(document.modifyGroup.elements[beginName].value);
+            var endValue = new Number(document.modifyGroup.elements[endName].value);
+
+            if (!document.modifyGroup.elements["deleteDuty"+c].checked)
+            {
+                if (isNaN(beginValue))
+                {
+                    alert("The begin time of duty schedule " + (c+1) + " must be expressed in military time with no other characters, such as 800, not 8:00");
+                    return false;
+                }
+                if (isNaN(endValue))
+                {
+                    alert("The end time of duty schedule " + (c+1) + " must be expressed in military time with no other characters, such as 800, not 8:00");
+                    return false;
+                }
+                if (beginValue > endValue)
+                {
+                    alert("The begin value for duty schedule " + (c+1) + " must be less than the end value.");
+                    return false;
+                }
+                if (beginValue < 0 || beginValue > 2359)
+                {
+                    alert("The begin value for duty schedule " + (c+1) + " must be greater than 0 and less than 2400");
+                    return false;
+                }
+                if (endValue < 0 || endValue > 2359)
+                {
+                    alert("The end value for duty schedule " + (c+1) + " must be greater than 0 and less than 2400");
+                    return false;
+                }
+            }
+        }
         return true;
     }
     
@@ -131,6 +168,32 @@
         m2.options[i].text = m2.options[j].text;
         m2.options[j].text = temp;
         m2.selectedIndex = j;		// make new location selected
+    }
+
+    function addGroupDutySchedules()
+    {
+        var ok = validate();
+
+        if(ok)
+        {
+            selectAllSelected();
+            document.modifyGroup.redirect.value="/admin/userGroupView/groups/addGroupDutySchedules";
+            document.modifyGroup.action="admin/userGroupView/groups/updateGroup";
+            document.modifyGroup.submit();
+        }
+    }
+
+    function removeGroupDutySchedules()
+    {
+        var ok = validate();
+
+        if(ok)
+        {
+            selectAllSelected();
+            document.modifyGroup.redirect.value="/admin/userGroupView/groups/modifyGroup.jsp";
+            document.modifyGroup.action="admin/userGroupView/groups/updateGroup";
+            document.modifyGroup.submit();
+        }
     }
     
     function saveGroup()
@@ -245,7 +308,77 @@
   
   </tr>
 
-  </table>
+  <tr>
+    <td width="100%" colspan="3">
+      <p><b>Duty Schedules</b></p>
+      <table width="100%" border="1" cellspacing="0" cellpadding="2" >
+        <tr bgcolor="#999999">
+          <td>&nbsp;</td>
+          <td><b>Delete</b></td>
+          <td><b>Mo</b></td>
+          <td><b>Tu</b></td>
+          <td><b>We</b></td>
+          <td><b>Th</b></td>
+          <td><b>Fr</b></td>
+          <td><b>Sa</b></td>
+          <td><b>Su</b></td>
+          <td><b>Begin Time</b></td>
+          <td><b>End Time</b></td>
+        </tr>
+                    <%
+                            Collection dutySchedules = group.getDutyScheduleCollection(); %>
+                            <input type="hidden" name="dutySchedules" value="<%=group.getDutyScheduleCount()%>">
+                    <%
+                            int i =0;
+                            Iterator iter = dutySchedules.iterator();
+                            while(iter.hasNext())
+                            {
+                                    DutySchedule tmp = new DutySchedule((String)iter.next());
+                                    Vector curSched = tmp.getAsVector();
+                    %>
+                    <tr>
+                      <td width="1%"><%=(i+1)%></td>
+                      <td width="1%">
+                        <input type="checkbox" name="deleteDuty<%=i%>">
+                      </td>
+                      <% ChoiceFormat days = new ChoiceFormat("0#Mo|1#Tu|2#We|3#Th|4#Fr|5#Sa|6#Su");
+                         for (int j = 0; j < 7; j++)
+                         {
+                            Boolean curDay = (Boolean)curSched.get(j);
+                      %>
+                      <td width="5%">
+                        <input type="checkbox" name="duty<%=i+days.format(j)%>" <%= (curDay.booleanValue() ? "checked" : "")%>>
+                      </td>
+                      <% } %>
+                      <td width="5%">
+                        <input type="text" size="4" name="duty<%=i%>Begin" value="<%=curSched.get(7)%>">
+                      </td>
+                      <td width="5%">
+                        <input type="text" size="4" name="duty<%=i%>End" value="<%=curSched.get(8)%>">
+                      </td>
+                    </tr>
+                    <% i++; } %>
+      </table>
+    </td>
+  </tr>
+
+
+  </table><p>
+
+  <p><input type="button" name="addSchedule" value="Add This Many Schedules" onclick="addGroupDutySchedules()">
+    <select name="numSchedules" value="3" size="1">
+      <option value="1">1</option>
+      <option value="2">2</option>
+      <option value="3">3</option>
+      <option value="4">4</option>
+      <option value="5">5</option>
+      <option value="6">6</option>
+      <option value="7">7</option>
+    </select>
+  </p>
+
+  <p><input type="button" name="addSchedule" value="Remove Checked Schedules" onclick="removeGroupDutySchedules()"></p>
+
 
 <!-- finish and discard buttons -->
   <table>

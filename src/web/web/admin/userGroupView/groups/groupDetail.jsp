@@ -39,7 +39,7 @@
 
 -->
 
-<%@page language="java" contentType = "text/html" session = "true"  import="org.opennms.netmgt.config.*, java.util.*,java.text.*,org.opennms.netmgt.config.groups.*"%>
+<%@page language="java" contentType = "text/html" session = "true"  import="org.opennms.netmgt.config.*, java.util.*,java.text.*,org.opennms.netmgt.config.groups.*,org.opennms.netmgt.config.users.DutySchedule"%>
 <%
 	Group group = null;
   	String groupName = request.getParameter("groupName");
@@ -131,6 +131,41 @@
                 <% } %>
               </td>
             </tr>
+            <tr>
+              <td>
+              <b>Duty Schedules:</b>
+                    <table width="50%" border="1" cellspacing="0" cellpadding="2" >
+                      <% Collection dutySchedules = group.getDutyScheduleCollection(); %>
+                      <%
+                              int i =0;
+                              Iterator iter = dutySchedules.iterator();
+                              while(iter.hasNext())
+                              {
+                                      DutySchedule tmp = new DutySchedule((String)iter.next());
+                                      Vector curSched = tmp.getAsVector();
+                                      i++;
+                      %>
+                      <tr>
+                         <% ChoiceFormat days = new ChoiceFormat("0#Mo|1#Tu|2#We|3#Th|4#Fr|5#Sa|6#Su");
+                           for (int j = 0; j < 7; j++)
+                           {
+                               Boolean curDay = (Boolean)curSched.get(j);
+                         %>
+                         <td width="5%">
+                           <%= (curDay.booleanValue() ? days.format(j) : "X")%>
+                         </td>
+                         <% } %>
+                         <td width="5%">
+                           <%=curSched.get(7)%>
+                         </td>
+                         <td width="5%">
+                           <%=curSched.get(8)%>
+                         </td>
+                       </tr>
+                       <% } %>
+                     </table>
+                 </td>
+               </tr>      
           </table>
         </td>
       </tr>
