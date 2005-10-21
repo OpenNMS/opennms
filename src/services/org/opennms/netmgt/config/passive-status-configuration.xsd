@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://xmlns.opennms.org/xsd/config/virtual"
-	xmlns:tns="http://xmlns.opennms.org/xsd/config/virtual" xmlns:this="http://xmlns.opennms.org/xsd/config/virtual">
+<schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://xmlns.opennms.org/xsd/passive-status-configuration"
+	xmlns:this="http://xmlns.opennms.org/xsd/passive-status-configuration">
 	<element name="passive-status-configuration" >
 		<complexType>
 			<sequence>

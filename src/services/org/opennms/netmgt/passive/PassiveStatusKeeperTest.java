@@ -63,11 +63,9 @@ public class PassiveStatusKeeperTest extends MockObjectTestCase {
 
     private PassiveStatusKeeper m_psk;
     private String passiveStatusConfiguration ="<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + 
-            "<tns:passiveStatus-configuration xmlns:tns=\"http://www.example.org/xsd/passive-status-configuration\"\n" + 
-            "                                 xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n" + 
-            "  <tns:passive-status-uei key=\"passiveStatus\" value=\"uei.opennms.org/services/passiveServiceStatus\"/>\n" + 
-            "</tns:passiveStatus-configuration>\n" + 
-            "";
+            "<this:passive-status-configuration xmlns:this=\"http://xmlns.opennms.org/xsd/passive-status-configuration\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n" + 
+            "  <this:passive-status-uei key=\"passiveStatus\" value=\"uei.opennms.org/services/passiveServiceStatus\"/>\n" + 
+            "</this:passive-status-configuration>";
     private MockEventIpcManager m_eventMgr;
     private MockDatabase m_db;
     private MockNetwork m_network;

@@ -47,8 +47,8 @@ import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.ConfigFileConstants;
-import org.opennms.netmgt.config.virtual.PassiveStatusConfiguration;
-import org.opennms.netmgt.config.virtual.PassiveStatusUei;
+import org.opennms.netmgt.config.passive.PassiveStatusConfiguration;
+import org.opennms.netmgt.config.passive.PassiveStatusUei;
 
 /**
  * This is the singleton class used to load the configuration from the

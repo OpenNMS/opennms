@@ -236,7 +236,13 @@
 	<package name="passive-service-example1">
 		<filter>IPADDR IPLIKE *.*.*.*</filter>
 		<include-range begin="1.1.1.1" end="254.254.254.254"/>
-			<service name="NON-IP" interval="30000" user-defined="false" status="on" />
+		<rrd step = "300">
+			<rra>RRA:AVERAGE:0.5:1:2016</rra>
+			<rra>RRA:AVERAGE:0.5:12:4464</rra>
+			<rra>RRA:MIN:0.5:12:4464</rra>
+			<rra>RRA:MAX:0.5:12:4464</rra>
+		</rrd>
+		<service name="NON-IP" interval="30000" user-defined="false" status="on" />
 		<downtime interval="15000" begin="0" end="300000"/>		<!-- 15s, 0, 5m -->
 		<downtime interval="30000" begin="300000" end="43200000"/>	<!-- 30s, 5m, 12h -->
 		<downtime interval="300000" begin="43200000" end="432000000"/>	<!-- 5m, 12h, 5d -->
@@ -274,5 +280,5 @@
 	<!-- 
 	<monitor service="LOOP-BACK" class-name="org.opennms.netmgt.poller.monitors.LooMonitor" />
 	 -->
-	<monitor service="NON-IP" class-name="org.opennms.netmgt.poller.monitors.PassiveStatusMonitor" />
+	<monitor service="NON-IP" class-name="org.opennms.netmgt.poller.monitors.PassiveServiceMonitor" />
 </poller-configuration>
