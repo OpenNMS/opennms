@@ -41,6 +41,7 @@ import junit.framework.TestCase;
 
 import org.opennms.netmgt.mock.MockLogAppender;
 import org.opennms.netmgt.passive.PassiveStatusKeeper;
+import org.opennms.netmgt.passive.PassiveStatusKeeperTest;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.poller.mock.MockPollContext;
