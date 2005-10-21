@@ -46,6 +46,7 @@ import org.opennms.netmgt.mock.MockEventIpcManager;
 import org.opennms.netmgt.mock.MockLogAppender;
 import org.opennms.netmgt.mock.MockMonitoredService;
 import org.opennms.netmgt.mock.MockNetwork;
+import org.opennms.netmgt.mock.MockService;
 import org.opennms.netmgt.mock.MockUtil;
 import org.opennms.netmgt.mock.OutageAnticipator;
 import org.opennms.netmgt.poller.ServiceMonitor;
@@ -95,6 +96,7 @@ public class PassiveStatusKeeperTest extends MockObjectTestCase {
         m_psk = PassiveStatusKeeper.getInstance();
         m_psk.setEventManager(m_eventMgr);
         m_psk.setConfig(PassiveStatusConfigFactory.getInstance());
+        m_psk.setDbConnectionFactory(m_db);
         
         m_psk.init();
         m_psk.start();
@@ -146,6 +148,10 @@ public class PassiveStatusKeeperTest extends MockObjectTestCase {
         m_network.addInterface("192.168.1.5");
         m_network.addService("SMTP");
         m_network.addService("HTTP");
+        m_network.addNode(100, "localhost");
+        m_network.addInterface("127.0.0.1");
+        m_network.addService("PSV");
+        m_network.addService("PSV2");
     }
 
     private void sleep(long millis) {
@@ -157,26 +163,24 @@ public class PassiveStatusKeeperTest extends MockObjectTestCase {
 
 
     public void testSetStatus() {
-        String nodeLabel = "localhost";
-        String ipAddr = "127.0.0.1";
-        String svcName = "PSV";
-        testSetStatus(nodeLabel, ipAddr, svcName);
+        testSetStatus("localhost", "127.0.0.1", "PSV", PollStatus.STATUS_UP);
         
     }
 
-    private void testSetStatus(String nodeLabel, String ipAddr, String svcName) {
-        PollStatus pollStatus = PollStatus.STATUS_UP;
-        
+    private void testSetStatus(String nodeLabel, String ipAddr, String svcName, PollStatus pollStatus) {
         PassiveStatusKeeper.getInstance().setStatus(nodeLabel, ipAddr, svcName, pollStatus);
         assertEquals(pollStatus, PassiveStatusKeeper.getInstance().getStatus(nodeLabel, ipAddr, svcName));
     }
     
     public void testRestart() {
-        String nodeLabel = "localhost";
-        String ipAddr = "127.0.0.1";
-        String svcName = "PSV";
+        testSetStatus("localhost", "127.0.0.1", "PSV", PollStatus.STATUS_UP);
+
+        testSetStatus("localhost", "127.0.0.1", "PSV2", PollStatus.STATUS_DOWN);
         
-        testSetStatus(nodeLabel, ipAddr, svcName);
+        MockService svc = m_network.getService(100, "127.0.0.1", "PSV2");
+        Event downEvent = svc.createDownEvent();
+        m_db.writeEvent(downEvent);
+        m_db.createOutage(svc, downEvent);
 
         m_psk.stop();
         m_psk.destroy();
@@ -184,10 +188,12 @@ public class PassiveStatusKeeperTest extends MockObjectTestCase {
         
         m_psk.setEventManager(m_eventMgr);
         m_psk.setConfig(PassiveStatusConfigFactory.getInstance());
+        m_psk.setDbConnectionFactory(m_db);
         m_psk.init();
         m_psk.start();
         
-        assertEquals(PollStatus.STATUS_UP, PassiveStatusKeeper.getInstance().getStatus(nodeLabel, ipAddr, svcName));
+        assertEquals(PollStatus.STATUS_UP, PassiveStatusKeeper.getInstance().getStatus("localhost", "127.0.0.1", "PSV"));
+        assertEquals(PollStatus.STATUS_DOWN, PassiveStatusKeeper.getInstance().getStatus("localhost", "127.0.0.1", "PSV2"));
     }
     
     public void testDownPassiveStatus() throws InterruptedException, UnknownHostException {

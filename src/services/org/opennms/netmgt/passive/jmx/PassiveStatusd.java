@@ -37,6 +37,7 @@ import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.config.DatabaseConnectionFactory;
 import org.opennms.netmgt.config.PassiveStatusConfigFactory;
 import org.opennms.netmgt.eventd.EventIpcManager;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
@@ -54,12 +55,15 @@ public class PassiveStatusd implements PassiveStatusdMBean {
         Category log = ThreadCategory.getInstance();
         try {
             PassiveStatusConfigFactory.init();
+            DatabaseConnectionFactory.init();
         } catch (MarshalException e) {
             log.error("Could not unmarshall configuration", e);
         } catch (ValidationException e) {
             log.error("validation error ", e);
         } catch (IOException e) {
             log.error("IOException: ", e);
+        } catch (ClassNotFoundException e) {
+            log.error("Unable to initialize database: "+e.getMessage(), e);
         }
         
         EventIpcManagerFactory.init();
@@ -68,6 +72,7 @@ public class PassiveStatusd implements PassiveStatusdMBean {
         PassiveStatusKeeper keeper = getPassiveStatusKeeper();
         keeper.setConfig(PassiveStatusConfigFactory.getInstance());
         keeper.setEventManager(mgr);
+        keeper.setDbConnectionFactory(DatabaseConnectionFactory.getInstance());
         keeper.init();
     }
 

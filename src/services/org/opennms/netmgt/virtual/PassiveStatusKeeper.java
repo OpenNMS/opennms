@@ -141,7 +141,8 @@ public class PassiveStatusKeeper extends ServiceDaemon implements EventListener 
     }
 
     public String getName() {
-        return "OpenNMS.PassiveStatusKeeper";    }
+        return "OpenNMS.PassiveStatusKeeper";
+    }
 
     public void pause() {
         setStatus(PAUSED);

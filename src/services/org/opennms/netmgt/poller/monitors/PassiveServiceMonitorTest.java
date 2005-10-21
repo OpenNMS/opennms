@@ -37,9 +37,6 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.HashMap;
 
-import junit.framework.TestCase;
-
-import org.opennms.netmgt.mock.MockLogAppender;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.poller.mock.MockPollContext;
@@ -49,21 +46,11 @@ import org.opennms.netmgt.poller.pollables.PollableNetwork;
 import org.opennms.netmgt.poller.pollables.PollableNode;
 import org.opennms.netmgt.poller.pollables.PollableService;
 import org.opennms.netmgt.virtual.PassiveStatusKeeper;
+import org.opennms.netmgt.virtual.PassiveStatusKeeperTest;
 
-public class PassiveServiceMonitorTest extends TestCase {
+public class PassiveServiceMonitorTest extends PassiveStatusKeeperTest {
 
-    public void setUp() throws Exception  {
-        super.setUp();
-        MockLogAppender.setupLogging();
-        PassiveStatusKeeper psk = new PassiveStatusKeeper();
-        psk.init();
-        psk.start();
-    }
-
-    public void tearDown() throws Exception  {
-        super.tearDown();
-    }
-
+    // inherit from PassiveStatusKeeperTest so we can inherit all the proper initialization
     public void testPoll() throws UnknownHostException {
         
         PassiveStatusKeeper psk = PassiveStatusKeeper.getInstance();
