@@ -37,9 +37,6 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.HashMap;
 
-import junit.framework.TestCase;
-
-import org.opennms.netmgt.mock.MockLogAppender;
 import org.opennms.netmgt.passive.PassiveStatusKeeper;
 import org.opennms.netmgt.passive.PassiveStatusKeeperTest;
 import org.opennms.netmgt.poller.MonitoredService;
