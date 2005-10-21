@@ -179,13 +179,14 @@ public class PassiveStatusKeeper extends ServiceDaemon implements EventListener 
     }
 
     public void onEvent(Event e) {
+        String key = EventUtils.getParm(e, EventConstants.PARM_PASSIVE_NODE_LABEL)+":"+EventUtils.getParm(e, EventConstants.PARM_PASSIVE_IPADDR)+":"+EventUtils.getParm(e, EventConstants.PARM_PASSIVE_SERVICE_NAME);
         if (isPassiveStatusEvent(e)) {
             log().debug("onEvent: received valid registered passive status event: \n"+EventUtils.toString(e));
-            String key = EventConstants.PARM_PASSIVE_NODE_LABEL+":"+EventConstants.PARM_PASSIVE_IPADDR+":"+EventConstants.PARM_PASSIVE_SERVICE_NAME;
             setStatus(key, determinePollStatus(e));
-            log().debug("onEvent: passive status for: "+EventConstants.PARM_PASSIVE_NODE_LABEL+":");
+            log().debug("onEvent: passive status for: "+key+ "is: "+m_statusTable.get(key));
         } else {
             log().debug("onEvent: received Invalid registered passive status event: \n"+EventUtils.toString(e));
+            log().debug("onEvent: passive status for: "+key+ "is: "+m_statusTable.get(key));
         }
     }
 
