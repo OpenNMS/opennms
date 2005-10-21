@@ -50,27 +50,27 @@ public abstract class ServiceDaemon implements PausableFiber {
 
     abstract public String getName();
 
-    protected void setStatus(int status) {
+    protected synchronized void setStatus(int status) {
         m_status = status;
     }
 
-    public int getStatus() {
+    public synchronized int getStatus() {
         return m_status;
     }
 
-    protected boolean isStartPending() {
+    protected synchronized boolean isStartPending() {
         return m_status == START_PENDING;
     }
 
-    protected boolean isRunning() {
+    protected synchronized boolean isRunning() {
         return m_status == RUNNING;
     }
 
-    protected boolean isPaused() {
+    protected synchronized boolean isPaused() {
         return m_status == PAUSED;
     }
 
-    protected boolean isStarting() {
+    protected synchronized boolean isStarting() {
         return m_status == STARTING;
     }
 

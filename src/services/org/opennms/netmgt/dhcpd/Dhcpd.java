@@ -393,26 +393,16 @@ public final class Dhcpd extends ServiceDaemon implements Runnable, Observer {
                     clnt.addObserver(this);
                     clnt.start();
                 } catch (IOException ioE) {
-                    synchronized (this) {
-                        if (isRunning())
-                            log.error("I/O exception occured creating client handler.", ioE);
-                    }
+                    log.error("I/O exception occured creating client handler.", ioE);
                 }
             }
         } catch (IOException ioE) {
-            synchronized (this) {
-                if (isRunning())
-                    log.error("I/O exception occured processing incomming request", ioE);
-            }
+            log.error("I/O exception occured processing incomming request", ioE);
         } catch (Throwable t) {
-            synchronized (this) {
-                if (isRunning())
-                    log.error("An undeclared throwable was caught", t);
-            }
+            log.error("An undeclared throwable was caught", t);
         } finally {
-            synchronized (this) {
-                setStatus(STOPPED);
-            }
+            log.debug("run: DHCPD client daemon run completed setting status to stopped");
+            setStatus(STOPPED);
         }
 
     }

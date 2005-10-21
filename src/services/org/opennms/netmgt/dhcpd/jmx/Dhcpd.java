@@ -34,6 +34,8 @@
 
 package org.opennms.netmgt.dhcpd.jmx;
 
+import org.opennms.core.utils.ThreadCategory;
+
 public class Dhcpd implements DhcpdMBean {
     public void start() {
         org.opennms.netmgt.dhcpd.Dhcpd dhcpd = org.opennms.netmgt.dhcpd.Dhcpd.getInstance();
@@ -55,6 +57,9 @@ public class Dhcpd implements DhcpdMBean {
     }
 
     public String getStatusText() {
-        return org.opennms.core.fiber.Fiber.STATUS_NAMES[getStatus()];
+        int status = getStatus();
+        String statusText = org.opennms.core.fiber.Fiber.STATUS_NAMES[status];
+        ThreadCategory.getInstance(getClass()).debug("getStatusText: status = "+status+", statusText = "+statusText);
+        return statusText;
     }
 }
