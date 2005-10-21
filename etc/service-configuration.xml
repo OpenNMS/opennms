@@ -188,8 +188,8 @@ maintained
         </service>
 -->
         <service>
-                <name>OpenNMS:Name=PassiveStatusKeeper</name>
-                <class-name>org.opennms.netmgt.passive.jmx.PassiveStatusKeeper</class-name>
+                <name>OpenNMS:Name=PassiveStatusd</name>
+                <class-name>org.opennms.netmgt.passive.jmx.PassiveStatusd</class-name>
                 <invoke pass="0" method="init"/>
                 <invoke pass="1" method="start"/>
                 <invoke at="status" pass="0" method="status"/>
