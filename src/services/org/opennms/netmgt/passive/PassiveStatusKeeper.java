@@ -154,7 +154,12 @@ public class PassiveStatusKeeper extends ServiceDaemon implements EventListener 
 
     public void setStatus(String nodeLabel, String ipAddr, String svcName, PollStatus pollStatus) {
         checkInit();
-        m_statusTable.put(nodeLabel+":"+ipAddr+":"+svcName, pollStatus);
+        setStatus(nodeLabel+":"+ipAddr+":"+svcName, pollStatus);
+    }
+    
+    public void setStatus(String key, PollStatus pollStatus) {
+        checkInit();
+        m_statusTable.put(key, pollStatus);
     }
 
     private void checkInit() {
@@ -175,10 +180,12 @@ public class PassiveStatusKeeper extends ServiceDaemon implements EventListener 
 
     public void onEvent(Event e) {
         if (isPassiveStatusEvent(e)) {
-            log().debug("onEvent: received valid registered passive status event: "+e);
-            setStatus(EventUtils.getParm(e, EventConstants.PARM_PASSIVE_NODE_LABEL), EventUtils.getParm(e, EventConstants.PARM_PASSIVE_IPADDR), EventUtils.getParm(e, EventConstants.PARM_PASSIVE_SERVICE_NAME), determinePollStatus(e));
+            log().debug("onEvent: received valid registered passive status event: \n"+EventUtils.toString(e));
+            String key = EventConstants.PARM_PASSIVE_NODE_LABEL+":"+EventConstants.PARM_PASSIVE_IPADDR+":"+EventConstants.PARM_PASSIVE_SERVICE_NAME;
+            setStatus(key, determinePollStatus(e));
+            log().debug("onEvent: passive status for: "+EventConstants.PARM_PASSIVE_NODE_LABEL+":");
         } else {
-            log().debug("onEvent: received Invalid registered passive status event: "+e);
+            log().debug("onEvent: received Invalid registered passive status event: \n"+EventUtils.toString(e));
         }
     }
 

@@ -41,6 +41,7 @@ package org.opennms.netmgt.capsd;
 
 import java.net.InetAddress;
 import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.List;
 
 import org.apache.log4j.Category;
@@ -48,6 +49,8 @@ import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 import org.opennms.netmgt.eventd.EventListener;
+import org.opennms.netmgt.mock.ParmsWrapper;
+import org.opennms.netmgt.mock.SnmpWrapper;
 import org.opennms.netmgt.utils.XmlrpcUtil;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
@@ -1170,5 +1173,112 @@ public class EventUtils {
 
         return newEvent;
     }
+
+    public static String toString(Event event) {
+            StringBuffer b = new StringBuffer("Event: ");
+            if (event.getAutoacknowledge() != null) {
+            	b.append(" Autoacknowledge: " + event.getAutoacknowledge() + "\n");
+            }
+            if (event.getAutoactionCount() > 0) {
+            	b.append(" Autoactions:");
+            	for (Iterator i = event.getAutoactionCollection().iterator(); i.hasNext(); ) {
+            		b.append(" " + i.next().toString());
+            	}
+            b.append("\n");
+            }
+            if (event.getCreationTime() != null) {
+            	b.append(" CreationTime: " + event.getCreationTime() + "\n");
+          }
+    b.append(" Dbid: " + event.getDbid() + "\n");
+    if (event.getDescr() != null) {
+            b.append(" Descr: " + event.getDescr() + "\n");
+    }
+    if (event.getDistPoller() != null) {
+            b.append(" DistPoller: " + event.getDistPoller() + "\n");
+    }
+    if (event.getForwardCount() > 0) {
+            b.append(" Forwards:");
+            for (Iterator i = event.getForwardCollection().iterator(); i.hasNext(); ) {
+            	b.append(" " + i.next().toString());
+            }
+            b.append("\n");
+    }
+    if (event.getHost() != null) {
+            b.append(" Host: " + event.getHost() + "\n");
+    }
+    if (event.getInterface() != null) {
+            b.append(" Interface: " + event.getInterface() + "\n");
+    }
+    if (event.getLoggroupCount() > 0) {
+            b.append(" Loggroup:");
+            for (Iterator i = event.getLoggroupCollection().iterator(); i.hasNext(); ) {
+            	b.append(" " + i.next().toString());
+            }
+            b.append("\n");
+    }
+    if (event.getLogmsg() != null) {
+            b.append(" Logmsg: " + event.getLogmsg() + "\n");
+    }
+    if (event.getMask() != null) {
+            b.append(" Mask: " + event.getMask() + "\n");
+    }
+    if (event.getMasterStation() != null) {
+            b.append(" MasterStation: " + event.getMasterStation() + "\n");
+    }
+    if (event.getMouseovertext() != null) {
+            b.append(" Mouseovertext: " + event.getMouseovertext() + "\n");
+    }
+    b.append(" Nodeid: " + event.getNodeid() + "\n");
+    if (event.getOperactionCount() > 0) {
+            b.append(" Operaction:");
+            for (Iterator i = event.getOperactionCollection().iterator(); i.hasNext(); ) {
+            	b.append(" " + i.next().toString());
+            }
+            b.append("\n");
+    }
+    if (event.getOperinstruct() != null) {
+            b.append(" Operinstruct: " + event.getOperinstruct() + "\n");
+    }
+    if (event.getParms() != null) {
+            b.append(" Parms: " + new ParmsWrapper(event.getParms()) + "\n");
+    }
+    if (event.getScriptCount() > 0) {
+            b.append(" Script:");
+            for (Iterator i = event.getScriptCollection().iterator(); i.hasNext(); ) {
+            	b.append(" " + i.next().toString());
+            }
+            b.append("\n");
+    }
+    if (event.getService() != null) {
+            b.append(" Service: " + event.getService() + "\n");
+    }
+    if (event.getSeverity() != null) {
+            b.append(" Severity: " + event.getSeverity() + "\n");
+    }
+    if (event.getSnmp() != null) {
+            b.append(" Snmp: " + new SnmpWrapper(event.getSnmp()) + "\n");
+    }
+    if (event.getSnmphost() != null) {
+            b.append(" Snmphost: " + event.getSnmphost() + "\n");
+    }
+    if (event.getSource() != null) {
+            b.append(" Source: " + event.getSource() + "\n");
+    }
+    if (event.getTime() != null) {
+            b.append(" Time: " + event.getTime() + "\n");
+    }
+    if (event.getTticket() != null) {
+            b.append(" Tticket: " + event.getTticket() + "\n");
+    }
+    if (event.getUei() != null) {
+            b.append(" Uei: " + event.getUei() + "\n");
+    }
+    if (event.getUuid() != null) {
+            b.append(" Uuid: " + event.getUuid() + "\n");
+    }
+          
+    b.append("End Event\n");
+          return b.toString();
+        }
 
 }
