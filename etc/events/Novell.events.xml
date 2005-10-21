@@ -9560,7 +9560,7 @@ NCP 104,2&lt;/p&gt;&lt;table&gt;
 	<uei>uei.opennms.org/vendor/novell/traps/nttThresholdtotalServerTrafficKBytes</uei>
 	<event-label>Windows-NT-Server-Trend-MIB defined trap event: nttThresholdtotalServerTrafficKBytes</event-label>
 	<descr>
-&lt;p&gt;The total kilo-bytes transmitted & received by the server
+&lt;p&gt;The total kilo-bytes transmitted and received by the server
 exceeded the threshold&lt;/p&gt;&lt;table&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
@@ -9698,7 +9698,7 @@ the threshold&lt;/p&gt;&lt;table&gt;
 	<uei>uei.opennms.org/vendor/novell/traps/nttThresholdavgAllServerLogons</uei>
 	<event-label>Windows-NT-Server-Trend-MIB defined trap event: nttThresholdavgAllServerLogons</event-label>
 	<descr>
-&lt;p&gt;The average number of all interactive, service, successful &
+&lt;p&gt;The average number of all interactive, service, successful and
 failed logons exceeded the threshold&lt;/p&gt;&lt;table&gt;
 	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
 
