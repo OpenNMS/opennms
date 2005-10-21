@@ -371,7 +371,7 @@ public final class Dhcpd extends ServiceDaemon implements Runnable, Observer {
                         } catch (InterruptedException e) {
                             // ignore
                         }
-                    } else if (isRunning())
+                    } else if (!isRunning())
                         break;
                 }
 
