@@ -31,56 +31,59 @@
 //
 // Tab Size = 8
 
-package org.opennms.netmgt.poller.monitors;
+package org.opennms.netmgt.capsd.plugins;
 
+import java.net.InetAddress;
 import java.util.Map;
 
-import org.opennms.netmgt.config.PollerConfig;
-import org.opennms.netmgt.config.poller.Package;
-import org.opennms.netmgt.passive.PassiveStatusKeeper;
-import org.opennms.netmgt.poller.MonitoredService;
-import org.opennms.netmgt.poller.ServiceMonitor;
-import org.opennms.netmgt.poller.pollables.PollStatus;
+import org.opennms.netmgt.capsd.Plugin;
+import org.opennms.netmgt.config.SnmpPeerFactory;
+import org.opennms.netmgt.utils.ParameterMap;
 /**
  * @author david
  *
  */
-public class PassiveServiceMonitor implements ServiceMonitor {
+public class LoopPlugin implements Plugin {
+
+    private String m_protocolName = "LOOP";
 
     /* (non-Javadoc)
-     * @see org.opennms.netmgt.poller.ServiceMonitor#initialize(org.opennms.netmgt.config.PollerConfig, java.util.Map)
+     * @see org.opennms.netmgt.capsd.Plugin#getProtocolName()
      */
-    public void initialize(PollerConfig config, Map parameters) {
-        return;
+    public String getProtocolName() {
+        return m_protocolName;
     }
 
     /* (non-Javadoc)
-     * @see org.opennms.netmgt.poller.ServiceMonitor#release()
+     * @see org.opennms.netmgt.capsd.Plugin#isProtocolSupported(java.net.InetAddress)
      */
-    public void release() {
-        return;
+    public boolean isProtocolSupported(InetAddress address) {
+        return isProtocolSupported(address, null);
     }
 
     /* (non-Javadoc)
-     * @see org.opennms.netmgt.poller.ServiceMonitor#initialize(org.opennms.netmgt.poller.MonitoredService)
+     * @see org.opennms.netmgt.capsd.Plugin#isProtocolSupported(java.net.InetAddress, java.util.Map)
      */
-    public void initialize(MonitoredService svc) {
-        return;
+    public boolean isProtocolSupported(InetAddress address, Map qualifiers) {
+        
+        if (qualifiers == null)
+            return false;
+        
+        String ipMatch = getIpMatch(qualifiers);
+        if (SnmpPeerFactory.verifyIpMatch(address.getHostAddress(), ipMatch)) {
+            return isSupported(qualifiers);
+        } else {
+            return false;
+        }
+        
     }
 
-    /* (non-Javadoc)
-     * @see org.opennms.netmgt.poller.ServiceMonitor#release(org.opennms.netmgt.poller.MonitoredService)
-     */
-    public void release(MonitoredService svc) {
-        return;
+    private boolean isSupported(Map parameters) {
+        return ParameterMap.getKeyedString(parameters, "is-supported", "false").equalsIgnoreCase("true");
     }
 
-    /* (non-Javadoc)
-     * @see org.opennms.netmgt.poller.ServiceMonitor#poll(org.opennms.netmgt.poller.MonitoredService, java.util.Map, org.opennms.netmgt.config.poller.Package)
-     */
-    public PollStatus poll(MonitoredService svc, Map parameters, Package pkg) {
-        PollStatus status = PassiveStatusKeeper.getInstance().getStatus(svc.getNodeLabel(), svc.getIpAddr(), svc.getSvcName());
-        return status;
+    private String getIpMatch(Map parameters) {
+        return ParameterMap.getKeyedString(parameters, "ip-match", "*.*.*.*");
     }
 
 }

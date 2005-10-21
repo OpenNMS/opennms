@@ -37,6 +37,10 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.HashMap;
 
+import junit.framework.TestCase;
+
+import org.opennms.netmgt.mock.MockLogAppender;
+import org.opennms.netmgt.passive.PassiveStatusKeeper;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.poller.mock.MockPollContext;
@@ -45,8 +49,6 @@ import org.opennms.netmgt.poller.pollables.PollableInterface;
 import org.opennms.netmgt.poller.pollables.PollableNetwork;
 import org.opennms.netmgt.poller.pollables.PollableNode;
 import org.opennms.netmgt.poller.pollables.PollableService;
-import org.opennms.netmgt.virtual.PassiveStatusKeeper;
-import org.opennms.netmgt.virtual.PassiveStatusKeeperTest;
 
 public class PassiveServiceMonitorTest extends PassiveStatusKeeperTest {
 

@@ -205,6 +205,18 @@
          <property key="retry" value="2"/>
          <property key="timeout" value="2000"/>
     </protocol-plugin>
+    <!--
+    Use the LoopPlugin to force a service for use with PassiveStatusMonitor or the LoopMonitor
+    <protocol-plugin protocol="LOOP-BACK" class-name="org.opennms.netmgt.capsd.plugins.LoopPlugin" scan="on" user-defined="false">
+        <property key="ip-match" value="10.1.1.1-254" />
+        <property key="is-supported" value="true" />
+    </protocol-plugin>
+    -->
+    <!-- Using the LoopPlugin to simply establish a service monitored by the PassiveServiceMonitor a service  -->
+    <protocol-plugin protocol="NON-IP" class-name="org.opennms.netmgt.capsd.plugins.LoopPlugin" scan="on" user-defined="false">
+        <property key="ip-match" value="169.254.*.*" />
+        <property key="is-supported" value="true" />
+    </protocol-plugin>
     <smb-config>
         <smb-auth user="guest" password="guest" type="domain">WORKGROUP</smb-auth>
     </smb-config>

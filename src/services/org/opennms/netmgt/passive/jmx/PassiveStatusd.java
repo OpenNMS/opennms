@@ -41,7 +41,7 @@ import org.opennms.netmgt.config.DatabaseConnectionFactory;
 import org.opennms.netmgt.config.PassiveStatusConfigFactory;
 import org.opennms.netmgt.eventd.EventIpcManager;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
-import org.opennms.netmgt.virtual.PassiveStatusKeeper;
+import org.opennms.netmgt.passive.PassiveStatusKeeper;
 
 public class PassiveStatusd implements PassiveStatusdMBean {
 

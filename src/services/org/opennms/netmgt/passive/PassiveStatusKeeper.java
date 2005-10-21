@@ -29,7 +29,7 @@
 //     http://www.opennms.org/
 //     http://www.opennms.com/
 //
-package org.opennms.netmgt.virtual;
+package org.opennms.netmgt.passive;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;

@@ -35,17 +35,18 @@ package org.opennms.netmgt.poller.monitors;
 
 import java.util.Map;
 
+import org.opennms.netmgt.capsd.plugins.LoopPlugin;
 import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.config.poller.Package;
-import org.opennms.netmgt.passive.PassiveStatusKeeper;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.poller.pollables.PollStatus;
+import org.opennms.netmgt.utils.ParameterMap;
 /**
  * @author david
  *
  */
-public class PassiveServiceMonitor implements ServiceMonitor {
+public class LoopMonitor implements ServiceMonitor {
 
     /* (non-Javadoc)
      * @see org.opennms.netmgt.poller.ServiceMonitor#initialize(org.opennms.netmgt.config.PollerConfig, java.util.Map)
@@ -79,8 +80,16 @@ public class PassiveServiceMonitor implements ServiceMonitor {
      * @see org.opennms.netmgt.poller.ServiceMonitor#poll(org.opennms.netmgt.poller.MonitoredService, java.util.Map, org.opennms.netmgt.config.poller.Package)
      */
     public PollStatus poll(MonitoredService svc, Map parameters, Package pkg) {
-        PollStatus status = PassiveStatusKeeper.getInstance().getStatus(svc.getNodeLabel(), svc.getIpAddr(), svc.getSvcName());
-        return status;
+        LoopPlugin lp = new LoopPlugin();
+        boolean isAvailable = lp.isProtocolSupported(svc.getAddress(), parameters);
+        int status = (isAvailable ? ServiceMonitor.SERVICE_AVAILABLE : ServiceMonitor.SERVICE_UNAVAILABLE);
+        StringBuffer sb = new StringBuffer();
+        sb.append("LoopMonitor configured with is-supported =  ");
+        sb.append(ParameterMap.getKeyedString(parameters, "is-supported", "false"));
+        sb.append(" for ip-match: ");
+        sb.append(ParameterMap.getKeyedString(parameters, "ip-match", "*.*.*.*"));
+        
+        return PollStatus.getPollStatus(status, sb.toString());
     }
 
 }

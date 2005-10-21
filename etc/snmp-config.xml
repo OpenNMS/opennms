@@ -6,9 +6,28 @@
 	<definition version="v2c">
 		<specific>192.168.0.50</specific>
 	</definition>
-	<definition version="v3" security-name="opennmsUser">
+	
+	<!-- Sample v3 configuration
+	  - If prive attributes are set, the security level will be be AuthPriv
+	  - If no priv attributes are set, the security level will be AuthNoPriv
+	  - If no auth attributes are set, the security level will be NoAuthNoPriv
+	  - Note: setting priv attributes without auth attributes is not allowed
+	  
+	<definition version="v3" security-name="opennmsUser" auth-passprhase="0p3nNMSv3" auth-protocol ="MD5" priv-passphrase="0p3nNMSv3" priv-protocol="DES">
 		<specific>192.168.0.102</specific>
 	</definition>
+	-->
+	
+	<!-- Sample new IP matching support
+	  - Each octet supports lists separated with ',' and/or ranges indicated by '-'
+	  - An '*' is supported only for matching the entire octet
+	  
+	<definition version="v2c" read-community="abc" >
+		<ip-match>77.5-12,15.1-255.255</ip-match>
+		<ip-match>10.*.*.*</ip-match>
+	</definition>
+	-->
+	
 	<!--
 	<definition>
 		<range begin="192.168.100.1" end="192.168.100.254"/>

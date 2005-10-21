@@ -33,54 +33,43 @@
 
 package org.opennms.netmgt.poller.monitors;
 
+import java.net.UnknownHostException;
+import java.util.HashMap;
 import java.util.Map;
 
-import org.opennms.netmgt.config.PollerConfig;
+import junit.framework.TestCase;
+
 import org.opennms.netmgt.config.poller.Package;
-import org.opennms.netmgt.passive.PassiveStatusKeeper;
+import org.opennms.netmgt.mock.MockMonitoredService;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.poller.pollables.PollStatus;
-/**
- * @author david
- *
- */
-public class PassiveServiceMonitor implements ServiceMonitor {
+public class LoopMonitorTest extends TestCase {
 
-    /* (non-Javadoc)
-     * @see org.opennms.netmgt.poller.ServiceMonitor#initialize(org.opennms.netmgt.config.PollerConfig, java.util.Map)
-     */
-    public void initialize(PollerConfig config, Map parameters) {
-        return;
+    protected void setUp() throws Exception {
+        super.setUp();
     }
 
-    /* (non-Javadoc)
-     * @see org.opennms.netmgt.poller.ServiceMonitor#release()
-     */
-    public void release() {
-        return;
+    protected void tearDown() throws Exception {
+        super.tearDown();
     }
 
-    /* (non-Javadoc)
-     * @see org.opennms.netmgt.poller.ServiceMonitor#initialize(org.opennms.netmgt.poller.MonitoredService)
+    /*
+     * Test method for 'org.opennms.netmgt.poller.monitors.LoopMonitor.poll(MonitoredService, Map, Package)'
      */
-    public void initialize(MonitoredService svc) {
-        return;
-    }
+    public void testPoll() throws UnknownHostException {
+        
+        ServiceMonitor sm = new LoopMonitor();
+        MonitoredService svc = new MockMonitoredService(1, "Router", "127.0.0.1", "LOOP");
+        Map parms = new HashMap();
 
-    /* (non-Javadoc)
-     * @see org.opennms.netmgt.poller.ServiceMonitor#release(org.opennms.netmgt.poller.MonitoredService)
-     */
-    public void release(MonitoredService svc) {
-        return;
-    }
+        parms.put("ip-match", "127.0.0.1-2");
+        parms.put("is-supported", "true");
+        
+        PollStatus ps = sm.poll(svc, parms, new Package());
+        assertTrue(ps.isUp());
+        assertFalse(ps.isDown());
 
-    /* (non-Javadoc)
-     * @see org.opennms.netmgt.poller.ServiceMonitor#poll(org.opennms.netmgt.poller.MonitoredService, java.util.Map, org.opennms.netmgt.config.poller.Package)
-     */
-    public PollStatus poll(MonitoredService svc, Map parameters, Package pkg) {
-        PollStatus status = PassiveStatusKeeper.getInstance().getStatus(svc.getNodeLabel(), svc.getIpAddr(), svc.getSvcName());
-        return status;
     }
 
 }

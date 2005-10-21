@@ -218,6 +218,13 @@
 			<parameter key="ds-name" value="jmx"/>
 			<parameter key="friendly-name" value="jvm"/>
 		</service>
+		<!--
+		Use this monitor when testing.  Set the is-supported parm to control "Up/Down" status during the poll.
+		<service name="LOOP-BACK" interval="300000" user-defined="false" status="on">
+			<parameter key="ip-match" value="169.254.*.*"/>
+			<parameter key="is-supported" value="true"/>
+		</service>
+		-->
 		<outage-calendar>zzz from poll-outages.xml zzz</outage-calendar>
 
 		<downtime interval="30000" begin="0" end="300000"/>		<!-- 30s, 0, 5m -->
@@ -225,6 +232,15 @@
 		<downtime interval="600000" begin="43200000" end="432000000"/>	<!-- 10m, 12h, 5d -->
 		<downtime begin="432000000" delete="true"/>			<!-- anything after 5 days delete -->
 
+	</package>
+	<package name="passive-service-example1">
+		<filter>IPADDR IPLIKE *.*.*.*</filter>
+		<include-range begin="1.1.1.1" end="254.254.254.254"/>
+			<service name="NON-IP" interval="30000" user-defined="false" status="on" />
+		<downtime interval="15000" begin="0" end="300000"/>		<!-- 15s, 0, 5m -->
+		<downtime interval="30000" begin="300000" end="43200000"/>	<!-- 30s, 5m, 12h -->
+		<downtime interval="300000" begin="43200000" end="432000000"/>	<!-- 5m, 12h, 5d -->
+		<downtime begin="432000000" delete="true"/>			<!-- anything after 5 days delete -->
 	</package>
 
     	<monitor service="DominoIIOP" 	class-name="org.opennms.netmgt.poller.monitors.DominoIIOPMonitor"/>
@@ -254,6 +270,9 @@
 	<monitor service="SSH"		class-name="org.opennms.netmgt.poller.monitors.TcpMonitor"/>
 	<monitor service="IMAP" 	class-name="org.opennms.netmgt.poller.monitors.ImapMonitor"/>
 	<monitor service="POP3" 	class-name="org.opennms.netmgt.poller.monitors.Pop3Monitor"/>
-	<monitor service="RadiusAuth" class-name="org.opennms.netmgt.poller.monitors.RadiusAuthMonitor"/>         	
+	<monitor service="RadiusAuth" class-name="org.opennms.netmgt.poller.monitors.RadiusAuthMonitor"/>
+	<!-- 
+	<monitor service="LOOP-BACK" class-name="org.opennms.netmgt.poller.monitors.LooMonitor" />
+	 -->
+	<monitor service="NON-IP" class-name="org.opennms.netmgt.poller.monitors.PassiveStatusMonitor" />
 </poller-configuration>
-
