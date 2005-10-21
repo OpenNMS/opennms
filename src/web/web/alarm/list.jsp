@@ -176,12 +176,10 @@
 <br/>
 
 <!-- Body -->
-<table width="100%" border="0" cellspacing="0" cellpadding="2" >
-  <tr>
-    <td>&nbsp;</td>
+<div id="eventlist">
 
-    <td>
       <!-- menu -->
+      <div id="linkbar">
       <a href="<%=this.makeLink( parms, new ArrayList())%>" title="Remove all search constraints" >View all alarms</a>
       &nbsp;&nbsp;&nbsp;<a href="alarm/advsearch.jsp" title="More advanced searching and sorting options">Advanced Search</a>      
       &nbsp;&nbsp;&nbsp;<a href="javascript: void window.open('<%=org.opennms.web.Util.calculateUrlBase(request)%>/alarm/severity.jsp','', 'fullscreen=no,toolbar=no,status=no,menubar=no,scrollbars=no,resizable=yes,directories=no,location=no,width=525,height=158')" title="Open a window explaining the alarm severities">Severity Legend</a>      
@@ -191,6 +189,7 @@
       <% } else { %>
         &nbsp;&nbsp;&nbsp;<a href="javascript: void document.acknowledge_by_filter_form.submit()" onclick="return confirm('Are you sure you want to unacknowledge all alarms in the current search including those not shown on your screen)?  (<%=alarmCount%> total alarms)')" title="Unacknowledge all alarms that match the current search constraints, even those not shown on the screen">Unacknowledge entire search</a>               
       <% } %>
+      </div>
       <!-- end menu -->      
 
       <!-- hidden form for acknowledging the result set --> 
@@ -200,10 +199,8 @@
         <%=org.opennms.web.Util.makeHiddenTags(request)%>
       </form>      
 
-      
-      <table width="100%" border="0" cellspacing="2" cellpadding="0" >
-        <tr>
-          <td width="50%" valign="top">
+        <div id="contentleft">
+
             <jsp:include page="/alarm/querypanel.jsp" flush="false" />
           
             <% if( alarmCount > 0 ) { %>
@@ -215,9 +212,11 @@
                 <jsp:param name="multiple" value="<%=parms.multiple%>"   />
               </jsp:include>
             <% } %>          
-          </td>
+         </div>
+
           
-          <td width="50%" valign="top">          
+        <div id="contentright">
+
             <% if( parms.filters.size() > 0 || parms.ackType == AlarmFactory.AcknowledgeType.UNACKNOWLEDGED || parms.ackType == AlarmFactory.AcknowledgeType.ACKNOWLEDGED ) { %>
               <% int length = parms.filters.size(); %>
 
@@ -249,9 +248,11 @@
                 </ol>
               </p>           
             <% } %>
-          </td>
-        </tr>
-    </table>
+          </div>
+
+    <div class="spacer">
+    </div>
+
 
     <form action="alarm/acknowledge" method="POST" name="acknowledge_form">
       <input type="hidden" name="redirectParms" value="<%=request.getQueryString()%>" />
@@ -447,10 +448,7 @@
         <a HREF="admin/alarms.jsp" title="Acknowledge or Unacknowledge All Alarms">[Acknowledge or Unacknowledge All Alarms]</a>
       <% } %>--%>
 
-    </td>
-    <td>&nbsp;</td>
-  </tr>
-</table>
+</div>
 
 <br>
 
