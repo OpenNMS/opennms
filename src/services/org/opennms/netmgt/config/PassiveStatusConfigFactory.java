@@ -122,7 +122,7 @@ public final class PassiveStatusConfigFactory implements PassiveStatusConfig {
             return;
         }
 
-        File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.CATEGORIES_CONF_FILE_NAME);
+        File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.PASSIVE_CONFIG_FILE_NAME);
 
         m_singleton = new PassiveStatusConfigFactory(cfgFile.getPath());
 
