@@ -945,7 +945,7 @@ public class PollerTest extends TestCase {
                return null;
            return new Integer(m_regainedSvcEvent.getDbid());
        }
-    };
+    }
     
 
 
