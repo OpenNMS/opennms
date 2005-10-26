@@ -205,6 +205,13 @@
          <property key="retry" value="2"/>
          <property key="timeout" value="2000"/>
     </protocol-plugin>
+    <protocol-plugin protocol="NRPE" class-name="org.opennms.netmgt.capsd.plugins.NrpePlugin" scan="on" user-defined="false">
+        <property key="banner" value="*" />
+        <property key="port" value="5666" />
+        <property key="timeout" value="3000" />
+        <property key="retry" value="2" />
+        <property key="command" value="_NRPE_CHECK" />
+    </protocol-plugin>
     <!--
     Use the LoopPlugin to force a service for use with PassiveStatusMonitor or the LoopMonitor
     <protocol-plugin protocol="LOOP-BACK" class-name="org.opennms.netmgt.capsd.plugins.LoopPlugin" scan="on" user-defined="false">

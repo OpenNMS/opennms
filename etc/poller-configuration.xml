@@ -218,6 +218,15 @@
 			<parameter key="ds-name" value="jmx"/>
 			<parameter key="friendly-name" value="jvm"/>
 		</service>
+		<service name="NRPE" interval="300000" user-defined="false" status="on">
+             		<parameter key="retry" value="3"/>
+             		<parameter key="timeout" value="3000"/>
+             		<parameter key="port" value="5666"/>
+             		<parameter key="command" value="_NRPE_CHECK"/>
+             		<parameter key="padding" value="2"/>
+             		<parameter key="rrd-repository" value="@install.share.dir@/rrd/response"/>
+             		<parameter key="ds-name" value="nrpe"/>
+		</service>
 		<!--
 		Use this monitor when testing.  Set the is-supported parm to control "Up/Down" status during the poll.
 		<service name="LOOP-BACK" interval="300000" user-defined="false" status="on">
@@ -276,7 +285,8 @@
 	<monitor service="SSH"		class-name="org.opennms.netmgt.poller.monitors.TcpMonitor"/>
 	<monitor service="IMAP" 	class-name="org.opennms.netmgt.poller.monitors.ImapMonitor"/>
 	<monitor service="POP3" 	class-name="org.opennms.netmgt.poller.monitors.Pop3Monitor"/>
-	<monitor service="RadiusAuth" class-name="org.opennms.netmgt.poller.monitors.RadiusAuthMonitor"/>
+	<monitor service="RadiusAuth"	class-name="org.opennms.netmgt.poller.monitors.RadiusAuthMonitor"/>
+	<monitor service="NRPE"		class-name="org.opennms.netmgt.poller.monitors.NrpeMonitor"/>
 	<!-- 
 	<monitor service="LOOP-BACK" class-name="org.opennms.netmgt.poller.monitors.LooMonitor" />
 	 -->
