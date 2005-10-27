@@ -13,7 +13,7 @@
 	  - If no auth attributes are set, the security level will be NoAuthNoPriv
 	  - Note: setting priv attributes without auth attributes is not allowed
 	  
-	<definition version="v3" security-name="opennmsUser" auth-passprhase="0p3nNMSv3" auth-protocol ="MD5" priv-passphrase="0p3nNMSv3" priv-protocol="DES">
+	<definition version="v3" security-name="opennmsUser" auth-passprhase="0p3nNMSv3" auth-protocol ="MD5" privacy-passphrase="0p3nNMSv3" privacy-protocol="DES">
 		<specific>192.168.0.102</specific>
 	</definition>
 	-->
