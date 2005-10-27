@@ -473,51 +473,29 @@ private EventIpcManager m_eventManager;
         return addService(serviceId, retry, timeout, interval, downTimeInterval, downTimeDuration, TCP_MONITOR, TCP_PLUGIN, parm);
     }
 
-    public boolean addServiceHTTP(String serviceId, int retry, int timeout, int interval, int downTimeInterval, int downTimeDuration, int port, String response, String responseText, String url, String user, String passwd, String agent) throws MalformedURLException {
-//        System.err.println("Called OpenNMSProvisioner.addServiceHTTP("+
-//                           serviceId+", "+
-//                           retry+", "+
-//                           timeout+", "+
-//                           interval+", "+
-//                           downTimeInterval+", "+
-//                           downTimeDuration+", "+
-//                           port+", "+
-//                           response+", "+
-//                           responseText+", "+
-//                           url+
-//                           ")");
+    public boolean addServiceHTTP(String serviceId, int retry, int timeout, int interval, int downTimeInterval, int downTimeDuration, String hostName, int port, String response, String responseText, String url, String user, String passwd, String agent) throws MalformedURLException {
         validateSchedule(retry, timeout, interval, downTimeInterval, downTimeDuration);
         checkPort(port);
         checkResponseCode(response);
         checkContentCheck(responseText);
         checkUrl(url);
         
-        String auth = (user == null ? null : user+":"+passwd);
+        String auth = (user == null || "".equals(user) ? null : user+":"+passwd);
         
         List parmList = new ArrayList();
+        
         parmList.add(new Parm("port", port));
         parmList.add(new Parm("response", response));
         parmList.add(new Parm("response text", responseText));
         parmList.add(new Parm("url", url));
+        if (hostName != null && !"".equals(hostName)) parmList.add(new Parm("host-name", hostName));
         if (auth != null) parmList.add(new Parm("basic-authentication", auth));
-        if (agent != null) parmList.add(new Parm("user-agent", agent));
+        if (agent != null && !"".equals(agent)) parmList.add(new Parm("user-agent", agent));
         
         return addService(serviceId, retry, timeout, interval, downTimeInterval, downTimeDuration, HTTP_MONITOR, HTTP_PLUGIN, (Parm[]) parmList.toArray(new Parm[parmList.size()]));
     }
 
-    public boolean addServiceHTTPS(String serviceId, int retry, int timeout, int interval, int downTimeInterval, int downTimeDuration, int port, String response, String responseText, String url, String user, String passwd, String agent) throws MalformedURLException {
-//        System.err.println("Called OpenNMSProvisioner.addServiceHTTPS("+
-//                           serviceId+", "+
-//                           retries+", "+
-//                           timeout+", "+
-//                           interval+", "+
-//                           downTimeInterval+", "+
-//                           downTimeDuration+", "+
-//                           port+", "+
-//                           responseCode+", "+
-//                           contentCheck+", "+
-//                           url+
-//                           ")");
+    public boolean addServiceHTTPS(String serviceId, int retry, int timeout, int interval, int downTimeInterval, int downTimeDuration, String hostName, int port, String response, String responseText, String url, String user, String passwd, String agent) throws MalformedURLException {
         validateSchedule(retry, timeout, interval, downTimeInterval, downTimeDuration);
         checkPort(port);
         checkResponseCode(response);
@@ -531,8 +509,9 @@ private EventIpcManager m_eventManager;
         parmList.add(new Parm("response", response));
         parmList.add(new Parm("response text", responseText));
         parmList.add(new Parm("url", url));
+        if (hostName != null && !"".equals(hostName)) parmList.add(new Parm("host-name", hostName));
         if (auth != null) parmList.add(new Parm("basic-authentication", auth));
-        if (agent != null) parmList.add(new Parm("user-agent", agent));
+        if (agent != null && !"".equals(agent)) parmList.add(new Parm("user-agent", agent));
         
         return addService(serviceId, retry, timeout, interval, downTimeInterval, downTimeDuration, HTTPS_MONITOR, HTTPS_PLUGIN, (Parm[]) parmList.toArray(new Parm[parmList.size()]));
     }

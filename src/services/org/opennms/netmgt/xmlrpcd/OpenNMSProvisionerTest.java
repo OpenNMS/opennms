@@ -335,21 +335,22 @@ public class OpenNMSProvisionerTest extends MockObjectTestCase {
     public void testAddServiceHTTP() throws Exception {
         expectUpdateEvent();
         expectRrdInitialize();
-        m_provisioner.addServiceHTTP("MyHTTP", 22, 2222, 22222, 222, 222222, 212, "202", "Home", "/index.html", null, null, null);
-        checkHTTPConfiguration("MyHTTP", "MyHTTP", 22, 2222, 22222, 222, 222222, 212, "202", "Home", "/index.html");
+        m_provisioner.addServiceHTTP("MyHTTP", 22, 2222, 22222, 222, 222222, "opennms.com", 212, "202", "Home", "/index.html", null, null, null);
+        checkHTTPConfiguration("MyHTTP", "MyHTTP", 22, 2222, 22222, 222, 222222, "opennms.com", 212, "202", "Home", "/index.html");
         verifyEvents();
     }
 
     public void testAddServiceHTTPNoResponseCode() throws Exception {
         expectUpdateEvent();
         expectRrdInitialize();
-        m_provisioner.addServiceHTTP("MyHTTP", 22, 2222, 22222, 222, 222222, 212, "", "Home", "/index.html", "user", "pw", "");
-        checkHTTPConfiguration("MyHTTP", "MyHTTP", 22, 2222, 22222, 222, 222222, 212, "", "Home", "/index.html");
+        m_provisioner.addServiceHTTP("MyHTTP", 22, 2222, 22222, 222, 222222, "opennms.com", 212, "", "Home", "/index.html", "user", "pw", "");
+        checkHTTPConfiguration("MyHTTP", "MyHTTP", 22, 2222, 22222, 222, 222222, "opennms.com", 212, "", "Home", "/index.html");
         verifyEvents();
     }
 
-    private Map checkHTTPConfiguration(String pkgName, String svcName, int retries, int timeout, int interval, int downtimeInterval, int downtimeDuration, int port, String responseCode, String contentCheck, String url) throws Exception {
+    private Map checkHTTPConfiguration(String pkgName, String svcName, int retries, int timeout, int interval, int downtimeInterval, int downtimeDuration, String hostName, int port, String responseCode, String contentCheck, String url) throws Exception {
         Map configParams = checkServiceConfiguration(pkgName, svcName, retries, timeout, interval, downtimeInterval, downtimeDuration);
+        assertEquals(hostName, configParams.get("host-name"));
         assertEquals(new Integer(port), configParams.get("port"));
         assertEquals(responseCode, configParams.get("response"));
         assertEquals(contentCheck, configParams.get("response_text"));
@@ -360,13 +361,14 @@ public class OpenNMSProvisionerTest extends MockObjectTestCase {
     public void testAddServiceHTTPS() throws Exception {
         expectUpdateEvent();
         expectRrdInitialize();
-        m_provisioner.addServiceHTTPS("MyHTTPS", 33, 3333, 33333, 333, 333333, 313, "303", "Secure", "/secure.html", "user", "pw", "");
-        checkHTTPSConfiguration("MyHTTPS", "MyHTTPS", 33, 3333, 33333, 333, 333333, 313, "303", "Secure", "/secure.html");
+        m_provisioner.addServiceHTTPS("MyHTTPS", 33, 3333, 33333, 333, 333333, "opennms.com", 313, "303", "Secure", "/secure.html", "user", "pw", "");
+        checkHTTPSConfiguration("MyHTTPS", "MyHTTPS", 33, 3333, 33333, 333, 333333, "opennms.com", 313, "303", "Secure", "/secure.html");
         verifyEvents();
     }
     
-    private Map checkHTTPSConfiguration(String pkgName, String svcName, int retries, int timeout, int interval, int downtimeInterval, int downtimeDuration, int port, String responseCode, String contentCheck, String url) throws Exception {
+    private Map checkHTTPSConfiguration(String pkgName, String svcName, int retries, int timeout, int interval, int downtimeInterval, int downtimeDuration, String hostName, int port, String responseCode, String contentCheck, String url) throws Exception {
         Map configParams = checkServiceConfiguration(pkgName, svcName, retries, timeout, interval, downtimeInterval, downtimeDuration);
+        assertEquals(hostName, configParams.get("host-name"));
         assertEquals(new Integer(port), configParams.get("port"));
         assertEquals(responseCode, configParams.get("response"));
         assertEquals(contentCheck, configParams.get("response_text"));

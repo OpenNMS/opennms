@@ -112,6 +112,7 @@ public interface Provisioner {
      * @param interval <code>int</code> the standard polling interval in milliseconds 
      * @param downTimeInterval <code>int</code> the downtime polling interval in milliseconds(downtime model)
      * @param downTimeDuration <code>int</> the amount of time in milliseconds the downtime polling interval is in effect
+     * @param hostName <code>String</code> the virtual host (requires a url other than just "/")
      * @param port <code>int</code> the port to attempt to connect to determine if the service is accepting connections
      * @param responseCode <code>String</code> a set of responseCodes that are considered valid.  
      *        This string should consist of one or more ranges ( [range],[range],...) where a range is either a single number or
@@ -126,7 +127,7 @@ public interface Provisioner {
      * @return Always returns true. 
      * @throws IllegalArgumentException when arguments are outside of ranges
      */
-    boolean addServiceHTTP(String serviceId, int retries, int timeout, int interval, int downTimeInterval, int downTimeDuration, int port, String responseCode, String contentCheck, String url, String user, String passwd, String agent) throws MalformedURLException;
+    boolean addServiceHTTP(String serviceId, int retries, int timeout, int interval, int downTimeInterval, int downTimeDuration, String hostName, int port, String responseCode, String contentCheck, String url, String user, String passwd, String agent) throws MalformedURLException;
 
     /**
      * This method defines a new package and HTTPS service using the <code>serviceId</code> as the name of the
@@ -141,7 +142,8 @@ public interface Provisioner {
      * @param timeout <code>int</code> time in milliseconds to wait during each <code>retries</code>
      * @param interval <code>int</code> the standard polling interval in milliseconds 
      * @param downTimeInterval <code>int</code> the downtime polling interval in milliseconds(downtime model)
-     * @param downTimeDuration <code>int</> the amount of time in milliseconds the downtime polling interval is in effect
+     * @param downTimeDuration <code>int</code> the amount of time in milliseconds the downtime polling interval is in effect
+     * @param hostName <code>String</code> the virtual host (requires a url other than just "/")
      * @param port <code>int</code> the port to attempt to connect to determine if the service is accepting connections
      * @param responseCode <code>String</code> a set of responseCodes that are considered valid.  
      *        This string should consist of one or more ranges ( [range],[range],...) where a range is either a single number or
@@ -156,7 +158,7 @@ public interface Provisioner {
      * @return Always returns true. 
      * @throws IllegalArgumentException when arguments are outside of ranges
      */
-    boolean addServiceHTTPS(String serviceId, int retries, int timeout, int interval, int downTimeInterval, int downTimeDuration, int port, String responseCode, String contentCheck, String url, String user, String passwd, String agent) throws MalformedURLException;
+    boolean addServiceHTTPS(String serviceId, int retries, int timeout, int interval, int downTimeInterval, int downTimeDuration, String hostName, int port, String responseCode, String contentCheck, String url, String user, String passwd, String agent) throws MalformedURLException;
 
     /**
      * This method defines a new package and Database(JDBC) service using the <code>serviceId</code> as the name of the
