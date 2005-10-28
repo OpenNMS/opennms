@@ -73,6 +73,9 @@ public class SnmpPeerFactoryTest extends OpenNMSTestCase {
         assertFalse(SnmpPeerFactory.matchNumericListOrRange("192", "190,191,194"));
         assertTrue(SnmpPeerFactory.matchNumericListOrRange("192", "10,172,190-193"));
         assertFalse(SnmpPeerFactory.matchNumericListOrRange("192", "10,172,193-199"));
+        assertTrue(SnmpPeerFactory.matchNumericListOrRange("205", "200-300,400-500"));
+        assertTrue(SnmpPeerFactory.matchNumericListOrRange("405", "200-300,400-500"));
+        assertFalse(SnmpPeerFactory.matchNumericListOrRange("505", "200-300,400-500"));
     }
     
     public void testVerifyIpMatch() {
