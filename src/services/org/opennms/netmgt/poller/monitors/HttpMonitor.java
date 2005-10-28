@@ -379,15 +379,25 @@ public class HttpMonitor extends IPv4LatencyMonitor {
     }
 
     private String getUserAgent(Map parameters) {
-        return ParameterMap.getKeyedString(parameters, "user-agent", "OpenNMS HttpMonitor");
+        String agent = ParameterMap.getKeyedString(parameters, "user-agent", null);
+        if (agent == null || "".equals(agent))
+            return "OpenNMS HttpMonitor";
+        return agent;
     }
 
     protected String getBasicAuthentication(Map parameters) {
         String credentials = ParameterMap.getKeyedString(parameters, "basic-authentication", null);
-        if (credentials != null) {
-            credentials = new String(Base64.encodeBase64(((String) credentials).getBytes()));
+        if (credentials != null && !"".equals(credentials)) {
+            return new String(Base64.encodeBase64(credentials.getBytes()));
+        } else {
+            String user = ParameterMap.getKeyedString(parameters, "user", null);
+            if (user == null || "".equals(user))
+                return null;
+            
+            String passwd = ParameterMap.getKeyedString(parameters, "password", "");
+            
+            return new String(Base64.encodeBase64((user+":"+passwd).getBytes()));
         }
-        return credentials;
     }
 
     private InetAddress getIpv4Addr(NetworkInterface iface) {
@@ -405,10 +415,12 @@ public class HttpMonitor extends IPv4LatencyMonitor {
 */
     private String getVirtualHost(Map parameters) {
         String virtualHost = ParameterMap.getKeyedString(parameters, "host-name", null);
-        if (virtualHost == null) {
+        if (virtualHost == null || "".equals(virtualHost)) {
             //try deprecated parameter
             virtualHost = ParameterMap.getKeyedString(parameters, "host name", null);
         }
+        if (virtualHost == null || "".equals(virtualHost))
+            return null;
         return virtualHost;
     }
 

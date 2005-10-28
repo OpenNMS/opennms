@@ -484,17 +484,16 @@ private EventIpcManager m_eventManager;
         checkContentCheck(responseText);
         checkUrl(url);
         
-        String auth = (user == null || "".equals(user) ? null : user+":"+passwd);
-        
         List parmList = new ArrayList();
         
         parmList.add(new Parm("port", port));
         parmList.add(new Parm("response", response));
         parmList.add(new Parm("response text", responseText));
         parmList.add(new Parm("url", url));
-        if (hostName != null && !"".equals(hostName)) parmList.add(new Parm("host-name", hostName));
-        if (auth != null) parmList.add(new Parm("basic-authentication", auth));
-        if (agent != null && !"".equals(agent)) parmList.add(new Parm("user-agent", agent));
+        if (hostName != null) parmList.add(new Parm("host-name", hostName));
+        if (user != null) parmList.add(new Parm("user", user));
+        if (passwd != null) parmList.add(new Parm("password", passwd));
+        if (agent != null) parmList.add(new Parm("user-agent", agent));
         
         return addService(serviceId, retry, timeout, interval, downTimeInterval, downTimeDuration, HTTP_MONITOR, HTTP_PLUGIN, (Parm[]) parmList.toArray(new Parm[parmList.size()]));
     }
@@ -506,16 +505,15 @@ private EventIpcManager m_eventManager;
         checkContentCheck(responseText);
         checkUrl(url);
         
-        String auth = (user == null ? null : user+":"+passwd);
-
         List parmList = new ArrayList();
         parmList.add(new Parm("port", port));
         parmList.add(new Parm("response", response));
         parmList.add(new Parm("response text", responseText));
         parmList.add(new Parm("url", url));
-        if (hostName != null && !"".equals(hostName)) parmList.add(new Parm("host-name", hostName));
-        if (auth != null) parmList.add(new Parm("basic-authentication", auth));
-        if (agent != null && !"".equals(agent)) parmList.add(new Parm("user-agent", agent));
+        if (hostName != null) parmList.add(new Parm("host-name", hostName));
+        if (user != null) parmList.add(new Parm("user", user));
+        if (passwd != null) parmList.add(new Parm("password", passwd));
+        if (agent != null) parmList.add(new Parm("user-agent", agent));
         
         return addService(serviceId, retry, timeout, interval, downTimeInterval, downTimeDuration, HTTPS_MONITOR, HTTPS_PLUGIN, (Parm[]) parmList.toArray(new Parm[parmList.size()]));
     }
@@ -585,6 +583,21 @@ private EventIpcManager m_eventManager;
                 key = "response_text";
             } else if ("response-text".equals(key)) {
                 key = "response_text";
+            } else if ("host-name".equals(key)) {
+                key = "hostname";
+            } else if ("host name".equals(key)) {
+                key = "hostname";
+            } else if ("user-agent".equals(key)) {
+                key = "agent";
+            } else if ("basic-authentication".equals(key)) {
+                int colon = valStr.indexOf(':');
+                if (colon < 0)
+                    continue;
+                String user = valStr.substring(0, colon);
+                String passwd = valStr.substring(colon+1);
+                m.put("user", user);
+                m.put("password", passwd);
+                continue;
             }
             
             m.put(key, val);
