@@ -92,6 +92,20 @@ public class NotifdTest extends NotificationsTestCase {
         
     }
 
+    public void testNewSuspect() throws Exception {
+        
+        Date date = new Date();
+        
+        long finished = anticipateNotificationsForGroup("A new interface (10.1.1.1) has been discovered and is being queued for a services scan.", "A new interface (10.1.1.1) has been discovered and is being queued for a services scan.", "InitialGroup", date, 0);
+
+        Event e = MockUtil.createNewSuspectEvent("test", "uei.opennms.org/internal/discovery/newSuspect", "10.1.1.1");
+        MockUtil.setEventTime(e, date);
+        m_eventMgr.sendEventToListeners(e);
+        
+        verifyAnticipated(finished, 500);
+        
+    }
+    
     public void testNotifdStatus() throws Exception {
         
             //test for off status passed in config XML string

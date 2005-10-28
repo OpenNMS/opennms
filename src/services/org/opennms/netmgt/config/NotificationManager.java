@@ -126,6 +126,7 @@ public abstract class NotificationManager {
     
         return false;
     }
+    
     public Notification[] getNotifForEvent(Event event) throws IOException, MarshalException, ValidationException {
 
         update();
@@ -138,7 +139,7 @@ public abstract class NotificationManager {
         for (Enumeration e = m_notifications.enumerateNotification(); e.hasMoreElements();) {
             Notification curNotif = (Notification) e.nextElement();
     
-            if (curNotif.getStatus().equals("on") && (event.getUei().equals(curNotif.getUei()) || "MATCH-ANY-UEI".equals(curNotif.getUei())) && nodeInterfaceServiceValid(curNotif, event)) {
+            if (curNotif.getStatus().equals("on") && (event.getUei().equals(curNotif.getUei()) || "MATCH-ANY-UEI".equals(curNotif.getUei())) && (nodeInterfaceServiceValid(curNotif, event) || !event.hasNodeid())) {
 
                 boolean parmsmatched = getConfigManager().matchNotificationParameters(event, curNotif);
 

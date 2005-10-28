@@ -145,6 +145,13 @@ public class MockUtil {
         return createEvent(source, uei, node.getNodeId(), null, null, null);
     }
     
+    public static Event createNewSuspectEvent(String source, String uei, String ipAddr) {
+        Event event = createEvent(source, uei);
+        
+        event.setInterface(ipAddr);
+        return event;
+    }
+    
     public static void setEventTime(Event event, Date date) {
         event.setTime(EventConstants.formatToString(date));
     }

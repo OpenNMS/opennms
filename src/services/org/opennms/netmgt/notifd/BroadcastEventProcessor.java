@@ -308,7 +308,7 @@ public final class BroadcastEventProcessor implements EventListener {
      * of the notify
      */
     private boolean continueWithNotice(Event event) {
-        String nodeID = String.valueOf(event.getNodeid());
+        String nodeID = event.hasNodeid() ? String.valueOf(event.getNodeid()) : null;
         String ipAddr = event.getInterface();
         String service = event.getService();
 
@@ -591,7 +591,8 @@ public final class BroadcastEventProcessor implements EventListener {
         String subject = (notification.getSubject() != null ? notification.getSubject() : "Notice #" + noticeId);
 
         paramMap.put("noticeid", Integer.toString(noticeId));
-        paramMap.put(NotificationManager.PARAM_NODE, String.valueOf(event.getNodeid()));
+        paramMap.put(NotificationManager.PARAM_NODE, 
+                event.hasNodeid() ? String.valueOf(event.getNodeid()) : "");
         paramMap.put(NotificationManager.PARAM_INTERFACE, event.getInterface());
         paramMap.put(NotificationManager.PARAM_SERVICE, event.getService());
         paramMap.put("eventID", String.valueOf(event.getDbid()));

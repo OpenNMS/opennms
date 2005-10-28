@@ -124,6 +124,13 @@ public class NotificationsTestCase extends TestCase {
                 "        <created>Wednesday, February 6, 2002 10:10:00 AM EST</created>\n" + 
                 "        <mstation>localhost</mstation>\n" + 
                 "    </header>\n" + 
+                "    <notification name=\"New Suspect Test Event\" status=\"on\">\n" + 
+                "        <uei>uei.opennms.org/internal/discovery/newSuspect</uei>\n" + 
+                "        <rule>IPADDR IPLIKE *.*.*.*</rule>\n" + 
+                "        <destinationPath>NoEscalate</destinationPath>\n" + 
+                "        <text-message>A new interface (%interface%) has been discovered and is being queued for a services scan.</text-message>\n" + 
+                "        <subject>A new interface (%interface%) has been discovered and is being queued for a services scan.</subject>\n" + 
+                "    </notification>" +
                 "    <notification name=\"snmpTrap\" status=\"on\">\n" + 
                 "        <uei>uei.opennms.org/nodes/nodeDown</uei>\n" + 
                 "        <rule>IPADDR IPLIKE *.*.*.*</rule>\n" + 
