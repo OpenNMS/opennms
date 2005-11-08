@@ -7,6 +7,7 @@ import java.io.FilenameFilter;
 import java.io.InputStream;
 import java.io.IOException;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import java.net.MalformedURLException;
@@ -16,6 +17,8 @@ import java.net.URLClassLoader;
 import java.util.LinkedList;
 import java.util.Properties;
 import java.util.StringTokenizer;
+
+import org.opennms.core.utils.ThreadCategory;
 
 public class Bootstrap {
     private static FileFilter m_dirFilter = new FileFilter() {
@@ -126,13 +129,9 @@ public class Bootstrap {
 	final String bootPropertiesName = "bootstrap.properties";
 	final String opennmsHomeProperty = "opennms.home";
 
-	String classToExec = null;
-	String classToExecMethod = null;
-	String[] classToExecArgs = null;
-
-	classToExec = "org.opennms.netmgt.vmmgr.Manager";
-	classToExecMethod = "main";
-	classToExecArgs = args;
+	final String classToExec = "org.opennms.netmgt.vmmgr.Manager";
+    final String classToExecMethod = "main";
+    final String[] classToExecArgs = args;
 
 	boolean propertiesLoaded = false;
 	String opennmsHome = System.getProperty(opennmsHomeProperty);
@@ -185,7 +184,7 @@ public class Bootstrap {
 		System.getProperty(opennmsHomeProperty) +
 		File.separator + "etc";
 	}
-	ClassLoader cl = Bootstrap.loadClasses(dir, false);
+	final ClassLoader cl = Bootstrap.loadClasses(dir, false);
     
 	URL url;
 
@@ -215,13 +214,32 @@ public class Bootstrap {
 	}
 
 	if (classToExec != null) {
-	    String className = classToExec;
-	    Class[] classes = new Class[] { classToExecArgs.getClass() };
-	    Object[] methodArgs = new Object[] { classToExecArgs };
+	    final String className = classToExec;
+	    final Class[] classes = new Class[] { classToExecArgs.getClass() };
+	    final Object[] methodArgs = new Object[] { classToExecArgs };
+        Class c = cl.loadClass(className);
+        final Method method = c.getMethod(classToExecMethod, classes);
 
-	    Class c = cl.loadClass(className);
-	    Method method = c.getMethod(classToExecMethod, classes);
-	    method.invoke(null, methodArgs);
+	    Runnable execer = new Runnable() {
+	        public void run() {
+	            try {
+                    method.invoke(null, methodArgs);
+                } catch (IllegalArgumentException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                } catch (IllegalAccessException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                } catch (InvocationTargetException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+	        }   
+	        
+	    };
+        Thread bootstrapper = new Thread(execer, "BootStrapper");
+        bootstrapper.setContextClassLoader(cl);
+        bootstrapper.start();
 	}
     }
 
