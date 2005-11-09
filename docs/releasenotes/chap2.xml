@@ -4,21 +4,12 @@
 
   <subtitle>Changes in This OpenNMS</subtitle>
 
-<!--
-  <para>OpenNMS 1.1.0 represents a refinement of the functionality introduced
-  in 1.0.0. The 1.1 tree is a development, or "unstable" tree, implementing a
-  number of new features but without the testing that went into 1.0. When 1.1
-  is mature enough, it will become 1.2, the next production or "stable"
-  release. Release 1.1.4 was a major step toward that next stable release, and
-  version 1.1.5 continues that progress.</para>
--->
-
-  <para>OpenNMS 1.2.5 is the most recent production, or "stable", release.
-  It is the sixth release in the stable branch of OpenNMS.  Changes to the
-  stable branch are limited to bug fixes and simple improvements.  The 1.3
-  tree is a development, or "unstable" tree, where most new features are
-  implemented, but without the testing that goes into 1.2.  When 1.3 is
-  mature enough, it will become OpenNMS 1.4, the next stable version.</para>
+  <para>OpenNMS 1.2.5 is the most recent production, or "stable", release. It
+  is the sixth release in the stable branch of OpenNMS. Changes to the stable
+  branch are limited to bug fixes and simple improvements. The 1.3 tree is a
+  development, or "unstable" tree, where most new features are implemented,
+  but without the testing that goes into 1.2. When 1.3 is mature enough, it
+  will become OpenNMS 1.4, the next stable version.</para>
 
   <section>
     <title>Changes in OpenNMS 1.2.5</title>
@@ -29,44 +20,65 @@
       <bridgehead>Simplify building on 32bit/64bit architectures</bridgehead>
 
       <para>Some new options were added to <filename>build.xml</filename> to
-      simplify support of specifying the target architecture for which
-      the C files are compiled.   They are
-      <varname>build.jni.compiler.arg</varname> for JNI code and
-      <varname>build.postgresql.compiler.arg</varname> for the
-      PostgreSQL iplike module.  You would use something like "-m32" or
-      "-m64" to force compilation of 32 bit or 64 bit binaries.  Note that
-      the options may differ for your platform and/or version of GCC.  See
-      your GCC man page for details.  Thanks to Jonathan Sartin who
-      submitted a patch.  Bug 1331.</para>
+      simplify support of specifying the target architecture for which the C
+      files are compiled. They are <varname>build.jni.compiler.arg</varname>
+      for JNI code and <varname>build.postgresql.compiler.arg</varname> for
+      the PostgreSQL iplike module. You would use something like "-m32" or
+      "-m64" to force compilation of 32 bit or 64 bit binaries. Note that the
+      options may differ for your platform and/or version of GCC. See your GCC
+      man page for details. Thanks to Jonathan Sartin who submitted a patch.
+      Bug 1331.</para>
 
       <bridgehead>Support for building on FreeBSD</bridgehead>
 
-      <para>Some bugs have been fixed, and OpenNMS can now compile and run
-      on FreeBSD.  Thanks to Dennis Berger and Brent Verner for supplying
-      patches (bug 1315).  You should be able to compile for FreeBSD with
-      the following build.properties file, assuming that you have used the
-      ports tree to install RRDTool and PostgreSQL:</para>
+      <para>Some bugs have been fixed, and OpenNMS can now compile and run on
+      FreeBSD. Thanks to Dennis Berger and Brent Verner for supplying patches
+      (bug 1315). You should be able to compile for FreeBSD with the following
+      build.properties file, assuming that you have used the ports tree to
+      install RRDTool and PostgreSQL:</para>
 
       <programlisting>build.postgresql.include.dir=/usr/local/include/postgresql/server
 build.postgresql.include2.dir=/usr/local/include
 build.rrdtool.include.dir=/usr/local/include
 build.rrdtool.lib.dir=/usr/local/lib
 build.rrdtool.bin=/usr/local/bin/rrdtool</programlisting>
+
+      <bridgehead>XMPP Group Notifications</bridgehead>
+
+      <para>Added the ability to notifiy groups (chat rooms) via XMPP. A shout
+      out to Jonathan Sartin for this work.</para>
     </section>
 
     <section>
       <title>Bug Fixes</title>
 
+      <bridgehead>Fixed Possible Poller Deadlock</bridgehead>
+
+      <para>Addressed a possible poller problem that would cause outages that
+      would never clear. This was fixed in 1.3.0 and backported to
+      1.2.5.</para>
+
+      <bridgehead>SNMP Data Collection Improvements</bridgehead>
+
+      <para>Made some changes to make SNMP data collection faster as well as
+      to improve startup time on systems with a large amount of data
+      collection.</para>
+
       <para>A number of small bug fixes have been added:</para>
 
       <itemizedlist>
         <listitem>
-          <para>Fixed a number of documentation mistakes pointed out
-	  by Austin Tuan.  Thank you very much, Austin!  Bug 1303.</para>
+          <para>Fixed a number of documentation mistakes pointed out by Austin
+          Tuan. Thank you very much, Austin! Bug 1303.</para>
         </listitem>
 
         <listitem>
           <para>Some minor bugs in the JavaMailer have been fixed.</para>
+        </listitem>
+
+        <listitem>
+          <para>Added come configutation for Symbol, Netscreen, Novell and
+          AirDefense events.</para>
         </listitem>
       </itemizedlist>
     </section>
@@ -92,7 +104,7 @@ build.rrdtool.bin=/usr/local/bin/rrdtool</programlisting>
       <para>Currently, when a "down" event notification is auto-acknowledged
       with an "up" event, a "RESOLVED" message gets sent to anyone who got the
       original "down" notice. However, if the problem is manually
-      acknowledged, the "RESOLVED" message is not sent. </para>
+      acknowledged, the "RESOLVED" message is not sent.</para>
 
       <para>With the release, when you configure a destination path, you can
       choose "on", "auto" or "off".</para>

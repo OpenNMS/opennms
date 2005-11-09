@@ -4,6 +4,13 @@
 
   <subtitle>About This Release</subtitle>
 
+  <para>Release 1.2.5 is an important maintenance release for the stable
+  branch of OpenNMS. It includes a major bug fix concerning possible polling
+  deadlocks that can cause outages that are never resolved, as well as a large
+  improvement to SNMP data collection speed and startup time.</para>
+
+  <para>The code word for 1.2.5 is "gromit".</para>
+
   <para>Release 1.2.4 is yet another maintenance release for OpenNMS. It
   includes a few minor bug fixes, some new configurations, and a couple of
   small features.</para>

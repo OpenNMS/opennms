@@ -1,5 +1,9 @@
 1.2.4 to 1.2.5
 ----------------------------------------------------------------------
+- Made changes to SNMP data collection to improve both speed and
+  startup time.
+- Corrected a deadlock condition to fix getConnection hangs and 
+  outage resolution issues.
 - Added group duty schedules. Bug 1147. Thx Bill
 - Updated Novell Events.
 - Added Netscreen Events.
