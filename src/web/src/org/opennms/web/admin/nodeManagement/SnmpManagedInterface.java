@@ -88,6 +88,11 @@ public class SnmpManagedInterface {
     /**
      * 
      */
+    protected String ifAlias;
+
+    /**
+     * 
+     */
     public void setAddress(String newAddress) {
         address = newAddress;
     }
@@ -196,4 +201,17 @@ public class SnmpManagedInterface {
         return ifName;
     }
 
+    /**
+     * 
+     */
+    public String getIfAlias() {
+        return ifAlias;
+    }
+
+    /**
+     * 
+     */
+    public void setIfAlias(String newIfAlias) {
+        ifAlias = newIfAlias;
+    }
 }

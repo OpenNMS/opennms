@@ -209,9 +209,15 @@ xmlns:fo="http://www.w3.org/1999/XSL/Format">
 	<xsl:for-each select="row">
 		<fo:table-row>
 			<xsl:for-each select="value">
-				<fo:table-cell>
-					<fo:block font-weight="bold"><xsl:value-of select="."/></fo:block>
-				</fo:table-cell>
+                                <fo:table-cell>
+                                <fo:block font-weight="bold">
+                                <xsl:call-template name="replace">
+                                        <xsl:with-param name="string" select="."/>
+                                        <xsl:with-param name="old" select="'.'"/>
+                                        <xsl:with-param name="new" select="'.&#x200b;'"/>
+                                </xsl:call-template>
+                                </fo:block>
+                                </fo:table-cell>
 			</xsl:for-each>
 			<!-- xsl:apply-templates select="colTitle"/ --> 
 		</fo:table-row>
@@ -246,4 +252,24 @@ xmlns:fo="http://www.w3.org/1999/XSL/Format">
 <!-- /fo:table-column --> 
 
 </xsl:template> 
+<xsl:template name="replace">
+<xsl:param name="string"/>
+<xsl:param name="old" />
+<xsl:param name="new"/>
+<xsl:choose>
+        <xsl:when test="contains( $string, $old )">
+                <xsl:value-of select="substring-before( $string, $old )"/>
+                <xsl:value-of select="$new"/>
+                <xsl:call-template name="replace">
+                        <xsl:with-param name="string" select="substring-after( $string, $old )"/>
+                        <xsl:with-param name="old" select="$old"/>
+                        <xsl:with-param name="new" select="$new"/>
+                </xsl:call-template>
+        </xsl:when>
+        <xsl:otherwise>
+                <xsl:value-of select="$string"/>
+        </xsl:otherwise>
+</xsl:choose>
+</xsl:template>
+
 </xsl:stylesheet>

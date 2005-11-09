@@ -10,6 +10,9 @@
 //
 // Modifications:
 //
+// 2005 Mar 25: Fixed bug 1178 regarding designation of secondary SNMP
+//              interfaces, as well as a few other minor bugs discovered
+//              in testing the bug fix.
 // 2004 Dec 27: Updated code to determine primary SNMP interface to select
 //              an interface from collectd-configuration.xml first, and if
 //              none found, then from all interfaces on the node. In either
@@ -152,7 +155,7 @@ public final class CapsdConfigFactory {
      * SQL statement to retrieve all non-deleted IP addresses from the
      * ipInterface table which support SNMP.
      */
-    private static String SQL_DB_RETRIEVE_SNMP_IP_INTERFACES = "SELECT DISTINCT ipinterface.nodeid,ipinterface.ipaddr,ipinterface.ifindex,ipinterface.issnmpprimary,snmpinterface.snmpiftype,snmpinterface.snmpifindex FROM ipinterface,ifservices,service,snmpinterface WHERE ipinterface.ismanaged!='D' AND ipinterface.ipaddr=ifservices.ipaddr AND ipinterface.ipaddr=snmpinterface.ipaddr AND ifservices.serviceid=service.serviceid AND service.servicename='SNMP' AND ipinterface.nodeid=snmpinterface.nodeid";
+    private static String SQL_DB_RETRIEVE_SNMP_IP_INTERFACES = "SELECT DISTINCT ipinterface.nodeid,ipinterface.ipaddr,ipinterface.ifindex,ipinterface.issnmpprimary,snmpinterface.snmpiftype,snmpinterface.snmpifindex FROM ipinterface,ifservices,service,snmpinterface WHERE ipinterface.ismanaged!='D' AND ifservices.status!='D' AND ipinterface.ipaddr=ifservices.ipaddr AND ipinterface.ipaddr=snmpinterface.ipaddr AND ifservices.serviceid=service.serviceid AND service.servicename='SNMP' AND ipinterface.nodeid=snmpinterface.nodeid";
 
     /**
      * SQL statement used to update the 'isSnmpPrimary' field of the ipInterface
@@ -1207,7 +1210,10 @@ public final class CapsdConfigFactory {
                 if (lwIf.getIfIndex() == LightWeightIfEntry.NULL_IFINDEX) {
                     lwIf.setSnmpPrimaryState(DbIpInterfaceEntry.SNMP_NOT_ELIGIBLE);
                 } else if (primarySnmpIf == null || !lwIf.getAddress().equals(primarySnmpIf.getHostAddress())) {
-                    lwIf.setSnmpPrimaryState(DbIpInterfaceEntry.SNMP_SECONDARY);
+                    if (CollectdConfigFactory.getInstance().lookupInterfaceServicePair(lwIf.getAddress(), "SNMP"))
+                        lwIf.setSnmpPrimaryState(DbIpInterfaceEntry.SNMP_SECONDARY);
+                    else
+                        lwIf.setSnmpPrimaryState(DbIpInterfaceEntry.SNMP_NOT_ELIGIBLE);
                 } else {
                     lwIf.setSnmpPrimaryState(DbIpInterfaceEntry.SNMP_PRIMARY);
                 }

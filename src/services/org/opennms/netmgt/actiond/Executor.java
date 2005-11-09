@@ -311,7 +311,7 @@ final class Executor implements Runnable, PausableFiber {
                 }
             } else if (chars[x] == '\"' && !squoted) {
                 dquoted = dquoted ? false : true;
-            } else if (chars[x] == '\'') {
+            } else if (chars[x] == '\'' && !dquoted) {
                 squoted = squoted ? false : true;
             } else if (squoted || dquoted) {
                 buf.append(chars[x]);
