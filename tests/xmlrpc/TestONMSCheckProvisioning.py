@@ -24,8 +24,7 @@ class ONMSTest(unittest.TestCase):
         """
         # Connect to the XML-RPC server
         #self.server = DelegatingProvisioner(MockONMSXMLRPC()) # Use this for testing
-        #self.server = DelegatingProvisioner(OpenNMSProvisioner()) # Use this for testing
-        self.server = DelegatingProvisioner(xmlrpclib.Server('http://localhost:9192/RPC2') ) 
+        self.server = DelegatingProvisioner(xmlrpclib.Server('http://localhost:9192/RPC2') )
         
 class ONMSServiceTest(ONMSTest):
     """
@@ -87,8 +86,9 @@ class ONMSServiceTest(ONMSTest):
                             'Call failed with %s set to %s.' 
                             % (test_parm, repr(value)))
             except xmlrpclib.Fault, fault:
-                self.fail('Call failed with %s set to %s. Fault: %d' 
-                          % (test_parm, repr(value), fault.faultCode))
+                self.fail('Call failed with %s set to %s. Fault: %d - %s' 
+                          % (test_parm, repr(value), fault.faultCode, 
+                             fault.faultString))
             service_id = parms['serviceid']
             retVal = self.server.getServiceConfiguration(service_id, service_id)
             retVal['serviceid'] = service_id
@@ -183,17 +183,28 @@ class ONMSServiceTest(ONMSTest):
     def test_ResponseCodeUnderBounds(self):
         "Test response_code < 100"
         if self.parameters.has_key('response_code'):
-            self._testBadValue('response_code', 99)
+            self._testBadValue('response_code', '99')
             
     def test_ResponseCodeOverBounds(self):
         "Test response_code > 599"
         if self.parameters.has_key('response_code'):
-            self._testBadValue('response_code', 600)
+            self._testBadValue('response_code', '600')
             
     def test_ResponseCodeAllData(self):
         "Test all valid response_codes 100..599"
         if self.parameters.has_key('response_code'):
-            self._testGoodValues('response_code', range(100,600))
+            self._testGoodValues('response_code', 
+                                 [str(code) for code in range(100,600)])
+                                 
+    def test_ResponseCodeRange(self):
+        "Test response code range 200-300"
+        if self.parameters.has_key('response_code'):
+            self._testGoodValues('response_code', ('200-300',))
+            
+    def test_DefaultResponseCode(self):
+        "Test a default response code (blank)"
+        if self.parameters.has_key('response_code'):
+            self._testGoodValues('response_code', (''))
             
     def test_URLOverBounds(self):
         "Test URL > 512 characters"
@@ -212,22 +223,23 @@ class ONMSServiceTest(ONMSTest):
             testdata = ('/', '/'+'a'*511)
             self._testGoodValues('url', testdata)
             
-#    def test_URLBadProtocol(self):
-#        "Test URL has a bad protocol"
+    def test_URLBadProtocol(self):
+        "Test URL has a bad protocol"
+        pass
 #        if self.parameters.has_key('url'):
 #            self._testBadValue('url', 'a.com', FAULT_URL_INVALID)
             
-    def test_UsernameOverBounds(self):
-        "Test username > 64 characters"
-        if self.parameters.has_key('username'):
+    def test_UserOverBounds(self):
+        "Test user > 64 characters"
+        if self.parameters.has_key('user'):
             testdata = 'a'*65
-            self._testBadValue('username', testdata)
+            self._testBadValue('user', testdata)
             
-    def test_UsernameGoodData(self):
+    def test_UserGoodData(self):
         "Test username with good data"
-        if self.parameters.has_key('username'):
+        if self.parameters.has_key('user'):
             testdata = ('', 'a'*64)
-            self._testGoodValues('username', testdata)
+            self._testGoodValues('user', testdata)
             
     def test_PasswordOverBounds(self):
         "Test password > 64 characters"
@@ -334,9 +346,13 @@ class TestAddServiceHTTP(ONMSServiceTest):
                  'downtime_interval' : mintomilis(1),
                  'downtime_duration' : mintomilis(1),
                  'port'              : 1,
-                 'response'          : '100',
+                 'hostname'          : 'rackspace.com',
+                 'response'          : '',
                  'response_text'     : '',
-                 'url'               : '/index.html' }
+                 'url'               : '/',
+                 'user'          : '',
+                 'password'          : '',
+                 'agent'             : '' }
     
 class TestAddServiceHTTPS(ONMSServiceTest):
     
@@ -351,9 +367,13 @@ class TestAddServiceHTTPS(ONMSServiceTest):
                  'downtime_interval' : mintomilis(1),
                  'downtime_duration' : mintomilis(1),
                  'port'              : 1,
-                 'response'          : '100',
+                 'hostname'          : 'rackspace.com',
+                 'response'          : '',
                  'response_text'     : '',
-                 'url'               : '/index.html' }
+                 'url'               : '/index.html',
+                 'user'          : '',
+                 'password'          : '',
+                 'agent'             : '' }
     
 class TestAddServiceDatabase(ONMSServiceTest):
     
@@ -377,18 +397,16 @@ if __name__ == '__main__':
     testRunner = unittest.TextTestRunner(verbosity=2)
     #print "\nTesting system calls"
     #testRunner.run(unittest.makeSuite(TestSystemCalls))
+    print "\nTesting TestAddServiceICMP"
+    testRunner.run(unittest.makeSuite(TestAddServiceICMP))
+    print "\nTesting TestAddServiceDNS"
+    testRunner.run(unittest.makeSuite(TestAddServiceDNS))
+    print "\nTesting TestAddServiceTCP"
+    testRunner.run(unittest.makeSuite(TestAddServiceTCP))
     print "\nTesting TestAddServiceHTTP"
     testRunner.run(unittest.makeSuite(TestAddServiceHTTP))
-    #print "\nTesting TestAddServiceICMP"
-    #testRunner.run(unittest.makeSuite(TestAddServiceICMP))
-    #print "\nTesting TestAddServiceDNS"
-    #testRunner.run(unittest.makeSuite(TestAddServiceDNS))
-    #print "\nTesting TestAddServiceTCP"
-    #testRunner.run(unittest.makeSuite(TestAddServiceTCP))
-    #print "\nTesting TestAddServiceHTTP"
-    #testRunner.run(unittest.makeSuite(TestAddServiceHTTP))
-    #print "\nTesting TestAddServiceHTTPS"
-    #testRunner.run(unittest.makeSuite(TestAddServiceHTTPS))
-    #print "\nTesting TestAddServiceDatabase"
-    #testRunner.run(unittest.makeSuite(TestAddServiceDatabase))
+    print "\nTesting TestAddServiceHTTPS"
+    testRunner.run(unittest.makeSuite(TestAddServiceHTTPS))
+    print "\nTesting TestAddServiceDatabase"
+    testRunner.run(unittest.makeSuite(TestAddServiceDatabase))
     

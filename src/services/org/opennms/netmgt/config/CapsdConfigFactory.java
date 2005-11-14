@@ -80,6 +80,12 @@ public final class CapsdConfigFactory extends CapsdConfigManager {
      * The singleton instance of this factory
      */
     private static CapsdConfig m_singleton = null;
+    
+    
+    /**
+     * Timestamp of the file for the currently loadded configuration
+     */
+    private long m_currentVersion = -1L;
 
     /**
      * Constructs a new CapsdConfigFactory object for access to the Capsd
@@ -103,12 +109,15 @@ public final class CapsdConfigFactory extends CapsdConfigManager {
 
     }
 
-    protected void update() throws IOException, FileNotFoundException, MarshalException, ValidationException {
+    protected synchronized void update() throws IOException, FileNotFoundException, MarshalException, ValidationException {
         File configFile = ConfigFileConstants.getFile(ConfigFileConstants.CAPSD_CONFIG_FILE_NAME);
-        ThreadCategory.getInstance(CapsdConfigFactory.class).debug("init: config file path: " + configFile.getPath());
-        Reader rdr = new FileReader(configFile);
-        loadXml(rdr);
-        rdr.close();
+        if (m_currentVersion < configFile.lastModified()) {
+            m_currentVersion = configFile.lastModified();
+            ThreadCategory.getInstance(CapsdConfigFactory.class).debug("init: config file path: " + configFile.getPath());
+            Reader rdr = new FileReader(configFile);
+            loadXml(rdr);
+            rdr.close();
+        }
     }
 
     /**
@@ -132,7 +141,7 @@ public final class CapsdConfigFactory extends CapsdConfigManager {
         super(rdr);
     }
 
-    protected void saveXml(String xml) throws IOException {
+    protected synchronized void saveXml(String xml) throws IOException {
         if (xml != null) {
             File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.CAPSD_CONFIG_FILE_NAME);
             FileWriter fileWriter = new FileWriter(cfgFile);

@@ -38,9 +38,11 @@ import java.util.Hashtable;
 import java.util.Map;
 import java.util.Vector;
 
+import org.apache.log4j.Category;
 import org.apache.xmlrpc.WebServer;
 import org.apache.xmlrpc.XmlRpcException;
 import org.apache.xmlrpc.XmlRpcHandler;
+import org.opennms.core.utils.ThreadCategory;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.support.ArgumentConvertingMethodInvoker;
@@ -106,6 +108,8 @@ public class XmlRpcServiceExporter extends RemoteExporter implements Initializin
 
     public Object execute(String method, Vector params) throws Exception {
         
+        log().debug("calling: "+method+'('+toArgList(params)+')');
+        
         MethodInvoker invoker = new ArgumentConvertingMethodInvoker();
         invoker.setTargetObject(this.proxy);
         invoker.setTargetMethod(getMethodName(method));
@@ -116,17 +120,18 @@ public class XmlRpcServiceExporter extends RemoteExporter implements Initializin
         Object returnValue =  invoker.invoke();
         
         if (returnValue == null && invoker.getPreparedMethod().getReturnType() == Void.TYPE) {
-            return "void";
+            returnValue = "void";
         }
         
-        if (returnValue instanceof Map && !(returnValue instanceof Hashtable)) {
-            return new Hashtable((Map)returnValue);
+        else if (returnValue instanceof Map && !(returnValue instanceof Hashtable)) {
+            returnValue = new Hashtable((Map)returnValue);
         }
         
-        if (returnValue instanceof Collection && !(returnValue instanceof Vector)) {
-            return new Vector((Collection)returnValue);
+        else if (returnValue instanceof Collection && !(returnValue instanceof Vector)) {
+            returnValue = new Vector((Collection)returnValue);
         }
         
+        log().debug("returning from: "+method+'('+toArgList(params)+") result = "+returnValue);
         return returnValue;
         
         } catch (InvocationTargetException e) {
@@ -149,6 +154,19 @@ public class XmlRpcServiceExporter extends RemoteExporter implements Initializin
             throw ex;
         }
 
+    }
+
+    private String toArgList(Vector params) {
+        StringBuffer sb = new StringBuffer();
+        for(int i = 0; i < params.size(); i++) {
+            if (i != 0) sb.append(", ");
+            sb.append(params.get(i));
+        }
+        return sb.toString();
+    }
+
+    private Category log() {
+        return ThreadCategory.getInstance(getClass()); 
     }
 
     private String getMethodName(String method) {

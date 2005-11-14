@@ -56,7 +56,6 @@ import org.opennms.netmgt.config.poller.Parameter;
 import org.opennms.netmgt.config.poller.Rrd;
 import org.opennms.netmgt.config.poller.Service;
 import org.opennms.netmgt.eventd.EventIpcManager;
-import org.opennms.netmgt.eventd.EventUtil;
 import org.opennms.netmgt.xml.event.Event;
 
 public class OpenNMSProvisioner implements Provisioner {
@@ -479,6 +478,9 @@ private EventIpcManager m_eventManager;
 
     public boolean addServiceHTTP(String serviceId, int retry, int timeout, int interval, int downTimeInterval, int downTimeDuration, String hostName, int port, String response, String responseText, String url, String user, String passwd, String agent) throws MalformedURLException {
         validateSchedule(retry, timeout, interval, downTimeInterval, downTimeDuration);
+        checkHostname(hostName);
+        checkUsername(user);
+        checkPassword(passwd);
         checkPort(port);
         checkResponseCode(response);
         checkContentCheck(responseText);
@@ -500,6 +502,9 @@ private EventIpcManager m_eventManager;
 
     public boolean addServiceHTTPS(String serviceId, int retry, int timeout, int interval, int downTimeInterval, int downTimeDuration, String hostName, int port, String response, String responseText, String url, String user, String passwd, String agent) throws MalformedURLException {
         validateSchedule(retry, timeout, interval, downTimeInterval, downTimeDuration);
+        checkHostname(hostName);
+        checkUsername(user);
+        checkPassword(passwd);
         checkPort(port);
         checkResponseCode(response);
         checkContentCheck(responseText);

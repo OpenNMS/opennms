@@ -35,7 +35,7 @@
 	<classpathentry kind="lib" path="lib/mailapi.jar"/>
 	<classpathentry kind="lib" path="lib/imap.jar"/>
 	<classpathentry kind="lib" path="lib/activation.jar"/>
-	<classpathentry sourcepath="ECLIPSE_HOME/plugins/org.eclipse.jdt.source_3.1.0/src/org.junit_3.8.1/junitsrc.zip"  kind="var" path="JUNIT_HOME/junit.jar"/>
+	<classpathentry sourcepath="ECLIPSE_HOME/plugins/org.eclipse.jdt.source_3.1.0/src/org.junit_3.8.1/junitsrc.zip" kind="var" path="JUNIT_HOME/junit.jar"/>
 	<classpathentry kind="lib" path="lib/hsqldb.jar"/>
 	<classpathentry kind="lib" path="lib/jradius-client.jar"/>
 	<classpathentry kind="lib" path="lib/jmta.jar"/>
@@ -65,5 +65,6 @@
 	<classpathentry kind="lib" path="lib/jcommon-1.0.0-rc1.jar"/>
 	<classpathentry kind="lib" path="lib/jfreechart-1.0.0-rc1.jar"/>
 	<classpathentry kind="lib" path="lib/SNMP4J-1.5.jar"/>
+	<classpathentry kind="src" path="src/bootstrap"/>
 	<classpathentry kind="output" path="work/opennms/classes"/>
 </classpath>

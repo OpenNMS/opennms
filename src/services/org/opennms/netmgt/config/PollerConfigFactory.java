@@ -76,6 +76,11 @@ public final class PollerConfigFactory extends PollerConfigManager {
      * This member is set to true if the configuration file has been loaded.
      */
     private static boolean m_loaded = false;
+    
+    /**
+     * Loaded version
+     */
+    private long m_currentVersion = -1L;
 
     /**
      * Private constructor
@@ -87,8 +92,9 @@ public final class PollerConfigFactory extends PollerConfigManager {
      * @exception org.exolab.castor.xml.ValidationException
      *                Thrown if the contents do not match the required schema.
      */
-    public PollerConfigFactory(Reader reader, String localServer, boolean verifyServer) throws MarshalException, ValidationException, IOException {
+    public PollerConfigFactory(long currentVersion, Reader reader, String localServer, boolean verifyServer) throws MarshalException, ValidationException, IOException {
         super(reader, localServer, verifyServer);
+        m_currentVersion = currentVersion;
     }
 
     /**
@@ -117,7 +123,7 @@ public final class PollerConfigFactory extends PollerConfigManager {
         ThreadCategory.getInstance(PollerConfigFactory.class).debug("init: config file path: " + cfgFile.getPath());
 
         FileReader reader = new FileReader(cfgFile);
-        m_singleton = new PollerConfigFactory(reader, onmsSvrConfig.getServerName(), onmsSvrConfig.verifyServer());
+        m_singleton = new PollerConfigFactory(cfgFile.lastModified(), reader, onmsSvrConfig.getServerName(), onmsSvrConfig.verifyServer());
         reader.close();
 
         m_loaded = true;
@@ -138,13 +144,16 @@ public final class PollerConfigFactory extends PollerConfigManager {
         getInstance().update();
     }
 
-    protected void saveXml(String xml) throws IOException {
+    protected synchronized void saveXml(String xml) throws IOException {
         if (xml != null) {
+            long timestamp = System.currentTimeMillis();
             File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.POLLER_CONFIG_FILE_NAME);
+            ThreadCategory.getInstance(PollerConfigFactory.class).debug("saveXml: saving config file at "+timestamp+": " + cfgFile.getPath());
             FileWriter fileWriter = new FileWriter(cfgFile);
             fileWriter.write(xml);
             fileWriter.flush();
             fileWriter.close();
+            ThreadCategory.getInstance(PollerConfigFactory.class).debug("saveXml: finished saving config file: " + cfgFile.getPath());
         }
     }
 
@@ -168,11 +177,14 @@ public final class PollerConfigFactory extends PollerConfigManager {
         m_loaded = true;
     }
 
-    public void update() throws IOException, MarshalException, ValidationException {
+    public synchronized void update() throws IOException, MarshalException, ValidationException {
 
         File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.POLLER_CONFIG_FILE_NAME);
-
-        ThreadCategory.getInstance(PollerConfigFactory.class).debug("init: config file path: " + cfgFile.getPath());
-        reloadXML(new FileReader(cfgFile));
+        if (cfgFile.lastModified() > m_currentVersion) {
+            m_currentVersion = cfgFile.lastModified();
+            ThreadCategory.getInstance(PollerConfigFactory.class).debug("init: config file path: " + cfgFile.getPath());
+            reloadXML(new FileReader(cfgFile));
+            ThreadCategory.getInstance(PollerConfigFactory.class).debug("init: finished loading config file: " + cfgFile.getPath());
+        }
     }
 }

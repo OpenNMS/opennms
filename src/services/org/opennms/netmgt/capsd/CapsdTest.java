@@ -250,7 +250,7 @@ public class CapsdTest extends OpenNMSTestCase {
         
         OpennmsServerConfigFactory onmsSvrConfig = new OpennmsServerConfigFactory(new StringReader(SVR_CONFIG));
         OpennmsServerConfigFactory.setInstance(onmsSvrConfig);
-        PollerConfigFactory.setInstance(new PollerConfigFactory(new StringReader(POLLER_CONFIG), onmsSvrConfig.getServerName(), onmsSvrConfig.verifyServer()));
+        PollerConfigFactory.setInstance(new PollerConfigFactory(System.currentTimeMillis(), new StringReader(POLLER_CONFIG), onmsSvrConfig.getServerName(), onmsSvrConfig.verifyServer()));
         CollectdConfigFactory.setInstance(new CollectdConfigFactory(new StringReader(COLLECTD_CONFIG)));
     }
 

@@ -51,39 +51,53 @@ class DelegatingProvisioner:
         addServiceTCP function
         """
         return self.delegate.addServiceTCP(serviceid, retries, timeout, interval, downtime_interval, downtime_duration, port, banner)
-       
+    
+        """
+        Java XMLRPC definition:
+        boolean addServiceHTTP(String serviceId, int retries, int timeout, 
+        int interval, int downTimeInterval, int downTimeDuration, String hostName,
+        int port, String responseCode, String contentCheck, String url, 
+        String user, String passwd, String agent) throws MalformedURLException;
+        """
     def addServiceHTTP( self, 
                         serviceid, 
                         retries, 
                         timeout, 
                         interval, 
                         downtime_interval,
-                        downtime_duration, 
-                        port, 
+                        downtime_duration,
+                        hostname, 
+                        port,
                         response, 
                         response_text, 
-                        url ):
+                        url,
+                        user,
+                        password,
+                        agent ):
         """
         addServiceHTTP function
-        """
-        
-        return self.delegate.addServiceHTTP(serviceid, retries, timeout, interval, downtime_interval, downtime_duration, port, response, response_text, url)
+        """        
+        return self.delegate.addServiceHTTP(serviceid, retries, timeout, interval, downtime_interval, downtime_duration, hostname, port, response, response_text, url, user, password, agent)
        
     def addServiceHTTPS( self,
                          serviceid, 
                          retries, 
                          timeout, 
-                         interval,
+                         interval, 
                          downtime_interval,
                          downtime_duration, 
-                         port, 
+                         hostname,
+                         port,
                          response, 
                          response_text, 
-                         url ):
+                         url,
+                         user,
+                         password,
+                         agent ):
         """
         addServiceHTTPS function
         """
-        return self.delegate.addServiceHTTPS(serviceid, retries, timeout, interval, downtime_interval, downtime_duration, port, response, response_text, url)
+        return self.delegate.addServiceHTTPS(serviceid, retries, timeout, interval, downtime_interval, downtime_duration, hostname, port, response, response_text, url, user, password, agent)
 
     def addServiceDatabase( self, 
                             serviceid, 

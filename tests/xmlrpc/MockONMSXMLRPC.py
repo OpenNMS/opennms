@@ -125,6 +125,9 @@ class MockONMSXMLRPC:
             self.Fault(FAULT_DATA_INVALID)
         if len(url) == 0:
             self.Fault(FAULT_DATA_INVALID)
+        # Check for a protocol
+        #if (len(url) > 0) and (url.find('://') < 1): # No protocol given
+        #    self.Fault(FAULT_URL_INVALID)
             
     def _checkContentCheck(self, check):
         if not isinstance(check, basestring):
@@ -133,10 +136,23 @@ class MockONMSXMLRPC:
             self.Fault(FAULT_DATA_INVALID)
             
     def _checkResponseCode(self, code):
-        if not isinstance(code, int):
+        if not isinstance(code, basestring):
             self.Fault(FAULT_DATA_INVALID)
-        if code < 100 or code > 599:
-            self.Fault(FAULT_DATA_INVALID)
+        if code == '':
+            return
+        if code.find('-') == -1:
+            codes = (code,)
+        else:
+            codes = code.split('-')
+        for code in codes:
+            try:
+                intcode = int(code)
+                if intcode < 100:
+                    self.Fault(FAULT_DATA_INVALID)
+                if intcode >= 600:
+                    self.Fault(FAULT_DATA_INVALID)
+            except ValueError:
+                self.Fault(FAULT_DATA_INVALID)
             
     def _checkUsername(self, name):
         if not isinstance(name, basestring):
@@ -251,19 +267,27 @@ class MockONMSXMLRPC:
                         interval, 
                         downtime_interval,
                         downtime_duration, 
-                        port, 
+                        hostname,
+                        port,
                         response, 
                         response_text, 
-                        url ):
+                        url,
+                        username,
+                        password,
+                        agent
+                         ):
         """
         addServiceHTTP function
         """
         self._validateSchedule(retries, timeout, interval,
                               downtime_interval, downtime_duration)
         self._checkPort(port)
+        self._checkHostname(hostname)
         self._checkResponseCode(response)
         self._checkContentCheck(response_text)
         self._checkURL(url)
+        self._checkUsername(username)
+        self._checkPassword(password)
         # Set the configuration
         self.configs[serviceid] = {
                                       'retries':retries,
@@ -272,32 +296,44 @@ class MockONMSXMLRPC:
                                       'downtime_interval':downtime_interval,
                                       'downtime_duration':downtime_duration,
                                       'port':port,
+                                      'hostname':hostname,
                                       'response':response,
                                       'response_text':response_text,
-                                      'url':url
+                                      'url':url,
+                                      'username':username,
+                                      'password':password,
+                                      'agent':agent,
                                   }
         return True
        
-    def addServiceHTTPS( self,
+    def addServiceHTTPS( self, 
                          serviceid, 
                          retries, 
-                         timeout, 
-                         interval,
+                         timeout,
+                         interval, 
                          downtime_interval,
                          downtime_duration, 
-                         port, 
+                         hostname,
+                         port,
                          response, 
                          response_text, 
-                         url ):
+                         url,
+                         username,
+                         password,
+                         agent
+                         ):
         """
         addServiceHTTPS function
         """
         self._validateSchedule(retries, timeout, interval,
                               downtime_interval, downtime_duration)
         self._checkPort(port)
+        self._checkHostname(hostname)
         self._checkResponseCode(response)
         self._checkContentCheck(response_text)
         self._checkURL(url)
+        self._checkUsername(username)
+        self._checkPassword(password)
         # Set the configuration
         self.configs[serviceid] = {
                                       'retries':retries,
@@ -306,9 +342,13 @@ class MockONMSXMLRPC:
                                       'downtime_interval':downtime_interval,
                                       'downtime_duration':downtime_duration,
                                       'port':port,
+                                      'hostname':hostname,
                                       'response':response,
                                       'response_text':response_text,
-                                      'url':url
+                                      'url':url,
+                                      'username':username,
+                                      'password':password,
+                                      'agent':agent,
                                   }
         return True
        

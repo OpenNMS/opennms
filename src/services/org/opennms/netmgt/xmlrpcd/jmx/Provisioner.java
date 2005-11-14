@@ -31,7 +31,9 @@
 //
 package org.opennms.netmgt.xmlrpcd.jmx;
 
+import org.apache.xmlrpc.XmlRpc;
 import org.opennms.core.fiber.Fiber;
+import org.opennms.core.utils.ThreadCategory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -46,11 +48,14 @@ public class Provisioner implements ProvisionerMBean {
     }
 
     public void init() {
+        XmlRpc.debug = "true".equalsIgnoreCase(System.getProperty("xmlrpc.debug", "false"));
     }
 
     public void start() {
         m_status = Fiber.STARTING;
+        ThreadCategory.getInstance().debug("SPRING: thread.classLoader="+Thread.currentThread().getContextClassLoader());;
         m_context = new ClassPathXmlApplicationContext("/org/opennms/netmgt/xmlrpcd/provisioner-context.xml");
+        ThreadCategory.getInstance().debug("SPRING: context.classLoader="+m_context.getClassLoader());
         m_status = Fiber.RUNNING;
     }
 
