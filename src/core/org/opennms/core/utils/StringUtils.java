@@ -29,95 +29,16 @@
 //     http://www.opennms.org/
 //     http://www.opennms.com/
 //
-package org.opennms.netmgt.utils;
+package org.opennms.core.utils;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.Reader;
-import java.io.Writer;
 import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.StringTokenizer;
 
-public class StreamUtils {
+import org.apache.log4j.Category;
 
-    /**
-     * Convenience method for reading data from a <code>Reader</code> and then
-     * immediately writing that data to a <code>Writer</code> with a default
-     * buffer size of one kilobyte (1,024 chars).
-     * 
-     * @param in
-     *            a data source
-     * @param out
-     *            a data sink
-     */
-    public static void streamToStream(Reader in, Writer out) throws IOException {
-        streamToStream(in, out, 1024);
-    }
-
-    /**
-     * Convenience method for reading data from a <code>Reader</code> and then
-     * immediately writing that data to a <code>Writer</code>.
-     * 
-     * @param in
-     *            a data source
-     * @param out
-     *            a data sink
-     * @param bufferSize
-     *            the size of the <code>char</code> buffer to use for each
-     *            read/write
-     */
-    public static void streamToStream(Reader in, Writer out, int bufferSize) throws IOException {
-        if (in == null || out == null) {
-            throw new IllegalArgumentException("Cannot take null parameters.");
-        }
-    
-        if (bufferSize < 1) {
-            throw new IllegalArgumentException("Cannot take negative buffer size.");
-        }
-    
-        char[] b = new char[bufferSize];
-        int length;
-    
-        while ((length = in.read(b)) != -1) {
-            out.write(b, 0, length);
-        }
-    }
-
-    /**
-     * Convenience method for reading data from an <code>InputStream</code>
-     * and then immediately writing that data to an <code>OutputStream</code>
-     * with a default buffer size of one kilobyte (1,024 bytes).
-     * 
-     * @param in
-     *            a data source
-     * @param out
-     *            a data sink
-     */
-    public static void streamToStream(InputStream in, OutputStream out) throws IOException {
-        streamToStream(in, out, 1024);
-    }
-
-    /**
-     * Convenience method for reading data from an <code>InputStream</code>
-     * and then immediately writing that data to an <code>OutputStream</code>.
-     * 
-     * @param in
-     *            a data source
-     * @param out
-     *            a data sink
-     * @param bufferSize
-     *            the size of the <code>byte</code> buffer to use for each
-     *            read/write
-     */
-    public static void streamToStream(InputStream in, OutputStream out, int bufferSize) throws IOException {
-        byte[] b = new byte[bufferSize];
-        int length;
-    
-        while ((length = in.read(b)) != -1) {
-            out.write(b, 0, length);
-        }
-    }
+public class StringUtils {
 
     /**
      * Convenience method for creating arrays of strings suitable for use as
@@ -192,6 +113,79 @@ public class StreamUtils {
         }
     
         return list;
+    }
+
+    public static String[] tokenizeWithQuotingAndEscapes(String line, String delims, boolean processQuoted) {
+        Category log = ThreadCategory.getInstance(StringUtils.class);
+        List tokenList = new LinkedList();
+    
+        StringBuffer currToken = new StringBuffer();
+        boolean quoting = false;
+        boolean escaping = false;
+        boolean debugTokens = Boolean.getBoolean("org.opennms.netmgt.rrd.debugTokens");
+    
+        if (debugTokens)
+            log.debug("tokenize: line=" + line + " delims=" + delims);
+        for (int i = 0; i < line.length(); i++) {
+            char ch = line.charAt(i);
+            if (debugTokens)
+                log.debug("tokenize: checking char: " + ch);
+            if (escaping) {
+                if (ch == 'n') {
+                    currToken.append('\n');
+                } else if (ch == 'r') {
+                    currToken.append('\r');
+                } else if (ch == 't') {
+                    currToken.append('\t');
+                } else {
+                    currToken.append(ch);
+                }
+                escaping = false;
+                if (debugTokens)
+                    log.debug("tokenize: escaped. appended to " + currToken);
+            } else if (ch == '\\') {
+                if (debugTokens)
+                    log.debug("tokenize: found a backslash... escaping currToken = " + currToken);
+                if (quoting && !processQuoted)
+                    currToken.append(ch);
+                else
+                    escaping = true;
+            } else if (ch == '\"') {
+                if (!processQuoted)
+                    currToken.append(ch);
+                if (quoting) {
+                    if (debugTokens)
+                        log.debug("tokenize: found a quote ending quotation currToken = " + currToken);
+                    quoting = false;
+                } else {
+                    if (debugTokens)
+                        log.debug("tokenize: found a quote beginning quotation  currToken =" + currToken);
+                    quoting = true;
+                }
+            } else if (!quoting && delims.indexOf(ch) >= 0) {
+                if (debugTokens)
+                    log.debug("tokenize: found a token: " + ch + " ending token [" + currToken + "] and starting a new one");
+                tokenList.add(currToken.toString());
+                currToken = new StringBuffer();
+            } else {
+                if (debugTokens)
+                    log.debug("tokenize: appending " + ch + " to token: " + currToken);
+                currToken.append(ch);
+            }
+    
+        }
+    
+        if (escaping || quoting) {
+            if (debugTokens)
+                log.debug("tokenize: ended string but escaping = " + escaping + " and quoting = " + quoting);
+            throw new IllegalArgumentException("unable to tokenize string " + line + " with token chars " + delims);
+        }
+    
+        if (debugTokens)
+            log.debug("tokenize: reached end of string.  completing token " + currToken);
+        tokenList.add(currToken.toString());
+    
+        return (String[]) tokenList.toArray(new String[tokenList.size()]);
     }
 
 }

@@ -36,7 +36,7 @@
 // Tab Size = 8
 //
 
-package org.opennms.netmgt.rrd;
+package org.opennms.netmgt.rrd.rrdtool;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
@@ -51,8 +51,11 @@ import java.util.List;
 
 import org.apache.log4j.Category;
 import org.apache.log4j.Priority;
+import org.opennms.core.utils.StreamUtils;
+import org.opennms.core.utils.StringUtils;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.utils.StreamUtils;
+import org.opennms.netmgt.rrd.RrdException;
+import org.opennms.netmgt.rrd.RrdStrategy;
 
 /**
  * Provides an rrdtool based implementation of RrdStrategy. It uses the existing
@@ -65,7 +68,7 @@ import org.opennms.netmgt.utils.StreamUtils;
  * 
  * See the individual methods for more details
  */
-class JniRrdStrategy implements RrdStrategy {
+public class JniRrdStrategy implements RrdStrategy {
 
     boolean initialized = false;
 
@@ -277,7 +280,7 @@ class JniRrdStrategy implements RrdStrategy {
      */
     public InputStream createGraph(String command, File workDir) throws IOException, RrdException {
         InputStream tempIn;
-        String[] commandArray = StreamUtils.createCommandArray(command, '@');
+        String[] commandArray = StringUtils.createCommandArray(command, '@');
         Process process = Runtime.getRuntime().exec(commandArray, null, workDir);
 
         ByteArrayOutputStream tempOut = new ByteArrayOutputStream();

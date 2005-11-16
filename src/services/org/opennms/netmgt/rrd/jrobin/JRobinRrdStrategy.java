@@ -36,7 +36,7 @@
 // Tab Size = 8
 //
 
-package org.opennms.netmgt.rrd;
+package org.opennms.netmgt.rrd.jrobin;
 
 import java.awt.Color;
 import java.awt.Font;
@@ -45,7 +45,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.log4j.Category;
@@ -56,7 +55,9 @@ import org.jrobin.core.RrdException;
 import org.jrobin.core.Sample;
 import org.jrobin.graph.RrdGraph;
 import org.jrobin.graph.RrdGraphDef;
+import org.opennms.core.utils.StringUtils;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.rrd.RrdStrategy;
 
 /**
  * Provides a JRobin based implementation of RrdStrategy. It uses JRobin 1.4 in
@@ -182,79 +183,6 @@ public class JRobinRrdStrategy implements RrdStrategy {
     private Color getColor(String colorValue) {
         int colorVal = Integer.parseInt(colorValue, 16);
         return new Color(colorVal);
-    }
-
-    private String[] tokenize(String line, String delims, boolean processQuoted) {
-        Category log = ThreadCategory.getInstance(getClass());
-        List tokenList = new LinkedList();
-
-        StringBuffer currToken = new StringBuffer();
-        boolean quoting = false;
-        boolean escaping = false;
-        boolean debugTokens = Boolean.getBoolean("org.opennms.netmgt.rrd.debugTokens");
-
-        if (debugTokens)
-            log.debug("tokenize: line=" + line + " delims=" + delims);
-        for (int i = 0; i < line.length(); i++) {
-            char ch = line.charAt(i);
-            if (debugTokens)
-                log.debug("tokenize: checking char: " + ch);
-            if (escaping) {
-                if (ch == 'n') {
-                    currToken.append('\n');
-                } else if (ch == 'r') {
-                    currToken.append('\r');
-                } else if (ch == 't') {
-                    currToken.append('\t');
-                } else {
-                    currToken.append(ch);
-                }
-                escaping = false;
-                if (debugTokens)
-                    log.debug("tokenize: escaped. appended to " + currToken);
-            } else if (ch == '\\') {
-                if (debugTokens)
-                    log.debug("tokenize: found a backslash... escaping currToken = " + currToken);
-                if (quoting && !processQuoted)
-                    currToken.append(ch);
-                else
-                    escaping = true;
-            } else if (ch == '\"') {
-                if (!processQuoted)
-                    currToken.append(ch);
-                if (quoting) {
-                    if (debugTokens)
-                        log.debug("tokenize: found a quote ending quotation currToken = " + currToken);
-                    quoting = false;
-                } else {
-                    if (debugTokens)
-                        log.debug("tokenize: found a quote beginning quotation  currToke =" + currToken);
-                    quoting = true;
-                }
-            } else if (!quoting && delims.indexOf(ch) >= 0) {
-                if (debugTokens)
-                    log.debug("tokenize: found a token: " + ch + " ending token [" + currToken + "] and starting a new one");
-                tokenList.add(currToken.toString());
-                currToken = new StringBuffer();
-            } else {
-                if (debugTokens)
-                    log.debug("tokenize: appending " + ch + " to token: " + currToken);
-                currToken.append(ch);
-            }
-
-        }
-
-        if (escaping || quoting) {
-            if (debugTokens)
-                log.debug("tokenize: ended string but escaping = " + escaping + " and quoting = " + quoting);
-            throw new IllegalArgumentException("unable to tokenize string " + line + " with token chars " + delims);
-        }
-
-        if (debugTokens)
-            log.debug("tokenize: reached end of string.  completing token " + currToken);
-        tokenList.add(currToken.toString());
-
-        return (String[]) tokenList.toArray(new String[tokenList.size()]);
     }
 
     /**
@@ -475,6 +403,10 @@ public class JRobinRrdStrategy implements RrdStrategy {
             log.error("JRobin:exception occurred creating graph", e);
             throw new org.opennms.netmgt.rrd.RrdException("An exception occurred creating the graph.", e);
         }
+    }
+    
+    private String[] tokenize(String line, String delimiters, boolean processQuotes) {
+        return StringUtils.tokenizeWithQuotingAndEscapes(line, delimiters, processQuotes);
     }
 
     /**

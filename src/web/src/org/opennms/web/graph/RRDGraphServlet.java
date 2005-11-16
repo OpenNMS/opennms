@@ -51,10 +51,10 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.regexp.RE;
 import org.apache.regexp.RESyntaxException;
 import org.opennms.core.resource.Vault;
+import org.opennms.core.utils.StreamUtils;
 import org.opennms.netmgt.rrd.RrdException;
 import org.opennms.netmgt.rrd.RrdUtils;
 import org.opennms.netmgt.utils.RrdFileConstants;
-import org.opennms.netmgt.utils.StreamUtils;
 import org.opennms.web.MissingParameterException;
 
 /**

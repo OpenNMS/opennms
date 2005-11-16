@@ -240,7 +240,7 @@ int buildArgList(char* command, char **argv) {
 
  /*---------------------------------------------------------------------------
   * JNI Function (as defined in machine-generated file 'rrd_jinterface.h')
-  *		Java_org_opennms_netmgt_rrd_Interface_launch() 
+  *		Java_org_opennms_netmgt_rrd_rrdtool_Interface_launch() 
   * 
   * Description:
   *	JNI method implementation which takes a pre-formatted RRD command
@@ -265,7 +265,7 @@ int buildArgList(char* command, char **argv) {
   *
   * Args:
   *		*env	Java execution environment reference
-  *		obj		Reference to the org.opennms.netmgt.rrd.Interface class
+  *		obj		Reference to the org.opennms.netmgt.rrd.rrdtool.Interface class
   *		javaCmdStr	RRDtool style command string
   * 
   * Return:
@@ -281,7 +281,7 @@ int buildArgList(char* command, char **argv) {
   * 
   ---------------------------------------------------------------------------*/
 JNIEXPORT jobjectArray JNICALL
-Java_org_opennms_netmgt_rrd_Interface_launch(JNIEnv *env, jobject obj, jstring javaCmdStr) {
+Java_org_opennms_netmgt_rrd_rrdtool_Interface_launch(JNIEnv *env, jobject obj, jstring javaCmdStr) {
 
 	/* Local vars */
 	jbyte *nativeCmdStr;

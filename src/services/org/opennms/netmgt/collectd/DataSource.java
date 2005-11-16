@@ -34,7 +34,6 @@
 //
 package org.opennms.netmgt.collectd;
 
-import org.opennms.netmgt.rrd.RRDDataSource;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpValue;
 

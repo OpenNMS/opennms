@@ -48,7 +48,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.opennms.core.resource.Vault;
 import org.opennms.core.utils.PropertiesUtils;
-import org.opennms.netmgt.utils.StreamUtils;
+import org.opennms.core.utils.StreamUtils;
+import org.opennms.core.utils.StringUtils;
 import org.opennms.web.MissingParameterException;
 
 /**
@@ -107,7 +108,7 @@ public class RRDDumpServlet extends HttpServlet {
         this.log(command);
 
         // parse the command into an array and fork a process for it
-        String[] commandArray = StreamUtils.createCommandArray(command, '@');
+        String[] commandArray = StringUtils.createCommandArray(command, '@');
         Process process = Runtime.getRuntime().exec(commandArray, null, new File(this.workDir));
 
         PrintWriter out = response.getWriter();

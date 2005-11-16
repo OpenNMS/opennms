@@ -32,15 +32,15 @@
 // RRDDataSource.java,v 1.1.1.1 2001/11/11 17:34:38 ben Exp
 //
 
-package org.opennms.netmgt.rrd;
+package org.opennms.netmgt.collectd;
 import java.util.List;
 
 import org.apache.log4j.Category;
 import org.apache.log4j.Priority;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.collectd.DataSource;
-import org.opennms.netmgt.collectd.MibObject;
 import org.opennms.netmgt.config.DataCollectionConfigFactory;
+import org.opennms.netmgt.rrd.RrdException;
+import org.opennms.netmgt.rrd.RrdUtils;
 import org.opennms.netmgt.snmp.SnmpValue;
 
 

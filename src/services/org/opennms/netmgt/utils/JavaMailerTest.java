@@ -4,32 +4,47 @@
  * TODO To change the template for this generated file go to
  * Window - Preferences - Java - Code Style - Code Templates
  */
-package org.opennms.core.utils;
+package org.opennms.netmgt.utils;
 
-/*
+
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.Calendar;
 import java.util.Properties;
 
 import javax.mail.Address;
 import javax.mail.Message;
 import javax.mail.Session;
+import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
-import alt.dev.jmta.JMTA;
-*/
-import org.opennms.netmgt.mock.OpenNMSTestCase;
+import junit.framework.TestCase;
 
+import org.apache.log4j.Category;
+import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.mock.MockLogAppender;
+
+import alt.dev.jmta.JMTA;
 /**
  * @author david hustace
  */
-public class JavaMailerTest extends OpenNMSTestCase {
+public class JavaMailerTest extends TestCase {
     
+    protected void setUp() {
+        MockLogAppender.setupLogging();
+        System.setProperty("opennms.home", ".");
+    }
+    
+    protected void tearDown() {
+        MockLogAppender.assertNoWarningsOrGreater();
+    }
+
     public void testNothing() throws Exception {
         
     }
 	    
- /*   public void testMTA() throws Exception {
+    public void testMTA() throws Exception {
         
         Properties props = new Properties();
         Session session = Session.getInstance(props, null);
@@ -38,8 +53,8 @@ public class JavaMailerTest extends OpenNMSTestCase {
         message.setText("Hello");
         message.setSubject(Calendar.getInstance().getTime() + ": testMTA message");
         
-        String to = "david@opennms.org";
-        String from = "david@opennms.org";
+        String to = "brozow@opennms.org";
+        String from = "brozow@opennms.org";
         
 
         Address address = new InternetAddress(from);
@@ -48,7 +63,10 @@ public class JavaMailerTest extends OpenNMSTestCase {
         message.setRecipients(Message.RecipientType.TO, to);
         message.saveChanges();
         
-        JMTA.send(message);
+        Transport  aTransport = session.getTransport( "mta" );
+        
+        aTransport.sendMessage( message, null );
+//        JMTA.send(message);
         
     }
 
@@ -57,14 +75,14 @@ public class JavaMailerTest extends OpenNMSTestCase {
         
         JavaMailer jm = new JavaMailer();
         
-        jm.setFrom("david@opennms.org");
+        jm.setFrom("brozow@opennms.org");
         try {
             jm.setMessageText("Test message from testJavaMailer: "+InetAddress.getLocalHost());
         } catch (UnknownHostException e) {
             log().error("Host Name exception: "+e.getMessage());
         }
         jm.setSubject("Testing JavaMailer");
-        jm.setTo("david@opennms.org");
+        jm.setTo("brozow@opennms.org");
         try {
             jm.mailSend();
         } catch (JavaMailerException e) {
@@ -77,14 +95,14 @@ public class JavaMailerTest extends OpenNMSTestCase {
         
         JavaMailer jm = new JavaMailer();
 
-        jm.setFrom("david@opennms.org");
+        jm.setFrom("brozow@opennms.org");
         try {
             jm.setMessageText("Test message with file attachment from testJavaMailer: "+InetAddress.getLocalHost());
         } catch (UnknownHostException e) {
             log().error("Host Name exception: "+e.getMessage());
         }
         jm.setSubject("Testing JavaMailer");
-        jm.setTo("david@opennms.org");
+        jm.setTo("brozow@opennms.org");
         
         jm.setFileName("/etc/motd");
         try {
@@ -98,5 +116,5 @@ public class JavaMailerTest extends OpenNMSTestCase {
     private Category log() {
         return ThreadCategory.getInstance(getClass());
     }
-*/
+
 }

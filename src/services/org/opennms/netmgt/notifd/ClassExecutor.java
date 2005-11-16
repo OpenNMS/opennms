@@ -30,12 +30,12 @@
 //      http://www.opennms.com/
 //
 
-package org.opennms.core.utils;
+package org.opennms.netmgt.notifd;
 
 import java.util.List;
 
 import org.apache.log4j.Category;
-import org.opennms.netmgt.notifd.NotificationStrategy;
+import org.opennms.core.utils.ThreadCategory;
 
 /**
  * Implementation of Executor strategy that instantiates a Java class.

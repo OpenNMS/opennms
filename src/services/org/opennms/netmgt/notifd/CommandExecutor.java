@@ -30,7 +30,7 @@
 //      http://www.opennms.com/
 //
 
-package org.opennms.core.utils;
+package org.opennms.netmgt.notifd;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -39,6 +39,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Category;
+import org.opennms.core.utils.Argument;
+import org.opennms.core.utils.ThreadCategory;
 
 /**
  * This is a class to store and execute a console command

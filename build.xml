@@ -1291,11 +1291,11 @@ OpenNMS as part of the post-install.
 
   <target name="jrrd.compile" depends="prep,java.compile">
     <mkdir dir="${build.jrrd.dir}"/>
-    <javah class="org.opennms.netmgt.rrd.Interface"
+    <javah class="org.opennms.netmgt.rrd.rrdtool.Interface"
 	   classpath="${build.classes.dir}"
            outputFile="${build.jrrd.dir}/rrd_jinterface.h"/>
     <copy todir="${build.jrrd.dir}">
-      <fileset dir="${services.source.dir}/org/opennms/netmgt/rrd">
+      <fileset dir="${services.source.dir}/org/opennms/netmgt/rrd/rrdtool">
         <include name="rrd_jinterface.c"/>
       </fileset>
     </copy>

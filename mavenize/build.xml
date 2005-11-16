@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
- 
+
 <!--=================================================================
 
    $Id$
@@ -7,20 +7,604 @@
    Build file that will reorganize a opennms 1.x source tree to an opennms 2.x tree
  
 ==================================================================== -->
- 
+
 <project name="opennms-mavenize" default="usage" basedir=".">
-  <description>
+	<description>
 Reorganize an existing opennms 1.x source tree 
 into a maven built 2.x source tree
 
-Make sure you set \${maven.basedir} to the directory
+Make sure you set ${maven.basedir} to the directory
 to put the reorg code into. 
   </description>
-	
- <target name="usage" description="How to use this build file">
-  <java fork="true" dir="${basedir}" jar="${ant.library.dir}/ant-launcher.jar">
-    <arg value="-projecthelp"/>
-  </java>
- </target>
+
+	<property name="opennms.dir" value=".." />
+	<property name="maven.basedir" value="tmp" />
+
+	<property name="java.subdir" value="src/main/java" />
+	<property name="test.subdir" value="src/test/java" />
+	<property name="castor.subdir" value="src/main/castor" />
+	<property name="sablecc.subdir" value="src/main/sablecc" />
+	<property name="native.subdir" value="src/main/native" />
+
+	<property name="opennms.version" value="1.3.1-SNAPSHOT" />
+
+
+	<taskdef resource="net/sf/antcontrib/antlib.xml">
+		<classpath>
+			<pathelement location="${opennms.dir}/devlib/ant-contrib.jar" />
+		</classpath>
+	</taskdef>
+
+
+	<target name="usage" description="--> How to use this build file">
+		<java fork="true" dir="${basedir}" jar="${ant.library.dir}/ant-launcher.jar">
+			<arg value="-projecthelp" />
+		</java>
+	</target>
+
+	<!-- ================================= 
+          target: reorg              
+         ================================= -->
+	<target name="reorg" depends="clean,modules" description="--> Reorganize the project to a maven2 style">
+	</target>
+
+	<!-- ================================= 
+          target: clean              
+         ================================= -->
+	<target name="clean" depends="" description="--> Remove mavenized project files">
+		<delete dir="${maven.basedir}" />
+	</target>
+
+	<!-- = = = = = = = = = = = = = = = = =
+          macrodef: create-and-copy       
+         = = = = = = = = = = = = = = = = = -->
+	<macrodef name="create-and-copy">
+		<attribute name="dir" />
+		<element name="files" implicit="yes" />
+		<sequential>
+			<mkdir dir="@{dir}" />
+			<copy todir="@{dir}">
+				<files />
+			</copy>
+		</sequential>
+	</macrodef>
+
+	<!-- = = = = = = = = = = = = = = = = =
+          macrodef: create-module-dir         
+         = = = = = = = = = = = = = = = = = -->
+	<macrodef name="create-module-dir">
+		<attribute name="module-id" />
+		<attribute name="target-dir" />
+		<element name="files" implicit="yes" />
+		<sequential>
+			<create-and-copy dir="${maven.basedir}/@{module-id}/@{target-dir}">
+				<files />
+			</create-and-copy>
+		</sequential>
+	</macrodef>
+
+	<!-- = = = = = = = = = = = = = = = = =
+          macrodef: dependency-helper          
+         = = = = = = = = = = = = = = = = = -->
+	<macrodef name="dependency-helper">
+		<attribute name="module-id" />
+		<attribute name="groupId" />
+		<attribute name="artifactId" />
+		<attribute name="version" />
+		<sequential>
+			<concat destfile="dependencies.@{module-id}" append="true">
+				<filelist dir="${basedir}" files="dependency.tmpl" />
+				<filterchain>
+					<replacetokens>
+						<token key="dependency.groupId" value="@{groupId}" />
+						<token key="dependency.artifactId" value="@{artifactId}" />
+						<token key="dependency.version" value="@{version}" />
+					</replacetokens>
+				</filterchain>
+			</concat>
+		</sequential>
+	</macrodef>
+
+	<!-- = = = = = = = = = = = = = = = = =
+          macrodef: module-helper          
+         = = = = = = = = = = = = = = = = = -->
+	<macrodef name="module-helper">
+		<attribute name="module-id" />
+		<sequential>
+			<concat destfile="modules" append="true">
+				<filelist dir="${basedir}" files="module.tmpl" />
+				<filterchain>
+					<replacetokens>
+						<token key="module.id" value="@{module-id}" />
+					</replacetokens>
+				</filterchain>
+			</concat>
+		</sequential>
+	</macrodef>
+
+	<macrodef name="dependency">
+		<attribute name="groupId" />
+		<attribute name="artifactId" />
+		<attribute name="version" />
+		<sequential>
+			<echo>Invalid use of dependency this def is here only to help validation</echo>
+		</sequential>
+	</macrodef>
+
+	<macrodef name="module-dependency">
+		<attribute name="id" />
+		<sequential>
+			<echo>Invalid use of module-dependency this def is here only to help validation</echo>
+		</sequential>
+	</macrodef>
+
+	<macrodef name="create-empty-module">
+		<attribute name="module-id" />
+		<attribute name="module-name" />
+		<attribute name="module-type" default="jar" />
+		<attribute name="pom-template" default="module-pom.tmpl" />
+		<element name="dependencies" optional="yes" implicit="true"/>
+		<sequential>
+			<!-- use this to define a dependency for this module -->
+			<macrodef name="dependency">
+				<attribute name="groupId" />
+				<attribute name="artifactId" />
+				<attribute name="version" />
+				<sequential>
+					<dependency-helper module-id="@{module-id}" groupId="@{groupId}" artifactId="@{artifactId}" version="@{version}" />
+				</sequential>
+			</macrodef>
+			<!-- this is defines a dependency on another opennms module -->
+			<macrodef name="module-dependency">
+				<attribute name="id" />
+				<sequential>
+					<dependency-helper module-id="@{module-id}" groupId="org.opennms" artifactId="opennms-@{id}" version="${opennms.version}" />
+				</sequential>
+			</macrodef>
+
+			<!-- add the new module to top level project -->
+			<module-helper module-id="@{module-id}" />
+
+			<!-- initial the dependencies file for this module -->
+			<delete quiet="true" file="dependencies.@{module-id}" />
+			<touch file="dependencies.@{module-id}" />
+
+			<!-- build the dependencies file -->
+			<dependencies />
+
+			<!-- create the pom.xml file for this module -->
+			<!-- first load the dependencies we just created -->
+			<loadfile property="dependencies-@{module-id}" srcfile="dependencies.@{module-id}" />
+
+			<!-- now copy the pom.xml template to the module dir substiting as necessary -->
+			<copy file="@{pom-template}" tofile="${maven.basedir}/@{module-id}/pom.xml">
+				<filterchain>
+					<replacetokens>
+						<token key="module.id" value="@{module-id}" />
+						<token key="module.name" value="@{module-name}" />
+						<token key="module.packaging" value="@{module-type}" />
+						<token key="module.dependencies" value="${dependencies-@{module-id}}" />
+					</replacetokens>
+					<tokenfilter>
+						<replacestring from="$${dependencies-@{module-id}}" to="" />
+					</tokenfilter>
+				</filterchain>
+			</copy>
+
+			<!-- now copy any custom resources to the module dir  -->
+			<copy failonerror="false" verbose="false" todir="${maven.basedir}/@{module-id}">
+				<fileset dir="${basedir}/@{module-id}">
+				</fileset>
+			</copy>
+			<!-- remove the temporary dependency file -->
+			<delete file="dependencies.@{module-id}" />
+		</sequential>
+	</macrodef>
+
+
+
+	<!-- = = = = = = = = = = = = = = = = =
+          macrodef: create-module        
+         = = = = = = = = = = = = = = = = = -->
+	<macrodef name="create-module">
+		<attribute name="module-id" />
+		<attribute name="module-name" />
+		<attribute name="module-type" default="jar" />
+		<attribute name="pom-template" default="module-pom.tmpl" />
+		<element name="srcs" />
+		<element name="test-srcs" optional="yes" />
+		<element name="dependencies" optional="yes" />
+		<sequential>
+			<create-empty-module module-id="@{module-id}" module-name="@{module-name}" module-type="@{module-type}" pom-template="@{pom-template}">
+					<dependencies/>
+			</create-empty-module>
+			
+			<!-- first install the main java sources -->
+			<create-module-dir module-id="@{module-id}" target-dir="${java.subdir}">
+				<srcs />
+			</create-module-dir>
+
+			<!-- next install the test java sources -->
+			<create-module-dir module-id="@{module-id}" target-dir="${test.subdir}">
+				<test-srcs />
+			</create-module-dir>
+
+		</sequential>
+	</macrodef>
+
+	<!-- = = = = = = = = = = = = = = = = =
+          macrodef: create-module-wrapper        
+         = = = = = = = = = = = = = = = = = -->
+	<macrodef name="create-module-wrapper">
+		<attribute name="module-id" />
+		<attribute name="module-name" />
+		<attribute name="module-type" default="jar" />
+		<attribute name="pom-template" default="module-pom.tmpl" />
+		<element name="sources" />
+		<element name="test-sources" />
+		<element name="deps" optional="yes" />
+		<sequential>
+			<create-module module-id="@{module-id}" module-name="@{module-name}" module-type="@{module-type}" pom-template="@{pom-template}">
+				<srcs>
+					<sources />
+				</srcs>
+				<test-srcs>
+					<test-sources />
+				</test-srcs>
+				<dependencies>
+					<deps />
+				</dependencies>
+			</create-module>
+		</sequential>
+	</macrodef>
+	<!-- = = = = = = = = = = = = = = = = =
+          macrodef: create-castor-module        
+         = = = = = = = = = = = = = = = = = -->
+	<macrodef name="create-castor-module">
+		<attribute name="module-id" />
+		<attribute name="module-name" />
+		<attribute name="module-type" default="jar" />
+		<attribute name="pom-template" default="castor-pom.tmpl" />
+		<element name="srcs" />
+		<element name="test-srcs" />
+		<element name="castor-srcs" />
+		<element name="dependencies" />
+		<sequential>
+			<create-module-wrapper module-id="@{module-id}" module-name="@{module-name}" module-type="@{module-type}" pom-template="@{pom-template}">
+				<sources>
+					<srcs />
+				</sources>
+				<test-sources>
+					<test-srcs />
+				</test-sources>
+				<deps>
+					<dependencies />
+				</deps>
+			</create-module-wrapper>
+			<!-- next install the test java sources -->
+			<create-module-dir module-id="@{module-id}" target-dir="${castor.subdir}">
+				<castor-srcs />
+			</create-module-dir>
+
+		</sequential>
+	</macrodef>
+
+	<!-- = = = = = = = = = = = = = = = = =
+          macrodef: create-castor-module-wrapper        
+         = = = = = = = = = = = = = = = = = -->
+	<macrodef name="create-castor-module-wrapper">
+		<attribute name="module-id" />
+		<attribute name="module-name" />
+		<attribute name="module-type" default="jar" />
+		<attribute name="pom-template" default="module-pom.tmpl" />
+		<element name="sources" />
+		<element name="test-sources" />
+		<element name="castor-sources" />
+		<element name="deps" />
+		<sequential>
+			<create-castor-module module-id="@{module-id}" module-name="@{module-name}" module-type="@{module-type}" pom-template="@{pom-template}">
+				<srcs>
+					<sources />
+				</srcs>
+				<test-srcs>
+					<test-sources />
+				</test-srcs>
+				<castor-srcs>
+					<castor-sources />
+				</castor-srcs>
+				<dependencies>
+					<deps />
+				</dependencies>
+			</create-castor-module>
+		</sequential>
+	</macrodef>
+
+
+	<!-- = = = = = = = = = = = = = = = = =
+	          macrodef: create-castor-module        
+	         = = = = = = = = = = = = = = = = = -->
+	<macrodef name="create-sablecc-module">
+		<attribute name="module-id" />
+		<attribute name="module-name" />
+		<attribute name="module-type" default="jar" />
+		<attribute name="pom-template" default="sablecc-pom.tmpl" />
+		<element name="srcs" />
+		<element name="test-srcs" />
+		<element name="castor-srcs" />
+		<element name="sablecc-srcs" />
+		<element name="dependencies" />
+		<sequential>
+			<create-castor-module-wrapper module-id="@{module-id}" module-name="@{module-name}" module-type="@{module-type}" pom-template="@{pom-template}">
+				<sources>
+					<srcs />
+				</sources>
+				<test-sources>
+					<test-srcs />
+				</test-sources>
+				<castor-sources>
+					<castor-srcs />
+				</castor-sources>
+				<deps>
+					<dependencies />
+				</deps>
+			</create-castor-module-wrapper>
+			<!-- next install the test java sources -->
+			<create-module-dir module-id="@{module-id}" target-dir="${sablecc.subdir}">
+				<sablecc-srcs />
+			</create-module-dir>
+		</sequential>
+	</macrodef>
+
+	<!-- = = = = = = = = = = = = = = = = =
+	  macrodef: create-native-module        
+ 	= = = = = = = = = = = = = = = = = -->
+	<macrodef name="create-native-module">
+		<attribute name="module-id" />
+		<attribute name="module-name" />
+		<attribute name="module-type" default="jar" />
+		<attribute name="pom-template" default="native-pom.tmpl" />
+		<element name="native-srcs" />
+		<element name="dependencies" optional="yes" />
+		<sequential>
+			<create-empty-module module-id="@{module-id}" module-name="@{module-name}" module-type="@{module-type}" pom-template="@{pom-template}">
+					<dependencies/>
+			</create-empty-module>
+			<!-- first install the main java sources -->
+			<create-module-dir module-id="@{module-id}" target-dir="${native.subdir}">
+				<native-srcs />
+			</create-module-dir>
+		</sequential>
+	</macrodef>
+
+
+
+
+	<macrodef name="simple-jar-module" description="define a simple jar based module">
+		<attribute name="module-id" />
+		<attribute name="module-name" />
+		<attribute name="src-dir" />
+		<element name="deps" implicit="yes" optional="yes" />
+		<sequential>
+			<create-module module-id="@{module-id}" module-name="@{module-name}" module-type="jar">
+				<srcs>
+					<fileset dir="@{src-dir}">
+						<include name="**/*.java" />
+						<exclude name="**/*Test*.java" />
+					</fileset>
+				</srcs>
+				<test-srcs>
+					<fileset dir="@{src-dir}">
+						<include name="**/*Test*.java" />
+					</fileset>
+				</test-srcs>
+				<dependencies>
+					<deps />
+				</dependencies>
+			</create-module>
+		</sequential>
+	</macrodef>
+
+	<macrodef name="init-maven-project">
+		<sequential>
+			<delete file="modules" />
+		</sequential>
+	</macrodef>
+
+	<macrodef name="create-maven-project-file">
+		<sequential>
+			<loadfile property="modules" srcfile="modules" />
+			<copy file="pom.xml" tofile="${maven.basedir}/pom.xml">
+				<filterchain>
+					<replacetokens>
+						<token key="modules" value="${modules}" />
+					</replacetokens>
+				</filterchain>
+			</copy>
+			<delete file="modules" />
+		</sequential>
+	</macrodef>
+
+
+	<fileset dir="${basedir}" id="empty.set">
+		<filename name="nomatch" />
+	</fileset>
+
+
+
+
+	<!-- - - - - - - - - - - - - - - - - - 
+          target: modules                      
+         - - - - - - - - - - - - - - - - - -->
+	<target name="modules">
+		<init-maven-project />
+		
+		<!-- core module -->
+		<simple-jar-module module-id="core" module-name="OpenNMS Core Utilities" src-dir="${opennms.dir}/src/core" />
+		
+		<!-- joesnmp module -->
+		<simple-jar-module module-id="joesnmp" module-name="OpenNMS JoeSNMP library" src-dir="${opennms.dir}/src/joesnmp" />
+		
+		<!-- install module -->
+		<simple-jar-module module-id="install" module-name="OpenNMS Installation Utilities" src-dir="${opennms.dir}/src/install" />
+		
+		<!-- config-util - this module has the ConfigFileConstants which is used in many places -->
+		<create-module module-id="config-utils" module-name="OpenNMS Config Utilities">
+			<srcs>
+				<fileset dir="${opennms.dir}/src/services">
+					<include name="org/opennms/netmgt/ConfigFileConstants.java" />
+				</fileset>
+			</srcs>
+			<test-srcs>
+				<fileset refid="empty.set" />
+			</test-srcs>
+			<dependencies>
+				<module-dependency id="core" />
+			</dependencies>
+		</create-module>
+		
+		<!-- the db module - this has the DatabaseConnectionFactory -->
+		<create-module module-id="db" module-name="OpenNMS DB Access">
+			<srcs>
+				<fileset dir="${opennms.dir}/src/services">
+					<include name="org/opennms/netmgt/config/DatabaseConnectionFactory.java" />
+					<include name="org/opennms/netmgt/config/DbConnectionFactory.java" />
+				</fileset>
+			</srcs>
+			<test-srcs>
+				<fileset refid="empty.set" />
+			</test-srcs>
+			<dependencies>
+				<module-dependency id="core" />
+				<module-dependency id="config-utils" />
+				<dependency groupId="castor" artifactId="castor" version="0.9.7" />
+			</dependencies>
+		</create-module>
+		
+		<!-- the filtering module - this parse the filter rules in package and converts to SQL
+		     based on database-schema.xml -->
+		<create-sablecc-module module-id="filter" module-name="OpenNMS Service Filtering">
+			<srcs>
+				<fileset dir="${opennms.dir}/src/services">
+					<include name="org/opennms/netmgt/config/DatabaseSchemaConfigFactory.java" />
+					<include name="org/opennms/netmgt/filter/*.java" />
+					<exclude name="org/opennms/netmgt/filter/*Test*.java" />
+				</fileset>
+			</srcs>
+			<test-srcs>
+				<fileset refid="empty.set" />
+			</test-srcs>
+			<castor-srcs>
+				<fileset dir="${opennms.dir}/src/services/org/opennms/netmgt/config">
+					<include name="database-schema.xsd" />
+				</fileset>
+				<fileset dir="${opennms.dir}/devlib">
+					<include name="castorbuilder.properties"/>
+				</fileset>
+			</castor-srcs>
+			<sablecc-srcs>
+				<fileset dir="${opennms.dir}/src/services/org/opennms/netmgt/filter">
+					<include name="filter.grammar"/>
+				</fileset>
+			</sablecc-srcs>
+			<dependencies>
+				<module-dependency id="core" />
+				<module-dependency id="db" />
+				<dependency groupId="castor" artifactId="castor" version="0.9.7" />
+			</dependencies>
+		</create-sablecc-module>
+		
+		<!-- the icmp module.. has the java code for the icmp lib -->
+		<create-module module-id="icmp" module-name="OpenNMS ICMP Library">
+			<srcs>
+				<fileset dir="${opennms.dir}/src/services">
+					<include name="org/opennms/protocols/icmp/*.java" />
+					<include name="org/opennms/protocols/ip/*.java" />
+				</fileset>
+			</srcs>
+			<test-srcs>
+				<fileset refid="empty.set" />
+			</test-srcs>
+			<dependencies/>
+		</create-module>
+		
+		<!-- the jni code for icmp -->
+		<create-native-module module-id="icmp-jni" module-type="jar" module-name="OpenNMS ICMP JNI Library">
+			<native-srcs>
+				<fileset dir="${opennms.dir}/src/services/org/opennms/protocols/icmp">
+					<include name="*.c" />
+					<include name="*.h" />
+				</fileset>
+			</native-srcs>
+			<dependencies>
+				<module-dependency id="icmp" />
+			</dependencies>
+		</create-native-module>
+		
+		<!-- rrd - a module used to define the highlevel interface for accessing RRD Data -->
+		<create-module module-id="rrd" module-name="OpenNMS RRD Interface">
+			<srcs>
+				<fileset dir="${opennms.dir}/src/services">
+					<include name="org/opennms/netmgt/rrd/*.java" />
+				</fileset>
+			</srcs>
+			<test-srcs>
+				<fileset refid="empty.set" />
+			</test-srcs>
+			<dependencies>
+				<module-dependency id="core" />
+				<module-dependency id="config-utils"  />
+			</dependencies>
+		</create-module>
+		
+		<!-- an implementation of the rrd interfaces using the pure java JRobin library -->
+		<create-module module-id="rrd-jrobin" module-name="OpenNMS JRobin RRD Implementation">
+			<srcs>
+				<fileset dir="${opennms.dir}/src/services">
+					<include name="org/opennms/netmgt/rrd/jrobin/*.java" />
+				</fileset>
+			</srcs>
+			<test-srcs>
+				<fileset refid="empty.set" />
+			</test-srcs>
+			<dependencies>
+				<module-dependency id="rrd" />
+				<dependency groupId="jrobin" artifactId="jrobin" version="1.4.0" />
+			</dependencies>
+		</create-module>
+		
+		<!-- an implementation of the rrd interfaces using the a jni layer to rrdtool --> 
+		<create-module module-id="rrd-rrdtool" module-name="OpenNMS RRDTool RRD Implementation">
+			<srcs>
+				<fileset dir="${opennms.dir}/src/services">
+					<include name="org/opennms/netmgt/rrd/rrdtool/*.java" />
+				</fileset>
+			</srcs>
+			<test-srcs>
+				<fileset refid="empty.set" />
+			</test-srcs>
+			<dependencies>
+				<module-dependency id="rrd" />
+			</dependencies>
+		</create-module>
+		
+		<!-- rrdtool-jni a JNI layer to accessing rrdtool -->
+		<create-native-module module-id="rrdtool-jni" module-name="OpenNMS RRDTool JNI Library">
+			<native-srcs>
+				<fileset dir="${opennms.dir}/src/services/org/opennms/netmgt/rrd/rrdtool">
+					<include name="*.c" />
+					<include name="*.h" />
+				</fileset>
+			</native-srcs>
+			<dependencies>
+				<module-dependency id="rrd-rrdtool" />
+			</dependencies>
+		</create-native-module>
+		<!--
+		<simple-jar-module module-id="reporting" module-name="OpenNMS Reporting" src-dir="${opennms.dir}/src/report">
+			<module-dependency id="core"/>
+		</simple-jar-module>
+		-->
+		<create-maven-project-file />
+	</target>
 
 </project>

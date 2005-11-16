@@ -46,7 +46,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Category;
-import org.opennms.netmgt.utils.StreamUtils;
+import org.opennms.core.utils.StreamUtils;
 import org.opennms.web.MissingParameterException;
 
 /**

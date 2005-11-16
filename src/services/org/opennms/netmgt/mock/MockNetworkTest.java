@@ -373,7 +373,7 @@ public class MockNetworkTest extends TestCase {
     
     public void testInvalidPoll() throws UnknownHostException {
         m_network.resetInvalidPollCount();
-        MonitoredService svc = new MockMonitoredService(1, "InvalidNode", "1.1.1.1", "ICMP");
+        MonitoredService svc = new MockMonitoredService(99, "InvalidNode", "1.1.1.1", "ICMP");
         ServiceMonitor monitor = m_pollerConfig.getServiceMonitor("ICMP");
         monitor.poll(svc, new HashMap(), m_pollerConfig.getPackage("TestPackage"));
         assertEquals(1, m_network.getInvalidPollCount());

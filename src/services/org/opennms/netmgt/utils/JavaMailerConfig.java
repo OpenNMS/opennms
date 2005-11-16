@@ -35,7 +35,7 @@
 //
 // Tab Size = 8
 //
-package org.opennms.core.utils;
+package org.opennms.netmgt.utils;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -44,13 +44,14 @@ import java.io.InputStream;
 import java.util.Properties;
 
 import org.apache.log4j.Category;
+import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.ConfigFileConstants;
 
 /**
  * Provides access to the rrd configuration data.
  */
 class JavaMailerConfig {
-
+    
     /**
      * This loads the configuration file.
      * 
@@ -65,7 +66,7 @@ class JavaMailerConfig {
         in.close();
         return properties;
     }
-
+    
     /**
      * Get a string valued property, returning default value if it is not set.
      * 

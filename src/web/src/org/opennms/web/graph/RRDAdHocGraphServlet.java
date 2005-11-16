@@ -47,10 +47,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.opennms.core.resource.Vault;
+import org.opennms.core.utils.StreamUtils;
 import org.opennms.netmgt.rrd.RrdException;
 import org.opennms.netmgt.rrd.RrdUtils;
 import org.opennms.netmgt.utils.RrdFileConstants;
-import org.opennms.netmgt.utils.StreamUtils;
 
 /**
  * A servlet that creates a custom graph of network performance data using the

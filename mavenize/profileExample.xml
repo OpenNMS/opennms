@@ -1,0 +1,63 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+  
+  <parent>
+    <groupId>bes</groupId>
+    <artifactId>web-connectors-parent</artifactId>
+    <version>7.0-SNAPSHOT</version>
+  </parent>
+
+  <packaging>pom</packaging>
+
+  <groupId>bes</groupId>
+  <artifactId>modiiop-connectors</artifactId>
+
+  <name>ModIIOP Connectors Parent</name>
+
+
+  <profiles>
+  
+    <profile>
+      <id>add-windows-86-module</id>
+      <activation>
+        <property>
+          <name>platform</name>
+          <value>windows-x86</value>
+        </property>
+      </activation>
+      <modules>
+        <module>windows-x86</module>
+      </modules>
+    </profile>
+
+    <profile>
+      <id>add-redhat-x86-r3-module</id>
+      <activation>
+        <property>
+          <name>platform</name>
+          <value>redhat-x86-r3</value>
+        </property>
+      </activation>
+      <modules>
+        <module>redhat-x86-r3</module>
+      </modules>
+    </profile>
+    
+    <profile>
+      <id>add-aix-ppc-module</id>
+      <activation>
+        <property>
+          <name>platform</name>
+          <value>aix-ppc</value>
+        </property>
+      </activation>
+      <modules>
+        <module>aix-ppc</module>
+      </modules>
+    </profile>
+    
+  </profiles>
+
+</project>

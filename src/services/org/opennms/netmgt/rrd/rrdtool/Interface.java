@@ -36,7 +36,7 @@
 // Tab Size = 8
 //
 
-package org.opennms.netmgt.rrd;
+package org.opennms.netmgt.rrd.rrdtool;
 
 import org.opennms.core.utils.ThreadCategory;
 

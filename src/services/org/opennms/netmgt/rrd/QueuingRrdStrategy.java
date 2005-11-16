@@ -49,7 +49,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Category;
-import org.jrobin.core.Util;
 
 /**
  * Provides queueing implementation of RrdStrategy.
@@ -112,7 +111,7 @@ import org.jrobin.core.Util;
  * TODO: Provide an event that will write data for a particular file... Say
  * right before we try to graph it.
  */
-class QueuingRrdStrategy implements RrdStrategy, Runnable {
+public class QueuingRrdStrategy implements RrdStrategy, Runnable {
 
     RrdStrategy m_delegate;
 
@@ -880,7 +879,7 @@ class QueuingRrdStrategy implements RrdStrategy, Runnable {
 
         long currentSigOpsEnqueued = (significantOpsEnqueued - lastSignificantEnqueued);
         long currentSigOpsDequeued = (significantOpsDequeued - lastSignificantDequeued);
-        long currentSigOpsCompleted = (significantOpsCompleted - lastSignificantCompleted);
+        //long currentSigOpsCompleted = (significantOpsCompleted - lastSignificantCompleted);
 
         long currentEnqueueRate = (long) (currentEnqueuedOps * 1000.0 / currentElapsedMillis);
         long currentSigEnqueueRate = (long) (currentSigOpsEnqueued * 1000.0 / currentElapsedMillis);
@@ -924,7 +923,7 @@ class QueuingRrdStrategy implements RrdStrategy, Runnable {
     }
 
     void printLapTime(String message) {
-        log(message + " " + Util.getLapTime());
+        log(message + " " + getLapTime());
     }
 
     /**

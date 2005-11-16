@@ -6,7 +6,7 @@
  * TODO To change the template for this generated file go to
  * Window - Preferences - Java - Code Style - Code Templates
  */
-package org.opennms.core.utils;
+package org.opennms.netmgt.utils;
 
 import java.util.Date;
 import java.util.Properties;
@@ -25,8 +25,7 @@ import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 
 import org.apache.log4j.Category;
-
-import alt.dev.jmta.JMTA;
+import org.opennms.core.utils.ThreadCategory;
 
 /**
  * Sends an email message using the Java Mail API
@@ -250,7 +249,10 @@ public class JavaMailer {
             message.setSentDate(new Date());
             
             if (isUseJMTA()) {
-                JMTA.send(message);
+                //JMTA.send(message);
+                // replace above with this so we have no compile time dependency on JMTA
+                Transport  aTransport = session.getTransport( "mta" );
+                aTransport.sendMessage( message, null );
             } else {
                 localMtaSend(session, message);
             }
@@ -258,6 +260,7 @@ public class JavaMailer {
         } catch (AddressException e) {
             throw new JavaMailerException("Java Mailer Addressing exception: ", e);
         } catch (MessagingException e) {
+            ThreadCategory.getInstance(getClass()).error("Java Mailer messaging exception: ", e);
             throw new JavaMailerException("Java Mailer messaging exception: ", e);
         }
     }
@@ -323,6 +326,7 @@ public class JavaMailer {
         } catch (NoSuchProviderException e) {
             throw new JavaMailerException("Couldn't get a transport: ", e);
         } catch (MessagingException e) {
+            ThreadCategory.getInstance(getClass()).error("Java Mailer messaging exception: ", e);
             throw new JavaMailerException("Java Mailer messaging exception: ", e);
         } finally {
             try {

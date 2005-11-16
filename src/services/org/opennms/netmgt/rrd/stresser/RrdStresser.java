@@ -35,7 +35,7 @@
  * Boston, MA 02111-1307, USA.
  */
 
-package org.opennms.netmgt.rrd;
+package org.opennms.netmgt.rrd.stresser;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -44,6 +44,11 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+
+import org.opennms.netmgt.rrd.QueuingRrdStrategy;
+import org.opennms.netmgt.rrd.RrdStrategy;
+import org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy;
+import org.opennms.netmgt.rrd.rrdtool.JniRrdStrategy;
 
 class RrdStresser {
 
