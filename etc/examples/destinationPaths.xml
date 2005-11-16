@@ -1,0 +1,219 @@
+<?xml version="1.0"?>
+<destinationPaths>
+    <header>
+        <rev>1.2</rev>
+        <created>Wednesday, February 6, 2002 10:10:00 AM EST</created>
+        <mstation>localhost</mstation>
+    </header>
+    <path name="Email-Reporting">
+        <target>
+                <name>Reporting</name>
+                <command>javaEmail</command>
+        </target>
+    </path>
+    <path name="Page-Management">
+        <target>
+                <name>Management</name>
+                <command>textPage</command>
+                <command>javaPagerEmail</command>
+                <command>javaEmail</command>
+        </target>
+    </path>
+    <path name="Page-Network/Systems/Management">
+	<target interval="15m">
+                <name>Network/Systems</name>
+                <command>textPage</command>
+                <command>javaPagerEmail</command>
+                <command>javaEmail</command>
+        </target>
+        <escalate delay="15m">
+            <target>
+                <name>Management</name>
+                <command>textPage</command>
+                <command>javaPagerEmail</command>
+                <command>javaEmail</command>
+            </target>
+        </escalate>
+    </path>
+    <path name="Page-Network/Systems">
+        <target>
+                <name>Network/Systems</name>
+                <command>textPage</command>
+                <command>javaPagerEmail</command>
+                <command>javaEmail</command>
+        </target>
+    </path>
+    <path name="Email-Management">
+        <target>
+                <name>Management</name>
+                <command>javaEmail</command>
+        </target>
+    </path>
+    <path name="Page-Desktops/Management">
+        <target>
+                <name>Desktops</name>
+                <command>textPage</command>
+                <command>javaPagerEmail</command>
+                <command>javaEmail</command>
+        </target>
+        <escalate delay="15m">
+                <target>
+                        <name>Management</name>
+                        <command>textPage</command>
+                        <command>javaPagerEmail</command>
+                        <command>javaEmail</command>
+                </target>
+        </escalate>
+    </path>
+    <path name="Email-Network/Systems/Management">
+        <target>
+                <name>Network/Systems</name>
+                <command>javaEmail</command>
+        </target>
+        <escalate delay="15m">
+                <target>
+                        <name>Management</name>
+                        <command>javaEmail</command>
+                </target>
+        </escalate>
+    </path>
+    <path name="Email-Security/Management">
+        <target>
+                <name>Security</name>
+                <command>javaEmail</command>
+        </target>
+        <escalate delay="15m">
+                <target>
+                        <name>Management</name>
+                        <command>javaEmail</command>
+                </target>
+        </escalate>
+    </path>
+    <path name="Page-Security/Management">
+        <target>
+                <name>Security</name>
+                <command>textPage</command>
+                <command>javaPagerEmail</command>
+                <command>javaEmail</command>
+        </target>
+        <escalate delay="15m">
+                <target>
+                        <name>Management</name>
+                        <command>textPage</command>
+                        <command>javaPagerEmail</command>
+                        <command>javaEmail</command>
+                </target>
+        </escalate>
+    </path>
+    <path name="Email-Desktops/Management">
+        <target>
+                <name>Desktops</name>
+                <command>javaEmail</command>
+        </target>
+        <escalate delay="15m">
+                <target>
+                        <name>Management</name>
+                        <command>javaEmail</command>
+                </target>
+        </escalate>
+    </path>
+    <path name="Email-Desktops">
+        <target>
+                <name>Desktops</name>
+                <command>javaEmail</command>
+        </target>
+    </path>
+    <path name="Email-Security">
+        <target>
+                <name>Security</name>
+                <command>javaEmail</command>
+        </target>
+    </path>
+    <path name="Email-Network/Systems">
+        <target>
+                <name>Network/Systems</name>
+                <command>javaEmail</command>
+        </target>
+    </path>
+    <path name="Page-Desktops">
+        <target>
+                <name>Desktops</name>
+                <command>textPage</command>
+                <command>javaPagerEmail</command>
+                <command>javaEmail</command>
+        </target>
+    </path>
+    <path name="Page-Security">
+        <target>
+                <name>Security</name>
+                <command>textPage</command>
+                <command>javaPagerEmail</command>
+                <command>javaEmail</command>
+        </target>
+    </path>
+    <path name="Page-All">
+        <target>
+                <name>Network/Systems</name>
+                <command>textPage</command>
+                <command>javaPagerEmail</command>
+                <command>javaEmail</command>
+        </target>
+        
+        <target interval="15m">
+                <name>Security</name>
+                <command>textPage</command>
+                <command>javaPagerEmail</command>
+                <command>javaEmail</command>
+        </target>
+        
+        <target interval="1h">
+                <name>Desktops</name>
+                <command>textPage</command>
+                <command>javaPagerEmail</command>
+                <command>javaEmail</command>
+        </target>
+        
+        <target interval="1d">
+                <name>Management</name>
+                <command>page</command>
+                <command>javaPagerEmail</command>
+                <command>javaEmail</command>
+        </target>
+    </path>
+    <path name="Email-All">
+        <target>
+                <name>Network/Systems</name>
+                <command>javaEmail</command>
+         </target>
+        <target>
+                <name>Security</name>
+                <command>javaEmail</command>
+        </target>
+        <target>
+                <name>Desktops</name>
+                <command>javaEmail</command>
+        </target>
+        <target>
+                <name>Management</name>
+                <command>javaEmail</command>
+        </target>
+    </path>
+    <path name="Email-Admin">
+        <target>
+                <name>Admin</name>
+                <command>javaEmail</command>
+        </target>
+    </path>
+    <path name="XMPP-Admin">
+        <target>
+                <name>Admin</name>
+                <command>xmppMessage</command>
+        </target>
+    </path>
+    <path name="Growl-Admin">
+        <target>
+                <name>Admin</name>
+                <command>growlMessage</command>
+        </target>
+    </path>
+</destinationPaths>

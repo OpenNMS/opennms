@@ -1,0 +1,219 @@
+<?xml version="1.0"?>
+<notifications xmlns="http://xmlns.opennms.org/xsd/notifications">
+    <header>
+        <rev>1.2</rev>
+        <created>Wednesday, February 6, 2002 10:10:00 AM EST</created>
+        <mstation>localhost</mstation>
+    </header>
+    <!-- Sample notification using SNMP Traps (this sample uses a destination path called "trapNotifier")
+    <notification name="snmpTrap" status="on">
+    	<uei>uei.opennms.org/nodes/nodeDown</uei>
+    	<rule>IPADDR IPLIKE *.*.*.*</rule>
+    	<destinationPath>trapNotifier</destinationPath>
+    	<text-message>
+    		All services are down on node %nodeid%.
+    	</text-message>
+    	<subject>node %nodeid% down.</subject>
+    	<numeric-message>111-%noticeid%</numeric-message>
+    	<parameter name="trapVersion" value="v1" />
+    	<parameter name="trapTransport" value="UDP" />
+    	<parameter name="trapHost" value="my-trap-host.mydomain.org" />
+    	<parameter name="trapPort" value="162" />
+    	<parameter name="trapCommunity" value="public" />
+    	<parameter name="trapEnterprise" value=".1.3.6.1.4.1.5813" />
+    	<parameter name="trapGeneric" value="6" />
+    	<parameter name="trapSpecific" value="1" />
+    	<parameter name="trapVarbind" value="Node: %nodelabel%" />
+    </notification>
+    -->
+    <notification name="serviceUnresponsive" status="on">
+        <uei>uei.opennms.org/nodes/serviceUnresponsive</uei>
+        <rule>IPADDR IPLIKE *.*.*.*</rule>
+        <destinationPath>Email-Admin</destinationPath>
+        <text-message>The %service% poll to interface %interfaceresolve% (%interface%) 
+on node %nodelabel% successfully 
+completed a connection to the service listener on the 
+remote machine. However, the synthetic transaction failed 
+to complete within %parm[timeout]% milliseconds, over 
+%parm[attempts]% attempts.  This event will NOT impact service 
+level agreements, but may be an indicator of other problems on that node.  
+	</text-message>
+        <subject>Notice #%noticeid%: %service% service on %interfaceresolve% (%interface%) on node %nodelabel% is unresponsive.</subject>
+        <numeric-message>111-%noticeid%</numeric-message>
+    </notification>
+    <notification name="serviceResponsive" status="off">
+        <uei>uei.opennms.org/nodes/serviceResponsive</uei>
+        <rule>IPADDR IPLIKE *.*.*.*</rule>
+        <destinationPath>Email-Admin</destinationPath>
+        <text-message>The %service% service on %interfaceresolve% (%interface%) 
+on node %nodelabel% has recovered from a previously 
+UNRESPONSIVE state.  Synthetic transactions to this service 
+are completing within the alotted timeout and retry period.</text-message>
+        <subject>Notice #%noticeid%: %service% service on %interfaceresolve% (%interface%) on node %nodelabel% has recovered.</subject>
+        <numeric-message>111-%noticeid%</numeric-message>
+    </notification>
+    <notification name="interfaceDown" status="on">
+        <uei>uei.opennms.org/nodes/interfaceDown</uei>
+        <rule>IPADDR IPLIKE *.*.*.*</rule>
+        <destinationPath>Email-Admin</destinationPath>
+        <text-message>All services are down on interface %interfaceresolve% (%interface%) 
+on node %nodelabel%.  New Outage records have been created 
+and service level availability calculations will be impacted 
+until this outage is resolved.  
+	</text-message>
+        <subject>Notice #%noticeid%: %interfaceresolve% (%interface%) on node %nodelabel% down.</subject>
+        <numeric-message>111-%noticeid%</numeric-message>
+    </notification>
+    <notification name="nodeDown" status="on">
+        <uei>uei.opennms.org/nodes/nodeDown</uei>
+        <rule>IPADDR IPLIKE *.*.*.*</rule>
+        <destinationPath>Email-Admin</destinationPath>
+        <text-message>All services are down on node %nodelabel%.  New Outage records have 
+been created and service level availability calculations will 
+be impacted until this outage is resolved.  
+	</text-message>
+        <subject>Notice #%noticeid%: node %nodelabel% down.</subject>
+        <numeric-message>111-%noticeid%</numeric-message>
+    </notification>
+    <notification name="interfaceUp" status="off">
+        <uei>uei.opennms.org/nodes/interfaceUp</uei>
+        <rule>IPADDR IPLIKE *.*.*.*</rule>
+        <destinationPath>Email-Admin</destinationPath>
+        <text-message>The interface %interfaceresolve% (%interface%) 
+on node %nodelabel% which was previously down is now up.</text-message>
+        <subject>Notice #%noticeid%: Interface %interfaceresolve% (%interface%) on node %nodelabel% has been cleared</subject>
+        <numeric-message>111-%noticeid%</numeric-message>
+    </notification>
+    <notification name="nodeUp" status="off">
+        <uei>uei.opennms.org/nodes/nodeUp</uei>
+        <rule>IPADDR IPLIKE *.*.*.*</rule>
+        <destinationPath>Email-Admin</destinationPath>
+        <text-message>The node %nodelabel% which was previously down is now up.</text-message>
+        <subject>Notice #%noticeid%: Node %nodelabel% has been cleared.</subject>
+        <numeric-message>111-%noticeid%</numeric-message>
+    </notification>
+    <notification name="nodeLostService" status="on">
+        <uei>uei.opennms.org/nodes/nodeLostService</uei>
+        <rule>IPADDR IPLIKE *.*.*.*</rule>
+        <destinationPath>Email-Admin</destinationPath>
+        <text-message>The %service% service poll on interface %interfaceresolve% (%interface%) 
+on node %nodelabel% failed at %time%. 
+	</text-message>
+        <subject>Notice #%noticeid%: %service% down on %interfaceresolve% (%interface%) on node %nodelabel%.</subject>
+        <numeric-message>111-%noticeid%</numeric-message>
+    </notification>
+    <notification name="nodeRegainedService" status="off">
+        <uei>uei.opennms.org/nodes/nodeRegainedService</uei>
+        <rule>IPADDR IPLIKE *.*.*.*</rule>
+        <destinationPath>Email-Admin</destinationPath>
+        <text-message>%service% service restored on interface %interfaceresolve% (%interface%) 
+on node %nodelabel%.</text-message>
+        <subject>Notice #%noticeid%: %interfaceresolve% (%interface%) on node %nodelabel%&apos;s %service% service restored.</subject>
+        <numeric-message>111-%noticeid%</numeric-message>
+    </notification>
+    <notification name="coldStart" status="on">
+        <uei>uei.opennms.org/generic/traps/SNMP_Cold_Start</uei>
+        <rule>IPADDR IPLIKE *.*.*.*</rule>
+        <destinationPath>Email-Admin</destinationPath>
+        <text-message>An SNMP coldStart trap has been received from
+interface %snmphost%.  This indicates that the box has been
+powered up.</text-message>
+        <subject>Notice #%noticeid%: %snmphost% powered up.</subject>
+        <numeric-message>111-%noticeid%</numeric-message>
+    </notification>
+    <notification name="warmStart" status="on">
+        <uei>uei.opennms.org/generic/traps/SNMP_Warm_Start</uei>
+        <rule>IPADDR IPLIKE *.*.*.*</rule>
+        <destinationPath>Email-Admin</destinationPath>
+        <text-message>An SNMP warmStart trap has been received from
+interface %snmphost%.  This indicates that the box has been rebooted.</text-message>
+        <subject>Notice #%noticeid%: %snmphost% rebooted.</subject>
+        <numeric-message>111-%noticeid%</numeric-message>
+    </notification>
+    <notification name="authenticationFailure" status="on">
+        <uei>uei.opennms.org/generic/traps/SNMP_Authen_Failure</uei>
+        <rule>IPADDR IPLIKE *.*.*.*</rule>
+        <destinationPath>Email-Admin</destinationPath>
+        <text-message>An Authentication Failure has been identified on
+network device %snmphost%.  This message is usually
+generated by an authentication failure during a user login
+attempt or an SNMP request failed due to incorrect community string.</text-message>
+        <subject>Notice #%noticeid%: [OpenNMS] Authentication Failure on %snmphost%.</subject>
+        <numeric-message>111-%noticeid%</numeric-message>
+    </notification>
+    <notification name="serviceDeleted" status="on">
+        <uei>uei.opennms.org/nodes/serviceDeleted</uei>
+        <rule>IPADDR IPLIKE *.*.*.*</rule>
+        <destinationPath>Email-Admin</destinationPath>
+        <text-message>Due to extended downtime or operator action, the %service% service on
+interface %interfaceresolve% (%interface%) on node %nodelabel% 
+has been deleted from OpenNMS&apos;s polling database.</text-message>
+        <subject>Notice #%noticeid%: %interfaceresolve% (%interface%) on node %nodelabel%&apos;s %service% service deleted.</subject>
+        <numeric-message>111-%noticeid%</numeric-message>
+    </notification>
+    <notification name="nodeAdded" status="on">
+        <uei>uei.opennms.org/nodes/nodeAdded</uei>
+        <rule>IPADDR IPLIKE *.*.*.*</rule>
+        <destinationPath>Email-Admin</destinationPath>
+        <text-message>OpenNMS has discovered a new node named
+%parm[nodelabel]%. Please be advised.</text-message>
+        <subject>Notice #%noticeid%: %parm[nodelabel]% discovered.</subject>
+        <numeric-message>111-%noticeid%</numeric-message>
+    </notification>
+    <notification name="nodeInfoChanged" status="on">
+        <uei>uei.opennms.org/nodes/nodeInfoChanged</uei>
+        <rule>IPADDR IPLIKE *.*.*.*</rule>
+        <destinationPath>Email-Admin</destinationPath>
+        <text-message>Node information has changed for a device in your
+network.  The new information is included:    System Name:
+%parm[nodesysname]%  System Description:
+%parm[nodesysdescription]%  System Object Identifier:
+%parm[nodesysobjectid]%  System Location:
+%parm[nodesyslocation]%  System Contact:
+%parm[nodesyscontact]%  NetBIOS Name: %parm[nodenetbiosname]%</text-message>
+        <subject>Notice #%noticeid%: Node information changed.</subject>
+        <numeric-message>111-%noticeid%</numeric-message>
+    </notification>
+    <notification name="interfaceDeleted" status="on">
+        <uei>uei.opennms.org/nodes/interfaceDeleted</uei>
+        <rule>IPADDR IPLIKE *.*.*.*</rule>
+        <destinationPath>Email-Admin</destinationPath>
+        <text-message>Due to extended downtime or operator action, the interface %interfaceresolve% (%interface%) 
+on node %nodelabel% has been deleted from OpenNMS&apos;s polling database.</text-message>
+        <subject>Notice #%noticeid%: [OpenNMS] %interfaceresolve% (%interface%) on node %nodelabel% deleted.</subject>
+        <numeric-message>111-%noticeid%</numeric-message>
+    </notification>
+    <notification name="High Threshold" status="off">
+        <uei>uei.opennms.org/threshold/highThresholdExceeded</uei>
+        <description>A monitored device has hit a high threshold</description>
+        <rule>IPADDR IPLIKE *.*.*.*</rule>
+        <destinationPath>Email-Admin</destinationPath>
+        <text-message>A Threshold has been exceeded on node: %nodelabel%, interface:%interface%. The parameter %parm[ds]% reached a value of %parm[value]% while the threshold is %parm[threshold]%. This alert will be rearmed when %parm[ds]% reaches %parm[rearm]%.</text-message>
+        <subject>Notice #%noticeid%: High Threshold for %parm[ds]% on node %nodelabel%.</subject>
+    </notification>
+    <notification name="Low Threshold" status="off">
+        <uei>uei.opennms.org/threshold/lowThresholdExceeded</uei>
+        <description>A monitored device has hit a low threshold</description>
+        <rule>IPADDR IPLIKE *.*.*.*</rule>
+        <destinationPath>Email-Admin</destinationPath>
+        <text-message>A Threshold has been exceeded on node: %nodelabel%, interface:%interface%. The parameter %parm[ds]% reached a value of %parm[value]% while the threshold is %parm[threshold]%. This alert will be rearmed when %parm[ds]% reaches %parm[rearm]%.</text-message>
+        <subject>Notice #%noticeid%: Low Threshold for %parm[ds]% on node %nodelabel%.</subject>
+    </notification>
+    <notification name="Low Threshold Rearmed" status="off">
+        <uei>uei.opennms.org/threshold/lowThresholdRearmed</uei>
+        <description>A monitored device has recovered from a low threshold</description>
+        <rule>IPADDR IPLIKE *.*.*.*</rule>
+        <destinationPath>Email-Admin</destinationPath>
+        <text-message>A Threshold has returned to normal on node: %nodelabel%, interface:%interface%. The parameter %parm[ds]% reached a value of %parm[value]% with a rearm threshold of %parm[rearm]%. This threshold for this alert was %parm[threshold]%.</text-message>
+        <subject>Notice #%noticeid%: Low Threshold Rearmed for %parm[ds]% on node %nodelabel%.</subject>
+    </notification>
+    <notification name="High Threshold Rearmed" status="off">
+        <uei>uei.opennms.org/threshold/highThresholdRearmed</uei>
+        <description>A monitored device has recovered from a high threshold</description>
+        <rule>IPADDR IPLIKE *.*.*.*</rule>
+        <destinationPath>Email-Admin</destinationPath>
+        <text-message>A Threshold has returned to normal on node: %nodelabel%, interface:%interface%. The parameter %parm[ds]% reached a value of %parm[value]% with a rearm threshold of %parm[rearm]%. This threshold for this alert was %parm[threshold]%.</text-message>
+        <subject>Notice #%noticeid%: High Threshold Rearmed for %parm[ds]% on node %nodelabel%.</subject>
+    </notification>
+
+</notifications>

@@ -1,0 +1,53 @@
+<?xml version="1.0"?>
+<groupinfo  xmlns="http://xmlns.opennms.org/xsd/groups">
+    <header>
+        <rev>1.3</rev>
+        <created>Wednesday, February 6, 2002 10:10:00 AM EST</created>
+        <mstation>dhcp-219.internal.opennms.org</mstation>
+    </header>
+    <groups>
+        <group>
+            <name>Network/Systems</name>
+            <comments>The network and systems group</comments>
+        </group>
+        <group>
+            <name>Desktops</name>
+            <comments>The desktops group</comments>
+        </group>
+        <group>
+            <name>Security</name>
+            <comments>The security group</comments>
+        </group>
+        <group>
+            <name>Management</name>
+            <comments>The management group</comments>
+        </group>
+        <group>
+            <name>Reporting</name>
+            <comments>The reporting group</comments>
+        </group>
+	<group>
+	    <name>Admin</name>
+            <comments>The administrators</comments>
+	    <user>admin</user>
+        </group>
+        <group>
+        		<name>TempGroup</name>
+        		<user>admin</user>
+        		<user>tempuser</user>
+        	</group>
+    </groups>
+<!--  These role time formats are not valid.  They must be revised.
+    <roles> 
+		<role supervisor="admin" name="oncall" description="The On Call Schedule" membership-group="TempGroup"> 
+			<schedule name="tempuser" type="specific">
+				<time begins="21-Apr-2005 10:00:00" ends="21-Apr-2005 18:00:00" />
+				<time begins="22-Apr-2005 10:00:00" ends="22-Apr-2005 18:00:00" />
+				<time begins="23-Apr-2005 10:00:00" ends="23-Apr-2005 18:00:00" />
+				<time begins="23-Aug-2005 10:00:00" ends="23-Aug-2005 18:00:00" />
+				<time begins="03-Sep-2005 10:00:00" ends="07-Sep-2005 18:00:00" />
+			</schedule>
+	    </role>
+  </roles>
+--> 
+</groupinfo>

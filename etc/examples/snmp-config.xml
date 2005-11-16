@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+<snmp-config port="161" retry="3" timeout="800"
+             read-community="public" 
+	         version="v1">
+
+	<definition version="v2c">
+		<specific>192.168.0.50</specific>
+	</definition>
+	
+	<!-- Sample v3 configuration
+	  - If prive attributes are set, the security level will be be AuthPriv
+	  - If no priv attributes are set, the security level will be AuthNoPriv
+	  - If no auth attributes are set, the security level will be NoAuthNoPriv
+	  - Note: setting priv attributes without auth attributes is not allowed
+	  
+	<definition version="v3" security-name="opennmsUser" auth-passprhase="0p3nNMSv3" auth-protocol ="MD5" privacy-passphrase="0p3nNMSv3" privacy-protocol="DES">
+		<specific>192.168.0.102</specific>
+	</definition>
+	-->
+	
+	<!-- Sample new IP matching support
+	  - Each octet supports lists separated with ',' and/or ranges indicated by '-'
+	  - An '*' is supported only for matching the entire octet
+	  
+	<definition version="v2c" read-community="abc" >
+		<ip-match>77.5-12,15.1-255.255</ip-match>
+		<ip-match>10.*.*.*</ip-match>
+	</definition>
+	-->
+	
+	<!--
+	<definition>
+		<range begin="192.168.100.1" end="192.168.100.254"/>
+		<range begin="192.168.101.1" end="192.168.101.254"/>
+		<range begin="192.168.102.1" end="192.168.102.254"/>
+		<range begin="192.168.103.1" end="192.168.103.254"/>
+		<range begin="192.168.104.1" end="192.168.104.254"/>
+		<range begin="192.168.105.1" end="192.168.105.254"/>
+		<range begin="192.168.106.1" end="192.168.106.254"/>
+		<range begin="192.168.107.1" end="192.168.107.254"/>
+	</definition>
+	  -->
+
+</snmp-config>
+
