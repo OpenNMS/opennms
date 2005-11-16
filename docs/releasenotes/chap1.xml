@@ -4,6 +4,10 @@
 
   <subtitle>About This Release</subtitle>
 
+  <para>Release 1.3.1 is a bug fix release to address an issue with a database
+  connection leak. It also includes more NRPE client code and a new "examples"
+  directory.</para>
+
   <para>Release 1.3.0 is the first "development" release on the road to
   version 1.4.0. As a development release, it should be considered unstable
   for use in production environments, but you are encouraged to try it out. It
