@@ -44,7 +44,7 @@
                <statement>UPDATE alarms SET severity=2 WHERE alarmid = ${alarmid}</statement>
            </action>
            <action name="clearProblems" >
-               <statement>UPDATE alarms SET severity=2 WHERE alarmType=1 AND severity > 2 AND eventUei = ${clearUei} AND dpName = ${dpName} and nodeID = ${nodeID} and ipaddr = ${ipaddr} and serviceID = ${serviceID}</statement> 
+               <statement>UPDATE alarms SET severity=2 WHERE alarmType=1 AND lastEventTime &lt;=  ${lastEventTime} AND severity > 2 AND eventUei = ${clearUei} AND dpName = ${dpName} and nodeID = ${nodeID} and ipaddr = ${ipaddr} and serviceID = ${serviceID}</statement> 
                <!-- <statement>UPDATE alarms SET severity=2 WHERE alarmType=1 AND severity > 2 AND dpName = ${dpName} and nodeID = ${nodeID} and ipaddr = ${ipaddr} and serviceID = ${serviceID}</statement> -->
            </action>
            <action name="escalate" >
