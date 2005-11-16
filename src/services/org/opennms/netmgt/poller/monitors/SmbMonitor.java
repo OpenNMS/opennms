@@ -134,58 +134,17 @@ final public class SmbMonitor extends IPv4Monitor {
         // Attempt to retrieve NetBIOS name of this interface in order
         // to determine if SMB is supported.
         //
+        NbtAddress nbtAddr = null;
+        
         /*
-         * TODO: Use it or loose it.
-         * Commented out because it is not currently used in this monitor
+         * This try block was updated to reflect the behavior of the plugin.
          */
-        //NbtAddress nbtAddr = null;
         try {
-            // Debugging only
-            /*
-             * if (m_logger.isDebugEnabled()) m_logger.debug("SmbMonitor.poll:
-             * configuring netbios logging "); jcifs.netbios.Log.setPrintWriter(
-             * new FileWriter( "/var/log/opennms/jcifs_netbios.log" )); if
-             * (m_logger.isDebugEnabled()) m_logger.debug("SmbMonitor.poll:
-             * configuring netbios logging mask");
-             * jcifs.netbios.Log.setMask(jcifs.util.Log.ALL);
-             * 
-             * if (m_logger.isDebugEnabled()) m_logger.debug("SmbMonitor.poll:
-             * configuring smb logging "); jcifs.smb.Log.setPrintWriter( new
-             * FileWriter( "/var/log/opennms/jcifs_smb.log" ));
-             * jcifs.smb.Log.setMask(jcifs.util.Log.ALL);
-             */
-            // end debugging
-            //
-            // Don't fully understand why yet but it isn't enough to
-            // just call getByName(). getByName() will return a valid
-            // NbtAddress object for an IP address for which it does not
-            // successfully resolve a netbios name for...the netbios
-            // name in this case retrieved by calling getHostName()
-            // is set to the node's IP address. A subsequent call
-            // to getNodeType() will however throw UnknownHostException
-            // if the Netbios name is not resolved.
-            //
-            /*
-             * TODO: Use it or loose it.
-             * Commented out because it is not currently used in this monitor
-             */
-            //nbtAddr = NbtAddress.getByName(ipv4Addr.getHostAddress());
-            NbtAddress.getByName(ipv4Addr.getHostAddress());
-            /*
-             * TODO: Use it or loose it.
-             * Commented out because it is not currently used in this monitor
-             */
-            //int nodeType = nbtAddr.getNodeType();
+            nbtAddr = NbtAddress.getByName(ipv4Addr.getHostAddress());
+            
+            if (!nbtAddr.getHostName().equals(ipv4Addr.getHostAddress()))
+                serviceStatus = ServiceMonitor.SERVICE_AVAILABLE;
 
-            /*
-             * if(log.isDebugEnabled()) { log.debug("Successfully created
-             * NbtAddress for " + ipv4Addr.toString() + ". Netbios name= " +
-             * nbtAddr.toString()); log.debug(" Host address: " +
-             * nbtAddr.getHostAddress()); log.debug(" Netbios name: " +
-             * nbtAddr.getHostName()); log.debug(" Node type: " + nodeType); }
-             */
-
-            serviceStatus = ServiceMonitor.SERVICE_AVAILABLE;
         } catch (UnknownHostException uhE) {
             if (log.isDebugEnabled())
                 log.debug("poll: Unknown host exception generated for " + ipv4Addr.toString() + ", reason: " + uhE.getLocalizedMessage());
