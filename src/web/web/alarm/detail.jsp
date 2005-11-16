@@ -218,7 +218,7 @@
         <input type="hidden" name="action" value="<%=action%>" />
         <input type="hidden" name="alarm" value="<%=alarm.getId()%>"/>
         <input type="hidden" name="redirect" value="<%=request.getContextPath() + request.getServletPath() + "?" + request.getQueryString()%>" />
-        <input type="submit" value="<%=buttonName%>"
+        <input type="submit" value="<%=buttonName%>" />
       </FORM>
       
     </td>
