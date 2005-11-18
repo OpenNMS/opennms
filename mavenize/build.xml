@@ -45,7 +45,7 @@ to put the reorg code into.
 	<!-- ================================= 
           target: reorg              
          ================================= -->
-	<target name="reorg" depends="clean,modules" description="--> Reorganize the project to a maven2 style">
+	<target name="reorg" depends="clean,modules,fixup-root-project" description="--> Reorganize the project to a maven2 style">
 	</target>
 
 	<!-- ================================= 
@@ -106,22 +106,9 @@ to put the reorg code into.
 	</macrodef>
 
 	<!-- = = = = = = = = = = = = = = = = =
-          macrodef: module-helper          
+          macrodef: dependency
+          This is a template for the dependency macros defined within other macros         
          = = = = = = = = = = = = = = = = = -->
-	<macrodef name="module-helper">
-		<attribute name="module-id" />
-		<sequential>
-			<concat destfile="modules" append="true">
-				<filelist dir="${basedir}" files="module.tmpl" />
-				<filterchain>
-					<replacetokens>
-						<token key="module.id" value="@{module-id}" />
-					</replacetokens>
-				</filterchain>
-			</concat>
-		</sequential>
-	</macrodef>
-
 	<macrodef name="dependency">
 		<attribute name="groupId" />
 		<attribute name="artifactId" />
@@ -131,6 +118,10 @@ to put the reorg code into.
 		</sequential>
 	</macrodef>
 
+	<!-- = = = = = = = = = = = = = = = = =
+          macrodef: macro-dependency
+          This is a template for the macro-dependency macros defined within other macros         
+         = = = = = = = = = = = = = = = = = -->
 	<macrodef name="module-dependency">
 		<attribute name="id" />
 		<sequential>
@@ -138,6 +129,12 @@ to put the reorg code into.
 		</sequential>
 	</macrodef>
 
+	<!-- = = = = = = = = = = = = = = = = =
+          macrodef: create-empty-module
+          This macro defines a new module that has a pom.xml and other related file
+          but no buildable contents.  This is used as a workhorse for other create-XXX-module
+          macros that define which also copy files into appropriate locations         
+         = = = = = = = = = = = = = = = = = -->
 	<macrodef name="create-empty-module">
 		<attribute name="module-id" />
 		<attribute name="module-name" />
@@ -281,7 +278,7 @@ to put the reorg code into.
 					<dependencies />
 				</deps>
 			</create-module-wrapper>
-			<!-- next install the test java sources -->
+			<!-- next install the castor xsd sources -->
 			<create-module-dir module-id="@{module-id}" target-dir="${castor.subdir}">
 				<castor-srcs />
 			</create-module-dir>
@@ -321,7 +318,7 @@ to put the reorg code into.
 
 
 	<!-- = = = = = = = = = = = = = = = = =
-	          macrodef: create-castor-module        
+	          macrodef: create-sablecc-module        
 	         = = = = = = = = = = = = = = = = = -->
 	<macrodef name="create-sablecc-module">
 		<attribute name="module-id" />
@@ -348,7 +345,7 @@ to put the reorg code into.
 					<dependencies />
 				</deps>
 			</create-castor-module-wrapper>
-			<!-- next install the test java sources -->
+			<!-- next install the sablecc grammar sources -->
 			<create-module-dir module-id="@{module-id}" target-dir="${sablecc.subdir}">
 				<sablecc-srcs />
 			</create-module-dir>
@@ -403,24 +400,44 @@ to put the reorg code into.
 			</create-module>
 		</sequential>
 	</macrodef>
+	
+	<!-- = = = = = = = = = = = = = = = = =
+          macrodef: module-helper          
+         = = = = = = = = = = = = = = = = = -->
+	<macrodef name="module-helper">
+		<attribute name="module-id" />
+		<attribute name="parent-module-id" default="ROOT" />
+		<sequential>
+			<concat destfile="@{parent-module-id}.modules" append="true">
+				<filelist dir="${basedir}" files="module.tmpl" />
+				<filterchain>
+					<replacetokens>
+						<token key="module.id" value="@{module-id}" />
+					</replacetokens>
+				</filterchain>
+			</concat>
+		</sequential>
+	</macrodef>
 
 	<macrodef name="init-maven-project">
+		<attribute name="parent-module-id" default="ROOT" />
 		<sequential>
-			<delete file="modules" />
+			<delete file="@{parent-module-id}.modules" />
 		</sequential>
 	</macrodef>
 
 	<macrodef name="create-maven-project-file">
+		<attribute name="parent-module-id" default="ROOT" />
 		<sequential>
-			<loadfile property="modules" srcfile="modules" />
-			<copy file="pom.xml" tofile="${maven.basedir}/pom.xml">
+			<loadfile property="@{parent-module-id}.modules" srcfile="@{parent-module-id}.modules" />
+			<copy file="pom.xml" tofile="${maven.basedir}/@{parent-module-id}/pom.xml">
 				<filterchain>
 					<replacetokens>
-						<token key="modules" value="${modules}" />
+						<token key="modules" value="${@{parent-module-id}.modules}" />
 					</replacetokens>
 				</filterchain>
 			</copy>
-			<delete file="modules" />
+			<delete file="@{parent-module-id}.modules" />
 		</sequential>
 	</macrodef>
 
@@ -599,6 +616,16 @@ to put the reorg code into.
 				<module-dependency id="rrd-rrdtool" />
 			</dependencies>
 		</create-native-module>
+		
+		<!-- posgresql iplike function module -->
+		<create-native-module module-id="iplike" module-name="OpenNMS iplike Stored Procedure for PostgreSQL">
+			<native-srcs>
+				<fileset dir="${opennms.dir}/src/postgresql">
+					<include name="*.c" />
+				</fileset>
+			</native-srcs>
+			<dependencies/>
+		</create-native-module>
 		<!--
 		<simple-jar-module module-id="reporting" module-name="OpenNMS Reporting" src-dir="${opennms.dir}/src/report">
 			<module-dependency id="core"/>
@@ -606,5 +633,20 @@ to put the reorg code into.
 		-->
 		<create-maven-project-file />
 	</target>
+	
+	
+    <!-- - - - - - - - - - - - - - - - - - 
+          target: fixup-root-project                      
+         - - - - - - - - - - - - - - - - - -->
+    <target name="fixup-root-project">
+		<copy todir="${maven.basedir}">
+			<fileset dir="${maven.basedir}/ROOT">
+			    <include name="**/*"/>
+			</fileset>
+		</copy>
+    		<delete dir="${maven.basedir}/ROOT"/>
+    </target>
+
+
 
 </project>

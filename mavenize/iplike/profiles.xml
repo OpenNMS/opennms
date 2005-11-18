@@ -1,0 +1,18 @@
+<profiles>
+  <profile>
+    <id>macosx-with-fink</id>
+    
+    <activation>
+	<file>
+	  <exists>/sw</exists>
+	</file>
+    </activation>
+
+    <properties>
+      <build.postgresql.include.dir>/sw/include/postgresql</build.postgresql.include.dir>
+      <build.rrdtool.include.dir>/sw/include</build.rrdtool.include.dir>
+      <build.rrdtool.lib.dir>/sw/lib</build.rrdtool.lib.dir>
+    </properties>
+  </profile>
+</profiles>
+

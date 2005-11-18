@@ -10,7 +10,7 @@ your distribution.
   </description>
 	
   <property name="build.dir" value="target"/>
-  <property name="build.jicmp.dir" value="${build.dir}/jicmp"/>
+  <property name="build.postgresql.dir" value="${build.dir}/iplike"/>
  
   <!-- versioning options -->
   <property name="product.version" value="1.3.0"/>
@@ -163,8 +163,6 @@ your distribution.
       properties.
     </fail>
 
-    <available property="apple.apis.present" classname="com.apple.cocoa.foundation.NSArray" classpathref="libraries.java.path" />
-
   </target>
  
  <target name="info" depends="prep"
@@ -287,10 +285,10 @@ your distribution.
           tofile="${build.jrrd.dir}/libjrrd.${build.jniext}"/>
   </target>
 
-  <target name="postgresql.compile" depends="prep">
+  <target name="postgresql.compile" depends="prep, platform.check, compile.check">
     <mkdir dir="${build.postgresql.dir}"/>
     <copy todir="${build.postgresql.dir}">
-      <fileset dir="${postgresql.source.dir}">
+      <fileset dir="src/main/native">
         <include name="iplike.c"/>
       </fileset>
     </copy>
