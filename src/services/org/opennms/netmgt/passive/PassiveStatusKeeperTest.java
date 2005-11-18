@@ -34,7 +34,6 @@ package org.opennms.netmgt.passive;
 import java.io.Reader;
 import java.io.StringReader;
 import java.net.UnknownHostException;
-import java.util.Date;
 
 import org.jmock.cglib.MockObjectTestCase;
 import org.opennms.netmgt.EventConstants;
@@ -59,6 +58,21 @@ import org.opennms.netmgt.xml.event.Parms;
 import org.opennms.netmgt.xml.event.Value;
 
 public class PassiveStatusKeeperTest extends MockObjectTestCase {
+    
+    /* TODO for PassiveSTatusKeeper
+     
+     uei check in isPassiveStatusEvent
+     
+     Get hardcoded nodelabel
+     Get entire nodeLabel from field
+     get entire nodeLabel from param
+     get regexp nodeLabel from field
+     get regexp nodeLabel from param
+     
+     ipaddr, servicename, status
+     
+     add reason mapper for status reason
+     */
 
 
     private PassiveStatusKeeper m_psk;
