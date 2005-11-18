@@ -31,17 +31,47 @@
 //
 package org.opennms.netmgt.config;
 
-import java.util.List;
-
-import org.opennms.netmgt.xml.event.Event;
-
-public interface PassiveStatusConfig {
-
-    public abstract List getUEIList();
+public class PassiveStatusKey {
     
-    public abstract boolean isPassiveStatusEvent(Event e);
-    
-    public abstract PassiveStatusValue getPassiveStatusValue(Event e);
-    
+    private String m_nodeLabel;
+    private String m_ipAddr;
+    private String m_serviceName;
+
+    public PassiveStatusKey(String nodeLabel, String ipAddr, String serviceName) {
+        m_nodeLabel = nodeLabel;
+        m_ipAddr = ipAddr;
+        m_serviceName = serviceName;
+    }
+
+    public String getIpAddr() {
+        return m_ipAddr;
+    }
+
+    public String getNodeLabel() {
+        return m_nodeLabel;
+    }
+
+    public String getServiceName() {
+        return m_serviceName;
+    }
+
+    public boolean equals(Object o) {
+        if (o instanceof PassiveStatusKey) {
+            PassiveStatusKey key = (PassiveStatusKey) o;
+            return getNodeLabel().equals(key.getNodeLabel()) &&
+                    getIpAddr().equals(key.getIpAddr()) &&
+                    getServiceName().equals(key.getServiceName());
+        }
+        return false;
+    }
+
+    public int hashCode() {
+        return getNodeLabel().hashCode() ^ getIpAddr().hashCode() ^ getServiceName().hashCode();
+    }
+
+    public String toString() {
+        return getNodeLabel()+':'+getIpAddr()+':'+getServiceName();
+    }
+
 
 }

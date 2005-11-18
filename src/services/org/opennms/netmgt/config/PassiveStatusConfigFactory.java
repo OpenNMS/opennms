@@ -40,6 +40,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
@@ -47,8 +49,14 @@ import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.ConfigFileConstants;
+import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.capsd.EventUtils;
 import org.opennms.netmgt.config.passive.PassiveEvent;
 import org.opennms.netmgt.config.passive.PassiveStatusConfiguration;
+import org.opennms.netmgt.poller.pollables.PollStatus;
+import org.opennms.netmgt.xml.event.Event;
+import org.opennms.netmgt.xml.event.Parm;
+import org.opennms.netmgt.xml.event.Parms;
 
 /**
  * This is the singleton class used to load the configuration from the
@@ -171,7 +179,7 @@ public final class PassiveStatusConfigFactory implements PassiveStatusConfig {
      * 
      * @return the PassiveStatus configuration
      */
-    public synchronized PassiveStatusConfiguration getConfig() {
+    private synchronized PassiveStatusConfiguration getConfig() {
         return m_config;
     }
 
@@ -183,6 +191,58 @@ public final class PassiveStatusConfigFactory implements PassiveStatusConfig {
             ueis.add(event.getUei());
         }
         return ueis;
+    }
+    
+    public PassiveStatusValue getPassiveStatusValue(Event e) {
+        PassiveStatusKey key = new PassiveStatusKey(getMatchedNodeLabel(e), getMatchedIpAddr(e), getMatchedServiceName(e));
+        return new PassiveStatusValue(key, getMatchedStatus(e));
+    }
+
+    public PollStatus getMatchedStatus(Event e) {
+        String status = EventUtils.getParm(e, EventConstants.PARM_PASSIVE_SERVICE_STATUS);
+        return PollStatus.decodePollStatus(status, e.getLogmsg().getContent());
+    }
+
+    public String getMatchedServiceName(Event e) {
+        return EventUtils.getParm(e, EventConstants.PARM_PASSIVE_SERVICE_NAME);
+    }
+
+    public String getMatchedIpAddr(Event e) {
+        return EventUtils.getParm(e, EventConstants.PARM_PASSIVE_IPADDR);
+    }
+
+    public String getMatchedNodeLabel(Event e) {
+        return EventUtils.getParm(e, EventConstants.PARM_PASSIVE_NODE_LABEL);
+    }
+
+    private String[] getRequiredParmsForMatch(Event e) {
+        String labels[] = { EventConstants.PARM_PASSIVE_NODE_LABEL, EventConstants.PARM_PASSIVE_IPADDR, EventConstants.PARM_PASSIVE_SERVICE_NAME, EventConstants.PARM_PASSIVE_SERVICE_STATUS };
+        return labels;
+    }
+    
+
+    public boolean isPassiveStatusEvent(Event e) {
+        // FIXME: make sure the uei for the given event is in the configured list
+        return eventContainsRequiredParms(e, getRequiredParmsForMatch(e));
+    }
+
+    private boolean eventContainsRequiredParms(Event e, String[] labels) {
+        Parms parms = e.getParms();
+        if (parms != null) {
+            List labelList = getParmsLabels(parms);
+            if (labelList.containsAll(Arrays.asList(labels)))
+                return true;
+        }
+        return false;
+    }
+
+    private List getParmsLabels(Parms parms) {
+        List labels = new ArrayList();
+        Collection parmColl = parms.getParmCollection();
+        for (Iterator it = parmColl.iterator(); it.hasNext();) {
+            labels.add(((Parm) it.next()).getParmName());
+        }
+        return labels;
     }
 
 }

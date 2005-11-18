@@ -33,29 +33,22 @@ package org.opennms.netmgt.passive;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.capsd.EventUtils;
 import org.opennms.netmgt.config.DbConnectionFactory;
 import org.opennms.netmgt.config.PassiveStatusConfig;
+import org.opennms.netmgt.config.PassiveStatusKey;
+import org.opennms.netmgt.config.PassiveStatusValue;
 import org.opennms.netmgt.daemon.ServiceDaemon;
 import org.opennms.netmgt.eventd.EventIpcManager;
 import org.opennms.netmgt.eventd.EventListener;
-import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.poller.pollables.PollStatus;
 import org.opennms.netmgt.utils.Querier;
 import org.opennms.netmgt.xml.event.Event;
-import org.opennms.netmgt.xml.event.Parm;
-import org.opennms.netmgt.xml.event.Parms;
 
 public class PassiveStatusKeeper extends ServiceDaemon implements EventListener {
     
@@ -102,7 +95,9 @@ public class PassiveStatusKeeper extends ServiceDaemon implements EventListener 
         Querier querier = new Querier(m_dbConnectionFactory, sql) {
         
             public void processRow(ResultSet rs) throws SQLException {
-                m_statusTable.put(rs.getString("nodeLabel")+":"+rs.getString("ipAddr")+":"+rs.getString("serviceName"), PollStatus.STATUS_DOWN);
+               
+                PassiveStatusKey key = new PassiveStatusKey(rs.getString("nodeLabel"), rs.getString("ipAddr"), rs.getString("serviceName"));
+                m_statusTable.put(key, PollStatus.STATUS_DOWN);
             }
         
         };
@@ -154,10 +149,10 @@ public class PassiveStatusKeeper extends ServiceDaemon implements EventListener 
 
     public void setStatus(String nodeLabel, String ipAddr, String svcName, PollStatus pollStatus) {
         checkInit();
-        setStatus(nodeLabel+":"+ipAddr+":"+svcName, pollStatus);
+        setStatus(new PassiveStatusKey(nodeLabel, ipAddr, svcName), pollStatus);
     }
     
-    public void setStatus(String key, PollStatus pollStatus) {
+    public void setStatus(PassiveStatusKey key, PollStatus pollStatus) {
         checkInit();
         m_statusTable.put(key, pollStatus);
     }
@@ -169,7 +164,7 @@ public class PassiveStatusKeeper extends ServiceDaemon implements EventListener 
 
     public PollStatus getStatus(String nodeLabel, String ipAddr, String svcName) {
         //FIXME: Throw a log or exception here if this method is called and the this class hasn't been initialized
-        PollStatus status = (PollStatus) (m_statusTable == null ? PollStatus.STATUS_UNKNOWN : m_statusTable.get(nodeLabel+":"+ipAddr+":"+svcName));
+        PollStatus status = (PollStatus) (m_statusTable == null ? PollStatus.STATUS_UNKNOWN : m_statusTable.get(new PassiveStatusKey(nodeLabel, ipAddr, svcName)));
         return (status == null ? PollStatus.STATUS_UP : status);
     }
 
@@ -179,51 +174,15 @@ public class PassiveStatusKeeper extends ServiceDaemon implements EventListener 
     }
 
     public void onEvent(Event e) {
-        String key = EventUtils.getParm(e, EventConstants.PARM_PASSIVE_NODE_LABEL)+":"+EventUtils.getParm(e, EventConstants.PARM_PASSIVE_IPADDR)+":"+EventUtils.getParm(e, EventConstants.PARM_PASSIVE_SERVICE_NAME);
-        if (isPassiveStatusEvent(e)) {
+        
+        if (m_config.isPassiveStatusEvent(e)) {
             log().debug("onEvent: received valid registered passive status event: \n"+EventUtils.toString(e));
-            setStatus(key, determinePollStatus(e));
-            log().debug("onEvent: passive status for: "+key+ "is: "+m_statusTable.get(key));
+            PassiveStatusValue statusValue = m_config.getPassiveStatusValue(e);
+            setStatus(statusValue.getKey(), statusValue.getStatus());
+            log().debug("onEvent: passive status for: "+statusValue.getKey()+ "is: "+m_statusTable.get(statusValue.getKey()));
         } else {
             log().debug("onEvent: received Invalid registered passive status event: \n"+EventUtils.toString(e));
-            log().debug("onEvent: passive status for: "+key+ "is: "+m_statusTable.get(key));
         }
-    }
-
-    private PollStatus determinePollStatus(Event e) {
-        String status = EventUtils.getParm(e, EventConstants.PARM_PASSIVE_SERVICE_STATUS);
-        
-        if (status.equalsIgnoreCase("Up")) {
-            return PollStatus.getPollStatus(ServiceMonitor.SERVICE_AVAILABLE, e.getLogmsg().getContent());
-        } else if(status.equalsIgnoreCase("Down")) {
-            return PollStatus.getPollStatus(ServiceMonitor.SERVICE_UNAVAILABLE, e.getLogmsg().getContent());
-        } else if(status.equalsIgnoreCase("Unknown")) {
-            return PollStatus.getPollStatus(ServiceMonitor.SERVICE_UNKNOWN, e.getLogmsg().getContent());
-        } else if(status.equalsIgnoreCase("Unresponsive")) {
-            return PollStatus.getPollStatus(ServiceMonitor.SERVICE_UNRESPONSIVE, e.getLogmsg().getContent());
-        } else {
-            return PollStatus.getPollStatus(ServiceMonitor.SERVICE_UNKNOWN, e.getLogmsg().getContent());
-        }
-    }
-
-    private boolean isPassiveStatusEvent(Event e) {
-        String labels[] = { EventConstants.PARM_PASSIVE_NODE_LABEL, EventConstants.PARM_PASSIVE_IPADDR, EventConstants.PARM_PASSIVE_SERVICE_NAME, EventConstants.PARM_PASSIVE_SERVICE_STATUS };
-        Parms parms = e.getParms();
-        if (parms != null) {
-            List labelList = getParmsLabels(parms);
-            if (labelList.containsAll(Arrays.asList(labels)))
-                return true;
-        }
-        return false;
-    }
-
-    private List getParmsLabels(Parms parms) {
-        List labels = new ArrayList();
-        Collection parmColl = parms.getParmCollection();
-        for (Iterator it = parmColl.iterator(); it.hasNext();) {
-            labels.add(((Parm) it.next()).getParmName());
-        }
-        return labels;
     }
 
     public EventIpcManager getEventManager() {

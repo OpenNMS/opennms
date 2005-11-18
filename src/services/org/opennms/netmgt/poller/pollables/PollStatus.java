@@ -66,13 +66,29 @@ public class PollStatus {
             return STATUS_DOWN;
         }
     }
-
+    
+    public static PollStatus decodePollStatus(String statusName) {
+        if (STATUS_UP.getStatusName().equalsIgnoreCase(statusName))
+            return STATUS_UP;
+        if (STATUS_DOWN.getStatusName().equalsIgnoreCase(statusName))
+            return STATUS_DOWN;
+        if (STATUS_UNRESPONSIVE.getStatusName().equalsIgnoreCase(statusName))
+            return STATUS_UNRESPONSIVE;
+        if (STATUS_UNKNOWN.getStatusName().equalsIgnoreCase(statusName))
+            return STATUS_UNKNOWN;
+        return STATUS_UNKNOWN;
+    }
+    
     public static PollStatus getPollStatus(int status, String reason) {
         return new PollStatus(getPollStatus(status), reason);
     }
     
     public static PollStatus getPollStatus(PollStatus status, String reason) {
         return new PollStatus(status, reason);
+    }
+    
+    public static PollStatus decodePollStatus(String statusName, String reason) {
+        return new PollStatus(decodePollStatus(statusName), reason);
     }
     
     private PollStatus(PollStatus s, String reason) {

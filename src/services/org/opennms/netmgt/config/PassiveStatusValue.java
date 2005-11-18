@@ -31,17 +31,37 @@
 //
 package org.opennms.netmgt.config;
 
-import java.util.List;
+import org.opennms.netmgt.poller.pollables.PollStatus;
 
-import org.opennms.netmgt.xml.event.Event;
-
-public interface PassiveStatusConfig {
-
-    public abstract List getUEIList();
+public class PassiveStatusValue {
     
-    public abstract boolean isPassiveStatusEvent(Event e);
+    private PassiveStatusKey m_key;
+    private PollStatus m_status;
     
-    public abstract PassiveStatusValue getPassiveStatusValue(Event e);
+    public PassiveStatusValue(String nodeLabel, String ipAddr, String serviceName, PollStatus status) {
+        this(new PassiveStatusKey(nodeLabel, ipAddr, serviceName), status);
+    }
     
+    public PassiveStatusValue(PassiveStatusKey key, PollStatus status) {
+        m_key = key;
+        m_status = status;
+    }
+    
+    public PollStatus getStatus() {
+        return m_status;
+    }
 
+    public void setStatus(PollStatus status) {
+        m_status = status;
+    }
+    
+    public PassiveStatusKey getKey() {
+        return m_key;
+    }
+    
+    public String toString() {
+        return getKey().toString()+" -> "+m_status;
+    }
+
+    
 }

@@ -31,17 +31,23 @@
 //
 package org.opennms.netmgt.config;
 
-import java.util.List;
+import junit.framework.TestCase;
 
-import org.opennms.netmgt.xml.event.Event;
+public class PassiveStatusTest extends TestCase {
 
-public interface PassiveStatusConfig {
+    /*
+     * Test method for 'org.opennms.netmgt.config.PassiveStatus.equals(Object)'
+     */
+    public void testEqualsObject() {
+        PassiveStatusKey ps = new PassiveStatusKey("node1", "1.1.1.1", "ICMP");
+        PassiveStatusKey ps2 = new PassiveStatusKey("node1", "2.1.1.1", "HTTP");
+        PassiveStatusKey ps3 = new PassiveStatusKey("node1", "1.1.1.1", "ICMP");
+        
+        assertEquals(ps, ps3);
+        assertFalse(ps.equals(ps2));
+        assertFalse(ps2.equals(ps3));
 
-    public abstract List getUEIList();
-    
-    public abstract boolean isPassiveStatusEvent(Event e);
-    
-    public abstract PassiveStatusValue getPassiveStatusValue(Event e);
-    
+
+    }
 
 }

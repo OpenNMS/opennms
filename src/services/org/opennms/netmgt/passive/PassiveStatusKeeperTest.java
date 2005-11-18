@@ -91,6 +91,7 @@ public class PassiveStatusKeeperTest extends MockObjectTestCase {
     private MockNetwork m_network;
     private EventAnticipator m_anticipator;
     private OutageAnticipator m_outageAnticipator;
+    private PassiveStatusConfigFactory m_config;
 
     protected void setUp() throws Exception {
         super.setUp();
@@ -109,7 +110,8 @@ public class PassiveStatusKeeperTest extends MockObjectTestCase {
         m_eventMgr.setSynchronous(true);
 
         Reader rdr = new StringReader(passiveStatusConfiguration);
-        PassiveStatusConfigFactory.setInstance(new PassiveStatusConfigFactory(rdr));
+        m_config = new PassiveStatusConfigFactory(rdr);
+        PassiveStatusConfigFactory.setInstance(m_config);
         
         m_psk = PassiveStatusKeeper.getInstance();
         m_psk.setEventManager(m_eventMgr);
@@ -178,6 +180,17 @@ public class PassiveStatusKeeperTest extends MockObjectTestCase {
         } catch (InterruptedException e) {
         }
     }
+    
+    public void testHardCodedValues() {
+        Event e = createPassiveStatusEvent("Router", "192.168.1.1", "ICMP", "Down");
+
+        assertTrue(m_config.isPassiveStatusEvent(e));
+        
+        assertEquals("Router", m_config.getMatchedNodeLabel(e));
+        assertEquals("192.168.1.1", m_config.getMatchedIpAddr(e));
+        assertEquals("ICMP", m_config.getMatchedServiceName(e));
+        assertEquals(PollStatus.STATUS_DOWN, m_config.getMatchedStatus(e));
+    }
 
 
     public void testSetStatus() {
@@ -216,19 +229,7 @@ public class PassiveStatusKeeperTest extends MockObjectTestCase {
     
     public void testDownPassiveStatus() throws InterruptedException, UnknownHostException {
 
-        String uei = "uei.opennms.org/services/passiveServiceStatus";
-        Event e = createEvent("Automation", uei);
-        Parms parms = new Parms();
-
-        parms.addParm(buildParm(EventConstants.PARM_PASSIVE_NODE_LABEL, "Router"));
-        parms.addParm(buildParm(EventConstants.PARM_PASSIVE_IPADDR, "192.168.1.1"));
-        parms.addParm(buildParm(EventConstants.PARM_PASSIVE_SERVICE_NAME, "ICMP"));
-        parms.addParm(buildParm(EventConstants.PARM_PASSIVE_SERVICE_STATUS, "Down"));
-        
-        e.setParms(parms);
-        Logmsg logmsg = new Logmsg();
-        logmsg.setContent("Testing Passive Status Keeper with down status");
-        e.setLogmsg(logmsg);
+        Event e = createPassiveStatusEvent("Router", "192.168.1.1", "ICMP", "Down");
         m_eventMgr.sendNow(e);
         
         PollStatus ps = m_psk.getStatus("Router", "192.168.1.1", "ICMP");
@@ -246,6 +247,32 @@ public class PassiveStatusKeeperTest extends MockObjectTestCase {
         
         assertEquals(ps, ps2);
     }
+
+    private Event createPassiveStatusEvent() {
+        return createPassiveStatusEvent("Router", "192.168.1.1", "ICMP", "Down");
+    }
+
+    private Event createPassiveStatusEvent(String nodeLabel, String ipAddr, String serviceName, String status) {
+        Parms parms = new Parms();
+
+        parms.addParm(buildParm(EventConstants.PARM_PASSIVE_NODE_LABEL, nodeLabel));
+        parms.addParm(buildParm(EventConstants.PARM_PASSIVE_IPADDR, ipAddr));
+        parms.addParm(buildParm(EventConstants.PARM_PASSIVE_SERVICE_NAME, serviceName));
+        parms.addParm(buildParm(EventConstants.PARM_PASSIVE_SERVICE_STATUS, status));
+
+        return createPassiveStatusEventWithParms(parms);
+    }
+
+    private Event createPassiveStatusEventWithParms(Parms parms) {
+        String uei = "uei.opennms.org/services/passiveServiceStatus";
+        Event e = MockUtil.createEvent("Automation", uei);
+        
+        e.setParms(parms);
+        Logmsg logmsg = new Logmsg();
+        logmsg.setContent("Testing Passive Status Keeper with down status");
+        e.setLogmsg(logmsg);
+        return e;
+    }
     
     private Parm buildParm(String parmName, String parmValue) {
         Value v = new Value();
@@ -254,16 +281,6 @@ public class PassiveStatusKeeperTest extends MockObjectTestCase {
         p.setParmName(parmName);
         p.setValue(v);
         return p;
-    }
-
-    private static Event createEvent(String source, String uei) {
-        Event event = new Event();
-        event.setSource(source);
-        event.setUei(uei);
-        String eventTime = EventConstants.formatToString(new Date());
-        event.setCreationTime(eventTime);
-        event.setTime(eventTime);
-        return event;
     }
 
 }
