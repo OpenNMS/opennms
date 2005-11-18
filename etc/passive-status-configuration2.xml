@@ -1,4 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<this:passive-status-configuration xmlns:this="http://xmlns.opennms.org/xsd/passive-status-configuration" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  <this:passive-status-uei key="passiveStatus" value="uei.opennms.org/services/passiveServiceStatus"/>
-</this:passive-status-configuration>

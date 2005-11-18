@@ -47,8 +47,8 @@ import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.ConfigFileConstants;
+import org.opennms.netmgt.config.passive.PassiveEvent;
 import org.opennms.netmgt.config.passive.PassiveStatusConfiguration;
-import org.opennms.netmgt.config.passive.PassiveStatusUei;
 
 /**
  * This is the singleton class used to load the configuration from the
@@ -176,11 +176,11 @@ public final class PassiveStatusConfigFactory implements PassiveStatusConfig {
     }
 
     public List getUEIList() {
-        List passiveStatusUeis = getConfig().getPassiveStatusUeiCollection();
+        List passiveEvents = getConfig().getPassiveEvents().getPassiveEventCollection();
         List ueis = new ArrayList();
-        for (Iterator it = passiveStatusUeis.iterator(); it.hasNext();) {
-            PassiveStatusUei psu = (PassiveStatusUei) it.next();
-            ueis.add(psu.getValue());
+        for (Iterator it = passiveEvents.iterator(); it.hasNext();) {
+            PassiveEvent event = (PassiveEvent) it.next();
+            ueis.add(event.getUei());
         }
         return ueis;
     }

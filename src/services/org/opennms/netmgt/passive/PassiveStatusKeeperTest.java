@@ -63,9 +63,29 @@ public class PassiveStatusKeeperTest extends MockObjectTestCase {
 
     private PassiveStatusKeeper m_psk;
     private String passiveStatusConfiguration ="<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + 
-            "<this:passive-status-configuration xmlns:this=\"http://xmlns.opennms.org/xsd/passive-status-configuration\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n" + 
-            "  <this:passive-status-uei key=\"passiveStatus\" value=\"uei.opennms.org/services/passiveServiceStatus\"/>\n" + 
-            "</this:passive-status-configuration>";
+            "<this:passive-status-configuration \n" + 
+            "xmlns:this=\"http://xmlns.opennms.org/xsd/passive-status-configuration\" \n" + 
+            "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" >\n" + 
+            "  <this:passive-events>\n" + 
+            "    <this:passive-event uei=\"uei.opennms.org/services/passiveServiceStatus\">\n" + 
+            "      <this:status-key>\n" + 
+            "        <this:node-label>\n" + 
+            "          <this:event-token is-parm=\"true\" name=\"nodeLabel\" value=\"Router\"/>\n" + 
+            "        </this:node-label>\n" + 
+            "        <this:ipaddr>\n" + 
+            "          <this:event-token is-parm=\"true\" name=\"ipAddr\" value=\"192.168.1.1\"/>\n" + 
+            "        </this:ipaddr>\n" + 
+            "        <this:service-name>\n" + 
+            "          <this:event-token is-parm=\"true\" name=\"serviceName\" value=\"ICMP\"/>\n" + 
+            "        </this:service-name>\n" + 
+            "        <this:status>\n" + 
+            "          <this:event-token is-parm=\"true\" name=\"status\" value=\"Down\"/>\n" + 
+            "        </this:status>\n" + 
+            "      </this:status-key>\n" + 
+            "    </this:passive-event>\n" + 
+            "  </this:passive-events>\n" + 
+            "</this:passive-status-configuration>\n" + 
+            "";
     private MockEventIpcManager m_eventMgr;
     private MockDatabase m_db;
     private MockNetwork m_network;

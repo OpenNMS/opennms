@@ -34,8 +34,6 @@ package org.opennms.netmgt.config;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.StringReader;
-import java.util.Collections;
-import java.util.List;
 
 import junit.framework.TestCase;
 
@@ -50,8 +48,6 @@ import org.opennms.netmgt.config.poller.Service;
 import org.opennms.netmgt.mock.MockDatabase;
 import org.opennms.netmgt.mock.MockLogAppender;
 import org.opennms.netmgt.mock.MockNetwork;
-import org.opennms.netmgt.mock.MockUtil;
-import org.opennms.netmgt.mock.OpenNMSTestCase;
 
 public class PollerConfigFactoryTest extends TestCase {
 
