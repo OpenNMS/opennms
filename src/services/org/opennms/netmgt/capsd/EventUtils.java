@@ -37,6 +37,10 @@
 // Tab Size = 8
 //
 
+/*
+ * TODO
+ * Tremendous amount of code duplication that should be refactored.
+ */
 package org.opennms.netmgt.capsd;
 
 import java.net.InetAddress;
@@ -204,7 +208,7 @@ public class EventUtils {
      * Construct a deleteNode event for the given nodeId.
      * 
      * @param source
-     *            the source for the vent
+     *            the source for the event
      * @param nodeId
      *            the node to be deleted.
      * @param txNo
@@ -240,7 +244,7 @@ public class EventUtils {
      * Construct a deleteNode event for the given nodeId.
      * 
      * @param source
-     *            the source for the vent
+     *            the source for the event
      * @param nodeId
      *            the node to be deleted.
      * @param txNo
@@ -316,7 +320,7 @@ public class EventUtils {
      * Construct a nodeDeleteed event for the given nodeId
      * 
      * @param source
-     *            the source for the evnet
+     *            the source for the event
      * @param nodeId
      *            the id of the node being deleted
      * @param txNo
@@ -536,7 +540,7 @@ public class EventUtils {
      * @param newEvent
      *            the event to send
      * @param isXmlRpcEnabled
-     *            FIXME
+     * @return  void
      */
     public static void sendEvent(Event newEvent, String callerUei, long txNo, boolean isXmlRpcEnabled) {
         // Send event to Eventd
@@ -656,7 +660,7 @@ public class EventUtils {
      * it to eventd..
      * 
      * @param source
-     *            FIXME
+     *            A string representing the source of the event
      * @param nodeId
      *            Nodeid of the node got deleted.
      * @param hostName
@@ -707,7 +711,7 @@ public class EventUtils {
      * it to eventd..
      * 
      * @param source
-     *            FIXME
+     *            the source of the event
      * @param nodeLabel
      *            the nodelabel of the deleted node.
      * @param hostName
@@ -780,7 +784,7 @@ public class EventUtils {
      * sending it to eventd...
      * 
      * @param source
-     *            FIXME
+     *            the source of the event
      * @param nodeId
      *            Nodeid of the node that the deleted interface resides on.
      * @param ipaddr
@@ -910,7 +914,7 @@ public class EventUtils {
      * sending it to eventd..
      * 
      * @param source
-     *            FIXME
+     *            the source of the event
      * @param nodeEntry
      *            The node that the service to get deleted on.
      * @param ifaddr
@@ -918,7 +922,7 @@ public class EventUtils {
      * @param service
      *            the service to delete.
      * @param hostName
-     *            FIXME
+     *            set to the host field in the event
      * @param txNo
      *            the transaction no.
      */
@@ -977,7 +981,7 @@ public class EventUtils {
      * sending it to eventd..
      * 
      * @param source
-     *            FIXME
+     *            the source of the event
      * @param nodeLabel
      *            the node label of the node where the interface resides.
      * @param ipaddr
@@ -1029,7 +1033,7 @@ public class EventUtils {
      * sending it to eventd..
      * 
      * @param source
-     *            FIXME
+     *            the source of the event
      * @param nodeLabel
      *            the node label of the node where the interface resides.
      * @param ipaddr
@@ -1081,7 +1085,7 @@ public class EventUtils {
      * sending it to eventd..
      * 
      * @param source
-     *            FIXME
+     *            the source of the event
      * @param ipaddr
      *            IP address of the interface where the service resides.
      * @param service
@@ -1089,7 +1093,7 @@ public class EventUtils {
      * @param action
      *            what operation to perform for the service/interface pair.
      * @param hostName
-     *            FIXME
+     *            sets the host field of the event
      * @param txNo
      *            the external transaction No.
      */

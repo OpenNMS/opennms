@@ -503,21 +503,19 @@ class Persist {
         set(m_insStmt, 19, Constants.format(event.getMouseovertext(), EVENT_MOUSEOVERTEXT_FIELD_SIZE));
 
         //Column 20, suppressedUntil
-        //FIXME:
-        m_insStmt.setTimestamp(20, eventTime);
+        set(m_insStmt, 20, eventTime);
         
         //Column 21, suppressedUser
         m_insStmt.setString(21, null);
         
         //Column 22, suppressedTime
-        //FIXME:
-        m_insStmt.setTimestamp(22, eventTime);
+        set(m_insStmt, 22, eventTime);
         
         //Column 23, alarmAckUser
         m_insStmt.setString(23, null);
         
         //Column 24, alarmAckTime
-        m_insStmt.setTimestamp(24, eventTime);
+        set(m_insStmt, 24, eventTime);
         
         //Column 25, clearUie
         m_insStmt.setString(25, Constants.format(event.getAlarmData().getClearUei(), EVENT_UEI_FIELD_SIZE));

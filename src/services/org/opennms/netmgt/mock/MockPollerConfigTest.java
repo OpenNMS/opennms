@@ -97,7 +97,7 @@ public class MockPollerConfigTest extends TestCase {
 
         // ensure a sample interface is in the package
         assertTrue(m_pollerConfig.interfaceInPackage("192.168.1.1", pkg));
-        // assertFalse(m_pollerConfig.interfaceInPackage(192.168.1.7", pkg)); FIXME
+        assertFalse(m_pollerConfig.interfaceInPackage("192.168.1.7", pkg));
 
         Enumeration svcs = pkg.enumerateService();
         assertNotNull(svcs);
