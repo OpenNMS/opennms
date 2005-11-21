@@ -40,7 +40,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -49,10 +48,10 @@ import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.ConfigFileConstants;
-import org.opennms.netmgt.EventConstants;
-import org.opennms.netmgt.capsd.EventUtils;
 import org.opennms.netmgt.config.passive.PassiveEvent;
 import org.opennms.netmgt.config.passive.PassiveStatusConfiguration;
+import org.opennms.netmgt.config.passive.StatusKey;
+import org.opennms.netmgt.eventd.EventUtil;
 import org.opennms.netmgt.poller.pollables.PollStatus;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
@@ -183,6 +182,10 @@ public final class PassiveStatusConfigFactory implements PassiveStatusConfig {
         return m_config;
     }
 
+    /*
+     *  (non-Javadoc)
+     * @see org.opennms.netmgt.config.PassiveStatusConfig#getUEIList()
+     */
     public List getUEIList() {
         List passiveEvents = getConfig().getPassiveEvents().getPassiveEventCollection();
         List ueis = new ArrayList();
@@ -199,42 +202,198 @@ public final class PassiveStatusConfigFactory implements PassiveStatusConfig {
     }
 
     public PollStatus getMatchedStatus(Event e) {
-        String status = EventUtils.getParm(e, EventConstants.PARM_PASSIVE_SERVICE_STATUS);
-        return PollStatus.decodePollStatus(status, e.getLogmsg().getContent());
+        PassiveEvent pe = getPassiveEventByUei(e.getUei());
+        String tokenValue = null;
+        String eventToken = pe.getStatusKey().getStatus().getEventToken().getName();
+        if (pe.getStatusKey().getNodeLabel().getEventToken().getIsParm() == true) {
+            tokenValue = EventUtil.getNamedParmValue("parm["+ eventToken +"]", e);
+        } else {
+            tokenValue = getEventField(eventToken, e);
+        }
+        return PollStatus.decodePollStatus(tokenValue, e.getLogmsg().getContent());
     }
 
     public String getMatchedServiceName(Event e) {
-        return EventUtils.getParm(e, EventConstants.PARM_PASSIVE_SERVICE_NAME);
+        PassiveEvent pe = getPassiveEventByUei(e.getUei());
+        String tokenValue = null;
+        String eventToken = pe.getStatusKey().getServiceName().getEventToken().getName();
+        if (pe.getStatusKey().getNodeLabel().getEventToken().getIsParm() == true) {
+            tokenValue = EventUtil.getNamedParmValue("parm["+ eventToken +"]", e);
+        } else {
+            tokenValue = getEventField(eventToken, e);
+        }
+        return tokenValue;
     }
 
     public String getMatchedIpAddr(Event e) {
-        return EventUtils.getParm(e, EventConstants.PARM_PASSIVE_IPADDR);
+        PassiveEvent pe = getPassiveEventByUei(e.getUei());
+        String tokenValue = null;
+        String eventToken = pe.getStatusKey().getIpaddr().getEventToken().getName();
+        if (pe.getStatusKey().getNodeLabel().getEventToken().getIsParm() == true) {
+            tokenValue = EventUtil.getNamedParmValue("parm["+ eventToken +"]", e);
+        } else {
+            tokenValue = getEventField(eventToken, e);
+        }
+        return tokenValue;
     }
 
+    /**
+     * This method returns the nodelabel value by using the config to determine this value
+     * based on field and parm values of a passive event.
+     * 
+     * @param e
+     * @return
+     */
     public String getMatchedNodeLabel(Event e) {
-        return EventUtils.getParm(e, EventConstants.PARM_PASSIVE_NODE_LABEL);
+        
+        PassiveEvent pe = getPassiveEventByUei(e.getUei());
+        String tokenValue = null;
+        String eventToken = pe.getStatusKey().getNodeLabel().getEventToken().getName();
+        if (pe.getStatusKey().getNodeLabel().getEventToken().getIsParm() == true) {
+            tokenValue = EventUtil.getNamedParmValue("parm["+ eventToken +"]", e);
+        } else {
+            tokenValue = getEventField(eventToken, e);
+        }
+        return tokenValue;
     }
 
-    private String[] getRequiredParmsForMatch(Event e) {
-        String labels[] = { EventConstants.PARM_PASSIVE_NODE_LABEL, EventConstants.PARM_PASSIVE_IPADDR, EventConstants.PARM_PASSIVE_SERVICE_NAME, EventConstants.PARM_PASSIVE_SERVICE_STATUS };
-        return labels;
+    private String getEventField(String eventToken, Event e) {
+        if (eventToken.equalsIgnoreCase("descr")) {
+            return e.getDescr();
+        } else if (eventToken.equalsIgnoreCase("distPoller")) {
+            return e.getDistPoller();
+        } else if (eventToken.equalsIgnoreCase("host")) {
+            return e.getHost();
+        } else if (eventToken.equalsIgnoreCase("ifAlias")) {
+            return e.getIfAlias();
+        } else if (eventToken.equalsIgnoreCase("interface")) {
+            return e.getInterface();
+        } else if (eventToken.equalsIgnoreCase("service")) {
+            return e.getService();
+        } else if (eventToken.equalsIgnoreCase("severity")) {
+            return e.getSeverity();
+        } else if (eventToken.equalsIgnoreCase("snmpHost")) {
+            return e.getSnmphost();
+        } else if (eventToken.equalsIgnoreCase("source")) {
+            return e.getSource();
+        } else if (eventToken.equalsIgnoreCase("logGroup")) {
+            return e.getLogmsg().getContent();
+        } else if (eventToken.equalsIgnoreCase("masterStation")) {
+            return e.getMasterStation();
+        } else if (eventToken.equalsIgnoreCase("mouseOverText")) {
+            return e.getMouseovertext();
+        } else if (eventToken.equalsIgnoreCase("operInstruct")) {
+            return e.getOperinstruct();
+        }
+        return null;
     }
-    
 
+    /**
+     * Use this method to verify that the event is quailified to be processed
+     * by the passive status keeper.
+     * 
+     * @param e
+     *      The event to be analyzed
+     * @return
+     *      true or false
+     */
     public boolean isPassiveStatusEvent(Event e) {
-        // FIXME: make sure the uei for the given event is in the configured list
-        return eventContainsRequiredParms(e, getRequiredParmsForMatch(e));
+        if (!getUEIList().contains(e.getUei()))
+            return false;
+        return eventContainsRequiredParms(e);
     }
 
-    private boolean eventContainsRequiredParms(Event e, String[] labels) {
+    /**
+     * 
+     * @param e
+     * @param labels
+     * @return
+     */
+    private boolean eventContainsRequiredParms(Event e) {
+        
+        /*
+         * First check to see if the config for this event requires parms
+         */
+        if (!isParmRequired(e)) {
+            return true;
+        }
+        
+        /*
+         * Check to see if the parms required by the configuration are actually
+         * in the event.
+         */
+        List passiveStatusParmNames = getPassiveStatusParmNames(e);
         Parms parms = e.getParms();
-        if (parms != null) {
+        if (parms != null && passiveStatusParmNames != null) {
             List labelList = getParmsLabels(parms);
-            if (labelList.containsAll(Arrays.asList(labels)))
+            if (labelList.containsAll(passiveStatusParmNames))
                 return true;
         }
         return false;
     }
+
+    /**
+     * Goes through the list of configured passive events looking for the configured
+     * event for any status key that uses an event parm vs.
+     * event field.
+     *
+     * @return hasParm
+     *      true or false
+     */
+    private boolean isParmRequired(Event e) {
+        PassiveEvent pe = getPassiveEventByUei(e.getUei());
+        StatusKey key = pe.getStatusKey();
+        boolean hasParm = false;
+        if ( key.getNodeLabel().getEventToken().getIsParm() ||
+                key.getIpaddr().getEventToken().getIsParm() ||
+                key.getServiceName().getEventToken().getIsParm() ||
+                key.getStatus().getEventToken().getIsParm())
+            hasParm = true;
+        return hasParm;
+    }
+    
+    /**
+     * Returns a list of parms required in the passive status configuration
+     * for this event.
+     * 
+     * @param e
+     * @return parms
+     *      List containing strings representing the names a parms required
+     *      for the passive status key.
+     */
+    private List getPassiveStatusParmNames(Event e) {
+        List parms = new ArrayList();
+        PassiveEvent pe = getPassiveEventByUei(e.getUei());
+        StatusKey key = pe.getStatusKey();
+        if (key.getNodeLabel().getEventToken().getIsParm())
+            parms.add(key.getNodeLabel().getEventToken().getName());
+        if (key.getIpaddr().getEventToken().getIsParm())
+            parms.add(key.getIpaddr().getEventToken().getName());
+        if (key.getServiceName().getEventToken().getIsParm())
+            parms.add(key.getServiceName().getEventToken().getName());
+        if (key.getStatus().getEventToken().getIsParm())
+            parms.add(key.getStatus().getEventToken().getName());
+        return parms;
+    }
+    
+    /**
+     * Get the configured passive event based on UEI.
+     * @param uei
+     * @return pe
+     *      the configured passive event
+     */
+    private PassiveEvent getPassiveEventByUei(String uei) {
+        PassiveEvent pe = null;
+        Collection eventList = m_config.getPassiveEvents().getPassiveEventCollection();
+        for (Iterator iter = eventList.iterator(); iter.hasNext();) {
+            PassiveEvent event = (PassiveEvent) iter.next();
+            if (event.getUei().equals(uei)) {
+                pe = event;
+            }
+        }
+        return pe;
+    }
+    
 
     private List getParmsLabels(Parms parms) {
         List labels = new ArrayList();
