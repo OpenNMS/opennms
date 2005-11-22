@@ -62,17 +62,6 @@ import org.opennms.netmgt.xml.event.Value;
 public class PassiveStatusKeeperTest extends MockObjectTestCase {
     
     /* TODO for PassiveSTatusKeeper
-     
-     uei check in isPassiveStatusEvent
-     
-     Get hardcoded nodelabel
-     Get entire nodeLabel from field
-     get entire nodeLabel from param
-     get regexp nodeLabel from field
-     get regexp nodeLabel from param
-     
-     ipaddr, servicename, status
-     
      add reason mapper for status reason
      */
 
