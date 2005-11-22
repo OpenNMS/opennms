@@ -46,9 +46,11 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
+import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.ConfigFileConstants;
 import org.opennms.netmgt.config.passive.PassiveEvent;
 import org.opennms.netmgt.config.passive.PassiveStatusConfiguration;
@@ -320,7 +322,12 @@ public final class PassiveStatusConfigFactory implements PassiveStatusConfig {
     public boolean isPassiveStatusEvent(Event e) {
         if (!getUEIList().contains(e.getUei()))
             return false;
+        log().debug("isPassiveStatusEvent: Received valid UEI: "+e.getUei()+", checking parms...");
         return eventContainsRequiredParms(e);
+    }
+
+    private Category log() {
+        return ThreadCategory.getInstance("PassiveStatusConfigFactory.class");
     }
 
     private String getValueFromFieldOrParm(Event e, String eventToken, boolean isParm) {
@@ -352,14 +359,16 @@ public final class PassiveStatusConfigFactory implements PassiveStatusConfig {
          * Check to see if the parms required by the configuration are actually
          * in the event.
          */
+        boolean hasAllParms = false;
         List passiveStatusParmNames = getPassiveStatusParmNames(e);
         Parms parms = e.getParms();
         if (parms != null && passiveStatusParmNames != null) {
             List labelList = getParmsLabels(parms);
             if (labelList.containsAll(passiveStatusParmNames))
-                return true;
+                hasAllParms = true;
         }
-        return false;
+        log().debug("eventContainsRequiredParms: this passive event has all parms required in configuration: "+Boolean.toString(hasAllParms));
+        return hasAllParms;
     }
 
     /**
@@ -371,14 +380,13 @@ public final class PassiveStatusConfigFactory implements PassiveStatusConfig {
      *      true or false
      */
     private boolean isParmRequired(Event e) {
-        PassiveEvent pe = getPassiveEventByUei(e.getUei());
-        StatusKey key = pe.getStatusKey();
         boolean hasParm = false;
-        if ( key.getNodeLabel().getEventToken().getIsParm() ||
-                key.getIpaddr().getEventToken().getIsParm() ||
-                key.getServiceName().getEventToken().getIsParm() ||
-                key.getStatus().getEventToken().getIsParm())
+        if ( getPassiveEventByUei(e.getUei()).getStatusKey().getNodeLabel().getEventToken().getIsParm() ||
+                getPassiveEventByUei(e.getUei()).getStatusKey().getIpaddr().getEventToken().getIsParm() ||
+                getPassiveEventByUei(e.getUei()).getStatusKey().getServiceName().getEventToken().getIsParm() ||
+                getPassiveEventByUei(e.getUei()).getStatusKey().getStatus().getEventToken().getIsParm())
             hasParm = true;
+        log().debug("isParmRequired: This passive event requires parms: "+Boolean.toString(hasParm));
         return hasParm;
     }
     
