@@ -43,6 +43,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Unmarshaller;
@@ -201,62 +203,76 @@ public final class PassiveStatusConfigFactory implements PassiveStatusConfig {
         return new PassiveStatusValue(key, getMatchedStatus(e));
     }
 
-    public PollStatus getMatchedStatus(Event e) {
-        PassiveEvent pe = getPassiveEventByUei(e.getUei());
-        String tokenValue = null;
-        String eventToken = pe.getStatusKey().getStatus().getEventToken().getName();
-        if (pe.getStatusKey().getNodeLabel().getEventToken().getIsParm() == true) {
-            tokenValue = EventUtil.getNamedParmValue("parm["+ eventToken +"]", e);
-        } else {
-            tokenValue = getEventField(eventToken, e);
-        }
-        return PollStatus.decodePollStatus(tokenValue, e.getLogmsg().getContent());
-    }
-
-    public String getMatchedServiceName(Event e) {
-        PassiveEvent pe = getPassiveEventByUei(e.getUei());
-        String tokenValue = null;
-        String eventToken = pe.getStatusKey().getServiceName().getEventToken().getName();
-        if (pe.getStatusKey().getNodeLabel().getEventToken().getIsParm() == true) {
-            tokenValue = EventUtil.getNamedParmValue("parm["+ eventToken +"]", e);
-        } else {
-            tokenValue = getEventField(eventToken, e);
-        }
-        return tokenValue;
-    }
-
-    public String getMatchedIpAddr(Event e) {
-        PassiveEvent pe = getPassiveEventByUei(e.getUei());
-        String tokenValue = null;
-        String eventToken = pe.getStatusKey().getIpaddr().getEventToken().getName();
-        if (pe.getStatusKey().getNodeLabel().getEventToken().getIsParm() == true) {
-            tokenValue = EventUtil.getNamedParmValue("parm["+ eventToken +"]", e);
-        } else {
-            tokenValue = getEventField(eventToken, e);
-        }
-        return tokenValue;
-    }
-
     /**
-     * This method returns the nodelabel value by using the config to determine this value
+     * This method determines the nodelabel value by using the config to determine this value
      * based on field and parm values of a passive event.
      * 
      * @param e
-     * @return
+     * @return The PollStatus from the event
      */
-    public String getMatchedNodeLabel(Event e) {
+    public PollStatus getMatchedStatus(Event e) {
+        String eventToken = getPassiveEventByUei(e.getUei()).getStatusKey().getStatus().getEventToken().getName();
+        String expr = getPassiveEventByUei(e.getUei()).getStatusKey().getStatus().getEventToken().getValue();
+        boolean isParm = getPassiveEventByUei(e.getUei()).getStatusKey().getStatus().getEventToken().getIsParm();
         
-        PassiveEvent pe = getPassiveEventByUei(e.getUei());
-        String tokenValue = null;
-        String eventToken = pe.getStatusKey().getNodeLabel().getEventToken().getName();
-        if (pe.getStatusKey().getNodeLabel().getEventToken().getIsParm() == true) {
-            tokenValue = EventUtil.getNamedParmValue("parm["+ eventToken +"]", e);
-        } else {
-            tokenValue = getEventField(eventToken, e);
-        }
-        return tokenValue;
+        String tokenValue = getValueFromFieldOrParm(e, eventToken, isParm);
+        return PollStatus.decodePollStatus(parseExpression(tokenValue, expr), e.getLogmsg().getContent());
     }
 
+    /**
+     * This method determines the nodelabel value by using the config to determine this value
+     * based on field and parm values of a passive event.
+     * 
+     * @param e
+     * @return The correct value of the servicename portion of the status key
+     */
+    public String getMatchedServiceName(Event e) {
+        String eventToken = getPassiveEventByUei(e.getUei()).getStatusKey().getServiceName().getEventToken().getName();
+        String expr = getPassiveEventByUei(e.getUei()).getStatusKey().getServiceName().getEventToken().getValue();
+        boolean isParm = getPassiveEventByUei(e.getUei()).getStatusKey().getServiceName().getEventToken().getIsParm();
+        
+        String tokenValue = getValueFromFieldOrParm(e, eventToken, isParm);
+        return parseExpression(tokenValue, expr);
+    }
+
+    /**
+     * This method determines the nodelabel value by using the config to determine this value
+     * based on field and parm values of a passive event.
+     * 
+     * @param e
+     * @return The correct value of the ipaddr portion of the status key
+     */
+    public String getMatchedIpAddr(Event e) {
+        String eventToken = getPassiveEventByUei(e.getUei()).getStatusKey().getIpaddr().getEventToken().getName();
+        String expr = getPassiveEventByUei(e.getUei()).getStatusKey().getIpaddr().getEventToken().getValue();
+        boolean isParm = getPassiveEventByUei(e.getUei()).getStatusKey().getIpaddr().getEventToken().getIsParm();
+        
+        String tokenValue = getValueFromFieldOrParm(e, eventToken, isParm);
+        return parseExpression(tokenValue, expr);
+    }
+
+    /**
+     * This method determines the nodelabel value by using the config to determine this value
+     * based on field and parm values of a passive event.
+     * 
+     * @param e
+     * @return The correct value of the nodelabel portion of the status key
+     */
+    public String getMatchedNodeLabel(Event e) {
+        String eventToken = getPassiveEventByUei(e.getUei()).getStatusKey().getNodeLabel().getEventToken().getName();
+        String expr = getPassiveEventByUei(e.getUei()).getStatusKey().getNodeLabel().getEventToken().getValue();
+        boolean isParm = getPassiveEventByUei(e.getUei()).getStatusKey().getNodeLabel().getEventToken().getIsParm();
+
+        String tokenValue = getValueFromFieldOrParm(e, eventToken, isParm);
+        return parseExpression(tokenValue, expr);
+    }
+
+    /**
+     * Wish there was a better way to do this!
+     * @param eventToken
+     * @param e
+     * @return String value from the event field specified in @param eventToken
+     */
     private String getEventField(String eventToken, Event e) {
         if (eventToken.equalsIgnoreCase("descr")) {
             return e.getDescr();
@@ -301,6 +317,16 @@ public final class PassiveStatusConfigFactory implements PassiveStatusConfig {
         if (!getUEIList().contains(e.getUei()))
             return false;
         return eventContainsRequiredParms(e);
+    }
+
+    private String getValueFromFieldOrParm(Event e, String eventToken, boolean isParm) {
+        String tokenValue;
+        if (isParm == true) {
+            tokenValue = EventUtil.getNamedParmValue("parm["+ eventToken +"]", e);
+        } else {
+            tokenValue = getEventField(eventToken, e);
+        }
+        return tokenValue;
     }
 
     /**
@@ -352,6 +378,47 @@ public final class PassiveStatusConfigFactory implements PassiveStatusConfig {
         return hasParm;
     }
     
+    /**
+     * Parses regular expressions and returns either the expr string
+     * or the back reference(s) within the expression.  If the string begins
+     * with "~", then it is treated as a regular expression begining with the
+     * second character otherwise the expression is treated as a literal and
+     * is returned without matching.
+     * 
+     * If not grouping is used in the string, then the entire match (group 0) is
+     * returned.  If there is one or more groups, then the groups are returned
+     * concatenated into one string.
+     * 
+     * @param value
+     * @param expr
+     * @return
+     */
+    public String parseExpression(String value, String expr) {
+        String retValue = "";
+        if (expr.startsWith("~")) {
+            Pattern p = Pattern.compile(expr.substring(1));
+            Matcher m = p.matcher(value);
+    
+            if (m.matches()) {
+                int cnt = m.groupCount();
+                if (cnt == 0) {
+                    retValue = m.group(0);
+                } else {
+                    for (int i = 1; i <= cnt; i++) {
+                        retValue += m.group(i);
+                    }
+                }
+            }
+            
+        } else {
+            //this, in-fact, makes the the field/parm value unused and takes
+            //the literal of expr (the value in the config)
+            retValue = expr;
+        }
+        
+        return retValue;
+    }
+
     /**
      * Returns a list of parms required in the passive status configuration
      * for this event.

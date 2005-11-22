@@ -183,10 +183,7 @@ public class PassiveStatusKeeperTest extends MockObjectTestCase {
 
         assertTrue(m_config.isPassiveStatusEvent(e));
         
-        assertEquals("Router", m_config.getMatchedNodeLabel(e));
-        assertEquals("192.168.1.1", m_config.getMatchedIpAddr(e));
-        assertEquals("ICMP", m_config.getMatchedServiceName(e));
-        assertEquals(PollStatus.STATUS_DOWN, m_config.getMatchedStatus(e));
+        assertMatches(e);
     }
     
     /**
@@ -214,7 +211,7 @@ public class PassiveStatusKeeperTest extends MockObjectTestCase {
          * there are no parms required for this configuration that derives the key based on
          * literal field values.
          */
-        m_config = new PassiveStatusConfigFactory(new StringReader(getDerivedLiteralFieldConfig()));
+        m_config = new PassiveStatusConfigFactory(new StringReader(getLiteralFieldConfig()));
         PassiveStatusConfigFactory.setInstance(m_config);
         e = createPassiveStatusEvent(null, null, null, null);
         assertTrue(m_config.isPassiveStatusEvent(e));
@@ -222,66 +219,105 @@ public class PassiveStatusKeeperTest extends MockObjectTestCase {
     }
     
     /**
-     * This is a test for the passive status keeper where all the parms are derived from
-     * the config and the derived values are literal values pulled event fields.
+     * This is a test for the passive status keeper where all the values from the config
+     * should be taken literally.  The actual field value is ignored, however, the field
+     * must exist.  If the config value isn't an expression, the config value overrides the
+     * event's field value.
+     *  
      * @throws ValidationException 
      * @throws MarshalException 
      */
-    public void testEventWithDerivedHardCodedParms() throws MarshalException, ValidationException {
+    public void testEventWithHardCodedFieldValues() throws MarshalException, ValidationException {
         
-        m_config = new PassiveStatusConfigFactory(new StringReader(getDerivedLiteralFieldConfig()));
+        m_config = new PassiveStatusConfigFactory(new StringReader(getLiteralFieldConfig()));
+        PassiveStatusConfigFactory.setInstance(m_config);
+
+        Event e = createPassiveStatusEvent(null, null, null, null);
+        
+        /*
+         * Should not need these when using the literal value in the config (i.e. the config value is
+         * not a regex)
+         * 
+        e.setHost("Router");
+        e.setSource("192.168.1.1");
+        e.setService("ICMP");
+        e.setDescr("Down");
+        */
+        
+        assertTrue(m_config.isPassiveStatusEvent(e));
+        
+        assertMatches(e);
+    }
+    
+    /**
+     * This is a test for the passive status keeper where all the values from the config
+     * should be derived using the config's value as an expression against a field in
+     * the event.
+     *  
+     * @throws ValidationException 
+     * @throws MarshalException 
+     */
+    public void testEventWithDerivedFieldValues() throws MarshalException, ValidationException {
+        
+        m_config = new PassiveStatusConfigFactory(new StringReader(getRegExFieldConfig()));
         PassiveStatusConfigFactory.setInstance(m_config);
 
         Event e = createPassiveStatusEvent(null, null, null, null);
         e.setHost("Router");
         e.setSource("192.168.1.1");
-        e.setService("ICMP");
-        e.setDescr("Down");
+        e.setService("Simulated ICMP_service tester");
+        e.setDescr("isDown");
         
         assertTrue(m_config.isPassiveStatusEvent(e));
         
-        assertEquals("Router", m_config.getMatchedNodeLabel(e));
-        assertEquals("192.168.1.1", m_config.getMatchedIpAddr(e));
-        assertEquals("ICMP", m_config.getMatchedServiceName(e));
-        assertEquals(PollStatus.STATUS_DOWN, m_config.getMatchedStatus(e));
-        
-        
+        assertMatches(e);
     }
-    
+
     /**
-     * This is a test for the passive status keeper where all the parms are derived from
-     * the config and the derived values are based on the values contained in fields of the
-     * event.
+     * This is a test for the passive status keeper where all the values from the config
+     * should be taken literally.  The actual parm value is ignored, however, the parm
+     * must exist.  If the config value isn't an expression, the config value overrides the
+     * event's field value.
+     * 
+     * @throws ValidationException 
+     * @throws MarshalException 
      */
-    public void testEventWithDerivedEventFieldValues() {
+    public void testEventWithHardCodedParmValues() throws MarshalException, ValidationException {
+        m_config = new PassiveStatusConfigFactory(new StringReader(getLiteralParmConfig()));
+        PassiveStatusConfigFactory.setInstance(m_config);
         
-    }
-    
-    /**
-     * This is a test for the passive status keeper where all the parms are derived from
-     * the config and the derived values are based on the values contained in parameters
-     * of the event.
-     */
-    public void testEventWithDerivedEventParmValues() {
+        //set these wrong because the literals from the config should be used instead
+        Event e = createPassiveStatusEvent("switch", "1.1.1.1", "pmci", "up");
         
+        assertTrue(m_config.isPassiveStatusEvent(e));
+        
+        assertMatches(e);
     }
     
     /**
      * This is a test for the passive status keeper where all the parms are derived from
      * the config and the derived values are based on regular expressions contained in the
      * fields of the event.
+     * @throws ValidationException 
+     * @throws MarshalException 
      */
-    public void testEventWithDerivedFieldExpressions() {
+    public void testEventWithDerivedParmValues() throws MarshalException, ValidationException {
+        m_config = new PassiveStatusConfigFactory(new StringReader(getRegExParmConfig()));
+        PassiveStatusConfigFactory.setInstance(m_config);
         
+        Event e = createPassiveStatusEvent("Router", "192.168.1.1", "Simulated ICMP_service tester", "isDown");
+        
+        assertTrue(m_config.isPassiveStatusEvent(e));
+        
+        assertMatches(e);
+
     }
 
-    /**
-     * This is a test for the passive status keeper where all the parms are derived from
-     * the config and the derived values are based on regular expressions contained in the
-     * parameters of the event.
-     */
-    public void testEventWithDerivedParmExpressions() {
-        
+    private void assertMatches(Event e) {
+        assertEquals("Router", m_config.getMatchedNodeLabel(e));
+        assertEquals("192.168.1.1", m_config.getMatchedIpAddr(e));
+        assertEquals("ICMP", m_config.getMatchedServiceName(e));
+        assertEquals(PollStatus.STATUS_DOWN, m_config.getMatchedStatus(e));
     }
 
     public void testSetStatus() {
@@ -321,6 +357,30 @@ public class PassiveStatusKeeperTest extends MockObjectTestCase {
     public void testDownPassiveStatus() throws InterruptedException, UnknownHostException {
 
         Event e = createPassiveStatusEvent("Router", "192.168.1.1", "ICMP", "Down");
+        m_eventMgr.sendNow(e);
+        
+        PollStatus ps = m_psk.getStatus("Router", "192.168.1.1", "ICMP");
+        
+        assertTrue(ps.isDown());
+        
+        MockMonitoredService svc = new MockMonitoredService(1, "Router", "192.168.1.1", "ICMP" );
+        
+        ServiceMonitor m = new PassiveServiceMonitor();
+        m.initialize(null, null);
+        m.initialize(svc);
+        PollStatus ps2 = m.poll(svc, null, null);
+        m.release(svc);
+        m.release();
+        
+        assertEquals(ps, ps2);
+    }
+
+    public void testDownPassiveStatusDerived() throws InterruptedException, UnknownHostException, MarshalException, ValidationException {
+
+        m_config = new PassiveStatusConfigFactory(new StringReader(getRegExParmConfig()));
+        PassiveStatusConfigFactory.setInstance(m_config);
+        
+        Event e = createPassiveStatusEvent("Router", "192.168.1.1", "Simulated ICMP_service tester", "isDown");
         m_eventMgr.sendNow(e);
         
         PollStatus ps = m_psk.getStatus("Router", "192.168.1.1", "ICMP");
@@ -397,7 +457,7 @@ public class PassiveStatusKeeperTest extends MockObjectTestCase {
         "";
     }
     
-    private String getDerivedLiteralFieldConfig() {
+    private String getLiteralFieldConfig() {
         return "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + 
         "<this:passive-status-configuration \n" + 
         "xmlns:this=\"http://xmlns.opennms.org/xsd/passive-status-configuration\" \n" + 
@@ -457,7 +517,7 @@ public class PassiveStatusKeeperTest extends MockObjectTestCase {
         "";
     }
 
-    private String getDerivedLiteralParmConfig() {
+    private String getLiteralParmConfig() {
         return "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + 
         "<this:passive-status-configuration \n" + 
         "xmlns:this=\"http://xmlns.opennms.org/xsd/passive-status-configuration\" \n" + 
@@ -484,7 +544,7 @@ public class PassiveStatusKeeperTest extends MockObjectTestCase {
         "";
     }
     
-    private String getDerivedExpressionFieldConfig() {
+    private String getRegExFieldConfig() {
         return "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + 
         "<this:passive-status-configuration \n" + 
         "xmlns:this=\"http://xmlns.opennms.org/xsd/passive-status-configuration\" \n" + 
@@ -493,16 +553,16 @@ public class PassiveStatusKeeperTest extends MockObjectTestCase {
         "    <this:passive-event uei=\"uei.opennms.org/services/passiveServiceStatus\">\n" + 
         "      <this:status-key>\n" + 
         "        <this:node-label>\n" + 
-        "          <this:event-token is-parm=\"false\" name=\"host\" value=\"Router\"/>\n" + 
+        "          <this:event-token is-parm=\"false\" name=\"host\" value=\"~.*\"/>\n" + 
         "        </this:node-label>\n" + 
         "        <this:ipaddr>\n" + 
-        "          <this:event-token is-parm=\"false\" name=\"source\" value=\"192.168.1.1\"/>\n" + 
+        "          <this:event-token is-parm=\"false\" name=\"source\" value=\"~.*(192\\.168\\.1\\.1).*\"/>\n" + 
         "        </this:ipaddr>\n" + 
         "        <this:service-name>\n" + 
-        "          <this:event-token is-parm=\"false\" name=\"service\" value=\"ICMP\"/>\n" + 
+        "          <this:event-token is-parm=\"false\" name=\"service\" value=\"~.*(ICMP).*\"/>\n" + 
         "        </this:service-name>\n" + 
         "        <this:status>\n" + 
-        "          <this:event-token is-parm=\"false\" name=\"descr\" value=\"Down\"/>\n" + 
+        "          <this:event-token is-parm=\"false\" name=\"descr\" value=\"~.*is(Down).*\"/>\n" + 
         "        </this:status>\n" + 
         "      </this:status-key>\n" + 
         "    </this:passive-event>\n" + 
@@ -511,7 +571,7 @@ public class PassiveStatusKeeperTest extends MockObjectTestCase {
         "";
     }
     
-    private String getDerivedExpressionParmConfig() {
+    private String getRegExParmConfig() {
         return "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + 
         "<this:passive-status-configuration \n" + 
         "xmlns:this=\"http://xmlns.opennms.org/xsd/passive-status-configuration\" \n" + 
@@ -520,16 +580,16 @@ public class PassiveStatusKeeperTest extends MockObjectTestCase {
         "    <this:passive-event uei=\"uei.opennms.org/services/passiveServiceStatus\">\n" + 
         "      <this:status-key>\n" + 
         "        <this:node-label>\n" + 
-        "          <this:event-token is-parm=\"true\" name=\"passiveNodeLabel\" value=\"Router\"/>\n" + 
+        "          <this:event-token is-parm=\"true\" name=\"passiveNodeLabel\" value=\"~.*\"/>\n" + 
         "        </this:node-label>\n" + 
         "        <this:ipaddr>\n" + 
-        "          <this:event-token is-parm=\"true\" name=\"passiveIpAddr\" value=\"192.168.1.1\"/>\n" + 
+        "          <this:event-token is-parm=\"true\" name=\"passiveIpAddr\" value=\"~.*(192\\.168\\.1\\.1).*\"/>\n" + 
         "        </this:ipaddr>\n" + 
         "        <this:service-name>\n" + 
-        "          <this:event-token is-parm=\"true\" name=\"passiveServiceName\" value=\"ICMP\"/>\n" + 
+        "          <this:event-token is-parm=\"true\" name=\"passiveServiceName\" value=\"~.*(ICMP).*\"/>\n" + 
         "        </this:service-name>\n" + 
         "        <this:status>\n" + 
-        "          <this:event-token is-parm=\"true\" name=\"passiveStatus\" value=\"Down\"/>\n" + 
+        "          <this:event-token is-parm=\"true\" name=\"passiveStatus\" value=\"~.*is(Down).*\"/>\n" + 
         "        </this:status>\n" + 
         "      </this:status-key>\n" + 
         "    </this:passive-event>\n" + 
