@@ -167,7 +167,7 @@ public class NrpePacket {
 		packet[2] = (byte) ((m_type >> 8) & 0xff);
 		packet[3] = (byte) (m_type & 0xff);
 
-		// These will get filled in later when we computer the CRC.
+		// These will get filled in later when we compute the CRC.
 		packet[4] = 0;
 		packet[5] = 0;
 		packet[6] = 0;
