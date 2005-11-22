@@ -215,7 +215,7 @@ public final class PassiveStatusConfigFactory implements PassiveStatusConfig {
     public PollStatus getMatchedStatus(Event e) {
         String eventToken = getPassiveEventByUei(e.getUei()).getStatusKey().getStatus().getEventToken().getName();
         String expr = getPassiveEventByUei(e.getUei()).getStatusKey().getStatus().getEventToken().getValue();
-        String pattern = getPassiveEventByUei(e.getUei()).getStatusKey().getStatus().getEventToken().getPattern();
+        String pattern = getPassiveEventByUei(e.getUei()).getStatusKey().getStatus().getEventToken().getFormat();
         boolean isParm = getPassiveEventByUei(e.getUei()).getStatusKey().getStatus().getEventToken().getIsParm();
         
         String tokenValue = getValueFromFieldOrParm(e, eventToken, isParm);
@@ -232,7 +232,7 @@ public final class PassiveStatusConfigFactory implements PassiveStatusConfig {
     public String getMatchedServiceName(Event e) {
         String eventToken = getPassiveEventByUei(e.getUei()).getStatusKey().getServiceName().getEventToken().getName();
         String expr = getPassiveEventByUei(e.getUei()).getStatusKey().getServiceName().getEventToken().getValue();
-        String pattern = getPassiveEventByUei(e.getUei()).getStatusKey().getServiceName().getEventToken().getPattern();
+        String pattern = getPassiveEventByUei(e.getUei()).getStatusKey().getServiceName().getEventToken().getFormat();
         boolean isParm = getPassiveEventByUei(e.getUei()).getStatusKey().getServiceName().getEventToken().getIsParm();
         
         String tokenValue = getValueFromFieldOrParm(e, eventToken, isParm);
@@ -249,7 +249,7 @@ public final class PassiveStatusConfigFactory implements PassiveStatusConfig {
     public String getMatchedIpAddr(Event e) {
         String eventToken = getPassiveEventByUei(e.getUei()).getStatusKey().getIpaddr().getEventToken().getName();
         String expr = getPassiveEventByUei(e.getUei()).getStatusKey().getIpaddr().getEventToken().getValue();
-        String pattern = getPassiveEventByUei(e.getUei()).getStatusKey().getIpaddr().getEventToken().getPattern();
+        String pattern = getPassiveEventByUei(e.getUei()).getStatusKey().getIpaddr().getEventToken().getFormat();
         boolean isParm = getPassiveEventByUei(e.getUei()).getStatusKey().getIpaddr().getEventToken().getIsParm();
         
         String tokenValue = getValueFromFieldOrParm(e, eventToken, isParm);
@@ -266,7 +266,7 @@ public final class PassiveStatusConfigFactory implements PassiveStatusConfig {
     public String getMatchedNodeLabel(Event e) {
         String eventToken = getPassiveEventByUei(e.getUei()).getStatusKey().getNodeLabel().getEventToken().getName();
         String expr = getPassiveEventByUei(e.getUei()).getStatusKey().getNodeLabel().getEventToken().getValue();
-        String pattern = getPassiveEventByUei(e.getUei()).getStatusKey().getNodeLabel().getEventToken().getPattern();
+        String pattern = getPassiveEventByUei(e.getUei()).getStatusKey().getNodeLabel().getEventToken().getFormat();
         boolean isParm = getPassiveEventByUei(e.getUei()).getStatusKey().getNodeLabel().getEventToken().getIsParm();
 
         String tokenValue = getValueFromFieldOrParm(e, eventToken, isParm);

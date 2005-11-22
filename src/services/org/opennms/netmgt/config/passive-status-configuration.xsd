@@ -99,7 +99,7 @@
 		<complexType>
 			<attribute name="name" type="string" use="required" />
 			<attribute name="value" type="string" use="required" />
-			<attribute name="pattern" type="string" use="optional" />
+			<attribute name="format" type="string" use="optional" />
 			<attribute name="is-parm" type="boolean" use="optional" default="true" />
 		</complexType>
 	</element>

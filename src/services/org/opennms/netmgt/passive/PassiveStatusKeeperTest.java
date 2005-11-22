@@ -179,6 +179,9 @@ public class PassiveStatusKeeperTest extends MockObjectTestCase {
         String result = m_config.parseExpression("Channel 9", "~^(Channel) (9)", "$1-$2");
         assertEquals("Channel-9", result);
         
+        result = m_config.parseExpression("Channel 9", "~.*(Channel) (9).*", "$1-$2");
+        assertEquals("Channel-9", result);
+        
         result = m_config.parseExpression("Channel 9", "~.*(nnel).*", null);
         assertEquals("Channel 9", result);
         
@@ -577,10 +580,10 @@ public class PassiveStatusKeeperTest extends MockObjectTestCase {
         "          <this:event-token is-parm=\"false\" name=\"source\" value=\"~.*(192\\.168\\.1\\.1).*\"/>\n" + 
         "        </this:ipaddr>\n" + 
         "        <this:service-name>\n" + 
-        "          <this:event-token is-parm=\"false\" name=\"service\" value=\"~.*(ICMP).*\" pattern=\"$1\"/>\n" + 
+        "          <this:event-token is-parm=\"false\" name=\"service\" value=\"~.*(ICMP).*\" format=\"$1\"/>\n" + 
         "        </this:service-name>\n" + 
         "        <this:status>\n" + 
-        "          <this:event-token is-parm=\"false\" name=\"descr\" value=\"~.*is(Down).*\" pattern=\"$1\"/>\n" + 
+        "          <this:event-token is-parm=\"false\" name=\"descr\" value=\"~.*is(Down).*\" format=\"$1\"/>\n" + 
         "        </this:status>\n" + 
         "      </this:status-key>\n" + 
         "    </this:passive-event>\n" + 
@@ -604,10 +607,10 @@ public class PassiveStatusKeeperTest extends MockObjectTestCase {
         "          <this:event-token is-parm=\"true\" name=\"passiveIpAddr\" value=\"~.*(192\\.168\\.1\\.1).*\"/>\n" + 
         "        </this:ipaddr>\n" + 
         "        <this:service-name>\n" + 
-        "          <this:event-token is-parm=\"true\" name=\"passiveServiceName\" value=\"~.*(ICMP).*\" pattern=\"$1\"/>\n" + 
+        "          <this:event-token is-parm=\"true\" name=\"passiveServiceName\" value=\"~.*(ICMP).*\" format=\"$1\"/>\n" + 
         "        </this:service-name>\n" + 
         "        <this:status>\n" + 
-        "          <this:event-token is-parm=\"true\" name=\"passiveStatus\" value=\"~.*is(Down).*\" pattern=\"$1\"/>\n" + 
+        "          <this:event-token is-parm=\"true\" name=\"passiveStatus\" value=\"~.*is(Down).*\" format=\"$1\"/>\n" + 
         "        </this:status>\n" + 
         "      </this:status-key>\n" + 
         "    </this:passive-event>\n" + 
