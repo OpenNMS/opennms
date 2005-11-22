@@ -213,10 +213,11 @@ public final class PassiveStatusConfigFactory implements PassiveStatusConfig {
     public PollStatus getMatchedStatus(Event e) {
         String eventToken = getPassiveEventByUei(e.getUei()).getStatusKey().getStatus().getEventToken().getName();
         String expr = getPassiveEventByUei(e.getUei()).getStatusKey().getStatus().getEventToken().getValue();
+        String pattern = getPassiveEventByUei(e.getUei()).getStatusKey().getStatus().getEventToken().getPattern();
         boolean isParm = getPassiveEventByUei(e.getUei()).getStatusKey().getStatus().getEventToken().getIsParm();
         
         String tokenValue = getValueFromFieldOrParm(e, eventToken, isParm);
-        return PollStatus.decodePollStatus(parseExpression(tokenValue, expr), e.getLogmsg().getContent());
+        return PollStatus.decodePollStatus(parseExpression(tokenValue, expr, pattern), e.getLogmsg().getContent());
     }
 
     /**
@@ -229,10 +230,11 @@ public final class PassiveStatusConfigFactory implements PassiveStatusConfig {
     public String getMatchedServiceName(Event e) {
         String eventToken = getPassiveEventByUei(e.getUei()).getStatusKey().getServiceName().getEventToken().getName();
         String expr = getPassiveEventByUei(e.getUei()).getStatusKey().getServiceName().getEventToken().getValue();
+        String pattern = getPassiveEventByUei(e.getUei()).getStatusKey().getServiceName().getEventToken().getPattern();
         boolean isParm = getPassiveEventByUei(e.getUei()).getStatusKey().getServiceName().getEventToken().getIsParm();
         
         String tokenValue = getValueFromFieldOrParm(e, eventToken, isParm);
-        return parseExpression(tokenValue, expr);
+        return parseExpression(tokenValue, expr, pattern);
     }
 
     /**
@@ -245,10 +247,11 @@ public final class PassiveStatusConfigFactory implements PassiveStatusConfig {
     public String getMatchedIpAddr(Event e) {
         String eventToken = getPassiveEventByUei(e.getUei()).getStatusKey().getIpaddr().getEventToken().getName();
         String expr = getPassiveEventByUei(e.getUei()).getStatusKey().getIpaddr().getEventToken().getValue();
+        String pattern = getPassiveEventByUei(e.getUei()).getStatusKey().getIpaddr().getEventToken().getPattern();
         boolean isParm = getPassiveEventByUei(e.getUei()).getStatusKey().getIpaddr().getEventToken().getIsParm();
         
         String tokenValue = getValueFromFieldOrParm(e, eventToken, isParm);
-        return parseExpression(tokenValue, expr);
+        return parseExpression(tokenValue, expr, pattern);
     }
 
     /**
@@ -261,10 +264,11 @@ public final class PassiveStatusConfigFactory implements PassiveStatusConfig {
     public String getMatchedNodeLabel(Event e) {
         String eventToken = getPassiveEventByUei(e.getUei()).getStatusKey().getNodeLabel().getEventToken().getName();
         String expr = getPassiveEventByUei(e.getUei()).getStatusKey().getNodeLabel().getEventToken().getValue();
+        String pattern = getPassiveEventByUei(e.getUei()).getStatusKey().getNodeLabel().getEventToken().getPattern();
         boolean isParm = getPassiveEventByUei(e.getUei()).getStatusKey().getNodeLabel().getEventToken().getIsParm();
 
         String tokenValue = getValueFromFieldOrParm(e, eventToken, isParm);
-        return parseExpression(tokenValue, expr);
+        return parseExpression(tokenValue, expr, pattern);
     }
 
     /**
@@ -385,28 +389,34 @@ public final class PassiveStatusConfigFactory implements PassiveStatusConfig {
      * second character otherwise the expression is treated as a literal and
      * is returned without matching.
      * 
-     * If not grouping is used in the string, then the entire match (group 0) is
+     * If no grouping is used in the string, then the entire match (group 0) is
      * returned.  If there is one or more groups, then the groups are returned
      * concatenated into one string.
      * 
+     * Use the pattern to do a very limited printf style formatting of the string
+     * using $1 - $9 to reference back references of the expr.  Example:
+     *      value = "Channel 9"
+     *      expr = "~^(Channel) (9)"
+     *      formatPattern = "$1-$2"
+     *      
+     *      retValue will be: "Channel-9"
+     *      
      * @param value
      * @param expr
-     * @return
+     * @param formatPattern
+     * @return a formatted regex/the literal/or empty string
      */
-    public String parseExpression(String value, String expr) {
+    public String parseExpression(String value, String expr, String formatPattern) {
         String retValue = "";
         if (expr.startsWith("~")) {
             Pattern p = Pattern.compile(expr.substring(1));
             Matcher m = p.matcher(value);
     
             if (m.matches()) {
-                int cnt = m.groupCount();
-                if (cnt == 0) {
+                if (m.groupCount() == 0 || formatPattern == null) {
                     retValue = m.group(0);
                 } else {
-                    for (int i = 1; i <= cnt; i++) {
-                        retValue += m.group(i);
-                    }
+                    retValue = applyFormat(formatPattern, m);
                 }
             }
             
@@ -416,6 +426,31 @@ public final class PassiveStatusConfigFactory implements PassiveStatusConfig {
             retValue = expr;
         }
         
+        return retValue;
+    }
+
+    /**
+     * Use formatPattern to reference matching groups in the matcher m.  Use
+     * '$[0-9]' to referenece a group in the matcher. 
+     * 
+     * @param formatPattern
+     * @param m
+     * @return a string representing the format in formatPattern
+     */
+    private String applyFormat(String formatPattern, Matcher m) {
+        String retValue = "";
+        //Loop through the expression looking for $
+        for (int i=0; i<formatPattern.length(); i++) {
+            String nextChar = formatPattern.substring(i, i+1);
+            if (nextChar.equals("$") && i+1 <= formatPattern.length()) {
+                nextChar = formatPattern.substring(++i, i+1);
+                if (nextChar.matches("[0123456789]") && Integer.parseInt(nextChar) <= m.groupCount()) {
+                    retValue += m.group(Integer.parseInt(nextChar));
+                }
+            } else {
+                retValue += nextChar;
+            }
+        }
         return retValue;
     }
 

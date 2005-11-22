@@ -186,6 +186,35 @@ public class PassiveStatusKeeperTest extends MockObjectTestCase {
         assertMatches(e);
     }
     
+    public void testParseExpression() {
+        String result = m_config.parseExpression("Channel 9", "~^(Channel) (9)", "$1-$2");
+        assertEquals("Channel-9", result);
+        
+        result = m_config.parseExpression("Channel 9", "~.*(nnel).*", null);
+        assertEquals("Channel 9", result);
+        
+        result = m_config.parseExpression("Channel 9", "~^(Channel) (9)", null);
+        assertEquals("Channel 9", result);
+        
+        result = m_config.parseExpression("Channel 9", "~^(Channel) (9)", "$1$2");
+        assertEquals("Channel9", result);
+        
+        result = m_config.parseExpression("Channel 9", "Channel 19", null);
+        assertEquals("Channel 19", result);
+        
+        //the entire value tested should be returned
+        result = m_config.parseExpression("Channel 9 on your side", "~^Channel 9.*", null);
+        assertEquals("Channel 9 on your side", result);
+        
+        //test weird formatting
+        result = m_config.parseExpression("Channel 9 on your side", "~^(Channel) (9).*(side)$", "$2--server--$3->$1s");
+        assertEquals("9--server--side->Channels", result);
+        
+        //formatting should be ignored if there is no grouping
+        result = m_config.parseExpression("Channel 9", "~^Channel 9", "$1-$2");
+        assertEquals("Channel 9", result);
+    }
+    
     /**
      * This is a test for the method that verifies valid passive status events
      * for the passive status keeper.
@@ -559,10 +588,10 @@ public class PassiveStatusKeeperTest extends MockObjectTestCase {
         "          <this:event-token is-parm=\"false\" name=\"source\" value=\"~.*(192\\.168\\.1\\.1).*\"/>\n" + 
         "        </this:ipaddr>\n" + 
         "        <this:service-name>\n" + 
-        "          <this:event-token is-parm=\"false\" name=\"service\" value=\"~.*(ICMP).*\"/>\n" + 
+        "          <this:event-token is-parm=\"false\" name=\"service\" value=\"~.*(ICMP).*\" pattern=\"$1\"/>\n" + 
         "        </this:service-name>\n" + 
         "        <this:status>\n" + 
-        "          <this:event-token is-parm=\"false\" name=\"descr\" value=\"~.*is(Down).*\"/>\n" + 
+        "          <this:event-token is-parm=\"false\" name=\"descr\" value=\"~.*is(Down).*\" pattern=\"$1\"/>\n" + 
         "        </this:status>\n" + 
         "      </this:status-key>\n" + 
         "    </this:passive-event>\n" + 
@@ -586,10 +615,10 @@ public class PassiveStatusKeeperTest extends MockObjectTestCase {
         "          <this:event-token is-parm=\"true\" name=\"passiveIpAddr\" value=\"~.*(192\\.168\\.1\\.1).*\"/>\n" + 
         "        </this:ipaddr>\n" + 
         "        <this:service-name>\n" + 
-        "          <this:event-token is-parm=\"true\" name=\"passiveServiceName\" value=\"~.*(ICMP).*\"/>\n" + 
+        "          <this:event-token is-parm=\"true\" name=\"passiveServiceName\" value=\"~.*(ICMP).*\" pattern=\"$1\"/>\n" + 
         "        </this:service-name>\n" + 
         "        <this:status>\n" + 
-        "          <this:event-token is-parm=\"true\" name=\"passiveStatus\" value=\"~.*is(Down).*\"/>\n" + 
+        "          <this:event-token is-parm=\"true\" name=\"passiveStatus\" value=\"~.*is(Down).*\" pattern=\"$1\"/>\n" + 
         "        </this:status>\n" + 
         "      </this:status-key>\n" + 
         "    </this:passive-event>\n" + 

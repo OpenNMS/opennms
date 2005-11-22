@@ -87,12 +87,19 @@
 			defining this element of the key.  Fields are used if the is-parm boolean is set
 			to "false".  Regular expressions are supported for extracting the value or a literal
 			may be specified.  If the value is set and begins with a "~" character, the matching
-			regular expression is used, otherwise it is interpreted as a literal.
+			regular expression is used, otherwise it is interpreted as a literal.  If groups
+			are available, they will be concatenated unless a pattern attribute is used.  The
+			pattern attribute works as follows:
+				Event parm: passiveNodeLabel with value "Channel 9"
+				attribute value: "~^(Channel) (9)"
+				attribute pattern: "$1-$2"
+				resulting string: "Channel-9"
 			</documentation>
 		</annotation>
 		<complexType>
 			<attribute name="name" type="string" use="required" />
 			<attribute name="value" type="string" use="required" />
+			<attribute name="pattern" type="string" use="optional" />
 			<attribute name="is-parm" type="boolean" use="optional" default="true" />
 		</complexType>
 	</element>
