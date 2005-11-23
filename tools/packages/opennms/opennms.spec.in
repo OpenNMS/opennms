@@ -283,6 +283,13 @@ rm -rf $RPM_BUILD_ROOT
 ##############################################################################
 
 %install
+#
+# This next bit is to keep gprintify.py on Mandriva/Mandrake from screwing
+# up the "echo" statements in the opennms.sh init script.  See:
+#	http://qa.mandriva.com/twiki/bin/view/Main/InitscriptHowto?skin=print
+#
+DONT_GPRINTIFY="yes, please do not"
+export DONT_GPRINTIFY
 
 if [ x"%{buildtests}" = x"1" ]; then
 	EXTRA_TARGETS="$EXTRA_TARGETS test"
