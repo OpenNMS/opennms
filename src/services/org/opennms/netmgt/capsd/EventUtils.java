@@ -44,6 +44,7 @@
 package org.opennms.netmgt.capsd;
 
 import java.net.InetAddress;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
@@ -53,12 +54,11 @@ import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 import org.opennms.netmgt.eventd.EventListener;
-import org.opennms.netmgt.mock.ParmsWrapper;
-import org.opennms.netmgt.mock.SnmpWrapper;
 import org.opennms.netmgt.utils.XmlrpcUtil;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.Parms;
+import org.opennms.netmgt.xml.event.Snmp;
 import org.opennms.netmgt.xml.event.Value;
 
 /**
@@ -1244,7 +1244,7 @@ public class EventUtils {
             b.append(" Operinstruct: " + event.getOperinstruct() + "\n");
     }
     if (event.getParms() != null) {
-            b.append(" Parms: " + new ParmsWrapper(event.getParms()) + "\n");
+            b.append(" Parms: " + toString(event.getParms()) + "\n");
     }
     if (event.getScriptCount() > 0) {
             b.append(" Script:");
@@ -1260,7 +1260,7 @@ public class EventUtils {
             b.append(" Severity: " + event.getSeverity() + "\n");
     }
     if (event.getSnmp() != null) {
-            b.append(" Snmp: " + new SnmpWrapper(event.getSnmp()) + "\n");
+            b.append(" Snmp: " + toString(event.getSnmp()) + "\n");
     }
     if (event.getSnmphost() != null) {
             b.append(" Snmphost: " + event.getSnmphost() + "\n");
@@ -1284,5 +1284,55 @@ public class EventUtils {
     b.append("End Event\n");
           return b.toString();
         }
+
+    public static String toString(Parms parms) {
+        if (parms.getParmCount() == 0) {
+    		return "Parms: (none)\n";
+    	}
+    	
+    	StringBuffer b = new StringBuffer();
+    	b.append("Parms:\n");
+    	for (Enumeration e = parms.enumerateParm(); e.hasMoreElements(); ) {
+    		Parm p = (Parm) e.nextElement();
+    		b.append(" ");
+    		b.append(p.getParmName());
+    		b.append(" = ");
+    		b.append(toString(p.getValue()));
+    		b.append("\n");
+    	}
+    	b.append("End Parms\n");
+    	return b.toString();
+    }
+    
+    public static String toString(Value value) {
+        return value.getType() + "(" + value.getEncoding() + "): " + value.getContent();
+    }
+
+    public static String toString(Snmp snmp) {
+        StringBuffer b = new StringBuffer("Snmp: ");
+    
+        if (snmp.getVersion() != null) {
+    		b.append("Version: " + snmp.getVersion() + "\n");
+    	}
+    	
+    	b.append("TimeStamp: " + new Date(snmp.getTimeStamp()) + "\n");
+    	
+    	if (snmp.getCommunity() != null) {
+    		b.append("Community: " + snmp.getCommunity() + "\n");
+    	}
+    
+    	b.append("Generic: " + snmp.getGeneric() + "\n");
+    	b.append("Specific: " + snmp.getSpecific() + "\n");
+    	
+    	if (snmp.getId() != null) {
+    		b.append("Id: " + snmp.getId() + "\n");
+    	}
+    	if (snmp.getIdtext() != null) {
+    		b.append("Idtext: " + snmp.getIdtext() + "\n");
+    	}
+    	
+    	b.append("End Snmp\n");
+    	return b.toString();
+    }
 
 }
