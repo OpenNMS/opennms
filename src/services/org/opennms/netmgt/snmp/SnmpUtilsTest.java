@@ -254,6 +254,9 @@ public class SnmpUtilsTest extends OpenNMSTestCase implements TrapProcessorFacto
         assertEquals("Expect an octectString", SnmpValue.SNMP_OCTET_STRING, octetString.getType());
         assertEquals("mystring", octetString.toDisplayString());
         assertEquals("mystring", new String(octetString.getBytes()));
+        // test for non-printables in string
+        SnmpValue nonPrintable = valueFactory.getOctetString("non-printable\0".getBytes());
+        assertEquals("non-printable.", nonPrintable.toDisplayString());
         
         // SnmpValue.SNMP_COUNTER32;
         SnmpValue counter32 = valueFactory.getCounter32(0xF7654321L);
@@ -309,5 +312,6 @@ public class SnmpUtilsTest extends OpenNMSTestCase implements TrapProcessorFacto
         assertEquals(timeTicks.toBigInteger(), new BigInteger(timeTicks.getBytes()));
         
     }
+    
     
 }

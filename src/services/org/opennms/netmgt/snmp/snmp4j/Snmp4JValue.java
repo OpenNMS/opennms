@@ -194,9 +194,19 @@ class Snmp4JValue implements SnmpValue {
             return SnmpObjId.get(((OID)m_value).getValue()).toString();
         case SMIConstants.SYNTAX_TIMETICKS :
             return Long.toString(toLong());
+        case SMIConstants.SYNTAX_OCTET_STRING :
+            return toStringDottingCntrlChars(((OctetString)m_value).getValue());
         default :
             return m_value.toString();
         }
+    }
+
+    private String toStringDottingCntrlChars(byte[] value) {
+        byte[] results = new byte[value.length];
+        for (int i = 0; i < value.length; i++) {
+            results[i] = Character.isISOControl((char)value[i]) ? (byte)'.' : value[i];
+        }
+        return new String(results);
     }
 
     public InetAddress toInetAddress() {

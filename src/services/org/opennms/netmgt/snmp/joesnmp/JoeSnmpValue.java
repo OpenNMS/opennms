@@ -185,6 +185,8 @@ class JoeSnmpValue implements SnmpValue {
         switch (m_value.typeId()) {
         case SnmpSMI.SMI_TIMETICKS :
             return Long.toString(toLong());
+        case SnmpSMI.SMI_STRING:
+            return SnmpOctetString.toDisplayString((SnmpOctetString)m_value);
         default :
             return m_value.toString();
         }
