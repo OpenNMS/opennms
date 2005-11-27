@@ -93,7 +93,7 @@ public class ThresholderTestCase extends MockObjectTestCase {
 		m_serviceParameters.put("svcName", serviceName);
 		m_parameters = new HashMap();
 		m_parameters.put("thresholding-group", groupName);
-		FileReader r = new FileReader("etc/thresholds.xml");
+		FileReader r = new FileReader("etc/examples/thresholds.xml");
 		ThresholdingConfigFactory.setInstance(new ThresholdingConfigFactory(r));
 		r.close();
 		ThresholdingConfigFactory.getInstance().getGroup(groupName).setRrdRepository("/tmp");

@@ -38,7 +38,7 @@ public class SnmpThresholderTest extends ThresholderTestCase {
         RrdUtils.setStrategy((RrdStrategy)m_mockRrdStrategy.proxy());
         m_mockRrdStrategy.expects(atLeastOnce()).method("initialize");
 
-		FileReader r = new FileReader("etc/thresholds.xml");
+		FileReader r = new FileReader("etc/examples/thresholds.xml");
         ThresholdingConfigFactory.setInstance(new ThresholdingConfigFactory(r));
         r.close();
 
