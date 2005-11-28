@@ -143,6 +143,7 @@ to put the reorg code into.
 		<attribute name="groupId" />
 		<attribute name="artifactId" />
 		<attribute name="version" />
+		<attribute name="scope" default="compile" />
 		<sequential>
 			<concat destfile="dependencies.@{module-id}" append="true">
 				<filelist dir="${basedir}" files="${template.dir}/dependency.tmpl" />
@@ -151,6 +152,7 @@ to put the reorg code into.
 						<token key="dependency.groupId" value="@{groupId}" />
 						<token key="dependency.artifactId" value="@{artifactId}" />
 						<token key="dependency.version" value="@{version}" />
+						<token key="dependency.scope" value="@{scope}" />
 					</replacetokens>
 				</filterchain>
 			</concat>
@@ -191,16 +193,18 @@ to put the reorg code into.
 		<attribute name="groupId" />
 		<attribute name="artifactId" />
 		<attribute name="version" />
+		<attribute name="scope" default="compile" />
 		<sequential>
-			<dependency-helper module-id="${modules-top}" groupId="@{groupId}" artifactId="@{artifactId}" version="@{version}" />
+			<dependency-helper module-id="${modules-top}" groupId="@{groupId}" artifactId="@{artifactId}" version="@{version}" scope="@{scope}"/>
 		</sequential>
 	</macrodef>
 
 	<!-- this defines a dependency on another opennms module -->
 	<macrodef name="module-dependency">
 		<attribute name="id" />
+		<attribute name="scope" default="compile" />
 		<sequential>
-			<dependency-helper module-id="${modules-top}" groupId="${@{id}-groupId}" artifactId="${@{id}-artifactId}" version="${@{id}-version}" />
+			<dependency-helper module-id="${modules-top}" groupId="${@{id}-groupId}" artifactId="${@{id}-artifactId}" version="${@{id}-version}" scope="@{scope}"/>
 		</sequential>
 	</macrodef>
 	
