@@ -36,7 +36,6 @@ import java.util.Properties;
 
 import junit.framework.TestCase;
 
-import org.opennms.netmgt.mock.MockUtil;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpValue;
 
@@ -62,7 +61,6 @@ public class TestAgentTest extends TestCase {
         addColumn(agentData, col3Base, 1, columnLength);
         m_agent.setAgentData(agentData);
         
-        MockUtil.println("---------- Begin Test "+getName()+"---------------");
     }
 
     private void addColumn(Properties agentData, String base, int start, int end) {

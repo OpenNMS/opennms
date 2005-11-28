@@ -32,7 +32,7 @@
 // Tab Stop = 8
 //
 
-package org.opennms.netmgt.utils;
+package org.opennms.core.concurrent;
 
 /**
  * <P>

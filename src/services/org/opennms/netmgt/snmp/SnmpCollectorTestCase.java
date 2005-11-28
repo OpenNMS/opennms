@@ -36,11 +36,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.TreeMap;
 
+import org.opennms.core.concurrent.BarrierSignaler;
 import org.opennms.netmgt.collectd.MibObject;
 import org.opennms.netmgt.collectd.SNMPCollectorEntry;
 import org.opennms.netmgt.mock.OpenNMSTestCase;
 import org.opennms.netmgt.snmp.mock.TestAgent;
-import org.opennms.netmgt.utils.BarrierSignaler;
 
 public class SnmpCollectorTestCase extends OpenNMSTestCase {
 

@@ -35,8 +35,8 @@ import java.io.IOException;
 import java.net.InetAddress;
 
 import org.apache.log4j.Category;
+import org.opennms.core.concurrent.BarrierSignaler;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.utils.BarrierSignaler;
 
 
 public abstract class SnmpWalker {
