@@ -230,21 +230,21 @@ to put the reorg code into.
     		<attribute name="module-packaging" default="jar" />
     		<element name="contents" optional="true" implicit="yes"/>
     		<sequential>
-			<create-empty-module-helper module-id="@{module-id}" module-name="@{module-name}" module-type="@{module-type}" module-packaging="@{module-packaging}" parent-module-id="${modules-top}">
+			<module-helper module-id="@{module-id}" module-name="@{module-name}" module-type="@{module-type}" module-packaging="@{module-packaging}" parent-module-id="${modules-top}">
     				<contents/>
-    			</create-empty-module-helper>
+    			</module-helper>
         </sequential>
     </macrodef>
 
 
 	
 	<!-- = = = = = = = = = = = = = = = = =
-          macrodef: create-empty-module-helper
+          macrodef: module-helper
           This macro defines a new module that has a pom.xml and other related file
           but no buildable contents.  This is used as a workhorse for other create-XXX-module
           macros that define which also copy files into appropriate locations         
          = = = = = = = = = = = = = = = = = -->
-	<macrodef name="create-empty-module-helper">
+	<macrodef name="module-helper">
 		<attribute name="module-id" />
 		<attribute name="module-name" />
 		<attribute name="module-type" />
@@ -271,7 +271,7 @@ to put the reorg code into.
 			<touch file="dependencies.@{module-id}" />
 
 			<!-- add the new module to top level project -->
-			<module-helper module-id="@{module-id}" parent-module-id="@{parent-module-id}" />
+			<add-module-to-parent module-id="@{module-id}" parent-module-id="@{parent-module-id}" />
 
 			<!-- process the contents of the module -->
 			<contents />
@@ -343,9 +343,9 @@ to put the reorg code into.
 	</macrodef>
 	
 	<!-- = = = = = = = = = = = = = = = = =
-          macrodef: module-helper          
+          macrodef: add-module-to-parent          
          = = = = = = = = = = = = = = = = = -->
-	<macrodef name="module-helper">
+	<macrodef name="add-module-to-parent">
 		<attribute name="module-id" />
 		<attribute name="parent-module-id" default="ROOT" />
 		<sequential>
@@ -367,9 +367,9 @@ to put the reorg code into.
     		<element name="submodules" implicit="true"/>
         <sequential>
         		<module-stack-init/>
-			<create-empty-module-helper module-id="ROOT" module-name="OpenNMS" module-type="toplevel" module-packaging="pom" parent-module-id="SUPER">
+			<module-helper module-id="ROOT" module-name="OpenNMS" module-type="toplevel" module-packaging="pom" parent-module-id="SUPER">
 				<submodules/>
-			</create-empty-module-helper>
+			</module-helper>
         		<delete quiet="true" file="modules.SUPER"/>
         </sequential>
     </macrodef>
@@ -539,6 +539,47 @@ to put the reorg code into.
 				</sources>
 				<dependencies/>
 			</module>
+			
+			<module module-id="snmp" module-type="composite" module-packaging="pom" module-name="OpenNMS SNMP">
+				<module module-id="snmp-api" module-type="java" module-packaging="jar" module-name="OpenNMS SNMP API">
+					<sources source-type="java">
+						<fileset dir="${opennms.dir}/src/services">
+							<include name="org/opennms/netmgt/snmp/*.java"/>
+							<exclude name="org/opennms/netmgt/snmp/*Test*.java"/>
+						</fileset>
+					</sources>
+					<dependencies>
+						<module-dependency id="core"/>
+					</dependencies>
+				</module>
+				
+				<module module-id="snmp-joesnmp" module-type="java" module-packaging="jar" module-name="OpenNMS JoeSNMP SNMP Implementation">
+					<sources source-type="java">
+						<fileset dir="${opennms.dir}/src/services">
+							<include name="org/opennms/netmgt/snmp/joesnmp/*.java"/>
+							<exclude name="org/opennms/netmgt/snmp/joesnmp/*Test*.java"/>
+						</fileset>
+					</sources>
+					<dependencies>
+						<module-dependency id="snmp-api"/>
+						<module-dependency id="joesnmp"/>
+					</dependencies>
+				</module>
+
+				<module module-id="snmp-snmp4j" module-type="java" module-packaging="jar" module-name="OpenNMS SNMP4J SNMP Implementation">
+				<!--	<sources source-type="java">
+						<fileset dir="${opennms.dir}/src/services">
+							<include name="org/opennms/netmgt/snmp/snmp4j/*.java"/>
+							<exclude name="org/opennms/netmgt/snmp/snmp4j/*Test*.java"/>
+						</fileset>
+					</sources>-->
+					<dependencies>
+						<module-dependency id="snmp-api"/>
+					</dependencies> 
+				</module>
+				
+			</module>
+				
 			<!-- report code 
 			<simple-jar-module module-id="reporting" module-name="OpenNMS Reporting" src-dir="${opennms.dir}/src/report">
 				<module-dependency id="core"/>
