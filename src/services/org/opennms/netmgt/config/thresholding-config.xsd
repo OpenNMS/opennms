@@ -146,6 +146,12 @@
           value before a threshold event is generated.</documentation>
         </annotation>
       </attribute>
+
+      <attribute name="ds-label" type="string" use="optional">
+        <annotation>
+          <documentation>Value to retrieve from strings.properties to label this datasource.</documentation>
+        </annotation>
+      </attribute>
     </complexType>
   </element>
 </schema>

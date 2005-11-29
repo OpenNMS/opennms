@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2005 Nov 29: Added a method to allow for labels in Threshold events
 // 2005 Jan 03: minor mod to support lame SNMP hosts
 // 2003 Jan 31: Cleaned up some unused imports.
 // 2002 Oct 22: Added a threshold rearm event.
@@ -40,6 +41,9 @@
 package org.opennms.netmgt.threshd;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.lang.NullPointerException;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -50,6 +54,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Properties;
 
 import org.apache.log4j.Category;
 import org.apache.log4j.Priority;
@@ -591,10 +596,28 @@ final class SnmpThresholder implements ServiceThresholder {
             //
             ThresholdEntity threshold = (ThresholdEntity) thresholdMap.get(datasource);
             if (threshold != null) {
+
+                // Get the value to use for the ds-label from this threshold
+                String dsLabelValue = null;
+                String propertiesFile = directory + "/strings.properties";
+                Properties stringProps = new Properties();
+                try {
+                        stringProps.load(new FileInputStream(propertiesFile));
+                        dsLabelValue = stringProps.getProperty(threshold.getDatasourceLabel());
+                } catch (FileNotFoundException e) {
+                        log.debug ("Label: No strings.properties file found for node id: " + nodeId + " looking here: " + propertiesFile);
+                } catch (NullPointerException e) {
+                        log.debug ("Label: No data source label for node id: " + nodeId );
+                } catch (java.io.IOException e) {
+                        log.debug ("Label: I/O exception when looking for strings.properties file for node id: "+ nodeId + " looking here: " + propertiesFile);
+                }
+
+
                 // Use RRD JNI interface to "fetch" value of the
                 // datasource from the RRD file
                 //
                 Double dsValue = null;
+		
                 try {
                     dsValue = RrdUtils.fetchLastValue(files[i].getAbsolutePath(), interval);
                 } catch (NumberFormatException nfe) {
@@ -613,19 +636,19 @@ final class SnmpThresholder implements ServiceThresholder {
                     int result = threshold.evaluate(dsValue.doubleValue());
                     if (result != ThresholdEntity.NONE_TRIGGERED) {
                         if (result == ThresholdEntity.HIGH_AND_LOW_TRIGGERED || result == ThresholdEntity.HIGH_TRIGGERED) {
-                            events.addEvent(createEvent(nodeId, primary, null, dsValue.doubleValue(), threshold.getHighThreshold(), EventConstants.HIGH_THRESHOLD_EVENT_UEI, date));
+                            events.addEvent(createEvent(nodeId, primary, null, dsValue.doubleValue(), threshold.getHighThreshold(), EventConstants.HIGH_THRESHOLD_EVENT_UEI, date, dsLabelValue));
                         }
 
                         if (result == ThresholdEntity.HIGH_AND_LOW_TRIGGERED || result == ThresholdEntity.LOW_TRIGGERED) {
-                            events.addEvent(createEvent(nodeId, primary, null, dsValue.doubleValue(), threshold.getLowThreshold(), EventConstants.LOW_THRESHOLD_EVENT_UEI, date));
+                            events.addEvent(createEvent(nodeId, primary, null, dsValue.doubleValue(), threshold.getLowThreshold(), EventConstants.LOW_THRESHOLD_EVENT_UEI, date, dsLabelValue));
                         }
 
                         if (result == ThresholdEntity.HIGH_AND_LOW_REARMED || result == ThresholdEntity.HIGH_REARMED) {
-                            events.addEvent(createEvent(nodeId, primary, null, dsValue.doubleValue(), threshold.getHighThreshold(), EventConstants.HIGH_THRESHOLD_REARM_EVENT_UEI, date));
+                            events.addEvent(createEvent(nodeId, primary, null, dsValue.doubleValue(), threshold.getHighThreshold(), EventConstants.HIGH_THRESHOLD_REARM_EVENT_UEI, date, dsLabelValue));
                         }
 
                         if (result == ThresholdEntity.HIGH_AND_LOW_REARMED || result == ThresholdEntity.LOW_REARMED) {
-                            events.addEvent(createEvent(nodeId, primary, null, dsValue.doubleValue(), threshold.getLowThreshold(), EventConstants.LOW_THRESHOLD_REARM_EVENT_UEI, date));
+                            events.addEvent(createEvent(nodeId, primary, null, dsValue.doubleValue(), threshold.getLowThreshold(), EventConstants.LOW_THRESHOLD_REARM_EVENT_UEI, date, dsLabelValue));
                         }
                     }
                 }
@@ -734,6 +757,9 @@ final class SnmpThresholder implements ServiceThresholder {
                 log.debug("checkIfDir: looking up datasource: " + datasource);
             ThresholdEntity threshold = (ThresholdEntity) thresholdMap.get(datasource);
             if (threshold != null) {
+
+		String dsLabelValue = null;
+
                 // Use RRD JNI interface to "fetch" value of the
                 // datasource from the RRD file
                 //
@@ -827,19 +853,19 @@ final class SnmpThresholder implements ServiceThresholder {
                         }
 
                         if (result == ThresholdEntity.HIGH_AND_LOW_TRIGGERED || result == ThresholdEntity.HIGH_TRIGGERED) {
-                            events.addEvent(createEvent(nodeId, primary, ifDataMap, dsValue.doubleValue(), threshold.getHighThreshold(), EventConstants.HIGH_THRESHOLD_EVENT_UEI, date));
+                            events.addEvent(createEvent(nodeId, primary, ifDataMap, dsValue.doubleValue(), threshold.getHighThreshold(), EventConstants.HIGH_THRESHOLD_EVENT_UEI, date, dsLabelValue));
                         }
 
                         if (result == ThresholdEntity.HIGH_AND_LOW_TRIGGERED || result == ThresholdEntity.LOW_TRIGGERED) {
-                            events.addEvent(createEvent(nodeId, primary, ifDataMap, dsValue.doubleValue(), threshold.getLowThreshold(), EventConstants.LOW_THRESHOLD_EVENT_UEI, date));
+                            events.addEvent(createEvent(nodeId, primary, ifDataMap, dsValue.doubleValue(), threshold.getLowThreshold(), EventConstants.LOW_THRESHOLD_EVENT_UEI, date, dsLabelValue));
                         }
 
                         if (result == ThresholdEntity.HIGH_AND_LOW_REARMED || result == ThresholdEntity.HIGH_REARMED) {
-                            events.addEvent(createEvent(nodeId, primary, ifDataMap, dsValue.doubleValue(), threshold.getHighThreshold(), EventConstants.HIGH_THRESHOLD_REARM_EVENT_UEI, date));
+                            events.addEvent(createEvent(nodeId, primary, ifDataMap, dsValue.doubleValue(), threshold.getHighThreshold(), EventConstants.HIGH_THRESHOLD_REARM_EVENT_UEI, date, dsLabelValue));
                         }
 
                         if (result == ThresholdEntity.HIGH_AND_LOW_REARMED || result == ThresholdEntity.LOW_REARMED) {
-                            events.addEvent(createEvent(nodeId, primary, ifDataMap, dsValue.doubleValue(), threshold.getLowThreshold(), EventConstants.LOW_THRESHOLD_REARM_EVENT_UEI, date));
+                            events.addEvent(createEvent(nodeId, primary, ifDataMap, dsValue.doubleValue(), threshold.getLowThreshold(), EventConstants.LOW_THRESHOLD_REARM_EVENT_UEI, date, dsLabelValue));
                         }
                     }
                 }
@@ -867,7 +893,7 @@ final class SnmpThresholder implements ServiceThresholder {
      * 
      * @return new threshold event to be sent to Eventd
      */
-    private Event createEvent(Integer nodeId, InetAddress primary, Map ifDataMap, double dsValue, Threshold threshold, String uei, java.util.Date date) {
+    private Event createEvent(Integer nodeId, InetAddress primary, Map ifDataMap, double dsValue, Threshold threshold, String uei, java.util.Date date, String label) {
 		Category log = log();
 
         if (nodeId == null || primary == null || threshold == null)
@@ -966,6 +992,16 @@ final class SnmpThresholder implements ServiceThresholder {
         parmValue.setContent(Double.toString(threshold.getRearm()));
         eventParm.setValue(parmValue);
         eventParms.addParm(eventParm);
+
+        // Add datasource label
+	if (label != null) {
+        	eventParm = new Parm();
+        	eventParm.setParmName("label");
+        	parmValue = new Value();
+        	parmValue.setContent(label);
+        	eventParm.setValue(parmValue);
+        	eventParms.addParm(eventParm);
+	}
 
         // Add interface parms if available
         if (ifDataMap != null && ifDataMap.get("iflabel") != null) {

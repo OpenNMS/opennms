@@ -1,7 +1,7 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2002-2003 The OpenNMS Group, Inc.  All rights reserved.
+// OpenNMS(R) is Copyright (C) 2002-2005 The OpenNMS Group, Inc.  All rights reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included code and modified
 // code that was published under the GNU General Public License. Copyrights for modified 
 // and included code are below.
@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2005 Nov 29: Added a method to allow for labels in Threshold events
 // 2003 Jan 31: Cleaned up some unused imports.
 // 2002 Oct 22: Added Threshold rearm event.
 //
@@ -223,6 +224,18 @@ final class ThresholdEntity implements Cloneable {
             throw new IllegalStateException("Low threshold not set.");
 
         return m_lowThreshold.getTrigger();
+    }
+
+    /**
+     * Get datasource Label
+     */
+    String getDatasourceLabel() {
+        if (this.hasHighThreshold())
+            return m_highThreshold.getDsLabel();
+        else if (this.hasLowThreshold())
+            return m_lowThreshold.getDsLabel();
+        else
+            return null;
     }
 
     /**
