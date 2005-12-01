@@ -12,6 +12,266 @@
   version 1.1.5 continues that progress.</para>
 
   <section>
+    <title>Changes in OpenNMS 1.3.2</title>
+
+    <section>
+      <title>Bug Fixes</title>
+
+      <para>SNMP interface descriptions are no longer printed in hex if they
+      contain unprintable characters. In particular, this was seen on
+      Microsoft Windows platforms with the default Windows SNMP daemon.</para>
+    </section>
+
+    <section>
+      <title>Features</title>
+
+      <section>
+        <title>NSClient support</title>
+
+        <para>An <ulink url="http://nsclient.ready2run.nl/">NSClient</ulink>
+        poller and capsd plugin have been contributed by <ulink
+        url="mailto:matt.raykowski@gmail.com">Matt Raykowski</ulink>. This
+        allows performance counters on Microsoft Windows platform to be
+        queried, with the help of the NSClient agent software on the Windows
+        side. No data collection is performed at this time.</para>
+
+        <para>For testing, you can run the NsclientManager implementation
+        directly:</para>
+
+        <para><programlisting><command>java -cp $OPENNMS_HOME/lib/opennms_services.jar &lt;hostname&gt; &lt;command&gt; &lt;criticalPercent&gt; &lt;warningPercent&gt; &lt;parameter&gt;</command></programlisting></para>
+
+        <para>Here are a couple of example tests using the command-line
+        tool:<orderedlist>
+            <listitem>
+              <para>Testing the client version:<programlisting><command>java -cp $OPENNMS_HOME/lib/opennms_services.jar org.opennms.netmgt.poller.nsclient.CheckNsc &lt;hostname&gt; CLIENTVERSION 0 0 "1.0.7.0"</command></programlisting></para>
+            </listitem>
+
+            <listitem>
+              <para>Testing NT services:</para>
+
+              <para><programlisting><command>java -cp $OPENNMS_HOME/lib/opennms_services.jar org.opennms.netmgt.poller.nsclient.CheckNsc &lt;hostname&gt; USEDDISKSPACE 95 90 "C:"</command></programlisting></para>
+            </listitem>
+
+            <listitem>
+              <para>Testing memory usage:</para>
+
+              <para><programlisting><command>java -cp $OPENNMS_HOME/lib/opennms_services.jar org.opennms.netmgt.poller.nsclient.CheckNsc &lt;hostname&gt; MEMUSE 95 90 ""</command></programlisting></para>
+            </listitem>
+          </orderedlist></para>
+
+        <para>Available commands:</para>
+
+        <glosslist>
+          <glossentry>
+            <glossterm>CLIENTVERSION</glossterm>
+
+            <glossdef>
+              <para>This check uses the parameter property only. This string
+              must be formatted like "#.#.#.#" or empty. If you provide a
+              number, such as "1.0.7.0", you are specifying the minimum
+              version supported, any version lower than this parameter will
+              return 'critical'. If you do not specify a parameter (for
+              example, supplying "") the check always returns 'okay' and will
+              provide the version number in the response.</para>
+
+              <para>Using CLIENTVERSION in capsd:</para>
+
+              <para><programlisting>&lt;protocol-plugin protocol="NSC-CLIENTVERSION" class-name="org.opennms.netmgt.capsd.plugins.NsclientPlugin" scan="on" user-defined="false"&gt;
+  &lt;property key="port" value="1248" /&gt;
+  &lt;property key="timeout" value="3000" /&gt;
+  &lt;property key="retry" value="2" /&gt;
+  &lt;property key="command" value="CLIENTVERSION" /&gt;
+  &lt;!-- parameter is optional, if you want to do version checking
+    &lt;property key="parameter" value="1.0.7.0" /&gt;
+  --&gt;
+&lt;/protocol-plugin&gt;</programlisting></para>
+            </glossdef>
+          </glossentry>
+
+          <glossentry>
+            <glossterm>CPULOAD</glossterm>
+
+            <glossdef>
+              <para>This check uses the warningPercent and criticalPercent
+              properties only. These values must be integers in percentage
+              format.</para>
+
+              <para>Using CPULOAD in capsd:</para>
+
+              <para><programlisting>&lt;protocol-plugin protocol="NSC-CPULOAD" class-name="org.opennms.netmgt.capsd.plugins.NsclientPlugin" scan="on" user-defined="false"&gt;
+  &lt;property key="port" value="1248" /&gt;
+  &lt;property key="timeout" value="3000" /&gt;
+  &lt;property key="retry" value="2" /&gt;
+  &lt;property key="command" value="CPULOAD" /&gt;
+  &lt;property key="warningPercent" value="90" /&gt;
+  &lt;property key="criticalPercent" value="95" /&gt;
+&lt;/protocol-plugin&gt;</programlisting></para>
+            </glossdef>
+          </glossentry>
+
+          <glossentry>
+            <glossterm>UPTIME</glossterm>
+
+            <glossdef>
+              <para>This check simply returns the uptime of the system. No
+              validation is performed.</para>
+            </glossdef>
+          </glossentry>
+
+          <glossentry>
+            <glossterm>USEDDISKSPACE</glossterm>
+
+            <glossdef>
+              <para>This check uses the warningPercent and criticalPercent
+              properties to determine thresholds. These values must be
+              integers and they should be in percentage form (e.g. 1-100.) The
+              parameter property is used to determine the drive letter, either
+              "C" or "C:" can be used. Some older services have mixed support,
+              so try adding/removing the ':' if you are experiencing
+              problems.</para>
+
+              <para>Using USEDDISKSPACE in capsd:</para>
+
+              <para><programlisting>&lt;protocol-plugin protocol="NSC-C-SPACE" class-name="org.opennms.netmgt.capsd.plugins.NsclientPlugin" scan="on" user-defined="false"&gt;
+  &lt;property key="port" value="1248" /&gt;
+  &lt;property key="timeout" value="3000" /&gt;
+  &lt;property key="retry" value="2" /&gt;
+  &lt;property key="command" value="USEDDISKSPACE" /&gt;
+  &lt;property key="warningPercent" value="90" /&gt;
+  &lt;property key="criticalPercent" value="95" /&gt;
+  &lt;property key="parameter" value="C:" /&gt;
+&lt;/protocol-plugin&gt;</programlisting></para>
+            </glossdef>
+          </glossentry>
+
+          <glossentry>
+            <glossterm>SERVICESTATE</glossterm>
+
+            <glossdef>
+              <para>This check determines the status of NT services on a
+              remove server. This check only uses the parameter property. The
+              parameter property should contain a comma delimited list of
+              services you would like the status of.</para>
+
+              <para>Using SERVICESTATE in capsd:</para>
+
+              <para><programlisting>&lt;protocol-plugin protocol="NSC-SERVICE-SERVERS" class-name="org.opennms.netmgt.capsd.plugins.NsclientPlugin" scan="on" user-defined="false"&gt;
+  &lt;property key="port" value="1248" /&gt;
+  &lt;property key="timeout" value="3000" /&gt;
+  &lt;property key="retry" value="2" /&gt;
+  &lt;property key="command" value="SERVICESTATE" /&gt;
+  &lt;property key="parameter" value="Eventlog,lanmanserver,Netlogon,RpcSs" /&gt;
+&lt;/protocol-plugin&gt;</programlisting></para>
+            </glossdef>
+          </glossentry>
+
+          <glossentry>
+            <glossterm>PROCSTATE</glossterm>
+
+            <glossdef>
+              <para>This check determines whether or not a list of processes
+              are running on a remote server. This check only uses the
+              parameter property. The parameter property should contain a
+              comma delimited list of processes you want to determine the
+              status of.</para>
+
+              <para>Using PROCSTATE in capsd:</para>
+
+              <para><programlisting>&lt;protocol-plugin protocol="NSC-PROCESS-NAVISPHERE" class-name="org.opennms.netmgt.capsd.plugins.NsclientPlugin" scan="on" user-defined="false"&gt;
+  &lt;property key="port" value="1248" /&gt;
+  &lt;property key="timeout" value="3000" /&gt;
+  &lt;property key="retry" value="2" /&gt;
+  &lt;property key="command" value="SERVICESTATE" /&gt;
+  &lt;property key="parameter" value="naviagent.exe,EmcPowSrv.exe" /&gt;
+&lt;/protocol-plugin&gt;</programlisting></para>
+            </glossdef>
+          </glossentry>
+
+          <glossentry>
+            <glossterm>MEMUSE</glossterm>
+
+            <glossdef>
+              <para>This check uses the warningPercent and criticalPercent
+              properties only. These values must be integers in percentage
+              format.</para>
+
+              <para>Using MEMUSE in capsd:</para>
+
+              <para><programlisting>&lt;protocol-plugin protocol="NSC-MEMORY" class-name="org.opennms.netmgt.capsd.plugins.NsclientPlugin" scan="on" user-defined="false"&gt;
+  &lt;property key="port" value="1248" /&gt;
+  &lt;property key="timeout" value="3000" /&gt;
+  &lt;property key="retry" value="2" /&gt;
+  &lt;property key="command" value="MEMUSE" /&gt;
+  &lt;property key="warningPercent" value="90" /&gt;
+  &lt;property key="criticalPercent" value="95" /&gt;
+&lt;/protocol-plugin&gt;</programlisting></para>
+            </glossdef>
+          </glossentry>
+
+          <glossentry>
+            <glossterm>COUNTER</glossterm>
+
+            <glossdef>
+              <para>This check is used to check the PerfMon OID objects on a
+              remote Windows server. This check uses the warningPercent and
+              criticalPercent properties as <emphasis>values</emphasis>. These
+              values may or may not actually be in percentage format. You will
+              have to use discretion when setting these up and read the
+              documentation for the specific PerfMon OID that you will be
+              monitoring. It also uses the parameter property to define the
+              PerfMon OID that you will be monitoring.</para>
+
+              <para>Using COUNTER in capsd:</para>
+
+              <para><programlisting>&lt;protocol-plugin protocol="NSC-PRINT-QUEUE" class-name="org.opennms.netmgt.capsd.plugins.NsclientPlugin" scan="on" user-defined="false"&gt;
+  &lt;property key="port" value="1248" /&gt;
+  &lt;property key="timeout" value="3000" /&gt;
+  &lt;property key="retry" value="2" /&gt;
+  &lt;property key="command" value="COUNTER" /&gt;
+  &lt;property key="warningPercent" value="10" /&gt;
+  &lt;property key="criticalPercent" value="20" /&gt;
+  &lt;property key="parameter" value="\Print Queue(_Total)\Jobs" /&gt;
+&lt;/protocol-plugin&gt;</programlisting></para>
+            </glossdef>
+          </glossentry>
+
+          <glossentry>
+            <glossterm>FILEAGE</glossterm>
+
+            <glossdef>
+              <para>This check is used to determine the age of a specified
+              file on the remote server. This check uses the warningPercent
+              and criticalPercent properties as <emphasis>values</emphasis>.
+              These values will be the newest age of the file allowed in
+              <emphasis>minutes</emphasis>. For example, if you set the
+              criticalPercent to 60 then a file that is 59 minutes or
+              <emphasis>newer</emphasis> will result in a critical response
+              from the manager. This check uses the parameter property to
+              determine the <emphasis>full path</emphasis> of the file to be
+              monitored. This check is useful for monitoring log files or
+              other files that may collect critical events or files that
+              should rarely change. Note: This check does not yet support
+              using the modified date response supplied by the server.</para>
+
+              <para>Using FILEAGE in capsd:</para>
+
+              <para><programlisting>&lt;protocol-plugin protocol="NSC-SYSTEMFILES" class-name="org.opennms.netmgt.capsd.plugins.NsclientPlugin" scan="on" user-defined="false"&gt;
+  &lt;property key="port" value="1248" /&gt;
+  &lt;property key="timeout" value="3000" /&gt;
+  &lt;property key="retry" value="2" /&gt;
+  &lt;property key="command" value="FILEAGE" /&gt;
+  &lt;property key="warningPercent" value="0" /&gt;
+  &lt;property key="criticalPercent" value="525600" /&gt; &lt;!-- two years --&gt;
+  &lt;property key="parameter" value="C:\autoexec.bat" /&gt;
+&lt;/protocol-plugin&gt;</programlisting></para>
+            </glossdef>
+          </glossentry>
+        </glosslist>
+      </section>
+    </section>
+  </section>
+
+  <section>
     <title>Changes in OpenNMS 1.3.1</title>
 
     <section>
@@ -25,7 +285,7 @@
       <title>Features</title>
 
       <para>There are no new features in 1.3.1, but more work was done on the
-      NRPE client code. </para>
+      NRPE client code.</para>
 
       <para>One problem with OpenNMS comes from upgrading. If a new feature
       like NRPE support is added, the configuration files are often modified
@@ -33,7 +293,7 @@
 
       <para>This causes problems when upgrading, since a change to the default
       file will often result in an .rpmnew file being generated, requiring a
-      manual merge. </para>
+      manual merge.</para>
 
       <para>The existing configuration files have been streamlined to only
       include those features most likely to be used by end users, and the more
