@@ -94,8 +94,8 @@
 			snmpTrapHelper.addVarBinding(trap, ".1.3.6.1.4.1.5813.2.16", "OctetString", "text", event.descr);
 		else
 			snmpTrapHelper.addVarBinding(trap, ".1.3.6.1.4.1.5813.2.16", "OctetString", "text", "null");
-                if (event.logmsg != null)
-                        snmpTrapHelper.addVarBinding(trap, ".1.3.6.1.4.1.5813.2.17", "OctetString", "text", event.logmsg);
+                if (event.logmsg.content != null)
+                        snmpTrapHelper.addVarBinding(trap, ".1.3.6.1.4.1.5813.2.17", "OctetString", "text", event.logmsg.content);
                 else
                         snmpTrapHelper.addVarBinding(trap, ".1.3.6.1.4.1.5813.2.17", "OctetString", "text", "null");
 		if (event.severity != null)
