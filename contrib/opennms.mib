@@ -141,8 +141,16 @@ OpenNMS-event-descr		OBJECT-TYPE
 	SYNTAX		DisplayString
 	ACCESS		read-only
 	STATUS		mandatory
-	DESCRIPTION 	"This is the description of the event."
+	DESCRIPTION 	"This is the verbose description of the event."
 	::= { OpenNMS-events 16 }
+
+OpenNMS-event-logmsg		OBJECT-TYPE
+	SYNTAX		DisplayString
+	ACCESS		read-only
+	STATUS		mandatory
+	DESCRIPTION 	"The log message is a short, usually one sentence, description of
+			the event suitable for displaying in a log or table."
+	::= { OpenNMS-events 17 }
 
 OpenNMS-event-severity		OBJECT-TYPE
 	SYNTAX		DisplayString
@@ -219,6 +227,7 @@ OpenNMS-Generic-Trap		TRAP-TYPE
 		OpenNMS-event-snmphost,
 		OpenNMS-event-service,
 		OpenNMS-event-descr,
+		OpenNMS-event-logmsg,
 		OpenNMS-event-severity,
 		OpenNMS-event-pathoutage,
 		OpenNMS-event-operinst,
