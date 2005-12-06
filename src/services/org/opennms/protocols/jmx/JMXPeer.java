@@ -1,32 +1,11 @@
 /*
  * Created on Mar 3, 2005
  *
- * TODO To change the template for this generated file go to
- * Window - Preferences - Java - Code Style - Code Templates
  */
 package org.opennms.protocols.jmx;
 
 import java.net.InetAddress;
 
-import org.opennms.protocols.snmp.SnmpParameters;
-import org.opennms.protocols.snmp.SnmpPeer;
-import org.opennms.protocols.snmp.SnmpSession;
-
-/**
- * The peer object defines a SNMP peer agent that is communicated with. The
- * SnmpPeer object is used by the SnmpSession class to define the remote agent.
- * 
- * The information includes the peer's port and address. Also included is the
- * number of retries and timeouts that should be used when sending packets to
- * the agent.
- * 
- * @see SnmpSession
- * @see SnmpPeer
- * 
- * @author <a href="mailto:weave@oculan.com>Brian Weaver </a>
- * @version 1.1.1.1
- * 
- */
 public class JMXPeer extends Object implements Cloneable {
     /**
      * The internet address of the peer
@@ -74,7 +53,7 @@ public class JMXPeer extends Object implements Cloneable {
     public static final int defaultTimeout = 8000; // .8 seconds
 
     /**
-     * Class constructor. Constructs a SnmpPeer to the passed remote agent.
+     * Class constructor. Constructs a JMXPeer to the passed remote agent.
      * 
      * @param peer
      *            The remote internet address
@@ -93,7 +72,7 @@ public class JMXPeer extends Object implements Cloneable {
      * @param peer
      *            The remote agent address
      * @param port
-     *            The snmp port on the remote
+     *            The port on the remote
      * 
      */
     public JMXPeer(InetAddress peer, int port) {
@@ -102,8 +81,8 @@ public class JMXPeer extends Object implements Cloneable {
     }
 
     /**
-     * Class copy constructor. Constructs a SnmpPeer object that is identical to
-     * the passed SnmpPeer object.
+     * Class copy constructor. Constructs a JMXPeer object that is identical to
+     * the passed JMXPeer object.
      * 
      * @param second
      *            The peer object to copy.
@@ -232,27 +211,6 @@ public class JMXPeer extends Object implements Cloneable {
      */
     public void setTimeout(int timeout) {
         m_timeout = timeout;
-    }
-
-    /**
-     * Retuns the current parameters for the peer agent.
-     * 
-     * @return The current SNMP parameters
-     * 
-     */
-    public SnmpParameters getParameters() {
-        return null;//m_params;
-    }
-
-    /**
-     * Used to set the current parameters for the SnmpPeer object.
-     * 
-     * @param params
-     *            The SnmpParameters for the peer.
-     * 
-     */
-    public void setParameters(SnmpParameters params) {
-        //m_params = params;
     }
 
     /**

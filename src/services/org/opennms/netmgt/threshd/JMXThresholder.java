@@ -70,7 +70,6 @@ import org.opennms.netmgt.xml.event.Log;
 import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.Parms;
 import org.opennms.netmgt.xml.event.Value;
-import org.opennms.protocols.snmp.SnmpSession;
 
 /**
  * <P>
@@ -124,11 +123,6 @@ public abstract class JMXThresholder implements ServiceThresholder {
      */
     static final String ALL_IF_THRESHOLD_MAP_KEY = "org.opennms.netmgt.collectd.JMXThresholder.AllIfThresholdMap";
 
-    /**
-     * Local host name
-     */
-    private String m_host;
-    
     private String serviceName = null;
     
     private boolean useFriendlyName = false;
@@ -165,16 +159,6 @@ public abstract class JMXThresholder implements ServiceThresholder {
         // Log4j category
         //
         Category log = ThreadCategory.getInstance(getClass());
-
-        // Get local host name (used when generating threshold events)
-        //
-        try {
-            m_host = InetAddress.getLocalHost().getHostName();
-        } catch (UnknownHostException e) {
-            if (log.isEnabledFor(Priority.WARN))
-                log.warn("initialize: Unable to resolve local host name.", e);
-            m_host = "unresolved.host";
-        }
 
         try {
             RrdUtils.initialize();
@@ -431,9 +415,7 @@ public abstract class JMXThresholder implements ServiceThresholder {
             dsDir = friendlyName;
         }
 
-        int thresholdingStatus = THRESHOLDING_UNKNOWN;
         InetAddress primary = (InetAddress) iface.getAddress();
-        SnmpSession session = null;
 
         // Get configuration parameters
         //
@@ -807,15 +789,6 @@ public abstract class JMXThresholder implements ServiceThresholder {
                             // the createEvent() method
                             ifDataMap.put("iflabel", ifLabel);
 
-                            // Debug - dump data map
-                            //
-                            if (log.isDebugEnabled()) {
-                                Iterator iter = ifDataMap.keySet().iterator();
-                                while (iter.hasNext()) {
-                                    String key = (String) iter.next();
-                                    String value = (String) ifDataMap.get(key);
-                                }
-                            }
                         }
 
                         if (result == ThresholdEntity.HIGH_AND_LOW_TRIGGERED || result == ThresholdEntity.HIGH_TRIGGERED) {
