@@ -124,7 +124,7 @@ to put the reorg code into.
 			
 			<module module-id="icmp" module-type="composite" module-name="OpenNMS ICMP Library">
 					<!-- the icmp module.. has the java code for the icmp lib -->
-					<module module-id="icmp-jar" module-name="OpenNMS ICMP Interface" module-type="java" >
+					<module module-id="icmp-api" module-name="OpenNMS ICMP Interface" module-type="java" >
 						<sources source-type="java">
 							<fileset dir="${opennms.dir}/src/services">
 								<include name="org/opennms/protocols/icmp/*.java" />
@@ -143,13 +143,13 @@ to put the reorg code into.
 							</fileset>
 						</sources>
 						<dependencies>
-							<module-dependency id="icmp-jar" />
+							<module-dependency id="icmp-api" />
 						</dependencies>
 					</module>
 			</module>
 			<module module-id="rrd" module-type="composite" module-packaging="pom" module-name="OpenNMS RRD Module">
 				<!-- rrd - a module used to define the highlevel interface for accessing RRD Data -->
-				<module module-id="rrd-jar" module-type="java" module-name="OpenNMS RRD Interface">
+				<module module-id="rrd-api" module-type="java" module-name="OpenNMS RRD Interface">
 					<sources source-type="java">
 						<fileset dir="${opennms.dir}/src/services">
 							<include name="org/opennms/netmgt/rrd/*.java" />
@@ -169,7 +169,7 @@ to put the reorg code into.
 						</fileset>
 					</sources>
 					<dependencies>
-						<module-dependency id="rrd-jar" />
+						<module-dependency id="rrd-api" />
 						<dependency groupId="jrobin" artifactId="jrobin" version="1.4.0" />
 					</dependencies>
 				</module>
@@ -183,7 +183,7 @@ to put the reorg code into.
 							</fileset>
 						</sources>
 						<dependencies>
-							<module-dependency id="rrd-jar" />
+							<module-dependency id="rrd-api" />
 						</dependencies>
 					</module>
 			
@@ -212,7 +212,9 @@ to put the reorg code into.
 				<dependencies/>
 			</module>
 			
+			<!-- module for the snmp library containing the api and implementations -->
 			<module module-id="snmp" module-type="composite" module-packaging="pom" module-name="OpenNMS SNMP">
+				<!-- the api for access snmp -->
 				<module module-id="snmp-api" module-type="java" module-packaging="jar" module-name="OpenNMS SNMP API">
 					<sources source-type="java">
 						<fileset dir="${opennms.dir}/src/services">
@@ -225,6 +227,7 @@ to put the reorg code into.
 					</dependencies>
 				</module>
 				
+				<!-- the joesnmp implementation of the snmp api - SNMP version 1, 2c -->
 				<module module-id="snmp-joesnmp" module-type="java" module-packaging="jar" module-name="OpenNMS JoeSNMP SNMP Implementation">
 					<sources source-type="java">
 						<fileset dir="${opennms.dir}/src/services">
@@ -238,6 +241,7 @@ to put the reorg code into.
 					</dependencies>
 				</module>
 
+				<!-- an snmp4j implementation of the snmp api - SNMP versions 1, 2c, and 3 -->
 				<module module-id="snmp-snmp4j" module-type="java" module-packaging="jar" module-name="OpenNMS SNMP4J SNMP Implementation">
 					<sources source-type="java">
 						<fileset dir="${opennms.dir}/src/services">
@@ -253,12 +257,99 @@ to put the reorg code into.
 				
 			</module>
 				
-			<!-- report code 
-			<simple-jar-module module-id="reporting" module-name="OpenNMS Reporting" src-dir="${opennms.dir}/src/report">
-				<module-dependency id="core"/>
-			</simple-jar-module>
-			-->
+			<module module-id="services" module-type="castor" module-packaging="jar" module-name="OpenNMS Services">
+				<sources source-type="castor">
+					<fileset dir="${opennms.dir}/src/services/org/opennms/netmgt/config">
+						<include name="*.xsd"/>
+						<exclude name="database-schema.xsd"/>
+					</fileset>
+					<fileset dir="${opennms.dir}/schema/xsd">
+						<include name="*.xsd"/>
+						<exclude name="availability_report.xsd"/>
+					</fileset>
+					<fileset dir="${opennms.dir}/devlib">
+						<include name="castorbuilder.properties"/>
+					</fileset>
+				</sources>
+				<sources source-type="java">
+					<fileset dir="${opennms.dir}/src/services">
+						<include name="**/*.java"/>
+						<exclude name="org/opennms/netmgt/ConfigFileConstants.java" />
+						<exclude name="org/opennms/netmgt/config/DatabaseConnectionFactory.java" />
+						<exclude name="org/opennms/netmgt/config/DbConnectionFactory.java" />
+						<exclude name="org/opennms/netmgt/config/DatabaseSchemaConfigFactory.java" />
+						<exclude name="org/opennms/netmgt/filter/*.java" />
+						<exclude name="org/opennms/protocols/icmp/*.java" />
+						<exclude name="org/opennms/protocols/ip/*.java" />
+						<exclude name="org/opennms/netmgt/rrd/**/*.java" />
+						<exclude name="org/opennms/netmgt/snmp/**/*.java"/>
+						<!-- need to add these to another project or location -->
+						<exclude name="**/*Test*.java"/>
+						<exclude name="**/mock/**/*.java"/>
+						<exclude name="org/opennms/netmgt/capsd/plugins/**.java" />
+						<exclude name="org/opennms/netmgt/poller/monitors/**.java" />
+						<exclude name="org/opennms/netmgt/notifd/*Growl*" />
+					</fileset>
+				</sources>
+				<dependencies>
+					<module-dependency id="core"/>
+					<module-dependency id="config-utils" />
+					<module-dependency id="db" />
+					<module-dependency id="snmp-api"/>
+					<module-dependency id="rrd-api"/>
+					<module-dependency id="filter" />
+					<module-dependency id="icmp-api"/>
+					<!-- opennms repo libs -->
+					<dependency groupId="net.sf.jradius" artifactId="jradius-client" version="20040211"/>
+					<dependency groupId="org.dhcp.jdhcp" artifactId="jdhcp" version="1.1.1" />
+					<!-- standard repo libs -->
+					<dependency groupId="jivesoftware" artifactId="smack" version="2.0.0"/>
+					<dependency groupId="jivesoftware" artifactId="smackx" version="2.0.0"/>
+					<dependency groupId="jakarta-regexp" artifactId="jakarta-regexp" version="1.4" />
+					<dependency groupId="castor" artifactId="castor" version="0.9.7" />
+					<dependency groupId="xmlrpc" artifactId="xmlrpc" version="1.2" />
+					<dependency groupId="org.samba.jcifs" artifactId="jcifs" version="1.2.6" />
+					<dependency groupId="mx4j" artifactId="mx4j" version="3.0.1" />
+					<dependency groupId="mx4j" artifactId="mx4j-remote" version="3.0.1" />
+					<dependency groupId="org.springframework" artifactId="spring-context" version="1.2.5"/>
+					<dependency groupId="org.springframework" artifactId="spring-remoting" version="1.2.5"/>
+					<dependency groupId="bsf" artifactId="bsf" version="2.2" />
+					<dependency groupId="bsh" artifactId="bsh" version="1.2b7" />
+					<dependency groupId="geronimo-spec" artifactId="geronimo-spec-javamail" version="1.3.1-rc5" scope="provided"/>
+					<dependency groupId="geronimo-spec" artifactId="geronimo-spec-activation" version="1.0.2-rc4" scope="provided"/>
+					<!-- needed to add gnujaxp to opennms repo to get this to work -->
+					<dependency groupId="jfree" artifactid="jfreechart" version="1.0.0-rc1" />
+					
+				</dependencies>
+			</module>
 			
+			<!--
+			<module module-id="reporting" module-type="castor" module-packaging="jar" module-name="OpenNMS Reporting">
+				<sources source-type="java">
+					<fileset dir="${opennms.dir}/src/report">
+						<include name="**/*.java"/>
+						<exclude name="**/*Test*.java"/>
+					</fileset>
+				</sources>
+				<sources source-type="test">
+					<fileset dir="${opennms.dir}/src/report">
+						<include name="**/*Test*.java"/>
+					</fileset>
+				</sources>
+				<sources source-type="castor">
+					<fileset dir="${opennms.dir}/schema/xsd">
+						<include name="availability_report.xsd"/>
+					</fileset>
+					<fileset dir="${opennms.dir}/devlib">
+						<include name="castorbuilder.properties"/>
+					</fileset>
+				</sources>
+				<dependencies>
+					<module-dependency id="core"/>
+					<dependency groupId="castor" artifactId="castor" version="0.9.7" />
+				</dependencies>
+			</module>
+			-->
 			<dependencies>
 				<dependency groupid="log4j" artifactid="log4j" version="1.2.7" />
 				<dependency groupid="junit" artifactid="junit" version="3.8.1" />

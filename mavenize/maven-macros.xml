@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 
-<project name="maven-macros" default="usage" basedir=".">
+<project name="maven-macros" basedir=".">
 	<description>
 	Macros to make it easier to convert a project to maven2
   </description>
