@@ -99,7 +99,7 @@ public class Jsr160ConnectionFactory {
                 // Create an RMI connector client and
                 // connect it to the RMI connector server
                 //
-                url = new JMXServiceURL(protocol, address.getHostAddress(), port, urlPath);
+                url = new JMXServiceURL("service:jmx:" + protocol + ":///jndi/"+protocol+"://" + address.getHostAddress() + ":" + port + urlPath);
                 
                 // Connect a JSR 160 JMXConnector to the server side
                 JMXConnector connector = JMXConnectorFactory.newJMXConnector(url, null);
