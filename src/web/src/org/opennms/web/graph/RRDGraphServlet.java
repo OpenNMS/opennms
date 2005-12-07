@@ -210,10 +210,20 @@ public class RRDGraphServlet extends HttpServlet {
         buf.append(graph.getCommand());
         String command = buf.toString();
 
+	long startTime = Long.parseLong(start);
+	long endTime = Long.parseLong(end);
+	long diffTime = endTime - startTime;
+
+	String startTimeString = Long.toString(startTime / 1000);
+	String endTimeString = Long.toString(endTime / 1000);
+	String diffTimeString = Long.toString(diffTime / 1000);
+
+/*
         // remember rrdtool wants the time in seconds, not milliseconds;
         // java.util.Date.getTime() returns milliseconds, so divide by 1000
         String starttime = Long.toString(Long.parseLong(start) / 1000);
         String endtime = Long.toString(Long.parseLong(end) / 1000);
+*/
 
         HashMap translationMap = new HashMap();
 
@@ -222,8 +232,9 @@ public class RRDGraphServlet extends HttpServlet {
             translationMap.put(RE.simplePatternToFullRegularExpression(key), rrds[i]);
         }
 
-        translationMap.put(RE.simplePatternToFullRegularExpression("{startTime}"), starttime);
-        translationMap.put(RE.simplePatternToFullRegularExpression("{endTime}"), endtime);
+        translationMap.put(RE.simplePatternToFullRegularExpression("{startTime}"), startTimeString);
+        translationMap.put(RE.simplePatternToFullRegularExpression("{endTime}"), endTimeString);
+        translationMap.put(RE.simplePatternToFullRegularExpression("{diffTime}"), diffTimeString);
 	Properties externalProperties = new Properties();
 	if (propertiesFile != null) {
 		try {
