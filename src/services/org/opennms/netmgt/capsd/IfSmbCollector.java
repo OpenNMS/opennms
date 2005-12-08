@@ -386,22 +386,7 @@ final class IfSmbCollector implements Runnable {
                 if (log.isDebugEnabled())
                     log.debug("IfSmbCollector: shares list retrieved...");
 
-                // Get the OS name now
-                //
-                // Note: getOSVersion() method is not part of the standard jCIFS
-                // code. It was added specifically so we could gain access to
-                // the OS version information already determined by jCIFS but
-                // not made public.
-                //
-                // FIXME: removed this since I wanted to move to newer jcifs
-//                String os = sfile.getOSVersion();
-//                m_osName = SmbUtils.getOsLabel(os, m_allAddrs, m_isSamba, m_hasExchange);
-//                if (log.isDebugEnabled())
-//                    log.debug("IfSmbCollector: operating system = " + os);
             } catch (MalformedURLException e) {
-                if (log.isDebugEnabled())
-                    log.debug("IfSmbCollector: failed to get SMB resource and OS name for host " + m_target.getHostAddress(), e);
-            } catch (UnknownHostException e) {
                 if (log.isDebugEnabled())
                     log.debug("IfSmbCollector: failed to get SMB resource and OS name for host " + m_target.getHostAddress(), e);
             } catch (SmbAuthException e) {

@@ -17,7 +17,6 @@
 	<classpathentry kind="lib" path="lib/commons-jxpath-1.1.jar"/>
 	<classpathentry kind="lib" path="lib/getopt.jar"/>
 	<classpathentry kind="lib" path="lib/jakarta-regexp-1.1.jar"/>
-	<classpathentry kind="lib" path="lib/jcifs.jar"/>
 	<classpathentry kind="lib" path="lib/jdhcp.jar"/>
 	<classpathentry kind="lib" path="lib/jimi100.jar"/>
 	<classpathentry kind="lib" path="lib/jta101.jar"/>
@@ -66,5 +65,6 @@
 	<classpathentry kind="lib" path="lib/jfreechart-1.0.0-rc1.jar"/>
 	<classpathentry kind="lib" path="lib/SNMP4J-1.5.jar"/>
 	<classpathentry kind="src" path="src/bootstrap"/>
+	<classpathentry kind="lib" path="lib/jcifs-1.2.6.jar"/>
 	<classpathentry kind="output" path="work/opennms/classes"/>
 </classpath>
