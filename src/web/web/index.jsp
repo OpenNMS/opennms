@@ -48,94 +48,109 @@
   <link rel="stylesheet" type="text/css" href="css/styles.css" />
 </head>
 
-<!--
-<body marginwidth="0" marginheight="0" LEFTMARGIN="0" RIGHTMARGIN="0" TOPMARGIN="0">
--->
 <body>
+<%--
+<div class="rbroundbox">
+	<div class="rbtop"><div></div></div>
+		<div class="rbcontent">
+			<p>
+--%>
 <jsp:include page="/includes/header.jsp" flush="false" >
-  <jsp:param name="title" value="Web Console" />
+ 			 	<jsp:param name="title" value="Web Console" />
 </jsp:include>
+<%--
+				</p>
+		</div><!-- /rbcontent -->
+	<div class="rbbot"><div></div></div>
+</div><!-- /rbroundbox -->
+--%>
 
-<br> 
+
+
+
 
 <!-- Body -->
-<!--
-<table width="100%" border="0" cellspacing="0" cellpadding="2" >
-  <tr> 
-    <td>&nbsp;</td>
--->
   
     <!-- Column 1 of Body -->  
     <div id="index-contentleft">
 
-<!--
-    <td width="25%" valign="top" >
--->
       <!-- Services down box -->
-      <jsp:include page="/includes/servicesdown-box.jsp" flush="false" />
-    </div>
+  <div class="rbroundbox">
+	<div class="rbtop"><div></div></div>
+		<div class="rbcontent"><p>
+		<jsp:include page="/includes/servicesdown-box.jsp" flush="false" />	</p>
+		</div><!-- /rbcontent -->
+	<div class="rbbot"><div></div></div>
+</div><!-- /rbroundbox -->    
 
-<!--
-    </td>
-    
-    <td>&nbsp;</td>
--->
+    </div>
 
     <!-- Middle Column -->
     <div id="index-contentmiddle">
-<!--
-    <td valign="top">
--->
       <!-- category box(es) -->    
-      <jsp:include page="/includes/categories-box.jsp" flush="false" />                
+<div class="rbroundbox">
+	<div class="rbtop"><div></div></div>
+		<div class="rbcontent"><p>
+		<jsp:include page="/includes/categories-box.jsp" flush="false" /> 	</p>
+		</div><!-- /rbcontent -->
+	<div class="rbbot"><div></div></div>
+</div><!-- /rbroundbox -->    
+      
+
+               
     </div>
 
       <!--desktop query box -->  
-<!--
-    </td>
-
-    <td>&nbsp;</td>
--->
 
     <!-- Column 3 of Body -->  
     <div id="index-contentright">
-<!--
-    <td width="25%" valign="top" >
--->
       <!-- notification box -->    
-      <jsp:include page="/includes/notification-box.jsp" flush="false" />    
-            
-      <br>
+      <div class="rbroundbox">
+	<div class="rbtop"><div></div></div>
+		<div class="rbcontent"><p>
+		<jsp:include page="/includes/notification-box.jsp" flush="false" />	</p>
+		</div><!-- /rbcontent -->
+	<div class="rbbot"><div></div></div>
+      </div><!-- /rbroundbox -->    
       
+
       <!-- Performance box -->    
-      <jsp:include page="/includes/performance-box.jsp" flush="false" />
+      <div class="rbroundbox">
+	<div class="rbtop"><div></div></div>
+		<div class="rbcontent"><p>
+		 <jsp:include page="/includes/performance-box.jsp" flush="false" />	</p>
+		</div><!-- /rbcontent -->
+	<div class="rbbot"><div></div></div>
+      </div><!-- /rbroundbox -->        
 
-        <br>
-      
+
       <!-- Response Time box -->    
-      <jsp:include page="/includes/response-box.jsp" flush="false" />
+      <div class="rbroundbox">
+	<div class="rbtop"><div></div></div>
+		<div class="rbcontent"><p>
+		<jsp:include page="/includes/response-box.jsp" flush="false" />	</p>
+		</div><!-- /rbcontent -->
+	<div class="rbbot"><div></div></div>
+      </div><!-- /rbroundbox -->        
 
-        <br>
-      
+          
       <!-- KSC Reports box -->    
-      <jsp:include page="/includes/ksc-box.jsp" flush="false" />
+      <div class="rbroundbox">
+	<div class="rbtop"><div></div></div>
+		<div class="rbcontent"><p>
+		<jsp:include page="/includes/ksc-box.jsp" flush="false" />	</p>
+		</div><!-- /rbcontent -->
+	<div class="rbbot"><div></div></div>
+      </div><!-- /rbroundbox -->          
+ 
       
-        <br>
-
-        <!-- security box -->    
+      <!-- security box -->    
       <%--
         Commenting out the security box include until it is functional
         <jsp:include page="/includes/security-box.jsp" flush="false" />
       --%>
     </div>
 
-<!--
-    </td>
-    
-    <td>&nbsp;</td>   
-  </tr>
-</table>
--->
 <br>
 <jsp:include page="/includes/charts.jsp" flush="false" />
 

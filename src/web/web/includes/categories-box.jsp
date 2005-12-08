@@ -1,4 +1,4 @@
-<!--
+<%--
 
 //
 // This file is part of the OpenNMS(R) Application.
@@ -38,7 +38,7 @@
 //      http://www.opennms.com/
 //
 
--->
+--%>
 
 <%-- 
   This page is included by other JSPs to create a box containing a

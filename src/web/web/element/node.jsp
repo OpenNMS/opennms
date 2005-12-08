@@ -197,10 +197,6 @@
   <link rel="stylesheet" type="text/css" href="css/styles.css" />
 </head>
 
-<!--
-<body marginwidth="0" marginheight="0" LEFTMARGIN="0" RIGHTMARGIN="0" TOPMARGIN="0">
--->
-
 <body>
 
 <% String breadcrumb1 = "<a href='element/index.jsp'>Search</a>"; %>
@@ -211,21 +207,8 @@
   <jsp:param name="breadcrumb" value="<%=breadcrumb2%>" />
 </jsp:include>
 
-<!--
-<br>
--->
-
 <!-- Body -->
 <div id="node">
-<!--
-<table width="100%" border="0" cellspacing="0" cellpadding="2" >
-  <tr>
-    <td>&nbsp;</td>
--->
-
-<!--
-    <td width="100%" valign="top" >
--->
       <h2>Node: <%=node_db.getLabel()%></h2>
 
       <div id="linkbar">
@@ -291,22 +274,9 @@
       </div>
 
 
-<!--
-      <table width="100%" border="0" cellspacing="0" cellpadding="0">
-        <tr>
-          <td valign="top" width="48%">
--->
 
 	<span id="contentleft">
-
-<!--      <div id="nodeboxes"> -->
-
             <!-- general info box -->
-<!--
-            <table width="100%" border="1" cellspacing="0" cellpadding="2" bordercolor="black" BGCOLOR="#cccccc">
-              <tr bgcolor="#999999">
-                <td colspan="2" ><b>General</b></td> 
--->
             <table class="first">
               <tbody><tr>
                 <td class="header" colspan="2">General</td> 
@@ -317,26 +287,13 @@
               </tr>
             </tbody></table>
 
-<!--            <br/> -->
-            
             <!-- Availability box -->
             <jsp:include page="/includes/nodeAvailability-box.jsp" flush="false" />
 
-<!--            <br/> -->
-            
-            <!-- node desktop information box -->
-            
             <!-- SNMP box, if info available --> 
             <% if( node_db.getNodeSysId() != null ) { %>
-<!--
-              <table width="100%" border="1" cellspacing="0" cellpadding="2" bordercolor="black" BGCOLOR="#cccccc">
-                <tr bgcolor="#999999">
--->
 	      <table>
 	      <tbody><tr>
-<!--
-                  <td colspan="2"><b>SNMP Attributes</b></td>
--->
                   <td class="header" colspan="2">SNMP Attributes</td>
                 </tr>
                 <tr>
@@ -358,21 +315,12 @@
                 </tr>
                 <tr>
                   <td valign="top" width="10%">Description:</td>
-<!-- XXX why the colspan=3?
-                  <td valign="top" colspan="3"><%=(node_db.getNodeSysDescr() == null) ? "&nbsp;" : node_db.getNodeSysDescr()%> </td>
--->
                   <td valign="top"><%=(node_db.getNodeSysDescr() == null) ? "&nbsp;" : node_db.getNodeSysDescr()%> </td>
                 </tr>
               </table>  
-<!--              <br/> -->
             <% } %>
             
             <!-- Interface box -->
-<!--
-            <table width="100%" border="1" cellspacing="0" cellpadding="2" bordercolor="black" BGCOLOR="#cccccc">
-              <tr bgcolor="#999999">
-                <td><b>Interfaces</b></td> 
--->
 	      <table>
 	      <tbody><tr>
                 <td class="header">Interfaces</td> 
@@ -396,25 +344,8 @@
               <% } %>
             </table>
 
-<!-- XXX so, yeah.... a <br> and an empty table???
-            <br>
-
-            <table width="100%" border="1" cellspacing="0" cellpadding="2" bordercolor="black" BGCOLOR="#cccccc">
-              
-            </table>
--->
-
-<!--            
-          </td>
--->
 	</span>
 
-
-<!--
-          <td>&nbsp;</td>
-
-          <td valign="top" width="48%">
--->
 
 	<span id="contentright">
 
@@ -428,27 +359,12 @@
               <jsp:param name="header" value="<%=eventHeader%>" />
               <jsp:param name="moreUrl" value="<%=moreEventsUrl%>" />
             </jsp:include>
-<!--            <br/> -->
             
             <!-- Recent outages box -->
             <jsp:include page="/includes/nodeOutages-box.jsp" flush="false" />
-<!--
-         </td>
-       </tr>
-     </table>
--->
-
 </span>
 </div>
 
-
-<!--    
-    <td>&nbsp;</td>
-  </tr>
-</table>
--->
-
-<!--<br/>-->
 
 <jsp:include page="/includes/footer.jsp" flush="false" />
 

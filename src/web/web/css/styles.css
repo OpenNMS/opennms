@@ -7,6 +7,22 @@
  
  */
 
+/* set millions of background images */
+.rbroundbox { background: url(../images/nt.gif) repeat; }
+.rbtop div { background: url(../images/tl.gif) no-repeat top left; }
+.rbtop { background: url(../images/tr.gif) no-repeat top right; }
+.rbbot div { background: url(../images/bl.gif) no-repeat bottom left; }
+.rbbot { background: url(../images/br.gif) no-repeat bottom right; }
+
+/* height and width stuff, width not really neccesary. */
+.rbtop div, .rbtop, .rbbot div, .rbbot {
+width: 100%;
+height: 7px;
+font-size: 1px;
+}
+.rbcontent { margin: 0 7px; }
+.rbroundbox { width: 100%; margin: 1em auto; }
+
 /* Color the unvisited and visited links the same blue */
 A:link    { color: #0000cc }
 A:active  { color: #ff0000 }
@@ -124,29 +140,29 @@ TD.footer
 
 #navbar ul
 { 
-  list-style: none;
-  display: inline;
+	list-style: none;
+	display: inline;
 }
 
 
 #navbar li
 { 
-  padding: 0 0.2em 0 0.5em;
-  border-style: solid;
-  border-color: black;
-  border-width: 0 1px 0 0;
-  list-style: none;
-  display: inline;
+	padding: 0 0.2em 0 0.5em;
+	border-style: solid;
+	border-color: black;
+	border-width: 0 1px 0 0;
+	list-style: none;
+	display: inline;
 }
 
 #navbar li.last
 { 
-  padding: 0 0.2em 0 0.5em;
-  border-style: solid;
-  border-color: black;
-  border-width: 0 0 0 0;
-  list-style: none;
-  display: inline;
+	padding: 0 0.2em 0 0.5em;
+	border-style: solid;
+	border-color: black;
+	border-width: 0 0 0 0;
+	list-style: none;
+	display: inline;
 }
 
 /*
@@ -161,21 +177,21 @@ TD.footer
 
 #linkbar
 {
-  padding: 0 0 1em 0;
+	padding: 0 0 1em 0;
 }
 
 #linkbar ul
 { 
-  list-style: none;
-  display: inline;
-  padding: 0 0 0 0;
+	list-style: none;
+	display: inline;
+	padding: 0 0 0 0;
 }
 
 #linkbar li
 { 
-  list-style: none;
-  display: inline;
-  padding-right: 0.75em;
+	list-style: none;
+	display: inline;
+	padding-right: 0.75em;
 }
 
 #node {
@@ -377,7 +393,7 @@ TD.footer
 }
 
 #headertop { 
-        background: url(../images/logo-background.gif) repeat;
+/*        background: url(../images/logo-background.gif) repeat; */
 /*        height: 82px; */
 }
 
@@ -428,14 +444,14 @@ div.center {
         clear: both;
         float: left;
         padding: 2px;
-        font-size: 10px;
+        font-size: 12px;
 	font-family: Arial, Verdana, Helvetica, sans-serif; 
 }
 
 #headernavbarright {
         float: right;
         padding: 2px;
-        font-size: 10px;
+        font-size: 12px;
 	font-family: Arial, Verdana, Helvetica, sans-serif; 
 }
 
