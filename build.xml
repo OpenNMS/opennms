@@ -191,7 +191,7 @@ your distribution.
     <pathelement path="${packaged.lib.dir}/mx4j-tools-3.0.1.jar"/>
     <pathelement path="${packaged.lib.dir}/mx4j-remote-3.0.1.jar"/>
     <pathelement path="${packaged.lib.dir}/jdhcp.jar"/>
-    <pathelement path="${packaged.lib.dir}/jcifs.jar"/>
+    <pathelement path="${packaged.lib.dir}/jcifs-1.2.6.jar"/>
     <pathelement path="${packaged.lib.dir}/bsf220.jar"/>
     <pathelement path="${packaged.lib.dir}/xercesImpl-2.6.2.jar"/>
     <pathelement path="${packaged.lib.dir}/xml-apis-2.6.2.jar"/>
@@ -347,7 +347,7 @@ your distribution.
     <include name="avalon-framework-cvs-20020806.jar" />
     <include name="logkit-1.0.jar" />
     <include name="batik.jar" />
-    <include name="jcifs.jar" />
+    <include name="jcifs.jar-1.2.6" />
     <include name="ldap.jar" />
     <include name="jrobin*.jar" />
     <include name="activation.jar" />
