@@ -4,9 +4,7 @@
 
 	<start-script language="beanshell">
 
-		import org.opennms.netmgt.snmp.SnmpTrapBuilder;
-		import org.opennms.netmgt.config.DatabaseConnectionFactory;
-		import org.opennms.netmgt.utils.SingleResultQuerier;
+		import org.opennms.protocols.snmp.SnmpPduTrap;
 
 		log = bsf.lookupBean("log");
 		snmpTrapHelper = new org.opennms.netmgt.scriptd.helper.SnmpTrapHelper();
@@ -25,19 +23,17 @@
 
 	event = bsf.lookupBean("event");
 
-	if ((event.uei.equals("uei.opennms.org/nodes/nodeUp")) 
-		|| (event.uei.equals("uei.opennms.org/nodes/nodeDown"))
-		|| (event.uei.equals("uei.opennms.org/nodes/interfaceDown")) 
-		|| (event.uei.equals("uei.opennms.org/nodes/interfaceUp")) 
-		|| (event.uei.equals("uei.opennms.org/nodes/nodeLostService")) 
-		|| (event.uei.equals("uei.opennms.org/nodes/nodeRegainedService")))
+	if (event.snmp == null)
 	{
 
 		try {
 
 		log.debug("Forwarding an OpenNMS event.");
 
-		SnmpTrapBuilder trap = snmpTrapHelper.createV1Trap(".1.3.6.1.4.1.5813.1", "10.88.2.18", 6, 1, 0);
+		SnmpTrapBuilder trap = snmpTrapHelper.createV1Trap(".1.3.6.1.4.1.5813.1", "10.84.245.21", 6, 1, 0);
+
+		<!-- This sends an enterprise id of ".1.3.6.1.4.1.5813.1" from agent "10.84.245.21" (einstein), 
+		which should be the IP address of the OpenNMS system, generic value of 6 and specific value of 1 -->
 
 		t_dbid = new Integer(event.dbid).toString();
 		if (t_dbid != null)
@@ -86,18 +82,25 @@
 			snmpTrapHelper.addVarBinding(trap, ".1.3.6.1.4.1.5813.2.12", "OctetString", "text", event.snmphost);
 		else
 			snmpTrapHelper.addVarBinding(trap, ".1.3.6.1.4.1.5813.2.12", "OctetString", "text", "einstein.ntrs.com");
+
+			<!-- The snmphost field must be changed to the hostname of the OpenNMS system sending the event -->
+
 		if (event.service != null)
 			snmpTrapHelper.addVarBinding(trap, ".1.3.6.1.4.1.5813.2.13", "OctetString", "text", event.service);
 		else
 			snmpTrapHelper.addVarBinding(trap, ".1.3.6.1.4.1.5813.2.13", "OctetString", "text", "null");
-		if (event.descr != null)
-			snmpTrapHelper.addVarBinding(trap, ".1.3.6.1.4.1.5813.2.16", "OctetString", "text", event.descr);
+		if (event.descr != null) {
+			descrString = event.descr.replaceAll("&lt;.*&gt;", " ").replaceAll("\\s+", " ");
+			snmpTrapHelper.addVarBinding(trap, ".1.3.6.1.4.1.5813.2.16", "OctetString", "text", descrString);
+		}
 		else
 			snmpTrapHelper.addVarBinding(trap, ".1.3.6.1.4.1.5813.2.16", "OctetString", "text", "null");
-                if (event.logmsg.content != null)
-                        snmpTrapHelper.addVarBinding(trap, ".1.3.6.1.4.1.5813.2.17", "OctetString", "text", event.logmsg.content);
-                else
-                        snmpTrapHelper.addVarBinding(trap, ".1.3.6.1.4.1.5813.2.17", "OctetString", "text", "null");
+		if (event.logmsg.content != null) {
+			logString = event.logmsg.content.replaceAll("&lt;.*&gt;", " ").replaceAll("\\s+", " ");
+			snmpTrapHelper.addVarBinding(trap, ".1.3.6.1.4.1.5813.2.17", "OctetString", "text", logString);
+		}
+		else
+			snmpTrapHelper.addVarBinding(trap, ".1.3.6.1.4.1.5813.2.17", "OctetString", "text", "null");
 		if (event.severity != null)
 			snmpTrapHelper.addVarBinding(trap, ".1.3.6.1.4.1.5813.2.18", "OctetString", "text", event.severity);
 		else
@@ -136,6 +139,8 @@
 
 		snmpTrapHelper.sendTrap("10.88.2.18", 162, "public", trap);
 
+		<!-- 10.88.2.18 is the destination for the trap, the port (162) and the community string (usually public for traps) -->
+
 		}
 
 		catch (e) {
@@ -148,16 +153,16 @@
 
 	</event-script>
 
-        <event-script language="beanshell">
-                                                                                                                                                      
-                event = bsf.lookupBean("event");
-                                                                                                                                                      
-                if (event.snmp != null) {
-                        log.debug("Forwarding a trap");
-                        snmpTrapHelper.forwardTrap(event, "10.1.1.15", 162);
-                }
-                                                                                                                                                      
-        </event-script>
+	<event-script language="beanshell">
+
+		event = bsf.lookupBean("event");
+
+		if (event.snmp != null) {
+			log.debug("Forwarding a trap");
+			snmpTrapHelper.forwardTrap(event, "10.1.1.15", 162);
+		}
+
+	</event-script>
 
 
 </scriptd-configuration>
