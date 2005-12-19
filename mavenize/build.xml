@@ -301,8 +301,6 @@ to put the reorg code into.
 						<!-- need to add these to another project or location -->
 						<exclude name="**/*Test*.java"/>
 						<exclude name="**/mock/**/*.java"/>
-						<exclude name="org/opennms/netmgt/capsd/plugins/**.java" />
-						<exclude name="org/opennms/netmgt/poller/monitors/**.java" />
 						<exclude name="org/opennms/netmgt/notifd/*Growl*" />
 					</fileset>
 				</sources>
@@ -366,6 +364,8 @@ to put the reorg code into.
 					<dependency groupId="hsqldb" artifactId="hsqldb" version="1.8.0.1" scope="test" />
 					<dependency groupId="alt.dev.jmta" artifactId="jmta" version="1.0" scope="test" />
 					<dependency groupId="javax.mail" artifactId="mail" version="1.3.2" scope="test" />
+					<!-- plugin/monitor dependencies -->
+					<dependency groupId="openldap" artifactId="jldap" version="2005.10.03" /> 
 				</dependencies>
 			</module>
 			

@@ -112,7 +112,7 @@ public final class LdapPlugin extends AbstractPlugin {
             m_timeout = timeout;
         }
 
-        public Socket makeSocket(String host, int port) throws IOException, UnknownHostException {
+        public Socket createSocket(String host, int port) throws IOException, UnknownHostException {
             Socket socket = new Socket(host, port);
             socket.setSoTimeout(m_timeout);
             return socket;

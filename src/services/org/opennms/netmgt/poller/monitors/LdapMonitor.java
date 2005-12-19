@@ -110,7 +110,7 @@ final public class LdapMonitor extends IPv4Monitor {
             m_timeout = timeout;
         }
 
-        public Socket makeSocket(String host, int port) throws IOException, UnknownHostException {
+        public Socket createSocket(String host, int port) throws IOException, UnknownHostException {
             Socket socket = new Socket(host, port);
             socket.setSoTimeout(m_timeout);
             return socket;
@@ -200,7 +200,7 @@ final public class LdapMonitor extends IPv4Monitor {
                 // bind if possible
                 if (ldapDn != null && password != null) {
                     try {
-                        lc.bind(ldapVersion, ldapDn, password);
+                        lc.bind(ldapVersion, ldapDn, password.getBytes());
                         log.debug("bound to LDAP server version " + ldapVersion + " with distinguished name " + ldapDn);
                     } catch (LDAPException e) {
                         try {
@@ -225,7 +225,7 @@ final public class LdapMonitor extends IPv4Monitor {
                 try {
                     results = lc.search(searchBase, searchScope, searchFilter, attrs, attributeOnly);
 
-                    if (results != null && results.hasMoreElements()) {
+                    if (results != null && results.hasMore()) {
                         log.debug("search yielded results");
                         serviceStatus = ServiceMonitor.SERVICE_AVAILABLE;
                     } else {
