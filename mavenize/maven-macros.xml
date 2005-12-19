@@ -17,10 +17,13 @@
 	<property name="maven.basedir" value="tmp" />
 
 	<property name="java.subdir" value="src/main/java" />
+	<property name="resource.subdir" value="src/main/resources" />
 	<property name="test.subdir" value="src/test/java" />
+	<property name="test-resource.subdir" value="src/test/resources" />
 	<property name="castor.subdir" value="src/main/castor" />
 	<property name="sablecc.subdir" value="src/main/sablecc" />
 	<property name="native.subdir" value="src/main/native" />
+	<property name="webapp.subdidr" value="src/main/webapp" />
 
 	<property name="module.prefix" value="opennms-" />
 	<property name="ROOT-groupId" value="org.opennms"/>

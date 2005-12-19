@@ -273,6 +273,19 @@ to put the reorg code into.
 						<include name="castorbuilder.properties"/>
 					</fileset>
 				</sources>
+				<sources source-type="resource">
+					<fileset dir="${opennms.dir}/src/services">
+						<include name="castor.properties"/>
+						<include name="org/opennms/netmgt/xmlrpcd/provisioner-context.xml"/>
+					</fileset>
+				</sources>
+				<sources source-type="test-resource">
+					<fileset dir="${opennms.dir}/src/services">
+						<include name="org/opennms/netmgt/rrd/stresser/stress-test-simple.txt"/>
+						<include name="org/opennms/netmgt/snmp/mock/loadSnmpDataTest.properties"/>
+						<include name="org/opennms/netmgt/snmp/snmpTestData1.properties"/>
+					</fileset>
+				</sources>
 				<sources source-type="java">
 					<fileset dir="${opennms.dir}/src/services">
 						<include name="**/*.java"/>
