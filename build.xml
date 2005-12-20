@@ -181,9 +181,9 @@ your distribution.
     <pathelement path="${packaged.lib.dir}/oro204.jar"/>
     <pathelement path="${packaged.lib.dir}/regexp120.jar"/>
     <pathelement path="${dev.lib.dir}/servlet.jar"/>
-    <pathelement path="${packaged.lib.dir}/ldap.jar"/>
+    <pathelement path="${packaged.lib.dir}/openldap-jldap-2005.10.03.jar"/>
     <pathelement path="${packaged.lib.dir}/catalina.jar"/>
-  	<pathelement path="${packaged.lib.dir}/castor-0.9.6.jar"/>
+    <pathelement path="${packaged.lib.dir}/castor-0.9.6.jar"/>
     <pathelement path="${packaged.lib.dir}/fop0205.jar"/>
     <pathelement path="${packaged.lib.dir}/avalon-framework-cvs-20020806.jar"/>
     <pathelement path="${packaged.lib.dir}/batik.jar"/>
@@ -206,11 +206,11 @@ your distribution.
 <!--  	<pathelement path="${packaged.lib.dir}/pop3.jar"/> -->
     <pathelement path="${packaged.lib.dir}/activation.jar"/>
     <pathelement path="${packaged.lib.dir}/jmta.jar"/>
-  	<pathelement path="${packaged.lib.dir}/SNMP4J-1.5.jar"/>
-  	<pathelement path="${packaged.lib.dir}/cglib-nodep-2.1.jar"/> 
-  	<pathelement path="${packaged.lib.dir}/spring-1.2.1.jar"/>
-  	<pathelement path="${packaged.lib.dir}/jfreechart-1.0.0-rc1.jar" />
-  	<pathelement path="${packaged.lib.dir}/jcommon-1.0.0-rc1.jar" />
+    <pathelement path="${packaged.lib.dir}/SNMP4J-1.5.jar"/>
+    <pathelement path="${packaged.lib.dir}/cglib-nodep-2.1.jar"/> 
+    <pathelement path="${packaged.lib.dir}/spring-1.2.1.jar"/>
+    <pathelement path="${packaged.lib.dir}/jfreechart-1.0.0-rc1.jar" />
+    <pathelement path="${packaged.lib.dir}/jcommon-1.0.0-rc1.jar" />
     <pathelement path="/System/Library/Java"/>
     <pathelement path="${packaged.lib.dir}/jboss/jbossall-client.jar"/>
   </path>
