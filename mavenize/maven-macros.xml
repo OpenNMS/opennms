@@ -114,6 +114,7 @@
 		<attribute name="artifactId" />
 		<attribute name="version" />
 		<attribute name="scope" default="compile" />
+		<attribute name="type" default="jar" />
 		<sequential>
 			<concat destfile="dependencies.@{module-id}" append="true">
 				<filelist dir="${basedir}" files="${template.dir}/dependency.tmpl" />
@@ -123,6 +124,7 @@
 						<token key="dependency.artifactId" value="@{artifactId}" />
 						<token key="dependency.version" value="@{version}" />
 						<token key="dependency.scope" value="@{scope}" />
+						<token key="dependency.type" value="@{type}" />
 					</replacetokens>
 				</filterchain>
 			</concat>
@@ -164,8 +166,9 @@
 		<attribute name="artifactId" />
 		<attribute name="version" />
 		<attribute name="scope" default="compile" />
+		<attribute name="type" default="jar" />
 		<sequential>
-			<dependency-helper module-id="${modules-top}" groupId="@{groupId}" artifactId="@{artifactId}" version="@{version}" scope="@{scope}"/>
+			<dependency-helper module-id="${modules-top}" groupId="@{groupId}" artifactId="@{artifactId}" version="@{version}" scope="@{scope}" type="@{type}" />
 		</sequential>
 	</macrodef>
 
@@ -173,8 +176,9 @@
 	<macrodef name="module-dependency">
 		<attribute name="id" />
 		<attribute name="scope" default="compile" />
+		<attribute name="type" default="jar" />
 		<sequential>
-			<dependency-helper module-id="${modules-top}" groupId="${@{id}-groupId}" artifactId="${@{id}-artifactId}" version="${@{id}-version}" scope="@{scope}"/>
+			<dependency-helper module-id="${modules-top}" groupId="${@{id}-groupId}" artifactId="${@{id}-artifactId}" version="${@{id}-version}" scope="@{scope}" type="@{type}" />
 		</sequential>
 	</macrodef>
 	

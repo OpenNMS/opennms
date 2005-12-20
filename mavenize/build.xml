@@ -88,7 +88,7 @@ to put the reorg code into.
 				<dependencies>
 					<module-dependency id="core" />
 					<module-dependency id="config-utils" />
-					<dependency groupId="castor" artifactId="castor" version="0.9.7" />
+					<dependency groupId="castor" artifactId="castor" version="0.9.6" />
 					<dependency groupId="xerces" artifactId="xerces" version="1.4.0" scope="runtime"/>
 				</dependencies>
 			</module>
@@ -119,7 +119,7 @@ to put the reorg code into.
 				<dependencies>
 					<module-dependency id="core" />
 					<module-dependency id="db" />
-					<dependency groupId="castor" artifactId="castor" version="0.9.7" />
+					<dependency groupId="castor" artifactId="castor" version="0.9.6" />
 					<dependency groupId="xerces" artifactId="xerces" version="1.4.0" scope="runtime"/>
 				</dependencies>
 			</module>
@@ -309,6 +309,7 @@ to put the reorg code into.
 						<include name="org/opennms/netmgt/poller/monitors/PassiveServiceMonitor.java" />
 					</fileset>
 				</sources>
+<!--
 				<sources source-type="test">
 					<fileset dir="${opennms.dir}/src/services">
 						<include name="**/*Test*.java"/>
@@ -324,6 +325,7 @@ to put the reorg code into.
 						<exclude name="**/SpringBoardMBeanTest.java" />
 					</fileset>
 				</sources>
+-->
 				<dependencies>
 					<module-dependency id="core"/>
 					<module-dependency id="config-utils" />
@@ -343,7 +345,7 @@ to put the reorg code into.
 					<dependency groupId="jivesoftware" artifactId="smack" version="2.0.0"/>
 					<dependency groupId="jivesoftware" artifactId="smackx" version="2.0.0"/>
 					<dependency groupId="jakarta-regexp" artifactId="jakarta-regexp" version="1.4" />
-					<dependency groupId="castor" artifactId="castor" version="0.9.7" />
+					<dependency groupId="castor" artifactId="castor" version="0.9.6" />
 					<dependency groupId="xerces" artifactId="xerces" version="1.4.0" scope="runtime"/>
 					<dependency groupId="xmlrpc" artifactId="xmlrpc" version="1.2" />
 					<dependency groupId="org.samba.jcifs" artifactId="jcifs" version="1.2.6" />
@@ -369,7 +371,6 @@ to put the reorg code into.
 				</dependencies>
 			</module>
 			
-			<!--
 			<module module-id="reporting" module-type="castor" module-packaging="jar" module-name="OpenNMS Reporting">
 				<sources source-type="java">
 					<fileset dir="${opennms.dir}/src/report">
@@ -392,11 +393,44 @@ to put the reorg code into.
 				</sources>
 				<dependencies>
 					<module-dependency id="core"/>
-					<dependency groupId="castor" artifactId="castor" version="0.9.7" />
+					<module-dependency id="services"/>
+					<module-dependency id="services" scope="test" type="test-jar" />
+					<module-dependency id="config-utils" />
+					<module-dependency id="filter" />
+					<dependency groupId="castor" artifactId="castor" version="0.9.6" />
 					<dependency groupId="xerces" artifactId="xerces" version="1.4.0" scope="runtime"/>
+					<dependency groupId="avalon-framework" artifactId="avalon-framework" version="4.1.3"/>
+					<dependency groupId="fop" artifactId="fop" version="0.20.5" />
 				</dependencies>
 			</module>
-			-->
+<!--
+			<module module-id="webapp" module-type="java" module-packaging="war" module-name="OpenNMS Web Application">
+				<sources source-type="java">
+					<fileset dir="${opennms.dir}/src/web/src">
+						<include name="**/*.java" />
+						<exclude name="**/*Test*.java"/>
+					</fileset>
+				</sources>
+				<sources source-type="test">
+					<fileset dir="${opennms.dir}/src/web/src">
+						<include name="**/*Test*.java"/>
+					</fileset>
+				</sources>
+				<sources source-type="webapp">
+					<fileset dir="${opennms.dir}/src/web/web">
+						<include name="**/*" />
+					</fileset>
+				</sources>
+				<dependencies>
+					<module-dependency id="services" />
+					<dependency groupId="xerces" artifactId="xerces" version="1.4.0" scope="runtime"/>
+					<dependency groupId="xerces" artifactId="xercesImpl" version="2.6.2" />
+					<dependency groupId="javax.servlet" artifactId="servlet-api" version="2.3" scope="provided"/>
+					<dependency groupId="tomcat" artifactId="catalina" version="4.1.31" />
+					<dependency id="reporting"/>
+				</dependencies>
+			</module>
+-->
 			<dependencies>
 				<dependency groupid="log4j" artifactid="log4j" version="1.2.7" />
 				<dependency groupid="junit" artifactid="junit" version="3.8.1" />
