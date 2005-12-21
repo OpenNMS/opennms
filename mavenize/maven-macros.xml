@@ -23,7 +23,7 @@
 	<property name="castor.subdir" value="src/main/castor" />
 	<property name="sablecc.subdir" value="src/main/sablecc" />
 	<property name="native.subdir" value="src/main/native" />
-	<property name="webapp.subdidr" value="src/main/webapp" />
+	<property name="webapp.subdir" value="src/main/webapp" />
 
 	<property name="module.prefix" value="opennms-" />
 	<property name="ROOT-groupId" value="org.opennms"/>
