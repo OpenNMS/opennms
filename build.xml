@@ -481,14 +481,6 @@ your distribution.
       <isset property="skip.dist"/>
     </condition>
 
-    <loadfile srcfile="tools/run/runjava" property="runjava.contents">
-      <filterchain>
-	<tokenfilter>
-	  <replaceregex pattern="^.*### CHOMP.*" replace=""/>
-	</tokenfilter>
-      </filterchain>
-    </loadfile>
-
     <!-- set properties which are dependent on conditional properties above -->
     <property name="product.fullversion.stamp"
 	      value="${product.version}-${product.release.stamp}"/>
@@ -567,7 +559,6 @@ your distribution.
     <filter token="rpm.database.user" value="${rpm.database.user}"/>
     <filter token="rpm.install.dir" value="${rpm.install.dir}"/>
     <filter token="rpm.platform" value="${rpm.platform}"/>
-    <filter token="runjava.contents" value="${runjava.contents}"/>
   	
     <!-- prep wrapup -->
     <property name="prep.done" value="true"/>
@@ -1275,7 +1266,9 @@ OpenNMS as part of the post-install.
 	outfile="${build.jicmp.dir}/jicmp-build"
 	outputfileproperty="build.jicmp.output.lib">
       <compiler name="gcc">
-	 <compilerarg value="-D${build.platform.define}"/>
+	<compilerarg value="-D${build.platform.define}"/>
+	<compilerarg value="${build.jni.compiler.arg}"
+		     if="build.jni.compiler.arg"/>
       </compiler>
       <linker name="gcc"/>
       <fileset dir="${build.jicmp.dir}" includes="IcmpSocket.c"/>
@@ -1305,6 +1298,8 @@ OpenNMS as part of the post-install.
 	outputfileproperty="build.jrrd.output.lib">
       <compiler name="gcc">
         <compilerarg value="-D${build.platform.define}"/>
+	<compilerarg value="${build.jni.compiler.arg}"
+		     if="build.jni.compiler.arg"/>
       </compiler>
       <linker name="gcc">
 	<linkerarg value="${build.jrrd.linker.arg}"
@@ -1335,9 +1330,13 @@ OpenNMS as part of the post-install.
 	outfile="${build.postgresql.dir}/iplike-build"
 	outputfileproperty="build.postgresql.output.lib">
       <compiler name="gcc">
+	<compilerarg value="${build.postgresql.compiler.arg}"
+		     if="build.postgresql.compiler.arg"/>
       </compiler>
       <fileset dir="${build.postgresql.dir}" includes="iplike.c"/>
       <includepath path="${build.postgresql.include.dir}"/>
+      <includepath path="${build.postgresql.include2.dir}"
+                   if="build.postgresql.include2.dir"/>
     </cc>
     <copy file="${build.postgresql.output.lib}"
           tofile="${build.postgresql.dir}/iplike.${build.soext}"/>

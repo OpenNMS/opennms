@@ -278,7 +278,7 @@ public class JavaMailer {
             _msg.setFrom();
         if (_to == null) {
             log.debug("_to is null");
-            _to = "root@127.0.0.1";
+            _to = "root@[127.0.0.1]";
         }
         log.debug("To is: " + _to);
         _msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse(_to, false));
@@ -292,7 +292,7 @@ public class JavaMailer {
             log.debug("_messageText is null");
             _messageText = "Message Text was null";
         }
-        log.debug("Subject is: " + _subject);
+        log.debug("Message text is: " + _messageText);
     }
 
     /**

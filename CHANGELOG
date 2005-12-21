@@ -63,7 +63,6 @@
   to break.  Will also allow us to unit test them in the future.
 - Moved servlet.jar from lib to devlib.  We shouldn't be distributing
   this with binary builds.  Bug 1146. 
-- Include group dutySchedules from Bill Ayres. Bug 1147.
 - De-singletonized Eventd for jUnit test framework
 - Added support the new notion of Alarms vs. Events
 - Enhanced Vacuumd with support of Automations.  Automations process
@@ -90,6 +89,29 @@
 - Merged feature-xmlrpc-branch.  This includes enhancements made to the XML-RPC
   API as well as a new HttpMonitor that allows for virtual host, url, and page
   content matching; litterals as well as reqular expressions.
+
+1.2.4 to 1.2.5
+----------------------------------------------------------------------
+- Added group duty schedules. Bug 1147. Thx Bill
+- Updated Novell Events.
+- Added Netscreen Events.
+- Added AirDefense events and updated Symbol events.
+- Fixed a number of documentation mistakes pointed out by Austin Tuan.
+  Thank you very much, Austin!  Bug 1303.
+- Fixes to build.xml to make it easier to specify compiler options for
+  explicitly setting the target architecture for the JNI code and the
+  PostgreSQL module (build.jni.compiler.arg and build.postgresql.compiler.arg,
+  respectively).  Thanks to Jonathan Sartin who submitted a patch.  Bug 1331.
+- Fix for building on FreeBSD.  Should now be able to do it by creating
+  a build.properties file (see the release notes for details).  Thanks
+  to Dennis Berger and Brent Verner for supplying patches.  Bug 1315.
+- Fix some small bugs in JavaMailer.  Fixed the default recipient address
+  by placing square brackets around the IP address to make it a valid
+  domain-literal per RFC 2822.  Also fix a logging bug where the subject
+  was logged twice instead of logging the subject and the message contents.
+- Performance enhancement for the Scheduled outages editing page. Bug 1340.
+  Thanks, Craig M.!
+- Added Symbol WS5000 events and updated eventconf.xml  
 - Fixed issue where xmpp notifications were only being sent to one user in goup
   notifications - Bug 1329.
 - Added xmpp group (chat room) notifications - Bug 1246
