@@ -400,8 +400,8 @@
   
 <br>
 
-<jsp:include page="/includes/footer.jsp" flush="false" >
-</jsp:include>
+<jsp:include page="/includes/footer.jsp" flush="false" />
+
 
 <script language="JavaScript">
   // shorthand for refering to menus
