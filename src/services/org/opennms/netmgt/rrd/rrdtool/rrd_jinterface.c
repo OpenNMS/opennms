@@ -51,6 +51,7 @@
 #include <malloc.h>
 #endif
 #include <string.h>
+#include <stdlib.h>
 
 #include "rrd.h"
 #if 0
@@ -288,7 +289,7 @@ JNIEXPORT jobjectArray JNICALL
 Java_org_opennms_netmgt_rrd_rrdtool_Interface_launch(JNIEnv *env, jobject obj, jstring javaCmdStr) {
 
 	/* Local vars */
-	jbyte *nativeCmdStr;
+	char *nativeCmdStr;
 	char **argv;
 	int  argc=0;
 	int ii,jj;
@@ -314,7 +315,7 @@ Java_org_opennms_netmgt_rrd_rrdtool_Interface_launch(JNIEnv *env, jobject obj, j
 		return NULL;
 
 	/* allocate memory to hold native command string */
-	nativeCmdStr = (jbyte *)malloc((len+1) * sizeof(jbyte));
+	nativeCmdStr = (char *)malloc((len+1) * sizeof(jbyte));
 	if (nativeCmdStr == NULL)
 	{
 		(*env)->ThrowNew(env, clazzOutOfMem, "Failed to allocate native command string");
