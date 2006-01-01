@@ -137,7 +137,7 @@ public final class Reply {
      *             Thrown if the datagram does not contain sufficent data.
      * 
      */
-    static Reply create(DatagramPacket packet) {
+    public static Reply create(DatagramPacket packet) {
         // Check the packet length
         //
         if (packet.getData().length != Packet.getNetworkSize()) {

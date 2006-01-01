@@ -50,6 +50,7 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <stdlib.h>
+#include <string.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #if defined(__SOLARIS__) || defined (__FreeBSD__)
@@ -89,9 +90,13 @@ typedef struct icmp icmphdr_t;
 typedef struct iphdr iphdr_t;
 typedef struct icmphdr icmphdr_t;
 #endif
+#if 0
 #pragma export on
+#endif
 #include "IcmpSocket.h"
+#if 0
 #pragma export reset
+#endif
 
 /**
  * This macro is used to recover the current time
@@ -438,7 +443,7 @@ end_setfd:
 	return;
 }
 
-static jobject newInetAddress(JNIEnv *env, unsigned long addr)
+static jobject newInetAddress(JNIEnv *env, in_addr_t addr)
 {
 	char 		buf[32];
 	jclass		addrClass;
@@ -494,13 +499,14 @@ end_inet:
 	return addrInstance;
 }
 
-static unsigned long getInetAddress(JNIEnv *env, jobject instance)
+static in_addr_t getInetAddress(JNIEnv *env, jobject instance)
 {
 	jclass		addrClass = NULL;
 	jmethodID	addrArrayMethodID = NULL;
 	jbyteArray	addrData = NULL;
+	jbyte		addrDataBytes[4];
 
-	unsigned long	retAddr = 0UL;
+	in_addr_t	retAddr = 0;
 
 	/**
 	 * load the class
@@ -527,7 +533,12 @@ static unsigned long getInetAddress(JNIEnv *env, jobject instance)
 				   addrData,
 				   0,
 				   4,
-				   (jbyte *)&retAddr);
+				   addrDataBytes);
+
+	retAddr = (((unsigned char) addrDataBytes[0]) << 24)
+		  + (((unsigned char) addrDataBytes[1]) << 16)
+		  + (((unsigned char) addrDataBytes[2]) << 8)
+		  + ((unsigned char) addrDataBytes[3]);
 
 	(*env)->DeleteLocalRef(env, addrClass);
 	(*env)->DeleteLocalRef(env, addrData);
@@ -732,7 +743,7 @@ Java_org_opennms_protocols_icmp_IcmpSocket_receive (JNIEnv *env, jobject instanc
 	 * the recipt information. The network address must
 	 * be passed in network byte order!
 	 */
-	addrInstance = newInetAddress(env, (unsigned long)ntohl(inAddr.sin_addr.s_addr));
+	addrInstance = newInetAddress(env, ntohl(inAddr.sin_addr.s_addr));
 	if(addrInstance == NULL || (*env)->ExceptionOccurred(env) != NULL)
 		goto end_recv;
 

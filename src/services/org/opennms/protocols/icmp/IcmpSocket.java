@@ -68,18 +68,6 @@ public final class IcmpSocket {
      */
     private native void initSocket() throws IOException;
 
-    // Load the requried system library. This
-    // should be delayed until the class is actually
-    // loaded and used, so normally it should not
-    // take unecessary resources from an application that
-    // is not going to use ICMP.
-    //
-    /*
-    static {
-        System.loadLibrary("jicmp");
-    }
-    */
-
     /**
      * Constructs a new socket that is able to send and receive ICMP messages.
      * The newly constructed socket will receive all ICMP messages directed at
@@ -135,4 +123,125 @@ public final class IcmpSocket {
      * generated.
      */
     public final native void close();
+
+    public static void main(String[] argv) {
+	if (argv.length != 1) {
+            System.err.println("incorrect number of command-line arguments.");
+            System.err.println("usage: java -cp ... "
+                               + IcmpSocket.class.getName() + " <host>");
+            System.exit(1);
+        }
+ 
+        String host = argv[0];
+
+        IcmpSocket m_socket = null;
+
+        try {
+            m_socket = new IcmpSocket();
+	} catch (UnsatisfiedLinkError e) {
+            System.err.println("UnsatisfiedLinkError while creating an "
+                               + "IcmpSocket.  Most likely failed to load "
+                               + "libjicmp.so.");
+            e.printStackTrace();
+            System.exit(1);
+	} catch (NoClassDefFoundError e) {
+            System.err.println("NoClassDefFoundError while creating an "
+                               + "IcmpSocket.  Most likely failed to load "
+                               + "libjicmp.so.");
+            e.printStackTrace();
+            System.exit(1);
+	} catch (IOException e) {
+            System.err.println("IOException while creating an "
+                               + "IcmpSocket.");
+            e.printStackTrace();
+            System.exit(1);
+        }
+
+	java.net.InetAddress addr = null;
+        try {
+	    addr = java.net.InetAddress.getByName(host);
+        } catch (java.net.UnknownHostException e) {
+            System.err.println("UnknownHostException when looking up "
+                               + host + ".");
+            e.printStackTrace();
+            System.exit(1);
+        }
+
+	short m_icmpId = 2;
+
+        Stuff s = new Stuff(m_socket, m_icmpId);
+        Thread t = new Thread(s);
+        t.start();
+
+        for (long m_fiberId = 0; true; m_fiberId++) {
+    	    // build a packet
+            org.opennms.netmgt.ping.Packet pingPkt =
+                new org.opennms.netmgt.ping.Packet(m_fiberId);
+            pingPkt.setIdentity(m_icmpId);
+            pingPkt.computeChecksum();
+    
+            // convert it to a datagram to be sent
+            byte[] buf = pingPkt.toBytes();
+            DatagramPacket sendPkt =
+                new DatagramPacket(buf, buf.length, addr, 0);
+            buf = null;
+            pingPkt = null;
+
+            try {
+                m_socket.send(sendPkt);
+            } catch (IOException e) {
+                System.err.println("IOException received when sending packet.");
+                e.printStackTrace();
+                System.exit(1);
+            }
+            try {
+                Thread.currentThread().sleep(1000);
+            } catch (InterruptedException e) {
+                // do nothing
+            }
+        }
+    }
+
+    private static class Stuff implements Runnable {
+        private IcmpSocket m_socket;
+	private short m_icmpId;
+
+        public Stuff(IcmpSocket socket, short icmpId) {
+            m_socket = socket;
+            m_icmpId = icmpId;
+        }
+
+        public void run() {
+            try {
+                while (true) {
+                    DatagramPacket pkt = m_socket.receive();
+                    org.opennms.netmgt.ping.Reply reply;
+                    try {
+                        reply = org.opennms.netmgt.ping.Reply.create(pkt);
+                    } catch (Throwable t) {
+                        // do nothing but skip this packet
+                        continue;
+                    }
+            
+                    if (reply.isEchoReply()
+                        && reply.getIdentity() == m_icmpId) {
+                        float rtt = ((float) reply.getPacket().getPingRTT())
+                                    / 1000;
+                        System.out.println(reply.getPacket().getNetworkSize()
+                                           + " bytes from "
+                                           + pkt.getAddress().getHostAddress()
+                                           + ": icmp_seq="
+                                           + reply.getPacket().getTID()
+                                           + ". time="
+                                           + rtt + " ms");
+                    }
+                }
+            } catch (Throwable t) {
+                System.err.println("An exception occured processing the "
+                                   + "datagram, thread exiting.");
+                t.printStackTrace();
+                System.exit(1);
+            }
+        }
+    }
 }

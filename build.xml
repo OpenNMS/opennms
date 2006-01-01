@@ -1266,11 +1266,19 @@ OpenNMS as part of the post-install.
 	outfile="${build.jicmp.dir}/jicmp-build"
 	outputfileproperty="build.jicmp.output.lib">
       <compiler name="gcc">
+	<compilerarg value="-Wall"/>
+	<compilerarg value="-Werror"/>
+	<compilerarg value="-D${build.platform.define}"/>
 	<compilerarg value="-D${build.platform.define}"/>
 	<compilerarg value="${build.jni.compiler.arg}"
 		     if="build.jni.compiler.arg"/>
       </compiler>
-      <linker name="gcc"/>
+      <linker name="gcc">
+	<linkerarg value="${build.jni.compiler.arg}"
+		   if="build.jni.compiler.arg"/>
+	<linkerarg value="${build.jni.linker.arg}"
+		   if="build.jni.linker.arg"/>
+      </linker>
       <fileset dir="${build.jicmp.dir}" includes="IcmpSocket.c"/>
       <includepath path="${java.home}/include"/> 
       <includepath path="${java.home}/include${build.java.jnimd.dir}"/>
@@ -1297,11 +1305,17 @@ OpenNMS as part of the post-install.
 	outfile="${build.jrrd.dir}/jrrd-build"
 	outputfileproperty="build.jrrd.output.lib">
       <compiler name="gcc">
+	<compilerarg value="-Wall"/>
+	<compilerarg value="-Werror"/>
         <compilerarg value="-D${build.platform.define}"/>
 	<compilerarg value="${build.jni.compiler.arg}"
 		     if="build.jni.compiler.arg"/>
       </compiler>
       <linker name="gcc">
+	<linkerarg value="${build.jni.compiler.arg}"
+		   if="build.jni.compiler.arg"/>
+	<linkerarg value="${build.jni.linker.arg}"
+		   if="build.jni.linker.arg"/>
 	<linkerarg value="${build.jrrd.linker.arg}"
 		   if="build.jrrd.linker.arg"/>
       </linker>
@@ -1330,6 +1344,8 @@ OpenNMS as part of the post-install.
 	outfile="${build.postgresql.dir}/iplike-build"
 	outputfileproperty="build.postgresql.output.lib">
       <compiler name="gcc">
+	<compilerarg value="-Wall"/>
+	<compilerarg value="-Werror"/>
 	<compilerarg value="${build.postgresql.compiler.arg}"
 		     if="build.postgresql.compiler.arg"/>
       </compiler>
@@ -1337,6 +1353,12 @@ OpenNMS as part of the post-install.
       <includepath path="${build.postgresql.include.dir}"/>
       <includepath path="${build.postgresql.include2.dir}"
                    if="build.postgresql.include2.dir"/>
+      <linker>
+	<linkerarg value="${build.postgresql.compiler.arg}"
+		   if="build.postgresql.compiler.arg"/>
+	<linkerarg value="${build.postgresql.linker.arg}"
+		   if="build.postgresql.linker.arg"/>
+      </linker>
     </cc>
     <copy file="${build.postgresql.output.lib}"
           tofile="${build.postgresql.dir}/iplike.${build.soext}"/>

@@ -53,9 +53,13 @@
 #include <string.h>
 
 #include "rrd.h"
+#if 0
 #pragma export on
+#endif
 #include "rrd_jinterface.h"
+#if 0
 #pragma export reset
+#endif
 #if !defined(__SOLARIS__) && !defined(__APPLE_CC__) && !defined(__bsdi__) && !defined(__FreeBSD__)
 #include "getopt.h"
 #endif
@@ -285,7 +289,6 @@ Java_org_opennms_netmgt_rrd_rrdtool_Interface_launch(JNIEnv *env, jobject obj, j
 
 	/* Local vars */
 	jbyte *nativeCmdStr;
-	char *token;
 	char **argv;
 	int  argc=0;
 	int ii,jj;
@@ -523,7 +526,7 @@ Java_org_opennms_netmgt_rrd_rrdtool_Interface_launch(JNIEnv *env, jobject obj, j
 			for (ii = start; ii <= end; ii += step) 
 			{
 				jstring utf_str;
-		        	sprintf(buf, "%10lu:", ii);
+		        	sprintf(buf, "%10u:", ii);
 				for (bytesWritten=0, jj = 0; jj < ds_cnt; jj++) 
 				{
 				    	bytesWritten += sprintf(&buf[bytesWritten], "%0.10e ", *(datai++));
