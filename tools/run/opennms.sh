@@ -183,13 +183,6 @@ END
 }
 
 doStart(){
-    if id | grep '^uid=0(' > /dev/null; then
-	true # all is well
-    else
-	echo "Error: you must start OpenNMS as root" >&2
-	return 4    # According to LSB: 4 - user had insufficient privileges
-    fi
-
     checkRpmFiles || return $?
 
     doStatus
@@ -513,6 +506,13 @@ if [ ! -f $OPENNMS_HOME/etc/configured ]; then
     echo "$OPENNMS_HOME/etc/configured does not exist." >&2
     echo "You need to run the installer -- see the install guide for details." >&2
     exit 6    # From LSB: 6 - program is not configured
+fi
+
+if id | grep '^uid=0(' > /dev/null; then
+    true # all is well
+else
+    echo "Error: you must run this script as root" >&2
+    exit 4    # According to LSB: 4 - user had insufficient privileges
 fi
 
 case "$COMMAND" in
