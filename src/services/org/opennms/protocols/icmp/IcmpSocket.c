@@ -503,7 +503,6 @@ static in_addr_t getInetAddress(JNIEnv *env, jobject instance)
 	jclass		addrClass = NULL;
 	jmethodID	addrArrayMethodID = NULL;
 	jbyteArray	addrData = NULL;
-//	jbyte		addrDataBytes[4];
 
 	in_addr_t	retAddr = 0;
 
@@ -528,19 +527,18 @@ static in_addr_t getInetAddress(JNIEnv *env, jobject instance)
 	if(addrData == NULL || (*env)->ExceptionOccurred(env) != NULL)
 		goto end_inet;
 
+	/*
+	 * The byte array returned from java.net.InetAddress.getAddress()
+	 * (which was fetched above and is stored as a jbyteArray in addrData)
+	 * is in network byte order (high byte first, AKA big endian).
+	 * the value of in_addr_t is also in network byte order, so no
+	 * conversion needs to be performed.
+	 */
 	(*env)->GetByteArrayRegion(env,
 				   addrData,
 				   0,
 				   4,
 				   (jbyte *) &retAddr);
-/*				   addrDataBytes); */
-
-/*
-	retAddr = (((unsigned char) addrDataBytes[0]) << 24)
-		  + (((unsigned char) addrDataBytes[1]) << 16)
-		  + (((unsigned char) addrDataBytes[2]) << 8)
-		  + ((unsigned char) addrDataBytes[3]);
-*/
 
 	(*env)->DeleteLocalRef(env, addrClass);
 	(*env)->DeleteLocalRef(env, addrData);
