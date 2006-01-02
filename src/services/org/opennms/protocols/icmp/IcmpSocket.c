@@ -69,14 +69,13 @@
 #include <netinet/ip_icmp.h> 
 #include <netdb.h>
 #include <errno.h>
+#include <sys/time.h>
 
 #if defined(__FreeBSD__)
 #include "byteswap.h"
-#include <sys/time.h>
 #endif
 
 #if defined(__DARWIN__)
-#include <sys/time.h>
 #include <architecture/byte_order.h>
 #endif
 
