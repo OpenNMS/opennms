@@ -450,14 +450,12 @@ static jobject newInetAddress(JNIEnv *env, in_addr_t addr)
 	jobject 	addrInstance = NULL;
 	jstring		addrString = NULL;
 
-#define BYTE_OF(_x, _i) ((_x >> (_i * 8)) & 0xff)
 	sprintf(buf,
 		"%d.%d.%d.%d",
-		BYTE_OF(addr, 3),
-		BYTE_OF(addr, 2),
-		BYTE_OF(addr, 1),
-		BYTE_OF(addr, 0));
-#undef BYTE_OF
+		((unsigned char *) &addr)[0],
+		((unsigned char *) &addr)[1],
+		((unsigned char *) &addr)[2],
+		((unsigned char *) &addr)[3]);
 
 	/**
 	 * create the string
@@ -743,7 +741,7 @@ Java_org_opennms_protocols_icmp_IcmpSocket_receive (JNIEnv *env, jobject instanc
 	 * the recipt information. The network address must
 	 * be passed in network byte order!
 	 */
-	addrInstance = newInetAddress(env, ntohl(inAddr.sin_addr.s_addr));
+	addrInstance = newInetAddress(env, inAddr.sin_addr.s_addr);
 	if(addrInstance == NULL || (*env)->ExceptionOccurred(env) != NULL)
 		goto end_recv;
 
