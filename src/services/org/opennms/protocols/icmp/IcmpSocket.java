@@ -141,7 +141,11 @@ public final class IcmpSocket {
 	} catch (UnsatisfiedLinkError e) {
             System.err.println("UnsatisfiedLinkError while creating an "
                                + "IcmpSocket.  Most likely failed to load "
-                               + "libjicmp.so.");
+                               + "libjicmp.so.  Try setting the property "
+                               + "'opennms.library.jicmp' to point at the "
+                               + "full path name of the libjicmp.so shared "
+                               + "library "
+                               + "(e.g. 'java -Dopennms.library.jicmp=/some/path/libjicmp.so ...')");
             e.printStackTrace();
             System.exit(1);
 	} catch (NoClassDefFoundError e) {
@@ -166,6 +170,9 @@ public final class IcmpSocket {
             e.printStackTrace();
             System.exit(1);
         }
+
+        System.out.println("PING " + host + " (" + addr.getHostAddress()
+                           + "): 56 data bytes");
 
 	short m_icmpId = 2;
 

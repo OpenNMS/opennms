@@ -504,7 +504,7 @@ static in_addr_t getInetAddress(JNIEnv *env, jobject instance)
 	jclass		addrClass = NULL;
 	jmethodID	addrArrayMethodID = NULL;
 	jbyteArray	addrData = NULL;
-	jbyte		addrDataBytes[4];
+//	jbyte		addrDataBytes[4];
 
 	in_addr_t	retAddr = 0;
 
@@ -533,12 +533,15 @@ static in_addr_t getInetAddress(JNIEnv *env, jobject instance)
 				   addrData,
 				   0,
 				   4,
-				   addrDataBytes);
+				   (jbyte *) &retAddr);
+/*				   addrDataBytes); */
 
+/*
 	retAddr = (((unsigned char) addrDataBytes[0]) << 24)
 		  + (((unsigned char) addrDataBytes[1]) << 16)
 		  + (((unsigned char) addrDataBytes[2]) << 8)
 		  + ((unsigned char) addrDataBytes[3]);
+*/
 
 	(*env)->DeleteLocalRef(env, addrClass);
 	(*env)->DeleteLocalRef(env, addrData);
