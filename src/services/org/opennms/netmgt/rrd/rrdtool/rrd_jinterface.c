@@ -315,7 +315,7 @@ Java_org_opennms_netmgt_rrd_rrdtool_Interface_launch(JNIEnv *env, jobject obj, j
 		return NULL;
 
 	/* allocate memory to hold native command string */
-	nativeCmdStr = (char *)malloc((len+1) * sizeof(jbyte));
+	nativeCmdStr = (char *)malloc((len+1) * sizeof(char));
 	if (nativeCmdStr == NULL)
 	{
 		(*env)->ThrowNew(env, clazzOutOfMem, "Failed to allocate native command string");
@@ -444,7 +444,7 @@ Java_org_opennms_netmgt_rrd_rrdtool_Interface_launch(JNIEnv *env, jobject obj, j
 			datai = data;
 
 #ifdef DEBUG
-			printf("Interface_launch(): start: %d end: %d step: %d ds_cnt: %d\n", 
+			printf("Interface_launch(): start: %ld end: %ld step: %ld ds_cnt: %ld\n", 
 				start, end, step, ds_cnt);
 #endif
 
