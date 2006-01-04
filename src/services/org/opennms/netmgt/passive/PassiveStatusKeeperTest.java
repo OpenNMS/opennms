@@ -239,6 +239,12 @@ public class PassiveStatusKeeperTest extends MockObjectTestCase {
         
     }
     
+    public void testIsTranslateEvent() {
+        Event e = createPassiveStatusEvent("Router", "192.168.1.1", "ICMP", "Down");
+        assertTrue(m_config.isTranslationEvent(e));
+        
+    }
+    
     /**
      * This is a test for the passive status keeper where all the values from the config
      * should be taken literally.  The actual field value is ignored, however, the field
@@ -454,8 +460,24 @@ public class PassiveStatusKeeperTest extends MockObjectTestCase {
     private String getStandardConfig() {
         return "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + 
         "<this:passive-status-configuration \n" + 
+        "xmlns=\"http://xmlns.opennms.org/xsd/passive-status-configuration\" \n" + 
         "xmlns:this=\"http://xmlns.opennms.org/xsd/passive-status-configuration\" \n" + 
-        "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" >\n" + 
+        "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" >\n" +
+        "  <translation-events>\n" +
+        "    <translation-event>\n" +
+        "      <translation-map>\n" +
+        "        <node-label>\n" + 
+        "          <event-token is-parm=\"true\" name=\"passiveNodeLabel\" value=\"Router\"/>\n" + 
+        "        </node-label>\n" + 
+        "        <ipaddr>\n" + 
+        "          <event-token is-parm=\"true\" name=\"passiveIpAddr\" value=\"192.168.1.1\"/>\n" + 
+        "        </ipaddr>\n" + 
+        "        <service-name>\n" + 
+        "          <event-token is-parm=\"true\" name=\"passiveServiceName\" value=\"ICMP\"/>\n" + 
+        "        </service-name>\n" + 
+        "      </translation-map>\n" +
+        "    </translation-event>" +
+        "  </translation-events>\n" +
         "  <this:passive-events>\n" + 
         "    <this:passive-event uei=\"uei.opennms.org/services/passiveServiceStatus\">\n" + 
         "      <this:status-key>\n" + 

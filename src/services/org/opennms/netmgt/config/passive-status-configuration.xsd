@@ -4,13 +4,52 @@
 	<element name="passive-status-configuration" >
 		<complexType>
 			<sequence>
+				<element ref="this:translated-events" minOccurs="0" maxOccurs="1" />
 				<element ref="this:passive-events" minOccurs="1" maxOccurs="1" />
+			</sequence>
+		</complexType>
+	</element>
+	<element name="translated-events">
+		<annotation>
+			<documentation>List of OpenNMS events for which the passive status keeper will subscribe to translate to an event for a passive node</documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<element ref="this:translated-event" minOccurs="1" maxOccurs="unbounded" />
+			</sequence>
+		</complexType>
+	</element>
+	<element name="translated-event">
+		<annotation>
+			<documentation>
+			This element defines the new event to generate when receiving an existing event.
+			</documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<element ref="this:translation-map" minOccurs="1" maxOccurs="1" />
+			</sequence>
+			<attribute name="uei" type="string" use="required" />
+		</complexType>
+	</element>
+	<element name="translation-map">
+		<annotation>
+			<documentation>
+			Defines the mapping needed to generate the new translated event.  The nodeId is
+			determined by lookup up the node using the nodeLabel.
+			</documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<element ref="this:node-label" minOccurs="1" maxOccurs="1" />
+				<element ref="this:ipaddr" minOccurs="1" maxOccurs="1" />
+				<element ref="this:service-name" minOccurs="1" maxOccurs="1" />
 			</sequence>
 		</complexType>
 	</element>
 	<element name="passive-events">
 		<annotation>
-			<documentation>List of OpenNMS events for which the passive status keeper will subscribe</documentation>
+			<documentation>List of OpenNMS events for which the passive status keeper will subscribe to set the status for a passive node</documentation>
 		</annotation>
 		<complexType>
 			<sequence>

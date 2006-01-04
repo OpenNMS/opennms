@@ -180,7 +180,14 @@ public class PassiveStatusKeeper extends ServiceDaemon implements EventListener 
             PassiveStatusValue statusValue = m_config.getPassiveStatusValue(e);
             setStatus(statusValue.getKey(), statusValue.getStatus());
             log().debug("onEvent: passive status for: "+statusValue.getKey()+ "is: "+m_statusTable.get(statusValue.getKey()));
-        } else {
+        } 
+        
+        if (m_config.isTranslationEvent(e)) {
+            
+        }
+        
+        if (!m_config.isPassiveStatusEvent(e) && !m_config.isTranslationEvent(e))
+        {
             log().debug("onEvent: received Invalid registered passive status event: \n"+EventUtils.toString(e));
         }
     }

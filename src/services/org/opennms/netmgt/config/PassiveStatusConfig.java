@@ -57,5 +57,12 @@ public interface PassiveStatusConfig {
      */
     public abstract PassiveStatusValue getPassiveStatusValue(Event e);
     
+    /**
+     * Determine if the @param e is a translation event
+     * @param e Event
+     * @return true iff e is a translation event
+     */
+    public abstract boolean isTranslationEvent(Event e);
+    
 
 }

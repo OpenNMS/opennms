@@ -325,6 +325,12 @@ public final class PassiveStatusConfigFactory implements PassiveStatusConfig {
         log().debug("isPassiveStatusEvent: Received valid UEI: "+e.getUei()+", checking parms...");
         return eventContainsRequiredParms(e);
     }
+    
+    public boolean isTranslationEvent(Event e) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
 
     private Category log() {
         return ThreadCategory.getInstance("PassiveStatusConfigFactory.class");
@@ -513,5 +519,6 @@ public final class PassiveStatusConfigFactory implements PassiveStatusConfig {
         }
         return labels;
     }
+
 
 }
