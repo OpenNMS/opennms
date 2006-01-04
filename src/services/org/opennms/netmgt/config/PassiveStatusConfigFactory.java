@@ -328,7 +328,7 @@ public final class PassiveStatusConfigFactory implements PassiveStatusConfig {
     
     public boolean isTranslationEvent(Event e) {
         // TODO Auto-generated method stub
-        return false;
+        return true;
     }
 
 

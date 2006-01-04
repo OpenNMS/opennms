@@ -463,8 +463,8 @@ public class PassiveStatusKeeperTest extends MockObjectTestCase {
         "xmlns=\"http://xmlns.opennms.org/xsd/passive-status-configuration\" \n" + 
         "xmlns:this=\"http://xmlns.opennms.org/xsd/passive-status-configuration\" \n" + 
         "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" >\n" +
-        "  <translation-events>\n" +
-        "    <translation-event>\n" +
+        "  <translated-events>\n" +
+        "    <translated-event uei=\"uei.opennms.org/services/passiveServiceStatus\">\n" +
         "      <translation-map>\n" +
         "        <node-label>\n" + 
         "          <event-token is-parm=\"true\" name=\"passiveNodeLabel\" value=\"Router\"/>\n" + 
@@ -476,8 +476,8 @@ public class PassiveStatusKeeperTest extends MockObjectTestCase {
         "          <event-token is-parm=\"true\" name=\"passiveServiceName\" value=\"ICMP\"/>\n" + 
         "        </service-name>\n" + 
         "      </translation-map>\n" +
-        "    </translation-event>" +
-        "  </translation-events>\n" +
+        "    </translated-event>" +
+        "  </translated-events>\n" +
         "  <this:passive-events>\n" + 
         "    <this:passive-event uei=\"uei.opennms.org/services/passiveServiceStatus\">\n" + 
         "      <this:status-key>\n" + 
