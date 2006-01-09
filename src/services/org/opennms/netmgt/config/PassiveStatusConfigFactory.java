@@ -39,10 +39,15 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -52,6 +57,13 @@ import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.ConfigFileConstants;
+import org.opennms.netmgt.config.passive.Attribute;
+import org.opennms.netmgt.config.passive.AttributeValue;
+import org.opennms.netmgt.config.passive.EventTranslationSpec;
+import org.opennms.netmgt.config.passive.FieldValue;
+import org.opennms.netmgt.config.passive.Mapping;
+import org.opennms.netmgt.config.passive.Parameter;
+import org.opennms.netmgt.config.passive.ParameterValue;
 import org.opennms.netmgt.config.passive.PassiveEvent;
 import org.opennms.netmgt.config.passive.PassiveStatusConfiguration;
 import org.opennms.netmgt.config.passive.StatusKey;
@@ -185,12 +197,29 @@ public final class PassiveStatusConfigFactory implements PassiveStatusConfig {
     private synchronized PassiveStatusConfiguration getConfig() {
         return m_config;
     }
+    
 
     /*
      *  (non-Javadoc)
      * @see org.opennms.netmgt.config.PassiveStatusConfig#getUEIList()
      */
     public List getUEIList() {
+        Set ueiSet = new TreeSet(getPassiveStatusUEIs());
+        ueiSet.addAll(getTranslationUEIs());
+        return new ArrayList(ueiSet);
+    }
+
+    private List getTranslationUEIs() {
+		List translatedEvents = getConfig().getTranslation().getEventTranslationSpecCollection();
+		List ueis = new ArrayList();
+		for (Iterator it = translatedEvents.iterator(); it.hasNext();) {
+			EventTranslationSpec event = (EventTranslationSpec) it.next();
+			ueis.add(event.getUei());
+		}
+		return ueis;
+	}
+    
+    private List getPassiveStatusUEIs() {
         List passiveEvents = getConfig().getPassiveEvents().getPassiveEventCollection();
         List ueis = new ArrayList();
         for (Iterator it = passiveEvents.iterator(); it.hasNext();) {
@@ -320,15 +349,14 @@ public final class PassiveStatusConfigFactory implements PassiveStatusConfig {
      *      true or false
      */
     public boolean isPassiveStatusEvent(Event e) {
-        if (!getUEIList().contains(e.getUei()))
+        if (!getPassiveStatusUEIs().contains(e.getUei()))
             return false;
         log().debug("isPassiveStatusEvent: Received valid UEI: "+e.getUei()+", checking parms...");
-        return eventContainsRequiredParms(e);
+        return passiveStatusEventContainsRequiredParms(e);
     }
     
     public boolean isTranslationEvent(Event e) {
-        // TODO Auto-generated method stub
-        return true;
+        return findMatchingMappingForEvent(e) != null;
     }
 
 
@@ -336,6 +364,7 @@ public final class PassiveStatusConfigFactory implements PassiveStatusConfig {
         return ThreadCategory.getInstance("PassiveStatusConfigFactory.class");
     }
 
+    
     private String getValueFromFieldOrParm(Event e, String eventToken, boolean isParm) {
         String tokenValue;
         if (isParm == true) {
@@ -352,14 +381,7 @@ public final class PassiveStatusConfigFactory implements PassiveStatusConfig {
      * @param labels
      * @return
      */
-    private boolean eventContainsRequiredParms(Event e) {
-        
-        /*
-         * First check to see if the config for this event requires parms
-         */
-        if (!isParmRequired(e)) {
-            return true;
-        }
+    private boolean passiveStatusEventContainsRequiredParms(Event e) {
         
         /*
          * Check to see if the parms required by the configuration are actually
@@ -378,6 +400,95 @@ public final class PassiveStatusConfigFactory implements PassiveStatusConfig {
     }
 
     /**
+     * 
+     * @param e
+     * @param labels
+     * @return
+     */
+    private Mapping findMatchingMappingForEvent(Event e) {
+    	
+    		EventTranslationSpec transSpec = getEventTranslationSpecByUei(e.getUei());
+    		if (transSpec == null) return null;
+    		
+    		List mappings = transSpec.getMappings().getMappingCollection();
+    		for (Iterator it = mappings.iterator(); it.hasNext();) {
+				Mapping mapping = (Mapping) it.next();
+				if (mappingMatchesEvent(mapping, e))
+					return mapping;
+		}
+    		return null;
+        
+    }
+
+    private boolean mappingMatchesEvent(Mapping mapping, Event e) {
+    		return attributeAssignmentsMatchEvent(mapping.getParameterCollection(), e)
+    		    && attributeAssignmentsMatchEvent(mapping.getFieldCollection(), e);
+	}
+
+	private boolean attributeAssignmentsMatchEvent(List attrAssignments, Event e) {
+		for (Iterator it = attrAssignments.iterator(); it.hasNext();) {
+		Attribute attrAssignment = (Attribute) it.next();
+		if (!attributeAssignmentMatchesEvent(attrAssignment, e))
+			return false;
+		}
+		return true;
+	}
+
+	private boolean attributeAssignmentMatchesEvent(Attribute attr, Event e) {
+		if (attr.getFieldValue() != null)
+			return new FieldMatcher(attr.getFieldValue()).eventMatches(e);
+		else if (attr.getParameterValue() != null)
+			return new ParameterMatcher(attr.getParameterValue()).eventMatches(e);
+		else
+			return true;
+	}
+	
+	static abstract class AttributeMatcher {
+		AttributeValue m_val;
+		AttributeMatcher(AttributeValue val) { m_val = val; }
+		public boolean eventMatches(Event e) {
+			return valueMatches(getAttributeValue(m_val.getName(), e));
+		}
+		
+		private boolean valueMatches(String attributeValue) {
+			if (attributeValue == null) return false;
+			if (m_val.getMatches() == null) return true;
+			
+			Pattern p = Pattern.compile(m_val.getMatches());
+			Matcher m = p.matcher(attributeValue);
+			
+			return m.matches();
+		}
+		abstract public String getAttributeValue(String attrName, Event e);
+	}
+	
+	static class FieldMatcher extends AttributeMatcher {
+		FieldMatcher(FieldValue val) { super(val); }
+		public String getAttributeValue(String attrName, Event e) {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+	}
+	
+	static class ParameterMatcher extends AttributeMatcher {
+		ParameterMatcher(ParameterValue val) { super(val); }
+		public String getAttributeValue(String attrName, Event e) {
+			Parms parms = e.getParms();
+			if (parms == null) return null;
+			
+			for (Iterator it = parms.getParmCollection().iterator(); it.hasNext();) {
+				Parm parm = (Parm) it.next();
+				if (parm.getParmName().equals(attrName))
+					return (parm.getValue() == null ? "" : parm.getValue().getContent());
+					
+			}
+			return null;
+		}
+
+	}
+
+	/**
      * Goes through the list of configured passive events looking for the configured
      * event for any status key that uses an event parm vs.
      * event field.
@@ -519,6 +630,17 @@ public final class PassiveStatusConfigFactory implements PassiveStatusConfig {
         }
         return labels;
     }
+
+	private EventTranslationSpec getEventTranslationSpecByUei(String uei) {
+        Collection eventList = m_config.getTranslation().getEventTranslationSpecCollection();
+        for (Iterator iter = eventList.iterator(); iter.hasNext();) {
+        	EventTranslationSpec transSpec = (EventTranslationSpec) iter.next();
+            if (transSpec.getUei().equals(uei)) {
+                return transSpec;
+            }
+        }
+        return null;
+	}
 
 
 }

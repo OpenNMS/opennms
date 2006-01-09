@@ -34,6 +34,8 @@ package org.opennms.netmgt.passive;
 import java.io.Reader;
 import java.io.StringReader;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
@@ -63,6 +65,19 @@ public class PassiveStatusKeeperTest extends MockObjectTestCase {
     
     /* TODO for PassiveSTatusKeeper
      add reason mapper for status reason
+     
+     add correct matching behavior for event fields
+     
+     be able to create an event with translated values
+     - determine new event values based on config
+     - assign computed values to new event
+     - copy over (or not) untranslated attributes
+     
+     make sure we can translate uei if desired
+     
+     modify passive status config to handle specific event with specific parms
+     
+     
      */
 
 
@@ -239,10 +254,39 @@ public class PassiveStatusKeeperTest extends MockObjectTestCase {
         
     }
     
-    public void testIsTranslateEvent() {
-        Event e = createPassiveStatusEvent("Router", "192.168.1.1", "ICMP", "Down");
-        assertTrue(m_config.isTranslationEvent(e));
+    public void testIsTranslationEvent() {
+    		// test non matching uei match fails
+        Event pse = createPassiveStatusEvent("Router", "192.168.1.1", "ICMP", "Down");
+        assertFalse(m_config.isTranslationEvent(pse));
         
+        // test matchin uei succeeds
+        Event te = createTranslationEvent("Router", "192.168.1.1", "ICMP", "Down");
+        assertTrue(m_config.isTranslationEvent(te));
+        
+        // test null parms fails
+        Event teWithNullParms = createTranslationEvent("Router", "192.168.1.1", "ICMP", "Down");
+        teWithNullParms.setParms(null);
+        assertFalse(m_config.isTranslationEvent(teWithNullParms));
+        
+        // test empty  parm list fails
+        Event teWithNoParms = createTranslationEvent("Router", "192.168.1.1", "ICMP", "Down");
+        Parms parms = teWithNoParms.getParms();
+        parms.setParmCollection(new ArrayList(0));
+        assertFalse(m_config.isTranslationEvent(teWithNoParms));
+
+        // test missing a parm fails
+        Event teWithWrongParms = createTranslationEvent("Router", "192.168.1.1", "ICMP", "Down");
+        Parms p = teWithWrongParms.getParms();
+        p.getParm(2).setParmName("unmatching"); // change the name for the third parm so it fails to match
+        assertFalse(m_config.isTranslationEvent(teWithWrongParms));
+
+        // that a matching parm value succeeds
+        Event te2 = createTranslationEvent("Router", "xxx192.168.1.1xxx", "ICMP", "Down");
+        assertTrue(m_config.isTranslationEvent(te2));
+        
+        // that a matching parm value succeeds
+        Event te3 = createTranslationEvent("Router", "xxx192.168.1.2", "ICMP", "Down");
+        assertFalse(m_config.isTranslationEvent(te3));
     }
     
     /**
@@ -425,6 +469,13 @@ public class PassiveStatusKeeperTest extends MockObjectTestCase {
         
         assertEquals(ps, ps2);
     }
+    
+    public void testUEIList() {
+    		List ueis = m_config.getUEIList();
+    		assertEquals(2, ueis.size());
+    		assertTrue(ueis.contains("uei.opennms.org/services/passiveServiceStatus"));
+    		assertTrue(ueis.contains("uei.opennms.org/services/translationEvent"));
+    }
 
     private Event createPassiveStatusEvent(String nodeLabel, String ipAddr, String serviceName, String status) {
         Parms parms = new Parms();
@@ -434,19 +485,31 @@ public class PassiveStatusKeeperTest extends MockObjectTestCase {
         if(serviceName != null) parms.addParm(buildParm(EventConstants.PARM_PASSIVE_SERVICE_NAME, serviceName));
         if(status != null) parms.addParm(buildParm(EventConstants.PARM_PASSIVE_SERVICE_STATUS, status));
 
-        return createPassiveStatusEventWithParms(parms);
+		return createEventWithParms("uei.opennms.org/services/passiveServiceStatus", parms);
     }
 
-    private Event createPassiveStatusEventWithParms(Parms parms) {
-        String uei = "uei.opennms.org/services/passiveServiceStatus";
-        Event e = MockUtil.createEvent("Automation", uei);
+    private Event createTranslationEvent(String nodeLabel, String ipAddr, String serviceName, String status) {
+        Parms parms = new Parms();
+
+        if(nodeLabel != null) parms.addParm(buildParm(EventConstants.PARM_PASSIVE_NODE_LABEL, nodeLabel));
+        if(ipAddr != null) parms.addParm(buildParm(EventConstants.PARM_PASSIVE_IPADDR, ipAddr));
+        if(serviceName != null) parms.addParm(buildParm(EventConstants.PARM_PASSIVE_SERVICE_NAME, serviceName));
+        if(status != null) parms.addParm(buildParm(EventConstants.PARM_PASSIVE_SERVICE_STATUS, status));
+
+		return createEventWithParms("uei.opennms.org/services/translationEvent", parms);
+    }
+
+    private Event createEventWithParms(String uei, Parms parms) {
+		Event e = MockUtil.createEvent("Automation", uei);
         
         e.setParms(parms);
         Logmsg logmsg = new Logmsg();
         logmsg.setContent("Testing Passive Status Keeper with down status");
         e.setLogmsg(logmsg);
         return e;
-    }
+	}
+    
+    
     
     private Parm buildParm(String parmName, String parmValue) {
         Value v = new Value();
@@ -459,13 +522,32 @@ public class PassiveStatusKeeperTest extends MockObjectTestCase {
     
     private String getStandardConfig() {
         return "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + 
-        "<this:passive-status-configuration \n" + 
+        "<passive-status-configuration \n" + 
         "xmlns=\"http://xmlns.opennms.org/xsd/passive-status-configuration\" \n" + 
-        "xmlns:this=\"http://xmlns.opennms.org/xsd/passive-status-configuration\" \n" + 
         "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" >\n" +
-        "  <translated-events>\n" +
-        "    <translated-event uei=\"uei.opennms.org/services/passiveServiceStatus\">\n" +
-        "      <translation-map>\n" +
+        "  <translation>\n" +
+        "   <event-translation-spec uei=\"uei.opennms.org/services/translationEvent\">\n" + 
+        "      <mappings>\n" + 
+        "        <mapping>\n" + 
+        "          <parameter name=\"nodeLabel\">\n" + 
+        "            <parameter-value name=\"passiveNodeLabel\" value=\"Router\" />\n" + 
+        "          </parameter>\n" + 
+        "          <field name=\"interface\">\n" + 
+        "            <parameter-value name=\"passiveIpAddr\" matches=\".*(192\\.168\\.1\\.1).*\" value=\"192.168.1.1\" />\n" + 
+        "          </field>\n" + 
+        "          <field name=\"service\">\n" + 
+        "            <parameter-value name=\"passiveServiceName\" value=\"ICMP\" />\n" + 
+        "          </field>\n" + 
+        "          <parameter name=\"passiveStatus\">\n" + 
+        "            <parameter-value name=\"passiveStatus\" value=\"Down\" />\n" + 
+        "          </parameter>\n" + 
+        "        </mapping>\n" + 
+        "      </mappings>\n" + 
+        "    </event-translation-spec>\n" + 
+        "  </translation>\n" +
+        "  <passive-events>\n" + 
+        "    <passive-event uei=\"uei.opennms.org/services/passiveServiceStatus\">\n" + 
+        "      <status-key>\n" + 
         "        <node-label>\n" + 
         "          <event-token is-parm=\"true\" name=\"passiveNodeLabel\" value=\"Router\"/>\n" + 
         "        </node-label>\n" + 
@@ -475,28 +557,13 @@ public class PassiveStatusKeeperTest extends MockObjectTestCase {
         "        <service-name>\n" + 
         "          <event-token is-parm=\"true\" name=\"passiveServiceName\" value=\"ICMP\"/>\n" + 
         "        </service-name>\n" + 
-        "      </translation-map>\n" +
-        "    </translated-event>" +
-        "  </translated-events>\n" +
-        "  <this:passive-events>\n" + 
-        "    <this:passive-event uei=\"uei.opennms.org/services/passiveServiceStatus\">\n" + 
-        "      <this:status-key>\n" + 
-        "        <this:node-label>\n" + 
-        "          <this:event-token is-parm=\"true\" name=\"passiveNodeLabel\" value=\"Router\"/>\n" + 
-        "        </this:node-label>\n" + 
-        "        <this:ipaddr>\n" + 
-        "          <this:event-token is-parm=\"true\" name=\"passiveIpAddr\" value=\"192.168.1.1\"/>\n" + 
-        "        </this:ipaddr>\n" + 
-        "        <this:service-name>\n" + 
-        "          <this:event-token is-parm=\"true\" name=\"passiveServiceName\" value=\"ICMP\"/>\n" + 
-        "        </this:service-name>\n" + 
-        "        <this:status>\n" + 
-        "          <this:event-token is-parm=\"true\" name=\"passiveStatus\" value=\"Down\"/>\n" + 
-        "        </this:status>\n" + 
-        "      </this:status-key>\n" + 
-        "    </this:passive-event>\n" + 
-        "  </this:passive-events>\n" + 
-        "</this:passive-status-configuration>\n" + 
+        "        <status>\n" + 
+        "          <event-token is-parm=\"true\" name=\"passiveStatus\" value=\"Down\"/>\n" + 
+        "        </status>\n" + 
+        "      </status-key>\n" + 
+        "    </passive-event>\n" + 
+        "  </passive-events>\n" + 
+        "</passive-status-configuration>\n" + 
         "";
     }
     

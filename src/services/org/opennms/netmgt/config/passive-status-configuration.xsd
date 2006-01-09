@@ -1,51 +1,138 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://xmlns.opennms.org/xsd/passive-status-configuration"
 	xmlns:this="http://xmlns.opennms.org/xsd/passive-status-configuration">
+	
+	<!-- Types defined and used by this XSD -->
+	<complexType name="attribute">
+        <annotation>
+          <documentation>a base class for fields and parameters</documentation>
+        </annotation>
+        <choice minOccurs="1" maxOccurs="1">
+        		<element ref="this:field-value"/>
+        		<element ref="this:parameter-value"/>
+        		<element ref="this:constant"/>
+        </choice>
+			<attribute name="name" type="string" use="required" />
+	</complexType>
+	
+	<complexType name="value">
+        <annotation>
+          <documentation>
+          An element representing a value to be used in a translation.  The value attribute is used to determine the value to set.
+          </documentation>
+        </annotation>
+        	<attribute name="value" type="string" use="required" />
+	</complexType>
+	<complexType name="attribute-value">
+        <annotation>
+          <documentation>
+          A value element that indicates a value computed from a field or paramenter attribute.  The 'name' attribute is used to define a 'working-value'.
+          The 'matches' attribute is used to indicate if the working value matches this translation.  If the working value matches the regexp defined in
+          the 'matches' attribute then the 'value' attribute is used to define the value to assign to the attribute.  First backreferences are replaced in the
+          value attribute and the result is assigned to the attribute.  The working-value is defined by extensions to this type.
+          </documentation>
+        </annotation>
+		<complexContent>
+        		<extension base="this:value">
+        			<attribute name="name" type="string" use="required" />
+        			<attribute name="matches" type="string" default=".*" />
+        		</extension>
+        	</complexContent>
+	</complexType>
+
+	<!--  elements defining this xsd -->
 	<element name="passive-status-configuration" >
 		<complexType>
 			<sequence>
-				<element ref="this:translated-events" minOccurs="0" maxOccurs="1" />
+				<element ref="this:translation" minOccurs="0" maxOccurs="1" />
 				<element ref="this:passive-events" minOccurs="1" maxOccurs="1" />
 			</sequence>
 		</complexType>
 	</element>
-	<element name="translated-events">
+	<element name="translation">
 		<annotation>
 			<documentation>List of OpenNMS events for which the passive status keeper will subscribe to translate to an event for a passive node</documentation>
 		</annotation>
 		<complexType>
 			<sequence>
-				<element ref="this:translated-event" minOccurs="1" maxOccurs="unbounded" />
+				<element ref="this:event-translation-spec" minOccurs="1" maxOccurs="unbounded" />
 			</sequence>
 		</complexType>
 	</element>
-	<element name="translated-event">
+	<element name="event-translation-spec">
 		<annotation>
 			<documentation>
-			This element defines the new event to generate when receiving an existing event.
+			This defines the allowable translations for a given event uei
 			</documentation>
 		</annotation>
 		<complexType>
 			<sequence>
-				<element ref="this:translation-map" minOccurs="1" maxOccurs="1" />
+				<element ref="this:mappings" minOccurs="1" maxOccurs="1" />
 			</sequence>
 			<attribute name="uei" type="string" use="required" />
 		</complexType>
 	</element>
-	<element name="translation-map">
+	<element name="mappings">
 		<annotation>
 			<documentation>
-			Defines the mapping needed to generate the new translated event.  The nodeId is
-			determined by lookup up the node using the nodeLabel.
+			The list of event mappings for this event.  The first mapping that matches the event
+			is used to translate the event into a new event.
 			</documentation>
 		</annotation>
 		<complexType>
 			<sequence>
-				<element ref="this:node-label" minOccurs="1" maxOccurs="1" />
-				<element ref="this:ipaddr" minOccurs="1" maxOccurs="1" />
-				<element ref="this:service-name" minOccurs="1" maxOccurs="1" />
+				<element ref="this:mapping" minOccurs="0" maxOccurs="unbounded" />
 			</sequence>
 		</complexType>
+	</element>
+	<element name="mapping">
+		<annotation>
+			<documentation>
+			A mapping for a given event.  This translation is only applied if it is the first that matches
+			</documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+ 				<element ref="this:parameter" minOccurs="0" maxOccurs="unbounded" />
+				<element ref="this:field" minOccurs="0" maxOccurs="unbounded" />
+			</sequence>
+		</complexType>
+	</element>
+	<element name="parameter" type="this:attribute">
+		<annotation>
+			<documentation>
+			Defines a mapping for a single parameter of the new event.  Its value element is used to set the value of the parameter with name 'name'
+			</documentation>
+		</annotation>
+	</element>
+	<element name="field" type="this:attribute">
+		<annotation>
+			<documentation>
+			Defines a mapping for a single field of the new event.  Its value element is used to set the value of the field with name 'name'
+			</documentation>
+		</annotation>
+	</element>
+	<element name="field-value" type="this:attribute-value">
+		<annotation>
+			<documentation>
+			Define a mapping whose 'working value' is obtained from the field with name 'name'. 
+			</documentation>
+		</annotation>
+	</element>
+
+	<element name="parameter-value" type="this:attribute-value">
+		<annotation>
+			<documentation>
+			Define a mapping whose 'working value' is obtained from the paramter with name 'name'. 
+			</documentation>
+		</annotation>
+	</element>
+	<element name="constant" type="this:value">
+		<annotation>
+			<documentation>
+			Defines a constant value for use in field or parameter translation
+			</documentation>
+		</annotation>
 	</element>
 	<element name="passive-events">
 		<annotation>
