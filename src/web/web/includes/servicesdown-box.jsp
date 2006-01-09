@@ -1,4 +1,4 @@
-<!--
+<%--
 
 //
 // This file is part of the OpenNMS(R) Application.
@@ -32,7 +32,7 @@
 //      http://www.opennms.com/
 //
 
--->
+--%>
 
 <%-- 
   This page is included by other JSPs to create a box containing an
@@ -42,7 +42,10 @@
   that directs all URLs to be relative to the servlet context.
 --%>
 
-<%@page language="java" contentType="text/html" session="true" import="org.opennms.web.outage.*" %>
+<%@page language="java"
+        contentType="text/html"
+        session="true"
+        import="org.opennms.web.outage.*" %>
 
 <%! 
     public static final int ROW_COUNT = 12;
@@ -53,9 +56,9 @@
     OutageSummary[] summaries = this.model.getCurrentOutageSummaries();
 %>
 
-<table width="100%" border="1" cellspacing="0" cellpadding="2" bordercolor="black" BGCOLOR="#cccccc">
-  <tr> 
-    <td BGCOLOR="#999999"><a href="outage/current.jsp"><b>Nodes with Outages</b></a></td>
+<table class="standardfirst">
+  <tr>
+     <td class="standardheader"><a href="outage/current.jsp">Nodes with Outages</a></td>
   </tr>
 
 <% for( int i=0; i < ROW_COUNT; i++ ) { %>
@@ -65,16 +68,16 @@
        int nodeId = summary.getNodeId();
     %>
     <tr>
-      <td align="left"><a href="element/node.jsp?node=<%=nodeId%>"><nobr><%=nodeLabel%></nobr></a></td>
+      <td class="standard"><a href="element/node.jsp?node=<%=nodeId%>"><nobr><%=nodeLabel%></nobr></a></td>
     </tr>
   <% } else { %>
-    <tr><td>&nbsp;</td></tr>
+    <tr><td class="standard">&nbsp;</td></tr>
   <% } %>
 <% } %>
 
 <% if( summaries.length > ROW_COUNT ) { %>
   <tr>
-    <td>
+    <td class="standard">
       <a HREF="outage/index.jsp"><%=summaries.length - ROW_COUNT%> more</a>
     </td>
   </tr>

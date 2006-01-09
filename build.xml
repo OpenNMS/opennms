@@ -1770,9 +1770,9 @@ OpenNMS as part of the post-install.
 	
 <target name="install.webetc" depends="prep">
 	<mkdir dir="${install.prefix}${install.servlet.dir}/WEB-INF"/>
-	<copy todir="${install.prefix}${install.servlet.dir}/WEB-INF" filtering="yes" overwrite="${filter.overwrite}">
+	<copy todir="${install.prefix}${install.servlet.dir}/WEB-INF"
+              filtering="yes" overwrite="${filter.overwrite}">
 		<fileset dir="src/web/etc">
-				<include name="web.xml"/>
 				<include name="configuration.properties"/>
 		</fileset>
 	</copy>
@@ -1798,22 +1798,10 @@ OpenNMS as part of the post-install.
      </fileset>
   </copy>
   <mkdir dir="${install.prefix}${install.servlet.dir}"/>
-  <copy todir="${install.prefix}${install.servlet.dir}" filtering="yes"
+  <copy todir="${install.prefix}${install.servlet.dir}" filtering="no"
 	overwrite="${filter.overwrite}">
    <fileset dir="src/web/web">
     <include name="**/*"/>
-    <exclude name="**/*.jar"/>
-    <exclude name="**/*.png"/>
-    <exclude name="**/*.jpg"/>
-    <exclude name="**/*.gif"/>    
-   </fileset>
-  </copy>
-  <copy todir="${install.prefix}${install.servlet.dir}">
-   <fileset dir="src/web/web">
-    <include name="**/*.jar"/>
-    <include name="**/*.png"/>
-    <include name="**/*.jpg"/>
-    <include name="**/*.gif"/>        
    </fileset>
   </copy>
  </target>

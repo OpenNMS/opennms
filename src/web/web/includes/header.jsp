@@ -21,10 +21,7 @@
 	contentType="text/html"
 	session="true"
 	import="java.text.DateFormat,
-		java.io.File,
-		java.util.LinkedList,
-		java.util.Iterator,
-		org.opennms.web.authenticate.Authentication,
+		java.util.Date,
 		org.opennms.netmgt.config.NotifdConfigFactory
 		"
 %>
@@ -37,30 +34,32 @@
     public void init() throws ServletException {
         try {
             NotifdConfigFactory.init();
-        }
-        catch( Exception e ) {/*notice status will be unknown if the factory can't be initialized*/}
+        } catch (Throwable t) {
+	    // notice status will be unknown if the factory can't be initialized
+	}
     }
 %>
 
 <%
-    String title = request.getParameter( "title" );
-    String location = request.getParameter( "location" );
-    String[] breadcrumbs = request.getParameterValues( "breadcrumb" );
+    Date now = new Date(); 
+    pageContext.setAttribute("date", dateFormatter.format(now));
+    pageContext.setAttribute("time", timeFormatter.format(now));
 
-    if( breadcrumbs == null ) {
-        breadcrumbs = new String[0];
+    String noticeStatus;
+    try {
+        noticeStatus = NotifdConfigFactory.getInstance().getPrettyStatus();
+    } catch (Throwable t) {
+        noticeStatus = "<font color=\"ff0000\">Unknown</font>";
     }
-
-    java.util.Date now = new java.util.Date(); 
-    String date = dateFormatter.format( now );
-    String time = timeFormatter.format( now );
-    File mapEnableFile = new File("@install.etc.dir@/map.enable");
-
+    pageContext.setAttribute("noticeStatus", noticeStatus);
 %>
+
 
 <!-- Header -->
 
 
+
+<%--
 
 <!-- Start of new box stuff -->
 <div class="rbroundbox">
@@ -70,6 +69,7 @@
 
  <div class="rbcontent">
   <!-- <p> -->
+--%>
 
 <div id="header">
 
@@ -80,27 +80,19 @@
    </span><!-- /headerlogo -->
   
    <span id="headertitle">
-    <%=title%>
+    <c:out value="${param.title}"/>
    </span><!-- /headertitle -->
   
    <span id="headerinfo">
     <div id="outer">
      <div id="middle">
       <div id="inner">
-          [<%=request.getRemoteUser()%>]<br>
+          [<c:out value="${pageContext.request.remoteUser}"/>]<br>
     
-          <%
-            String status;
-            try {
-                status = NotifdConfigFactory.getInstance().getPrettyStatus();
-            } catch (Exception e) {
-                status = "<font color=\"ff0000\">Unknown</font>";
-    	}
-          %>
-          Notices <%= status %><br/>
+          Notices <c:out value="${noticeStatus}" escapeXml="false"/><br/>
           <div id="headerdate">
-            <%=date%><br/>
-            <%=time%>
+            <c:out value="${date}"/><br/>
+            <c:out value="${time}"/>
           </div><!-- /headerdate -->
       </div><!-- /inner -->
      </div><!-- /middle -->
@@ -113,104 +105,26 @@
   
   </div><!-- /headertop -->
 
- <%!
-	public class NavBarEntry {
-		private String m_locationMatch;
-		private String m_URL;
-		private String m_name;
-
-		public NavBarEntry(String locationMatch, String URL, String name) {
-			m_locationMatch = locationMatch;
-			m_URL = URL;
-			m_name = name;
-		}
-
-		public String getLocationMatch() {
-			return m_locationMatch;
-		}
-
-		public String getURL() {
-			return m_URL;
-		}
-
-		public String getName() {
-			return m_name;
-		}
-
-		public boolean isMatchingLocation(String locationMatch) {
-			return m_locationMatch.equals(locationMatch);
-		}
-	}
- %>
-
- <%
-
-	LinkedList headerNavBar = new LinkedList();
-	headerNavBar.add(new NavBarEntry("nodelist", "element/nodelist.jsp", "Node List"));
-	headerNavBar.add(new NavBarEntry("element", "element/index.jsp", "Search"));
-	headerNavBar.add(new NavBarEntry("outages", "outage/index.jsp", "Outages"));
-	headerNavBar.add(new NavBarEntry("event", "event/index.jsp", "Events"));
-	headerNavBar.add(new NavBarEntry("alarm", "alarm/index.jsp", "Alarms"));
-	headerNavBar.add(new NavBarEntry("notification", "notification/index.jsp", "Notification"));
-	headerNavBar.add(new NavBarEntry("asset", "asset/index.jsp", "Assets"));
-	//headerNavBar.add(new NavBarEntry("security", "security.jsp", "Security"));
-	headerNavBar.add(new NavBarEntry("report", "report/index.jsp", "Reports"));
-	if (mapEnableFile.exists()) {
-	  headerNavBar.add(new NavBarEntry("map", "map/index.jsp", "Map"));
-	} 
-	if(request.isUserInRole(Authentication.ADMIN_ROLE)) {
-	  headerNavBar.add(new NavBarEntry("admin", "admin/index.jsp", "Admin"));
-	}
-	headerNavBar.add(new NavBarEntry("help", "help/index.jsp", "Help"));
-
-	request.setAttribute("headerNavBar", headerNavBar);
-	request.setAttribute("location", location);
-
-	request.setAttribute("breadcrumbs", breadcrumbs);
- %>
 
 
 <span id="headernavbar">
           <span id="headernavbarleft">
             <a href="index.jsp">Home</a> 
-	    <c:forEach var="breadcrumb" items="${breadcrumbs}">
+	    <c:forEach var="breadcrumb" items="${paramValues.breadcrumb}">
               &gt; <c:out value="${breadcrumb}" escapeXml="false"/>
 	    </c:forEach>
 	  </span>
 
           <span id="headernavbarright">
-
-   	  <div id="navbar">
-	  <ul>
-	    <c:forEach var="headerNavEntry" items="${headerNavBar}">
-	      <c:choose>
-	        <c:when test="${headerNavEntry.name == 'Help'}">
-	          <li class="last">
-	        </c:when>
-		<c:otherwise>
-	          <li>
-		</c:otherwise>
-	      </c:choose>
-
-	      <c:choose>
-	        <c:when test="${location == headerNavEntry.locationMatch}">
-	          <c:out value="${headerNavEntry.name}"/>
-	        </c:when>
-		<c:otherwise>
-	          <a href="<c:out value="${headerNavEntry.URL}"/>"><c:out value="${headerNavEntry.name}"/></a>
-		</c:otherwise>
-	      </c:choose>
-              </li>
-	      </c:forEach>
-	    </ul>
-	  </div>
-</span>
+            <jsp:include page="/includes/navbar.jsp" flush="false"/>
+          </span>
 </span>
 
 
 </div>
 
 
+<%--
   <!-- End of new header -->
   <!-- </p> -->
  </div><!-- /rbcontent -->
@@ -220,3 +134,4 @@
  </div>
 </div><!-- /rbroundbox -->
 
+--%>

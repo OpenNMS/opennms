@@ -1,4 +1,4 @@
-<!--
+<%--
 
 //
 // This file is part of the OpenNMS(R) Application.
@@ -39,9 +39,15 @@
 //      http://www.opennms.org/
 //      http://www.opennms.com///
 
--->
+--%>
 
-<%@page language="java" contentType="text/html" session="true" import="org.opennms.web.authenticate.Authentication" %>
+<%@page language="java"
+	contentType="text/html"
+	session="true"
+	import="org.opennms.web.authenticate.Authentication,
+		org.opennms.core.resource.Vault
+	"
+%>
 
 <%
     boolean role = request.isUserInRole(Authentication.ADMIN_ROLE);
@@ -75,7 +81,7 @@
       <table width="100%" cellspacing="0" cellpadding="0"border="0">
         <tr>
           <td>Version:</td>
-          <td>@product.fullversion.stamp@</td>
+          <td><%=Vault.getProperty("version.full")%></td>
         </tr>
         <tr>
           <td>Server Time:</td>

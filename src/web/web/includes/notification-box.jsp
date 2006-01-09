@@ -1,4 +1,4 @@
-<!--
+<%--
 
 //
 // This file is part of the OpenNMS(R) Application.
@@ -38,7 +38,7 @@
 //      http://www.opennms.com/
 //
 
--->
+--%>
 
 <%--
   This page is included by other JSPs to create a box containing a
@@ -55,42 +55,31 @@
     protected java.text.ChoiceFormat formatter = new java.text.ChoiceFormat( "0#No outstanding notices|1#1 outstanding notice|2#{0} outstanding notices" );
 %>
 
-<table width="100%" border="1" cellspacing="0" cellpadding="2" id="notification" bordercolor="black" bgcolor="#cccccc">
-  <tr> 
-    <td bgcolor="#999999" ><b><a href="notification/index.jsp">Notification</a></b></td>
+<table class="standardfirst">
+  <tr>
+    <td class="standardheader"><a href="notification/index.jsp">Notification</a></td>
   </tr>
-  <tr> 
-    <td>
-      <table width="100%" border="0" cellspacing="0" cellpadding="1">
+
         <tr>
-          <td>
+          <td class="standard">
             <a href="notification/browse?acktype=unack&filter=<%= java.net.URLEncoder.encode("user="+request.getRemoteUser()) %>">Check Your Notices</a>
-          </td>
-        </tr>
-        <tr>
-          <td>
+            <br/>
+
             <%
                 int count = this.model.getOutstandingNoticeCount(request.getRemoteUser());
                 String format = this.formatter.format( count );
                 out.println( java.text.MessageFormat.format( format, new Object[] { new Integer(count) } ));
              %>
-          </td>
-        </tr>
-        <tr>
-          <td>
+	    <br/>
+
             <a href="notification/browse?acktype=unack">Check All Open Notices</a>
-          </td>
-        </tr>
-        <tr>
-          <td>
+            <br/>
+
             <%
                 count = this.model.getOutstandingNoticeCount();
                 format = this.formatter.format( count );
                 out.println( java.text.MessageFormat.format( format, new Object[] { new Integer(count) } ));
              %>
-          </td>
-        </tr>
-      </table>
     </td>
   </tr>
 </table>

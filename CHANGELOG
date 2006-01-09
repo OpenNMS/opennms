@@ -1,5 +1,11 @@
 1.3.1 to 1.3.2
 ----------------------------------------------------------------------
+- Pull navbar from the top and bottom of the web pages into its own include
+  file and use a bean to drive its operation instead of a ton of if statements.
+- Pull ant filter replacements out of the web app from {header,footer}.jsp
+  and about.jsp.  Use configuration.properties/Vault.getProperty() and
+  Vault.homeDir() instead.
+- More CSS-ification of the webapp.  Clean up the formatting of styles.ccs.
 - Add a standalone ping utility to org.opennms.protocols.icmp.IcmpSocket.
   To use, do a "sh build.sh jar" and then execute this as root:
       java -Dopennms.library.jicmp=`pwd`/work/jicmp/libjicmp.* \

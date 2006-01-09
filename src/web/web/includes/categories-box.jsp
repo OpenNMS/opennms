@@ -75,19 +75,17 @@
 		m_category_list.isDisconnected(earliestUpdate);
 %>
 
-	<table width="100%" border="1" cellspacing="0" 
-		    cellpadding="2" id="categories" bordercolor="black"
-		    bgcolor="#cccccc">
+        <table class="standardfirst">
 
 <%
 	for (Iterator i = categoryData.keySet().iterator(); i.hasNext(); ) {
 	    String sectionName = (String) i.next();
 %>
 
-	    <tr bgcolor="#999999">
-	    <td width="50%"><b><%= sectionName %></b></td>
-	    <td width="20%" align="right"><b>Outages</b></td>
-	    <td width="30%" align="right"><b>24hr Avail</b></td>
+	    <tr>
+	    <td class="standardheader" width="50%"><%= sectionName %></td>
+	    <td class="standardheader" width="20%" align="right">Outages</td>
+	    <td class="standardheader" width="30%" align="right">24hr Avail</td>
 	    </tr>
 	    
 <%
@@ -100,17 +98,17 @@
 
 		<tr>
 
-		<td><a href="<%= response.encodeURL(
+		<td class="standard"><a href="<%= response.encodeURL(
 				"rtc/category.jsp?category=" +
 			    	URLEncoder.encode(categoryName, "UTF-8")) %>"
 		       title="<%= category.getTitle() %>"
 		    ><%= categoryName %></a></td>
-		<td bgcolor="<%= (opennmsDisconnect ? "lightblue" :
+		<td class="standard" bgcolor="<%= (opennmsDisconnect ? "lightblue" :
 			       category.getOutageColor()) %>"
 	            align="right"
 		    title="Updated: <%= category.getLastUpdated() %>"
 		><%= category.getOutageText() %></td>
-		<td bgcolor="<%= (opennmsDisconnect ? "lightblue" :
+		<td class="standard" bgcolor="<%= (opennmsDisconnect ? "lightblue" :
 			      category.getAvailColor()) %>"
 		    align="right" 
 		    title="Updated: <%= category.getLastUpdated() %>"
@@ -122,10 +120,10 @@
 	}
 %>
     
-	<tr bgcolor="#999999">
+	<tr>
 
 <%	if (opennmsDisconnect) { %>
-	    <td colspan="3">
+	    <td class="standardheader" colspan="3">
 	      <font color="#bb1111">
 	        OpenNMS Disconnect -- is the OpenNMS daemon running?
 		<br/>
@@ -136,7 +134,7 @@
 	      </font>
             </td>
 <%	} else { %>
-	    <td colspan="3">Percentage over last 24 hours</td>
+	    <td class="standardheaderplain" colspan="3">Percentage over last 24 hours</td>
 <%	} %>
 
 	</tr>

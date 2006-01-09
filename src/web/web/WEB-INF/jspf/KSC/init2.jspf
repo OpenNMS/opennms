@@ -1,4 +1,4 @@
-<!--
+<%--
  
 //
 // This file is part of the OpenNMS(R) Application.
@@ -34,7 +34,7 @@
 //      http://www.opennms.org/
 //      http://www.opennms.com/
 
--->
+--%>
 
 <%!
     public PerformanceModel model = null;

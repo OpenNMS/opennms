@@ -1,4 +1,4 @@
-<!--
+<%--
 
 //
 // This file is part of the OpenNMS(R) Application.
@@ -36,7 +36,7 @@
 //      http://www.opennms.com/
 //
 
--->
+--%>
 
 <%--
   This page is included by other JSPs to create a box containing an
@@ -47,7 +47,16 @@
 --%>
 
 
-<%@page language="java" contentType="text/html" session="true" import="java.util.*,org.opennms.web.Util,org.opennms.web.performance.*,org.opennms.netmgt.config.kscReports.*,org.opennms.netmgt.config.KSC_PerformanceReportFactory" %>
+<%@page language="java"
+	contentType="text/html"
+	session="true"
+	import="java.util.*,
+		org.opennms.web.Util,
+		org.opennms.web.performance.*,
+		org.opennms.netmgt.config.kscReports.*,
+		org.opennms.netmgt.config.KSC_PerformanceReportFactory"
+%>
+
 
 <%@ include file="/WEB-INF/jspf/KSC/init2.jspf" %>
 
@@ -75,42 +84,37 @@
 
 <%-- Start the HTML Page Definition here --%>
 
+<!--
 <table width="100%" border="1" cellspacing="0" cellpadding="2" id="ksc" bordercolor="black" bgcolor="#cccccc">
   <tr>
     <td bgcolor="#999999" ><b><a href="KSC/index.jsp">KSC Reports</a></b></td>
   </tr>
-
+-->
+<table class="standard" id="ksc">
+  <tr>
+    <td class="standardheader"><a href="KSC/index.jsp">KSC Reports</a></td>
+  </tr>
   
   <tr>
-    <td valign="top">
+    <td class="standardmorepadding">
       <form method="get" name="choose_report" action="KSC/form_proc_main.jsp">
          <input type="hidden" name="report_action" value="View">
-         <table>
 	    <% if (report_array.length < 1) { %>
-	    <br>
-            <tr>
-		<td>
-		    <p>No KSC reports defined</p>
-		</td>
-            </tr>
+	      <br/>
+	      No KSC reports defined
 	    <% } else { %>
-            <tr>
-                <td>
-    		<font size="-1">Choose a report to view</font><br>
-                    <select name="report" size="1">
+    		<font size="-1">Choose a report to view</font>
+                <br/>
+
+                    <select style="width: 100%;" name="report" size="1">
                             <% for( int i=0; i < r_count; i++ ) { %>
                                 <option value="<%=i%>"> <%=report_array[i].getTitle()%>  </option>
                             <% } %>
-                        </select>
-                </td>
-            </tr>
-          <tr>
-            <td>
+                    </select>
+                <br/>              
+
               <input type="submit" value="Execute Query" />
-            </td>
-          </tr>
 		<% } %>
-        </table>
       </form>
     
     </td>

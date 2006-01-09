@@ -8,28 +8,68 @@
  */
 
 /* set millions of background images */
-.rbroundbox { background: url(../images/nt.gif) repeat; }
-.rbtop div { background: url(../images/tl.gif) no-repeat top left; }
-.rbtop { background: url(../images/tr.gif) no-repeat top right; }
-.rbbot div { background: url(../images/bl.gif) no-repeat bottom left; }
-.rbbot { background: url(../images/br.gif) no-repeat bottom right; }
+.rbroundbox
+{
+	background: url(../images/nt.gif) repeat;
+}
+
+.rbtop div
+{
+	background: url(../images/tl.gif) no-repeat top left;
+}
+
+.rbtop
+{
+	background: url(../images/tr.gif) no-repeat top right;
+}
+
+.rbbot div
+{
+	background: url(../images/bl.gif) no-repeat bottom left;
+}
+
+.rbbot
+{
+	background: url(../images/br.gif) no-repeat bottom right;
+}
 
 /* height and width stuff, width not really neccesary. */
-.rbtop div, .rbtop, .rbbot div, .rbbot {
-width: 100%;
-height: 7px;
-font-size: 1px;
+.rbtop div, .rbtop, .rbbot div, .rbbot
+{
+	width: 100%;
+	height: 7px;
+	font-size: 1px;
 }
-.rbcontent { margin: 0 7px; }
-.rbroundbox { width: 100%; margin: 1em auto; }
+
+.rbcontent
+{
+	margin: 0 7px;
+}
+
+.rbroundbox
+{
+	width: 100%; margin: 1em auto;
+}
 
 /* Color the unvisited and visited links the same blue */
-A:link    { color: #0000cc }
-A:active  { color: #ff0000 }
-A:visited { color: #0000cc }
+A:link
+{
+	color: #0000cc
+}
+
+A:active
+{
+	color: #ff0000
+}
+
+A:visited
+{
+	color: #0000cc
+}
 
 /* I don't specify the margins here because Netscape 4.x ignores them. */
-BODY {
+BODY
+{
  	margin: 0px;
   	padding: 0px;
 	background:    #ffffff;
@@ -47,7 +87,7 @@ TD.footer
 /* Widget Box Body */
 .widget-box
 {
-    background: #cccccc;    
+	background: #cccccc;    
 }
 
 
@@ -56,8 +96,7 @@ TD.footer
  */
 .widget-box-fieldname
 {
-    background: #999999; 
-
+	background: #999999; 
 }
 
 #eventlist tr.eventlist-head
@@ -81,8 +120,8 @@ TD.footer
 }
 
 
-
-#nav, #nav ul { /* all lists */
+#nav, #nav ul	/* all lists */
+{
 	padding: 0;
 	margin: 0;
 	list-style: none;
@@ -90,7 +129,8 @@ TD.footer
 	width: 11em;
 }
 
-#nav li { /* all list items */
+#nav li		/* all list items */
+{
 	position: relative;
 	float: left;
 	line-height: 1.25em;
@@ -98,18 +138,21 @@ TD.footer
 	width: 11em;
 }
 	
-#nav li ul { /* second-level lists */
+#nav li ul	/* second-level lists */
+{
 	position: absolute;
 	left: -999em;
 	margin-left: 11.05em;
 	margin-top: -1.35em;
 }
 
-#nav li ul ul { /* third-and-above-level lists */
+#nav li ul ul	/* third-and-above-level lists */
+{
 	left: -999em;
 }
 
-#nav li a {
+#nav li a
+{
 	width: 11em;
 	w\idth: 10em;
 	display: block;
@@ -121,21 +164,25 @@ TD.footer
 	padding: 0 0.5em;
 }
 
-#nav li a:hover {
+#nav li a:hover
+{
 	color: #cccccc;
 	background-color: black;
 }
 
-#nav li:hover ul ul, #nav li:hover ul ul ul, #nav li.sfhover ul ul, #nav li.sfhover ul ul ul {
+#nav li:hover ul ul, #nav li:hover ul ul ul, #nav li.sfhover ul ul, #nav li.sfhover ul ul ul
+{
 	left: -999em;
 }
 	
-#nav li:hover ul, #nav li li:hover ul, #nav li li li:hover ul, #nav li.sfhover ul, #nav li li.sfhover ul, #nav li li li.sfhover ul { /* lists nested under hovered list items */
+#nav li:hover ul, #nav li li:hover ul, #nav li li li:hover ul, #nav li.sfhover ul, #nav li li.sfhover ul, #nav li li li.sfhover ul	/* lists nested under hovered list items */
+{
 	left: auto;
 }
 
-#content {
-	margin-left: 12em;
+#content
+{
+	margin: 1em;
 }
 
 #navbar ul
@@ -165,16 +212,6 @@ TD.footer
 	display: inline;
 }
 
-/*
-#footer { 
-        text-align: center;
-        padding: 2px;
-	background-color: #c9dfc9;
-        font-size: 10px;
-	font-family: Arial, Verdana, Helvetica, sans-serif; 
-}
-*/
-
 #linkbar
 {
 	padding: 0 0 1em 0;
@@ -194,126 +231,219 @@ TD.footer
 	padding-right: 0.75em;
 }
 
-#node {
+div.standard
+{
         clear: both;
         padding: 0.1em 1.0em 0.75em 0.75em;
 }
 
-#node table.first { 
+table.standardfirst
+{ 
+        width: 100%;
+	border: none;
+	border-spacing: 0pt;
+	background-color: #cccccc;
+	border-collapse: collapse;
+        margin-top: 0;
+}
+
+table.standard
+{ 
+        width: 100%;
+	background-color: #cccccc;
+	border-collapse: collapse;
+        margin-top: 1em;
+}
+
+td.standardheader
+{
+	background-color: #999999;
+	border: 2pt solid black;
+	font-weight: bold;
+	padding: 2px;
+}
+
+td.standardheaderplain
+{
+	background-color: #999999;
+	border: 2pt solid black;
+	padding: 2px;
+}
+
+td.standardnavlinks
+{
+        width: 25%;
+}
+
+td.standardwarning
+{
+        background-color: cyan;
+}
+
+td.standard
+{
+	border: 2pt solid black;
+	padding: 2px;
+}
+
+td.standardmorepadding
+{
+	border: 2pt solid black;
+	padding: 1px 3px 1px 3px;
+}
+
+#nodelist table
+{ 
+        width: 100%;
+        border: 0;
+}
+
+#nodelist td
+{
+        padding: 2px;
+	width: 50%;
+}
+
+#node
+{
+        clear: both;
+        padding: 0.1em 1.0em 0.75em 0.75em;
+}
+
+#node table.first
+{
         width: 100%;
 	background-color: black;
         margin-top: 0;
 }
 
-#node table { 
+#node table
+{
         width: 100%;
 	background-color: black;
         margin-top: 1em;
 }
 
-#node td.header {
+#node td.header
+{
 	background-color: #999999;
 	font-weight: bold;
 }
 
-#node td.headerplain {
+#node td.headerplain
+{
 	background-color: #999999;
 }
 
-#node td.navlinks { 
+#node td.navlinks
+{
         width: 25%;
 }
 
-#node td.warning { 
+#node td.warning
+{
         background-color: cyan;
 }
 
-#node td { 
+#node td
+{
 	background-color: #cccccc;
 }
 
 
-#interface {
+#interface
+{
         clear: both;
         padding: 0.1em 1.0em 0.75em 0.75em;
 }
 
 
-#interface table.first { 
+#interface table.first
+{
         width: 100%;
 	background-color: black;
         margin-top: 0;
 }
 
-#interface table { 
+#interface table
+{
 	background-color: black;
         width: 100%;
         margin-top: 1em;
 }
 
-#interface td.header {
+#interface td.header
+{
 	background-color: #999999;
 	font-weight: bold;
 }
 
-#interface td.headerplain {
+#interface td.headerplain
+{
 	background-color: #999999;
 }
 
-#interface td { 
+#interface td
+{
 	background-color: #cccccc;
 }
 
 
 #availability-box table.inner
 { 
-  margin-top: 0;
+	margin-top: 0;
 }
 
 #availability-box td.header
 {
-  width: 70%;
-  background-color: #999999;
-  font-weight: bold;
+	width: 70%;
+	background-color: #999999;
+	font-weight: bold;
 }
 
 #availability-box td.headerplain
 {
-  width: 70%;
-  background-color: #999999;
+	width: 70%;
+	background-color: #999999;
 }
 
-#availability-box td.availnode { 
+#availability-box td.availnode
+{ 
         text-align: left;
         vertical-align: top;
         width: 25%;
 }
 
-#availability-box td.availunmanaged { 
+#availability-box td.availunmanaged
+{
 	background-color: #cccccc;
 	font-weight: bold;
         text-align: right;
 }
 
-#availability-box td.availgood { 
+#availability-box td.availgood
+{
 	background-color: green;
 	font-weight: bold;
         text-align: right;
 }
 
-#availability-box td.availwarn { 
+#availability-box td.availwarn
+{
 	background-color: #ffff33;
 	font-weight: bold;
         text-align: right;
 }
 
-#availability-box td.availcrit { 
+#availability-box td.availcrit
+{
 	background-color: #ff3333;
 	font-weight: bold;
         text-align: right;
 }
 
-#eventlist {
+#eventlist
+{
         clear: both;
         padding: 0.1em 1.0em 0.75em 0.75em;
 }
@@ -322,62 +452,73 @@ TD.footer
 {
 }
 
-#include-eventlist table { 
+#include-eventlist table
+{
         width: 100%;
 	background-color: black;
         margin-top: 0;
 }
 
-#include-eventlist td.header {
+#include-eventlist td.header
+{
 	background-color: #999999;
 	font-weight: bold;
 }
 
-#include-eventlist td.headerplain {
+#include-eventlist td.headerplain
+{
 	background-color: #999999;
 }
 
-#include-eventlist td.sev_indeterminate {
+#include-eventlist td.sev_indeterminate
+{
         background-color: lightblue;
 }
 
-#include-eventlist td.sev_cleared {
+#include-eventlist td.sev_cleared
+{
         background-color: white;
 }
 
-#include-eventlist td.sev_normal {
+#include-eventlist td.sev_normal
+{
         background-color: green;
 }
 
-#include-eventlist td.sev_warning {
+#include-eventlist td.sev_warning
+{
         background-color: cyan;
 }
 
-#include-eventlist td.sev_minor {
+#include-eventlist td.sev_minor
+{
         background-color: yellow;
 }
 
-#include-eventlist td.sev_major {
+#include-eventlist td.sev_major
+{
         background-color: orange;
 }
 
-#include-eventlist td.sev_critical {
+#include-eventlist td.sev_critical
+{
         background-color: red;
 }
 
-#include-eventlist td { 
+#include-eventlist td
+{ 
 	background-color: #cccccc;
 }
 
 #include-charts
 { 
-  text-align: center;
-  clear: both;
+	text-align: center;
+	clear: both;
 }
 
 #performance-results
 { 
-  text-align: center;
+	text-align: center;
 }
 
 /*#performance-results-periods td */
@@ -388,31 +529,37 @@ TD.footer
   text-align: center;
 }
 
-#header { 
+#header
+{
         margin-bottom: 2em;
 }
 
-#headertop { 
-/*        background: url(../images/logo-background.gif) repeat; */
+#headertop
+{ 
+        background: url(../images/logo-background.gif) repeat;
 /*        height: 82px; */
 }
 
-div.spacer { 
+div.spacer
+{
         clear: both;
         height: 0px;
 }
 
-div.center { 
+div.center
+{
         align: center;
 }
 
-#headerlogo {
+#headerlogo
+{
         width: 30%;
         float: left;
         padding: 6px 2px 6px 2px;
 }
 
-#headertitle {
+#headertitle
+{
         width: 50%;
         float: left;
 	font-weight: bold;
@@ -422,7 +569,8 @@ div.center {
         vertical-align: middle;
 }
 
-#headerinfo {
+#headerinfo
+{
         float: right;
         text-align: right;
         padding: 4px;
@@ -430,7 +578,8 @@ div.center {
         vertical-align: middle;
 }
 
-#headerdate {
+#headerdate
+{
         float: right;
         text-align: right;
 	font-weight: bold;
@@ -440,7 +589,8 @@ div.center {
 	font-family: Arial, Verdana, Helvetica, sans-serif;
 }
 
-#headernavbarleft {
+#headernavbarleft
+{
         clear: both;
         float: left;
         padding: 2px;
@@ -448,52 +598,61 @@ div.center {
 	font-family: Arial, Verdana, Helvetica, sans-serif; 
 }
 
-#headernavbarright {
+#headernavbarright
+{
         float: right;
         padding: 2px;
         font-size: 12px;
 	font-family: Arial, Verdana, Helvetica, sans-serif; 
 }
 
-#contentleft {
+#contentleft
+{
         width: 48%;
         float: left;
 }
 
-#contentleft td { 
+#contentleft td
+{
         padding: 2px;
 }
 
-#contentright { 
+#contentright
+{
         width: 48%;
         float: right;
 }
 
-#index-contentleft {
+#index-contentleft
+{
         width: 24%;
         float: left;
         padding-left: 1%;
 }
 
-#index-contentmiddle {
+#index-contentmiddle
+{
         width: 48%;
         float: left;
         padding-left: 1%;
 }
 
-#index-contentright { 
+#index-contentright
+{
         width: 24%;
         float: right;
         padding-left: 1%;
         padding-right: 1%;
 }
 
-#prefooter { 
+#prefooter
+{
         clear: both;
         padding-top: 16px;
 }
 
-#footer { 
+#footer
+{
         text-align: center;
         padding: 2px;
 	background-color: #c9dfc9;
@@ -502,13 +661,15 @@ div.center {
 }
 
 /*
-#footer a { 
+#footer a
+{
         padding: 0 0.25em;
 	border: 1px solid #ffffff;
 }
 */
 
-#copyright { 
+#copyright
+{
         text-align: center;
         padding: 3px;
         font-size: 10px;
@@ -518,11 +679,41 @@ div.center {
 
 /* XXX hacking for vertical centering */
 
-#outer {height: 82px; overflow: hidden; position: relative;}
-#outer[id] {display: table; position: static;}
+#outer
+{
+	height: 82px;
+	overflow: hidden;
+	position: relative;
+}
 
-#middle {position: absolute; top: 50%;}  /* for explorer only*/
-#middle[id] {display: table-cell; vertical-align: middle; position: static;}
+#outer[id]
+{
+	display: table;
+	position: static;
+}
 
-#inner {position: relative; top: -50%}  /* for explorer only */
-/* optional: #inner[id] {position: static;} */
+#middle
+{
+	position: absolute;
+	top: 50%;
+}  /* for explorer only*/
+
+#middle[id]
+{
+	display: table-cell;
+	vertical-align: middle;
+	position: static;
+}
+
+#inner
+{
+	position: relative;
+	top: -50%
+}  /* for explorer only */
+
+/* optional:
+#inner[id]
+{
+	position: static;
+}
+*/

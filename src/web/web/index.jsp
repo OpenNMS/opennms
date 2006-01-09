@@ -67,7 +67,7 @@
 
 
 
-
+<br/>
 
 <!-- Body -->
   
@@ -75,27 +75,36 @@
     <div id="index-contentleft">
 
       <!-- Services down box -->
+<%--
   <div class="rbroundbox">
 	<div class="rbtop"><div></div></div>
 		<div class="rbcontent"><p>
-		<jsp:include page="/includes/servicesdown-box.jsp" flush="false" />	</p>
+--%>
+		<jsp:include page="/includes/servicesdown-box.jsp" flush="false" />
+<%--
+                </p>
 		</div><!-- /rbcontent -->
 	<div class="rbbot"><div></div></div>
 </div><!-- /rbroundbox -->    
+--%>
 
     </div>
 
     <!-- Middle Column -->
     <div id="index-contentmiddle">
       <!-- category box(es) -->    
+<%--
 <div class="rbroundbox">
 	<div class="rbtop"><div></div></div>
 		<div class="rbcontent"><p>
-		<jsp:include page="/includes/categories-box.jsp" flush="false" /> 	</p>
+--%>
+		<jsp:include page="/includes/categories-box.jsp" flush="false" />
+<%--
+                </p>
 		</div><!-- /rbcontent -->
 	<div class="rbbot"><div></div></div>
 </div><!-- /rbroundbox -->    
-      
+--%>
 
                
     </div>
@@ -105,53 +114,71 @@
     <!-- Column 3 of Body -->  
     <div id="index-contentright">
       <!-- notification box -->    
+<%--
       <div class="rbroundbox">
 	<div class="rbtop"><div></div></div>
 		<div class="rbcontent"><p>
-		<jsp:include page="/includes/notification-box.jsp" flush="false" />	</p>
+--%>
+		<jsp:include page="/includes/notification-box.jsp" flush="false" />
+<%--
+                </p>
 		</div><!-- /rbcontent -->
 	<div class="rbbot"><div></div></div>
       </div><!-- /rbroundbox -->    
-      
+--%>
 
       <!-- Performance box -->    
+<%--
       <div class="rbroundbox">
 	<div class="rbtop"><div></div></div>
 		<div class="rbcontent"><p>
-		 <jsp:include page="/includes/performance-box.jsp" flush="false" />	</p>
+--%>
+		 <jsp:include page="/includes/performance-box.jsp" flush="false" />
+<%--
+                </p>
 		</div><!-- /rbcontent -->
 	<div class="rbbot"><div></div></div>
       </div><!-- /rbroundbox -->        
-
+--%>
 
       <!-- Response Time box -->    
+<%--
       <div class="rbroundbox">
 	<div class="rbtop"><div></div></div>
 		<div class="rbcontent"><p>
-		<jsp:include page="/includes/response-box.jsp" flush="false" />	</p>
+--%>
+		<jsp:include page="/includes/response-box.jsp" flush="false" />
+<%--
+                </p>
 		</div><!-- /rbcontent -->
 	<div class="rbbot"><div></div></div>
       </div><!-- /rbroundbox -->        
-
+--%>
           
       <!-- KSC Reports box -->    
+<%--
       <div class="rbroundbox">
 	<div class="rbtop"><div></div></div>
 		<div class="rbcontent"><p>
-		<jsp:include page="/includes/ksc-box.jsp" flush="false" />	</p>
+--%>
+		<jsp:include page="/includes/ksc-box.jsp" flush="false" />
+<%--
+                </p>
 		</div><!-- /rbcontent -->
 	<div class="rbbot"><div></div></div>
       </div><!-- /rbroundbox -->          
+--%>
  
-      
-      <!-- security box -->    
       <%--
+      <!-- security box -->    
         Commenting out the security box include until it is functional
         <jsp:include page="/includes/security-box.jsp" flush="false" />
       --%>
     </div>
 
-<br>
+<div class="spacer"></div>
+<br/>
+
 <jsp:include page="/includes/charts.jsp" flush="false" />
 
 <jsp:include page="/includes/footer.jsp" flush="false" />
