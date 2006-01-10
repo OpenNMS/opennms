@@ -1,13 +1,14 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2002-2003 The OpenNMS Group, Inc.  All rights reserved.
+// OpenNMS(R) is Copyright (C) 2002-2004 The OpenNMS Group, Inc.  All rights reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included code and modified
 // code that was published under the GNU General Public License. Copyrights for modified 
 // and included code are below.
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Copyright (C) 2004 Eric Molitor (eric@tuxbot.com)
 // Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -47,7 +48,10 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.apache.catalina.Container;
-import org.apache.catalina.Realm;
+import org.apache.catalina.LifecycleException;
+import org.apache.catalina.realm.Constants;
+import org.apache.catalina.realm.RealmBase;
+import org.apache.catalina.util.StringManager;
 import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
@@ -58,28 +62,23 @@ import org.opennms.netmgt.config.UserFactory;
 import org.opennms.netmgt.config.UserManager;
 import org.opennms.netmgt.config.users.User;
 
+
 /**
- * Implements the interface to allow Tomcat to check our users.xml file to
- * authenticate users.
- * 
- * <p>
- * This class is Tomcat-specific and will not be portable to other servlet
- * containers. It relies on packages supplied with Tomcat.
- * </p>
- * 
- * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * Implements the interface to allow Tomcat to check our users.xml file
+ * to authenticate users.
+ * <p/>
+ * <p>This class is Tomcat-specific and will not be portable to other
+ * servlet containers. It relies on packages supplied with Tomcat.</p>
+ *
+ * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski</A>
+ * @author <A HREF="mailto:eric@tuxbot.com">Eric Molitor</A>
+ * @author <A HREF="http://www.opennms.org/">OpenNMS</A>
  */
-public class OpenNMSTomcatRealm extends Object implements Realm {
+public class OpenNMSTomcatRealm extends RealmBase {
     /**
      * The relative path to find the users.xml file
      */
     protected String HOME_DIR = "/opt/OpenNMS/";
-
-    /**
-     * The Container with which this Realm is associated.
-     */
-    protected Container container = null;
 
     /**
      * Descriptive information about this Realm implementation.
@@ -90,6 +89,18 @@ public class OpenNMSTomcatRealm extends Object implements Realm {
      * Descriptive information about this Realm implementation.
      */
     protected static final String name = "OpenNMSTomcatRealm";
+
+        /**
+     * The global JNDI name of the <code>UserDatabase</code> resource
+     * we will be utilizing.
+     */
+    protected String resourceName = "UserDatabase";
+
+    /**
+     * The string manager for this package.
+     */
+    private static StringManager sm =
+        StringManager.getManager(Constants.Package);
 
     /**
      * The set of valid Principals for this Realm, keyed by user name.
@@ -108,9 +119,9 @@ public class OpenNMSTomcatRealm extends Object implements Realm {
     protected File magicUsersFile;
 
     /**
-     * The time (in milliseconds) that the magic-users.properties file was last
-     * modified. This value is kept so that the users.xml file will be reparsed
-     * anytime it is modified.
+     * The time (in milliseconds) that the magic-users.properties file was
+     * last modified.  This value is kept so that the users.xml
+     * file will be reparsed anytime it is modified.
      */
     protected long magicUsersLastModified = 0;
 
@@ -120,7 +131,7 @@ public class OpenNMSTomcatRealm extends Object implements Realm {
     protected Category log = Authentication.log;
 
     /**
-     * A mapping of special roles to authorized users. Each role name key
+     * A mapping of special roles to authorized users.  Each role name key
      * contains a <code>List</code> value of authorized user names.
      */
     protected Map magicRoleMapping = new HashMap();
@@ -130,25 +141,47 @@ public class OpenNMSTomcatRealm extends Object implements Realm {
      */
     protected boolean initialized = false;
 
+
     /**
      * Create a new instance.
      */
     public OpenNMSTomcatRealm() {
         this.propertyChangeSupport = new PropertyChangeSupport(this);
         Vault.getProperties().setProperty("opennms.home", HOME_DIR);
+    }
+
+    /**
+     * Return the global JNDI name of the <code>UserDatabase</code> resource
+     * we will be using.
+     */
+    public String getResourceName() {
+
+        return resourceName;
+
+    }
+
+
+    /**
+     * Set the global JNDI name of the <code>UserDatabase</code> resource
+     * we will be using.
+     *
+     * @param resourceName The new global JNDI name
+     */
+    public void setResourceName(String resourceName) {
+
+        this.resourceName = resourceName;
 
     }
 
     /**
      * Convenience method for parsing the users.xml file.
-     * 
-     * <p>
-     * This method is synchronized so only one thread at a time can parse the
-     * users.xml file and create the <code>principal</code> instance variable.
-     * </p>
+     * <p/>
+     * <p>This method is synchronized so only one thread at a time
+     * can parse the users.xml file and create the <code>principal</code>
+     * instance variable.</p>
      */
     protected synchronized void parse() {
-        // reset the principals cache
+        //reset the principals cache        
         this.principals = new HashMap();
 
         try {
@@ -179,7 +212,7 @@ public class OpenNMSTomcatRealm extends Object implements Realm {
         }
 
         try {
-            // load the "magic" users
+            //load the "magic" users
             Map[] maps = this.parseMagicUsers();
             Map magicUserToPasswordMapping = maps[0];
             this.magicRoleMapping = maps[1];
@@ -222,9 +255,8 @@ public class OpenNMSTomcatRealm extends Object implements Realm {
 
     /**
      * Set the Container with which this Realm has been associated.
-     * 
-     * @param container
-     *            The associated Container
+     *
+     * @param container The associated Container
      */
     public void setContainer(Container container) {
         this.container = container;
@@ -232,33 +264,32 @@ public class OpenNMSTomcatRealm extends Object implements Realm {
         this.log.debug("Initialized with container: " + this.container.getName() + " (" + this.container.getInfo() + ")");
     }
 
+
     /**
-     * Return descriptive information about this Realm implementation and the
-     * corresponding version number, in the format
+     * Return descriptive information about this Realm implementation and
+     * the corresponding version number, in the format
      * <code>&lt;description&gt;/&lt;version&gt;</code>.
      */
     public String getInfo() {
         return (this.info);
     }
 
+
     /**
      * Return the Principal associated with the specified username and
      * credentials, if there is one; otherwise return <code>null</code>.
-     * 
-     * @param username
-     *            Username of the Principal to look up
-     * @param credentials
-     *            Password or other credentials to use in authenticating this
-     *            username
+     *
+     * @param username    Username of the Principal to look up
+     * @param credentials Password or other credentials to use in
+     *                    authenticating this username
      */
     public synchronized Principal authenticate(String username, String credentials) {
         if (username == null || credentials == null) {
-            // throw new IllegalArgumentException( "Cannot take null
-            // parameters." );
+            //throw new IllegalArgumentException( "Cannot take null parameters." );
             return null;
         }
 
-        // check everytime to see if the users.xml file has changed
+        //check everytime to see if the users.xml file has changed
         if (this.isParseNecessary()) {
             this.parse();
         }
@@ -280,35 +311,37 @@ public class OpenNMSTomcatRealm extends Object implements Realm {
         return (principal);
     }
 
+
     /**
      * Return the Principal associated with the specified username and
      * credentials, if there is one; otherwise return <code>null</code>.
-     * 
-     * @param username
-     *            Username of the Principal to look up
-     * @param credentials
-     *            Password or other credentials to use in authenticating this
-     *            username
+     *
+     * @param username    Username of the Principal to look up
+     * @param credentials Password or other credentials to use in
+     *                    authenticating this username
      */
     public Principal authenticate(String username, byte[] credentials) {
         return (authenticate(username, credentials.toString()));
     }
 
-    /**
-     * Not implemented.
-     * 
-     * @throws IllegalStateException
-     *             because this method is not implemented.
-     */
-    public Principal authenticate(String username, String digest, String nonce, String nc, String cnonce, String qop, String realm, String md5a2) {
-        throw new IllegalStateException("Not implementing this method for now.");
-    }
 
     /**
      * Not implemented.
-     * 
-     * @throws IllegalStateException
-     *             because this method is not implemented.
+     *
+     * @throws IllegalStateException because this method is not implemented.
+     */
+    public Principal authenticate(String username, String digest,
+                                  String nonce, String nc, String cnonce,
+                                  String qop, String realm,
+                                  String md5a2) {
+        throw new IllegalStateException("Not implementing this method for now.");
+    }
+
+
+    /**
+     * Not implemented.
+     *
+     * @throws IllegalStateException because this method is not implemented.
      */
     public Principal authenticate(java.security.cert.X509Certificate[] certs) {
         throw new IllegalStateException("Not implementing this method for now.");
@@ -316,27 +349,25 @@ public class OpenNMSTomcatRealm extends Object implements Realm {
 
     /**
      * Returns true for any specified user if the role is
-     * {@link Authentication#USER_ROLE Authentication.USER_ROLE}, and will
-     * additionally return true for the <em>admin</em> user if the role is
-     * {@link Authentication#ADMIN_ROLE Authentication.ADMIN_ROLE}. Otherwise
-     * this method returns false.
-     * 
-     * <p>
-     * Note that no logging takes place in this method because it is called very
-     * frequently. Logging messages here could greatly reduce page-serving
-     * performance and would quickly flood the server logs with not very useful
-     * information.
-     * </p>
-     * 
+     * {@link Authentication#USER_ROLE Authentication.USER_ROLE},
+     * and will additionally return true for the <em>admin</em> user if
+     * the role is
+     * {@link Authentication#ADMIN_ROLE Authentication.ADMIN_ROLE}.
+     * Otherwise this method returns false.
+     * <p/>
+     * <p>Note that no logging takes place in this method because
+     * it is called very frequently.  Logging messages here could greatly
+     * reduce page-serving performance and would quickly flood the server
+     * logs with not very useful information.</p>
+     *
      * @param principal
-     * @param role
-     *            role to be checked
+     * @param role      role to be checked
      */
     public boolean hasRole(Principal principal, String role) {
         boolean hasrole = false;
 
         if (Authentication.USER_ROLE.equals(role)) {
-            hasrole = true;
+            hasrole = true;            
         } else {
             List userList = (List) this.magicRoleMapping.get(role);
 
@@ -367,6 +398,19 @@ public class OpenNMSTomcatRealm extends Object implements Realm {
     public void removePropertyChangeListener(PropertyChangeListener listener) {
         this.propertyChangeSupport.removePropertyChangeListener(listener);
     }
+
+    protected String getName() {
+        return name;
+    }
+
+    protected String getPassword(String s) {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    protected Principal getPrincipal(String userName) {
+        return (OpenNMSPrincipal) this.principals.get(userName);
+    }
+
 
     /**
      * Called by tomcat to handle the <em>userFile</em> attribute in the
@@ -464,5 +508,51 @@ public class OpenNMSTomcatRealm extends Object implements Realm {
         }
 
         return (new Map[] { passwordMap, roleMap });
+    }
+
+    /**
+     * Prepare for active use of the public methods of this Component.
+     *
+     * @throws org.apache.catalina.LifecycleException
+     *          if this component detects a fatal error
+     *          that prevents it from being started
+     */
+    public synchronized void start() throws LifecycleException {
+
+        try {
+            //StandardServer server = (StandardServer) ServerFactory.getServer();
+            //Context context = server.getGlobalNamingContext();
+            this.parse();
+            //database = (UserDatabase) context.lookup(resourceName);
+        } catch (Throwable e) {
+            e.printStackTrace();
+            log(sm.getString("userDatabaseRealm.lookup"), e);
+            principals = null;
+        }
+        if (principals == null) {
+            throw new LifecycleException
+                    (sm.getString("openNMSTomcatRealm.noPrincipals"));
+        }
+
+        // Perform normal superclass initialization
+        super.start();
+
+    }
+
+
+    /**
+     * Gracefully shut down active use of the public methods of this Component.
+     *
+     * @throws LifecycleException if this component detects a fatal error
+     *                            that needs to be reported
+     */
+    public synchronized void stop() throws LifecycleException {
+
+        // Perform normal superclass finalization
+        super.stop();
+
+        // Release reference to our user database
+        principals = null;
+
     }
 }
