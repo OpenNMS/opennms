@@ -47,6 +47,7 @@ import java.util.List;
 
 import org.opennms.netmgt.rrd.QueuingRrdStrategy;
 import org.opennms.netmgt.rrd.RrdStrategy;
+import org.opennms.netmgt.rrd.RrdUtils;
 import org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy;
 import org.opennms.netmgt.rrd.rrdtool.JniRrdStrategy;
 
@@ -104,7 +105,7 @@ class RrdStresser {
 
     static final int UPDATE_TIME = Integer.getInteger("stresstest.updatetime", 300).intValue();
 
-    static final String EXTENSION = ".rrd";
+    static final String EXTENSION = RrdUtils.get_extension();
 
     static long filesPerZero = FILE_COUNT / ZERO_FILES;
 
@@ -281,8 +282,8 @@ class RrdStresser {
         String dir = file.getParent();
         String[] rraList = { "RRA:AVERAGE:0.5:1:8928", "RRA:AVERAGE:0.5:12:8784", "RRA:MIN:0.5:12:8784", "RRA:MAX:0.5:12:8784", };
         String dsName = file.getName();
-        if (dsName.endsWith(".rrd")) {
-            dsName = dsName.substring(0, dsName.length() - ".rrd".length());
+        if (dsName.endsWith(RrdUtils.get_extension())) {
+            dsName = dsName.substring(0, dsName.length() - RrdUtils.get_extension().length());
         }
         return rrd.createDefinition("stressTest", dir, dsName, 300, "GAUGE", 600, "U", "U", Arrays.asList(rraList));
     }

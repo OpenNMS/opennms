@@ -77,6 +77,8 @@ public class RrdUtils {
     private static final String RRD_STRATEGY_CLASSNAME = RrdConfig.getProperty("org.opennms.rrd.strategyClass", DEFAULT_RRD_STRATEGY_CLASSNAME);
 
     private static RrdStrategy m_rrdStrategy = null;
+    
+    private static String m_rrdExtension = RrdConfig.getProperty("org.opennms.rrd.fileExtension",".rrd");
 
     private static RrdStrategy getStrategy() throws RrdException {
         if (m_rrdStrategy == null)
@@ -173,7 +175,7 @@ public class RrdUtils {
      * @return true if the file was actually created, false otherwise
      */
     public static boolean createRRD(String creator, String directory, String dsName, int step, String dsType, int dsHeartbeat, String dsMin, String dsMax, List rraList) throws RrdException {
-        String fileName = dsName + ".rrd";
+        String fileName = dsName + get_extension();
 
         if (log().isDebugEnabled())
             log().debug("createRRD: rrd path and file name to create: " + directory + File.separator + fileName);
@@ -226,7 +228,7 @@ public class RrdUtils {
      */
     public static void updateRRD(String owner, String repositoryDir, String dsName, String val) throws RrdException {
         // Issue the RRD update
-        String rrdFile = repositoryDir + File.separator + dsName + ".rrd";
+        String rrdFile = repositoryDir + File.separator + dsName + get_extension();
         long time = (System.currentTimeMillis() + 500L) / 1000L;
 
         String updateVal = Long.toString(time) + ":" + val;
@@ -295,5 +297,9 @@ public class RrdUtils {
     public static InputStream createGraph(String command, File workDir) throws IOException, RrdException {
         return getStrategy().createGraph(command, workDir);
     }
+
+	public static String get_extension() {
+		return m_rrdExtension;
+	}
 
 }

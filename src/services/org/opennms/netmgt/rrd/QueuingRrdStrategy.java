@@ -714,7 +714,7 @@ public class QueuingRrdStrategy implements RrdStrategy, Runnable {
      * @see RrdStrategy#createDefinition(java.lang.String)
      */
     public Object createDefinition(String creator, String directory, String dsName, int step, String dsType, int dsHeartbeat, String dsMin, String dsMax, List rraList) throws Exception {
-        String fileName = directory + File.separator + dsName + ".rrd";
+        String fileName = directory + File.separator + dsName + RrdUtils.get_extension();
         Object def = m_delegate.createDefinition(creator, directory, dsName, step, dsType, dsHeartbeat, dsMin, dsMax, rraList);
         return makeCreateOperation(fileName, def);
     }

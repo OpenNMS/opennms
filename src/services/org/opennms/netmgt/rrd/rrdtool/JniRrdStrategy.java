@@ -56,6 +56,7 @@ import org.opennms.core.utils.StringUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.rrd.RrdException;
 import org.opennms.netmgt.rrd.RrdStrategy;
+import org.opennms.netmgt.rrd.RrdUtils;
 
 /**
  * Provides an rrdtool based implementation of RrdStrategy. It uses the existing
@@ -112,7 +113,7 @@ public class JniRrdStrategy implements RrdStrategy {
         File f = new File(directory);
         f.mkdirs();
 
-        String fileName = directory + File.separator + dsName + ".rrd";
+        String fileName = directory + File.separator + dsName + RrdUtils.get_extension();
 
         StringBuffer createCmd = new StringBuffer("create");
 

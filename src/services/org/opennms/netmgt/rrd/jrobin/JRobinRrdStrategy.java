@@ -58,6 +58,7 @@ import org.jrobin.graph.RrdGraphDef;
 import org.opennms.core.utils.StringUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.rrd.RrdStrategy;
+import org.opennms.netmgt.rrd.RrdUtils;
 
 /**
  * Provides a JRobin based implementation of RrdStrategy. It uses JRobin 1.4 in
@@ -83,7 +84,7 @@ public class JRobinRrdStrategy implements RrdStrategy {
         File f = new File(directory);
         f.mkdirs();
 
-        String fileName = directory + File.separator + dsName + ".rrd";
+        String fileName = directory + File.separator + dsName + RrdUtils.get_extension();
 
         RrdDef def = new RrdDef(fileName);
 

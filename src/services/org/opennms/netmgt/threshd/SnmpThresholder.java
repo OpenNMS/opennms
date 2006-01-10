@@ -586,10 +586,10 @@ final class SnmpThresholder implements ServiceThresholder {
             return;
 
         for (int i = 0; i < files.length; i++) {
-            // File name has format: <datsource>.rrd
-            // Must strip off ".rrd" portion.
+            // File name has format: <datsource><extension>
+            // Must strip off <extension> portion.
             String filename = files[i].getName();
-            String datasource = filename.substring(0, filename.indexOf(".rrd"));
+            String datasource = filename.substring(0, filename.indexOf(RrdUtils.get_extension()));
 
             // Lookup the ThresholdEntity object corresponding
             // to this datasource.
@@ -745,10 +745,10 @@ final class SnmpThresholder implements ServiceThresholder {
 
         Map ifDataMap = null;
         for (int i = 0; i < files.length; i++) {
-            // File name has format: <datsource>.rrd
-            // Must strip off ".rrd" portion.
+            // File name has format: <datsource><extension>
+            // Must strip off <extension> portion.
             String filename = files[i].getName();
-            String datasource = filename.substring(0, filename.indexOf(".rrd"));
+            String datasource = filename.substring(0, filename.indexOf(RrdUtils.get_extension()));
 
             // Lookup the ThresholdEntity object corresponding
             // to this datasource.
