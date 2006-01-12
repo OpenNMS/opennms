@@ -84,6 +84,7 @@ public class SnmpObjId implements Comparable {
     }
     
     private static int[] convertStringToInts(String oid) {
+    	    oid = oid.trim();
         if (oid.startsWith(".")) {
             oid = oid.substring(1);
         }
