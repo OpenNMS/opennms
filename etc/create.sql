@@ -716,6 +716,7 @@ create index notifications_serviceid_idx on notifications(serviceID);
 create index notifications_eventid_idx on notifications(eventID);
 create index notifications_respondtime_idx on notifications(respondTime);
 create index notifications_answeredby_idx on notifications(answeredBy);
+create index notifications_eventuei_idx on notifications (eventuei);
 
 --########################################################################
 --#
