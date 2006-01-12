@@ -257,6 +257,8 @@ public class SnmpUtilsTest extends OpenNMSTestCase implements TrapProcessorFacto
         // test for non-printables in string
         SnmpValue nonPrintable = valueFactory.getOctetString("non-printable\0".getBytes());
         assertEquals("non-printable.", nonPrintable.toDisplayString());
+        SnmpValue hexString = valueFactory.getOctetString("\1\2\3\4".getBytes());
+        assertEquals("01020304", hexString.toHexString());
         
         // SnmpValue.SNMP_COUNTER32;
         SnmpValue counter32 = valueFactory.getCounter32(0xF7654321L);
@@ -310,6 +312,7 @@ public class SnmpUtilsTest extends OpenNMSTestCase implements TrapProcessorFacto
         assertEquals(ticks, timeTicks.toLong());
         assertEquals(ticks, valueFactory.getValue(SnmpValue.SNMP_TIMETICKS, BigInteger.valueOf(ticks).toByteArray()).toLong());
         assertEquals(timeTicks.toBigInteger(), new BigInteger(timeTicks.getBytes()));
+        
         
     }
     

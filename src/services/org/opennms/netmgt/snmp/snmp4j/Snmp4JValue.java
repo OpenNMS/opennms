@@ -221,7 +221,7 @@ class Snmp4JValue implements SnmpValue {
     public String toHexString() {
         switch (m_value.getSyntax()) {
         case SMIConstants.SYNTAX_OCTET_STRING:
-            return ((OctetString)m_value).toHexString();
+            return ((OctetString)m_value).toHexString().replaceAll(":", "");
         default:
                 throw new IllegalArgumentException("cannot convert "+m_value+" to a HexString");
         }

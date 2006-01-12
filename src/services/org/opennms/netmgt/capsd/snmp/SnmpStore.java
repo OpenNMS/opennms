@@ -80,11 +80,17 @@ public class SnmpStore extends AbstractSnmpStore {
         for(int i = 0; i < ms_elemList.length; i++) {
             NamedSnmpVar var = ms_elemList[i];
             if (base.equals(var.getSnmpObjId())) {
-                log().debug("Storing Result: alias: "+var.getAlias()+" ["+base+"].["+inst+"] = "+val);
+                log().debug("Storing Result: alias: "+var.getAlias()+" ["+base+"].["+inst+"] = "+toLogString(val));
                 putValue(var.getAlias(), val);
             }
         }
     }
-
+    
+    private String toLogString(SnmpValue val) {
+        if (val.getType() == SnmpValue.SNMP_OCTET_STRING) {
+            return val.toDisplayString() + " (" + val.toHexString() + ")";
+        }
+        return val.toString();
+    }
 
 }
