@@ -32,7 +32,6 @@
 package org.opennms.netmgt.poller.pollables;
 
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.Date;
 
 import org.apache.log4j.Category;
@@ -116,7 +115,7 @@ public class PollableService extends PollableElement implements ReadyRunnable {
     /**
      * @param pollConfig
      */
-    public void setPollConfig(PollConfig pollConfig) {
+    public void setPollConfig(PollableServiceConfig pollConfig) {
         m_pollConfig = pollConfig;
     }
 
@@ -221,7 +220,7 @@ public class PollableService extends PollableElement implements ReadyRunnable {
         
         if (!getContext().isServiceUnresponsiveEnabled()) {
             if (newStatus == PollStatus.STATUS_UNRESPONSIVE)
-                newStatus = PollStatus.STATUS_UP;
+                newStatus = PollStatus.STATUS_DOWN;
         }
         
         PollStatus currentStatus = getStatus();
@@ -257,7 +256,14 @@ public class PollableService extends PollableElement implements ReadyRunnable {
     }
     
     public boolean isReady() {
-        return isTreeLockAvailable();
+		/* FIXME: There is a bug in the Scheduler that only checks the first service in a queue.
+		 * If a thread hangs the below line will cause all services with the same interval to get
+		 * hang behind a service that is blocked if it has the same polling interval.  The below would
+		 * be the optimal way to do it to promote fairness but... not for now.
+		 */
+        //return isTreeLockAvailable();
+		return true;
+		
     }
 
 
@@ -317,4 +323,9 @@ public class PollableService extends PollableElement implements ReadyRunnable {
     public void sendDeleteEvent() {
         getContext().sendEvent(getContext().createEvent(EventConstants.DELETE_SERVICE_EVENT_UEI, getNodeId(), getAddress(), getSvcName(), new Date()));
     }
+
+    public void refreshConfig() {
+        m_pollConfig.refresh();
+    }
+
 }

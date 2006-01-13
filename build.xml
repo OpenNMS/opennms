@@ -25,7 +25,7 @@ your distribution.
   <property file="build.properties"/>
  
   <!-- versioning options -->
-  <property name="product.version" value="1.1.6"/>
+  <property name="product.version" value="1.2.6"/>
   <property name="product.release" value="0"/>
   <property name="product.snapshot" value="true"/>
   <property name="product.fullversion"
@@ -192,10 +192,13 @@ your distribution.
     <pathelement path="${packaged.lib.dir}/mailapi.jar"/>
     <pathelement path="${packaged.lib.dir}/smtp.jar"/>
     <pathelement path="${packaged.lib.dir}/jradius-client.jar"/>
+    <pathelement path="${packaged.lib.dir}/smack.jar"/>
+    <pathelement path="${packaged.lib.dir}/smackx.jar"/>
 <!--  	<pathelement path="${packaged.lib.dir}/imap.jar"/> -->
 <!--  	<pathelement path="${packaged.lib.dir}/pop3.jar"/> -->
     <pathelement path="${packaged.lib.dir}/activation.jar"/>
     <pathelement path="${packaged.lib.dir}/jmta.jar"/>
+    <pathelement path="/System/Library/Java"/>
   </path>
 
   <!-- The jars listed for Class-Path in the MANIFEST.MF for the installer's
@@ -378,14 +381,6 @@ your distribution.
       <isset property="skip.dist"/>
     </condition>
 
-    <loadfile srcfile="tools/run/runjava" property="runjava.contents">
-      <filterchain>
-	<tokenfilter>
-	  <replaceregex pattern="^.*### CHOMP.*" replace=""/>
-	</tokenfilter>
-      </filterchain>
-    </loadfile>
-
     <!-- set properties which are dependent on conditional properties above -->
     <property name="product.fullversion.stamp"
 	      value="${product.version}-${product.release.stamp}"/>
@@ -464,7 +459,6 @@ your distribution.
     <filter token="rpm.database.user" value="${rpm.database.user}"/>
     <filter token="rpm.install.dir" value="${rpm.install.dir}"/>
     <filter token="rpm.platform" value="${rpm.platform}"/>
-    <filter token="runjava.contents" value="${runjava.contents}"/>
 
     <!-- prep wrapup -->
     <property name="prep.done" value="true"/>
@@ -520,7 +514,11 @@ your distribution.
 
   <target name="platform.default" unless="build.platform.define">
     <fail>
-      build.xml does not support your operating system.
+      Your operating system is not supported by the build system.  See the
+      platform.* targets in the build.xml file for details on supported
+      platforms.  You can try to work around this error by modifying an
+      existing platform or creating your own (and don't forget to add it
+      to the depends list in the platform.check target).
     </fail>
   </target>
 
@@ -533,7 +531,10 @@ your distribution.
     </condition>
 
     <fail unless="java.versionokay">
-      java version is not 1.4 or 1.5
+      Your Java version (${java.vm.version}) is not supported.  The
+      build system is currently designed and tested to work with Java
+      versions 1.4 and 1.5.  You can try to work around this error by
+      modifying the java.check target in the build.xml file.
     </fail>
   </target>
 
@@ -544,8 +545,10 @@ your distribution.
    
     <fail unless="compile.check.postgresql.include">
       Could not find postgres.h include file in ${build.postgresql.include.dir}.
-      Set build.postgresql.include.dir to the directory that contains 
-      postgres.h.  See README.build for details.
+      Please make sure that you have the PostgreSQL development files installed
+      or, if they are installed in a non-standard location, you may need to
+      set the build.postgresql.include.dir property to the directory that
+      contains postgres.h.  See README.build for details on setting properties.
     </fail>
 
     <condition property="compile.check.rrdtool.include">
@@ -554,8 +557,10 @@ your distribution.
    
     <fail unless="compile.check.rrdtool.include">
       Could not find rrd.h include file in ${build.rrdtool.include.dir}.
-      Set build.rrdtool.include.dir to the directory that contains rrd.h.
-      See README.build for details.
+      Please make sure that you have the rrdtool development files installed
+      or, if they are installed in a non-standard location, you may need
+      to set the build.rrdtool.include.dir property to the directory that
+      contains rrd.h.  See README.build for details on setting properties.
     </fail>
 
     <condition property="compile.check.rrdtool.lib">
@@ -567,9 +572,15 @@ your distribution.
    
     <fail unless="compile.check.rrdtool.lib">
       Could not find librrd.a or librrd.so library in ${build.rrdtool.lib.dir}.
-      Set build.rrdtool.lib.dir to the directory that contains librrd.a or
-      librrd.so.  See README.build for details.
+      Please make sure that you have the rrdtool development files installed
+      or, if they are installed in a non-standard location, you may need
+      to set the build.rrdtool.lib.dir property to the directory that
+      contains librrd.a or librrd.so.  See README.build for details on setting
+      properties.
     </fail>
+
+    <available property="apple.apis.present" classname="com.apple.cocoa.foundation.NSArray" classpathref="libraries.java.path" />
+
   </target>
  
  <target name="info" depends="prep"
@@ -665,7 +676,7 @@ your distribution.
   </exec>
  </target>
  
- <target name="srpm" depends="prep, rpm.check, release.source, rpm.prepare"
+ <target name="srpm" depends="prep, rpm.check, release.source.tar, rpm.prepare"
 	 description="Build an RPM and a source RPM package">
   <copy todir="${build.rpm.dir}/SOURCES"
 	file="${build.release.dir}/${release.source.archive.prefix}.tar.gz"/>
@@ -718,9 +729,9 @@ your distribution.
 
  <target name="rpm.check">
    <fail unless="rpm.platform">
-     You must set rpm.platform to one of the platforms listed in
-     tools/packages/opennms/opennms.spec.in.  E.g.:
-         ./build.sh -Drpm.platform=linux-i386-fedora-1 rpm
+     You must set the rpm.platform property to one of the platforms listed in
+     tools/packages/opennms/opennms.spec.in.  See README.build for details on
+     setting properties.
    </fail>
  </target>
 
@@ -818,7 +829,10 @@ your distribution.
        includes="${release.docs.dir}/"/>
  </target>
 
- <target name="release.prepare.source" depends="prep">
+ <target name="release.source" depends="release.source.tar,
+					release.source.zip"/>
+
+ <target name="release.source.copy" depends="prep">
   <mkdir dir="${build.dir}/${release.source.dir}"/>
   <copy todir="${build.dir}/${release.source.dir}">
    <fileset dir="${basedir}">
@@ -832,11 +846,19 @@ your distribution.
   </copy>
  </target>
  
- <target name="release.source" depends="release.prepare.source">
+ <target name="release.source.prep">
   <mkdir dir="${build.release.dir}"/>
+ </target>
+
+ <target name="release.source.tar" depends="release.source.copy,
+					    release.source.prep">
   <tar tarfile="${build.release.dir}/${release.source.archive.prefix}.tar.gz"
        basedir="${build.dir}" longfile="gnu" compression="gzip"
        includes="${release.source.dir}/"/>
+ </target>
+
+ <target name="release.source.zip" depends="release.source.copy,
+					    release.source.prep">
   <zip zipfile="${build.release.dir}/${release.source.archive.prefix}.zip"
        basedir="${build.dir}"
        includes="${release.source.dir}/"/>
@@ -1088,6 +1110,7 @@ OpenNMS as part of the post-install.
    <include name="**/*.java"/>
    <exclude name="**/*Test.java"/>
    <exclude name="**/mock/*.java"/>
+   <exclude name="**/*Growl*" unless="apple.apis.present"/>
   </javac>
   <copy todir="${build.classes.dir}">
    <fileset dir="${build.sablecc.source.dir}">
@@ -1112,7 +1135,9 @@ OpenNMS as part of the post-install.
 	outfile="${build.jicmp.dir}/jicmp-build"
 	outputfileproperty="build.jicmp.output.lib">
       <compiler name="gcc">
-	 <compilerarg value="-D${build.platform.define}"/>
+	<compilerarg value="-D${build.platform.define}"/>
+	<compilerarg value="${build.jni.compiler.arg}"
+		     if="build.jni.compiler.arg"/>
       </compiler>
       <linker name="gcc"/>
       <fileset dir="${build.jicmp.dir}" includes="IcmpSocket.c"/>
@@ -1142,6 +1167,8 @@ OpenNMS as part of the post-install.
 	outputfileproperty="build.jrrd.output.lib">
       <compiler name="gcc">
         <compilerarg value="-D${build.platform.define}"/>
+	<compilerarg value="${build.jni.compiler.arg}"
+		     if="build.jni.compiler.arg"/>
       </compiler>
       <linker name="gcc">
 	<linkerarg value="${build.jrrd.linker.arg}"
@@ -1172,9 +1199,13 @@ OpenNMS as part of the post-install.
 	outfile="${build.postgresql.dir}/iplike-build"
 	outputfileproperty="build.postgresql.output.lib">
       <compiler name="gcc">
+	<compilerarg value="${build.postgresql.compiler.arg}"
+		     if="build.postgresql.compiler.arg"/>
       </compiler>
       <fileset dir="${build.postgresql.dir}" includes="iplike.c"/>
       <includepath path="${build.postgresql.include.dir}"/>
+      <includepath path="${build.postgresql.include2.dir}"
+		   if="build.postgresql.include2.dir"/>
     </cc>
     <copy file="${build.postgresql.output.lib}"
           tofile="${build.postgresql.dir}/iplike.${build.soext}"/>
@@ -1283,13 +1314,17 @@ OpenNMS as part of the post-install.
     </or>
   </condition>
   <fail unless="continue.build" >
-     Unit Tests Failed.  Check the Test Results in ${test.xml.dir}.  To build anyway run the build with -DignoreFailedTests=true
+     Unit Tests Failed.  Check the test results in ${test.xml.dir}.
+     To ignore failed tests, set the ignoreFailedTests property to true.
+     See README.build for details on setting properties.
   </fail>
 </target>
 
-<target name="runTest" depends="prep, java.compile, junit.compile" description="Run a single unit test class">
+<target name="runTest" depends="prep, java.compile, junit.compile"
+        description="Run a single unit test class">
   <fail unless="test.class">
-    You need to define test.class to indicate which test to run.
+    You need to define the test.class property to indicate which test
+    to run.  See README.build for details on setting properties.
   </fail>
   <junit errorProperty="test.failed" failureProperty="test.failed">
      <classpath>
@@ -1313,7 +1348,9 @@ OpenNMS as part of the post-install.
     </or>
   </condition>
   <fail unless="continue.build" >
-     Unit Test Failed.  To build anyway run the build with -DignoreFailedTests=true
+     Unit Tests Failed.  Check the test results in ${test.xml.dir}.
+     To ignore failed tests, set the ignoreFailedTests property to true.
+     See README.build for details on setting properties.
   </fail>
 </target>
 

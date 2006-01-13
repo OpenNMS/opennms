@@ -66,6 +66,8 @@ public class Querier extends JDBCTemplate implements RowProcessor {
              m_rowProcessor.processRow(rs);
              m_count++;
          }
+         if (rs != null)
+             rs.close();
     }
 
     public void processRow(ResultSet rs) throws SQLException {

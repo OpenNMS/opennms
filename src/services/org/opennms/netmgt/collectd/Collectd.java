@@ -699,4 +699,14 @@ public final class Collectd implements PausableFiber {
     public void setSchedulingCompleted(boolean schedulingCompleted) {
         m_schedulingCompleted = schedulingCompleted;
     }
+
+
+	public void refreshServicePackages() {
+                 Iterator serviceIterator=m_collectableServices.iterator();
+                 while(serviceIterator.hasNext()) {
+                         CollectableService thisService=(CollectableService)serviceIterator.next();
+                         thisService.refreshPackage();
+                 }
+        }
+
 }

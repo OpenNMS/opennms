@@ -48,6 +48,7 @@ import java.util.Map;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.config.ThreshdConfigFactory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 import org.opennms.netmgt.eventd.EventListener;
@@ -140,6 +141,10 @@ final class BroadcastEventProcessor implements EventListener {
         // serviceDeleted
         ueiList.add(EventConstants.SERVICE_DELETED_EVENT_UEI);
 
+	// scheduled outage configuration change
+	ueiList.add(EventConstants.SCHEDOUTAGES_CHANGED_EVENT_UEI);
+
+
         EventIpcManagerFactory.getInstance().getManager().addEventListener(this, ueiList);
     }
 
@@ -187,9 +192,17 @@ final class BroadcastEventProcessor implements EventListener {
         if (log.isDebugEnabled()) {
             log.debug("received event, uei = " + event.getUei());
         }
-
-        // If the event doesn't have a nodeId it can't be processed.
-        if (!event.hasNodeid()) {
+	if(event.getUei().equals(EventConstants.SCHEDOUTAGES_CHANGED_EVENT_UEI)) {
+		log.warn("Reloading Threshd config factory");
+		try {
+			ThreshdConfigFactory.reload();
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.error("Failed to reload ThreshdConfigFactory because "+e.getMessage());
+		}
+		Threshd.getInstance().refreshServicePackages();
+	} else if(!event.hasNodeid()) {
+	    // For all other events, if the event doesn't have a nodeId it can't be processed.
             log.info("no database node id found, discarding event");
         } else if (event.getUei().equals(EventConstants.NODE_GAINED_SERVICE_EVENT_UEI)) {
             // If there is no interface then it cannot be processed

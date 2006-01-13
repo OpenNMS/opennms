@@ -475,4 +475,4 @@ parseArgsAndDoStuff() {
     die "internal error... got to end of script and shouldn't have"
 }
 
-parseArgsAndDoStuff "$@"	### CHOMP ME
+parseArgsAndDoStuff "$@"

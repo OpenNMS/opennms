@@ -7,11 +7,25 @@
 
                 <!--  We don't have good data to base the next one on, so we're commenting it out
                 <threshold type="high" ds-name="bufferFail"  ds-type="node" value="1" rearm="0" trigger="3"/>
+
+		
                                                                                                         -->
 
                 <!--  We don't have good data to base the next one on, so we're commenting it out
                 <threshold type="high" ds-name="bufferNoMem"  ds-type="node" value="1" rearm="0" trigger="3"/>
                                                                                                         -->
+
+		<!-- SNMP Informant thresholds -->
+                <threshold type="low" ds-name="sinfDskPtFreeSpcC"  ds-type="node" value="5" rearm="10" trigger="1"/>
+                <threshold type="low" ds-name="sinfDskPtFreeSpcD"  ds-type="node" value="5" rearm="10" trigger="1"/>
+                <threshold type="low" ds-name="sinfDskPtFreeSpcE"  ds-type="node" value="5" rearm="10" trigger="1"/>
+                <threshold type="low" ds-name="sinfDskPtFreeSpcTl"  ds-type="node" value="5" rearm="10" trigger="1"/>
+
+                <threshold type="high" ds-name="sinfCpuPtProcTime0"  ds-type="node" value="100" rearm="90" trigger="3"/>
+                <threshold type="high" ds-name="sinfCpuPtProcTime1"  ds-type="node" value="100" rearm="90" trigger="3"/>
+                <threshold type="high" ds-name="sinfCpuPtProcTime2"  ds-type="node" value="100" rearm="90" trigger="3"/>
+                <threshold type="high" ds-name="sinfCpuPtProcTime3"  ds-type="node" value="100" rearm="90" trigger="3"/>
+                <threshold type="high" ds-name="sinfCpuPtProcTimeTl"  ds-type="node" value="100" rearm="90" trigger="3"/>
 
                 <threshold type="low" ds-name="wfkernelBuffersFree"  ds-type="node" value="0" rearm="1" trigger="3"/>
                 <threshold type="low" ds-name="wfkernelMemoryFree"  ds-type="node" value="0" rearm="1" trigger="3"/>

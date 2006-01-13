@@ -39,6 +39,7 @@
 		<complexType>
 			<sequence>
 			        <element name="name" type="string" minOccurs="1" maxOccurs="1"/>
+			        <element name="autoNotify" type="string" minOccurs="0" maxOccurs="1"/>
                                 <element name="command" type="string" minOccurs="1" maxOccurs="unbounded"/>	
 			</sequence>
                         <attribute name="interval" type="string" use="optional" value="0s"/>

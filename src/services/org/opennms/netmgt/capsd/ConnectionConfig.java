@@ -57,6 +57,10 @@ public class ConnectionConfig {
     public InetSocketAddress getSocketAddress() {
         return new InetSocketAddress(getInetAddress(), getPort());
     }
+    
+    public void setQualifiers(Map qualifiers) {
+        m_qualifiers = qualifiers;
+    }
 
     /**
      * @return Returns the address.
@@ -78,6 +82,13 @@ public class ConnectionConfig {
             return defaultVal;
         else
             return ParameterMap.getKeyedInteger(m_qualifiers, key, defaultVal);
+    }
+
+    public String getKeyedString(String key, String defaultVal) {
+        if (m_qualifiers == null)
+            return defaultVal;
+        else
+            return ParameterMap.getKeyedString(m_qualifiers, key, defaultVal);
     }
 
     public void saveKeyedInteger(String key, int value) {

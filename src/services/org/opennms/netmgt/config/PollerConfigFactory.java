@@ -40,20 +40,23 @@
 package org.opennms.netmgt.config;
 
 import java.io.File;
-import java.io.FileInputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.Reader;
+import java.io.StringWriter;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.TreeMap;
 
 import org.apache.log4j.Category;
 import org.apache.log4j.Priority;
 import org.exolab.castor.xml.MarshalException;
+import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
@@ -163,18 +166,17 @@ public final class PollerConfigFactory implements PollerConfig {
      * @exception org.exolab.castor.xml.ValidationException
      *                Thrown if the contents do not match the required schema.
      */
-    private PollerConfigFactory(String configFile) throws IOException, MarshalException, ValidationException {
-        InputStream cfgIn = new FileInputStream(configFile);
+    private PollerConfigFactory(OpennmsServerConfigFactory serverConfig, Reader reader) throws IOException, MarshalException, ValidationException {
 
-        m_config = (PollerConfiguration) Unmarshaller.unmarshal(PollerConfiguration.class, new InputStreamReader(cfgIn));
-        cfgIn.close();
+        reloadXML(serverConfig, reader);
+    }
 
+    private void reloadXML(OpennmsServerConfigFactory serverConfig, Reader reader) throws MarshalException, ValidationException, IOException {
+        m_config = (PollerConfiguration) Unmarshaller.unmarshal(PollerConfiguration.class, reader);
+        reader.close();
         createUrlIpMap();
-
-        OpennmsServerConfigFactory.init();
-        m_verifyServer = OpennmsServerConfigFactory.getInstance().verifyServer();
-        m_localServer = OpennmsServerConfigFactory.getInstance().getServerName();
-
+        m_verifyServer = serverConfig.verifyServer();
+        m_localServer = serverConfig.getServerName();
         createPackageIpListMap();
         createServiceMonitors();
     }
@@ -197,11 +199,13 @@ public final class PollerConfigFactory implements PollerConfig {
             return;
         }
 
+        OpennmsServerConfigFactory.init();
+
         File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.POLLER_CONFIG_FILE_NAME);
 
         ThreadCategory.getInstance(PollerConfigFactory.class).debug("init: config file path: " + cfgFile.getPath());
 
-        m_singleton = new PollerConfigFactory(cfgFile.getPath());
+        m_singleton = new PollerConfigFactory(OpennmsServerConfigFactory.getInstance(), new FileReader(cfgFile));
 
         m_loaded = true;
     }
@@ -217,10 +221,29 @@ public final class PollerConfigFactory implements PollerConfig {
      *                Thrown if the contents do not match the required schema.
      */
     public static synchronized void reload() throws IOException, MarshalException, ValidationException {
-        m_singleton = null;
-        m_loaded = false;
-
         init();
+        getInstance().update();
+    }
+
+    /**
+     * Saves the current in-memory configuration to disk and reloads
+     */
+    public synchronized void saveCurrent() throws MarshalException, IOException, ValidationException {
+        File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.POLLER_CONFIG_FILE_NAME);
+
+        // marshall to a string first, then write the string to the file. This
+        // way the original config
+        // isn't lost if the xml from the marshall is hosed.
+        StringWriter stringWriter = new StringWriter();
+        Marshaller.marshal(m_config, stringWriter);
+        if (stringWriter.toString() != null) {
+            FileWriter fileWriter = new FileWriter(cfgFile);
+            fileWriter.write(stringWriter.toString());
+            fileWriter.flush();
+            fileWriter.close();
+        }
+
+        update();
     }
 
     /**
@@ -245,6 +268,17 @@ public final class PollerConfigFactory implements PollerConfig {
         return m_config;
     }
 
+    public synchronized org.opennms.netmgt.config.poller.Package getPackage(String name) {
+        Enumeration packageEnum = m_config.enumeratePackage();
+        while (packageEnum.hasMoreElements()) {
+            org.opennms.netmgt.config.poller.Package thisPackage = (org.opennms.netmgt.config.poller.Package) packageEnum.nextElement();
+            if (thisPackage.getName().equals(name)) {
+                return thisPackage;
+            }
+        }
+        return null;
+    }
+
     /**
      * This method is used to determine if the named interface is included in
      * the passed package's url includes. If the interface is found in any of
@@ -252,16 +286,18 @@ public final class PollerConfigFactory implements PollerConfig {
      * returned.
      * 
      * <pre>
-     * The file URL is read and each entry in this file checked. Each line
-     *  in the URL file can be one of -
-     *  &lt;IP&gt;&lt;space&gt;#&lt;comments&gt;
-     *  or
-     *  &lt;IP&gt;
-     *  or
-     *  #&lt;comments&gt;
      * 
-     *  Lines starting with a '#' are ignored and so are characters after
-     *  a '&lt;space&gt;#' in a line.
+     *  The file URL is read and each entry in this file checked. Each line
+     *   in the URL file can be one of -
+     *   &lt;IP&gt;&lt;space&gt;#&lt;comments&gt;
+     *   or
+     *   &lt;IP&gt;
+     *   or
+     *   #&lt;comments&gt;
+     *  
+     *   Lines starting with a '#' are ignored and so are characters after
+     *   a '&lt;space&gt;#' in a line.
+     *  
      * </pre>
      * 
      * @param addr
@@ -585,6 +621,35 @@ public final class PollerConfigFactory implements PollerConfig {
     }
 
     /**
+     * Returns a list of package names that the ip belongs to, null if none.
+     *                
+     * <strong>Note: </strong>Evaluation of the interface against a package
+     * filter will only work if the IP is alrady in the database.
+     *
+     * @param ipaddr
+     *            the interface to check
+     *
+     * @return a list of package names that the ip belongs to, null if none
+     */
+    public synchronized List getAllPackageMatches(String ipaddr) {
+        Category log = ThreadCategory.getInstance(getClass());
+
+        Enumeration pkgEnum = m_config.enumeratePackage();
+        List matchingPkgs = new ArrayList();
+        while (pkgEnum.hasMoreElements()) {
+            org.opennms.netmgt.config.poller.Package pkg = (org.opennms.netmgt.config.poller.Package) pkgEnum.nextElement();
+            String pkgName = pkg.getName();
+            boolean inPkg = interfaceInPackage(ipaddr, pkg);
+            if (inPkg) {
+                matchingPkgs.add(pkgName);
+            }
+        }
+
+        return matchingPkgs;
+    }
+
+
+    /**
      * Returns true if the ip is part of atleast one package.
      * 
      * <strong>Note: </strong>Evaluation of the interface against a package
@@ -760,5 +825,13 @@ public final class PollerConfigFactory implements PollerConfig {
 
     public String getNextOutageIdSql() {
         return m_config.getNextOutageId();
+    }
+
+    public void update() throws IOException, MarshalException, ValidationException {
+
+        File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.POLLER_CONFIG_FILE_NAME);
+
+        ThreadCategory.getInstance(PollerConfigFactory.class).debug("init: config file path: " + cfgFile.getPath());
+        reloadXML(OpennmsServerConfigFactory.getInstance(), new FileReader(cfgFile));
     }
 }

@@ -38,6 +38,7 @@
 				<element name="name" type="string" minOccurs="1" maxOccurs="1"/>
 				<element name="comments" type="string" minOccurs="0" maxOccurs="1"/>
 				<element name="user" type="string" minOccurs="0" maxOccurs="unbounded"/>
+                                <element name="duty-schedule" type="string" minOccurs="0" maxOccurs="unbounded"/>
 			</sequence>
 		</complexType>
 	</element>

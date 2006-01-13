@@ -43,7 +43,7 @@ PostgreSQL Limits -- All Platforms
 ------------------------------------------------------------------------------
 
 Once you do that, you will need to edit
-@PREFIX@/var/postgresql/data/postgresql.conf (as root, or postgres), and
+@PREFIX@/var/postgresql-7.4/data/postgresql.conf (as root, or postgres), and
 make sure that the following values are set:
 
   tcpip_socket    = true
@@ -61,7 +61,7 @@ Make sure PostgreSQL is started before you install.  If it isn't, you will
 have to start it ("sudo @PREFIX@/bin/pgsql.sh start") and try again.  To run
 the installer manually, run:
 
-  sudo @PREFIX@/var/opennms/bin/install -r -disU
+  sudo @PREFIX@/var/opennms/bin/install -disU
 
 ------------------------------------------------------------------------------
 Startup

@@ -121,10 +121,8 @@
         <a href="admin/nodelabel.jsp?node=<%=nodeId%>">Change Node Label</a>
       <p>
         <a href="javascript:getInterfacesPost()">Manage and Unmanage Interfaces and Services</a>
-<!--
       <p>
-        <a href="admin/snmpselect.jsp?node=<%=nodeId%>">Configure SNMP Data Collection per Interface</a>
--->
+        <a href="admin/snmpGetInterfaces?node=<%=nodeId%>&nodelabel=<%=node_db.getLabel()%>">Configure SNMP Data Collection per Interface</a>
       <p>
         <a href="admin/nodemanagement/deletenode.jsp?node=<%=nodeId%>">Delete Node</a>
       

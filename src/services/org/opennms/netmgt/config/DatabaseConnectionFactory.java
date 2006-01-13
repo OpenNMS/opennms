@@ -92,7 +92,7 @@ public final class DatabaseConnectionFactory implements DbConnectionFactory {
     /**
      * The singleton instance of this factory
      */
-    private static DatabaseConnectionFactory m_singleton = null;
+    private static DbConnectionFactory m_singleton = null;
 
     /**
      * This member is set to true if the configuration file has been loaded.
@@ -178,6 +178,8 @@ public final class DatabaseConnectionFactory implements DbConnectionFactory {
          * 
          */
         CachedConnection(Connection dbc, DatabaseConnectionFactory owner) {
+            // this must remain simple and not manipulate factory data as
+            // the DbConnectionFactory is not locked when the constructor is called
             m_delegate = dbc;
             m_owner = owner;
             m_inUse = false;
@@ -925,7 +927,9 @@ public final class DatabaseConnectionFactory implements DbConnectionFactory {
         String driverCN = m_database.getDriver().getClassName();
 
         Class.forName(driverCN);
+        DriverManager.setLoginTimeout(180);
     }
+
 
     /**
      * Load the config from the default config file and create the singleton
@@ -982,12 +986,17 @@ public final class DatabaseConnectionFactory implements DbConnectionFactory {
      * @throws java.lang.IllegalStateException
      *             Thrown if the factory has not yet been initialized.
      */
-    public static synchronized DatabaseConnectionFactory getInstance() {
+    public static synchronized DbConnectionFactory getInstance() {
         if (!m_loaded)
             throw new IllegalStateException("The factory has not been initialized");
 
         return m_singleton;
     }
+	
+	public static void setInstance(DbConnectionFactory singleton) {
+		m_singleton=singleton;
+		m_loaded=true;
+	}
 
     /**
      * Return the database that was configured in the config file
@@ -1061,14 +1070,15 @@ public final class DatabaseConnectionFactory implements DbConnectionFactory {
 
         // lock the database cache for the open
         //
+        Category log = ThreadCategory.getInstance(getClass());
+        boolean isTracing = log.isDebugEnabled();
+
+        CachedConnection cdbc = null;
         synchronized (m_dbcCache) {
-            Category log = ThreadCategory.getInstance(getClass());
-            boolean isTracing = log.isDebugEnabled();
 
             // look at each reference, removing those
             // that garbage collection has destroyed
             //
-            CachedConnection cdbc = null;
             while (cdbc == null && !m_dbcCache.isEmpty()) {
                 cdbc = (CachedConnection) m_dbcCache.removeFirst();
                 synchronized (cdbc) {
@@ -1106,19 +1116,20 @@ public final class DatabaseConnectionFactory implements DbConnectionFactory {
                     }
                 }
             }
+        } // no need to have connection creation syncrhonized
 
-            // unable to find one that was not in
-            // use so a new one has been allocated
-            //
-            if (cdbc == null) {
-                cdbc = new CachedConnection(DriverManager.getConnection(m_driverUrl, m_driverUser, m_driverPass), this);
-                cdbc.markUsed();
+        // unable to find one that was not in
+        // use so a new one has been allocated
+        //
+        if (cdbc == null) {
+            cdbc = new CachedConnection(DriverManager.getConnection(m_driverUrl, m_driverUser, m_driverPass), this);
+            cdbc.markUsed();
 
-                if (isTracing)
-                    log.debug("created new JDBC connection, no previous reference available");
-            }
-
-            return cdbc;
+            if (isTracing)
+                log.debug("created new JDBC connection, no previous reference available");
         }
+
+        return cdbc;
+        
     }
 }
