@@ -355,14 +355,15 @@ public class SnmpOctetString extends Object implements SnmpSyntax, Cloneable, Se
         // decimal range 32 - 126 inclusive) with an
         // ASCII period char (decimal 46).
         // 
+        byte newBytes[] = new byte[bytes.length];
         for (int i = 0; i < bytes.length; i++) {
             if (bytes[i] < 32 || bytes[i] > 126) {
-                bytes[i] = 46; // ASCII period '.'
+                newBytes[i] = 46; // ASCII period '.'
             }
         }
     
         // Create string, trim any white-space and return
-        String result = new String(bytes);
+        String result = new String(newBytes);
         return result.trim();
     }
 
