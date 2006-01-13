@@ -104,6 +104,9 @@ final class BroadcastEventProcessor implements EventListener {
         // add the serviceDeleted event
         ueisOfInterest.add(EventConstants.SERVICE_DELETED_EVENT_UEI);
 
+        // add the serviceDeleted event
+        ueisOfInterest.add(EventConstants.SERVICE_UNMANAGED_EVENT_UEI);
+
         // add the interfaceReparented event
         ueisOfInterest.add(EventConstants.INTERFACE_REPARENTED_EVENT_UEI);
 

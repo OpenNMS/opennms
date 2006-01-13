@@ -186,13 +186,14 @@ public class ManageNodeServlet extends HttpServlet {
                             this.log("DEBUG: executing manage service update for " + curInterface.getAddress() + " " + curService.getName());
                             stmt.executeUpdate();
                         } else if (!serviceList.contains(serviceKey) && curService.getStatus().equals("managed")) {
-                            // Event newEvent = new Event();
-                            // newEvent.setUei("uei.opennms.org/internal/serviceUnmanaged");
-                            // newEvent.setSource("web ui");
-                            // newEvent.setNodeid(curNode.getNodeID());
-                            // newEvent.setInterface(curInterface.getAddress());
-                            // newEvent.setService(curService.getName());
-                            // newEvent.setTime(curDate);
+                            Event newEvent = new Event();
+                            newEvent.setUei("uei.opennms.org/nodes/serviceUnmanaged");
+                            newEvent.setSource("web ui");
+                            newEvent.setNodeid(curInterface.getNodeid());
+                            newEvent.setInterface(curInterface.getAddress());
+                            newEvent.setService(curService.getName());
+                            newEvent.setTime(curDate);
+                            sendEvent(newEvent);
 
                             stmt.setString(1, "S");
                             stmt.setString(2, curInterface.getAddress());
