@@ -359,6 +359,8 @@ public class SnmpOctetString extends Object implements SnmpSyntax, Cloneable, Se
         for (int i = 0; i < bytes.length; i++) {
             if (bytes[i] < 32 || bytes[i] > 126) {
                 newBytes[i] = 46; // ASCII period '.'
+            } else {
+            		newBytes[i] = bytes[i];
             }
         }
     
