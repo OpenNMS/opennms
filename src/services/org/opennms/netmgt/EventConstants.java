@@ -250,6 +250,11 @@ public class EventConstants {
     public final static String SERVICE_UNRESPONSIVE_EVENT_UEI = "uei.opennms.org/nodes/serviceUnresponsive";
 
     /**
+     * The service unmanaged event UEI
+     */
+    public final static String SERVICE_UNMANAGED_EVENT_UEI = "uei.opennms.org/nodes/serviceUnmanaged";
+
+    /**
      * The interface down event UEI
      */
     public final static String INTERFACE_DOWN_EVENT_UEI = "uei.opennms.org/nodes/interfaceDown";

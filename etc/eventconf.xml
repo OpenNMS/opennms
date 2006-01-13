@@ -485,7 +485,7 @@
 		<severity>Warning</severity>
 	</event>
 	<event>
-		<uei>uei.opennms.org/internal/serviceUnmanaged</uei>
+		<uei>uei.opennms.org/nodes/serviceUnmanaged</uei>
 		<event-label>OpenNMS-defined internal event: serviceUnmanaged</event-label>
 		<descr>
 			&lt;p&gt;The service %service% on interface %interface% is
@@ -495,7 +495,7 @@
 			The service %service% on interface %interface% is being
 			forcibly unmanaged.
 		</logmsg>
-		<severity>Major</severity>
+		<severity>Warning</severity>
 	</event>
 	<event>
 		<uei>uei.opennms.org/internal/unknownServiceStatus</uei>

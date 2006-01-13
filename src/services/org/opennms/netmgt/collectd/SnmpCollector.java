@@ -665,7 +665,19 @@ final class SnmpCollector implements ServiceCollector {
                 while (rs1.next()) {
                     String snmppriIfIndex = rs1.getString(1);
                     String snmppriCollType = rs1.getString(2);
-                    snmppriMap.put(snmppriIfIndex, snmppriCollType);
+
+                    String currSNMPPriValue = (String) snmppriMap.get(snmppriIfIndex);
+
+                    if (currSNMPPriValue == null)
+                        snmppriMap.put(snmppriIfIndex, snmppriCollType);
+                    else if (currSNMPPriValue.equals("P"))
+                        continue;
+                    else if (currSNMPPriValue.equals("S") && snmppriCollType.equals("P"))
+                        snmppriMap.put(snmppriIfIndex, snmppriCollType);
+                    else if (currSNMPPriValue.equals("C") && (snmppriCollType.equals("P") || snmppriCollType.equals("S")))
+                        snmppriMap.put(snmppriIfIndex, snmppriCollType);
+                    else
+                        snmppriMap.put(snmppriIfIndex, snmppriCollType);
                 }
                 rs1.close();
 

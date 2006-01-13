@@ -448,9 +448,9 @@ function outageTypeChanged(selectElement) {
 </jsp:include>
 
 <%
-Enumeration enum=request.getParameterNames();
-while(enum.hasMoreElements()) {
-	String paramName=(String)enum.nextElement();
+Enumeration enumList=request.getParameterNames();
+while(enumList.hasMoreElements()) {
+	String paramName=(String)enumList.nextElement();
 	%>
 <!--	<%=paramName%>=<%=request.getParameter(paramName)%><BR>  -->
 	<%

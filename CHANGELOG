@@ -1,3 +1,11 @@
+1.2.5 to 1.2.6
+----------------------------------------------------------------------
+- Changed OpenNMS so that manage/unmange interfaces deletes active
+  outages and does not require a reboot when unmanaging a service.
+- Fixed an issue with the Scheduled Outages GUI and Java 5.
+- Fixed an issue with data collection when the primary interface is
+  on a NIC with other virtual IPs.
+
 1.2.4 to 1.2.5
 ----------------------------------------------------------------------
 - Made changes to SNMP data collection to improve both speed and

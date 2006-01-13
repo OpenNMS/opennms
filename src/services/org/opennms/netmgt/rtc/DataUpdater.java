@@ -477,6 +477,8 @@ final class DataUpdater implements Runnable {
             handleNodeRegainedService(nodeid, ip, svcName, eventTime);
         } else if (eventUEI.equals(EventConstants.SERVICE_DELETED_EVENT_UEI)) {
             handleServiceDeleted(nodeid, ip, svcName);
+        } else if (eventUEI.equals(EventConstants.SERVICE_UNMANAGED_EVENT_UEI)) {
+            handleServiceDeleted(nodeid, ip, svcName);
         } else if (eventUEI.equals(EventConstants.INTERFACE_REPARENTED_EVENT_UEI)) {
             handleInterfaceReparented(ip, m_event.getParms());
         } else if (eventUEI.equals(EventConstants.RTC_SUBSCRIBE_EVENT_UEI)) {
