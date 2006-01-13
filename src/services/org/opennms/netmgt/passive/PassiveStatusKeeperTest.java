@@ -56,6 +56,7 @@ import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.poller.monitors.PassiveServiceMonitor;
 import org.opennms.netmgt.poller.pollables.PollStatus;
 import org.opennms.netmgt.xml.event.Event;
+import org.opennms.netmgt.xml.event.Log;
 import org.opennms.netmgt.xml.event.Logmsg;
 import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.Parms;
@@ -65,8 +66,6 @@ public class PassiveStatusKeeperTest extends MockObjectTestCase {
     
     /* TODO for PassiveSTatusKeeper
      add reason mapper for status reason
-     
-     add correct matching behavior for event fields
      
      be able to create an event with translated values
      - determine new event values based on config
@@ -260,33 +259,72 @@ public class PassiveStatusKeeperTest extends MockObjectTestCase {
         assertFalse(m_config.isTranslationEvent(pse));
         
         // test matchin uei succeeds
-        Event te = createTranslationEvent("Router", "192.168.1.1", "ICMP", "Down");
+        Event te = createTranslatableEvent("Router", "192.168.1.1", "ICMP", "Down");
         assertTrue(m_config.isTranslationEvent(te));
         
         // test null parms fails
-        Event teWithNullParms = createTranslationEvent("Router", "192.168.1.1", "ICMP", "Down");
+        Event teWithNullParms = createTranslatableEvent("Router", "192.168.1.1", "ICMP", "Down");
         teWithNullParms.setParms(null);
         assertFalse(m_config.isTranslationEvent(teWithNullParms));
         
         // test empty  parm list fails
-        Event teWithNoParms = createTranslationEvent("Router", "192.168.1.1", "ICMP", "Down");
+        Event teWithNoParms = createTranslatableEvent("Router", "192.168.1.1", "ICMP", "Down");
         Parms parms = teWithNoParms.getParms();
         parms.setParmCollection(new ArrayList(0));
         assertFalse(m_config.isTranslationEvent(teWithNoParms));
 
         // test missing a parm fails
-        Event teWithWrongParms = createTranslationEvent("Router", "192.168.1.1", "ICMP", "Down");
+        Event teWithWrongParms = createTranslatableEvent("Router", "192.168.1.1", "ICMP", "Down");
         Parms p = teWithWrongParms.getParms();
         p.getParm(2).setParmName("unmatching"); // change the name for the third parm so it fails to match
         assertFalse(m_config.isTranslationEvent(teWithWrongParms));
 
         // that a matching parm value succeeds
-        Event te2 = createTranslationEvent("Router", "xxx192.168.1.1xxx", "ICMP", "Down");
+        Event te2 = createTranslatableEvent("Router", "xxx192.168.1.1xxx", "ICMP", "Down");
         assertTrue(m_config.isTranslationEvent(te2));
         
         // that a matching parm value succeeds
-        Event te3 = createTranslationEvent("Router", "xxx192.168.1.2", "ICMP", "Down");
+        Event te3 = createTranslatableEvent("Router", "xxx192.168.1.2", "ICMP", "Down");
         assertFalse(m_config.isTranslationEvent(te3));
+    }
+    
+    public void testTranslateEvent() {
+		// test non matching uei match fails
+        Event pse = createPassiveStatusEvent("Router", "192.168.1.1", "ICMP", "Down");
+        assertNull(m_config.translateEvent(pse));
+        
+        // test matchin uei succeeds
+        Event te = createTranslatableEvent("Router", "192.168.1.1", "ICMP", "Down");
+        List translatedEvents = m_config.translateEvent(te);
+		assertNotNull(translatedEvents);
+		assertEquals(1, translatedEvents.size());
+        Event event = (Event)translatedEvents.get(0);
+		//assertEquals("192.168.1.1", event.getInterface());
+        
+        // test null parms fails
+        Event teWithNullParms = createTranslatableEvent("Router", "192.168.1.1", "ICMP", "Down");
+        teWithNullParms.setParms(null);
+        assertNull(m_config.translateEvent(teWithNullParms));
+        
+        // test empty  parm list fails
+        Event teWithNoParms = createTranslatableEvent("Router", "192.168.1.1", "ICMP", "Down");
+        Parms parms = teWithNoParms.getParms();
+        parms.setParmCollection(new ArrayList(0));
+        assertNull(m_config.translateEvent(teWithNoParms));
+
+        // test missing a parm fails
+        Event teWithWrongParms = createTranslatableEvent("Router", "192.168.1.1", "ICMP", "Down");
+        Parms p = teWithWrongParms.getParms();
+        p.getParm(2).setParmName("unmatching"); // change the name for the third parm so it fails to match
+        assertNull(m_config.translateEvent(teWithWrongParms));
+
+        // that a matching parm value succeeds
+        Event te2 = createTranslatableEvent("Router", "xxx192.168.1.1xxx", "ICMP", "Down");
+        assertNotNull(m_config.translateEvent(te2));
+        
+        // that a matching parm value succeeds
+        Event te3 = createTranslatableEvent("Router", "xxx192.168.1.2", "ICMP", "Down");
+        assertNull(m_config.translateEvent(te3));
     }
     
     /**
@@ -488,7 +526,7 @@ public class PassiveStatusKeeperTest extends MockObjectTestCase {
 		return createEventWithParms("uei.opennms.org/services/passiveServiceStatus", parms);
     }
 
-    private Event createTranslationEvent(String nodeLabel, String ipAddr, String serviceName, String status) {
+    private Event createTranslatableEvent(String nodeLabel, String ipAddr, String serviceName, String status) {
         Parms parms = new Parms();
 
         if(nodeLabel != null) parms.addParm(buildParm(EventConstants.PARM_PASSIVE_NODE_LABEL, nodeLabel));
@@ -501,6 +539,7 @@ public class PassiveStatusKeeperTest extends MockObjectTestCase {
 
     private Event createEventWithParms(String uei, Parms parms) {
 		Event e = MockUtil.createEvent("Automation", uei);
+		e.setHost("localhost");
         
         e.setParms(parms);
         Logmsg logmsg = new Logmsg();
@@ -530,7 +569,7 @@ public class PassiveStatusKeeperTest extends MockObjectTestCase {
         "      <mappings>\n" + 
         "        <mapping>\n" + 
         "          <parameter name=\"nodeLabel\">\n" + 
-        "            <parameter-value name=\"passiveNodeLabel\" value=\"Router\" />\n" + 
+        "            <field-value name=\"host\" value=\"Router\" />\n" +
         "          </parameter>\n" + 
         "          <field name=\"interface\">\n" + 
         "            <parameter-value name=\"passiveIpAddr\" matches=\".*(192\\.168\\.1\\.1).*\" value=\"192.168.1.1\" />\n" + 

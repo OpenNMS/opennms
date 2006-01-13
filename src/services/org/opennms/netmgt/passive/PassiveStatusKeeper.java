@@ -34,6 +34,8 @@ package org.opennms.netmgt.passive;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Category;
@@ -49,6 +51,8 @@ import org.opennms.netmgt.eventd.EventListener;
 import org.opennms.netmgt.poller.pollables.PollStatus;
 import org.opennms.netmgt.utils.Querier;
 import org.opennms.netmgt.xml.event.Event;
+import org.opennms.netmgt.xml.event.Events;
+import org.opennms.netmgt.xml.event.Log;
 
 public class PassiveStatusKeeper extends ServiceDaemon implements EventListener {
     
@@ -183,7 +187,19 @@ public class PassiveStatusKeeper extends ServiceDaemon implements EventListener 
         } 
         
         if (m_config.isTranslationEvent(e)) {
-            
+            log().debug("onEvent: received valid registered translation event: \n"+EventUtils.toString(e));
+            List translated = m_config.translateEvent(e);
+            if (translated != null) {
+            	   Log log = new Log();
+            	   Events events = new Events();
+            	   for (Iterator iter = translated.iterator(); iter.hasNext();) {
+            		   Event event = (Event) iter.next();
+            		   events.addEvent(event);
+            		   log().debug("onEvent: sended translated event: \n"+EventUtils.toString(event));
+            	   }
+            	   log.setEvents(events);
+            	   getEventManager().sendNow(log);
+            }
         }
         
         if (!m_config.isPassiveStatusEvent(e) && !m_config.isTranslationEvent(e))

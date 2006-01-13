@@ -57,6 +57,9 @@ public interface EventIpcManager {
      */
     public void sendNow(Log eventLog);
 
+    // TODO: Make a sendNow that takes a list of events so we don't need to
+    // mess with Log everywhere that sends multiple events
+    
     /**
      * Called by eventd to send an event to all interested listeners
      */

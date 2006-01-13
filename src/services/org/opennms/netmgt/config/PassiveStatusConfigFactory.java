@@ -34,19 +34,22 @@
 
 package org.opennms.netmgt.config;
 
+import java.beans.PropertyDescriptor;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.Reader;
-import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -59,7 +62,9 @@ import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.ConfigFileConstants;
 import org.opennms.netmgt.config.passive.Attribute;
 import org.opennms.netmgt.config.passive.AttributeValue;
+import org.opennms.netmgt.config.passive.Constant;
 import org.opennms.netmgt.config.passive.EventTranslationSpec;
+import org.opennms.netmgt.config.passive.Field;
 import org.opennms.netmgt.config.passive.FieldValue;
 import org.opennms.netmgt.config.passive.Mapping;
 import org.opennms.netmgt.config.passive.Parameter;
@@ -72,6 +77,7 @@ import org.opennms.netmgt.poller.pollables.PollStatus;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.Parms;
+import org.springframework.beans.BeanUtils;
 
 /**
  * This is the singleton class used to load the configuration from the
@@ -95,6 +101,8 @@ public final class PassiveStatusConfigFactory implements PassiveStatusConfig {
      * The config class loaded from the config file
      */
     private PassiveStatusConfiguration m_config;
+
+	private List m_translationSpecs;
 
     /**
      * This member is set to true if the configuration file has been loaded.
@@ -122,9 +130,8 @@ public final class PassiveStatusConfigFactory implements PassiveStatusConfig {
         marshallReader(rdr);
     }
     
-    private synchronized PassiveStatusConfiguration marshallReader(Reader rdr) throws MarshalException, ValidationException {
+    private synchronized void marshallReader(Reader rdr) throws MarshalException, ValidationException {
         m_config = (PassiveStatusConfiguration) Unmarshaller.unmarshal(PassiveStatusConfiguration.class, rdr);
-        return m_config;
     }
 
     /**
@@ -355,13 +362,27 @@ public final class PassiveStatusConfigFactory implements PassiveStatusConfig {
         return passiveStatusEventContainsRequiredParms(e);
     }
     
-    public boolean isTranslationEvent(Event e) {
-        return findMatchingMappingForEvent(e) != null;
+	static class TranslationFailedException extends RuntimeException {
+		private static final long serialVersionUID = 1L;
+		TranslationFailedException(String msg) {
+    			super(msg);
+    		}
     }
 
+    public boolean isTranslationEvent(Event e) {
+    	
+		List specs = getTranslationSpecs();
+		for (Iterator it = specs.iterator(); it.hasNext();) {
+			TranslationSpec spec = (TranslationSpec) it.next();
+			if (spec.matches(e))
+				return true;
+		}
+		return false;
+    }
+    
 
-    private Category log() {
-        return ThreadCategory.getInstance("PassiveStatusConfigFactory.class");
+	static private Category log() {
+        return ThreadCategory.getInstance(PassiveStatusConfigFactory.class);
     }
 
     
@@ -399,114 +420,75 @@ public final class PassiveStatusConfigFactory implements PassiveStatusConfig {
         return hasAllParms;
     }
 
-    /**
-     * 
-     * @param e
-     * @param labels
-     * @return
-     */
-    private Mapping findMatchingMappingForEvent(Event e) {
-    	
-    		EventTranslationSpec transSpec = getEventTranslationSpecByUei(e.getUei());
-    		if (transSpec == null) return null;
-    		
-    		List mappings = transSpec.getMappings().getMappingCollection();
-    		for (Iterator it = mappings.iterator(); it.hasNext();) {
-				Mapping mapping = (Mapping) it.next();
-				if (mappingMatchesEvent(mapping, e))
-					return mapping;
-		}
-    		return null;
-        
-    }
-
-    private boolean mappingMatchesEvent(Mapping mapping, Event e) {
-    		return attributeAssignmentsMatchEvent(mapping.getParameterCollection(), e)
-    		    && attributeAssignmentsMatchEvent(mapping.getFieldCollection(), e);
-	}
-
-	private boolean attributeAssignmentsMatchEvent(List attrAssignments, Event e) {
-		for (Iterator it = attrAssignments.iterator(); it.hasNext();) {
-		Attribute attrAssignment = (Attribute) it.next();
-		if (!attributeAssignmentMatchesEvent(attrAssignment, e))
-			return false;
-		}
-		return true;
-	}
-
-	private boolean attributeAssignmentMatchesEvent(Attribute attr, Event e) {
-		if (attr.getFieldValue() != null)
-			return new FieldMatcher(attr.getFieldValue()).eventMatches(e);
-		else if (attr.getParameterValue() != null)
-			return new ParameterMatcher(attr.getParameterValue()).eventMatches(e);
-		else
-			return true;
-	}
-	
-	static abstract class AttributeMatcher {
-		AttributeValue m_val;
-		AttributeMatcher(AttributeValue val) { m_val = val; }
-		public boolean eventMatches(Event e) {
-			return valueMatches(getAttributeValue(m_val.getName(), e));
-		}
+	public List translateEvent(Event e) {
+		EventTranslationSpec transSpec = getEventTranslationSpecByUei(e.getUei());
+		if (transSpec == null) return null;
 		
-		private boolean valueMatches(String attributeValue) {
-			if (attributeValue == null) return false;
-			if (m_val.getMatches() == null) return true;
-			
-			Pattern p = Pattern.compile(m_val.getMatches());
-			Matcher m = p.matcher(attributeValue);
-			
-			return m.matches();
+		List events = new ArrayList();
+		List mappings = transSpec.getMappings().getMappingCollection();
+		for (Iterator it = mappings.iterator(); it.hasNext();)
+			try {
+				Mapping mapping = (Mapping) it.next();
+				Event translated = translateEvent(mapping, e);
+				events.add(translated);
+			} catch (TranslationFailedException ex) {
 		}
-		abstract public String getAttributeValue(String attrName, Event e);
-	}
-	
-	static class FieldMatcher extends AttributeMatcher {
-		FieldMatcher(FieldValue val) { super(val); }
-		public String getAttributeValue(String attrName, Event e) {
-			// TODO Auto-generated method stub
-			return null;
-		}
+		return events.size() > 0 ? events : null;
 
+		
 	}
-	
-	static class ParameterMatcher extends AttributeMatcher {
-		ParameterMatcher(ParameterValue val) { super(val); }
-		public String getAttributeValue(String attrName, Event e) {
-			Parms parms = e.getParms();
-			if (parms == null) return null;
-			
-			for (Iterator it = parms.getParmCollection().iterator(); it.hasNext();) {
-				Parm parm = (Parm) it.next();
-				if (parm.getParmName().equals(attrName))
-					return (parm.getValue() == null ? "" : parm.getValue().getContent());
-					
-			}
-			return null;
-		}
-
+    private Event translateEvent(Mapping mapping, Event e) {
+    		Event translated = cloneEvent(e);
+    		
+    		assignAttributes(mapping.getParameterCollection(), e, translated);
+    		assignAttributes(mapping.getFieldCollection(), e, translated);
+    		
+    		return translated;
 	}
 
-	/**
-     * Goes through the list of configured passive events looking for the configured
-     * event for any status key that uses an event parm vs.
-     * event field.
-     *
-     * @return hasParm
-     *      true or false
-     */
-    private boolean isParmRequired(Event e) {
-        boolean hasParm = false;
-        if ( getPassiveEventByUei(e.getUei()).getStatusKey().getNodeLabel().getEventToken().getIsParm() ||
-                getPassiveEventByUei(e.getUei()).getStatusKey().getIpaddr().getEventToken().getIsParm() ||
-                getPassiveEventByUei(e.getUei()).getStatusKey().getServiceName().getEventToken().getIsParm() ||
-                getPassiveEventByUei(e.getUei()).getStatusKey().getStatus().getEventToken().getIsParm())
-            hasParm = true;
-        log().debug("isParmRequired: This passive event requires parms: "+Boolean.toString(hasParm));
-        return hasParm;
-    }
-    
+	private void assignAttributes(List attributes, Event e, Event translated) {
+		for (Iterator it = attributes.iterator(); it.hasNext();) {
+			Attribute attribute = (Attribute) it.next();
+			assignAttribute(attribute, e, translated);
+		}
+	}
+
+	private void assignAttribute(Attribute attr, Event e, Event translated) {
+		if (attr.getFieldValue() != null)
+			new FieldValueSpec(attr.getFieldValue()).assign(e, translated);
+		else if (attr.getParameterValue() != null)
+			new ParameterValueSpec(attr.getParameterValue()).assign(e, translated);
+		else if (attr.getConstant() != null)
+			new ConstantValueSpec(attr.getConstant()).assign(e, translated);
+		
+			
+	}
+
+	private static Event cloneEvent(Event orig) {
+	       Event copy = null;
+	        try {
+	            // Write the object out to a byte array
+	            ByteArrayOutputStream bos = new ByteArrayOutputStream(1024);
+	            ObjectOutputStream out = new ObjectOutputStream(bos);
+	            out.writeObject(orig);
+	            out.flush();
+	            out.close();
+
+	            // Make an input stream from the byte array and read
+	            // a copy of the object back in.
+	            ObjectInputStream in = new ObjectInputStream(
+	                new ByteArrayInputStream(bos.toByteArray()));
+	            copy = (Event)in.readObject();
+	        }
+	        catch(IOException e) {
+	            log().error("Exception copying event", e);
+	        }
+	        catch(ClassNotFoundException cnfe) {
+	            log().error("Exception copying event", cnfe);
+	        }
+	        return copy;
+	}
+
     /**
      * Parses regular expressions and returns either the expr string
      * or the back reference(s) within the expression.  If the string begins
@@ -641,6 +623,251 @@ public final class PassiveStatusConfigFactory implements PassiveStatusConfig {
         }
         return null;
 	}
+	
+	private List getTranslationSpecs() {
+		if (m_translationSpecs == null)
+			m_translationSpecs = constructTranslationSpecs();
+		
+		return m_translationSpecs;
+	}
+
+	private List constructTranslationSpecs() {
+		List specs = new ArrayList();
+		for (Iterator it = m_config.getTranslation().getEventTranslationSpecCollection().iterator(); it.hasNext();) {
+			EventTranslationSpec eventTrans = (EventTranslationSpec) it.next();
+			specs.add(new TranslationSpec(eventTrans));
+		}
+		return specs;
+	}
+	
+	static class TranslationSpec {
+		private EventTranslationSpec m_spec;
+		private List m_translationMappings;
+		TranslationSpec(EventTranslationSpec spec) {
+			m_spec = spec;
+			m_translationMappings = null; // lazy init
+		}
+		String getUei() { return m_spec.getUei(); }
+		public EventTranslationSpec getEventTranslationSpec() {
+			return m_spec;
+		}
+		
+		private List constructTranslationMappings() {
+			if (m_spec.getMappings() == null) return Collections.EMPTY_LIST;
+
+			List mappings = m_spec.getMappings().getMappingCollection();
+			
+			List transMaps = new ArrayList(mappings.size());
+			for (Iterator it = mappings.iterator(); it.hasNext();) {
+				Mapping mapping = (Mapping) it.next();
+				TranslationMapping transMap = new TranslationMapping(mapping);
+				transMaps.add(transMap);
+			}
+			
+			return transMaps;
+		}
+		
+		List getTranslationMappings() {
+			if (m_translationMappings == null)
+				m_translationMappings = constructTranslationMappings();
+			return m_translationMappings;
+		}
+		boolean matches(Event e) {
+			if (!m_spec.getUei().equals(e.getUei())) return false;
+			
+			List transMaps = getTranslationMappings();
+			for (Iterator it = transMaps.iterator(); it.hasNext();) {
+				TranslationMapping transMap = (TranslationMapping) it.next();
+				if (transMap.matches(e))
+					return true;
+			}
+			return false;
+		}
+		
+		
+	}
+	
+	static class TranslationMapping {
+		Mapping m_mapping;
+		List m_assignments;
+		TranslationMapping(Mapping mapping) { 
+			m_mapping = mapping;
+			m_assignments = null; // lazy init
+		}
+		
+		public Mapping getMapping() {
+			return m_mapping;
+		}
+		
+		private List getAssignmentSpecs() {
+			if (m_assignments == null)
+				m_assignments = constructAssignmentSpecs();
+			return m_assignments;
+		}
+		
+		private List constructAssignmentSpecs() {
+			Mapping mapping = getMapping();
+			List assignments = new ArrayList();
+			for (Iterator iter = mapping.getParameterCollection().iterator(); iter.hasNext();) {
+				Parameter param = (Parameter) iter.next();
+				AssignmentSpec assignSpec = new ParameterAssignmentSpec(param);
+				assignments.add(assignSpec);
+			}
+			for (Iterator iter = mapping.getFieldCollection().iterator(); iter.hasNext();) {
+				Field field = (Field) iter.next();
+				AssignmentSpec assignSpec = new FieldAssignmentSpec(field);
+				assignments.add(assignSpec);
+			}
+			return assignments;
+		}
+		
+		private boolean assignmentsMatch(Event e) {
+			for (Iterator it = getAssignmentSpecs().iterator(); it.hasNext();) {
+				AssignmentSpec assignSpec = (AssignmentSpec) it.next();
+			
+				if (!assignSpec.matches(e))
+					return false;
+			}	
+			return true;
+		}
+		boolean matches(Event e) {
+			return assignmentsMatch(e);
+		}
+	}
+	
+	static class AssignmentSpec {
+		private Attribute m_attribute;
+		private ValueSpec m_valueSpec;
+		AssignmentSpec(Attribute attribute) {
+			m_attribute = attribute; 
+			m_valueSpec = null; // lazy init
+		}
+		private Attribute getAttribute() { return m_attribute; }
+		private ValueSpec constructValueSpec() {
+			if (getAttribute().getFieldValue() != null)
+				return new FieldValueSpec(getAttribute().getFieldValue());
+			else if (getAttribute().getParameterValue() != null)
+				return new ParameterValueSpec(getAttribute().getParameterValue());
+			else if (getAttribute().getConstant() != null)
+				return new ConstantValueSpec(getAttribute().getConstant());
+			else
+				return new ValueSpecUnspecified();
+		}
+		private ValueSpec getValueSpec() {
+			if (m_valueSpec == null)
+				m_valueSpec = constructValueSpec();
+			return m_valueSpec;
+		}
+		boolean matches(Event e) {
+			return getValueSpec().matches(e);
+		}
+	}
+	
+	static class FieldAssignmentSpec extends AssignmentSpec {
+		FieldAssignmentSpec(Field field) { super(field); }
+		
+	}
+	
+	static class ParameterAssignmentSpec extends AssignmentSpec {
+		ParameterAssignmentSpec(Parameter param) { super(param); }
+	}
+	
+	static abstract class ValueSpec {
+		public abstract boolean matches(Event e);
+		public abstract void assign(Event e, Event translated);
+	}
+	
+	static class ConstantValueSpec extends ValueSpec {
+		
+		Constant m_constant;
+
+		public ConstantValueSpec(Constant constant) {
+			m_constant = constant;
+		}
+		
+
+		public boolean matches(Event e) {
+			return true;
+		}
+
+		public void assign(Event e, Event translated) {
+		}
+		
+	}
+
+	static class ValueSpecUnspecified extends ValueSpec {
+		
+		public boolean matches(Event e) {
+			// TODO: this should probably throw an exception since it makes no sense
+			return true;
+		}
+
+		public void assign(Event e, Event translated) {
+			// TODO: this should probably throw an exception since it makes no sense
+		}
+		
+	}
+
+	static abstract class AttributeValueSpec extends ValueSpec {
+		AttributeValue m_val;
+		AttributeValueSpec(AttributeValue val) { m_val = val; }
+		public boolean matches(Event e) {
+			return valueMatches(getAttributeValue(m_val.getName(), e));
+		}
+		public void assign(Event e, Event translated) {}
+		
+		private boolean valueMatches(String attributeValue) {
+			if (attributeValue == null) return false;
+			if (m_val.getMatches() == null) return true;
+			
+			Pattern p = Pattern.compile(m_val.getMatches());
+			Matcher m = p.matcher(attributeValue);
+			
+			return m.matches();
+		}
+		abstract public String getAttributeValue(String attrName, Event e);
+	}
+	
+	static class FieldValueSpec extends AttributeValueSpec {
+		FieldValueSpec(FieldValue val) { super(val); }
+		public String getAttributeValue(String attrName, Event e) {
+			PropertyDescriptor[] desc = BeanUtils.getPropertyDescriptors(Event.class);
+			for (int i = 0; i < desc.length; i++) {
+				PropertyDescriptor descriptor = desc[i];
+				if (descriptor.getName().equals(attrName)) {
+					
+					try {
+						Object result = descriptor.getReadMethod().invoke(e, new Object[0]);
+						return result == null ? "" : result.toString();
+					} catch (Exception e1) {
+						log().error("Unable to retrieve l-value from event!", e1);
+						return null;
+					}
+				}
+			}
+			log().warn("Attempt to retrive l-value for event field named: "+attrName+".  This field is invalid!");
+			return null;
+		}
+
+	}
+	
+	static class ParameterValueSpec extends AttributeValueSpec {
+		ParameterValueSpec(ParameterValue val) { super(val); }
+		public String getAttributeValue(String attrName, Event e) {
+			Parms parms = e.getParms();
+			if (parms == null) return null;
+			
+			for (Iterator it = parms.getParmCollection().iterator(); it.hasNext();) {
+				Parm parm = (Parm) it.next();
+				if (parm.getParmName().equals(attrName))
+					return (parm.getValue() == null ? "" : parm.getValue().getContent());
+					
+			}
+			return null;
+		}
+
+	}
+	
 
 
 }

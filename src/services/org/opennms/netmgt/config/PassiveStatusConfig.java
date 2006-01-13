@@ -34,6 +34,7 @@ package org.opennms.netmgt.config;
 import java.util.List;
 
 import org.opennms.netmgt.xml.event.Event;
+import org.opennms.netmgt.xml.event.Log;
 
 public interface PassiveStatusConfig {
 
@@ -63,6 +64,13 @@ public interface PassiveStatusConfig {
      * @return true iff e is a translation event
      */
     public abstract boolean isTranslationEvent(Event e);
+
+    /**
+     * Translate the @param e to a new event
+     * @param e Event
+     * @return a translated event
+     */
+	public abstract List translateEvent(Event e);
     
 
 }
