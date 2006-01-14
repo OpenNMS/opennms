@@ -500,4 +500,12 @@ public class ResponseTimeModel extends Object implements GraphModel {
 
         return isQueryable;
     }
+
+    public boolean encodeNodeIdInRRDParm() {
+        return false;
+    }
+
+    public String getGraphURL() {
+        return "response/graph.png";
+    }
 }

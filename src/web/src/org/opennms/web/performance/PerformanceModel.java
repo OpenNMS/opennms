@@ -512,4 +512,13 @@ public class PerformanceModel extends Object implements GraphModel {
 
         return this.isQueryableInterface(Integer.parseInt(nodeId), ifLabel);
     }
+
+    public boolean encodeNodeIdInRRDParm() {
+        return true;
+    }
+
+    public String getGraphURL() {
+        return "snmp/performance/graph.png";
+    }
+
 }
