@@ -1,4 +1,4 @@
-<!--
+<%--
 
 //
 // This file is part of the OpenNMS(R) Application.
@@ -38,9 +38,20 @@
 //      http://www.opennms.com/
 //
 
--->
+--%>
 
-<%@page language="java" contentType="text/html" session="true" import="java.util.*,org.opennms.web.admin.notification.noticeWizard.*,org.opennms.web.Util,org.opennms.netmgt.filter.Filter,org.opennms.netmgt.filter.FilterParseException,org.opennms.netmgt.config.*,org.opennms.netmgt.config.notifications.*" %>
+<%@page language="java"
+	contentType="text/html"
+	session="true"
+	import="java.util.*,
+		org.opennms.web.admin.notification.noticeWizard.*,
+		org.opennms.web.Util,
+		org.opennms.netmgt.filter.Filter,
+		org.opennms.netmgt.filter.FilterParseException,
+		org.opennms.netmgt.config.*,
+		org.opennms.netmgt.config.notifications.*
+	"
+%>
 
 <%!
     public void init() throws ServletException {
@@ -63,12 +74,14 @@
       notServices = new String[0];
 %>
 
-<html>
-<head>
-  <title>Validate Rule | Admin | OpenNMS Web Console</title>
-  <base HREF="<%=org.opennms.web.Util.calculateUrlBase( request )%>" />
-  <link rel="stylesheet" type="text/css" href="css/styles.css" />
-</head>
+<jsp:include page="/includes/header.jsp" flush="false" >
+  <jsp:param name="title" value="Validate Rule" />
+  <jsp:param name="headTitle" value="Validate Rule" />
+  <jsp:param name="headTitle" value="Admin" />
+  <jsp:param name="breadcrumb" value="<a href='admin/index.jsp'>Admin</a>" />
+  <jsp:param name="breadcrumb" value="<a href='admin/notification/index.jsp'>Configure Notifications</a>" />
+  <jsp:param name="breadcrumb" value="Validate Rule" />
+</jsp:include>
 
 <script language="Javascript" type="text/javascript" >
   
@@ -86,28 +99,9 @@
   
 </script>
 
-<body marginwidth="0" marginheight="0" LEFTMARGIN="0" RIGHTMARGIN="0" TOPMARGIN="0">
+<h2><%=(newNotice.getName()!=null ? "Editing notice: " + newNotice.getName() + "<br>" : "")%></h2>
 
-<% String breadcrumb1 = "<a href='admin/index.jsp'>Admin</a>"; %>
-<% String breadcrumb2 = "<a href='admin/notification/index.jsp'>Configure Notifications</a>"; %>
-<% String breadcrumb3 = "Validate Rule"; %>
-<jsp:include page="/includes/header.jsp" flush="false" >
-  <jsp:param name="title" value="Validate Rule" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb1%>" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb2%>" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb3%>" />
-</jsp:include>
-
-<br>
-<!-- Body -->
-
-<table width="100%" cellspacing="0" cellpadding="0" border="0">
-  <tr>
-    <td> &nbsp; </td>
-
-    <td>
-      <h2><%=(newNotice.getName()!=null ? "Editing notice: " + newNotice.getName() + "<br>" : "")%></h2>
-      <h3>Check the TCP/IP addresses below to ensure that the rule has given the expected results. If it hasn't click the
+<h3>Check the TCP/IP addresses below to ensure that the rule has given the expected results. If it hasn't click the
           'Rebuild' link below the table. If the results look good continue by clicking the 'Next' link also below the table.</h3>
       <table width="100%" cellspacing="0" cellpadding="0" border="0">
         <tr>
@@ -142,19 +136,8 @@
         </tr>
         </table>
       </form>
-      
-    </td>
-
-    <td> &nbsp; </td>
-  </tr>
-</table>
-
-<br>
 
 <jsp:include page="/includes/footer.jsp" flush="false" />
-
-</body>
-</html>
 
 <%!
   public String buildInterfaceTable(String rule, String[] serviceList, String[] notServiceList)

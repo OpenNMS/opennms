@@ -1,4 +1,4 @@
-<!--
+<%--
 
 //
 // This file is part of the OpenNMS(R) Application.
@@ -35,44 +35,30 @@
 //      http://www.opennms.org/
 //      http://www.opennms.com///
 
--->
+--%>
 
-<%@page language="java" contentType="text/html" session="true" %>
+<%@page language="java"
+	contentType="text/html"
+session="true"
+%>
 
-<html>
-<head>
-  <title>Help | OpenNMS Web Console</title>
-  <base HREF="<%=org.opennms.web.Util.calculateUrlBase( request )%>" />
-  <link rel="stylesheet" type="text/css" href="css/styles.css" />
-</head>
-<body marginwidth="0" marginheight="0" LEFTMARGIN="0" RIGHTMARGIN="0" TOPMARGIN="0">
-
-<% String breadcrumb1 = "Help"; %>
 <jsp:include page="/includes/header.jsp" flush="false" >
   <jsp:param name="title" value="Help" />
+  <jsp:param name="headTitle" value="Help" />
   <jsp:param name="location" value="help" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb1%>" />
+  <jsp:param name="breadcrumb" value="Help" />
 </jsp:include>
 
-<br>
-
-<!-- Body -->
-<table width="100%" cellspacing="0" cellpadding="0" border="0">
-  <tr>
-    <td>&nbsp;</td>
-
-    <td valign="top">
+  <div style="width: 40%; float: left;">
       <h3>Local Resources</h3>
       <p><a href="help/about.jsp">About the OpenNMS Web Console</a></p>
 
       <h3>Internet Resources</h3>
       <p><a href="http://faq.opennms.org">Frequently Asked Questions</a></p>
       <p><a href="http://docs.opennms.org">Online Documentation</a></p>
-    </td>
-    
-    <td>&nbsp;</td>
+  </div>
 
-    <td valign="top" width="60%">
+  <div style="width: 60%; float: left;">
       <h3>Helpful Resources</h3>
     
       <p>
@@ -87,18 +73,6 @@
         <em>Online Documentation</em>.  Check out important attributes of your OpenNMS system
         on the <em>About page</em>.
       </p>
-      
-    </td>
-    
-    <td>&nbsp;</td>
-  </tr>
-</table>
+  </div>
 
-<br>
-
-<jsp:include page="/includes/footer.jsp" flush="false" >
-  <jsp:param name="location" value="help" />
-</jsp:include>
-
-</body>
-</html>
+<jsp:include page="/includes/footer.jsp" flush="false"/>

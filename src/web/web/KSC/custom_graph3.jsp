@@ -1,4 +1,4 @@
-<!--
+<%--
 
 //
 // This file is part of the OpenNMS(R) Application.
@@ -34,30 +34,44 @@
 //      http://www.opennms.org/
 //      http://www.opennms.com/
 
--->
+--%>
 
-<%@page language="java" contentType="text/html" session="true" import="java.util.*,java.io.*,org.opennms.web.performance.*,org.opennms.web.*,org.opennms.web.graph.*,java.io.File,org.opennms.netmgt.config.kscReports.*,org.opennms.netmgt.config.KSC_PerformanceReportFactory,org.opennms.web.element.NetworkElementFactory" %>
-
+<%@page language="java"
+	contentType="text/html"
+	session="true"
+	import="java.util.*,
+		java.io.*,
+		org.opennms.web.performance.*,
+		org.opennms.web.*,
+		org.opennms.web.graph.*,
+		java.io.File,
+		org.opennms.netmgt.config.kscReports.*,
+		org.opennms.netmgt.config.KSC_PerformanceReportFactory,
+		org.opennms.web.element.NetworkElementFactory
+	"
+%>
 
 <%@ include file="/WEB-INF/jspf/KSC/init2.jspf" %>
 <%@ include file="/WEB-INF/jspf/KSC/rrd.jspf" %>
 
 <%
-    //required parameter node
+    String[] requiredParameters = new String[] {"node", "intf"};
+
+    // required parameter node
     String nodeIdString = request.getParameter("node");
-    if(nodeIdString == null) {
-        throw new MissingParameterException( "node", new String[] {"node", "intf"} );
+    if (nodeIdString == null) {
+        throw new MissingParameterException("node", requiredParameters);
     }
 
-    //required parameter intf, a value of "" means to discard the intf
+    // required parameter intf, a value of "" means to discard the intf
     String intf = request.getParameter("intf");
-    if(intf == null) {
-        throw new MissingParameterException( "intf", new String[] {"node", "intf"} );
+    if (intf == null) {
+        throw new MissingParameterException("intf", requiredParameters);
     }
     
     int nodeId = Integer.parseInt(nodeIdString);
 
-    String nodeLabel = org.opennms.web.element.NetworkElementFactory.getNodeLabel(nodeId);     
+    String nodeLabel = NetworkElementFactory.getNodeLabel(nodeId);     
 
     PrefabGraph[] graph_options = null;
     boolean includeNodeQueries = true;
@@ -77,13 +91,15 @@
     PrefabGraph display_graph = (PrefabGraph) this.model.getQuery(sample_graph.getGraphtype());
 %>
 
-<html>
-
-<head>
-  <title>Performance | Reports | KSC </title>
-  <base HREF="<%=org.opennms.web.Util.calculateUrlBase( request )%>" />
-  <link rel="stylesheet" type="text/css" href="css/styles.css" />
-</head>
+<jsp:include page="/includes/header.jsp" flush="false" >
+  <jsp:param name="title" value="Key SNMP Customized Performance Reports" />
+  <jsp:param name="headTitle" value="Performance " />
+  <jsp:param name="headTitle" value="Reports" />
+  <jsp:param name="headTitle" value="KSC" />
+  <jsp:param name="location" value="KSC Reports" />
+  <jsp:param name="breadcrumb" value="<a href='report/index.jsp'>Reports</a>" />
+  <jsp:param name="breadcrumb" value="KSC Reports" />
+</jsp:include>
 
 <script language="Javascript" type="text/javascript">
  
@@ -110,21 +126,6 @@
   
 </script>
 
-
-<body marginwidth="0" marginheight="0" LEFTMARGIN="0" RIGHTMARGIN="0" TOPMARGIN="0">
-
-<% String breadcrumb1 = "<a href='report/index.jsp'>Reports</a>"; %>
-<% String breadcrumb2 = "KSC Reports"; %>
-<jsp:include page="/includes/header.jsp" flush="false" >
-  <jsp:param name="title" value="Key SNMP Customized Performance Reports" />
-  <jsp:param name="location" value="KSC Reports" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb1%>" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb2%>" />
-</jsp:include>
-
-<br/>
-
-<!-- Body -->
 
 <table width="100%" cellspacing="0" cellpadding="0" border="0">
   <tr>
@@ -284,11 +285,4 @@
   </tr>
 </table>
                                          
-<br>
-
 <jsp:include page="/includes/footer.jsp" flush="false" />
-
-</body>
-</html>
-
-

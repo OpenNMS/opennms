@@ -68,23 +68,14 @@
     int interfaceCount = 0;
 %>
 
-<html>
-<head>
-  <title>Node List | OpenNMS Web Console</title>
-  <base HREF="<%=org.opennms.web.Util.calculateUrlBase( request )%>" />
-  <link rel="stylesheet" type="text/css" href="css/styles.css" />
-</head>
-<body>
-
 <jsp:include page="/includes/header.jsp" flush="false" >
   <jsp:param name="title" value="Node List" />
+  <jsp:param name="headTitle" value="Node List" />
   <jsp:param name="location" value="nodelist" />
   <jsp:param name="breadcrumb" value="<a href ='element/index.jsp'>Search</a>"/>
   <jsp:param name="breadcrumb" value="Node List"/>
 </jsp:include>
 
-<!-- Body -->
-<div id="content">
 <h3>Nodes and their Interfaces</h3>
 
   <% if( nodes.length > 0 ) { %>
@@ -133,11 +124,4 @@
 <div class="spacer"></div>
 <%=nodes.length%> Nodes, <%=interfaceCount%> Interfaces
                                      
-</div> <!-- id="content" -->
-
-<jsp:include page="/includes/footer.jsp" flush="false" >
-  <jsp:param name="location" value="nodelist" />
-</jsp:include>
-
-</body>
-</html>
+<jsp:include page="/includes/footer.jsp" flush="false"/>

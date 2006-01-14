@@ -1,4 +1,4 @@
-<!--
+<%--
 
 //
 // This file is part of the OpenNMS(R) Application.
@@ -37,9 +37,17 @@
 //      http://www.opennms.com/
 //
 
--->
+--%>
 
-<%@page language="java" contentType="text/html" session="true" import="java.util.*,org.opennms.web.Util,org.opennms.netmgt.config.*,org.opennms.netmgt.config.destinationPaths.*" %>
+<%@page language="java"
+	contentType="text/html"
+	session="true"
+	import="java.util.*,
+		org.opennms.web.Util,
+		org.opennms.netmgt.config.*,
+		org.opennms.netmgt.config.destinationPaths.*
+	"
+%>
 
 <%!
     public void init() throws ServletException {
@@ -60,12 +68,15 @@
     Path newPath = (Path)user.getAttribute("newPath");
 %>
 
-<html>
-<head>
-  <title>Choose Commands | Admin | OpenNMS Web Console</title>
-  <base HREF="<%=org.opennms.web.Util.calculateUrlBase( request )%>" />
-  <link rel="stylesheet" type="text/css" href="css/styles.css" />
-</head>
+<jsp:include page="/includes/header.jsp" flush="false" >
+  <jsp:param name="title" value="Choose Commands" />
+  <jsp:param name="headTitle" value="Choose Commands" />
+  <jsp:param name="headTitle" value="Admin" />
+  <jsp:param name="breadcrumb" value="<a href='admin/index.jsp'>Admin</a>" />
+  <jsp:param name="breadcrumb" value="<a href='admin/notification/index.jsp'>Configure Notifications</a>" />
+  <jsp:param name="breadcrumb" value="<a href='admin/notification/destinationPaths.jsp'>Destination Paths</a>" />
+  <jsp:param name="breadcrumb" value="Choose Commands" />
+</jsp:include>
 
 <script language="Javascript" type="text/javascript" >
 
@@ -93,72 +104,41 @@
 
 </script>
 
-<body marginwidth="0" marginheight="0" LEFTMARGIN="0" RIGHTMARGIN="0" TOPMARGIN="0">
+<h2><%=(newPath.getName()!=null ? "Editing path: " + newPath.getName() + "<br>" : "")%></h2>
 
-<% String breadcrumb1 = "<a href='admin/index.jsp'>Admin</a>"; %>
-<% String breadcrumb2 = "<a href='admin/notification/index.jsp'>Configure Notifications</a>"; %>
-<% String breadcrumb3 = "<a href='admin/notification/destinationPaths.jsp'>Destination Paths</a>"; %>
-<% String breadcrumb4 = "Choose Commands"; %>
-<jsp:include page="/includes/header.jsp" flush="false" >
-  <jsp:param name="title" value="Choose Commands" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb1%>" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb2%>" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb3%>" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb4%>" />
-</jsp:include>
+<h3>Choose the commands to use for each user and group. More than one
+command can be choosen for each (except for email addresses). Also
+choose the desired behavior for automatic notification on "UP" events.</h3>
 
-<br>
-<!-- Body -->
+<form method="post" name="commands"
+      action="admin/notification/destinationWizard">
+  <%=Util.makeHiddenTags(request)%>
 
-<table width="100%" cellspacing="0" cellpadding="0" border="0">
-  <tr>
-    <td> &nbsp; </td>
+  <input type="hidden" name="sourcePage" value="chooseCommands.jsp"/>
 
-    <td>
-    <h2><%=(newPath.getName()!=null ? "Editing path: " + newPath.getName() + "<br>" : "")%></h2>
-    <h3>Choose the commands to use for each user and group. More than one command can be choosen
-        for each (except for email addresses). Also choose the desired behavior for automatic
-        notification on "UP" events.</h3>
-    <form METHOD="POST" NAME="commands" ACTION="admin/notification/destinationWizard" >
-      <%=Util.makeHiddenTags(request)%>
-      <input type="hidden" name="sourcePage" value="chooseCommands.jsp"/>
-      <table width="50%" cellspacing="2" cellpadding="2" border="0">
-        <tr>
-          <td valign="top" align="left">
-            <%=buildCommands(newPath, Integer.parseInt(request.getParameter("targetIndex")))%>
-          </td>
-        </tr>
-        <tr>
-          <td colspan="2">
-            <input type="reset"/>
-          </td>
-        </tr>
-        <tr>
-          <td colspan="2">
-           <a HREF="javascript:next()">Next &#155;&#155;&#155;</a>
-          </td>
-        </tr>
-      </table>
-    </form>
-    </td>
+  <br/>
 
-    <td> &nbsp; </td>
-  </tr>
-</table>
+  <%=buildCommands(newPath, Integer.parseInt(request.getParameter("targetIndex")))%>
 
-<br>
+  <div class="spacer"></div>
+
+  <br/>
+
+  <input type="reset"/>
+
+  <br/>
+
+  <a href="javascript:next()">Next &#155;&#155;&#155;</a>
+</form>
 
 <jsp:include page="/includes/footer.jsp" flush="false" />
-
-</body>
-</html>
 
 <%!
     public String buildCommands(Path path, int index)
       throws ServletException
     {
         StringBuffer buffer = new StringBuffer();
-        buffer.append("<table width=\"100%\" cellspacing=\"2\" cellpadding=\"2\" border=\"0\">");
+        buffer.append("<table cellspacing=\"2\" cellpadding=\"2\" border=\"0\">");
         
         Target targets[] = null;
         

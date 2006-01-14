@@ -1,4 +1,4 @@
-<!--
+<%--
 
 //
 // This file is part of the OpenNMS(R) Application.
@@ -37,12 +37,33 @@
 //      http://www.opennms.com/
 //
 
--->
+--%>
 
-<%@page language="java" contentType="text/html" session="true" import="org.opennms.web.*,org.opennms.web.performance.*,java.util.*" %>
+<%@page language="java"
+	contentType="text/html"
+	session="true"
+	import="org.opennms.web.*,
+		org.opennms.web.performance.*,
+		java.util.*
+	"
+%>
 
 <%!
-    public final static String[] REQUIRED_PARAMS = new String[] {"rrddir", "title", "style", "ds", "startMonth", "startDate", "startYear", "startHour", "startMonth", "startDate", "startYear", "startHour" };
+    public final static String[] REQUIRED_PARAMS =
+	new String[] {
+		"rrddir",
+		"title",
+		"style",
+		"ds",
+		"startMonth",
+		"startDate",
+		"startYear",
+		"startHour",
+		"startMonth",
+		"startDate",
+		"startYear",
+		"startHour"
+	};
 %>
 
 <%
@@ -131,50 +152,29 @@
     String queryString = Util.makeQueryString( request, additions, ignores ); 
 %>
 
-<html>
-<head>
-  <title>Custom | Performance | Reports | OpenNMS Web Console</title>
-  <base HREF="<%=org.opennms.web.Util.calculateUrlBase( request )%>" />
-  <link rel="stylesheet" type="text/css" href="css/styles.css" />
-</head>
-<body marginwidth="0" marginheight="0" LEFTMARGIN="0" RIGHTMARGIN="0" TOPMARGIN="0">
-
-<% String breadcrumb1 = "<a href='report/index.jsp'>Reports</a>"; %>
-<% String breadcrumb2 = "<a href='performance/index.jsp'>Performance</a>"; %>
-<% String breadcrumb3 = "Custom"; %>
 <jsp:include page="/includes/header.jsp" flush="false" >
   <jsp:param name="title" value="Custom Performance Reporting" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb1%>" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb2%>" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb3%>" />
+  <jsp:param name="headTitle" value="Custom" />
+  <jsp:param name="headTitle" value="Performance" />
+  <jsp:param name="headTitle" value="Reports" />
+  <jsp:param name="breadcrumb" value="<a href='report/index.jsp'>Reports</a>" />
+  <jsp:param name="breadcrumb" value="<a href='performance/index.jsp'>Performance</a>" />
+  <jsp:param name="breadcrumb" value="Custom" />
 </jsp:include>
 
-<br>
-<!-- Body -->
-<table width="100%" cellpadding="2" cellspacing="2" border="0">
-  <tr>
-    <td align="center">
-      <img src="snmp/performance/adhocGraph.png?<%=queryString%>" />
-    </td>
-  </tr>
+<div align="center">
+  <img src="snmp/performance/adhocGraph.png?<%=queryString%>" />
 
-  <tr>
-    <td align="center">
-       <b>From</b> <%=startPretty%> <br>
-       <b>To</b> <%=endPretty%>
-    </td>
-  </tr>
-  <tr>
-    <td align="center">
-	<jsp:include page="/includes/bookmark.jsp" flush="false" />
-    </td>
-  </tr>
+  <br/>
 
-</table>
-                                     
-<br>
+  <strong>From:</strong> <%=startPretty%> <br/>
+  <strong<To:</strong> <%=endPretty%>
+
+  <br/>
+  <br/>
+
+  <jsp:include page="/includes/bookmark.jsp" flush="false" />
+
+</div>
 
 <jsp:include page="/includes/footer.jsp" flush="false" />
-
-</body>
-</html>

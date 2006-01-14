@@ -1,4 +1,4 @@
-<!--
+<%--
 
 //
 // This file is part of the OpenNMS(R) Application.
@@ -37,16 +37,24 @@
 //      http://www.opennms.com/
 //
 
--->
+--%>
 
-<%@page language="java" contentType="text/html" session="true"%>
+<%@page language="java"
+	contentType="text/html"
+	session="true"
+%>
+
 <%@ taglib uri="http://java.sun.com/jstl/core" prefix="c" %>
-<html>
-<head>
-<title>List | Role Admin | OpenNMS Web Console</title>
-<base HREF="<%=org.opennms.web.Util.calculateUrlBase( request )%>" />
-<link rel="stylesheet" type="text/css" href="css/styles.css" />
-</head>
+
+<jsp:include page="/includes/header.jsp" flush="false">
+	<jsp:param name="title" value="Role Configuration" />
+	<jsp:param name="headTitle" value="List" />
+	<jsp:param name="headTitle" value="Roles" />
+	<jsp:param name="headTitle" value="Admin" />
+	<jsp:param name="breadcrumb" value="<a href='admin/index.jsp'>Admin</a>" />
+	<jsp:param name="breadcrumb" value="<a href='admin/userGroupView/index.jsp'>Users, Groups and Roles</a>" />
+	<jsp:param name="breadcrumb" value="Role List" />
+</jsp:include>
 
 <script language="Javascript" type="text/javascript" >
 
@@ -67,38 +75,20 @@
 </script>
 
 
-<body marginwidth="0" marginheight="0" LEFTMARGIN="0" RIGHTMARGIN="0"
-	TOPMARGIN="0">
 
-<jsp:include page="/includes/header.jsp" flush="false">
-	<jsp:param name="title" value="Role Configuration" />
-	<jsp:param name="breadcrumb" value="<a href='admin/index.jsp'>Admin</a>" />
-	<jsp:param name="breadcrumb" value="<a href='admin/userGroupView/index.jsp'>Users, Groups and Roles</a>" />
-	<jsp:param name="breadcrumb" value="Role List" />
-</jsp:include>
-
-<form action="<c:url value='${reqUrl}'/>" method="POST" name="roleForm">
+<form action="<c:url value='${reqUrl}'/>" method="post" name="roleForm">
 	<input type="hidden" name="operation" />
 	<input type="hidden" name="role" />
 </form>
 
+<h3>Role Configuration</h3>
 
-<br />
-<table>
-	<tr>
-		<td>&nbsp;</td>
-		<td>
-		<h3>Role Configuration</h3>
-		</td>
-	</tr>
-	<tr>
-		<td>&nbsp;</td>
-		<td>
-		 <form action="<c:url value='${reqUrl}'/>" method="POST" name="newForm">
-		 	<input name="operation" type="hidden" value="new"/>
-		 	<input type="submit" value="New Role"/>
-		 </form>
-		 <table width="100%" border="1" cellspacing="0" cellpadding="2" bordercolor="black">
+<form action="<c:url value='${reqUrl}'/>" method="post" name="newForm">
+  <input name="operation" type="hidden" value="new"/>
+  <input type="submit" value="New Role"/>
+</form>
+
+<table width="100%" border="1" cellspacing="0" cellpadding="2" bordercolor="black">
 
          <tr bgcolor="#999999">
           <td/>
@@ -126,11 +116,5 @@
 				</tr>
 			</c:forEach>
 		</table>
-		</td>
-	</tr>
-</table>
-<br/>
-<jsp:include page="/includes/footer.jsp" flush="false" />
 
-</body>
-</html>
+<jsp:include page="/includes/footer.jsp" flush="false" />

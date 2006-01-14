@@ -1,4 +1,4 @@
-<!--
+<%--
 
 //
 // This file is part of the OpenNMS(R) Application.
@@ -40,9 +40,19 @@
 //      http://www.opennms.com/
 //
 
--->
+--%>
 
-<%@page language="java" contentType="text/html" session="true" import="org.opennms.web.notification.*,org.opennms.web.element.*,java.util.*,java.sql.SQLException,org.opennms.web.event.*,org.opennms.web.event.filter.*" %>
+<%@page language="java"
+	contentType="text/html"
+	session="true"
+	import="org.opennms.web.notification.*,
+		org.opennms.web.element.*,
+		java.util.*,
+		java.sql.SQLException,
+		org.opennms.web.event.*,
+		org.opennms.web.event.filter.*
+	"
+%>
 
 <%--
   This page is written to be the display (view) portion of the NotificationQueryServlet
@@ -89,17 +99,13 @@
     String addPositiveFilterString = "[+]";    
 %>
 
-
-<html>
-<head>
-  <title> Browse | Notices | OpenNMS Web Console</title>
-  <base HREF="<%=org.opennms.web.Util.calculateUrlBase( request )%>" />
-  <link rel="stylesheet" type="text/css" href="css/styles.css" />
-  
-  <style type="text/css"> 
-    a.filterLink { color:black; text-decoration:none; };
-  </style>  
-</head>
+<jsp:include page="/includes/header.jsp" flush="false" >
+  <jsp:param name="title" value="Notice List" />
+  <jsp:param name="headTitle" value="Browse" />
+  <jsp:param name="headTitle" value="Notices" />
+  <jsp:param name="breadcrumb" value="<a href='notification/index.jsp' title='Notice System Page'>Notices</a>" />
+  <jsp:param name="breadcrumb" value="List" />
+</jsp:include>
 
 <script language="Javascript" type="text/javascript" >
     function checkAllCheckboxes() {
@@ -172,66 +178,53 @@
     
 </script>
 
-<body marginwidth="0" marginheight="0" LEFTMARGIN="0" RIGHTMARGIN="0" TOPMARGIN="0">
-
-<% String breadcrumb1 = "<a href='notification/index.jsp' title='Notice System Page'>Notices</a>"; %>
-<% String breadcrumb2 = "List"; %>
-<jsp:include page="/includes/header.jsp" flush="false" >
-  <jsp:param name="title" value="Notice List" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb1%>" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb2%>" />
-</jsp:include>
-
-<br>
-
-<!-- Body -->
-<table width="100%" border="0" cellspacing="0" cellpadding="2" >
-  <tr>
-    <td>&nbsp;</td>
-
-    <td>
-      <% if( parms.ackType == NoticeFactory.AcknowledgeType.UNACKNOWLEDGED ) { %>
-        <p>Currently showing only <strong>outstanding</strong> notices.  
-           <a href="<%=this.makeLink(parms, NoticeFactory.AcknowledgeType.ACKNOWLEDGED)%>" title="Show acknowledged notices">[Show acknowledged]</a>
-        </p>
-      <% } else if( parms.ackType == NoticeFactory.AcknowledgeType.ACKNOWLEDGED ) { %>
-        <p>Currently showing only <strong>acknowledged</strong> notices.  
-           <a href="<%=this.makeLink(parms, NoticeFactory.AcknowledgeType.UNACKNOWLEDGED)%>" title="Show outstanding notices">[Show outstanding]</a>
-        </p>
-      <% } %>
+<% if( parms.ackType == NoticeFactory.AcknowledgeType.UNACKNOWLEDGED ) { %>
+  <p>
+    Currently showing only <strong>outstanding</strong> notices.
+    <a href="<%=this.makeLink(parms, NoticeFactory.AcknowledgeType.ACKNOWLEDGED)%>" title="Show acknowledged notices">[Show acknowledged]</a>
+  </p>
+<% } else if( parms.ackType == NoticeFactory.AcknowledgeType.ACKNOWLEDGED ) { %>
+  <p>
+    Currently showing only <strong>acknowledged</strong> notices.  
+    <a href="<%=this.makeLink(parms, NoticeFactory.AcknowledgeType.UNACKNOWLEDGED)%>" title="Show outstanding notices">[Show outstanding]</a>
+  </p>
+<% } %>
       
-      <% if( noticeCount > 0 ) { %>      
-      <p><%=(parms.multiple==0)?1:parms.multiple*parms.limit%>-<%=((parms.multiple+1)*parms.limit < noticeCount)?((parms.multiple+1)*parms.limit):noticeCount%> of <%=noticeCount%>.
-        <a href="<%=this.makeLink(parms)%>&multiple=<%=parms.multiple+1%>">Next</a>&nbsp;
-      <% int linkcnt = (int)Math.ceil( noticeCount/(float)parms.limit ); %>
-      <% for( int i=0; i < linkcnt; i++ ) { %>
-        <% if( parms.multiple == i ) { %>
-           <%=i+1%>
-        <% } else { %>
-          <a href="<%=this.makeLink(parms)%>&multiple=<%=i%>"><%=i+1%></a>&nbsp;
-        <% } %>
+<% if( noticeCount > 0 ) { %>      
+  <p>
+    <%=(parms.multiple==0)?1:parms.multiple*parms.limit%>-<%=((parms.multiple+1)*parms.limit < noticeCount)?((parms.multiple+1)*parms.limit):noticeCount%> of <%=noticeCount%>.
+    <a href="<%=this.makeLink(parms)%>&multiple=<%=parms.multiple+1%>">Next</a>&nbsp;
+    <% int linkcnt = (int)Math.ceil( noticeCount/(float)parms.limit ); %>
+    <% for( int i=0; i < linkcnt; i++ ) { %>
+      <% if( parms.multiple == i ) { %>
+        <%=i+1%>
+      <% } else { %>
+        <a href="<%=this.makeLink(parms)%>&multiple=<%=i%>"><%=i+1%></a>&nbsp;
       <% } %>
-      </p>
-      <% } %>
+    <% } %>
+  </p>
+<% } %>
 
-      <% if( parms.filters.size() > 0 ) {
-           int length = parms.filters.size(); 
-      %>
-           <p>Current active filters:
-             <ol>
-           <% for( int i = 0; i < length; i++ ) {
-               NoticeFactory.Filter filter = (NoticeFactory.Filter)parms.filters.get(i); 
-           %>
-               <li><strong><%=filter.getTextDescription()%></strong> 
-               <a href="<%=this.makeLink( parms, filter, false)%>" title="Remove filter">[Remove]</a>
-          <% } %>
-             </ol>
-               <a href="<%=this.makeLink( parms, new ArrayList())%>" title="Remove all filters">[Remove All Filters]</a>
-            </p>
+<% if( parms.filters.size() > 0 ) { %>
+  <% int length = parms.filters.size(); %>
+  <p>
+    Current active filters:
+    <ol>
+      <% for( int i = 0; i < length; i++ ) { %>
+        <% NoticeFactory.Filter filter = (NoticeFactory.Filter)parms.filters.get(i); %>
+        <li>
+	  <strong><%=filter.getTextDescription()%></strong>
+          <a href="<%=this.makeLink( parms, filter, false)%>" title="Remove filter">[Remove]</a>
+	</li>
       <% } %>
+    </ol>
+
+    <a href="<%=this.makeLink( parms, new ArrayList())%>" title="Remove all filters">[Remove All Filters]</a>
+  </p>
+<% } %>
 
       <table width="100%" cellspacing="1" cellpadding="2" border="0" bordercolor="black">
-        <form action="notification/acknowledge" method="POST" name="acknowledge_form">
+        <form action="notification/acknowledge" method="post" name="acknowledge_form">
           <input type="hidden" name="redirectParms" value="<%=request.getQueryString()%>" />
           <%=org.opennms.web.Util.makeHiddenTags(request)%>
 
@@ -367,20 +360,8 @@
         </tr>
         </form>
       </table>
-    <br>
-    
-    </td>
-    
-    <td>&nbsp;</td>
-  </tr>
-</table>
-
-<br>
 
 <jsp:include page="/includes/footer.jsp" flush="false" />
-
-</body>
-</html>
 
 
 <%!

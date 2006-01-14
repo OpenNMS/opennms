@@ -1,4 +1,4 @@
-<!--
+<%--
 
 //
 // This file is part of the OpenNMS(R) Application.
@@ -34,9 +34,20 @@
 //      http://www.opennms.org/
 //      http://www.opennms.com/
 
--->
+--%>
 
-<%@page language="java" contentType="text/html" session="true" import="java.util.*,java.io.*,org.opennms.web.Util,org.opennms.web.performance.*,org.opennms.netmgt.config.kscReports.*,org.opennms.netmgt.config.KSC_PerformanceReportFactory" %>
+<%@page language="java"
+	contentType="text/html"
+	session="true"
+	import="java.util.*,
+		java.io.*,
+		org.opennms.web.ServletInitializer,
+		org.opennms.web.Util,
+		org.opennms.web.performance.*,
+		org.opennms.netmgt.config.kscReports.*,
+		org.opennms.netmgt.config.KSC_PerformanceReportFactory
+	"
+%>
 
 
 <%!
@@ -44,10 +55,9 @@
    
     public void init() throws ServletException {
         try {
-            this.model = new PerformanceModel( org.opennms.web.ServletInitializer.getHomeDir() );
-        }
-        catch( Exception e ) {
-            throw new ServletException( "Could not initialize the PerformanceModel", e );
+            this.model = new PerformanceModel(ServletInitializer.getHomeDir());
+        } catch (Throwable t) {
+            throw new ServletException("Could not initialize the PerformanceModel", t);
         }
     }
 %>
@@ -56,22 +66,22 @@
     PerformanceModel.QueryableNode[] nodes = this.model.getQueryableNodes();
     String nodeId = request.getParameter("node");
     int node_intval;
-    if (nodeId.equals("null") || (nodeId == null)) {
+    if (nodeId == null || "null".equals(nodeId)) {
         node_intval = -1;
-    } 
-    else {
+    } else {
         node_intval = Integer.valueOf(nodeId).intValue();
     } 
 
 %>
 
-<%-- Start the HTML Page Definition here --%>
-<html>
-<head>
-  <title>Performance | Reports | KSC </title>
-  <base HREF="<%=org.opennms.web.Util.calculateUrlBase( request )%>" />
-  <link rel="stylesheet" type="text/css" href="css/styles.css" />
-</head>
+<jsp:include page="/includes/header.jsp" flush="false" >
+  <jsp:param name="title" value="Key SNMP Customized Performance Reports" />
+  <jsp:param name="headTitle" value="Performance" />
+  <jsp:param name="headTitle" value="Reports" />
+  <jsp:param name="location" value="KSC Reports" />
+  <jsp:param name="breadcrumb" value="<a href='report/index.jsp'>Reports</a>" />
+  <jsp:param name="breadcrumb" value="KSC Reports" />
+</jsp:include>
 
 <%-- A script for validating Node ID Selection Form before submittal --%>
 <script language="Javascript" type="text/javascript" >
@@ -102,17 +112,6 @@
       }
   }
 </script>
-
-<body marginwidth="0" marginheight="0" LEFTMARGIN="0" RIGHTMARGIN="0" TOPMARGIN="0">
-
-<% String breadcrumb1 = "<a href='report/index.jsp'>Reports</a>"; %>
-<% String breadcrumb2 = "KSC Reports"; %>
-<jsp:include page="/includes/header.jsp" flush="false" >
-  <jsp:param name="title" value="Key SNMP Customized Performance Reports" />
-  <jsp:param name="location" value="KSC Reports" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb1%>" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb2%>" />
-</jsp:include>
 
 <h3 align="center">Customized Report - Graph Definition</h3>
 
@@ -149,11 +148,4 @@
   </tr>
 </table>
 
-<br>
-<jsp:include page="/includes/footer.jsp" flush="false" >
-  <jsp:param name="location" value="KSC Reports" />
-</jsp:include>
-
-</body>
-</html>
-
+<jsp:include page="/includes/footer.jsp" flush="false"/>

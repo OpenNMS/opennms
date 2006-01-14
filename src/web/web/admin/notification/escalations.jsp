@@ -1,4 +1,4 @@
-<!--
+<%--
 
 //
 // This file is part of the OpenNMS(R) Application.
@@ -38,9 +38,17 @@
 //      http://www.opennms.com/
 //
 
--->
+--%>
 
-<%@page language="java" contentType="text/html" session="true" import="java.util.*,org.opennms.web.Util,org.opennms.netmgt.config.*,org.opennms.netmgt.config.destinationPaths.*" %>
+<%@page language="java"
+	contentType="text/html"
+	session="true"
+	import="java.util.*,
+		org.opennms.web.Util,
+		org.opennms.netmgt.config.*,
+		org.opennms.netmgt.config.destinationPaths.*
+	"
+%>
 
 <%!
     public void init() throws ServletException {
@@ -67,12 +75,13 @@
       path = new Path();
 %>
 
-<html>
-<head>
-  <title>Group Intervals | Admin | OpenNMS Web Console</title>
-  <base HREF="<%=org.opennms.web.Util.calculateUrlBase( request )%>" />
-  <link rel="stylesheet" type="text/css" href="css/styles.css" />
-</head>
+<jsp:include page="/includes/header.jsp" flush="false" >
+  <jsp:param name="title" value="Commands" />
+  <jsp:param name="headTitle" value="Group Intervals" />
+  <jsp:param name="headTitle" value="Admin" />
+  <jsp:param name="breadcrumb" value="<a href='admin/index.jsp'>Admin</a>" />
+  <jsp:param name="breadcrumb" value="Commands" />
+</jsp:include>
 
 <script language="Javascript" type="text/javascript" >
 
@@ -83,27 +92,11 @@
 
 </script>
 
-<body marginwidth="0" marginheight="0" LEFTMARGIN="0" RIGHTMARGIN="0" TOPMARGIN="0">
+<h3><%=(pathName!=null ? "Editing path " + pathName + "<br>" : "")%></h3>
 
-<% String breadcrumb1 = "<a href='admin/index.jsp'>Admin</a>"; %>
-<% String breadcrumb2 = "Commands"; %>
-<jsp:include page="/includes/header.jsp" flush="false" >
-  <jsp:param name="title" value="Commands" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb1%>" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb2%>" />
-</jsp:include>
+<h3>Step 4: Add escalations to the path.</h3>
 
-<br>
-<!-- Body -->
-
-<table width="100%" cellspacing="0" cellpadding="0" border="0">
-  <tr>
-    <td> &nbsp; </td>
-
-    <td>
-    <h3><%=(pathName!=null ? "Editing path " + pathName + "<br>" : "")%></h3>
-    <h3>Step 4: Add escalations to the path.</h3>
-    <form METHOD="POST" NAME="escalations" ACTION="" >
+<form method="post" name="escalations" action="" >
       <%=Util.makeHiddenTags(request)%>
       <table width="50%" cellspacing="2" cellpadding="2" border="0">
         <tr>
@@ -121,23 +114,13 @@
         </tr>
         <tr>
           <td colspan="2">
-           <a HREF="javascript:document.commands.submit()">Next &#155;&#155;&#155;</a>
+           <a href="javascript:document.commands.submit()">Next &#155;&#155;&#155;</a>
           </td>
         </tr>
       </table>
     </form>
-    </td>
-
-    <td> &nbsp; </td>
-  </tr>
-</table>
-
-<br>
 
 <jsp:include page="/includes/footer.jsp" flush="false" />
-
-</body>
-</html>
 
 <%!
     public String displayTargets(String users[], String groups[])

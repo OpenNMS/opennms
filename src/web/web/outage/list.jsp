@@ -1,4 +1,4 @@
-<!--
+<%--
 
 //
 // This file is part of the OpenNMS(R) Application.
@@ -36,9 +36,20 @@
 //      http://www.opennms.com/
 //
 
--->
+--%>
 
-<%@page language="java" contentType="text/html" session="true" import="org.opennms.web.outage.*,java.util.*,java.sql.SQLException,org.opennms.web.authenticate.Authentication,org.opennms.web.outage.filter.*,org.opennms.web.element.ElementUtil,java.text.DateFormat" %>
+<%@page language="java"
+	contentType="text/html"
+	session="true"
+	import="org.opennms.web.outage.*,
+		java.util.*,
+		java.sql.SQLException,
+		org.opennms.web.authenticate.Authentication,
+		org.opennms.web.outage.filter.*,
+		org.opennms.web.element.ElementUtil,
+		java.text.DateFormat
+	"
+%>
 
 <%--
   This page is written to be the display (view) portion of the OutageQueryServlet
@@ -72,45 +83,23 @@
     int outageCount = OutageFactory.getOutageCount( parms.outageType, parms.getFilters() );        
 %>
 
-<html>
-<head>
-  <title> List | Outages | OpenNMS Web Console</title>
-  <base href="<%=org.opennms.web.Util.calculateUrlBase( request )%>" />
-  <link rel="stylesheet" type="text/css" href="css/styles.css" />
-  
-  <style type="text/css"> 
-    a.filterLink { color:black ; text-decoration:none; };
-    a.filterLink:visited { color:black ; text-decoration:none; };    
-  </style>
-</head>
-
-<body marginwidth="0" marginheight="0" leftmargin="0" rightmargin="0" topmargin="0">
-
-<% String breadcrumb1 = "<a href='outage/index.jsp' title='Outages System Page'>Outages</a>"; %>
-<% String breadcrumb2 = "List"; %>
 <jsp:include page="/includes/header.jsp" flush="false" >
   <jsp:param name="title" value="Outage List" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb1%>" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb2%>" />
+  <jsp:param name="headTitle" value="List" />
+  <jsp:param name="headTitle" value="Outage" />
+  <jsp:param name="breadcrumb" value="<a href='outage/index.jsp' title='Outages System Page'>Outages</a>" />
+  <jsp:param name="breadcrumb" value="List" />
 </jsp:include>
 
-<br/>
-
-<!-- Body -->
-<table width="100%" border="0" cellspacing="0" cellpadding="2" >
-  <tr>
-    <td>&nbsp;</td>
-
-    <td>
       <!-- menu -->
       <a href="<%=OutageUtil.makeLink(request, parms, new ArrayList())%>" title="Remove all search constraints" >View all outages</a>
       <%--&nbsp;&nbsp;&nbsp;<a href="outage/advsearch.jsp" title="More advanced searching and sorting options">Advanced Search</a>--%>
       &nbsp;&nbsp;&nbsp;<a href="outage/current.jsp" title="A more convenient way of looking at current outages">View Current Outages</a>            
       <!-- end menu -->      
 
-      <table width="100%" border="0" cellspacing="2" cellpadding="0" >
+      <table class="standard">
         <tr>
-          <td width="50%" valign="top">
+          <td class="standard" width="50%" valign="top">
             <%--<jsp:include page="/outage/querypanel.jsp" flush="false" />--%>
           
             <% if( outageCount > 0 ) { %>
@@ -124,32 +113,32 @@
             <% } %>          
           </td>
           
-          <td width="50%" valign="top">          
-            <jsp:include page="/outage/search-constraints-box.jsp" />           
+          <td class="standard" width="50%" valign="top">          
+            <jsp:include page="/includes/search-constraints-box.jsp" />
           </td>
         </tr>
     </table>
 
-    <table width="100%" cellspacing="0" cellpadding="2" border="1" bordercolor="black">
-      <tr bgcolor="#999999">
-        <td width="5%"> <%=this.makeSortLink(request, parms, OutageFactory.SortStyle.ID,                OutageFactory.SortStyle.REVERSE_ID,                "id",                        "ID" )%></td>
-        <td width="25%"><%=this.makeSortLink(request, parms, OutageFactory.SortStyle.NODE,              OutageFactory.SortStyle.REVERSE_NODE,              "node",                      "Node")%></td>
-        <td width="15%"><%=this.makeSortLink(request, parms, OutageFactory.SortStyle.INTERFACE,         OutageFactory.SortStyle.REVERSE_INTERFACE,         "interface",                 "Interface")%></td>
-        <td width="15%"><%=this.makeSortLink(request, parms, OutageFactory.SortStyle.SERVICE,           OutageFactory.SortStyle.REVERSE_SERVICE,           "service",                   "Service")%></td>
-        <td width="20%"><%=this.makeSortLink(request, parms, OutageFactory.SortStyle.IFLOSTSERVICE,     OutageFactory.SortStyle.REVERSE_IFLOSTSERVICE,     "time service was lost",     "Down")%></td>
-        <td width="20%"><%=this.makeSortLink(request, parms, OutageFactory.SortStyle.IFREGAINEDSERVICE, OutageFactory.SortStyle.REVERSE_IFREGAINEDSERVICE, "time service was regained", "Up")%></td>       
+    <table class="standardfirst">
+      <tr>
+        <td class="standardheader" width="5%"> <%=this.makeSortLink(request, parms, OutageFactory.SortStyle.ID,                OutageFactory.SortStyle.REVERSE_ID,                "id",                        "ID" )%></td>
+        <td class="standardheader" width="25%"><%=this.makeSortLink(request, parms, OutageFactory.SortStyle.NODE,              OutageFactory.SortStyle.REVERSE_NODE,              "node",                      "Node")%></td>
+        <td class="standardheader" width="15%"><%=this.makeSortLink(request, parms, OutageFactory.SortStyle.INTERFACE,         OutageFactory.SortStyle.REVERSE_INTERFACE,         "interface",                 "Interface")%></td>
+        <td class="standardheader" width="15%"><%=this.makeSortLink(request, parms, OutageFactory.SortStyle.SERVICE,           OutageFactory.SortStyle.REVERSE_SERVICE,           "service",                   "Service")%></td>
+        <td class="standardheader" width="20%"><%=this.makeSortLink(request, parms, OutageFactory.SortStyle.IFLOSTSERVICE,     OutageFactory.SortStyle.REVERSE_IFLOSTSERVICE,     "time service was lost",     "Down")%></td>
+        <td class="standardheader" width="20%"><%=this.makeSortLink(request, parms, OutageFactory.SortStyle.IFREGAINEDSERVICE, OutageFactory.SortStyle.REVERSE_IFREGAINEDSERVICE, "time service was regained", "Up")%></td>       
       </tr>      
       
       <% for( int i=0; i < outages.length; i++ ) { %>        
         <tr valign="top" bgcolor="<%=(i%2 == 0) ? "white" : "#cccccc"%>">
         
           <!-- outage id -->
-          <td valign="top" >
+          <td class="standard" valign="top" >
             <a href="outage/detail.jsp?id=<%=outages[i].getId()%>"><%=outages[i].getId()%></a>
           </td>
           
           <!-- node -->
-          <td>
+          <td class="standard">
             <% if(outages[i].getNodeId() != 0 ) { %>             
               <% String longLabel  = outages[i].getNodeLabel(); %>
               <% String shortLabel = ElementUtil.truncateLabel(longLabel, 32); %>
@@ -170,7 +159,7 @@
           </td>
           
           <!-- interface -->
-          <td>
+          <td class="standard">
             <% if(outages[i].getIpAddress() != null ) { %>
               <% if( outages[i].getNodeId() != 0 ) { %>
                  <a href="element/interface.jsp?node=<%=outages[i].getNodeId()%>&intf=<%=outages[i].getIpAddress()%>" title="More info on this interface"><%=outages[i].getIpAddress()%></a>
@@ -193,7 +182,7 @@
           </td>
           
           <!-- service -->
-          <td>
+          <td class="standard">
             <% if(outages[i].getServiceName() != null) { %>
               <% if( outages[i].getNodeId() != 0 && outages[i].getIpAddress() != null ) { %>
                 <a href="element/service.jsp?node=<%=outages[i].getNodeId()%>&intf=<%=outages[i].getIpAddress()%>&service=<%=outages[i].getServiceId()%>" title="More info on this service"><%=outages[i].getServiceName()%></a>
@@ -216,7 +205,7 @@
           </td>
             
           <!-- lost service time -->
-          <td>
+          <td class="standard">
             <nobr><%=DATE_FORMAT.format(outages[i].getLostServiceTime())%></nobr>
             <nobr>
               <a href="<%=OutageUtil.makeLink( request, parms, new LostServiceDateAfterFilter(outages[i].getLostServiceTime()), true)%>" title="Only show outages beginning after this one"><%=AFTER_ICON%></a>            
@@ -227,7 +216,7 @@
           <!-- regained service time -->
           <% Date regainedTime = outages[i].getRegainedServiceTime(); %>
           <% if(regainedTime != null ) { %>
-            <td>
+            <td class="standard">
               <nobr><%=DATE_FORMAT.format(outages[i].getRegainedServiceTime())%></nobr>
               
               <nobr>
@@ -236,7 +225,7 @@
               </nobr>
             </td>
           <% } else { %>
-            <td bgcolor="<%=OutageUtil.getStatusColor(outages[i])%>">
+            <td class="standard" bgcolor="<%=OutageUtil.getStatusColor(outages[i])%>">
               <%=OutageUtil.getStatusLabel(outages[i])%>
             </td>
           <% } %>                       
@@ -246,20 +235,8 @@
       <% } %>      
     </table>
 
-
-    </td>
-    <td>&nbsp;</td>
-  </tr>
-</table>
-
-<br>
-
 <jsp:include page="/includes/bookmark.jsp" flush="false" />
 <jsp:include page="/includes/footer.jsp" flush="false" />
-
-</body>
-</html>
-
 
 <%!
     protected String makeSortLink(HttpServletRequest request, OutageQueryParms parms, OutageFactory.SortStyle style, OutageFactory.SortStyle revStyle, String sortString, String title ) {
@@ -289,9 +266,9 @@
           buffer.append( "\">" );   
       }
 
-      buffer.append( "<font color=\"black\"><b>" );
+      buffer.append( "<font color=\"black\">" );
       buffer.append( title );
-      buffer.append( "</b></font></a>" );
+      buffer.append( "</font></a>" );
       buffer.append( "</nobr>" );
 
       return( buffer.toString() );

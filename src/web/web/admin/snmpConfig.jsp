@@ -1,4 +1,4 @@
-<!--
+<%--
 
 //
 // This file is part of the OpenNMS(R) Application.
@@ -36,26 +36,21 @@
 //      http://www.opennms.com/
 //
 
--->
+--%>
 
-<%@page language="java" contentType = "text/html" session = "true" %>
+<%@page language="java"
+	contentType="text/html"
+	session="true"
+%>
 
-<html>
-<head>
-  <title>Admin | OpenNMS Web Console</title>
-  <base HREF="<%=org.opennms.web.Util.calculateUrlBase( request )%>" />
-  <link rel="stylesheet" type="text/css" href="css/styles.css" />
-</head>
 
-<body marginwidth="0" marginheight="0" LEFTMARGIN="0" RIGHTMARGIN="0" TOPMARGIN="0">
-
-<% String breadcrumb1 = "<a href='admin/index.jsp'>Admin</a>"; %>
-<% String breadcrumb2 = "Configure SNMP by IP"; %>
 <jsp:include page="/includes/header.jsp" flush="false" >
   <jsp:param name="title" value="Configure SNMP Parameters per polled IP" />
+  <jsp:param name="headTitle" value="SNMP Configuration" />
+  <jsp:param name="headTitle" value="Admin" />
   <jsp:param name="location" value="admin" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb1%>" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb2%>" />
+  <jsp:param name="breadcrumb" value="<a href='admin/index.jsp'>Admin</a>" />
+  <jsp:param name="breadcrumb" value="Configure SNMP by IP" />
 </jsp:include>
 
 <script language="JavaScript">
@@ -121,15 +116,12 @@
         }
 </script>
 
-<br>
-
 <form method="post" name="snmpConfigForm">
-<table width="100%" border="0" cellspacing="0" cellpadding="2" >
-<tr>
-    <td>&nbsp;</td>
 
-    <td>
-      <h3>Please enter an IP or a range of IPs and the read community string below.</h3>
+  <div style="width: 40%; float: left;">
+
+      <h3>Please enter an IP or a range of IPs and the read community string below</h3>
+  	
       <table>
          <tr>
             <td width="25%">
@@ -167,10 +159,9 @@
              </td>
           </tr>
        </table>
-    </td>
-    <td>&nbsp;</td>
+  </div>
 
-    <td valign="top" width="60%">
+  <div style="width: 60%; float: left;">
       <h3>Updating SNMP Community Names</h3>
 
       <p>In the boxes on the left, enter in a specific IP address and community string, 
@@ -187,16 +178,8 @@
          update the SNMP information on the interface page for that device (by selecting the "Update SNMP"
          link) for these changes to take affect.
       </p>
-    </td>
+  </div>
 
-    <td>&nbsp;</td>
-</tr>
-</table>
 </form>
 
-<br>
-
 <jsp:include page="/includes/footer.jsp" flush="false" />
-
-</body>
-</html>

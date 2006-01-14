@@ -1,4 +1,7 @@
-<%@ page language="java" contentType="text/html"%>
+<%@page language="java"
+	contentType="text/html"
+%>
+
 <%@ taglib uri="http://java.sun.com/jstl/core" prefix="c" %>
 
 <html>
@@ -66,7 +69,7 @@
 		</table>
 		<table>
 			<tr>
-			<form id="newScheduleForm" method="GET">
+			<form id="newScheduleForm" method="get">
 			<input id="newScheduleOp" name="op" type="hidden" value="newSchedule"/>
 			<td><input id="newScheduleName" name="name" type="text" readonly="true" value="Schedule Name"/></td>
 			<td>

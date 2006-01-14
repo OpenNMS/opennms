@@ -1,4 +1,4 @@
-<!--
+<%--
 
 //
 // This file is part of the OpenNMS(R) Application.
@@ -39,17 +39,22 @@
 //      http://www.opennms.com/
 //
 
--->
+--%>
 
-<%@page language="java" contentType="text/html" session="true" import="org.opennms.netmgt.config.NotifdConfigFactory" %>
+<%@page language="java"
+	contentType="text/html"
+	session="true"
+	import="org.opennms.netmgt.config.NotifdConfigFactory"
+%>
 
-<html>
-<head>
-  <title>Admin | OpenNMS Web Console</title>
-  <base HREF="<%=org.opennms.web.Util.calculateUrlBase( request )%>" />
-  <link rel="stylesheet" type="text/css" href="css/styles.css" />
+<jsp:include page="/includes/header.jsp" flush="false" >
+  <jsp:param name="title" value="Admin" />
+  <jsp:param name="headTitle" value="Admin" />
+  <jsp:param name="location" value="admin" />
+  <jsp:param name="breadcrumb" value="Admin" />
+</jsp:include>
 
-<script language="Javascript" type="text/javascript" >
+<script type="text/javascript" >
 
   function addInterfacePost()
   {
@@ -104,45 +109,28 @@
   }
   
 </script>
-</head>
 
-<body marginwidth="0" marginheight="0" LEFTMARGIN="0" RIGHTMARGIN="0" TOPMARGIN="0">
-
-<% String breadcrumb1 = "Admin"; %>
-<jsp:include page="/includes/header.jsp" flush="false" >
-  <jsp:param name="title" value="Admin" />
-  <jsp:param name="location" value="admin" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb1%>" />
-</jsp:include>
-
-<!-- Body -->
-<br>
-
-<FORM METHOD="POST" NAME="getNodes" ACTION="admin/getNodes">
+<form method="post" name="getNodes" action="admin/getNodes">
   <input type="hidden"/>
-</FORM>
+</form>
 
-<FORM METHOD="POST" NAME="addInterface">
+<form method="post" name="addInterface">
   <input type="hidden"/>
-</FORM>
+</form>
 
-<FORM METHOD="POST" NAME="deleteNodes" ACTION="admin/deleteNodes">
+<form method="post" name="deleteNodes" action="admin/deleteNodes">
   <input type="hidden"/>
-</FORM>
+</form>
 
-<FORM METHOD="POST" NAME="snmpManage" ACTION="admin/snmpGetNodes">
+<form method="post" name="snmpManage" action="admin/snmpGetNodes">
   <input type="hidden"/>
-</FORM>
+</form>
 
-<FORM METHOD="POST" NAME="snmpConfig" ACTION="admin/snmpConfig">
+<form method="post" name="snmpConfig" action="admin/snmpConfig">
   <input type="hidden"/>
-</FORM>
+</form>
 
-<table width="100%" cellspacing="0" cellpadding="0" border="0">
-  <tr>
-    <td> &nbsp; </td>
-
-    <td valign="top">
+  <div style="width: 40%; float: left;">
       <h3>Admin Options</h3>
 
       <p>
@@ -207,12 +195,9 @@
         </table>
         </FORM>
         </p>
+  </div>
       
-    </td>
-
-    <td> &nbsp; </td>
-
-    <td valign="top" width="60%">
+  <div style="width: 60%; float: left;">
       <h3>Option Descriptions</h3>
 
         <p><b>Configure Users and Groups</b> allows you, the Administrator, to add, modify or delete
@@ -279,17 +264,6 @@
             corner of every OpenNMS screen with either a <em>Notices On</em> or <em>Notices
             Off</em> banner.  
         </p>
+  </div>
 
-    </td>
-    
-    <td> &nbsp; </td>
-  </tr>
-</table>
-
-<br>
-
-<jsp:include page="/includes/footer.jsp" flush="false" >
-  <jsp:param name="location" value="admin" />
-</jsp:include>
-</body>
-</html>
+<jsp:include page="/includes/footer.jsp" flush="false"/>

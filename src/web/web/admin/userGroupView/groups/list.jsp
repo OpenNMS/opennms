@@ -1,4 +1,4 @@
-<!--
+<%--
 
 //
 // This file is part of the OpenNMS(R) Application.
@@ -37,9 +37,17 @@
 //      http://www.opennms.com/
 //
 
--->
+--%>
 
-<%@page language="java" contentType = "text/html" session = "true"  import="org.opennms.netmgt.config.*, java.util.*,org.opennms.netmgt.config.groups.*"%>
+<%@page language="java"
+	contentType="text/html"
+	session="true"
+	import="org.opennms.netmgt.config.*,
+		java.util.*,
+		org.opennms.netmgt.config.groups.*
+	"
+%>
+
 <%
 	GroupManager groupFactory = null;
 	Map groups = null;
@@ -56,12 +64,15 @@
 	}
 %>
 
-<html>
-<head>
-<title>List | Group Admin | OpenNMS Web Console</title>
-<base HREF="<%=org.opennms.web.Util.calculateUrlBase( request )%>" />
-<link rel="stylesheet" type="text/css" href="css/styles.css" />
-</head>
+<jsp:include page="/includes/header.jsp" flush="false" >
+  <jsp:param name="title" value="Group Configuration" />
+  <jsp:param name="headTitle" value="List" />
+  <jsp:param name="headTitle" value="Groups" />
+  <jsp:param name="headTitle" value="Admin" />
+  <jsp:param name="breadcrumb" value="<a href='admin/index.jsp'>Admin</a>" />
+  <jsp:param name="breadcrumb" value="<a href='admin/userGroupView/index.jsp'>Users and Groups</a>" />
+  <jsp:param name="breadcrumb" value="Group List" />
+</jsp:include>
 
 <script language="Javascript" type="text/javascript" >
 
@@ -105,34 +116,22 @@
 
 </script>
 
-<body marginwidth="0" marginheight="0" LEFTMARGIN="0" RIGHTMARGIN="0" TOPMARGIN="0">
+<h3>Group Configuration</h3>
 
-<% String breadcrumb1 = "<a href='admin/index.jsp'>Admin</a>"; %>
-<% String breadcrumb2 = "<a href='admin/userGroupView/index.jsp'>Users and Groups</a>"; %>
-<% String breadcrumb3 = "Group List"; %>
-<jsp:include page="/includes/header.jsp" flush="false" >
-  <jsp:param name="title" value="Group Configuration" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb1%>" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb2%>" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb3%>" />
-</jsp:include>
+<p>
+  Click on the <i>Group Name</i> link to view detailed information about
+  a group.
+</p>
 
-<FORM METHOD="POST" NAME="allGroups">
-<input type="hidden" name="redirect"/>
-<input type="hidden" name="groupName"/>
-<input type="hidden" name="newName"/>
+<form method="post" name="allGroups">
+  <input type="hidden" name="redirect"/>
+  <input type="hidden" name="groupName"/>
+  <input type="hidden" name="newName"/>
 
-<br>
-<table width="100%" border="0" cellspacing="0" cellpadding="2" >
-  <tr>
-    <td>&nbsp;</td>
+  <%-- XXX why is this disabled?
+       <a href="javascript:addNewGroup()"> <img src="images/add1.gif" alt="Add new group"> Add new group</a> --%>
 
-    <td>
-    <h3>Group Configuration</h3>
-
-    <p>Click on the <i>Group Name</i> link to view detailed information about a group.</p>
-    <!--<a href="javascript:addNewGroup()"> <img src="images/add1.gif" alt="Add new group"> Add new group</a>-->
-     <table width="100%" border="1" cellspacing="0" cellpadding="2" bordercolor="black">
+  <table width="100%" border="1" cellspacing="0" cellpadding="2" bordercolor="black">
 
          <tr bgcolor="#999999">
           <td width="5%"><b>Delete</b></td>
@@ -192,16 +191,6 @@
          <% row++;
             } %>
      </table>
-    </td>
+</form>
 
-    <td>&nbsp;</td>
-  </tr>
-</table>
-
-</FORM>
-
-<br>
 <jsp:include page="/includes/footer.jsp" flush="false" />
-
-</body>
-</html>

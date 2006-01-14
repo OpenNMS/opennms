@@ -1,4 +1,4 @@
-<!--
+<%--
 
 //
 // This file is part of the OpenNMS(R) Application.
@@ -37,22 +37,29 @@
 //      http://www.opennms.com/
 //
 
--->
+--%>
 
-<%@page language="java" contentType="text/html" session="true" import="org.opennms.web.notification.*,org.opennms.web.element.*" %>
+<%@page language="java"
+	contentType="text/html"
+	session="true"
+	import="org.opennms.web.notification.*,
+		org.opennms.web.element.*,
+		org.opennms.web.MissingParameterException
+	"
+%>
 
 <%!
     NotificationModel model = new NotificationModel();
 %>
 
 <%
-    String[] noticeIds = request.getParameterValues( "notices" );
+    String[] noticeIds = request.getParameterValues("notices");
 
-    if( noticeIds == null || noticeIds.length == 0 ) {
+    if (noticeIds == null || noticeIds.length == 0) {
         //ok, this is an extremely ugly way of doing this...
         //all the error checking will be cleaned up in the second
         //iteration where all the JSPs are split into JSPs and servlets
-        throw new ServletException( "Must have notices specified." );
+        throw new MissingParameterException("notices");
     }
     
     Notification[] notices = null;   
@@ -65,120 +72,94 @@
     //all you get is a servlet exception (very, very ugly)
 
     String username = request.getRemoteUser();
-    for( int i = 0; i < noticeIds.length; i++ ) {
-        this.model.acknowledged( username, Integer.parseInt( noticeIds[i] ));
+    for (int i = 0; i < noticeIds.length; i++ ) {
+        this.model.acknowledged(username, Integer.parseInt(noticeIds[i]));
     }
 
     //here again, I'm assuming that all succeeded, really need
     //to address this in the second iteration
     notices = new Notification[noticeIds.length];
 
-    for( int i = 0; i < noticeIds.length; i++ ) {
-        notices[i] = this.model.getNoticeInfo( Integer.parseInt( noticeIds[i] ));
+    for (int i = 0; i < noticeIds.length; i++) {
+        notices[i] = this.model.getNoticeInfo(Integer.parseInt(noticeIds[i]));
     }
 %>
-<html>
-<head>
-  <title>Notification Acknowledgment | OpenNMS Web Console</title>
-  <base HREF="<%=org.opennms.web.Util.calculateUrlBase( request )%>" />
-  <link rel="stylesheet" type="text/css" href="css/styles.css" />
-</head>
-<body marginwidth="0" marginheight="0" LEFTMARGIN="0" RIGHTMARGIN="0" TOPMARGIN="0">
 
-<% String breadcrumb1 = "<a href='notification/index.jsp'>Notification</a>"; %>
-<% String breadcrumb2 = "Acknowledge"; %>
 <jsp:include page="/includes/header.jsp" flush="false" >
   <jsp:param name="title" value="Notifications Acknowledgment" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb1%>" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb2%>" />
+  <jsp:param name="headTitle" value="Notification Acknowledgment" />
+  <jsp:param name="breadcrumb" value="<a href='notification/index.jsp'>Notification</a>" />
+  <jsp:param name="breadcrumb" value="Acknowledge" />
 </jsp:include>
 
-<br>
-
-<!-- Body -->
-<table width="100%" border="0" cellspacing="0" cellpadding="2" >
-  <tr>
-    <td>&nbsp;</td>
-
-    <td>
-      <h3>Acknowledgment Results</h3>
+<h3>Acknowledgment Results</h3>
       
-      <ul>
-<%
-    for( int i = 0; i < notices.length; i++ ) {
-%>
-        <li> Notice #<%=notices[i].getId()%> was successfully acknowledged.
-<%
-    }
-%>
-      </ul>
+<ul>
+  <% for( int i = 0; i < notices.length; i++ ) { %>
+    <li>Notice #<%=notices[i].getId()%> was successfully
+      acknowledged.</li>
+  <% } %>
+</ul>
 
+<% for( int i = 0; i < notices.length; i++ ) { %>
+  <h4>Notice <%=notices[i].getId()%> Summary</h4>
+  <table class="standard">
+    <tr>
+      <td class="standardheader" width="15%">Notice ID</td>
+      <td class="standard" width="15%"> <a href="notification/detail.jsp?notice=<%=notices[i].getId()%>"><%=notices[i].getId()%></a></td>
+      <td class="standardheader" width="15%">Event ID</td>
+      <td class="standard" width="15%"> <a href="event/detail.jsp?id=<%=notices[i].getEventId()%>"><%=notices[i].getEventId()%></a></td>
+      <td class="standardheader" width="15%">Sent</td>
+      <td class="standard" width="15%"> <%=notices[i].getTimeSent()%> </td>
+    </tr>
 
-<%
-    for( int i = 0; i < notices.length; i++ ) {
-%>
-      <h4> Notice <%=notices[i].getId()%> Summary </h4>
-      <table WIDTH="100%" BORDER="1" cellspacing="0" CELLPADDING="2" bordercolor="#666666">
-        <tr>
-          <td BGCOLOR="#999999" width="15%"> <b>Notice ID</b> </td>
-          <td BGCOLOR="#cccccc" width="15%"> <a HREF="notification/detail.jsp?notice=<%=notices[i].getId()%>"><%=notices[i].getId()%></a></td>
-          <td BGCOLOR="#999999" width="15%"> <b>Event ID</b> </td>
-          <td BGCOLOR="#cccccc" width="15%"> <a href="event/detail.jsp?id=<%=notices[i].getEventId()%>"><%=notices[i].getEventId()%></a></td>
-          <td BGCOLOR="#999999" width="15%"> <b>Sent:</b> </td>
-          <td BGCOLOR="#cccccc" width="15%"> <%=notices[i].getTimeSent()%> </td>
-        </tr>
-        <tr>
-          <td BGCOLOR="#999999" width="15%"> <b>Interface:</b> </td>
-          <td BGCOLOR="#cccccc" width="15%"> 
-            <%if (NetworkElementFactory.getNodeLabel(notices[i].getNodeId())!=null && notices[i].getIpAddress()!=null) { %>
-              <a href="element/interface.jsp?node=<%=notices[i].getNodeId()%>&intf=<%=notices[i].getIpAddress()%>"><%=notices[i].getIpAddress()%></a>
-            <% } else if (notices[i].getIpAddress()!=null) { %>
-              <%=notices[i].getIpAddress()%>
-            <% } else { %>
-              &nbsp;
-            <% } %>
-            </td>
-          <td BGCOLOR="#999999" width="15%"> <b>Service:</b> </td>
-          <td BGCOLOR="#cccccc" width="15%"> 
-            <%if (NetworkElementFactory.getNodeLabel(notices[i].getNodeId())!=null && notices[i].getIpAddress()!=null && notices[i].getServiceName()!=null) { %>
-              <a href="element/service.jsp?node=<%=notices[i].getNodeId()%>&intf=<%=notices[i].getIpAddress()%>&service=<%=notices[i].getServiceId()%>"><%=notices[i].getServiceName()%></a>
-            <% } else if (notices[i].getServiceName()!=null) { %>
-              <%=notices[i].getServiceName()%>
-            <% } else { %>
-              &nbsp;
-            <% } %>
-          </td>
+    <tr>
+      <td class="standardheader" width="15%">Interface</td>
+
+      <td class="standard" width="15%"> 
+        <%if (NetworkElementFactory.getNodeLabel(notices[i].getNodeId())!=null && notices[i].getIpAddress()!=null) { %>
+          <a href="element/interface.jsp?node=<%=notices[i].getNodeId()%>&intf=<%=notices[i].getIpAddress()%>"><%=notices[i].getIpAddress()%></a>
+        <% } else if (notices[i].getIpAddress()!=null) { %>
+          <%=notices[i].getIpAddress()%>
+        <% } else { %>
+          &nbsp;
+        <% } %>
+      </td>
+
+      <td class="standardheader" width="15%">Service</td>
+
+      <td class="standard" width="15%"> 
+        <%if (NetworkElementFactory.getNodeLabel(notices[i].getNodeId())!=null && notices[i].getIpAddress()!=null && notices[i].getServiceName()!=null) { %>
+          <a href="element/service.jsp?node=<%=notices[i].getNodeId()%>&intf=<%=notices[i].getIpAddress()%>&service=<%=notices[i].getServiceId()%>"><%=notices[i].getServiceName()%></a>
+        <% } else if (notices[i].getServiceName()!=null) { %>
+          <%=notices[i].getServiceName()%>
+        <% } else { %>
+          &nbsp;
+        <% } %>
+      </td>
           
-          <td BGCOLOR="#999999" width="15%"> <b>Acknowledged:</b> </td>
-          <td BGCOLOR="#cccccc" width="15%"> <%=notices[i].getTimeReplied()%> </td>
-        </tr>
-        <%if (notices[i].getNumericMessage() != null) { %>
-          <tr>
-            <td COLSPAN="6" BGCOLOR="#cccccc">
-              <%=notices[i].getNumericMessage()%>
-            </td>
-          <tr>
-        <% } %>
-        <%if (notices[i].getTextMessage() != null) { %>
-          <tr>
-            <td COLSPAN="6" BGCOLOR="#cccccc">
-              <%=notices[i].getTextMessage()%>
-            </td>
-          </tr>
-        <% } %>
-      </table>
-<%
-    }
-%>       
+      <td class="standardheader" width="15%">Acknowledged</td>
+
+      <td class="standard" width="15%"> <%=notices[i].getTimeReplied()%> </td>
+    </tr>
+
+    <%if (notices[i].getNumericMessage() != null) { %>
+      <tr>
+        <td colspan="6" class="standard">
+          <%=notices[i].getNumericMessage()%>
+        </td>
+      <tr>
+    <% } %>
+
+    <%if (notices[i].getTextMessage() != null) { %>
+      <tr>
+        <td colspan="6" class="standard">
+          <%=notices[i].getTextMessage()%>
+        </td>
+      </tr>
+    <% } %>
+  </table>
+<% } %>       
       
-    </td>
-    
-    <td>&nbsp;</td>
-  </tr>
-</table>
-<br>
 
 <jsp:include page="/includes/footer.jsp" flush="false" />
-
-</body>
-</html>

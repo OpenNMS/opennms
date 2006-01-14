@@ -1,4 +1,4 @@
-<!--
+<%--
 
 //
 // This file is part of the OpenNMS(R) Application.
@@ -37,33 +37,21 @@
 //      http://www.opennms.com/
 //
 
--->
+--%>
 
-<%@page language="java" contentType="text/html" session="true" %>
+<%@page language="java"
+	contentType="text/html"
+	session="true"
+%>
 
-<html>
-<head>
-  <title>Outages | OpenNMS Web Console</title>
-  <base href="<%=org.opennms.web.Util.calculateUrlBase( request )%>" />
-  <link rel="stylesheet" type="text/css" href="css/styles.css" />
-</head>
-<body marginwidth="0" marginheight="0" leftmargin="0" rightmargin="0" topmargin="0">
-
-<% String breadcrumb1 = "Outages"; %>
 <jsp:include page="/includes/header.jsp" flush="false" >
   <jsp:param name="title" value="Outages" />
+  <jsp:param name="headTitle" value="Outages" />
   <jsp:param name="location" value="outages" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb1%>" />  
+  <jsp:param name="breadcrumb" value="Outages" />  
 </jsp:include>
 
-<br />
-<!-- Body -->
-
-<table width="100%" cellspacing="0" cellpadding="0" border="0">
-  <tr>
-    <td>&nbsp;</td>
-
-    <td>
+  <div style="width: 40%; float: left;">
       <h3>Outage Menu</h3>    
 
       <p><a href="outage/current.jsp">View current outages</a></p>
@@ -76,11 +64,9 @@
           <input type="submit" value="Search" />
         </form>      
       </p>
-    </td>
-    
-    <td>&nbsp;</td>
+  </div>
 
-    <td valign="top" width="60%" >
+  <div style="width: 60%; float: left;">
       <h3>Outages and Service Level Availability</h3>
 
       <p>
@@ -89,15 +75,6 @@
         is created and service level availbility levels are impacted.  Service 
         outages created notifications. 
       </p>     
-    </td>
-
-    <td>&nbsp;</td>
-  </tr>
-</table>                                    
+  </div>
                                      
-<br />
-
 <jsp:include page="/includes/footer.jsp" flush="false" />
-
-</body>
-</html>

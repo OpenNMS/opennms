@@ -1,4 +1,4 @@
-<!--
+<%--
 
 //
 // This file is part of the OpenNMS(R) Application.
@@ -35,9 +35,16 @@
 //      http://www.opennms.org/
 //      http://www.opennms.com///
 
--->
+--%>
 
-<%@page language="java" contentType="text/html" session="true" import="org.opennms.web.asset.*,java.util.*,org.opennms.web.element.NetworkElementFactory" %>
+<%@page language="java"
+	contentType="text/html"
+	session="true"
+	import="org.opennms.web.asset.*,
+		java.util.*,
+		org.opennms.web.element.NetworkElementFactory
+	"
+%>
 
 <%!
     protected AssetModel model;
@@ -66,28 +73,14 @@
     }
 %>
 
-<html>
-<head>
-  <title>Assets | OpenNMS Web Console</title>
-  <base HREF="<%=org.opennms.web.Util.calculateUrlBase( request )%>" />
-  <link rel="stylesheet" type="text/css" href="css/styles.css" />
-</head>
-<body marginwidth="0" marginheight="0" LEFTMARGIN="0" RIGHTMARGIN="0" TOPMARGIN="0">
-
-<% String breadcrumb1 = "Assets"; %>
 <jsp:include page="/includes/header.jsp" flush="false" >
   <jsp:param name="title" value="Assets" />
+  <jsp:param name="headTitle" value="Assets" />
   <jsp:param name="location" value="asset" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb1%>" />
+  <jsp:param name="breadcrumb" value="Assets" />
 </jsp:include>
 
-<br>
-
-<table width="100%" cellspacing="0" cellpadding="2" border="0">
-  <tr>
-    <td>&nbsp;</td>
-
-    <td valign="top">
+  <div style="width: 40%; float: left;">
       <h3>Search Asset Information</h3>
       <p>
         <form action="asset/nodelist.jsp" method="GET">
@@ -105,10 +98,9 @@
       </p>
       <br>
     </td>
-    
-    <td>&nbsp;</td>
+  </div>
 
-    <td width="60%" valign="top">
+  <div style="width: 60%; float: left;">
         <h3>Assets Inventory</h3>
 
         <p>The OpenNMS system provides a means for you to easily track and share 
@@ -138,14 +130,13 @@
             asset numbers, simply click on the <b>List all nodes with asset information</b> 
             link.
         </p>
-    </td>
+  </div>
 
-    <td>&nbsp;</td>
-  </tr>
-</table>
-<br>
+<div class="spacer"></div>
+<br/>
 <hr align="center" size="2" width="95%">
-<br>
+<br/>
+
 <table>
   <tr>
     <td>&nbsp;</td>
@@ -177,11 +168,4 @@
   </tr>
 </table>
                                      
-<br>
-
-<jsp:include page="/includes/footer.jsp" flush="false" >
-  <jsp:param name="location" value="asset" />
-</jsp:include>
-
-</body>
-</html>
+<jsp:include page="/includes/footer.jsp" flush="false"/>

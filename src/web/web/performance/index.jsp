@@ -1,4 +1,4 @@
-<!--
+<%--
 
 //
 // This file is part of the OpenNMS(R) Application.
@@ -37,19 +37,26 @@
 //      http://www.opennms.com/
 //
 
--->
+--%>
 
-<%@page language="java" contentType="text/html" session="true" import="java.util.*,org.opennms.web.Util,org.opennms.web.performance.*" %>
+<%@page language="java"
+	contentType="text/html"
+	session="true"
+	import="java.util.*,
+		org.opennms.web.Util,
+		org.opennms.web.performance.*,
+		org.opennms.web.ServletInitializer
+	"
+%>
 
 <%!
     public PerformanceModel model = null;
 
     public void init() throws ServletException {
         try {
-            this.model = new PerformanceModel( org.opennms.web.ServletInitializer.getHomeDir() );
-        }
-        catch( Exception e ) {
-            throw new ServletException( "Could not initialize the PerformanceModel", e );
+            this.model = new PerformanceModel(ServletInitializer.getHomeDir());
+        } catch (Throwable t) {
+            throw new ServletException("Could not initialize the PerformanceModel", t);
         }
     }
 %>
@@ -58,12 +65,14 @@
     PerformanceModel.QueryableNode[] nodes = this.model.getQueryableNodes();
 %>
 
-<html>
-<head>
-  <title>Performance | Reports | OpenNMS Web Console</title>
-  <base HREF="<%=org.opennms.web.Util.calculateUrlBase( request )%>" />
-  <link rel="stylesheet" type="text/css" href="css/styles.css" />
-</head>
+<jsp:include page="/includes/header.jsp" flush="false" >
+  <jsp:param name="title" value="Performance" />
+  <jsp:param name="headTitle" value="Performance" />
+  <jsp:param name="headTitle" value="Reports" />
+  <jsp:param name="location" value="performance" />
+  <jsp:param name="breadcrumb" value="<a href='report/index.jsp'>Reports</a>" />
+  <jsp:param name="breadcrumb" value="Performance" />
+</jsp:include>
 
 <script language="Javascript" type="text/javascript" >
   function validateNode()
@@ -121,83 +130,64 @@
   }
 </script>
 
-<body marginwidth="0" marginheight="0" LEFTMARGIN="0" RIGHTMARGIN="0" TOPMARGIN="0">
+<div style="width: 40%; float: left;">
+  <h3>Standard Performance Reports</h3>
 
-<% String breadcrumb1 = "<a href='report/index.jsp'>Reports</a>"; %>
-<% String breadcrumb2 = "Performance"; %>
-<jsp:include page="/includes/header.jsp" flush="false" >
-  <jsp:param name="title" value="Performance" />
-  <jsp:param name="location" value="performance" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb1%>" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb2%>" />
-</jsp:include>
+  <p>
+    Choose a node to generate a standard performance report on.
+  </p>
 
-<br>
-<!-- Body -->
+  <form method="get" name="choose_node" action="performance/addIntfFromNode">
+    <input type="hidden" name="endUrl"
+	   value="performance/choosereportanddate.jsp" />
 
-<table width="100%" cellspacing="0" cellpadding="2" border="0">
-  <tr>
-    <td>&nbsp;</td>
+    <select name="node" size="10">
+      <% for( int i=0; i < nodes.length; i++ ) { %>
+        <option value="<%=nodes[i].nodeId%>"><%=nodes[i].nodeLabel%></option>
+      <% } %>
+    </select>
 
-    <td valign="top">
-      <h3>Standard Performance Reports</h3>
+    <br/>
+    <br/>
 
-      <form method="get" name="choose_node" action="performance/addIntfFromNode" >
-        <p>Choose a node to generate a standard performance report on.</p>
-        <p>
-          <input type="hidden" name="endUrl" value="performance/choosereportanddate.jsp" />
-          <select name="node" size="10">
-            <% for( int i=0; i < nodes.length; i++ ) { %>
-                <option value="<%=nodes[i].nodeId%>"><%=nodes[i].nodeLabel%></option>
-            <% } %>
-          </select>
-        </p>
-        <p>
-          <input type="button" value="Start" onclick="submitForm()"/>
-        </p>
-      </form>
+    <input type="button" value="Start" onclick="submitForm()"/>
+  </form>
 
-      <h3>Custom Performance Reports</h3>
+  <h3>Custom Performance Reports</h3>
 
-      <form method="get" name="choose_node_adhoc" action="performance/adhoc.jsp" >
-        <p>Choose a node to generate a custom performance report on.</p>
-        <p>
-          <select name="node" size="10">
-            <% for( int i=0; i < nodes.length; i++ ) { %>
-              <option value="<%=nodes[i].nodeId%>"><%=nodes[i].nodeLabel%></option>
-            <% } %>
-          </select>
-        </p>
-        <p><input type="button" value="Start" onclick="submitFormAdhoc()"/></p>
-      </form>
-    </td>
+  <p>
+    Choose a node to generate a custom performance report on.
+  </p>
 
-    <td>&nbsp;</td>
+  <form method="get" name="choose_node_adhoc" action="performance/adhoc.jsp">
+    <select name="node" size="10">
+      <% for( int i=0; i < nodes.length; i++ ) { %>
+        <option value="<%=nodes[i].nodeId%>"><%=nodes[i].nodeLabel%></option>
+      <% } %>
+    </select>
 
-    <td valign="top" width="60%">
-      <h3>Network Performance Data</h3>
+    <br/>
+    <br/>
 
-      <p>The <strong>Standard Performance Reports</strong> provide a stock way to
-        easily visualize the critical SNMP data collected from managed nodes throughout
-        your network.
-      <p>
+    <input type="button" value="Start" onclick="submitFormAdhoc()"/>
+  </form>
+</div>
 
-      <p><strong>Custom Performance Reports</strong> can be used to produce a single
-        graph that contains the data of your choice from a single interface or node.
-        You can select the timeframe, line colors, line styles, and title of the graph
-        and you can bookmark the results.
-      </p>
-    </td>
+<div style="width: 60%; float: left;">
+  <h3>Network Performance Data</h3>
 
-    <td>&nbsp;</td>
-  </tr>
-</table>
+  <p>
+    The <strong>Standard Performance Reports</strong> provide a stock way to
+    easily visualize the critical SNMP data collected from managed nodes
+    throughout your network.
+  <p>
 
-<br>
+  <p>
+    <strong>Custom Performance Reports</strong> can be used to produce a
+    single graph that contains the data of your choice from a single
+    interface or node.  You can select the timeframe, line colors, line
+     styles, and title of the graph and you can bookmark the results.
+  </p>
+</div>
 
-<jsp:include page="/includes/footer.jsp" flush="false" >
-  <jsp:param name="location" value="performance" />
-</jsp:include>
-
-</body>
-</html>
+<jsp:include page="/includes/footer.jsp" flush="false"/>

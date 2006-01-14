@@ -1,4 +1,4 @@
-<!--
+<%--
 
 //
 // This file is part of the OpenNMS(R) Application.
@@ -37,9 +37,16 @@
 //      http://www.opennms.com/
 //
 
--->
+--%>
 
-<%@page language="java" contentType="text/html" session="true" import="java.util.*,org.opennms.web.outage.*,java.text.DateFormat" %>
+<%@page language="java"
+	contentType="text/html"
+	session="true"
+	import="java.util.*,
+		org.opennms.web.outage.*,
+		java.text.DateFormat
+	"
+%>
 
 <%!
     public static DateFormat DATE_FORMAT = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM);
@@ -71,38 +78,21 @@
     String buttonName=null;    
 %>
 
-<html>
-<head>
-  <title>Detail | Outages | OpenNMS Web Console</title>
-  <base href="<%=org.opennms.web.Util.calculateUrlBase( request )%>" />
-  <link rel="stylesheet" type="text/css" href="css/styles.css" />
-</head>
-
-<body marginwidth="0" marginheight="0" leftmargin="0" rightmargin="0" topmargin="0">
-
-<% String breadcrumb1 = "<a href='outage/index.jsp'>Outages</a>"; %>
-<% String breadcrumb2 = "Detail"; %>
 <jsp:include page="/includes/header.jsp" flush="false" >
   <jsp:param name="title" value="Outage Details" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb1%>" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb2%>" />
+  <jsp:param name="headTitle" value="Detail" />
+  <jsp:param name="headTitle" value="Outages" />
+  <jsp:param name="breadcrumb" value="<a href='outage/index.jsp'>Outages</a>" />
+  <jsp:param name="breadcrumb" value="Detail " />
 </jsp:include>
 
-<br />
-
-<!-- Body -->
-<table width="100%" border="0" cellspacing="0" cellpadding="2" >
-  <tr>
-    <td>&nbsp;</td>
-    
-    <td width="99%" valign="top">    
       <!-- page title -->
       <h3>Outage: <%=outage.getId()%></h3>
           
-      <table width="100%" cellspacing="0" cellpadding="2" class="widget-box" border="1" bordercolor="black">
+      <table class="standardfirst">
         <tr>
-          <td width="10%" class="widget-box-fieldname">Node:</td>
-          <td>
+          <td class="standardheader" width="10%">Node:</td>
+          <td class="standard">
             <% if( outage.getNodeId() > 0 ) { %>
               <a href="element/node.jsp?node=<%=outage.getNodeId()%>"><%=outage.getNodeLabel()%></a>
             <% } else {%>
@@ -110,16 +100,16 @@
             <% } %>
           </td>
           
-          <td width="10%" class="widget-box-fieldname">Lost&nbsp;Service&nbsp;Time:</td>
-          <td><%=DATE_FORMAT.format(outage.getLostServiceTime())%></td>
+          <td class="standardheader" width="10%">Lost&nbsp;Service&nbsp;Time:</td>
+          <td class="standard"><%=DATE_FORMAT.format(outage.getLostServiceTime())%></td>
           
-          <td width="10%" class="widget-box-fieldname">Lost&nbsp;Service&nbsp;Event:</td>
-          <td><a href="event/detail.jsp?id=<%=outage.getLostServiceEventId()%>"><%=outage.getLostServiceEventId()%></a></td>          
+          <td class="standardheader" width="10%">Lost&nbsp;Service&nbsp;Event:</td>
+          <td class="standard"><a href="event/detail.jsp?id=<%=outage.getLostServiceEventId()%>"><%=outage.getLostServiceEventId()%></a></td>          
           
         </tr>
         <tr>
-          <td class="widget-box-fieldname">Interface:</td>
-          <td>
+          <td class="standardheader">Interface:</td>
+          <td class="standard">
             <% if( outage.getIpAddress() != null ) { %>
               <% if( outage.getNodeId() > 0 ) { %>
                 <a href="element/interface.jsp?node=<%=outage.getNodeId()%>&intf=<%=outage.getIpAddress()%>"><%=outage.getIpAddress()%></a>
@@ -131,8 +121,8 @@
             <% } %>
           </td>
           
-          <td class="widget-box-fieldname">Regained&nbsp;Service:</td>
-          <td>
+          <td class="standardheader">Regained&nbsp;Service:</td>
+          <td class="standard">
             <% Date regainTime = outage.getRegainedServiceTime(); %>
             
             <% if(regainTime != null) { %>
@@ -143,8 +133,8 @@
             <% } %>
           </td>
 
-          <td class="widget-box-fieldname">Regained&nbsp;Service&nbsp;Event:</td>
-          <td>
+          <td class="standardheader">Regained&nbsp;Service&nbsp;Event:</td>
+          <td class="standard">
             <% Integer regainedEventId = outage.getRegainedServiceEventId(); %>
             <% if(regainedEventId != null) { %>
               <a href="event/detail.jsp?id=<%=regainedEventId%>">
@@ -158,8 +148,8 @@
           
         </tr>
         <tr>
-          <td class="widget-box-fieldname">Service:</td>
-          <td>
+          <td class="standardheader">Service:</td>
+          <td class="standard">
             <% if( outage.getServiceName() != null ) { %>
               <% if( outage.getIpAddress() != null && outage.getNodeId() > 0 ) { %>
                 <a href="element/service.jsp?node=<%=outage.getNodeId()%>&intf=<%=outage.getIpAddress()%>&service=<%=outage.getServiceId()%>"><%=outage.getServiceName()%></a>              
@@ -170,18 +160,8 @@
               &nbsp;
             <% } %>
           </td>
-          <td colspan="4">&nbsp;</td>
+          <td class="standard" colspan="4">&nbsp;</td>
         </tr>
       </table>
-    </td>
-    
-    <td width="1%" valign="top">&nbsp;</td>
-  </tr>
-</table>
-
-<br />
 
 <jsp:include page="/includes/footer.jsp" flush="false" />
-
-</body>
-</html>

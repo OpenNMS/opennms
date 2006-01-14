@@ -1,4 +1,4 @@
-<!--
+<%--
 
 //
 // This file is part of the OpenNMS(R) Application.
@@ -37,9 +37,12 @@
 //      http://www.opennms.com/
 //
 
--->
+--%>
 
-<%@page language="java" contentType = "text/html" session = "true" %>
+<%@page language="java"
+	contentType="text/html"
+	session="true"
+%>
 <%@page import="java.util.*"%>
 <%@page import="java.text.*"%>
 <%@page import="org.opennms.netmgt.config.*"%>
@@ -63,12 +66,17 @@
         }
 
         %>
-<html>
-<head>
-<title>Modify User | User Admin | OpenNMS Web Console</title>
-<base HREF="<%=org.opennms.web.Util.calculateUrlBase( request )%>" />
-<link rel="stylesheet" type="text/css" href="css/styles.css" />
-</head>
+
+<jsp:include page="/includes/header.jsp" flush="false" >
+  <jsp:param name="title" value="Modify User" />
+  <jsp:param name="headTitle" value="Modify" />
+  <jsp:param name="headTitle" value="Users" />
+  <jsp:param name="headTitle" value="Admin" />
+  <jsp:param name="breadcrumb" value="<a href='admin/index.jsp'>Admin</a>" />
+  <jsp:param name="breadcrumb" value="<a href='admin/userGroupView/index.jsp'>Users and Groups</a>" />
+  <jsp:param name="breadcrumb" value="<a href='admin/userGroupView/users/list.jsp'>User List</a>" />
+  <jsp:param name="breadcrumb" value="Modify User" />
+</jsp:include>
 
 <script language="Javascript" type="text/javascript" >
     
@@ -163,45 +171,21 @@
     
 </script>
 
-<body marginwidth="0" marginheight="0" LEFTMARGIN="0" RIGHTMARGIN="0" TOPMARGIN="0">
 
-<%String breadcrumb1 = "<a href='admin/index.jsp'>Admin</a>";
-        %>
-<%String breadcrumb2 = "<a href='admin/userGroupView/index.jsp'>Users and Groups</a>";
-        %>
-<%String breadcrumb3 = "<a href='admin/userGroupView/users/list.jsp'>User List</a>";
-        %>
-<%String breadcrumb4 = "Modify User";
-        %>
-<jsp:include page="/includes/header.jsp" flush="false" >
-  <jsp:param name="title" value="Modify User" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb1%>" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb2%>" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb3%>" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb4%>" />
-</jsp:include>
-
-<br/>
-
-<FORM id="modifyUser" METHOD="POST" NAME="modifyUser">
+<form id="modifyUser" method="post" name="modifyUser">
 <input id="userID" type="hidden" name="userID" value="<%=user.getUserId()%>"/>
 <input id="password" type="hidden" name="password"/>
 <input id="redirect" type="hidden" name="redirect"/>
 
+<h3>Modify User: <%=userid%></h3>
 
-<table width="100%" border="0" cellspacing="0" cellpadding="2" >
-  <tr>
-    <td>&nbsp;</td>
+<div id="contentleft">
+  <p>
+    <input type="button" value="Reset Password" onClick="resetPassword()" />
+  </p>
 
-    <td>
-    <h3>Modify User: <%=userid%></h3>
-
-    <table width="100%" border="0" cellspacing="0" cellpadding="2" >
-      <tr>
-        <td width="50%" valign="top">
-          <p><input type="button" value="Reset Password" onClick="resetPassword()" /></p>
-
-          <p><table width="100%" border="0" cellspacing="0" cellpadding="2">
+  <p>
+    <table width="100%" border="0" cellspacing="0" cellpadding="2">
             <tr>
               <td colspan="2">
                 <p><b>User Information</b></p>
@@ -317,40 +301,59 @@
               </td>
             </tr>
           </table>
-        </td>
-        <td width="15">&nbsp;&nbsp;</td>
-        <td width="50%" valign="top">
-          <p>This panel allows you to modify information for each user, including their name,
-          notification information, and duty schedules.</p>
+ </p>
+</div>
 
-          <p><b>Notification Information</b> provides the ability for you to configure contact
-          information for each user, including any of <em>email</em> address, <em>pager email</em>
-          (in the case that the pager can be reached as an email destination), <em>XMPP address</em>
-          (for instant messages using the Jabber XMPP protocol), <em>numeric service</em>
-          (for pagers that cannot display text messages), and <em>text service</em> (for alphanumeric pagers).</p>
+<div id="contentright">
+  <p>
+    This panel allows you to modify information for each user, including
+    their name, notification information, and duty schedules.
+  </p>
 
-          <p><b>Duty Schedules</b> allow you to flexibility to determine when users should receive
-          notifications.  A duty schedule consists of a list of days for which the time will apply
-          and a time range, presented in military time with no punctuation.  Using this standard, days
-          run from <em>0000</em> to <em>2359</em>.</p>
+  <p>
+    <b>Notification Information</b> provides the ability for you to configure
+    contact information for each user, including any of <em>email</em>
+    address, <em>pager email</em> (in the case that the pager can be reached
+    as an email destination), <em>XMPP address</em> (for instant messages
+    using the Jabber XMPP protocol), <em>numeric service</em> (for pagers
+    that cannot display text messages), and <em>text service</em> (for
+    alphanumeric pagers).
+  </p>
 
-          <p>If your duty schedules span midnight, or if your users work multiple, noncontiniguous
-          time periods, you will need to configure multiple duty schedules.  To do so, select the
-          number of duty schedules to add from the drop-down box next to <b>[Add This Many Schedules]</b>,
-          and click the button.  Then, using the duty schedule fields you've just added, create a
-          duty schedule from the start time to 2359 on one day, and enter a second duty schedule
-          which begins at 0000 and ends at the end of that users coverage.</p>
+  <p>
+    <b>Duty Schedules</b> allow you to flexibility to determine when users
+    should receive notifications.  A duty schedule consists of a list of
+    days for which the time will apply and a time range, presented in
+    military time with no punctuation.  Using this standard, days run from
+    <em>0000</em> to <em>2359</em>.
+  </p>
 
-          <p>To remove configured duty schedules, put a check in the <em>Delete</em> column and click
-          <b>[Remove Checked Schedules]</b>.</p>
+  <p>
+    If your duty schedules span midnight, or if your users work multiple,
+    non-contiguous time periods, you will need to configure multiple duty
+    schedules.  To do so, select the number of duty schedules to add from
+    the drop-down box next to <b>[Add This Many Schedules]</b>, and click
+    the button.  Then, using the duty schedule fields you've just added,
+    create a duty schedule from the start time to 2359 on one day, and
+    enter a second duty schedule which begins at 0000 and ends at the end
+    of that users coverage.
+  </p>
 
-          <p>To save your configuration, click on <b>[Finish]</b>.</p>
-        </td>
-      </tr>
-      
-      <tr>
-        <td width="100%" colspan="3">
-          <p><b>Duty Schedules</b></p>
+  <p>
+    To remove configured duty schedules, put a check in the <em>Delete</em>
+    column and click <b>[Remove Checked Schedules]</b>.
+  </p>
+
+  <p>
+   To save your configuration, click on <b>[Finish]</b>.
+  </p>
+</div>
+
+<div class="spacer"></div>
+
+<p>
+  <b>Duty Schedules</b>
+</p>
                                   <%
 Collection dutySchedules = user.getDutyScheduleCollection();
         %>
@@ -404,12 +407,12 @@ int i = 0;
         }
         %>
           </table>
-        </td>
-      </tr>
-    </table>
 
-    <p><input id="addSchedulesButton" type="button" name="addSchedule" value="Add This Many Schedules" onclick="addDutySchedules()"/>
-      <select name="numSchedules" value="3" size="1">
+<p>
+  <input id="addSchedulesButton" type="button" name="addSchedule"
+         value="Add This Many Schedules" onclick="addDutySchedules()"/>
+
+  <select name="numSchedules" value="3" size="1">
         <option value="1">1</option>
         <option value="2">2</option>
         <option value="3">3</option>
@@ -417,19 +420,22 @@ int i = 0;
         <option value="5">5</option>
         <option value="6">6</option>
         <option value="7">7</option>
-      </select>
-    </p>
+  </select>
+</p>
 
-    <p><input id="removeSchedulesButton" type="button" name="addSchedule" value="Remove Checked Schedules" onclick="removeDutySchedules()"/></p>
-    <p><input id="saveUserButton" type="button" name="finish" value="Finish" onclick="saveUser()"/>&nbsp;&nbsp;&nbsp;<input id="cancelButton" type="button" name="cancel" value="Cancel" onclick="cancelUser()"/></p>
-  </tr>
-</table>
+<p>
+  <input id="removeSchedulesButton" type="button" name="addSchedule"
+         value="Remove Checked Schedules" onclick="removeDutySchedules()"/>
+</p>
 
-</FORM>
+<p>
+  <input id="saveUserButton" type="button" name="finish" value="Finish"
+         onclick="saveUser()"/>
+  &nbsp;&nbsp;&nbsp;
+  <input id="cancelButton" type="button" name="cancel" value="Cancel"
+         onclick="cancelUser()"/>
+</p>
 
-<br/>
+</form>
 
 <jsp:include page="/includes/footer.jsp" flush="false" />
-
-</body>
-</html>

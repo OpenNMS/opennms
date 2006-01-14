@@ -1,4 +1,4 @@
-<!--
+<%--
 
 //
 // This file is part of the OpenNMS(R) Application.
@@ -37,17 +37,25 @@
 //      http://www.opennms.com/
 //
 
--->
+--%>
 
-<%@page language="java" contentType="text/html" session="true"%>
+<%@page language="java"
+	contentType="text/html"
+	session="true"%>
+
 <%@ taglib uri="http://java.sun.com/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jstl/fmt" prefix="fmt" %>
-<html>
-<head>
-<title>Edit Role | Role Admin | OpenNMS Web Console</title>
-<base HREF="<%=org.opennms.web.Util.calculateUrlBase( request )%>" />
-<link rel="stylesheet" type="text/css" href="css/styles.css" />
-</head>
+
+<jsp:include page="/includes/header.jsp" flush="false">
+	<jsp:param name="title" value="Role Configuration" />
+	<jsp:param name="headTitle" value="Edit" />
+	<jsp:param name="headTitle" value="Roles" />
+	<jsp:param name="headTitle" value="Admin" />
+	<jsp:param name="breadcrumb" value="<a href='admin/index.jsp'>Admin</a>" />
+	<jsp:param name="breadcrumb" value="<a href='admin/userGroupView/index.jsp'>Users, Groups and Roles</a>" />
+	<jsp:param name="breadcrumb" value="<a href='admin/userGroupView/roles'>Role List</a>" />
+	<jsp:param name="breadcrumb" value="Edit Role" />
+</jsp:include>
 
 <script language="Javascript" type="text/javascript" >
 
@@ -65,36 +73,11 @@
 
 </script>
 
+<h3>Edit Role</h3>
 
-<body marginwidth="0" marginheight="0" LEFTMARGIN="0" RIGHTMARGIN="0"
-	TOPMARGIN="0">
-
-<% String breadcrumb1 = "<a href='admin/index.jsp'>Admin</a>"; %>
-<% String breadcrumb2 = "<a href='admin/userGroupView/index.jsp'>Users, Groups and Roles</a>"; %>
-<% String breadcrumb3 = "<a href='admin/userGroupView/roles'>Role List</a>"; %>
-<% String breadcrumb4 = "Edit Role"; %>
-<jsp:include page="/includes/header.jsp" flush="false">
-	<jsp:param name="title" value="Role Configuration" />
-	<jsp:param name="breadcrumb" value="<%=breadcrumb1%>" />
-	<jsp:param name="breadcrumb" value="<%=breadcrumb2%>" />
-	<jsp:param name="breadcrumb" value="<%=breadcrumb3%>" />
-	<jsp:param name="breadcrumb" value="<%=breadcrumb4%>" />
-</jsp:include>
-
-<br />
-<form action="<c:url value='${reqUrl}'/>" method="POST" name="editForm">
-<input type="hidden" name="operation" value="saveDetails"/>
-<input type="hidden" name="role" value="<c:out value='${role.name}'/>"/>
-<table>
-	<tr>
-		<td>&nbsp;</td>
-		<td>
-		<h3>Edit Role</h3>
-		</td>
-	</tr>
-	<tr>
-		<td>&nbsp;</td>
-		<td>
+<form action="<c:url value='${reqUrl}'/>" method="post" name="editForm">
+  <input type="hidden" name="operation" value="saveDetails"/>
+  <input type="hidden" name="role" value="<c:out value='${role.name}'/>"/>
 		 <table width="100%" border="1" cellspacing="0" cellpadding="2" bordercolor="black">
 	         <tr>
     		    		<td bgcolor="#999999"><b>Name</b></td>
@@ -143,27 +126,11 @@
 				<td colspan="3"><input name="roleDescr" size="100" type="text" value="<c:out value='${role.description}'/>"/></td>
           	</tr>
 		</table>
-		</td>
-	</tr>
-	<tr align="right">
-		<td>&nbsp;</td>
-		<td>
-		<table border="0">
-		<tr>
-		<td>
-			<input type="submit" name="save" value="Save" />
-		</td>
-		<td>
-			<input type="submit" name="cancel" value="Cancel" />
-		</td>
-		</tr>
-		</table>
-		</td>
-	</tr>
-</table>
-</form>
-<br/>
-<jsp:include page="/includes/footer.jsp" flush="false" />
 
-</body>
-</html>
+  <br/>
+  <input type="submit" name="save" value="Save" />
+  &nbsp;&nbsp;&nbsp;
+  <input type="submit" name="cancel" value="Cancel" />
+</form>
+
+<jsp:include page="/includes/footer.jsp" flush="false" />

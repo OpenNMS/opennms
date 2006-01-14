@@ -1,4 +1,4 @@
-<!--
+<%--
 
 //
 // This file is part of the OpenNMS(R) Application.
@@ -37,25 +37,44 @@
 //      http://www.opennms.com/
 //
 
--->
+--%>
 
-<%@page language="java" contentType = "text/html" session = "true"  import="org.opennms.netmgt.config.*, java.util.*,java.text.*,org.opennms.netmgt.config.views.*"%>
+<%@page language="java"
+	contentType="text/html"
+	session="true"
+	import="org.opennms.netmgt.config.*,
+		java.util.*,
+		java.text.*,
+		org.opennms.netmgt.config.views.*
+	"
+%>
+
 <%
 	HttpSession userSession = request.getSession(false);
 	View view = null;
   
-	if (userSession != null)
-	{
+	if (userSession != null) {
 		view = (View)userSession.getAttribute("view.modifyView.jsp");
   	}
 
+	if (view == null) {
+		throw new ServletException("User session attribute "
+					   + "view.modifyView.jsp is not set");
+	}
+
 %>
-<html>
-<head>
-<title>Modify View | User Admin | OpenNMS Web Console</title>
-<base HREF="<%=org.opennms.web.Util.calculateUrlBase( request )%>" />
-<link rel="stylesheet" type="text/css" href="css/styles.css" />
-</head>
+
+<jsp:include page="/includes/header.jsp" flush="false" >
+  <jsp:param name="title" value="Modify View" />
+  <jsp:param name="headTitle" value="Modify" />
+  <jsp:param name="headTitle" value="Views" />
+  <jsp:param name="headTitle" value="Admin" />
+  <jsp:param name="breadcrumb" value="<a href='admin/index.jsp'>Admin</a>" />
+  <jsp:param name="breadcrumb" value="<a href='admin/userGroupView/index.jsp'>Users, Groups, and Views</a>" />
+  <jsp:param name="breadcrumb" value="<a href='admin/userGroupView/views/list.jsp'>Views List</a>" />
+  <jsp:param name="breadcrumb" value="Modify View" />
+</jsp:include>
+
 
 <script language="Javascript" type="text/javascript" >
     
@@ -202,54 +221,18 @@
 
 </script>
 
-<body marginwidth="0" marginheight="0" LEFTMARGIN="0" RIGHTMARGIN="0" TOPMARGIN="0">
+<h3>Modifying View: <%=view.getName()%></h3>
 
-<% String breadcrumb1 = "<a href='admin/index.jsp'>Admin</a>"; %>
-<% String breadcrumb2 = "<a href='admin/userGroupView/index.jsp'>Users, Groups, and Views</a>"; %>
-<% String breadcrumb3 = "<a href='admin/userGroupView/views/list.jsp'>Views List</a>"; %>
-<% String breadcrumb4 = "Modify View"; %>
-<jsp:include page="/includes/header.jsp" flush="false" >
-  <jsp:param name="title" value="Modify View" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb1%>" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb2%>" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb3%>" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb4%>" />
-</jsp:include>
+<p>
+  Assign and unassign users and groups to the view using the select lists
+  below.
+</p>
 
-<br>
+<form method="post" name="modifyView">
+  <input type="hidden" name="viewName" value="<%=view.getName()%>"/>
+  <input type="hidden" name="redirect"/>
 
-<FORM METHOD="POST" NAME="modifyView">
-<input type="hidden" name="viewName" value="<%=view.getName()%>"/>
-<input type="hidden" name="redirect"/>
-
-<table width="100%" border="0" cellspacing="0" cellpadding="2" >
-  <tr>
-    <td>&nbsp;</td>
-
-    <td>
       <table width="100%" border="0" cellspacing="0" cellpadding="2" >
-        <tr>
-          <td>
-            <h3>Modifying View: <%=view.getName()%></h3>
-            <tr>
-              <td>
-                Assign and unassign users and groups to the view using the select lists below.
-                <br>
-              </td>
-            </tr>
-            <!--<table width="100%" border="0" cellspacing="0" cellpadding="2">
-              <tr>
-                <td width="10%" valign="top">
-                  <b>Comments:</b>
-                </td>
-                <td width="90%" valign="top">
-                  <textarea rows="5" cols="50" name="comments"><%=view.getComment()%></textarea>
-                </td>
-              </tr>
-            </table>-->
-          </td>
-        </tr>
-        
         <tr>
           <td align="left">
             <table bgcolor="white" border="1" cellpadding="5" cellspacing="2">
@@ -327,16 +310,7 @@
             </td>
           </tr>
         </table>
-      <td> &nbsp; </td>
-    </tr>
-  </table>
-  
-</FORM>
-  
-<br>
-
-<jsp:include page="/includes/footer.jsp" flush="false" >
-</jsp:include>
+</form>
 
 <script language="JavaScript">
   // shorthand for refering to menus
@@ -349,8 +323,7 @@
   var m4 = document.modifyView.selectedGroups;
 </script>
 
-</body>
-</html>
+<jsp:include page="/includes/footer.jsp" flush="false"/>
 
 <%!
     private String getUsersList(View view)

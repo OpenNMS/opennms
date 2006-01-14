@@ -1,4 +1,19 @@
-<%@page language="java" contentType="text/html" session="true" import="java.util.*,org.opennms.netmgt.config.*,org.opennms.netmgt.config.common.*,org.opennms.netmgt.config.poller.*,org.opennms.web.element.*,org.opennms.netmgt.EventConstants,org.opennms.netmgt.xml.event.Event,java.net.*,java.io.*,org.opennms.netmgt.utils.*" %>
+<%@page language="java"
+	contentType="text/html"
+	session="true"
+	import="java.util.*,
+		org.opennms.netmgt.config.*,
+		org.opennms.netmgt.config.common.*,
+		org.opennms.netmgt.config.poller.*,
+		org.opennms.web.element.*,
+		org.opennms.netmgt.EventConstants,
+		org.opennms.netmgt.xml.event.Event,
+		java.net.*,
+		java.io.*,
+		org.opennms.netmgt.utils.*
+	"
+%>
+
 <%!
 public void sendOutagesChangedEvent() throws ServletException {
         Event event = new Event();
@@ -56,18 +71,15 @@ if(deleteName!=null) {
 	sendOutagesChangedEvent();
 }
 %>
-<html>
-<title>Scheduled Outage Administration</title>
-<base href="<%=org.opennms.web.Util.calculateUrlBase( request )%>" />
-<link rel="stylesheet" type="text/css" href="css/styles.css" />
-<body>
-<% String breadcrumb1 = "<a href='admin/index.jsp'>Admin</a>"; %>
-<% String breadcrumb2 = "Manage Scheduled Outages"; %>
+
+
 <jsp:include page="/includes/header.jsp" flush="false" >
   <jsp:param name="title" value="Manage Scheduled Outages" />
+  <jsp:param name="headTitle" value="Scheduled Outages" />
+  <jsp:param name="headTitle" value="Admin" />
   <jsp:param name="location" value="admin" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb1%>" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb2%>" />
+  <jsp:param name="breadcrumb" value="<a href='admin/index.jsp'>Admin</a>" />
+  <jsp:param name="breadcrumb" value="Scheduled Outages" />
 </jsp:include>
 
 
@@ -185,10 +197,5 @@ for(int i=0; i<outages.length; i++) {
 <input type="hidden" name="addNew" value="true"/>
 <input type="submit" name="newOutage" value="Add new outage"/>
 </form>
-<br/>
-<jsp:include page="/includes/footer.jsp" flush="true" >
-  <jsp:param name="location" value="admin" />
-</jsp:include>
 
-</body>
-</html>
+<jsp:include page="/includes/footer.jsp" flush="true"/>

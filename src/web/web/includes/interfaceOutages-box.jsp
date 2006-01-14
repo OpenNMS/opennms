@@ -1,4 +1,4 @@
-<!--
+<%--
 
 //
 // This file is part of the OpenNMS(R) Application.
@@ -32,7 +32,7 @@
 //      http://www.opennms.com/
 //
 
--->
+--%>
 
 <%-- 
   This page is included by other JSPs to create a box containing an
@@ -42,7 +42,13 @@
   that directs all URLs to be relative to the servlet context.
 --%>
 
-<%@page language="java" contentType="text/html" session="true" import="org.opennms.web.outage.*,java.util.*" %>
+<%@page language="java"
+	contentType="text/html"
+	session="true"
+	import="org.opennms.web.outage.*,
+		java.util.*
+	"
+%>
 
 <%! 
     OutageModel model = new OutageModel();
@@ -75,33 +81,32 @@
     Outage[] outages = this.model.getOutagesForInterface(nodeId, ipAddr, yesterday);    
 %>
 
-<table width="100%" border="1" cellspacing="0" cellpadding="2" bordercolor="black" BGCOLOR="#cccccc">
-  
+<table class="standard">
 
 <% if(outages.length == 0) { %>
   <tr>
-    <td BGCOLOR="#999999" colspan="4">There have been no outages on this interface in the last 24 hours.</b></td>
+    <td class="standardheaderplain" colspan="4">There have been no outages on this interface in the last 24 hours.</b></td>
   </tr>
 <% } else { %>
   <tr> 
-    <td BGCOLOR="#999999" colspan="4"><b>Recent Outages</b></td>
+    <td class="standardheader" colspan="4"><b>Recent Outages</b></td>
   </tr>
-  <tr bgcolor="#999999">
-    <td><b>Service</b></td>
-    <td><b>Lost</b></td>
-    <td><b>Regained</b></td>
-    <td><b>Outage ID</b></td>
+  <tr>
+    <td class="standardheader">Service</td>
+    <td class="standardheader">Lost</td>
+    <td class="standardheader">Regained</td>
+    <td class="standardheader">Outage ID</td>
   </tr>
   <% for( int i=0; i < outages.length; i++ ) { %>
      <tr>
-      <td><a href="element/service.jsp?node=<%=nodeId%>&intf=<%=outages[i].getIpAddress()%>&service=<%=outages[i].getServiceId()%>"><%=outages[i].getServiceName()%></a></td>
-      <td><%=org.opennms.netmgt.EventConstants.formatToUIString(outages[i].getLostServiceTime())%></td>
+      <td class="standard"><a href="element/service.jsp?node=<%=nodeId%>&intf=<%=outages[i].getIpAddress()%>&service=<%=outages[i].getServiceId()%>"><%=outages[i].getServiceName()%></a></td>
+      <td class="standard"><%=org.opennms.netmgt.EventConstants.formatToUIString(outages[i].getLostServiceTime())%></td>
       <% if( outages[i].getRegainedServiceTime() == null ) { %>
-        <td bgcolor="red"><b>DOWN</b></td>
+        <td class="standard" bgcolor="red"><b>DOWN</b></td>
       <% } else { %>        
-        <td><%=org.opennms.netmgt.EventConstants.formatToUIString(outages[i].getRegainedServiceTime())%></td>
+        <td class="standard"><%=org.opennms.netmgt.EventConstants.formatToUIString(outages[i].getRegainedServiceTime())%></td>
       <% } %>
-      <td><a href="outage/detail.jsp?id=<%=outages[i].getId()%>"><%=outages[i].getId()%></a></td>  
+      <td class="standard"><a href="outage/detail.jsp?id=<%=outages[i].getId()%>"><%=outages[i].getId()%></a></td>  
      </tr>
   <% } %>
 <% } %>

@@ -1,4 +1,4 @@
-<!--
+<%--
 
 //
 // This file is part of the OpenNMS(R) Application.
@@ -37,9 +37,13 @@
 //      http://www.opennms.org/
 //      http://www.opennms.com///
 
--->
+--%>
 
-<%@page language="java" contentType="text/html" session="true" import="org.opennms.web.alarm.*" %>
+<%@page language="java"
+	contentType="text/html"
+	session="true"
+	import="org.opennms.web.alarm.*"
+%>
 
 <%
     String alarmIdString = request.getParameter( "id" );
@@ -78,53 +82,36 @@
     }
 %>
 
-<html>
-<head>
-  <title> Detail | Alarms | OpenNMS Web Console</title>
-  <base HREF="<%=org.opennms.web.Util.calculateUrlBase( request )%>" />
-  <link rel="stylesheet" type="text/css" href="css/styles.css" />
-</head>
-
-<body marginwidth="0" marginheight="0" LEFTMARGIN="0" RIGHTMARGIN="0" TOPMARGIN="0">
-
-<% String breadcrumb1 = "<a href='alarm/index.jsp'>Alarms</a>"; %>
-<% String breadcrumb2 = "Detail"; %>
 <jsp:include page="/includes/header.jsp" flush="false" >
   <jsp:param name="title" value="Alarm Detail" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb1%>" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb2%>" />
+  <jsp:param name="headTitle" value="Detail" />
+  <jsp:param name="headTitle" value="Alarms" />
+  <jsp:param name="breadcrumb" value="<a href='alarm/index.jsp'>Alarms</a>" />
+  <jsp:param name="breadcrumb" value="Detail" />
 </jsp:include>
 
-<br>
-
-<!-- Body -->
-<table width="100%" border="0" cellspacing="0" cellpadding="2" >
-  <tr>
-    <td>&nbsp;</td>
-
-    <td width="100%" valign="top" >
       <h3>Alarm <%=alarm.getId()%></h3>
  
-      <table width="100%" border="1" cellspacing="0" cellpadding="2" bgcolor="#cccccc" bordercolor="black">
+      <table class="standardfirst">
         <tr>
-          <td width="10%" bgcolor="#999999"><b>Severity</b></td>
-          <td bgcolor="<%=AlarmUtil.getSeverityColor(alarm.getSeverity())%>"><%=AlarmUtil.getSeverityLabel(alarm.getSeverity())%></td>
-          <td width="10%" bgcolor="#999999"><b>Node</b></td>
-          <td>
+          <td class="standardheader" width="10%">Severity</td>
+          <td class="standard" bgcolor="<%=AlarmUtil.getSeverityColor(alarm.getSeverity())%>"><%=AlarmUtil.getSeverityLabel(alarm.getSeverity())%></td>
+          <td class="standardheader" width="10%">>Node</td>
+          <td class="standard">
             <% if( alarm.getNodeId() > 0 ) { %>
               <a href="element/node.jsp?node=<%=alarm.getNodeId()%>"><%=alarm.getNodeLabel()%></a>
             <% } else {%>
               &nbsp;
             <% } %>
           </td>
-          <td width="10%" bgcolor="#999999"><b>Acknowledged&nbsp;By</b></td>
-          <td><%=alarm.getAcknowledgeUser()!=null ? alarm.getAcknowledgeUser() : "&nbsp"%></td>
+          <td class="standardheader" width="10%">Acknowledged&nbsp;By</td>
+          <td class="standard"><%=alarm.getAcknowledgeUser()!=null ? alarm.getAcknowledgeUser() : "&nbsp"%></td>
         </tr>
         <tr>
-          <td bgcolor="#999999"><b>Last Event</b></td>
-          <td><%=org.opennms.netmgt.EventConstants.formatToUIString(alarm.getLastEventTime())%></td>
-          <td bgcolor="#999999"><b>Interface</b></td>
-          <td>
+          <td class="standardheader">Last Event</td>
+          <td class="standard"><%=org.opennms.netmgt.EventConstants.formatToUIString(alarm.getLastEventTime())%></td>
+          <td class="standardheader">Interface</td>
+          <td class="standard">
             <% if( alarm.getIpAddress() != null ) { %>
               <% if( alarm.getNodeId() > 0 ) { %>
                 <a href="element/interface.jsp?node=<%=alarm.getNodeId()%>&intf=<%=alarm.getIpAddress()%>"><%=alarm.getIpAddress()%></a>
@@ -135,14 +122,14 @@
               &nbsp;
             <% } %>
           </td>
-          <td bgcolor="#999999"><b>Time&nbsp;Acknowledged</b></td>
-          <td><%=alarm.getAcknowledgeTime()!=null ? org.opennms.netmgt.EventConstants.formatToUIString(alarm.getAcknowledgeTime()) : "&nbsp"%></td>
+          <td class="standardheader">Time&nbsp;Acknowledged</td>
+          <td class="standard"><%=alarm.getAcknowledgeTime()!=null ? org.opennms.netmgt.EventConstants.formatToUIString(alarm.getAcknowledgeTime()) : "&nbsp"%></td>
         </tr>
         <tr>
-          <td bgcolor="#999999"><b>First Event</b></td>
-          <td><%=org.opennms.netmgt.EventConstants.formatToUIString(alarm.getFirstEventTime())%></td>
-          <td bgcolor="#999999"><b>Service</b></td>
-          <td>
+          <td class="standardheader">First Event</td>
+          <td class="standard"><%=org.opennms.netmgt.EventConstants.formatToUIString(alarm.getFirstEventTime())%></td>
+          <td class="standardheader">Service</td>
+          <td class="standard" colspan="3">
             <% if( alarm.getServiceName() != null ) { %>
               <% if( alarm.getIpAddress() != null && alarm.getNodeId() > 0 ) { %>
                 <a href="element/service.jsp?node=<%=alarm.getNodeId()%>&intf=<%=alarm.getIpAddress()%>&service=<%=alarm.getServiceId()%>"><%=alarm.getServiceName()%></a>
@@ -155,53 +142,54 @@
           </td>
           </tr> 
           <tr>
-          	<td bgcolor="#999999"><b>Count</b></td>
-	        <td><%=alarm.getCount()%></td>
-          	<td bgcolor="#999999"><b>UEI</b></td>
+          	<td class="standardheader">Count</td>
+	        <td class="standard"><%=alarm.getCount()%></td>
+          	<td class="standardheader">UEI</td>
+          	<td class="standard" colspan="3">
           	<% if( alarm.getUei() != null ) { %>
-          	      <td colspan=3><%=alarm.getUei()%></td>
+          	      <%=alarm.getUei()%>
           	<% } else {%>
-                      <td colspan=3>&nbsp;</td>
+                      &nbsp;
           	<% } %>
+		</td>
         </tr>
-          <tr>
-          	<td bgcolor="#999999"><b>Reduct. Key</b></td>
+        <tr>
+          	<td class="standardheader">Reduct. Key</td>
+          	<td class="standard" colspan="5">
           	<% if( alarm.getReductionKey() != null ) { %>
-          	      <td colspan=5><%=alarm.getReductionKey()%></td>
+          	      <%=alarm.getReductionKey()%>
           	<% } else {%>
-                      <td colspan=3>&nbsp;</td>
+                      &nbsp;
           	<% } %>
+		</td>
         </tr>
       </table>
 
-      <br>
-            
-      <table width="100%" border="1" cellspacing="0" cellpadding="2" bgcolor="#cccccc" bordercolor="black">        <tr bgcolor="#999999">
-          <td align="left" valign="top">Log Message</td>
+      <table class="standard">
+          <td class="standardheader">Log Message</td>
         </tr>
         <tr>
-          <td align="left" valign="top"><%=alarm.getLogMessage()%></td>
+          <td class="standard"><%=alarm.getLogMessage()%></td>
         </tr>
       </table>
 
-      <br>
-
-      <table width="100%" border="1" cellspacing="0" cellpadding="2" bgcolor="#cccccc" bordercolor="black">        <tr bgcolor="#999999">
-          <td align="left" valign="top">Description</td>
+      <table class="standard">
+        <tr>
+          <td class="standardheader">Description</td>
         </tr>
         <tr>
-          <td align="left" valign="top"><%=alarm.getDescription()%></td>
+          <td class="standard"><%=alarm.getDescription()%></td>
         </tr>
       </table>
       
-      <br>
       
-      <table width="100%" border="1" cellspacing="0" cellpadding="2" bgcolor="#cccccc" bordercolor="black">        <tr bgcolor="#999999">
-          <td align="left" valign="top">Operator Instructions</td>
+      <table class="standard">
+        <tr>
+          <td class="standardheader">Operator Instructions</td>
         </tr>
 	
         <tr>
-          <td align="left" valign="top"> 
+          <td class="standard">
 	    <%if (alarm.getOperatorInstruction()==null) { %>
               No instructions available
             <% } else { %>
@@ -210,26 +198,14 @@
 	  </td>
         </tr>
       </table>
-      
-      <br>
 
+      <br/>
       
-      <FORM METHOD="POST" NAME="acknowlegde" ACTION="alarm/acknowledge">
+      <form method="post" action="alarm/acknowledge">
         <input type="hidden" name="action" value="<%=action%>" />
         <input type="hidden" name="alarm" value="<%=alarm.getId()%>"/>
         <input type="hidden" name="redirect" value="<%=request.getContextPath() + request.getServletPath() + "?" + request.getQueryString()%>" />
         <input type="submit" value="<%=buttonName%>" />
-      </FORM>
-      
-    </td>
-    
-    <td>&nbsp;</td>
-  </tr>
-</table>
-
-<br>
+      </form>
 
 <jsp:include page="/includes/footer.jsp" flush="false" />
-
-</body>
-</html>

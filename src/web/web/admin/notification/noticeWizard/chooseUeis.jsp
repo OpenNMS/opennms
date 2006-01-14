@@ -1,4 +1,4 @@
-<!--
+<%--
 
 //
 // This file is part of the OpenNMS(R) Application.
@@ -37,9 +37,21 @@
 //      http://www.opennms.com/
 //
 
--->
+--%>
 
-<%@page language="java" contentType="text/html" session="true" import="java.util.*,org.opennms.web.admin.notification.noticeWizard.*,org.opennms.netmgt.config.*,org.opennms.netmgt.config.notifications.*,org.opennms.core.utils.BundleLists,org.opennms.netmgt.ConfigFileConstants,java.io.*,org.opennms.netmgt.xml.eventconf.Event" %>
+<%@page language="java"
+	contentType="text/html"
+	session="true"
+	import="java.util.*,
+		org.opennms.web.admin.notification.noticeWizard.*,
+		org.opennms.netmgt.config.*,
+		org.opennms.netmgt.config.notifications.*,
+		org.opennms.core.utils.BundleLists,
+		org.opennms.netmgt.ConfigFileConstants,
+		java.io.*,
+		org.opennms.netmgt.xml.eventconf.Event
+	"
+%>
 
 <%!
     public void init() throws ServletException {
@@ -57,12 +69,15 @@
     Notification newNotice = (Notification)user.getAttribute("newNotice");
 %>
 
-<html>
-<head>
-  <title>Choose Event | Admin | OpenNMS Web Console</title>
-  <base HREF="<%=org.opennms.web.Util.calculateUrlBase( request )%>" />
-  <link rel="stylesheet" type="text/css" href="css/styles.css" />
-</head>
+<jsp:include page="/includes/header.jsp" flush="false" >
+  <jsp:param name="title" value="Choose Event" />
+  <jsp:param name="headTitle" value="Choose Event" />
+  <jsp:param name="headTitle" value="Admin" />
+  <jsp:param name="breadcrumb" value="<a href='admin/index.jsp'>Admin</a>" />
+  <jsp:param name="breadcrumb" value="<a href='admin/notification/index.jsp'>Configure Notifications</a>" />
+  <jsp:param name="breadcrumb" value="<a href='admin/notification/noticeWizard/eventNotices.jsp'>Event Notifications</a>" />
+  <jsp:param name="breadcrumb" value="Choose Event" />
+</jsp:include>
 
 <script language="Javascript" type="text/javascript" >
 
@@ -80,31 +95,12 @@
 
 </script>
 
-<body marginwidth="0" marginheight="0" LEFTMARGIN="0" RIGHTMARGIN="0" TOPMARGIN="0">
+<h2><%=(newNotice.getName()!=null ? "Editing notice: " + newNotice.getName() + "<br>" : "")%></h2>
 
-<% String breadcrumb1 = "<a href='admin/index.jsp'>Admin</a>"; %>
-<% String breadcrumb2 = "<a href='admin/notification/index.jsp'>Configure Notifications</a>"; %>
-<% String breadcrumb3 = "<a href='admin/notification/noticeWizard/eventNotices.jsp'>Event Notifications</a>"; %>
-<% String breadcrumb4 = "Choose Event"; %>
-<jsp:include page="/includes/header.jsp" flush="false" >
-  <jsp:param name="title" value="Choose Event" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb1%>" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb2%>" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb3%>" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb4%>" />
-</jsp:include>
+<h3>Choose the event uei that will trigger this notification.</h3>
 
-<br>
-<!-- Body -->
-
-<table width="100%" cellspacing="0" cellpadding="0" border="0">
-  <tr>
-    <td> &nbsp; </td>
-
-    <td>
-    <h2><%=(newNotice.getName()!=null ? "Editing notice: " + newNotice.getName() + "<br>" : "")%></h2>
-    <h3>Choose the event uei that will trigger this notification.</h3>
-    <form METHOD="POST" NAME="events" ACTION="admin/notification/noticeWizard/notificationWizard" >
+<form method="post" name="events"
+      action="admin/notification/noticeWizard/notificationWizard" >
       <input type="hidden" name="sourcePage" value="<%=NotificationWizardServlet.SOURCE_PAGE_UEIS%>"/>
       <table width="50%" cellspacing="2" cellpadding="2" border="0">
         <tr>
@@ -127,18 +123,8 @@
         </tr>
       </table>
     </form>
-    </td>
-
-    <td> &nbsp; </td>
-  </tr>
-</table>
-
-<br>
 
 <jsp:include page="/includes/footer.jsp" flush="false" />
-
-</body>
-</html>
 
 <%!
     public String buildEventSelect(Notification notice)

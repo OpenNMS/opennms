@@ -1,4 +1,4 @@
-<!--
+<%--
 
 //
 // This file is part of the OpenNMS(R) Application.
@@ -37,44 +37,60 @@
 //      http://www.opennms.com/
 //
 
--->
+--%>
 
-<%@page language="java" contentType="text/html" session="true" import="java.util.*,org.opennms.web.*,org.opennms.web.performance.*,java.util.Calendar" %>
+<%@page language="java"
+	contentType="text/html"
+	session="true"
+	import="java.util.*,
+		org.opennms.web.*,
+		org.opennms.web.performance.*,
+		java.util.Calendar
+	"
+%>
 
 <%!
     public PerformanceModel model = null;
     
     public void init() throws ServletException {
         try {
-            this.model = new PerformanceModel( org.opennms.web.ServletInitializer.getHomeDir() );
-        }
-        catch( Exception e ) {
-            throw new ServletException( "Could not initialize the PerformanceModel", e );
+            this.model = new PerformanceModel(ServletInitializer.getHomeDir());
+        } catch (Throwable t) {
+            throw new ServletException("Could not initialize the PerformanceModel", t);
         }
     } 
 %>
 
 <%
+    String[] requiredParameters = new String[] { "node", "endUrl" };
+
     String nodeId = request.getParameter("node");
     String endUrl = request.getParameter("endUrl");
     
-    if( nodeId == null ) {
-        throw new MissingParameterException( "node", new String[] {"node", "endUrl"} );
+    if (nodeId == null) {
+        throw new MissingParameterException("node", requiredParameters);
     }
     
-    if( endUrl == null ) {
-        throw new MissingParameterException( "endUrl", new String[] {"node", "endUrl"} );
+    if (endUrl == null) {
+        throw new MissingParameterException("endUrl", requiredParameters);
     }
     
     String[] intfs = this.model.getQueryableInterfacesForNode(nodeId);
     Arrays.sort(intfs);        
 %>
 
-<html>
-<head>
-  <title>Choose Interface | Performance | Reports | OpenNMS Web Console</title>
-  <base HREF="<%=org.opennms.web.Util.calculateUrlBase( request )%>" />
-  <link rel="stylesheet" type="text/css" href="css/styles.css" />
+
+<jsp:include page="/includes/header.jsp" flush="false" >
+  <jsp:param name="title" value="Choose Interface" />
+  <jsp:param name="headTitle" value="Choose Interface" />
+  <jsp:param name="headTitle" value="Performance" />
+  <jsp:param name="headTitle" value="Reports" />
+  <jsp:param name="breadcrumb" value="<a href='report/index.jsp'>Reports</a>" />
+  <jsp:param name="breadcrumb" value="<a href='performance/index.jsp'>Performance</a>" />
+  <jsp:param name="breadcrumb" value="Choose Interface" />
+</jsp:include>
+
+
   <script language="Javascript" type="text/javascript" >
       function validateRRD()
       {
@@ -103,69 +119,27 @@
           }
       }
   </script>
-  </head>
 
-<body marginwidth="0" marginheight="0" LEFTMARGIN="0" RIGHTMARGIN="0" TOPMARGIN="0">
+<h3>Choose an Interface to Query</h3>
 
-<% String breadcrumb1 = "<a href='report/index.jsp'>Reports</a>"; %>
-<% String breadcrumb2 = "<a href='performance/index.jsp'>Performance</a>"; %>
-<% String breadcrumb3 = "Choose Interface"; %>
-<jsp:include page="/includes/header.jsp" flush="false" >
-  <jsp:param name="title" value="Choose Interface" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb1%>" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb2%>" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb3%>" />
-</jsp:include>
+<p>
+  The node that you have chosen has performance data for multiple interfaces.
+  Please choose the interface that you wish to query.
+</p>
 
-<br />
-<!-- Body -->
+<form method="get" name="report" action="<%=endUrl%>" >
+  <%=Util.makeHiddenTags(request, new String[] {"endUrl"})%>
 
-<table width="100%" cellspacing="0" cellpadding="0" border="0">
-  <tr>
-    <td> &nbsp; </td>
+  <select name="intf" size="10">
+    <% for(int i=0; i < intfs.length; i++) { %>
+      <option value="<%=intfs[i]%>" <%=(i==0) ? "selected" : ""%>><%=this.model.getHumanReadableNameForIfLabel(Integer.parseInt(nodeId), intfs[i])%></option>
+    <% } %>
+  </select>
 
-    <td>
-      <form method="get" name="report" action="<%=endUrl%>" >
-        <%=Util.makeHiddenTags(request, new String[] {"endUrl"})%>
+  <br/>
+  <br/>
 
-        <table width="100%" cellspacing="2" cellpadding="2" border="0">
-          <tr>
-            <td>
-                <h3>Choose an Interface to Query</h3>
-            </td>
-          </tr>
-
-          <tr>
-            <td valign="top">
-                <p>
-                  The node that you have chosen has performance data for multiple interfaces.
-                  Please choose the interface that you wish to query.
-                </p>
-
-                <select name="intf" size="10">
-                  <% for(int i=0; i < intfs.length; i++) { %>
-                    <option value="<%=intfs[i]%>" <%=(i==0) ? "selected" : ""%>><%=this.model.getHumanReadableNameForIfLabel(Integer.parseInt(nodeId), intfs[i])%></option>
-                  <% } %>
-              </select>
-            </td>
-          </tr>
-
-          <tr>
-            <td valign="top" >
-                <input type="button" value="Submit" onclick="submitForm()" />
-            </td>
-          </tr>
-        </table>
-      </form>
-    </td>
-
-    <td> &nbsp; </td>
-  </tr>
-</table>
-
-<br/>
+  <input type="button" value="Submit" onclick="submitForm()" />
+</form>
 
 <jsp:include page="/includes/footer.jsp" flush="false" />
-
-</body>
-</html>

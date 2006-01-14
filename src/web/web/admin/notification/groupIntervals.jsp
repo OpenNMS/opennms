@@ -1,4 +1,4 @@
-<!--
+<%--
 
 //
 // This file is part of the OpenNMS(R) Application.
@@ -38,9 +38,17 @@
 //      http://www.opennms.com/
 //
 
--->
+--%>
 
-<%@page language="java" contentType="text/html" session="true" import="java.util.*,org.opennms.web.Util,org.opennms.netmgt.config.*,org.opennms.netmgt.config.destinationPaths.*" %>
+<%@page language="java"
+	contentType="text/html"
+	session="true"
+	import="java.util.*,
+		org.opennms.web.Util,
+		org.opennms.netmgt.config.*,
+		org.opennms.netmgt.config.destinationPaths.*
+	"
+%>
 
 <%!
     public void init() throws ServletException {
@@ -61,38 +69,19 @@
     String intervals[] = {"0m", "1m", "2m", "5m", "10m", "15m", "30m", "1h", "2h", "3h", "6h", "12h", "1d"};
 %>
 
-<html>
-<head>
-  <title>Group Intervals | Admin | OpenNMS Web Console</title>
-  <base HREF="<%=org.opennms.web.Util.calculateUrlBase( request )%>" />
-  <link rel="stylesheet" type="text/css" href="css/styles.css" />
-</head>
-
-<body marginwidth="0" marginheight="0" LEFTMARGIN="0" RIGHTMARGIN="0" TOPMARGIN="0">
-
-<% String breadcrumb1 = "<a href='admin/index.jsp'>Admin</a>"; %>
-<% String breadcrumb2 = "<a href='admin/notification/index.jsp'>Configure Notifications</a>"; %>
-<% String breadcrumb3 = "<a href='admin/notification/destinationPaths.jsp'>Destination Paths</a>"; %>
-<% String breadcrumb4 = "Group Intervals"; %>
 <jsp:include page="/includes/header.jsp" flush="false" >
   <jsp:param name="title" value="Group Intervals" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb1%>" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb2%>" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb3%>" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb4%>" />
+  <jsp:param name="headTitle" value="Group Intervals" />
+  <jsp:param name="headTitle" value="Admin" />
+  <jsp:param name="breadcrumb" value="<a href='admin/index.jsp'>Admin</a>" />
+  <jsp:param name="breadcrumb" value="<a href='admin/notification/index.jsp'>Configure Notifications</a>" />
+  <jsp:param name="breadcrumb" value="<a href='admin/notification/destinationPaths.jsp'>Destination Paths</a>" />
+  <jsp:param name="breadcrumb" value="Group Intervals" />
 </jsp:include>
 
-<br>
-<!-- Body -->
-
-<table width="100%" cellspacing="0" cellpadding="0" border="0">
-  <tr>
-    <td> &nbsp; </td>
-
-    <td>
-    <h2><%=(newPath.getName()!=null ? "Editing path: " + newPath.getName() + "<br>" : "")%></h2>
+<h2><%=(newPath.getName()!=null ? "Editing path: " + newPath.getName() + "<br>" : "")%></h2>
     <h3>Choose the interval to wait between contacting each member in the groups.</h3>
-    <form METHOD="POST" NAME="groupIntervals" ACTION="admin/notification/destinationWizard" >
+    <form method="post" name="groupIntervals" action="admin/notification/destinationWizard" >
       <%=Util.makeHiddenTags(request)%>
       <input type="hidden" name="sourcePage" value="groupIntervals.jsp"/>
       <table width="50%" cellspacing="2" cellpadding="2" border="0">
@@ -116,18 +105,8 @@
         </tr>
       </table>
     </form>
-    </td>
-
-    <td> &nbsp; </td>
-  </tr>
-</table>
-
-<br>
 
 <jsp:include page="/includes/footer.jsp" flush="false" />
-
-</body>
-</html>
 
 <%!
     public String intervalTable(Path path, String[] groups, int index, String[] intervals)

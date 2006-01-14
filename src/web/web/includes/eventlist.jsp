@@ -49,7 +49,13 @@
   that directs all URLs to be relative to the servlet context.
 --%>
 
-<%@page language="java" contentType="text/html" session="true" import="org.opennms.web.event.*, org.opennms.web.MissingParameterException" %>
+<%@page language="java"
+	contentType="text/html"
+	session="true"
+	import="org.opennms.web.event.*,
+		org.opennms.web.MissingParameterException
+	"
+%>
 
 <%
     //required parameter: node
@@ -160,14 +166,9 @@
 <input type="hidden" name="redirect" value="<%=request.getContextPath() + request.getServletPath() + "?" + request.getQueryString()%>" />
 <input type="hidden" name="action" value="<%=org.opennms.web.event.AcknowledgeEventServlet.ACKNOWLEDGE_ACTION%>" />
 
-
-<!--
-<table width="100%" border="1" cellspacing="0" cellpadding="2" bordercolor="black" BGCOLOR="#cccccc">
-     <tr bgcolor="#999999">
--->
-<table>
+<table class="standardfirst">
      <tr>
-       <td class="header" colspan="4"><%=header%></td>
+       <td class="standardheader" colspan="4"><%=header%></td>
      </tr>
 
 <%
@@ -175,20 +176,20 @@
        int severity = events[i].getSeverity();
 %>
      <tr>
-       <td>
+       <td class="standard">
          <nobr>
            <input type="checkbox" name="event" value="<%=events[i].getId()%>" />
            <a href="event/detail.jsp?id=<%=events[i].getId()%>"><%=events[i].getId()%></a>
          </nobr>
        </td>
-       <td><%=org.opennms.netmgt.EventConstants.formatToUIString(events[i].getTime())%></td>
+       <td class="standard"><%=org.opennms.netmgt.EventConstants.formatToUIString(events[i].getTime())%></td>
        <td class="<%=EventUtil.getSeverityClass(severity)%>"><%=EventUtil.getSeverityLabel(severity)%></td>
-       <td><%=events[i].getLogMessage()%></td>
+       <td class="standard"><%=events[i].getLogMessage()%></td>
      </tr>
 <% } %>
 
      <tr>
-       <td colspan="2">
+       <td class="standard" colspan="2">
          <nobr>
            <input type="button" value="Acknowledge" onclick="submitAck()">
            <input TYPE="reset" />
@@ -197,12 +198,12 @@
 
 <% if( eventCount > events.length ) { %>
   <% if( moreUrl != null ) { %>     
-       <td colspan="2"><a href="<%=moreUrl%>"><%=eventCount-events.length%> more</a></td>
+       <td class="standard" colspan="2"><a href="<%=moreUrl%>"><%=eventCount-events.length%> more</a></td>
   <% } else { %>
-       <td colspan="2"><%=eventCount-events.length%> more</td>
+       <td class="standard" colspan="2"><%=eventCount-events.length%> more</td>
   <% } %>
 <% } else { %>
-       <td colspan="2"><%=events.length%> events total
+       <td class="standard" colspan="2"><%=events.length%> events total
 <% } %>
      </tr>
       

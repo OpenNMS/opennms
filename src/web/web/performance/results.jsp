@@ -43,18 +43,27 @@
 
 --%>
 
-<%@page language="java" contentType="text/html" session="true" import="org.opennms.web.*,org.opennms.web.performance.*,org.opennms.web.graph.*,java.util.*,java.io.*,org.opennms.web.element.NetworkElementFactory" %>
+<%@page language="java"
+	contentType="text/html"
+	session="true"
+	import="org.opennms.web.*,
+		org.opennms.web.performance.*,
+		org.opennms.web.graph.*,
+		org.opennms.core.resource.Vault,
+		java.util.*,
+		java.io.*,
+		org.opennms.web.element.NetworkElementFactory
+	"
+%>
 
 <%!
     protected PerformanceModel model = null;
     
-    
     public void init() throws ServletException {
         try {
-            this.model = new PerformanceModel( org.opennms.core.resource.Vault.getHomeDir() );
-        }
-        catch( Exception e ) {
-            throw new ServletException( "Could not initialize the PerformanceModel", e );
+            this.model = new PerformanceModel(Vault.getHomeDir());
+        } catch (Throwable t) {
+            throw new ServletException("Could not initialize the PerformanceModel", t);
         }
 
         m_periods = new TimePeriod[] {
@@ -67,23 +76,25 @@
 %>
 
 <%
-    //required parameter reports
+    String[] requiredParameters = new String[] { "report", "node" };
+
+    // required parameter reports
     String reports[] = request.getParameterValues( "reports" );
     if(reports == null) {
-        throw new MissingParameterException( "report", new String[] {"report", "node"} );
+        throw new MissingParameterException("report", requiredParameters);
     }
         
-    //required parameter node
+    // required parameter node
     String nodeIdString = request.getParameter( "node" );
-    if(nodeIdString == null) {
-        throw new MissingParameterException( "node", new String[] {"report", "node"} );
+    if (nodeIdString == null) {
+        throw new MissingParameterException("node", requiredParameters);
     }
     int nodeId = Integer.parseInt(nodeIdString);
     
-    //optional parameter intf
+    // optional parameter intf
     String intf = request.getParameter( "intf" );
 
-    //see if the start and end time were explicitly set as params    
+    // see if the start and end time were explicitly set as params    
     String start = request.getParameter( "start" );
     String end   = request.getParameter( "end" );
 
@@ -164,171 +175,52 @@
     Arrays.sort(graphs);    
 %>
 
-
-<html>
-<head>
-    <title>Results | Performance | Reports | OpenNMS Web Console</title>
-    <base HREF="<%=org.opennms.web.Util.calculateUrlBase( request )%>" />
-    <link rel="stylesheet" type="text/css" href="css/styles.css" />
-</head>
-
-<!--
-<body marginwidth="0" marginheight="0" LEFTMARGIN="0" RIGHTMARGIN="0" TOPMARGIN="0">
--->
-<body>
-
-<% String breadcrumb1 = "<a href='report/index.jsp'>Reports</a>"; %>
-<% String breadcrumb2 = "<a href='performance/index.jsp'>Performance</a>"; %>
-<% String breadcrumb3 = "Results"; %>
 <jsp:include page="/includes/header.jsp" flush="false" >
   <jsp:param name="title" value="Performance Results" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb1%>" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb2%>" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb3%>" />
+  <jsp:param name="headTitle" value="Results" />
+  <jsp:param name="headTitle" value="Performance" />
+  <jsp:param name="headTitle" value="Reports" />
+  <jsp:param name="breadcrumb" value="<a href='report/index.jsp'>Reports</a>" />
+  <jsp:param name="breadcrumb" value="<a href='performance/index.jsp'>Performance</a>" />
+  <jsp:param name="breadcrumb" value="Results" />
 </jsp:include>
 
-<br/>
+<div id="graph-results">
+  <h3>
+    Node: <a href="element/node.jsp?node=<%=nodeId%>"><%=NetworkElementFactory.getNodeLabel(nodeId)%></a><br/>
+    <% if(intf != null ) { %>
+      Interface: <%=this.model.getHumanReadableNameForIfLabel(nodeId, intf)%>
+    <% } %>
+  </h3>
 
-<div id="performance-results">
+  <% printRelativeTimeForm(out, relativeTime, nodeId, intf, reports); %>
 
-<!--
-<table width="100%" cellpadding="0" cellspacing="0" border="0">
-  <tr>
-    <td align="center">
-      <table>
-        <tr>
-          <td>&nbsp;</td>
-          <td align="center">
--->
-            <h3>
-              Node: <a href="element/node.jsp?node=<%=nodeId%>"><%=NetworkElementFactory.getNodeLabel(nodeId)%></a><br/>
-              <% if(intf != null ) { %>
-                Interface: <%=this.model.getHumanReadableNameForIfLabel(nodeId, intf)%>
-              <% } %>
-            </h3>
+  <h3>Interface Performance Data</h3>
+  <strong>From</strong> <%=startDate%> <br/>
+  <strong>To</strong> <%=endDate%> <br/>
 
-<!--
-          </td>
-          <td>&nbsp;</td>
-        </tr>
-      </table>
-    </td>
-  </tr>
+  <% if(graphs.length > 0) { %>
+    <% for(int i=0; i < graphs.length; i++ ) { %>
+      <%-- encode the RRD filenames based on the graph's required data sources --%>
+      <% String[] rrds = this.getRRDNames(nodeId, intf, graphs[i]); %> 
+      <% String rrdParm = this.encodeRRDNamesAsParmString(rrds); %>
+                          
+      <%-- handle external values, if any --%>
+      <% String externalValuesParm = this.encodeExternalValuesAsParmString(nodeId, intf, graphs[i]); %>
 
-  <tr>
-    <td height="20">&nbsp;</td>
-  </tr>
-  
-  <tr><td align="center">
--->
+      <a href="/opennms/performance/zoom.jsp?intf=<%=intf%>&node=<%=nodeId%>&reports=<%=graphs[i].getName()%>&start=<%=start%>&end=<%=end%>"><img src="snmp/performance/graph.png?props=<%=nodeId%>/strings.properties&report=<%=graphs[i].getName()%>&start=<%=start%>&end=<%=end%>&<%=rrdParm%>&<%=externalValuesParm%>intf=<%=intf%>&node=<%=nodeId%>"/></a>
+      <br/>
+    <% } %>
+  <% } else { %>
+    No SNMP performance data has been gathered at this level
+  <% } %>
 
-    <% printRelativeTimeForm(out, relativeTime, nodeId, intf, reports); %>
+  <% printRelativeTimeForm(out, relativeTime, nodeId, intf, reports); %>
 
-<!--
-  </td>
-  </tr>
-
-  <tr>
-    <td height="20">&nbsp;</td>
-  </tr>
-  
-  <tr>
-
-    <td align="center"><h3>Interface Performance Data</h3></td>
-  </tr>
-
-  <tr>
-    <td>
-      <table width="100%">
-        <tr>
-          <td align="center">
-            <b>From</b> <%=startDate%> <br>
-            <b>To</b> <%=endDate%>
-          </td>
-        </tr>
--->
-
-	<h3>Interface Performance Data</h3>
-        <b>From</b> <%=startDate%> <br/>
-        <b>To</b> <%=endDate%> <br/>
-
-
-        <% if(graphs.length > 0) { %>
-          <% for(int i=0; i < graphs.length; i++ ) { %>
-            <%-- encode the RRD filenames based on the graph's required data sources --%>
-            <% String[] rrds = this.getRRDNames(nodeId, intf, graphs[i]); %> 
-            <% String rrdParm = this.encodeRRDNamesAsParmString(rrds); %>
-                        
-            <%-- handle external values, if any --%>
-            <% String externalValuesParm = this.encodeExternalValuesAsParmString(nodeId, intf, graphs[i]); %>
-
-<!--            
-            <tr>
-              <td align="center">
--->
-                <a href="/opennms/performance/zoom.jsp?intf=<%=intf%>&node=<%=nodeId%>&reports=<%=graphs[i].getName()%>&start=<%=start%>&end=<%=end%>"><img src="snmp/performance/graph.png?props=<%=nodeId%>/strings.properties&report=<%=graphs[i].getName()%>&start=<%=start%>&end=<%=end%>&<%=rrdParm%>&<%=externalValuesParm%>intf=<%=intf%>&node=<%=nodeId%>"/></a>
-		<br/>
-<!--
-              </td>
-            </tr>
--->
-          <% } %>
-        <% } else { %>
-<!--
-            <tr>
-              <td align="center">No SNMP performance data has been gathered at this level</td>
-            </tr>
--->
-              No SNMP performance data has been gathered at this level
-        <% } %>
-<!--
-      </table>
-    </td>
-  </tr>
-
-  <tr>
-    <td height="20">&nbsp;</td>
-  </tr>
-
-  <tr><td align="center">
--->
-
-    <% printRelativeTimeForm(out, relativeTime, nodeId, intf, reports); %>
-
-<!--
-  </td>
-  </tr>
-
-
-
-
-  <tr>
-    <td height="20">&nbsp;</td>
-  </tr>
-
-  <tr>
-    <td align="center">
--->
-    <jsp:include page="/includes/bookmark.jsp" flush="false" />
-<!--
-    </td>
-  </tr>
-
-  <tr>
-    <td height="20">&nbsp;</td>
-  </tr>
-
-</table>
-
-<br/>
--->
-
+  <jsp:include page="/includes/bookmark.jsp" flush="false" />
 </div>
 
 <jsp:include page="/includes/footer.jsp" flush="false" />
-
-</body>
-</html>
 
 <%!
     /** intf can be null */           

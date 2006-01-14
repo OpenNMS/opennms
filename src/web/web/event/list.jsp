@@ -43,7 +43,16 @@
 
 --%>
 
-<%@page language="java" contentType="text/html" session="true" import="org.opennms.web.event.*,java.util.*,java.sql.SQLException,org.opennms.web.authenticate.Authentication,org.opennms.web.event.filter.*" %>
+<%@page language="java"
+	contentType="text/html"
+	session="true"
+	import="org.opennms.web.event.*,
+		java.util.*,
+		java.sql.SQLException,
+		org.opennms.web.authenticate.Authentication,
+		org.opennms.web.event.filter.*
+	"
+%>
 
 <%--
   This page is written to be the display (view) portion of the EventQueryServlet
@@ -83,16 +92,6 @@
 %>
 
 
-<html>
-<head>
-  <title> List | Events | OpenNMS Web Console</title>
-  <base href="<%=org.opennms.web.Util.calculateUrlBase( request )%>" />
-  <link rel="stylesheet" type="text/css" href="css/styles.css" />
-  
-  <style type="text/css"> 
-    a.filterLink { color:black ; text-decoration:none; };
-    a.filterLink:visited { color:black ; text-decoration:none; };    
-  </style>
   <script language="Javascript" type="text/javascript">
     function checkAllCheckboxes() {
        if( document.acknowledge_form.event.length ) {  
@@ -162,36 +161,17 @@
     }
 
   </script>
-</head>
 
-<!--
-<body marginwidth="0" marginheight="0" leftmargin="0" rightmargin="0" topmargin="0">
--->
 
-<body>
-
-<% String breadcrumb1 = "<a href= 'event/index.jsp' title='Events System Page'>Events</a>"; %>
-<% String breadcrumb2 = "List"; %>
 <jsp:include page="/includes/header.jsp" flush="false" >
   <jsp:param name="title" value="Event List" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb1%>" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb2%>" />
+  <jsp:param name="headTitle" value="List" />
+  <jsp:param name="headTitle" value="Events" />
+  <jsp:param name="breadcrumb" value="<a href= 'event/index.jsp' title='Events System Page'>Events</a>" />
+  <jsp:param name="breadcrumb" value="List" />
 </jsp:include>
 
-<!--
-<br/>
--->
-
-<!-- Body -->
 <div id="eventlist">
-
-<!--
-<table width="100%" border="0" cellspacing="0" cellpadding="2" >
-  <tr>
-    <td>&nbsp;</td>
-
-    <td>
--->
 
       <!-- menu -->
       <div id="linkbar">
@@ -232,7 +212,7 @@
           <td width="50%" valign="top">
 -->
 	<div id="contentleft">
-            <jsp:include page="/event/querypanel.jsp" flush="false" />
+            <jsp:include page="/includes/event-querypanel.jsp" flush="false" />
           
             <% if( eventCount > 0 ) { %>
               <% String baseUrl = this.makeLink(parms); %>
@@ -460,23 +440,11 @@
         <a HREF="admin/events.jsp" title="Acknowledge or Unacknowledge All Events">[Acknowledge or Unacknowledge All Events]</a>
       <% } %>--%>
 
-<!--
-    </td>
-    <td>&nbsp;</td>
-  </tr>
-</table>
--->
 </div>
 
-<!--
-<br>
--->
-
 <jsp:include page="/includes/bookmark.jsp" flush="false" />
-<jsp:include page="/includes/footer.jsp" flush="false" />
 
-</body>
-</html>
+<jsp:include page="/includes/footer.jsp" flush="false" />
 
 
 <%!

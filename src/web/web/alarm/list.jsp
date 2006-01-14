@@ -1,4 +1,4 @@
-<!--
+<%--
 
 //
 // This file is part of the OpenNMS(R) Application.
@@ -40,9 +40,18 @@
 //      http://www.opennms.org/
 //      http://www.opennms.com///
 
--->
+--%>
 
-<%@page language="java" contentType="text/html" session="true" import="org.opennms.web.alarm.*,java.util.*,java.sql.SQLException,org.opennms.web.authenticate.Authentication,org.opennms.web.alarm.filter.*" %>
+<%@page language="java"
+	contentType="text/html"
+	session="true"
+	import="org.opennms.web.alarm.*,
+		java.util.*,
+		java.sql.SQLException,
+		org.opennms.web.authenticate.Authentication,
+		org.opennms.web.alarm.filter.*
+		"
+%>
 
 <%--
   This page is written to be the display (view) portion of the AlarmQueryServlet
@@ -82,16 +91,15 @@
 %>
 
 
-<html>
-<head>
-  <title> List | Alarms | OpenNMS Web Console</title>
-  <base href="<%=org.opennms.web.Util.calculateUrlBase( request )%>" />
-  <link rel="stylesheet" type="text/css" href="css/styles.css" />
-  
-  <style type="text/css"> 
-    a.filterLink { color:black ; text-decoration:none; };
-    a.filterLink:visited { color:black ; text-decoration:none; };    
-  </style>
+<jsp:include page="/includes/header.jsp" flush="false" >
+  <jsp:param name="title" value="Alarm List" />
+  <jsp:param name="headTitle" value="List" />
+  <jsp:param name="headTitle" value="Alarms" />
+  <jsp:param name="breadcrumb" value="<a href= 'alarm/index.jsp' title='Alarms System Page'>Alarms</a>" />
+  <jsp:param name="breadcrumb" value="List" />
+</jsp:include>
+
+
   <script language="Javascript" type="text/javascript">
     function checkAllCheckboxes() {
        if( document.acknowledge_form.alarm.length ) {  
@@ -161,22 +169,8 @@
     }
 
   </script>
-</head>
 
-<body marginwidth="0" marginheight="0" leftmargin="0" rightmargin="0" topmargin="0">
-
-<% String breadcrumb1 = "<a href= 'alarm/index.jsp' title='Alarms System Page'>Alarms</a>"; %>
-<% String breadcrumb2 = "List"; %>
-<jsp:include page="/includes/header.jsp" flush="false" >
-  <jsp:param name="title" value="Alarm List" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb1%>" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb2%>" />
-</jsp:include>
-
-<br/>
-
-<!-- Body -->
-<div id="eventlist">
+  <div id="eventlist">
 
       <!-- menu -->
       <div id="linkbar">
@@ -201,7 +195,7 @@
 
         <div id="contentleft">
 
-            <jsp:include page="/alarm/querypanel.jsp" flush="false" />
+            <jsp:include page="/includes/alarm-querypanel.jsp" flush="false" />
           
             <% if( alarmCount > 0 ) { %>
               <% String baseUrl = this.makeLink(parms); %>
@@ -448,15 +442,10 @@
         <a HREF="admin/alarms.jsp" title="Acknowledge or Unacknowledge All Alarms">[Acknowledge or Unacknowledge All Alarms]</a>
       <% } %>--%>
 
-</div>
-
-<br>
+  </div> <!-- id="eventlist" -->
 
 <jsp:include page="/includes/bookmark.jsp" flush="false" />
 <jsp:include page="/includes/footer.jsp" flush="false" />
-
-</body>
-</html>
 
 
 <%!

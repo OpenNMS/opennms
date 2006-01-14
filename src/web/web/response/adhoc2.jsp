@@ -1,4 +1,4 @@
-<!--
+<%--
 
 //
 // This file is part of the OpenNMS(R) Application.
@@ -39,9 +39,19 @@
 //      http://www.opennms.com/
 //
 
--->
+--%>
 
-<%@page language="java" contentType="text/html" session="true" import="org.opennms.web.response.*,org.opennms.web.*,org.opennms.web.graph.*,java.io.File" %>
+<%@page language="java"
+	contentType="text/html"
+	session="true"
+	import="org.opennms.web.response.*,
+		org.opennms.web.*,
+		org.opennms.web.graph.*,
+		java.io.File,
+    		org.opennms.netmgt.utils.RrdFileConstants,
+    		org.opennms.web.element.NetworkElementFactory
+	"
+%>
 
 <%!
     public ResponseTimeModel model = null;
@@ -57,88 +67,63 @@
 %>
 
 <%
-    //required parameter node
+
+    String[] requiredParameters = new String[] { "node", "intf" };
+
+    // required parameter node
     String nodeIdString = request.getParameter("node");
-    if(nodeIdString == null) {
-        throw new MissingParameterException( "node", new String[] {"node", "intf"} );
+    if (nodeIdString == null) {
+        throw new MissingParameterException("node", requiredParameters);
     }
 
-    //required parameter intf, a value of "" means to discard the intf
+    // required parameter intf, a value of "" means to discard the intf
     String intf = request.getParameter("intf");
-    if(intf == null) {
-        throw new MissingParameterException( "intf", new String[] {"node", "intf"} );
+    if (intf == null || "".equals(intf)) {
+        throw new MissingParameterException( "intf", requiredParameters);
     }
     
     int nodeId = Integer.parseInt(nodeIdString);
 
-    File rrdPath = null;
-    String rrdDir = null;
-    if("".equals(intf)) {
-        throw new MissingParameterException( "intf", new String[] {"node", "intf"} );
-    }
-    else {
-        rrdPath = new File(this.model.getRrdDirectory(), intf);
-        rrdDir = intf;
-    }
+    File rrdPath = new File(this.model.getRrdDirectory(), intf);
+    String rrdDir = intf;
 
+    File[] rrds = rrdPath.listFiles(RrdFileConstants.RRD_FILENAME_FILTER);
 
-    File[] rrds = rrdPath.listFiles(org.opennms.netmgt.utils.RrdFileConstants.RRD_FILENAME_FILTER);
-
-    if(rrds == null) {
+    if (rrds == null) {
         this.log("Invalid rrd directory: " + rrdPath);
         throw new IllegalArgumentException("Invalid rrd directory: " + rrdPath);
     }
 
-    String nodeLabel = org.opennms.web.element.NetworkElementFactory.getNodeLabel(nodeId);     
+    String nodeLabel = NetworkElementFactory.getNodeLabel(nodeId);     
 %>
 
-<html>
-<head>
-  <title>Custom | Response Time | Reports | OpenNMS Web Console</title>
-  <base HREF="<%=org.opennms.web.Util.calculateUrlBase( request )%>" />
-  <link rel="stylesheet" type="text/css" href="css/styles.css" />
-</head>
-<body marginwidth="0" marginheight="0" LEFTMARGIN="0" RIGHTMARGIN="0" TOPMARGIN="0">
-
-<% String breadcrumb1 = "<a href='report/index.jsp'>Reports</a>"; %>
-<% String breadcrumb2 = "<a href='response/index.jsp'>Response Time</a>"; %>
-<% String breadcrumb3 = "Custom"; %>
 <jsp:include page="/includes/header.jsp" flush="false" >
   <jsp:param name="title" value="Custom Response Time Reporting" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb1%>" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb2%>" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb3%>" />
+  <jsp:param name="headTitle" value="Custom" />
+  <jsp:param name="headTitle" value="Response Time" />
+  <jsp:param name="headTitle" value="Reports" />
+  <jsp:param name="breadcrumb" value="<a href='report/index.jsp'>Reports</a>" />
+  <jsp:param name="breadcrumb" value="<a href='response/index.jsp'>Response Time</a>" />
+  <jsp:param name="breadcrumb" value="Custom" />
 </jsp:include>
 
-<br/>
+<form method="get" action="response/adhoc3.jsp" >
+  <%=Util.makeHiddenTags(request, new String[] {"node", "intf"})%>
+  <input type="hidden" name="rrddir" value="<%=rrdDir%>" />
 
-<!-- Body -->
+  <h3>Step 2: Choose the Data Sources</h3> 
+  <% if("".equals(intf)) { %>
+    <%-- XXX this code is never reached because of the earlier intf check --%>
+    Node: <%=nodeLabel%>
+  <% } else { %>
+    Node: <%=nodeLabel%> &nbsp;&nbsp;
+    Interface: <%=this.model.getHumanReadableNameForIfLabel(nodeId, intf)%>
+  <% } %>
 
-<table width="100%" cellspacing="0" cellpadding="0" border="0">
-  <tr>
-    <td>&nbsp;</td>
-
-    <td>
-    <form method="get" action="response/adhoc3.jsp" >
-      <%=Util.makeHiddenTags(request, new String[] {"node", "intf"})%>
-      <input type="hidden" name="rrddir" value="<%=rrdDir%>" />
+  <br/>
+  <br/>
 
       <table width="100%" cellspacing="2" cellpadding="2" border="0">
-        <tr>
-          <td colspan="2">
-            <h3>Step 2: Choose the Data Sources</h3> 
-            <% if("".equals(intf)) { %>             
-              Node: <%=nodeLabel%>
-            <% } else { %>
-              Node: <%=nodeLabel%> &nbsp;&nbsp; Interface: <%=this.model.getHumanReadableNameForIfLabel(nodeId, intf)%>
-            <% } %>
-          </td>
-        </tr>
-
-        <tr>
-          <td colspan="2">&nbsp;</td>
-        </tr>
-
         <% for(int dsindex=0; dsindex < 4; dsindex++ ) { %>
         <!-- Data Source <%=dsindex+1%> -->     
         <tr>

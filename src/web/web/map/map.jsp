@@ -1,4 +1,4 @@
-<!--
+<%--
 
 //
 // This file is part of the OpenNMS(R) Application.
@@ -32,11 +32,16 @@
 //      http://www.opennms.com/
 //
 
--->
+--%>
 
-<%@page language="java" contentType="text/html" session="true" %>
+<%@page language="java"
+	contentType="text/html"
+	session="true"
+%>
+
 <%@page import="org.opennms.web.map.DocumentGenerator" %>
 <%@page import="org.opennms.web.map.MapNodeFactory" %>
+
 <%
    String type = request.getParameter("type");
    String format = request.getParameter("format");
@@ -45,6 +50,7 @@
 
    String refreshVal = new Integer( new Integer(refresh).intValue() * 60 ).toString();
 %>
+<%--
 <html>
 <head>
   <title>Map | OpenNMS Web Console</title>
@@ -53,6 +59,7 @@
   <meta http-equiv="refresh" content="<%= refreshVal %>" />
 </head>
 <body marginwidth="0" marginheight="0" LEFTMARGIN="0" RIGHTMARGIN="0" TOPMARGIN="0">
+--%>
 
 <% 
    String breadcrumb1 = "<a href='map/index.jsp'>Map</a>";
@@ -70,45 +77,37 @@
    // can find the document
    request.getSession().setAttribute("docgen", docgen);
 %>
-<% if(fullscreen.equals("n")) { %>
+<%
+String quiet;
+if(fullscreen.equals("y")) {
+    quiet = "true";
+} else {
+    quiet = "false";
+}
+%>
 <jsp:include page="/includes/header.jsp" flush="false" >
   <jsp:param name="title" value="Display Map" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb1%>" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb2%>" />
+  <jsp:param name="headTitle" value="Map" />
+  <jsp:param name="quiet" value="<%= quiet %>" />
+  <jsp:param name="breadcrumb" value="<%= breadcrumb1 %>" />
+  <jsp:param name="breadcrumb" value="<%= breadcrumb2 %>" />
 </jsp:include>
-<% } %>
 
-<br>
-<!-- Body -->
-
-<table width="100%" cellspacing="0" cellpadding="0" border="0">
 <% if(fullscreen.equals("n")) { %>
-  <tr>
-    <td>
-      <h3>View Network Map</h3>          
-    </td>
-  </tr>
+  <h3>View Network Map</h3>          
 <% } %>
 
-  <tr>    
     <% if(format.equals("png")) { %>
     <%= docgen.getImageMap("svgmap", "element/node.jsp?node=") %>
     <td><img src="map/SVGTranscoder" border="0" usemap="#svgmap"></td>
     <% } else { %>
-    <td><embed src="map/SVGServlet" 
+    <embed src="map/SVGServlet" 
                width="<%= docgen.getDocumentWidth() %>" 
                height="<%= docgen.getDocumentHeight() %>" 
                type="image/svg+xml"
-               pluginspage="http://www.adobe.com/svg/viewer/install/"></td>
+               pluginspage="http://www.adobe.com/svg/viewer/install/">
     <% } %>
-  </tr>
-</table>                                    
 
-<br />
-
-<% if(fullscreen.equals("n")) { %>
-    <jsp:include page="/includes/footer.jsp" flush="false" />
-<% } %>
-
-  </body>
-</html>
+<jsp:include page="/includes/footer.jsp" flush="false" >
+  <jsp:param name="quiet" value="<%= quiet %>" />
+</jsp:include>

@@ -1,4 +1,19 @@
-<%@page language="java" contentType="text/html" session="true" import="java.util.*,org.opennms.netmgt.config.*,org.opennms.netmgt.config.common.*,org.opennms.netmgt.config.poller.*,org.opennms.web.element.*,org.opennms.netmgt.EventConstants,org.opennms.netmgt.xml.event.Event,org.opennms.netmgt.utils.*,java.net.*,java.io.*" %>
+<%@page language="java"
+	contentType="text/html"
+	session="true"
+	import="java.util.*,
+		org.opennms.netmgt.config.*,
+		org.opennms.netmgt.config.common.*,
+		org.opennms.netmgt.config.poller.*,
+		org.opennms.web.element.*,
+		org.opennms.netmgt.EventConstants,
+		org.opennms.netmgt.xml.event.Event,
+		org.opennms.netmgt.utils.*,
+		java.net.*,
+		java.io.*
+	"
+%>
+
 <%!
 //A singleton instance of a "Match-any" interface, which can be used for generic tests/removals etc.
 private static org.opennms.netmgt.config.poller.Interface matchAnyInterface;
@@ -416,16 +431,24 @@ boolean hasMatchAny=theOutage.getInterfaceCollection().contains(matchAnyInterfac
 //}
 theOutage.getInterfaceCollection().contains("match-any");
 %>    
-<html>
-<head>
-<title>Scheduled Outage administration</title>
-<base href="<%=org.opennms.web.Util.calculateUrlBase( request )%>" />
-<link rel="stylesheet" type="text/css" href="css/styles.css" />
+
+<jsp:include page="/includes/header.jsp" flush="false" >
+  <jsp:param name="title" value="Edit Outage" />
+  <jsp:param name="headTitle" value="Edit" />
+  <jsp:param name="headTitle" value="Scheduled Outages" />
+  <jsp:param name="headTitle" value="Admin" />
+  <jsp:param name="location" value="admin" />
+  <jsp:param name="breadcrumb" value="<a href='admin/index.jsp'>Admin</a>" />
+  <jsp:param name="breadcrumb" value="<a href='admin/sched-outages/index.jsp'>Scheduled Outages</a>" />
+  <jsp:param name="breadcrumb" value="Edit" />
+</jsp:include>
+
 <style>
 TD {
         font-size: 0.8em;
 }
 </style>
+
 <script>
 function outageTypeChanged(selectElement) {
 	var isSpecific=selectElement.options(selectElement.selectedIndex).value=="specific";
@@ -436,18 +459,7 @@ function outageTypeChanged(selectElement) {
 	document.getElementById("startNewDayNum").style.display=((isMonthly)?'':'none');
 }
 </script>
-</head>
-<body>
-<% String breadcrumb1 = "<a href='admin/index.jsp'>Admin</a>"; %>
-<% String breadcrumb2 = "<a href='admin/sched-outages/index.jsp'>Manage Scheduled Outages</a>"; %>
-<% String breadcrumb3 = "Edit Outage"; %>
-<jsp:include page="/includes/header.jsp" flush="false" >
-  <jsp:param name="title" value="Edit Outage" />
-  <jsp:param name="location" value="admin" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb1%>" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb2%>" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb3%>" />
-</jsp:include>
+
 
 <%
 Enumeration enumList=request.getParameterNames();
@@ -458,7 +470,7 @@ while(enumList.hasMoreElements()) {
 	<%
 }
  %>
-<form id="editForm" action="admin/sched-outages/editoutage.jsp" method="POST">
+<form id="editForm" action="admin/sched-outages/editoutage.jsp" method="post">
 <input type="hidden" name="formSubmission" value="<%=true%>"/>
 <table border="0">
 <tr><td><b>Name:</b></td>
@@ -785,13 +797,8 @@ while(keys.hasNext()) {
 </table>
 <input type="submit" value="Save" name="saveButton" />
 </form>
-<form id="cancelForm" action="admin/sched-outages/index.jsp" method="POST">
+<form id="cancelForm" action="admin/sched-outages/index.jsp" method="post">
 <input type="submit" value="Cancel" name="cancelButton" />
 </form>
 
-<jsp:include page="/includes/footer.jsp" flush="true" >
-  <jsp:param name="location" value="admin" />
-</jsp:include>
-
-</body>
-</html>
+<jsp:include page="/includes/footer.jsp" flush="true"/>

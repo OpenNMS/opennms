@@ -1,4 +1,4 @@
-<!--
+<%--
 
 //
 // This file is part of the OpenNMS(R) Application.
@@ -37,9 +37,12 @@
 //      http://www.opennms.com/
 //
 
--->
+--%>
 
-<%@page language="java" contentType = "text/html" session = "true"  %>
+<%@page language="java"
+	contentType="text/html"
+	session="true"
+%>
 <%@page import="java.util.*" %>
 <%@page import="javax.servlet.*" %>
 <%@page import="org.opennms.netmgt.config.*" %>
@@ -59,12 +62,16 @@
 		throw new ServletException("User:list " + e.getMessage());
 	}
 %>
-<html>
-<head>
-  <title>List | User Admin | OpenNMS Web Console</title>
-  <base HREF="<%=org.opennms.web.Util.calculateUrlBase( request )%>" />
-  <link rel="stylesheet" type="text/css" href="css/styles.css" />
-</head>
+
+<jsp:include page="/includes/header.jsp" flush="false" >
+  <jsp:param name="title" value="User Configuration" />
+  <jsp:param name="headTitle" value="List" />
+  <jsp:param name="headTitle" value="Users" />
+  <jsp:param name="headTitle" value="Admin" />
+  <jsp:param name="breadcrumb" value="<a href='admin/index.jsp'>Admin</a>" />
+  <jsp:param name="breadcrumb" value="<a href='admin/userGroupView/index.jsp'>Users and Groups</a>" />
+  <jsp:param name="breadcrumb" value="User List" />
+</jsp:include>
 
 <script language="Javascript" type="text/javascript" >
 
@@ -110,40 +117,25 @@
     
 </script>
 
-<body marginwidth="0" marginheight="0" LEFTMARGIN="0" RIGHTMARGIN="0" TOPMARGIN="0">
 
-<% String breadcrumb1 = "<a href='admin/index.jsp'>Admin</a>"; %>
-<% String breadcrumb2 = "<a href='admin/userGroupView/index.jsp'>Users and Groups</a>"; %>
-<% String breadcrumb3 = "User List"; %>
-<jsp:include page="/includes/header.jsp" flush="false" >
-  <jsp:param name="title" value="User Configuration" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb1%>" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb2%>" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb3%>" />
-</jsp:include>
-
-<FORM METHOD="POST" NAME="allUsers">
+<form method="post" name="allUsers">
 <input type="hidden" name="redirect"/>
 <input type="hidden" name="userID"/>
 <input type="hidden" name="newID"/>
 <input type="hidden" name="password"/>
 
-<br>	
-<table width="100%" border="0" cellspacing="0" cellpadding="2" >
-  <tr>
-    <td>&nbsp;</td>
+<h3>User Configuration</h3>
 
-    <td>
-    <h3>User Configuration</h3>
+<p>
+  Click on the <i>User ID</i> link to view detailed information about a
+  user.
+</p>
 
-    <p>Click on the <i>User ID</i> link to view detailed information about a user.</p>
+<a id="doNewUser" href="javascript:addNewUser()"><img src="images/add1.gif" alt="Add new user" border="0"></a>
+<a href="javascript:addNewUser()">Add New User</a>
 
-    <table>
-    <tr>
-      <td valign="center"><a id="doNewUser" href="javascript:addNewUser()"><img src="images/add1.gif" alt="Add new user" border="0"></a></td>
-      <td valign="center"><a href="javascript:addNewUser()">Add New User</a></td>
-    </tr>
-    </table>
+<br/>
+<br/>
 
      <table width="100%" border="1" cellspacing="0" cellpadding="2" bordercolor="black">
 
@@ -259,17 +251,7 @@
          <% row++;
             } %>
      </table>
-    </td>
-    
-    <td>&nbsp;</td>
-  </tr>
-</table>
 
-</FORM>
-
-<br>
+</form>
 
 <jsp:include page="/includes/footer.jsp" flush="false" />
-
-</body>
-</html>

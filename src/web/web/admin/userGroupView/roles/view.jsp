@@ -1,4 +1,4 @@
-<!--
+<%--
 
 //
 // This file is part of the OpenNMS(R) Application.
@@ -37,17 +37,28 @@
 //      http://www.opennms.com/
 //
 
--->
+--%>
 
-<%@page language="java" contentType="text/html" session="true"%>
+<%@page language="java"
+	contentType="text/html"
+	session="true"
+%>
+
 <%@ taglib uri="http://java.sun.com/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jstl/fmt" prefix="fmt" %>
-<html>
-<head>
-<title>View Role | Role Admin | OpenNMS Web Console</title>
-<base HREF="<%=org.opennms.web.Util.calculateUrlBase( request )%>" />
-<link rel="stylesheet" type="text/css" href="css/styles.css" />
-</head>
+
+
+<jsp:include page="/includes/header.jsp" flush="false">
+	<jsp:param name="title" value="Role Configuration" />
+	<jsp:param name="headTitle" value="View" />
+	<jsp:param name="headTitle" value="Roles" />
+	<jsp:param name="headTitle" value="Admin" />
+	<jsp:param name="breadcrumb" value="<a href='admin/index.jsp'>Admin</a>" />
+	<jsp:param name="breadcrumb" value="<a href='admin/userGroupView/index.jsp'>Users, Groups and Roles</a>" />
+	<jsp:param name="breadcrumb" value="<a href='admin/userGroupView/roles'>Role List</a>" />
+	<jsp:param name="breadcrumb" value="View Role" />
+</jsp:include>
+
 
 <!--  swiped this and images/new.gif from webcalendar.sf.net -->
 <style type="text/css">
@@ -63,8 +74,6 @@
 }
 
 </style>
-
-
 
 <script language="Javascript" type="text/javascript" >
 
@@ -94,35 +103,9 @@
 
 </script>
 
+<h3>View Role</h3>
 
-<body marginwidth="0" marginheight="0" LEFTMARGIN="0" RIGHTMARGIN="0"
-	TOPMARGIN="0">
-
-<% String breadcrumb1 = "<a href='admin/index.jsp'>Admin</a>"; %>
-<% String breadcrumb2 = "<a href='admin/userGroupView/index.jsp'>Users, Groups and Roles</a>"; %>
-<% String breadcrumb3 = "<a href='admin/userGroupView/roles'>Role List</a>"; %>
-<% String breadcrumb4 = "View Role"; %>
-<jsp:include page="/includes/header.jsp" flush="false">
-	<jsp:param name="title" value="Role Configuration" />
-	<jsp:param name="breadcrumb" value="<%=breadcrumb1%>" />
-	<jsp:param name="breadcrumb" value="<%=breadcrumb2%>" />
-	<jsp:param name="breadcrumb" value="<%=breadcrumb3%>" />
-	<jsp:param name="breadcrumb" value="<%=breadcrumb4%>" />
-</jsp:include>
-
-<br />
-<table>
-	<tr>
-		<td>&nbsp;</td>
-		<td>
-		<h3>View Role</h3>
-		</td>
-	</tr>
-	<tr>
-		<td>&nbsp;</td>
-		<td>
-		
-		 <table width="100%" border="1" cellspacing="0" cellpadding="2" bordercolor="black">
+<table width="100%" border="1" cellspacing="0" cellpadding="2" bordercolor="black">
 	         <tr>
     		    		<td bgcolor="#999999"><b>Name</b></td>
 				<td><c:out value="${role.name}"/></td>
@@ -152,14 +135,14 @@
 		<table border="0">
 		<tr>
 		<td>
-		<form action="<c:url value='${reqUrl}'/>" method="POST" name="editForm">
+		<form action="<c:url value='${reqUrl}'/>" method="post" name="editForm">
 			<input type="hidden" name="operation" value="editDetails"/>
 			<input type="hidden" name="role" value="<c:out value='${role.name}'/>"/>
 			<input type="submit" value="Edit Details" />
 		</form>
 		</td>
 		<td>
-		<form action="<c:url value='${reqUrl}'/>" method="POST" name="doneForm">
+		<form action="<c:url value='${reqUrl}'/>" method="post" name="doneForm">
 			<input type="submit" value="Done" />
 		</form>
 		</td>
@@ -175,22 +158,22 @@
 	</tr>
 	<tr>
 		<td>&nbsp;
-				<form action="<c:url value='${reqUrl}'/>" method="POST" name="prevMonthForm">
+				<form action="<c:url value='${reqUrl}'/>" method="post" name="prevMonthForm">
 					<input type="hidden" name="operation" value="view"/>
 					<input type="hidden" name="role" value="<c:out value='${role.name}'/>"/>
 					<input type="hidden" name="month" value="<fmt:formatDate value='${calendar.previousMonth}' type='date' pattern='MM-yyyy'/>"/>
 				</form>
-				<form action="<c:url value='${reqUrl}'/>" method="POST" name="nextMonthForm">
+				<form action="<c:url value='${reqUrl}'/>" method="post" name="nextMonthForm">
 					<input type="hidden" name="operation" value="view"/>
 					<input type="hidden" name="role" value="<c:out value='${role.name}'/>"/>
 					<input type="hidden" name="month" value="<fmt:formatDate value='${calendar.nextMonth}' type='date' pattern='MM-yyyy'/>"/>
 				</form>
-				<form action="<c:url value='${reqUrl}'/>" method="POST" name="addEntryForm">
+				<form action="<c:url value='${reqUrl}'/>" method="post" name="addEntryForm">
 					<input type="hidden" name="operation" value="addEntry"/>
 					<input type="hidden" name="role" value="<c:out value='${role.name}'/>"/>
 					<input type="hidden" name="date"/>
 				</form>
-				<form action="<c:url value='${reqUrl}'/>" method="POST" name="editEntryForm">
+				<form action="<c:url value='${reqUrl}'/>" method="post" name="editEntryForm">
 					<input type="hidden" name="operation" value="editEntry"/>
 					<input type="hidden" name="role" value="<c:out value='${role.name}'/>"/>
 					<input type="hidden" name="schedIndex"/>
@@ -236,18 +219,11 @@
 		<table border="0">
 		<tr>
 		<td>
-		<form action="<c:url value='${reqUrl}'/>" method="POST" name="doneForm">
+		<form action="<c:url value='${reqUrl}'/>" method="post" name="doneForm">
 			<input type="submit" value="Done" />
 		</form>
 		</td>
 		</tr>
 		</table>
-		</td>
-	</tr>
-	
-</table>
-<br/>
-<jsp:include page="/includes/footer.jsp" flush="false" />
 
-</body>
-</html>
+<jsp:include page="/includes/footer.jsp" flush="false" />

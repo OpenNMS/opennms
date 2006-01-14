@@ -24,7 +24,17 @@
 		org.opennms.core.resource.Vault"
 %>
 
+<%@ taglib uri="http://java.sun.com/jstl/core" prefix="c" %>
 
+<!-- End of Content -->
+</div>
+
+<c:choose>
+<c:when test="${param.quiet == 'true'}">
+<!-- Not displaying footer -->
+</c:when>
+
+<c:otherwise>
 <!-- Footer -->
 
 <div id="prefooter"></div>
@@ -34,6 +44,11 @@
 </div>
 
 <div id="copyright">
-OpenNMS <a href="help/about.jsp">Copyright</a> &copy; 2002-2005 <a HREF="http://www.opennms.com/">The OpenNMS Group, Inc.</a> OpenNMS&reg; is a registered trademark of <a href="http://www.opennms.com">The OpenNMS Group, Inc.</a>
+OpenNMS <a href="help/about.jsp">Copyright</a> &copy; 2002-2005 <a href="http://www.opennms.com/">The OpenNMS Group, Inc.</a> OpenNMS&reg; is a registered trademark of <a href="http://www.opennms.com">The OpenNMS Group, Inc.</a>
 </div>
 
+</c:otherwise>
+</c:choose>
+
+</body>
+</html>

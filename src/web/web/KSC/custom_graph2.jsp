@@ -1,4 +1,4 @@
-<!--
+<%--
 
 //
 // This file is part of the OpenNMS(R) Application.
@@ -34,19 +34,26 @@
 //      http://www.opennms.org/
 //      http://www.opennms.com/
 
--->
+--%>
 
-<%@page language="java" contentType="text/html" session="true" import="java.util.*,org.opennms.web.*,org.opennms.web.performance.*,java.util.Calendar" %>
+<%@page language="java"
+	contentType="text/html"
+	session="true"
+	import="java.util.*,
+		org.opennms.web.*,
+		org.opennms.web.performance.*,
+		java.util.Calendar
+	"
+%>
 
 <%!
     public PerformanceModel model = null;
     
     public void init() throws ServletException {
         try {
-            this.model = new PerformanceModel( org.opennms.web.ServletInitializer.getHomeDir() );
-        }
-        catch( Exception e ) {
-            throw new ServletException( "Could not initialize the PerformanceModel", e );
+            this.model = new PerformanceModel(ServletInitializer.getHomeDir());
+        } catch (Throwable t) {
+            throw new ServletException("Could not initialize the PerformanceModel", t);
         }
     } 
 %>
@@ -66,11 +73,15 @@
     Arrays.sort(intfs);        
 %>
 
-<html>
-<head>
-  <title>Choose Interface | Performance | Reports | OpenNMS Web Console</title>
-  <base HREF="<%=org.opennms.web.Util.calculateUrlBase( request )%>" />
-  <link rel="stylesheet" type="text/css" href="css/styles.css" />
+<jsp:include page="/includes/header.jsp" flush="false" >
+  <jsp:param name="title" value="Key SNMP Customized Performance Reports" />
+  <jsp:param name="headTitle" value="Choose Interface" />
+  <jsp:param name="headTitle" value="Performance" />
+  <jsp:param name="headTitle" value="Reports" />
+  <jsp:param name="breadcrumb" value="<a href='report/index.jsp'>Reports</a>" />
+  <jsp:param name="breadcrumb" value="KSC Reports" />
+</jsp:include>
+
   <script language="Javascript" type="text/javascript" >
       function validateInterface()
       {
@@ -100,20 +111,6 @@
       }
   </script>
   </head>
-
-<body marginwidth="0" marginheight="0" LEFTMARGIN="0" RIGHTMARGIN="0" TOPMARGIN="0">
-
-<% String breadcrumb1 = "<a href='report/index.jsp'>Reports</a>"; %>
-<% String breadcrumb2 = "KSC Reports"; %>
-
-<jsp:include page="/includes/header.jsp" flush="false" >
-  <jsp:param name="title" value="Key SNMP Customized Performance Reports" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb1%>" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb2%>" />
-</jsp:include>
-<br />
-
-<!-- Body -->
 
 <h3 align="center"> Customized Report - Graph Definition </h3>
 
@@ -156,9 +153,4 @@
   </tr>
 </table>
 
-<br/>
-
 <jsp:include page="/includes/footer.jsp" flush="false" />
-
-</body>
-</html>

@@ -1,4 +1,4 @@
-<!--
+<%--
 
 //
 // This file is part of the OpenNMS(R) Application.
@@ -36,32 +36,22 @@
 //      http://www.opennms.com/
 //
 
--->
+--%>
 
-<%@page language="java" contentType="text/html" session="true" import="java.util.Date" %>
-<html>
-<head>
-  <title>Notification | OpenNMS Web Console</title>
-  <base HREF="<%=org.opennms.web.Util.calculateUrlBase( request )%>" />
-  <link rel="stylesheet" type="text/css" href="css/styles.css" />
-</head>
-<body marginwidth="0" marginheight="0" LEFTMARGIN="0" RIGHTMARGIN="0" TOPMARGIN="0">
+<%@page language="java"
+	contentType="text/html"
+	session="true"
+	import="java.util.Date"
+%>
 
-<% String breadcrumb1 = "Notification"; %>
 <jsp:include page="/includes/header.jsp" flush="false" >
   <jsp:param name="title" value="Notification" />
+  <jsp:param name="headTitle" value="Notification" />
   <jsp:param name="location" value="notification" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb1%>" />
+  <jsp:param name="breadcrumb" value="Notification" />
 </jsp:include>
 
-<br>
-<!-- Body -->
-
-<table width="100%" cellspacing="0" cellpadding="0" border="0">
-  <tr>
-    <td> &nbsp; </td>
-
-    <td valign="top">
+  <div style="width: 40%; float: left;">
       <h3>Notification queries</h3>
 
       <p>
@@ -84,12 +74,9 @@
         <input type="TEXT" NAME="notice" />
         <input type="submit" value="Search" />        
       </form>
+  </div>
 
-    </td>
-
-    <td> &nbsp; </td>
-
-    <td valign="top" width="60%">
+  <div style="width: 60%; float: left;">
         <h3>Outstanding and Acknowledged Notices</h3>
 
         <p>When important events are detected by OpenNMS, users may 
@@ -134,17 +121,6 @@
             where all members of that group will be notified at once with no 
             15 minute escalation interval.
         </p>
-    </td>
+  </div>
 
-     <td> &nbsp; </td>
-  </tr>
-</table>                                    
-                                     
-<br>
-
-<jsp:include page="/includes/footer.jsp" flush="false" >
-  <jsp:param name="location" value="notification" />
-</jsp:include>
-
-</body>
-</html>
+<jsp:include page="/includes/footer.jsp" flush="false"/>

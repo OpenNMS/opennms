@@ -1,4 +1,4 @@
-<!--
+<%--
 
 //
 // This file is part of the OpenNMS(R) Application.
@@ -38,9 +38,17 @@
 //      http://www.opennms.com/
 //
 
--->
+--%>
 
-<%@page language="java" contentType="text/html" session="true" import="java.util.*,org.opennms.web.Util,org.opennms.netmgt.config.*,org.opennms.netmgt.config.destinationPaths.*" %>
+<%@page language="java"
+	contentType="text/html"
+	session="true"
+	import="java.util.*,
+		org.opennms.web.Util,
+		org.opennms.netmgt.config.*,
+		org.opennms.netmgt.config.destinationPaths.*
+	"
+%>
 
 <%!
     public void init() throws ServletException {
@@ -68,13 +76,6 @@
         escalateDelays.add(newPath.getEscalate()[i].getDelay());
     }
 %>
-
-<html>
-<head>
-  <title>Path Outline | Admin | OpenNMS Web Console</title>
-  <base HREF="<%=org.opennms.web.Util.calculateUrlBase( request )%>" />
-  <link rel="stylesheet" type="text/css" href="css/styles.css" />
-</head>
 
 <script language="Javascript" type="text/javascript" >
 
@@ -146,34 +147,24 @@
 
 </script>
 
-<body marginwidth="0" marginheight="0" LEFTMARGIN="0" RIGHTMARGIN="0" TOPMARGIN="0">
-
-<% String breadcrumb1 = "<a href='admin/index.jsp'>Admin</a>"; %>
-<% String breadcrumb2 = "<a href='admin/notification/index.jsp'>Configure Notifications</a>"; %>
-<% String breadcrumb3 = "<a href='admin/notification/destinationPaths.jsp'>Destination Paths</a>"; %>
-<% String breadcrumb4 = "Path Outline"; %>
 <jsp:include page="/includes/header.jsp" flush="false" >
   <jsp:param name="title" value="Path Outline" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb1%>" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb2%>" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb3%>" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb4%>" />
+  <jsp:param name="headTitle" value="Path Outline" />
+  <jsp:param name="headTitle" value="Admin" />
+  <jsp:param name="breadcrumb" value="a href='admin/index.jsp'>Admin</a>" />
+  <jsp:param name="breadcrumb" value="<a href='admin/notification/index.jsp'>Configure Notifications</a>" />
+  <jsp:param name="breadcrumb" value="<a href='admin/notification/destinationPaths.jsp'>Destination Paths</a>" />
+  <jsp:param name="breadcrumb" value="Path Outline" />
 </jsp:include>
 
-<br>
-<!-- Body -->
+<h2><%=(newPath.getName()!=null ? "Editing path: " + newPath.getName() + "<br>" : "")%></h2>
 
-<table width="100%" cellspacing="0" cellpadding="0" border="0">
-  <tr>
-    <td> &nbsp; </td>
+<h3>Choose the piece of the path that you want to edit from below. When
+  all editing is complete click the <i>Finish</i> button. No changes will
+  be permanent until the <i>Finish</i> button has been clicked.</h3>
 
-    <td>
-    <h2><%=(newPath.getName()!=null ? "Editing path: " + newPath.getName() + "<br>" : "")%></h2>
-    <h3>Choose the piece of the path that you want to edit from below. When all editing is complete click
-        the <i>Finish</i> button. No changes will be permanent until the <i>Finish</i> button has been clicked.</h3>
-    <br>
-    <table width="100%" cellspacing="2" cellpadding="2" border="0">
-    <form METHOD="POST" name="outline" action="admin/notification/destinationWizard">
+<form method="post" name="outline"
+      action="admin/notification/destinationWizard">
       <input type="hidden" name="sourcePage" value="pathOutline.jsp"/>
       <input type="hidden" name="index"/>
       <input type="hidden" name="userAction"/>
@@ -235,18 +226,8 @@
       </tr>
     </form>
     </table>
-    </td>
-
-    <td> &nbsp; </td>
-  </tr>
-</table>
-
-<br>
 
 <jsp:include page="/includes/footer.jsp" flush="false" />
-
-</body>
-</html>
 
 <%!
     public String buildDelaySelect(String[] intervals, String name, String currValue)

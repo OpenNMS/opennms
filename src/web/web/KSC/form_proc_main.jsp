@@ -1,4 +1,4 @@
-<!--
+<%--
 
 //
 // This file is part of the OpenNMS(R) Application.
@@ -34,9 +34,17 @@
 //      http://www.opennms.org/
 //      http://www.opennms.com/
 
--->
+--%>
 
-<%@page language="java" contentType="text/html" session="true" import="java.util.*,org.opennms.netmgt.config.kscReports.*,org.opennms.netmgt.config.KSC_PerformanceReportFactory" %>
+<%@page language="java"
+	contentType="text/html"
+	session="true"
+	import="java.util.*,
+		org.opennms.web.MissingParameterException,
+		org.opennms.netmgt.config.kscReports.*,
+		org.opennms.netmgt.config.KSC_PerformanceReportFactory
+	"
+%>
 
 <%@ include file="/WEB-INF/jspf/KSC/init1.jspf" %>
 
@@ -46,13 +54,14 @@
     String report_action = request.getParameter("report_action");
     
     if (report_action == null) {
-        throw new ServletException ("Missing Parameter report_action");
+        throw new MissingParameterException("report_action");
+					    requiredParameters);
     }
       
     if ((report_action.equals("Customize")) || (report_action.equals("View")) || (report_action.equals("CreateFrom")) || (report_action.equals("Delete"))) {
         String r_index = request.getParameter("report");
         if (r_index == null) {
-            throw new ServletException ("Missing Parameter report");
+            throw new MissingParameterException("report");
         } 
         report_index = Integer.parseInt(r_index);
         if ((report_action.equals("Customize")) || (report_action.equals("CreateFrom"))) {  
@@ -65,8 +74,7 @@
         if (report_action.equals("Delete")) {  // Take care of this case right now
             this.reportFactory.deleteReportAndSave(report_index); 
         }
-    }        
-    else { 
+    } else { 
         if (report_action.equals("Create")) {
             report_index = -1;
            // Go ahead and tell report factory to put the report config (a blank config) into the working report area
@@ -79,11 +87,13 @@
 
 %>
 
-<html>
-<head>
-</head>
-
-<body> 
+<jsp:include page="/includes/header.jsp" flush="false" >
+  <jsp:param name="title" value="Custom Report Main Page" />
+  <jsp:param name="headTitle" value="Performance" />
+  <jsp:param name="headTitle" value="Reports" />
+  <jsp:param name="headTitle" value="KSC" />
+  <jsp:param name="quiet" value="true" />
+</jsp:include>
 
 <% if (report_action.equals("View")) { %>
        <form name="do_next" method="get" action="custom_view.jsp">
@@ -107,5 +117,6 @@
 <%     } 
    } %> 
 
-</body>
-</html>
+<jsp:include page="/includes/footer.jsp" flush="false" >
+  <jsp:param name="quiet" value="true" />
+</jsp:include>

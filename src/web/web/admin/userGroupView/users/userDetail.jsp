@@ -1,4 +1,4 @@
-<!--
+<%--
 
 //
 // This file is part of the OpenNMS(R) Application.
@@ -37,51 +37,47 @@
 //      http://www.opennms.com/
 //
 
--->
+--%>
 
-<%@page language="java" contentType = "text/html" session = "true"  import="org.opennms.netmgt.config.*, java.util.*,java.text.*,org.opennms.netmgt.config.users.*"%>
+<%@page language="java"
+	contentType="text/html"
+	session="true"
+	import="org.opennms.netmgt.config.*,
+		java.util.*,
+		java.text.*,
+		org.opennms.netmgt.config.users.*,
+		org.opennms.web.MissingParameterException
+	"
+%>
+
 <%
 	User user = null;
 	UserManager userFactory = UserFactory.getInstance();
   	String userID = request.getParameter("userID");
-	try
-  	{
+	if (userID == null) {
+		throw new MissingParameterException("userID");
+	}
+
+	try {
 		UserFactory.init();
       		user = userFactory.getUser(userID);
-  	}
-	catch (Exception e)
-  	{
+  	} catch (Exception e) {
       		throw new ServletException("Could not find user " + userID + " in user factory.", e);
   	}
+
+	if (user == null) {
+      		throw new ServletException("Could not find user " + userID);
+	}
 %>
-<html>
-<head>
-<title>User Detail | User Admin | OpenNMS Web Console</title>
-<base HREF="<%=org.opennms.web.Util.calculateUrlBase( request )%>" />
-<link rel="stylesheet" type="text/css" href="css/styles.css" />
-</head>
 
-<body marginwidth="0" marginheight="0" LEFTMARGIN="0" RIGHTMARGIN="0" TOPMARGIN="0">
-
-<% String breadcrumb1 = "<a href='admin/index.jsp'>Admin</a>"; %>
-<% String breadcrumb2 = "<a href='admin/userGroupView/index.jsp'>Users and Groups</a>"; %>
-<% String breadcrumb3 = "<a href='admin/userGroupView/users/list.jsp'>User List</a>"; %>
-<% String breadcrumb4 = "User Detail"; %>
 <jsp:include page="/includes/header.jsp" flush="false" >
   <jsp:param name="title" value="User Detail" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb1%>" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb2%>" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb3%>" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb4%>" />
+  <jsp:param name="breadcrumb" value="<a href='admin/index.jsp'>Admin</a>" />
+  <jsp:param name="breadcrumb" value="<a href='admin/userGroupView/index.jsp'>Users and Groups</a>" />
+  <jsp:param name="breadcrumb" value="<a href='admin/userGroupView/users/list.jsp'>User List</a>" />
+  <jsp:param name="breadcrumb" value="User Detail" />
 </jsp:include>
 
-<br>
-
-<table width="100%" border="0" cellspacing="0" cellpadding="2" >
-  <tr>
-    <td>&nbsp;</td>
-    
-    <td>
     <table width="100%" border="0" cellspacing="0" cellpadding="2" >
       <tr>
         <td>
@@ -227,14 +223,6 @@
         
           </table>
       </table>
-   </td>
-   <td>&nbsp;</td>
-   </tr>
- </table>
  
-<br>
 
 <jsp:include page="/includes/footer.jsp" flush="false" />
-
-</body>
-</html>

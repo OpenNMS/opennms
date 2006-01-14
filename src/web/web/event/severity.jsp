@@ -1,4 +1,4 @@
-<!--
+<%--
 
 //
 // This file is part of the OpenNMS(R) Application.
@@ -35,10 +35,16 @@
 //      http://www.opennms.org/
 //      http://www.opennms.com///
 
--->
+--%>
 
-<html>
-<body marginwidth="0" marginheight="0" LEFTMARGIN="0" RIGHTMARGIN="0" TOPMARGIN="0">
+
+<jsp:include page="/includes/header.jsp" flush="false" >
+  <jsp:param name="title" value="Event Severity Legend" />
+  <jsp:param name="headTitle" value="Severity Legend" />
+  <jsp:param name="headTitle" value="Events" />
+  <jsp:param name="quiet" value="true" />
+</jsp:include>
+
 
 			<table>
 				<tr><td bgcolor="red"><b>Critical</b></td><td>This event means numerous devices on the 
@@ -56,5 +62,8 @@
 				condition has been corrected and service is restored</td></tr>
 				<tr><td bgcolor="lightblue"><b>Indeterminate</b></td><td>No Severity could be associated with this event.</td></tr>
 			</table>
-</body>
-</html>
+
+<jsp:include page="/includes/footer.jsp" flush="false" >
+  <jsp:param name="quiet" value="true" />
+</jsp:include>
+

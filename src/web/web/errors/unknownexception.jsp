@@ -1,4 +1,4 @@
-<!--
+<%--
 
 //
 // This file is part of the OpenNMS(R) Application.
@@ -35,25 +35,20 @@
 //      http://www.opennms.org/
 //      http://www.opennms.com///
 
--->
+--%>
 
-<%@page language="java" contentType="text/html" session="true" isErrorPage="true" %>
+<%@page language="java"
+	contentType="text/html"
+	session="true"
+	isErrorPage="true"
+ %>
 
-<html>
-<head>
-  <title>Unexpected Error | Error | OpenNMS Web Console</title>
-  <base HREF="<%=org.opennms.web.Util.calculateUrlBase( request )%>" />
-  <link rel="stylesheet" type="text/css" href="css/styles.css" />
-</head>
-<body marginwidth="0" marginheight="0" leftmargin="0" rightmargin="0" topmargin="0">
-
-<% String breadcrumb1 = "Error"; %>
 <jsp:include page="/includes/header.jsp" flush="false" >
   <jsp:param name="title" value="Error" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb1%>" />
+  <jsp:param name="headTitle" value="Unexpected Error" />
+  <jsp:param name="headTitle" value="Error" />
+  <jsp:param name="breadcrumb" value="Error " />
 </jsp:include>
-
-<br />
 
 <%
 
@@ -62,57 +57,33 @@
     }
 %>
 
-<!-- Body -->
+<h1>The Web User Interface Has Experienced an Unexpected Error</h1>
 
-<table width="100%" border="0" cellspacing="0" cellpadding="2">
-  <tr>
-    <td> &nbsp; </td>
+<p>
+  The webUI has encountered an exception condition that it does
+  not know how to handle.
+</p>
 
-    <td>
-      <h1>The Web User Interface Has Experienced an Error</h1>
+<p>
+  Possible causes could be that the database is not responding,
+  the OpenNMS application has stopped or is not running, or there
+  is an issue with Tomcat.
+</p>
 
-      <p>
-      </p>
+<p>
+  You can try going to the main page and hitting "refresh"
+  in your browser, but there is a good chance that will have
+  no effect. Please bring this to the attention of the person
+  responsible for maintaining OpenNMS for your organization, and
+  have them insure that OpenNMS, Tomcat and the database are all
+  running without errors.
+</p>
 
-      <p>
-        <br>
-        The webUI has encountered an exception condition that it does
-        not know how to handle.
-      </p>
+<h3>Error Details</h3>
 
-      <p>
-	Possible causes could be that the database is not responding,
-	the OpenNMS application has stopped or is not running, or there
-	is an issue with Tomcat.
-      </p>
-
-      <p>
-	You can try going to the main page and hitting "refresh"
-	in your browser, but there is a good chance that will have
-	no effect. Please bring this to the attention of the person
-	responsible for maintaining OpenNMS for your organization, and
-	have them insure that OpenNMS, Tomcat and the database are all
-	running without errors.
-      </p>
-
-      <h2>Error Details</h2>
-
-      <p>
-        <pre><% exception.printStackTrace(new java.io.PrintWriter(out)); %> 
-        </pre> 
-      </p>
-
-
-    </td>
-
-    <td> &nbsp; </td>
-  </tr>
-</table>                               
-
-<br />
-
+<p>
+  <pre><% exception.printStackTrace(new java.io.PrintWriter(out)); %> 
+  </pre> 
+</p>
 
 <jsp:include page="/includes/footer.jsp" flush="false" />
-
-</body>
-</html>

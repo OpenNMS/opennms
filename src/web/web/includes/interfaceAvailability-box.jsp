@@ -46,7 +46,14 @@
   that directs all URLs to be relative to the servlet context.
 --%>
 
-<%@page language="java" contentType="text/html" session="true" import="org.opennms.web.category.*,org.opennms.web.element.*,java.util.*" %>
+<%@page language="java"
+	contentType="text/html"
+	session="true"
+	import="org.opennms.web.category.*,
+		org.opennms.web.element.*,
+		java.util.*
+	"
+%>
 
 
 <%!
@@ -108,39 +115,22 @@
     double overallRtcValue = this.model.getInterfaceAvailability(nodeId, ipAddr);
 %>
 
-<div id="availability-box">
-<!--
-<table width="100%" cellspacing="0" cellpadding="2" border="1" bordercolor="black" bgcolor="#cccccc">
-  <tr bgcolor="#999999">
-    <td><b>Overall Availability</b></td>
--->
-
-<table>
-<tbody>
+<table class="standard">
   <tr>
-    <td class="header">Overall Availability</td>
+    <td class="standardheader">Overall Availability</td>
 
 <% if( overallRtcValue < 0 ) { %>
-<!--
-      <td width="30%" bgcolor="#cccccc" align="right"><b><%=ElementUtil.getInterfaceStatusString(intf)%></b></td>
--->
       <td class="availunmanaged"><%=ElementUtil.getInterfaceStatusString(intf)%></td>
 
 <% } else { %>
-<!--
-      <td width="30%" bgcolor="<%=CategoryUtil.getCategoryColor(this.normalThreshold, this.warningThreshold, overallRtcValue)%>" align="right"><b><%=CategoryUtil.formatValue(overallRtcValue)%>%</b></td>
--->
       <td class="<%=CategoryUtil.getCategoryClass(this.normalThreshold, this.warningThreshold, overallRtcValue)%>"><%=CategoryUtil.formatValue(overallRtcValue)%>%</td>
 
   </tr>
 
   <tr>
-    <td colspan="2">
-<!--
-      <table width="100%" cellspacing="0" cellpadding="2" border="1">
--->
-      <table class="inner">
-      <tbody>
+    <td class="standard" colspan="2">
+<!--      <table class="inner"> -->
+      <table class="standardfirst">
         <% for( int i=0; i < services.length; i++ ) { %>
           <% Service service = services[i]; %>
           
@@ -148,42 +138,26 @@
             <% double svcValue = this.model.getServiceAvailability(nodeId, ipAddr, service.getServiceId()); %>     
 
             <tr>
-<!--
-              <td align="left"  width="30%"><a href="element/service.jsp?node=<%=nodeId%>&intf=<%=ipAddr%>&service=<%=service.getServiceId()%>"><%=service.getServiceName()%></a></td>
-              <td align="right" width="70%" bgcolor="<%=CategoryUtil.getCategoryColor(this.normalThreshold, this.warningThreshold, svcValue)%>"><b><%=CategoryUtil.formatValue(svcValue)%>%</b></td>
--->
               <td class="availnode"><a href="element/service.jsp?node=<%=nodeId%>&intf=<%=ipAddr%>&service=<%=service.getServiceId()%>"><%=service.getServiceName()%></a></td>
               <td class="<%=CategoryUtil.getCategoryClass(this.normalThreshold, this.warningThreshold, svcValue)%>"><%=CategoryUtil.formatValue(svcValue)%>%</td>
             </tr>
           <% } else { %>
             <tr>
-<!--
-              <td align="left"  width="30%"><a href="element/service.jsp?node=<%=nodeId%>&intf=<%=ipAddr%>&service=<%=service.getServiceId()%>"><%=service.getServiceName()%></a></td>
-              <td align="right" width="70%" bgcolor="#cccccc"><b><%=ElementUtil.getServiceStatusString(service)%></b></td>
--->
               <td class="availnode"><a href="element/service.jsp?node=<%=nodeId%>&intf=<%=ipAddr%>&service=<%=service.getServiceId()%>"><%=service.getServiceName()%></a></td>
               <td class="availunmanaged"><%=ElementUtil.getServiceStatusString(service)%></td>
 
             </tr>          
           <% } %>
         <% } %>
-      </tbody>
       </table>
     </td>
   </tr>
-<!--
-  <tr bgcolor="#999999">
-    <td colspan="2">Percentage over last 24 hours</td> <%-- next iteration, read this from same properties file that sets up for RTCVCM --%></td>
--->
   <tr>
-    <td class="headerplain" colspan="2">Percentage over last 24 hours</td> <%-- next iteration, read this from same properties file that sets up for RTCVCM --%></td>
+    <td class="standardheaderplain" colspan="2">Percentage over last 24 hours</td> <%-- next iteration, read this from same properties file that sets up for RTCVCM --%></td>
 
 <% } %>
   </tr>   
-</tbody>
 </table>   
-
-</div>
 
 <%!    
     /** Convenient anonymous class for sorting Service objects by service name. */

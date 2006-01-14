@@ -1,4 +1,4 @@
-<!--
+<%--
 
 //
 // This file is part of the OpenNMS(R) Application.
@@ -40,9 +40,17 @@
 //      http://www.opennms.com/
 //
 
--->
+--%>
 
-<%@page language="java" contentType="text/html" session="true" import="java.io.File,java.util.*,org.opennms.web.element.NetworkElementFactory,org.opennms.web.admin.nodeManagement.*" %>
+<%@page language="java"
+	contentType="text/html"
+	session="true"
+	import="java.io.File,
+		java.util.*,
+		org.opennms.web.element.NetworkElementFactory,
+		org.opennms.web.admin.nodeManagement.*
+	"
+%>
 
 <%!
     int interfaceIndex;
@@ -63,14 +71,17 @@
         lineItems = (Integer)userSession.getAttribute("lineItems.delete.jsp");
     }
 %>
-<html>
-<head>
-  <title>Admin | OpenNMS Web Console</title>
-  <base HREF="<%=org.opennms.web.Util.calculateUrlBase( request )%>" />
-  <link rel="stylesheet" type="text/css" href="css/styles.css" />
-</head>
 
-<script language="Javascript" type="text/javascript" >
+<jsp:include page="/includes/header.jsp" flush="false" >
+  <jsp:param name="title" value="Delete Nodes" />
+  <jsp:param name="headTitle" value="Delete Nodes" />
+  <jsp:param name="headTitle" value="Admin" />
+  <jsp:param name="location" value="admin" />
+  <jsp:param name="breadcrumb" value="<a href='admin/index.jsp'>Admin</a>" />
+  <jsp:param name="breadcrumb" value="Delete Nodes" />
+</jsp:include>
+
+<script type="text/javascript" >
 
   function applyChanges()
   {
@@ -131,21 +142,7 @@
   
 </script>
 
-<body marginwidth="0" marginheight="0" LEFTMARGIN="0" RIGHTMARGIN="0" TOPMARGIN="0">
-
-<% String breadcrumb1 = "<a href='admin/index.jsp'>Admin</a>"; %>
-<% String breadcrumb2 = "Delete Nodes"; %>
-<jsp:include page="/includes/header.jsp" flush="false" >
-  <jsp:param name="title" value="Delete Nodes" />
-  <jsp:param name="location" value="admin" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb1%>" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb2%>" />
-</jsp:include>
-
-<!-- Body -->
-<br>
-
-<FORM METHOD="POST" name="deleteAll" action="admin/deleteSelNodes">
+<form method="post" name="deleteAll" action="admin/deleteSelNodes">
 
 <%
   int midNodeIndex = 1;
@@ -156,17 +153,8 @@
   }
 %>
 
-<table width="100%" cellspacing="0" cellpadding="0" border="0">
-  
-  <tr>
-    <td> &nbsp; </td>  
-    
-    <td>
     <h3>Delete Nodes</h3>
 
-    <table width="100%" cellspacing="0" cellpadding="0" border="0">
-      <tr>
-        <td colspan="3"> 
 	<P>The nodes present in the system are listed below. To permanently delete a node (and all associated
 	   interfaces, services, outages, events and notifications), check the "Delete?" box beside the node's ID and
            select "Delete Nodes". You may check more than one.
@@ -180,89 +168,63 @@
 	   the node will be discovered again. To prevent this, either remove the IP address from the
 	   discovery range or unmanage the device instead of deleting it.
         </P>
-        </td>
-      </tr>
-	
-      <TR>
-      <td>&nbsp;</td>
-      </tr>
 
-   </tr> 
-      
-   <tr>
-        <td align="left" valign="center">
+	<br/>
+
           <input type="button" value="Delete Nodes" onClick="applyChanges()">
           <input type="button" value="Cancel" onClick="cancel()">
           <input type="button" value="Select All" onClick="checkAll()">
           <input type="button" value="Unselect All" onClick="uncheckAll()">
           <input type="reset"><br>&nbsp;
-        </td>
-	<td>&nbsp;</td>
-	<td>&nbsp;</td>
-   </tr>
+
+	<br/>
       
    <% if (nodes.size() > 0) { %>
-   <tr>
-        <td width="49%" align="left" valign="top">
-          <table border="1" cellspacing="0" cellpadding="2" bordercolor="black">
-            <tr bgcolor="#999999">
-              <td width="5%" align="center"><b>Delete?</b></td>
-              <td width="5%" align="center"><b>Data?</b></td>
-              <td width="5%" align="center"><b>Node ID</b></td>
-              <td width="10%" align="center"><b>Node Label</b></td>
+	<div id="contentleft">
+          <table class="standardfirst">
+            <tr>
+              <td class="standardheader" width="5%" align="center">Delete?</td>
+              <td class="standardheader" width="5%" align="center">Data?</td>
+              <td class="standardheader" width="5%" align="center">Node ID</td>
+              <td class="standardheader" width="10%" align="center">Node Label</td>
             </tr>
             
             <%=buildTableRows(nodes, 0, midNodeIndex)%>
             
           </table>
+	</div>
           <% } /*end if*/ %>
-        </td>
-        
-        <td>
-          &nbsp;&nbsp;
-        </td>
-        
+
       <!--see if there is a second column to draw-->
       <% if (midNodeIndex < nodes.size()) { %>
-        <td width="49%" align="left" valign="top">
-          <table border="1" cellspacing="0" cellpadding="2" bordercolor="black">
-            <tr bgcolor="#999999">
-              <td width="5%" align="center"><b>Delete?</b></td>
-              <td width="5%" align="center"><b>Data?</b></td>
-              <td width="5%" align="center"><b>Node ID</b></td>
-              <td width="10%" align="center"><b>Node Label</b></td>
+	<div id="contentright">
+          <table class="standardfirst"
+            <tr>
+              <td class="standardheader" width="5%" align="center">Delete?</td>
+              <td class="standardheader" width="5%" align="center">Data?</td>
+              <td class="standardheader" width="5%" align="center">Node ID</td>
+              <td class="standardheader" width="10%" align="center">Node Label</td>
             </tr>
             
             <%=buildTableRows(nodes, midNodeIndex, nodes.size())%>
                
           </table>
-        </td>
+	</div>
         <% } /*end if */ %>
-   </tr>
-      
-   <tr>
-        <td align="left" valign="center" colspan="5">
-          &nbsp;<br>
+
+	<div class="spacer"></div>
+
+	<br/>
+
           <input type="button" value="Delete Nodes" onClick="applyChanges()">
           <input type="button" value="Cancel" onClick="cancel()"> 
           <input type="button" value="Select All" onClick="checkAll()">
           <input type="button" value="Unselect All" onClick="uncheckAll()">
           <input type="reset">
-        </td>
-	<td>&nbsp;</td>
-	<td>&nbsp;</td>
-    </tr>
-  
-</table>
-</FORM>
+</form>
 
-<br>
 
-<jsp:include page="/includes/footer.jsp" flush="true" >
-  <jsp:param name="location" value="admin" />
-</jsp:include>
-</body>
-</html>
+<jsp:include page="/includes/footer.jsp" flush="true"/>
 
 <%!
       public String buildTableRows(List nodes, int start, int stop)
@@ -278,16 +240,16 @@
 		int nodeid = curNode.getNodeID();
                  
           row.append("<tr>\n");
-          row.append("<td width=\"5%\" align=\"center\">");
+          row.append("<td class=\"standard\" width=\"5%\" align=\"center\">");
           row.append("<input type=\"checkbox\" name=\"nodeCheck\" value=\""+ nodeid +"\" >");
           row.append("</td>\n");
-          row.append("<td width=\"5%\" align=\"center\">");
+          row.append("<td class=\"standard\" width=\"5%\" align=\"center\">");
           row.append("<input type=\"checkbox\" name=\"nodeData\" value=\""+ nodeid +"\" >");
           row.append("</td>\n");
-          row.append("<td width=\"5%\" align=\"center\">");
+          row.append("<td class=\"standard\" width=\"5%\" align=\"center\">");
 	  row.append(nodeid);
           row.append("</td>\n");
-          row.append("<td width=\"10%\" align=\"left\">");
+          row.append("<td class=\"standard\" width=\"10%\" align=\"left\">");
 	  row.append(nodelabel);
           row.append("</td>\n");
           row.append("</tr>\n");

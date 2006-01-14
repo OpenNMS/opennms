@@ -1,4 +1,4 @@
-<!--
+<%--
 
 //
 // This file is part of the OpenNMS(R) Application.
@@ -36,42 +36,28 @@
 //      http://www.opennms.org/
 //      http://www.opennms.com///
 
--->
+--%>
 
-<%@page language="java" contentType="text/html" session="true" %>
+<%@page language="java"
+	contentType="text/html"
+	session="true"
+%>
 
-<html>
-<head>
-  <title>Advanced Alarm Search | Alarms | OpenNMS Web Console</title>
-  <base HREF="<%=org.opennms.web.Util.calculateUrlBase( request )%>" />
-  <link rel="stylesheet" type="text/css" href="css/styles.css" />
-</head>
-<body marginwidth="0" marginheight="0" LEFTMARGIN="0" RIGHTMARGIN="0" TOPMARGIN="0">
-
-<% String breadcrumb1 = "<a href='alarm/index.jsp'>Alarms</a>"; %>
-<% String breadcrumb2 = "Advanced Alarm Search"; %>
 <jsp:include page="/includes/header.jsp" flush="false" >
   <jsp:param name="title" value="Advanced Alarm Search" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb1%>" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb2%>" />
+  <jsp:param name="headTitle" value="Advanced Search" />
+  <jsp:param name="headTitle" value="Alarms" />
+  <jsp:param name="breadcrumb" value="<a href='alarm/index.jsp'>Alarms</a>" />
+  <jsp:param name="breadcrumb" value="Advanced Alarm Search" />
 </jsp:include>
 
-<br />
-<!-- Body -->
-
-<table width="100%" cellspacing="0" cellpadding="0" border="0">
-  <tr>
-    <td width="10">&nbsp;</td>
-
-    <td valign="top">
+  <div id="contentleft">
       <h3>Advanced Alarm Search</h3>
 
-      <jsp:include page="/alarm/advquerypanel.jsp" flush="false" />
-    </td>
+      <jsp:include page="/includes/alarm-advquerypanel.jsp" flush="false" />
+  </div> <!-- id="contentleft" -->
 
-    <td width="20">&nbsp;</td>
-
-    <td width="50%" valign="top">
+  <div id="contentright">
       <h3>Searching Instructions</h3>
 
       <p>The <strong>Advanced Alarm Search</strong> page can be used to search the alarm list on
@@ -83,15 +69,6 @@
 
       <p>If you wish to select alarms within a specific time span, check <em>both</em>
       boxes and enter the beginning and end of the range in the boxes provided.</p>
-    </td>
-
-    <td width="10">&nbsp;</td>
-  </tr>
-</table>
-
-<br />
+  </div> <!-- id="contentright" -->
 
 <jsp:include page="/includes/footer.jsp" flush="false" />
-
-</body>
-</html>

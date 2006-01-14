@@ -1,4 +1,4 @@
-<!--
+<%--
 
 //
 // This file is part of the OpenNMS(R) Application.
@@ -37,9 +37,16 @@
 //      http://www.opennms.com/
 //
 
--->
+--%>
 
-<%@page language="java" contentType="text/html" session="true" import="java.util.*,org.opennms.web.notification.*,org.opennms.web.element.*"%>
+<%@page language="java"
+	contentType="text/html"
+	session="true"
+	import="java.util.*,
+		org.opennms.web.notification.*,
+		org.opennms.web.element.*
+	"
+%>
 
 <%!
     NotificationModel model = new NotificationModel();
@@ -54,22 +61,23 @@
         noticeID = Integer.parseInt( noticeIdString );
     }
     catch( NumberFormatException e ) {
-        throw new org.opennms.web.notification.NoticeIdNotFoundException( "The notice id must be an integer.", noticeIdString );
+        throw new NoticeIdNotFoundException("The notice id must be an integer.",
+					     noticeIdString );
     }
     
     Notification notice = this.model.getNoticeInfo(noticeID);
     
     if( notice == null ) {
-        throw new org.opennms.web.notification.NoticeIdNotFoundException( "An notice with this id was not found.", String.valueOf(noticeID) );
+        throw new NoticeIdNotFoundException("An notice with this id was not found.", String.valueOf(noticeID));
     }
 %>
 
-<html>
-<head>
-  <title>Notification Detail | OpenNMS Web Console</title>
-  <base HREF="<%=org.opennms.web.Util.calculateUrlBase( request )%>" />
-  <link rel="stylesheet" type="text/css" href="css/styles.css" />
-</head>
+<jsp:include page="/includes/header.jsp" flush="false" >
+  <jsp:param name="title" value="Notification Detail" />
+  <jsp:param name="headTitle" value="Notification Detail" />
+  <jsp:param name="breadcrumb" value="<a href='notification/index.jsp'>Notification</a>" />
+  <jsp:param name="breadcrumb" value="Detail" />
+</jsp:include>
 
 <script language="Javascript" type="text/javascript" >
     
@@ -79,160 +87,137 @@
     }
 </script>
 
-<body marginwidth="0" marginheight="0" LEFTMARGIN="0" RIGHTMARGIN="0" TOPMARGIN="0">
-
-<% String breadcrumb1 = "<a href='notification/index.jsp'>Notification</a>"; %>
-<% String breadcrumb2 = "Detail"; %>
-<jsp:include page="/includes/header.jsp" flush="false" >
-  <jsp:param name="title" value="Notification Detail" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb1%>" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb2%>" />
-</jsp:include>
-
-<br>
-<!-- Body -->
-
-<table width="100%" cellspacing="0" cellpadding="0" border="0">
+<h3>Notice #<%=notice.getId()%> 
+  <% if ( NoticeFactory.canDisplayEvent(notice.getEventId()) ) { %>
+    from event #<a href="event/detail.jsp?id=<%=notice.getEventId()%>"><%=notice.getEventId()%></a>
+  <% } %>
+</h3>
+      
+<table class="standard">
   <tr>
-    <td> &nbsp; </td>
-
-    <td>
-      
-      <td width="100%" valign="top" > 
-      <h3>Notice #<%=notice.getId()%> 
-          <% if ( NoticeFactory.canDisplayEvent(notice.getEventId()) ) { %>
-                from event #<a href="event/detail.jsp?id=<%=notice.getEventId()%>"><%=notice.getEventId()%></a>
-          <% } %>
-      </h3>
-      
-      <table width="100%" border="1" cellspacing="0" cellpadding="2" bgcolor="#cccccc" bordercolor="black">
-        <tr>
-          <td width="15%" bgcolor="#999999"><b>Notification Time</b></td>
-          <td width="17%"><%=org.opennms.netmgt.EventConstants.formatToUIString(notice.getTimeSent())%></td>
-          <td width="15%" bgcolor="#999999"><b>Time&nbsp;Replied</b></td>
-          <td width="17%"><%=notice.getTimeReplied()!=null ? org.opennms.netmgt.EventConstants.formatToUIString(notice.getTimeReplied()) : "&nbsp"%></td>
-          <td width="15%" bgcolor="#999999"><b>Responder</b></td>
-          <td width="17%"><%=notice.getResponder()!=null ? notice.getResponder() : "&nbsp"%></td>
-        </tr>
-      </table>
-      
-      <br>
-      
-      <table width="100%" border="1" cellspacing="0" cellpadding="2" bgcolor="#cccccc" bordercolor="black">
-        <tr>
-          <td align="left" valign="top" bgcolor="#999999" width="15%"><b>Node</b></td>
-          <td width="17%">
-          <%if (NetworkElementFactory.getNodeLabel(notice.getNodeId())!=null) { %>
-            <a href="element/node.jsp?node=<%=notice.getNodeId()%>"><%=NetworkElementFactory.getNodeLabel(notice.getNodeId())%></a>
-          <% } else { %>
-            &nbsp;
-          <% } %>
-          </td>
-          
-          <td align="left" valign="top" bgcolor="#999999"  width="15%"><b>Interface</b></td>
-          <td width="17%">
-          <%if (NetworkElementFactory.getNodeLabel(notice.getNodeId())!=null && notice.getIpAddress()!=null) { %>
-            <a href="element/interface.jsp?node=<%=notice.getNodeId()%>&intf=<%=notice.getIpAddress()%>"><%=notice.getIpAddress()%></a>
-          <% } else if (notice.getIpAddress()!=null) { %>
-            <%=notice.getIpAddress()%>
-          <% } else { %>
-            &nbsp;
-          <% } %>
-          </td>
-          
-          <td align="left" valign="top" bgcolor="#999999"  width="15%"><b>Service</b></td>
-          <td width="17%">
-          <%if (NetworkElementFactory.getNodeLabel(notice.getNodeId())!=null && notice.getIpAddress()!=null && notice.getServiceName()!=null) { %>
-            <a href="element/service.jsp?node=<%=notice.getNodeId()%>&intf=<%=notice.getIpAddress()%>&service=<%=notice.getServiceId()%>"><%=notice.getServiceName()%></a>
-          <% } else if (notice.getServiceName()!=null) { %>
-            <%=notice.getServiceName()%>
-          <% } else { %>
-            &nbsp;
-          <% } %>
-          </td>
-        </tr>
-        <%if (NetworkElementFactory.getNodeLabel(notice.getNodeId())!=null) { %>
-          <tr>
-            <td align="left" valign="top" colspan="6">
-              <a href="outage/list?filter=node%3D<%=notice.getNodeId()%>">See outages for <%=NetworkElementFactory.getNodeLabel(notice.getNodeId())%></a>
-            </td>
-          </tr>
-        <% } %>
-      </table>
-      
-      <br>
-      
-      <table width="100%" border="1" cellspacing="0" cellpadding="2" bgcolor="#cccccc" bordercolor="black">
-        <%if (notice.getNumericMessage()!=null) { %>
-          <tr>
-            <td align="left" valign="top" width="10%" bgcolor="#999999"><b>Numeric Message</b></td>
-          </tr>
-          <tr>
-           <td align="left" valign="top"><%=notice.getNumericMessage()%></td>
-          </tr>
-        <% } %>
-        
-        <%if (notice.getTextMessage()!=null) { %>
-          <tr>
-            <td align="left" valign="top" width="10%" bgcolor="#999999"><b>Text Message</b></td>
-          </tr>
-          <tr>
-            <td align="left" valign="top"><%=notice.getTextMessage()%></td>
-          </tr>
-        <% } %>
-      </table>
-      
-      <br>
-      
-      <table width="100%" border="1" cellspacing="0" cellpadding="2" bgcolor="#cccccc" bordercolor="black">
-        <tr>
-          <td bgcolor="#999999"><b>Sent To</b></td>
-          <td bgcolor="#999999"><b>Sent At</b></td>
-          <td bgcolor="#999999"><b>Media</b></td>
-          <td bgcolor="#999999"><b>Contact Info</b></td>
-        </tr>
-        <% List sentToList = notice.getSentTo();
-           for (int i=0; i < sentToList.size(); i++) {
-              NoticeSentTo sentTo = (NoticeSentTo)sentToList.get(i);
-         %>
-        <tr>
-          <td><%=sentTo.getUserId()%></a></td>
-          <td><%=org.opennms.netmgt.EventConstants.formatToUIString(sentTo.getTime())%></td>
-          <td><% if (sentTo.getMedia()!=null && !sentTo.getMedia().trim().equals("")) { %>
-                <%=sentTo.getMedia()%>
-              <% } else { %>
-                &nbsp;
-              <% } %>
-          </td>
-          <td><% if (sentTo.getContactInfo()!=null && !sentTo.getContactInfo().trim().equals("")) { %>
-                <%=sentTo.getContactInfo()%>
-              <% } else { %>
-                &nbsp;
-              <% } %>
-          </td>
-        </tr>
-        <% } %>
-      </table>
-      
-      <br>
-      
-      <%if (notice.getTimeReplied()==null) { %>
-        <FORM METHOD="POST" NAME="acknowledge" ACTION="notification/acknowledge">
-          <input type="hidden" name="notices" value="<%=notice.getId()%>"/>
-          <input type="hidden" name="redirect" value="<%=request.getContextPath() + request.getServletPath() + "?" + request.getQueryString()%>" />
-          <input type="button" value="Acknowledge" onClick="javascript:acknowledgeNotice()"/>
-        </FORM>
-      <% } %>
-      
-    </td>
-    
-    <td> &nbsp; </td>
+    <td class="standardheader" width="15%">Notification Time</td>
+    <td class="standard" width="17%"><%=org.opennms.netmgt.EventConstants.formatToUIString(notice.getTimeSent())%></td>
+    <td class="standardheader" width="15%">Time&nbsp;Replied</td>
+    <td class="standard" width="17%"><%=notice.getTimeReplied()!=null ? org.opennms.netmgt.EventConstants.formatToUIString(notice.getTimeReplied()) : "&nbsp"%></td>
+    <td class="standardheader" width="15%">Responder</td>
+    <td class="standard" width="17%"><%=notice.getResponder()!=null ? notice.getResponder() : "&nbsp"%></td>
   </tr>
 </table>
+      
+<table class="standard">
+  <tr>
+    <td class="standardheader" width="15%">Node</td>
 
-<br>
+    <td class="standard" width="17%">
+      <%if (NetworkElementFactory.getNodeLabel(notice.getNodeId())!=null) { %>
+        <a href="element/node.jsp?node=<%=notice.getNodeId()%>"><%=NetworkElementFactory.getNodeLabel(notice.getNodeId())%></a>
+      <% } else { %>
+        &nbsp;
+      <% } %>
+    </td>
+          
+    <td class="standardheader" width="15%">Interface</td>
 
+    <td class="standard" width="17%">
+      <%if (NetworkElementFactory.getNodeLabel(notice.getNodeId())!=null && notice.getIpAddress()!=null) { %>
+        <a href="element/interface.jsp?node=<%=notice.getNodeId()%>&intf=<%=notice.getIpAddress()%>"><%=notice.getIpAddress()%></a>
+      <% } else if (notice.getIpAddress()!=null) { %>
+        <%=notice.getIpAddress()%>
+      <% } else { %>
+        &nbsp;
+      <% } %>
+    </td>
+          
+    <td class="standardheader" width="15%">Service</td>
+
+    <td class="standard" width="17%">
+      <%if (NetworkElementFactory.getNodeLabel(notice.getNodeId())!=null && notice.getIpAddress()!=null && notice.getServiceName()!=null) { %>
+        <a href="element/service.jsp?node=<%=notice.getNodeId()%>&intf=<%=notice.getIpAddress()%>&service=<%=notice.getServiceId()%>"><%=notice.getServiceName()%></a>
+      <% } else if (notice.getServiceName()!=null) { %>
+        <%=notice.getServiceName()%>
+      <% } else { %>
+        &nbsp;
+      <% } %>
+    </td>
+  </tr>
+
+  <%if (NetworkElementFactory.getNodeLabel(notice.getNodeId())!=null) { %>
+    <tr>
+      <td class="standard" colspan="6">
+        <a href="outage/list?filter=node%3D<%=notice.getNodeId()%>">See outages for <%=NetworkElementFactory.getNodeLabel(notice.getNodeId())%></a>
+      </td>
+    </tr>
+  <% } %>
+</table>
+      
+<% if (notice.getNumericMessage() != null || notice.getTextMessage() != null) { %>
+  <table class="standard">
+    <% if (notice.getNumericMessage()!=null) { %>
+      <tr>
+        <td class="standardheader" width="10%">Numeric Message</td>
+      </tr>
+
+      <tr>
+        <td class="standard"><%=notice.getNumericMessage()%></td>
+      </tr>
+    <% } %>
+          
+    <% if (notice.getTextMessage() != null) { %>
+      <tr>
+        <td class="standardheader" width="10%">Text Message</td>
+      </tr>
+
+      <tr>
+        <td class="standard"><%=notice.getTextMessage()%></td>
+      </tr>
+    <% } %>
+  </table>
+<% } %>
+      
+<table class="standard">
+  <tr>
+    <td class="standardheader">Sent To</td>
+    <td class="standardheader">Sent At</td>
+    <td class="standardheader">Media</td>
+    <td class="standardheader">Contact Info</td>
+  </tr>
+  
+  <% List sentToList = notice.getSentTo(); %>
+  <%  for (int i=0; i < sentToList.size(); i++) { %>
+    <%  NoticeSentTo sentTo = (NoticeSentTo)sentToList.get(i); %>
+
+    <tr>
+      <td class="standard"><%=sentTo.getUserId()%></a></td>
+
+      <td class="standard"><%=org.opennms.netmgt.EventConstants.formatToUIString(sentTo.getTime())%></td>
+
+      <td class="standard">
+        <% if (sentTo.getMedia()!=null && !sentTo.getMedia().trim().equals("")) { %>
+          <%=sentTo.getMedia()%>
+        <% } else { %>
+          &nbsp;
+        <% } %>
+      </td>
+
+      <td class="standard">
+        <% if (sentTo.getContactInfo()!=null && !sentTo.getContactInfo().trim().equals("")) { %>
+          <%=sentTo.getContactInfo()%>
+        <% } else { %>
+          &nbsp;
+        <% } %>
+      </td>
+    </tr>
+  <% } %>
+</table>
+ 
+<br/>
+     
+<% if (notice.getTimeReplied()==null) { %>
+  <form method="post" name="acknowledge" action="notification/acknowledge">
+    <input type="hidden" name="notices" value="<%=notice.getId()%>"/>
+    <input type="hidden" name="redirect" value="<%=request.getContextPath() + request.getServletPath() + "?" + request.getQueryString()%>" />
+    <input type="button" value="Acknowledge" onClick="javascript:acknowledgeNotice()"/>
+  </form>
+<% } %>
+      
 <jsp:include page="/includes/footer.jsp" flush="false" />
-
-</body>
-</html>

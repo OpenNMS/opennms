@@ -1,4 +1,4 @@
-<!--
+<%--
 
 //
 // This file is part of the OpenNMS(R) Application.
@@ -38,50 +38,42 @@
 //      http://www.opennms.com/
 //
 
--->
+--%>
 
-<%@page language="java" contentType="text/html" session="true" %>
+<%@page language="java"
+	contentType="text/html"
+	session="true"
+%>
 
-<html>
-<head>
-  <title>Import Assets | OpenNMS Web Console</title>
-  <base HREF="<%=org.opennms.web.Util.calculateUrlBase( request )%>" />
-  <link rel="stylesheet" type="text/css" href="css/styles.css" />
-</head>
-<body marginwidth="0" marginheight="0" LEFTMARGIN="0" RIGHTMARGIN="0" TOPMARGIN="0">
-
-<% String breadcrumb1 = "<a href='admin/index.jsp'>Admin</a>"; %>
-<% String breadcrumb2 = "<a href='admin/asset/index.jsp'>Import/Export Assets</a>"; %>
-<% String breadcrumb3 = "Import"; %>
 <jsp:include page="/includes/header.jsp" flush="false" >
   <jsp:param name="title" value="Import Assets" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb1%>" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb2%>" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb3%>" />
+  <jsp:param name="headTitle" value="Import Assets" />
+  <jsp:param name="breadcrumb" value="<a href='admin/index.jsp'>Admin</a>" />
+  <jsp:param name="breadcrumb" value="<a href='admin/asset/index.jsp'>Import/Export Assets</a>" />
+  <jsp:param name="breadcrumb" value="Import" />
 </jsp:include>
 
-<br>
-<!-- Body -->
-<table width="100%" cellspacing="0" cellpadding="2" border="0">
-  <tr>
-    <td> &nbsp; </td>
+<h3>Assets</h3>
 
-    <td>
-      <h3>Assets</h3>
-      <p>Paste your comma-seperated values into this text field to import
-         them into the assets database.  There is one line per record, and 
-         the fields are delimited by commas.
-      </p>
-      <form action="admin/asset/import" method="POST">
-        <textarea name="assetsText" cols="80" rows="25" wrap="off" ></textarea>
-        <br>
-        <input type="submit" value="Import"/>
-      </form>
+<p>
+  Paste your comma-seperated values into this text field to import
+  them into the assets database.  There is one line per record, and 
+  the fields are delimited by commas.
+</p>
 
-      <p>The asset fields are (in order):
-        <table width="100%" cellspacing="0" cellpadding="2" border="0">
-          <tr>
-            <td colspan="33%">
+<form action="admin/asset/import" method="post">
+  <textarea name="assetsText" cols="80" rows="25" wrap="off" ></textarea>
+
+  <br/>
+
+  <input type="submit" value="Import"/>
+</form>
+
+<p>
+  The asset fields are (in order):
+</p>
+
+	<div style="width: 33%; float: left">
               <ol>
                 <li> NodeLabel (for display only)
                 <li> NodeId (database identifier, integer)
@@ -97,8 +89,9 @@
                 <li> Rack
 		<li> Slot
               </ol>
-            </td>
-            <td colspan="33%">
+	</div>
+
+	<div style="width: 33%; float: left">
               <ol start="14">
                 <li> Port
                 <li> Region
@@ -114,8 +107,9 @@
                 <li> Room
                 <li> VendorPhone
               </ol>
-            </td>
-            <td colspan="33%">
+	</div>
+
+	<div style="width: 33%; float: left">
               <ol start="27">
                 <li> VendorFax
                 <li> DateInstalled
@@ -131,19 +125,6 @@
 		<li> Threshold Category
                 <li> Comments
               </ol>
-            </td>
-          </tr>
-        </table>
-      </p>
-    </td>
-    
-    <td> &nbsp; </td>
-  </tr>
-</table>
-                                     
-<br>
+	</div>
 
 <jsp:include page="/includes/footer.jsp" flush="false" />
-
-</body>
-</html>

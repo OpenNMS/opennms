@@ -1,4 +1,4 @@
-<!--
+<%--
 
 //
 // This file is part of the OpenNMS(R) Application.
@@ -40,32 +40,25 @@
 //      http://www.opennms.com/
 //
 
--->
+--%>
 
-<%@page language="java" contentType="text/html" session="true" import="org.opennms.netmgt.config.*,org.opennms.netmgt.config.categories.*, java.util.*"  %>
-<html>
-<head>
-  <title>Reports | OpenNMS Web Console</title>
-  <base HREF="<%=org.opennms.web.Util.calculateUrlBase( request )%>" />
-  <link rel="stylesheet" type="text/css" href="css/styles.css" />
-</head>
-<body marginwidth="0" marginheight="0" LEFTMARGIN="0" RIGHTMARGIN="0" TOPMARGIN="0">
+<%@page language="java"
+	contentType="text/html"
+	session="true"
+	import="org.opennms.netmgt.config.*,
+		org.opennms.netmgt.config.categories.*,
+		java.util.*
+	"
+%>
 
-<% String breadcrumb1 = "Reports"; %>
 <jsp:include page="/includes/header.jsp" flush="false" >
   <jsp:param name="title" value="Reports" />
+  <jsp:param name="headTitle" value="Reports" />
   <jsp:param name="location" value="report" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb1%>" />
+  <jsp:param name="breadcrumb" value="Reports" />
 </jsp:include>
 
-<br> 
-
-<!-- Body -->
-<table>
-    <tr>
-        <td>&nbsp;</td>
-        
-        <td valign="top">
+  <div style="width: 40%; float: left;">
             <h3>Reports</h3>
 
             <!-- Performance Reports -->    
@@ -80,11 +73,9 @@
             <!-- Response Time Report -->
             <p><a href="response/index.jsp">Response Time Reports</a></p>
             <!-- more reports will follow -->
-        </td>
-        
-        <td>&nbsp;</td>
-         
-        <td width="60%" valign="top">
+  </div>
+
+  <div style="width: 60%; float: left;">
             <h3>Descriptions</h3>
             
             <p><b>Performance Reports</b> provide a way to easily 
@@ -108,17 +99,6 @@
                 visualize the response time data collected from managed nodes throughout
                 your network.  
             </p>
-            
-         </td>
-         
-         <td>&nbsp;</td>
-    </tr>        
-</table>
-<br>
+  </div>
 
-<jsp:include page="/includes/footer.jsp" flush="false" >
-  <jsp:param name="location" value="report" />
-</jsp:include>
-
-</body>
-</html>
+<jsp:include page="/includes/footer.jsp" flush="false"/>

@@ -1,4 +1,4 @@
-<!--
+<%--
 
 //
 // This file is part of the OpenNMS(R) Application.
@@ -37,9 +37,18 @@
 //      http://www.opennms.org/
 //      http://www.opennms.com///
 
--->
+--%>
 
-<%@page language="java" contentType="text/html" session="true" import="org.opennms.netmgt.EventConstants,org.opennms.netmgt.xml.event.Event,org.opennms.web.element.*,org.opennms.web.*,org.opennms.netmgt.utils.*" %>
+<%@page language="java"
+	contentType="text/html"
+	session="true"
+	import="org.opennms.netmgt.EventConstants,
+		org.opennms.netmgt.xml.event.Event,
+		org.opennms.web.element.*,
+		org.opennms.web.*,
+		org.opennms.netmgt.utils.*
+	"
+%>
 
 <%!
     private void sendSNMPRestartEvent(int nodeid, String primeInt) throws ServletException {
@@ -63,17 +72,17 @@
 <%
     String nodeIdString = request.getParameter("node");
     String ipAddr = request.getParameter("ipaddr");
+    String[] requiredParameters = new String[] { "node", "ipaddr" };
     
-    if( nodeIdString == null ) {
-        throw new MissingParameterException("node");
+    if (nodeIdString == null) {
+        throw new MissingParameterException("node", requiredParameters);
     }
     
-    if( ipAddr == null ) {
-        throw new MissingParameterException("ipaddr");
+    if (ipAddr == null) {
+        throw new MissingParameterException("ipaddr", requiredParameters);
     }
-    
+
     int nodeId = Integer.parseInt(nodeIdString);
-    String nodeLabel = NetworkElementFactory.getNodeLabel(nodeId);
 
     sendSNMPRestartEvent(nodeId, ipAddr);
     
@@ -88,50 +97,28 @@
 </head>
 <body marginwidth="0" marginheight="0" LEFTMARGIN="0" RIGHTMARGIN="0" TOPMARGIN="0">
 
-<% if( ipAddr == null ) { %>
-  <% String breadcrumb1 = "<a href='element/index.jsp'>Search</a>"; %>
-  <% String breadcrumb2 = "<a href='element/node.jsp?node=" + nodeId  + "'>Node</a>"; %>
-  <% String breadcrumb3 = "Update SNMP Information"; %>
-  <jsp:include page="/includes/header.jsp" flush="false" >
-    <jsp:param name="title" value="Update SNMP Information" />
-    <jsp:param name="breadcrumb" value="<%=breadcrumb1%>" />
-    <jsp:param name="breadcrumb" value="<%=breadcrumb2%>" />
-    <jsp:param name="breadcrumb" value="<%=breadcrumb3%>" />
-  </jsp:include>
-<% } else { %>
-  <% String intfCrumb = ""; %>
-  <% String breadcrumb1 = "<a href='element/index.jsp'>Search</a>"; %>
-  <% String breadcrumb2 = "<a href='element/node.jsp?node=" + nodeId  + "'>Node</a>"; %>
-  <% String breadcrumb3 = "<a href='element/interface.jsp?node=" + nodeId + "&intf=" + ipAddr  + "'>Interface</a>"; %>
-  <% String breadcrumb4 = "Update SNMP Information"; %>
-  <jsp:include page="/includes/header.jsp" flush="false" >
-    <jsp:param name="title" value="Update SNMP Information" />
-    <jsp:param name="breadcrumb" value="<%=breadcrumb1%>" />
-    <jsp:param name="breadcrumb" value="<%=breadcrumb2%>" />
-    <jsp:param name="breadcrumb" value="<%=breadcrumb3%>" />
-    <jsp:param name="breadcrumb" value="<%=breadcrumb4%>" />
-  </jsp:include>
-<% } %>
+<%
+  String breadcrumb2 = "<a href='element/node.jsp?node=" + nodeId
+                       + "'>Node</a>";
+  String breadcrumb3 = "<a href='element/interface.jsp?node=" + nodeId
+		       + "&intf=" + ipAddr  + "'>Interface</a>";
+%>
 
-<br>
+<jsp:include page="/includes/header.jsp" flush="false" >
+  <jsp:param name="title" value="Update SNMP Information" />
+  <jsp:param name="headTitle" value="Rescan" />
+  <jsp:param name="headTitle" value="SNMP Information" />
+  <jsp:param name="breadcrumb" value="<a href='element/index.jsp'>Search</a>" />
+  <jsp:param name="breadcrumb" value="<%=breadcrumb2%>" />
+  <jsp:param name="breadcrumb" value="<%=breadcrumb3%>" />
+  <jsp:param name="breadcrumb" value="Update SNMP Information" />
+</jsp:include>
 
-<!-- Body -->
-<table width="100%" cellspacing="0" cellpadding="0"border="0">
-  <tr>
-    <td>&nbsp;</td>
-
-    <td valign="top">
-      <h3>Update SNMP Information</h3>
+<h3>Update SNMP Information</h3>
       
-      <p>The interface has had its SNMP information updated. This should cause any
-	 changes in SNMP community names or collection to take affect.</p>
-    </td>
-  </tr>
-</table>
-
-<br>
+<p>
+  The interface has had its SNMP information updated. This should cause any
+  changes in SNMP community names or collection to take affect.
+</p>
 
 <jsp:include page="/includes/footer.jsp" flush="false" />
-
-</body>
-</html>

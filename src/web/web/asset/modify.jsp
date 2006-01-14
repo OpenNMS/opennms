@@ -1,4 +1,4 @@
-<!--
+<%--
 
 //
 // This file is part of the OpenNMS(R) Application.
@@ -37,23 +37,30 @@
 //      http://www.opennms.org/
 //      http://www.opennms.com///
 
--->
+--%>
 
-<%@page language="java" contentType="text/html" session="true" import="org.opennms.web.asset.*,org.opennms.web.element.*" %>
+<%@page language="java"
+	contentType="text/html"
+	session="true"
+	import="org.opennms.web.asset.*,
+		org.opennms.web.element.*,
+        	org.opennms.web.MissingParameterException
+	"
+%>
 
 <%!
     AssetModel model = new AssetModel();
 %>
 
 <%
-    String nodeIdString = request.getParameter( "node" );
+    String nodeIdString = request.getParameter("node");
 
-    if( nodeIdString == null ) {
-        throw new org.opennms.web.MissingParameterException( "node" );
+    if (nodeIdString == null) {
+        throw new MissingParameterException("node", new String[] { "node" });
     }
 
     int nodeId = Integer.parseInt( nodeIdString );
-    String nodeLabel = org.opennms.web.element.NetworkElementFactory.getNodeLabel( nodeId );
+    String nodeLabel = NetworkElementFactory.getNodeLabel( nodeId );
     Asset asset = this.model.getAsset( nodeId );
     Node node_db = NetworkElementFactory.getNode( nodeId );
     boolean isNew = false;
@@ -64,66 +71,50 @@
     } 
 %>
 
-<html>
-<head>
-  <title>Modify | Asset | OpenNMS Web Console</title>
-  <base HREF="<%=org.opennms.web.Util.calculateUrlBase( request )%>" />
-  <link rel="stylesheet" type="text/css" href="css/styles.css" />
-</head>
-<body marginwidth="0" marginheight="0" LEFTMARGIN="0" RIGHTMARGIN="0" TOPMARGIN="0">
-
-<% String breadcrumb1 = "<a href ='asset/index.jsp'>Assets</a>"; %>
-<% String breadcrumb2 = "Modify"; %>
 <jsp:include page="/includes/header.jsp" flush="false" >
   <jsp:param name="title" value="Modify Asset" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb1%>" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb2%>" />
+  <jsp:param name="headTitle" value="Modify" />
+  <jsp:param name="headTitle" value="Asset" />
+  <jsp:param name="breadcrumb" value="<a href ='asset/index.jsp'>Assets</a>" />
+  <jsp:param name="breadcrumb" value="Modify" />
 </jsp:include>
 
-<br>
+<h2><%=nodeLabel%> (Node ID <%=nodeId%>)</h2>
 
-<table width="100%" cellspacing="0" cellpadding="2" border="0">
-  <tr>
-    <td>&nbsp;</td>
-    <td colspan="3">
-      <h2><%=nodeLabel%> ( nodeID=<%=nodeId%> ) </h2>
-      <p><a href="element/node.jsp?node=<%=nodeId%>">General Information</a></p>
-      <%-- Handle the SNMP information if any --%> 
-      <% if( node_db.getNodeSysId() != null ) { %>
-        <table width="100%" border="1" cellspacing="0" cellpadding="2" bordercolor="black">
-          <tr>
-            <td> System Id </td>
-            <td> <%=node_db.getNodeSysId()%> </td>
-            <td> System Name </td>
-            <td> <%=node_db.getNodeSysName()%> </td>
-          </tr>
-          <tr>
-            <td> System Location </td>
-            <td> <%=node_db.getNodeSysLocn()%> </td>
-            <td> System Contact </td>
-            <td> <%=node_db.getNodeSysContact()%> </td>
-          </tr>
-          <tr>
-            <td> System Description </td>
-            <td> <%=node_db.getNodeSysDescr()%> </td>
-	            <td>&nbsp; </td>
-    	        <td>&nbsp; </td>
-          </tr>
-        </table>
-      <% } %>      
-    </td>
-    <td>&nbsp;</td>
-  </tr>
+<p>
+  <a href="element/node.jsp?node=<%=nodeId%>">General Information</a>
+</p>
 
-  <tr>
-    <td>&nbsp;</td>
+<%-- Handle the SNMP information if any --%> 
+<% if( node_db.getNodeSysId() != null ) { %>
+  <table class="standard">
+    <tr>
+      <td class="standardheader"> System Id </td>
+      <td class="standard"> <%=node_db.getNodeSysId()%> </td>
+      <td class="standardheader"> System Name </td>
+      <td class="standard"> <%=node_db.getNodeSysName()%> </td>
+    </tr>
 
-    <td>
-      <form action="asset/modifyAsset" method="POST">
-        <input type="hidden" name="node" value="<%=nodeId%>" />
-        <input type="hidden" name="isnew" value="<%=isNew%>" />
+    <tr>
+      <td class="standardheader"> System Location </td>
+      <td class="standard"> <%=node_db.getNodeSysLocn()%> </td>
+      <td class="standardheader"> System Contact </td>
+      <td class="standard"> <%=node_db.getNodeSysContact()%> </td>
+    </tr>
 
-        <table width="100%" cellspacing="0" cellpadding="2" border="0">
+    <tr>
+      <td class="standardheader"> System Description </td>
+      <td class="standard"> <%=node_db.getNodeSysDescr()%> </td>
+      <td class="standard" colspan="2">&nbsp; </td>
+   </tr>
+  </table>
+<% } %>      
+
+<form action="asset/modifyAsset" method="post">
+  <input type="hidden" name="node" value="<%=nodeId%>" />
+  <input type="hidden" name="isnew" value="<%=isNew%>" />
+
+  <table width="100%" cellspacing="0" cellpadding="2" border="0">
 	  <tr>
 	    <td colspan="6"><h3>Configuration Categories</h3></td>
 	  </tr>
@@ -279,18 +270,10 @@
         </table>
       </form>
 
-      <p>Note that all commas and end of line markers will be removed when 
-        submitted.  Please try to format your comments and other values without
-        commas or hitting the return key to add new lines.
-      </p>
-    </td>
+<p>
+  Note that all commas and end of line markers will be removed when 
+  submitted.  Please try to format your comments and other values without
+  commas or hitting the return key to add new lines.
+</p>
 
-    <td>&nbsp;</td>
-  </tr>
-</table>
-                                     
-<br>
 <jsp:include page="/includes/footer.jsp" flush="false" />
-
-</body>
-</html>

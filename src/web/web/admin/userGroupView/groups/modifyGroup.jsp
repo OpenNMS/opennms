@@ -1,4 +1,4 @@
-<!--
+<%--
 
 //
 // This file is part of the OpenNMS(R) Application.
@@ -37,25 +37,45 @@
 //      http://www.opennms.com/
 //
 
--->
+--%>
 
-<%@page language="java" contentType = "text/html" session = "true"  import="org.opennms.netmgt.config.*, java.util.*,java.text.*,org.opennms.netmgt.config.groups.*,org.opennms.netmgt.config.users.*"%>
+<%@page language="java"
+	contentType="text/html"
+	session="true"
+	import="org.opennms.netmgt.config.*,
+		java.util.*,
+		java.text.*,
+		org.opennms.netmgt.config.groups.*,
+		org.opennms.netmgt.config.users.*
+	"
+%>
+
 <%
 	HttpSession userSession = request.getSession(false);
   	Group group = null;
   
-	if (userSession != null)
-  	{
+	if (userSession != null) {
 		group = (Group)userSession.getAttribute("group.modifyGroup.jsp");
   	}
 
+	if (group == null) {
+		throw new ServletException("Could not get session attribute "
+					   + "group.modifyGroup.jsp");
+	}
+
 %>
-<html>
-<head>
-<title>Modify Group | User Admin | OpenNMS Web Console</title>
-<base HREF="<%=org.opennms.web.Util.calculateUrlBase( request )%>" />
-<link rel="stylesheet" type="text/css" href="css/styles.css" />
-</head>
+
+
+<jsp:include page="/includes/header.jsp" flush="false" >
+  <jsp:param name="title" value="Modify Group" />
+  <jsp:param name="headTitle" value="Modify" />
+  <jsp:param name="headTitle" value="Groups" />
+  <jsp:param name="headTitle" value="Admin" />
+  <jsp:param name="breadcrumb" value="<a href='admin/index.jsp'>Admin</a>" />
+  <jsp:param name="breadcrumb" value="<a href='admin/userGroupView/index.jsp'>Users and Groups</a>" />
+  <jsp:param name="breadcrumb" value="<a href='admin/userGroupView/groups/list.jsp'>Group List</a>" />
+  <jsp:param name="breadcrumb" value="Modify Group" />
+</jsp:include>
 
 <script language="Javascript" type="text/javascript" >
     
@@ -220,35 +240,15 @@
 
 </script>
 
-<body marginwidth="0" marginheight="0" LEFTMARGIN="0" RIGHTMARGIN="0" TOPMARGIN="0">
+<h3>Modifying Group: <%=group.getName()%></h3>
 
-<% String breadcrumb1 = "<a href='admin/index.jsp'>Admin</a>"; %>
-<% String breadcrumb2 = "<a href='admin/userGroupView/index.jsp'>Users and Groups</a>"; %>
-<% String breadcrumb3 = "<a href='admin/userGroupView/groups/list.jsp'>Group List</a>"; %>
-<% String breadcrumb4 = "Modify Group"; %>
-<jsp:include page="/includes/header.jsp" flush="false" >
-  <jsp:param name="title" value="Modify Group" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb1%>" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb2%>" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb3%>" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb4%>" />
-</jsp:include>
+<form method="post" name="modifyGroup">
+  <input type="hidden" name="groupName" value="<%=group.getName()%>"/>
+  <input type="hidden" name="redirect"/>
 
-<br>
-
-<FORM METHOD="POST" NAME="modifyGroup">
-<input type="hidden" name="groupName" value="<%=group.getName()%>"/>
-<input type="hidden" name="redirect"/>
-
-<table width="100%" border="0" cellspacing="0" cellpadding="2" >
-  <tr>
-    <td>&nbsp;</td>
-
-    <td>
       <table width="100%" border="0" cellspacing="0" cellpadding="2" >
         <tr>
           <td>
-            <h3>Modifying Group: <%=group.getName()%></h3>
             <tr>
               <td>
                 Assign and unassign users to the group using the select lists below. Also, change the ordering of
@@ -392,17 +392,8 @@
             </td>
           </tr>
         </table>
-      <td> &nbsp; </td>
-    </tr>
-  </table>
+</form>
   
-</FORM>
-  
-<br>
-
-<jsp:include page="/includes/footer.jsp" flush="false" />
-
-
 <script language="JavaScript">
   // shorthand for refering to menus
   // must run after document has been created
@@ -412,8 +403,9 @@
   var m2 = document.modifyGroup.selectedUsers;
 </script>
 
-</body>
-</html>
+<jsp:include page="/includes/footer.jsp" flush="false" />
+
+
 
 <%!
     private String getUsersList(Group group)

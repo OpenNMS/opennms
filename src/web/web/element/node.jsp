@@ -41,7 +41,19 @@
 
 --%>
 
-<%@page language="java" contentType="text/html" session="true" import="org.opennms.web.element.*,java.util.*,org.opennms.web.authenticate.Authentication,org.opennms.web.event.*,java.net.*,org.opennms.netmgt.utils.IPSorter,org.opennms.web.performance.*,org.opennms.web.response.*" %>
+<%@page language="java"
+	contentType="text/html"
+	session="true"
+	import="org.opennms.web.element.*,
+		java.util.*,
+		org.opennms.web.authenticate.Authentication,
+		org.opennms.web.event.*,
+		java.net.*,
+		org.opennms.netmgt.utils.IPSorter,
+		org.opennms.web.performance.*,
+		org.opennms.web.response.*
+	"
+%>
 
 <%!
     protected int telnetServiceId;
@@ -190,25 +202,16 @@
 	isSnmp = true;
 %>
 
-<html>
-<head>
-  <title><%=node_db.getLabel()%> | Node | OpenNMS Web Console</title>
-  <base HREF="<%=org.opennms.web.Util.calculateUrlBase( request )%>" />
-  <link rel="stylesheet" type="text/css" href="css/styles.css" />
-</head>
-
-<body>
-
 <% String breadcrumb1 = "<a href='element/index.jsp'>Search</a>"; %>
 <% String breadcrumb2 = "Node"; %>
 <jsp:include page="/includes/header.jsp" flush="false" >
   <jsp:param name="title" value="Node" />
+  <jsp:param name="headTitle" value="<%= node_db.getLabel() %>" />
+  <jsp:param name="headTitle" value="Node" />
   <jsp:param name="breadcrumb" value="<%=breadcrumb1%>" />
   <jsp:param name="breadcrumb" value="<%=breadcrumb2%>" />
 </jsp:include>
 
-<!-- Body -->
-<div id="node">
       <h2>Node: <%=node_db.getLabel()%></h2>
 
       <div id="linkbar">
@@ -275,67 +278,67 @@
 
 
 
-	<span id="contentleft">
+	<div id="contentleft">
             <!-- general info box -->
-            <table class="first">
-              <tbody><tr>
-                <td class="header" colspan="2">General</td> 
+            <table class="standardfirst">
+              <tr>
+                <td class="standardheader" colspan="2">General</td> 
               </tr>
               <tr> 
-                <td>Status</td>
-                <td><%=(this.getStatusString(node_db.getNodeType())!=null ? this.getStatusString(node_db.getNodeType()) : "Unknown")%></td>
+                <td class="standard">Status</td>
+                <td class="standard"><%=(this.getStatusString(node_db.getNodeType())!=null ? this.getStatusString(node_db.getNodeType()) : "Unknown")%></td>
               </tr>
-            </tbody></table>
+            </table>
 
             <!-- Availability box -->
             <jsp:include page="/includes/nodeAvailability-box.jsp" flush="false" />
 
             <!-- SNMP box, if info available --> 
             <% if( node_db.getNodeSysId() != null ) { %>
-	      <table>
-	      <tbody><tr>
-                  <td class="header" colspan="2">SNMP Attributes</td>
+	      <table class="standard">
+	      <tr>
+                  <td class="standardheader" colspan="2">SNMP Attributes</td>
                 </tr>
                 <tr>
 		  <!-- XXX should get rid of width... replace with a class? -->
-                  <td width="10%">Name:</td>
-                  <td><%=(node_db.getNodeSysName() == null) ? "&nbsp;" : node_db.getNodeSysName()%></td>
+                  <td class="standard" width="10%">Name:</td>
+                  <td class="standard"><%=(node_db.getNodeSysName() == null) ? "&nbsp;" : node_db.getNodeSysName()%></td>
                 </tr>
                 <tr>
-                  <td width="10%">Object&nbsp;ID:</td>
-                  <td><%=(node_db.getNodeSysId() == null) ? "&nbsp;" : node_db.getNodeSysId()%></td>
+                  <td class="standard" width="10%">Object&nbsp;ID:</td>
+                  <td class="standard"><%=(node_db.getNodeSysId() == null) ? "&nbsp;" : node_db.getNodeSysId()%></td>
                 </tr>
                 <tr>
-                  <td width="10%">Location:</td>
-                  <td><%=(node_db.getNodeSysLocn() == null) ? "&nbsp;" : node_db.getNodeSysLocn()%></td>
+                  <td class="standard" width="10%">Location:</td>
+                  <td class="standard"><%=(node_db.getNodeSysLocn() == null) ? "&nbsp;" : node_db.getNodeSysLocn()%></td>
                 </tr>
                 <tr>
-                  <td width="10%">Contact:</td>
-                  <td><%=(node_db.getNodeSysContact() == null) ? "&nbsp;" : node_db.getNodeSysContact()%></td>
+                  <td class="standard" width="10%">Contact:</td>
+                  <td class="standard"><%=(node_db.getNodeSysContact() == null) ? "&nbsp;" : node_db.getNodeSysContact()%></td>
                 </tr>
                 <tr>
-                  <td valign="top" width="10%">Description:</td>
-                  <td valign="top"><%=(node_db.getNodeSysDescr() == null) ? "&nbsp;" : node_db.getNodeSysDescr()%> </td>
+                  <td class="standard" valign="top" width="10%">Description:</td>
+                  <td class="standard" valign="top"><%=(node_db.getNodeSysDescr() == null) ? "&nbsp;" : node_db.getNodeSysDescr()%> </td>
                 </tr>
               </table>  
             <% } %>
             
             <!-- Interface box -->
-	      <table>
-	      <tbody><tr>
-                <td class="header">Interfaces</td> 
+	      <table class="standard">
+	      <tr>
+                <td class="standardheader">Interfaces</td> 
               </tr>
               <% for( int i=0; i < intfs.length; i++ ) { %>
                 <% if( "0.0.0.0".equals( intfs[i].getIpAddress() )) { %>
                   <tr>
-                    <td>
+                    <td class="standard">
                       <a href="element/interface.jsp?node=<%=nodeId%>&intf=<%=intfs[i].getIpAddress()%>&ifindex=<%=intfs[i].getIfIndex()%>">Non-IP</a>
                       <%=" (ifIndex: "+intfs[i].getIfIndex()+"-"+intfs[i].getSnmpIfDescription()+")"%>
                     </td>
                   </tr>
                 <% } else { %>  
                   <tr>
-                    <td>
+                    <td class="standard">
                       <a href="element/interface.jsp?node=<%=nodeId%>&intf=<%=intfs[i].getIpAddress()%>"><%=intfs[i].getIpAddress()%></a>
                       <%=intfs[i].getIpAddress().equals(intfs[i].getHostname()) ? "" : "(" + intfs[i].getHostname() + ")"%>
                     </td>
@@ -344,10 +347,10 @@
               <% } %>
             </table>
 
-	</span>
+	</div>
 
 
-	<span id="contentright">
+	<div id="contentright">
 
             <!-- events list  box -->
             <% String eventHeader = "<a href='event/list?filter=" + URLEncoder.encode("node=" + nodeId) + "'>Recent Events</a>"; %>
@@ -362,14 +365,9 @@
             
             <!-- Recent outages box -->
             <jsp:include page="/includes/nodeOutages-box.jsp" flush="false" />
-</span>
-</div>
-
+       </div>
 
 <jsp:include page="/includes/footer.jsp" flush="false" />
-
-</body>
-</html>
 
 <%!
     public static HashMap statusMap;

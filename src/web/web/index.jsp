@@ -41,36 +41,10 @@
 
 <%@page language="java" contentType="text/html" session="true"  %>
 
-<html>
-<head>
-  <title>OpenNMS Web Console</title>
-  <base HREF="<%=org.opennms.web.Util.calculateUrlBase( request )%>" />
-  <link rel="stylesheet" type="text/css" href="css/styles.css" />
-</head>
-
-<body>
-<%--
-<div class="rbroundbox">
-	<div class="rbtop"><div></div></div>
-		<div class="rbcontent">
-			<p>
---%>
-<jsp:include page="/includes/header.jsp" flush="false" >
- 			 	<jsp:param name="title" value="Web Console" />
+<jsp:include page="/includes/header.jsp" flush="false">
+  <jsp:param name="title" value="Web Console" />
 </jsp:include>
-<%--
-				</p>
-		</div><!-- /rbcontent -->
-	<div class="rbbot"><div></div></div>
-</div><!-- /rbroundbox -->
---%>
 
-
-
-<br/>
-
-<!-- Body -->
-  
     <!-- Column 1 of Body -->  
     <div id="index-contentleft">
 
@@ -176,12 +150,9 @@
       --%>
     </div>
 
-<div class="spacer"></div>
-<br/>
+  <div class="spacer"></div>
+  <br/>
 
 <jsp:include page="/includes/charts.jsp" flush="false" />
 
 <jsp:include page="/includes/footer.jsp" flush="false" />
-
-</body>
-</html>

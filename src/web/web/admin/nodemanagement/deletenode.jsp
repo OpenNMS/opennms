@@ -1,4 +1,4 @@
-<!--
+<%--
 
 //
 // This file is part of the OpenNMS(R) Application.
@@ -36,16 +36,24 @@
 //      http://www.opennms.com/
 //
 
--->
+--%>
 
-<%@page language="java" contentType="text/html" session="true" import="org.opennms.web.element.*,java.util.*,org.opennms.web.element.NetworkElementFactory" %>
+<%@page language="java"
+	contentType="text/html"
+	session="true"
+	import="org.opennms.web.element.*,
+		java.util.*,
+		org.opennms.web.element.NetworkElementFactory,
+		org.opennms.web.MissingParameterException
+	"
+%>
 
 <%
     int nodeId = -1;
     String nodeIdString = request.getParameter("node");
 
     if (nodeIdString == null) {
-        throw new org.opennms.web.MissingParameterException("node");
+        throw new MissingParameterException("node");
     }
 
     try {
@@ -54,8 +62,9 @@
         throw new ServletException(numE);
     }
     
-    if (nodeId < 0 )
+    if (nodeId < 0) {
         throw new ServletException("Invalid node ID.");
+    }
         
     //get the database node info
     Node node_db = NetworkElementFactory.getNode(nodeId);
@@ -64,12 +73,14 @@
     }
 %>
 
-<html>
-<head>
-  <title>Node Management | Admin | OpenNMS Web Console</title>
-  <base HREF="<%=org.opennms.web.Util.calculateUrlBase( request )%>" />
-  <link rel="stylesheet" type="text/css" href="css/styles.css" />
-</head>
+<jsp:include page="/includes/header.jsp" flush="false" >
+  <jsp:param name="title" value="Delete Node" />
+  <jsp:param name="headTitle" value="Node Management" />
+  <jsp:param name="headTitle" value="Admin" />
+  <jsp:param name="location" value="Node Management" />
+  <jsp:param name="breadcrumb" value="<a href='admin/index.jsp'>Admin</a>" />
+  <jsp:param name="breadcrumb" value="Node Management" />
+</jsp:include>
 
 <script language="Javascript" type="text/javascript" >
 
@@ -108,94 +119,55 @@
   }
 </script>
 
-<body marginwidth="0" marginheight="0" LEFTMARGIN="0" RIGHTMARGIN="0" TOPMARGIN="0">
+<h2>Node: <%=node_db.getLabel()%></h2>
 
-<% String breadcrumb1 = "<a href='admin/index.jsp'>Admin</a>"; %>
-<% String breadcrumb2 = "Node Management"; %>
-<jsp:include page="/includes/header.jsp" flush="false" >
-  <jsp:param name="title" value="Delete Node" />
-  <jsp:param name="location" value="Node Management" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb1%>" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb2%>" />
-</jsp:include>
+<hr/>
 
-<!-- Body -->
-<br>
+<p>
+  To permanently delete a node (and all associated interfaces, services,
+  outages, events and notifications), check the "Node" box and select "Delete". 
+</p>
 
-<table width="100%" cellspacing="0" cellpadding="0" border="0">
-  <tr>
-    <td> &nbsp;&nbsp; </td>
+<p>
+  Checking the "Data" box will delete the SNMP performance and response
+  time directories from the system as well.  Note that it is possible for
+  the directory to be deleted <i>before</i> the fact that the node has been
+  removed has fully propagated through the system. Thus the system may
+  recreate the directory for a single update after this action. In that
+  case, the directory will need to be removed manually.
+</p>
 
-    <td width="100%" valign="top">
-       <h2>Node: <%=node_db.getLabel()%></h2>
-       <hr>
-    </td>
-  </tr>
-</table>
+<p>
+  <strong>Note:</strong> If the IP address of any of the node's interfaces
+  is still configured for discovery, the node will be discovered again.  To
+  prevent this, either remove the IP address from the discovery range or
+  unmanage the device instead of deleting it.
+</p>
 
-<table width="100%" cellspacing="0" cellpadding="0" border="0">
-  <tr>
-    <td> &nbsp;&nbsp; </td>  
-    
-    <td><table width="100%" cellspacing="0" cellpadding="0" border="0">
-         <tr>
-          <td> &nbsp;&nbsp; </td>  
-          <td colspan="3"> 
-	  <p>To permanently delete a node (and all associated interfaces, services, outages, events and notifications), 
-             check the "Node" box and  select "Delete". 
-          </p>
-	  <p>Checking the "Data" box will delete the SNMP performance and response time directories from the system as well.
-             Note that it is possible for the directory to be deleted <i>before</i> the fact that the node has been removed 
-             has fully propagated through the system. Thus the system may recreate the directory for a single update after
-             this action. In that case, the directory will need to be removed manually.
-	  </p>
-          <p><b>Note:</b> If the IP address of any of the node's interfaces is still configured for discovery, the node  
-             will be discovered again. To prevent this, either remove the IP address from the discovery range or unmanage  
-             the device instead of deleting it.
-          </p>
-          </td>
-          <td> &nbsp;&nbsp; </td>  
-        </tr>
-      </table>
-    </td>
-  </tr>
-</table>
-<hr> 
+<hr/> 
   
-<form method="POST" name="deleteNode" action="admin/deleteSelNodes">
-<table width="70%" cellspacing="0" cellpadding="0" border="0">
-  <tr>
-	<td>&nbsp;</td>
-        <td align="left" valign="center">
-          <input type="checkbox" name="nodeCheck" value='<%= nodeId %>'>Node
-        </td>
-	<td>&nbsp;</td>
-        <td align="left" valign="center">
-          <input type="checkbox" name="nodeData" value='<%= nodeId %>'>Data
-        </td>
-        <td align="left" valign="center">
-          Node: <%=node_db.getLabel()%>
-        </td>
-        <br>
-   </tr>
-   <tr><td>&nbsp;</td></tr>
-   <tr><td>&nbsp;</td></tr>
-   <tr>
-	<td>&nbsp;</td>
-        <td align="left" valign="center" colspan="5">
-          <input type="button" value="Delete" onClick="applyChanges()">
-          <input type="button" value="Cancel" onClick="cancel()">
-        <td>
-        <br>
-   </tr>
-</table>
+<form method="post" name="deleteNode" action="admin/deleteSelNodes">
+
+<br/>
+
+<input type="checkbox" name="nodeCheck" value='<%= nodeId %>'>Node
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+<input type="checkbox" name="nodeData" value='<%= nodeId %>'>Data
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+Node: <%=node_db.getLabel()%>
+
+<br/>
+<br/>
+
+<input type="button" value="Delete" onClick="applyChanges()">
+<input type="button" value="Cancel" onClick="cancel()">
+
+<br/>
 </form>
 
-<br>
-
-<jsp:include page="/includes/footer.jsp" flush="true" >
-  <jsp:param name="location" value="Node Management" />
-</jsp:include>
-</body>
-</html>
+<jsp:include page="/includes/footer.jsp" flush="true"/>
 

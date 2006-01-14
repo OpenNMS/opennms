@@ -1,4 +1,4 @@
-<!--
+<%--
 
 //
 // This file is part of the OpenNMS(R) Application.
@@ -37,9 +37,13 @@
 //      http://www.opennms.org/
 //      http://www.opennms.com///
 
--->
+--%>
 
-<%@page language="java" contentType="text/html" session="true" import="org.opennms.web.event.*" %>
+<%@page language="java"
+	contentType="text/html"
+	session="true"
+	import="org.opennms.web.event.*"
+%>
 
 <%
     String eventIdString = request.getParameter( "id" );
@@ -78,53 +82,36 @@
     }
 %>
 
-<html>
-<head>
-  <title> Detail | Events | OpenNMS Web Console</title>
-  <base HREF="<%=org.opennms.web.Util.calculateUrlBase( request )%>" />
-  <link rel="stylesheet" type="text/css" href="css/styles.css" />
-</head>
-
-<body marginwidth="0" marginheight="0" LEFTMARGIN="0" RIGHTMARGIN="0" TOPMARGIN="0">
-
-<% String breadcrumb1 = "<a href='event/index.jsp'>Events</a>"; %>
-<% String breadcrumb2 = "Detail"; %>
 <jsp:include page="/includes/header.jsp" flush="false" >
   <jsp:param name="title" value="Event Detail" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb1%>" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb2%>" />
+  <jsp:param name="headTitle" value="Detail" />
+  <jsp:param name="headTtitle" value="Events" />
+  <jsp:param name="breadcrumb" value="<a href='event/index.jsp'>Events</a>" />
+  <jsp:param name="breadcrumb" value="Detail" />
 </jsp:include>
 
-<br>
-
-<!-- Body -->
-<table width="100%" border="0" cellspacing="0" cellpadding="2" >
-  <tr>
-    <td>&nbsp;</td>
-
-    <td width="100%" valign="top" >
       <h3>Event <%=event.getId()%></h3>
  
-      <table width="100%" border="1" cellspacing="0" cellpadding="2" bgcolor="#cccccc" bordercolor="black">
+      <table class="standardfirst">
         <tr>
-          <td width="10%" bgcolor="#999999"><b>Severity</b></td>
-          <td bgcolor="<%=EventUtil.getSeverityColor(event.getSeverity())%>"><%=EventUtil.getSeverityLabel(event.getSeverity())%></td>
-          <td width="10%" bgcolor="#999999"><b>Node</b></td>
-          <td>
+          <td class="standardheader" width="10%">Severity</td>
+          <td class="standard" bgcolor="<%=EventUtil.getSeverityColor(event.getSeverity())%>"><%=EventUtil.getSeverityLabel(event.getSeverity())%></td>
+          <td class="standardheader" width="10%">Node</td>
+          <td class="standard">
             <% if( event.getNodeId() > 0 ) { %>
               <a href="element/node.jsp?node=<%=event.getNodeId()%>"><%=event.getNodeLabel()%></a>
             <% } else {%>
               &nbsp;
             <% } %>
           </td>
-          <td width="10%" bgcolor="#999999"><b>Acknowledged&nbsp;By</b></td>
-          <td><%=event.getAcknowledgeUser()!=null ? event.getAcknowledgeUser() : "&nbsp"%></td>
+          <td class="standardheader" width="10%">Acknowledged&nbsp;By</td>
+          <td class="standard"><%=event.getAcknowledgeUser()!=null ? event.getAcknowledgeUser() : "&nbsp"%></td>
         </tr>
         <tr>
-          <td bgcolor="#999999"><b>Time</b></td>
-          <td><%=org.opennms.netmgt.EventConstants.formatToUIString(event.getTime())%></td>
-          <td bgcolor="#999999"><b>Interface</b></td>
-          <td>
+          <td class="standardheader">Time</td>
+          <td class="standard"><%=org.opennms.netmgt.EventConstants.formatToUIString(event.getTime())%></td>
+          <td class="standardheader">Interface</td>
+          <td class="standard">
             <% if( event.getIpAddress() != null ) { %>
               <% if( event.getNodeId() > 0 ) { %>
                 <a href="element/interface.jsp?node=<%=event.getNodeId()%>&intf=<%=event.getIpAddress()%>"><%=event.getIpAddress()%></a>
@@ -135,12 +122,12 @@
               &nbsp;
             <% } %>
           </td>
-          <td bgcolor="#999999"><b>Time&nbsp;Acknowledged</b></td>
-          <td><%=event.getAcknowledgeTime()!=null ? org.opennms.netmgt.EventConstants.formatToUIString(event.getAcknowledgeTime()) : "&nbsp"%></td>
+          <td class="standardheader">Time&nbsp;Acknowledged</td>
+          <td class="standard"><%=event.getAcknowledgeTime()!=null ? org.opennms.netmgt.EventConstants.formatToUIString(event.getAcknowledgeTime()) : "&nbsp"%></td>
         </tr>
         <tr>
-          <td bgcolor="#999999"><b>Service</b></td>
-          <td>
+          <td class="standardheader">Service</td>
+          <td class="standard">
             <% if( event.getServiceName() != null ) { %>
               <% if( event.getIpAddress() != null && event.getNodeId() > 0 ) { %>
                 <a href="element/service.jsp?node=<%=event.getNodeId()%>&intf=<%=event.getIpAddress()%>&service=<%=event.getServiceId()%>"><%=event.getServiceName()%></a>
@@ -151,45 +138,48 @@
               &nbsp;
             <% } %>
           </td>
+          <td class="standard" colspan="4">&nbsp;</td>
           </tr> 
           <tr>
-          	<td bgcolor="#999999"><b>UEI</b></td>
+          	<td class="standardheader">UEI</td>
+                <td class="standard">
           	<% if( event.getUei() != null ) { %>
-          	      <td><%=event.getUei()%></td>
+          	      <%=event.getUei()%>
           	<% } else {%>
                 	&nbsp;
           	<% } %>
+                </td>
+                <td class="standard" colspan="4">&nbsp;</td>
         </tr>
       </table>
 
       <br>
             
-      <table width="100%" border="1" cellspacing="0" cellpadding="2" bgcolor="#cccccc" bordercolor="black">        <tr bgcolor="#999999">
-          <td align="left" valign="top">Log Message</td>
+      <table class="standard">
+        <tr>
+          <td class="standardheader">Log Message</td>
         </tr>
         <tr>
-          <td align="left" valign="top"><%=event.getLogMessage()%></td>
+          <td class="standard"><%=event.getLogMessage()%></td>
         </tr>
       </table>
 
-      <br>
-
-      <table width="100%" border="1" cellspacing="0" cellpadding="2" bgcolor="#cccccc" bordercolor="black">        <tr bgcolor="#999999">
-          <td align="left" valign="top">Description</td>
+      <table class="standard">
+        <tr>
+          <td class="standardheader">Description</td>
         </tr>
         <tr>
-          <td align="left" valign="top"><%=event.getDescription()%></td>
+          <td class="standard"><%=event.getDescription()%></td>
         </tr>
       </table>
       
-      <br>
-      
-      <table width="100%" border="1" cellspacing="0" cellpadding="2" bgcolor="#cccccc" bordercolor="black">        <tr bgcolor="#999999">
-          <td align="left" valign="top">Operator Instructions</td>
+      <table class="standard">
+        <tr>
+          <td class="standardheader">Operator Instructions</td>
         </tr>
 	
         <tr>
-          <td align="left" valign="top"> 
+          <td class="standard">
 	    <%if (event.getOperatorInstruction()==null) { %>
               No instructions available
             <% } else { %>
@@ -199,25 +189,12 @@
         </tr>
       </table>
       
-      <br>
-
-      
-      <FORM METHOD="POST" NAME="acknowlegde" ACTION="event/acknowledge">
+      <br/>
+      <form mthod="post" action="event/acknowledge">
         <input type="hidden" name="action" value="<%=action%>" />
         <input type="hidden" name="event" value="<%=event.getId()%>"/>
         <input type="hidden" name="redirect" value="<%=request.getContextPath() + request.getServletPath() + "?" + request.getQueryString()%>" />
         <input type="submit" value="<%=buttonName%>"
-      </FORM>
+      </form>
       
-    </td>
-    
-    <td>&nbsp;</td>
-  </tr>
-</table>
-
-<br>
-
 <jsp:include page="/includes/footer.jsp" flush="false" />
-
-</body>
-</html>

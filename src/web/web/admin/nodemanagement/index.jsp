@@ -1,4 +1,4 @@
-<!--
+<%--
 
 //
 // This file is part of the OpenNMS(R) Application.
@@ -37,40 +37,53 @@
 //      http://www.opennms.com/
 //
 
--->
+--%>
 
-<%@page language="java" contentType="text/html" session="true" import="org.opennms.web.element.*,java.util.*,org.opennms.web.event.*,java.net.*" %>
+<%@page language="java"
+	contentType="text/html"
+	session="true"
+	import="org.opennms.web.element.*,
+		java.util.*,
+		org.opennms.web.event.*,
+		java.net.*,
+        	org.opennms.web.MissingParameterException
+	"
+%>
 
 <%
     int nodeId = -1;
     
-    String nodeIdString = request.getParameter( "node" );
+    String nodeIdString = request.getParameter("node");
 
-    if( nodeIdString == null ) {
-        throw new org.opennms.web.MissingParameterException( "node" );
+    if (nodeIdString == null) {
+        throw new MissingParameterException("node");
     }
     try {
-        nodeId = Integer.parseInt( nodeIdString );
+        nodeId = Integer.parseInt(nodeIdString);
     } catch (NumberFormatException numE) {
         throw new ServletException(numE);
     }
 
-    if (nodeId < -1)
+    if (nodeId < -1) {
         throw new ServletException("Invalid node ID.");
+    }
         
     //get the database node info
-    Node node_db = NetworkElementFactory.getNode( nodeId );
-    if( node_db == null ) {
-        //handle this WAY better, very awful
-        throw new ServletException( "No such node in database" );
+    Node node_db = NetworkElementFactory.getNode(nodeId);
+    if (node_db == null) {
+        // XXX handle this WAY better, very awful
+        throw new ServletException("No such node in database");
     }
 %>
 
-<html>
-<head>
-  <title>Node Management | Admin | OpenNMS Web Console</title>
-  <base HREF="<%=org.opennms.web.Util.calculateUrlBase( request )%>" />
-  <link rel="stylesheet" type="text/css" href="css/styles.css" />
+<jsp:include page="/includes/header.jsp" flush="false" >
+  <jsp:param name="title" value="Node Management" />
+  <jsp:param name="headTitle" value="Node Management" />
+  <jsp:param name="headTitle" value="Admin" />
+  <jsp:param name="location" value="nodemanagement" />
+  <jsp:param name="breadcrumb" value="<a href='admin/index.jsp'>Admin</a>" />
+  <jsp:param name="breadcrumb" value="Node Management" />
+</jsp:include>
 
 <script language="Javascript" type="text/javascript" >
 
@@ -81,86 +94,63 @@
 </script>
 </head>
 
-<body marginwidth="0" marginheight="0" LEFTMARGIN="0" RIGHTMARGIN="0" TOPMARGIN="0">
-
-<% String breadcrumb1 = "<a href='admin/index.jsp'>Admin</a>"; %>
-<% String breadcrumb2 = "Node Management"; %>
-<jsp:include page="/includes/header.jsp" flush="false" >
-  <jsp:param name="title" value="Node Management" />
-  <jsp:param name="location" value="nodemanagement" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb1%>" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb2%>" />
-</jsp:include>
-
-<!-- Body -->
-<br>
-
-<FORM METHOD="POST" NAME="getInterfaces" ACTION="admin/nodemanagement/getInterfaces">
+<form method="post" name="getInterfaces"
+      action="admin/nodemanagement/getInterfaces">
   <input name="node" value=<%=nodeId%> type="hidden"/>
-</FORM>
+</form>
 
-<table width="100%" cellspacing="0" cellpadding="0" border="0">
-  <tr>
-    <td> &nbsp;&nbsp; </td>
-    
-    <td width="100%" valign="top">
-      <h2>Node: <%=node_db.getLabel()%></h2>
-      <hr>
-    </td>
-  </tr>
-</table>
+<h2>Node: <%=node_db.getLabel()%></h2>
 
-<table width="100%" cellspacing="0" cellpadding="0" border="0">
-  <tr>
-    <td> &nbsp; &nbsp; </td>
+<div style="width: 40%; float: left;">
+  <h3>Admin Options</h3>
+
+  <p>
+    <a href="admin/nodelabel.jsp?node=<%=nodeId%>">Change Node Label</a>
+  </p>
+
+  <p>
+    <a href="javascript:getInterfacesPost()">Manage and Unmanage Interfaces
+    and Services</a>
+  </p>
+
+  <p>
+    <a href="admin/snmpGetInterfaces?node=<%=nodeId%>&nodelabel=<%=node_db.getLabel()%>">
+    Configure SNMP Data Collection per Interface</a>
+  </p>
+
+  <p>
+    <a href="admin/nodemanagement/deletenode.jsp?node=<%=nodeId%>">Delete
+    Node</a>
+  </p>
+</div>
       
-    <td valign="top">
-      <h3>Admin Options</h3>
+<div style="width: 60%; float: left;">
 
-      <p>
-        <a href="admin/nodelabel.jsp?node=<%=nodeId%>">Change Node Label</a>
-      <p>
-        <a href="javascript:getInterfacesPost()">Manage and Unmanage Interfaces and Services</a>
-      <p>
-        <a href="admin/snmpGetInterfaces?node=<%=nodeId%>&nodelabel=<%=node_db.getLabel()%>">Configure SNMP Data Collection per Interface</a>
-      <p>
-        <a href="admin/nodemanagement/deletenode.jsp?node=<%=nodeId%>">Delete Node</a>
-      
-    </td>
+  <h3>Option Descriptions</h3>
 
-    <td> &nbsp; </td>
+  <p>
+    <b>Change Node Label</b> allows administrators either to specify a node 
+    name, or let the system to automatically select the node name.
+  </p>
 
-    <td valign="top" width="60%">
-      <h3>Option Descriptions</h3>
+  <p>
+    When OpenNMS was first started, the nodes, interfaces, and services
+    in the network were <em>discovered</em>. As your network grows and changes, 
+    the TCP/IP ranges you want to manage, as well as the interfaces and
+    services within those ranges, may change.
+    <b>Manage and Unmanage Interfaces and Services</b> allows you to change
+    your OpenNMS configuration along with your network.
+  </p>
 
-        <p><b>Change Node Label</b> allows administrators either to specify a node 
-            name, or let the system to automatically select the node name.
-        </p>
-
-        <p>When OpenNMS was first started, the nodes, interfaces, and services
-            in the network were <em>discovered</em>. As your network grows and changes, 
-            the TCP/IP ranges you want to manage, as well as the interfaces and services 
-            within those ranges, may change. <b>Manage and Unmanage Interfaces and Services
-            </b> allows you to change your OpenNMS configuration along with your network.
-        </p>
-
-	<p><b>Manage SNMP Data Collection per Interface</b>: This interface will allow you
-	to configure which non-IP interfaces are used in SNMP Data Collection.
-	</p>
+  <p>
+    <b>Manage SNMP Data Collection per Interface</b> allows you
+    to configure which non-IP interfaces are used in SNMP Data Collection.
+  </p>
         
-        <p><b>Delete Node</b> allows you to permanently delete current node from database.
-        </p>
+  <p>
+    <b>Delete Node</b> allows you to permanently delete a current node
+    from database.
+  </p>
+</div>
 
-    </td>
-    
-    <td> &nbsp;&nbsp; </td>
-  </tr>
-</table>
-
-<br>
-
-<jsp:include page="/includes/footer.jsp" flush="false" >
-  <jsp:param name="location" value="nodemanagement" />
-</jsp:include>
-</body>
-</html>
+<jsp:include page="/includes/footer.jsp" flush="false"/>

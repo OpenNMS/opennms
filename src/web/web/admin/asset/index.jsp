@@ -1,4 +1,4 @@
-<!--
+<%--
 
 //
 // This file is part of the OpenNMS(R) Application.
@@ -37,71 +37,49 @@
 //      http://www.opennms.com/
 //
 
--->
+--%>
 
-<%@page language="java" contentType="text/html" session="true" import="java.lang.*" %>
+<%@page language="java"
+	contentType="text/html"
+	session="true"
+	import="java.lang.*"
+%>
 
-<html>
-<head>
-  <title>Import/Export | Assets | OpenNMS Web Console</title>
-  <base HREF="<%=org.opennms.web.Util.calculateUrlBase( request )%>" />
-  <link rel="stylesheet" type="text/css" href="css/styles.css" />
-</head>
-
-<body marginwidth="0" marginheight="0" LEFTMARGIN="0" RIGHTMARGIN="0" TOPMARGIN="0">
-
-<% String breadcrumb1 = "<a href='admin/index.jsp'>Admin</a>"; %>
-<% String breadcrumb2 = "Import/Export Assets"; %>
 <jsp:include page="/includes/header.jsp" flush="false" >
   <jsp:param name="title" value="Import/Export Assets" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb1%>" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb2%>" />
+  <jsp:param name="headTitle" value="Import/Export" />
+  <jsp:param name="headTitle" value="Assets" />
+  <jsp:param name="breadcrumb" value="<a href='admin/index.jsp'>Admin</a>" />
+  <jsp:param name="breadcrumb" value="Import/Export Assets" />
 </jsp:include>
 
-<!-- Body -->
-<br>
+<div id="width: 40%; float: left;">
+  <h3>Import and Export Assets</h3>
 
-<table width="100%" cellspacing="0" cellpadding="0" border="0">
-  <tr>
-    <td> &nbsp; </td>
+  <p>
+    <a href="admin/asset/import.jsp">Import Assets</a>
+  </p>
 
-    <td valign="top">
-      <h3>Import and Export Assets</h3>
+  <p>
+    <a href="admin/asset/assets.csv">Export Assets</a>
+  </p>
+</div>
 
-      <p>
-        <a href="admin/asset/import.jsp">Import Assets</a>
-      </p>
+<div id="width: 60%; float: left;">
+  <h3>Importing Asset Information</h3>
 
-      <p>
-        <a href="admin/asset/assets.csv">Export Assets</a>
-      </p>
-    </td>
+  <p>
+    The asset import page imports a comma-separated value file (.csv),
+    (probably exported from spreadsheet) into the assets database.
+  </p>
 
-    <td> &nbsp; </td>
+  <h3>Exporting Asset Information</h3>
 
-    <td valign="top" width="60%">
-      <h3>Importing Asset Information</h3>
-
-      <p>
-        The asset import page imports a comma-separated value file (.csv),
-        (probably exported from spreadsheet) into the assets database.
-      </p>
-
-      <h3>Exporting Asset Information</h3>
-
-      <p>
-        All the nodes with asset information will be exported to a 
-        comma-separated value file (.csv), which is suitable for use in a 
-        spreadsheet application. 
-      </p>
-    </td>
-    
-    <td> &nbsp; </td>
-  </tr>
-</table>
-
-<br>
+  <p>
+    All the nodes with asset information will be exported to a 
+    comma-separated value file (.csv), which is suitable for use in a 
+    spreadsheet application. 
+  </p>
+</div>
 
 <jsp:include page="/includes/footer.jsp" flush="false" />
-</body>
-</html>

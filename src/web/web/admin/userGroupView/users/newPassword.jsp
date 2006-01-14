@@ -1,4 +1,4 @@
-<!--
+<%--
 
 //
 // This file is part of the OpenNMS(R) Application.
@@ -32,18 +32,25 @@
 //      http://www.opennms.com/
 //
 
--->
+--%>
 
-<%@page language="java" contentType = "text/html" session = "true"  import="org.opennms.netmgt.config.*, java.util.*,org.opennms.netmgt.config.users.*"%>
+<%@page language="java"
+	contentType="text/html"
+	session="true"
+	import="org.opennms.netmgt.config.*,
+		java.util.*,
+		org.opennms.netmgt.config.users.*
+	"
+%>
 
-<html>
-<head>
-  <title>New User Password | User Admin | OpenNMS Web Console</title>
-  <base HREF="<%=org.opennms.web.Util.calculateUrlBase( request )%>" />
-  <link rel="stylesheet" type="text/css" href="css/styles.css" />
-</head>
+<jsp:include page="/includes/header.jsp" flush="false" >
+  <jsp:param name="title" value="New Password" />
+  <jsp:param name="headTitle" value="New Password" />
+  <jsp:param name="headTitle" value="Users" />
+  <jsp:param name="headTitle" value="Admin" />
+  <jsp:param name="quiet" value="true" />
+</jsp:include>
 
-<body marginwidth="0" marginheight="0" LEFTMARGIN="0" RIGHTMARGIN="0" TOPMARGIN="0">
 
 <script language="JavaScript">
   function verifyGoForm() 
@@ -61,8 +68,10 @@
 }
 </script>
 
-<br>
-<h3>Please enter the New Password and Confirm.</h3><br>
+<h3>Please enter the New Password and Confirm.</h3>
+
+<br/
+>
 <form method="post" name="goForm">
 
 <table>
@@ -93,10 +102,13 @@
     </tr>
 </table>
 </form>
-<P>
-Note: Be sure to click "Finish" at the bottom of the user page to save changes.
-</P>
 
+<p>
+  Note: Be sure to click "Finish" at the bottom of the user page to save
+  changes.
+</p>
 
-</body>
-</html>
+<jsp:include page="/includes/footer.jsp" flush="false" >
+  <jsp:param name="quiet" value="true" />
+</jsp:include>
+

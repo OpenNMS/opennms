@@ -1,4 +1,4 @@
-<!--
+<%--
 
 //
 // This file is part of the OpenNMS(R) Application.
@@ -39,9 +39,17 @@
 //      http://www.opennms.com/
 //
 
--->
+--%>
 
-<%@page language="java" contentType="text/html" session="true" import="java.io.File,java.util.*,org.opennms.web.element.NetworkElementFactory,org.opennms.web.admin.nodeManagement.*" %>
+<%@page language="java"
+	contentType="text/html"
+	session="true"
+	import="java.io.File,
+		java.util.*,
+		org.opennms.web.element.NetworkElementFactory,
+		org.opennms.web.admin.nodeManagement.*
+	"
+%>
 
 <%!
     int interfaceIndex;
@@ -73,14 +81,16 @@
     }
 %>
 
-<html>
-<head>
-  <title>Admin | OpenNMS Web Console</title>
-  <base HREF="<%=org.opennms.web.Util.calculateUrlBase( request )%>" />
-  <link rel="stylesheet" type="text/css" href="css/styles.css" />
-</head>
+<jsp:include page="/includes/header.jsp" flush="false" >
+  <jsp:param name="title" value="Select SNMP Interfaces" />
+  <jsp:param name="headTitle" value="Select SNMP Interfaces" />
+  <jsp:param name="headTitle" value="Admin"/>
+  <jsp:param name="location" value="admin" />
+  <jsp:param name="breadcrumb" value="<a href='admin/index.jsp'>Admin</a>" />
+  <jsp:param name="breadcrumb" value="Select SNMP Interfaces" />
+</jsp:include>
 
-<script language="Javascript" type="text/javascript" >
+<script type="text/javascript" >
 
   function applyChanges()
   {
@@ -121,127 +131,79 @@
   
 </script>
 
-<body marginwidth="0" marginheight="0" LEFTMARGIN="0" RIGHTMARGIN="0" TOPMARGIN="0">
 
-<% String breadcrumb1 = "<a href='admin/index.jsp'>Admin</a>"; %>
-<% String breadcrumb2 = "Select SNMP Interfaces"; %>
-<jsp:include page="/includes/header.jsp" flush="false" >
-  <jsp:param name="title" value="Select SNMP Interfaces" />
-  <jsp:param name="location" value="admin" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb1%>" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb2%>" />
-</jsp:include>
-
-<!-- Body -->
-<br>
-
-<FORM METHOD="POST" name="chooseSnmpNodes" action="admin/changeCollectStatus">
+<form method="post" name="chooseSnmpNodes" action="admin/changeCollectStatus">
 
 <input type="hidden" name="node" value="<%=nodeId%>" />
 
+<h3>Choose SNMP Interfaces for Data Collection</h3>
 
-<table width="100%" cellspacing="0" cellpadding="0" border="0">
-  
-  <tr>
-    <td> &nbsp; </td>  
-    
-    <td>
-    	<h3>Choose SNMP Interfaces for Data Collection</h3>
+<p>
+  Listed below are all the interfaces discovered for the selected node. If
+  snmpStorageFlag is set to "select" for a collection scheme that includes
+  the interface marked as "Primary", only the interfaces checked below will have
+  their collected SNMP data stored. This has no effect if snmpStorageFlag is
+  set to "primary" or "all".
+</p>
 
-    	<table width="100%" cellspacing="0" cellpadding="0" border="0">
-      	<tr>
-        	<td colspan="3"> 
-		<P>Listed below are all the interfaces discovered for the selected node. If
-		snmpStorageFlag is set to "select" for a collection scheme that includes
-		the interface marked as "Primary", only the interfaces checked below will have
-		their collected SNMP data stored. This has no effect if snmpStorageFlag is
-		set to "primary" or "all".
-		</P>
-		<P>
-		In order to change what interfaces are scheduled for collection, simple check
-		or uncheck the box beside the interface(s) you wish to change, and then
-		select "Update Collection".
-		</P>
-        	<P><b>Note:</b> Interfaces marked as Primary or Secondary will always be selected
-		for data collection. To remove them, please edit the IP address range in the
-		collectd configuration.
-        	</P>
-        	</td>
-      	</tr>
-	
-      	<TR>
-      	<td>&nbsp;</td>
-      	</tr>
+<p>
+  In order to change what interfaces are scheduled for collection, simple check
+  or uncheck the box beside the interface(s) you wish to change, and then
+  select "Update Collection".
+</p>
 
-   	<%=listNodeName(nodeId, nodeLabel)%>
+<p>
+  <strong>Note:</strong>
+  Interfaces marked as Primary or Secondary will always be selected
+  for data collection.  To remove them, edit the IP address range in the
+  collectd configuration file.
+</p>
+
+<%=listNodeName(nodeId, nodeLabel)%>
+
+<br/>
       
-   	<tr>
-        	<td align="left" valign="top">
-       			<% if (interfaces.size() > 0) { %>
-          		<table border="1" cellspacing="0" cellpadding="2" bordercolor="black">
-            		<tr bgcolor="#999999">
-              			<td width="5%" align="center"><b>ifIndex</b></td>
-              			<td width="10%" align="center"><b>IP Address</b></td>
-              			<td width="10%" align="center"><b>IP Hostname</b></td>
-              			<td width="5%" align="center"><b>ifType</b></td>
-              			<td width="10%" align="center"><b>ifDescription</b></td>
-              			<td width="10%" align="center"><b>ifName</b></td>
-              			<td width="10%" align="center"><b>ifAlias</b></td>
-              			<td width="10%" align="center"><b>SNMP Status</b></td>
-              			<td width="5%" align="center"><b>Collect?</b></td>
+<% if (interfaces.size() > 0) { %>
+          		<table class="standardfirst">
+            		<tr>
+              			<td class="standardheader" width="5%" align="center">ifIndex</td>
+              			<td class="standardheader" width="10%" align="center">IP Address</td>
+              			<td class="standardheader" width="10%" align="center">IP Hostname</td>
+              			<td class="standardheader" width="5%" align="center">ifType</td>
+              			<td class="standardheader" width="10%" align="center">ifDescription</td>
+              			<td class="standardheader" width="10%" align="center">ifName</td>
+              			<td class="standardheader" width="10%" align="center">ifAlias</td>
+              			<td class="standardheader" width="10%" align="center">SNMP Status</td>
+              			<td class="standardheader" width="5%" align="center">Collect?</td>
             		</tr>
             		<%=buildTableRows(interfaces, nodeId, interfaces.size())%>
             
           		</table>
           		<% } /*end if*/ %>
-       		</td>
-        
-       		<td>
-       		&nbsp;&nbsp;
-       		</td>
-        
-   	</tr>
-      
-   	<tr>
-        	<td align="left" valign="center" colspan="5">
-          	&nbsp;<br>
+
+		<br/>
+
           	<input type="button" value="Update Collection" onClick="applyChanges()">
           	<input type="button" value="Cancel" onClick="cancel()"> 
           	<input type="button" value="Select All" onClick="checkAll()">
           	<input type="button" value="Unselect All" onClick="uncheckAll()">
           	<input type="reset">
-        	</td>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
-    	</tr>
-	</table>
-</td>
-</tr>
-</table>
-</FORM>
+</form>
 
-<br>
 
-<jsp:include page="/includes/footer.jsp" flush="true" >
-  <jsp:param name="location" value="admin" />
-</jsp:include>
-</body>
-</html>
+<jsp:include page="/includes/footer.jsp" flush="true"/>
 
 <%!
       public String listNodeName(int intnodeid, String nodelabel)
       {
          StringBuffer nodename = new StringBuffer();
                 
-         nodename.append("<tr><td>");
-         nodename.append("<B>Node ID</B>: ");
+         nodename.append("<strong>Node ID</strong>: ");
          nodename.append(intnodeid);
-         nodename.append("</td></tr>\n");
-         nodename.append("<tr><td>");
-         nodename.append("<B>Node Label</B>: ");
+         nodename.append("<br/>");
+         nodename.append("<strong>Node Label</strong>: ");
          nodename.append(nodelabel);
-      	 nodename.append("</td></tr>\n");
-         nodename.append("<tr><td>&nbsp;</td></tr>\n");
+      	 nodename.append("<br/>\n");
           
          return nodename.toString();
       }
@@ -290,7 +252,7 @@
 			chkstatus = "unchecked";
 		}
           	row.append("<tr>\n");
-          	row.append("<td width=\"5%\" align=\"center\">");
+          	row.append("<td class=\"standard\" width=\"5%\" align=\"center\">");
                 int ifIndex = curInterface.getIfIndex();
                 if ( ifIndex > 0 ) {
                   row.append(ifIndex);
@@ -298,28 +260,28 @@
                   row.append("&nbsp");
                 }
           	row.append("</td>\n");
-          	row.append("<td width=\"10%\" align=\"center\">");
+          	row.append("<td class=\"standard\" width=\"10%\" align=\"center\">");
 	  	row.append(curInterface.getAddress());
           	row.append("</td>\n");
-          	row.append("<td width=\"20%\" align=\"left\">");
+          	row.append("<td class=\"standard\" width=\"20%\" align=\"left\">");
 	  	row.append(curInterface.getIpHostname());
           	row.append("</td>\n");
-          	row.append("<td width=\"5%\" align=\"center\">");
+          	row.append("<td class=\"standard\" width=\"5%\" align=\"center\">");
 	  	row.append(curInterface.getIfType());
           	row.append("</td>\n");
-          	row.append("<td width=\"10%\" align=\"center\">");
+          	row.append("<td class=\"standard\" width=\"10%\" align=\"center\">");
 	  	row.append(curInterface.getIfDescr());
           	row.append("</td>\n");
-          	row.append("<td width=\"10%\" align=\"center\">");
+          	row.append("<td class=\"standard\" width=\"10%\" align=\"center\">");
 	  	row.append(curInterface.getIfName());
           	row.append("</td>\n");
-          	row.append("<td width=\"10%\" align=\"center\">");
+          	row.append("<td class=\"standard\" width=\"10%\" align=\"center\">");
 	  	row.append(curInterface.getIfAlias());
           	row.append("</td>\n");
-          	row.append("<td width=\"10%\" align=\"center\">");
+          	row.append("<td class=\"standard\" width=\"10%\" align=\"center\">");
 	  	row.append(collstatus);
           	row.append("</td>\n");
-          	row.append("<td width=\"5%\" align=\"center\">");
+          	row.append("<td class=\"standard\" width=\"5%\" align=\"center\">");
           	row.append("<input type=\"checkbox\" name=\"collTypeCheck\" value=\"").append(key).append("\" ").append(chkstatus).append(" >");
           	row.append("</td>\n");
       	   	row.append("</tr>\n");

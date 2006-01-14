@@ -1,4 +1,4 @@
-<!--
+<%--
  
 //
 // This file is part of the OpenNMS(R) Application.
@@ -34,9 +34,16 @@
 //      http://www.opennms.org/
 //      http://www.opennms.com/
 
--->
+--%>
 
-<%@page language="java" contentType="text/html" session="true" import="java.util.*,org.opennms.netmgt.config.kscReports.*,org.opennms.netmgt.config.KSC_PerformanceReportFactory" %>
+<%@page language="java"
+	contentType="text/html"
+	session="true"
+	import="java.util.*,
+		org.opennms.netmgt.config.kscReports.*,
+		org.opennms.netmgt.config.KSC_PerformanceReportFactory
+	"
+%>
 
 <%@ include file="/WEB-INF/jspf/KSC/init1.jspf" %>
 
@@ -102,13 +109,14 @@
 %>
 
 
-<html>
-<head>
-  <title>Customized Report Save Page</title>
-</head>
+<jsp:include page="/includes/header.jsp" flush="false" >
+  <jsp:param name="title" value="Custom Report Save Page" />
+  <jsp:param name="headTitle" value="Performance" />
+  <jsp:param name="headTitle" value="Reports" />
+  <jsp:param name="headTitle" value="KSC" />
+  <jsp:param name="quiet" value="true" />
+</jsp:include>
 
-<!-- Body -->
-<body marginwidth="0" marginheight="0" LEFTMARGIN="0" RIGHTMARGIN="0" TOPMARGIN="0">
 <h3 align="center">Processing Form...</h3>
 <h3> Action: <%=action%> </h3>
 
@@ -140,9 +148,7 @@
     </script>
 <% } %>
 
-
-</body>
-
-</html>
-
+<jsp:include page="/includes/footer.jsp" flush="false" >
+  <jsp:param name="quiet" value="true" />
+</jsp:include>
 

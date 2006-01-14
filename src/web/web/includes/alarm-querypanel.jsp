@@ -1,4 +1,4 @@
-<!--
+<%--
 
 //
 // This file is part of the OpenNMS(R) Application.
@@ -35,9 +35,16 @@
 //      http://www.opennms.org/
 //      http://www.opennms.com///
 
--->
+--%>
 
-<%@page language="java" contentType="text/html" session="true" import="java.util.*,org.opennms.web.element.NetworkElementFactory,org.opennms.web.alarm.*" %>
+<%@page language="java"
+	contentType="text/html"
+	session="true"
+	import="java.util.*,
+		org.opennms.web.element.NetworkElementFactory,
+		org.opennms.web.alarm.*
+	"
+%>
 
 <%
     //get the service names, in alpha order
@@ -53,7 +60,7 @@
     Calendar now = Calendar.getInstance();
 %>
 
-<SCRIPT LANGUAGE="JavaScript" type="text/javascript">
+<script type="text/javascript">
 <!--
 function Blank_TextField_Validator()
 {
@@ -66,9 +73,9 @@ function Blank_TextField_Validator()
   return true;
 }
 -->
-</SCRIPT>
+</script>
 
-<form name="alarm_search" action="alarm/query" method="GET" onsubmit="return Blank_TextField_Validator()">
+<form name="alarm_search" action="alarm/query" method="get" onsubmit="return Blank_TextField_Validator()">
   <table border="0" cellpadding="2" cellspacing="0">
     <tr>
       <td>Alarm Text:</td>

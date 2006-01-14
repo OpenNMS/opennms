@@ -1,4 +1,4 @@
-<!--
+<%--
 
 //
 // This file is part of the OpenNMS(R) Application.
@@ -37,9 +37,24 @@
 //      http://www.opennms.com/
 //
 
--->
+--%>
 
-<%@page language="java" contentType="text/html" session="true" import="java.io.File,java.util.*,org.opennms.netmgt.config.capsd.*,org.opennms.netmgt.config.poller.*,org.opennms.netmgt.config.PollerConfigFactory, org.opennms.netmgt.config.PollerConfig, org.opennms.netmgt.config.CapsdConfigFactory,org.opennms.core.resource.Vault,org.opennms.core.utils.BundleLists,org.opennms.netmgt.ConfigFileConstants,java.io.FileInputStream" %>
+<%@page language="java"
+	contentType="text/html"
+	session="true"
+	import="java.io.File,
+		java.util.*,
+		org.opennms.netmgt.config.capsd.*,
+		org.opennms.netmgt.config.poller.*,
+		org.opennms.netmgt.config.PollerConfigFactory,
+		org.opennms.netmgt.config.PollerConfig,
+		org.opennms.netmgt.config.CapsdConfigFactory,
+		org.opennms.core.resource.Vault,
+		org.opennms.core.utils.BundleLists,
+		org.opennms.netmgt.ConfigFileConstants,
+		java.io.FileInputStream
+	"
+%>
 <%
 	HashMap scanablePlugin = new HashMap();
 	HashMap scanableUserPlugin = new HashMap();
@@ -166,8 +181,14 @@
     	}
 %>
 
-<html>
-<head>
+<jsp:include page="/includes/header.jsp" flush="false" >
+  <jsp:param name="title" value="Add New Custom Poller" />
+  <jsp:param name="headTitle" value="Add New Custom Poller" />
+  <jsp:param name="headTitle" value="Admin" />
+  <jsp:param name="location" value="Poller Config" />
+  <jsp:param name="breadcrumb" value="<a href='admin/index.jsp'>Admin</a>" />
+  <jsp:param name="breadcrumb" value="Configure Pollers" />
+</jsp:include>
 
 <script language="Javascript" type="text/javascript" >
 
@@ -231,78 +252,82 @@
   }
 
 </script>
-  <title>Add New Custom Poller | Admin | OpenNMS Web Console</title>
-  <base HREF="<%=org.opennms.web.Util.calculateUrlBase( request )%>" />
-  <link rel="stylesheet" type="text/css" href="css/styles.css" />
-</head>
 
-<body marginwidth="0" marginheight="0" LEFTMARGIN="0" RIGHTMARGIN="0" TOPMARGIN="0">
+<div id="contentleft">
+  <h3>Add New Custom Poller</h3>
 
-<%
-String breadcrumb1 = "<a href='admin/index.jsp'>Admin</a>";
-String breadcrumb2 = "Configure Pollers";
-%>
+  <form method="post" name="poller" action="admin/pollerConfig/addPollerConfig">
+    <% int rowCounter = 0; %>
+    <table class="standard">
+      <tr>
+        <td class="standardheader">Active</td>
+        <td class="standardheader">Poller Name</td>
+        <td class="standardheader">Protocol</td>
+        <td class="standardheader">Port</td>
+      </tr>
 
-<jsp:include page="/includes/header.jsp" flush="false" >
-  <jsp:param name="title" value="Add New Custom Poller" />
-  <jsp:param name="location" value="Poller Config" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb1%>" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb2%>" />
-</jsp:include>
+      <%-- XXX Not sure if this works.  Probably need to use classes. --%>
+      <tr <% if(rowCounter % 2 == 0){ %>BGCOLOR="#cccccc"<% } %>>
+	<td class="standard"><input type="checkbox" name="check1" /></td>
+	<td class="standard"><input type="text" name="name1" /></td>
+	<td class="standard">
+	  <select name="protArray1" size="1">
+	    <% for( int i=0; i < sortedProtocols.length; i++ ) { %>
+	      <option><%= sortedProtocols[i] %></option>
+	    <% } %>
+	  </select>
+	</td>
+	<td class="standard"><input type="text" name="port1"/></td>
+      </tr>
+    </table>
 
-<br />
+    <br/>
 
-<!-- Body -->
-<form method="post" name="poller" action="admin/pollerConfig/addPollerConfig">
-<table border="0" width="100%" cellspacing="0" cellpadding="1">
-	<tr>
-		<td>&nbsp;</td>
-		<td width="50%" valign="top">
-			<h3>Add New Custom Poller</h3>
+    <input type="button" value="Add" onClick="saveFile()" />
+    &nbsp;&nbsp;
+    <input type="button" value="Cancel" onClick="cancel()" />
+  </form>
+</div>
 
-			<% int rowCounter = 0; %>
-			<table width="100%" border="1" cellspacing="0" cellpadding="1">
-			<tr BGCOLOR="#999999">
-				<td><b>Active</b></td>
-				<td><b>Poller Name</b></td>
-				<td><b>Protocol</b></td>
-				<td><b>Port</b></td>
-			</tr>
-			<tr <% if(rowCounter % 2 == 0){ %>BGCOLOR="#cccccc"<% } %>>
-				<td><input type="checkbox" name="check1" /></td>
-				<td><input type="text" name="name1" /></td>
-				<td>
-					<select name="protArray1" size="1">
-						<% for( int i=0; i < sortedProtocols.length; i++ ) { %>
-							<option><%= sortedProtocols[i] %></option>
-						<% } %>
-					</select>
-                		</td>
-		                <td><input type="text" name="port1"/></td>
-		        </tr>
-			</table>
-			<br />
+<div id="contentright">
+  <h3>Descriptions</h3>
 
-			<input type="button" value="Add" onClick="saveFile()" />&nbsp;&nbsp;
-			<input type="button" value="Cancel" onClick="cancel()" />
-		</td>
-		<td width="10">&nbsp;</td>
-		<td valign="top">
-			<h3>Descriptions</h3>
-			<p>The <b>Add New Custom Poller</b> page gives the administrator the ability to add a new poller that will poll services not covered by the default pollers.</p>
-			<p>The <i><b>Active</b></i> column is the current status of the poller. If the active field is checked, the poller will be turned on and will scan the network during the next poller rescan.</p>
-			<p>The <i><b>Poller Name</b></i> column is the name of the new service to be added. Any name can be used; for instance, &quot;Company ABC Intranet HTTP&quot; or &quot;My Secret SSH Service&quot; are both valid.</p>
-			<p>The <i><b>Protocol</b></i> column is the protocol used for polling the service. If you simply want to check to see if the target port is open, then choose &quot;TCP&quot; as the protocol.</p>
-			<p>The <i><b>Port</b></i> column lists the ports at which the service will be polled. If there is more than one port where the service can be located, the values should be separated by colons (:).</p>
-			<p>After you add the custom poller, click on the <b><i>Apply Changes</i></b> button on the <b>Configure Pollers</b> page to apply the settings.</p>
-		</td>
-		<td>&nbsp;</td>
-	</tr>
-</table>
-</form>
-<br />
-<jsp:include page="/includes/footer.jsp" flush="true" >
-  <jsp:param name="location" value="Poller Config" />
-</jsp:include>
-</body>
-</html>
+  <p>
+    The <b>Add New Custom Poller</b> page gives the administrator the
+    ability to add a new poller that will poll services not covered by
+    the default pollers.
+  </p>
+
+  <p>
+    The <i><b>Active</b></i> column is the current status of the poller.
+    If the active field is checked, the poller will be turned on and will
+    scan the network during the next poller rescan.
+  </p>
+
+  <p>
+    The <i><b>Poller Name</b></i> column is the name of the new service
+    to be added.  Any name can be used; for instance, &quot;Company ABC
+    Intranet HTTP&quot; or &quot;My Secret SSH Service&quot; are both
+    valid.
+  </p>
+
+  <p>
+    The <i><b>Protocol</b></i> column is the protocol used for polling
+    the service. If you simply want to check to see if the target port
+    is open, then choose &quot;TCP&quot; as the protocol.
+  </p>
+
+  <p>
+    The <i><b>Port</b></i> column lists the ports at which the service
+    will be polled. If there is more than one port where the service
+    can be located, the values should be separated by colons (:).
+  </p>
+
+  <p>
+    After you add the custom poller, click on the <b><i>Apply
+    Changes</i></b> button on the <b>Configure Pollers</b> page to apply
+    the settings.
+  </p>
+</div>
+
+<jsp:include page="/includes/footer.jsp" flush="true"/>

@@ -1,4 +1,4 @@
-<!--
+<%--
 
 //
 // This file is part of the OpenNMS(R) Application.
@@ -36,9 +36,17 @@
 //      http://www.opennms.com/
 //
 
--->
+--%>
 
-<%@page language="java" contentType="text/html" session="true" import="java.io.File,java.util.*,org.opennms.web.element.NetworkElementFactory,org.opennms.web.admin.nodeManagement.*" %>
+<%@page language="java"
+	contentType="text/html"
+	session="true"
+	import="java.io.File,
+		java.util.*,
+		org.opennms.web.element.NetworkElementFactory,
+		org.opennms.web.admin.nodeManagement.*
+	"
+%>
 
 <%!
     int interfaceIndex;
@@ -55,18 +63,30 @@
     interfaceIndex = 0;
     serviceIndex = 0;
     
-    if (userSession != null)
-    {
-        interfaces = (List)userSession.getAttribute("interfaces.nodemanagement");
-        lineItems = (Integer)userSession.getAttribute("lineItems.nodemanagement");
+    if (userSession == null) {
+	throw new ServletException("User session is null");
+    }
+
+    interfaces = (List) userSession.getAttribute("interfaces.nodemanagement");
+    if (interfaces == null) {
+	throw new ServletException("Session attribute "
+				   + "interfaces.nodemanagement is null");
+    }
+    lineItems = (Integer) userSession.getAttribute("lineItems.nodemanagement");
+    if (lineItems == null) {
+	throw new ServletException("Session attribute "
+				   + "lineItems.nodemanagement is null");
     }
 %>
-<html>
-<head>
-  <title>Node Management | Admin | OpenNMS Web Console</title>
-  <base HREF="<%=org.opennms.web.Util.calculateUrlBase( request )%>" />
-  <link rel="stylesheet" type="text/css" href="css/styles.css" />
-</head>
+
+<jsp:include page="/includes/header.jsp" flush="false" >
+  <jsp:param name="title" value="Manage/Unmanage Interfaces and Services" />
+  <jsp:param name="headTitle" value="Node Management" />
+  <jsp:param name="headTitle" value="Admin" />
+  <jsp:param name="location" value="Node Management" />
+  <jsp:param name="breadcrumb" value="<a href='admin/index.jsp'>Admin</a>" />
+  <jsp:param name="breadcrumb" value="Node Management" />
+</jsp:include>
 
 <script language="Javascript" type="text/javascript" >
 
@@ -134,20 +154,6 @@
 
 </script>
 
-<body marginwidth="0" marginheight="0" LEFTMARGIN="0" RIGHTMARGIN="0" TOPMARGIN="0">
-
-<% String breadcrumb1 = "<a href='admin/index.jsp'>Admin</a>"; %>
-<% String breadcrumb2 = "Node Management"; %>
-<jsp:include page="/includes/header.jsp" flush="false" >
-  <jsp:param name="title" value="Manage/Unmanage Interfaces and Services" />
-  <jsp:param name="location" value="Node Management" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb1%>" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb2%>" />
-</jsp:include>
-
-<!-- Body -->
-<br>
-
 <%
         int halfway = 0;
         int midCount = 0;
@@ -187,116 +193,71 @@
         }
 %>
 
-<table width="100%" cellspacing="0" cellpadding="0" border="0">
-  <tr>
-    <td> &nbsp;&nbsp; </td>
+<h2>Node: <%=nodeLabel%></h2>
 
-    <td width="100%" valign="top">
-      <h2>Node: <%=nodeLabel%></h2>
-      <hr>
-    </td>
-  </tr>
-</table>
+<hr/>
     
-<FORM METHOD="POST" name="manageAll" action="admin/manageNode">
-<table width="100%" cellspacing="0" cellpadding="0" border="0">
-  
-  <tr>
-    <td> &nbsp; </td>  
-    
-    <td>
-    <h3>Manage and Unmanage Interfaces and Services</h3>
+<form method="post" name="manageAll" action="admin/manageNode">
 
-    <table width="100%" cellspacing="0" cellpadding="0" border="0">
+  <h3>Manage and Unmanage Interfaces and Services</h3>
+
+  <p>
+    The two tables below represent each managed and unmanged interface,
+    and service combination.  The 'Managed' column indicates if the
+    interface or service is managed or not, with checked rows meaning
+    the interface or service is managed, and unchecked meaning not managed.
+    Each different interface has a dark grey row and no service column,
+    and each service on that interface is listed below on light grey rows.
+  </p>
+
+  <p>
+    Managing or Unmanaging an interface will automatically mark each
+    service on that interface as managed or unmanaged accordingly.  A
+    service cannot be managed if its interface is not managed.
+  </p>
+
+  <input type="button" value="Apply Changes" onClick="applyChanges()"/>
+  <input type="button" value="Cancel" onClick="cancel()"/>
+  <input type="button" value="Select All" onClick="checkAll()"/>
+  <input type="button" value="Unselect All" onClick="uncheckAll()"/>
+  <input type="reset"/>
+
+  <% if (interfaces.size() > 0) { %>
+    <table class="standard">
       <tr>
-        <td colspan="3"> 
-          <p>The two tables below represent each managed and unmanged interface, and service combination. The 'Status' 
-          column indicates if the interface or service is managed or not, with checked rows meaning the interface 
-          or service is managed, and unchecked meaning not managed. Each different interface has a dark grey row 
-          and no service column, and each service on that interface is listed below on light grey rows.</p>
-          <p>Managing or Unmanaging an interface will automatically mark each service on that interface as managed 
-          or unmanaged accordingly. A service cannot be managed if its interface is not managed.</p>
-        </td><br>
+        <td class="standardheader" align="center" width="5%">Managed</td>
+        <td class="standardheader" align="center" width="10%">Interface</td>
+        <td class="standardheader" align="center" width="10%">Service</td>
       </tr>
-      
-      <tr>
-        <td align="left" valign="center">
-          <input type="button" value="Apply Changes" onClick="applyChanges()">
-          <input type="button" value="Cancel" onClick="cancel()">
-          <input type="button" value="Select All" onClick="checkAll()">
-          <input type="button" value="Unselect All" onClick="uncheckAll()">
-          <input type="reset"><br>&nbsp;
-        </td>
-      </tr>
-      
-      <% if (interfaces.size() > 0) { %>
-      <tr>
-        <td align="left" valign="top">
-          <table border="1" cellspacing="0" cellpadding="2" bordercolor="black">
-            <tr bgcolor="#999999">
-              <td width="5%"><b>Status</b></td>
-              <td width="10%"><b>Interface</b></td>
-              <td width="10%"><b>Service</b></td>
-            </tr>
             
-            <%=buildManageTableRows(interfaces, 0, midInterfaceIndex)%>
-            
-          </table>
-          <% } /*end if*/ %>
-        </td>
-        
-        <td>
-          &nbsp;&nbsp;
-        </td>
-        
-      <!--see if there is a second column to draw-->
-      <% if (midInterfaceIndex < interfaces.size()) { %>
-        <td align="left" valign="top">
-          <table border="1" cellspacing="0" cellpadding="2" bordercolor="black">
-            <tr bgcolor="#999999">
-              <td width="5%"><b>Status</b></td>
-              <td width="10%"><b>Interface</b></td>
-              <td width="10%"><b>Service</b></td>
-            </tr>
-            
-            <%=buildManageTableRows(interfaces, midInterfaceIndex, interfaces.size())%>
-               
-          </table>
-        </td>
-        <% } /*end if */ %>
-      </tr>
-      
-      <tr>
-      <% if (midInterfaceIndex < interfaces.size()) { %>
-        <td>&nbsp;</td>
-        <td>&nbsp;</td>
-      <% } /*end if*/ %>
-        <td align="left" valign="center" colspan="3">
-          &nbsp;<br>
-          <input type="button" value="Apply Changes" onClick="applyChanges()">
-          <input type="button" value="Cancel" onClick="cancel()"> 
-          <input type="button" value="Select All" onClick="checkAll()">
-          <input type="button" value="Unselect All" onClick="uncheckAll()">
-          <input type="reset">
-        </td>
-      </tr>
-    
+      <%=buildManageTableRows(interfaces, 0, midInterfaceIndex)%>
     </table>
-    </td>
-    
-    <td> &nbsp; </td>
-  
-  </tr>
-</table>
-</FORM>
+  <% } /*end if*/ %>
+        
+  <%-- See if there is a second column to draw --%>
+  <% if (midInterfaceIndex < interfaces.size()) { %>
+    <table class="standard">
+      <tr>
+        <td class="standardheader" align="center" width="5%">Managed</td>
+        <td class="standardheader" align="center" width="10%">Interface</td>
+        <td class="standardheader" align="center" width="10%">Service</td>
+      </tr>
 
-<br>
+      <%=buildManageTableRows(interfaces, midInterfaceIndex, interfaces.size())%>
+    </table>
+  <% } /*end if */ %>
+      
+  <br/>
 
-<jsp:include page="/includes/footer.jsp" flush="true" >
-  <jsp:param name="location" value="admin" />
-</jsp:include>
-</body>
-</html>
+  <input type="button" value="Apply Changes" onClick="applyChanges()"/>
+  <input type="button" value="Cancel" onClick="cancel()"/> 
+  <input type="button" value="Select All" onClick="checkAll()"/>
+  <input type="button" value="Unselect All" onClick="uncheckAll()"/>
+  <input type="reset"/>
+
+</form>
+
+<jsp:include page="/includes/footer.jsp" flush="true"/>
 
 <%!
       public String buildManageTableRows(List interfaces, int start, int stop)
@@ -349,29 +310,29 @@
       
       public String buildInterfaceRow(String key, int interfaceIndex, String serviceArray, String status, String address)
       {
-          StringBuffer row = new StringBuffer( "<tr bgcolor=\"#999999\">");
+          StringBuffer row = new StringBuffer( "<tr>");
           
-          row.append("<td width=\"5%\" align=\"center\">");
+          row.append("<td class=\"standardheaderplain\" width=\"5%\" align=\"center\">");
           row.append("<input type=\"checkbox\" name=\"interfaceCheck\" value=\"").append(key).append("\" onClick=\"javascript:updateServices(" + interfaceIndex + ", " + serviceArray + ")\" ").append(status).append(" >");
           row.append("</td>").append("\n");
           row.append("</td>").append("\n");
-          row.append("<td width=\"10%\">");
+          row.append("<td class=\"standardheaderplain\" width=\"10%\" align=\"center\">");
           row.append(address);
           row.append("</td>").append("\n");
-          row.append("<td width=\"10%\">").append("&nbsp;").append("</td></tr>").append("\n");
+          row.append("<td class=\"standardheaderplain\" width=\"10%\" align=\"center\">").append("&nbsp;").append("</td></tr>").append("\n");
           
           return row.toString();
       }
       
       public String buildServiceRow(String key, int interfaceIndex, int serviceIndex, String status, String address, String service)
       {
-          StringBuffer row = new StringBuffer( "<tr bgcolor=\"#cccccc\">");
+          StringBuffer row = new StringBuffer( "<tr>");
           
-          row.append("<td width=\"5%\" align=\"center\">");
+          row.append("<td class=\"standard\" width=\"5%\" align=\"center\">");
           row.append("<input type=\"checkbox\" name=\"serviceCheck\" value=\"").append(key).append("\" onClick=\"javascript:verifyManagedInterface(" + interfaceIndex + ", " + serviceIndex + ")\" ").append(status).append(" >");
           row.append("</td>").append("\n");
-          row.append("<td width=\"10%\">").append(address).append("</td>").append("\n");
-          row.append("<td width=\"10%\">").append(service).append("</td></tr>").append("\n");
+          row.append("<td class=\"standard\" width=\"10%\" align=\"center\">").append(address).append("</td>").append("\n");
+          row.append("<td class=\"standard\" width=\"10%\" align=\"center\">").append(service).append("</td></tr>").append("\n");
           
           return row.toString();
       }

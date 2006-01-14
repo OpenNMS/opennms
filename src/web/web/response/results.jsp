@@ -1,4 +1,4 @@
-<!--
+<%--
 
 //
 // This file is part of the OpenNMS(R) Application.
@@ -41,9 +41,20 @@
 //      http://www.opennms.com/
 //
 
--->
+--%>
 
-<%@page language="java" contentType="text/html" session="true" import="org.opennms.web.*,org.opennms.web.response.*,org.opennms.web.graph.*,java.util.*,java.io.*,org.opennms.web.element.NetworkElementFactory" %>
+<%@page language="java"
+	contentType="text/html"
+	session="true"
+	import="org.opennms.web.*,
+		org.opennms.web.response.*,
+		org.opennms.web.graph.*,
+		org.opennms.web.element.NetworkElementFactory,
+		org.opennms.core.resource.Vault,
+		java.util.*,
+		java.io.*
+	"
+%>
 
 <%!
     protected ResponseTimeModel model = null;
@@ -51,120 +62,120 @@
     
     public void init() throws ServletException {
         try {
-            this.model = new ResponseTimeModel( org.opennms.core.resource.Vault.getHomeDir() );
-        }
-        catch( Exception e ) {
-            throw new ServletException( "Could not initialize the ResponseTimeModel", e );
+            this.model = new ResponseTimeModel(Vault.getHomeDir());
+        } catch (Throwable t) {
+            throw new ServletException("Could not initialize the ResponseTimeModel", t);
         }
     }
 %>
 
 <%
-    //required parameter reports
-    String reports[] = request.getParameterValues( "reports" );
-    if(reports == null) {
-        throw new MissingParameterException( "report", new String[] {"report", "node", "intf"} );
+    String[] requiredParameters = new String[] {"report", "node", "intf"};
+
+    // required parameter reports
+    String reports[] = request.getParameterValues("reports");
+    if (reports == null) {
+        throw new MissingParameterException("report", requiredParameters);
     }
         
-    //required parameter node
-    String nodeIdString = request.getParameter( "node" );
-    if(nodeIdString == null) {
-        throw new MissingParameterException( "node", new String[] {"report", "node", "intf"} );
+    // required parameter node
+    String nodeIdString = request.getParameter("node");
+    if (nodeIdString == null) {
+        throw new MissingParameterException("node", requiredParameters);
     }
+    // XXX no error checking!  Did parseInt fail?  Is it a valid nodeID?
     int nodeId = Integer.parseInt(nodeIdString);
     
-    //required parameter intf
-    String intf = request.getParameter( "intf" );
-    if(intf == null) {
-        throw new MissingParameterException( "intf", new String[] {"report", "node", "intf"} );
+    // required parameter intf
+    String intf = request.getParameter("intf");
+    if (intf == null) {
+        throw new MissingParameterException("intf", requiredParameters);
     }
 
-    //see if the start and end time were explicitly set as params    
-    String start = request.getParameter( "start" );
-    String end   = request.getParameter( "end" );
+    // see if the start and end time were explicitly set as params    
+    String start = request.getParameter("start");
+    String end   = request.getParameter("end");
     
-    if( start == null || end == null ) {
+    if (start == null || end == null) {
         String relativeTime = request.getParameter("relativetime");
         
-        //only support last 24 hours in this version, need to clean up
-        //this code by making a comman date param API, LJK 04/30/2002
+        /*
+	 * TODO: Only support last 24 hours in this version, need to clean up
+         * this code by making a comman date param API, LJK 04/30/2002
+	 */
         if(relativeTime != null ) {
-            if(relativeTime.equals("lastweek")) {
+            if (relativeTime.equals("lastweek")) {
                java.util.Calendar cal = new java.util.GregorianCalendar();
                end = Long.toString(cal.getTime().getTime());
-               cal.add( java.util.Calendar.DATE, -7 );
+               cal.add(java.util.Calendar.DATE, -7);
                start = Long.toString(cal.getTime().getTime());
-            }
-            else if(relativeTime.equals("lastmonth")) {
+            } else if (relativeTime.equals("lastmonth")) {
                java.util.Calendar cal = new java.util.GregorianCalendar();
                end = Long.toString(cal.getTime().getTime());
                cal.add( java.util.Calendar.DATE, -31 );
                start = Long.toString(cal.getTime().getTime());
-            }
-            else if(relativeTime.equals("lastyear")) {
+            } else if (relativeTime.equals("lastyear")) {
                java.util.Calendar cal = new java.util.GregorianCalendar();
                end = Long.toString(cal.getTime().getTime());
-               cal.add( java.util.Calendar.DATE, -366 );
+               cal.add(java.util.Calendar.DATE, -366);
                start = Long.toString(cal.getTime().getTime());
-            }
-            else {
+            } else {
                java.util.Calendar cal = new java.util.GregorianCalendar();
                end = Long.toString(cal.getTime().getTime());
-               cal.add( java.util.Calendar.DATE, -1 );
+               cal.add(java.util.Calendar.DATE, -1);
                start = Long.toString(cal.getTime().getTime());
             }
         }
     }
     
-    if( start == null || end == null ) {
-        String startMonth = request.getParameter( "startMonth" );
-        String startDate  = request.getParameter( "startDate" );
-        String startYear  = request.getParameter( "startYear" );
-        String startHour  = request.getParameter( "startHour" );
+    if (start == null || end == null) {
+        String startMonth = request.getParameter("startMonth");
+        String startDate  = request.getParameter("startDate");
+        String startYear  = request.getParameter("startYear");
+        String startHour  = request.getParameter("startHour");
 
-        String endMonth = request.getParameter( "endMonth" );
-        String endDate  = request.getParameter( "endDate" );
-        String endYear  = request.getParameter( "endYear" );
-        String endHour  = request.getParameter( "endHour" );
+        String endMonth = request.getParameter("endMonth");
+        String endDate  = request.getParameter("endDate");
+        String endYear  = request.getParameter("endYear");
+        String endHour  = request.getParameter("endHour");
 
-        if( startMonth == null || startDate == null || startYear == null || startHour == null ||
-            endMonth == null   || endDate == null   || endYear == null   || endHour == null )
-        {
-            throw new MissingParameterException( "startMonth", new String[] { "startMonth", "startDate", "startYear", "startHour", "endMonth", "endDate", "endYear", "endHour" } );
+        if (startMonth == null || startDate == null
+	    || startYear == null || startHour == null
+            || endMonth == null   || endDate == null
+            || endYear == null   || endHour == null) {
+            throw new MissingParameterException("startMonth", new String[] { "startMonth", "startDate", "startYear", "startHour", "endMonth", "endDate", "endYear", "endHour" } );
         }
-        else
-        {
-            Calendar startCal = Calendar.getInstance();
-            startCal.set( Calendar.MONTH, Integer.parseInt( startMonth ));
-            startCal.set( Calendar.DATE, Integer.parseInt( startDate ));
-            startCal.set( Calendar.YEAR, Integer.parseInt( startYear ));
-            startCal.set( Calendar.HOUR_OF_DAY, Integer.parseInt( startHour ));
-            startCal.set( Calendar.MINUTE, 0 );
-            startCal.set( Calendar.SECOND, 0 );
-            startCal.set( Calendar.MILLISECOND, 0 );
 
-            Calendar endCal = Calendar.getInstance();
-            endCal.set( Calendar.MONTH, Integer.parseInt( endMonth ));
-            endCal.set( Calendar.DATE, Integer.parseInt( endDate ));
-            endCal.set( Calendar.YEAR, Integer.parseInt( endYear ));
-            endCal.set( Calendar.HOUR_OF_DAY, Integer.parseInt( endHour ));
-            endCal.set( Calendar.MINUTE, 0 );
-            endCal.set( Calendar.SECOND, 0 );
-            endCal.set( Calendar.MILLISECOND, 0 );
+        Calendar startCal = Calendar.getInstance();
+        startCal.set(Calendar.MONTH, Integer.parseInt(startMonth));
+        startCal.set(Calendar.DATE, Integer.parseInt(startDate));
+        startCal.set(Calendar.YEAR, Integer.parseInt(startYear));
+        startCal.set(Calendar.HOUR_OF_DAY, Integer.parseInt(startHour));
+        startCal.set(Calendar.MINUTE, 0);
+        startCal.set(Calendar.SECOND, 0);
+        startCal.set(Calendar.MILLISECOND, 0);
 
-            start = Long.toString( startCal.getTime().getTime() );
-            end   = Long.toString( endCal.getTime().getTime() );
-        }
+        Calendar endCal = Calendar.getInstance();
+        endCal.set(Calendar.MONTH, Integer.parseInt(endMonth));
+        endCal.set(Calendar.DATE, Integer.parseInt(endDate));
+        endCal.set(Calendar.YEAR, Integer.parseInt(endYear));
+        endCal.set(Calendar.HOUR_OF_DAY, Integer.parseInt(endHour));
+        endCal.set(Calendar.MINUTE, 0);
+        endCal.set(Calendar.SECOND, 0);
+        endCal.set(Calendar.MILLISECOND, 0);
+
+        start = Long.toString( startCal.getTime().getTime());
+        end  = Long.toString( endCal.getTime().getTime());
     }
 
-    //gather information for displaying around the image
-    Date startDate = new Date( Long.parseLong( start ));
-    Date endDate   = new Date( Long.parseLong( end ));
+    // gather information for displaying around the image
+    Date startDate = new Date(Long.parseLong(start));
+    Date endDate   = new Date(Long.parseLong(end));
     
-    //convert the report names to graph objects
+    // convert the report names to graph objects
     PrefabGraph[] graphs = new PrefabGraph[reports.length];
 
-    for( int i=0; i < reports.length; i++ ) {
+    for (int i=0; i < reports.length; i++) {
         graphs[i] = (PrefabGraph)this.model.getQuery(reports[i]);
         
         if(graphs[i] == null) {
@@ -172,217 +183,136 @@
         }
     }
 
-    //sort the graphs by their order in the properties file
-    //(PrefabGraph implements the Comparable interface)
+    /*
+     * Sort the graphs by their order in the properties file.
+     * Note: PrefabGraph implements the Comparable interface.
+     */
     Arrays.sort(graphs);    
+
+    String relativetime = request.getParameter("relativetime");
+
+    if (relativetime == null) {
+        relativetime = "unknown";
+    }
+
+    String reportList = "";
+    for (int i=0; i < reports.length; i++) {
+        reportList = reportList + "&reports=" + reports[i];
+    }
 %>
 
-
-<html>
-<head>
-    <title>Results | Response Time | Reports | OpenNMS Web Console</title>
-    <base HREF="<%=org.opennms.web.Util.calculateUrlBase( request )%>" />
-    <link rel="stylesheet" type="text/css" href="css/styles.css" />
-</head>
-
-<body marginwidth="0" marginheight="0" LEFTMARGIN="0" RIGHTMARGIN="0" TOPMARGIN="0">
-
-<% String breadcrumb1 = "<a href='report/index.jsp'>Reports</a>"; %>
-<% String breadcrumb2 = "<a href='response/index.jsp'>Response Time</a>"; %>
-<% String breadcrumb3 = "Results"; %>
 <jsp:include page="/includes/header.jsp" flush="false" >
-<jsp:param name="title" value="Response Time Results" />
-<jsp:param name="breadcrumb" value="<%=breadcrumb1%>" />
-<jsp:param name="breadcrumb" value="<%=breadcrumb2%>" />
-<jsp:param name="breadcrumb" value="<%=breadcrumb3%>" />
+  <jsp:param name="title" value="Response Time Results" />
+  <jsp:param name="headTitle" value="Results" />
+  <jsp:param name="headTitle" value="Response Time" />
+  <jsp:param name="headTitle" value="Reports" />
+  <jsp:param name="breadcrumb" value="<a href='report/index.jsp'>Reports</a>" />
+  <jsp:param name="breadcrumb" value="<a href='response/index.jsp'>Response Time</a>" />
+  <jsp:param name="breadcrumb" value="Results" />
 </jsp:include>
 
-<br/>
+<div align="center">
+  <h3>
+    Node: <a href="element/node.jsp?node=<%=nodeId%>"><%=NetworkElementFactory.getNodeLabel(nodeId)%></a><br/>
+    <% if(intf != null ) { %>
+      Interface: <%=this.model.getHumanReadableNameForIfLabel(nodeId, intf)%>
+    <% } %>
+  </h3>
 
-<table width="100%" cellpadding="0" cellspacing="0" border="0">
-  <tr>
-    <td align="center">
-      <table>
-        <tr>
-          <td>&nbsp;</td>
-          <td align="center">
-            <h3>
-              Node: <a href="element/node.jsp?node=<%=nodeId%>"><%=NetworkElementFactory.getNodeLabel(nodeId)%></a><br/>
-              <% if(intf != null ) { %>
-                Interface: <%=this.model.getHumanReadableNameForIfLabel(nodeId, intf)%>
-              <% } %>
-            </h3>
-          </td>
-          <td>&nbsp;</td>
-        </tr>
-      </table>
-    </td>
-  </tr>
+  <form name="reltimeform">
+    <table>
+      <tr>
+        <td align="center" width="80">Last Day</td>
+        <td align="center" width="80">Last Week</td>
+        <td align="center" width="80">Last Month</td>
+        <td align="center" width="80">Last Year</td>
+      </tr>
 
-  <tr>
-    <td height="20">&nbsp;</td>
-  </tr>
+      <tr>
+        <td align="center">
+          <input type="radio" name="rtstatus" <%=(relativetime.equals("lastday") ? "checked" : "")%>
+                 onclick="top.location = '/opennms/response/results.jsp?relativetime=lastday&intf=<%=intf%>&node=<%=nodeId%><%=reportList%>'" ></input>
+        </td>
 
-  <tr><td align="center">
-      <FORM NAME="reltimeform">
-        <% String relativetime = request.getParameter("relativetime"); %>
+        <td align="center">
+          <input type="radio" name="rtstatus" <%=(relativetime.equals("lastweek") ? "checked" : "")%>
+                 onclick="top.location = '/opennms/response/results.jsp?relativetime=lastweek&intf=<%=intf%>&node=<%=nodeId%><%=reportList%>'" ></input>
+        </td>
 
-        <%
-        if(relativetime == null ) {
-           relativetime = "unknown";
-        } %>
+        <td align="center">
+          <input type="radio" name="rtstatus" <%=(relativetime.equals("lastmonth") ? "checked" : "")%>
+                 onclick="top.location = '/opennms/response/results.jsp?relativetime=lastmonth&intf=<%=intf%>&node=<%=nodeId%><%=reportList%>'" ></input>
+        </td>
 
-        <%
-            String reportList = "";
-            for( int i=0; i < reports.length; i++ ) {
-                reportList = reportList + "&reports=" + reports[i];
-            }
-        %>
+        <td align="center">
+          <input type="radio" name="rtstatus" <%=(relativetime.equals("lastyear") ? "checked" : "")%>
+                 onclick="top.location = '/opennms/response/results.jsp?relativetime=lastyear&intf=<%=intf%>&node=<%=nodeId%><%=reportList%>'" ></input>
+        </td>
+      </tr>
+    </table>
+  </form>
 
-        <table>
-        <tr>
-           <td align="center" width="80">Last Day</td>
-           <td align="center" width="80">Last Week</td>
-           <td align="center" width="80">Last Month</td>
-           <td align="center" width="80">Last Year</td>
-        </tr>
-          <tr>
-            <td align="center">
-              <input type="radio" name="rtstatus" <%=(relativetime.equals("lastday") ? "checked" : "")%>
-               onclick="top.location = '/opennms/response/results.jsp?relativetime=lastday&intf=<%=intf%>&node=<%=nodeId%><%=reportList%>'" ></input><br>
-            </td>
-            <td align="center">
-              <input type="radio" name="rtstatus" <%=(relativetime.equals("lastweek") ? "checked" : "")%>
-               onclick="top.location = '/opennms/response/results.jsp?relativetime=lastweek&intf=<%=intf%>&node=<%=nodeId%><%=reportList%>'" ></input><br>
-            </td>
-            <td align="center">
-              <input type="radio" name="rtstatus" <%=(relativetime.equals("lastmonth") ? "checked" : "")%>
-               onclick="top.location = '/opennms/response/results.jsp?relativetime=lastmonth&intf=<%=intf%>&node=<%=nodeId%><%=reportList%>'" ></input><br>
-            </td>
-            <td align="center">
-              <input type="radio" name="rtstatus" <%=(relativetime.equals("lastyear") ? "checked" : "")%>
-               onclick="top.location = '/opennms/response/results.jsp?relativetime=lastyear&intf=<%=intf%>&node=<%=nodeId%><%=reportList%>'" ></input><br>
-            </td>
-          </tr>
-        </table>
-        </FORM>
-  </td>
-  </tr>
+  <h3>Interface Response Time Data</h3>
+  
+  <strong>From</strong> <%=startDate%> <br/>
+  <strong>To</strong> <%=endDate%><br/>
 
-  <tr>
-    <td height="20">&nbsp;</td>
-  </tr>
-
-  <tr>
-    <td align="center"><h3>Interface Response Time Data</h3></td>
-  </tr>
-
-  <tr>
-    <td>
-      <table width="100%">
-        <tr>
-          <td align="center">
-            <b>From</b> <%=startDate%> <br>
-            <b>To</b> <%=endDate%>
-          </td>
-        </tr>
-
-        <% if(graphs.length > 0) { %>
-          <% for(int i=0; i < graphs.length; i++ ) { %>
-            <%-- encode the RRD filenames based on the graph's required data sources --%>
-            <% String[] rrds = this.getRRDNames(nodeId, intf, graphs[i]); %> 
-            <% String rrdParm = this.encodeRRDNamesAsParmString(rrds); %>
+  <% if(graphs.length > 0) { %>
+    <% for(int i=0; i < graphs.length; i++ ) { %>
+      <%-- Encode the RRD filenames based on the graph's required data
+        -- sources.
+        --%>
+      <% String[] rrds = this.getRRDNames(nodeId, intf, graphs[i]); %> 
+      <% String rrdParm = this.encodeRRDNamesAsParmString(rrds); %>
                         
-            <%-- handle external values, if any --%>
-            <% String externalValuesParm = this.encodeExternalValuesAsParmString(nodeId, intf, graphs[i]); %>
+      <%-- handle external values, if any --%>
+      <% String externalValuesParm = this.encodeExternalValuesAsParmString(nodeId, intf, graphs[i]); %>
             
-            <tr>
-              <td align="center">
-                <img src="response/graph.png?report=<%=graphs[i].getName()%>&start=<%=start%>&end=<%=end%>&<%=rrdParm%>&<%=externalValuesParm%>"/>
-              </td>
-            </tr>
-          <% } %>
-        <% } else { %>
-            <tr>
-              <td align="center">No response time data has been gathered at this level</td>
-            </tr>
-        <% } %>
+      <img src="response/graph.png?report=<%=graphs[i].getName()%>&start=<%=start%>&end=<%=end%>&<%=rrdParm%>&<%=externalValuesParm%>"/>
+    <% } %>
+  <% } else { %>
+    No response time data has been gathered at this level.
+  <% } %>
 
-      </table>
-    </td>
-  </tr>
 
-  <tr>
-    <td height="20">&nbsp;</td>
-  </tr>
+  <form name="reltimeform">
+    <table>
+      <tr>
+        <td align="center" width="80">Last Day</td>
+        <td align="center" width="80">Last Week</td>
+        <td align="center" width="80">Last Month</td>
+        <td align="center" width="80">Last Year</td>
+      </tr>
 
-  <tr><td align="center">
-      <FORM NAME="reltimeform">
+      <tr>
+        <td align="center">
+          <input type="radio" name="rtstatus" <%=(relativetime.equals("lastday") ? "checked" : "")%>
+                 onclick="top.location = '/opennms/response/results.jsp?relativetime=lastday&intf=<%=intf%>&node=<%=nodeId%><%=reportList%>'" ></input>
+        </td>
 
-        <%
-        if(relativetime == null ) {
-           relativetime = "unknown";
-        } %>
+        <td align="center">
+          <input type="radio" name="rtstatus" <%=(relativetime.equals("lastweek") ? "checked" : "")%>
+                 onclick="top.location = '/opennms/response/results.jsp?relativetime=lastweek&intf=<%=intf%>&node=<%=nodeId%><%=reportList%>'" ></input>
+        </td>
 
-        <%
-            reportList = "";
-            for( int i=0; i < reports.length; i++ ) {
-                reportList = reportList + "&reports=" + reports[i];
-            }
-        %>
+        <td align="center">
+          <input type="radio" name="rtstatus" <%=(relativetime.equals("lastmonth") ? "checked" : "")%>
+                 onclick="top.location = '/opennms/response/results.jsp?relativetime=lastmonth&intf=<%=intf%>&node=<%=nodeId%><%=reportList%>'" ></input>
+        </td>
 
-        <table>
-        <tr>
-           <td align="center" width="80">Last Day</td>
-           <td align="center" width="80">Last Week</td>
-           <td align="center" width="80">Last Month</td>
-           <td align="center" width="80">Last Year</td>
-        </tr>
-          <tr>
-            <td align="center">
-              <input type="radio" name="rtstatus" <%=(relativetime.equals("lastday") ? "checked" : "")%>
-               onclick="top.location = '/opennms/response/results.jsp?relativetime=lastday&intf=<%=intf%>&node=<%=nodeId%><%=reportList%>'" ></input><br>
-            </td>
-            <td align="center">
-              <input type="radio" name="rtstatus" <%=(relativetime.equals("lastweek") ? "checked" : "")%>
-               onclick="top.location = '/opennms/response/results.jsp?relativetime=lastweek&intf=<%=intf%>&node=<%=nodeId%><%=reportList%>'" ></input><br>
-            </td>
-            <td align="center">
-              <input type="radio" name="rtstatus" <%=(relativetime.equals("lastmonth") ? "checked" : "")%>
-               onclick="top.location = '/opennms/response/results.jsp?relativetime=lastmonth&intf=<%=intf%>&node=<%=nodeId%><%=reportList%>'" ></input><br>
-            </td>
-            <td align="center">
-              <input type="radio" name="rtstatus" <%=(relativetime.equals("lastyear") ? "checked" : "")%>
-               onclick="top.location = '/opennms/response/results.jsp?relativetime=lastyear&intf=<%=intf%>&node=<%=nodeId%><%=reportList%>'" ></input><br>
-            </td>
-          </tr>
-        </table>
-        </FORM>
-  </td>
-  </tr>
+        <td align="center">
+          <input type="radio" name="rtstatus" <%=(relativetime.equals("lastyear") ? "checked" : "")%>
+                 onclick="top.location = '/opennms/response/results.jsp?relativetime=lastyear&intf=<%=intf%>&node=<%=nodeId%><%=reportList%>'" ></input>
+        </td>
+      </tr>
+    </table>
+  </form>
 
-  <tr>
-    <td height="20">&nbsp;</td>
-  </tr>
 
-  <tr>
-    <td align="center">
-    <jsp:include page="/includes/bookmark.jsp" flush="false" />
-    </td>
-  </tr>
-
-  <tr>
-    <td height="20">&nbsp;</td>
-  </tr>
-
-</table>
-
-<br/>
+  <jsp:include page="/includes/bookmark.jsp" flush="false" />
+</div>
 
 <jsp:include page="/includes/footer.jsp" flush="false" />
-
-</body>
-</html>
 
 <%!
     /** intf can be null */           

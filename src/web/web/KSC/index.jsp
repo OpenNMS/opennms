@@ -1,4 +1,4 @@
-<!--
+<%--
  
 //
 // This file is part of the OpenNMS(R) Application.
@@ -34,9 +34,18 @@
 //      http://www.opennms.org/
 //      http://www.opennms.com/
 
--->
+--%>
 
-<%@page language="java" contentType="text/html" session="true" import="java.util.*,org.opennms.web.Util,org.opennms.web.performance.*,org.opennms.netmgt.config.kscReports.*,org.opennms.netmgt.config.KSC_PerformanceReportFactory" %>
+<%@page language="java"
+	contentType="text/html"
+	session="true"
+	import="java.util.*,
+		org.opennms.web.Util,
+		org.opennms.web.performance.*,
+		org.opennms.netmgt.config.kscReports.*,
+		org.opennms.netmgt.config.KSC_PerformanceReportFactory
+	"
+%>
 
 <%@ include file="/WEB-INF/jspf/KSC/init2.jspf" %>
 
@@ -62,13 +71,14 @@
     }
 %>
 
-<%-- Start the HTML Page Definition here --%>
-<html>
-<head>
-  <title>Performance | Reports | KSC </title>
-  <base HREF="<%=org.opennms.web.Util.calculateUrlBase( request )%>" />
-  <link rel="stylesheet" type="text/css" href="css/styles.css" />
-</head>
+<jsp:include page="/includes/header.jsp" flush="false" >
+  <jsp:param name="title" value="Key SNMP Customized Performance Reports and Node Reports" />
+  <jsp:param name="headTitle" value="Performance" />
+  <jsp:param name="headTitle" value="Reports" />
+  <jsp:param name="headTitle" value="KSC" />
+  <jsp:param name="breadcrumb" value="<a href='report/index.jsp'>Reports</a>" />
+  <jsp:param name="breadcrumb" value="KSC and Node Reports" />
+</jsp:include>
 
 <%-- A script for validating Node ID Selection Form before submittal --%>
 <script language="Javascript" type="text/javascript" >
@@ -146,17 +156,6 @@
   }
 </script>
 
-<body marginwidth="0" marginheight="0" LEFTMARGIN="0" RIGHTMARGIN="0" TOPMARGIN="0">
-
-<% String breadcrumb1 = "<a href='report/index.jsp'>Reports</a>"; %>
-<% String breadcrumb2 = "KSC and Node Reports"; %>
-<jsp:include page="/includes/header.jsp" flush="false" >
-  <jsp:param name="title" value="Key SNMP Customized Performance Reports and Node Reports" />
-  <jsp:param name="location" value="KSC and Node Reports" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb1%>" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb2%>" />
-</jsp:include>
-
 <h3 align="center">Key SNMP Customized Peformance Reports and Node Reports</h3>
 
 <table width="100%" cellspacing="0" cellpadding="2" border="0">
@@ -220,11 +219,5 @@
   </tr>
 
 </table>
-<br>
-<jsp:include page="/includes/footer.jsp" flush="false" >
-  <jsp:param name="location" value="KSC and Node Reports" />
-</jsp:include>
 
-</body>
-</html>
-
+<jsp:include page="/includes/footer.jsp" flush="false"/>

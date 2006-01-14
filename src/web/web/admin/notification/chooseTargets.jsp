@@ -1,4 +1,4 @@
-<!--
+<%--
 
 //
 // This file is part of the OpenNMS(R) Application.
@@ -37,9 +37,18 @@
 //      http://www.opennms.com/
 //
 
--->
+--%>
 
-<%@page language="java" contentType="text/html" session="true" import="java.util.*,org.opennms.web.Util,org.opennms.netmgt.config.*,org.opennms.netmgt.config.groups.*,org.opennms.netmgt.config.destinationPaths.*" %>
+<%@page language="java"
+	contentType="text/html"
+	session="true"
+	import="java.util.*,
+		org.opennms.web.Util,
+		org.opennms.netmgt.config.*,
+		org.opennms.netmgt.config.groups.*,
+		org.opennms.netmgt.config.destinationPaths.*
+	"
+%>
 
 <%!
     public void init() throws ServletException {
@@ -72,12 +81,15 @@
     }
 %>
 
-<html>
-<head>
-  <title>Choose Targets | Admin | OpenNMS Web Console</title>
-  <base HREF="<%=org.opennms.web.Util.calculateUrlBase( request )%>" />
-  <link rel="stylesheet" type="text/css" href="css/styles.css" />
-</head>
+<jsp:include page="/includes/header.jsp" flush="false" >
+  <jsp:param name="title" value="Choose Targets" />
+  <jsp:param name="headTitle" value="Choose Targets" />
+  <jsp:param name="headTitle" value="Admin" />
+  <jsp:param name="breadcrumb" value="<a href='admin/index.jsp'>Admin</a>" />
+  <jsp:param name="breadcrumb" value="<a href='admin/notification/index.jsp'>Configure Notifications</a>" />
+  <jsp:param name="breadcrumb" value="<a href='admin/notification/destinationPaths.jsp'>Destination Paths</a>" />
+  <jsp:param name="breadcrumb" value="Choose Targets" />
+</jsp:include>
 
 <script language="Javascript" type="text/javascript" >
 
@@ -160,35 +172,18 @@
 
 </script>
 
-<body marginwidth="0" marginheight="0" LEFTMARGIN="0" RIGHTMARGIN="0" TOPMARGIN="0">
 
-<% String breadcrumb1 = "<a href='admin/index.jsp'>Admin</a>"; %>
-<% String breadcrumb2 = "<a href='admin/notification/index.jsp'>Configure Notifications</a>"; %>
-<% String breadcrumb3 = "<a href='admin/notification/destinationPaths.jsp'>Destination Paths</a>"; %>
-<% String breadcrumb4 = "Choose Targets"; %>
-<jsp:include page="/includes/header.jsp" flush="false" >
-  <jsp:param name="title" value="Choose Targets" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb1%>" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb2%>" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb3%>" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb4%>" />
-</jsp:include>
+<h2><%=(newPath.getName()!=null ? "Editing path: " + newPath.getName() + "<br>" : "")%></h2>
 
-<br>
-<!-- Body -->
+<h3>Choose the users and groups to send the notice to.</h3>
 
-<table width="100%" cellspacing="0" cellpadding="0" border="0">
-  <tr>
-    <td> &nbsp; </td>
+<form method="post" name="targets"
+action="admin/notification/destinationWizard" >
+<%=Util.makeHiddenTags(request)%>
+<input type="hidden" name="sourcePage" value="chooseTargets.jsp"/>
+<input type="hidden" name="nextPage"/>
 
-    <td>
-    <h2><%=(newPath.getName()!=null ? "Editing path: " + newPath.getName() + "<br>" : "")%></h2>
-    <h3>Choose the users and groups to send the notice to.</h3>
-    <form METHOD="POST" NAME="targets" ACTION="admin/notification/destinationWizard" >
-      <%=Util.makeHiddenTags(request)%>
-      <input type="hidden" name="sourcePage" value="chooseTargets.jsp"/>
-      <input type="hidden" name="nextPage"/>
-      <table width="50%" cellspacing="2" cellpadding="2" border="0">
+<table cellspacing="2" cellpadding="2" border="0">
         <tr>
           <td valign="top"><h4>Send to Selected Users:</h4></td>
           <td>&nbsp;</td>
@@ -283,23 +278,13 @@
         </tr>
         <tr>
           <td colspan="2">
-           <a HREF="javascript:next()">Next &#155;&#155;&#155;</a>
+           <a href="javascript:next()">Next &#155;&#155;&#155;</a>
           </td>
         </tr>
       </table>
     </form>
-    </td>
-
-    <td> &nbsp; </td>
-  </tr>
-</table>
-
-<br>
 
 <jsp:include page="/includes/footer.jsp" flush="false" />
-
-</body>
-</html>
 
 <%!
     public Map getUsers(Collection targets)

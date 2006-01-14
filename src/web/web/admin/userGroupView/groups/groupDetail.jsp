@@ -1,4 +1,4 @@
-<!--
+<%--
 
 //
 // This file is part of the OpenNMS(R) Application.
@@ -37,56 +37,57 @@
 //      http://www.opennms.com/
 //
 
--->
+--%>
 
-<%@page language="java" contentType = "text/html" session = "true"  import="org.opennms.netmgt.config.*, java.util.*,java.text.*,org.opennms.netmgt.config.groups.*,org.opennms.netmgt.config.users.DutySchedule"%>
+<%@page language="java"
+	contentType="text/html"
+	session="true"
+	import="org.opennms.netmgt.config.*,
+		java.util.*,
+		java.text.*,
+		org.opennms.netmgt.config.groups.*,
+		org.opennms.netmgt.config.users.DutySchedule,
+                org.opennms.web.MissingParameterException
+	"
+%>
+
 <%
 	Group group = null;
   	String groupName = request.getParameter("groupName");
-	try
-  	{
+        if (groupName == null) {
+                throw new MissingParameterException("groupName");
+        }
+
+	try {
 		GroupFactory.init();
 		GroupManager groupFactory = GroupFactory.getInstance();
       		group = groupFactory.getGroup(groupName);
-  	}
-	catch (Exception e)
-  	{
+  	} catch (Exception e) {
       		throw new ServletException("Could not find group " + groupName + " in group factory.", e);
   	}
 
+	if (group == null) {
+		throw new ServletException("Could not find group " + groupName);
+	}
+
 %>
-<html>
-<head>
-<title>Group Detail | User Admin | OpenNMS Web Console</title>
-<base HREF="<%=org.opennms.web.Util.calculateUrlBase( request )%>" />
-<link rel="stylesheet" type="text/css" href="css/styles.css" />
-</head>
 
-<body marginwidth="0" marginheight="0" LEFTMARGIN="0" RIGHTMARGIN="0" TOPMARGIN="0">
-
-<% String breadcrumb1 = "<a href='admin/index.jsp'>Admin</a>"; %>
-<% String breadcrumb2 = "<a href='admin/userGroupView/index.jsp'>Users and Groups</a>"; %>
-<% String breadcrumb3 = "<a href='admin/userGroupView/groups/list.jsp'>Group List</a>"; %>
-<% String breadcrumb4 = "Group Detail"; %>
 <jsp:include page="/includes/header.jsp" flush="false" >
   <jsp:param name="title" value="Group Detail" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb1%>" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb2%>" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb3%>" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb4%>" />
+  <jsp:param name="headTitle" value="Group Detail" />
+  <jsp:param name="headTitle" value="Groups" />
+  <jsp:param name="headTitle" value="Admin" />
+  <jsp:param name="breadcrumb" value="<a href='admin/index.jsp'>Admin</a>" />
+  <jsp:param name="breadcrumb" value="<a href='admin/userGroupView/index.jsp'>Users and Groups</a>" />
+  <jsp:param name="breadcrumb" value="<a href='admin/userGroupView/groups/list.jsp'>Group List</a>" />
+  <jsp:param name="breadcrumb" value="Group Detail" />
 </jsp:include>
 
-<br>
+<h2>Details for Group: <%=group.getName()%></h2>
 
-<table width="100%" border="0" cellspacing="0" cellpadding="2" >
-  <tr>
-    <td>&nbsp;</td>
-
-    <td>
     <table width="100%" border="0" cellspacing="0" cellpadding="2" >
       <tr>
         <td>
-          <h2>Details for Group: <%=group.getName()%></h2>
           <table width="100%" border="0" cellspacing="0" cellpadding="2">
             <tr>
               <td width="10%" valign="top">
@@ -170,15 +171,5 @@
         </td>
       </tr>
     </table>
-    </td>
 
-    <td>&nbsp;</td>
-  </tr>
-</table>
-
-<br>
-
-<jsp:include page="/includes/footer.jsp" flush="false" >
-</jsp:include>
-</body>
-</html>
+<jsp:include page="/includes/footer.jsp" flush="false"/>

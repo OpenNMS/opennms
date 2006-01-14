@@ -1,4 +1,4 @@
-<!--
+<%--
 
 //
 // This file is part of the OpenNMS(R) Application.
@@ -37,9 +37,15 @@
 //      http://www.opennms.com/
 //
 
--->
+--%>
 
-<%@page language="java" contentType="text/html" session="true" import="java.util.*,org.opennms.netmgt.config.*" %>
+<%@page language="java"
+	contentType="text/html"
+	session="true"
+	import="java.util.*,
+		org.opennms.netmgt.config.*
+	"
+%>
 
 <%!
     public void init() throws ServletException {
@@ -52,12 +58,14 @@
     }
 %>
 
-<html>
-<head>
-  <title>Destination Paths | Admin | OpenNMS Web Console</title>
-  <base HREF="<%=org.opennms.web.Util.calculateUrlBase( request )%>" />
-  <link rel="stylesheet" type="text/css" href="css/styles.css" />
-</head>
+<jsp:include page="/includes/header.jsp" flush="false" >
+  <jsp:param name="title" value="Destination Paths" />
+  <jsp:param name="headTitle" value="Destination Paths" />
+  <jsp:param name="headTitle" value="Admin" />
+  <jsp:param name="breadcrumb" value="<a href='admin/index.jsp'>Admin</a>" />
+  <jsp:param name="breadcrumb" value="<a href='admin/notification/index.jsp'>Configure Notifications</a>" />
+  <jsp:param name="breadcrumb" value="Destination Paths" />
+</jsp:include>
 
 <script language="Javascript" type="text/javascript" >
 
@@ -99,69 +107,34 @@
     
 </script>
 
-<body marginwidth="0" marginheight="0" LEFTMARGIN="0" RIGHTMARGIN="0" TOPMARGIN="0">
 
-<% String breadcrumb1 = "<a href='admin/index.jsp'>Admin</a>"; %>
-<% String breadcrumb2 = "<a href='admin/notification/index.jsp'>Configure Notifications</a>"; %>
-<% String breadcrumb3 = "Destination Paths"; %>
-<jsp:include page="/includes/header.jsp" flush="false" >
-  <jsp:param name="title" value="Destination Paths" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb1%>" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb2%>" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb3%>" />
-</jsp:include>
+<h2>Destination Paths</h2>
 
-<br>
-<!-- Body -->
+<form method="post" name="path" action="admin/notification/destinationWizard">
+  <input type="hidden" name="userAction" value=""/>
+  <input type="hidden" name="sourcePage" value="destinationPaths.jsp"/>
 
-<table width="100%" cellspacing="0" cellpadding="0" border="0">
-  <tr>
-    <td> &nbsp; </td>
+  <h3>Create a new Destination Path or edit an existing path.</h3>
 
-    <td>
-      <h2>Destination Paths</h2>
-      <table width="100%" cellspacing="2" cellpadding="2" border="0">
-      <form METHOD="POST" NAME="path" ACTION="admin/notification/destinationWizard">
-      <input type="hidden" name="userAction" value=""/>
-      <input type="hidden" name="sourcePage" value="destinationPaths.jsp"/>
-        <tr>
-          <td><h3>Create a new Destination Path or edit an existing path.</h3></td>
-        </tr>
-        <tr>
-          <td>
-            <input type="button" value="New Path" onclick="javascript:newPath()"/>
-          </td>
-        </tr>
-        <tr>
-          <td valign="top">
-            <h4>Existing Paths</h4>
-            <select NAME="paths" SIZE="10">
-            <% Map pathsMap = new TreeMap(DestinationPathFactory.getInstance().getPaths());
-               Iterator iterator = pathsMap.keySet().iterator();
-               while(iterator.hasNext()) 
-               { 
-                 String key = (String)iterator.next();
-            %>
-                <option VALUE=<%=key%>><%=key%></option>
-            <% } %>
-            </select>
-            <br>
-            <input type="button" value="Edit" onclick="javascript:editPath()"/>
-            <input type="button" value="Delete" onclick="javascript:deletePath()"/>
-          </td>
-        </tr>
-      </form>
-      </table>
+  <input type="button" value="New Path" onclick="javascript:newPath()"/>
+
+  <h4>Existing Paths</h4>
+ 
+  <select NAME="paths" SIZE="10">
+    <% Map pathsMap =
+	 new TreeMap(DestinationPathFactory.getInstance().getPaths());
+       Iterator iterator = pathsMap.keySet().iterator();
+       while(iterator.hasNext()) { 
+         String key = (String)iterator.next();
+    %>
+         <option VALUE=<%=key%>><%=key%></option>
+    <% } %>
+  </select>
+
+  <br/>
+
+  <input type="button" value="Edit" onclick="javascript:editPath()"/>
+  <input type="button" value="Delete" onclick="javascript:deletePath()"/>
+</form>
     
-    </td>
-
-    <td> &nbsp; </td>
-  </tr>
-</table>
-
-<br>
-
 <jsp:include page="/includes/footer.jsp" flush="false" />
-
-</body>
-</html>

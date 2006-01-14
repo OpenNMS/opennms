@@ -1,4 +1,4 @@
-<!--
+<%--
 
 //
 // This file is part of the OpenNMS(R) Application.
@@ -32,33 +32,21 @@
 //      http://www.opennms.com/
 //
 
---> 
+--%> 
 
-<%@page language="java" contentType="text/html" session="true" %>
+<%@page language="java"
+	contentType="text/html"
+	session="true"
+%>
 
-<html>
-<head>
-  <title>Map | OpenNMS Web Console</title>
-  <base HREF="<%=org.opennms.web.Util.calculateUrlBase( request )%>" />
-  <link rel="stylesheet" type="text/css" href="css/styles.css" />
-</head>
-<body marginwidth="0" marginheight="0" LEFTMARGIN="0" RIGHTMARGIN="0" TOPMARGIN="0">
-
-<% String breadcrumb1 = java.net.URLEncoder.encode("Map"); %>
 <jsp:include page="/includes/header.jsp" flush="false" >
   <jsp:param name="title" value="Map" />
+  <jsp:param name="headTitle" value="Map" />
   <jsp:param name="location" value="map" />  
-  <jsp:param name="breadcrumb" value="<%=breadcrumb1%>" />
+  <jsp:param name="breadcrumb" value="Map" />
 </jsp:include>
 
-<br>
-<!-- Body -->
-
-<table width="100%" cellspacing="0" cellpadding="0" border="0">
-  <tr>
-    <td>&nbsp;</td>
-
-    <td>
+  <div style="width: 40%; float: left;">
       <h3>Mapping</h3>    
 
       <p>
@@ -110,11 +98,9 @@
           </tr>
         </table>
       </p>
-    </td>
+  </div>
 
-    <td>&nbsp;</td>
-
-    <td valign="top" width="60%" >
+  <div style="width: 60%; float: left;">
       <h3>Mapping</h3>
 
       <p>
@@ -133,17 +119,6 @@
       <p>Use the "Set Parent-Child Relationships" link to establish a
       heirarchy for your nodes so they do not all appear at the same
       "level".</p>
-    </td>
+  </div>
 
-    <td>&nbsp;</td>
-  </tr>
-</table>                                    
-                                     
-<br />
-
-    <jsp:include page="/includes/footer.jsp" flush="false" >
-      <jsp:param name="location" value="map" />
-    </jsp:include>
-
-  </body>
-</html>
+<jsp:include page="/includes/footer.jsp" flush="false"/>

@@ -1,4 +1,4 @@
-<!--
+<%--
 
 //
 // This file is part of the OpenNMS(R) Application.
@@ -36,29 +36,29 @@
 //      http://www.opennms.com/
 //
 
--->
+--%>
 
-<%@page language="java" contentType = "text/html" session = "true" %>
+<%@page language="java"
+	contentType="text/html"
+	session="true"
+%>
 
-<html>
-<head>
-  <title>Admin | OpenNMS Web Console</title>
-  <base HREF="<%=org.opennms.web.Util.calculateUrlBase( request )%>" />
-  <link rel="stylesheet" type="text/css" href="css/styles.css" />
-</head>
-
-<body marginwidth="0" marginheight="0" LEFTMARGIN="0" RIGHTMARGIN="0" TOPMARGIN="0" onLoad="document.newIpForm.ipAddress.focus()">
-
-<% String breadcrumb1 = "<a href='admin/index.jsp'>Admin</a>"; %>
-<% String breadcrumb2 = "Add Interface"; %>
 <jsp:include page="/includes/header.jsp" flush="false" >
   <jsp:param name="title" value="Add Interface" />
+  <jsp:param name="headTitle" value="Add Interface" />
+  <jsp:param name="headTitle" value="Admin" />
   <jsp:param name="location" value="admin" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb1%>" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb2%>" />
+  <jsp:param name="breadcrumb" value="<a href='admin/index.jsp'>Admin</a>" />
+  <jsp:param name="breadcrumb" value="Add Interface" />
 </jsp:include>
 
-<script language="JavaScript">
+<%--
+ XXX Can't do this because body is in the header:
+	onLoad="document.newIpForm.ipAddress.focus()"
+--%>
+
+
+<script type="text/javascript">
         function verifyIpAddress () {
                 var prompt = new String("IP Address");
                 var errorMsg = new String("");
@@ -99,46 +99,24 @@
         }
 </script>
 
-<br>
-
 <form method="post" name="newIpForm">
-<table width="100%" border="0" cellspacing="0" cellpadding="2" >
-  <tr>
-    <td>&nbsp;</td>
 
-    <td>
-    <%if (request.getParameter("action").equals("redo")) { %>
-      <h3> The IP address <%=request.getParameter("ipAddress")%> already exists. Please type in a different IP address.</h3>
+    <%if ("redo".equals(request.getParameter("action"))) { %>
+      <h3>Please enter a different IP address</h3>
+      
+      The IP address <%=request.getParameter("ipAddress")%> already exists.
+      Please enter a different IP address.
     <% } else { %>
-      <h3>Please enter a new IP address below.</h3>
+      <h3>Please enter a new IP address below</h3>
     <% } %>
-    <table>
-  <tr>
-    <td width="10%">
       IP address:
-    </td>
-    <td width="100%">
       <input size=15 name="ipAddress">
-    </td>
-  </tr>
+
+	<br/>
+	<br/>
   
-  <tr>
-    <td>
       <input type="submit" value="Add" onClick="verifyIpAddress()">
-    </td>
-    <td>
       <input type="button" value="Cancel" onClick="cancel()">
-    </td>
-  </tr>
-    </table>
-    </td>
-    </tr>
-</table>
 </form>
 
-<br>
-
 <jsp:include page="/includes/footer.jsp" flush="false" />
-
-</body>
-</html>

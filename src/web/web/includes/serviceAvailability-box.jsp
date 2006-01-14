@@ -1,4 +1,4 @@
-<!--
+<%--
 
 //
 // This file is part of the OpenNMS(R) Application.
@@ -32,7 +32,7 @@
 //      http://www.opennms.com/
 //
 
--->
+--%>
 
 <%-- 
   This page is included by other JSPs to create a table containing
@@ -42,7 +42,14 @@
   that directs all URLs to be relative to the servlet context.
 --%>
 
-<%@page language="java" contentType="text/html" session="true" import="java.util.*,org.opennms.web.category.*,org.opennms.web.element.*" %>
+<%@page language="java"
+	contentType="text/html"
+	session="true"
+	import="java.util.*,
+		org.opennms.web.category.*,
+		org.opennms.web.element.*
+	"
+%>
 
 <%!
     protected CategoryModel model;
@@ -99,13 +106,13 @@
     double rtcValue = this.model.getServiceAvailability(nodeId, ipAddr, serviceId);
 %>
 
-<table width="100%" border="1" cellspacing="0" cellpadding="2" bordercolor="black" BGCOLOR="#cccccc">
-  <tr bgcolor="#999999">
-    <td width="30%"><b>Overall&nbsp;Availability</b></td>
+<table class="standard">
+  <tr>
+    <td class="standardheader" width="30%"><b>Overall&nbsp;Availability</b></td>
     <% if( service.isManaged() ) { %>
-      <td bgcolor="<%=CategoryUtil.getCategoryColor(this.normalThreshold, this.warningThreshold, rtcValue)%>" align="right"><b><%=CategoryUtil.formatValue(rtcValue)%>%</b></td>    
+      <td class="standard" bgcolor="<%=CategoryUtil.getCategoryColor(this.normalThreshold, this.warningThreshold, rtcValue)%>" align="right"><b><%=CategoryUtil.formatValue(rtcValue)%>%</b></td>    
     <% } else { %>
-      <td bgcolor="#cccccc" align="right"><b><%=ElementUtil.getServiceStatusString(service)%></b></td>
+      <td class="standard" bgcolor="#cccccc" align="right"><b><%=ElementUtil.getServiceStatusString(service)%></b></td>
     <% } %>
   </tr>
 </table>

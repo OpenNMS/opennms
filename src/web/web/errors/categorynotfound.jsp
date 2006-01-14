@@ -1,4 +1,4 @@
-<!--
+<%--
 
 //
 // This file is part of the OpenNMS(R) Application.
@@ -35,65 +35,43 @@
 //      http://www.opennms.org/
 //      http://www.opennms.com///
 
--->
+--%>
 
-<%@page language="java" contentType="text/html" session="true" isErrorPage="true" import="org.opennms.web.category.*"%>
-
-<html>
-<head>
-  <title>Category Not Found | Error | OpenNMS Web Console</title>
-  <base HREF="<%=org.opennms.web.Util.calculateUrlBase( request )%>" />
-  <link rel="stylesheet" type="text/css" href="css/styles.css" />
-</head>
-<body marginwidth="0" marginheight="0" leftmargin="0" rightmargin="0" topmargin="0">
-
-<% String breadcrumb1 = "Error"; %>
-<jsp:include page="/includes/header.jsp" flush="false" >
-  <jsp:param name="title" value="Error" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb1%>" />
-</jsp:include>
-
-<br />
+<%@page language="java"
+	contentType="text/html"
+	session="true"
+	isErrorPage="true"
+	import="org.opennms.web.category.*"
+%>
 
 <%
     CategoryNotFoundException cnfe = null;
     
     if( exception instanceof CategoryNotFoundException ) {
         cnfe = (CategoryNotFoundException)exception;
-    }
-    else if( exception instanceof ServletException ) {
+    } else if( exception instanceof ServletException ) {
         cnfe = (CategoryNotFoundException)((ServletException)exception).getRootCause();
-    }
-    else {
+    } else {
         throw new ServletException( "This error page does not handle this exception type.", exception );
     }    
     
 %>
 
-<!-- Body -->
+<jsp:include page="/includes/header.jsp" flush="false" >
+  <jsp:param name="title" value="Error" />
+  <jsp:param name="headTitle" value="Category Not Found" />
+  <jsp:param name="headTitle" value="Error" />
+  <jsp:param name="breadcrumb" value="Error" />
+</jsp:include>
 
-<table width="100%" border="0" cellspacing="0" cellpadding="2">
-  <tr>
-    <td> &nbsp; </td>
 
-    <td>
-      <h1>Category Not Found</h1>
+<h1>Category Not Found</h1>
 
-      <p>
-        No information is currently available for the <strong><%=cnfe.getCategory()%></strong> category.
-        <br>
-        Either the category does not exist, or its information is still being calculated.  
-      </p>
-    </td>
-
-    <td> &nbsp; </td>
-  </tr>
-</table>                               
-
-<br />
-
+<p>
+  No information is currently available for the
+  <strong><%=cnfe.getCategory()%></strong> category.
+  Either the category does not exist, or its information is still being
+  calculated.  
+</p>
 
 <jsp:include page="/includes/footer.jsp" flush="false" />
-
-</body>
-</html>

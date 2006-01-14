@@ -47,7 +47,14 @@
   that directs all URLs to be relative to the servlet context.
 --%>
 
-<%@page language="java" contentType="text/html" session="true" import="org.opennms.web.category.*,org.opennms.web.element.*,java.util.*" %>
+<%@page language="java"
+	contentType="text/html"
+	session="true"
+	import="org.opennms.web.category.*,
+		org.opennms.web.element.*,
+		java.util.*
+	"
+%>
 
 
 <%!
@@ -101,38 +108,23 @@
     double overallRtcValue = this.model.getNodeAvailability(nodeId);
 %>
 
-<!--
-<table width="100%" cellspacing="0" cellpadding="2" border="1" bordercolor="black" bgcolor="#cccccc">
-  <tr bgcolor="#999999">
-    <td><b>Overall Availability</b></td>
--->
-
 <div id="availability-box">
 
-<table>
-  <tbody><tr>
-    <!-- XXX can we pull the width into the CSS file? -->
-    <td class="header">Overall Availability</td>
+<table class="standard">
+  <tr>
+    <td class="standardheader">Overall Availability</td>
 
 <% if( overallRtcValue < 0 ) { %>
-<!--
-      <td width="30%" bgcolor="#cccccc" align="right"><b>Unmanaged</b></td>
--->
       <td class="availunmanaged">Unmanaged</td>
 <% } else { %>
-<!--
-      <td width="30%" bgcolor="<%=CategoryUtil.getCategoryColor(this.normalThreshold, this.warningThreshold, overallRtcValue)%>" align="right"><b><%=CategoryUtil.formatValue(overallRtcValue)%>%</b></td>
--->
       <td class="<%=CategoryUtil.getCategoryClass(this.normalThreshold, this.warningThreshold, overallRtcValue)%>"><%=CategoryUtil.formatValue(overallRtcValue)%>%</td>
 
   </tr>
 
   <tr>
-    <td colspan="2">
-      <!-- XXX should any of this be done with CSS? -->
-<!--      <table width="100%" cellspacing="0" cellpadding="2" border="1"> -->
-      <table class="inner">
-        <tbody>
+    <td class="standard" colspan="2">
+<!--      <table class="inner"> -->
+      <table class="standardfirst">
         <% Interface[] availIntfs = this.getInterfaces(nodeId); %>
            
         <% for( int i=0; i < availIntfs.length; i++ ) { %>
@@ -145,13 +137,8 @@
             <% Service[] svcs = this.getServices(intf); %>
     
             <tr>
-<!--
-              <td align="left"  width="25%" rowspan="<%=svcs.length+1%>" valign="top"><a href="element/interface.jsp?node=<%=nodeId%>&intf=<%=ipAddr%>"><%=ipAddr%></a></td>
-              <td align="right" width="75%" colspan="2" bgcolor="<%=CategoryUtil.getCategoryColor(this.normalThreshold, this.warningThreshold, intfValue)%>"><b><%=CategoryUtil.formatValue(intfValue)%>%</b></td>
--->
               <td class="availnode" rowspan="<%=svcs.length+1%>"><a href="element/interface.jsp?node=<%=nodeId%>&intf=<%=ipAddr%>"><%=ipAddr%></a></td>
               <td class="<%=CategoryUtil.getCategoryClass(this.normalThreshold, this.warningThreshold, intfValue)%>" colspan="2"><%=CategoryUtil.formatValue(intfValue)%>%</td>
-
             </tr>
     
             <% for( int j=0; j < svcs.length; j++ ) { %>
@@ -160,20 +147,12 @@
               <% if( service.isManaged() ) { %>
                 <% double svcValue = this.model.getServiceAvailability(nodeId, ipAddr, service.getServiceId()); %>
                 <tr>
-<!--
-                  <td align="left"  width="25%"><a href="element/service.jsp?node=<%=nodeId%>&intf=<%=ipAddr%>&service=<%=service.getServiceId()%>"><%=service.getServiceName()%></a></td>
-                  <td align="right" width="50%" bgcolor="<%=CategoryUtil.getCategoryColor(this.normalThreshold, this.warningThreshold, svcValue)%>"><b><%=CategoryUtil.formatValue(svcValue)%>%</b></td>
--->
-                  <td><a href="element/service.jsp?node=<%=nodeId%>&intf=<%=ipAddr%>&service=<%=service.getServiceId()%>"><%=service.getServiceName()%></a></td>
+                  <td class="standard"><a href="element/service.jsp?node=<%=nodeId%>&intf=<%=ipAddr%>&service=<%=service.getServiceId()%>"><%=service.getServiceName()%></a></td>
                   <td class="<%=CategoryUtil.getCategoryClass(this.normalThreshold, this.warningThreshold, svcValue)%>"><%=CategoryUtil.formatValue(svcValue)%>%</td>
                 </tr>
               <% } else { %>
                 <tr>
-<!--
-                  <td align="left"  width="25%"><a href="element/service.jsp?node=<%=nodeId%>&intf=<%=ipAddr%>&service=<%=service.getServiceId()%>"><%=service.getServiceName()%></a></td>
-                  <td align="right" width="50%" bgcolor="#cccccc"><b><%=ElementUtil.getServiceStatusString(service)%></b></td>
--->
-                  <td><a href="element/service.jsp?node=<%=nodeId%>&intf=<%=ipAddr%>&service=<%=service.getServiceId()%>"><%=service.getServiceName()%></a></td>
+                  <td class="standard"><a href="element/service.jsp?node=<%=nodeId%>&intf=<%=ipAddr%>&service=<%=service.getServiceId()%>"><%=service.getServiceName()%></a></td>
                   <td class="availunmanaged"><%=ElementUtil.getServiceStatusString(service)%></td>
                 </tr>
               <% } %>
@@ -184,13 +163,7 @@
             }
             else { %>
             <tr>
-<!--
-              <td align="left" width="25%" valign="top">
-              <a href="element/interface.jsp?node=<%=nodeId%>&intf=<%=ipAddr%>"><%=ipAddr%></a>
-              </td>
-              <td align="right" width="75%" colspan="2" bgcolor="#cccccc"><b><%=ElementUtil.getInterfaceStatusString(intf)%></b></td>
--->
-              <td>
+              <td class="standard">
               <a href="element/interface.jsp?node=<%=nodeId%>&intf=<%=ipAddr%>"><%=ipAddr%></a>
               </td>
               <td class="availunmanaged" colspan="2"><%=ElementUtil.getInterfaceStatusString(intf)%></td>
@@ -198,19 +171,13 @@
             <% } %>
           <% } %>
         <% } %>
-      </tbody>
       </table>
     </td>
   </tr>
-<!--
-  <tr bgcolor="#999999">
-    <td colspan="2">Percentage over last 24 hours</td> <%-- next iteration, read this from same properties file that sets up for RTCVCM --%></td>
--->
   <tr>
-    <td class="headerplain" colspan="2">Percentage over last 24 hours</td> <%-- next iteration, read this from same properties file that sets up for RTCVCM --%></td>
+    <td class="standardheaderplain" colspan="2">Percentage over last 24 hours</td> <%-- next iteration, read this from same properties file that sets up for RTCVCM --%></td>
 <% } %>
   </tr>   
-  </tbody>
 </table>   
 
 </div>

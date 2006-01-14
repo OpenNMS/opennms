@@ -1,4 +1,4 @@
-<!--
+<%--
 
 //
 // This file is part of the OpenNMS(R) Application.
@@ -36,9 +36,15 @@
 //      http://www.opennms.org/
 //      http://www.opennms.com///
 
--->
+--%>
 
-<%@page language="java" contentType="text/html" session="true" import="org.opennms.web.asset.*" %>
+<%@page language="java"
+	contentType="text/html"
+	session="true"
+	import="org.opennms.web.asset.*,
+		org.opennms.web.MissingParameterException 
+	"
+%>
 
 <%!
     AssetModel model;
@@ -49,77 +55,46 @@
 %>
 
 <%
-    String column = request.getParameter( "column" );
-    String search = request.getParameter( "searchvalue" );
+    String column = request.getParameter("column");
+    String search = request.getParameter("searchvalue");
+    String requiredParameters[] = new String[] { "column", "searchvalue" };
 
     if( column == null ) {
-        throw new org.opennms.web.MissingParameterException( "column", new String[] {"column","searchvalue"} );
+        throw new MissingParameterException("column", requiredParameters);
     }
 
     if( search == null ) {
-        throw new org.opennms.web.MissingParameterException( "searchvalue", new String[] {"column","searchvalue"} );
+        throw new MissingParameterException("searchvalue", requiredParameters);
     }
 
-    AssetModel.MatchingAsset[] assets = model.searchAssets( column, search );
+    AssetModel.MatchingAsset[] assets = model.searchAssets(column, search);
 %>
 
-<html>
-<head>
-  <title>Asset List | OpenNMS Web Console</title>
-  <base HREF="<%=org.opennms.web.Util.calculateUrlBase( request )%>" />
-  <link rel="stylesheet" type="text/css" href="css/styles.css" />
-</head>
-<body marginwidth="0" marginheight="0" LEFTMARGIN="0" RIGHTMARGIN="0" TOPMARGIN="0">
-
-<% String breadcrumb1 = "<a href='asset/index.jsp'>Assets</a>"; %>
-<% String breadcrumb2 = "Asset List"; %>
 <jsp:include page="/includes/header.jsp" flush="false" >
   <jsp:param name="title" value="Asset List" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb1%>" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb2%>" />
+  <jsp:param name="headTitle" value="Asset List" />
+  <jsp:param name="breadcrumb" value="<a href='asset/index.jsp'>Assets</a>" />
+  <jsp:param name="breadcrumb" value="Asset List" />
 </jsp:include>
 
-<br>
-<!-- Body -->
-<table width="100%" cellspacing="0" cellpadding="2" border="0">
-  <tr>
-    <td> &nbsp; </td>
-    <td colspan="2"> <h3>Assets</h3>
-    <td> &nbsp; </td>
-  </tr>
-
-  <tr>
-    <td> &nbsp; </td>
+<h3>Assets</h3>
 
   <% if( assets.length > 0 ) { %>
-    <td valign="top">
-      <table width="100%" cellspacing="2" cellpadding="2" border="0">
+      <table class="standard">
         <tr>
-          <td width="10%"><b>Asset</b></td>
-          <td><b>Matching Text</b></td>
+          <td class="standardheader" width="10%">Asset</td>
+          <td class="standardheader">Matching Text</td>
         </tr>
 
       <% for( int i=0; i < assets.length; i++ ) { %>
         <tr>
-          <td><a href="asset/modify.jsp?node=<%=assets[i].nodeId%>"><%=assets[i].nodeLabel%></a></td>
-          <td><%=assets[i].matchingValue%></td>
+          <td class="standard"><a href="asset/modify.jsp?node=<%=assets[i].nodeId%>"><%=assets[i].nodeLabel%></a></td>
+          <td class="standard"><%=assets[i].matchingValue%></td>
         </tr>
       <% } %>
       </table>
-   </td>
   <% } else { %>
-    <td>
       None found.
-    </td>    
   <% } %>
-    
-    <td> &nbsp; </td>
-  </tr>
-</table>
-                                     
-<br>
 
 <jsp:include page="/includes/footer.jsp" flush="false" />
-
-</body>
-</html>

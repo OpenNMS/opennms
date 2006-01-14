@@ -54,10 +54,31 @@
     pageContext.setAttribute("noticeStatus", noticeStatus);
 %>
 
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+<head>
+  <title>
+    <c:forEach var="headTitle" items="${paramValues.headTitle}">
+      <c:out value="${headTitle}" escapeXml="false"/> |
+    </c:forEach>
+    OpenNMS Web Console
+  </title>
+  <base href="<%=org.opennms.web.Util.calculateUrlBase( request )%>" />
+  <link rel="stylesheet" type="text/css" href="css/styles.css"/>
+</head>
+
+<body>
+
+<c:choose>
+<c:when test="${param.quiet == 'true'}">
+<!-- No visual header is being displayed -->
+</c:when>
+
+<c:otherwise>
 
 <!-- Header -->
-
-
 
 <%--
 
@@ -76,18 +97,19 @@
 
   <div id="headertop">
    <span id="headerlogo">
-    <a href="index.jsp"><img src="images/logo.png" hspace="0" vspace="0" border="0" alt="OpenNMS Web Console Home"></a>
+<%--    <a href="index.jsp"><img src="images/logo.png" hspace="0" vspace="0" border="0" alt="OpenNMS Web Console Home"></a> --%>
+    <a href="index.jsp"><img src="images/logo.png" alt="OpenNMS Web Console Home"/></a>
    </span><!-- /headerlogo -->
   
    <span id="headertitle">
     <c:out value="${param.title}"/>
    </span><!-- /headertitle -->
   
-   <span id="headerinfo">
+   <div id="headerinfo">
     <div id="outer">
      <div id="middle">
       <div id="inner">
-          [<c:out value="${pageContext.request.remoteUser}"/>]<br>
+          [<c:out value="${pageContext.request.remoteUser}"/>]<br/>
     
           Notices <c:out value="${noticeStatus}" escapeXml="false"/><br/>
           <div id="headerdate">
@@ -97,7 +119,7 @@
       </div><!-- /inner -->
      </div><!-- /middle -->
     </div><!-- /outer -->
-   </span><!-- /headerinfo -->
+   </div><!-- /headerinfo -->
   
    <div class="spacer">
     &nbsp;
@@ -107,18 +129,20 @@
 
 
 
-<span id="headernavbar">
-          <span id="headernavbarleft">
+<div id="headernavbar">
+          <div id="headernavbarleft">
             <a href="index.jsp">Home</a> 
 	    <c:forEach var="breadcrumb" items="${paramValues.breadcrumb}">
-              &gt; <c:out value="${breadcrumb}" escapeXml="false"/>
+	      <c:if test="${breadcrumb != ''}">
+                &gt; <c:out value="${breadcrumb}" escapeXml="false"/>
+	      </c:if>
 	    </c:forEach>
-	  </span>
+	  </div>
 
-          <span id="headernavbarright">
+          <div id="headernavbarright">
             <jsp:include page="/includes/navbar.jsp" flush="false"/>
-          </span>
-</span>
+          </div>
+</div>
 
 
 </div>
@@ -135,3 +159,10 @@
 </div><!-- /rbroundbox -->
 
 --%>
+
+</c:otherwise>
+</c:choose>
+
+<!-- Body -->
+<div id="content">
+

@@ -42,7 +42,19 @@
 
 --%>
 
-<%@page language="java" contentType="text/html" session="true" import="org.opennms.netmgt.config.PollerConfigFactory,org.opennms.netmgt.config.PollerConfig,org.opennms.web.element.*,java.util.*,org.opennms.web.event.*,org.opennms.web.performance.*,org.opennms.netmgt.utils.IfLabel,org.opennms.web.response.*" %>
+<%@page language="java"
+	contentType="text/html"
+	session="true"
+	import="org.opennms.netmgt.config.PollerConfigFactory,
+		org.opennms.netmgt.config.PollerConfig,
+		org.opennms.web.element.*,
+		java.util.*,
+		org.opennms.web.event.*,
+		org.opennms.web.performance.*,
+		org.opennms.netmgt.utils.IfLabel,
+		org.opennms.web.response.*
+		"
+%>
 
 <%!
     protected int telnetServiceId;
@@ -156,15 +168,19 @@
 
 %>
 
-<html>
-<head>
-  <title><%=ipAddr%> | Interface | OpenNMS Web Console</title>
-  <base HREF="<%=org.opennms.web.Util.calculateUrlBase( request )%>" />
-  <link rel="stylesheet" type="text/css" href="css/styles.css" />
-</head>
+<% String nodeBreadCrumb = "<a href='element/node.jsp?node=" + nodeId  + "'>Node</a>"; %>
+<jsp:include page="/includes/header.jsp" flush="false" >
+  <jsp:param name="title" value="Interface" />
+  <jsp:param name="headTitle" value="<%= ipAddr %>" />
+  <jsp:param name="headTitle" value="Interface" />
+  <jsp:param name="breadcrumb" value="<a href='element/index.jsp'>Search</a>" />
+  <jsp:param name="breadcrumb" value="<%= nodeBreadCrumb %>" />
+  <jsp:param name="breadcrumb" value="Interface" />
+</jsp:include>
+
 <% if (request.isUserInRole("OpenNMS Administrator")) { %>
 
-<script language="Javascript" type="text/javascript" >
+<script type="text/javascript" >
 function doDelete() {
      if (confirm("Are you sure you want to proceed? This action will permanently delete this interface and cannot be undone."))
      {
@@ -175,44 +191,14 @@ function doDelete() {
 </script>
 <% } %>
 
-<!--
-<body marginwidth="0" marginheight="0" LEFTMARGIN="0" RIGHTMARGIN="0" TOPMARGIN="0">
--->
-
-<body>
-
-<% String breadcrumb1 = "<a href='element/index.jsp'>Search</a>"; %>
-<% String breadcrumb2 = "<a href='element/node.jsp?node=" + nodeId  + "'>Node</a>"; %>
-<% String breadcrumb3 = "Interface"; %>
-<jsp:include page="/includes/header.jsp" flush="false" >
-  <jsp:param name="title" value="Interface" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb1%>" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb2%>" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb3%>" />
-</jsp:include>
-
-<!--
-<br>
--->
-
-<!-- Body -->
-<div id="interface">
-
-<!--
-<table width="100%" border="0" cellspacing="0" cellpadding="2" >
-  <tr>
-    <td>&nbsp;</td>
-    <td width="100%" valign="top" >
--->
 
       <h2>Interface: <%=intf_db.getIpAddress()%> <%=intf_db.getIpAddress().equals(intf_db.getHostname()) ? "" : "(" + intf_db.getHostname() + ")"%></h2>
 
         <% if (request.isUserInRole("OpenNMS Administrator")) { %>
-
-      <form method="POST" name="delete" action="admin/deleteInterface">
-      <input type="hidden" name="node" value="<%=nodeId%>">
-      <input type="hidden" name="ifindex" value="<%=(ifindexString == null ? "" : ifindexString)%>">
-      <input type="hidden" name="intf" value="<%=ipAddr%>">
+      <form method="post" action="admin/deleteInterface">
+      <input type="hidden" name="node" value="<%=nodeId%>"/>
+      <input type="hidden" name="ifindex" value="<%=(ifindexString == null ? "" : ifindexString)%>"/>
+      <input type="hidden" name="intf" value="<%=ipAddr%>"/>
       <% } %>
 
       <div id="linkbar">
@@ -278,45 +264,34 @@ function doDelete() {
       </form>
       <% } %>
 
-<!--
-      <table width="100%" border="0" cellspacing="0" cellpadding="0">
-        <tr>
-          <td valign="top" width="48%">
--->
-
-	<span id="contentleft">
+	<div id="contentleft">
 
             <!-- general info box -->
-<!--
-            <table width="100%" border="1" cellspacing="0" cellpadding="2" bordercolor="black" BGCOLOR="#cccccc">
-              <tr bgcolor="#999999">
-                <td colspan="2" ><b>General</b></td> 
--->
-	    <table class="first">
+	    <table class="standardfirst">
               <tr>
-                <td class="header" colspan="2">General</td>
+                <td class="standardheader" colspan="2">General</td>
               </tr>
               <tr>
-                <td>Node</td> 
-                <td><a href="element/node.jsp?node=<%=intf_db.getNodeId()%>"><%=NetworkElementFactory.getNodeLabel(intf_db.getNodeId())%></a></td>
+                <td class="standard">Node</td> 
+                <td class="standard"><a href="element/node.jsp?node=<%=intf_db.getNodeId()%>"><%=NetworkElementFactory.getNodeLabel(intf_db.getNodeId())%></a></td>
               </tr>
               <tr> 
-                <td>Polling Status</td>
-                <td><%=ElementUtil.getInterfaceStatusString(intf_db)%></td>
+                <td class="standard">Polling Status</td>
+                <td class="standard"><%=ElementUtil.getInterfaceStatusString(intf_db)%></td>
               </tr>
               <% if(ElementUtil.getInterfaceStatusString(intf_db).equals("Managed") && request.isUserInRole("OpenNMS Administrator")) {
                   List inPkgs = pollerCfgFactory.getAllPackageMatches(ipAddr);
                   Iterator pkgiter = inPkgs.iterator();
                   while (pkgiter.hasNext()) { %>
                       <tr>
-                          <td>Polling Package</td>
-                          <td><%= (String) pkgiter.next()%></td>
+                          <td class="standard">Polling Package</td>
+                          <td class="standard"><%= (String) pkgiter.next()%></td>
                       </tr>
                   <% } %>
               <% } %>
               <tr>
-                <td>Interface Index</td> 
-                <td>
+                <td class="standard">Interface Index</td> 
+                <td class="standard">
                   <% int ifIndex = intf_db.getIfIndex(); %>
                   <% if( ifIndex > 0 ) {  %>
                     <%=ifIndex%>
@@ -326,12 +301,12 @@ function doDelete() {
                 </td>
               </tr>
               <tr> 
-                <td>Last Service Scan</td>
-                <td><%=intf_db.getLastCapsdPoll()%></td>
+                <td class="standard">Last Service Scan</td>
+                <td class="standard"><%=intf_db.getLastCapsdPoll()%></td>
               </tr>
               <tr>
-                <td>Physical Address</td>        
-                <td>
+                <td class="standard">Physical Address</td>        
+                <td class="standard">
                   <% String macAddr = intf_db.getPhysicalAddress(); %>
                   <% if( macAddr != null && macAddr.trim().length() > 0 ) { %>
                     <%=macAddr%>
@@ -341,32 +316,26 @@ function doDelete() {
                 </td>
               </tr>
             </table>
-<!--            <br>-->
             
             <!-- SNMP box, if info available -->
             <% if( hasSNMPData(intf_db) ) { %>
-<!--
-                  <table width="100%" border="1" cellspacing="0" cellpadding="2" bordercolor="black" bgcolor="#cccccc">
-                    <tr bgcolor="#999999">
-                      <td colspan="2"><b>SNMP Attributes</b></td> 
--->
-		  <table>
+		  <table class="standard">
 		    <tr>
-                      <td class="header" colspan="2">SNMP Attributes</td>
+                      <td class="standardheader" colspan="2">SNMP Attributes</td>
                     </tr>
                     <tr> 
-                      <td>Subnet Mask</td>
-                      <td>
+                      <td class="standard">Subnet Mask</td>
+                      <td class="standard">
                         <%=(intf_db.getSnmpIpAdEntNetMask() == null) ? "&nbsp;" : intf_db.getSnmpIpAdEntNetMask()%>                                    
                       </td>
                     </tr>
                     <tr>
-                      <td>Interface Type</td>
-                      <td><%=IFTYPES[intf_db.getSnmpIfType()]%></td>
+                      <td class="standard">Interface Type</td>
+                      <td class="standard"><%=IFTYPES[intf_db.getSnmpIfType()]%></td>
                     </tr>
                     <tr> 
-                      <td>Status (Adm/Op)</td>
-                      <td>
+                      <td class="standard">Status (Adm/Op)</td>
+                      <td class="standard">
                         <% if( intf_db.getSnmpIfAdminStatus() < 1 || intf_db.getSnmpIfOperStatus() < 1 ) { %>
                           &nbsp;
                         <% } else { %>
@@ -375,55 +344,40 @@ function doDelete() {
                       </td>
                     </tr>
                     <tr>
-                      <td>Speed</td>        
-                      <td><%=(intf_db.getSnmpIfSpeed() > 0) ? String.valueOf(intf_db.getSnmpIfSpeed()) : "&nbsp;"%></td>
+                      <td class="standard">Speed</td>        
+                      <td class="standard"><%=(intf_db.getSnmpIfSpeed() > 0) ? String.valueOf(intf_db.getSnmpIfSpeed()) : "&nbsp;"%></td>
                     </tr>
                     <tr> 
-                      <td>Description</td>
-                      <td><%=(intf_db.getSnmpIfDescription() == null) ? "&nbsp;" : intf_db.getSnmpIfDescription()%></td>
+                      <td class="standard">Description</td>
+                      <td class="standard"><%=(intf_db.getSnmpIfDescription() == null) ? "&nbsp;" : intf_db.getSnmpIfDescription()%></td>
                     </tr>
                     <tr>
-                      <td>Alias</td>
-                      <td><%=(intf_db.getSnmpIfAlias() == null) ? "&nbsp;" : intf_db.getSnmpIfAlias()%></td>
+                      <td class="standard">Alias</td>
+                      <td class="standard"><%=(intf_db.getSnmpIfAlias() == null) ? "&nbsp;" : intf_db.getSnmpIfAlias()%></td>
                     </tr>
 
                   </table>
-<!--                  <br> -->
             <% } %>
 
             <!-- services box -->
-<!--
-            <table width="100%" border="1" cellspacing="0" cellpadding="2" bordercolor="black" BGCOLOR="#cccccc">
-              <tr bgcolor="#999999">
-                <td><b>Services</b></td> 
--->
-	    <table>
+	    <table class="standard">
 	      <tr>
-	        <td class="header">Services</td>
+	        <td class="standardheader">Services</td>
               </tr>
               <% for( int i=0; i < services.length; i++ ) { %>
                 <tr>
-                  <td><a href="element/service.jsp?node=<%=services[i].getNodeId()%>&intf=<%=services[i].getIpAddress()%>&service=<%=services[i].getServiceId()%>"><%=services[i].getServiceName()%></a></td>
+                  <td class="standard"><a href="element/service.jsp?node=<%=services[i].getNodeId()%>&intf=<%=services[i].getIpAddress()%>&service=<%=services[i].getServiceId()%>"><%=services[i].getServiceName()%></a></td>
                 </tr>
               <% } %>
             </table>
-<!--            <br>-->
 
             <!-- Availability box -->
             <jsp:include page="/includes/interfaceAvailability-box.jsp" flush="false" />
-<!--            <br>-->
 
-</span>
+</div>
        
-<!--     
-          </td>
 
-          <td>&nbsp;</td>
-
-          <td valign="top" width="48%">
--->
-
-<span id="contentright">
+<div id="contentright">
 
             <!-- interface desktop information box -->
           
@@ -437,33 +391,15 @@ function doDelete() {
               <jsp:param name="header" value="<%=eventHeader%>" />
               <jsp:param name="moreUrl" value="<%=moreEventsUrl%>" />
             </jsp:include>
-<!--            <br>-->
             
             <!-- Recent outages box -->
             <jsp:include page="/includes/interfaceOutages-box.jsp" flush="false" />
             
-          </td>
 
-        </tr>
-      </table>
 
-<!--
-    </td>
-    
-    <td>&nbsp;</td>
-  </tr>
-</table>
-
--->
-
-</span>
-
-</div>
+</div> <!-- id="contentright" -->
 
 <jsp:include page="/includes/footer.jsp" flush="false" />
-
-</body>
-</html>
 
 
 <%!

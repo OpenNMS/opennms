@@ -1,4 +1,4 @@
-<!--
+<%--
 
 //
 // This file is part of the OpenNMS(R) Application.
@@ -38,49 +38,31 @@
 //      http://www.opennms.com/
 //
 
--->
+--%>
 
-<%@page language="java" contentType = "text/html" session = "true"  %>
+<%@page language="java"
+	contentType="text/html"
+	session="true"
+%>
 
-<html>
-<head>
-  <title>Modify Event | Event Config | OpenNMS Web Console</title>
-  <base HREF="<%=org.opennms.web.Util.calculateUrlBase( request )%>" />
-  <link rel="stylesheet" type="text/css" href="css/styles.css" />
-</head>
-
-<body marginwidth="0" marginheight="0" LEFTMARGIN="0" RIGHTMARGIN="0" TOPMARGIN="0">
-
-<% String breadcrumb1 = "<a href='admin/index.jsp'>Admin</a>"; %>
-<% String breadcrumb2 = "Manage/Unmanage Interfaces Finish"; %>
 <jsp:include page="/includes/header.jsp" flush="false" >
   <jsp:param name="title" value="Manage/Unmanage Interfaces Finish" />
+  <jsp:param name="headTitle" value="Manage Interfaces" />
+  <jsp:param name="headTitle" value="Admin" />
   <jsp:param name="location" value="admin" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb1%>" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb2%>" />
+  <jsp:param name="breadcrumb" value="<a href='admin/index.jsp'>Admin</a>" />
+  <jsp:param name="breadcrumb" value="Manage/Unmanage Interfaces Finish" />
 </jsp:include>
 
-<br>
+<h3>Finished updating the database for the manage/unmanaged changes</h3>
 
-<table width="100%" border="0" cellspacing="0" cellpadding="2" >
-  <tr>
-    <td>&nbsp;</td>
-    
-    <td>
-        <h3>Finished updating the database for the manage/unmanaged changes.</h3>
-        <p>OpenNMS will need to be restarted for the changes to take affect.</p>
-	<p>Changes for a specific node will become effective upon execution of
-	a forced rescan on that node. (Node must not be down when rescanned)</p>
-    </td>
-    
-    <td>&nbsp;</td>
-  </tr>
-</table>
+<p>
+  OpenNMS will need to be restarted for the changes to take affect.
+</p>
 
-<br>
+<p>
+  Changes for a specific node will become effective upon execution of
+  a forced rescan on that node (node must not be down when rescanned).
+</p>
 
-<jsp:include page="/includes/footer.jsp" flush="true" >
-  <jsp:param name="location" value="admin" />
-</jsp:include>
-</body>
-</html>
+<jsp:include page="/includes/footer.jsp" flush="true"/>

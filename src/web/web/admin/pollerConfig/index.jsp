@@ -1,4 +1,4 @@
-<!--
+<%--
 
 //
 // This file is part of the OpenNMS(R) Application.
@@ -37,9 +37,25 @@
 //      http://www.opennms.com/
 //
 
--->
+--%>
 
-<%@page language="java" contentType="text/html" session="true" import="java.io.File,java.util.*,org.opennms.netmgt.config.capsd.*,org.opennms.netmgt.config.poller.*,org.opennms.netmgt.config.PollerConfigFactory,org.opennms.netmgt.config.PollerConfig, org.opennms.netmgt.config.CapsdConfigFactory,org.opennms.core.resource.Vault,org.opennms.core.utils.BundleLists,org.opennms.netmgt.ConfigFileConstants,java.io.FileInputStream" %>
+<%@page language="java"
+	contentType="text/html"
+	session="true"
+	import="java.io.File,
+		java.util.*,
+		org.opennms.netmgt.config.capsd.*,
+		org.opennms.netmgt.config.poller.*,
+		org.opennms.netmgt.config.PollerConfigFactory,
+		org.opennms.netmgt.config.PollerConfig,
+		org.opennms.netmgt.config.CapsdConfigFactory,
+		org.opennms.core.resource.Vault,
+		org.opennms.core.utils.BundleLists,
+		org.opennms.netmgt.ConfigFileConstants,
+		java.io.FileInputStream
+	"
+%>
+
 <%
 	HashMap scanablePlugin = new HashMap();
 	HashMap scanableUserPlugin = new HashMap();
@@ -115,22 +131,6 @@
 
 %>
 
-<script language="Javascript" type="text/javascript" >
- 
-  function modifyPoller()
-  {
-      document.poller.redirect.value="finishPollerConfig.jsp";
-      document.poller.action="admin/pollerConfig/pollerConfig";
-      document.poller.submit();
-  }
-
-  function addPoller()
-  {
-      document.poller.redirect.value="addPollerConfig.jsp";
-      document.poller.action="admin/pollerConfig/pollerConfig";
-      document.poller.submit();
-  }   
-</script>
 <%!
 	Map protoMap;
         Properties props = new java.util.Properties();
@@ -184,47 +184,46 @@
     	}
 %>
 
-<html>
-<head>
-  <title>Configure Pollers | Admin | OpenNMS Web Console</title>
-  <base HREF="<%=org.opennms.web.Util.calculateUrlBase( request )%>" />
-  <link rel="stylesheet" type="text/css" href="css/styles.css" />
-</head>
-
-<script language="Javascript" type="text/javascript" >
-</script>
-
-
-<body marginwidth="0" marginheight="0" LEFTMARGIN="0" RIGHTMARGIN="0" TOPMARGIN="0">
-
-<% String breadcrumb1 = "<a href='admin/index.jsp'>Admin</a>"; %>
-<% String breadcrumb2 = "Configure Pollers"; %>
 <jsp:include page="/includes/header.jsp" flush="false" >
   <jsp:param name="title" value="Configure Pollers" />
+  <jsp:param name="headTitle" value="Configure Pollers" />
+  <jsp:param name="headTitle" value="Admin" />
   <jsp:param name="location" value="Poller Config" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb1%>" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb2%>" />
+  <jsp:param name="breadcrumb" value="<a href='admin/index.jsp'>Admin</a>" />
+  <jsp:param name="breadcrumb" value="Configure Pollers" />
 </jsp:include>
 
-<!-- Body -->
-<br>
+<script language="Javascript" type="text/javascript" >
+ 
+  function modifyPoller()
+  {
+      document.poller.redirect.value="finishPollerConfig.jsp";
+      document.poller.action="admin/pollerConfig/pollerConfig";
+      document.poller.submit();
+  }
 
-<FORM METHOD="POST" name="poller" action="admin/pollerConfig/pollerConfig"  >
-<input type="hidden" name="redirect" value=""/>
-<!-- All the information that is in capsd is displayed on the form, if they are in poller they are checked -->
-<table width="100%" border="0" cellspacing="0" cellpadding="2" >
+  function addPoller()
+  {
+      document.poller.redirect.value="addPollerConfig.jsp";
+      document.poller.action="admin/pollerConfig/pollerConfig";
+      document.poller.submit();
+  }   
+</script>
 
-<tr>
-<td>&nbsp;</td>
-<td width="50%" valign="top" >
+<div id="contentleft">
+  <h3>Default Pollers</h3>
 
-<h3>Default Pollers</h3>
-<table border="1" width="100%" cellspacing="0" cellpadding="0" valign="top">
-      <tr BGCOLOR="#999999">
-	<td><b>Active</b></td>
-	<td><b>Poller Name</b></td>
-	<td><b>Protocol</b></td>
-	<td><b>Port</b></td>
+  <form method="post" name="poller" action="admin/pollerConfig/pollerConfig">
+    <input type="hidden" name="redirect" value=""/>
+    <!-- All the information that is in capsd is displayed on the form, if
+         they are in poller they are checked -->
+
+    <table class="standard">
+      <tr>
+	<td class="standardheader">Active</td>
+	<td class="standardheader">Poller Name</td>
+	<td class="standardheader">Protocol</td>
+	<td class="standardheader">Port</td>
       </tr>
       <%
 	Set scanned = (Set) scanablePlugin.keySet();
@@ -253,24 +252,25 @@
 				}
 			}
        %>
+		<%-- XXX not sure if this will work with the CSS classes --%>
 			<tr <% if(rowCounter % 2 == 0){ %>
-				 BGCOLOR="#cccccc"
+				 bgcolor="#cccccc"
 			    <% } %>
 
-			><td><input type="checkbox"
+			><td class="standard"><input type="checkbox"
 		<%
 				if(polledPlugins != null && polledPlugins.contains(servicename)){%>
 					checked
 		<% 		} %>
 			name="activate" value="<%= servicename %>" ></td>
-			<td><%= servicename %></td>
-			<td><% if(getProtocol(servicename) == null){ %>
+			<td class="standard"><%= servicename %></td>
+			<td class="standard"><% if(getProtocol(servicename) == null){ %>
 				<%= servicename %>
 			    <% }else{ %>
 				<%= getProtocol(servicename) %>
 			    <% } %>
 			</td>
-			<td><%= port %></td></tr>
+			<td class="standard"><%= port %></td></tr>
 	  <%
  		}
 		rowCounter++;
@@ -284,17 +284,15 @@
 	{
 	%>
 
-	<br /><br />
-	<table width="100%"><tr>
-	<td>
-	<h3>Custom Pollers</h3>
-	<table border="1" cellspacing="0" cellpadding="0" valign="top" width="100%">
-      <tr BGCOLOR="#999999">
-	<td><b>Active</b></td>
-	<td><b>Poller Name</b></td>
-	<td><b>Protocol</b></td>
-	<td><b>Port</b></td>
-	<td><b>Delete</b></td>
+    <h3>Custom Pollers</h3>
+
+    <table class="standard">
+      <tr>
+	<td class="standardheader">Active</td>
+	<td class="standardheader">Poller Name</td>
+	<td class="standardheader">Protocol</td>
+	<td class="standardheader">Port</td>
+	<td class="standardheader">Delete</td>
       </tr>
 	<%
 
@@ -322,54 +320,77 @@
                                 }
                         }
        %>
-                        <tr <%=(rowCounter % 2 == 0) ? "BGCOLOR='#cccccc'" : "" %>>
-                          <td><input type="checkbox"
+		<%-- XXX not sure if this will work with the CSS classes --%>
+                        <tr <%=(rowCounter % 2 == 0) ? "bgcolor='#cccccc'" : "" %>>
+                          <td class="standard"><input type="checkbox"
                 <%      if(polledPlugins != null && polledPlugins.contains(servicename)){%>
 				checked
                 <%      } %>
                         name="activate" value="<%= servicename %>" ></td>
 			
-                        <td><%= servicename %></td>
-                        <td><% if(getProtocol(servicename) == null){ %>
+                        <td class="standard"><%= servicename %></td>
+                        <td class="standard"><% if(getProtocol(servicename) == null){ %>
                                 <%= servicename %>
                             <% }else{ %>
                                 <%= getProtocol(servicename) %>
                             <% } %>
                         </td>
-                        <td><%= port %></td>
-                        <td><input type="checkbox" name="delete" value="<%= servicename %>"></td>
+                        <td class="standard"><%= port %></td>
+                        <td class="standard"><input type="checkbox" name="delete" value="<%= servicename %>"></td>
                       </tr>
           <%
                 }
                 rowCounter++;
         }%>
-	</table></td></tr>
-</table>
+	</table>
 	<% } %>
 
-	<br>
-	<input type="button" value="Apply Changes" onClick="modifyPoller()" />&nbsp;&nbsp;
-	<input type="button" value="Add Custom Poller" onClick="addPoller()" />
-</td>
-<td width="10">&nbsp;</td>
-<td valign="top">
-            <h3>Descriptions</h3>
+    <br/>
 
-		<p>This page provides a list of all of the pollers that the system uses to check the status of services on the network. On this page, administrators can enable or disable specific pollers and define new custom pollers.</p>
-		<p>The <i><b>Active</b></i> column shows the current status of the poller. If the active field is checked, the poller will be used to scan the network during the next poller rescan.</p>
-		<p>The <i><b>Poller Name</b></i> column shows the name of each service in the poller configuration.</p>
-		<p>The <i><b>Protocol</b></i> column shows the protocol used for polling each service.</p>
-		<p>The <i><b>Port</b></i> column shows the ports at which the service will be polled. If there is more than one port, the values should be seperated by colons (:).</p>
-		<p>If you add custom pollers by using the <b>Add New Custom Pollers</b> page, a table with the heading <b><i>Custom Pollers</i></b> will be present to list them. There are checkboxes on each line to allow you to enable, disable, or delete each custom poller.</p>
+    <input type="button" value="Apply Changes" onClick="modifyPoller()" />
+    &nbsp;&nbsp;
+    <input type="button" value="Add Custom Poller" onClick="addPoller()" />
+  </form>
+</div>
 
-</td>
-<td>&nbsp;</td>
-</tr>
-</table>
-</FORM>
-<br>
-<jsp:include page="/includes/footer.jsp" flush="true" >
-  <jsp:param name="location" value="Poller Config" />
-</jsp:include>
-</body>
-</html>
+<div id="contentright">
+  <h3>Descriptions</h3>
+
+  <p>
+    This page provides a list of all of the pollers that the system uses
+    to check the status of services on the network. On this page,
+    administrators can enable or disable specific pollers and define new
+    custom pollers.
+  </p>
+
+  <p>
+    The <i><b>Active</b></i> column shows the current status of the
+    poller. If the active field is checked, the poller will be used to
+    scan the network during the next poller rescan.
+  </p>
+
+  <p>
+    The <i><b>Poller Name</b></i> column shows the name of each service
+    in the poller configuration.
+  </p>
+
+  <p>
+    The <i><b>Protocol</b></i> column shows the protocol used for
+    polling each service.
+  </p>
+
+  <p>
+    The <i><b>Port</b></i> column shows the ports at which the service
+    will be polled. If there is more than one port, the values should
+    be seperated by colons (:).
+  </p>
+
+  <p>
+    If you add custom pollers by using the <b>Add New Custom Pollers</b>
+    page, a table with the heading <b><i>Custom Pollers</i></b> will be
+    present to list them. There are checkboxes on each line to allow you
+    to enable, disable, or delete each custom poller.
+  </p>
+</div>
+
+<jsp:include page="/includes/footer.jsp" flush="true"/>

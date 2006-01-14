@@ -1,4 +1,4 @@
-<!--
+<%--
 
 //
 // This file is part of the OpenNMS(R) Application.
@@ -36,9 +36,16 @@
 //      http://www.opennms.org/
 //      http://www.opennms.com///
 
--->
+--%>
 
-<%@page language="java" contentType="text/html" session="true" import="org.opennms.netmgt.config.*,org.opennms.netmgt.config.categories.*,java.util.*" %>
+<%@page language="java"
+	contentType="text/html"
+	session="true"
+	import="org.opennms.netmgt.config.*,
+		org.opennms.netmgt.config.categories.*,
+		java.util.*
+	"
+%>
 
 <%
 	Catinfo catconfig  = null;
@@ -54,7 +61,7 @@
                 throw new ServletException (e);
         }
 %>
-<SCRIPT language="Javascript" type="text/javascript">
+<script type="text/javascript">
 	function openwindow()
 	{
 		var url = "<%=org.opennms.web.Util.calculateUrlBase(request)%>availability/availability?";
@@ -64,31 +71,18 @@
 		//window.open(url, "", "fullscreen=yes,toolbar=no,status=no,menubar=no,resizable=yes,directories=no,location=no");
 		window.open(url);
 	}
-</SCRIPT>
-<html>
-<head>
-  <title>Availability | OpenNMS Web Console</title>
-  <base HREF="<%=org.opennms.web.Util.calculateUrlBase( request )%>" />
-  <link rel="stylesheet" type="text/css" href="css/styles.css" />
-</head>
-<body marginwidth="0" marginheight="0" LEFTMARGIN="0" RIGHTMARGIN="0" TOPMARGIN="0">
+</script>
 
-<% String breadcrumb1 = "<a href ='report/index.jsp'>Reports</a>"; %>
-<% String breadcrumb2 = "Availability"; %>
 <jsp:include page="/includes/header.jsp" flush="false" >
   <jsp:param name="title" value="Availability" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb1%>" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb2%>" />
+  <jsp:param name="headTitle" value="Availability" />
+  <jsp:param name="breadcrumb" value="<a href='report/index.jsp'>Reports</a>" />
+  <jsp:param name="breadcrumb" value="Availability" />
 </jsp:include>
 
-<br>
-<!-- Body -->
-<table width="100%" cellspacing="0" cellpadding="2" border="0">
-  <tr>
-    <td>&nbsp;</td>
+<h3>Network Availability Reporting</h3>
 
-    <td width="35%">
-      <h3>Network Availability Reporting</h3>
+  <div style="width: 40%; float: left;">
 
       <form name="avail" method="GET" action="availability/availability" >
         <% boolean checked = true; %>
@@ -133,12 +127,11 @@
                 }
 	  %>
 	<input type="hidden" name="categoryvalue" value="<%= catval %>" /> <br />
-        <input type="submit" value="generate"  class="button" />
+        <input type="submit" value="Generate"  class="button" />
       </form>
-    </td>
+  </div>
 
-    <td valign="top">
-        <h3>&nbsp;</h3>
+  <div style="width: 60%; float: left;">
         <p>Generating the availability reports may take a few minutes, especially 
         for large networks, so please do not press the stop or reload buttons 
         until it has finished.  Thank you for your patience.         
@@ -147,16 +140,7 @@
 	If you do not have Adobe Acrobat Reader and wish to download it, please click on the following link:</p>
 	<p><a href="http://www.adobe.com/products/acrobat/readstep2.html" target="_new"><img src="images/getacro.gif" border="0" hspace="0" vspace="0" alt="Get Acrobat Reader"/></a></p>
 	<p><font size="-1">Acrobat is a registered trademark of Adobe Systems Incorporated.</font>
-    </td>
+  </div>
 
-    <td>&nbsp;</td>
-  </tr>
-</table>
-
-                                     
-<br>
 
 <jsp:include page="/includes/footer.jsp" flush="false" />
-
-</body>
-</html>

@@ -1,4 +1,4 @@
-<!--
+<%--
 
 //
 // This file is part of the OpenNMS(R) Application.
@@ -36,9 +36,17 @@
 //      http://www.opennms.org/
 //      http://www.opennms.com///
 
--->
+--%>
 
-<%@page language="java" contentType="text/html" session="true" import="org.opennms.web.element.*,org.opennms.web.category.*,java.util.*,org.opennms.web.event.*" %>
+<%@page language="java"
+	contentType="text/html"
+	session="true"
+	import="org.opennms.web.element.*,
+		org.opennms.web.category.*,
+		java.util.*,
+		org.opennms.web.event.*
+	"
+%>
 
 <%
     String nodeIdString = request.getParameter( "node" );
@@ -79,12 +87,18 @@
     String eventUrl = "event/list?filter=node%3D" + nodeId + "&filter=interface%3D" + ipAddr + "&filter=service%3D" + serviceId;
 %>
 
-<html>
-<head>
-  <title><%=service_db.getServiceName()%> Service on <%=ipAddr%> | OpenNMS Web Console</title>
-  <base HREF="<%=org.opennms.web.Util.calculateUrlBase( request )%>" />
-  <link rel="stylesheet" type="text/css" href="css/styles.css" />
-</head>
+<% String headTitle = service_db.getServiceName() + " Service on " + ipAddr; %>
+<% String breadcrumb2 = "<a href='element/node.jsp?node=" + nodeId  + "'>Node</a>"; %>
+<% String breadcrumb3 = "<a href='element/interface.jsp?node=" + nodeId + "&intf=" + ipAddr  + "'>Interface</a>"; %>
+
+<jsp:include page="/includes/header.jsp" flush="false" >
+  <jsp:param name="title" value="Service" />
+  <jsp:param name="headTitle" value="<%= headTitle %>" />
+  <jsp:param name="breadcrumb" value="<a href='element/index.jsp'>Search</a>" />
+  <jsp:param name="breadcrumb" value="<%=breadcrumb2%>" />
+  <jsp:param name="breadcrumb" value="<%=breadcrumb3%>" />
+  <jsp:param name="breadcrumb" value="Service" />
+</jsp:include>
        
 <% if (request.isUserInRole("OpenNMS Administrator")) { %>
 
@@ -100,28 +114,6 @@ function doDelete() {
 
 <% } %>
 
-<body marginwidth="0" marginheight="0" LEFTMARGIN="0" RIGHTMARGIN="0" TOPMARGIN="0">
-
-<% String breadcrumb1 = "<a href='element/index.jsp"  + "'>Search</a>"; %>
-<% String breadcrumb2 = "<a href='element/node.jsp?node=" + nodeId  + "'>Node</a>"; %>
-<% String breadcrumb3 = "<a href='element/interface.jsp?node=" + nodeId + "&intf=" + ipAddr  + "'>Interface</a>"; %>
-<% String breadcrumb4 = "Service"; %>
-<jsp:include page="/includes/header.jsp" flush="false" >
-  <jsp:param name="title" value="Service" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb1%>" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb2%>" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb3%>" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb4%>" />
-</jsp:include>
-
-<br>
-
-<!-- Body -->
-<table width="100%" border="0" cellspacing="0" cellpadding="2" >
-  <tr>
-    <td>&nbsp;</td>
-
-    <td width="100%" valign="top" >
       <h2><%=service_db.getServiceName()%> service on <%=service_db.getIpAddress()%></h2>
 
          <% if (request.isUserInRole("OpenNMS Administrator")) { %>
@@ -141,37 +133,34 @@ function doDelete() {
          <% if (request.isUserInRole("OpenNMS Administrator")) { %>
          </form>
          <% } %>
-      <table width="100%" border="0" cellspacing="0" cellpadding="2" >
-        <tr>
-          <td valign="top" width="48%">
+
+
+      <div id="contentleft">
             <!-- general info box -->
-            <table width="100%" border="1" cellspacing="0" cellpadding="2" bordercolor="black" BGCOLOR="#cccccc">
-              <tr bgcolor="#999999">
-                <td colspan="2" ><b>General</b></td> 
+            <table class="standardfirst">
+              <tr>
+                <td class="standardheader" colspan="2">General</td> 
               </tr>
               <tr>
-                <td>Node</td> 
-                <td><a href="element/node.jsp?node=<%=service_db.getNodeId()%>"><%=NetworkElementFactory.getNodeLabel(service_db.getNodeId())%></a></td>
+                <td class="standard">Node</td> 
+                <td class="standard"><a href="element/node.jsp?node=<%=service_db.getNodeId()%>"><%=NetworkElementFactory.getNodeLabel(service_db.getNodeId())%></a></td>
               </tr>
               <tr>
-                <td>Interface</td> 
-                <td><a href="element/interface.jsp?node=<%=service_db.getNodeId()%>&intf=<%=service_db.getIpAddress()%>"><%=service_db.getIpAddress()%></a></td>
+                <td class="standard">Interface</td> 
+                <td class="standard"><a href="element/interface.jsp?node=<%=service_db.getNodeId()%>&intf=<%=service_db.getIpAddress()%>"><%=service_db.getIpAddress()%></a></td>
               </tr>              
               <tr> 
-                <td>Polling Status</td>
-                <td><%=ElementUtil.getServiceStatusString(service_db)%></td>
+                <td class="standard">Polling Status</td>
+                <td class="standard"><%=ElementUtil.getServiceStatusString(service_db)%></td>
               </tr>
             </table>
-            <br>
           
             <!-- Availability box -->
             <jsp:include page="/includes/serviceAvailability-box.jsp" flush="false" />
             
-          </td>
+      </div> <!-- id="contentleft" -->
 
-          <td>&nbsp;</td>
-          
-          <td valign="top" width="48%">
+      <div id="contentright">
             <!-- events list box -->
             <% String eventHeader = "<a href='" + eventUrl + "'>Recent Events</a>"; %>
             <% String moreEventsUrl = eventUrl; %>
@@ -183,24 +172,9 @@ function doDelete() {
               <jsp:param name="header" value="<%=eventHeader%>" />
               <jsp:param name="moreUrl" value="<%=moreEventsUrl%>" />
             </jsp:include>            
-            <br>
       
             <!-- Recent outages box -->
             <jsp:include page="/includes/serviceOutages-box.jsp" flush="false" />
-            <br>          
-          </td>
-         </tr>
-       </table>    
-    </td>
-    
-    <td>&nbsp;</td>
-  </tr>
-</table>
-
-<br>
+      </div> <!-- id="contentright" -->
 
 <jsp:include page="/includes/footer.jsp" flush="false" />
-
-</body>
-</html>
-

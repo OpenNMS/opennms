@@ -1,4 +1,4 @@
-<!--
+<%--
 
 //
 // This file is part of the OpenNMS(R) Application.
@@ -36,34 +36,21 @@
 //      http://www.opennms.org/
 //      http://www.opennms.com///
 
--->
+--%>
 
-<%@page language="java" contentType="text/html" session="true" %>
+<%@page language="java"
+	contentType="text/html"
+	session="true"
+%>
 
-<html>
-<head>
-  <title>Alarms | OpenNMS Web Console</title>
-  <base HREF="<%=org.opennms.web.Util.calculateUrlBase( request )%>" />
-  <link rel="stylesheet" type="text/css" href="css/styles.css" />
-
-</head>
-<body marginwidth="0" marginheight="0" LEFTMARGIN="0" RIGHTMARGIN="0" TOPMARGIN="0">
-
-<% String breadcrumb1 = "Alarms"; %>
 <jsp:include page="/includes/header.jsp" flush="false" >
   <jsp:param name="title" value="Alarms" />
+  <jsp:param name="headTitle" value="Alarms" />
   <jsp:param name="location" value="alarm" />  
-  <jsp:param name="breadcrumb" value="<%=breadcrumb1%>" />
+  <jsp:param name="breadcrumb" value="Alarms" />
 </jsp:include>
 
-<br>
-<!-- Body -->
-
-<table width="100%" cellspacing="0" cellpadding="0" border="0">
-  <tr>
-    <td>&nbsp;</td>
-
-    <td valign="top">     
+  <div style="width: 40%; float: left">
       <h3>Alarm Queries</h3>
       
       <jsp:include page="/alarm/querypanel.jsp" flush="false" />
@@ -84,12 +71,9 @@
           </tr>                    
         </table>
       </p>
-      
-    </td>
+  </div>
 
-    <td>&nbsp;</td>
-
-    <td valign="top" width="60%">
+  <div style="width: 60%; float: left">
       <h3>Outstanding and acknowledged alarms</h3>
 
       <p>Alarms can be <em>acknowledged</em>, or removed from the view of other users, by
@@ -109,17 +93,6 @@
         description, type the identifier into the <em>Get details for Alarm ID</em> box and
         hit <b>[Enter]</b>.  You will then go to the appropriate details page.
       </p>
-    </td>
+  </div>
 
-     <td> &nbsp; </td>
-  </tr>
-</table>                                    
-                                     
-<br>
-
-<jsp:include page="/includes/footer.jsp" flush="false" >
-  <jsp:param name="location" value="alarm" />
-</jsp:include>
-
-</body>
-</html>
+<jsp:include page="/includes/footer.jsp" flush="false"/>

@@ -1,4 +1,4 @@
-<!--
+<%--
 
 //
 // This file is part of the OpenNMS(R) Application.
@@ -35,25 +35,14 @@
 //      http://www.opennms.org/
 //      http://www.opennms.com///
 
--->
+--%>
 
-<%@page language="java" contentType="text/html" session="true" isErrorPage="true" import="java.net.ConnectException" %>
-
-<html>
-<head>
-  <title>Connection Error | Error | OpenNMS Web Console</title>
-  <base HREF="<%=org.opennms.web.Util.calculateUrlBase( request )%>" />
-  <link rel="stylesheet" type="text/css" href="css/styles.css" />
-</head>
-<body marginwidth="0" marginheight="0" leftmargin="0" rightmargin="0" topmargin="0">
-
-<% String breadcrumb1 = "Error"; %>
-<jsp:include page="/includes/header.jsp" flush="false" >
-  <jsp:param name="title" value="Error" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb1%>" />
-</jsp:include>
-
-<br />
+<%@page language="java"
+	contentType="text/html"
+	session="true"
+	isErrorPage="true"
+	import="java.net.ConnectException"
+%>
 
 <%
 
@@ -75,33 +64,22 @@
     
 %>
 
-<!-- Body -->
+<jsp:include page="/includes/header.jsp" flush="false" >
+  <jsp:param name="title" value="Connection Error" />
+  <jsp:param name="headTitle" value="Connection Error" />
+  <jsp:param name="headTitle" value="Error" />
+  <jsp:param name="breadcrumb" value="Error" />
+</jsp:include>
 
-<table width="100%" border="0" cellspacing="0" cellpadding="2">
-  <tr>
-    <td> &nbsp; </td>
+<h1>Connection Error</h1>
 
-    <td>
-      <h1>Connection Error</h1>
+<p>
+  Could not send an event to the OpenNMS event daemon due to this
+  error: <%= org.opennms.web.Util.htmlify(e.getMessage()) %>
+</p>
 
-      <p>
-        <br>
-        Could not send an event to the OpenNMS event daemon due to this
-	error: <%= org.opennms.web.Util.htmlify(e.getMessage()) %>
-      </p>
-      <p>
-	Is the OpenNMS daemon running?
-      </p>
-    </td>
-
-    <td> &nbsp; </td>
-  </tr>
-</table>                               
-
-<br />
-
+<p>
+  Is the OpenNMS daemon running?
+</p>
 
 <jsp:include page="/includes/footer.jsp" flush="false" />
-
-</body>
-</html>

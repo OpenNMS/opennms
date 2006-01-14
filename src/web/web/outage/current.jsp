@@ -1,4 +1,4 @@
-<!--
+<%--
 
 //
 // This file is part of the OpenNMS(R) Application.
@@ -37,9 +37,15 @@
 //      http://www.opennms.com/
 //
 
--->
+--%>
 
-<%@page language="java" contentType="text/html" session="true" import="org.opennms.web.outage.*,java.util.*" %>
+<%@page language="java"
+	contentType="text/html"
+	session="true"
+	import="org.opennms.web.outage.*,
+		java.util.*
+	"
+%>
 
 <%!  
     protected OutageModel model = new OutageModel();
@@ -49,33 +55,15 @@
     Outage[] outages = this.model.getCurrentOutages(); 
 %>
 
-<html>
-<head>
-  <title>Outages | OpenNMS Web Console</title>
-  <base HREF="<%=org.opennms.web.Util.calculateUrlBase( request )%>" />
-  <link rel="stylesheet" type="text/css" href="css/styles.css" />
-</head>
-
-<body bgcolor="white" text="#000000" link="#0000cc" vlink="#800080" alink="#ff0000" marginwidth="0" marginheight="0" LEFTMARGIN="0" rightmargin="0" TOPMARGIN="0">
-
-<% String breadcrumb1 = "<a href='outage/index.jsp'>Outages</a>"; %>
-<% String breadcrumb2 = "Current By Node"; %>
 <jsp:include page="/includes/header.jsp" flush="false" >
   <jsp:param name="title" value="Current Outages" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb1%>" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb2%>" />
+  <jsp:param name="headTitle" value="Outages" />
+  <jsp:param name="breadcrumb" value="<a href='outage/index.jsp'>Outages</a>" />
+  <jsp:param name="breadcrumb" value="Current By Node" />
 </jsp:include>
 
-<br>
-<!-- Body -->
 <% if( outages == null || outages.length == 0 ) { %>
-  <table border="0">
-    <tr>
-      <td>&nbsp;</td>
-      <td align="left"><h2>All services are up!</h2></td>
-      <td>&nbsp;</td>
-    </tr>
-  </table>
+  <h2>All services are up!</h2>
 <% } else { %>
   <%
       int nodeCount = 0;
@@ -125,25 +113,20 @@
       interfaceCount++;
       nodeCount++;
   %>           
- 
-  <table width="100%" border="0" cellspacing="0" cellpadding="2" >
-    <tr>
-      <td>&nbsp;</td>
 
-      <td width="100%" valign="top" > 
         <a href="outage/list" title="See all outages in the outage browser" >View All Outages</a>
         <%--&nbsp;&nbsp;&nbsp; <a href="outage/advsearch.jsp" title="More advanced searching and sorting options">Advanced Search</a>--%>
         &nbsp;&nbsp;&nbsp; <a href="outage/list?outtype=<%=OutageFactory.OutageType._CURRENT%>" title="A more powerful way of looking at outages">Query Current Outages</a>
         
         <h3>Current Outages</h3>
         
-        <table width="100%" border="1" cellspacing="0" cellpadding="2" bordercolor="black">
-          <tr BGCOLOR="#999999">
-            <td><b>Node</b></td>
-            <td WIDTH="15%"><b>Interface</b></td>
-            <td width="10%"><b>Service&nbsp;Down</b></td>
-            <td WIDTH="30%"><b>Time&nbsp;Down</b></td>
-            <td WIDTH="10%"><b>Outage&nbsp;ID</b></td>
+        <table class="standardfirst">
+          <tr>
+            <td class="standardheader">Node</td>
+            <td class="standardheader" WIDTH="15%">Interface</td>
+            <td class="standardheader" width="10%">Service&nbsp;Down</td>
+            <td class="standardheader" WIDTH="30%">Time&nbsp;Down</td>
+            <td class="standardheader" WIDTH="10%">Outage&nbsp;ID</td>
           </tr>
 
           <% for( int nodeIndex=0; nodeIndex < nodeList.size(); nodeIndex++ ) { %>
@@ -165,39 +148,27 @@
 
                 <tr valign="top" <% if( nodeIndex%2 == 0 ) out.print( "BGCOLOR=\"#cccccc\""); %>>
                   <% if( intfIndex==0 && svcIndex == 0) { %>
-                    <td rowspan="<%=serviceCnt%>"><a name="node<%=nodeId%>"/><a HREF="element/node.jsp?node=<%=nodeId%>" title="General information about this node"><%=outage.getNodeLabel()%></a></td>
+                    <td class="standard" rowspan="<%=serviceCnt%>"><a name="node<%=nodeId%>"/><a HREF="element/node.jsp?node=<%=nodeId%>" title="General information about this node"><%=outage.getNodeLabel()%></a></td>
                   <% } %>
 
                   <% if( svcIndex==0 ) { %>
-                    <td rowspan="<%=svcList.size()%>"><a HREF="element/interface.jsp?node=<%=nodeId%>&intf=<%=ipAddr%>" title="General information about this interface"><%=ipAddr%></a> <%=!ipAddr.equals(outage.getHostname()) ? "(" + outage.getHostname() + ")" : ""%></td>
+                    <td class="standard" rowspan="<%=svcList.size()%>"><a HREF="element/interface.jsp?node=<%=nodeId%>&intf=<%=ipAddr%>" title="General information about this interface"><%=ipAddr%></a> <%=!ipAddr.equals(outage.getHostname()) ? "(" + outage.getHostname() + ")" : ""%></td>
                   <% } %>
                     
-                  <td><a HREF="element/service.jsp?node=<%=nodeId%>&intf=<%=ipAddr%>&service=<%=outage.getServiceId()%>"><%=outage.getServiceName()%></a></td>
-                  <td><%=org.opennms.netmgt.EventConstants.formatToUIString(outage.getTimeDown())%></td>
-                  <td><a href="outage/detail.jsp?id=<%=outageId%>"><%=outageId%></a></td>
+                  <td class="standard"><a HREF="element/service.jsp?node=<%=nodeId%>&intf=<%=ipAddr%>&service=<%=outage.getServiceId()%>"><%=outage.getServiceName()%></a></td>
+                  <td class="standard"><%=org.opennms.netmgt.EventConstants.formatToUIString(outage.getTimeDown())%></td>
+                  <td class="standard"><a href="outage/detail.jsp?id=<%=outageId%>"><%=outageId%></a></td>
                 </tr>
               <% } /* endfor service */ %>
             <% } /*endfor interface */ %>
           <% } /*endfor node */ %>
         
-          <tr valign="top" BGCOLOR="#999999">
-            <td colspan="5"> 
-              <b><%=outages.length%> total services down on <%=interfaceCount%> interfaces of <%=nodeCount%> nodes</b>
+          <tr>
+            <td class="standardheader" colspan="5"> 
+              <%=outages.length%> total services down on <%=interfaceCount%> interfaces of <%=nodeCount%> nodes
             </td>
           </tr>
         </table>
-      </td>
-    
-      <td>&nbsp;</td>
-    </tr>
-  </table>
 <% } %>
 
-<br>
-
-<jsp:include page="/includes/footer.jsp" flush="false" >
-  <jsp:param name="location" value="outages" />
-</jsp:include>
-
-</body>
-</html>
+<jsp:include page="/includes/footer.jsp" flush="false"/>

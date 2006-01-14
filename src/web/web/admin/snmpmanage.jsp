@@ -1,4 +1,4 @@
-<!--
+<%--
 
 //
 // This file is part of the OpenNMS(R) Application.
@@ -38,9 +38,17 @@
 //      http://www.opennms.com/
 //
 
--->
+--%>
 
-<%@page language="java" contentType="text/html" session="true" import="java.io.File,java.util.*,org.opennms.web.element.NetworkElementFactory,org.opennms.web.admin.nodeManagement.*" %>
+<%@page language="java"
+	contentType="text/html"
+	session="true"
+	import="java.io.File,
+		java.util.*,
+		org.opennms.web.element.NetworkElementFactory,
+		org.opennms.web.admin.nodeManagement.*
+	"
+%>
 
 <%!
     int interfaceIndex;
@@ -53,33 +61,28 @@
     
     interfaceIndex = 0;
     
-    if (userSession != null)
-    {
-  	nodes = (List)userSession.getAttribute("listAllnodes.snmpmanage.jsp");
-        lineItems = (Integer)userSession.getAttribute("lineNodeItems.snmpmanage.jsp");
+    if (userSession == null) {
+	throw new ServletException("session is null");
+    }
+
+    nodes = (List)userSession.getAttribute("listAllnodes.snmpmanage.jsp");
+    lineItems = (Integer)userSession.getAttribute("lineNodeItems.snmpmanage.jsp");
+
+    if (nodes == null) {
+	throw new ServletException("session attribute listAllnodes.snmpmanage.jsp is null");
+    }
+    if (lineItems == null) {
+	throw new ServletException("session attribute lineNodeItems.snmpmanage.jsp is null");
     }
 %>
 
-<html>
-<head>
-  <title>Admin | OpenNMS Web Console</title>
-  <base HREF="<%=org.opennms.web.Util.calculateUrlBase( request )%>" />
-  <link rel="stylesheet" type="text/css" href="css/styles.css" />
-</head>
-
-<body marginwidth="0" marginheight="0" LEFTMARGIN="0" RIGHTMARGIN="0" TOPMARGIN="0">
-
-<% String breadcrumb1 = "<a href='admin/index.jsp'>Admin</a>"; %>
-<% String breadcrumb2 = "Manage SNMP by Interface"; %>
 <jsp:include page="/includes/header.jsp" flush="false" >
   <jsp:param name="title" value="Manage SNMP by Interface" />
+  <jsp:param name="headTitle" value="Admin" />
   <jsp:param name="location" value="admin" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb1%>" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb2%>" />
+  <jsp:param name="breadcrumb" value="<a href='admin/index.jsp'>Admin</a>" />
+  <jsp:param name="breadcrumb" value="Manage SNMP by Interface" />
 </jsp:include>
-
-<!-- Body -->
-<br>
 
 <%
   int midNodeIndex = 1;
@@ -90,82 +93,60 @@
   }
 %>
 
-<table width="100%" cellspacing="0" cellpadding="0" border="0">
-  
-  <tr>
-    <td> &nbsp; </td>  
-    
-    <td>
-    <h3>Manage SNMP Data Collection per Interface</h3>
+<h3>Manage SNMP Data Collection per Interface</h3>
 
-    <table width="100%" cellspacing="0" cellpadding="0" border="0">
-      <tr>
-        <td colspan="3"> 
-	<P>In the datacollection-config.xml file, for each different collection scheme there is a
-	parameter called <code>snmpStorageFlag</code>. If this value is set to "primary", then
-	only values pertaining to the node as a whole or the primary SNMP interface will be
-	stored in the system. If this value is set to "all", then all interfaces for which values are
-	collected will be stored.
-	</P>
-	<P>If this parameter is set to "select", then the interfaces for which data is stored can be
-	selected. By default, only information from Primary and Secondary SNMP interfaces will be stored,
-	but by using this interface, other non-IP interfaces can be chosen.
-	</P>
-	<P>
-	Simply select the node of interest below, and follow the instructions on the following page.
-	</P>
-        </td>
-      </tr>
-	
-      <TR>
-      <td>&nbsp;</td>
-      </tr>
+<p>
+  In the datacollection-config.xml file, for each different collection
+  scheme there is a parameter called <code>snmpStorageFlag</code>.  If
+  this value is set to "primary", then only values pertaining to the
+  node as a whole or the primary SNMP interface will be stored in the
+  system. If this value is set to "all", then all interfaces for which
+  values are collected will be stored.
+</p>
 
-   </tr> 
+<p>
+  If this parameter is set to "select", then the interfaces for which
+  data is stored can be selected.  By default, only information from
+  Primary and Secondary SNMP interfaces will be stored, but by using
+  this interface, other non-IP interfaces can be chosen.
+</p>
+
+<p>
+  Simply select the node of interest below, and follow the instructions
+  on the following page.
+</p>
+
       
    <% if (nodes.size() > 0) { %>
-   <tr>
-        <td width="49%" align="left" valign="top">
-          <table border="1" cellspacing="0" cellpadding="2" bordercolor="black">
-            <tr bgcolor="#999999">
-              <td width="5%" align="center"><b>Node ID</b></td>
-              <td width="10%" align="center"><b>Node Label</b></td>
+	<div id="contentleft">
+          <table class="standardfirst">
+            <tr>
+              <td class="standardheader" width="5%" align="center">Node ID</td>
+              <td class="standardheader" width="10%" align="center">Node Label</td>
             </tr>
             <%=buildTableRows(nodes, 0, midNodeIndex)%>
             
           </table>
+	</div>
           <% } /*end if*/ %>
-        </td>
-        
-        <td>
-          &nbsp;&nbsp;
-        </td>
         
       <!--see if there is a second column to draw-->
       <% if (midNodeIndex < nodes.size()) { %>
-        <td width="49%" align="left" valign="top">
-          <table border="1" cellspacing="0" cellpadding="2" bordercolor="black">
-            <tr bgcolor="#999999">
-              <td width="5%" align="center"><b>Node ID</b></td>
-              <td width="10%" align="center"><b>Node Label</b></td>
+	<div id="contentright">
+          <table class="standardfirst">
+            <tr>
+              <td class="standardheader" width="5%" align="center">Node ID</td>
+              <td class="standardheader" width="10%" align="center">Node Label</td>
             </tr>
             
             <%=buildTableRows(nodes, midNodeIndex, nodes.size())%>
                
           </table>
-        </td>
+	</div>
         <% } /*end if */ %>
-   </tr>
-      
-</table>
 
-<br>
+<jsp:include page="/includes/footer.jsp" flush="true"/>
 
-<jsp:include page="/includes/footer.jsp" flush="true" >
-  <jsp:param name="location" value="admin" />
-</jsp:include>
-</body>
-</html>
 <%!
       public String buildTableRows(List nodes, int start, int stop)
       	throws java.sql.SQLException
@@ -180,10 +161,10 @@
 		int nodeid = curNode.getNodeID();
                  
           row.append("<tr>\n");
-          row.append("<td width=\"5%\" align=\"center\">");
+          row.append("<td class=\"standard\" width=\"5%\" align=\"center\">");
 	  row.append(nodeid);
           row.append("</td>\n");
-          row.append("<td width=\"10%\" align=\"left\">");
+          row.append("<td class=\"standard\" width=\"10%\" align=\"left\">");
           row.append("<a href=\"admin/snmpGetInterfaces?node=");
 	  row.append(nodeid);
           row.append("&nodelabel=");

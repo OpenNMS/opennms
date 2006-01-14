@@ -1,4 +1,4 @@
-<!--
+<%--
 
 //
 // This file is part of the OpenNMS(R) Application.
@@ -35,9 +35,16 @@
 //      http://www.opennms.org/
 //      http://www.opennms.com///
 
--->
+--%>
 
-<%@page language="java" contentType="text/html" session="true" import="java.util.*,org.opennms.web.element.*,org.opennms.web.asset.*" %>
+<%@page language="java"
+	contentType="text/html"
+	session="true"
+	import="java.util.*,
+		org.opennms.web.element.*,
+		org.opennms.web.asset.*
+		"
+%>
 
 <%!
     protected AssetModel model;
@@ -55,28 +62,15 @@
     Iterator serviceNameIterator = serviceNameSet.iterator();
 %>
 
-<html>
-<head>
-  <title>Element Search | OpenNMS Web Console</title>
-  <base HREF="<%=org.opennms.web.Util.calculateUrlBase( request )%>" />
-  <link rel="stylesheet" type="text/css" href="css/styles.css" />
-</head>
-<body marginwidth="0" marginheight="0" LEFTMARGIN="0" RIGHTMARGIN="0" TOPMARGIN="0">
-
-<% String breadcrumb1 = "Search"; %>
 <jsp:include page="/includes/header.jsp" flush="false" >
   <jsp:param name="title" value="Element Search" />
+  <jsp:param name="headTitle" value="Element Search" />
   <jsp:param name="location" value="element" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb1%>" />
+  <jsp:param name="breadcrumb" value="Search" />
 </jsp:include>
 
-<br>
+  <div style="width: 40%; float: left;">
 
-<table width="100%" cellspacing="0" cellpadding="2" border="0">
-  <tr>
-    <td>&nbsp;</td>
-
-    <td valign="top">
       <h3>Search for Nodes</h3>
 
       <p>
@@ -164,11 +158,10 @@
 
         <a href="asset/nodelist.jsp?column=<%=this.columns[0][1]%>&searchvalue=">List all nodes with asset info</a>
       </p>
-    </td>
+  </div>
 
-    <td>&nbsp;</td>
 
-    <td width="60%" valign="top">
+  <div style="width: 60%; float: left;">
       <h3>Search Options</h3>
       
       <p>Searching by name is a case-insensitive, inclusive search. For example,
@@ -208,17 +201,6 @@
       <p>Also note that you can quickly search for all nodes which have asset
         information assigned by clicking the <em>List all nodes with asset info</em> link.
       </p>
-    </td>
+  </div>
 
-    <td>&nbsp;</td>
-  </tr>
-</table>
-                                     
-<br>
-
-<jsp:include page="/includes/footer.jsp" flush="false" >
-  <jsp:param name="location" value="element" />
-</jsp:include>
-
-</body>
-</html>
+<jsp:include page="/includes/footer.jsp" flush="false"/>

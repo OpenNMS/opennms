@@ -1,4 +1,4 @@
-<!--
+<%--
 
 //
 // This file is part of the OpenNMS(R) Application.
@@ -39,19 +39,26 @@
 //      http://www.opennms.com/
 //
 
--->
+--%>
 
-<%@page language="java" contentType="text/html" session="true" import="java.util.*,org.opennms.web.Util,org.opennms.web.response.*" %>
+<%@page language="java"
+	contentType="text/html"
+	session="true"
+	import="java.util.*,
+		org.opennms.web.ServletInitializer,
+		org.opennms.web.Util,
+		org.opennms.web.response.*
+	"
+%>
 
 <%!
     public ResponseTimeModel model = null;
 
     public void init() throws ServletException {
         try {
-            this.model = new ResponseTimeModel( org.opennms.web.ServletInitializer.getHomeDir() );
-        }
-        catch( Exception e ) {
-            throw new ServletException( "Could not initialize the ResponseTimeModel", e );
+            this.model = new ResponseTimeModel(ServletInitializer.getHomeDir());
+        } catch (Throwable t) {
+            throw new ServletException("Could not initialize the ResponseTimeModel", t);
         }
     }
 %>
@@ -60,12 +67,14 @@
     ResponseTimeModel.QueryableNode[] nodes = this.model.getQueryableNodes();
 %>
 
-<html>
-<head>
-  <title>Response Time | Reports | OpenNMS Web Console</title>
-  <base HREF="<%=org.opennms.web.Util.calculateUrlBase( request )%>" />
-  <link rel="stylesheet" type="text/css" href="css/styles.css" />
-</head>
+<jsp:include page="/includes/header.jsp" flush="false" >
+  <jsp:param name="title" value="Response Time" />
+  <jsp:param name="headTitle" value="Response Time" />
+  <jsp:param name="headTitle" value="Reports" />
+  <jsp:param name="location" value="response" />
+  <jsp:param name="breadcrumb" value="<a href='report/index.jsp'>Reports</a>" />
+  <jsp:param name="breadcrumb" value="Response Time" />
+</jsp:include>
 
 <script language="Javascript" type="text/javascript" >
   function validateNode()
@@ -123,83 +132,66 @@
   }
 </script>
 
-<body marginwidth="0" marginheight="0" LEFTMARGIN="0" RIGHTMARGIN="0" TOPMARGIN="0">
+<div style="width: 40%; float: left;">
+  <h3>Standard Response Time Reports</h3>
 
-<% String breadcrumb1 = "<a href='report/index.jsp'>Reports</a>"; %>
-<% String breadcrumb2 = "Response Time"; %>
-<jsp:include page="/includes/header.jsp" flush="false" >
-  <jsp:param name="title" value="Response Time" />
-  <jsp:param name="location" value="response" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb1%>" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb2%>" />
-</jsp:include>
+  <form method="get" name="choose_node" action="response/addIntfFromNode">
+    <p>
+      Choose a node to generate a standard response time report on.
+    </p>
 
-<br>
-<!-- Body -->
+    <p>
+      <input type="hidden" name="endUrl"
+             value="response/choosereportanddate.jsp"/>
 
-<table width="100%" cellspacing="0" cellpadding="2" border="0">
-  <tr>
-    <td>&nbsp;</td>
+      <select name="node" size="10">
+        <% for( int i=0; i < nodes.length; i++ ) { %>
+          <option value="<%=nodes[i].nodeId%>"><%=nodes[i].nodeLabel%></option>
+        <% } %>
+      </select>
+    </p>
+    
+    <p>
+      <input type="button" value="Start" onclick="submitForm()"/>
+    </p>
+  </form>
 
-    <td valign="top">
-      <h3>Standard Response Time Reports</h3>
+  <h3>Custom Response Time Reports</h3>
 
-      <form method="get" name="choose_node" action="response/addIntfFromNode" >
-        <p>Choose a node to generate a standard response time report on.</p>
-        <p>
-          <input type="hidden" name="endUrl" value="response/choosereportanddate.jsp" />
-          <select name="node" size="10">
-            <% for( int i=0; i < nodes.length; i++ ) { %>
-                <option value="<%=nodes[i].nodeId%>"><%=nodes[i].nodeLabel%></option>
-            <% } %>
-          </select>
-        </p>
-        <p>
-          <input type="button" value="Start" onclick="submitForm()"/>
-        </p>
-      </form>
+  <form method="get" name="choose_node_adhoc" action="response/adhoc.jsp">
+    <p>
+      Choose a node to generate a custom response time report on.
+    </p>
 
-      <h3>Custom Response Time Reports</h3>
+    <p>
+      <select name="node" size="10">
+        <% for( int i=0; i < nodes.length; i++ ) { %>
+          <option value="<%=nodes[i].nodeId%>"><%=nodes[i].nodeLabel%></option>
+        <% } %>
+      </select>
+    </p>
 
-      <form method="get" name="choose_node_adhoc" action="response/adhoc.jsp" >
-        <p>Choose a node to generate a custom response time report on.</p>
-        <p>
-          <select name="node" size="10">
-            <% for( int i=0; i < nodes.length; i++ ) { %>
-              <option value="<%=nodes[i].nodeId%>"><%=nodes[i].nodeLabel%></option>
-            <% } %>
-          </select>
-        </p>
-        <p><input type="button" value="Start" onclick="submitFormAdhoc()"/></p>
-      </form>
-    </td>
+    <p>
+      <input type="button" value="Start" onclick="submitFormAdhoc()"/>
+    </p>
+  </form>
+</div>
 
-    <td>&nbsp;</td>
+<div style="width: 60%; float: left;">
+  <h3>Network Response Time Data</h3>
 
-    <td valign="top" width="60%">
-      <h3>Network Response Time Data</h3>
+  <p>
+    The <strong>Standard Response Time Reports</strong> provide a stock way to
+    easily visualize the service response time data collected from managed
+    nodes throughout your network.
+  </p>
 
-      <p>The <strong>Standard Response Time Reports</strong> provide a stock way to
-        easily visualize the service response time data collected from managed nodes throughout
-        your network.
-      <p>
+  <p>
+    <strong>Custom Response Time Reports</strong> can be used to produce a
+    single graph that contains the data of your choice from a single interface
+    or node.  You can select the timeframe, line colors, line styles, and
+    title of the graph and you can bookmark the results.
+  </p>
+</div>
 
-      <p><strong>Custom Response Time Reports</strong> can be used to produce a single
-        graph that contains the data of your choice from a single interface or node.
-        You can select the timeframe, line colors, line styles, and title of the graph
-        and you can bookmark the results.
-      </p>
-    </td>
-
-    <td>&nbsp;</td>
-  </tr>
-</table>
-
-<br>
-
-<jsp:include page="/includes/footer.jsp" flush="false" >
-  <jsp:param name="location" value="response" />
-</jsp:include>
-
-</body>
-</html>
+<jsp:include page="/includes/footer.jsp" flush="false"/>

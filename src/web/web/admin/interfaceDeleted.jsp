@@ -1,4 +1,4 @@
-<!--
+<%--
 
 //
 // This file is part of the OpenNMS(R) Application.
@@ -36,9 +36,18 @@
 //      http://www.opennms.org/
 //      http://www.opennms.com///
 
--->
+--%>
 
-<%@page language="java" contentType="text/html" session="true" import="org.opennms.web.element.*,org.opennms.web.category.*,java.util.*,org.opennms.web.event.*" %>
+<%@page language="java"
+	contentType="text/html"
+	session="true"
+	import="org.opennms.web.element.*,
+		org.opennms.web.category.*,
+		java.util.*,
+		org.opennms.web.event.*,
+		org.opennms.web.MissingParameterException
+	"
+%>
 
 <%
 	
@@ -46,11 +55,11 @@
     String ipAddr = request.getParameter( "intf" );
 
     if( nodeIdString == null ) {
-        throw new org.opennms.web.MissingParameterException( "node", new String[] { "node", "intf" } );
+        throw new MissingParameterException( "node", new String[] { "node", "intf" } );
     }
 
     if( ipAddr == null ) {
-        throw new org.opennms.web.MissingParameterException( "intf", new String[] { "node", "intf" } );
+        throw new MissingParameterException( "intf", new String[] { "node", "intf" } );
     }
 
     int nodeId = -1;
@@ -65,48 +74,23 @@
 	
 %>
 
-<html>
-<head>
-  <title><%=ipAddr%> | OpenNMS Web Console</title>
-  <base HREF="<%=org.opennms.web.Util.calculateUrlBase( request )%>" />
-  <link rel="stylesheet" type="text/css" href="css/styles.css" />
-</head>
-       
-<body marginwidth="0" marginheight="0" LEFTMARGIN="0" RIGHTMARGIN="0" TOPMARGIN="0">
-
-<% String breadcrumb1 = "<a href='element/index.jsp"  + "'>Search</a>"; %>
 <% String breadcrumb2 = "<a href='element/node.jsp?node=" + nodeId  + "'>Node</a>"; %>
 <% String breadcrumb3 = "<a href='element/interface.jsp?node=" + nodeId + "&intf=" + ipAddr  + "'>Interface</a>"; %>
-<% String breadcrumb4 = "Interface Deleted"; %>
+
 <jsp:include page="/includes/header.jsp" flush="false" >
   <jsp:param name="title" value="Interface Deleted" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb1%>" />
+  <jsp:param name="headTitle" value="<%= ipAddr %>" />
+  <jsp:param name="breadcrumb" value="<a href='element/index.jsp'>Search</a>" />
   <jsp:param name="breadcrumb" value="<%=breadcrumb2%>" />
   <jsp:param name="breadcrumb" value="<%=breadcrumb3%>" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb4%>" />
+  <jsp:param name="breadcrumb" value="Interface Deleted" />
 </jsp:include>
 
-<br>
+<h3>Finished Deleting Interface <%= ipAddr %></h3>
 
-<!-- Body -->
-<br>
+<p>
+  OpenNMS should not need to be restarted, but it may take a moment for
+  the Categories to be updated.
+</p>
 
-<table width="100%" border="0" cellspacing="0" cellpadding="2" >
-  <tr>
-    <td>&nbsp;</td>
-    
-    <td>
-        <h3>Finished Deleting Interface <%= ipAddr %></h3>
-        <p>OpenNMS should not need to be restarted, but it may take a moment for the Categories to be updated.</p>
-    </td>
-    
-    <td>&nbsp;</td>
-  </tr>
-</table>
-
-<br>
 <jsp:include page="/includes/footer.jsp" flush="false" />
-
-</body>
-</html>
-

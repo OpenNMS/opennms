@@ -1,4 +1,4 @@
-<!--
+<%--
 
 //
 // This file is part of the OpenNMS(R) Application.
@@ -33,10 +33,20 @@
 //      OpenNMS Licensing       <license@opennms.org>
 //      http://www.opennms.org/
 //      http://www.opennms.com/
+--%>
 
--->
-
-<%@page language="java" contentType="text/html" session="true" import="java.util.*,java.io.*,org.opennms.web.performance.*,org.opennms.web.graph.*,org.opennms.web.element.NetworkElementFactory,org.opennms.netmgt.config.kscReports.*,org.opennms.netmgt.config.KSC_PerformanceReportFactory" %>
+<%@page language="java"
+	contentType="text/html"
+	session="true"
+	import="java.util.*,
+		java.io.*,
+		org.opennms.web.performance.*,
+		org.opennms.web.graph.*,
+		org.opennms.web.element.NetworkElementFactory,
+		org.opennms.netmgt.config.kscReports.*,
+		org.opennms.netmgt.config.KSC_PerformanceReportFactory
+	"
+%>
 
 <%@ include file="/WEB-INF/jspf/KSC/init2.jspf" %> 
 <%@ include file="/WEB-INF/jspf/KSC/rrd.jspf" %> 
@@ -48,12 +58,16 @@
 %>
 
 
-<html>
-<head>
-  <title>Performance | Reports | KSC </title>
-  <base HREF="<%=org.opennms.web.Util.calculateUrlBase( request )%>" />
-  <link rel="stylesheet" type="text/css" href="css/styles.css" />
-</head>
+<jsp:include page="/includes/header.jsp" flush="false" >
+  <jsp:param name="title" value="Key SNMP Customized Performance Reports" />
+  <jsp:param name="headTitle" value="Performance" />
+  <jsp:param name="headTitle" value="Reports" />
+  <jsp:param name="headTitle" value="KSC" />
+  <jsp:param name="location" value="KSC Reports" />
+  <jsp:param name="breadcrumb" value="<a href='report/index.jsp'>Reports</a>" />
+  <jsp:param name="breadcrumb" value="KSC Reports" />
+</jsp:include>
+
 
 <%-- A script to Save the file --%>
 <script language="Javascript" type="text/javascript">
@@ -94,18 +108,6 @@
 </script>
 
 
-<% String breadcrumb1 = "<a href='report/index.jsp'>Reports</a>"; %>
-<% String breadcrumb2 = "KSC Reports"; %>
-<jsp:include page="/includes/header.jsp" flush="false" >
-  <jsp:param name="title" value="Key SNMP Customized Performance Reports" />
-  <jsp:param name="location" value="KSC Reports" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb1%>" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb2%>" />
-</jsp:include>
-
-
-<body marginwidth="0" marginheight="0" LEFTMARGIN="0" RIGHTMARGIN="0" TOPMARGIN="0">
-<!-- Body -->
 <h3 align="center">Customized Report Configuration</h3>
 
     <form name="customize_form" method="get" action="KSC/form_proc_report.jsp">
@@ -237,13 +239,4 @@
 
     </form>
 
-<br>
-<jsp:include page="/includes/footer.jsp" flush="false" >
-  <jsp:param name="location" value="KSC Reports" />
-</jsp:include>
-
-</body>
-
-</html>
-
-
+<jsp:include page="/includes/footer.jsp" flush="false"/>

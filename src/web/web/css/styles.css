@@ -67,6 +67,18 @@ A:visited
 	color: #0000cc
 }
 
+a.filterLink
+{
+	color:black;
+	text-decoration:none;
+}
+
+a.filterLink:visited
+{
+	color:black;
+	text-decoration:none;
+}
+
 /* I don't specify the margins here because Netscape 4.x ignores them. */
 BODY
 {
@@ -304,91 +316,7 @@ td.standardmorepadding
 	width: 50%;
 }
 
-#node
-{
-        clear: both;
-        padding: 0.1em 1.0em 0.75em 0.75em;
-}
-
-#node table.first
-{
-        width: 100%;
-	background-color: black;
-        margin-top: 0;
-}
-
-#node table
-{
-        width: 100%;
-	background-color: black;
-        margin-top: 1em;
-}
-
-#node td.header
-{
-	background-color: #999999;
-	font-weight: bold;
-}
-
-#node td.headerplain
-{
-	background-color: #999999;
-}
-
-#node td.navlinks
-{
-        width: 25%;
-}
-
-#node td.warning
-{
-        background-color: cyan;
-}
-
-#node td
-{
-	background-color: #cccccc;
-}
-
-
-#interface
-{
-        clear: both;
-        padding: 0.1em 1.0em 0.75em 0.75em;
-}
-
-
-#interface table.first
-{
-        width: 100%;
-	background-color: black;
-        margin-top: 0;
-}
-
-#interface table
-{
-	background-color: black;
-        width: 100%;
-        margin-top: 1em;
-}
-
-#interface td.header
-{
-	background-color: #999999;
-	font-weight: bold;
-}
-
-#interface td.headerplain
-{
-	background-color: #999999;
-}
-
-#interface td
-{
-	background-color: #cccccc;
-}
-
-
+/*
 #availability-box table.inner
 { 
 	margin-top: 0;
@@ -406,40 +334,51 @@ td.standardmorepadding
 	width: 70%;
 	background-color: #999999;
 }
+*/
 
-#availability-box td.availnode
+td.availnode
 { 
         text-align: left;
         vertical-align: top;
         width: 25%;
+	border: 2pt solid black;
+	padding: 2px;
 }
 
-#availability-box td.availunmanaged
+td.availunmanaged
 {
 	background-color: #cccccc;
 	font-weight: bold;
         text-align: right;
+	border: 2pt solid black;
+	padding: 2px;
 }
 
-#availability-box td.availgood
+td.availgood
 {
 	background-color: green;
 	font-weight: bold;
         text-align: right;
+	border: 2pt solid black;
+	padding: 2px;
 }
 
-#availability-box td.availwarn
+td.availwarn
 {
 	background-color: #ffff33;
 	font-weight: bold;
         text-align: right;
+	border: 2pt solid black;
+	padding: 2px;
 }
 
-#availability-box td.availcrit
+td.availcrit
 {
 	background-color: #ff3333;
 	font-weight: bold;
         text-align: right;
+	border: 2pt solid black;
+	padding: 2px;
 }
 
 #eventlist
@@ -452,62 +391,53 @@ td.standardmorepadding
 {
 }
 
-#include-eventlist table
-{
-        width: 100%;
-	background-color: black;
-        margin-top: 0;
-}
-
-#include-eventlist td.header
-{
-	background-color: #999999;
-	font-weight: bold;
-}
-
-#include-eventlist td.headerplain
-{
-	background-color: #999999;
-}
-
 #include-eventlist td.sev_indeterminate
 {
         background-color: lightblue;
+	border: 2pt solid black;
+	padding: 2px;
 }
 
 #include-eventlist td.sev_cleared
 {
         background-color: white;
+	border: 2pt solid black;
+	padding: 2px;
 }
 
 #include-eventlist td.sev_normal
 {
         background-color: green;
+	border: 2pt solid black;
+	padding: 2px;
 }
 
 #include-eventlist td.sev_warning
 {
         background-color: cyan;
+	border: 2pt solid black;
+	padding: 2px;
 }
 
 #include-eventlist td.sev_minor
 {
         background-color: yellow;
+	border: 2pt solid black;
+	padding: 2px;
 }
 
 #include-eventlist td.sev_major
 {
         background-color: orange;
+	border: 2pt solid black;
+	padding: 2px;
 }
 
 #include-eventlist td.sev_critical
 {
         background-color: red;
-}
-
-#include-eventlist td
-{ 
-	background-color: #cccccc;
+	border: 2pt solid black;
+	padding: 2px;
 }
 
 #include-charts
@@ -516,14 +446,14 @@ td.standardmorepadding
 	clear: both;
 }
 
-#performance-results
+#graph-results
 { 
 	text-align: center;
 }
 
-/*#performance-results-periods td */
+/*#graph-results-periods td */
 
-#performance-results .periods td
+#graph-results .periods td
 { 
   width: 80px;
   text-align: center;
@@ -600,7 +530,7 @@ div.center
 
 #headernavbarright
 {
-        float: right;
+	float: right;
         padding: 2px;
         font-size: 12px;
 	font-family: Arial, Verdana, Helvetica, sans-serif; 

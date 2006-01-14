@@ -1,4 +1,4 @@
-<!--
+<%--
 
 //
 // This file is part of the OpenNMS(R) Application.
@@ -32,41 +32,27 @@
 //      http://www.opennms.com/
 //
 
--->
+--%>
 
-<%@page language="java" contentType="text/html" session="true" import="org.opennms.web.element.*"%>
+<%@page language="java"
+	contentType="text/html"
+	session="true"
+	import="org.opennms.web.element.*"
+%>
 
 <%
        Node[] nodes = NetworkElementFactory.getAllNodes();
        String message = (String)session.getAttribute("message");
 %>
 
-<html>
-<head>
-  <title>Map | OpenNMS Web Console</title>
-  <base HREF="<%=org.opennms.web.Util.calculateUrlBase( request )%>" />
-  <link rel="stylesheet" type="text/css" href="css/styles.css" />
-</head>
-<body marginwidth="0" marginheight="0" LEFTMARGIN="0" RIGHTMARGIN="0" TOPMARGIN="0">
-
-<%
-   String breadcrumb1 = "<a href='map/index.jsp'>Map</a>";
-   String breadcrumb2 = "Set Parent-Child Relationships";
-%>
 <jsp:include page="/includes/header.jsp" flush="false" >
+  <jsp:param name="headTitle" value="Map" />
   <jsp:param name="title" value="Set Parents" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb1%>" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb2%>" />
+  <jsp:param name="breadcrumb" value="<a href='map/index.jsp'>Map</a>" />
+  <jsp:param name="breadcrumb" value="Set Parent-Child Relationships" />
 </jsp:include>
 
-<br>
-<!-- Body -->
-
-<table width="100%" cellspacing="0" cellpadding="0" border="0">
-  <tr>
-    <td>&nbsp;</td>
-
-    <td>
+  <div style="width: 40%; float: left;">
       <h3>Set Parents</h3>          
 
       <% if(message != null) { %>
@@ -74,7 +60,7 @@
       <% } %>
 
       <p>
-        <form method="POST" action="map/modifyParent" >
+        <form method="post" action="map/modifyParent" >
           <select name="parentID">
               <option value="0">- none -</option>
           <% for(int i = 0; i < nodes.length; i++) { %>
@@ -95,11 +81,9 @@
           <input type="submit" value="submit">
         </form>      
       </p>
-    </td>
+    </div>
 
-    <td>&nbsp;</td>
-
-    <td valign="top" width="60%" >
+  <div style="width: 60%; float: left;">
       <h3>Set Parent&lt;-&gt;Child Relationships</h3>
 
       <p>
@@ -113,17 +97,6 @@
          nodes involved in the circular relationship will not appear
          on the map.
       </p>
-    </td>
+  </div>
 
-    <td>&nbsp;</td>
-
-  </tr>
-
-</table>                                    
-
-<br />
-
-    <jsp:include page="/includes/footer.jsp" flush="false" />
-
-  </body>
-</html>
+<jsp:include page="/includes/footer.jsp" flush="false" />

@@ -1,4 +1,4 @@
-<!--
+<%--
 
 //
 // This file is part of the OpenNMS(R) Application.
@@ -37,42 +37,24 @@
 //      http://www.opennms.org/
 //      http://www.opennms.com///
 
--->
+--%>
 
-<%@page language="java" contentType="text/html" session="true" import="java.util.*" %>
-
-<html>
-<head>
-  <title>Outage | OpenNMS Web Console</title>
-  <base HREF="<%=org.opennms.web.Util.calculateUrlBase( request )%>" />
-  <link rel="stylesheet" type="text/css" href="css/styles.css" />
-</head>
-<body marginwidth="0" marginheight="0" LEFTMARGIN="0" RIGHTMARGIN="0" TOPMARGIN="0">
-
-<% String breadcrumb1 = "<a href ='report/index.jsp'>Reports</a>"; %>
-<% String breadcrumb2 = "<a href ='availability/index.jsp'>Availability Report</a>"; %>
-<% String breadcrumb3 = "No Email"; %>
+<%@page language="java"
+	contentType="text/html"
+	session="true"
+	import="java.util.*"
+ %>
 
 <jsp:include page="/includes/header.jsp" flush="false" >
   <jsp:param name="title" value="No Email" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb1%>" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb2%>" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb3%>" />
+  <jsp:param name="headTitle" value="No Email" />
+  <jsp:param name="breadcrumb" value="<a href='report/index.jsp'>Reports</a>" />
+  <jsp:param name="breadcrumb" value="<a href='availability/index.jsp'>Availability Report</a>" />
+  <jsp:param name="breadcrumb" value="No Email" />
 </jsp:include>
 
-<br />
+<h3>No Email Address Configured</h3>
 
-<!-- page title -->
-<table width="100%" border="0" cellspacing="0" cellpadding="2">
-  <tr><td>No Email Address Configured</td></tr>
-</table>
-
-<br />
-
-<!-- Body -->
-<table width="100%" cellspacing="0" cellpadding="2" border="0">
-  <tr>
-    <td>
       <p>
         The Availability report you requested could not be generated because you
         do not have an email address configured.  You will need to have your
@@ -83,17 +65,5 @@
       <p>
         <a href="availability/index.jsp">Go back to the Availability Report page</a>
       </p>
-    </td>
 
-    <td>&nbsp;</td>
-  </tr>
-</table>
-                                     
-<br />
-
-<jsp:include page="/includes/footer.jsp" flush="false" >
-  <jsp:param name="location" value="report" />
-</jsp:include>
-
-</body>
-</html>
+<jsp:include page="/includes/footer.jsp" flush="false"/>

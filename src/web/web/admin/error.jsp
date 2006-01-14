@@ -1,4 +1,4 @@
-<!--
+<%--
 
 //
 // This file is part of the OpenNMS(R) Application.
@@ -37,78 +37,68 @@
 //      http://www.opennms.com/
 //
 
--->
+--%>
 
-<%@page language="java" contentType = "text/html" session = "true"  %>
+<%@page language="java"
+	contentType="text/html"
+	session="true"
+	import="org.opennms.web.MissingParameterException"
+%>
+
 <%
-	String error = null;
-	String name = null;
-	try
-    	{
-		error = request.getParameter( "error" );
-		name = request.getParameter( "name" );
+	String error = request.getParameter("error");
+	String name = request.getParameter("name");
+	int errorcode;
+
+	if (error == null) {
+		throw new MissingParameterException("error", new String[] { "error", "name" });
 	}
-	catch(Exception e)
-	{
-		throw new ServletException("Admin:pollerConfig " + e.getMessage());
+	if (name == null) {
+		throw new MissingParameterException("name", new String[] { "error", "name" });
+	}
+
+	try {
+		errorcode = (new Integer(error)).intValue();
+	} catch(Throwable t) {
+		throw new ServletException("Admin:pollerConfig " + t);
 	}
 %>
-<html>
-<head>
-  <title>Error Page | Configure Poller | Admin | OpenNMS Web Console</title>
-  <base HREF="<%=org.opennms.web.Util.calculateUrlBase( request )%>" />
-  <link rel="stylesheet" type="text/css" href="css/styles.css" />
-</head>
 
-<body marginwidth="0" marginheight="0" LEFTMARGIN="0" RIGHTMARGIN="0" TOPMARGIN="0">
-
-<% String breadcrumb1 = "<a href='admin/index.jsp'>Admin</a>"; %>
-<% String breadcrumb2 = "<a href='admin/pollerConfig/index.jsp'>Configure Pollers</a>"; %>
-<% String breadcrumb3 = "Error Page"; %>
 <jsp:include page="/includes/header.jsp" flush="false" >
   <jsp:param name="title" value="User Configuration" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb1%>" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb2%>" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb3%>" />
+  <jsp:param name="headTitle" value="Error Page" />
+  <jsp:param name="headTitle" value="Configure Poller" />
+  <jsp:param name="headTitle" value="Admin" />
+  <jsp:param name="breadcrumb" value="<a href='admin/index.jsp'>Admin</a>" />
+  <jsp:param name="breadcrumb" value="<a href='admin/pollerConfig/index.jsp'>Configure Pollers</a>" />
+  <jsp:param name="breadcrumb" value="Error Page" />
 </jsp:include>
 
-<br />
-
-<table border="0" width="100%">
-<tr>
-<td>&nbsp;</td>
-<td>
+<h3>
 <% 
-	int errorcode = (new Integer(error)).intValue();
 	switch(errorcode)
 	{
 		case 0:	%>
-				An error has occured due to a missing parameter <%= name %> in the poller configuration file
+				Missing parameter <%= name %> in the poller configuration file
 			
 	<%		break;
 		case 1: %>
-				An error has occured since the <%= name %> poller already exists
+				The <%= name %> poller already exists
 	<%		break;
 		case 2: %>
-				An error has occured due to the poller-configuration.xml file being empty
+				The poller-configuration.xml file is empty
 	<%		break;
-		case 3:%>
-				An error has occured due to the capsd-configuration.xml file being empty
+		case 3: %>
+				The capsd-configuration.xml file is empty
 	<%
 			break;
 	}
 %>
+</h3>
 
-</td>
-</tr>
-<tr><td>&nbsp;</td>
-<p><a href="admin/pollerConfig/index.jsp">Go back to the Poller Configuration page</a></p>
-</td>
-
-</tr></table>
-
-<br />
+<p>
+<a href="admin/pollerConfig/index.jsp">Go back to the Poller Configuration
+page</a>.
+</p>
 
 <jsp:include page="/includes/footer.jsp" flush="true"/>
-</body>
-</html>

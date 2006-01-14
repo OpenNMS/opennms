@@ -1,4 +1,4 @@
-<!--
+<%--
 
 //
 // This file is part of the OpenNMS(R) Application.
@@ -31,9 +31,17 @@
 //      http://www.opennms.org/
 //      http://www.opennms.com///
 
--->
+--%>
 
-<%@page language="java" contentType="text/html" session="true" import="java.util.*,java.text.DecimalFormat,org.opennms.web.element.NetworkElementFactory,org.opennms.web.alarm.*" %>
+<%@page language="java"
+	contentType="text/html"
+	session="true"
+	import="java.util.*,
+		java.text.DecimalFormat,
+		org.opennms.web.element.NetworkElementFactory,
+		org.opennms.web.alarm.*
+		"
+%>
 <%!
     public static final DecimalFormat MINUTE_FORMAT = new DecimalFormat( "00" );
 %>
