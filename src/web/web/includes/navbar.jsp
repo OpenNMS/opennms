@@ -41,7 +41,7 @@
     }
 %>
 
-<div id="navbar">
+<div class="navbar">
   <ul>
     <c:forEach var="navEntry" items="${navBar}">
       <c:choose>

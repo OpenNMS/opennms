@@ -197,14 +197,14 @@ TD.footer
 	margin: 1em;
 }
 
-#navbar ul
+.navbar ul
 { 
 	list-style: none;
 	display: inline;
 }
 
 
-#navbar li
+.navbar li
 { 
 	padding: 0 0.2em 0 0.5em;
 	border-style: solid;
@@ -214,7 +214,7 @@ TD.footer
 	display: inline;
 }
 
-#navbar li.last
+.navbar li.last
 { 
 	padding: 0 0.2em 0 0.5em;
 	border-style: solid;
