@@ -488,6 +488,11 @@ div.center
         padding: 6px 2px 6px 2px;
 }
 
+#headerlogo a img
+{
+	border: none;
+}
+
 #headertitle
 {
         width: 50%;
