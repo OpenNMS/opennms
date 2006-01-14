@@ -66,12 +66,7 @@ function addbookmark()
 </script>
 
 <div id="include-bookmark">
-<form NAME="bookmark" ACTION="javascript:addbookmark()">
-<!--
- 	<table>
-	<tr><td><input type="SUBMIT" value="Bookmark the results"/></td></tr>
-	</table>
--->
-        <input type="SUBMIT" value="Bookmark the results"/>
-</form>
+  <form id="bookmark" action="javascript:addbookmark()">
+    <input type="submit" value="Bookmark the results"/>
+  </form>
 </div>
