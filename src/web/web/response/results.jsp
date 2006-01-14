@@ -56,16 +56,19 @@
 	"
 %>
 
+<%@ include file="/WEB-INF/jspf/graph-common.jspf"%>
+
 <%!
-    protected ResponseTimeModel model = null;
-    
+    protected GraphModel m_model = null;
     
     public void init() throws ServletException {
         try {
-            this.model = new ResponseTimeModel(Vault.getHomeDir());
+            m_model = new ResponseTimeModel(Vault.getHomeDir());
         } catch (Throwable t) {
             throw new ServletException("Could not initialize the ResponseTimeModel", t);
         }
+
+	initPeriods();
     }
 %>
 
@@ -96,8 +99,8 @@
     String start = request.getParameter("start");
     String end   = request.getParameter("end");
     
-    if (start == null || end == null) {
-        String relativeTime = request.getParameter("relativetime");
+    String relativeTime = request.getParameter("relativetime");
+    if ((start == null || end == null) && relativeTime != null) {
         
         /*
 	 * TODO: Only support last 24 hours in this version, need to clean up
@@ -176,7 +179,7 @@
     PrefabGraph[] graphs = new PrefabGraph[reports.length];
 
     for (int i=0; i < reports.length; i++) {
-        graphs[i] = (PrefabGraph)this.model.getQuery(reports[i]);
+        graphs[i] = m_model.getQuery(reports[i]);
         
         if(graphs[i] == null) {
             throw new IllegalArgumentException("Unknown report name: " + reports[i]);
@@ -188,17 +191,6 @@
      * Note: PrefabGraph implements the Comparable interface.
      */
     Arrays.sort(graphs);    
-
-    String relativetime = request.getParameter("relativetime");
-
-    if (relativetime == null) {
-        relativetime = "unknown";
-    }
-
-    String reportList = "";
-    for (int i=0; i < reports.length; i++) {
-        reportList = reportList + "&reports=" + reports[i];
-    }
 %>
 
 <jsp:include page="/includes/header.jsp" flush="false" >
@@ -215,42 +207,11 @@
   <h3>
     Node: <a href="element/node.jsp?node=<%=nodeId%>"><%=NetworkElementFactory.getNodeLabel(nodeId)%></a><br/>
     <% if(intf != null ) { %>
-      Interface: <%=this.model.getHumanReadableNameForIfLabel(nodeId, intf)%>
+      Interface: <%=m_model.getHumanReadableNameForIfLabel(nodeId, intf)%>
     <% } %>
   </h3>
 
-  <form name="reltimeform">
-    <table>
-      <tr>
-        <td align="center" width="80">Last Day</td>
-        <td align="center" width="80">Last Week</td>
-        <td align="center" width="80">Last Month</td>
-        <td align="center" width="80">Last Year</td>
-      </tr>
-
-      <tr>
-        <td align="center">
-          <input type="radio" name="rtstatus" <%=(relativetime.equals("lastday") ? "checked" : "")%>
-                 onclick="top.location = '/opennms/response/results.jsp?relativetime=lastday&intf=<%=intf%>&node=<%=nodeId%><%=reportList%>'" ></input>
-        </td>
-
-        <td align="center">
-          <input type="radio" name="rtstatus" <%=(relativetime.equals("lastweek") ? "checked" : "")%>
-                 onclick="top.location = '/opennms/response/results.jsp?relativetime=lastweek&intf=<%=intf%>&node=<%=nodeId%><%=reportList%>'" ></input>
-        </td>
-
-        <td align="center">
-          <input type="radio" name="rtstatus" <%=(relativetime.equals("lastmonth") ? "checked" : "")%>
-                 onclick="top.location = '/opennms/response/results.jsp?relativetime=lastmonth&intf=<%=intf%>&node=<%=nodeId%><%=reportList%>'" ></input>
-        </td>
-
-        <td align="center">
-          <input type="radio" name="rtstatus" <%=(relativetime.equals("lastyear") ? "checked" : "")%>
-                 onclick="top.location = '/opennms/response/results.jsp?relativetime=lastyear&intf=<%=intf%>&node=<%=nodeId%><%=reportList%>'" ></input>
-        </td>
-      </tr>
-    </table>
-  </form>
+  <% printRelativeTimeForm(out, relativeTime, nodeId, intf, reports); %>
 
   <h3>Interface Response Time Data</h3>
   
@@ -262,7 +223,7 @@
       <%-- Encode the RRD filenames based on the graph's required data
         -- sources.
         --%>
-      <% String[] rrds = this.getRRDNames(nodeId, intf, graphs[i]); %> 
+      <% String[] rrds = this.getRRDNames(-1, intf, graphs[i]); %> 
       <% String rrdParm = this.encodeRRDNamesAsParmString(rrds); %>
                         
       <%-- handle external values, if any --%>
@@ -275,155 +236,9 @@
     No response time data has been gathered at this level.
   <% } %>
 
-
-  <form name="reltimeform">
-    <table>
-      <tr>
-        <td align="center" width="80">Last Day</td>
-        <td align="center" width="80">Last Week</td>
-        <td align="center" width="80">Last Month</td>
-        <td align="center" width="80">Last Year</td>
-      </tr>
-
-      <tr>
-        <td align="center">
-          <input type="radio" name="rtstatus" <%=(relativetime.equals("lastday") ? "checked" : "")%>
-                 onclick="top.location = '/opennms/response/results.jsp?relativetime=lastday&intf=<%=intf%>&node=<%=nodeId%><%=reportList%>'" ></input>
-        </td>
-
-        <td align="center">
-          <input type="radio" name="rtstatus" <%=(relativetime.equals("lastweek") ? "checked" : "")%>
-                 onclick="top.location = '/opennms/response/results.jsp?relativetime=lastweek&intf=<%=intf%>&node=<%=nodeId%><%=reportList%>'" ></input>
-        </td>
-
-        <td align="center">
-          <input type="radio" name="rtstatus" <%=(relativetime.equals("lastmonth") ? "checked" : "")%>
-                 onclick="top.location = '/opennms/response/results.jsp?relativetime=lastmonth&intf=<%=intf%>&node=<%=nodeId%><%=reportList%>'" ></input>
-        </td>
-
-        <td align="center">
-          <input type="radio" name="rtstatus" <%=(relativetime.equals("lastyear") ? "checked" : "")%>
-                 onclick="top.location = '/opennms/response/results.jsp?relativetime=lastyear&intf=<%=intf%>&node=<%=nodeId%><%=reportList%>'" ></input>
-        </td>
-      </tr>
-    </table>
-  </form>
-
+  <% printRelativeTimeForm(out, relativeTime, nodeId, intf, reports); %>
 
   <jsp:include page="/includes/bookmark.jsp" flush="false" />
 </div>
 
 <jsp:include page="/includes/footer.jsp" flush="false" />
-
-<%!
-    /** intf can be null */           
-    public String[] getRRDNames(int nodeId, String intf, PrefabGraph graph) {
-        if(graph == null) {
-            throw new IllegalArgumentException("Cannot take null parameters.");
-        }            
-    
-        String[] columns = graph.getColumns();
-        String[] rrds = new String[columns.length];
-         
-        for(int i=0; i < columns.length; i++ ) {
-            StringBuffer buffer = new StringBuffer();
-            // buffer.append(nodeId);            
-            // buffer.append(File.separator);
-            
-            if(intf != null) {             
-                buffer.append(intf);
-                buffer.append(File.separator);
-            }
-            
-            buffer.append(columns[i]);
-            buffer.append(org.opennms.netmgt.utils.RrdFileConstants.RRD_SUFFIX);            
-
-            rrds[i] = buffer.toString();
-        }   
-
-        return rrds;             
-    }
-
-
-
-    public String encodeRRDNamesAsParmString(String[] rrds) {
-        if(rrds == null) {
-            throw new IllegalArgumentException("Cannot take null parameters.");
-        }
-        
-        String parmString = "";
-        
-        if(rrds.length > 0) {
-            StringBuffer buffer = new StringBuffer("rrd=");
-            buffer.append(java.net.URLEncoder.encode(rrds[0]));
-              
-            for(int i=1; i < rrds.length; i++ ) {
-                buffer.append("&rrd=");
-                buffer.append(java.net.URLEncoder.encode(rrds[i]));
-            }
-            
-            parmString = buffer.toString();              
-        }
-        
-        return parmString;
-    }
-  
-  
-    /** currently only know how to handle ifSpeed external value; intf can be null */
-    public String encodeExternalValuesAsParmString(int nodeId, String intf, PrefabGraph graph) throws java.sql.SQLException {
-        if(graph == null) {
-            throw new IllegalArgumentException("Cannot take null parameters.");      
-        }
-        
-        String parmString = "";        
-        String[] externalValues = graph.getExternalValues();
-        
-        if(externalValues != null && externalValues.length > 0) {
-            StringBuffer buffer = new StringBuffer();
-            
-            for(int i=0; i < externalValues.length; i++) {
-                if("ifSpeed".equals(externalValues[i])) {
-                    String speed = this.getIfSpeed(nodeId, intf);
-                    
-                    if(speed != null) {
-                        buffer.append(externalValues[i]);
-                        buffer.append("=");                        
-                        buffer.append(speed);   
-                        buffer.append("&");                        
-                    }
-                }
-                else {
-                    throw new IllegalStateException("Unsupported external value name: " + externalValues[i]);
-                }                
-            }
-            
-            parmString = buffer.toString();
-        }        
-        
-        return parmString;
-    }
-    
-    
-    public String getIfSpeed(int nodeId, String intf) throws java.sql.SQLException {
-        if(intf == null) {
-            throw new IllegalArgumentException("Cannot take null parameters.");
-        }
-
-        String speed = null;
-        
-        try {
-            Map intfInfo = org.opennms.netmgt.utils.IfLabel.getInterfaceInfoFromIfLabel(nodeId, intf);
-
-            //if the extended information was found correctly
-            if(intfInfo != null) {
-                speed = (String)intfInfo.get("snmpifspeed");
-            }
-        }
-        catch (java.sql.SQLException e) {
-            this.log("SQLException while trying to fetch extended interface info", e);
-        }
-
-
-        return speed;
-    }
-%>

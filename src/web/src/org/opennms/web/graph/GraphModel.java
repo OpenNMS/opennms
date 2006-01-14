@@ -1,0 +1,9 @@
+package org.opennms.web.graph;
+
+import java.sql.SQLException;
+
+public interface GraphModel {
+    public PrefabGraph getQuery(String report);
+
+    public String getHumanReadableNameForIfLabel(int nodeId, String intf) throws SQLException;
+}

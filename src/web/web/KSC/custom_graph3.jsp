@@ -52,7 +52,7 @@
 %>
 
 <%@ include file="/WEB-INF/jspf/KSC/init2.jspf" %>
-<%@ include file="/WEB-INF/jspf/KSC/rrd.jspf" %>
+<%@ include file="/WEB-INF/jspf/graph-common.jspf"%>
 
 <%
     String[] requiredParameters = new String[] {"node", "intf"};

@@ -59,6 +59,7 @@ import org.opennms.netmgt.utils.IfLabel;
 import org.opennms.netmgt.utils.RrdFileConstants;
 import org.opennms.web.Util;
 import org.opennms.web.graph.PrefabGraph;
+import org.opennms.web.graph.GraphModel;
 
 /**
  * Encapsulates all SNMP performance reporting for the web user interface.
@@ -67,7 +68,7 @@ import org.opennms.web.graph.PrefabGraph;
  * @author <a href="mailto:larry@opennms.org">Lawrence Karnowski </a>
  * @author <a href="http://www.opennms.org">OpenNMS </a>
  */
-public class PerformanceModel extends Object {
+public class PerformanceModel extends Object implements GraphModel {
     public static final String RRDTOOL_GRAPH_PROPERTIES_FILENAME =
 		File.separator + "etc" + File.separator + "snmp-graph.properties";
 
@@ -511,5 +512,4 @@ public class PerformanceModel extends Object {
 
         return this.isQueryableInterface(Integer.parseInt(nodeId), ifLabel);
     }
-
 }
