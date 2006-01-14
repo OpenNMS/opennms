@@ -269,6 +269,7 @@
       <% String externalValuesParm = this.encodeExternalValuesAsParmString(nodeId, intf, graphs[i]); %>
             
       <img src="response/graph.png?report=<%=graphs[i].getName()%>&start=<%=start%>&end=<%=end%>&<%=rrdParm%>&<%=externalValuesParm%>"/>
+      <br/>
     <% } %>
   <% } else { %>
     No response time data has been gathered at this level.
