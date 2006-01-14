@@ -58,4 +58,21 @@ public class MissingParameterException extends RuntimeException {
     public String[] getRequiredParameters() {
         return (this.requiredParameters);
     }
+
+    public String getMessage() {
+	StringBuffer b = new StringBuffer();
+
+        b.append("Missing parameter \"" + getMissingParameter()
+                 + "\" out of required parameters: ");
+
+        String[] requiredParameters = getRequiredParameters();
+	for (int i = 0; i < requiredParameters.length; i++) {
+	    if (i != 0) {
+                b.append(", ");
+	    }
+            b.append(requiredParameters[i]);
+	}
+
+	return b.toString();
+    }
 }
