@@ -1395,7 +1395,6 @@
     <location>/errors/eventproxyexception.jsp</location>
   </error-page>  
   <error-page>
-    <exception-type>java.lang.Exception</exception-type>
     <location>/errors/unknownexception.jsp</location>
   </error-page>  
   
