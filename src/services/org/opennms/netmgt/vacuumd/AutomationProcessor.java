@@ -222,8 +222,7 @@ public class AutomationProcessor implements ReadyRunnable {
             }
 
         } catch (SQLException e) {
-            log().warn("runAutomation: Could not execute trigger: "+auto.getTriggerName());
-            log().warn(e.getMessage());
+            log().warn("runAutomation: Could not execute trigger: "+auto.getTriggerName(), e);
         } finally {
             log().debug("runAutomation: Closing trigger resultset.");
             if (isTriggerInAutomation()) {
@@ -404,7 +403,7 @@ public class AutomationProcessor implements ReadyRunnable {
         if (log().isDebugEnabled())
             log().debug("resultSetHasRequiredActionColumns: Verifying required action columns in trigger ResultSet...");
         
-        boolean verified = false;
+        boolean verified = true;
         String actionColumnName = null;
         
         Iterator it = actionColumns.iterator();
@@ -413,7 +412,6 @@ public class AutomationProcessor implements ReadyRunnable {
             actionColumnName = (String)it.next();
             try {
                 if (rs.findColumn(actionColumnName) > 0) {
-                    verified = true;
                 }
             } catch (SQLException e) {
                 log().warn("resultSetHasRequiredActionColumns: Trigger ResultSet does NOT have required action columns.  Missing: "+actionColumnName);

@@ -35,12 +35,16 @@ package org.opennms.netmgt.vacuumd;
 
 import java.io.Reader;
 import java.io.StringReader;
+import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
 
 import org.opennms.core.fiber.Fiber;
 import org.opennms.core.fiber.PausableFiber;
+import org.opennms.netmgt.config.DatabaseConnectionFactory;
 import org.opennms.netmgt.config.VacuumdConfigFactory;
 import org.opennms.netmgt.config.vacuumd.Action;
 import org.opennms.netmgt.config.vacuumd.Automation;
@@ -81,6 +85,7 @@ public class VacuumdTest extends OpenNMSTestCase {
         "           <automation name=\"autoEscalate\" interval=\"10000\" trigger-name=\"selectWithCounter\" auto-event-name=\"escalationEvent\" action-name=\"escalate\" active=\"true\" />\n" + 
         "           <automation name=\"cleanUpAlarms\" interval=\"300000\" action-name=\"deleteDayOldAlarms\" active=\"true\" />\n" +
         "           <automation name=\"cosmicClear\" interval=\"30000\" trigger-name=\"selectResolvers\" action-name=\"clearProblems\" active=\"true\" />\n" + 
+        "           <automation name=\"stormDetect\" interval=\"60000\" trigger-name=\"stormTrigger\" action-name=\"null\" auto-event-name=\"stormAlert\" active=\"true\" />" +
         "    </automations>\n" + 
         "    <triggers>\n" + 
         "           <trigger name=\"selectAll\" operator=\"&gt;=\" row-count=\"1\" >\n" + 
@@ -91,6 +96,9 @@ public class VacuumdTest extends OpenNMSTestCase {
         "           </trigger>\n" + 
         "           <trigger name=\"selectResolvers\" operator=\"&gt;=\" row-count=\"1\" >\n" + 
         "               <statement>SELECT * FROM alarms WHERE alarmType=2</statement>\n" + 
+        "           </trigger>\n" + 
+        "           <trigger name=\"stormTrigger\" operator=\"&gt;=\" row-count=\"1\" >\n" + 
+        "               <statement>SELECT * FROM events</statement>\n" + 
         "           </trigger>\n" + 
         "    </triggers>\n" + 
         "    <actions>\n" + 
@@ -110,11 +118,17 @@ public class VacuumdTest extends OpenNMSTestCase {
         "           <action name=\"deleteDayOldAlarms\" >\n" + 
         "               <statement>DELETE FROM alarms WHERE alarmAckUser IS NOT NULL AND lastEventTime &lt; CURRENT_TIMESTAMP</statement>\n" + 
         "           </action>\n" + 
+        "           <action name=\"null\" >\n" + 
+        "               <statement>update distpoller SET dpname = \'foxtel\' where dpip = \'1.1.1.1\'</statement>\n" + 
+        "           </action>\n" + 
         "    </actions>\n" + 
         "    <auto-events>\n" +
         "        <auto-event name=\"escalationEvent\" >\n" +
         "            <uei>uei.opennms.org/vacuumd/alarmEscalated</uei>\n" +
         "        </auto-event>\n" +
+        "        <auto-event name=\"stormAlert\" >\n" + 
+        "            <uei>FOXTEL/System/OpenNMS/MessageStormDetected</uei>\n" + 
+        "        </auto-event>\n" + 
         "    </auto-events>\n" +
         "" + 
         "</VacuumdConfiguration>";
@@ -211,21 +225,34 @@ public class VacuumdTest extends OpenNMSTestCase {
     }
     
     /**
+     * Test resultSetHasRequiredActionColumns method
+     * @throws SQLException 
+     */
+    
+    public final void testResultSetHasRequiredActionColumns() throws SQLException {
+        Connection conn = DatabaseConnectionFactory.getInstance().getConnection();
+        Statement stmt = conn.createStatement();
+        ResultSet rs = stmt.executeQuery("select * from events");
+        Collection columns = new ArrayList();
+        AutomationProcessor ap = new AutomationProcessor();
+        assertTrue(ap.resultSetHasRequiredActionColumns(rs, columns));
+    }
+    /**
      * Simple test on a helper method.
      */
     public final void testGetAutomations() {
-        assertEquals(3, VacuumdConfigFactory.getInstance().getAutomations().size());
+        assertEquals(4, VacuumdConfigFactory.getInstance().getAutomations().size());
     }
     
     public final void testGetAutoEvents() {
-        assertEquals(1, VacuumdConfigFactory.getInstance().getAutoEvents().size());
+        assertEquals(2, VacuumdConfigFactory.getInstance().getAutoEvents().size());
     }
     
     /**
      * Simple test on a helper method.
      */
     public final void testGetTriggers() {
-        assertEquals(3,VacuumdConfigFactory.getInstance().getTriggers().size());
+        assertEquals(4,VacuumdConfigFactory.getInstance().getTriggers().size());
     }
     
     /**
@@ -233,7 +260,7 @@ public class VacuumdTest extends OpenNMSTestCase {
      */
     public final void testGetActions() {
         AutomationProcessor ap = new AutomationProcessor();
-        assertEquals(5,VacuumdConfigFactory.getInstance().getActions().size());
+        assertEquals(6,VacuumdConfigFactory.getInstance().getActions().size());
         assertEquals(2, ap.getTokenCount(VacuumdConfigFactory.getInstance().getAction("delete").getStatement().getContent()));
     }
     
@@ -272,7 +299,7 @@ public class VacuumdTest extends OpenNMSTestCase {
         
         //Get all the triggers defined in the config
         ArrayList triggers = (ArrayList)VacuumdConfigFactory.getInstance().getTriggers();
-        assertEquals(3, triggers.size());
+        assertEquals(4, triggers.size());
 
         Querier q = null;
 
