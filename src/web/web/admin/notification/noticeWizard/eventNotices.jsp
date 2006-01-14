@@ -68,7 +68,7 @@
   <jsp:param name="headTitle" value="Event Notifications" />
   <jsp:param name="headTitle" value="Admin" />
   <jsp:param name="breadcrumb" value="<a href='admin/index.jsp'>Admin</a>" />
-  <jsp:param name="breadcrumb" value="<a href='admin/notification/index.jsp" +  "'>Configure Notifications</a>" />
+  <jsp:param name="breadcrumb" value="<a href='admin/notification/index.jsp'>Configure Notifications</a>" />
   <jsp:param name="breadcrumb" value="Event Notifications" />
 </jsp:include>
 

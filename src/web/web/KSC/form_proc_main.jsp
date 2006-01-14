@@ -55,7 +55,6 @@
     
     if (report_action == null) {
         throw new MissingParameterException("report_action");
-					    requiredParameters);
     }
       
     if ((report_action.equals("Customize")) || (report_action.equals("View")) || (report_action.equals("CreateFrom")) || (report_action.equals("Delete"))) {
@@ -96,7 +95,7 @@
 </jsp:include>
 
 <% if (report_action.equals("View")) { %>
-       <form name="do_next" method="get" action="custom_view.jsp">
+       <form name="do_next" method="get" action="KSC/custom_view.jsp">
            <input type="hidden" name="report" value="<%=report_index%>" >
            <input type="hidden" name="type" value="custom" >
        </form>

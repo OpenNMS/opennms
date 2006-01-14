@@ -124,7 +124,7 @@
 <h3>Report Index: <%=report_index%></h3>
 
 <% if (report_action.equals("Update")) { %>
-       <form name="do_next" method="get" action="custom_view.jsp">
+       <form name="do_next" method="get" action="KSC/custom_view.jsp">
            <input type="hidden" name="report" value="<%=report_index%>" >
            <input type="hidden" name="type" value="<%=report_type%>" >
            <% if (override_timespan != null) { %> 
