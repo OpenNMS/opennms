@@ -160,6 +160,8 @@
 
 --%>
 
+<div class="spacer"></div>
+
 </c:otherwise>
 </c:choose>
 
