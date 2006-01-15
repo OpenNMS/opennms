@@ -1,7 +1,4 @@
-<%@page language="java"
-	contentType="text/html"
-	session="true"
-	import="java.util.Date,
+<%@page import="java.util.Date,
 		java.util.Calendar,
 		org.opennms.web.performance.PerformanceModel,
             	org.opennms.netmgt.utils.IfLabel,
@@ -201,8 +198,8 @@
     }
 
     private void printRelativeTimeForm(JspWriter out, String relativetime,
-    	 		       int nodeId, String intf, String[] reports)
-			       throws IOException {
+    	 		       int nodeId, String intf, String[] reports,
+			       String URL) throws IOException {
    	if (relativetime == null) {
             relativetime = "unknown";
         }
@@ -231,7 +228,7 @@
 			(relativetime.equals(m_periods[i].getId()) ?
 			    " checked=\"checked\"" : "") +
 			" onclick=\"top.location = " +
-			"'performance/results.jsp?" +
+			"'" + URL + "?" +
 			"relativetime=" + m_periods[i].getId() +
 			"&intf=" + intf +
 			"&node=" + nodeId +

@@ -57,6 +57,7 @@
 %>
 
 <%@ include file="/WEB-INF/jspf/graph-common.jspf"%>
+<%@ taglib uri="http://java.sun.com/jstl/core" prefix="c" %>
 
 <%!
     protected GraphModel m_model = null;
@@ -174,23 +175,19 @@
     // gather information for displaying around the image
     Date startDate = new Date(Long.parseLong(start));
     Date endDate   = new Date(Long.parseLong(end));
-    
-    // convert the report names to graph objects
-    PrefabGraph[] graphs = new PrefabGraph[reports.length];
 
-    for (int i=0; i < reports.length; i++) {
-        graphs[i] = m_model.getQuery(reports[i]);
-        
-        if(graphs[i] == null) {
-            throw new IllegalArgumentException("Unknown report name: " + reports[i]);
-        }
-    }
+    GraphResults results = new GraphResults();
+    results.setModel(m_model);
+    results.setNodeId(nodeId);
+    results.setIntf(intf);
+    results.setReports(reports);
+    results.setStart(startDate);
+    results.setEnd(endDate);
+    results.setRelativeTime(relativeTime);
 
-    /*
-     * Sort the graphs by their order in the properties file.
-     * Note: PrefabGraph implements the Comparable interface.
-     */
-    Arrays.sort(graphs);    
+    results.initializeGraphs();
+
+    pageContext.setAttribute("results", results);
 %>
 
 <jsp:include page="/includes/header.jsp" flush="false" >
@@ -203,42 +200,40 @@
   <jsp:param name="breadcrumb" value="Results" />
 </jsp:include>
 
-<div align="center">
+<div id="graph-results">
   <h3>
-    Node: <a href="element/node.jsp?node=<%=nodeId%>"><%=NetworkElementFactory.getNodeLabel(nodeId)%></a><br/>
-    <% if(intf != null ) { %>
-      Interface: <%=m_model.getHumanReadableNameForIfLabel(nodeId, intf)%>
-    <% } %>
+    Node: <a href="element/node.jsp?node=<c:out value="${results.nodeId}"/>"><c:out value="${results.nodeLabel}"/></a>
+    <c:if test="${!empty results.intf}">
+      <br/>
+      Interface: <c:out value="${results.humanReadableNameForIfLabel}"/>
+    </c:if>
   </h3>
 
-  <% printRelativeTimeForm(out, relativeTime, nodeId, intf, reports); %>
+  <% printRelativeTimeForm(out, relativeTime, nodeId, intf, reports,
+			   "response/results.jsp"); %>
 
   <h3>Interface Response Time Data</h3>
-  
-  <strong>From</strong> <%=startDate%> <br/>
-  <strong>To</strong> <%=endDate%><br/>
+  <strong>From</strong> <c:out value="${results.start}"/> <br/>
+  <strong>To</strong> <c:out value="${results.end}"/> <br/>
 
-  <% if(graphs.length > 0) { %>
-    <% for(int i=0; i < graphs.length; i++ ) { %>
-      <%-- Encode the RRD filenames based on the graph's required data
-        -- sources.
-        --%>
-      <% String[] rrds = this.getRRDNames(-1, intf, graphs[i]); %> 
-      <% String rrdParm = this.encodeRRDNamesAsParmString(rrds); %>
-                        
-      <%-- handle external values, if any --%>
-      <% String externalValuesParm = this.encodeExternalValuesAsParmString(nodeId, intf, graphs[i]); %>
-            
-      <img src="response/graph.png?report=<%=graphs[i].getName()%>&start=<%=start%>&end=<%=end%>&<%=rrdParm%>&<%=externalValuesParm%>"/>
-      <br/>
-    <% } %>
-  <% } else { %>
-    No response time data has been gathered at this level.
-  <% } %>
+  <c:choose>
+    <c:when test="${!empty results.graphs}">
+      <c:forEach var="graph" items="${results.graphs}">
+        <img src="<c:out value="${graph.graphURL}"/>"/>
+        <br/>
+      </c:forEach>
+    </c:when>
 
-  <% printRelativeTimeForm(out, relativeTime, nodeId, intf, reports); %>
+    <c:otherwise>
+      No response time data has been gathered at this level.
+    </c:otherwise>
+  </c:choose>
+
+  <% printRelativeTimeForm(out, relativeTime, nodeId, intf, reports,
+			   "response/results.jsp"); %>
 
   <jsp:include page="/includes/bookmark.jsp" flush="false" />
 </div>
+
 
 <jsp:include page="/includes/footer.jsp" flush="false" />

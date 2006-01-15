@@ -57,6 +57,7 @@
 %>
 
 <%@ include file="/WEB-INF/jspf/graph-common.jspf"%>
+<%@ taglib uri="http://java.sun.com/jstl/core" prefix="c" %>
 
 <%!
     protected GraphModel m_model = null;
@@ -156,21 +157,18 @@
     Date startDate = new Date(Long.parseLong(start));
     Date endDate   = new Date(Long.parseLong(end));
 
-    // convert the report names to graph objects
-    PrefabGraph[] graphs = new PrefabGraph[reports.length];
+    GraphResults results = new GraphResults();
+    results.setModel(m_model);
+    results.setNodeId(nodeId);
+    results.setIntf(intf);
+    results.setReports(reports);
+    results.setStart(startDate);
+    results.setEnd(endDate);
+    results.setRelativeTime(relativeTime);
 
-    for (int i=0; i < reports.length; i++) {
-        graphs[i] = m_model.getQuery(reports[i]);
-        
-        if (graphs[i] == null) {
-            throw new IllegalArgumentException("Unknown report name: " +
-		reports[i]);
-        }
-    }
+    results.initializeGraphs();
 
-    // sort the graphs by their order in the properties file
-    // (PrefabGraph implements the Comparable interface)
-    Arrays.sort(graphs);    
+    pageContext.setAttribute("results", results);
 %>
 
 <jsp:include page="/includes/header.jsp" flush="false" >
@@ -185,37 +183,39 @@
 
 <div id="graph-results">
   <h3>
-    Node: <a href="element/node.jsp?node=<%=nodeId%>"><%=NetworkElementFactory.getNodeLabel(nodeId)%></a><br/>
-    <% if(intf != null ) { %>
-      Interface: <%=m_model.getHumanReadableNameForIfLabel(nodeId, intf)%>
-    <% } %>
+    Node: <a href="element/node.jsp?node=<c:out value="${results.nodeId}"/>"><c:out value="${results.nodeLabel}"/></a>
+    <c:if test="${!empty results.intf}">
+      <br/>
+      Interface: <c:out value="${results.humanReadableNameForIfLabel}"/>
+    </c:if>
   </h3>
 
-  <% printRelativeTimeForm(out, relativeTime, nodeId, intf, reports); %>
+  <% printRelativeTimeForm(out, relativeTime, nodeId, intf, reports,
+			   "performance/results.jsp"); %>
 
   <h3>Interface Performance Data</h3>
-  <strong>From</strong> <%=startDate%> <br/>
-  <strong>To</strong> <%=endDate%> <br/>
+  <strong>From</strong> <c:out value="${results.start}"/> <br/>
+  <strong>To</strong> <c:out value="${results.end}"/> <br/>
 
-  <% if(graphs.length > 0) { %>
-    <% for(int i=0; i < graphs.length; i++ ) { %>
-      <%-- Encode the RRD filenames based on the graph's required data sources
-        -- sources.
-        --%>
-      <% String[] rrds = this.getRRDNames(nodeId, intf, graphs[i]); %> 
-      <% String rrdParm = this.encodeRRDNamesAsParmString(rrds); %>
-                          
-      <%-- handle external values, if any --%>
-      <% String externalValuesParm = this.encodeExternalValuesAsParmString(nodeId, intf, graphs[i]); %>
+  <c:choose>
+    <c:when test="${!empty results.graphs}">
+      <c:forEach var="graph" items="${results.graphs}">
+	<a href="/opennms/performance/zoom.jsp?intf=<c:out value="${graph.intf}"/>&amp;node=<c:out value="${graph.nodeId}"/>&amp;reports=<c:out value="${graph.name}"/>&amp;start=<c:out value="${graph.start.time}"/>&amp;end=<c:out value="${graph.end.time}"/>&amp;props=<c:out value="${results.nodeId}"/>/strings.properties">
+	  <img src="<c:out value="${graph.graphURL}"/>&amp;props=<c:out value="${results.nodeId}"/>/strings.properties"/>
+	</a>
 
-      <a href="/opennms/performance/zoom.jsp?intf=<%=intf%>&node=<%=nodeId%>&reports=<%=graphs[i].getName()%>&start=<%=start%>&end=<%=end%>"><img src="snmp/performance/graph.png?props=<%=nodeId%>/strings.properties&report=<%=graphs[i].getName()%>&start=<%=start%>&end=<%=end%>&<%=rrdParm%>&<%=externalValuesParm%>intf=<%=intf%>&node=<%=nodeId%>"/></a>
-      <br/>
-    <% } %>
-  <% } else { %>
-    No SNMP performance data has been gathered at this level
-  <% } %>
+	<br/>
+      </c:forEach>
+    </c:when>
 
-  <% printRelativeTimeForm(out, relativeTime, nodeId, intf, reports); %>
+    <c:otherwise>
+      No SNMP performance data has been gathered at this level
+    </c:otherwise>
+  </c:choose>
+
+
+  <% printRelativeTimeForm(out, relativeTime, nodeId, intf, reports,
+			   "performance/results.jsp"); %>
 
   <jsp:include page="/includes/bookmark.jsp" flush="false" />
 </div>

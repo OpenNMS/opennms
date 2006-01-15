@@ -43,7 +43,7 @@
 		java.io.*,
 		org.opennms.web.performance.*,
 		org.opennms.web.*,
-		org.opennms.web.graph.*,
+		org.opennms.web.graph.PrefabGraph,
 		java.io.File,
 		org.opennms.netmgt.config.kscReports.*,
 		org.opennms.netmgt.config.KSC_PerformanceReportFactory,

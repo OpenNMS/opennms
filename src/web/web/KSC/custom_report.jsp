@@ -41,7 +41,7 @@
 	import="java.util.*,
 		java.io.*,
 		org.opennms.web.performance.*,
-		org.opennms.web.graph.*,
+		org.opennms.web.graph.PrefabGraph,
 		org.opennms.web.element.NetworkElementFactory,
 		org.opennms.netmgt.config.kscReports.*,
 		org.opennms.netmgt.config.KSC_PerformanceReportFactory
