@@ -1,73 +1,79 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://xmlns.opennms.org/xsd/passive-status-configuration"
+<schema xmlns="http://www.w3.org/2001/XMLSchema"
+	targetNamespace="http://xmlns.opennms.org/xsd/passive-status-configuration"
 	xmlns:this="http://xmlns.opennms.org/xsd/passive-status-configuration">
-	
-	<!-- Types defined and used by this XSD -->
-	<complexType name="attribute">
-        <annotation>
-          <documentation>a base class for fields and parameters</documentation>
-        </annotation>
-        <choice minOccurs="1" maxOccurs="1">
-        		<element ref="this:field-value"/>
-        		<element ref="this:parameter-value"/>
-        		<element ref="this:constant"/>
-        </choice>
-			<attribute name="name" type="string" use="required" />
-	</complexType>
-	
-	<complexType name="value">
-        <annotation>
-          <documentation>
-          An element representing a value to be used in a translation.  The value attribute is used to determine the value to set.
-          </documentation>
-        </annotation>
-        	<attribute name="value" type="string" use="required" />
-	</complexType>
-	<complexType name="attribute-value">
-        <annotation>
-          <documentation>
-          A value element that indicates a value computed from a field or paramenter attribute.  The 'name' attribute is used to define a 'working-value'.
-          The 'matches' attribute is used to indicate if the working value matches this translation.  If the working value matches the regexp defined in
-          the 'matches' attribute then the 'value' attribute is used to define the value to assign to the attribute.  First backreferences are replaced in the
-          value attribute and the result is assigned to the attribute.  The working-value is defined by extensions to this type.
-          </documentation>
-        </annotation>
-		<complexContent>
-        		<extension base="this:value">
-        			<attribute name="name" type="string" use="required" />
-        			<attribute name="matches" type="string" default=".*" />
-        		</extension>
-        	</complexContent>
-	</complexType>
+
+		<element name="value">
+			<annotation>
+				<documentation>
+					An element representing a value to be used in a
+					translation. 
+				</documentation>
+			</annotation>
+			<complexType>
+ 				<sequence>
+					<element ref="this:value" minOccurs="0" maxOccurs="unbounded"/>
+				</sequence>
+				<attribute name="result" type="string" use="required" />
+				<attribute name="matches" type="string" use="optional" />
+				<attribute name="type" type="string" use="required" />
+				<attribute name="name" type="string" use="optional" />
+			</complexType>
+
+		</element>
+		
+		<element name="assignment">
+			<annotation>
+				<documentation>
+					An element representing an assignement to an attribute of the event
+				</documentation>
+			</annotation>
+			<complexType>
+				<sequence>
+					<element ref="this:value" minOccurs="1" maxOccurs="1"/>
+				</sequence>
+				<attribute name="type" type="string" use="required" />
+				<attribute name="name" type="string" use="required" />
+			</complexType>
+		</element>
 
 	<!--  elements defining this xsd -->
-	<element name="passive-status-configuration" >
+	<element name="passive-status-configuration">
 		<complexType>
 			<sequence>
-				<element ref="this:translation" minOccurs="0" maxOccurs="1" />
-				<element ref="this:passive-events" minOccurs="1" maxOccurs="1" />
+				<element ref="this:translation" minOccurs="0"
+					maxOccurs="1" />
+				<element ref="this:passive-events" minOccurs="1"
+					maxOccurs="1" />
 			</sequence>
 		</complexType>
 	</element>
 	<element name="translation">
 		<annotation>
-			<documentation>List of OpenNMS events for which the passive status keeper will subscribe to translate to an event for a passive node</documentation>
+			<documentation>
+				List of OpenNMS events for which the passive status
+				keeper will subscribe to translate to an event for a
+				passive node
+			</documentation>
 		</annotation>
 		<complexType>
 			<sequence>
-				<element ref="this:event-translation-spec" minOccurs="1" maxOccurs="unbounded" />
+				<element ref="this:event-translation-spec" minOccurs="1"
+					maxOccurs="unbounded" />
 			</sequence>
 		</complexType>
 	</element>
 	<element name="event-translation-spec">
 		<annotation>
 			<documentation>
-			This defines the allowable translations for a given event uei
+				This defines the allowable translations for a given
+				event uei
 			</documentation>
 		</annotation>
 		<complexType>
 			<sequence>
-				<element ref="this:mappings" minOccurs="1" maxOccurs="1" />
+				<element ref="this:mappings" minOccurs="1"
+					maxOccurs="1" />
 			</sequence>
 			<attribute name="uei" type="string" use="required" />
 		</complexType>
@@ -75,89 +81,63 @@
 	<element name="mappings">
 		<annotation>
 			<documentation>
-			The list of event mappings for this event.  The first mapping that matches the event
-			is used to translate the event into a new event.
+				The list of event mappings for this event. The first
+				mapping that matches the event is used to translate the
+				event into a new event.
 			</documentation>
 		</annotation>
 		<complexType>
 			<sequence>
-				<element ref="this:mapping" minOccurs="0" maxOccurs="unbounded" />
+				<element ref="this:mapping" minOccurs="0"
+					maxOccurs="unbounded" />
 			</sequence>
 		</complexType>
 	</element>
 	<element name="mapping">
 		<annotation>
 			<documentation>
-			A mapping for a given event.  This translation is only applied if it is the first that matches
+				A mapping for a given event. This translation is only
+				applied if it is the first that matches
 			</documentation>
 		</annotation>
 		<complexType>
 			<sequence>
- 				<element ref="this:parameter" minOccurs="0" maxOccurs="unbounded" />
-				<element ref="this:field" minOccurs="0" maxOccurs="unbounded" />
+				<element ref="this:assignment" minOccurs="0" maxOccurs="unbounded" />
 			</sequence>
 		</complexType>
 	</element>
-	<element name="parameter" type="this:attribute">
-		<annotation>
-			<documentation>
-			Defines a mapping for a single parameter of the new event.  Its value element is used to set the value of the parameter with name 'name'
-			</documentation>
-		</annotation>
-	</element>
-	<element name="field" type="this:attribute">
-		<annotation>
-			<documentation>
-			Defines a mapping for a single field of the new event.  Its value element is used to set the value of the field with name 'name'
-			</documentation>
-		</annotation>
-	</element>
-	<element name="field-value" type="this:attribute-value">
-		<annotation>
-			<documentation>
-			Define a mapping whose 'working value' is obtained from the field with name 'name'. 
-			</documentation>
-		</annotation>
-	</element>
-
-	<element name="parameter-value" type="this:attribute-value">
-		<annotation>
-			<documentation>
-			Define a mapping whose 'working value' is obtained from the paramter with name 'name'. 
-			</documentation>
-		</annotation>
-	</element>
-	<element name="constant" type="this:value">
-		<annotation>
-			<documentation>
-			Defines a constant value for use in field or parameter translation
-			</documentation>
-		</annotation>
-	</element>
 	<element name="passive-events">
 		<annotation>
-			<documentation>List of OpenNMS events for which the passive status keeper will subscribe to set the status for a passive node</documentation>
+			<documentation>
+				List of OpenNMS events for which the passive status
+				keeper will subscribe to set the status for a passive
+				node
+			</documentation>
 		</annotation>
 		<complexType>
 			<sequence>
-				<element ref="this:passive-event" minOccurs="1" maxOccurs="unbounded" />
+				<element ref="this:passive-event" minOccurs="1"
+					maxOccurs="unbounded" />
 			</sequence>
 		</complexType>
 	</element>
 	<element name="passive-event">
 		<annotation>
 			<documentation>
-			This element defines for the passive status keeper (PSK) the a key to be used
-			when creating a new or updating a previous entry in its hash table and the uei of the event.
-			The key is composed of 3 elements and concatenated with the ":" character...
-			
+				This element defines for the passive status keeper (PSK)
+				the a key to be used when creating a new or updating a
+				previous entry in its hash table and the uei of the
+				event. The key is composed of 3 elements and
+				concatenated with the ":" character...
+
 				[nodeLabel:ipAddr:serviceName]
-				
+
 			</documentation>
 		</annotation>
 		<complexType>
 			<sequence>
-				<element ref="this:status-key" minOccurs="1" maxOccurs="1" />
+				<element ref="this:status-key" minOccurs="1"
+					maxOccurs="1" />
 			</sequence>
 			<attribute name="uei" type="string" use="required" />
 		</complexType>
@@ -165,15 +145,19 @@
 	<element name="status-key">
 		<annotation>
 			<documentation>
-			This element defines the 3 elements of the passive status keeper's (PSK) hash table key
-			and, for, convenience, the status value for the hash table.  Valid values are "Up|Down".
+				This element defines the 3 elements of the passive
+				status keeper's (PSK) hash table key and, for,
+				convenience, the status value for the hash table. Valid
+				values are "Up|Down".
 			</documentation>
 		</annotation>
 		<complexType>
 			<sequence>
-				<element ref="this:node-label" minOccurs="1" maxOccurs="1" />
+				<element ref="this:node-label" minOccurs="1"
+					maxOccurs="1" />
 				<element ref="this:ipaddr" minOccurs="1" maxOccurs="1" />
-				<element ref="this:service-name" minOccurs="1" maxOccurs="1" />
+				<element ref="this:service-name" minOccurs="1"
+					maxOccurs="1" />
 				<element ref="this:status" minOccurs="1" maxOccurs="1" />
 			</sequence>
 		</complexType>
@@ -181,52 +165,59 @@
 	<element name="node-label">
 		<complexType>
 			<sequence>
-				<element ref="this:event-token" minOccurs="1" maxOccurs="1" />
+				<element ref="this:event-token" minOccurs="1"
+					maxOccurs="1" />
 			</sequence>
 		</complexType>
 	</element>
 	<element name="ipaddr">
 		<complexType>
 			<sequence>
-				<element ref="this:event-token" minOccurs="1" maxOccurs="1" />
+				<element ref="this:event-token" minOccurs="1"
+					maxOccurs="1" />
 			</sequence>
 		</complexType>
 	</element>
 	<element name="service-name">
 		<complexType>
 			<sequence>
-				<element ref="this:event-token" minOccurs="1" maxOccurs="1" />
+				<element ref="this:event-token" minOccurs="1"
+					maxOccurs="1" />
 			</sequence>
 		</complexType>
 	</element>
 	<element name="status">
 		<complexType>
 			<sequence>
-				<element ref="this:event-token" minOccurs="1" maxOccurs="1" />
+				<element ref="this:event-token" minOccurs="1"
+					maxOccurs="1" />
 			</sequence>
 		</complexType>
 	</element>
 	<element name="event-token">
 		<annotation>
 			<documentation>
-			The token defines for the PSK which event field or parameter should be used when
-			defining this element of the key.  Fields are used if the is-parm boolean is set
-			to "false".  Regular expressions are supported for extracting the value or a literal
-			may be specified.  If the value is set and begins with a "~" character, the matching
-			regular expression is used, otherwise it is interpreted as a literal.  If groups
-			are available, they will be concatenated unless a pattern attribute is used.  The
-			pattern attribute works as follows:
-				Event parm: passiveNodeLabel with value "Channel 9"
-				attribute value: "~^(Channel) (9)"
-				attribute pattern: "$1-$2"
-				resulting string: "Channel-9"
+				The token defines for the PSK which event field or
+				parameter should be used when defining this element of
+				the key. Fields are used if the is-parm boolean is set
+				to "false". Regular expressions are supported for
+				extracting the value or a literal may be specified. If
+				the value is set and begins with a "~" character, the
+				matching regular expression is used, otherwise it is
+				interpreted as a literal. If groups are available, they
+				will be concatenated unless a pattern attribute is used.
+				The pattern attribute works as follows: Event parm:
+				passiveNodeLabel with value "Channel 9" attribute value:
+				"~^(Channel) (9)" attribute pattern: "$1-$2" resulting
+				string: "Channel-9"
 			</documentation>
 		</annotation>
 		<complexType>
 			<attribute name="name" type="string" use="required" />
 			<attribute name="value" type="string" use="required" />
 			<attribute name="format" type="string" use="optional" />
-			<attribute name="is-parm" type="boolean" use="optional" default="true" />
+			<attribute name="is-parm" type="boolean" use="optional"
+				default="true" />
 		</complexType>
 	</element>
 </schema>

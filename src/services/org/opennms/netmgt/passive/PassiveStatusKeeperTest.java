@@ -41,6 +41,7 @@ import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.jmock.cglib.MockObjectTestCase;
 import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.capsd.EventUtils;
 import org.opennms.netmgt.config.DatabaseConnectionFactory;
 import org.opennms.netmgt.config.PassiveStatusConfigFactory;
 import org.opennms.netmgt.mock.EventAnticipator;
@@ -56,7 +57,6 @@ import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.poller.monitors.PassiveServiceMonitor;
 import org.opennms.netmgt.poller.pollables.PollStatus;
 import org.opennms.netmgt.xml.event.Event;
-import org.opennms.netmgt.xml.event.Log;
 import org.opennms.netmgt.xml.event.Logmsg;
 import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.Parms;
@@ -106,7 +106,7 @@ public class PassiveStatusKeeperTest extends MockObjectTestCase {
         m_eventMgr.setSynchronous(true);
 
         Reader rdr = new StringReader(m_passiveStatusConfiguration);
-        m_config = new PassiveStatusConfigFactory(rdr);
+        m_config = new PassiveStatusConfigFactory(rdr, m_db);
         PassiveStatusConfigFactory.setInstance(m_config);
         
         m_psk = PassiveStatusKeeper.getInstance();
@@ -246,7 +246,7 @@ public class PassiveStatusKeeperTest extends MockObjectTestCase {
          * there are no parms required for this configuration that derives the key based on
          * literal field values.
          */
-        m_config = new PassiveStatusConfigFactory(new StringReader(getLiteralFieldConfig()));
+        m_config = new PassiveStatusConfigFactory(new StringReader(getLiteralFieldConfig()), m_db);
         PassiveStatusConfigFactory.setInstance(m_config);
         e = createPassiveStatusEvent(null, null, null, null);
         assertTrue(m_config.isPassiveStatusEvent(e));
@@ -288,46 +288,71 @@ public class PassiveStatusKeeperTest extends MockObjectTestCase {
         assertFalse(m_config.isTranslationEvent(te3));
     }
     
-    public void xxxtestTranslateEvent() {
-		// test non matching uei match fails
+    public void testTranslateEvent() {
+    	
+    		//printNodeInfo();
+
+    		// test non matching uei match fails
         Event pse = createPassiveStatusEvent("Router", "192.168.1.1", "ICMP", "Down");
-        assertNull(m_config.translateEvent(pse));
+        assertTrue(m_config.translateEvent(pse).isEmpty());
         
         // test matchin uei succeeds
-        Event te = createTranslatableEvent("Router", "192.168.1.1", "ICMP", "Down");
+        Event te = createTranslatableEvent("Router", "192.168.1.1", "ICMP", "This node is way Down!");
         List translatedEvents = m_config.translateEvent(te);
 		assertNotNull(translatedEvents);
 		assertEquals(1, translatedEvents.size());
-        Event event = (Event)translatedEvents.get(0);
-		//assertEquals("192.168.1.1", event.getInterface());
-        
+        validateTranslatedEvent((Event)translatedEvents.get(0));
+
         // test null parms fails
         Event teWithNullParms = createTranslatableEvent("Router", "192.168.1.1", "ICMP", "Down");
         teWithNullParms.setParms(null);
-        assertNull(m_config.translateEvent(teWithNullParms));
+        assertTrue(m_config.translateEvent(teWithNullParms).isEmpty());
         
         // test empty  parm list fails
         Event teWithNoParms = createTranslatableEvent("Router", "192.168.1.1", "ICMP", "Down");
         Parms parms = teWithNoParms.getParms();
         parms.setParmCollection(new ArrayList(0));
-        assertNull(m_config.translateEvent(teWithNoParms));
+        assertTrue(m_config.translateEvent(teWithNoParms).isEmpty());
 
         // test missing a parm fails
         Event teWithWrongParms = createTranslatableEvent("Router", "192.168.1.1", "ICMP", "Down");
         Parms p = teWithWrongParms.getParms();
         p.getParm(2).setParmName("unmatching"); // change the name for the third parm so it fails to match
-        assertNull(m_config.translateEvent(teWithWrongParms));
+        assertTrue(m_config.translateEvent(teWithWrongParms).isEmpty());
 
         // that a matching parm value succeeds
         Event te2 = createTranslatableEvent("Router", "xxx192.168.1.1xxx", "ICMP", "Down");
         assertNotNull(m_config.translateEvent(te2));
+		assertEquals(1, translatedEvents.size());
+        validateTranslatedEvent((Event)translatedEvents.get(0));
         
         // that a matching parm value succeeds
         Event te3 = createTranslatableEvent("Router", "xxx192.168.1.2", "ICMP", "Down");
-        assertNull(m_config.translateEvent(te3));
+        assertTrue(m_config.translateEvent(te3).isEmpty());
     }
+
+//	private void printNodeInfo() {
+//		RowProcessor rp = new RowProcessor() {
+//			public void processRow(ResultSet rs) throws SQLException {
+//				System.err.println("nodeid: "+rs.getString("nodeid")+", nodeLabel: "+rs.getString("nodeLabel")+" ipaddr: "+rs.getString("ipaddr"));
+//			}
+//		};
+//		
+//		Querier q = new Querier(m_db, "select node.nodeid as nodeid, node.nodeLabel as nodeLabel, ipinterface.ipaddr as ipaddr from node, ipinterface where node.nodeid = ipinterface.nodeid and node.nodeLabel = 'Router' and ipinterface.ipaddr = '192.168.1.1' and ipinterface.isManaged != 'D' ", rp);
+//		q.execute();
+//	}
+
+	private void validateTranslatedEvent(Event event) {
+		assertEquals(3L, event.getNodeid());
+		assertEquals("www.opennms.org", event.getHost());
+        assertEquals("a generated event", event.getDescr());
+        assertEquals("192.168.1.1", event.getInterface());
+        assertEquals("Switch", EventUtils.getParm(event, "nodeLabel"));
+        assertEquals("PSV", event.getService());
+        assertEquals("Down", EventUtils.getParm(event, "passiveStatus"));
+	}
     
-    /**
+	/**
      * This is a test for the passive status keeper where all the values from the config
      * should be taken literally.  The actual field value is ignored, however, the field
      * must exist.  If the config value isn't an expression, the config value overrides the
@@ -338,7 +363,7 @@ public class PassiveStatusKeeperTest extends MockObjectTestCase {
      */
     public void testEventWithHardCodedFieldValues() throws MarshalException, ValidationException {
         
-        m_config = new PassiveStatusConfigFactory(new StringReader(getLiteralFieldConfig()));
+        m_config = new PassiveStatusConfigFactory(new StringReader(getLiteralFieldConfig()), m_db);
         PassiveStatusConfigFactory.setInstance(m_config);
 
         Event e = createPassiveStatusEvent(null, null, null, null);
@@ -368,7 +393,7 @@ public class PassiveStatusKeeperTest extends MockObjectTestCase {
      */
     public void testEventWithDerivedFieldValues() throws MarshalException, ValidationException {
         
-        m_config = new PassiveStatusConfigFactory(new StringReader(getRegExFieldConfig()));
+        m_config = new PassiveStatusConfigFactory(new StringReader(getRegExFieldConfig()), m_db);
         PassiveStatusConfigFactory.setInstance(m_config);
 
         Event e = createPassiveStatusEvent(null, null, null, null);
@@ -392,7 +417,7 @@ public class PassiveStatusKeeperTest extends MockObjectTestCase {
      * @throws MarshalException 
      */
     public void testEventWithHardCodedParmValues() throws MarshalException, ValidationException {
-        m_config = new PassiveStatusConfigFactory(new StringReader(getLiteralParmConfig()));
+        m_config = new PassiveStatusConfigFactory(new StringReader(getLiteralParmConfig()), m_db);
         PassiveStatusConfigFactory.setInstance(m_config);
         
         //set these wrong because the literals from the config should be used instead
@@ -411,7 +436,7 @@ public class PassiveStatusKeeperTest extends MockObjectTestCase {
      * @throws MarshalException 
      */
     public void testEventWithDerivedParmValues() throws MarshalException, ValidationException {
-        m_config = new PassiveStatusConfigFactory(new StringReader(getRegExParmConfig()));
+        m_config = new PassiveStatusConfigFactory(new StringReader(getRegExParmConfig()), m_db);
         PassiveStatusConfigFactory.setInstance(m_config);
         
         Event e = createPassiveStatusEvent("Router", "192.168.1.1", "Simulated ICMP_service tester", "isDown");
@@ -486,7 +511,7 @@ public class PassiveStatusKeeperTest extends MockObjectTestCase {
 
     public void testDownPassiveStatusDerived() throws InterruptedException, UnknownHostException, MarshalException, ValidationException {
 
-        m_config = new PassiveStatusConfigFactory(new StringReader(getRegExParmConfig()));
+        m_config = new PassiveStatusConfigFactory(new StringReader(getRegExParmConfig()), m_db);
         PassiveStatusConfigFactory.setInstance(m_config);
         
         Event e = createPassiveStatusEvent("Router", "192.168.1.1", "Simulated ICMP_service tester", "isDown");
@@ -567,19 +592,31 @@ public class PassiveStatusKeeperTest extends MockObjectTestCase {
         "  <translation>\n" +
         "   <event-translation-spec uei=\"uei.opennms.org/services/translationEvent\">\n" + 
         "      <mappings>\n" + 
-        "        <mapping>\n" + 
-        "          <parameter name=\"nodeLabel\">\n" + 
-        "            <field-value name=\"host\" value=\"Router\" />\n" +
-        "          </parameter>\n" + 
-        "          <field name=\"interface\">\n" + 
-        "            <parameter-value name=\"passiveIpAddr\" matches=\".*(192\\.168\\.1\\.1).*\" value=\"192.168.1.1\" />\n" + 
-        "          </field>\n" + 
-        "          <field name=\"service\">\n" + 
-        "            <parameter-value name=\"passiveServiceName\" value=\"ICMP\" />\n" + 
-        "          </field>\n" + 
-        "          <parameter name=\"passiveStatus\">\n" + 
-        "            <parameter-value name=\"passiveStatus\" value=\"Down\" />\n" + 
-        "          </parameter>\n" + 
+        "        <mapping>\n" +
+        "          <assignment type=\"field\" name=\"nodeid\">\n" +  
+        "            <value type=\"sql\" result=\"select node.nodeid from node, ipInterface where node.nodeLabel=? and ipinterface.ipaddr=? and node.nodeId=ipinterface.nodeid and ipInterface.isManaged != 'D' and node.nodeType != 'D'\" >\n" +
+        "				<value type=\"parameter\" name=\"passiveNodeLabel\" matches=\"Router\" result=\"Firewall\" />\n" +
+        "				<value type=\"constant\" result=\"192.168.1.4\" />\n" +
+        "			</value>\n" +
+        "          </assignment>\n" + 
+        "          <assignment type=\"parameter\" name=\"nodeLabel\">\n" +  
+        "            <value type=\"field\" name=\"host\" result=\"Switch\" />\n" +
+        "          </assignment>\n" + 
+        "          <assignment type=\"field\" name=\"interface\">\n" + 
+        "            <value type=\"parameter\" name=\"passiveIpAddr\" matches=\".*(192\\.168\\.1\\.1).*\" result=\"192.168.1.1\" />\n" +
+        "          </assignment>\n" +
+        "		  <assignment type=\"field\" name=\"host\">\n" +
+        "			<value type=\"field\" name=\"host\" result=\"www.opennms.org\" />\n" +
+        "		  </assignment>\n" + 
+        "		  <assignment type=\"field\" name=\"descr\">\n" +
+        "			<value type=\"constant\" result=\"a generated event\" />\n" +
+        "		  </assignment>\n" + 
+        "          <assignment type=\"field\" name=\"service\">\n" + 
+        "            <value type=\"parameter\" name=\"passiveServiceName\" result=\"PSV\" />\n" + 
+        "          </assignment>\n" + 
+        "          <assignment type=\"parameter\" name=\"passiveStatus\">\n" + 
+        "            <value type=\"parameter\" name=\"passiveStatus\" matches=\".*(Up|Down).*\" result=\"${1}\" />\n" + 
+        "          </assignment>\n" + 
         "        </mapping>\n" + 
         "      </mappings>\n" + 
         "    </event-translation-spec>\n" + 
@@ -633,39 +670,6 @@ public class PassiveStatusKeeperTest extends MockObjectTestCase {
         "";
     }
     
-    /**
-     * This is the same event as it's valid version except an invalid event
-     * field is specified.  (host is misspelled hots)
-     * 
-     * @return
-     */
-    private String getBogusDerivedLiteralFieldConfig() {
-        return "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + 
-        "<this:passive-status-configuration \n" + 
-        "xmlns:this=\"http://xmlns.opennms.org/xsd/passive-status-configuration\" \n" + 
-        "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" >\n" + 
-        "  <this:passive-events>\n" + 
-        "    <this:passive-event uei=\"uei.opennms.org/services/passiveServiceStatus\">\n" + 
-        "      <this:status-key>\n" + 
-        "        <this:node-label>\n" + 
-        "          <this:event-token is-parm=\"false\" name=\"hots\" value=\"Router\"/>\n" + 
-        "        </this:node-label>\n" + 
-        "        <this:ipaddr>\n" + 
-        "          <this:event-token is-parm=\"false\" name=\"source\" value=\"192.168.1.1\"/>\n" + 
-        "        </this:ipaddr>\n" + 
-        "        <this:service-name>\n" + 
-        "          <this:event-token is-parm=\"false\" name=\"service\" value=\"ICMP\"/>\n" + 
-        "        </this:service-name>\n" + 
-        "        <this:status>\n" + 
-        "          <this:event-token is-parm=\"false\" name=\"descr\" value=\"Down\"/>\n" + 
-        "        </this:status>\n" + 
-        "      </this:status-key>\n" + 
-        "    </this:passive-event>\n" + 
-        "  </this:passive-events>\n" + 
-        "</this:passive-status-configuration>\n" + 
-        "";
-    }
-
     private String getLiteralParmConfig() {
         return "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + 
         "<this:passive-status-configuration \n" + 
