@@ -315,8 +315,8 @@ public class MockDatabase implements DbConnectionFactory, EventWriter {
     }
     
     public void writeNode(MockNode node) {
-        Object[] values = { new Integer(node.getNodeId()), node.getLabel(), new Timestamp(System.currentTimeMillis()) };
-        update("insert into node (nodeID, nodeLabel, nodeCreateTime) values (?, ?, ?);", values);
+        Object[] values = { new Integer(node.getNodeId()), node.getLabel(), new Timestamp(System.currentTimeMillis()), "A" };
+        update("insert into node (nodeID, nodeLabel, nodeCreateTime, nodeType) values (?, ?, ?, ?);", values);
         
     }
 
