@@ -39,6 +39,11 @@
 
 package org.opennms.netmgt.eventd;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.math.BigInteger;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -902,5 +907,30 @@ public final class EventUtil {
 		}
 		
 		return ifAlias;
+	}
+
+	public static Event cloneEvent(Event orig) {
+	       Event copy = null;
+	        try {
+	            // Write the object out to a byte array
+	            ByteArrayOutputStream bos = new ByteArrayOutputStream(1024);
+	            ObjectOutputStream out = new ObjectOutputStream(bos);
+	            out.writeObject(orig);
+	            out.flush();
+	            out.close();
+	
+	            // Make an input stream from the byte array and read
+	            // a copy of the object back in.
+	            ObjectInputStream in = new ObjectInputStream(
+	                new ByteArrayInputStream(bos.toByteArray()));
+	            copy = (Event)in.readObject();
+	        }
+	        catch(IOException e) {
+	            ThreadCategory.getInstance(EventUtil.class).error("Exception cloning event", e);
+	        }
+	        catch(ClassNotFoundException cnfe) {
+	            ThreadCategory.getInstance(EventUtil.class).error("Exception cloning event", cnfe);
+	        }
+	        return copy;
 	}	
 }
