@@ -134,7 +134,8 @@
   }
 </script>
 
-<form method="get" name="report" action="response/results.jsp">
+<form method="get" name="report" action="graph/results">
+  <input type="hidden" name="type" value="response"/>
   <%=Util.makeHiddenTags(request)%>
 
   <h3>Network Response Time Data</h3>

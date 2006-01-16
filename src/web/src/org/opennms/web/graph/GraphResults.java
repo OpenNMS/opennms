@@ -24,6 +24,7 @@ public class GraphResults {
     private Date m_end = null;
     private String m_relativeTime = null;
     private Graph[] m_graphs = null;
+    private RelativeTimePeriod[] m_relativeTimePeriods = null;
 
     public void setModel(GraphModel model) {
         m_model = model;
@@ -123,6 +124,15 @@ public class GraphResults {
 
     public Graph[] getGraphs() {
 	return m_graphs;
+    }
+
+    public void setRelativeTimePeriods(RelativeTimePeriod[]
+				       relativeTimePeriods) {
+	m_relativeTimePeriods = relativeTimePeriods;
+    }
+
+    public RelativeTimePeriod[] getRelativeTimePeriods() {
+	return m_relativeTimePeriods;
     }
 
 }

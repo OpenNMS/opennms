@@ -130,8 +130,9 @@ public class AddInterfaceToURLServlet extends HttpServlet {
             // redirect to the chooseInterfaceUrl
             String queryString = Util.makeQueryString(request);
 
-            // this is a sibling URL, so no base URL is needed
-            response.sendRedirect(this.chooseInterfaceUrl + "?" + queryString);
+            response.sendRedirect(Util.calculateUrlBase(request)
+				  + this.chooseInterfaceUrl + "?"
+				  + queryString);
             break;
         }
         }

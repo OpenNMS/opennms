@@ -12,6 +12,8 @@
 //
 // Modifications:
 //
+// 2005 Oct 01: Convert to use CSS for layout. -- DJ Gregor
+// 2005 Oct 01: Refactor relative date code. -- DJ Gregor
 // 2003 Feb 28: Corrected day/week/month/year reports on some browsers.
 // 2003 Feb 07: Fixed URLEncoder issues.
 // 2003 Feb 28: Added day/week/month/year reports.
@@ -44,127 +46,73 @@
 <%@page language="java"
 	contentType="text/html"
 	session="true"
-	import="org.opennms.web.*,
-		org.opennms.web.performance.*,
-		org.opennms.web.graph.*,
-		org.opennms.core.resource.Vault,
-		java.util.*,
-		java.io.*,
-		org.opennms.web.element.NetworkElementFactory"
 %>
 
-<%@ include file="/WEB-INF/jspf/graph-common.jspf"%>
+<%@ taglib uri="http://java.sun.com/jstl/core" prefix="c" %>
 
-<%!
-    protected PerformanceModel model = null;
-    
-    
-    public void init() throws ServletException {
-        try {
-            this.model = new PerformanceModel(Vault.getHomeDir());
-        } catch (Throwable t) {
-            throw new ServletException("Could not initialize the PerformanceModel", t);
-        }
-    }
-%>
+<%--
+<c:set var="name" value="Performance"/>
+<c:set var="breadcrumb" value="<a href='performance/index.jsp'>Performance</a>" />
+<c:set var="noDataMessage" value="No SNMP performance data has been gathered at this level."/>
+--%>
 
-<%
-    String[] requiredParameters = new String[] {"report", "node"};
-
-    // required parameter reports
-    String reports[] = request.getParameterValues("reports");
-    if (reports == null) {
-        throw new MissingParameterException("report", requiredParameters);
-    }
-        
-    // required parameter node
-    String nodeIdString = request.getParameter("node");
-    if (nodeIdString == null) {
-        throw new MissingParameterException("node", requiredParameters);
-    }
-    int nodeId = Integer.parseInt(nodeIdString);
-    
-    // optional parameter intf
-    String intf = request.getParameter("intf");
-
-    //see if the start and end time were explicitly set as params    
-    String start = request.getParameter( "start" );
-    String end   = request.getParameter( "end" );
-    
-    //gather information for displaying around the image
-    Date startDate = new Date( Long.parseLong( start ));
-    Date endDate   = new Date( Long.parseLong( end ));
-   
-    if(reports.length != 1) {
-        throw new IllegalArgumentException("The wrong number of reports were requested, " + reports.length + " were requested, zoom.jsp only allows 1");
-    } 
-
-    //convert the report names to graph objects
-    PrefabGraph[] graphs = new PrefabGraph[reports.length];
-
-    for( int i=0; i < reports.length; i++ ) {
-        graphs[i] = (PrefabGraph)this.model.getQuery(reports[i]);
-
-        if(graphs[i] == null) {
-            throw new IllegalArgumentException("Unknown report name: " + reports[i]);
-        }
-    }
-
-    //sort the graphs by their order in the properties file
-    //(PrefabGraph implements the Comparable interface)
-    Arrays.sort(graphs);
-%>
-
-<jsp:include page="/includes/header.jsp" flush="false" >
-<jsp:param name="title" value="Performance Results" />
-<jsp:param name="headTitle" value="Results" />
-<jsp:param name="headTitle" value="Performance" />
-<jsp:param name="headTitle" value="Reports" />
-<jsp:param name="breadcrumb" value="<a href='report/index.jsp'>Reports</a>" />
-<jsp:param name="breadcrumb" value="<a href='performance/index.jsp'>Performance</a>" />
-<jsp:param name="breadcrumb" value="Results" />
-</jsp:include>
-
+<c:import url="/includes/header.jsp">
+  <c:param name="title" value="${name} Results" />
+  <c:param name="headTitle" value="Results" />
+  <c:param name="headTitle" value="${name}" />
+  <c:param name="headTitle" value="Reports" />
+  <c:param name="breadcrumb" value="<a href='report/index.jsp'>Reports</a>" />
+  <c:param name="breadcrumb" value="${breadcrumb}"/>
+  <c:param name="breadcrumb" value="Results" />
+</c:import>
 
 <div id="graph-results">
   <h3>
-    Node: <a href="element/node.jsp?node=<%=nodeId%>"><%=NetworkElementFactory.getNodeLabel(nodeId)%></a><br/>
-    <% if(intf != null ) { %>
-      Interface: <%=this.model.getHumanReadableNameForIfLabel(nodeId, intf)%>
-    <% } %>
+    Node: <a href="element/node.jsp?node=<c:out value="${results.nodeId}"/>"><c:out value="${results.nodeLabel}"/></a>
+    <c:if test="${!empty results.intf}">
+      <br/>
+      Interface: <c:out value="${results.humanReadableNameForIfLabel}"/>
+    </c:if>
   </h3>
 
-  <h3>Interface Performance Data</h3>
+  <c:if test="${empty param.zoom}">
+    <%@ include file="/WEB-INF/jspf/relativetimeform.jspf" %>
+  </c:if>
 
-  <strong>From:</strong> <%=startDate%> <br/>
-  <strong>To</strong> <%=endDate%>
+  <h3>Interface <c:out value="${name}"/> Data</h3>
+  <strong>From</strong> <c:out value="${results.start}"/> <br/>
+  <strong>To</strong> <c:out value="${results.end}"/> <br/>
 
-  <% if(graphs.length > 0) { %>
-    <% for(int i=0; i < graphs.length; i++ ) { %>
-      <%-- encode the RRD filenames based on the graph's required data sources --%>
-      <% String[] rrds = this.getRRDNames(nodeId, intf, graphs[i]); %> 
-      <% String rrdParm = this.encodeRRDNamesAsParmString(rrds); %>
-                        
-      <%-- handle external values, if any --%>
-      <% String externalValuesParm = this.encodeExternalValuesAsParmString(nodeId, intf, graphs[i]); %>
-            
-      <div id='zoomSensitiveZone' style='position:absolute; overflow:none; left:0px; top:0px; width:0px; height:0px; visibility:visible; cursor:crosshair; background:blue; filter:alpha(opacity=0); -moz-opacity:0; -khtml-opacity:0; opacity:0;' oncontextmenu='return false'></div>
-      <div id='zoomBox' style='position:absolute; overflow:none; left:0px; top:0px; width:0px; height:0px; visibility:visible; background:red; filter:alpha(opacity=50); -moz-opacity:0.5; -khtml-opacity:.5; opacity:0.5;'></div>
-      <img id='zoomGraphImage' src="snmp/performance/graph.png?props=<%=nodeId%>/strings.properties&report=<%=graphs[i].getName()%>&start=<%=start%>&end=<%=end%>&<%=rrdParm%>&<%=externalValuesParm%>&intf=<%=intf%>&node=<%=nodeId%>"/>
-    <% } %>
-  <% } else { %>
-   No SNMP performance data has been gathered at this level
-  <% } %>
+  <c:choose>
+    <c:when test="${!empty param.zoom}">
+      <div id='zoomSensitiveZone' oncontextmenu='return false'></div>
+      <div id='zoomBox'></div>
+      <img id='zoomGraphImage' src="<c:out value="${results.graphs[0].graphURL}"/>&amp;props=<c:out value="${results.nodeId}"/>/strings.properties&amp;type=<c:out value="${param.type}"/>&amp;node=<c:out value="${results.nodeId}"/>&amp;intf=<c:out value="${results.intf}"/>"/>
+      <br/>
+    </c:when>
 
-  <br/>
-  <br/>
+    <c:when test="${!empty results.graphs}">
+      <c:forEach var="graph" items="${results.graphs}">
+	<a href="graph/results?zoom=true&type=<c:out value="${param.type}"/>&intf=<c:out value="${graph.intf}"/>&amp;node=<c:out value="${graph.nodeId}"/>&amp;reports=<c:out value="${graph.name}"/>&amp;start=<c:out value="${graph.start.time}"/>&amp;end=<c:out value="${graph.end.time}"/>&amp;props=<c:out value="${results.nodeId}"/>/strings.properties">
+          <img src="<c:out value="${graph.graphURL}"/>&amp;props=<c:out value="${results.nodeId}"/>/strings.properties"/>
+	</a>
+	<br/>
+      </c:forEach>
+    </c:when>
 
-  <jsp:include page="/includes/bookmark.jsp" flush="false" />
+    <c:otherwise>
+      <c:out value="${noDataMessage}"/>
+    </c:otherwise>
+  </c:choose>
 
+  <c:if test="${empty param.zoom}">
+    <%@ include file="/WEB-INF/jspf/relativetimeform.jspf" %>
+  </c:if>
+
+  <c:import url="/includes/bookmark.jsp"/>
 </div>
 
-<jsp:include page="/includes/footer.jsp" flush="false" />
-
+<c:if test="${!empty param.zoom}">
 <script type="text/javascript">
 <!--
 /*
@@ -196,7 +144,7 @@
 
 // Global constant
 
-var cURLBase = "/opennms/performance/zoom.jsp?";
+var cURLBase = "graph/results?"
 
 // Global variables
 
@@ -350,6 +298,7 @@ function zoomGraphObj(zoomGraphName) {
  this.zoomGraphName = zoomGraphName;
  this.imgObject = document.getElementById(this.zoomGraphName);
  gUrlObj = new urlObj(this.imgObject.src);
+// document.write("<h1>foo: " + gUrlObj + "</h1><br/>\n");
 
  this.zoomGraphLeft = 0;
  this.zoomGraphTop = 0;
@@ -744,11 +693,12 @@ function onMouseUpEvent(e) {
   newGraphStart = graphStart - Timespan * 2;
 
   var urlBase = cURLBase;
+  var type = gUrlObj.getUrlParameterValue("type");
   var reports = gUrlObj.getUrlParameterValue("report");
   var intf = gUrlObj.getUrlParameterValue("intf");
   var node = gUrlObj.getUrlParameterValue("node");
 
-  open(urlBase + "&intf=" + intf + "&node=" + node + "&reports=" + reports + "&start=" + newGraphStart + "&end=" + newGraphEnd, "_self");
+  open(urlBase + "zoom=true&type=" + type + "&intf=" + intf + "&node=" + node + "&reports=" + reports + "&start=" + newGraphStart + "&end=" + newGraphEnd, "_self");
  }
 
  if ((gMouseObj.leftButtonPressed()) && (gMouseObj.dragging)) {
@@ -787,11 +737,12 @@ function onMouseUpEvent(e) {
    newGraphStart = Math.round(graphStart + minX * OnePixel);
 
   var urlBase = cURLBase;
+  var type = gUrlObj.getUrlParameterValue("type");
   var report = gUrlObj.getUrlParameterValue("report");
   var intf = gUrlObj.getUrlParameterValue("intf");
   var node = gUrlObj.getUrlParameterValue("node");
 
-  open(urlBase + "&intf=" + intf + "&node=" + node + "&reports=" + report + "&start=" + newGraphStart + "&end=" + newGraphEnd, "_self");
+  open(urlBase + "zoom=true&type=" + type + "&intf=" + intf + "&node=" + node + "&reports=" + report + "&start=" + newGraphStart + "&end=" + newGraphEnd, "_self");
   
   }
  }
@@ -815,3 +766,6 @@ window.onload = initBonsai;
 //-->
 
 </script>
+</c:if>
+
+<jsp:include page="/includes/footer.jsp" flush="false" />

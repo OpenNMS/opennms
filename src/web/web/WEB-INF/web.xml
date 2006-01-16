@@ -165,7 +165,7 @@
     <servlet-class>org.opennms.web.performance.AddInterfaceToURLServlet</servlet-class>
     <init-param>
       <param-name>chooseInterfaceUrl</param-name>
-      <param-value>chooseinterface.jsp</param-value>
+      <param-value>performance/chooseinterface.jsp</param-value>
       <description>Redirect to this sibling URL when more than one RRD matches a node.</description>      
     </init-param>
   </servlet>  
@@ -197,7 +197,7 @@
     <servlet-class>org.opennms.web.response.AddInterfaceToURLServlet</servlet-class>
     <init-param>
       <param-name>rt-chooseInterfaceUrl</param-name>
-      <param-value>chooseinterface.jsp</param-value>
+      <param-value>response/chooseinterface.jsp</param-value>
       <description>Redirect to this sibling URL when more than one RRD matches a node.</description>
     </init-param>
   </servlet>
@@ -825,6 +825,12 @@
   		<param-value>sample-bar-chart</param-value>
   	</init-param>
   </servlet>
+
+  <servlet>
+  	<servlet-name>graphResults</servlet-name>
+  	<servlet-class>org.opennms.web.graph.GraphResultsServlet</servlet-class>
+  </servlet>
+
   <!-- python servlet for testing purposes - ->
   <servlet>
       <servlet-name>PyServlet</servlet-name>
@@ -834,6 +840,7 @@
           <param-value>/home/larry/jython-2.1a1</param-value>
       </init-param>
   </servlet>
+
   <servlet-mapping>
       <servlet-name>PyServlet</servlet-name>
       <url-pattern>*.py</url-pattern>
@@ -1356,6 +1363,10 @@
   <servlet-mapping>
     <servlet-name>modifyParent</servlet-name>
     <url-pattern>/map/modifyParent</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>graphResults</servlet-name>
+    <url-pattern>/graph/results</url-pattern>
   </servlet-mapping>
 
   <error-page>

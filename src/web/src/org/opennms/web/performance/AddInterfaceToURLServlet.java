@@ -117,7 +117,8 @@ public class AddInterfaceToURLServlet extends HttpServlet {
             // this is a servlet context-relative URL (ie external URL), so
             // we have to add the base URL; the base URL contains a trailing
             // slash, so I do not add one here
-            response.sendRedirect(Util.calculateUrlBase(request) + endUrl + "?" + queryString);
+            response.sendRedirect(Util.calculateUrlBase(request) + endUrl + "?"
+				  + queryString);
             break;
         }
 
@@ -126,7 +127,9 @@ public class AddInterfaceToURLServlet extends HttpServlet {
             String queryString = Util.makeQueryString(request);
 
             // this is a sibling URL, so no base URL is needed
-            response.sendRedirect(this.chooseInterfaceUrl + "?" + queryString);
+            response.sendRedirect(Util.calculateUrlBase(request)
+				  + this.chooseInterfaceUrl + "?"
+				  + queryString);
             break;
         }
         }

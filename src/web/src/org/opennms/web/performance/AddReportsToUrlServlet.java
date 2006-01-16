@@ -89,8 +89,10 @@ public class AddReportsToUrlServlet extends HttpServlet {
 
         Map additions = new HashMap();
         additions.put("reports", queryNames);
+        additions.put("type", "performance");
         String queryString = Util.makeQueryString(request, additions);
 
-        response.sendRedirect("results.jsp?" + queryString);
+        response.sendRedirect(Util.calculateUrlBase(request) + "graph/results?"
+			      + queryString);
     }
 }

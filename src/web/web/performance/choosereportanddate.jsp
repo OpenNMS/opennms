@@ -137,7 +137,8 @@
 
 <h3>Network Performance Data</h3>
 
-<form method="get" name="report" action="performance/results.jsp">
+<form method="get" name="report" action="graph/results">
+  <input type="hidden" name="type" value="performance"/>
   <%=Util.makeHiddenTags(request)%>
 
   <div style="width: 40%; float: left;">
