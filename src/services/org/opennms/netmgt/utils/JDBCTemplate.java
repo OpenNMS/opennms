@@ -117,6 +117,10 @@ abstract public class JDBCTemplate {
          }
     }
     
+    public String reproduceStatement(Object values[]) {
+    		return m_sql+": with vals "+argsToString(values);
+    }
+    
     abstract void executeStmt(PreparedStatement stmt) throws SQLException;
 
 }
