@@ -46,20 +46,6 @@ public interface EventTranslatorConfig {
     public abstract List getUEIList();
     
     /**
-     * Determine if the @param e is a valid passive status event
-     * @param e
-     * @return true|false
-     */
-    public abstract boolean isPassiveStatusEvent(Event e);
-    
-    /**
-     * Derives the PassiveStatusValue based on the event and passive status config.
-     * @param e
-     * @return passive status value
-     */
-    public abstract PassiveStatusValue getPassiveStatusValue(Event e);
-    
-    /**
      * Determine if the @param e is a translation event
      * @param e Event
      * @return true iff e is a translation event

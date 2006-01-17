@@ -1,0 +1,3 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<event-translator-configuration xmlns="http://xmlns.opennms.org/xsd/translator-configuration" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://xmlns.opennms.org/xsd/translator-configuration ../src/services/org/opennms/netmgt/config/translator-configuration.xsd ">
+</event-translator-configuration>

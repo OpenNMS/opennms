@@ -43,8 +43,6 @@
 			<sequence>
 				<element ref="this:translation" minOccurs="0"
 					maxOccurs="1" />
-				<element ref="this:passive-events" minOccurs="0"
-					maxOccurs="1" />
 			</sequence>
 		</complexType>
 	</element>
@@ -104,120 +102,6 @@
 			<sequence>
 				<element ref="this:assignment" minOccurs="0" maxOccurs="unbounded" />
 			</sequence>
-		</complexType>
-	</element>
-	<element name="passive-events">
-		<annotation>
-			<documentation>
-				List of OpenNMS events for which the passive status
-				keeper will subscribe to set the status for a passive
-				node
-			</documentation>
-		</annotation>
-		<complexType>
-			<sequence>
-				<element ref="this:passive-event" minOccurs="1"
-					maxOccurs="unbounded" />
-			</sequence>
-		</complexType>
-	</element>
-	<element name="passive-event">
-		<annotation>
-			<documentation>
-				This element defines for the passive status keeper (PSK)
-				the a key to be used when creating a new or updating a
-				previous entry in its hash table and the uei of the
-				event. The key is composed of 3 elements and
-				concatenated with the ":" character...
-
-				[nodeLabel:ipAddr:serviceName]
-
-			</documentation>
-		</annotation>
-		<complexType>
-			<sequence>
-				<element ref="this:status-key" minOccurs="1"
-					maxOccurs="1" />
-			</sequence>
-			<attribute name="uei" type="string" use="required" />
-		</complexType>
-	</element>
-	<element name="status-key">
-		<annotation>
-			<documentation>
-				This element defines the 3 elements of the passive
-				status keeper's (PSK) hash table key and, for,
-				convenience, the status value for the hash table. Valid
-				values are "Up|Down".
-			</documentation>
-		</annotation>
-		<complexType>
-			<sequence>
-				<element ref="this:node-label" minOccurs="1"
-					maxOccurs="1" />
-				<element ref="this:ipaddr" minOccurs="1" maxOccurs="1" />
-				<element ref="this:service-name" minOccurs="1"
-					maxOccurs="1" />
-				<element ref="this:status" minOccurs="1" maxOccurs="1" />
-			</sequence>
-		</complexType>
-	</element>
-	<element name="node-label">
-		<complexType>
-			<sequence>
-				<element ref="this:event-token" minOccurs="1"
-					maxOccurs="1" />
-			</sequence>
-		</complexType>
-	</element>
-	<element name="ipaddr">
-		<complexType>
-			<sequence>
-				<element ref="this:event-token" minOccurs="1"
-					maxOccurs="1" />
-			</sequence>
-		</complexType>
-	</element>
-	<element name="service-name">
-		<complexType>
-			<sequence>
-				<element ref="this:event-token" minOccurs="1"
-					maxOccurs="1" />
-			</sequence>
-		</complexType>
-	</element>
-	<element name="status">
-		<complexType>
-			<sequence>
-				<element ref="this:event-token" minOccurs="1"
-					maxOccurs="1" />
-			</sequence>
-		</complexType>
-	</element>
-	<element name="event-token">
-		<annotation>
-			<documentation>
-				The token defines for the PSK which event field or
-				parameter should be used when defining this element of
-				the key. Fields are used if the is-parm boolean is set
-				to "false". Regular expressions are supported for
-				extracting the value or a literal may be specified. If
-				the value is set and begins with a "~" character, the
-				matching regular expression is used, otherwise it is
-				interpreted as a literal. If groups are available, they
-				will be concatenated unless a pattern attribute is used.
-				The pattern attribute works as follows: Event parm:
-				passiveNodeLabel with value "Channel 9" attribute value:
-				"~^(Channel) (9)" attribute pattern: "$1-$2" resulting
-				string: "Channel-9"
-			</documentation>
-		</annotation>
-		<complexType>
-			<attribute name="name" type="string" use="required" />
-			<attribute name="value" type="string" use="required" />
-			<attribute name="format" type="string" use="optional" />
-			<attribute name="is-parm" type="boolean" use="optional"
-				default="true" />
 		</complexType>
 	</element>
 </schema>

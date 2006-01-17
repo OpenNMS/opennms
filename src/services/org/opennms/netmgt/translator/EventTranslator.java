@@ -44,7 +44,6 @@ import org.opennms.netmgt.capsd.EventUtils;
 import org.opennms.netmgt.config.DbConnectionFactory;
 import org.opennms.netmgt.config.EventTranslatorConfig;
 import org.opennms.netmgt.config.PassiveStatusKey;
-import org.opennms.netmgt.config.PassiveStatusValue;
 import org.opennms.netmgt.daemon.ServiceDaemon;
 import org.opennms.netmgt.eventd.EventIpcManager;
 import org.opennms.netmgt.eventd.EventListener;
