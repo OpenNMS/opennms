@@ -86,8 +86,12 @@ public class VacuumdTest extends OpenNMSTestCase {
         "           <automation name=\"cleanUpAlarms\" interval=\"300000\" action-name=\"deleteDayOldAlarms\" active=\"true\" />\n" +
         "           <automation name=\"cosmicClear\" interval=\"30000\" trigger-name=\"selectResolvers\" action-name=\"clearProblems\" active=\"true\" />\n" + 
         "           <automation name=\"stormDetect\" interval=\"60000\" trigger-name=\"stormTrigger\" action-name=\"null\" auto-event-name=\"stormAlert\" active=\"true\" />" +
+        "           <automation name=\"testZeroResults\" interval=\"60000\" trigger-name=\"zeroResults\" action-name=\"null\" auto-event-name=\"stormAlert\" active=\"true\" />" +
         "    </automations>\n" + 
-        "    <triggers>\n" + 
+        "    <triggers>\n" +
+        "           <trigger name=\"zeroResults\" operator=\"&lt;\" row-count=\"1\" >\n" +
+        "               <statement>SELECT * FROM alarms where alarmid &lt; 0</statement>" +
+        "           </trigger>\n" +
         "           <trigger name=\"selectAll\" operator=\"&gt;=\" row-count=\"1\" >\n" + 
         "               <statement>SELECT * FROM alarms</statement>\n" + 
         "           </trigger>\n" + 
@@ -351,6 +355,16 @@ public class VacuumdTest extends OpenNMSTestCase {
         ap.setAutomation(VacuumdConfigFactory.getInstance().getAutomation("cleanUpAlarms"));
         Thread.sleep(2000);
         assertTrue(ap.runAutomation(VacuumdConfigFactory.getInstance().getAutomation("cleanUpAlarms")));
+    }
+    
+    public final void testRunAutomationWithZeroResultsFromTrigger() throws InterruptedException, SQLException {
+        bringNodeDownCreatingEvent(1);
+        Thread.sleep(500);
+        assertEquals(1, verifyInitialAlarmState());
+        AutomationProcessor ap = new AutomationProcessor();
+        ap.setAutomation(VacuumdConfigFactory.getInstance().getAutomation("testZeroResults"));
+        Thread.sleep(200);
+        assertTrue(ap.runAutomation(VacuumdConfigFactory.getInstance().getAutomation("testZeroResults")));        
     }
     
     /**

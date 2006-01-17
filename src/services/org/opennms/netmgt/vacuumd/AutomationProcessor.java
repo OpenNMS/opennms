@@ -329,7 +329,7 @@ public class AutomationProcessor implements ReadyRunnable {
         return event;
     }
 
-    private boolean verifyRowCount(Automation auto, ResultSet triggerResultSet) throws SQLException {
+    protected boolean verifyRowCount(Automation auto, ResultSet triggerResultSet) throws SQLException {
         int resultRows;
         boolean validRows = true;
         //determine if number of rows required by the trigger row-count and operator were
@@ -342,12 +342,8 @@ public class AutomationProcessor implements ReadyRunnable {
         if (log().isDebugEnabled())
             log().debug("verifyRowCount: Verifying trigger result: "+resultRows+" is "+triggerOperator+" than "+triggerRowCount);
 
-        if (resultRows < 1) {
+        if (!triggerRowCheck(triggerRowCount, triggerOperator, resultRows))
             validRows = false;
-        } else {    
-            if (!triggerRowCheck(triggerRowCount, triggerOperator, resultRows))
-                validRows = false;
-        }
 
         return validRows;
     }
