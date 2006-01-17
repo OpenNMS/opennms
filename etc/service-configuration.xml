@@ -188,6 +188,14 @@ maintained
         </service>
 -->
         <service>
+                <name>OpenNMS:Name=EventTranslator</name>
+                <class-name>org.opennms.netmgt.translator.jmx.EventTranslator</class-name>
+                <invoke pass="0" method="init"/>
+                <invoke pass="1" method="start"/>
+                <invoke at="status" pass="0" method="status"/>
+                <invoke at="stop" pass="0" method="stop"/>
+        </service>
+        <service>
                 <name>OpenNMS:Name=PassiveStatusd</name>
                 <class-name>org.opennms.netmgt.passive.jmx.PassiveStatusd</class-name>
                 <invoke pass="0" method="init"/>

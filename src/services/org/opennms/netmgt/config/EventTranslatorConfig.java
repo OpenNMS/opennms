@@ -34,9 +34,10 @@ package org.opennms.netmgt.config;
 import java.util.List;
 
 import org.opennms.netmgt.xml.event.Event;
-import org.opennms.netmgt.xml.event.Log;
 
-public interface PassiveStatusConfig {
+public interface EventTranslatorConfig {
+	
+	public static final String TRANSLATOR_NAME = "OpenNMS.EventTranslator";
 
     /**
      * Get the list of UEIs that are registered in the passive status configuration.

@@ -29,7 +29,7 @@
 //     http://www.opennms.org/
 //     http://www.opennms.com/
 //
-package org.opennms.netmgt.passive.jmx;
+package org.opennms.netmgt.translator.jmx;
 
 import java.io.IOException;
 
@@ -38,13 +38,13 @@ import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.DatabaseConnectionFactory;
+import org.opennms.netmgt.config.EventTranslatorConfigFactory;
 import org.opennms.netmgt.eventd.EventIpcManager;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
-import org.opennms.netmgt.passive.PassiveStatusKeeper;
 
-public class PassiveStatusd implements PassiveStatusdMBean {
+public class EventTranslator implements EventTranslatorMBean {
 
-    public final static String LOG4J_CATEGORY = "OpenNMS.PassiveStatus";
+    public final static String LOG4J_CATEGORY = "OpenNMS.EventTranslator";
 
     public void init() {
         // Set the category prefix
@@ -54,6 +54,7 @@ public class PassiveStatusd implements PassiveStatusdMBean {
         Category log = ThreadCategory.getInstance();
         try {
             DatabaseConnectionFactory.init();
+            EventTranslatorConfigFactory.init();
         } catch (MarshalException e) {
             log.error("Could not unmarshall configuration", e);
         } catch (ValidationException e) {
@@ -67,7 +68,8 @@ public class PassiveStatusd implements PassiveStatusdMBean {
         EventIpcManagerFactory.init();
         EventIpcManager mgr = EventIpcManagerFactory.getIpcManager();
 
-        PassiveStatusKeeper keeper = getPassiveStatusKeeper();
+        org.opennms.netmgt.translator.EventTranslator keeper = getEventTranslator();
+        keeper.setConfig(EventTranslatorConfigFactory.getInstance());
         keeper.setEventManager(mgr);
         keeper.setDbConnectionFactory(DatabaseConnectionFactory.getInstance());
         keeper.init();
@@ -77,21 +79,21 @@ public class PassiveStatusd implements PassiveStatusdMBean {
         // Set the category prefix
         ThreadCategory.setPrefix(LOG4J_CATEGORY);
 
-        getPassiveStatusKeeper().start();
+        getEventTranslator().start();
     }
 
     public void stop() {
         // Set the category prefix
         ThreadCategory.setPrefix(LOG4J_CATEGORY);
 
-        getPassiveStatusKeeper().stop();
+        getEventTranslator().stop();
     }
 
     public int getStatus() {
         // Set the category prefix
         ThreadCategory.setPrefix(LOG4J_CATEGORY);
 
-        return getPassiveStatusKeeper().getStatus();
+        return getEventTranslator().getStatus();
     }
 
     public String status() {
@@ -108,11 +110,11 @@ public class PassiveStatusd implements PassiveStatusdMBean {
         return org.opennms.core.fiber.Fiber.STATUS_NAMES[getStatus()];
     }
 
-    private PassiveStatusKeeper getPassiveStatusKeeper() {
+    private org.opennms.netmgt.translator.EventTranslator getEventTranslator() {
         // Set the category prefix
         ThreadCategory.setPrefix(LOG4J_CATEGORY);
 
-        return PassiveStatusKeeper.getInstance();
+        return org.opennms.netmgt.translator.EventTranslator.getInstance();
     }
 
 

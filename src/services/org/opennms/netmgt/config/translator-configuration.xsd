@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <schema xmlns="http://www.w3.org/2001/XMLSchema"
-	targetNamespace="http://xmlns.opennms.org/xsd/passive-status-configuration"
-	xmlns:this="http://xmlns.opennms.org/xsd/passive-status-configuration">
+	targetNamespace="http://xmlns.opennms.org/xsd/translator-configuration"
+	xmlns:this="http://xmlns.opennms.org/xsd/translator-configuration">
 
 		<element name="value">
 			<annotation>
@@ -38,12 +38,12 @@
 		</element>
 
 	<!--  elements defining this xsd -->
-	<element name="passive-status-configuration">
+	<element name="event-translator-configuration">
 		<complexType>
 			<sequence>
 				<element ref="this:translation" minOccurs="0"
 					maxOccurs="1" />
-				<element ref="this:passive-events" minOccurs="1"
+				<element ref="this:passive-events" minOccurs="0"
 					maxOccurs="1" />
 			</sequence>
 		</complexType>

@@ -44,8 +44,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -56,13 +54,13 @@ import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.PropertiesUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.ConfigFileConstants;
-import org.opennms.netmgt.config.passive.Assignment;
-import org.opennms.netmgt.config.passive.EventTranslationSpec;
-import org.opennms.netmgt.config.passive.Mapping;
-import org.opennms.netmgt.config.passive.PassiveEvent;
-import org.opennms.netmgt.config.passive.PassiveStatusConfiguration;
-import org.opennms.netmgt.config.passive.StatusKey;
-import org.opennms.netmgt.config.passive.Value;
+import org.opennms.netmgt.config.translator.Assignment;
+import org.opennms.netmgt.config.translator.EventTranslationSpec;
+import org.opennms.netmgt.config.translator.EventTranslatorConfiguration;
+import org.opennms.netmgt.config.translator.Mapping;
+import org.opennms.netmgt.config.translator.PassiveEvent;
+import org.opennms.netmgt.config.translator.StatusKey;
+import org.opennms.netmgt.config.translator.Value;
 import org.opennms.netmgt.eventd.EventUtil;
 import org.opennms.netmgt.poller.pollables.PollStatus;
 import org.opennms.netmgt.utils.SingleResultQuerier;
@@ -84,16 +82,16 @@ import org.springframework.beans.FatalBeanException;
  * @author <a href="mailto:david@opennms.org">David Hustace </a>
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
  */
-public final class PassiveStatusConfigFactory implements PassiveStatusConfig {
+public final class EventTranslatorConfigFactory implements EventTranslatorConfig {
     /**
      * The singleton instance of this factory
      */
-    private static PassiveStatusConfig m_singleton = null;
+    private static EventTranslatorConfig m_singleton = null;
 
     /**
      * The config class loaded from the config file
      */
-    private PassiveStatusConfiguration m_config;
+    private EventTranslatorConfiguration m_config;
 
 	private List m_translationSpecs;
 	
@@ -119,18 +117,18 @@ public final class PassiveStatusConfigFactory implements PassiveStatusConfig {
      *                Thrown if the contents do not match the required schema.
      * 
      */
-    private PassiveStatusConfigFactory(String configFile, DbConnectionFactory dbConnFactory) throws IOException, MarshalException, ValidationException {
+    private EventTranslatorConfigFactory(String configFile, DbConnectionFactory dbConnFactory) throws IOException, MarshalException, ValidationException {
         Reader rdr = new InputStreamReader(new FileInputStream(configFile));
         marshallReader(rdr, dbConnFactory);
         rdr.close();
     }
     
-    public PassiveStatusConfigFactory(Reader rdr, DbConnectionFactory dbConnFactory) throws MarshalException, ValidationException {
+    public EventTranslatorConfigFactory(Reader rdr, DbConnectionFactory dbConnFactory) throws MarshalException, ValidationException {
         marshallReader(rdr, dbConnFactory);
     }
     
     private synchronized void marshallReader(Reader rdr, DbConnectionFactory dbConnFactory) throws MarshalException, ValidationException {
-        m_config = (PassiveStatusConfiguration) Unmarshaller.unmarshal(PassiveStatusConfiguration.class, rdr);
+        m_config = (EventTranslatorConfiguration) Unmarshaller.unmarshal(EventTranslatorConfiguration.class, rdr);
         m_dbConnFactory = dbConnFactory;
     }
 
@@ -157,7 +155,7 @@ public final class PassiveStatusConfigFactory implements PassiveStatusConfig {
 
         File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.PASSIVE_CONFIG_FILE_NAME);
 
-        m_singleton = new PassiveStatusConfigFactory(cfgFile.getPath(), DatabaseConnectionFactory.getInstance());
+        m_singleton = new EventTranslatorConfigFactory(cfgFile.getPath(), DatabaseConnectionFactory.getInstance());
 
         m_loaded = true;
     }
@@ -188,14 +186,14 @@ public final class PassiveStatusConfigFactory implements PassiveStatusConfig {
      * @throws java.lang.IllegalStateException
      *             Thrown if the factory has not yet been initialized.
      */
-    public static synchronized PassiveStatusConfig getInstance() {
+    public static synchronized EventTranslatorConfig getInstance() {
         if (!m_loaded)
             throw new IllegalStateException("getInstance: The factory has not been initialized");
 
         return m_singleton;
     }
 
-	public static void setInstance(PassiveStatusConfig singleton) {
+	public static void setInstance(EventTranslatorConfig singleton) {
 		m_singleton=singleton;
 		m_loaded=true;
 	}
@@ -205,7 +203,7 @@ public final class PassiveStatusConfigFactory implements PassiveStatusConfig {
      * 
      * @return the PassiveStatus configuration
      */
-    private synchronized PassiveStatusConfiguration getConfig() {
+    private synchronized EventTranslatorConfiguration getConfig() {
         return m_config;
     }
     
@@ -215,9 +213,7 @@ public final class PassiveStatusConfigFactory implements PassiveStatusConfig {
      * @see org.opennms.netmgt.config.PassiveStatusConfig#getUEIList()
      */
     public List getUEIList() {
-        Set ueiSet = new TreeSet(getPassiveStatusUEIs());
-        ueiSet.addAll(getTranslationUEIs());
-        return new ArrayList(ueiSet);
+    		return getTranslationUEIs();
     }
 
     private List getTranslationUEIs() {
@@ -367,7 +363,7 @@ public final class PassiveStatusConfigFactory implements PassiveStatusConfig {
     }
     
 	static private Category log() {
-        return ThreadCategory.getInstance(PassiveStatusConfigFactory.class);
+        return ThreadCategory.getInstance(EventTranslatorConfigFactory.class);
     }
 
     
@@ -658,6 +654,8 @@ public final class PassiveStatusConfigFactory implements PassiveStatusConfig {
 				AssignmentSpec assignSpec = (AssignmentSpec) it.next();
 				assignSpec.apply(srcEvent, targetEvent);
 			}
+			
+			targetEvent.setSource(TRANSLATOR_NAME);
 			return targetEvent;
 		}
 
@@ -721,7 +719,7 @@ public final class PassiveStatusConfigFactory implements PassiveStatusConfig {
 			Value val = getAssignment().getValue();
 			
 			
-			return PassiveStatusConfigFactory.this.getValueSpec(val);
+			return EventTranslatorConfigFactory.this.getValueSpec(val);
 		}
 
 		protected abstract void setValue(Event targetEvent, String value);
@@ -864,7 +862,7 @@ public final class PassiveStatusConfigFactory implements PassiveStatusConfig {
 			List nestedValues = new ArrayList();
 			for (Iterator it = m_val.getValueCollection().iterator(); it.hasNext();) {
 				Value val = (Value) it.next();
-				nestedValues.add(PassiveStatusConfigFactory.this.getValueSpec(val));
+				nestedValues.add(EventTranslatorConfigFactory.this.getValueSpec(val));
 			}
 			return nestedValues;
 		}

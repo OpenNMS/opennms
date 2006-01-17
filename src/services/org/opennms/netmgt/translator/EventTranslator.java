@@ -29,18 +29,20 @@
 //     http://www.opennms.org/
 //     http://www.opennms.com/
 //
-package org.opennms.netmgt.passive;
+package org.opennms.netmgt.translator;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.capsd.EventUtils;
 import org.opennms.netmgt.config.DbConnectionFactory;
+import org.opennms.netmgt.config.EventTranslatorConfig;
 import org.opennms.netmgt.config.PassiveStatusKey;
 import org.opennms.netmgt.config.PassiveStatusValue;
 import org.opennms.netmgt.daemon.ServiceDaemon;
@@ -49,32 +51,33 @@ import org.opennms.netmgt.eventd.EventListener;
 import org.opennms.netmgt.poller.pollables.PollStatus;
 import org.opennms.netmgt.utils.Querier;
 import org.opennms.netmgt.xml.event.Event;
+import org.opennms.netmgt.xml.event.Events;
+import org.opennms.netmgt.xml.event.Log;
 
-public class PassiveStatusKeeper extends ServiceDaemon implements EventListener {
+public class EventTranslator extends ServiceDaemon implements EventListener {
     
-    private static PassiveStatusKeeper s_instance = new PassiveStatusKeeper();
-    
-    private static final String PASSIVE_STATUS_UEI = "uei.opennms.org/services/passiveServiceStatus";
+    private static EventTranslator s_instance = new EventTranslator();
 
     private Map m_statusTable = null;
     private EventIpcManager m_eventMgr;
+    private EventTranslatorConfig m_config;
     private boolean m_initialized = false;
 
     private DbConnectionFactory m_dbConnectionFactory;
 
     
-    public PassiveStatusKeeper() {
+    public EventTranslator() {
     }
     
-    public PassiveStatusKeeper(EventIpcManager eventMgr) {
+    public EventTranslator(EventIpcManager eventMgr) {
         setEventManager(eventMgr);
     }
     
-    public synchronized static void setInstance(PassiveStatusKeeper psk) {
+    public synchronized static void setInstance(EventTranslator psk) {
         s_instance = psk;
     }
     
-    public synchronized static PassiveStatusKeeper getInstance() {
+    public synchronized static EventTranslator getInstance() {
         return s_instance;
     }
 
@@ -111,6 +114,8 @@ public class PassiveStatusKeeper extends ServiceDaemon implements EventListener 
     }
 
     private void checkPreRequisites() {
+        if (m_config == null)
+            throw new IllegalStateException("config has not been set");
         if (m_eventMgr == null)
             throw new IllegalStateException("eventManager has not been set");
         if (m_dbConnectionFactory == null)
@@ -130,11 +135,12 @@ public class PassiveStatusKeeper extends ServiceDaemon implements EventListener 
         setStatus(STOPPED);
         m_initialized = false;
         m_eventMgr = null;
+        m_config = null;
         m_statusTable = null;
     }
 
     public String getName() {
-        return "OpenNMS.PassiveStatusKeeper";
+        return EventTranslatorConfig.TRANSLATOR_NAME;
     }
 
     public void pause() {
@@ -168,48 +174,50 @@ public class PassiveStatusKeeper extends ServiceDaemon implements EventListener 
 
     private void createMessageSelectorAndSubscribe() {
         // Subscribe to eventd
-        getEventManager().addEventListener(this, PASSIVE_STATUS_UEI);
+        getEventManager().addEventListener(this, m_config.getUEIList());
     }
 
     public void onEvent(Event e) {
+    	
+    		if (getName().equals(e.getSource())) {
+    			log().debug("onEvent: ignoring event with EventTranslator as source");
+    			return;
+    		}
+    		
+    		if (!m_config.isTranslationEvent(e)) {
+    			log().debug("onEvent: received event that matches no translations: \n"+EventUtils.toString(e));
+    			return;
+    		}
         
-        if (isPassiveStatusEvent(e)) {
-            log().debug("onEvent: received valid registered passive status event: \n"+EventUtils.toString(e));
-            PassiveStatusValue statusValue = getPassiveStatusValue(e);
-            setStatus(statusValue.getKey(), statusValue.getStatus());
-            log().debug("onEvent: passive status for: "+statusValue.getKey()+ "is: "+m_statusTable.get(statusValue.getKey()));
-        } 
-        
-        if (!isPassiveStatusEvent(e))
-        {
-            log().debug("onEvent: received Invalid registered passive status event: \n"+EventUtils.toString(e));
-        }
+    		log().debug("onEvent: received valid registered translation event: \n"+EventUtils.toString(e));
+    		List translated = m_config.translateEvent(e);
+    		if (translated != null) {
+    			Log log = new Log();
+    			Events events = new Events();
+    			for (Iterator iter = translated.iterator(); iter.hasNext();) {
+    				Event event = (Event) iter.next();
+    				events.addEvent(event);
+    				log().debug("onEvent: sended translated event: \n"+EventUtils.toString(event));
+    			}
+    			log.setEvents(events);
+    			getEventManager().sendNow(log);
+    		}
     }
 
-    private PassiveStatusValue getPassiveStatusValue(Event e) {
-    		return new PassiveStatusValue(
-    				EventUtils.getParm(e, EventConstants.PARM_PASSIVE_NODE_LABEL),
-    				EventUtils.getParm(e, EventConstants.PARM_PASSIVE_IPADDR),
-    				EventUtils.getParm(e, EventConstants.PARM_PASSIVE_SERVICE_NAME),
-    				PollStatus.decodePollStatus(EventUtils.getParm(e, EventConstants.PARM_PASSIVE_SERVICE_STATUS))
-    				);
-    		
-	}
-
-	boolean isPassiveStatusEvent(Event e) {
-		return PASSIVE_STATUS_UEI.equals(e.getUei()) &&
-			EventUtils.getParm(e, EventConstants.PARM_PASSIVE_NODE_LABEL) != null &&
-			EventUtils.getParm(e, EventConstants.PARM_PASSIVE_IPADDR) != null &&
-			EventUtils.getParm(e, EventConstants.PARM_PASSIVE_SERVICE_NAME) != null &&
-			EventUtils.getParm(e, EventConstants.PARM_PASSIVE_SERVICE_STATUS) != null;
-	}
-
-	public EventIpcManager getEventManager() {
+    public EventIpcManager getEventManager() {
         return m_eventMgr;
     }
 
     public void setEventManager(EventIpcManager eventMgr) {
         m_eventMgr = eventMgr;
+    }
+    
+    public EventTranslatorConfig getConfig() {
+        return m_config;
+    }
+    
+    public void setConfig(EventTranslatorConfig config) {
+        m_config = config;
     }
     
     public DbConnectionFactory getDbConnectoinFactory() {
@@ -221,7 +229,7 @@ public class PassiveStatusKeeper extends ServiceDaemon implements EventListener 
     }
     
     private Category log() {
-        return ThreadCategory.getInstance(PassiveStatusKeeper.class);
+        return ThreadCategory.getInstance(EventTranslator.class);
     }
 
 }
