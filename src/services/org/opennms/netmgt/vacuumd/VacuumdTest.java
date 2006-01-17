@@ -123,7 +123,7 @@ public class VacuumdTest extends OpenNMSTestCase {
         "               <statement>DELETE FROM alarms WHERE alarmAckUser IS NOT NULL AND lastEventTime &lt; CURRENT_TIMESTAMP</statement>\n" + 
         "           </action>\n" + 
         "           <action name=\"null\" >\n" + 
-        "               <statement>update distpoller SET dpname = \'foxtel\' where dpip = \'1.1.1.1\'</statement>\n" + 
+        "               <statement>update node SET nodelabel = \'foxtel\' where dpname = \'1.1.1.1\'</statement>\n" + 
         "           </action>\n" + 
         "    </actions>\n" + 
         "    <auto-events>\n" +
@@ -245,7 +245,7 @@ public class VacuumdTest extends OpenNMSTestCase {
      * Simple test on a helper method.
      */
     public final void testGetAutomations() {
-        assertEquals(4, VacuumdConfigFactory.getInstance().getAutomations().size());
+        assertEquals(5, VacuumdConfigFactory.getInstance().getAutomations().size());
     }
     
     public final void testGetAutoEvents() {
@@ -256,7 +256,7 @@ public class VacuumdTest extends OpenNMSTestCase {
      * Simple test on a helper method.
      */
     public final void testGetTriggers() {
-        assertEquals(4,VacuumdConfigFactory.getInstance().getTriggers().size());
+        assertEquals(5,VacuumdConfigFactory.getInstance().getTriggers().size());
     }
     
     /**
@@ -303,7 +303,7 @@ public class VacuumdTest extends OpenNMSTestCase {
         
         //Get all the triggers defined in the config
         ArrayList triggers = (ArrayList)VacuumdConfigFactory.getInstance().getTriggers();
-        assertEquals(4, triggers.size());
+        assertEquals(5, triggers.size());
 
         Querier q = null;
 
