@@ -195,7 +195,7 @@ function doDelete() {
       <h2>Interface: <%=intf_db.getIpAddress()%> <%=intf_db.getIpAddress().equals(intf_db.getHostname()) ? "" : "(" + intf_db.getHostname() + ")"%></h2>
 
         <% if (request.isUserInRole("OpenNMS Administrator")) { %>
-      <form method="post" action="admin/deleteInterface">
+      <form method="post" name="delete" action="admin/deleteInterface">
       <input type="hidden" name="node" value="<%=nodeId%>"/>
       <input type="hidden" name="ifindex" value="<%=(ifindexString == null ? "" : ifindexString)%>"/>
       <input type="hidden" name="intf" value="<%=ipAddr%>"/>
