@@ -249,10 +249,14 @@ public class AutomationProcessor implements ReadyRunnable {
             
             //Loop through the select results
             while (getTriggerResultSet().next()) {                        
-                processActionStatement(getActionSQL(auto), getTriggerResultSet());            
-                sendAutoEvent(auto);
+                processActionStatement(getActionSQL(auto), getTriggerResultSet());
+                /*
+                 * TODO: create new XSD configuration to allow a way to send an event for each action per row.
+                 * Currently, the XSD presents itself as one event per automation.
+                 */
             }
             setActionSuccessful(true);
+            sendAutoEvent(auto);
         } else {
             //No trigger defined, just running the action.
             if (getTokenCount(getActionSQL(auto)) != 0) {
