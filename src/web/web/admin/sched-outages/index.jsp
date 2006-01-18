@@ -144,7 +144,7 @@ for(int i=0; i<outages.length; i++) {
 	for(int j=0; j<nodeList.length; j++) { 
 		org.opennms.web.element.Node elementNode=NetworkElementFactory.getNode(nodeList[j].getId());
 		%>
-		<%=elementNode.getLabel()%><BR>
+                <%=elementNode==null?"NoNodeFound":elementNode.getLabel()%><BR>
 	<% } 
 	org.opennms.netmgt.config.poller.Interface[] interfaceList=pollFactory.getInterfaces(outageName);
 	for(int j=0; j<interfaceList.length; j++) { 
