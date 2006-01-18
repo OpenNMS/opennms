@@ -57,6 +57,7 @@ import org.opennms.netmgt.config.translator.Assignment;
 import org.opennms.netmgt.config.translator.EventTranslationSpec;
 import org.opennms.netmgt.config.translator.EventTranslatorConfiguration;
 import org.opennms.netmgt.config.translator.Mapping;
+import org.opennms.netmgt.config.translator.Translation;
 import org.opennms.netmgt.config.translator.Value;
 import org.opennms.netmgt.eventd.EventUtil;
 import org.opennms.netmgt.utils.SingleResultQuerier;
@@ -217,7 +218,11 @@ public final class EventTranslatorConfigFactory implements EventTranslatorConfig
     }
 
     private List getTranslationUEIs() {
-		List translatedEvents = getConfig().getTranslation().getEventTranslationSpecCollection();
+		Translation translation = getConfig().getTranslation();
+		if (translation == null)
+			return Collections.EMPTY_LIST;
+		
+		List translatedEvents = translation.getEventTranslationSpecCollection();
 		List ueis = new ArrayList();
 		for (Iterator it = translatedEvents.iterator(); it.hasNext();) {
 			EventTranslationSpec event = (EventTranslationSpec) it.next();
