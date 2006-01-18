@@ -1,4 +1,4 @@
-package org.opennms.netmgt.notifd;
+package org.opennms.netmgt.notifd.growl;
 
 /**
  * Growl.java
@@ -8,6 +8,12 @@ package org.opennms.netmgt.notifd;
  *
  * Revisions:
  * $Log$
+ * Revision 1.1  2006/01/18 20:49:46  brozow
+ * Fix web.xml error for tomcat 4.1
+ * Fix xsddoc on Java5
+ * fix Growl errors in Javadoc
+ * make translator use correct config file
+ *
  * Revision 1.2  2005/03/29 23:16:18  djgregor
  * Merge changes between OPENNMS_1_2_1-1_RELEASE and OPENNMS_1_2_2_RELEASE into HEAD
  *

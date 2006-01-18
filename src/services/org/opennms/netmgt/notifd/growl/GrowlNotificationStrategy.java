@@ -4,7 +4,7 @@
  * 
  */
 
-package org.opennms.netmgt.notifd;
+package org.opennms.netmgt.notifd.growl;
 
 import java.io.FileInputStream;
 import java.util.List;

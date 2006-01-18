@@ -173,6 +173,20 @@ your distribution.
     <pathelement path="${report.source.dir}"/>
     <pathelement path="${install.source.dir}"/>
   </path>
+	
+  <path id="javadoc.sources">
+    <fileset dir="${build.castor.source.dir}"/>
+    <fileset dir="${build.sablecc.source.dir}"/>
+    <fileset dir="${core.source.dir}"/>
+    <fileset dir="${joesnmp.source.dir}"/>
+    <fileset dir="${services.source.dir}">
+        <exclude name="**/*Growl*" unless="apple.apis.present"/>
+    </fileset>
+    <fileset dir="${bootstrap.source.dir}"/>
+    <fileset dir="${web.source.dir}"/>
+    <fileset dir="${report.source.dir}"/>
+    <fileset dir="${install.source.dir}"/>
+  </path>
 
   <!-- Classpath reference for <javac/> and <javadoc/> -->
   <path id="libraries.java.path">
@@ -435,6 +449,8 @@ your distribution.
   <taskdef classname="net.sf.xframe.xsddoc.Task" name="xsddoc">
     <classpath>
       <pathelement location="${dev.lib.dir}/xsddoc.jar"/>
+      <pathelement location="${dev.lib.dir}/xalan.jar"/>
+      <pathelement location="${dev.lib.dir}/serializer.jar"/>
     </classpath>
   </taskdef>
 
@@ -1635,7 +1651,7 @@ OpenNMS as part of the post-install.
 	   splitindex="true"
 	   failonerror="true"
 	   classpathref="libraries.java.path"
-	   maxmemory="128m">
+	   maxmemory="512m">
   <link href="http://java.sun.com/j2se/1.4.2/docs/api/"/>
   <link href="http://jakarta.apache.org/log4j/docs/api/"/>
   <classpath>
@@ -1643,9 +1659,8 @@ OpenNMS as part of the post-install.
    <path refid="test.path"/>
    <path refid="webtest.path"/>
   </classpath>
-  <sourcepath>
-   <path refid="sources.java.path"/>
-  </sourcepath>
+  <sourcepath refid="sources.java.path"/>
+  <excludepackage name="org.opennms.netmgt.notifd.growl" />
   </javadoc>
  </target>
 

@@ -204,7 +204,7 @@ public final class ConfigFileConstants {
     /**
      * JFree Chart configuration file
      */
-    public static final int PASSIVE_CONFIG_FILE_NAME;
+    public static final int TRANSLATOR_CONFIG_FILE_NAME;
     
     /**
      * The config file for specifying JMX MBeans
@@ -466,7 +466,7 @@ public final class ConfigFileConstants {
 
         JMX_DATA_COLLECTION_CONF_FILE_NAME = 56;
         
-        PASSIVE_CONFIG_FILE_NAME = 57;
+        TRANSLATOR_CONFIG_FILE_NAME = 57;
         
         // Allocate and build the mapping of identifiers to names
         //
@@ -548,7 +548,7 @@ public final class ConfigFileConstants {
 
         FILE_ID_TO_NAME[JMX_DATA_COLLECTION_CONF_FILE_NAME] = "jmx-datacollection-config.xml";
         
-        FILE_ID_TO_NAME[PASSIVE_CONFIG_FILE_NAME] = "passive-status-configuration.xml";
+        FILE_ID_TO_NAME[TRANSLATOR_CONFIG_FILE_NAME] = "translator-configuration.xml";
     }
 
     /**

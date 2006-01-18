@@ -131,9 +131,12 @@ to put the reorg code into.
 							<fileset dir="${opennms.dir}/src/services">
 								<include name="org/opennms/protocols/icmp/*.java" />
 								<include name="org/opennms/protocols/ip/*.java" />
+								<include name="org/opennms/netmgt/ping/*.java" />
 							</fileset>
 						</sources>
-						<dependencies/>
+						<dependencies>
+							<module-dependency id="core"/>
+						</dependencies>
 					</module>
 				
 					<!-- the jni code for icmp -->
@@ -296,6 +299,7 @@ to put the reorg code into.
 						<exclude name="org/opennms/netmgt/filter/*.java" />
 						<exclude name="org/opennms/protocols/icmp/*.java" />
 						<exclude name="org/opennms/protocols/ip/*.java" />
+						<exclude name="org/opennms/netmgt/ping/*.java" />	
 						<exclude name="org/opennms/netmgt/rrd/**/*.java" />
 						<exclude name="org/opennms/netmgt/snmp/**/*.java"/>
 						<!-- need to add these to another project or location -->
@@ -321,7 +325,7 @@ to put the reorg code into.
 						<exclude name="org/opennms/netmgt/mock/MockAgentTest.java" />
 						<exclude name="org/opennms/netmgt/capsd/plugins/**.java" />
 						<exclude name="org/opennms/netmgt/poller/monitors/**.java" />
-						<exclude name="org/opennms/netmgt/notifd/*Growl*" />
+						<exclude name="org/opennms/netmgt/notifd/growl/*Growl*" />
 						<exclude name="**/SpringBoardMBeanTest.java" />
 					</fileset>
 				</sources>

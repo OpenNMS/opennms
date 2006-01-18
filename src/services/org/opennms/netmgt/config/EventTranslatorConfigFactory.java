@@ -149,7 +149,7 @@ public final class EventTranslatorConfigFactory implements EventTranslatorConfig
         
         DatabaseConnectionFactory.init();
 
-        File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.PASSIVE_CONFIG_FILE_NAME);
+        File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.TRANSLATOR_CONFIG_FILE_NAME);
 
         m_singleton = new EventTranslatorConfigFactory(cfgFile.getPath(), DatabaseConnectionFactory.getInstance());
 
