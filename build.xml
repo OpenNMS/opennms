@@ -1442,7 +1442,8 @@ OpenNMS as part of the post-install.
  	  </copy>
  </target>
 
- <target name="test" depends="test.prep, java.compile, junit.compile, test.resources"
+ <target name="test" depends="test.prep, java.compile, junit.compile,
+			      jsp.compile, test.resources"
 	 description="Run all the unit tests on the opennms service code"
 	 unless="skip.tests">
    <junit dir="${basedir}" fork="yes" forkmode="perTest" errorProperty="test.failed" failureProperty="test.failed">
