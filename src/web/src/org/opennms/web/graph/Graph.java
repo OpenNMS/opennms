@@ -56,24 +56,21 @@ public class Graph implements Comparable {
 	String rrdParm = getRRDParmString();
 	String externalValuesParm = encodeExternalValuesAsParmString();
 
-	System.out.println("graphURL: " + m_model.getGraphURL());
-	System.out.println("name: " + getName());
-	System.out.println("start: " + m_start.getTime());
-	System.out.println("end: " + m_end.getTime());
-	System.out.println("rrdParm: " + rrdParm);
-	System.out.println("externalValuesParm: " + externalValuesParm);
-
-	/*
-	 * XXX might also need to add this for snmp:
-	 *     props=18/strings.properties
-	 */
-	return m_model.getGraphURL()
+	String url = "graph/graph.png"
 	       + "?report="
 	       + getName()
+	       + "&type=" + m_model.getType()
 	       + "&start=" + m_start.getTime()
 	       + "&end=" + m_end.getTime()
 	       + "&" + rrdParm
 	       + "&" + externalValuesParm;
+
+	// XXX This is such a hack.  This logic should *not* be in here.
+	if (m_model.getType() == "performance") {
+	    url = url + "&" + m_nodeId + "/strings.properties";
+	}
+
+	return url;
     }
 
     /** intf can be null */

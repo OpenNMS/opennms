@@ -96,14 +96,14 @@
   </listener>
 
   <!-- desktop survey report servlet -->  
-  
+
   <servlet>
     <!-- This servlet creates the graph images using RRDTool. -->
-    <servlet-name>snmpGraph</servlet-name>
+    <servlet-name>rrdgraph</servlet-name>
     <servlet-class>org.opennms.web.graph.RRDGraphServlet</servlet-class>
     <init-param>
       <param-name>rrd-properties</param-name>
-      <param-value>etc/snmp-graph.properties</param-value>
+      <param-value>performance=etc/snmp-graph.properties;response=etc/response-graph.properties</param-value>
     </init-param>
   </servlet>
   
@@ -116,16 +116,6 @@
       <param-value>etc/snmp-adhoc-graph.properties</param-value>
     </init-param>
   </servlet>  
-
-  <servlet>
-    <!-- This servlet creates the graph images using RRDTool. -->
-    <servlet-name>rtGraph</servlet-name>
-    <servlet-class>org.opennms.web.graph.RRDGraphServlet</servlet-class>
-    <init-param>
-      <param-name>rrd-properties</param-name>
-      <param-value>etc/response-graph.properties</param-value>
-    </init-param>
-  </servlet>
 
   <servlet>
     <!-- This servlet creates ad hoc graph images using RRDTool. -->
@@ -859,15 +849,12 @@
   	<servlet-name>scheduleEditor</servlet-name>
   	<url-pattern>/admin/schedule/schedule-editor</url-pattern>
   </servlet-mapping>
+
   <servlet-mapping>
-    <servlet-name>snmpGraph</servlet-name>
-    <url-pattern>/snmp/performance/graph.png</url-pattern>
+    <servlet-name>rrdgraph</servlet-name>
+    <url-pattern>/graph/graph.png</url-pattern>
   </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>snmpGraph</servlet-name>
-    <url-pattern>/snmp/performance/graph</url-pattern>
-  </servlet-mapping>
-  
+
   <servlet-mapping>
     <servlet-name>snmpAdHocGraph</servlet-name>
     <url-pattern>/snmp/performance/adhocGraph.png</url-pattern>
@@ -917,15 +904,6 @@
   <servlet-mapping>
     <servlet-name>rt-addIntfToPerfUrl</servlet-name>
     <url-pattern>/response/addIntfFromNode</url-pattern>
-  </servlet-mapping>
-
-  <servlet-mapping>
-    <servlet-name>rtGraph</servlet-name>
-    <url-pattern>/response/graph.png</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>rtGraph</servlet-name>
-    <url-pattern>/response/graph</url-pattern>
   </servlet-mapping>
 
   <servlet-mapping>

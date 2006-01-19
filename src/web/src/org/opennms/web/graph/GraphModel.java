@@ -9,5 +9,5 @@ public interface GraphModel {
 
     public boolean encodeNodeIdInRRDParm();
 
-    public String getGraphURL();
+    public String getType();
 }

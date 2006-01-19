@@ -41,6 +41,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
+import java.util.regex.PatternSyntaxException;
 
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
@@ -84,40 +85,54 @@ import org.opennms.web.MissingParameterException;
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
 public class RRDGraphServlet extends HttpServlet {
-    /**
-     * The working directory as specifed in the rrdtool-graph properties file.
-     */
-    protected File workDir;
+    private String s_initParam = "rrd-properties";
 
-    /**
-     * The prefix for the RRDtool command (including the executable's pathname)
-     * as specified in the rrdtool-graph properties file.
+    /** 
+     * Holds the GraphTypeConfig for all supported graph types.  It maps
+     * graph types to {@link GraphTypeConfig GraphTypeconfig} instances.
      */
-    protected String commandPrefix;
-
-    /**
-     * The mime type of the image we will return.
-     */
-    protected String mimeType;
-
-    /**
-     * Holds the graph definitions specified in the rrdtool-graph properties
-     * file. It maps report names to {@link PrefabGraph PrefabGraph}instances.
-     */
-    protected Map reportMap;
+    private Map m_graphTypeMap = new HashMap();
 
     /**
      * Initializes this servlet by reading the rrdtool-graph properties file.
      */
     public void init() throws ServletException {
+        String homeDir = Vault.getHomeDir();
+        String configs = getServletConfig().getInitParameter(s_initParam);
+
+        try {
+            String[] configEntries = configs.split(";");
+            for (int i = 0; i < configEntries.length; i++) {
+		String[] entry = configEntries[i].split("=");
+	        if (entry.length != 2) {
+		    throw new ServletException("Incorrect number of equals "
+					       + "signs in servlet init "
+					       + "parameter \""
+					       + s_initParam
+					       + "\": " + configs);
+		}
+		String type = entry[0];
+		String configFile = entry[1];
+
+		m_graphTypeMap.put(type,
+				   loadGraphTypeConfig(homeDir + configFile));
+            }
+        } catch (PatternSyntaxException e) {
+	    String message = "Could not parse servlet init parameter \""
+		+ s_initParam + "\"";
+	    log(message, e);
+            throw new ServletException(message, e);
+        }
+    }
+
+    public GraphTypeConfig loadGraphTypeConfig(String propertiesFilename)
+		throws ServletException {
         Properties properties = new Properties();
 
         try {
-            String propertiesFilename = Vault.getHomeDir() + this.getServletConfig().getInitParameter("rrd-properties");
             properties.load(new FileInputStream(propertiesFilename));
 
             RrdUtils.graphicsInitialize();
-
         } catch (FileNotFoundException e) {
             log("Could not find configuration file", e);
             throw new ServletException("Could not find configuration file", e);
@@ -132,11 +147,24 @@ public class RRDGraphServlet extends HttpServlet {
             throw new ServletException("Unexpected exception or error occured: " + e.getMessage(), e);
         }
 
-        this.workDir = new File(properties.getProperty("command.input.dir"));
-        this.commandPrefix = properties.getProperty("command.prefix");
-        this.mimeType = properties.getProperty("output.mime");
-        this.reportMap = PrefabGraph.getPrefabGraphDefinitions(properties);
+        GraphTypeConfig config = new GraphTypeConfig();
 
+        config.setWorkDir(new File(properties.getProperty("command.input.dir")));
+        config.setCommandPrefix(properties.getProperty("command.prefix"));
+        config.setMimeType(properties.getProperty("output.mime"));
+        config.setReportMap(PrefabGraph.getPrefabGraphDefinitions(properties));
+
+        return config;
+    }
+
+    public GraphTypeConfig getGraphConfig(String type) throws ServletException {
+	GraphTypeConfig config = (GraphTypeConfig) m_graphTypeMap.get(type);
+
+        if (config == null) {
+	    throw new ServletException("Invalid graph type \"" + type + "\"");
+	}
+
+	return config;
     }
 
     /**
@@ -145,67 +173,81 @@ public class RRDGraphServlet extends HttpServlet {
      * to the <code>ServletOutputStream</code> back to the requesting web
      * browser.
      */
-    public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    public void doGet(HttpServletRequest request, HttpServletResponse response)
+	    throws ServletException, IOException {
         try {
+            String type = request.getParameter("type");
             String report = request.getParameter("report");
             String[] rrds = request.getParameterValues("rrd");
 	    String propertiesFile = request.getParameter("props");
             String start = request.getParameter("start");
             String end = request.getParameter("end");
 
-            if (report == null || rrds == null || start == null || end == null) {
+            if (type == null || report == null || rrds == null || start == null
+		|| end == null) {
                 response.setContentType("image/png");
-                StreamUtils.streamToStream(this.getServletContext().getResourceAsStream("/images/rrd/missingparams.png"), response.getOutputStream());
+                StreamUtils.streamToStream(getServletContext().getResourceAsStream("/images/rrd/missingparams.png"), response.getOutputStream());
                 return;
             }
 
+	    GraphTypeConfig config = getGraphConfig(type);
+
             for (int i = 0; i < rrds.length; i++) {
                 if (!RrdFileConstants.isValidRRDName(rrds[i])) {
-                    this.log("Illegal RRD filename: " + rrds[i]);
+                    log("Illegal RRD filename: " + rrds[i]);
                     throw new IllegalArgumentException("Illegal RRD filename: " + rrds[i]);
                 }
             }
 
-            String command = this.createPrefabCommand(request, report, rrds, propertiesFile, start, end);
+            File workDir = config.getWorkDir();
+
+            String command = createPrefabCommand(request,
+						 config.getReportMap(),
+						 config.getCommandPrefix(),
+						 workDir, report, rrds,
+						 propertiesFile,
+						 start, end);
 
             InputStream tempIn = null;
             ServletOutputStream out = response.getOutputStream();
             try {
-
-                this.log("Executing RRD command in this directory: " + workDir);
-                this.log(command);
-
-                File workDir = this.workDir;
+                log("Executing RRD command in this directory: " + workDir);
+                log(command);
 
                 tempIn = RrdUtils.createGraph(command, workDir);
-
             } catch (RrdException e) {
-                this.log("Read from stderr: " + e.getMessage());
+                log("Read from stderr: " + e.getMessage());
                 response.setContentType("image/png");
-                StreamUtils.streamToStream(this.getServletContext().getResourceAsStream("/images/rrd/error.png"), out);
+                StreamUtils.streamToStream(getServletContext().getResourceAsStream("/images/rrd/error.png"), out);
             }
 
             if (tempIn != null) {
-                response.setContentType(this.mimeType);
+                response.setContentType(config.getMimeType());
                 StreamUtils.streamToStream(tempIn, out);
 
                 tempIn.close();
             }
             out.close();
         } catch (Exception e) {
-            this.log("Exception occurred: " + e.getMessage(), e);
+            log("Exception occurred: " + e.getMessage(), e);
         }
     }
 
-    protected String createPrefabCommand(HttpServletRequest request, String reportName, String[] rrds, String propertiesFile, String start, String end) throws ServletException {
-        PrefabGraph graph = (PrefabGraph) this.reportMap.get(reportName);
+    protected String createPrefabCommand(HttpServletRequest request,
+					 Map reportMap, String commandPrefix,
+					 File workDir, String reportName,
+					 String[] rrds, String propertiesFile,
+					 String start, String end)
+		throws ServletException {
+        PrefabGraph graph = (PrefabGraph) reportMap.get(reportName);
 
         if (graph == null) {
-            throw new IllegalArgumentException("Unknown report name: " + reportName);
+            throw new IllegalArgumentException("Unknown report name: "
+					       + reportName);
         }
 
         StringBuffer buf = new StringBuffer();
-        buf.append(this.commandPrefix);
+        buf.append(commandPrefix);
         buf.append(" ");
         buf.append(graph.getCommand());
         String command = buf.toString();
@@ -229,7 +271,8 @@ public class RRDGraphServlet extends HttpServlet {
 
         for (int i = 0; i < rrds.length; i++) {
             String key = "{rrd" + (i + 1) + "}";
-            translationMap.put(RE.simplePatternToFullRegularExpression(key), rrds[i]);
+            translationMap.put(RE.simplePatternToFullRegularExpression(key),
+			       rrds[i]);
         }
 
         translationMap.put(RE.simplePatternToFullRegularExpression("{startTime}"), startTimeString);
@@ -239,7 +282,7 @@ public class RRDGraphServlet extends HttpServlet {
 	if (propertiesFile != null) {
 		try {
 			externalProperties.load(new FileInputStream(
-						this.workDir + File.separator + propertiesFile));
+						workDir + File.separator + propertiesFile));
 		} catch (Exception e1) {
 			//Do nothing - just have no properties.
 		}
@@ -296,4 +339,62 @@ public class RRDGraphServlet extends HttpServlet {
         return command;
     }
 
+    public class GraphTypeConfig {
+        /**
+         * The working directory as specifed in the rrdtool-graph properties
+	 * file.
+         */
+        private File m_workDir;
+    
+        /**
+         * The prefix for the RRDtool command (including the executable's
+         * pathname) as specified in the rrdtool-graph properties file.
+         */
+        private String m_commandPrefix;
+    
+        /**
+         * The mime type of the image we will return.
+         */
+        private String m_mimeType;
+    
+        /**
+         * Holds the graph definitions specified in the rrdtool-graph
+         * properties file. It maps report names to {@link PrefabGraph
+         * PrefabGraph}instances.
+         */
+        private Map m_reportMap;
+
+
+        public void setWorkDir(File workDir) {
+            m_workDir = workDir;
+        }
+
+        public File getWorkDir() {
+            return m_workDir;
+        }
+
+        public void setCommandPrefix(String commandPrefix) {
+            m_commandPrefix = commandPrefix;
+        }
+
+        public String getCommandPrefix() {
+            return m_commandPrefix;
+        }
+
+        public void setMimeType(String mimeType) {
+            m_mimeType = mimeType;
+        }
+
+        public String getMimeType() {
+            return m_mimeType;
+        }
+
+        public void setReportMap(Map reportMap) {
+            m_reportMap = reportMap;
+        }
+
+        public Map getReportMap() {
+            return m_reportMap;
+        }
+    }
 }

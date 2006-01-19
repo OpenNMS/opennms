@@ -505,7 +505,7 @@ public class ResponseTimeModel extends Object implements GraphModel {
         return false;
     }
 
-    public String getGraphURL() {
-        return "response/graph.png";
+    public String getType() {
+        return "response";
     }
 }

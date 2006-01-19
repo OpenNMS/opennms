@@ -517,8 +517,7 @@ public class PerformanceModel extends Object implements GraphModel {
         return true;
     }
 
-    public String getGraphURL() {
-        return "snmp/performance/graph.png";
+    public String getType() {
+        return "performance";
     }
-
 }
