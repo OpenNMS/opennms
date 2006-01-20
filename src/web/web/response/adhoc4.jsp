@@ -151,7 +151,7 @@
 </jsp:include>
 
 <div style="text-align: center;">
-  <img src="response/adhocGraph.png?<%=queryString%>" />
+  <img src="graph/graph.png?type=response-adhoc&amp;<%=queryString%>" />
 
   <br/>
 

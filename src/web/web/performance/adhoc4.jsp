@@ -163,7 +163,7 @@
 </jsp:include>
 
 <div align="center">
-  <img src="snmp/performance/adhocGraph.png?<%=queryString%>" />
+  <img src="graph/graph.png?type=performance-adhoc&amp;<%=queryString%>" />
 
   <br/>
 

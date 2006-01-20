@@ -103,30 +103,9 @@
     <servlet-class>org.opennms.web.graph.RRDGraphServlet</servlet-class>
     <init-param>
       <param-name>rrd-properties</param-name>
-      <param-value>performance=etc/snmp-graph.properties;response=etc/response-graph.properties</param-value>
+      <param-value>performance=etc/snmp-graph.properties;response=etc/response-graph.properties;performance-adhoc=etc/snmp-adhoc-graph.properties;response-adhoc=etc/response-adhoc-graph.properties</param-value>
     </init-param>
   </servlet>
-  
-  <servlet>
-    <!-- This servlet creates ad hoc graph images using RRDTool. -->
-    <servlet-name>snmpAdHocGraph</servlet-name>
-    <servlet-class>org.opennms.web.graph.RRDAdHocGraphServlet</servlet-class>
-    <init-param>
-      <param-name>rrd-properties</param-name>
-      <param-value>etc/snmp-adhoc-graph.properties</param-value>
-    </init-param>
-  </servlet>  
-
-  <servlet>
-    <!-- This servlet creates ad hoc graph images using RRDTool. -->
-    <servlet-name>rtAdHocGraph</servlet-name>
-    <servlet-class>org.opennms.web.graph.RRDAdHocGraphServlet</servlet-class>
-    <init-param>
-      <param-name>rrd-properties</param-name>
-      <param-value>etc/response-adhoc-graph.properties</param-value>
-    </init-param>
-  </servlet>
-
   
   <servlet>
     <!-- This servlet dumps out XML using RRDTool. -->
@@ -856,15 +835,6 @@
   </servlet-mapping>
 
   <servlet-mapping>
-    <servlet-name>snmpAdHocGraph</servlet-name>
-    <url-pattern>/snmp/performance/adhocGraph.png</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>snmpAdHocGraph</servlet-name>
-    <url-pattern>/snmp/performance/adhocGraph</url-pattern>
-  </servlet-mapping>  
-
-  <servlet-mapping>
     <servlet-name>rrddump</servlet-name>
     <url-pattern>/performance/dump</url-pattern>
   </servlet-mapping>
@@ -904,15 +874,6 @@
   <servlet-mapping>
     <servlet-name>rt-addIntfToPerfUrl</servlet-name>
     <url-pattern>/response/addIntfFromNode</url-pattern>
-  </servlet-mapping>
-
-  <servlet-mapping>
-    <servlet-name>rtAdHocGraph</servlet-name>
-    <url-pattern>/response/adhocGraph.png</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>rtAdHocGraph</servlet-name>
-    <url-pattern>/response/adhocGraph</url-pattern>
   </servlet-mapping>
 
   <servlet-mapping>
