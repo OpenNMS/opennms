@@ -53,6 +53,6 @@
 
 <c:import url="/graph/results.jsp">
   <c:param name="name" value="Performance"/>
-  <c:param name="breadcrumb" value="<a href='performance/index.jsp'>Performance</a>" />
+  <c:param name="reportbreadcrumb" value="<a href='performance/index.jsp'>Performance</a>" />
   <c:param name="noDataMessage" value="No SNMP performance data has been gathered at this level."/>
 </c:import>

@@ -50,19 +50,13 @@
 
 <%@ taglib uri="http://java.sun.com/jstl/core" prefix="c" %>
 
-<%--
-<c:set var="name" value="Performance"/>
-<c:set var="breadcrumb" value="<a href='performance/index.jsp'>Performance</a>" />
-<c:set var="noDataMessage" value="No SNMP performance data has been gathered at this level."/>
---%>
-
 <c:import url="/includes/header.jsp">
-  <c:param name="title" value="${name} Results" />
+  <c:param name="title" value="${param.name} Results" />
   <c:param name="headTitle" value="Results" />
-  <c:param name="headTitle" value="${name}" />
+  <c:param name="headTitle" value="${param.name}" />
   <c:param name="headTitle" value="Reports" />
   <c:param name="breadcrumb" value="<a href='report/index.jsp'>Reports</a>" />
-  <c:param name="breadcrumb" value="${breadcrumb}"/>
+  <c:param name="breadcrumb" value="${param.reportbreadcrumb}"/>
   <c:param name="breadcrumb" value="Results" />
 </c:import>
 
@@ -79,7 +73,7 @@
     <%@ include file="/WEB-INF/jspf/relativetimeform.jspf" %>
   </c:if>
 
-  <h3>Interface <c:out value="${name}"/> Data</h3>
+  <h3>Interface <c:out value="${param.name}"/> Data</h3>
   <strong>From</strong> <c:out value="${results.start}"/> <br/>
   <strong>To</strong> <c:out value="${results.end}"/> <br/>
 
@@ -101,7 +95,7 @@
     </c:when>
 
     <c:otherwise>
-      <c:out value="${noDataMessage}"/>
+      <c:out value="${param.noDataMessage}"/>
     </c:otherwise>
   </c:choose>
 

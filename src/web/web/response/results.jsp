@@ -53,6 +53,6 @@
 
 <c:import url="/graph/results.jsp">
   <c:param name="name" value="Response Time"/>
-  <c:param name="breadcrumb" value="<a href='response/index.jsp'>Response Time</a>" />
+  <c:param name="reportbreadcrumb" value="<a href='response/index.jsp'>Response Time</a>" />
   <c:param name="noDataMessage" value="No response time data has been gathered at this level."/>
 </c:import>
