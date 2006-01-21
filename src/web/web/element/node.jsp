@@ -62,12 +62,14 @@
     protected int snmpServiceId;
     protected PerformanceModel perfModel;
     protected ResponseTimeModel rtModel;
+    AssetModel model = new AssetModel();
     
     public void init() throws ServletException {
         this.statusMap = new HashMap();
         this.statusMap.put( new Character('A'), "Active" );
         this.statusMap.put( new Character(' '), "Unknown" );
         this.statusMap.put( new Character('D'), "Deleted" );
+
         
         try {
             this.telnetServiceId = NetworkElementFactory.getServiceIdFromName("Telnet");
@@ -200,6 +202,9 @@
 
     if( snmpServices != null && snmpServices.length > 0 ) 
 	isSnmp = true;
+
+    //Get Asset Info for this node
+    Asset asset = this.model.getAsset( nodeId );
 %>
 
 <% String breadcrumb1 = "<a href='element/index.jsp'>Search</a>"; %>
@@ -292,6 +297,24 @@
 
             <!-- Availability box -->
             <jsp:include page="/includes/nodeAvailability-box.jsp" flush="false" />
+
+            <!-- Asset box, if info available --> 
+            <% if( asset != null ) { %>
+              <table width="100%" border="1" cellspacing="0" cellpadding="2" bordercolor="black" BGCOLOR="#cccccc">
+                <tr bgcolor="#999999">
+                  <td colspan="2"><b>Asset Information</b></td>
+                </tr>
+                <tr>
+                  <td width="10%">Description:</td>
+                  <td><%=(asset.getDescription() == null) ? "&nbsp;" : asset.getDescription()%></td>
+                </tr>
+                <tr>
+                  <td width="10%">Comments:</td>
+                  <td><%=(asset.getComments() == null) ? "&nbsp;" : asset.getComments()%></td>
+                </tr>
+              </table>  
+              <br>
+            <% } %>
 
             <!-- SNMP box, if info available --> 
             <% if( node_db.getNodeSysId() != null ) { %>
