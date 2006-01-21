@@ -1,5 +1,6 @@
 1.2.5 to 1.2.6
 ----------------------------------------------------------------------
+- Added asset info to the node page and some SNMP-Informant collections.
 - Changed OpenNMS so that manage/unmange interfaces deletes active
   outages and does not require a reboot when unmanaging a service.
 - Fixed an issue with the Scheduled Outages GUI and Java 5.
