@@ -1669,27 +1669,35 @@ OpenNMS as part of the post-install.
   <dependset>
    <srcfileset dir="${core.source.dir}">
     <include name="**/*.java"/>
+    <include name="**/*.html"/>
    </srcfileset>
    <srcfileset dir="${joesnmp.source.dir}">
     <include name="**/*.java"/>
+    <include name="**/*.html"/>
    </srcfileset>
    <srcfileset dir="${postgresql.source.dir}">
     <include name="**/*.java"/>
+    <include name="**/*.html"/>
    </srcfileset>
    <srcfileset dir="${report.source.dir}">
     <include name="**/*.java"/>
+    <include name="**/*.html"/>
    </srcfileset>
    <srcfileset dir="${services.source.dir}">
     <include name="**/*.java"/>
+    <include name="**/*.html"/>
    </srcfileset>
    <srcfileset dir="${bootstrap.source.dir}">
     <include name="**/*.java"/>
+    <include name="**/*.html"/>
    </srcfileset>
    <srcfileset dir="${web.source.dir}">
     <include name="**/*.java"/>
+    <include name="**/*.html"/>
    </srcfileset>
    <srcfileset dir="${install.source.dir}">
     <include name="**/*.java"/>
+    <include name="**/*.html"/>
    </srcfileset>
    <targetfileset dir="${build.api.dir}">
     <include name="**/*.html"/>
