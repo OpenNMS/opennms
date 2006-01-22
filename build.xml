@@ -769,9 +769,12 @@ your distribution.
  <!-- CLEAN targets -->
  <target name="clean" depends="prep, clean.dist">
    <delete dir="${build.dir}"/>
-   <delete dir="${install.dir}"/>
  </target>
-	
+
+ <target name="veryclean" depends="clean">
+   <!-- Don't delete ${install.dir} here, which might be /opt/OpenNMS -->
+   <delete dir="${basedir}/${relative.install.dir}"/>
+ </target>
  
  <!-- archive/package targets -->
  <target name="rpm" depends="prep, rpm.check, all, test, rpm.prepare"
