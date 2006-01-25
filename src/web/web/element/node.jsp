@@ -51,7 +51,9 @@
 		java.net.*,
 		org.opennms.netmgt.utils.IPSorter,
 		org.opennms.web.performance.*,
-		org.opennms.web.response.*
+		org.opennms.web.response.*,
+	        org.opennms.web.asset.Asset,
+	        org.opennms.web.asset.AssetModel
 	"
 %>
 
