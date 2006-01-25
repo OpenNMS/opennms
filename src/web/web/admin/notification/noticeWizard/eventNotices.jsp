@@ -50,17 +50,30 @@
 %>
 
 <%!
+    EventconfFactory m_eventconfFactory;
+    NotificationFactory m_notificationFactory;
+
     public void init() throws ServletException {
         try {
             NotificationFactory.init();
+        } catch (Throwable t) {
+            throw new ServletException("Could not initialize "
+				       + "NotificationFactory: "
+				       + t.getMessage(), t);
+        }
+
+        try {
             EventconfFactory.init();
+        } catch (Throwable t) {
+            throw new ServletException("Could not initialize "
+				       + "EventconfFactory: "
+				       + t.getMessage(), t);
         }
-        catch( Exception e ) {
-            throw new ServletException( "Cannot load configuration file", e );
-        }
+
+        m_eventconfFactory = EventconfFactory.getInstance();
+        m_notificationFactory = NotificationFactory.getInstance();
     }
     
-    //EventconfFactory eventConfFactory = EventconfFactory.getInstance();
 %>
 
 <jsp:include page="/includes/header.jsp" flush="false" >
@@ -134,7 +147,7 @@
                     <b>Event</b>
                 </td>
               </tr>
-            <% Map noticeMap = new TreeMap(NotificationFactory.getInstance().getNotifications());
+            <% Map noticeMap = new TreeMap(m_notificationFactory.getNotifications());
                Iterator iterator = noticeMap.keySet().iterator();
                while(iterator.hasNext()) 
                { 
@@ -159,7 +172,7 @@
                     <%=key%>
                   </td>
                   <td>
-                    <%=EventconfFactory.getInstance().getEventLabel(curNotif.getUei())%>
+                    <%=m_eventconfFactory.getEventLabel(curNotif.getUei())%>
                   </td>
                 </tr>
             <% } %>
