@@ -87,12 +87,12 @@
 
 <% if (action.equals("Save") || action.equals("Cancel")) { %>
     <script>
-        window.location="custom_report.jsp"
+        window.location="KSC/custom_report.jsp"
     </script>
 <% } %>
 
 <% if (action.equals("Update")) { %>
-    <form name="do_update" method="get" action="custom_graph3.jsp">
+    <form name="do_update" method="get" action="KSC/custom_graph3.jsp">
         <input type="hidden" name="node" value="<%=graph.getNodeId()%>">
         <input type="hidden" name="intf" value="<%=graph.getInterfaceId()%>">
     </form> 

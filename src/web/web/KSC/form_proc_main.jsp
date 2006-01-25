@@ -106,12 +106,12 @@
    else { 
        if ((report_action.equals("Customize")) || (report_action.equals("Create")) || (report_action.equals("CreateFrom"))) { %> 
            <script>
-               window.location="custom_report.jsp";
+               window.location="KSC/custom_report.jsp";
            </script>
 <%     } 
        else { %>
            <script>
-               window.location="index.jsp";
+               window.location="KSC/index.jsp";
            </script>
 <%     } 
    } %> 

@@ -139,7 +139,7 @@
        </script>
 <% } %> 
 <% if (report_action.equals("Customize")) { %> 
-       <form name="do_next" method="get" action="custom_report.jsp">
+       <form name="do_next" method="get" action="KSC/custom_report.jsp">
            <input type="hidden" name="report" value="<%=report_index%>" >
        </form>
        <script>
@@ -148,7 +148,7 @@
 <% } %> 
 <% if (report_action.equals("Exit")) { %> 
        <script>
-           window.location="index.jsp";
+           window.location="KSC/index.jsp";
        </script>
 <% } %> 
 

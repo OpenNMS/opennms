@@ -123,16 +123,16 @@
 
 <% if (action.equals("Save")) { %>
     <script>
-        window.location="index.jsp"
+        window.location="KSC/index.jsp"
     </script>
 <% } %>
 <% if (action.equals("DelGraph")) { %>
     <script>
-        window.location="custom_report.jsp"
+        window.location="KSC/custom_report.jsp"
     </script>
 <% } %>
 <% if (action.equals("AddGraph") || action.equals("ModGraph")) { %>
-    <form name="do_next" method="get" action="custom_graph1.jsp">
+    <form name="do_next" method="get" action="KSC/custom_graph1.jsp">
         
         <% if (action.equals("AddGraph")) { %>
             <input type="hidden" name="node" value="null">
