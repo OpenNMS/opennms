@@ -82,8 +82,21 @@
 <h3>Error Details</h3>
 
 <p>
-  <pre><% exception.printStackTrace(new java.io.PrintWriter(out)); %> 
-  </pre> 
+  <pre><%
+    while (exception != null) {
+      exception.printStackTrace(new java.io.PrintWriter(out));
+
+      if (exception instanceof ServletException) {
+        exception = ((ServletException) exception).getRootCause();
+      } else {
+        exception = exception.getCause();
+      }
+
+      if (exception != null) {
+        out.print("Caused by: ");
+      }
+    }
+  %></pre>
 </p>
 
 <jsp:include page="/includes/footer.jsp" flush="false" />
