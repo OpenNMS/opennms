@@ -15,6 +15,7 @@ import org.opennms.core.utils.Argument;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.ConfigFileConstants;
 import org.opennms.netmgt.config.NotificationManager;
+import org.opennms.netmgt.notifd.NotificationStrategy;
 
 /**
  * Implements NotificationStrategy pattern used to send notifications using the
