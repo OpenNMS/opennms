@@ -1,5 +1,6 @@
 1.2.5 to 1.2.6
 ----------------------------------------------------------------------
+- Upgraded MX4J to 3.0.1 (the same version in head) to fix bug #1330.
 - Added asset info to the node page and some SNMP-Informant collections.
 - Changed OpenNMS so that manage/unmange interfaces deletes active
   outages and does not require a reboot when unmanaging a service.

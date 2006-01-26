@@ -182,7 +182,7 @@ your distribution.
     <pathelement path="${packaged.lib.dir}/castor-0.9.3.9.jar"/>
     <pathelement path="${packaged.lib.dir}/fop0203.jar"/>
     <pathelement path="${packaged.lib.dir}/batik.jar"/>
-    <pathelement path="${packaged.lib.dir}/mx4j.jar"/>
+    <pathelement path="${packaged.lib.dir}/mx4j-3.0.1.jar"/>
     <pathelement path="${packaged.lib.dir}/jdhcp.jar"/>
     <pathelement path="${packaged.lib.dir}/jcifs.jar"/>
     <pathelement path="${packaged.lib.dir}/bsf220.jar"/>

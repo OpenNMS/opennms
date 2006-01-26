@@ -4,6 +4,14 @@
 
   <subtitle>About This Release</subtitle>
 
+  <para>Release 1.2.5 is a maintenance release for the stable branch of
+  OpenNMS.  It includes a fix for the "opennms status", "opennms stop",
+  and "opennms restart" commands being broken when using Java 5.0 due to
+  a problem with getting status information from the running OpenNMS daemon.
+  Users will need to re-install the etc/service-configuration.xml file
+  due to some changed class names inside of MX4J.  See Bug #1330.
+  </para>
+
   <para>Release 1.2.5 is an important maintenance release for the stable
   branch of OpenNMS. It includes a major bug fix concerning possible polling
   deadlocks that can cause outages that are never resolved, as well as a large
