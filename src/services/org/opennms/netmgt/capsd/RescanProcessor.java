@@ -1147,10 +1147,13 @@ final class RescanProcessor implements Runnable {
                 // No ifIndex found
                 log.debug("updateInterfaceInfo:  No ifIndex found for " + ifaddr.getHostAddress() + ". Not eligible for primary SNMP interface");
             }
-            currIpIfEntry.setPrimaryState(DbIpInterfaceEntry.SNMP_NOT_ELIGIBLE);
-        } else if (doesSnmp) {
+            if ('C' != originalIpIfEntry.getPrimaryState()) {
+                currIpIfEntry.setPrimaryState(DbIpInterfaceEntry.SNMP_NOT_ELIGIBLE);
+            }
+        } else if (doesSnmp && 'C' != originalIpIfEntry.getPrimaryState()) {
             currIpIfEntry.setPrimaryState(DbIpInterfaceEntry.SNMP_NOT_ELIGIBLE);
         }
+
 
         // Update any fields which have changed
         dbIpIfEntry.setLastPoll(now);

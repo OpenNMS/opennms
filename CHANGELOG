@@ -1,5 +1,7 @@
 1.2.5 to 1.2.6
 ----------------------------------------------------------------------
+- Fixed an issue where interfaces marked for collection were getting
+  set to "N" on a rescan.
 - Upgraded MX4J to 3.0.1 (the same version in head) to fix bug #1330.
 - Added asset info to the node page and some SNMP-Informant collections.
 - Changed OpenNMS so that manage/unmange interfaces deletes active
