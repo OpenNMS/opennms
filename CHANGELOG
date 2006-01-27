@@ -1,5 +1,8 @@
 1.2.5 to 1.2.6
 ----------------------------------------------------------------------
+- When choosing to select SNMP data collection for a node, once the
+  changes are applied the web page will go back to the node instead
+  of the main Admin page. This improves performance on large systems.
 - Fixed an issue where interfaces marked for collection were getting
   set to "N" on a rescan.
 - Upgraded MX4J to 3.0.1 (the same version in head) to fix bug #1330.
