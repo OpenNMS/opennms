@@ -127,10 +127,10 @@
                       <p>
                           <select name="node" size="10">
                               <% for( int i=0; i < nodes.length; i++ ) { %>
-                                  <% if (node_intval == nodes[i].nodeId) { %>
-                                      <option value="<%=nodes[i].nodeId%>" SELECTED><%=nodes[i].nodeLabel%></option>
+                                  <% if (node_intval == nodes[i].getNodeId()) { %>
+                                      <option value="<%=nodes[i].getNodeId()%>" SELECTED><%=nodes[i].getNodeLabel()%></option>
                                   <% } else { %>
-                                      <option value="<%=nodes[i].nodeId%>"><%=nodes[i].nodeLabel%></option>
+                                      <option value="<%=nodes[i].getNodeId()%>"><%=nodes[i].getNodeLabel()%></option>
                                   <% } %>
                               <% } %>
                           </select>

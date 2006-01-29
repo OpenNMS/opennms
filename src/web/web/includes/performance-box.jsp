@@ -83,7 +83,7 @@
 
               <select style="width: 100%;" name="node" size="1">
                 <% for( int i=0; i < nodes.length; i++ ) { %>
-                   <option value="<%=nodes[i].nodeId%>"><%=nodes[i].nodeLabel%></option>
+                   <option value="<%=nodes[i].getNodeId()%>"><%=nodes[i].getNodeLabel()%></option>
                 <% } %>
               </select>
               <br/>

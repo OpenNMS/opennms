@@ -33,7 +33,9 @@
 package org.opennms.web.performance;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -78,7 +80,7 @@ public class AddInterfaceToURLServlet extends HttpServlet {
         }
 
         // should return an empty array if no queryable interfaces available
-        String[] intfs = this.model.getQueryableInterfacesForNode(nodeId);
+        ArrayList intfs = this.model.getQueryableInterfacesForNode(nodeId);
 
         if (intfs == null) {
             // shouldn't ever happen, but just in case
@@ -86,13 +88,13 @@ public class AddInterfaceToURLServlet extends HttpServlet {
         }
 
         this.log("DEBUG: Found these interfaces for node " + nodeId + ":");
-        for (int i = 0; i < intfs.length; i++) {
-            this.log("DEBUG: " + i + "=" + intfs[i]);
+	for (Iterator i = intfs.iterator(); i.hasNext(); ) {
+            this.log("DEBUG: interface: " + (String) i.next());
         }
 
         String[] ignores = new String[] { "endUrl" };
 
-        switch (intfs.length) {
+        switch (intfs.size()) {
         case 0: {
             // there are no queryable interfaces, but there must be node
             // information otherwise the given nodeid would never have
@@ -110,7 +112,7 @@ public class AddInterfaceToURLServlet extends HttpServlet {
         case 1: {
             // add the interface, and redirect to end url
             HashMap additions = new HashMap();
-            additions.put("intf", intfs[0]);
+            additions.put("intf", intfs.get(0));
 
             String queryString = Util.makeQueryString(request, additions, ignores);
 

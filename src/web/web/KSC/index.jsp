@@ -204,7 +204,7 @@
                       <p>
                           <select name="report" size="10">
                               <% for( int i=0; i < nodes.length; i++ ) { %>
-                                  <option value="<%=nodes[i].nodeId%>"><%=nodes[i].nodeLabel%></option>
+                                  <option value="<%=nodes[i].getNodeId()%>"><%=nodes[i].getNodeLabel()%></option>
                               <% } %>
                           </select>
                       </p>

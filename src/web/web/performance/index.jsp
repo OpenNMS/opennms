@@ -143,7 +143,7 @@
 
     <select name="node" size="10">
       <% for( int i=0; i < nodes.length; i++ ) { %>
-        <option value="<%=nodes[i].nodeId%>"><%=nodes[i].nodeLabel%></option>
+        <option value="<%=nodes[i].getNodeId()%>"><%=nodes[i].getNodeLabel()%></option>
       <% } %>
     </select>
 
@@ -162,7 +162,7 @@
   <form method="get" name="choose_node_adhoc" action="performance/adhoc.jsp">
     <select name="node" size="10">
       <% for( int i=0; i < nodes.length; i++ ) { %>
-        <option value="<%=nodes[i].nodeId%>"><%=nodes[i].nodeLabel%></option>
+        <option value="<%=nodes[i].getNodeId()%>"><%=nodes[i].getNodeLabel()%></option>
       <% } %>
     </select>
 

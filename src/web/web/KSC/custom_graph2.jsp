@@ -68,9 +68,9 @@
         intfId = "";
     }
     
-    String[] intfs = this.model.getQueryableInterfacesForNode(nodeId);
+    ArrayList intfs = this.model.getQueryableInterfacesForNode(nodeId);
     
-    Arrays.sort(intfs);        
+    Collections.sort(intfs);        
 %>
 
 <jsp:include page="/includes/header.jsp" flush="false" >
@@ -130,13 +130,14 @@
           <tr>
             <td>
                 <select name="intf" size="10">
-                  <% for(int i=0; i < intfs.length; i++) { %>
-                      <% if (intfId.equals(intfs[i])) { %>
-                          <option value="<%=intfs[i]%>" SELECTED> 
+                  <% for(Iterator i = intfs.iterator(); i.hasNext(); ) { %>
+                      <% String intf = (String) i.next(); %>
+                      <% if (intfId.equals(intf)) { %>
+                          <option value="<%=intf%>" SELECTED> 
                       <% } else { %>
-                          <option value="<%=intfs[i]%>"> 
+                          <option value="<%=intf%>"> 
                       <% } %>
-                      <%=this.model.getHumanReadableNameForIfLabel(Integer.parseInt(nodeId), intfs[i])%></option>
+                      <%=this.model.getHumanReadableNameForIfLabel(Integer.parseInt(nodeId), intf)%></option>
                   <% } %>
               </select>
             </td>

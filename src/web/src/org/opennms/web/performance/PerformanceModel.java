@@ -60,6 +60,7 @@ import org.opennms.netmgt.utils.RrdFileConstants;
 import org.opennms.web.Util;
 import org.opennms.web.graph.PrefabGraph;
 import org.opennms.web.graph.GraphModel;
+import org.opennms.web.graph.GraphModelAbstract;
 
 /**
  * Encapsulates all SNMP performance reporting for the web user interface.
@@ -68,23 +69,13 @@ import org.opennms.web.graph.GraphModel;
  * @author <a href="mailto:larry@opennms.org">Lawrence Karnowski </a>
  * @author <a href="http://www.opennms.org">OpenNMS </a>
  */
-public class PerformanceModel extends Object implements GraphModel {
+public class PerformanceModel extends GraphModelAbstract {
     public static final String RRDTOOL_GRAPH_PROPERTIES_FILENAME =
 		File.separator + "etc" + File.separator + "snmp-graph.properties";
 
     public static final String INTERFACE_GRAPH_TYPE = "interface";
 
     public static final String NODE_GRAPH_TYPE = "node";
-
-    protected Properties props;
-
-    protected PrefabGraph[] queries;
-
-    protected Map reportMap;
-
-    protected File rrdDirectory;
-
-    protected String infoCommand;
 
     /**
      * Create a new instance.
@@ -94,263 +85,27 @@ public class PerformanceModel extends Object implements GraphModel {
      *            Vault.getHomeDir}.
      */
     public PerformanceModel(String homeDir) throws IOException {
-        if (homeDir == null) {
-            throw new IllegalArgumentException("Cannot take null parameters.");
-        }
-
-        this.props = new java.util.Properties();
-        this.props.load(new FileInputStream(homeDir + RRDTOOL_GRAPH_PROPERTIES_FILENAME));
-
-        this.rrdDirectory = new File(this.props.getProperty("command.input.dir"));
-        this.infoCommand = this.props.getProperty("info.command");
-
-        this.reportMap = PrefabGraph.getPrefabGraphDefinitions(props);
+	loadProperties(homeDir, RRDTOOL_GRAPH_PROPERTIES_FILENAME);
     }
 
-    public File getRrdDirectory() {
-        return this.rrdDirectory;
-    }
-
-    public PrefabGraph getQuery(String queryName) {
-        return (PrefabGraph) this.reportMap.get(queryName);
-    }
-
-    /**
-     * Return a list of all known prefabricated graph definitions.
-     */
-    public PrefabGraph[] getQueries() {
-        if (this.queries == null) {
-            Collection values = this.reportMap.values();
-            Iterator iter = values.iterator();
-
-            PrefabGraph[] graphs = new PrefabGraph[values.size()];
-
-            for (int i = 0; i < graphs.length; i++) {
-                graphs[i] = (PrefabGraph) iter.next();
-            }
-
-            this.queries = graphs;
-        }
-
-        return (this.queries);
-    }
-
-    public PrefabGraph[] getQueries(int nodeId) {
-        return this.getQueries(String.valueOf(nodeId));
-    }
-
-    public PrefabGraph[] getQueries(String nodeId) {
-        if (nodeId == null) {
-            throw new IllegalArgumentException("Cannot take null parameters.");
-        }
-
-        // create a temporary list of queries to return
-        List returnList = new LinkedList();
-
-        // get the full list of all possible queries
-        PrefabGraph[] queries = this.getQueries();
-
-        // get all the data sources supported by node
-        List availDataSourceList = this.getDataSourceList(nodeId);
-
-        // for each query, see if all the required data sources are available
-        // in the available data source list, if so, add that query to the
-        // returnList
-        for (int i = 0; i < queries.length; i++) {
-            List requiredList = Arrays.asList(queries[i].getColumns());
-
-            if (availDataSourceList.containsAll(requiredList)) {
-                returnList.add(queries[i]);
-            }
-        }
-
-        // put the queries in returnList into an array
-        PrefabGraph[] availQueries = (PrefabGraph[]) returnList.toArray(new PrefabGraph[returnList.size()]);
-
-        return availQueries;
-    }
-
-    public PrefabGraph[] getQueries(int nodeId, String intf, boolean includeNodeQueries) {
-        return this.getQueries(String.valueOf(nodeId), intf, includeNodeQueries);
-    }
-
-    public PrefabGraph[] getQueries(String nodeId, String intf, boolean includeNodeQueries) {
+    public List getDataSourceList(String nodeId, String intf,
+				  boolean includeNodeQueries) {
         if (nodeId == null || intf == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
 
-        // create a temporary list of queries to return
-        List returnList = new LinkedList();
-
-        // get the full list of all possible queries
-        PrefabGraph[] queries = this.getQueries();
-
-        // get all the data sources supported by this interface (and possibly
-        // node)
-        List availDataSourceList = this.getDataSourceList(nodeId, intf, includeNodeQueries);
-
-        // for each query, see if all the required data sources are available
-        // in the available data source list, if so, add that query to the
-        // returnList
-        for (int i = 0; i < queries.length; i++) {
-            List requiredList = Arrays.asList(queries[i].getColumns());
-
-            if (availDataSourceList.containsAll(requiredList)) {
-                returnList.add(queries[i]);
-            }
-        }
-
-        // put the queries in returnList into an array
-        PrefabGraph[] availQueries = (PrefabGraph[]) returnList.toArray(new PrefabGraph[returnList.size()]);
-
-        return availQueries;
-    }
-
-    public String[] getDataSources(int nodeId) {
-        return this.getDataSources(String.valueOf(nodeId));
-    }
-
-    public String[] getDataSources(String nodeId) {
-        List dataSourceList = this.getDataSourceList(String.valueOf(nodeId));
-        String[] dataSources = (String[]) dataSourceList.toArray(new String[dataSourceList.size()]);
-
-        return dataSources;
-    }
-
-    public String[] getDataSources(int nodeId, String intf, boolean includeNodeQueries) {
-        return this.getDataSources(String.valueOf(nodeId), intf, includeNodeQueries);
-    }
-
-    public String[] getDataSources(String nodeId, String intf, boolean includeNodeQueries) {
-        List dataSourceList = this.getDataSourceList(String.valueOf(nodeId), intf, includeNodeQueries);
-        String[] dataSources = (String[]) dataSourceList.toArray(new String[dataSourceList.size()]);
-
-        return dataSources;
-    }
-
-    public List getDataSourceList(int nodeId) {
-        return this.getDataSourceList(String.valueOf(nodeId));
-    }
-
-    public List getDataSourceList(String nodeId) {
-        if (nodeId == null) {
-            throw new IllegalArgumentException("Cannot take null parameters.");
-        }
-
-        List dataSources = new ArrayList();
-        File nodeDir = new File(this.rrdDirectory, nodeId);
-        int suffixLength = RrdFileConstants.RRD_SUFFIX.length();
-
-        // get the node data sources
-        File[] nodeFiles = nodeDir.listFiles(RrdFileConstants.RRD_FILENAME_FILTER);
-
-        for (int i = 0; i < nodeFiles.length; i++) {
-            String fileName = nodeFiles[i].getName();
-            String dsName = fileName.substring(0, fileName.length() - suffixLength);
-
-            dataSources.add(dsName);
-        }
-
-        return dataSources;
-    }
-
-    public List getDataSourceList(int nodeId, String intf, boolean includeNodeQueries) {
-        return this.getDataSourceList(String.valueOf(nodeId), intf, includeNodeQueries);
-    }
-
-    public List getDataSourceList(String nodeId, String intf, boolean includeNodeQueries) {
-        if (nodeId == null || intf == null) {
-            throw new IllegalArgumentException("Cannot take null parameters.");
-        }
-
-        List dataSources = new ArrayList();
-
-        File nodeDir = new File(this.rrdDirectory, nodeId);
+        File nodeDir = new File(getRrdDirectory(), nodeId);
         File intfDir = new File(nodeDir, intf);
 
-        int suffixLength = RrdFileConstants.RRD_SUFFIX.length();
+	ArrayList dataSources = new ArrayList();
 
-        // get the node data sources
         if (includeNodeQueries) {
-            dataSources.addAll(this.getDataSourceList(nodeId));
+            dataSources.addAll(getDataSourceList(nodeId));
         }
 
-        // get the interface data sources
-        File[] intfFiles = intfDir.listFiles(RrdFileConstants.RRD_FILENAME_FILTER);
+	dataSources.addAll(getDataSourcesInDirectory(intfDir));
 
-        for (int i = 0; i < intfFiles.length; i++) {
-            String fileName = intfFiles[i].getName();
-            String dsName = fileName.substring(0, fileName.length() - suffixLength);
-
-            dataSources.add(dsName);
-        }
-
-        return dataSources;
-    }
-
-    /**
-     * Return a human-readable description (usually an IP address or hostname)
-     * for the interface given.
-     */
-    public String getHumanReadableNameForIfLabel(int nodeId, String ifLabel) throws SQLException {
-        if (nodeId < 1) {
-            throw new IllegalArgumentException("Illegal nodeid encountered when looking for performance information: \"" + String.valueOf(nodeId) + "\"");
-        }
-        if (ifLabel == null) {
-            throw new IllegalArgumentException("Cannot take null parameters.");
-        }
-
-        // Retrieve the extended information for this nodeid/ifLabel pair
-        Map intfMap = IfLabel.getInterfaceInfoFromIfLabel(nodeId, ifLabel);
-
-        String descr = new String();
-
-        // If there is no extended information, the ifLabel is not associated
-        // with a
-        // current SNMP interface.
-        if (intfMap.size() < 1) {
-            descr = ifLabel + " (Not Currently Updated)";
-        }
-        // Otherwise, add the extended information to the description
-        else {
-            String parenString = new String();
-            
-            if (intfMap.get("snmpifalias") != null) {
-                parenString += (String) intfMap.get("snmpifalias");
-            }
-            if ((intfMap.get("ipaddr") != null) && !((String) intfMap.get("ipaddr")).equals("0.0.0.0")) {
-                String ipaddr = (String) intfMap.get("ipaddr");
-                parenString += ((parenString.equals("")) ? ipaddr : (", " + ipaddr));
-            }
-            if ((intfMap.get("snmpifspeed") != null) && (Integer.parseInt((String) intfMap.get("snmpifspeed")) != 0)) {
-                String speed = Util.getHumanReadableIfSpeed(Integer.parseInt((String) intfMap.get("snmpifspeed")));
-                parenString += ((parenString.equals("")) ? speed : (", " + speed));
-            }
-
-            if (intfMap.get("snmpifname") != null) {
-                descr = (String) intfMap.get("snmpifname");
-            } else if (intfMap.get("snmpifdescr") != null) {
-                descr = (String) intfMap.get("snmpifdescr");
-            } else {
-                // Should never reach this point, since ifLabel
-                // is based on the values of ifName and ifDescr
-                // but better safe than sorry.
-                descr = ifLabel;
-            }
-
-            // Add the extended information in parenthesis after the ifLabel,
-            // if such information was found
-            descr = Util.htmlify(descr + ((parenString.equals("")) ? "" : (" (" + parenString + ")")));
-        }
-
-        return descr;
-    }
-
-    /** Convenient data structure for storing nodes with RRDs available. */
-    public static class QueryableNode extends Object {
-        public int nodeId;
-
-        public String nodeLabel;
+	return dataSources;
     }
 
     /**
@@ -368,93 +123,87 @@ public class PerformanceModel extends Object implements GraphModel {
      * </p>
      */
     public QueryableNode[] getQueryableNodes() throws SQLException {
-        QueryableNode[] nodes = new QueryableNode[0];
-
         // Get all of the numeric directory names in the RRD directory; these
         // are the nodeids of the nodes that have performance data
-        File[] nodeDirs = this.rrdDirectory.listFiles(RrdFileConstants.NODE_DIRECTORY_FILTER);
+        File[] nodeDirs =
+	    getRrdDirectory().listFiles(RrdFileConstants.NODE_DIRECTORY_FILTER);
 
-        if (nodeDirs != null && nodeDirs.length > 0) {
-            List nodeList = new LinkedList();
+        if (nodeDirs == null || nodeDirs.length == 0) {
+	    return new QueryableNode[0];
+	}
 
-            // Construct a set containing the nodeIds that are queryable
-            IntSet queryableIds = new IntSet();
-            for (int i = 0; i < nodeDirs.length; i++) {
-                String fileName = nodeDirs[i].getName();
-                int nodeId = Integer.parseInt(fileName);
-                queryableIds.add(nodeId);
-            }
+	List nodeList = new LinkedList();
 
-            // create the main stem of the select statement
-            StringBuffer select = new StringBuffer("SELECT DISTINCT NODEID, NODELABEL FROM NODE WHERE NODETYPE != 'D' ORDER BY NODELABEL");
+	// Construct a set containing the nodeIds that are queryable
+        IntSet queryableIds = new IntSet();
+	for (int i = 0; i < nodeDirs.length; i++) {
+	    String fileName = nodeDirs[i].getName();
+	    int nodeId = Integer.parseInt(fileName);
+	    queryableIds.add(nodeId);
+	}
 
-            Connection conn = Vault.getDbConnection();
+	// create the main stem of the select statement
+	StringBuffer select = new StringBuffer("SELECT DISTINCT NODEID, NODELABEL FROM NODE WHERE NODETYPE != 'D' ORDER BY NODELABEL");
+	
+	Connection conn = Vault.getDbConnection();
 
-            Statement stmt = null;
-            ResultSet rs = null;
-            try {
-                stmt = conn.createStatement();
-                rs = stmt.executeQuery(select.toString());
+	Statement stmt = null;
+	ResultSet rs = null;
+	try {
+	    stmt = conn.createStatement();
+	    rs = stmt.executeQuery(select.toString());
 
-                while (rs.next()) {
+	    while (rs.next()) {
+		int nodeId = rs.getInt("nodeid");
 
-                    int nodeId = rs.getInt("nodeid");
+		if (queryableIds.contains(nodeId)) {
+		    String nodeLabel = rs.getString("nodeLabel");
+		    nodeList.add(new QueryableNode(nodeId, nodeLabel));
+		}
+	    }
+	} finally {
+	    if (rs != null)
+		rs.close();
+	    if (stmt != null)
+		stmt.close();
+	    Vault.releaseDbConnection(conn);
+	}
 
-                    if (queryableIds.contains(nodeId)) {
-                        QueryableNode node = new QueryableNode();
-
-                        node.nodeId = nodeId;
-                        node.nodeLabel = rs.getString("nodeLabel");
-
-                        nodeList.add(node);
-                    }
-                }
-
-            } finally {
-                if (rs != null)
-                    rs.close();
-                if (stmt != null)
-                    stmt.close();
-                Vault.releaseDbConnection(conn);
-            }
-
-            nodes = (QueryableNode[]) nodeList.toArray(new QueryableNode[nodeList.size()]);
-        }
-
-        return (nodes);
+	return (QueryableNode[])
+	    nodeList.toArray(new QueryableNode[nodeList.size()]);
     }
 
-    public String[] getQueryableInterfacesForNode(int nodeId) {
-        return this.getQueryableInterfacesForNode(String.valueOf(nodeId));
+    public ArrayList getQueryableInterfacesForNode(int nodeId) {
+        return getQueryableInterfacesForNode(String.valueOf(nodeId));
     }
 
-    public String[] getQueryableInterfacesForNode(String nodeId) {
+    public ArrayList getQueryableInterfacesForNode(String nodeId) {
         if (nodeId == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
 
-        String[] intfs = new String[0];
-        File nodeDir = new File(this.rrdDirectory, nodeId);
+        ArrayList intfs = new ArrayList();
+        File nodeDir = new File(getRrdDirectory(), nodeId);
 
-        if (!nodeDir.exists() || !nodeDir.isDirectory()) {
+        if (!nodeDir.isDirectory()) {
             throw new IllegalArgumentException("No such directory: " + nodeDir);
         }
 
-        File[] intfDirs = nodeDir.listFiles(RrdFileConstants.INTERFACE_DIRECTORY_FILTER);
+	File[] intfDirs =
+	    nodeDir.listFiles(RrdFileConstants.INTERFACE_DIRECTORY_FILTER);
 
         if (intfDirs != null && intfDirs.length > 0) {
-            intfs = new String[intfDirs.length];
-
+            intfs.ensureCapacity(intfDirs.length);
             for (int i = 0; i < intfDirs.length; i++) {
-                intfs[i] = intfDirs[i].getName();
-            }
+		intfs.add(intfDirs[i].getName());
+	    }
         }
 
         return intfs;
     }
 
     public boolean isQueryableNode(int nodeId) {
-        return this.isQueryableNode(String.valueOf(nodeId));
+        return isQueryableNode(String.valueOf(nodeId));
     }
 
     public boolean isQueryableNode(String nodeId) {
@@ -462,24 +211,8 @@ public class PerformanceModel extends Object implements GraphModel {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
 
-        boolean isQueryable = false;
-        File nodeDir = new File(this.rrdDirectory, nodeId);
-
-        if (nodeDir.exists() && nodeDir.isDirectory()) {
-            File[] nodeFiles = nodeDir.listFiles(RrdFileConstants.RRD_FILENAME_FILTER);
-
-            if (nodeFiles != null && nodeFiles.length > 0) {
-                isQueryable = true;
-            } else {
-                File[] intfDirs = nodeDir.listFiles(RrdFileConstants.INTERFACE_DIRECTORY_FILTER);
-
-                if (intfDirs != null && intfDirs.length > 0) {
-                    isQueryable = true;
-                }
-            }
-        }
-
-        return isQueryable;
+        File nodeDir = new File(getRrdDirectory(), nodeId);
+	return RrdFileConstants.isValidRRDNodeDir(nodeDir);
     }
 
     public boolean isQueryableInterface(int nodeId, String ifLabel) {
@@ -487,22 +220,10 @@ public class PerformanceModel extends Object implements GraphModel {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
 
-        boolean isQueryable = false;
-        File nodeDir = new File(this.rrdDirectory, String.valueOf(nodeId));
-
-        if (nodeDir.exists() && nodeDir.isDirectory()) {
-            File intfDir = new File(nodeDir, ifLabel);
-
-            if (intfDir.exists() && intfDir.isDirectory()) {
-                File[] intfFiles = intfDir.listFiles(RrdFileConstants.RRD_FILENAME_FILTER);
-
-                if (intfFiles != null && intfFiles.length > 0) {
-                    isQueryable = true;
-                }
-            }
-        }
-
-        return isQueryable;
+	File intfDir = new File(getRrdDirectory(),
+				String.valueOf(nodeId) + File.separator
+				+ ifLabel);
+	return RrdFileConstants.isValidRRDInterfaceDir(intfDir);
     }
 
     public boolean isQueryableInterface(String nodeId, String ifLabel) {
@@ -510,7 +231,7 @@ public class PerformanceModel extends Object implements GraphModel {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
 
-        return this.isQueryableInterface(Integer.parseInt(nodeId), ifLabel);
+        return isQueryableInterface(Integer.parseInt(nodeId), ifLabel);
     }
 
     public boolean encodeNodeIdInRRDParm() {
@@ -519,5 +240,14 @@ public class PerformanceModel extends Object implements GraphModel {
 
     public String getType() {
         return "performance";
+    }
+
+    /**
+     * Return a human-readable description (usually an IP address or hostname)
+     * for the interface given.
+     */
+    public String getHumanReadableNameForIfLabel(int nodeId, String ifLabel)
+		throws SQLException {
+	return getHumanReadableNameForIfLabel(nodeId, ifLabel, true);
     }
 }

@@ -68,11 +68,12 @@
     int nodeId = Integer.parseInt(nodeIdString);
     
     TreeMap intfMap = new TreeMap();  
-    String[] intfs = this.model.getQueryableInterfacesForNode(nodeId);
+    ArrayList intfs = this.model.getQueryableInterfacesForNode(nodeId);
   
     // Add the readable name and the file path to the Map
-    for(int i=0; i < intfs.length; i++) {
-        intfMap.put(this.model.getHumanReadableNameForIfLabel(nodeId, intfs[i]), intfs[i]);
+    for (Iterator i = intfs.iterator(); i.hasNext(); ) {
+    	String intf = (String) i.next();
+        intfMap.put(this.model.getHumanReadableNameForIfLabel(nodeId, intf), intf);
     }
 %>
 

@@ -75,8 +75,8 @@ public class RRDListServlet extends HttpServlet {
         try {
             ResponseTimeModel.QueryableNode[] nodes = this.model.getQueryableNodes();
             for (int i = 0; i < nodes.length; i++) {
-                if ((nodes[i].nodeLabel != null) && (!nodes[i].nodeLabel.equals(""))) {
-                    out.println(nodes[i].nodeLabel + ", " + nodes[i].nodeId);
+                if ((nodes[i].getNodeLabel() != null) && (!nodes[i].getNodeLabel().equals(""))) {
+                    out.println(nodes[i].getNodeLabel() + ", " + nodes[i].getNodeId());
                 } else {
                     //
                     out.println("&lt;blank&gt; (change this later)");

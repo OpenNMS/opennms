@@ -146,7 +146,7 @@
 
       <select name="node" size="10">
         <% for( int i=0; i < nodes.length; i++ ) { %>
-          <option value="<%=nodes[i].nodeId%>"><%=nodes[i].nodeLabel%></option>
+          <option value="<%=nodes[i].getNodeId()%>"><%=nodes[i].getNodeLabel()%></option>
         <% } %>
       </select>
     </p>
@@ -166,7 +166,7 @@
     <p>
       <select name="node" size="10">
         <% for( int i=0; i < nodes.length; i++ ) { %>
-          <option value="<%=nodes[i].nodeId%>"><%=nodes[i].nodeLabel%></option>
+          <option value="<%=nodes[i].getNodeId()%>"><%=nodes[i].getNodeLabel()%></option>
         <% } %>
       </select>
     </p>

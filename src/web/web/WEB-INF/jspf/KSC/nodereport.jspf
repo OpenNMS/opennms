@@ -45,13 +45,14 @@
         node_report.setShow_timespan_button(true);
         node_report.setShow_graphtype_button(true);
  
-        String query_interface[] = this.model.getQueryableInterfacesForNode(node_id);
-        Arrays.sort (query_interface);
-        for (int i=0; i < query_interface.length;  i++) {
+        ArrayList query_interface = this.model.getQueryableInterfacesForNode(node_id);
+        Collections.sort(query_interface);
+	for (Iterator i = query_interface.iterator(); i.hasNext(); ) {
+	    String intf = (String) i.next();
             Graph graph = new Graph(); 
             graph.setTitle("");
             graph.setNodeId(String.valueOf(node_id));
-            graph.setInterfaceId(query_interface[i]);  
+            graph.setInterfaceId(intf);
             graph.setTimespan("7_day");
             graph.setGraphtype("mib2.bits");
             node_report.addGraph(graph);

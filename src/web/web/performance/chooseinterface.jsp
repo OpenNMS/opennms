@@ -75,8 +75,8 @@
         throw new MissingParameterException("endUrl", requiredParameters);
     }
     
-    String[] intfs = this.model.getQueryableInterfacesForNode(nodeId);
-    Arrays.sort(intfs);        
+    ArrayList intfs = this.model.getQueryableInterfacesForNode(nodeId);
+    Collections.sort(intfs);        
 %>
 
 
@@ -131,8 +131,9 @@
   <%=Util.makeHiddenTags(request, new String[] {"endUrl"})%>
 
   <select name="intf" size="10">
-    <% for(int i=0; i < intfs.length; i++) { %>
-      <option value="<%=intfs[i]%>" <%=(i==0) ? "selected" : ""%>><%=this.model.getHumanReadableNameForIfLabel(Integer.parseInt(nodeId), intfs[i])%></option>
+    <% for (ListIterator i = intfs.listIterator(); i.hasNext(); ) { %>
+      <% String intf = (String) i.next(); %>
+      <option value="<%=intf%>" <%=(i.previousIndex()==0) ? "selected" : ""%>><%=this.model.getHumanReadableNameForIfLabel(Integer.parseInt(nodeId), intf)%></option>
     <% } %>
   </select>
 
