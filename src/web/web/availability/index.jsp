@@ -42,7 +42,7 @@
 
 <%
 	Catinfo catconfig  = null;
-        CategoryFactory catFactory;
+        CatFactory catFactory;
         try
         {
                 CategoryFactory.init();
@@ -69,7 +69,7 @@
 <head>
   <title>Availability | OpenNMS Web Console</title>
   <base HREF="<%=org.opennms.web.Util.calculateUrlBase( request )%>" />
-  <link rel="stylesheet" type="text/css" href="includes/styles.css" />
+  <link rel="stylesheet" type="text/css" href="css/styles.css" />
 </head>
 <body marginwidth="0" marginheight="0" LEFTMARGIN="0" RIGHTMARGIN="0" TOPMARGIN="0">
 
@@ -98,6 +98,10 @@
           <input type="radio" name="format" value="<%="PDF"%>" onClick="avail.formatvalue.value='PDF'" /> Numeric Reports in PDF Format<br>
           <input type="radio" name="format" value="<%="HTML"%>" onClick="avail.formatvalue.value='HTML'"/> Numeric Reports in HTML Format<br>
           <input type="hidden" name="formatvalue" value="SVG"/> <br>
+    <br><B>Choose the format of the monthly report sections.</B><br>
+          <input type="radio" name="monthformat" value="<%="classic"%>" checked onClick="avail.monthformatvalue.value='classic'"/> Classic Format <br>
+          <input type="radio" name="monthformat" value="<%="calendar"%>" onClick="avail.monthformatvalue.value='calendar'" /> Calendar Format<br>
+          <input type="hidden" name="monthformatvalue" value="classic"/> <br>
 	<br><B>Choose the category.</B><br>
 	  <% 
                 boolean checkCategory = true;

@@ -81,7 +81,7 @@ public class RawAvailabilityServlet extends HttpServlet {
             urlReplace += "/images/logo.gif";
 
             AvailabilityReport report = new AvailabilityReport(username);
-            report.getReportData(urlReplace, category, "all");
+            report.getReportData(urlReplace, category, "all", null);
 
             if (log.isDebugEnabled())
                 log.info("Generated Report Data... ");

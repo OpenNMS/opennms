@@ -52,7 +52,7 @@ public class AvailabilityConstants {
      * The sql statement that is used to get services information for a
      * nodeid/IP address.
      */
-    public final static String DB_GET_SVC_ENTRIES = "SELECT ifServices.serviceid, service.servicename FROM ifServices, " + "service WHERE ((ifServices.nodeid = ? ) AND (ifServices.ipaddr = ?) AND ipinterface.ipaddr = ? AND ipinterface.isManaged ='M' AND " + "(ifServices.serviceid = service.serviceid) AND (ifservices.status = 'A')) AND node.nodeid = ? AND node.nodetype = 'A'";
+    public final static String DB_GET_SVC_ENTRIES = "SELECT ifServices.serviceid, service.servicename FROM ifServices, ipInterface, node, " + "service WHERE ((ifServices.nodeid = ? ) AND (ifServices.ipaddr = ?) AND ipinterface.ipaddr = ? AND ipinterface.isManaged ='M' AND " + "(ifServices.serviceid = service.serviceid) AND (ifservices.status = 'A')) AND node.nodeid = ? AND node.nodetype = 'A'";
 
     /**
      * The sql statement for getting outage entries for a nodeid/ip/serviceid

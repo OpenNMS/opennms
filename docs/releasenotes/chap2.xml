@@ -4,12 +4,38 @@
 
   <subtitle>Changes in This OpenNMS</subtitle>
 
-  <para>OpenNMS 1.2.5 is the most recent production, or "stable", release. It
-  is the sixth release in the stable branch of OpenNMS. Changes to the stable
+  <para>OpenNMS 1.2.6 is the most recent production, or "stable", release. It
+  is the seventh release in the stable branch of OpenNMS. Changes to the stable
   branch are limited to bug fixes and simple improvements. The 1.3 tree is a
   development, or "unstable" tree, where most new features are implemented,
   but without the testing that goes into 1.2. When 1.3 is mature enough, it
   will become OpenNMS 1.4, the next stable version.</para>
+
+  <section>
+    <title>Changes in OpenNMS 1.2.6</title>
+
+    <section>
+      <title>New Features</title>
+
+      <bridgehead>New format for availability reports</bridgehead>
+
+      <para>Version 1.2.6 previews new format availability reports from the 1.3
+      tree of OpenNMS. Each availability report format (HTML, PDF and SVG) now
+      has a new version of the Last Months Daily Availability and Month to Date
+      Daily Availability report. These new reports have a tabular calendar look
+      to them and have colour-coded cells to identify days that have fallen 
+      below "normal" and "warning" levels for the category displayed in the
+      report. To generate these reports, select "Calendar Format" from the 
+      availability reports page in the WebUI. The original reports are still
+      available (by default) as "Classic Format" reports.</para>
+
+    </section> 
+
+    <section>
+      <title>Bug Fixes</title>
+    </section> 
+  </section>
+
 
   <section>
     <title>Changes in OpenNMS 1.2.5</title>

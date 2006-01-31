@@ -12,6 +12,7 @@
 - Fixed an issue with the Scheduled Outages GUI and Java 5.
 - Fixed an issue with data collection when the primary interface is
   on a NIC with other virtual IPs.
+- Merged Calendar format reports from 1.3 line.
 
 1.2.4 to 1.2.5
 ----------------------------------------------------------------------
