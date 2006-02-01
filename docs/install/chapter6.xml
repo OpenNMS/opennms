@@ -17,7 +17,7 @@
       OpenNMS depends on are required before the OpenNMS package can be
       installed. You should be able to find those packages on the distribution
       CDs that came with your system. For some of the more obscure packages,
-      you can visit the OpenNMS <ulink
+      like <filename>metamail</filename>, you can visit the OpenNMS <ulink
       url="ftp://ftp.opennms.org">FTP</ulink> site and check in the
       <filename>/pub/dependencies</filename> directory. In addition, sites
       like <ulink url="http://distro.ibiblio.org/">Ibiblio</ulink> and <ulink
@@ -32,7 +32,7 @@
       <para>This can happen for a a number of reasons. You can run
       "<code>opennms -v status</code>" a few times after getting this error to
       see if OpenNMS eventually starts itself completely and if not, to see
-      which daemons never start up completely. Here are some of the likely
+      which daemons never start up completely. Hare are some of the likely
       causes of this problem:</para>
 
       <orderedlist>
@@ -51,7 +51,7 @@
 
         <listitem>
           <para>Database is not running. If only about half or less of the
-          daemons are shown as running, you can check for this condition by
+          daemons are shown as running. You can check for this condition by
           looking for <code>FATAL</code> errors in the log files. You'll see
           something like "<code>Error accessing database</code>" in the
           logs.</para>
@@ -154,8 +154,8 @@
       a "context" to that file, however this is no longer needed in OpenNMS
       1.1.4. In fact, if you are upgrading from 1.1.3 or earlier, you must
       manually remove this "context" from <filename>server.xml</filename> (it
-      is not done automatically when upgrading). Here is what it looks
-      like:</para>
+      is not done automatically when upgrading). Here is what it looks like
+      looks like:</para>
 
       <programlisting>&lt;!-- Example Server Configuration File --&gt;
 &lt;Server ...
@@ -322,7 +322,7 @@ opennms=# </computeroutput><command>ALTER TABLE node_old_11033991291234 RENAME T
 
       <para>You can use the "\d" command within <filename>psql</filename> to
       see what other tables exist in your database. You can use
-      "<code>SELECT count(*) from table;</code>" (fill in the table
+      "<filename>SELECT count(*) from table</filename>;" (fill in the table
       name for "table") to get a count of rows in any table. If you have empty
       tables, you can just drop them. If you have multiple tables with data,
       you will have to decide which table of data you want to keep or merge
@@ -378,7 +378,7 @@ opennms=# </computeroutput><command>ALTER TABLE node_old_11033991291234 RENAME T
       <title>Error: "- adding iplike database function... &lt;snip&gt;
       org.postgresql.util.PSQLException: ERROR: could not access file
       '&lt;snip&gt;/lib/iplike.so': Permission denied"</title>
-      
+
       <para>The PostgreSQL server cannot access the iplike.so file. This could
       be due to the file itself not having appropriate permissions for the
       user that PostgreSQL runs as and/or one or more of the parent
@@ -393,72 +393,6 @@ opennms=# </computeroutput><command>ALTER TABLE node_old_11033991291234 RENAME T
       when people install OpenNMS into a home directory for root or another
       user and the permissions on that home directory do not allow users other
       than the owner of the directory access.</para>
-    </section>
-
-    <section>
-      <title>Error: "- adding iplike database function... &lt;snip&gt;
-      org.postgresql.util.PSQLException: ERROR: could not load
-      library ..."</title>
-
-      <para>The latter part of the error could be something like
-      "<code>&lt;path&gt;/iplike.so: cannot open shared object file: No
-      such file or directory</code>" or "<code>ld.so.1: postgres: fatal:
-      &lt;path&gt;/iplike.so: wrong ELF class: ELFCLASS32</code>".</para>
-      
-      <para>The PostgreSQL server cannot load the <code>iplike.so</code>
-      file.  This is almost always caused by the PostgreSQL server and the
-      iplike.so file being compiled for different processor instruction
-      sets.  This is commonly seen when the PostgreSQL server is compiled
-      to use a 64-bit instruction set but the OpenNMS <code>iplike.so</code>
-      shared object is compiled for a 32-bit instruction set, although the
-      opposite is possible, as well.  You can use the "<code>file</code>"
-      command on <code>iplike.so</code> and the <code>postmaster</code>
-      binary with PostgreSQL to check their instruction sets.</para>
-
-      <para>The easiest solution is to see if there is a packaged version
-      of OpenNMS compiled for the same instruction set (32- or 64-bit) as
-      your PostgreSQL server.  The next easiest method for most users is
-      to switch the PostgreSQL server to match the instruction set that
-      the <code>iplike.so</code> file was compiled for.  For advanced
-      users, you can compile OpenNMS yourself to fit the processor set
-      that you need.  See <ulink url="http://sourceforge.net/mailarchive/message.php?msg_id=9531580">this post to the discuss list</ulink>
-      for some pointers.</para>
-    </section>
-
-    <section>
-      <title>Error: "Exception in thread "main"
-      org.postgresql.util.PSQLException: ERROR: relation "pg_user" does not
-      exist" when running installer.</title>
-
-      <para>This error means the database was not created properly. Since the
-      installer script is supposed to create the database, one might assume it
-      is a problem with OpenNMS, but instead it is an issue with the SELinux
-      portions of Red Hat 4 (and CentOS 4). Basically, the postgres init_db
-      command is not able to write to /dev/null, and it fails without a useful
-      error message.</para>
-
-      <para>To get around this, run the following commands:</para>
-
-      <orderedlist>
-        <listitem>
-          <para>stop postgres</para>
-        </listitem>
-
-        <listitem>
-          <para>rm -rf /var/lib/pgsql/data</para>
-        </listitem>
-
-        <listitem>
-          <para>/usr/sbin/setenforce 0</para>
-        </listitem>
-
-        <listitem>
-          <para>start postgres</para>
-        </listitem>
-      </orderedlist>
-
-      <para>Note that step 2 will delete any changes you made to the
-      postgresql configuration files and you'll need to redo them.</para>
     </section>
   </section>
 
@@ -569,6 +503,9 @@ opennms=# </computeroutput><command>ALTER TABLE node_old_11033991291234 RENAME T
           </glossdef>
         </glossentry>
       </glosslist>
+
+      <para>The OpenNMS lists are also archived on <ulink
+      url="http://search.gmane.org">gmane.org</ulink>.</para>
     </section>
 
     <section>
