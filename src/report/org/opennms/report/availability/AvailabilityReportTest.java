@@ -30,7 +30,7 @@ public class AvailabilityReportTest extends TestCase {
 		calendar = new GregorianCalendar();
 		//date fror report run is 18th May 2005
 		calendar.set(2005, 4, 18);
-		MockLogAppender.setupLogging();
+		//MockLogAppender.setupLogging();
 		m_categories = new Categories();
 		m_db = new MockDatabase();
 		DatabaseConnectionFactory.setInstance(m_db);
