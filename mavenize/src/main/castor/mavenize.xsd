@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://xmlns.opennms.org/xsd/mavenize" xmlns:this="http://xmlns.opennms.org/xsd/mavenize">
+
+  <element name="include">
+    <complexType>
+      <attribute name="name" type="string" />
+    </complexType>
+  </element>
+  <element name="exclude">
+    <complexType>
+      <attribute name="name" type="string" />
+    </complexType>
+  </element>
+  <element name="fileset">
+    <complexType>
+      <sequence>
+        <element ref="this:include" minOccurs="0" maxOccurs="unbounded" />
+        <element ref="this:exclude" minOccurs="0" maxOccurs="unbounded" />
+      </sequence>
+      <attribute name="dir" type="string" />
+    </complexType>
+  </element> 
+  <element name="sources">
+    <complexType>
+      <sequence>
+        <element ref="this:fileset" minOccurs="1" maxOccurs="unbounded" />
+      </sequence>
+      <attribute name="type" type="string" />
+    </complexType>
+  </element>
+  <element name="dependency">
+    <complexType>
+      <attribute name="groupId"    type="string" />
+      <attribute name="artifactId" type="string" />
+      <attribute name="version"    type="string" />
+      <attribute name="scope"      type="string" default="compile"/>
+    </complexType>
+  </element>
+  <element name="module-dependency">
+    <complexType>
+      <attribute name="module-id" type="string" />
+    </complexType>
+  </element>
+  <element name="dependencies">
+    <complexType>
+      <sequence>
+        <element ref="this:dependency" minOccurs="0" maxOccurs="unbounded" />
+        <element ref="this:module-dependency" minOccurs="0" maxOccurs="unbounded" />
+      </sequence>
+      <attribute name="type" type="string" />
+    </complexType>
+  </element>
+  <element name="module">
+    <complexType>
+      <sequence>
+        <element ref="this:sources" minOccurs="0" maxOccurs="unbounded" />
+        <element ref="this:dependencies" minOccurs="0" maxOccurs="unbounded" />
+        <element ref="this:module" minOccurs="0" maxOccurs="unbounded" />
+      </sequence>
+      <attribute name="module-id" type="string" />
+      <attribute name="module-type" type="string" />
+      <attribute name="module-name" type="string" />
+    </complexType>
+  </element>
+</schema>
