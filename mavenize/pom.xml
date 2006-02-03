@@ -1,0 +1,16 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.opennms</groupId>
+  <artifactId>opennms-mavenizer</artifactId>
+  <version>1.0-SNAPSHOT</version>
+  <name>OpenNMS Mavenizer</name>
+  <packaging>jar</packaging>
+  <dependencies>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>3.8.1</version>
+    </dependency>
+  </dependencies>
+</project>
+
