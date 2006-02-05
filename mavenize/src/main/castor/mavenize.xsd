@@ -3,63 +3,84 @@
 
   <element name="include">
     <complexType>
-      <attribute name="name" type="string" />
+      <attribute name="name" type="string" use="required"/>
     </complexType>
   </element>
+
   <element name="exclude">
     <complexType>
-      <attribute name="name" type="string" />
+      <attribute name="name" type="string" use="required"/>
     </complexType>
   </element>
+
   <element name="fileset">
     <complexType>
       <sequence>
         <element ref="this:include" minOccurs="0" maxOccurs="unbounded" />
         <element ref="this:exclude" minOccurs="0" maxOccurs="unbounded" />
       </sequence>
-      <attribute name="dir" type="string" />
+      <attribute name="dir" type="string" use="required"/>
     </complexType>
   </element> 
+
   <element name="sources">
     <complexType>
       <sequence>
         <element ref="this:fileset" minOccurs="1" maxOccurs="unbounded" />
       </sequence>
-      <attribute name="type" type="string" />
+      <attribute name="source-type" type="string" use="required"/>
     </complexType>
   </element>
+
   <element name="dependency">
     <complexType>
-      <attribute name="groupId"    type="string" />
-      <attribute name="artifactId" type="string" />
-      <attribute name="version"    type="string" />
+      <attribute name="groupId"    type="string" use="required"/>
+      <attribute name="artifactId" type="string" use="required"/>
+      <attribute name="version"    type="string" use="required"/>
       <attribute name="scope"      type="string" default="compile"/>
     </complexType>
   </element>
+
   <element name="module-dependency">
     <complexType>
-      <attribute name="module-id" type="string" />
+      <attribute name="module-id" type="string" use="required"/>
+      <attribute name="scope"      type="string" default="compile"/>
     </complexType>
   </element>
+
   <element name="dependencies">
     <complexType>
       <sequence>
-        <element ref="this:dependency" minOccurs="0" maxOccurs="unbounded" />
         <element ref="this:module-dependency" minOccurs="0" maxOccurs="unbounded" />
+        <element ref="this:dependency" minOccurs="0" maxOccurs="unbounded" />
       </sequence>
-      <attribute name="type" type="string" />
     </complexType>
   </element>
+
   <element name="module">
     <complexType>
       <sequence>
         <element ref="this:sources" minOccurs="0" maxOccurs="unbounded" />
-        <element ref="this:dependencies" minOccurs="0" maxOccurs="unbounded" />
         <element ref="this:module" minOccurs="0" maxOccurs="unbounded" />
+        <element ref="this:dependencies" minOccurs="0" maxOccurs="1" />
       </sequence>
-      <attribute name="module-id" type="string" />
-      <attribute name="module-type" type="string" />
-      <attribute name="module-name" type="string" />
+      <attribute name="module-id" type="string" use="required"/>
+      <attribute name="module-type" type="string" use="required"/>
+      <attribute name="module-name" type="string" use="required"/>
+    </complexType>
+  </element>
+
+  <element name="project">
+    <complexType>
+      <sequence>
+         <element ref="this:module" minOccurs="0" maxOccurs="unbounded" />
+        <element ref="this:dependencies" minOccurs="0" maxOccurs="1" />
+      </sequence>
+      <attribute name="groupId" type="string" use="required"/>
+      <attribute name="artifactId" type="string" use="required"/>
+      <attribute name="version" type="string" use="required" />
+      <attribute name="name" type="string" use="required"/>
+      <attribute name="packaging" type="string" default="pom" />
     </complexType>
   </element>
 </schema>

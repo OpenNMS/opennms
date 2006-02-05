@@ -31,11 +31,9 @@
 //
 package org.opennms.mavenize;
 
-import java.io.File;
-import java.util.Iterator;
-import java.util.Vector;
-
 import junit.framework.TestCase;
+
+import org.codehaus.plexus.util.DirectoryScanner;
 
 public class FileSetTest extends TestCase {
 
@@ -46,19 +44,15 @@ public class FileSetTest extends TestCase {
     protected void tearDown() throws Exception {
         super.tearDown();
     }
-    
 
-    public void testIterate() {
-        FileSet fileSet = new FileSet();
-        fileSet.setBaseDir(new File("src/main/castor"));
-        
-        int count = 0;
-        for (Iterator it = fileSet.iterator(); it.hasNext();) {
-            File file = (File) it.next();
-            count++;
-        }
-        assertEquals(2, count);
-        
+    public void testScan() {
+    	DirectoryScanner scanner = new DirectoryScanner();
+    	scanner.setBasedir("src/main");
+    	scanner.addDefaultExcludes();
+    	scanner.setIncludes(new String[] { "**/*.xsd" });
+    	scanner.scan();
+    	
+    	assertEquals(1, scanner.getIncludedFiles().length);
     }
 
 }

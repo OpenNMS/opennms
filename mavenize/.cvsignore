@@ -1,5 +1,7 @@
 tmp
-
 target
 .classpath
 .project
+.settings
+bin
+test-pom.xml

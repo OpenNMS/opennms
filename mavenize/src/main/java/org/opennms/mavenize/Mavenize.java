@@ -31,6 +31,170 @@
 //
 package org.opennms.mavenize;
 
+import java.io.FileReader;
+import java.io.Reader;
+import java.util.Enumeration;
+
+import org.exolab.castor.xml.MarshalException;
+import org.exolab.castor.xml.Unmarshaller;
+import org.exolab.castor.xml.ValidationException;
+import org.opennms.mavenize.config.Dependencies;
+import org.opennms.mavenize.config.Dependency;
+import org.opennms.mavenize.config.Exclude;
+import org.opennms.mavenize.config.Fileset;
+import org.opennms.mavenize.config.Include;
+import org.opennms.mavenize.config.Module;
+import org.opennms.mavenize.config.ModuleDependency;
+import org.opennms.mavenize.config.Project;
+import org.opennms.mavenize.config.Sources;
+
 public class Mavenize {
+	
+	private Project m_module;
+
+	public Mavenize(String specFile) throws Exception {
+		System.out.println("Loading spec file: "+specFile);
+		FileReader reader = new FileReader(specFile);
+		parse(reader);
+		reader.close();
+	}
+	
+	Mavenize(Reader reader) throws Exception {
+		parse(reader);
+	}
+
+	private void parse(Reader reader) throws MarshalException, ValidationException {
+		m_module = (Project)Unmarshaller.unmarshal(Project.class, reader);
+	}
+	
+	Project getTopLevelModule() { return m_module; }
+
+	public static void main(String[] args) throws Exception {
+		if (args.length < 1) {
+			usage();
+			return;
+		}
+		
+		Mavenize mavenize = new Mavenize(args[0]);
+		mavenize.visitSpec(new AbstractSpecVisitor());
+	}
+	
+	public void visitSpec(SpecVisitor visitor) {
+		visitProject(visitor, getTopLevelModule());
+	}
+	
+	private void visitProject(SpecVisitor visitor, Project project) {
+		visitor.visitProject(project);
+		
+		// then visit the dependencies
+		if (project.getDependencies() != null)
+			visitDependencies(visitor, project.getDependencies());
+
+		// then visit the sub modules
+		Enumeration en = project.enumerateModule();
+		while (en.hasMoreElements()) {
+			Module subModule = (Module) en.nextElement();
+			visitModule(visitor, subModule);
+		}
+		
+		visitor.completeProject(project);
+	}
+
+	private void visitModule(SpecVisitor visitor, Module module) {
+		visitor.visitModule(module);
+		
+		// first visit the sources
+		Enumeration sources = module.enumerateSources();
+		while (sources.hasMoreElements()) {
+			Sources source = (Sources) sources.nextElement();
+			visitorSources(visitor, source);
+		}
+		
+		// then visit the dependencies
+		if (module.getDependencies() != null)
+			visitDependencies(visitor, module.getDependencies());
+
+		// then visit the sub modules
+		Enumeration en = module.enumerateModule();
+		while (en.hasMoreElements()) {
+			Module subModule = (Module) en.nextElement();
+			visitModule(visitor, subModule);
+		}
+		
+		visitor.completeModule(module);
+	}
+
+	private void visitDependencies(SpecVisitor visitor, Dependencies deps) {
+		visitor.visitDependencies(deps);
+		
+		Enumeration modDepends = deps.enumerateModuleDependency();
+		while (modDepends.hasMoreElements()) {
+			ModuleDependency modDepend = (ModuleDependency) modDepends.nextElement();
+			visitModuleDependency(visitor, modDepend);
+		}
+		
+		Enumeration depends = deps.enumerateDependency();
+		while (depends.hasMoreElements()) {
+			Dependency depend = (Dependency) depends.nextElement();
+			visitDependency(visitor, depend);
+		}
+		
+		visitor.completeDependencies(deps);
+		
+	}
+
+	private void visitDependency(SpecVisitor visitor, Dependency depend) {
+		visitor.visitDependency(depend);
+		visitor.completeDependency(depend);
+	}
+
+	private void visitModuleDependency(SpecVisitor visitor, ModuleDependency modDepend) {
+		visitor.visitModuleDependency(modDepend);
+		visitor.completeModuleDependency(modDepend);
+	}
+
+	private void visitorSources(SpecVisitor visitor, Sources sources) {
+		visitor.visitSources(sources);
+		
+		Enumeration filesets = sources.enumerateFileset();
+		while (filesets.hasMoreElements()) {
+			Fileset fileset = (Fileset) filesets.nextElement();
+			visitFileSet(visitor, fileset);
+		}
+		
+		visitor.completeSources(sources);
+	}
+
+	private void visitFileSet(SpecVisitor visitor, Fileset fileset) {
+		visitor.visitFileSet(fileset);
+		
+		Enumeration includes = fileset.enumerateInclude();
+		while (includes.hasMoreElements()) {
+			Include include = (Include) includes.nextElement();
+			visitInclude(visitor, include);
+		}
+		
+		Enumeration excludes = fileset.enumerateExclude();
+		while (excludes.hasMoreElements()) {
+			Exclude exclude = (Exclude) excludes.nextElement();
+			visitExclude(visitor, exclude);
+		}
+		
+		visitor.completeFileSet(fileset);
+	}
+
+	private void visitExclude(SpecVisitor visitor, Exclude exclude) {
+		visitor.visitExclude(exclude);
+		visitor.completeExclude(exclude);
+	}
+
+	private void visitInclude(SpecVisitor visitor, Include include) {
+		visitor.visitInclude(include);
+		visitor.completeInclude(include);
+	}
+
+	public static void usage() {
+		System.err.println("mavenize <maven-spec-file>");
+	}
 
 }

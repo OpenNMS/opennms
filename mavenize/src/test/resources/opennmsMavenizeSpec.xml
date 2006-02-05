@@ -1,0 +1,510 @@
+<?xml version="1.0"?>
+
+<!--=================================================================
+	
+	$Id$
+	
+	Build file that will reorganize a opennms 1.x source tree to an opennms 2.x tree
+	
+	==================================================================== -->
+
+<project xmlns="http://xmlns.opennms.org/xsd/mavenize"
+	groupId="org.opennms" artifactId="opennms" version="2.0-SNAPSHOT" name="OpenNMS">
+
+	<!-- core module -->
+	<module module-id="opennms-core" module-type="jar"
+		module-name="OpenNMS Core Utilities">
+		<sources source-type="java">
+			<fileset dir="${opennms.dir}/src/core" />
+		</sources>
+		<dependencies />
+	</module>
+	<!-- joesnmp module -->
+	<module module-id="opennms-joesnmp" module-type="jar"
+		module-name="OpenNMS JoeSNMP library">
+		<sources source-type="java">
+			<fileset dir="${opennms.dir}/src/joesnmp" />
+		</sources>
+		<dependencies />
+	</module>
+
+	<!-- install module -->
+	<module module-id="opennms-install" module-type="jar"
+		module-name="OpenNMS Installation Utilities">
+		<sources source-type="java">
+			<fileset dir="${opennms.dir}/src/install" />
+		</sources>
+		<dependencies />
+	</module>
+
+	<!-- config-util - this module has the ConfigFileConstants which is used in many places -->
+	<module module-id="opennms-config-utils" module-type="jar"
+		module-name="OpenNMS Config Utilities">
+		<sources source-type="java">
+			<fileset dir="${opennms.dir}/src/services">
+				<include
+					name="org/opennms/netmgt/ConfigFileConstants.java" />
+			</fileset>
+		</sources>
+		<dependencies>
+			<module-dependency module-id="opennms-core" />
+		</dependencies>
+	</module>
+
+	<!-- the db module - this has the DatabaseConnectionFactory -->
+	<module module-id="opennms-db" module-type="jar"
+		module-name="OpenNMS DB Access">
+		<sources source-type="java">
+			<fileset dir="${opennms.dir}/src/services">
+				<include
+					name="org/opennms/netmgt/config/DatabaseConnectionFactory.java" />
+				<include
+					name="org/opennms/netmgt/config/DbConnectionFactory.java" />
+			</fileset>
+		</sources>
+		<dependencies>
+			<module-dependency module-id="opennms-core" />
+			<module-dependency module-id="opennms-config-utils" />
+			<dependency groupId="castor" artifactId="castor"
+				version="0.9.6" />
+			<dependency groupId="xerces" artifactId="xerces"
+				version="1.4.0" scope="runtime" />
+		</dependencies>
+	</module>
+
+	<!-- the filtering module - this parse the filter rules in package and converts to SQL
+		based on database-schema.xml -->
+	<module module-id="opennms-filter" module-type="sablecc"
+		module-name="OpenNMS Service Filtering">
+		<sources source-type="java">
+			<fileset dir="${opennms.dir}/src/services">
+				<include
+					name="org/opennms/netmgt/config/DatabaseSchemaConfigFactory.java" />
+				<include name="org/opennms/netmgt/filter/*.java" />
+				<exclude name="org/opennms/netmgt/filter/*Test*.java" />
+			</fileset>
+		</sources>
+		<sources source-type="castor">
+			<fileset
+				dir="${opennms.dir}/src/services/org/opennms/netmgt/config">
+				<include name="database-schema.xsd" />
+			</fileset>
+			<fileset dir="${opennms.dir}/devlib">
+				<include name="castorbuilder.properties" />
+			</fileset>
+		</sources>
+		<sources source-type="sablecc">
+			<fileset
+				dir="${opennms.dir}/src/services/org/opennms/netmgt/filter">
+				<include name="filter.grammar" />
+			</fileset>
+		</sources>
+		<dependencies>
+			<module-dependency module-id="opennms-core" />
+			<module-dependency module-id="opennms-db" />
+			<dependency groupId="castor" artifactId="castor"
+				version="0.9.6" />
+			<dependency groupId="xerces" artifactId="xerces"
+				version="1.4.0" scope="runtime" />
+		</dependencies>
+	</module>
+
+	<module module-id="opennms-icmp" module-type="pom"
+		module-name="OpenNMS ICMP Library">
+		<!-- the icmp module.. has the java code for the icmp lib -->
+		<module module-id="opennms-icmp-api"
+			module-name="OpenNMS ICMP Interface" module-type="jar">
+			<sources source-type="java">
+				<fileset dir="${opennms.dir}/src/services">
+					<include name="org/opennms/protocols/icmp/*.java" />
+					<include name="org/opennms/protocols/ip/*.java" />
+					<include name="org/opennms/netmgt/ping/*.java" />
+				</fileset>
+			</sources>
+			<dependencies>
+				<module-dependency module-id="opennms-core" />
+			</dependencies>
+		</module>
+
+		<!-- the jni code for icmp -->
+		<module module-id="opennms-icmp-jni" module-type="native"
+			module-name="OpenNMS ICMP JNI Library">
+			<sources source-type="native">
+				<fileset
+					dir="${opennms.dir}/src/services/org/opennms/protocols/icmp">
+					<include name="*.c" />
+					<include name="*.h" />
+				</fileset>
+			</sources>
+			<dependencies>
+				<module-dependency module-id="opennms-icmp-api" />
+			</dependencies>
+		</module>
+		<dependencies />
+	</module>
+	<module module-id="opennms-rrd" module-type="pom"
+		module-name="OpenNMS RRD Module">
+		<!-- rrd - a module used to define the highlevel interface for accessing RRD Data -->
+		<module module-id="opennms-rrd-api" module-type="jar"
+			module-name="OpenNMS RRD Interface">
+			<sources source-type="java">
+				<fileset dir="${opennms.dir}/src/services">
+					<include name="org/opennms/netmgt/rrd/*.java" />
+				</fileset>
+			</sources>
+			<dependencies>
+				<module-dependency module-id="opennms-core" />
+				<module-dependency module-id="opennms-config-utils" />
+			</dependencies>
+		</module>
+
+		<!-- an implementation of the rrd interfaces using the pure java JRobin library -->
+		<module module-id="opennms-rrd-jrobin" module-type="jar"
+			module-name="OpenNMS JRobin RRD Implementation">
+			<sources source-type="java">
+				<fileset dir="${opennms.dir}/src/services">
+					<include
+						name="org/opennms/netmgt/rrd/jrobin/*.java" />
+				</fileset>
+			</sources>
+			<dependencies>
+				<module-dependency module-id="opennms-rrd-api" />
+				<dependency groupId="jrobin" artifactId="jrobin"
+					version="1.4.0" />
+			</dependencies>
+		</module>
+
+		<module module-id="opennms-rrd-rrdtool" module-type="pom"
+			module-name="OpenNMS RRDTool RRD Implementation">
+			<!-- an implementation of the rrd interfaces using the a jni layer to rrdtool -->
+			<module module-id="opennms-rrdtool-java" module-type="jar"
+				module-name="OpenNMS RRDTool RRD Interface">
+				<sources source-type="java">
+					<fileset dir="${opennms.dir}/src/services">
+						<include
+							name="org/opennms/netmgt/rrd/rrdtool/*.java" />
+					</fileset>
+				</sources>
+				<dependencies>
+					<module-dependency module-id="opennms-rrd-api" />
+				</dependencies>
+			</module>
+
+			<!-- rrdtool-jni a JNI layer to accessing rrdtool -->
+			<module module-id="opennms-rrdtool-jni" module-type="native"
+				module-name="OpenNMS RRDTool JNI Library">
+				<sources source-type="native">
+					<fileset
+						dir="${opennms.dir}/src/services/org/opennms/netmgt/rrd/rrdtool">
+						<include name="*.c" />
+						<include name="*.h" />
+					</fileset>
+				</sources>
+				<dependencies>
+					<module-dependency module-id="opennms-rrdtool-java" />
+				</dependencies>
+			</module>
+		</module>
+	</module>
+
+	<!-- posgresql iplike function module -->
+	<module module-id="opennms-iplike" module-type="native"
+		module-name="OpenNMS iplike Stored Procedure for PostgreSQL">
+		<sources source-type="native">
+			<fileset dir="${opennms.dir}/src/postgresql">
+				<include name="*.c" />
+			</fileset>
+		</sources>
+		<dependencies />
+	</module>
+
+	<!-- module for the snmp library containing the api and implementations -->
+	<module module-id="opennms-snmp" module-type="pom"
+		module-name="OpenNMS SNMP">
+		<!-- the api for access snmp -->
+		<module module-id="opennms-snmp-api" module-type="jar"
+			module-name="OpenNMS SNMP API">
+			<sources source-type="java">
+				<fileset dir="${opennms.dir}/src/services">
+					<include name="org/opennms/netmgt/snmp/*.java" />
+					<exclude name="org/opennms/netmgt/snmp/*Test*.java" />
+				</fileset>
+			</sources>
+			<dependencies>
+				<module-dependency module-id="opennms-core" />
+			</dependencies>
+		</module>
+
+		<!-- the joesnmp implementation of the snmp api - SNMP version 1, 2c -->
+		<module module-id="opennms-snmp-joesnmp" module-type="jar"
+			module-name="OpenNMS JoeSNMP SNMP Implementation">
+			<sources source-type="java">
+				<fileset dir="${opennms.dir}/src/services">
+					<include
+						name="org/opennms/netmgt/snmp/joesnmp/*.java" />
+					<exclude
+						name="org/opennms/netmgt/snmp/joesnmp/*Test*.java" />
+				</fileset>
+			</sources>
+			<dependencies>
+				<module-dependency module-id="opennms-snmp-api" />
+				<module-dependency module-id="opennms-joesnmp" />
+			</dependencies>
+		</module>
+
+		<!-- an snmp4j implementation of the snmp api - SNMP versions 1, 2c, and 3 -->
+		<module module-id="opennms-snmp-snmp4j" module-type="jar"
+			module-name="OpenNMS SNMP4J SNMP Implementation">
+			<sources source-type="java">
+				<fileset dir="${opennms.dir}/src/services">
+					<include
+						name="org/opennms/netmgt/snmp/snmp4j/*.java" />
+					<exclude
+						name="org/opennms/netmgt/snmp/snmp4j/*Test*.java" />
+				</fileset>
+			</sources>
+			<dependencies>
+				<module-dependency module-id="opennms-snmp-api" />
+				<dependency groupId="org.snmp4j" artifactId="snmp4j"
+					version="1.5" />
+			</dependencies>
+		</module>
+
+	</module>
+
+	<module module-id="opennms-services" module-type="castor"
+		module-name="OpenNMS Services">
+		<sources source-type="castor">
+			<fileset
+				dir="${opennms.dir}/src/services/org/opennms/netmgt/config">
+				<include name="*.xsd" />
+				<exclude name="database-schema.xsd" />
+			</fileset>
+			<fileset dir="${opennms.dir}/schema/xsd">
+				<include name="*.xsd" />
+				<exclude name="availability_report.xsd" />
+			</fileset>
+			<fileset dir="${opennms.dir}/devlib">
+				<include name="castorbuilder.properties" />
+			</fileset>
+		</sources>
+		<sources source-type="resource">
+			<fileset dir="${opennms.dir}/src/services">
+				<include name="castor.properties" />
+				<include
+					name="org/opennms/netmgt/xmlrpcd/provisioner-context.xml" />
+			</fileset>
+		</sources>
+		<sources source-type="test-resource">
+			<fileset dir="${opennms.dir}/src/services">
+				<include
+					name="org/opennms/netmgt/rrd/stresser/stress-test-simple.txt" />
+				<include
+					name="org/opennms/netmgt/snmp/mock/loadSnmpDataTest.properties" />
+				<include
+					name="org/opennms/netmgt/snmp/snmpTestData1.properties" />
+			</fileset>
+		</sources>
+		<sources source-type="java">
+			<fileset dir="${opennms.dir}/src/services">
+				<include name="**/*.java" />
+				<exclude
+					name="org/opennms/netmgt/ConfigFileConstants.java" />
+				<exclude
+					name="org/opennms/netmgt/config/DatabaseConnectionFactory.java" />
+				<exclude
+					name="org/opennms/netmgt/config/DbConnectionFactory.java" />
+				<exclude
+					name="org/opennms/netmgt/config/DatabaseSchemaConfigFactory.java" />
+				<exclude name="org/opennms/netmgt/filter/*.java" />
+				<exclude name="org/opennms/protocols/icmp/*.java" />
+				<exclude name="org/opennms/protocols/ip/*.java" />
+				<exclude name="org/opennms/netmgt/ping/*.java" />
+				<exclude name="org/opennms/netmgt/rrd/**/*.java" />
+				<exclude name="org/opennms/netmgt/snmp/**/*.java" />
+				<!-- need to add these to another project or location -->
+				<exclude name="**/*Test*.java" />
+				<exclude name="**/mock/**/*.java" />
+				<exclude name="org/opennms/netmgt/notifd/*Growl*" />
+			</fileset>
+		</sources>
+		<sources source-type="java">
+			<fileset dir="${opennms.dir}/src/services">
+				<include
+					name="org/opennms/netmgt/poller/monitors/PassiveServiceMonitor.java" />
+			</fileset>
+		</sources>
+		<!--
+			<sources source-type="test">
+			<fileset dir="${opennms.dir}/src/services">
+			<include name="**/*Test*.java"/>
+			<include name="**/mock/**/*.java"/>
+			<exclude name="org/opennms/netmgt/mock/MockAgent.java" />
+			<exclude name="org/opennms/netmgt/mock/MockProxy.java" />
+			<exclude name="org/opennms/netmgt/mock/SubAgent.java" />
+			<exclude name="org/opennms/netmgt/mock/MapSubAgent.java" />
+			<exclude name="org/opennms/netmgt/mock/MockAgentTest.java" />
+			<exclude name="org/opennms/netmgt/capsd/plugins/**.java" />
+			<exclude name="org/opennms/netmgt/poller/monitors/**.java" />
+			<exclude name="org/opennms/netmgt/notifd/growl/*Growl*" />
+			<exclude name="**/SpringBoardMBeanTest.java" />
+			</fileset>
+			</sources>
+		-->
+		<dependencies>
+			<module-dependency module-id="opennms-core" />
+			<module-dependency module-id="opennms-config-utils" />
+			<module-dependency module-id="opennms-db" />
+			<module-dependency module-id="opennms-snmp-api" />
+			<module-dependency module-id="opennms-rrd-api" />
+			<module-dependency module-id="opennms-filter" />
+			<module-dependency module-id="opennms-icmp-api" />
+			<!-- modules needed only at runtime or this case to run the tests -->
+			<!-- we only actually need one of these so we'll have to figure that out -->
+			<module-dependency module-id="opennms-snmp-joesnmp" scope="runtime" />
+			<module-dependency module-id="opennms-snmp-snmp4j" scope="runtime" />
+			<!-- opennms repo libs -->
+			<dependency groupId="net.sf.jradius"
+				artifactId="jradius-client" version="20040211" />
+			<dependency groupId="org.dhcp.jdhcp" artifactId="jdhcp"
+				version="1.1.1" />
+			<!-- standard repo libs -->
+			<dependency groupId="jivesoftware" artifactId="smack"
+				version="2.0.0" />
+			<dependency groupId="jivesoftware" artifactId="smackx"
+				version="2.0.0" />
+			<dependency groupId="jakarta-regexp"
+				artifactId="jakarta-regexp" version="1.4" />
+			<dependency groupId="castor" artifactId="castor"
+				version="0.9.6" />
+			<dependency groupId="xerces" artifactId="xerces"
+				version="1.4.0" scope="runtime" />
+			<dependency groupId="xmlrpc" artifactId="xmlrpc"
+				version="1.2" />
+			<dependency groupId="org.samba.jcifs" artifactId="jcifs"
+				version="1.2.6" />
+			<dependency groupId="mx4j" artifactId="mx4j"
+				version="3.0.1" />
+			<dependency groupId="mx4j" artifactId="mx4j-remote"
+				version="3.0.1" />
+			<dependency groupId="mx4j" artifactId="mx4j-tools"
+				version="3.0.1" />
+			<dependency groupId="org.springframework"
+				artifactId="spring-context" version="1.2.5" />
+			<dependency groupId="org.springframework"
+				artifactId="spring-remoting" version="1.2.5" />
+			<dependency groupId="bsf" artifactId="bsf" version="2.2" />
+			<dependency groupId="bsh" artifactId="bsh" version="1.2b7" />
+			<dependency groupId="geronimo-spec"
+				artifactId="geronimo-spec-javamail" version="1.3.1-rc5"
+				scope="provided" />
+			<dependency groupId="geronimo-spec"
+				artifactId="geronimo-spec-activation" version="1.0.2-rc4"
+				scope="provided" />
+			<!-- needed to add gnujaxp to opennms repo to get this to work -->
+			<dependency groupId="jfree" artifactId="jfreechart"
+				version="1.0.0-rc1" />
+			<!-- test dependencies -->
+			<dependency groupId="jmock" artifactId="jmock"
+				version="1.0.1" scope="test" />
+			<dependency groupId="jmock" artifactId="jmock-cglib"
+				version="1.0.1" scope="test" />
+			<dependency groupId="hsqldb" artifactId="hsqldb"
+				version="1.8.0.1" scope="test" />
+			<dependency groupId="alt.dev.jmta" artifactId="jmta"
+				version="1.0" scope="test" />
+			<dependency groupId="javax.mail" artifactId="mail"
+				version="1.3.2" scope="test" />
+			<!-- plugin/monitor dependencies -->
+			<dependency groupId="openldap" artifactId="jldap"
+				version="2005.10.03" />
+		</dependencies>
+	</module>
+
+	<module module-id="opennms-reporting" module-type="castor"
+		module-name="OpenNMS Reporting">
+		<sources source-type="java">
+			<fileset dir="${opennms.dirmodule}/src/report">
+				<include name="**/*.java" />
+				<exclude name="**/*Test*.java" />
+			</fileset>
+		</sources>
+		<!--
+			<sources source-type="test">
+			<fileset dir="${opennms.dir}/src/report">
+			<include name="**/*Test*.java"/>
+			</fileset>
+			</sources>
+		-->
+		<sources source-type="castor">
+			<fileset dir="${opennms.dir}/schema/xsd">
+				<include name="availability_report.xsd" />
+			</fileset>
+			<fileset dir="${opennms.dir}/devlib">
+				<include name="castorbuilder.properties" />
+			</fileset>
+		</sources>
+		<dependencies>
+			<module-dependency module-id="opennms-core" />
+			<module-dependency module-id="opennms-services" />
+			<!-- <module-dependency module-id="opennms-services" scope="test" type="test-jar" /> -->
+			<module-dependency module-id="opennms-config-utils" />
+			<module-dependency module-id="opennms-filter" />
+			<dependency groupId="castor" artifactId="castor"
+				version="0.9.6" />
+			<dependency groupId="xerces" artifactId="xerces"
+				version="1.4.0" scope="runtime" />
+			<dependency groupId="avalon-framework"
+				artifactId="avalon-framework" version="4.1.3" />
+			<dependency groupId="fop" artifactId="fop" version="0.20.5" />
+		</dependencies>
+	</module>
+	<module module-id="opennms-webapp" module-type="war"
+		module-name="OpenNMS Web Application">
+		<sources source-type="java">
+			<fileset dir="${opennms.dir}/src/web/src">
+				<include name="**/*.java" />
+				<exclude name="**/*Test*.java" />
+			</fileset>
+		</sources>
+		<!--
+			<sources source-type="test">
+			<fileset dir="${opennms.dir}/src/web/src">
+			<include name="**/*Test*.java"/>
+			</fileset>
+			</sources>
+		-->
+		<!-- TODO: config.properties needs to be copied -->
+		<sources source-type="webapp">
+			<fileset dir="${opennms.dir}/src/web/web">
+				<include name="**/*" />
+			</fileset>
+		</sources>
+		<dependencies>
+			<module-dependency module-id="opennms-services" />
+			<module-dependency module-id="opennms-reporting" />
+			<dependency groupId="xerces" artifactId="xerces"
+				version="1.4.0" scope="runtime" />
+			<dependency groupId="xerces" artifactId="xercesImpl"
+				version="2.6.2" />
+			<dependency groupId="javax.servlet" artifactId="servlet-api"
+				version="2.3" scope="provided" />
+			<dependency groupId="tomcat" artifactId="catalina"
+				version="4.1.31" />
+			<dependency groupId="batik" artifactId="batik-dom"
+				version="1.5" />
+			<dependency groupId="batik" artifactId="batik-svg-dom"
+				version="1.5" />
+			<dependency groupId="batik" artifactId="batik-transcoder"
+				version="1.5" />
+			<dependency groupId="batik" artifactId="batik-xml"
+				version="1.5" />
+			<dependency groupId="batik" artifactId="batik-util"
+				version="1.5" />
+		</dependencies>
+	</module>
+	<dependencies>
+		<dependency groupId="log4j" artifactId="log4j" version="1.2.7" />
+		<dependency groupId="junit" artifactId="junit" version="3.8.1" />
+	</dependencies>
+</project>

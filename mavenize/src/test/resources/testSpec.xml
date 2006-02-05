@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<project xmlns="http://xmlns.opennms.org/xsd/mavenize"
+	groupId="org.opennms" artifactId="opennms" version="2.0-SNAPSHOT"
+	name="OpenNMS">
+</project>
+
