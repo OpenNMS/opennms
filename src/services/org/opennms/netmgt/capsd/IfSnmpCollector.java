@@ -141,6 +141,9 @@ final class IfSnmpCollector implements Runnable {
      */
     boolean hasIfTable() {
         // FIXME What should we do if the table had no error but was empty
+		if (m_ifTable == null) {
+			log().debug("hasIfTable: No interface table present.");
+		}
         return (m_ifTable != null && !m_ifTable.failed());
     }
 
@@ -156,6 +159,9 @@ final class IfSnmpCollector implements Runnable {
      */
     boolean hasIpAddrTable() {
         // FIXME What should we do if the table had no error but was empty
+		if (m_ipAddrTable == null) {
+			log().debug("hasIpAddrTable: No IP interface address table present.");
+		}
         return (m_ipAddrTable != null && !m_ipAddrTable.failed());
     }
 
@@ -171,6 +177,9 @@ final class IfSnmpCollector implements Runnable {
      */
     boolean hasIfXTable() {
         // FIXME What should we do if the table had no error but was empty
+    		if (m_ifXTable == null) {
+    			log().debug("hasIfXTable: No interface extensions table present.");
+    		}
         return (m_ifXTable != null && !m_ifXTable.failed());
     }
 

@@ -109,13 +109,6 @@
         }
 
         try {
-            this.perfModel = new PerformanceModel( org.opennms.core.resource.Vault.getHomeDir() );
-        }
-        catch( Exception e ) {
-            throw new ServletException( "Could not initialize the PerformanceModel", e );
-        }
-
-        try {
             this.rtModel = new ResponseTimeModel( org.opennms.core.resource.Vault.getHomeDir() );
         }
         catch( Exception e ) {
