@@ -1877,11 +1877,15 @@ final class DbNodeEntry {
      */
     public void createAssetNodeEntry(Connection conn, int nodeid) throws SQLException {
 
-        PreparedStatement stmt = conn.prepareStatement("INSERT INTO ASSETS (nodeID,category,userLastModified,lastModifiedDate) values(?,?,?,?)");
+        PreparedStatement stmt = conn.prepareStatement("INSERT INTO ASSETS (nodeID,category,userLastModified,lastModifiedDate,displayCategory,notifyCategory,pollerCategory,thresholdCategory) values(?,?,?,?,?,?,?,?)");
         stmt.setInt(1, nodeid);
         stmt.setString(2, "Unspecified");
         stmt.setString(3, "");
         stmt.setTimestamp(4, new Timestamp((new Date()).getTime()));
+        stmt.setString(5, " ");
+        stmt.setString(6, " ");
+        stmt.setString(7, " ");
+        stmt.setString(8, " ");
 
         stmt.execute();
         stmt.close();
