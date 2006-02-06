@@ -42,24 +42,21 @@ public class ProjectBuildingVisitor extends AbstractSpecVisitor {
 		popBuilder();
 	}
 
-	public void visitSources(Sources souces) {
-		// TODO Auto-generated method stub
-
+	public void visitSources(Sources sources) {
+		getBuilder().addSourceSet(sources.getSourceType());
 	}
 
 	public void visitFileSet(Fileset fileset) {
-		// TODO Auto-generated method stub
-
+		getBuilder().addFileSet(fileset.getDir());
 	}
 
 	public void visitInclude(Include include) {
-		// TODO Auto-generated method stub
+		getBuilder().addInclude(include.getName());
 
 	}
 
 	public void visitExclude(Exclude exclude) {
-		// TODO Auto-generated method stub
-
+		getBuilder().addExclude(exclude.getName());
 	}
 
 	public void visitDependencies(Dependencies deps) {

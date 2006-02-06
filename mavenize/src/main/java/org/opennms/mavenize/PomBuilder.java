@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.maven.model.Dependency;
@@ -18,6 +19,7 @@ public class PomBuilder {
 	private PomBuilder m_parent;
 	private Model m_model = new Model();
 	private List m_modules = new ArrayList();
+	private LinkedList m_sourceSets = new LinkedList();
 	
 	public PomBuilder() {
 		this(null);
@@ -41,12 +43,20 @@ public class PomBuilder {
 		
 		Writer writer = new FileWriter(pom);
 		MavenXpp3Writer modelWriter = new MavenXpp3Writer();
-		modelWriter.write(writer, m_model																								);
+		modelWriter.write(writer, m_model);
 	
+		saveSourceSets(baseDir);
 		saveModules(baseDir);
 		
 	}
 	
+	private void saveSourceSets(File baseDir) throws IOException {
+		for (Iterator it = m_sourceSets.iterator(); it.hasNext();) {
+			SourceSet sourceSet = (SourceSet) it.next();
+			sourceSet.save(baseDir);
+		}
+	}
+
 	private void saveModules(File baseDir) throws IOException {
 		for (Iterator it = m_modules.iterator(); it.hasNext();) {
 			PomBuilder subModule = (PomBuilder) it.next();
@@ -117,7 +127,7 @@ public class PomBuilder {
 		
 		return module;
 	}
-
+	
 	public void addDependency(String groupId, String artifactId, String version, String scope) {
 		Dependency dependency = new Dependency();
 		dependency.setGroupId(groupId);
@@ -126,5 +136,28 @@ public class PomBuilder {
 		dependency.setScope(scope);
 		m_model.addDependency(dependency);
 	}
+
+	public void addSourceSet(String sourceType) {
+		SourceSet sourceSet = SourceSet.create(sourceType);
+		m_sourceSets.add(sourceSet);
+	}
+	
+	public SourceSet getCurrentSourceSet() {
+		return (SourceSet)m_sourceSets.getLast();
+	}
+
+	public void addFileSet(String dir) {
+		getCurrentSourceSet().addFileSet(dir);
+	}
+
+	public void addInclude(String name) {
+		getCurrentSourceSet().addInclude(name);
+	}
+
+	public void addExclude(String name) {
+		getCurrentSourceSet().addExclude(name);
+	}
+	
+	
 
 }

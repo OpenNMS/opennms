@@ -14,6 +14,7 @@ import junit.framework.TestCase;
 
 public class MavenizeTest extends TestCase {
 	
+	String m_baseDir = "target/test/work";
 	
 	
 	private final class CountingInvocationHandler implements InvocationHandler {
@@ -76,31 +77,77 @@ public class MavenizeTest extends TestCase {
 		rdr.close();
 		return mavenize;
 	}
+	
+	public void testMavenizeTest() throws Exception {
+		FileUtils.deleteDirectory(m_baseDir);
+		System.setProperty("opennms.dir", "src/test/test-data");
+		
+		Mavenize mavenize = createMavenizer("/testSpec.xml");
+		
+		PomBuilder builder = new PomBuilder();
+		mavenize.visitSpec(new ProjectBuildingVisitor(builder));
+		builder.save(new File(m_baseDir));
+		
+		assertDirectoryExists(m_baseDir);
+		assertDirectoryExists(m_baseDir,"mavenize-test");
+		assertFileExists(m_baseDir,"mavenize-test/pom.xml");
+		assertDirectoryExists(m_baseDir,"mavenize-test/test-submodule");
+		assertFileExists(m_baseDir,"mavenize-test/test-submodule/pom.xml");
+		assertDirectoryExists(m_baseDir, "mavenize-test/test-submodule/src/main/java");
+		assertFileExists(m_baseDir, "mavenize-test/test-submodule/src/main/java/org/opennms/netmgt/poller/pollables/PollableServiceConfig.java");
+		assertFileNotExists(m_baseDir, "mavenize-test/test-submodule/src/main/java/org/opennms/netmgt/poller/pollables/PollablesTest.java");
+		assertFileExists(m_baseDir, "mavenize-test/test-submodule/src/main/java/org/opennms/netmgt/poller/pollables/PollableVisitor.java");
+		assertFileExists(m_baseDir, "mavenize-test/test-submodule/src/main/java/org/opennms/netmgt/poller/pollables/PollStatus.java");
+		assertFileNotExists(m_baseDir, "mavenize-test/test-submodule/src/main/java/org/opennms/netmgt/poller/pollables/PollStatusTest.java");
+		
+	}
 
-	public void testMavenize() throws Exception {
-		FileUtils.deleteDirectory("target/test/work");
+	public void testMavenizeOpenNMS() throws Exception {
+		FileUtils.deleteDirectory(m_baseDir);
 		
 		Mavenize mavenize = createMavenizer("/opennmsMavenizeSpec.xml");
 		
 		PomBuilder builder = new PomBuilder();
 		mavenize.visitSpec(new ProjectBuildingVisitor(builder));
-		builder.save(new File("target/test/work"));
+		builder.save(new File(m_baseDir));
 		
-		assertDirectoryExists("target/test/work");
-		assertDirectoryExists("target/test/work/opennms");
-		assertFileExists("target/test/work/opennms/pom.xml");
-		assertDirectoryExists("target/test/work/opennms/opennms-rrd/opennms-rrd-rrdtool/opennms-rrdtool-jni");
+		assertDirectoryExists(m_baseDir);
+		assertDirectoryExists(m_baseDir,"opennms");
+		assertFileExists(m_baseDir,"opennms/pom.xml");
+		assertDirectoryExists(m_baseDir,"opennms/opennms-rrd/opennms-rrd-rrdtool/opennms-rrdtool-jni");
+		assertDirectoryExists(m_baseDir, "opennms/opennms-core/src/main/java");
+		
 		
 		
 	}
 
 	private void assertDirectoryExists(String dirName) {
-		File dir = new File(dirName);
-		assertTrue("Directory "+dirName+" does not exist.", dir.exists());
-		assertTrue(dirName+" is not a directory", dir.isDirectory());
+		assertDirectoryExists(new File(dirName));
 	}
 	
-	private void assertFileExists(String fileName) {
-		assertTrue("File "+fileName+" does not exist.", new File(fileName).exists());
+	private void assertDirectoryExists(String baseDir, String path) {
+		assertDirectoryExists(new File(baseDir, path));
 	}
+
+	private void assertDirectoryExists(File dir) {
+		assertTrue("Directory "+dir.getPath()+" does not exist.", dir.exists());
+		assertTrue(dir.getPath()+" is not a directory", dir.isDirectory());
+	}
+	
+	private void assertFileExists(String baseDir, String path) {
+		assertFileExists(new File(baseDir, path));
+	}
+
+	private void assertFileExists(File file) {
+		assertTrue("File "+file.getPath()+" does not exist.", file.exists());
+	}
+	
+	private void assertFileNotExists(String baseDir, String path) {
+		assertFileNotExists(new File(baseDir, path));
+	}
+
+	private void assertFileNotExists(File file) {
+		assertFalse("File "+file.getPath()+" shoult NOT exist.", file.exists());
+	}
+
 }
