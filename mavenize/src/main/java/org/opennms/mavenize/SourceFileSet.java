@@ -6,58 +6,66 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.commons.configuration.SystemConfiguration;
 import org.codehaus.plexus.util.DirectoryScanner;
 import org.codehaus.plexus.util.FileUtils;
 import org.codehaus.plexus.util.IOUtil;
+import org.codehaus.plexus.util.PropertyUtils;
 
 public class SourceFileSet {
 	
 	String m_baseDir;
-	StringBuffer m_includes = null;
-	StringBuffer m_excludes = null;
+	
+	List m_includes = new ArrayList();
+	List m_excludes = new ArrayList();
 	
 	public SourceFileSet(String baseDir) {
-		m_baseDir = baseDir;
-		
-		// add default excludes
-		for (Iterator it = FileUtils.getDefaultExcludesAsList().iterator(); it.hasNext();) {
-			String exclude = (String) it.next();
-			addExclude(exclude);
-		}
+		SystemConfiguration config = new SystemConfiguration();
+		config.addProperty("fileSet.basedir", baseDir);
+		m_baseDir = config.getString("fileSet.basedir");
+		config.clearProperty("fileSet.basedir");
 	}
 
 	public void addInclude(String name) {
-		if (m_includes == null) {
-			m_includes = new StringBuffer(name);
-		}
-		else {
-			m_includes.append(',');
-			m_includes.append(name);
-		}
+		m_includes.add(name);
 	}
 	
-	public String getIncludes() {
-		if (m_includes == null) return "**";
-		
-		return m_includes.toString();
+	public String[] getIncludes() {
+		return (String[]) m_includes.toArray(new String[m_includes.size()]);
 	}
-
+	
 	public void addExclude(String name) {
-		if (m_excludes == null) {
-			m_excludes = new StringBuffer(name);
-		} else {
-			m_excludes.append(',');
-			m_excludes.append(name);
-		}
+		m_excludes.add(name);
 	}
 	
-	public String getExcludes() {
-		if (m_excludes == null) return null;
-		return m_excludes.toString();
+	public String[] getExcludes() {
+		return (String[]) m_excludes.toArray(new String[m_excludes.size()]);
+	}
+	
+	public void save(File targetDir) throws IOException {
+		
+		DirectoryScanner scanner = new DirectoryScanner();
+		scanner.addDefaultExcludes();
+		scanner.setBasedir(getBaseDir());
+		scanner.setIncludes(getIncludes());
+		scanner.setExcludes(getExcludes());
+		scanner.scan();
+
+		System.out.println("Results using scanner");
+		System.out.println("From: "+new File(getBaseDir()).getAbsolutePath());
+		System.out.println("To: "+targetDir.getPath());
+		String[] included = scanner.getIncludedFiles();
+		for (int i = 0; i < included.length; i++) {
+			String includedFile = included[i];
+			System.out.println("\tFile: "+includedFile);
+			FileUtils.copyFile(new File(getBaseDir(), includedFile), new File(targetDir, includedFile));
+		}
+		
 	}
 
-	public void save(File targetDir) throws IOException {
-		FileUtils.copyDirectory(new File(m_baseDir), targetDir, getIncludes(), getExcludes());
+	private String getBaseDir() {
+		return m_baseDir;
 	}
+	
 
 }

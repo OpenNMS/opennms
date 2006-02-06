@@ -5,8 +5,13 @@
 	<module module-id="test-submodule" module-type="jar" module-name="Test Submodule">
 		<sources source-type="java">
 			<fileset dir="src/test/test-data/src/services">
-				<include name="org/opennms/netmgmt/**/*.java"/>
+				<include name="org/opennms/netmgt/**/*.java"/>
 				<exclude name="**/*Test*.java"/>
+			</fileset>
+		</sources>
+		<sources source-type="test">
+			<fileset dir="src/test/test-data/src/services">
+				<include name="org/opennms/netmgt/**/*Test*.java"/>
 			</fileset>
 		</sources>
 		<dependencies>

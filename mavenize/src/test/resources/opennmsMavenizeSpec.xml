@@ -15,7 +15,15 @@
 	<module module-id="opennms-core" module-type="jar"
 		module-name="OpenNMS Core Utilities">
 		<sources source-type="java">
-			<fileset dir="${opennms.dir}/src/core" />
+			<fileset dir="${opennms.dir}/src/core">
+				<include name="**/*.java"/>
+				<exclude name="**/*Test*.java"/>
+			</fileset>
+		</sources>
+		<sources source-type="test">
+			<fileset dir="${opennms.dir}/src/core">
+				<include name="**/*Test*.java"/>
+			</fileset>
 		</sources>
 		<dependencies />
 	</module>
@@ -23,7 +31,15 @@
 	<module module-id="opennms-joesnmp" module-type="jar"
 		module-name="OpenNMS JoeSNMP library">
 		<sources source-type="java">
-			<fileset dir="${opennms.dir}/src/joesnmp" />
+			<fileset dir="${opennms.dir}/src/joesnmp">
+				<include name="**/*.java"/>
+				<exclude name="**/*Test*.java"/>
+			</fileset>
+		</sources>
+		<sources source-type="test">
+			<fileset dir="${opennms.dir}/src/joesnmp">
+				<include name="**/*Test*.java"/>
+			</fileset>
 		</sources>
 		<dependencies />
 	</module>
@@ -32,7 +48,15 @@
 	<module module-id="opennms-install" module-type="jar"
 		module-name="OpenNMS Installation Utilities">
 		<sources source-type="java">
-			<fileset dir="${opennms.dir}/src/install" />
+			<fileset dir="${opennms.dir}/src/install">
+				<include name="**/*.java"/>
+				<exclude name="**/*Test*.java"/>
+			</fileset>
+		</sources>
+		<sources source-type="test">
+			<fileset dir="${opennms.dir}/src/install">
+				<include name="**/*Test*.java"/>
+			</fileset>
 		</sources>
 		<dependencies />
 	</module>
@@ -424,7 +448,7 @@
 	<module module-id="opennms-reporting" module-type="castor"
 		module-name="OpenNMS Reporting">
 		<sources source-type="java">
-			<fileset dir="${opennms.dirmodule}/src/report">
+			<fileset dir="${opennms.dir}/src/report">
 				<include name="**/*.java" />
 				<exclude name="**/*Test*.java" />
 			</fileset>

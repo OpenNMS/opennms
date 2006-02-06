@@ -79,7 +79,7 @@ public class MavenizeTest extends TestCase {
 	}
 	
 	public void testMavenizeTest() throws Exception {
-		FileUtils.deleteDirectory(m_baseDir);
+		FileUtils.deleteDirectory(m_baseDir+"/mavenize-test");
 		System.setProperty("opennms.dir", "src/test/test-data");
 		
 		Mavenize mavenize = createMavenizer("/testSpec.xml");
@@ -89,21 +89,30 @@ public class MavenizeTest extends TestCase {
 		builder.save(new File(m_baseDir));
 		
 		assertDirectoryExists(m_baseDir);
-		assertDirectoryExists(m_baseDir,"mavenize-test");
-		assertFileExists(m_baseDir,"mavenize-test/pom.xml");
-		assertDirectoryExists(m_baseDir,"mavenize-test/test-submodule");
-		assertFileExists(m_baseDir,"mavenize-test/test-submodule/pom.xml");
+		assertDirectoryExists(m_baseDir, "mavenize-test");
+		assertFileExists     (m_baseDir, "mavenize-test/pom.xml");
+		assertDirectoryExists(m_baseDir, "mavenize-test/test-submodule");
+		assertFileExists     (m_baseDir, "mavenize-test/test-submodule/pom.xml");
+		// java code in main
 		assertDirectoryExists(m_baseDir, "mavenize-test/test-submodule/src/main/java");
-		assertFileExists(m_baseDir, "mavenize-test/test-submodule/src/main/java/org/opennms/netmgt/poller/pollables/PollableServiceConfig.java");
-		assertFileNotExists(m_baseDir, "mavenize-test/test-submodule/src/main/java/org/opennms/netmgt/poller/pollables/PollablesTest.java");
-		assertFileExists(m_baseDir, "mavenize-test/test-submodule/src/main/java/org/opennms/netmgt/poller/pollables/PollableVisitor.java");
-		assertFileExists(m_baseDir, "mavenize-test/test-submodule/src/main/java/org/opennms/netmgt/poller/pollables/PollStatus.java");
-		assertFileNotExists(m_baseDir, "mavenize-test/test-submodule/src/main/java/org/opennms/netmgt/poller/pollables/PollStatusTest.java");
-		
+		assertFileExists     (m_baseDir, "mavenize-test/test-submodule/src/main/java/org/opennms/netmgt/poller/pollables/PollableServiceConfig.java");
+		assertFileNotExists  (m_baseDir, "mavenize-test/test-submodule/src/main/java/org/opennms/netmgt/poller/pollables/PollablesTest.java");
+		assertFileExists     (m_baseDir, "mavenize-test/test-submodule/src/main/java/org/opennms/netmgt/poller/pollables/PollableVisitor.java");
+		assertFileExists     (m_baseDir, "mavenize-test/test-submodule/src/main/java/org/opennms/netmgt/poller/pollables/PollStatus.java");
+		assertFileNotExists  (m_baseDir, "mavenize-test/test-submodule/src/main/java/org/opennms/netmgt/poller/pollables/PollStatusTest.java");
+		// test code
+		assertDirectoryExists(m_baseDir, "mavenize-test/test-submodule/src/test/java");
+		assertFileNotExists  (m_baseDir, "mavenize-test/test-submodule/src/test/java/org/opennms/netmgt/poller/pollables/PollableServiceConfig.java");
+		assertFileExists     (m_baseDir, "mavenize-test/test-submodule/src/test/java/org/opennms/netmgt/poller/pollables/PollablesTest.java");
+		assertFileNotExists  (m_baseDir, "mavenize-test/test-submodule/src/test/java/org/opennms/netmgt/poller/pollables/PollableVisitor.java");
+		assertFileNotExists  (m_baseDir, "mavenize-test/test-submodule/src/test/java/org/opennms/netmgt/poller/pollables/PollStatus.java");
+		assertFileExists     (m_baseDir, "mavenize-test/test-submodule/src/test/java/org/opennms/netmgt/poller/pollables/PollStatusTest.java");
+
 	}
 
 	public void testMavenizeOpenNMS() throws Exception {
-		FileUtils.deleteDirectory(m_baseDir);
+		FileUtils.deleteDirectory(m_baseDir+"/opennms");
+		System.setProperty("opennms.dir", "${user.home}/workspaces/HEAD/opennms");
 		
 		Mavenize mavenize = createMavenizer("/opennmsMavenizeSpec.xml");
 		
@@ -112,9 +121,9 @@ public class MavenizeTest extends TestCase {
 		builder.save(new File(m_baseDir));
 		
 		assertDirectoryExists(m_baseDir);
-		assertDirectoryExists(m_baseDir,"opennms");
-		assertFileExists(m_baseDir,"opennms/pom.xml");
-		assertDirectoryExists(m_baseDir,"opennms/opennms-rrd/opennms-rrd-rrdtool/opennms-rrdtool-jni");
+		assertDirectoryExists(m_baseDir, "opennms");
+		assertFileExists     (m_baseDir, "opennms/pom.xml");
+		assertDirectoryExists(m_baseDir, "opennms/opennms-rrd/opennms-rrd-rrdtool/opennms-rrdtool-jni");
 		assertDirectoryExists(m_baseDir, "opennms/opennms-core/src/main/java");
 		
 		
