@@ -98,7 +98,7 @@
 
 	<!-- the filtering module - this parse the filter rules in package and converts to SQL
 		based on database-schema.xml -->
-	<module module-id="opennms-filter" module-type="sablecc"
+	<module module-id="opennms-filter" module-type="jar"
 		module-name="OpenNMS Service Filtering">
 		<sources source-type="java">
 			<fileset dir="${opennms.dir}/src/services">
@@ -151,7 +151,7 @@
 		</module>
 
 		<!-- the jni code for icmp -->
-		<module module-id="opennms-icmp-jni" module-type="native"
+		<module module-id="opennms-icmp-jni" module-type="shlib"
 			module-name="OpenNMS ICMP JNI Library">
 			<sources source-type="native">
 				<fileset
@@ -215,7 +215,7 @@
 			</module>
 
 			<!-- rrdtool-jni a JNI layer to accessing rrdtool -->
-			<module module-id="opennms-rrdtool-jni" module-type="native"
+			<module module-id="opennms-rrdtool-jni" module-type="shlib"
 				module-name="OpenNMS RRDTool JNI Library">
 				<sources source-type="native">
 					<fileset
@@ -232,7 +232,7 @@
 	</module>
 
 	<!-- posgresql iplike function module -->
-	<module module-id="opennms-iplike" module-type="native"
+	<module module-id="opennms-iplike" module-type="shlib"
 		module-name="OpenNMS iplike Stored Procedure for PostgreSQL">
 		<sources source-type="native">
 			<fileset dir="${opennms.dir}/src/postgresql">
@@ -296,7 +296,7 @@
 
 	</module>
 
-	<module module-id="opennms-services" module-type="castor"
+	<module module-id="opennms-services" module-type="jar"
 		module-name="OpenNMS Services">
 		<sources source-type="castor">
 			<fileset
@@ -445,7 +445,7 @@
 		</dependencies>
 	</module>
 
-	<module module-id="opennms-reporting" module-type="castor"
+	<module module-id="opennms-reporting" module-type="jar"
 		module-name="OpenNMS Reporting">
 		<sources source-type="java">
 			<fileset dir="${opennms.dir}/src/report">
@@ -501,7 +501,9 @@
 		<!-- TODO: config.properties needs to be copied -->
 		<sources source-type="webapp">
 			<fileset dir="${opennms.dir}/src/web/web">
-				<include name="**/*" />
+				<include name="**" />
+				<exclude name="**/CVS/**" />
+				<exclude name="**/.cvsignore" />
 			</fileset>
 		</sources>
 		<dependencies>

@@ -4,43 +4,26 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.Properties;
 
 public class SourceSet {
 	
-	private static Properties s_sourceTypeMap = null; 
-	static {
-		try {
-			s_sourceTypeMap = loadSourceMap();
-		} catch (IOException e) {
-			throw new RuntimeException("Unable to load sourceTypeMap", e);
-		}
+	public static SourceSet create(String sourceType, PomBuilder pomBuilder) {
+		return new SourceSet(SourceType.get(sourceType), pomBuilder);
 	}
 	
-	public static SourceSet create(String sourceType) {
-		return new SourceSet(sourceType, getDirectoryToSourceType(sourceType));
-	}
-	
-	private static String getDirectoryToSourceType(String sourceType) {
-		return s_sourceTypeMap.getProperty(sourceType+".standardDir");
-	}
-
-	private static Properties loadSourceMap() throws IOException {
-			Properties sourceProperties = new Properties();
-			sourceProperties.load(SourceSet.class.getResourceAsStream("/sourceTypes.properties"));
-			return sourceProperties;
-	}
-
-	private String m_targetDir;
 	private LinkedList m_fileSets = new LinkedList();
+	private PomBuilder m_pomBuilder;
+	private SourceType m_sourceType;
 
-	private SourceSet(String type, String targetDir) {
-		if (targetDir == null) throw new NullPointerException("targetDir cannot be null for type "+type);
-		m_targetDir = targetDir;
+	private SourceSet(SourceType sourceType, PomBuilder pomBuilder) {
+		m_sourceType = sourceType;
+		m_pomBuilder = pomBuilder;
+		
+		m_sourceType.addPlugins(m_pomBuilder);
 	}
 
 	public void save(File baseDir) throws IOException {
-		File target = new File(baseDir, m_targetDir);
+		File target = new File(baseDir, getTargetDir());
 		target.mkdirs();
 		
 		saveFileSets(target);
@@ -68,6 +51,10 @@ public class SourceSet {
 
 	public void addExclude(String name) {
 		getCurrentFileSet().addExclude(name);
+	}
+
+	private String getTargetDir() {
+		return m_sourceType.getStandardDir();
 	}
 
 }

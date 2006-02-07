@@ -3,14 +3,11 @@ package org.opennms.mavenize;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.configuration.SystemConfiguration;
 import org.codehaus.plexus.util.DirectoryScanner;
 import org.codehaus.plexus.util.FileUtils;
-import org.codehaus.plexus.util.IOUtil;
-import org.codehaus.plexus.util.PropertyUtils;
 
 public class SourceFileSet {
 	

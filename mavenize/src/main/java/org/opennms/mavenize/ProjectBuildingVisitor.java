@@ -1,8 +1,6 @@
 package org.opennms.mavenize;
 
-import java.io.File;
 import java.util.LinkedList;
-import java.util.List;
 
 import org.opennms.mavenize.config.Dependencies;
 import org.opennms.mavenize.config.Dependency;

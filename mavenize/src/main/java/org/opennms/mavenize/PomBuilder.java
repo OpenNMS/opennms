@@ -9,9 +9,11 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.maven.model.Build;
 import org.apache.maven.model.Dependency;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.Parent;
+import org.apache.maven.model.Plugin;
 import org.apache.maven.model.io.xpp3.MavenXpp3Writer;
 
 public class PomBuilder {
@@ -138,7 +140,7 @@ public class PomBuilder {
 	}
 
 	public void addSourceSet(String sourceType) {
-		SourceSet sourceSet = SourceSet.create(sourceType);
+		SourceSet sourceSet = SourceSet.create(sourceType, this);
 		m_sourceSets.add(sourceSet);
 	}
 	
@@ -156,6 +158,19 @@ public class PomBuilder {
 
 	public void addExclude(String name) {
 		getCurrentSourceSet().addExclude(name);
+	}
+
+	public Plugin addPlugin(String groupId, String artifactId) {
+		if (m_model.getBuild() == null) {
+			m_model.setBuild(new Build());
+		}
+		
+		Plugin plugin = new Plugin();
+		plugin.setGroupId(groupId);
+		plugin.setArtifactId(artifactId);
+		m_model.getBuild().addPlugin(plugin);
+		
+		return plugin;
 	}
 	
 	
