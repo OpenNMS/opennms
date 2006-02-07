@@ -19,36 +19,36 @@ public class SourceType {
 		}
 		
 		String getGroupId() {
-			return getTypeConfiguration().getString(getPrefix()+".groupId");
+			return Configuration.get().getString(getPrefix()+".groupId");
 		}
 		String getArtifactId() {
-			return getTypeConfiguration().getString(getPrefix()+".artifactId");
+			return Configuration.get().getString(getPrefix()+".artifactId");
 		}
 		List getGoals() {
-			return getTypeConfiguration().getList(getPrefix()+".goals");
+			return Configuration.get().getList(getPrefix()+".goals");
 		}
 	}
 	
-	private String m_typeKey;
+	private String m_typeName;
 	
 	public static SourceType get(String typeName) {
 		return new SourceType(typeName);
 	}
 
-	private SourceType(String typeKey) {
-		m_typeKey = typeKey;
+	private SourceType(String typeName) {
+		m_typeName = typeName;
 	}
 	
-	public String getTypeKey() {
-		return m_typeKey;
+	private String getTypePrefix() {
+		return "sourceType."+m_typeName;
 	}
 	
 	public String getStandardDir() {
-		return getTypeConfiguration().getString(getTypeKey()+".standardDir");
+		return Configuration.get().getString(getTypePrefix()+".standardDir");
 	}
 
 	 public void addPlugins(PomBuilder builder) {
-		 List plugins = getTypeConfiguration().getList(getTypeKey()+".plugins");
+		 List plugins = Configuration.get().getList(getTypePrefix()+".plugins");
 
 		 for (Iterator it = plugins.iterator(); it.hasNext();) {
 			String pluginName = (String) it.next();
@@ -67,15 +67,6 @@ public class SourceType {
 		}
 		plugin.addExecution(execution);
 		
-	}
-
-	private static Configuration s_configuration;
-	private static Configuration getTypeConfiguration() {
-	    if (s_configuration == null) {
-	        Configuration config = new Configuration("/sourceTypes.properties");
-	        s_configuration = config;
-	    }
-	    return s_configuration;
 	}
 
 

@@ -30,10 +30,9 @@ public class ProjectBuildingVisitor extends AbstractSpecVisitor {
 	
 
 	public void visitModule(Module module) {
-		PomBuilder modBuilder = getBuilder().createModule(module.getModuleId());
+		PomBuilder modBuilder = getBuilder().createModule(module.getModuleId(), module.getModuleType());
 		pushBuilder(modBuilder);
 		getBuilder().setName(module.getModuleName());
-		getBuilder().setPackaging(module.getModuleType());
 	}
 	
 	public void completeModule(Module module) {

@@ -17,19 +17,32 @@ import org.apache.maven.model.Plugin;
 import org.apache.maven.model.io.xpp3.MavenXpp3Writer;
 
 public class PomBuilder {
-
+    
+    public static PomBuilder createBuilder(PomBuilder parent, String moduleId, String moduleType) {
+        return new PomBuilder(parent, moduleId, ModuleType.get(moduleType));
+    }
+    
+    public static PomBuilder createBuilder(String moduleId, String moduleType) {
+        return new PomBuilder(null, moduleId, ModuleType.get(moduleType));
+    }
+    
+    public static PomBuilder createProjectBuilder() {
+        return new PomBuilder(null, null, ModuleType.get("pom"));
+    }
+    
 	private PomBuilder m_parent;
+    private ModuleType m_type;
 	private Model m_model = new Model();
 	private List m_modules = new ArrayList();
 	private LinkedList m_sourceSets = new LinkedList();
 	
-	public PomBuilder() {
-		this(null);
-	}
-	
-	public PomBuilder(PomBuilder parent) {
+	private PomBuilder(PomBuilder parent, String moduleId, ModuleType type) {
+        m_type = type;
 		m_model.setModelVersion("4.0.0");
 		setParent(parent);
+        setArtifactId(moduleId);
+        
+        m_type.configureModule(this);
 	}
 
 	public void save() throws IOException {
@@ -120,16 +133,15 @@ public class PomBuilder {
 		m_model.setPackaging(packaging);
 	}
 
-	public PomBuilder createModule(String moduleId) {
-		PomBuilder module = new PomBuilder(this);
-		module.setArtifactId(moduleId);
+	public PomBuilder createModule(String moduleId, String moduleType) {
+		PomBuilder module = PomBuilder.createBuilder(this, moduleId, moduleType);
 		
 		m_model.addModule(moduleId);
 		m_modules.add(module);
 		
 		return module;
 	}
-	
+
 	public void addDependency(String groupId, String artifactId, String version, String scope) {
 		Dependency dependency = new Dependency();
 		dependency.setGroupId(groupId);

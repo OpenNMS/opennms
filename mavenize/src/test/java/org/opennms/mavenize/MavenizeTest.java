@@ -84,7 +84,7 @@ public class MavenizeTest extends TestCase {
 		
 		Mavenize mavenize = createMavenizer("/testSpec.xml");
 		
-		PomBuilder builder = new PomBuilder();
+		PomBuilder builder = PomBuilder.createProjectBuilder();
 		mavenize.visitSpec(new ProjectBuildingVisitor(builder));
 		builder.save(new File(m_baseDir));
 		
@@ -116,7 +116,7 @@ public class MavenizeTest extends TestCase {
 		
 		Mavenize mavenize = createMavenizer("/opennmsMavenizeSpec.xml");
 		
-		PomBuilder builder = new PomBuilder();
+		PomBuilder builder = PomBuilder.createProjectBuilder();
 		mavenize.visitSpec(new ProjectBuildingVisitor(builder));
 		builder.save(new File(m_baseDir));
 		

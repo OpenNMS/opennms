@@ -42,7 +42,9 @@ import org.codehaus.plexus.util.StringUtils;
 
 public class Configuration {
     
-    Properties m_properties = new Properties();
+    private static Configuration s_configuration;
+
+    private Properties m_properties = new Properties();
 
     public Configuration(String resource) {
         try {
@@ -62,6 +64,25 @@ public class Configuration {
         if (val == null) return Collections.EMPTY_LIST;
         
         return Arrays.asList(StringUtils.stripAll(StringUtils.split(val, ",")));
+    }
+
+    public static Configuration get() {
+        if (s_configuration == null) {
+            Configuration config = new Configuration("/configuration.properties");
+            s_configuration = config;
+        }
+        return s_configuration;
+    }
+
+    public Class getClass(String key, Class dflt) {
+        String className = getString(key);
+        if (className == null) return dflt;
+        
+        try {
+            return Class.forName(className);
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException("Unable to load class "+className, e);
+        }
     }
 
 }
