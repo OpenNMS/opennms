@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.configuration.SystemConfiguration;
 import org.codehaus.plexus.util.DirectoryScanner;
 import org.codehaus.plexus.util.FileUtils;
 
@@ -17,10 +16,7 @@ public class SourceFileSet {
 	List m_excludes = new ArrayList();
 	
 	public SourceFileSet(String baseDir) {
-		SystemConfiguration config = new SystemConfiguration();
-		config.addProperty("fileSet.basedir", baseDir);
-		m_baseDir = config.getString("fileSet.basedir");
-		config.clearProperty("fileSet.basedir");
+        m_baseDir = PropertiesUtils.substitute(baseDir, System.getProperties());
 	}
 
 	public void addInclude(String name) {

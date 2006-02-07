@@ -3,9 +3,6 @@ package org.opennms.mavenize;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.commons.configuration.Configuration;
-import org.apache.commons.configuration.ConfigurationException;
-import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.maven.model.Plugin;
 import org.apache.maven.model.PluginExecution;
 
@@ -74,16 +71,11 @@ public class SourceType {
 
 	private static Configuration s_configuration;
 	private static Configuration getTypeConfiguration() {
-		try {
-			if (s_configuration == null) {
-				PropertiesConfiguration config = new PropertiesConfiguration();
-				config.load(SourceSet.class.getResourceAsStream("/sourceTypes.properties"));
-				s_configuration = config;
-			}
-			return s_configuration;
-		} catch (ConfigurationException e) {
-			throw new RuntimeException("unable to load sourceTypes.properties", e);
-		}
+	    if (s_configuration == null) {
+	        Configuration config = new Configuration("/sourceTypes.properties");
+	        s_configuration = config;
+	    }
+	    return s_configuration;
 	}
 
 
