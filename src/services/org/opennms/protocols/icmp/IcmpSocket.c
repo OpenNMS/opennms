@@ -92,7 +92,7 @@ typedef struct icmphdr icmphdr_t;
 #if 0
 #pragma export on
 #endif
-#include "IcmpSocket.h"
+#include "org_opennms_protocols_icmp_IcmpSocket.h"
 #if 0
 #pragma export reset
 #endif

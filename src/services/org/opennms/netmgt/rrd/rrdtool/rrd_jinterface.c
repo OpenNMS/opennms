@@ -57,7 +57,7 @@
 #if 0
 #pragma export on
 #endif
-#include "rrd_jinterface.h"
+#include "org_opennms_netmgt_rrd_rrdtool_Interface.h"
 #if 0
 #pragma export reset
 #endif

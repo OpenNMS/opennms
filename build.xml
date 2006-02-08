@@ -1273,7 +1273,7 @@ OpenNMS as part of the post-install.
     <mkdir dir="${build.jicmp.dir}"/>
     <javah class="org.opennms.protocols.icmp.IcmpSocket"
 	   classpath="${build.classes.dir}"
-           outputFile="${build.jicmp.dir}/IcmpSocket.h"/>
+    	destdir="${build.jicmp.dir}"/>
     <copy todir="${build.jicmp.dir}">
       <fileset dir="${services.source.dir}/org/opennms/protocols/icmp">
         <include name="IcmpSocket.c"/>
@@ -1313,7 +1313,7 @@ OpenNMS as part of the post-install.
     <mkdir dir="${build.jrrd.dir}"/>
     <javah class="org.opennms.netmgt.rrd.rrdtool.Interface"
 	   classpath="${build.classes.dir}"
-           outputFile="${build.jrrd.dir}/rrd_jinterface.h"/>
+    	destdir="${build.jrrd.dir}"/>
     <copy todir="${build.jrrd.dir}">
       <fileset dir="${services.source.dir}/org/opennms/netmgt/rrd/rrdtool">
         <include name="rrd_jinterface.c"/>
