@@ -5,51 +5,42 @@ import java.util.List;
 
 import org.apache.maven.model.Plugin;
 import org.apache.maven.model.PluginExecution;
-import org.codehaus.plexus.util.xml.Xpp3Dom;
-import org.codehaus.plexus.util.xml.Xpp3DomBuilder;
+
 
 public class ShlibModuleType extends ModuleType {
 	
 	public ShlibModuleType(String moduleType) {
 		super(moduleType);
 	}
-
+    
 	public void configureModule(PomBuilder builder) {
 		builder.setPackaging("pom");
 		
 		String suffix = "platforms";
 		List platforms = getList(suffix);
 		for (Iterator it = platforms.iterator(); it.hasNext();) {
-			String platform = (String) it.next();
-			String moduleType = getString(platform+".subModuleType");
-			if (moduleType == null) throw new NullPointerException("subModuleType is null for platfrom "+platform);
-			PomBuilder subModuleBuilder = builder.createModule(builder.getArtifactId()+"-"+platform, moduleType);
-			addSubModulePlugins(subModuleBuilder);
-			
+            String platfrm = (String) it.next();
+            Platform platform = createPlatform(platfrm);
+            platform.addPlatformModule(builder);
 		}
 		
 	}
 
-	private void addSubModulePlugins(PomBuilder builder) {
-		String groupId = Configuration.get().getString("plugin.native.groupId");
-		String artifactId = Configuration.get().getString("plugin.native.artifactId");
-		Plugin plugin = builder.addPlugin(groupId, artifactId);
-		plugin.setExtensions(true);
-		
-		Xpp3Dom compilerProvider = new Xpp3Dom("compilerProvider");
-		compilerProvider.setValue("generic");
-		
-		Xpp3Dom compilerStartOption = new Xpp3Dom("compilerStartOption");
-		compilerStartOption.setValue("-fPIC -O");
-		
-		Xpp3Dom compilerStartOptions = new Xpp3Dom("compilerStartOptions");
-		compilerStartOptions.addChild(compilerStartOption);
-		
-		Xpp3Dom config = new Xpp3Dom("configuration");
-		config.addChild(compilerProvider);
-		config.addChild(compilerStartOptions);
-		
-		plugin.setConfiguration(config);
-	}
+    protected Platform createPlatform(String platfrm) {
+        return new Platform(this, platfrm);
+    }
 
+    NativePluginConfig createNativeConfiguration(Platform platform) {
+        NativePluginConfig conf = new NativePluginConfig();
+        conf.setCompilerProvider(platform.getPlatformString("compilerProvider"));
+        conf.setCompilerOptions(platform.getPlatformString("compilerOptions"));
+        conf.setLinkerOptions(platform.getPlatformString("linkerOptions"));
+        
+        conf.addSourceDirectory("../src/main/native");
+    
+        return conf;
+    }
+
+    public void addPluginExecution(Plugin plugin, Platform platform) {
+    }
 }
