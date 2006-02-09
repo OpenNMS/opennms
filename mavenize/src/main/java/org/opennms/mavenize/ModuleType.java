@@ -31,6 +31,8 @@
 //
 package org.opennms.mavenize;
 
+import java.util.List;
+
 import org.codehaus.plexus.util.reflection.Reflector;
 import org.codehaus.plexus.util.reflection.ReflectorException;
 
@@ -50,6 +52,10 @@ public class ModuleType {
     public ModuleType(String moduleType) {
         m_moduleType = moduleType;
     }
+    
+    public String getKeyPrefix() {
+    	return "moduleType."+m_moduleType;
+    }
 
     public String getPackaging() {
         return m_moduleType;
@@ -58,5 +64,13 @@ public class ModuleType {
     public void configureModule(PomBuilder builder) {
         builder.setPackaging(m_moduleType);
     }
+
+	protected List getList(String suffix) {
+		return Configuration.get().getList(getKeyPrefix()+"."+suffix);
+	}
+	
+	protected String getString(String suffix) {
+		return Configuration.get().getString(getKeyPrefix()+"."+suffix);
+	}
 
 }

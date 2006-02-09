@@ -151,7 +151,7 @@
 		</module>
 
 		<!-- the jni code for icmp -->
-		<module module-id="opennms-icmp-jni" module-type="shlib"
+		<module module-id="opennms-icmp-jni" module-type="jni"
 			module-name="OpenNMS ICMP JNI Library">
 			<sources source-type="native">
 				<fileset
@@ -201,7 +201,7 @@
 		<module module-id="opennms-rrd-rrdtool" module-type="pom"
 			module-name="OpenNMS RRDTool RRD Implementation">
 			<!-- an implementation of the rrd interfaces using the a jni layer to rrdtool -->
-			<module module-id="opennms-rrdtool-java" module-type="jar"
+			<module module-id="opennms-rrdtool-api" module-type="jar"
 				module-name="OpenNMS RRDTool RRD Interface">
 				<sources source-type="java">
 					<fileset dir="${opennms.dir}/src/services">
@@ -215,7 +215,7 @@
 			</module>
 
 			<!-- rrdtool-jni a JNI layer to accessing rrdtool -->
-			<module module-id="opennms-rrdtool-jni" module-type="shlib"
+			<module module-id="opennms-rrdtool-jni" module-type="jni"
 				module-name="OpenNMS RRDTool JNI Library">
 				<sources source-type="native">
 					<fileset
@@ -225,7 +225,7 @@
 					</fileset>
 				</sources>
 				<dependencies>
-					<module-dependency module-id="opennms-rrdtool-java" />
+					<module-dependency module-id="opennms-rrdtool-api" />
 				</dependencies>
 			</module>
 		</module>
