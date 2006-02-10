@@ -10,9 +10,7 @@ import java.util.HashMap;
 
 import org.codehaus.plexus.util.FileUtils;
 
-import junit.framework.TestCase;
-
-public class MavenizeTest extends TestCase {
+public class MavenizeTest extends FileTestCase {
 	
 	String m_baseDir = "target/test/work";
 	
@@ -128,35 +126,6 @@ public class MavenizeTest extends TestCase {
 		
 		
 		
-	}
-
-	private void assertDirectoryExists(String dirName) {
-		assertDirectoryExists(new File(dirName));
-	}
-	
-	private void assertDirectoryExists(String baseDir, String path) {
-		assertDirectoryExists(new File(baseDir, path));
-	}
-
-	private void assertDirectoryExists(File dir) {
-		assertTrue("Directory "+dir.getPath()+" does not exist.", dir.exists());
-		assertTrue(dir.getPath()+" is not a directory", dir.isDirectory());
-	}
-	
-	private void assertFileExists(String baseDir, String path) {
-		assertFileExists(new File(baseDir, path));
-	}
-
-	private void assertFileExists(File file) {
-		assertTrue("File "+file.getPath()+" does not exist.", file.exists());
-	}
-	
-	private void assertFileNotExists(String baseDir, String path) {
-		assertFileNotExists(new File(baseDir, path));
-	}
-
-	private void assertFileNotExists(File file) {
-		assertFalse("File "+file.getPath()+" shoult NOT exist.", file.exists());
 	}
 
 }

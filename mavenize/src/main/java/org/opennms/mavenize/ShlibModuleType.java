@@ -15,6 +15,7 @@ public class ShlibModuleType extends ModuleType {
     
 	public void configureModule(PomBuilder builder) {
 		builder.setPackaging("pom");
+		builder.addModuleReference(builder.getArtifactId()+"-${platform}");
 		
 		String suffix = "platforms";
 		List platforms = getList(suffix);

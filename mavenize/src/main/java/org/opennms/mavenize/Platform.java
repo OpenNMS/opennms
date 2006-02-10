@@ -72,9 +72,18 @@ class Platform {
 
     private PomBuilder createPlatformModule(PomBuilder builder) {
         String moduleType = getPlatformString("subModuleType");
+        String platformName = getPlatformString("platformName");
         if (moduleType == null) throw new NullPointerException("subModuleType is null for platfrom "+m_platform);
-        PomBuilder subModuleBuilder = builder.createModule(builder.getArtifactId()+"-"+m_platform, moduleType);
+        
+        PomBuilder subModuleBuilder = createSubModule(builder, moduleType, platformName);
         return subModuleBuilder;
     }
+
+	private PomBuilder createSubModule(PomBuilder builder, String moduleType, String platformName) {
+		String moduleId = builder.getArtifactId()+"-"+m_platform;
+		PomBuilder module = PomBuilder.createBuilder(builder, moduleId, builder.getName()+" - "+platformName, moduleType);
+		builder.addModuleDirectory(module);
+		return module;
+	}
     
 }

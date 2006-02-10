@@ -18,16 +18,16 @@ import org.apache.maven.model.io.xpp3.MavenXpp3Writer;
 
 public class PomBuilder {
     
-    public static PomBuilder createBuilder(PomBuilder parent, String moduleId, String moduleType) {
-        return new PomBuilder(parent, moduleId, ModuleType.get(moduleType));
+    public static PomBuilder createBuilder(PomBuilder parent, String moduleId, String moduleName, String moduleType) {
+        return new PomBuilder(parent, moduleId, moduleName, ModuleType.get(moduleType));
     }
     
-    public static PomBuilder createBuilder(String moduleId, String moduleType) {
-        return new PomBuilder(null, moduleId, ModuleType.get(moduleType));
+    public static PomBuilder createBuilder(String moduleId, String moduleType, String moduleName) {
+        return new PomBuilder(null, moduleId, moduleName, ModuleType.get(moduleType));
     }
     
     public static PomBuilder createProjectBuilder() {
-        return new PomBuilder(null, null, ModuleType.get("pom"));
+        return new PomBuilder(null, null, null, ModuleType.get("pom"));
     }
     
 	private PomBuilder m_parent;
@@ -36,11 +36,12 @@ public class PomBuilder {
 	private List m_modules = new ArrayList();
 	private LinkedList m_sourceSets = new LinkedList();
 	
-	private PomBuilder(PomBuilder parent, String moduleId, ModuleType type) {
+	private PomBuilder(PomBuilder parent, String moduleId, String moduleName, ModuleType type) {
         m_type = type;
 		m_model.setModelVersion("4.0.0");
 		setParent(parent);
         setArtifactId(moduleId);
+        setName(moduleName);
         
         m_type.configureModule(this);
 	}
@@ -61,6 +62,7 @@ public class PomBuilder {
 		modelWriter.write(writer, m_model);
 	
 		saveSourceSets(baseDir);
+		
 		saveModules(baseDir);
 		
 	}
@@ -132,14 +134,22 @@ public class PomBuilder {
 	public void setPackaging(String packaging) {
 		m_model.setPackaging(packaging);
 	}
-
-	public PomBuilder createModule(String moduleId, String moduleType) {
-		PomBuilder module = PomBuilder.createBuilder(this, moduleId, moduleType);
+	
+	public PomBuilder createModule(String moduleId, String moduleName, String moduleType) {
+		PomBuilder module = PomBuilder.createBuilder(this, moduleId, moduleName, moduleType);
 		
-		m_model.addModule(moduleId);
-		m_modules.add(module);
+		addModuleReference(moduleId);
+		addModuleDirectory(module);
 		
 		return module;
+	}
+
+	public void addModuleDirectory(PomBuilder module) {
+		m_modules.add(module);
+	}
+
+	public void addModuleReference(String moduleId) {
+		m_model.addModule(moduleId);
 	}
 
 	public void addDependency(String groupId, String artifactId, String version, String scope) {
