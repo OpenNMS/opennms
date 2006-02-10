@@ -127,13 +127,19 @@ class NativePluginConfig {
     }
 
     public void addSourceDirectories(Xpp3Dom config) {
+    	if (m_sourceDirs.isEmpty()) return;
+    	
+    	
+        Xpp3Dom sources = new Xpp3Dom("sources");
         for (Iterator it = m_sourceDirs.iterator(); it.hasNext();) {
             String dir = (String) it.next();
-            addSourceDirectory(config, dir);
+            addSourceDirectory(sources, dir);
         }
+        
+        config.addChild(sources);
     }
 
-    private void addSourceDirectory(Xpp3Dom config, String dir) {
+    private void addSourceDirectory(Xpp3Dom sources, String dir) {
     	String[] fileNames = (String[])m_filesNames.get(dir);
     	
         Xpp3Dom dirDom = new Xpp3Dom("directory");
@@ -153,10 +159,7 @@ class NativePluginConfig {
     		source.addChild(files);
     	}
         
-        Xpp3Dom sources = new Xpp3Dom("sources");
         sources.addChild(source);
-        
-        config.addChild(sources);
     }
 
     public void setJavahOS(String javahOs) {

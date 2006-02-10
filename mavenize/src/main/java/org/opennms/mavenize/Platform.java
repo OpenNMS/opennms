@@ -32,6 +32,7 @@
 package org.opennms.mavenize;
 
 import java.io.File;
+import java.util.List;
 
 import org.apache.maven.model.Plugin;
 
@@ -53,6 +54,11 @@ class Platform {
     String getPlatformString(String platformKey) {
         return m_type.getString(getKey()+'.'+platformKey);
     }
+    
+	public List getPlatformList(String platformKey) {
+		return m_type.getList(getKey()+'.'+platformKey);
+	}
+
 
     void addPlatformModule(PomBuilder builder) {
         
@@ -84,5 +90,6 @@ class Platform {
 		builder.addModuleDirectory(module);
 		return module;
 	}
+
     
 }

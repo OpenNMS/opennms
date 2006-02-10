@@ -51,6 +51,12 @@ public class ShlibModuleType extends ModuleType {
         conf.setCompilerOptions(platform.getPlatformString("compilerOptions"));
         conf.setLinkerOptions(platform.getPlatformString("linkerOptions"));
         
+        List includeDirs = platform.getPlatformList("extraIncludes");
+        for (Iterator it = includeDirs.iterator(); it.hasNext();) {
+			String dir = (String) it.next();
+			conf.addSourceDirectory(dir);
+		}
+        
         
         File nativeDir = new File(baseDir, "src/main/native");
         conf.addFileNames("../src/main/native", nativeDir.list(new CFileFilter()));
