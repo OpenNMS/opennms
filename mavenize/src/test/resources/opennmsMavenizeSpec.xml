@@ -349,7 +349,7 @@
 				<!-- need to add these to another project or location -->
 				<exclude name="**/*Test*.java" />
 				<exclude name="**/mock/**/*.java" />
-				<exclude name="org/opennms/netmgt/notifd/*Growl*" />
+				<exclude name="org/opennms/netmgt/notifd/**/*Growl*" />
 			</fileset>
 		</sources>
 		<sources source-type="java">
