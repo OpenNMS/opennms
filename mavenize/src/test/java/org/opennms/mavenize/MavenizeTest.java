@@ -10,7 +10,7 @@ import java.util.HashMap;
 
 import org.codehaus.plexus.util.FileUtils;
 
-public class MavenizeTest extends FileTestCase {
+public class MavenizeTest extends AbstractFileTest {
 	
 	String m_baseDir = "target/test/work";
 	

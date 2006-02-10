@@ -4,7 +4,7 @@ import java.io.File;
 
 import junit.framework.TestCase;
 
-public class FileTestCase extends TestCase {
+public class AbstractFileTest extends TestCase {
 
 	protected void assertDirectoryExists(String dirName) {
 		assertDirectoryExists(new File(dirName));
