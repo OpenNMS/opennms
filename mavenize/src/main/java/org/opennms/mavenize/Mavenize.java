@@ -31,6 +31,7 @@
 //
 package org.opennms.mavenize;
 
+import java.io.File;
 import java.io.FileReader;
 import java.io.Reader;
 import java.util.Enumeration;
@@ -76,7 +77,12 @@ public class Mavenize {
 		}
 		
 		Mavenize mavenize = new Mavenize(args[0]);
-		mavenize.visitSpec(new AbstractSpecVisitor());
+		
+		PomBuilder builder = PomBuilder.createProjectBuilder();
+		mavenize.visitSpec(new ProjectBuildingVisitor(builder));
+		builder.save(new File("."));
+		
+
 	}
 	
 	public void visitSpec(SpecVisitor visitor) {
