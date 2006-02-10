@@ -57,4 +57,8 @@ public class SourceSet {
 		return m_sourceType.getStandardDir();
 	}
 
+	public boolean isType(String sourceType) {
+		return m_sourceType.isType(sourceType);
+	}
+
 }

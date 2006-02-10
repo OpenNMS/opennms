@@ -31,13 +31,15 @@
 //
 package org.opennms.mavenize;
 
+import java.io.File;
+
 import org.apache.maven.model.Plugin;
-import org.apache.maven.model.PluginExecution;
 
 class Platform {
     
     private final ShlibModuleType m_type;
     private String m_platform;
+	private PomBuilder m_subModuleBuilder;
 
     public Platform(ShlibModuleType type, String platform) {
         m_type = type;
@@ -54,32 +56,29 @@ class Platform {
 
     void addPlatformModule(PomBuilder builder) {
         
-        PomBuilder subModuleBuilder = createPlatformModule(builder);
-        Plugin plugin = createPlugin(subModuleBuilder);
-        NativePluginConfig conf = m_type.createNativeConfiguration(this);
-        plugin.setConfiguration(conf.getConfiguration());
-        m_type.addPluginExecution(plugin, this);
-
+        String moduleType = getPlatformString("subModuleType");
+		String platformName = getPlatformString("platformName");
+		if (moduleType == null) throw new NullPointerException("subModuleType is null for platfrom "+m_platform);
+		
+		m_subModuleBuilder = createSubModule(builder, moduleType, platformName);
     }
 
-    private Plugin createPlugin(PomBuilder subModuleBuilder) {
+	public void addNativePlugin(File baseDir) {
+		Plugin plugin = createPlugin();
+        NativePluginConfig conf = m_type.createNativeConfiguration(this, baseDir);
+        plugin.setConfiguration(conf.getConfiguration());
+        m_type.addPluginExecution(plugin, this);
+	}
+
+    private Plugin createPlugin() {
         String groupId = Configuration.get().getString("plugin.native.groupId");
         String artifactId = Configuration.get().getString("plugin.native.artifactId");
-        Plugin plugin = subModuleBuilder.addPlugin(groupId, artifactId);
+        Plugin plugin = m_subModuleBuilder.addPlugin(groupId, artifactId);
         plugin.setExtensions(true);
         return plugin;
     }
 
-    private PomBuilder createPlatformModule(PomBuilder builder) {
-        String moduleType = getPlatformString("subModuleType");
-        String platformName = getPlatformString("platformName");
-        if (moduleType == null) throw new NullPointerException("subModuleType is null for platfrom "+m_platform);
-        
-        PomBuilder subModuleBuilder = createSubModule(builder, moduleType, platformName);
-        return subModuleBuilder;
-    }
-
-	private PomBuilder createSubModule(PomBuilder builder, String moduleType, String platformName) {
+    private PomBuilder createSubModule(PomBuilder builder, String moduleType, String platformName) {
 		String moduleId = builder.getArtifactId()+"-"+m_platform;
 		PomBuilder module = PomBuilder.createBuilder(builder, moduleId, builder.getName()+" - "+platformName, moduleType);
 		builder.addModuleDirectory(module);

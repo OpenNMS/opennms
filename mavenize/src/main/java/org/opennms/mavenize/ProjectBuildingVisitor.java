@@ -35,6 +35,7 @@ public class ProjectBuildingVisitor extends AbstractSpecVisitor {
 	}
 	
 	public void completeModule(Module module) {
+		getBuilder().moduleComplete();
 		popBuilder();
 	}
 

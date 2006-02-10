@@ -1,5 +1,6 @@
 package org.opennms.mavenize;
 
+import java.io.File;
 import java.util.Collections;
 
 import org.apache.maven.model.Plugin;
@@ -33,12 +34,11 @@ public class JniModuleType extends ShlibModuleType {
 		super(moduleType);
 	}
 
-    NativePluginConfig createNativeConfiguration(Platform platform) {
-        NativePluginConfig config =  super.createNativeConfiguration(platform);
+    NativePluginConfig createNativeConfiguration(Platform platform, File baseDir) {
+        NativePluginConfig config =  super.createNativeConfiguration(platform, baseDir);
         
         config.setJavahOS(platform.getPlatformString("javahOS"));
         config.setJdkIncludePath(platform.getPlatformString("jdkIncludePath"));
-        config.setJavahImplementaion(platform.getPlatformString("javahImplementation"));
         return config;
     }
     

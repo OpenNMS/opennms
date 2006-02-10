@@ -52,6 +52,7 @@ public class PomBuilder {
 	
 	public void save(File targetDir) throws IOException {
 		File baseDir = new File(targetDir, getArtifactId());
+		m_type.beforeSave(this, baseDir);
 	
 		baseDir.mkdirs();
 
@@ -62,9 +63,11 @@ public class PomBuilder {
 		modelWriter.write(writer, m_model);
 	
 		saveSourceSets(baseDir);
+
+		m_type.afterSave(this, baseDir);
+
 		
 		saveModules(baseDir);
-		
 	}
 	
 	private void saveSourceSets(File baseDir) throws IOException {
@@ -193,6 +196,21 @@ public class PomBuilder {
 		m_model.getBuild().addPlugin(plugin);
 		
 		return plugin;
+	}
+
+	public void moduleComplete() {
+		m_type.moduleComplete(this);
+	}
+
+	public List getSourceSetsByType(String sourceType) {
+		List sets = new ArrayList();
+		for (Iterator it = m_sourceSets.iterator(); it.hasNext();) {
+			SourceSet sourceSet = (SourceSet) it.next();
+			if (sourceSet.isType(sourceType)) {
+				sets.add(sourceSet);
+			}
+		}
+		return sets;
 	}
 	
 	

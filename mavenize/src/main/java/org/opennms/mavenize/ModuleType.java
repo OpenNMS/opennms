@@ -31,6 +31,7 @@
 //
 package org.opennms.mavenize;
 
+import java.io.File;
 import java.util.List;
 
 import org.codehaus.plexus.util.reflection.Reflector;
@@ -71,6 +72,19 @@ public class ModuleType {
 	
 	protected String getString(String suffix) {
 		return Configuration.get().getString(getKeyPrefix()+"."+suffix);
+	}
+
+	public void moduleComplete(PomBuilder builder) {
+		
+	}
+
+	public void beforeSave(PomBuilder builder, File baseDir) {
+		
+	}
+
+	public void afterSave(PomBuilder builder, File baseDir) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

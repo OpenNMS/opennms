@@ -69,5 +69,9 @@ public class SourceType {
 		
 	}
 
+	public boolean isType(String sourceType) {
+		return m_typeName.equals(sourceType);
+	}
+
 
 }

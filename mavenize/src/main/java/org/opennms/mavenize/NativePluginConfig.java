@@ -31,9 +31,11 @@
 //
 package org.opennms.mavenize;
 
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import org.codehaus.plexus.util.xml.Xpp3Dom;
 
@@ -43,9 +45,9 @@ class NativePluginConfig {
     String m_compilerOptions;
     String m_linkerOptions;
     List m_sourceDirs = new LinkedList();
+    Map m_filesNames = new HashMap();
     private String m_javahOs;
     private String m_jdkIncludePath;
-    private String m_javahImplementation;
 
     public void setCompilerProvider(String compilerProvider) {
         m_compilerProvider = compilerProvider;
@@ -132,11 +134,24 @@ class NativePluginConfig {
     }
 
     private void addSourceDirectory(Xpp3Dom config, String dir) {
+    	String[] fileNames = (String[])m_filesNames.get(dir);
+    	
         Xpp3Dom dirDom = new Xpp3Dom("directory");
         dirDom.setValue(dir);
         
         Xpp3Dom source = new Xpp3Dom("source");
         source.addChild(dirDom);
+
+    	if (fileNames != null) {
+    		Xpp3Dom files = new Xpp3Dom("fileNames");
+    		for (int i = 0; i < fileNames.length; i++) {
+				Xpp3Dom file = new Xpp3Dom("fileName");
+				file.setValue(fileNames[i]);
+				files.addChild(file);
+			}
+    		
+    		source.addChild(files);
+    	}
         
         Xpp3Dom sources = new Xpp3Dom("sources");
         sources.addChild(source);
@@ -152,7 +167,8 @@ class NativePluginConfig {
         m_jdkIncludePath = jdkIncludePath;
     }
 
-    public void setJavahImplementaion(String javahImplementation) {
-        m_javahImplementation = javahImplementation;
-    }
+	public void addFileNames(String directory, String[] fileNames) {
+		addSourceDirectory(directory);
+		m_filesNames.put(directory, fileNames);
+	}
 }
