@@ -97,6 +97,12 @@ public class SQLTranslation extends DepthFirstAdapter {
     public static final String VIRTUAL_COLUMN_PREFIX = "is";
 
     /**
+     * Constant to identify a virtual column for determining if an interface
+     * supports a service
+     */
+    public static final String VIRTUAL_NOT_COLUMN_PREFIX = "notis";
+
+    /**
      * The list of tables required to create the approriate SQL statement
      */
     private List m_tables;
@@ -192,6 +198,20 @@ public class SQLTranslation extends DepthFirstAdapter {
                 expr = addColumnToStatement(tableForIdent, "serviceName");
             if (expr != null)
                 expr = expr + " = '" + serviceName + '\'';
+        }
+
+        if (expr == null && ident.startsWith(VIRTUAL_NOT_COLUMN_PREFIX)) {
+            String serviceName = ident.substring(VIRTUAL_NOT_COLUMN_PREFIX.length());
+            // should check against some form of
+            // service identifier table, but for now I'm
+            // removing this check since it's just used
+            // internally
+            //
+            tableForIdent = m_schemaFactory.findTableByVisableColumn("serviceName");
+            if (tableForIdent != null)
+                expr = addColumnToStatement(tableForIdent, "serviceName");
+            if (expr != null)
+                expr = "ifservices.ipaddr not in (select ipaddr from ifservices,service where service.serviceName ='"+ serviceName + "' and service.serviceID = ifServices.serviceid)";
         }
 
         if (expr == null) {
