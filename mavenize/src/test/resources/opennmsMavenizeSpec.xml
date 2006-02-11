@@ -17,6 +17,7 @@
 		<sources source-type="java">
 			<fileset dir="${opennms.dir}/src/core">
 				<include name="**/*.java"/>
+				<include name="**/*.html"/>
 				<exclude name="**/*Test*.java"/>
 			</fileset>
 		</sources>
@@ -33,6 +34,7 @@
 		<sources source-type="java">
 			<fileset dir="${opennms.dir}/src/joesnmp">
 				<include name="**/*.java"/>
+				<include name="**/*.html"/>
 				<exclude name="**/*Test*.java"/>
 			</fileset>
 		</sources>
@@ -50,6 +52,7 @@
 		<sources source-type="java">
 			<fileset dir="${opennms.dir}/src/install">
 				<include name="**/*.java"/>
+				<include name="**/*.html"/>
 				<exclude name="**/*Test*.java"/>
 			</fileset>
 		</sources>
@@ -105,6 +108,7 @@
 				<include
 					name="org/opennms/netmgt/config/DatabaseSchemaConfigFactory.java" />
 				<include name="org/opennms/netmgt/filter/*.java" />
+				<include name="org/opennms/netmgt/filter/*.html"/>
 				<exclude name="org/opennms/netmgt/filter/*Test*.java" />
 			</fileset>
 		</sources>
@@ -141,8 +145,11 @@
 			<sources source-type="java">
 				<fileset dir="${opennms.dir}/src/services">
 					<include name="org/opennms/protocols/icmp/*.java" />
+					<include name="org/opennms/protocols/icmp/*.html" />
 					<include name="org/opennms/protocols/ip/*.java" />
+					<include name="org/opennms/protocols/ip/*.html" />
 					<include name="org/opennms/netmgt/ping/*.java" />
+					<include name="org/opennms/netmgt/ping/*.html" />
 				</fileset>
 			</sources>
 			<dependencies>
@@ -174,6 +181,7 @@
 			<sources source-type="java">
 				<fileset dir="${opennms.dir}/src/services">
 					<include name="org/opennms/netmgt/rrd/*.java" />
+					<include name="org/opennms/netmgt/rrd/*.html" />
 				</fileset>
 			</sources>
 			<dependencies>
@@ -189,6 +197,8 @@
 				<fileset dir="${opennms.dir}/src/services">
 					<include
 						name="org/opennms/netmgt/rrd/jrobin/*.java" />
+					<include
+						name="org/opennms/netmgt/rrd/jrobin/*.html" />
 				</fileset>
 			</sources>
 			<dependencies>
@@ -207,6 +217,8 @@
 					<fileset dir="${opennms.dir}/src/services">
 						<include
 							name="org/opennms/netmgt/rrd/rrdtool/*.java" />
+						<include
+							name="org/opennms/netmgt/rrd/rrdtool/*.html" />
 					</fileset>
 				</sources>
 				<dependencies>
@@ -251,6 +263,7 @@
 			<sources source-type="java">
 				<fileset dir="${opennms.dir}/src/services">
 					<include name="org/opennms/netmgt/snmp/*.java" />
+					<include name="org/opennms/netmgt/snmp/*.html" />
 					<exclude name="org/opennms/netmgt/snmp/*Test*.java" />
 				</fileset>
 			</sources>
@@ -266,6 +279,8 @@
 				<fileset dir="${opennms.dir}/src/services">
 					<include
 						name="org/opennms/netmgt/snmp/joesnmp/*.java" />
+					<include
+						name="org/opennms/netmgt/snmp/joesnmp/*.html" />
 					<exclude
 						name="org/opennms/netmgt/snmp/joesnmp/*Test*.java" />
 				</fileset>
@@ -283,6 +298,8 @@
 				<fileset dir="${opennms.dir}/src/services">
 					<include
 						name="org/opennms/netmgt/snmp/snmp4j/*.java" />
+					<include
+						name="org/opennms/netmgt/snmp/snmp4j/*.html" />
 					<exclude
 						name="org/opennms/netmgt/snmp/snmp4j/*Test*.java" />
 				</fileset>
@@ -332,6 +349,7 @@
 		<sources source-type="java">
 			<fileset dir="${opennms.dir}/src/services">
 				<include name="**/*.java" />
+				<include name="**/*.html" />
 				<exclude
 					name="org/opennms/netmgt/ConfigFileConstants.java" />
 				<exclude
@@ -341,15 +359,21 @@
 				<exclude
 					name="org/opennms/netmgt/config/DatabaseSchemaConfigFactory.java" />
 				<exclude name="org/opennms/netmgt/filter/*.java" />
+				<exclude name="org/opennms/netmgt/filter/*.html" />
 				<exclude name="org/opennms/protocols/icmp/*.java" />
+				<exclude name="org/opennms/protocols/icmp/*.html" />
 				<exclude name="org/opennms/protocols/ip/*.java" />
+				<exclude name="org/opennms/protocols/ip/*.html" />
 				<exclude name="org/opennms/netmgt/ping/*.java" />
+				<exclude name="org/opennms/netmgt/ping/*.html" />
 				<exclude name="org/opennms/netmgt/rrd/**/*.java" />
+				<exclude name="org/opennms/netmgt/rrd/**/*.html" />
 				<exclude name="org/opennms/netmgt/snmp/**/*.java" />
+				<exclude name="org/opennms/netmgt/snmp/**/*.html" />
 				<!-- need to add these to another project or location -->
 				<exclude name="**/*Test*.java" />
-				<exclude name="**/mock/**/*.java" />
-				<exclude name="org/opennms/netmgt/notifd/**/*Growl*" />
+				<exclude name="**/mock/**" />
+				<exclude name="org/opennms/netmgt/notifd/growl/**" />
 			</fileset>
 		</sources>
 		<sources source-type="java">
@@ -363,6 +387,7 @@
 			<fileset dir="${opennms.dir}/src/services">
 			<include name="**/*Test*.java"/>
 			<include name="**/mock/**/*.java"/>
+			<include name="**/mock/**/*.html"/>
 			<exclude name="org/opennms/netmgt/mock/MockAgent.java" />
 			<exclude name="org/opennms/netmgt/mock/MockProxy.java" />
 			<exclude name="org/opennms/netmgt/mock/SubAgent.java" />
@@ -370,7 +395,7 @@
 			<exclude name="org/opennms/netmgt/mock/MockAgentTest.java" />
 			<exclude name="org/opennms/netmgt/capsd/plugins/**.java" />
 			<exclude name="org/opennms/netmgt/poller/monitors/**.java" />
-			<exclude name="org/opennms/netmgt/notifd/growl/*Growl*" />
+			<exclude name="org/opennms/netmgt/notifd/growl/*" />
 			<exclude name="**/SpringBoardMBeanTest.java" />
 			</fileset>
 			</sources>
@@ -459,6 +484,7 @@
 		<sources source-type="java">
 			<fileset dir="${opennms.dir}/src/report">
 				<include name="**/*.java" />
+				<include name="**/*.html" />
 				<exclude name="**/*Test*.java" />
 			</fileset>
 		</sources>
@@ -497,6 +523,7 @@
 		<sources source-type="java">
 			<fileset dir="${opennms.dir}/src/web/src">
 				<include name="**/*.java" />
+				<include name="**/*.html" />
 				<exclude name="**/*Test*.java" />
 			</fileset>
 		</sources>
