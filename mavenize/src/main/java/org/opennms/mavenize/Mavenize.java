@@ -47,6 +47,7 @@ import org.opennms.mavenize.config.Include;
 import org.opennms.mavenize.config.Module;
 import org.opennms.mavenize.config.ModuleDependency;
 import org.opennms.mavenize.config.Project;
+import org.opennms.mavenize.config.Repository;
 import org.opennms.mavenize.config.Sources;
 
 public class Mavenize {
@@ -103,7 +104,20 @@ public class Mavenize {
 			visitModule(visitor, subModule);
 		}
 		
+		// now visit the repositories
+		Enumeration repos = project.enumerateRepository();
+		while (repos.hasMoreElements()) {
+			Repository repo = (Repository) repos.nextElement();
+			visitRepository(visitor, repo);
+		}
+		
 		visitor.completeProject(project);
+	}
+
+	private void visitRepository(SpecVisitor visitor, Repository repo) {
+		visitor.visitRepository(repo);
+		visitor.completeRepository(repo);
+		
 	}
 
 	private void visitModule(SpecVisitor visitor, Module module) {

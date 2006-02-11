@@ -8,6 +8,7 @@ import org.opennms.mavenize.config.Include;
 import org.opennms.mavenize.config.Module;
 import org.opennms.mavenize.config.ModuleDependency;
 import org.opennms.mavenize.config.Project;
+import org.opennms.mavenize.config.Repository;
 import org.opennms.mavenize.config.Sources;
 
 public class AbstractSpecVisitor implements SpecVisitor {
@@ -64,6 +65,12 @@ public class AbstractSpecVisitor implements SpecVisitor {
 	}
 	
 	public void completeModuleDependency(ModuleDependency modDep) {
+	}
+	
+	public void visitRepository(Repository repo) {
+	}
+	
+	public void completeRepository(Repository repo) {
 	}
 
 }

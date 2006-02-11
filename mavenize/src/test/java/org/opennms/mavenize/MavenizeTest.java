@@ -34,7 +34,7 @@ public class MavenizeTest extends AbstractFileTest {
 	}
 
 	public void testSpecFile() throws Exception {
-		Mavenize mavenize = createMavenizer("/opennmsMavenizeSpec.xml");
+		Mavenize mavenize = createMavenizer("/testSpec.xml");
 		
 		CountingInvocationHandler counter = new CountingInvocationHandler();
 		SpecVisitor visitor = getCountingVisitor(counter);
@@ -43,22 +43,22 @@ public class MavenizeTest extends AbstractFileTest {
 		
 		assertEquals(1, counter.getCount("visitProject"));
 		assertEquals(1, counter.getCount("completeProject"));
-		assertEquals(23, counter.getCount("visitModule"));
-		assertEquals(23, counter.getCount("completeModule"));
-		assertEquals(30, counter.getCount("visitSources"));
-		assertEquals(30, counter.getCount("completeSources"));
-		assertEquals(34, counter.getCount("visitFileSet"));
-		assertEquals(34, counter.getCount("completeFileSet"));
-		assertEquals(43, counter.getCount("visitInclude"));
-		assertEquals(43, counter.getCount("completeInclude"));
-		assertEquals(26, counter.getCount("visitExclude"));
-		assertEquals(26, counter.getCount("completeExclude"));
-		assertEquals(21, counter.getCount("visitDependencies"));
-		assertEquals(21, counter.getCount("completeDependencies"));
-		assertEquals(46, counter.getCount("visitDependency"));
-		assertEquals(46, counter.getCount("completeDependency"));
-		assertEquals(31, counter.getCount("visitModuleDependency"));
-		assertEquals(31, counter.getCount("completeModuleDependency"));
+		assertEquals(1, counter.getCount("visitModule"));
+		assertEquals(1, counter.getCount("completeModule"));
+		assertEquals(2, counter.getCount("visitSources"));
+		assertEquals(2, counter.getCount("completeSources"));
+		assertEquals(2, counter.getCount("visitFileSet"));
+		assertEquals(2, counter.getCount("completeFileSet"));
+		assertEquals(2, counter.getCount("visitInclude"));
+		assertEquals(2, counter.getCount("completeInclude"));
+		assertEquals(1, counter.getCount("visitExclude"));
+		assertEquals(1, counter.getCount("completeExclude"));
+		assertEquals(1, counter.getCount("visitDependencies"));
+		assertEquals(1, counter.getCount("completeDependencies"));
+		assertEquals(1, counter.getCount("visitDependency"));
+		assertEquals(1, counter.getCount("completeDependency"));
+		assertEquals(0, counter.getCount("visitModuleDependency"));
+		assertEquals(0, counter.getCount("completeModuleDependency"));
 		
 	}
 
@@ -110,6 +110,7 @@ public class MavenizeTest extends AbstractFileTest {
 
 	public void testMavenizeOpenNMS() throws Exception {
 		FileUtils.deleteDirectory(m_baseDir+"/opennms");
+		//System.setProperty("opennms.dir", "..");
 		System.setProperty("opennms.dir", "${user.home}/workspaces/HEAD/opennms");
 		
 		Mavenize mavenize = createMavenizer("/opennmsMavenizeSpec.xml");

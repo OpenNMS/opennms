@@ -5,3 +5,5 @@ target
 .settings
 bin
 test-pom.xml
+opennms
+

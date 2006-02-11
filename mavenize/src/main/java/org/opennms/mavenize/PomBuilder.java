@@ -14,6 +14,8 @@ import org.apache.maven.model.Dependency;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.Parent;
 import org.apache.maven.model.Plugin;
+import org.apache.maven.model.Repository;
+import org.apache.maven.model.RepositoryPolicy;
 import org.apache.maven.model.io.xpp3.MavenXpp3Writer;
 
 public class PomBuilder {
@@ -211,6 +213,25 @@ public class PomBuilder {
 			}
 		}
 		return sets;
+	}
+
+	public void addRepository(String repoId, String url, String repoName, boolean release, boolean snaphot) {
+		Repository repo = new Repository();
+		repo.setId(repoId);
+		repo.setUrl(url);
+		repo.setName(repoName);
+		
+		RepositoryPolicy releasePolicy = new RepositoryPolicy();
+		releasePolicy.setEnabled(release);
+		
+		RepositoryPolicy snapshotPolicy = new RepositoryPolicy();
+		snapshotPolicy.setEnabled(snaphot);
+		
+		repo.setReleases(releasePolicy);
+		repo.setSnapshots(snapshotPolicy);
+		
+		m_model.addRepository(repo);
+		m_model.addPluginRepository(repo);
 	}
 	
 	

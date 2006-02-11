@@ -18,5 +18,6 @@
 			<dependency groupId="junit" artifactId="junit" version="3.8.1" scope="test" />
 		</dependencies>
 	</module>
+	<repository repo-id="test-repo" repo-name="Test Repository" release="false" snapshot="true" url="http://www.test.com"/>
 </project>
 

@@ -10,6 +10,7 @@ import org.opennms.mavenize.config.Include;
 import org.opennms.mavenize.config.Module;
 import org.opennms.mavenize.config.ModuleDependency;
 import org.opennms.mavenize.config.Project;
+import org.opennms.mavenize.config.Repository;
 import org.opennms.mavenize.config.Sources;
 
 public class ProjectBuildingVisitor extends AbstractSpecVisitor {
@@ -67,6 +68,10 @@ public class ProjectBuildingVisitor extends AbstractSpecVisitor {
 
 	public void visitModuleDependency(ModuleDependency modDep) {
 		getBuilder().addDependency(getBuilder().getGroupId(), modDep.getModuleId(), getBuilder().getVersion(), modDep.getScope());
+	}
+	
+	public void visitRepository(Repository repo) {
+		getBuilder().addRepository(repo.getRepoId(), repo.getRepoName(), repo.getUrl(), repo.getRelease(), repo.getSnaphot());
 	}
 
 	void pushBuilder(PomBuilder builder) {

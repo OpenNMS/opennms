@@ -444,6 +444,15 @@
 				version="2005.10.03" />
 		</dependencies>
 	</module>
+	
+	<module module-id="opennms-site" module-type="jar" module-name="OpenNMS Site">
+		<sources source-type="docbook">
+			<fileset dir="${opennms.dir}/docs">
+				<include name="**"/>
+				<exclude name="**/CVS/**"/>
+			</fileset>
+		</sources>
+	</module>
 
 	<module module-id="opennms-reporting" module-type="jar"
 		module-name="OpenNMS Reporting">
@@ -533,4 +542,6 @@
 		<dependency groupId="log4j" artifactId="log4j" version="1.2.7" />
 		<dependency groupId="junit" artifactId="junit" version="3.8.1" />
 	</dependencies>
+	<repository repo-id="opennms-repo" repo-name="OpenNMS Repository" release="true" snapshot="true" url="http://repo.opennms.org/maven2"/>
+	<repository repo-id="codehaus-shapshots" repo-name="Maven/Codehaus Snapshot Repository" release="true" snapshot="true" url="http://snapshots.maven.codehaus.org/maven2"/>
 </project>
