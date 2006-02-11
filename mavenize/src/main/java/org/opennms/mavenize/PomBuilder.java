@@ -215,7 +215,7 @@ public class PomBuilder {
 		return sets;
 	}
 
-	public void addRepository(String repoId, String url, String repoName, boolean release, boolean snaphot) {
+	public void addRepository(String repoId, String repoName, String url, boolean release, boolean snaphot) {
 		Repository repo = new Repository();
 		repo.setId(repoId);
 		repo.setUrl(url);
