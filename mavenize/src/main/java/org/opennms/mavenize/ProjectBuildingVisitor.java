@@ -41,7 +41,7 @@ public class ProjectBuildingVisitor extends AbstractSpecVisitor {
 	}
 
 	public void visitSources(Sources sources) {
-		getBuilder().addSourceSet(sources.getSourceType());
+		getBuilder().addSourceSet(sources.getSourceType(), sources.getTargetDir());
 	}
 
 	public void visitFileSet(Fileset fileset) {

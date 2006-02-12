@@ -470,15 +470,6 @@
 		</dependencies>
 	</module>
 	
-	<module module-id="opennms-site" module-type="jar" module-name="OpenNMS Site">
-		<sources source-type="docbook">
-			<fileset dir="${opennms.dir}/docs">
-				<include name="**"/>
-				<exclude name="**/CVS/**"/>
-			</fileset>
-		</sources>
-	</module>
-
 	<module module-id="opennms-reporting" module-type="jar"
 		module-name="OpenNMS Reporting">
 		<sources source-type="java">
@@ -565,6 +556,41 @@
 				version="1.5" />
 		</dependencies>
 	</module>
+	
+	<module module-id="opennms-site" module-type="jar" module-name="OpenNMS Site">
+		<sources source-type="docbook">
+			<fileset dir="${opennms.dir}/docs">
+				<include name="**"/>
+				<exclude name="**/CVS/**"/>
+			</fileset>
+		</sources>
+	</module>
+	
+	<module module-id="opennms-daemon" module-type="pom" module-name="OpenNMS Application">
+		<sources source-type="manual" target-dir="src/etc">
+			<fileset dir="${opennms.dir}/etc">
+				<include name="**/*"/>
+				<exclude name="**/CVS/**"/>
+			</fileset>
+		</sources>
+		<sources source-type="manual" target-dir="src/bin">
+			<fileset dir="${opennms.dir}/tools/run">
+				<include name="**/*"/>
+				<exclude name="**/CVS/**"/>
+			</fileset>
+			<fileset dir="${opennms.dir}/tools/contrib">
+				<include name="**/*"/>
+				<exclude name="**/CVS/**"/>
+			</fileset>
+		</sources>
+		<sources source-type="manual" target-dir="src/contrib">
+			<fileset dir="${opennms.dir}/contrib">
+				<include name="**/*"/>
+				<exclude name="**/CVS/**"/>
+			</fileset>
+		</sources>
+	</module>
+	
 	<dependencies>
 		<dependency groupId="log4j" artifactId="log4j" version="1.2.7" />
 		<dependency groupId="junit" artifactId="junit" version="3.8.1" />

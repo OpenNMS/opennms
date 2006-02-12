@@ -29,6 +29,7 @@
         <element ref="this:fileset" minOccurs="1" maxOccurs="unbounded" />
       </sequence>
       <attribute name="source-type" type="string" use="required"/>
+      <attribute name="target-dir" type="string" use="optional" />
     </complexType>
   </element>
 

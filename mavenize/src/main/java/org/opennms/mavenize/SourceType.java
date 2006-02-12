@@ -27,6 +27,9 @@ public class SourceType {
 		List getGoals() {
 			return Configuration.get().getList(getPrefix()+".goals");
 		}
+		String getPhase() {
+			return Configuration.get().getString(getPrefix()+".phase");
+		}
 	}
 	
 	private String m_typeName;
@@ -61,6 +64,7 @@ public class SourceType {
 		Plugin plugin = builder.addPlugin(specPlugin.getGroupId(), specPlugin.getArtifactId());
 		
 		PluginExecution execution = new PluginExecution();
+		execution.setPhase(specPlugin.getPhase());
 		for (Iterator it = specPlugin.getGoals().iterator(); it.hasNext();) {
 			String goal = (String) it.next();
 			execution.addGoal(goal);

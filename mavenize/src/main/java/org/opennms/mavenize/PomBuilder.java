@@ -166,8 +166,8 @@ public class PomBuilder {
 		m_model.addDependency(dependency);
 	}
 
-	public void addSourceSet(String sourceType) {
-		SourceSet sourceSet = SourceSet.create(sourceType, this);
+	public void addSourceSet(String sourceType, String targetDir) {
+		SourceSet sourceSet = SourceSet.create(sourceType, targetDir, this);
 		m_sourceSets.add(sourceSet);
 	}
 	

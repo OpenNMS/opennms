@@ -7,16 +7,18 @@ import java.util.LinkedList;
 
 public class SourceSet {
 	
-	public static SourceSet create(String sourceType, PomBuilder pomBuilder) {
-		return new SourceSet(SourceType.get(sourceType), pomBuilder);
+	public static SourceSet create(String sourceType, String targetDir, PomBuilder pomBuilder) {
+		return new SourceSet(SourceType.get(sourceType), targetDir, pomBuilder);
 	}
 	
 	private LinkedList m_fileSets = new LinkedList();
 	private PomBuilder m_pomBuilder;
 	private SourceType m_sourceType;
+	private String m_targetDir;
 
-	private SourceSet(SourceType sourceType, PomBuilder pomBuilder) {
+	private SourceSet(SourceType sourceType, String targetDir, PomBuilder pomBuilder) {
 		m_sourceType = sourceType;
+		m_targetDir = targetDir;
 		m_pomBuilder = pomBuilder;
 		
 		m_sourceType.addPlugins(m_pomBuilder);
@@ -54,7 +56,9 @@ public class SourceSet {
 	}
 
 	private String getTargetDir() {
-		return m_sourceType.getStandardDir();
+		return m_targetDir != null
+			? PropertiesUtils.substitute(m_targetDir, System.getProperties())
+			: m_sourceType.getStandardDir();
 	}
 
 	public boolean isType(String sourceType) {
