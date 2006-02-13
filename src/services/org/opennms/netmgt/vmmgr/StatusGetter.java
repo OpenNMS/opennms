@@ -27,7 +27,7 @@ public class StatusGetter {
     private int m_status = STATUS_UNKNOWN;
 
     public StatusGetter() throws MalformedURLException {
-	m_invokeURL = new URL("http://localhost:8181/invoke?objectname=OpenNMS:Name=FastExit&operation=status");
+	m_invokeURL = new URL("http://127.0.0.1:8181/invoke?objectname=OpenNMS:Name=FastExit&operation=status");
     }
 
     public boolean isVerbose() {

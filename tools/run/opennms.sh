@@ -83,11 +83,7 @@ VERBOSE_GC=""
 RUNJAVA_OPTIONS=""
 
 # URL that this script uses to communicate with a running OpenNMS daemon.
-INVOKE_URL="http://localhost:8181/invoke?objectname=OpenNMS:Name=FastExit"
-
-# Unset http_proxy.  If people have it set, it will likely break wget/curl
-# when it tries to connect to localhost.
-unset http_proxy
+INVOKE_URL="http://127.0.0.1:8181/invoke?objectname=OpenNMS:Name=FastExit"
 
 #### ------------> DO NOT CHANGE VARIABLES IN THIS FILE <------------- ####
 #### Create $OPENNMS_HOME/etc/opennms.conf and put overrides in there. ####
