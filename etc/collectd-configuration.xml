@@ -18,7 +18,44 @@
 		
 		<outage-calendar>zzz from poll-outages.xml zzz</outage-calendar>
 	</package>
-	
+<!--
+        <package name="collect-SNMPv2">
+                <filter>isSNMPv2</filter>        
+                <include-range begin="1.1.1.1" end="254.254.254.254"/>
+
+                <service name="SNMPv2" interval="300000" user-defined="false" status="on">
+                        <parameter key="collection" value="default"/>
+                        <parameter key="force version" value="v2c"/>
+                        <parameter key="port" value="161"/>
+                        <parameter key="retry" value="3"/>
+                        <parameter key="timeout" value="3000"/>
+                </service>
+
+                <outage-calendar>zzz from poll-outages.xml zzz</outage-calendar>
+        </package>
+
+        <package name="collect-SNMPv1">
+                <filter>isSNMPv1 &amp; notisSNMPv2</filter>      
+                <include-range begin="1.1.1.1" end="254.254.254.254"/>
+
+                <service name="SNMPv1" interval="300000" user-defined="false" status="on">
+                        <parameter key="collection" value="default"/>
+                        <parameter key="force version" value="v1"/>
+                        <parameter key="port" value="161"/>
+                        <parameter key="retry" value="3"/>
+                        <parameter key="timeout" value="3000"/>
+                </service>
+
+                <outage-calendar>zzz from poll-outages.xml zzz</outage-calendar>
+        </package>
+-->
+
 	<collector service="SNMP" 	class-name="org.opennms.netmgt.collectd.SnmpCollector"/>
+
+<!--
+        <collector service="SNMPv1"     class-name="org.opennms.netmgt.collectd.SnmpCollector"/>
+        <collector service="SNMPv2"     class-name="org.opennms.netmgt.collectd.SnmpCollector"/>
+-->
+	
 </collectd-configuration>
 
