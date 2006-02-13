@@ -158,7 +158,7 @@ final class SnmpCollector implements ServiceCollector {
      * kept relatively small in order to communicate successfully with the
      * largest possible number of agents.
      */
-    private static int DEFAULT_MAX_VARS_PER_PDU = 30;
+    private static int DEFAULT_MAX_VARS_PER_PDU = 10;
 
     /**
      * Max number of variables permitted in a single outgoing SNMP PDU request..
@@ -406,6 +406,9 @@ final class SnmpCollector implements ServiceCollector {
 
         // Retrieve the name of the SNMP data collector
         String collectionName = ParameterMap.getKeyedString(parameters, "collection", "default");
+
+        // Retrieve the version to force, if available
+        String forceVersion = ParameterMap.getKeyedString(parameters, "force version", null);
 
         // Determine if data to be collected for all interfaces or only
         // for the primary SNMP interface
@@ -832,7 +835,17 @@ final class SnmpCollector implements ServiceCollector {
 
         // Instantiate new SnmpPeer object for this interface
         //
-        SnmpPeer peer = SnmpPeerFactory.getInstance().getPeer(ipAddr, supportsSnmpV2 ? SnmpSMI.SNMPV2 : SnmpSMI.SNMPV1);
+	SnmpPeer peer = null;
+	if (forceVersion != null) {
+		if (forceVersion.equals("v2c"))
+			peer = SnmpPeerFactory.getInstance().getPeer(ipAddr, SnmpSMI.SNMPV2);
+		else if (forceVersion.equals("v1"))
+			peer = SnmpPeerFactory.getInstance().getPeer(ipAddr, SnmpSMI.SNMPV1);
+		else
+			peer = SnmpPeerFactory.getInstance().getPeer(ipAddr, supportsSnmpV2 ? SnmpSMI.SNMPV2 : SnmpSMI.SNMPV1);
+	}
+	else
+        	peer = SnmpPeerFactory.getInstance().getPeer(ipAddr, supportsSnmpV2 ? SnmpSMI.SNMPV2 : SnmpSMI.SNMPV1);
         if (log.isDebugEnabled()) {
             String nl = System.getProperty("line.separator");
             log.debug("initialize: SnmpPeer configuration: address: " + peer.getPeer() + nl + "      version: " + ((peer.getParameters().getVersion() == SnmpSMI.SNMPV1) ? "SNMPv1" : "SNMPv2") + nl + "      timeout: " + peer.getTimeout() + nl + "      retries: " + peer.getRetries() + nl + "      read commString: " + peer.getParameters().getReadCommunity() + nl + "      write commString: " + peer.getParameters().getWriteCommunity());

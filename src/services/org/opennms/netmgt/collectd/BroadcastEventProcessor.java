@@ -357,7 +357,8 @@ final class BroadcastEventProcessor implements EventListener {
         Category log = ThreadCategory.getInstance(getClass());
         // Currently only support SNMP data collection.
         //
-        if (!event.getService().equals("SNMP")) {
+	// TODO This should not be hard coded
+        if (!(event.getService().equals("SNMP") || event.getService().equals("SNMPv1") || event.getService().equals("SNMPv2"))) {
             if (log.isDebugEnabled())
                 log.debug("nodeGainedServiceHandler: Datacollection not scheduled for service "+event.getService() +", currently only supporting SNMP service for collection.");
             return;

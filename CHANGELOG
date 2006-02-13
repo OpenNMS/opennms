@@ -1,5 +1,6 @@
 1.2.5 to 1.2.6
 ----------------------------------------------------------------------
+- Added a "force version" parameter to collectd.
 - When choosing to select SNMP data collection for a node, once the
   changes are applied the web page will go back to the node instead
   of the main Admin page. This improves performance on large systems.
