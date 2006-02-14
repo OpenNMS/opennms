@@ -68,7 +68,6 @@
     
     <td>
         <h3>Finished updating the database for the manage/unmanaged changes.</h3>
-        <p>OpenNMS will need to be restarted for the changes to take affect.</p>
 	<p>Changes for a specific node will become effective upon execution of
 	a forced rescan on that node. (Node must not be down when rescanned)</p>
     </td>
