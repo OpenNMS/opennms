@@ -110,7 +110,7 @@
     <h3>License and Copyright</h3>
       
       <p>
-        The <a href="http://www.opennms.org/">OpenNMS&reg;</a> software, as distributed here, is copyright &copy; 2002-2004 <a href="http://www.opennms.com">The OpenNMS Group, Inc.</a> <a href="http://www.opennms.org/">OpenNMS&reg;</a> is a registered trademark of <a href="http://www.opennms.com">The OpenNMS Group, Inc.</a>
+        The <a href="http://www.opennms.org/">OpenNMS&reg;</a> software, as distributed here, is copyright &copy; 2002-2006 <a href="http://www.opennms.com">The OpenNMS Group, Inc.</a> <a href="http://www.opennms.org/">OpenNMS&reg;</a> is a registered trademark of <a href="http://www.opennms.com">The OpenNMS Group, Inc.</a>
       </p>
 
       <p>
