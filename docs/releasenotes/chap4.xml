@@ -48,7 +48,7 @@
     written by Ian MacDonald.</para>
 
     <formalpara>
-      <title>Solaris 8 and Solaris 9 on x86 and SPARC</title>
+      <title>Solaris 8, Solaris 9 and Solaris 10 on x86 and SPARC</title>
 
       <para>Packages are available at ftp.opennms.org for Solaris 8 and
       Solaris 9 running on SPARC and Solaris 9 running on x86.</para>
@@ -63,7 +63,7 @@
     </formalpara>
 
     <formalpara>
-      <title>SuSE 8 and SuSE 9</title>
+      <title>SuSE 8, SuSE 9 and SuSE 10</title>
 
       <para>OpenNMS is known to build and run on SuSE.</para>
     </formalpara>

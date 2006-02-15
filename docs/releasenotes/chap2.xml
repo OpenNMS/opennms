@@ -5,11 +5,11 @@
   <subtitle>Changes in This OpenNMS</subtitle>
 
   <para>OpenNMS 1.2.6 is the most recent production, or "stable", release. It
-  is the seventh release in the stable branch of OpenNMS. Changes to the stable
-  branch are limited to bug fixes and simple improvements. The 1.3 tree is a
-  development, or "unstable" tree, where most new features are implemented,
-  but without the testing that goes into 1.2. When 1.3 is mature enough, it
-  will become OpenNMS 1.4, the next stable version.</para>
+  is the seventh release in the stable branch of OpenNMS. Changes to the
+  stable branch are limited to bug fixes and simple improvements. The 1.3 tree
+  is a development, or "unstable" tree, where most new features are
+  implemented, but without the testing that goes into 1.2. When 1.3 is mature
+  enough, it will become OpenNMS 1.4, the next stable version.</para>
 
   <section>
     <title>Changes in OpenNMS 1.2.6</title>
@@ -19,23 +19,210 @@
 
       <bridgehead>New format for availability reports</bridgehead>
 
-      <para>Version 1.2.6 previews new format availability reports from the 1.3
-      tree of OpenNMS. Each availability report format (HTML, PDF and SVG) now
-      has a new version of the Last Months Daily Availability and Month to Date
-      Daily Availability report. These new reports have a tabular calendar look
-      to them and have colour-coded cells to identify days that have fallen 
-      below "normal" and "warning" levels for the category displayed in the
-      report. To generate these reports, select "Calendar Format" from the 
-      availability reports page in the WebUI. The original reports are still
-      available (by default) as "Classic Format" reports.</para>
+      <para>Version 1.2.6 previews new format availability reports from the
+      1.3 tree of OpenNMS. Each availability report format (HTML, PDF and SVG)
+      now has a new version of the Last Months Daily Availability and Month to
+      Date Daily Availability report. These new reports have a tabular
+      calendar look to them and have colour-coded cells to identify days that
+      have fallen below "normal" and "warning" levels for the category
+      displayed in the report. To generate these reports, select "Calendar
+      Format" from the availability reports page in the WebUI. The original
+      reports are still available (by default) as "Classic Format"
+      reports.</para>
 
-    </section> 
+      <bridgehead>Ability to have SNMPv1 and SNMPv2 as Separate
+      Services</bridgehead>
+
+      <para>A lot of changes have been made to SNMP. The most useful is the
+      ability to view SNMP services by version, instead of as a generic "SNMP"
+      service. This is in preparation for the SNMPv3 support that is available
+      in the development branch - it would be nice to know which versions of
+      SNMP are supported on a device. </para>
+
+      <para>In order to speed up collectd startup times, since 1.2.5 OpenNMS
+      has defaulted to SNMPv1 if SNMPv2 was not specifically defined in
+      snmp-config.xml. This allows collectd to start without having to query
+      each device, but it created a number of issues at sites where the high
+      capacity (64-bit) counters were being used to track traffic data. By
+      defaulting to SNMPv1, those values were not accessible. Also, there is
+      an existing bug where if SNMPv2 was supported without SNMPv1, the
+      service would not be discovered (unless v2 was forced in the
+      configuration file). </para>
+
+      <para>The approach taken to fix this was to create in capsd two new
+      services, SNMPv1 and SNMPv2. By using the "force version" parameter,
+      OpenNMS can discover which devices expressly support each version. Armed
+      with that information, it should be possible to perform data collection
+      using the most preferable version. However, there was the additional
+      problem with devices that support both versions - how to prevent double
+      collection? </para>
+
+      <para>The solution was to be able to use OpenNMS packages - one for
+      SNMPv2 and one for SNMPv1. In any filter or rule, using
+      "is[ServiceName]" will return all the IP addresses that support a
+      particular service. Thus "isHTTP" will return all those interfaces with
+      HTTP running on port 80, and "isSNMPv2" can return all of the devices
+      that support SNMP version 2. </para>
+
+      <para>The problem is that having a package for "isSNMPv2" and another
+      for "isSNMPv1" would result in duplicate collection on devices that
+      supported both. There needed to be some way to say "return all the
+      interfaces that support SNMPv1 but do not support SNMPv2". Using
+      something like "!(isSNMPv2)" didn't work because that is true for any
+      service that is not SNMPv2, instead of finding out "is SNMPv2 one of the
+      supported services". </para>
+
+      <para>The solution was to create a new filter tool called
+      "notis[ServiceName]". This will craft an SQL query such that it will
+      only return true if "ServiceName" is not associated with the interface
+      in question. The final piece was to add a "force version" parameter to
+      collectd. Now it was possible to create two packages, one for SNMPv2 and
+      one for SNMPv1, that would collect as desired. </para>
+
+      <para>There are only two steps needed to get this working. First, the
+      two services must be added to the capsd-configuration.xml.</para>
+
+      <para><programlisting><code> </code>        &lt;protocol-plugin protocol="SNMPv1" class-name="org.opennms.netmgt.capsd.SnmpPlugin" scan="on" user-defined="false"&gt;
+                &lt;property key="timeout" value="2000"/&gt;
+                &lt;property key="force version" value="v1"/&gt;
+                &lt;property key="retry" value="2"/&gt;
+        &lt;/protocol-plugin&gt;
+        &lt;protocol-plugin protocol="SNMPv2" class-name="org.opennms.netmgt.capsd.SnmpPlugin" scan="on" user-defined="false"&gt;
+                &lt;property key="timeout" value="2000"/&gt;
+                &lt;property key="force version" value="v2c"/&gt;
+                &lt;property key="retry" value="2"/&gt;
+        &lt;/protocol-plugin&gt;</programlisting> </para>
+
+      <para>Now this is the important part - before switching over to using
+      the new services, they have to be discovered on the devices. This takes
+      time. If the default rescan frequency is being used, then at least 24
+      hours is needed until SNMPv1 and SNMPv2 will be discovered. </para>
+
+      <para>If you know your network, then some SQL trickery can be used to
+      make this easier. First, update capsd as above and restart OpenNMS.
+      </para>
+
+      <para>Get in to the database: <code></code></para>
+
+      <para><code>psql -U opennms opennms</code> and then <code>select * from
+      service;</code> </para>
+
+      <para>Note the serviceIDs for SNMP, SNMPv1 and SNMPv2. </para>
+
+      <para>To add SNMPv1 to those devices that already have SNMP, use the
+      following SQL: <code></code></para>
+
+      <para><code>INSERT INTO ifservices (nodeid, ipaddr, ifindex, serviceid,
+      status, source, notify) SELECT nodeid, ipaddr, ifindex, [SNMPv1 ID],
+      status, source, notify FROM ifservices WHERE serviceid=[SNMP ID] AND
+      ipaddr NOT IN (SELECT ipaddr FROM ifservices WHERE serviceid=[SNMPv1
+      ID]);</code> </para>
+
+      <para>replacing [SNMP ID] with the serviceID for SNMP and [SNMPv1 ID]
+      with the serviceID for SNMPv1. Repeat as desired for SNMPv2.</para>
+
+      <para>Second, the <filename>collectd-configuration.xml</filename> file
+      must be updated. Remember - only do this if SNMPv1 and SNMPv2 have been
+      discovered.</para>
+
+      <para><programlisting><code>        &lt;package name="collect-SNMPv2"&gt;
+                &lt;filter&gt;isSNMPv2&lt;/filter&gt;
+                &lt;include-range begin="1.1.1.1" end="254.254.254.254"/&gt;
+
+                &lt;service name="SNMPv2" interval="300000" user-defined="false" status="on"&gt;
+                        &lt;parameter key="collection" value="default"/&gt;
+                        &lt;parameter key="force version" value="v2c"/&gt;
+                        &lt;parameter key="port" value="161"/&gt;
+                        &lt;parameter key="retry" value="3"/&gt;
+                        &lt;parameter key="timeout" value="3000"/&gt;
+                &lt;/service&gt;
+
+                &lt;outage-calendar&gt;zzz from poll-outages.xml zzz&lt;/outage-calendar&gt;
+        &lt;/package&gt;
+
+        &lt;package name="collect-SNMPv1"&gt;
+                &lt;filter&gt;isSNMPv1 &amp;amp; notisSNMPv2&lt;/filter&gt;
+                &lt;include-range begin="1.1.1.1" end="254.254.254.254"/&gt;
+
+                &lt;service name="SNMPv1" interval="300000" user-defined="false" status="on"&gt;
+                        &lt;parameter key="collection" value="default"/&gt;
+                        &lt;parameter key="force version" value="v1"/&gt;
+                        &lt;parameter key="port" value="161"/&gt;
+                        &lt;parameter key="retry" value="3"/&gt;
+                        &lt;parameter key="timeout" value="3000"/&gt;
+                &lt;/service&gt;
+
+                &lt;outage-calendar&gt;zzz from poll-outages.xml zzz&lt;/outage-calendar&gt;
+        &lt;/package&gt;
+
+        &lt;collector service="SNMPv1"     class-name="org.opennms.netmgt.collectd.SnmpCollector"/&gt;
+        &lt;collector service="SNMPv2"     class-name="org.opennms.netmgt.collectd.SnmpCollector"/&gt;
+</code></programlisting></para>
+
+      <para>Note the use of the "notis" filter tool to only do collection via
+      SNMPv1 if SNMPv2 is not present.</para>
+
+      <bridgehead>Capsd SNMP Plugin and Poller SNMP Monitor Changed
+      Slightly</bridgehead>
+
+      <para>In addition to changes for the new SNMP services, the SNMP plugin
+      and SNMP monitor where changed to use SNMP GET commands instead of SNMP
+      GETNEXT commands. This will make it easier to build SNMP-based monitors,
+      as the discovery of the SNMP-based service will be more accurate.</para>
+
+      <bridgehead>WebUI Speed Enhancements</bridgehead>
+
+      <para>On large systems the OpenNMS GUI can become slow. In an attempt to
+      fix that, most of the Admin functions for the system are also available
+      under the Admin section for each node. This saves time waiting for the
+      large system-wide pages to load. However, the "Configure SNMP Data
+      Collection per Interface" would always return to the system-wide page
+      after a change. Now it will return to the page for the node. Also, the
+      "List Nodes" page will only list the node labels instead of the node
+      labels and interfaces (that option is still available under "Search").
+      Also on that topic, the Manage/Unmanage screen no longer requires a
+      restart (I should be hearing a collective cheer). When a service is
+      unmanaged, the categories on the front page will be updated and all
+      outstanding outages cleared.</para>
+
+      <bridgehead>Cosmetic Improvements</bridgehead>
+
+      <para>There are a few cosmetic changes. There is a new color scheme for
+      the default <filename>datacollection-config.xml </filename>reports.
+      Please let us know if you like it. If not, the old colors can be found
+      in the file <filename>snmp-graph.properties.125</filename>. Simply move
+      it to <filename>snmp-graph.properties</filename> and restart Tomcat.
+      </para>
+
+      <para>There is also a new stylesheet. The old stylesheet is called
+      <filename>styles.css.orig</filename> and can be found in the
+      <filename>$OPENNMS_HOME/webapps/opennms/includes</filename> directory.
+      Move it back to <filename>styles.css</filename> if you don't like the
+      new one. And a couple of the asset fields now appear on the main node
+      page.</para>
+    </section>
 
     <section>
       <title>Bug Fixes</title>
-    </section> 
-  </section>
 
+      <bridgehead>SNMP "select" Data Collection Reset</bridgehead>
+
+      <para>The biggest bug fixed in this release also involves SNMP data
+      collection. It was discovered that if a device has an IP address
+      configured, but SNMP is not supported on that particular interface, any
+      collections set on those interfaces would be set to "N" on the next
+      rescan. Very frustrating, but it is better now. Also fixed in the
+      release is an issue with the primary SNMP interface being on a NIC with
+      other addresses. It would rarely cause issues, so not too many people
+      should have experienced issues with this.</para>
+
+      <bridgehead>New MX4J</bridgehead>
+
+      <para>The MX4J jars have been upgraded to 3.0.1 which should fix issues
+      with <filename>opennms.sh -v status</filename> that some people were
+      experiencing.</para>
+    </section>
+  </section>
 
   <section>
     <title>Changes in OpenNMS 1.2.5</title>

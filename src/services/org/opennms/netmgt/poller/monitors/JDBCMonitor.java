@@ -10,6 +10,8 @@
 //
 // Modifications:
 //
+// 2005 SEP 19: Refactored to remove calls to DriverManager as it can (and does) cause thread deadlocks.
+// 2005 Mar 10: Refactored to allow support for StoredProcedure poller and other potential subclasses.
 // 2004 May 19: Added response time information to poller. Bug 830
 // 2003 May 01: Added this JDBC poller, based on generic poller code.
 //
@@ -42,11 +44,13 @@ package org.opennms.netmgt.poller.monitors;
 import java.net.InetAddress;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
-import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Map;
+import java.lang.Integer;
+import java.sql.Driver;
+import java.util.Properties;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
@@ -68,7 +72,7 @@ import org.opennms.netmgt.utils.ParameterMap;
  *         Added retry logic, input validations to poller.
  * @since 0.1
  */
-final public class JDBCMonitor extends IPv4LatencyMonitor {
+public class JDBCMonitor extends IPv4LatencyMonitor {
     /**
      * Number of miliseconds to wait before timing out a database login using
      * JDBC Hint: 1 minute is 6000 miliseconds.
@@ -86,7 +90,7 @@ final public class JDBCMonitor extends IPv4LatencyMonitor {
 
     public JDBCMonitor() throws ClassNotFoundException, InstantiationException, IllegalAccessException {
         Category log = ThreadCategory.getInstance(getClass());
-        log.info(getClass().getName() + ": JDBCmonitor class loaded");
+        log.debug(getClass().getName() + ": JDBCmonitor class loaded");
     }
 
     /**
@@ -100,9 +104,7 @@ final public class JDBCMonitor extends IPv4LatencyMonitor {
     public void initialize(PollerConfig pollerConfig, Map parameters) {
         super.initialize(pollerConfig, parameters);
         Category log = ThreadCategory.getInstance(getClass());
-        if (log.isDebugEnabled()) {
-            log.debug(getClass().getName() + ": Calling init");
-        }
+        log.debug(getClass().getName() + ": Calling init");
         return;
     }
 
@@ -115,9 +117,7 @@ final public class JDBCMonitor extends IPv4LatencyMonitor {
      */
     public void release() {
         Category log = ThreadCategory.getInstance(getClass());
-        if (log.isDebugEnabled()) {
-            log.debug(getClass().getName() + ": Shuting down plugin");
-        }
+        log.debug(getClass().getName() + ": Shuting down plugin");
         return;
     }
 
@@ -138,9 +138,7 @@ final public class JDBCMonitor extends IPv4LatencyMonitor {
         if (!(iface.getAddress() instanceof InetAddress)) {
             throw new NetworkInterfaceNotSupportedException(getClass().getName() + ": Address type not supported");
         }
-        if (log.isDebugEnabled()) {
-            log.debug(getClass().getName() + ": initialize");
-        }
+        log.debug(getClass().getName() + ": initialize");
         return;
     }
 
@@ -158,158 +156,214 @@ final public class JDBCMonitor extends IPv4LatencyMonitor {
      */
     public void release(NetworkInterface iface) {
         Category log = ThreadCategory.getInstance(getClass());
-        if (log.isDebugEnabled()) {
-            log.debug(getClass().getName() + ": Shuting down plugin");
-        }
+        log.debug(getClass().getName() + ": Shuting down plugin");
         return;
     }
 
-    /**
-     * Network interface to poll for a given service. Make sure you're using the
-     * latest (at least 5.5) <a
-     * href="http://www.sybase.com/detail_list/1,6902,2912,00.html">JConnect
-     * version </a> or the plugin will not be able to tell exactly if the
-     * service is up or not.
-     * 
-     * @param iface
-     *            The interface to poll
-     * @param parameters
-     *            Parameters to pass when polling the interface Currently
-     *            recognized Map keys:
-     *            <ul>
-     *            <li>user - Database user
-     *            <li>password - User password
-     *            <li>port - server port
-     *            <li>timeout - Number of miliseconds to wait before sending a
-     *            timeout
-     *            <li>driver - The JDBC driver to use
-     *            <li>url - The vendor specific jdbc URL
-     *            </ul>
-     * @return int An status code that shows the status of the service
-     * @throws java.lang.RuntimeException
-     *             Thrown if an unrecoverable error occurs that prevents the
-     *             interface from being monitored.
-     * @see org.opennms.netmgt.poller.monitors.ServiceMonitor#SURPRESS_EVENT_MASK
-     * @see org.opennms.netmgt.poller.monitors.ServiceMonitor#SERVICE_AVAILABLE
-     * @see org.opennms.netmgt.poller.monitors.ServiceMonitor#SERVICE_UNAVAILABLE
-     * @see org.opennms.netmgt.poller.monitors.ServiceMonitor#SERVICE_UNRESPONSIVE
-     * @see <a
-     *      href="http://manuals.sybase.com/onlinebooks/group-jc/jcg0550e/prjdbc/@Generic__BookTextView/9332;pt=1016#X">Error
-     *      codes for JConnect </a>
-     */
-    public int poll(NetworkInterface iface, Map parameters, org.opennms.netmgt.config.poller.Package pkg) {
-        Category log = ThreadCategory.getInstance(getClass());
+   /**
+   * Network interface to poll for a given service. Make sure you're using the
+   * latest (at least 5.5) <a
+   * href="http://www.sybase.com/detail_list/1,6902,2912,00.html">JConnect
+   * version </a> or the plugin will not be able to tell exactly if the
+   * service is up or not.
+   * 
+   * @param iface
+   *            The interface to poll
+   * @param parameters
+   *            Parameters to pass when polling the interface Currently
+   *            recognized Map keys:
+   *            <ul>
+   *            <li>user - Database user
+   *            <li>password - User password
+   *            <li>port - server port
+   *            <li>timeout - Number of miliseconds to wait before sending a
+   *            timeout
+   *            <li>driver - The JDBC driver to use
+   *            <li>url - The vendor specific jdbc URL
+   *            </ul>
+   * @return int An status code that shows the status of the service
+   * @throws java.lang.RuntimeException
+   *             Thrown if an unrecoverable error occurs that prevents the
+   *             interface from being monitored.
+   * @see org.opennms.netmgt.poller.monitors.ServiceMonitor#SURPRESS_EVENT_MASK
+   * @see org.opennms.netmgt.poller.monitors.ServiceMonitor#SERVICE_AVAILABLE
+   * @see org.opennms.netmgt.poller.monitors.ServiceMonitor#SERVICE_UNAVAILABLE
+   * @see org.opennms.netmgt.poller.monitors.ServiceMonitor#SERVICE_UNRESPONSIVE
+   * @see <a
+   *      href="http://manuals.sybase.com/onlinebooks/group-jc/jcg0550e/prjdbc/@Generic__BookTextView/9332;pt=1016#X">Error
+   *      codes for JConnect </a>
+   */
+   public int poll(NetworkInterface iface, Map parameters, org.opennms.netmgt.config.poller.Package pkg)
+   {
+      Category log = ThreadCategory.getInstance(getClass());
 
-        // Asume that the service is down
-        int status = SERVICE_UNAVAILABLE;
-        Connection con = null;
-        Statement statement = null;
-        ResultSet resultset = null;
+      // Asume that the service is down
+      int status = SERVICE_UNAVAILABLE;
+      Connection con = null;
+      Driver driver = null;
 
-        if (iface.getType() != NetworkInterface.TYPE_IPV4) {
-            log.error(getClass().getName() + ": Unsupported interface type, only TYPE_IPV4 currently supported");
-            throw new NetworkInterfaceNotSupportedException(getClass().getName() + ": Unsupported interface type, only TYPE_IPV4 currently supported");
-        }
+      if (iface.getType() != NetworkInterface.TYPE_IPV4)
+      {
+         log.error(getClass().getName() + ": Unsupported interface type, only TYPE_IPV4 currently supported");
+         throw new NetworkInterfaceNotSupportedException(getClass().getName() + ": Unsupported interface type, only TYPE_IPV4 currently supported");
+      }
+      if (parameters == null)
+      {
+         throw new NullPointerException();
+      }
+      try
+      {
+         String db_driver = ParameterMap.getKeyedString(parameters, "driver", DBTools.DEFAULT_JDBC_DRIVER);
+         driver = (Driver)Class.forName(db_driver).newInstance();
+      }
+      catch (Exception exp)
+      {
+         exp.printStackTrace();
+         throw new RuntimeException(exp.toString());
+      }
+      log.debug(getClass().getName() + ": Loaded JDBC driver");
 
-        if (parameters == null) {
-            throw new NullPointerException();
-        }
-        try {
-            Class.forName(ParameterMap.getKeyedString(parameters, "driver", DBTools.DEFAULT_JDBC_DRIVER)).newInstance();
-        } catch (Exception exp) {
-            exp.printStackTrace();
-            throw new RuntimeException(exp.toString());
-        }
-        log.info(getClass().getName() + ": Loaded JDBC driver");
+      // Get the JDBC url host part
+      InetAddress ipv4Addr = (InetAddress) iface.getAddress();
+      String url = null;
+      url = DBTools.constructUrl(ParameterMap.getKeyedString(parameters, "url", DBTools.DEFAULT_URL), ipv4Addr.getCanonicalHostName());
+      log.debug(getClass().getName() + ": JDBC url: " + url);
 
-        // Get the JDBC url host part
-        InetAddress ipv4Addr = (InetAddress) iface.getAddress();
-        String url = null;
-        url = DBTools.constructUrl(ParameterMap.getKeyedString(parameters, "url", DBTools.DEFAULT_URL), ipv4Addr.getCanonicalHostName());
-        if (log.isDebugEnabled()) {
-            log.debug(getClass().getName() + ": JDBC url: " + url);
-        }
+      int retries = ParameterMap.getKeyedInteger(parameters, "retry", DEFAULT_RETRY);
+      String rrdPath = ParameterMap.getKeyedString(parameters, "rrd-repository", null);
+      String dsName = ParameterMap.getKeyedString(parameters, "ds-name", null);
+      if (dsName == null)
+      {
+         dsName = DS_NAME;
+      }
 
-        int retries = ParameterMap.getKeyedInteger(parameters, "retry", DEFAULT_RETRY);
-        int timeout = ParameterMap.getKeyedInteger(parameters, "timeout", DEFAULT_TIMEOUT);
-        String db_user = ParameterMap.getKeyedString(parameters, "user", DBTools.DEFAULT_DATABASE_USER);
-        String db_pass = ParameterMap.getKeyedString(parameters, "password", DBTools.DEFAULT_DATABASE_PASSWORD);
-        String rrdPath = ParameterMap.getKeyedString(parameters, "rrd-repository", null);
-        String dsName = ParameterMap.getKeyedString(parameters, "ds-name", null);
+      if (rrdPath == null) {
+         log.info("poll: RRD repository not specified in parameters, latency data will not be stored.");
+      }
 
-        if (rrdPath == null) {
-            log.info("poll: RRD repository not specified in parameters, latency data will not be stored.");
-        }
-        if (dsName == null) {
-            dsName = DS_NAME;
-        }
+      int timeout = ParameterMap.getKeyedInteger(parameters, "timeout", DEFAULT_TIMEOUT);
+      String user = ParameterMap.getKeyedString(parameters, "user", DBTools.DEFAULT_DATABASE_USER);
+      String password = ParameterMap.getKeyedString(parameters, "password", DBTools.DEFAULT_DATABASE_PASSWORD);
+     
+      Properties props = new Properties();
+      props.setProperty("user", user);
+      props.setProperty("password", password);
+      Integer to = new Integer(timeout / 1000);
+      props.setProperty("timeout", to.toString());
 
-        for (int attempts = 0; attempts <= retries; attempts++) {
-            try {
-                long responseTime = -1;
-                DriverManager.setLoginTimeout(timeout);
-                long sentTime = System.currentTimeMillis();
-                con = DriverManager.getConnection(url, db_user, db_pass);
+      for (int attempts = 0; attempts <= retries; attempts++)
+      {
+         try
+         {
+            log.debug(getClass().getName() + ": Attempting connection...");
+            con = driver.connect(url, props);
+            log.debug(getClass().getName() + ": Connection attempt complete.");
 
-                // We are connected, upgrade the status to unresponsive
-                status = SERVICE_UNRESPONSIVE;
-
-                if (con != null) {
-                    DatabaseMetaData metadata = con.getMetaData();
-                    resultset = metadata.getCatalogs();
-                    while (resultset.next()) {
-                        resultset.getString(1);
-                    }
-
-                    // The query worked, assume than the server is ok
-                    if (resultset != null) {
-                        responseTime = System.currentTimeMillis() - sentTime;
-                        status = SERVICE_AVAILABLE;
-                        if (log.isDebugEnabled()) {
-                            log.debug(getClass().getName() + ": JDBC service is AVAILABLE on: " + ipv4Addr.getCanonicalHostName());
-                            log.debug("poll: responseTime= " + responseTime + "ms");
-
-                        }
-                        // Update response time
-                        if (responseTime >= 0 && rrdPath != null) {
-                            try {
-                                this.updateRRD(rrdPath, ipv4Addr, dsName, responseTime, pkg);
-                            } catch (RuntimeException rex) {
-                                log.debug("There was a problem writing the RRD:" + rex);
-                            }
-                        }
-                        break;
-                    }
-                } // end if con
-            } catch (SQLException sqlEx) {
-                if (log.isDebugEnabled()) {
-                    log.debug(getClass().getName() + ": JDBC service is not responding on: " + ipv4Addr.getCanonicalHostName() + ", " + sqlEx.getSQLState() + ", " + sqlEx.toString());
-                    sqlEx.printStackTrace();
-                }
-            } finally {
-                if (resultset != null) {
-                    try {
-                        resultset.close();
-                    } catch (SQLException ignore) {
-                    }
-                    resultset = null;
-                }
-                if (statement != null) {
-                    try {
-                        statement.close();
-                    } catch (SQLException ignore) {
-                    }
-                    statement = null;
-                }
-                if (con != null) {
-                    try {
-                        con.close();
-                    } catch (SQLException ignore) {
-                    }
-                    con = null;
-                }
+            if (con != null)
+            {
+               log.debug(getClass().getName() + ": Connection established.");
+               long sentTime = System.currentTimeMillis();
+               status = checkStatus(log, parameters, con);
+               if (status == SERVICE_AVAILABLE)
+               {
+                  // The server is ok
+                  long responseTime = System.currentTimeMillis() - sentTime;
+                  if (log.isDebugEnabled())
+                  {
+                     log.debug(getClass().getName() + ": JDBC service is AVAILABLE on: " + ipv4Addr.getCanonicalHostName());
+                     log.debug("poll: responseTime= " + responseTime + "ms");
+                  }
+                  // Update response time
+                  if (responseTime >= 0 && rrdPath != null)
+                  {
+                     try
+                     {
+                        this.updateRRD(rrdPath, ipv4Addr, dsName, responseTime, pkg);
+                     }
+                     catch (RuntimeException rex)
+                     {
+                        log.debug("There was a problem writing the RRD:" + rex);
+                     }
+                  }
+                  break;
+               }
+            } // end if con
+            else
+            {
+               log.debug(getClass().getName() + ": Connection failed.");
             }
-        }
-        return status;
-    }
+         }
+         catch (SQLException sqlEx)
+         {
+            if (log.isDebugEnabled())
+            {
+               log.debug(getClass().getName() + ": JDBC service is not responding on: " + ipv4Addr.getCanonicalHostName() + ", " + sqlEx.getSQLState() + ", " + sqlEx.toString());
+               sqlEx.printStackTrace();
+            }
+         }
+         finally
+         {
+            if (con != null)
+            {
+               try
+               {
+                  con.close();
+               }
+               catch (SQLException ignore)
+               {
+               }
+               con = null;
+            }
+         }
+      }
+      return status;
+   }
+
+   public int checkStatus( Category log, Map parameters, Connection con )
+   {
+      int status = SERVICE_UNAVAILABLE;
+      ResultSet resultset = null;
+      try
+      {
+         // We are connected, upgrade the status to unresponsive
+         status = SERVICE_UNRESPONSIVE;
+
+         DatabaseMetaData metadata = con.getMetaData();
+         resultset = metadata.getCatalogs();
+         while (resultset.next())
+         {
+            resultset.getString(1);
+         }
+
+         // The query worked, assume than the server is ok
+         if (resultset != null)
+         {
+            status = SERVICE_AVAILABLE;
+         }
+      }
+      catch (SQLException sqlEx)
+      {
+         if (log.isDebugEnabled())
+         {
+            log.debug(getClass().getName() + ": JDBC service failed to retrieve metadata: " + sqlEx.getSQLState() + ", " + sqlEx.toString());
+            sqlEx.printStackTrace();
+         }
+      }
+      finally
+      {
+         if (resultset != null)
+         {
+            try
+            {
+               resultset.close();
+            }
+            catch (SQLException ignore)
+            {
+            }
+            resultset = null;
+         }
+      }
+      return status;
+   }
 } // End of class
+
