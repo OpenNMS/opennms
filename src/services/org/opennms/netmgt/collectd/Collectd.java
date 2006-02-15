@@ -82,7 +82,7 @@ public final class Collectd implements PausableFiber {
      * SQL used to retrieve all the interfaces which support a particular
      * service.
      */
-    private final static String SQL_RETRIEVE_INTERFACES = "SELECT DISTINCT ifServices.nodeid,ifServices.ipaddr FROM ifServices, service WHERE ifServices.serviceid = service.serviceid AND service.servicename = ? AND ifServices.ipaddr = ipinterface.ipaddr and ifServices.nodeid = ipinterface.nodeid and ipinterface.ismanaged != 'D'";
+    private final static String SQL_RETRIEVE_INTERFACES = "SELECT DISTINCT ifServices.nodeid,ifServices.ipaddr FROM ifServices, service, ipinterface WHERE ifServices.serviceid = service.serviceid AND service.servicename = ? AND ifServices.ipaddr = ipinterface.ipaddr and ifServices.nodeid = ipinterface.nodeid and ipinterface.ismanaged != 'D'";
 
     /**
      * SQL used to retrieve all the service id's and names from the database.
