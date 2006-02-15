@@ -37,7 +37,7 @@
       ability to view SNMP services by version, instead of as a generic "SNMP"
       service. This is in preparation for the SNMPv3 support that is available
       in the development branch - it would be nice to know which versions of
-      SNMP are supported on a device. </para>
+      SNMP are supported on a device.</para>
 
       <para>In order to speed up collectd startup times, since 1.2.5 OpenNMS
       has defaulted to SNMPv1 if SNMPv2 was not specifically defined in
@@ -47,7 +47,7 @@
       defaulting to SNMPv1, those values were not accessible. Also, there is
       an existing bug where if SNMPv2 was supported without SNMPv1, the
       service would not be discovered (unless v2 was forced in the
-      configuration file). </para>
+      configuration file).</para>
 
       <para>The approach taken to fix this was to create in capsd two new
       services, SNMPv1 and SNMPv2. By using the "force version" parameter,
@@ -55,14 +55,14 @@
       with that information, it should be possible to perform data collection
       using the most preferable version. However, there was the additional
       problem with devices that support both versions - how to prevent double
-      collection? </para>
+      collection?</para>
 
       <para>The solution was to be able to use OpenNMS packages - one for
       SNMPv2 and one for SNMPv1. In any filter or rule, using
       "is[ServiceName]" will return all the IP addresses that support a
       particular service. Thus "isHTTP" will return all those interfaces with
       HTTP running on port 80, and "isSNMPv2" can return all of the devices
-      that support SNMP version 2. </para>
+      that support SNMP version 2.</para>
 
       <para>The problem is that having a package for "isSNMPv2" and another
       for "isSNMPv1" would result in duplicate collection on devices that
@@ -70,14 +70,14 @@
       interfaces that support SNMPv1 but do not support SNMPv2". Using
       something like "!(isSNMPv2)" didn't work because that is true for any
       service that is not SNMPv2, instead of finding out "is SNMPv2 one of the
-      supported services". </para>
+      supported services".</para>
 
       <para>The solution was to create a new filter tool called
       "notis[ServiceName]". This will craft an SQL query such that it will
       only return true if "ServiceName" is not associated with the interface
       in question. The final piece was to add a "force version" parameter to
       collectd. Now it was possible to create two packages, one for SNMPv2 and
-      one for SNMPv1, that would collect as desired. </para>
+      one for SNMPv1, that would collect as desired.</para>
 
       <para>There are only two steps needed to get this working. First, the
       two services must be added to the capsd-configuration.xml.</para>
@@ -91,23 +91,23 @@
                 &lt;property key="timeout" value="2000"/&gt;
                 &lt;property key="force version" value="v2c"/&gt;
                 &lt;property key="retry" value="2"/&gt;
-        &lt;/protocol-plugin&gt;</programlisting> </para>
+        &lt;/protocol-plugin&gt;</programlisting></para>
 
       <para>Now this is the important part - before switching over to using
       the new services, they have to be discovered on the devices. This takes
       time. If the default rescan frequency is being used, then at least 24
-      hours is needed until SNMPv1 and SNMPv2 will be discovered. </para>
+      hours is needed until SNMPv1 and SNMPv2 will be discovered.</para>
 
       <para>If you know your network, then some SQL trickery can be used to
-      make this easier. First, update capsd as above and restart OpenNMS.
-      </para>
+      make this easier. First, update capsd as above and restart
+      OpenNMS.</para>
 
       <para>Get in to the database: <code></code></para>
 
       <para><code>psql -U opennms opennms</code> and then <code>select * from
-      service;</code> </para>
+      service;</code></para>
 
-      <para>Note the serviceIDs for SNMP, SNMPv1 and SNMPv2. </para>
+      <para>Note the serviceIDs for SNMP, SNMPv1 and SNMPv2.</para>
 
       <para>To add SNMPv1 to those devices that already have SNMP, use the
       following SQL: <code></code></para>
@@ -116,7 +116,7 @@
       status, source, notify) SELECT nodeid, ipaddr, ifindex, [SNMPv1 ID],
       status, source, notify FROM ifservices WHERE serviceid=[SNMP ID] AND
       ipaddr NOT IN (SELECT ipaddr FROM ifservices WHERE serviceid=[SNMPv1
-      ID]);</code> </para>
+      ID]);</code></para>
 
       <para>replacing [SNMP ID] with the serviceID for SNMP and [SNMPv1 ID]
       with the serviceID for SNMPv1. Repeat as desired for SNMPv2.</para>
@@ -162,6 +162,59 @@
       <para>Note the use of the "notis" filter tool to only do collection via
       SNMPv1 if SNMPv2 is not present.</para>
 
+      <bridgehead>New JDBCStoredProcedureMonitor and
+      JDBCStoredProcedurePlugin</bridgehead>
+
+      <para>Tobey Pasheilich has added some new functionality to the JDBC
+      monitoring code in OpenNMS.</para>
+
+      <para>In his environment, Oracle backups take their database(s)
+      off-line. However, Oracle still responds to connections and the metadata
+      poll as performed in JDBCMonitor passes even though the databases are
+      not available. These changes allow testing via the execution of a stored
+      procedure to insure that the database is actually working. This may also
+      allow some application level rules to be evaluated.</para>
+
+      <para>Usage is typical of other plugins and pollers. Entries must be
+      created for the new java plugins. As an extension of the
+      <filename>JDBCPlugin</filename> and <filename>JDBCMonitor</filename>, it
+      requires all the xml parameters those classes require. Additionally, a
+      parameter <filename>'stored-procedure'</filename> is required. The
+      procedure name given in the xml is assumed to exist inside a package
+      named <filename>'test'</filename> on the database. It is hoped that this
+      will help limit concerns about accidental stored procedure invokation.
+      The stored procedure must return a bit and take no arguements.</para>
+
+      <para>An example <filename>capsd-configuration.xml</filename> entry
+      would be something like:</para>
+
+      <para><programlisting>&lt;protocol-plugin protocol="Oracle-JDBC-ets" class-name="org.opennms.netmgt.capsd.JDBCStoredProcedurePlugin" scan="on" user-defined="false"&gt;
+       &lt;property key="user" value="USERNAME"/&gt;
+       &lt;property key="password" value="PASSWORD"/&gt;
+       &lt;property key="retry" value="2"/&gt;
+       &lt;property key="timeout" value="3000"/&gt;
+       &lt;property key="driver" value="oracle.jdbc.OracleDriver"/&gt;
+       &lt;property key="url" value="jdbc:oracle:thin:@OPENNMS_JDBC_HOSTNAME:1521:ets"/&gt;
+       &lt;property key="stored-procedure" value="ets"/&gt;
+   &lt;/protocol-plugin&gt;</programlisting></para>
+
+      <para>And in <filename>poller-configuration.xml</filename> add:</para>
+
+      <para><programlisting>       &lt;service name="Oracle-JDBC-ets" interval="300000" user-defined="false" status="on"&gt;
+           &lt;parameter key="user" value="USERNAME"/&gt;
+           &lt;parameter key="password" value="PASSWORD"/&gt;
+           &lt;parameter key="timeout" value="3000"/&gt;
+           &lt;parameter key="driver" value="oracle.jdbc.OracleDriver"/&gt;
+           &lt;parameter key="url" value="jdbc:oracle:thin:@OPENNMS_JDBC_HOSTNAME:1521:ets"/&gt;
+           &lt;parameter key="stored-procedure" value="ets"/&gt;
+           &lt;parameter key="rrd-repository" value="/usr/local/opennms/share/rrd/response"/&gt;
+           &lt;parameter key="ds-name" value="jdbc-ets"/&gt;
+       &lt;/service&gt;</programlisting></para>
+
+      <para>Remember to add the service definition at the bottom:</para>
+
+      <para><programlisting>&lt;monitor service="Oracle-JDBC-ets" class-name="org.opennms.netmgt.poller.monitors.JDBCStoredProcedureMonitor"/&gt;</programlisting></para>
+
       <bridgehead>Capsd SNMP Plugin and Poller SNMP Monitor Changed
       Slightly</bridgehead>
 
@@ -191,8 +244,8 @@
       the default <filename>datacollection-config.xml </filename>reports.
       Please let us know if you like it. If not, the old colors can be found
       in the file <filename>snmp-graph.properties.125</filename>. Simply move
-      it to <filename>snmp-graph.properties</filename> and restart Tomcat.
-      </para>
+      it to <filename>snmp-graph.properties</filename> and restart
+      Tomcat.</para>
 
       <para>There is also a new stylesheet. The old stylesheet is called
       <filename>styles.css.orig</filename> and can be found in the
