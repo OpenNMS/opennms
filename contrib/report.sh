@@ -1,10 +1,35 @@
 #!/bin/bash 
 
+# Produce availability reports on the command line
+# Invoke thus:
+#
+# report.sh [category_name] [format] [monthFormat]
+#
+# At the time of writing, acceptable values are:
+#
+# category_name: any category from categories.xml (enclosed in double quotes 
+#                if it contains any spaces).
+#
+# format:        one of HTML, PDF or SVG
+#
+# monthFormat:   classic or calendar
+#
+# ie:
+#
+# ./report.sh "all my nodes" SVG classic
+#
+# or:
+#
+# ./report.sh "all my nodes" SVG calendar 
+#
+# for the new-style reports
+#
+
 show_help () {
  
   cat <<END
 
-Usage: $0 [category_name [format] [monthFormat]
+Usage: $0 [category_name] [format] [monthFormat]
  
 END
   return
@@ -58,6 +83,12 @@ APP_CLASSPATH=`build_classpath dir:$OPENNMS_HOME/lib/updates \
 	"cp:$CLASSPATH"`
 APP_VM_PARMS="-Xmx256m -Dopennms.home=$OPENNMS_HOME -Dimage=$OPENNMS_WEBAPP/images/logo.gif -Djava.awt.headless=true"
 APP_CLASS="org.opennms.report.availability.AvailabilityReport"
+echo "will execute report with:"
+echo "JAVA         " $JAVA_CMD
+echo "CATEGORY     " $CATNAME
+echo "FORMAT       " $FORMAT
+echo "MONTH FORMAT " $MONTHFORMAT
+echo "CLASSPATH    " $APP_CLASSPATH
 
 if [ -z "$NOEXECUTE" ]; then
 	$JAVA_CMD -classpath $APP_CLASSPATH $APP_VM_PARMS -DcatName="$CATNAME" -Dformat="$FORMAT" -DMonthFormat="$MONTHFORMAT" $APP_CLASS "$@"
