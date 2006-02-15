@@ -50,7 +50,7 @@ import java.io.Reader;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.ConfigFileConstants;
-
+import org.opennms.netmgt.notifd.BroadcastEventProcessor;
 /**
  */
 public class NotifdConfigFactory extends NotifdConfigManager {
@@ -188,4 +188,6 @@ public class NotifdConfigFactory extends NotifdConfigManager {
             NotifdConfigFactory.getInstance().reload();
         }
     }
+
+
 }

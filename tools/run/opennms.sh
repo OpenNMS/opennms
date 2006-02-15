@@ -1,12 +1,10 @@
 #!/bin/sh -
 #
-#  $Id$
-#
-#  For info on the "BEGIN INIT INFO" section, see:
-#      http://www.suse.de/~mmj/Package-Conventions/
-#
-#  For info on the "chkconfig:" section, see:
-#      http://www.sensi.org/~alec/unix/redhat/sysvinit.html
+# chkconfig: 345 99 01
+# description: Starts and stops the OpenNMS network management \
+#              poller and backend processes
+# processname: opennms
+# pidfile: @install.pid.file@
 #
 ### BEGIN INIT INFO
 # Provides:          opennms
@@ -20,11 +18,13 @@
 # Description:       OpenNMS daemon for network monitoring
 ### END INIT INFO
 #
-# chkconfig: 345 99 01
-# description: Starts and stops the OpenNMS network management \
-#              poller and backend processes
-# processname: opennms
-# pidfile: @install.pid.file@
+#  $Id$
+#
+#  For info on the "chkconfig:" section, see:
+#      http://www.sensi.org/~alec/unix/redhat/sysvinit.html
+#
+#  For info on the "BEGIN INIT INFO" section, see:
+#      http://www.suse.de/~mmj/Package-Conventions/
 #
 
 #### ------------> DO NOT CHANGE VARIABLES IN THIS FILE <------------- ####
@@ -55,6 +55,9 @@ JAVA_HEAP_SIZE=256
 # Additional options that should be passed to Java when starting OpenNMS.
 ADDITIONAL_MANAGER_OPTIONS=""
 
+# Classpath additions.  These go on the front of our classpath.
+ADDITIONAL_CLASSPATH=""
+
 # Use incremental garbage collection.
 USE_INCGC=""
 
@@ -70,6 +73,9 @@ RUNJAVA_OPTIONS=""
 # URL that this script uses to communicate with a running OpenNMS daemon.
 INVOKE_URL="http://localhost:8181/invoke?objectname=OpenNMS:Name=FastExit"
 
+# Unset http_proxy.  If people have it set, it will likely break wget/curl
+# when it tries to connect to localhost.
+unset http_proxy
 
 #### ------------> DO NOT CHANGE VARIABLES IN THIS FILE <------------- ####
 #### Create $OPENNMS_HOME/etc/opennms.conf and put overrides in there. ####
@@ -274,7 +280,7 @@ doStart(){
 	date >> "$REDIRECT"
 	echo "begin ulimit settings:" >> "$REDIRECT"
 	ulimit -a >> "$REDIRECT"
-	echo "end ulimit settings:" >> "$REDIRECT"
+	echo "end ulimit settings" >> "$REDIRECT"
 	CMD="$JAVA_CMD -classpath $APP_CLASSPATH $APP_VM_PARMS $APP_CLASS $APP_PARMS_BEFORE "$@" $APP_PARMS_AFTER"
 	echo "Executing command: $CMD" >> "$REDIRECT"
 	$CMD >>"$REDIRECT" 2>&1 &
@@ -284,7 +290,7 @@ doStart(){
 
     if [ $START_TIMEOUT -eq 0 ]; then
 	# don't wait for OpenNMS to startup
-	echo -n "(not waiting for startup) "
+	$opennms_echo "(not waiting for startup) \c"
 	return 0
     fi
 
@@ -430,9 +436,9 @@ else
 fi
 
 if [ `echo "\000\c" | wc -c` -eq 1 ]; then
-    echo="echo"
+    opennms_echo="echo"
 elif [ `echo -e "\000\c" | wc -c` -eq 1 ]; then
-    echo="echo -e"
+    opennms_echo="echo -e"
 else
     echo "ERROR: could not get 'echo' to emit just a null character" >&2
     exit 1
@@ -455,7 +461,11 @@ cd "$OPENNMS_HOME" || { echo "could not \"cd $OPENNMS_HOME\"" >&2; exit 1; }
 # define needed for grep to find opennms easily
 JAVA_CMD="$OPENNMS_HOME/bin/runjava -r $RUNJAVA_OPTIONS --"
 
-APP_CLASSPATH="$OPENNMS_HOME/etc"
+if [ x"$ADDITIONAL_CLASSPATH" != x"" ]; then
+    APP_CLASSPATH="$ADDITIONAL_CLASSPATH:$OPENNMS_HOME/etc"
+else
+    APP_CLASSPATH="$OPENNMS_HOME/etc"
+fi
 for jar in $OPENNMS_HOME/lib/*.jar; do
     APP_CLASSPATH="$APP_CLASSPATH:$jar"
 done
@@ -546,7 +556,7 @@ fi
 
 case "$COMMAND" in
     start|spawn)
-	echo -n "Starting OpenNMS: "
+	$opennms_echo "Starting OpenNMS: \c"
 
 	if [ -f /etc/SuSE-release ]; then
 	    doStart
@@ -575,7 +585,7 @@ case "$COMMAND" in
 	;;
 
     stop)
-	echo -n "Stopping OpenNMS: "
+	$opennms_echo "Stopping OpenNMS: \c"
 	if [ -f /etc/SuSE-release ]; then
 	    doStop
 
@@ -622,7 +632,7 @@ case "$COMMAND" in
 
     status)
 	if [ -f /etc/SuSE-release ]; then
-	    echo -n "Checking for OpenNMS: "
+	    $opennms_echo "Checking for OpenNMS: \c"
 	    if [ $VERBOSE -gt 0 ]; then
 		echo ""
 	    fi

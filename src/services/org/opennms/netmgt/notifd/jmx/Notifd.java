@@ -41,6 +41,7 @@ import org.opennms.netmgt.config.GroupFactory;
 import org.opennms.netmgt.config.NotifdConfigFactory;
 import org.opennms.netmgt.config.NotificationCommandFactory;
 import org.opennms.netmgt.config.NotificationFactory;
+import org.opennms.netmgt.config.PollOutagesConfigFactory;
 import org.opennms.netmgt.config.UserFactory;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 
@@ -90,6 +91,12 @@ public class Notifd implements NotifdMBean {
             ThreadCategory.getInstance(getClass()).warn("start: Failed to init notification command factory.", e);            
         }
 
+        try {
+            PollOutagesConfigFactory.init();
+        } catch (Exception e) {
+            ThreadCategory.getInstance(getClass()).warn("start: Failed to init poll outage config factory.", e);
+        }
+
         getNotifd().setDbConnectionFactory(DatabaseConnectionFactory.getInstance());
         getNotifd().setEventManager(EventIpcManagerFactory.getInstance().getManager());
         
@@ -99,6 +106,7 @@ public class Notifd implements NotifdMBean {
         getNotifd().setUserManager(UserFactory.getInstance());
         getNotifd().setDestinationPathManager(DestinationPathFactory.getInstance());
         getNotifd().setNotificationCommandManager(NotificationCommandFactory.getInstance());
+        getNotifd().setPollOutagesConfigManager(PollOutagesConfigFactory.getInstance());
         getNotifd().init();
         
     }

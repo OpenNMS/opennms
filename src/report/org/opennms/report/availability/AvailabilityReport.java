@@ -64,19 +64,27 @@ public class AvailabilityReport extends Object {
      * The log4j category used to log debug messsages and statements.
      */
     private static final String LOG4J_CATEGORY = "OpenNMS.Report";
+	
+	/*
+	 * classic month format
+	 */
+	
+	private static final String MONTH_FORMAT_CLASSIC = "classic";
 
     /**
      * Castor object that holds all the information required for the generating
      * xml to be translated to the pdf.
      */
     private Report m_report = null;
+	
+	private Category log;
 
     /**
      * Default constructor
      */
     public AvailabilityReport(String author) {
         ThreadCategory.setPrefix(LOG4J_CATEGORY);
-        Category log = ThreadCategory.getInstance(this.getClass());
+        log = ThreadCategory.getInstance(this.getClass());
         if (log.isDebugEnabled())
             log.debug("Inside AvailabilityReport");
 
@@ -116,28 +124,80 @@ public class AvailabilityReport extends Object {
      *            of the logo to be displayed on the report
      * @param reportFormat
      *            Report Format ("SVG" / all)
+     *            
+     * @param monthFormat
+     *            Format for month data ("classic"/"calendar")
      * 
      */
-    public void getReportData(String logourl, String categoryName, String reportFormat) throws ValidationException, MarshalException, IOException, Exception {
-        ThreadCategory.setPrefix(LOG4J_CATEGORY);
-        Category log = ThreadCategory.getInstance(this.getClass());
-        if (log.isDebugEnabled()) {
+	public void getReportData(String logourl, String categoryName, String reportFormat, String monthFormat) {
+
+		if (log.isDebugEnabled()) {
             log.debug("inside getReportData");
             log.debug("Category name  " + categoryName);
             log.debug("Report format   " + reportFormat);
             log.debug("logo  " + logourl);
+			log.debug("monthFormat "+monthFormat);
         }
-
+		populateReport(logourl, categoryName, reportFormat, monthFormat);
+		try {
+			marshalReport();
+		} catch (Exception e) {
+            if (log.isEnabledFor(Priority.FATAL))
+                log.fatal("Exception ", e);
+        }
+	}
+	
+	/**
+     * This when invoked populates the castor classes.
+     * 
+     * @param logourl
+     *            location of the logo to be displayed on the report
+     * @param categoryName
+     *            of the logo to be displayed on the report
+     * @param reportFormat
+     *            Report Format ("SVG" / all)
+     * @param monthFormat
+     *            Format for month data ("classic"/"calendar")
+     * 
+     */
+    public void populateReport(String logourl, String categoryName, String reportFormat, String monthFormat) {
         m_report.setLogo(logourl);
         ViewInfo viewInfo = new ViewInfo();
         m_report.setViewInfo(viewInfo);
         org.opennms.report.availability.Categories categories = new org.opennms.report.availability.Categories();
         m_report.setCategories(categories);
-        AvailabilityData availData = new AvailabilityData(categoryName, m_report, reportFormat);
+        try {
+			Calendar calendar = new GregorianCalendar();
+			AvailabilityData availData = new AvailabilityData(categoryName, m_report, reportFormat, monthFormat, calendar);
+		} catch (MarshalException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ValidationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    }
+	
+	/**
+	 * 
+     * This when invoked marshalls the report XML from the castor classes.
+     * 
+     */
+	
+	public void marshalReport() throws ValidationException, MarshalException, IOException, Exception {
+
         File file = new File(ConfigFileConstants.getHome() + "/share/reports/AvailReport.xml");
         try {
             FileWriter fileWriter = new FileWriter(file);
-            Marshaller.marshal(m_report, fileWriter);
+            Marshaller marshaller = new Marshaller(fileWriter);
+            //marshaller.setSuppressNamespaces(true);
+            marshaller.marshal(m_report);
             if (log.isDebugEnabled())
                 log.debug("The xml marshalled from the castor classes is saved in " + ConfigFileConstants.getHome() + "/share/reports/AvailReport.xml");
             fileWriter.close();
@@ -195,9 +255,12 @@ public class AvailabilityReport extends Object {
         String format = System.getProperty("format");
         if (format == null || format.equals(""))
             format = "SVG";
+		String monthFormat = System.getProperty("MonthFormat");
+        if (monthFormat == null || format.equals(""))
+            monthFormat = MONTH_FORMAT_CLASSIC;
 
         try {
-            generateReport(logourl, categoryName, format);
+            generateReport(logourl, categoryName, format, monthFormat);
         } catch (Exception e) {
             log.error("Caught Exception generating report", e);
         }
@@ -208,7 +271,7 @@ public class AvailabilityReport extends Object {
      * @param categoryName
      * @param format
      */
-    public static void generateReport(String logourl, String categoryName, String format) throws Exception {
+    public static void generateReport(String logourl, String categoryName, String format, String monthFormat) throws Exception {
 
         // This report will be invoked by the mailer script.
         // Only SVG formatted reports are needed.
@@ -225,7 +288,7 @@ public class AvailabilityReport extends Object {
             pdfFileName = ConfigFileConstants.getHome() + "/share/reports/AVAIL-HTML-" + catFileName + fmt.format(new java.util.Date()) + ".html";
         try {
             AvailabilityReport report = new AvailabilityReport("Unknown");
-            report.getReportData(logourl, categoryName, format);
+            report.getReportData(logourl, categoryName, format, monthFormat);
             if (log.isInfoEnabled())
                 log.info("Generated Report Data... ");
             File file = new File(pdfFileName);

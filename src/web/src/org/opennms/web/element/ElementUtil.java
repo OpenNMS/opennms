@@ -61,7 +61,7 @@ public class ElementUtil extends Object {
                 interfaceStatusMap.put(new Character('U'), "Unmanaged");
                 interfaceStatusMap.put(new Character('D'), "Deleted");
                 interfaceStatusMap.put(new Character('F'), "Forced Unmanaged");
-                interfaceStatusMap.put(new Character('N'), "Not Polled");
+                interfaceStatusMap.put(new Character('N'), "Not Monitored");
             }
         }
 
@@ -96,7 +96,7 @@ public class ElementUtil extends Object {
                 serviceStatusMap.put(new Character('U'), "Unmanaged");
                 serviceStatusMap.put(new Character('D'), "Deleted");
                 serviceStatusMap.put(new Character('F'), "Forced Unmanaged");
-                serviceStatusMap.put(new Character('N'), "Not Polled");
+                serviceStatusMap.put(new Character('N'), "Not Monitored");
                 serviceStatusMap.put(new Character('R'), "Rescan to Resume");
                 serviceStatusMap.put(new Character('S'), "Rescan to Suspend");
             }

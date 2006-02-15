@@ -38,6 +38,9 @@ import java.util.GregorianCalendar;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
+import org.apache.log4j.Category;
+import org.opennms.core.utils.ThreadCategory;
+
 /**
  * This class holds information on the duty schedules that users can have.
  * Converstion between different formats of the duty schedule information are
@@ -51,6 +54,8 @@ import java.util.Vector;
  * 
  */
 public class DutySchedule {
+    Category log = ThreadCategory.getInstance(this.getClass());
+
     /**
      * Each boolean in the bit set represents a day of the week. Monday = 0,
      * Tuesday = 1 ... Sunday = 6
@@ -301,6 +306,117 @@ public class DutySchedule {
         }
 
         return response;
+    }
+
+    /**
+     * This method decides if a given time falls within the duty schedule
+     * contained in this object. If so, it returns 0 milliseconds. If not
+     * it returns the number of milliseconds until the next on-duty period
+     * begins.
+     * It creates two partial Calendars from the Calendar that is passed in
+     * and then sets the start time for one and the end time for the other.
+     * Then in a loop it reassigns the day of week according to the BitSet.
+     * If the day is today, it makes a comparision of the argument Calendar
+     * and the start and stop times to determine the return value. If the
+     * day is not today it calculates the time between now and the day and
+     * start time of the duty schedule, saving the smallest of these as the
+     * return value as we iterate through the BitSet.???
+     * @param nTime The time to check.
+     * @return long - number of milliseconds
+     */
+    public long nextInSchedule(Calendar nTime) {
+        long next = -1;
+        long tempnext = -1;
+        //make two new Calendar objects from the YEAR, MONTH and DATE of the
+        //date we are checking.
+        Calendar startTime = new GregorianCalendar(nTime.get(Calendar.YEAR), nTime.get(Calendar.MONTH), nTime.get(Calendar.DATE));
+        //the hour will be the integer part of the start time divided by 100
+        //cause it should be in military time
+        startTime.set(Calendar.HOUR_OF_DAY, (m_startTime/100));
+
+        //the minute will be the start time mod 100 cause it should be in
+        //military time
+        startTime.set(Calendar.MINUTE, (m_startTime % 100));
+        startTime.set(Calendar.SECOND, 0);
+
+        Calendar endTime = new GregorianCalendar(nTime.get(Calendar.YEAR), nTime.get(Calendar.MONTH), nTime.get(Calendar.DATE));
+
+        endTime.set(Calendar.HOUR_OF_DAY, (m_stopTime/100));
+        endTime.set(Calendar.MINUTE, (m_stopTime % 100));
+        endTime.set(Calendar.SECOND, 0);
+
+        //we want the begin and end times for the ranges to be includsive,
+        //so convert to milliseconds so we can do a greater than/less than
+        //equal to comparisons
+        long dateMillis = nTime.getTime().getTime();
+        long startMillis = startTime.getTime().getTime();
+        long endMillis = endTime.getTime().getTime();
+
+        //look at the BitSet to see what days are set for this duty schedule,
+        //reassign the day of week for the start and stop time, then see if
+        //the argument Calendar is between these times.
+        int itoday = -1;
+        for (int i = 0; i < 7; i++) {
+            // does i correspond to today?
+            if (CALENDAR_DAY_MAPPING[i] == nTime.get(Calendar.DAY_OF_WEEK)) {
+                itoday = i;
+                if (log.isDebugEnabled()) {
+                    log.debug("nextInSchedule: day of week is " + i);
+                }
+            }
+
+            //is duty schedule for today?
+            //see if the now time corresponds to a day when the user is on duty
+            if (m_days.get(i) && CALENDAR_DAY_MAPPING[i] == nTime.get(Calendar.DAY_OF_WEEK)) {
+                if (log.isDebugEnabled()) {
+                    log.debug("nextInSchedule: Today is in schedule");
+                }
+                //is start time > current time?
+                if (startMillis > dateMillis) {
+                    next = startMillis - dateMillis;
+                    if (log.isDebugEnabled()) {
+                        log.debug("nextInSchedule: duty starts in " + next + " millisec");
+                     }
+                } else {
+                    //is end time >= now
+                    if (endMillis >= dateMillis) {
+                        next = 0;
+                        if (log.isDebugEnabled()) {
+                            log.debug("nextInSchedule: on duty now");
+                        }
+                    }
+                }
+            }
+        }
+        if(next >= 0) {
+            return next;
+        }
+        if (log.isDebugEnabled()) {
+            log.debug("nextInSchedule: Remainder of today is not in schedule");
+        }
+        int ndays = -1;
+        for (int i = 0; i < 7; i++) {
+            if(m_days.get(i)) {
+                if (log.isDebugEnabled()) {
+                    log.debug("nextInSchedule: day " + i + " is in schedule");
+                }
+                ndays = i - itoday;
+                if( ndays <= 0 ) {
+                    ndays += 7;
+                }
+                if (log.isDebugEnabled()) {
+                    log.debug("nextInSchedule: day " + i + " is " + ndays + " from today");
+                }
+                tempnext = (86400000 * ndays) - dateMillis + startMillis;
+                if(tempnext < next || next == -1) {
+                    next = tempnext;
+                    if (log.isDebugEnabled()) {
+                        log.debug("nextInSchedule: duty begins in " + next + " millisecs");
+                    }
+                }
+            }
+        }
+        return next;
     }
 
     /**

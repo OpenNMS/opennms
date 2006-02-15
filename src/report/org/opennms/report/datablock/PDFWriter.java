@@ -46,6 +46,7 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
+import org.apache.avalon.framework.logger.*;
 
 import org.apache.fop.apps.Version;
 import org.apache.fop.messaging.MessageHandler;
@@ -130,7 +131,9 @@ public class PDFWriter extends Object {
     public void generatePDF(FileReader xml, OutputStream pdfWriter, String fotFileName) throws MarshalException, ValidationException, IOException, Exception {
         ThreadCategory.setPrefix(LOG4J_CATEGORY);
         Category log = ThreadCategory.getInstance(PDFWriter.class);
-        try {
+		Logger avalonLogger = new Log4JLogger(log);
+		
+		try {
             if (log.isInfoEnabled())
                 log.info("XSL File " + m_xslSource);
             Reader xsl = new FileReader(m_xslSource);
@@ -154,6 +157,8 @@ public class PDFWriter extends Object {
 
             xml = null;
             // initDriver();
+			Logger nullLogger = new NullLogger();
+			MessageHandler.setScreenLogger(nullLogger);
             MessageHandler.setOutputMethod(MessageHandler.NONE);
 
             fot.close();
@@ -162,7 +167,8 @@ public class PDFWriter extends Object {
             InputSource dataSource = new InputSource(reader);
 
             m_driver = new org.apache.fop.apps.Driver(dataSource, pdfWriter);
-            m_driver.setRenderer(org.apache.fop.apps.Driver.RENDER_PDF);
+			m_driver.setLogger(avalonLogger);
+			m_driver.setRenderer(org.apache.fop.apps.Driver.RENDER_PDF);
             m_driver.run();
 
             /*
@@ -198,8 +204,11 @@ public class PDFWriter extends Object {
     private void initDriver() throws Exception {
         ThreadCategory.setPrefix(LOG4J_CATEGORY);
         Category log = ThreadCategory.getInstance(PDFWriter.class);
+		Logger avalonLogger = new Log4JLogger(log);
+		
         try {
             m_driver = new org.apache.fop.apps.Driver();
+			m_driver.setLogger(avalonLogger);
             m_driver.setRenderer("org.apache.fop.render.pdf.PDFRenderer", Version.getVersion());
             m_driver.addElementMapping("org.apache.fop.fo.StandardElementMapping");
             m_driver.addElementMapping("org.apache.fop.svg.SVGElementMapping");

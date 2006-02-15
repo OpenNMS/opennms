@@ -52,7 +52,7 @@
 
           <itemizedlist>
             <listitem>
-              <para>The j<code>ava-common</code> package is a dependency for
+              <para>The <code>java-common</code> package is a dependency for
               the <code>j2sdk1.4</code> package you will be creating, and
               since it will be installed by <filename>dpkg</filename>,
               <filename>apt</filename> will not be there to pull it in so
@@ -69,9 +69,9 @@
             </listitem>
 
             <listitem>
-              <para>Download the Java 1.4.2 SDK from Sun. Make sure that you
-              get the non-RPM binary package (the "<filename>.bin</filename>"
-              package).</para>
+              <para>Download the Java 1.4 SDK from Sun.  We suggest 1.4.2 or
+              later.  Make sure that you get the non-RPM binary package (the
+              "<filename>.bin</filename>" package).</para>
             </listitem>
 
             <listitem>
@@ -116,7 +116,7 @@
       </note>
 
       <para>You will need to use Sun's Java 2 Platform, Standard Edition,
-      version 1.4.2 or later. You can <ulink
+      version 1.4 or later.  We suggest using 1.4.2 or later.  You can <ulink
       url="http://java.sun.com/j2se/1.4.2/download.html">download it</ulink>
       from Sun's <ulink url="http://java.sun.com/">Java</ulink> website. Step
       through the licensing process and then download the proper version of
@@ -128,7 +128,7 @@
   </section>
 
   <section>
-    <title>Prerequisite Package: Tomcat4</title>
+    <title>Prerequisite Package: Tomcat4 (version 4.1 or greater)</title>
 
     <para><ulink
     url="http://jakarta.apache.org/tomcat/index.html">Tomcat</ulink> is part
@@ -202,7 +202,10 @@
           files of OpenNMS. This can be done one of two ways. The first option
           is making Tomcat run as root and the second is making the OpenNMS
           configuration files readable and writable by the user Tomcat runs
-          as.</para>
+          as. The first option, although not preferable from a security
+          standpoint, is easier to setup and is the suggested method. Plans
+          are in place to make OpenNMS so it easily runs as a non-root
+          user--see enhancement bug 1150.</para>
         </listitem>
       </orderedlist>
 
@@ -211,7 +214,7 @@
       <filename>/etc/tomcat4/</filename> on the Red Hat and Fedora series of
       Linux distributions. It looks like this:</para>
 
-      <para><programlisting>j# tomcat /etc/rc.d script example configuration file
+      <para><programlisting># tomcat /etc/rc.d script example configuration file
 # Use with version 1.07 of the scripts or later
 
 # Use Jpackage utils if present
@@ -307,7 +310,7 @@ TOMCAT_USER="tomcat"
           <filename>capsd-configuration.xml</filename>. Run the
           commands:</para>
 
-          <para><programlisting><computeroutput># </computeroutput><command>chgrp -R $OPENNMS_HOME/etc
+          <para><programlisting><computeroutput># </computeroutput><command>chgrp -R tomcat4 $OPENNMS_HOME/etc
 </command><computeroutput># </computeroutput><command>chmod -R g+w $OPENNMS_HOME/etc</command></programlisting></para>
 
           <para>where <varname>$OPENNMS_HOME/etc</varname> is the OpenNMS
@@ -321,11 +324,11 @@ TOMCAT_USER="tomcat"
           OpenNMS "<filename>etc</filename>" directory (find an instance of
           "File"). Run the commands:</para>
 
-          <para><programlisting><computeroutput># </computeroutput><command>chgrp -R $OPENNMS_HOME/logs
-</command><computeroutput># </computeroutput><command>chmod -R g+w $OPENNMS_HOME/logs</command></programlisting></para>
+          <para><programlisting><computeroutput># </computeroutput><command>chgrp -R tomcat4 /var/log/opennms
+</command><computeroutput># </computeroutput><command>chmod -R g+w /var/log/opennms</command></programlisting></para>
 
-          <para>where <varname>$OPENNMS_HOME/logs</varname> is the OpenNMS
-          "<filename>logs</filename>" directory.</para>
+          <para>where <varname>/var/log/opennms</varname> is the OpenNMS logs
+          directory.</para>
         </listitem>
       </orderedlist>
 
@@ -353,6 +356,15 @@ TOMCAT_USER="tomcat"
     was installed as a package, the OpenNMS package should be able to find it
     and configure itself to use the proper commands. We are known to work with
     any "1.0" version of RRDtool since 1.0.33.</para>
+
+    <note>
+      <para>OpenNMS can also use JRobin for storing and graphing of
+      time-series data, however it is always built with RRDtool support.
+      For the time being, you will still need to install RRDtool to build
+      OpenNMS or to install an OpenNMS RPM package, even if you plan on
+      using JRobin (see enhancement bug 1335).  You can read more about
+      JRobin in the release notes.</para>
+    </note>
   </section>
 
   <section>
@@ -375,7 +387,7 @@ TOMCAT_USER="tomcat"
     using a version of PostgreSQL prior to 7.4, the server error messages are
     required to be in English (the 'C' locale). In particular, the parameter
     <filename>lc_messages</filename> must be set to <filename>'C'</filename>.
-    This is set in <filename>postgresql.conf</filename> in he PostgreSQL data
+    This is set in <filename>postgresql.conf</filename> in the PostgreSQL data
     directory and it requires the database be restarted if you change the
     setting. See the section below on <filename>pg_hba.conf</filename> for
     details on the location of the <filename>data</filename> directory.</para>
@@ -460,9 +472,9 @@ TOMCAT_USER="tomcat"
       system does not support IPv6):</para>
 
       <para><programlisting># TYPE DATABASE USER IP-ADDRESS IP-MASK METHOD
-local all all
-trust host all all 127.0.0.1 255.255.255.255
-trust host all all ::1 ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff trust</programlisting></para>
+local all all trust
+host all all 127.0.0.1 255.255.255.255 trust
+host all all ::1 ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff trust</programlisting></para>
 
       <para>Make sure that no other lines are uncommented in this file.</para>
 
@@ -506,25 +518,5 @@ trust host all all ::1 ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff trust</programlis
     <para>The startup script uses <filename>curl</filename> to connect to the
     OpenNMS daemon to check that the various components are up and running
     ("<filename>opennms status</filename>").</para>
-  </section>
-
-  <section>
-    <title>Optional Prerequisite Package:
-    <filename>metamail</filename></title>
-
-    <note>
-      <para>This is no longer needed starting with OpenNMS 1.1.4, as the Perl
-      mailing has been replaced with a Java mailer.</para>
-    </note>
-
-    <para>Since OpenNMS uses Perl to mail availability reports, with some
-    mailers it is necessary to add the <filename>metamail</filename>
-    application in order for the PDF files created by OpenNMS to be mailed
-    properly.</para>
-
-    <para>Like the Perl modules in the above section,
-    <filename>metamail</filename> can be found on the OpenNMS FTP site (which
-    includes and SRPM) if metamail is not directly available for your
-    distribution.</para>
   </section>
 </chapter>

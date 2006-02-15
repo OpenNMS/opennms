@@ -149,6 +149,7 @@
           <td width="15%"><b>Full Name</b></td>
           <td width="15%"><b>Email</b></td>
           <td width="15%"><b>Pager Email</b></td>
+          <td width="15%"><b>XMPP Address</b></td>
           <!--
           <td width="10%"><b>Num Service</b></td>
           <td width="10%"><b>Num Pin</b></td>
@@ -164,6 +165,7 @@
 	      String userid = curUser.getUserId();
 	      String email = userFactory.getEmail(userid);
 	      String pagerEmail = userFactory.getPagerEmail(userid);
+	      String xmppAddress = userFactory.getXMPPAddress(userid);
 	      String numericService = userFactory.getNumericPage(userid);
 	      String textService = userFactory.getTextPage(userid);
 	      String numericPin = userFactory.getNumericPin(userid);
@@ -197,11 +199,14 @@
 		    <%= (curUser.getFullName().equals("") ? "&nbsp;" : curUser.getFullName()) %>
 	    <% } %>
           </td>
-          <td width="33%">
+          <td width="15%">
             <%= ((email == null || email.equals("")) ? "&nbsp;" : email) %>
           </td>
-          <td width="33%">
+          <td width="15%">
             <%= ((pagerEmail == null || pagerEmail.equals("")) ? "&nbsp;" : pagerEmail) %>
+          </td>
+          <td width="15">
+            <%= ((xmppAddress == null || xmppAddress.equals("")) ? "&nbsp;" : xmppAddress) %>
           </td>
           <!--
           <td width="10%">
@@ -219,7 +224,7 @@
           -->
           </tr>
           <tr bgcolor=<%=row%2==0 ? "#ffffff" : "#cccccc"%>>
-            <td colspan="4">
+            <td colspan="5">
 	      <% if(curUser.getUserComments() != null){ %>
 		      <%= (curUser.getUserComments().equals("") ? "No Comments" : curUser.getUserComments()) %>
 	      <% } %>

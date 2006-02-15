@@ -41,6 +41,18 @@
 		<property key="timeout" value="2000"/>
 		<property key="retry" value="2"/>
 	</protocol-plugin>
+<!--
+        <protocol-plugin protocol="SNMPv1" class-name="org.opennms.netmgt.capsd.SnmpPlugin" scan="on" user-defined="false">
+                <property key="timeout" value="2000"/>
+                <property key="force version" value="v1"/>
+                <property key="retry" value="2"/>
+        </protocol-plugin>
+        <protocol-plugin protocol="SNMPv2" class-name="org.opennms.netmgt.capsd.SnmpPlugin" scan="on" user-defined="false">
+                <property key="timeout" value="2000"/>
+                <property key="force version" value="v2c"/>
+                <property key="retry" value="2"/>
+        </protocol-plugin>
+-->
 	<protocol-plugin protocol="SMB"  class-name="org.opennms.netmgt.capsd.SmbPlugin" scan="on" user-defined="false"/>
 	<protocol-plugin protocol="HTTP" class-name="org.opennms.netmgt.capsd.HttpPlugin" scan="on" user-defined="false">
 		<property key="port" value="80"/>

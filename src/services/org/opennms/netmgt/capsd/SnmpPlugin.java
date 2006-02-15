@@ -72,7 +72,7 @@ public final class SnmpPlugin extends AbstractPlugin {
     /**
      * The system object identifier to retreive from the remote agent.
      */
-    private static final String DEFAULT_OID = ".1.3.6.1.2.1.1.2";
+    private static final String DEFAULT_OID = ".1.3.6.1.2.1.1.2.0";
 
     /**
      * Returns the name of the protocol that this plugin checks on the target
@@ -103,7 +103,7 @@ public final class SnmpPlugin extends AbstractPlugin {
             session = new SnmpSession(peer);
 
             SnmpResponseHandler handler = new SnmpResponseHandler();
-            SnmpPduPacket out = new SnmpPduRequest(SnmpPduPacket.GETNEXT, new SnmpVarBind[] { new SnmpVarBind(DEFAULT_OID) });
+            SnmpPduPacket out = new SnmpPduRequest(SnmpPduPacket.GET, new SnmpVarBind[] { new SnmpVarBind(DEFAULT_OID) });
 
             synchronized (handler) {
                 session.send(out, handler);
@@ -197,7 +197,7 @@ public final class SnmpPlugin extends AbstractPlugin {
 
             SnmpPduPacket out = null;
             if (peer.getParameters().getVersion() == SnmpSMI.SNMPV1)
-                out = new SnmpPduRequest(SnmpPduPacket.GETNEXT, new SnmpVarBind[] { new SnmpVarBind(oid) });
+                out = new SnmpPduRequest(SnmpPduPacket.GET, new SnmpVarBind[] { new SnmpVarBind(oid) });
             else if (peer.getParameters().getVersion() == SnmpSMI.SNMPV2)
                 out = new SnmpPduBulk(1, // nonRepeaters
                         0, // maxRepetitions

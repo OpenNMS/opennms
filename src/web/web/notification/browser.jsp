@@ -12,6 +12,8 @@
 //
 // Modifications:
 //
+// 2004 Nov 18: Added "Acknowledge Notices" and "Select All" buttons at the top of the table
+//              So it isn't necessary to scroll all the way to the bottom. Bill Ayres.
 // 2003 Feb 07: Fixed URLEncoder issues.
 // 2002 Nov 26: Fixed breadcrumbs issue.
 // 2002 Nov 10: Removed "http://" from UEIs and references to bluebird.
@@ -40,7 +42,7 @@
 
 -->
 
-<%@page language="java" contentType="text/html" session="true" import="org.opennms.web.notification.*,org.opennms.web.element.*,java.util.*,java.sql.SQLException" %>
+<%@page language="java" contentType="text/html" session="true" import="org.opennms.web.notification.*,org.opennms.web.element.*,java.util.*,java.sql.SQLException,org.opennms.web.event.*,org.opennms.web.event.filter.*" %>
 
 <%--
   This page is written to be the display (view) portion of the NotificationQueryServlet
@@ -51,6 +53,16 @@
   2) parms: an org.opennms.web.notification.NoticeQueryParms object that holds all the 
      parameters used to make this query
 --%>
+<%!
+   public String getBgColor(Notification n) {
+	   String bgcolor="#cccccc";
+	   try {
+		return EventUtil.getSeverityColor(EventFactory.getEvent(n.getEventId()).getSeverity());
+	   } catch (Exception e) {
+	   	return bgcolor;
+	   }
+   }
+%>
 
 <%
     //required attributes
@@ -222,6 +234,16 @@
         <form action="notification/acknowledge" method="POST" name="acknowledge_form">
           <input type="hidden" name="redirectParms" value="<%=request.getQueryString()%>" />
           <%=org.opennms.web.Util.makeHiddenTags(request)%>
+
+      <tr>
+        <td colspan="5">
+        <% if( parms.ackType == NoticeFactory.AcknowledgeType.UNACKNOWLEDGED ) { %>
+          <input type="button" value="Acknowledge Notices" onClick="submitAcknowledge()"/>
+          <input TYPE="button" VALUE="Select All" onClick="checkAllCheckboxes()"/>
+          <input TYPE="reset" />
+        <% } %>
+      </tr>
+      <tr><td> &nbsp;</td></tr>
           
       <% for( int i=0; i < notices.length; i++ ) { %>
         <% if( i%5 == 0 ) { %>
@@ -247,7 +269,7 @@
             </nobr>
           </td>
           <% } %>
-          <td valign="top" rowspan="2" >
+          <td bgcolor="<%=getBgColor(notices[i])%>" valign="top" rowspan="2" >
             <a href="notification/detail.jsp?notice=<%=notices[i].getId()%>"><%=notices[i].getId()%></a>
           </td>
           <td>
@@ -319,7 +341,7 @@
             <% } %>
           </td>
         </tr>
-        <tr bgcolor="#cccccc">
+	<tr bgcolor="#cccccc">
           <td colspan="7"><%=notices[i].getTextMessage()%></td>          
         </tr>
       <% } /*end for*/%>

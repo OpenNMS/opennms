@@ -62,11 +62,11 @@ import org.opennms.netmgt.config.categories.Catinfo;
  * @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj </a>
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
  */
-public final class CategoryFactory {
+public final class CategoryFactory implements CatFactory{
     /**
      * The singleton instance of this factory
      */
-    private static CategoryFactory m_singleton = null;
+    private static CatFactory m_singleton = null;
 
     /**
      * The config class loaded from the config file
@@ -146,13 +146,18 @@ public final class CategoryFactory {
      * @throws java.lang.IllegalStateException
      *             Thrown if the factory has not yet been initialized.
      */
-    public static synchronized CategoryFactory getInstance() {
+    public static synchronized CatFactory getInstance() {
         if (!m_loaded)
             throw new IllegalStateException("The factory has not been initialized");
 
         return m_singleton;
     }
 
+	public static void setInstance(CatFactory singleton) {
+		m_singleton=singleton;
+		m_loaded=true;
+	}
+	
     /**
      * Return the categories configuration.
      * 

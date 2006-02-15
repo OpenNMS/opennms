@@ -57,6 +57,8 @@ public class ReportMailer extends Object implements Runnable {
      * The log4j category used to log debug messsages and statements.
      */
     private static final String LOG4J_CATEGORY = "OpenNMS.Report";
+	
+	private static final String MONTH_FORMAT_CLASSIC = "classic";
 
     protected String scriptGenerateReport;
 
@@ -75,6 +77,8 @@ public class ReportMailer extends Object implements Runnable {
     protected String logoUrl = null;
 
     protected String format = null;
+	
+	protected String monthFormat = null;
 
     protected String categoryName = null;
 
@@ -85,18 +89,20 @@ public class ReportMailer extends Object implements Runnable {
         log = ThreadCategory.getInstance(this.getClass());
     }
 
-    public void initialise(String fileName, String userName, String generateReport, String mailReport, String parms, String fmt) throws ServletException {
+    public void initialise(String fileName, String userName, String generateReport, String mailReport, String parms, String fmt, String monthFmt) throws ServletException {
 
         filename = fileName;
         commandParms = parms;
         this.scriptGenerateReport = generateReport;
         this.scriptMailReport = mailReport;
         this.format = fmt;
+		this.monthFormat = monthFmt;
 
         if (log.isDebugEnabled()) {
             log.debug("scriptGenerateReport " + scriptGenerateReport);
             log.debug("parms " + parms);
             log.debug("fmt " + fmt);
+			log.debug("monthFmt " + monthFmt);
         }
         if (this.scriptGenerateReport == null) {
             throw new ServletException("Missing required init parameter: script.generateReport");
@@ -213,8 +219,9 @@ public class ReportMailer extends Object implements Runnable {
         }
 
         // java.lang.Process process = Runtime.getRuntime().exec( cmdArgs );
+		// TODO: Add code to generate "calendar" as well as "classic" reports
         try {
-            AvailabilityReport.generateReport(getLogoUrl(), getCategoryName(), getFormat());
+            AvailabilityReport.generateReport(getLogoUrl(), getCategoryName(), getFormat(), getMonthFormat());
         } catch (Exception e) {
             log.error("Caught exception generating report: ", e);
         }
@@ -328,13 +335,27 @@ public class ReportMailer extends Object implements Runnable {
         this.categoryName = categoryName;
     }
 
+	/**
+     * @return Returns the monthFormat.
+     */
+    public String getMonthFormat() {
+        return monthFormat;
+    }
+	
+    /**
+     * @param format
+     *            The format to set.
+     */
+    public void setMonthFormat(String monthFormat) {
+        this.monthFormat = monthFormat;
+    }
     /**
      * @return Returns the format.
      */
     public String getFormat() {
         return format;
     }
-
+	
     /**
      * @param format
      *            The format to set.

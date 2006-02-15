@@ -74,6 +74,8 @@ public class ManageNodeServlet extends HttpServlet {
 
     private static final String UPDATE_SERVICE = "UPDATE ifservices SET status = ? WHERE ipaddr = ? AND nodeID = ? AND serviceid = ?";
 
+    private static final String DELETE_SERVICE_OUTAGES = "DELETE FROM outages WHERE ipaddr = ? AND nodeID = ? AND serviceid = ? AND ifregainedservice IS NULL";
+
     private static final String INCLUDE_FILE_NAME = "include";
 
     public static final String GAINED_SERVICE_UEI = "uei.opennms.org/nodes/nodeGainedService";
@@ -126,6 +128,7 @@ public class ManageNodeServlet extends HttpServlet {
             try {
                 connection.setAutoCommit(false);
                 PreparedStatement stmt = connection.prepareStatement(UPDATE_SERVICE);
+                PreparedStatement outagesstmt = connection.prepareStatement(DELETE_SERVICE_OUTAGES);
 
                 for (int j = 0; j < allNodes.size(); j++) {
                     ManagedInterface curInterface = (ManagedInterface) allNodes.get(j);
@@ -183,20 +186,25 @@ public class ManageNodeServlet extends HttpServlet {
                             this.log("DEBUG: executing manage service update for " + curInterface.getAddress() + " " + curService.getName());
                             stmt.executeUpdate();
                         } else if (!serviceList.contains(serviceKey) && curService.getStatus().equals("managed")) {
-                            // Event newEvent = new Event();
-                            // newEvent.setUei("uei.opennms.org/internal/serviceUnmanaged");
-                            // newEvent.setSource("web ui");
-                            // newEvent.setNodeid(curNode.getNodeID());
-                            // newEvent.setInterface(curInterface.getAddress());
-                            // newEvent.setService(curService.getName());
-                            // newEvent.setTime(curDate);
+                            Event newEvent = new Event();
+                            newEvent.setUei("uei.opennms.org/nodes/serviceUnmanaged");
+                            newEvent.setSource("web ui");
+                            newEvent.setNodeid(curInterface.getNodeid());
+                            newEvent.setInterface(curInterface.getAddress());
+                            newEvent.setService(curService.getName());
+                            newEvent.setTime(curDate);
+			    sendEvent(newEvent);
 
                             stmt.setString(1, "S");
                             stmt.setString(2, curInterface.getAddress());
                             stmt.setInt(3, curInterface.getNodeid());
                             stmt.setInt(4, curService.getId());
+                            outagesstmt.setString(1, curInterface.getAddress());
+                            outagesstmt.setInt(2, curInterface.getNodeid());
+                            outagesstmt.setInt(3, curService.getId());
                             this.log("DEBUG: executing unmanage service update for " + curInterface.getAddress() + " " + curService.getName());
                             stmt.executeUpdate();
+                            outagesstmt.executeUpdate();
                         }
                     } // end k loop
                 } // end j loop

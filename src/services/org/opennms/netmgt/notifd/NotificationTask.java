@@ -42,7 +42,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -59,7 +58,6 @@ import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.NotificationManager;
 import org.opennms.netmgt.config.notificationCommands.Argument;
 import org.opennms.netmgt.config.notificationCommands.Command;
-import org.opennms.netmgt.config.users.Contact;
 import org.opennms.netmgt.config.users.User;
 
 /**
@@ -80,6 +78,10 @@ public class NotificationTask extends Thread {
      * The User object the notification needs to go out to
      */
     private User m_user;
+
+    /**The autoNotify info for the usersnotified table
+     */
+    private String m_autoNotify;
 
     /**
      * The row id that will be used for the row inserted into the notifications
@@ -113,14 +115,15 @@ public class NotificationTask extends Thread {
     /**
      * Constructor, initializes some information
      * 
-     * @param someParams
-     *            the parameters from Notify
+     * @param someParams the parameters from
+     * Notify
      */
-    public NotificationTask(Notifd notifd, long sendTime, Map someParams, List siblings) throws SQLException {
+    public NotificationTask(Notifd notifd, long sendTime, Map someParams, List siblings, String autoNotify) throws SQLException {
         m_notifd = notifd;
         m_sendTime = sendTime;
         m_params = new HashMap(someParams);
         m_siblings = siblings;
+        m_autoNotify = autoNotify;
 
     }
 
@@ -163,6 +166,13 @@ public class NotificationTask extends Thread {
         m_user = aUser;
     }
 
+    /**Sets the autoNotify info for the usersnotified table
+     * @param String autoNotify
+     */
+    public void setAutoNotify(String autoNotify) {
+        m_autoNotify = autoNotify;
+    } 
+
     /**
      * Sets the group id that will be inserted into the row in notifications
      * table
@@ -204,10 +214,16 @@ public class NotificationTask extends Thread {
                     // send the notice
 
                     ExecutorStrategy command = null;
+                    String cntct = "";
 
                     for (int i = 0; i < m_commands.length; i++) {
+                        if (m_user.getUserId().equals("email-address")) {
+                            cntct = m_user.getContact()[0].getInfo();
+                        } else {
+                            cntct = m_notifd.getUserManager().getContactInfo(m_user.getUserId(), m_commands[i].getName());
+                        }
                         try {
-                            m_notifd.getNotificationManager().updateNoticeWithUserInfo(m_user.getUserId(), m_notifyId, m_commands[i].getName(), m_notifd.getUserManager().getContactInfo(m_user.getUserId(), m_commands[i].getName()));
+                            m_notifd.getNotificationManager().updateNoticeWithUserInfo(m_user.getUserId(), m_notifyId, m_commands[i].getName(), cntct, m_autoNotify);
                         } catch (SQLException e) {
                             log.error("Could not insert notice info into database, aborting send notice...", e);
                             continue;
@@ -276,9 +292,11 @@ public class NotificationTask extends Thread {
             if (NotificationManager.PARAM_DESTINATION.equals(aSwitch)) {
                 value = m_user.getUserId();
             } else if (NotificationManager.PARAM_EMAIL.equals(aSwitch)) {
-                value = getEmail(m_user);
+                value =m_notifd.getUserManager().getEmail(m_user.getUserId());
             } else if (NotificationManager.PARAM_PAGER_EMAIL.equals(aSwitch)) {
                 value = m_notifd.getUserManager().getPagerEmail(m_user.getUserId());
+            } else if (NotificationManager.PARAM_XMPP_ADDRESS.equals(aSwitch)) {
+            	value = m_notifd.getUserManager().getXMPPAddress(m_user.getUserId());
             } else if (NotificationManager.PARAM_TEXT_PAGER_PIN.equals(aSwitch)) {
                 value = m_notifd.getUserManager().getTextPin(m_user.getUserId());
             } else if (NotificationManager.PARAM_NUM_PAGER_PIN.equals(aSwitch)) {
@@ -290,25 +308,6 @@ public class NotificationTask extends Thread {
             ThreadCategory.getInstance(getClass()).error("unable to get value for parameter " + aSwitch);
         }
 
-        return value;
-    }
-
-    /**
-     * 
-     */
-    private String getEmail(User user) {
-
-        String value = "";
-        Enumeration contacts = user.enumerateContact();
-        while (contacts != null && contacts.hasMoreElements()) {
-            Contact contact = (Contact) contacts.nextElement();
-            if (contact != null) {
-                if (contact.getType().equals("email")) {
-                    value = contact.getInfo();
-                    break;
-                }
-            }
-        }
         return value;
     }
 }

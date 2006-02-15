@@ -411,7 +411,7 @@ class TrapQueueProcessor implements Runnable, PausableFiber {
 
             Parms parms = new Parms();
 
-            for (int i = 0; i < pdu.getLength(); i++) {
+            for (int i = 2; i < pdu.getLength(); i++) {
                 Value val = new Value();
 
                 String name = pdu.getVarBindAt(i).getName().toString();

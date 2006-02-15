@@ -2,10 +2,11 @@
 #  $Id$
 #
 %{!?version:%define version @product.version@}
-%{!?release:%define release @product.release.stamp@}
+%{!?plain_release:%define plain_release @product.release.stamp@}
+%{!?release:%define release %{plain_release}}
 %{!?releasenumber:%define releasenumber @product.release@}
 %{!?instprefix:%define instprefix @rpm.install.dir@}
-%{!?packagedir:%define packagedir @ant.project.name@-%version-%release}
+%{!?packagedir:%define packagedir @ant.project.name@-%version-%{releasenumber}}
 %{!?dbuser:%define dbuser @rpm.database.user@}
 %{!?dbpass:%define dbpass @rpm.database.password@}
 %{!?dbname:%define dbname @rpm.database.name@}
@@ -31,16 +32,25 @@
 %if "%{platform}" == "linux-i386-centos-3"
 %define	initdir		/etc
 %define psql_service	rhdb
-%define requires	postgresql-server >= 7.2, compat-libstdc++, j2sdk >= 1.4
+%define requires	postgresql-server >= 7.2, j2sdk >= 1.4
 %define webapp_requires tomcat4 >= 4.1.18
 %define release_pkg     %{release}_centos3
 %define platform_match	true
 %endif
 
+%if "%{platform}" == "linux-i386-centos-4"
+%define initdir         /etc
+%define psql_service    rhdb
+%define requires        postgresql-server >= 7.2, j2sdk >= 1.4, xorg-x11-deprecated-libs
+%define webapp_requires tomcat4 >= 4.1.18
+%define release_pkg     %{release}_centos4
+%define platform_match  true
+%endif
+
 %if "%{platform}" == "linux-i386-fedora-1"
 %define	initdir		/etc
 %define psql_service	postgresql
-%define requires	postgresql-server >= 7.2, compat-libstdc++, j2sdk >= 1.4
+%define requires	postgresql-server >= 7.2, j2sdk >= 1.4
 %define webapp_requires tomcat4 >= 4.1.18
 %define release_pkg     %{release}_fc1
 %define platform_match	true
@@ -49,7 +59,7 @@
 %if "%{platform}" == "linux-i386-fedora-2"
 %define	initdir		/etc
 %define psql_service	postgresql
-%define requires	postgresql-server >= 7.2, compat-libstdc++, j2sdk >= 1.4
+%define requires	postgresql-server >= 7.2, j2sdk >= 1.4
 %define webapp_requires tomcat4 >= 4.1.18
 %define release_pkg     %{release}_fc2
 %define platform_match	true
@@ -58,10 +68,19 @@
 %if "%{platform}" == "linux-i386-fedora-3"
 %define	initdir		/etc
 %define psql_service	postgresql
-%define requires	postgresql-server >= 7.2, compat-libstdc++, j2sdk >= 1.4, xorg-x11-deprecated-libs
+%define requires	postgresql-server >= 7.2, j2sdk >= 1.4, xorg-x11-deprecated-libs
 %define webapp_requires tomcat4 >= 4.1.18
 %define release_pkg     %{release}_fc3
 %define platform_match	true
+%endif
+
+%if "%{platform}" == "linux-i386-fedora-4"
+%define initdir         /etc
+%define psql_service    postgresql
+%define requires        postgresql-server >= 7.2, j2sdk >= 1.4, xorg-x11-deprecated-libs
+%define webapp_requires tomcat4 >= 4.1.18
+%define release_pkg     %{release}_fc4
+%define platform_match  true
 %endif
 
 %if "%{platform}" == "linux-i386-mandrake-7"
@@ -103,7 +122,7 @@
 %if "%{platform}" == "linux-i386-mandrake-10"
 %define	initdir		/etc
 %define psql_service	postgresql
-%define requires	postgresql-server >= 7.2, postgresql-pl >= 7.2, libstdc++2.10, j2sdk >= 1.4
+%define requires	postgresql-server >= 7.2, postgresql-pl >= 7.2, j2sdk >= 1.4
 %define webapp_requires tomcat4 >= 4.1.18
 %define release_pkg     %{release}_mdk10
 %define platform_match	true
@@ -139,9 +158,18 @@
 %if "%{platform}" == "linux-i386-rhel-3"
 %define	initdir		/etc
 %define psql_service	rhdb
-%define requires	postgresql-server >= 7.2, compat-libstdc++, j2sdk >= 1.4
+%define requires	postgresql-server >= 7.2, j2sdk >= 1.4
 %define webapp_requires tomcat4 >= 4.1.18
 %define release_pkg     %{release}_rhel3
+%define platform_match	true
+%endif
+
+%if "%{platform}" == "linux-i386-rhel-4"
+%define	initdir		/etc
+%define psql_service	rhdb
+%define requires	postgresql-server >= 7.2, j2sdk >= 1.4
+%define webapp_requires tomcat4 >= 4.1.18
+%define release_pkg     %{release}_rhel4
 %define platform_match	true
 %endif
 
@@ -193,15 +221,15 @@
 %endif
 
 Name:			@ant.project.name@
-Summary:		Enterprise-level network management platform
-Serial:			1
+Summary:		Enterprise-grade network management platform
+#Serial:			1
 Release:		%release_pkg
 Version:		%version
-Copyright:		LGPL/GPL
+License:		LGPL/GPL
 Group:			Applications/System
 
-Source:			%{name}-source-%{version}-%{release}.tar.gz
-URL:			ftp://opennms.org/pub/releases/OpenNMS/
+Source:			%{name}-source-%{version}-%{plain_release}.tar.gz
+URL:			https://sourceforge.net/project/showfiles.php?group_id=4141
 BuildRoot:		%{_tmppath}/%{name}-%{version}-root
 
 AutoReqProv:		no
@@ -209,8 +237,8 @@ AutoReqProv:		no
 Requires:		rrdtool, curl, %{requires}
 
 %description
-OpenNMS is a network management package.
-This is the 1.0 stable tree.
+OpenNMS is an enterprise-grade network management package.
+This is the 1.2 stable tree.
 
 %if "%builddocs" == "1"
 %package docs
@@ -225,7 +253,7 @@ for OpenNMS.
 %package webapp
 Summary:	Web interface servlet for the OpenNMS network management platform
 Group:		Applications/System
-Requires:	rrdtool, %{name} = 1:%{version}-%{release}, %{webapp_requires}
+Requires:	rrdtool, %{name} = %{version}-%{release}, %{webapp_requires}
 
 %description webapp
 The web UI for OpenNMS.
@@ -233,7 +261,7 @@ The web UI for OpenNMS.
 %prep
 
 %if %{standalone}
-tar -xvzf $RPM_SOURCE_DIR/%{name}-source-%{version}-%{release}.tar.gz -C $RPM_BUILD_DIR
+tar -xvzf $RPM_SOURCE_DIR/%{name}-source-%{version}-%{plain_release}.tar.gz -C $RPM_BUILD_DIR
 %define setupdir %{packagedir}/source
 %else
 %define setupdir @root.source@
@@ -255,6 +283,13 @@ rm -rf $RPM_BUILD_ROOT
 ##############################################################################
 
 %install
+#
+# This next bit is to keep gprintify.py on Mandriva/Mandrake from screwing
+# up the "echo" statements in the opennms.sh init script.  See:
+#	http://qa.mandriva.com/twiki/bin/view/Main/InitscriptHowto?skin=print
+#
+DONT_GPRINTIFY="yes, please do not"
+export DONT_GPRINTIFY
 
 if [ x"%{buildtests}" = x"1" ]; then
 	EXTRA_TARGETS="$EXTRA_TARGETS test"
@@ -283,7 +318,7 @@ mkdir -p $RPM_BUILD_ROOT%{_bindir}
 cat > $RPM_BUILD_ROOT%{_bindir}/opennms <<EOF
 #!/bin/sh -
 
-exec %{instprefix}/bin/opennms.sh "$@"
+exec %{instprefix}/bin/opennms.sh "\$@"
 EOF
 
 ### XXX is this needed?  (Most of) the current scripts don't use OPENNMS_HOME.
@@ -323,6 +358,17 @@ pushd $RPM_BUILD_ROOT
 find $RPM_BUILD_ROOT%{instprefix}/etc ! -type d | \
     sed -e "s,^$RPM_BUILD_ROOT,%config(noreplace) ," | \
     sort > %{_tmppath}/files.etc
+find $RPM_BUILD_ROOT%{instprefix}/etc -type d | \
+    sed -e "s,^$RPM_BUILD_ROOT,%dir ," | \
+    sort >> %{_tmppath}/files.etc
+
+find $RPM_BUILD_ROOT%{webappsdir} ! -type d | \
+    sed -e "s,^$RPM_BUILD_ROOT,," | \
+    grep -v '/WEB-INF/web\.xml$' | \
+    sort > %{_tmppath}/files.webapp
+find $RPM_BUILD_ROOT%{webappsdir} -type d | \
+    sed -e "s,^$RPM_BUILD_ROOT,%dir ," | \
+    sort >> %{_tmppath}/files.webapp
 popd
 
 %clean
@@ -338,7 +384,6 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root)	%{profiledir}/%{name}.sh
 %attr(755,root,root)	%{_bindir}/*
 %attr(755,root,root)	%{instprefix}/bin
-%dir			%{instprefix}/etc
 			%{instprefix}/contrib
 %if "%builddocs" == "1"
 %attr(755,root,root)	%{instprefix}/docs
@@ -355,9 +400,8 @@ rm -rf $RPM_BUILD_ROOT
 %{_docdir}/%{name}-%{version}
 %endif
 
-%files webapp
+%files webapp -f %{_tmppath}/files.webapp
 %defattr(644 root root 755)
-%{webappsdir}
 %config %{servletdir}/WEB-INF/web.xml
 
 

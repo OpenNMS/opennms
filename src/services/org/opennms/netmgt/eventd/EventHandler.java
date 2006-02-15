@@ -105,61 +105,64 @@ final class EventHandler implements Runnable {
         // create an EventWriter
         EventWriter eventWriter = null;
         try {
-            eventWriter = new EventWriter(m_getNextEventIdStr);
-        } catch (Throwable t) {
-            log.warn("Exception creating EventWriter", t);
-            log.warn("Event(s) CANNOT be inserted into the database");
-
-            return;
-        }
-
-        Enumeration en = events.enumerateEvent();
-        while (en.hasMoreElements()) {
-            Event event = (Event) en.nextElement();
-
-            if (log.isDebugEnabled()) {
-                // print out the eui, source, and other
-                // important aspects
-                //
-                String uuid = event.getUuid();
-                log.debug("Event {");
-                log.debug("  uuid  = " + (uuid != null && uuid.length() > 0 ? uuid : "<not-set>"));
-                log.debug("  uei   = " + event.getUei());
-                log.debug("  src   = " + event.getSource());
-                log.debug("  iface = " + event.getInterface());
-                log.debug("  time  = " + event.getTime());
-                Parm[] parms = (event.getParms() == null ? null : event.getParms().getParm());
-                if (parms != null) {
-                    log.debug("  parms {");
-                    for (int x = 0; x < parms.length; x++) {
-                        if ((parms[x].getParmName().trim() != null) && (parms[x].getValue().getContent().trim() != null)) {
-                            log.debug("    (" + parms[x].getParmName().trim() + ", " + parms[x].getValue().getContent().trim() + ")");
-                        }
-                    }
-                    log.debug("  }");
-                }
-                log.debug("}");
-            }
-
+            
             try {
-                // look up eventconf match and expand event
-                EventExpander.expandEvent(event);
-
-                // add to database
-                eventWriter.persistEvent(m_eventLog.getHeader(), event);
-
-                // send event to interested listeners
-                EventIpcManagerFactory.getInstance().getManager().broadcastNow(event);
-
-            } catch (SQLException sqle) {
-                log.warn("Unable to add event to database", sqle);
+                eventWriter = new EventWriter(m_getNextEventIdStr);
             } catch (Throwable t) {
-                log.warn("Unknown exception processing event", t);
+                log.warn("Exception creating EventWriter", t);
+                log.warn("Event(s) CANNOT be inserted into the database");
+                
+                return;
             }
+            
+            Enumeration en = events.enumerateEvent();
+            while (en.hasMoreElements()) {
+                Event event = (Event) en.nextElement();
+                
+                if (log.isDebugEnabled()) {
+                    // print out the eui, source, and other
+                    // important aspects
+                    //
+                    String uuid = event.getUuid();
+                    log.debug("Event {");
+                    log.debug("  uuid  = " + (uuid != null && uuid.length() > 0 ? uuid : "<not-set>"));
+                    log.debug("  uei   = " + event.getUei());
+                    log.debug("  src   = " + event.getSource());
+                    log.debug("  iface = " + event.getInterface());
+                    log.debug("  time  = " + event.getTime());
+                    Parm[] parms = (event.getParms() == null ? null : event.getParms().getParm());
+                    if (parms != null) {
+                        log.debug("  parms {");
+                        for (int x = 0; x < parms.length; x++) {
+                            if ((parms[x].getParmName().trim() != null) && (parms[x].getValue().getContent().trim() != null)) {
+                                log.debug("    (" + parms[x].getParmName().trim() + ", " + parms[x].getValue().getContent().trim() + ")");
+                            }
+                        }
+                        log.debug("  }");
+                    }
+                    log.debug("}");
+                }
+                
+                try {
+                    // look up eventconf match and expand event
+                    EventExpander.expandEvent(event);
+                    
+                    // add to database
+                    eventWriter.persistEvent(m_eventLog.getHeader(), event);
+                    
+                    // send event to interested listeners
+                    EventIpcManagerFactory.getInstance().getManager().broadcastNow(event);
+                    
+                } catch (SQLException sqle) {
+                    log.warn("Unable to add event to database", sqle);
+                } catch (Throwable t) {
+                    log.warn("Unknown exception processing event", t);
+                }
+            }
+        } finally {
+            // close database related stuff in the eventwriter
+            eventWriter.close();
         }
-
-        // close database related stuff in the eventwriter
-        eventWriter.close();
     }
 
 }

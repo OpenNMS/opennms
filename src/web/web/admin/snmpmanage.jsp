@@ -49,9 +49,7 @@
 <%
     HttpSession userSession = request.getSession(false);
     List nodes = null;
-    List interfaces = null;
     Integer lineItems= new Integer(0);
-    Integer lineIntItems= new Integer(0);
     
     interfaceIndex = 0;
     
@@ -59,8 +57,6 @@
     {
   	nodes = (List)userSession.getAttribute("listAllnodes.snmpmanage.jsp");
         lineItems = (Integer)userSession.getAttribute("lineNodeItems.snmpmanage.jsp");
-  	interfaces = (List)userSession.getAttribute("listAllinterfaces.snmpmanage.jsp");
-        lineIntItems = (Integer)userSession.getAttribute("lineIntItems.snmpmanage.jsp");
     }
 %>
 
@@ -70,47 +66,6 @@
   <base HREF="<%=org.opennms.web.Util.calculateUrlBase( request )%>" />
   <link rel="stylesheet" type="text/css" href="includes/styles.css" />
 </head>
-
-<script language="Javascript" type="text/javascript" >
-
-  function applyChanges()
-  {
-      if (confirm("Are you sure you want to proceed? This action will permanently delete the checked nodes and cannot be undone."))
-      {
-          document.deleteAll.submit();
-      }
-  }
-  
-  function cancel()
-  {
-      document.deleteAll.action="admin/index.jsp";
-      document.deleteAll.submit();
-  }
-  
-  function checkAll()
-  {
-      for (var c = 0; c < document.deleteAll.elements.length; c++)
-      {  
-          if (document.deleteAll.elements[c].type == "checkbox")
-          {
-              document.deleteAll.elements[c].checked = true;
-          }
-      }
-  }
-  
-  function uncheckAll()
-  {
-      for (var c = 0; c < document.deleteAll.elements.length; c++)
-      {  
-          if (document.deleteAll.elements[c].type == "checkbox")
-          {
-              
-              document.deleteAll.elements[c].checked = false;
-          }
-      }
-  }
-  
-</script>
 
 <body marginwidth="0" marginheight="0" LEFTMARGIN="0" RIGHTMARGIN="0" TOPMARGIN="0">
 
@@ -229,8 +184,10 @@
 	  row.append(nodeid);
           row.append("</td>\n");
           row.append("<td width=\"10%\" align=\"left\">");
-          row.append("<a href=\"admin/snmpselect.jsp?node=");
+          row.append("<a href=\"admin/snmpGetInterfaces?node=");
 	  row.append(nodeid);
+          row.append("&nodelabel=");
+	  row.append(nodelabel);
           row.append("\">");
 	  row.append(nodelabel);
           row.append("</a>");

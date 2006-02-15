@@ -1,4 +1,174 @@
-1.1.6 to 1.2.0
+1.2.5 to 1.2.6
+----------------------------------------------------------------------
+- Added a new .jsp for the List Nodes page that doesn't include
+  interfaces.
+- Added a "force version" parameter to collectd.
+- When choosing to select SNMP data collection for a node, once the
+  changes are applied the web page will go back to the node instead
+  of the main Admin page. This improves performance on large systems.
+- Fixed an issue where interfaces marked for collection were getting
+  set to "N" on a rescan.
+- Upgraded MX4J to 3.0.1 (the same version in head) to fix bug #1330.
+- Added asset info to the node page and some SNMP-Informant collections.
+- Changed OpenNMS so that manage/unmange interfaces deletes active
+  outages and does not require a reboot when unmanaging a service.
+- Fixed an issue with the Scheduled Outages GUI and Java 5.
+- Fixed an issue with data collection when the primary interface is
+  on a NIC with other virtual IPs.
+- Merged Calendar format reports from 1.3 line.
+
+1.2.4 to 1.2.5
+----------------------------------------------------------------------
+- Made changes to SNMP data collection to improve both speed and
+  startup time.
+- Corrected a deadlock condition to fix getConnection hangs and 
+  outage resolution issues.
+- Added group duty schedules. Bug 1147. Thx Bill
+- Updated Novell Events.
+- Added Netscreen Events.
+- Added AirDefense events and updated Symbol events.
+- Removed the first two varbinds from an SNMP v2 Trap. Bug 733
+- Fixed a number of documentation mistakes pointed out by Austin Tuan.
+  Thank you very much, Austin!  Bug 1303.
+- Fixes to build.xml to make it easier to specify compiler options for
+  explicitly setting the target architecture for the JNI code and the
+  PostgreSQL module (build.jni.compiler.arg and build.postgresql.compiler.arg,
+  respectively).  Thanks to Jonathan Sartin who submitted a patch.  Bug 1331.
+- Fix for building on FreeBSD.  Should now be able to do it by creating
+  a build.properties file (see the release notes for details).  Thanks
+  to Dennis Berger and Brent Verner for supplying patches.  Bug 1315.
+- Fix some small bugs in JavaMailer.  Fixed the default recipient address
+  by placing square brackets around the IP address to make it a valid
+  domain-literal per RFC 2822.  Also fix a logging bug where the subject
+  was logged twice instead of logging the subject and the message contents.
+- Performance enhancement for the Scheduled outages editing page. Bug 1340.
+  Thanks, Craig M.!
+- Added Symbol WS5000 events and updated eventconf.xml  
+- Fixed issue where xmpp notifications were only being sent to one user in goup
+  notifications - Bug 1329.
+- Added xmpp group (chat room) notifications - Bug 1246
+
+1.2.3 to 1.2.4
+----------------------------------------------------------------------
+- Fixed a problem with acknowledging events. Bug 1290
+- Added the ability to use a URL in the HTTP and HTTPS Monitors.
+  Bug 848.
+- Colored the background of notification IDs to match the severity
+  of the event that triggered the notice. Bug 1262. Thx Eugene
+- Display notification totals for both the logged in user and everyone
+  else. Bug 1257. Thx Bill.
+- Made a change to prevent duplicate "Update SNMP" links.
+  Bug 1256. Thx Bill.
+- Modified the HttpPlugin to handle replies with a newline.
+  Bug 1214. Thx Tobey
+- Added the ability to include %descr% tags in notifications
+  that reflect the description of the event that caused them.
+  Bug 1183. Thx Vincent.
+- fixed an issue where secondary IP addresses would be set when
+  they were not included in collectd. Bug 1178. Thx again Bill.
+- Added a new feature to fine tune RESOLVED messages in 
+  notifications. Bug 1087. Thx Bill.
+- Added HC counters.
+- Corrected an error with BGP4 standard events.
+- Added Netgear events.
+- Listed all the parameters in an unformatted event.
+- Added SystemEdge and Fujitsu-Seimens events, as well as new MGE-UPS
+  event definitions.
+- Added MGE UPS collections and reports.
+- Make the tilde "~" character work in filters and rules. This
+  allows for regular expressions in SQL queries in Postgres 7.4+
+- Added support for RFC1628, the UPS MIB
+
+1.2.2 to 1.2.3
+----------------------------------------------------------------------
+- A few small documentation fixes, including bug 1204 (thanks Chris)
+  and bug 1185.
+- Change the $echo variable in opennms.sh to $opennms_echo.  This should
+  take care of problems people were seeing on Mandrake.
+- Added data collections for TCP stats.
+- Modified isReady for PollableService as a work around for hung polling.
+- Added some SNMP Informant collections, reports and thresholds.
+- Added NORTEL Contivity events. Bug 1223. Thx Julian
+- Added some new Foundry event definitions. Bug 1234. Thx Ted
+- Added the --color attribute to jRobin graphs. Bug 1239. Thx Gerald
+- Tweaked the availability report format from suggestions from the
+  list.
+- Removed the possibility that 0.0.0.0 would show up as the IP
+  address for a service in the ifservices table. Thx Bill
+- Applied final version of poll outage editor. Bug 1116. Thx Craig
+
+1.2.1 to 1.2.2
+----------------------------------------------------------------------
+- Fixed an issue with the webUI and null issnmpprimary values.
+
+1.2.0 to 1.2.1
+----------------------------------------------------------------------
+- Fix source RPM builds ("srpm" build target).  Bug 1112.  Thanks, Tarus.
+- An Admin GUI is now available to modify snmp-config.xml. Bug 1167
+  Thx Gerald
+- Added the ability to remove "secondary" status from interfaces
+  via the SNMP Collection Admin UI, and added a direct link
+  from the node admin page to the particular node's configuration
+  page.
+- Applied the patch to help with 30 second outages. Bug 1180. 
+  Thx Tobey
+- Added package name to Interface page for admins. Bug 1044. Thx Bill
+- Extended the varbind matching in Notifications. Bug 1032. Thx Wiktor
+- Added mib2.packets report. Bug 1179. Thx Andy
+- Made some improvements to the node page. Bug 1018. Thx Bill
+- Added notification selection to top of page. Bug 1017. Thx Bill
+- Added nodeid to modify asset page. Bug 785
+- Added a new and improved DHCP poller. Bug 663. Thx Bill
+- Added a more descriptive error message when an invalid outage ID
+  is entered in the webUI. Bug 498
+- Added display of ifAlias in an event or notification.  It uses the nodeid
+  and the ipaddr to find it.  Use %ifalias% to see this in the event or 
+  notification.  Bug 1140
+- Fix the opennms init script so that it works properly with chkconfig.
+  Bug 1177.  Thanks Julian Gomez <JulianJose.Gomez@getronics.com>.
+- Fixed the Configure SNMP Data Collection per Interface UI to be
+  much faster and to handle null issnmpprimary values.
+- Initialize begin and end times in isTimeInOutage so days of week is
+  properly handled when passing a date that's not 'now.' Bug 1170.
+- Reset TreeMap in last month top 20 outage calculations
+  before accumulating outages for each service. Bug 945.
+- Move the column constraints in create.sql to be at the end of table
+  definitions, instead of immediately after the constrained column and
+  update the installer to allow this.  Unit tests included.  Bug 1159.
+- Have build.sh prefer the JRE at $JAVA_HOME/bin/java if JAVA_HOME is set.
+  Bug 1154.  Thanks Chris Abernethy <opennms@obado.net>.
+- Clean up the text of the <fail> tasks in build.xml so they are more clear.
+  Bug 1155.  Thanks Chris Abernethy <opennms@obado.net>.
+- Add Poll outage editor contributed by Craig Miskell.
+- Fixed an issue with Unresponsive services being considered up
+  even with unresponsiveness set to false. Bug 1151.
+- Added a focus to the add interface page. Bug 1148. Thx Craig.
+- Added a Linksys event to stop stupid connection traps.
+- Addressed issue with DHCP poller not closing connections. Bug 1101
+  Thx Bill.
+- Added XMPP Notifications (Jabber) to OpenNMS. Bug 1168. Thanks Chris
+- Added the ability to gather and display SNMP text properties in 
+  reports. Bug 1115. Thx Craig.
+- Changed snmpIfAlias column size to 256. Bug 1127
+- Modified MockPollConfig to share code with PollOutageConfigFactory. Bug 1122.
+- Write test for and fixed midnight outages in PollOutageConfigManager.
+  Bug 1122.
+- Fix GETBULK in SnmpIfCollector to handle cases where indices are not
+  contiguous.  Fixed ArrayIndexOutOfBound exceptions. Bug 1141
+- Add RESOLVED: to body of email and pager msgs.  Unit tests include. Bug 1134.
+  Thnx mhuot and bill ayres.
+- Fix the /usr/bin/opennms (or /usr/local/bin/opennms) script created by
+  opennms.spec.in so that it passes arguments to opennms.sh.  Bug 1136.
+  Thanks to Chris Abernethy <opennms@obado.net> for reporting this bug.
+- Fix some small documentation bugs.  Bugs 1137 and 1138 and an email to
+  opennms-discuss.  Thanks Chris Abernethy <opennms@obado.net> and
+  Austin Tuan <ystuan@gmail.com>.
+- Fixed notifications so that they use local time instead of GMT time.  Also
+  fixed the same problem in the webUI for data like the last service scan time
+  on the interface page.  Bug 1114.  Thanks to Bill Ayers <ayres@net.orst.edu>
+  and Craig Miskell <craig.miskell@agresearch.co.nz>.
+
+1.1.5 to 1.2.0
 ----------------------------------------------------------------------
 - Added new SystemDef for Cisco PIX. Thx Ted. Bug 1047.
 - Removed deleted nodes from the list of nodes available for

@@ -54,6 +54,7 @@ import org.apache.log4j.Priority;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.config.CatFactory;
 import org.opennms.netmgt.config.CategoryFactory;
 import org.opennms.netmgt.config.DatabaseConnectionFactory;
 import org.opennms.netmgt.config.categories.Categorygroup;
@@ -125,7 +126,7 @@ public class AvailabilityData extends Object {
     /**
      * Category Factory
      */
-    CategoryFactory m_catFactory;
+    CatFactory m_catFactory;
 
     /**
      * Rolling window of the last year.
@@ -141,14 +142,14 @@ public class AvailabilityData extends Object {
      * Constructor
      * 
      */
-    public AvailabilityData(String categoryName, Report report, String format) throws IOException, MarshalException, ValidationException, Exception {
+    public AvailabilityData(String categoryName, Report report, String format, String monthFormat, Calendar calendar) throws IOException, MarshalException, ValidationException, Exception {
         ThreadCategory.setPrefix(LOG4J_CATEGORY);
         org.apache.log4j.Category log = ThreadCategory.getInstance(this.getClass());
         if (log.isDebugEnabled())
             log.debug("Inside AvailabilityData");
 
         m_nodes = new ArrayList();
-        initialiseInterval();
+        initialiseInterval(calendar);
         m_categoryName = categoryName;
         Catinfo config = null;
         try {
@@ -174,6 +175,8 @@ public class AvailabilityData extends Object {
         if (categoryName.equals("") || categoryName.equals("all")) {
             Enumeration enumCG = config.enumerateCategorygroup();
             int catCount = 0;
+			if (log.isDebugEnabled())
+                log.debug("catCount " + catCount);
             while (enumCG.hasMoreElements()) {
                 Categorygroup cg = (Categorygroup) enumCG.nextElement();
 
@@ -192,14 +195,16 @@ public class AvailabilityData extends Object {
                     if (log.isDebugEnabled())
                         log.debug("CATEGORY " + cat.getLabel());
                     catCount++;
-                    populateDataStructures(cat, report, format, catCount);
+                    populateDataStructures(cat, report, format, monthFormat, catCount);
                 }
             }
+			if (log.isDebugEnabled())
+                log.debug("catCount " + catCount);
         } else {
             org.opennms.netmgt.config.categories.Category cat = (org.opennms.netmgt.config.categories.Category) m_catFactory.getCategory(categoryName);
             if (log.isDebugEnabled())
-                log.debug("CATEGORY " + cat.getLabel());
-            populateDataStructures(cat, report, format, 1);
+                log.debug("CATEGORY - now populate data structures " + cat.getLabel());
+            populateDataStructures(cat, report, format, monthFormat, 1);
         }
 
         SimpleDateFormat simplePeriod = new SimpleDateFormat("MMMMMMMMMMM dd, yyyy");
@@ -225,9 +230,13 @@ public class AvailabilityData extends Object {
      * @param format
      *            SVG-specific/all reports
      */
-    private void populateDataStructures(org.opennms.netmgt.config.categories.Category cat, Report report, String format, int catIndex) throws Exception {
-        report.setCatCount(catIndex);
+    private void populateDataStructures(org.opennms.netmgt.config.categories.Category cat, Report report, String format, String monthFormat, int catIndex) throws Exception {
         org.apache.log4j.Category log = ThreadCategory.getInstance(this.getClass());
+		if (log.isDebugEnabled())
+			log.debug("Inside populate data Structures" + catIndex);
+		report.setCatCount(catIndex);
+		if (log.isDebugEnabled())
+			log.debug("Inside populate data Structures");
         try {
             String categoryName = cat.getLabel();
             m_commonRule = m_catFactory.getEffectiveRule(categoryName);
@@ -235,6 +244,8 @@ public class AvailabilityData extends Object {
             List monitoredServices = new ArrayList();
             while (enumMonitoredSvc.hasMoreElements()) {
                 String service = (String) enumMonitoredSvc.nextElement();
+				if (log.isDebugEnabled())
+	                log.debug("adding service" + service);
                 monitoredServices.add(service);
             }
             populateNodesFromDB(cat, monitoredServices);
@@ -246,7 +257,9 @@ public class AvailabilityData extends Object {
             while (cleanNodes.hasNext()) {
                 Node node = (Node) cleanNodes.next();
                 if (node != null && !node.hasOutages()) {
-                    cleanNodes.remove();
+					if (log.isDebugEnabled())
+		                log.debug("Removing node: " + node);
+					cleanNodes.remove();
                 }
             }
             if (log.isDebugEnabled()) {
@@ -260,7 +273,7 @@ public class AvailabilityData extends Object {
             if (m_nodes.size() <= 0)
                 m_nodes = null;
             if (m_nodes != null) {
-                AvailCalculations availCalculations = new AvailCalculations(m_nodes, m_endTime, m_lastMonthEndTime, monitoredServices, report, topOffenders, cat.getWarning(), cat.getNormal(), cat.getComment(), cat.getLabel(), format, catIndex, m_sectionIndex);
+                AvailCalculations availCalculations = new AvailCalculations(m_nodes, m_endTime, m_lastMonthEndTime, monitoredServices, report, topOffenders, cat.getWarning(), cat.getNormal(), cat.getComment(), cat.getLabel(), format, monthFormat, catIndex, m_sectionIndex);
                 m_sectionIndex = availCalculations.getSectionIndex();
                 report.setSectionCount(m_sectionIndex - 1);
             } else {
@@ -294,10 +307,9 @@ public class AvailabilityData extends Object {
      * Initialise the endTime, last Months end time and number of days in the
      * last month.
      */
-    private void initialiseInterval() {
+    private void initialiseInterval(Calendar calendar) {
         org.apache.log4j.Category log = ThreadCategory.getInstance(this.getClass());
 
-        Calendar calendar = new GregorianCalendar();
         int month = calendar.get(Calendar.MONTH);
         int day = calendar.get(Calendar.DAY_OF_MONTH);
         int year = calendar.get(Calendar.YEAR);
@@ -506,6 +518,10 @@ public class AvailabilityData extends Object {
      */
     private void populateNodesFromDB(org.opennms.netmgt.config.categories.Category cat, List monitoredServices) throws SQLException, FilterParseException, Exception {
         m_nodes = new ArrayList();
+		org.apache.log4j.Category log = ThreadCategory.getInstance(AvailabilityData.class);
+
+		if (log.isDebugEnabled())
+            log.debug("in populateNodesFromDB");
         // Create the filter
         Filter filter = new Filter();
 
@@ -517,8 +533,7 @@ public class AvailabilityData extends Object {
         // Prepared statement to get outages entries
         PreparedStatement outagesGetStmt = m_availConn.prepareStatement(AvailabilityConstants.DB_GET_OUTAGE_ENTRIES);
 
-        org.apache.log4j.Category log = ThreadCategory.getInstance(AvailabilityData.class);
-
+        
         // get the rule for this category, get the list of nodes that satisfy
         // this rule
         m_catComment = cat.getComment();
@@ -679,7 +694,7 @@ public class AvailabilityData extends Object {
                 newNode.addInterface(ipaddr, serviceName);
                 m_nodes.add(newNode);
             }
-            rs.beforeFirst();
+//            rs.beforeFirst();
             while (rs.next()) {
                 Timestamp lost = rs.getTimestamp(1);
                 Timestamp regained = rs.getTimestamp(2);

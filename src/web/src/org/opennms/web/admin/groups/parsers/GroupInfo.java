@@ -33,7 +33,11 @@
 package org.opennms.web.admin.groups.parsers;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
+import java.util.Vector;
+
+import org.opennms.netmgt.config.users.DutySchedule;
 
 /**
  * This is a data class to store the group information from the groups.xml file
@@ -61,12 +65,18 @@ public class GroupInfo {
     private List m_users;
 
     /**
+     * The list of duty schedules in the group
+     */
+    private List m_dutySchedules;
+
+    /**
      * Default constructor, intializes the users list
      */
     public GroupInfo() {
         m_groupName = "";
         m_groupComments = "";
         m_users = new ArrayList();
+        m_dutySchedules = new Vector();
     }
 
     /**
@@ -146,6 +156,75 @@ public class GroupInfo {
     }
 
     /**
+     * This method adds a duty schedule
+     * 
+     * @param aSchedule
+     *            a new duty schedule to associate with a group
+     */
+    public void addGroupDutySchedule(DutySchedule aSchedule) {
+        m_dutySchedules.add(aSchedule);
+    }
+
+    /**
+     * This method sets a full list of duty schedules for a group
+     * 
+     * @param someSchedules
+     *            a list of DutySchedule objects for a group
+     */
+    public void setDutySchedule(List someSchedules) {
+        m_dutySchedules = someSchedules;
+    }
+
+    /**
+     * Returns the number of DutySchedule object for a group
+     * 
+     * @return the number of DutySchedules
+     */
+    public int getDutyScheduleCount() {
+        return m_dutySchedules.size();
+    }
+
+    /**
+     * Returns the full list of DutySchedules
+     * 
+     * @return the full list of DutySchedules
+     */
+    public List getDutySchedules() {
+        return m_dutySchedules;
+    }
+
+    /**
+     * Returns a boolean indicating if the user is on duty at the specified
+     * time.
+     * 
+     * @param aTime
+     *            a time to see if the user is on duty
+     * @return true if the user is on duty, false otherwise
+     */
+    public boolean isOnDuty(Calendar aTime) {
+        boolean result = false;
+
+        // if there is no schedule assume that the user is on duty
+        if (m_dutySchedules.size() == 0) {
+            return true;
+        }
+
+        DutySchedule curSchedule = null;
+
+        for (int i = 0; i < m_dutySchedules.size(); i++) {
+            curSchedule = (DutySchedule) m_dutySchedules.get(i);
+
+            result = curSchedule.isInSchedule(aTime);
+
+            // don't continue if the time is in this schedule
+            if (result)
+                break;
+        }
+
+        return result;
+    }
+
+    /**
      * Returns a String representation of the group, used primarily for
      * debugging.
      * 
@@ -160,6 +239,10 @@ public class GroupInfo {
 
         for (int i = 0; i < m_users.size(); i++) {
             buffer.append("\t" + (String) m_users.get(i) + "\n");
+        }
+ 
+        for (int i = 0; i < m_dutySchedules.size(); i++) {
+            buffer.append(m_dutySchedules.get(i).toString() + "\n");
         }
 
         return buffer.toString();

@@ -47,6 +47,7 @@ import java.util.Map;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.resource.Vault;
+import org.opennms.netmgt.config.CatFactory;
 import org.opennms.netmgt.config.CategoryFactory;
 
 public class CategoryModel extends Object {
@@ -71,7 +72,7 @@ public class CategoryModel extends Object {
     protected HashMap categories = new HashMap();
 
     /** A reference to the CategoryFactory to get to category definitions. */
-    protected CategoryFactory catFactory = null;
+    protected CatFactory catFactory = null;
 
     /** The Log4J category for logging status and debug messages. */
     protected org.apache.log4j.Category log = org.opennms.core.utils.ThreadCategory.getInstance("RTC");
@@ -320,7 +321,7 @@ public class CategoryModel extends Object {
         Connection conn = Vault.getDbConnection();
 
         try {
-            PreparedStatement stmt = conn.prepareStatement("select getPercentAvailabilityInWindow(?, ?, ?, ?, ?) as avail from ifservices where ifservices.ipaddr = ipinterface.ipaddr and ifservices.nodeid = ipinterface.nodeid and ipinterface.ismanaged='M' and nodeid=? and ipaddr=? and serviceid=?");
+            PreparedStatement stmt = conn.prepareStatement("select getPercentAvailabilityInWindow(?, ?, ?, ?, ?) as avail from ifservices, ipinterface where ifservices.ipaddr = ipinterface.ipaddr and ifservices.nodeid = ipinterface.nodeid and ipinterface.ismanaged='M' and ifservices.nodeid=? and ifservices.ipaddr=? and serviceid=?");
 
             stmt.setInt(1, nodeId);
             stmt.setString(2, ipAddr);
