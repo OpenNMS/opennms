@@ -107,7 +107,7 @@ report.mib2.bits.command=--title="Bits In/Out" \
  GPRINT:rawbitsOut:AVERAGE:"Avg  \\: %8.2lf %s" \
  GPRINT:rawbitsOut:MIN:"Min  \\: %8.2lf %s" \
  GPRINT:rawbitsOut:MAX:"Max  \\: %8.2lf %s\\n" \
- GPRINT:inSum:AVERAGE:" Tot In  \\: %8.2lf %s" \
+ GPRINT:inSum:AVERAGE:"  Tot In  \\: %8.2lf %s" \
  GPRINT:outSum:AVERAGE:" Tot Out  \\: %8.2lf %s" \
  GPRINT:totSum:AVERAGE:" Tot  \\: %8.2lf %s\\n"
 

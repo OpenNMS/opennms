@@ -243,8 +243,8 @@
       <para>There are a few cosmetic changes. There is a new color scheme for
       the default <filename>datacollection-config.xml </filename>reports.
       Please let us know if you like it. If not, the old colors can be found
-      in the file <filename>snmp-graph.properties.125</filename>. Simply move
-      it to <filename>snmp-graph.properties</filename> and restart
+      in the file <filename>snmp-graph.properties.oldcolors</filename>. Simply
+      move it to <filename>snmp-graph.properties</filename> and restart
       Tomcat.</para>
 
       <para>There is also a new stylesheet. The old stylesheet is called
