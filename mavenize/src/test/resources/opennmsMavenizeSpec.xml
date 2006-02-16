@@ -572,13 +572,13 @@
 	        		<include name="*.xml"/>
 	        </fileset>
 	    </sources>
-		<sources source-type="manual" target-dir="src/etc">
+		<sources source-type="filtered">
 			<fileset dir="${opennms.dir}/etc">
 				<include name="**/*"/>
 				<exclude name="**/CVS/**"/>
 			</fileset>
 		</sources>
-		<sources source-type="manual" target-dir="src/bin">
+		<sources source-type="filtered">
 			<fileset dir="${opennms.dir}/tools/run">
 				<include name="**/*"/>
 				<exclude name="**/CVS/**"/>
@@ -588,11 +588,16 @@
 				<exclude name="**/CVS/**"/>
 			</fileset>
 		</sources>
-		<sources source-type="manual" target-dir="src/contrib">
+		<sources source-type="resource">
 			<fileset dir="${opennms.dir}/contrib">
 				<include name="**/*"/>
 				<exclude name="**/CVS/**"/>
 			</fileset>
+		</sources>
+		<sources source-type="filter">
+		    <fileset dir="modules/daemon/src/filters">
+		        <include name="*.properties"/>
+		    </fileset>
 		</sources>
 	</module>
 	

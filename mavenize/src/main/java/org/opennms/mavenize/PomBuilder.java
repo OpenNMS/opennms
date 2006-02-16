@@ -15,6 +15,7 @@ import org.apache.maven.model.Parent;
 import org.apache.maven.model.Plugin;
 import org.apache.maven.model.Repository;
 import org.apache.maven.model.RepositoryPolicy;
+import org.apache.maven.model.Resource;
 import org.apache.maven.model.io.xpp3.MavenXpp3Writer;
 
 public class PomBuilder {
@@ -192,11 +193,13 @@ public class PomBuilder {
 			m_model.setBuild(new Build());
 		}
 		
-		Plugin plugin = new Plugin();
-		plugin.setGroupId(groupId);
-		plugin.setArtifactId(artifactId);
-		m_model.getBuild().addPlugin(plugin);
-		
+		Plugin plugin = getPlugin(groupId, artifactId);
+		if (plugin == null) {
+		    plugin = new Plugin();
+		    plugin.setGroupId(groupId);
+		    plugin.setArtifactId(artifactId);
+		    m_model.getBuild().addPlugin(plugin);
+		}
 		return plugin;
 	}
 
@@ -233,6 +236,51 @@ public class PomBuilder {
 		m_model.addRepository(repo);
 		m_model.addPluginRepository(repo);
 	}
+    
+    public Plugin getPlugin(String groupId, String artifactId) {
+        for (Iterator it = m_model.getBuild().getPlugins().iterator(); it.hasNext();) {
+            Plugin plugin = (Plugin) it.next();
+            if (groupId.equals(plugin.getGroupId()) && artifactId.equals(plugin.getArtifactId())) {
+                return plugin;
+            }
+        }
+        return null;
+    }
+    
+    public Resource getResourceByDirectory(String directory) {
+        for (Iterator it = m_model.getBuild().getResources().iterator(); it.hasNext();) {
+            Resource resource = (Resource) it.next();
+            if (directory.equals(resource.getDirectory()))
+                return resource;
+        }
+        return null;
+    }
+
+    public void addResource(Resource resource) {
+        if (m_model.getBuild() == null) {
+            m_model.setBuild(new Build());
+        }
+        
+        m_model.getBuild().addResource(resource);
+    }
+
+    public void addFilterFile(String fileName) {
+        if (m_model.getBuild() == null) {
+            m_model.setBuild(new Build());
+        }
+        
+        if (!hasFilterFile(fileName))
+            m_model.getBuild().addFilter(fileName);
+    }
+
+    private boolean hasFilterFile(String fileName) {
+        for (Iterator it = m_model.getBuild().getFilters().iterator(); it.hasNext();) {
+            String filterFile = (String) it.next();
+            if (fileName.equals(filterFile))
+                return true;
+        }
+        return false;
+    }
 	
 	
 

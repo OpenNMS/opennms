@@ -9,6 +9,8 @@ import java.util.Properties;
 import org.apache.maven.model.Plugin;
 import org.apache.maven.model.PluginExecution;
 import org.codehaus.plexus.util.FileUtils;
+import org.codehaus.plexus.util.reflection.Reflector;
+import org.codehaus.plexus.util.reflection.ReflectorException;
 import org.codehaus.plexus.util.xml.Xpp3Dom;
 import org.codehaus.plexus.util.xml.Xpp3DomBuilder;
 
@@ -61,10 +63,15 @@ public class SourceType {
 	private String m_typeName;
 	
 	public static SourceType get(String typeName) {
-		return new SourceType(typeName);
+        try {
+            Class typeClass = Configuration.get().getClass("sourceType."+typeName+".class", SourceType.class);
+            return (SourceType)(new Reflector()).newInstance(typeClass, new Object[] { typeName });
+        } catch (ReflectorException e) {
+            throw new RuntimeException("could not construct instance for sourceType "+typeName, e);
+        }
 	}
 
-	private SourceType(String typeName) {
+	public SourceType(String typeName) {
 		m_typeName = typeName;
 	}
 	
