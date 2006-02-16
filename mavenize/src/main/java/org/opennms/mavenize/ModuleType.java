@@ -87,4 +87,8 @@ public class ModuleType {
 		
 	}
 
+    public String getTypeName() {
+        return m_moduleType;
+    }
+
 }

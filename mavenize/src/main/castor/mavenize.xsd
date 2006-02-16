@@ -46,6 +46,7 @@
     <complexType>
       <attribute name="module-id" type="string" use="required"/>
       <attribute name="scope"      type="string" default="compile"/>
+      <attribute name="platform-specific" type="boolean" default="false" />      
     </complexType>
   </element>
 

@@ -4,9 +4,11 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.Writer;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.maven.model.Build;
 import org.apache.maven.model.Dependency;
@@ -20,12 +22,20 @@ import org.apache.maven.model.io.xpp3.MavenXpp3Writer;
 
 public class PomBuilder {
     
-    public static PomBuilder createBuilder(PomBuilder parent, String moduleId, String moduleName, String moduleType) {
-        return new PomBuilder(parent, moduleId, moduleName, ModuleType.get(moduleType));
+    private static Map m_moduleLookup = new HashMap();
+    
+    public static PomBuilder findModule(String moduleId) {
+        return (PomBuilder)m_moduleLookup.get(moduleId);
     }
     
-    public static PomBuilder createBuilder(String moduleId, String moduleType, String moduleName) {
-        return new PomBuilder(null, moduleId, moduleName, ModuleType.get(moduleType));
+    public static PomBuilder createBuilder(PomBuilder parent, String moduleId, String moduleName, String moduleType) {
+        PomBuilder module = new PomBuilder(parent, moduleId, moduleName, ModuleType.get(moduleType));
+        m_moduleLookup.put(moduleId, module);
+        return module;
+    }
+    
+    public static PomBuilder createBuilder(String moduleId, String moduleName, String moduleType) {
+        return createBuilder(null, moduleId, moduleName, moduleType);
     }
     
     public static PomBuilder createProjectBuilder() {
@@ -158,16 +168,25 @@ public class PomBuilder {
 		m_model.addModule(moduleId);
 	}
 
-	public void addDependency(String groupId, String artifactId, String version, String scope) {
+	public void addDependency(String groupId, String artifactId, String version, String scope, boolean platformSpecific) {
 		Dependency dependency = new Dependency();
 		dependency.setGroupId(groupId);
-		dependency.setArtifactId(artifactId);
+		dependency.setArtifactId(platformSpecific ? artifactId+"-${platform}" : artifactId);
 		dependency.setVersion(version);
 		dependency.setScope(scope);
+        if (platformSpecific) {
+            PomBuilder modDep = PomBuilder.findModule(artifactId);
+            ModuleType modType = modDep.getModuleType();
+            dependency.setType("${platform."+modType.getTypeName()+"}");
+        }
 		m_model.addDependency(dependency);
 	}
 
-	public void addSourceSet(String sourceType, String targetDir) {
+	private ModuleType getModuleType() {
+        return m_type;
+    }
+
+    public void addSourceSet(String sourceType, String targetDir) {
 		SourceSet sourceSet = SourceSet.create(sourceType, targetDir, this);
 		m_sourceSets.add(sourceSet);
 	}

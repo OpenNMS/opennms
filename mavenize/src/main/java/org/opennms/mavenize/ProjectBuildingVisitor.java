@@ -63,11 +63,11 @@ public class ProjectBuildingVisitor extends AbstractSpecVisitor {
 	}
 
 	public void visitDependency(Dependency dep) {
-		getBuilder().addDependency(dep.getGroupId(), dep.getArtifactId(), dep.getVersion(), dep.getScope());
+		getBuilder().addDependency(dep.getGroupId(), dep.getArtifactId(), dep.getVersion(), dep.getScope(), false);
 	}
 
 	public void visitModuleDependency(ModuleDependency modDep) {
-		getBuilder().addDependency(getBuilder().getGroupId(), modDep.getModuleId(), getBuilder().getVersion(), modDep.getScope());
+		getBuilder().addDependency(getBuilder().getGroupId(), modDep.getModuleId(), getBuilder().getVersion(), modDep.getScope(), modDep.getPlatformSpecific());
 	}
 	
 	public void visitRepository(Repository repo) {

@@ -15,13 +15,13 @@
       </includes>
     </fileSet>
     <fileSet>
-      <directory>src/bin</directory>
+      <directory>target/classes/bin</directory>
       <outputDirectory>bin</outputDirectory>
       <lineEnding>unix</lineEnding>
       <fileMode>0755</fileMode>
     </fileSet>
     <fileSet>
-      <directory>src/etc</directory>
+      <directory>target/classes/etc</directory>
       <outputDirectory>etc</outputDirectory>
     </fileSet>
   </fileSets>

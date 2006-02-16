@@ -94,48 +94,49 @@ public class SourceType {
 
 	private void addPlugin(SpecPlugin specPlugin, PomBuilder builder, File baseDir, String target) throws Exception {
 		
-		Plugin plugin = builder.addPlugin(specPlugin.getGroupId(), specPlugin.getArtifactId());
-        
-		
-		PluginExecution execution = new PluginExecution();
-		execution.setPhase(specPlugin.getPhase());
-		for (Iterator it = specPlugin.getGoals().iterator(); it.hasNext();) {
-			String goal = (String) it.next();
-			execution.addGoal(goal);
-		}
-		plugin.addExecution(execution);
-        
-        if (specPlugin.hasConfiguration()) {
-            Xpp3Dom configuration = new Xpp3Dom("configuration");
-            Xpp3Dom parent = configuration;
-            String suffix = "";
-            String element = specPlugin.getConfiguration();
-            System.err.println("element = "+element);
-            while(element.indexOf("${file}") < 0) {
-                Xpp3Dom child = new Xpp3Dom(element);
-                parent.addChild(child);
-                parent = child;
-                suffix = suffix+'.'+element;
-                element = specPlugin.getConfigurationElement(suffix);
-                System.err.println("element = "+element);
-            }
-            
-            System.err.println("Creating per file configuration!");
-            Properties props = new Properties(System.getProperties());
-            List fileNames = FileUtils.getFileNames(baseDir, specPlugin.getConfigIncludes(), specPlugin.getConfigExcludes(), false);
-            for (Iterator it = fileNames.iterator(); it.hasNext();) {
-                String fileName = (String) it.next();
-                System.err.println("Configuration File: "+fileName);
-                props.put("file", fileName);
-                String configResult = PropertiesUtils.substitute(element, props);
-                Xpp3Dom child = Xpp3DomBuilder.build(new StringReader(configResult));
-                parent.addChild(child);
-            }
-            
-            plugin.setConfiguration(configuration);
-            
-        }
-		
+	    Plugin plugin = builder.addPlugin(specPlugin.getGroupId(), specPlugin.getArtifactId());
+	    
+	    if (plugin.getExecutions().size() == 0) {
+	        PluginExecution execution = new PluginExecution();
+	        execution.setPhase(specPlugin.getPhase());
+	        for (Iterator it = specPlugin.getGoals().iterator(); it.hasNext();) {
+	            String goal = (String) it.next();
+	            execution.addGoal(goal);
+	        }
+	        plugin.addExecution(execution);
+	        
+	        if (specPlugin.hasConfiguration()) {
+	            Xpp3Dom configuration = new Xpp3Dom("configuration");
+	            Xpp3Dom parent = configuration;
+	            String suffix = "";
+	            String element = specPlugin.getConfiguration();
+	            System.err.println("element = "+element);
+	            while(element.indexOf("${file}") < 0) {
+	                Xpp3Dom child = new Xpp3Dom(element);
+	                parent.addChild(child);
+	                parent = child;
+	                suffix = suffix+'.'+element;
+	                element = specPlugin.getConfigurationElement(suffix);
+	                System.err.println("element = "+element);
+	            }
+	            
+	            System.err.println("Creating per file configuration!");
+	            Properties props = new Properties(System.getProperties());
+	            List fileNames = FileUtils.getFileNames(baseDir, specPlugin.getConfigIncludes(), specPlugin.getConfigExcludes(), false);
+	            for (Iterator it = fileNames.iterator(); it.hasNext();) {
+	                String fileName = (String) it.next();
+	                System.err.println("Configuration File: "+fileName);
+	                props.put("file", fileName);
+	                String configResult = PropertiesUtils.substitute(element, props);
+	                Xpp3Dom child = Xpp3DomBuilder.build(new StringReader(configResult));
+	                parent.addChild(child);
+	            }
+	            
+	            plugin.setConfiguration(configuration);
+	            
+	        }
+	    }
+	    
 	}
 
 	public boolean isType(String sourceType) {

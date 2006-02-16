@@ -32,14 +32,10 @@
 package org.opennms.mavenize;
 
 import java.io.File;
-import java.io.StringReader;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.maven.model.Resource;
 import org.codehaus.plexus.util.FileUtils;
-import org.codehaus.plexus.util.xml.Xpp3Dom;
-import org.codehaus.plexus.util.xml.Xpp3DomBuilder;
 
 public class FilterType extends SourceType {
 

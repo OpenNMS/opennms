@@ -572,13 +572,13 @@
 	        		<include name="*.xml"/>
 	        </fileset>
 	    </sources>
-		<sources source-type="filtered">
+		<sources source-type="filtered" target-dir="src/main/filtered/etc">
 			<fileset dir="${opennms.dir}/etc">
 				<include name="**/*"/>
 				<exclude name="**/CVS/**"/>
 			</fileset>
 		</sources>
-		<sources source-type="filtered">
+		<sources source-type="filtered" target-dir="src/main/filtered/bin">
 			<fileset dir="${opennms.dir}/tools/run">
 				<include name="**/*"/>
 				<exclude name="**/CVS/**"/>
@@ -588,7 +588,7 @@
 				<exclude name="**/CVS/**"/>
 			</fileset>
 		</sources>
-		<sources source-type="resource">
+		<sources source-type="resource" target-dir="src/main/resources/contrib">
 			<fileset dir="${opennms.dir}/contrib">
 				<include name="**/*"/>
 				<exclude name="**/CVS/**"/>
@@ -599,6 +599,18 @@
 		        <include name="*.properties"/>
 		    </fileset>
 		</sources>
+		<dependencies>
+		   <module-dependency module-id="opennms-services"/>
+		   <module-dependency module-id="opennms-install"/>
+		   <module-dependency module-id="opennms-iplike" platform-specific="true"/>
+		   <module-dependency module-id="opennms-icmp-jni" platform-specific="true"/>
+		   <module-dependency module-id="opennms-rrd-jrobin"/>
+		   <module-dependency module-id="opennms-rrdtool-api"/>
+		   <module-dependency module-id="opennms-rrdtool-jni" platform-specific="true"/>
+		   <module-dependency module-id="opennms-icmp-jni" platform-specific="true"/>
+		   <module-dependency module-id="opennms-snmp-joesnmp"/>
+		   <module-dependency module-id="opennms-snmp-snmp4j"/>
+		</dependencies>
 	</module>
 	
 	<dependencies>
