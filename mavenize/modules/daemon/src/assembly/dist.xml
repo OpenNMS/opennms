@@ -27,7 +27,54 @@
   </fileSets>
   <dependencySets>
     <dependencySet>
+       <outputFileNameMapping>libjicmp.${extension}</outputFileNameMapping>
+       <outputDirectory>lib</outputDirectory>
+       <!-- all the platforms need to be listed until the IncludesArtifactFiler supports wildcards -->
+       <includes>
+         <include>org.opennms:opennms-icmp-jni-macosx</include>
+         <include>org.opennms:opennms-icmp-jni-linux</include>
+         <include>org.opennms:opennms-icmp-jni-freebsd</include>
+         <include>org.opennms:opennms-icmp-jni-solaris</include>
+       </includes>
+    </dependencySet>
+    <dependencySet>
+       <outputFileNameMapping>libjrrd.${extension}</outputFileNameMapping>
+       <outputDirectory>lib</outputDirectory>
+       <!-- all the platforms need to be listed until the IncludesArtifactFiler supports wildcards -->
+       <includes>
+         <include>org.opennms:opennms-rrdtool-jni-macosx</include>
+         <include>org.opennms:opennms-rrdtool-jni-linux</include>
+         <include>org.opennms:opennms-rrdtool-jni-freebsd</include>
+         <include>org.opennms:opennms-rrdtool-jni-solaris</include>
+       </includes>
+    </dependencySet>
+    <dependencySet>
+       <outputFileNameMapping>iplike.${extension}</outputFileNameMapping>
+       <outputDirectory>lib</outputDirectory>
+       <!-- all the platforms need to be listed until the IncludesArtifactFiler supports wildcards -->
+       <includes>
+         <include>org.opennms:opennms-iplike-macosx</include>
+         <include>org.opennms:opennms-iplike-jni-linux</include>
+         <include>org.opennms:opennms-iplike-jni-freebsd</include>
+         <include>org.opennms:opennms-iplike-jni-solaris</include>
+       </includes>
+    </dependencySet>
+    <dependencySet>
       <outputDirectory>lib</outputDirectory>
+      <excludes>
+        <exclude>org.opennms:opennms-icmp-jni-macosx</exclude>
+        <exclude>org.opennms:opennms-icmp-jni-linux</exclude>
+        <exclude>org.opennms:opennms-icmp-jni-freebsd</exclude>
+        <exclude>org.opennms:opennms-icmp-jni-solaris</exclude>
+         <exclude>org.opennms:opennms-rrdtool-jni-macosx</exclude>
+         <exclude>org.opennms:opennms-rrdtool-jni-linux</exclude>
+         <exclude>org.opennms:opennms-rrdtool-jni-freebsd</exclude>
+         <exclude>org.opennms:opennms-rrdtool-jni-solaris</exclude>
+         <exclude>org.opennms:opennms-iplike-macosx</exclude>
+         <exclude>org.opennms:opennms-iplike-jni-linux</exclude>
+         <exclude>org.opennms:opennms-iplike-jni-freebsd</exclude>
+         <exclude>org.opennms:opennms-iplike-jni-solaris</exclude>
+      </excludes>
     </dependencySet>
   </dependencySets>
 </assembly>
