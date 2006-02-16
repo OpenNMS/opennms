@@ -56,12 +56,19 @@
 				<exclude name="**/*Test*.java"/>
 			</fileset>
 		</sources>
+		<sources source-type="filtered">
+			<fileset dir="${opennms.dir}src/install">
+				<include name="**/*.properties"/>
+			</fileset>
+		</sources>
 		<sources source-type="test">
 			<fileset dir="${opennms.dir}/src/install">
 				<include name="**/*Test*.java"/>
 			</fileset>
 		</sources>
-		<dependencies />
+		<dependencies>
+		  <dependency groupId="postgresql" artifactId="postgresql" version="8.1-404.jdbc3"/>
+		</dependencies>
 	</module>
 
 	<!-- config-util - this module has the ConfigFileConstants which is used in many places -->
