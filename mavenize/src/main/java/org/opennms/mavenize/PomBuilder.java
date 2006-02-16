@@ -2,7 +2,6 @@ package org.opennms.mavenize;
 
 import java.io.File;
 import java.io.FileWriter;
-import java.io.IOException;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -48,38 +47,39 @@ public class PomBuilder {
         m_type.configureModule(this);
 	}
 
-	public void save() throws IOException {
+	public void save() throws Exception {
 		save(new File("."));
 	}
 	
-	public void save(File targetDir) throws IOException {
+	public void save(File targetDir) throws Exception {
 		File baseDir = new File(targetDir, getArtifactId());
-		m_type.beforeSave(this, baseDir);
+        
+		m_type.beforeSaveSourceSets(this, baseDir);
 	
 		baseDir.mkdirs();
 
-		File pom = new File(baseDir, "pom.xml");
-		
-		Writer writer = new FileWriter(pom);
-		MavenXpp3Writer modelWriter = new MavenXpp3Writer();
-		modelWriter.write(writer, m_model);
-	
-		saveSourceSets(baseDir);
+        saveSourceSets(baseDir);
 
-		m_type.afterSave(this, baseDir);
+		m_type.afterSaveSourceSets(this, baseDir);
 
+        saveModules(baseDir);
+
+        File pom = new File(baseDir, "pom.xml");
+        Writer writer = new FileWriter(pom);
+        MavenXpp3Writer modelWriter = new MavenXpp3Writer();
+        modelWriter.write(writer, m_model);
+    
 		
-		saveModules(baseDir);
 	}
 	
-	private void saveSourceSets(File baseDir) throws IOException {
+	private void saveSourceSets(File baseDir) throws Exception {
 		for (Iterator it = m_sourceSets.iterator(); it.hasNext();) {
 			SourceSet sourceSet = (SourceSet) it.next();
 			sourceSet.save(baseDir);
 		}
 	}
 
-	private void saveModules(File baseDir) throws IOException {
+	private void saveModules(File baseDir) throws Exception {
 		for (Iterator it = m_modules.iterator(); it.hasNext();) {
 			PomBuilder subModule = (PomBuilder) it.next();
 			subModule.save(baseDir);

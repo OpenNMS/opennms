@@ -21,14 +21,16 @@ public class SourceSet {
 		m_targetDir = targetDir;
 		m_pomBuilder = pomBuilder;
 		
-		m_sourceType.addPlugins(m_pomBuilder);
+		//m_sourceType.addPlugins(m_pomBuilder);
 	}
 
-	public void save(File baseDir) throws IOException {
+	public void save(File baseDir) throws Exception {
 		File target = new File(baseDir, getTargetDir());
 		target.mkdirs();
 		
+        m_sourceType.beforeSaveFileSets(baseDir, getTargetDir(), m_pomBuilder);
 		saveFileSets(target);
+        m_sourceType.afterSaveFileSets(baseDir, getTargetDir(), m_pomBuilder);
 	}
 	
 

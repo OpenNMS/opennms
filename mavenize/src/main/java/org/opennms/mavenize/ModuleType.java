@@ -78,11 +78,11 @@ public class ModuleType {
 		
 	}
 
-	public void beforeSave(PomBuilder builder, File baseDir) {
+	public void beforeSaveSourceSets(PomBuilder builder, File baseDir) {
 		
 	}
 
-	public void afterSave(PomBuilder builder, File baseDir) {
+	public void afterSaveSourceSets(PomBuilder builder, File baseDir) {
 		// TODO Auto-generated method stub
 		
 	}

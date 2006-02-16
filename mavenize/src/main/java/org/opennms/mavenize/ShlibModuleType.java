@@ -30,8 +30,7 @@ public class ShlibModuleType extends ModuleType {
 		builder.setPackaging("pom");
 		builder.addModuleReference(builder.getArtifactId()+"-${platform}");
 		
-		String suffix = "platforms";
-		List platforms = getList(suffix);
+		List platforms = getList("platforms");
 		for (Iterator it = platforms.iterator(); it.hasNext();) {
             String platfrm = (String) it.next();
             Platform platform = createPlatform(platfrm);
@@ -68,8 +67,8 @@ public class ShlibModuleType extends ModuleType {
     public void addPluginExecution(Plugin plugin, Platform platform) {
     }
 
-	public void afterSave(PomBuilder builder, File baseDir) {
-		super.afterSave(builder, baseDir);
+	public void afterSaveSourceSets(PomBuilder builder, File baseDir) {
+		super.afterSaveSourceSets(builder, baseDir);
 		
 		for (Iterator it = m_platforms.iterator(); it.hasNext();) {
 			Platform platform = (Platform) it.next();
@@ -78,8 +77,8 @@ public class ShlibModuleType extends ModuleType {
 		
 	}
 
-	public void beforeSave(PomBuilder builder, File baseDir) {
-		super.beforeSave(builder, baseDir);
+	public void beforeSaveSourceSets(PomBuilder builder, File baseDir) {
+		super.beforeSaveSourceSets(builder, baseDir);
 		
 		
 	}

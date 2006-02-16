@@ -567,6 +567,11 @@
 	</module>
 	
 	<module module-id="opennms-daemon" module-type="pom" module-name="OpenNMS Application">
+	    <sources source-type="assembly">
+	        <fileset dir="modules/daemon/src/assembly">
+	        		<include name="*.xml"/>
+	        </fileset>
+	    </sources>
 		<sources source-type="manual" target-dir="src/etc">
 			<fileset dir="${opennms.dir}/etc">
 				<include name="**/*"/>
