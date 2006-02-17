@@ -572,7 +572,6 @@
 			</fileset>
 			</sources>
 		-->
-		<!-- TODO: config.properties needs to be copied -->
 		<sources source-type="webapp">
 			<fileset dir="${opennms.dir}/src/web/web">
 				<include name="**" />
@@ -583,6 +582,11 @@
 		<sources source-type="filter">
 		    <fileset dir="modules/filters">
 		        <include name="*.properties"/>
+		    </fileset>
+		</sources>
+		<sources source-type="filtered" target-dir="src/main/filtered/META-INF">
+		    <fileset dir="src/web">
+		        <include name="opennms.xml"/>
 		    </fileset>
 		</sources>
 		<sources source-type="filtered">
