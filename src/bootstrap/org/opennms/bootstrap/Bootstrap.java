@@ -18,8 +18,6 @@ import java.util.LinkedList;
 import java.util.Properties;
 import java.util.StringTokenizer;
 
-import org.opennms.core.utils.ThreadCategory;
-
 /**
  * Bootstrap application for starting OpenNMS.
  */
