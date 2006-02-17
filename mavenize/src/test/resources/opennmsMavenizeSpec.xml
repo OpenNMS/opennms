@@ -38,7 +38,7 @@
 			</fileset>
 		</sources>
 		<sources source-type="test">
-			<fileset dir="${opennms.dir}/src/core">
+			<fileset dir="${opennms.dir}/src/bootstrap">
 				<include name="**/*Test*.java"/>
 			</fileset>
 		</sources>
@@ -556,7 +556,7 @@
 			<dependency groupId="fop" artifactId="fop" version="0.20.5" />
 		</dependencies>
 	</module>
-	<module module-id="opennms-web" module-type="jar">
+	<module module-id="opennms-web" module-type="jar" module-name="OpenNMS Web Code">
 		<sources source-type="java">
 			<fileset dir="${opennms.dir}/src/web/src">
 				<include name="**/*.java" />
@@ -609,7 +609,7 @@
 		    </fileset>
 		</sources>
 		<sources source-type="filtered" target-dir="src/main/filtered/META-INF">
-		    <fileset dir="src/web">
+		    <fileset dir="${opennms.dir}/src/web">
 		        <include name="opennms.xml"/>
 		    </fileset>
 		</sources>
