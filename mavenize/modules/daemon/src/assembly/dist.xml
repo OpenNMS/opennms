@@ -54,9 +54,9 @@
        <!-- all the platforms need to be listed until the IncludesArtifactFiler supports wildcards -->
        <includes>
          <include>org.opennms:opennms-iplike-macosx</include>
-         <include>org.opennms:opennms-iplike-jni-linux</include>
-         <include>org.opennms:opennms-iplike-jni-freebsd</include>
-         <include>org.opennms:opennms-iplike-jni-solaris</include>
+         <include>org.opennms:opennms-iplike-linux</include>
+         <include>org.opennms:opennms-iplike-freebsd</include>
+         <include>org.opennms:opennms-iplike-solaris</include>
        </includes>
     </dependencySet>
     <dependencySet>
@@ -71,9 +71,9 @@
          <exclude>org.opennms:opennms-rrdtool-jni-freebsd</exclude>
          <exclude>org.opennms:opennms-rrdtool-jni-solaris</exclude>
          <exclude>org.opennms:opennms-iplike-macosx</exclude>
-         <exclude>org.opennms:opennms-iplike-jni-linux</exclude>
-         <exclude>org.opennms:opennms-iplike-jni-freebsd</exclude>
-         <exclude>org.opennms:opennms-iplike-jni-solaris</exclude>
+         <exclude>org.opennms:opennms-iplike-linux</exclude>
+         <exclude>org.opennms:opennms-iplike-freebsd</exclude>
+         <exclude>org.opennms:opennms-iplike-solaris</exclude>
       </excludes>
     </dependencySet>
   </dependencySets>
