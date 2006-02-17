@@ -28,6 +28,24 @@
 		</sources>
 		<dependencies />
 	</module>
+	<module module-id="opennms-bootstrap" module-type="jar"
+		module-name="OpenNMS Launcher">
+		<sources source-type="java">
+			<fileset dir="${opennms.dir}/src/bootstrap">
+				<include name="**/*.java"/>
+				<include name="**/*.html"/>
+				<exclude name="**/*Test*.java"/>
+			</fileset>
+		</sources>
+		<sources source-type="test">
+			<fileset dir="${opennms.dir}/src/core">
+				<include name="**/*Test*.java"/>
+			</fileset>
+		</sources>
+		<dependencies>
+                   <module-dependency module-id="opennms-core"/>
+                </dependencies>
+	</module>
 	<!-- joesnmp module -->
 	<module module-id="opennms-joesnmp" module-type="jar"
 		module-name="OpenNMS JoeSNMP library">
@@ -614,6 +632,7 @@
 		<dependencies>
 		   <module-dependency module-id="opennms-services"/>
 		   <module-dependency module-id="opennms-install"/>
+		   <module-dependency module-id="opennms-bootstrap"/>
 		   <module-dependency module-id="opennms-iplike" platform-specific="true"/>
 		   <module-dependency module-id="opennms-icmp-jni" platform-specific="true"/>
 		   <module-dependency module-id="opennms-rrd-jrobin"/>
