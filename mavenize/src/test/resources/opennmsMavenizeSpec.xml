@@ -61,6 +61,11 @@
 				<include name="**/*.properties"/>
 			</fileset>
 		</sources>
+		<sources source-type="filter">
+		    <fileset dir="modules/filters">
+		        <include name="*.properties"/>
+		    </fileset>
+		</sources>
 		<sources source-type="test">
 			<fileset dir="${opennms.dir}/src/install">
 				<include name="**/*Test*.java"/>
@@ -602,7 +607,7 @@
 			</fileset>
 		</sources>
 		<sources source-type="filter">
-		    <fileset dir="modules/daemon/src/filters">
+		    <fileset dir="modules/filters">
 		        <include name="*.properties"/>
 		    </fileset>
 		</sources>
