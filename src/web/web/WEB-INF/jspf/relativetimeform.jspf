@@ -1,5 +1,3 @@
-<%@ taglib uri="http://java.sun.com/jstl/core" prefix="c" %>
-
 <c:set var="reportList"></c:set>
 <c:forEach var="report" items="${results.reports}">
   <c:set var="reportList"><c:out value="${reportList}" escapeXml="false"/>&reports=<c:out value="${report}"/></c:set>
