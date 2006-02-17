@@ -619,7 +619,7 @@
 		   <module-dependency module-id="opennms-snmp-snmp4j"/>
 		   <dependency groupId="postgresql" artifactId="postgresql" version="8.1-404.jdbc3" scope="runtime"/>
 		   <dependency groupId="javax.mail" artifactId="mail" version="1.3.2" scope="runtime"/>
-		   <dependency groupId="javax.activation" artifactId="activiation" version="1.0.2" scope="runtime"/>
+		   <dependency groupId="javax.activation" artifactId="activation" version="1.0.2" scope="runtime"/>
 		   
 		</dependencies>
 	</module>
