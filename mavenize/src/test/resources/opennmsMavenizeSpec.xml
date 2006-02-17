@@ -580,6 +580,17 @@
 				<exclude name="**/.cvsignore" />
 			</fileset>
 		</sources>
+		<sources source-type="filter">
+		    <fileset dir="modules/filters">
+		        <include name="*.properties"/>
+		    </fileset>
+		</sources>
+		<sources source-type="filtered">
+			<fileset dir="${opennms.dir}/src/web/etc">
+				<include name="configuration.properties"/>
+			</fileset>
+		</sources>
+		
 		<dependencies>
 			<module-dependency module-id="opennms-services" />
 			<module-dependency module-id="opennms-reporting" />
