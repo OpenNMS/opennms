@@ -57,7 +57,7 @@
 			</fileset>
 		</sources>
 		<sources source-type="filtered">
-			<fileset dir="${opennms.dir}src/install">
+			<fileset dir="${opennms.dir}/src/install">
 				<include name="**/*.properties"/>
 			</fileset>
 		</sources>
