@@ -42,9 +42,15 @@
 				<include name="**/*Test*.java"/>
 			</fileset>
 		</sources>
-		<dependencies>
-                   <module-dependency module-id="opennms-core"/>
-                </dependencies>
+		<plugin groupId="org.apache.maven.plugins" artifactId="maven-jar-plugin">
+		   <configuration>
+              <archive>
+                <manifest>
+                  <mainClass>org.opennms.bootstrap.Bootstrap</mainClass>
+                </manifest>
+              </archive>
+		   </configuration>
+		</plugin>	
 	</module>
 	<!-- joesnmp module -->
 	<module module-id="opennms-joesnmp" module-type="jar"
@@ -89,6 +95,17 @@
 				<include name="**/*Test*.java"/>
 			</fileset>
 		</sources>
+		<plugin groupId="org.apache.maven.plugins" artifactId="maven-jar-plugin">
+		   <configuration>
+              <archive>
+                <manifest>
+                  <mainClass>org.opennms.install.Installer</mainClass>
+                  <packageName>org.opennms.install</packageName>
+                  <addClasspath>true</addClasspath>
+                </manifest>
+              </archive>
+		   </configuration>
+		</plugin>
 		<dependencies>
 		  <dependency groupId="postgresql" artifactId="postgresql" version="8.1-404.jdbc3"/>
 		</dependencies>

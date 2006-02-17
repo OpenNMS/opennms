@@ -19,6 +19,7 @@ import org.apache.maven.model.Repository;
 import org.apache.maven.model.RepositoryPolicy;
 import org.apache.maven.model.Resource;
 import org.apache.maven.model.io.xpp3.MavenXpp3Writer;
+import org.codehaus.plexus.util.xml.Xpp3Dom;
 
 public class PomBuilder {
     
@@ -221,6 +222,14 @@ public class PomBuilder {
 		}
 		return plugin;
 	}
+    
+    public Plugin addPlugin(String groupId, String artifactId, Xpp3Dom config) {
+        Plugin plugin = addPlugin(groupId, artifactId);
+        if (config != null)
+            plugin.setConfiguration(config);
+        return plugin;
+    }
+
 
 	public void moduleComplete() {
 		m_type.moduleComplete(this);
@@ -300,6 +309,7 @@ public class PomBuilder {
         }
         return false;
     }
+
 	
 	
 

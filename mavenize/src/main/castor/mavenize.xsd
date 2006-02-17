@@ -58,12 +58,32 @@
       </sequence>
     </complexType>
   </element>
+  
+  <element name="configuration">
+    <complexType>
+      <sequence>
+         <any/>
+      </sequence>
+    </complexType>
+  </element>
+  
+  <element name="plugin">
+    <complexType>
+      <sequence>
+         <element ref="this:configuration" minOccurs="0" maxOccurs="1"/>
+      </sequence>
+      <attribute name="groupId"    type="string" use="required"/>
+      <attribute name="artifactId" type="string" use="required"/>
+      <attribute name="version"    type="string" use="optional"/>
+    </complexType>
+  </element>
 
   <element name="module">
     <complexType>
       <sequence>
         <element ref="this:sources" minOccurs="0" maxOccurs="unbounded" />
         <element ref="this:module" minOccurs="0" maxOccurs="unbounded" />
+        <element ref="this:plugin" minOccurs="0" maxOccurs="unbounded" />
         <element ref="this:dependencies" minOccurs="0" maxOccurs="1" />
       </sequence>
       <attribute name="module-id" type="string" use="required"/>

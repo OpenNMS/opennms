@@ -46,6 +46,7 @@ import org.opennms.mavenize.config.Fileset;
 import org.opennms.mavenize.config.Include;
 import org.opennms.mavenize.config.Module;
 import org.opennms.mavenize.config.ModuleDependency;
+import org.opennms.mavenize.config.Plugin;
 import org.opennms.mavenize.config.Project;
 import org.opennms.mavenize.config.Repository;
 import org.opennms.mavenize.config.Sources;
@@ -133,6 +134,13 @@ public class Mavenize {
 		// then visit the dependencies
 		if (module.getDependencies() != null)
 			visitDependencies(visitor, module.getDependencies());
+        
+        // next visit the plugins
+        Enumeration plugins = module.enumeratePlugin();
+        while (plugins.hasMoreElements()) {
+            Plugin plugin = (Plugin) plugins.nextElement();
+            visitPlugin(visitor, plugin);
+        }
 
 		// then visit the sub modules
 		Enumeration en = module.enumerateModule();
@@ -144,7 +152,12 @@ public class Mavenize {
 		visitor.completeModule(module);
 	}
 
-	private void visitDependencies(SpecVisitor visitor, Dependencies deps) {
+	private void visitPlugin(SpecVisitor visitor, Plugin plugin) {
+        visitor.visitPlugin(plugin);
+        visitor.completePlugin(plugin);
+    }
+
+    private void visitDependencies(SpecVisitor visitor, Dependencies deps) {
 		visitor.visitDependencies(deps);
 		
 		Enumeration modDepends = deps.enumerateModuleDependency();

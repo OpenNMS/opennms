@@ -7,6 +7,7 @@ import org.opennms.mavenize.config.Fileset;
 import org.opennms.mavenize.config.Include;
 import org.opennms.mavenize.config.Module;
 import org.opennms.mavenize.config.ModuleDependency;
+import org.opennms.mavenize.config.Plugin;
 import org.opennms.mavenize.config.Project;
 import org.opennms.mavenize.config.Repository;
 import org.opennms.mavenize.config.Sources;
@@ -23,6 +24,7 @@ public interface SpecVisitor {
 	public abstract void visitDependency(Dependency dep);
 	public abstract void visitModuleDependency(ModuleDependency modDep);
 	public abstract void visitRepository(Repository repo);
+    public abstract void visitPlugin(Plugin plugin);
 	
 	public abstract void completeProject(Project project);	
 	public abstract void completeModule(Module module);
@@ -34,5 +36,6 @@ public interface SpecVisitor {
 	public abstract void completeDependency(Dependency dep);
 	public abstract void completeModuleDependency(ModuleDependency modDep);
 	public abstract void completeRepository(Repository repo);
+    public abstract void completePlugin(Plugin plugin);
 	
 }
