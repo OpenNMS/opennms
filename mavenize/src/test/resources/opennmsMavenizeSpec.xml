@@ -556,8 +556,7 @@
 			<dependency groupId="fop" artifactId="fop" version="0.20.5" />
 		</dependencies>
 	</module>
-	<module module-id="opennms-webapp" module-type="war"
-		module-name="OpenNMS Web Application">
+	<module module-id="opennms-web" module-type="jar">
 		<sources source-type="java">
 			<fileset dir="${opennms.dir}/src/web/src">
 				<include name="**/*.java" />
@@ -572,29 +571,6 @@
 			</fileset>
 			</sources>
 		-->
-		<sources source-type="webapp">
-			<fileset dir="${opennms.dir}/src/web/web">
-				<include name="**" />
-				<exclude name="**/CVS/**" />
-				<exclude name="**/.cvsignore" />
-			</fileset>
-		</sources>
-		<sources source-type="filter">
-		    <fileset dir="modules/filters">
-		        <include name="*.properties"/>
-		    </fileset>
-		</sources>
-		<sources source-type="filtered" target-dir="src/main/filtered/META-INF">
-		    <fileset dir="src/web">
-		        <include name="opennms.xml"/>
-		    </fileset>
-		</sources>
-		<sources source-type="filtered">
-			<fileset dir="${opennms.dir}/src/web/etc">
-				<include name="configuration.properties"/>
-			</fileset>
-		</sources>
-		
 		<dependencies>
 			<module-dependency module-id="opennms-services" />
 			<module-dependency module-id="opennms-reporting" />
@@ -617,6 +593,34 @@
 			<dependency groupId="batik" artifactId="batik-util"
 				version="1.5" />
 		</dependencies>
+	</module>
+	<module module-id="opennms-webapp" module-type="war"
+		module-name="OpenNMS Web Application">
+		<sources source-type="webapp">
+			<fileset dir="${opennms.dir}/src/web/web">
+				<include name="**" />
+				<exclude name="**/CVS/**" />
+				<exclude name="**/.cvsignore" />
+			</fileset>
+		</sources>
+		<sources source-type="filter">
+		    <fileset dir="modules/filters">
+		        <include name="*.properties"/>
+		    </fileset>
+		</sources>
+		<sources source-type="filtered" target-dir="src/main/filtered/META-INF">
+		    <fileset dir="src/web">
+		        <include name="opennms.xml"/>
+		    </fileset>
+		</sources>
+		<sources source-type="filtered">
+			<fileset dir="${opennms.dir}/src/web/etc">
+				<include name="configuration.properties"/>
+			</fileset>
+		</sources>
+		<dependencies>
+			<module-dependency module-id="opennms-web"/>
+		</dependencies>		
 	</module>
 	
 	<module module-id="opennms-site" module-type="jar" module-name="OpenNMS Site">
