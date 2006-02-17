@@ -475,8 +475,11 @@
 				version="0.9.6" />
 			<dependency groupId="xerces" artifactId="xerces"
 				version="1.4.0" scope="runtime" />
+			<!-- the javax.servlet dependency is used by xmlrpc but don't want it so make it provided -->	
 			<dependency groupId="xmlrpc" artifactId="xmlrpc"
 				version="1.2" />
+			<dependency groupId="javax.servlet" artifactId="servlet-api"
+				version="2.2" scope="provided" />
 			<dependency groupId="org.samba.jcifs" artifactId="jcifs"
 				version="1.2.6" />
 			<dependency groupId="mx4j" artifactId="mx4j"
