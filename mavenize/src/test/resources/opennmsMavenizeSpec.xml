@@ -623,6 +623,9 @@
 		</sources>
 		<dependencies>
 			<module-dependency module-id="opennms-web"/>
+		        <dependency groupId="postgresql" artifactId="postgresql" version="8.1-404.jdbc3" scope="runtime"/>
+			<dependency groupId="javax.servlet" artifactId="servlet-api"
+				version="2.2" scope="provided" />
 		</dependencies>		
 	</module>
 	
