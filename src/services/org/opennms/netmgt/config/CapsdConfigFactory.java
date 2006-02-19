@@ -1210,13 +1210,15 @@ public final class CapsdConfigFactory {
                 if (lwIf.getIfIndex() == LightWeightIfEntry.NULL_IFINDEX) {
                     lwIf.setSnmpPrimaryState(DbIpInterfaceEntry.SNMP_NOT_ELIGIBLE);
                 } else if (primarySnmpIf == null || !lwIf.getAddress().equals(primarySnmpIf.getHostAddress())) {
-                    if (CollectdConfigFactory.getInstance().lookupInterfaceServicePair(lwIf.getAddress(), "SNMP"))
+                    if (CollectdConfigFactory.getInstance().lookupInterfaceServicePair(lwIf.getAddress(), "SNMP") || CollectdConfigFactory.getInstance().lookupInterfaceServicePair(lwIf.getAddress(), "SNMPv1") || CollectdConfigFactory.getInstance().lookupInterfaceServicePair(lwIf.getAddress(), "SNMPv2"))
                         lwIf.setSnmpPrimaryState(DbIpInterfaceEntry.SNMP_SECONDARY);
                     else
                         lwIf.setSnmpPrimaryState(DbIpInterfaceEntry.SNMP_NOT_ELIGIBLE);
                 } else {
                     lwIf.setSnmpPrimaryState(DbIpInterfaceEntry.SNMP_PRIMARY);
                 }
+
+		// TODO get rid of all of this hard-coding of the SNMP service
 
                 // Has SNMP primary state changed?
                 if (lwIf.hasSnmpPrimaryStateChanged()) {
