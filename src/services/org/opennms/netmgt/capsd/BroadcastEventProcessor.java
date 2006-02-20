@@ -62,7 +62,6 @@ import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.CapsdConfigFactory;
 import org.opennms.netmgt.config.DatabaseConnectionFactory;
 import org.opennms.netmgt.config.OpennmsServerConfigFactory;
-import org.opennms.netmgt.config.PollerConfigFactory;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 import org.opennms.netmgt.eventd.EventListener;
 import org.opennms.netmgt.utils.XmlrpcUtil;
@@ -363,7 +362,7 @@ final class BroadcastEventProcessor implements EventListener {
     }
 
     /**
-     * Counts the number of other polled services associated with the
+     * Counts the number of other non deleted services associated with the
      * interface defined by nodeid/ipAddr
      * 
      * @param dbConn
@@ -374,13 +373,13 @@ final class BroadcastEventProcessor implements EventListener {
      *            the interface to check
      * @param service
      *            the name of the service not to include
-     * @return the number of polled services, other than serviceId
+     * @return the number of non deleted services, other than serviceId
      */
     private int countOtherServicesOnInterface(Connection dbConn, long nodeId, String ipAddr, String service) throws SQLException {
 
         Category log = ThreadCategory.getInstance(getClass());
 
-        final String DB_COUNT_OTHER_SERVICES_ON_IFACE = "SELECT count(*) FROM ifservices, service " + "WHERE ifservices.serviceId = service.serviceId AND ifservices.status = 'A' " + "AND ifservices.nodeID=? AND ifservices.ipAddr=? AND service.servicename != ?";
+        final String DB_COUNT_OTHER_SERVICES_ON_IFACE = "SELECT count(*) FROM ifservices, service " + "WHERE ifservices.serviceId = service.serviceId AND ifservices.status != 'D' " + "AND ifservices.nodeID=? AND ifservices.ipAddr=? AND service.servicename != ?";
 
         PreparedStatement stmt = dbConn.prepareStatement(DB_COUNT_OTHER_SERVICES_ON_IFACE);
         stmt.setLong(1, nodeId);
@@ -393,7 +392,7 @@ final class BroadcastEventProcessor implements EventListener {
         }
 
         if (log.isDebugEnabled())
-            log.debug("countOtherServicesOnInterface: count services for interface " + nodeId + "/" + ipAddr + "/" + service + ": found " + count);
+            log.debug("countServicesForInterface: count services for interface " + nodeId + "/" + ipAddr + ": found " + count);
 
         stmt.close();
 
@@ -401,7 +400,7 @@ final class BroadcastEventProcessor implements EventListener {
     }
 
     /**
-     * Counts the number of polled services on a node on interfaces other
+     * Counts the number of non deleted services on a node on interfaces other
      * than a given interface
      * 
      * @param dbConn
@@ -410,12 +409,12 @@ final class BroadcastEventProcessor implements EventListener {
      *            the nodeid to check
      * @param ipAddr
      *            the address of the interface not to include
-     * @return the number of polled services on other interfaces
+     * @return the number of non deleted services on other interfaces
      */
     private int countServicesOnOtherInterfaces(Connection dbConn, long nodeId, String ipAddr) throws SQLException {
         Category log = ThreadCategory.getInstance(getClass());
 
-        final String DB_COUNT_SERVICES_ON_OTHER_INTERFACES = "SELECT count(*) FROM ifservices WHERE nodeID=? and ipAddr != ? and status = 'A'";
+        final String DB_COUNT_SERVICES_ON_OTHER_INTERFACES = "SELECT count(*) FROM ifservices WHERE nodeID=? and ipAddr != ? and status != 'D'";
 
         PreparedStatement stmt = dbConn.prepareStatement(DB_COUNT_SERVICES_ON_OTHER_INTERFACES);
         stmt.setLong(1, nodeId);
@@ -429,45 +428,6 @@ final class BroadcastEventProcessor implements EventListener {
 
         if (log.isDebugEnabled())
             log.debug("countServicesOnOtherInterfaces: count services for node " + nodeId + ": found " + count);
-
-        stmt.close();
-
-        return count;
-    }
-
-    /**
-     * Counts the number of interfaces other than a given interface
-     * with a given service that is polled
-     *
-     * @param dbConn
-     *            the database connection
-     * @param nodeId
-     *            the nodeid to check
-     * @param ipAddr
-     *            the address of the interface not to include
-     * @param service           
-     *            the service to look for
-     *
-     * @return the number of other interfaces with the given service
-     */
-    private int countOtherInterfacesWithService(Connection dbConn, long nodeId, String ipAddr, String service) throws SQLException {
-        Category log = ThreadCategory.getInstance(getClass());
-
-        final String DB_COUNT_OTHER_INTERFACES_WITH_SERVICE = "SELECT count(*) FROM ifservices, service WHERE ifservices.nodeid=? and ifservices.ipaddr != ? AND service.servicename=? AND ifservices.serviceId = service.serviceId AND ifservices.status = 'A'";
-
-        PreparedStatement stmt = dbConn.prepareStatement(DB_COUNT_OTHER_INTERFACES_WITH_SERVICE);
-        stmt.setLong(1, nodeId);
-        stmt.setString(2, ipAddr);
-        stmt.setString(3, service);
-        ResultSet rs = stmt.executeQuery();
-
-        int count = 0;
-        while (rs.next()) {
-            count = rs.getInt(1);
-        }
-
-        if (log.isDebugEnabled())
-            log.debug("countOtherInterfacesWithService: count interfaces for node " + nodeId + " with service " + service + ": found " + count);
 
         stmt.close();
 
@@ -1028,29 +988,19 @@ final class BroadcastEventProcessor implements EventListener {
         List eventsToSend = new LinkedList();
 
         if (isPropagationEnabled()) {
-            // if this is the last polled service for the interface or the last
-	    // polled service  for the node then send delete events for the
-	    // interface or node instead
-	    //
-	    // If this is the critical service for the interface, send delete
-	    // events for the interface or node instead
-	    // 
-	    String critSvc = PollerConfigFactory.getInstance().getCriticalService();
-	    log.debug("Critical service = " + critSvc);
+            // if this is the last service for the interface or the last service
+            // for the node then send delete events for the interface or node
+            // instead
             int otherSvcsOnIfCnt = countOtherServicesOnInterface(dbConn, nodeid, ipAddr, service);
-	    if (critSvc != null && service.equals(critSvc) && countOtherInterfacesWithService(dbConn, nodeid, ipAddr, critSvc) == 0) {
-                // no critical service being polled on any other interface on
-		// this node so delete node
-                log.debug("This is the critical service. Propagating service delete to node " + nodeid);
-                eventsToSend.addAll(doDeleteNode(dbConn, source, nodeid, txNo));
-	    } else if (otherSvcsOnIfCnt == 0 && countServicesOnOtherInterfaces(dbConn, nodeid, ipAddr) == 0) {
-                // no services being polled on this interface or any other
-		// interface on this node so delete node
+            if (otherSvcsOnIfCnt == 0 && countServicesOnOtherInterfaces(dbConn, nodeid, ipAddr) == 0) {
+                // no services on this interface or any other interface on this
+                // node so delete
+                // node
                 log.debug("Propagating service delete to node " + nodeid);
                 eventsToSend.addAll(doDeleteNode(dbConn, source, nodeid, txNo));
             } else if (otherSvcsOnIfCnt == 0) {
-                // no other polled services on this interface so delete interface
-                log.debug("Propagating service delete to interface " + nodeid + "/" + ipAddr);
+                // no services on this interface so delete interface
+                log.debug("Propagting service delete to interface " + nodeid + "/" + ipAddr);
                 eventsToSend.addAll(doDeleteInterface(dbConn, source, nodeid, ipAddr, txNo));
             } else {
                 log.debug("No need to Propagate service delete " + nodeid + "/" + ipAddr + "/" + service);

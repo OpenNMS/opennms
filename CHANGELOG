@@ -1,8 +1,5 @@
 1.2.6 to 1.2.7
 ----------------------------------------------------------------------
-- Nodes with no active services should be deleted if delete 
-  propagation is set to true. Prior to this fix, inactive
-  services would be counted. Bug 1443. Thanks Bill.
 - If the ifIndex of an interface on a device changes, it is possible
   that an interface with an IP address that is set for collection
   could be set to not collect. This has been fixed.
