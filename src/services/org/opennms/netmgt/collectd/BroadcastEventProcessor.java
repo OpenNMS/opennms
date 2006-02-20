@@ -705,8 +705,12 @@ final class BroadcastEventProcessor implements EventListener {
                 // Only interested in entries with matching nodeId, IP address
                 // and service
                 InetAddress addr = (InetAddress) cSvc.getAddress();
-                if (!(cSvc.getNodeId() == nodeId && addr.getHostName().equals(ipAddr)) && cSvc.getServiceName().equals(svcName))
+
+                if (!(cSvc.getNodeId() == nodeId && addr.getHostName().equals(ipAddr) && cSvc.getServiceName().equals(svcName)))
                     continue;
+
+        	if (log.isDebugEnabled())
+            		log.debug("serviceDeletedHandler: deleting " + nodeId + "/" + ipAddr + "/" + svcName);
 
                 synchronized (cSvc) {
                     // Retrieve the CollectorUpdates object associated with

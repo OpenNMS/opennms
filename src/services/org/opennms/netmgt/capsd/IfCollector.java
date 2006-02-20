@@ -369,6 +369,8 @@ final class IfCollector implements Runnable {
             SupportedProtocol proto = (SupportedProtocol) iter.next();
             if (proto.getProtocolName().equalsIgnoreCase("snmp")) {
                 isSnmp = true;
+            } else if (proto.getProtocolName().equalsIgnoreCase("snmpv1")) {
+                isSnmp = true;
             } else if (proto.getProtocolName().equalsIgnoreCase("snmpv2")) {
                 isSnmpV2 = true;
             } else if (proto.getProtocolName().equalsIgnoreCase("smb")) {

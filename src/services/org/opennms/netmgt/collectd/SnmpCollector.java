@@ -837,9 +837,9 @@ final class SnmpCollector implements ServiceCollector {
         //
 	SnmpPeer peer = null;
 	if (forceVersion != null) {
-		if (forceVersion.equals("v2c"))
+		if (forceVersion.equals("snmpv2"))
 			peer = SnmpPeerFactory.getInstance().getPeer(ipAddr, SnmpSMI.SNMPV2);
-		else if (forceVersion.equals("v1"))
+		else if (forceVersion.equals("snmpv1"))
 			peer = SnmpPeerFactory.getInstance().getPeer(ipAddr, SnmpSMI.SNMPV1);
 		else
 			peer = SnmpPeerFactory.getInstance().getPeer(ipAddr, supportsSnmpV2 ? SnmpSMI.SNMPV2 : SnmpSMI.SNMPV1);

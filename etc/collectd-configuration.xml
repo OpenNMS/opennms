@@ -25,7 +25,7 @@
 
                 <service name="SNMPv2" interval="300000" user-defined="false" status="on">
                         <parameter key="collection" value="default"/>
-                        <parameter key="force version" value="v2c"/>
+                        <parameter key="force version" value="snmpv2"/>
                         <parameter key="port" value="161"/>
                         <parameter key="retry" value="3"/>
                         <parameter key="timeout" value="3000"/>
@@ -40,7 +40,7 @@
 
                 <service name="SNMPv1" interval="300000" user-defined="false" status="on">
                         <parameter key="collection" value="default"/>
-                        <parameter key="force version" value="v1"/>
+                        <parameter key="force version" value="snmpv1"/>
                         <parameter key="port" value="161"/>
                         <parameter key="retry" value="3"/>
                         <parameter key="timeout" value="3000"/>
