@@ -1522,6 +1522,7 @@ final class SuspectEventProcessor implements Runnable {
             // Old and new primary interfaces are the same
             if (log.isDebugEnabled())
                 log.debug("setPrimarySnmpInterface: Old and new primary interfaces are the same");
+            return;
         }
 
 

@@ -1,3 +1,12 @@
+1.2.6 to 1.2.7
+----------------------------------------------------------------------
+- If the ifIndex of an interface on a device changes, it is possible
+  that an interface with an IP address that is set for collection
+  could be set to not collect. This has been fixed.
+- If using the new SNMPv1 and SNMPv2 services, the problem listed
+  below for 1.2.6 where interfaces set for C get set to N during
+  a rescan would occur. This has been fixed.
+
 1.2.5 to 1.2.6
 ----------------------------------------------------------------------
 - Added a new .jsp for the List Nodes page that doesn't include

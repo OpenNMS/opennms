@@ -80,6 +80,8 @@ public final class DbIpInterfaceEntry {
 
     public final static char SNMP_SECONDARY = 'S';
 
+    public final static char SNMP_COLLECT = 'C';
+
     public final static char SNMP_NOT_ELIGIBLE = 'N';
 
     public final static char SNMP_UNKNOWN = ' ';

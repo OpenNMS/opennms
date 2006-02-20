@@ -1212,7 +1212,7 @@ public final class CapsdConfigFactory {
                 } else if (primarySnmpIf == null || !lwIf.getAddress().equals(primarySnmpIf.getHostAddress())) {
                     if (CollectdConfigFactory.getInstance().lookupInterfaceServicePair(lwIf.getAddress(), "SNMP") || CollectdConfigFactory.getInstance().lookupInterfaceServicePair(lwIf.getAddress(), "SNMPv1") || CollectdConfigFactory.getInstance().lookupInterfaceServicePair(lwIf.getAddress(), "SNMPv2"))
                         lwIf.setSnmpPrimaryState(DbIpInterfaceEntry.SNMP_SECONDARY);
-                    else
+                    else if ( 'C' != lwIf.getSnmpPrimaryState())
                         lwIf.setSnmpPrimaryState(DbIpInterfaceEntry.SNMP_NOT_ELIGIBLE);
                 } else {
                     lwIf.setSnmpPrimaryState(DbIpInterfaceEntry.SNMP_PRIMARY);
