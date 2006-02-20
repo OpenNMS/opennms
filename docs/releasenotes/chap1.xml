@@ -4,6 +4,13 @@
 
   <subtitle>About This Release</subtitle>
 
+  <para>Before 1.2.6 had time to really get out there, an issue was discovered
+  with using the new SNMPv1 and SNMPv2 services. This was corrected, and since
+  1.2.6 had not been formally released, but had been tagged, the fixed release
+  was labeled 1.2.7.</para>
+
+  <para>The code word for 1.2.7 is "birdshot".</para>
+
   <para>OpenNMS 1.2.6 is another release in the stable, or production, branch
   of OpenNMS. It fixes at least one annoying bug and adds a number of new
   features designed to increase usability, speed and functionality.</para>

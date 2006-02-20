@@ -4,12 +4,26 @@
 
   <subtitle>Changes in This OpenNMS</subtitle>
 
-  <para>OpenNMS 1.2.6 is the most recent production, or "stable", release. It
-  is the seventh release in the stable branch of OpenNMS. Changes to the
-  stable branch are limited to bug fixes and simple improvements. The 1.3 tree
-  is a development, or "unstable" tree, where most new features are
-  implemented, but without the testing that goes into 1.2. When 1.3 is mature
-  enough, it will become OpenNMS 1.4, the next stable version.</para>
+  <para>OpenNMS 1.2.7 is the most recent production, or "stable", release. It
+  is the eighth release in the stable branch of OpenNMS. Changes to the stable
+  branch are limited to bug fixes and simple improvements. The 1.3 tree is a
+  development, or "unstable" tree, where most new features are implemented,
+  but without the testing that goes into 1.2. When 1.3 is mature enough, it
+  will become OpenNMS 1.4, the next stable version.</para>
+
+  <section>
+    <title>Changes in OpenNMS 1.2.7</title>
+
+    <section>
+      <title>Bug Fixes</title>
+
+      <bridgehead>SNMP "select" Data Collection Reset</bridgehead>
+
+      <para>It turns out this issue, while fixed in 1.2.6, was still present
+      if using "SNMPv1" and "SNMPv2" services versus the default "SNMP"
+      service. This has been corrected.</para>
+    </section>
+  </section>
 
   <section>
     <title>Changes in OpenNMS 1.2.6</title>
