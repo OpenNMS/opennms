@@ -31,6 +31,8 @@
 //
 package org.opennms.netmgt.scheduler;
 
+import java.util.Random;
+
 import org.opennms.core.utils.ThreadCategory;
 
 
@@ -41,12 +43,15 @@ import org.opennms.core.utils.ThreadCategory;
  */
 public class Schedule {
 
+	public static final Random random = new Random();
+	
     private ReadyRunnable m_schedulable;
     private ScheduleInterval m_interval;
     private ScheduleTimer m_timer;
     private int m_currentExpirationCode;
     private long m_currentInterval;
     private boolean m_scheduled = false;
+	
     
     class ScheduleEntry implements ReadyRunnable {
         private int m_expirationCode;
@@ -76,7 +81,8 @@ public class Schedule {
                 try {
                     Schedule.this.run();
                 } catch (PostponeNecessary e) {
-                    m_timer.schedule(10000, this);
+				   // Chose a random number of seconds between 5 and 14 to wait before trying again
+                    m_timer.schedule(random.nextInt(10)*1000+5000, this);
                     return;
                 }
             }

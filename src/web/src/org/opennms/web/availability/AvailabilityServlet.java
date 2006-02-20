@@ -134,6 +134,7 @@ public class AvailabilityServlet extends HttpServlet {
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String view = request.getParameter("view");
         String format = request.getParameter("format");
+		String monthFormat = request.getParameter("monthformat");
         String category = request.getParameter("category");
         String username = request.getRemoteUser();
         ServletConfig config = this.getServletConfig();
@@ -164,7 +165,8 @@ public class AvailabilityServlet extends HttpServlet {
                 SimpleDateFormat fmt = new SimpleDateFormat("yyyyMMdd");
                 String catFileName = category.replace(' ', '-');
                 String filename = ConfigFileConstants.getHome() + "/share/reports/AVAIL-HTML-" + catFileName + fmt.format(new java.util.Date()) + ".html";
-                reportMailer.initialise(filename, username, scriptGenerateReport, scriptMailReport, category, "HTML");
+				
+                reportMailer.initialise(filename, username, scriptGenerateReport, scriptMailReport, category, "HTML", monthFormat);
                 reportMailer.setLogoUrl(logo);
                 reportMailer.setCategoryName(category);
                 reportMailer.setFormat("HTML");
@@ -185,7 +187,7 @@ public class AvailabilityServlet extends HttpServlet {
                 SimpleDateFormat fmt = new SimpleDateFormat("yyyyMMdd");
                 String catFileName = category.replace(' ', '-');
                 String filename = ConfigFileConstants.getHome() + "/share/reports/AVAIL-PDF-" + catFileName + fmt.format(new java.util.Date()) + ".pdf";
-                reportMailer.initialise(filename, username, scriptGenerateReport, scriptMailReport, category, "PDF");
+                reportMailer.initialise(filename, username, scriptGenerateReport, scriptMailReport, category, "PDF", monthFormat);
                 reportMailer.setLogoUrl(logo);
                 reportMailer.setCategoryName(category);
                 reportMailer.setFormat("PDF");
@@ -204,7 +206,7 @@ public class AvailabilityServlet extends HttpServlet {
                 SimpleDateFormat fmt = new SimpleDateFormat("yyyyMMdd");
                 String catFileName = category.replace(' ', '-');
                 String filename = ConfigFileConstants.getHome() + "/share/reports/AVAIL-SVG-" + catFileName + fmt.format(new java.util.Date()) + ".pdf";
-                reportMailer.initialise(filename, username, scriptGenerateReport, scriptMailReport, category, "SVG");
+                reportMailer.initialise(filename, username, scriptGenerateReport, scriptMailReport, category, "SVG", monthFormat);
                 reportMailer.setLogoUrl(logo);
                 reportMailer.setCategoryName(category);
                 reportMailer.setFormat("SVG");

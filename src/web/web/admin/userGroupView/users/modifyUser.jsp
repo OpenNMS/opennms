@@ -206,6 +206,7 @@
 	    <% 
 		String email = userFactory.getEmail(userid); 
 		String pagerEmail = userFactory.getPagerEmail(userid); 
+		String xmppAddress = userFactory.getXMPPAddress(userid);
 		String numericPage = userFactory.getNumericPage(userid); 
 		String numericPin = userFactory.getNumericPin(userid); 
 		String textPage = userFactory.getTextPage(userid); 
@@ -257,6 +258,14 @@
             </tr>
             <tr>
               <td valign="top">
+                XMPP Address:
+              </td>
+              <td valign="top">
+                <input type="text" size="35" name="xmppAddress" value='<%=(xmppAddress == null || xmppAddress.equals(""))? "":xmppAddress%>'>
+              </td>
+            </tr>
+            <tr>
+              <td valign="top">
                 Numeric Service:
               </td>
               <td valign="top">
@@ -296,7 +305,8 @@
 
           <p><b>Notification Information</b> provides the ability for you to configure contact
           information for each user, including any of <em>email</em> address, <em>pager email</em>
-          (in the case that the pager can be reached as an email destination), <em>numeric service</em>
+          (in the case that the pager can be reached as an email destination), <em>XMPP address</em>
+          (for instant messages using the Jabber XMPP protocol), <em>numeric service</em>
           (for pagers that cannot display text messages), and <em>text service</em> (for alphanumeric pagers).</p>
 
           <p><b>Duty Schedules</b> allow you to flexibility to determine when users should receive

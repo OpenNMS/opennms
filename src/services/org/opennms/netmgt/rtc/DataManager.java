@@ -63,6 +63,7 @@ import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.config.CatFactory;
 import org.opennms.netmgt.config.CategoryFactory;
 import org.opennms.netmgt.config.DatabaseConnectionFactory;
 import org.opennms.netmgt.config.categories.Categories;
@@ -405,7 +406,7 @@ public class DataManager extends Object {
     private void createCategoriesMap() {
         org.apache.log4j.Category log = ThreadCategory.getInstance(DataManager.class);
 
-        CategoryFactory cFactory = null;
+        CatFactory cFactory = null;
         try {
             CategoryFactory.reload();
             cFactory = CategoryFactory.getInstance();

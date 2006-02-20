@@ -146,11 +146,11 @@ xmlns:svg="http://www.w3.org/2000/svg">
                         <xsl:value-of select="/report/catCount"/>
 		</xsl:variable>
 		<fo:block>
-			<xsl:attribute name="break-after">
 				<xsl:if test="$count!=catIndex">
+			           <xsl:attribute name="break-after">
 					<xsl:value-of select="'page'"/>
-				</xsl:if>
 			</xsl:attribute>
+				</xsl:if>
 			<xsl:if test='$nodeCount=0'>
 				<fo:block font-weight="bold">There are no node outages for this category</fo:block>
 			</xsl:if>
@@ -495,12 +495,12 @@ xmlns:svg="http://www.w3.org/2000/svg">
 		<xsl:otherwise>
 			<svg:text style="font-size:9;text-anchor:middle">
 				<xsl:attribute name="x">
-					<xsl:value-of select="$x + 165"/>
+					<xsl:value-of select="$x + 175"/>
 				</xsl:attribute>
 				<xsl:attribute name="y">
 					<xsl:value-of select="(385 + (-1 * $y-offset)) "/>
 				</xsl:attribute>
-				<xsl:value-of select="format-number($value, '0.0000')"/>
+				<xsl:value-of select="format-number($value, '0.00')"/>
 			</svg:text>
 		</xsl:otherwise>
 	</xsl:choose>
@@ -533,43 +533,64 @@ xmlns:svg="http://www.w3.org/2000/svg">
 </xsl:template> 
 
 <xsl:template match="section">
+  <xsl:param name="sectionName"/>
+  <xsl:param name="namesec"/>
+  <xsl:param name="warning"/>
+  <xsl:param name="normal"/>
+  <xsl:if test="sectionName=$namesec">
+ <fo:instream-foreign-object 	width="0.1mm" 
+				height="5cm"
+				number-columns-spanned="2" 
+				maximum-repeats="5" 
+				provisional-distance-between-starts="0.1mm"
+				padding-after="2cm"
+				overflow="scroll" > 
+  <svg xmlns="http://www.w3.org/2000/svg" width="500" height="400">
+   <defs>
+    <svg:path id="Path4Text" d="M 100 250 L 100 900 Z"/>
+   </defs>
+   <xsl:apply-templates select="classicTable">
+    <xsl:with-param name="sectionName" select="sectionName"/>
+    <xsl:with-param name="namesec" select="$namesec"/>
+    <xsl:with-param name="warning" select="$warning"/>
+    <xsl:with-param name="normal" select="$normal"/>
+   </xsl:apply-templates>
+   <xsl:apply-templates select="calendarTable">
+    <xsl:with-param name="sectionName" select="sectionName"/>
+    <xsl:with-param name="namesec" select="$namesec"/>
+    <xsl:with-param name="warning" select="$warning"/>
+    <xsl:with-param name="normal" select="$normal"/>
+   </xsl:apply-templates>
+  </svg>
+ </fo:instream-foreign-object>
+ </xsl:if>
+</xsl:template>
+
+<xsl:template match="classicTable">
 	<xsl:param name="sectionName"/>
 	<xsl:param name="namesec"/>
-        <xsl:param name="warning"/>
-        <xsl:param name="normal"/>
-	<xsl:variable name="graphtype" select="sectionName"/>
+    <xsl:param name="warning"/>
+    <xsl:param name="normal"/>
+	<xsl:variable name="graphtype" select="../sectionName"/>
 	
-	<xsl:if test="sectionName=$namesec">
-		<fo:instream-foreign-object 	width="0.1mm" 
-						height="5cm"
-						number-columns-spanned="2" 
-						maximum-repeats="5" 
-						provisional-distance-between-starts="0.1mm"
-						padding-after="2cm"
-						overflow="scroll"
-		> 
-			<svg xmlns="http://www.w3.org/2000/svg" width="500" height="400">
-				<defs>
-					<svg:path id="Path4Text" d="M 100 250 L 100 900 Z"/>
-				</defs>
 
 				<xsl:choose>
 				<xsl:when test="$graphtype='lastMoTop20offenders'">
-					<g transform="scale(0.55)">
+					<svg:g transform="scale(0.55)">
 						<!-- Drawing the title -->
 						<svg:text style="font-size:14;text-anchor:middle" x="150"  y="25">
-							<xsl:value-of select="sectionTitle"/>
+							<xsl:value-of select="../sectionTitle"/>
 						</svg:text>
 
 						<!-- Drawing the subtitle -->
 						<svg:text style="font-size:12;text-anchor:middle" x="180" y="38">(Percentage Availability)</svg:text>
 			
 						<!-- Draw the x-axis and y-axis -->
-						<g style="stroke-width:2; stroke:black">
+						<svg:g style="stroke-width:2; stroke:black">
 							<svg:path d="M 175 355 L 175 50 L 175 355 L 700 355 Z"/>
-						</g>
+						</svg:g>
 
-						<g style="fill:none; stroke:#B0B0B0; stroke-width:1; stroke-dasharray:2 4">
+						<svg:g style="fill:none; stroke:#B0B0B0; stroke-width:1; stroke-dasharray:2 4">
 							<svg:path d="M 223 50 L 223 350 Z"/>
 							<svg:path d="M 273 50 L 273 350 Z"/>
 							<svg:path d="M 323 50 L 323 350 Z"/>
@@ -580,9 +601,9 @@ xmlns:svg="http://www.w3.org/2000/svg">
 							<svg:path d="M 573 50 L 573 350 Z"/>
 							<svg:path d="M 623 50 L 623 350 Z"/>
 							<svg:path d="M 673 50 L 673 350 Z"/>
-						</g>
+						</svg:g>
 
-						<g style="font-size:9">
+						<svg:g style="font-size:9">
 							<svg:text style="text-anchor:end" x="673" y="365">100%</svg:text>
 							<svg:text style="text-anchor:end" x="623" y="365">90</svg:text>
 							<svg:text style="text-anchor:end" x="573" y="365">80</svg:text>
@@ -596,13 +617,13 @@ xmlns:svg="http://www.w3.org/2000/svg">
 							<svg:text style="text-anchor:end" x="173" y="365">0</svg:text>
 
 							<!-- Drawing the description -->
-							<svg:text style="font-size:9" x="20" y="380"><xsl:value-of select="sectionDescr"/></svg:text>
-							<svg:text style="font-size:9" x="20" y="400"><xsl:value-of select="period"/></svg:text>
-						</g>
-					</g>
+							<svg:text style="font-size:9" x="20" y="380"><xsl:value-of select="../sectionDescr"/></svg:text>
+							<svg:text style="font-size:9" x="20" y="400"><xsl:value-of select="../period"/></svg:text>
+						</svg:g>
+					</svg:g>
 				</xsl:when>
 				<xsl:otherwise>
-					<g transform="scale(0.45)">
+					<svg:g transform="scale(0.45)">
 						<xsl:choose>
 							<xsl:when test="$graphtype='last12MoAvail'">
 								<xsl:attribute name="transform">
@@ -623,14 +644,14 @@ xmlns:svg="http://www.w3.org/2000/svg">
 
 						<!-- Drawing the title -->
 						<svg:text style="font-size:14;text-anchor:middle" x="150"  y="25">
-							<xsl:value-of select="sectionTitle"/>
+							<xsl:value-of select="../sectionTitle"/>
 						</svg:text>
 
 						<!-- Drawing the subtitle -->
 						<svg:text style="font-size:12;text-anchor:middle" x="180" y="38">(Percentage Availability)</svg:text>
 			
 						<!-- Draw the x-axis and y-axis -->
-						<g style="stroke-width:2; stroke:black">
+						<svg:g style="stroke-width:2; stroke:black">
 							<svg:path>
 								<xsl:attribute name="d">
 									<xsl:text>M 25 250 L 25 40 L 25 250 L </xsl:text>
@@ -645,9 +666,9 @@ xmlns:svg="http://www.w3.org/2000/svg">
 									<xsl:text> 250 Z</xsl:text>
 								</xsl:attribute>
 							</svg:path>
-						</g>
+						</svg:g>
 
-						<g style="fill:none; stroke:#B0B0B0; stroke-width:1; stroke-dasharray:2 4">
+						<svg:g style="fill:none; stroke:#B0B0B0; stroke-width:1; stroke-dasharray:2 4">
 							<svg:path>
 								<xsl:attribute name="d">
 									<xsl:text> M 20 50 L </xsl:text>
@@ -789,9 +810,9 @@ xmlns:svg="http://www.w3.org/2000/svg">
 									<xsl:text> 230 Z</xsl:text>
 								</xsl:attribute>
 							</svg:path>
-						</g>
+						</svg:g>
 
-						<g style="font-size:7">
+						<svg:g style="font-size:7">
 							<svg:text style="text-anchor:end" y="250" x="20"> 0</svg:text>
 							<svg:text style="text-anchor:end" y="230" x="20"> 10</svg:text>
 							<svg:text style="text-anchor:end" y="210" x="20"> 20</svg:text>
@@ -803,17 +824,17 @@ xmlns:svg="http://www.w3.org/2000/svg">
 							<svg:text style="text-anchor:end" y="90" x="20"> 80</svg:text>
 							<svg:text style="text-anchor:end" y="70" x="20"> 90</svg:text>
 							<svg:text style="text-anchor:end" y="50" x="20">100%</svg:text>
-						</g>
+						</svg:g>
 
 						<!-- Drawing the description -->
-						<svg:text style="font-size:9" x="15" y="280"><xsl:value-of select="sectionDescr"/></svg:text>
-						<svg:text style="font-size:9" x="15" y="300"><xsl:value-of select="period"/></svg:text>
-					  </g>
+						<svg:text style="font-size:9" x="15" y="280"><xsl:value-of select="../sectionDescr"/></svg:text>
+						<svg:text style="font-size:9" x="15" y="300"><xsl:value-of select="../period"/></svg:text>
+					  </svg:g>
 
 				</xsl:otherwise>
 				</xsl:choose>
 
-				<g transform="scale(0.50)">
+				<svg:g transform="scale(0.50)">
 					<xsl:choose>
 					<xsl:when test="$graphtype='last12MoAvail'">
 						<xsl:attribute name="transform">
@@ -863,10 +884,218 @@ xmlns:svg="http://www.w3.org/2000/svg">
 							<xsl:with-param name="y-offset-ver" select="250"/>
 						</xsl:apply-templates>
 					</xsl:for-each>
-				</g>
-			</svg>
-		</fo:instream-foreign-object>
-	</xsl:if>
+				</svg:g>
+</xsl:template>
+
+
+<xsl:template match="calendarTable">
+ <xsl:param name="sectionName"/>
+ <xsl:param name="namesec"/>
+<!-- <xsl:param name="y-offset"/> -->
+ <xsl:param name="warning"/>
+ <xsl:param name="normal"/>
+ <svg:g transform="scale(0.45)">
+ <!-- Drawing the title -->
+  <svg:text style="font-size:14;text-anchor:middle" x="180"  y="10">
+   <xsl:value-of select="../sectionTitle"/>
+  </svg:text>
+  <!-- Drawing the subtitle -->
+  <svg:text style="font-size:12;text-anchor:middle" x="180" y="22">(Percentage Availability)</svg:text>
+  <xsl:apply-templates select="daysOfWeek"/>
+   <xsl:for-each select="week">
+    <xsl:variable name="position">
+     <xsl:value-of select="position()"/>
+    </xsl:variable>
+   <xsl:apply-templates select=".">
+    <xsl:with-param name="x-offset">
+     <xsl:value-of select="10"/>
+    </xsl:with-param>
+    <xsl:with-param name="y-offset">
+     <!--<xsl:value-of select="$position * 50 - 20"/> -->
+     <xsl:value-of select="$position * 50"/>
+     </xsl:with-param>
+    <xsl:with-param name="warning" select="$warning"/>
+    <xsl:with-param name="normal" select="$normal"/>
+   </xsl:apply-templates>
+  </xsl:for-each>
+  <svg:text style="font-size:9" x="10" y="360">
+   <xsl:value-of select="../sectionDescr"/>
+  </svg:text>
+  <svg:text style="font-size:9" x="10" y="380">
+   <xsl:value-of select="../period"/>
+  </svg:text>
+ </svg:g>
+</xsl:template>
+
+<xsl:template match="daysOfWeek">
+ <xsl:for-each select="dayName">
+  <xsl:variable name="weekposition">
+   <xsl:value-of select="position()"/>
+  </xsl:variable>
+  <xsl:apply-templates select=".">
+  <xsl:with-param name="x-offset">
+<!--   <xsl:value-of select="25 + $weekposition * 50"/> -->
+   <xsl:value-of select="$weekposition * 50 - 25"/>
+  </xsl:with-param>
+  <xsl:with-param name="y-offset">
+   <!--<xsl:value-of select="10"/> -->
+   <xsl:value-of select="45"/>
+  </xsl:with-param>
+  </xsl:apply-templates>
+ </xsl:for-each>
+</xsl:template>
+
+<xsl:template match="dayName">
+ <xsl:param name="x-offset"/>
+ <xsl:param name="y-offset"/>
+ <svg:text style="font-size:10;text-anchor:middle">
+      <xsl:attribute name="x">
+       <xsl:value-of select="$x-offset"/>
+      </xsl:attribute>
+      <xsl:attribute name="y">
+       <xsl:value-of select="$y-offset"/>
+      </xsl:attribute>
+       <xsl:value-of select="."/>
+     </svg:text> 
+</xsl:template>
+
+<xsl:template match="week">
+ <xsl:param name="y-offset"/>
+ <xsl:param name="warning"/>
+ <xsl:param name="normal"/>
+ <xsl:for-each select="day">
+  <xsl:variable name="position">
+   <xsl:value-of select="position()"/>
+  </xsl:variable>
+  <xsl:apply-templates select=".">
+  <xsl:with-param name="x-offset">
+<!--   <xsl:value-of select="$position * 50" /> -->
+   <xsl:value-of select="$position * 50 - 50 " />
+  </xsl:with-param>
+  <xsl:with-param name="y-offset" select="$y-offset"/> 
+  <xsl:with-param name="warning" select="$warning"/>
+  <xsl:with-param name="normal" select="$normal"/>
+  </xsl:apply-templates>
+ </xsl:for-each>
+</xsl:template>
+
+<xsl:template match="day">
+ <xsl:param name="x-offset"/>
+ <xsl:param name="y-offset"/>
+ <xsl:param name="warning"/>
+ <xsl:param name="normal"/>
+ <xsl:choose>
+  <!-- these sections are all visible as they are vaild days of month -->
+  <xsl:when test="@visible='true'">
+     <!-- add date to top right of circle -->
+     <svg:text style="font-size:9;text-anchor:middle">
+      <xsl:attribute name="x">
+       <xsl:value-of select="$x-offset + 43 "/>
+      </xsl:attribute>
+      <xsl:attribute name="y">
+       <xsl:value-of select="$y-offset + 8 "/>
+      </xsl:attribute>
+      <xsl:value-of select="@date"/>
+     </svg:text>
+   <xsl:choose>
+    <xsl:when test="number(@pctValue) = 0">
+     <!-- add empty circle for empty data  -->
+     <svg:circle>
+     <xsl:attribute name="fill">#eee</xsl:attribute>
+      <xsl:attribute name="cx">
+       <xsl:value-of select="$x-offset + 25 "/>
+      </xsl:attribute>
+      <xsl:attribute name="cy">
+       <xsl:value-of select="$y-offset + 25 "/>
+      </xsl:attribute>
+      <xsl:attribute name="r">
+       20 
+      </xsl:attribute>
+     </svg:circle>
+    </xsl:when>
+    <!-- critical value -->
+    <xsl:when test="$warning >= @pctValue">
+     <!-- add red circle for critical data  -->
+     <svg:circle>
+     <xsl:attribute name="fill">red</xsl:attribute>
+      <xsl:attribute name="cx">
+       <xsl:value-of select="$x-offset + 25 "/>
+      </xsl:attribute>
+      <xsl:attribute name="cy">
+       <xsl:value-of select="$y-offset + 25 "/>
+      </xsl:attribute>
+      <xsl:attribute name="r">
+       20 
+      </xsl:attribute>
+     </svg:circle>
+     <!-- draw number in circle -->
+     <svg:text style="font-size:12;text-anchor:middle">
+      <xsl:attribute name="x">
+       <xsl:value-of select="$x-offset + 25 "/>
+      </xsl:attribute>
+      <xsl:attribute name="y">
+       <xsl:value-of select="$y-offset + 30 "/>
+      </xsl:attribute>
+      <xsl:value-of select="format-number(@pctValue, '0.00')"/>
+     </svg:text>
+    </xsl:when>
+    <!-- warning value -->
+    <xsl:when test="$normal >= @pctValue">
+     <!-- add yellow cricle for warning data  -->
+     <svg:circle>
+     <xsl:attribute name="fill">yellow</xsl:attribute>
+      <xsl:attribute name="cx">
+       <xsl:value-of select="$x-offset + 25 "/>
+      </xsl:attribute>
+      <xsl:attribute name="cy">
+       <xsl:value-of select="$y-offset + 25 "/>
+      </xsl:attribute>
+      <xsl:attribute name="r">
+       20 
+      </xsl:attribute>
+     </svg:circle>
+     <!-- draw number in circle -->
+     <svg:text style="font-size:12;text-anchor:middle">
+      <xsl:attribute name="x">
+       <xsl:value-of select="$x-offset + 25 "/>
+      </xsl:attribute>
+      <xsl:attribute name="y">
+       <xsl:value-of select="$y-offset + 30 "/>
+      </xsl:attribute>
+      <xsl:value-of select="format-number(@pctValue, '0.00')"/>
+     </svg:text>
+    </xsl:when>
+    <xsl:otherwise>
+     <!-- add green cricle for normal data  -->
+     <svg:circle>
+      <xsl:attribute name="fill">green</xsl:attribute>
+      <xsl:attribute name="cx">
+       <xsl:value-of select="$x-offset + 25 "/>
+      </xsl:attribute>
+      <xsl:attribute name="cy">
+       <xsl:value-of select="$y-offset + 25 "/>
+      </xsl:attribute>
+      <xsl:attribute name="r">
+       20 
+      </xsl:attribute>
+     </svg:circle>
+     <!-- draw number in circle -->
+     <svg:text style="font-size:12;text-anchor:middle">
+      <xsl:attribute name="x">
+       <xsl:value-of select="$x-offset + 25 "/>
+      </xsl:attribute>
+      <xsl:attribute name="y">
+       <xsl:value-of select="$y-offset + 30 "/>
+      </xsl:attribute>
+      <xsl:value-of select="format-number(@pctValue, '0.00')"/>
+     </svg:text>
+    </xsl:otherwise>
+   </xsl:choose>
+  </xsl:when>
+  <xsl:otherwise>
+  <!-- skip this location if it's not visible -->
+  </xsl:otherwise>
+ </xsl:choose>
 </xsl:template>
 
 </xsl:stylesheet>

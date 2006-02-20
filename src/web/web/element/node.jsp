@@ -40,14 +40,16 @@
 
 -->
 
-<%@page language="java" contentType="text/html" session="true" import="org.opennms.web.element.*,java.util.*,org.opennms.web.authenticate.Authentication,org.opennms.web.event.*,java.net.*,org.opennms.netmgt.utils.IPSorter,org.opennms.web.performance.*,org.opennms.web.response.*" %>
+<%@page language="java" contentType="text/html" session="true" import="org.opennms.web.element.*,java.util.*,org.opennms.web.authenticate.Authentication,org.opennms.web.event.*,java.net.*,org.opennms.netmgt.utils.IPSorter,org.opennms.web.performance.*,org.opennms.web.response.*,org.opennms.web.asset.*" %>
 
 <%!
     protected int telnetServiceId;
     protected int httpServiceId;
     protected int dellServiceId;
+    protected int snmpServiceId;
     protected PerformanceModel perfModel;
     protected ResponseTimeModel rtModel;
+    AssetModel model = new AssetModel();
     
     public void init() throws ServletException {
         this.statusMap = new HashMap();
@@ -78,6 +80,13 @@
 
         try {
             this.dellServiceId = NetworkElementFactory.getServiceIdFromName("Dell-OpenManage");
+        }
+        catch( Exception e ) {
+            throw new ServletException( "Could not determine the Dell-OpenManage service ID", e );
+        }
+
+        try {
+            this.snmpServiceId = NetworkElementFactory.getServiceIdFromName("SNMP");
         }
         catch( Exception e ) {
             throw new ServletException( "Could not determine the Dell-OpenManage service ID", e );
@@ -173,6 +182,15 @@
         }
     }
 
+    //find if SNMP is on this node 
+    boolean isSnmp = false;
+    Service[] snmpServices = NetworkElementFactory.getServicesOnNode(nodeId, this.snmpServiceId);
+
+    if( snmpServices != null && snmpServices.length > 0 ) 
+	isSnmp = true;
+
+    //Get Asset Info for this node
+    Asset asset = this.model.getAsset( nodeId );
 %>
 
 <html>
@@ -230,6 +248,16 @@
         <% if( request.isUserInRole( Authentication.ADMIN_ROLE )) { %> 
           &nbsp;&nbsp;&nbsp;<a href="admin/nodemanagement/index.jsp?node=<%=nodeId%>">Admin</a>
         <% } %>
+
+           <% if ( isSnmp && request.isUserInRole("OpenNMS Administrator"))  { %>
+              <% for( int i=0; i < intfs.length; i++ ) { %>
+                <% if( "P".equals( intfs[i].getIsSnmpPrimary() )) { %>
+                      &nbsp;&nbsp;&nbsp;<a href="admin/updateSnmp.jsp?node=<%=nodeId%>&ipaddr=<%=intfs[i].getIpAddress()%>">Update SNMP</a>
+                <% } %>
+              <% } %>
+           <% } %>
+
+
       </p>
 
       <table width="100%" border="0" cellspacing="0" cellpadding="0">
@@ -248,37 +276,29 @@
             </table>
             <br>
             
-            <!-- Interface box -->
-            <table width="100%" border="1" cellspacing="0" cellpadding="2" bordercolor="black" BGCOLOR="#cccccc">
-              <tr bgcolor="#999999">
-                <td><b>Interfaces</b></td> 
-              </tr>
-              <% for( int i=0; i < intfs.length; i++ ) { %>
-                <% if( "0.0.0.0".equals( intfs[i].getIpAddress() )) { %>
-                  <tr>
-                    <td>
-                      <a href="element/interface.jsp?node=<%=nodeId%>&intf=<%=intfs[i].getIpAddress()%>&ifindex=<%=intfs[i].getIfIndex()%>">Non-IP</a>
-                      <%=" (ifIndex: "+intfs[i].getIfIndex()+"-"+intfs[i].getSnmpIfDescription()+")"%>
-                    </td>
-                  </tr>
-                <% } else { %>  
-                  <tr>
-                    <td>
-                      <a href="element/interface.jsp?node=<%=nodeId%>&intf=<%=intfs[i].getIpAddress()%>"><%=intfs[i].getIpAddress()%></a>
-                      <%=intfs[i].getIpAddress().equals(intfs[i].getHostname()) ? "" : "(" + intfs[i].getHostname() + ")"%>
-                    </td>
-                  </tr>
-                <% } %>
-              <% } %>
-            </table>
-
-            <br>
-
             <!-- Availability box -->
             <jsp:include page="/includes/nodeAvailability-box.jsp" flush="false" />
             <br>
             
             <!-- node desktop information box -->
+            
+            <!-- Asset box, if info available --> 
+            <% if( asset != null ) { %>
+              <table width="100%" border="1" cellspacing="0" cellpadding="2" bordercolor="black" BGCOLOR="#cccccc">
+                <tr bgcolor="#999999">
+                  <td colspan="2"><b>Asset Information</b></td>
+                </tr>
+                <tr>
+                  <td width="10%">Description:</td>
+                  <td><%=(asset.getDescription() == null) ? "&nbsp;" : asset.getDescription()%></td>
+                </tr>
+                <tr>
+                  <td width="10%">Comments:</td>
+                  <td><%=(asset.getComments() == null) ? "&nbsp;" : asset.getComments()%></td>
+                </tr>
+              </table>  
+              <br>
+            <% } %>
             
             <!-- SNMP box, if info available --> 
             <% if( node_db.getNodeSysId() != null ) { %>
@@ -310,6 +330,32 @@
               <br>
             <% } %>
             
+            <!-- Interface box -->
+            <table width="100%" border="1" cellspacing="0" cellpadding="2" bordercolor="black" BGCOLOR="#cccccc">
+              <tr bgcolor="#999999">
+                <td><b>Interfaces</b></td> 
+              </tr>
+              <% for( int i=0; i < intfs.length; i++ ) { %>
+                <% if( "0.0.0.0".equals( intfs[i].getIpAddress() )) { %>
+                  <tr>
+                    <td>
+                      <a href="element/interface.jsp?node=<%=nodeId%>&intf=<%=intfs[i].getIpAddress()%>&ifindex=<%=intfs[i].getIfIndex()%>">Non-IP</a>
+                      <%=" (ifIndex: "+intfs[i].getIfIndex()+"-"+intfs[i].getSnmpIfDescription()+")"%>
+                    </td>
+                  </tr>
+                <% } else { %>  
+                  <tr>
+                    <td>
+                      <a href="element/interface.jsp?node=<%=nodeId%>&intf=<%=intfs[i].getIpAddress()%>"><%=intfs[i].getIpAddress()%></a>
+                      <%=intfs[i].getIpAddress().equals(intfs[i].getHostname()) ? "" : "(" + intfs[i].getHostname() + ")"%>
+                    </td>
+                  </tr>
+                <% } %>
+              <% } %>
+            </table>
+
+            <br>
+
             <table width="100%" border="1" cellspacing="0" cellpadding="2" bordercolor="black" BGCOLOR="#cccccc">
               
             </table>

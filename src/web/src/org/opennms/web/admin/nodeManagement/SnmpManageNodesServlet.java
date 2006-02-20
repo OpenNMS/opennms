@@ -87,7 +87,7 @@ public class SnmpManageNodesServlet extends HttpServlet {
         java.util.List allInterfaces = null;
 
         if (userSession != null) {
-            allInterfaces = (java.util.List) userSession.getAttribute("listAllinterfaces.snmpmanage.jsp");
+            allInterfaces = (java.util.List) userSession.getAttribute("listInterfacesForNode.snmpselect.jsp");
         }
 
         // the list of all interfaces marked as managed
@@ -119,13 +119,13 @@ public class SnmpManageNodesServlet extends HttpServlet {
                     String intKey = curInterface.getNodeid() + "+" + curInterface.getIfIndex();
 
                     // determine what is managed and unmanged
-                    if (interfaceList.contains(intKey) && "N".equals(curInterface.getStatus())) {
+                    if (interfaceList.contains(intKey) && (curInterface.getStatus() == null || curInterface.getStatus().equals("N"))) {
                         stmt.setString(1, "C");
                         stmt.setInt(2, curInterface.getNodeid());
                         stmt.setInt(3, curInterface.getIfIndex());
                         this.log("DEBUG: executing SNMP Collection Type update to C for nodeid: " + curInterface.getNodeid() + " ifIndex: " + curInterface.getIfIndex());
                         stmt.executeUpdate();
-                    } else if (!interfaceList.contains(intKey) && curInterface.getNodeid() == currNodeId && "C".equals(curInterface.getStatus())) {
+                    } else if (!interfaceList.contains(intKey) && curInterface.getNodeid() == currNodeId && ("C".equals(curInterface.getStatus()) || "S".equals(curInterface.getStatus()))) {
                         stmt.setString(1, "N");
                         stmt.setInt(2, curInterface.getNodeid());
                         stmt.setInt(3, curInterface.getIfIndex());
@@ -149,7 +149,8 @@ public class SnmpManageNodesServlet extends HttpServlet {
             sendSNMPRestartEvent(currNodeId, primeInt);
 
         // forward the request for proper display
-        RequestDispatcher dispatcher = this.getServletContext().getRequestDispatcher("/admin/index.jsp");
+	// TODO This will redirect to the node page, but the URL will be admin/changeCollectStatus. Needs fixed.
+        RequestDispatcher dispatcher = this.getServletContext().getRequestDispatcher("/element/node.jsp?node=" + currNodeId);
         dispatcher.forward(request, response);
     }
 

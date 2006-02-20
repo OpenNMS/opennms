@@ -25,7 +25,7 @@
         <%  if( "element".equals( location ) ) { %>
               List Nodes&nbsp;|&nbsp;
         <%  } else { %>
-              <a href="element/nodelist.jsp">List Nodes</a>&nbsp;|&nbsp;
+              <a href="element/nodelistonly.jsp">List Nodes</a>&nbsp;|&nbsp;
         <%  } %>
 
         <%-- Elements Search --%>
@@ -108,7 +108,7 @@
   </tr>
   <tr> 
     <td align="center" >
-      <font  SIZE="-1">OpenNMS <a href="help/about.jsp">Copyright</a> &copy; 2002-2005 <a HREF="http://www.opennms.com/">The OpenNMS Group, Inc.</a> OpenNMS&reg; is a registered trademark of <a href="http://www.opennms.com">The OpenNMS Group, Inc.</a> </font>
+      <font  SIZE="-1">OpenNMS <a href="help/about.jsp">Copyright</a> &copy; 2002-2006 <a HREF="http://www.opennms.com/">The OpenNMS Group, Inc.</a> OpenNMS&reg; is a registered trademark of <a href="http://www.opennms.com">The OpenNMS Group, Inc.</a> </font>
     </td>
   </tr>
 </table>

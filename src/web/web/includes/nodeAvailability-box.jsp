@@ -144,17 +144,16 @@
             <% } %>
           <% } else { %>
             <%-- interface is not managed --%>
+            <% if("0.0.0.0".equals(ipAddr)) {
+            }
+            else { %>
             <tr>
               <td align="left" width="25%" valign="top">
-                <% if("0.0.0.0".equals(ipAddr)) { %>            
-                  <a href="element/interface.jsp?node=<%=nodeId%>&intf=<%=ipAddr%>&ifindex=<%=intf.getIfIndex()%>">Non-IP</a>
-                  <nobr><%=" (ifIndex: "+intf.getIfIndex()+"-"+intf.getSnmpIfDescription()+")"%></nobr>
-                <% } else { %>
-                  <a href="element/interface.jsp?node=<%=nodeId%>&intf=<%=ipAddr%>"><%=ipAddr%></a>
-                <% } %>
+              <a href="element/interface.jsp?node=<%=nodeId%>&intf=<%=ipAddr%>"><%=ipAddr%></a>
               </td>
               <td align="right" width="75%" colspan="2" bgcolor="#cccccc"><b><%=ElementUtil.getInterfaceStatusString(intf)%></b></td>
             </tr>
+            <% } %>
           <% } %>
         <% } %>
       </table>

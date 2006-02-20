@@ -208,7 +208,11 @@ final public class IcmpMonitor extends IPv4LatencyMonitor {
                             }
 
                             Long key = new Long(pong.getPacket().getTID());
-                            Ping ping = (Ping) m_waiting.get(key);
+                           Ping ping = null;
+                           synchronized( m_waiting )
+                           {
+                              ping = (Ping) m_waiting.get(key);
+                           }
                             if (ping != null && ping.isTarget(pong.getAddress())) {
                                 // Save reference to packet so that the
                                 // poll() method of the IcmpMonitor will
@@ -286,15 +290,16 @@ final public class IcmpMonitor extends IPv4LatencyMonitor {
         //
         Long tidKey = null;
         long tid = (long) Thread.currentThread().hashCode();
-        synchronized (m_waiting) {
+       InetAddress ipv4Addr = (InetAddress) iface.getAddress();
+       Ping reply = new Ping(ipv4Addr);
+
+       synchronized (m_waiting)
+       {
             while (m_waiting.containsKey(tidKey = new Long(tid)))
                 ++tid;
+          m_waiting.put(tidKey, reply);
         }
-
-        InetAddress ipv4Addr = (InetAddress) iface.getAddress();
         DatagramPacket pkt = getDatagram(ipv4Addr, tid);
-        Ping reply = new Ping(ipv4Addr);
-        m_waiting.put(tidKey, reply);
 
         int serviceStatus = ServiceMonitor.SERVICE_UNAVAILABLE;
         for (int attempts = 0; attempts <= retry && !reply.isSignaled(); ++attempts) {
@@ -322,7 +327,11 @@ final public class IcmpMonitor extends IPv4LatencyMonitor {
             }
         }
 
-        m_waiting.remove(tidKey);
+        synchronized (m_waiting)
+        {
+           m_waiting.remove(tidKey);
+        }
+
 
         if (reply.isSignaled()) {
             serviceStatus = ServiceMonitor.SERVICE_AVAILABLE;

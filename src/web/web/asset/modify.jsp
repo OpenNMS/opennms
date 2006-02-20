@@ -86,7 +86,7 @@
   <tr>
     <td>&nbsp;</td>
     <td colspan="3">
-      <h2><%=nodeLabel%></h2>
+      <h2><%=nodeLabel%> ( nodeID=<%=nodeId%> ) </h2>
       <p><a href="element/node.jsp?node=<%=nodeId%>">General Information</a></p>
       <%-- Handle the SNMP information if any --%> 
       <% if( node_db.getNodeSysId() != null ) { %>

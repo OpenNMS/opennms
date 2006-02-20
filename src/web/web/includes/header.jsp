@@ -84,7 +84,7 @@
             <%  if( "element".equals( location ) ) { %>
                   List Nodes&nbsp;|&nbsp;
             <%  } else { %>
-                  <a href="element/nodelist.jsp">List Nodes</a>&nbsp;|&nbsp;
+                  <a href="element/nodelistonly.jsp">List Nodes</a>&nbsp;|&nbsp;
             <%  } %>
 
             <%-- Element Search --%>

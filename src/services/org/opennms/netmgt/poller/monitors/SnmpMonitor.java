@@ -98,7 +98,7 @@ final public class SnmpMonitor extends IPv4Monitor {
     /**
      * Default object to collect if "oid" property not available.
      */
-    private static final String DEFAULT_OBJECT_IDENTIFIER = ".1.3.6.1.2.1.1.2"; // MIB-II
+    private static final String DEFAULT_OBJECT_IDENTIFIER = ".1.3.6.1.2.1.1.2.0"; // MIB-II
                                                                                 // System
                                                                                 // Object
                                                                                 // Id
@@ -302,11 +302,11 @@ final public class SnmpMonitor extends IPv4Monitor {
         // retrieval is completed...wrapping in a try/finally block
         //
         try {
-            // Create SNMP response handler, send SNMP GetNext request and
+            // Create SNMP response handler, send SNMP Get request and
             // block waiting for response.
             //
             SnmpResponseHandler handler = new SnmpResponseHandler();
-            SnmpPduPacket out = new SnmpPduRequest(SnmpPduPacket.GETNEXT, new SnmpVarBind[] { new SnmpVarBind(new SnmpObjectId(oid)) });
+            SnmpPduPacket out = new SnmpPduRequest(SnmpPduPacket.GET, new SnmpVarBind[] { new SnmpVarBind(new SnmpObjectId(oid)) });
 
             synchronized (handler) {
                 session.send(out, handler);
@@ -324,10 +324,10 @@ final public class SnmpMonitor extends IPv4Monitor {
                 try {
                     status = (meetsCriteria(handler.getResult().getValue(), operator, operand) ? SERVICE_AVAILABLE : SERVICE_UNAVAILABLE);
                 } catch (NumberFormatException e) {
-                    log.error("Number operator used on a non-number " + e.getMessage());
+                    log.warn("Number operator used on a non-number " + e.getMessage());
                     status = SERVICE_AVAILABLE;
                 } catch (IllegalArgumentException e) {
-                    log.error("Invalid Snmp Criteria: " + e.getMessage());
+                    log.warn("Invalid Snmp Criteria: " + e.getMessage());
                     status = SERVICE_UNAVAILABLE;
                 }
             } else {
@@ -354,7 +354,7 @@ final public class SnmpMonitor extends IPv4Monitor {
 
     /**
      * Verifies that the result of the SNMP query meets the criteria specified
-     * by the operator and the operand from the configuartion file.
+     * by the operator and the operand from the configuration file.
      * 
      * @param result
      * @param operator

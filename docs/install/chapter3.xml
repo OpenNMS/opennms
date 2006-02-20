@@ -55,7 +55,7 @@
     <section>
       <title>Installing on Solaris</title>
 
-      <para>Download the appropriate package for your Linux distribution from
+      <para>Download the appropriate package for your Solaris version from
       the OpenNMS <ulink
       url="http://sourceforge.net/project/showfiles.php?group_id=4141">Files</ulink>
       section on SourceForge.</para>
@@ -170,19 +170,19 @@
       make a backup of important information before attempting the
       upgrade.</para>
 
-      <para>For OpenNMS, you should do two things:</para>
+      <para>For OpenNMS, you should do a few things:</para>
 
       <orderedlist>
         <listitem>
           <para>Copy the contents of the
           <filename>$OPENNMS_HOME/etc</filename> directory to a safe location.
           Should an issue arise with any new files, you will want to be able
-          to recover your original</para>
+          to recover your original.</para>
         </listitem>
 
         <listitem>
           <para>Make a backup of the postgres database. Using the
-          <filename>pg_dumpall </filename>command you can dump the entire
+          <filename>pg_dumpall</filename> command you can dump the entire
           contents of the database to a file:</para>
 
           <para><programlisting><computeroutput># </computeroutput><command>pg_dumpall &gt; old_data</command></programlisting></para>
@@ -243,6 +243,8 @@
         specify the exact JRE you want OpenNMS to use:</para>
 
         <programlisting><computeroutput># </computeroutput><command>$OPENNMS_HOME/bin/runjava -S &lt;path to JRE&gt;</command></programlisting>
+
+	<para>Note that you will need the path to the "java" executable - i.e. the file named "java" - usually in $JAVA_HOME/bin.</para>
       </section>
     </section>
 

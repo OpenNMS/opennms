@@ -33,6 +33,9 @@
 package org.opennms.web.admin.groups;
 
 import java.io.IOException;
+import java.util.Vector;
+import java.util.Collection;
+import java.text.ChoiceFormat;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -42,6 +45,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.opennms.netmgt.config.groups.Group;
+import org.opennms.netmgt.config.users.DutySchedule;
 
 /**
  * A servlet that handles saving a group
@@ -66,6 +70,36 @@ public class UpdateGroupServlet extends HttpServlet {
                     newGroup.addUser(users[i]);
                 }
             }
+
+            Vector newSchedule = new Vector();
+            ChoiceFormat days = new ChoiceFormat("0#Mo|1#Tu|2#We|3#Th|4#Fr|5#Sa|6#Su");
+
+            Collection dutySchedules = newGroup.getDutyScheduleCollection();
+            dutySchedules.clear();
+
+            int dutyCount = Integer.parseInt(request.getParameter("dutySchedules"));
+            for (int duties = 0; duties < dutyCount; duties++) {
+                newSchedule.clear();
+                String deleteFlag = request.getParameter("deleteDuty" + duties);
+                // don't save any duties that were marked for deletion
+                if (deleteFlag == null) {
+                    for (int i = 0; i < 7; i++) {
+                        String curDayFlag = request.getParameter("duty" + duties + days.format(i));
+                        if (curDayFlag != null) {
+                            newSchedule.addElement(new Boolean(true));
+                        } else {
+                            newSchedule.addElement(new Boolean(false));
+                        }
+                    }
+
+                    newSchedule.addElement(request.getParameter("duty" + duties + "Begin"));
+                    newSchedule.addElement(request.getParameter("duty" + duties + "End"));
+
+                    DutySchedule newDuty = new DutySchedule(newSchedule);
+                    dutySchedules.add(newDuty.toString());
+                }
+            }
+            userSession.setAttribute("group.modifyGroup.jsp", newGroup);
         }
 
         // forward the request for proper display

@@ -10,6 +10,9 @@
 //
 // Modifications:
 //
+// 2005 Mar 25: Fixed bug 1178 regarding designation of secondary SNMP
+//              interfaces, as well as a few other minor bugs discovered
+//              in testing the bug fix.
 // 2004 Dec 27: Updated code to determine primary SNMP interface to select
 //              an interface from collectd-configuration.xml first, and if
 //              none found, then from all interfaces on the node. In either
@@ -108,7 +111,7 @@ final class SuspectEventProcessor implements Runnable {
     /**
      * SQL statement to retrieve the ipaddresses for a given node ID
      */
-    private final static String SQL_RETRIEVE_IPINTERFACES_ON_NODEID = "SELECT ipaddr FROM ipinterface WHERE nodeid = ?";
+    private final static String SQL_RETRIEVE_IPINTERFACES_ON_NODEID = "SELECT ipaddr FROM ipinterface WHERE nodeid = ? and ismanaged != 'D'";
 
     private final static String SELECT_METHOD_MIN = "min";
 
@@ -498,7 +501,9 @@ final class SuspectEventProcessor implements Runnable {
 
         Date now = new Date();
 
-        DbIpInterfaceEntry ipIfEntry = DbIpInterfaceEntry.create(node.getNodeId(), ifaddr);
+        int nodeId = node.getNodeId();
+
+        DbIpInterfaceEntry ipIfEntry = DbIpInterfaceEntry.create(nodeId, ifaddr);
         ipIfEntry.setLastPoll(now);
         ipIfEntry.setHostname(ifaddr.getHostName());
 
@@ -516,10 +521,13 @@ final class SuspectEventProcessor implements Runnable {
         //
 
         boolean addrUnmanaged = cFactory.isAddressUnmanaged(ifaddr);
-        if (addrUnmanaged)
+        if (addrUnmanaged) {
+            log.debug("addInterfaces: " + ifaddr + " is unmanaged");
             ipIfEntry.setManagedState(DbIpInterfaceEntry.STATE_UNMANAGED);
-        else
+        } else {
+            log.debug("addInterfaces: " + ifaddr + " is managed");
             ipIfEntry.setManagedState(DbIpInterfaceEntry.STATE_MANAGED);
+        }
 
         ipIfEntry.setPrimaryState(DbIpInterfaceEntry.SNMP_NOT_ELIGIBLE);
 
@@ -538,6 +546,8 @@ final class SuspectEventProcessor implements Runnable {
             if (ipPkg != null)
                 ipToBePolled = true;
 
+            log.debug("addInterfaces: " + ifaddr + " is to be polled = " + ipToBePolled);
+
             if (!ipToBePolled) {
                 // update ismanaged to 'N' in ipinterface
                 ipIfEntry.setManagedState(DbIpInterfaceEntry.STATE_NOT_POLLED);
@@ -549,13 +559,14 @@ final class SuspectEventProcessor implements Runnable {
         IfSnmpCollector snmpc = null;
         if (collector.hasSnmpCollection()) {
             snmpc = collector.getSnmpCollector();
-            if (snmpc.hasIpAddrTable() && (ifIndex = snmpc.getIfIndex(ifaddr)) != -1) {
-                // Just set primary state to secondary for now. The primary SNMP
-                // interface won't be selected until after all interfaces have
-                // been inserted into the database. This is because the interface
-                // must already be in the database for filter rule evaluation to
-                // succeed.
+            // Just set primary state to not eligible for now. The primary SNMP
+            // interface won't be selected until after all interfaces have
+            // been inserted into the database. This is because the interface
+            // must already be in the database for filter rule evaluation to
+            // succeed.
 
+            ipIfEntry.setPrimaryState(DbIpInterfaceEntry.SNMP_NOT_ELIGIBLE);
+            if (snmpc.hasIpAddrTable() && (ifIndex = snmpc.getIfIndex(ifaddr)) != -1) {
                 if (snmpc.hasIfTable()) {
                     int status = snmpc.getAdminStatus(ifIndex);
                     if (status != -1)
@@ -569,7 +580,6 @@ final class SuspectEventProcessor implements Runnable {
                 if (log.isDebugEnabled())
                     log.debug("SuspectEventProcessor: no valid ifIndex for " + ifaddr + " Assume this is a lame SNMP host");
             }
-            ipIfEntry.setPrimaryState(DbIpInterfaceEntry.SNMP_SECONDARY);
             if (ifIndex != -1)
                 if (log.isDebugEnabled())
                     log.debug("SuspectEventProcessor: setting ifindex for " + ifaddr + " to " + ifIndex);
@@ -602,7 +612,7 @@ final class SuspectEventProcessor implements Runnable {
                     if (log.isDebugEnabled())
                         log.debug("addInterfaces: adding interface " + xifaddr.getHostAddress());
 
-                    DbIpInterfaceEntry xipIfEntry = DbIpInterfaceEntry.create(node.getNodeId(), xifaddr);
+                    DbIpInterfaceEntry xipIfEntry = DbIpInterfaceEntry.create(nodeId, xifaddr);
                     xipIfEntry.setLastPoll(now);
                     xipIfEntry.setHostname(xifaddr.getHostName());
 
@@ -624,7 +634,13 @@ final class SuspectEventProcessor implements Runnable {
                         xipIfEntry.setManagedState(DbIpInterfaceEntry.STATE_UNMANAGED);
                     else
                         xipIfEntry.setManagedState(DbIpInterfaceEntry.STATE_MANAGED);
+                    // Just set primary state to not eligible for now. The
+                    // primary SNMP interface won't be selected until after
+                    // all interfaces have been inserted into the database.
+                    // This is because the interface must already be in
+                    // the database for filter rule evaluation to succeed.
 
+                    xipIfEntry.setPrimaryState(DbIpInterfaceEntry.SNMP_NOT_ELIGIBLE);
                     int xifIndex = -1;
                     if ((xifIndex = snmpc.getIfIndex(xifaddr)) != -1) {
                         xipIfEntry.setIfIndex(xifIndex);
@@ -632,21 +648,12 @@ final class SuspectEventProcessor implements Runnable {
                         if (status != -1)
                             xipIfEntry.setStatus(status);
 
-                        if (supportsSnmp((List) extraTargets.get(xifaddr))) {
-                            // Just set primary state to secondary for now. The
-                            // primary SNMP interface
-                            // won't be selected until after all interfaces have
-                            // been inserted
-                            // into the database. This is because the interface must
-                            // already be in
-                            // the database for filter rule evaluation to succeed.
-                            xipIfEntry.setPrimaryState(DbIpInterfaceEntry.SNMP_SECONDARY);
-                        } else {
-                            xipIfEntry.setPrimaryState(DbIpInterfaceEntry.SNMP_NOT_ELIGIBLE);
+                        if (!supportsSnmp((List) extraTargets.get(xifaddr))) {
+                            log.debug("addInterfaces: Interface doesn't support SNMP. " + xifaddr.getHostAddress() + " set to not eligible");
                         }
                     } else {
                         // No ifIndex found so set primary state to NOT_ELIGIBLE
-                        xipIfEntry.setPrimaryState(DbIpInterfaceEntry.SNMP_NOT_ELIGIBLE);
+                        log.debug("addInterfaces: No ifIndex found. " + xifaddr.getHostAddress() + " set to not eligible");
                     }
 
                     xipIfEntry.store(dbc);
@@ -684,7 +691,7 @@ final class SuspectEventProcessor implements Runnable {
 
                         DbIpInterfaceEntry xipIfEntry = null;
                         try {
-                            xipIfEntry = DbIpInterfaceEntry.create(node.getNodeId(), InetAddress.getByName("0.0.0.0"));
+                            xipIfEntry = DbIpInterfaceEntry.create(nodeId, InetAddress.getByName("0.0.0.0"));
                         } catch (UnknownHostException e) {
                             continue;
                         }
@@ -753,7 +760,7 @@ final class SuspectEventProcessor implements Runnable {
                     if (aaddrs[0].getHostAddress().startsWith("127."))
                         continue;
 
-                    DbSnmpInterfaceEntry snmpEntry = DbSnmpInterfaceEntry.create(node.getNodeId(), xifIndex);
+                    DbSnmpInterfaceEntry snmpEntry = DbSnmpInterfaceEntry.create(nodeId, xifIndex);
 
                     // IP address
                     snmpEntry.setIfAddress(aaddrs[0]);
@@ -839,7 +846,7 @@ final class SuspectEventProcessor implements Runnable {
                 }
             }
             if(ifIndex == CapsdConfigFactory.LAME_SNMP_HOST_IFINDEX || forceSnmpInterfaceEntry) {
-                DbSnmpInterfaceEntry snmpEntry = DbSnmpInterfaceEntry.create(node.getNodeId(), ifIndex);
+                DbSnmpInterfaceEntry snmpEntry = DbSnmpInterfaceEntry.create(nodeId, ifIndex);
                 // IP address
                 snmpEntry.setIfAddress(ifaddr);
                 snmpEntry.store(dbc);
@@ -870,6 +877,12 @@ final class SuspectEventProcessor implements Runnable {
      *             table.
      */
     private void addSupportedProtocols(DbNodeEntry node, InetAddress ifaddr, List protocols, boolean addrUnmanaged, int ifIndex, org.opennms.netmgt.config.poller.Package ipPkg) throws SQLException {
+        Category log = ThreadCategory.getInstance(getClass());
+        if(ifaddr.getHostAddress().equals("0.0.0.0")) {
+            log.debug("addSupportedProtocols: node " + node.getNodeId() + ": Cant add ip services for non-ip interface. Just return.");
+            return;
+        }
+
         // add the supported protocols
         //
         // NOTE!!!!!: (reference internal bug# 201)
@@ -929,13 +942,17 @@ final class SuspectEventProcessor implements Runnable {
      * @param supportedProtocols
      *            List of supported protocol objects.
      * 
-     * @return TRUE if service "SNMP" is present in the list, FALSE otherwise
+     * @return TRUE if service "SNMP" or "SNMPv1" or "SNMPv2" is present in the list, FALSE otherwise
      */
     static boolean supportsSnmp(List supportedProtocols) {
         Iterator iter = supportedProtocols.iterator();
         while (iter.hasNext()) {
             IfCollector.SupportedProtocol p = (IfCollector.SupportedProtocol) iter.next();
             if (p.getProtocolName().equals("SNMP"))
+                return true;
+            else if (p.getProtocolName().equals("SNMPv1"))
+                return true;
+            else if (p.getProtocolName().equals("SNMPv2"))
                 return true;
         }
         return false;
@@ -1311,6 +1328,30 @@ final class SuspectEventProcessor implements Runnable {
                         CollectdConfigFactory.getInstance().rebuildPackageIpListMap();
                         List lbAddressList = buildLBSnmpAddressList(collector);
                         List addressList = buildSnmpAddressList(collector);
+                        // first set the value of issnmpprimary for secondaries
+                        Iterator iter = addressList.iterator();
+                        while(iter.hasNext()) {
+                            InetAddress addr = (InetAddress) iter.next();
+                            if (CollectdConfigFactory.getInstance().lookupInterfaceServicePair(addr.getHostAddress(), "SNMP") || CollectdConfigFactory.getInstance().lookupInterfaceServicePair(addr.getHostAddress(), "SNMPv1") || CollectdConfigFactory.getInstance().lookupInterfaceServicePair(addr.getHostAddress(), "SNMPv2")) {
+                                PreparedStatement stmt = dbc.prepareStatement("UPDATE ipInterface SET isSnmpPrimary='S' WHERE nodeId=? AND ipAddr=? AND isManaged!='D'");
+                                stmt.setInt(1, entryNode.getNodeId());
+                                stmt.setString(2, addr.getHostAddress());
+
+                                // Execute statement
+                                try {
+                                    stmt.executeUpdate();
+                                    log.debug("updated " + addr.getHostAddress() + " to secondary.");
+                                } catch (SQLException sqlE) {
+                                    throw sqlE;
+                                } finally {
+                                    try {
+                                        stmt.close();
+                                    } catch (Exception e) {
+                                        // Ignore
+                                    }
+                                }
+                            }
+                        }
                         String psiType = null;
                         if (lbAddressList != null) {
                             newSnmpPrimaryIf = CollectdConfigFactory.getInstance().determinePrimarySnmpInterface(lbAddressList, strict);
@@ -1336,9 +1377,9 @@ final class SuspectEventProcessor implements Runnable {
 
                         if (log.isDebugEnabled()) {
                             if(newSnmpPrimaryIf == null) {
-                                log.debug("SuspectEventProcessor: No primary SNMP interface found");
+                                log.debug("No primary SNMP interface found");
                             } else {
-                                log.debug("SuspectEventProcessor: primary SNMP interface is: " + newSnmpPrimaryIf + ", selected from " + psiType);
+                                log.debug("primary SNMP interface is: " + newSnmpPrimaryIf + ", selected from " + psiType);
                             }
                         }  
                         // iterate over list of old primaries. There should only be
@@ -1410,7 +1451,7 @@ final class SuspectEventProcessor implements Runnable {
 
         List priSnmpAddrs = new ArrayList();
 
-        log.debug("getPrimarySnmpInterfaceFromDb: retrieving primary snmp interface(s) from DB...");
+        log.debug("getPrimarySnmpInterfaceFromDb: retrieving primary snmp interface(s) from DB for node " + node.getNodeId());
         InetAddress oldPrimarySnmpIf = null;
 
         // Prepare SQL statement
@@ -1422,7 +1463,8 @@ final class SuspectEventProcessor implements Runnable {
         try {
             rs = stmt.executeQuery();
             while (rs.next()) {
-                String oldPrimaryAddr = rs.getString("ipAddr");
+                String oldPrimaryAddr = rs.getString(1);
+                log.debug("getPrimarySnmpInterfaceFromDb: String oldPrimaryAddr = " + oldPrimaryAddr);
                 if (oldPrimaryAddr != null) {
                     try {
                         oldPrimarySnmpIf = InetAddress.getByName(oldPrimaryAddr);
@@ -1434,6 +1476,7 @@ final class SuspectEventProcessor implements Runnable {
                 }
             }
         } catch (SQLException sqlE) {
+            log.warn("getPrimarySnmpInterfaceFromDb: Exception: " + sqlE);
             throw sqlE;
         } finally {
             try {
@@ -1474,46 +1517,24 @@ final class SuspectEventProcessor implements Runnable {
             return;
         } else {
             if (log.isDebugEnabled())
-                log.debug("setPrimarySnmpInterface: newSnmpPrimary=" + newPrimarySnmpIf);
+                log.debug("setPrimarySnmpInterface: newSnmpPrimary = " + newPrimarySnmpIf);
         }
 
         // Verify that old and new primary interfaces are different
         //
         if (oldPrimarySnmpIf != null && oldPrimarySnmpIf.equals(newPrimarySnmpIf)) {
-            // Old and new primary interfaces are the same, just return
+            // Old and new primary interfaces are the same
             if (log.isDebugEnabled())
-                log.debug("setPrimarySnmpInterface: Old and new primary interfaces are the same, just return");
+                log.debug("setPrimarySnmpInterface: Old and new primary interfaces are the same");
             return;
         }
 
-        // They are different so mark the old primary as a secondary interface
-        // 
-        if (oldPrimarySnmpIf != null) {
-            // Prepare SQL statement
-            PreparedStatement stmt = dbc.prepareStatement("UPDATE ipInterface SET isSnmpPrimary='S' WHERE nodeId=? AND ipAddr=? AND isManaged!='D'");
-            stmt.setInt(1, node.getNodeId());
-            stmt.setString(2, oldPrimarySnmpIf.getHostAddress());
-
-            // Execute statement
-            try {
-                stmt.executeUpdate();
-                log.debug("setPrimarySnmpInterface: completed update of old primary interface to SECONDARY.");
-            } catch (SQLException sqlE) {
-                throw sqlE;
-            } finally {
-                try {
-                    stmt.close();
-                } catch (Exception e) {
-                    // Ignore
-                }
-            }
-        }
 
         // Set primary SNMP interface 'isSnmpPrimary' field to 'P' for primary
         //
         if (newPrimarySnmpIf != null) {
             if (log.isDebugEnabled())
-                log.debug("setPrimarySnmpInterface:  primary SNMP interface=" + newPrimarySnmpIf.getHostAddress());
+                log.debug("setPrimarySnmpInterface:  Updating primary SNMP interface " + newPrimarySnmpIf.getHostAddress());
 
             // Update the appropriate entry in the 'ipInterface' table
             //

@@ -35,6 +35,8 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.Properties;
@@ -136,6 +138,11 @@ public class PollablesTest extends TestCase {
         
         public long getCurrentTime() {
             return System.currentTimeMillis();
+        }
+
+        public void refresh() {
+            // TODO Auto-generated method stub
+            
         }
     }
     /*
@@ -1720,6 +1727,73 @@ public class PollablesTest extends TestCase {
         assertUp(pDot1Smtp);
         assertUnchanged(pDot1Smtp);
     }
+    
+    public void testMidnightOutageBug1122() throws ParseException {
+        m_pollerConfig.addScheduledOutage(m_pollerConfig.getPackage("TestPackage"), "first", "monday", "23:59:57", "23:59:59", "192.168.1.1");
+        m_pollerConfig.addScheduledOutage(m_pollerConfig.getPackage("TestPackage"), "second", "tuesday", "00:00:00", "00:00:02", "192.168.1.1");
+
+        Date start = new SimpleDateFormat("dd-MMM-yyyy HH:mm:ss").parse("21-FEB-2005 23:59:56");
+        long startTime = start.getTime();
+        m_timer.setCurrentTime(startTime);
+        
+        pDot1Smtp.getSchedule().schedule();
+        
+        m_scheduler.next();
+        
+        assertPoll(mDot1Smtp);
+        assertTime(startTime+0); // 23:59:56 should poll
+        assertUp(pDot1Smtp);
+        assertUnchanged(pDot1Smtp);
+        
+        m_scheduler.next();
+        
+        assertNoPoll(mDot1Smtp);
+        assertTime(startTime+1000); // 23:59:57 should not poll
+        assertUp(pDot1Smtp);
+        assertUnchanged(pDot1Smtp);
+
+        m_scheduler.next();
+       
+        assertNoPoll(mDot1Smtp);
+        assertTime(startTime+2000); // 23:59:58 should not poll
+        assertUp(pDot1Smtp);
+        assertUnchanged(pDot1Smtp);
+
+        m_scheduler.next();
+        
+        assertNoPoll(mDot1Smtp);
+        assertTime(startTime+3000); // 23:59:59 should not poll
+        assertUp(pDot1Smtp);
+        assertUnchanged(pDot1Smtp);
+
+        m_scheduler.next();
+        
+        assertNoPoll(mDot1Smtp);
+        assertTime(startTime+4000); // 00:00:00 should not poll
+        assertUp(pDot1Smtp);
+        assertUnchanged(pDot1Smtp);
+
+        m_scheduler.next();
+        
+        assertNoPoll(mDot1Smtp);
+        assertTime(startTime+5000);  // 00:00:01 should not poll
+        assertUp(pDot1Smtp);
+        assertUnchanged(pDot1Smtp);
+
+        m_scheduler.next();
+        
+        assertNoPoll(mDot1Smtp);
+        assertTime(startTime+6000);  // 00:00:02 should not poll
+        assertUp(pDot1Smtp);
+        assertUnchanged(pDot1Smtp);
+
+        m_scheduler.next();
+        
+        assertPoll(mDot1Smtp);
+        assertTime(startTime+7000);  // 00:00:03 should poll
+        assertUp(pDot1Smtp);
+        assertUnchanged(pDot1Smtp);
+}
     
     public void testLoadService() throws Exception {
         anticipateDown(mDot1Smtp);

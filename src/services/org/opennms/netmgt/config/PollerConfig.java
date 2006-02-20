@@ -36,6 +36,7 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
 
+import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.poller.monitors.ServiceMonitor;
 
 /**
@@ -218,16 +219,19 @@ public interface PollerConfig {
      * 
      * @return list of RRA strings.
      */
-    public abstract List getRRAList(org.opennms.netmgt.config.poller.Package pkg);
+    public abstract List getRRAList(Package pkg);
     
     public abstract String getNextOutageIdSql();
 
     public Enumeration enumeratePackage();
+    
+    public Package getPackage(String pkgName);
 
     public int getThreads();
 
     public Map getServiceMonitors();
 
     public ServiceMonitor getServiceMonitor(String svcName);
-
+    
+    public void update() throws Exception;
 }
