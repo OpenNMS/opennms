@@ -1350,6 +1350,7 @@ final class RescanProcessor implements Runnable {
                 // If this interface already existed in the database and SNMP
                 // service has been gained then create interfaceSupportsSNMP
                 // event
+		// TODO As this event isn't used anywhere, why do we sent it?
                 if (!isNewIpEntry && p.getProtocolName().equalsIgnoreCase("SNMP")) {
                     createInterfaceSupportsSNMPEvent(dbIpIfEntry);
                 }
@@ -3023,7 +3024,7 @@ final class RescanProcessor implements Runnable {
         Iterator iter = snmpAddresses.iterator();
         while(iter.hasNext()) {
             InetAddress addr = (InetAddress) iter.next();
-            if (CollectdConfigFactory.getInstance().lookupInterfaceServicePair(addr.getHostAddress(), "SNMP")) {
+            if (CollectdConfigFactory.getInstance().lookupInterfaceServicePair(addr.getHostAddress(), "SNMP") || CollectdConfigFactory.getInstance().lookupInterfaceServicePair(addr.getHostAddress(), "SNMPv1") || CollectdConfigFactory.getInstance().lookupInterfaceServicePair(addr.getHostAddress(), "SNMPv2")) {
                 PreparedStatement stmt = dbc.prepareStatement("UPDATE ipInterface SET isSnmpPrimary='S' WHERE nodeId=? AND ipAddr=? AND isManaged!='D'");
                 stmt.setInt(1, dbNodeEntry.getNodeId());
                 stmt.setString(2, addr.getHostAddress());

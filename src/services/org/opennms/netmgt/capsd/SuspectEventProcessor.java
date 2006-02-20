@@ -942,13 +942,17 @@ final class SuspectEventProcessor implements Runnable {
      * @param supportedProtocols
      *            List of supported protocol objects.
      * 
-     * @return TRUE if service "SNMP" is present in the list, FALSE otherwise
+     * @return TRUE if service "SNMP" or "SNMPv1" or "SNMPv2" is present in the list, FALSE otherwise
      */
     static boolean supportsSnmp(List supportedProtocols) {
         Iterator iter = supportedProtocols.iterator();
         while (iter.hasNext()) {
             IfCollector.SupportedProtocol p = (IfCollector.SupportedProtocol) iter.next();
             if (p.getProtocolName().equals("SNMP"))
+                return true;
+            else if (p.getProtocolName().equals("SNMPv1"))
+                return true;
+            else if (p.getProtocolName().equals("SNMPv2"))
                 return true;
         }
         return false;
@@ -1328,7 +1332,7 @@ final class SuspectEventProcessor implements Runnable {
                         Iterator iter = addressList.iterator();
                         while(iter.hasNext()) {
                             InetAddress addr = (InetAddress) iter.next();
-                            if (CollectdConfigFactory.getInstance().lookupInterfaceServicePair(addr.getHostAddress(), "SNMP")) {
+                            if (CollectdConfigFactory.getInstance().lookupInterfaceServicePair(addr.getHostAddress(), "SNMP") || CollectdConfigFactory.getInstance().lookupInterfaceServicePair(addr.getHostAddress(), "SNMPv1") || CollectdConfigFactory.getInstance().lookupInterfaceServicePair(addr.getHostAddress(), "SNMPv2")) {
                                 PreparedStatement stmt = dbc.prepareStatement("UPDATE ipInterface SET isSnmpPrimary='S' WHERE nodeId=? AND ipAddr=? AND isManaged!='D'");
                                 stmt.setInt(1, entryNode.getNodeId());
                                 stmt.setString(2, addr.getHostAddress());

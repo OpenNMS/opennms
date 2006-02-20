@@ -394,7 +394,7 @@ final class BroadcastEventProcessor implements EventListener {
 
         // Currently only support SNMP data collection.
         //
-        if (!event.getService().equals("SNMP"))
+        if (!event.getService().equals("SNMP") && !event.getService().equals("SNMPv1") && !event.getService().equals("SNMPv2"))
             return;
 
         // Extract the old and new primary SNMP interface adddresses from the
@@ -686,7 +686,7 @@ final class BroadcastEventProcessor implements EventListener {
 
         // Currently only support SNMP data collection.
         //
-        if (!event.getService().equals("SNMP"))
+        if (!event.getService().equals("SNMP") && !event.getService().equals("SNMPv1") && !event.getService().equals("SNMPv2"))
             return;
 
         int nodeId = (int) event.getNodeid();

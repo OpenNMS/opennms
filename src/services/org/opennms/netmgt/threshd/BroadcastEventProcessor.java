@@ -343,7 +343,7 @@ final class BroadcastEventProcessor implements EventListener {
 
         // Currently only support SNMP data thresholding.
         //
-        if (!event.getService().equals("SNMP"))
+        if (!event.getService().equals("SNMP") && !event.getService().equals("SNMPv1") && !event.getService().equals("SNMPv2"))
             return;
 
         // Schedule the new service...
@@ -663,7 +663,7 @@ final class BroadcastEventProcessor implements EventListener {
 
         // Currently only support SNMP data thresholding.
         //
-        if (!event.getService().equals("SNMP"))
+        if (!event.getService().equals("SNMP") && !event.getService().equals("SNMPv1") && !event.getService().equals("SNMPv2"))
             return;
 
         int nodeId = (int) event.getNodeid();
