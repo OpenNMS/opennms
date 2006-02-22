@@ -670,28 +670,23 @@ public class MockDatabase implements DbConnectionFactory, EventWriter {
     }
 
     public Connection getConnection(String username, String password) throws SQLException {
-        // TODO Auto-generated method stub
-        return null;
+        return this.getConnection();
     }
 
     public PrintWriter getLogWriter() throws SQLException {
-        // TODO Auto-generated method stub
-        return null;
+        return DriverManager.getLogWriter();
     }
 
     public void setLogWriter(PrintWriter out) throws SQLException {
-        // TODO Auto-generated method stub
-        
+        DriverManager.setLogWriter(out);
     }
 
     public void setLoginTimeout(int seconds) throws SQLException {
-        // TODO Auto-generated method stub
-        
+        DriverManager.setLoginTimeout(seconds);
     }
 
     public int getLoginTimeout() throws SQLException {
-        // TODO Auto-generated method stub
-        return 0;
+        return DriverManager.getLoginTimeout();
     }
     
 
