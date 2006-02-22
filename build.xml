@@ -159,7 +159,7 @@ your distribution.
   <property name="rpm.additional.args" value=""/>
 
   <!-- jars that are referenced in multiple places -->
-  <property name="postgresql.jar" value="pg74.215.jdbc3.jar" />
+  <property name="postgresql.jar" value="postgresql-8.1-404.jdbc3.jar" />
 
   <!-- paths -->
   <path id="sources.java.path">
@@ -227,6 +227,7 @@ your distribution.
     <pathelement path="${packaged.lib.dir}/jcommon-1.0.0-rc1.jar" />
     <pathelement path="/System/Library/Java"/>
     <pathelement path="${packaged.lib.dir}/jboss/jbossall-client.jar"/>
+    <pathelement path="${packaged.lib.dir}/c3p0-0.9.1-pre5a.jar"/>
   </path>
 
   <!-- The jars listed for Class-Path in the MANIFEST.MF for the installer's
@@ -252,6 +253,7 @@ your distribution.
     <pathelement path="${build.jar.dir}/opennms_core.jar"/>
     <pathelement path="${build.jar.dir}/opennms_services.jar"/>
     <pathelement path="${build.jar.dir}/opennms_web.jar"/>
+    <pathelement path="${packaged.lib.dir}/c3p0-0.9.1-pre5a.jar"/>
     <!-- These are the libraries that were in opennms.spec.in:
 	castor-0.9.3.9.jar \
 	log4j.jar \
@@ -280,6 +282,7 @@ your distribution.
   <path id="jsp.compile.path">
     <path refid="libraries.java.path" />
     <path refid="tomcatlib.jars.path" />
+    <pathelement location="${install.servlet.dir}/WEB-INF/lib/c3p0-0.9.1-pre5a.jar"/>
     <pathelement location="${install.servlet.dir}/WEB-INF/lib/opennms_common.jar"/>
     <pathelement location="${install.servlet.dir}/WEB-INF/lib/opennms_core.jar"/>
     <pathelement location="${install.servlet.dir}/WEB-INF/lib/opennms_install.jar"/>
@@ -375,6 +378,7 @@ your distribution.
     <include name="standard.jar" />
     <include name="jfree*.jar" />
     <include name="jcommon*.jar" />
+    <include name="c3p0-0.9.1.pre5a.jar" />
   </patternset>
 
   <patternset id="web.opennms.jars">

@@ -31,8 +31,7 @@
 //
 package org.opennms.netmgt.config;
 
-import java.sql.Connection;
-import java.sql.SQLException;
+
 
 /**
  * @author brozow
@@ -40,19 +39,6 @@ import java.sql.SQLException;
  * TODO To change the template for this generated type comment go to
  * Window - Preferences - Java - Code Style - Code Templates
  */
-public interface DbConnectionFactory {
-    /**
-     * Return a new database connection to the database configured in the
-     * <tt>opennms-database.xml</tt>. The database connection is not managed
-     * by the factory and must be release by the caller by using the
-     * <code>close</code> method.
-     * 
-     * @return a new database connection to the database configured in the
-     *         <tt>opennms-database.xml</tt>
-     * 
-     * @throws java.sql.SQLException
-     *             Thrown if there is an error opening the connection to the
-     *             database.
-     */
-    public Connection getConnection() throws SQLException;
+public interface DbConnectionFactory extends javax.sql.DataSource {
+        
 }

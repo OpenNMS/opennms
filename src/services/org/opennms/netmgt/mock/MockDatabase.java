@@ -31,6 +31,7 @@
 //
 package org.opennms.netmgt.mock;
 
+import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -666,6 +667,31 @@ public class MockDatabase implements DbConnectionFactory, EventWriter {
         SingleResultQuerier querier = new SingleResultQuerier(this, "select alarmid from alarms where reductionKey = ?");
         querier.execute(reductionKey);
         return (Integer)querier.getResult();
+    }
+
+    public Connection getConnection(String username, String password) throws SQLException {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public PrintWriter getLogWriter() throws SQLException {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public void setLogWriter(PrintWriter out) throws SQLException {
+        // TODO Auto-generated method stub
+        
+    }
+
+    public void setLoginTimeout(int seconds) throws SQLException {
+        // TODO Auto-generated method stub
+        
+    }
+
+    public int getLoginTimeout() throws SQLException {
+        // TODO Auto-generated method stub
+        return 0;
     }
     
 
