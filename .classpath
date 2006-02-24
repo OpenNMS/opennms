@@ -57,7 +57,6 @@
 	<classpathentry kind="lib" path="devlib/jmock-cglib-1.0.1.jar"/>
 	<classpathentry kind="lib" path="devlib/jmock-1.0.1.jar"/>
 	<classpathentry kind="lib" path="lib/cglib-nodep-2.1.jar"/>
-	<classpathentry kind="lib" path="lib/spring-1.2.1.jar"/>
 	<classpathentry kind="lib" path="lib/avalon-framework-cvs-20020806.jar"/>
 	<classpathentry kind="lib" path="lib/fop0205.jar"/>
 	<classpathentry kind="lib" path="lib/jcommon-1.0.0-rc1.jar"/>
@@ -66,5 +65,7 @@
 	<classpathentry kind="src" path="src/bootstrap"/>
 	<classpathentry kind="lib" path="lib/jcifs-1.2.6.jar"/>
 	<classpathentry kind="lib" path="lib/openldap-jldap-2005.10.03.jar"/>
+	<classpathentry kind="lib" path="lib/c3p0-0.9.1-pre5a.jar"/>
+	<classpathentry kind="lib" path="lib/spring-1.2.6.jar"/>
 	<classpathentry kind="output" path="work/opennms/classes"/>
 </classpath>
