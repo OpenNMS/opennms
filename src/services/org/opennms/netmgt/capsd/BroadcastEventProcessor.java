@@ -232,21 +232,29 @@ final class BroadcastEventProcessor implements EventListener {
 
         final String DB_COUNT_OTHER_INTERFACES_ON_NODE = "SELECT count(*) FROM ipinterface WHERE nodeID=? and ipAddr != ? and isManaged != 'D'";
 
-        PreparedStatement stmt = dbConn.prepareStatement(DB_COUNT_OTHER_INTERFACES_ON_NODE);
-        stmt.setLong(1, nodeId);
-        stmt.setString(2, ipAddr);
-        ResultSet rs = stmt.executeQuery();
-        int count = 0;
-        while (rs.next()) {
-            count = rs.getInt(1);
-        }
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        try {
+            stmt = dbConn.prepareStatement(DB_COUNT_OTHER_INTERFACES_ON_NODE);
+            stmt.setLong(1, nodeId);
+            stmt.setString(2, ipAddr);
+            rs = stmt.executeQuery();
+            int count = 0;
+            while (rs.next()) {
+                count = rs.getInt(1);
+            }
 
-        if (log.isDebugEnabled())
-            log.debug("countServicesForInterface: count services for interface " + nodeId + "/" + ipAddr + ": found " + count);
+            if (log.isDebugEnabled())
+                log.debug("countServicesForInterface: count services for interface " + nodeId + "/" + ipAddr + ": found " + count);
 
-        stmt.close();
-
-        return count;
+            return count;
+        } finally {
+            try {
+                if (rs != null) rs.close();
+            } finally {
+                if (stmt != null) stmt.close();
+            }
+        }        
     }
 
     /**
@@ -269,22 +277,30 @@ final class BroadcastEventProcessor implements EventListener {
 
         final String DB_COUNT_OTHER_SERVICES_ON_IFACE = "SELECT count(*) FROM ifservices, service " + "WHERE ifservices.serviceId = service.serviceId AND ifservices.status != 'D' " + "AND ifservices.nodeID=? AND ifservices.ipAddr=? AND service.servicename != ?";
 
-        PreparedStatement stmt = dbConn.prepareStatement(DB_COUNT_OTHER_SERVICES_ON_IFACE);
-        stmt.setLong(1, nodeId);
-        stmt.setString(2, ipAddr);
-        stmt.setString(3, service);
-        ResultSet rs = stmt.executeQuery();
-        int count = 0;
-        while (rs.next()) {
-            count = rs.getInt(1);
-        }
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        try {
+            stmt = dbConn.prepareStatement(DB_COUNT_OTHER_SERVICES_ON_IFACE);
+            stmt.setLong(1, nodeId);
+            stmt.setString(2, ipAddr);
+            stmt.setString(3, service);
+            rs = stmt.executeQuery();
+            int count = 0;
+            while (rs.next()) {
+                count = rs.getInt(1);
+            }
 
-        if (log.isDebugEnabled())
-            log.debug("countServicesForInterface: count services for interface " + nodeId + "/" + ipAddr + ": found " + count);
+            if (log.isDebugEnabled())
+                log.debug("countServicesForInterface: count services for interface " + nodeId + "/" + ipAddr + ": found " + count);
 
-        stmt.close();
-
-        return count;
+            return count;
+        } finally {
+            try {
+                if (rs != null) rs.close();
+            } finally {
+                if (stmt != null) stmt.close();
+            }
+        }        
     }
 
     /**
@@ -304,22 +320,30 @@ final class BroadcastEventProcessor implements EventListener {
 
         final String DB_COUNT_SERVICES_ON_OTHER_INTERFACES = "SELECT count(*) FROM ifservices WHERE nodeID=? and ipAddr != ? and status != 'D'";
 
-        PreparedStatement stmt = dbConn.prepareStatement(DB_COUNT_SERVICES_ON_OTHER_INTERFACES);
-        stmt.setLong(1, nodeId);
-        stmt.setString(2, ipAddr);
-        ResultSet rs = stmt.executeQuery();
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        try {
+            stmt = dbConn.prepareStatement(DB_COUNT_SERVICES_ON_OTHER_INTERFACES);
+            stmt.setLong(1, nodeId);
+            stmt.setString(2, ipAddr);
+            rs = stmt.executeQuery();
 
-        int count = 0;
-        while (rs.next()) {
-            count = rs.getInt(1);
-        }
+            int count = 0;
+            while (rs.next()) {
+                count = rs.getInt(1);
+            }
 
-        if (log.isDebugEnabled())
-            log.debug("countServicesOnOtherInterfaces: count services for node " + nodeId + ": found " + count);
+            if (log.isDebugEnabled())
+                log.debug("countServicesOnOtherInterfaces: count services for node " + nodeId + ": found " + count);
 
-        stmt.close();
-
-        return count;
+            return count;
+        } finally {
+            try {
+                if (rs != null) rs.close();
+            } finally {
+                if (stmt != null) stmt.close();
+            }
+        }        
     }
 
     /**
@@ -382,13 +406,11 @@ final class BroadcastEventProcessor implements EventListener {
             throw new FailedOperationException("unable to resolve host " + ipaddr + ": " + e.getMessage(), e);
         } finally {
             try {
-                if (rs != null)
-                    rs.close();
-                if (stmt != null)
-                    stmt.close();
-            } catch (SQLException e) {
+                if (rs != null) rs.close();
+            } finally {
+                if (stmt != null) stmt.close();
             }
-        }
+        }        
     }
 
     /**
@@ -592,18 +614,21 @@ final class BroadcastEventProcessor implements EventListener {
     private List doAddServiceMapping(Connection dbConn, String ipaddr, String serviceName, long txNo) throws SQLException, FailedOperationException {
         PreparedStatement stmt = null;
         Category log = ThreadCategory.getInstance(getClass());
-        stmt = dbConn.prepareStatement(SQL_ADD_SERVICE_TO_MAPPING);
+        try {
+            stmt = dbConn.prepareStatement(SQL_ADD_SERVICE_TO_MAPPING);
 
-        stmt.setString(1, ipaddr);
-        stmt.setString(2, serviceName);
-        stmt.executeUpdate();
-        stmt.close();
+            stmt.setString(1, ipaddr);
+            stmt.setString(2, serviceName);
+            stmt.executeUpdate();
 
-        if (log.isDebugEnabled()) {
-            log.debug("updateServiceHandler: add service " + serviceName + " to interface: " + ipaddr);
-        }
+            if (log.isDebugEnabled()) {
+                log.debug("updateServiceHandler: add service " + serviceName + " to interface: " + ipaddr);
+            }
 
-        return doChangeService(dbConn, ipaddr, serviceName, "ADD", txNo);
+            return doChangeService(dbConn, ipaddr, serviceName, "ADD", txNo);
+        } finally {
+            if (stmt != null) stmt.close();
+        }        
     }
 
     /**
@@ -653,13 +678,11 @@ final class BroadcastEventProcessor implements EventListener {
             throw new FailedOperationException("Unable to resolve host: " + e.getMessage(), e);
         } finally {
             try {
-                if (rs != null)
-                    rs.close();
-                if (stmt != null)
-                    stmt.close();
-            } catch (SQLException ex) {
+                if (rs != null) rs.close();
+            } finally {
+                if (stmt != null) stmt.close();
             }
-        }
+        }        
     }
 
     /**
@@ -725,13 +748,8 @@ final class BroadcastEventProcessor implements EventListener {
             Event newEvent = EventUtils.createAddInterfaceEvent("OpenNMS.Capsd", nodeLabel, ipaddr, hostName, txNo);
             return Collections.singletonList(newEvent);
         } finally {
-            if (stmt != null)
-                try {
-                    stmt.close();
-                } catch (SQLException e) {
-                }
-        }
-
+            if (stmt != null) stmt.close();
+        }        
     }
 
     /**
@@ -815,12 +833,8 @@ final class BroadcastEventProcessor implements EventListener {
             }
             return eventsToSend;
         } finally {
-            if (stmt != null)
-                try {
-                    stmt.close();
-                } catch (SQLException e) {
-                }
-        }
+            if (stmt != null) stmt.close();
+        }        
     }
 
     /**
@@ -933,11 +947,7 @@ final class BroadcastEventProcessor implements EventListener {
 
             return doChangeService(dbConn, ipaddr, serviceName, "DELETE", txNo);
         } finally {
-            if (stmt != null)
-                try {
-                    stmt.close();
-                } catch (SQLException e) {
-                }
+            if (stmt != null) stmt.close();
         }
     }
 
@@ -1030,12 +1040,8 @@ final class BroadcastEventProcessor implements EventListener {
 
             return count > 0;
         } finally {
-            if (stmt != null)
-                try {
-                    stmt.close();
-                } catch (SQLException e) {
-                }
-        }
+            if (stmt != null) stmt.close();
+        }        
     }
 
     /**
@@ -1051,30 +1057,38 @@ final class BroadcastEventProcessor implements EventListener {
         int[] nodeIds;
         Category log = ThreadCategory.getInstance(getClass());
         PreparedStatement stmt = null;
-        // Verify if the specified service already exist.
-        stmt = dbConn.prepareStatement(SQL_QUERY_SERVICE_EXIST);
+        ResultSet rs = null;
+        
+        try {
+            // Verify if the specified service already exist.
+            stmt = dbConn.prepareStatement(SQL_QUERY_SERVICE_EXIST);
 
-        stmt.setString(1, ipaddr);
-        stmt.setString(2, serviceName);
+            stmt.setString(1, ipaddr);
+            stmt.setString(2, serviceName);
 
-        ResultSet rs = stmt.executeQuery();
-        List nodeIdList = new LinkedList();
-        while (rs.next()) {
-            if (log.isDebugEnabled()) {
-                log.debug("changeService: service " + serviceName + " on IPAddress " + ipaddr + " already exists in the database.");
+            rs = stmt.executeQuery();
+            List nodeIdList = new LinkedList();
+            while (rs.next()) {
+                if (log.isDebugEnabled()) {
+                    log.debug("changeService: service " + serviceName + " on IPAddress " + ipaddr + " already exists in the database.");
+                }
+                int nodeId = rs.getInt(1);
+                nodeIdList.add(new Integer(nodeId));
             }
-            int nodeId = rs.getInt(1);
-            nodeIdList.add(new Integer(nodeId));
-        }
-        rs.close();
-        stmt.close();
-        nodeIds = new int[nodeIdList.size()];
-        int i = 0;
-        for (Iterator it = nodeIdList.iterator(); it.hasNext(); i++) {
-            Integer n = (Integer) it.next();
-            nodeIds[i] = n.intValue();
-        }
-        return nodeIds;
+            nodeIds = new int[nodeIdList.size()];
+            int i = 0;
+            for (Iterator it = nodeIdList.iterator(); it.hasNext(); i++) {
+                Integer n = (Integer) it.next();
+                nodeIds[i] = n.intValue();
+            }
+            return nodeIds;
+        } finally {
+            try {
+                if (rs != null) rs.close();
+            } finally {
+                if (stmt != null) stmt.close();
+            }
+        }        
     }
 
     /**
@@ -1088,12 +1102,13 @@ final class BroadcastEventProcessor implements EventListener {
      */
     private long[] findNodeIdsForInterfaceAndLabel(Connection dbConn, String nodeLabel, String ipAddr) throws SQLException {
         PreparedStatement stmt = null;
+        ResultSet rs = null;
         try {
             stmt = dbConn.prepareStatement("SELECT node.nodeid FROM node, ipinterface WHERE node.nodeid = ipinterface.nodeid AND node.nodelabel = ? AND ipinterface.ipaddr = ? AND isManaged !='D' AND nodeType !='D'");
             stmt.setString(1, nodeLabel);
             stmt.setString(2, ipAddr);
 
-            ResultSet rs = stmt.executeQuery();
+            rs = stmt.executeQuery();
             List nodeIdList = new LinkedList();
             while (rs.next()) {
                 nodeIdList.add(new Long(rs.getLong(1)));
@@ -1107,12 +1122,12 @@ final class BroadcastEventProcessor implements EventListener {
             }
             return nodeIds;
         } finally {
-            if (stmt != null)
-                try {
-                    stmt.close();
-                } catch (SQLException e) {
-                }
-        }
+            try {
+                if (rs != null) rs.close();
+            } finally {
+                if (stmt != null) stmt.close();
+            }
+        }        
     }
 
     /**
@@ -1180,11 +1195,15 @@ final class BroadcastEventProcessor implements EventListener {
                         dbConn.rollback();
                     }
                 } catch (SQLException ex) {
+                    log.error("handleAddInterface: Threw Exception during commit: ", ex);
+                    throw new FailedOperationException("Database error: " + ex.getMessage(), ex);
                 } finally {
                     if (dbConn != null)
                         try {
+                            dbConn.setAutoCommit(true);
                             dbConn.close();
                         } catch (SQLException ex) {
+                            log.error("handleAddInterface: Threw Exception during close: ", ex);
                         }
                 }
         }
@@ -1201,7 +1220,7 @@ final class BroadcastEventProcessor implements EventListener {
      *             if an error occurs during processing
      */
     private void handleAddNode(Event event) throws InsufficientInformationException, FailedOperationException {
-        // Category log = ThreadCategory.getInstance(getClass());
+        Category log = ThreadCategory.getInstance(getClass());
 
         EventUtils.requireParm(event, EventConstants.PARM_NODE_LABEL);
         if (isXmlRpcEnabled()) {
@@ -1211,13 +1230,10 @@ final class BroadcastEventProcessor implements EventListener {
         String ipaddr = event.getInterface();
         String nodeLabel = EventUtils.getParm(event, EventConstants.PARM_NODE_LABEL);
         long txNo = EventUtils.getLongParm(event, EventConstants.PARM_TRANSACTION_NO, -1L);
-        {
 
-            Category log = ThreadCategory.getInstance(getClass());
-
-            if (log.isDebugEnabled())
-                log.debug("addNodeHandler:  processing addNode event for " + ipaddr);
-        }
+        if (log.isDebugEnabled())
+            log.debug("addNodeHandler:  processing addNode event for " + ipaddr);
+            
         Connection dbConn = null;
         List eventsToSend = null;
         try {
@@ -1226,7 +1242,6 @@ final class BroadcastEventProcessor implements EventListener {
 
             eventsToSend = doAddNode(dbConn, nodeLabel, ipaddr, txNo);
         } catch (SQLException sqlE) {
-            Category log = ThreadCategory.getInstance(getClass());
             log.error("addNodeHandler: SQLException during add node and ipaddress to tables", sqlE);
             throw new FailedOperationException("database error: " + sqlE.getMessage(), sqlE);
         } finally {
@@ -1241,11 +1256,14 @@ final class BroadcastEventProcessor implements EventListener {
                         dbConn.rollback();
                     }
                 } catch (SQLException ex) {
+                    log.error("handleAddNode: Threw Exception during commit: ", ex);
+                    throw new FailedOperationException("database error: " + ex.getMessage(), ex);
                 } finally {
                     if (dbConn != null)
                         try {
                             dbConn.close();
                         } catch (SQLException ex) {
+                            log.error("handleAddNode: Threw Exception during close: ", ex);
                         }
                 }
         }
@@ -1300,11 +1318,14 @@ final class BroadcastEventProcessor implements EventListener {
                         dbConn.rollback();
                     }
                 } catch (SQLException ex) {
+                    log.error("handleChangeService: Exception thrown during commit/rollback: ", ex);
+                    throw new FailedOperationException("exeption processing changeService: " + ex.getMessage(), ex);
                 } finally {
                     if (dbConn != null)
                         try {
                             dbConn.close();
                         } catch (SQLException ex) {
+                            log.error("handleChangeService: Exception thrown closing connection: "+ex);
                         }
                 }
         }
@@ -1363,11 +1384,14 @@ final class BroadcastEventProcessor implements EventListener {
                         dbConn.rollback();
                     }
                 } catch (SQLException ex) {
+                    log.error("handleDeleteInterface: Exception thrown during commit/rollback: ", ex);
+                    throw new FailedOperationException("exeption processing delete interface: " + ex.getMessage(), ex);
                 } finally {
                     if (dbConn != null)
                         try {
                             dbConn.close();
                         } catch (SQLException ex) {
+                            log.error("handleDeleteInterface: Exception thrown closing connection: ", ex);
                         }
                 }
         }
@@ -1427,11 +1451,14 @@ final class BroadcastEventProcessor implements EventListener {
                         dbConn.rollback();
                     }
                 } catch (SQLException ex) {
+                    log.error("handleDeleteNode: Exception thrown during commit/rollback: ", ex);
+                    throw new FailedOperationException("exeption processing deleteNode: " + ex.getMessage(), ex);
                 } finally {
                     if (dbConn != null)
                         try {
                             dbConn.close();
                         } catch (SQLException ex) {
+                            log.error("handleDeleteNode: Exception thrown closing connection: ",ex);
                         }
                 }
         }
@@ -1488,11 +1515,14 @@ final class BroadcastEventProcessor implements EventListener {
                         dbConn.rollback();
                     }
                 } catch (SQLException ex) {
+                    log.error("handleDeleteService: Exception thrown during commit/rollback: ", ex);
+                    throw new FailedOperationException("exeption processing deleteService: " + ex.getMessage(), ex);
                 } finally {
                     if (dbConn != null)
                         try {
                             dbConn.close();
                         } catch (SQLException ex) {
+                            log.error("handleDeleteService: Exception thrown closing connection: ", ex);
                         }
                 }
         }
@@ -1548,24 +1578,25 @@ final class BroadcastEventProcessor implements EventListener {
                     nodeid = rs.getInt(1);
                 }
             } catch (SQLException sqlE) {
-                log.error("onMessage: Database error during nodeid retrieval for interface " + event.getInterface(), sqlE);
+                log.error("handleForceRescan: Database error during nodeid retrieval for interface " + event.getInterface(), sqlE);
             } finally {
-                // Close the prepared statement
-                if (stmt != null) {
+                try {
+                    if (rs != null) rs.close();
+                } catch (SQLException e) {
+                    log.error("handleForceRescan: Exception thrown closing resultset: ", e);
+                } finally {
                     try {
-                        stmt.close();
-                    } catch (SQLException sqlE) {
-                        // Ignore
+                        if (stmt != null) stmt.close();                        
+                    } catch (SQLException e) {
+                        log.error("handleForceRescan: Exception thrown closing statement: ", e);
+                    } finally {
+                        try {
+                            if (dbc != null) dbc.close();
+                        } catch (SQLException e) {
+                            log.error("handleForceRescan: Exception thrown closing connection: ", e);
+                        }
                     }
-                }
 
-                // Close the connection
-                if (dbc != null) {
-                    try {
-                        dbc.close();
-                    } catch (SQLException sqlE) {
-                        // Ignore
-                    }
                 }
             }
 
@@ -1679,11 +1710,14 @@ final class BroadcastEventProcessor implements EventListener {
                         dbConn.rollback();
                     }
                 } catch (SQLException ex) {
+                    log.error("handleUpdateServer: Exception thrown during commit/rollback: ", ex);
+                    throw new FailedOperationException("SQLException during updateServer on database.", ex);
                 } finally {
                     if (dbConn != null)
                         try {
                             dbConn.close();
                         } catch (SQLException ex) {
+                            log.error("handleUpdateServer: Exception thrown closing connection: ", ex);
                         }
                 }
         }
@@ -1746,11 +1780,14 @@ final class BroadcastEventProcessor implements EventListener {
                         dbConn.rollback();
                     }
                 } catch (SQLException ex) {
+                    log.error("handleUpdateService: Exception thrown during commit/rollback: ", ex);
+                    throw new FailedOperationException(ex.getMessage());
                 } finally {
                     if (dbConn != null)
                         try {
                             dbConn.close();
                         } catch (SQLException ex) {
+                            log.error("handleUpdateService: Exception thrown during close: ",ex);
                         }
                 }
         }
@@ -1784,14 +1821,11 @@ final class BroadcastEventProcessor implements EventListener {
             return rs.next();
         } finally {
             try {
-                if (rs != null)
-                    rs.close();
-                if (stmt != null)
-                    stmt.close();
-            } catch (SQLException e) {
+                if (rs != null) rs.close();
+            } finally {
+                if (stmt != null) stmt.close();
             }
         }
-
     }
 
     /**
@@ -1852,14 +1886,11 @@ final class BroadcastEventProcessor implements EventListener {
             return eventsToSend;
         } finally {
             try {
-                if (rs != null)
-                    rs.close();
-                if (stmt != null)
-                    stmt.close();
-            } catch (SQLException e) {
+                if (rs != null) rs.close();
+            } finally {
+                if (stmt != null) stmt.close();
             }
-
-        }
+        }        
     }
 
     /**
@@ -1890,7 +1921,6 @@ final class BroadcastEventProcessor implements EventListener {
             stmt.setLong(1, nodeId);
             stmt.setString(2, ipAddr);
             int count = stmt.executeUpdate();
-            stmt.close();
 
             if (log.isDebugEnabled())
                 log.debug("markServicesDeleted: marked service deleted: " + nodeId + "/" + ipAddr);
@@ -1900,12 +1930,8 @@ final class BroadcastEventProcessor implements EventListener {
             else
                 return Collections.EMPTY_LIST;
         } finally {
-            try {
-                if (stmt != null)
-                    stmt.close();
-            } catch (SQLException e) {
-            }
-        }
+            if (stmt != null) stmt.close();
+        }        
     }
 
     /**
@@ -1957,13 +1983,11 @@ final class BroadcastEventProcessor implements EventListener {
             return eventsToSend;
         } finally {
             try {
-                if (rs != null)
-                    rs.close();
-                if (stmt != null)
-                    stmt.close();
-            } catch (SQLException e) {
+                if (rs != null) rs.close();
+            } finally {
+                if (stmt != null) stmt.close();
             }
-        }
+        }        
     }
 
     /**
@@ -1986,18 +2010,21 @@ final class BroadcastEventProcessor implements EventListener {
         Category log = ThreadCategory.getInstance(getClass());
         PreparedStatement stmt = null;
 
-        stmt = dbConn.prepareStatement(DB_FIND_INTERFACE);
-        stmt.setLong(1, nodeId);
-        int count = stmt.executeUpdate();
-        stmt.close();
+        try {
+            stmt = dbConn.prepareStatement(DB_FIND_INTERFACE);
+            stmt.setLong(1, nodeId);
+            int count = stmt.executeUpdate();
 
-        if (log.isDebugEnabled())
-            log.debug("markServicesDeleted: marked service deleted: " + nodeId);
+            if (log.isDebugEnabled())
+                log.debug("markServicesDeleted: marked service deleted: " + nodeId);
 
-        if (count > 0)
-            return Collections.singletonList(EventUtils.createNodeDeletedEvent(source, nodeId, txNo));
-        else
-            return Collections.EMPTY_LIST;
+            if (count > 0)
+                return Collections.singletonList(EventUtils.createNodeDeletedEvent(source, nodeId, txNo));
+            else
+                return Collections.EMPTY_LIST;
+        } finally {
+            if (stmt != null) stmt.close();
+        }
     }
 
     /**
@@ -2026,21 +2053,23 @@ final class BroadcastEventProcessor implements EventListener {
 
         final String DB_MARK_SERVICE_DELETED = "UPDATE ifservices SET status='D' " + "WHERE ifservices.serviceID = service.serviceID " + "AND ifservices.nodeID=? AND ifservices.ipAddr=? AND service.serviceName=?";
 
-        stmt = dbConn.prepareStatement(DB_MARK_SERVICE_DELETED);
-        stmt.setLong(1, nodeId);
-        stmt.setString(2, ipAddr);
-        stmt.setString(3, service);
-        int count = stmt.executeUpdate();
+        try {
+            stmt = dbConn.prepareStatement(DB_MARK_SERVICE_DELETED);
+            stmt.setLong(1, nodeId);
+            stmt.setString(2, ipAddr);
+            stmt.setString(3, service);
+            int count = stmt.executeUpdate();
 
-        if (log.isDebugEnabled())
-            log.debug("markServiceDeleted: marked service deleted: " + nodeId + "/" + ipAddr + "/" + service);
+            if (log.isDebugEnabled())
+                log.debug("markServiceDeleted: marked service deleted: " + nodeId + "/" + ipAddr + "/" + service);
 
-        stmt.close();
-
-        if (count > 0)
-            return Collections.singletonList(EventUtils.createServiceDeletedEvent(source, nodeId, ipAddr, service, txNo));
-        else
-            return Collections.EMPTY_LIST;
+            if (count > 0)
+                return Collections.singletonList(EventUtils.createServiceDeletedEvent(source, nodeId, ipAddr, service, txNo));
+            else
+                return Collections.EMPTY_LIST;
+        } finally {
+            if (stmt != null) stmt.close();
+        }        
     }
 
     /**
@@ -2066,13 +2095,11 @@ final class BroadcastEventProcessor implements EventListener {
             return rs.next();
         } finally {
             try {
-                if (rs != null)
-                    rs.close();
-                if (stmt != null)
-                    stmt.close();
-            } catch (SQLException e) {
+                if (rs != null) rs.close();
+            } finally {
+                if (stmt != null) stmt.close();
             }
-        }
+        }        
 
     }
 
@@ -2214,16 +2241,19 @@ final class BroadcastEventProcessor implements EventListener {
         // Verify if the specified service already exists on the
         // interface/service
         // mapping.
-        stmt = dbConn.prepareStatement(SQL_QUERY_SERVICE_MAPPING_EXIST);
+        try {
+            stmt = dbConn.prepareStatement(SQL_QUERY_SERVICE_MAPPING_EXIST);
 
-        stmt.setString(1, ipaddr);
-        stmt.setString(2, serviceName);
+            stmt.setString(1, ipaddr);
+            stmt.setString(2, serviceName);
 
-        ResultSet rs = stmt.executeQuery();
-        mapExists = rs.next();
-        stmt.close();
-        return mapExists;
-    }
+            ResultSet rs = stmt.executeQuery();
+            mapExists = rs.next();
+            return mapExists;
+        } finally {
+            if (stmt != null) stmt.close();
+        }        
+   }
 
     /**
      * FIXME: finish the doc here
@@ -2262,14 +2292,11 @@ final class BroadcastEventProcessor implements EventListener {
             return serviceId;
         } finally {
             try {
-                if (rs != null)
-                    rs.close();
-                if (stmt != null)
-                    stmt.close();
-            } catch (SQLException e) {
-
+                if (rs != null) rs.close();
+            } finally {
+                if (stmt != null) stmt.close();
             }
-        }
+        }        
     }
 
 } // end class

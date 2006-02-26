@@ -1,3 +1,17 @@
+1.2.7 to 1.2.8
+----------------------------------------------------------------------
+- Attempting to clean up PostgreSQL connection hangs with clean up of
+  Capsd.BroadcastEventProcessor ResultSets and Statments.  This should
+  not be necessary, however, we do have a lot of these objects that just
+  go out of scope over the course of a delete transaction that uses a 
+  single connection.  Also, added more thow FailedOperationException 
+  where SQLExceptions were just being eaten.
+- There were also places that ate SQLExceptions for close operations
+  on statements, connections, and such that were removed allowing
+  the method to throw the Exception.  This may have been the expected
+  behavior (don't fail the process if a something simply can't be cleaned
+  up).  Note: a bit of clean up was done in DbNodeEntry as well.
+  
 1.2.6 to 1.2.7
 ----------------------------------------------------------------------
 - If the ifIndex of an interface on a device changes, it is possible
