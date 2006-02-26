@@ -84,57 +84,10 @@ final class BroadcastEventProcessor implements EventListener {
     private static String SQL_ADD_SERVICE_TO_MAPPING = "INSERT INTO serviceMap VALUES (?, ?)";
 
     /**
-     * SQL statement used to count all the interface on a node
-     */
-    private static String SQL_COUNT_INTERFACES_ON_NODE = "SELECT count(ipaddr) FROM ipinterface WHERE nodeid = (SELECT nodeid FROM node WHERE nodelabel = ?) ";
-
-    /**
-     * SQL statement used to delete all the ipinterfaces with a specified
-     * nodeid.
-     */
-    private static String SQL_DELETE_ALL_INTERFACES_ON_NODE = "DELETE FROM ipinterface WHERE nodeid = ?";
-
-    /**
      * SQL statement used to delete all services mapping to a specified
      * interface from the database.
      */
     private static String SQL_DELETE_ALL_SERVICES_INTERFACE_MAPPING = "DELETE FROM serviceMap WHERE ipaddr = ?";
-
-    /**
-     * SQL statement used to delete all assets from the database with a
-     * specified nodeid.
-     */
-    private static String SQL_DELETE_ASSETS_ON_NODE = "DELETE FROM assets WHERE nodeid = ?";
-
-    /**
-     * SQL statement used to delete all events associated with a specified
-     * interface from the database.
-     */
-    private static String SQL_DELETE_EVENTS_ON_INTERFACE = "DELETE FROM events " + "WHERE nodeid = ? AND ipaddr = ?";
-
-    /**
-     * SQL statement used to delete all events from the database with a
-     * specified nodeid.
-     */
-    private static String SQL_DELETE_EVENTS_ON_NODE = "DELETE FROM events WHERE nodeid = ?";
-
-    /**
-     * SQL statement used to delete all ifservices from the database with a
-     * specified interface.
-     */
-    private static String SQL_DELETE_IFSERVICES_ON_INTERFACE = "DELETE FROM ifservices WHERE nodeid = ? AND ipaddr = ?";
-
-    /**
-     * SQL statement used to delete all ifservices from the database with a
-     * specified nodeid.
-     */
-    private static String SQL_DELETE_IFSERVICES_ON_NODE = "DELETE FROM ifservices WHERE nodeid = ?";
-
-    /**
-     * SQL statement used to delete an ipinterfac with a specified nodeid and
-     * ipaddress.
-     */
-    private static String SQL_DELETE_INTERFACE = "DELETE FROM ipinterface WHERE nodeid = ? AND ipaddr = ?";
 
     /**
      * SQL statement used to delete an interface/server mapping from the
@@ -143,69 +96,10 @@ final class BroadcastEventProcessor implements EventListener {
     private static String SQL_DELETE_INTERFACE_ON_SERVER = "DELETE FROM serverMap WHERE ipaddr = ? AND servername = ?";
 
     /**
-     * SQL statement used to delete a node from the database with a specified
-     * nodelabel.
-     */
-    private static String SQL_DELETE_NODEID = "DELETE FROM node WHERE nodeid = ?";
-
-    /**
-     * SQL statement used to delete all notifications associated with a
-     * specified interface from the database.
-     */
-    private static String SQL_DELETE_NOTIFICATIONS_ON_INTERFACE = "DELETE FROM notifications " + "WHERE nodeid = ? AND interfaceid = ?";
-
-    /**
-     * SQL statement used to delete all notifications from the database with a
-     * specified nodeid.
-     */
-    private static String SQL_DELETE_NOTIFICATIONS_ON_NODE = "DELETE FROM notifications WHERE nodeid = ?";
-
-    /**
-     * SQL statement used to delete all notifications associated with a
-     * specified interface from the database.
-     */
-    private static String SQL_DELETE_OUTAGES_ON_INTERFACE = "DELETE FROM outages " + "WHERE nodeid = ? AND ipaddr = ?";
-
-    /**
-     * SQL statement used to delete all outages from the database with a
-     * specified nodeid.
-     */
-    private static String SQL_DELETE_OUTAGES_ON_NODE = "DELETE FROM outages WHERE nodeid = ?";
-
-    /**
      * SQL statement used to delete an interface/service mapping from the
      * database.
      */
     private static String SQL_DELETE_SERVICE_INTERFACE_MAPPING = "DELETE FROM serviceMap WHERE ipaddr = ? AND servicemapname = ?";
-
-    /**
-     * SQL statement used to delete the snmpinterface entry associated with a
-     * specified interface from the database.
-     */
-    private static String SQL_DELETE_SNMPINTERFACE_ON_INTERFACE = "DELETE FROM snmpinterface " + "WHERE nodeid = ? AND ipaddr = ?";
-
-    /**
-     * SQL statement used to delete all snmpinterface from the database with a
-     * specified nodeid.
-     */
-    private static String SQL_DELETE_SNMPINTERFACE_ON_NODE = "DELETE FROM snmpinterface WHERE nodeid = ?";
-
-    /**
-     * SQL statement used to delete all usersnotified info associated with a
-     * specified interface from the database.
-     */
-    private static String SQL_DELETE_USERSNOTIFIED_ON_INTERFACE = "DELETE FROM usersnotified WHERE notifyid IN " + "(SELECT notifid FROM notifications " + " WHERE nodeid = ? AND interfaceid = ?)";
-
-    /**
-     * SQL statement used to delete all usersNotified from the database with a
-     * specified nodeid.
-     */
-    private static String SQL_DELETE_USERSNOTIFIED_ON_NODE = "DELETE FROM usersNotified WHERE notifyID IN ( SELECT notifyID from notifications WHERE nodeid = ?)";
-
-    /**
-     * SQL statement used to count all the interface on a node
-     */
-    private static String SQL_FIND_SERVICES_ON_NODE = "SELECT ifservices.ipaddr, service.servicename FROM ifservices, service WHERE nodeID = ?";
 
     /**
      * SQL statement used to verify if an ipinterface with the specified ip
@@ -224,12 +118,6 @@ final class BroadcastEventProcessor implements EventListener {
      * in the database, and the nodeid from the database if exists.
      */
     private static String SQL_QUERY_NODE_EXIST = "SELECT nodeid, dpname FROM node WHERE nodelabel = ? AND nodeType !='D'";
-
-    /**
-     * SQL statement used to query if an interface is the snmp primary interface
-     * of a node.
-     */
-    private static String SQL_QUERY_PRIMARY_INTERFACE = "SELECT isSnmpPrimary FROM ipinterface " + "WHERE nodeid = ? AND ipaddr = ?";
 
     /**
      * SQL statement used to verify if an ifservice with the specified ip
@@ -1321,7 +1209,6 @@ final class BroadcastEventProcessor implements EventListener {
         }
 
         String ipaddr = event.getInterface();
-        String sourceUei = event.getUei();
         String nodeLabel = EventUtils.getParm(event, EventConstants.PARM_NODE_LABEL);
         long txNo = EventUtils.getLongParm(event, EventConstants.PARM_TRANSACTION_NO, -1L);
         {
@@ -1617,8 +1504,6 @@ final class BroadcastEventProcessor implements EventListener {
      * @param event
      */
     private void handleDupNodeDeleted(Event event) throws InsufficientInformationException {
-        Category log = ThreadCategory.getInstance(getClass());
-
         EventUtils.checkNodeId(event);
 
         // Remove the deleted node from the scheduler
@@ -1739,7 +1624,6 @@ final class BroadcastEventProcessor implements EventListener {
      * @param event
      */
     private void handleNodeDeleted(Event event) throws InsufficientInformationException {
-        Category log = ThreadCategory.getInstance(getClass());
 
         EventUtils.checkNodeId(event);
 
@@ -1956,8 +1840,6 @@ final class BroadcastEventProcessor implements EventListener {
             stmt.setLong(1, nodeId);
             stmt.setString(2, ipAddr);
 
-            int count = stmt.executeUpdate();
-
             for (Iterator it = services.iterator(); it.hasNext();) {
                 String serviceName = (String) it.next();
                 log.debug("creating event for service " + serviceName + " for ipAddr " + ipAddr + " node " + nodeId);
@@ -2003,7 +1885,6 @@ final class BroadcastEventProcessor implements EventListener {
         Category log = ThreadCategory.getInstance(getClass());
         PreparedStatement stmt = null;
         try {
-            List eventsToSend = new LinkedList();
 
             stmt = dbConn.prepareStatement(DB_FIND_INTERFACE);
             stmt.setLong(1, nodeId);
@@ -2104,7 +1985,6 @@ final class BroadcastEventProcessor implements EventListener {
         final String DB_FIND_INTERFACE = "UPDATE node SET nodeType = 'D' WHERE nodeid = ? and nodeType != 'D'";
         Category log = ThreadCategory.getInstance(getClass());
         PreparedStatement stmt = null;
-        List eventsToSend = new LinkedList();
 
         stmt = dbConn.prepareStatement(DB_FIND_INTERFACE);
         stmt.setLong(1, nodeId);
