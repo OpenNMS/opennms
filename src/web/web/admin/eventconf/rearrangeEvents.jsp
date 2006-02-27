@@ -171,8 +171,7 @@
   
 <br>
 
-<jsp:include page="/includes/footer.jsp" flush="false" >
-</jsp:include>
+<jsp:include page="/includes/footer.jsp" flush="false" />
 
 </body>
 </html>
