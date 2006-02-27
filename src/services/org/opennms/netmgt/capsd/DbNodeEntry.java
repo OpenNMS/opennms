@@ -302,181 +302,190 @@ final class DbNodeEntry {
 
         // Get the next node identifier
         //
-        PreparedStatement stmt = c.prepareStatement(SQL_NEXT_NID);
-        ResultSet rset = stmt.executeQuery();
-        rset.next();
-        m_nodeId = rset.getInt(1);
-        rset.close();
-        rset = null;
-        stmt.close();
-        stmt = null;
+        PreparedStatement stmt = null;
+        ResultSet rset = null;
+        try {
+            stmt = c.prepareStatement(SQL_NEXT_NID);
+            rset = stmt.executeQuery();
+            rset.next();
+            m_nodeId = rset.getInt(1);
+            rset.close();
+            rset = null;
+            stmt.close();
+            stmt = null;
 
-        // first extract the next node identifier
-        //
-        StringBuffer names = new StringBuffer("INSERT INTO node (nodeID,dpName");
-        StringBuffer values = new StringBuffer("?");
+            // first extract the next node identifier
+            //
+            StringBuffer names = new StringBuffer("INSERT INTO node (nodeID,dpName");
+            StringBuffer values = new StringBuffer("?");
 
-        if ((m_changed & CHANGED_DPNAME) == CHANGED_DPNAME) {
-            values.append(",?");
-        } else {
-            values.append(",'").append(DEFAULT_DP_NAME).append("'");
-        }
+            if ((m_changed & CHANGED_DPNAME) == CHANGED_DPNAME) {
+                values.append(",?");
+            } else {
+                values.append(",'").append(DEFAULT_DP_NAME).append("'");
+            }
 
-        if ((m_changed & CHANGED_PARENT_ID) == CHANGED_PARENT_ID) {
-            values.append(",?");
-            names.append(",nodeParentID");
-        }
+            if ((m_changed & CHANGED_PARENT_ID) == CHANGED_PARENT_ID) {
+                values.append(",?");
+                names.append(",nodeParentID");
+            }
 
-        if ((m_changed & CHANGED_TYPE) == CHANGED_TYPE) {
-            values.append(",?");
-            names.append(",nodeType");
-        }
+            if ((m_changed & CHANGED_TYPE) == CHANGED_TYPE) {
+                values.append(",?");
+                names.append(",nodeType");
+            }
 
-        if ((m_changed & CHANGED_CREATE_TIME) == CHANGED_CREATE_TIME) {
-            values.append(",?");
-            names.append(",nodeCreateTime");
-        } else {
-            values.append(",?");
-            names.append(",nodeCreateTime");
-            m_createTime = new Timestamp((new Date()).getTime());
-            m_changed |= CHANGED_CREATE_TIME;
-        }
+            if ((m_changed & CHANGED_CREATE_TIME) == CHANGED_CREATE_TIME) {
+                values.append(",?");
+                names.append(",nodeCreateTime");
+            } else {
+                values.append(",?");
+                names.append(",nodeCreateTime");
+                m_createTime = new Timestamp((new Date()).getTime());
+                m_changed |= CHANGED_CREATE_TIME;
+            }
 
-        if ((m_changed & CHANGED_SYSOID) == CHANGED_SYSOID) {
-            values.append(",?");
-            names.append(",nodeSysOID");
-        }
+            if ((m_changed & CHANGED_SYSOID) == CHANGED_SYSOID) {
+                values.append(",?");
+                names.append(",nodeSysOID");
+            }
 
-        if ((m_changed & CHANGED_SYSNAME) == CHANGED_SYSNAME) {
-            values.append(",?");
-            names.append(",nodeSysName");
-        }
+            if ((m_changed & CHANGED_SYSNAME) == CHANGED_SYSNAME) {
+                values.append(",?");
+                names.append(",nodeSysName");
+            }
 
-        if ((m_changed & CHANGED_SYSDESCR) == CHANGED_SYSDESCR) {
-            values.append(",?");
-            names.append(",nodeSysDescription");
-        }
+            if ((m_changed & CHANGED_SYSDESCR) == CHANGED_SYSDESCR) {
+                values.append(",?");
+                names.append(",nodeSysDescription");
+            }
 
-        if ((m_changed & CHANGED_SYSLOC) == CHANGED_SYSLOC) {
-            values.append(",?");
-            names.append(",nodeSysLocation");
-        }
+            if ((m_changed & CHANGED_SYSLOC) == CHANGED_SYSLOC) {
+                values.append(",?");
+                names.append(",nodeSysLocation");
+            }
 
-        if ((m_changed & CHANGED_SYSCONTACT) == CHANGED_SYSCONTACT) {
-            values.append(",?");
-            names.append(",nodeSysContact");
-        }
+            if ((m_changed & CHANGED_SYSCONTACT) == CHANGED_SYSCONTACT) {
+                values.append(",?");
+                names.append(",nodeSysContact");
+            }
 
-        if ((m_changed & CHANGED_LABEL) == CHANGED_LABEL) {
-            values.append(",?");
-            names.append(",nodeLabel");
-        }
+            if ((m_changed & CHANGED_LABEL) == CHANGED_LABEL) {
+                values.append(",?");
+                names.append(",nodeLabel");
+            }
 
-        if ((m_changed & CHANGED_LABEL_SOURCE) == CHANGED_LABEL_SOURCE) {
-            values.append(",?");
-            names.append(",nodeLabelSource");
-        }
+            if ((m_changed & CHANGED_LABEL_SOURCE) == CHANGED_LABEL_SOURCE) {
+                values.append(",?");
+                names.append(",nodeLabelSource");
+            }
 
-        if ((m_changed & CHANGED_NETBIOS_NAME) == CHANGED_NETBIOS_NAME) {
-            values.append(",?");
-            names.append(",nodeNetBIOSName");
-        }
+            if ((m_changed & CHANGED_NETBIOS_NAME) == CHANGED_NETBIOS_NAME) {
+                values.append(",?");
+                names.append(",nodeNetBIOSName");
+            }
 
-        if ((m_changed & CHANGED_DOMAIN_NAME) == CHANGED_DOMAIN_NAME) {
-            values.append(",?");
-            names.append(",nodeDomainName");
-        }
+            if ((m_changed & CHANGED_DOMAIN_NAME) == CHANGED_DOMAIN_NAME) {
+                values.append(",?");
+                names.append(",nodeDomainName");
+            }
 
-        if ((m_changed & CHANGED_OS) == CHANGED_OS) {
-            values.append(",?");
-            names.append(",operatingSystem");
-        }
+            if ((m_changed & CHANGED_OS) == CHANGED_OS) {
+                values.append(",?");
+                names.append(",operatingSystem");
+            }
 
-        if ((m_changed & CHANGED_POLLTIME) == CHANGED_POLLTIME) {
-            values.append(",?");
-            names.append(",lastCapsdPoll");
-        }
+            if ((m_changed & CHANGED_POLLTIME) == CHANGED_POLLTIME) {
+                values.append(",?");
+                names.append(",lastCapsdPoll");
+            }
 
-        names.append(") VALUES (").append(values).append(')');
-        log.debug("DbNodeEntry.insert: SQL insert statment = " + names.toString());
+            names.append(") VALUES (").append(values).append(')');
+            log.debug("DbNodeEntry.insert: SQL insert statment = " + names.toString());
 
-        // create the Prepared statment and then
-        // start setting the result values
-        //
-        stmt = c.prepareStatement(names.toString());
-        names = null;
+            // create the Prepared statment and then
+            // start setting the result values
+            //
+            stmt = c.prepareStatement(names.toString());
+            names = null;
 
-        int ndx = 1;
-        stmt.setInt(ndx++, m_nodeId);
-        if ((m_changed & CHANGED_DPNAME) == CHANGED_DPNAME)
-            stmt.setString(ndx++, m_dpName);
+            int ndx = 1;
+            stmt.setInt(ndx++, m_nodeId);
+            if ((m_changed & CHANGED_DPNAME) == CHANGED_DPNAME)
+                stmt.setString(ndx++, m_dpName);
 
-        if ((m_changed & CHANGED_PARENT_ID) == CHANGED_PARENT_ID)
-            if (m_parentId == -1)
-                stmt.setNull(ndx++, Types.INTEGER);
-            else
-                stmt.setInt(ndx++, m_parentId);
+            if ((m_changed & CHANGED_PARENT_ID) == CHANGED_PARENT_ID)
+                if (m_parentId == -1)
+                    stmt.setNull(ndx++, Types.INTEGER);
+                else
+                    stmt.setInt(ndx++, m_parentId);
 
-        if ((m_changed & CHANGED_TYPE) == CHANGED_TYPE)
-            stmt.setString(ndx++, new String(new char[] { m_type }));
+            if ((m_changed & CHANGED_TYPE) == CHANGED_TYPE)
+                stmt.setString(ndx++, new String(new char[] { m_type }));
 
-        if ((m_changed & CHANGED_CREATE_TIME) == CHANGED_CREATE_TIME) {
-            stmt.setTimestamp(ndx++, m_createTime);
-        }
+            if ((m_changed & CHANGED_CREATE_TIME) == CHANGED_CREATE_TIME) {
+                stmt.setTimestamp(ndx++, m_createTime);
+            }
 
-        if ((m_changed & CHANGED_SYSOID) == CHANGED_SYSOID)
-            stmt.setString(ndx++, m_sysoid);
+            if ((m_changed & CHANGED_SYSOID) == CHANGED_SYSOID)
+                stmt.setString(ndx++, m_sysoid);
 
-        if ((m_changed & CHANGED_SYSNAME) == CHANGED_SYSNAME)
-            stmt.setString(ndx++, m_sysname);
+            if ((m_changed & CHANGED_SYSNAME) == CHANGED_SYSNAME)
+                stmt.setString(ndx++, m_sysname);
 
-        if ((m_changed & CHANGED_SYSDESCR) == CHANGED_SYSDESCR)
-            stmt.setString(ndx++, m_sysdescr);
+            if ((m_changed & CHANGED_SYSDESCR) == CHANGED_SYSDESCR)
+                stmt.setString(ndx++, m_sysdescr);
 
-        if ((m_changed & CHANGED_SYSLOC) == CHANGED_SYSLOC)
-            stmt.setString(ndx++, m_syslocation);
+            if ((m_changed & CHANGED_SYSLOC) == CHANGED_SYSLOC)
+                stmt.setString(ndx++, m_syslocation);
 
-        if ((m_changed & CHANGED_SYSCONTACT) == CHANGED_SYSCONTACT)
-            stmt.setString(ndx++, m_syscontact);
+            if ((m_changed & CHANGED_SYSCONTACT) == CHANGED_SYSCONTACT)
+                stmt.setString(ndx++, m_syscontact);
 
-        if ((m_changed & CHANGED_LABEL) == CHANGED_LABEL)
-            stmt.setString(ndx++, m_label);
+            if ((m_changed & CHANGED_LABEL) == CHANGED_LABEL)
+                stmt.setString(ndx++, m_label);
 
-        if ((m_changed & CHANGED_LABEL_SOURCE) == CHANGED_LABEL_SOURCE)
-            stmt.setString(ndx++, new String(new char[] { m_labelSource }));
+            if ((m_changed & CHANGED_LABEL_SOURCE) == CHANGED_LABEL_SOURCE)
+                stmt.setString(ndx++, new String(new char[] { m_labelSource }));
 
-        if ((m_changed & CHANGED_NETBIOS_NAME) == CHANGED_NETBIOS_NAME)
-            stmt.setString(ndx++, m_nbName);
+            if ((m_changed & CHANGED_NETBIOS_NAME) == CHANGED_NETBIOS_NAME)
+                stmt.setString(ndx++, m_nbName);
 
-        if ((m_changed & CHANGED_DOMAIN_NAME) == CHANGED_DOMAIN_NAME)
-            stmt.setString(ndx++, m_nbDomainName);
+            if ((m_changed & CHANGED_DOMAIN_NAME) == CHANGED_DOMAIN_NAME)
+                stmt.setString(ndx++, m_nbDomainName);
 
-        if ((m_changed & CHANGED_OS) == CHANGED_OS)
-            stmt.setString(ndx++, m_os);
+            if ((m_changed & CHANGED_OS) == CHANGED_OS)
+                stmt.setString(ndx++, m_os);
 
-        if ((m_changed & CHANGED_POLLTIME) == CHANGED_POLLTIME) {
-            stmt.setTimestamp(ndx++, m_lastPoll);
-        }
+            if ((m_changed & CHANGED_POLLTIME) == CHANGED_POLLTIME) {
+                stmt.setTimestamp(ndx++, m_lastPoll);
+            }
 
-        if (log.isDebugEnabled()) {
-            log.debug("nodeid='" + m_nodeId + "'" + " nodetype='" + new String(new char[] { m_type }) + "'" + " createTime='" + m_createTime + "'" + " lastPoll='" + m_lastPoll + "'" + " dpName='" + m_dpName + "'" + " sysname='" + m_sysname + "'" + " sysoid='" + m_sysoid + "'" + " sysdescr='" + m_sysdescr + "'" + " syslocation='" + m_syslocation + "'" + " syscontact='" + m_syscontact + "'" + " label='" + m_label + "'" + " labelsource='" + new String(new char[] { m_labelSource }) + "'" + " netbios='" + m_nbName + "'" + " domain='" + m_nbDomainName + "'" + " os='" + m_os + "'");
-        }
+            if (log.isDebugEnabled()) {
+                log.debug("nodeid='" + m_nodeId + "'" + " nodetype='" + new String(new char[] { m_type }) + "'" + " createTime='" + m_createTime + "'" + " lastPoll='" + m_lastPoll + "'" + " dpName='" + m_dpName + "'" + " sysname='" + m_sysname + "'" + " sysoid='" + m_sysoid + "'" + " sysdescr='" + m_sysdescr + "'" + " syslocation='" + m_syslocation + "'" + " syscontact='" + m_syscontact + "'" + " label='" + m_label + "'" + " labelsource='" + new String(new char[] { m_labelSource }) + "'" + " netbios='" + m_nbName + "'" + " domain='" + m_nbDomainName + "'" + " os='" + m_os + "'");
+            }
 
-        // Run the insert
-        //
-        int rc = stmt.executeUpdate();
-        log.debug("DbNodeEntry.insert: SQL update result = " + rc);
-        stmt.close();
+            // Run the insert
+            //
+            int rc = stmt.executeUpdate();
+            log.debug("DbNodeEntry.insert: SQL update result = " + rc);
 
-        // Insert a null entry into the asset table
+            // Insert a null entry into the asset table
 
-        createAssetNodeEntry(c, m_nodeId);
+            createAssetNodeEntry(c, m_nodeId);
 
-        // clear the mask and mark as backed
-        // by the database
-        //
-        m_fromDb = true;
-        m_changed = 0;
+            // clear the mask and mark as backed
+            // by the database
+            //
+            m_fromDb = true;
+            m_changed = 0;
+        } finally {
+            try {
+                if (rset != null) rset.close();
+            } finally {
+                if (stmt != null) stmt.close();
+            }
+        }        
     }
 
     /**
@@ -576,114 +585,118 @@ final class DbNodeEntry {
         // create the Prepared statment and then
         // start setting the result values
         //
-        PreparedStatement stmt = c.prepareStatement(sqlText.toString());
-        sqlText = null;
+        PreparedStatement stmt = null;
+        try {
+            stmt = c.prepareStatement(sqlText.toString());
+            sqlText = null;
 
-        int ndx = 1;
-        if ((m_changed & CHANGED_PARENT_ID) == CHANGED_PARENT_ID)
-            if (m_parentId == -1)
-                stmt.setNull(ndx++, Types.INTEGER);
-            else
-                stmt.setInt(ndx++, m_parentId);
+            int ndx = 1;
+            if ((m_changed & CHANGED_PARENT_ID) == CHANGED_PARENT_ID)
+                if (m_parentId == -1)
+                    stmt.setNull(ndx++, Types.INTEGER);
+                else
+                    stmt.setInt(ndx++, m_parentId);
 
-        if ((m_changed & CHANGED_TYPE) == CHANGED_TYPE)
-            stmt.setString(ndx++, new String(new char[] { m_type }));
+            if ((m_changed & CHANGED_TYPE) == CHANGED_TYPE)
+                stmt.setString(ndx++, new String(new char[] { m_type }));
 
-        if ((m_changed & CHANGED_CREATE_TIME) == CHANGED_CREATE_TIME) {
-            if (m_createTime == null) {
-                stmt.setNull(ndx++, Types.TIMESTAMP);
-            } else {
-                stmt.setTimestamp(ndx++, m_createTime);
+            if ((m_changed & CHANGED_CREATE_TIME) == CHANGED_CREATE_TIME) {
+                if (m_createTime == null) {
+                    stmt.setNull(ndx++, Types.TIMESTAMP);
+                } else {
+                    stmt.setTimestamp(ndx++, m_createTime);
+                }
             }
+
+            if ((m_changed & CHANGED_SYSOID) == CHANGED_SYSOID) {
+                if (m_sysoid == null)
+                    stmt.setNull(ndx++, Types.VARCHAR);
+                else
+                    stmt.setString(ndx++, m_sysoid);
+            }
+
+            if ((m_changed & CHANGED_SYSNAME) == CHANGED_SYSNAME) {
+                if (m_sysname == null)
+                    stmt.setNull(ndx++, Types.VARCHAR);
+                else
+                    stmt.setString(ndx++, m_sysname);
+            }
+
+            if ((m_changed & CHANGED_SYSDESCR) == CHANGED_SYSDESCR) {
+                if (m_sysdescr == null)
+                    stmt.setNull(ndx++, Types.VARCHAR);
+                else
+                    stmt.setString(ndx++, m_sysdescr);
+            }
+
+            if ((m_changed & CHANGED_SYSLOC) == CHANGED_SYSLOC) {
+                if (m_syslocation == null)
+                    stmt.setNull(ndx++, Types.VARCHAR);
+                else
+                    stmt.setString(ndx++, m_syslocation);
+            }
+
+            if ((m_changed & CHANGED_SYSCONTACT) == CHANGED_SYSCONTACT) {
+                if (m_syscontact == null)
+                    stmt.setNull(ndx++, Types.VARCHAR);
+                else
+                    stmt.setString(ndx++, m_syscontact);
+            }
+
+            if ((m_changed & CHANGED_LABEL) == CHANGED_LABEL) {
+                if (m_label == null)
+                    stmt.setNull(ndx++, Types.VARCHAR);
+                else
+                    stmt.setString(ndx++, m_label);
+            }
+
+            if ((m_changed & CHANGED_LABEL_SOURCE) == CHANGED_LABEL_SOURCE) {
+                stmt.setString(ndx++, new String(new char[] { m_labelSource }));
+            }
+
+            if ((m_changed & CHANGED_NETBIOS_NAME) == CHANGED_NETBIOS_NAME) {
+                if (m_nbName == null)
+                    stmt.setNull(ndx++, Types.VARCHAR);
+                else
+                    stmt.setString(ndx++, m_nbName);
+            }
+
+            if ((m_changed & CHANGED_DOMAIN_NAME) == CHANGED_DOMAIN_NAME) {
+                if (m_nbDomainName == null)
+                    stmt.setNull(ndx++, Types.VARCHAR);
+                else
+                    stmt.setString(ndx++, m_nbDomainName);
+            }
+
+            if ((m_changed & CHANGED_OS) == CHANGED_OS) {
+                if (m_os == null)
+                    stmt.setNull(ndx++, Types.VARCHAR);
+                else
+                    stmt.setString(ndx++, m_os);
+            }
+
+            if ((m_changed & CHANGED_POLLTIME) == CHANGED_POLLTIME) {
+                if (m_lastPoll != null) {
+                    stmt.setTimestamp(ndx++, m_lastPoll);
+                } else
+                    stmt.setNull(ndx++, Types.TIMESTAMP);
+            }
+
+            stmt.setInt(ndx++, m_nodeId);
+            stmt.setString(ndx++, m_dpName);
+
+            // Run the insert
+            //
+            int rc = stmt.executeUpdate();
+            log.debug("DbNodeEntry.update: update result = " + rc);
+
+            // clear the mask and mark as backed
+            // by the database
+            //
+            m_changed = 0;
+        } finally {
+            if (stmt != null) stmt.close();
         }
-
-        if ((m_changed & CHANGED_SYSOID) == CHANGED_SYSOID) {
-            if (m_sysoid == null)
-                stmt.setNull(ndx++, Types.VARCHAR);
-            else
-                stmt.setString(ndx++, m_sysoid);
-        }
-
-        if ((m_changed & CHANGED_SYSNAME) == CHANGED_SYSNAME) {
-            if (m_sysname == null)
-                stmt.setNull(ndx++, Types.VARCHAR);
-            else
-                stmt.setString(ndx++, m_sysname);
-        }
-
-        if ((m_changed & CHANGED_SYSDESCR) == CHANGED_SYSDESCR) {
-            if (m_sysdescr == null)
-                stmt.setNull(ndx++, Types.VARCHAR);
-            else
-                stmt.setString(ndx++, m_sysdescr);
-        }
-
-        if ((m_changed & CHANGED_SYSLOC) == CHANGED_SYSLOC) {
-            if (m_syslocation == null)
-                stmt.setNull(ndx++, Types.VARCHAR);
-            else
-                stmt.setString(ndx++, m_syslocation);
-        }
-
-        if ((m_changed & CHANGED_SYSCONTACT) == CHANGED_SYSCONTACT) {
-            if (m_syscontact == null)
-                stmt.setNull(ndx++, Types.VARCHAR);
-            else
-                stmt.setString(ndx++, m_syscontact);
-        }
-
-        if ((m_changed & CHANGED_LABEL) == CHANGED_LABEL) {
-            if (m_label == null)
-                stmt.setNull(ndx++, Types.VARCHAR);
-            else
-                stmt.setString(ndx++, m_label);
-        }
-
-        if ((m_changed & CHANGED_LABEL_SOURCE) == CHANGED_LABEL_SOURCE) {
-            stmt.setString(ndx++, new String(new char[] { m_labelSource }));
-        }
-
-        if ((m_changed & CHANGED_NETBIOS_NAME) == CHANGED_NETBIOS_NAME) {
-            if (m_nbName == null)
-                stmt.setNull(ndx++, Types.VARCHAR);
-            else
-                stmt.setString(ndx++, m_nbName);
-        }
-
-        if ((m_changed & CHANGED_DOMAIN_NAME) == CHANGED_DOMAIN_NAME) {
-            if (m_nbDomainName == null)
-                stmt.setNull(ndx++, Types.VARCHAR);
-            else
-                stmt.setString(ndx++, m_nbDomainName);
-        }
-
-        if ((m_changed & CHANGED_OS) == CHANGED_OS) {
-            if (m_os == null)
-                stmt.setNull(ndx++, Types.VARCHAR);
-            else
-                stmt.setString(ndx++, m_os);
-        }
-
-        if ((m_changed & CHANGED_POLLTIME) == CHANGED_POLLTIME) {
-            if (m_lastPoll != null) {
-                stmt.setTimestamp(ndx++, m_lastPoll);
-            } else
-                stmt.setNull(ndx++, Types.TIMESTAMP);
-        }
-
-        stmt.setInt(ndx++, m_nodeId);
-        stmt.setString(ndx++, m_dpName);
-
-        // Run the insert
-        //
-        int rc = stmt.executeUpdate();
-        log.debug("DbNodeEntry.update: update result = " + rc);
-        stmt.close();
-
-        // clear the mask and mark as backed
-        // by the database
-        //
-        m_changed = 0;
     }
 
     /**
