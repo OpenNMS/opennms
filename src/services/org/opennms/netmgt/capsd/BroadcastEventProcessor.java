@@ -1869,12 +1869,12 @@ final class BroadcastEventProcessor implements EventListener {
             stmt.close();
             stmt = null;
             
-            stmt.executeUpdate();
-
             final String DB_MARK_SERVICES_FOR_INTERFACE = "UPDATE ifservices SET status = 'D' where ifservices.nodeID = ? and ifservices.ipAddr = ?";
             stmt = dbConn.prepareStatement(DB_MARK_SERVICES_FOR_INTERFACE);
             stmt.setLong(1, nodeId);
             stmt.setString(2, ipAddr);
+
+            stmt.executeUpdate();
 
             for (Iterator it = services.iterator(); it.hasNext();) {
                 String serviceName = (String) it.next();
