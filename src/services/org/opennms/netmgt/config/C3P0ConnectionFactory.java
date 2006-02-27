@@ -128,31 +128,31 @@ public class C3P0ConnectionFactory implements DbConnectionFactory {
         m_pool.setDriverClass(m_className);
         
         //defaults
-        m_pool.setAcquireIncrement(DEFAULT_AQUIRE_INCREMENT);
-        m_pool.setAcquireRetryAttempts(DEFAULT_RETRY_ATTEMPTS);
-        m_pool.setAcquireRetryDelay(DEFAULT_RETRY_DELAY);
-        m_pool.setAutoCommitOnClose(DEFAULT_AUTOCOMMIT_ON_CLOSE);
-        m_pool.setBreakAfterAcquireFailure(DEFAULT_BREAK_AFTER_ACQUIRE_FAILURE);
-        m_pool.setCheckoutTimeout(DEFAULT_CHECKOUT_TIMEOUT);
-        m_pool.setConnectionTesterClassName(DEFAULT_TESTER_CLASS_NAME);
-        m_pool.setDescription(DEFAULT_POOL_DESCRIPTION);
-        m_pool.setForceIgnoreUnresolvedTransactions(DEFAULT_FORCE_IGNORE_UNRESOLVED_TRANSACTION);
-        m_pool.setIdentityToken(DEFAULT_IDENTITY_TOKEN);
-        m_pool.setIdleConnectionTestPeriod(DEFAULT_IDLE_CONNECTION_TEST_PERIOD);
-        m_pool.setInitialPoolSize(DEFAULT_INITIAL_POOL_SIZE);
-        m_pool.setLoginTimeout(DEFAULT_LOGIN_TIMEOUT);
-        m_pool.setLogWriter(DEFAULT_LOG_WRITER);
-        m_pool.setMaxIdleTime(DEFAUT_MAX_IDLE_TIME);
-        m_pool.setMaxPoolSize(DEFAULT_MAX_POOL_SIZE);
-        m_pool.setMaxStatements(DEFAULT_MAX_STATEMENTS);
-        m_pool.setMaxStatementsPerConnection(DEFAULT_MAX_STATEMENTS_PER_CONNECTION);
-        m_pool.setMinPoolSize(DEFAULT_MIN_POOL_SIZE);
-        m_pool.setNumHelperThreads(DEFAULT_NUM_HELPER_THREADS);
-        m_pool.setPreferredTestQuery(DEFAULT_PERFERRED_TEST_QUERY);
-        m_pool.setPropertyCycle(DEFAULT_PROPERTY_CYCLE);
-        m_pool.setTestConnectionOnCheckin(DEFAULT_SET_TEST_CONNECTION_ON_CHECKIN);
-        m_pool.setTestConnectionOnCheckout(DEFAULT_SET_TEST_CONNECTION_ON_CHECKOUT);
-        m_pool.setUsesTraditionalReflectiveProxies(DEFAULT_USES_TRADITIONAL_REFLECTIVE_PROXIES);
+//        m_pool.setAcquireIncrement(DEFAULT_AQUIRE_INCREMENT);
+//        m_pool.setAcquireRetryAttempts(DEFAULT_RETRY_ATTEMPTS);
+//        m_pool.setAcquireRetryDelay(DEFAULT_RETRY_DELAY);
+//        m_pool.setAutoCommitOnClose(DEFAULT_AUTOCOMMIT_ON_CLOSE);
+//        m_pool.setBreakAfterAcquireFailure(DEFAULT_BREAK_AFTER_ACQUIRE_FAILURE);
+//        m_pool.setCheckoutTimeout(DEFAULT_CHECKOUT_TIMEOUT);
+//        m_pool.setConnectionTesterClassName(DEFAULT_TESTER_CLASS_NAME);
+//        m_pool.setDescription(DEFAULT_POOL_DESCRIPTION);
+//        m_pool.setForceIgnoreUnresolvedTransactions(DEFAULT_FORCE_IGNORE_UNRESOLVED_TRANSACTION);
+//        m_pool.setIdentityToken(DEFAULT_IDENTITY_TOKEN);
+//        m_pool.setIdleConnectionTestPeriod(DEFAULT_IDLE_CONNECTION_TEST_PERIOD);
+//        m_pool.setInitialPoolSize(DEFAULT_INITIAL_POOL_SIZE);
+//        m_pool.setLoginTimeout(DEFAULT_LOGIN_TIMEOUT);
+//        m_pool.setLogWriter(DEFAULT_LOG_WRITER);
+//        m_pool.setMaxIdleTime(DEFAUT_MAX_IDLE_TIME);
+//        m_pool.setMaxPoolSize(DEFAULT_MAX_POOL_SIZE);
+//        m_pool.setMaxStatements(DEFAULT_MAX_STATEMENTS);
+//        m_pool.setMaxStatementsPerConnection(DEFAULT_MAX_STATEMENTS_PER_CONNECTION);
+//        m_pool.setMinPoolSize(DEFAULT_MIN_POOL_SIZE);
+//        m_pool.setNumHelperThreads(DEFAULT_NUM_HELPER_THREADS);
+//        m_pool.setPreferredTestQuery(DEFAULT_PERFERRED_TEST_QUERY);
+//        m_pool.setPropertyCycle(DEFAULT_PROPERTY_CYCLE);
+//        m_pool.setTestConnectionOnCheckin(DEFAULT_SET_TEST_CONNECTION_ON_CHECKIN);
+//        m_pool.setTestConnectionOnCheckout(DEFAULT_SET_TEST_CONNECTION_ON_CHECKOUT);
+//        m_pool.setUsesTraditionalReflectiveProxies(DEFAULT_USES_TRADITIONAL_REFLECTIVE_PROXIES);
     }
     
     public Connection getConnection() throws SQLException {
