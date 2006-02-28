@@ -159,13 +159,14 @@ final class DbSnmpInterfaceEntry {
 
         // first extract the next node identifier
         //
-        StringBuffer names = new StringBuffer("INSERT INTO snmpInterface (nodeID,snmpIfIndex");
-        StringBuffer values = new StringBuffer("?,?");
+        StringBuffer names = new StringBuffer("INSERT INTO snmpInterface (nodeID,snmpIfIndex,ipaddr");
+        StringBuffer values = new StringBuffer("?,?,?");
 
-        if ((m_changed & CHANGED_IFADDRESS) == CHANGED_IFADDRESS) {
-            values.append(",?");
-            names.append(",ipAddr");
-        }
+        // We *must* have an IP address that is not null in the snmpinterface table
+	// if ((m_changed & CHANGED_IFADDRESS) == CHANGED_IFADDRESS) {
+        //    values.append(",?");
+        //    names.append(",ipAddr");
+        //}
 
         if ((m_changed & CHANGED_NETMASK) == CHANGED_NETMASK) {
             values.append(",?");
@@ -228,6 +229,7 @@ final class DbSnmpInterfaceEntry {
 
         if ((m_changed & CHANGED_IFADDRESS) == CHANGED_IFADDRESS)
             stmt.setString(ndx++, m_ipAddr.getHostAddress());
+	else stmt.setString(ndx++, "0.0.0.0");
 
         if ((m_changed & CHANGED_NETMASK) == CHANGED_NETMASK)
             stmt.setString(ndx++, m_netmask.getHostAddress());
