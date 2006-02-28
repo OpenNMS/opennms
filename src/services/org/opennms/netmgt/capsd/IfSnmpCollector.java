@@ -62,7 +62,7 @@ import org.opennms.netmgt.snmp.SnmpWalker;
  * @author <a href="http://www.opennms.org">OpenNMS </a>
  * 
  */
-final class IfSnmpCollector implements Runnable {
+public final class IfSnmpCollector implements Runnable {
 
     /**
      * The IP address to used to collect the SNMP information
@@ -107,7 +107,7 @@ final class IfSnmpCollector implements Runnable {
      * <code>run</code> method is invoked.
      * 
      */
-    IfSnmpCollector(InetAddress address) {
+    public IfSnmpCollector(InetAddress address) {
         m_address = address;
         m_sysGroup = null;
         m_ifTable = null;
@@ -118,28 +118,28 @@ final class IfSnmpCollector implements Runnable {
     /**
      * Returns true if any part of the collection failed.
      */
-    boolean failed() {
+    public boolean failed() {
         return !hasSystemGroup() || !hasIfTable() || !hasIpAddrTable();
     }
 
     /**
      * Returns true if the system group was collected successfully
      */
-    boolean hasSystemGroup() {
+    public boolean hasSystemGroup() {
         return (m_sysGroup != null && !m_sysGroup.failed());
     }
 
     /**
      * Returns the collected system group.
      */
-    SystemGroup getSystemGroup() {
+    public SystemGroup getSystemGroup() {
         return m_sysGroup;
     }
 
     /**
      * Returns true if the interface table was collected.
      */
-    boolean hasIfTable() {
+    public boolean hasIfTable() {
         // FIXME What should we do if the table had no error but was empty
 		if (m_ifTable == null) {
 			log().debug("hasIfTable: No interface table present.");
@@ -150,14 +150,14 @@ final class IfSnmpCollector implements Runnable {
     /**
      * Returns the collected interface table.
      */
-    IfTable getIfTable() {
+    public IfTable getIfTable() {
         return m_ifTable;
     }
 
     /**
      * Returns true if the IP Interface Address table was collected.
      */
-    boolean hasIpAddrTable() {
+    public boolean hasIpAddrTable() {
         // FIXME What should we do if the table had no error but was empty
 		if (m_ipAddrTable == null) {
 			log().debug("hasIpAddrTable: No IP interface address table present.");
@@ -168,14 +168,14 @@ final class IfSnmpCollector implements Runnable {
     /**
      * Returns the collected IP Interface Address table.
      */
-    IpAddrTable getIpAddrTable() {
+    public IpAddrTable getIpAddrTable() {
         return m_ipAddrTable;
     }
 
     /**
      * Returns true if the interface extensions table was collected.
      */
-    boolean hasIfXTable() {
+    public boolean hasIfXTable() {
         // FIXME What should we do if the table had no error but was empty
     		if (m_ifXTable == null) {
     			log().debug("hasIfXTable: No interface extensions table present.");
@@ -186,14 +186,14 @@ final class IfSnmpCollector implements Runnable {
     /**
      * Returns the collected interface extensions table.
      */
-    IfXTable getIfXTable() {
+    public IfXTable getIfXTable() {
         return m_ifXTable;
     }
 
     /**
      * Returns the target address that the collection occured for.
      */
-    InetAddress getCollectorTargetAddress() {
+    public InetAddress getCollectorTargetAddress() {
         return m_address;
     }
 
@@ -208,7 +208,7 @@ final class IfSnmpCollector implements Runnable {
      *             Thrown if the index cannot be resolved due to an incomplete
      *             table.
      */
-    InetAddress[] getIfAddressAndMask(int ifIndex) {
+    public InetAddress[] getIfAddressAndMask(int ifIndex) {
         if (!hasIpAddrTable()) {
             throw new IndexOutOfBoundsException("Illegal Index, no table present");
         }
@@ -216,7 +216,7 @@ final class IfSnmpCollector implements Runnable {
         return m_ipAddrTable.getIfAddressAndMask(ifIndex);
     }
 
-    int getAdminStatus(int ifIndex) {
+    public int getAdminStatus(int ifIndex) {
         if (!hasIfTable()) {
             throw new IndexOutOfBoundsException("Illegal Index, no table present");
         }
@@ -224,7 +224,7 @@ final class IfSnmpCollector implements Runnable {
         return m_ifTable.getAdminStatus(ifIndex);
     }
 
-    int getIfType(int ifIndex) {
+    public int getIfType(int ifIndex) {
         if (!hasIfTable()) {
             throw new IndexOutOfBoundsException("Illegal Index, no table present");
         }
@@ -232,7 +232,7 @@ final class IfSnmpCollector implements Runnable {
         return m_ifTable.getIfType(ifIndex);
     }
 
-    int getIfIndex(InetAddress address) {
+    public int getIfIndex(InetAddress address) {
         log().debug("getIfIndex: retrieving ifIndex for " + address.getHostAddress());
         if (!hasIpAddrTable()) {
             log().debug("getIfIndex: Illegal index, no table present.");
@@ -245,7 +245,7 @@ final class IfSnmpCollector implements Runnable {
     /**
      * 
      */
-    String getIfName(int ifIndex) {
+    public String getIfName(int ifIndex) {
         String snmpIfName = null;
 
         if (hasIfXTable()) {
@@ -265,7 +265,7 @@ final class IfSnmpCollector implements Runnable {
     /**
      * 
      */
-    String getIfAlias(int ifIndex) {
+    public String getIfAlias(int ifIndex) {
         String snmpIfAlias = null;
 
         if (hasIfXTable()) {
@@ -307,6 +307,7 @@ final class IfSnmpCollector implements Runnable {
         if (log().isDebugEnabled())
             log().debug("run: collecting for: "+m_address+" with agentConfig: "+agentConfig);
         
+        //TODO: This needs to be fixed... reported as a bug in bugzilla.
         agentConfig.setMaxVarsPerPdu(50);
         SnmpWalker walker = SnmpUtils.createWalker(agentConfig, "system/ifTable/ifXTable/ipAddrTable", new CollectionTracker[] { m_sysGroup, m_ifTable, m_ipAddrTable, m_ifXTable});
         walker.start();

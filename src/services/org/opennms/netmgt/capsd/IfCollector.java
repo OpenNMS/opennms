@@ -70,7 +70,7 @@ import org.opennms.netmgt.config.CapsdConfigFactory;
  * @author <a href="http://www.opennms.org">OpenNMS </a>
  * 
  */
-final class IfCollector implements Runnable {
+public final class IfCollector implements Runnable {
     /**
      * The primary target internet address
      */
