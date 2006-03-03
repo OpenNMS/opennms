@@ -313,7 +313,7 @@ public class EventTranslatorTest extends MockObjectTestCase {
     private String getStandardConfig() {
         return "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + 
         "<event-translator-configuration \n" + 
-        "xmlns=\"http://xmlns.opennms.org/xsd/passive-status-configuration\" \n" + 
+        "xmlns=\"http://xmlns.opennms.org/xsd/translator-configuration\" \n" + 
         "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" >\n" +
         "  <translation>\n" +
         "   <event-translation-spec uei=\"uei.opennms.org/services/translationTest\">\n" + 

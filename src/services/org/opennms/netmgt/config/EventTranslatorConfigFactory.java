@@ -323,13 +323,17 @@ public final class EventTranslatorConfigFactory implements EventTranslatorConfig
 		}
 		boolean matches(Event e) {
 			// short circuit if the eui doesn't match
-			if (!ueiMatches(e)) return false;
+			if (!ueiMatches(e)) {
+                log().debug("TransSpec.matches: Comparing spec UEI: "+m_spec.getUei()+" with event UEI: "+e.getUei());
+                return false;
+            }
 			
 			// uei matches to go thru the mappings
+            log().debug("TransSpec.matches: checking mappings for spec.");
 			List transMaps = getTranslationMappings();
 			for (Iterator it = transMaps.iterator(); it.hasNext();) {
 				TranslationMapping transMap = (TranslationMapping) it.next();
-				if (transMap.matches(e))
+				if (transMap.matches(e)) 
 					return true;
 			}
 			return false;
@@ -392,12 +396,16 @@ public final class EventTranslatorConfigFactory implements EventTranslatorConfig
 		}
 		
 		private boolean assignmentsMatch(Event e) {
+            AssignmentSpec assignSpec = null;
 			for (Iterator it = getAssignmentSpecs().iterator(); it.hasNext();) {
-				AssignmentSpec assignSpec = (AssignmentSpec) it.next();
+				assignSpec = (AssignmentSpec) it.next();
 			
-				if (!assignSpec.matches(e))
+				if (!assignSpec.matches(e)) {
+                    log().debug("TranslationMapping.assignmentsMatch: assignmentSpec: "+assignSpec.getAttributeName()+" doesn't match.");
 					return false;
+                }
 			}	
+            log().debug("TranslationMapping.assignmentsMatch: assignmentSpec: "+assignSpec.getAttributeName()+" matches!");
 			return true;
 		}
 		boolean matches(Event e) {
@@ -525,8 +533,10 @@ public final class EventTranslatorConfigFactory implements EventTranslatorConfig
 		
 
 		public boolean matches(Event e) {
-			if (m_constant.getMatches() != null)
+			if (m_constant.getMatches() != null) {
+                log().warn("ConstantValueSpec.matches: matches not allowed for constant value.");
 				throw new IllegalStateException("Illegal to use matches with constant type values");
+            }
 			return true;
 		}
 
@@ -606,14 +616,26 @@ public final class EventTranslatorConfigFactory implements EventTranslatorConfig
 		public boolean matches(Event e) {
 			
 			String attributeValue = getAttributeValue(e);
-			if (attributeValue == null) return false;
+			if (attributeValue == null) {
+                log().debug("AttributeValueSpec.matches: Event attributeValue doesn't match because attributeValue itself is null");
+                return false;
+            }
 
-			if (m_val.getMatches() == null) return true;
+			if (m_val.getMatches() == null) {
+                log().debug("AttributeValueSpec.matches: Event attributeValue: "+attributeValue+" matches because pattern is null");
+                return true;
+            }
 
 			Pattern p = Pattern.compile(m_val.getMatches());
 			Matcher m = p.matcher(attributeValue);
-			
-			return m.matches();
+
+            if (m.matches()) {
+                log().debug("AttributeValueSpec.matches: Event attributeValue: "+attributeValue+" matches pattern: "+m_val.getMatches());
+                return true;
+            } else {
+                log().debug("AttributeValueSpec.matches: Event attributeValue: "+attributeValue+" doesn't match pattern: "+m_val.getMatches());
+                return false;
+            }
 		}
 
 		public String getResult(Event srcEvent) {
