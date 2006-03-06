@@ -130,6 +130,20 @@
 		<severity>Warning</severity>
 	</event>
 	<event>
+		<uei>uei.opennms.org/internal/capsd/rescanCompleted</uei>
+		<event-label>OpenNMS-defined internal event: capsd rescanCompleted</event-label>
+		<descr>
+			&lt;p&gt;A services scan has been completed.&lt;/p&gt;
+			&lt;p&gt;The list of services on this node has been
+			updated.&lt;/p&gt;
+		</descr>
+		<logmsg dest='logndisplay'>
+			&lt;p&gt;A services scan has been completed on this
+			node.&lt;/p&gt;
+		</logmsg>
+		<severity>Normal</severity>
+	</event>
+	<event>
 		<uei>uei.opennms.org/internal/capsd/interfaceSupportsSNMP</uei>
 		<event-label>OpenNMS-defined internal event: capsd interfaceSupportsSNMP</event-label>
 		<descr>
