@@ -49,6 +49,8 @@
     String nameParm = request.getParameter( "nodename" );
     String ipLikeParm = request.getParameter( "iplike" );
     String serviceParm = request.getParameter( "service" );
+    String ifAliasParm = request.getParameter( "ifAlias" );
+    boolean isIfAliasSearch = false;
 
     if( nameParm != null ) {
         nodes = NetworkElementFactory.getNodesLike( nameParm );
@@ -59,6 +61,10 @@
     else if( serviceParm != null ) {
         int serviceId = Integer.parseInt( serviceParm );
         nodes = NetworkElementFactory.getNodesWithService( serviceId );
+    }
+    else if( ifAliasParm != null ) {
+        nodes = NetworkElementFactory.getNodesWithIfAlias( ifAliasParm );
+        isIfAliasSearch = true;
     }
     else {
         nodes = NetworkElementFactory.getAllNodes();
@@ -82,18 +88,38 @@
     <!-- left column -->
     <div style="float: left; width=45%;">
       <ul>
-      <% for( int i=0; i < lastIn1stColumn; i++ ) { %>
-        <li><a href="element/node.jsp?node=<%=nodes[i].getNodeId()%>"><%=nodes[i].getLabel()%></a>
-        <% Interface[] interfaces = NetworkElementFactory.getActiveInterfacesOnNode(nodes[i].getNodeId()); %>
-        <ul>
+      <% if(isIfAliasSearch) { %>
+        <% for( int i=0; i < lastIn1stColumn; i++ ) { %>
+          <li><a href="element/node.jsp?node=<%=nodes[i].getNodeId()%>"><%=nodes[i].getLabel()%></a>
+          <% Interface[] interfaces = NetworkElementFactory.getInterfacesWithIfAlias(nodes[i].getNodeId(), ifAliasParm); %>
+          <ul>
+          <% for( int j=0; j < interfaces.length; j++ ) {
+            if(interfaces[j].getSnmpIfAlias() != null && !interfaces[j].getSnmpIfAlias().equals("")) {
+              interfaceCount++;
+              if(interfaces[j].getIpAddress().equals("0.0.0.0")) { %>
+                <li> <%=interfaces[j].getSnmpIfName()%>
+              <% } else { %>
+                <li> <%=interfaces[j].getIpAddress()%>
+              <% } %>
+              <a href="element/interface.jsp?node=<%=interfaces[j].getNodeId()%>&intf=<%=interfaces[j].getIpAddress()%>&ifindex=<%=interfaces[j].getSnmpIfIndex()%>"><%=interfaces[j].getSnmpIfAlias()%></a>
+            <% } %>
+          <% } %>
+          </ul>
+        <% } %>
+      <% } else {%>
+        <% for( int i=0; i < lastIn1stColumn; i++ ) { %>
+          <li><a href="element/node.jsp?node=<%=nodes[i].getNodeId()%>"><%=nodes[i].getLabel()%></a>
+          <% Interface[] interfaces = NetworkElementFactory.getActiveInterfacesOnNode(nodes[i].getNodeId()); %>
+          <ul>
           <% for( int j=0; j < interfaces.length; j++ ) { %>
             <% if( !"0.0.0.0".equals(interfaces[j].getIpAddress() )) { 
                interfaceCount++;
-            %>
-            <li> <a href="element/interface.jsp?node=<%=interfaces[j].getNodeId()%>&intf=<%=interfaces[j].getIpAddress()%>"><%=interfaces[j].getIpAddress()%></a>
+              %>
+              <li> <a href="element/interface.jsp?node=<%=interfaces[j].getNodeId()%>&intf=<%=interfaces[j].getIpAddress()%>"><%=interfaces[j].getIpAddress()%></a>
             <% } %>
           <% } %>
-        </ul>
+        </ul>		    
+        <% } %>
       <% } %>
       </ul>
     </div>
@@ -102,21 +128,41 @@
     <!-- right column -->
     <div style="float: left; width=45%;">
       <ul>
-      <% for( int i=lastIn1stColumn; i < nodes.length; i++ ) { %>
-        <li><a href="element/node.jsp?node=<%=nodes[i].getNodeId()%>"><%=nodes[i].getLabel()%></a>
-        <% Interface[] interfaces = NetworkElementFactory.getActiveInterfacesOnNode(nodes[i].getNodeId()); %>
-        <ul>
-          <% for( int j=0; j < interfaces.length; j++ ) { %>
-            <% if( !"0.0.0.0".equals(interfaces[j].getIpAddress() )) { 
-               interfaceCount++;
-            %>
-            <li> <a href="element/interface.jsp?node=<%=interfaces[j].getNodeId()%>&intf=<%=interfaces[j].getIpAddress()%>"><%=interfaces[j].getIpAddress()%></a>
+      <% if(isIfAliasSearch) { %>
+        <% for( int i=lastIn1stColumn; i < nodes.length; i++ ) { %>
+          <li><a href="element/node.jsp?node=<%=nodes[i].getNodeId()%>"><%=nodes[i].getLabel()%></a>
+          <% Interface[] interfaces = NetworkElementFactory.getInterfacesWithIfAlias(nodes[i].getNodeId(), ifAliasParm); %>
+          <ul>
+          <% for( int j=0; j < interfaces.length; j++ ) {
+            if(interfaces[j].getSnmpIfAlias() != null && !interfaces[j].getSnmpIfAlias().equals("")) {
+              interfaceCount++;
+              if(interfaces[j].getIpAddress().equals("0.0.0.0")) { %>
+                <li> <%=interfaces[j].getSnmpIfName()%>
+              <% } else { %>
+                <li> <%=interfaces[j].getIpAddress()%>
+              <% } %>
+              <a href="element/interface.jsp?node=<%=interfaces[j].getNodeId()%>&intf=<%=interfaces[j].getIpAddress()%>&ifindex=<%=interfaces[j].getSnmpIfIndex()%>"><%=interfaces[j].getSnmpIfAlias()%></a>
             <% } %>
           <% } %>
-        </ul>
+	  </ul>
+        <% } %>
+      <% } else { %>
+        <% for( int i=lastIn1stColumn; i < nodes.length; i++ ) { %>
+          <li><a href="element/node.jsp?node=<%=nodes[i].getNodeId()%>"><%=nodes[i].getLabel()%></a>
+          <% Interface[] interfaces = NetworkElementFactory.getActiveInterfacesOnNode(nodes[i].getNodeId()); %>
+          <ul>
+            <% for( int j=0; j < interfaces.length; j++ ) { %>
+              <% if( !"0.0.0.0".equals(interfaces[j].getIpAddress() )) { 
+                interfaceCount++;
+                %>
+                <li> <a href="element/interface.jsp?node=<%=interfaces[j].getNodeId()%>&intf=<%=interfaces[j].getIpAddress()%>"><%=interfaces[j].getIpAddress()%></a>
+              <% } %>
+            <% } %>
+          </ul>
+        <% } %>
       <% } %>
       </ul>
-      </div>
+    </div>
   <% } else { %>
       None found.
   <% } %>

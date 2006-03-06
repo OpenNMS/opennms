@@ -203,7 +203,7 @@ public class NetworkElementFactory extends Object {
         Connection conn = Vault.getDbConnection();
 
         try {
-            PreparedStatement stmt = conn.prepareStatement("SELECT DISTINCT * FROM NODE, IPINTERFACE WHERE NODE.NODEID=IPINTERFACE.NODEID AND IPLIKE(IPINTERFACE.IPADDR,?) AND NODETYPE != 'D' ORDER BY NODELABEL");
+            PreparedStatement stmt = conn.prepareStatement("SELECT DISTINCT * FROM NODE, IPINTERFACE WHERE NODE.NODEID=IPINTERFACE.NODEID AND IPLIKE(IPINTERFACE.IPADDR,?) AND IPINTERFACE.ISMANAGED != 'D' AND NODETYPE != 'D' ORDER BY NODELABEL");
             stmt.setString(1, iplike);
             ResultSet rs = stmt.executeQuery();
 
@@ -228,6 +228,38 @@ public class NetworkElementFactory extends Object {
         try {
             PreparedStatement stmt = conn.prepareStatement("SELECT * FROM NODE WHERE NODEID IN (SELECT NODEID FROM IFSERVICES WHERE SERVICEID=?) AND NODETYPE != 'D' ORDER BY NODELABEL");
             stmt.setInt(1, serviceId);
+            ResultSet rs = stmt.executeQuery();
+
+            nodes = rs2Nodes(rs);
+
+            rs.close();
+            stmt.close();
+        } finally {
+            Vault.releaseDbConnection(conn);
+        }
+
+        return nodes;
+    }
+
+    /**
+     * Returns all non-deleted nodes that contain the given string in an ifAlias
+     * @Param ifAlias
+     *               the ifAlias string we are looking for
+     * @return nodes
+     *               the nodes with a matching ifAlias on one or more interfaces
+     */
+    public static Node[] getNodesWithIfAlias(String ifAlias) throws SQLException {
+        Node[] nodes = null;
+        Connection conn = Vault.getDbConnection();
+
+        try {
+            StringBuffer buffer = new StringBuffer("%");
+            buffer.append(ifAlias);
+            buffer.append("%");
+
+            PreparedStatement stmt = conn.prepareStatement("SELECT * FROM NODE WHERE NODEID IN (SELECT SNMPINTERFACE.NODEID FROM SNMPINTERFACE,IPINTERFACE WHERE SNMPINTERFACE.SNMPIFALIAS ILIKE ? AND SNMPINTERFACE.SNMPIFINDEX=IPINTERFACE.IFINDEX AND IPINTERFACE.NODEID=SNMPINTERFACE.NODEID AND IPINTERFACE.ISMANAGED != 'D') AND NODETYPE != 'D' ORDER BY NODELABEL");
+
+	    stmt.setString(1, buffer.toString());
             ResultSet rs = stmt.executeQuery();
 
             nodes = rs2Nodes(rs);
@@ -348,6 +380,55 @@ public class NetworkElementFactory extends Object {
         try {
             PreparedStatement stmt = conn.prepareStatement("SELECT * FROM IPINTERFACE WHERE IPADDR=?");
             stmt.setString(1, ipAddress);
+            ResultSet rs = stmt.executeQuery();
+
+            intfs = rs2Interfaces(rs);
+
+            rs.close();
+            stmt.close();
+
+            augmentInterfacesWithSnmpData(intfs, conn);
+
+        } finally {
+            Vault.releaseDbConnection(conn);
+        }
+
+        return intfs;
+    }
+
+    /**
+     * Returns all non-deleted Interfaces on the specified node that
+     * contain the given string in an ifAlias
+     *
+     * @Param nodeId
+     *               The nodeId of the node we are looking at
+     * @Param ifAlias
+     *               the ifAlias string we are looking for
+     * @return intfs
+     *               the Interfaces with a matching ifAlias
+     */
+    public static Interface[] getInterfacesWithIfAlias(int nodeId, String ifAlias) throws SQLException {
+        if (ifAlias == null) {
+            throw new IllegalArgumentException("Cannot take null parameter ifAlias");
+        }
+
+        Interface[] intfs = null;
+        Connection conn = Vault.getDbConnection();
+
+        try {
+            StringBuffer buffer = new StringBuffer("%");
+            buffer.append(ifAlias);
+            buffer.append("%");
+
+            PreparedStatement stmt = conn.prepareStatement("");
+	    if(nodeId > 0) {
+      		stmt = conn.prepareStatement("SELECT * FROM IPINTERFACE WHERE NODEID = ? AND IFINDEX IN (SELECT SNMPIFINDEX FROM SNMPINTERFACE WHERE SNMPIFALIAS ILIKE ? AND IPINTERFACE.NODEID=SNMPINTERFACE.NODEID) AND ISMANAGED != 'D'");
+            stmt.setInt(1, nodeId);
+	    stmt.setString(2, buffer.toString());
+	    } else {
+                stmt = conn.prepareStatement("SELECT * FROM IPINTERFACE WHERE IPINTERFACE.IFINDEX IN (SELECT SNMPIFINDEX FROM SNMPINTERFACE WHERE SNMPIFALIAS ILIKE ? AND IPINTERFACE.NODEID=SNMPINTERFACE.NODEID) AND IPINTERFACE.ISMANAGED != 'D' ORDER BY IPINTERFACE.NODEID");
+	    stmt.setString(1, buffer.toString());
+	    }
             ResultSet rs = stmt.executeQuery();
 
             intfs = rs2Interfaces(rs);

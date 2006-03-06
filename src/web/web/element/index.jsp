@@ -96,6 +96,16 @@
           </tr>
 
           <tr>
+            <td colspan="2">IfAlias containing:</td>
+          </tr>
+          <tr>
+            <form action="element/nodelist.jsp" method="GET">          
+              <td><input type="text" name="ifAlias" /></td>
+              <td><input type="submit" value="Search"/></td>                
+            </form>
+          </tr>
+
+          <tr>
             <td colspan="2">Providing service:</td>
           </tr>
           <tr>
@@ -166,7 +176,8 @@
       
       <p>Searching by name is a case-insensitive, inclusive search. For example,
         searching on <em>serv</em> would find any of <em>serv</em>, <em>Service</em>, 
-        <em>Reserved</em>, <em>NTSERV</em>, <em>UserVortex</em>, etc.
+        <em>Reserved</em>, <em>NTSERV</em>, <em>UserVortex</em>, etc. The underscore
+	character acts as a wildcard.
       </p>
         
       <p>Searching by TCP/IP address uses a very flexible search format, allowing you
@@ -185,6 +196,12 @@
             <li>192.168.0-255.0-255
             <li>192.168.0,1,2,3-255.*
         </ul>
+      </p>
+
+      <p>A search by ifAlias will find nodes with interfaces that match the given
+        search string.This is a case-insensitive inclusive search, and the underscore
+	character acts as a wildcard. A list of nodes with matching interfaces will
+	be displayed.
       </p>
 
       <p>To search by Service, click the down arrow and select the service you would
