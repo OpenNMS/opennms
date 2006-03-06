@@ -88,6 +88,8 @@ public class Installer {
 
 	boolean m_do_inserts = false;
 
+	boolean m_skip_constraints = false;
+
 	boolean m_update_iplike = false;
 
 	boolean m_update_unicode = false;
@@ -234,7 +236,9 @@ public class Installer {
 
 		if (m_update_database) {
 			checkOldTables();
-			checkConstraints();
+			if (!m_skip_constraints) {
+				checkConstraints();
+			}
 			createTables();
 			createSequences();
 			createIndexes();
@@ -386,6 +390,9 @@ public class Installer {
 						m_do_inserts = true;
 						break;
 
+					case 'n':
+						m_skip_constraints = true;
+						
 					case 'N':
 						m_ignore_notnull = true;
 						break;
