@@ -40,6 +40,7 @@
 
 package org.opennms.netmgt.collectd;
 
+import java.lang.Integer;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -49,6 +50,7 @@ import java.util.TreeMap;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.config.CapsdConfigFactory;
 import org.opennms.netmgt.snmp.AggregateTracker;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
@@ -81,6 +83,18 @@ public class SnmpIfCollector extends AggregateTracker {
     private String m_primaryIf;
 
     private List m_objList;
+
+    /**
+     * The mib object for MIB-2 ifXtable ifAlias
+     */
+    private static MibObject ifAliasMibObject() {
+        MibObject m_ifAliasMibObject = new MibObject();
+        m_ifAliasMibObject.setOid(".1.3.6.1.2.1.31.1.1.1.18");
+        m_ifAliasMibObject.setAlias("ifAlias");
+        m_ifAliasMibObject.setType("DisplayString");
+        m_ifAliasMibObject.setInstance("ifIndex");
+	return m_ifAliasMibObject;
+    }
 
     /**
      * The class constructor is used to initialize the collector and send out
@@ -145,6 +159,7 @@ public class SnmpIfCollector extends AggregateTracker {
                         allOids.add(oid);
                 }
             }
+	    allOids.add(ifAliasMibObject());
         }
 
         return allOids;

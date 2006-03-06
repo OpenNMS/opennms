@@ -119,6 +119,56 @@
           </annotation>
         </element>
 
+        <element maxOccurs="1" minOccurs="0" name="storeByIfAlias"
+                 type="string">
+          <annotation>
+            <documentation>Flag for storing collected data by domain/ifAlias.
+            Defaults to false. Allowable values are true, false.
+            </documentation>
+          </annotation>
+        </element>
+
+        <element maxOccurs="1" minOccurs="0" name="storeByNodeID"
+                 type="string">
+          <annotation>
+            <documentation>Flag for storing collected data by nodeid/interface name.
+            Defaults to normal. Allowable values are true, false, normal.
+            </documentation>
+          </annotation>
+        </element>
+
+        <element maxOccurs="1" minOccurs="0" name="ifAliasDomain"
+                 type="string">
+          <annotation>
+            <documentation>The name of the domain covered by this collection
+            package. Defaults to package name.
+            </documentation>
+          </annotation>
+        </element>
+
+        <element maxOccurs="1" minOccurs="0" name="storFlagOverride"
+                 type="string">
+          <annotation>
+            <documentation>Flag for controlling how interfaces are selected for
+            data collection  by domain/ifAlias. If true, storage will occur for
+            any interface on the node found to have an valid ifAlias. Otherwise
+            data will be stored only if the interface is configured for data
+            collection. Defaults to false.
+            </documentation>
+          </annotation>
+        </element>
+
+        <element maxOccurs="1" minOccurs="0" name="ifAliasComment"
+                 type="string">
+          <annotation>
+            <documentation>A character or string for terminating ifAlias text.
+            In effect, any text beginning with this character or string becomes
+            a comment and is not considered part of the ifAlias when naming
+            storage files and displaying data. Defaults to null.
+            </documentation>
+          </annotation>
+        </element>
+
         <element maxOccurs="unbounded" minOccurs="0" ref="this:service">
           <annotation>
             <documentation>Services for which data is to be collected in this

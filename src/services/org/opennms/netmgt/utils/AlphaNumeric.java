@@ -60,14 +60,43 @@ public class AlphaNumeric extends Object {
      * @return Converted value which can be used in a file name.
      */
     public static String parseAndReplace(String str, char replacement) {
+	return parseAndReplaceExcept(str, replacement, new Character(replacement).toString());
+    }
+
+    /**
+     * Any character in the passed string which does not match one of the
+     * following values is replaced by the specified replacement character,
+     * unless it is contained in the exception string.
+     * 
+     * Ascii chars: 0 - 9 (Decimal 48 - 57) A - Z (Decimal 65 - 90) a - z
+     * (Decimal 97 - 122)
+     * 
+     * For example: 'Ethernet 10/100' is converted to 'Ethernet_10_100'
+     * 
+     * @param str
+     *            string to be converted
+     * @param replacement
+     *            replacement character
+     * @param except
+     *            string containing exception characters
+     * 
+     * @return Converted value which can be used in a file name.
+     */
+    public static String parseAndReplaceExcept(String str, char replacement, String except) {
         if (str == null) {
             return "";
         } else {
             boolean replacedChar = false;
             byte[] bytes = str.getBytes();
+            byte[] exBytes = except.getBytes();
 
-            for (int x = 0; x < bytes.length; x++) {
+            blat: for (int x = 0; x < bytes.length; x++) {
                 if (!((bytes[x] >= 48 && bytes[x] <= 57) || (bytes[x] >= 65 && bytes[x] <= 90) || (bytes[x] >= 97 && bytes[x] <= 122))) {
+		    for (int y = 0; y < exBytes.length; y++) {
+			if (bytes[x] == exBytes[y]) {
+			    continue blat;
+			}
+		    }
                     bytes[x] = (byte) replacement;
                     replacedChar = true;
                 }

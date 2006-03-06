@@ -61,6 +61,7 @@ import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.capsd.DbIpInterfaceEntry;
+import org.opennms.netmgt.config.CapsdConfigFactory;
 import org.opennms.netmgt.config.DataCollectionConfigFactory;
 import org.opennms.netmgt.config.DatabaseConnectionFactory;
 import org.opennms.netmgt.config.SnmpPeerFactory;
@@ -80,6 +81,7 @@ import org.opennms.netmgt.utils.EventProxy;
 import org.opennms.netmgt.utils.EventProxyException;
 import org.opennms.netmgt.utils.ParameterMap;
 import org.opennms.netmgt.xml.event.Event;
+import org.opennms.protocols.snmp.SnmpSyntax;
 
 /**
  * <P>
@@ -110,6 +112,38 @@ final class SnmpCollector implements ServiceCollector {
      * Name of monitored service.
      */
     private static final String SERVICE_NAME = "SNMP";
+
+    /**
+     * The character to replace non-alphanumeric
+     * characters in Strings where needed.
+     */
+    private static final char nonAnRepl = '_';
+
+    /**
+     * The String of characters which are exceptions for 
+     * AlphaNumeric.parseAndReplaceExcept in if Aliases
+     */
+    private static final String AnReplEx = "-._";
+
+    /**
+     * Value of MIB-II ifAlias oid
+     */
+    private static final String IFALIAS_OID = ".1.3.6.1.2.1.31.1.1.1.18";
+
+    /**
+     * SQL statement to retrieve snmpifaliases and snmpifindexes for a given node.
+     */
+    private static final String SQL_GET_SNMPIFALIASES = "SELECT snmpifindex, snmpifalias FROM snmpinterface WHERE nodeid=? AND snmpifalias != ''";
+
+    /**
+     * SQL statement to retrieve most recent forced rescan eventid for a node.
+     */
+    private static final String SQL_GET_LATEST_FORCED_RESCAN_EVENTID = "SELECT eventid FROM events WHERE (nodeid=? OR ipaddr=?) AND eventuei='uei.opennms.org/internal/capsd/forceRescan' ORDER BY eventid DESC LIMIT 1";
+
+    /**
+     * SQL statement to retrieve most recent rescan completed eventid for a node.
+     */
+    private static final String SQL_GET_LATEST_RESCAN_COMPLETED_EVENTID = "SELECT eventid FROM events WHERE nodeid=? AND eventuei='uei.opennms.org/internal/capsd/rescanCompleted' ORDER BY eventid DESC LIMIT 1";
 
     /**
      * SQL statement to retrieve interface's 'ipinterface' table information.
@@ -718,9 +752,9 @@ final class SnmpCollector implements ServiceCollector {
                     //
                     String label = null;
                     if (name != null) {
-                        label = AlphaNumeric.parseAndReplace(name, '_');
+                        label = AlphaNumeric.parseAndReplace(name, nonAnRepl);
                     } else if (descr != null) {
-                        label = AlphaNumeric.parseAndReplace(descr, '_');
+                        label = AlphaNumeric.parseAndReplace(descr, nonAnRepl);
                     } else {
                         log.warn("Interface (ifIndex/nodeId=" + index + "/" + nodeID + ") has no ifName and no ifDescr...setting to label to 'no_ifLabel'.");
                         label = "no_ifLabel";
@@ -899,7 +933,7 @@ final class SnmpCollector implements ServiceCollector {
                 
                 saveIfCount(iface, ifCount);
                 
-                log().debug("collect: interface: " + getHostAddress(iface) + " ifCount: " + ifCount + " savedIfCount: " + savedIfCount);
+                log().debug("collect: nodeId: " + getNodeInfo(iface).getNodeId() + " interface: " + getHostAddress(iface) + " ifCount: " + ifCount + " savedIfCount: " + savedIfCount);
                 
                 // If saved interface count differs from the newly retreived
                 // interface count the following must occur:
@@ -908,16 +942,16 @@ final class SnmpCollector implements ServiceCollector {
                 // node, update the database, and generate the appropriate
                 // events back to the poller.
                 // 
-                if (savedIfCount != -1) {
-                    if (ifCount != savedIfCount) {
+                if ((savedIfCount != -1) && (ifCount != savedIfCount)){
+                    if (!isForceRescanInProgress(getNodeInfo(iface).getNodeId(), getHostAddress(iface))) {
                         log().info("Number of interfaces on primary SNMP interface " + getHostAddress(iface) + " has changed, generating 'ForceRescan' event. ");
-                        generateForceRescanEvent(getHostAddress(iface), eproxy);
+                        generateForceRescanEvent(getHostAddress(iface), getNodeInfo(iface).getNodeId(), eproxy);
                     }
                 }
             }
             
             // Update RRD with values retrieved in SNMP collection
-            boolean rrdError = updateRRDs(getCollectionName(parameters), iface, nodeCollector, ifCollector);
+            boolean rrdError = updateRRDs(getCollectionName(parameters), iface, nodeCollector, ifCollector, parameters, eproxy);
             
             if (rrdError) {
                 log().warn("collect: RRD error during update for " + getHostAddress(iface));
@@ -1069,7 +1103,7 @@ final class SnmpCollector implements ServiceCollector {
      * @exception RuntimeException
      *                Thrown if the data source list for the interface is null.
      */
-    private boolean updateRRDs(String collectionName, NetworkInterface iface, SnmpNodeCollector nodeCollector, SnmpIfCollector ifCollector) throws CollectionError {
+    private boolean updateRRDs(String collectionName, NetworkInterface iface, SnmpNodeCollector nodeCollector, SnmpIfCollector ifCollector, Map parms, EventProxy eproxy) throws CollectionError {
         // Log4j category
         //
         InetAddress ipaddr = getInetAddress(iface);
@@ -1079,6 +1113,7 @@ final class SnmpCollector implements ServiceCollector {
         
         // Get primary interface index from NodeInfo object
         NodeInfo nodeInfo = getNodeInfo(iface);
+	int nodeId = nodeInfo.getNodeId();
         int primaryIfIndex = nodeInfo.getPrimarySnmpIfIndex();
         
         // Retrieve interface map attribute
@@ -1101,7 +1136,7 @@ final class SnmpCollector implements ServiceCollector {
             // Build path to node RRD repository. createRRD() will make the
             // appropriate directories if they do not already exist.
             //
-            String nodeRepository = m_rrdPath + File.separator + String.valueOf(nodeInfo.getNodeId());
+            String nodeRepository = m_rrdPath + File.separator + String.valueOf(nodeId);
             
             SNMPCollectorEntry nodeEntry = nodeCollector.getEntry();
             
@@ -1119,11 +1154,11 @@ final class SnmpCollector implements ServiceCollector {
                     if (dsVal == null) {
                         // Do nothing, no update is necessary
                         if (log().isDebugEnabled())
-                            log().debug("updateRRDs: Skipping update, no data retrieved for nodeId: " + nodeInfo.getNodeId() + " datasource: " + ds.getName());
+                            log().debug("updateRRDs: Skipping update, no data retrieved for nodeId: " + nodeId + " datasource: " + ds.getName());
                     } else {
                         //createRRD(collectionName, ipaddr, nodeRepository, ds);
                         if(ds.performUpdate(collectionName, ipaddr.getHostAddress(), nodeRepository, ds.getName(), dsVal)) {
-                            log().warn("updateRRDs: ds.performUpdate() failed for node: " + nodeInfo.getNodeId() + " datasource: " + ds.getName());
+                            log().warn("updateRRDs: ds.performUpdate() failed for node: " + nodeId + " datasource: " + ds.getName());
                             rrdError = true;
                         }
                     }
@@ -1131,7 +1166,7 @@ final class SnmpCollector implements ServiceCollector {
                     log().warn("getRRDValue: " + e.getMessage());
                     // Set rrdError flag
                     rrdError = true;
-                    log().warn("updateRRDs: call to getRRDValue() failed for node: " + nodeInfo.getNodeId() + " datasource: " + ds.getName());
+                    log().warn("updateRRDs: call to getRRDValue() failed for node: " + nodeId + " datasource: " + ds.getName());
                 }
                 
             } // end while(more datasources)
@@ -1141,7 +1176,18 @@ final class SnmpCollector implements ServiceCollector {
         // Interface-specific data
         // -----------------------------------------------------------
         
+        boolean forceRescan = false;
+        boolean rescanPending = false;
+        Map SnmpIfAliasMap = new HashMap();
         if (ifCollector != null) {
+            String domain = ParameterMap.getKeyedString(parms, "domain", "default");
+            String storeByNodeID = ParameterMap.getKeyedString(parms, "storeByNodeID", "normal");
+            String storeByIfAlias = ParameterMap.getKeyedString(parms, "storeByIfAlias", "false");
+            String storFlagOverride = ParameterMap.getKeyedString(parms, "storFlagOverride", "false");
+            String ifAliasComment = ParameterMap.getKeyedString(parms, "ifAliasComment", null);
+	    if (log().isDebugEnabled() && storeByIfAlias.equals("true")) {
+                log().debug("domain:storeByNodeID:storeByIfAlias:storFlagOverride:ifAliasComment = " + domain + ":" + storeByNodeID + ":" + storeByIfAlias + ":" + storFlagOverride + ":" + ifAliasComment);
+            }		
             // Retrieve list of SNMP collector entries generated for the
             // remote node's interfaces.
             //
@@ -1150,6 +1196,13 @@ final class SnmpCollector implements ServiceCollector {
                 log().warn("updateRRDs:  No data retrieved for the interface " + ipaddr.getHostAddress());
             }
             
+            // get the snmpIfAliases
+            if(isForceRescanInProgress(nodeId, ipaddr.getHostAddress())) {
+                rescanPending = true;
+            } else {
+                SnmpIfAliasMap = getIfAliasesFromDb(nodeId);
+            }
+	    
             // Iterate over the SNMP collector entries
             //
             Iterator iter = snmpCollectorEntries.iterator();
@@ -1157,8 +1210,38 @@ final class SnmpCollector implements ServiceCollector {
                 SNMPCollectorEntry ifEntry = (SNMPCollectorEntry) iter.next();
                 
                 int ifIndex = ifEntry.getIfIndex().intValue();
+		String ifIdx = Integer.toString(ifIndex);
                 
-                
+                // get the ifAlias if one exists
+                String aliasVal = getRRDIfAlias(ifIdx, ifEntry);
+		if(aliasVal != null && !aliasVal.equals("")) {
+                    aliasVal = aliasVal.trim();
+                    
+                    // Check DB to see if ifAlias is current and flag a forced rescan if not
+                    if(!rescanPending) {
+                        if(SnmpIfAliasMap.get(ifIdx) == null || !SnmpIfAliasMap.get(ifIdx).equals(aliasVal)) {
+                            rescanPending = true;
+                            forceRescan = true;
+                            if (log().isDebugEnabled())
+                                log().debug("Forcing rescan. IfAlias " + aliasVal + " for index " + ifIdx + " does not match DB value: " + SnmpIfAliasMap.get(ifIdx));
+                        }
+                    }
+                    if(ifAliasComment != null) {
+                        int si = aliasVal.indexOf(ifAliasComment);
+                        if(si > -1) {
+                            aliasVal = aliasVal.substring(0, si).trim();
+                        }
+                    }
+                    if(aliasVal != null && !aliasVal.equals("")) {
+                        aliasVal = AlphaNumeric.parseAndReplaceExcept(aliasVal, nonAnRepl, AnReplEx);
+                    }			
+                }
+
+                boolean override = true;
+                if(storFlagOverride.equals("false") || (aliasVal == null) || aliasVal.equals("")) {
+                    override = false;
+                }
+                String byNode = storeByNodeID;		
                 
                 // Are we storing SNMP data for all interfaces or primary
                 // interface only?
@@ -1166,9 +1249,17 @@ final class SnmpCollector implements ServiceCollector {
                 // ifIndex is equal to the ifIndex of the primary SNMP interface
                 if (snmpStorage.equals(SNMP_STORAGE_PRIMARY)) {
                     if (ifIndex != primaryIfIndex) {
-                        if (log().isDebugEnabled())
-                            log().debug("updateRRDs: only storing SNMP data for primary interface (" + primaryIfIndex + "), skipping ifIndex: " + ifIndex);
-                        continue;
+                        if(override) {
+                            if (log().isDebugEnabled())
+                                log().debug("updateRRDs: storFlagOverride = true. Storing SNMP data for non-primary interface " + ifIdx);
+                        } else {
+                            if (log().isDebugEnabled())
+                                log().debug("updateRRDs: only storing SNMP data for primary interface (" + primaryIfIndex + "), skipping ifIndex: " + ifIdx);
+                            continue;
+                        }
+                        if(byNode.equals("normal")) {
+                            byNode = "false";
+                        }
                     }
                 }
                 
@@ -1181,18 +1272,24 @@ final class SnmpCollector implements ServiceCollector {
                     continue;
                 }
                 
-                if (ifInfo.getCollType() == null){
-                    log().warn("updateRRDs: No SNMP info for ifIndex: " + ifIndex);
-                    continue;
-                }
-                
                 if (snmpStorage.equals(SNMP_STORAGE_SELECT)) {
                     if (ifInfo.getCollType() == null || ifInfo.getCollType().equals("N")) {
-                        if (log().isDebugEnabled())
-                            log().debug("updateRRDs: selectively storing SNMP data for primary interface (" + primaryIfIndex + "), skipping ifIndex: " + ifIndex + " because collType = "+ifInfo.getCollType());
-                        continue;
+                        if(override) {
+                            if (log().isDebugEnabled())				    
+                                log().debug("updateRRDs: storFlagOverride = true. Storing SNMP data for interface " + ifIdx + " with CollType = " + ifInfo.getCollType());
+                        } else {
+                            if (log().isDebugEnabled())
+                                log().debug("updateRRDs: selectively storing SNMP data for primary interface (" + primaryIfIndex + "), skipping ifIndex: " + ifIdx + " because collType = "+ifInfo.getCollType());
+                            continue;
+                        }
+                        if(byNode.equals("normal")) {
+                            byNode = "false";
+                        }			    
                     }
                 }
+                if(byNode.equals("normal")) {
+                    byNode = "true";
+                } 		    
                 
                 if (ifInfo.getDsList() == null)
                     throw new RuntimeException("Data Source list not available for primary IP addr " + ipaddr.getHostAddress() + " and ifIndex " + ifInfo.getIndex());
@@ -1210,7 +1307,7 @@ final class SnmpCollector implements ServiceCollector {
                     // make the
                     // appropriate directories if they do not already exist.
                     //
-                    String ifRepository = m_rrdPath + File.separator + String.valueOf(nodeInfo.getNodeId()) + File.separator + ifInfo.getLabel();
+                    String ifRepository = m_rrdPath + File.separator + String.valueOf(nodeId) + File.separator + ifInfo.getLabel();
                     
                     try {
                         
@@ -1221,28 +1318,42 @@ final class SnmpCollector implements ServiceCollector {
                         if (dsVal == null) {
                             // Do nothing, no update is necessary
                             if (log().isDebugEnabled())
-                                log().debug("updateRRDs: Skipping update, no data retrieved for node/ifindex: " + nodeInfo.getNodeId() + "/" + ifIndex + " datasource: " + ds.getName());
+                                log().debug("updateRRDs: Skipping update, no data retrieved for node/ifindex: " + nodeId + "/" + ifIndex + " datasource: " + ds.getName());
                         } else {
                             // Call createRRD() to create RRD if it doesn't
                             // already exist
                             //
                             //createRRD(collectionName, ipaddr, ifRepository, ds);
-                            if(ds.performUpdate(collectionName, ipaddr.getHostAddress(), ifRepository, ds.getName(), dsVal)) {
-                                log().warn("updateRRDs: ds.performUpdate() failed for node/ifindex: " + nodeInfo.getNodeId() + "/" + ifIndex + " datasource: " + ds.getName());
-                                rrdError = true;
+                            if(byNode.equals("true")) {
+                                if(ds.performUpdate(collectionName, ipaddr.getHostAddress(), ifRepository, ds.getName(), dsVal)) {
+                                    log().warn("updateRRDs: ds.performUpdate() failed for node/ifindex: " + nodeId + "/" + ifIndex + " datasource: " + ds.getName());
+                                    rrdError = true;
+                                }
                             }
-                            
+                            if(storeByIfAlias.equals("true")) {
+                                if((aliasVal != null) && !aliasVal.equals("")) {
+                                    ifRepository = m_rrdPath + File.separator + domain + File.separator + aliasVal;
+                                    if(ds.performUpdate(collectionName, ipaddr.getHostAddress(), ifRepository, ds.getName(), dsVal)) {
+                                        log().warn("updateRRDs: ds.performUpdate() failed for node/ifindex/domain/alias: " + nodeId + "/" + ifIndex + "/" + domain + "/" + aliasVal + " datasource: " + ds.getName());
+                                        rrdError = true;
+                                    }
+                                }
+                            }				
+
                         }
                     } catch (IllegalArgumentException e) {
                         log().warn("buildRRDUpdateCmd: " + e.getMessage());
                         // Set rrdError flag
                         rrdError = true;
-                        log().warn("updateRRDs: call to buildRRDUpdateCmd() failed for node/ifindex: " + nodeInfo.getNodeId() + "/" + ifIndex + " datasource: " + ds.getName());
+                        log().warn("updateRRDs: call to buildRRDUpdateCmd() failed for node/ifindex: " + nodeId + "/" + ifIndex + " datasource: " + ds.getName());
                     }
                     
                 } // end while(more datasources)
             } // end while(more SNMP collector entries)
         } // end if(ifCollector != null)
+        if(forceRescan) {
+            generateForceRescanEvent(ipaddr.getHostAddress(), nodeInfo.getNodeId(), eproxy);
+        }	    
         return rrdError;
     }
 
@@ -1281,9 +1392,36 @@ final class SnmpCollector implements ServiceCollector {
             return null;
 
         if (log.isDebugEnabled())
-            log.debug("issueRRDUpdate: name:oid:value -  " + ds.getName() + ":" + fullOid + ":" + snmpVar.toString());
+            log.debug("issueRRDUpdate: name:oid:value - " + ds.getName() + ":" + fullOid + ":" + snmpVar.toString());
 	
 	return ds.getStorableValue(snmpVar);
+    }
+
+    /**
+     * @param oid
+     * @param instance
+     * @param collectorEntry
+     * @return
+     * @throws Exception
+     */
+    public String getRRDIfAlias(String instance, SNMPCollectorEntry collectorEntry) throws IllegalArgumentException {
+        Category log = log();
+	if(instance.equals("")) {
+	    return null;
+	}
+
+        String fullOid = IFALIAS_OID + "." + instance;
+
+        String snmpVar = collectorEntry.getDisplayString(fullOid);
+
+        if (snmpVar == null || snmpVar.equals("")) {
+            // No value retrieved matching this oid
+            return null;
+	}
+
+        if (log.isDebugEnabled())
+            log.debug("getRRDIfAlias: ifAlias = "  + snmpVar);
+	return snmpVar;
     }
 
     /**
@@ -1332,6 +1470,119 @@ final class SnmpCollector implements ServiceCollector {
     }
 
     /**
+     * This method is responsible for retrieving
+     * an array of ifaliases indexed by ifindex
+     * for the specified node
+     * 
+     * @param int nodeID
+     *            the nodeID of the node being checked
+     */
+    private Map getIfAliasesFromDb(int nodeID) {
+
+        Category log = ThreadCategory.getInstance(getClass());
+	java.sql.Connection dbConn = null;
+	Map ifAliasMap = new HashMap();
+        if (log.isDebugEnabled()) {
+            log.debug("building ifAliasMap for node " + nodeID);
+	}
+
+        try {
+            dbConn = DatabaseConnectionFactory.getInstance().getConnection();
+
+	    PreparedStatement stmt = dbConn.prepareStatement(SQL_GET_SNMPIFALIASES);
+	    stmt.setInt(1, nodeID);
+	    try {
+	        ResultSet rs = stmt.executeQuery();
+	        while (rs.next()) {
+		    ifAliasMap.put(rs.getString(1), rs.getString(2));
+	        }
+	    } catch (SQLException sqlE) {
+	        throw sqlE;
+	    }
+        } catch (SQLException sqlE) {
+            if (log.isEnabledFor(Priority.ERROR))
+                log.error("Failed getting connection to the database.", sqlE);
+            throw new UndeclaredThrowableException(sqlE);
+        } finally {
+            // Done with the database so close the connection
+            try {
+                dbConn.close();
+            } catch (SQLException sqle) {
+                if (log.isEnabledFor(Priority.INFO))
+                    log.info("SQLException while closing database connection", sqle);
+            }
+        }
+        return ifAliasMap;
+    }
+
+    /**
+     * This method is responsible for determining if a 
+     * forced rescan has been started, but is not yet
+     * complete for the given nodeID
+     * 
+     * @param int nodeID
+     *            the nodeID of the node being checked
+     */
+    private boolean isForceRescanInProgress(int nodeID, String addr) {
+
+        Category log = ThreadCategory.getInstance(getClass());
+	java.sql.Connection dbConn = null;
+	boolean force = true;
+
+        try {
+            dbConn = DatabaseConnectionFactory.getInstance().getConnection();
+
+	    PreparedStatement stmt1 = dbConn.prepareStatement(SQL_GET_LATEST_FORCED_RESCAN_EVENTID);
+	    PreparedStatement stmt2 = dbConn.prepareStatement(SQL_GET_LATEST_RESCAN_COMPLETED_EVENTID);
+	    stmt1.setInt(1, nodeID);
+	    stmt1.setString(2, addr);
+	    stmt2.setInt(1, nodeID);
+	    try {
+	        // Issue database query
+	        ResultSet rs1 = stmt1.executeQuery();
+	        if (rs1.next()) {
+		    int forcedRescanEventId = rs1.getInt(1);
+		    try {
+		        ResultSet rs2 = stmt2.executeQuery();
+		        if (rs2.next()) {
+			    if(rs2.getInt(1) > forcedRescanEventId) {
+			        force = false;
+			    } else {
+                                if (log.isDebugEnabled()) {
+                                    log.debug("Rescan already pending on node " + nodeID);
+	                        }
+			    }
+		        }
+		    } catch (SQLException sqlE) {
+		        throw sqlE;
+		    } finally {
+		        stmt2.close();
+		    }
+	        } else {
+		    force = false;
+	        }
+	    } catch (SQLException sqlE) {
+	        throw sqlE;
+	    } finally {
+	        stmt1.close();
+	    }
+        } catch (SQLException sqlE) {
+            if (log.isEnabledFor(Priority.ERROR))
+                log.error("Failed getting connection to the database.", sqlE);
+            throw new UndeclaredThrowableException(sqlE);
+        } finally {
+            // Done with the database so close the connection
+            try {
+                dbConn.close();
+            } catch (SQLException sqle) {
+                if (log.isEnabledFor(Priority.INFO))
+                    log.info("SQLException while closing database connection", sqle);
+            }
+        }
+	return force;
+    }
+
+    /**
      * This method is responsible for building a Capsd forceRescan event object
      * and sending it out over the EventProxy.
      * 
@@ -1340,7 +1591,7 @@ final class SnmpCollector implements ServiceCollector {
      * @param eventProxy
      *            proxy over which an event may be sent to eventd
      */
-    private void generateForceRescanEvent(String ifAddress, EventProxy eventProxy) {
+    private void generateForceRescanEvent(String ifAddress, int nodeId, EventProxy eventProxy) {
         // Log4j category
         //
         Category log = log();
@@ -1363,6 +1614,8 @@ final class SnmpCollector implements ServiceCollector {
             newEvent.setHost(m_host);
 
         newEvent.setTime(EventConstants.formatToString(new java.util.Date()));
+
+        newEvent.setNodeid(nodeId);
 
         // Send event via EventProxy
         try {

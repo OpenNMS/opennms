@@ -705,8 +705,11 @@ public final class RescanProcessor implements Runnable {
 
             // alias (from interface extensions table)
             String ifAlias = snmpc.getIfAlias(ifIndex);
-            if (ifAlias != null && ifAlias.length() > 0)
+            if (ifAlias != null) {
                 dbSnmpIfEntry.updateAlias(ifAlias);
+            } else {
+                dbSnmpIfEntry.updateAlias("");
+            }		
 
         } // end if valid ifTable entry
 
@@ -1658,7 +1661,7 @@ public final class RescanProcessor implements Runnable {
                 // speed
                 Long uint = ifte.getIfSpeed();
 
-                //set the default speed to 10MB if not retrievable. 
+                //set the default speed to 10MB if not retrievable.
                 currSnmpIfEntry.setSpeed((uint == null ? 10000000L : uint.longValue())); 
 
                 // admin status
@@ -1676,8 +1679,11 @@ public final class RescanProcessor implements Runnable {
 
                 // alias (from interface extensions table)
                 String ifAlias = snmpc.getIfAlias(ifIndex);
-                if (ifAlias != null && ifAlias.length() > 0)
+                if (ifAlias != null) {
                     currSnmpIfEntry.setAlias(ifAlias);
+                } else {
+                    currSnmpIfEntry.setAlias("");
+                }		    
 
             } // end if valid ifTable entry
 
@@ -2890,6 +2896,7 @@ public final class RescanProcessor implements Runnable {
                         DbNodeEntry updatedNodeEntry = updateNode(dbc, now, dbNodeEntry, newSnmpPrimaryIf, dbInterfaces, collectorMap);
                     }
                     updateCompleted = true;
+		    createRescanCompletedEvent(dbNodeEntry);
                 }
             }
 
@@ -2928,7 +2935,7 @@ public final class RescanProcessor implements Runnable {
         m_scheduledNode.setScheduled(false);
 
         if (log.isDebugEnabled())
-            log.debug("Rescan for node w/ nodeid " + m_scheduledNode.getNodeId() + " completed.");
+            log.debug((m_forceRescan ? "Forced r" : "R") + "escan for node w/ nodeid " + m_scheduledNode.getNodeId() + " completed.");
     } // end run
 
     private boolean scanPrimarySnmpInterface(Category log, DbIpInterfaceEntry oldPrimarySnmpInterface, Map collectorMap, Set probedAddrs) {
@@ -4148,7 +4155,60 @@ public final class RescanProcessor implements Runnable {
         m_eventList.add(newEvent);
 
         if (log.isDebugEnabled()) {
-            log.debug("snmpConflictsWithDbEvent: Created snmpConflictsWithDbevent for nodeid: " + nodeEntry.getNodeId());
+            log.debug("snmpConflictsWithDbEvent: Created snmpConflictsWithDbEvent for nodeid: " + nodeEntry.getNodeId());
+        }
+    }
+
+    /**
+     * This method is responsible for generating a rescanCompleted event and
+     * adding it to the event list.
+     *
+     * @param nodeEntry Entry of node which was rescanned
+     */
+    private void createRescanCompletedEvent(DbNodeEntry nodeEntry) {
+        Category log = ThreadCategory.getInstance(getClass());
+
+        Event newEvent = new Event();
+
+        newEvent.setUei(EventConstants.RESCAN_COMPLETED_EVENT_UEI);
+
+        newEvent.setSource("OpenNMS.Capsd");
+
+        newEvent.setNodeid(nodeEntry.getNodeId());
+
+        newEvent.setHost(Capsd.getLocalHostAddress());
+
+        newEvent.setTime(EventConstants.formatToString(new java.util.Date()));
+
+        // Add appropriate parms
+        Parms eventParms = new Parms();
+        Parm eventParm = null;
+        Value parmValue = null;
+
+        // Add node label
+        String hostname = null;
+        if (nodeEntry.getLabel() == null) {
+            hostname = "";
+        }
+        else {
+            hostname = nodeEntry.getLabel();
+        }
+
+        eventParm = new Parm();
+        eventParm.setParmName(EventConstants.PARM_NODE_LABEL);
+        parmValue = new Value();
+        parmValue.setContent(hostname);
+        eventParm.setValue(parmValue);
+        eventParms.addParm(eventParm);
+
+        // Add Parms to the event
+        newEvent.setParms(eventParms);
+
+        // Add event to the list of events to be sent out.
+        m_eventList.add(newEvent);
+
+        if (log.isDebugEnabled()) {
+            log.debug("rescanCompletedEvent: Created rescanCompletedEvent for nodeid: " + nodeEntry.getNodeId());
         }
     }
 

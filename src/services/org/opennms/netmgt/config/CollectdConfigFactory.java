@@ -371,6 +371,44 @@ public final class CollectdConfigFactory {
                  return null;
          }
 
+    /**
+     * Returns true if collection package exists
+     * 
+     * @param name
+     *            The package name to check
+     * 
+     * @return True if the package exists
+     */
+     public synchronized boolean packageExists(String name) {
+             Enumeration packageEnum=m_config.enumeratePackage();
+             while(packageEnum.hasMoreElements()) {
+                     org.opennms.netmgt.config.collectd.Package thisPackage=( org.opennms.netmgt.config.collectd.Package)packageEnum.nextElement();
+                     if(thisPackage.getName().equals(name)) {
+                             return true;
+                     }
+             }
+             return false;
+     }
+
+    /**
+     * Returns true if collection domain exists
+     * 
+     * @param name
+     *            The domain name to check
+     * 
+     * @return True if the domain exists
+     */
+     public synchronized boolean domainExists(String name) {
+             Enumeration packageEnum=m_config.enumeratePackage();
+             while(packageEnum.hasMoreElements()) {
+                     org.opennms.netmgt.config.collectd.Package thisPackage=( org.opennms.netmgt.config.collectd.Package)packageEnum.nextElement();
+                     if((thisPackage.getIfAliasDomain() != null) && thisPackage.getIfAliasDomain().equals(name)) {
+                             return true;
+                     }
+             }
+             return false;
+     }
+
 
     /**
      * This method is used to determine if the named interface is included in

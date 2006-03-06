@@ -423,6 +423,12 @@ public class EventConstants {
     public final static String SNMP_CONFLICTS_WITH_DB_EVENT_UEI = "uei.opennms.org/internal/capsd/snmpConflictsWithDb";
 
     /**
+     * The rescan completed UEI
+     */
+
+    public final static String RESCAN_COMPLETED_EVENT_UEI = "uei.opennms.org/internal/capsd/rescanCompleted";
+
+    /**
      * The RTC subscribe event
      */
     public final static String RTC_SUBSCRIBE_EVENT_UEI = "uei.opennms.org/internal/rtc/subscribe";

@@ -82,6 +82,31 @@ final class CollectableService extends IPv4NetworkInterface implements ReadyRunn
     private org.opennms.netmgt.config.collectd.Package m_package;
 
     /**
+     * The storeByNodeID string for this interface/service pair
+     */
+    private String m_storeByNodeID;
+
+    /**
+     * The storeByIfAlias string for this interface/service pair
+     */
+    private String m_storeByIfAlias;
+
+    /**
+     * The ifAliasDomain string for this interface/service pair
+     */
+    private String m_ifAliasDomain;
+
+    /**
+     * The storFlagOverride string for this interface/service pair
+     */
+    private String m_storFlagOverride;
+
+    /**
+     * The ifAliasComment string for this interface/service pair
+     */
+    private String m_ifAliasComment;
+
+    /**
      * The service informaion for this interface/service pair
      */
     private final Service m_service;
@@ -155,9 +180,16 @@ final class CollectableService extends IPv4NetworkInterface implements ReadyRunn
      */
     CollectableService(int dbNodeId, InetAddress address, String svcName, org.opennms.netmgt.config.collectd.Package pkg) {
         super(address);
+        Category log = ThreadCategory.getInstance(getClass());
         m_nodeId = dbNodeId;
         m_package = pkg;
         m_status = ServiceCollector.COLLECTION_SUCCEEDED;
+
+	m_storeByIfAlias = pkg.getStoreByIfAlias();
+	m_storeByNodeID = pkg.getStoreByNodeID();
+	m_ifAliasDomain = pkg.getIfAliasDomain();
+	m_storFlagOverride = pkg.getStorFlagOverride();
+	m_ifAliasComment = pkg.getIfAliasComment();
 
         m_scheduler = Collectd.getInstance().getScheduler();
         m_collector = Collectd.getInstance().getServiceCollector(svcName);
@@ -195,6 +227,29 @@ final class CollectableService extends IPv4NetworkInterface implements ReadyRunn
                     Parameter p = (Parameter) ep.nextElement();
                     m.put(p.getKey(), p.getValue());
                 }
+		if(m_storeByIfAlias != null && isTrue(m_storeByIfAlias)) {
+		    m.put("storeByIfAlias", "true");
+		    if(m_storeByNodeID != null) {
+			if(isTrue(m_storeByNodeID)) {
+		            m.put("storeByNodeID", "true");
+			} else if(isFalse(m_storeByNodeID)) {
+		            m.put("storeByNodeID", "false");
+			} else {
+		            m.put("storeByNodeID", "normal");
+			}
+		    }
+		    if(m_ifAliasDomain != null) {
+			m.put("domain", m_ifAliasDomain);
+		    } else {
+		        m.put("domain", m_package.getName());
+		    }
+		    if(m_storFlagOverride != null && isTrue(m_storFlagOverride)) {
+		        m.put("storFlagOverride", "true");
+		    }
+		    m.put("ifAliasComment", m_ifAliasComment);
+                    if (log.isDebugEnabled())
+		        log.debug("ifAliasDomain = " + m_ifAliasDomain + ", storeByIfAlias = " + m_storeByIfAlias + ", storeByNodeID = " + m_storeByNodeID + ", storFlagOverride = " + m_storFlagOverride + ", ifAliasComment = " + m_ifAliasComment);
+		}
 
                 SVC_PROP_MAP.put(m_svcPropKey, m);
             }
@@ -210,6 +265,22 @@ final class CollectableService extends IPv4NetworkInterface implements ReadyRunn
             }
         };
 
+    }
+
+    private boolean isTrue(String stg) {
+	if(stg.equalsIgnoreCase("yes") || stg.equalsIgnoreCase("on") || stg.equalsIgnoreCase("true")) {
+	    return true;
+	} else {
+	    return false;
+	}
+    }
+
+    private boolean isFalse(String stg) {
+	if(stg.equalsIgnoreCase("no") || stg.equalsIgnoreCase("off") || stg.equalsIgnoreCase("false")) {
+	    return true;
+	} else {
+	    return false;
+	}
     }
 
     /**
