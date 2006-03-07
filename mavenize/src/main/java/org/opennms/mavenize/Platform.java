@@ -79,7 +79,8 @@ class Platform {
     private Plugin createPlugin() {
         String groupId = Configuration.get().getString("plugin.native.groupId");
         String artifactId = Configuration.get().getString("plugin.native.artifactId");
-        Plugin plugin = m_subModuleBuilder.addPlugin(groupId, artifactId);
+        String version = Configuration.get().getString("plugin.native.version");
+        Plugin plugin = m_subModuleBuilder.addPlugin(groupId, artifactId, version);
         plugin.setExtensions(true);
         return plugin;
     }

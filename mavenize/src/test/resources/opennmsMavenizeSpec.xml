@@ -131,9 +131,7 @@
 		<sources source-type="java">
 			<fileset dir="${opennms.dir}/src/services">
 				<include
-					name="org/opennms/netmgt/config/DatabaseConnectionFactory.java" />
-				<include
-					name="org/opennms/netmgt/config/DbConnectionFactory.java" />
+					name="org/opennms/netmgt/config/*ConnectionFactory.java" />
 			</fileset>
 		</sources>
 		<dependencies>
@@ -143,6 +141,8 @@
 				version="0.9.6" />
 			<dependency groupId="xerces" artifactId="xerces"
 				version="1.4.0" scope="runtime" />
+			<dependency groupId="c3p0" artifactId="c3p0"
+				version="0.9.0-pre5" />
 		</dependencies>
 	</module>
 

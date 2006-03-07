@@ -32,6 +32,9 @@ public class SourceType {
 		String getArtifactId() {
 			return Configuration.get().getString(getPrefix()+".artifactId");
 		}
+		String getVersion() {
+			return Configuration.get().getString(getPrefix()+".version");
+		}
 		List getGoals() {
 			return Configuration.get().getList(getPrefix()+".goals");
 		}
@@ -94,7 +97,7 @@ public class SourceType {
 
 	private void addPlugin(SpecPlugin specPlugin, PomBuilder builder, File baseDir, String target) throws Exception {
 		
-	    Plugin plugin = builder.addPlugin(specPlugin.getGroupId(), specPlugin.getArtifactId());
+	    Plugin plugin = builder.addPlugin(specPlugin.getGroupId(), specPlugin.getArtifactId(), specPlugin.getVersion());
 	    
 	    if (plugin.getExecutions().size() == 0) {
 	        PluginExecution execution = new PluginExecution();

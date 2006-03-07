@@ -209,6 +209,9 @@ public class PomBuilder {
 	}
 
 	public Plugin addPlugin(String groupId, String artifactId) {
+	        return addPlugin(groupId, artifactId, (String)null);
+        }
+	public Plugin addPlugin(String groupId, String artifactId, String version) {
 		if (m_model.getBuild() == null) {
 			m_model.setBuild(new Build());
 		}
@@ -218,6 +221,7 @@ public class PomBuilder {
 		    plugin = new Plugin();
 		    plugin.setGroupId(groupId);
 		    plugin.setArtifactId(artifactId);
+                    plugin.setVersion(version);
 		    m_model.getBuild().addPlugin(plugin);
 		}
 		return plugin;
