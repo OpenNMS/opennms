@@ -1,5 +1,8 @@
 1.3.1 to 1.3.2
 ----------------------------------------------------------------------
+- Added support for range attribute in threshd packages. When specified
+  this will fetch the last non NaN value from an rrd between now and
+  now minus range. Bug 1432.
 - Added SNMP system definition for Powerware UPSes (OID mask
   .1.3.6.1.4.1.534.).  Thanks to Sean McAvoy <seanmcavoy@gmail.com>.
 - Added asset info to the node page and some SNMP-Informant collections.
