@@ -48,6 +48,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.log4j.Category;
+import org.apache.log4j.Priority;
 import org.jrobin.core.FetchData;
 import org.jrobin.core.RrdDb;
 import org.jrobin.core.RrdDef;
@@ -164,6 +165,50 @@ public class JRobinRrdStrategy implements RrdStrategy {
             double[] vals = data.getValues(0);
             if (vals.length > 0) {
                 return new Double(vals[vals.length - 1]);
+            }
+            return null;
+        } catch (IOException e) {
+            throw new org.opennms.netmgt.rrd.RrdException("Exception occurred fetching data from " + fileName, e);
+        } catch (RrdException e) {
+            throw new org.opennms.netmgt.rrd.RrdException("Exception occurred fetching data from " + fileName, e);
+        } finally {
+            if (rrd != null)
+                try {
+                    rrd.close();
+                } catch (IOException e) {
+                    Category log = ThreadCategory.getInstance(getClass());
+                    log.error("Failed to close rrd file: " + fileName, e);
+                }
+        }
+    }
+    
+    public Double fetchLastValueInRange(String fileName, int interval, int range) throws NumberFormatException, org.opennms.netmgt.rrd.RrdException {
+        RrdDb rrd = null;
+        try {
+        	Category log = ThreadCategory.getInstance(getClass());
+        	rrd = new RrdDb(fileName);
+         	long now = System.currentTimeMillis();
+            long latestUpdateTime = (now - (now % interval)) / 1000L;
+            long earliestUpdateTime = ((now - (now % interval)) - range) / 1000L;
+            if (log.isEnabledFor(Priority.DEBUG))
+            	log.debug("fetchInRange: fetching data from " + earliestUpdateTime + " to " + latestUpdateTime);
+            
+            FetchData data = rrd.createFetchRequest("AVERAGE", earliestUpdateTime, latestUpdateTime).fetchData();
+            
+		    double[] vals = data.getValues(0);
+		    long[] times = data.getTimestamps();
+		    
+		    // step backwards through the array of values until we get something that's a number
+            
+		    for(int i = vals.length - 1; i >= 0; i--) {
+            	if ( Double.isNaN(vals[i]) ) {
+            		if (log.isEnabledFor(Priority.DEBUG))
+            			log.debug("fetchInRange: Got a NaN value at interval: " + times[i] + " continuing back in time");
+            	} else {
+               		if (log.isEnabledFor(Priority.DEBUG))
+               			log.debug("Got a non NaN value at interval: " + times[i] + " : " + vals[i] );
+            		return new Double(vals[i]);
+               	}
             }
             return null;
         } catch (IOException e) {
