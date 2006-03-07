@@ -1,0 +1,30 @@
+<c:set var="reportList"></c:set>
+<c:forEach var="report" items="${results.reports}">
+  <c:set var="reportList"><c:out value="${reportList}" escapeXml="false"/>&reports=<c:out value="${report}"/></c:set>
+</c:forEach>
+
+<div align="center">
+  <form name="reltimeform" action="">
+    <table class="periods">
+      <tbody>
+        <tr>
+	  <c:forEach var="period" items="${requestScope.results.relativeTimePeriods}">
+	    <td><c:out value="${period.name}"/></td>
+	  </c:forEach>
+        </tr>
+
+        <tr>
+	  <c:forEach var="period" items="${requestScope.results.relativeTimePeriods}">
+	    <td>
+	      <input type="radio" name="rtstatus"
+	        <c:if test="${period.id == requestScope.results.relativeTime}">
+		  checked="checked"
+	        </c:if>
+		onclick="top.location = 'graph/domainResults?type=<c:out value="${param.type}"/>&relativetime=<c:out value="${period.id}"/>&intf=<c:out value="${requestScope.results.intf}"/>&domain=<c:out value="${requestScope.results.domain}"/><c:out value="${reportList}"/>'">
+	    </td>
+	  </c:forEach>
+        </tr>
+      </tbody>
+    </table>
+  </form>
+</div>
