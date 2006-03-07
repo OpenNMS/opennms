@@ -71,6 +71,8 @@ import org.opennms.netmgt.xml.event.Log;
  * @author <A HREF="mailto:mike@opennms.org">Mike Davidson </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  * 
+ * FIXME: This thresholder does not support ranges yet.
+ * 
  */
 final class LatencyThresholder implements ServiceThresholder {
     /**
@@ -83,6 +85,13 @@ final class LatencyThresholder implements ServiceThresholder {
      * 
      */
     static final int DEFAULT_INTERVAL = 300000; // 300s or 5m
+
+    /**
+     * Default age before which a data point is considered "out of date"
+     */
+    
+    static final int DEFAULT_RANGE = 0; 
+
 
     /**
      * Interface attribute key used to store the interface's node id

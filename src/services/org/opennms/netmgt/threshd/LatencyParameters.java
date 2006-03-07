@@ -36,5 +36,11 @@ public class LatencyParameters {
 	    return groupName;
 	}
 	
+	int getRange() {
+		Map parameters = getParameters();
+	    int range = ParameterMap.getKeyedInteger(parameters, "range", LatencyThresholder.DEFAULT_RANGE);
+	    return range;
+	}
+	
 
 }

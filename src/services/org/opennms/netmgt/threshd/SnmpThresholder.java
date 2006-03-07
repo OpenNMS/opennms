@@ -104,7 +104,13 @@ final class SnmpThresholder implements ServiceThresholder {
      * 
      */
     private static final int DEFAULT_INTERVAL = 300000; // 300s or 5m
-
+    
+    /**
+     * Default age before which a data point is considered "out of date"
+     */
+    
+    private static final int DEFAULT_RANGE = 0; // 300s or 5m
+    
     /**
      * Interface attribute key used to store the interface's node id
      */
@@ -453,9 +459,10 @@ final class SnmpThresholder implements ServiceThresholder {
         //
         String groupName = ParameterMap.getKeyedString(parameters, "thresholding-group", "default");
         int interval = ParameterMap.getKeyedInteger(parameters, "interval", DEFAULT_INTERVAL);
+        int range = ParameterMap.getKeyedInteger(parameters, "range", DEFAULT_RANGE);
 
         if (log.isDebugEnabled())
-            log.debug("check: service= " + SERVICE_NAME + " address= " + primary.getHostAddress() + " thresholding-group=" + groupName + " interval=" + interval + "ms");
+        	log.debug("check: service= " + SERVICE_NAME + " address= " + primary.getHostAddress() + " thresholding-group=" + groupName + " interval=" + interval + "ms range=" + range + " mS");
 
         // RRD Repository attribute
         //
@@ -495,7 +502,7 @@ final class SnmpThresholder implements ServiceThresholder {
         Date dateStamp = new Date();
 
         try {
-            checkNodeDir(nodeDirectory, nodeId, primary, interval, dateStamp, nodeMap, events);
+        	checkNodeDir(nodeDirectory, nodeId, primary, interval, range, dateStamp, nodeMap, events);
         } catch (IllegalArgumentException e) {
             log.error("check: Threshold checking failed for primary SNMP interface " + primary.getHostAddress(), e);
             return THRESHOLDING_FAILED;
@@ -516,7 +523,7 @@ final class SnmpThresholder implements ServiceThresholder {
             for (int i = 0; i < files.length; i++) {
                 try {
                     // Found interface directory...
-                    checkIfDir(files[i], nodeId, primary, interval, dateStamp, baseIfMap, allIfMap, events);
+                    checkIfDir(files[i], nodeId, primary, interval, range, dateStamp, baseIfMap, allIfMap, events);
                 } catch (IllegalArgumentException e) {
                     log.error("check: Threshold checking failed for primary SNMP interface " + primary.getHostAddress(), e);
                     return THRESHOLDING_FAILED;
@@ -553,6 +560,9 @@ final class SnmpThresholder implements ServiceThresholder {
      *            Primary SNMP interface address
      * @param interval
      *            Configured thresholding interval
+     * @param range
+     *            Time interval before last possible PDP is considered
+     *            "out of date"
      * @param date
      *            Source for timestamp to be used for all generated events
      * @param thresholdMap
@@ -565,7 +575,7 @@ final class SnmpThresholder implements ServiceThresholder {
      * @throws IllegalArgumentException
      *             if path parameter is not a directory.
      */
-    private void checkNodeDir(File directory, Integer nodeId, InetAddress primary, int interval, Date date, Map thresholdMap, Events events) throws IllegalArgumentException {
+    private void checkNodeDir(File directory, Integer nodeId, InetAddress primary, int interval, int range, Date date, Map thresholdMap, Events events) throws IllegalArgumentException {
 		Category log = log();
 
         // Sanity Check
@@ -619,7 +629,15 @@ final class SnmpThresholder implements ServiceThresholder {
                 Double dsValue = null;
 		
                 try {
-                    dsValue = RrdUtils.fetchLastValue(files[i].getAbsolutePath(), interval);
+                	if (range != 0) {
+                		if (log.isDebugEnabled())
+                            log.debug("checking values within " + range + " mS of last possible PDP");
+                		dsValue = RrdUtils.fetchLastValueInRange(files[i].getAbsolutePath(), interval, range);
+                	} else {
+                		if (log.isDebugEnabled())
+                            log.debug("checking value of last possible PDP only");
+                		dsValue = RrdUtils.fetchLastValue(files[i].getAbsolutePath(), interval);
+                	}
                 } catch (NumberFormatException nfe) {
                     log.warn("Unable to convert retrieved value for datasource '" + datasource + "' to a double, skipping evaluation.");
                 } catch (RrdException e) {
@@ -667,6 +685,9 @@ final class SnmpThresholder implements ServiceThresholder {
      *            Primary SNMP interface address
      * @param interval
      *            Configured thresholding interval
+     * @param range
+     *            Time interval before last possible PDP is considered
+     *            "out of date"
      * @param date
      *            Source for timestamp to be used for all generated events
      * @param baseIfThresholdMap
@@ -681,7 +702,7 @@ final class SnmpThresholder implements ServiceThresholder {
      * @throws IllegalArgumentException
      *             if path parameter is not a directory.
      */
-    private void checkIfDir(File directory, Integer nodeId, InetAddress primary, int interval, Date date, Map baseIfThresholdMap, Map allIfThresholdMap, Events events) throws IllegalArgumentException {
+    private void checkIfDir(File directory, Integer nodeId, InetAddress primary, int interval, int range, Date date, Map baseIfThresholdMap, Map allIfThresholdMap, Events events) throws IllegalArgumentException {
 		Category log = log();
 
         // Sanity Check
@@ -765,7 +786,15 @@ final class SnmpThresholder implements ServiceThresholder {
                 //
                 Double dsValue = null;
                 try {
-                    dsValue = RrdUtils.fetchLastValue(files[i].getAbsolutePath(), interval);
+                	if (range != 0) {
+                		if (log.isDebugEnabled())
+                            log.debug("checking values within " + range + " mS of last possible PDP");
+                		dsValue = RrdUtils.fetchLastValueInRange(files[i].getAbsolutePath(), interval, range);
+                	} else {
+                		if (log.isDebugEnabled())
+                            log.debug("checking value of last possible PDP only");
+                		dsValue = RrdUtils.fetchLastValue(files[i].getAbsolutePath(), interval);
+                	}
                 } catch (NumberFormatException nfe) {
                     log.warn("Unable to convert retrieved value for datasource '" + datasource + "' to a double, skipping evaluation.");
                 } catch (RrdException e) {

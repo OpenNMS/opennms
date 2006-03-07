@@ -91,6 +91,13 @@ public abstract class JMXThresholder implements ServiceThresholder {
      * 
      */
     private static final int DEFAULT_INTERVAL = 300000; // 300s or 5m
+    
+    /**
+     * Default age before which a data point is considered "out of date"
+     */
+    
+    private static final int DEFAULT_RANGE = 0; // 300s or 5m
+    
 
     /**
      * Interface attribute key used to store the interface's node id
@@ -410,6 +417,7 @@ public abstract class JMXThresholder implements ServiceThresholder {
 
         String port         = ParameterMap.getKeyedString( parameters, "port",           null);
         String friendlyName = ParameterMap.getKeyedString( parameters, "friendly-name",  port);
+        int range = ParameterMap.getKeyedInteger( parameters, "range",  DEFAULT_RANGE);
         
         if (useFriendlyName) {
             dsDir = friendlyName;
@@ -423,7 +431,7 @@ public abstract class JMXThresholder implements ServiceThresholder {
         int    interval  = ParameterMap.getKeyedInteger(parameters, "interval", DEFAULT_INTERVAL);
 
         if (log.isDebugEnabled())
-            log.debug("check: service= " + serviceName.toUpperCase() + " address= " + primary.getHostAddress() + " thresholding-group=" + groupName + " interval=" + interval + "ms");
+            log.debug("check: service= " + serviceName.toUpperCase() + " address= " + primary.getHostAddress() + " thresholding-group=" + groupName + " interval=" + interval + "mS range =  " + range + " mS");
 
         // RRD Repository attribute
         //
@@ -462,7 +470,7 @@ public abstract class JMXThresholder implements ServiceThresholder {
         Date dateStamp = new Date();
 
         try {
-            checkNodeDir(nodeDirectory, nodeId, primary, interval, dateStamp, nodeMap, events);
+            checkNodeDir(nodeDirectory, nodeId, primary, range, interval, dateStamp, nodeMap, events);
         } catch (IllegalArgumentException e) {
             log.error("check: Threshold checking failed for primary " + serviceName + " interface " + primary.getHostAddress(), e);
             return THRESHOLDING_FAILED;
@@ -483,7 +491,7 @@ public abstract class JMXThresholder implements ServiceThresholder {
             for (int i = 0; i < files.length; i++) {
                 try {
                     // Found interface directory...
-                    checkIfDir(files[i], nodeId, primary, interval, dateStamp, baseIfMap, allIfMap, events);
+                    checkIfDir(files[i], nodeId, primary, interval, range, dateStamp, baseIfMap, allIfMap, events);
                 } catch (IllegalArgumentException e) {
                     log.error("check: Threshold checking failed for primary " + serviceName + " interface " + primary.getHostAddress(), e);
                     return THRESHOLDING_FAILED;
@@ -521,6 +529,8 @@ public abstract class JMXThresholder implements ServiceThresholder {
      *            Primary SNMP interface address
      * @param interval
      *            Configured thresholding interval
+     * @param range
+     *            Age before which PDP is considered out of date
      * @param date
      *            Source for timestamp to be used for all generated events
      * @param thresholdMap
@@ -533,7 +543,7 @@ public abstract class JMXThresholder implements ServiceThresholder {
      * @throws IllegalArgumentException
      *             if path parameter is not a directory.
      */
-    private void checkNodeDir(File directory, Integer nodeId, InetAddress primary, int interval, Date date, Map thresholdMap, Events events) throws IllegalArgumentException {
+    private void checkNodeDir(File directory, Integer nodeId, InetAddress primary, int interval, int range,  Date date, Map thresholdMap, Events events) throws IllegalArgumentException {
         Category log = ThreadCategory.getInstance(getClass());
 
         // Sanity Check
@@ -569,7 +579,15 @@ public abstract class JMXThresholder implements ServiceThresholder {
                 //
                 Double dsValue = null;
                 try {
-                    dsValue = RrdUtils.fetchLastValue(files[i].getAbsolutePath(), interval);
+                	if (range != 0) {
+                		if (log.isDebugEnabled())
+                            log.debug("checking values within " + range + " mS of last possible PDP");
+                		dsValue = RrdUtils.fetchLastValueInRange(files[i].getAbsolutePath(), interval, range);
+                	} else {
+                		if (log.isDebugEnabled())
+                            log.debug("checking value of last possible PDP only");
+                		dsValue = RrdUtils.fetchLastValue(files[i].getAbsolutePath(), interval);
+                	}
                 } catch (NumberFormatException nfe) {
                     log.warn("Unable to convert retrieved value for datasource '" + datasource + "' to a double, skipping evaluation.");
                 } catch (RrdException e) {
@@ -618,6 +636,8 @@ public abstract class JMXThresholder implements ServiceThresholder {
      *            Primary JMX interface address
      * @param interval
      *            Configured thresholding interval
+     * @param range
+     *            Age before which PDP is considered out of date           
      * @param date
      *            Source for timestamp to be used for all generated events
      * @param baseIfThresholdMap
@@ -632,7 +652,7 @@ public abstract class JMXThresholder implements ServiceThresholder {
      * @throws IllegalArgumentException
      *             if path parameter is not a directory.
      */
-    private void checkIfDir(File directory, Integer nodeId, InetAddress primary, int interval, Date date, Map baseIfThresholdMap, Map allIfThresholdMap, Events events) throws IllegalArgumentException {
+    private void checkIfDir(File directory, Integer nodeId, InetAddress primary, int interval, int range, Date date, Map baseIfThresholdMap, Map allIfThresholdMap, Events events) throws IllegalArgumentException {
         Category log = ThreadCategory.getInstance(getClass());
 
         // Sanity Check
@@ -713,7 +733,15 @@ public abstract class JMXThresholder implements ServiceThresholder {
                 //
                 Double dsValue = null;
                 try {
-                    dsValue = RrdUtils.fetchLastValue(files[i].getAbsolutePath(), interval);
+                	if (range != 0) {
+                		if (log.isDebugEnabled())
+                            log.debug("checking values within " + range + " mS of last possible PDP");
+                		dsValue = RrdUtils.fetchLastValueInRange(files[i].getAbsolutePath(), interval, range);
+                	} else {
+                		if (log.isDebugEnabled())
+                            log.debug("checking value of last possible PDP only");
+                		dsValue = RrdUtils.fetchLastValue(files[i].getAbsolutePath(), interval);
+                	}
                 } catch (NumberFormatException nfe) {
                     log.warn("Unable to convert retrieved value for datasource '" + datasource + "' to a double, skipping evaluation.");
                 } catch (RrdException e) {
