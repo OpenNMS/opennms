@@ -107,7 +107,7 @@ public final class IfXTable extends SnmpTable {
         return null;
     }
 
-    public String getIfIndex(int ifIndex) {
+    public String getIfAlias(int ifIndex) {
         // Find ifXTable entry with matching ifIndex
         //
         Iterator iter = getEntries().iterator();

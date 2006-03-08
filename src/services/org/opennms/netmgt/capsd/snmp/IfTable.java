@@ -138,7 +138,49 @@ public final class IfTable extends SnmpTable {
         return -1;
     }
 
+    public String getIfDescr(final int ifIndex) {
+        String ifDescr = null;   
+        if (getEntries() != null) {
+            Iterator i = getEntries().iterator();
+            while (i.hasNext()) {
+                IfTableEntry entry = (IfTableEntry) i.next();
+                Integer ndx = entry.getIfIndex();
+                if (ndx != null && ndx.intValue() == ifIndex) {
+                    ifDescr = entry.getIfDescr();
+                }
+            }
+        }
+        return ifDescr;
+    }
 
-
+    public Long getIfSpeed(final int ifIndex) {
+        Long ifSpeed = null;   
+        if (getEntries() != null) {
+            Iterator i = getEntries().iterator();
+            while (i.hasNext()) {
+                IfTableEntry entry = (IfTableEntry) i.next();
+                Integer ndx = entry.getIfIndex();
+                if (ndx != null && ndx.intValue() == ifIndex) {
+                    ifSpeed = entry.getIfSpeed();
+                }
+            }
+        }
+        return ifSpeed;
+    }
+    
+    public String getPhysAddr(final int ifIndex) {
+        String physAddr = null;   
+        if (getEntries() != null) {
+            Iterator i = getEntries().iterator();
+            while (i.hasNext()) {
+                IfTableEntry entry = (IfTableEntry) i.next();
+                Integer ndx = entry.getIfIndex();
+                if (ndx != null && ndx.intValue() == ifIndex) {
+                    physAddr = entry.getPhysAddr();
+                }
+            }
+        }
+        return physAddr;
+    }
 
 }

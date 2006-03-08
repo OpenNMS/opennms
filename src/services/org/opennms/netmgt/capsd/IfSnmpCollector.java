@@ -261,7 +261,34 @@ public final class IfSnmpCollector implements Runnable {
 
         return snmpIfName;
     }
-
+    
+    public String getIfDescr(final int ifIndex) {
+        String ifDescr = null;
+        
+        if (hasIfTable()) {
+            ifDescr = m_ifTable.getIfDescr(ifIndex);
+        }
+        return ifDescr;
+    }
+    
+    public Long getIfSpeed(final int ifIndex) {
+        Long ifSpeed = null;
+        
+        if (hasIfTable()) {
+            ifSpeed = m_ifTable.getIfSpeed(ifIndex);
+        }
+        return ifSpeed;
+    }
+    
+    public String getPhysAddr(final int ifIndex) {
+        String physAddr = null;
+        
+        if (hasIfTable()) {
+            physAddr = m_ifTable.getPhysAddr(ifIndex);
+        }
+        return physAddr;
+    }
+    
     /**
      * 
      */
@@ -269,7 +296,7 @@ public final class IfSnmpCollector implements Runnable {
         String snmpIfAlias = null;
 
         if (hasIfXTable()) {
-            snmpIfAlias = m_ifXTable.getIfIndex(ifIndex);
+            snmpIfAlias = m_ifXTable.getIfAlias(ifIndex);
         }
 
         // Debug
