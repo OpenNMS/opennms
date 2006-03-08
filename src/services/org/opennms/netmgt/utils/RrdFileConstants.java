@@ -104,6 +104,37 @@ public class RrdFileConstants extends Object {
         return false;
     }
 
+    /**
+     * Convenience filter that matches non-integer-named directories that
+     * contain directories that contain RRD files.
+     */
+    public static final FileFilter DOMAIN_DIRECTORY_FILTER = new FileFilter() {
+        public boolean accept(File file) {
+            return isValidRRDDomainDir(file);
+        }
+    };
+
+    public static final boolean isValidRRDDomainDir(File file) {
+        if (!file.isDirectory()) {
+            return false;
+        }
+
+        try {
+            // if the directory name is an integer
+            Integer.parseInt(file.getName());
+        } catch (Exception e) {
+        
+            // if the domain dir contains queryable interface directories, then
+            // it is queryable
+            File[] intfDirs = file.listFiles(INTERFACE_DIRECTORY_FILTER);
+            if (intfDirs != null && intfDirs.length > 0) {
+                return true;
+            }
+
+        } 
+        return false;
+    }
+
     public static final boolean isValidRRDInterfaceDir(File file) {
         if (!file.isDirectory()) {
             return false;

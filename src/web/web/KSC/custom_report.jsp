@@ -65,7 +65,8 @@
   <jsp:param name="headTitle" value="KSC" />
   <jsp:param name="location" value="KSC Reports" />
   <jsp:param name="breadcrumb" value="<a href='report/index.jsp'>Reports</a>" />
-  <jsp:param name="breadcrumb" value="KSC Reports" />
+  <jsp:param name="breadcrumb" value="<a href='KSC/index.jsp'>KSC Reports</a>" />
+  <jsp:param name="breadcrumb" value="Custom Report" />
 </jsp:include>
 
 
@@ -136,17 +137,27 @@
             <table width="100%" border="2">
                 <% int graph_count = report.getGraphCount();
                    for (int i=0; i< graph_count; i++) { 
+                       int nodeId = 0;
                        Graph current_graph = report.getGraph(i); 
-                       int nodeId = Integer.parseInt(current_graph.getNodeId());
+                       if(current_graph.getNodeId() != null && !current_graph.getNodeId().equals("null")) {
+                           nodeId = Integer.parseInt(current_graph.getNodeId());
+                       }
+                       String curr_domain = current_graph.getDomain();
                        String intf = current_graph.getInterfaceId();
                        PrefabGraph display_graph = (PrefabGraph) this.model.getQuery(current_graph.getGraphtype());
                        
                        // encode the RRD filenames based on the graph's required data sources 
-                       String[] rrds = this.getRRDNames(nodeId, intf, display_graph);  
+                       String[] rrds;
+                       String externalValuesParm="";
+                       if(nodeId > 0) {
+                           rrds = this.getRRDNames(nodeId, intf, display_graph);  
+                           // handle external values, if any 
+                           externalValuesParm = this.encodeExternalValuesAsParmString(nodeId, intf, display_graph); 
+                       } else {
+                           rrds = this.getRRDNames(curr_domain, intf, display_graph);  
+                       }
                        String rrdParm = this.encodeRRDNamesAsParmString(rrds); 
                        
-                       // handle external values, if any 
-                       String externalValuesParm = this.encodeExternalValuesAsParmString(nodeId, intf, display_graph); 
                 %>
             
                     <tr>
@@ -156,11 +167,16 @@
                         </td>
                         <td align="right">
                             <h3> <%=current_graph.getTitle()%> <br>
+                            <%if(nodeId > 0) {%>    
                                 Node: <a href="element/node.jsp?node=<%=nodeId%>">
                                 <%=NetworkElementFactory.getNodeLabel(nodeId)%></a><br>
                                 <% if(intf != null ) { %>
                                     Interface: <%=this.model.getHumanReadableNameForIfLabel(nodeId, intf)%>
                                 <% } %>
+                            <%} else {%>
+                                Domain: <%=curr_domain%><br>
+                                Interface: <a href="element/nodelist.jsp?ifAlias=<%=intf%>"><%=intf%></a><br/>
+                            <%}%>
                             </h3>
 
                             <%-- gather start/stop time information --%>

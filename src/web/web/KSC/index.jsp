@@ -51,6 +51,7 @@
 
 <%
     PerformanceModel.QueryableNode[] nodes = this.model.getQueryableNodes();
+    String[] domains = this.model.getQueryableDomains();
 %>
 
 <%
@@ -72,12 +73,12 @@
 %>
 
 <jsp:include page="/includes/header.jsp" flush="false" >
-  <jsp:param name="title" value="Key SNMP Customized Performance Reports and Node Reports" />
+  <jsp:param name="title" value="Key SNMP Customized Performance Reports" />
   <jsp:param name="headTitle" value="Performance" />
   <jsp:param name="headTitle" value="Reports" />
   <jsp:param name="headTitle" value="KSC" />
   <jsp:param name="breadcrumb" value="<a href='report/index.jsp'>Reports</a>" />
-  <jsp:param name="breadcrumb" value="KSC and Node Reports" />
+  <jsp:param name="breadcrumb" value="KSC Reports" />
 </jsp:include>
 
 <%-- A script for validating Node ID Selection Form before submittal --%>
@@ -101,11 +102,38 @@
       return isChecked;
   }
 
+  function validateDomain()
+  {
+      var isChecked = false
+      for( i = 0; i < document.choose_domain.domain.length; i++ )
+      {
+         //make sure something is checked before proceeding
+         if (document.choose_domain.domain[i].selected)
+         {
+            isChecked=true;
+         }
+      }
+
+      if (!isChecked)
+      {
+          alert("Please check the domain that you would like to report on.");
+      }
+      return isChecked;
+  }
+
   function submitNodeForm()
   {
       if (validateNode())
       {
           document.choose_node.submit();
+      }
+  }
+
+  function submitDomainForm()
+  {
+      if (validateDomain())
+      {
+          document.choose_domain.submit();
       }
   }
 </script>
@@ -156,7 +184,7 @@
   }
 </script>
 
-<h3 align="center">Key SNMP Customized Peformance Reports and Node Reports</h3>
+<h3 align="center">Key SNMP Customized Peformance Reports,<br>Node Reports and Domain Reports</h3>
 
 <table width="100%" cellspacing="0" cellpadding="2" border="0">
   
@@ -191,11 +219,21 @@
     
     </td>
   </tr>
-  
   <tr>
-    <td>
+    <td>&nbsp;</td>
+  </tr>
+  <tr>
+    <td class="footer" ALIGN="center"></td>
+  </tr>
+</table>  
+
+<br>
+  
+<table width="100%" cellspacing="0" cellpadding="4" border="0">
+  <tr>
+    <td valign="top" align="center">
       <h3>Node Reports</h3>
-      <p>Select Node for desired performance report</p>
+      <p>Select Node for desired <br> performance report</p>
       <form method="get" name="choose_node" action="KSC/custom_view.jsp" >
           <input type="hidden" name="type" value="node">
           <table> 
@@ -215,6 +253,34 @@
               </tr>
           </table> 
       </form>
+    </td>
+  
+    <td valign="top" align="center">
+      <h3>Domain Reports</h3>
+      <% if(domains.length == 0) { %>
+        <p>No Data Has Been Collected by Domain</p>
+      <% } else { %>
+        <p>Select Domain for desired <br> performance report</p>
+        <form method="get" name="choose_domain" action="KSC/custom_view.jsp" >
+            <input type="hidden" name="type" value="domain">
+            <table> 
+                <tr>
+                    <td>
+                        <p>
+                            <select name="domain" size="10">
+                                <% for( int i=0; i < domains.length; i++ ) { %>
+                                    <option value="<%=domains[i]%>"><%=domains[i]%></option>
+                                <% } %>
+                            </select>
+                        </p>
+                    </td>
+                    <td>
+                        <p> <input type="button" value="Submit" onclick="submitDomainForm()" alt="Initiates Generation of Domain Report"/> </p>
+                    </td>
+                </tr>
+            </table> 
+        </form>
+      <% } %>
     </td>
   </tr>
 

@@ -136,10 +136,12 @@
         
         <% if (action.equals("AddGraph")) { %>
             <input type="hidden" name="node" value="null">
+            <input type="hidden" name="domain" value="null">
             <input type="hidden" name="intf" value="null">
         <% } else { %>
             <% Graph graph = this.reportFactory.getWorkingGraph(); %>
             <input type="hidden" name="node" value="<%=graph.getNodeId()%>">
+            <input type="hidden" name="domain" value="<%=graph.getDomain()%>">
             <input type="hidden" name="intf" value="<%=graph.getInterfaceId()%>">
         <% } %>
     </form>

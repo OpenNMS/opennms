@@ -64,8 +64,8 @@
             <!-- Performance Reports -->    
             <p><a href="performance/index.jsp">Performance Reports</a></p>
 
-            <!-- KSC Performance Reports and Node Reports -->
-            <p><a href="KSC/index.jsp">KSC Performance Reports and Node Reports</a></p>
+            <!-- KSC Performance Reports, Node Reports, Domain Reports -->
+            <p><a href="KSC/index.jsp">KSC Performance Reports, Node Reports, Domain Reports</a></p>
 
             <!-- Availability Report -->
             <p><a href="availability/index.jsp">Availability Reports</a></p>

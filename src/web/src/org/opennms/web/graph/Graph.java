@@ -16,6 +16,7 @@ public class Graph implements Comparable {
     private GraphModel m_model = null;
     private PrefabGraph m_graph = null;
     private int m_nodeId = -1;
+    private String m_domain = null;
     private String m_intf = null;
     private Date m_start = null;
     private Date m_end = null;
@@ -30,8 +31,22 @@ public class Graph implements Comparable {
 	m_end = end;
     }
 
+    public Graph(GraphModel model, PrefabGraph graph, String domain, String intf,
+		Date start, Date end) {
+	m_model = model;
+	m_graph = graph;
+	m_domain = domain;
+	m_intf = intf;
+	m_start = start;
+	m_end = end;
+    }
+
     public int getNodeId() {
         return m_nodeId;
+    }
+
+    public String getDomain() {
+        return m_domain;
     }
 
     public String getIntf() {
@@ -67,7 +82,9 @@ public class Graph implements Comparable {
 
 	// XXX This is such a hack.  This logic should *not* be in here.
 	if (m_model.getType() == "performance") {
-	    url = url + "&" + m_nodeId + "/strings.properties";
+            if (m_nodeId > -1) {
+	        url = url + "&" + m_nodeId + "/strings.properties";
+            }
 	}
 
 	return url;
@@ -83,7 +100,12 @@ public class Graph implements Comparable {
 
             if (encodeNodeIdInRRDParm) {
 		// We don't include node IDs on response graphs
-                buffer.append(m_nodeId);
+                // Make sure we have a valid nodeId, else append domain
+                if (m_nodeId > -1) {
+                    buffer.append(m_nodeId);
+                } else {
+                    buffer.append(m_domain);
+                }
                 buffer.append(File.separator);
             }
 

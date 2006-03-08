@@ -854,6 +854,10 @@
     <servlet-name>addIntfToPerfUrl</servlet-name>
     <url-pattern>/performance/addIntfFromNode</url-pattern>
   </servlet-mapping>  
+  <servlet-mapping>
+    <servlet-name>addIntfToPerfUrl</servlet-name>
+    <url-pattern>/performance/addIntfFromDomain</url-pattern>
+  </servlet-mapping>
 
   <servlet-mapping>
     <servlet-name>rt-rrddump</servlet-name>
@@ -1306,6 +1310,10 @@
   <servlet-mapping>
     <servlet-name>graphResults</servlet-name>
     <url-pattern>/graph/results</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>graphResults</servlet-name>
+    <url-pattern>/graph/domainResults</url-pattern>
   </servlet-mapping>
 
   <error-page>

@@ -54,7 +54,7 @@
             graph.setNodeId(String.valueOf(node_id));
             graph.setInterfaceId(intf);
             graph.setTimespan("7_day");
-            graph.setGraphtype("mib2.bits");
+            graph.setGraphtype("none");
             node_report.addGraph(graph);
         }
         return node_report; 

@@ -64,13 +64,14 @@
 %>
 
 <%
-    // required parameter node
+    // optional parameter node
     String nodeIdString = request.getParameter("node");
-    if (nodeIdString == null) {
-        throw new MissingParameterException("node");
-    }
 
-    int nodeId = Integer.parseInt(nodeIdString);
+    //optional parameter domain
+    String domain = request.getParameter("domain");
+    if(( nodeIdString == null ) && ( domain == null )) {
+        throw new MissingParameterException("node or domain");
+    }
 
     // optional parameter intf
     String intf = request.getParameter("intf");    
@@ -78,11 +79,14 @@
     PrefabGraph[] graphs = null;
 
     // FIXME: getQueries throws an exception if nodeId doesn't have snmp data!
-    if (intf == null) {
-        graphs = this.model.getQueries(nodeId);
+    // This doesn't seem to be an issue any more, at least from performance reports
+    if((intf == null) && (nodeIdString != null )) {
+        graphs = this.model.getQueries(Integer.parseInt(nodeIdString));
+    } else if (nodeIdString != null ) {
+        boolean includeNodeQueries = false;
+	graphs = this.model.getQueries(Integer.parseInt(nodeIdString), intf, includeNodeQueries);
     } else {
-        boolean includeNodeQueries = true;
-        graphs = this.model.getQueries(nodeId, intf, includeNodeQueries);    
+        graphs = this.model.getQueriesForDomain(domain, intf);
     }
 
     /*
@@ -137,14 +141,25 @@
 
 <h3>Network Performance Data</h3>
 
-<form method="get" name="report" action="graph/results">
+<% if (nodeIdString != null ) { %>
+  <form method="get" name="report" action="graph/results">
+<% } else { %>
+  <form method="get" name="report" action="graph/domainResults">
+<% } %>
   <input type="hidden" name="type" value="performance"/>
   <%=Util.makeHiddenTags(request)%>
+  <% if(intf == null) { %>
+    <input type="hidden" name="intf" value="" />
+  <% } %>
 
   <div style="width: 40%; float: left;">
     <p>
-      Please choose one or more of the following queries to perform on
-      the interface.
+      <% if (graphs.length > 0) { %>
+        Please choose one or more of the following queries to perform on
+        the node or interface.
+      <% } else { %>
+        No standard reports being collected for this node or interface.
+      <% } %>
     </p>
 
     <p>

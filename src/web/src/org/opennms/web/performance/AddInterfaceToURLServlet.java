@@ -69,28 +69,37 @@ public class AddInterfaceToURLServlet extends HttpServlet {
 
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String nodeId = request.getParameter("node");
+	String domain = request.getParameter("domain");
         String endUrl = request.getParameter("endUrl");
-
-        if (nodeId == null) {
-            throw new MissingParameterException("node", new String[] { "node", "endUrl" });
-        }
+	ArrayList intfs;
 
         if (endUrl == null) {
             throw new MissingParameterException("endUrl", new String[] { "node", "endUrl" });
         }
 
         // should return an empty array if no queryable interfaces available
-        ArrayList intfs = this.model.getQueryableInterfacesForNode(nodeId);
+
+        if (nodeId != null) {
+            intfs = this.model.getQueryableInterfacesForNode(nodeId);
+            this.log("DEBUG: Found these interfaces for node " + nodeId + ":");
+        } else if (domain != null) {
+            intfs = this.model.getQueryableInterfacesForDomain(domain);
+            this.log("DEBUG: Found these interfaces for domain " + domain + ":");
+        } else {
+            throw new MissingParameterException("node or domain", new String[] { "node or domain", "endUrl" });
+        }
 
         if (intfs == null) {
             // shouldn't ever happen, but just in case
+            this.log("DEBUG: Error: No interfaces found");
             throw new ServletException("Unexpected value: a null array");
         }
 
-        this.log("DEBUG: Found these interfaces for node " + nodeId + ":");
 	for (Iterator i = intfs.iterator(); i.hasNext(); ) {
             this.log("DEBUG: interface: " + (String) i.next());
         }
+        this.log("DEBUG: No more interfaces");
+
 
         String[] ignores = new String[] { "endUrl" };
 
@@ -110,6 +119,15 @@ public class AddInterfaceToURLServlet extends HttpServlet {
         }
 
         case 1: {
+          if(this.model.getQueries(Integer.parseInt(nodeId)).length > 0) {
+            // redirect to the chooseInterfaceUrl
+            String queryString = Util.makeQueryString(request);
+            response.sendRedirect(Util.calculateUrlBase(request)
+				  + this.chooseInterfaceUrl + "?"
+				  + queryString);
+
+            // this is a sibling URL, so no base URL is needed
+          } else {
             // add the interface, and redirect to end url
             HashMap additions = new HashMap();
             additions.put("intf", intfs.get(0));
@@ -121,7 +139,8 @@ public class AddInterfaceToURLServlet extends HttpServlet {
             // slash, so I do not add one here
             response.sendRedirect(Util.calculateUrlBase(request) + endUrl + "?"
 				  + queryString);
-            break;
+          }	    
+	  break;
         }
 
         default: {

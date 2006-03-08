@@ -93,8 +93,10 @@
 
 <% if (action.equals("Update")) { %>
     <form name="do_update" method="get" action="KSC/custom_graph3.jsp">
+        <input type="hidden" name="domain" value="<%=graph.getDomain()%>">
         <input type="hidden" name="node" value="<%=graph.getNodeId()%>">
         <input type="hidden" name="intf" value="<%=graph.getInterfaceId()%>">
+        <input type="hidden" name="graphtype" value="<%=graph.getGraphtype()%>">
     </form> 
     <script>
        document.do_update.submit(); 

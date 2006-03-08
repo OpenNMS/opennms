@@ -55,11 +55,18 @@
 <%@ include file="/WEB-INF/jspf/graph-common.jspf"%>
 
 <%
-    String[] requiredParameters = new String[] {"node", "intf"};
+    String[] requiredParameters = new String[] {"node or domain", "intf"};
 
-    // required parameter node
+    // optional parameter node
     String nodeIdString = request.getParameter("node");
-    if (nodeIdString == null) {
+
+    //optional parameter domain
+    String domain = request.getParameter("domain");
+
+    //optional parameter gtype
+    String gtype = request.getParameter("graphtype");
+
+    if((nodeIdString == null) && ( domain == null )) {
         throw new MissingParameterException("node", requiredParameters);
     }
 
@@ -69,26 +76,45 @@
         throw new MissingParameterException("intf", requiredParameters);
     }
     
-    int nodeId = Integer.parseInt(nodeIdString);
+    int nodeId = 0;
 
-    String nodeLabel = NetworkElementFactory.getNodeLabel(nodeId);     
+    String nodeLabel = "";     
 
     PrefabGraph[] graph_options = null;
-    boolean includeNodeQueries = true;
-    graph_options = this.model.getQueries(nodeId, intf, includeNodeQueries); 
 
+    if( nodeIdString != null && !nodeIdString.equals("null")) {
+        boolean includeNodeQueries = false;
+        nodeId = Integer.parseInt(nodeIdString);
+        nodeLabel = NetworkElementFactory.getNodeLabel(nodeId);
+	if(intf.equals("")) {
+            graph_options = this.model.getQueries(nodeId);
+        } else {
+            graph_options = this.model.getQueries(nodeId, intf, includeNodeQueries);
+        }
+    } else {
+        graph_options = this.model.getQueriesForDomain(domain, intf);
+        nodeIdString = "null";
+    }
     Report report = this.reportFactory.getWorkingReport(); 
     org.opennms.netmgt.config.kscReports.Graph sample_graph = this.reportFactory.getWorkingGraph(); 
     if (sample_graph == null) {
-        throw new IllegalArgumentException("Invalid working graph argument -- null pointer");
+        throw new IllegalArgumentException("Invalid working graph argument -- null pointer. Possibly missing prefab report in snmp-graph.properties?");
     }
     int graph_index = this.reportFactory.getWorkingGraphIndex(); 
 
     // Set the node and interface values in the working graph (in case they changed)
     sample_graph.setNodeId(nodeIdString);
+    sample_graph.setDomain(domain);
     sample_graph.setInterfaceId(intf);
 
-    PrefabGraph display_graph = (PrefabGraph) this.model.getQuery(sample_graph.getGraphtype());
+    PrefabGraph display_graph = null;
+    if(graph_options.length > 0) {
+        if(gtype == null) {
+            display_graph = (PrefabGraph) this.model.getQuery(graph_options[0].getName());
+        } else {
+            display_graph = (PrefabGraph) this.model.getQuery(sample_graph.getGraphtype());
+        }
+    }
 %>
 
 <jsp:include page="/includes/header.jsp" flush="false" >
@@ -98,7 +124,8 @@
   <jsp:param name="headTitle" value="KSC" />
   <jsp:param name="location" value="KSC Reports" />
   <jsp:param name="breadcrumb" value="<a href='report/index.jsp'>Reports</a>" />
-  <jsp:param name="breadcrumb" value="KSC Reports" />
+  <jsp:param name="breadcrumb" value="<a href='KSC/index.jsp'>KSC Reports</a>" />
+  <jsp:param name="breadcrumb" value="Custom Graph" />
 </jsp:include>
 
 <script language="Javascript" type="text/javascript">
@@ -138,8 +165,14 @@
       <table width="100%" cellspacing="2" cellpadding="2" border="0">
         <tr>
             <td colspan="2">
-                <h3 align="center">Cusomized Report Graph Definition</h3> 
-                <h3 align="center">Step 3: Choose Graph Type & Timespan</h3> 
+                <% if(graph_options.length > 0) { %>
+                    <h3 align="center">Customized Report Graph Definition</h3> 
+                    <h3 align="center">Choose Graph Type & Timespan</h3> 
+                <% } else { %>
+                    <h3 align="left">No graph options available. Check that the
+                    correct data is being collected and that appropriate reports
+                    are defined.</h3>
+                <% } %>
             </td>
         </tr>
 
@@ -155,21 +188,37 @@
                             <h3 align="center">Sample Graph Image</h3> 
                         </td>
                     </tr>
+		    <% String[] rrds; %>
                     <%-- encode the RRD filenames based on the graph's required data sources --%>
-                    <% String[] rrds = this.getRRDNames(nodeId, intf, display_graph); %> 
+                    <% if(nodeId > 0) { %>
+                        <% rrds = this.getRRDNames(nodeId, intf, display_graph); %> 
+                    <% } else { %>
+                        <% rrds = this.getRRDNames(domain, intf, display_graph); %> 
+                    <% } %>
                     <% String rrdParm = this.encodeRRDNamesAsParmString(rrds); %>
+
+                    <% String externalValuesParm = ""; %>
                         
                     <%-- handle external values, if any --%>
-                    <% String externalValuesParm = this.encodeExternalValuesAsParmString(nodeId, intf, display_graph); %>
-            
+                    <% if(nodeId > 0) { %>
+                        <% this.log("custom graph3: encoding external values for node " + nodeId); %>
+                        <% externalValuesParm = this.encodeExternalValuesAsParmString(nodeId, intf, display_graph); %>
+                    <% } %>
+
                     <tr>
                         <td align="right">
                             Title: &nbsp; <input type="text" name="title" value="<%=sample_graph.getTitle()%>" size="40" maxlength="40"/> <br>
-                            <h3> Node: <a href="element/node.jsp?node=<%=nodeId%>">
-                            <%=NetworkElementFactory.getNodeLabel(nodeId)%></a><br>
-                            <% if(intf != null ) { %>
-                                Interface: <%=this.model.getHumanReadableNameForIfLabel(nodeId, intf)%>
-                            <% } %>
+                            <h3>
+                            <%if(nodeId > 0) {%>
+                                Node: <a href="element/node.jsp?node=<%=nodeId%>">
+                                <%=NetworkElementFactory.getNodeLabel(nodeId)%></a><br>
+                                <% if(intf != null && !intf.equals("")) { %>
+                                    Interface: <%=this.model.getHumanReadableNameForIfLabel(nodeId, intf)%>
+                                <% } %>
+                            <%} else {%>
+                                Domain: <%=domain%><br>
+                                Interface: <a href="element/nodelist.jsp?ifAlias=<%=intf%>"><%=intf%></a><br/>
+                            <%}%>
                             </h3>
 
                             <%-- gather start/stop time information --%>

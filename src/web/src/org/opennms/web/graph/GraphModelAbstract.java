@@ -1,5 +1,7 @@
 package org.opennms.web.graph;
 
+import org.apache.log4j.Category;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -7,12 +9,14 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.utils.IfLabel;
 import org.opennms.netmgt.utils.RrdFileConstants;
 import org.opennms.web.Util;
@@ -23,6 +27,8 @@ public abstract class GraphModelAbstract implements GraphModel {
     private Map m_reportMap;
 
     private File m_rrdDirectory;
+
+    private String m_defaultReport;
 
     protected void loadProperties(String homeDir, String fileName)
 		throws IOException {
@@ -43,11 +49,22 @@ public abstract class GraphModelAbstract implements GraphModel {
         m_rrdDirectory =
 	    new File(m_properties.getProperty("command.input.dir"));
 
+        if(m_properties.getProperty("default.report") != null) {	
+            m_defaultReport =
+	        new String(m_properties.getProperty("default.report"));
+        } else {
+            m_defaultReport = new String("none");
+        }	    
+
         m_reportMap = PrefabGraph.getPrefabGraphDefinitions(m_properties);
     }
 
     public File getRrdDirectory() {
         return m_rrdDirectory;
+    }
+
+    public String getDefaultReport() {
+        return m_defaultReport;
     }
 
     public PrefabGraph getQuery(String queryName) {
@@ -116,14 +133,23 @@ public abstract class GraphModelAbstract implements GraphModel {
 
     public PrefabGraph[] getQueries(int nodeId, String intf,
 				    boolean includeNodeQueries) {
-        return getQueries(String.valueOf(nodeId), intf, includeNodeQueries);
+        boolean isNode = true;	    
+        return getQueries(String.valueOf(nodeId), intf, includeNodeQueries, isNode);
     }
 
     public PrefabGraph[] getQueries(String nodeId, String intf,
 				    boolean includeNodeQueries) {
-        if (nodeId == null || intf == null) {
+        boolean isNode = true;
+        return getQueries(nodeId, intf, includeNodeQueries, isNode);
+    }
+
+    public PrefabGraph[] getQueries(String nodeOrDomain, String intf,
+                                    boolean includeNodeQueries, boolean isNode) { 
+        Category log = ThreadCategory.getInstance(this.getClass());
+        if (nodeOrDomain == null || intf == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
+	log.debug("getQueries: nodeordomain:intf:includeNodeQueries:isNode " + nodeOrDomain + ":" + intf + ":" + includeNodeQueries + ":" + isNode);
 
         // create a temporary list of queries to return
         List returnList = new LinkedList();
@@ -133,8 +159,8 @@ public abstract class GraphModelAbstract implements GraphModel {
 
         // get all the data sources supported by this interface (and possibly
         // node)
-        List availDataSourceList = getDataSourceList(nodeId, intf,
-						     includeNodeQueries);
+        List availDataSourceList = getDataSourceList(nodeOrDomain, intf,
+						     includeNodeQueries, isNode);
 
         // for each query, see if all the required data sources are available
         // in the available data source list, if so, add that query to the
@@ -143,7 +169,9 @@ public abstract class GraphModelAbstract implements GraphModel {
             List requiredList = Arrays.asList(queries[i].getColumns());
 
             if (availDataSourceList.containsAll(requiredList)) {
-                returnList.add(queries[i]);
+                if(isNode || queries[i].getExternalValues().length == 0) {
+                    returnList.add(queries[i]);
+                }
             }
         }
 
@@ -154,6 +182,91 @@ public abstract class GraphModelAbstract implements GraphModel {
         return availQueries;
     }
 
+    public PrefabGraph[] getQueriesForDomain(String domain, String intf) {
+        boolean includeNodeQueries = false;
+        boolean isNode = false;
+        return getQueries(domain, intf, includeNodeQueries, isNode);
+    }
+    
+    public PrefabGraph[] getAllQueries(String nodeOrDomain, boolean isNode) {
+        if (nodeOrDomain == null) {
+            throw new IllegalArgumentException("Cannot take null parameters.");
+        }
+        Category log = ThreadCategory.getInstance(this.getClass());
+        boolean includeNodeQueries = false;
+        HashMap queryCount = new HashMap();
+        String mostFreqQuery = "none";
+        int mostFreqCount = 0;
+
+        // get the full list of all possible queries
+        PrefabGraph[] queries = getQueries();
+
+        File nodeOrDomainDir = new File(getRrdDirectory(), nodeOrDomain);
+
+        // get each interface directory
+        File[] intfDir = nodeOrDomainDir.listFiles(RrdFileConstants.INTERFACE_DIRECTORY_FILTER);
+
+        // for each interface directory, get all available data sources
+        for (int j = 0; j < intfDir.length; j++) {
+            String dirName = intfDir[j].getName();
+
+            //
+
+            List availDataSourceList = getDataSourceList(nodeOrDomain, dirName, includeNodeQueries, isNode);
+
+            // for each query, see if all the required data sources are available
+            // in the available data source list, if so, add that query to the
+            // queryCount HashMap
+            //
+            for (int i = 0; i < queries.length; i++) {
+	        String qname = queries[i].getName();
+                List requiredList = Arrays.asList(queries[i].getColumns());
+
+                if (availDataSourceList.containsAll(requiredList)) {
+                    if(isNode || queries[i].getExternalValues().length == 0) {
+                        if(queryCount.containsKey(queries[i])) {
+                            int x = ( (Integer) queryCount.get(queries[i])).intValue();
+                            queryCount.put(queries[i], new Integer(x++));
+                        } else {
+                            queryCount.put(queries[i], new Integer(1));
+                        }
+                        if(( (Integer) queryCount.get(queries[i])).intValue() > mostFreqCount) {
+                            mostFreqCount = ( (Integer) queryCount.get(queries[i])).intValue();
+                            mostFreqQuery = qname;
+                        }
+                    }
+                }
+            }
+        }	
+
+        // put the queries in queryCount keySet into an array
+        PrefabGraph[] availQueries = (PrefabGraph[]) queryCount.keySet().toArray(new PrefabGraph[queryCount.size() + 1]);
+
+        // determine working default graph and copy to end of array. It will be pulled
+        // off again by the calling method.
+        for(int i = 0; i < queryCount.size(); i++ ) {
+            if(availQueries[i].getName().equals(getDefaultReport())) {
+                availQueries[queryCount.size()] = availQueries[i];
+                break;
+            }
+            if(availQueries[i].getName().equals(mostFreqQuery)) {
+                availQueries[queryCount.size()] = availQueries[i];
+            }
+        }
+        if (log.isDebugEnabled() && queryCount.size() > 0) {
+            if(availQueries[queryCount.size()].getName().equals(getDefaultReport())) {
+                log.debug("Found default report " + getDefaultReport() + " in list of available queries");
+            } else {
+                log.debug("Default report " + getDefaultReport() + " not found in list of available queries. Using most frequent query " + mostFreqQuery + " as the default.");
+            }
+        }
+
+        return availQueries;
+    }	
+
+    // Check to see whether any of the public String[] getDataSources listed below are used
+    // Remove them if not.
+    //
     public String[] getDataSources(int nodeId) {
         return getDataSources(String.valueOf(nodeId));
     }
@@ -212,9 +325,41 @@ public abstract class GraphModelAbstract implements GraphModel {
     }
 
     public List getDataSourceList(int nodeId, String intf,
-				  boolean includeNodeQueries) {
-        return getDataSourceList(String.valueOf(nodeId), intf,
-				 includeNodeQueries);
+                                  boolean includeNodeQueries) {
+        boolean isNode = true;
+        return getDataSourceList(String.valueOf(nodeId), intf, includeNodeQueries, isNode);
+    }
+
+    public List getDataSourceList(String nodeIdOrDomain, String intf, boolean includeNodeQueries, boolean isNode) {
+        Category log = ThreadCategory.getInstance(this.getClass());
+        if (nodeIdOrDomain == null || intf == null) {
+            throw new IllegalArgumentException("Cannot take null parameters.");
+        }
+
+        List dataSources = new ArrayList();
+
+        File nodeOrDomainDir = new File(getRrdDirectory(), nodeIdOrDomain);
+        File intfDir = new File(nodeOrDomainDir, intf);
+
+        int suffixLength = RrdFileConstants.RRD_SUFFIX.length();
+
+        // get the node data sources
+        if (includeNodeQueries && isNode) {
+            dataSources.addAll(this.getDataSourceList(nodeIdOrDomain));
+        }
+
+        // get the interface data sources
+        File[] intfFiles = intfDir.listFiles(RrdFileConstants.RRD_FILENAME_FILTER);
+
+        for (int i = 0; i < intfFiles.length; i++) {
+            String fileName = intfFiles[i].getName();
+            String dsName = fileName.substring(0, fileName.length() - suffixLength);
+
+            dataSources.add(dsName);
+	    log.debug("getDataSourceList: adding " + dsName);
+        }
+
+        return dataSources;
     }
 
     /**

@@ -61,14 +61,18 @@
 <%
     String nodeId = request.getParameter("node");
     String intfId = request.getParameter("intf");
-    if( nodeId == null ) {
-        throw new MissingParameterException( "node", new String[] {"node", "endUrl"} );
+    String domain = request.getParameter("domain");
+    ArrayList intfs;
+    if( nodeId != null ) {
+        intfs = this.model.getQueryableInterfacesForNode(nodeId);
+    } else if (domain != null) {
+        intfs = this.model.getQueryableInterfacesForDomain(domain);
+    } else {
+        throw new MissingParameterException( "node or domain", new String[] {"node or domain", "endUrl"} );
     }
     if( intfId == null ) {
         intfId = "";
     }
-    
-    ArrayList intfs = this.model.getQueryableInterfacesForNode(nodeId);
     
     Collections.sort(intfs);        
 %>
@@ -79,7 +83,8 @@
   <jsp:param name="headTitle" value="Performance" />
   <jsp:param name="headTitle" value="Reports" />
   <jsp:param name="breadcrumb" value="<a href='report/index.jsp'>Reports</a>" />
-  <jsp:param name="breadcrumb" value="KSC Reports" />
+  <jsp:param name="breadcrumb" value="<a href='KSC/index.jsp'>KSC Reports</a>" />
+  <jsp:param name="breadcrumb" value="Custom Graph" />
 </jsp:include>
 
   <script language="Javascript" type="text/javascript" >
@@ -120,16 +125,20 @@
     <td align="center">
       <form method="get" name="report" action="KSC/custom_graph3.jsp" >
         <input type=hidden name="node" value="<%=nodeId%>">
+	<input type=hidden name="domain" value="<%=domain%>">
         <table>
           <tr>
             <td>
-                <h3>Step 2: Choose an Interface to Query</h3>
+                <h3>Choose an Interface to Query</h3>
             </td>
           </tr>
 
           <tr>
             <td>
                 <select name="intf" size="10">
+                  <% if(nodeId != null) { %>
+                      <option value="">Node-level Performance Data</option>
+                  <% } %>		      
                   <% for(Iterator i = intfs.iterator(); i.hasNext(); ) { %>
                       <% String intf = (String) i.next(); %>
                       <% if (intfId.equals(intf)) { %>
@@ -137,7 +146,11 @@
                       <% } else { %>
                           <option value="<%=intf%>"> 
                       <% } %>
-                      <%=this.model.getHumanReadableNameForIfLabel(Integer.parseInt(nodeId), intf)%></option>
+                      <% if( nodeId != null ) { %>		      
+                          <%=this.model.getHumanReadableNameForIfLabel(Integer.parseInt(nodeId), intf)%></option>
+                      <% } else { %>
+                          <%=intf%></option>
+                      <% } %>
                   <% } %>
               </select>
             </td>

@@ -63,6 +63,7 @@
 
 <%
     PerformanceModel.QueryableNode[] nodes = this.model.getQueryableNodes();
+    String[] domains = this.model.getQueryableDomains();
 %>
 
 <jsp:include page="/includes/header.jsp" flush="false" >
@@ -113,7 +114,45 @@
       return isChecked;
   }
 
-  function submitForm()
+  function validateDomain()
+  {
+      var isChecked = false
+      for( i = 0; i < document.choose_domain.domain.length; i++ )
+      {
+         //make sure something is checked before proceeding
+         if (document.choose_domain.domain[i].selected)
+         {
+            isChecked=true;
+         }
+      }
+
+      if (!isChecked)
+      {
+          alert("Please check the domain that you would like to report on.");
+      }
+      return isChecked;
+  }
+
+  function validateDomainAdhoc()
+  {
+      var isChecked = false
+      for( i = 0; i < document.choose_domain_adhoc.domain.length; i++ )
+      {
+         //make sure something is checked before proceeding
+         if (document.choose_domain_adhoc.domain[i].selected)
+         {
+            isChecked=true;
+         }
+      }
+
+      if (!isChecked)
+      {
+          alert("Please check the domain that you would like to report on.");
+      }
+      return isChecked;
+  }
+
+  function submitNodeForm()
   {
       if (validateNode())
       {
@@ -121,20 +160,36 @@
       }
   }
 
-  function submitFormAdhoc()
+  function submitNodeFormAdhoc()
   {
       if (validateNodeAdhoc())
       {
           document.choose_node_adhoc.submit();
       }
   }
+
+  function submitDomainForm()
+  {
+      if (validateDomain())
+      {
+          document.choose_domain.submit();
+      }
+  }
+
+  function submitDomainFormAdhoc()
+  {
+      if (validateDomainAdhoc())
+      {
+          document.choose_domain_adhoc.submit();
+      }
+  }
 </script>
 
-<div style="width: 40%; float: left;">
-  <h3>Standard Performance Reports</h3>
+<div style="width: 30%; float: left;">
+  <h3>Standard Node<br>Performance Reports</h3>
 
   <p>
-    Choose a node to generate a standard performance report on.
+    Choose a node for a standard performance report.
   </p>
 
   <form method="get" name="choose_node" action="performance/addIntfFromNode">
@@ -150,13 +205,13 @@
     <br/>
     <br/>
 
-    <input type="button" value="Start" onclick="submitForm()"/>
+    <input type="button" value="Start" onclick="submitNodeForm()"/>
   </form>
 
-  <h3>Custom Performance Reports</h3>
+  <h3>Custom Node<br>Performance Reports</h3>
 
   <p>
-    Choose a node to generate a custom performance report on.
+    Choose a node for a custom performance report.
   </p>
 
   <form method="get" name="choose_node_adhoc" action="performance/adhoc.jsp">
@@ -169,12 +224,57 @@
     <br/>
     <br/>
 
-    <input type="button" value="Start" onclick="submitFormAdhoc()"/>
+    <input type="button" value="Start" onclick="submitNodeFormAdhoc()"/>
   </form>
 </div>
 
-<div style="width: 60%; float: left;">
-  <h3>Network Performance Data</h3>
+<div style="width: 30%; float: left;">
+<% if (domains.length > 0) { %>
+  <h3>Standard Domain<br>Performance Reports</h3>
+
+  <p>
+    Choose a domain for a standard performance report.
+  </p>
+
+  <form method="get" name="choose_domain" action="performance/addIntfFromDomain">
+    <input type="hidden" name="endUrl"
+	   value="performance/choosereportanddate.jsp" />
+
+    <select name="domain" size="10">
+      <% for( int i=0; i < domains.length; i++ ) { %>
+        <option value="<%=domains[i]%>"><%=domains[i]%></option>
+      <% } %>
+    </select>
+
+    <br/>
+    <br/>
+
+    <input type="button" value="Start" onclick="submitDomainForm()"/>
+  </form>
+
+  <h3>Custom Domain<br>Performance Reports</h3>
+
+  <p>
+    Choose a domain for a custom performance report.
+  </p>
+
+  <form method="get" name="choose_domain_adhoc" action="performance/adhoc.jsp">
+    <select name="domain" size="10">
+      <% for( int i=0; i < domains.length; i++ ) { %>
+        <option value="<%=domains[i]%>"><%=domains[i]%></option>
+      <% } %>
+    </select>
+
+    <br/>
+    <br/>
+
+    <input type="button" value="Start" onclick="submitDomainFormAdhoc()"/>
+  </form>
+<% } %>
+</div>
+
+<div style="width: 40%; float: right;">
+  <h3 align=center>Network Performance Data</h3>
 
   <p>
     The <strong>Standard Performance Reports</strong> provide a stock way to

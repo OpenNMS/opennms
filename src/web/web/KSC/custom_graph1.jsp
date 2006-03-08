@@ -64,7 +64,9 @@
 
 <%
     PerformanceModel.QueryableNode[] nodes = this.model.getQueryableNodes();
+    String[] domains = this.model.getQueryableDomains();
     String nodeId = request.getParameter("node");
+    String dom = request.getParameter("domain");
     int node_intval;
     if (nodeId == null || "null".equals(nodeId)) {
         node_intval = -1;
@@ -80,7 +82,8 @@
   <jsp:param name="headTitle" value="Reports" />
   <jsp:param name="location" value="KSC Reports" />
   <jsp:param name="breadcrumb" value="<a href='report/index.jsp'>Reports</a>" />
-  <jsp:param name="breadcrumb" value="KSC Reports" />
+  <jsp:param name="breadcrumb" value="<a href='KSC/index.jsp'>KSC Reports</a>" />
+  <jsp:param name="breadcrumb" value="Custom Graph" />
 </jsp:include>
 
 <%-- A script for validating Node ID Selection Form before submittal --%>
@@ -104,6 +107,25 @@
       return isChecked;
   }
 
+  function validateDomain()
+  {
+      var isChecked = false
+      for( i = 0; i < document.choose_domain.domain.length; i++ )
+      {
+          //make sure something is checked before proceeding
+          if (document.choose_domain.domain[i].selected)
+          {
+              isChecked=true;
+          }
+      }
+
+      if (!isChecked)
+      {
+          alert("Please check the domain that you would like to report on.");
+      }
+      return isChecked;
+  }
+  
   function submitNodeForm()
   {
       if (validateNode())
@@ -111,14 +133,22 @@
           document.choose_node.submit();
       }
   }
+
+  function submitDomainForm()
+  {
+      if (validateDomain())
+      {
+          document.choose_domain.submit();
+      }
+  }
 </script>
 
 <h3 align="center">Customized Report - Graph Definition</h3>
 
-<table width="100" align="center">
+<table width="100" align="center" cellpadding=10>
   <tr>
     <td>
-      <h3>Step 1: Select Node to Report On</h3>
+      <h3 align="center">Select a Node</h3>
       <form method="get" name="choose_node" action="KSC/custom_graph2.jsp" >
           <input type="hidden" name="intf" value="<%=request.getParameter("intf")%>" >
           <table> 
@@ -145,6 +175,37 @@
           </table> 
       </form>
     </td>
+    <% if(domains.length > 0) { %>
+      <td valign="top">--or--</td>
+      <td>
+        <h3 align="center">Select a Domain</h3>
+        <form method="get" name="choose_domain" action="KSC/custom_graph2.jsp" >
+          <input type="hidden" name="intf" value="<%=request.getParameter("intf")%>" >
+            <table> 
+                <tr>
+                    <td>
+                        <p>
+                            <select name="domain" size="10">
+                                <% for( int i=0; i < domains.length; i++ ) { %>
+                                    <% if (dom.equals(domains[i])) { %>
+                                        <option value="<%=domains[i]%>" SELECTED><%=domains[i]%></option>
+                                    <% } else { %>
+                                        <option value="<%=domains[i]%>"><%=domains[i]%></option>
+                                    <% } %>
+                                <% } %>
+                            </select>
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p> <input type="button" value="Submit" onclick="submitDomainForm()" alt="Select Domain and Proceed to Step 2"/> </p>
+                    </td>
+                </tr>
+            </table> 
+          </form>
+      </td>
+    <% } %>
   </tr>
 </table>
 

@@ -64,13 +64,13 @@
 %>
 
 <%
-    String[] requiredParameters = new String[] {"node", "intf"};
+    String[] requiredParameters = new String[] {"node or domain", "intf"};
 
-    // required parameter node
+    // optional parameter node
     String nodeIdString = request.getParameter("node");
-    if(nodeIdString == null) {
-        throw new MissingParameterException( "node", requiredParameters);
-    }
+
+    //optional parameter domain
+    String domain = request.getParameter("domain");
 
     //required parameter intf, a value of "" means to discard the intf
     String intf = request.getParameter("intf");
@@ -78,17 +78,32 @@
         throw new MissingParameterException( "intf", requiredParameters);
     }
     
-    int nodeId = Integer.parseInt(nodeIdString);
+    String label = null;
+    int nodeId = -1;
+    if(nodeIdString != null) {
+        nodeId = Integer.parseInt(nodeIdString);
+	label = NetworkElementFactory.getNodeLabel(nodeId);
+    } else if (domain != null) {
+        label = domain;
+    } else {
+        throw new MissingParameterException( "node or domain", requiredParameters);
+    }
 
     File rrdPath = null;
+    File nodeDir = null;
     String rrdDir = null;
-    if("".equals(intf)) {
+    if("".equals(intf) && nodeIdString != null) {
         rrdPath = new File(this.model.getRrdDirectory(), nodeIdString);
         rrdDir = nodeIdString;
     } else {
-        File nodeDir = new File(this.model.getRrdDirectory(), nodeIdString);
+        if(nodeIdString != null) {
+            nodeDir = new File(this.model.getRrdDirectory(), nodeIdString);
+            rrdDir = nodeIdString + File.separator + intf;
+        } else {
+            nodeDir = new File(this.model.getRrdDirectory(), domain);
+            rrdDir = domain + File.separator + intf;
+        }
         rrdPath = new File(nodeDir, intf);
-        rrdDir = nodeIdString + File.separator + intf;
     }
 
     File[] rrds = rrdPath.listFiles(RrdFileConstants.RRD_FILENAME_FILTER);
@@ -98,7 +113,6 @@
         throw new IllegalArgumentException("Invalid rrd directory: " + rrdPath);
     }
 
-    String nodeLabel = NetworkElementFactory.getNodeLabel(nodeId);     
 %>
 
 <jsp:include page="/includes/header.jsp" flush="false" >
@@ -113,11 +127,15 @@
 
 <h3>Step 2: Choose the Data Sources</h3> 
 
-<% if("".equals(intf)) { %>             
-  Node: <%=nodeLabel%>
+<% if(nodeIdString != null) { %>
+  <% if("".equals(intf)) { %>             
+    Node: <%=label%>
+  <% } else { %>
+    Node: <%=label%> &nbsp;&nbsp; Interface: <%=this.model.getHumanReadableNameForIfLabel(nodeId, intf)%>
+   <% } %>
 <% } else { %>
-  Node: <%=nodeLabel%> &nbsp;&nbsp; Interface: <%=this.model.getHumanReadableNameForIfLabel(nodeId, intf)%>
- <% } %>
+  Domain: <%=label%> &nbsp;&nbsp; Interface: <%=intf%>
+<% } %>
 
 <form method="get" action="performance/adhoc3.jsp" >
   <%=Util.makeHiddenTags(request, new String[] {"node", "intf"})%>

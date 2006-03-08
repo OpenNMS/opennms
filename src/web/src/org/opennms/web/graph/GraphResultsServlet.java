@@ -92,27 +92,27 @@ public class GraphResultsServlet extends HttpServlet {
         }
 
         GraphResults graphResults = new GraphResults();
-	String[] reports;
-	int nodeId;
-	String intf;
+	String[] reports = request.getParameterValues("reports");
+	int nodeId = -1;
+	String nodeIdString = request.getParameter("node");
+	String intf = request.getParameter("intf");
+	String domain = request.getParameter("domain");
 	GraphModel model;
         String view;
 
-        if ("performance".equals(graphType)) {
+        if ("performance".equals(graphType) && nodeIdString != null) {
 	    model = m_performanceModel;
 	    view = "/performance/results.jsp";
 
 	    String[] requiredParameters = new String[] { "reports", "node" };
 
 	    // required parameter reports
-	    reports = request.getParameterValues("reports");
 	    if (reports == null) {
 		throw new MissingParameterException("reports",
 						    requiredParameters);
 	    }
 
 	    // required parameter node
-	    String nodeIdString = request.getParameter("node");
 	    if (nodeIdString == null) {
 		throw new MissingParameterException("node",
 						    requiredParameters);
@@ -125,7 +125,31 @@ public class GraphResultsServlet extends HttpServlet {
 	    }
 
 	    // optional parameter intf
-	    intf = request.getParameter("intf");
+
+	} else if ("performance".equals(graphType) && domain != null) {
+
+	    model = m_performanceModel;
+	    view = "/performance/domainResults.jsp";
+
+	    String[] requiredParameters = new String[] { "reports", "domain", "intf"};
+
+	    // required parameter reports
+	    if (reports == null) {
+		throw new MissingParameterException("reports",
+						    requiredParameters);
+	    }
+
+	    // required parameter domain
+	    if (domain == null) {
+		throw new MissingParameterException("domain",
+						    requiredParameters);
+	    }
+
+	    // required parameter intf
+	    if (intf == null) {
+		throw new MissingParameterException("intf",
+						    requiredParameters);
+	    }
 	} else if ("response".equals(graphType)) {
 	    model = m_responseTimeModel;
 	    view = "/response/results.jsp";
@@ -134,14 +158,12 @@ public class GraphResultsServlet extends HttpServlet {
 							 "intf" };
 
 	    // required parameter reports
-	    reports = request.getParameterValues("reports");
 	    if (reports == null) {
 		throw new MissingParameterException("reports",
 						    requiredParameters);
 	    }
 
 	    // required parameter node
-	    String nodeIdString = request.getParameter("node");
 	    if (nodeIdString == null) {
 		throw new MissingParameterException("node",
 						    requiredParameters);
@@ -154,9 +176,8 @@ public class GraphResultsServlet extends HttpServlet {
 	    }
 
 	    // required parameter intf
-	    intf = request.getParameter("intf");
-	    if (nodeIdString == null) {
-		throw new MissingParameterException("intf", requiredParameters);
+	    if (intf == null) {
+                throw new MissingParameterException("intf", requiredParameters);
 	    }
 	} else {
 	    throw new ServletException("Unsupported graph type \"" + graphType
@@ -236,7 +257,12 @@ public class GraphResultsServlet extends HttpServlet {
 	Date endDate   = new Date(Long.parseLong(end));
 
 	graphResults.setModel(model);
-	graphResults.setNodeId(nodeId);
+	if(nodeIdString != null && nodeId > -1) {
+	    graphResults.setNodeId(nodeId);
+        }
+	if(domain != null) {
+	    graphResults.setDomain(domain);
+        }
 	graphResults.setIntf(intf);
 	graphResults.setReports(reports);
 	graphResults.setStart(startDate);
@@ -244,7 +270,11 @@ public class GraphResultsServlet extends HttpServlet {
 	graphResults.setRelativeTime(relativeTime);
 	graphResults.setRelativeTimePeriods(m_periods);
 
-	graphResults.initializeGraphs();
+	if(nodeIdString != null && nodeId > -1) {
+            graphResults.initializeGraphs();
+        } else if (domain != null) {
+            graphResults.initializeDomainGraphs();
+        }
 
 	request.setAttribute("results", graphResults);
 

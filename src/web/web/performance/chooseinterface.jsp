@@ -62,20 +62,26 @@
 %>
 
 <%
-    String[] requiredParameters = new String[] { "node", "endUrl" };
+    String[] requiredParameters = new String[] { "node or domain", "endUrl" };
 
     String nodeId = request.getParameter("node");
+    String domain = request.getParameter("domain");
     String endUrl = request.getParameter("endUrl");
+    ArrayList intfs;
     
-    if (nodeId == null) {
-        throw new MissingParameterException("node", requiredParameters);
-    }
     
     if (endUrl == null) {
         throw new MissingParameterException("endUrl", requiredParameters);
     }
+
+    if( nodeId != null ) {
+        intfs = this.model.getQueryableInterfacesForNode(nodeId);
+    } else if (domain != null) {
+        intfs = this.model.getQueryableInterfacesForDomain(domain);
+    } else {
+        throw new MissingParameterException("nodei or domain", requiredParameters);
+    }
     
-    ArrayList intfs = this.model.getQueryableInterfacesForNode(nodeId);
     Collections.sort(intfs);        
 %>
 
@@ -123,7 +129,13 @@
 <h3>Choose an Interface to Query</h3>
 
 <p>
-  The node that you have chosen has performance data for multiple interfaces.
+  The
+  <% if( nodeId != null ) { %>
+    node
+  <% } else {  %>
+    domain
+  <% } %>
+  that you have chosen has performance data for multiple interfaces.
   Please choose the interface that you wish to query.
 </p>
 
@@ -131,9 +143,18 @@
   <%=Util.makeHiddenTags(request, new String[] {"endUrl"})%>
 
   <select name="intf" size="10">
-    <% for (ListIterator i = intfs.listIterator(); i.hasNext(); ) { %>
-      <% String intf = (String) i.next(); %>
-      <option value="<%=intf%>" <%=(i.previousIndex()==0) ? "selected" : ""%>><%=this.model.getHumanReadableNameForIfLabel(Integer.parseInt(nodeId), intf)%></option>
+    <% if(nodeId != null) { %>
+      <option value="" "selected">Node-level Performance Data</option>
+    
+      <% for (ListIterator i = intfs.listIterator(); i.hasNext(); ) { %>
+        <% String intf = (String) i.next(); %>
+        <option value="<%=intf%>" ><%=this.model.getHumanReadableNameForIfLabel(Integer.parseInt(nodeId), intf)%></option>
+      <% } %>
+    <% } else {%>
+      <% for (ListIterator i = intfs.listIterator(); i.hasNext(); ) { %>
+        <% String intf = (String) i.next(); %>
+        <option value="<%=intf%>" <%=(i.previousIndex()==0) ? "selected" : ""%>><%=intf%></option>
+      <% } %>
     <% } %>
   </select>
 

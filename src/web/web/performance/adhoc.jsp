@@ -61,19 +61,29 @@
 %>
 <%
     String nodeIdString = request.getParameter("node");    
-    if(nodeIdString == null) {
-        throw new MissingParameterException("node");
-    }
+    String domain = request.getParameter("domain");
+    ArrayList intfs;
 
-    int nodeId = Integer.parseInt(nodeIdString);
+    int nodeId = -1;
     
     TreeMap intfMap = new TreeMap();  
-    ArrayList intfs = this.model.getQueryableInterfacesForNode(nodeId);
+    if( nodeIdString != null ) {
+        nodeId = Integer.parseInt(nodeIdString);
+        intfs = this.model.getQueryableInterfacesForNode(nodeId);
+    } else if (domain != null) {
+        intfs = this.model.getQueryableInterfacesForDomain(domain);
+    } else {
+        throw new MissingParameterException( "node or domain", new String[] {"node or domain", "endUrl"} );
+    }
   
     // Add the readable name and the file path to the Map
     for (Iterator i = intfs.iterator(); i.hasNext(); ) {
     	String intf = (String) i.next();
-        intfMap.put(this.model.getHumanReadableNameForIfLabel(nodeId, intf), intf);
+	if( nodeIdString != null ) {
+            intfMap.put(this.model.getHumanReadableNameForIfLabel(nodeId, intf), intf);
+        } else {
+            intfMap.put(intf, intf);
+        }
     }
 %>
 
@@ -93,11 +103,16 @@
   <h3>Step 1: Choose the Interface to Query</h3>
 
   <select name="intf" size="10">
-    <option value="">Node-level Performance Data</option>              
+    <% boolean selected = false; %>
+    <% if(nodeIdString != null) { %>
+      <option value="" "selected">Node-level Performance Data</option>
+      <% selected = true; %>
+    <% } %>
     <% Iterator iterator = intfMap.keySet().iterator(); %>
     <% while(iterator.hasNext()) { %>
       <% String key = (String)iterator.next(); %>
-      <option value="<%=intfMap.get(key)%>"><%=key%></option>
+      <option value="<%=intfMap.get(key)%>" <%=(selected) ? "" : "selected"%>><%=key%></option>
+      <% selected = true; %>
     <% } %>
   </select>
 

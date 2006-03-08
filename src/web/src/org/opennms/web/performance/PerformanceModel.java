@@ -40,6 +40,8 @@ package org.opennms.web.performance;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.lang.Integer;
+import java.lang.reflect.UndeclaredThrowableException;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -47,14 +49,18 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import org.exolab.castor.xml.MarshalException;
+import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.resource.Vault;
 import org.opennms.core.utils.IntSet;
+import org.opennms.netmgt.config.CollectdConfigFactory;
 import org.opennms.netmgt.utils.IfLabel;
 import org.opennms.netmgt.utils.RrdFileConstants;
 import org.opennms.web.Util;
@@ -76,6 +82,8 @@ public class PerformanceModel extends GraphModelAbstract {
     public static final String INTERFACE_GRAPH_TYPE = "interface";
 
     public static final String NODE_GRAPH_TYPE = "node";
+
+    protected String defaultReport;
 
     /**
      * Create a new instance.
@@ -173,6 +181,50 @@ public class PerformanceModel extends GraphModelAbstract {
 	    nodeList.toArray(new QueryableNode[nodeList.size()]);
     }
 
+    /**
+     * Returns a list of data structures representing the domains that have SNMP
+     * performance data collected.
+     *
+     * <p>
+     * First the list of RRD directories is collected. From those directories,
+     * those that are not integers are selected, and verified by comparing
+     * with the collectd configuration.
+     * </p>
+     */
+    public String[] getQueryableDomains() {
+        List domainList = new LinkedList();
+
+        // Get all of the non-numeric directory names in the RRD directory; these
+        // are the names of the domains that have performance data
+        File[] domainDirs = getRrdDirectory().listFiles(RrdFileConstants.DOMAIN_DIRECTORY_FILTER);
+
+        if (domainDirs != null && domainDirs.length > 0) {
+
+            try {
+                CollectdConfigFactory.init();
+
+                for(int i = 0; i < domainDirs.length; i++) {
+                    if(CollectdConfigFactory.getInstance().domainExists(domainDirs[i].getName()) || CollectdConfigFactory.getInstance().packageExists(domainDirs[i].getName())) {
+                        domainList.add(domainDirs[i].getName());
+                    }
+                }
+            } catch (IOException iE) {
+                throw new UndeclaredThrowableException(iE);
+            } catch (MarshalException mE) {
+                throw new UndeclaredThrowableException(mE);
+            } catch  (ValidationException vE) {
+                throw new UndeclaredThrowableException(vE);
+            }
+        }
+        Iterator iter = domainList.iterator();
+        String[] domains = new String[domainList.size()];
+        for (int i = 0; i < domainList.size(); i++) {
+            domains[i] = (String) iter.next();
+        }
+
+        return domains;
+    }
+
     public ArrayList getQueryableInterfacesForNode(int nodeId) {
         return getQueryableInterfacesForNode(String.valueOf(nodeId));
     }
@@ -197,6 +249,30 @@ public class PerformanceModel extends GraphModelAbstract {
             for (int i = 0; i < intfDirs.length; i++) {
 		intfs.add(intfDirs[i].getName());
 	    }
+        }
+
+        return intfs;
+    }
+
+    public ArrayList getQueryableInterfacesForDomain(String domain) {
+        if (domain == null) {
+            throw new IllegalArgumentException("Cannot take null parameters.");
+        }
+
+        ArrayList intfs = new ArrayList();
+        File domainDir = new File(getRrdDirectory(), domain);
+
+        if (!domainDir.exists() || !domainDir.isDirectory()) {
+            throw new IllegalArgumentException("No such directory: " + domainDir);
+        }
+
+        File[] intfDirs = domainDir.listFiles(RrdFileConstants.INTERFACE_DIRECTORY_FILTER);
+
+        if (intfDirs != null && intfDirs.length > 0) {
+            intfs.ensureCapacity(intfDirs.length);
+            for (int i = 0; i < intfDirs.length; i++) {
+                intfs.add(intfDirs[i].getName());
+            }
         }
 
         return intfs;

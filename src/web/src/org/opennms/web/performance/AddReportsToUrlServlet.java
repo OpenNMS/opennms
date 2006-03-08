@@ -77,7 +77,7 @@ public class AddReportsToUrlServlet extends HttpServlet {
         if (intf == null) {
             queries = this.model.getQueries(nodeIdString);
         } else {
-            boolean showNodeQueries = true;
+            boolean showNodeQueries = false;
             queries = this.model.getQueries(nodeIdString, intf, showNodeQueries);
         }
 

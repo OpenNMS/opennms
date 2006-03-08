@@ -18,6 +18,7 @@ import org.opennms.web.performance.PerformanceModel;
 public class GraphResults {
     private GraphModel m_model = null;
     private int m_nodeId = -1;
+    private String m_domain = null;
     private String m_intf = null;
     private String[] m_reports = null;
     private Date m_start = null;
@@ -47,6 +48,14 @@ public class GraphResults {
 
     public int getNodeId() {
         return m_nodeId;
+    }
+
+    public void setDomain(String domain) {
+        m_domain = domain;
+    }
+
+    public String getDomain() {
+        return m_domain;
     }
 
     public void setIntf(String intf) {
@@ -112,6 +121,30 @@ public class GraphResults {
 	    }
 
 	    m_graphs[i] = new Graph(m_model, prefabGraph, m_nodeId, m_intf,
+				    m_start, m_end);
+        }
+
+	/*
+	 * Sort the graphs by their order in the properties file.
+	 * PrefabGraph implements the Comparable interface.
+	 */
+	Arrays.sort(m_graphs);
+    }
+
+    /**
+     * Convert the report names to graph objects for domain graphs.
+     */
+    public void initializeDomainGraphs() {
+	m_graphs = new Graph[m_reports.length];
+
+	for (int i=0; i < m_reports.length; i++) {
+	    PrefabGraph prefabGraph = m_model.getQuery(m_reports[i]);
+
+	    if (prefabGraph == null) {
+		throw new IllegalArgumentException("Unknown report name: " +
+		    m_reports[i]);
+	    }
+	    m_graphs[i] = new Graph(m_model, prefabGraph, m_domain, m_intf,
 				    m_start, m_end);
         }
 

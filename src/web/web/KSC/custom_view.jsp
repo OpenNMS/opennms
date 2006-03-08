@@ -53,9 +53,10 @@
 <%@ include file="/WEB-INF/jspf/KSC/init2.jspf" %> 
 <%@ include file="/WEB-INF/jspf/graph-common.jspf"%>
 <%@ include file="/WEB-INF/jspf/KSC/nodereport.jspf" %> 
+<%@ include file="/WEB-INF/jspf/KSC/domainreport.jspf" %> 
 
 <%
-    String[] requiredParameters = new String[] { "report", "type" };
+    String[] requiredParameters = new String[] { "report or domain", "type" };
 
     // Get Form Variable
     String report_type = request.getParameter("type");
@@ -64,10 +65,13 @@
     }
 
     String r_index = request.getParameter("report");
-    if (r_index == null) {
+    String domain = request.getParameter("domain");
+    int report_index=0;
+    if (r_index != null) {
+        report_index = Integer.parseInt(r_index);
+    } else if (domain == null) {
         throw new MissingParameterException("report", requiredParameters);
     }
-    int report_index = Integer.parseInt(r_index);     
     
     String override_timespan = request.getParameter("timespan");
     String override_graphtype = request.getParameter("graphtype");
@@ -82,34 +86,55 @@
     Report report = null;
     if (report_type.equals("node")) {
         report = buildNodeReport(report_index);
-    } 
-    else { 
+    } else if (report_type.equals("domain")) {
+        report = buildDomainReport(domain);
+    } else { 
         ReportsList reports_list = this.reportFactory.getConfiguration();
         report = reports_list.getReport(report_index);
     } 
     if (report == null) {
         throw new ServletException ("Report does not exist");
     }
-    
-    // Define the possible graph options (based on first graph in list)
+
+    // Define the possible graph options 
     Graph graph = null; 
     PrefabGraph[] graph_options = null;
     if (report.getGraphCount() > 0) {
         graph = report.getGraph(0); // get the first graph in the list
-        boolean includeNodeQueries = true;
-        graph_options = this.model.getQueries (Integer.parseInt(graph.getNodeId()), graph.getInterfaceId(), includeNodeQueries);
-        Arrays.sort(graph_options);
+	boolean isNode = false;
+        boolean includeNodeQueries = false;
+        if(graph.getDomain() != null && !graph.getDomain().equals("null")) {
+            graph_options = this.model.getAllQueries (graph.getDomain(), isNode);
+	    this.log("custom_view: Retrieving graph options for domain " + graph.getDomain());
+	}
+        else {
+	    isNode = true;
+            graph_options = this.model.getAllQueries (graph.getNodeId(), isNode);
+	    this.log("custom_view: Retrieving graph options for node " + graph.getNodeId());
+        }
+
+        // Get default graph type from last element of graph_options
+
+        if((report_type.equals("node") || report_type.equals("domain")) && override_graphtype.equals("none")) {
+	    override_graphtype = graph_options[graph_options.length - 1].getName();
+	    this.log("custom_view: setting default graph type to " + graph_options[graph_options.length - 1].getName());
+	}
+
+        if(graph_options.length > 1) {
+            Arrays.sort(graph_options, 0, graph_options.length - 2);
+	}
     }
 %>
 
 
 <jsp:include page="/includes/header.jsp" flush="false" >
-  <jsp:param name="title" value="Key SNMP Customized Performance Reports and Node Reports" />
+  <jsp:param name="title" value="Key SNMP Customized Performance Reports" />
   <jsp:param name="headTitle" value="Performance" />
   <jsp:param name="headTitle" value="Reports" />
   <jsp:param name="headTitle" value="KSC" />
   <jsp:param name="breadcrumb" value="<a href='report/index.jsp'>Reports</a>" />
-  <jsp:param name="breadcrumb" value="KSC and Node Reports" />
+  <jsp:param name="breadcrumb" value="<a href='KSC/index.jsp'>KSC Reports</a>" />
+  <jsp:param name="breadcrumb" value="Custom View" />
 </jsp:include>
 
 
@@ -135,15 +160,19 @@
 </script>
 
 <h3 align="center"><%=report.getTitle()%></h3>
+<% if (report_type.equals("node") && this.model.getQueries(r_index).length > 0) { %>
+  <h3 align="center"><a href="performance/addReportsToUrl?node=<%=report_index%>&relativetime=lastday">Show Node-level Performance Data</a></h3>
+<% } %>
 
 <% int graph_count = report.getGraphCount(); %>
 <% if (graph_count <= 0) { %>
-    <h3 align="center">No graphs defined for this report.</h3>
+    <h3 align="center">No interface graphs defined for this report.</h3>
 <% } else { %>
 
     <form name="view_form" method="get" action="KSC/form_proc_view.jsp">
         <input type=hidden name="type" value="<%=report_type%>" >
         <input type=hidden name="action" value="none">
+        <input type=hidden name="domain" value="<%=domain%>">
         <input type=hidden name="report" value="<%=r_index%>">
 
     <table width="100%" align="center">
@@ -152,8 +181,12 @@
             <td>
             <table width="100%" >
                 <% for (int i=0; i< graph_count; i++) { 
+                       int nodeId = 0;
                        Graph current_graph = report.getGraph(i); 
-                       int nodeId = Integer.parseInt(current_graph.getNodeId());
+                       if(current_graph.getNodeId() != null && !current_graph.getNodeId().equals("null")) {
+                           nodeId = Integer.parseInt(current_graph.getNodeId());
+                       }
+                       String curr_domain = current_graph.getDomain();
                        String intf = current_graph.getInterfaceId();
                        String display_graphtype = null;
                        if (override_graphtype.equals("none")) {
@@ -165,22 +198,39 @@
                        PrefabGraph display_graph = (PrefabGraph) this.model.getQuery(display_graphtype);
                        
                        // encode the RRD filenames based on the graph's required data sources 
-                       String[] rrds = this.getRRDNames(nodeId, intf, display_graph);  
+                       String[] rrds;
+                       if(nodeId > 0) {
+                           rrds = this.getRRDNames(nodeId, intf, display_graph);  
+                       } else {
+                           rrds = this.getRRDNames(curr_domain, intf, display_graph);  
+                       }
                        String rrdParm = this.encodeRRDNamesAsParmString(rrds); 
+
+                       String externalValuesParm="";
                        
                        // handle external values, if any 
-                       String externalValuesParm = this.encodeExternalValuesAsParmString(nodeId, intf, display_graph); 
+                       if(nodeId > 0) {
+                           externalValuesParm = this.encodeExternalValuesAsParmString(nodeId, intf, display_graph); 
+                       }
                 %>
             
                     <tr>
-                        <td align="right">
-                            <h3> <%=current_graph.getTitle()%> <br>
+                        <td align="center">
+                            <h3> <%=current_graph.getTitle()%> <br></h3>
+			    <h4>
+                            <%if(nodeId > 0) {%>
                                 Node: <a href="element/node.jsp?node=<%=nodeId%>">
                                 <%=NetworkElementFactory.getNodeLabel(nodeId)%></a><br>
-                                <% if(intf != null ) { %>
-                                    Interface: <%=this.model.getHumanReadableNameForIfLabel(nodeId, intf)%>
+                                <% if(intf != null) { %>
+                                    Interface: <%=this.model.getHumanReadableNameForIfLabel(nodeId, intf)%><br>
+				    <a href="performance/choosereportanddate.jsp?node=<%=nodeId%>&intf=<%=intf%>">Detail</a>
                                 <% } %>
-                            </h3>
+                            <%} else {%>
+                                Domain: <%=curr_domain%><br>
+                                Interface: <a href="element/nodelist.jsp?ifAlias=<%=intf%>"><%=intf%></a><br>
+				<a href="performance/choosereportanddate.jsp?domain=<%=curr_domain%>&intf=<%=intf%>">Detail</a>
+                            <%}%>
+                            </h4>
 
                             <%-- gather start/stop time information --%>
                             <%
@@ -251,12 +301,12 @@
                             </td>
                             <td>
                                 <SELECT name="graphtype">
-                                    <% if (override_graphtype.equals("none")) { %>
-                                         <OPTION SELECTED>none 
-                                    <% } else { %>                  
-                                         <OPTION>none 
-                                    <% } %>                  
-                                    <% for (int i=0; i < graph_options.length; i++) { %>
+				    <% if (override_graphtype.equals("none")) { %>
+				        <OPTION SELECTED>none
+				    <% } else { %>
+				        <OPTION>none
+				    <% } %>
+                                    <% for (int i=0; i < graph_options.length - 1; i++) { %>
                                         <% if (graph_options[i].getName().equals(override_graphtype)) { %>
                                             <OPTION SELECTED> <%=graph_options[i].getName() %> 
                                         <% } else { %>                  

@@ -49,6 +49,7 @@
 
 <%@ include file="/WEB-INF/jspf/KSC/init2.jspf" %>
 <%@ include file="/WEB-INF/jspf/KSC/nodereport.jspf" %>
+<%@ include file="/WEB-INF/jspf/KSC/domainreport.jspf" %>
 
 <%
     // Get Form Variables
@@ -56,6 +57,7 @@
     String override_timespan = null;
     String override_graphtype = null;
     String report_action = request.getParameter("action");
+    String domain = request.getParameter("domain");
     if (report_action == null) {
         throw new MissingParameterException ("action", new String[] {"action","report","type"});
     }
@@ -63,13 +65,14 @@
     if (report_type == null) {
         throw new MissingParameterException ("type", new String[] {"action","report","type"});
     }
-      
+
     if ((report_action.equals("Customize")) || (report_action.equals("Update"))) {
         String r_index = request.getParameter("report");
-        if (r_index == null) {
-            throw new MissingParameterException ("report", new String[] {"action","report","type"});
-        } 
-        report_index = Integer.parseInt(r_index);
+        if (r_index != null && !r_index.equals("null")) {
+           report_index = Integer.parseInt(r_index); 
+        } else if (domain == null) {
+	    throw new MissingParameterException("report or domain", new String[] {"report or domain","type"});
+	}
         override_timespan = request.getParameter("timespan");
         if ((override_timespan == null) || (override_timespan.equals("null"))) {
             override_timespan = "none";
@@ -83,8 +86,11 @@
                 Report report = buildNodeReport(report_index);
                 this.reportFactory.loadWorkingReport(report); 
                 this.reportFactory.setWorkingReportIndex(-1); // Must set index to -1 to make customizer create a new report, not replace
-            }
-            else { 
+            } else if (report_type.equals("domain")) {
+                Report report = buildDomainReport(domain);
+                this.reportFactory.loadWorkingReport(report); 
+                this.reportFactory.setWorkingReportIndex(-1); // Must set index to -1 to make customizer create a new report, not replace
+            } else { 
                 // Go ahead and tell report factory to put the indexed report config into the working report area
                 this.reportFactory.loadWorkingReport(report_index);
             }
@@ -126,6 +132,7 @@
 <% if (report_action.equals("Update")) { %>
        <form name="do_next" method="get" action="KSC/custom_view.jsp">
            <input type="hidden" name="report" value="<%=report_index%>" >
+           <input type="hidden" name="domain" value="<%=domain%>" >
            <input type="hidden" name="type" value="<%=report_type%>" >
            <% if (override_timespan != null) { %> 
                <input type="hidden" name="timespan" value="<%=override_timespan%>" >

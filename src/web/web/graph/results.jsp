@@ -73,7 +73,7 @@
     <%@ include file="/WEB-INF/jspf/relativetimeform.jspf" %>
   </c:if>
 
-  <h3>Interface <c:out value="${param.name}"/> Data</h3>
+  <h3><c:out value="${param.name}"/> Data</h3>
   <strong>From</strong> <c:out value="${results.start}"/> <br/>
   <strong>To</strong> <c:out value="${results.end}"/> <br/>
 
