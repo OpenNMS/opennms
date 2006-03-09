@@ -91,4 +91,9 @@ public class MockRrdStrategy implements RrdStrategy {
         return null;
     }
 
+	public Double fetchLastValueInRange(String rrdFile, int interval, int range) throws NumberFormatException, RrdException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }
