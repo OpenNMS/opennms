@@ -571,14 +571,18 @@ public class EventUtils {
      * 
      */
     public static Event createNodeAddedEvent(DbNodeEntry nodeEntry, long txNo) {
-        Category log = ThreadCategory.getInstance(EventUtils.class);
-        if (log.isDebugEnabled())
-            log.debug("createAndSendNodeAddedEvent:  nodeId  " + nodeEntry.getNodeId());
+        return createNodeAddedEvent(nodeEntry.getNodeId(), nodeEntry.getLabel(), String.valueOf(nodeEntry.getLabelSource()));
+    }
+
+	public static Event createNodeAddedEvent(int nodeId, String nodeLabel, String labelSource) {
+		Category log = ThreadCategory.getInstance(EventUtils.class);
+		if (log.isDebugEnabled())
+            log.debug("createAndSendNodeAddedEvent:  nodeId  " + nodeId);
 
         Event newEvent = new Event();
         newEvent.setUei(EventConstants.NODE_ADDED_EVENT_UEI);
         newEvent.setSource("OpenNMS.Capsd");
-        newEvent.setNodeid(nodeEntry.getNodeId());
+        newEvent.setNodeid(nodeId);
         newEvent.setHost(Capsd.getLocalHostAddress());
         newEvent.setTime(EventConstants.formatToString(new java.util.Date()));
 
@@ -590,7 +594,7 @@ public class EventUtils {
         eventParm = new Parm();
         eventParm.setParmName(EventConstants.PARM_NODE_LABEL);
         parmValue = new Value();
-        parmValue.setContent(nodeEntry.getLabel());
+		parmValue.setContent(nodeLabel);
         eventParm.setValue(parmValue);
         eventParms.addParm(eventParm);
 
@@ -598,8 +602,7 @@ public class EventUtils {
         eventParm = new Parm();
         eventParm.setParmName(EventConstants.PARM_NODE_LABEL_SOURCE);
         parmValue = new Value();
-        char labelSource[] = new char[] { nodeEntry.getLabelSource() };
-        parmValue.setContent(new String(labelSource));
+		parmValue.setContent(labelSource);
         eventParm.setValue(parmValue);
         eventParms.addParm(eventParm);
 
@@ -607,7 +610,7 @@ public class EventUtils {
         newEvent.setParms(eventParms);
 
         return newEvent;
-    }
+	}
 
     /**
      * This method is responsible for generating a nodeGainedInterface event and
@@ -622,14 +625,18 @@ public class EventUtils {
      * 
      */
     public static Event createNodeGainedInterfaceEvent(DbNodeEntry nodeEntry, InetAddress ifaddr, long txNo) {
-        Category log = ThreadCategory.getInstance(EventUtils.class);
-        if (log.isDebugEnabled())
-            log.debug("createAndSendNodeAddedEvent:  nodeId  " + nodeEntry.getNodeId());
+        return createNodeGainedInterfaceEvent("OpenNMS.Capsd", nodeEntry.getNodeId(), ifaddr);
+    }
+
+	public static Event createNodeGainedInterfaceEvent(String source, int nodeId, InetAddress ifaddr) {
+		Category log = ThreadCategory.getInstance(EventUtils.class);
+		if (log.isDebugEnabled())
+            log.debug("createAndSendNodeAddedEvent:  nodeId  " + nodeId);
 
         Event newEvent = new Event();
         newEvent.setUei(EventConstants.NODE_GAINED_INTERFACE_EVENT_UEI);
-        newEvent.setSource("OpenNMS.Capsd");
-        newEvent.setNodeid(nodeEntry.getNodeId());
+		newEvent.setSource(source);
+        newEvent.setNodeid(nodeId);
         newEvent.setHost(Capsd.getLocalHostAddress());
         newEvent.setInterface(ifaddr.getHostAddress());
         newEvent.setTime(EventConstants.formatToString(new java.util.Date()));
@@ -653,7 +660,7 @@ public class EventUtils {
         newEvent.setParms(eventParms);
 
         return newEvent;
-    }
+	}
 
     /**
      * This method is responsible for generating a nodeDeleted event and sending
@@ -840,14 +847,24 @@ public class EventUtils {
      * 
      */
     public static Event createNodeGainedServiceEvent(DbNodeEntry nodeEntry, InetAddress ifaddr, String service, long txNo) {
-        Category log = ThreadCategory.getInstance(EventUtils.class);
-        if (log.isDebugEnabled())
-            log.debug("createAndSendNodeGainedServiceEvent:  nodeId/interface/service  " + nodeEntry.getNodeId() + "/" + ifaddr.getHostAddress() + "/" + service);
+        int nodeId = nodeEntry.getNodeId();
+        String nodeLabel = nodeEntry.getLabel();
+        String labelSource = String.valueOf(nodeEntry.getLabelSource());
+        String sysName = nodeEntry.getSystemName();
+        String sysDescr = nodeEntry.getSystemDescription();
+
+        return createNodeGainedServiceEvent("OpenNMS.Capsd", nodeId, ifaddr, service, nodeLabel, labelSource, sysName, sysDescr);
+    }
+
+	public static Event createNodeGainedServiceEvent(String source, int nodeId, InetAddress ifaddr, String service, String nodeLabel, String labelSource, String sysName, String sysDescr) {
+		Category log = ThreadCategory.getInstance(EventUtils.class);
+		if (log.isDebugEnabled())
+            log.debug("createAndSendNodeGainedServiceEvent:  nodeId/interface/service  " + nodeId + "/" + ifaddr.getHostAddress() + "/" + service);
 
         Event newEvent = new Event();
         newEvent.setUei(EventConstants.NODE_GAINED_SERVICE_EVENT_UEI);
-        newEvent.setSource("OpenNMS.Capsd");
-        newEvent.setNodeid(nodeEntry.getNodeId());
+		newEvent.setSource(source);
+        newEvent.setNodeid(nodeId);
         newEvent.setHost(Capsd.getLocalHostAddress());
         newEvent.setInterface(ifaddr.getHostAddress());
         newEvent.setService(service);
@@ -870,7 +887,7 @@ public class EventUtils {
         eventParm = new Parm();
         eventParm.setParmName(EventConstants.PARM_NODE_LABEL);
         parmValue = new Value();
-        parmValue.setContent(nodeEntry.getLabel());
+		parmValue.setContent(nodeLabel);
         eventParm.setValue(parmValue);
         eventParms.addParm(eventParm);
 
@@ -878,27 +895,26 @@ public class EventUtils {
         eventParm = new Parm();
         eventParm.setParmName(EventConstants.PARM_NODE_LABEL_SOURCE);
         parmValue = new Value();
-        char labelSource[] = new char[] { nodeEntry.getLabelSource() };
-        parmValue.setContent(new String(labelSource));
+        parmValue.setContent(labelSource);
         eventParm.setValue(parmValue);
         eventParms.addParm(eventParm);
 
         // Add sysName if available
-        if (nodeEntry.getSystemName() != null) {
+		if (sysName != null) {
             eventParm = new Parm();
             eventParm.setParmName(EventConstants.PARM_NODE_SYSNAME);
             parmValue = new Value();
-            parmValue.setContent(nodeEntry.getSystemName());
+            parmValue.setContent(sysName);
             eventParm.setValue(parmValue);
             eventParms.addParm(eventParm);
         }
 
         // Add sysDescr if available
-        if (nodeEntry.getSystemDescription() != null) {
+		if (sysDescr != null) {
             eventParm = new Parm();
             eventParm.setParmName(EventConstants.PARM_NODE_SYSDESCRIPTION);
             parmValue = new Value();
-            parmValue.setContent(nodeEntry.getSystemDescription());
+            parmValue.setContent(sysDescr);
             eventParm.setValue(parmValue);
             eventParms.addParm(eventParm);
         }
@@ -907,7 +923,7 @@ public class EventUtils {
         newEvent.setParms(eventParms);
 
         return newEvent;
-    }
+	}
 
     /**
      * This method is responsible for generating a deleteService event and
