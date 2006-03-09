@@ -28,6 +28,8 @@
 --# Modified: 2004-08-30
 --# Note: See create.sql.changes
 
+drop table category_node cascade;
+drop table categories cascade;
 drop table assets cascade;
 drop table usersNotified cascade;
 drop table notifications cascade;
@@ -44,6 +46,7 @@ drop table vulnerabilities cascade;
 drop table vulnPlugins cascade;
 drop table serverMap cascade;
 drop table serviceMap cascade;
+drop sequence catNxtId;
 drop sequence nodeNxtId;
 drop sequence serviceNxtId;
 drop sequence eventsNxtId;
@@ -910,6 +913,47 @@ create table assets (
 	constraint fk_nodeID5 foreign key (nodeID) references node ON DELETE CASCADE
 );
 
+--########################################################################
+--# categories table - Contains list of categories
+--#                     for nodes, interfaces, and services
+--#
+--# This table contains the following fields:
+--#
+--# id           : The category id
+--# name         : Textual name of a category
+--# description  : Descriptive text about a category.
+--########################################################################
+
+create table categories (
+		id			integer,
+		name			varchar(64) not null,
+		description	varchar(256),
+
+	constraint category_pkey primary key (id)
+);
+
+CREATE UNIQUE INDEX category_idx ON categories(name);
+
+--########################################################################
+--# category_node table - Many-to-Many mapping table of categories to nodes
+--#
+--# This table contains the following fields:
+--#
+--# categoryid   : The category id from category table
+--# nodeID       : The node id from the node table.
+--########################################################################
+
+create table category_node (
+                categoryId              integer,
+                nodeId                  integer,
+
+                constraint categoryid_fkey1 foreign key (categoryId) references categories(id) ON DELETE CASCADE,
+                constraint nodeid_fkey1 foreign key (nodeId) references node ON DELETE CASCADE
+);
+
+CREATE INDEX catid_idx on category_node(categoryId);
+CREATE INDEX catnode_idx on category_node(nodeId);
+
 
 --##################################################################
 --# The following commands set up automatic sequencing functionality
@@ -953,6 +997,11 @@ create sequence notifyNxtId minvalue 1;
 --#          sequence, column,         table
 --# install: vulnNxtId vulnerabilityID vulnerabilities
 create sequence vulnNxtId minvalue 1;
+
+--# Sequence for the id column in the categories table
+--#          sequence, column, table
+--# install: catNxtId id   categories
+create sequence catNxtId minvalue 1;
 
 --##################################################################
 --# The following command adds the initial loopback poller entry to
