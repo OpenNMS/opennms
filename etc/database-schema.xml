@@ -25,6 +25,19 @@
 		<column name="nodeLabel"/>
 	</table>
 
+	<table name="categories">
+		<join column="categoryID" table="category_node" table-column="categoryID"/>
+		<column name="categoryID" />
+		<column name="categoryName" />
+		<column name="categoryDescription" />
+	</table>
+
+	<table name="category_node">
+		<join column="nodeID" table="ipInterface" table-column="nodeID"/>
+		<column name="categoryID" visable="false" />
+		<column name="nodeID" visable="false" />
+	</table>
+
 	<table name="ipInterface" key="primary">
 		<column name="nodeID" visable="false"/>
 		<column name="ipAddr"/>
