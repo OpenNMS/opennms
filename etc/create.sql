@@ -929,7 +929,7 @@ create table categories (
 		categoryName			varchar(64) not null,
 		categoryDescription	varchar(256),
 
-	constraint category_pkey primary key (id)
+	constraint category_pkey primary key (categoryId)
 );
 
 CREATE UNIQUE INDEX category_idx ON categories(name);
@@ -947,7 +947,7 @@ create table category_node (
                 categoryId              integer,
                 nodeId                  integer,
 
-                constraint categoryid_fkey1 foreign key (categoryId) references categories(id) ON DELETE CASCADE,
+                constraint categoryid_fkey1 foreign key (categoryId) references categories(categoryId) ON DELETE CASCADE,
                 constraint nodeid_fkey1 foreign key (nodeId) references node ON DELETE CASCADE
 );
 
