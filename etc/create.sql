@@ -925,9 +925,9 @@ create table assets (
 --########################################################################
 
 create table categories (
-		id			integer,
-		name			varchar(64) not null,
-		description	varchar(256),
+		categoryId			integer,
+		categoryName			varchar(64) not null,
+		categoryDescription	varchar(256),
 
 	constraint category_pkey primary key (id)
 );
