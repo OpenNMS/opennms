@@ -932,7 +932,7 @@ create table categories (
 	constraint category_pkey primary key (categoryId)
 );
 
-CREATE UNIQUE INDEX category_idx ON categories(name);
+CREATE UNIQUE INDEX category_idx ON categories(categoryName);
 
 --########################################################################
 --# category_node table - Many-to-Many mapping table of categories to nodes
