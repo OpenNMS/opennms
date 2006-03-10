@@ -223,6 +223,14 @@ public final class IfSnmpCollector implements Runnable {
         
         return m_ifTable.getAdminStatus(ifIndex);
     }
+    
+    public int getOperStatus(int ifIndex) {
+        if (!hasIfTable()) {
+            throw new IndexOutOfBoundsException("Illegal Index, no table present");
+        }
+        
+        return m_ifTable.getOperStatus(ifIndex);
+    }
 
     public int getIfType(int ifIndex) {
         if (!hasIfTable()) {

@@ -98,7 +98,24 @@ public final class IfTable extends SnmpTable {
         return ThreadCategory.getInstance(IfTable.class);
     }
     
-    
+    public int getOperStatus(int ifIndex) {
+        if (getEntries() == null)
+            return -1;
+        Iterator i = getEntries().iterator();
+        while (i.hasNext()) {
+            IfTableEntry entry = (IfTableEntry) i.next();
+            Integer ndx = entry.getIfIndex();
+            if (ndx != null && ndx.intValue() == ifIndex) {
+                // found it
+                // extract the admin status
+                //
+                Integer ifStatus = entry.getIfOperStatus();
+                if (ifStatus != null)
+                    return ifStatus.intValue();
+            }
+        }
+        return -1;
+    }
         
     public int getAdminStatus(int ifIndex) {
         if (getEntries() == null)
