@@ -947,7 +947,7 @@ create table category_node (
                 categoryId              integer,
                 nodeId                  integer,
 
-                constraint categoryid_fkey1 foreign key (categoryId) references categories(categoryId) ON DELETE CASCADE,
+                constraint categoryid_fkey1 foreign key (categoryId) references categories (categoryId) ON DELETE CASCADE,
                 constraint nodeid_fkey1 foreign key (nodeId) references node ON DELETE CASCADE
 );
 
