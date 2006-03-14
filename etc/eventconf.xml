@@ -310,7 +310,7 @@
       <event-label>OpenNMS-defined internal event: importer process successfully completed</event-label>
       <descr>
         &lt;p&gt;This event indicates the model-importer process has completed successfully. There 
-        is 1 parameter called importStats: %parm [importStats]&lt;/p&gt;
+        is 1 parameter called importStats: %parm [importStats]%&lt;/p&gt;
       </descr>
       <logmsg dest='logndisplay'>
         &lt;p&gt;This event indicates the model-importer process has completed successfully&lt;/p&gt;
@@ -322,10 +322,10 @@
       <event-label>OpenNMS-defined internal event: importer process failed.</event-label>
       <descr>
         &lt;p&gt;This event indicates the model-importer process has failed.  There is 1 parameter 
-        called failureMessage: %parm [failureMessage]&lt;/p&gt;
+        called failureMessage: %parm [failureMessage]%&lt;/p&gt;
       </descr>
       <logmsg dest='logndisplay'>
-        &lt;p&gt;This event indicates the model-importer process has failed with reason: %parm [failureMessage]&lt;/p&gt;
+        &lt;p&gt;This event indicates the model-importer process has failed with reason: %parm [failureMessage]%&lt;/p&gt;
       </logmsg>
       <severity>Warning</severity>
     </event>
