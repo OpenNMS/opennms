@@ -145,11 +145,9 @@ public abstract class GraphModelAbstract implements GraphModel {
 
     public PrefabGraph[] getQueries(String nodeOrDomain, String intf,
                                     boolean includeNodeQueries, boolean isNode) { 
-        Category log = ThreadCategory.getInstance(this.getClass());
         if (nodeOrDomain == null || intf == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
-	log.debug("getQueries: nodeordomain:intf:includeNodeQueries:isNode " + nodeOrDomain + ":" + intf + ":" + includeNodeQueries + ":" + isNode);
 
         // create a temporary list of queries to return
         List returnList = new LinkedList();
@@ -312,13 +310,14 @@ public abstract class GraphModelAbstract implements GraphModel {
         // get the node data sources
         File[] nodeFiles =
 	    nodeDir.listFiles(RrdFileConstants.RRD_FILENAME_FILTER);
+        if (nodeFiles != null) {
+            for (int i = 0; i < nodeFiles.length; i++) {
+                String fileName = nodeFiles[i].getName();
+                String dsName =
+		    fileName.substring(0, fileName.length() - suffixLength);
 
-        for (int i = 0; i < nodeFiles.length; i++) {
-            String fileName = nodeFiles[i].getName();
-            String dsName =
-		fileName.substring(0, fileName.length() - suffixLength);
-
-            dataSources.add(dsName);
+                dataSources.add(dsName);
+            }
         }
 
         return dataSources;
@@ -350,13 +349,23 @@ public abstract class GraphModelAbstract implements GraphModel {
 
         // get the interface data sources
         File[] intfFiles = intfDir.listFiles(RrdFileConstants.RRD_FILENAME_FILTER);
+	if (intfFiles == null) {
+            // See if perhaps this is a response graph rather than a performance graph
+	    // TODO - Do this a better way. Should distinguish response from performance
+	    // coming in.
+	    log.debug("getDataSourceList: No interface files. Looking for performance data");
+            intfDir = new File(getRrdDirectory(), intf);
+	    intfFiles = intfDir.listFiles(RrdFileConstants.RRD_FILENAME_FILTER);
+        }
 
-        for (int i = 0; i < intfFiles.length; i++) {
-            String fileName = intfFiles[i].getName();
-            String dsName = fileName.substring(0, fileName.length() - suffixLength);
+        if (intfFiles != null) {
+            for (int i = 0; i < intfFiles.length; i++) {
+                String fileName = intfFiles[i].getName();
+                String dsName = fileName.substring(0, fileName.length() - suffixLength);
 
-            dataSources.add(dsName);
-	    log.debug("getDataSourceList: adding " + dsName);
+                dataSources.add(dsName);
+	        log.debug("getDataSourceList: adding " + dsName);
+            }
         }
 
         return dataSources;
