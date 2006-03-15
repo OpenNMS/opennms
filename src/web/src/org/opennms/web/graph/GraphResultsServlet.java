@@ -106,10 +106,11 @@ public class GraphResultsServlet extends HttpServlet {
 
 	    String[] requiredParameters = new String[] { "reports", "node" };
 
-	    // required parameter reports
+	    // required parameter reports - If no reports were passed in,
+	    // going to choosereportanddate  will allow the user to choose,
+	    // or tell the user if there are no reports available.
 	    if (reports == null) {
-		throw new MissingParameterException("reports",
-						    requiredParameters);
+                view = "/performance/choosereportanddate.jsp";
 	    }
 
 	    // required parameter node
@@ -270,7 +271,7 @@ public class GraphResultsServlet extends HttpServlet {
 	graphResults.setRelativeTime(relativeTime);
 	graphResults.setRelativeTimePeriods(m_periods);
 
-	if(nodeIdString != null && nodeId > -1) {
+	if(nodeIdString != null && nodeId > -1 && reports != null) {
             graphResults.initializeGraphs();
         } else if (domain != null) {
             graphResults.initializeDomainGraphs();
