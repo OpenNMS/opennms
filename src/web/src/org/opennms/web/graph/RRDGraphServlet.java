@@ -85,6 +85,11 @@ import org.opennms.web.Util;
  */
 public class RRDGraphServlet extends HttpServlet {
     /**
+     * 
+     */
+    private static final long serialVersionUID = 8890231247851529359L;
+
+    /**
      * The working directory as specifed in the rrdtool-graph properties file.
      */
     protected File workDir;
@@ -112,9 +117,11 @@ public class RRDGraphServlet extends HttpServlet {
     public void init() throws ServletException {
         Properties properties = new Properties();
 
+        FileInputStream fileInputStream = null;
         try {
             String propertiesFilename = Vault.getHomeDir() + this.getServletConfig().getInitParameter("rrd-properties");
-            properties.load(new FileInputStream(propertiesFilename));
+            fileInputStream = new FileInputStream(propertiesFilename);
+            properties.load(fileInputStream);
 
             RrdUtils.graphicsInitialize();
 
@@ -130,6 +137,12 @@ public class RRDGraphServlet extends HttpServlet {
         } catch (Throwable e) {
             log("Unexpected exception or error occurred", e);
             throw new ServletException("Unexpected exception or error occured: " + e.getMessage(), e);
+        } finally {
+            try {
+                fileInputStream.close();
+            } catch (IOException e) {
+                this.log("init: Error closing properties file.",e);
+            }
         }
 
         this.workDir = new File(properties.getProperty("command.input.dir"));
@@ -232,15 +245,22 @@ public class RRDGraphServlet extends HttpServlet {
         translationMap.put(RE.simplePatternToFullRegularExpression("{endTime}"), endTimeString);
         translationMap.put(RE.simplePatternToFullRegularExpression("{diffTime}"), diffTimeString);
 
-	Properties externalProperties = new Properties();
-	if (propertiesFile != null) {
-		try {
-			externalProperties.load(new FileInputStream(
-						this.workDir + File.separator + propertiesFile));
-		} catch (Exception e1) {
-			//Do nothing - just have no properties.
-		}
-	}
+        Properties externalProperties = new Properties();
+        if (propertiesFile != null) {
+            FileInputStream fileInputStream = null;
+            try {
+                fileInputStream = new FileInputStream(this.workDir + File.separator + propertiesFile);
+                externalProperties.load(fileInputStream);
+            } catch (Exception e1) {
+                this.log("createPrefabGraph: Error loading properties file: "+propertiesFile, e1);
+            } finally {
+                try {
+                    fileInputStream.close();
+                } catch (IOException e) {
+                    this.log("createPrefabGraph: Error closing properties file: "+propertiesFile, e);
+                }
+            }
+        }
 
 
         // names of values specified outside of the RRD data (external values)
