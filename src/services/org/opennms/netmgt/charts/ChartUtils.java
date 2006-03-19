@@ -266,6 +266,7 @@ public class ChartUtils {
                 }
             }
         }
+        conn.close();
         return baseDataSet;
     }
     
