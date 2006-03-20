@@ -50,6 +50,7 @@ import java.util.List;
 
 import org.apache.log4j.Category;
 import org.jrobin.core.FetchData;
+import org.jrobin.core.FetchPoint;
 import org.jrobin.core.RrdDb;
 import org.jrobin.core.RrdDef;
 import org.jrobin.core.RrdException;
@@ -155,10 +156,20 @@ public class JRobinRrdStrategy implements RrdStrategy {
     public Double fetchLastValue(String fileName, int interval) throws NumberFormatException, org.opennms.netmgt.rrd.RrdException {
         RrdDb rrd = null;
         try {
-            long now = System.currentTimeMillis();
-            long collectTime = (now - (now % interval)) / 1000L;
-            rrd = new RrdDb(fileName);
-            FetchData data = rrd.createFetchRequest("AVERAGE", collectTime, collectTime).fetchData();
+        	Category log = ThreadCategory.getInstance(getClass());
+        	rrd = new RrdDb(fileName);
+        	long lastUpdateTime = rrd.getLastUpdateTime();
+        	long now = System.currentTimeMillis();
+            long preciseCollectTime = (now - (now % interval)) / 1000L;
+            long collectTime = (now - interval) / 1000L;
+            log.debug("rrd last update time: " + lastUpdateTime + " collect time " + collectTime + " precise collect time " + preciseCollectTime);
+            
+            FetchData data = rrd.createFetchRequest("AVERAGE", preciseCollectTime, preciseCollectTime).fetchData();
+            //FetchData data = rrd.createFetchRequest("AVERAGE", lastUpdateTime, lastUpdateTime).fetchData();
+		for(int i = 0; i < data.getRowCount(); i++) {
+    		FetchPoint point = data.getRow(i);
+    		log.debug("got the following from row: " + i + " of my RRD: " + point.dump());
+		}
             double[] vals = data.getValues(0);
             if (vals.length > 0) {
                 return new Double(vals[vals.length - 1]);
@@ -179,6 +190,46 @@ public class JRobinRrdStrategy implements RrdStrategy {
         }
     }
 
+    public Double fetchLastValueInRange(String fileName, int interval, int range) throws NumberFormatException, org.opennms.netmgt.rrd.RrdException {
+        RrdDb rrd = null;
+        try {
+        	Category log = ThreadCategory.getInstance(getClass());
+        	rrd = new RrdDb(fileName);
+        	long lastUpdateTime = rrd.getLastUpdateTime();
+        	long now = System.currentTimeMillis();
+            long latestUpdateTime = (now - (now % interval)) / 1000L;
+            long earliestUpdateTime = ((now - (now % interval)) - range) / 1000L;
+            log.debug("fetching data from " + earliestUpdateTime + " to " + latestUpdateTime);
+            
+            FetchData data = rrd.createFetchRequest("AVERAGE", earliestUpdateTime, latestUpdateTime).fetchData();
+            //FetchData data = rrd.createFetchRequest("AVERAGE", lastUpdateTime, lastUpdateTime).fetchData();
+		    double[] vals = data.getValues(0);
+		    long[] times = data.getTimestamps();
+		    // step backwards through the array of values until we get something that's a number
+            for(int i = vals.length - 1; i >= 0; i--) {
+            	if ( Double.isNaN(vals[i]) ) {
+               		log.debug("Got a NaN value at interval: " + times[i]);
+            	} else {
+            		log.debug("Got a non NaN value at interval: " + times[i] + " : " + vals[i] );
+            		return new Double(vals[i]);
+               	}
+            }
+            return null;
+        } catch (IOException e) {
+            throw new org.opennms.netmgt.rrd.RrdException("Exception occurred fetching data from " + fileName, e);
+        } catch (RrdException e) {
+            throw new org.opennms.netmgt.rrd.RrdException("Exception occurred fetching data from " + fileName, e);
+        } finally {
+            if (rrd != null)
+                try {
+                    rrd.close();
+                } catch (IOException e) {
+                    Category log = ThreadCategory.getInstance(getClass());
+                    log.error("Failed to close rrd file: " + fileName, e);
+                }
+        }
+    }
+    
     private Color getColor(String colorValue) {
         int colorVal = Integer.parseInt(colorValue, 16);
         return new Color(colorVal);

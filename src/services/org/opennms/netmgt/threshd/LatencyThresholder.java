@@ -90,6 +90,12 @@ final class LatencyThresholder implements ServiceThresholder {
      * 
      */
     private static final int DEFAULT_INTERVAL = 300000; // 300s or 5m
+    
+    /**
+     * Default age before which a data point is considered "out of date"
+     */
+    
+    private static final int DEFAULT_RANGE = 0; 
 
     /**
      * Interface attribute key used to store the interface's node id
@@ -404,6 +410,7 @@ final class LatencyThresholder implements ServiceThresholder {
         //
         String groupName = ParameterMap.getKeyedString(parameters, "thresholding-group", "default");
         int interval = ParameterMap.getKeyedInteger(parameters, "interval", DEFAULT_INTERVAL);
+        int range = ParameterMap.getKeyedInteger(parameters, "range", DEFAULT_RANGE);
 
         // NodeId attribute
         int nodeId = -1;
@@ -446,7 +453,7 @@ final class LatencyThresholder implements ServiceThresholder {
         Events events = new Events();
 
         try {
-            checkRrdDir(latencyDir, nodeId, ipAddr, interval, new Date(), // time
+            checkRrdDir(latencyDir, nodeId, ipAddr, interval, range, new Date(), // time
                                                                             // stamp
                                                                             // for
                                                                             // outgoing
@@ -500,7 +507,7 @@ final class LatencyThresholder implements ServiceThresholder {
      * @throws IllegalArgumentException
      *             if path parameter is not a directory.
      */
-    private void checkRrdDir(File directory, int nodeId, InetAddress ipAddr, int interval, Date date, Map thresholdMap, Events events) throws IllegalArgumentException {
+    private void checkRrdDir(File directory, int nodeId, InetAddress ipAddr, int interval, int range, Date date, Map thresholdMap, Events events) throws IllegalArgumentException {
         Category log = ThreadCategory.getInstance(getClass());
 
         // Sanity Check
@@ -536,7 +543,15 @@ final class LatencyThresholder implements ServiceThresholder {
                 //
                 Double dsValue = null;
                 try {
-                    dsValue = RrdUtils.fetchLastValue(files[i].getAbsolutePath(), interval);
+                	if (range != 0) {
+                		if (log.isDebugEnabled())
+                            log.debug("checking values within " + range + " mS of last possible PDP");
+                		dsValue = RrdUtils.fetchLastValueInRange(files[i].getAbsolutePath(), interval, range);
+                	} else {
+                		if (log.isDebugEnabled())
+                            log.debug("checking value of last possible PDP only");
+                		dsValue = RrdUtils.fetchLastValue(files[i].getAbsolutePath(), interval);
+                	}
                 } catch (NumberFormatException nfe) {
                     log.warn("Unable to convert retrieved value for datasource '" + datasource + "' to a double, skipping evaluation.");
                 } catch (RrdException e) {

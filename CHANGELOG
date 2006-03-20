@@ -11,6 +11,7 @@
   the method to throw the Exception.  This may have been the expected
   behavior (don't fail the process if a something simply can't be cleaned
   up).  Note: a bit of clean up was done in DbNodeEntry as well.
+- Add support for range parameter in threshd-configuration.xml - Bug 1432.
   
 1.2.6 to 1.2.7
 ----------------------------------------------------------------------

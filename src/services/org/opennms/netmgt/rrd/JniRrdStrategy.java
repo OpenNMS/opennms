@@ -270,6 +270,107 @@ class JniRrdStrategy implements RrdStrategy {
         return dsValue;
     }
 
+    public Double fetchLastValueInRange(String rrdFile, int interval, int range) throws NumberFormatException, RrdException {
+        checkState("fetchLastValue");
+        // Log4j category
+        //
+        Category log = ThreadCategory.getInstance(getClass());
+
+        // Generate rrd_fetch() command through jrrd JNI interface in order to
+        // retrieve
+        // LAST pdp for the datasource stored in the specified RRD file
+        //
+        // String array returned from launch() native method format:
+        // String[0] - If success is null, otherwise contains reason for failure
+        // String[1] - All data source names contained in the RRD (space
+        // delimited)
+        // String[2]...String[n] - RRD fetch data in the following format:
+        // <timestamp> <value1> <value2> ... <valueX> where X is
+        // the total number of data sources
+        //
+        // NOTE: Specifying start time of 'now-<interval>' and
+        // end time of 'now-<interval>' where <interval> is the
+        // configured thresholding interval (and should be the
+        // same as the RRD step size) in order to guarantee that
+        // we don't get a 'NaN' value from the fetch command. This
+        // is necessary because the collection is being done by collectd
+        // and there is nothing keeping us in sync.
+        // 
+        // interval argument is in milliseconds so must convert to seconds
+        //
+        
+        // FIXME: This doesn't work for JNI RRDs yet.
+        
+    	long now = System.currentTimeMillis();
+        long latestUpdateTime = (now - (now % interval)) / 1000L;
+        long earliestUpdateTime = ((now - (now % interval)) - range) / 1000L;
+   
+        if (log.isEnabledFor(Priority.DEBUG))
+        	log.debug("fetching data from " + earliestUpdateTime + " to " + latestUpdateTime);
+        
+        String fetchCmd = "fetch " + rrdFile + " AVERAGE -s " + earliestUpdateTime + " -e " + latestUpdateTime;
+
+        String[] fetchStrings = Interface.launch(fetchCmd);
+
+        // Sanity check the returned string array
+        if (fetchStrings == null) {
+            if (log.isEnabledFor(Priority.ERROR)) {
+                log.error("fetch: Unexpected error issuing RRD 'fetch' command, no error text available.");
+            }
+            return null;
+        }
+
+        // Check error string at index 0, will be null if 'fetch' was successful
+        if (fetchStrings[0] != null) {
+            if (log.isEnabledFor(Priority.ERROR)) {
+                log.error("fetch: RRD database 'fetch' failed, reason: " + fetchStrings[0]);
+            }
+            return null;
+        }
+
+        // Sanity check
+        if (fetchStrings[1] == null || fetchStrings[2] == null) {
+            if (log.isEnabledFor(Priority.ERROR)) {
+                log.error("fetch: RRD database 'fetch' failed, no data retrieved.");
+            }
+            return null;
+        }
+        
+        int numFetched = fetchStrings.length;
+        
+        if (log.isEnabledFor(Priority.DEBUG))
+        	log.debug("got " + numFetched + " strings from RRD");
+
+        // String at index 1 contains the RRDs datasource names
+        //
+        String dsName = fetchStrings[1].trim();
+
+        Double dsValue;
+        
+        // Back through the RRD output until I get something interesting
+        
+        for(int i = fetchStrings.length - 1; i > 1; i--) {
+        	log.debug("examining RRD fetch output at  " + fetchStrings[i]);
+        	if ( fetchStrings[i].trim().equalsIgnoreCase("nan") ) {
+           		log.debug("Got a NaN value: " + fetchStrings[i]);
+        	} else {
+        		log.debug("Got a non NaN value at interval: " + fetchStrings[i]);
+                try {
+                    dsValue = new Double(fetchStrings[i].trim());
+                    if (log.isDebugEnabled())
+                        log.debug("fetch: fetch successful: " + dsName + "= " + dsValue);
+                    return dsValue;
+                } catch (NumberFormatException nfe) {
+                    if (log.isEnabledFor(Priority.WARN))
+                        log.warn("fetch: Unable to convert fetched value (" + fetchStrings[2].trim() + ") to Double for data source " + dsName);
+                    throw nfe;
+                }
+          	}
+        }
+        
+        return null;
+    }
+    
     /**
      * Executes the given graph comnmand as process with workDir as the current
      * directory. The output stream of the command (a PNG image) is copied to a

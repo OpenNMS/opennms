@@ -252,6 +252,29 @@ public class RrdUtils {
     public static Double fetchLastValue(String rrdFile, int interval) throws NumberFormatException, RrdException {
         return getStrategy().fetchLastValue(rrdFile, interval);
     }
+    
+    /**
+     * This method issues an round robing fetch command to retrieve the last 
+     * value of the datasource stored in the specified RRD file within given
+     * tolerance (which should be a multiple of the RRD interval). This is useful
+     * If you are not entirely sure when an RRD might have been updated, but you 
+     * want to retrieve the last value.
+      * NOTE: This method assumes that each RRD file contains a single
+     * datasource.
+     * 
+     * @param rrdFile
+     *            RRD file from which to fetch the data.
+     * @param interval
+     *            Thresholding interval (should equal RRD step size)
+     * 
+     * @return Retrived datasource value as a java.lang.Double
+     * 
+     * @throws NumberFormatException
+     *             if the retrieved value fails to convert to a double
+     */
+    public static Double fetchLastValueInRange(String rrdFile, int interval, int range) throws NumberFormatException, RrdException {
+        return getStrategy().fetchLastValueInRange(rrdFile, interval, range);
+    }
 
     /**
      * Creates an InputStream representing the bytes of a graph created from

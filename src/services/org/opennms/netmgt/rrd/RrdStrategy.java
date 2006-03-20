@@ -157,6 +157,26 @@ interface RrdStrategy {
     public Double fetchLastValue(String rrdFile, int interval) throws NumberFormatException, RrdException;
 
     /**
+     * Fetches the last value from the round robin database with the given name
+     * within a time range. The interval passed in should be the interval 
+     * associated with the round robin database. The range should be the amount of
+     * "lag" acceptable for an update to be considered valid. Range must be a 
+     * multiple of the RRD interval.
+     * 
+     * @param rrdFile
+     *            a name the represents a round robin database
+     * @param interval
+     *            a step interval of the round robin database
+     * @param range
+     *            an acceptable range for which the last value will be returned
+     * @return The last value as a Double (if the last value didn't exist
+     *         returns a Double.NaN)
+     * @throws NumberFormatException
+     * @throws RrdException
+     */
+    public Double fetchLastValueInRange(String rrdFile, int interval, int range) throws NumberFormatException, RrdException;
+    
+    /**
      * Creates an InputStream representing the bytes of a graph created from
      * round robin data. It accepts an rrdtool graph command. The underlying
      * implementation converts this command to a format appropriate for it .

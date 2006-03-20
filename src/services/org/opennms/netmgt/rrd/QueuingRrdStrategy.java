@@ -775,6 +775,13 @@ class QueuingRrdStrategy implements RrdStrategy, Runnable {
         // an immediate file update.
         return m_delegate.fetchLastValue(rrdFile, interval);
     }
+    
+    public Double fetchLastValueInRange(String rrdFile, int interval, int range) throws NumberFormatException, RrdException {
+        // TODO: handle queued values with fetch. Fetch could pull values off
+        // the queue or force
+        // an immediate file update.
+        return m_delegate.fetchLastValueInRange(rrdFile, interval, range);
+    }
 
     public InputStream createGraph(String command, File workDir) throws IOException, RrdException {
         return m_delegate.createGraph(command, workDir);
