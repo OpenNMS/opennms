@@ -37,7 +37,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.Reader;
 import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -46,7 +45,6 @@ import java.util.Properties;
 import java.util.regex.PatternSyntaxException;
 
 import javax.servlet.ServletException;
-import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -87,6 +85,11 @@ import org.opennms.web.MissingParameterException;
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
 public class RRDGraphServlet extends HttpServlet {
+    /**
+    * 
+    */
+    private static final long serialVersionUID = 8890231247851529359L;
+
     private String s_initParam = "rrd-properties";
     private String s_missingParamsPath = "/images/rrd/missingparams.png";
     private String s_rrdError = "/images/rrd/error.png";
@@ -103,29 +106,29 @@ public class RRDGraphServlet extends HttpServlet {
     public void init() throws ServletException {
         String homeDir = Vault.getHomeDir();
         String configs = getServletConfig().getInitParameter(s_initParam);
-
+        
         try {
             String[] configEntries = configs.split(";");
             for (int i = 0; i < configEntries.length; i++) {
-		String[] entry = configEntries[i].split("=");
-	        if (entry.length != 2) {
-		    throw new ServletException("Incorrect number of equals "
-					       + "signs in servlet init "
-					       + "parameter \""
-					       + s_initParam
-					       + "\": " + configs);
-		}
-		String type = entry[0];
-		String configFile = entry[1];
-
-		GraphTypeConfig config =
-		    loadGraphTypeConfig(type, homeDir + configFile);
-		m_graphTypeMap.put(type, config);
+                String[] entry = configEntries[i].split("=");
+                if (entry.length != 2) {
+                    throw new ServletException("Incorrect number of equals "
+                            + "signs in servlet init "
+                            + "parameter \""
+                            + s_initParam
+                            + "\": " + configs);
+                }
+                String type = entry[0];
+                String configFile = entry[1];
+                
+                GraphTypeConfig config =
+                    loadGraphTypeConfig(type, homeDir + configFile);
+                m_graphTypeMap.put(type, config);
             }
         } catch (PatternSyntaxException e) {
-	    String message = "Could not parse servlet init parameter \""
-		+ s_initParam + "\"";
-	    log(message, e);
+            String message = "Could not parse servlet init parameter \""
+                + s_initParam + "\"";
+            log(message, e);
             throw new ServletException(message, e);
         }
     }
@@ -135,8 +138,10 @@ public class RRDGraphServlet extends HttpServlet {
 		throws ServletException {
         Properties properties = new Properties();
 
+        FileInputStream fileInputStream = null;
         try {
-            properties.load(new FileInputStream(propertiesFilename));
+            fileInputStream = new FileInputStream(propertiesFilename);
+            properties.load(fileInputStream);
 
             RrdUtils.graphicsInitialize();
         } catch (FileNotFoundException e) {
@@ -151,6 +156,12 @@ public class RRDGraphServlet extends HttpServlet {
         } catch (Throwable e) {
             log("Unexpected exception or error occurred", e);
             throw new ServletException("Unexpected exception or error occured: " + e.getMessage(), e);
+        } finally {
+            try {
+                if (fileInputStream != null) fileInputStream.close();
+            } catch (Exception e) {
+                this.log("init: Error closing properties file.",e);
+            }
         }
 
         GraphTypeConfig config = new GraphTypeConfig();
@@ -233,98 +244,105 @@ public class RRDGraphServlet extends HttpServlet {
     }
 
     public String getCommandNonAdhoc(GraphTypeConfig config,
-			             HttpServletRequest request,
-				     HttpServletResponse response)
-		throws ServletException {
+            HttpServletRequest request,
+            HttpServletResponse response)
+    throws ServletException {
         String report = request.getParameter("report");
         String[] rrds = request.getParameterValues("rrd");
-	String propertiesFile = request.getParameter("props");
+        String propertiesFile = request.getParameter("props");
         String start = request.getParameter("start");
         String end = request.getParameter("end");
-
+        
         if (report == null || rrds == null || start == null || end == null) {
-	    return null;
+            return null;
         }
-
+        
         for (int i = 0; i < rrds.length; i++) {
             if (!RrdFileConstants.isValidRRDName(rrds[i])) {
                 log("Illegal RRD filename: " + rrds[i]);
                 throw new IllegalArgumentException("Illegal RRD filename: "
-						   + rrds[i]);
+                        + rrds[i]);
             }
         }
-
+        
         return createPrefabCommand(request,
-			           config.getReportMap(),
-				   config.getCommandPrefix(),
-				   config.getWorkDir(), report, rrds,
-				   propertiesFile,
-				   start, end);
+                config.getReportMap(),
+                config.getCommandPrefix(),
+                config.getWorkDir(), report, rrds,
+                propertiesFile,
+                start, end);
     }
-
+    
     protected String createPrefabCommand(HttpServletRequest request,
-					 Map reportMap, String commandPrefix,
-					 File workDir, String reportName,
-					 String[] rrds, String propertiesFile,
-					 String start, String end)
-		throws ServletException {
+            Map reportMap, String commandPrefix,
+            File workDir, String reportName,
+            String[] rrds, String propertiesFile,
+            String start, String end)
+    throws ServletException {
         PrefabGraph graph = (PrefabGraph) reportMap.get(reportName);
-
+        
         if (graph == null) {
             throw new IllegalArgumentException("Unknown report name: "
-					       + reportName);
+                    + reportName);
         }
-
+        
         StringBuffer buf = new StringBuffer();
         buf.append(commandPrefix);
         buf.append(" ");
         buf.append(graph.getCommand());
         String command = buf.toString();
-
-	long startTime = Long.parseLong(start);
-	long endTime = Long.parseLong(end);
-	long diffTime = endTime - startTime;
-
-	String startTimeString = Long.toString(startTime / 1000);
-	String endTimeString = Long.toString(endTime / 1000);
-	String diffTimeString = Long.toString(diffTime / 1000);
-
-/*
-        // remember rrdtool wants the time in seconds, not milliseconds;
-        // java.util.Date.getTime() returns milliseconds, so divide by 1000
-        String starttime = Long.toString(Long.parseLong(start) / 1000);
-        String endtime = Long.toString(Long.parseLong(end) / 1000);
-*/
-
+        
+        long startTime = Long.parseLong(start);
+        long endTime = Long.parseLong(end);
+        long diffTime = endTime - startTime;
+        
+        String startTimeString = Long.toString(startTime / 1000);
+        String endTimeString = Long.toString(endTime / 1000);
+        String diffTimeString = Long.toString(diffTime / 1000);
+        
+        /*
+         // remember rrdtool wants the time in seconds, not milliseconds;
+          // java.util.Date.getTime() returns milliseconds, so divide by 1000
+           String starttime = Long.toString(Long.parseLong(start) / 1000);
+           String endtime = Long.toString(Long.parseLong(end) / 1000);
+           */
+        
         HashMap translationMap = new HashMap();
-
+        
         for (int i = 0; i < rrds.length; i++) {
             String key = "{rrd" + (i + 1) + "}";
             translationMap.put(RE.simplePatternToFullRegularExpression(key),
-			       rrds[i]);
+                    rrds[i]);
         }
-
+        
         translationMap.put(RE.simplePatternToFullRegularExpression("{startTime}"), startTimeString);
         translationMap.put(RE.simplePatternToFullRegularExpression("{endTime}"), endTimeString);
         translationMap.put(RE.simplePatternToFullRegularExpression("{diffTime}"), diffTimeString);
-	Properties externalProperties = new Properties();
-	if (propertiesFile != null) {
-		try {
-			externalProperties.load(new FileInputStream(
-						workDir + File.separator + propertiesFile));
-		} catch (Exception e1) {
-			//Do nothing - just have no properties.
-		}
-	}
-
-
+        
+        Properties externalProperties = new Properties();
+        if (propertiesFile != null) {
+            FileInputStream fileInputStream = null;
+            try {
+                fileInputStream = new FileInputStream(workDir + File.separator + propertiesFile);
+                externalProperties.load(fileInputStream);
+            } catch (Exception e1) {
+                this.log("createPrefabGraph: Error loading properties file: "+propertiesFile, e1);
+            } finally {
+                try {
+                    if (fileInputStream != null) fileInputStream.close();
+                } catch (Exception e) {
+                    this.log("createPrefabGraph: Error closing properties file: "+propertiesFile, e);    }      
+            }
+        }
+        
+        
         // names of values specified outside of the RRD data (external values)
         String[] externalValues = graph.getExternalValues();
-
+        
         if (externalValues != null || externalValues.length > 0) {
             for (int i = 0; i < externalValues.length; i++) {
                 String value = request.getParameter(externalValues[i]);
-
+                
                 if (value == null) {
                     throw new MissingParameterException(externalValues[i]);
                 } else {
@@ -332,31 +350,31 @@ public class RRDGraphServlet extends HttpServlet {
                 }
             }
         }
-
-	//names of values specified that come from properties files
-	String[] propertiesValues = graph.getPropertiesValues();
-	if (propertiesValues != null || propertiesValues.length > 0) {
-		for (int i = 0; i < propertiesValues.length; i++) {
-			String value = (externalProperties.getProperty(propertiesValues[i]) == null ? "Unknown" : externalProperties.getProperty(propertiesValues[i]));
-			if (value == null) {
-				throw new MissingParameterException(propertiesValues[i]);
-			} else {
-				translationMap.put(
-					RE.simplePatternToFullRegularExpression(
-						"{" + propertiesValues[i] + "}"),
-					value);
-			}
-		}
-	}
-
-
+        
+        //names of values specified that come from properties files
+        String[] propertiesValues = graph.getPropertiesValues();
+        if (propertiesValues != null || propertiesValues.length > 0) {
+            for (int i = 0; i < propertiesValues.length; i++) {
+                String value = (externalProperties.getProperty(propertiesValues[i]) == null ? "Unknown" : externalProperties.getProperty(propertiesValues[i]));
+                if (value == null) {
+                    throw new MissingParameterException(propertiesValues[i]);
+                } else {
+                    translationMap.put(
+                            RE.simplePatternToFullRegularExpression(
+                                    "{" + propertiesValues[i] + "}"),
+                                    value);
+                }
+            }
+        }
+        
+        
         try {
             Iterator iter = translationMap.keySet().iterator();
-
+            
             while (iter.hasNext()) {
                 String s1 = (String) iter.next();
                 String s2 = (String) translationMap.get(s1);
-
+                
                 // replace s1 with s2
                 RE re = new RE(s1);
                 command = re.subst(command, s2);
@@ -364,7 +382,7 @@ public class RRDGraphServlet extends HttpServlet {
         } catch (RESyntaxException e) {
             throw new ServletException("Invalid regular expression syntax, check rrd-properties file", e);
         }
-
+        
         return command;
     }
 

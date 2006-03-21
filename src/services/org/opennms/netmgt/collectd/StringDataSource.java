@@ -38,6 +38,7 @@ package org.opennms.netmgt.collectd;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.Properties;
 
 import org.apache.log4j.Category;
@@ -66,42 +67,56 @@ public class StringDataSource extends DataSource {
 		//Nothing else custom to do
 	}
 
-        public boolean performUpdate(
-		String collectionName,
-                String owner,
-               String repository,
-                String dsName,
-                String val) {
-
-		Category log = ThreadCategory.getInstance(getClass());
-
-		boolean error = false;
-
-		Properties props = new Properties();
-                File propertiesFile =
-                        new File(repository + File.separator + "strings.properties");
-		
-		//Preload existing data
-                if (propertiesFile.exists()) {
-                        try {
-                                props.load(new FileInputStream(propertiesFile));
-                        } catch (Exception e) {
-                                //Can't be filenotfound, must be an IOException - we can't
-                                // handle that - just quit
-                                e.printStackTrace();
-                                return true;
-                        }
+	public boolean performUpdate(
+	        String collectionName,
+	        String owner,
+	        String repository,
+	        String dsName,
+	        String val) {
+	    
+	    Category log = ThreadCategory.getInstance(getClass());
+	    	    
+	    Properties props = new Properties();
+	    File propertiesFile =	 new File(repository + File.separator + "strings.properties");
+	    
+        FileInputStream fileInputStream = null;
+	    //Preload existing data
+	    if (propertiesFile.exists()) {
+	        try {
+	            fileInputStream = new FileInputStream(propertiesFile);
+	            props.load(fileInputStream);
+	        } catch (Exception e) {
+                log.error("performUpdate: Error openning properties file.", e);
+	            return true;
+	        } finally {
+	            try {
+                    if (fileInputStream != null) fileInputStream.close();
+                } catch (IOException e) {
+                    log.error("performUpdate: Error closing file.", e);
                 }
-                props.setProperty(this.getName(), val);
-                try {
-                        props.store(new FileOutputStream(propertiesFile), null);
-                } catch (Exception e) {
-                        //Ouch, something went wrong that we should mention to the outside world
-                        e.printStackTrace();
-                        return true;
-                }
-                return false;
-		
+            }
+	    }
+	    props.setProperty(this.getName(), val);
+        FileOutputStream fileOutputStream = null;
+	    try {
+	        fileOutputStream = new FileOutputStream(propertiesFile);
+            props.store(fileOutputStream, null);
+	    } catch (Exception e) {
+	        //Ouch, something went wrong that we should mention to the outside world
+	        e.printStackTrace();
+	        return true;
+	    } finally {
+	        try {
+	            if (fileOutputStream != null) {
+	                fileOutputStream.flush();
+	                fileOutputStream.close();
+	            }
+	        } catch (IOException e) {
+	            log.error("performUpdate: Error closing file.", e);
+	        }
+        }
+	    return false;
+	    
 	}
 
 	public String toString() {
