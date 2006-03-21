@@ -92,7 +92,7 @@ public class StringDataSource extends DataSource {
 	            return true;
 	        } finally {
 	            try {
-                    fileInputStream.close();
+                    if (fileInputStream != null) fileInputStream.close();
                 } catch (IOException e) {
                     log.error("performUpdate: Error closing file.", e);
                 }
@@ -109,8 +109,10 @@ public class StringDataSource extends DataSource {
 	        return true;
 	    } finally {
 	        try {
-                fileOutputStream.flush();
-                fileOutputStream.close();
+	            if (fileInputStream != null) {
+	                fileOutputStream.flush();
+	                fileOutputStream.close();
+	            }
             } catch (IOException e) {
                 log.error("performUpdate: Error closing file.", e);
             }

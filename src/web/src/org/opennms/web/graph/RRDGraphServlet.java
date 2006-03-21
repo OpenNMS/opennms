@@ -139,7 +139,7 @@ public class RRDGraphServlet extends HttpServlet {
             throw new ServletException("Unexpected exception or error occured: " + e.getMessage(), e);
         } finally {
             try {
-                fileInputStream.close();
+                if (fileInputStream != null) fileInputStream.close();
             } catch (IOException e) {
                 this.log("init: Error closing properties file.",e);
             }
@@ -255,7 +255,7 @@ public class RRDGraphServlet extends HttpServlet {
                 this.log("createPrefabGraph: Error loading properties file: "+propertiesFile, e1);
             } finally {
                 try {
-                    fileInputStream.close();
+                    if (fileInputStream != null) fileInputStream.close();
                 } catch (IOException e) {
                     this.log("createPrefabGraph: Error closing properties file: "+propertiesFile, e);
                 }
