@@ -1,0 +1,2208 @@
+<?xml version="1.0"?>
+ 
+<!--=================================================================
+
+   $Id$
+ 
+   Build file for OpenNMS
+ 
+Refactoring notes: 
+ELB - All targets that should be displayed require a description attribute.
+ELB - All targets that should not be displayed require it's absence.
+==================================================================== -->
+ 
+<project name="opennms" default="usage" basedir="." xmlns:artifact="urn:maven-artifact-ant" xmlns:module="urn:module-utils">
+  <description>
+Build file for OpenNMS Modules.
+  </description>
+	
+  <!-- overrride with site-specific settings (first property set wins) -->
+  <property file="build.properties"/>
+ 
+  <!-- versioning options -->
+  <property name="product.version" value="1.3.2"/>
+  <property name="product.release" value="0"/>
+  <property name="product.snapshot" value="true"/>
+  <property name="product.fullversion"
+	    value="${product.version}-${product.release}"/>
+	    	
+  <!--library directories-->
+  <!-- packaged libraries that are included in binary distributions -->
+  <property name="packaged.lib.dir" value="${basedir}/lib"/>
+  <!-- development libraries that are not included in binary distributions -->
+  <property name="dev.lib.dir" value="${basedir}/devlib"/>
+ 
+  <property name="test.jar.dir" value="${basedir}/work/test-jars"/> 
+
+  <!-- Declare the use of the maven ant tasks for retrieving dependencies -->
+  <typedef resource="org/apache/maven/artifact/ant/antlib.xml" uri="urn:maven-artifact-ant">
+    <classpath>
+      <pathelement location="${dev.lib.dir}/maven-artifact-ant-2.0.2-dep.jar" />
+    </classpath>
+  </typedef>
+
+  <!-- maven repositories -->
+  <artifact:remoteRepository id="opennms-repo" url="http://repo.opennms.org/maven2" />
+	
+	
+  <patternset id="default.source.pattern">
+    <include name="**/*.java"/>
+    <exclude name="**/*Test*"/>
+    <exclude name="**/mock/**.java"/>
+    <exclude name="**/*tests/*.java"/>
+    <exclude name="**/*Growl*" unless="apple.apis.present"/>
+  </patternset>
+ 
+  <patternset id="default.resource.pattern">
+    <exclude name="**/*.java"/> 
+    <exclude name="**/mock/**"/>
+    <exclude name="**/*tests/**"/>
+  </patternset> 
+	
+  <patternset id="default.test-source.pattern">
+    <include name="**/*Test*"/>
+    <include name="**/mock/**"/>
+    <include name="**/*tests/*.java"/>
+  </patternset>
+  	
+  <patternset id="default.test.pattern">
+    <include name="**/*Test.java"/>
+  </patternset>
+    
+  <patternset id="default.test-resource.pattern">
+    <include name="**/mock/**"/>
+    <include name="**/*tests/**"/>
+    <exclude name="**/*.java"/> 
+  </patternset> 
+ 
+  <!--
+  ==============================================
+  
+  Macros used to define modules
+  
+  ==============================================
+  -->
+
+  <!-- define necessary paths/properties etc for a new module -->
+  <macrodef name="init" uri="urn:module-utils">
+    <attribute name="module" />
+    <sequential>
+      <!-- pom file used for determining external dependencies --> 
+      <artifact:pom id="@{module}" file="${@{module}.pomfile}"/>
+      
+       <!-- source path needed for the javac task --> 
+      <path id="@{module}.source.path">
+        <pathelement location="${@{module}.source.dir}"/>
+      </path>
+      
+      <!-- source path for compiling tests --> 
+      <path id="@{module}.test.path">
+        <pathelement location="${@{module}.test-source.dir}"/>
+      </path>
+      
+      <!-- determine the compile time dependencies --> 
+      <artifact:dependencies pathId="@{module}.compile.dependencies" useScope="compile" verbose="true">
+        <pom refid="@{module}" /> 
+      </artifact:dependencies>
+      
+     <!-- determine the test dependencies - these should include the compile and rumtime deps--> 
+      <artifact:dependencies pathId="@{module}.test.dependencies" useScope="test" verbose="true">
+        <pom refid="@{module}" /> 
+      </artifact:dependencies>
+     
+     <!-- determine the runtime dependencies - thse should include the comple deps --> 
+      <artifact:dependencies pathId="@{module}.runtime.dependencies" useScope="runtime" verbose="">
+        <pom refid="@{module}" /> 
+      </artifact:dependencies> 
+     
+      <!-- define the compile classpath --> 
+      <path id="@{module}.compile.classpath">
+        <path refid="@{module}.compile.dependencies"/>
+      </path> 
+      
+     <!-- define the classpath used to compile tests --> 
+      <path id="@{module}.test-compile.classpath">
+        <pathelement location="${@{module}.target.classes}"/>
+        <path refid="@{module}.test.dependencies" />
+      </path>
+     
+     <!-- define the classpath need to run the tests --> 
+      <path id="@{module}.test-runtime.classpath">
+         <pathelement location="${@{module}.target.test-classes}"/>
+         <path refid="@{module}.test-compile.classpath" />
+      </path>             
+    </sequential>
+  </macrodef>
+ 
+ <!-- used to make sure resources are copied into the appropriate class path --> 
+  <macrodef name="process-resources" uri="urn:module-utils">
+    <attribute name="module" />
+    <sequential>
+     <!-- copy all the resources into the classpath --> 
+      <mkdir dir="${@{module}.target.classes}" />
+      <copy todir="${@{module}.target.classes}" filtering="true">
+        <fileset dir="${@{module}.resource.dir}">
+          <patternset refid="@{module}.resource.pattern" />
+        </fileset>
+      </copy>
+     
+     <!-- copy all the test resource into the test classpath --> 
+      <mkdir dir="${@{module}.target.test-classes}" />
+      <copy todir="${@{module}.target.test-classes}" filtering="true">
+        <fileset dir="${@{module}.test-resource.dir}">
+          <patternset refid="@{module}.test-resource.pattern" />
+        </fileset>
+      </copy>
+    </sequential>
+  </macrodef> 
+ 
+ <!-- used to compile the source for a module --> 
+  <macrodef name="compile" uri="urn:module-utils">
+    <attribute name="module" />
+    <sequential>
+      <mkdir dir="${@{module}.target.classes}" />
+      <javac destdir="${@{module}.target.classes}" target="1.4" includeantruntime="false">
+        <src refid="@{module}.source.path"/>
+        <patternset refid="@{module}.source.pattern"/>
+        <classpath refid="@{module}.compile.classpath"/>
+      </javac>
+    </sequential>
+  </macrodef> 
+
+ <!-- used to compile the tests for a module --> 
+  <macrodef name="test-compile" uri="urn:module-utils">
+    <attribute name="module" />
+    <sequential>
+      <mkdir dir="${@{module}.target.test-classes}"/>
+      <javac destdir="${@{module}.target.test-classes}" target="1.4" includeantruntime="false">
+        <src refid="@{module}.test.path"/>
+        <patternset refid="@{module}.test-source.pattern"/>
+        <classpath refid="@{module}.test-compile.classpath" /> 
+      </javac>
+    </sequential>
+  </macrodef> 
+ 
+ <!-- used to run the tests for a module --> 
+  <macrodef name="test" uri="urn:module-utils">
+    <attribute name="module" />
+    <sequential>
+      <mkdir dir="${@{module}.target.test-results}"/> 
+      <junit dir="${basedir}" fork="yes" forkmode="perTest" errorProperty="@{module}.test.failed" failureProperty="@{module}.test.failed">
+        <formatter type="brief" usefile="false" />
+        <formatter type="xml" />
+        <batchtest todir="${@{module}.target.test-results}">
+          <fileset dir="${@{module}.test-source.dir}">
+             <patternset refid="@{module}.test.pattern"/> 
+          </fileset>  
+        </batchtest>
+        <classpath refid="@{module}.test-runtime.classpath"/>
+        <sysproperty key="mock.logLevel" value="${mock.logLevel}" />
+        <sysproperty key="mock.debug" value="${mock.debug}" />
+        <sysproperty key="mock.rundbtests" value="${mock.rundbtests}" />
+      </junit>
+      <condition property="continue.build">
+        <or>
+          <isset property="ignoreFailedTests" />
+          <not> <isset property="@{module}.test.failed" /></not>
+        </or>
+      </condition>
+      <fail unless="continue.build" >
+        Unit Tests Failed.
+        Check the test results in ${@{module}.target.test-results}.
+        To ignore failed tests, set the ignoreFailedTests property to true.
+        See README.build for details on setting properties.
+      </fail>
+    </sequential>
+  </macrodef> 
+ 
+ <!-- used to create the jars for a module 
+      there are two jars created the standard jar and a test-jar 
+      that other modules can use to implemenet their tests --> 
+  <macrodef name="package" uri="urn:module-utils">
+    <attribute name="module" />
+    <sequential>
+      <mkdir dir="${build.jar.dir}"/> 
+      <jar jarfile="${build.jar.dir}/${@{module}.finalName}.jar">
+       <fileset dir="${@{module}.target.classes}"/>
+      </jar>
+      <mkdir dir="${test.jar.dir}"/> 
+      <jar jarfile="${test.jar.dir}/${@{module}.finalName}-tests.jar">
+       <fileset dir="${@{module}.target.test-classes}"/>
+      </jar>
+    </sequential>
+  </macrodef> 
+ 
+  <!--
+  ==============================================
+  
+  Modules
+  
+  ==============================================
+  -->
+  <!-- core module -->
+  <property name="core.pomfile" value="${basedir}/poms/core.pom"/>
+ 
+  <property name="core.finalName" value="opennms_core" />
+  
+  <property name="core.target"              value="${basedir}/work/core" />
+  <property name="core.target.classes"      value="${core.target}/classes" />
+  <property name="core.target.test-classes" value="${core.target}/test-classes" />
+  <property name="core.target.test-results" value="${core.target}/test-results" /> 
+  
+  <property name="core.source.dir"        value="${basedir}/src/core" />
+  <property name="core.resource.dir"      value="${basedir}/src/core" />
+  <property name="core.test-source.dir"   value="${basedir}/src/core" />
+  <property name="core.test-resource.dir" value="${basedir}/src/core" />
+  
+  <patternset id="core.source.pattern" refid="default.source.pattern"/>
+  <patternset id="core.resource.pattern" refid="default.resource.pattern"/>
+  <patternset id="core.test-source.pattern" refid="default.test-source.pattern"/>
+  <patternset id="core.test.pattern" refid="default.test.pattern"/>
+  <patternset id="core.test-resource.pattern" refid="default.test-resource.pattern"/>
+ 
+  <target name="init.core">
+    <module:init module="core"/> 
+  </target>
+  <target name="core.generate-sources" depends="init.core">
+  </target>
+  <target name="core.process-sources" depends="core.generate-sources">
+  </target>
+  <target name="core.generate-resources" depends="core.process-sources">
+  </target>
+  <target name="core.process-resources" depends="core.generate-resources">
+   <module:process-resources module="core" /> 
+  </target>
+  <target name="core.compile" depends="core.process-resources">
+     <module:compile module="core"/> 
+  </target>
+  <target name="core.test-compile" depends="core.compile">
+     <module:test-compile module="core"/> 
+  </target>
+  <target name="core.test" depends="core.test-compile" unless="skip.tests">
+    <module:test module="core"/> 
+  </target>
+  <target name="core.package" depends="core.test">
+   <module:package module="core"/> 
+  </target>
+  <target name="core.install" depends="core.package">
+    <echo>Processing core.install</echo>
+  </target>
+  <target name="core.deploy" depends="core.install">
+    <echo>Processing core.deploy</echo>
+  </target>
+  <target name="core.clean">
+    <delete dir="${core.target}"/>
+  </target>
+	
+  <target name="core.module" depends="core.deploy">
+    <echo>Completed building core</echo>
+  </target>
+
+  <!-- install module -->
+  <property name="install.pomfile" value="${basedir}/poms/install.pom"/>
+  
+ 
+  <property name="install.finalName" value="opennms_install" />
+  
+  <property name="install.target"              value="${basedir}/work/install" />
+  <property name="install.target.classes"      value="${install.target}/classes" />
+  <property name="install.target.test-classes" value="${install.target}/test-classes" />
+  <property name="install.target.test-results" value="${install.target}/test-results" /> 
+  
+  <property name="install.source.dir"        value="${basedir}/src/install" />
+  <property name="install.resource.dir"      value="${basedir}/src/install" />
+  <property name="install.test-source.dir"   value="${basedir}/src/install" />
+  <property name="install.test-resource.dir" value="${basedir}/src/install" />
+  
+ <!-- need custom patterns here since FileAnticipator is a test class --> 
+  <patternset id="install.source.pattern">
+    <include name="**/*.java"/>
+    <exclude name="**/*Test*"/>
+    <exclude name="**/mock/**.java"/>
+    <exclude name="**/*tests/*.java"/>
+    <exclude name="**/FileAnticipator.java"/> 
+    <exclude name="**/*Growl*" unless="apple.apis.present"/>
+  </patternset>
+ 
+  <patternset id="install.test-source.pattern">
+    <include name="**/*Test*"/>
+    <include name="**/mock/**"/>
+    <include name="**/FileAnticipator.java"/> 
+    <include name="**/*tests/*.java"/>
+  </patternset>
+    
+  <patternset id="install.resource.pattern" refid="default.resource.pattern"/>
+  <patternset id="install.test.pattern" refid="default.test.pattern"/>
+  <patternset id="install.test-resource.pattern" refid="default.test-resource.pattern"/>
+ 
+  <target name="init.install">
+    <module:init module="install"/> 
+  </target>
+  <target name="install.generate-sources" depends="init.install">
+  </target>
+  <target name="install.process-sources" depends="install.generate-sources">
+  </target>
+  <target name="install.generate-resources" depends="install.process-sources">
+  </target>
+  <target name="install.process-resources" depends="install.generate-resources">
+   <module:process-resources module="install" /> 
+  </target>
+  <target name="install.compile" depends="install.process-resources">
+     <module:compile module="install"/> 
+  </target>
+  <target name="install.test-compile" depends="install.compile">
+     <module:test-compile module="install"/> 
+  </target>
+  <target name="install.test" depends="install.test-compile" unless="skip.tests">
+    <module:test module="install"/> 
+  </target>
+  <target name="install.package" depends="install.test">
+   <module:package module="install"/> 
+  </target>
+  <target name="install.install" depends="install.package">
+    <echo>Processing install.install</echo>
+  </target>
+  <target name="install.deploy" depends="install.install">
+    <echo>Processing install.deploy</echo>
+  </target>
+  <target name="install.clean">
+    <delete dir="${install.target}"/>
+  </target>
+  
+  <target name="install.module" depends="install.deploy">
+    <echo>Completed building install</echo>
+  </target>
+  
+	
+
+ <!-- OLD STUFF STARTS HERE -->
+
+  <!-- build options -->
+  <!-- Warning: there are some internal ant properties named build.* -->
+  <!-- Note: build.dir needs to be a path relative to ${basedir}, and
+       the same thing might be the case for some properties that
+       contain build.dir -->
+  <property name="relative.build.dir" value="work"/>
+  <property name="build.dir" value="${basedir}/${relative.build.dir}"/>
+  <property name="build.castor.source.dir" value="${build.dir}/castor"/>
+  <property name="build.sablecc.source.dir" value="${build.dir}/sablecc"/>
+  <property name="build.docs.dir" value="${build.dir}/docs"/>
+  <property name="build.rpm.dir" value="${build.dir}/rpm"/>
+  <property name="build.filter.docs.dir" value="${build.dir}/docs.filter"/>
+  <property name="build.api.dir" value="${build.docs.dir}/javadoc"/>
+  <property name="build.xsddoc.dir" value="${build.docs.dir}/xsddoc"/>
+  <property name="build.classes.dir" value="${build.dir}/opennms/classes"/>
+  <property name="build.tests.dir" value="${build.dir}/opennms/tests"/>
+  <property name="build.jar.dir" value="${build.dir}/jar"/>
+  <property name="build.jicmp.dir" value="${build.dir}/jicmp"/>
+  <property name="build.jrrd.dir" value="${build.dir}/jrrd"/>
+  <property name="build.postgresql.dir" value="${build.dir}/postgresql"/>
+  <property name="build.release.dir" value="${build.dir}/releases"/>
+
+  <property name="build.postgresql.include.dir"
+	    value="/usr/include/pgsql/server"/>
+  <property name="build.rrdtool.include.dir" value="/usr/include"/>
+  <property name="build.rrdtool.lib.dir" value="/usr/lib"/>
+  <property name="build.rrdtool.bin" value="/usr/bin/rrdtool"/>
+  <property name="database.name" value="opennms"/>
+  <property name="database.user" value="opennms"/>
+  <property name="database.password" value="opennms"/>
+  	
+  	
+  <!--compiler options-->
+  <property name="compiler.debug" value="true"/>
+  <property name="compiler.optimize" value="true"/>
+  <property name="compiler.verbose" value="false"/>
+  <!-- XXX This should be true, but will have to set it false for now -->
+  <property name="compiler.deprecation" value="false"/>
+
+  <!--source directories -->
+  <property name="source.dir" value="${basedir}/src"/>
+  <property name="core.source.dir" value="${source.dir}/core"/>
+  <property name="joesnmp.source.dir" value="${source.dir}/joesnmp"/>
+  <property name="postgresql.source.dir" value="${source.dir}/postgresql"/>
+  <property name="report.source.dir" value="${source.dir}/report"/>
+  <property name="services.source.dir" value="${source.dir}/services"/>
+  <property name="bootstrap.source.dir" value="${source.dir}/bootstrap"/>
+  <property name="install.source.dir" value="${source.dir}/install"/>
+  <property name="web.source.dir" value="${source.dir}/web/src"/>
+
+  <!-- test results directory -->
+  <property name="test.xml.dir" value="${build.dir}/test-results" />
+  <property name="mock.logLevel" value="WARN" />
+  <property name="mock.debug" value="false" />
+  <property name="mock.rundbtests" value="false" />
+
+  <!-- docs source directory -->
+  <property name="docs.source.dir" value="${basedir}/docs"/>
+
+  <!-- castor specific -->
+  <property name="castor.xsd.dir" value="${basedir}/schema/xsd"/>
+  <property name="castor.config.dir"
+	    value="${services.source.dir}/org/opennms/netmgt/config"/>
+  <property name="castor.typefactory" value="j2"/>
+
+  <!-- sablecc specific -->
+  <property name="sablecc.filter.dir" value="org/opennms/netmgt/filter"/>
+
+  <!-- relative directories for use in filesets and for install.dir -->
+  <property name="relative.install.dir" value="dist"/>
+
+  <!-- dist options and archive names -->
+  <property name="dist.source.archive.prefix"
+	    value="${ant.project.name}-${product.version}-src"/>
+  <property name="dist.docs.archive.prefix"
+	    value="${ant.project.name}-${product.version}-docs"/>
+  
+  <!-- install directories -->
+
+  <!-- install.dir: the top directory into which to install OpenNMS -->
+  <property name="install.dir" value="${basedir}/${relative.install.dir}"/>
+
+  <property name="install.init.dir" value="${install.dir}/bin"/>
+  <property name="install.webapps.dir" value="${install.dir}/webapps" />
+  <property name="install.servlet.dir"
+	    value="${install.webapps.dir}/opennms"/>
+  <property name="install.share.dir" value="${install.dir}/share"/>
+  <property name="install.bin.dir" value="${install.dir}/bin"/>
+  <property name="install.postgresql.dir" value="${install.dir}/lib"/>
+  <property name="install.contrib.dir" value="${install.dir}/contrib"/>
+  <property name="install.etc.dir" value="${install.dir}/etc"/>
+  <property name="install.logs.dir" value="${install.dir}/logs"/>
+  <property name="install.pid.file" value="${install.dir}/logs/opennms.pid"/>
+
+  <!-- install.prefix: a prefix used for installation in or chroot -->
+  <property name="install.prefix" value=""/>
+
+  <property name="install.postgresql.service" value="postgresql"/>
+  <property name="install.database.name" value="${database.name}"/>
+  <property name="install.database.user" value="${database.user}"/>
+  <property name="install.database.password" value="${database.password}"/>
+  <property name="install.database.driver" value="org.postgresql.Driver"/>
+  <!-- XXX why is compatible=7.1 being used?
+       It's not added here... see etc/opennms-database.xml and
+       src/web/etc/web.xml where @install.database.driver@ is used. -->
+  <property name="install.database.url"
+	    value="jdbc:postgresql://localhost:5432/"/>
+  <property name="install.database.bindir"
+	    value="/usr/bin"/>
+  <property name="install.rrdtool.bin" value="${build.rrdtool.bin}"/>
+  <property name="install.perl.bin" value="/usr/bin/perl"/>
+
+  <!-- rpm specific -->
+  <property name="rpm.install.dir" value="/opt/OpenNMS"/>
+  <property name="rpm.build.executable" value="rpmbuild"/>
+  <property name="rpm.build.docs" value="1"/>
+  <property name="rpm.sign" value="false"/>
+  <property name="rpm.buildtests" value="false"/>
+  <property name="rpm.database.name" value="opennms"/>
+  <property name="rpm.database.password" value="opennms"/>
+  <property name="rpm.database.user" value="opennms"/>
+  <property name="rpm.additional.args" value=""/>
+
+  <!-- jars that are referenced in multiple places -->
+  <property name="postgresql.jar" value="postgresql-8.1-404.jdbc3.jar" />
+
+  <!-- paths -->
+  <path id="sources.java.path">
+    <pathelement path="${build.castor.source.dir}"/>
+    <pathelement path="${build.sablecc.source.dir}"/>
+    <pathelement path="${core.source.dir}"/>
+    <pathelement path="${joesnmp.source.dir}"/>
+    <pathelement path="${services.source.dir}"/>
+    <pathelement path="${bootstrap.source.dir}"/>
+    <pathelement path="${web.source.dir}"/>
+    <pathelement path="${report.source.dir}"/>
+    <pathelement path="${install.source.dir}"/>
+  </path>
+	
+  <path id="javadoc.sources">
+    <fileset dir="${build.castor.source.dir}"/>
+    <fileset dir="${build.sablecc.source.dir}"/>
+    <fileset dir="${core.source.dir}"/>
+    <fileset dir="${joesnmp.source.dir}"/>
+    <fileset dir="${services.source.dir}">
+        <exclude name="**/*Growl*" unless="apple.apis.present"/>
+    </fileset>
+    <fileset dir="${bootstrap.source.dir}"/>
+    <fileset dir="${web.source.dir}"/>
+    <fileset dir="${report.source.dir}"/>
+    <fileset dir="${install.source.dir}"/>
+  </path>
+	
+		
+
+	
+  <!-- Classpath reference for <javac/> and <javadoc/> -->
+  <path id="libraries.java.path">
+    <pathelement path="${packaged.lib.dir}/log4j.jar"/> 
+    <pathelement path="${packaged.lib.dir}/commons-logging.jar"/>
+    <pathelement path="${packaged.lib.dir}/oro204.jar"/>
+    <pathelement path="${packaged.lib.dir}/regexp120.jar"/>
+    <pathelement path="${dev.lib.dir}/servlet.jar"/>
+    <pathelement path="${packaged.lib.dir}/openldap-jldap-2005.10.03.jar"/>
+    <pathelement path="${packaged.lib.dir}/catalina.jar"/>
+    <pathelement path="${packaged.lib.dir}/castor-0.9.6.jar"/>
+    <pathelement path="${packaged.lib.dir}/fop0205.jar"/>
+    <pathelement path="${packaged.lib.dir}/avalon-framework-cvs-20020806.jar"/>
+    <pathelement path="${packaged.lib.dir}/batik.jar"/>
+    <pathelement path="${packaged.lib.dir}/mx4j-3.0.1.jar"/>
+    <pathelement path="${packaged.lib.dir}/mx4j-tools-3.0.1.jar"/>
+    <pathelement path="${packaged.lib.dir}/mx4j-remote-3.0.1.jar"/>
+    <pathelement path="${packaged.lib.dir}/jdhcp.jar"/>
+    <pathelement path="${packaged.lib.dir}/jcifs-1.2.6.jar"/>
+    <pathelement path="${packaged.lib.dir}/bsf220.jar"/>
+    <pathelement path="${packaged.lib.dir}/xercesImpl-2.6.2.jar"/>
+    <pathelement path="${packaged.lib.dir}/xml-apis-2.6.2.jar"/>
+    <pathelement path="${packaged.lib.dir}/xmlrpc-1.2-b1.jar"/>
+    <pathelement path="${packaged.lib.dir}/jrobin-1.4.0.jar"/>
+    <pathelement path="${packaged.lib.dir}/mailapi.jar"/>
+    <pathelement path="${packaged.lib.dir}/smtp.jar"/>
+    <pathelement path="${packaged.lib.dir}/jradius-client.jar"/>
+    <pathelement path="${packaged.lib.dir}/smack.jar"/>
+    <pathelement path="${packaged.lib.dir}/smackx.jar"/>
+<!--  	<pathelement path="${packaged.lib.dir}/imap.jar"/> -->
+<!--  	<pathelement path="${packaged.lib.dir}/pop3.jar"/> -->
+    <pathelement path="${packaged.lib.dir}/activation.jar"/>
+    <pathelement path="${packaged.lib.dir}/jmta.jar"/>
+    <pathelement path="${packaged.lib.dir}/SNMP4J-1.5.jar"/>
+    <pathelement path="${packaged.lib.dir}/cglib-nodep-2.1.jar"/> 
+    <pathelement path="${packaged.lib.dir}/spring-1.2.6.jar"/>
+    <pathelement path="${packaged.lib.dir}/c3p0-0.9.1-pre5a.jar"/>
+    <pathelement path="${packaged.lib.dir}/jfreechart-1.0.0-rc1.jar" />
+    <pathelement path="${packaged.lib.dir}/jcommon-1.0.0-rc1.jar" />
+    <pathelement path="/System/Library/Java"/>
+    <pathelement path="${packaged.lib.dir}/jboss/jbossall-client.jar"/>
+  </path>
+
+  <!-- The jars listed for Class-Path in the MANIFEST.MF for the installer's
+       JAR file -->
+  <path id="install.manifest.jars">
+    <pathelement path="${packaged.lib.dir}/${postgresql.jar}"/>
+  </path>
+
+  <pathconvert refid="install.manifest.jars" pathsep=" "
+	       property="install.manifest.classes">
+    <map from="${packaged.lib.dir}/" to=""/>
+  </pathconvert>
+
+  <!-- Libraries that are linked into Tomcat's server/lib directory from
+       WEB-INF/lib by the installer or by the RPM.  These also need to be
+       in web.jars or one of the opennms_*.jar files so that the libraries
+       make it into WEB-INF/lib.  See the "install.servlet" target to see
+       how things are copied into WEB-INF/lib. -->
+  <path id="tomcatlib.jars.path">
+    <pathelement path="${packaged.lib.dir}/log4j.jar"/>
+    <pathelement path="${packaged.lib.dir}/castor-0.9.6.jar"/>
+  	<pathelement path="${packaged.lib.dir}/oro204.jar"/>
+    <pathelement path="${build.jar.dir}/opennms_core.jar"/>
+    <pathelement path="${build.jar.dir}/opennms_services.jar"/>
+    <pathelement path="${build.jar.dir}/opennms_web.jar"/>
+    <!-- These are the libraries that were in opennms.spec.in:
+	castor-0.9.3.9.jar \
+	log4j.jar \
+	opennms_common.jar \
+	opennms_core.jar \
+	opennms_services.jar \
+	opennms_web.jar \
+	-->
+  </path>
+
+  <pathconvert targetos="unix" refid="tomcatlib.jars.path"
+	       property="install.tomcat.serverlibs">
+    <map from="${packaged.lib.dir}/" to=""/>
+    <map from="${build.jar.dir}/" to=""/>
+  </pathconvert>
+
+  <!-- patterns and sets -->
+  <!-- XXX not used -->
+  <!--
+  <patternset id="not.run">
+    <exclude name="nightly-build.pl"/>
+    <exclude name="*.bat"/>
+  </patternset>
+  -->
+
+  <path id="jsp.compile.path">
+    <path refid="libraries.java.path" />
+    <path refid="tomcatlib.jars.path" />
+    <pathelement location="${install.servlet.dir}/WEB-INF/lib/opennms_common.jar"/>
+    <pathelement location="${install.servlet.dir}/WEB-INF/lib/opennms_core.jar"/>
+    <pathelement location="${install.servlet.dir}/WEB-INF/lib/opennms_install.jar"/>
+    <pathelement location="${install.servlet.dir}/WEB-INF/lib/opennms_joesnmp.jar"/>
+    <pathelement location="${install.servlet.dir}/WEB-INF/lib/opennms_services.jar"/>
+    <pathelement location="${install.servlet.dir}/WEB-INF/lib/opennms_web.jar"/>
+    <pathelement location="${install.servlet.dir}/WEB-INF/lib/jstl.jar"/>
+    <pathelement location="${install.servlet.dir}/WEB-INF/lib/standard.jar"/>
+    <pathelement location="${dev.lib.dir}/jasper/jasper-compiler.jar"/>
+    <pathelement location="${dev.lib.dir}/jasper/jasper-runtime.jar"/>
+  </path>  
+  
+  <path id="mock.path">
+    <pathelement location="${packaged.lib.dir}/hsqldb.jar"/>
+    <pathelement location="${packaged.lib.dir}/SNMP4J-1.5.jar"/>
+    <pathelement location="${packaged.lib.dir}/${postgresql.jar}"/>
+    <pathelement location="${dev.lib.dir}/jmock-1.0.1.jar"/>
+    <pathelement location="${dev.lib.dir}/jmock-cglib-1.0.1.jar"/>
+  </path>
+
+  <path id="test.path">
+    <pathelement location="${dev.lib.dir}/junit.jar"/>
+    <pathelement location="${build.classes.dir}" />
+    <pathelement location="${build.tests.dir}" />
+    <path refid="libraries.java.path"/>
+    <path refid="mock.path"/>
+  </path>
+	
+  <path id="jwebunit.jars">
+    <pathelement location="${dev.lib.dir}/junit.jar"/>
+    <pathelement location="${dev.lib.dir}/httpunit-1.6.1.jar"/>
+    <pathelement location="${dev.lib.dir}/nekohtml.jar"/>
+    <pathelement location="${dev.lib.dir}/js.jar"/>
+    <pathelement location="${dev.lib.dir}/jasper/jasper-compiler.jar"/>
+    <pathelement location="${dev.lib.dir}/jasper/jasper-runtime.jar"/>
+    <pathelement location="${packaged.lib.dir}/xercesImpl-2.6.2.jar"/>
+    <pathelement location="${packaged.lib.dir}/xml-apis-2.6.2.jar"/>
+    <pathelement location="${dev.lib.dir}/servlet.jar"/>
+    <pathelement location="${dev.lib.dir}/jwebunit-1.2.jar"/>
+  </path>
+	
+  <path id="webtest.path">
+    <path refid="jwebunit.jars"/>
+    <pathelement location="${build.tests.dir}" />
+    <path refid="tomcatlib.jars.path"/>
+    <path refid="mock.path"/>
+    <pathelement path="${packaged.lib.dir}/commons-logging.jar"/>
+  	<pathelement path="${dev.lib.dir}/ant/lib/ant.jar"/>
+  	<pathelement path="${dev.lib.dir}/ant/lib/ant-launcher.jar"/>
+  </path>
+
+  <!-- Files in ${packaged.lib.dir} that are copied into ${install.dir}/lib.
+       Note: everything in ${build.jar.dir} is also copied.  -->
+  <patternset id="lib.jars">
+    <include name="*.jar" />
+    <exclude name="ant*.jar" />
+    <exclude name="fop0170.jar" />
+    <exclude name="fop0203.jar" />
+    <exclude name="avalon-framework-4.0.jar" />
+    <exclude name="jakarta-regexp*.jar" />
+    <exclude name="pylib*.jar" />
+    <exclude name="sablecc*.jar" />
+  </patternset>
+
+  <!-- Files in ${packaged.lib.dir} that are copied into
+       ${install.servlet.dir}/WEB-INF/lib.
+       Note: opennms_*.jar from ${build.jar.dir} is also copied.  -->
+  <patternset id="web.packaged.jars">
+    <include name="castor*.jar" />
+    <include name="fop0205.jar" />
+    <include name="jms*.jar" />
+    <include name="log4j*.jar" />
+    <include name="${postgresql.jar}" />
+    <include name="regexp*.jar" />
+    <include name="w3c*.jar" />
+    <include name="avalon-framework-cvs-20020806.jar" />
+    <include name="logkit-1.0.jar" />
+    <include name="batik.jar" />
+    <include name="jcifs.jar-1.2.6" />
+    <include name="ldap.jar" />
+    <include name="jrobin*.jar" />
+    <include name="activation.jar" />
+    <include name="imap.jar" />
+    <include name="jmta.jar" />
+    <include name="mailapi.jar" />
+    <include name="pop3.jar" />
+    <include name="smtp.jar" />
+    <include name="oro*.jar" />
+    <include name="jstl.jar" />
+    <include name="standard.jar" />
+    <include name="jfree*.jar" />
+    <include name="jcommon*.jar" />
+    <include name="spring-1.2.6.jar" />
+    <include name="c3p0-0.9.1-pre5a.jar" />
+  </patternset>
+
+  <patternset id="web.opennms.jars">
+    <include name="opennms_common.jar"/>
+    <include name="opennms_core.jar"/>
+    <include name="opennms_joesnmp.jar"/>
+    <include name="opennms_services.jar"/>
+    <include name="opennms_web.jar"/>
+  </patternset>
+
+
+  <!-- The includes in this patternset need to match the directories in
+       the <fop> tasks for the pdf.docs target, along with the common
+       directory. -->
+  <patternset id="doc.dirs">
+    <include name="common/**"/>
+    <include name="install/**"/>
+    <include name="releasenotes/**"/>
+  </patternset>
+
+  <patternset id="source.dirs">
+    <include name="**/*"/>
+    <include name="**/CVS/**"/>
+    <include name="${relative.build.dir}/**"/>
+    <exclude name="${relative.install.dir}/**"/>
+  </patternset>
+
+  <!-- ant tasks -->
+  <taskdef name="sablecc" classname="org.sablecc.ant.taskdef.Sablecc">
+    <classpath>
+      <pathelement location="${dev.lib.dir}/sablecc-anttask-1.1.0.jar" />
+      <pathelement location="${dev.lib.dir}/sablecc-2.17.2.jar" />
+    </classpath>
+  </taskdef>
+
+  <taskdef name="fop" classname="org.apache.fop.tools.anttasks.Fop">
+    <classpath>
+      <pathelement location="${packaged.lib.dir}/fop0205.jar"/>
+      <pathelement location="${packaged.lib.dir}/logkit-1.0.jar"/>
+      <pathelement location="${packaged.lib.dir}/avalon-framework-cvs-20020806.jar"/>
+      <pathelement location="${packaged.lib.dir}/batik.jar"/>
+      <pathelement location="${packaged.lib.dir}/xercesImpl-2.6.2.jar"/>
+    </classpath>
+  </taskdef>
+
+  <taskdef resource="cpptasks.tasks">
+    <classpath>
+      <pathelement location="${dev.lib.dir}/cpptasks.jar"/>
+    </classpath>
+  </taskdef>
+
+  <taskdef resource="cpptasks.types">
+    <classpath>
+      <pathelement location="${dev.lib.dir}/cpptasks.jar"/>
+    </classpath>
+  </taskdef>
+
+  <taskdef classname="org.apache.jasper.JspC" name="jasper2" > 
+    <classpath>
+      <pathelement location="${dev.lib.dir}/jasper/jasper-compiler.jar"/>
+      <pathelement location="${dev.lib.dir}/jasper/jasper-runtime.jar"/>
+      <pathelement location="${dev.lib.dir}/servlet.jar"/>
+    </classpath> 
+  </taskdef> 
+	
+  <taskdef resource="net/sf/antcontrib/antlib.xml">
+    <classpath>
+      <pathelement location="${dev.lib.dir}/ant-contrib.jar"/>
+    </classpath>
+  </taskdef>
+
+  <taskdef classname="net.sf.xframe.xsddoc.Task" name="xsddoc">
+    <classpath>
+      <pathelement location="${dev.lib.dir}/xsddoc.jar"/>
+      <pathelement location="${dev.lib.dir}/xalan.jar"/>
+      <pathelement location="${dev.lib.dir}/serializer.jar"/>
+    </classpath>
+  </taskdef>
+
+  <!-- PREP target -->
+  <target name="prep" depends="platform.check, java.check" unless="prep.done">
+    <tstamp/>
+
+    <!-- set conditional properties -->
+    <condition property="product.release.stamp"
+	       value="0.${DSTAMP}.${product.release}">
+      <istrue value="${product.snapshot}"/>
+    </condition>
+    <condition property="product.release.stamp" value="${product.release}">
+      <isfalse value="${product.snapshot}"/>
+    </condition>
+
+    <condition property="rpm.sign.arg" value="--sign">
+      <istrue value="${product.snapshot}"/>
+    </condition>
+    <condition property="rpm.sign.arg" value="">
+      <isfalse value="${product.snapshot}"/>
+    </condition>
+
+    <condition property="wasrpm" value="true">
+      <available file="${build.rpm.dir}" type="dir"/>
+    </condition>
+
+    <condition property="rpm.tainted" value="true">
+      <or>
+	<istrue value="${wasrpm}"/>
+	<istrue value="${isrpm}"/>
+      </or>
+    </condition>
+
+    <condition property="filter.overwrite" value="true">
+      <istrue value="${rpm.tainted}"/>
+    </condition>
+
+    <condition property="filter.overwrite" value="false">
+      <isfalse value="${rpm.tainted}"/>
+    </condition>
+
+    <condition property="clean.dist.done" value="true">
+      <isset property="skip.dist"/>
+    </condition>
+
+    <!-- set properties which are dependent on conditional properties above -->
+    <property name="product.fullversion.stamp"
+	      value="${product.version}-${product.release.stamp}"/>
+
+    <!-- release directories -->
+    <property name="release.install.dir" value="/opt/OpenNMS"/>
+    <property name="release.docs.dir"
+	      value="${ant.project.name}-${product.fullversion}/docs"/>
+    <property name="release.docs.archive.prefix"
+	      value="${ant.project.name}-docs-${product.fullversion.stamp}"/>
+    <property name="release.source.dir"
+	      value="${ant.project.name}-${product.fullversion}/source"/>
+    <property name="release.source.archive.prefix"
+	      value="${ant.project.name}-source-${product.fullversion.stamp}"/>
+    <property name="release.binary.dir"
+	      value="${ant.project.name}-${product.fullversion}/binary"/>
+    <property name="release.binary.archive.prefix"
+	      value="${ant.project.name}-binary-${product.fullversion.stamp}"/>
+
+
+    <!-- set filters -->
+    <!-- This little Bourne shell script will spit out <filter token="..."/>
+	 tags for all of the filters found in the OpenNMS files as long as
+	 they contain an embedded period:
+
+	 find . -type f  -print | \
+	 xargs perl -ne '
+	 while (s/(@[a-z.]+\.[a-z.]+@)//) {
+	 print "$ARGV $1\n";
+	 }' | \
+	 awk '{ print $2 }' | \
+	 sort -u | \
+	 sed 's/^@//;s/@$//;s/\(.*\)/<filter token="\1" value="${\1}"\/>/'
+
+	 Get rid of everything after "awk" to get a list of which files have
+	 which filtering tokens.
+      -->
+    <filter token="ant.project.name" value="${ant.project.name}"/>
+    <filter token="build.soext" value="${build.soext}"/>
+    <filter token="root.source" value="${basedir}"/>
+    <filter token="install.database.bindir"
+	    value="${install.database.bindir}"/>
+    <filter token="install.database.driver"
+	    value="${install.database.driver}"/>
+    <filter token="install.database.name" value="${install.database.name}"/>
+    <filter token="install.database.password"
+	    value="${install.database.password}"/>
+    <filter token="install.database.url" value="${install.database.url}"/>
+    <filter token="install.database.user" value="${install.database.user}"/>
+    <filter token="install.perl.bin" value="${install.perl.bin}"/>
+    <filter token="install.postgresql.service"
+	    value="${install.postgresql.service}"/>
+    <filter token="install.rrdtool.bin" value="${install.rrdtool.bin}"/>
+    <filter token="install.tomcat.serverlibs"
+	    value="${install.tomcat.serverlibs}"/>
+    <filter token="product.fullversion.stamp"
+	    value="${product.fullversion.stamp}"/>
+    <filter token="product.release" value="${product.release}"/>
+    <filter token="product.release.stamp" value="${product.release.stamp}"/>
+    <filter token="product.version" value="${product.version}"/>
+    <filter token="install.etc.dir" value="${install.etc.dir}"/>
+    <filter token="install.bin.dir" value="${install.bin.dir}"/>
+    <filter token="install.init.dir" value="${install.init.dir}"/>
+    <filter token="install.logs.dir" value="${install.logs.dir}"/>
+    <filter token="install.manifest.classes"
+	    value="${install.manifest.classes}"/>
+    <filter token="install.pid.file" value="${install.pid.file}"/>
+    <filter token="install.postgresql.dir" value="${install.postgresql.dir}"/>
+    <filter token="install.webapps.dir" value="${install.webapps.dir}"/>
+    <filter token="install.servlet.dir" value="${install.servlet.dir}"/>
+    <filter token="install.share.dir" value="${install.share.dir}"/>
+    <filter token="install.dir" value="${install.dir}"/>
+    <filter token="rpm.buildtests" value="${rpm.buildtests}"/>
+    <filter token="rpm.database.name" value="${rpm.database.name}"/>
+    <filter token="rpm.database.password" value="${rpm.database.password}"/>
+    <filter token="rpm.database.user" value="${rpm.database.user}"/>
+    <filter token="rpm.install.dir" value="${rpm.install.dir}"/>
+    <filter token="rpm.platform" value="${rpm.platform}"/>
+  	
+    <!-- prep wrapup -->
+    <property name="prep.done" value="true"/>
+  </target>
+	
+  <target name="test.prep" depends="prep">
+    <delete dir="${test.xml.dir}"/>
+    <mkdir dir="${test.xml.dir}"/>
+  </target>
+
+  <target name="platform.check" depends="platform.init, platform.darwin,
+					 platform.freebsd, platform.linux,
+					 platform.sun, platform.default"/>
+
+  <target name="platform.init">
+    <condition property="platform.darwin">
+      <os name="Mac OS X"/>
+    </condition>
+    <condition property="platform.freebsd">
+      <os name="FreeBSD"/>
+    </condition>
+    <condition property="platform.linux">
+      <os name="Linux"/>
+    </condition>
+    <condition property="platform.sun">
+      <os name="SunOS"/>
+    </condition>
+  </target>
+
+  <target name="platform.darwin" if="platform.darwin">
+    <property name="build.platform.define" value="__DARWIN__"/>
+    <property name="build.soext" value="dylib"/>
+    <property name="build.jniext" value="jnilib"/>
+    <property name="build.java.jnimd.dir" value=""/>
+  </target>
+
+  <target name="platform.freebsd" if="platform.freebsd">
+    <property name="build.platform.define" value="__FreeBSD__"/>
+    <property name="build.soext" value="so"/>
+    <property name="build.jniext" value="so"/>
+    <property name="build.java.jnimd.dir" value="/freebsd"/>
+  </target>
+
+  <target name="platform.linux" if="platform.linux">
+    <property name="build.platform.define" value="__LINUX__"/>
+    <property name="build.soext" value="so"/>
+    <property name="build.jniext" value="so"/>
+    <property name="build.java.jnimd.dir" value="/linux"/>
+  </target>
+
+  <target name="platform.sun" if="platform.sun">
+    <property name="build.platform.define" value="__SOLARIS__"/>
+    <property name="build.soext" value="so"/>
+    <property name="build.jniext" value="so"/>
+    <property name="build.java.jnimd.dir" value="/solaris"/>
+    <property name="build.jrrd.linker.arg" value="-R${build.rrdtool.lib.dir}"/>
+  </target>
+
+  <target name="platform.default" unless="build.platform.define">
+    <fail>
+      Your operating system is not supported by the build system.  See the
+      platform.* targets in the build.xml file for details on supported
+      platforms.  You can try to work around this error by modifying an
+      existing platform or creating your own (and don't forget to add it
+      to the depends list in the platform.check target).
+    </fail>
+  </target>
+
+  <target name="java.check">
+    <condition property="java.versionokay">
+    	  <or>
+      <contains string="${java.vm.version}" substring="1.4."/>
+    	  <contains string="${java.vm.version}" substring="1.5."/>
+    	  </or>
+    </condition>
+
+    <fail unless="java.versionokay">
+      Your Java version (${java.vm.version}) is not supported.  The
+      build system is currently designed and tested to work with Java
+      versions 1.4 and 1.5.  You can try to work around this error by
+      modifying the java.check target in the build.xml file.
+    </fail>
+  </target>
+
+  <target name="compile.check" depends="prep">
+    <condition property="compile.check.postgresql.include">
+      <available file="${build.postgresql.include.dir}/postgres.h"/>
+    </condition>
+   
+    <fail unless="compile.check.postgresql.include">
+      Could not find postgres.h include file in ${build.postgresql.include.dir}.
+      Please make sure that you have the PostgreSQL development files installed
+      or, if they are installed in a non-standard location, you may need to
+      set the build.postgresql.include.dir property to the directory that
+      contains postgres.h.  See README.build for details on setting properties.
+    </fail>
+
+    <condition property="compile.check.rrdtool.include">
+      <available file="${build.rrdtool.include.dir}/rrd.h"/>
+    </condition>
+   
+    <fail unless="compile.check.rrdtool.include">
+      Could not find rrd.h include file in ${build.rrdtool.include.dir}.
+      Please make sure that you have the rrdtool development files installed
+      or, if they are installed in a non-standard location, you may need
+      to set the build.rrdtool.include.dir property to the directory that
+      contains rrd.h.  See README.build for details on setting properties.
+    </fail>
+
+    <condition property="compile.check.rrdtool.lib">
+      <or>
+	<available file="${build.rrdtool.lib.dir}/librrd.a"/>
+	<available file="${build.rrdtool.lib.dir}/librrd.so"/>
+      </or>
+    </condition>
+   
+    <fail unless="compile.check.rrdtool.lib">
+      Could not find librrd.a or librrd.so library in ${build.rrdtool.lib.dir}.
+      Please make sure that you have the rrdtool development files installed
+      or, if they are installed in a non-standard location, you may need
+      to set the build.rrdtool.lib.dir property to the directory that
+      contains librrd.a or librrd.so.  See README.build for details on setting
+      properties.
+    </fail>
+
+    <available property="apple.apis.present" classname="com.apple.cocoa.foundation.NSArray" classpathref="libraries.java.path" />
+
+  </target>
+ 
+ <target name="info" depends="prep"
+	 description="Show information about this build instance">
+  <echo>
+  === Java ===
+  JVM Version                  = ${java.vm.vendor} ${java.vm.name} ${java.vm.version}
+  Java Home                    = ${java.home}
+  CLASSPATH                    = ${java.class.path}
+  Ant Version                  = ${ant.version}
+  Ant project name             = ${ant.project.name}
+  Ant project base directory   = ${basedir}
+
+  === System ===
+  OS Name                      = ${os.name}
+  OS Version                   = ${os.version}
+  User                         = ${user.name}
+  Home Directory               = ${user.home}
+  OpenNMS Version              = ${product.fullversion.stamp}
+  Compilation Defines          = ${build.platform.define}
+
+  === Build/Install Tools ===
+  PostgreSQL Include Arguments = ${build.postgresql.include.dir}
+  RRDTool Include Arguments    = ${build.rrdtool.include.dir}
+  RRDTool Library Arguments    = ${build.rrdtool.lib.dir}
+
+  === Build Directories ===
+  Build Working Directory      = ${build.dir}
+  Class Working Directory      = ${build.classes.dir}
+  Release Tarball Directory    = ${build.release.dir}
+
+  === Install Directories ===
+  Installation Prefix          = ${install.prefix}
+  Installation Directory       = ${install.dir}
+  init.d Directory             = ${install.init.dir}
+  PostgreSQL Library Directory = ${install.postgresql.dir}
+  Shared Files Directory       = ${install.share.dir}
+  Servlet Directory            = ${install.servlet.dir}
+
+  === RPM Details ===
+  RPM Platform                 = ${rpm.platform}
+  RPM Install Directory        = ${rpm.install.dir}
+  </echo>
+ </target>
+ 
+ <!-- USAGE targets -->
+ <target name="usage" description="How to use this build file">
+  <java fork="true" dir="${basedir}" jar="${ant.library.dir}/ant-launcher.jar">
+    <arg value="-projecthelp"/>
+  </java>
+ </target>
+
+ <!-- "meta" targets -->
+ <target name="check" depends="java.check, platform.check, compile.check"
+	  description="check prerequisites for build"/>
+
+ <target name="install"
+	depends="install.lib, install.servlet, install.init, install.etc,
+		 install.bin, install.logs, install.share, install.contrib"
+	description="build &quot;all&quot;, and install"/>
+
+ <target name="all" depends="compile, jar"
+	 description="build everything (except documentation)"/>
+ 
+ <!-- CLEAN targets -->
+ <target name="clean" depends="prep, clean.dist">
+   <delete dir="${build.dir}"/>
+ </target>
+
+ <target name="veryclean" depends="clean">
+   <!-- Don't delete ${install.dir} here, which might be /opt/OpenNMS -->
+   <delete dir="${basedir}/${relative.install.dir}"/>
+ </target>
+ 
+ <!-- archive/package targets -->
+ <target name="rpm" depends="prep, rpm.check, all, test, rpm.prepare"
+	 description="Build an RPM package">
+  <exec dir="${build.rpm.dir}" executable="${rpm.build.executable}"
+	failonerror="true">
+   <arg value="-bb"/>
+   <arg value="SPECS/opennms.spec"/>
+   <arg value="--define"/>
+   <arg value="platform ${rpm.platform}"/>
+   <arg value="--define"/>
+   <arg value="_topdir ${build.rpm.dir}"/>
+   <arg value="--define"/>
+   <arg value="_tmppath ${build.rpm.dir}/tmp"/>
+   <arg value="--define"/>
+   <arg value="snapshot ${product.snapshot}"/>
+   <arg value="--define"/>
+   <arg value="date ${DSTAMP}"/>
+   <arg value="--define"/>
+   <arg value="standalone 0"/>
+   <arg value="--define"/>
+   <arg value="builddocs ${rpm.build.docs}"/>
+   <arg line="${rpm.sign.arg}"/>
+   <arg line="${rpm.additional.args}"/>
+  </exec>
+ </target>
+ 
+ <target name="srpm" depends="prep, rpm.check, release.source.tar, rpm.prepare"
+	 description="Build an RPM and a source RPM package">
+  <copy todir="${build.rpm.dir}/SOURCES"
+	file="${build.release.dir}/${release.source.archive.prefix}.tar.gz"/>
+  <echo message="building RPM for OpenNMS version ${product.fullversion.stamp}..."/>
+  <exec dir="${build.rpm.dir}" executable="${rpm.build.executable}"
+	failonerror="true">
+   <arg value="-ba"/>
+   <arg value="SPECS/opennms.spec"/>
+   <arg value="--define"/>
+   <arg value="platform ${rpm.platform}"/>
+   <arg value="--define"/>
+   <arg value="_topdir ${build.rpm.dir}"/>
+   <arg value="--define"/>
+   <arg value="_tmppath ${build.rpm.dir}/tmp"/>
+   <arg value="--define"/>
+   <arg value="standalone 1"/>
+   <arg value="--define"/>
+   <arg value="builddocs ${rpm.build.docs}"/>
+   <arg line="${rpm.sign.arg}"/>
+   <arg line="${rpm.additional.args}"/>
+  </exec>
+ </target>
+
+ <target name="rpm.prepare" depends="prep">
+  <mkdir dir="${build.rpm.dir}/BUILD"/>
+  <mkdir dir="${build.rpm.dir}/RPMS/i386"/>
+  <mkdir dir="${build.rpm.dir}/RPMS/i486"/>
+  <mkdir dir="${build.rpm.dir}/RPMS/i586"/>
+  <mkdir dir="${build.rpm.dir}/RPMS/i686"/>
+  <mkdir dir="${build.rpm.dir}/RPMS/athlon"/>
+  <mkdir dir="${build.rpm.dir}/RPMS/k6"/>
+  <mkdir dir="${build.rpm.dir}/RPMS/noarch"/>
+  <mkdir dir="${build.rpm.dir}/SOURCES"/>
+  <mkdir dir="${build.rpm.dir}/SPECS"/>
+  <mkdir dir="${build.rpm.dir}/SRPMS"/>
+  <mkdir dir="${build.rpm.dir}/tmp"/>
+  <copy filtering="yes"
+	file="tools/packages/opennms/opennms.spec.in"
+        tofile="${build.rpm.dir}/SPECS/opennms.spec"
+	overwrite="${filter.overwrite}" />
+  <copy todir="${build.rpm.dir}/SOURCES">
+   <fileset dir="tools/packages/opennms">
+    <include name="**/*.patch"/>
+    <include name="**/*.patch.gz"/>
+    <include name="**/*.patch.bz2"/>
+   </fileset>
+   <mapper type="flatten"/>
+  </copy>
+ </target>
+
+ <target name="rpm.check">
+   <fail unless="rpm.platform">
+     You must set the rpm.platform property to one of the platforms listed in
+     tools/packages/opennms/opennms.spec.in.  See README.build for details on
+     setting properties.
+   </fail>
+ </target>
+
+ <!-- DIST targets -->
+ <target name="dist" depends="clean.dist, source.dist, binary.dist, docs.dist"
+	 description="Generate a distribution"/>
+ 
+ <target name="clean.dist" depends="prep" unless="clean.dist.done">
+  <delete dir="${build.release.dir}"/>
+  <property name="clean.dist.done" value="true"/>
+ </target>
+
+ <target name="prepare.dist" depends="prep">
+   <mkdir dir="${build.release.dir}"/>
+ </target>
+
+ <target name="source.dist" depends="zip.source.dist, tgz.source.dist,
+				     tbz2.source.dist"/>
+
+ <target name="zip.source.dist" depends="prepare.dist" unless="skip.dist">
+   <zip destfile="${build.release.dir}/${dist.source.archive.prefix}.zip">
+     <fileset dir="${basedir}">
+       <patternset refid="source.dirs" />
+     </fileset>
+   </zip>
+ </target>
+
+ <target name="tar.source.dist" depends="prepare.dist" unless="skip.dist">
+   <tar destfile="${build.release.dir}/${dist.source.archive.prefix}.tar">
+     <tarfileset dir="${basedir}">
+       <patternset refid="source.dirs" />
+     </tarfileset>
+   </tar>
+ </target>
+
+ <target name="tgz.source.dist" depends="tar.source.dist" unless="skip.dist">
+  <gzip destfile="${build.release.dir}/${dist.source.archive.prefix}.tgz"
+	src="${build.release.dir}/${dist.source.archive.prefix}.tar"/>
+ </target>
+
+ <target name="tbz2.source.dist" depends="tar.source.dist" unless="skip.dist">
+  <bzip2 destfile="${build.release.dir}/${dist.source.archive.prefix}.tbz2"
+	 src="${build.release.dir}/${dist.source.archive.prefix}.tar"/>
+ </target>
+
+ <target name="binary.dist" depends="zip.binary.dist, tgz.binary.dist,
+				     tbz2.binary.dist" unless="skip.dist"/>
+
+ <target name="zip.binary.dist" depends="prepare.dist">
+ </target>
+
+ <target name="tgz.binary.dist" depends="prepare.dist">
+ </target>
+
+ <target name="tbz2.binary.dist" depends="prepare.dist">
+ </target>
+
+ <target name="docs.dist" depends="zip.docs.dist, tgz.docs.dist,
+				   tbz2.docs.dist" unless="skip.dist"/>
+
+ <target name="zip.docs.dist" depends="prepare.dist, docs">
+   <zip destfile="${build.release.dir}/${dist.docs.archive.prefix}.zip">
+     <fileset dir="${build.docs.dir}">
+       <patternset refid="source.dirs" />
+     </fileset>
+   </zip>
+ </target>
+
+ <target name="tgz.docs.dist" depends="prepare.dist, docs">
+ </target>
+
+ <target name="tbz2.docs.dist" depends="prepare.dist, docs">
+ </target>
+
+
+ <!-- RELEASE targets -->
+ <target name="release" depends="prep,release.source, release.binary, 
+				 release.docs"
+	 description="Build a release (source and binary)"/>
+
+ <target name="release.prepare.docs" depends="prep, docs">
+  <mkdir dir="${build.dir}/${release.docs.dir}"/>
+  <copy todir="${build.dir}/${release.docs.dir}">
+    <fileset dir="${build.docs.dir}"/>
+  </copy>
+ </target>
+
+ <target name="release.docs" depends="prep, release.prepare.docs">
+  <mkdir dir="${build.release.dir}"/>
+  <tar tarfile="${build.release.dir}/${release.docs.archive.prefix}.tar.gz"
+       basedir="${build.dir}" longfile="gnu" compression="gzip"
+       includes="${release.docs.dir}/"/>
+  <zip zipfile="${build.release.dir}/${release.docs.archive.prefix}.zip"
+       basedir="${build.dir}"
+       includes="${release.docs.dir}/"/>
+ </target>
+
+ <target name="release.source" depends="release.source.tar,
+					release.source.zip"/>
+
+ <target name="release.source.copy" depends="prep">
+  <mkdir dir="${build.dir}/${release.source.dir}"/>
+  <copy todir="${build.dir}/${release.source.dir}">
+   <fileset dir="${basedir}">
+    <include name="**/*"/>
+    <exclude name="${relative.build.dir}/**"/>
+    <exclude name="${relative.install.dir}/**"/>
+    <exclude name="debian/opennms/**"/>
+    <exclude name="CVSROOT/**"/>
+    <exclude name="**/*.swp"/>
+   </fileset>
+  </copy>
+ </target>
+ 
+ <target name="release.source.prep">
+  <mkdir dir="${build.release.dir}"/>
+ </target>
+
+ <target name="release.source.tar" depends="release.source.copy,
+					    release.source.prep">
+  <tar tarfile="${build.release.dir}/${release.source.archive.prefix}.tar.gz"
+       basedir="${build.dir}" longfile="gnu" compression="gzip"
+       includes="${release.source.dir}/"/>
+ </target>
+
+ <target name="release.source.zip" depends="release.source.copy,
+					    release.source.prep">
+  <zip zipfile="${build.release.dir}/${release.source.archive.prefix}.zip"
+       basedir="${build.dir}"
+       includes="${release.source.dir}/"/>
+ </target>
+
+
+ <!-- XXX This needs to be reworked and the generated files need to be put
+      somewhere under ${build.dir} -->
+ <target name="release.prepare.binary" depends="prep">
+  <mkdir dir="${build.dir}/${release.binary.dir}"/>
+  <antcall target="install" inheritAll="false">
+   <param name="install.dir" value="${release.install.dir}"/>
+   <param name="install.prefix" value="${build.dir}"/>
+  </antcall>
+  <move todir="${build.dir}/${release.binary.dir}">
+   <fileset dir="${build.dir}${release.install.dir}" includes="**/*"/>
+  </move>
+  <delete dir="${build.dir}/opt" includeEmptyDirs="true"/>
+ </target>
+
+ <target name="release.binary" depends="release.prepare.binary">
+  <mkdir dir="${build.release.dir}"/>
+  <tar tarfile="${build.release.dir}/${release.binary.archive.prefix}.tar.gz"
+       basedir="${build.dir}" longfile="gnu" compression="gzip"
+       includes="${release.binary.dir}/" />
+  <zip zipfile="${build.release.dir}/${release.binary.archive.prefix}.zip"
+       basedir="${build.dir}"
+       includes="${release.binary.dir}/"/>
+ </target>
+
+ <!-- installation targets -->
+
+ <target name="install.bin" depends="prep, copy.bin">
+  <mkdir dir="${install.prefix}${install.bin.dir}"/>
+  <copy todir="${install.prefix}${install.bin.dir}">
+   <fileset dir="${build.dir}/bin"/>
+  </copy>
+  <chmod perm="0755" parallel="false">
+   <fileset dir="${install.prefix}${install.bin.dir}"/>
+  </chmod>
+ </target>
+
+ <target name="install.init" depends="prep, install.bin">
+   <mkdir dir="${install.prefix}${install.init.dir}"/>
+   <exec executable="ln" dir="${install.prefix}${install.init.dir}"
+	failonerror="true">
+    <arg value="-sf"/>
+    <arg value="${install.bin.dir}/opennms.sh"/>
+    <arg value="${install.prefix}${install.init.dir}/${ant.project.name}"/>
+  </exec>
+
+ </target>
+
+ <target name="install.etc" depends="prep,copy.etc">
+  <copy todir="${install.prefix}${install.dir}/etc">
+   <fileset dir="${build.dir}/etc"/>
+  </copy>
+  <mkdir dir="${install.prefix}${install.servlet.dir}/WEB-INF/classes"/>
+<!--
+  <copy todir="${install.prefix}${install.servlet.dir}/WEB-INF/classes">
+    <fileset dir="${build.dir}/etc">
+      <include name="castor.properties"/> 
+   </fileset>
+  </copy>
+-->
+ </target>
+
+ <target name="install.contrib" depends="prep,copy.contrib">
+  <copy todir="${install.prefix}${install.contrib.dir}">
+   <fileset dir="${build.dir}/contrib"/>
+  </copy>
+ </target>
+
+ <target name="install.lib" depends="prep,compile,jar">
+  <mkdir dir="${install.prefix}${install.dir}/lib"/>
+  <mkdir dir="${install.prefix}${install.dir}/lib/jboss"/>
+  <mkdir dir="${install.prefix}${install.dir}/lib/updates"/>
+  <echo file="${install.prefix}${install.dir}/lib/updates/README.updates">
+
+=========================================================
+This directory is ONLY for class file and jar updates
+between releases of OpenNMS.
+
+Do not put anything here that you may want to keep, they
+will be DELETED upon an RPM upgrade to a new version of
+OpenNMS as part of the post-install.
+=========================================================
+
+  </echo>
+
+  <copy todir="${install.prefix}${install.dir}/lib">
+   <fileset dir="${build.jar.dir}" includes="*.jar" />
+   <fileset dir="${packaged.lib.dir}">
+    <patternset refid="lib.jars" />
+   </fileset>
+  </copy>
+  <chmod perm="0664">
+   <fileset dir="${install.prefix}${install.dir}/lib">
+    <include name="*.jar"/>
+   </fileset>
+  </chmod>
+ 	
+  <copy todir="${install.prefix}${install.dir}/lib/jboss">
+    <fileset dir="${packaged.lib.dir}/jboss" includes="*.jar" />
+  </copy>
+  <chmod perm="0664">
+    <fileset dir="${install.prefix}${install.dir}/lib/jboss">
+      <include name="*.jar"/>
+    </fileset>
+   </chmod>
+
+  <copy todir="${install.prefix}${install.dir}/lib">
+   <fileset dir="${build.jicmp.dir}" includes="libjicmp.${build.jniext}"/>
+   <fileset dir="${build.jrrd.dir}" includes="libjrrd.${build.jniext}"/>
+  </copy>
+
+  <copy todir="${install.prefix}${install.postgresql.dir}">
+   <fileset dir="${build.postgresql.dir}" includes="iplike.${build.soext}"/>
+  </copy>
+
+  <!-- XXX Are these links at all useful?  Should they be removed?  Should
+       they include the version of the program or libraries we link against -->
+  <exec executable="ln" dir="${install.prefix}${install.dir}/lib"
+	failonerror="true">
+    <arg value="-sf"/>
+    <arg value="libjicmp.${build.jniext}"/>
+    <arg value="libjicmp.${build.jniext}.${product.version}"/>
+  </exec>
+  <exec executable="ln" dir="${install.prefix}${install.dir}/lib"
+	failonerror="true">
+    <arg value="-sf"/>
+    <arg value="libjrrd.${build.jniext}"/>
+    <arg value="libjrrd.${build.jniext}.${product.version}"/>
+  </exec>
+  <exec executable="ln" dir="${install.prefix}${install.postgresql.dir}"
+	failonerror="true">
+    <arg value="-sf"/>
+    <arg value="iplike.${build.soext}"/>
+    <arg value="iplike.${build.soext}.${product.version}"/>
+  </exec>
+
+  <chmod perm="0755">
+   <fileset dir="${install.prefix}${install.dir}/lib">
+     <include name="*.${build.jniext}"/>
+     <include name="*.${build.soext}"/>
+   </fileset>
+  </chmod>
+
+  <mkdir dir="${install.prefix}${install.dir}/lib/scripts"/>
+  <copy todir="${install.prefix}${install.dir}/lib/scripts" filtering="yes"
+        overwrite="${filter.overwrite}">
+   <fileset dir="tools/infrastructure">
+    <include name="**/*.sh"/>
+    <include name="**/*.pl"/>
+   </fileset>
+  </copy>
+  <chmod perm="0755">
+   <fileset dir="${install.prefix}${install.dir}/lib/scripts"/>
+  </chmod>
+ </target>
+
+ <target name="install.logs" depends="prep">
+  <mkdir dir="${install.prefix}${install.logs.dir}"/>
+ </target>
+
+ <target name="install.share" depends="prep">
+  <mkdir dir="${install.prefix}${install.share.dir}"/>
+  <mkdir dir="${install.prefix}${install.share.dir}/reports"/>
+  <mkdir dir="${install.prefix}${install.share.dir}/events"/>
+  <mkdir dir="${install.prefix}${install.share.dir}/rrd"/>
+ </target>
+
+ <!-- token translation targets -->
+
+ <target name="copy.bin" depends="prep">
+  <mkdir dir="${build.dir}/bin"/>
+  <copy todir="${build.dir}/bin" filtering="yes"
+	overwrite="${filter.overwrite}">
+   <fileset dir="tools/run"/>
+   <fileset dir="tools/contrib"/>
+  </copy>
+ </target>
+
+ <target name="copy.etc" depends="prep">
+  <mkdir dir="${build.dir}/etc"/>
+  <copy todir="${build.dir}/etc" filtering="yes"
+	overwrite="${filter.overwrite}">
+   <fileset dir="etc">
+    <include name="**/*"/>
+    <exclude name="**/*.gif"/>
+    <exclude name="**/*.jpg"/>
+    <exclude name="**/*.png"/>
+   </fileset>
+   <fileset dir="${postgresql.source.dir}" includes="*.sql"/>
+  </copy>
+  <copy todir="${build.dir}/etc">
+   <fileset dir="etc">
+    <include name="**/*.gif"/>
+    <include name="**/*.jpg"/>
+    <include name="**/*.png"/>
+   </fileset>
+  </copy>
+ </target>
+
+ <target name="copy.contrib" depends="prep">
+  <mkdir dir="${build.dir}/contrib"/>
+  <copy todir="${build.dir}/contrib">
+   <fileset dir="contrib">
+    <include name="**/*"/>
+   </fileset>
+  </copy>
+ </target>
+
+ <target name="copy.docs" depends="prep">
+  <mkdir dir="${build.filter.docs.dir}"/>
+  <copy todir="${build.filter.docs.dir}" filtering="yes"
+	overwrite="${filter.overwrite}">
+   <fileset dir="${docs.source.dir}">
+     <patternset refid="doc.dirs"/>
+   </fileset>
+  </copy>
+ </target>
+				   
+ <target name="copy.install" depends="prep">
+   <mkdir dir="${build.classes.dir}"/>
+   <copy todir="${build.classes.dir}" filtering="yes"
+         overwrite="${filter.overwrite}">
+     <fileset dir="${install.source.dir}">
+       <include name="**/installer.properties"/>
+       <include name="**/MANIFEST.MF"/>
+     </fileset>
+   </copy>
+ </target>
+
+ <!-- SOURCES targets -->
+ <!-- This target should be used to generate all source code
+      That does not already exist in CVS -->
+ <target name="sources"
+	 depends="sablecc.sources, castor.sources" 
+  description="Update Java sources generated by Castor and Sablecc"/>
+
+ <target name="sablecc.sources" depends="prep">
+   <ant antfile="build-sablecc.xml"/>
+ </target>
+
+ <target name="castor.sources" depends="prep">
+   <ant antfile="build-castor.xml" inheritRefs="true" />
+ </target>
+
+ <!-- COMPILE targets -->
+ 
+ <target name="compile" depends="compile.check, java.compile, jicmp.compile,
+				 jrrd.compile, postgresql.compile"
+	 description="compile all code"/>
+
+ <target name="java.compile" depends="prep,sources">
+  <mkdir dir="${build.classes.dir}"/>
+  <javac destdir="${build.classes.dir}"
+	 debug="${compiler.debug}"
+	 optimize="${compiler.optimize}"
+	 verbose="${compiler.verbose}"
+	 classpathref="libraries.java.path"
+	 deprecation="${compiler.deprecation}">
+   <src>
+    <path refid="sources.java.path"/>
+   </src>
+   <include name="**/*.java"/>
+   <exclude name="**/*Test.java"/>
+    <exclude name="**/*TestCase.java"/>
+    <exclude name="**/*TestSuite.java"/>
+   <exclude name="**/mock/*.java"/>
+   <exclude name="**/*tests//*.java"/>
+   <exclude name="**/*Growl*" unless="apple.apis.present"/>
+  </javac>
+  <copy todir="${build.classes.dir}">
+   <fileset dir="${build.sablecc.source.dir}">
+    <include name="**/*.dat"/>
+   </fileset>
+   <fileset dir="src/services">
+    <include name="**/*-context.xml"/>
+   </fileset> 
+  </copy>
+ </target>
+
+  <target name="jicmp.compile" depends="prep,java.compile">
+    <mkdir dir="${build.jicmp.dir}"/>
+    <javah class="org.opennms.protocols.icmp.IcmpSocket"
+	   classpath="${build.classes.dir}"
+    	destdir="${build.jicmp.dir}"/>
+    <copy todir="${build.jicmp.dir}">
+      <fileset dir="${services.source.dir}/org/opennms/protocols/icmp">
+        <include name="IcmpSocket.c"/>
+        <include name="byteswap.h"/>
+      </fileset>
+    </copy>
+    <cc debug="true" link="shared"
+        objdir="${build.jicmp.dir}"
+	outfile="${build.jicmp.dir}/jicmp-build"
+	outputfileproperty="build.jicmp.output.lib">
+      <compiler name="gcc">
+	<compilerarg value="-Wall"/>
+	<compilerarg value="-Werror"/>
+	<compilerarg value="-D${build.platform.define}"/>
+	<compilerarg value="-D${build.platform.define}"/>
+	<compilerarg value="${build.jni.compiler.arg}"
+		     if="build.jni.compiler.arg"/>
+      </compiler>
+      <linker name="gcc">
+	<linkerarg value="${build.jni.compiler.arg}"
+		   if="build.jni.compiler.arg"/>
+	<linkerarg value="${build.jni.linker.arg}"
+		   if="build.jni.linker.arg"/>
+      </linker>
+      <fileset dir="${build.jicmp.dir}" includes="IcmpSocket.c"/>
+      <includepath path="${java.home}/include"/> 
+      <includepath path="${java.home}/include${build.java.jnimd.dir}"/>
+      <!-- XXX hack -->
+      <includepath path="${java.home}/../include"/>
+      <includepath path="${java.home}/../include${build.java.jnimd.dir}"/>
+    </cc>
+    <copy file="${build.jicmp.output.lib}"
+          tofile="${build.jicmp.dir}/libjicmp.${build.jniext}"/>
+  </target>
+
+  <target name="jrrd.compile" depends="prep,java.compile">
+    <mkdir dir="${build.jrrd.dir}"/>
+    <javah class="org.opennms.netmgt.rrd.rrdtool.Interface"
+	   classpath="${build.classes.dir}"
+    	destdir="${build.jrrd.dir}"/>
+    <copy todir="${build.jrrd.dir}">
+      <fileset dir="${services.source.dir}/org/opennms/netmgt/rrd/rrdtool">
+        <include name="rrd_jinterface.c"/>
+      </fileset>
+    </copy>
+    <cc debug="true" link="shared"
+        objdir="${build.jrrd.dir}"
+	outfile="${build.jrrd.dir}/jrrd-build"
+	outputfileproperty="build.jrrd.output.lib">
+      <compiler name="gcc">
+	<compilerarg value="-Wall"/>
+	<compilerarg value="-Werror"/>
+        <compilerarg value="-D${build.platform.define}"/>
+	<compilerarg value="${build.jni.compiler.arg}"
+		     if="build.jni.compiler.arg"/>
+      </compiler>
+      <linker name="gcc">
+	<linkerarg value="${build.jni.compiler.arg}"
+		   if="build.jni.compiler.arg"/>
+	<linkerarg value="${build.jni.linker.arg}"
+		   if="build.jni.linker.arg"/>
+	<linkerarg value="${build.jrrd.linker.arg}"
+		   if="build.jrrd.linker.arg"/>
+      </linker>
+      <fileset dir="${build.jrrd.dir}" includes="rrd_jinterface.c"/>
+      <libset dir="${build.rrdtool.lib.dir}" libs="rrd"/>
+      <includepath path="${java.home}/include"/>
+      <includepath path="${java.home}/include${build.java.jnimd.dir}"/>
+      <!-- XXX hack -->
+      <includepath path="${java.home}/../include"/>
+      <includepath path="${java.home}/../include${build.java.jnimd.dir}"/>
+      <includepath path="${build.rrdtool.include.dir}"/>
+    </cc>
+    <copy file="${build.jrrd.output.lib}"
+          tofile="${build.jrrd.dir}/libjrrd.${build.jniext}"/>
+  </target>
+
+  <target name="postgresql.compile" depends="prep">
+    <mkdir dir="${build.postgresql.dir}"/>
+    <copy todir="${build.postgresql.dir}">
+      <fileset dir="${postgresql.source.dir}">
+        <include name="iplike.c"/>
+      </fileset>
+    </copy>
+    <cc debug="true" link="plugin"
+        objdir="${build.postgresql.dir}"
+	outfile="${build.postgresql.dir}/iplike-build"
+	outputfileproperty="build.postgresql.output.lib">
+      <compiler name="gcc">
+	<compilerarg value="-Wall"/>
+	<compilerarg value="-Werror"/>
+	<compilerarg value="${build.postgresql.compiler.arg}"
+		     if="build.postgresql.compiler.arg"/>
+      </compiler>
+      <fileset dir="${build.postgresql.dir}" includes="iplike.c"/>
+      <includepath path="${build.postgresql.include.dir}"/>
+      <includepath path="${build.postgresql.include2.dir}"
+                   if="build.postgresql.include2.dir"/>
+      <linker>
+	<linkerarg value="${build.postgresql.compiler.arg}"
+		   if="build.postgresql.compiler.arg"/>
+	<linkerarg value="${build.postgresql.linker.arg}"
+		   if="build.postgresql.linker.arg"/>
+      </linker>
+    </cc>
+    <copy file="${build.postgresql.output.lib}"
+          tofile="${build.postgresql.dir}/iplike.${build.soext}"/>
+  </target>
+
+ <!-- tests -->
+
+ <target name="jsp.compile" depends="jsp.compile.prep, jsp.compile.jspc,
+				     jsp.compile.javac"
+	 description="compile the JSPs"/>
+
+ <target name="jsp.compile.prep" depends="install">
+   <mkdir dir="${build.dir}/jsp-source"/>
+   <mkdir dir="${build.dir}/jsp-classes"/>
+ </target>
+
+ <target name="jsp.compile.jspc" depends="jsp.compile.prep">
+   <jasper2 validateXml="false" 
+            uriroot="${install.prefix}${install.servlet.dir}" 
+            webXmlFragment="${build.dir}/jsp-source/WEB-INF/web.xml" 
+            outputDir="${build.dir}/jsp-source" />
+ </target>
+
+ <target name="jsp.compile.javac" depends="jsp.compile.jspc">
+   <javac destdir="${build.dir}/jsp-classes"
+	  debug="${compiler.debug}"
+	  optimize="${compiler.optimize}"
+	  verbose="${compiler.verbose}"
+	  deprecation="${compiler.deprecation}">
+     <src path="${build.dir}/jsp-source"/>
+     <classpath>
+       <path refid="jsp.compile.path"/>
+     </classpath>
+   </javac>
+ </target>
+
+ <!-- jUnit build -->
+ <target name="junit.compile" depends="prep,java.compile">
+  <mkdir dir="${build.tests.dir}" />
+  <javac destdir="${build.tests.dir}"
+	 debug="${compiler.debug}"
+	 optimize="${compiler.optimize}"
+	 verbose="${compiler.verbose}"
+	 deprecation="${compiler.deprecation}">
+   <src>
+    <path refid="sources.java.path"/>
+   </src>
+    <include name="**/*Test.java"/>
+    <include name="**/*TestCase.java"/>
+    <include name="**/*TestSuite.java"/>
+    <include name="**/mock/*.java"/>
+    <include name="**/*tests/*.java"/>
+   <classpath>
+     <path refid="test.path"/>
+     <path refid="webtest.path"/>
+   </classpath>
+  </javac>
+ </target>
+	
+ <target name="test.resources" unless="skip.tests">
+ 	  <copy todir="${build.tests.dir}">
+ 	   <fileset dir="src/services">
+ 	    <include name="**/*.properties"/>
+ 	   </fileset>
+ 	  </copy>
+ </target>
+
+ <target name="test" depends="test.prep, java.compile, junit.compile,
+			      jsp.compile, test.resources"
+	 description="Run all the unit tests on the opennms service code"
+	 unless="skip.tests">
+   <junit dir="${basedir}" fork="yes" forkmode="perTest" errorProperty="test.failed" failureProperty="test.failed">
+     <classpath refid="test.path"/>
+     <formatter type="brief" usefile="false" />
+     <formatter type="xml" />
+     <batchtest todir="${test.xml.dir}">
+       <fileset dir="${source.dir}/services">
+         <include name="**/*Test.java" />
+         <exclude name="**/AllTests.java" /> 
+       </fileset>
+       <fileset dir="${source.dir}/install">
+         <include name="**/*Test.java" />
+       </fileset>
+       <fileset dir="${source.dir}/core">
+         <include name="**/*Test.java" />
+       </fileset>
+     </batchtest>
+     <sysproperty key="mock.logLevel" value="${mock.logLevel}" />
+     <sysproperty key="mock.debug" value="${mock.debug}" />
+     <sysproperty key="mock.rundbtests" value="${mock.rundbtests}" />
+   </junit>
+   <condition property="continue.build">
+     <or>
+       <isset property="ignoreFailedTests" />
+       <not> <isset property="test.failed" /></not>
+     </or>
+   </condition>
+   <fail unless="continue.build" >
+     Unit Tests Failed.
+     Check the test results in ${test.xml.dir}.
+     To ignore failed tests, set the ignoreFailedTests property to true.
+     See README.build for details on setting properties.
+   </fail>
+ </target>
+
+ <target name="runTest" depends="test.prep, java.compile, junit.compile"
+         description="Run a single unit test class">
+   <fail unless="test.class">
+     You need to define the test.class property to indicate which test
+     to run.  See README.build for details on setting properties.
+   </fail>
+   <junit showoutput="yes" fork="yes" forkmode="perTest" errorProperty="test.failed" failureProperty="test.failed">
+     <classpath refid="test.path"/>
+     <formatter type="plain" usefile="false" />
+     <test name="${test.class}"/>
+     <sysproperty key="mock.logLevel" value="${mock.logLevel}" />
+     <sysproperty key="mock.debug" value="${mock.debug}" />
+     <sysproperty key="mock.rundbtests" value="${mock.rundbtests}" />
+   </junit>
+   <condition property="continue.build">
+     <or>
+       <isset property="ignoreFailedTests" />
+       <not> <isset property="test.failed" /></not>
+     </or>
+   </condition>
+   <fail unless="continue.build" >
+     Unit Tests Failed.
+     Check the test results in ${test.xml.dir}.
+     To ignore failed tests, set the ignoreFailedTests property to true.
+     See README.build for details on setting properties.
+   </fail>
+ </target>
+
+ <target name="webtest" depends="install, test.prep, junit.compile"
+	 description="Run all the unit tests on the webapp" unless="skip.tests">
+   <junit fork="true" dir="${install.prefix}${install.servlet.dir}" forkmode="once" errorProperty="test.failed"
+	  failureProperty="test.failed">
+     <classpath refid="webtest.path"/>
+     <formatter type="brief" usefile="false" />
+     <formatter type="xml" />
+     <batchtest todir="${test.xml.dir}">
+       <fileset dir="${source.dir}/web/src">
+         <include name="**/*Test.java" />
+         <exclude name="**/AllTests.java" /> 
+       </fileset>
+     </batchtest>
+     <sysproperty key="mock.logLevel" value="${mock.logLevel}" />
+     <sysproperty key="mock.debug" value="${mock.debug}" />
+     <sysproperty key="mock.rundbtests" value="${mock.rundbtests}" />
+   </junit>
+   <condition property="continue.build">
+     <or>
+       <isset property="ignoreFailedTests" />
+       <not> <isset property="test.failed" /></not>
+     </or>
+   </condition>
+   <fail unless="continue.build" >
+     Unit Tests Failed.
+     Check the test results in ${test.xml.dir}.
+     To ignore failed tests, set the ignoreFailedTests property to true.
+     See README.build for details on setting properties.
+   </fail>
+ </target>
+	
+ <!-- JAR targets -->
+ <target name="jar" depends="opennms_core.jar, opennms_joesnmp.jar,
+			     opennms_web.jar, opennms_common.jar,
+			     opennms_services.jar, opennms_bootstrap.jar,
+			     opennms_install.jar"
+	 description="create jar files"/>
+ 
+ <target name="jar.copyxml" depends="prep">
+  <mkdir dir="${build.dir}/opennms/xmlfiles"/>
+  <copy todir="${build.dir}/opennms/xmlfiles">
+   <fileset dir="src/services">
+    <include name="**/*.xml"/>
+   </fileset>
+  </copy>
+ </target>
+
+ <target name="jar.copyconfig" depends="prep">
+  <mkdir dir="${build.dir}/opennms/configfiles"/>
+  <copy todir="${build.dir}/opennms/configfiles">
+   <fileset dir="etc"/>
+  </copy>
+ </target>
+
+ <target name="opennms_core.jar" depends="prep,java.compile">
+  <mkdir dir="${build.jar.dir}"/>
+  <jar jarfile="${build.jar.dir}/opennms_core.jar">
+   <fileset dir="${build.classes.dir}"
+	    includesfile="${core.source.dir}/classlist"/>
+  </jar>
+ </target>
+ 
+ <target name="opennms_joesnmp.jar" depends="prep,java.compile">
+  <mkdir dir="${build.jar.dir}"/>
+  <jar jarfile="${build.jar.dir}/opennms_joesnmp.jar">
+   <fileset dir="${build.classes.dir}"
+	    includesfile="${joesnmp.source.dir}/classlist"/>
+  </jar>
+ </target>
+
+ <target name="opennms_services.jar" depends="prep,java.compile">
+  <mkdir dir="${build.jar.dir}"/>
+  <jar jarfile="${build.jar.dir}/opennms_services.jar">
+   <fileset dir="${build.classes.dir}"
+	    includesfile="${services.source.dir}/classlist"/>
+  </jar>
+ </target>
+
+ <target name="opennms_bootstrap.jar" depends="prep,java.compile">
+  <mkdir dir="${build.jar.dir}"/>
+  <jar jarfile="${build.jar.dir}/opennms_bootstrap.jar"
+       manifest="${bootstrap.source.dir}/org/opennms/bootstrap/MANIFEST.MF">
+   <fileset dir="${build.classes.dir}"
+	    includesfile="${bootstrap.source.dir}/classlist"/>
+  </jar>
+ </target>
+
+ <target name="opennms_web.jar" depends="prep,java.compile">
+  <mkdir dir="${build.jar.dir}"/>
+  <jar jarfile="${build.jar.dir}/opennms_web.jar">
+   <fileset dir="${build.classes.dir}"
+	    includesfile="${web.source.dir}/classlist"/>
+  </jar>
+ </target>
+
+ <target name="opennms_install.jar"
+	 depends="prep, java.compile, copy.install">
+  <mkdir dir="${build.jar.dir}"/>
+  <jar jarfile="${build.jar.dir}/opennms_install.jar"
+       manifest="${build.classes.dir}/org/opennms/install/MANIFEST.MF">
+    <fileset dir="${build.classes.dir}"
+	     includesfile="${install.source.dir}/classlist"/>
+  </jar>
+ </target>
+
+ <!-- XXX Ugly hack, jar files should be restructured to not depend on
+      classlist files -->
+ <target name="opennms_common.jar" depends="prep,java.compile">
+  <mkdir dir="${build.jar.dir}"/>
+  <jar jarfile="${build.jar.dir}/opennms_common.jar"> 
+   <fileset dir="${build.classes.dir}">
+    <patternset>
+     <excludesfile name="${core.source.dir}/classlist"/>
+     <excludesfile name="${joesnmp.source.dir}/classlist"/>
+     <excludesfile name="${services.source.dir}/classlist"/>
+     <excludesfile name="${bootstrap.source.dir}/classlist"/>
+     <excludesfile name="${web.source.dir}/classlist"/>
+     <excludesfile name="${install.source.dir}/classlist"/>
+     <exclude name="**/MANIFEST.MF"/>
+    </patternset>
+   </fileset>
+  </jar>
+ </target>
+
+ <!-- DOCS targets -->
+ <target name="docs" depends="javadoc.docs, xsddoc.docs, html.docs, pdf.docs"
+	 description="Build javadoc and manuals"/>
+ 
+ <target name="javadoc.docs" depends="prep,sources,javadoc.docs.uptodate"
+	 unless="javadoc.docs.uptodate">
+  <mkdir dir="${build.api.dir}"/>
+  <javadoc destdir="${build.api.dir}"
+	   packagenames="HelpFrame.*,ToolTipTree.*,org.opennms.*"
+	   author="true"
+	   version="true"
+	   private="true"
+	   windowtitle="OpenNMS API"
+	   doctitle="OpenNMS API ${product.version}"
+	   header="OpenNMS API ${product.version}"
+	   footer="OpenNMS API ${product.version}"
+	   bottom="Generated by ${user.name} on ${TODAY} ${TSTAMP}."
+	   splitindex="true"
+	   failonerror="true"
+	   classpathref="libraries.java.path"
+	   maxmemory="512m">
+  <link href="http://java.sun.com/j2se/1.4.2/docs/api/"/>
+  <link href="http://jakarta.apache.org/log4j/docs/api/"/>
+  <classpath>
+   <path refid="libraries.java.path"/>
+   <path refid="test.path"/>
+   <path refid="webtest.path"/>
+  </classpath>
+  <sourcepath refid="sources.java.path"/>
+  <excludepackage name="org.opennms.netmgt.notifd.growl" />
+  </javadoc>
+ </target>
+
+ <target name="javadoc.docs.uptodate" depends="prep">
+  <dependset>
+   <srcfileset dir="${core.source.dir}">
+    <include name="**/*.java"/>
+    <include name="**/*.html"/>
+   </srcfileset>
+   <srcfileset dir="${joesnmp.source.dir}">
+    <include name="**/*.java"/>
+    <include name="**/*.html"/>
+   </srcfileset>
+   <srcfileset dir="${postgresql.source.dir}">
+    <include name="**/*.java"/>
+    <include name="**/*.html"/>
+   </srcfileset>
+   <srcfileset dir="${report.source.dir}">
+    <include name="**/*.java"/>
+    <include name="**/*.html"/>
+   </srcfileset>
+   <srcfileset dir="${services.source.dir}">
+    <include name="**/*.java"/>
+    <include name="**/*.html"/>
+   </srcfileset>
+   <srcfileset dir="${bootstrap.source.dir}">
+    <include name="**/*.java"/>
+    <include name="**/*.html"/>
+   </srcfileset>
+   <srcfileset dir="${web.source.dir}">
+    <include name="**/*.java"/>
+    <include name="**/*.html"/>
+   </srcfileset>
+   <srcfileset dir="${install.source.dir}">
+    <include name="**/*.java"/>
+    <include name="**/*.html"/>
+   </srcfileset>
+   <targetfileset dir="${build.api.dir}">
+    <include name="**/*.html"/>
+    <include name="package-list"/>
+    <include name="stylesheet.css"/>
+    <include name="resources/inherit.gif"/>
+   </targetfileset>
+  </dependset>
+  <condition property="javadoc.docs.uptodate">
+   <available file="${build.api.dir}/index.html" type="file"/>
+  </condition>
+ </target>
+
+ <target name="xsddoc.docs" depends="prep,sources,xsddoc.docs.uptodate"
+	 unless="xsddoc.docs.uptodate">
+  <mkdir dir="${build.xsddoc.dir}"/>
+  <xsddoc out="${build.xsddoc.dir}"
+	  doctitle="XML Schema for OpenNMS"
+	  failonerror="true">
+    <fileset dir="${castor.xsd.dir}">
+      <include name="*.xsd"/>
+    </fileset>
+    <fileset dir="${castor.config.dir}">
+      <include name="types.xsd"/>
+    </fileset>
+    <fileset dir="${castor.config.dir}">
+      <include name="*.xsd"/>
+      <exclude name="types.xsd"/>
+    </fileset>
+  </xsddoc>
+ </target>
+
+ <target name="xsddoc.docs.uptodate" depends="prep,sources">
+  <dependset>
+   <srcfileset dir="${castor.xsd.dir}">
+    <include name="**/*.xsd"/>
+   </srcfileset>
+   <srcfileset dir="${castor.config.dir}">
+    <include name="**/*.xsd"/>
+   </srcfileset>
+   <targetfileset dir="${build.xsddoc.dir}">
+    <include name="**/*.html"/>
+    <include name="stylesheet.css"/>
+   </targetfileset>
+  </dependset>
+  <condition property="xsddoc.docs.uptodate">
+   <available file="${build.xsddoc.dir}/index.html" type="file"/>
+  </condition>
+ </target>
+
+ <target name="html.docs" depends="prep,copy.docs,html.docs.uptodate"
+	 unless="html.docs.uptodate">
+  <mkdir dir="${build.docs.dir}"/>
+  <style basedir="${build.filter.docs.dir}"
+	destdir="${build.docs.dir}"
+	style="${docs.source.dir}/common/html-docbook.xsl"
+	includes="*/book.xml"/>
+ </target>
+ 
+ <target name="html.docs.uptodate">
+  <dependset>
+   <srcfileset dir="${docs.source.dir}"/>
+   <targetfileset dir="${build.docs.dir}"/>
+  </dependset>
+  <condition property="html.docs.uptodate">
+   <!-- Magic file: canidate for refactoring -->
+   <available file="${build.docs.dir}/releasenotes/book.html" type="file"/>
+  </condition>
+ </target>
+
+ <target name="docs.fot.uptodate" depends="prep,copy.docs">
+  <uptodate property="fot.is.uptodate">
+   <srcfiles dir="${build.filter.docs.dir}">
+    <include name="**/book.xml"/>
+    <include name="**/bookinfo.xml"/>
+    <include name="**/preface.xml"/>
+    <include name="**/chap*.xml"/>
+   </srcfiles>
+   <mapper type="regexp" from="^(.*)/[^/]+$$"
+           to="${build.docs.dir}/\1/book.fot"/>
+  </uptodate>
+ </target>
+
+ <target name="docs.fot" depends="prep,docs.fot.uptodate,copy.docs"
+	 unless="fot.is.uptodate">
+  <mkdir dir="${build.docs.dir}"/>
+  <style basedir="${build.filter.docs.dir}"
+	destdir="${build.docs.dir}"
+	style="${docs.source.dir}/common/fo-docbook.xsl"
+	includes="**/book.xml"
+	extension=".fot"
+	 />
+ </target>
+	
+<target name="install.webetc" depends="prep">
+	<mkdir dir="${install.prefix}${install.servlet.dir}/WEB-INF"/>
+	<copy todir="${install.prefix}${install.servlet.dir}/WEB-INF"
+              filtering="yes" overwrite="${filter.overwrite}">
+		<fileset dir="src/web/etc">
+				<include name="configuration.properties"/>
+		</fileset>
+	</copy>
+</target>
+
+
+ <!-- The directories in the <fop> targets need to match the includes
+      in the doc.dirs patternset. -->
+ <target name="pdf.docs" depends="prep, docs.fot">
+   <fop fofile="${build.docs.dir}/install/book.fot"
+	outfile="${build.docs.dir}/install/book.pdf"/>
+   <fop fofile="${build.docs.dir}/releasenotes/book.fot"
+	outfile="${build.docs.dir}/releasenotes/book.pdf"/>
+ </target>
+ 
+ <!-- copy web UI JSPs to the webapp directory -->
+ <target name="install.jsp" depends="prep, install.webetc">
+  <mkdir dir="${install.prefix}${install.webapps.dir}"/>
+  <copy todir="${install.prefix}${install.webapps.dir}" filtering="yes"
+	overwrite="${filter.overwrite}">
+     <fileset dir="src/web">
+        <include name="opennms.xml"/>
+     </fileset>
+  </copy>
+  <mkdir dir="${install.prefix}${install.servlet.dir}"/>
+  <copy todir="${install.prefix}${install.servlet.dir}" filtering="no"
+	overwrite="${filter.overwrite}">
+   <fileset dir="src/web/web">
+    <include name="**/*"/>
+   </fileset>
+  </copy>
+ </target>
+
+ <!-- copy web UI to the webapp directory -->
+ <target name="install.servlet" depends="prep,jar,install.jsp">
+  <mkdir dir="${install.prefix}${install.servlet.dir}/WEB-INF"/>
+  <mkdir dir="${install.prefix}${install.servlet.dir}/WEB-INF/lib"/>
+  <copy todir="${install.prefix}${install.servlet.dir}/WEB-INF/lib">
+   <fileset dir="${packaged.lib.dir}">
+    <patternset refid="web.packaged.jars"/>    
+   </fileset>
+   <fileset dir="${install.prefix}${install.dir}/lib">
+    <patternset refid="web.opennms.jars"/>    
+   </fileset>
+  </copy>
+  <mkdir dir="${install.prefix}${install.servlet.dir}/WEB-INF/classes"/>
+  <exec executable="ln"
+        dir="${install.prefix}${install.servlet.dir}/WEB-INF/classes"
+	failonerror="true">
+    <arg value="-sf"/>
+    <arg value="${install.etc.dir}/log4j.properties"/>
+    <arg value="log4j.properties"/>
+  </exec>
+  <exec executable="ln" dir="${install.prefix}${install.servlet.dir}/WEB-INF/classes"
+ 		failonerror="true">
+ 	    <arg value="-sf"/>
+ 	    <arg value="${install.etc.dir}/castor.properties"/>
+ 	    <arg value="castor.properties"/>
+   </exec>
+ </target>
+</project>
