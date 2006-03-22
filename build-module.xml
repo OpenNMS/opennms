@@ -161,7 +161,7 @@ Build file for OpenNMS Modules.
     <attribute name="module" />
     <sequential>
       <mkdir dir="${@{module}.target.classes}" />
-      <javac destdir="${@{module}.target.classes}" target="1.4" includeantruntime="false">
+      <javac destdir="${@{module}.target.classes}" source="1.4" target="1.4" includeantruntime="false">
         <src refid="@{module}.source.path"/>
         <patternset refid="@{module}.source.pattern"/>
         <classpath refid="@{module}.compile.classpath"/>
@@ -174,7 +174,7 @@ Build file for OpenNMS Modules.
     <attribute name="module" />
     <sequential>
       <mkdir dir="${@{module}.target.test-classes}"/>
-      <javac destdir="${@{module}.target.test-classes}" target="1.4" includeantruntime="false">
+      <javac destdir="${@{module}.target.test-classes}" source="1.4" target="1.4" includeantruntime="false">
         <src refid="@{module}.test.path"/>
         <patternset refid="@{module}.test-source.pattern"/>
         <classpath refid="@{module}.test-compile.classpath" /> 
