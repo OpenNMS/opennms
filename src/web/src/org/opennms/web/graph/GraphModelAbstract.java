@@ -420,11 +420,11 @@ public abstract class GraphModelAbstract implements GraphModel {
 		parenString.append(ipaddr);
             }
             if ((intfMap.get("snmpifspeed") != null)
-		&& (Integer.parseInt((String) intfMap.get("snmpifspeed"))
+		&& (Long.parseLong((String) intfMap.get("snmpifspeed"))
 		    != 0)) {
-		int intSpeed =
-		    Integer.parseInt((String) intfMap.get("snmpifspeed"));
-		String speed = Util.getHumanReadableIfSpeed(intSpeed);
+		long ifSpeed =
+		    Long.parseLong((String) intfMap.get("snmpifspeed"));
+		String speed = Util.getHumanReadableIfSpeed(ifSpeed);
 		if (parenString.length() > 0) {
 		    parenString.append(", ");
 		}

@@ -27,6 +27,11 @@
   on most platforms and libjicmp.jnilib on Mac OS X.
 - Add NSClient capsd plugin and poller monitor written by Matt Raykowski,
   <matt.raykowski@gmail.com>.  Thanks, Matt!  Enhancement bug #1389.
+- Changed snmpIfSpeed in the snmpinterface table to a bigint and made
+  appropriate int->long and Integer->Long changes refering to ifSpeed
+  Changed installer to not pg_dump using "-D" flag.  Be sure to run 
+  the installer with the "-disU" option.  DJ - change this
+  back if you see fit. Bug 1398.
 
 1.3.0 to 1.3.1
 ----------------------------------------------------------------------

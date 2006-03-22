@@ -790,7 +790,7 @@ public class NetworkElementFactory extends Object {
                     intfs[i].m_snmpIfName = rs.getString("snmpIfName");
                     intfs[i].m_snmpIfType = rs.getInt("snmpIfType");
                     intfs[i].m_snmpIfOperStatus = rs.getInt("snmpIfOperStatus");
-                    intfs[i].m_snmpIfSpeed = rs.getInt("snmpIfSpeed");
+                    intfs[i].m_snmpIfSpeed = rs.getLong("snmpIfSpeed");
                     intfs[i].m_snmpIfAdminStatus = rs.getInt("snmpIfAdminStatus");
                     intfs[i].m_snmpIfAlias = rs.getString("snmpIfAlias");
                 }
