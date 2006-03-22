@@ -15,4 +15,20 @@
       <scope>runtime</scope>
     </dependency>
   </dependencies>
+  <repositories>
+    <repository>
+      <releases />
+      <snapshots />
+      <id>opennms-repo</id>
+      <name>OpenNMS Repository</name>
+      <url>http://repo.opennms.org/maven2</url>
+    </repository>
+    <repository>
+      <releases />
+      <snapshots />
+      <id>codehaus-shapshots</id>
+      <name>Maven/Codehaus Snapshot Repository</name>
+      <url>http://snapshots.maven.codehaus.org/maven2</url>
+    </repository>
+  </repositories>
 </project>
