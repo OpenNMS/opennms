@@ -43,9 +43,17 @@ Build file for OpenNMS Modules.
     </classpath>
   </typedef>
 
+ <!-- ant-contrib tasks used for the if task --> 
+  <taskdef resource="net/sf/antcontrib/antlib.xml">
+    <classpath>
+      <pathelement location="${dev.lib.dir}/ant-contrib.jar"/>
+    </classpath>
+  </taskdef>
+
   <!-- maven repositories -->
   <artifact:remoteRepository id="opennms-repo" url="http://repo.opennms.org/maven2" />	
 	
+ <!-- default patterns to use for find source --> 
   <patternset id="default.source.pattern">
     <include name="**/*.java"/>
     <exclude name="**/*Test*"/>
@@ -58,6 +66,9 @@ Build file for OpenNMS Modules.
     <exclude name="**/*.java"/> 
     <exclude name="**/mock/**"/>
     <exclude name="**/*tests/**"/>
+    <exclude name="classlist"/>
+    <exclude name="**/package.html"/>
+    <exclude name="**/MANIFEST.MF"/> 
   </patternset> 
 	
   <patternset id="default.test-source.pattern">
@@ -67,13 +78,15 @@ Build file for OpenNMS Modules.
   </patternset>
   	
   <patternset id="default.test.pattern">
-    <include name="**/*Test.java"/>
+    <include name="**/*Test.class"/>
   </patternset>
     
   <patternset id="default.test-resource.pattern">
     <include name="**/mock/**"/>
     <include name="**/*tests/**"/>
+    <exclude name="**/package.html"/>
     <exclude name="**/*.java"/> 
+    <exclude name="**/MANIFEST.MF"/> 
   </patternset> 
  
   <!--
@@ -88,18 +101,17 @@ Build file for OpenNMS Modules.
   <macrodef name="init" uri="urn:module-utils">
     <attribute name="module" />
     <sequential>
+
+     <!-- define target dirs --> 
+      <property name="@{module}.target"              value="${basedir}/work/@{module}" />
+      <property name="@{module}.target.classes"      value="${@{module}.target}/classes" />
+      <property name="@{module}.target.test-classes" value="${@{module}.target}/test-classes" />
+      <property name="@{module}.target.test-results" value="${@{module}.target}/test-results" /> 
+      <property name="@{module}.generated-sources"   value="${@{module}.target}/generated-sources"/> 
+      
+ 
       <!-- pom file used for determining external dependencies --> 
       <artifact:pom id="@{module}" file="${@{module}.pomfile}"/>
-      
-       <!-- source path needed for the javac task --> 
-      <path id="@{module}.source.path">
-        <pathelement location="${@{module}.source.dir}"/>
-      </path>
-      
-      <!-- source path for compiling tests --> 
-      <path id="@{module}.test.path">
-        <pathelement location="${@{module}.test-source.dir}"/>
-      </path>
       
       <!-- determine the compile time dependencies --> 
       <artifact:dependencies pathId="@{module}.compile.dependencies" useScope="compile" verbose="${maven.verbose}">
@@ -140,20 +152,30 @@ Build file for OpenNMS Modules.
     <attribute name="module" />
     <sequential>
      <!-- copy all the resources into the classpath --> 
-      <mkdir dir="${@{module}.target.classes}" />
-      <copy todir="${@{module}.target.classes}" filtering="true">
-        <fileset dir="${@{module}.resource.dir}">
-          <patternset refid="@{module}.resource.pattern" />
-        </fileset>
-      </copy>
+      <for param="dir">
+        <path refid="@{module}.resource.path"/>
+        <sequential>
+          <mkdir dir="${@{module}.target.classes}" />
+          <copy todir="${@{module}.target.classes}" filtering="true">
+            <fileset dir="@{dir}">
+              <patternset refid="@{module}.resource.pattern" />
+            </fileset>
+          </copy>
+        </sequential>
+      </for>
      
-     <!-- copy all the test resource into the test classpath --> 
-      <mkdir dir="${@{module}.target.test-classes}" />
-      <copy todir="${@{module}.target.test-classes}" filtering="true">
-        <fileset dir="${@{module}.test-resource.dir}">
-          <patternset refid="@{module}.test-resource.pattern" />
-        </fileset>
-      </copy>
+      <!-- copy all the test resource into the test classpath -->
+      <for param="dir">
+        <path refid="@{module}.test-resource.path"/>
+        <sequential>
+          <mkdir dir="${@{module}.target.test-classes}" />
+          <copy todir="${@{module}.target.test-classes}" filtering="true">
+            <fileset dir="@{dir}">
+              <patternset refid="@{module}.test-resource.pattern" />
+            </fileset>
+          </copy>
+        </sequential> 
+      </for>
     </sequential>
   </macrodef> 
  
@@ -192,7 +214,7 @@ Build file for OpenNMS Modules.
         <formatter type="brief" usefile="false" />
         <formatter type="xml" />
         <batchtest todir="${@{module}.target.test-results}">
-          <fileset dir="${@{module}.test-source.dir}">
+          <fileset dir="${@{module}.target.test-classes}">
              <patternset refid="@{module}.test.pattern"/> 
           </fileset>  
         </batchtest>
@@ -222,10 +244,26 @@ Build file for OpenNMS Modules.
   <macrodef name="package" uri="urn:module-utils">
     <attribute name="module" />
     <sequential>
+     <!-- use the supplied manifest or build one if none is supplied --> 
+      <if> <isset property="@{module}.manifest"/>
+        <then>
+          <mkdir dir="${@{module}.target}" />
+          <copy tofile="${@{module}.target}/MANIFEST.MF" file="${@{module}.manifest}" filtering="true"/>
+        </then>
+        <else>
+          <manifest file="${@{module}.target}/MANIFEST.MF">
+            <attribute name="Built-By" value="${user.name}"/>
+            <attribute name="OpenNMS-Version" value="${product.fullversion}"/>
+            <attribute name="OpenNMS-Module" value="@{module}"/>
+          </manifest>
+        </else> 
+      </if> 
+      <!-- build the jar --> 
       <mkdir dir="${build.jar.dir}"/> 
-      <jar jarfile="${build.jar.dir}/${@{module}.finalName}.jar">
+      <jar jarfile="${build.jar.dir}/${@{module}.finalName}.jar" manifest="${@{module}.target}/MANIFEST.MF">
        <fileset dir="${@{module}.target.classes}"/>
       </jar>
+     <!-- build the tests into a jar so tests from one module can depend on tests from another --> 
       <mkdir dir="${test.jar.dir}"/> 
       <jar jarfile="${test.jar.dir}/${@{module}.finalName}-tests.jar">
        <fileset dir="${@{module}.target.test-classes}"/>
@@ -245,15 +283,16 @@ Build file for OpenNMS Modules.
  
   <property name="core.finalName" value="opennms_core" />
   
-  <property name="core.target"              value="${basedir}/work/core" />
-  <property name="core.target.classes"      value="${core.target}/classes" />
-  <property name="core.target.test-classes" value="${core.target}/test-classes" />
-  <property name="core.target.test-results" value="${core.target}/test-results" /> 
-  
-  <property name="core.source.dir"        value="${basedir}/src/core" />
-  <property name="core.resource.dir"      value="${basedir}/src/core" />
-  <property name="core.test-source.dir"   value="${basedir}/src/core" />
-  <property name="core.test-resource.dir" value="${basedir}/src/core" />
+  <!-- source path needed for the javac task --> 
+  <path id="core.source.path">
+    <pathelement location="${basedir}/src/core"/>
+  </path>
+ 
+  <!-- source path for compiling tests --> 
+  <path id="core.test.path" refid="core.source.path"/>
+
+  <path id="core.resource.path" refid="core.source.path" />
+  <path id="core.test-resource.path" refid="core.source.path" /> 
   
   <patternset id="core.source.pattern" refid="default.source.pattern"/>
   <patternset id="core.resource.pattern" refid="default.resource.pattern"/>
@@ -265,6 +304,7 @@ Build file for OpenNMS Modules.
     <module:init module="core"/> 
   </target>
   <target name="core.generate-sources" depends="init.core">
+   <ant></ant> 
   </target>
   <target name="core.process-sources" depends="core.generate-sources">
   </target>
@@ -301,19 +341,21 @@ Build file for OpenNMS Modules.
 
   <!-- install module -->
   <property name="install.pomfile" value="${basedir}/poms/install.pom"/>
-  
  
   <property name="install.finalName" value="opennms_install" />
+ 
+  <property name="install.manifest" value="${basedir}/src/install/org/opennms/install/MANIFEST.MF"/> 
   
-  <property name="install.target"              value="${basedir}/work/install" />
-  <property name="install.target.classes"      value="${install.target}/classes" />
-  <property name="install.target.test-classes" value="${install.target}/test-classes" />
-  <property name="install.target.test-results" value="${install.target}/test-results" /> 
-  
-  <property name="install.source.dir"        value="${basedir}/src/install" />
-  <property name="install.resource.dir"      value="${basedir}/src/install" />
-  <property name="install.test-source.dir"   value="${basedir}/src/install" />
-  <property name="install.test-resource.dir" value="${basedir}/src/install" />
+  <!-- source path needed for the javac task --> 
+ <path id="install.source.path">
+   <pathelement location="${basedir}/src/install"/>
+ </path>
+ 
+ <!-- source path for compiling tests --> 
+ <path id="install.test.path" refid="install.source.path"/>
+
+   <path id="install.resource.path" refid="install.source.path"/>
+   <path id="install.test-resource.path" refid="install.source.path"/>
   
  <!-- need custom patterns here since FileAnticipator is a test class --> 
   <patternset id="install.source.pattern">
@@ -321,15 +363,15 @@ Build file for OpenNMS Modules.
     <exclude name="**/*Test*"/>
     <exclude name="**/mock/**.java"/>
     <exclude name="**/*tests/*.java"/>
-    <exclude name="**/FileAnticipator.java"/> 
     <exclude name="**/*Growl*" unless="apple.apis.present"/>
+    <exclude name="**/FileAnticipator.java"/> 
   </patternset>
  
   <patternset id="install.test-source.pattern">
     <include name="**/*Test*"/>
     <include name="**/mock/**"/>
-    <include name="**/FileAnticipator.java"/> 
     <include name="**/*tests/*.java"/>
+    <include name="**/FileAnticipator.java"/> 
   </patternset>
     
   <patternset id="install.resource.pattern" refid="default.resource.pattern"/>
@@ -374,7 +416,189 @@ Build file for OpenNMS Modules.
     <echo>Completed building install</echo>
   </target>
   
+  <!-- bootstrap module -->
+  <property name="bootstrap.pomfile" value="${basedir}/poms/bootstrap.pom"/>
+ 
+  <property name="bootstrap.finalName" value="opennms_bootstrap" />
+ 
+  <property name="bootstrap.manifest" value="${basedir}/src/bootstrap/org/opennms/bootstrap/MANIFEST.MF"/> 
+  
+  <!-- source path needed for the javac task --> 
+ <path id="bootstrap.source.path">
+   <pathelement location="${basedir}/src/bootstrap"/>
+ </path>
+ 
+ <!-- source path for compiling tests --> 
+ <path id="bootstrap.test.path" refid="bootstrap.source.path"/>
+
+ <path id="bootstrap.resource.path" refid="bootstrap.source.path"/>
+ <path id="bootstrap.test-resource.path" refid="bootstrap.source.path"/> 
+  
+ <!-- need custom patterns here since FileAnticipator is a test class --> 
+  <patternset id="bootstrap.source.pattern" refid="default.source.pattern"/>
+  <patternset id="bootstrap.test-source.pattern" refid="default.test-source.pattern"/>
+  <patternset id="bootstrap.resource.pattern" refid="default.resource.pattern"/>
+  <patternset id="bootstrap.test.pattern" refid="default.test.pattern"/>
+  <patternset id="bootstrap.test-resource.pattern" refid="default.test-resource.pattern"/>
+ 
+  <target name="init.bootstrap">
+    <module:init module="bootstrap"/> 
+  </target>
+  <target name="bootstrap.generate-sources" depends="init.bootstrap">
+  </target>
+  <target name="bootstrap.process-sources" depends="bootstrap.generate-sources">
+  </target>
+  <target name="bootstrap.generate-resources" depends="bootstrap.process-sources">
+  </target>
+  <target name="bootstrap.process-resources" depends="bootstrap.generate-resources">
+   <module:process-resources module="bootstrap" /> 
+  </target>
+  <target name="bootstrap.compile" depends="bootstrap.process-resources">
+     <module:compile module="bootstrap"/> 
+  </target>
+  <target name="bootstrap.test-compile" depends="bootstrap.compile">
+     <module:test-compile module="bootstrap"/> 
+  </target>
+  <target name="bootstrap.test" depends="bootstrap.test-compile" unless="skip.tests">
+    <module:test module="bootstrap"/> 
+  </target>
+  <target name="bootstrap.package" depends="bootstrap.test">
+   <module:package module="bootstrap"/> 
+  </target>
+  <target name="bootstrap.install" depends="bootstrap.package">
+    <echo>Processing bootstrap.install</echo>
+  </target>
+  <target name="bootstrap.deploy" depends="bootstrap.install">
+    <echo>Processing bootstrap.deploy</echo>
+  </target>
+  <target name="bootstrap.clean">
+    <delete dir="${bootstrap.target}"/>
+  </target>
+  
+  <target name="bootstrap.module" depends="bootstrap.deploy">
+    <echo>Completed building bootstrap</echo>
+  </target>
 	
+  <!-- joesnmp module -->
+  <property name="joesnmp.pomfile" value="${basedir}/poms/joesnmp.pom"/>
+ 
+  <property name="joesnmp.finalName" value="opennms_joesnmp" />
+  
+  <!-- source path needed for the javac task --> 
+ <path id="joesnmp.source.path">
+   <pathelement location="${basedir}/src/joesnmp"/>
+ </path>
+ 
+  <!-- source path for compiling tests -->
+  <path id="joesnmp.test.path" refid="joesnmp.source.path"/>
+
+  <path id="joesnmp.resource.path" refid="joesnmp.source.path"/>
+  <path id="joesnmp.test-resource.path" refid="joesnmp.source.path"/>
+  
+  <!-- need custom patterns here since FileAnticipator is a test class --> 
+  <patternset id="joesnmp.source.pattern" refid="default.source.pattern"/>
+  <patternset id="joesnmp.test-source.pattern" refid="default.test-source.pattern"/>
+  <patternset id="joesnmp.resource.pattern" refid="default.resource.pattern"/>
+  <patternset id="joesnmp.test.pattern" refid="default.test.pattern"/>
+  <patternset id="joesnmp.test-resource.pattern" refid="default.test-resource.pattern"/>
+  
+  <target name="init.joesnmp">
+    <module:init module="joesnmp"/> 
+  </target>
+  <target name="joesnmp.generate-sources" depends="init.joesnmp">
+  </target>
+  <target name="joesnmp.process-sources" depends="joesnmp.generate-sources">
+  </target>
+  <target name="joesnmp.generate-resources" depends="joesnmp.process-sources">
+  </target>
+  <target name="joesnmp.process-resources" depends="joesnmp.generate-resources">
+   <module:process-resources module="joesnmp" /> 
+  </target>
+  <target name="joesnmp.compile" depends="joesnmp.process-resources">
+     <module:compile module="joesnmp"/> 
+  </target>
+  <target name="joesnmp.test-compile" depends="joesnmp.compile">
+     <module:test-compile module="joesnmp"/> 
+  </target>
+  <target name="joesnmp.test" depends="joesnmp.test-compile" unless="skip.tests">
+    <module:test module="joesnmp"/> 
+  </target>
+  <target name="joesnmp.package" depends="joesnmp.test">
+   <module:package module="joesnmp"/> 
+  </target>
+  <target name="joesnmp.install" depends="joesnmp.package">
+    <echo>Processing joesnmp.install</echo>
+  </target>
+  <target name="joesnmp.deploy" depends="joesnmp.install">
+    <echo>Processing joesnmp.deploy</echo>
+  </target>
+  <target name="joesnmp.clean">
+    <delete dir="${joesnmp.target}"/>
+  </target>
+  
+  <target name="joesnmp.module" depends="joesnmp.deploy">
+    <echo>Completed building joesnmp</echo>
+  </target>
+
+  <!-- services module -->
+  <property name="services.pomfile" value="${basedir}/poms/services.pom"/>
+ 
+  <property name="services.finalName" value="opennms_services" />
+  
+  <!-- source path needed for the javac task --> 
+ <path id="services.source.path">
+   <pathelement location="${basedir}/src/services"/>
+ </path>
+ 
+  <!-- source path for compiling tests --> 
+  <path id="services.test.path" refid="services.source.path"/>
+  <path id="services.resource.path" refid="services.source.path"/>
+  <path id="services.test-resource.path" refid="services.source.path"/>
+  
+  <!-- need custom patterns here since FileAnticipator is a test class --> 
+  <patternset id="services.source.pattern" refid="default.source.pattern"/>
+  <patternset id="services.test-source.pattern" refid="default.test-source.pattern"/>
+  <patternset id="services.resource.pattern" refid="default.resource.pattern"/>
+  <patternset id="services.test.pattern" refid="default.test.pattern"/>
+  <patternset id="services.test-resource.pattern" refid="default.test-resource.pattern"/>
+ 
+  <target name="init.services">
+    <module:init module="services"/> 
+  </target>
+  <target name="services.generate-sources" depends="init.services">
+  </target>
+  <target name="services.process-sources" depends="services.generate-sources">
+  </target>
+  <target name="services.generate-resources" depends="services.process-sources">
+  </target>
+  <target name="services.process-resources" depends="services.generate-resources">
+   <module:process-resources module="services" /> 
+  </target>
+  <target name="services.compile" depends="services.process-resources">
+     <module:compile module="services"/> 
+  </target>
+  <target name="services.test-compile" depends="services.compile">
+     <module:test-compile module="services"/> 
+  </target>
+  <target name="services.test" depends="services.test-compile" unless="skip.tests">
+    <module:test module="services"/> 
+  </target>
+  <target name="services.package" depends="services.test">
+   <module:package module="services"/> 
+  </target>
+  <target name="services.install" depends="services.package">
+    <echo>Processing services.install</echo>
+  </target>
+  <target name="services.deploy" depends="services.install">
+    <echo>Processing services.deploy</echo>
+  </target>
+  <target name="services.clean">
+    <delete dir="${services.target}"/>
+  </target>
+  
+  <target name="services.module" depends="services.deploy">
+    <echo>Completed building services</echo>
+  </target>
 
  <!-- OLD STUFF STARTS HERE -->
 
