@@ -54,10 +54,12 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
@@ -76,7 +78,6 @@ import org.opennms.netmgt.rtc.datablock.RTCCategory;
 import org.opennms.netmgt.rtc.datablock.RTCHashMap;
 import org.opennms.netmgt.rtc.datablock.RTCNode;
 import org.opennms.netmgt.rtc.datablock.RTCNodeKey;
-import org.opennms.netmgt.utils.Querier;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowCallbackHandler;
 import org.xml.sax.SAXException;
@@ -487,20 +488,20 @@ public class DataManager extends Object {
 			}
 
 			private boolean catContainsIp(RTCCategory cat, String ip) {
-				List ips = catGetIpList(cat);
+				Set ips = catGetIpAddrs(cat);
 				return ips.contains(ip);
 			}
 
-			private List catGetIpList(RTCCategory cat) {
-				List ips = (List)m_categoryIpLists.get(cat.getLabel());
+			private Set catGetIpAddrs(RTCCategory cat) {
+				Set ips = (Set)m_categoryIpLists.get(cat.getLabel());
 				if (ips == null) {
-					ips = catConstructIpList(cat);
+					ips = catConstructIpAddrs(cat);
 					m_categoryIpLists.put(cat.getLabel(), ips);
 				}
 				return ips;
 			}
 
-			private List catConstructIpList(RTCCategory cat) {
+			private Set catConstructIpAddrs(RTCCategory cat) {
 				String filterRule = cat.getEffectiveRule();
 				try {
 					Filter filter = new Filter();
@@ -513,11 +514,11 @@ public class DataManager extends Object {
 	                if (log().isDebugEnabled())
 	                    log().debug("Number of IPs satisfying rule: " + ips.size());
 
-	                return ips;
+	                return new HashSet(ips);
 	                
 				} catch (FilterParseException e) {
 					log().error("Unable to parse filter rule "+filterRule+" ignoring category "+cat.getLabel(), e);
-					return Collections.EMPTY_LIST;
+					return Collections.EMPTY_SET;
 				}
 			}
 
