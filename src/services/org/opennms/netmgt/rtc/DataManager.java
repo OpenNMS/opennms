@@ -409,9 +409,9 @@ public class DataManager extends Object {
      * list, this reads the services and outage tables to get the initial data,
      * creates 'RTCNode' objects that are added to the map and and to the
      * appropriate category.
-     * 
      * @param dbConn
      *            the database connection.
+     * 
      * @throws SQLException
      *             if the database read fails due to an SQL error
      * @throws FilterParseException
@@ -421,7 +421,7 @@ public class DataManager extends Object {
      *             if the database read or filtering the data against the
      *             category rule fails for some reason
      */
-    private void populateNodesFromDB(Connection dbConn) throws SQLException, FilterParseException, RTCException {
+    private void populateNodesFromDB() throws SQLException, FilterParseException, RTCException {
 
     	final String getOutagesInWindow = 
     			"select " + 
@@ -557,43 +557,23 @@ public class DataManager extends Object {
      *                if the initialization/data reading does not go through
      */
     public DataManager() throws SAXException, IOException, SQLException, FilterParseException, RTCException {
-        java.sql.Connection dbConn = null;
-        try {
-            DbConnectionFactory connFactory = getConnectionFactory();
-
-            try {
-            	dbConn = connFactory.getConnection();
-            } catch (SQLException ex) {
-            	log().warn("Failed to get database connection", ex);
-            	throw new UndeclaredThrowableException(ex);
-            }
-
 			
-			// read the categories.xml to get all the categories
-            createCategoriesMap();
+    	// read the categories.xml to get all the categories
+    	createCategoriesMap();
 
-            if (m_categories == null || m_categories.isEmpty()) {
-                throw new RTCException("No categories found in categories.xml");
-            }
+    	if (m_categories == null || m_categories.isEmpty()) {
+    		throw new RTCException("No categories found in categories.xml");
+    	}
 
-            if (log().isDebugEnabled())
-                log().debug("Number of categories read: " + m_categories.size());
+    	if (log().isDebugEnabled())
+    		log().debug("Number of categories read: " + m_categories.size());
 
-            // create data holder
-            m_map = new RTCHashMap(30000);
+    	// create data holder
+    	m_map = new RTCHashMap(30000);
 
-            // Populate the nodes initially from the database
-            populateNodesFromDB(dbConn);
+    	// Populate the nodes initially from the database
+    	populateNodesFromDB();
 
-            // close the database connection
-        } finally {
-            try {
-                if (dbConn != null)
-                    dbConn.close();
-            } catch (SQLException e) {
-                ThreadCategory.getInstance(getClass()).warn("Exception closing JDBC connection", e);
-            }
-        }
     }
 
 	private DbConnectionFactory getConnectionFactory() {
