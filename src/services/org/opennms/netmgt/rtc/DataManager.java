@@ -459,7 +459,7 @@ public class DataManager extends Object {
     		Map m_categoryIpLists = new HashMap();
 
 			public void processRow(ResultSet rs) throws SQLException {
-				RTCNodeKey key = new RTCNodeKey(rs.getLong("nodeid"), rs.getString("ipaddr"), rs.getString("svcname"));
+				RTCNodeKey key = new RTCNodeKey(rs.getLong("nodeid"), rs.getString("ipaddr"), rs.getString("servicename"));
 				if (!matchesCurrent(key)) {
 					m_currentKey = key;
 					processIfService(key);
