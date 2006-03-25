@@ -1,5 +1,9 @@
 1.3.1 to 1.3.2
 ----------------------------------------------------------------------
+- Add "Show/hide interfaces" link to the bottom of element/nodelist.jsp.
+- Combine element/nodelist.jsp and element/nodelistonly.jsp in the webUI
+  into a single page.  If the "listInterfaces" parameter is passed,
+  interfaces will be shown for each node, otherwise, just nodes are shown.
 - Significantly improved RTC startup time. (DB with 40K nodes and 30
   categories configured took 3.5 hours to init RTCd.  With improvements,
   time now < 2 minutes) (way to go brozow!)

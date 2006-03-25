@@ -17,7 +17,7 @@
         File mapEnableFile = new File(mapEnableLocation);
   
         LinkedList navBar = new LinkedList();
-        navBar.add(new NavBarEntry("nodelist", "element/nodelistonly.jsp",
+        navBar.add(new NavBarEntry("nodelist", "element/nodelist.jsp",
 		   "Node List"));
         navBar.add(new NavBarEntry("element", "element/index.jsp", "Search"));
         navBar.add(new NavBarEntry("outages", "outage/index.jsp", "Outages"));

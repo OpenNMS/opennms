@@ -80,6 +80,7 @@
           </tr>
           <tr>
             <form action="element/nodelist.jsp" method="GET">          
+              <input type="hidden" name="listInterfaces" value=""/>
               <td><input type="text" name="nodename" /></td>
               <td><input type="submit" value="Search"/></td>                
             </form>
@@ -90,6 +91,7 @@
           </tr>
           <tr>
             <form action="element/nodelist.jsp" method="GET">          
+              <input type="hidden" name="listInterfaces" value=""/>
               <td><input type="text" name="iplike" value="*.*.*.*" /></td>
               <td><input type="submit" value="Search"/></td>                
             </form>
@@ -100,6 +102,7 @@
           </tr>
           <tr>
             <form action="element/nodelist.jsp" method="GET">          
+              <input type="hidden" name="listInterfaces" value=""/>
               <td><input type="text" name="ifAlias" /></td>
               <td><input type="submit" value="Search"/></td>                
             </form>
@@ -110,6 +113,7 @@
           </tr>
           <tr>
             <form action="element/nodelist.jsp" method="GET">          
+              <input type="hidden" name="listInterfaces" value=""/>
               <td>
                 <select name="service" size="1">
                   <% while( serviceNameIterator.hasNext() ) { %>
@@ -125,7 +129,8 @@
       </p>
 
       <p>
-        <a href="element/nodelist.jsp">List all nodes</a>
+        <a href="element/nodelist.jsp">List all nodes</a><br/>
+        <a href="element/nodelist.jsp?listInterfaces">List all nodes and their interfaces</a><br/>
       </p>
 
       <h3>Search Asset Information</h3>

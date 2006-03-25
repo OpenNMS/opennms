@@ -175,7 +175,7 @@
                                 <% } %>
                             <%} else {%>
                                 Domain: <%=curr_domain%><br>
-                                Interface: <a href="element/nodelist.jsp?ifAlias=<%=intf%>"><%=intf%></a><br/>
+                                Interface: <a href="element/nodelist.jsp?listInterfaces&ifAlias=<%=intf%>"><%=intf%></a><br/>
                             <%}%>
                             </h3>
 
