@@ -1,4 +1,4 @@
-<!--
+<%--
 
 //
 // This file is part of the OpenNMS(R) Application.
@@ -34,13 +34,19 @@
 // For more information contact:
 //      OpenNMS Licensing       <license@opennms.org>
 //      http://www.opennms.org/
-//      http://www.opennms.com///
+//      http://www.opennms.com/
 //
 // Modified nodelist.jsp as nodelistonly.jsp, to list only nodes, 
 //      without the interface stuff.  Charlie Moore, 7-12-05
--->
+//
 
-<%@page language="java" contentType="text/html" session="true" import="org.opennms.web.element.*" %>
+--%>
+
+<%@page language="java"
+	contentType="text/html"
+	session="true"
+	import="org.opennms.web.element.*"
+%>
 
 <%
     Node[] nodes = null;
@@ -66,70 +72,40 @@
     int interfaceCount = 0;
 %>
 
-<html>
-<head>
-  <title>Node List | OpenNMS Web Console</title>
-  <base HREF="<%=org.opennms.web.Util.calculateUrlBase( request )%>" />
-  <link rel="stylesheet" type="text/css" href="includes/styles.css" />
-</head>
-<body marginwidth="0" marginheight="0" LEFTMARGIN="0" RIGHTMARGIN="0" TOPMARGIN="0">
-
-<% String breadcrumb1 = "<a href ='element/index.jsp'>Search</a>"; %>
-<% String breadcrumb2 = "Node List"; %>
 <jsp:include page="/includes/header.jsp" flush="false" >
   <jsp:param name="title" value="Node List" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb1%>" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb2%>" />
+  <jsp:param name="headTitle" value="Node List" />
+  <jsp:param name="location" value="nodelist" />
+  <jsp:param name="breadcrumb" value="<a href ='element/index.jsp'>Search</a>"/>
+  <jsp:param name="breadcrumb" value="Node List"/>
 </jsp:include>
 
-<br>
-<!-- Body -->
-<table width="100%" cellspacing="0" cellpadding="2" border="0">
-  <tr>
-    <td> &nbsp; </td>
-    <td colspan="2"> <h3>Discovered Nodes</h3>
-    <td> &nbsp; </td>
-  </tr>
-
-  <tr>
-    <td> &nbsp; </td>
+<h3>Nodes and their Interfaces</h3>
 
   <% if( nodes.length > 0 ) { %>
-    <td valign="top">
-      <!-- left column -->
+    <!-- left column -->
+    <div style="float: left; width=45%;">
       <ul>
       <% for( int i=0; i < lastIn1stColumn; i++ ) { %>
         <li><a href="element/node.jsp?node=<%=nodes[i].getNodeId()%>"><%=nodes[i].getLabel()%></a>
       <% } %>
       </ul>
-    </td>
+    </div>
 
-    <td valign="top">      
-      <!-- right column -->
+
+    <!-- right column -->
+    <div style="float: left; width=45%;">
       <ul>
       <% for( int i=lastIn1stColumn; i < nodes.length; i++ ) { %>
         <li><a href="element/node.jsp?node=<%=nodes[i].getNodeId()%>"><%=nodes[i].getLabel()%></a>
       <% } %>
       </ul>
-    </td>
+    </div>
   <% } else { %>
-    <td>
       None found.
-    </td>    
   <% } %>
-    
-    <td> &nbsp; </td>
-  </tr>
-  <tr>
-    <td> &nbsp; </td>
-    <td colspan="2"> <br><%=nodes.length%> Nodes</td>
-    <td> &nbsp; </td>
-  </tr>
-</table>
-                                     
-<br>
+ 
+<div class="spacer"></div>
+<%=nodes.length%> Nodes
 
-<jsp:include page="/includes/footer.jsp" flush="false" />
-
-</body>
-</html>
+<jsp:include page="/includes/footer.jsp" flush="false"/>
