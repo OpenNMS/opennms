@@ -1,16 +1,13 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"%>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<%@page language="java"
+	contentType="text/html; charset=UTF-8"
+	    pageEncoding="UTF-8"
+%>
 
 <%@ page import="org.opennms.netmgt.charts.ChartUtils" %>
 <%@ page import="java.util.Iterator" %>
 <%@ page import="org.opennms.netmgt.config.charts.BarChart" %>
 
 <%--Align images in the center of the page --%>
-<!--
-<p ALIGN=CENTER >
--->
 
 <div id="include-charts">
 <%--Get collection of charts --%>
@@ -26,6 +23,3 @@ while (it.hasNext()) {
 %>
 
 </div>
-<!--
-</p>
--->
