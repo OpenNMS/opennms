@@ -89,14 +89,11 @@ public class RTCNode extends Object {
      * Default constructor. Initializes all values
      */
     public RTCNode() {
-        m_nodeID = -1;
-
-        m_ip = null;
-
-        m_svcName = null;
-
-        m_svcTimesList = new RTCNodeSvcTimesList();
-        m_categories = new ArrayList();
+    	this(-1, null, null);
+    }
+    
+    public RTCNode(RTCNodeKey key) {
+    	this(key.getNodeID(), key.getIP(), key.getSvcName());
     }
 
     /**
@@ -112,7 +109,7 @@ public class RTCNode extends Object {
     public RTCNode(long nodeid, String ip, String svcName) {
         m_nodeID = nodeid;
 
-        setIP(ip);
+        m_ip = ip;
 
         m_svcName = svcName;
 
@@ -160,16 +157,6 @@ public class RTCNode extends Object {
      */
     public void addSvcTime(long losttime, long regainedtime) {
         m_svcTimesList.addSvcTime(losttime, regainedtime);
-    }
-
-    /**
-     * Add a new 'RTCNodeSvcTime' entry for this node.
-     * 
-     * @param losttime
-     *            time at which service was lost
-     */
-    public void addSvcTime(long losttime) {
-        m_svcTimesList.addSvcTime(losttime);
     }
 
     /**

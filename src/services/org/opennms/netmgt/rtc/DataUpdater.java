@@ -383,12 +383,12 @@ final class DataUpdater implements Runnable {
     /**
      * If it is a assetInfoChanged method, update RTC
      */
-    private void handleAssetInfoChangedEvent(long nodeid) throws SQLException, FilterParseException, RTCException {
+    private void handleAssetInfoChangedEvent(long nodeid) {
         Category log = ThreadCategory.getInstance(DataUpdater.class);
 
         DataManager dataMgr = RTCManager.getDataManager();
 
-        dataMgr.rtcNodeRescan(nodeid);
+        dataMgr.assetInfoChanged(nodeid);
 
         if (log.isDebugEnabled())
             log.debug(m_event.getUei() + " rescanned: " + nodeid);
@@ -400,7 +400,7 @@ final class DataUpdater implements Runnable {
      * read event parms, if necessary, and call appropriate methods on the data
      * manager to update data
      */
-    private void processEvent() throws SQLException, FilterParseException, RTCException {
+    private void processEvent() {
         Category log = ThreadCategory.getInstance(DataUpdater.class);
 
         if (m_event == null) {

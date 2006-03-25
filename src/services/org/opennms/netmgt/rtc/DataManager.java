@@ -45,17 +45,17 @@ package org.opennms.netmgt.rtc;
 
 import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
@@ -101,7 +101,100 @@ import org.xml.sax.SAXException;
  * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
  */
 public class DataManager extends Object {
-    /**
+    private class RTCNodeProcessor implements RowCallbackHandler {
+		RTCNodeKey m_currentKey = null;
+
+		Map m_categoryIpLists = new HashMap();
+
+		public void processRow(ResultSet rs) throws SQLException {
+			RTCNodeKey key = new RTCNodeKey(rs.getLong("nodeid"), rs.getString("ipaddr"), rs.getString("servicename"));
+			processKey(key);
+			processOutage(key, rs.getTimestamp("ifLostService"), rs.getTimestamp("ifRegainedService"));
+		}
+
+		private void processKey(RTCNodeKey key) {
+			if (!matchesCurrent(key)) {
+				m_currentKey = key;
+				processIfService(key);
+			}
+		}
+
+		private boolean matchesCurrent(RTCNodeKey key) {
+			return (m_currentKey != null && m_currentKey.equals(key));
+		}
+
+		// This is called exactly once for each unique (nodeid, ipaddr, svcname) tuple
+		public void processIfService(RTCNodeKey key) {
+			for (Iterator it = m_categories.values().iterator(); it.hasNext();) {
+				RTCCategory cat = (RTCCategory) it.next();
+				if (catContainsIfService(cat, key)) {
+					RTCNode rtcN = getRTCNode(key);
+					addNodeToCategory(cat, rtcN);
+				}
+			}
+		
+		}
+
+		private RTCNode getRTCNode(RTCNodeKey key) {
+			RTCNode rtcN = m_map.getRTCNode(key);
+			if (rtcN == null) {
+				rtcN = new RTCNode(key);
+				addRTCNode(rtcN);
+			}
+			return rtcN;
+		}
+
+		private boolean catContainsIfService(RTCCategory cat, RTCNodeKey key) {
+			return cat.containsService(key.getSvcName()) && catContainsIp(cat, key.getIP());
+		}
+
+		private boolean catContainsIp(RTCCategory cat, String ip) {
+			Set ips = catGetIpAddrs(cat);
+			return ips.contains(ip);
+		}
+
+		private Set catGetIpAddrs(RTCCategory cat) {
+			Set ips = (Set)m_categoryIpLists.get(cat.getLabel());
+			if (ips == null) {
+				ips = catConstructIpAddrs(cat);
+				m_categoryIpLists.put(cat.getLabel(), ips);
+			}
+			return ips;
+		}
+
+		private Set catConstructIpAddrs(RTCCategory cat) {
+			String filterRule = cat.getEffectiveRule();
+			try {
+				Filter filter = new Filter();
+		
+				if (log().isDebugEnabled())
+					log().debug("Category: " + cat.getLabel() + "\t" + filterRule);
+		
+				List ips = filter.getIPList(filterRule);
+				
+		        if (log().isDebugEnabled())
+		            log().debug("Number of IPs satisfying rule: " + ips.size());
+		
+		        return new HashSet(ips);
+		        
+			} catch (FilterParseException e) {
+				log().error("Unable to parse filter rule "+filterRule+" ignoring category "+cat.getLabel(), e);
+				return Collections.EMPTY_SET;
+			}
+		}
+
+		// This is processed for each outage, passing two null means there is not outage
+		public void processOutage(RTCNodeKey key, Timestamp ifLostService, Timestamp ifRegainedService) {
+			RTCNode rtcN = m_map.getRTCNode(key);
+			// if we can't find the node it doesn't belong to any category
+			if (rtcN == null) return;
+			
+			addOutageToRTCNode(rtcN, ifLostService, ifRegainedService);
+			
+		}
+	}
+
+	/**
      * The RTC categories
      */
     private Map m_categories;
@@ -124,150 +217,14 @@ public class DataManager extends Object {
      * @return the 'status' from the ifservices table
      */
     private char getServiceStatus(long nodeid, String ip, String svc) {
-        //
-        // check the 'status' flag
-        //
-        char status = '\0';
-        ResultSet statusRS = null;
+    	
+    	JdbcTemplate template = new JdbcTemplate(getConnectionFactory());
+    	String status= (String)template.queryForObject(RTCConstants.DB_GET_SERVICE_STATUS, new Object[] { new Long(nodeid), ip, svc }, String.class);
 
-        Connection dbConn = null;
-        try {
-            dbConn = DatabaseConnectionFactory.getInstance().getConnection();
-
-            // Prepare statement to get the 'status' flag for a
-            // nodeid/IP/service
-            PreparedStatement svcStatusGetStmt = dbConn.prepareStatement(RTCConstants.DB_GET_SERVICE_STATUS);
-
-            svcStatusGetStmt.setLong(1, nodeid);
-            svcStatusGetStmt.setString(2, ip);
-            svcStatusGetStmt.setString(3, svc);
-            statusRS = svcStatusGetStmt.executeQuery();
-            if (statusRS.next()) {
-                String statusStr = statusRS.getString(1);
-                status = statusStr.charAt(0);
-            }
-
-            // close statement
-            svcStatusGetStmt.close();
-        } catch (SQLException ipe) {
-            log().warn("Error reading status for: " + nodeid + "/" + ip + "/" + svc, ipe);
-
-            status = '\0';
-        } finally {
-            try {
-                if (statusRS != null)
-                    statusRS.close();
-            } catch (Exception e) {
-                if (log().isDebugEnabled())
-                    log().debug("Exception while closing the service status result set", e);
-            }
-
-            try {
-                if (dbConn != null)
-                    dbConn.close();
-            } catch (SQLException e) {
-                ThreadCategory.getInstance(getClass()).warn("Exception closing JDBC connection", e);
-            }
-
-        }
-
-        return status;
+    	if (status == null) return '\0';
+    	return status.charAt(0);
+    	
     }
-
-    /**
-     * Add a node/ip/service to the specified category.
-     * 
-     * @param nodeid
-     *            the nodeid to be added
-     * @param ip
-     *            the interface to be added
-     * @param svcname
-     *            the service to be added
-     * @param cat
-     *            the category to which this node is to be added to
-     * @param knownIPs
-     *            the hashtable of IP->list of RTCNodes (used only at startup)
-     * @param outagesGetStmt
-     *            the prepared statement to read outages
-     */
-    private void addNodeIpSvcToCategory(long nodeid, String ip, String svcname, RTCCategory cat, PreparedStatement outagesGetStmt) {
-        RTCNode rtcN = findRTCNode(nodeid, ip, svcname);
-        if (rtcN == null) {
-        	rtcN = new RTCNode(nodeid, ip, svcname);;
-			addRTCNode(rtcN);
-	    	populateOutages(rtcN, outagesGetStmt);
-		}
-        addNodeToCategory(cat, rtcN);
-
-    }
-
-	private RTCNode getRTCNode(long nodeid, String ip, String svcname) {
-		//
-        // check if the node is already part of the tree, if yes,
-        // simply add the current category information
-        //
-        RTCNode rtcN = findRTCNode(nodeid, ip, svcname);
-        if (rtcN == null) {
-        	rtcN = new RTCNode(nodeid, ip, svcname);;
-			addRTCNode(rtcN);
-        }
-		return rtcN;
-	}
-	
-	private RTCNode getRTCNode(RTCNodeKey key) {
-		return getRTCNode(key.getNodeID(), key.getIP(), key.getSvcName());
-	}
-
-	private void populateOutages(RTCNode rtcN, PreparedStatement outagesGetStmt) {
-		// read outages
-		//
-		// the window for which outages are to be read - the current
-		// time minus the rollingWindow
-		//
-		long window = (new java.util.Date()).getTime() - RTCManager.getRollingWindow();
-		Timestamp windowTS = new Timestamp(window);
-
-		//
-		// Read closed outages in the above window and outages that are
-		// still open
-		//
-		ResultSet outRS = null;
-		try {
-			//
-			// get outages
-			//
-			outagesGetStmt.setLong(1, rtcN.getNodeID());
-			outagesGetStmt.setString(2, rtcN.getIP());
-			outagesGetStmt.setString(3, rtcN.getSvcName());
-			outagesGetStmt.setTimestamp(4, windowTS);
-			outagesGetStmt.setTimestamp(5, windowTS);
-			outRS = outagesGetStmt.executeQuery();
-			while (outRS.next()) {
-				int outColIndex = 1;
-				Timestamp lostTimeTS = outRS.getTimestamp(outColIndex++);
-				Timestamp regainedTimeTS = outRS.getTimestamp(outColIndex++);
-
-				addOutageToRTCNode(rtcN, lostTimeTS, regainedTimeTS);
-			}
-		} catch (SQLException sqle2) {
-			if (log().isDebugEnabled())
-				log().debug("Error getting outages information for nodeid: " + rtcN.getNodeID() + "\tip:" + rtcN.getIP(), sqle2);
-
-		} catch (Exception e2) {
-			if (log().isDebugEnabled())
-				log().debug("Unknown error while reading outages for nodeid: " + rtcN.getNodeID() + "\tip: " + rtcN.getIP(), e2);
-
-		} finally {
-			// finally close the result set
-			try {
-				if (outRS != null)
-					outRS.close();
-			} catch (Exception e) {
-				if (log().isDebugEnabled())
-					log().debug("Exception while closing the outages result set ", e);
-			}
-		}
-	}
 
 	private void addOutageToRTCNode(RTCNode rtcN, Timestamp lostTimeTS, Timestamp regainedTimeTS) {
 		if (lostTimeTS == null) return;
@@ -286,22 +243,7 @@ public class DataManager extends Object {
 	}
 
 	private void addRTCNode(RTCNode rtcN) {
-		// Add node to the map
-		m_map.put(new RTCNodeKey(rtcN.getNodeID(), rtcN.getIP(), rtcN.getSvcName()), rtcN);
-
-		// node key map
-		m_map.add(rtcN.getNodeID(), rtcN);
-
-		// node and ip key map
-		m_map.add(rtcN.getNodeID(), rtcN.getIP(), rtcN);
-	}
-
-	private RTCNode findRTCNode(long nodeid, String ip, String svcname) {
-		return findRTCNode(new RTCNodeKey(nodeid, ip, svcname));
-	}
-
-	private RTCNode findRTCNode(RTCNodeKey key) {
-		return (RTCNode) m_map.get(key);
+		m_map.add(rtcN);
 	}
 
 	private void addNodeToCategory(RTCCategory cat, RTCNode rtcN) {
@@ -315,53 +257,6 @@ public class DataManager extends Object {
 		if (log().isDebugEnabled())
 		    log().debug("rtcN : " + rtcN.getNodeID() + "/" + rtcN.getIP() + "/" + rtcN.getSvcName() + " added to cat: " + cat.getLabel());
 	}
-
-    /**
-     * Delete a node/ip/service to the specified category.
-     * 
-     * Note: This will not delete the service, it will just remove the node from
-     * the category.
-     * 
-     * @param nodeid
-     *            the nodeid to be added
-     * @param ip
-     *            the interface to be added
-     * @param svcname
-     *            the service to be added
-     * @param cat
-     *            the category to which this node is to be added to
-     */
-    private void delNodeIpSvcToCategory(long nodeid, String ip, String svcname, RTCCategory cat) {
-        //
-        // check if the node is already part of the tree, if yes,
-        // simply remove the current category information
-        //
-
-        RTCNodeKey key = new RTCNodeKey(nodeid, ip, svcname);
-        RTCNode rtcN = (RTCNode) m_map.get(key);
-        if (rtcN != null) {
-
-            String catlabel = cat.getLabel();
-
-            // get nodes in this category
-            List catNodes = cat.getNodes();
-
-            // check if the category contains this node
-            Long tmpNodeid = new Long(rtcN.getNodeID());
-            int nIndex = catNodes.indexOf(tmpNodeid);
-            if (nIndex != -1) {
-                // remove from the category
-                catNodes.remove(nIndex);
-                log().info("Removing node from category: " + catlabel);
-
-                // let the node know that this category is out
-                rtcN.removeCategory(catlabel);
-            }
-        }
-
-        // allow for gc
-        rtcN = null;
-    }
 
     /**
      * Creates the categories map. Reads the categories from the categories.xml
@@ -421,7 +316,7 @@ public class DataManager extends Object {
      *             if the database read or filtering the data against the
      *             category rule fails for some reason
      */
-    private void populateNodesFromDB() throws SQLException, FilterParseException, RTCException {
+    private void populateNodesFromDB(String query, Object[] args) throws SQLException, FilterParseException, RTCException {
 
     	final String getOutagesInWindow = 
     			"select " + 
@@ -448,96 +343,29 @@ public class DataManager extends Object {
     			"            )" +
     			"          ) " +
     			"order by " + 
-    			"       ifsvc.nodeid, ifsvc.ipAddr, ifsvc.serviceid, o.ifLostService;";
+    			"       ifsvc.nodeid, ifsvc.ipAddr, ifsvc.serviceid, o.ifLostService " +
+    			(query == null ? "" : "where "+query);
     	
 		long window = (new Date()).getTime() - RTCManager.getRollingWindow();
 		Timestamp windowTS = new Timestamp(window);
     	
-    	RowCallbackHandler rowHandler = new RowCallbackHandler() {
-    		
-    		RTCNodeKey m_currentKey = null;
-    		Map m_categoryIpLists = new HashMap();
+    	RowCallbackHandler rowHandler = new RTCNodeProcessor();
 
-			public void processRow(ResultSet rs) throws SQLException {
-				RTCNodeKey key = new RTCNodeKey(rs.getLong("nodeid"), rs.getString("ipaddr"), rs.getString("servicename"));
-				if (!matchesCurrent(key)) {
-					m_currentKey = key;
-					processIfService(key);
-				}
-				processOutage(key, rs.getTimestamp("ifLostService"), rs.getTimestamp("ifRegainedService"));
-			}
-    	
-    		private boolean matchesCurrent(RTCNodeKey key) {
-    			return (m_currentKey != null && m_currentKey.equals(key));
-    		}
-			
-			// This is called exactly once for each unique (nodeid, ipaddr, svcname) tuple
-			public void processIfService(RTCNodeKey key) {
-				for (Iterator it = m_categories.values().iterator(); it.hasNext();) {
-					RTCCategory cat = (RTCCategory) it.next();
-					if (catContainsIfService(cat, key)) {
-						RTCNode rtcN = getRTCNode(key);
-						addNodeToCategory(cat, rtcN);
-					}
-				}
-			
-			}
-			
-			private boolean catContainsIfService(RTCCategory cat, RTCNodeKey key) {
-				return cat.containsService(key.getSvcName()) && catContainsIp(cat, key.getIP());
-			}
-
-			private boolean catContainsIp(RTCCategory cat, String ip) {
-				Set ips = catGetIpAddrs(cat);
-				return ips.contains(ip);
-			}
-
-			private Set catGetIpAddrs(RTCCategory cat) {
-				Set ips = (Set)m_categoryIpLists.get(cat.getLabel());
-				if (ips == null) {
-					ips = catConstructIpAddrs(cat);
-					m_categoryIpLists.put(cat.getLabel(), ips);
-				}
-				return ips;
-			}
-
-			private Set catConstructIpAddrs(RTCCategory cat) {
-				String filterRule = cat.getEffectiveRule();
-				try {
-					Filter filter = new Filter();
-
-					if (log().isDebugEnabled())
-						log().debug("Category: " + cat.getLabel() + "\t" + filterRule);
-
-					List ips = filter.getIPList(filterRule);
-					
-	                if (log().isDebugEnabled())
-	                    log().debug("Number of IPs satisfying rule: " + ips.size());
-
-	                return new HashSet(ips);
-	                
-				} catch (FilterParseException e) {
-					log().error("Unable to parse filter rule "+filterRule+" ignoring category "+cat.getLabel(), e);
-					return Collections.EMPTY_SET;
-				}
-			}
-
-			// This is processed for each outage, passing two null means there is not outage
-			public void processOutage(RTCNodeKey key, Timestamp ifLostService, Timestamp ifRegainedService) {
-				RTCNode rtcN = findRTCNode(key);
-				// if we can't find the node it doesn't belong to any category
-				if (rtcN == null) return;
-				
-				addOutageToRTCNode(rtcN, ifLostService, ifRegainedService);
-				
-			}
-    		
-    	};
+    	Object[] sqlArgs = createArgs(windowTS, windowTS, args);
     	
     	JdbcTemplate template = new JdbcTemplate(getConnectionFactory());
-    	template.query(getOutagesInWindow, new Object[] {windowTS, windowTS}, rowHandler);
+    	template.query(getOutagesInWindow, sqlArgs, rowHandler);
     	
     }
+
+	private Object[] createArgs(Object arg1, Object arg2, Object[] remaining) {
+		LinkedList args = new LinkedList();
+		args.add(arg1);
+		args.add(arg2);
+		if (remaining != null)
+			args.addAll(Arrays.asList(remaining));
+		return args.toArray();
+	}
 
 	private Category log() {
 		return ThreadCategory.getInstance(DataManager.class);
@@ -572,7 +400,7 @@ public class DataManager extends Object {
     	m_map = new RTCHashMap(30000);
 
     	// Populate the nodes initially from the database
-    	populateNodesFromDB();
+    	populateNodesFromDB(null, null);
 
     }
 
@@ -645,7 +473,7 @@ public class DataManager extends Object {
                 log().debug("rtcN : Rescanning services on : " + ip);
             }
             try {
-                rtcNodeIpRescan(nodeid, ip);
+                rtcNodeRescan(nodeid);
             } catch (FilterParseException ex) {
                 log().warn("Failed to unmarshall database config", ex);
                 throw new UndeclaredThrowableException(ex);
@@ -676,7 +504,7 @@ public class DataManager extends Object {
      */
     public synchronized void nodeLostService(long nodeid, String ip, String svcName, long t) {
         RTCNodeKey key = new RTCNodeKey(nodeid, ip, svcName);
-        RTCNode rtcN = (RTCNode) m_map.get(key);
+        RTCNode rtcN = m_map.getRTCNode(key);
         if (rtcN == null) {
             // oops! got a lost/regained service for a node that is not known?
             log().info("Received a nodeLostService event for an unknown/irrelevant node: " + key.toString());
@@ -699,8 +527,7 @@ public class DataManager extends Object {
      *            the time at which service was lost
      */
     public synchronized void interfaceDown(long nodeid, String ip, long t) {
-        String key = Long.toString(nodeid) + ip;
-        List nodesList = (List) m_map.get(key);
+        List nodesList = m_map.getRTCNodes(nodeid, ip);
         if (nodesList == null) {
             // nothing to do - node/ip probably does not belong
             // to any of the categories
@@ -726,8 +553,7 @@ public class DataManager extends Object {
      *            the time at which service was lost
      */
     public synchronized void nodeDown(long nodeid, long t) {
-        Long key = new Long(nodeid);
-        List nodesList = (List) m_map.get(key);
+    	List nodesList = m_map.getRTCNodes(nodeid);
         if (nodesList == null) {
             // nothing to do - node probably does not belong
             // to any of the categories
@@ -753,8 +579,7 @@ public class DataManager extends Object {
      *            the time at which service was regained
      */
     public synchronized void nodeUp(long nodeid, long t) {
-        Long key = new Long(nodeid);
-        List nodesList = (List) m_map.get(key);
+    	List nodesList = m_map.getRTCNodes(nodeid);
         if (nodesList == null) {
             // nothing to do - node probably does not belong
             // to any of the categories
@@ -782,8 +607,7 @@ public class DataManager extends Object {
      *            the time at which service was regained
      */
     public synchronized void interfaceUp(long nodeid, String ip, long t) {
-        String key = Long.toString(nodeid) + ip;
-        List nodesList = (List) m_map.get(key);
+        List nodesList = m_map.getRTCNodes(nodeid, ip);
         if (nodesList == null) {
             // nothing to do - node/ip probably does not belong
             // to any of the categories
@@ -814,7 +638,7 @@ public class DataManager extends Object {
      */
     public synchronized void nodeRegainedService(long nodeid, String ip, String svcName, long t) {
         RTCNodeKey key = new RTCNodeKey(nodeid, ip, svcName);
-        RTCNode rtcN = (RTCNode) m_map.get(key);
+        RTCNode rtcN = m_map.getRTCNode(key);
         if (rtcN == null) {
             // oops! got a lost/regained service for a node that is not known?
             log().info("Received a nodeRegainedService event for an unknown/irrelevant node: " + key.toString());
@@ -840,7 +664,7 @@ public class DataManager extends Object {
         RTCNodeKey key = new RTCNodeKey(nodeid, ip, svcName);
 
         // lookup the node
-        RTCNode rtcN = (RTCNode) m_map.get(key);
+        RTCNode rtcN = m_map.getRTCNode(key);
         if (rtcN == null) {
             log().warn("Received a " + EventConstants.SERVICE_DELETED_EVENT_UEI + " event for an unknown node: " + key.toString());
 
@@ -877,14 +701,26 @@ public class DataManager extends Object {
         }
 
         // finally remove from map
+        
+        m_map.delete(rtcN);
 
-        m_map.remove(key);
-        m_map.delete(rtcN.getNodeID(), rtcN);
-        m_map.delete(rtcN.getNodeID(), rtcN.getIP(), rtcN);
+    }
+    
+    public synchronized void assetInfoChanged(long nodeid) {
+        try {
+        	rtcNodeRescan(nodeid);
+        } catch (FilterParseException ex) {
+            log().warn("Failed to unmarshall database config", ex);
+            throw new UndeclaredThrowableException(ex);
+        } catch (SQLException ex) {
+            log().warn("Failed to get database connection", ex);
+            throw new UndeclaredThrowableException(ex);
+        } catch (RTCException ex) {
+            log().warn("Failed to get database connection", ex);
+            throw new UndeclaredThrowableException(ex);
+        }
 
-        // allow for gc
-        rtcN = null;
-
+    	
     }
 
     /**
@@ -904,256 +740,16 @@ public class DataManager extends Object {
      *             category rule fails for some reason
      */
     public synchronized void rtcNodeRescan(long nodeid) throws SQLException, FilterParseException, RTCException {
-        // Get a new database connection
-        java.sql.Connection dbConn = null;
-        ResultSet ipRS = null;
-        try {
-            try {
-                dbConn = DatabaseConnectionFactory.getInstance().getConnection();
-            } catch (SQLException ex) {
-                log().warn("Failed to get database connection", ex);
-                throw new UndeclaredThrowableException(ex);
-            }
-
-            // Prepare the statement to get the IP addresses assigned to a node.
-            PreparedStatement nodeIPsGetStmt = dbConn.prepareStatement(RTCConstants.SQL_DB_NODE_IPADDRS);
-
-            // get IP addresses for this node
-
-            nodeIPsGetStmt.setString(1, String.valueOf(nodeid));
-
-            ipRS = nodeIPsGetStmt.executeQuery();
-            while (ipRS.next()) {
-                // Call the method to rescan the node and IP address
-                rtcNodeIpRescan(nodeid, ipRS.getString(1));
-            }
-        }
-
-        finally {
-            try {
-                if (ipRS != null)
-                    ipRS.close();
-            } catch (Exception e) {
-                if (log().isDebugEnabled())
-                    log().debug("Exception while closing the get node IPs result set - node: " + nodeid, e);
-            }
-        }
-    }
-
-    /**
-     * Update the categories for a node. When SNMP is discovered on a node, we
-     * need to recalculate the categories for that node in case the filter is
-     * based on SNMP information. This method can be used for any node that
-     * requires the categories to be updated.
-     * 
-     * @param nodeid
-     *            the nodeid on which SNMP service was added
-     * @param ip
-     *            the ip on which SNMP service was added
-     * 
-     * @throws SQLException
-     *             if the database read fails due to an SQL error
-     * @throws FilterParseException
-     *             if filtering the data against the category rule fails due to
-     *             the rule being incorrect
-     * @throws RTCException
-     *             if the database read or filtering the data against the
-     *             category rule fails for some reason
-     */
-    public synchronized void rtcNodeIpRescan(long nodeid, String ip) throws SQLException, FilterParseException, RTCException {
-        // Get a new database connection
-        java.sql.Connection dbConn = null;
-        try {
-            try {
-                dbConn = DatabaseConnectionFactory.getInstance().getConnection();
-            } catch (SQLException ex) {
-                log().warn("Failed to get database connection", ex);
-                throw new UndeclaredThrowableException(ex);
-            }
-
-            // Create the filter
-            Filter filter = new Filter();
-
-            // Prepare the statement to get service entries for each IP
-            PreparedStatement servicesGetStmt = dbConn.prepareStatement(RTCConstants.DB_GET_SVC_ENTRIES);
-            // Prepared statement to get node info for an ip
-            PreparedStatement ipInfoGetStmt = dbConn.prepareStatement(RTCConstants.DB_GET_INFO_FOR_IP);
-            // Prepared statement to get outages entries
-            PreparedStatement outagesGetStmt = dbConn.prepareStatement(RTCConstants.DB_GET_OUTAGE_ENTRIES);
-
-            // loop through the categories
-
-            Iterator catIter = m_categories.values().iterator();
-            while (catIter.hasNext()) {
-                RTCCategory cat = (RTCCategory) catIter.next();
-
-                // get the rule for this category, get the list of nodes that
-                // satisfy this rule
-                String filterRule = cat.getEffectiveRule();
-
-                if (log().isDebugEnabled())
-                    log().debug("Category: " + cat.getLabel() + "\t" + filterRule);
-
-                String catip = null;
-                ResultSet ipRS = null;
-                try {
-                    List nodeIPs = filter.getIPList(filterRule);
-
-                    // See if the node is currently in the category
-                    boolean ipInCat = false;
-                    boolean ipInFilter = false;
-                    List catnodelist = cat.getNodes();
-                    Long longnodeid = Long.valueOf(String.valueOf(nodeid));
-                    ipInCat = catnodelist.contains(longnodeid);
-
-                    if (log().isDebugEnabled())
-                        log().debug("IP in cat: " + ipInCat);
-
-                    // Interesting problem. Since it is not possible to
-                    // determine if a node has been
-                    // added to a category with a particular service, on a
-                    // rescan it is best
-                    // to delete the node from the category and re-add it.
-
-                    if (ipInCat) {
-                        ipInCat = false;
-                        cat.deleteNode(nodeid);
-                    }
-
-                    Iterator nodeIter = nodeIPs.iterator();
-                    while (nodeIter.hasNext()) {
-                        catip = (String) nodeIter.next();
-
-                        // Only care if the catip is equal to ip
-                        if (catip.equals(ip))
-                            ipInFilter = true;
-                    }
-
-                    if (log().isDebugEnabled())
-                        log().debug("IP in filter: " + ipInFilter);
-
-                    if (log().isDebugEnabled())
-                        log().debug("Number of IPs satisfying rule: " + nodeIPs.size());
-
-                    if (log().isDebugEnabled())
-                        log().debug("IP: " + ip);
-
-                    // get node info for this ip
-                    ipInfoGetStmt.setString(1, ip);
-
-                    ipRS = ipInfoGetStmt.executeQuery();
-                    while (ipRS.next()) {
-                        int nodeColIndex = 1;
-
-                        long catnodeid = ipRS.getLong(nodeColIndex++);
-
-                        if (log().isDebugEnabled())
-                            log().debug("IP->node info lookup result: " + catnodeid);
-
-                        if (nodeid != catnodeid)
-                            continue;
-
-                        //
-                        // get the services for this IP address
-                        //
-                        ResultSet svcRS = null;
-                        servicesGetStmt.setLong(1, nodeid);
-                        servicesGetStmt.setString(2, ip);
-                        svcRS = servicesGetStmt.executeQuery();
-
-                        // create node objects for this nodeID/IP/service
-                        while (svcRS.next()) {
-                            int colIndex = 1;
-
-                            // read data from the resultset
-                            String svcname = svcRS.getString(colIndex++);
-
-                            if (log().isDebugEnabled())
-                                log().debug("services result: " + nodeid + "\t" + ip + "\t" + svcname);
-
-                            // unless the service found is in the category's
-                            // services list,
-                            // do not add that service
-                            if (ipInFilter && !ipInCat) {
-                                if (!cat.containsService(svcname)) {
-                                    if (log().isDebugEnabled())
-                                        log().debug("service " + svcname + " not in category service list of cat " + cat.getLabel() + " - skipping " + nodeid + "\t" + ip + "\t" + svcname);
-                                    continue;
-                                }
-
-                                // see if the node is in this category
-                                if (log().isDebugEnabled())
-                                    log().debug("Adding service to category");
-                                addNodeIpSvcToCategory(nodeid, ip, svcname, cat, outagesGetStmt);
-                            } else if (!ipInFilter && ipInCat) {
-                                if (!cat.containsService(svcname)) {
-                                    if (log().isDebugEnabled())
-                                        log().debug("service " + svcname + " not in category service list of cat " + cat.getLabel() + " - skipping " + nodeid + "\t" + ip + "\t" + svcname);
-                                    continue;
-                                }
-
-                                // delete the node from this category
-                                if (log().isDebugEnabled())
-                                    log().debug("Deleting service to category");
-                                delNodeIpSvcToCategory(nodeid, ip, svcname, cat);
-                            }
-                        }
-                    }
-                } catch (SQLException e) {
-                    if (log().isDebugEnabled())
-                        log().debug("Unable to get node list for category \'" + cat.getLabel(), e);
-                    throw e;
-                } catch (FilterParseException e) {
-                    // if we get here, the error was most likely in
-                    // getting the nodelist from the filters
-                    if (log().isDebugEnabled())
-                        log().debug("Unable to get node list for category \'" + cat.getLabel(), e);
-
-                    // throw exception
-                    throw e;
-                } catch (Exception e) {
-                    if (log().isDebugEnabled())
-                        log().debug("Unable to get node list for category \'" + cat.getLabel(), e);
-
-                    // throw rtc exception
-                    throw new RTCException("Unable to get node list for category \'" + cat.getLabel() + "\':\n\t" + e.getMessage());
-                } finally {
-                    try {
-                        if (ipRS != null)
-                            ipRS.close();
-                    } catch (Exception e) {
-                        if (log().isDebugEnabled())
-                            log().debug("Exception while closing the ip get node info result set - ip: " + ip, e);
-                    }
-                }
-            }
-
-            //
-            // close the prepared statements
-            //
-            try {
-                if (servicesGetStmt != null)
-                    servicesGetStmt.close();
-
-                if (ipInfoGetStmt != null)
-                    ipInfoGetStmt.close();
-
-                if (outagesGetStmt != null)
-                    outagesGetStmt.close();
-            } catch (SQLException csqle) {
-                if (log().isDebugEnabled())
-                    log().debug("Exception while closing the prepared statements after populating nodes from DB");
-
-                // do nothing
-            }
-        } finally {
-            if (dbConn != null)
-                try {
-                    dbConn.close();
-                } catch (Exception e) {
-                }
-            ;
-        }
+    	
+    	for (Iterator it = m_categories.values().iterator(); it.hasNext();) {
+			RTCCategory cat = (RTCCategory) it.next();
+			cat.deleteNode(nodeid);
+		}
+    	
+    	m_map.deleteNode(nodeid);
+    	
+    	populateNodesFromDB("ifsvc.nodeid = ?", new Object[] { new Long(nodeid) });
+    	
     }
 
     /**
@@ -1178,54 +774,26 @@ public class DataManager extends Object {
      */
     public synchronized void interfaceReparented(String ip, long oldNodeId, long newNodeId) {
         // get all RTCNodes with the ip/oldNodeId
-        String key = Long.toString(oldNodeId) + ip;
-        List nodesList = (List) m_map.get(key);
+    	List nodesList = m_map.getRTCNodes(oldNodeId, ip);
         if (nodesList == null) {
             // nothing to do - simply means ip does not belong
             // to any of the categories
             return;
         }
 
-        // iterate through this list
-        ListIterator listIter = nodesList.listIterator();
+        // iterate through this list - make a copy as we modify it as we iterate
+        ListIterator listIter = new LinkedList(nodesList).listIterator();
         while (listIter.hasNext()) {
             RTCNode rtcN = (RTCNode) listIter.next();
 
-            // get the key for this node
-            RTCNodeKey rtcnKey = new RTCNodeKey(rtcN.getNodeID(), rtcN.getIP(), rtcN.getSvcName());
-
-            // remove the node pointed to by this key from the map
-            m_map.remove(rtcnKey);
-
-            // remove this node from the list pointed to
-            // by the nodeid key
-            m_map.delete(oldNodeId, rtcN);
-
-            // remove from current list pointed to by the iterator
-            listIter.remove();
-
-            //
-            // !!!!!NOTE!!!!!!!
-            // This node could belong to more than one
-            // category. However, category rule evaluation is done
-            // based ONLY on the IP - therefore there is no need to
-            // re-evaluate the validity against the rule
-            //
+            // remove the node with the oldnode id from the map
+            m_map.delete(rtcN);
 
             // change the nodeid on the RTCNode
             rtcN.setNodeID(newNodeId);
 
-            // get the new key for this node
-            rtcnKey.setNodeID(newNodeId);
-
-            // add new node to the map
-            m_map.put(rtcnKey, rtcN);
-
-            // add to the nodeid map
-            m_map.add(newNodeId, rtcN);
-
-            // add to the nodeid/ip map
-            m_map.add(newNodeId, ip, rtcN);
+            // now add the node with the new nodeid
+            m_map.add(rtcN);
 
             // remove old nodeid from the categories it belonged to
             // and the new nodeid
@@ -1239,32 +807,6 @@ public class DataManager extends Object {
             }
 
         }
-    }
-
-    /**
-     * Get the rtcnode with this nodeid/ip/svcname.
-     * 
-     * @param nodeid
-     *            the node id
-     * @param ip
-     *            the interface
-     * @param svcName
-     *            the service
-     */
-    public synchronized RTCNode get(long nodeid, String ip, String svcName) {
-        RTCNodeKey key = new RTCNodeKey(nodeid, ip, svcName);
-        return (RTCNode) m_map.get(key);
-    }
-
-    /**
-     * Get the node from it's key.
-     * 
-     * @param key
-     *            the RTCNodeKey
-     * @return the node for this key.
-     */
-    public synchronized RTCNode get(RTCNodeKey key) {
-        return (RTCNode) m_map.get(key);
     }
 
     /**

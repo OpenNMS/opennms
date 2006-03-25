@@ -39,10 +39,12 @@
 package org.opennms.netmgt.rtc.datablock;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
 
 /**
  * The RTCHashMap has either a nodeid or a nodeid/ip as key and provides
@@ -52,28 +54,53 @@ import java.util.Set;
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Kumaraswamy </A>
  * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
  */
-public class RTCHashMap extends HashMap {
+public class RTCHashMap {
+	
+	Map m_map;
+	
     /**
      * Default constructor
      */
     public RTCHashMap() {
-        super();
+    	m_map = new HashMap();
     }
 
     /**
      * constructor
      */
     public RTCHashMap(int initialCapacity) {
-        super(initialCapacity);
+        m_map = new HashMap(initialCapacity);
     }
 
     /**
      * constructor
      */
     public RTCHashMap(int initialCapacity, float loadFactor) {
-        super(initialCapacity, loadFactor);
+    	m_map = new HashMap(initialCapacity, loadFactor);
     }
-
+    
+    private void put(Object key, Object value) {
+    	m_map.put(key, value);
+    }
+    
+    private Object get(Object key) {
+    	return m_map.get(key);
+    }
+    
+    private Object remove(Object key) {
+    	return m_map.remove(key);
+    }
+    
+    private List getNodeIDs() {
+    	List nodes = new LinkedList();
+    	for (Iterator it = m_map.keySet().iterator(); it.hasNext();) {
+			Object key = it.next();
+			if (key instanceof Long)
+				nodes.add(key);
+		}
+    	return nodes;
+    }
+    
     /**
      * Add the node with nodeid as key
      * 
@@ -82,7 +109,7 @@ public class RTCHashMap extends HashMap {
      * @param rtcN
      *            the RTCNode to add
      */
-    public void add(long nodeid, RTCNode rtcN) {
+    private void add(long nodeid, RTCNode rtcN) {
         Long key = new Long(nodeid);
 
         List nodesList = (List) get(key);
@@ -108,7 +135,7 @@ public class RTCHashMap extends HashMap {
      * @param rtcN
      *            the RTCNode to add
      */
-    public void add(long nodeid, String ip, RTCNode rtcN) {
+    private void add(long nodeid, String ip, RTCNode rtcN) {
         String key = Long.toString(nodeid) + ip;
 
         List nodesList = (List) get(key);
@@ -123,7 +150,29 @@ public class RTCHashMap extends HashMap {
             put(key, nodesList);
         }
     }
-
+    
+    private void add(long nodeid, String ip, String svcName, RTCNode rtcN) {
+    	put(new RTCNodeKey(nodeid, ip, svcName), rtcN);
+    }
+    
+    /**
+     * Add an rtc node
+     * 
+     * @param rtcN the rtcNode to add
+     */
+    public void add(RTCNode rtcN) {
+    	add(rtcN.getNodeID(), rtcN);
+    	add(rtcN.getNodeID(), rtcN.getIP(), rtcN);
+    	add(rtcN.getNodeID(), rtcN.getIP(), rtcN.getSvcName(), rtcN);
+    }
+    
+    public void delete(RTCNode rtcN) {
+    	delete(rtcN.getNodeID(), rtcN);
+    	delete(rtcN.getNodeID(), rtcN.getIP(), rtcN);
+    	delete(rtcN.getNodeID(), rtcN.getIP(), rtcN.getSvcName(), rtcN);
+    }
+    
+    
     /**
      * Delete the node from list with nodeid as key
      * 
@@ -132,7 +181,7 @@ public class RTCHashMap extends HashMap {
      * @param rtcN
      *            the RTCNode to delete
      */
-    public void delete(long nodeid, RTCNode rtcN) {
+    private void delete(long nodeid, RTCNode rtcN) {
         Long key = new Long(nodeid);
 
         List nodesList = (List) get(key);
@@ -151,13 +200,18 @@ public class RTCHashMap extends HashMap {
      * @param rtcN
      *            the RTCNode to add
      */
-    public void delete(long nodeid, String ip, RTCNode rtcN) {
+    private void delete(long nodeid, String ip, RTCNode rtcN) {
         String key = Long.toString(nodeid) + ip;
 
         List nodesList = (List) get(key);
         if (nodesList != null) {
             nodesList.remove(rtcN);
         }
+    }
+    
+    private void delete(long nodeid, String ip, String svcName, RTCNode rtcN) {
+    	RTCNodeKey key = new RTCNodeKey(nodeid, ip, svcName);
+    	remove(key);
     }
 
     /**
@@ -173,7 +227,7 @@ public class RTCHashMap extends HashMap {
      * @return true if ip has already been validated, false otherwise
      */
     public boolean isIpValidated(long nodeid, String ip, String catLabel) {
-        List nodesList = (List) get(Long.toString(nodeid) + ip);
+        List nodesList = getRTCNodes(nodeid, ip);
         if (nodesList == null) {
             return false;
         }
@@ -216,16 +270,12 @@ public class RTCHashMap extends HashMap {
         long downTime = 0;
 
         // get all nodes in the hashtable
-        Set keys = keySet();
-        Iterator keyIter = keys.iterator();
-        while (keyIter.hasNext()) {
+        List nodes = getNodeIDs();
+        Iterator it = nodes.iterator();
+        while (it.hasNext()) {
             // get only values of nodeids
-            Object key = keyIter.next();
-            if (!(key instanceof Long)) {
-                continue;
-            }
-
-            List valList = (List) get((Long) key);
+            Long key = (Long)it.next();
+            List valList = getRTCNodes(key.longValue());
             if (valList == null || valList.size() == 0)
                 continue;
 
@@ -290,7 +340,7 @@ public class RTCHashMap extends HashMap {
         long downTime = 0;
 
         // get nodeslist
-        List nodesList = (List) get(new Long(nodeid));
+        List nodesList = getRTCNodes(nodeid);
         Iterator iter = nodesList.iterator();
         while (iter.hasNext()) {
             RTCNode node = (RTCNode) iter.next();
@@ -341,7 +391,7 @@ public class RTCHashMap extends HashMap {
         int count = 0;
 
         // get nodeslist
-        List nodesList = (List) get(new Long(nodeid));
+        List nodesList = getRTCNodes(nodeid);
         Iterator iter = nodesList.iterator();
         while (iter.hasNext()) {
             RTCNode node = (RTCNode) iter.next();
@@ -371,7 +421,7 @@ public class RTCHashMap extends HashMap {
         int count = 0;
 
         // get nodeslist
-        List nodesList = (List) get(new Long(nodeid));
+        List nodesList = getRTCNodes(nodeid);
         Iterator iter = nodesList.iterator();
         while (iter.hasNext()) {
             RTCNode node = (RTCNode) iter.next();
@@ -383,5 +433,36 @@ public class RTCHashMap extends HashMap {
 
         return count;
     }
+
+	public RTCNode getRTCNode(RTCNodeKey key) {
+		return (RTCNode)get(key);
+	}
+	
+	public RTCNode getRTCNode(long nodeid, String ipaddr, String svcname) {
+		return getRTCNode(new RTCNodeKey(nodeid, ipaddr, svcname));
+	}
+	
+	public List getRTCNodes(long nodeid) {
+		Long key = new Long(nodeid);
+		List nodes = (List)get(key);
+		if (nodes == null) return null;
+		return Collections.unmodifiableList(nodes); 
+	}
+	
+	public List getRTCNodes(long nodeid, String ip) {
+		String key = Long.toString(nodeid)+ip;
+		List nodes = (List)get(key);
+		if (nodes == null) return null;
+		return Collections.unmodifiableList(nodes);
+	}
+
+	public void deleteNode(long nodeid) {
+		List nodeList = new ArrayList(getRTCNodes(nodeid));
+		for (Iterator it = nodeList.iterator(); it.hasNext();) {
+			RTCNode rtcN = (RTCNode) it.next();
+			delete(rtcN);
+		}
+		
+	}
 
 }
