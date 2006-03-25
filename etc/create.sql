@@ -913,6 +913,8 @@ create table assets (
 	constraint fk_nodeID5 foreign key (nodeID) references node ON DELETE CASCADE
 );
 
+CREATE INDEX assets_an_idx ON assets(assetNumber);
+
 --########################################################################
 --# categories table - Contains list of categories
 --#                     for nodes, interfaces, and services
