@@ -1,5 +1,17 @@
 1.3.1 to 1.3.2
 ----------------------------------------------------------------------
+- Significantly improved RTC startup time. (DB with 40K nodes and 30
+  categories configured took 3.5 hours to init RTCd.  With improvements,
+  time now < 2 minutes) (way to go brozow!)
+- Improved category feature with new category_node and categories
+  tables along with new database-schema.xml file.  Use categoryName
+  now in your filter rules by populating categories and category_node
+  tables appropriately.
+- Changed snmpIfSpeed in the snmpinterface table to a bigint and made
+  appropriate int->long and Integer->Long changes refering to ifSpeed
+  Changed installer to not pg_dump using "-D" flag.  Be sure to run 
+  the installer with the "-disU" option.  DJ - change this
+  back if you see fit. Bug 1398.
 - Added support for range attribute in threshd packages. When specified
   this will fetch the last non NaN value from an rrd between now and
   now minus range. Bug 1432.
@@ -27,18 +39,6 @@
   on most platforms and libjicmp.jnilib on Mac OS X.
 - Add NSClient capsd plugin and poller monitor written by Matt Raykowski,
   <matt.raykowski@gmail.com>.  Thanks, Matt!  Enhancement bug #1389.
-- Changed snmpIfSpeed in the snmpinterface table to a bigint and made
-  appropriate int->long and Integer->Long changes refering to ifSpeed
-  Changed installer to not pg_dump using "-D" flag.  Be sure to run 
-  the installer with the "-disU" option.  DJ - change this
-  back if you see fit. Bug 1398.
-- Improved category feature with new category_node and categories
-  tables along with new database-schema.xml file.  Use categoryName
-  now in your filter rules by populating categories and category_node
-  tables appropriately.
-- Significantly improved RTC startup time. (DB with 40K nodes and 30
-  categories configured took 3.5 hours to init RTCd.  With improvements,
-  time now < 2 minutes) (way to go brozow!)
   
 1.3.0 to 1.3.1
 ----------------------------------------------------------------------
