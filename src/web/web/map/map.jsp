@@ -50,16 +50,6 @@
 
    String refreshVal = new Integer( new Integer(refresh).intValue() * 60 ).toString();
 %>
-<%--
-<html>
-<head>
-  <title>Map | OpenNMS Web Console</title>
-  <base HREF="<%=org.opennms.web.Util.calculateUrlBase( request )%>" />
-  <link rel="stylesheet" type="text/css" href="css/styles.css" />
-  <meta http-equiv="refresh" content="<%= refreshVal %>" />
-</head>
-<body marginwidth="0" marginheight="0" LEFTMARGIN="0" RIGHTMARGIN="0" TOPMARGIN="0">
---%>
 
 <% 
    String breadcrumb1 = "<a href='map/index.jsp'>Map</a>";
