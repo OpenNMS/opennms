@@ -1243,7 +1243,7 @@ public class Installer {
 
 		m_out.print("  - dumping data to " + dumpFile + "... ");
 		String[] cmd1 = { m_pg_bindir + File.separator + "pg_dump", "-U",
-				m_pg_user, "-a", "-D", m_database, "-f", dumpFile };
+				m_pg_user, "-a", m_database, "-f", dumpFile };
 		if ((exitVal = e.exec(cmd1)) != 0) {
 			throw new Exception("Dumping database returned non-zero exit "
 					+ "value " + exitVal + " while executing " + "command '"

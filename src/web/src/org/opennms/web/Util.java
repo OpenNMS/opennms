@@ -192,13 +192,15 @@ public abstract class Util extends Object {
      * @return A string representation of the speed (&quot;100 Mbps&quot; for
      *         example)
      */
-    public static String getHumanReadableIfSpeed(int ifSpeed) {
-        if (ifSpeed == 10000000)
+    public static String getHumanReadableIfSpeed(long ifSpeed) {
+        if (ifSpeed == 10000000L)
             return "10 Mbps";
-        else if (ifSpeed == 100000000)
+        else if (ifSpeed == 100000000L)
             return "100 Mbps";
-        else if (ifSpeed == 1000000000)
+        else if (ifSpeed == 1000000000L)
             return "1.0 Gbps";
+        else if (ifSpeed == 10000000000L)
+            return "10.0 Gbps";
         else
             return (String.valueOf(ifSpeed) + " bps");
     }

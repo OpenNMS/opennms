@@ -114,7 +114,7 @@ public class MockDatabase implements DbConnectionFactory, EventWriter {
                 "snmpIfDesc varchar(256)," +
                 "snmpIfType integer," +
                 "snmpIfName varchar(32)," +
-                "snmpIfSpeed integer," +
+                "snmpIfSpeed bigint," +
                 "snmpIfAdminStatus integer," +
                 "snmpIfOperStatus integer," +
                 "snmpIfAlias varchar(32)," +

@@ -315,8 +315,8 @@ public class PerformanceModel extends Object {
                 String ipaddr = (String) intfMap.get("ipaddr");
                 parenString += ((parenString.equals("")) ? ipaddr : (", " + ipaddr));
             }
-            if ((intfMap.get("snmpifspeed") != null) && (Integer.parseInt((String) intfMap.get("snmpifspeed")) != 0)) {
-                String speed = Util.getHumanReadableIfSpeed(Integer.parseInt((String) intfMap.get("snmpifspeed")));
+            if ((intfMap.get("snmpifspeed") != null) && (Long.parseLong((String) intfMap.get("snmpifspeed")) != 0)) {
+                String speed = Util.getHumanReadableIfSpeed(Long.parseLong((String) intfMap.get("snmpifspeed")));
                 parenString += ((parenString.equals("")) ? speed : (", " + speed));
             }
 

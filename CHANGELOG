@@ -1,5 +1,10 @@
 1.2.7 to 1.2.8
 ----------------------------------------------------------------------
+- Changed snmpIfSpeed in the snmpinterface table to a bigint and made
+  appropriate int->long and Integer->Long changes refering to ifSpeed
+  Changed installer to not pg_dump using "-D" flag.  Be sure to run 
+  the installer with the "-disU" option.  DJ - change this
+  back if you see fit. Bug 1398.  Fix backported from HEAD.
 - Attempting to clean up PostgreSQL connection hangs with clean up of
   Capsd.BroadcastEventProcessor ResultSets and Statments.  This should
   not be necessary, however, we do have a lot of these objects that just

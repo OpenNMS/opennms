@@ -61,7 +61,7 @@ public class Interface {
 
     int m_snmpIfOperStatus;
 
-    int m_snmpIfSpeed;
+    long m_snmpIfSpeed;
 
     int m_snmpIfAdminStatus;
     
@@ -125,7 +125,7 @@ public class Interface {
         return m_snmpIfOperStatus;
     }
 
-    public int getSnmpIfSpeed() {
+    public long getSnmpIfSpeed() {
         return m_snmpIfSpeed;
     }
 
