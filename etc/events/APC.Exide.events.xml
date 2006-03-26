@@ -2025,8 +2025,8 @@ The included variables provide additional information on the test.&lt;/p&gt;&lt;
         <event-label>XUPS-MIB defined trap event: xupsGenericUnknownEvent</event-label>
         <descr>
 &lt;p&gt;An event was received with the Exide (APC) enterprise ID, but no configuration exists
-for this event in eventconf.xml.&lt;/p&gt;&lt;
-&lt;p&gt;(enterprise:%id% generic:%generic% specific:%specific%). %parm[##]%&lt;/p&gt;&lt;
+for this event in eventconf.xml.&lt;/p&gt;
+&lt;p&gt;(enterprise:%id% generic:%generic% specific:%specific%). %parm[##]%&lt;/p&gt;
         </descr>
                 <logmsg dest='logndisplay'>&lt;p&gt;
                         APC XUPS Event: Generic Unknown Event

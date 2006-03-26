@@ -65,6 +65,14 @@
 				<mibObj oid=".1.3.6.1.2.1.33.1.2.5" instance="0" alias="upsBatteryVoltage" type="Integer32" />
 				<mibObj oid=".1.3.6.1.2.1.33.1.2.6" instance="0" alias="upsBatteryCurrent" type="Integer32" />
 				<mibObj oid=".1.3.6.1.2.1.33.1.2.7" instance="0" alias="upsBatteryTemp" type="Integer32" />
+				<mibObj oid=".1.3.6.1.2.1.33.1.3.3.1.2" instance="1" alias="upsInputFrequency1" type="Integer32" />
+				<mibObj oid=".1.3.6.1.2.1.33.1.3.3.1.3" instance="1" alias="upsInputVoltage1" type="Integer32" />
+				<mibObj oid=".1.3.6.1.2.1.33.1.4.1" instance="0" alias="upsOutputSource" type="Integer32" />
+				<mibObj oid=".1.3.6.1.2.1.33.1.4.2" instance="0" alias="upsOutputFrequency" type="Integer32" />
+				<mibObj oid=".1.3.6.1.2.1.33.1.4.4.1.2" instance="1" alias="upsOutputVoltage1" type="Integer32" />
+				<mibObj oid=".1.3.6.1.2.1.33.1.4.4.1.3" instance="1" alias="upsOutputCurrent1" type="Integer32" />
+				<mibObj oid=".1.3.6.1.2.1.33.1.4.4.1.4" instance="1" alias="upsOutputPower1" type="Integer32" />
+				<mibObj oid=".1.3.6.1.2.1.33.1.4.4.1.5" instance="1" alias="upsOutputLoad1" type="Integer32" />
  			</group>
                         <group  name = "printer-usage" ifType = "ignore">
                                 <mibObj oid="1.3.6.1.2.1.43.10.2.1.4.1"    instance="1" alias="lifeCount" type="Gauge" />

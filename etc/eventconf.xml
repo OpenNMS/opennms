@@ -57,6 +57,7 @@
         <event-file>@install.etc.dir@/events/Symbol.events.xml</event-file>
 <!--        <event-file>@install.etc.dir@/events/Symbol-WS5000.events.xml</event-file> -->
         <event-file>@install.etc.dir@/events/SystemEdge.events.xml</event-file>
+        <event-file>@install.etc.dir@/events/UPS-MIB.events.xml</event-file>
         <event-file>@install.etc.dir@/events/Uptime.events.xml</event-file>
         <event-file>@install.etc.dir@/events/Xerox.events.xml</event-file>
 
