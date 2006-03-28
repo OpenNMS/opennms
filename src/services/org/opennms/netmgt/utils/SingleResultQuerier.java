@@ -34,11 +34,11 @@ package org.opennms.netmgt.utils;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import org.opennms.netmgt.config.DbConnectionFactory;
+import javax.sql.DataSource;
 
 
 public class SingleResultQuerier extends Querier {
-    public SingleResultQuerier(DbConnectionFactory db, String sql) {
+    public SingleResultQuerier(DataSource db, String sql) {
         super(db, sql);
     }
     

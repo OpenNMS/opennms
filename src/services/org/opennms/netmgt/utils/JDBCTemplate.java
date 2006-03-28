@@ -35,7 +35,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
-import org.opennms.netmgt.config.DbConnectionFactory;
+import javax.sql.DataSource;
 
 /**
  * @author brozow
@@ -43,10 +43,10 @@ import org.opennms.netmgt.config.DbConnectionFactory;
  */
 abstract public class JDBCTemplate {
 
-    private DbConnectionFactory m_db;
+    private DataSource m_db;
     private String m_sql;
     
-    protected JDBCTemplate(DbConnectionFactory db, String sql) {
+    protected JDBCTemplate(DataSource db, String sql) {
         m_db = db;
         m_sql = sql;
     }

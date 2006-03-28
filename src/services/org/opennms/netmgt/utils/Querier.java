@@ -35,13 +35,13 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import org.opennms.netmgt.config.DbConnectionFactory;
+import javax.sql.DataSource;
 
 
 public class Querier extends JDBCTemplate implements RowProcessor {
      private int m_count;
     private RowProcessor m_rowProcessor;
-     public Querier(DbConnectionFactory db, String sql, RowProcessor rowProcessor) {
+     public Querier(DataSource db, String sql, RowProcessor rowProcessor) {
          super(db, sql);
          if (rowProcessor == null)
              m_rowProcessor = this;
@@ -50,7 +50,7 @@ public class Querier extends JDBCTemplate implements RowProcessor {
          m_count = 0;
      }
      
-     public Querier(DbConnectionFactory db, String sql) {
+     public Querier(DataSource db, String sql) {
          this(db, sql, null);
      }
      

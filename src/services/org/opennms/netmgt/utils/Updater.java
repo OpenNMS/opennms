@@ -34,7 +34,7 @@ package org.opennms.netmgt.utils;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
-import org.opennms.netmgt.config.DbConnectionFactory;
+import javax.sql.DataSource;
 
 /**
  * @author brozow
@@ -44,7 +44,7 @@ import org.opennms.netmgt.config.DbConnectionFactory;
  */
 public class Updater extends JDBCTemplate {
     
-    public Updater(DbConnectionFactory db, String sql) {
+    public Updater(DataSource db, String sql) {
         super(db, sql);
     }
 
