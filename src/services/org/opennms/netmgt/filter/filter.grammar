@@ -10,6 +10,7 @@ name             = letter name_part ( '_' name_part)*;
 list             = (number* ',')* number*;
 range            = number* '-' number*;
 service_ident    = 'is' (name | (letter* '-' number*) );
+notservice_ident    = 'notis' (name | (letter* '-' number*) );
 
 Tokens
 semi             = ';';
@@ -30,6 +31,7 @@ rparen           = ')';
 blank            = white_space;
 integer          = number*;
 ident            = service_ident | name;
+notident            = notservice_ident | name;
 quoted_string    = '"' [all - '"']* '"' | ''' [all - ''']* ''';
 dot              = '.';
 star             = '*';
