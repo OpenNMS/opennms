@@ -186,12 +186,11 @@ public abstract class GraphModelAbstract implements GraphModel {
         return getQueries(domain, intf, includeNodeQueries, isNode);
     }
     
-    public PrefabGraph[] getAllQueries(String nodeOrDomain, boolean isNode) {
+    public PrefabGraph[] getAllQueries(String nodeOrDomain, boolean includeNodeQueries, boolean isNode) {
         if (nodeOrDomain == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
         Category log = ThreadCategory.getInstance(this.getClass());
-        boolean includeNodeQueries = false;
         HashMap queryCount = new HashMap();
         String mostFreqQuery = "none";
         int mostFreqCount = 0;

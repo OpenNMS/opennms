@@ -103,13 +103,17 @@
         graph = report.getGraph(0); // get the first graph in the list
 	boolean isNode = false;
         boolean includeNodeQueries = false;
+        if(report_type.equals("custom")) {
+            includeNodeQueries = true;
+        }
+
         if(graph.getDomain() != null && !graph.getDomain().equals("null")) {
-            graph_options = this.model.getAllQueries (graph.getDomain(), isNode);
+            graph_options = this.model.getAllQueries (graph.getDomain(), includeNodeQueries, isNode);
 	    this.log("custom_view: Retrieving graph options for domain " + graph.getDomain());
 	}
         else {
 	    isNode = true;
-            graph_options = this.model.getAllQueries (graph.getNodeId(), isNode);
+            graph_options = this.model.getAllQueries (graph.getNodeId(), includeNodeQueries, isNode);
 	    this.log("custom_view: Retrieving graph options for node " + graph.getNodeId());
         }
 
