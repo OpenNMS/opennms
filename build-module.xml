@@ -97,9 +97,93 @@ Build file for OpenNMS Modules.
   ==============================================
   -->
 
+ <!-- stack manipulation macros --> 
+  <macrodef name="stack-init">
+    <attribute name="stack-name"/>
+    <attribute name="initial-value"/>
+    <sequential>
+      <var name="@{stack-name}-values" value=""/>
+      <var name="@{stack-name}-top" value="@{initial-value}"/>
+    </sequential>
+  </macrodef>
+      
+  <macrodef name="stack-push">
+    <attribute name="stack-name"/>
+    <attribute name="value"/>
+    <sequential>
+      <var name="@{stack-name}-values" value="${@{stack-name}-top}#${@{stack-name}-values}" />
+      <var name="@{stack-name}-top" value="@{value}" />
+    </sequential>
+  </macrodef>
+  
+  <macrodef name="stack-pop">
+    <attribute name="stack-name"/>
+    <sequential>
+      <propertyregex property="@{stack-name}-top" override="true" input="${@{stack-name}-values}" regexp="([^#]*)#.*" select="\1" />
+      <propertyregex property="@{stack-name}-values" override="true" input="${@{stack-name}-values}" regexp="[^#]*#(.*)" select="\1" />
+    </sequential>
+  </macrodef>
+ 
+  <!-- path manipulation -->
+  <macrodef name="define-path">
+    <attribute name="path-name"/>
+    <sequential>
+      <property name="@{path-name}.includesfile" value="work/@{path-name}.includesfile"/>
+      <delete failonerror="false" file="${@{path-name}.includesfile}"/> 
+      <touch file="${@{path-name}.includesfile}"/>
+    </sequential> 
+  </macrodef>
+  
+  <macrodef name="add-pathelem">
+     <attribute name="path-name" /> 
+     <attribute name="elem" />
+     <sequential>
+      <echo message="Added @{elem} to @{path-name}"/>
+      <echo append="true" file="${@{path-name}.includesfile}${line.separator}" message="@{elem}" />
+     </sequential>
+  </macrodef> 
+ 
+  <macrodef name="complete-path">
+     <attribute name="path-name"/>
+     <sequential>
+       <fileset dir="${build.jar.dir}" includesfile="${@{path-name}.includesfile}" id="@{path-name}" />
+     </sequential> 
+  </macrodef> 
+  
+  <!-- module stack declaration --> 
+  <macrodef name="module-stack-init">
+    <sequential>
+      <stack-init stack-name="modules" initial-value="ROOT"/>
+    </sequential>
+  </macrodef>
+  
+    <macrodef name="push-module">
+        <attribute name="module-id" />
+        <sequential>
+            <stack-push stack-name="modules" value="@{module-id}"/>
+        </sequential>
+    </macrodef>
+
+    <macrodef name="pop-module">
+        <sequential>
+            <stack-pop stack-name="modules" />
+        </sequential>
+    </macrodef>
+  
+ 
+  <macrodef name="dependency" uri="urn:module-utils">
+    <attribute name="module" />
+    <sequential>
+      <antcall target="@{module}.package" inheritrefs="true" inheritall="true"/>
+      <add-pathelem path-name="${modules-top}.module.dependencies" elem="${@{module}.finalName}.jar"/>
+      <add-pathelem path-name="${modules-top}.module.test-dependencies" elem="${@{module}.finalName}-tests.jar"/>
+    </sequential>
+  </macrodef> 
+
   <!-- define necessary paths/properties etc for a new module -->
   <macrodef name="init" uri="urn:module-utils">
     <attribute name="module" />
+    <element name="module-dependencies" implicit="true" optional="true"/>  
     <sequential>
 
      <!-- define target dirs --> 
@@ -108,8 +192,17 @@ Build file for OpenNMS Modules.
       <property name="@{module}.target.test-classes" value="${@{module}.target}/test-classes" />
       <property name="@{module}.target.test-results" value="${@{module}.target}/test-results" /> 
       <property name="@{module}.generated-sources"   value="${@{module}.target}/generated-sources"/> 
+     
+      <push-module module-id="@{module}" /> 
       
- 
+      <define-path path-name="@{module}.module.dependencies" />
+      <define-path path-name="@{module}.module.test-dependencies" /> 
+      <module-dependencies />
+      <complete-path path-name="@{module}.module.dependencies" />
+      <complete-path path-name="@{module}.module.test-dependencies" /> 
+     
+      <pop-module /> 
+      
       <!-- pom file used for determining external dependencies --> 
       <artifact:pom id="@{module}" file="${@{module}.pomfile}"/>
       
@@ -130,6 +223,7 @@ Build file for OpenNMS Modules.
      
       <!-- define the compile classpath --> 
       <path id="@{module}.compile.classpath">
+        <fileset refid="@{module}.module.dependencies" />
         <path refid="@{module}.compile.dependencies"/>
       </path> 
       
@@ -137,6 +231,8 @@ Build file for OpenNMS Modules.
       <path id="@{module}.test-compile.classpath">
         <pathelement location="${@{module}.target.classes}"/>
         <path refid="@{module}.test.dependencies" />
+        <fileset refid="@{module}.module.dependencies" />
+        <fileset refid="@{module}.module.test-dependencies" />
       </path>
      
      <!-- define the classpath need to run the tests --> 
@@ -147,7 +243,7 @@ Build file for OpenNMS Modules.
     </sequential>
   </macrodef>
  
- <!-- used to make sure resources are copied into the appropriate class path --> 
+  <!-- used to make sure resources are copied into the appropriate class path --> 
   <macrodef name="process-resources" uri="urn:module-utils">
     <attribute name="module" />
     <sequential>
@@ -271,6 +367,13 @@ Build file for OpenNMS Modules.
     </sequential>
   </macrodef> 
  
+  <target name="init-modules">
+   <module-stack-init/> 
+   <mkdir dir="${build.jar.dir}"/> 
+   <!-- touch this file so we can always have something in the classpath --> 
+   <touch file="${build.jar.dir}/opennms_common.jar" /> 
+  </target> 
+ 
   <!--
   ==============================================
   
@@ -300,11 +403,10 @@ Build file for OpenNMS Modules.
   <patternset id="core.test.pattern" refid="default.test.pattern"/>
   <patternset id="core.test-resource.pattern" refid="default.test-resource.pattern"/>
  
-  <target name="init.core">
+  <target name="init.core" depends="init-modules">
     <module:init module="core"/> 
   </target>
   <target name="core.generate-sources" depends="init.core">
-   <ant></ant> 
   </target>
   <target name="core.process-sources" depends="core.generate-sources">
   </target>
@@ -378,7 +480,7 @@ Build file for OpenNMS Modules.
   <patternset id="install.test.pattern" refid="default.test.pattern"/>
   <patternset id="install.test-resource.pattern" refid="default.test-resource.pattern"/>
  
-  <target name="init.install">
+  <target name="init.install" depends="init-modules">
     <module:init module="install"/> 
   </target>
   <target name="install.generate-sources" depends="init.install">
@@ -441,7 +543,7 @@ Build file for OpenNMS Modules.
   <patternset id="bootstrap.test.pattern" refid="default.test.pattern"/>
   <patternset id="bootstrap.test-resource.pattern" refid="default.test-resource.pattern"/>
  
-  <target name="init.bootstrap">
+  <target name="init.bootstrap" depends="init-modules">
     <module:init module="bootstrap"/> 
   </target>
   <target name="bootstrap.generate-sources" depends="init.bootstrap">
@@ -502,7 +604,7 @@ Build file for OpenNMS Modules.
   <patternset id="joesnmp.test.pattern" refid="default.test.pattern"/>
   <patternset id="joesnmp.test-resource.pattern" refid="default.test-resource.pattern"/>
   
-  <target name="init.joesnmp">
+  <target name="init.joesnmp" depends="init-modules">
     <module:init module="joesnmp"/> 
   </target>
   <target name="joesnmp.generate-sources" depends="init.joesnmp">
@@ -548,6 +650,8 @@ Build file for OpenNMS Modules.
   <!-- source path needed for the javac task --> 
  <path id="services.source.path">
    <pathelement location="${basedir}/src/services"/>
+    <pathelement location="${basedir}/work/sablecc"/>
+    <pathelement location="${basedir}/work/castor"/>
  </path>
  
   <!-- source path for compiling tests --> 
@@ -562,10 +666,15 @@ Build file for OpenNMS Modules.
   <patternset id="services.test.pattern" refid="default.test.pattern"/>
   <patternset id="services.test-resource.pattern" refid="default.test-resource.pattern"/>
  
-  <target name="init.services">
-    <module:init module="services"/> 
+  <target name="init.services" depends="init-modules">
+    <module:init module="services">
+       <module:dependency module="core" /> 
+       <module:dependency module="joesnmp" /> 
+     </module:init> 
   </target>
   <target name="services.generate-sources" depends="init.services">
+    <ant antfile="build-sablecc.xml" inheritRefs="true" />
+    <ant antfile="build-castor.xml" inheritRefs="true" />
   </target>
   <target name="services.process-sources" depends="services.generate-sources">
   </target>

@@ -9,6 +9,18 @@
   <name>OpenNMS Services</name>
   <dependencies>
     <dependency>
+      <groupId>c3p0</groupId>
+      <artifactId>c3p0</artifactId>
+      <version>0.9.0-pre5</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>jrobin</groupId>
+      <artifactId>jrobin</artifactId>
+      <version>1.4.0</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
       <groupId>net.sf.jradius</groupId>
       <artifactId>jradius-client</artifactId>
       <version>20040211</version>
@@ -88,7 +100,31 @@
     </dependency>
     <dependency>
       <groupId>org.springframework</groupId>
+      <artifactId>spring-jdbc</artifactId>
+      <version>1.2.6</version>
+      <scope>compile</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>javax.transaction</groupId>
+          <artifactId>jta</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
       <artifactId>spring-context</artifactId>
+      <version>1.2.6</version>
+      <scope>compile</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>javax.transaction</groupId>
+          <artifactId>jta</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-support</artifactId>
       <version>1.2.6</version>
       <scope>compile</scope>
       <exclusions>
@@ -163,6 +199,11 @@
       <artifactId>jmta</artifactId>
       <version>1.0</version>
       <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.snmp4j</groupId>
+      <artifactId>snmp4j</artifactId>
+      <version>1.5</version>
     </dependency>
 <!--
     <dependency>
