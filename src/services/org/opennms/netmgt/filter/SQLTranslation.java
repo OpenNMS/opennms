@@ -103,6 +103,12 @@ public class SQLTranslation extends DepthFirstAdapter {
     public static final String VIRTUAL_NOT_COLUMN_PREFIX = "notis";
 
     /**
+     * Constant to identify a virtual column for determining if an interface
+     * is in a particular category.
+     */
+    public static final String VIRTUAL_CATINC_PREFIX = "catinc";
+
+    /**
      * The list of tables required to create the approriate SQL statement
      */
     private List m_tables;
@@ -212,6 +218,18 @@ public class SQLTranslation extends DepthFirstAdapter {
                 expr = addColumnToStatement(tableForIdent, "serviceName");
             if (expr != null)
                 expr = "ifservices.ipaddr not in (select ipaddr from ifservices,service where service.serviceName ='"+ serviceName + "' and service.serviceID = ifServices.serviceid)";
+        }
+
+        if (expr == null && ident.startsWith(VIRTUAL_CATINC_PREFIX)) {
+            String categoryName = ident.substring(VIRTUAL_CATINC_PREFIX.length());
+            // 
+            // This is a kludge to get Alex's categories working
+            //
+            tableForIdent = m_schemaFactory.findTableByVisableColumn("categoryName");
+            if (tableForIdent != null)
+                expr = addColumnToStatement(tableForIdent, "categoryName");
+            if (expr != null)
+                expr = "ipinterface.nodeid in (select nodeid from category_node, categories where categories.categoryID = category_node.categoryID AND categories.categoryName = '"+ categoryName + "')";
         }
 
         if (expr == null) {

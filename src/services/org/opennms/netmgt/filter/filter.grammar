@@ -11,6 +11,7 @@ list             = (number* ',')* number*;
 range            = number* '-' number*;
 service_ident    = 'is' (name | (letter* '-' number*) );
 notservice_ident    = 'notis' (name | (letter* '-' number*) );
+catinc_ident    = 'catinc' (name | (letter* '-' number*) );
 
 Tokens
 semi             = ';';
