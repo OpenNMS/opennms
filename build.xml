@@ -1636,7 +1636,7 @@ OpenNMS as part of the post-install.
  </target>
 
  <!-- DOCS targets -->
- <target name="docs" depends="javadoc.docs, xsddoc.docs, html.docs, pdf.docs"
+ <target name="docs" depends="javadoc.docs, xsddoc.docs, html.docs"
 	 description="Build javadoc and manuals"/>
  
  <target name="javadoc.docs" depends="prep,sources,javadoc.docs.uptodate"
