@@ -171,7 +171,11 @@ public class Constraint {
             return;
         }
 
-        m = Pattern.compile("(?i)constraint (\\S+) " + "foreign key \\((\\S+)\\) " + "references (\\S+)" + "(?: \\((\\S+)\\))?" + "(\\s+on\\s+delete\\s+cascade)?").matcher(constraint);
+        m = Pattern.compile("(?i)constraint (\\S+) "
+			    + "foreign key \\((\\S+)\\) "
+			    + "references ([^\\s\\(\\)]+)"
+			    + "(?: \\((\\S+)\\))?"
+			    + "(\\s+on\\s+delete\\s+cascade)?").matcher(constraint);
         if (m.matches()) {
             setName(m.group(1));
             setType(FOREIGN_KEY);
