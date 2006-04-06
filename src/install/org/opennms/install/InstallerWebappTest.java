@@ -13,6 +13,8 @@ import java.io.PrintWriter;
 import java.util.ListIterator;
 import java.util.LinkedList;
 
+import org.opennms.test.FileAnticipator;
+
 import junit.framework.TestCase;
 
 public class InstallerWebappTest extends TestCase {
@@ -20,6 +22,8 @@ public class InstallerWebappTest extends TestCase {
 
     private FileAnticipator m_anticipator;
 
+    private File m_tomcat;
+    
     private File m_tomcat_webapps;
 
     private File m_tomcat_conf_dir;
@@ -42,10 +46,10 @@ public class InstallerWebappTest extends TestCase {
         m_anticipator.tempFile(lib, "opennms_services.jar");
         m_anticipator.tempFile(lib, "opennms_web.jar");
 
-        File tomcat = m_anticipator.tempDir("tomcat");
-        m_tomcat_webapps = m_anticipator.tempDir(tomcat, "webapps");
-        m_tomcat_conf_dir = m_anticipator.tempDir(tomcat, "conf");
-        File tomcat_server = m_anticipator.tempDir(tomcat, "server");
+        m_tomcat = m_anticipator.tempDir("tomcat");
+        m_tomcat_webapps = m_anticipator.tempDir(m_tomcat, "webapps");
+        m_tomcat_conf_dir = m_anticipator.tempDir(m_tomcat, "conf");
+        File tomcat_server = m_anticipator.tempDir(m_tomcat, "server");
         File tomcat_lib = m_anticipator.tempDir(tomcat_server, "lib");
 
         m_anticipator.expecting(m_tomcat_webapps, "opennms.xml");
@@ -130,5 +134,55 @@ public class InstallerWebappTest extends TestCase {
 
     public void testServerXmlNoFile() throws Exception {
         m_installer.checkServerXmlOldOpennmsContext();
+    }
+    
+    public void testServerVersion41() throws IOException {
+        String readme = 
+            "$Id$\n"
+            + "\n"
+            + "                   The Tomcat 4.1 Servlet/JSP Container\n"
+            + "                   ====================================\n";
+        String running =
+            "$Id$\n"
+            + "\n"
+            + "\n"
+            + "               Running The Tomcat 4.0 Servlet/JSP Container\n"
+            + "               ============================================\n";
+
+        testServerVersion(readme, running, "4.1");
+    }
+    
+    public void testServerVersion5() throws IOException {
+        String running =
+            "$Id$\n"
+            + "\n"
+            + "\n"
+            + "                 Running The Tomcat 5 Servlet/JSP Container\n"
+            + "                 ==========================================\n";
+
+        testServerVersion(null, running, "5");
+    }
+    
+    public void testServerVersion55() throws IOException {
+        String running = 
+            "$Id$\n"
+            + "\n"
+            + "                 ============================================\n"
+            + "                 Running The Tomcat 5.5 Servlet/JSP Container\n"
+            + "                 ============================================\n";
+
+        testServerVersion(null, running, "5.5");
+    }
+    
+    private void testServerVersion(String readme, String running, String version)
+        throws IOException {
+        if (readme != null) {
+            m_anticipator.tempFile(m_tomcat, "README.txt", readme);
+        }
+        if (running != null) {
+            m_anticipator.tempFile(m_tomcat, "RUNNING.txt", running);
+        }
+                               
+        assertEquals("Server version", version, m_installer.checkServerVersion());
     }
 }

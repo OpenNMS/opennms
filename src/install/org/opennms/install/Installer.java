@@ -605,7 +605,7 @@ public class Installer {
 				continue;
 			}
 
-			// XXX should do something here to we can catch what we can't parse
+			// XXX should do something here so we can catch what we can't parse
 			// m_out.println("unmatched line: " + line);
 
 			sql_l.add(line);
@@ -688,7 +688,7 @@ public class Installer {
 		// Expected error: "ERROR: relation "bogus_table" does not exist"
 		try {
 			Statement st = m_dbconnection.createStatement();
-			ResultSet rs = st.executeQuery(bogus_query);
+			st.executeQuery(bogus_query);
 		} catch (SQLException e) {
 			if (e.toString().indexOf("does not exist") != -1) {
 				/*
@@ -866,7 +866,6 @@ public class Installer {
 					+ m_fix_constraint_name + " in the database.");
 		}
 
-		String name = constraint[0];
 		String table = constraint[1];
 		String column = constraint[2];
 		String ftable = constraint[3];
@@ -962,7 +961,7 @@ public class Installer {
 				throw new Exception("Cannot find sequence mapping for "
 						+ sequence);
 			}
-			String[] mapping = (String[]) m_seqmapping.get(sequence);
+			// String[] mapping = (String[]) m_seqmapping.get(sequence);
 		}
 
 		i = m_sequences.iterator();
@@ -1171,7 +1170,6 @@ public class Installer {
 
 	public void fixData() throws Exception {
 		Statement st = m_dbconnection.createStatement();
-		ResultSet rs;
 
 		st.execute("UPDATE ipinterface SET issnmpprimary='N' "
 				+ "WHERE issnmpprimary IS NULL");
@@ -1184,7 +1182,6 @@ public class Installer {
 	// ERROR: duplicate key violates unique constraint "pk_dpname"
 	void insertData() throws Exception {
 		Statement st = m_dbconnection.createStatement();
-		ResultSet rs;
 
 		for (Iterator i = m_inserts.keySet().iterator(); i.hasNext();) {
 			String table = (String) i.next();
@@ -1384,7 +1381,6 @@ public class Installer {
 
 	public void addStoredProcedures() throws Exception {
 		Statement st = m_dbconnection.createStatement();
-		ResultSet rs;
 
 		m_out.print("- adding stored procedures... ");
 
@@ -1434,7 +1430,7 @@ public class Installer {
 			String function = m.group(1);
 			String columns = m.group(2);
 			String returns = m.group(3);
-			String rest = m.group(4);
+			// String rest = m.group(4);
 
 			if (functionExists(function, columns, returns)) {
 				if (m_force) {
@@ -1563,10 +1559,8 @@ public class Installer {
 	public void installLink(String source, String destination,
 			String description, boolean recursive) throws Exception {
 
-		File f;
 		String[] cmd;
 		ProcessExec e = new ProcessExec(m_out, m_out);
-		int exists;
 
 		if (new File(destination).exists()) {
 			m_out.print("  - " + destination + " exists, removing... ");
@@ -1657,7 +1651,6 @@ public class Installer {
 
 	public void updateIplike() throws Exception {
 		Statement st = m_dbconnection.createStatement();
-		ResultSet rs;
 
 		m_out.print("- checking for stale iplike references... ");
 		try {
@@ -1786,7 +1779,6 @@ public class Installer {
 		LinkedList columns = new LinkedList();
 		boolean parens = false;
 		StringBuffer accumulator = new StringBuffer();
-		Matcher m;
 
 		for (int i = 0; i <= create.length(); i++) {
 			char c = ' ';
@@ -1995,7 +1987,7 @@ public class Installer {
 			rs = st.executeQuery(query);
 
 			while (rs.next()) {
-				String name = rs.getString(1);
+//				String name = rs.getString(1);
 				String[] args = new String(rs.getBytes(2)).split("\000");
 
 				Constraint constraint = new Constraint(rs.getString(1),
@@ -2474,4 +2466,45 @@ public class Installer {
 
 		return sb.toString();
 	}
+
+    public String checkServerVersion() throws IOException {
+        File catalinaHome = new File(m_webappdir).getParentFile();
+        String readmeVersion = getTomcatVersion(new File(catalinaHome,
+                                                         "README.txt"));
+        String runningVersion = getTomcatVersion(new File(catalinaHome,
+                                                          "RUNNING.txt"));
+        
+        if (readmeVersion == null && runningVersion == null) {
+            return null;
+        } else if (readmeVersion != null && runningVersion != null) {
+            return readmeVersion; // XXX what should be done here?
+        } else if (readmeVersion != null && runningVersion == null) {
+            return readmeVersion;
+        } else {
+            return runningVersion;
+        }
+    }
+    
+    public String getTomcatVersion(File file) throws IOException {
+        if (file == null || !file.exists()) {
+            return null;
+        }
+        Pattern p = Pattern.compile("The Tomcat (\\S+) Servlet/JSP Container");
+        BufferedReader in = new BufferedReader(new FileReader(file));
+        for (int i = 0; i < 5; i++) {
+            String line = in.readLine();
+            if (line == null) { // EOF
+                in.close();
+                return null;
+            }
+            Matcher m = p.matcher(line);
+            if (m.find()) {
+                in.close();
+                return m.group(1);
+            }
+        }
+        
+        in.close();
+        return null;
+    }
 }
