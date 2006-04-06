@@ -115,7 +115,6 @@ public class NotificationModel extends Object {
             ResultSet sentToResults = sentTo.executeQuery();
 
             List sentToList = new ArrayList();
-            sentToResults.beforeFirst();
             while (sentToResults.next()) {
                 NoticeSentTo newSentTo = new NoticeSentTo();
                 newSentTo.setUserId(sentToResults.getString(USERID));
@@ -136,7 +135,6 @@ public class NotificationModel extends Object {
             pstmt.setInt(1, id);
             ResultSet rs = pstmt.executeQuery();
 
-            rs.beforeFirst();
             while (rs.next()) {
                 Object element = rs.getString(TXT_MESG);
                 nbean.m_txtMsg = (String) element;
@@ -224,8 +222,11 @@ public class NotificationModel extends Object {
     }
 
     /**
-     * This method returns the data from the result set as an array of
-     * Notification objects.
+     * Returns the data from the result set as an array of
+     * Notification objects.  The ResultSet must be positioned before
+     * the first result before calling this method (this is the case right
+     * after calling java.sql.Connection#createStatement and friends or
+     * after calling java.sql.ResultSet#beforeFirst).
      */
     protected Notification[] rs2NotifyBean(Connection conn, ResultSet rs) throws SQLException {
         Notification[] notices = null;
@@ -233,7 +234,6 @@ public class NotificationModel extends Object {
 
         // Format the results.
         try {
-            rs.beforeFirst();
             while (rs.next()) {
                 Notification nbean = new Notification();
 
@@ -250,10 +250,11 @@ public class NotificationModel extends Object {
                 nbean.m_timeSent = ((Timestamp) element).getTime();
 
                 element = rs.getTimestamp(REPLYTIME);
-                if (element != null)
+                if (element != null) {
                     nbean.m_timeReply = ((Timestamp) element).getTime();
-                else
+                } else {
                     nbean.m_timeReply = 0;
+                }
 
                 element = rs.getString(ANS_BY);
                 nbean.m_responder = (String) element;

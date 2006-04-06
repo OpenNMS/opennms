@@ -85,8 +85,10 @@ import org.opennms.netmgt.eventd.db.Constants;
  * 
  */
 class NessusScan implements Runnable {
-    // Put the md5_caching directive in to prevent the server
-    // from sending the entire plugin list at startup
+    /*
+     * Put the md5_caching directive in to prevent the server
+     * from sending the entire plugin list at startup
+     */
     private static final String NTP_VERSION_STRING = "< NTP/1.2 >< md5_caching plugins_cve_id plugins_version>";
 
     private static final String NTP_CLIENT_ENTITY = "CLIENT";
@@ -200,10 +202,11 @@ class NessusScan implements Runnable {
      * configuration and insert the results of the scan into the database.
      */
     public NessusScan(NessusScanConfiguration newConfig) throws IllegalArgumentException {
-        if (newConfig.isValid())
+        if (newConfig.isValid()) {
             config = newConfig;
-        else
+        } else {
             throw new IllegalArgumentException("NessusScanConfiguration was invalid");
+        }
 
         try {
             ntpTokenizer = new RE(" <\\|> ");
@@ -232,9 +235,11 @@ class NessusScan implements Runnable {
         // DB connection; is connected and disconnected as necessary
         Connection conn = null;
 
-        // Grab the list of all current open vulnerabilities for the IP address.
-        // We'll use this list to resolve vulnerabilities that are not
-        // redetected.
+        /*
+         * Grab the list of all current open vulnerabilities for the IP address.
+         * We'll use this list to resolve vulnerabilities that are not
+         * redetected.
+         */
         try {
             conn = DatabaseConnectionFactory.getInstance().getConnection();
         } catch (SQLException ex) {
@@ -263,10 +268,11 @@ class NessusScan implements Runnable {
             }
         }
 
-        // Perform a Nessus scan of the target IP address. As each vulnerability
-        // is
-        // found, a new entry is put into the database or the existing entry is
-        // updated.
+        /*
+         * Perform a Nessus scan of the target IP address.  As each
+         * vulnerability is found, a new entry is put into the database
+	 * or the existing entry is updated.
+         */
         Socket nessusSocket = null;
         try {
             nessusSocket = NessusConnectionFactory.getConnection(config.hostname, config.hostport);
@@ -298,8 +304,9 @@ class NessusScan implements Runnable {
                         break;
                     }
                 }
-                if (!found)
+                if (!found) {
                     lines = readLines(in);
+                }
             }
 
             // Login to the server
@@ -318,8 +325,9 @@ class NessusScan implements Runnable {
                         break;
                     }
                 }
-                if (!found)
+                if (!found) {
                     lines = readLines(in);
+                }
             }
 
             // Login to the server
@@ -341,8 +349,9 @@ class NessusScan implements Runnable {
                         break;
                     }
                 }
-                if (!found)
+                if (!found) {
                     lines = readLines(in);
+                }
             }
 
             // Strip off the preferences list
@@ -359,8 +368,9 @@ class NessusScan implements Runnable {
                         break;
                     }
                 }
-                if (!found)
+                if (!found) {
                     lines = readLines(in);
+                }
             }
 
             // Strip off the rules list
@@ -377,13 +387,16 @@ class NessusScan implements Runnable {
                         break;
                     }
                 }
-                if (!found)
+                if (!found) {
                     lines = readLines(in);
+		}
             }
 
-            // Write the preferences list for the scan
-            // (which includes the list of plugins to execute
-            // against the target)
+            /*
+             * Write the preferences list for the scan
+             * (which includes the list of plugins to execute
+             * against the target).
+             */
             out.write(buildPreferencesString().getBytes());
 
             log.debug("Sent preferences string.");
@@ -406,9 +419,11 @@ class NessusScan implements Runnable {
                     lines = readLines(in);
             }
 
-            // I'm using the NEW_ATTACK directive, since I don't
-            // care about command strings getting too long (which
-            // you would use the LONG_ATTACK directive for).
+            /*
+             * I'm using the NEW_ATTACK directive, since I don't
+             * care about command strings getting too long (which
+             * you would use the LONG_ATTACK directive for).
+             */
             out.write((NTP_CLIENT_ENTITY + NTP_SEP + "NEW_ATTACK" + NTP_SEP + config.targetAddress.toString() + NTP_SEP + NTP_CLIENT_ENTITY + "\n").getBytes());
 
             log.debug("Sent NEW_ATTACK directive against target: " + config.targetAddress.toString());
@@ -424,10 +439,11 @@ class NessusScan implements Runnable {
 
                     // Grep out any inappropriate messages
                     if ((line.indexOf("the server killed it") == -1)) {
-                        // This processing will update existing vulnerabilities
-                        // in the database
-                        // and add new vulnerability entries as the
-                        // vulnerabilities are detected
+                        /*
+                         * This processing will update existing vulnerabilities
+                         * in the database and add new vulnerability entries
+                         * as the vulnerabilities are detected.
+                         */
                         returnCode = processScanMessage(line);
                     } else {
                         log.error("Discarded inappropriate Nessus message: " + line);
@@ -442,9 +458,10 @@ class NessusScan implements Runnable {
 
             out.write(buildStopWholeTestString().getBytes());
 
-            // If there were open vulnerabilities that were not reconfirmed
-            // during this
-            // scanning cycle, then mark them as resolved.
+            /*
+             * If there were open vulnerabilities that were not reconfirmed
+             * during this scanning cycle, then mark them as resolved.
+             */
             if (openVulnerabilities.size() > 0) {
                 try {
                     conn = DatabaseConnectionFactory.getInstance().getConnection();
@@ -461,9 +478,11 @@ class NessusScan implements Runnable {
                     while (vuln.hasNext()) {
                         stmt.setTimestamp(1, currentTime);
 
-                        // If the scan ended because of a successful completion
-                        // and all plugins were executed (indicating that the
-                        // host WAS accessible), resolve the bug
+                        /*
+                         * If the scan ended because of a successful completion
+                         * and all plugins were executed (indicating that the
+                         * host WAS accessible), resolve the bug.
+                         */
                         if ((returnCode == SCAN_COMPLETE) && (lastPlugin == totalPlugins)) {
                             stmt.setTimestamp(2, currentTime);
                         }
@@ -498,8 +517,9 @@ class NessusScan implements Runnable {
             log.warn(ex, ex);
         } finally {
             log.info("Releasing Nessus socket connection");
-            if (nessusSocket != null)
+            if (nessusSocket != null) {
                 NessusConnectionFactory.releaseConnection(nessusSocket);
+	    }
         }
 
         // Update the scheduler flags for this configuration
@@ -569,8 +589,10 @@ class NessusScan implements Runnable {
 
             String next = tokens[i++];
 
-            // Indicates information about the target system or
-            // that a security hole has been located
+            /*
+             * Indicates information about the target system or
+             * that a security hole has been located.
+             */
             if (next.equals("INFO") || next.equals("HOLE")) {
                 NessusParser parser = NessusParser.getInstance();
 
@@ -608,10 +630,11 @@ class NessusScan implements Runnable {
                     log.error("Could not parse the plugin ID out of the string: " + pluginIdString, ex);
                 }
 
-                // Change this, once we get a way to break the
-                // plugins down into separate vulnerabilities
+                /*
+                 * Change this, once we get a way to break the
+                 * plugins down into separate vulnerabilities.
+                 */
                 pluginSubId = 0;
-                //
 
                 try {
                     conn = DatabaseConnectionFactory.getInstance().getConnection();
@@ -626,16 +649,18 @@ class NessusScan implements Runnable {
                     stmt.setString(1, config.targetAddress.getHostAddress());
 
                     // port
-                    if (portvals.port > 0)
+                    if (portvals.port > 0) {
                         stmt.setInt(2, portvals.port);
-                    else
+                    } else {
                         stmt.setNull(2, Types.INTEGER);
+                    }
 
                     // protocol
-                    if (portvals.protocol != null)
+                    if (portvals.protocol != null) {
                         stmt.setString(3, portvals.protocol);
-                    else
+                    } else {
                         stmt.setNull(2, Types.VARCHAR);
+                    }
 
                     // pluginid and pluginsubid
                     stmt.setInt(4, pluginId);
@@ -644,7 +669,7 @@ class NessusScan implements Runnable {
                     ResultSet openVuln = stmt.executeQuery();
 
                     // Update the timestamps on the existing events
-                    if (openVuln.first()) {
+                    if (openVuln.next()) {
                         stmt = conn.prepareStatement(VULNERABILITY_SCANNED);
 
                         Timestamp currentTime = new Timestamp(new java.util.Date().getTime());
@@ -678,10 +703,11 @@ class NessusScan implements Runnable {
 
                         // Match the interface to a node in the database
                         int nodeId = VulnscandConfigFactory.getInterfaceDbNodeId(conn, config.targetAddress);
-                        if (nodeId > 0)
+                        if (nodeId > 0) {
                             stmt.setInt(2, nodeId);
-                        else
+                        } else {
                             stmt.setNull(2, Types.INTEGER);
+			}
 
                         stmt.setString(3, config.targetAddress.getHostAddress());
                         // ADD SERVICE CORRELATION
@@ -707,43 +733,52 @@ class NessusScan implements Runnable {
                             if (plugRS.getString("name") != null && plugRS.getString("name").length() > 0) {
                                 pluginLogmsg = plugRS.getString("name");
                             }
-                            if (plugRS.getString("summary") != null && plugRS.getString("summary").length() > 0) {
-                                if (!pluginLogmsg.equals(""))
+                            if (plugRS.getString("summary") != null
+				&& plugRS.getString("summary").length() > 0) {
+                                if (!pluginLogmsg.equals("")) {
                                     pluginLogmsg += ": ";
+				}
                                 pluginLogmsg += plugRS.getString("summary");
                             }
                         }
                         plugRS.close();
                         plugRS = null;
 
-                        // If the logmsg could not be populated from the
-                        // database...
+                        /*
+			 * If the logmsg could not be populated from the
+                         * database...
+			 */
                         if (pluginLogmsg.equals("")) {
-                            // ADD A METHOD THAT WILL QUERY THE NESSUS SERVER
-                            // FOR INFORMATION DIRECTLY IF IT CANNOT BE LOCATED
-                            // IN THE DATABASE
+			    /*
+			     * XXX Add a method that will query the Nessus
+			     * XXX server for information directly if it
+			     * XXX cannot be located in the database.
+			     */
                             // Punt this for now; we will pre-populate the DB
-                            if (portvals.port >= 0)
+                            if (portvals.port >= 0) {
                                 pluginLogmsg = "A vulnerability was detected on port " + portvals.port + ". See the description for more information.";
-                            else
+			    } else {
                                 pluginLogmsg = "A vulnerability was detected. See the description for " + "more information.";
+			    }
                         }
 
                         stmt.setString(11, pluginLogmsg);
 
                         stmt.setString(12, descrvals.descr);
 
-                        if (portvals.port >= 0)
+                        if (portvals.port >= 0) {
                             stmt.setInt(13, portvals.port);
-                        else
+                        } else {
                             stmt.setNull(13, Types.INTEGER);
+			}
 
                         stmt.setString(14, portvals.protocol);
 
-                        if (descrvals.cveEntry != null)
+                        if (descrvals.cveEntry != null) {
                             stmt.setString(15, descrvals.cveEntry);
-                        else
+                        } else {
                             stmt.setNull(15, Types.VARCHAR);
+			}
 
                         if (stmt.executeUpdate() < 1) {
                             log.error("UNEXPECTED CONDITION: No rows inserted during last INSERT call.");
@@ -799,16 +834,18 @@ class NessusScan implements Runnable {
                     stmt.setString(1, config.targetAddress.getHostAddress());
 
                     // port
-                    if (portvals.port > 0)
+                    if (portvals.port > 0) {
                         stmt.setInt(2, portvals.port);
-                    else
+                    } else {
                         stmt.setNull(2, Types.INTEGER);
+                    }
 
                     // protocol
-                    if (portvals.protocol != null)
+                    if (portvals.protocol != null) {
                         stmt.setString(3, portvals.protocol);
-                    else
+                    } else {
                         stmt.setNull(2, Types.VARCHAR);
+		    }
 
                     // pluginid and pluginsubid
                     stmt.setInt(4, PORTSCAN_PLUGIN_ID);
@@ -817,7 +854,7 @@ class NessusScan implements Runnable {
                     ResultSet openVuln = stmt.executeQuery();
 
                     // Update the timestamps on the existing events
-                    if (openVuln.first()) {
+                    if (openVuln.next()) {
                         stmt = conn.prepareStatement(VULNERABILITY_SCANNED);
 
                         Timestamp currentTime = new Timestamp(new java.util.Date().getTime());
@@ -851,10 +888,11 @@ class NessusScan implements Runnable {
 
                         // Match the interface to a node in the database
                         int nodeId = VulnscandConfigFactory.getInterfaceDbNodeId(conn, config.targetAddress);
-                        if (nodeId > 0)
+                        if (nodeId > 0) {
                             stmt.setInt(2, nodeId);
-                        else
+                        } else {
                             stmt.setNull(2, Types.INTEGER);
+                        }
 
                         stmt.setString(3, config.targetAddress.getHostAddress());
                         // ADD SERVICE CORRELATION
@@ -876,10 +914,11 @@ class NessusScan implements Runnable {
                         stmt.setString(11, "Port " + portvals.port + " is open on this host.");
                         stmt.setString(12, "Port " + portvals.port + " is open on this host.");
 
-                        if (portvals.port >= 0)
+                        if (portvals.port >= 0) {
                             stmt.setInt(13, portvals.port);
-                        else
+                        } else {
                             stmt.setNull(13, Types.INTEGER);
+                        }
 
                         // Protocol
                         stmt.setString(14, portvals.protocol);
@@ -910,19 +949,19 @@ class NessusScan implements Runnable {
             } else if (next.equals("BYE")) {
                 log.debug("BYE message received, ending scan");
 
-                // If the scan completed running each plugin
-                if (lastPlugin == totalPlugins)
+                if (lastPlugin == totalPlugins) {
+                    // If the scan completed running each plugin
                     return SCAN_COMPLETE;
-                // Otherwise, do not resolve undetected plugins
-                else
+		} else {
+                    // Otherwise, do not resolve undetected plugins
                     return SCAN_FATAL_ERROR;
+		}
             } else {
                 log.warn("Unhandled message type from Nessus: " + next + "\n" + message);
                 return SCAN_NON_FATAL_ERROR;
             }
-        }
-        // Abbreviated status messages
-        else if (message.startsWith("s:")) {
+        } else if (message.startsWith("s:")) {
+            // Abbreviated status messages
             message = message.substring("s:".length()).trim();
 
             StringTokenizer parts = new StringTokenizer(message, ":");
@@ -947,11 +986,13 @@ class NessusScan implements Runnable {
                     total = Integer.parseInt(parts.nextToken());
 
                     if (lastPlugin >= 0) {
-                        // If the plugin increment magically
-                        // goes down because Nessus is
-                        // starting another unwanted scan,
-                        // report the scan complete so it
-                        // will terminate the connection
+                        /*
+                         * If the plugin increment magically
+                         * goes down because Nessus is
+                         * starting another unwanted scan,
+                         * report the scan complete so it
+                         * will terminate the connection.
+                         */
                         if (last < lastPlugin) {
                             log.warn("UNEXPECTED CONDITION: The completed plugin counter decreased. Reporting the current scan complete.");
                             return SCAN_COMPLETE;
@@ -1002,27 +1043,32 @@ class NessusScan implements Runnable {
                 byte[] message = new byte[1024];
 
                 bytesInThisRead = in.read(message);
-                if (log.isDebugEnabled())
+                if (log.isDebugEnabled()) {
                     log.debug("bytesInThisRead: " + bytesInThisRead);
+		}
 
-                // Check the result code. A negative value
-                // means that the end of file has been reached
-                // Otherwise the value must be greater than zero
-                // according to the Java API documentation
-                //
-                if (bytesInThisRead < 0)
+                /*
+                 * Check the result code. A negative value
+                 * means that the end of file has been reached
+                 * Otherwise the value must be greater than zero
+                 * according to the Java API documentation
+                 */
+                if (bytesInThisRead < 0) {
                     break;
+		}
 
-                // check if current chunk of data has end of data
-                // care should be exercised since the buffer may contain
-                // more than one log message.
-                //
+                /*
+                 * Check if current chunk of data has end of data
+                 * care should be exercised since the buffer may contain
+                 * more than one log message.
+                 */
                 String newData = new String(message, 0, bytesInThisRead);
                 String tempStr;
-                if (alreadyRecdData != null)
+                if (alreadyRecdData != null) {
                     tempStr = alreadyRecdData + newData;
-                else
+                } else {
                     tempStr = newData;
+		}
 
                 int index = -1;
                 while ((index = tempStr.indexOf(EOL)) != -1) {
@@ -1035,7 +1081,6 @@ class NessusScan implements Runnable {
                     xmlStr.write(tempb, 0, tlen);
 
                     // Create a new text message
-                    //
                     retval.add(new String(xmlStr.toByteArray(), 0, xmlStr.size()));
 
                     xmlStr.reset();
@@ -1053,8 +1098,10 @@ class NessusScan implements Runnable {
                 }
 
                 if (bytesInThisRead < 1024) {
-                    // Return any remaining data as the last line
-                    // in the queue
+                    /*
+                     * Return any remaining data as the last line
+                     * in the queue.
+		     */
                     if ((alreadyRecdData != null) && (alreadyRecdData.length() != 0)) {
                         retval.add(alreadyRecdData);
                     }

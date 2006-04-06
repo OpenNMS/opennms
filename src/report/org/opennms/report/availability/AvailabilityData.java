@@ -142,11 +142,16 @@ public class AvailabilityData extends Object {
      * Constructor
      * 
      */
-    public AvailabilityData(String categoryName, Report report, String format, String monthFormat, Calendar calendar) throws IOException, MarshalException, ValidationException, Exception {
+    public AvailabilityData(String categoryName, Report report, String format,
+			    String monthFormat, Calendar calendar)
+		throws IOException, MarshalException, ValidationException,
+		       Exception {
         ThreadCategory.setPrefix(LOG4J_CATEGORY);
-        org.apache.log4j.Category log = ThreadCategory.getInstance(this.getClass());
-        if (log.isDebugEnabled())
+        org.apache.log4j.Category log =
+	    ThreadCategory.getInstance(this.getClass());
+        if (log.isDebugEnabled()) {
             log.debug("Inside AvailabilityData");
+	}
 
         m_nodes = new ArrayList();
         initialiseInterval(calendar);
@@ -170,53 +175,71 @@ public class AvailabilityData extends Object {
             throw ex;
         }
 
-        if (log.isDebugEnabled())
+        if (log.isDebugEnabled()) {
             log.debug("CATEGORY " + categoryName);
+	}
         if (categoryName.equals("") || categoryName.equals("all")) {
             Enumeration enumCG = config.enumerateCategorygroup();
             int catCount = 0;
-			if (log.isDebugEnabled())
+	    if (log.isDebugEnabled()) {
                 log.debug("catCount " + catCount);
+	    }
             while (enumCG.hasMoreElements()) {
                 Categorygroup cg = (Categorygroup) enumCG.nextElement();
 
                 // go through the categories
-                org.opennms.netmgt.config.categories.Categories cats = cg.getCategories();
+                org.opennms.netmgt.config.categories.Categories cats =
+		    cg.getCategories();
 
                 Enumeration enumCat = cats.enumerateCategory();
                 while (enumCat.hasMoreElements()) {
-                    org.opennms.netmgt.config.categories.Category cat = (org.opennms.netmgt.config.categories.Category) enumCat.nextElement();
+                    org.opennms.netmgt.config.categories.Category cat =
+		        (org.opennms.netmgt.config.categories.Category)
+			enumCat.nextElement();
                     Enumeration enumMonitoredSvc = cat.enumerateService();
                     List monitoredServices = new ArrayList();
                     while (enumMonitoredSvc.hasMoreElements()) {
-                        String service = (String) enumMonitoredSvc.nextElement();
+                        String service =
+			    (String) enumMonitoredSvc.nextElement();
                         monitoredServices.add(service);
                     }
-                    if (log.isDebugEnabled())
+                    if (log.isDebugEnabled()) {
                         log.debug("CATEGORY " + cat.getLabel());
+		    }
                     catCount++;
-                    populateDataStructures(cat, report, format, monthFormat, catCount);
+                    populateDataStructures(cat, report, format, monthFormat,
+					   catCount);
                 }
             }
-			if (log.isDebugEnabled())
+	    if (log.isDebugEnabled()) {
                 log.debug("catCount " + catCount);
+	    }
         } else {
-            org.opennms.netmgt.config.categories.Category cat = (org.opennms.netmgt.config.categories.Category) m_catFactory.getCategory(categoryName);
-            if (log.isDebugEnabled())
-                log.debug("CATEGORY - now populate data structures " + cat.getLabel());
+            org.opennms.netmgt.config.categories.Category cat =
+		(org.opennms.netmgt.config.categories.Category)
+		m_catFactory.getCategory(categoryName);
+            if (log.isDebugEnabled()) {
+                log.debug("CATEGORY - now populating data structures "
+		    + cat.getLabel());
+	    }
             populateDataStructures(cat, report, format, monthFormat, 1);
         }
 
-        SimpleDateFormat simplePeriod = new SimpleDateFormat("MMMMMMMMMMM dd, yyyy");
-        String reportPeriod = simplePeriod.format(new java.util.Date(m_12MonthsBack)) + " - " + simplePeriod.format(new java.util.Date(m_endTime));
+        SimpleDateFormat simplePeriod =
+	    new SimpleDateFormat("MMMMMMMMMMM dd, yyyy");
+        String reportPeriod =
+	    simplePeriod.format(new java.util.Date(m_12MonthsBack)) + " - "
+	    + simplePeriod.format(new java.util.Date(m_endTime));
         Created created = report.getCreated();
-        if (created == null)
+        if (created == null) {
             created = new Created();
+	}
         created.setPeriod(reportPeriod);
         report.setCreated(created);
 
-        if (log.isDebugEnabled())
+        if (log.isDebugEnabled()) {
             log.debug("After availCalculations");
+	}
     }
 
     /**
@@ -338,22 +361,13 @@ public class AvailabilityData extends Object {
         month = lastMonthCalendar.get(Calendar.MONTH) - 1;
         year = lastMonthCalendar.get(Calendar.YEAR);
         lastMonthCalendar.set(year, month, 1, 0, 0, 0);
-        m_daysInLastMonth = getDaysForMonth(lastMonthCalendar.getTime().getTime()); // Number
-                                                                                    // of
-                                                                                    // days
-                                                                                    // in
-                                                                                    // the
-                                                                                    // last
-                                                                                    // month
 
-        lastMonthCalendar.set(year, month, m_daysInLastMonth, 23, 59, 59); // Set
-                                                                            // the
-                                                                            // end
-                                                                            // Time
-                                                                            // of
-                                                                            // the
-                                                                            // last
-                                                                            // month
+	// Number of days in the last month
+        m_daysInLastMonth =
+	    getDaysForMonth(lastMonthCalendar.getTime().getTime());
+
+	// Set the end time of the last month
+        lastMonthCalendar.set(year, month, m_daysInLastMonth, 23, 59, 59);
         m_lastMonthEndTime = lastMonthCalendar.getTime().getTime();
     }
 
@@ -384,10 +398,11 @@ public class AvailabilityData extends Object {
             return 30;
 
         case 1:
-            if (isLeap)
+            if (isLeap) {
                 return 29;
-            else
+	    } else {
                 return 28;
+	    }
         }
         return -1;
     }
@@ -458,8 +473,9 @@ public class AvailabilityData extends Object {
                 m_availConn.close();
                 m_availConn = null;
             } catch (Throwable t) {
-                if (log.isEnabledFor(Priority.WARN))
+                if (log.isEnabledFor(Priority.WARN)) {
                     log.warn("initialize: an exception occured while closing the JDBC connection", t);
+		}
             }
         }
     }
@@ -489,19 +505,22 @@ public class AvailabilityData extends Object {
             if (node != null) {
                 double percent = node.getPercentAvail(endTime, rollingWindow);
                 String nodeName = node.getName();
-                if (log.isDebugEnabled())
+                if (log.isDebugEnabled()) {
                     log.debug("Node " + nodeName + " " + percent + "%");
+		}
                 if (percent < 100.0) {
                     List tmp = (List) percentNode.get(new Double(percent));
-                    if (tmp == null)
+                    if (tmp == null) {
                         tmp = new ArrayList();
+		    }
                     tmp.add(nodeName);
                     percentNode.put(new Double(percent), tmp);
                 }
             }
         }
-        if (log.isDebugEnabled())
+        if (log.isDebugEnabled()) {
             log.debug("Percent node " + percentNode);
+	}
         return percentNode;
     }
 
@@ -518,10 +537,12 @@ public class AvailabilityData extends Object {
      */
     private void populateNodesFromDB(org.opennms.netmgt.config.categories.Category cat, List monitoredServices) throws SQLException, FilterParseException, Exception {
         m_nodes = new ArrayList();
-		org.apache.log4j.Category log = ThreadCategory.getInstance(AvailabilityData.class);
+	org.apache.log4j.Category log = ThreadCategory.getInstance(AvailabilityData.class);
 
-		if (log.isDebugEnabled())
+	if (log.isDebugEnabled()) {
             log.debug("in populateNodesFromDB");
+	}
+
         // Create the filter
         Filter filter = new Filter();
 
@@ -539,16 +560,18 @@ public class AvailabilityData extends Object {
         m_catComment = cat.getComment();
         String filterRule = m_commonRule;
 
-        if (log.isDebugEnabled())
+        if (log.isDebugEnabled()) {
             log.debug("Category: " + filterRule);
+	}
 
         String ip = null;
         ResultSet ipRS = null;
         try {
             List nodeIPs = filter.getIPList(filterRule);
 
-            if (log.isDebugEnabled())
+            if (log.isDebugEnabled()) {
                 log.debug("Number of IPs satisfying rule: " + nodeIPs.size());
+	    }
 
             // For each of these IP addresses, get the details from the
             // ifServices and services tables
@@ -582,15 +605,20 @@ public class AvailabilityData extends Object {
                         // read data from the resultset
                         int svcid = svcRS.getInt(1);
                         String svcname = svcRS.getString(2);
-                        // If the list is empty, we assume all services are
-                        // monitored. If it has any, we use it as a filter
+
+                        /*
+			 * If the list is empty, we assume all services are
+                         * monitored. If it has any, we use it as a filter
+			 */
                         if (monitoredServices.isEmpty() || monitoredServices.contains(svcname)) {
                             // if(log.isDebugEnabled())
                             // log.debug("services result: " + nodeid + "\t" +
                             // ip + "\t" + svcname);
 
                             OutageSvcTimesList outageSvcTimesList = new OutageSvcTimesList();
-                            getOutagesNodeIpSvc(nodeid, nodeName, ip, svcid, svcname, outageSvcTimesList, outagesGetStmt);
+                            getOutagesNodeIpSvc(nodeid, nodeName, ip, svcid,
+						svcname, outageSvcTimesList,
+						outagesGetStmt);
 
                             /*
                              * IfService ifservice = new IfService(nodeid, ip,
@@ -605,51 +633,67 @@ public class AvailabilityData extends Object {
 
                     // finally close the result set
                     try {
-                        if (svcRS != null)
+                        if (svcRS != null) {
                             svcRS.close();
+			}
                     } catch (Exception e) {
-                        if (log.isEnabledFor(Priority.FATAL))
+                        if (log.isEnabledFor(Priority.FATAL)) {
                             log.fatal("Exception while closing the services result set", e);
+			}
                         throw e;
                     }
                 }
             }
         } catch (SQLException e) {
-            if (log.isEnabledFor(Priority.FATAL))
+            if (log.isEnabledFor(Priority.FATAL)) {
                 log.fatal("Unable to get node list for category \'" + cat.getLabel(), e);
+	    }
             throw e;
         } catch (FilterParseException e) {
-            // if we get here, the error was most likely in
-            // getting the nodelist from the filters
-            if (log.isEnabledFor(Priority.FATAL))
-                log.fatal("Unable to get node list for category \'" + cat.getLabel(), e);
+            /*
+	     * If we get here, the error was most likely in
+             * getting the nodelist from the filters.
+	     */
+            if (log.isEnabledFor(Priority.FATAL)) {
+                log.fatal("Unable to get node list for category \'"
+		    + cat.getLabel() + "'", e);
+	    }
 
-            // throw exception
+            // re-throw exception
             throw e;
         } catch (Exception e) {
-            if (log.isEnabledFor(Priority.FATAL))
-                log.fatal("Unable to get node list for category \'" + cat.getLabel(), e);
+            if (log.isEnabledFor(Priority.FATAL)) {
+                log.fatal("Unable to get node list for category \'"
+		    + cat.getLabel() + "'", e);
+	    }
 
-            // throw exception
-            throw new Exception("Unable to get node list for category \'" + cat.getLabel() + "\':\n\t" + e);
+            // re-throw exception
+            throw new Exception("Unable to get node list for category \'"
+		+ cat.getLabel() + "\':\n\t" + e);
         } finally {
             try {
-                if (ipRS != null)
+                if (ipRS != null) {
                     ipRS.close();
-                if (servicesGetStmt != null)
+		}
+                if (servicesGetStmt != null) {
                     servicesGetStmt.close();
+		}
 
-                if (ipInfoGetStmt != null)
+                if (ipInfoGetStmt != null) {
                     ipInfoGetStmt.close();
+		}
 
-                if (outagesGetStmt != null)
+                if (outagesGetStmt != null) {
                     outagesGetStmt.close();
+		}
 
-                if (m_availConn != null)
+                if (m_availConn != null) {
                     closeConnection();
+		}
             } catch (Exception e) {
-                if (log.isEnabledFor(Priority.FATAL))
+                if (log.isEnabledFor(Priority.FATAL)) {
                     log.fatal("Exception while closing the ip get node info result set - ip: " + ip, e);
+		}
                 throw e;
             }
         }
@@ -659,7 +703,12 @@ public class AvailabilityData extends Object {
      * Get all outages for this nodeid/ipaddr/service combination and add it to
      * m_nodes.
      */
-    private void getOutagesNodeIpSvc(int nodeid, String nodeName, String ipaddr, int serviceid, String serviceName, OutageSvcTimesList outageSvcTimesList, PreparedStatement outagesGetStmt) throws SQLException {
+    private void getOutagesNodeIpSvc(int nodeid, String nodeName,
+				     String ipaddr, int serviceid,
+				     String serviceName,
+				     OutageSvcTimesList outageSvcTimesList,
+				     PreparedStatement outagesGetStmt)
+		throws SQLException {
         org.apache.log4j.Category log = ThreadCategory.getInstance(AvailabilityData.class);
         // Get outages for this node/ip/svc pair
         try {
@@ -671,6 +720,7 @@ public class AvailabilityData extends Object {
             outagesGetStmt.setInt(3, serviceid);
 
             ResultSet rs = outagesGetStmt.executeQuery();
+
             if (m_nodes != null && m_nodes.size() > 0) {
                 ListIterator lstIter = m_nodes.listIterator();
                 boolean foundFlag = false;
@@ -694,32 +744,39 @@ public class AvailabilityData extends Object {
                 newNode.addInterface(ipaddr, serviceName);
                 m_nodes.add(newNode);
             }
-//            rs.beforeFirst();
+
             while (rs.next()) {
                 Timestamp lost = rs.getTimestamp(1);
                 Timestamp regained = rs.getTimestamp(2);
                 long losttime = lost.getTime();
                 long regainedtime = 0;
-                if (regained != null)
+
+                if (regained != null) {
                     regainedtime = regained.getTime();
+		}
 
                 if (regainedtime > 0) {
-                    if (regainedtime <= m_12MonthsBack || losttime >= m_endTime)
+                    if (regainedtime <= m_12MonthsBack
+			|| losttime >= m_endTime) {
                         continue;
+		    }
                 } else {
-                    if (losttime >= m_endTime)
+                    if (losttime >= m_endTime) {
                         continue;
+		    }
                 }
                 Outage outage = new Outage(losttime, regainedtime);
                 outageSvcTimesList.add(outage);
                 addNode(nodeName, nodeid, ipaddr, serviceName, losttime, regainedtime);
             }
-            if (rs != null)
+            if (rs != null) {
                 rs.close();
+	    }
 
         } catch (SQLException e) {
-            if (log.isEnabledFor(Priority.FATAL))
+            if (log.isEnabledFor(Priority.FATAL)) {
                 log.fatal("Error has occured while getting the outages ", e);
+	    }
             throw e;
         }
     }
@@ -729,18 +786,19 @@ public class AvailabilityData extends Object {
      */
     public void addNode(String nodeName, int nodeid, String ipaddr, String serviceid, long losttime, long regainedtime) {
         org.apache.log4j.Category log = ThreadCategory.getInstance(AvailabilityData.class);
-        if (m_nodes == null)
+        if (m_nodes == null) {
             m_nodes = new ArrayList();
-        else {
+	} else {
             if (m_nodes.size() <= 0) {
                 Node newNode = new Node(nodeName, nodeid);
                 // if(log.isDebugEnabled())
                 // log.debug("Created the new node.");
                 if (losttime > 0) {
-                    if (regainedtime > 0)
+                    if (regainedtime > 0) {
                         newNode.addInterface(ipaddr, serviceid, losttime, regainedtime);
-                    else
+		    } else {
                         newNode.addInterface(ipaddr, serviceid, losttime);
+		    }
                 } else {
                     newNode.addInterface(ipaddr, serviceid);
                 }
@@ -761,10 +819,11 @@ public class AvailabilityData extends Object {
                 if (!foundFlag) {
                     newNode = new Node(nodeName, nodeid);
                     if (losttime > 0) {
-                        if (regainedtime > 0)
+                        if (regainedtime > 0) {
                             newNode.addInterface(ipaddr, serviceid, losttime, regainedtime);
-                        else
+			} else {
                             newNode.addInterface(ipaddr, serviceid, losttime);
+			}
                     } else {
                         newNode.addInterface(ipaddr, serviceid);
                     }
@@ -772,10 +831,11 @@ public class AvailabilityData extends Object {
                     return;
                 } else {
                     if (losttime > 0) {
-                        if (regainedtime > 0)
+                        if (regainedtime > 0) {
                             newNode.addInterface(ipaddr, serviceid, losttime, regainedtime);
-                        else
+			} else {
                             newNode.addInterface(ipaddr, serviceid, losttime);
+			}
                     } else {
                         newNode.addInterface(ipaddr, serviceid);
                     }
