@@ -77,6 +77,7 @@ your distribution.
   <property name="services.source.dir" value="${source.dir}/services"/>
   <property name="bootstrap.source.dir" value="${source.dir}/bootstrap"/>
   <property name="install.source.dir" value="${source.dir}/install"/>
+  <property name="test.source.dir" value="${source.dir}/test"/>
   <property name="web.source.dir" value="${source.dir}/web/src"/>
 
   <!-- test results directory -->
@@ -172,6 +173,7 @@ your distribution.
     <pathelement path="${web.source.dir}"/>
     <pathelement path="${report.source.dir}"/>
     <pathelement path="${install.source.dir}"/>
+    <pathelement path="${test.source.dir}"/>
   </path>
 	
   <path id="javadoc.sources">
@@ -186,6 +188,7 @@ your distribution.
     <fileset dir="${web.source.dir}"/>
     <fileset dir="${report.source.dir}"/>
     <fileset dir="${install.source.dir}"/>
+    <fileset dir="${test.source.dir}"/>
   </path>
 
   <!-- Classpath reference for <javac/> and <javadoc/> -->
@@ -1629,6 +1632,7 @@ OpenNMS as part of the post-install.
      <excludesfile name="${bootstrap.source.dir}/classlist"/>
      <excludesfile name="${web.source.dir}/classlist"/>
      <excludesfile name="${install.source.dir}/classlist"/>
+     <excludesfile name="${test.source.dir}/classlist"/>
      <exclude name="**/MANIFEST.MF"/>
     </patternset>
    </fileset>
@@ -1699,6 +1703,10 @@ OpenNMS as part of the post-install.
     <include name="**/*.html"/>
    </srcfileset>
    <srcfileset dir="${install.source.dir}">
+    <include name="**/*.java"/>
+    <include name="**/*.html"/>
+   </srcfileset>
+   <srcfileset dir="${test.source.dir}">
     <include name="**/*.java"/>
     <include name="**/*.html"/>
    </srcfileset>

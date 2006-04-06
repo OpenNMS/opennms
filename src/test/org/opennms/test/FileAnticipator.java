@@ -1,10 +1,14 @@
-package org.opennms.install;
+package org.opennms.test;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.util.LinkedList;
 import java.util.ListIterator;
+
+import org.opennms.install.ProcessExec;
 
 import junit.framework.Assert;
 
@@ -70,6 +74,10 @@ public class FileAnticipator extends Assert {
         return tempFile(m_tempDir, name);
     }
     
+    public File tempFile(String name, String contents) throws IOException {
+        return tempFile(m_tempDir, name, contents);
+    }
+    
     public File tempFile(File parent, String name) throws IOException {
         String path;
         if (parent != null) {
@@ -81,6 +89,15 @@ public class FileAnticipator extends Assert {
         File f = new File(path);
         assertTrue("createNewFile: " + f.getAbsolutePath(), f.createNewFile());
         m_deleteMe.add(f);
+        return f;
+    }
+    
+    public File tempFile(File parent, String name, String contents)
+        throws IOException {
+        File f = tempFile(parent, name);
+        PrintWriter w = new PrintWriter(new FileWriter(f));
+        w.print(contents);
+        w.close();
         return f;
     }
 

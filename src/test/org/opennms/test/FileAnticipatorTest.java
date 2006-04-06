@@ -1,6 +1,7 @@
-package org.opennms.install;
+package org.opennms.test;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 
 import junit.framework.TestCase;
@@ -63,6 +64,24 @@ public class FileAnticipatorTest extends TestCase {
     public void testTempFile() throws IOException {
         String file = "FileAnticipatorTest_tempFile_" + System.currentTimeMillis();
         m_anticipator.tempFile(file);
+        m_anticipator.deleteExpected();
+    }
+    
+    public void testTempFileContents() throws IOException {
+        String file = "FileAnticipatorTest_tempFile_" + System.currentTimeMillis();
+        String contents = "yay!";
+        File yay = m_anticipator.tempFile(file, contents);
+        
+        StringBuffer b = new StringBuffer();
+        FileInputStream is = new FileInputStream(yay);
+        int i;
+        while ((i = is.read()) != -1) {
+            b.append(new Character((char) i));
+        }
+        is.close();
+        
+        assertEquals("file contents", contents, b.toString());
+        
         m_anticipator.deleteExpected();
     }
 }
