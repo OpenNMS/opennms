@@ -3,6 +3,7 @@
 	<classpathentry excluding="**/classlist" output=".deployables/opennms/WEB-INF/classes" kind="src" path="src/core"/>
 	<classpathentry excluding="**/classlist|org/opennms/install/MANIFEST.MF|org/opennms/install/installer.properties" kind="src" path="src/install"/>
 	<classpathentry excluding="**/classlist" kind="src" path="src/joesnmp"/>
+	<classpathentry excluding="**/classlist" kind="src" path="src/test"/>
 	<classpathentry excluding="**/classlist" output=".deployables/opennms/WEB-INF/classes" kind="src" path="src/report"/>
 	<classpathentry excluding="**/Growl*.java|**/classlist" output=".deployables/opennms/WEB-INF/classes" kind="src" path="src/services"/>
 	<classpathentry excluding="**/classlist" output=".deployables/opennms/WEB-INF/classes" kind="src" path="src/web/src"/>
