@@ -96,7 +96,7 @@
         <tr>
           <td class="standardheader" width="10%">Severity</td>
           <td class="standard" bgcolor="<%=AlarmUtil.getSeverityColor(alarm.getSeverity())%>"><%=AlarmUtil.getSeverityLabel(alarm.getSeverity())%></td>
-          <td class="standardheader" width="10%">>Node</td>
+          <td class="standardheader" width="10%">Node</td>
           <td class="standard">
             <% if( alarm.getNodeId() > 0 ) { %>
               <a href="element/node.jsp?node=<%=alarm.getNodeId()%>"><%=alarm.getNodeLabel()%></a>
