@@ -295,20 +295,19 @@
 
             <!-- Asset box, if info available --> 
             <% if( asset != null ) { %>
-              <table width="100%" border="1" cellspacing="0" cellpadding="2" bordercolor="black" BGCOLOR="#cccccc">
-                <tr bgcolor="#999999">
-                  <td colspan="2"><b>Asset Information</b></td>
+	      <table class="standard">
+                <tr>
+                  <td class="standardheader" colspan="2">Asset Information</td>
                 </tr>
                 <tr>
-                  <td width="10%">Description:</td>
-                  <td><%=(asset.getDescription() == null) ? "&nbsp;" : asset.getDescription()%></td>
+                  <td class="standard" width="10%">Description:</td>
+                  <td class="standard"><%=(asset.getDescription() == null) ? "&nbsp;" : asset.getDescription()%></td>
                 </tr>
                 <tr>
-                  <td width="10%">Comments:</td>
-                  <td><%=(asset.getComments() == null) ? "&nbsp;" : asset.getComments()%></td>
+                  <td class="standard" width="10%">Comments:</td>
+                  <td class="standard"><%=(asset.getComments() == null) ? "&nbsp;" : asset.getComments()%></td>
                 </tr>
               </table>  
-              <br>
             <% } %>
 
             <!-- SNMP box, if info available --> 
