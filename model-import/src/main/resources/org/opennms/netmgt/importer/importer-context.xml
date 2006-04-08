@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+
+  <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+    <property name="location">
+      <value>file:${opennms.home}/etc/model-importer.properties</value>
+    </property>
+  </bean>
+  
+  <bean id="eventIpcManager-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+    <property name="staticMethod"><value>org.opennms.netmgt.eventd.EventIpcManagerFactory.init</value></property>
+  </bean>
+  
+  <bean id="eventManager" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" depends-on="eventIpcManager-init">
+    <property name="staticMethod"><value>org.opennms.netmgt.eventd.EventIpcManagerFactory.getIpcManager</value></property>
+  </bean>
+
+  <!--
+  <bean id="dbConnectionFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+    <property name="staticMethod"><value>org.opennms.netmgt.config.DatabaseConnectionFactory.init</value></property>
+  </bean>
+  
+  <bean id="dataSource" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" depends-on="dbConnectionFactory-init">
+    <property name="staticMethod"><value>org.opennms.netmgt.config.DatabaseConnectionFactory.getInstance</value></property>
+  </bean>
+  -->
+
+  <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource">
+  	<property name="driverClassName" value="${importer.db.driverClassName}"/>
+  	<property name="url" value="${importer.db.url}"/>
+  	<property name="username" value="${importer.db.username}"/>
+  	<property name="password" value="${importer.db.password}"/>
+  	<property name="maxActive" value="${importer.maxActiveConnections}" />
+  </bean>
+  
+  <!-- AssetRecordFactory.register(m_dataSource) -->  
+  <bean id="assetRecordFactory" class="org.opennms.netmgt.dao.jdbc.asset.AssetRecordFactory">
+  	<property name="dataSource" ref="dataSource" />
+  </bean>
+  <bean id="assetRecordDao" class="org.opennms.netmgt.dao.jdbc.AssetRecordDaoJdbc">
+  	<property name="dataSource" ref="dataSource" />
+  </bean>
+  
+  <!-- DistPollerFactory.register(m_dataSource)  -->
+  <bean id="distPollerFactory" class="org.opennms.netmgt.dao.jdbc.distpoller.DistPollerFactory">
+  	<property name="dataSource" ref="dataSource" />
+  </bean>
+  <bean id="distPollerDao" class="org.opennms.netmgt.dao.jdbc.DistPollerDaoJdbc">
+  	<property name="dataSource" ref="dataSource" />
+  </bean>
+  
+  <!-- IpInterfaceFactory.register(m_dataSource); -->
+  <bean id="ipInterfaceFactory" class="org.opennms.netmgt.dao.jdbc.ipif.IpInterfaceFactory">
+  	<property name="dataSource" ref="dataSource" />
+  </bean>
+  <bean id="ipInterfaceDao" class="org.opennms.netmgt.dao.jdbc.IpInterfaceDaoJdbc">
+  	<property name="dataSource" ref="dataSource" />
+  </bean>
+  
+  <!-- MonitoredServiceFactory.register(m_dataSource); -->
+  <bean id="monitoredServiceFactory" class="org.opennms.netmgt.dao.jdbc.monsvc.MonitoredServiceFactory">
+  	<property name="dataSource" ref="dataSource" />
+  </bean>
+  <bean id="monitoredServiceDao" class="org.opennms.netmgt.dao.jdbc.MonitoredServiceDaoJdbc">
+  	<property name="dataSource" ref="dataSource" />
+  </bean>
+  
+  <!-- NodeFactory.register(m_dataSource); -->
+  <bean id="nodeFactory" class="org.opennms.netmgt.dao.jdbc.node.NodeFactory">
+  	<property name="dataSource" ref="dataSource" />
+  </bean>
+  <bean id="nodeDao" class="org.opennms.netmgt.dao.jdbc.NodeDaoJdbc">
+  	<property name="dataSource" ref="dataSource" />
+  </bean>
+  
+  <!-- ServiceTypeFactory.register(m_dataSource); -->
+  <bean id="serviceTypeFactory" class="org.opennms.netmgt.dao.jdbc.svctype.ServiceTypeFactory">
+  	<property name="dataSource" ref="dataSource" />
+  </bean>
+  <bean id="serviceTypeDao" class="org.opennms.netmgt.dao.jdbc.ServiceTypeDaoJdbc">
+  	<property name="dataSource" ref="dataSource" />
+  </bean>
+  
+  <!-- SnmpInterfaceFactory.register(m_dataSource); -->
+  <bean id="snmpInterfaceFactory" class="org.opennms.netmgt.dao.jdbc.snmpif.SnmpInterfaceFactory">
+  	<property name="dataSource" ref="dataSource" />
+  </bean>
+  <bean id="snmpInterfaceDao" class="org.opennms.netmgt.dao.jdbc.SnmpInterfaceDaoJdbc">
+  	<property name="dataSource" ref="dataSource" />
+  </bean>
+  
+  <!-- CategoryFactory.register(m_dataSource); -->
+  <bean id="categoryFactory" class="org.opennms.netmgt.dao.jdbc.category.CategoryFactory">
+  	<property name="dataSource" ref="dataSource" />
+  </bean>
+  <bean id="categoryDao" class="org.opennms.netmgt.dao.jdbc.CategoryDaoJdbc">
+  	<property name="dataSource" ref="dataSource" />
+  </bean>
+
+  <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+  	<property name="dataSource" ref="dataSource" />
+  </bean>
+  
+  <bean id="transactionTemplate" class="org.springframework.transaction.support.TransactionTemplate">
+    <property name="transactionManager" ref="transactionManager" />
+  </bean>
+  
+  
+  <bean id="modelImporter" class="org.opennms.netmgt.importer.ImporterService">
+    <property name="importResource" value="${importer.importURL}"/>
+    <property name="eventManager" ref="eventManager"/>
+    <property name="assetRecordDao" ref="assetRecordDao"/>
+    <property name="distPollerDao" ref="distPollerDao" />
+    <property name="ipInterfaceDao" ref="ipInterfaceDao" />
+    <property name="monitoredServiceDao" ref="monitoredServiceDao" />
+    <property name="nodeDao" ref="nodeDao" />
+    <property name="serviceTypeDao" ref="serviceTypeDao" />
+    <property name="categoryDao" ref="categoryDao" />
+    <property name="transactionTemplate" ref="transactionTemplate" />
+    <property name="scanThreads" value="${importer.scanThreads}" />
+    <property name="writeThreads" value="${importer.writeThreads}" />
+  </bean>
+ 
+ <bean id="modelImportingJobDetail" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+   <property name="targetObject">
+     <ref bean="modelImporter"/>
+   </property>
+   <property name="targetMethod">
+     <value>doImport</value>
+   </property>
+   <property name="concurrent">
+    <value>false</value>
+   </property>
+ </bean>
+ 
+ <bean id="cronImportTrigger" class="org.springframework.scheduling.quartz.CronTriggerBean">
+   <property name="jobDetail" ref="modelImportingJobDetail" />
+   <property name="cronExpression">
+     <value>${importer.importSchedule}</value>
+   </property>
+ </bean>
+ 
+ <bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+   <property name="triggers">
+     <list><ref bean="cronImportTrigger"/></list>
+   </property>
+ </bean>
+ 
+</beans>

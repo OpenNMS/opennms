@@ -79,6 +79,8 @@ your distribution.
   <property name="install.source.dir" value="${source.dir}/install"/>
   <property name="test.source.dir" value="${source.dir}/test"/>
   <property name="web.source.dir" value="${source.dir}/web/src"/>
+  <property name="importer.source.dir" value="${basedir}/model-import/src/main/java"/>
+  <property name="model.source.dir" value="${basedir}/opennms-model/src/main/java"/>
 
   <!-- test results directory -->
   <property name="test.xml.dir" value="${build.dir}/test-results" />
@@ -167,6 +169,7 @@ your distribution.
     <pathelement path="${build.castor.source.dir}"/>
     <pathelement path="${build.sablecc.source.dir}"/>
     <pathelement path="${core.source.dir}"/>
+    <pathelement path="${model.source.dir}" />
     <pathelement path="${joesnmp.source.dir}"/>
     <pathelement path="${services.source.dir}"/>
     <pathelement path="${bootstrap.source.dir}"/>
@@ -174,7 +177,13 @@ your distribution.
     <pathelement path="${report.source.dir}"/>
     <pathelement path="${install.source.dir}"/>
     <pathelement path="${test.source.dir}"/>
+    <pathelement path="${importer.source.dir}"/> 
   </path>
+ 
+ <path id="test.java.path">
+  <pathelement path="${basedir}/model-import/src/test/java"/>
+  <pathelement path="${basedir}/opennms-model/src/test/java"/>
+ </path>
 	
   <path id="javadoc.sources">
     <fileset dir="${build.castor.source.dir}"/>
@@ -189,6 +198,8 @@ your distribution.
     <fileset dir="${report.source.dir}"/>
     <fileset dir="${install.source.dir}"/>
     <fileset dir="${test.source.dir}"/>
+    <fileset dir="${model.source.dir}" />
+    <fileset dir="${importer.source.dir}"/>
   </path>
 
   <!-- Classpath reference for <javac/> and <javadoc/> -->
@@ -231,6 +242,8 @@ your distribution.
     <pathelement path="${packaged.lib.dir}/jcommon-1.0.0-rc1.jar" />
     <pathelement path="/System/Library/Java"/>
     <pathelement path="${packaged.lib.dir}/jboss/jbossall-client.jar"/>
+    <pathelement path="${packaged.lib.dir}/hibernate-3.0.5.jar"/>
+    <pathelement path="${packaged.lib.dir}/commons-beanutils-1.7.0.jar"/> 
   </path>
 
   <!-- The jars listed for Class-Path in the MANIFEST.MF for the installer's
@@ -1268,7 +1281,9 @@ OpenNMS as part of the post-install.
    </fileset>
    <fileset dir="src/services">
     <include name="**/*-context.xml"/>
-   </fileset> 
+   </fileset>
+   <fileset dir="${basedir}/model-import/src/main/resources" />
+   <fileset dir="${basedir}/opennms-model/src/main/resources" /> 
   </copy>
  </target>
 
@@ -1438,6 +1453,20 @@ OpenNMS as part of the post-install.
      <path refid="webtest.path"/>
    </classpath>
   </javac>
+  <javac destdir="${build.tests.dir}"
+   debug="${compiler.debug}"
+   optimize="${compiler.optimize}"
+   verbose="${compiler.verbose}"
+   deprecation="${compiler.deprecation}">
+   <src>
+    <path refid="test.java.path"/>
+   </src>
+   <classpath>
+     <pathelement path="${build.tests.dir}"/>
+     <path refid="test.path"/>
+     <path refid="webtest.path"/>
+   </classpath>
+  </javac>
  </target>
 	
  <target name="test.resources" unless="skip.tests">
@@ -1445,6 +1474,8 @@ OpenNMS as part of the post-install.
  	   <fileset dir="src/services">
  	    <include name="**/*.properties"/>
  	   </fileset>
+     <fileset dir="${basedir}/opennms-model/src/test/resources"/>
+     <fileset dir="${basedir}/model-import/src/test/resources"/>
  	  </copy>
  </target>
 
@@ -1486,7 +1517,7 @@ OpenNMS as part of the post-install.
    </fail>
  </target>
 
- <target name="runTest" depends="test.prep, java.compile, junit.compile"
+ <target name="runTest" depends="test.prep, java.compile, junit.compile, test.resources"
          description="Run a single unit test class">
    <fail unless="test.class">
      You need to define the test.class property to indicate which test
@@ -1549,7 +1580,7 @@ OpenNMS as part of the post-install.
  <target name="jar" depends="opennms_core.jar, opennms_joesnmp.jar,
 			     opennms_web.jar, opennms_common.jar,
 			     opennms_services.jar, opennms_bootstrap.jar,
-			     opennms_install.jar"
+			     opennms_install.jar, opennms_model.jar, opennms_dao.jar, opennms_importer.jar"
 	 description="create jar files"/>
  
  <target name="jar.copyxml" depends="prep">
@@ -1619,6 +1650,36 @@ OpenNMS as part of the post-install.
   </jar>
  </target>
 
+   <target name="opennms_model.jar"
+     depends="prep, java.compile, copy.install">
+    <mkdir dir="${build.jar.dir}"/>
+    <jar jarfile="${build.jar.dir}/opennms_model.jar">
+      <fileset dir="${build.classes.dir}"
+         includes="org/opennms/netmgt/model/**"/>
+    </jar>
+   </target>
+ 
+  <target name="opennms_dao.jar"
+    depends="prep, java.compile, copy.install">
+   <mkdir dir="${build.jar.dir}"/>
+   <jar jarfile="${build.jar.dir}/opennms_dao.jar">
+     <fileset dir="${build.classes.dir}">
+       <include name="org/opennms/netmgt/dao/**"/>
+      <include name="org/opennms/netmgt/util/**"/>
+     </fileset>
+   </jar>
+  </target>
+
+  <target name="opennms_importer.jar"
+    depends="prep, java.compile, copy.install">
+   <mkdir dir="${build.jar.dir}"/>
+   <jar jarfile="${build.jar.dir}/opennms_importer.jar">
+     <fileset dir="${build.classes.dir}"
+        includes="org/opennms/netmgt/importer/**"/>
+   </jar>
+  </target>
+
+ 
  <!-- XXX Ugly hack, jar files should be restructured to not depend on
       classlist files -->
  <target name="opennms_common.jar" depends="prep,java.compile">
@@ -1632,6 +1693,11 @@ OpenNMS as part of the post-install.
      <excludesfile name="${bootstrap.source.dir}/classlist"/>
      <excludesfile name="${web.source.dir}/classlist"/>
      <excludesfile name="${install.source.dir}/classlist"/>
+     <excludesfile name="${test.source.dir}/classlist"/>
+     <exclude name="org/opennms/netmgt/model/**"/> 
+      <exclude name="org/opennms/netmgt/util/**"/> 
+      <exclude name="org/opennms/netmgt/importer/**"/> 
+      <exclude name="org/opennms/netmgt/dao/**"/> 
      <excludesfile name="${test.source.dir}/classlist"/>
      <exclude name="**/MANIFEST.MF"/>
     </patternset>
@@ -1707,6 +1773,14 @@ OpenNMS as part of the post-install.
     <include name="**/*.html"/>
    </srcfileset>
    <srcfileset dir="${test.source.dir}">
+    <include name="**/*.java"/>
+    <include name="**/*.html"/>
+   </srcfileset>
+   <srcfileset dir="${model.source.dir}">
+    <include name="**/*.java"/>
+    <include name="**/*.html"/>
+   </srcfileset>
+   <srcfileset dir="${importer.source.dir}">
     <include name="**/*.java"/>
     <include name="**/*.html"/>
    </srcfileset>

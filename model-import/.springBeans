@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beansProjectDescription>
+	<configs>
+		<config>src/main/resources/org/opennms/netmgt/importer/importer-context.xml</config>
+	</configs>
+	<configSets>
+	</configSets>
+</beansProjectDescription>

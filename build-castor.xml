@@ -178,6 +178,7 @@
 		<castor-gen file="${castor.config.dir}/viewsdisplay.xsd" srcpackage="org.opennms.netmgt.config.viewsdisplay" />
 		<castor-gen file="${castor.config.dir}/webui-colors.xsd" srcpackage="org.opennms.netmgt.config.webuiColors" />
 		<castor-gen file="${castor.config.dir}/translator-configuration.xsd" srcpackage="org.opennms.netmgt.config.translator" />
+    <castor-gen file="${basedir}/model-import/src/main/castor/model-import.xsd" srcpackage="org.opennms.netmgt.config.modelimport" />
 
 	</target>
 

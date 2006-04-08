@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model-import xmlns="http://xmlns.opennms.org/xsd/model-import" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemalLocation="http://xmlns.opennms.org/xsd/config/model-import ../../main/castor/model-import.xsd" date-stamp="2005-12-27T09:12:54">
+  <node node-label="apknd" parent-node-label="apknd" foreign-id="4243">
+    <interface ip-addr="10.136.160.1" status="1" snmp-primary="P" descr="VPN interface">
+      <monitored-service service-name="ICMP">
+        <category name="AC" />
+      </monitored-service>
+      <monitored-service service-name="SNMP">
+        <category name="AC" />
+      </monitored-service>
+    </interface>
+  </node>
+</model-import>

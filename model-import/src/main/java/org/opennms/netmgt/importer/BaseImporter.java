@@ -1,0 +1,317 @@
+//
+// This file is part of the OpenNMS(R) Application.
+//
+// OpenNMS(R) is Copyright (C) 2006 The OpenNMS Group, Inc.  All rights reserved.
+// OpenNMS(R) is a derivative work, containing both original code, included code and modified
+// code that was published under the GNU General Public License. Copyrights for modified 
+// and included code are below.
+//
+// OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+//
+// Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
+//
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 2 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+//
+// For more information contact:
+// OpenNMS Licensing       <license@opennms.org>
+//     http://www.opennms.org/
+//     http://www.opennms.com/
+//
+package org.opennms.netmgt.importer;
+
+import java.io.IOException;
+import java.util.Collection;
+import java.util.Map;
+
+import org.apache.log4j.Category;
+import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.config.modelimport.Node;
+import org.opennms.netmgt.dao.AssetRecordDao;
+import org.opennms.netmgt.dao.CategoryDao;
+import org.opennms.netmgt.dao.DistPollerDao;
+import org.opennms.netmgt.dao.IpInterfaceDao;
+import org.opennms.netmgt.dao.MonitoredServiceDao;
+import org.opennms.netmgt.dao.NodeDao;
+import org.opennms.netmgt.dao.ServiceTypeDao;
+import org.opennms.netmgt.importer.operations.DefaultImportStatistics;
+import org.opennms.netmgt.importer.operations.DeleteOperation;
+import org.opennms.netmgt.importer.operations.ImportOperationFactory;
+import org.opennms.netmgt.importer.operations.ImportOperationsManager;
+import org.opennms.netmgt.importer.operations.ImportStatistics;
+import org.opennms.netmgt.importer.operations.InsertOperation;
+import org.opennms.netmgt.importer.operations.UpdateOperation;
+import org.opennms.netmgt.importer.specification.AbstractImportVisitor;
+import org.opennms.netmgt.importer.specification.SpecFile;
+import org.opennms.netmgt.model.OnmsDistPoller;
+import org.opennms.netmgt.model.OnmsNode;
+import org.springframework.core.io.Resource;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
+import org.springframework.transaction.support.TransactionTemplate;
+
+public class BaseImporter implements ImportOperationFactory {
+
+    protected TransactionTemplate m_transTemplate;
+    protected DistPollerDao m_distPollerDao;
+    private NodeDao m_nodeDao;
+    private IpInterfaceDao m_ipInterfaceDao;
+    private ServiceTypeDao m_serviceTypeDao;
+    private MonitoredServiceDao m_monitoredServiceDao;
+    private AssetRecordDao m_assetRecordDao;
+    private CategoryDao m_categoryDao;
+	private int m_scanThreads = 50;
+	private int m_writeThreads = 4;
+
+    //FIXME: We have a setTransactionTemplate and a setTransTemplate for the same field.
+    public void setTransactionTemplate(TransactionTemplate transTemplate) {
+        m_transTemplate = transTemplate;
+    }
+
+    public DistPollerDao getDistPollerDao() {
+        return m_distPollerDao;
+    }
+
+    public void setDistPollerDao(DistPollerDao distPollerDao) {
+        m_distPollerDao = distPollerDao;
+    }
+
+    public NodeDao getNodeDao() {
+        return m_nodeDao;
+    }
+
+    public void setNodeDao(NodeDao nodeDao) {
+        m_nodeDao = nodeDao;
+    }
+
+    public IpInterfaceDao getIpInterfaceDao() {
+        return m_ipInterfaceDao;
+    }
+
+    public void setIpInterfaceDao(IpInterfaceDao ipInterfaceDao) {
+        m_ipInterfaceDao = ipInterfaceDao;
+    }
+
+    public MonitoredServiceDao getMonitoredServiceDao() {
+        return m_monitoredServiceDao;
+    }
+
+    public void setMonitoredServiceDao(MonitoredServiceDao monitoredServiceDao) {
+        m_monitoredServiceDao = monitoredServiceDao;
+    }
+
+    public ServiceTypeDao getServiceTypeDao() {
+        return m_serviceTypeDao;
+    }
+
+    public void setServiceTypeDao(ServiceTypeDao serviceTypeDao) {
+        m_serviceTypeDao = serviceTypeDao;
+    }
+
+    public AssetRecordDao getAssetRecordDao() {
+        return m_assetRecordDao;
+    }
+
+    public void setAssetRecordDao(AssetRecordDao assetRecordDao) {
+        m_assetRecordDao = assetRecordDao;
+    }
+
+    public TransactionTemplate getTransTemplate() {
+        return m_transTemplate;
+    }
+
+    public void setTransTemplate(TransactionTemplate transTemplate) {
+        m_transTemplate = transTemplate;
+    }
+
+    public InsertOperation createInsertOperation(String foreignId, String nodeLabel, String building, String city) {
+        InsertOperation insertOperation = new InsertOperation(foreignId, nodeLabel, building, city);
+        insertOperation.setNodeDao(m_nodeDao);
+        insertOperation.setDistPollerDao(m_distPollerDao);
+        insertOperation.setServiceTypeDao(m_serviceTypeDao);
+        insertOperation.setCategoryDao(m_categoryDao);
+        return insertOperation;
+        
+    }
+
+    public UpdateOperation createUpdateOperation(Integer nodeId, String foreignId, String nodeLabel, String building, String city) {
+        UpdateOperation updateOperation = new UpdateOperation(nodeId, foreignId, nodeLabel, building, city);
+        updateOperation.setNodeDao(m_nodeDao);
+        updateOperation.setDistPollerDao(m_distPollerDao);
+        updateOperation.setServiceTypeDao(m_serviceTypeDao);
+        updateOperation.setCategoryDao(m_categoryDao);
+        return updateOperation;
+    }
+
+    public DeleteOperation createDeleteOperation(Integer nodeId, String assetNumber) {
+        return new DeleteOperation(nodeId, assetNumber, m_nodeDao);
+    }
+    
+    protected void importModelFromResource(Resource resource) throws IOException, ModelImportException {
+    	importModelFromResource(resource, new DefaultImportStatistics());
+    }
+
+    protected void importModelFromResource(Resource resource, ImportStatistics stats) throws IOException, ModelImportException {
+    	stats.beginImporting();
+    	stats.beginLoadingResource(resource);
+    	
+        SpecFile specFile = new SpecFile();
+        specFile.loadResource(resource);
+        
+        stats.finishLoadingResource(resource);
+        
+        stats.beginAuditNodes();
+        createDistPollerIfNecessary();
+        
+        Map assetNumbersToNodes = getAssetNumberToNodeMap();
+        
+        ImportOperationsManager opsMgr = createImportOperationsManager(assetNumbersToNodes, stats);
+        opsMgr.setScanThreads(m_scanThreads);
+        opsMgr.setWriteThreads(m_writeThreads);
+        
+        auditNodes(opsMgr, specFile);
+        
+        stats.finishAuditNodes();
+        
+        opsMgr.persistOperations(m_transTemplate, getNodeDao());
+        
+        stats.beginRelateNodes();
+        
+        relateNodes(specFile);
+        
+        stats.finishRelateNodes();
+    
+        stats.finishImporting();
+    }
+
+	protected ImportOperationsManager createImportOperationsManager(Map assetNumbersToNodes, ImportStatistics stats) {
+		ImportOperationsManager opsMgr = new ImportOperationsManager(assetNumbersToNodes, this);
+		opsMgr.setStats(stats);
+		return opsMgr;
+	}
+
+    private void auditNodes(final ImportOperationsManager opsMgr, final SpecFile specFile) {
+    	m_transTemplate.execute(new TransactionCallback() {
+    
+            public Object doInTransaction(TransactionStatus status) {
+                ImportAccountant accountant = new ImportAccountant(opsMgr);
+                specFile.visitImport(accountant);
+                return null;
+            }
+            
+        });
+    }
+
+	class NodeRelator extends AbstractImportVisitor {
+		public void visitNode(final Node node) {
+			m_transTemplate.execute(new TransactionCallbackWithoutResult() {
+				protected void doInTransactionWithoutResult(TransactionStatus status) {
+					OnmsNode dbNode = findNodeByForeignId(node.getForeignId());
+					if (dbNode == null) {
+					    log().error("Error setting parent on node: "+node.getForeignId()+" node not in database");
+					    return;
+					}
+					OnmsNode parent = findParent(node);
+					log().info("Setting parent of node: "+dbNode+" to: "+parent);
+					dbNode.setParent(parent);
+					getNodeDao().update(dbNode);
+				}
+
+			});
+		}
+		
+		private OnmsNode findParent(Node node) {
+			if (node.getParentForeignId() != null)
+				return findNodeByForeignId(node.getParentForeignId());
+			else if (node.getParentNodeLabel() != null)
+				return findNodeByNodeLabel(node.getParentNodeLabel());
+			
+			return null;
+		}
+
+		private OnmsNode findNodeByNodeLabel(String label) {
+			Collection nodes = getNodeDao().findByLabel(label);
+			if (nodes.size() == 1)
+				return (OnmsNode)nodes.iterator().next();
+			
+			log().error("Unable to locate a unique node using label "+label+" "+nodes.size()+" nodes found.  Ignoring relationship.");
+			return null;
+		}
+
+		private OnmsNode findNodeByForeignId(String foreignId) {
+			return getNodeDao().findByAssetNumber(ImportOperationsManager.getAssetNumber(foreignId));
+		}
+
+	};
+
+	private void relateNodes(SpecFile specFile) {
+		specFile.visitImport(new NodeRelator());
+	}
+
+    public Category log() {
+    	return ThreadCategory.getInstance(getClass());
+	}
+
+	private Map getAssetNumberToNodeMap() {
+        return (Map)m_transTemplate.execute(new TransactionCallback() {
+            public Object doInTransaction(TransactionStatus status) {
+                return getAssetRecordDao().findImportedAssetNumbersToNodeIds();
+            }
+        });
+        
+    }
+
+    private OnmsDistPoller createDistPollerIfNecessary() {
+        System.err.println("Locating DistPoller");
+        return (OnmsDistPoller)m_transTemplate.execute(new TransactionCallback() {
+    
+            public Object doInTransaction(TransactionStatus status) {
+                OnmsDistPoller distPoller = m_distPollerDao.get("localhost");
+                if (distPoller == null) {
+                    distPoller = new OnmsDistPoller("localhost", "127.0.0.1");
+                    m_distPollerDao.save(distPoller);
+                }
+                return distPoller;
+            }
+            
+        });
+    
+    }
+
+    public CategoryDao getCategoryDao() {
+        return m_categoryDao;
+    }
+
+    public void setCategoryDao(CategoryDao categoryDao) {
+        m_categoryDao = categoryDao;
+    }
+
+	public int getScanThreads() {
+		return m_scanThreads;
+	}
+
+	public void setScanThreads(int poolSize) {
+		m_scanThreads = poolSize;
+	}
+
+	public int getWriteThreads() {
+		return m_writeThreads;
+	}
+
+	public void setWriteThreads(int writeThreads) {
+		m_writeThreads = writeThreads;
+	}
+
+}
