@@ -111,7 +111,11 @@ public abstract class JMXCollector implements ServiceCollector {
      * SQL statement to retrieve interface's 'ipinterface' table information.
      */
 
-    private static final String SQL_GET_NODEID = "SELECT nodeid FROM ipinterface WHERE ipaddr=? AND ismanaged!='D'";
+    private static final String SQL_GET_NODEID =
+        "SELECT nodeid "
+            + "FROM ipinterface "
+            + "WHERE ipaddr=? "
+            + "AND ismanaged!='D'";
 
     /**
      * Interface attribute key used to store the map of IfInfo objects which
@@ -151,7 +155,8 @@ public abstract class JMXCollector implements ServiceCollector {
      */
     static String NODE_INFO_KEY = "org.opennms.netmgt.collectd.JMXCollector.nodeInfo";
 
-    static String MAX_VARS_PER_PDU_STORAGE_KEY = "org.opennms.netmgt.collectd.JMXCollector.maxVarsPerPdu";
+    static String MAX_VARS_PER_PDU_STORAGE_KEY =
+        "org.opennms.netmgt.collectd.JMXCollector.maxVarsPerPdu";
     
     /*
      * The service name is provided by the derived class

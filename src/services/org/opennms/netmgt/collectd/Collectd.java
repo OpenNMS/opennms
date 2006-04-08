@@ -81,12 +81,21 @@ public final class Collectd extends ServiceDaemon {
      * SQL used to retrieve all the interfaces which support a particular
      * service.
      */
-    private final static String SQL_RETRIEVE_INTERFACES = "SELECT DISTINCT ifServices.nodeid,ifServices.ipaddr FROM ifServices, service, ipinterface WHERE ifServices.serviceid = service.serviceid AND service.servicename = ? AND ifServices.ipaddr = ipinterface.ipaddr and ifServices.nodeid = ipinterface.nodeid and ipinterface.ismanaged != 'D'";
+    private final static String SQL_RETRIEVE_INTERFACES =
+        "SELECT DISTINCT ifServices.nodeid, ifServices.ipaddr "
+            + "FROM ifServices, service, ipinterface "
+            + "WHERE ifServices.serviceid = service.serviceid "
+            + "AND service.servicename = ? "
+            + "AND ifServices.ipaddr = ipinterface.ipaddr "
+            + "AND ifServices.nodeid = ipinterface.nodeid "
+            + "AND ipinterface.ismanaged != 'D'";
 
     /**
      * SQL used to retrieve all the service id's and names from the database.
      */
-    private final static String SQL_RETRIEVE_SERVICE_IDS = "SELECT serviceid,servicename FROM service";
+    private final static String SQL_RETRIEVE_SERVICE_IDS =
+        "SELECT serviceid, servicename "
+            + "FROM service";
 
     /**
      * Singleton instance of the Collectd class
@@ -139,17 +148,14 @@ public final class Collectd extends ServiceDaemon {
         // get the category logger
         final Category log = ThreadCategory.getInstance();
 
-        if (log.isDebugEnabled())
-            log.debug("init: Initializing collection daemon");
+        log.debug("init: Initializing collection daemon");
 
         loadConfigFactory(log);
         loadscheduledOutagesConfigFactory(log);
 
-        if (log.isDebugEnabled())
-            log.debug("init: Loading collectors");
+        log.debug("init: Loading collectors");
 
         // Collectd configuration
-        //
         CollectdConfigFactory cCfgFactory = CollectdConfigFactory.getInstance();
         CollectdConfiguration config = cCfgFactory.getConfiguration();
 
@@ -162,18 +168,18 @@ public final class Collectd extends ServiceDaemon {
     }
 
     private void createEventProcessor(final Category log) {
-        // Create an event receiver. The receiver will
-        // receive events, process them, creates network
-        // interfaces, and schedulers them.
-        //
+        /*
+         * Create an event receiver. The receiver will
+         * receive events, process them, creates network
+         * interfaces, and schedulers them.
+         */
         try {
-            if (log.isDebugEnabled())
-                log.debug("init: Creating event broadcast event processor");
+            log.debug("init: Creating event broadcast event processor");
 
             m_receiver = new BroadcastEventProcessor(m_collectableServices);
         } catch (Throwable t) {
-            if (log.isEnabledFor(Priority.FATAL))
-                log.fatal("init: Failed to initialized the broadcast event receiver", t);
+            log.fatal("init: Failed to initialized the broadcast event receiver",
+                      t);
 
             throw new UndeclaredThrowableException(t);
         }
@@ -189,12 +195,11 @@ public final class Collectd extends ServiceDaemon {
             }
 
             public void run() {
-                //
                 try {
                     scheduleExistingInterfaces();
                 } catch (SQLException sqlE) {
-                    if (log.isEnabledFor(Priority.ERROR))
-                        log.error("start: Failed to schedule existing interfaces", sqlE);
+                    log.error("start: Failed to schedule existing interfaces",
+                              sqlE);
                 } finally {
                     setSchedulingCompleted(true);
                 }
@@ -204,45 +209,47 @@ public final class Collectd extends ServiceDaemon {
         return interfaceScheduler;
     }
 
-    private void createScheduler(final Category log, CollectdConfiguration config) {
+    private void createScheduler(final Category log,
+                                 CollectdConfiguration config) {
         // Create a scheduler
-        //
         try {
-            if (log.isDebugEnabled())
-                log.debug("init: Creating collectd scheduler");
+            log.debug("init: Creating collectd scheduler");
 
             m_scheduler = new Scheduler("Collectd", config.getThreads());
         } catch (RuntimeException e) {
-            if (log.isEnabledFor(Priority.FATAL))
-                log.fatal("init: Failed to create collectd scheduler", e);
+            log.fatal("init: Failed to create collectd scheduler", e);
             throw e;
         }
     }
 
     private void instantiateCollectors(final Category log, CollectdConfiguration config) {
-        // Load up an instance of each collector from the config
-        // so that the event processor will have them for
-        // new incomming events to create collectable service objects.
-        //
+        /*
+         * Load up an instance of each collector from the config
+         * so that the event processor will have them for
+         * new incomming events to create collectable service objects.
+         */
         Enumeration eiter = config.enumerateCollector();
         while (eiter.hasMoreElements()) {
             Collector collector = (Collector) eiter.nextElement();
             try {
                 if (log.isDebugEnabled()) {
-                    log.debug("init: Loading collector " + collector.getService() + ", classname " + collector.getClassName());
+                    log.debug("init: Loading collector " 
+                              + collector.getService() + ", classname "
+                              + collector.getClassName());
                 }
                 Class cc = Class.forName(collector.getClassName());
                 ServiceCollector sc = (ServiceCollector) cc.newInstance();
 
                 // Attempt to initialize the service collector
-                //
                 Map properties = null; // properties not currently used
                 sc.initialize(properties);
 
                 m_svcCollectors.put(collector.getService(), sc);
             } catch (Throwable t) {
                 if (log.isEnabledFor(Priority.WARN)) {
-                    log.warn("init: Failed to load collector " + collector.getClassName() + " for service " + collector.getService(), t);
+                    log.warn("init: Failed to load collector "
+                             + collector.getClassName() + " for service "
+                             + collector.getService(), t);
                 }
             }
         }
@@ -250,40 +257,32 @@ public final class Collectd extends ServiceDaemon {
 
     private void loadscheduledOutagesConfigFactory(final Category log) {
         // Load up the configuration for the scheduled outages.
-        //
         try {
             PollOutagesConfigFactory.reload();
         } catch (MarshalException ex) {
-            if (log.isEnabledFor(Priority.FATAL))
-                log.fatal("init: Failed to load poll-outage configuration", ex);
+            log.fatal("init: Failed to load poll-outage configuration", ex);
             throw new UndeclaredThrowableException(ex);
         } catch (ValidationException ex) {
-            if (log.isEnabledFor(Priority.FATAL))
-                log.fatal("init: Failed to load poll-outage configuration", ex);
+            log.fatal("init: Failed to load poll-outage configuration", ex);
             throw new UndeclaredThrowableException(ex);
         } catch (IOException ex) {
-            if (log.isEnabledFor(Priority.FATAL))
-                log.fatal("init: Failed to load poll-outage configuration", ex);
+            log.fatal("init: Failed to load poll-outage configuration", ex);
             throw new UndeclaredThrowableException(ex);
         }
     }
 
     private void loadConfigFactory(final Category log) {
         // Load collectd configuration file
-        //
         try {
             CollectdConfigFactory.reload();
         } catch (MarshalException ex) {
-            if (log.isEnabledFor(Priority.FATAL))
-                log.fatal("init: Failed to load collectd configuration", ex);
+            log.fatal("init: Failed to load collectd configuration", ex);
             throw new UndeclaredThrowableException(ex);
         } catch (ValidationException ex) {
-            if (log.isEnabledFor(Priority.FATAL))
-                log.fatal("init: Failed to load collectd configuration", ex);
+            log.fatal("init: Failed to load collectd configuration", ex);
             throw new UndeclaredThrowableException(ex);
         } catch (IOException ex) {
-            if (log.isEnabledFor(Priority.FATAL))
-                log.fatal("init: Failed to load collectd configuration", ex);
+            log.fatal("init: Failed to load collectd configuration", ex);
             throw new UndeclaredThrowableException(ex);
         }
     }
@@ -300,19 +299,15 @@ public final class Collectd extends ServiceDaemon {
         // get the category logger
         Category log = ThreadCategory.getInstance();
 
-        if (log.isDebugEnabled())
-            log.debug("start: Initializing collection daemon");
+        log.debug("start: Initializing collection daemon");
 
         // start the scheduler
-        //
         try {
-            if (log.isDebugEnabled())
-                log.debug("start: Starting collectd scheduler");
+            log.debug("start: Starting collectd scheduler");
 
             m_scheduler.start();
         } catch (RuntimeException e) {
-            if (log.isEnabledFor(Priority.FATAL))
-                log.fatal("start: Failed to start scheduler", e);
+            log.fatal("start: Failed to start scheduler", e);
             throw e;
         }
 
@@ -320,8 +315,7 @@ public final class Collectd extends ServiceDaemon {
         //
         setStatus(RUNNING);
 
-        if (log.isDebugEnabled())
-            log.debug("start: Collectd running");
+        log.debug("start: Collectd running");
     }
 
     /**
@@ -335,40 +329,39 @@ public final class Collectd extends ServiceDaemon {
         m_scheduler = null;
         setStatus(STOPPED);
         Category log = ThreadCategory.getInstance();
-        if (log.isDebugEnabled())
-            log.debug("stop: Collectd stopped");
+        log.debug("stop: Collectd stopped");
     }
 
     /**
      * Responsible for pausing the collection daemon.
      */
     public synchronized void pause() {
-        if (!isRunning())
+        if (!isRunning()) {
             return;
+        }
 
         setStatus(PAUSE_PENDING);
         m_scheduler.pause();
         setStatus(PAUSED);
 
         Category log = ThreadCategory.getInstance();
-        if (log.isDebugEnabled())
-            log.debug("pause: Collectd paused");
+        log.debug("pause: Collectd paused");
     }
 
     /**
      * Responsible for resuming the collection daemon.
      */
     public synchronized void resume() {
-        if (!isPaused())
+        if (!isPaused()) {
             return;
+        }
 
         setStatus(RESUME_PENDING);
         m_scheduler.resume();
         setStatus(RUNNING);
 
         Category log = ThreadCategory.getInstance();
-        if (log.isDebugEnabled())
-            log.debug("resume: Collectd resumed");
+        log.debug("resume: Collectd resumed");
     }
 
     /**
@@ -413,7 +406,6 @@ public final class Collectd extends ServiceDaemon {
      */
     private void scheduleExistingInterfaces() throws SQLException {
         // get the category logger
-        //
         Category log = ThreadCategory.getInstance();
 
         // Database connection
@@ -425,27 +417,30 @@ public final class Collectd extends ServiceDaemon {
             stmt = dbConn.prepareStatement(SQL_RETRIEVE_INTERFACES);
 
             // Loop through loaded collectors and schedule for each one present
-            //
             Set svcNames = m_svcCollectors.keySet();
             Iterator i = svcNames.iterator();
             while (i.hasNext()) {
                 String svcName = (String) i.next();
-                ServiceCollector collector = (ServiceCollector) m_svcCollectors.get(svcName);
+                ServiceCollector collector =
+                    (ServiceCollector) m_svcCollectors.get(svcName);
 
-                if (log.isDebugEnabled())
-                    log.debug("scheduleExistingInterfaces: dbConn = " + dbConn + ", svcName = " + svcName);
+                if (log.isDebugEnabled()) {
+                    log.debug("scheduleExistingInterfaces: dbConn = " + dbConn
+                              + ", svcName = " + svcName);
+                }
 
-                // Retrieve list of interfaces from the database which
-                // support the service collected by this collector
-                //
+                /*
+                 * Retrieve list of interfaces from the database which
+                 * support the service collected by this collector
+                 */
                 try {
                     stmt.setString(1, svcName); // Service name
                     ResultSet rs = stmt.executeQuery();
 
-                    // Iterate over result set and schedule each
-                    // interface/service
-                    // pair which passes the criteria
-                    //
+                    /*
+                     * Iterate over result set and schedule each
+                     * interface/service pair which passes the criteria
+                     */
                     while (rs.next()) {
                         int nodeId = rs.getInt(1);
                         String ipAddress = rs.getString(2);
@@ -455,7 +450,8 @@ public final class Collectd extends ServiceDaemon {
 
                     rs.close();
                 } catch (SQLException sqle) {
-                    log.warn("scheduleExistingInterfaces: SQL exception while querying ipInterface table", sqle);
+                    log.warn("scheduleExistingInterfaces: SQL exception while "
+                             + "querying ipInterface table", sqle);
                     throw sqle;
                 }
             } // end while more service collectors
@@ -464,8 +460,8 @@ public final class Collectd extends ServiceDaemon {
                 try {
                     stmt.close();
                 } catch (Exception e) {
-                    if (log.isDebugEnabled())
-                        log.debug("scheduleExistingInterfaces: an exception occured closing the SQL statement", e);
+                    log.debug("scheduleExistingInterfaces: an exception occured "
+                              + "closing the SQL statement", e);
                 }
             }
 
@@ -473,8 +469,8 @@ public final class Collectd extends ServiceDaemon {
                 try {
                     dbConn.close();
                 } catch (Throwable t) {
-                    if (log.isDebugEnabled())
-                        log.debug("scheduleExistingInterfaces: an exception occured closing the SQL connection", t);
+                    log.debug("scheduleExistingInterfaces: an exception occured "
+                              + "closing the SQL connection", t);
                 }
             }
         }
@@ -500,82 +496,100 @@ public final class Collectd extends ServiceDaemon {
         CollectdConfigFactory cCfgFactory = CollectdConfigFactory.getInstance();
         CollectdConfiguration cConfig = cCfgFactory.getConfiguration();
         Enumeration epkgs = cConfig.enumeratePackage();
-
-        // Compare interface/service pair against each collectd package
-        // For each match, create new SnmpCollector object and
-        // schedule it for collection
-        //
+        
+        /*
+         * Compare interface/service pair against each collectd package
+         * For each match, create new SnmpCollector object and
+         * schedule it for collection
+         */
         while (epkgs.hasMoreElements()) {
             Package pkg = (Package) epkgs.nextElement();
 
-            // Make certain the the current service is in the package
-            // and enabled!
-            //
-            if (!cCfgFactory.serviceInPackageAndEnabled(svcName, pkg)) {
-                if (log.isDebugEnabled())
-                    log.debug("scheduleInterface: address/service: " + ipAddress + "/" + svcName + " not scheduled, service is not enabled or does not exist in package: " + pkg.getName());
+            /*
+             * Make certain the the current service is in the package
+             * and enabled!
+             */
+             if (!cCfgFactory.serviceInPackageAndEnabled(svcName, pkg)) {
+                if (log.isDebugEnabled()) {
+                    log.debug("scheduleInterface: address/service: " + ipAddress
+                              + "/" + svcName + " not scheduled, service is not "
+                              + "enabled or does not exist in package: "
+                              + pkg.getName());
+                }
                 continue;
             }
 
             // Is the interface in the package?
-            //
             if (!cCfgFactory.interfaceInPackage(ipAddress, pkg)) {
-                if (log.isDebugEnabled())
-                    log.debug("scheduleInterface: address/service: " + ipAddress + "/" + svcName + " not scheduled, interface does not belong to package: " + pkg.getName());
+                if (log.isDebugEnabled()) {
+                    log.debug("scheduleInterface: address/service: " + ipAddress
+                              + "/" + svcName + " not scheduled, interface "
+                              + "does not belong to package: " + pkg.getName());
+                }
                 continue;
             }
 
             if (existing == false) {
-                // It is possible that both a nodeGainedService and a
-                // primarySnmpInterfaceChanged
-                // event are generated for an interface during a rescan. To
-                // handle
-                // this scenario we must verify that the ipAddress/pkg pair
-                // identified by
-                // this event does not already exist in the collectable services
-                // list.
-                //
+                /*
+                 * It is possible that both a nodeGainedService and a
+                 * primarySnmpInterfaceChanged event are generated for an
+                 * interface during a rescan. To handle this scenario we must
+                 * verify that the ipAddress/pkg pair identified by this event
+                 * does not already exist in the collectable services list.
+                 */
                 if (alreadyScheduled(ipAddress, pkg.getName(), svcName)) {
                     if (log.isDebugEnabled()) {
-                        log.debug("scheduleInterface: ipAddr/pkgName " + ipAddress + "/" + pkg.getName() + " already in collectable service list, skipping.");
+                        log.debug("scheduleInterface: ipAddr/pkgName "
+                                  + ipAddress + "/" + pkg.getName()
+                                  + " already in collectable service list, "
+                                  + "skipping.");
                     }
                     continue;
                 }
             }
 
             try {
-                // Criteria checks have all passed. The interface/service pair
-                // can be scheduled.
-                //
+                /*
+                 * Criteria checks have all passed. The interface/service pair
+                 * can be scheduled.
+                 */
                 CollectableService cSvc = null;
 
-                // Create a new SnmpCollector object representing this node,
-                // interface,
-                // service and package pairing
-                //
-                cSvc = new CollectableService(nodeId, InetAddress.getByName(ipAddress), svcName, pkg);
+                /*
+                 * Create a new SnmpCollector object representing this node,
+                 * interface,
+                 * service and package pairing
+                 */
+                cSvc = new CollectableService(nodeId,
+                                              InetAddress.getByName(ipAddress),
+                                              svcName, pkg);
 
                 // Initialize the collector with the collectable service.
-                //
                 ServiceCollector collector = this.getServiceCollector(svcName);
                 collector.initialize(cSvc, cSvc.getPropertyMap());
 
                 // Add new collectable service to the colleable service list.
-                //
                 m_collectableServices.add(cSvc);
 
                 // Schedule the collectable service for immediate collection
-                //
                 m_scheduler.schedule(cSvc, 0);
 
-                if (log.isDebugEnabled())
-                    log.debug("scheduleInterface: " + nodeId + "/" + ipAddress + " scheduled for " + svcName + " collection");
+                if (log.isDebugEnabled()) {
+                    log.debug("scheduleInterface: " + nodeId + "/" + ipAddress
+                              + " scheduled for " + svcName + " collection");
+                }
             } catch (UnknownHostException ex) {
-                log.error("scheduleInterface: Failed to schedule interface " + ipAddress + " for service " + svcName + ", illegal address", ex);
+                log.error("scheduleInterface: Failed to schedule interface "
+                          + ipAddress + " for service " + svcName
+                          + ", illegal address", ex);
             } catch (RuntimeException rE) {
-                log.warn("scheduleInterface: Unable to schedule " + ipAddress + " for service " + svcName + ", reason: " + rE.getMessage());
+                log.warn("scheduleInterface: Unable to schedule " + ipAddress
+                         + " for service " + svcName + ", reason: "
+                         + rE.getMessage());
             } catch (Throwable t) {
-                log.error("scheduleInterface: Uncaught exception, failed to schedule interface " + ipAddress + " for service " + svcName, t);
+                log.error("scheduleInterface: Uncaught exception, failed to "
+                          + "schedule interface " + ipAddress + " for service "
+                          + svcName, t);
             }
         } // end while more packages exist
     }
@@ -584,7 +598,8 @@ public final class Collectd extends ServiceDaemon {
      * Returns true if specified address/pkg pair is already represented in the
      * collectable services list. False otherwise.
      */
-    private boolean alreadyScheduled(String ipAddress, String pkgName, String svcName) {
+    private boolean alreadyScheduled(String ipAddress, String pkgName,
+                                     String svcName) {
         synchronized (m_collectableServices) {
             CollectableService cSvc = null;
             Iterator iter = m_collectableServices.iterator();
@@ -592,7 +607,9 @@ public final class Collectd extends ServiceDaemon {
                 cSvc = (CollectableService) iter.next();
 
                 InetAddress addr = (InetAddress) cSvc.getAddress();
-                if (addr.getHostAddress().equals(ipAddress) && cSvc.getPackageName().equals(pkgName) && cSvc.getServiceName().equals(svcName)) {
+                if (addr.getHostAddress().equals(ipAddress) 
+                    && cSvc.getPackageName().equals(pkgName)
+                    && cSvc.getServiceName().equals(svcName)) {
                     return true;
                 }
             }
@@ -618,11 +635,11 @@ public final class Collectd extends ServiceDaemon {
 
 
 	public void refreshServicePackages() {
-                 Iterator serviceIterator=m_collectableServices.iterator();
-                 while(serviceIterator.hasNext()) {
-                         CollectableService thisService=(CollectableService)serviceIterator.next();
-                         thisService.refreshPackage();
-                 }
-        }
-
+	    Iterator serviceIterator=m_collectableServices.iterator();
+	    while (serviceIterator.hasNext()) {
+	        CollectableService thisService =
+                (CollectableService) serviceIterator.next();
+	        thisService.refreshPackage();
+	    }
+	}
 }
