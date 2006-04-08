@@ -79,6 +79,8 @@
 			     before a threshold event is generated.
 			-->
 			<attribute name="trigger" type="positiveInteger" use="required"/>
+			<!-- data source label -->
+			<attribute name="ds-label" type="string" use="optional"/>
 		</complexType>
 	</element>
 </schema>

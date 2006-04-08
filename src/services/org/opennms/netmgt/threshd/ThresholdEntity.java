@@ -219,6 +219,19 @@ final class ThresholdEntity implements Cloneable {
     }
 
     /**
+     * Get datasource Label
+     */
+    String getDatasourceLabel() {
+        if (this.hasHighThreshold())
+            return m_highThreshold.getDsLabel();
+        else if (this.hasLowThreshold())
+            return m_lowThreshold.getDsLabel();
+        else
+            return null;
+    }
+
+
+    /**
      * Returns a copy of this ThresholdEntity object.
      * 
      * NOTE: The m_lowThreshold and m_highThreshold member variables are not

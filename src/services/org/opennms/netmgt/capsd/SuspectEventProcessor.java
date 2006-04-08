@@ -1526,6 +1526,30 @@ final class SuspectEventProcessor implements Runnable {
             // Old and new primary interfaces are the same
             if (log.isDebugEnabled())
                 log.debug("setPrimarySnmpInterface: Old and new primary interfaces are the same");
+
+	    // (sigh) capsd sets all values of issnmpprimary to 'S' up to this point, so we
+	    // still need to set it to 'P' in the table
+
+            // Prepare SQL statement
+            PreparedStatement stmt = dbc.prepareStatement("UPDATE ipInterface SET isSnmpPrimary='P' WHERE nodeId=? AND ipaddr=? AND isManaged!='D'");
+            stmt.setInt(1, node.getNodeId());
+            stmt.setString(2, newPrimarySnmpIf.getHostAddress());
+
+            // Execute statement
+            try {
+                stmt.executeUpdate();
+                if (log.isDebugEnabled())
+                    log.debug("setPrimarySnmpInterface: completed update of new primary interface to PRIMARY.");
+            } catch (SQLException sqlE) {
+                throw sqlE;
+            } finally {
+                try {
+                    stmt.close();
+                } catch (Exception e) {
+                    // Ignore
+                }
+            }
+
             return;
         }
 

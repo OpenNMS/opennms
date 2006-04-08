@@ -1,7 +1,7 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2002-2003 The OpenNMS Group, Inc.  All rights reserved.
+// OpenNMS(R) is Copyright (C) 2002-2006 The OpenNMS Group, Inc.  All rights reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included code and modified
 // code that was published under the GNU General Public License. Copyrights for modified 
 // and included code are below.
@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2006 Apr 05: Modifed replaceNotifications to preserve notice order.
 // 2004 Jun 03: Modified to allow rules other than IPADDR IPLIKE.
 //
 // Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -241,12 +242,8 @@ public class NotificationWizardServlet extends HttpServlet {
             newNotice.setName(request.getParameter("name"));
 
             try {
-                if (oldName != null && !oldName.equals(newNotice.getName())) {
-                    // replacing a path with a new name
+		// Edited replaceNotification to add if no match.
                     NotificationFactory.getInstance().replaceNotification(oldName, newNotice);
-                } else {
-                    NotificationFactory.getInstance().addNotification(newNotice);
-                }
             } catch (Exception e) {
                 throw new ServletException("Couldn't save/reload notification configuration file.", e);
             }
@@ -277,6 +274,7 @@ public class NotificationWizardServlet extends HttpServlet {
         newNotice.setSubject(oldNotice.getSubject());
         newNotice.setNumericMessage(oldNotice.getNumericMessage());
         newNotice.setStatus(oldNotice.getStatus());
+        newNotice.setVarbind(oldNotice.getVarbind());
 
         Parameter parameters[] = oldNotice.getParameter();
         for (int i = 0; i < parameters.length; i++) {

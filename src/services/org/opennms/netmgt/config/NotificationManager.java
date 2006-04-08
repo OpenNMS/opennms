@@ -1,12 +1,14 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2005 The OpenNMS Group, Inc.  All rights reserved.
+// OpenNMS(R) is Copyright (C) 2006 The OpenNMS Group, Inc.  All rights reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included code and modified
 // code that was published under the GNU General Public License. Copyrights for modified 
 // and included code are below.
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+//
+// 2006 Apr 7: Changed replaceNotification to handle preserving the order.
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -60,6 +62,7 @@ import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.notifications.Header;
 import org.opennms.netmgt.config.notifications.Notification;
 import org.opennms.netmgt.config.notifications.Notifications;
+import org.opennms.netmgt.config.notifications.Parameter;
 import org.opennms.netmgt.filter.Filter;
 import org.opennms.netmgt.filter.FilterParseException;
 import org.opennms.netmgt.utils.Querier;
@@ -743,12 +746,35 @@ public abstract class NotificationManager {
     /**
      * 
      */
-    public synchronized void replaceNotification(String oldName, Notification notice) throws MarshalException, ValidationException, IOException, ClassNotFoundException {
-        Notification oldNotice = getNotification(oldName);
-        if (oldNotice != null)
-            m_notifications.removeNotification(oldNotice);
-    
-        addNotification(notice);
+    public synchronized void replaceNotification(String oldName, Notification newNotice) throws MarshalException, ValidationException, IOException, ClassNotFoundException {
+        //   In order to preserver the order of the notices, we have to replace "in place".
+
+        Notification notice = getNotification(oldName);
+	if (notice != null) {
+        	notice.setWriteable(newNotice.getWriteable());
+	        notice.setDescription(newNotice.getDescription());
+	        notice.setUei(newNotice.getUei());
+	        notice.setRule(newNotice.getRule());
+	        notice.setDestinationPath(newNotice.getDestinationPath());
+	        notice.setNoticeQueue(newNotice.getNoticeQueue());
+	        notice.setTextMessage(newNotice.getTextMessage());
+	        notice.setSubject(newNotice.getSubject());
+	        notice.setNumericMessage(newNotice.getNumericMessage());
+	        notice.setStatus(newNotice.getStatus());
+	        notice.setVarbind(newNotice.getVarbind());
+            
+	        Parameter parameters[] = newNotice.getParameter();
+	        for (int i = 0; i < parameters.length; i++) {
+		            Parameter newParam = new Parameter();
+		            newParam.setName(parameters[i].getName());
+		            newParam.setValue(parameters[i].getValue());
+
+		            notice.addParameter(newParam);
+	        } 
+                saveCurrent();
+	}
+	else	
+        	addNotification(newNotice);
     }
     /**
      * Sets the status on an individual notification configuration and saves to
