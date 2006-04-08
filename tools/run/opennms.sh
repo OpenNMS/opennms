@@ -500,7 +500,8 @@ fi
 if [ ! -f $OPENNMS_HOME/etc/configured ]; then
     echo "$0: OpenNMS not configured." >&2
     echo "$OPENNMS_HOME/etc/configured does not exist." >&2
-    echo "You need to run the installer -- see the install guide for details." >&2
+    echo "You need to run the installer to setup the database -- see the" >&2
+    echo "install guide for details." >&2
     exit 6    # From LSB: 6 - program is not configured
 fi
 
