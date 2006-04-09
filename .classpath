@@ -80,5 +80,7 @@
 	<classpathentry kind="lib" path="lib/openldap-jldap-2005.10.03.jar"/>
 	<classpathentry kind="lib" path="lib/c3p0-0.9.1-pre5a.jar"/>
 	<classpathentry kind="lib" path="lib/spring-1.2.6.jar"/>
+	<classpathentry kind="lib" path="lib/commons-codec-1.3.jar"/>
+	<classpathentry kind="lib" path="lib/commons-httpclient-3.0.jar"/>
 	<classpathentry kind="output" path="work/opennms/classes"/>
 </classpath>

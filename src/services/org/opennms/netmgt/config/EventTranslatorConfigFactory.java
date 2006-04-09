@@ -50,6 +50,7 @@ import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
+import org.opennms.core.utils.MatchTable;
 import org.opennms.core.utils.PropertiesUtils;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.ConfigFileConstants;
@@ -652,21 +653,7 @@ public final class EventTranslatorConfigFactory implements EventTranslatorConfig
 			if (!m.matches())
 				throw new TranslationFailedException("failed to match "+attributeValue+" against '"+m_val.getMatches()+"' for attribute "+getAttributeName());
 			
-			class MatchTable implements PropertiesUtils.SymbolTable {
-
-				public String getSymbolValue(String symbol) {
-					try {
-						int groupNum = Integer.parseInt(symbol);
-						if (groupNum > m.groupCount())
-							return null;
-						return m.group(groupNum);
-					} catch (NumberFormatException e) {
-						return null;
-					}
-				}
-				
-			};
-			MatchTable matches = new MatchTable();
+			MatchTable matches = new MatchTable(m);
 
 			return PropertiesUtils.substitute(m_val.getResult(), matches);
 		}
@@ -677,7 +664,7 @@ public final class EventTranslatorConfigFactory implements EventTranslatorConfig
 		abstract public String getAttributeValue(Event e);
 	}
 	
-	class FieldValueSpec extends AttributeValueSpec {
+    class FieldValueSpec extends AttributeValueSpec {
 		public FieldValueSpec(Value val) {
 			super(val);
 		}

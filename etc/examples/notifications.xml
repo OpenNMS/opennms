@@ -5,7 +5,23 @@
         <created>Wednesday, February 6, 2002 10:10:00 AM EST</created>
         <mstation>localhost</mstation>
     </header>
-    <!-- Sample notification using SNMP Traps (this sample uses a destination path called "trapNotifier")
+    <!-- Sample notification using HTTP Post -->
+    <notification name="httpPost" status="on" >
+      <uei>uei.opennms.org/nodes/nodeDown</uei>
+      <rule>IPADDR IPLIKE *.*.*.*</rule>
+      <destinationPath>httpPostNotifier</destinationPath>
+      <text-message>All services are down on node %nodeid%</text-message>
+      <subject>node: %nodeid% down</subject>
+      <parameter name="url" value="http://172.16.1.1/cgi-bin/noauth/rt.pl" />
+      <parameter name="timeout" value="2000" />
+      <parameter name="retries" value="1" />
+      <parameter name="post-NodeID" value="%nodeid%" />
+      <parameter name="post-event" value="%eventid%" />
+      <parameter name="post-message" value="-tm" />
+      <parameter name="result-match" value="(?s).*OK\\s+([0-9]+).*" />
+      <parameter name="sql" value="UPDATE alarms SET tticketID=${1} WHERE lastEventID = %eventid%" />
+    </notification>
+    <!-- Sample notification using SNMP Traps (this sample uses a destination path called "trapNotifier") -->
     <notification name="snmpTrap" status="on">
     	<uei>uei.opennms.org/nodes/nodeDown</uei>
     	<rule>IPADDR IPLIKE *.*.*.*</rule>
@@ -25,7 +41,6 @@
     	<parameter name="trapSpecific" value="1" />
     	<parameter name="trapVarbind" value="Node: %nodelabel%" />
     </notification>
-    -->
     <notification name="serviceUnresponsive" status="on">
         <uei>uei.opennms.org/nodes/serviceUnresponsive</uei>
         <rule>IPADDR IPLIKE *.*.*.*</rule>

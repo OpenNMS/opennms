@@ -1,5 +1,6 @@
 1.3.1 to 1.3.2
 ----------------------------------------------------------------------
+- Added HTTP notification strategy.
 - Add "Show/hide interfaces" link to the bottom of element/nodelist.jsp.
 - Combine element/nodelist.jsp and element/nodelistonly.jsp in the webUI
   into a single page.  If the "listInterfaces" parameter is passed,

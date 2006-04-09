@@ -5,6 +5,42 @@
         <created>Wednesday, February 6, 2002 10:10:00 AM EST</created>
         <mstation>master.nmanage.com</mstation>
     </header>
+    <!-- Use this notificationCommand to send an HTTP Get/Post as a notification (See notifications.xml example)
+    Note: If there are no arguments specified prefixed with "post-", then an HTTP GET will be issued
+    with the provided URL (URL is a required argument, of course).  Otherwise, an HTTP POST will be
+    issued with this notification command.  There must be an argument specified in this configuration
+    for each parameter specified in the notification defined in notifications.xml file.  We know this is a bit
+    confusion and this will be refactored someday.
+    Also note: If a "post-" argument is defined here, the matching "post-" paramenter defined in the notifications.xml
+    file can reference the "-tm" switch.  If the paramenter's value is set to "-tm", then the value will be replaced with
+    the notification's text message (this is for convenience only for the same message could be duplicated).
+     -->
+    <command binary="false">
+      <name>http</name>
+      <execute>org.opennms.netmgt.notifd.HttpNotificationStrategy</execute>
+      <comment>Class for sending notifications as SNMP Traps</comment>
+      <argument streamed="false">
+        <switch>-tm</switch>
+      </argument>
+      <argument streamed="false">
+        <switch>url</switch>
+      </argument>
+      <argument streamed="false">
+        <switch>timeout</switch>
+      </argument>
+      <argument streamed="false">
+        <switch>retries</switch>
+      </argument>
+      <argument streamed="false">
+        <switch>post-NodeID</switch>
+      </argument>
+      <argument streamed="false">
+        <switch>result-match</switch>
+      </argument>
+      <argument streamed="false">
+        <switch>sql</switch>
+      </argument>
+    </command>
     <!-- Use this notificationCommand to send an SNMP Trap as a notification (See notifications.xml example) -->
     <command binary="false">
     	<name>snmpTrap</name>
