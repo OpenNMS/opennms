@@ -1943,4 +1943,8 @@ OpenNMS as part of the post-install.
  	    <arg value="castor.properties"/>
    </exec>
  </target>
+
+ <!-- eclipse helper target -->
+ <target name="eclipse" depends="prep,sources"
+         description="Initialize project for Eclipse"/>
 </project>
