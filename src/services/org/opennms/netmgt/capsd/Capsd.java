@@ -39,6 +39,7 @@
 
 package org.opennms.netmgt.capsd;
 
+import java.beans.PropertyVetoException;
 import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.net.InetAddress;
@@ -151,15 +152,12 @@ public class Capsd extends ServiceDaemon {
         setStatus(STOP_PENDING);
 
         // Stop the broadcast event receiver
-        //
         m_receiver.close();
 
         // Stop the Suspect Event Processor thread pool
-        //
         m_suspectRunner.stop();
 
         // Stop the Rescan Processor thread pool
-        //
         m_rescanRunner.stop();
 
         setStatus(STOPPED);
@@ -173,7 +171,6 @@ public class Capsd extends ServiceDaemon {
         Category log = ThreadCategory.getInstance();
 
         // Initialize the Capsd configuration factory.
-        //
         try {
             CapsdConfigFactory.init();
         } catch (MarshalException ex) {
@@ -188,7 +185,6 @@ public class Capsd extends ServiceDaemon {
         }
 
         // Initialize the poller configuration factory.
-        //
         try {
             PollerConfigFactory.init();
         } catch (MarshalException ex) {
@@ -203,7 +199,6 @@ public class Capsd extends ServiceDaemon {
         }
 
         // Initialize the collectd configuration factory.
-        //
         try {
             CollectdConfigFactory.init();
         } catch (MarshalException ex) {
@@ -218,7 +213,6 @@ public class Capsd extends ServiceDaemon {
         }
 
         // Initialize the Database configuration factory
-        //
         try {
             DatabaseConnectionFactory.init();
         } catch (IOException ie) {
@@ -233,10 +227,15 @@ public class Capsd extends ServiceDaemon {
         } catch (ClassNotFoundException ce) {
             log.fatal("Class lookup failure loading database config", ce);
             throw new UndeclaredThrowableException(ce);
+        } catch (PropertyVetoException pve) {
+            log.fatal("Property veto failure loading database config", pve);
+            throw new UndeclaredThrowableException(pve);
+        } catch (SQLException sqle) {
+            log.fatal("SQL exception loading database config", sqle);
+            throw new UndeclaredThrowableException(sqle);
         }
 
         // Initialize the SNMP Peer Factory
-        //
         try {
             SnmpPeerFactory.init();
         } catch (MarshalException ex) {
@@ -250,21 +249,23 @@ public class Capsd extends ServiceDaemon {
             throw new UndeclaredThrowableException(ex);
         }
 
-        // Get connection to the database and use it to sync the
-        // content of the database with the latest configuration
-        // information.
-        // 
-        // First any new services are added to the services table
-        // with a call to syncServices().
-        //
-        // Secondly the management state of interfaces and services
-        // in the database is updated based on the latest configuration
-        // information with a call to syncManagementState()
-        //
-        // Lastly the primary snmp interface state ('isSnmpPrimary')
-        // of all interfaces which support SNMP is updated based on
-        // the latest configuration information via a call to
-        // syncSnmpPrimaryState()
+	/*
+         * Get connection to the database and use it to sync the
+         * content of the database with the latest configuration
+         * information.
+         * 
+         * First any new services are added to the services table
+         * with a call to syncServices().
+         *
+         * Secondly the management state of interfaces and services
+         * in the database is updated based on the latest configuration
+         * information with a call to syncManagementState()
+         *
+         * Lastly the primary snmp interface state ('isSnmpPrimary')
+         * of all interfaces which support SNMP is updated based on
+         * the latest configuration information via a call to
+         * syncSnmpPrimaryState()
+         */
         java.sql.Connection conn = null;
         try {
             conn = DatabaseConnectionFactory.getInstance().getConnection();
@@ -296,28 +297,26 @@ public class Capsd extends ServiceDaemon {
         }
 
         // Create the suspect event and rescan thread pools
-        //
         m_suspectRunner = new RunnableConsumerThreadPool("Capsd Suspect Pool", 0.0f, 0.0f, CapsdConfigFactory.getInstance().getMaxSuspectThreadPoolSize());
 
-        m_rescanRunner = new RunnableConsumerThreadPool("Capsd Rescan Pool", 0.0f, // Only
-                                                                                    // stop
-                                                                                    // thread
-                                                                                    // if
-                                                                                    // nothing
-                                                                                    // in
-                                                                                    // queue
-                0.0f, // Always start thread if queue is not
-                // empty and max threads has not been reached.
+        /*
+         * Only stop thread if nothing in queue.
+         * Always start thread if queue is not
+         * empty and max threads has not been reached.
+         */
+        m_rescanRunner = new RunnableConsumerThreadPool("Capsd Rescan Pool",
+							0.0f, 0.0f,
                 CapsdConfigFactory.getInstance().getMaxRescanThreadPoolSize());
 
         // Create the rescan scheduler
-        //
         if (log.isDebugEnabled()) {
             log.debug("init: Creating rescan scheduler");
         }
         try {
-            // During instantiation, the scheduler will load the
-            // list of known nodes from the database
+            /*
+             * During instantiation, the scheduler will load the
+             * list of known nodes from the database.
+             */
             m_scheduler = new Scheduler(m_rescanRunner.getRunQueue());
         } catch (SQLException sqlE) {
             log.error("Failed to initialize the rescan scheduler.", sqlE);
@@ -328,7 +327,6 @@ public class Capsd extends ServiceDaemon {
         }
 
         // Create an event receiver.
-        //
         try {
             if (log.isDebugEnabled()) {
                 log.debug("init: Creating event broadcast event receiver");
@@ -351,7 +349,6 @@ public class Capsd extends ServiceDaemon {
         setStatus(STARTING);
 
         // Start the suspect event and rescan thread pools
-        //
         if (log.isDebugEnabled()) {
             log.debug("start: Starting runnable thread pools...");
         }
@@ -359,7 +356,6 @@ public class Capsd extends ServiceDaemon {
         m_rescanRunner.start();
 
         // Start the rescan scheduler
-        //
         if (log.isDebugEnabled()) {
             log.debug("start: Starting rescan scheduler");
         }
@@ -376,7 +372,7 @@ public class Capsd extends ServiceDaemon {
 
         Category log = ThreadCategory.getInstance();
 
-        // TBD - Pause all threads
+        // XXX Pause all threads?
 
         setStatus(PAUSED);
 
@@ -394,7 +390,7 @@ public class Capsd extends ServiceDaemon {
 
         Category log = ThreadCategory.getInstance();
 
-        // TBD - Resume all threads
+        // XXX Resume all threads?
 
         setStatus(RUNNING);
 

@@ -31,7 +31,9 @@
 //
 package org.opennms.netmgt.translator.jmx;
 
+import java.beans.PropertyVetoException;
 import java.io.IOException;
+import java.sql.SQLException;
 
 import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
@@ -63,7 +65,13 @@ public class EventTranslator implements EventTranslatorMBean {
             log.error("IOException: ", e);
         } catch (ClassNotFoundException e) {
             log.error("Unable to initialize database: "+e.getMessage(), e);
+        } catch (SQLException e) {
+            log.error("SQLException: ", e);
+        } catch (PropertyVetoException e) {
+            log.error("PropertyVetoException: ", e);
         }
+        
+        // XXX we don't throw an exception and stop processing???
         
         EventIpcManagerFactory.init();
         EventIpcManager mgr = EventIpcManagerFactory.getIpcManager();

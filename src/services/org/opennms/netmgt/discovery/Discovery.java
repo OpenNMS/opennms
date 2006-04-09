@@ -39,6 +39,7 @@
 
 package org.opennms.netmgt.discovery;
 
+import java.beans.PropertyVetoException;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -54,6 +55,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.log4j.Category;
+import org.apache.log4j.Priority;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.queue.FifoQueue;
@@ -251,6 +253,9 @@ public final class Discovery extends ServiceDaemon {
         } catch (ClassNotFoundException cnfE) {
             log.fatal("Class Not Found Exception getting database connection", cnfE);
             throw new UndeclaredThrowableException(cnfE);
+        } catch (PropertyVetoException e) {
+            log.fatal("initialize: Failed getting connection to the database.", e);
+            throw new UndeclaredThrowableException(e);
         } finally {
             try {
                 if (ctest != null) {

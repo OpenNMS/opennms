@@ -34,6 +34,7 @@
 
 package org.opennms.report.availability;
 
+import java.beans.PropertyVetoException;
 import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.sql.PreparedStatement;
@@ -460,6 +461,10 @@ public class AvailabilityData extends Object {
             if (log.isEnabledFor(Priority.FATAL))
                 log.fatal("initialize: Failed getting connection to the database.", sqlE);
             throw new UndeclaredThrowableException(sqlE);
+        } catch (PropertyVetoException e) {
+            if (log.isEnabledFor(Priority.FATAL))
+                log.fatal("initialize: Failed getting connection to the database.", e);
+            throw new UndeclaredThrowableException(e);
         }
     }
 

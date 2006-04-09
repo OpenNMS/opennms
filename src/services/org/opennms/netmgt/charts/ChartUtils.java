@@ -36,6 +36,7 @@ package org.opennms.netmgt.charts;
 import java.awt.Color;
 import java.awt.Paint;
 import java.awt.image.BufferedImage;
+import java.beans.PropertyVetoException;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -77,8 +78,8 @@ import org.opennms.netmgt.config.charts.Title;
 public class ChartUtils {
     
     /**
-     * Use this it initialize required factories so that the WebUI doesn't have to.  Can't
-     * wait for Spring.
+     * Use this it initialize required factories so that the WebUI doesn't
+     * have to.  Can't wait for Spring.
      */
     static {
         try {
@@ -93,6 +94,10 @@ public class ChartUtils {
         } catch (IOException e) {
             log().error("static initializer: IO error while marshalling chart configuration file. "+e);
         } catch (ClassNotFoundException e) {
+            log().error("static initializer: Error initializing database connection factory. "+e);
+        } catch (PropertyVetoException e) {
+            log().error("static initializer: Error initializing database connection factory. "+e);
+        } catch (SQLException e) {
             log().error("static initializer: Error initializing database connection factory. "+e);
         }
     }

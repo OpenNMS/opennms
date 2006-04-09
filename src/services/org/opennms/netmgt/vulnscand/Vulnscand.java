@@ -32,6 +32,7 @@
 
 package org.opennms.netmgt.vulnscand;
 
+import java.beans.PropertyVetoException;
 import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.net.InetAddress;
@@ -203,7 +204,14 @@ public class Vulnscand extends ServiceDaemon {
         } catch (ClassNotFoundException ce) {
             log.fatal("Class lookup failure loading database config", ce);
             throw new UndeclaredThrowableException(ce);
+        } catch (PropertyVetoException e) {
+            log.fatal("Property Veto Exception loading database config", e);
+            throw new UndeclaredThrowableException(e);
+        } catch (SQLException e) {
+            log.fatal("SQL Exception loading database config", e);
+            throw new UndeclaredThrowableException(e);
         }
+        
 
         // Create the specific and scheduled scan pools
         //

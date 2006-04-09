@@ -100,7 +100,7 @@ public final class DatabaseConnectionFactory implements DbConnectionFactory {
      * @throws PropertyVetoException 
      * 
      */
-    public static synchronized void init() throws IOException, MarshalException, ValidationException, ClassNotFoundException {
+    public static synchronized void init() throws IOException, MarshalException, ValidationException, ClassNotFoundException, PropertyVetoException, SQLException {
         if (m_loaded) {
             // init already called - return
             // to reload, reload() will need to be called
@@ -122,11 +122,9 @@ public final class DatabaseConnectionFactory implements DbConnectionFactory {
         } catch (FileNotFoundException e) {
             throw e;
         } catch (PropertyVetoException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            throw e;
         } catch (SQLException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            throw e;
         }
         m_loaded = true;
     }

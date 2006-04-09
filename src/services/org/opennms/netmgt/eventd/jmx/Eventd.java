@@ -34,12 +34,15 @@
 
 package org.opennms.netmgt.eventd.jmx;
 
+import java.beans.PropertyVetoException;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
+import java.sql.SQLException;
 
 import org.apache.log4j.Category;
+import org.apache.log4j.Priority;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
@@ -67,7 +70,6 @@ public class Eventd implements EventdMBean {
         try {
             EventdConfigFactory.reload();
             DatabaseConnectionFactory.init();
-            
         } catch (FileNotFoundException ex) {
             log.error("Failed to load eventd configuration. File Not Found:", ex);
             throw new UndeclaredThrowableException(ex);
@@ -82,7 +84,13 @@ public class Eventd implements EventdMBean {
             throw new UndeclaredThrowableException(ex);
         } catch (ClassNotFoundException ex) {
             log.error("Failed to init database connection factory", ex);
-            ex.printStackTrace();
+            throw new UndeclaredThrowableException(ex);
+        } catch (SQLException ex) {
+            log.error("Failed to init database connection factory", ex);
+            throw new UndeclaredThrowableException(ex);
+        } catch (PropertyVetoException ex) {
+            log.error("Failed to init database connection factory", ex);
+            throw new UndeclaredThrowableException(ex);
         }
 
         // load configuration(eventconf)

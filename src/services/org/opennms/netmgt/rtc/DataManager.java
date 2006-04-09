@@ -43,6 +43,7 @@
 
 package org.opennms.netmgt.rtc;
 
+import java.beans.PropertyVetoException;
 import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.sql.ResultSet;
@@ -418,10 +419,16 @@ public class DataManager extends Object {
 		} catch (ValidationException ex) {
 		    log().warn("Failed to unmarshall database config", ex);
 		    throw new UndeclaredThrowableException(ex);
-		} catch (ClassNotFoundException ex) {
-		    log().warn("Failed to get database connection", ex);
-		    throw new UndeclaredThrowableException(ex);
-		}
+        } catch (ClassNotFoundException ex) {
+            log().warn("Failed to get database connection", ex);
+            throw new UndeclaredThrowableException(ex);
+        } catch (SQLException ex) {
+            log().warn("Failed to get database connection", ex);
+            throw new UndeclaredThrowableException(ex);
+        } catch (PropertyVetoException ex) {
+            log().warn("Failed to get database connection", ex);
+            throw new UndeclaredThrowableException(ex);
+        }
 		return connFactory;
 	}
 

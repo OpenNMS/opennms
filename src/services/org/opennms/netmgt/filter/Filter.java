@@ -40,6 +40,7 @@
 
 package org.opennms.netmgt.filter;
 
+import java.beans.PropertyVetoException;
 import java.io.IOException;
 import java.io.PushbackReader;
 import java.io.StringReader;
@@ -224,6 +225,10 @@ public class Filter {
             Category log = ThreadCategory.getInstance(getClass());
             log.fatal("Validation Exception getting database connection", ve);
             throw new UndeclaredThrowableException(ve);
+        } catch (PropertyVetoException ve) {
+            Category log = ThreadCategory.getInstance(getClass());
+            log.fatal("Property Veto Exception getting database connection", ve);
+            throw new UndeclaredThrowableException(ve);
         } catch (ClassNotFoundException e) {
             Category log = ThreadCategory.getInstance(getClass());
             log.fatal("Class Not Found Exception getting database connection", e);
@@ -311,6 +316,9 @@ public class Filter {
             throw new UndeclaredThrowableException(me);
         } catch (ValidationException ve) {
             log.fatal("Validation Exception getting database connection", ve);
+            throw new UndeclaredThrowableException(ve);
+        } catch (PropertyVetoException ve) {
+            log.fatal("Property Veto Exception getting database connection", ve);
             throw new UndeclaredThrowableException(ve);
         } finally {
             if (conn != null) {

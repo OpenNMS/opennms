@@ -38,6 +38,7 @@
 
 package org.opennms.netmgt.archive;
 
+import java.beans.PropertyVetoException;
 import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.sql.Connection;
@@ -258,6 +259,8 @@ public class EventsArchiver {
             throw new UndeclaredThrowableException(me);
         } catch (ValidationException ve) {
             throw new UndeclaredThrowableException(ve);
+        } catch (PropertyVetoException pvE) {
+            throw new UndeclaredThrowableException(pvE);
         } catch (SQLException sqlE) {
             throw new UndeclaredThrowableException(sqlE);
         } catch (ClassNotFoundException cnfE) {

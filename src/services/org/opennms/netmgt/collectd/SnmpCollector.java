@@ -42,6 +42,7 @@
 
 package org.opennms.netmgt.collectd;
 
+import java.beans.PropertyVetoException;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
@@ -403,6 +404,10 @@ final class SnmpCollector implements ServiceCollector {
             log.fatal("initialize: Failed getting connection to the "
                     + "database.", sqlE);
             throw new UndeclaredThrowableException(sqlE);
+        } catch (PropertyVetoException e) {
+            log.fatal("initialize: Failed getting connection to the "
+                    + "database.", e);
+            throw new UndeclaredThrowableException(e);
         } catch (ClassNotFoundException cnfE) {
             log.fatal("initialize: Failed loading database driver.", cnfE);
             throw new UndeclaredThrowableException(cnfE);

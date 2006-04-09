@@ -34,11 +34,13 @@
 
 package org.opennms.netmgt.config;
 
+import java.beans.PropertyVetoException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -142,7 +144,7 @@ public final class EventTranslatorConfigFactory implements EventTranslatorConfig
      *                Thrown if the contents do not match the required schema.
      * @throws ClassNotFoundException 
      */
-    public static synchronized void init() throws IOException, MarshalException, ValidationException, ClassNotFoundException {
+    public static synchronized void init() throws IOException, MarshalException, ValidationException, ClassNotFoundException, SQLException, PropertyVetoException  {
         if (m_loaded) {
             // init already called - return
             // to reload, reload() will need to be called
@@ -169,7 +171,7 @@ public final class EventTranslatorConfigFactory implements EventTranslatorConfig
      *                Thrown if the contents do not match the required schema.
      * @throws ClassNotFoundException 
      */
-    public static synchronized void reload() throws IOException, MarshalException, ValidationException, ClassNotFoundException {
+    public static synchronized void reload() throws IOException, MarshalException, ValidationException, ClassNotFoundException, SQLException, PropertyVetoException {
         m_singleton = null;
         m_loaded = false;
 
