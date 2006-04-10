@@ -37,6 +37,7 @@ import java.util.Collection;
 
 import org.opennms.netmgt.dao.IpInterfaceDao;
 import org.opennms.netmgt.model.OnmsIpInterface;
+import org.opennms.netmgt.model.OnmsNode;
 /**
  * @author david
  *
@@ -50,6 +51,11 @@ public class IpInterfaceDaoHibernate extends AbstractDaoHibernate  implements Ip
     public OnmsIpInterface get(Long id) {
         return (OnmsIpInterface)getHibernateTemplate().get(OnmsIpInterface.class, id);
     }
+
+	public OnmsIpInterface get(OnmsNode node, String ipAddress) {
+		// TODO: Implement this!
+		throw new RuntimeException("Not implemented!");
+	}
 
     public void save(OnmsIpInterface iface) {
         getHibernateTemplate().save(iface);

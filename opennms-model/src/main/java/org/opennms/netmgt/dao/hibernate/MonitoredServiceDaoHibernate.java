@@ -37,6 +37,7 @@ import java.util.Collection;
 
 import org.opennms.netmgt.dao.MonitoredServiceDao;
 import org.opennms.netmgt.model.OnmsMonitoredService;
+import org.opennms.netmgt.model.OnmsServiceType;
 /**
  * @author david
  *
@@ -66,5 +67,14 @@ public class MonitoredServiceDaoHibernate extends AbstractDaoHibernate  implemen
     public int countAll() {
         return ((Integer)findUnique("select count(*) from OnmsMonitoredService")).intValue();
     }
+
+	public Collection findByType(String type) {
+		return getHibernateTemplate().find("from OnmsMonitoredService svc where svc.serviceType.name = ?", type);
+	}
+
+	public OnmsMonitoredService get(int nodeId, String ipAddress, String svcName) {
+		// TODO Implement this
+		throw new RuntimeException("Not yet implemented!");
+	}
 
 }

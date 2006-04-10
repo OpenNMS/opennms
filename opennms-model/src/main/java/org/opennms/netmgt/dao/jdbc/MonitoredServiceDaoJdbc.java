@@ -44,6 +44,8 @@ import org.opennms.netmgt.dao.MonitoredServiceDao;
 import org.opennms.netmgt.dao.jdbc.monsvc.FindAll;
 import org.opennms.netmgt.dao.jdbc.monsvc.FindByInterfaceWithIfIndex;
 import org.opennms.netmgt.dao.jdbc.monsvc.FindByInterfaceWithNulIfIndex;
+import org.opennms.netmgt.dao.jdbc.monsvc.FindByNodeIpAddrSvcName;
+import org.opennms.netmgt.dao.jdbc.monsvc.FindByType;
 import org.opennms.netmgt.dao.jdbc.monsvc.LazyMonitoredService;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
@@ -62,75 +64,6 @@ public class MonitoredServiceDaoJdbc extends AbstractDaoJdbc implements Monitore
         return getJdbcTemplate().queryForInt("select count(*) from ifservices");
     }
 
-    public Collection findAll() {
-        return new FindAll(getDataSource()).findSet();
-    }
-    
-    public Set findByInterface(OnmsIpInterface iface) {
-        // MORE CRAP
-        if (iface.getIfIndex() == null) {
-            return (new FindByInterfaceWithNulIfIndex(getDataSource())).findSet(
-                         new Object[] { iface.getNode().getId(), iface.getIpAddress() });
-        }
-        else {
-            return (new FindByInterfaceWithIfIndex(getDataSource())).findSet(
-                         new Object[] { iface.getNode().getId(), iface.getIpAddress(), iface.getIfIndex() });
-        }
-    }
-
-    public void flush() {
-    }
-
-    public OnmsMonitoredService get(Long id) {
-        throw new RuntimeException("we are not able to locate ifservices by a single id yet!");
-    }
-
-    public OnmsMonitoredService load(Long id) {
-        throw new RuntimeException("we are not able to locate ifservices by a single id yet!");
-    }
-
-    public void save(OnmsMonitoredService svc) {
-        if (exists(svc))
-            throw new IllegalArgumentException("cannot save svc that already exist in the db");
-        
-        doSave(svc);
-
-    }
-
-    public void saveOrUpdate(OnmsMonitoredService svc) {
-        if (exists(svc)) {
-            doUpdate(svc);
-        } else {
-            doSave(svc);
-        }
-    }
-    
-	public void saveSvcsForIf(OnmsIpInterface iface) {
-		for (Iterator it = iface.getMonitoredServices().iterator(); it.hasNext();) {
-		    OnmsMonitoredService svc = (OnmsMonitoredService) it.next();
-		    doSave(svc);
-		}
-	}
-    
-    public void saveOrUpdateSvcsForIf(OnmsIpInterface iface) {
-        Set svcs = iface.getMonitoredServices();
-        if (!isDirty(svcs)) return;
-        if (svcs instanceof JdbcSet) {
-            updateSetMembers((JdbcSet)svcs);
-        } else {
-            removeAndAddSet(iface);
-        }
-    }
-    
-    public void update(OnmsMonitoredService svc) {
-        
-        if (!exists(svc))
-            throw new IllegalArgumentException("cannot updates svcs that are already in the db");
-        
-        doUpdate(svc);
-        
-    }
-
     private void delete(OnmsMonitoredService svc) {
         if (svc.getIfIndex() == null) {
             Object[] parms = new Object[] { svc.getNodeId(), svc.getIpAddress(), svc.getServiceId() };
@@ -141,7 +74,7 @@ public class MonitoredServiceDaoJdbc extends AbstractDaoJdbc implements Monitore
         }
         
     }
-
+    
     private void deleteServicesForInterface(OnmsIpInterface iface) {
         if (iface.getIfIndex() == null) {
             Object[] parms = new Object[] { iface.getNode().getId(), iface.getIpAddress() };
@@ -202,15 +135,7 @@ public class MonitoredServiceDaoJdbc extends AbstractDaoJdbc implements Monitore
         getJdbcTemplate().update(updateStmt, parms);
     }
 
-    private boolean isDirty(OnmsMonitoredService svc) {
-    	if (svc instanceof LazyMonitoredService) {
-			LazyMonitoredService lazySvc = (LazyMonitoredService) svc;
-			return lazySvc.isDirty();
-		}
-    	return true;
-	}
-
-	private boolean exists(OnmsMonitoredService svc) {
+    private boolean exists(OnmsMonitoredService svc) {
         
         // SAME CRAP HERE
         String query = "select count(*) from ifservices where nodeid = ? and ipAddr = ? and serviceId = ? and " +
@@ -230,13 +155,101 @@ public class MonitoredServiceDaoJdbc extends AbstractDaoJdbc implements Monitore
         int count = getJdbcTemplate().queryForInt(query, parms);
         return count > 0;
     }
+    
+	public OnmsMonitoredService get(int nodeId, String ipAddress, String svcName) {
+		return (new FindByNodeIpAddrSvcName(getDataSource())).
+			findUnique(new Object[] {new Integer(nodeId), ipAddress, svcName});
+	}
+
+
+
+    public Collection findAll() {
+        return new FindAll(getDataSource()).findSet();
+    }
+
+    public Set findByInterface(OnmsIpInterface iface) {
+        // MORE CRAP
+        if (iface.getIfIndex() == null) {
+            return (new FindByInterfaceWithNulIfIndex(getDataSource())).findSet(
+                         new Object[] { iface.getNode().getId(), iface.getIpAddress() });
+        }
+        else {
+            return (new FindByInterfaceWithIfIndex(getDataSource())).findSet(
+                         new Object[] { iface.getNode().getId(), iface.getIpAddress(), iface.getIfIndex() });
+        }
+    }
+    
+	public Collection findByType(String type) {
+		return (new FindByType(getDataSource())).execute(type);
+	}
+    
+    public void flush() {
+    }
+    
+    public OnmsMonitoredService get(Long id) {
+        throw new RuntimeException("we are not able to locate ifservices by a single id yet!");
+    }
+
+    private boolean isDirty(OnmsMonitoredService svc) {
+    	if (svc instanceof LazyMonitoredService) {
+			LazyMonitoredService lazySvc = (LazyMonitoredService) svc;
+			return lazySvc.isDirty();
+		}
+    	return true;
+	}
+
+    public OnmsMonitoredService load(Long id) {
+        throw new RuntimeException("we are not able to locate ifservices by a single id yet!");
+    }
 
     private void removeAndAddSet(OnmsIpInterface iface) {
         deleteServicesForInterface(iface);
         saveSvcsForIf(iface);
     }
 
-    private void updateSetMembers(JdbcSet set) {
+    public void save(OnmsMonitoredService svc) {
+        if (exists(svc))
+            throw new IllegalArgumentException("cannot save svc that already exist in the db");
+        
+        doSave(svc);
+
+    }
+
+    public void saveOrUpdate(OnmsMonitoredService svc) {
+        if (exists(svc)) {
+            doUpdate(svc);
+        } else {
+            doSave(svc);
+        }
+    }
+
+	public void saveOrUpdateSvcsForIf(OnmsIpInterface iface) {
+        Set svcs = iface.getMonitoredServices();
+        if (!isDirty(svcs)) return;
+        if (svcs instanceof JdbcSet) {
+            updateSetMembers((JdbcSet)svcs);
+        } else {
+            removeAndAddSet(iface);
+        }
+    }
+
+    public void saveSvcsForIf(OnmsIpInterface iface) {
+		for (Iterator it = iface.getMonitoredServices().iterator(); it.hasNext();) {
+		    OnmsMonitoredService svc = (OnmsMonitoredService) it.next();
+		    doSave(svc);
+		}
+	}
+
+    public void update(OnmsMonitoredService svc) {
+        
+        if (!exists(svc))
+            throw new IllegalArgumentException("cannot updates svcs that are already in the db");
+        
+        doUpdate(svc);
+        
+    }
+
+	private void updateSetMembers(JdbcSet set) {
         for (Iterator it = set.getRemoved().iterator(); it.hasNext();) {
             OnmsMonitoredService svc = (OnmsMonitoredService) it.next();
             delete(svc);

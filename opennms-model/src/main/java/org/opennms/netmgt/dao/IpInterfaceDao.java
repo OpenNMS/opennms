@@ -36,6 +36,7 @@ package org.opennms.netmgt.dao;
 import java.util.Collection;
 
 import org.opennms.netmgt.model.OnmsIpInterface;
+import org.opennms.netmgt.model.OnmsNode;
 
 
 /**
@@ -49,12 +50,15 @@ public interface IpInterfaceDao extends OnmsDao {
 
     public abstract OnmsIpInterface get(Long id);
     
-    public abstract Collection findByIpAddress(String ipAddress);
+	public abstract OnmsIpInterface get(OnmsNode node, String ipAddress);
+
+	public abstract Collection findByIpAddress(String ipAddress);
 
     public abstract void save(OnmsIpInterface iface);
 
     public abstract void update(OnmsIpInterface iface);
 
     public abstract Collection findAll();
+
 
 }

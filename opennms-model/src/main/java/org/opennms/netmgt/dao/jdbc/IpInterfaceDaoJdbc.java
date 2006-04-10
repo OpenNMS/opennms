@@ -45,6 +45,7 @@ import org.opennms.netmgt.dao.jdbc.ipif.FindAll;
 import org.opennms.netmgt.dao.jdbc.ipif.FindById;
 import org.opennms.netmgt.dao.jdbc.ipif.FindByIpInterface;
 import org.opennms.netmgt.dao.jdbc.ipif.FindByNode;
+import org.opennms.netmgt.dao.jdbc.ipif.FindByNodeAndIp;
 import org.opennms.netmgt.dao.jdbc.ipif.IpInterfaceId;
 import org.opennms.netmgt.dao.jdbc.ipif.LazyIpInterface;
 import org.opennms.netmgt.model.OnmsIpInterface;
@@ -114,6 +115,11 @@ public class IpInterfaceDaoJdbc extends AbstractDaoJdbc implements IpInterfaceDa
     	
     	return FindById.get(getDataSource(), id).find(id);
     }
+    
+	public OnmsIpInterface get(OnmsNode node, String ipAddress) {
+		return (new FindByNodeAndIp(getDataSource())).findUnique(node.getId(), ipAddress);
+	}
+
 
     public OnmsIpInterface get(Long id) {
         throw new RuntimeException("cannot lookup interface by a single int id yet!");
@@ -272,5 +278,6 @@ public class IpInterfaceDaoJdbc extends AbstractDaoJdbc implements IpInterfaceDa
         
         set.reset();
     }
+
 
 }
