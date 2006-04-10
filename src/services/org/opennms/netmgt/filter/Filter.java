@@ -92,6 +92,8 @@ public class Filter {
      *             Thrown if the rule cannot be parsed.
      */
     public void parseRule(String rule) throws FilterParseException {
+        Category log = ThreadCategory.getInstance(getClass());
+ 
         if (rule != null && rule.length() > 0) {
             try {
                 // Create a Parser instance.
@@ -100,15 +102,12 @@ public class Filter {
                 // Parse the input.
                 m_parseTree = p.parse();
             } catch (ParserException e) {
-                Category log = ThreadCategory.getInstance(getClass());
                 log.error("Failed to parse the filter rule: " + rule, e);
                 throw new FilterParseException("Parse error in " + rule, e);
             } catch (LexerException e) {
-                Category log = ThreadCategory.getInstance(getClass());
                 log.error("Failed to parse filter rule: " + rule, e);
                 throw new FilterParseException("Parse error in " + rule, e);
             } catch (IOException e) {
-                Category log = ThreadCategory.getInstance(getClass());
                 log.error("Failed to parse filter rule: " + rule, e);
                 throw new FilterParseException("Parse error in " + rule, e);
             }
@@ -155,16 +154,19 @@ public class Filter {
      *                executing the SQL statement.
      */
     public boolean isValid(String addr, String rule) throws FilterParseException {
-        if (rule.length() == 0)
+        if (rule.length() == 0) {
             return true;
-        else
-            // see if the ip address is contained in the list that the
-            // rule returns
-            //
+        } else {
+            /*
+             * see if the ip address is contained in the list that the
+             * rule returns
+             */
             return getIPList(rule).contains(addr);
+        }
     }
 
     public Map getIPServiceMap(String rule) {
+        Category log = ThreadCategory.getInstance(getClass());
         Map ipServices = new TreeMap();
 
         // parse the rule
@@ -178,12 +180,10 @@ public class Filter {
             conn = DatabaseConnectionFactory.getInstance().getConnection();
 
             // execute query and return the list of ip addresses
-            //
             Statement stmt = conn.createStatement();
             ResultSet rset = stmt.executeQuery(getIPServiceMappingStatement());
 
             // fill up the array list if the result set has values
-            //
             if (rset != null) {
                 // Iterate through the result and build the array list
                 while (rset.next()) {
@@ -210,27 +210,21 @@ public class Filter {
             } catch (SQLException e) {
             }
         } catch (SQLException e) {
-            Category log = ThreadCategory.getInstance(getClass());
             log.info("SQL Exception occured getting IP List", e);
             throw new UndeclaredThrowableException(e);
         } catch (IOException ie) {
-            Category log = ThreadCategory.getInstance(getClass());
             log.fatal("IOException getting database connection", ie);
             throw new UndeclaredThrowableException(ie);
         } catch (MarshalException me) {
-            Category log = ThreadCategory.getInstance(getClass());
             log.fatal("Marshall Exception getting database connection", me);
             throw new UndeclaredThrowableException(me);
         } catch (ValidationException ve) {
-            Category log = ThreadCategory.getInstance(getClass());
             log.fatal("Validation Exception getting database connection", ve);
             throw new UndeclaredThrowableException(ve);
         } catch (PropertyVetoException ve) {
-            Category log = ThreadCategory.getInstance(getClass());
             log.fatal("Property Veto Exception getting database connection", ve);
             throw new UndeclaredThrowableException(ve);
         } catch (ClassNotFoundException e) {
-            Category log = ThreadCategory.getInstance(getClass());
             log.fatal("Class Not Found Exception getting database connection", e);
             throw new UndeclaredThrowableException(e);
         } finally {
@@ -273,18 +267,16 @@ public class Filter {
             conn = DatabaseConnectionFactory.getInstance().getConnection();
 
             // parse the rule and get the sql select statement
-            //
             sqlString = getSQLStatement();
-            if (log.isDebugEnabled())
+            if (log.isDebugEnabled()) {
                 log.debug("Filter: SQL statement: \n" + sqlString);
+            }
 
             // execute query and return the list of ip addresses
-            //
             Statement stmt = conn.createStatement();
             ResultSet rset = stmt.executeQuery(sqlString);
 
             // fill up the array list if the result set has values
-            //
             if (rset != null) {
                 // Iterate through the result and build the array list
                 while (rset.next()) {
@@ -301,7 +293,6 @@ public class Filter {
                 stmt.close();
             } catch (SQLException e) {
             }
-
         } catch (ClassNotFoundException e) {
             log.info("Class Not Found Exception occured getting IP List", e);
             throw new UndeclaredThrowableException(e);
