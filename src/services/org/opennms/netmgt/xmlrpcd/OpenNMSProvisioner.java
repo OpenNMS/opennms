@@ -488,8 +488,10 @@ private EventIpcManager m_eventManager;
         
         List parmList = new ArrayList();
         
+        if ("".equals(response)) response = null;
+        
         parmList.add(new Parm("port", port));
-        parmList.add(new Parm("response", response));
+        if (response != null) parmList.add(new Parm("response", response));
         parmList.add(new Parm("response text", responseText));
         parmList.add(new Parm("url", url));
         if (hostName != null) parmList.add(new Parm("host-name", hostName));
@@ -510,9 +512,11 @@ private EventIpcManager m_eventManager;
         checkContentCheck(responseText);
         checkUrl(url);
         
+        if ("".equals(response)) response = null;
+
         List parmList = new ArrayList();
         parmList.add(new Parm("port", port));
-        parmList.add(new Parm("response", response));
+        if (response != null) parmList.add(new Parm("response", response));
         parmList.add(new Parm("response text", responseText));
         parmList.add(new Parm("url", url));
         if (hostName != null) parmList.add(new Parm("host-name", hostName));
