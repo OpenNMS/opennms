@@ -38,7 +38,6 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -55,7 +54,6 @@ import org.apache.log4j.Priority;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.BeanInfo;
 import org.opennms.netmgt.config.DatabaseConnectionFactory;
 import org.opennms.netmgt.config.JMXDataCollectionConfigFactory;
@@ -65,7 +63,6 @@ import org.opennms.netmgt.rrd.RrdException;
 import org.opennms.netmgt.rrd.RrdUtils;
 import org.opennms.netmgt.utils.EventProxy;
 import org.opennms.netmgt.utils.ParameterMap;
-import org.opennms.netmgt.xml.event.Event;
 import org.opennms.protocols.jmx.connectors.ConnectionWrapper;
 
 /**
@@ -144,11 +141,6 @@ public abstract class JMXCollector implements ServiceCollector {
     private String m_rrdPath = null;
 
     /**
-     * Local host name
-     */
-    private String m_host;
-
-    /**
      * In some circumstances there may be many instances of a given service
      * but running on different ports. Rather than using the port as the
      * identfier users may define a more meaninful name.
@@ -207,14 +199,6 @@ public abstract class JMXCollector implements ServiceCollector {
     public void initialize(Map parameters) {
         // Log4j category
         Category log = ThreadCategory.getInstance(getClass());
-
-        // Get local host name (used when generating threshold events)
-        try {
-            m_host = InetAddress.getLocalHost().getHostName();
-        } catch (UnknownHostException e) {
-            log.warn("initialize: Unable to resolve local host name.", e);
-            m_host = "unresolved.host";
-        }
 
         // Initialize the JMXDataCollectionConfigFactory
         try {
@@ -948,48 +932,6 @@ public abstract class JMXCollector implements ServiceCollector {
         }
 
         return dsList;
-    }
-
-    /**
-     * This method is responsible for building a Capsd forceRescan event object
-     * and sending it out over the EventProxy.
-     * 
-     * @param ifAddress
-     *            interface address to which this event pertains
-     * @param eventProxy
-     *            proxy over which an event may be sent to eventd
-     */
-    private void generateForceRescanEvent(String ifAddress,
-            EventProxy eventProxy) {
-
-        // Log4j category
-        //
-        Category log = ThreadCategory.getInstance(getClass());
-        if (log.isDebugEnabled()) {
-            log.debug("generateForceRescanEvent: interface = " + ifAddress
-                    + " serviceName: " + serviceName);
-        }
-
-        // create the event to be sent
-        Event newEvent = new Event();
-        newEvent.setUei(EventConstants.FORCE_RESCAN_EVENT_UEI);
-        newEvent.setSource(serviceName.toUpperCase() + "ServiceMonitor");
-        newEvent.setInterface(ifAddress);
-        newEvent.setService(serviceName.toUpperCase());
-
-        if (m_host != null) {
-            newEvent.setHost(m_host);
-        }
-
-        newEvent.setTime(EventConstants.formatToString(new java.util.Date()));
-
-        // Send event via EventProxy
-        try {
-            eventProxy.send(newEvent);
-        } catch (Exception e) {
-            log.error("generateForceRescanEvent: Unable to send forceRescan "
-                      + "event.", e);
-        }
     }
 
     /**
