@@ -45,13 +45,11 @@ import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 import org.opennms.netmgt.passive.PassiveStatusKeeper;
 
 public class PassiveStatusd implements PassiveStatusdMBean {
-
     public final static String LOG4J_CATEGORY = "OpenNMS.PassiveStatus";
 
     public void init() {
         // Set the category prefix
         ThreadCategory.setPrefix(LOG4J_CATEGORY);
-
 
         Category log = ThreadCategory.getInstance();
         try {
@@ -69,7 +67,7 @@ public class PassiveStatusd implements PassiveStatusdMBean {
         } catch (PropertyVetoException e) {
             log.error("PropertyVetoException: "+e.getMessage(), e);
         }
-        // XXX We don't throw an exception and continue?
+        // XXX We don't throw an exception?
         
         EventIpcManagerFactory.init();
         EventIpcManager mgr = EventIpcManagerFactory.getIpcManager();
