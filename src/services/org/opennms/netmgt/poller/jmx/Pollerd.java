@@ -73,6 +73,8 @@ public class Pollerd implements PollerdMBean {
         } catch (PropertyVetoException e) {
             log.error("PropertyVetoException: ", e);
         }
+        
+        // XXX why don't we throw an exception and stop?
 
         org.opennms.netmgt.poller.Poller poller = getPoller();
         poller.setPollerConfig(PollerConfigFactory.getInstance());
