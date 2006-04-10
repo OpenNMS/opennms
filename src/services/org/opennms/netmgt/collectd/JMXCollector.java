@@ -798,8 +798,9 @@ public abstract class JMXCollector implements ServiceCollector {
         log.debug("getRRDValue: " + ds.getName());
 
         // Make sure we have an actual object id value.
-        if (ds.getOid() == null)
+        if (ds.getOid() == null) {
             return null;
+        }
 
         return (String) collectorEntry.get(collectorEntry + "|" + ds.getOid());
     }
@@ -911,11 +912,12 @@ public abstract class JMXCollector implements ServiceCollector {
                      */
                     ds.setOid(attr.getName());
 
-                    // if (log.isDebugEnabled())
-                    log.debug("buildDataSourceList: ds_name: " + ds.getName()
-                            + " ds_oid: " + ds.getOid() + "."
-                            + ds.getInstance() + " ds_max: " + ds.getMax()
-                            + " ds_min: " + ds.getMin());
+                    if (log.isDebugEnabled()) {
+                        log.debug("buildDataSourceList: ds_name: " + ds.getName()
+                                  + " ds_oid: " + ds.getOid() + "."
+                                  + ds.getInstance() + " ds_max: " + ds.getMax()
+                                  + " ds_min: " + ds.getMin());
+                    }
 
                     // Add the new data source to the list
                     dsList.put(objectName + "|" + attr.getName(), ds);
