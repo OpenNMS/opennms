@@ -109,12 +109,18 @@ public class EventsArchiver {
      * The SQL statement to select events that have their eventCreateTime
      * earlier than a specified age
      */
-    private static final String DB_SELECT_EVENTS_TO_ARCHIVE = "SELECT * from events where (eventcreatetime < ?)";
+    private static final String DB_SELECT_EVENTS_TO_ARCHIVE =
+        "SELECT * " +
+        "FROM events " +
+        "WHERE (eventcreatetime < ?)";
 
     /**
      * The SQL statement to delete events based on their eventID
      */
-    private static final String DB_DELETE_EVENT = "DELETE from events where (eventID = ?)";
+    private static final String DB_DELETE_EVENT =
+        "DELETE " +
+        "FROM events " +
+        "WHERE (eventID = ?)";
 
     /**
      * The column name for eventID in the events table
@@ -197,76 +203,94 @@ public class EventsArchiver {
         // The archive logs go to this category
         m_archCat = Category.getInstance("EventsArchiver");
 
-        // set additivity for this to false so that logs from here
-        // do not go to the root category
+        /*
+         * Set additivity for this to false so that logs from here
+         * do not go to the root category.
+         */
         m_archCat.setAdditivity(false);
 
+        EventsArchiverConfigFactory eaFactory;
+        
         try {
             EventsArchiverConfigFactory.init();
-            EventsArchiverConfigFactory eaFactory = EventsArchiverConfigFactory.getInstance();
-
-            // get archive age
-            String archAgeStr = eaFactory.getArchiveAge();
-            long archAge;
-            try {
-                archAge = TimeConverter.convertToMillis(archAgeStr);
-            } catch (NumberFormatException nfe) {
-                throw new ArchiverException("Archive age: " + archAgeStr + "- Incorrect format " + nfe.getMessage());
-            }
-
-            // set actual time that is to be used for the select from the
-            // database
-            m_archAge = System.currentTimeMillis() - archAge;
-
-            //
-            // get the separator to be used between column names in the archive
-            //
-            String separator = eaFactory.getSeparator();
-            if (separator == null) {
-                m_archSeparator = "#";
-            } else {
-                m_archSeparator = separator;
-            }
-
-            // info logs
-            if (m_logCat.isInfoEnabled()) {
-                // get this in readable format
-                archAgeStr = (new java.util.Date(m_archAge)).toString();
-                m_logCat.info("Events archive age specified = " + archAgeStr);
-                m_logCat.info("Events archive age in millisconds = " + archAge);
-
-                m_logCat.info("Events created before \'" + archAgeStr + " \' will be deleted");
-
-                m_logCat.info("Separator to be used in archive: " + m_archSeparator);
-            }
+             eaFactory =
+                EventsArchiverConfigFactory.getInstance();
         } catch (MarshalException ex) {
+            m_logCat.fatal("MarshalException", ex);
             throw new UndeclaredThrowableException(ex);
         } catch (ValidationException ex) {
+            m_logCat.fatal("ValidationException", ex);
             throw new UndeclaredThrowableException(ex);
         } catch (IOException ex) {
+            m_logCat.fatal("IOException", ex);
             throw new UndeclaredThrowableException(ex);
         }
 
-        //
+        // get archive age
+        String archAgeStr = eaFactory.getArchiveAge();
+        long archAge;
+        try {
+            archAge = TimeConverter.convertToMillis(archAgeStr);
+        } catch (NumberFormatException nfe) {
+            throw new ArchiverException("Archive age: " + archAgeStr
+                                        + "- Incorrect format "
+                                        + nfe.getMessage());
+        }
+
+        /*
+         * Set actual time that is to be used for the select from the
+         * database.
+         */
+        m_archAge = System.currentTimeMillis() - archAge;
+
+        // get the separator to be used between column names in the archive
+        String separator = eaFactory.getSeparator();
+        if (separator == null) {
+            m_archSeparator = "#";
+        } else {
+            m_archSeparator = separator;
+        }
+
+        // info logs
+        if (m_logCat.isInfoEnabled()) {
+            // get this in readable format
+            archAgeStr = (new java.util.Date(m_archAge)).toString();
+            m_logCat.info("Events archive age specified = " + archAgeStr);
+            m_logCat.info("Events archive age in millisconds = " + archAge);
+
+            m_logCat.info("Events created before \'" + archAgeStr
+                          + " \' will be deleted");
+
+            m_logCat.info("Separator to be used in archive: "
+                          + m_archSeparator);
+        }
+
         // Make sure we can connect to the database
-        //
         try {
             DatabaseConnectionFactory.init();
             m_dbConn = DatabaseConnectionFactory.getInstance().getConnection();
-        } catch (IOException ie) {
-            throw new UndeclaredThrowableException(ie);
-        } catch (MarshalException me) {
-            throw new UndeclaredThrowableException(me);
-        } catch (ValidationException ve) {
-            throw new UndeclaredThrowableException(ve);
-        } catch (PropertyVetoException pvE) {
-            throw new UndeclaredThrowableException(pvE);
-        } catch (SQLException sqlE) {
-            throw new UndeclaredThrowableException(sqlE);
-        } catch (ClassNotFoundException cnfE) {
-            throw new UndeclaredThrowableException(cnfE);
+        } catch (IOException e) {
+            m_logCat.fatal("IOException while initializing database", e);
+            throw new UndeclaredThrowableException(e);
+        } catch (MarshalException e) {
+            m_logCat.fatal("MarshalException while initializing database", e);
+            throw new UndeclaredThrowableException(e);
+        } catch (ValidationException e) {
+            m_logCat.fatal("ValidationException while initializing database", e);
+            throw new UndeclaredThrowableException(e);
+        } catch (PropertyVetoException e) {
+            m_logCat.fatal("PropertyVetoException while initializing database",
+                           e);
+            throw new UndeclaredThrowableException(e);
+        } catch (SQLException e) {
+            m_logCat.fatal("SQLException while initializing database", e);
+            throw new UndeclaredThrowableException(e);
+        } catch (ClassNotFoundException e) {
+            m_logCat.fatal("ClassNotFoundException while initializing database",
+                           e);
+            throw new UndeclaredThrowableException(e);
         }
-
+        // XXX should we be throwing ArchiverException instead?
     }
 
     /**
@@ -274,25 +298,21 @@ public class EventsArchiver {
      * the ResultSet.deleteRow() implemented! - so use the eventID to delete!
      */
     private boolean removeEvent(String eventID) {
-        boolean bRet;
-
         try {
             m_eventDeleteStmt.setString(1, eventID);
             m_eventDeleteStmt.executeUpdate();
-
-            bRet = true;
         } catch (SQLException sqle) {
-            bRet = false;
-            m_logCat.error("Unable to delete event \'" + eventID + "\': " + sqle.getMessage());
+            m_logCat.error("Unable to delete event \'" + eventID + "\': "
+                           + sqle.getMessage());
+            return false;
         }
 
         // debug logs
-        if (bRet && m_logCat.isDebugEnabled()) {
+        if (m_logCat.isDebugEnabled()) {
             m_logCat.debug("EventID: " + eventID + " removed from events table");
-
         }
 
-        return bRet;
+        return true;
     }
 
     /**
@@ -338,49 +358,55 @@ public class EventsArchiver {
                 // eventAckUser for this event
                 eventAckUser = eventsRS.getString(EVENT_ACK_USER);
 
-                m_logCat.debug("Event id: " + eventID + " uei: " + eventUEI + " log: " + eventLog + " display: " + eventDisplay + " eventAck: " + eventAckUser);
+                m_logCat.debug("Event id: " + eventID + " uei: " + eventUEI
+                               + " log: " + eventLog + " display: "
+                               + eventDisplay + " eventAck: " + eventAckUser);
 
-                // log = N, display = N, delete event
                 if (eventLog.equals(MSG_NO) && eventDisplay.equals(MSG_NO)) {
+                    // log = N, display = N, delete event
                     ret = removeEvent(eventID);
                     if (ret) {
                         remCount++;
                     }
-                }
-
-                // log = Y, display = N, archive event, then delete
-                else if (eventLog.equals(MSG_YES) && eventDisplay.equals(MSG_NO)) {
+                } else if (eventLog.equals(MSG_YES)
+                           && eventDisplay.equals(MSG_NO)) {
+                    // log = Y, display = N, archive event, then delete
                     ret = removeEvent(eventID);
                     if (ret) {
                         sendToArchive(eventsRS, colCount);
-                        if (m_logCat.isDebugEnabled())
+                        if (m_logCat.isDebugEnabled()) {
                             m_logCat.debug("eventID " + eventID + " archived");
+                        }
 
                         archCount++;
 
                         remCount++;
                     }
-                }
-
-                // log = N, display = Y, delete event only if event has been
-                // acknowledged
-                else if (eventLog.equals(MSG_NO) && eventDisplay.equals(MSG_YES)) {
+                } else if (eventLog.equals(MSG_NO)
+                           && eventDisplay.equals(MSG_YES)) {
+                    /*
+                     * log = N, display = Y, delete event only if event has been
+                     * acknowledged.
+                     */
                     if (eventAckUser != null) {
                         ret = removeEvent(eventID);
-                        if (ret)
+                        if (ret) {
                             remCount++;
+                        }
                     }
-                }
-
-                // log = Y, display = Y, log and delete event only if event has
-                // been acknowledged
-                else {
+                } else {
+                    /*
+                     * log = Y, display = Y, log and delete event only if event
+                     * has been acknowledged.
+                     */
                     if (eventAckUser != null) {
                         ret = removeEvent(eventID);
                         if (ret) {
                             sendToArchive(eventsRS, colCount);
-                            if (m_logCat.isDebugEnabled())
-                                m_logCat.debug("eventID " + eventID + " archived");
+                            if (m_logCat.isDebugEnabled()) {
+                                m_logCat.debug("eventID " + eventID
+                                               + " archived");
+                            }
                             archCount++;
 
                             remCount++;
@@ -390,7 +416,8 @@ public class EventsArchiver {
 
             }
 
-            m_logCat.info("Number of events removed from the event table: " + remCount);
+            m_logCat.info("Number of events removed from the event table: "
+                          + remCount);
             m_logCat.info("Number of events sent to the archive: " + archCount);
         } catch (Exception oe) {
             m_logCat.error("EventsArchiver: Error reading events for archival: ");
@@ -399,7 +426,8 @@ public class EventsArchiver {
             try {
                 eventsRS.close();
             } catch (Exception e) {
-                m_logCat.info("EventsArchiver: Exception while events result set: message -> " + e.getMessage());
+                m_logCat.info("EventsArchiver: Exception while events result "
+                              + "set: message -> " + e.getMessage());
             }
         }
 
@@ -412,7 +440,8 @@ public class EventsArchiver {
      *                thrown if there is an error getting column values from the
      *                result set
      */
-    private void sendToArchive(ResultSet eventsRS, int colCount) throws SQLException {
+    private void sendToArchive(ResultSet eventsRS, int colCount)
+            throws SQLException {
         StringBuffer outBuf = new StringBuffer();
 
         for (int index = 1; index <= colCount; index++) {
@@ -433,24 +462,23 @@ public class EventsArchiver {
      * Appenders and categories
      */
     private void close() {
-        //
         // database related
-        //
         try {
             m_eventsGetStmt.close();
             m_eventDeleteStmt.close();
 
             m_dbConn.close();
-        } catch (SQLException sqle) {
-            m_logCat.warn("Error while closing database statements and connection: message -> " + sqle.getMessage());
+        } catch (SQLException e) {
+            m_logCat.warn("Error while closing database statements and "
+                          + "connection: message -> " + e.getMessage());
         }
 
-        //
-        // log4j related - for now a shutdown() on the categories
-        // will do - however if these categories are ever configured
-        // with 'SocketAppender's or 'AsyncAppender's, these appenders
-        // should be closed explictly before shutdown()
-        //
+        /*
+         * log4j related - for now a shutdown() on the categories
+         * will do - however if these categories are ever configured
+         * with 'SocketAppender's or 'AsyncAppender's, these appenders
+         * should be closed explictly before shutdown()
+         */
         Category.shutdown();
         // m_logCat.shutdown();
     }
@@ -466,10 +494,13 @@ public class EventsArchiver {
 
         // initialize the prepared statements
         try {
-            m_eventsGetStmt = m_dbConn.prepareStatement(DB_SELECT_EVENTS_TO_ARCHIVE);
+            m_eventsGetStmt =
+                m_dbConn.prepareStatement(DB_SELECT_EVENTS_TO_ARCHIVE);
             m_eventDeleteStmt = m_dbConn.prepareStatement(DB_DELETE_EVENT);
         } catch (SQLException e) {
-            m_logCat.error("EventsArchiver: Exception in opening the database connection or in the prepared statement for the get events");
+            m_logCat.error("EventsArchiver: Exception in opening the database "
+                           + "connection or in the prepared statement for the "
+                           + "get events");
             m_logCat.error(e);
             throw new ArchiverException("EventsArchiver: " + e.getMessage());
         }
@@ -480,8 +511,10 @@ public class EventsArchiver {
             // create the archiver
             EventsArchiver ea = new EventsArchiver();
 
-            // remove events(this method sends removed events
-            // to archive file if configured for archival)
+            /*
+             * Remove events.  This method sends removed events
+             * to archive file if configured for archival.
+             */
             ea.archiveEvents();
 
             // close the archiver
