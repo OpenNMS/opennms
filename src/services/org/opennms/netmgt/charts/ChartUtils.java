@@ -100,6 +100,7 @@ public class ChartUtils {
         } catch (SQLException e) {
             log().error("static initializer: Error initializing database connection factory. "+e);
         }
+        // XXX why don't we throw an exception here or something?
     }
 
     /**
