@@ -35,11 +35,15 @@ package org.opennms.netmgt.capsd.plugins;
 import java.net.InetAddress;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
+import java.sql.Driver;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
@@ -66,7 +70,7 @@ import org.opennms.netmgt.utils.ParameterMap;
  * @version 0.1 - 07/22/2002
  * @since 0.1
  */
-public final class JDBCPlugin extends AbstractPlugin {
+public class JDBCPlugin extends AbstractPlugin {
     /**
      * The protocol supported by the plugin
      */
@@ -86,19 +90,21 @@ public final class JDBCPlugin extends AbstractPlugin {
      * Class constructor. Load the JDBC drivers.
      */
     public JDBCPlugin() {
-        Category log = ThreadCategory.getInstance(getClass());
-        log.info(getClass().getName() + ": JDBCPlugin class loaded");
+        log().info("JDBCPlugin class loaded");
     }
+
+	protected Category log() {
+		return ThreadCategory.getInstance(getClass());
+	}
 
     /**
      * Checks if a given server is listening o a given interface
-     * 
+     * @param hostname
+     *            name of the RDBMS server
      * @param user
      *            Database user
      * @param password
      *            Database password
-     * @param hostname
-     *            name of the RDBMS server
      * @param db_url
      *            Database connection url
      * @param timeout
@@ -107,82 +113,118 @@ public final class JDBCPlugin extends AbstractPlugin {
      *            Number of retrys before giving up a connection attempts
      * @param db_driver
      *            JDBC driver to use
+     * 
      * @see DBTools#constructUrl
      */
 
-    private boolean isServer(String user, String password, String hostname, String db_url, int timeout, int retries, String db_driver) {
-        Category log = ThreadCategory.getInstance(getClass());
+    private boolean isServer(String hostname, Map qualifiers) {
+    	
+        String user = ParameterMap.getKeyedString(qualifiers, "user", DBTools.DEFAULT_DATABASE_USER);
+        String password = ParameterMap.getKeyedString(qualifiers, "password", DBTools.DEFAULT_DATABASE_PASSWORD);
+        String db_url = ParameterMap.getKeyedString(qualifiers, "url", DBTools.DEFAULT_URL);
+        int timeout = ParameterMap.getKeyedInteger(qualifiers, "timeout", DEFAULT_TIMEOUT);
+        int retries = ParameterMap.getKeyedInteger(qualifiers, "retry", DEFAULT_RETRY);
+        String db_driver = ParameterMap.getKeyedString(qualifiers, "driver", DBTools.DEFAULT_JDBC_DRIVER);
+
 
         boolean status = false;
         Connection con = null;
         Statement statement = null;
-        ResultSet result = null;
         boolean connected = false;
 
         for (int attempts = 1; attempts <= retries && !connected;) {
-            log.info(getClass().getName() + ": Trying to detect JDBC server on '" + hostname + "', attempts #: " + attempts);
+            log().info("Trying to detect JDBC server on '" + hostname + "', attempts #: " + attempts);
             try {
 
-                log.debug(getClass().getName() + ": Loading JDBC driver: '" + db_driver + "'");
-                Class.forName(db_driver).newInstance();
-                log.debug(getClass().getName() + ": JDBC driver loaded: '" + db_driver + "'");
+                log().debug("Loading JDBC driver: '" + db_driver + "'");
+                Driver driver = (Driver)Class.forName(db_driver).newInstance();
+                log().debug("JDBC driver loaded: '" + db_driver + "'");
 
                 String url = DBTools.constructUrl(db_url, hostname);
-                log.debug(getClass().getName() + ": Constructed JDBC url: '" + url + "'");
+                log().debug("Constructed JDBC url: '" + url + "'");
 
-                DriverManager.setLoginTimeout(timeout);
-                con = DriverManager.getConnection(url, user, password);
+                Properties props = new Properties();
+                props.setProperty("user", user);
+                props.setProperty("password", password);
+                props.setProperty("timeout", String.valueOf(timeout/1000));
+                con = driver.connect(url, props);
                 connected = true;
-                log.debug(getClass().getName() + ": Got database connection: '" + con + "' (" + url + ", " + user + ", " + password + ")");
+                log().debug("Got database connection: '" + con + "' (" + url + ", " + user + ", " + password + ")");
+                
+                status = checkStatus(con, qualifiers);
 
-                DatabaseMetaData metadata = con.getMetaData();
-                log.debug(getClass().getName() + ": Got database metadata");
-
-                result = metadata.getCatalogs();
-                while (result.next()) {
-                    result.getString(1);
-                    log.debug(getClass().getName() + ": Metadata catalog: '" + result.getString(1) + "'");
-                }
-
-                // The JDBC server was detected using JDBC, update the status
-                status = true;
-                log.info(getClass().getName() + ": JDBC server detected on: '" + hostname + "', attempts #:" + attempts);
-            } catch (NullPointerException nullExp) {
-                log.error(nullExp.toString());
-            } catch (IllegalArgumentException illegalExp) {
-                log.error(illegalExp.toString());
-            } catch (InstantiationException insExp) {
-                log.error(insExp.toString());
-            } catch (IllegalAccessException illegalExp) {
-                log.error(illegalExp.toString());
-            } catch (ClassNotFoundException classExp) {
-                log.error(classExp.toString());
-            } catch (SQLException sqlException) {
-                log.error(sqlException.toString());
+                if (status)
+                	log().info("JDBC server detected on: '" + hostname + "', attempts #:" + attempts);
+                
+            } catch (Exception e) {
+                log().info(e);
             } finally {
                 attempts++;
-                if (result != null) {
-                    try {
-                        result.close();
-                    } catch (SQLException ignore) {
-                    }
-                }
-                if (statement != null) {
-                    try {
-                        statement.close();
-                    } catch (SQLException ignore) {
-                    }
-                }
-                if (con != null) {
-                    try {
-                        con.close();
-                    } catch (SQLException ignore) {
-                    }
-                }
+                closeStmt(statement);
+                closeConn(con);
             }
         }
         return status;
     }
+    
+    public boolean checkStatus(Connection con, Map qualifiers )
+    {
+    	boolean status = false;
+    	ResultSet result = null;
+    	try
+    	{
+    		DatabaseMetaData metadata = con.getMetaData();
+    		log().debug("Got database metadata");
+
+    		result = metadata.getCatalogs();
+    		while (result.next())
+    		{
+    			result.getString(1);
+    			log().debug("Metadata catalog: '" + result.getString(1) + "'");
+    		}
+
+    		// The JDBC server was detected using JDBC, update the status
+    		if ( result != null )
+    			status = true;
+    	}
+    	catch ( SQLException sqlException )
+    	{
+    		log().warn(sqlException.toString());
+    	}
+    	finally
+    	{
+    		closeResult(result);
+    	}
+    	return status;
+    }
+
+
+	private void closeConn(Connection con) {
+		if (con != null) {
+		    try {
+		        con.close();
+		    } catch (SQLException ignore) {
+		    }
+		}
+	}
+
+	protected void closeStmt(Statement statement) {
+		if (statement != null) {
+		    try {
+		        statement.close();
+		    } catch (SQLException ignore) {
+		    }
+		}
+	}
+
+	private void closeResult(ResultSet result) {
+		if (result != null) {
+		    try {
+		        result.close();
+		    } catch (SQLException ignore) {
+		    }
+		}
+	}
 
     /**
      * Returns the default protocol name
@@ -204,21 +246,12 @@ public final class JDBCPlugin extends AbstractPlugin {
      * @return True if a JDBC server is running on this server, false otherwise
      */
     public boolean isProtocolSupported(InetAddress address) {
-        Category log = ThreadCategory.getInstance(getClass());
         boolean status = false;
 
-        String db_user = DBTools.DEFAULT_DATABASE_USER;
-        String db_pass = DBTools.DEFAULT_DATABASE_PASSWORD;
-        String db_hostname = address.getCanonicalHostName();
-        String db_url = DBTools.DEFAULT_URL;
-        int db_timeout = DEFAULT_TIMEOUT;
-        int db_retries = DEFAULT_RETRY;
-        String db_driver = DBTools.DEFAULT_JDBC_DRIVER;
-
         try {
-            status = isServer(db_user, db_pass, db_hostname, db_url, db_timeout, db_retries, db_driver);
+            status = isServer(address.getCanonicalHostName(), Collections.EMPTY_MAP);
         } catch (Exception exp) {
-            log.error(exp.toString());
+            log().error(exp);
         }
         return status;
     }
@@ -246,8 +279,6 @@ public final class JDBCPlugin extends AbstractPlugin {
      * @return True if a JDBC server is running on this server, false otherwise
      */
     public boolean isProtocolSupported(InetAddress address, Map qualifiers) {
-        Category log = ThreadCategory.getInstance(getClass());
-
         boolean status = false;
 
         if (address == null) {
@@ -257,18 +288,10 @@ public final class JDBCPlugin extends AbstractPlugin {
             throw new NullPointerException(getClass().getName() + ": Map argument cannot be null");
         }
 
-        String db_user = ParameterMap.getKeyedString(qualifiers, "user", DBTools.DEFAULT_DATABASE_USER);
-        String db_pass = ParameterMap.getKeyedString(qualifiers, "password", DBTools.DEFAULT_DATABASE_PASSWORD);
-        String db_hostname = address.getCanonicalHostName();
-        String db_url = ParameterMap.getKeyedString(qualifiers, "url", DBTools.DEFAULT_URL);
-        int timeout = ParameterMap.getKeyedInteger(qualifiers, "timeout", DEFAULT_TIMEOUT);
-        int retries = ParameterMap.getKeyedInteger(qualifiers, "retry", DEFAULT_RETRY);
-        String db_driver = ParameterMap.getKeyedString(qualifiers, "driver", DBTools.DEFAULT_JDBC_DRIVER);
-
         try {
-            status = isServer(db_user, db_pass, db_hostname, db_url, timeout, retries, db_driver);
+            status = isServer(address.getCanonicalHostName(), qualifiers);
         } catch (Exception exp) {
-            log.info(exp.toString());
+            log().error(exp);
         }
         return status;
     }
