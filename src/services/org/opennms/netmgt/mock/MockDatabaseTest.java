@@ -34,8 +34,11 @@ package org.opennms.netmgt.mock;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import javax.sql.DataSource;
+
 import junit.framework.TestCase;
 
+import org.opennms.netmgt.config.DatabaseConnectionFactory;
 import org.opennms.netmgt.utils.Querier;
 import org.opennms.netmgt.xml.event.Event;
 
@@ -46,6 +49,7 @@ public class MockDatabaseTest extends TestCase {
 
     private MockNetwork m_network;
     private MockDatabase m_db;
+    private MockDatabase m_secondDb;
 
     protected void setUp() throws Exception {
         super.setUp();
@@ -90,6 +94,24 @@ public class MockDatabaseTest extends TestCase {
         };
         querier.execute();
         assertEquals(m_network.getNodeCount(), querier.getCount());
+    }
+    
+    public void testMultipleDatabases() {
+    		m_secondDb = new MockDatabase("test2");
+    		m_secondDb.create();
+    	
+    		Querier secondQuerier = new Querier(m_secondDb, "select * from node");
+    		secondQuerier.execute();
+    		Querier querier = new Querier(m_db, "select * from node");
+    		querier.execute();
+    		assertFalse(secondQuerier.getCount() == querier.getCount());
+    		
+    		MockNode node = m_network.getNode(1);
+    		m_secondDb.writeNode(node);
+    		secondQuerier = new Querier(m_secondDb, "select * from node");
+    		secondQuerier.execute();
+    		assertEquals(1, secondQuerier.getCount());
+    		
     }
     
     public void testIFQuery() {

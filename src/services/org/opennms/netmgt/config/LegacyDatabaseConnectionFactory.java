@@ -903,26 +903,31 @@ public final class LegacyDatabaseConnectionFactory implements DbConnectionFactor
         // This is necessary so that any location information can
         // positively identify the source of the error.
         //
-        InputSource dbIn = new InputSource(new FileInputStream(configFile));
-        dbIn.setSystemId(configFile);
+        FileInputStream fileInputStream = new FileInputStream(configFile);
+		try {
+			InputSource dbIn = new InputSource(fileInputStream);
+			dbIn.setSystemId(configFile);
 
-        // Attempt to load the database reference.
-        //
-        m_database = (Database) Unmarshaller.unmarshal(dsc, dbIn);
+			// Attempt to load the database reference.
+			//
+			m_database = (Database) Unmarshaller.unmarshal(dsc, dbIn);
 
-        m_dbcCache = new LinkedList();
+			m_dbcCache = new LinkedList();
 
-        Param[] parms = m_database.getDatabaseChoice().getDriver().getParam();
-        for (int i = 0; i < parms.length; i++) {
-            if (parms[i].getName().equals("user"))
-                m_driverUser = parms[i].getValue();
-            else if (parms[i].getName().equals("password"))
-                m_driverPass = parms[i].getValue();
-        }
-        m_driverUrl = m_database.getDatabaseChoice().getDriver().getUrl();
-        String driverCN = m_database.getDatabaseChoice().getDriver().getClassName();
+			Param[] parms = m_database.getDatabaseChoice().getDriver().getParam();
+			for (int i = 0; i < parms.length; i++) {
+			    if (parms[i].getName().equals("user"))
+			        m_driverUser = parms[i].getValue();
+			    else if (parms[i].getName().equals("password"))
+			        m_driverPass = parms[i].getValue();
+			}
+			m_driverUrl = m_database.getDatabaseChoice().getDriver().getUrl();
+			String driverCN = m_database.getDatabaseChoice().getDriver().getClassName();
 
-        Class.forName(driverCN);
+			Class.forName(driverCN);
+		} finally {
+			fileInputStream.close();
+		}
     }
 
 

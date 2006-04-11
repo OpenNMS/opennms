@@ -45,6 +45,10 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.sql.DataSource;
 
 import org.exolab.castor.jdo.conf.Database;
 import org.exolab.castor.xml.MarshalException;
@@ -77,9 +81,9 @@ public final class DatabaseConnectionFactory implements DbConnectionFactory {
     /**
      * This member is set to true if the configuration file has been loaded.
      */
-    private static boolean m_loaded = false;
-
     private static boolean m_legacy = false;
+    
+    private static Map m_dataSources = new HashMap();
 
     /**
      * The database class loaded from the config file
@@ -101,32 +105,24 @@ public final class DatabaseConnectionFactory implements DbConnectionFactory {
      * 
      */
     public static synchronized void init() throws IOException, MarshalException, ValidationException, ClassNotFoundException, PropertyVetoException, SQLException {
-        if (m_loaded) {
+    		init("opennms");
+    }
+
+    public static synchronized void init(String dsName) throws IOException, MarshalException, ValidationException, ClassNotFoundException, PropertyVetoException, SQLException {
+        if (isLoaded(dsName)) {
             // init already called - return
             // to reload, reload() will need to be called
             return;
         }
 
-        File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.DB_CONFIG_FILE_NAME);
-        try {
-            if (!isLegacy()) {
-                m_singleton = new C3P0ConnectionFactory(cfgFile.getPath());                
-            } else {
-                LegacyDatabaseConnectionFactory.init();
-                m_singleton = LegacyDatabaseConnectionFactory.getInstance();
-            }
-        } catch (MarshalException e) {
-            throw e;
-        } catch (ValidationException e) {
-            throw e;
-        } catch (FileNotFoundException e) {
-            throw e;
-        } catch (PropertyVetoException e) {
-            throw e;
-        } catch (SQLException e) {
-            throw e;
+        File cfgFile = ConfigFileConstants.getConfigFileByName(dsName+"-database.xml");
+        DbConnectionFactory dataSource = null;
+        if (!isLegacy()) {
+        		dataSource = new C3P0ConnectionFactory(cfgFile.getPath());                
+        } else {
+        		dataSource = new LegacyDatabaseConnectionFactory(cfgFile.getPath());
         }
-        m_loaded = true;
+        setInstance(dsName,dataSource);
     }
 
     public static boolean isLegacy() {
@@ -137,7 +133,11 @@ public final class DatabaseConnectionFactory implements DbConnectionFactory {
         m_legacy = legacy;
     }
 
-    /**
+	private static boolean isLoaded(String dsName) {
+		return m_dataSources.containsKey(dsName);			
+	}
+
+	/**
      * <p>
      * Return the singleton instance of this factory. This is the instance of
      * the factory that was last created when the <code>
@@ -152,10 +152,17 @@ public final class DatabaseConnectionFactory implements DbConnectionFactory {
      *             Thrown if the factory has not yet been initialized.
      */
     public static synchronized DbConnectionFactory getInstance() {
-        if (!m_loaded)
-            throw new IllegalStateException("The factory has not been initialized");
-
-        return m_singleton;
+//    		m_dataSources.put("opennms",m_singleton);
+    		return getInstance("opennms");
+    }
+    
+    public static synchronized DbConnectionFactory getInstance(String name) {
+            DbConnectionFactory dataSource = (DbConnectionFactory)m_dataSources.get(name);
+            if (dataSource == null) {
+            		throw new IllegalArgumentException("Unable to locate data source named " + name + ".  Does this need to be init'd?");
+            }
+			return (DbConnectionFactory)m_dataSources.get(name);
+        
     }
 	
 	/**
@@ -172,12 +179,20 @@ public final class DatabaseConnectionFactory implements DbConnectionFactory {
      *             database.
      */
     public Connection getConnection() throws SQLException {
-        return m_singleton.getConnection();
+        return getConnection("opennms");
+    }
+
+    public Connection getConnection(String dsName) throws SQLException {
+        return ((DataSource)m_dataSources.get(dsName)).getConnection();
     }
 
     public static void setInstance(DbConnectionFactory singleton) {
-		m_singleton=singleton;
-		m_loaded=true;
+    		m_singleton=singleton;
+		setInstance("opennms", singleton);
+	}
+
+    public static void setInstance(String dsName, DbConnectionFactory singleton) {
+		m_dataSources.put(dsName,singleton);
 	}
 
     /**
@@ -194,8 +209,12 @@ public final class DatabaseConnectionFactory implements DbConnectionFactory {
      * 
      * @return the datasource configured for the database
      */
-    public javax.sql.DataSource getDataSource() {
-        return m_singleton;
+    public static DataSource getDataSource() {
+        return getDataSource("opennms");
+    }
+
+    public static DataSource getDataSource(String dsName) {
+        return (DataSource)m_dataSources.get(dsName);
     }
 
     public Connection getConnection(String username, String password) throws SQLException {
@@ -206,22 +225,37 @@ public final class DatabaseConnectionFactory implements DbConnectionFactory {
         return m_singleton.getLogWriter();
     }
 
+    public PrintWriter getLogWriter(String dsName) throws SQLException {
+        return ((DataSource)m_dataSources.get(dsName)).getLogWriter();
+    }
+
     public void setLogWriter(PrintWriter out) throws SQLException {
-        m_singleton.setLogWriter(out);
+        setLogWriter("opennms", out);
+    }
+
+    public void setLogWriter(String dsName, PrintWriter out) throws SQLException {
+    		((DataSource)m_dataSources.get(dsName)).setLogWriter(out);
     }
 
     public void setLoginTimeout(int seconds) throws SQLException {
-        m_singleton.setLoginTimeout(seconds);
+        setLoginTimeout("opennms", seconds);
+    }
+
+    public void setLoginTimeout(String dsName, int seconds) throws SQLException {
+    		((DataSource)m_dataSources.get(dsName)).setLoginTimeout(seconds);
     }
 
     public int getLoginTimeout() throws SQLException {
-        return m_singleton.getLoginTimeout();
+        return getLoginTimeout("opennms");
+    }
+
+    public int getLoginTimeout(String dsName) throws SQLException {
+        return ((DataSource)m_dataSources.get(dsName)).getLoginTimeout();
     }
 
     public void initialize() throws MarshalException, ValidationException, IOException, ClassNotFoundException {
         // TODO Auto-generated method stub
         
     }
-
 
 }

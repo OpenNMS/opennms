@@ -35,7 +35,7 @@ package org.opennms.netmgt.config;
 
 import java.beans.PropertyVetoException;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -93,28 +93,33 @@ public class C3P0ConnectionFactory implements DbConnectionFactory {
     private String m_className;
     private Database m_database;
 
-    public C3P0ConnectionFactory(String configFile) throws FileNotFoundException, MarshalException, ValidationException, PropertyVetoException, SQLException {
+    public C3P0ConnectionFactory(String configFile) throws IOException, MarshalException, ValidationException, PropertyVetoException, SQLException {
         Class dsc = Database.class;
 
         // Set the system identifier for the source of the input stream.
         // This is necessary so that any location information can
         // positively identify the source of the error.
         //
-        InputSource dbIn = new InputSource(new FileInputStream(configFile));
-        dbIn.setSystemId(configFile);
+        FileInputStream fileInputStream = new FileInputStream(configFile);
+		try {
+			InputSource dbIn = new InputSource(fileInputStream);
+			dbIn.setSystemId(configFile);
 
-        m_database = (Database) Unmarshaller.unmarshal(dsc, dbIn);
-        Param[] params = m_database.getDatabaseChoice().getDriver().getParam();
-        for (Iterator it = Arrays.asList(params).iterator(); it.hasNext();) {
-            Param param = (Param) it.next();
-            if (param.getName().equals("user")) {
-                m_user = param.getValue();
-            } else if (param.getName().equals("password")) {
-                m_password = param.getValue();
-            }
-        }
+			m_database = (Database) Unmarshaller.unmarshal(dsc, dbIn);
+			Param[] params = m_database.getDatabaseChoice().getDriver().getParam();
+			for (Iterator it = Arrays.asList(params).iterator(); it.hasNext();) {
+			    Param param = (Param) it.next();
+			    if (param.getName().equals("user")) {
+			        m_user = param.getValue();
+			    } else if (param.getName().equals("password")) {
+			        m_password = param.getValue();
+			    }
+			}
 
-        initializePool();
+			initializePool();
+		} finally {
+			fileInputStream.close();
+		}
         
     }
 
