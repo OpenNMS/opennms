@@ -697,6 +697,7 @@ public final class SnmpPeerFactory {
         agentConfig.setSecurityName(determineSecurityName(def));
         agentConfig.setAuthProtocol(determineAuthProtocol(def));
         agentConfig.setAuthPassPhrase(determineAuthPassPhrase(def));
+        agentConfig.setPrivPassPhrase(determinePrivPassPhrase(def));
         agentConfig.setPrivProtocol(determinePrivProtocol(def));
         agentConfig.setReadCommunity(determineReadCommunity(def));
         agentConfig.setWriteCommunity(determineWriteCommunity(def));
@@ -782,7 +783,7 @@ public final class SnmpPeerFactory {
     }
     
     /**
-     * Helper method to find a security name to use in the snmp-config.  If v3 has
+     * Helper method to find a authentication passphrase to use from the snmp-config.  If v3 has
      * been specified and one can't be found, then a default is used for this
      * is a required option for v3 operations.
      * @param def
@@ -797,7 +798,22 @@ public final class SnmpPeerFactory {
     }
 
     /**
-     * Helper method to find a security name to use in the snmp-config.  If v3 has
+     * Helper method to find a privacy passphrase to use from the snmp-config.  If v3 has
+     * been specified and one can't be found, then a default is used for this
+     * is a required option for v3 operations.
+     * @param def
+     * @return
+     */
+    private String determinePrivPassPhrase(Definition def) {
+        String privPassPhrase = (def.getPrivacyPassphrase() == null ? m_config.getPrivacyPassphrase() : def.getPrivacyPassphrase());
+        if (privPassPhrase == null) {
+            privPassPhrase = SnmpAgentConfig.DEFAULT_PRIV_PASS_PHRASE;
+        }
+        return privPassPhrase;
+    }
+
+    /**
+     * Helper method to find a privacy protocol to use from the snmp-config.  If v3 has
      * been specified and one can't be found, then a default is used for this
      * is a required option for v3 operations.
      * @param def
