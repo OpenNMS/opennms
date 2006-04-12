@@ -37,9 +37,10 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 
+import javax.sql.DataSource;
+
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
-import org.opennms.netmgt.config.DbConnectionFactory;
 import org.opennms.netmgt.config.NotifdConfigManager;
 import org.opennms.netmgt.config.NotificationManager;
 /**
@@ -52,7 +53,7 @@ public class MockNotificationManager extends NotificationManager {
     
     private String m_mgrString;
 
-    public MockNotificationManager(NotifdConfigManager configManager, DbConnectionFactory db, String mgrString) throws MarshalException, ValidationException {
+    public MockNotificationManager(NotifdConfigManager configManager, DataSource db, String mgrString) throws MarshalException, ValidationException {
         super(configManager, db);
         Reader reader = new StringReader(mgrString);
         m_mgrString = mgrString;

@@ -1,5 +1,7 @@
 package org.opennms.netmgt.config;
 
+import javax.sql.DataSource;
+
 import org.opennms.netmgt.mock.EventAnticipator;
 import org.opennms.netmgt.mock.MockEventIpcManager;
 import org.opennms.netmgt.mock.MockLogAppender;
@@ -8,7 +10,7 @@ import org.opennms.netmgt.mock.OutageAnticipator;
 
 public class DatabaseConnectionFactoryTest extends OpenNMSTestCase {
 
-	public DbConnectionFactory m_testDb = new DatabaseConnectionFactory();
+	public DataSource m_testDb = new DatabaseConnectionFactory();
     private EventAnticipator m_anticipator;
     private OutageAnticipator m_outageAnticipator;
     private MockEventIpcManager m_eventMgr;

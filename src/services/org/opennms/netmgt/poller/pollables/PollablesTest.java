@@ -39,12 +39,12 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Enumeration;
-import java.util.Properties;
+
+import javax.sql.DataSource;
 
 import junit.framework.TestCase;
 
 import org.opennms.netmgt.EventConstants;
-import org.opennms.netmgt.config.DbConnectionFactory;
 import org.opennms.netmgt.config.PollOutagesConfig;
 import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.config.poller.Package;
@@ -54,7 +54,6 @@ import org.opennms.netmgt.mock.MockElement;
 import org.opennms.netmgt.mock.MockEventIpcManager;
 import org.opennms.netmgt.mock.MockInterface;
 import org.opennms.netmgt.mock.MockLogAppender;
-import org.opennms.netmgt.mock.MockMonitor;
 import org.opennms.netmgt.mock.MockNetwork;
 import org.opennms.netmgt.mock.MockNode;
 import org.opennms.netmgt.mock.MockPollerConfig;
@@ -239,7 +238,7 @@ public class PollablesTest extends TestCase {
         }
     }
 
-    static private PollableNetwork createPollableNetwork(final DbConnectionFactory db, final ScheduleTimer scheduler, final PollerConfig pollerConfig, final PollOutagesConfig pollOutageConfig, PollContext pollContext) throws UnknownHostException {
+    static private PollableNetwork createPollableNetwork(final DataSource db, final ScheduleTimer scheduler, final PollerConfig pollerConfig, final PollOutagesConfig pollOutageConfig, PollContext pollContext) throws UnknownHostException {
         
         final PollableNetwork pNetwork = new PollableNetwork(pollContext);
         

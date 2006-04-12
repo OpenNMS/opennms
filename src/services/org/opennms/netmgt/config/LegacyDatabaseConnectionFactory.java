@@ -54,6 +54,8 @@ import java.sql.Statement;
 import java.util.LinkedList;
 import java.util.Map;
 
+import javax.sql.DataSource;
+
 import org.apache.log4j.Category;
 import org.exolab.castor.jdo.conf.Database;
 import org.exolab.castor.jdo.conf.Driver;
@@ -83,14 +85,14 @@ import org.xml.sax.InputSource;
  * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
  */
-public final class LegacyDatabaseConnectionFactory implements DbConnectionFactory {
+public final class LegacyDatabaseConnectionFactory implements DataSource {
     
     private static final int MAX_AGE = 5 * 60 * 1000;
 
     /**
      * The singleton instance of this factory
      */
-    private static DbConnectionFactory m_singleton = null;
+    private static DataSource m_singleton = null;
 
     /**
      * This member is set to true if the configuration file has been loaded.
@@ -969,14 +971,14 @@ public final class LegacyDatabaseConnectionFactory implements DbConnectionFactor
      * @throws java.lang.IllegalStateException
      *             Thrown if the factory has not yet been initialized.
      */
-    public static synchronized DbConnectionFactory getInstance() {
+    public static synchronized DataSource getInstance() {
         if (!m_loaded)
             throw new IllegalStateException("The factory has not been initialized");
 
         return m_singleton;
     }
 	
-	public static void setInstance(DbConnectionFactory singleton) {
+	public static void setInstance(DataSource singleton) {
 		m_singleton=singleton;
 		m_loaded=true;
 	}

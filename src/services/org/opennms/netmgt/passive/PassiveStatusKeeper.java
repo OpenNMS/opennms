@@ -36,11 +36,12 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.sql.DataSource;
+
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.capsd.EventUtils;
-import org.opennms.netmgt.config.DbConnectionFactory;
 import org.opennms.netmgt.config.PassiveStatusKey;
 import org.opennms.netmgt.config.PassiveStatusValue;
 import org.opennms.netmgt.daemon.ServiceDaemon;
@@ -60,7 +61,7 @@ public class PassiveStatusKeeper extends ServiceDaemon implements EventListener 
     private EventIpcManager m_eventMgr;
     private boolean m_initialized = false;
 
-    private DbConnectionFactory m_dbConnectionFactory;
+    private DataSource m_dbConnectionFactory;
 
     
     public PassiveStatusKeeper() {
@@ -212,11 +213,11 @@ public class PassiveStatusKeeper extends ServiceDaemon implements EventListener 
         m_eventMgr = eventMgr;
     }
     
-    public DbConnectionFactory getDbConnectoinFactory() {
+    public DataSource getDbConnectoinFactory() {
         return m_dbConnectionFactory;
     }
     
-    public void setDbConnectionFactory(DbConnectionFactory dbConnectionFactory) {
+    public void setDbConnectionFactory(DataSource dbConnectionFactory) {
         m_dbConnectionFactory = dbConnectionFactory;
     }
     

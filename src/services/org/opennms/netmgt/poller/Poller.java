@@ -49,11 +49,12 @@ import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Map;
 
+import javax.sql.DataSource;
+
 import org.apache.log4j.Category;
 import org.apache.log4j.Priority;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
-import org.opennms.netmgt.config.DbConnectionFactory;
 import org.opennms.netmgt.config.PollOutagesConfig;
 import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.config.poller.Package;
@@ -98,7 +99,7 @@ public class Poller extends ServiceDaemon {
 
     private EventIpcManager m_eventMgr;
 
-    private DbConnectionFactory m_dbConnectionFactory;
+    private DataSource m_dbConnectionFactory;
 
     public static final String EVENT_SOURCE = "OpenNMS.Poller";
 
@@ -559,7 +560,7 @@ public class Poller extends ServiceDaemon {
     /**
      * @param instance
      */
-    public void setDbConnectionFactory(DbConnectionFactory dbConnectionFactory) {
+    public void setDbConnectionFactory(DataSource dbConnectionFactory) {
         m_dbConnectionFactory = dbConnectionFactory;
     }
 

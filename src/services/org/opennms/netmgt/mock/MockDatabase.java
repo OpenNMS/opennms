@@ -43,9 +43,10 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.sql.DataSource;
+
 import org.hsqldb.Server;
 import org.opennms.netmgt.EventConstants;
-import org.opennms.netmgt.config.DbConnectionFactory;
 import org.opennms.netmgt.eventd.db.Constants;
 import org.opennms.netmgt.utils.Querier;
 import org.opennms.netmgt.utils.SingleResultQuerier;
@@ -57,7 +58,7 @@ import org.opennms.netmgt.xml.event.Event;
  * testing.  Can be populated from a MockNetwork
  * @author brozow
  */
-public class MockDatabase implements DbConnectionFactory, EventWriter {
+public class MockDatabase implements DataSource, EventWriter {
 
 
     private Server m_server;

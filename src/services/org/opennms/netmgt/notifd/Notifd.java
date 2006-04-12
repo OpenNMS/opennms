@@ -43,8 +43,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import javax.sql.DataSource;
+
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.config.DbConnectionFactory;
 import org.opennms.netmgt.config.DestinationPathManager;
 import org.opennms.netmgt.config.GroupManager;
 import org.opennms.netmgt.config.NotifdConfigManager;
@@ -93,7 +94,7 @@ public final class Notifd extends ServiceDaemon {
 
     private NotifdConfigManager m_configManager;
 
-    private DbConnectionFactory m_dbConnectionFactory;
+    private DataSource m_dbConnectionFactory;
 
     private NotificationManager m_notificationManager;
     
@@ -316,7 +317,7 @@ public final class Notifd extends ServiceDaemon {
     /**
      * @param dbConnectionFactory
      */
-    public void setDbConnectionFactory(DbConnectionFactory dbConnectionFactory) {
+    public void setDbConnectionFactory(DataSource dbConnectionFactory) {
         m_dbConnectionFactory = dbConnectionFactory;
         
     }

@@ -48,6 +48,8 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.sql.DataSource;
+
 import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Unmarshaller;
@@ -103,7 +105,7 @@ public final class EventTranslatorConfigFactory implements EventTranslatorConfig
     /**
      * connection factory for use with sql-value
      */
-	private DbConnectionFactory m_dbConnFactory;
+	private DataSource m_dbConnFactory;
 
     
     /**
@@ -117,17 +119,17 @@ public final class EventTranslatorConfigFactory implements EventTranslatorConfig
      *                Thrown if the contents do not match the required schema.
      * 
      */
-    private EventTranslatorConfigFactory(String configFile, DbConnectionFactory dbConnFactory) throws IOException, MarshalException, ValidationException {
+    private EventTranslatorConfigFactory(String configFile, DataSource dbConnFactory) throws IOException, MarshalException, ValidationException {
         Reader rdr = new InputStreamReader(new FileInputStream(configFile));
         marshallReader(rdr, dbConnFactory);
         rdr.close();
     }
     
-    public EventTranslatorConfigFactory(Reader rdr, DbConnectionFactory dbConnFactory) throws MarshalException, ValidationException {
+    public EventTranslatorConfigFactory(Reader rdr, DataSource dbConnFactory) throws MarshalException, ValidationException {
         marshallReader(rdr, dbConnFactory);
     }
     
-    private synchronized void marshallReader(Reader rdr, DbConnectionFactory dbConnFactory) throws MarshalException, ValidationException {
+    private synchronized void marshallReader(Reader rdr, DataSource dbConnFactory) throws MarshalException, ValidationException {
         m_config = (EventTranslatorConfiguration) Unmarshaller.unmarshal(EventTranslatorConfiguration.class, rdr);
         m_dbConnFactory = dbConnFactory;
     }

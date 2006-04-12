@@ -53,7 +53,7 @@ import org.xml.sax.InputSource;
 
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 
-public class C3P0ConnectionFactory implements DbConnectionFactory {
+public class C3P0ConnectionFactory implements DataSource {
     
     /*
      * Just hacked for now to get model-import working in OpenNMS

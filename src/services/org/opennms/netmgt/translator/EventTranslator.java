@@ -34,10 +34,11 @@ package org.opennms.netmgt.translator;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.sql.DataSource;
+
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.capsd.EventUtils;
-import org.opennms.netmgt.config.DbConnectionFactory;
 import org.opennms.netmgt.config.EventTranslatorConfig;
 import org.opennms.netmgt.daemon.ServiceDaemon;
 import org.opennms.netmgt.eventd.EventIpcManager;
@@ -54,7 +55,7 @@ public class EventTranslator extends ServiceDaemon implements EventListener {
     private EventTranslatorConfig m_config;
     private boolean m_initialized = false;
 
-    private DbConnectionFactory m_dbConnectionFactory;
+    private DataSource m_dataSource;
 
     
     public EventTranslator() {
@@ -88,8 +89,8 @@ public class EventTranslator extends ServiceDaemon implements EventListener {
             throw new IllegalStateException("config has not been set");
         if (m_eventMgr == null)
             throw new IllegalStateException("eventManager has not been set");
-        if (m_dbConnectionFactory == null)
-            throw new IllegalStateException("dbConnectionFactory has not been set");
+        if (m_dataSource == null)
+            throw new IllegalStateException("dataSource has not been set");
     }
 
     public void start() {
@@ -168,12 +169,12 @@ public class EventTranslator extends ServiceDaemon implements EventListener {
         m_config = config;
     }
     
-    public DbConnectionFactory getDbConnectoinFactory() {
-        return m_dbConnectionFactory;
+    public DataSource getDataSource() {
+        return m_dataSource;
     }
     
-    public void setDbConnectionFactory(DbConnectionFactory dbConnectionFactory) {
-        m_dbConnectionFactory = dbConnectionFactory;
+    public void setDataSource(DataSource dataSource) {
+        m_dataSource = dataSource;
     }
     
     private Category log() {

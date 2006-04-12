@@ -106,7 +106,7 @@ public class EventTranslatorTest extends MockObjectTestCase {
         m_translator = EventTranslator.getInstance();
         m_translator.setEventManager(m_eventMgr);
         m_translator.setConfig(EventTranslatorConfigFactory.getInstance());
-        m_translator.setDbConnectionFactory(m_db);
+        m_translator.setDataSource(m_db);
         
         m_translator.init();
         m_translator.start();

@@ -71,12 +71,12 @@ import org.opennms.netmgt.ConfigFileConstants;
  * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
  */
-public final class DatabaseConnectionFactory implements DbConnectionFactory {
+public final class DatabaseConnectionFactory implements DataSource {
 
     /**
      * The singleton instance of this factory
      */
-    private static DbConnectionFactory m_singleton = null;
+    private static DataSource m_singleton = null;
 
     /**
      * This member is set to true if the configuration file has been loaded.
@@ -116,7 +116,7 @@ public final class DatabaseConnectionFactory implements DbConnectionFactory {
         }
 
         File cfgFile = ConfigFileConstants.getConfigFileByName(dsName+"-database.xml");
-        DbConnectionFactory dataSource = null;
+        DataSource dataSource = null;
         if (!isLegacy()) {
         		dataSource = new C3P0ConnectionFactory(cfgFile.getPath());                
         } else {
@@ -151,17 +151,17 @@ public final class DatabaseConnectionFactory implements DbConnectionFactory {
      * @throws java.lang.IllegalStateException
      *             Thrown if the factory has not yet been initialized.
      */
-    public static synchronized DbConnectionFactory getInstance() {
+    public static synchronized DataSource getInstance() {
 //    		m_dataSources.put("opennms",m_singleton);
     		return getInstance("opennms");
     }
     
-    public static synchronized DbConnectionFactory getInstance(String name) {
-            DbConnectionFactory dataSource = (DbConnectionFactory)m_dataSources.get(name);
+    public static synchronized DataSource getInstance(String name) {
+            DataSource dataSource = (DataSource)m_dataSources.get(name);
             if (dataSource == null) {
             		throw new IllegalArgumentException("Unable to locate data source named " + name + ".  Does this need to be init'd?");
             }
-			return (DbConnectionFactory)m_dataSources.get(name);
+			return (DataSource)m_dataSources.get(name);
         
     }
 	
@@ -186,12 +186,12 @@ public final class DatabaseConnectionFactory implements DbConnectionFactory {
         return ((DataSource)m_dataSources.get(dsName)).getConnection();
     }
 
-    public static void setInstance(DbConnectionFactory singleton) {
+    public static void setInstance(DataSource singleton) {
     		m_singleton=singleton;
 		setInstance("opennms", singleton);
 	}
 
-    public static void setInstance(String dsName, DbConnectionFactory singleton) {
+    public static void setInstance(String dsName, DataSource singleton) {
 		m_dataSources.put(dsName,singleton);
 	}
 

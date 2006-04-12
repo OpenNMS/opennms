@@ -10,7 +10,7 @@ import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
 
-import org.opennms.netmgt.config.DbConnectionFactory;
+import javax.sql.DataSource;
 
 /**
  * @author brozow
@@ -75,7 +75,7 @@ public interface QueryManager {
     /**
      * @param connectionFactory
      */
-    public void setDbConnectionFactory(DbConnectionFactory connectionFactory);
+    public void setDbConnectionFactory(DataSource connectionFactory);
 
     /**
      * @param nodeId

@@ -62,6 +62,8 @@ import java.util.ListIterator;
 import java.util.Map;
 import java.util.Set;
 
+import javax.sql.DataSource;
+
 import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
@@ -70,7 +72,6 @@ import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.CatFactory;
 import org.opennms.netmgt.config.CategoryFactory;
 import org.opennms.netmgt.config.DatabaseConnectionFactory;
-import org.opennms.netmgt.config.DbConnectionFactory;
 import org.opennms.netmgt.config.categories.Categories;
 import org.opennms.netmgt.config.categories.Categorygroup;
 import org.opennms.netmgt.filter.Filter;
@@ -405,8 +406,8 @@ public class DataManager extends Object {
 
     }
 
-	private DbConnectionFactory getConnectionFactory() {
-		DbConnectionFactory connFactory;
+	private DataSource getConnectionFactory() {
+		DataSource connFactory;
 		try {
 		    DatabaseConnectionFactory.init();
 		    connFactory = DatabaseConnectionFactory.getInstance();

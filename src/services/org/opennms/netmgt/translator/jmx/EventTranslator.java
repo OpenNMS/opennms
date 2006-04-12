@@ -79,7 +79,7 @@ public class EventTranslator implements EventTranslatorMBean {
         org.opennms.netmgt.translator.EventTranslator keeper = getEventTranslator();
         keeper.setConfig(EventTranslatorConfigFactory.getInstance());
         keeper.setEventManager(mgr);
-        keeper.setDbConnectionFactory(DatabaseConnectionFactory.getInstance());
+        keeper.setDataSource(DatabaseConnectionFactory.getInstance());
         keeper.init();
     }
 

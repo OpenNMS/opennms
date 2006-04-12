@@ -44,10 +44,11 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.sql.DataSource;
+
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
-import org.opennms.netmgt.config.DbConnectionFactory;
 import org.opennms.netmgt.utils.SingleResultQuerier;
 import org.opennms.netmgt.utils.Updater;
 
@@ -84,7 +85,7 @@ public class DefaultQueryManager implements QueryManager {
      */
     final static String SQL_FETCH_IFSERVICES_TO_POLL = "SELECT if.serviceid FROM ifservices if, service s WHERE if.serviceid = s.serviceid AND if.status = 'A' AND if.ipaddr = ?";
 
-    private DbConnectionFactory m_dbConnectionFactory;
+    private DataSource m_dbConnectionFactory;
 
     /**
      * @param whichEvent
@@ -429,7 +430,7 @@ public class DefaultQueryManager implements QueryManager {
     
     
 
-    public void setDbConnectionFactory(DbConnectionFactory dbConnectionFactory) {
+    public void setDbConnectionFactory(DataSource dbConnectionFactory) {
         m_dbConnectionFactory = dbConnectionFactory;
     }
     

@@ -50,6 +50,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import javax.sql.DataSource;
+
 import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
@@ -97,13 +99,13 @@ public abstract class NotificationManager {
     public static final String PARAM_TEXT_PAGER_PIN = "-tp";
     public static final String PARAM_NUM_PAGER_PIN = "-np";
     NotifdConfigManager m_configManager;
-    private DbConnectionFactory m_dbConnectionFactory;
+    private DataSource m_dbConnectionFactory;
     /**
      * @param configIn
      * @throws MarshalException
      * @throws ValidationException
      */
-    protected NotificationManager(NotifdConfigManager configManager, DbConnectionFactory dcf) {
+    protected NotificationManager(NotifdConfigManager configManager, DataSource dcf) {
         m_configManager = configManager;
         m_dbConnectionFactory = dcf;
     }

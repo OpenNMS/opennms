@@ -39,13 +39,14 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.opennms.netmgt.config.DbConnectionFactory;
+import javax.sql.DataSource;
+
 import org.opennms.netmgt.poller.IfKey;
 import org.opennms.netmgt.poller.QueryManager;
 
 public class MockQueryManager implements QueryManager {
 
-    public void setDbConnectionFactory(DbConnectionFactory dbConnectionFactory) {
+    public void setDbConnectionFactory(DataSource dbConnectionFactory) {
         // Don't do anything because this one doesn't use the database.
     }
 

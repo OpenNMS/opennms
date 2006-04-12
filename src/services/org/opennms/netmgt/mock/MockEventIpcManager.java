@@ -39,7 +39,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import org.opennms.netmgt.config.DbConnectionFactory;
+import javax.sql.DataSource;
+
 import org.opennms.netmgt.config.EventdConfigManager;
 import org.opennms.netmgt.eventd.EventIpcManager;
 import org.opennms.netmgt.eventd.EventListener;
@@ -225,7 +226,7 @@ public class MockEventIpcManager implements EventIpcManager {
         
     }
 
-    public void setDbConnectionFactory(DbConnectionFactory instance) {
+    public void setDbConnectionFactory(DataSource instance) {
         // TODO Auto-generated method stub
         
     }
