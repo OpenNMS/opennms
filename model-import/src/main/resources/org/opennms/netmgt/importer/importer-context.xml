@@ -17,7 +17,6 @@
     <property name="staticMethod"><value>org.opennms.netmgt.eventd.EventIpcManagerFactory.getIpcManager</value></property>
   </bean>
 
-  <!--
   <bean id="dbConnectionFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
     <property name="staticMethod"><value>org.opennms.netmgt.config.DatabaseConnectionFactory.init</value></property>
   </bean>
@@ -25,8 +24,8 @@
   <bean id="dataSource" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" depends-on="dbConnectionFactory-init">
     <property name="staticMethod"><value>org.opennms.netmgt.config.DatabaseConnectionFactory.getInstance</value></property>
   </bean>
-  -->
 
+  <!--
   <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource">
   	<property name="driverClassName" value="${importer.db.driverClassName}"/>
   	<property name="url" value="${importer.db.url}"/>
@@ -34,7 +33,7 @@
   	<property name="password" value="${importer.db.password}"/>
   	<property name="maxActive" value="${importer.maxActiveConnections}" />
   </bean>
-  
+  -->
   <!-- AssetRecordFactory.register(m_dataSource) -->  
   <bean id="assetRecordFactory" class="org.opennms.netmgt.dao.jdbc.asset.AssetRecordFactory">
   	<property name="dataSource" ref="dataSource" />
