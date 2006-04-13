@@ -173,7 +173,7 @@ public class ImportOperationsManagerTest extends AbstractDaoTestCase {
                 "</snmp-config>");
         
         SnmpPeerFactory.setInstance(new SnmpPeerFactory(rdr));
-        testDoubleImport(new ClassPathResource("/tec_dump.xml.smalltest"));
+        testDoubleImport(new ClassPathResource("/tec_dump.xml"));
         
         Collection c = getIpInterfaceDao().findByIpAddress("172.20.1.171");
         assertEquals(1, c.size());
