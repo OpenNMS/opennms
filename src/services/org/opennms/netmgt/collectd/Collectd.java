@@ -56,6 +56,8 @@ import java.util.Set;
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.capsd.EventUtils;
+import org.opennms.netmgt.capsd.InsufficientInformationException;
 import org.opennms.netmgt.config.CollectdConfigFactory;
 import org.opennms.netmgt.config.DatabaseConnectionFactory;
 import org.opennms.netmgt.config.SnmpPeerFactory;
@@ -144,48 +146,48 @@ public final class Collectd extends ServiceDaemon implements EventListener {
 		return ThreadCategory.getInstance();
 	}
 
-    private void installMessageSelectors() {
+	private void installMessageSelectors() {
 		// Create the JMS selector for the ueis this service is interested in
-		    //
-		    List ueiList = new ArrayList();
-		
-		    // nodeGainedService
-		    ueiList.add(EventConstants.NODE_GAINED_SERVICE_EVENT_UEI);
-		
-		    // interfaceIndexChanged
-		    // NOTE: No longer interested in this event...if Capsd detects
-		    // that in interface's index has changed a
-		    // 'reinitializePrimarySnmpInterface' event is generated.
-		    // ueiList.add(EventConstants.INTERFACE_INDEX_CHANGED_EVENT_UEI);
-		
-		    // primarySnmpInterfaceChanged
-		    ueiList.add(EventConstants.PRIMARY_SNMP_INTERFACE_CHANGED_EVENT_UEI);
-		
-		    // reinitializePrimarySnmpInterface
-		    ueiList.add(EventConstants.REINITIALIZE_PRIMARY_SNMP_INTERFACE_EVENT_UEI);
-		
-		    // interfaceReparented
-		    ueiList.add(EventConstants.INTERFACE_REPARENTED_EVENT_UEI);
-		
-		    // nodeDeleted
-		    ueiList.add(EventConstants.NODE_DELETED_EVENT_UEI);
-		
-		    // duplicateNodeDeleted
-		    ueiList.add(EventConstants.DUP_NODE_DELETED_EVENT_UEI);
-		
-		    // interfaceDeleted
-		    ueiList.add(EventConstants.INTERFACE_DELETED_EVENT_UEI);
-		
-		    // serviceDeleted
-		    ueiList.add(EventConstants.SERVICE_DELETED_EVENT_UEI);
-		
+		//
+		List ueiList = new ArrayList();
+
+		// nodeGainedService
+		ueiList.add(EventConstants.NODE_GAINED_SERVICE_EVENT_UEI);
+
+		// interfaceIndexChanged
+		// NOTE: No longer interested in this event...if Capsd detects
+		// that in interface's index has changed a
+		// 'reinitializePrimarySnmpInterface' event is generated.
+		// ueiList.add(EventConstants.INTERFACE_INDEX_CHANGED_EVENT_UEI);
+
+		// primarySnmpInterfaceChanged
+		ueiList.add(EventConstants.PRIMARY_SNMP_INTERFACE_CHANGED_EVENT_UEI);
+
+		// reinitializePrimarySnmpInterface
+		ueiList.add(EventConstants.REINITIALIZE_PRIMARY_SNMP_INTERFACE_EVENT_UEI);
+
+		// interfaceReparented
+		ueiList.add(EventConstants.INTERFACE_REPARENTED_EVENT_UEI);
+
+		// nodeDeleted
+		ueiList.add(EventConstants.NODE_DELETED_EVENT_UEI);
+
+		// duplicateNodeDeleted
+		ueiList.add(EventConstants.DUP_NODE_DELETED_EVENT_UEI);
+
+		// interfaceDeleted
+		ueiList.add(EventConstants.INTERFACE_DELETED_EVENT_UEI);
+
+		// serviceDeleted
+		ueiList.add(EventConstants.SERVICE_DELETED_EVENT_UEI);
+
 		// outageConfigurationChanged
 		ueiList.add(EventConstants.SCHEDOUTAGES_CHANGED_EVENT_UEI);
-		
-		    // configureSNMP
-		    ueiList.add(EventConstants.CONFIGURE_SNMP_EVENT_UEI);
-		
-		    EventIpcManagerFactory.getIpcManager().addEventListener(this, ueiList);
+
+		// configureSNMP
+		ueiList.add(EventConstants.CONFIGURE_SNMP_EVENT_UEI);
+
+		EventIpcManagerFactory.getIpcManager().addEventListener(this, ueiList);
 	}
 
     private ReadyRunnable buildSchedule() {
@@ -507,99 +509,50 @@ public final class Collectd extends ServiceDaemon implements EventListener {
 	 * 
 	 */
 	public void onEvent(Event event) {
-	    // print out the uei
-	    //
-	    if (log().isDebugEnabled()) {
-	        log().debug("received event, uei = " + event.getUei());
-	    }
-	
-	if(event.getUei().equals(EventConstants.SCHEDOUTAGES_CHANGED_EVENT_UEI)) {
-		log().warn("Reloading Collectd config factory");
-		//Reload the collectd configuration
+		// print out the uei
+		//
+		log().debug("received event, uei = " + event.getUei());
+		
 		try {
-			CollectdConfigFactory.reload();
-		} catch (Exception e) {
-			e.printStackTrace();
-			log().error("Failed to reload CollectdConfigFactory because "+e.getMessage());
+		if (event.getUei().equals(EventConstants.SCHEDOUTAGES_CHANGED_EVENT_UEI)) {
+			handleScheduledOutagesChanged(event);
+		} else if (event.getUei().equals(EventConstants.CONFIGURE_SNMP_EVENT_UEI)) {
+			handleConfigureSNMP(event);
+		} else if (event.getUei().equals(EventConstants.NODE_GAINED_SERVICE_EVENT_UEI)) {
+			handleNodeGainedService(event);
+		} else if (event.getUei().equals(EventConstants.PRIMARY_SNMP_INTERFACE_CHANGED_EVENT_UEI)) {
+			handlePrimarySnmpInterfaceChanged(event);
+		} else if (event.getUei().equals(EventConstants.REINITIALIZE_PRIMARY_SNMP_INTERFACE_EVENT_UEI)) {
+			handleReinitializePrimarySnmpInterface(event);
+		} else if (event.getUei().equals(EventConstants.INTERFACE_REPARENTED_EVENT_UEI)) {
+			handleInterfaceReparented(event);
+		} else if (event.getUei().equals(EventConstants.NODE_DELETED_EVENT_UEI)) {
+			handleNodeDeleted(event);
+		} else if (event.getUei().equals(EventConstants.DUP_NODE_DELETED_EVENT_UEI)) { 
+			handleDupNodeDeleted(event);
+		} else if (event.getUei().equals(EventConstants.INTERFACE_DELETED_EVENT_UEI)) {
+			handleInterfaceDeleted(event);
+		} else if (event.getUei().equals(EventConstants.SERVICE_DELETED_EVENT_UEI)) {
+			handleServiceDeleted(event);
 		}
-		refreshServicePackages();
-	}
-	else if(!event.hasNodeid() && !event.getUei().equals(EventConstants.CONFIGURE_SNMP_EVENT_UEI)) 
-	{
-		// For all other events, if the event doesn't have a nodeId it can't be processed.
-		log().info("no database node id found, discarding event");
-	    } else if (event.getUei().equals(EventConstants.NODE_GAINED_SERVICE_EVENT_UEI)) {
-	        // If there is no interface then it cannot be processed
-	        //
-	        if (event.getInterface() == null || event.getInterface().length() == 0) {
-	            log().info("no interface found, discarding event");
-	        } else {
-	            this.nodeGainedServiceHandler(event);
-	        }
-	    } else if (event.getUei().equals(EventConstants.PRIMARY_SNMP_INTERFACE_CHANGED_EVENT_UEI)) {
-	        // If there is no interface then it cannot be processed
-	        //
-	        if (event.getInterface() == null || event.getInterface().length() == 0) {
-	            log().info("no interface found, discarding event");
-	        } else {
-	            this.primarySnmpInterfaceChangedHandler(event);
-	        }
-	    } else if (event.getUei().equals(EventConstants.REINITIALIZE_PRIMARY_SNMP_INTERFACE_EVENT_UEI)) {
-	        // If there is no interface then it cannot be processed
-	        //
-	        if (event.getInterface() == null || event.getInterface().length() == 0) {
-	            log().info("no interface found, discarding event");
-	        } else {
-	            this.reinitializePrimarySnmpInterfaceHandler(event);
-	        }
-	    } else if (event.getUei().equals(EventConstants.INTERFACE_REPARENTED_EVENT_UEI)) {
-	        // If there is no interface then it cannot be processed
-	        //
-	        if (event.getInterface() == null || event.getInterface().length() == 0) {
-	            log().info("no interface found, discarding event");
-	        } else {
-	            this.interfaceReparentedHandler(event);
-	        }
-	    } else if (event.getUei().equals(EventConstants.NODE_DELETED_EVENT_UEI) || event.getUei().equals(EventConstants.DUP_NODE_DELETED_EVENT_UEI)) {
-	        // NEW NODE OUTAGE EVENTS
-	        this.nodeDeletedHandler(event);
-	    } else if (event.getUei().equals(EventConstants.INTERFACE_DELETED_EVENT_UEI)) {
-	        // If there is no interface then it cannot be processed
-	        //
-	        if (event.getInterface() == null || event.getInterface().length() == 0) {
-	            log().info("no interface found, discarding event");
-	        } else {
-	            this.interfaceDeletedHandler(event);
-	        }
-	    } else if (event.getUei().equals(EventConstants.SERVICE_DELETED_EVENT_UEI)) {
-	        // If there is no interface then it cannot be processed
-	        //
-	        if (event.getInterface() == null || event.getInterface().length() == 0) {
-	            log().info("no interface found, discarding event");
-	        } else if (event.getService() == null || event.getService().length() == 0) {
-	            // If there is no service then it cannot be processed
-	            //
-	            log().info("no service found, discarding event");
-	        } else {
-	            this.serviceDeletedHandler(event);
-	        }
-	    } else if (event.getUei().equals(EventConstants.CONFIGURE_SNMP_EVENT_UEI)) {
-	        this.configureSNMPHandler(event);
-	    }
-	
+		} catch (InsufficientInformationException e) {
+			log().info(e.getMessage());
+		}
+
 	}
 
-	/**
-	 * </p>
-	 * Closes the current connections to the Java Message Queue if they are
-	 * still active. This call may be invoked more than once safely and may be
-	 * invoked during object finalization.
-	 * </p>
-	 * @deprecated Use {@link #deinstallMessageSelectors()} instead
-	 * 
-	 */
-	void close() {
-		deinstallMessageSelectors();
+	private void handleDupNodeDeleted(Event event) throws InsufficientInformationException {
+		handleNodeDeleted(event);
+	}
+
+	private void handleScheduledOutagesChanged(Event event) {
+		try {
+			log().info("Reloading Collectd config factory");
+			CollectdConfigFactory.reload();
+			refreshServicePackages();
+		} catch (Exception e) {
+			log().error("Failed to reload CollectdConfigFactory because "+e.getMessage(), e);
+		}
 	}
 
 	/**
@@ -619,11 +572,9 @@ public final class Collectd extends ServiceDaemon implements EventListener {
 	 *
 	 * @param event The event to process.
 	 */
-	void configureSNMPHandler(Event event) {
-	    Category log = log();
-	
-	    if (log.isDebugEnabled())
-	        log.debug("configureSNMPHandler: processing configure SNMP event...");
+	void handleConfigureSNMP(Event event) {
+	    if (log().isDebugEnabled())
+	        log().debug("configureSNMPHandler: processing configure SNMP event...");
 	
 	    // Extract the IP adddress range and SNMP community string from the
 	    // event parms.
@@ -683,7 +634,7 @@ public final class Collectd extends ServiceDaemon implements EventListener {
 	                factory.define(ip, communityString);
 	            }
 	            catch (Exception e) {
-	                log.warn("configureSNMPHandler: Failed to process IP address "
+	                log().warn("configureSNMPHandler: Failed to process IP address "
 	                         + IPv4Address.addressToString(address)
 	                         + ": " + e.getMessage(), e);
 	            }
@@ -693,13 +644,13 @@ public final class Collectd extends ServiceDaemon implements EventListener {
 	            SnmpPeerFactory.saveCurrent();
 	        }
 	        catch (Exception e) {
-	            log.warn("configureSNMPHandler: Failed to store SNMP configuration"
+	            log().warn("configureSNMPHandler: Failed to store SNMP configuration"
 	                     + ": " + e.getMessage(), e);
 	        }
 	    }
 	
-	    if (log.isDebugEnabled())
-	        log.debug("configureSNMPHandler: processing configure SNMP event for IP "
+	    if (log().isDebugEnabled())
+	        log().debug("configureSNMPHandler: processing configure SNMP event for IP "
 	                  + firstIPAddress + "-" + lastIPAddress + " completed.");
 	}
 
@@ -708,9 +659,13 @@ public final class Collectd extends ServiceDaemon implements EventListener {
 	 * 
 	 * @param event
 	 *            The event to process.
+	 * @throws InsufficientInformationException 
 	 * 
 	 */
-	void interfaceDeletedHandler(Event event) {
+	private void handleInterfaceDeleted(Event event) throws InsufficientInformationException {
+		EventUtils.checkNodeId(event);
+		EventUtils.checkInterface(event);
+
 	    Category log = log();
 	
 	    int nodeId = (int) event.getNodeid();
@@ -765,9 +720,13 @@ public final class Collectd extends ServiceDaemon implements EventListener {
 	 * 
 	 * @param event
 	 *            The event to process.
+	 * @throws InsufficientInformationException 
 	 * 
 	 */
-	void interfaceReparentedHandler(Event event) {
+	void handleInterfaceReparented(Event event) throws InsufficientInformationException {
+		EventUtils.checkNodeId(event);
+		EventUtils.checkInterface(event);
+
 	    Category log = log();
 	    if (log.isDebugEnabled())
 	        log.debug("interfaceReparentedHandler:  processing interfaceReparented event for " + event.getInterface());
@@ -860,9 +819,13 @@ public final class Collectd extends ServiceDaemon implements EventListener {
 	 * 
 	 * @param event
 	 *            The event to process.
+	 * @throws InsufficientInformationException 
 	 * 
 	 */
-	void nodeDeletedHandler(Event event) {
+	void handleNodeDeleted(Event event) throws InsufficientInformationException {
+		EventUtils.checkNodeId(event);
+		EventUtils.checkInterface(event);
+
 	    Category log = log();
 	
 	    int nodeId = (int) event.getNodeid();
@@ -910,9 +873,14 @@ public final class Collectd extends ServiceDaemon implements EventListener {
 	 * 
 	 * @param event
 	 *            The event to process.
+	 * @throws InsufficientInformationException 
 	 * 
 	 */
-	void nodeGainedServiceHandler(Event event) {
+	void handleNodeGainedService(Event event) throws InsufficientInformationException {
+		EventUtils.checkNodeId(event);
+		EventUtils.checkInterface(event);
+		// TODO: chouldn't this check for service as well?
+
 	    // Schedule the interface
 	    //
 	    this.scheduleForCollection(event);
@@ -941,9 +909,13 @@ public final class Collectd extends ServiceDaemon implements EventListener {
 	 * 
 	 * @param event
 	 *            The event to process.
+	 * @throws InsufficientInformationException 
 	 * 
 	 */
-	void primarySnmpInterfaceChangedHandler(Event event) {
+	void handlePrimarySnmpInterfaceChanged(Event event) throws InsufficientInformationException {
+		EventUtils.checkNodeId(event);
+		EventUtils.checkInterface(event);
+
 	    Category log = log();
 	
 	    if (log.isDebugEnabled())
@@ -1056,8 +1028,12 @@ public final class Collectd extends ServiceDaemon implements EventListener {
 	 * 
 	 * @param event
 	 *            The event to process.
+	 * @throws InsufficientInformationException 
 	 */
-	void reinitializePrimarySnmpInterfaceHandler(Event event) {
+	void handleReinitializePrimarySnmpInterface(Event event) throws InsufficientInformationException {
+		EventUtils.checkNodeId(event);
+		EventUtils.checkInterface(event);
+
 	    Category log = log();
 	
 	    if (event.getInterface() == null) {
@@ -1103,9 +1079,14 @@ public final class Collectd extends ServiceDaemon implements EventListener {
 	 * 
 	 * @param event
 	 *            The event to process.
+	 * @throws InsufficientInformationException 
 	 * 
 	 */
-	void serviceDeletedHandler(Event event) {
+	void handleServiceDeleted(Event event) throws InsufficientInformationException {
+		EventUtils.checkNodeId(event);
+		EventUtils.checkInterface(event);
+		EventUtils.checkService(event);
+
 	    Category log = log();
 	
 	    // Currently only support SNMP data collection.
