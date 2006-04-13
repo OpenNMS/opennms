@@ -335,8 +335,8 @@ public class OpenNMSProvisionerTest extends MockObjectTestCase {
     public void testAddServiceHTTP() throws Exception {
         expectUpdateEvent();
         expectRrdInitialize();
-        m_provisioner.addServiceHTTP("MyHTTP", 22, 2222, 22222, 222, 222222, "opennms.com", 212, "202", "Home", "/index.html", null, null, null);
-        checkHTTPConfiguration("MyHTTP", "MyHTTP", 22, 2222, 22222, 222, 222222, "opennms.com", 212, "202", "Home", "/index.html", null, null, null);
+        m_provisioner.addServiceHTTP("MyHTTP", 22, 2222, 22222, 222, 222222, "opennms.com", 212, "200-203", "Home", "/index.html", "user", "pw", "");
+        checkHTTPConfiguration("MyHTTP", "MyHTTP", 22, 2222, 22222, 222, 222222, "opennms.com", 212, "200-203", "Home", "/index.html", "user", "pw", "");
         verifyEvents();
     }
 
@@ -344,7 +344,7 @@ public class OpenNMSProvisionerTest extends MockObjectTestCase {
         expectUpdateEvent();
         expectRrdInitialize();
         m_provisioner.addServiceHTTP("MyHTTP", 22, 2222, 22222, 222, 222222, "opennms.com", 212, "", "Home", "/index.html", "user", "pw", "");
-        checkHTTPConfiguration("MyHTTP", "MyHTTP", 22, 2222, 22222, 222, 222222, "opennms.com", 212, "", "Home", "/index.html", "user", "pw", "");
+        checkHTTPConfiguration("MyHTTP", "MyHTTP", 22, 2222, 22222, 222, 222222, "opennms.com", 212, null, "Home", "/index.html", "user", "pw", "");
         verifyEvents();
     }
 

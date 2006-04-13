@@ -207,10 +207,31 @@ private EventIpcManager m_eventManager;
 //        if code < 100 or code > 599:
 //            self.Fault(FAULT_DATA_INVALID)
     
+    private void checkResponseRange(String response) {
+        if (response == null || response.equals(""))
+            return;
+        
+        if (response.indexOf('-') < 0) {
+        	checkResponseCode(response);
+        }
+        else {
+        	int dash = response.indexOf('-');
+        	String startCode = response.substring(0, dash).trim();
+        	if ("".equals(startCode))
+        		throw new IllegalArgumentException("Illegal Start code. Expected range format is <startCode>-<endCode>.");
+        	checkResponseCode(startCode);
+
+        	if (dash+1 > response.length()-1)
+        		throw new IllegalArgumentException("Illegal End code. Expected range format is <startcode>-<endcode>");
+        	String endCode = response.substring(dash+1);
+        	checkResponseCode(endCode);
+        }
+    }
+    
     private void checkResponseCode(String response) {
         if (response == null || response.equals(""))
             return;
-            
+        
         int code = Integer.parseInt(response);
         if (code < 100 || code > 599)
             throw new IllegalArgumentException("Illegal response code "+code+". Must be between 100 and 599");
@@ -482,7 +503,7 @@ private EventIpcManager m_eventManager;
         checkUsername(user);
         checkPassword(passwd);
         checkPort(port);
-        checkResponseCode(response);
+        checkResponseRange(response);
         checkContentCheck(responseText);
         checkUrl(url);
         
@@ -508,7 +529,7 @@ private EventIpcManager m_eventManager;
         checkUsername(user);
         checkPassword(passwd);
         checkPort(port);
-        checkResponseCode(response);
+        checkResponseRange(response);
         checkContentCheck(responseText);
         checkUrl(url);
         
