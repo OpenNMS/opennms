@@ -11,7 +11,7 @@ import org.springframework.core.style.ToStringCreator;
  *         table="outages"
  *     
 */
-public class OnmsOutage implements Serializable {
+public class OnmsOutage extends OnmsEntity implements Serializable {
 
     /**
      * 
@@ -19,39 +19,39 @@ public class OnmsOutage implements Serializable {
     private static final long serialVersionUID = 3846398168228820151L;
 
     /** identifier field */
-    private Integer outageid;
+    private Integer m_outageId;
 
     /** persistent field */
-    private String ipaddr;
+    private String m_ipAddr;
 
     /** persistent field */
-    private Date iflostservice;
+    private Date m_ifLostService;
 
     /** nullable persistent field */
-    private Date ifregainedservice;
+    private Date m_ifRegainedService;
 
     /** persistent field */
-    private org.opennms.netmgt.model.OnmsEvent eventBySvcregainedeventid;
+    private OnmsEvent m_eventBySvcRegainedEventId;
 
     /** persistent field */
-    private org.opennms.netmgt.model.OnmsEvent eventBySvclosteventid;
+    private OnmsEvent m_eventBySvcLostEventId;
 
     /** persistent field */
-    private org.opennms.netmgt.model.OnmsNode node;
+    private OnmsNode m_node;
 
     /** persistent field */
-    private org.opennms.netmgt.model.OnmsServiceType serviceType;
+    private OnmsServiceType m_serviceType;
 
     /** full constructor */
-    public OnmsOutage(Integer outageid, String ipaddr, Date iflostservice, Date ifregainedservice, org.opennms.netmgt.model.OnmsEvent eventBySvcregainedeventid, org.opennms.netmgt.model.OnmsEvent eventBySvclosteventid, org.opennms.netmgt.model.OnmsNode node, org.opennms.netmgt.model.OnmsServiceType service) {
-        this.outageid = outageid;
-        this.ipaddr = ipaddr;
-        this.iflostservice = iflostservice;
-        this.ifregainedservice = ifregainedservice;
-        this.eventBySvcregainedeventid = eventBySvcregainedeventid;
-        this.eventBySvclosteventid = eventBySvclosteventid;
-        this.node = node;
-        this.serviceType = service;
+    public OnmsOutage(Integer outageId, String ipAddr, Date ifLostService, Date ifRegainedService, OnmsEvent eventBySvcRegainedEventId, OnmsEvent eventBySvcLostEventId, OnmsNode node, OnmsServiceType service) {
+        m_outageId = outageId;
+        m_ipAddr = ipAddr;
+        m_ifLostService = ifLostService;
+        m_ifRegainedService = ifRegainedService;
+        m_eventBySvcRegainedEventId = eventBySvcRegainedEventId;
+        m_eventBySvcLostEventId = eventBySvcLostEventId;
+        m_node = node;
+        m_serviceType = service;
     }
 
     /** default constructor */
@@ -59,70 +59,70 @@ public class OnmsOutage implements Serializable {
     }
 
     /** minimal constructor */
-    public OnmsOutage(Integer outageid, String ipaddr, Date iflostservice, org.opennms.netmgt.model.OnmsEvent eventBySvcregainedeventid, org.opennms.netmgt.model.OnmsEvent eventBySvclosteventid, org.opennms.netmgt.model.OnmsNode node, org.opennms.netmgt.model.OnmsServiceType service) {
-        this.outageid = outageid;
-        this.ipaddr = ipaddr;
-        this.iflostservice = iflostservice;
-        this.eventBySvcregainedeventid = eventBySvcregainedeventid;
-        this.eventBySvclosteventid = eventBySvclosteventid;
-        this.node = node;
-        this.serviceType = service;
+    public OnmsOutage(Integer outageId, String ipAddr, Date ifLostService, OnmsEvent eventBySvcRegainedEventId, OnmsEvent eventBySvcLostEventId, OnmsNode node, OnmsServiceType service) {
+        m_outageId = outageId;
+        m_ipAddr = ipAddr;
+        m_ifLostService = ifLostService;
+        m_eventBySvcRegainedEventId = eventBySvcRegainedEventId;
+        m_eventBySvcLostEventId = eventBySvcLostEventId;
+        m_node = node;
+        m_serviceType = service;
     }
 
     /** 
-     * @hibernate.id generator-class="assigned" type="java.lang.Integer" column="outageid"
+     * @hibernate.id generator-class="assigned" type="java.lang.Integer" column="outageId"
      * @hibernate.generator-param name="sequence" value="outageNxtId"
      */
-    public Integer getOutageid() {
-        return this.outageid;
+    public Integer getOutageId() {
+        return m_outageId;
     }
 
-    public void setOutageid(Integer outageid) {
-        this.outageid = outageid;
+    public void setOutageId(Integer outageId) {
+        m_outageId = outageId;
     }
 
     /** 
      *            @hibernate.property
-     *             column="ipaddr"
+     *             column="ipAddr"
      *             length="16"
      *             not-null="true"
      *         
      */
-    public String getIpaddr() {
-        return this.ipaddr;
+    public String getIpAddr() {
+        return m_ipAddr;
     }
 
-    public void setIpaddr(String ipaddr) {
-        this.ipaddr = ipaddr;
+    public void setIpAddr(String ipAddr) {
+        m_ipAddr = ipAddr;
     }
 
     /** 
      *            @hibernate.property
-     *             column="iflostservice"
+     *             column="ifLostService"
      *             length="8"
      *             not-null="true"
      *         
      */
-    public Date getIflostservice() {
-        return this.iflostservice;
+    public Date getIfLostService() {
+        return m_ifLostService;
     }
 
-    public void setIflostservice(Date iflostservice) {
-        this.iflostservice = iflostservice;
+    public void setIfLostService(Date ifLostService) {
+        m_ifLostService = ifLostService;
     }
 
     /** 
      *            @hibernate.property
-     *             column="ifregainedservice"
+     *             column="ifRegainedService"
      *             length="8"
      *         
      */
-    public Date getIfregainedservice() {
-        return this.ifregainedservice;
+    public Date getIfRegainedService() {
+        return m_ifRegainedService;
     }
 
-    public void setIfregainedservice(Date ifregainedservice) {
-        this.ifregainedservice = ifregainedservice;
+    public void setIfRegainedService(Date ifRegainedService) {
+        m_ifRegainedService = ifRegainedService;
     }
 
     /** 
@@ -131,12 +131,12 @@ public class OnmsOutage implements Serializable {
      *            @hibernate.column name="svcregainedeventid"         
      *         
      */
-    public org.opennms.netmgt.model.OnmsEvent getEventBySvcregainedeventid() {
-        return this.eventBySvcregainedeventid;
+    public OnmsEvent getEventBySvcRegainedEventId() {
+        return m_eventBySvcRegainedEventId;
     }
 
-    public void setEventBySvcregainedeventid(org.opennms.netmgt.model.OnmsEvent eventBySvcregainedeventid) {
-        this.eventBySvcregainedeventid = eventBySvcregainedeventid;
+    public void setEventBySvcRegainedEventId(OnmsEvent eventBySvcRegainedEventId) {
+        m_eventBySvcRegainedEventId = eventBySvcRegainedEventId;
     }
 
     /** 
@@ -145,12 +145,12 @@ public class OnmsOutage implements Serializable {
      *            @hibernate.column name="svclosteventid"         
      *         
      */
-    public org.opennms.netmgt.model.OnmsEvent getEventBySvclosteventid() {
-        return this.eventBySvclosteventid;
+    public OnmsEvent getEventBySvcLostEventId() {
+        return m_eventBySvcLostEventId;
     }
 
-    public void setEventBySvclosteventid(org.opennms.netmgt.model.OnmsEvent eventBySvclosteventid) {
-        this.eventBySvclosteventid = eventBySvclosteventid;
+    public void setEventBySvcLostEventId(OnmsEvent eventBySvcLostEventId) {
+        m_eventBySvcLostEventId = eventBySvcLostEventId;
     }
 
     /** 
@@ -159,12 +159,12 @@ public class OnmsOutage implements Serializable {
      *            @hibernate.column name="nodeid"         
      *         
      */
-    public org.opennms.netmgt.model.OnmsNode getNode() {
-        return this.node;
+    public OnmsNode getNode() {
+        return m_node;
     }
 
-    public void setNode(org.opennms.netmgt.model.OnmsNode node) {
-        this.node = node;
+    public void setNode(OnmsNode node) {
+        m_node = node;
     }
 
     /** 
@@ -174,17 +174,22 @@ public class OnmsOutage implements Serializable {
      *         
      */
     public OnmsServiceType getServiceType() {
-        return this.serviceType;
+        return m_serviceType;
     }
 
     public void setServiceType(OnmsServiceType serviceType) {
-        this.serviceType = serviceType;
+        m_serviceType = serviceType;
     }
 
     public String toString() {
         return new ToStringCreator(this)
-            .append("outageid", getOutageid())
+            .append("outageId", getOutageId())
             .toString();
     }
+
+	public void visit(EntityVisitor visitor) {
+		// TODO Auto-generated method stub
+		throw new RuntimeException("visitor method not implemented");
+	}
 
 }
