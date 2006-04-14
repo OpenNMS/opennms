@@ -6,783 +6,703 @@ import java.util.Set;
 
 import org.springframework.core.style.ToStringCreator;
 
+/**
+ * @hibernate.class table="events"
+ * 
+ */
+public class OnmsEvent extends OnmsEntity implements Serializable {
 
-/** 
- *        @hibernate.class
- *         table="events"
- *     
-*/
-public class OnmsEvent implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -7412025003474162992L;
 
-    /**
-     * 
-     */
-    private static final long serialVersionUID = -7412025003474162992L;
+	/** identifier field */
+	private Integer m_eventId;
 
-    /** identifier field */
-    private Integer eventid;
+	/** persistent field */
+	private String m_eventUei;
 
-    /** persistent field */
-    private String eventuei;
+	/** persistent field */
+	private Date m_eventTime;
 
-    /** persistent field */
-    private Date eventtime;
+	/** nullable persistent field */
+	private String m_eventHost;
 
-    /** nullable persistent field */
-    private String eventhost;
+	/** persistent field */
+	private String m_eventSource;
 
-    /** persistent field */
-    private String eventsource;
+	/** nullable persistent field */
+	private String m_ipAddr;
 
-    /** nullable persistent field */
-    private String ipaddr;
+	/** persistent field */
+	private String m_eventDpName;
 
-    /** persistent field */
-    private String eventdpname;
+	/** nullable persistent field */
+	private String m_eventSnmpHost;
 
-    /** nullable persistent field */
-    private String eventsnmphost;
+	/** nullable persistent field */
+	private Integer m_serviceId;
 
-    /** nullable persistent field */
-    private Integer serviceid;
+	/** nullable persistent field */
+	private String m_eventSnmp;
 
-    /** nullable persistent field */
-    private String eventsnmp;
+	/** nullable persistent field */
+	private String m_eventParms;
 
-    /** nullable persistent field */
-    private String eventparms;
+	/** persistent field */
+	private Date m_eventCreateTime;
 
-    /** persistent field */
-    private Date eventcreatetime;
+	/** nullable persistent field */
+	private String m_eventDescr;
 
-    /** nullable persistent field */
-    private String eventdescr;
+	/** nullable persistent field */
+	private String m_eventLogGroup;
 
-    /** nullable persistent field */
-    private String eventloggroup;
+	/** nullable persistent field */
+	private String m_eventLogMsg;
 
-    /** nullable persistent field */
-    private String eventlogmsg;
+	/** persistent field */
+	private int m_eventSeverity;
 
-    /** persistent field */
-    private int eventseverity;
-
-    /** nullable persistent field */
-    private String eventpathoutage;
-
-    /** nullable persistent field */
-    private String eventcorrelation;
-
-    /** nullable persistent field */
-    private Integer eventsuppressedcount;
-
-    /** nullable persistent field */
-    private String eventoperinstruct;
-
-    /** nullable persistent field */
-    private String eventautoaction;
-
-    /** nullable persistent field */
-    private String eventoperaction;
-
-    /** nullable persistent field */
-    private String eventoperactionmenutext;
-
-    /** nullable persistent field */
-    private String eventnotification;
-
-    /** nullable persistent field */
-    private String eventtticket;
-
-    /** nullable persistent field */
-    private Integer eventtticketstate;
-
-    /** nullable persistent field */
-    private String eventforward;
-
-    /** nullable persistent field */
-    private String eventmouseovertext;
-
-    /** persistent field */
-    private String eventlog;
-
-    /** persistent field */
-    private String eventdisplay;
-
-    /** nullable persistent field */
-    private String eventackuser;
-
-    /** nullable persistent field */
-    private Date eventacktime;
-
-    /** nullable persistent field */
-    private Integer alarmid;
-
-    /** persistent field */
-    private org.opennms.netmgt.model.OnmsNode node;
-
-    /** persistent field */
-    private Set notifications;
-
-    /** persistent field */
-    private Set outagesBySvcregainedeventid;
-
-    /** persistent field */
-    private Set outagesBySvclosteventid;
-
-    /** persistent field */
-    private Set alarms;
-
-    /** full constructor */
-    public OnmsEvent(Integer eventid, String eventuei, Date eventtime, String eventhost, String eventsource, String ipaddr, String eventdpname, String eventsnmphost, Integer serviceid, String eventsnmp, String eventparms, Date eventcreatetime, String eventdescr, String eventloggroup, String eventlogmsg, int eventseverity, String eventpathoutage, String eventcorrelation, Integer eventsuppressedcount, String eventoperinstruct, String eventautoaction, String eventoperaction, String eventoperactionmenutext, String eventnotification, String eventtticket, Integer eventtticketstate, String eventforward, String eventmouseovertext, String eventlog, String eventdisplay, String eventackuser, Date eventacktime, Integer alarmid, org.opennms.netmgt.model.OnmsNode node, Set notifications, Set outagesBySvcregainedeventid, Set outagesBySvclosteventid, Set alarms) {
-        this.eventid = eventid;
-        this.eventuei = eventuei;
-        this.eventtime = eventtime;
-        this.eventhost = eventhost;
-        this.eventsource = eventsource;
-        this.ipaddr = ipaddr;
-        this.eventdpname = eventdpname;
-        this.eventsnmphost = eventsnmphost;
-        this.serviceid = serviceid;
-        this.eventsnmp = eventsnmp;
-        this.eventparms = eventparms;
-        this.eventcreatetime = eventcreatetime;
-        this.eventdescr = eventdescr;
-        this.eventloggroup = eventloggroup;
-        this.eventlogmsg = eventlogmsg;
-        this.eventseverity = eventseverity;
-        this.eventpathoutage = eventpathoutage;
-        this.eventcorrelation = eventcorrelation;
-        this.eventsuppressedcount = eventsuppressedcount;
-        this.eventoperinstruct = eventoperinstruct;
-        this.eventautoaction = eventautoaction;
-        this.eventoperaction = eventoperaction;
-        this.eventoperactionmenutext = eventoperactionmenutext;
-        this.eventnotification = eventnotification;
-        this.eventtticket = eventtticket;
-        this.eventtticketstate = eventtticketstate;
-        this.eventforward = eventforward;
-        this.eventmouseovertext = eventmouseovertext;
-        this.eventlog = eventlog;
-        this.eventdisplay = eventdisplay;
-        this.eventackuser = eventackuser;
-        this.eventacktime = eventacktime;
-        this.alarmid = alarmid;
-        this.node = node;
-        this.notifications = notifications;
-        this.outagesBySvcregainedeventid = outagesBySvcregainedeventid;
-        this.outagesBySvclosteventid = outagesBySvclosteventid;
-        this.alarms = alarms;
-    }
-
-    /** default constructor */
-    public OnmsEvent() {
-    }
-
-    /** minimal constructor */
-    public OnmsEvent(Integer eventid, String eventuei, Date eventtime, String eventsource, String eventdpname, Date eventcreatetime, int eventseverity, String eventlog, String eventdisplay, org.opennms.netmgt.model.OnmsNode node, Set notifications, Set outagesBySvcregainedeventid, Set outagesBySvclosteventid, Set alarms) {
-        this.eventid = eventid;
-        this.eventuei = eventuei;
-        this.eventtime = eventtime;
-        this.eventsource = eventsource;
-        this.eventdpname = eventdpname;
-        this.eventcreatetime = eventcreatetime;
-        this.eventseverity = eventseverity;
-        this.eventlog = eventlog;
-        this.eventdisplay = eventdisplay;
-        this.node = node;
-        this.notifications = notifications;
-        this.outagesBySvcregainedeventid = outagesBySvcregainedeventid;
-        this.outagesBySvclosteventid = outagesBySvclosteventid;
-        this.alarms = alarms;
-    }
-
-    /** 
-     * @hibernate.id generator-class="assigned" type="java.lang.Integer" column="eventid"
-     * @hibernate.generator-param name="sequence" value="eventsNxtId"
-     */
-    public Integer getEventid() {
-        return this.eventid;
-    }
-
-    public void setEventid(Integer eventid) {
-        this.eventid = eventid;
-    }
-
-    /** 
-     *            @hibernate.property
-     *             column="eventuei"
-     *             length="256"
-     *             not-null="true"
-     *         
-     */
-    public String getEventuei() {
-        return this.eventuei;
-    }
-
-    public void setEventuei(String eventuei) {
-        this.eventuei = eventuei;
-    }
-
-    /** 
-     *            @hibernate.property
-     *             column="eventtime"
-     *             length="8"
-     *             not-null="true"
-     *         
-     */
-    public Date getEventtime() {
-        return this.eventtime;
-    }
-
-    public void setEventtime(Date eventtime) {
-        this.eventtime = eventtime;
-    }
-
-    /** 
-     *            @hibernate.property
-     *             column="eventhost"
-     *             length="256"
-     *         
-     */
-    public String getEventhost() {
-        return this.eventhost;
-    }
-
-    public void setEventhost(String eventhost) {
-        this.eventhost = eventhost;
-    }
-
-    /** 
-     *            @hibernate.property
-     *             column="eventsource"
-     *             length="128"
-     *             not-null="true"
-     *         
-     */
-    public String getEventsource() {
-        return this.eventsource;
-    }
-
-    public void setEventsource(String eventsource) {
-        this.eventsource = eventsource;
-    }
-
-    /** 
-     *            @hibernate.property
-     *             column="ipaddr"
-     *             length="16"
-     *         
-     */
-    public String getIpaddr() {
-        return this.ipaddr;
-    }
-
-    public void setIpaddr(String ipaddr) {
-        this.ipaddr = ipaddr;
-    }
-
-    /** 
-     *            @hibernate.property
-     *             column="eventdpname"
-     *             length="12"
-     *             not-null="true"
-     *         
-     */
-    public String getEventdpname() {
-        return this.eventdpname;
-    }
-
-    public void setEventdpname(String eventdpname) {
-        this.eventdpname = eventdpname;
-    }
-
-    /** 
-     *            @hibernate.property
-     *             column="eventsnmphost"
-     *             length="256"
-     *         
-     */
-    public String getEventsnmphost() {
-        return this.eventsnmphost;
-    }
-
-    public void setEventsnmphost(String eventsnmphost) {
-        this.eventsnmphost = eventsnmphost;
-    }
-
-    /** 
-     *            @hibernate.property
-     *             column="serviceid"
-     *             length="4"
-     *         
-     */
-    public Integer getServiceid() {
-        return this.serviceid;
-    }
-
-    public void setServiceid(Integer serviceid) {
-        this.serviceid = serviceid;
-    }
-
-    /** 
-     *            @hibernate.property
-     *             column="eventsnmp"
-     *             length="256"
-     *         
-     */
-    public String getEventsnmp() {
-        return this.eventsnmp;
-    }
-
-    public void setEventsnmp(String eventsnmp) {
-        this.eventsnmp = eventsnmp;
-    }
-
-    /** 
-     *            @hibernate.property
-     *             column="eventparms"
-     *             length="1024"
-     *         
-     */
-    public String getEventparms() {
-        return this.eventparms;
-    }
-
-    public void setEventparms(String eventparms) {
-        this.eventparms = eventparms;
-    }
-
-    /** 
-     *            @hibernate.property
-     *             column="eventcreatetime"
-     *             length="8"
-     *             not-null="true"
-     *         
-     */
-    public Date getEventcreatetime() {
-        return this.eventcreatetime;
-    }
-
-    public void setEventcreatetime(Date eventcreatetime) {
-        this.eventcreatetime = eventcreatetime;
-    }
-
-    /** 
-     *            @hibernate.property
-     *             column="eventdescr"
-     *             length="4000"
-     *         
-     */
-    public String getEventdescr() {
-        return this.eventdescr;
-    }
-
-    public void setEventdescr(String eventdescr) {
-        this.eventdescr = eventdescr;
-    }
-
-    /** 
-     *            @hibernate.property
-     *             column="eventloggroup"
-     *             length="32"
-     *         
-     */
-    public String getEventloggroup() {
-        return this.eventloggroup;
-    }
-
-    public void setEventloggroup(String eventloggroup) {
-        this.eventloggroup = eventloggroup;
-    }
-
-    /** 
-     *            @hibernate.property
-     *             column="eventlogmsg"
-     *             length="256"
-     *         
-     */
-    public String getEventlogmsg() {
-        return this.eventlogmsg;
-    }
-
-    public void setEventlogmsg(String eventlogmsg) {
-        this.eventlogmsg = eventlogmsg;
-    }
-
-    /** 
-     *            @hibernate.property
-     *             column="eventseverity"
-     *             length="4"
-     *             not-null="true"
-     *         
-     */
-    public int getEventseverity() {
-        return this.eventseverity;
-    }
-
-    public void setEventseverity(int eventseverity) {
-        this.eventseverity = eventseverity;
-    }
-
-    /** 
-     *            @hibernate.property
-     *             column="eventpathoutage"
-     *             length="1024"
-     *         
-     */
-    public String getEventpathoutage() {
-        return this.eventpathoutage;
-    }
-
-    public void setEventpathoutage(String eventpathoutage) {
-        this.eventpathoutage = eventpathoutage;
-    }
-
-    /** 
-     *            @hibernate.property
-     *             column="eventcorrelation"
-     *             length="1024"
-     *         
-     */
-    public String getEventcorrelation() {
-        return this.eventcorrelation;
-    }
-
-    public void setEventcorrelation(String eventcorrelation) {
-        this.eventcorrelation = eventcorrelation;
-    }
-
-    /** 
-     *            @hibernate.property
-     *             column="eventsuppressedcount"
-     *             length="4"
-     *         
-     */
-    public Integer getEventsuppressedcount() {
-        return this.eventsuppressedcount;
-    }
-
-    public void setEventsuppressedcount(Integer eventsuppressedcount) {
-        this.eventsuppressedcount = eventsuppressedcount;
-    }
-
-    /** 
-     *            @hibernate.property
-     *             column="eventoperinstruct"
-     *             length="1024"
-     *         
-     */
-    public String getEventoperinstruct() {
-        return this.eventoperinstruct;
-    }
-
-    public void setEventoperinstruct(String eventoperinstruct) {
-        this.eventoperinstruct = eventoperinstruct;
-    }
-
-    /** 
-     *            @hibernate.property
-     *             column="eventautoaction"
-     *             length="256"
-     *         
-     */
-    public String getEventautoaction() {
-        return this.eventautoaction;
-    }
-
-    public void setEventautoaction(String eventautoaction) {
-        this.eventautoaction = eventautoaction;
-    }
-
-    /** 
-     *            @hibernate.property
-     *             column="eventoperaction"
-     *             length="256"
-     *         
-     */
-    public String getEventoperaction() {
-        return this.eventoperaction;
-    }
-
-    public void setEventoperaction(String eventoperaction) {
-        this.eventoperaction = eventoperaction;
-    }
-
-    /** 
-     *            @hibernate.property
-     *             column="eventoperactionmenutext"
-     *             length="64"
-     *         
-     */
-    public String getEventoperactionmenutext() {
-        return this.eventoperactionmenutext;
-    }
-
-    public void setEventoperactionmenutext(String eventoperactionmenutext) {
-        this.eventoperactionmenutext = eventoperactionmenutext;
-    }
-
-    /** 
-     *            @hibernate.property
-     *             column="eventnotification"
-     *             length="128"
-     *         
-     */
-    public String getEventnotification() {
-        return this.eventnotification;
-    }
-
-    public void setEventnotification(String eventnotification) {
-        this.eventnotification = eventnotification;
-    }
-
-    /** 
-     *            @hibernate.property
-     *             column="eventtticket"
-     *             length="128"
-     *         
-     */
-    public String getEventtticket() {
-        return this.eventtticket;
-    }
-
-    public void setEventtticket(String eventtticket) {
-        this.eventtticket = eventtticket;
-    }
-
-    /** 
-     *            @hibernate.property
-     *             column="eventtticketstate"
-     *             length="4"
-     *         
-     */
-    public Integer getEventtticketstate() {
-        return this.eventtticketstate;
-    }
-
-    public void setEventtticketstate(Integer eventtticketstate) {
-        this.eventtticketstate = eventtticketstate;
-    }
-
-    /** 
-     *            @hibernate.property
-     *             column="eventforward"
-     *             length="256"
-     *         
-     */
-    public String getEventforward() {
-        return this.eventforward;
-    }
-
-    public void setEventforward(String eventforward) {
-        this.eventforward = eventforward;
-    }
-
-    /** 
-     *            @hibernate.property
-     *             column="eventmouseovertext"
-     *             length="64"
-     *         
-     */
-    public String getEventmouseovertext() {
-        return this.eventmouseovertext;
-    }
-
-    public void setEventmouseovertext(String eventmouseovertext) {
-        this.eventmouseovertext = eventmouseovertext;
-    }
-
-    /** 
-     *            @hibernate.property
-     *             column="eventlog"
-     *             length="1"
-     *             not-null="true"
-     *         
-     */
-    public String getEventlog() {
-        return this.eventlog;
-    }
-
-    public void setEventlog(String eventlog) {
-        this.eventlog = eventlog;
-    }
-
-    /** 
-     *            @hibernate.property
-     *             column="eventdisplay"
-     *             length="1"
-     *             not-null="true"
-     *         
-     */
-    public String getEventdisplay() {
-        return this.eventdisplay;
-    }
-
-    public void setEventdisplay(String eventdisplay) {
-        this.eventdisplay = eventdisplay;
-    }
-
-    /** 
-     *            @hibernate.property
-     *             column="eventackuser"
-     *             length="256"
-     *         
-     */
-    public String getEventackuser() {
-        return this.eventackuser;
-    }
-
-    public void setEventackuser(String eventackuser) {
-        this.eventackuser = eventackuser;
-    }
-
-    /** 
-     *            @hibernate.property
-     *             column="eventacktime"
-     *             length="8"
-     *         
-     */
-    public Date getEventacktime() {
-        return this.eventacktime;
-    }
-
-    public void setEventacktime(Date eventacktime) {
-        this.eventacktime = eventacktime;
-    }
-
-    /** 
-     *            @hibernate.property
-     *             column="alarmid"
-     *             length="4"
-     *         
-     */
-    public Integer getAlarmid() {
-        return this.alarmid;
-    }
-
-    public void setAlarmid(Integer alarmid) {
-        this.alarmid = alarmid;
-    }
-
-    /** 
-     *            @hibernate.many-to-one
-     *             not-null="true"
-     *            @hibernate.column name="nodeid"         
-     *         
-     */
-    public org.opennms.netmgt.model.OnmsNode getNode() {
-        return this.node;
-    }
-
-    public void setNode(org.opennms.netmgt.model.OnmsNode node) {
-        this.node = node;
-    }
-
-    /** 
-     *            @hibernate.set
-     *             lazy="true"
-     *             inverse="true"
-     *             cascade="none"
-     *            @hibernate.key
-     *             column="eventid"
-     *            @hibernate.one-to-many
-     *             class="org.opennms.netmgt.model.OnmsNotification"
-     *            
-     * old XDoclet1 Tags
-     *            hibernate.collection-key
-     *             column="eventid"
-     *            hibernate.collection-one-to-many
-     *             class="org.opennms.netmgt.model.OnmsNotification"
-     *         
-     */
-    public Set getNotifications() {
-        return this.notifications;
-    }
-
-    public void setNotifications(Set notifications) {
-        this.notifications = notifications;
-    }
-
-    /** 
-     *            @hibernate.set
-     *             lazy="true"
-     *             inverse="true"
-     *             cascade="none"
-     *            @hibernate.key
-     *             column="svcregainedeventid"
-     *            @hibernate.one-to-many
-     *             class="org.opennms.netmgt.model.OnmsOutage"
-     *            
-     * old XDoclet1 Tags
-     *            hibernate.collection-key
-     *             column="svcregainedeventid"
-     *            hibernate.collection-one-to-many
-     *             class="org.opennms.netmgt.model.OnmsOutage"
-     *         
-     */
-    public Set getOutagesBySvcregainedeventid() {
-        return this.outagesBySvcregainedeventid;
-    }
-
-    public void setOutagesBySvcregainedeventid(Set outagesBySvcregainedeventid) {
-        this.outagesBySvcregainedeventid = outagesBySvcregainedeventid;
-    }
-
-    /** 
-     *            @hibernate.set
-     *             lazy="true"
-     *             inverse="true"
-     *             cascade="none"
-     *            @hibernate.key
-     *             column="svclosteventid"
-     *            @hibernate.one-to-many
-     *             class="org.opennms.netmgt.model.OnmsOutage"
-
-     * old XDoclet1 Tags
-     *            hibernate.collection-key
-     *             column="svclosteventid"
-     *            hibernate.collection-one-to-many
-     *             class="org.opennms.netmgt.model.OnmsOutage"
-     *         
-     */
-    public Set getOutagesBySvclosteventid() {
-        return this.outagesBySvclosteventid;
-    }
-
-    public void setOutagesBySvclosteventid(Set outagesBySvclosteventid) {
-        this.outagesBySvclosteventid = outagesBySvclosteventid;
-    }
-
-    /** 
-     *            @hibernate.set
-     *             lazy="true"
-     *             inverse="true"
-     *             cascade="none"
-     *            @hibernate.key
-     *             column="lasteventid"
-     *            @hibernate.one-to-many
-     *             class="org.opennms.netmgt.model.OnmsAlarm"
-
-     * old XDoclet1 Tags
-     *            hibernate.collection-key
-     *             column="lasteventid"
-     *            hibernate.collection-one-to-many
-     *             class="org.opennms.netmgt.model.OnmsAlarm"
-     *         
-     */
-    public Set getAlarms() {
-        return this.alarms;
-    }
-
-    public void setAlarms(Set alarms) {
-        this.alarms = alarms;
-    }
-
-    public String toString() {
-        return new ToStringCreator(this)
-            .append("eventid", getEventid())
-            .toString();
-    }
+	/** nullable persistent field */
+	private String m_eventPathOutage;
+
+	/** nullable persistent field */
+	private String m_eventCorrelation;
+
+	/** nullable persistent field */
+	private Integer m_eventSuppressedCount;
+
+	/** nullable persistent field */
+	private String m_eventOperInstruct;
+
+	/** nullable persistent field */
+	private String m_eventAutoAction;
+
+	/** nullable persistent field */
+	private String m_eventOperAction;
+
+	/** nullable persistent field */
+	private String m_eventOperactionMenuText;
+
+	/** nullable persistent field */
+	private String m_eventNotification;
+
+	/** nullable persistent field */
+	private String m_eventtTicket;
+
+	/** nullable persistent field */
+	private Integer m_eventTTicketState;
+
+	/** nullable persistent field */
+	private String m_eventForward;
+
+	/** nullable persistent field */
+	private String m_eventMouseoverText;
+
+	/** persistent field */
+	private String m_eventLog;
+
+	/** persistent field */
+	private String m_eventDisplay;
+
+	/** nullable persistent field */
+	private String m_eventAckUser;
+
+	/** nullable persistent field */
+	private Date eventacktime;
+
+	/** nullable persistent field */
+	private Integer m_alarmId;
+
+	/** persistent field */
+	private org.opennms.netmgt.model.OnmsNode node;
+
+	/** persistent field */
+	private Set m_notifications;
+
+	/** persistent field */
+	private Set m_outagesBySvcRegainedEventId;
+
+	/** persistent field */
+	private Set m_outagesBySvclostEventId;
+
+	/** persistent field */
+	private Set m_alarms;
+
+	/** full constructor */
+	public OnmsEvent(Integer eventid, String eventuei, Date eventtime,
+			String eventhost, String eventsource, String ipaddr,
+			String eventdpname, String eventsnmphost, Integer serviceid,
+			String eventsnmp, String eventparms, Date eventcreatetime,
+			String eventdescr, String eventloggroup, String eventlogmsg,
+			int eventseverity, String eventpathoutage, String eventcorrelation,
+			Integer eventsuppressedcount, String eventoperinstruct,
+			String eventautoaction, String eventoperaction,
+			String eventoperactionmenutext, String eventnotification,
+			String eventtticket, Integer eventtticketstate,
+			String eventforward, String eventmouseovertext, String eventlog,
+			String eventdisplay, String eventackuser, Date eventacktime,
+			Integer alarmid, org.opennms.netmgt.model.OnmsNode node,
+			Set notifications, Set outagesBySvcregainedeventid,
+			Set outagesBySvclosteventid, Set alarms) {
+		m_eventId = eventid;
+		m_eventUei = eventuei;
+		m_eventTime = eventtime;
+		m_eventHost = eventhost;
+		m_eventSource = eventsource;
+		m_ipAddr = ipaddr;
+		m_eventDpName = eventdpname;
+		m_eventSnmpHost = eventsnmphost;
+		m_serviceId = serviceid;
+		m_eventSnmp = eventsnmp;
+		m_eventParms = eventparms;
+		m_eventCreateTime = eventcreatetime;
+		m_eventDescr = eventdescr;
+		m_eventLogGroup = eventloggroup;
+		m_eventLogMsg = eventlogmsg;
+		m_eventSeverity = eventseverity;
+		m_eventPathOutage = eventpathoutage;
+		m_eventCorrelation = eventcorrelation;
+		m_eventSuppressedCount = eventsuppressedcount;
+		m_eventOperInstruct = eventoperinstruct;
+		m_eventAutoAction = eventautoaction;
+		m_eventOperAction = eventoperaction;
+		m_eventOperactionMenuText = eventoperactionmenutext;
+		m_eventNotification = eventnotification;
+		m_eventtTicket = eventtticket;
+		m_eventTTicketState = eventtticketstate;
+		m_eventForward = eventforward;
+		m_eventMouseoverText = eventmouseovertext;
+		m_eventLog = eventlog;
+		m_eventDisplay = eventdisplay;
+		m_eventAckUser = eventackuser;
+		eventacktime = eventacktime;
+		m_alarmId = alarmid;
+		node = node;
+		m_notifications = notifications;
+		m_outagesBySvcRegainedEventId = outagesBySvcregainedeventid;
+		m_outagesBySvclostEventId = outagesBySvclosteventid;
+		m_alarms = alarms;
+	}
+
+	/** default constructor */
+	public OnmsEvent() {
+	}
+
+	/** minimal constructor */
+	public OnmsEvent(Integer eventid, String eventuei, Date eventtime,
+			String eventsource, String eventdpname, Date eventcreatetime,
+			int eventseverity, String eventlog, String eventdisplay,
+			org.opennms.netmgt.model.OnmsNode node, Set notifications,
+			Set outagesBySvcregainedeventid, Set outagesBySvclosteventid,
+			Set alarms) {
+		m_eventId = eventid;
+		m_eventUei = eventuei;
+		m_eventTime = eventtime;
+		m_eventSource = eventsource;
+		m_eventDpName = eventdpname;
+		m_eventCreateTime = eventcreatetime;
+		m_eventSeverity = eventseverity;
+		m_eventLog = eventlog;
+		m_eventDisplay = eventdisplay;
+		node = node;
+		m_notifications = notifications;
+		m_outagesBySvcRegainedEventId = outagesBySvcregainedeventid;
+		m_outagesBySvclostEventId = outagesBySvclosteventid;
+		m_alarms = alarms;
+	}
+
+	/**
+	 * @hibernate.id generator-class="assigned" type="java.lang.Integer"
+	 *               column="eventid"
+	 * @hibernate.generator-param name="sequence" value="eventsNxtId"
+	 */
+	public Integer getEventId() {
+		return m_eventId;
+	}
+
+	public void setEventId(Integer eventid) {
+		m_eventId = eventid;
+	}
+
+	/**
+	 * @hibernate.property column="eventuei" length="256" not-null="true"
+	 * 
+	 */
+	public String getEventUei() {
+		return m_eventUei;
+	}
+
+	public void setEventUei(String eventuei) {
+		m_eventUei = eventuei;
+	}
+
+	/**
+	 * @hibernate.property column="eventtime" length="8" not-null="true"
+	 * 
+	 */
+	public Date getEventtime() {
+		return m_eventTime;
+	}
+
+	public void setEventtime(Date eventtime) {
+		m_eventTime = eventtime;
+	}
+
+	/**
+	 * @hibernate.property column="eventhost" length="256"
+	 * 
+	 */
+	public String getEventhost() {
+		return m_eventHost;
+	}
+
+	public void setEventhost(String eventhost) {
+		m_eventHost = eventhost;
+	}
+
+	/**
+	 * @hibernate.property column="eventsource" length="128" not-null="true"
+	 * 
+	 */
+	public String getEventsource() {
+		return m_eventSource;
+	}
+
+	public void setEventsource(String eventsource) {
+		m_eventSource = eventsource;
+	}
+
+	/**
+	 * @hibernate.property column="ipaddr" length="16"
+	 * 
+	 */
+	public String getIpAddr() {
+		return m_ipAddr;
+	}
+
+	public void setIpAddr(String ipaddr) {
+		m_ipAddr = ipaddr;
+	}
+
+	/**
+	 * @hibernate.property column="eventdpname" length="12" not-null="true"
+	 * 
+	 */
+	public String getEventDpName() {
+		return m_eventDpName;
+	}
+
+	public void setEventDpName(String eventdpname) {
+		m_eventDpName = eventdpname;
+	}
+
+	/**
+	 * @hibernate.property column="eventsnmphost" length="256"
+	 * 
+	 */
+	public String getEventSnmpHost() {
+		return m_eventSnmpHost;
+	}
+
+	public void setEventSnmpHost(String eventsnmphost) {
+		m_eventSnmpHost = eventsnmphost;
+	}
+
+	/**
+	 * @hibernate.property column="serviceid" length="4"
+	 * 
+	 */
+	public Integer getServiceId() {
+		return m_serviceId;
+	}
+
+	public void setServiceId(Integer serviceid) {
+		m_serviceId = serviceid;
+	}
+
+	/**
+	 * @hibernate.property column="eventsnmp" length="256"
+	 * 
+	 */
+	public String getEventSnmp() {
+		return m_eventSnmp;
+	}
+
+	public void setEventSnmp(String eventsnmp) {
+		m_eventSnmp = eventsnmp;
+	}
+
+	/**
+	 * @hibernate.property column="eventparms" length="1024"
+	 * 
+	 */
+	public String getEventParms() {
+		return m_eventParms;
+	}
+
+	public void setEventParms(String eventparms) {
+		m_eventParms = eventparms;
+	}
+
+	/**
+	 * @hibernate.property column="eventcreatetime" length="8" not-null="true"
+	 * 
+	 */
+	public Date getEventCreateTime() {
+		return m_eventCreateTime;
+	}
+
+	public void setEventCreateTime(Date eventcreatetime) {
+		m_eventCreateTime = eventcreatetime;
+	}
+
+	/**
+	 * @hibernate.property column="eventdescr" length="4000"
+	 * 
+	 */
+	public String getEventDescr() {
+		return m_eventDescr;
+	}
+
+	public void setEventDescr(String eventdescr) {
+		m_eventDescr = eventdescr;
+	}
+
+	/**
+	 * @hibernate.property column="eventloggroup" length="32"
+	 * 
+	 */
+	public String getEventLogGroup() {
+		return m_eventLogGroup;
+	}
+
+	public void setEventLogGroup(String eventloggroup) {
+		m_eventLogGroup = eventloggroup;
+	}
+
+	/**
+	 * @hibernate.property column="eventlogmsg" length="256"
+	 * 
+	 */
+	public String getEventLogMsg() {
+		return m_eventLogMsg;
+	}
+
+	public void setEventLogMsg(String eventlogmsg) {
+		m_eventLogMsg = eventlogmsg;
+	}
+
+	/**
+	 * @hibernate.property column="eventseverity" length="4" not-null="true"
+	 * 
+	 */
+	public int getEventSeverity() {
+		return m_eventSeverity;
+	}
+
+	public void setEventSeverity(int eventseverity) {
+		m_eventSeverity = eventseverity;
+	}
+
+	/**
+	 * @hibernate.property column="eventpathoutage" length="1024"
+	 * 
+	 */
+	public String getEventPathOutage() {
+		return m_eventPathOutage;
+	}
+
+	public void setEventPathOutage(String eventpathoutage) {
+		m_eventPathOutage = eventpathoutage;
+	}
+
+	/**
+	 * @hibernate.property column="eventcorrelation" length="1024"
+	 * 
+	 */
+	public String getEventCorrelation() {
+		return m_eventCorrelation;
+	}
+
+	public void setEventCorrelation(String eventcorrelation) {
+		m_eventCorrelation = eventcorrelation;
+	}
+
+	/**
+	 * @hibernate.property column="eventsuppressedcount" length="4"
+	 * 
+	 */
+	public Integer getEventSuppressedCount() {
+		return m_eventSuppressedCount;
+	}
+
+	public void setEventSuppressedCount(Integer eventsuppressedcount) {
+		m_eventSuppressedCount = eventsuppressedcount;
+	}
+
+	/**
+	 * @hibernate.property column="eventoperinstruct" length="1024"
+	 * 
+	 */
+	public String getEventOperInstruct() {
+		return m_eventOperInstruct;
+	}
+
+	public void setEventOperInstruct(String eventoperinstruct) {
+		m_eventOperInstruct = eventoperinstruct;
+	}
+
+	/**
+	 * @hibernate.property column="eventautoaction" length="256"
+	 * 
+	 */
+	public String getEventAutoAction() {
+		return m_eventAutoAction;
+	}
+
+	public void setEventAutoAction(String eventautoaction) {
+		m_eventAutoAction = eventautoaction;
+	}
+
+	/**
+	 * @hibernate.property column="eventoperaction" length="256"
+	 * 
+	 */
+	public String getEventOperaction() {
+		return m_eventOperAction;
+	}
+
+	public void setEventOperaction(String eventoperaction) {
+		m_eventOperAction = eventoperaction;
+	}
+
+	/**
+	 * @hibernate.property column="eventoperactionmenutext" length="64"
+	 * 
+	 */
+	public String getEventOperactionMenuText() {
+		return m_eventOperactionMenuText;
+	}
+
+	public void setEventOperactionMenuText(String eventoperactionmenutext) {
+		m_eventOperactionMenuText = eventoperactionmenutext;
+	}
+
+	/**
+	 * @hibernate.property column="eventnotification" length="128"
+	 * 
+	 */
+	public String getEventNotification() {
+		return m_eventNotification;
+	}
+
+	public void setEventNotification(String eventnotification) {
+		m_eventNotification = eventnotification;
+	}
+
+	/**
+	 * @hibernate.property column="eventtticket" length="128"
+	 * 
+	 */
+	public String getEventtTicket() {
+		return m_eventtTicket;
+	}
+
+	public void setEventtTicket(String eventtticket) {
+		m_eventtTicket = eventtticket;
+	}
+
+	/**
+	 * @hibernate.property column="eventtticketstate" length="4"
+	 * 
+	 */
+	public Integer getEventTTicketState() {
+		return m_eventTTicketState;
+	}
+
+	public void setEventTTicketState(Integer eventtticketstate) {
+		m_eventTTicketState = eventtticketstate;
+	}
+
+	/**
+	 * @hibernate.property column="eventforward" length="256"
+	 * 
+	 */
+	public String getEventForward() {
+		return m_eventForward;
+	}
+
+	public void setEventForward(String eventforward) {
+		m_eventForward = eventforward;
+	}
+
+	/**
+	 * @hibernate.property column="eventmouseovertext" length="64"
+	 * 
+	 */
+	public String getEventMouseoverText() {
+		return m_eventMouseoverText;
+	}
+
+	public void setEventMouseoverText(String eventmouseovertext) {
+		m_eventMouseoverText = eventmouseovertext;
+	}
+
+	/**
+	 * @hibernate.property column="eventlog" length="1" not-null="true"
+	 * 
+	 */
+	public String getEventLog() {
+		return m_eventLog;
+	}
+
+	public void setEventLog(String eventlog) {
+		m_eventLog = eventlog;
+	}
+
+	/**
+	 * @hibernate.property column="eventdisplay" length="1" not-null="true"
+	 * 
+	 */
+	public String getEventDisplay() {
+		return m_eventDisplay;
+	}
+
+	public void setEventDisplay(String eventdisplay) {
+		m_eventDisplay = eventdisplay;
+	}
+
+	/**
+	 * @hibernate.property column="eventackuser" length="256"
+	 * 
+	 */
+	public String getEventAckUser() {
+		return m_eventAckUser;
+	}
+
+	public void setEventAckUser(String eventackuser) {
+		m_eventAckUser = eventackuser;
+	}
+
+	/**
+	 * @hibernate.property column="eventacktime" length="8"
+	 * 
+	 */
+	public Date getEventacktime() {
+		return eventacktime;
+	}
+
+	public void setEventacktime(Date eventacktime) {
+		eventacktime = eventacktime;
+	}
+
+	/**
+	 * @hibernate.property column="alarmid" length="4"
+	 * 
+	 */
+	public Integer getAlarmId() {
+		return m_alarmId;
+	}
+
+	public void setAlarmId(Integer alarmid) {
+		m_alarmId = alarmid;
+	}
+
+	/**
+	 * @hibernate.many-to-one not-null="true"
+	 * @hibernate.column name="nodeid"
+	 * 
+	 */
+	public org.opennms.netmgt.model.OnmsNode getNode() {
+		return node;
+	}
+
+	public void setNode(org.opennms.netmgt.model.OnmsNode node) {
+		node = node;
+	}
+
+	/**
+	 * @hibernate.set lazy="true" inverse="true" cascade="none"
+	 * @hibernate.key column="eventid"
+	 * @hibernate.one-to-many class="org.opennms.netmgt.model.OnmsNotification"
+	 * 
+	 * old XDoclet1 Tags hibernate.collection-key column="eventid"
+	 * hibernate.collection-one-to-many
+	 * class="org.opennms.netmgt.model.OnmsNotification"
+	 * 
+	 */
+	public Set getNotifications() {
+		return m_notifications;
+	}
+
+	public void setNotifications(Set notifications) {
+		m_notifications = notifications;
+	}
+
+	/**
+	 * @hibernate.set lazy="true" inverse="true" cascade="none"
+	 * @hibernate.key column="svcregainedeventid"
+	 * @hibernate.one-to-many class="org.opennms.netmgt.model.OnmsOutage"
+	 * 
+	 * old XDoclet1 Tags hibernate.collection-key column="svcregainedeventid"
+	 * hibernate.collection-one-to-many
+	 * class="org.opennms.netmgt.model.OnmsOutage"
+	 * 
+	 */
+	public Set getOutagesBySvcRegainedEventId() {
+		return m_outagesBySvcRegainedEventId;
+	}
+
+	public void setOutagesBySvcRegainedEventId(Set outagesBySvcregainedeventid) {
+		m_outagesBySvcRegainedEventId = outagesBySvcregainedeventid;
+	}
+
+	/**
+	 * @hibernate.set lazy="true" inverse="true" cascade="none"
+	 * @hibernate.key column="svclosteventid"
+	 * @hibernate.one-to-many class="org.opennms.netmgt.model.OnmsOutage"
+	 * 
+	 * old XDoclet1 Tags hibernate.collection-key column="svclosteventid"
+	 * hibernate.collection-one-to-many
+	 * class="org.opennms.netmgt.model.OnmsOutage"
+	 * 
+	 */
+	public Set getOutagesBySvclostEventId() {
+		return m_outagesBySvclostEventId;
+	}
+
+	public void setOutagesBySvclostEventId(Set outagesBySvclosteventid) {
+		m_outagesBySvclostEventId = outagesBySvclosteventid;
+	}
+
+	/**
+	 * @hibernate.set lazy="true" inverse="true" cascade="none"
+	 * @hibernate.key column="lasteventid"
+	 * @hibernate.one-to-many class="org.opennms.netmgt.model.OnmsAlarm"
+	 * 
+	 * old XDoclet1 Tags hibernate.collection-key column="lasteventid"
+	 * hibernate.collection-one-to-many
+	 * class="org.opennms.netmgt.model.OnmsAlarm"
+	 * 
+	 */
+	public Set getAlarms() {
+		return m_alarms;
+	}
+
+	public void setAlarms(Set alarms) {
+		m_alarms = alarms;
+	}
+
+	public String toString() {
+		return new ToStringCreator(this).append("eventid", getEventId())
+				.toString();
+	}
+
+	public void visit(EntityVisitor visitor) {
+		throw new RuntimeException("visitor method not implemented");
+	}
 
 }
