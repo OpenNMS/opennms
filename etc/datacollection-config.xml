@@ -121,6 +121,22 @@
 				<mibObj oid=".1.3.6.1.4.1.2620.1.1.6" instance="0" alias="pktsDropped" type="integer" />
 				<mibObj oid=".1.3.6.1.4.1.2620.1.1.7" instance="0" alias="pktsLogged" type="integer" />
 			</group>
+                        <group name = "checkpoint-packets" ifType = "ignore">
+                                <mibObj oid=".1.3.6.1.4.1.2620.1.2.4.1.1" instance="0" alias="cpvEncPackets" type="integer" />
+                                <mibObj oid=".1.3.6.1.4.1.2620.1.2.4.1.2" instance="0" alias="cpvDecPackets" type="integer" />
+                        </group>
+                        <group name = "checkpoint-encryption-errors" ifType = "ignore">
+                                <mibObj oid=".1.3.6.1.4.1.2620.1.2.4.2.1" instance="0" alias="cpvErrOut" type="integer" />
+                                <mibObj oid=".1.3.6.1.4.1.2620.1.2.4.2.2" instance="0" alias="cpvErrIn" type="integer" />
+                        </group>
+                        <group name = "checkpoint-other-errors" ifType = "ignore">
+                                <mibObj oid=".1.3.6.1.4.1.2620.1.2.4.2.3" instance="0" alias="cpvErrIke" type="integer" />
+                                <mibObj oid=".1.3.6.1.4.1.2620.1.2.4.2.4" instance="0" alias="cpvErrPolicy" type="integer" />
+                        </group>
+                        <group name = "checkpoint-connections" ifType = "ignore">
+                                <mibObj oid="1.3.6.1.4.1.2620.1.1.25.3" instance="0" alias="fwNumConn" type="integer" />
+                                <mibObj oid="1.3.6.1.4.1.2620.1.1.25.4" instance="0" alias="fwPeakNumConn" type="integer" />
+                        </group>
 
 			<!-- Cisco MIBs -->
                         <group  name = "altiga-general" ifType = "ignore">
@@ -263,6 +279,18 @@
                                 <mibObj oid=".1.3.6.1.4.1.9.2.2.1.1.9" instance="ifIndex" alias="locIfOutPktsSec" type="integer"/>
 				<mibObj oid=".1.3.6.1.4.1.9.2.2.1.1.26" instance="ifIndex" alias="locIfInQueueDrops" type="gauge"/>
 				<mibObj oid=".1.3.6.1.4.1.9.2.2.1.1.27" instance="ifIndex" alias="locIfOutQueueDrops" type="gauge"/>
+                        </group>
+                        <!-- Netapp MIBS -->
+                        <group name = "netapp-cpu" ifType = "ignore">
+                                <mibObj oid=".1.3.6.1.4.1.789.1.2.1.3" instance="0" alias="cpuBusyTimePct" type="INTEGER" />
+                                <mibObj oid=".1.3.6.1.4.1.789.1.2.1.5" instance="0" alias="cpuIdleTimePct" type="INTEGER" />
+                        </group>
+                        <group name = "netapp-filesys" ifType = "ignore">
+                                <mibObj oid=".1.3.6.1.4.1.789.1.5.1" instance="0" alias="fsMaxfilesAvail" type="INTEGER" />
+                                <mibObj oid=".1.3.6.1.4.1.789.1.5.2" instance="0" alias="fsMaxfilesUsed" type="INTEGER" />
+                                <mibObj oid=".1.3.6.1.4.1.789.1.5.3" instance="0" alias="fsMaxfilesPossible" type="INTEGER" />
+                                <mibObj oid=".1.3.6.1.4.1.789.1.5.7.3" instance="0" alias="fsMaxUsedBytesPct" type="INTEGER" />
+                                <mibObj oid=".1.3.6.1.4.1.789.1.5.7.4" instance="0" alias="fsMaxUsedInodesPct" type="INTEGER" />
                         </group>
 
 			<!-- Concord Communications MIBs -->
@@ -975,6 +1003,10 @@
 				<sysoid>.1.3.6.1.4.1.2620.1</sysoid>
 				<collect>
 					<includeGroup>checkpoint-host</includeGroup>
+                                        <includeGroup>checkpoint-packets</includeGroup>
+                                        <includeGroup>checkpoint-encryption-errors</includeGroup>
+                                        <includeGroup>checkpoint-other-errors</includeGroup>
+                                        <includeGroup>checkpoint-connections</includeGroup>
 				</collect>
 			</systemDef>
 
@@ -1128,6 +1160,14 @@
                                 <sysoidMask>.1.3.6.1.4.1.5528.</sysoidMask>
                                 <collect>
                                         <includeGroup>netbotz</includeGroup>
+                                </collect>
+                        </systemDef>
+
+                        <systemDef name = "Network Appliance">
+                                <sysoidMask>.1.3.6.1.4.1.789.</sysoidMask>
+                                <collect>
+                                        <includeGroup>netapp-cpu</includeGroup>
+                                        <includeGroup>netapp-filesys</includeGroup>
                                 </collect>
                         </systemDef>
 		

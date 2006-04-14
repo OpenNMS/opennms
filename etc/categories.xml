@@ -14,14 +14,14 @@
             <category>
                 <label><![CDATA[Overall Service Availability]]></label>
                 <comment>This category reflects availability of all services currently being monitored by OpenNMS.</comment>
-                <normal>99</normal>
+                <normal>99.99</normal>
                 <warning>97</warning>
                 <rule><![CDATA[ipaddr IPLIKE *.*.*.*]]></rule>
             </category>
             <category>
                 <label><![CDATA[Network Interfaces]]></label>
                 <comment>This category reflects the ability to 'ping' managed devices and SNMP agents.  'Ping', using the ICMP protocol, tests a devices network connectivity/availability.</comment>
-                <normal>99</normal>
+                <normal>99.99</normal>
                 <warning>97</warning>
                 <service>ICMP</service>
                 <service>SNMP</service>
@@ -30,7 +30,7 @@
             <category>
                 <label><![CDATA[Email Servers]]></label>
                 <comment>This category includes all managed interfaces which are running an Email service, including SMTP, POP3, or IMAP.  This will include MS Exchange servers running these protocols.</comment>
-                <normal>99</normal>
+                <normal>99.99</normal>
                 <warning>97</warning>
                 <service>SMTP</service>
                 <service>POP3</service>
@@ -40,7 +40,7 @@
             <category>
                 <label><![CDATA[Web Servers]]></label>
                 <comment>This category includes all managed interfaces which are running an HTTP (Web) server on port 80 or other common ports.</comment>
-                <normal>99</normal>
+                <normal>99.99</normal>
                 <warning>97</warning>
                 <service>HTTP</service>
                 <service>HTTPS</service>
@@ -51,7 +51,7 @@
             <category>
                 <label><![CDATA[JMX Servers]]></label>
                 <comment>This category includes all managed interfaces which are running JMX servers.</comment>
-                <normal>99</normal>
+                <normal>99.99</normal>
                 <warning>97</warning>
                 <service>JBoss4</service>
                 <service>JBoss32</service>
@@ -61,7 +61,7 @@
             <category>
                 <label><![CDATA[DNS & DHCP Servers]]></label>
                 <comment>This category includes all managed interfaces which are running either DNS (name resolution) servers or DHCP servers.</comment>
-                <normal>99</normal>
+                <normal>99.99</normal>
                 <warning>97</warning>
                 <service>DNS</service>
                 <service>DHCP</service>
@@ -70,7 +70,7 @@
             <category>
                 <label><![CDATA[Database Servers]]></label>
                 <comment>This category includes all managed interfaces which are currently running PostgreSQL or MySQL database servers.</comment>
-                <normal>99</normal>
+                <normal>99.99</normal>
                 <warning>97</warning>
                 <service>Postgres</service>
                 <service>MySQL</service>
@@ -79,7 +79,7 @@
             <category>
                 <label><![CDATA[Other Servers]]></label>
                 <comment>This category includes all managed interfaces which are running FTP (file transfer protocol) servers or SSH (secure shell) servers.</comment>
-                <normal>99</normal>
+                <normal>99.99</normal>
                 <warning>97</warning>
                 <service>FTP</service>
                 <service>SSH</service>
@@ -88,7 +88,7 @@
             <category>
                 <label><![CDATA[Internet Connectivity]]></label>
                 <comment>This category reflects the ability to 'ping' the router at the ISP-end of your Internet connection.</comment>
-                <normal>99</normal>
+                <normal>99.99</normal>
                 <warning>97</warning>
                 <service>ICMP</service>
                 <rule><![CDATA[ipaddr IPLIKE 0.0.0.0]]></rule>
