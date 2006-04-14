@@ -109,7 +109,7 @@ public class StringDataSource extends DataSource {
 	        return true;
 	    } finally {
 	        try {
-	            if (fileInputStream != null) {
+	            if (fileOutputStream != null) {
 	                fileOutputStream.flush();
 	                fileOutputStream.close();
 	            }
