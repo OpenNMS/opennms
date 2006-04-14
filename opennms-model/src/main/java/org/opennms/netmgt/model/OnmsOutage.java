@@ -31,26 +31,26 @@ public class OnmsOutage extends OnmsEntity implements Serializable {
     private Date m_ifRegainedService;
 
     /** persistent field */
-    private OnmsEvent m_eventBySvcRegainedEventId;
+    private OnmsEvent m_eventBySvcRegainedEvent;
 
     /** persistent field */
-    private OnmsEvent m_eventBySvcLostEventId;
+    private OnmsEvent m_eventBySvcLostEvent;
 
     /** persistent field */
-    private OnmsNode m_node;
+    private OnmsMonitoredService m_monitoredService;
 
     /** persistent field */
     private OnmsServiceType m_serviceType;
 
     /** full constructor */
-    public OnmsOutage(Integer outageId, String ipAddr, Date ifLostService, Date ifRegainedService, OnmsEvent eventBySvcRegainedEventId, OnmsEvent eventBySvcLostEventId, OnmsNode node, OnmsServiceType service) {
+    public OnmsOutage(Integer outageId, String ipAddr, Date ifLostService, Date ifRegainedService, OnmsEvent eventBySvcRegainedEvent, OnmsEvent eventBySvcLostEvent, OnmsMonitoredService monitoredService, OnmsServiceType service) {
         m_outageId = outageId;
         m_ipAddr = ipAddr;
         m_ifLostService = ifLostService;
         m_ifRegainedService = ifRegainedService;
-        m_eventBySvcRegainedEventId = eventBySvcRegainedEventId;
-        m_eventBySvcLostEventId = eventBySvcLostEventId;
-        m_node = node;
+        m_eventBySvcRegainedEvent = eventBySvcRegainedEvent;
+        m_eventBySvcLostEvent = eventBySvcLostEvent;
+        m_monitoredService = monitoredService;
         m_serviceType = service;
     }
 
@@ -59,13 +59,13 @@ public class OnmsOutage extends OnmsEntity implements Serializable {
     }
 
     /** minimal constructor */
-    public OnmsOutage(Integer outageId, String ipAddr, Date ifLostService, OnmsEvent eventBySvcRegainedEventId, OnmsEvent eventBySvcLostEventId, OnmsNode node, OnmsServiceType service) {
+    public OnmsOutage(Integer outageId, String ipAddr, Date ifLostService, OnmsEvent eventBySvcRegainedEvent, OnmsEvent eventBySvcLostEvent, OnmsMonitoredService monitoredService, OnmsServiceType service) {
         m_outageId = outageId;
         m_ipAddr = ipAddr;
         m_ifLostService = ifLostService;
-        m_eventBySvcRegainedEventId = eventBySvcRegainedEventId;
-        m_eventBySvcLostEventId = eventBySvcLostEventId;
-        m_node = node;
+        m_eventBySvcRegainedEvent = eventBySvcRegainedEvent;
+        m_eventBySvcLostEvent = eventBySvcLostEvent;
+        m_monitoredService = monitoredService;
         m_serviceType = service;
     }
 
@@ -131,12 +131,12 @@ public class OnmsOutage extends OnmsEntity implements Serializable {
      *            @hibernate.column name="svcregainedeventid"         
      *         
      */
-    public OnmsEvent getEventBySvcRegainedEventId() {
-        return m_eventBySvcRegainedEventId;
+    public OnmsEvent getEventBySvcRegainedEvent() {
+        return m_eventBySvcRegainedEvent;
     }
 
-    public void setEventBySvcRegainedEventId(OnmsEvent eventBySvcRegainedEventId) {
-        m_eventBySvcRegainedEventId = eventBySvcRegainedEventId;
+    public void setEventBySvcRegainedEvent(OnmsEvent eventBySvcRegainedEvent) {
+        m_eventBySvcRegainedEvent = eventBySvcRegainedEvent;
     }
 
     /** 
@@ -145,26 +145,26 @@ public class OnmsOutage extends OnmsEntity implements Serializable {
      *            @hibernate.column name="svclosteventid"         
      *         
      */
-    public OnmsEvent getEventBySvcLostEventId() {
-        return m_eventBySvcLostEventId;
+    public OnmsEvent getEventBySvcLostEvent() {
+        return m_eventBySvcLostEvent;
     }
 
-    public void setEventBySvcLostEventId(OnmsEvent eventBySvcLostEventId) {
-        m_eventBySvcLostEventId = eventBySvcLostEventId;
+    public void setEventBySvcLostEvent(OnmsEvent eventBySvcLostEvent) {
+        m_eventBySvcLostEvent = eventBySvcLostEvent;
     }
 
     /** 
      *            @hibernate.many-to-one
      *             not-null="true"
-     *            @hibernate.column name="nodeid"         
+     *            @hibernate.column name="monitoredServiceid"         
      *         
      */
-    public OnmsNode getNode() {
-        return m_node;
+    public OnmsMonitoredService getMonitoredService() {
+        return m_monitoredService;
     }
 
-    public void setNode(OnmsNode node) {
-        m_node = node;
+    public void setMonitoredService(OnmsMonitoredService monitoredService) {
+        m_monitoredService = monitoredService;
     }
 
     /** 
