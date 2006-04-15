@@ -247,7 +247,8 @@ doStart(){
 	CMD="$JAVA_CMD $APP_VM_PARMS -jar $BOOTSTRAP $APP_PARMS_BEFORE "$@" $APP_PARMS_AFTER"
 	echo "Executing command: $CMD" >> "$REDIRECT"
 	$CMD >>"$REDIRECT" 2>&1 &
-	echo $! > "$OPENNMS_PIDFILE"
+	OPENNMS_PID=$!
+	echo $OPENNMS_PID > "$OPENNMS_PIDFILE"
 	# disown # XXX specific to bash
     fi
 
@@ -263,13 +264,18 @@ doStart(){
 	if doStatus; then
 	    return 0
 	fi
+	if ps -p $OPENNMS_PID | grep "^ *$OPENNMS_PID " > /dev/null; then
+	    true	# Java process is still running... don't do anything
+        else
+            echo "Started OpenNMS, but it stopped running: check output.log" >&2
+            return 1
+        fi
 	sleep $STATUS_WAIT
 	STATUS_ATTEMPTS=`expr $STATUS_ATTEMPTS + 1`
     done
 
     echo "Started OpenNMS, but it has not finished starting up" >&2
     return 1
-    
 }
 
 doPause(){

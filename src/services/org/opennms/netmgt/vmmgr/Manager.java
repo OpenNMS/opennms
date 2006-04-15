@@ -46,6 +46,7 @@ import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.net.Authenticator;
+import java.net.ConnectException;
 import java.net.PasswordAuthentication;
 import java.net.URL;
 import java.util.ArrayList;
@@ -63,6 +64,7 @@ import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.ServiceConfigFactory;
 import org.opennms.netmgt.config.service.Argument;
 import org.opennms.netmgt.config.service.Invoke;
+import org.opennms.netmgt.config.service.types.InvokeAtType;
 import org.opennms.netmgt.config.service.Service;
 
 /**
@@ -146,12 +148,14 @@ public class Manager implements ManagerMBean {
     }
 
     private static class InvokerResult {
+        private Service m_service;
         private ObjectInstance m_mbean;
         private Object m_result;
         private Throwable m_throwable;
         
-        private InvokerResult(ObjectInstance mbean, Object result,
-                              Throwable throwable) {
+        private InvokerResult(Service service, ObjectInstance mbean,
+                              Object result, Throwable throwable) {
+            m_service = service;
             m_mbean = mbean;
             m_result = result;
             m_throwable = throwable;
@@ -167,6 +171,14 @@ public class Manager implements ManagerMBean {
         
         private Throwable getThrowable() {
             return m_throwable;
+        }
+
+        private Service getService() {
+            return m_service;
+        }
+
+        private void setService(Service service) {
+            m_service = service;
         }
     }
 
@@ -207,7 +219,28 @@ public class Manager implements ManagerMBean {
         Category log = ThreadCategory.getInstance(Manager.class);
         
         log.debug("Beginning startup");
-        getInstancesAndInvoke(server, true, "start", false);
+        List resultInfo = getInstancesAndInvoke(server, true,
+                                                InvokeAtType.START, false,
+                                                true);
+        InvokerResult result =
+            (InvokerResult) resultInfo.get(resultInfo.size() - 1);
+        if (result != null && result.getThrowable() != null) {
+            Service service = result.getService();
+            String name = service.getName();
+            String className = service.getClassName();
+            
+            String message =
+                "An error occurred while attempting to start the \"" +
+                name + "\" service (class " + className + ").  "
+                + "Shutting down and exiting.";
+            log.fatal(message, result.getThrowable());
+            System.err.println(message);
+            result.getThrowable().printStackTrace();
+            stop(server);
+            new Manager().doSystemExit();
+            // Shouldn't get here
+            return;
+        }
         log.debug("Startup complete");
     }
 
@@ -223,7 +256,8 @@ public class Manager implements ManagerMBean {
         Category log = ThreadCategory.getInstance(Manager.class);
         
         log.debug("Beginning shutdown");
-        getInstancesAndInvoke(server, false, "stop", true);
+        getInstancesAndInvoke(server, false, InvokeAtType.STOP, true, false);
+
         log.debug("Shutdown complete");
     }
     
@@ -241,15 +275,17 @@ public class Manager implements ManagerMBean {
         Category log = ThreadCategory.getInstance(Manager.class);
         
         log.debug("Beginning status check");
-        List results = getInstancesAndInvoke(server, false, "status", false);
+        List results = getInstancesAndInvoke(server, false,
+                                             InvokeAtType.STATUS, false,
+                                             false);
         
         List statusInfo = new ArrayList(results.size());
         for (Iterator i = results.iterator(); i.hasNext(); ) {
             InvokerResult invokerResult = (InvokerResult) i.next();
             if (invokerResult.getThrowable() == null) {
                 statusInfo.add("Status: "
-                               + invokerResult.getMbean().getObjectName() + " = "
-                               + invokerResult.getResult().toString());
+                               + invokerResult.getMbean().getObjectName()
+                               + " = " + invokerResult.getResult().toString());
             } else {
                 statusInfo.add("Status: "
                                + invokerResult.getMbean().getObjectName()
@@ -263,7 +299,9 @@ public class Manager implements ManagerMBean {
 
     public static List getInstancesAndInvoke(MBeanServer server,
                                              boolean instantiate,
-                                             String method, boolean reverse) {
+                                             InvokeAtType at,
+                                             boolean reverse,
+                                             boolean failFast) {
         ServiceConfigFactory sfact = null;
         try {
             ServiceConfigFactory.init();
@@ -276,16 +314,16 @@ public class Manager implements ManagerMBean {
             InvokerService.createServiceArray(sfact.getServices());
 
         if (instantiate) {
-            loadClasses(server, services);
+            instantiateClasses(server, services);
         } else {
             getObjectInstances(server, services);
         }
 
-        return invokeMethods(server, services, method, reverse);
+        return invokeMethods(server, services, at, reverse, failFast);
     }
     
-    private static void loadClasses(MBeanServer server,
-                                    InvokerService[] invokerServices) {
+    private static void instantiateClasses(MBeanServer server,
+                                           InvokerService[] invokerServices) {
         Category log = ThreadCategory.getInstance(Manager.class);
 
         /*
@@ -367,7 +405,8 @@ public class Manager implements ManagerMBean {
 
     private static List invokeMethods(MBeanServer server,
                                       InvokerService[] invokerServices,
-                                      String at, boolean reverse) {
+                                      InvokeAtType at, boolean reverse,
+                                      boolean failFast) {
         Category log = ThreadCategory.getInstance(Manager.class);
 
         Integer[] serviceIndexes = new Integer[invokerServices.length];
@@ -388,7 +427,12 @@ public class Manager implements ManagerMBean {
             
             for (int i = 0; i < serviceIndexes.length; i++) {
                 int j = serviceIndexes[i].intValue();
+                String name = invokerServices[j].getService().getName();
                 if (invokerServices[j].isBadService()) {
+                    if (log.isDebugEnabled()) {
+                        log.debug("pass " + pass + " on service " + name
+                                  + " is bad: not invoking any more methods"); 
+                    }
                     break;
                 }
                 Invoke[] todo = invokerServices[j].getService().getInvoke();
@@ -398,15 +442,30 @@ public class Manager implements ManagerMBean {
                         continue;
                     }
                     
+                    Service service = invokerServices[j].getService();
                     ObjectInstance mbean = invokerServices[j].getMbean();
+
+                    if (log.isDebugEnabled()) {
+                        log.debug("pass " + pass + " on service " + name
+                                  + " will invoke method \""
+                                  + todo[k].getMethod() + "\""); 
+                    }
 
                     try {
                         Object result = invoke(server, todo[k], mbean);
-                        resultInfo.add(new InvokerResult(mbean, result, null));
+                        resultInfo.add(new InvokerResult(service, mbean, result,
+                                                         null));
                     } catch (Throwable t) {
-                        resultInfo.add(new InvokerResult(mbean, null, t));
+                        resultInfo.add(new InvokerResult(service, mbean, null,
+                                                         t));
+                        if (failFast) {
+                            return resultInfo;
+                        }
                     }
                 }
+            }
+            if (log.isDebugEnabled()) {
+                log.debug("completed pass " + pass);
             }
         }
         
@@ -471,6 +530,9 @@ public class Manager implements ManagerMBean {
      * @return does not return
      */
     public void doSystemExit() {
+        Category log = ThreadCategory.getInstance(Manager.class);
+
+        log.debug("doSystemExit called... exiting.");
         System.exit(1);
     }
 
@@ -527,13 +589,13 @@ public class Manager implements ManagerMBean {
         if ("start".equals(command)) {
             doStartCommand();
         } else if ("stop".equals(command)) {
-            doStopCommand(invokeUrl);
+            doStopCommand(verbose, invokeUrl);
         } else if ("status".equals(command)) {
             doStatusCommand(verbose, invokeUrl);
         } else if ("check".equals(command)) {
             doCheckCommand();
         } else if ("exit".equals(command)) {
-            doExitCommand(invokeUrl);
+            doExitCommand(verbose, invokeUrl);
         } else {
             System.err.println("Invalid command \"" + command + "\".");
             System.err.println("Use \"-h\" option for help.");
@@ -546,8 +608,8 @@ public class Manager implements ManagerMBean {
         start(server);
     }
 
-    private static void doStopCommand(String invokeUrl) {
-        invokeOperation(invokeUrl, "stop");
+    private static void doStopCommand(boolean verbose, String invokeUrl) {
+        invokeOperation(verbose, invokeUrl, "stop");
     }
     
     private static void doStatusCommand(boolean verbose, String invokeUrl) {
@@ -601,15 +663,17 @@ public class Manager implements ManagerMBean {
         System.exit(0);
     }
 
-    private static void doExitCommand(String invokeUrl) {
-        invokeOperation(invokeUrl, "doSystemExit");
+    private static void doExitCommand(boolean verbose, String invokeUrl) {
+        invokeOperation(verbose, invokeUrl, "doSystemExit");
     }
     
-    private static void invokeOperation(String invokeUrl, String operation) {
+    private static void invokeOperation(boolean verbose, String invokeUrl,
+                                        String operation) {
         Category log = ThreadCategory.getInstance(Manager.class);
 
+        String urlString = invokeUrl + "&operation=" + operation;
         try {
-            URL invoke = new URL(invokeUrl + "&operation=" + operation);
+            URL invoke = new URL(urlString);
             InputStream in = invoke.openStream();
             int ch;
             while ((ch = in.read()) != -1) {
@@ -619,8 +683,19 @@ public class Manager implements ManagerMBean {
             System.out.println("");
             System.out.flush();
             System.exit(0);
+        } catch (ConnectException e) {
+            log.error(e.getMessage() + " when attempting to fetch URL \""
+                      + urlString + "\"");
+            if (verbose) {
+                System.out.println(e.getMessage()
+                                   + " when attempting to fetch URL \""
+                                   + urlString + "\"");
+            }
+            System.exit(1);
         } catch (Throwable t) {
             log.error("error invoking " + operation + " operation", t);
+            System.out.println("error invoking " + operation + " operation");
+            t.printStackTrace();
             System.exit(1);
         }
     }
