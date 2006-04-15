@@ -111,13 +111,13 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	private String m_eventAckUser;
 
 	/** nullable persistent field */
-	private Date eventacktime;
+	private Date m_eventAckTime;
 
 	/** nullable persistent field */
 	private Integer m_alarmId;
 
 	/** persistent field */
-	private org.opennms.netmgt.model.OnmsNode node;
+	private org.opennms.netmgt.model.OnmsNode m_node;
 
 	/** persistent field */
 	private Set m_notifications;
@@ -178,9 +178,9 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 		m_eventLog = eventlog;
 		m_eventDisplay = eventdisplay;
 		m_eventAckUser = eventackuser;
-		eventacktime = eventacktime;
+		m_eventAckTime = eventacktime;
 		m_alarmId = alarmid;
-		node = node;
+		this.m_node = node;
 		m_notifications = notifications;
 		m_outagesBySvcRegainedEventId = outagesBySvcregainedeventid;
 		m_outagesBySvclostEventId = outagesBySvclosteventid;
@@ -207,7 +207,7 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 		m_eventSeverity = eventseverity;
 		m_eventLog = eventlog;
 		m_eventDisplay = eventdisplay;
-		node = node;
+		m_node = node;
 		m_notifications = notifications;
 		m_outagesBySvcRegainedEventId = outagesBySvcregainedeventid;
 		m_outagesBySvclostEventId = outagesBySvclosteventid;
@@ -591,11 +591,11 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	 * @hibernate.property column="eventacktime" length="8"
 	 * 
 	 */
-	public Date getEventacktime() {
-		return eventacktime;
+	public Date getEventAckTime() {
+		return m_eventAckTime;
 	}
 
-	public void setEventacktime(Date eventacktime) {
+	public void setEventAckTime(Date eventacktime) {
 		eventacktime = eventacktime;
 	}
 
@@ -617,7 +617,7 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	 * 
 	 */
 	public org.opennms.netmgt.model.OnmsNode getNode() {
-		return node;
+		return m_node;
 	}
 
 	public void setNode(org.opennms.netmgt.model.OnmsNode node) {
