@@ -95,9 +95,7 @@ import org.opennms.netmgt.xml.event.Event;
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
 final class SnmpCollector implements ServiceCollector {
-
 	private final class IfNumberTracker extends SingleInstanceTracker {
-
 		int m_ifNumber = -1;
 
 		private IfNumberTracker() {
@@ -375,10 +373,6 @@ final class SnmpCollector implements ServiceCollector {
 			log().error("initialize: Unable to initialize RrdUtils", e);
 			throw new RuntimeException("Unable to initialize RrdUtils", e);
 		}
-
-		// Save local reference to singleton instance
-		// m_rrdInterface = org.opennms.netmgt.rrd.Interface.getInstance();
-		log().debug("initialize: successfully initialized interface to RRD...");
 	}
 
 	private void initDatabaseConnectionFactory() {
