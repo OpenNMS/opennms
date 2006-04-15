@@ -10,25 +10,25 @@ import org.springframework.core.style.ToStringCreator;
  *         table="servicemap"
  *     
 */
-public class OnmsServiceMap implements Serializable {
+public class OnmsServiceMap extends OnmsEntity implements Serializable {
 
     /**
      * 
      */
     private static final long serialVersionUID = 6550492519192174055L;
     
-    private Integer id;
+    private Integer m_id;
 
     /** identifier field */
-    private String ipaddr;
+    private String m_ipAddr;
 
     /** identifier field */
-    private String servicemapname;
+    private String m_serviceMapName;
 
     /** full constructor */
-    public OnmsServiceMap(String ipaddr, String servicemapname) {
-        this.ipaddr = ipaddr;
-        this.servicemapname = servicemapname;
+    public OnmsServiceMap(String ipAddr, String serviceMapName) {
+        this.m_ipAddr = ipAddr;
+        this.m_serviceMapName = serviceMapName;
     }
 
     /** default constructor */
@@ -43,46 +43,52 @@ public class OnmsServiceMap implements Serializable {
      *         
      */
 public Integer getId() {
-        return id;
+        return m_id;
     }
     
     public void setId(Integer id) {
-        this.id = id;
+        this.m_id = id;
     }
 
     /** 
      *                @hibernate.property
-     *                 column="ipaddr"
+     *                 column="ipAddr"
      *                 length="16"
      *             
      */
-    public String getIpaddr() {
-        return this.ipaddr;
+    public String getIpAddr() {
+        return this.m_ipAddr;
     }
 
-    public void setIpaddr(String ipaddr) {
-        this.ipaddr = ipaddr;
+    public void setIpAddr(String ipAddr) {
+        this.m_ipAddr = ipAddr;
     }
 
     /** 
      *                @hibernate.property
-     *                 column="servicemapname"
+     *                 column="serviceMapName"
      *                 length="32"
      *             
      */
-    public String getServicemapname() {
-        return this.servicemapname;
+    public String getServiceMapName() {
+        return this.m_serviceMapName;
     }
 
-    public void setServicemapname(String servicemapname) {
-        this.servicemapname = servicemapname;
+    public void setServiceMapName(String serviceMapName) {
+        this.m_serviceMapName = serviceMapName;
     }
 
     public String toString() {
         return new ToStringCreator(this)
-            .append("ipaddr", getIpaddr())
-            .append("servicemapname", getServicemapname())
+            .append("ipAddr", getIpAddr())
+            .append("serviceMapName", getServiceMapName())
             .toString();
     }
+
+	public void visit(EntityVisitor visitor) {
+		// TODO Auto-generated method stub
+		throw new RuntimeException("visitor method not implemented");
+		
+	}
 
 }
