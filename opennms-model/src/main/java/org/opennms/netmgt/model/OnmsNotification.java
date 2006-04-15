@@ -12,7 +12,7 @@ import org.springframework.core.style.ToStringCreator;
  *         table="notifications"
  *     
 */
-public class OnmsNotification implements Serializable {
+public class OnmsNotification extends OnmsEntity implements Serializable {
 
     /**
      * 
@@ -20,63 +20,63 @@ public class OnmsNotification implements Serializable {
     private static final long serialVersionUID = -1162549324168290004L;
 
     /** identifier field */
-    private Integer notifyid;
+    private Integer m_notifyId;
 
     /** persistent field */
-    private String textmsg;
+    private String m_textMsg;
 
     /** nullable persistent field */
-    private String subject;
+    private String m_subject;
 
     /** nullable persistent field */
-    private String numericmsg;
+    private String m_numericMsg;
 
     /** nullable persistent field */
-    private Date pagetime;
+    private Date m_pageTime;
 
     /** nullable persistent field */
-    private Date respondtime;
+    private Date m_respondTime;
 
     /** nullable persistent field */
-    private String answeredby;
+    private String m_answeredBy;
 
     /** nullable persistent field */
-    private String interfaceid;
+    private OnmsIpInterface m_interface;
 
     /** nullable persistent field */
-    private Integer serviceid;
+    private OnmsMonitoredService m_service;
 
     /** nullable persistent field */
-    private String queueid;
+    private String m_queueId;
 
     /** persistent field */
-    private String eventuei;
+    private String m_eventUEI;
 
     /** persistent field */
-    private org.opennms.netmgt.model.OnmsEvent event;
+    private org.opennms.netmgt.model.OnmsEvent m_event;
 
     /** persistent field */
-    private org.opennms.netmgt.model.OnmsNode node;
+    private org.opennms.netmgt.model.OnmsNode m_node;
 
     /** persistent field */
-    private Set usersnotifieds;
+    private Set m_usersNotified;
 
     /** full constructor */
-    public OnmsNotification(Integer notifyid, String textmsg, String subject, String numericmsg, Date pagetime, Date respondtime, String answeredby, String interfaceid, Integer serviceid, String queueid, String eventuei, org.opennms.netmgt.model.OnmsEvent event, org.opennms.netmgt.model.OnmsNode node, Set usersnotifieds) {
-        this.notifyid = notifyid;
-        this.textmsg = textmsg;
-        this.subject = subject;
-        this.numericmsg = numericmsg;
-        this.pagetime = pagetime;
-        this.respondtime = respondtime;
-        this.answeredby = answeredby;
-        this.interfaceid = interfaceid;
-        this.serviceid = serviceid;
-        this.queueid = queueid;
-        this.eventuei = eventuei;
-        this.event = event;
-        this.node = node;
-        this.usersnotifieds = usersnotifieds;
+    public OnmsNotification(Integer notifyId, String textMsg, String subject, String numericMsg, Date pageTime, Date respondTime, String answeredBy, OnmsIpInterface ipInterface, OnmsMonitoredService service, String queueId, String eventUEI, org.opennms.netmgt.model.OnmsEvent event, org.opennms.netmgt.model.OnmsNode node, Set usersNotified) {
+        m_notifyId = notifyId;
+        m_textMsg = textMsg;
+        m_subject = subject;
+        m_numericMsg = numericMsg;
+        m_pageTime = pageTime;
+        m_respondTime = respondTime;
+        m_answeredBy = answeredBy;
+        m_interface = ipInterface;
+        m_service = service;
+        m_queueId = queueId;
+        m_eventUEI = eventUEI;
+        m_event = event;
+        m_node = node;
+        m_usersNotified = usersNotified;
     }
 
     /** default constructor */
@@ -84,25 +84,25 @@ public class OnmsNotification implements Serializable {
     }
 
     /** minimal constructor */
-    public OnmsNotification(Integer notifyid, String textmsg, String eventuei, org.opennms.netmgt.model.OnmsEvent event, org.opennms.netmgt.model.OnmsNode node, Set usersnotifieds) {
-        this.notifyid = notifyid;
-        this.textmsg = textmsg;
-        this.eventuei = eventuei;
-        this.event = event;
-        this.node = node;
-        this.usersnotifieds = usersnotifieds;
+    public OnmsNotification(Integer notifyId, String textMsg, String eventUEI, org.opennms.netmgt.model.OnmsEvent event, org.opennms.netmgt.model.OnmsNode node, Set usersNotified) {
+        m_notifyId = notifyId;
+        m_textMsg = textMsg;
+        m_eventUEI = eventUEI;
+        m_event = event;
+        m_node = node;
+        m_usersNotified = usersNotified;
     }
 
     /** 
      * @hibernate.id generator-class="native" type="java.lang.Integer" column="notifyid"
      * @hibernate.generator-param name="sequence" value="notifyNxtId"
      */
-    public Integer getNotifyid() {
-        return this.notifyid;
+    public Integer getNotifyId() {
+        return m_notifyId;
     }
 
-    public void setNotifyid(Integer notifyid) {
-        this.notifyid = notifyid;
+    public void setNotifyId(Integer notifyid) {
+        m_notifyId = notifyid;
     }
 
     /** 
@@ -112,12 +112,12 @@ public class OnmsNotification implements Serializable {
      *             not-null="true"
      *         
      */
-    public String getTextmsg() {
-        return this.textmsg;
+    public String getTextMsg() {
+        return m_textMsg;
     }
 
-    public void setTextmsg(String textmsg) {
-        this.textmsg = textmsg;
+    public void setTextMsg(String textmsg) {
+        m_textMsg = textmsg;
     }
 
     /** 
@@ -127,11 +127,11 @@ public class OnmsNotification implements Serializable {
      *         
      */
     public String getSubject() {
-        return this.subject;
+        return m_subject;
     }
 
     public void setSubject(String subject) {
-        this.subject = subject;
+        m_subject = subject;
     }
 
     /** 
@@ -140,12 +140,12 @@ public class OnmsNotification implements Serializable {
      *             length="256"
      *         
      */
-    public String getNumericmsg() {
-        return this.numericmsg;
+    public String getNumericMsg() {
+        return m_numericMsg;
     }
 
-    public void setNumericmsg(String numericmsg) {
-        this.numericmsg = numericmsg;
+    public void setNumericMsg(String numericmsg) {
+        m_numericMsg = numericmsg;
     }
 
     /** 
@@ -154,12 +154,12 @@ public class OnmsNotification implements Serializable {
      *             length="8"
      *         
      */
-    public Date getPagetime() {
-        return this.pagetime;
+    public Date getPageTime() {
+        return m_pageTime;
     }
 
-    public void setPagetime(Date pagetime) {
-        this.pagetime = pagetime;
+    public void setPageTime(Date pagetime) {
+        m_pageTime = pagetime;
     }
 
     /** 
@@ -168,12 +168,12 @@ public class OnmsNotification implements Serializable {
      *             length="8"
      *         
      */
-    public Date getRespondtime() {
-        return this.respondtime;
+    public Date getRespondTime() {
+        return m_respondTime;
     }
 
-    public void setRespondtime(Date respondtime) {
-        this.respondtime = respondtime;
+    public void setRespondTime(Date respondtime) {
+        m_respondTime = respondtime;
     }
 
     /** 
@@ -182,12 +182,12 @@ public class OnmsNotification implements Serializable {
      *             length="256"
      *         
      */
-    public String getAnsweredby() {
-        return this.answeredby;
+    public String getAnsweredBy() {
+        return m_answeredBy;
     }
 
-    public void setAnsweredby(String answeredby) {
-        this.answeredby = answeredby;
+    public void setAnsweredBy(String answeredby) {
+        m_answeredBy = answeredby;
     }
 
     /** 
@@ -196,12 +196,12 @@ public class OnmsNotification implements Serializable {
      *             length="16"
      *         
      */
-    public String getInterfaceid() {
-        return this.interfaceid;
+    public OnmsIpInterface getInterface() {
+        return m_interface;
     }
 
-    public void setInterfaceid(String interfaceid) {
-        this.interfaceid = interfaceid;
+    public void setInterface(OnmsIpInterface interfaceId) {
+        m_interface = interfaceId;
     }
 
     /** 
@@ -210,12 +210,12 @@ public class OnmsNotification implements Serializable {
      *             length="4"
      *         
      */
-    public Integer getServiceid() {
-        return this.serviceid;
+    public OnmsMonitoredService getService() {
+        return m_service;
     }
 
-    public void setServiceid(Integer serviceid) {
-        this.serviceid = serviceid;
+    public void setService(OnmsMonitoredService serviceId) {
+        m_service = serviceId;
     }
 
     /** 
@@ -224,12 +224,12 @@ public class OnmsNotification implements Serializable {
      *             length="256"
      *         
      */
-    public String getQueueid() {
-        return this.queueid;
+    public String getQueueId() {
+        return m_queueId;
     }
 
-    public void setQueueid(String queueid) {
-        this.queueid = queueid;
+    public void setQueueId(String queueid) {
+        m_queueId = queueid;
     }
 
     /** 
@@ -239,12 +239,12 @@ public class OnmsNotification implements Serializable {
      *             not-null="true"
      *         
      */
-    public String getEventuei() {
-        return this.eventuei;
+    public String getEventUEI() {
+        return m_eventUEI;
     }
 
-    public void setEventuei(String eventuei) {
-        this.eventuei = eventuei;
+    public void setEventUEI(String eventuei) {
+        m_eventUEI = eventuei;
     }
 
     /** 
@@ -254,11 +254,11 @@ public class OnmsNotification implements Serializable {
      *         
      */
     public org.opennms.netmgt.model.OnmsEvent getEvent() {
-        return this.event;
+        return m_event;
     }
 
     public void setEvent(org.opennms.netmgt.model.OnmsEvent event) {
-        this.event = event;
+        m_event = event;
     }
 
     /** 
@@ -268,11 +268,11 @@ public class OnmsNotification implements Serializable {
      *         
      */
     public org.opennms.netmgt.model.OnmsNode getNode() {
-        return this.node;
+        return m_node;
     }
 
     public void setNode(org.opennms.netmgt.model.OnmsNode node) {
-        this.node = node;
+        m_node = node;
     }
 
     /** 
@@ -292,18 +292,24 @@ public class OnmsNotification implements Serializable {
      *             class="org.opennms.netmgt.model.OnmsUserNotification"
      *         
      */
-    public Set getUsersnotifieds() {
-        return this.usersnotifieds;
+    public Set getUsersNotified() {
+        return m_usersNotified;
     }
 
-    public void setUsersnotifieds(Set usersnotifieds) {
-        this.usersnotifieds = usersnotifieds;
+    public void setUsersNotified(Set usersnotifieds) {
+        m_usersNotified = usersnotifieds;
     }
 
     public String toString() {
         return new ToStringCreator(this)
-            .append("notifyid", getNotifyid())
+            .append("notifyid", getNotifyId())
             .toString();
     }
+
+	public void visit(EntityVisitor visitor) {
+		// TODO Auto-generated method stub
+		throw new RuntimeException("visitor method not implemented");
+	
+	}
 
 }
