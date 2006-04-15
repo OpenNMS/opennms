@@ -378,54 +378,54 @@ final class SnmpCollector implements ServiceCollector {
 	private void initDatabaseConnectionFactory() {
 		try {
 			DatabaseConnectionFactory.init();
-		} catch (IOException ie) {
-			log().fatal("initialize: IOException getting database connection", ie);
-			throw new UndeclaredThrowableException(ie);
-		} catch (MarshalException me) {
-			log().fatal("initialize: Marshall Exception getting database connection", me);
-			throw new UndeclaredThrowableException(me);
-		} catch (ValidationException ve) {
-			log().fatal("initialize: Validation Exception getting database connection", ve);
-			throw new UndeclaredThrowableException(ve);
-		} catch (SQLException sqlE) {
-			log().fatal("initialize: Failed getting connection to the database.", sqlE);
-			throw new UndeclaredThrowableException(sqlE);
+		} catch (IOException e) {
+			log().fatal("initialize: IOException getting database connection", e);
+			throw new UndeclaredThrowableException(e);
+		} catch (MarshalException e) {
+			log().fatal("initialize: Marshall Exception getting database connection", e);
+			throw new UndeclaredThrowableException(e);
+		} catch (ValidationException e) {
+			log().fatal("initialize: Validation Exception getting database connection", e);
+			throw new UndeclaredThrowableException(e);
+		} catch (SQLException e) {
+			log().fatal("initialize: Failed getting connection to the database.", e);
+			throw new UndeclaredThrowableException(e);
 		} catch (PropertyVetoException e) {
 			log().fatal("initialize: Failed getting connection to the database.", e);
 			throw new UndeclaredThrowableException(e);
-		} catch (ClassNotFoundException cnfE) {
-			log().fatal("initialize: Failed loading database driver.", cnfE);
-			throw new UndeclaredThrowableException(cnfE);
+		} catch (ClassNotFoundException e) {
+			log().fatal("initialize: Failed loading database driver.", e);
+			throw new UndeclaredThrowableException(e);
 		}
 	}
 
 	private void initDataCollectionConfig() {
 		try {
 			DataCollectionConfigFactory.reload();
-		} catch (MarshalException ex) {
-			log().fatal("initialize: Failed to load data collection configuration", ex);
-			throw new UndeclaredThrowableException(ex);
-		} catch (ValidationException ex) {
-			log().fatal("initialize: Failed to load data collection configuration", ex);
-			throw new UndeclaredThrowableException(ex);
-		} catch (IOException ex) {
-			log().fatal("initialize: Failed to load data collection configuration", ex);
-			throw new UndeclaredThrowableException(ex);
+		} catch (MarshalException e) {
+			log().fatal("initialize: Failed to load data collection configuration", e);
+			throw new UndeclaredThrowableException(e);
+		} catch (ValidationException e) {
+			log().fatal("initialize: Failed to load data collection configuration", e);
+			throw new UndeclaredThrowableException(e);
+		} catch (IOException e) {
+			log().fatal("initialize: Failed to load data collection configuration", e);
+			throw new UndeclaredThrowableException(e);
 		}
 	}
 
 	private void initSnmpPeerFactory() {
 		try {
 			SnmpPeerFactory.init();
-		} catch (MarshalException ex) {
-			log().fatal("initialize: Failed to load SNMP configuration", ex);
-			throw new UndeclaredThrowableException(ex);
-		} catch (ValidationException ex) {
-			log().fatal("initialize: Failed to load SNMP configuration", ex);
-			throw new UndeclaredThrowableException(ex);
-		} catch (IOException ex) {
-			log().fatal("initialize: Failed to load SNMP configuration", ex);
-			throw new UndeclaredThrowableException(ex);
+		} catch (MarshalException e) {
+			log().fatal("initialize: Failed to load SNMP configuration", e);
+			throw new UndeclaredThrowableException(e);
+		} catch (ValidationException e) {
+			log().fatal("initialize: Failed to load SNMP configuration", e);
+			throw new UndeclaredThrowableException(e);
+		} catch (IOException e) {
+			log().fatal("initialize: Failed to load SNMP configuration", e);
+			throw new UndeclaredThrowableException(e);
 		}
 	}
 
@@ -483,11 +483,11 @@ final class SnmpCollector implements ServiceCollector {
 		java.sql.Connection dbConn = null;
 		try {
 			dbConn = DatabaseConnectionFactory.getInstance().getConnection();
-		} catch (SQLException sqlE) {
+		} catch (SQLException e) {
 			log().error(
 					"initialize: Failed getting connection to the database.",
-					sqlE);
-			throw new UndeclaredThrowableException(sqlE);
+					e);
+			throw new UndeclaredThrowableException(e);
 		}
 
 		int nodeID = -1;
@@ -535,8 +535,8 @@ final class SnmpCollector implements ServiceCollector {
 				}
 
 				rs.close();
-			} catch (SQLException sqle) {
-				log().debug("initialize: SQL exception!!", sqle);
+			} catch (SQLException e) {
+				log().debug("initialize: SQL exception", e);
 				throw new RuntimeException("SQL exception while attempting "
 						+ "to retrieve node id for interface "
 						+ ipAddr.getHostAddress());
@@ -548,12 +548,13 @@ final class SnmpCollector implements ServiceCollector {
 				}
 			}
 
-			if (log().isDebugEnabled())
+			if (log().isDebugEnabled()) {
 				log().debug(
 						"initialize: db retrieval info: nodeid = " + nodeID
 								+ ", address = " + ipAddr.getHostAddress()
 								+ ", primaryIfIndex = " + primaryIfIndex
 								+ ", isSnmpPrimary = " + isSnmpPrimary);
+            }
 
 			/*
 			 * RuntimeException is thrown if any of the following are true: -
@@ -599,17 +600,18 @@ final class SnmpCollector implements ServiceCollector {
 					sysoid = null;
 				}
 				rs.close();
-			} catch (SQLException sqle) {
+			} catch (SQLException e) {
 				log().debug("initialize: SQL exception retrieving the node id",
-						sqle);
+						e);
 				throw new RuntimeException("SQL exception while attempting "
-						+ "to retrieve interface's node id");
-			} catch (NullPointerException npe) {
+						+ "to retrieve interface's node id", e);
+			} catch (NullPointerException e) {
 				/*
 				 * Thrown by ResultSet.getString() if database query did not
 				 * return anything.
+                  * XXX this is a bad hack
 				 */
-				log().debug("initialize: NullPointerException", npe);
+				log().debug("initialize: NullPointerException", e);
 				sysoid = null;
 			} finally {
 				try {
@@ -671,10 +673,10 @@ final class SnmpCollector implements ServiceCollector {
 					snmpv2Supported = false;
 				}
 				rs.close();
-			} catch (SQLException sqle) {
-				log().debug("initialize: SQL exception!!", sqle);
+			} catch (SQLException e) {
+				log().debug("initialize: SQL exception!!", e);
 				throw new RuntimeException("SQL exception while attempting "
-						+ "to retrieve snmp version information");
+						+ "to retrieve snmp version information", e);
 			} finally {
 				try {
 					stmt.close();
@@ -859,18 +861,18 @@ final class SnmpCollector implements ServiceCollector {
 					ifMap.put(new Integer(index), ifInfo);
 				}
 				rs.close();
-			} catch (SQLException sqle) {
-				log().debug("initialize: SQL exception!!", sqle);
+			} catch (SQLException e) {
+				log().debug("initialize: SQL exception!!", e);
 				throw new RuntimeException("SQL exception while attempting "
-						+ "to retrieve snmp interface info");
-			} catch (NullPointerException npe) {
+						+ "to retrieve snmp interface info", e);
+			} catch (NullPointerException e) {
 				/*
 				 * Thrown by ResultSet.getString() if database query did not
 				 * return anything
 				 */
-				log().debug("initialize: NullPointerException", npe);
+				log().debug("initialize: NullPointerException", e);
 				throw new RuntimeException("NullPointerException while "
-						+ "attempting to retrieve snmp interface info");
+						+ "attempting to retrieve snmp interface info", e);
 			} finally {
 				try {
 					stmt.close();
@@ -919,10 +921,10 @@ final class SnmpCollector implements ServiceCollector {
 			// Done with the database so close the connection
 			try {
 				dbConn.close();
-			} catch (SQLException sqle) {
+			} catch (SQLException e) {
 				log().info(
 						"initialize: SQLException while closing database "
-								+ "connection", sqle);
+								+ "connection", e);
 			}
 		}
 
@@ -1793,20 +1795,20 @@ final class SnmpCollector implements ServiceCollector {
 				while (rs.next()) {
 					ifAliasMap.put(rs.getString(1), rs.getString(2));
 				}
-			} catch (SQLException sqlE) {
-				throw sqlE;
+			} catch (SQLException e) {
+				throw e;
 			}
-		} catch (SQLException sqlE) {
-			log.error("Failed getting connection to the database.", sqlE);
-			throw new UndeclaredThrowableException(sqlE);
+		} catch (SQLException e) {
+			log.error("Failed getting connection to the database.", e);
+			throw new UndeclaredThrowableException(e);
 		} finally {
 			// Done with the database so close the connection
 			try {
 				dbConn.close();
-			} catch (SQLException sqle) {
+			} catch (SQLException e) {
 				log
 						.info("SQLException while closing database connection",
-								sqle);
+								e);
 			}
 		}
 		return ifAliasMap;
@@ -1851,30 +1853,30 @@ final class SnmpCollector implements ServiceCollector {
 								}
 							}
 						}
-					} catch (SQLException sqlE) {
-						throw sqlE;
+					} catch (SQLException e) {
+						throw e;
 					} finally {
 						stmt2.close();
 					}
 				} else {
 					force = false;
 				}
-			} catch (SQLException sqlE) {
-				throw sqlE;
+			} catch (SQLException e) {
+				throw e;
 			} finally {
 				stmt1.close();
 			}
-		} catch (SQLException sqlE) {
-			log.error("Failed getting connection to the database.", sqlE);
-			throw new UndeclaredThrowableException(sqlE);
+		} catch (SQLException e) {
+			log.error("Failed getting connection to the database.", e);
+			throw new UndeclaredThrowableException(e);
 		} finally {
 			// Done with the database so close the connection
 			try {
 				dbConn.close();
-			} catch (SQLException sqle) {
+			} catch (SQLException e) {
 				log
 						.info("SQLException while closing database connection",
-								sqle);
+								e);
 			}
 		}
 		return force;
