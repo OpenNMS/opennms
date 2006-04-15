@@ -54,6 +54,8 @@ import java.util.ListIterator;
 import java.util.Set;
 
 import org.apache.log4j.Category;
+import org.exolab.castor.xml.MarshalException;
+import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.capsd.EventUtils;
@@ -99,7 +101,6 @@ public final class Collectd extends ServiceDaemon implements EventListener {
 
     /**
      * Indicates if scheduling of existing interfaces has been completed
-     * 
      */
     private boolean m_schedulingCompleted = false;
 
@@ -202,9 +203,8 @@ public final class Collectd extends ServiceDaemon implements EventListener {
             public void run() {
                 try {
                     scheduleExistingInterfaces();
-                } catch (SQLException sqlE) {
-                    log().error("start: Failed to schedule existing interfaces",
-                              sqlE);
+                } catch (SQLException e) {
+                    log().error("start: Failed to schedule existing interfaces", e);
                 } finally {
                     setSchedulingCompleted(true);
                 }
@@ -226,7 +226,7 @@ public final class Collectd extends ServiceDaemon implements EventListener {
         }
     }
 
-	/**
+   /**
      * Responsible for starting the collection daemon.
      */
     public synchronized void start() {
@@ -353,9 +353,9 @@ public final class Collectd extends ServiceDaemon implements EventListener {
     	} // end while more service collectors
     }
 
-	private Set getCollectorNames() {
-		return m_collectorConfigDao.getCollectorName();
-	}
+    private Set getCollectorNames() {
+        return m_collectorConfigDao.getCollectorName();
+    }
 
     /**
      * This method is responsible for scheduling the specified

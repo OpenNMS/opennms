@@ -83,7 +83,7 @@ VERBOSE_GC=""
 RUNJAVA_OPTIONS=""
 
 # URL that this script uses to communicate with a running OpenNMS daemon.
-INVOKE_URL="http://127.0.0.1:8181/invoke?objectname=OpenNMS:Name=FastExit"
+INVOKE_URL="http://127.0.0.1:8181/invoke?objectname=OpenNMS:Name=Manager"
 
 #### ------------> DO NOT CHANGE VARIABLES IN THIS FILE <------------- ####
 #### Create $OPENNMS_HOME/etc/opennms.conf and put overrides in there. ####

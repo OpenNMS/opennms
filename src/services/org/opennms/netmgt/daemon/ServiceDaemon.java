@@ -34,7 +34,6 @@ package org.opennms.netmgt.daemon;
 import org.opennms.core.fiber.PausableFiber;
 
 public abstract class ServiceDaemon implements PausableFiber {
-
     /**
      * The current status of this fiber
      */

@@ -38,12 +38,10 @@ import org.opennms.netmgt.poller.NetworkInterface;
 import org.opennms.netmgt.utils.EventProxy;
 
 /**
- * <P>
- * The Collector class...
- * </P>
+ * The Collector class.
  * 
- * @author <A HREF="mailto:mike@opennms.org">Mike </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
+ * @author <a href="mailto:mike@opennms.org">Mike</a>
+ * @author <a href="http://www.opennms.org/">OpenNMS</a>
  * 
  */
 public interface ServiceCollector {
@@ -56,7 +54,11 @@ public interface ServiceCollector {
 
     public static final int COLLECTION_FAILED = 2;
 
-    public static final String[] statusType = { "Unknown", "COLLECTION_SUCCEEDED", "COLLECTION_FAILED" };
+    public static final String[] statusType = {
+        "Unknown",
+        "COLLECTION_SUCCEEDED",
+        "COLLECTION_FAILED"
+        };
 
     public void initialize(Map parameters);
 
@@ -67,9 +69,7 @@ public interface ServiceCollector {
     public void release(NetworkInterface iface);
 
     /**
-     * <P>
      * Invokes a collection on the object.
-     * </P>
      */
     public int collect(NetworkInterface iface, EventProxy eproxy, Map parameters);
 }

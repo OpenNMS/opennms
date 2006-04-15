@@ -85,7 +85,7 @@ public class SpringBoardMBeanTest extends TestCase {
     "   </service>\n" + 
     "\n" + 
     "   <service>\n" + 
-    "       <name>OpenNMS:Name=FastExit</name>\n" + 
+    "       <name>OpenNMS:Name=Manager</name>\n" + 
     "       <class-name>org.opennms.netmgt.vmmgr.Manager</class-name>\n" + 
 //    "       <invoke at=\"stop\" pass=\"1\" method=\"doSystemExit\"/>\n" + 
     "   </service>\n" + 

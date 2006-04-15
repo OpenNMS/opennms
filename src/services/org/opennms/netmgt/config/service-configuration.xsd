@@ -72,10 +72,12 @@
 
       <attribute default="0" name="pass" type="int" use="optional"/>
 
-      <attribute default="start" name="at" use="optional">
+      <attribute name="at" use="required">
         <simpleType>
           <restriction base="string">
-            <pattern value="(start|stop|status)"/>
+            <enumeration value="start"/>
+            <enumeration value="stop"/>
+            <enumeration value="status"/>
           </restriction>
         </simpleType>
       </attribute>

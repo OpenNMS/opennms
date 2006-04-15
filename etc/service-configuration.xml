@@ -31,11 +31,11 @@ maintained
 			<name>AuthenticationMethod</name>
 			<value type="java.lang.String">basic</value>
 		</attribute>
-		<invoke pass="0" method="addAuthorization">
+		<invoke at="start" pass="0" method="addAuthorization">
 			<argument type="java.lang.String">admin</argument>
 			<argument type="java.lang.String">admin</argument>
 		</invoke>
-		<invoke pass="0" method="start"/>
+		<invoke at="start" pass="0" method="start"/>
 	</service>
 
 	<service>
@@ -53,15 +53,15 @@ maintained
 			<name>AuthenticationMethod</name>
 			<value type="java.lang.String">basic</value>
 		</attribute>
-		<invoke pass="0" method="addAuthorization">
+		<invoke at="start" pass="0" method="addAuthorization">
 			<argument type="java.lang.String">manager</argument>
 			<argument type="java.lang.String">manager</argument>
 		</invoke>
-		<invoke pass="0" method="start"/>
+		<invoke at="start" pass="0" method="start"/>
 	</service>
 
 	<service>
-		<name>OpenNMS:Name=FastExit</name>
+		<name>OpenNMS:Name=Manager</name>
 		<class-name>org.opennms.netmgt.vmmgr.Manager</class-name>
 		<invoke at="stop" pass="1" method="doSystemExit"/>
 	</service>
@@ -69,103 +69,103 @@ maintained
 	<service>
 		<name>OpenNMS:Name=Eventd</name>
 		<class-name>org.opennms.netmgt.eventd.jmx.Eventd</class-name>
-		<invoke pass="0" method="init"/>
-		<invoke pass="1" method="start"/>
+		<invoke at="start" pass="0" method="init"/>
+		<invoke at="start" pass="1" method="start"/>
 		<invoke at="status" pass="0" method="status"/>
 		<invoke at="stop" pass="0" method="stop"/>
 	</service>
 	<service>
 		<name>OpenNMS:Name=Trapd</name>
 		<class-name>org.opennms.netmgt.trapd.jmx.Trapd</class-name>
-		<invoke pass="0" method="init"/>
-		<invoke pass="1" method="start"/>
+		<invoke at="start" pass="0" method="init"/>
+		<invoke at="start" pass="1" method="start"/>
 		<invoke at="status" pass="0" method="status"/>
 		<invoke at="stop" pass="0" method="stop"/>
 	</service>
 	<service>
 		<name>OpenNMS:Name=Dhcpd</name>
 		<class-name>org.opennms.netmgt.dhcpd.jmx.Dhcpd</class-name>
-		<invoke pass="1" method="start"/>
+		<invoke at="start" pass="1" method="start"/>
 		<invoke at="status" pass="0" method="status"/>
 		<invoke at="stop" pass="0" method="stop"/>
 	</service>
 	<service>
 		<name>OpenNMS:Name=Actiond</name>
 		<class-name>org.opennms.netmgt.actiond.jmx.Actiond</class-name>
-		<invoke pass="0" method="init"/>
-		<invoke pass="1" method="start"/>
+		<invoke at="start" pass="0" method="init"/>
+		<invoke at="start" pass="1" method="start"/>
 		<invoke at="status" pass="0" method="status"/>
 		<invoke at="stop" pass="0" method="stop"/>
 	</service>
 	<service>
 		<name>OpenNMS:Name=Capsd</name>
 		<class-name>org.opennms.netmgt.capsd.jmx.Capsd</class-name>
-		<invoke pass="0" method="init"/>
-		<invoke pass="1" method="start"/>
+		<invoke at="start" pass="0" method="init"/>
+		<invoke at="start" pass="1" method="start"/>
 		<invoke at="status" pass="0" method="status"/>
 		<invoke at="stop" pass="0" method="stop"/>
 	</service>
 	<service>
 		<name>OpenNMS:Name=Notifd</name>
 		<class-name>org.opennms.netmgt.notifd.jmx.Notifd</class-name>
-		<invoke pass="0" method="init"/>
-		<invoke pass="1" method="start"/>
+		<invoke at="start" pass="0" method="init"/>
+		<invoke at="start" pass="1" method="start"/>
 		<invoke at="status" pass="0" method="status"/>
 		<invoke at="stop" pass="0" method="stop"/>
 	</service>
 	<service>
 		<name>OpenNMS:Name=Scriptd</name>
 		<class-name>org.opennms.netmgt.scriptd.jmx.Scriptd</class-name>
-		<invoke pass="0" method="init"/>
-		<invoke pass="1" method="start"/>
+		<invoke at="start" pass="0" method="init"/>
+		<invoke at="start" pass="1" method="start"/>
 		<invoke at="status" pass="0" method="status"/>
 		<invoke at="stop" pass="0" method="stop"/>
 	</service>
 	<service>
 		<name>OpenNMS:Name=Rtcd</name>
 		<class-name>org.opennms.netmgt.rtc.jmx.Rtcd</class-name>
-		<invoke pass="0" method="init"/>
-		<invoke pass="1" method="start"/>
+		<invoke at="start" pass="0" method="init"/>
+		<invoke at="start" pass="1" method="start"/>
 		<invoke at="status" pass="0" method="status"/>
 		<invoke at="stop" pass="0" method="stop"/>
 	</service>
 	<service>
 		<name>OpenNMS:Name=Pollerd</name>
 		<class-name>org.opennms.netmgt.poller.jmx.Pollerd</class-name>
-		<invoke pass="0" method="init"/>
-		<invoke pass="1" method="start"/>
+		<invoke at="start" pass="0" method="init"/>
+		<invoke at="start" pass="1" method="start"/>
 		<invoke at="status" pass="0" method="status"/>
 		<invoke at="stop" pass="0" method="stop"/>
 	</service>
 	<service>
 		<name>OpenNMS:Name=Collectd</name>
 		<class-name>org.opennms.netmgt.collectd.jmx.Collectd</class-name>
-		<invoke pass="0" method="init"/>
-		<invoke pass="1" method="start"/>
+		<invoke at="start" pass="0" method="init"/>
+		<invoke at="start" pass="1" method="start"/>
 		<invoke at="status" pass="0" method="status"/>
 		<invoke at="stop" pass="0" method="stop"/>
 	</service>
 	<service>
 		<name>OpenNMS:Name=Threshd</name>
 		<class-name>org.opennms.netmgt.threshd.jmx.Threshd</class-name>
-		<invoke pass="0" method="init"/>
-		<invoke pass="1" method="start"/>
+		<invoke at="start" pass="0" method="init"/>
+		<invoke at="start" pass="1" method="start"/>
 		<invoke at="status" pass="0" method="status"/>
 		<invoke at="stop" pass="0" method="stop"/>
 	</service>
 	<service>
 		<name>OpenNMS:Name=Discovery</name>
 		<class-name>org.opennms.netmgt.discovery.jmx.Discovery</class-name>
-		<invoke pass="0" method="init"/>
-		<invoke pass="1" method="start"/>
+		<invoke at="start" pass="0" method="init"/>
+		<invoke at="start" pass="1" method="start"/>
 		<invoke at="status" pass="0" method="status"/>
 		<invoke at="stop" pass="0" method="stop"/>
 	</service>
 	<service>
 		<name>OpenNMS:Name=Vacuumd</name>
 		<class-name>org.opennms.netmgt.vacuumd.jmx.Vacuumd</class-name>
-		<invoke pass="0" method="init"/>
-		<invoke pass="1" method="start"/>
+		<invoke at="start" pass="0" method="init"/>
+		<invoke at="start" pass="1" method="start"/>
 		<invoke at="status" pass="0" method="status"/>
 		<invoke at="stop" pass="0" method="stop"/>
 	</service>
@@ -173,16 +173,16 @@ maintained
         <service>
                 <name>OpenNMS:Name=Xmlrpcd</name>
                 <class-name>org.opennms.netmgt.xmlrpcd.jmx.Xmlrpcd</class-name>
-                <invoke pass="0" method="init"/>
-                <invoke pass="1" method="start"/>
+                <invoke at="start" pass="0" method="init"/>
+                <invoke at="start" pass="1" method="start"/>
                 <invoke at="status" pass="0" method="status"/>
                 <invoke at="stop" pass="0" method="stop"/>
         </service>
         <service>
                 <name>OpenNMS:Name=Provisioner</name>
                 <class-name>org.opennms.netmgt.xmlrpcd.jmx.Provisioner</class-name>
-                <invoke pass="0" method="init"/>
-                <invoke pass="1" method="start"/>
+                <invoke at="start" pass="0" method="init"/>
+                <invoke at="start" pass="1" method="start"/>
                 <invoke at="status" pass="0" method="status"/>
                 <invoke at="stop" pass="0" method="stop"/>
         </service>
@@ -190,16 +190,16 @@ maintained
         <service>
                 <name>OpenNMS:Name=EventTranslator</name>
                 <class-name>org.opennms.netmgt.translator.jmx.EventTranslator</class-name>
-                <invoke pass="0" method="init"/>
-                <invoke pass="1" method="start"/>
+                <invoke at="start" pass="0" method="init"/>
+                <invoke at="start" pass="1" method="start"/>
                 <invoke at="status" pass="0" method="status"/>
                 <invoke at="stop" pass="0" method="stop"/>
         </service>
         <service>
                 <name>OpenNMS:Name=PassiveStatusd</name>
                 <class-name>org.opennms.netmgt.passive.jmx.PassiveStatusd</class-name>
-                <invoke pass="0" method="init"/>
-                <invoke pass="1" method="start"/>
+                <invoke at="start" pass="0" method="init"/>
+                <invoke at="start" pass="1" method="start"/>
                 <invoke at="status" pass="0" method="status"/>
                 <invoke at="stop" pass="0" method="stop"/>
         </service>
@@ -208,8 +208,8 @@ maintained
         <service>
                 <name>OpenNMS:Name=Importer</name>
                 <class-name>org.opennms.netmgt.importer.jmx.ImporterService</class-name>
-                <invoke pass="0" method="init"/>
-                <invoke pass="1" method="start"/>
+                <invoke at="start" pass="0" method="init"/>
+                <invoke at="start" pass="1" method="start"/>
                 <invoke at="status" pass="0" method="status"/>
                 <invoke at="stop" pass="0" method="stop"/>
         </service>
