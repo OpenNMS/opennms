@@ -10,7 +10,7 @@ import org.springframework.core.style.ToStringCreator;
  *         table="vulnplugins"
  *     
 */
-public class OnmsVulnPlugin implements Serializable {
+public class OnmsVulnPlugin extends OnmsEntity implements Serializable {
 
     /**
      * 
@@ -18,53 +18,53 @@ public class OnmsVulnPlugin implements Serializable {
     private static final long serialVersionUID = 6665164524726559523L;
 
     /** identifier field */
-    private Integer pluginid;
+    private Integer m_plugInId;
 
     /** identifier field */
-    private Integer pluginsubid;
+    private Integer m_pluginSubId;
 
     /** identifier field */
-    private String name;
+    private String m_name;
 
     /** identifier field */
-    private String category;
+    private String m_category;
 
     /** identifier field */
-    private String copyright;
+    private String m_copyright;
 
     /** identifier field */
-    private String descr;
+    private String m_descr;
 
     /** identifier field */
-    private String summary;
+    private String m_summary;
 
     /** identifier field */
-    private String family;
+    private String m_family;
 
     /** identifier field */
-    private String version;
+    private String m_version;
 
     /** identifier field */
-    private String cveentry;
+    private String m_cveEntry;
 
     /** identifier field */
-    private String md5;
+    private String m_md5;
 
-    private Integer id;
+    private Integer m_id;
 
     /** full constructor */
-    public OnmsVulnPlugin(Integer pluginid, Integer pluginsubid, String name, String category, String copyright, String descr, String summary, String family, String version, String cveentry, String md5) {
-        this.pluginid = pluginid;
-        this.pluginsubid = pluginsubid;
-        this.name = name;
-        this.category = category;
-        this.copyright = copyright;
-        this.descr = descr;
-        this.summary = summary;
-        this.family = family;
-        this.version = version;
-        this.cveentry = cveentry;
-        this.md5 = md5;
+    public OnmsVulnPlugin(Integer pluginId, Integer pluginSubId, String name, String category, String copyright, String descr, String summary, String family, String version, String cveEntry, String md5) {
+        m_plugInId = pluginId;
+        m_pluginSubId = pluginSubId;
+        m_name = name;
+        m_category = category;
+        m_copyright = copyright;
+        m_descr = descr;
+        m_summary = summary;
+        m_family = family;
+        m_version = version;
+        m_cveEntry = cveEntry;
+        m_md5 = md5;
     }
 
     /** default constructor */
@@ -79,41 +79,41 @@ public class OnmsVulnPlugin implements Serializable {
      *         
      */
     public Integer getId() {
-        return id;
+        return m_id;
     }
     
     public void setId(Integer id) {
-        this.id = id;
+        m_id = id;
     }
 
     
 
     /** 
      *                @hibernate.property
-     *                 column="pluginid"
+     *                 column="pluginId"
      *                 length="4"
      *             
      */
-    public Integer getPluginid() {
-        return this.pluginid;
+    public Integer getPlugInId() {
+        return m_plugInId;
     }
 
-    public void setPluginid(Integer pluginid) {
-        this.pluginid = pluginid;
+    public void setPlugInId(Integer pluginId) {
+        m_plugInId = pluginId;
     }
 
     /** 
      *                @hibernate.property
-     *                 column="pluginsubid"
+     *                 column="pluginSubId"
      *                 length="4"
      *             
      */
-    public Integer getPluginsubid() {
-        return this.pluginsubid;
+    public Integer getPluginSubId() {
+        return m_pluginSubId;
     }
 
-    public void setPluginsubid(Integer pluginsubid) {
-        this.pluginsubid = pluginsubid;
+    public void setPluginSubId(Integer pluginSubId) {
+        m_pluginSubId = pluginSubId;
     }
 
     /** 
@@ -123,11 +123,11 @@ public class OnmsVulnPlugin implements Serializable {
      *             
      */
     public String getName() {
-        return this.name;
+        return m_name;
     }
 
     public void setName(String name) {
-        this.name = name;
+        m_name = name;
     }
 
     /** 
@@ -137,11 +137,11 @@ public class OnmsVulnPlugin implements Serializable {
      *             
      */
     public String getCategory() {
-        return this.category;
+        return m_category;
     }
 
     public void setCategory(String category) {
-        this.category = category;
+        m_category = category;
     }
 
     /** 
@@ -151,11 +151,11 @@ public class OnmsVulnPlugin implements Serializable {
      *             
      */
     public String getCopyright() {
-        return this.copyright;
+        return m_copyright;
     }
 
     public void setCopyright(String copyright) {
-        this.copyright = copyright;
+        m_copyright = copyright;
     }
 
     /** 
@@ -165,11 +165,11 @@ public class OnmsVulnPlugin implements Serializable {
      *             
      */
     public String getDescr() {
-        return this.descr;
+        return m_descr;
     }
 
     public void setDescr(String descr) {
-        this.descr = descr;
+        m_descr = descr;
     }
 
     /** 
@@ -179,11 +179,11 @@ public class OnmsVulnPlugin implements Serializable {
      *             
      */
     public String getSummary() {
-        return this.summary;
+        return m_summary;
     }
 
     public void setSummary(String summary) {
-        this.summary = summary;
+        m_summary = summary;
     }
 
     /** 
@@ -193,11 +193,11 @@ public class OnmsVulnPlugin implements Serializable {
      *             
      */
     public String getFamily() {
-        return this.family;
+        return m_family;
     }
 
     public void setFamily(String family) {
-        this.family = family;
+        m_family = family;
     }
 
     /** 
@@ -207,25 +207,25 @@ public class OnmsVulnPlugin implements Serializable {
      *             
      */
     public String getVersion() {
-        return this.version;
+        return m_version;
     }
 
     public void setVersion(String version) {
-        this.version = version;
+        m_version = version;
     }
 
     /** 
      *                @hibernate.property
-     *                 column="cveentry"
+     *                 column="cveEntry"
      *                 length="14"
      *             
      */
-    public String getCveentry() {
-        return this.cveentry;
+    public String getCveEntry() {
+        return m_cveEntry;
     }
 
-    public void setCveentry(String cveentry) {
-        this.cveentry = cveentry;
+    public void setCveEntry(String cveEntry) {
+        m_cveEntry = cveEntry;
     }
 
     /** 
@@ -235,17 +235,17 @@ public class OnmsVulnPlugin implements Serializable {
      *             
      */
     public String getMd5() {
-        return this.md5;
+        return m_md5;
     }
 
     public void setMd5(String md5) {
-        this.md5 = md5;
+        m_md5 = md5;
     }
 
     public String toString() {
         return new ToStringCreator(this)
-            .append("pluginid", getPluginid())
-            .append("pluginsubid", getPluginsubid())
+            .append("pluginId", getPlugInId())
+            .append("pluginSubId", getPluginSubId())
             .append("name", getName())
             .append("category", getCategory())
             .append("copyright", getCopyright())
@@ -253,9 +253,15 @@ public class OnmsVulnPlugin implements Serializable {
             .append("summary", getSummary())
             .append("family", getFamily())
             .append("version", getVersion())
-            .append("cveentry", getCveentry())
+            .append("cveEntry", getCveEntry())
             .append("md5", getMd5())
             .toString();
     }
+
+	public void visit(EntityVisitor visitor) {
+		// TODO Auto-generated method stub
+		throw new RuntimeException("visitor method not implemented");
+
+	}
 
 }
