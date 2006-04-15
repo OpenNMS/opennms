@@ -301,7 +301,7 @@ public class QueuingRrdStrategy implements RrdStrategy, Runnable {
 
             // keep stats
             if (++updatesCompleted % MODULUS == 0) {
-                printStats();
+                logStats();
             }
             // return the open rrd for further processing
             return rrd;
@@ -346,7 +346,7 @@ public class QueuingRrdStrategy implements RrdStrategy, Runnable {
 
                 // keep stats
                 if (++updatesCompleted % MODULUS == 0) {
-                    printStats();
+                    logStats();
                 }
             }
             return rrd;
@@ -850,7 +850,7 @@ public class QueuingRrdStrategy implements RrdStrategy, Runnable {
             }
         } catch (Exception e) {
             errors++;
-            printLapTime("Error updating file " + fileName + ": " + e.getMessage());
+            logLapTime("Error updating file " + fileName + ": " + e.getMessage());
             e.printStackTrace();
         } finally {
             processClose(rrd);
@@ -864,9 +864,8 @@ public class QueuingRrdStrategy implements RrdStrategy, Runnable {
         if (rrd != null) {
             try {
                 m_delegate.closeFile(rrd);
-            } catch (Exception e) {
-                printLapTime("Error closing file " + e.getMessage());
-                e.printStackTrace();
+            } catch (Throwable t) {
+                logLapTime("Throwable received while closing file", t);
             }
         }
     }
@@ -925,12 +924,16 @@ public class QueuingRrdStrategy implements RrdStrategy, Runnable {
         return stats;
     }
 
-    public void printStats() {
-        printLapTime(getStats());
+    public void logStats() {
+        logLapTime(getStats());
     }
 
-    void printLapTime(String message) {
+    void logLapTime(String message) {
         log(message + " " + getLapTime());
+    }
+    
+    void logLapTime(String message, Throwable t) {
+        log(message + " " + getLapTime(), t);
     }
 
     /**
@@ -941,6 +944,13 @@ public class QueuingRrdStrategy implements RrdStrategy, Runnable {
         Category log = Category.getInstance(LOG4J_CATEGORY);
 
         log.debug(msg);
+    }
+    
+    private void log(String msg, Throwable t) {
+        // get the category logger
+        Category log = Category.getInstance(LOG4J_CATEGORY);
+
+        log.debug(msg, t);
     }
 
     public String getLapTime() {
