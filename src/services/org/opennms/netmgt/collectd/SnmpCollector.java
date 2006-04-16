@@ -67,7 +67,7 @@ import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.capsd.DbIpInterfaceEntry;
 import org.opennms.netmgt.config.DataCollectionConfigFactory;
-import org.opennms.netmgt.config.DatabaseConnectionFactory;
+import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.poller.NetworkInterface;
 import org.opennms.netmgt.rrd.RrdException;
@@ -377,7 +377,7 @@ final class SnmpCollector implements ServiceCollector {
 
 	private void initDatabaseConnectionFactory() {
 		try {
-			DatabaseConnectionFactory.init();
+			DataSourceFactory.init();
 		} catch (IOException e) {
 			log().fatal("initialize: IOException getting database connection", e);
 			throw new UndeclaredThrowableException(e);
@@ -480,9 +480,9 @@ final class SnmpCollector implements ServiceCollector {
 		 * Get database connection in order to retrieve the nodeid, ifIndex and
 		 * sysoid information from the database for this interface.
 		 */
-		java.sql.Connection dbConn = null;
+		java.sql.Connection dsConn = null;
 		try {
-			dbConn = DatabaseConnectionFactory.getInstance().getConnection();
+			dsConn = DataSourceFactory.getInstance().getConnection();
 		} catch (SQLException e) {
 			log().error(
 					"initialize: Failed getting connection to the database.",
@@ -509,7 +509,7 @@ final class SnmpCollector implements ServiceCollector {
 			 */
 			PreparedStatement stmt = null;
 			try {
-				stmt = dbConn.prepareStatement(SQL_GET_NODEID);
+				stmt = dsConn.prepareStatement(SQL_GET_NODEID);
 				stmt.setString(1, ipAddr.getHostAddress()); // interface
 				// address
 				ResultSet rs = stmt.executeQuery();
@@ -591,7 +591,7 @@ final class SnmpCollector implements ServiceCollector {
 			 * object id (sysoid)
 			 */
 			try {
-				stmt = dbConn.prepareStatement(SQL_GET_NODESYSOID);
+				stmt = dsConn.prepareStatement(SQL_GET_NODESYSOID);
 				stmt.setInt(1, nodeID); // node ID
 				ResultSet rs = stmt.executeQuery();
 				if (rs.next()) {
@@ -663,7 +663,7 @@ final class SnmpCollector implements ServiceCollector {
 			 * version of node
 			 */
 			try {
-				stmt = dbConn.prepareStatement(SQL_CHECK_SNMPV2);
+				stmt = dsConn.prepareStatement(SQL_CHECK_SNMPV2);
 				stmt.setInt(1, nodeID);
 				ResultSet rs = stmt.executeQuery();
 				if (rs.next()) {
@@ -711,7 +711,7 @@ final class SnmpCollector implements ServiceCollector {
 
 			PreparedStatement stmt1 = null;
 			try {
-				stmt = dbConn.prepareStatement(SQL_GET_SNMP_INFO);
+				stmt = dsConn.prepareStatement(SQL_GET_SNMP_INFO);
 				stmt.setInt(1, nodeID);
 				ResultSet rs = stmt.executeQuery();
 
@@ -721,7 +721,7 @@ final class SnmpCollector implements ServiceCollector {
 				 * The issnmpprimary value can then be checked to see if SNMP
 				 * collection needs to be done on it.
 				 */
-				stmt1 = dbConn.prepareStatement(SQL_GET_ISSNMPPRIMARY);
+				stmt1 = dsConn.prepareStatement(SQL_GET_ISSNMPPRIMARY);
 				stmt1.setInt(1, nodeID); // interface address
 				ResultSet rs1 = stmt1.executeQuery();
 
@@ -920,7 +920,7 @@ final class SnmpCollector implements ServiceCollector {
 		} finally {
 			// Done with the database so close the connection
 			try {
-				dbConn.close();
+				dsConn.close();
 			} catch (SQLException e) {
 				log().info(
 						"initialize: SQLException while closing database "
@@ -1778,16 +1778,16 @@ final class SnmpCollector implements ServiceCollector {
 	 */
 	private Map getIfAliasesFromDb(int nodeID) {
 		Category log = ThreadCategory.getInstance(getClass());
-		java.sql.Connection dbConn = null;
+		java.sql.Connection dsConn = null;
 		Map ifAliasMap = new HashMap();
 		if (log.isDebugEnabled()) {
 			log.debug("building ifAliasMap for node " + nodeID);
 		}
 
 		try {
-			dbConn = DatabaseConnectionFactory.getInstance().getConnection();
+			dsConn = DataSourceFactory.getInstance().getConnection();
 
-			PreparedStatement stmt = dbConn
+			PreparedStatement stmt = dsConn
 					.prepareStatement(SQL_GET_SNMPIFALIASES);
 			stmt.setInt(1, nodeID);
 			try {
@@ -1804,7 +1804,7 @@ final class SnmpCollector implements ServiceCollector {
 		} finally {
 			// Done with the database so close the connection
 			try {
-				dbConn.close();
+				dsConn.close();
 			} catch (SQLException e) {
 				log
 						.info("SQLException while closing database connection",
@@ -1823,15 +1823,15 @@ final class SnmpCollector implements ServiceCollector {
 	 */
 	private boolean isForceRescanInProgress(int nodeID, String addr) {
 		Category log = ThreadCategory.getInstance(getClass());
-		java.sql.Connection dbConn = null;
+		java.sql.Connection dsConn = null;
 		boolean force = true;
 
 		try {
-			dbConn = DatabaseConnectionFactory.getInstance().getConnection();
+			dsConn = DataSourceFactory.getInstance().getConnection();
 
-			PreparedStatement stmt1 = dbConn
+			PreparedStatement stmt1 = dsConn
 					.prepareStatement(SQL_GET_LATEST_FORCED_RESCAN_EVENTID);
-			PreparedStatement stmt2 = dbConn
+			PreparedStatement stmt2 = dsConn
 					.prepareStatement(SQL_GET_LATEST_RESCAN_COMPLETED_EVENTID);
 			stmt1.setInt(1, nodeID);
 			stmt1.setString(2, addr);
@@ -1872,7 +1872,7 @@ final class SnmpCollector implements ServiceCollector {
 		} finally {
 			// Done with the database so close the connection
 			try {
-				dbConn.close();
+				dsConn.close();
 			} catch (SQLException e) {
 				log
 						.info("SQLException while closing database connection",

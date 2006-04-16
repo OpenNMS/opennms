@@ -61,7 +61,7 @@ import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.capsd.EventUtils;
 import org.opennms.netmgt.capsd.InsufficientInformationException;
 import org.opennms.netmgt.config.CollectdConfigFactory;
-import org.opennms.netmgt.config.DatabaseConnectionFactory;
+import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.config.collectd.Package;
 import org.opennms.netmgt.daemon.ServiceDaemon;
@@ -129,7 +129,7 @@ public final class Collectd extends ServiceDaemon implements EventListener {
 
         m_collectorConfigDao = new CollectorConfigDaoImpl();
         m_scheduledOutagesDao = new ScheduledOutagesDaoImpl();
-        m_monSvcDao = new MonitoredServiceDaoJdbc(DatabaseConnectionFactory.getInstance());
+        m_monSvcDao = new MonitoredServiceDaoJdbc(DataSourceFactory.getInstance());
         
         log().debug("init: Loading collectors");
 
