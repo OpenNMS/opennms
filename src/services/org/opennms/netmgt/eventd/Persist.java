@@ -46,7 +46,7 @@ import java.util.List;
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
-import org.opennms.netmgt.config.DatabaseConnectionFactory;
+import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.eventd.db.AutoAction;
 import org.opennms.netmgt.eventd.db.Constants;
 import org.opennms.netmgt.eventd.db.OperatorAction;
@@ -137,7 +137,7 @@ class Persist {
     /**
      * The database connection
      */
-    protected Connection m_dbConn;
+    protected Connection m_dsConn;
 
     /**
      * SQL statement to get service id for a service name
@@ -813,7 +813,7 @@ class Persist {
      */
     public Persist() throws SQLException {
         // Get a database connection
-        m_dbConn = DatabaseConnectionFactory.getInstance().getConnection();
+        m_dsConn = DataSourceFactory.getInstance().getConnection();
     }
 
     /**
@@ -821,7 +821,7 @@ class Persist {
      */
     public void close() {
         try {
-            m_dbConn.close();
+            m_dsConn.close();
         } catch (SQLException e) {
             ThreadCategory.getInstance(EventWriter.class).warn("SQLException while closing database connection", e);
         }

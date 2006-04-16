@@ -41,7 +41,7 @@ import org.exolab.castor.xml.ValidationException;
 import org.jmock.cglib.MockObjectTestCase;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.capsd.EventUtils;
-import org.opennms.netmgt.config.DatabaseConnectionFactory;
+import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.EventTranslatorConfigFactory;
 import org.opennms.netmgt.mock.EventAnticipator;
 import org.opennms.netmgt.mock.MockDatabase;
@@ -119,7 +119,7 @@ public class EventTranslatorTest extends MockObjectTestCase {
         m_translator.destroy();
         sleep(200);
         MockLogAppender.assertNoWarningsOrGreater();
-        DatabaseConnectionFactory.setInstance(null);
+        DataSourceFactory.setInstance(null);
         m_db.drop();
         MockUtil.println("------------ End Test "+getName()+" --------------------------");
         super.tearDown();
@@ -134,7 +134,7 @@ public class EventTranslatorTest extends MockObjectTestCase {
     private void createMockDb() {
         m_db = new MockDatabase();
         m_db.populate(m_network);
-        DatabaseConnectionFactory.setInstance(m_db);
+        DataSourceFactory.setInstance(m_db);
     }
 
     private void createMockNetwork() {

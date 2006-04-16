@@ -33,7 +33,7 @@ package org.opennms.web.webtests;
 
 import java.io.StringBufferInputStream;
 
-import org.opennms.netmgt.config.DatabaseConnectionFactory;
+import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.eventd.Eventd;
 import org.opennms.netmgt.mock.MockDatabase;
 import org.opennms.netmgt.mock.MockEventConfigManager;
@@ -265,7 +265,7 @@ public class MainPageWebTest extends OpenNMSWebTestCase {
         m_db = new MockDatabase();
         m_db.populate(m_network);
         
-        DatabaseConnectionFactory.setInstance(m_db);
+        DataSourceFactory.setInstance(m_db);
         
         MockEventConfigManager eventdConfigMgr = new MockEventConfigManager(config_xml);
         MockEventIpcManager ipcMgr = new MockEventIpcManager();

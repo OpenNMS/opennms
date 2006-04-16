@@ -45,7 +45,7 @@ import net.sourceforge.jwebunit.WebTestCase;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
-import org.opennms.netmgt.config.DatabaseConnectionFactory;
+import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.common.BasicSchedule;
 import org.opennms.netmgt.config.common.Time;
 import org.opennms.netmgt.config.poller.Outage;
@@ -282,7 +282,7 @@ public class OutageEditorWebTest extends OpenNMSWebTestCase {
         m_db = new MockDatabase();
         m_db.populate(m_network);
         
-        DatabaseConnectionFactory.setInstance(m_db);
+        DataSourceFactory.setInstance(m_db);
         
         MockEventConfigManager eventdConfigMgr = new MockEventConfigManager(config_xml);
         MockEventIpcManager ipcMgr = new MockEventIpcManager();

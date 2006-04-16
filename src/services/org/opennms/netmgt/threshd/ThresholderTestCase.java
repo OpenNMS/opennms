@@ -18,7 +18,7 @@ import org.jmock.Mock;
 import org.jmock.MockObjectTestCase;
 import org.jmock.core.Stub;
 import org.jmock.core.stub.StubSequence;
-import org.opennms.netmgt.config.DatabaseConnectionFactory;
+import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.ThresholdingConfigFactory;
 import org.opennms.netmgt.mock.EventAnticipator;
 import org.opennms.netmgt.mock.MockDatabase;
@@ -130,7 +130,7 @@ public class ThresholderTestCase extends MockObjectTestCase {
 		m_network.addService("HTTP");
 		MockDatabase db = new MockDatabase(getName());
 		db.populate(m_network);
-		DatabaseConnectionFactory.setInstance(db);
+		DataSourceFactory.setInstance(db);
 	}
 
 	protected void ensureExceededAfterFetches(String dsName, int count) {

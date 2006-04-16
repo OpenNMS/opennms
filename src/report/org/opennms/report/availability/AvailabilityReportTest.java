@@ -10,7 +10,7 @@ import junit.framework.TestCase;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
-import org.opennms.netmgt.config.DatabaseConnectionFactory;
+import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.mock.MockCategoryFactory;
 import org.opennms.netmgt.config.CategoryFactory;
 import org.opennms.netmgt.mock.MockDatabase;
@@ -33,7 +33,7 @@ public class AvailabilityReportTest extends TestCase {
 		MockLogAppender.setupLogging();
 		m_categories = new Categories();
 		m_db = new MockDatabase();
-		DatabaseConnectionFactory.setInstance(m_db);
+		DataSourceFactory.setInstance(m_db);
 		m_catFactory = new MockCategoryFactory();
 		CategoryFactory.setInstance(m_catFactory);
 		m_db.update("insert into node (nodeID, nodelabel, nodeCreateTime, nodeType) values (1,'test1.availability.opennms.org','2004-03-01 09:00:00','A')");

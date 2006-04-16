@@ -54,7 +54,7 @@ import java.util.List;
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
-import org.opennms.netmgt.config.DatabaseConnectionFactory;
+import org.opennms.netmgt.config.DataSourceFactory;
 
 /**
  * <p>
@@ -1503,7 +1503,7 @@ final class DbNodeEntry {
         if (m_changed != 0 || m_fromDb == false) {
             Connection db = null;
             try {
-                db = DatabaseConnectionFactory.getInstance().getConnection();
+                db = DataSourceFactory.getInstance().getConnection();
                 store(db);
                 if (db.getAutoCommit() == false)
                     db.commit();
@@ -1544,7 +1544,7 @@ final class DbNodeEntry {
 
         Connection db = null;
         try {
-            db = DatabaseConnectionFactory.getInstance().getConnection();
+            db = DataSourceFactory.getInstance().getConnection();
             entries = getInterfaces(db);
         } finally {
             try {
@@ -1601,7 +1601,7 @@ final class DbNodeEntry {
 
         Connection db = null;
         try {
-            db = DatabaseConnectionFactory.getInstance().getConnection();
+            db = DataSourceFactory.getInstance().getConnection();
             entries = getManagedInterfaces(db);
         } finally {
             try {
@@ -1669,7 +1669,7 @@ final class DbNodeEntry {
 
         Connection db = null;
         try {
-            db = DatabaseConnectionFactory.getInstance().getConnection();
+            db = DataSourceFactory.getInstance().getConnection();
             entries = getSnmpInterfaces(db);
         } finally {
             try {
@@ -1805,7 +1805,7 @@ final class DbNodeEntry {
     static DbNodeEntry get(int nid, String dpName) throws SQLException {
         Connection db = null;
         try {
-            db = DatabaseConnectionFactory.getInstance().getConnection();
+            db = DataSourceFactory.getInstance().getConnection();
             return get(db, nid, dpName);
         } finally {
             try {

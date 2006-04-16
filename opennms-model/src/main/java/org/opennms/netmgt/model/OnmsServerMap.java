@@ -10,7 +10,7 @@ import org.springframework.core.style.ToStringCreator;
  *         table="servermap"
  *     
 */
-public class OnmsServerMap implements Serializable {
+public class OnmsServerMap extends OnmsEntity implements Serializable {
 
     /**
      * 
@@ -18,17 +18,17 @@ public class OnmsServerMap implements Serializable {
     private static final long serialVersionUID = -858347716282069343L;
 
     /** identifier field */
-    private String ipaddr;
+    private String m_ipAddr;
 
     /** identifier field */
-    private String servername;
+    private String m_serverName;
 
-    private Integer id;
+    private Integer m_id;
 
     /** full constructor */
-    public OnmsServerMap(String ipaddr, String servername) {
-        this.ipaddr = ipaddr;
-        this.servername = servername;
+    public OnmsServerMap(String ipAddr, String serverName) {
+        m_ipAddr = ipAddr;
+        m_serverName = serverName;
     }
 
     /** default constructor */
@@ -42,46 +42,51 @@ public class OnmsServerMap implements Serializable {
      *         
      */
     public Integer getId() {
-        return id;
+        return m_id;
     }
     
     public void setId(Integer id) {
-        this.id = id;
+        m_id = id;
     }
 
     /** 
      *                @hibernate.property
-     *                 column="ipaddr"
+     *                 column="ipAddr"
      *                 length="16"
      *             
      */
-    public String getIpaddr() {
-        return this.ipaddr;
+    public String getIpAddr() {
+        return m_ipAddr;
     }
 
-    public void setIpaddr(String ipaddr) {
-        this.ipaddr = ipaddr;
+    public void setIpAddr(String ipAddr) {
+        m_ipAddr = ipAddr;
     }
 
     /** 
      *                @hibernate.property
-     *                 column="servername"
+     *                 column="serverName"
      *                 length="64"
      *             
      */
-    public String getServername() {
-        return this.servername;
+    public String getServerName() {
+        return m_serverName;
     }
 
-    public void setServername(String servername) {
-        this.servername = servername;
+    public void setServerName(String serverName) {
+        m_serverName = serverName;
     }
 
     public String toString() {
         return new ToStringCreator(this)
-            .append("ipaddr", getIpaddr())
-            .append("servername", getServername())
+            .append("ipAddr", getIpAddr())
+            .append("serverName", getServerName())
             .toString();
     }
+
+	public void visit(EntityVisitor visitor) {
+		// TODO Auto-generated method stub
+		throw new RuntimeException("visitor method not implemented");
+	}
 
 }

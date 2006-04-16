@@ -51,7 +51,7 @@ import java.util.TreeSet;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.config.DatabaseConnectionFactory;
+import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.discovery.ExcludeRange;
 import org.opennms.netmgt.utils.IPSorter;
 
@@ -163,7 +163,7 @@ final class DiscoveredIPMgr {
         java.sql.Connection c = null;
         try {
             // Get database connection
-            c = DatabaseConnectionFactory.getInstance().getConnection();
+            c = DataSourceFactory.getInstance().getConnection();
 
             // Run with it
             //

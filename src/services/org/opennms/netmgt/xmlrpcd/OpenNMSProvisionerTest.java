@@ -47,7 +47,7 @@ import org.jmock.MockObjectTestCase;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.CapsdConfigFactory;
 import org.opennms.netmgt.config.CapsdConfigManager;
-import org.opennms.netmgt.config.DatabaseConnectionFactory;
+import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.PollerConfigFactory;
 import org.opennms.netmgt.config.PollerConfigManager;
 import org.opennms.netmgt.config.poller.Package;
@@ -130,7 +130,7 @@ public class OpenNMSProvisionerTest extends MockObjectTestCase {
         super.setUp();
         MockLogAppender.setupLogging();
         MockDatabase db = new MockDatabase();
-        DatabaseConnectionFactory.setInstance(db);
+        DataSourceFactory.setInstance(db);
         
         Properties properties = new Properties();
         RrdConfig.setProperties(properties);
@@ -168,7 +168,7 @@ public class OpenNMSProvisionerTest extends MockObjectTestCase {
 
     protected void tearDown() throws Exception {
         
-        DatabaseConnectionFactory.setInstance(null);
+        DataSourceFactory.setInstance(null);
         super.tearDown();
         MockLogAppender.assertNoWarningsOrGreater();
     }

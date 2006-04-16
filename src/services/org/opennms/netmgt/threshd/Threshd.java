@@ -58,7 +58,7 @@ import java.util.TreeMap;
 import org.apache.log4j.Category;
 import org.apache.log4j.Priority;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.config.DatabaseConnectionFactory;
+import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.ThreshdConfigManager;
 import org.opennms.netmgt.config.threshd.Package;
 import org.opennms.netmgt.config.threshd.ThreshdConfiguration;
@@ -390,7 +390,7 @@ public final class Threshd extends ServiceDaemon {
 
         PreparedStatement stmt = null;
         try {
-            dbConn = DatabaseConnectionFactory.getInstance().getConnection();
+            dbConn = DataSourceFactory.getInstance().getConnection();
 
             stmt = dbConn.prepareStatement(SQL_RETRIEVE_INTERFACES);
 

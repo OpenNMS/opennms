@@ -54,7 +54,7 @@ import org.opennms.core.fiber.PausableFiber;
 import org.opennms.core.queue.FifoQueue;
 import org.opennms.core.queue.FifoQueueException;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.config.DatabaseConnectionFactory;
+import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.VulnscandConfigFactory;
 import org.opennms.netmgt.config.vulnscand.ScanLevel;
 import org.opennms.netmgt.config.vulnscand.VulnscandConfiguration;
@@ -214,7 +214,7 @@ final class Scheduler implements Runnable, PausableFiber {
         Statement selectInterfaces = null;
         ResultSet interfaces = null;
         try {
-            connection = DatabaseConnectionFactory.getInstance().getConnection();
+            connection = DataSourceFactory.getInstance().getConnection();
             selectInterfaces = connection.createStatement();
             interfaces = selectInterfaces.executeQuery(SQL_DB_RETRIEVE_IP_INTERFACE);
 
@@ -269,7 +269,7 @@ final class Scheduler implements Runnable, PausableFiber {
         // table.
         Connection db = null;
         try {
-            db = DatabaseConnectionFactory.getInstance().getConnection();
+            db = DataSourceFactory.getInstance().getConnection();
             PreparedStatement ifStmt = db.prepareStatement(SQL_GET_LAST_POLL_TIME);
             ifStmt.setString(1, address.getHostAddress());
             ResultSet rset = ifStmt.executeQuery();

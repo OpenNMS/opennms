@@ -44,7 +44,7 @@ import java.sql.Statement;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.opennms.netmgt.config.DatabaseConnectionFactory;
+import org.opennms.netmgt.config.DataSourceFactory;
 
 /**
  * This class represents a singular instance that is used to map trap IP
@@ -94,7 +94,7 @@ final class TrapdIPMgr {
         java.sql.Connection c = null;
         try {
             // Get database connection
-            c = DatabaseConnectionFactory.getInstance().getConnection();
+            c = DataSourceFactory.getInstance().getConnection();
 
             // Run with it
             //

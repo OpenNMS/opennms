@@ -54,7 +54,7 @@ import org.opennms.core.queue.FifoQueue;
 import org.opennms.core.queue.FifoQueueException;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.CapsdConfigFactory;
-import org.opennms.netmgt.config.DatabaseConnectionFactory;
+import org.opennms.netmgt.config.DataSourceFactory;
 
 /**
  * This class implements a simple scheduler to ensure that Capsd rescans occurs
@@ -248,7 +248,7 @@ final class Scheduler implements Runnable, PausableFiber {
         PreparedStatement nodeStmt = null;
         PreparedStatement ifStmt = null;
         try {
-            db = DatabaseConnectionFactory.getInstance().getConnection();
+            db = DataSourceFactory.getInstance().getConnection();
             // Prepare SQL statements in advance
             //
             nodeStmt = db.prepareStatement(SQL_RETRIEVE_NODES);
@@ -320,7 +320,7 @@ final class Scheduler implements Runnable, PausableFiber {
         // table.
         Connection db = null;
         try {
-            db = DatabaseConnectionFactory.getInstance().getConnection();
+            db = DataSourceFactory.getInstance().getConnection();
             PreparedStatement ifStmt = db.prepareStatement(SQL_GET_LAST_POLL_TIME);
             ifStmt.setInt(1, nodeId);
             ResultSet rset = ifStmt.executeQuery();
@@ -568,7 +568,7 @@ final class Scheduler implements Runnable, PausableFiber {
 
                             Connection db = null;
                             try {
-                                db = DatabaseConnectionFactory.getInstance().getConnection();
+                                db = DataSourceFactory.getInstance().getConnection();
 
                                 ReparentViaSmb reparenter = new ReparentViaSmb(db);
                                 try {

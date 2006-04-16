@@ -67,7 +67,7 @@ public class PurdyChartServlet extends HttpServlet {
 /*    public void init() {
         try {
             ChartConfigFactory.init();
-            DatabaseConnectionFactory.init();
+            DataSourceFactory.init();
         } catch (MarshalException e) {
             log().error("init: Error marshalling chart-configuration.xml: ",e);
         } catch (ValidationException e) {

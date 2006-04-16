@@ -17,12 +17,12 @@
     <property name="staticMethod"><value>org.opennms.netmgt.eventd.EventIpcManagerFactory.getIpcManager</value></property>
   </bean>
 
-  <bean id="dbConnectionFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-    <property name="staticMethod"><value>org.opennms.netmgt.config.DatabaseConnectionFactory.init</value></property>
+  <bean id="dataSource-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+    <property name="staticMethod"><value>org.opennms.netmgt.config.DataSource.init</value></property>
   </bean>
   
   <bean id="dataSource" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" depends-on="dbConnectionFactory-init">
-    <property name="staticMethod"><value>org.opennms.netmgt.config.DatabaseConnectionFactory.getInstance</value></property>
+    <property name="staticMethod"><value>org.opennms.netmgt.config.DataSource.getInstance</value></property>
   </bean>
 
   <!--

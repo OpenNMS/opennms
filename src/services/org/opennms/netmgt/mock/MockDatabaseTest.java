@@ -38,7 +38,7 @@ import javax.sql.DataSource;
 
 import junit.framework.TestCase;
 
-import org.opennms.netmgt.config.DatabaseConnectionFactory;
+import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.utils.Querier;
 import org.opennms.netmgt.xml.event.Event;
 

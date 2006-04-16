@@ -55,7 +55,7 @@ import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.BeanInfo;
-import org.opennms.netmgt.config.DatabaseConnectionFactory;
+import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.JMXDataCollectionConfigFactory;
 import org.opennms.netmgt.config.collectd.Attrib;
 import org.opennms.netmgt.poller.NetworkInterface;
@@ -220,8 +220,8 @@ public abstract class JMXCollector implements ServiceCollector {
         // Make sure we can connect to the database
         java.sql.Connection ctest = null;
         try {
-            DatabaseConnectionFactory.init();
-            ctest = DatabaseConnectionFactory.getInstance().getConnection();
+            DataSourceFactory.init();
+            ctest = DataSourceFactory.getInstance().getConnection();
         } catch (IOException e) {
             log.fatal("initialize: IOException getting database connection",
                       e);
@@ -347,7 +347,7 @@ public abstract class JMXCollector implements ServiceCollector {
         }
         java.sql.Connection dbConn = null;
         try {
-            dbConn = DatabaseConnectionFactory.getInstance().getConnection();
+            dbConn = DataSourceFactory.getInstance().getConnection();
         } catch (SQLException e) {
             log.error("initialize: Failed getting connection to the database.",
                       e);

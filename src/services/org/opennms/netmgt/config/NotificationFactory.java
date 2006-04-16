@@ -91,7 +91,7 @@ public class NotificationFactory extends NotificationManager {
      * 
      */
     private NotificationFactory() {
-        super(NotifdConfigFactory.getInstance(), DatabaseConnectionFactory.getInstance());
+        super(NotifdConfigFactory.getInstance(), DataSourceFactory.getInstance());
     }
 
     /**
@@ -109,7 +109,7 @@ public class NotificationFactory extends NotificationManager {
      */
     public static synchronized void init() throws IOException, FileNotFoundException, MarshalException, ValidationException, ClassNotFoundException, SQLException, PropertyVetoException  {
         if (!initialized) {
-            DatabaseConnectionFactory.init();
+            DataSourceFactory.init();
             instance = new NotificationFactory();
             instance.reload();
             initialized = true;

@@ -47,7 +47,7 @@ import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.ConfigFileConstants;
-import org.opennms.netmgt.config.DatabaseConnectionFactory;
+import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.EventdConfigFactory;
 import org.opennms.netmgt.eventd.EventConfigurationManager;
 import org.opennms.netmgt.eventd.EventIpcManager;
@@ -69,7 +69,7 @@ public class Eventd implements EventdMBean {
 
         try {
             EventdConfigFactory.reload();
-            DatabaseConnectionFactory.init();
+            DataSourceFactory.init();
         } catch (FileNotFoundException ex) {
             log.error("Failed to load eventd configuration. File Not Found:", ex);
             throw new UndeclaredThrowableException(ex);

@@ -53,7 +53,7 @@ import org.apache.log4j.Category;
 import org.apache.log4j.Priority;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
-import org.opennms.netmgt.config.DatabaseConnectionFactory;
+import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.ThresholdingConfigFactory;
 import org.opennms.netmgt.config.threshd.Threshold;
 import org.opennms.netmgt.poller.NetworkInterface;
@@ -305,7 +305,7 @@ public abstract class JMXThresholder implements ServiceThresholder {
         //
         java.sql.Connection dbConn = null;
         try {
-            dbConn = DatabaseConnectionFactory.getInstance().getConnection();
+            dbConn = DataSourceFactory.getInstance().getConnection();
         } catch (SQLException sqlE) {
             if (log.isEnabledFor(Priority.ERROR))
                 log.error("initialize: Failed getting connection to the database.", sqlE);
@@ -777,7 +777,7 @@ public abstract class JMXThresholder implements ServiceThresholder {
                             //
                             java.sql.Connection dbConn = null;
                             try {
-                                dbConn = DatabaseConnectionFactory.getInstance().getConnection();
+                                dbConn = DataSourceFactory.getInstance().getConnection();
                             } catch (SQLException sqlE) {
                                 if (log.isEnabledFor(Priority.ERROR))
                                     log.error("checkIfDir: Failed getting connection to the database.", sqlE);

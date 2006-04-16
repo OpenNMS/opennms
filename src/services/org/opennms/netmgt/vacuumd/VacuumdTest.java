@@ -44,7 +44,7 @@ import java.util.Collection;
 
 import org.opennms.core.fiber.Fiber;
 import org.opennms.core.fiber.PausableFiber;
-import org.opennms.netmgt.config.DatabaseConnectionFactory;
+import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.VacuumdConfigFactory;
 import org.opennms.netmgt.config.vacuumd.Action;
 import org.opennms.netmgt.config.vacuumd.Automation;
@@ -234,7 +234,7 @@ public class VacuumdTest extends OpenNMSTestCase {
      */
     
     public final void testResultSetHasRequiredActionColumns() throws SQLException {
-        Connection conn = DatabaseConnectionFactory.getInstance().getConnection();
+        Connection conn = DataSourceFactory.getInstance().getConnection();
         Statement stmt = conn.createStatement();
         ResultSet rs = stmt.executeQuery("select * from events");
         Collection columns = new ArrayList();

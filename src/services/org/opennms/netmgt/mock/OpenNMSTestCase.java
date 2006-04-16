@@ -40,7 +40,7 @@ import java.net.UnknownHostException;
 
 import junit.framework.TestCase;
 
-import org.opennms.netmgt.config.DatabaseConnectionFactory;
+import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.EventdConfigManager;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.eventd.EventConfigurationManager;
@@ -1411,7 +1411,7 @@ public class OpenNMSTestCase extends TestCase {
             m_db = new MockDatabase();
             m_db.populate(m_network);
             
-            DatabaseConnectionFactory.setInstance(m_db);
+            DataSourceFactory.setInstance(m_db);
 
             Reader rdr = new StringReader(getSnmpConfig());
             SnmpPeerFactory.setInstance(new SnmpPeerFactory(rdr));

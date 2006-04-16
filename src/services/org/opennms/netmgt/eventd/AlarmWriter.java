@@ -64,17 +64,17 @@ final class AlarmWriter extends Persist {
         //
         // prepare the SQL statement
         //
-        m_getSvcIdStmt = m_dbConn.prepareStatement(EventdConstants.SQL_DB_SVCNAME_TO_SVCID);
-        m_getHostNameStmt = m_dbConn.prepareStatement(EventdConstants.SQL_DB_HOSTIP_TO_HOSTNAME);
-        m_getNextIdStmt = m_dbConn.prepareStatement(getNextAlarmIdStr);
-        m_insStmt = m_dbConn.prepareStatement(EventdConstants.SQL_DB_ALARM_INS_EVENT);
-        m_reductionQuery = m_dbConn.prepareStatement(EventdConstants.SQL_DB_ALARM_REDUCTION_QUERY);
-        m_upDateStmt = m_dbConn.prepareStatement(EventdConstants.SQL_DB_ALARM_UPDATE_EVENT);
-        m_updateEventStmt = m_dbConn.prepareStatement(EventdConstants.SQL_DB_UPDATE_EVENT_WITH_ALARM_ID);
+        m_getSvcIdStmt = m_dsConn.prepareStatement(EventdConstants.SQL_DB_SVCNAME_TO_SVCID);
+        m_getHostNameStmt = m_dsConn.prepareStatement(EventdConstants.SQL_DB_HOSTIP_TO_HOSTNAME);
+        m_getNextIdStmt = m_dsConn.prepareStatement(getNextAlarmIdStr);
+        m_insStmt = m_dsConn.prepareStatement(EventdConstants.SQL_DB_ALARM_INS_EVENT);
+        m_reductionQuery = m_dsConn.prepareStatement(EventdConstants.SQL_DB_ALARM_REDUCTION_QUERY);
+        m_upDateStmt = m_dsConn.prepareStatement(EventdConstants.SQL_DB_ALARM_UPDATE_EVENT);
+        m_updateEventStmt = m_dsConn.prepareStatement(EventdConstants.SQL_DB_UPDATE_EVENT_WITH_ALARM_ID);
         // set the database for rollback support
         //
         try {
-            m_dbConn.setAutoCommit(false);
+            m_dsConn.setAutoCommit(false);
         } catch (SQLException se) {
             ThreadCategory.getInstance(AlarmWriter.class).warn("Unable to set auto commit mode");
         }
@@ -129,12 +129,12 @@ final class AlarmWriter extends Persist {
             while (attempt <= 2 && notUpdated) {
                 try {
                     insertOrUpdateAlarm(eventHeader, event);
-                    m_dbConn.commit();
+                    m_dsConn.commit();
                     notUpdated = false;
                 } catch (SQLException e) {
                     try {
-                        m_dbConn.rollback();
-                        m_dbConn.setAutoCommit(false);
+                        m_dsConn.rollback();
+                        m_dsConn.setAutoCommit(false);
                     } catch (Exception e2) {
                         log.warn("Rollback of transaction failed!", e2);
                     }

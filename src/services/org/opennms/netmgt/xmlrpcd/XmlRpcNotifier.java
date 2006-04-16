@@ -57,7 +57,7 @@ import org.apache.xmlrpc.XmlRpcException;
 import org.apache.xmlrpc.secure.SecureXmlRpcClient;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
-import org.opennms.netmgt.config.DatabaseConnectionFactory;
+import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.xmlrpcd.XmlrpcServer;
 import org.opennms.netmgt.xml.event.Event;
 
@@ -370,7 +370,7 @@ public final class XmlRpcNotifier {
         String nodeLabel = null;
 
         try {
-            dbConn = DatabaseConnectionFactory.getInstance().getConnection();
+            dbConn = DataSourceFactory.getInstance().getConnection();
 
             if (log.isDebugEnabled())
                 log.debug("getNodeLabel: retrieve node label for: " + nodeId);

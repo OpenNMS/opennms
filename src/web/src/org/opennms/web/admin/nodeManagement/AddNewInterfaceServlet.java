@@ -53,7 +53,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.opennms.netmgt.EventConstants;
-import org.opennms.netmgt.config.DatabaseConnectionFactory;
+import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.utils.EventProxy;
 import org.opennms.netmgt.utils.TcpEventProxy;
 import org.opennms.netmgt.xml.event.Event;
@@ -74,7 +74,7 @@ public class AddNewInterfaceServlet extends HttpServlet {
 
     public void init() throws ServletException {
         try {
-            DatabaseConnectionFactory.init();
+            DataSourceFactory.init();
         } catch (Exception e) {
             throw new ServletException("AddNewInterfaceServlet: Error initialising database connection factory." + e);
         }
@@ -132,7 +132,7 @@ public class AddNewInterfaceServlet extends HttpServlet {
         PreparedStatement stmt = null;
 
         try {
-            conn = DatabaseConnectionFactory.getInstance().getConnection();
+            conn = DataSourceFactory.getInstance().getConnection();
             stmt = conn.prepareStatement(SQL_INTERFACE_EXIST);
             stmt.setString(1, ipaddr);
 

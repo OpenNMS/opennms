@@ -58,7 +58,7 @@ import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.config.DatabaseConnectionFactory;
+import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.filter.lexer.Lexer;
 import org.opennms.netmgt.filter.lexer.LexerException;
 import org.opennms.netmgt.filter.node.Start;
@@ -176,8 +176,8 @@ public class Filter {
         // get the database connection
         Connection conn = null;
         try {
-            DatabaseConnectionFactory.init();
-            conn = DatabaseConnectionFactory.getInstance().getConnection();
+            DataSourceFactory.init();
+            conn = DataSourceFactory.getInstance().getConnection();
 
             // execute query and return the list of ip addresses
             Statement stmt = conn.createStatement();
@@ -263,8 +263,8 @@ public class Filter {
         // get the database connection
         Connection conn = null;
         try {
-            DatabaseConnectionFactory.init();
-            conn = DatabaseConnectionFactory.getInstance().getConnection();
+            DataSourceFactory.init();
+            conn = DataSourceFactory.getInstance().getConnection();
 
             // parse the rule and get the sql select statement
             sqlString = getSQLStatement();

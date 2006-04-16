@@ -60,7 +60,7 @@ import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.CatFactory;
 import org.opennms.netmgt.config.CategoryFactory;
-import org.opennms.netmgt.config.DatabaseConnectionFactory;
+import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.categories.Categorygroup;
 import org.opennms.netmgt.config.categories.Catinfo;
 import org.opennms.netmgt.filter.Filter;
@@ -460,8 +460,8 @@ public class AvailabilityData extends Object {
         // Initialize the DataCollectionConfigFactory
         //
         try {
-            DatabaseConnectionFactory.init();
-            m_availConn = DatabaseConnectionFactory.getInstance().getConnection();
+            DataSourceFactory.init();
+            m_availConn = DataSourceFactory.getInstance().getConnection();
         } catch (MarshalException e) {
             log.fatal("initialize: Failed to load data collection configuration",
                       e);

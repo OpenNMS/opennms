@@ -8,9 +8,9 @@ import org.opennms.netmgt.mock.MockLogAppender;
 import org.opennms.netmgt.mock.OpenNMSTestCase;
 import org.opennms.netmgt.mock.OutageAnticipator;
 
-public class DatabaseConnectionFactoryTest extends OpenNMSTestCase {
+public class DataSourceFactoryTest extends OpenNMSTestCase {
 
-	public DataSource m_testDb = new DatabaseConnectionFactory();
+	public DataSource m_testDb = new DataSourceFactory();
     private EventAnticipator m_anticipator;
     private OutageAnticipator m_outageAnticipator;
     private MockEventIpcManager m_eventMgr;
@@ -34,13 +34,13 @@ public class DatabaseConnectionFactoryTest extends OpenNMSTestCase {
 	}
 
 	public void testSecondDatabase() throws Exception {
-        DatabaseConnectionFactory.getInstance();
+        DataSourceFactory.getInstance();
         
-        DatabaseConnectionFactory.setInstance("test2", m_testDb);
+        DataSourceFactory.setInstance("test2", m_testDb);
         
         m_testDb.setLoginTimeout(5);
         
-        assertEquals(5, DatabaseConnectionFactory.getInstance("test2").getLoginTimeout());
+        assertEquals(5, DataSourceFactory.getInstance("test2").getLoginTimeout());
 	}
 	
 	

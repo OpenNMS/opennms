@@ -21,7 +21,7 @@ import org.opennms.core.utils.Argument;
 import org.opennms.core.utils.MatchTable;
 import org.opennms.core.utils.PropertiesUtils;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.config.DatabaseConnectionFactory;
+import org.opennms.netmgt.config.DataSourceFactory;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 /**
@@ -96,7 +96,7 @@ public class HttpNotificationStrategy implements NotificationStrategy {
                 MatchTable matches = new MatchTable(m);
                 String sqlString = PropertiesUtils.substitute(sql, matches);
                 log().info("send: running sql: "+sqlString);
-                JdbcTemplate template = new JdbcTemplate(DatabaseConnectionFactory.getInstance());
+                JdbcTemplate template = new JdbcTemplate(DataSourceFactory.getInstance());
                 template.execute(sqlString);
             } else {
                 log().warn("send: result didn't match, not running sql");

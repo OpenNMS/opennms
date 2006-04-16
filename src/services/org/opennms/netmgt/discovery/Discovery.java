@@ -61,7 +61,7 @@ import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.queue.FifoQueue;
 import org.opennms.core.queue.FifoQueueImpl;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.config.DatabaseConnectionFactory;
+import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.DiscoveryConfigFactory;
 import org.opennms.netmgt.config.discovery.DiscoveryConfiguration;
 import org.opennms.netmgt.config.discovery.IncludeRange;
@@ -236,8 +236,8 @@ public final class Discovery extends ServiceDaemon {
         //
         java.sql.Connection ctest = null;
         try {
-            DatabaseConnectionFactory.init();
-            ctest = DatabaseConnectionFactory.getInstance().getConnection();
+            DataSourceFactory.init();
+            ctest = DataSourceFactory.getInstance().getConnection();
         } catch (IOException ie) {
             log.fatal("IOException getting database connection", ie);
             throw new UndeclaredThrowableException(ie);

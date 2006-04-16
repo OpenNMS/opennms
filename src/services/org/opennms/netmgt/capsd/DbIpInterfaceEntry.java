@@ -54,7 +54,7 @@ import java.util.List;
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
-import org.opennms.netmgt.config.DatabaseConnectionFactory;
+import org.opennms.netmgt.config.DataSourceFactory;
 
 /**
  * 
@@ -835,7 +835,7 @@ public final class DbIpInterfaceEntry {
         if (m_changed != 0 || m_fromDb == false) {
             Connection db = null;
             try {
-                db = DatabaseConnectionFactory.getInstance().getConnection();
+                db = DataSourceFactory.getInstance().getConnection();
                 store(db);
                 if (db.getAutoCommit() == false)
                     db.commit();
@@ -874,7 +874,7 @@ public final class DbIpInterfaceEntry {
 
         Connection db = null;
         try {
-            db = DatabaseConnectionFactory.getInstance().getConnection();
+            db = DataSourceFactory.getInstance().getConnection();
             entries = getServices(db);
         } finally {
             try {
@@ -978,7 +978,7 @@ public final class DbIpInterfaceEntry {
     static DbIpInterfaceEntry get(int nid, InetAddress addr) throws SQLException {
         Connection db = null;
         try {
-            db = DatabaseConnectionFactory.getInstance().getConnection();
+            db = DataSourceFactory.getInstance().getConnection();
             return get(db, nid, addr);
         } finally {
             try {
@@ -1008,7 +1008,7 @@ public final class DbIpInterfaceEntry {
     static DbIpInterfaceEntry get(int nid, InetAddress addr, int ifIndex) throws SQLException {
         Connection db = null;
         try {
-            db = DatabaseConnectionFactory.getInstance().getConnection();
+            db = DataSourceFactory.getInstance().getConnection();
             return get(db, nid, addr, ifIndex);
         } finally {
             try {

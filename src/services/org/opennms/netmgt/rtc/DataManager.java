@@ -71,7 +71,7 @@ import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.CatFactory;
 import org.opennms.netmgt.config.CategoryFactory;
-import org.opennms.netmgt.config.DatabaseConnectionFactory;
+import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.categories.Categories;
 import org.opennms.netmgt.config.categories.Categorygroup;
 import org.opennms.netmgt.filter.Filter;
@@ -409,8 +409,8 @@ public class DataManager extends Object {
 	private DataSource getConnectionFactory() {
 		DataSource connFactory;
 		try {
-		    DatabaseConnectionFactory.init();
-		    connFactory = DatabaseConnectionFactory.getInstance();
+		    DataSourceFactory.init();
+		    connFactory = DataSourceFactory.getInstance();
 		} catch (IOException ex) {
 		    log().warn("Failed to load database config", ex);
 		    throw new UndeclaredThrowableException(ex);

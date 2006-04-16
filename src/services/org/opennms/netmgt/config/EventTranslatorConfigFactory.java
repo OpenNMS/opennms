@@ -153,11 +153,11 @@ public final class EventTranslatorConfigFactory implements EventTranslatorConfig
             return;
         }
         
-        DatabaseConnectionFactory.init();
+        DataSourceFactory.init();
 
         File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.TRANSLATOR_CONFIG_FILE_NAME);
 
-        m_singleton = new EventTranslatorConfigFactory(cfgFile.getPath(), DatabaseConnectionFactory.getInstance());
+        m_singleton = new EventTranslatorConfigFactory(cfgFile.getPath(), DataSourceFactory.getInstance());
 
         m_loaded = true;
     }

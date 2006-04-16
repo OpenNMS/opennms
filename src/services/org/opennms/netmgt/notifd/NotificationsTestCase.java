@@ -39,7 +39,7 @@ import java.util.Date;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.TimeConverter;
-import org.opennms.netmgt.config.DatabaseConnectionFactory;
+import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.NotificationCommandManager;
 import org.opennms.netmgt.config.NotificationManager;
 import org.opennms.netmgt.config.groups.Group;
@@ -536,7 +536,7 @@ public class NotificationsTestCase extends TestCase {
 
     private MockDatabase createDatabase(MockNetwork network) {
         MockDatabase db = new MockDatabase();
-        DatabaseConnectionFactory.setInstance(db);
+        DataSourceFactory.setInstance(db);
         db.populate(network);
         return db;
     }

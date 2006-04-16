@@ -48,7 +48,7 @@ import java.util.regex.Pattern;
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
-import org.opennms.netmgt.config.DatabaseConnectionFactory;
+import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.VacuumdConfigFactory;
 import org.opennms.netmgt.config.vacuumd.Automation;
 import org.opennms.netmgt.scheduler.ReadyRunnable;
@@ -197,7 +197,7 @@ public class AutomationProcessor implements ReadyRunnable {
             log().debug("runAutomation: Executing trigger: "+auto.getTriggerName());
 
         try {
-            setConn(DatabaseConnectionFactory.getInstance().getConnection());
+            setConn(DataSourceFactory.getInstance().getConnection());
 
             processTrigger(auto);
             

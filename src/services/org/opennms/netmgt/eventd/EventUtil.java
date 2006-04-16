@@ -56,7 +56,7 @@ import org.apache.log4j.Category;
 import org.opennms.core.utils.Base64;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
-import org.opennms.netmgt.config.DatabaseConnectionFactory;
+import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
@@ -819,7 +819,7 @@ public final class EventUtil {
 		Statement stmt = null;
 		try {
 			// Get datbase connection from the factory
-			dbConn = DatabaseConnectionFactory.getInstance().getConnection();
+			dbConn = DataSourceFactory.getInstance().getConnection();
 
 			// Issue query and extract nodeLabel from result set
 			stmt = dbConn.createStatement();
@@ -873,7 +873,7 @@ public final class EventUtil {
 		Statement stmt = null;
 		try {
 			// Get database connection from the factory
-			dbConn = DatabaseConnectionFactory.getInstance().getConnection();
+			dbConn = DataSourceFactory.getInstance().getConnection();
 			
 			// Issue query and extract ifAlias from result set
 			stmt = dbConn.createStatement();

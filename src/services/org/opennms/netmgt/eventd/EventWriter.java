@@ -75,14 +75,14 @@ final class EventWriter extends Persist {
         //
         // prepare the SQL statement
         //
-        m_getSvcIdStmt = m_dbConn.prepareStatement(EventdConstants.SQL_DB_SVCNAME_TO_SVCID);
-        m_getHostNameStmt = m_dbConn.prepareStatement(EventdConstants.SQL_DB_HOSTIP_TO_HOSTNAME);
-        m_getNextIdStmt = m_dbConn.prepareStatement(getNextEventIdStr);
-        m_insStmt = m_dbConn.prepareStatement(EventdConstants.SQL_DB_INS_EVENT);
+        m_getSvcIdStmt = m_dsConn.prepareStatement(EventdConstants.SQL_DB_SVCNAME_TO_SVCID);
+        m_getHostNameStmt = m_dsConn.prepareStatement(EventdConstants.SQL_DB_HOSTIP_TO_HOSTNAME);
+        m_getNextIdStmt = m_dsConn.prepareStatement(getNextEventIdStr);
+        m_insStmt = m_dsConn.prepareStatement(EventdConstants.SQL_DB_INS_EVENT);
         // set the database for rollback support
         //
         try {
-            m_dbConn.setAutoCommit(false);
+            m_dsConn.setAutoCommit(false);
         } catch (SQLException se) {
             ThreadCategory.getInstance(EventWriter.class).warn("Unable to set auto commit mode");
         }
@@ -131,11 +131,11 @@ final class EventWriter extends Persist {
                 insertEvent(eventHeader, event);
 
                 // commit
-                m_dbConn.commit();
+                m_dsConn.commit();
             } catch (SQLException e) {
                 log.warn("Error inserting event into the datastore", e);
                 try {
-                    m_dbConn.rollback();
+                    m_dsConn.rollback();
                 } catch (Exception e2) {
                     log.warn("Rollback of transaction failed!", e2);
                 }

@@ -44,7 +44,7 @@ import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.concurrent.RunnableConsumerThreadPool;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.config.DatabaseConnectionFactory;
+import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.VulnscandConfigFactory;
 import org.opennms.netmgt.daemon.ServiceDaemon;
 
@@ -191,7 +191,7 @@ public class Vulnscand extends ServiceDaemon {
         // Initialize the Database configuration factory
         //
         try {
-            DatabaseConnectionFactory.init();
+            DataSourceFactory.init();
         } catch (IOException ie) {
             log.fatal("IOException loading database config", ie);
             throw new UndeclaredThrowableException(ie);

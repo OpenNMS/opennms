@@ -55,7 +55,7 @@ import org.opennms.core.queue.FifoQueue;
 import org.opennms.core.queue.FifoQueueException;
 import org.opennms.core.queue.FifoQueueImpl;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.config.DatabaseConnectionFactory;
+import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.VulnscandConfigFactory;
 import org.opennms.netmgt.eventd.db.Constants;
 
@@ -241,7 +241,7 @@ class NessusScan implements Runnable {
          * redetected.
          */
         try {
-            conn = DatabaseConnectionFactory.getInstance().getConnection();
+            conn = DataSourceFactory.getInstance().getConnection();
         } catch (SQLException ex) {
             log.error("Could not open DB connection", ex);
             return;
@@ -464,7 +464,7 @@ class NessusScan implements Runnable {
              */
             if (openVulnerabilities.size() > 0) {
                 try {
-                    conn = DatabaseConnectionFactory.getInstance().getConnection();
+                    conn = DataSourceFactory.getInstance().getConnection();
                 } catch (SQLException ex) {
                     log.error("Could not open DB connection", ex);
                     return;
@@ -637,7 +637,7 @@ class NessusScan implements Runnable {
                 pluginSubId = 0;
 
                 try {
-                    conn = DatabaseConnectionFactory.getInstance().getConnection();
+                    conn = DataSourceFactory.getInstance().getConnection();
                 } catch (SQLException ex) {
                     log.error("Could not open DB connection", ex);
                     return SCAN_FATAL_ERROR;
@@ -822,7 +822,7 @@ class NessusScan implements Runnable {
                 }
 
                 try {
-                    conn = DatabaseConnectionFactory.getInstance().getConnection();
+                    conn = DataSourceFactory.getInstance().getConnection();
                 } catch (SQLException ex) {
                     log.error("Could not open DB connection", ex);
                     return SCAN_FATAL_ERROR;

@@ -55,7 +55,7 @@ import java.util.TreeMap;
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
-import org.opennms.netmgt.config.DatabaseConnectionFactory;
+import org.opennms.netmgt.config.DataSourceFactory;
 
 /**
  * This class represents a singular instance that is used to check address to
@@ -300,7 +300,7 @@ final class KnownIPMgr {
         try {
             // open the connection
             //
-            c = DatabaseConnectionFactory.getInstance().getConnection();
+            c = DataSourceFactory.getInstance().getConnection();
 
             // Run with it
             //

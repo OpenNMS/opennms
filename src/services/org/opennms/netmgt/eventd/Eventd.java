@@ -52,7 +52,7 @@ import java.util.Map;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.config.DatabaseConnectionFactory;
+import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.EventdConfigManager;
 import org.opennms.netmgt.daemon.ServiceDaemon;
 import org.opennms.netmgt.eventd.adaptors.EventReceiver;
@@ -198,7 +198,7 @@ public final class Eventd extends ServiceDaemon implements org.opennms.netmgt.ev
         //
         java.sql.Connection tempConn = null;
         try {
-            tempConn = DatabaseConnectionFactory.getInstance().getConnection();
+            tempConn = DataSourceFactory.getInstance().getConnection();
 
             // create the service table map
             //

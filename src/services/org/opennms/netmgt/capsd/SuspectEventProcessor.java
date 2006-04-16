@@ -79,7 +79,7 @@ import org.opennms.netmgt.capsd.snmp.SystemGroup;
 import org.opennms.netmgt.config.CapsdConfig;
 import org.opennms.netmgt.config.CapsdConfigFactory;
 import org.opennms.netmgt.config.CollectdConfigFactory;
-import org.opennms.netmgt.config.DatabaseConnectionFactory;
+import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.config.PollerConfigFactory;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
@@ -1263,7 +1263,7 @@ final class SuspectEventProcessor implements Runnable {
                 // Get database connection
                 //
                 try {
-                    dbc = DatabaseConnectionFactory.getInstance().getConnection();
+                    dbc = DataSourceFactory.getInstance().getConnection();
 
                     // Only add the node/interface to the database if
                     // it isn't already in the database

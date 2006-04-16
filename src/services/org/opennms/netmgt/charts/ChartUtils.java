@@ -63,7 +63,7 @@ import org.jfree.data.category.DefaultCategoryDataset;
 import org.jfree.data.jdbc.JDBCCategoryDataset;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.ChartConfigFactory;
-import org.opennms.netmgt.config.DatabaseConnectionFactory;
+import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.charts.BarChart;
 import org.opennms.netmgt.config.charts.ImageSize;
 import org.opennms.netmgt.config.charts.Rgb;
@@ -83,7 +83,7 @@ public class ChartUtils {
      */
     static {
         try {
-            DatabaseConnectionFactory.init();
+            DataSourceFactory.init();
             ChartConfigFactory.init();
         } catch (MarshalException e) {
             log().error("static initializer: Error marshalling chart configuration. "+e);
@@ -260,7 +260,7 @@ public class ChartUtils {
          * single series data sets returned from sql query to a base data set
          * to be displayed in a the chart. 
          */
-        Connection conn = DatabaseConnectionFactory.getInstance().getConnection();
+        Connection conn = DataSourceFactory.getInstance().getConnection();
         Iterator it = chartConfig.getSeriesDefCollection().iterator();
         while (it.hasNext()) {
             SeriesDef def = (SeriesDef) it.next();

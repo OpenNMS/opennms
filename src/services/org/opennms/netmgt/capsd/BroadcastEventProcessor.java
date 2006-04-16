@@ -61,7 +61,7 @@ import org.opennms.core.queue.FifoQueue;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.CapsdConfigFactory;
-import org.opennms.netmgt.config.DatabaseConnectionFactory;
+import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.OpennmsServerConfigFactory;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 import org.opennms.netmgt.eventd.EventListener;
@@ -1159,7 +1159,7 @@ final class BroadcastEventProcessor implements EventListener {
         Connection dbConn = null;
         List eventsToSend = null;
         try {
-            dbConn = DatabaseConnectionFactory.getInstance().getConnection();
+            dbConn = DataSourceFactory.getInstance().getConnection();
             dbConn.setAutoCommit(false);
 
             eventsToSend = doAddInterface(dbConn, nodeLabel, event.getInterface(), txNo);
@@ -1216,7 +1216,7 @@ final class BroadcastEventProcessor implements EventListener {
         Connection dbConn = null;
         List eventsToSend = null;
         try {
-            dbConn = DatabaseConnectionFactory.getInstance().getConnection();
+            dbConn = DataSourceFactory.getInstance().getConnection();
             dbConn.setAutoCommit(false);
 
             eventsToSend = doAddNode(dbConn, nodeLabel, ipaddr, txNo);
@@ -1275,7 +1275,7 @@ final class BroadcastEventProcessor implements EventListener {
         Connection dbConn = null;
         List eventsToSend = null;
         try {
-            dbConn = DatabaseConnectionFactory.getInstance().getConnection();
+            dbConn = DataSourceFactory.getInstance().getConnection();
             dbConn.setAutoCommit(false);
 
             eventsToSend = doChangeService(dbConn, event.getInterface(), event.getService(), action, txNo);
@@ -1335,7 +1335,7 @@ final class BroadcastEventProcessor implements EventListener {
         Connection dbConn = null;
         List eventsToSend = null;
         try {
-            dbConn = DatabaseConnectionFactory.getInstance().getConnection();
+            dbConn = DataSourceFactory.getInstance().getConnection();
             dbConn.setAutoCommit(false);
 
             String source = (e.getSource() == null ? "OpenNMS.Capsd" : e.getSource());
@@ -1396,7 +1396,7 @@ final class BroadcastEventProcessor implements EventListener {
         Connection dbConn = null;
         List eventsToSend = null;
         try {
-            dbConn = DatabaseConnectionFactory.getInstance().getConnection();
+            dbConn = DataSourceFactory.getInstance().getConnection();
             dbConn.setAutoCommit(false);
 
             String source = (e.getSource() == null ? "OpenNMS.Capsd" : e.getSource());
@@ -1459,7 +1459,7 @@ final class BroadcastEventProcessor implements EventListener {
         Connection dbConn = null;
         List eventsToSend = null;
         try {
-            dbConn = DatabaseConnectionFactory.getInstance().getConnection();
+            dbConn = DataSourceFactory.getInstance().getConnection();
             dbConn.setAutoCommit(false);
             String source = (e.getSource() == null ? "OpenNMS.Capsd" : e.getSource());
             eventsToSend = doDeleteService(dbConn, source, e.getNodeid(), e.getInterface(), e.getService(), txNo);
@@ -1535,7 +1535,7 @@ final class BroadcastEventProcessor implements EventListener {
             PreparedStatement stmt = null;
             ResultSet rs = null;
             try {
-                dbc = DatabaseConnectionFactory.getInstance().getConnection();
+                dbc = DataSourceFactory.getInstance().getConnection();
 
                 // Retrieve node id
                 stmt = dbc.prepareStatement(SQL_RETRIEVE_NODEID);
@@ -1652,7 +1652,7 @@ final class BroadcastEventProcessor implements EventListener {
         Connection dbConn = null;
         List eventsToSend = null;
         try {
-            dbConn = DatabaseConnectionFactory.getInstance().getConnection();
+            dbConn = DataSourceFactory.getInstance().getConnection();
             dbConn.setAutoCommit(false);
 
             eventsToSend = doUpdateServer(dbConn, nodeLabel, event.getInterface(), action, getLocalServer(), txNo);
@@ -1721,7 +1721,7 @@ final class BroadcastEventProcessor implements EventListener {
         List eventsToSend = null;
         Connection dbConn = null;
         try {
-            dbConn = DatabaseConnectionFactory.getInstance().getConnection();
+            dbConn = DataSourceFactory.getInstance().getConnection();
             dbConn.setAutoCommit(false);
 
             eventsToSend = doUpdateService(dbConn, nodeLabel, event.getInterface(), event.getService(), action, txNo);

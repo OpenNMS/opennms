@@ -71,7 +71,7 @@ import org.opennms.netmgt.ConfigFileConstants;
  * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
  */
-public final class DatabaseConnectionFactory implements DataSource {
+public final class DataSourceFactory implements DataSource {
 
     /**
      * The singleton instance of this factory

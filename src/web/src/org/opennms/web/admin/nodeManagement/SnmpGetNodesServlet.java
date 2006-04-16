@@ -53,7 +53,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.opennms.netmgt.config.DatabaseConnectionFactory;
+import org.opennms.netmgt.config.DataSourceFactory;
 
 /**
  * A servlet that handles querying the database for node, interface, service
@@ -69,7 +69,7 @@ public class SnmpGetNodesServlet extends HttpServlet {
 
     public void init() throws ServletException {
         try {
-            DatabaseConnectionFactory.init();
+            DataSourceFactory.init();
         } catch (Exception e) {
         }
     }
@@ -94,7 +94,7 @@ public class SnmpGetNodesServlet extends HttpServlet {
         int lineCount = 0;
 
         try {
-            connection = DatabaseConnectionFactory.getInstance().getConnection();
+            connection = DataSourceFactory.getInstance().getConnection();
             int snmpServNum = 0;
             Statement servstmt = connection.createStatement();
             ResultSet snmpserv = servstmt.executeQuery(SNMP_SERVICE_QUERY);

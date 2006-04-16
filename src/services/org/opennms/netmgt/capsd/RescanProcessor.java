@@ -92,7 +92,7 @@ import org.opennms.netmgt.capsd.snmp.SystemGroup;
 import org.opennms.netmgt.config.CapsdConfig;
 import org.opennms.netmgt.config.CapsdConfigFactory;
 import org.opennms.netmgt.config.CollectdConfigFactory;
-import org.opennms.netmgt.config.DatabaseConnectionFactory;
+import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.config.PollerConfigFactory;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
@@ -1384,7 +1384,7 @@ public final class RescanProcessor implements Runnable {
         ResultSet rs = null;
         Map serviceNames = new HashMap();
         try {
-            ctest = DatabaseConnectionFactory.getInstance().getConnection();
+            ctest = DataSourceFactory.getInstance().getConnection();
             PreparedStatement loadStmt = ctest.prepareStatement(SQL_RETRIEVE_SERVICE_IDS);
 
             // go ahead and load the service table
@@ -2871,7 +2871,7 @@ public final class RescanProcessor implements Runnable {
                 log.debug("Got capsd dbLock. processing "+m_scheduledNode.getNodeId());
                 // Get database connection
                 //
-                dbc = DatabaseConnectionFactory.getInstance().getConnection();
+                dbc = DataSourceFactory.getInstance().getConnection();
 
                 // There is a slight possibility that the node being rescanned
                 // has been deleted (due to reparenting) by another thread

@@ -53,7 +53,7 @@ import org.opennms.core.concurrent.RunnableConsumerThreadPool;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.CapsdConfigFactory;
 import org.opennms.netmgt.config.CollectdConfigFactory;
-import org.opennms.netmgt.config.DatabaseConnectionFactory;
+import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.PollerConfigFactory;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.daemon.ServiceDaemon;
@@ -214,7 +214,7 @@ public class Capsd extends ServiceDaemon {
 
         // Initialize the Database configuration factory
         try {
-            DatabaseConnectionFactory.init();
+            DataSourceFactory.init();
         } catch (IOException ie) {
             log.fatal("IOException loading database config", ie);
             throw new UndeclaredThrowableException(ie);
@@ -268,7 +268,7 @@ public class Capsd extends ServiceDaemon {
          */
         java.sql.Connection conn = null;
         try {
-            conn = DatabaseConnectionFactory.getInstance().getConnection();
+            conn = DataSourceFactory.getInstance().getConnection();
             if (log.isDebugEnabled()) {
                 log.debug("init: Loading services into database...");
             }

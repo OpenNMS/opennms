@@ -36,7 +36,7 @@ package org.opennms.netmgt.notifd.jmx;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.config.DatabaseConnectionFactory;
+import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.DestinationPathFactory;
 import org.opennms.netmgt.config.GroupFactory;
 import org.opennms.netmgt.config.NotifdConfigFactory;
@@ -71,7 +71,7 @@ public class Notifd implements NotifdMBean {
         }
         
         try {
-            DatabaseConnectionFactory.init();
+            DataSourceFactory.init();
         } catch (Exception e) {
             log.error("start: Failed to init database connection factory.", e);
         }
@@ -106,7 +106,7 @@ public class Notifd implements NotifdMBean {
             log.error("start: Failed to init poll outage config factory.", e);
         }
         
-        getNotifd().setDbConnectionFactory(DatabaseConnectionFactory.getInstance());
+        getNotifd().setDbConnectionFactory(DataSourceFactory.getInstance());
         getNotifd().setEventManager(EventIpcManagerFactory.getIpcManager());
         
         getNotifd().setConfigManager(NotifdConfigFactory.getInstance());

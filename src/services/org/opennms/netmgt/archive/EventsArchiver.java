@@ -52,7 +52,7 @@ import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.core.utils.TimeConverter;
-import org.opennms.netmgt.config.DatabaseConnectionFactory;
+import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.EventsArchiverConfigFactory;
 
 /**
@@ -176,7 +176,7 @@ public class EventsArchiver {
     /**
      * The database connection
      */
-    private Connection m_dbConn;
+    private Connection m_conn;
 
     /**
      * The prepared statement to select the events
@@ -267,8 +267,8 @@ public class EventsArchiver {
 
         // Make sure we can connect to the database
         try {
-            DatabaseConnectionFactory.init();
-            m_dbConn = DatabaseConnectionFactory.getInstance().getConnection();
+            DataSourceFactory.init();
+            m_conn = DataSourceFactory.getInstance().getConnection();
         } catch (IOException e) {
             m_logCat.fatal("IOException while initializing database", e);
             throw new UndeclaredThrowableException(e);
@@ -467,7 +467,7 @@ public class EventsArchiver {
             m_eventsGetStmt.close();
             m_eventDeleteStmt.close();
 
-            m_dbConn.close();
+            m_conn.close();
         } catch (SQLException e) {
             m_logCat.warn("Error while closing database statements and "
                           + "connection: message -> " + e.getMessage());
@@ -495,8 +495,8 @@ public class EventsArchiver {
         // initialize the prepared statements
         try {
             m_eventsGetStmt =
-                m_dbConn.prepareStatement(DB_SELECT_EVENTS_TO_ARCHIVE);
-            m_eventDeleteStmt = m_dbConn.prepareStatement(DB_DELETE_EVENT);
+                m_conn.prepareStatement(DB_SELECT_EVENTS_TO_ARCHIVE);
+            m_eventDeleteStmt = m_conn.prepareStatement(DB_DELETE_EVENT);
         } catch (SQLException e) {
             m_logCat.error("EventsArchiver: Exception in opening the database "
                            + "connection or in the prepared statement for the "

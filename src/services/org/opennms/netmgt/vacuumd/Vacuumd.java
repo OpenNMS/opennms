@@ -51,7 +51,7 @@ import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.config.DatabaseConnectionFactory;
+import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.VacuumdConfigFactory;
 import org.opennms.netmgt.config.vacuumd.Automation;
 import org.opennms.netmgt.daemon.ServiceDaemon;
@@ -291,7 +291,7 @@ public class Vacuumd extends ServiceDaemon implements Runnable {
         Connection dbConn = null;
         boolean commit = false;
         try {
-            dbConn = DatabaseConnectionFactory.getInstance().getConnection();
+            dbConn = DataSourceFactory.getInstance().getConnection();
             dbConn.setAutoCommit(false);
 
             PreparedStatement stmt = dbConn.prepareStatement(sql);

@@ -43,7 +43,7 @@ import junit.framework.TestCase;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.config.CapsdConfigManager;
-import org.opennms.netmgt.config.DatabaseConnectionFactory;
+import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.eventd.EventUtil;
 import org.opennms.netmgt.mock.EventAnticipator;
 import org.opennms.netmgt.mock.MockDatabase;
@@ -117,7 +117,7 @@ public class PollerTest extends TestCase {
         
         m_db = new MockDatabase();
         m_db.populate(m_network);
-        DatabaseConnectionFactory.setInstance(m_db);
+        DataSourceFactory.setInstance(m_db);
         
         m_pollerConfig = new MockPollerConfig(m_network);
         m_pollerConfig.setNextOutageIdSql(m_db.getNextOutageIdStatement());
@@ -162,7 +162,7 @@ public class PollerTest extends TestCase {
         stopDaemons();
         sleep(200);
 		MockLogAppender.assertNoWarningsOrGreater();
-        DatabaseConnectionFactory.setInstance(null);
+        DataSourceFactory.setInstance(null);
         m_db.drop();
         MockUtil.println("------------ End Test "+getName()+" --------------------------");
     }

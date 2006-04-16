@@ -39,7 +39,7 @@ import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.config.DatabaseConnectionFactory;
+import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.EventTranslatorConfigFactory;
 import org.opennms.netmgt.eventd.EventIpcManager;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
@@ -55,7 +55,7 @@ public class EventTranslator implements EventTranslatorMBean {
 
         Category log = ThreadCategory.getInstance();
         try {
-            DatabaseConnectionFactory.init();
+            DataSourceFactory.init();
             EventTranslatorConfigFactory.init();
         } catch (MarshalException e) {
             log.error("Could not unmarshall configuration", e);
@@ -79,7 +79,7 @@ public class EventTranslator implements EventTranslatorMBean {
         org.opennms.netmgt.translator.EventTranslator keeper = getEventTranslator();
         keeper.setConfig(EventTranslatorConfigFactory.getInstance());
         keeper.setEventManager(mgr);
-        keeper.setDataSource(DatabaseConnectionFactory.getInstance());
+        keeper.setDataSource(DataSourceFactory.getInstance());
         keeper.init();
     }
 

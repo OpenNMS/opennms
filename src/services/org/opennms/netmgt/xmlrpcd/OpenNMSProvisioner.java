@@ -46,7 +46,6 @@ import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.CapsdConfig;
-import org.opennms.netmgt.config.DatabaseConnectionFactory;
 import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.config.capsd.ProtocolPlugin;
 import org.opennms.netmgt.config.poller.Downtime;
@@ -57,6 +56,7 @@ import org.opennms.netmgt.config.poller.Rrd;
 import org.opennms.netmgt.config.poller.Service;
 import org.opennms.netmgt.eventd.EventIpcManager;
 import org.opennms.netmgt.xml.event.Event;
+import org.opennms.netmgt.config.DataSourceFactory;
 
 public class OpenNMSProvisioner implements Provisioner {
     
@@ -375,7 +375,7 @@ private EventIpcManager m_eventManager;
     
     private void syncServices() {
         try {
-            Connection conn = DatabaseConnectionFactory.getInstance().getConnection();
+            Connection conn = DataSourceFactory.getInstance().getConnection();
             try {
                 m_capsdConfig.syncServicesTable(conn);
             } finally {

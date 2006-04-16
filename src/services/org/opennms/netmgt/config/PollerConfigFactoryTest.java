@@ -109,12 +109,12 @@ public class PollerConfigFactoryTest extends TestCase {
         
         MockDatabase db = new MockDatabase();
         db.populate(network);
-        DatabaseConnectionFactory.setInstance(db);
+        DataSourceFactory.setInstance(db);
         
     }
 
     protected void tearDown() throws Exception {
-        DatabaseConnectionFactory.setInstance(null);
+        DataSourceFactory.setInstance(null);
         super.tearDown();
 		MockLogAppender.assertNoWarningsOrGreater();
     }
