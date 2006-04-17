@@ -78,7 +78,10 @@ public class CollectorConfigDaoImpl implements CollectorConfigDao {
 	}
 
 	private void instantiateCollectors() {
-			CollectdConfiguration config = getConfig();
+        log().debug("init: Loading collectors");
+
+
+        CollectdConfiguration config = getConfig();
 	    /*
 	     * Load up an instance of each collector from the config
 	     * so that the event processor will have them for

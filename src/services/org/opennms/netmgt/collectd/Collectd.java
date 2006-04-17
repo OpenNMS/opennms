@@ -54,8 +54,6 @@ import java.util.ListIterator;
 import java.util.Set;
 
 import org.apache.log4j.Category;
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.capsd.EventUtils;
@@ -131,8 +129,6 @@ public final class Collectd extends ServiceDaemon implements EventListener {
         m_scheduledOutagesDao = new ScheduledOutagesDaoImpl();
         m_monSvcDao = new MonitoredServiceDaoJdbc(DataSourceFactory.getInstance());
         
-        log().debug("init: Loading collectors");
-
         createScheduler();
         ReadyRunnable interfaceScheduler = buildSchedule();
         m_scheduler.schedule(interfaceScheduler, 0);
@@ -226,7 +222,7 @@ public final class Collectd extends ServiceDaemon implements EventListener {
         }
     }
 
-   /**
+	/**
      * Responsible for starting the collection daemon.
      */
     public synchronized void start() {
@@ -353,9 +349,9 @@ public final class Collectd extends ServiceDaemon implements EventListener {
     	} // end while more service collectors
     }
 
-    private Set getCollectorNames() {
-        return m_collectorConfigDao.getCollectorName();
-    }
+	private Set getCollectorNames() {
+		return m_collectorConfigDao.getCollectorName();
+	}
 
     /**
      * This method is responsible for scheduling the specified
@@ -879,11 +875,10 @@ public final class Collectd extends ServiceDaemon implements EventListener {
 	void handleNodeGainedService(Event event) throws InsufficientInformationException {
 		EventUtils.checkNodeId(event);
 		EventUtils.checkInterface(event);
-		// TODO: chouldn't this check for service as well?
-
+		EventUtils.checkService(event);
 	    // Schedule the interface
 	    //
-	    this.scheduleForCollection(event);
+	    scheduleForCollection(event);
 	}
 
 	void scheduleForCollection(Event event) {
