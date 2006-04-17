@@ -20,6 +20,14 @@
     <complexType>
       <attribute default="localhost" name="server-name" type="string"
                  use="optional"/>
+      <attribute default="" name="defaultCriticalPathIp" type="string"
+                 use="optional"/>
+      <attribute default="" name="defaultCriticalPathService" type="string"
+                 use="optional"/>
+      <attribute default="1500" name="defaultCriticalPathTimeout" type="positiveInteger"
+                 use="optional"/>
+      <attribute default="0" name="defaultCriticalPathRetries" type="nonNegativeInteger"
+                 use="optional"/>
 
       <attribute default="false" name="verify-server" use="optional">
         <annotation>

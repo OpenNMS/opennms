@@ -265,6 +265,11 @@ public class EventConstants {
     public final static String NODE_DOWN_EVENT_UEI = "uei.opennms.org/nodes/nodeDown";
 
     /**
+     * The path outage event UEI
+     */
+    public final static String PATH_OUTAGE_EVENT_UEI = "uei.opennms.org/nodes/pathOutage";
+
+    /**
      * The node up event UEI
      */
     public final static String NODE_UP_EVENT_UEI = "uei.opennms.org/nodes/nodeUp";
@@ -475,6 +480,24 @@ public class EventConstants {
     //
 
     /**
+     * The criticalPathIp used in determining if a node down event is
+     * due to a path outage
+     */
+    public final static String PARM_CRITICAL_PATH_IP = "criticalPathIp";
+
+    /**
+     * The criticalPathServiceName used in determining if a node down event is
+     * due to a path outage
+     */
+    public final static String PARM_CRITICAL_PATH_SVC = "criticalPathServiceName";
+
+    /**
+     * This parameter is set to true if a critical path outage has resulted in the
+     * supression of a notification
+     */
+    public final static String PARM_CRITICAL_PATH_NOTICE_SUPRESSED = "noticeSupressed";
+
+    /**
      * The nodeSysName from the node table when sent as an event parm
      */
     public final static String PARM_NODE_SYSNAME = "nodesysname";
@@ -680,6 +703,12 @@ public class EventConstants {
      * Used for retaining the reason from a monitor determines SERVICE_UNAVAILABLE
      */
     public final static String PARM_LOSTSERVICE_REASON = "eventReason";
+    
+    /**
+     * Used for setting the value for  PARM_LOSTSERVICE_REASON when the lost
+     * service is due to a critical path outage
+     */
+    public final static String PARM_VALUE_PATHOUTAGE = "pathOutage";
     
     /**
      * Parms used for passive status events sent to the PassiveServiceKeeper

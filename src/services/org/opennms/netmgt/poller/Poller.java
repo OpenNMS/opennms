@@ -38,14 +38,19 @@
 
 package org.opennms.netmgt.poller;
 
+import java.io.IOException;
+import java.lang.Integer;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -55,6 +60,9 @@ import org.apache.log4j.Category;
 import org.apache.log4j.Priority;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.capsd.plugins.IcmpPlugin;
+import org.opennms.netmgt.config.DataSourceFactory;
+import org.opennms.netmgt.config.OpennmsServerConfigFactory;
 import org.opennms.netmgt.config.PollOutagesConfig;
 import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.config.poller.Package;
@@ -596,6 +604,37 @@ public class Poller extends ServiceDaemon {
         Parms eventParms = new Parms();
         Parm eventParm = new Parm();
         Value parmValue = new Value();
+
+        if (uei.equals(EventConstants.NODE_DOWN_EVENT_UEI)) {
+            String[] criticalPath = getCriticalPath(nodeId);
+            boolean isPathOk = true;
+            isPathOk = testCriticalPath(criticalPath);
+            if(!isPathOk) {
+                log.debug("Critical path test failed for node " + nodeId);
+                // add eventReason, criticalPathIp, criticalPathService parms
+                eventParm = new Parm();
+                eventParm.setParmName(EventConstants.PARM_LOSTSERVICE_REASON);
+                parmValue = new Value();
+                parmValue.setContent(EventConstants.PARM_VALUE_PATHOUTAGE);
+                eventParm.setValue(parmValue);
+                eventParms.addParm(eventParm);
+
+                eventParm = new Parm();
+                eventParm.setParmName(EventConstants.PARM_CRITICAL_PATH_IP);
+                parmValue = new Value();
+                parmValue.setContent(criticalPath[0]);
+                eventParm.setValue(parmValue);
+                eventParms.addParm(eventParm);
+
+                eventParm = new Parm();
+                eventParm.setParmName(EventConstants.PARM_CRITICAL_PATH_SVC);
+                parmValue = new Value();
+                parmValue.setContent(criticalPath[1]);
+                eventParm.setValue(parmValue);
+                eventParms.addParm(eventParm);
+            }
+        }
+
         
         if (uei.equals(EventConstants.NODE_LOST_SERVICE_EVENT_UEI)) {
             eventParm = new Parm();
@@ -646,6 +685,66 @@ public class Poller extends ServiceDaemon {
 		}
 	};
 	m_network.visit(visitor);
+    }
+
+    private String[] getCriticalPath(int nodeId) {
+        Category log = ThreadCategory.getInstance(getClass());
+        String SQL_DB_RETRIEVE_PATHOUTAGE = "SELECT criticalpathip, criticalpathservicename FROM pathoutage where nodeid=?";
+        String[] cpath = new String[2];
+	Connection dbc = null;
+        try {
+            dbc = DataSourceFactory.getInstance().getConnection();
+            PreparedStatement stmt = dbc.prepareStatement(SQL_DB_RETRIEVE_PATHOUTAGE);
+            stmt.setLong(1, nodeId);
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                cpath[0] = rs.getString(1);
+                cpath[1] = rs.getString(2);
+            }
+            rs.close();
+            stmt.close();
+        } catch (SQLException sqlE) {
+            log.error("getCriticalPath: SQLException " + sqlE);
+        } finally {
+            try {
+                dbc.close();
+            } catch (Exception e) {
+                log.error("getCriticalPath: Exception on close" + e);
+            }
+        }
+
+        if (cpath[0] == null || cpath[0].equals("")) {
+            cpath[0] = OpennmsServerConfigFactory.getInstance().getDefaultCriticalPathIp();
+            cpath[1] = "ICMP";
+        }
+        if (cpath[1] == null || cpath[1].equals("")) {
+            cpath[1] = "ICMP";
+        }
+        return cpath;
+    }
+
+    private boolean testCriticalPath(String[] criticalPath) {
+        //TODO: Generalize the service
+        Category log = ThreadCategory.getInstance(getClass());
+        InetAddress addr = null;
+	boolean result = true;
+        try {
+            addr = InetAddress.getByName(criticalPath[0]);
+        } catch (UnknownHostException e ) {
+            log.error("failed to convert string address to InetAddress " + criticalPath[0]);
+            return true;
+        }
+	try {
+            IcmpPlugin p = new IcmpPlugin();
+            Map map = new HashMap();
+            map.put("retry", new Integer(OpennmsServerConfigFactory.getInstance().getDefaultCriticalPathRetries()));
+            map.put("timeout", new Integer(OpennmsServerConfigFactory.getInstance().getDefaultCriticalPathTimeout()));
+
+	    result = p.isProtocolSupported(addr, map);
+        } catch (IOException e) {
+            log.error("IOException when testing critical path " + e);
+        }
+        return result;
     }
 
 }

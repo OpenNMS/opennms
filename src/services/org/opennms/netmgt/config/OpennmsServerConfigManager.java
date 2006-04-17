@@ -59,6 +59,42 @@ public class OpennmsServerConfigManager {
     }
 
     /**
+     * Return the default critical path IP
+     * 
+     * @return the default critical path IP
+     */
+    public synchronized String getDefaultCriticalPathIp() {
+        return m_config.getDefaultCriticalPathIp();
+    }
+
+    /**
+     * Return the default critical path service
+     * 
+     * @return the default critical path service
+     */
+    public synchronized String getDefaultCriticalPathService() {
+        return m_config.getDefaultCriticalPathService();
+    }
+
+    /**
+     * Return the default critical path timeout
+     * 
+     * @return the default critical path timeout
+     */
+    public synchronized int getDefaultCriticalPathTimeout() {
+        return m_config.getDefaultCriticalPathTimeout();
+    }
+
+    /**
+     * Return the default critical path retries
+     * 
+     * @return the default critical path retries
+     */
+    public synchronized int getDefaultCriticalPathRetries() {
+        return m_config.getDefaultCriticalPathRetries();
+    }
+
+    /**
      * Return the boolean flag verify server to determine if poller what to use
      * server to restrict services to poll.
      * 

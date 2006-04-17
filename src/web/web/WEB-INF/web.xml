@@ -634,6 +634,11 @@
   </servlet>
 
   <servlet>
+    <!-- servlet for setting critical path -->
+    <servlet-name>setCriticalPath</servlet-name>
+    <servlet-class>org.opennms.web.admin.nodeManagement.SetCriticalPathServlet</servlet-class>
+  </servlet>
+  <servlet>
     <!-- servlet for grabbing node information -->
     <servlet-name>deleteSelNodes</servlet-name>
     <servlet-class>org.opennms.web.admin.nodeManagement.DeleteNodesServlet</servlet-class>
@@ -1209,6 +1214,10 @@
   <servlet-mapping>
     <servlet-name>addNewInterface</servlet-name>
     <url-pattern>/admin/addNewInterface</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>setCriticalPath</servlet-name>
+    <url-pattern>/admin/setCriticalPath</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
     <servlet-name>deleteSelNodes</servlet-name>

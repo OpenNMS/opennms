@@ -122,6 +122,11 @@
     <a href="admin/nodemanagement/deletenode.jsp?node=<%=nodeId%>">Delete
     Node</a>
   </p>
+
+  <p>
+    <a href="admin/nodemanagement/setPathOutage.jsp?node=<%=nodeId%>">
+    Configure Path Outage</a>
+  </p>
 </div>
       
 <div style="width: 60%; float: left;">
@@ -150,6 +155,11 @@
   <p>
     <b>Delete Node</b> allows you to permanently delete a current node
     from database.
+  </p>
+        
+  <p>
+    <b>Configure Path Outage</b> Set the critical path and service to test
+    before sending Node Down notifications for this node.
   </p>
 </div>
 

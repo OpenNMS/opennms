@@ -65,6 +65,7 @@ import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.core.utils.TimeConverter;
 import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.capsd.EventUtils;
 import org.opennms.netmgt.config.NotifdConfigManager;
 import org.opennms.netmgt.config.NotificationManager;
 import org.opennms.netmgt.config.PollOutagesConfigManager;
@@ -79,11 +80,15 @@ import org.opennms.netmgt.config.notifications.Parameter;
 import org.opennms.netmgt.config.users.Contact;
 import org.opennms.netmgt.config.users.User;
 import org.opennms.netmgt.eventd.EventIpcManager;
+import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 import org.opennms.netmgt.eventd.EventListener;
 import org.opennms.netmgt.eventd.EventUtil;
 import org.opennms.netmgt.utils.RowProcessor;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Logmsg;
+import org.opennms.netmgt.xml.event.Parm;
+import org.opennms.netmgt.xml.event.Parms;
+import org.opennms.netmgt.xml.event.Value;
 
 /**
  * 
@@ -104,6 +109,12 @@ public final class BroadcastEventProcessor implements EventListener {
     private static RE notifdExpandRE;
 
     private Notifd m_notifd;
+
+     /**
+      * SQL statement for retrieving the critical path IP address and service
+      * from the pathOutage table
+      */
+    final static String SQL_DB_RETRIEVE_PATHOUTAGE = "SELECT criticalpathip, criticalpathservicename FROM pathoutage where nodeid=?";
 
     /**
      * Initializes the expansion regular expression. The exception is going to
@@ -159,20 +170,50 @@ public final class BroadcastEventProcessor implements EventListener {
      *            The event .
      */
     public void onEvent(Event event) {
+        Category log = ThreadCategory.getInstance(getClass());
         if (event == null)
             return;
 
         String status = "off";
+        long nodeid = event.getNodeid();
         try {
             status = getConfigManager().getNotificationStatus();
         } catch (Exception e) {
             ThreadCategory.getInstance(getClass()).error("error getting notifd status, assuming status = 'off' for now: ", e);
         }
 
-        if (status.equals("on")) {
+        boolean isPathOk = true;
+
+        // If this is a nodeDown event, see if the critical path was down
+
+        if (event.getUei().equals(EventConstants.NODE_DOWN_EVENT_UEI)) {
+            String reason = EventUtils.getParm(event, EventConstants.PARM_LOSTSERVICE_REASON);
+            if (reason != null && reason.equals(EventConstants.PARM_VALUE_PATHOUTAGE)) {
+		isPathOk = false;
+		String cip = EventUtils.getParm(event, EventConstants.PARM_CRITICAL_PATH_IP);
+		String csvc = EventUtils.getParm(event, EventConstants.PARM_CRITICAL_PATH_SVC);
+                log.debug("Critical Path " + cip + " " + csvc + " for nodeId " + nodeid + " did not respond. Checking to see if notice would have been sent...");
+                boolean mapsToNotice = false;
+                boolean noticeSupressed = false;
+                Notification[] notifications = null;
+                try {
+                    mapsToNotice = getNotificationManager().hasUei(event.getUei());
+                } catch (Exception e) {
+                }
+                try {
+                    notifications = getNotificationManager().getNotifForEvent(event);
+                } catch (Exception e) {
+                }
+                if (status.equals("on") && mapsToNotice && continueWithNotice(event) && notifications != null) {
+                    noticeSupressed = true;
+                }
+                createPathOutageEvent(nodeid, EventUtils.getParm(event, EventConstants.PARM_NODE_LABEL), cip, csvc, noticeSupressed);
+            }
+        }
+
+        if (status.equals("on") && (isPathOk)) {
             scheduleNoticesForEvent(event);
-        } else {
-            Category log = ThreadCategory.getInstance(getClass());
+        } else if (status.equals("off")) {
             if (log.isDebugEnabled())
                 log.debug("discarding event " + event.getUei() + ", notifd status = " + status);
         }
@@ -317,7 +358,7 @@ public final class BroadcastEventProcessor implements EventListener {
         // can't check the database if any of these are null, so let the notice
         // continue
         if (nodeID == null || ipAddr == null || service == null || ipAddr.equals("0.0.0.0")) {
-            ThreadCategory.getInstance(getClass()).debug("nodeID=" + nodeID + " ipAddr=" + ipAddr + " service=" + service + ". Not checking DB, allowing notice to continue.");
+            ThreadCategory.getInstance(getClass()).debug("nodeID=" + nodeID + " ipAddr=" + ipAddr + " service=" + service + ". Not checking DB, continuing...");
             return true;
         }
 
@@ -926,6 +967,81 @@ public final class BroadcastEventProcessor implements EventListener {
         }
 
         return null;
+    }
+
+    /**
+     * This method is responsible for generating a pathOutage event and
+     * sending it
+     *
+     * @param nodeEntry Entry of node which was rescanned
+     */
+    private void createPathOutageEvent(long nodeid, String nodeLabel, String intfc, String svc, boolean noticeSupressed) {
+        Category log = ThreadCategory.getInstance(getClass());
+	log.debug("nodeid = " + nodeid + ", nodeLabel = " + nodeLabel + ", noticeSupressed = " + noticeSupressed);
+        Event newEvent = new Event();
+        newEvent.setUei(EventConstants.PATH_OUTAGE_EVENT_UEI);
+        newEvent.setSource("OpenNMS.notifd");
+        newEvent.setNodeid(nodeid);
+        newEvent.setTime(EventConstants.formatToString(new java.util.Date()));
+
+        // Add appropriate parms
+        Parms eventParms = new Parms();
+        Parm eventParm = null;
+        Value parmValue = null;
+
+        // Add node label
+        eventParm = new Parm();
+        eventParm.setParmName(EventConstants.PARM_NODE_LABEL);
+        parmValue = new Value();
+        if (nodeLabel == null) {
+            parmValue.setContent("");
+        }
+        else {
+            parmValue.setContent(nodeLabel);
+        }
+        eventParm.setValue(parmValue);
+        eventParms.addParm(eventParm);
+
+        // Add critical path IP
+        eventParm = new Parm();
+        eventParm.setParmName(EventConstants.PARM_CRITICAL_PATH_IP);
+        parmValue = new Value();
+        parmValue.setContent(intfc);
+        eventParm.setValue(parmValue);
+        eventParms.addParm(eventParm);
+
+        // Add critical path Svc
+        eventParm = new Parm();
+        eventParm.setParmName(EventConstants.PARM_CRITICAL_PATH_SVC);
+        parmValue = new Value();
+        parmValue.setContent(svc);
+        eventParm.setValue(parmValue);
+        eventParms.addParm(eventParm);
+
+        // Add noticeSupressed
+        eventParm = new Parm();
+        eventParm.setParmName(EventConstants.PARM_CRITICAL_PATH_NOTICE_SUPRESSED);
+        parmValue = new Value();
+	if(noticeSupressed) {
+            parmValue.setContent("true");
+        } else {
+            parmValue.setContent("false");
+        }
+        eventParm.setValue(parmValue);
+        eventParms.addParm(eventParm);
+
+        // Add Parms to the event
+        newEvent.setParms(eventParms);
+
+        // Send the event
+        if (log.isDebugEnabled()) {
+            log.debug("Creating pathOutageEvent for nodeid: " + nodeid);
+        }
+	try {
+            EventIpcManagerFactory.getIpcManager().sendNow((Event) newEvent);
+        } catch (Throwable t) {
+            log.warn("run: unexpected throwable exception caught during send to middleware", t);
+        }
     }
 
 } // end class

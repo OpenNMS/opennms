@@ -21,6 +21,7 @@
 		   "Node List"));
         navBar.add(new NavBarEntry("element", "element/index.jsp", "Search"));
         navBar.add(new NavBarEntry("outages", "outage/index.jsp", "Outages"));
+        navBar.add(new NavBarEntry("pathOutage", "pathOutage/index.jsp", "Path Outages"));
         navBar.add(new NavBarEntry("event", "event/index.jsp", "Events"));
         navBar.add(new NavBarEntry("alarm", "alarm/index.jsp", "Alarms"));
         navBar.add(new NavBarEntry("notification", "notification/index.jsp",
