@@ -46,6 +46,7 @@ drop table vulnerabilities cascade;
 drop table vulnPlugins cascade;
 drop table serverMap cascade;
 drop table serviceMap cascade;
+drop table pathOutage cascade;
 drop sequence catNxtId;
 drop sequence nodeNxtId;
 drop sequence serviceNxtId;
@@ -955,6 +956,35 @@ create table category_node (
 
 CREATE INDEX catid_idx on category_node(categoryId);
 CREATE INDEX catnode_idx on category_node(nodeId);
+
+--########################################################################
+--# pathOutage Table - Contains the critical path IP address and service
+--#                    associated with each node for suppressing nodeDown
+--#                    notifications
+--#
+--# This table contains the following information:
+--#
+--#  nodeID                  : Unique identifier of the node
+--#  criticalPathIp          : IP Address associated with the critical element in
+--#                            the path between the OpenNMS server and the node
+--#  criticalPathServiceName : the service to test on the critical path IP
+--#                            address (Assume ICMP in Phase I implementation)
+--#
+--# NOTE: The nodeID must be unique
+--#
+--########################################################################
+
+create table pathOutage (
+	nodeID			integer,
+	criticalPathIp		varchar(16) not null,
+	criticalPathServiceName	varchar(32),
+
+	constraint fk_nodeID8 foreign key (nodeID) references node ON DELETE CASCADE
+);
+
+create index pathoutage_nodeid_idx on pathOutage(nodeID);
+create index pathoutage_criticalpathip on pathOutage(criticalPathIp);
+create index pathoutage_criticalpathservicename_idx on pathOutage(criticalPathServiceName);
 
 
 --##################################################################

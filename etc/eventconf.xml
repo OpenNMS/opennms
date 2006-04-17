@@ -793,9 +793,26 @@
 			impacted until this outage is resolved.&lt;/p&gt;
 		</descr>
 		<logmsg dest='logndisplay'>
-			Node %parm[nodelabel]% is down.
+			Node %parm[nodelabel]% is down. %parm[eventReason]%
 		</logmsg>
 		<severity>Major</severity>
+        <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="1" />
+	</event>
+	<event>
+                <uei>uei.opennms.org/nodes/pathOutage</uei>
+                <event-label>OpenNMS-defined node event: pathOutage</event-label>
+                <descr>
+                        &lt;p&gt;The state of node %parm[nodelabel]% is unknown
+                        because the critical path to the node is down.&lt;/p&gt;
+                        &lt;p&gt;This event is generated when node outage processing
+                        determines that the critical path IP address/service for
+                        this node is not responding..&lt;/p&gt;
+                </descr>
+                <logmsg dest='logndisplay'>
+                        %parm[nodelabel]% path outage. Critical path =
+                        %parm[criticalPathIp]% %parm[criticalPathServiceName]%
+                </logmsg>
+                <severity>Major</severity>
         <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="1" />
 	</event>
 	<event>
