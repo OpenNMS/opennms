@@ -1,6 +1,5 @@
 package org.opennms.netmgt.collectd;
 
-import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Map;
 import java.util.TreeMap;
@@ -37,42 +36,35 @@ public class CollectionSpecification {
 		return m_package;
 	}
 
-	String storeByIfAlias() {
+	private String storeByIfAlias() {
 		return getPackage().getStoreByIfAlias();
 	}
 
-	String ifAliasComment() {
+	private String ifAliasComment() {
 		return getPackage().getIfAliasComment();
 	}
 
-	String storeFlagOverride() {
+	private String storeFlagOverride() {
 		return getPackage().getStorFlagOverride();
 	}
 
-	String ifAliasDomain() {
+	private String ifAliasDomain() {
 		return getPackage().getIfAliasDomain();
 	}
 
-	String storeByNodeId() {
+	private String storeByNodeId() {
 		return getPackage().getStoreByNodeID();
 	}
 
-	Service getService() {
-		// find the service matching the name
-	    // m
-	    Service svc = null;
-	    Enumeration esvc = getPackage().enumerateService();
-	    while (esvc.hasMoreElements()) {
-	        Service s = (Service) esvc.nextElement();
-	        if (s.getName().equalsIgnoreCase(m_svcName)) {
-	            svc = s;
-	            break;
-	        }
-	    }
-	    if (svc == null)
-	        throw new RuntimeException("Service name not part of package!");
-	    
-	    return svc;
+	private Service getService() {
+		
+		while (getPackage().enumerateService().hasMoreElements()) {
+			Service svc = (Service) getPackage().enumerateService().nextElement();
+			if (svc.getName().equalsIgnoreCase(m_svcName))
+				return svc;
+		}
+		
+		throw new RuntimeException("Service name not part of package!");
 	}
 	
 	public String getServiceName() {

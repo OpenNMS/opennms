@@ -99,12 +99,6 @@ final class CollectableService extends IPv4NetworkInterface implements ReadyRunn
 	private OnmsIpInterface m_iface;
 
     /**
-     * The map of service parameters. These parameters are mapped by the
-     * composite key <em>(package name, service name)</em>.
-     */
-    //private static Map SVC_PROP_MAP = Collections.synchronizedMap(new TreeMap());
-
-    /**
      * Constructs a new instance of a CollectableService object.
      * @param iface TODO
      * @param spec
@@ -129,6 +123,8 @@ final class CollectableService extends IPv4NetworkInterface implements ReadyRunn
         m_updates = new CollectorUpdates();
 
         m_lastScheduledCollectionTime = 0L;
+        
+        m_spec.initialize(this);
 
 
     }
@@ -177,6 +173,7 @@ final class CollectableService extends IPv4NetworkInterface implements ReadyRunn
 	* Should be called when the collect config has been reloaded.
 	*/
 	public void refreshPackage() {
+		// FIXME: remove reference to package and CollectdConfigFactory
 		org.opennms.netmgt.config.collectd.Package refreshedPackage=CollectdConfigFactory.getInstance().getPackage(this.getPackageName());
 		if(refreshedPackage!=null) {
 			m_spec.setPackage(refreshedPackage);
@@ -306,20 +303,12 @@ final class CollectableService extends IPv4NetworkInterface implements ReadyRunn
 
 		int status = ServiceCollector.COLLECTION_FAILED;
 		try {
-	        status = collect();
+	        status = m_spec.collect(this);
 		} catch (Throwable t) {
 			log().error("run: An undeclared throwable was caught during SNMP collection for interface " + m_address.getHostAddress(), t);
 		}
 		return status;
 	}
-
-	private int collect() {
-		return m_spec.collect(this);
-	}
-
-    Map getPropertyMap() {
-		return m_spec.getPropertyMap();
-    }
 
 	/**
      * Checks the package information for the collectable service and determines
@@ -370,8 +359,6 @@ final class CollectableService extends IPv4NetworkInterface implements ReadyRunn
      *         example due to deletion flag being set), false otherwise.
      */
     private boolean processUpdates() {
-        Category log = log();
-
         // All update processing takes place within synchronized block
         // to ensure that no updates are missed.
         //
@@ -385,8 +372,8 @@ final class CollectableService extends IPv4NetworkInterface implements ReadyRunn
                 // Deletion flag is set, simply return without polling
                 // or rescheduling this collector.
                 //
-                if (log.isDebugEnabled())
-                    log.debug("Collector for  " + m_address.getHostAddress() + " is marked for deletion...skipping collection, will not reschedule.");
+                if (log().isDebugEnabled())
+                    log().debug("Collector for  " + m_address.getHostAddress() + " is marked for deletion...skipping collection, will not reschedule.");
 
                 return ABORT_COLLECTION;
             }
@@ -397,26 +384,26 @@ final class CollectableService extends IPv4NetworkInterface implements ReadyRunn
                 // Reinitialization flag is set, call initialize() to
                 // reinit the collector for this interface
                 //
-                if (log.isDebugEnabled())
-                    log.debug("ReinitializationFlag set for " + m_address.getHostAddress());
+                if (log().isDebugEnabled())
+                    log().debug("ReinitializationFlag set for " + m_address.getHostAddress());
 
                 try {
-                    release();
-                    initialize();
-                    if (log.isDebugEnabled())
-                        log.debug("Completed reinitializing SNMP collector for " + m_address.getHostAddress());
+                    m_spec.release(this);
+                    m_spec.initialize(this);
+                    if (log().isDebugEnabled())
+                        log().debug("Completed reinitializing SNMP collector for " + m_address.getHostAddress());
                 } catch (RuntimeException rE) {
-                    log.warn("Unable to initialize " + m_address.getHostAddress() + " for " + m_spec.getServiceName() + " collection, reason: " + rE.getMessage());
+                    log().warn("Unable to initialize " + m_address.getHostAddress() + " for " + m_spec.getServiceName() + " collection, reason: " + rE.getMessage());
                 } catch (Throwable t) {
-                    log.error("Uncaught exception, failed to intialize interface " + m_address.getHostAddress() + " for " + m_spec.getServiceName() + " data collection", t);
+                    log().error("Uncaught exception, failed to intialize interface " + m_address.getHostAddress() + " for " + m_spec.getServiceName() + " data collection", t);
                 }
             }
 
             // Update: reparenting flag
             //
             if (m_updates.isReparentingFlagSet()) {
-                if (log.isDebugEnabled())
-                    log.debug("ReparentingFlag set for " + m_address.getHostAddress());
+                if (log().isDebugEnabled())
+                    log().debug("ReparentingFlag set for " + m_address.getHostAddress());
 
                 // The interface has been reparented under a different node
                 // (with
@@ -439,7 +426,7 @@ final class CollectableService extends IPv4NetworkInterface implements ReadyRunn
                 String rrdPath = DataCollectionConfigFactory.getInstance().getRrdRepository();
 
                 if (rrdPath == null) {
-                    log.warn("Configuration error, failed to retrieve path to RRD repository. Unable to process reparenting updated.");
+                    log().warn("Configuration error, failed to retrieve path to RRD repository. Unable to process reparenting updated.");
                     return !ABORT_COLLECTION;
                 }
 
@@ -461,15 +448,15 @@ final class CollectableService extends IPv4NetworkInterface implements ReadyRunn
 
                     try {
                         // Rename <oldNodeId> dir to <newNodeId> dir.
-                        if (log.isDebugEnabled())
-                            log.debug("Attempting to rename " + oldNodeDir + " to " + newNodeDir);
+                        if (log().isDebugEnabled())
+                            log().debug("Attempting to rename " + oldNodeDir + " to " + newNodeDir);
                         oldNodeDir.renameTo(newNodeDir);
-                        if (log.isDebugEnabled())
-                            log.debug("Rename successful!!");
+                        if (log().isDebugEnabled())
+                            log().debug("Rename successful!!");
                     } catch (SecurityException se) {
-                        log.error("Insufficient authority to rename RRD directory.", se);
+                        log().error("Insufficient authority to rename RRD directory.", se);
                     } catch (Throwable t) {
-                        log.error("Unexpected exception while attempting to rename RRD directory.", t);
+                        log().error("Unexpected exception while attempting to rename RRD directory.", t);
                     }
                 } else {
                     // New node directory already exists so we must move/rename
@@ -487,14 +474,14 @@ final class CollectableService extends IPv4NetworkInterface implements ReadyRunn
                             File srcFile = new File(oldNodeDir.toString() + File.separator + filesToMove[i]);
                             File destFile = new File(newNodeDir.toString() + File.separator + filesToMove[i]);
                             try {
-                                if (log.isDebugEnabled())
-                                    log.debug("Attempting to move " + srcFile + " to " + destFile);
+                                if (log().isDebugEnabled())
+                                    log().debug("Attempting to move " + srcFile + " to " + destFile);
                                 srcFile.renameTo(destFile);
                             } catch (SecurityException se) {
-                                log.error("Insufficient authority to move RRD files.", se);
+                                log().error("Insufficient authority to move RRD files.", se);
                                 break;
                             } catch (Throwable t) {
-                                log.warn("Unexpected exception while attempting to move " + srcFile + " to " + destFile, t);
+                                log().warn("Unexpected exception while attempting to move " + srcFile + " to " + destFile, t);
                             }
                         }
                     }
@@ -505,7 +492,7 @@ final class CollectableService extends IPv4NetworkInterface implements ReadyRunn
                 try {
                     newNodeId = Integer.parseInt(m_updates.getReparentNewNodeId());
                 } catch (NumberFormatException nfE) {
-                    log.warn("Unable to convert new nodeId value to an int while processing reparenting update: " + m_updates.getReparentNewNodeId());
+                    log().warn("Unable to convert new nodeId value to an int while processing reparenting update: " + m_updates.getReparentNewNodeId());
                 }
 
                 // Set this collector's nodeId to the value of the interface's
@@ -517,16 +504,16 @@ final class CollectableService extends IPv4NetworkInterface implements ReadyRunn
                 // to the interface's parent node among other things.
                 //
                 try {
-                    if (log.isDebugEnabled())
-                        log.debug("Reinitializing SNMP collector for " + m_address.getHostAddress());
-                    release();
-                    initialize();
-                    if (log.isDebugEnabled())
-                        log.debug("Completed reinitializing SNMP collector for " + m_address.getHostAddress());
+                    if (log().isDebugEnabled())
+                        log().debug("Reinitializing SNMP collector for " + m_address.getHostAddress());
+                    m_spec.release(this);
+                    m_spec.initialize(this);
+                    if (log().isDebugEnabled())
+                        log().debug("Completed reinitializing SNMP collector for " + m_address.getHostAddress());
                 } catch (RuntimeException rE) {
-                    log.warn("Unable to initialize " + m_address.getHostAddress() + " for " + m_spec.getServiceName() + " collection, reason: " + rE.getMessage());
+                    log().warn("Unable to initialize " + m_address.getHostAddress() + " for " + m_spec.getServiceName() + " collection, reason: " + rE.getMessage());
                 } catch (Throwable t) {
-                    log.error("Uncaught exception, failed to initialize interface " + m_address.getHostAddress() + " for " + m_spec.getServiceName() + " data collection", t);
+                    log().error("Uncaught exception, failed to initialize interface " + m_address.getHostAddress() + " for " + m_spec.getServiceName() + " data collection", t);
                 }
             }
 
@@ -537,12 +524,4 @@ final class CollectableService extends IPv4NetworkInterface implements ReadyRunn
 
         return !ABORT_COLLECTION;
     }
-
-	private void release() {
-		m_spec.release(this);
-	}
-
-	void initialize() {
-		m_spec.initialize(this);
-	}
 }

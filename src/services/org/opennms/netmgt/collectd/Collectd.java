@@ -409,9 +409,6 @@ public final class Collectd extends ServiceDaemon implements EventListener {
                  */
                 cSvc = new CollectableService(iface, spec);
 
-                // Initialize the collector with the collectable service.
-                cSvc.initialize();
-
                 // Add new collectable service to the colleable service list.
                 m_collectableServices.add(cSvc);
 
