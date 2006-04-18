@@ -77,4 +77,9 @@ public class IpInterfaceDaoHibernate extends AbstractDaoHibernate  implements Ip
         return ((Integer)findUnique("select count(*) from OnmsIpInterface")).intValue();
     }
 
+	public Collection findByServiceType(String svcName) {
+		// TODO: Implement this!
+		throw new RuntimeException("Not implemented!");
+	}
+
 }

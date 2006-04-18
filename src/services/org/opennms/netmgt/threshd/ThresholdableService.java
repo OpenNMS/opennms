@@ -289,7 +289,7 @@ final class ThresholdableService extends IPv4NetworkInterface implements ReadyRu
      * uei Universal event identifier of event to generate.
      */
     private void sendEvent(String uei) {
-        Category log = ThreadCategory.getInstance(getClass());
+        Category log = log();
         Event event = new Event();
         event.setUei(uei);
         event.setNodeid((long) m_nodeId);
@@ -325,7 +325,7 @@ final class ThresholdableService extends IPv4NetworkInterface implements ReadyRu
      * 
      */
     public void run() {
-        Category log = ThreadCategory.getInstance(getClass());
+        Category log = log();
 
         // Process any oustanding updates.
         //
@@ -427,8 +427,8 @@ final class ThresholdableService extends IPv4NetworkInterface implements ReadyRu
                 // Does the outage apply to this interface?
 		if ((outageFactory.isNodeIdInOutage((long)m_nodeId, outageName)) ||
 			(outageFactory.isInterfaceInOutage(m_address.getHostAddress(), outageName))) {
-                    if (ThreadCategory.getInstance(getClass()).isDebugEnabled())
-                        ThreadCategory.getInstance(getClass()).debug("scheduledOutage: configured outage '" + outageName + "' applies, interface " + m_address.getHostAddress() + " will not be collected for " + m_service);
+                    if (log().isDebugEnabled())
+                        log().debug("scheduledOutage: configured outage '" + outageName + "' applies, interface " + m_address.getHostAddress() + " will not be collected for " + m_service);
                     outageFound = true;
                     break;
                 }
@@ -445,7 +445,7 @@ final class ThresholdableService extends IPv4NetworkInterface implements ReadyRu
      *         (for example due to deletion flag being set), false otherwise.
      */
     private boolean processUpdates() {
-        Category log = ThreadCategory.getInstance(getClass());
+        Category log = log();
 
         // All update processing takes place within synchronized block
         // to ensure that no updates are missed.

@@ -20,6 +20,7 @@ import org.opennms.netmgt.config.collectd.CollectdConfiguration;
 import org.opennms.netmgt.config.collectd.Collector;
 import org.opennms.netmgt.config.collectd.Package;
 import org.opennms.netmgt.dao.CollectorConfigDao;
+import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsPackage;
 
@@ -36,6 +37,7 @@ public class CollectorConfigDaoImpl implements CollectorConfigDao {
 		loadConfigFactory();
 		
 		instantiateCollectors();
+		
 	}
 
 	public OnmsPackage load(String name) {
@@ -123,7 +125,7 @@ public class CollectorConfigDaoImpl implements CollectorConfigDao {
         return (ServiceCollector) m_svcCollectors.get(svcName);
 	}
 
-	public Set getCollectorName() {
+	public Set getCollectorNames() {
 		return m_svcCollectors.keySet();
 	}
 
@@ -131,7 +133,7 @@ public class CollectorConfigDaoImpl implements CollectorConfigDao {
 		return getConfig().getThreads();
 	}
 
-	public Collection getPackagesForService(OnmsMonitoredService svc) {
+	public Collection getSpecificationsForInterface(OnmsIpInterface iface, String svcName) {
 		Collection matchingPkgs = new LinkedList();
 
         CollectdConfigFactory cCfgFactory = CollectdConfigFactory.getInstance();
@@ -146,14 +148,15 @@ public class CollectorConfigDaoImpl implements CollectorConfigDao {
          */
         while (epkgs.hasMoreElements()) {
             Package pkg = (Package) epkgs.nextElement();
+            CollectionSpecification collectionSpec = new CollectionSpecification(pkg, svcName, getServiceCollector(svcName));
 
             /*
              * Make certain the the current service is in the package
              * and enabled!
              */
-             if (!cCfgFactory.serviceInPackageAndEnabled(svc.getServiceType().getName(), pkg)) {
+             if (!cCfgFactory.serviceInPackageAndEnabled(svcName, pkg)) {
                 if (log().isDebugEnabled()) {
-                    log().debug("scheduleInterface: address/service: " + svc + " not scheduled, service is not "
+                    log().debug("scheduleInterface: address/service: " + iface + '/' + svcName + " not scheduled, service is not "
                               + "enabled or does not exist in package: "
                               + pkg.getName());
                 }
@@ -161,15 +164,16 @@ public class CollectorConfigDaoImpl implements CollectorConfigDao {
             }
 
             // Is the interface in the package?
-            if (!cCfgFactory.interfaceInPackage(svc.getIpAddress(), pkg)) {
+            if (!cCfgFactory.interfaceInPackage(iface.getIpAddress(), pkg)) {
                 if (log().isDebugEnabled()) {
-                    log().debug("scheduleInterface: address/service: " + svc + " not scheduled, interface "
+                    log().debug("scheduleInterface: address/service: " + iface + '/' + svcName + " not scheduled, interface "
                               + "does not belong to package: " + pkg.getName());
                 }
                 continue;
             }
             
-            matchingPkgs.add(pkg);
+            
+            matchingPkgs.add(collectionSpec);
         }
 		return matchingPkgs;
 	}

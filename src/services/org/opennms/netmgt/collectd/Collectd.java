@@ -63,10 +63,13 @@ import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.config.collectd.Package;
 import org.opennms.netmgt.daemon.ServiceDaemon;
+import org.opennms.netmgt.dao.IpInterfaceDao;
 import org.opennms.netmgt.dao.MonitoredServiceDao;
+import org.opennms.netmgt.dao.jdbc.IpInterfaceDaoJdbc;
 import org.opennms.netmgt.dao.jdbc.MonitoredServiceDaoJdbc;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 import org.opennms.netmgt.eventd.EventListener;
+import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.scheduler.ReadyRunnable;
 import org.opennms.netmgt.scheduler.Scheduler;
@@ -108,6 +111,8 @@ public final class Collectd extends ServiceDaemon implements EventListener {
 
 	private MonitoredServiceDao m_monSvcDao;
 
+	private IpInterfaceDao m_ifSvcDao;
+
     /**
      * Constructor.
      */
@@ -128,10 +133,10 @@ public final class Collectd extends ServiceDaemon implements EventListener {
         m_collectorConfigDao = new CollectorConfigDaoImpl();
         m_scheduledOutagesDao = new ScheduledOutagesDaoImpl();
         m_monSvcDao = new MonitoredServiceDaoJdbc(DataSourceFactory.getInstance());
+        m_ifSvcDao = new IpInterfaceDaoJdbc(DataSourceFactory.getInstance());
         
         createScheduler();
-        ReadyRunnable interfaceScheduler = buildSchedule();
-        m_scheduler.schedule(interfaceScheduler, 0);
+        m_scheduler.schedule(ifScheduler(), 0);
         
         
         installMessageSelectors();
@@ -150,12 +155,6 @@ public final class Collectd extends ServiceDaemon implements EventListener {
 
 		// nodeGainedService
 		ueiList.add(EventConstants.NODE_GAINED_SERVICE_EVENT_UEI);
-
-		// interfaceIndexChanged
-		// NOTE: No longer interested in this event...if Capsd detects
-		// that in interface's index has changed a
-		// 'reinitializePrimarySnmpInterface' event is generated.
-		// ueiList.add(EventConstants.INTERFACE_INDEX_CHANGED_EVENT_UEI);
 
 		// primarySnmpInterfaceChanged
 		ueiList.add(EventConstants.PRIMARY_SNMP_INTERFACE_CHANGED_EVENT_UEI);
@@ -187,7 +186,7 @@ public final class Collectd extends ServiceDaemon implements EventListener {
 		EventIpcManagerFactory.getIpcManager().addEventListener(this, ueiList);
 	}
 
-    private ReadyRunnable buildSchedule() {
+    private ReadyRunnable ifScheduler() {
         // Schedule existing interfaces for data collection
 
         ReadyRunnable interfaceScheduler = new ReadyRunnable() {
@@ -332,25 +331,24 @@ public final class Collectd extends ServiceDaemon implements EventListener {
      */
     private void scheduleExistingInterfaces() throws SQLException {
     	// Loop through collectors and schedule for each one present
-    	Set svcNames = getCollectorNames();
-    	Iterator i = svcNames.iterator();
-    	while (i.hasNext()) {
-    		String svcName = (String) i.next();
-
-    		log().debug("scheduleExistingInterfaces: svcName = " + svcName);
-
-    		Collection services = m_monSvcDao.findByType(svcName);
-    		for (Iterator it = services.iterator(); it.hasNext();) {
-    			OnmsMonitoredService svc = (OnmsMonitoredService) it.next();
-    			boolean existing = true;
-				scheduleInterface(svc, existing);
-    		}
-
-    	} // end while more service collectors
+    	for (Iterator it = getCollectorNames().iterator(); it.hasNext();) {
+    		scheduleInterfacesWithService((String) it.next());
+		}
     }
 
+	private void scheduleInterfacesWithService(String svcName) {
+		log().debug("scheduleExistingInterfaces: svcName = " + svcName);
+
+		Collection monitoredServices = m_monSvcDao.findByType(svcName);
+		Collection ifsWithServices = m_ifSvcDao.findByServiceType(svcName);
+		for (Iterator it = monitoredServices.iterator(); it.hasNext();) {
+			OnmsMonitoredService svc = (OnmsMonitoredService) it.next();
+			scheduleInterface(svc.getIpInterface(), svc.getServiceType().getName(), svc, true);
+		}
+	}
+
 	private Set getCollectorNames() {
-		return m_collectorConfigDao.getCollectorName();
+		return m_collectorConfigDao.getCollectorNames();
 	}
 
     /**
@@ -369,14 +367,14 @@ public final class Collectd extends ServiceDaemon implements EventListener {
      */
     void scheduleInterface(int nodeId, String ipAddress, String svcName, boolean existing) {
     	OnmsMonitoredService svc = m_monSvcDao.get(nodeId, ipAddress, svcName);
-    	scheduleInterface(svc, existing);
+    	scheduleInterface(svc.getIpInterface(), svc.getServiceType().getName(), svc, existing);
     }
     	
-    void scheduleInterface(OnmsMonitoredService svc, boolean existing) {
-        Collection matchingPkgs = m_collectorConfigDao.getPackagesForService(svc);
+    void scheduleInterface(OnmsIpInterface iface, String svcName, OnmsMonitoredService monSvc, boolean existing) {
+        Collection matchingPkgs = m_collectorConfigDao.getSpecificationsForInterface(iface, svcName);
         
         for (Iterator it = matchingPkgs.iterator(); it.hasNext();) {
-			Package pkg = (Package) it.next();
+			CollectionSpecification spec = (CollectionSpecification) it.next();
 			
             if (existing == false) {
                 /*
@@ -386,10 +384,10 @@ public final class Collectd extends ServiceDaemon implements EventListener {
                  * verify that the ipAddress/pkg pair identified by this event
                  * does not already exist in the collectable services list.
                  */
-                if (alreadyScheduled(svc, pkg.getName())) {
+                if (alreadyScheduled(iface, spec)) {
                     if (log().isDebugEnabled()) {
                         log().debug("scheduleInterface: svc/pkgName "
-                                  + svc + "/" + pkg.getName()
+                                  + iface + '/' + svcName + "/" + spec.getPackageName()
                                   + " already in collectable service list, "
                                   + "skipping.");
                     }
@@ -409,13 +407,10 @@ public final class Collectd extends ServiceDaemon implements EventListener {
                  * interface,
                  * service and package pairing
                  */
-                cSvc = new CollectableService(svc.getNodeId().intValue(),
-                                              InetAddress.getByName(svc.getIpAddress()),
-                                              svc.getServiceType().getName(), pkg);
+                cSvc = new CollectableService(iface, spec);
 
                 // Initialize the collector with the collectable service.
-                ServiceCollector collector = this.getServiceCollector(svc.getServiceType().getName());
-                collector.initialize(cSvc, cSvc.getPropertyMap());
+                cSvc.initialize();
 
                 // Add new collectable service to the colleable service list.
                 m_collectableServices.add(cSvc);
@@ -424,17 +419,14 @@ public final class Collectd extends ServiceDaemon implements EventListener {
                 m_scheduler.schedule(cSvc, 0);
 
                 if (log().isDebugEnabled()) {
-                    log().debug("scheduleInterface: " + svc + " collection");
+                    log().debug("scheduleInterface: " + iface +'/' + svcName + " collection");
                 }
-            } catch (UnknownHostException ex) {
-                log().error("scheduleInterface: Failed to schedule interface "
-                          + svc + ", illegal address", ex);
             } catch (RuntimeException rE) {
-                log().warn("scheduleInterface: Unable to schedule " + svc + ", reason: "
+                log().warn("scheduleInterface: Unable to schedule " + iface +'/' + svcName + ", reason: "
                          + rE.getMessage());
             } catch (Throwable t) {
                 log().error("scheduleInterface: Uncaught exception, failed to "
-                          + "schedule interface " + svc + ".", t);
+                          + "schedule interface " + iface +'/' + svcName + ".", t);
             }
         } // end while more packages exist
     }
@@ -442,11 +434,14 @@ public final class Collectd extends ServiceDaemon implements EventListener {
 	/**
      * Returns true if specified address/pkg pair is already represented in the
      * collectable services list. False otherwise.
-     * @param svc TODO
+	 * @param iface TODO
+	 * @param spec TODO
+	 * @param svcName TODO
      */
-    private boolean alreadyScheduled(OnmsMonitoredService svc, String pkgName) {
-    	String ipAddress = svc.getIpAddress();
-    	String svcName = svc.getServiceType().getName();
+    private boolean alreadyScheduled(OnmsIpInterface iface, CollectionSpecification spec) {
+    	String ipAddress = iface.getIpAddress();
+    	String svcName = spec.getServiceName();
+    	String pkgName = spec.getPackageName();
         synchronized (m_collectableServices) {
             CollectableService cSvc = null;
             Iterator iter = m_collectableServices.iterator();

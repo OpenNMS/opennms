@@ -53,6 +53,8 @@ public interface IpInterfaceDao extends OnmsDao {
 	public abstract OnmsIpInterface get(OnmsNode node, String ipAddress);
 
 	public abstract Collection findByIpAddress(String ipAddress);
+	
+	public abstract Collection findByServiceType(String svcName);
 
     public abstract void save(OnmsIpInterface iface);
 

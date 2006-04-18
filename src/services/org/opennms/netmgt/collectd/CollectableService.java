@@ -39,27 +39,20 @@ package org.opennms.netmgt.collectd;
 import java.io.File;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.Collections;
-import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.TreeMap;
 
 import org.apache.log4j.Category;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.config.CollectdConfigFactory;
 import org.opennms.netmgt.config.DataCollectionConfigFactory;
 import org.opennms.netmgt.config.PollOutagesConfigFactory;
-import org.opennms.netmgt.config.CollectdConfigFactory;
-import org.opennms.netmgt.config.collectd.Parameter;
-import org.opennms.netmgt.config.collectd.Service;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
+import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.poller.IPv4NetworkInterface;
 import org.opennms.netmgt.scheduler.ReadyRunnable;
 import org.opennms.netmgt.scheduler.Scheduler;
-import org.opennms.netmgt.utils.EventProxy;
 import org.opennms.netmgt.xml.event.Event;
-import org.opennms.netmgt.xml.event.Log;
 
 /**
  * <P>
@@ -77,49 +70,9 @@ final class CollectableService extends IPv4NetworkInterface implements ReadyRunn
     private int m_nodeId;
 
     /**
-     * The package information for this interface/service pair
-     */
-    private org.opennms.netmgt.config.collectd.Package m_package;
-
-    /**
-     * The storeByNodeID string for this interface/service pair
-     */
-    private String m_storeByNodeID;
-
-    /**
-     * The storeByIfAlias string for this interface/service pair
-     */
-    private String m_storeByIfAlias;
-
-    /**
-     * The ifAliasDomain string for this interface/service pair
-     */
-    private String m_ifAliasDomain;
-
-    /**
-     * The storFlagOverride string for this interface/service pair
-     */
-    private String m_storFlagOverride;
-
-    /**
-     * The ifAliasComment string for this interface/service pair
-     */
-    private String m_ifAliasComment;
-
-    /**
-     * The service informaion for this interface/service pair
-     */
-    private final Service m_service;
-
-    /**
      * Last known/current status
      */
     private int m_status;
-
-    /**
-     * The last time data collection ocurred
-     */
-    private long m_lastCollectionTime;
 
     /**
      * The last time the collector was scheduled for collection.
@@ -137,153 +90,54 @@ final class CollectableService extends IPv4NetworkInterface implements ReadyRunn
     private CollectorUpdates m_updates;
 
     /**
-     * The event proxy
-     */
-    private EventProxy m_proxy;
-
-    /**
      * 
      */
     private static final boolean ABORT_COLLECTION = true;
 
-    /**
-     * The map of collection parameters
-     */
-    private static Map m_properties = new TreeMap();
+	private CollectionSpecification m_spec;
 
-    private ServiceCollector m_collector;
-
-    /**
-     * The key used to lookup the service properties that are passed to the
-     * monitor.
-     */
-    private final String m_svcPropKey;
+	private OnmsIpInterface m_iface;
 
     /**
      * The map of service parameters. These parameters are mapped by the
      * composite key <em>(package name, service name)</em>.
      */
-    private static Map SVC_PROP_MAP = Collections.synchronizedMap(new TreeMap());
+    //private static Map SVC_PROP_MAP = Collections.synchronizedMap(new TreeMap());
 
     /**
      * Constructs a new instance of a CollectableService object.
-     * 
+     * @param iface TODO
+     * @param spec
+     *            The package containing parms for this collectable service.
+     * @param monSvc TODO
      * @param dbNodeId
      *            The database identifier key for the interfaces' node
      * @param address
      *            InetAddress of the interface to collect from
      * @param svcName
      *            Service name
-     * @param pkg
-     *            The package containing parms for this collectable service.
      * 
      */
-    CollectableService(int dbNodeId, InetAddress address, String svcName, org.opennms.netmgt.config.collectd.Package pkg) {
-        super(address);
-        Category log = ThreadCategory.getInstance(getClass());
-        m_nodeId = dbNodeId;
-        m_package = pkg;
+    CollectableService(OnmsIpInterface iface, CollectionSpecification spec) {
+        super(iface.getInetAddress());
+        m_iface = iface;
+        m_spec = spec;
+        m_nodeId = iface.getNode().getId().intValue();
         m_status = ServiceCollector.COLLECTION_SUCCEEDED;
 
-	m_storeByIfAlias = pkg.getStoreByIfAlias();
-	m_storeByNodeID = pkg.getStoreByNodeID();
-	m_ifAliasDomain = pkg.getIfAliasDomain();
-	m_storFlagOverride = pkg.getStorFlagOverride();
-	m_ifAliasComment = pkg.getIfAliasComment();
-
         m_scheduler = Collectd.getInstance().getScheduler();
-        m_collector = Collectd.getInstance().getServiceCollector(svcName);
         m_updates = new CollectorUpdates();
 
         m_lastScheduledCollectionTime = 0L;
-        m_lastCollectionTime = 0L;
 
-        // find the service matching the name
-        // m
-        Service svc = null;
-        Enumeration esvc = m_package.enumerateService();
-        while (esvc.hasMoreElements()) {
-            Service s = (Service) esvc.nextElement();
-            if (s.getName().equalsIgnoreCase(svcName)) {
-                svc = s;
-                break;
-            }
-        }
-        if (svc == null)
-            throw new RuntimeException("Service name not part of package!");
-
-        // save reference to the service
-        m_service = svc;
-
-        // add property list for this service/package combination if
-        // it doesn't already exist in the service property map
-        //
-        m_svcPropKey = m_package.getName() + "." + m_service.getName();
-        synchronized (SVC_PROP_MAP) {
-            if (!SVC_PROP_MAP.containsKey(m_svcPropKey)) {
-                Map m = Collections.synchronizedMap(new TreeMap());
-                Enumeration ep = m_service.enumerateParameter();
-                while (ep.hasMoreElements()) {
-                    Parameter p = (Parameter) ep.nextElement();
-                    m.put(p.getKey(), p.getValue());
-                }
-		if(m_storeByIfAlias != null && isTrue(m_storeByIfAlias)) {
-		    m.put("storeByIfAlias", "true");
-		    if(m_storeByNodeID != null) {
-			if(isTrue(m_storeByNodeID)) {
-		            m.put("storeByNodeID", "true");
-			} else if(isFalse(m_storeByNodeID)) {
-		            m.put("storeByNodeID", "false");
-			} else {
-		            m.put("storeByNodeID", "normal");
-			}
-		    }
-		    if(m_ifAliasDomain != null) {
-			m.put("domain", m_ifAliasDomain);
-		    } else {
-		        m.put("domain", m_package.getName());
-		    }
-		    if(m_storFlagOverride != null && isTrue(m_storFlagOverride)) {
-		        m.put("storFlagOverride", "true");
-		    }
-		    m.put("ifAliasComment", m_ifAliasComment);
-                    if (log.isDebugEnabled())
-		        log.debug("ifAliasDomain = " + m_ifAliasDomain + ", storeByIfAlias = " + m_storeByIfAlias + ", storeByNodeID = " + m_storeByNodeID + ", storFlagOverride = " + m_storFlagOverride + ", ifAliasComment = " + m_ifAliasComment);
-		}
-
-                SVC_PROP_MAP.put(m_svcPropKey, m);
-            }
-        }
-
-        m_proxy = new EventProxy() {
-            public void send(Event e) {
-                EventIpcManagerFactory.getIpcManager().sendNow(e);
-            }
-
-            public void send(Log log) {
-                EventIpcManagerFactory.getIpcManager().sendNow(log);
-            }
-        };
 
     }
-
-    private boolean isTrue(String stg) {
-	if(stg.equalsIgnoreCase("yes") || stg.equalsIgnoreCase("on") || stg.equalsIgnoreCase("true")) {
-	    return true;
-	} else {
-	    return false;
-	}
+    
+    public CollectionSpecification getSpecification() {
+    	return m_spec;
     }
 
-    private boolean isFalse(String stg) {
-	if(stg.equalsIgnoreCase("no") || stg.equalsIgnoreCase("off") || stg.equalsIgnoreCase("false")) {
-	    return true;
-	} else {
-	    return false;
-	}
-    }
-
-    /**
+	/**
      * Returns node identifier
      */
     public int getNodeId() {
@@ -301,14 +155,14 @@ final class CollectableService extends IPv4NetworkInterface implements ReadyRunn
      * Returns the service name
      */
     public String getServiceName() {
-        return m_service.getName();
+        return m_spec.getServiceName();
     }
 
     /**
      * Returns the package name
      */
     public String getPackageName() {
-        return m_package.getName();
+        return m_spec.getPackageName();
     }
 
     /**
@@ -325,7 +179,7 @@ final class CollectableService extends IPv4NetworkInterface implements ReadyRunn
 	public void refreshPackage() {
 		org.opennms.netmgt.config.collectd.Package refreshedPackage=CollectdConfigFactory.getInstance().getPackage(this.getPackageName());
 		if(refreshedPackage!=null) {
-			this.m_package=refreshedPackage;
+			m_spec.setPackage(refreshedPackage);
 		}
 	}
 
@@ -342,10 +196,10 @@ final class CollectableService extends IPv4NetworkInterface implements ReadyRunn
         if (!Collectd.getInstance().isSchedulingCompleted())
             return false;
 
-        if (m_service.getInterval() < 1) {
+        if (m_spec.getInterval() < 1) {
             ready = true;
         } else {
-            ready = ((m_service.getInterval() - (System.currentTimeMillis() - m_lastScheduledCollectionTime)) < 1);
+            ready = ((m_spec.getInterval() - (System.currentTimeMillis() - m_lastScheduledCollectionTime)) < 1);
         }
 
         return ready;
@@ -357,7 +211,6 @@ final class CollectableService extends IPv4NetworkInterface implements ReadyRunn
      * uei Universal event identifier of event to generate.
      */
     private void sendEvent(String uei) {
-        Category log = ThreadCategory.getInstance(getClass());
         Event event = new Event();
         event.setUei(uei);
         event.setNodeid((long) m_nodeId);
@@ -376,12 +229,14 @@ final class CollectableService extends IPv4NetworkInterface implements ReadyRunn
         //
         try {
             EventIpcManagerFactory.getIpcManager().sendNow(event);
+
+            if (log().isDebugEnabled())
+                log().debug("sendEvent: Sent event " + uei + " for " + m_nodeId + "/" + m_address.getHostAddress() + "/" + getServiceName());
+
         } catch (Exception ex) {
-            log.error("Failed to send the event " + uei + " for interface " + m_address.getHostAddress(), ex);
+            log().error("Failed to send the event " + uei + " for interface " + m_address.getHostAddress(), ex);
         }
 
-        if (log.isDebugEnabled())
-            log.debug("sendEvent: Sent event " + uei + " for " + m_nodeId + "/" + m_address.getHostAddress() + "/" + m_service.getName());
     }
 
     /**
@@ -393,8 +248,6 @@ final class CollectableService extends IPv4NetworkInterface implements ReadyRunn
      * 
      */
     public void run() {
-        Category log = ThreadCategory.getInstance(getClass());
-
         // Process any oustanding updates.
         //
         if (processUpdates() == ABORT_COLLECTION)
@@ -406,66 +259,69 @@ final class CollectableService extends IPv4NetworkInterface implements ReadyRunn
         // Check scheduled outages to see if any apply indicating
         // that the collection should be skipped
         //
-        if (scheduledOutage()) {
-            // Outage applied...reschedule the service and return
-            m_scheduler.schedule(this, m_service.getInterval());
-            return;
+        if (!scheduledOutage()) {
+
+        	int status = doCollection();
+        	updateStatus(status);
+
         }
-
-        // Perform SNMP data collection
-        //
-        if (log.isDebugEnabled())
-            log.debug("run: starting new collection for " + m_address.getHostAddress());
-
-        int status = ServiceCollector.COLLECTION_FAILED;
-        Map propertiesMap = (Map) SVC_PROP_MAP.get(m_svcPropKey);
-        try {
-            status = m_collector.collect(this, m_proxy, propertiesMap);
-        } catch (Throwable t) {
-            log.error("run: An undeclared throwable was caught during SNMP collection for interface " + m_address.getHostAddress(), t);
-        }
-
-        // Update last poll time
-        m_lastCollectionTime = System.currentTimeMillis();
-
-        // Any change in status?
-        //
-        if (status != m_status) {
-            // Generate SNMP collection transition events
-            if (log.isDebugEnabled())
-                log.debug("run: change in collection status, generating event.");
-
-            // Send the appropriate event
-            //
-            switch (status) {
-            case ServiceCollector.COLLECTION_SUCCEEDED:
-                sendEvent(EventConstants.DATA_COLLECTION_SUCCEEDED_EVENT_UEI);
-                break;
-
-            case ServiceCollector.COLLECTION_FAILED:
-                sendEvent(EventConstants.DATA_COLLECTION_FAILED_EVENT_UEI);
-                break;
-
-            default:
-                break;
-            }
-        }
-
-        // Set the new status
-        m_status = status;
-
-        // Reschedule the service
-        //
-        m_scheduler.schedule(this, m_service.getInterval());
-
-        return;
+    	// Reschedule the service
+    	//
+        m_scheduler.schedule(this, m_spec.getInterval());
     }
+
+	private void updateStatus(int status) {
+		// Any change in status?
+		//
+		if (status != m_status) {
+			// Generate SNMP collection transition events
+			if (log().isDebugEnabled())
+				log().debug("run: change in collection status, generating event.");
+
+			// Send the appropriate event
+			//
+			switch (status) {
+			case ServiceCollector.COLLECTION_SUCCEEDED:
+				sendEvent(EventConstants.DATA_COLLECTION_SUCCEEDED_EVENT_UEI);
+				break;
+
+			case ServiceCollector.COLLECTION_FAILED:
+				sendEvent(EventConstants.DATA_COLLECTION_FAILED_EVENT_UEI);
+				break;
+
+			default:
+				break;
+			}
+		}
+
+		// Set the new status
+		m_status = status;
+	}
+
+	private int doCollection() {
+		// Perform SNMP data collection
+		//
+		if (log().isDebugEnabled())
+			log().debug("run: starting new collection for " + m_address.getHostAddress());
+
+		int status = ServiceCollector.COLLECTION_FAILED;
+		try {
+	        status = collect();
+		} catch (Throwable t) {
+			log().error("run: An undeclared throwable was caught during SNMP collection for interface " + m_address.getHostAddress(), t);
+		}
+		return status;
+	}
+
+	private int collect() {
+		return m_spec.collect(this);
+	}
 
     Map getPropertyMap() {
-        return (Map) SVC_PROP_MAP.get(m_svcPropKey);
+		return m_spec.getPropertyMap();
     }
 
-    /**
+	/**
      * Checks the package information for the collectable service and determines
      * if any of the calendar outages associated with the package apply to the
      * current time and the service's interface. If an outage applies true is
@@ -486,7 +342,7 @@ final class CollectableService extends IPv4NetworkInterface implements ReadyRunn
         // interface then break and return true. Otherwise process the
         // next outage.
         // 
-        Iterator iter = m_package.getOutageCalendarCollection().iterator();
+        Iterator iter = m_spec.getPackage().getOutageCalendarCollection().iterator();
         while (iter.hasNext()) {
             String outageName = (String) iter.next();
 
@@ -496,8 +352,8 @@ final class CollectableService extends IPv4NetworkInterface implements ReadyRunn
                 if ((outageFactory.isNodeIdInOutage((long)m_nodeId, outageName)) ||
 			(outageFactory.isInterfaceInOutage(m_address.getHostAddress(), outageName)))
 		{
-                    if (ThreadCategory.getInstance(getClass()).isDebugEnabled())
-                        ThreadCategory.getInstance(getClass()).debug("scheduledOutage: configured outage '" + outageName + "' applies, interface " + m_address.getHostAddress() + " will not be collected for " + m_service);
+                    if (log().isDebugEnabled())
+                        log().debug("scheduledOutage: configured outage '" + outageName + "' applies, interface " + m_address.getHostAddress() + " will not be collected for " + m_spec);
                     outageFound = true;
                     break;
                 }
@@ -514,7 +370,7 @@ final class CollectableService extends IPv4NetworkInterface implements ReadyRunn
      *         example due to deletion flag being set), false otherwise.
      */
     private boolean processUpdates() {
-        Category log = ThreadCategory.getInstance(getClass());
+        Category log = log();
 
         // All update processing takes place within synchronized block
         // to ensure that no updates are missed.
@@ -545,14 +401,14 @@ final class CollectableService extends IPv4NetworkInterface implements ReadyRunn
                     log.debug("ReinitializationFlag set for " + m_address.getHostAddress());
 
                 try {
-                    m_collector.release(this);
-                    m_collector.initialize(this, this.getPropertyMap());
+                    release();
+                    initialize();
                     if (log.isDebugEnabled())
                         log.debug("Completed reinitializing SNMP collector for " + m_address.getHostAddress());
                 } catch (RuntimeException rE) {
-                    log.warn("Unable to initialize " + m_address.getHostAddress() + " for " + m_service.getName() + " collection, reason: " + rE.getMessage());
+                    log.warn("Unable to initialize " + m_address.getHostAddress() + " for " + m_spec.getServiceName() + " collection, reason: " + rE.getMessage());
                 } catch (Throwable t) {
-                    log.error("Uncaught exception, failed to intialize interface " + m_address.getHostAddress() + " for " + m_service.getName() + " data collection", t);
+                    log.error("Uncaught exception, failed to intialize interface " + m_address.getHostAddress() + " for " + m_spec.getServiceName() + " data collection", t);
                 }
             }
 
@@ -663,14 +519,14 @@ final class CollectableService extends IPv4NetworkInterface implements ReadyRunn
                 try {
                     if (log.isDebugEnabled())
                         log.debug("Reinitializing SNMP collector for " + m_address.getHostAddress());
-                    m_collector.release(this);
-                    m_collector.initialize(this, this.getPropertyMap());
+                    release();
+                    initialize();
                     if (log.isDebugEnabled())
                         log.debug("Completed reinitializing SNMP collector for " + m_address.getHostAddress());
                 } catch (RuntimeException rE) {
-                    log.warn("Unable to initialize " + m_address.getHostAddress() + " for " + m_service.getName() + " collection, reason: " + rE.getMessage());
+                    log.warn("Unable to initialize " + m_address.getHostAddress() + " for " + m_spec.getServiceName() + " collection, reason: " + rE.getMessage());
                 } catch (Throwable t) {
-                    log.error("Uncaught exception, failed to initialize interface " + m_address.getHostAddress() + " for " + m_service.getName() + " data collection", t);
+                    log.error("Uncaught exception, failed to initialize interface " + m_address.getHostAddress() + " for " + m_spec.getServiceName() + " data collection", t);
                 }
             }
 
@@ -681,4 +537,12 @@ final class CollectableService extends IPv4NetworkInterface implements ReadyRunn
 
         return !ABORT_COLLECTION;
     }
+
+	private void release() {
+		m_spec.release(this);
+	}
+
+	void initialize() {
+		m_spec.initialize(this);
+	}
 }
