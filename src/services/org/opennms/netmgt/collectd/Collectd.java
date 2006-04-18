@@ -107,8 +107,6 @@ public final class Collectd extends ServiceDaemon implements EventListener {
 
 	private CollectorConfigDaoImpl m_collectorConfigDao;
 
-	private ScheduledOutagesDaoImpl m_scheduledOutagesDao;
-
 	private MonitoredServiceDao m_monSvcDao;
 
 	private IpInterfaceDao m_ifSvcDao;
@@ -131,7 +129,6 @@ public final class Collectd extends ServiceDaemon implements EventListener {
         log().debug("init: Initializing collection daemon");
 
         m_collectorConfigDao = new CollectorConfigDaoImpl();
-        m_scheduledOutagesDao = new ScheduledOutagesDaoImpl();
         m_monSvcDao = new MonitoredServiceDaoJdbc(DataSourceFactory.getInstance());
         m_ifSvcDao = new IpInterfaceDaoJdbc(DataSourceFactory.getInstance());
         
@@ -339,11 +336,10 @@ public final class Collectd extends ServiceDaemon implements EventListener {
 	private void scheduleInterfacesWithService(String svcName) {
 		log().debug("scheduleExistingInterfaces: svcName = " + svcName);
 
-		Collection monitoredServices = m_monSvcDao.findByType(svcName);
 		Collection ifsWithServices = m_ifSvcDao.findByServiceType(svcName);
-		for (Iterator it = monitoredServices.iterator(); it.hasNext();) {
-			OnmsMonitoredService svc = (OnmsMonitoredService) it.next();
-			scheduleInterface(svc.getIpInterface(), svc.getServiceType().getName(), svc, true);
+		for (Iterator it = ifsWithServices.iterator(); it.hasNext();) {
+			OnmsIpInterface iface = (OnmsIpInterface) it.next();
+			scheduleInterface(iface, svcName, true);
 		}
 	}
 
@@ -367,10 +363,14 @@ public final class Collectd extends ServiceDaemon implements EventListener {
      */
     void scheduleInterface(int nodeId, String ipAddress, String svcName, boolean existing) {
     	OnmsMonitoredService svc = m_monSvcDao.get(nodeId, ipAddress, svcName);
-    	scheduleInterface(svc.getIpInterface(), svc.getServiceType().getName(), svc, existing);
+    	scheduleInterface(svc.getIpInterface(), svc.getServiceType().getName(), existing);
     }
     	
-    void scheduleInterface(OnmsIpInterface iface, String svcName, OnmsMonitoredService monSvc, boolean existing) {
+    void scheduleInterface(OnmsIpInterface iface, String svcName, OnmsMonitoredService x, boolean existing) {
+		scheduleInterface(iface, svcName, existing);
+	}
+
+	void scheduleInterface(OnmsIpInterface iface, String svcName, boolean existing) {
         Collection matchingPkgs = m_collectorConfigDao.getSpecificationsForInterface(iface, svcName);
         
         for (Iterator it = matchingPkgs.iterator(); it.hasNext();) {
