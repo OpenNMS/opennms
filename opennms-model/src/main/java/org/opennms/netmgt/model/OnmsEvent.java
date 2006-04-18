@@ -36,7 +36,7 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	private String m_ipAddr;
 
 	/** persistent field */
-	private String m_eventDpName;
+	private String m_distPoller;
 
 	/** nullable persistent field */
 	private String m_eventSnmpHost;
@@ -153,7 +153,7 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 		m_eventHost = eventhost;
 		m_eventSource = eventsource;
 		m_ipAddr = ipaddr;
-		m_eventDpName = eventdpname;
+		m_distPoller = eventdpname;
 		m_eventSnmpHost = eventsnmphost;
 		m_serviceId = serviceid;
 		m_eventSnmp = eventsnmp;
@@ -180,7 +180,7 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 		m_eventAckUser = eventackuser;
 		m_eventAckTime = eventacktime;
 		m_alarmId = alarmid;
-		this.m_node = node;
+		m_node = node;
 		m_notifications = notifications;
 		m_outagesBySvcRegainedEventId = outagesBySvcregainedeventid;
 		m_outagesBySvclostEventId = outagesBySvclosteventid;
@@ -202,7 +202,7 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 		m_eventUei = eventuei;
 		m_eventTime = eventtime;
 		m_eventSource = eventsource;
-		m_eventDpName = eventdpname;
+		m_distPoller = eventdpname;
 		m_eventCreateTime = eventcreatetime;
 		m_eventSeverity = eventseverity;
 		m_eventLog = eventlog;
@@ -291,12 +291,12 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	 * @hibernate.property column="eventdpname" length="12" not-null="true"
 	 * 
 	 */
-	public String getEventDpName() {
-		return m_eventDpName;
+	public String getDistPoller() {
+		return m_distPoller;
 	}
 
-	public void setEventDpName(String eventdpname) {
-		m_eventDpName = eventdpname;
+	public void setDistPoller(String eventdpname) {
+		m_distPoller = eventdpname;
 	}
 
 	/**
@@ -596,7 +596,7 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	}
 
 	public void setEventAckTime(Date eventacktime) {
-		eventacktime = eventacktime;
+		m_eventAckTime = eventacktime;
 	}
 
 	/**
@@ -621,7 +621,7 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	}
 
 	public void setNode(org.opennms.netmgt.model.OnmsNode node) {
-		node = node;
+		m_node = node;
 	}
 
 	/**
