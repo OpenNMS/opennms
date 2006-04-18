@@ -63,9 +63,9 @@ public class PathOutageFactory extends Object {
 
     private static final String COUNT_NODES_IN_PATH = "SELECT count(*) FROM pathoutage WHERE criticalpathip=? AND criticalpathservicename=?";
 
-    private static final String GET_NODELABEL_BY_IP = "SELECT nodelabel FROM node WHERE nodeid=(SELECT nodeid FROM ipinterface WHERE ipaddr=?)";
+    private static final String GET_NODELABEL_BY_IP = "SELECT nodelabel FROM node WHERE nodeid IN (SELECT nodeid FROM ipinterface WHERE ipaddr=?)";
 
-    private static final String GET_NODEID_BY_IP = "SELECT nodeid FROM ipinterface WHERE ipaddr=?";
+    private static final String GET_NODEID_BY_IP = "SELECT nodeid FROM ipinterface WHERE ipaddr=? ORDER BY nodeid DESC LIMIT 1";
 
     private static final String GET_NODELABEL_BY_NODEID = "SELECT nodelabel FROM node WHERE nodeid=?";
 
@@ -73,17 +73,11 @@ public class PathOutageFactory extends Object {
 
     private static final String IS_CRITICAL_PATH_MANAGED = "SELECT count(*) FROM ifservices WHERE ipaddr=? AND status='A' AND serviceid=(SELECT serviceid FROM service WHERE servicename=?)";
 
-/**
- *      * SQL statement to retrieve most recent node down eventid for a node.
- *
- */
     private static final String SQL_GET_LATEST_NODE_DOWN_EVENTID = "SELECT eventid FROM events WHERE nodeid=? AND eventuei='uei.opennms.org/nodes/nodeDown' ORDER BY eventid DESC LIMIT 1";
 
-/**
- *      * SQL statement to retrieve most recent node up eventid for a node.
- *
- */
     private static final String SQL_GET_LATEST_NODE_UP_EVENTID = "SELECT eventid FROM events WHERE nodeid=? AND eventuei='uei.opennms.org/nodes/nodeUp' ORDER BY eventid DESC LIMIT 1";
+
+    private static final String SQL_GET_EVENT_PARMS = "SELECT eventparms FROM events WHERE eventid=?";
 
     /**
      * <p>
@@ -99,9 +93,9 @@ public class PathOutageFactory extends Object {
 
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
-		String[] path = new String[2];
-		path[0] = rs.getString(1);
-		path[1] = rs.getString(2);
+                String[] path = new String[2];
+                path[0] = rs.getString(1);
+                path[1] = rs.getString(2);
                 paths.add(path);
             }
             rs.close();
@@ -135,7 +129,7 @@ public class PathOutageFactory extends Object {
             while (rs.next()) {
                 pathNodes.add(rs.getString(1));
             }
-	    rs.close();
+            rs.close();
             stmt.close();
         } finally {
             Vault.releaseDbConnection(conn);
@@ -154,9 +148,10 @@ public class PathOutageFactory extends Object {
     public static String[] getNodeLabelAndColor(String nodeID) throws SQLException {
 
         Connection conn = Vault.getDbConnection();
-	int count = 0;
-	String result[] = new String[2];
-	result[1] = "lightblue";
+        int count = 0;
+        String result[] = new String[3];
+        result[1] = "lightblue";
+        result[2] = "Unmanaged";
 
         try {
             PreparedStatement stmt = conn.prepareStatement(GET_NODELABEL_BY_NODEID);
@@ -165,7 +160,7 @@ public class PathOutageFactory extends Object {
             while (rs.next()) {
                 result[0] = rs.getString(1);
             }
-	    rs.close();
+            rs.close();
             stmt.close();
 
             stmt = conn.prepareStatement(COUNT_MANAGED_SVCS);
@@ -186,31 +181,48 @@ public class PathOutageFactory extends Object {
                     if (rs2.next()) {
                         if(rs2.getInt(1) > nodeDownEventId) {
                             result[1] = "green";
+                            result[2] = "Up";
                         } else {
-                            result[1] = "red";
+                            // see if last node down was a path outage
+                            PreparedStatement stmt3 = conn.prepareStatement(SQL_GET_EVENT_PARMS);
+                            stmt3.setInt(1, nodeDownEventId);
+                            ResultSet rs3 = stmt3.executeQuery();
+                            if (rs3.next()) {
+                                if(rs3.getString(1).indexOf("eventReason=pathOutage") > -1) {
+                                    result[1] = "orange";
+                                    result[2] = "Path Outage";
+                                } else {
+                                    result[1] = "red";
+                                    result[2] = "Down";
+                                }
+                            }
+                            rs3.close();
+                            stmt3.close();
                         }
                     } else {
                         result[1] = "red";
+                        result[2] = "Down";
                     } 
                     rs2.close();
                     stmt2.close();
                 } else {
                     result[1] = "green";
+                    result[2] = "Up";
                 }
                 rs1.close();
                 stmt1.close();
             }
             rs.close();
-	    stmt.close();
+            stmt.close();
         } finally {
             Vault.releaseDbConnection(conn);
         }
-	return result;
+        return result;
     }
 
     /**
      * This method is responsible for determining the 
-     * data related to the critical path
+     * data related to the critical path:
      * node label, nodeId, the number of nodes
      * dependent on this path, and the managed state
      * of the path
@@ -225,9 +237,9 @@ public class PathOutageFactory extends Object {
      */
     public static String[] getCriticalPathData(String criticalPathIp, String criticalPathServiceName) throws SQLException {
         Connection conn = Vault.getDbConnection();
-	String[] result = new String[4];
+        String[] result = new String[4];
         int nodeCount=0;
-	int count = 0;
+        int count = 0;
 
         try {
 
@@ -236,12 +248,17 @@ public class PathOutageFactory extends Object {
 
             ResultSet rs0 = stmt0.executeQuery();
             while (rs0.next()) {
+                count++;
                 result[0] = rs0.getString(1);
+            }
+            if (count > 1) {
+                result[0] = "(" + count + " nodes have this IP)";
             }
 
             rs0.close();
             stmt0.close();
 
+            count = 0;
             PreparedStatement stmt1 = conn.prepareStatement(GET_NODEID_BY_IP);
             stmt1.setString(1, criticalPathIp);
 
@@ -260,7 +277,7 @@ public class PathOutageFactory extends Object {
             while (rs2.next()) {
                 nodeCount = rs2.getInt(1);
             }
-	    result[2] = Integer.toString(nodeCount);
+            result[2] = Integer.toString(nodeCount);
             rs2.close();
             stmt2.close();
 
@@ -293,7 +310,7 @@ public class PathOutageFactory extends Object {
                 rs3.close();
                 stmt3.close();
             } else {
-	        result[3] = "lightblue";
+                result[3] = "lightblue";
             }
         } finally {
             Vault.releaseDbConnection(conn);

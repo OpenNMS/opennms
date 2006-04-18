@@ -53,12 +53,13 @@
     String critSvc = request.getParameter("critSvc");
     List nodeList = PathOutageFactory.getNodesInPath(critIp, critSvc); %>
 
+    <br>
     <H3 align="center">Node List for Critical Path <%= critIp %> <%= critSvc%></H3>
     <table class="standardfirst">
 
         <tr>
-        <td class="standardheader" width="10%"><%= "Node ID" %></td>
-        <td class="standardheader" width="40%" align="center">Node Label</td>
+        <td class="standardheader" width="40%" align="center"><%= "Node" %></td>
+        <td class="standardheader" width="10%" align="center">Status</td>
         </tr>
 
 <%      Iterator iter = nodeList.iterator();
@@ -66,8 +67,8 @@
             String nodeid = (String)iter.next();
             String labelColor[] = PathOutageFactory.getNodeLabelAndColor(nodeid); %>
             <tr>
-            <td class="standard" align="center"><a href="element/node.jsp?node=<%= nodeid %>"><%= nodeid %></a></td>
-            <td class="standard" bgcolor="<%= labelColor[1] %>"><%= labelColor[0] %></td>
+            <td class="standard" align="center"><a href="element/node.jsp?node=<%= nodeid %>"><%= labelColor[0] %></a></td>
+            <td class="standard" bgcolor="<%= labelColor[1] %>"><%= labelColor[2] %></td>
             </tr>
         <% } %>
 

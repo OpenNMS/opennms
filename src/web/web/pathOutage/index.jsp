@@ -85,6 +85,8 @@
                 pthData = PathOutageFactory.getCriticalPathData(pth[0], pth[1]); %>
                 <% if((pthData[0] == null) || (pthData[0].equals(""))) { %>
                     <td class="standard" align="center">(interface not in DB)</td>
+                <% } else if (pthData[0].indexOf("nodes have this IP") > -1) { %>
+                    <td class="standard" align="center"><a href="element/nodelist.jsp?iplike=<%= pth[0] %>"><%= pthData[0] %></a></td>
                 <% } else { %>
                     <td class="standard" align="center"><a href="element/node.jsp?node=<%= pthData[1] %>"><%= pthData[0] %></a></td>
                 <% } %>
