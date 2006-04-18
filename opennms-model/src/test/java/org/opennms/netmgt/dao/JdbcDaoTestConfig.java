@@ -40,6 +40,7 @@ import org.opennms.netmgt.dao.jdbc.DistPollerDaoJdbc;
 import org.opennms.netmgt.dao.jdbc.IpInterfaceDaoJdbc;
 import org.opennms.netmgt.dao.jdbc.MonitoredServiceDaoJdbc;
 import org.opennms.netmgt.dao.jdbc.NodeDaoJdbc;
+import org.opennms.netmgt.dao.jdbc.OutageDaoJdbc;
 import org.opennms.netmgt.dao.jdbc.ServiceTypeDaoJdbc;
 import org.opennms.netmgt.dao.jdbc.SnmpInterfaceDaoJdbc;
 import org.opennms.netmgt.dao.jdbc.asset.AssetRecordFactory;
@@ -63,8 +64,8 @@ public class JdbcDaoTestConfig extends DaoTestConfig {
         m_createDb = createDb;
         
         if (createDb) {
-            String cmd = System.getProperty("psql.command", "psql");
-            Process p = Runtime.getRuntime().exec(cmd+" brozow -U opennms -f etc/create.sql");
+            String cmd = ( System.getProperty("psql.command", "psql") == null ? "/usr/bin/psql" : System.getProperty("psql.command", "psql") ) ;
+            Process p = Runtime.getRuntime().exec(cmd+" onmstest -U opennms -f etc/create.sql");
             p.waitFor();
             System.err.println("Got an exitValue of "+p.exitValue());
             
@@ -126,6 +127,10 @@ public class JdbcDaoTestConfig extends DaoTestConfig {
         if (!m_createDb) return;
         OnmsDistPoller distPoller = getDistPollerDao().get("localhost");
         getDistPollerDao().delete(distPoller); 
+    }
+
+    protected OutageDao createOutageDao() {
+        return new OutageDaoJdbc(m_dataSource);
     }
 
 

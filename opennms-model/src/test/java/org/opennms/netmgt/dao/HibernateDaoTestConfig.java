@@ -176,6 +176,11 @@ public class HibernateDaoTestConfig extends DaoTestConfig {
 	protected SnmpInterfaceDao createSnmpInterfaceDao() {
         throw new RuntimeException("SnmpInterfaceDao is not yet implemented in hibernate!");
 	}
+
+    protected OutageDao createOutageDao() {
+        // TODO Auto-generated method stub
+        return null;
+    }
     
 
 }

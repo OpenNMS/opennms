@@ -8,14 +8,12 @@ public interface OutageDao extends OnmsDao {
 
 	public abstract OnmsOutage load(Integer id);
 	
-	public abstract void save(OnmsOutage category);
+	public abstract void save(OnmsOutage outage);
 	
-	public abstract void update(OnmsOutage category);
+	public abstract void update(OnmsOutage outage);
     
-    public abstract void saveOrUpdate(OnmsOutage category);
+    public abstract void saveOrUpdate(OnmsOutage outage);
     
 	public abstract Collection findAll();
-
-    public abstract OnmsOutage findByName(String name);
 
 }

@@ -22,7 +22,7 @@ public class OnmsOutage extends OnmsEntity implements Serializable {
     private Integer m_outageId;
 
     /** persistent field */
-    private String m_ipAddr;
+    private OnmsIpInterface m_ipInteface;
 
     /** persistent field */
     private Date m_ifLostService;
@@ -39,19 +39,15 @@ public class OnmsOutage extends OnmsEntity implements Serializable {
     /** persistent field */
     private OnmsMonitoredService m_monitoredService;
 
-    /** persistent field */
-    private OnmsServiceType m_serviceType;
-
     /** full constructor */
-    public OnmsOutage(Integer outageId, String ipAddr, Date ifLostService, Date ifRegainedService, OnmsEvent eventBySvcRegainedEvent, OnmsEvent eventBySvcLostEvent, OnmsMonitoredService monitoredService, OnmsServiceType service) {
+    public OnmsOutage(Integer outageId, OnmsIpInterface ipInterface, Date ifLostService, Date ifRegainedService, OnmsEvent eventBySvcRegainedEvent, OnmsEvent eventBySvcLostEvent, OnmsMonitoredService monitoredService) {
         m_outageId = outageId;
-        m_ipAddr = ipAddr;
+        m_ipInteface = ipInterface;
         m_ifLostService = ifLostService;
         m_ifRegainedService = ifRegainedService;
         m_eventBySvcRegainedEvent = eventBySvcRegainedEvent;
         m_eventBySvcLostEvent = eventBySvcLostEvent;
         m_monitoredService = monitoredService;
-        m_serviceType = service;
     }
 
     /** default constructor */
@@ -59,14 +55,13 @@ public class OnmsOutage extends OnmsEntity implements Serializable {
     }
 
     /** minimal constructor */
-    public OnmsOutage(Integer outageId, String ipAddr, Date ifLostService, OnmsEvent eventBySvcRegainedEvent, OnmsEvent eventBySvcLostEvent, OnmsMonitoredService monitoredService, OnmsServiceType service) {
+    public OnmsOutage(Integer outageId, OnmsIpInterface ipInterface, Date ifLostService, OnmsEvent eventBySvcRegainedEvent, OnmsEvent eventBySvcLostEvent, OnmsMonitoredService monitoredService) {
         m_outageId = outageId;
-        m_ipAddr = ipAddr;
+        m_ipInteface = ipInterface;
         m_ifLostService = ifLostService;
         m_eventBySvcRegainedEvent = eventBySvcRegainedEvent;
         m_eventBySvcLostEvent = eventBySvcLostEvent;
         m_monitoredService = monitoredService;
-        m_serviceType = service;
     }
 
     /** 
@@ -83,17 +78,17 @@ public class OnmsOutage extends OnmsEntity implements Serializable {
 
     /** 
      *            @hibernate.property
-     *             column="ipAddr"
+     *             column="ipInterface"
      *             length="16"
      *             not-null="true"
      *         
      */
-    public String getIpAddr() {
-        return m_ipAddr;
+    public OnmsIpInterface getIpInteface() {
+        return m_ipInteface;
     }
 
-    public void setIpAddr(String ipAddr) {
-        m_ipAddr = ipAddr;
+    public void setIpInteface(OnmsIpInterface ipInterface) {
+        m_ipInteface = ipInterface;
     }
 
     /** 
@@ -165,20 +160,6 @@ public class OnmsOutage extends OnmsEntity implements Serializable {
 
     public void setMonitoredService(OnmsMonitoredService monitoredService) {
         m_monitoredService = monitoredService;
-    }
-
-    /** 
-     *            @hibernate.many-to-one
-     *             not-null="true"
-     *            @hibernate.column name="serviceid"         
-     *         
-     */
-    public OnmsServiceType getServiceType() {
-        return m_serviceType;
-    }
-
-    public void setServiceType(OnmsServiceType serviceType) {
-        m_serviceType = serviceType;
     }
 
     public String toString() {

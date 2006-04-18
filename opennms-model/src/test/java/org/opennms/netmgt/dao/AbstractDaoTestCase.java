@@ -317,6 +317,9 @@ public class AbstractDaoTestCase extends TestCase {
     protected CategoryDao getCategoryDao() {
         return m_testConfig.getCategoryDao();
     }
+    protected OutageDao getOutageDao() {
+            return m_testConfig.getOutageDao();
+    }
     private void populateDB(DistPollerDao dao) {
         //OnmsDistPoller distPoller = dao.load("localhost");
 

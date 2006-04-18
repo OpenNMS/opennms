@@ -51,6 +51,8 @@ public abstract class DaoTestConfig {
     protected abstract NodeDao createNodeDao();
 
     protected abstract DistPollerDao createDistPollerDao();
+    
+    protected abstract OutageDao createOutageDao();
 
     protected abstract void tearDown();
 
@@ -64,6 +66,7 @@ public abstract class DaoTestConfig {
     private AssetRecordDao m_arDao;
     private CategoryDao m_catDao;
 	private SnmpInterfaceDao m_snmpIfDao;
+    private OutageDao m_outageDao;
 
     public DistPollerDao getDistPollerDao() {
         if (m_dpDao == null) {
@@ -107,6 +110,13 @@ public abstract class DaoTestConfig {
         return m_arDao;
     }
 
+    public OutageDao getOutageDao() {
+        if (m_outageDao == null) {
+            m_outageDao = createOutageDao();
+        }
+        return m_outageDao;
+    }
+
     public void prePopulate() {
     }
 
@@ -128,5 +138,6 @@ public abstract class DaoTestConfig {
 		}
 		return m_snmpIfDao;
 	}
+
 
 }
