@@ -608,7 +608,7 @@ final class SnmpThresholder implements ServiceThresholder {
             if (threshold != null) {
 
                 // Get the value to use for the ds-label from this threshold
-                String dsLabelValue = null;
+                String dsLabelValue = "Unknown";
                 String propertiesFile = directory + "/strings.properties";
                 Properties stringProps = new Properties();
                 try {
@@ -779,7 +779,7 @@ final class SnmpThresholder implements ServiceThresholder {
             ThresholdEntity threshold = (ThresholdEntity) thresholdMap.get(datasource);
             if (threshold != null) {
 
-		String dsLabelValue = null;
+		String dsLabelValue = "Unknown";
 
                 // Use RRD JNI interface to "fetch" value of the
                 // datasource from the RRD file
