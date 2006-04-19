@@ -53,6 +53,8 @@ public abstract class DaoTestConfig {
     protected abstract DistPollerDao createDistPollerDao();
     
     protected abstract OutageDao createOutageDao();
+    
+    protected abstract EventDao createEventDao();
 
     protected abstract void tearDown();
 
@@ -67,6 +69,7 @@ public abstract class DaoTestConfig {
     private CategoryDao m_catDao;
 	private SnmpInterfaceDao m_snmpIfDao;
     private OutageDao m_outageDao;
+	private EventDao m_eventDao;
 
     public DistPollerDao getDistPollerDao() {
         if (m_dpDao == null) {
@@ -115,6 +118,13 @@ public abstract class DaoTestConfig {
             m_outageDao = createOutageDao();
         }
         return m_outageDao;
+    }
+    
+    public EventDao getEventDao() {
+    	if (m_eventDao == null) {
+    		m_eventDao = createEventDao();
+    	}
+    	return m_eventDao;
     }
 
     public void prePopulate() {

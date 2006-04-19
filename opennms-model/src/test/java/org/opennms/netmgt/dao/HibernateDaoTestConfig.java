@@ -181,6 +181,11 @@ public class HibernateDaoTestConfig extends DaoTestConfig {
         // TODO Auto-generated method stub
         return null;
     }
+
+	protected EventDao createEventDao() {
+		// TODO Auto-generated method stub
+		return null;
+	}
     
 
 }

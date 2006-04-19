@@ -37,6 +37,7 @@ import org.opennms.netmgt.dao.AbstractDaoTestCase.DB;
 import org.opennms.netmgt.dao.jdbc.AssetRecordDaoJdbc;
 import org.opennms.netmgt.dao.jdbc.CategoryDaoJdbc;
 import org.opennms.netmgt.dao.jdbc.DistPollerDaoJdbc;
+import org.opennms.netmgt.dao.jdbc.EventDaoJdbc;
 import org.opennms.netmgt.dao.jdbc.IpInterfaceDaoJdbc;
 import org.opennms.netmgt.dao.jdbc.MonitoredServiceDaoJdbc;
 import org.opennms.netmgt.dao.jdbc.NodeDaoJdbc;
@@ -121,17 +122,18 @@ public class JdbcDaoTestConfig extends DaoTestConfig {
 		return new SnmpInterfaceDaoJdbc(m_dataSource);
 	}
 
-	public void prePopulate() {
-        if (!m_createDb) return;
-        OnmsDistPoller distPoller = getDistPollerDao().get("localhost");
-        getDistPollerDao().delete(distPoller); 
-    }
-
     protected OutageDao createOutageDao() {
         return new OutageDaoJdbc(m_dataSource);
     }
 
+    protected EventDao createEventDao() {
+        return new EventDaoJdbc(m_dataSource);
+    }
 
-
+    public void prePopulate() {
+        if (!m_createDb) return;
+        OnmsDistPoller distPoller = getDistPollerDao().get("localhost");
+        getDistPollerDao().delete(distPoller); 
+    }
 
 }

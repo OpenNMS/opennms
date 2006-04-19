@@ -238,11 +238,11 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	 * @hibernate.property column="eventtime" length="8" not-null="true"
 	 * 
 	 */
-	public Date getEventtime() {
+	public Date getEventTime() {
 		return m_eventTime;
 	}
 
-	public void setEventtime(Date eventtime) {
+	public void setEventTime(Date eventtime) {
 		m_eventTime = eventtime;
 	}
 
@@ -680,14 +680,6 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 
 	public void visit(EntityVisitor visitor) {
 		throw new RuntimeException("visitor method not implemented");
-	}
-
-	public Date getEventTime() {
-		return m_eventTime;
-	}
-
-	public void setEventTime(Date eventTime) {
-		m_eventTime = eventTime;
 	}
 
 }

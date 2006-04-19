@@ -318,7 +318,10 @@ public class AbstractDaoTestCase extends TestCase {
         return m_testConfig.getCategoryDao();
     }
     protected OutageDao getOutageDao() {
-            return m_testConfig.getOutageDao();
+        return m_testConfig.getOutageDao();
+    }
+    protected EventDao getEventDao() {
+    	return m_testConfig.getEventDao();
     }
     private void populateDB(DistPollerDao dao) {
         //OnmsDistPoller distPoller = dao.load("localhost");
