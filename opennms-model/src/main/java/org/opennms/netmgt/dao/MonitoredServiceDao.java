@@ -36,7 +36,6 @@ package org.opennms.netmgt.dao;
 import java.util.Collection;
 
 import org.opennms.netmgt.model.OnmsMonitoredService;
-import org.opennms.netmgt.model.OnmsServiceType;
 
 /**
  * @author Craig Gallen

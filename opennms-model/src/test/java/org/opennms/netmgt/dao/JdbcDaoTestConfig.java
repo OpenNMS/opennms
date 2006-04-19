@@ -40,7 +40,7 @@ import org.opennms.netmgt.dao.jdbc.DistPollerDaoJdbc;
 import org.opennms.netmgt.dao.jdbc.IpInterfaceDaoJdbc;
 import org.opennms.netmgt.dao.jdbc.MonitoredServiceDaoJdbc;
 import org.opennms.netmgt.dao.jdbc.NodeDaoJdbc;
-import org.opennms.netmgt.dao.jdbc.OutageDaoJdbcTest;
+import org.opennms.netmgt.dao.jdbc.OutageDaoJdbc;
 import org.opennms.netmgt.dao.jdbc.ServiceTypeDaoJdbc;
 import org.opennms.netmgt.dao.jdbc.SnmpInterfaceDaoJdbc;
 import org.opennms.netmgt.dao.jdbc.asset.AssetRecordFactory;
@@ -128,7 +128,7 @@ public class JdbcDaoTestConfig extends DaoTestConfig {
     }
 
     protected OutageDao createOutageDao() {
-        return new OutageDaoJdbcTest(m_dataSource);
+        return new OutageDaoJdbc(m_dataSource);
     }
 
 

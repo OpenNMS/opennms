@@ -14,13 +14,13 @@ import org.opennms.netmgt.model.OnmsOutage;
  * @author mhuot
  *
  */
-public class OutageDaoJdbcTest extends AbstractDaoJdbc implements OutageDao {
+public class OutageDaoJdbc extends AbstractDaoJdbc implements OutageDao {
 
-    public OutageDaoJdbcTest() {
+    public OutageDaoJdbc() {
             super();
     }
 
-    public OutageDaoJdbcTest(DataSource ds) {
+    public OutageDaoJdbc(DataSource ds) {
             super(ds);
     }
     /* (non-Javadoc)
