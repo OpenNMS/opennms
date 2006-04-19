@@ -40,7 +40,7 @@ import org.opennms.netmgt.dao.jdbc.DistPollerDaoJdbc;
 import org.opennms.netmgt.dao.jdbc.IpInterfaceDaoJdbc;
 import org.opennms.netmgt.dao.jdbc.MonitoredServiceDaoJdbc;
 import org.opennms.netmgt.dao.jdbc.NodeDaoJdbc;
-import org.opennms.netmgt.dao.jdbc.OutageDaoJdbc;
+import org.opennms.netmgt.dao.jdbc.OutageDaoJdbcTest;
 import org.opennms.netmgt.dao.jdbc.ServiceTypeDaoJdbc;
 import org.opennms.netmgt.dao.jdbc.SnmpInterfaceDaoJdbc;
 import org.opennms.netmgt.dao.jdbc.asset.AssetRecordFactory;
@@ -64,13 +64,11 @@ public class JdbcDaoTestConfig extends DaoTestConfig {
         m_createDb = createDb;
         
         if (createDb) {
-            String cmd = ( System.getProperty("psql.command", "psql") == null ? "/usr/bin/psql" : System.getProperty("psql.command", "psql") ) ;
+            String cmd = System.getProperty("psql.command", "psql") ;
             Process p = Runtime.getRuntime().exec(cmd+" onmstest -U opennms -f etc/create.sql");
             p.waitFor();
             System.err.println("Got an exitValue of "+p.exitValue());
-            
         }
-        
         
         //m_dataSource = db.getDataSource();
         m_dataSource = db.getPoolingDataSource();
@@ -130,7 +128,7 @@ public class JdbcDaoTestConfig extends DaoTestConfig {
     }
 
     protected OutageDao createOutageDao() {
-        return new OutageDaoJdbc(m_dataSource);
+        return new OutageDaoJdbcTest(m_dataSource);
     }
 
 
