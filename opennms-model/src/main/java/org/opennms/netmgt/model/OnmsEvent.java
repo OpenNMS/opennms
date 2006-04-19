@@ -36,13 +36,13 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	private String m_ipAddr;
 
 	/** persistent field */
-	private String m_distPoller;
+	private OnmsDistPoller m_distPoller;
 
 	/** nullable persistent field */
 	private String m_eventSnmpHost;
 
 	/** nullable persistent field */
-	private Integer m_serviceId;
+	private OnmsMonitoredService m_service;
 
 	/** nullable persistent field */
 	private String m_eventSnmp;
@@ -63,7 +63,7 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	private String m_eventLogMsg;
 
 	/** persistent field */
-	private int m_eventSeverity;
+	private Integer m_eventSeverity;
 
 	/** nullable persistent field */
 	private String m_eventPathOutage;
@@ -84,13 +84,13 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	private String m_eventOperAction;
 
 	/** nullable persistent field */
-	private String m_eventOperactionMenuText;
+	private String m_eventOperActionMenuText;
 
 	/** nullable persistent field */
 	private String m_eventNotification;
 
 	/** nullable persistent field */
-	private String m_eventtTicket;
+	private String m_eventTTicket;
 
 	/** nullable persistent field */
 	private Integer m_eventTTicketState;
@@ -99,7 +99,7 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	private String m_eventForward;
 
 	/** nullable persistent field */
-	private String m_eventMouseoverText;
+	private String m_eventMouseOverText;
 
 	/** persistent field */
 	private String m_eventLog;
@@ -114,7 +114,7 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	private Date m_eventAckTime;
 
 	/** nullable persistent field */
-	private Integer m_alarmId;
+	private OnmsAlarm m_alarm;
 
 	/** persistent field */
 	private org.opennms.netmgt.model.OnmsNode m_node;
@@ -128,34 +128,31 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	/** persistent field */
 	private Set m_outagesBySvclostEventId;
 
-	/** persistent field */
-	private Set m_alarms;
-
 	/** full constructor */
 	public OnmsEvent(Integer eventid, String eventuei, Date eventtime,
 			String eventhost, String eventsource, String ipaddr,
-			String eventdpname, String eventsnmphost, Integer serviceid,
+			OnmsDistPoller distPoller, String eventsnmphost, OnmsMonitoredService service,
 			String eventsnmp, String eventparms, Date eventcreatetime,
 			String eventdescr, String eventloggroup, String eventlogmsg,
-			int eventseverity, String eventpathoutage, String eventcorrelation,
+			Integer eventseverity, String eventpathoutage, String eventcorrelation,
 			Integer eventsuppressedcount, String eventoperinstruct,
 			String eventautoaction, String eventoperaction,
 			String eventoperactionmenutext, String eventnotification,
 			String eventtticket, Integer eventtticketstate,
 			String eventforward, String eventmouseovertext, String eventlog,
 			String eventdisplay, String eventackuser, Date eventacktime,
-			Integer alarmid, org.opennms.netmgt.model.OnmsNode node,
+			OnmsAlarm alarm, org.opennms.netmgt.model.OnmsNode node,
 			Set notifications, Set outagesBySvcregainedeventid,
-			Set outagesBySvclosteventid, Set alarms) {
+			Set outagesBySvclosteventid) {
 		m_eventId = eventid;
 		m_eventUei = eventuei;
 		m_eventTime = eventtime;
 		m_eventHost = eventhost;
 		m_eventSource = eventsource;
 		m_ipAddr = ipaddr;
-		m_distPoller = eventdpname;
+		m_distPoller = distPoller;
 		m_eventSnmpHost = eventsnmphost;
-		m_serviceId = serviceid;
+		m_service = service;
 		m_eventSnmp = eventsnmp;
 		m_eventParms = eventparms;
 		m_eventCreateTime = eventcreatetime;
@@ -169,22 +166,21 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 		m_eventOperInstruct = eventoperinstruct;
 		m_eventAutoAction = eventautoaction;
 		m_eventOperAction = eventoperaction;
-		m_eventOperactionMenuText = eventoperactionmenutext;
+		m_eventOperActionMenuText = eventoperactionmenutext;
 		m_eventNotification = eventnotification;
-		m_eventtTicket = eventtticket;
+		m_eventTTicket = eventtticket;
 		m_eventTTicketState = eventtticketstate;
 		m_eventForward = eventforward;
-		m_eventMouseoverText = eventmouseovertext;
+		m_eventMouseOverText = eventmouseovertext;
 		m_eventLog = eventlog;
 		m_eventDisplay = eventdisplay;
 		m_eventAckUser = eventackuser;
 		m_eventAckTime = eventacktime;
-		m_alarmId = alarmid;
+		m_alarm = alarm;
 		m_node = node;
 		m_notifications = notifications;
 		m_outagesBySvcRegainedEventId = outagesBySvcregainedeventid;
 		m_outagesBySvclostEventId = outagesBySvclosteventid;
-		m_alarms = alarms;
 	}
 
 	/** default constructor */
@@ -193,8 +189,8 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 
 	/** minimal constructor */
 	public OnmsEvent(Integer eventid, String eventuei, Date eventtime,
-			String eventsource, String eventdpname, Date eventcreatetime,
-			int eventseverity, String eventlog, String eventdisplay,
+			String eventsource, OnmsDistPoller distPoller, Date eventcreatetime,
+			Integer eventseverity, String eventlog, String eventdisplay,
 			org.opennms.netmgt.model.OnmsNode node, Set notifications,
 			Set outagesBySvcregainedeventid, Set outagesBySvclosteventid,
 			Set alarms) {
@@ -202,7 +198,7 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 		m_eventUei = eventuei;
 		m_eventTime = eventtime;
 		m_eventSource = eventsource;
-		m_distPoller = eventdpname;
+		m_distPoller = distPoller;
 		m_eventCreateTime = eventcreatetime;
 		m_eventSeverity = eventseverity;
 		m_eventLog = eventlog;
@@ -211,7 +207,6 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 		m_notifications = notifications;
 		m_outagesBySvcRegainedEventId = outagesBySvcregainedeventid;
 		m_outagesBySvclostEventId = outagesBySvclosteventid;
-		m_alarms = alarms;
 	}
 
 	/**
@@ -219,11 +214,11 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	 *               column="eventid"
 	 * @hibernate.generator-param name="sequence" value="eventsNxtId"
 	 */
-	public Integer getEventId() {
+	public Integer getId() {
 		return m_eventId;
 	}
 
-	public void setEventId(Integer eventid) {
+	public void setId(Integer eventid) {
 		m_eventId = eventid;
 	}
 
@@ -255,11 +250,11 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	 * @hibernate.property column="eventhost" length="256"
 	 * 
 	 */
-	public String getEventhost() {
+	public String getEventHost() {
 		return m_eventHost;
 	}
 
-	public void setEventhost(String eventhost) {
+	public void setEventHost(String eventhost) {
 		m_eventHost = eventhost;
 	}
 
@@ -267,11 +262,11 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	 * @hibernate.property column="eventsource" length="128" not-null="true"
 	 * 
 	 */
-	public String getEventsource() {
+	public String getEventSource() {
 		return m_eventSource;
 	}
 
-	public void setEventsource(String eventsource) {
+	public void setEventSource(String eventsource) {
 		m_eventSource = eventsource;
 	}
 
@@ -291,12 +286,12 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	 * @hibernate.property column="eventdpname" length="12" not-null="true"
 	 * 
 	 */
-	public String getDistPoller() {
+	public OnmsDistPoller getDistPoller() {
 		return m_distPoller;
 	}
 
-	public void setDistPoller(String eventdpname) {
-		m_distPoller = eventdpname;
+	public void setDistPoller(OnmsDistPoller distPoller) {
+		m_distPoller = distPoller;
 	}
 
 	/**
@@ -315,12 +310,12 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	 * @hibernate.property column="serviceid" length="4"
 	 * 
 	 */
-	public Integer getServiceId() {
-		return m_serviceId;
+	public OnmsMonitoredService getService() {
+		return m_service;
 	}
 
-	public void setServiceId(Integer serviceid) {
-		m_serviceId = serviceid;
+	public void setService(OnmsMonitoredService service) {
+		m_service = service;
 	}
 
 	/**
@@ -399,12 +394,12 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	 * @hibernate.property column="eventseverity" length="4" not-null="true"
 	 * 
 	 */
-	public int getEventSeverity() {
+	public Integer getEventSeverity() {
 		return m_eventSeverity;
 	}
 
-	public void setEventSeverity(int eventseverity) {
-		m_eventSeverity = eventseverity;
+	public void setEventSeverity(Integer severity) {
+		m_eventSeverity = severity;
 	}
 
 	/**
@@ -471,11 +466,11 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	 * @hibernate.property column="eventoperaction" length="256"
 	 * 
 	 */
-	public String getEventOperaction() {
+	public String getEventOperAction() {
 		return m_eventOperAction;
 	}
 
-	public void setEventOperaction(String eventoperaction) {
+	public void setEventOperAction(String eventoperaction) {
 		m_eventOperAction = eventoperaction;
 	}
 
@@ -483,12 +478,12 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	 * @hibernate.property column="eventoperactionmenutext" length="64"
 	 * 
 	 */
-	public String getEventOperactionMenuText() {
-		return m_eventOperactionMenuText;
+	public String getEventOperActionMenuText() {
+		return m_eventOperActionMenuText;
 	}
 
-	public void setEventOperactionMenuText(String eventoperactionmenutext) {
-		m_eventOperactionMenuText = eventoperactionmenutext;
+	public void setEventOperActionMenuText(String eventOperActionMenuText) {
+		m_eventOperActionMenuText = eventOperActionMenuText;
 	}
 
 	/**
@@ -507,12 +502,12 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	 * @hibernate.property column="eventtticket" length="128"
 	 * 
 	 */
-	public String getEventtTicket() {
-		return m_eventtTicket;
+	public String getEventTTicket() {
+		return m_eventTTicket;
 	}
 
-	public void setEventtTicket(String eventtticket) {
-		m_eventtTicket = eventtticket;
+	public void setEventTTicket(String eventtticket) {
+		m_eventTTicket = eventtticket;
 	}
 
 	/**
@@ -543,12 +538,12 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	 * @hibernate.property column="eventmouseovertext" length="64"
 	 * 
 	 */
-	public String getEventMouseoverText() {
-		return m_eventMouseoverText;
+	public String getEventMouseOverText() {
+		return m_eventMouseOverText;
 	}
 
-	public void setEventMouseoverText(String eventmouseovertext) {
-		m_eventMouseoverText = eventmouseovertext;
+	public void setEventMouseOverText(String eventmouseovertext) {
+		m_eventMouseOverText = eventmouseovertext;
 	}
 
 	/**
@@ -603,12 +598,12 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	 * @hibernate.property column="alarmid" length="4"
 	 * 
 	 */
-	public Integer getAlarmId() {
-		return m_alarmId;
+	public OnmsAlarm getAlarm() {
+		return m_alarm;
 	}
 
-	public void setAlarmId(Integer alarmid) {
-		m_alarmId = alarmid;
+	public void setAlarm(OnmsAlarm alarm) {
+		m_alarm = alarm;
 	}
 
 	/**
@@ -678,31 +673,21 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 		m_outagesBySvclostEventId = outagesBySvclosteventid;
 	}
 
-	/**
-	 * @hibernate.set lazy="true" inverse="true" cascade="none"
-	 * @hibernate.key column="lasteventid"
-	 * @hibernate.one-to-many class="org.opennms.netmgt.model.OnmsAlarm"
-	 * 
-	 * old XDoclet1 Tags hibernate.collection-key column="lasteventid"
-	 * hibernate.collection-one-to-many
-	 * class="org.opennms.netmgt.model.OnmsAlarm"
-	 * 
-	 */
-	public Set getAlarms() {
-		return m_alarms;
-	}
-
-	public void setAlarms(Set alarms) {
-		m_alarms = alarms;
-	}
-
 	public String toString() {
-		return new ToStringCreator(this).append("eventid", getEventId())
+		return new ToStringCreator(this).append("eventid", getId())
 				.toString();
 	}
 
 	public void visit(EntityVisitor visitor) {
 		throw new RuntimeException("visitor method not implemented");
+	}
+
+	public Date getEventTime() {
+		return m_eventTime;
+	}
+
+	public void setEventTime(Date eventTime) {
+		m_eventTime = eventTime;
 	}
 
 }

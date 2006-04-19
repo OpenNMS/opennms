@@ -9,6 +9,10 @@ import org.opennms.netmgt.model.OnmsDistPoller;
 
 public class LazyDistPoller extends OnmsDistPoller {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -836488410614505130L;
 	private boolean m_loaded = false;
 	private DataSource m_dataSource;
 	
