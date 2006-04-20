@@ -5,19 +5,20 @@ import java.lang.reflect.UndeclaredThrowableException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
 import org.apache.log4j.Category;
-import org.apache.log4j.Priority;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.config.CollectdConfig;
 import org.opennms.netmgt.config.CollectdConfigFactory;
+import org.opennms.netmgt.config.CollectdPackage;
 import org.opennms.netmgt.config.collectd.CollectdConfiguration;
-import org.opennms.netmgt.config.collectd.Collector;
 import org.opennms.netmgt.config.collectd.Package;
 import org.opennms.netmgt.dao.CollectorConfigDao;
 import org.opennms.netmgt.model.OnmsIpInterface;
@@ -29,15 +30,19 @@ public class CollectorConfigDaoImpl implements CollectorConfigDao {
     /**
      * Map of all available ServiceCollector objects indexed by service name
      */
-    static Map m_svcCollectors;
+    private static Map m_svcCollectors;
+    
+	private ScheduledOutagesDao m_scheduledOutagesDao;
 
 	public CollectorConfigDaoImpl() {
         m_svcCollectors = Collections.synchronizedMap(new TreeMap());
 
 		loadConfigFactory();
 		
-		instantiateCollectors();
-		
+	}
+	
+	public void setScheduledOutageConfigDao(ScheduledOutagesDao scheduledOutagesDao) {
+		m_scheduledOutagesDao = scheduledOutagesDao;
 	}
 
 	public OnmsPackage load(String name) {
@@ -55,10 +60,6 @@ public class CollectorConfigDaoImpl implements CollectorConfigDao {
 		return null;
 	}
 	
-	CollectdConfiguration getConfig() {
-		return CollectdConfigFactory.getInstance().getConfiguration();
-	}
-
 	private void loadConfigFactory() {
 	    // Load collectd configuration file
 	    try {
@@ -75,58 +76,20 @@ public class CollectorConfigDaoImpl implements CollectorConfigDao {
 	    }
 	}
 
-	private Category log() {
+	public Category log() {
 		return ThreadCategory.getInstance(getClass());
 	}
 
-	private void instantiateCollectors() {
-        log().debug("init: Loading collectors");
-
-
-        CollectdConfiguration config = getConfig();
-	    /*
-	     * Load up an instance of each collector from the config
-	     * so that the event processor will have them for
-	     * new incomming events to create collectable service objects.
-	     */
-	    Enumeration eiter = config.enumerateCollector();
-	    while (eiter.hasMoreElements()) {
-	        Collector collector = (Collector) eiter.nextElement();
-	        String svcName = collector.getService();
-			try {
-	            if (log().isDebugEnabled()) {
-	                log().debug("init: Loading collector " 
-	                          + svcName + ", classname "
-	                          + collector.getClassName());
-	            }
-	            Class cc = Class.forName(collector.getClassName());
-	            ServiceCollector sc = (ServiceCollector) cc.newInstance();
-	
-	            // Attempt to initialize the service collector
-	            Map properties = null; // properties not currently used
-	            sc.initialize(properties);
-	
-	            setServiceCollector(svcName, sc);
-	        } catch (Throwable t) {
-	            if (log().isEnabledFor(Priority.WARN)) {
-	                log().warn("init: Failed to load collector "
-	                         + collector.getClassName() + " for service "
-	                         + svcName, t);
-	            }
-	        }
-	    }
+	private CollectdConfig getConfig() {
+		return CollectdConfigFactory.getInstance().getCollectdConfig();
 	}
 
-	void setServiceCollector(String svcName, ServiceCollector sc) {
-		m_svcCollectors.put(svcName, sc);
-	}
-
-	public ServiceCollector getServiceCollector(String svcName) {
-        return (ServiceCollector) m_svcCollectors.get(svcName);
+	private ServiceCollector getServiceCollector(String svcName) {
+		return getConfig().getServiceCollector(svcName);
 	}
 
 	public Set getCollectorNames() {
-		return m_svcCollectors.keySet();
+		return getConfig().getCollectorNames();
 	}
 
 	public int getSchedulerThreads() {
@@ -137,24 +100,22 @@ public class CollectorConfigDaoImpl implements CollectorConfigDao {
 		Collection matchingPkgs = new LinkedList();
 
         CollectdConfigFactory cCfgFactory = CollectdConfigFactory.getInstance();
-        CollectdConfiguration cConfig = getConfig();
-        Enumeration epkgs = cConfig.enumeratePackage();
-        
         
         /*
          * Compare interface/service pair against each collectd package
          * For each match, create new SnmpCollector object and
          * schedule it for collection
          */
-        while (epkgs.hasMoreElements()) {
-            Package pkg = (Package) epkgs.nextElement();
-            CollectionSpecification collectionSpec = new CollectionSpecification(pkg, svcName, getServiceCollector(svcName));
-
+        CollectdConfig config = cCfgFactory.getCollectdConfig();
+        for (Iterator it = config.getPackages().iterator(); it.hasNext();) {
+			CollectdPackage wpkg = (CollectdPackage) it.next();
+			Package pkg = wpkg.getPackage();
+        
             /*
              * Make certain the the current service is in the package
              * and enabled!
              */
-             if (!cCfgFactory.serviceInPackageAndEnabled(svcName, pkg)) {
+             if (!wpkg.serviceInPackageAndEnabled(svcName)) {
                 if (log().isDebugEnabled()) {
                     log().debug("scheduleInterface: address/service: " + iface + '/' + svcName + " not scheduled, service is not "
                               + "enabled or does not exist in package: "
@@ -164,7 +125,7 @@ public class CollectorConfigDaoImpl implements CollectorConfigDao {
             }
 
             // Is the interface in the package?
-            if (!cCfgFactory.interfaceInPackage(iface.getIpAddress(), pkg)) {
+            if (!wpkg.interfaceInPackage(iface.getIpAddress())) {
                 if (log().isDebugEnabled()) {
                     log().debug("scheduleInterface: address/service: " + iface + '/' + svcName + " not scheduled, interface "
                               + "does not belong to package: " + pkg.getName());
@@ -172,8 +133,15 @@ public class CollectorConfigDaoImpl implements CollectorConfigDao {
                 continue;
             }
             
+            Collection outageCalendars = new LinkedList();
+            Enumeration enumeration = pkg.enumerateOutageCalendar();
+            while (enumeration.hasMoreElements()) {
+				String outageName = (String) enumeration.nextElement();
+				outageCalendars.add(m_scheduledOutagesDao.get(outageName));
+			}
             
-            matchingPkgs.add(collectionSpec);
+            
+            matchingPkgs.add(new CollectionSpecification(pkg, svcName, outageCalendars, getServiceCollector(svcName)));
         }
 		return matchingPkgs;
 	}

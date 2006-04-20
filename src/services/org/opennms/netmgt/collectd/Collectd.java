@@ -41,7 +41,6 @@
 package org.opennms.netmgt.collectd;
 
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -51,7 +50,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
-import java.util.Set;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
@@ -59,18 +57,16 @@ import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.capsd.EventUtils;
 import org.opennms.netmgt.capsd.InsufficientInformationException;
 import org.opennms.netmgt.config.CollectdConfigFactory;
-import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.SnmpPeerFactory;
-import org.opennms.netmgt.config.collectd.Package;
 import org.opennms.netmgt.daemon.ServiceDaemon;
+import org.opennms.netmgt.dao.CollectorConfigDao;
 import org.opennms.netmgt.dao.IpInterfaceDao;
 import org.opennms.netmgt.dao.MonitoredServiceDao;
-import org.opennms.netmgt.dao.jdbc.IpInterfaceDaoJdbc;
-import org.opennms.netmgt.dao.jdbc.MonitoredServiceDaoJdbc;
-import org.opennms.netmgt.eventd.EventIpcManagerFactory;
+import org.opennms.netmgt.eventd.EventIpcManager;
 import org.opennms.netmgt.eventd.EventListener;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
+import org.opennms.netmgt.scheduler.LegacyScheduler;
 import org.opennms.netmgt.scheduler.ReadyRunnable;
 import org.opennms.netmgt.scheduler.Scheduler;
 import org.opennms.netmgt.xml.event.Event;
@@ -86,11 +82,6 @@ public final class Collectd extends ServiceDaemon implements EventListener {
     private final static String LOG4J_CATEGORY = "OpenNMS.Collectd";
 
     /**
-     * Singleton instance of the Collectd class
-     */
-    private final static Collectd m_singleton = new Collectd();
-
-    /**
      * List of all CollectableService objects.
      */
     private List m_collectableServices;
@@ -103,19 +94,34 @@ public final class Collectd extends ServiceDaemon implements EventListener {
     /**
      * Indicates if scheduling of existing interfaces has been completed
      */
-    private boolean m_schedulingCompleted = false;
-
-	private CollectorConfigDaoImpl m_collectorConfigDao;
+	private CollectorConfigDao m_collectorConfigDao;
 
 	private MonitoredServiceDao m_monSvcDao;
 
 	private IpInterfaceDao m_ifSvcDao;
+	
+	static class SchedulingCompletedFlag {
+		boolean m_schedulingCompleted = false;
+		
+		public synchronized void setSchedulingCompleted(boolean schedulingCompleted) {
+			m_schedulingCompleted = schedulingCompleted;
+		}
+		
+		public synchronized boolean isSchedulingCompleted() {
+			return m_schedulingCompleted;
+		}
+		
+	}
+	
+	private SchedulingCompletedFlag m_schedulingCompletedFlag = new SchedulingCompletedFlag();
+
+	private EventIpcManager m_eventIpcManager;
 
     /**
      * Constructor.
      */
-    private Collectd() {
-        m_scheduler = null;
+    public Collectd() {
+        
         setStatus(START_PENDING);
         
         m_collectableServices = Collections.synchronizedList(new LinkedList());
@@ -128,19 +134,13 @@ public final class Collectd extends ServiceDaemon implements EventListener {
         // Set the category prefix
         log().debug("init: Initializing collection daemon");
 
-        m_collectorConfigDao = new CollectorConfigDaoImpl();
-        m_monSvcDao = new MonitoredServiceDaoJdbc(DataSourceFactory.getInstance());
-        m_ifSvcDao = new IpInterfaceDaoJdbc(DataSourceFactory.getInstance());
-        
-        createScheduler();
-        m_scheduler.schedule(ifScheduler(), 0);
-        
+        getScheduler().schedule(0, ifScheduler());
         
         installMessageSelectors();
 
     }
 
-	Category log() {
+    private Category log() {
 		ThreadCategory.setPrefix(LOG4J_CATEGORY);
 		return ThreadCategory.getInstance();
 	}
@@ -180,7 +180,15 @@ public final class Collectd extends ServiceDaemon implements EventListener {
 		// configureSNMP
 		ueiList.add(EventConstants.CONFIGURE_SNMP_EVENT_UEI);
 
-		EventIpcManagerFactory.getIpcManager().addEventListener(this, ueiList);
+		getEventIpcManager().addEventListener(this, ueiList);
+	}
+	
+	public void setEventIpcManager(EventIpcManager eventIpcManager) {
+		m_eventIpcManager = eventIpcManager;
+	}
+
+	public EventIpcManager getEventIpcManager() {
+		return m_eventIpcManager;
 	}
 
     private ReadyRunnable ifScheduler() {
@@ -205,13 +213,14 @@ public final class Collectd extends ServiceDaemon implements EventListener {
         };
         return interfaceScheduler;
     }
-
+    
     private void createScheduler() {
+    	
         // Create a scheduler
         try {
             log().debug("init: Creating collectd scheduler");
 
-            m_scheduler = new Scheduler("Collectd", m_collectorConfigDao.getSchedulerThreads());
+            setScheduler(new LegacyScheduler("Collectd", getCollectorConfigDao().getSchedulerThreads()));
         } catch (RuntimeException e) {
             log().fatal("init: Failed to create collectd scheduler", e);
             throw e;
@@ -230,7 +239,7 @@ public final class Collectd extends ServiceDaemon implements EventListener {
         try {
             log().debug("start: Starting collectd scheduler");
 
-            m_scheduler.start();
+            getScheduler().start();
         } catch (RuntimeException e) {
             log().fatal("start: Failed to start scheduler", e);
             throw e;
@@ -248,10 +257,10 @@ public final class Collectd extends ServiceDaemon implements EventListener {
      */
     public synchronized void stop() {
         setStatus(STOP_PENDING);
-        m_scheduler.stop();
+        getScheduler().stop();
         deinstallMessageSelectors();
 
-        m_scheduler = null;
+        setScheduler(null);
         setStatus(STOPPED);
         log().debug("stop: Collectd stopped");
     }
@@ -265,7 +274,7 @@ public final class Collectd extends ServiceDaemon implements EventListener {
         }
 
         setStatus(PAUSE_PENDING);
-        m_scheduler.pause();
+        getScheduler().pause();
         setStatus(PAUSED);
 
         log().debug("pause: Collectd paused");
@@ -280,7 +289,7 @@ public final class Collectd extends ServiceDaemon implements EventListener {
         }
 
         setStatus(RESUME_PENDING);
-        m_scheduler.resume();
+        getScheduler().resume();
         setStatus(RUNNING);
 
         log().debug("resume: Collectd resumed");
@@ -294,33 +303,6 @@ public final class Collectd extends ServiceDaemon implements EventListener {
     }
 
     /**
-     * Returns singleton instance of the collection daemon.
-     */
-    public static Collectd getInstance() {
-        return m_singleton;
-    }
-
-    /**
-     * Returns reference to the scheduler
-     */
-    public Scheduler getScheduler() {
-        return m_scheduler;
-    }
-
-    /**
-     * Returns the loaded ServiceCollector for the specified service name.
-     * 
-     * @param svcName
-     *            Service name to lookup.
-     * 
-     * @return ServiceCollector responsible for performing data collection on
-     *         the specified service.
-     */
-    public ServiceCollector getServiceCollector(String svcName) {
-    		return m_collectorConfigDao.getServiceCollector(svcName);
-    }
-
-    /**
      * Schedule existing interfaces for data collection.
      * 
      * @throws SQLException
@@ -328,7 +310,7 @@ public final class Collectd extends ServiceDaemon implements EventListener {
      */
     private void scheduleExistingInterfaces() throws SQLException {
     	// Loop through collectors and schedule for each one present
-    	for (Iterator it = getCollectorNames().iterator(); it.hasNext();) {
+    	for (Iterator it = getCollectorConfigDao().getCollectorNames().iterator(); it.hasNext();) {
     		scheduleInterfacesWithService((String) it.next());
 		}
     }
@@ -336,18 +318,14 @@ public final class Collectd extends ServiceDaemon implements EventListener {
 	private void scheduleInterfacesWithService(String svcName) {
 		log().debug("scheduleExistingInterfaces: svcName = " + svcName);
 
-		Collection ifsWithServices = m_ifSvcDao.findByServiceType(svcName);
+		Collection ifsWithServices = getIpInterfaceDao().findByServiceType(svcName);
 		for (Iterator it = ifsWithServices.iterator(); it.hasNext();) {
 			OnmsIpInterface iface = (OnmsIpInterface) it.next();
 			scheduleInterface(iface, svcName, true);
 		}
 	}
 
-	private Set getCollectorNames() {
-		return m_collectorConfigDao.getCollectorNames();
-	}
-
-    /**
+	/**
      * This method is responsible for scheduling the specified
      * node/address/svcname tuple for data collection.
      * 
@@ -361,19 +339,15 @@ public final class Collectd extends ServiceDaemon implements EventListener {
      *            True if called by scheduleExistingInterfaces(), false
      *            otheriwse
      */
-    void scheduleInterface(int nodeId, String ipAddress, String svcName, boolean existing) {
-    	OnmsMonitoredService svc = m_monSvcDao.get(nodeId, ipAddress, svcName);
+	private void scheduleInterface(int nodeId, String ipAddress, String svcName, boolean existing) {
+    	OnmsMonitoredService svc = getMonitoredServiceDao().get(nodeId, ipAddress, svcName);
     	scheduleInterface(svc.getIpInterface(), svc.getServiceType().getName(), existing);
     }
     	
-    void scheduleInterface(OnmsIpInterface iface, String svcName, OnmsMonitoredService x, boolean existing) {
-		scheduleInterface(iface, svcName, existing);
-	}
-
-	void scheduleInterface(OnmsIpInterface iface, String svcName, boolean existing) {
-        Collection matchingPkgs = m_collectorConfigDao.getSpecificationsForInterface(iface, svcName);
+	private void scheduleInterface(OnmsIpInterface iface, String svcName, boolean existing) {
+        Collection matchingSpecs = getCollectorConfigDao().getSpecificationsForInterface(iface, svcName);
         
-        for (Iterator it = matchingPkgs.iterator(); it.hasNext();) {
+        for (Iterator it = matchingSpecs.iterator(); it.hasNext();) {
 			CollectionSpecification spec = (CollectionSpecification) it.next();
 			
             if (existing == false) {
@@ -387,7 +361,7 @@ public final class Collectd extends ServiceDaemon implements EventListener {
                 if (alreadyScheduled(iface, spec)) {
                     if (log().isDebugEnabled()) {
                         log().debug("scheduleInterface: svc/pkgName "
-                                  + iface + '/' + svcName + "/" + spec.getPackageName()
+                                  + iface + '/' + spec 
                                   + " already in collectable service list, "
                                   + "skipping.");
                     }
@@ -407,13 +381,13 @@ public final class Collectd extends ServiceDaemon implements EventListener {
                  * interface,
                  * service and package pairing
                  */
-                cSvc = new CollectableService(iface, spec);
+                cSvc = new CollectableService(iface, spec, getScheduler(), m_schedulingCompletedFlag);
 
                 // Add new collectable service to the colleable service list.
                 m_collectableServices.add(cSvc);
 
                 // Schedule the collectable service for immediate collection
-                m_scheduler.schedule(cSvc, 0);
+                getScheduler().schedule(0, cSvc);
 
                 if (log().isDebugEnabled()) {
                     log().debug("scheduleInterface: " + iface +'/' + svcName + " collection");
@@ -458,22 +432,15 @@ public final class Collectd extends ServiceDaemon implements EventListener {
     }
 
     /**
-     * @return Returns the schedulingCompleted.
-     */
-    public boolean isSchedulingCompleted() {
-        return m_schedulingCompleted;
-    }
-
-    /**
      * @param schedulingCompleted
      *            The schedulingCompleted to set.
      */
-    public void setSchedulingCompleted(boolean schedulingCompleted) {
-        m_schedulingCompleted = schedulingCompleted;
+    private void setSchedulingCompleted(boolean schedulingCompleted) {
+        m_schedulingCompletedFlag.setSchedulingCompleted(schedulingCompleted);
     }
 
 
-	public void refreshServicePackages() {
+	private void refreshServicePackages() {
 	    Iterator serviceIterator=m_collectableServices.iterator();
 	    while (serviceIterator.hasNext()) {
 	        CollectableService thisService =
@@ -482,7 +449,7 @@ public final class Collectd extends ServiceDaemon implements EventListener {
 	    }
 	}
 	
-	public List getCollectableServices() {
+	private List getCollectableServices() {
 		return m_collectableServices;
 	}
 
@@ -551,8 +518,8 @@ public final class Collectd extends ServiceDaemon implements EventListener {
 	 * </p>
 	 * 
 	 */
-	void deinstallMessageSelectors() {
-	    EventIpcManagerFactory.getIpcManager().removeEventListener(this);
+	private void deinstallMessageSelectors() {
+	    getEventIpcManager().removeEventListener(this);
 	}
 
 	/**
@@ -560,7 +527,7 @@ public final class Collectd extends ServiceDaemon implements EventListener {
 	 *
 	 * @param event The event to process.
 	 */
-	void handleConfigureSNMP(Event event) {
+	private void handleConfigureSNMP(Event event) {
 	    if (log().isDebugEnabled())
 	        log().debug("configureSNMPHandler: processing configure SNMP event...");
 	
@@ -711,7 +678,7 @@ public final class Collectd extends ServiceDaemon implements EventListener {
 	 * @throws InsufficientInformationException 
 	 * 
 	 */
-	void handleInterfaceReparented(Event event) throws InsufficientInformationException {
+	private void handleInterfaceReparented(Event event) throws InsufficientInformationException {
 		EventUtils.checkNodeId(event);
 		EventUtils.checkInterface(event);
 
@@ -810,7 +777,7 @@ public final class Collectd extends ServiceDaemon implements EventListener {
 	 * @throws InsufficientInformationException 
 	 * 
 	 */
-	void handleNodeDeleted(Event event) throws InsufficientInformationException {
+	private void handleNodeDeleted(Event event) throws InsufficientInformationException {
 		EventUtils.checkNodeId(event);
 		EventUtils.checkInterface(event);
 
@@ -864,7 +831,7 @@ public final class Collectd extends ServiceDaemon implements EventListener {
 	 * @throws InsufficientInformationException 
 	 * 
 	 */
-	void handleNodeGainedService(Event event) throws InsufficientInformationException {
+	private void handleNodeGainedService(Event event) throws InsufficientInformationException {
 		EventUtils.checkNodeId(event);
 		EventUtils.checkInterface(event);
 		EventUtils.checkService(event);
@@ -873,7 +840,7 @@ public final class Collectd extends ServiceDaemon implements EventListener {
 	    scheduleForCollection(event);
 	}
 
-	void scheduleForCollection(Event event) {
+	private void scheduleForCollection(Event event) {
 	    //This moved to here from the scheduleInterface() for better behavior during initialization
 	    CollectdConfigFactory cCfgFactory = CollectdConfigFactory.getInstance();
 	    cCfgFactory.rebuildPackageIpListMap();
@@ -899,7 +866,7 @@ public final class Collectd extends ServiceDaemon implements EventListener {
 	 * @throws InsufficientInformationException 
 	 * 
 	 */
-	void handlePrimarySnmpInterfaceChanged(Event event) throws InsufficientInformationException {
+	private void handlePrimarySnmpInterfaceChanged(Event event) throws InsufficientInformationException {
 		EventUtils.checkNodeId(event);
 		EventUtils.checkInterface(event);
 
@@ -1017,7 +984,7 @@ public final class Collectd extends ServiceDaemon implements EventListener {
 	 *            The event to process.
 	 * @throws InsufficientInformationException 
 	 */
-	void handleReinitializePrimarySnmpInterface(Event event) throws InsufficientInformationException {
+	private void handleReinitializePrimarySnmpInterface(Event event) throws InsufficientInformationException {
 		EventUtils.checkNodeId(event);
 		EventUtils.checkInterface(event);
 
@@ -1069,7 +1036,7 @@ public final class Collectd extends ServiceDaemon implements EventListener {
 	 * @throws InsufficientInformationException 
 	 * 
 	 */
-	void handleServiceDeleted(Event event) throws InsufficientInformationException {
+	private void handleServiceDeleted(Event event) throws InsufficientInformationException {
 		EventUtils.checkNodeId(event);
 		EventUtils.checkInterface(event);
 		EventUtils.checkService(event);
@@ -1120,5 +1087,39 @@ public final class Collectd extends ServiceDaemon implements EventListener {
 	
 	    if (log.isDebugEnabled())
 	        log.debug("serviceDeletedHandler: processing of serviceDeleted event for " + nodeId + "/" + ipAddr + "/" + svcName + " completed.");
+	}
+
+	public void setScheduler(Scheduler scheduler) {
+		m_scheduler = scheduler;
+	}
+
+	private Scheduler getScheduler() {
+		if (m_scheduler == null)
+			createScheduler();
+		return m_scheduler;
+	}
+
+	public void setCollectorConfigDao(CollectorConfigDao collectorConfigDao) {
+		m_collectorConfigDao = collectorConfigDao;
+	}
+
+	private CollectorConfigDao getCollectorConfigDao() {
+		return m_collectorConfigDao;
+	}
+
+	public void setMonitoredServiceDao(MonitoredServiceDao monSvcDao) {
+		m_monSvcDao = monSvcDao;
+	}
+
+	private MonitoredServiceDao getMonitoredServiceDao() {
+		return m_monSvcDao;
+	}
+
+	public void setIpInterfaceDao(IpInterfaceDao ifSvcDao) {
+		m_ifSvcDao = ifSvcDao;
+	}
+
+	private IpInterfaceDao getIpInterfaceDao() {
+		return m_ifSvcDao;
 	}
 }

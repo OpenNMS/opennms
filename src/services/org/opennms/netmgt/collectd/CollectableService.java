@@ -39,14 +39,10 @@ package org.opennms.netmgt.collectd;
 import java.io.File;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.Iterator;
-import java.util.Map;
 
-import org.apache.log4j.Category;
 import org.opennms.netmgt.EventConstants;
-import org.opennms.netmgt.config.CollectdConfigFactory;
+import org.opennms.netmgt.collectd.Collectd.SchedulingCompletedFlag;
 import org.opennms.netmgt.config.DataCollectionConfigFactory;
-import org.opennms.netmgt.config.PollOutagesConfigFactory;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.poller.IPv4NetworkInterface;
@@ -98,6 +94,8 @@ final class CollectableService extends IPv4NetworkInterface implements ReadyRunn
 
 	private OnmsIpInterface m_iface;
 
+	private SchedulingCompletedFlag m_schedulingCompletedFlag;
+
     /**
      * Constructs a new instance of a CollectableService object.
      * @param iface TODO
@@ -112,14 +110,16 @@ final class CollectableService extends IPv4NetworkInterface implements ReadyRunn
      *            Service name
      * 
      */
-    CollectableService(OnmsIpInterface iface, CollectionSpecification spec) {
+    CollectableService(OnmsIpInterface iface, CollectionSpecification spec, Scheduler scheduler, SchedulingCompletedFlag schedulingCompletedFlag) {
         super(iface.getInetAddress());
         m_iface = iface;
         m_spec = spec;
+        m_scheduler = scheduler;
+        m_schedulingCompletedFlag = schedulingCompletedFlag;
+
         m_nodeId = iface.getNode().getId().intValue();
         m_status = ServiceCollector.COLLECTION_SUCCEEDED;
 
-        m_scheduler = Collectd.getInstance().getScheduler();
         m_updates = new CollectorUpdates();
 
         m_lastScheduledCollectionTime = 0L;
@@ -173,15 +173,10 @@ final class CollectableService extends IPv4NetworkInterface implements ReadyRunn
 	* Should be called when the collect config has been reloaded.
 	*/
 	public void refreshPackage() {
-		// FIXME: remove reference to package and CollectdConfigFactory
-		org.opennms.netmgt.config.collectd.Package refreshedPackage=CollectdConfigFactory.getInstance().getPackage(this.getPackageName());
-		if(refreshedPackage!=null) {
-			m_spec.setPackage(refreshedPackage);
-		}
+		m_spec.refresh();
 	}
 
-
-    /**
+	/**
      * This method is used to evaluate the status of this interface and service
      * pair. If it is time to run the collection again then a value of true is
      * returned. If the interface is not ready then a value of false is
@@ -190,7 +185,7 @@ final class CollectableService extends IPv4NetworkInterface implements ReadyRunn
     public boolean isReady() {
         boolean ready = false;
 
-        if (!Collectd.getInstance().isSchedulingCompleted())
+        if (!isSchedulingComplete())
             return false;
 
         if (m_spec.getInterval() < 1) {
@@ -201,6 +196,10 @@ final class CollectableService extends IPv4NetworkInterface implements ReadyRunn
 
         return ready;
     }
+
+	private boolean isSchedulingComplete() {
+		return m_schedulingCompletedFlag.isSchedulingCompleted();
+	}
 
     /**
      * Generate event and send it to eventd via the event proxy.
@@ -256,7 +255,7 @@ final class CollectableService extends IPv4NetworkInterface implements ReadyRunn
         // Check scheduled outages to see if any apply indicating
         // that the collection should be skipped
         //
-        if (!scheduledOutage()) {
+        if (!m_spec.scheduledOutage(m_iface)) {
 
         	int status = doCollection();
         	updateStatus(status);
@@ -264,7 +263,7 @@ final class CollectableService extends IPv4NetworkInterface implements ReadyRunn
         }
     	// Reschedule the service
     	//
-        m_scheduler.schedule(this, m_spec.getInterval());
+        m_scheduler.schedule(m_spec.getInterval(), this);
     }
 
 	private void updateStatus(int status) {
@@ -311,48 +310,6 @@ final class CollectableService extends IPv4NetworkInterface implements ReadyRunn
 	}
 
 	/**
-     * Checks the package information for the collectable service and determines
-     * if any of the calendar outages associated with the package apply to the
-     * current time and the service's interface. If an outage applies true is
-     * returned...otherwise false is returned.
-     * 
-     * @return false if no outage found (indicating a collection may be
-     *         performed) or true if applicable outage is found (indicating
-     *         collection should be skipped).
-     */
-    private boolean scheduledOutage() {
-        boolean outageFound = false;
-
-        PollOutagesConfigFactory outageFactory = PollOutagesConfigFactory.getInstance();
-
-        // Iterate over the outage names defined in the interface's package.
-        // For each outage...if the outage contains a calendar entry which
-        // applies to the current time and the outage applies to this
-        // interface then break and return true. Otherwise process the
-        // next outage.
-        // 
-        Iterator iter = m_spec.getPackage().getOutageCalendarCollection().iterator();
-        while (iter.hasNext()) {
-            String outageName = (String) iter.next();
-
-            // Does the outage apply to the current time?
-            if (outageFactory.isCurTimeInOutage(outageName)) {
-                // Does the outage apply to this interface?
-                if ((outageFactory.isNodeIdInOutage((long)m_nodeId, outageName)) ||
-			(outageFactory.isInterfaceInOutage(m_address.getHostAddress(), outageName)))
-		{
-                    if (log().isDebugEnabled())
-                        log().debug("scheduledOutage: configured outage '" + outageName + "' applies, interface " + m_address.getHostAddress() + " will not be collected for " + m_spec);
-                    outageFound = true;
-                    break;
-                }
-            }
-        }
-
-        return outageFound;
-    }
-
-    /**
      * Process any outstanding updates.
      * 
      * @return true if update indicates that collection should be aborted (for
@@ -388,8 +345,7 @@ final class CollectableService extends IPv4NetworkInterface implements ReadyRunn
                     log().debug("ReinitializationFlag set for " + m_address.getHostAddress());
 
                 try {
-                    m_spec.release(this);
-                    m_spec.initialize(this);
+                    reinitialize();
                     if (log().isDebugEnabled())
                         log().debug("Completed reinitializing SNMP collector for " + m_address.getHostAddress());
                 } catch (RuntimeException rE) {
@@ -506,8 +462,7 @@ final class CollectableService extends IPv4NetworkInterface implements ReadyRunn
                 try {
                     if (log().isDebugEnabled())
                         log().debug("Reinitializing SNMP collector for " + m_address.getHostAddress());
-                    m_spec.release(this);
-                    m_spec.initialize(this);
+                    reinitialize();
                     if (log().isDebugEnabled())
                         log().debug("Completed reinitializing SNMP collector for " + m_address.getHostAddress());
                 } catch (RuntimeException rE) {
@@ -524,4 +479,9 @@ final class CollectableService extends IPv4NetworkInterface implements ReadyRunn
 
         return !ABORT_COLLECTION;
     }
+
+	private void reinitialize() {
+		m_spec.release(this);
+		m_spec.initialize(this);
+	}
 }

@@ -39,9 +39,10 @@ import java.util.TreeMap;
 
 import org.opennms.netmgt.scheduler.ReadyRunnable;
 import org.opennms.netmgt.scheduler.ScheduleTimer;
+import org.opennms.netmgt.scheduler.Scheduler;
 
 
-public class MockScheduler implements ScheduleTimer {
+public class MockScheduler implements Scheduler {
     
     private MockTimer m_timer;
     /*
@@ -119,5 +120,22 @@ public class MockScheduler implements ScheduleTimer {
     public long getCurrentTime() {
         return m_timer.getCurrentTime();
     }
+
+	public void start() {
+		
+	}
+
+	public void stop() {
+	}
+
+	public void pause() {
+	}
+
+	public void resume() {
+	}
+
+	public int getStatus() {
+		return 0;
+	}
     
 }

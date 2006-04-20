@@ -34,6 +34,12 @@ public class ScheduledOutagesDaoImpl implements ScheduledOutagesDao {
 	        throw new UndeclaredThrowableException(ex);
 	    }
 	}
+
+	public OnmsOutageCalendar get(String outageName) {
+		return new OnmsOutageCalendar();
+	}
+	
+	
 	
 
 }

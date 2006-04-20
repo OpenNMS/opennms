@@ -44,7 +44,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringWriter;
@@ -64,10 +63,7 @@ import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.ConfigFileConstants;
 import org.opennms.netmgt.config.collectd.CollectdConfiguration;
-import org.opennms.netmgt.config.collectd.ExcludeRange;
-import org.opennms.netmgt.config.collectd.IncludeRange;
 import org.opennms.netmgt.config.collectd.Package;
-import org.opennms.netmgt.config.collectd.Service;
 import org.opennms.netmgt.filter.Filter;
 import org.opennms.netmgt.utils.IPSorter;
 import org.opennms.netmgt.utils.IpListFromUrl;
@@ -90,7 +86,7 @@ import org.opennms.netmgt.utils.IpListFromUrl;
  * <em>init()</em> is called before calling any other method to ensure the
  * config is loaded before accessing other convenience methods.
  */
-public final class CollectdConfigFactory {
+public class CollectdConfigFactory {
 	private final static String SELECT_METHOD_MIN = "min";
 
 	private final static String SELECT_METHOD_MAX = "max";
@@ -106,21 +102,10 @@ public final class CollectdConfigFactory {
 	private static boolean m_loaded = false;
 
 	/**
-	 * The config class loaded from the config file
-	 */
-	private CollectdConfiguration m_config;
-
-	/**
 	 * A mapping of the configured URLs to a list of the specific IPs configured
 	 * in each - so as to avoid file reads
 	 */
 	private Map m_urlIPMap;
-
-	/**
-	 * A mapping of the configured package to a list of IPs selected via filter
-	 * rules, so as to avoid repetetive database access.
-	 */
-	private Map m_pkgIpMap;
 
 	/**
 	 * A boolean flag to indicate If a filter rule against the local NMS server
@@ -132,6 +117,8 @@ public final class CollectdConfigFactory {
 	 * Name of the local NMS server.
 	 */
 	private static String m_localServer;
+	
+	private CollectdConfig m_collectdConfig;
 
 	/**
 	 * Go through the configuration and build a mapping of each configured URL
@@ -140,18 +127,19 @@ public final class CollectdConfigFactory {
 	 */
 	private void createUrlIpMap() {
 		m_urlIPMap = new HashMap();
+		Map map = m_urlIPMap;
 
-		Enumeration pkgEnum = m_config.enumeratePackage();
-		while (pkgEnum.hasMoreElements()) {
-			Package pkg = (Package) pkgEnum.nextElement();
-
-			Enumeration urlEnum = pkg.enumerateIncludeUrl();
-			while (urlEnum.hasMoreElements()) {
-				String urlname = (String) urlEnum.nextElement();
-
-				java.util.List iplist = IpListFromUrl.parse(urlname);
+        for (Iterator it = m_collectdConfig.getPackages().iterator(); it.hasNext();) {
+			CollectdPackage wpkg = (CollectdPackage) it.next();
+			
+			for (Iterator iter = wpkg.getIncludeURLs().iterator(); iter.hasNext();) {
+				IncludeURL includeURL = (IncludeURL) iter.next();
+					
+				String urlname = (String) includeURL.getName();
+				List iplist = IpListFromUrl.parse(urlname);
 				if (iplist.size() > 0) {
-					m_urlIPMap.put(urlname, iplist);
+					map.put(urlname, iplist);
+					includeURL.setIpList(iplist);
 				}
 			}
 		}
@@ -163,50 +151,51 @@ public final class CollectdConfigFactory {
 	 * from the database.
 	 */
 	private void createPackageIpListMap() {
-		Category log = ThreadCategory.getInstance(this.getClass());
+		String localServer = m_localServer;
+		boolean verifyServer = m_verifyServer;
 
 		// Multiple threads maybe asking for the m_pkgIpMap field so create
 		// with temp map then assign when finished.
-		Map pkgIpMap = new HashMap();
+		
+		for (Iterator it = m_collectdConfig.getPackages().iterator(); it.hasNext();) {
+			CollectdPackage wpkg = (CollectdPackage) it.next();
+			createIpList(localServer, verifyServer, wpkg);
+		}
+	}
 
-		Enumeration pkgEnum = m_config.enumeratePackage();
-		while (pkgEnum.hasMoreElements()) {
-			Package pkg = (Package) pkgEnum.nextElement();
+	private void createIpList(String localServer, boolean verifyServer, CollectdPackage wpkg) {
+		Package pkg = wpkg.getPackage();
+		//
+		// Get a list of ipaddress per package agaist the filter rules from
+		// database and populate the package, IP list map.
+		//
+		String filterRules = wpkg.getFilterRule(localServer, verifyServer);
 
-			//
-			// Get a list of ipaddress per package agaist the filter rules from
-			// database and populate the package, IP list map.
-			//
-			Filter filter = new Filter();
-			StringBuffer filterRules = new StringBuffer(pkg.getFilter()
-					.getContent());
-
-			try {
-				if (m_verifyServer) {
-					filterRules.append(" & (serverName == ");
-					filterRules.append('\"');
-					filterRules.append(m_localServer);
-					filterRules.append('\"');
-					filterRules.append(")");
-				}
-
-				if (log.isDebugEnabled())
-					log.debug("createPackageIpMap: package is " + pkg.getName()
-							+ ". filer rules are  " + filterRules.toString());
-
-				List ipList = filter.getIPList(filterRules.toString());
-				if (ipList.size() > 0) {
-					pkgIpMap.put(pkg, ipList);
-				}
-			} catch (Throwable t) {
-				if (log.isEnabledFor(Priority.ERROR)) {
-					log.error("createPackageIpMap: failed to map package: "
-							+ pkg.getName() + " to an IP List", t);
-				}
+		Category log = wpkg.log();
+		if (log.isDebugEnabled())
+			log.debug("createPackageIpMap: package is " + pkg.getName()
+					+ ". filer rules are  " + filterRules);
+		try {
+			List ipList = getMatchingIps(filterRules);
+			if (ipList.size() > 0) {
+				wpkg.putIpList(ipList);
+			}
+		} catch (Throwable t) {
+			if (log.isEnabledFor(Priority.ERROR)) {
+				log.error("createPackageIpMap: failed to map package: "
+						+ pkg.getName() + " to an IP List", t);
 			}
 		}
+	}
 
-		m_pkgIpMap = pkgIpMap;
+	Category log() {
+		return ThreadCategory.getInstance(this.getClass());
+	}
+
+	protected List getMatchingIps(String filterRules) {
+		Filter filter = new Filter();
+		List ipList = filter.getIPList(filterRules);
+		return ipList;
 	}
 
 	/**
@@ -222,6 +211,8 @@ public final class CollectdConfigFactory {
 
 	/**
 	 * Private constructor
+	 * @param verifyServer 
+	 * @param localServer 
 	 * 
 	 * @exception java.io.IOException
 	 *                Thrown if the specified config file cannot be read
@@ -230,15 +221,13 @@ public final class CollectdConfigFactory {
 	 * @exception org.exolab.castor.xml.ValidationException
 	 *                Thrown if the contents do not match the required schema.
 	 */
-	private CollectdConfigFactory(String configFile) throws IOException,
+	private CollectdConfigFactory(String configFile, String localServer, boolean verifyServer) throws IOException,
 			MarshalException, ValidationException {
-		InputStream cfgIn = new FileInputStream(configFile);
-
-		m_config = (CollectdConfiguration) Unmarshaller.unmarshal(
-				CollectdConfiguration.class, new InputStreamReader(cfgIn));
-		cfgIn.close();
-
-		finishConstruction();
+		InputStreamReader rdr = new InputStreamReader(new FileInputStream(configFile));
+		
+		initialize(rdr, localServer, verifyServer);
+		
+		rdr.close();
 	}
 
 	/**
@@ -251,13 +240,20 @@ public final class CollectdConfigFactory {
 	 * @exception org.exolab.castor.xml.ValidationException
 	 *                Thrown if the contents do not match the required schema.
 	 */
-	public CollectdConfigFactory(Reader rdr) throws IOException,
+	public CollectdConfigFactory(Reader rdr, String localServer, boolean verifyServer) throws IOException,
 			MarshalException, ValidationException {
 
-		m_config = (CollectdConfiguration) Unmarshaller.unmarshal(
-				CollectdConfiguration.class, rdr);
+		initialize(rdr, localServer, verifyServer);
+	}
 
-		finishConstruction();
+	private void initialize(Reader rdr, String localServer, boolean verifyServer) throws MarshalException, ValidationException, IOException {
+		m_verifyServer = verifyServer;
+		m_localServer = localServer;
+
+		CollectdConfiguration config = (CollectdConfiguration) Unmarshaller.unmarshal(CollectdConfiguration.class, rdr);
+		m_collectdConfig = new CollectdConfig(config);
+		
+		finishConstruction(localServer, verifyServer);
 	}
 
 	/**
@@ -265,15 +261,11 @@ public final class CollectdConfigFactory {
 	 * @throws MarshalException
 	 * @throws ValidationException
 	 */
-	private void finishConstruction() throws IOException, MarshalException,
+	private void finishConstruction(String localServer, boolean verifyServer) throws IOException, MarshalException,
 			ValidationException {
 		createUrlIpMap();
-		OpennmsServerConfigFactory.init();
-		m_verifyServer = OpennmsServerConfigFactory.getInstance()
-				.verifyServer();
-		m_localServer = OpennmsServerConfigFactory.getInstance()
-				.getServerName();
 		createPackageIpListMap();
+		
 	}
 
 	/**
@@ -294,6 +286,8 @@ public final class CollectdConfigFactory {
 			// to reload, reload() will need to be called
 			return;
 		}
+		
+		OpennmsServerConfigFactory.init();
 
 		File cfgFile = ConfigFileConstants
 				.getFile(ConfigFileConstants.COLLECTD_CONFIG_FILE_NAME);
@@ -301,7 +295,7 @@ public final class CollectdConfigFactory {
 		ThreadCategory.getInstance(CollectdConfigFactory.class).debug(
 				"init: config file path: " + cfgFile.getPath());
 
-		m_singleton = new CollectdConfigFactory(cfgFile.getPath());
+		m_singleton = new CollectdConfigFactory(cfgFile.getPath(), OpennmsServerConfigFactory.getInstance().getServerName(), OpennmsServerConfigFactory.getInstance().verifyServer());
 		m_loaded = true;
 	}
 
@@ -335,7 +329,7 @@ public final class CollectdConfigFactory {
 		// way the original config
 		// isn't lost if the xml from the marshall is hosed.
 		StringWriter stringWriter = new StringWriter();
-		Marshaller.marshal(m_config, stringWriter);
+		Marshaller.marshal(m_collectdConfig.getConfig(), stringWriter);
 		if (stringWriter.toString() != null) {
 			FileWriter fileWriter = new FileWriter(cfgFile);
 			fileWriter.write(stringWriter.toString());
@@ -371,15 +365,19 @@ public final class CollectdConfigFactory {
 	 * Return the collectd configuration object.
 	 */
 	public synchronized CollectdConfiguration getConfiguration() {
-		return m_config;
+		return m_collectdConfig.getConfig();
+	}
+	
+	public CollectdConfig getCollectdConfig() {
+		return m_collectdConfig;
 	}
 
 	public synchronized Package getPackage(String name) {
-		Enumeration packageEnum = m_config.enumeratePackage();
-		while (packageEnum.hasMoreElements()) {
-			Package thisPackage = (Package) packageEnum.nextElement();
-			if (thisPackage.getName().equals(name)) {
-				return thisPackage;
+        for (Iterator it = m_collectdConfig.getPackages().iterator(); it.hasNext();) {
+			CollectdPackage wpkg = (CollectdPackage) it.next();
+			Package pkg = wpkg.getPackage();
+			if (pkg.getName().equals(name)) {
+				return pkg;
 			}
 		}
 		return null;
@@ -394,10 +392,10 @@ public final class CollectdConfigFactory {
 	 * @return True if the package exists
 	 */
 	public synchronized boolean packageExists(String name) {
-		Enumeration packageEnum = m_config.enumeratePackage();
-		while (packageEnum.hasMoreElements()) {
-			Package thisPackage = (Package) packageEnum.nextElement();
-			if (thisPackage.getName().equals(name)) {
+        for (Iterator it = m_collectdConfig.getPackages().iterator(); it.hasNext();) {
+			CollectdPackage wpkg = (CollectdPackage) it.next();
+			Package pkg = wpkg.getPackage();
+			if (pkg.getName().equals(name)) {
 				return true;
 			}
 		}
@@ -413,127 +411,15 @@ public final class CollectdConfigFactory {
 	 * @return True if the domain exists
 	 */
 	public synchronized boolean domainExists(String name) {
-		Enumeration packageEnum = m_config.enumeratePackage();
-		while (packageEnum.hasMoreElements()) {
-			Package thisPackage = (Package) packageEnum.nextElement();
-			if ((thisPackage.getIfAliasDomain() != null)
-					&& thisPackage.getIfAliasDomain().equals(name)) {
+        for (Iterator it = m_collectdConfig.getPackages().iterator(); it.hasNext();) {
+			CollectdPackage wpkg = (CollectdPackage) it.next();
+			Package pkg = wpkg.getPackage();
+			if ((pkg.getIfAliasDomain() != null)
+					&& pkg.getIfAliasDomain().equals(name)) {
 				return true;
 			}
 		}
 		return false;
-	}
-
-	/**
-	 * This method is used to determine if the named interface is included in
-	 * the passed package's url includes. If the interface is found in any of
-	 * the URL files, then a value of true is returned, else a false value is
-	 * returned.
-	 * 
-	 * <pre>
-	 *  The file URL is read and each entry in this file checked. Each line
-	 *   in the URL file can be one of -
-	 *   &lt;IP&gt;&lt;space&gt;#&lt;comments&gt;
-	 *   or
-	 *   &lt;IP&gt;
-	 *   or
-	 *   #&lt;comments&gt;
-	 *  
-	 *   Lines starting with a '#' are ignored and so are characters after
-	 *   a '&lt;space&gt;#' in a line.
-	 * </pre>
-	 * 
-	 * @param addr
-	 *            The interface to test against the package's URL
-	 * @param url
-	 *            The url file to read
-	 * 
-	 * @return True if the interface is included in the url, false otherwise.
-	 */
-	private boolean interfaceInUrl(String addr, String url) {
-		boolean bRet = false;
-
-		// get list of IPs in this URL
-		java.util.List iplist = (java.util.List) m_urlIPMap.get(url);
-		if (iplist != null && iplist.size() > 0) {
-			bRet = iplist.contains(addr);
-		}
-
-		return bRet;
-	}
-
-	/**
-	 * This method is used to determine if the named interface is included in
-	 * the passed package definition. If the interface belongs to the package
-	 * then a value of true is returned. If the interface does not belong to the
-	 * package a false value is returned.
-	 * 
-	 * <strong>Note: </strong>Evaluation of the interface against a package
-	 * filter will only work if the IP is already in the database.
-	 * 
-	 * @param iface
-	 *            The interface to test against the package.
-	 * @param pkg
-	 *            The package to check for the inclusion of the interface.
-	 * 
-	 * @return True if the interface is included in the package, false
-	 *         otherwise.
-	 */
-	public synchronized boolean interfaceInPackage(String iface, Package pkg) {
-		Category log = ThreadCategory.getInstance(this.getClass());
-
-		boolean filterPassed = interfaceInFilter(iface, pkg, log);
-
-		if (!filterPassed)
-			return false;
-
-		//
-		// Ensure that the interface is in the specific list or
-		// that it is in the include range and is not excluded
-		//
-
-		long addr = IPSorter.convertToLong(iface);
-
-		boolean has_range_include = hasIncludeRange(pkg, addr);
-		boolean has_specific = hasSpecific(pkg, addr);
-
-		has_specific = hasSpecificUrl(iface, pkg, has_specific);
-		boolean has_range_exclude = hasExcludeRange(pkg, addr, has_specific);
-
-		boolean packagePassed = has_specific
-				|| (has_range_include && !has_range_exclude);
-		log.debug("interfaceInPackage: Interface " + iface
-				+ " passed filter and specific/range for package "
-				+ pkg.getName() + "?: " + packagePassed);
-		return packagePassed;
-	}
-
-	/**
-	 * Returns true if the service is part of the package and the status of the
-	 * service is set to "on". Returns false if the service is not in the
-	 * package or it is but the status of the service is set to "off".
-	 * 
-	 * @param svcName
-	 *            The service name to lookup.
-	 * @param pkg
-	 *            The package to lookup up service.
-	 */
-	public synchronized boolean serviceInPackageAndEnabled(String svcName,
-			Package pkg) {
-		boolean result = false;
-
-		Enumeration esvcs = pkg.enumerateService();
-		while (result == false && esvcs.hasMoreElements()) {
-			Service tsvc = (Service) esvcs.nextElement();
-			if (tsvc.getName().equalsIgnoreCase(svcName)) {
-				// Ok its in the package. Now check the
-				// status of the service
-				String status = tsvc.getStatus();
-				if (status.equals("on"))
-					result = true;
-			}
-		}
-		return result;
 	}
 
 	/**
@@ -553,17 +439,16 @@ public final class CollectdConfigFactory {
 			String svcName) {
 		boolean result = false;
 
-		Enumeration pkgs = m_config.enumeratePackage();
-		while (pkgs.hasMoreElements() && result == false) {
-			Package pkg = (Package) pkgs.nextElement();
+        for (Iterator it = m_collectdConfig.getPackages().iterator(); it.hasNext();) {
+			CollectdPackage wpkg = (CollectdPackage) it.next();
 
 			// Does the package include the interface?
 			//
-			if (interfaceInPackage(ipAddr, pkg)) {
+			if (wpkg.interfaceInPackage(ipAddr)) {
 				// Yes, now see if package includes
 				// the service and service is enabled
 				//
-				if (serviceInPackageAndEnabled(svcName, pkg)) {
+				if (wpkg.serviceInPackageAndEnabled(svcName)) {
 					// Thats all we need to know...
 					result = true;
 				}
@@ -591,8 +476,6 @@ public final class CollectdConfigFactory {
 	 */
 	public synchronized InetAddress determinePrimarySnmpInterface(
 			List addressList, boolean strict) {
-		Category log = ThreadCategory.getInstance(CollectdConfigFactory.class);
-
 		InetAddress primaryIf = null;
 
 		// For now hard-coding primary interface address selection method to MIN
@@ -608,20 +491,20 @@ public final class CollectdConfigFactory {
 		Iterator iter = addressList.iterator();
 		while (iter.hasNext()) {
 			InetAddress ipAddr = (InetAddress) iter.next();
-			if (log.isDebugEnabled())
-				log.debug("determinePrimarySnmpIf: checking interface "
+			if (log().isDebugEnabled())
+				log().debug("determinePrimarySnmpIf: checking interface "
 						+ ipAddr.getHostAddress());
 			primaryIf = compareAndSelectPrimaryCollectionInterface("SNMP",
 					ipAddr, primaryIf, method, strict);
 		}
 
-		if (log.isDebugEnabled())
+		if (log().isDebugEnabled())
 			if (primaryIf != null)
-				log
+				log()
 						.debug("determinePrimarySnmpInterface: candidate primary SNMP interface: "
 								+ primaryIf.getHostAddress());
 			else
-				log
+				log()
 						.debug("determinePrimarySnmpInterface: no candidate primary SNMP interface found");
 		return primaryIf;
 	}
@@ -702,83 +585,6 @@ public final class CollectdConfigFactory {
 			return newPrimary;
 		else
 			return oldPrimary;
-	}
-
-	private boolean hasExcludeRange(Package pkg, long addr, boolean has_specific) {
-		boolean has_range_exclude = false;
-		Enumeration eex = pkg.enumerateExcludeRange();
-		while (!has_range_exclude && !has_specific && eex.hasMoreElements()) {
-			ExcludeRange rng = (ExcludeRange) eex.nextElement();
-			long start = IPSorter.convertToLong(rng.getBegin());
-			if (addr > start) {
-				long end = IPSorter.convertToLong(rng.getEnd());
-				if (addr <= end) {
-					has_range_exclude = true;
-				}
-			} else if (addr == start) {
-				has_range_exclude = true;
-			}
-		}
-		return has_range_exclude;
-	}
-
-	private boolean hasSpecificUrl(String iface, Package pkg,
-			boolean has_specific) {
-		Enumeration eurl = pkg.enumerateIncludeUrl();
-		while (!has_specific && eurl.hasMoreElements()) {
-			has_specific = interfaceInUrl(iface, (String) eurl.nextElement());
-		}
-		return has_specific;
-	}
-
-	private boolean hasSpecific(Package pkg, long addr) {
-		boolean has_specific = false;
-		Enumeration espec = pkg.enumerateSpecific();
-		while (!has_specific && espec.hasMoreElements()) {
-			long speca = IPSorter.convertToLong(espec.nextElement().toString());
-			if (speca == addr)
-				has_specific = true;
-		}
-		return has_specific;
-	}
-
-	private boolean hasIncludeRange(Package pkg, long addr) {
-		// if there are NO include rances then treat act as if the user include
-		// the range 0.0.0.0 - 255.255.255.255
-		boolean has_range_include = pkg.getIncludeRangeCount() == 0;
-
-		Enumeration eincs = pkg.enumerateIncludeRange();
-		while (!has_range_include && eincs.hasMoreElements()) {
-			IncludeRange rng = (IncludeRange) eincs.nextElement();
-			long start = IPSorter.convertToLong(rng.getBegin());
-			if (addr > start) {
-				long end = IPSorter.convertToLong(rng.getEnd());
-				if (addr <= end) {
-					has_range_include = true;
-				}
-			} else if (addr == start) {
-				has_range_include = true;
-			}
-		}
-		return has_range_include;
-	}
-
-	private boolean interfaceInFilter(String iface, Package pkg, Category log) {
-		boolean filterPassed = false;
-
-		// get list of IPs in this package
-		java.util.List ipList = (java.util.List) m_pkgIpMap.get(pkg);
-		if (ipList != null && ipList.size() > 0) {
-			filterPassed = ipList.contains(iface);
-		} else {
-			log.debug("interfaceInFilter: ipList contains no data");
-		}
-
-		if (!filterPassed)
-			log.debug("interfaceInFilter: Interface " + iface
-					+ " passed filter for package " + pkg.getName()
-					+ "?: false");
-		return filterPassed;
 	}
 
 }

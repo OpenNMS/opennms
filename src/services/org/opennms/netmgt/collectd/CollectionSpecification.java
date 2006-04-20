@@ -1,15 +1,20 @@
 package org.opennms.netmgt.collectd;
 
+import java.util.Collection;
 import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeMap;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.config.CollectdConfigFactory;
+import org.opennms.netmgt.config.PollOutagesConfigFactory;
 import org.opennms.netmgt.config.collectd.Package;
 import org.opennms.netmgt.config.collectd.Parameter;
 import org.opennms.netmgt.config.collectd.Service;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
+import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.utils.EventProxy;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Log;
@@ -20,11 +25,13 @@ public class CollectionSpecification {
 	private String m_svcName;
 	private ServiceCollector m_collector;
 	private Map m_parameters;
-
-	public CollectionSpecification(Package pkg, String svcName, ServiceCollector collector) {
+	private Collection m_outageCalendars;
+	
+	public CollectionSpecification(Package pkg, String svcName, Collection outageCalendars, ServiceCollector collector) {
 		m_package = pkg;
 		m_svcName = svcName;
 		m_collector = collector;
+		m_outageCalendars = outageCalendars;
 		initializeParameters();
 	}
 
@@ -32,7 +39,7 @@ public class CollectionSpecification {
 		return m_package.getName();
 	}
 	
-	public Package getPackage() {
+	private Package getPackage() {
 		return m_package;
 	}
 
@@ -71,7 +78,7 @@ public class CollectionSpecification {
 		return m_svcName;
 	}
 
-	public void setPackage(Package refreshedPackage) {
+	private void setPackage(Package refreshedPackage) {
 		m_package = refreshedPackage;
 	}
 	
@@ -84,11 +91,11 @@ public class CollectionSpecification {
 		return m_svcName + '/' + m_package.getName();
 	}
 
-	public ServiceCollector getCollector() {
+	private ServiceCollector getCollector() {
 		return m_collector;
 	}
 
-	Map getPropertyMap() {
+	private Map getPropertyMap() {
 		return m_parameters;
 	}
 
@@ -140,15 +147,15 @@ public class CollectionSpecification {
 	
 	}
 
-	void initialize(CollectableService service) {
+	public void initialize(CollectableService service) {
 		m_collector.initialize(service, getPropertyMap());
 	}
 
-	void release(CollectableService service) {
+	public void release(CollectableService service) {
 		m_collector.release(service);
 	}
 
-	int collect(CollectableService service) {
+	public int collect(CollectableService service) {
 		return getCollector().collect(service, eventProxy(), getPropertyMap());
 	}
 
@@ -162,6 +169,48 @@ public class CollectionSpecification {
 		        EventIpcManagerFactory.getIpcManager().sendNow(log);
 		    }
 		};
+	}
+
+	public boolean scheduledOutage(OnmsIpInterface iface) {
+	
+	    Category log = log();
+	
+		boolean outageFound = false;
+	
+	    PollOutagesConfigFactory outageFactory = PollOutagesConfigFactory.getInstance();
+	
+	    // Iterate over the outage names defined in the interface's package.
+	    // For each outage...if the outage contains a calendar entry which
+	    // applies to the current time and the outage applies to this
+	    // interface then break and return true. Otherwise process the
+	    // next outage.
+	    // 
+		Iterator iter = getPackage().getOutageCalendarCollection().iterator();
+	    while (iter.hasNext()) {
+	        String outageName = (String) iter.next();
+	
+	        // Does the outage apply to the current time?
+	        if (outageFactory.isCurTimeInOutage(outageName)) {
+	            // Does the outage apply to this interface?
+				if ((outageFactory.isNodeIdInOutage(iface.getNode().getId().longValue(), outageName)) ||
+			(outageFactory.isInterfaceInOutage(iface.getIpAddress(), outageName)))
+		{
+					if (log.isDebugEnabled())
+	                    log.debug("scheduledOutage: configured outage '" + outageName + "' applies, interface " + iface.getIpAddress() + " will not be collected for " + this);
+	                outageFound = true;
+	                break;
+	            }
+	        }
+	    }
+	
+	    return outageFound;
+	}
+
+	public void refresh() {
+		Package refreshedPackage=CollectdConfigFactory.getInstance().getPackage(getPackageName());
+		if(refreshedPackage!=null) {
+			setPackage(refreshedPackage);
+		}
 	}
 
 	

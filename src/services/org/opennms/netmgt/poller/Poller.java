@@ -79,6 +79,7 @@ import org.opennms.netmgt.poller.pollables.PollableServiceConfig;
 import org.opennms.netmgt.poller.pollables.PollableVisitor;
 import org.opennms.netmgt.poller.pollables.PollableVisitorAdaptor;
 import org.opennms.netmgt.scheduler.Schedule;
+import org.opennms.netmgt.scheduler.LegacyScheduler;
 import org.opennms.netmgt.scheduler.Scheduler;
 import org.opennms.netmgt.utils.Querier;
 import org.opennms.netmgt.utils.Updater;
@@ -93,7 +94,7 @@ public class Poller extends ServiceDaemon {
 
     private boolean m_initialized = false;
 
-    private Scheduler m_scheduler = null;
+    private LegacyScheduler m_scheduler = null;
 
     private PollerEventProcessor m_receiver;
 
@@ -208,7 +209,7 @@ public class Poller extends ServiceDaemon {
         try {
             log.debug("init: Creating poller scheduler");
 
-            m_scheduler = new Scheduler("Poller", getPollerConfig().getThreads());
+            m_scheduler = new LegacyScheduler("Poller", getPollerConfig().getThreads());
         } catch (RuntimeException e) {
             log.fatal("init: Failed to create poller scheduler", e);
             throw e;

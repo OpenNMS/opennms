@@ -57,6 +57,7 @@ import org.opennms.netmgt.config.vacuumd.Automation;
 import org.opennms.netmgt.daemon.ServiceDaemon;
 import org.opennms.netmgt.eventd.EventIpcManager;
 import org.opennms.netmgt.scheduler.Schedule;
+import org.opennms.netmgt.scheduler.LegacyScheduler;
 import org.opennms.netmgt.scheduler.Scheduler;
 
 /**
@@ -78,7 +79,7 @@ public class Vacuumd extends ServiceDaemon implements Runnable {
 
     private boolean m_stopped = false;
 
-    private Scheduler m_scheduler;
+    private LegacyScheduler m_scheduler;
     
     private EventIpcManager m_eventMgr;
 
@@ -331,7 +332,7 @@ public class Vacuumd extends ServiceDaemon implements Runnable {
         //
         try {
             log.debug("init: Creating Vacuumd scheduler");
-            m_scheduler = new Scheduler("Vacuumd", 2);
+            m_scheduler = new LegacyScheduler("Vacuumd", 2);
         } catch (RuntimeException e) {
             log.fatal("init: Failed to create Vacuumd scheduler", e);
             throw e;

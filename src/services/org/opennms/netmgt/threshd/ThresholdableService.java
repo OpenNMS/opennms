@@ -53,7 +53,7 @@ import org.opennms.netmgt.config.threshd.Parameter;
 import org.opennms.netmgt.config.threshd.Service;
 import org.opennms.netmgt.poller.IPv4NetworkInterface;
 import org.opennms.netmgt.scheduler.ReadyRunnable;
-import org.opennms.netmgt.scheduler.Scheduler;
+import org.opennms.netmgt.scheduler.LegacyScheduler;
 import org.opennms.netmgt.utils.EventProxy;
 import org.opennms.netmgt.xml.event.Event;
 
@@ -105,7 +105,7 @@ final class ThresholdableService extends IPv4NetworkInterface implements ReadyRu
     /**
      * The scheduler for threshd
      */
-    private final Scheduler m_scheduler;
+    private final LegacyScheduler m_scheduler;
 
     /**
      * Service updates

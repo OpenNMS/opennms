@@ -66,7 +66,7 @@ import org.opennms.netmgt.config.threshd.Thresholder;
 import org.opennms.netmgt.daemon.ServiceDaemon;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 import org.opennms.netmgt.scheduler.ReadyRunnable;
-import org.opennms.netmgt.scheduler.Scheduler;
+import org.opennms.netmgt.scheduler.LegacyScheduler;
 import org.opennms.netmgt.utils.EventProxy;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Log;
@@ -96,7 +96,7 @@ public final class Threshd extends ServiceDaemon {
     /**
      * Reference to the threshd scheduler
      */
-    private Scheduler m_scheduler;
+    private LegacyScheduler m_scheduler;
 
     /**
      * Indicates if all the existing interfaces have been scheduled
@@ -194,7 +194,7 @@ public final class Threshd extends ServiceDaemon {
             if (log.isDebugEnabled())
                 log.debug("start: Creating threshd scheduler");
 
-            m_scheduler = new Scheduler("Threshd", config.getThreads());
+            m_scheduler = new LegacyScheduler("Threshd", config.getThreads());
         } catch (RuntimeException e) {
             if (log.isEnabledFor(Priority.FATAL))
                 log.fatal("start: Failed to create threshd scheduler", e);
@@ -350,7 +350,7 @@ public final class Threshd extends ServiceDaemon {
     /**
      * Returns reference to the scheduler
      */
-    public Scheduler getScheduler() {
+    public LegacyScheduler getScheduler() {
         return m_scheduler;
     }
 

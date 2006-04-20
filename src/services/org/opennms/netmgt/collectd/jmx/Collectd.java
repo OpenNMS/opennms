@@ -32,21 +32,42 @@
 
 package org.opennms.netmgt.collectd.jmx;
 
+import org.opennms.netmgt.collectd.CollectorConfigDaoImpl;
+import org.opennms.netmgt.config.DataSourceFactory;
+import org.opennms.netmgt.dao.jdbc.IpInterfaceDaoJdbc;
+import org.opennms.netmgt.dao.jdbc.MonitoredServiceDaoJdbc;
+import org.opennms.netmgt.eventd.EventIpcManagerFactory;
+
 public class Collectd implements CollectdMBean {
-    public void init() {
-        org.opennms.netmgt.collectd.Collectd.getInstance().init();
+	org.opennms.netmgt.collectd.Collectd m_bean = null;
+
+	private org.opennms.netmgt.collectd.Collectd getBean() {
+		if (m_bean == null)
+			m_bean = new org.opennms.netmgt.collectd.Collectd();
+		
+		return m_bean;
+	}
+
+
+	public void init() {
+		getBean().setCollectorConfigDao(new CollectorConfigDaoImpl());
+		getBean().setMonitoredServiceDao(new MonitoredServiceDaoJdbc(DataSourceFactory.getInstance()));
+		getBean().setIpInterfaceDao(new IpInterfaceDaoJdbc(DataSourceFactory.getInstance()));
+		getBean().setEventIpcManager(EventIpcManagerFactory.getIpcManager());
+
+        getBean().init();
     }
 
     public void start() {
-        org.opennms.netmgt.collectd.Collectd.getInstance().start();
+        getBean().start();
     }
 
     public void stop() {
-        org.opennms.netmgt.collectd.Collectd.getInstance().stop();
+        getBean().stop();
     }
 
     public int getStatus() {
-        return org.opennms.netmgt.collectd.Collectd.getInstance().getStatus();
+        return getBean().getStatus();
     }
 
     public String getStatusText() {
