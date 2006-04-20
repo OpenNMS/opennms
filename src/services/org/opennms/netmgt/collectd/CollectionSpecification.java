@@ -9,6 +9,7 @@ import java.util.TreeMap;
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.CollectdConfigFactory;
+import org.opennms.netmgt.config.CollectdPackage;
 import org.opennms.netmgt.config.PollOutagesConfigFactory;
 import org.opennms.netmgt.config.collectd.Package;
 import org.opennms.netmgt.config.collectd.Parameter;
@@ -21,14 +22,14 @@ import org.opennms.netmgt.xml.event.Log;
 
 public class CollectionSpecification {
 	
-	private Package m_package;
+	private CollectdPackage m_package;
 	private String m_svcName;
 	private ServiceCollector m_collector;
 	private Map m_parameters;
 	private Collection m_outageCalendars;
 	
-	public CollectionSpecification(Package pkg, String svcName, Collection outageCalendars, ServiceCollector collector) {
-		m_package = pkg;
+	public CollectionSpecification(CollectdPackage wpkg, String svcName, Collection outageCalendars, ServiceCollector collector) {
+		m_package = wpkg;
 		m_svcName = svcName;
 		m_collector = collector;
 		m_outageCalendars = outageCalendars;
@@ -39,47 +40,36 @@ public class CollectionSpecification {
 		return m_package.getName();
 	}
 	
-	private Package getPackage() {
-		return m_package;
-	}
-
 	private String storeByIfAlias() {
-		return getPackage().getStoreByIfAlias();
+		return m_package.storeByIfAlias();
 	}
 
 	private String ifAliasComment() {
-		return getPackage().getIfAliasComment();
+		return m_package.ifAliasComment();
 	}
 
 	private String storeFlagOverride() {
-		return getPackage().getStorFlagOverride();
+		return m_package.getStorFlagOverride();
 	}
 
 	private String ifAliasDomain() {
-		return getPackage().getIfAliasDomain();
+		return m_package.ifAliasDomain();
 	}
 
 	private String storeByNodeId() {
-		return getPackage().getStoreByNodeID();
+		return m_package.storeByNodeId();
 	}
 
 	private Service getService() {
-		
-		while (getPackage().enumerateService().hasMoreElements()) {
-			Service svc = (Service) getPackage().enumerateService().nextElement();
-			if (svc.getName().equalsIgnoreCase(m_svcName))
-				return svc;
-		}
-		
-		throw new RuntimeException("Service name not part of package!");
+		return m_package.getService(m_svcName);
 	}
-	
+
 	public String getServiceName() {
 		return m_svcName;
 	}
 
-	private void setPackage(Package refreshedPackage) {
-		m_package = refreshedPackage;
+	private void setPackage(CollectdPackage pkg) {
+		m_package = pkg;
 	}
 	
 	public long getInterval() {
@@ -185,7 +175,7 @@ public class CollectionSpecification {
 	    // interface then break and return true. Otherwise process the
 	    // next outage.
 	    // 
-		Iterator iter = getPackage().getOutageCalendarCollection().iterator();
+		Iterator iter = m_package.getPackage().getOutageCalendarCollection().iterator();
 	    while (iter.hasNext()) {
 	        String outageName = (String) iter.next();
 	
@@ -207,7 +197,7 @@ public class CollectionSpecification {
 	}
 
 	public void refresh() {
-		Package refreshedPackage=CollectdConfigFactory.getInstance().getPackage(getPackageName());
+		CollectdPackage refreshedPackage=CollectdConfigFactory.getInstance().getPackage(getPackageName());
 		if(refreshedPackage!=null) {
 			setPackage(refreshedPackage);
 		}

@@ -1311,7 +1311,7 @@ final class SuspectEventProcessor implements Runnable {
                         Iterator iter = addressList.iterator();
                         while(iter.hasNext()) {
                             InetAddress addr = (InetAddress) iter.next();
-                            if (CollectdConfigFactory.getInstance().lookupInterfaceServicePair(addr.getHostAddress(), "SNMP")) {
+                            if (CollectdConfigFactory.getInstance().isServiceCollectionEnabled(addr.getHostAddress(), "SNMP")) {
                                 PreparedStatement stmt = dbc.prepareStatement("UPDATE ipInterface SET isSnmpPrimary='S' WHERE nodeId=? AND ipAddr=? AND isManaged!='D'");
                                 stmt.setInt(1, entryNode.getNodeId());
                                 stmt.setString(2, addr.getHostAddress());
@@ -1333,20 +1333,24 @@ final class SuspectEventProcessor implements Runnable {
                         }
                         String psiType = null;
                         if (lbAddressList != null) {
-                            newSnmpPrimaryIf = CollectdConfigFactory.getInstance().determinePrimarySnmpInterface(lbAddressList, strict);
+                            CollectdConfigFactory r = CollectdConfigFactory.getInstance();
+							newSnmpPrimaryIf = CapsdConfigFactory.getInstance().determinePrimarySnmpInterface(lbAddressList, strict);
                             psiType = ConfigFileConstants.getFileName(ConfigFileConstants.COLLECTD_CONFIG_FILE_NAME) + " loopback addresses";
                         }
                         if(newSnmpPrimaryIf == null) {
-                            newSnmpPrimaryIf = CollectdConfigFactory.getInstance().determinePrimarySnmpInterface(addressList, strict);
+                            CollectdConfigFactory r = CollectdConfigFactory.getInstance();
+							newSnmpPrimaryIf = CapsdConfigFactory.getInstance().determinePrimarySnmpInterface(addressList, strict);
                             psiType = ConfigFileConstants.getFileName(ConfigFileConstants.COLLECTD_CONFIG_FILE_NAME) + " addresses";
                         }
                         strict = false;
                         if((newSnmpPrimaryIf == null) && (lbAddressList != null)){
-                            newSnmpPrimaryIf = CollectdConfigFactory.getInstance().determinePrimarySnmpInterface(lbAddressList, strict);
+                            CollectdConfigFactory r = CollectdConfigFactory.getInstance();
+							newSnmpPrimaryIf = CapsdConfigFactory.getInstance().determinePrimarySnmpInterface(lbAddressList, strict);
                             psiType = "DB loopback addresses";
                         }
                         if(newSnmpPrimaryIf == null) {
-                            newSnmpPrimaryIf = CollectdConfigFactory.getInstance().determinePrimarySnmpInterface(addressList, strict);
+                            CollectdConfigFactory r = CollectdConfigFactory.getInstance();
+							newSnmpPrimaryIf = CapsdConfigFactory.getInstance().determinePrimarySnmpInterface(addressList, strict);
                             psiType = "DB addresses";
                         }
                         if (collector.hasSnmpCollection() &&newSnmpPrimaryIf == null) {

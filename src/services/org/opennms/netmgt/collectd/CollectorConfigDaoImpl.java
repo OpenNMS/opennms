@@ -27,15 +27,9 @@ import org.opennms.netmgt.model.OnmsPackage;
 
 public class CollectorConfigDaoImpl implements CollectorConfigDao {
 	
-    /**
-     * Map of all available ServiceCollector objects indexed by service name
-     */
-    private static Map m_svcCollectors;
-    
 	private ScheduledOutagesDao m_scheduledOutagesDao;
 
 	public CollectorConfigDaoImpl() {
-        m_svcCollectors = Collections.synchronizedMap(new TreeMap());
 
 		loadConfigFactory();
 		
@@ -109,7 +103,6 @@ public class CollectorConfigDaoImpl implements CollectorConfigDao {
         CollectdConfig config = cCfgFactory.getCollectdConfig();
         for (Iterator it = config.getPackages().iterator(); it.hasNext();) {
 			CollectdPackage wpkg = (CollectdPackage) it.next();
-			Package pkg = wpkg.getPackage();
         
             /*
              * Make certain the the current service is in the package
@@ -119,7 +112,7 @@ public class CollectorConfigDaoImpl implements CollectorConfigDao {
                 if (log().isDebugEnabled()) {
                     log().debug("scheduleInterface: address/service: " + iface + '/' + svcName + " not scheduled, service is not "
                               + "enabled or does not exist in package: "
-                              + pkg.getName());
+                              + wpkg.getName());
                 }
                 continue;
             }
@@ -128,20 +121,14 @@ public class CollectorConfigDaoImpl implements CollectorConfigDao {
             if (!wpkg.interfaceInPackage(iface.getIpAddress())) {
                 if (log().isDebugEnabled()) {
                     log().debug("scheduleInterface: address/service: " + iface + '/' + svcName + " not scheduled, interface "
-                              + "does not belong to package: " + pkg.getName());
+                              + "does not belong to package: " + wpkg.getName());
                 }
                 continue;
             }
             
             Collection outageCalendars = new LinkedList();
-            Enumeration enumeration = pkg.enumerateOutageCalendar();
-            while (enumeration.hasMoreElements()) {
-				String outageName = (String) enumeration.nextElement();
-				outageCalendars.add(m_scheduledOutagesDao.get(outageName));
-			}
             
-            
-            matchingPkgs.add(new CollectionSpecification(pkg, svcName, outageCalendars, getServiceCollector(svcName)));
+            matchingPkgs.add(new CollectionSpecification(wpkg, svcName, outageCalendars, getServiceCollector(svcName)));
         }
 		return matchingPkgs;
 	}

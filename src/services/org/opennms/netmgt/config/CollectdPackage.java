@@ -9,11 +9,13 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.log4j.Category;
+import org.apache.log4j.Priority;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.collectd.ExcludeRange;
 import org.opennms.netmgt.config.collectd.IncludeRange;
 import org.opennms.netmgt.config.collectd.Package;
 import org.opennms.netmgt.config.collectd.Service;
+import org.opennms.netmgt.filter.Filter;
 import org.opennms.netmgt.utils.IPSorter;
 
 public class CollectdPackage {
@@ -22,16 +24,22 @@ public class CollectdPackage {
 	private List m_includeURLs;
 	
 	
-	CollectdPackage(Package pkg) {
+	public CollectdPackage(Package pkg, String localServer, boolean verifyServer) {
 		m_pkg = pkg;
 		
 		m_includeURLs = new LinkedList();
 		
+		createIpList(localServer, verifyServer);
+		
+		createIncludeURLs(pkg);
+		
+	}
+
+	private void createIncludeURLs(Package pkg) {
 		Enumeration urlEnum = pkg.enumerateIncludeUrl();
 		while (urlEnum.hasMoreElements()) {
 			m_includeURLs.add(new IncludeURL((String)urlEnum.nextElement()));
 		}
-
 	}
 	
 	public Package getPackage() {
@@ -220,6 +228,62 @@ public class CollectdPackage {
 			filterRules.append(")");
 		}
 		return filterRules.toString();
+	}
+
+	void createIpList(String localServer, boolean verifyServer) {
+		Package pkg = getPackage();
+		//
+		// Get a list of ipaddress per package agaist the filter rules from
+		// database and populate the package, IP list map.
+		//
+		String filterRules = getFilterRule(localServer, verifyServer);
+	
+		Category log = log();
+		if (log.isDebugEnabled())
+			log.debug("createPackageIpMap: package is " + pkg.getName()
+					+ ". filer rules are  " + filterRules);
+		try {
+			List ipList = Filter.getMatchingIps(filterRules);
+			if (ipList.size() > 0) {
+				putIpList(ipList);
+			}
+		} catch (Throwable t) {
+			if (log.isEnabledFor(Priority.ERROR)) {
+				log.error("createPackageIpMap: failed to map package: "
+						+ pkg.getName() + " to an IP List", t);
+			}
+		}
+	}
+
+	public Service getService(String svcName) {
+		while (getPackage().enumerateService().hasMoreElements()) {
+			Service svc = (Service) getPackage().enumerateService().nextElement();
+			if (svc.getName().equalsIgnoreCase(svcName))
+				return svc;
+		}
+		
+		
+		throw new RuntimeException("Service name not part of package!");
+	}
+
+	public String storeByIfAlias() {
+		return getPackage().getStoreByIfAlias();
+	}
+
+	public String ifAliasComment() {
+		return getPackage().getIfAliasComment();
+	}
+
+	public String getStorFlagOverride() {
+		return getPackage().getStorFlagOverride();
+	}
+
+	public String ifAliasDomain() {
+		return getPackage().getIfAliasDomain();
+	}
+
+	public String storeByNodeId() {
+		return getPackage().getStoreByNodeID();
 	}
 	
 }

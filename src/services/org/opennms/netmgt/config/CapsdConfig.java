@@ -225,6 +225,8 @@ public interface CapsdConfig {
     public abstract ProtocolPlugin getProtocolPlugin(String svcName);
 
     public abstract void addProtocolPlugin(ProtocolPlugin plugin);
+    
+    public abstract InetAddress determinePrimarySnmpInterface(List addressList, boolean strict);
 
 
 }

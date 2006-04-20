@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.jmock.Mock;
 import org.jmock.cglib.MockObjectTestCase;
+import org.opennms.netmgt.config.CollectdPackage;
 import org.opennms.netmgt.config.collectd.Package;
 import org.opennms.netmgt.config.collectd.Parameter;
 import org.opennms.netmgt.config.collectd.Service;
@@ -62,7 +63,9 @@ public class CollectdTest extends MockObjectTestCase {
 		parm.setValue("value1");
 		svc.addParameter(parm);
 		
-		m_spec = new CollectionSpecification(pkg, "SNMP", null, getCollector());
+		CollectdPackage wpkg = new CollectdPackage(pkg, "localhost", false);
+		
+		m_spec = new CollectionSpecification(wpkg, "SNMP", null, getCollector());
 	}
 	
 	private ServiceCollector getCollector() {

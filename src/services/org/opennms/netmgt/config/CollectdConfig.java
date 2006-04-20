@@ -6,12 +6,12 @@ package org.opennms.netmgt.config;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Category;
-import org.apache.log4j.Priority;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.collectd.ServiceCollector;
 import org.opennms.netmgt.config.collectd.CollectdConfiguration;
@@ -23,20 +23,24 @@ public class CollectdConfig {
 	Collection m_packages;
 	Map m_collectors = new HashMap(4);
 	
-	CollectdConfig(CollectdConfiguration config) {
+	CollectdConfig(CollectdConfiguration config, String localServer, boolean verifyServer) {
 		m_config = config;
 		
 		instantiateCollectors();
 		
+		createPackageObjects(localServer, verifyServer);
+		
+		initialize(localServer, verifyServer);
+		
+	}
+
+	private void createPackageObjects(String localServer, boolean verifyServer) {
 		m_packages = new LinkedList();
 		Enumeration pkgEnum = m_config.enumeratePackage();
 		while (pkgEnum.hasMoreElements()) {
 			Package pkg = (Package) pkgEnum.nextElement();
-			m_packages.add(new CollectdPackage(pkg));
+			m_packages.add(new CollectdPackage(pkg, localServer, verifyServer));
 		}
-		
-		
-		
 	}
 	
 	public CollectdConfiguration getConfig() {
@@ -90,17 +94,106 @@ public class CollectdConfig {
 	
 	            setServiceCollector(svcName, sc);
 	        } catch (Throwable t) {
-	            if (log().isEnabledFor(Priority.WARN)) {
-	                log().warn("init: Failed to load collector "
-	                         + collector.getClassName() + " for service "
-	                         + svcName, t);
-	            }
+	        	log().warn("init: Failed to load collector "
+	        			+ collector.getClassName() + " for service "
+	        			+ svcName, t);
 	        }
 	    }
 	}
 
 	private Category log() {
 		return ThreadCategory.getInstance(getClass());
+	}
+
+	/**
+	 * This method is used to establish package agaist iplist mapping, with
+	 * which, the iplist is selected per package via the configured filter rules
+	 * from the database.
+	 * @param verifyServer2 
+	 * @param localServer2 
+	 * @param localServer TODO
+	 * @param verifyServer TODO
+	 */
+	void createPackageIpListMap(String localServer, boolean verifyServer) {
+	
+		// Multiple threads maybe asking for the m_pkgIpMap field so create
+		// with temp map then assign when finished.
+		
+		for (Iterator it = getPackages().iterator(); it.hasNext();) {
+			CollectdPackage wpkg = (CollectdPackage) it.next();
+			wpkg.createIpList(localServer, verifyServer);
+		}
+	}
+
+	/**
+	 * @param localServer TODO
+	 * @param verifyServer TODO
+	 */
+	void initialize(String localServer, boolean verifyServer)  {
+		createPackageIpListMap(localServer, verifyServer);
+		
+	}
+
+	public CollectdPackage getPackage(String name) {
+	    for (Iterator it = getPackages().iterator(); it.hasNext();) {
+			CollectdPackage wpkg = (CollectdPackage) it.next();
+			if (wpkg.getName().equals(name)) {
+				return wpkg;
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Returns true if collection domain exists
+	 * 
+	 * @param name
+	 *            The domain name to check
+	 * @return True if the domain exists
+	 */
+	public boolean domainExists(String name) {
+	    for (Iterator it = getPackages().iterator(); it.hasNext();) {
+			CollectdPackage wpkg = (CollectdPackage) it.next();
+			if ((wpkg.ifAliasDomain() != null)
+					&& wpkg.ifAliasDomain().equals(name)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Returns true if the specified interface is included by at least one
+	 * package which has the specified service and that service is enabled (set
+	 * to "on").
+	 * 
+	 * @param ipAddr
+	 *            IP address of the interface to lookup
+	 * @param svcName
+	 *            The service name to lookup
+	 * @return true if Collectd config contains a package which includes the
+	 *         specified interface and has the specified service enabled.
+	 */
+	public boolean isServiceCollectionEnabled(String ipAddr, String svcName) {
+		boolean result = false;
+	
+	    for (Iterator it = getPackages().iterator(); it.hasNext();) {
+			CollectdPackage wpkg = (CollectdPackage) it.next();
+	
+			// Does the package include the interface?
+			//
+			if (wpkg.interfaceInPackage(ipAddr)) {
+				// Yes, now see if package includes
+				// the service and service is enabled
+				//
+				if (wpkg.serviceInPackageAndEnabled(svcName)) {
+					// Thats all we need to know...
+					result = true;
+				}
+			}
+		}
+	
+		return result;
 	}
 	
 }

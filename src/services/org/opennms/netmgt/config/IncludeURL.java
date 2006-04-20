@@ -2,6 +2,8 @@ package org.opennms.netmgt.config;
 
 import java.util.List;
 
+import org.opennms.netmgt.utils.IpListFromUrl;
+
 public class IncludeURL {
 	
 	private String m_urlName;
@@ -9,6 +11,7 @@ public class IncludeURL {
 
 	public IncludeURL(String urlName) {
 		m_urlName = urlName;
+		createIpList();
 	}
 	
 	public String getName() {
@@ -59,6 +62,13 @@ public class IncludeURL {
 		}
 	
 		return bRet;
+	}
+
+	void createIpList() {
+		List iplist = IpListFromUrl.parse(getName());
+		if (iplist.size() > 0) {
+			setIpList(iplist);
+		}
 	}
 
 }

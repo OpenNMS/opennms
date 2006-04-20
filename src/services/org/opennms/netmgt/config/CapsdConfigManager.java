@@ -443,7 +443,7 @@ public abstract class CapsdConfigManager implements CapsdConfig {
                     m_plugins.put(plugin.getProtocol(), oplugin);
                 }
             } catch (Throwable t) {
-                ThreadCategory.getInstance(getClass()).error("CapsdConfigFactory: failed to load plugin for protocol " + plugin.getProtocol() + ", class-name = " + plugin.getClassName(), t);
+                log().error("CapsdConfigFactory: failed to load plugin for protocol " + plugin.getProtocol() + ", class-name = " + plugin.getClassName(), t);
             }
         }
         // Load addresses from any urls which have been specified
@@ -464,6 +464,10 @@ public abstract class CapsdConfigManager implements CapsdConfig {
             setNextSvcIdSql(NEXT_SVC_ID_SQL);
         }
     }
+
+	private Category log() {
+		return ThreadCategory.getInstance(getClass());
+	}
 
     /**
      * Saves the current in-memory configuration to disk and reloads
@@ -1067,20 +1071,20 @@ public abstract class CapsdConfigManager implements CapsdConfig {
             InetAddress primarySnmpIf = null;
             String psiType = null;
             if (lbAddressList != null) {
-                primarySnmpIf = CollectdConfigFactory.getInstance().determinePrimarySnmpInterface(lbAddressList, strict);
+				primarySnmpIf = determinePrimarySnmpInterface(lbAddressList, strict);
                 psiType = ConfigFileConstants.getFileName(ConfigFileConstants.COLLECTD_CONFIG_FILE_NAME) + " loopback addresses";
             }
             if(primarySnmpIf == null) {
-                primarySnmpIf = CollectdConfigFactory.getInstance().determinePrimarySnmpInterface(addressList, strict);
+				primarySnmpIf = determinePrimarySnmpInterface(addressList, strict);
                 psiType = ConfigFileConstants.getFileName(ConfigFileConstants.COLLECTD_CONFIG_FILE_NAME) + " addresses";
             }
             strict = false;
             if((primarySnmpIf == null) && (lbAddressList != null)){
-                primarySnmpIf = CollectdConfigFactory.getInstance().determinePrimarySnmpInterface(lbAddressList, strict);
+				primarySnmpIf = determinePrimarySnmpInterface(lbAddressList, strict);
                 psiType = "DB loopback addresses";
             }
             if(primarySnmpIf == null) {
-                primarySnmpIf = CollectdConfigFactory.getInstance().determinePrimarySnmpInterface(addressList, strict);
+				primarySnmpIf = determinePrimarySnmpInterface(addressList, strict);
                 psiType = "DB addresses";
             }
     
@@ -1104,7 +1108,7 @@ public abstract class CapsdConfigManager implements CapsdConfig {
                 if (lwIf.getIfIndex() == LightWeightIfEntry.NULL_IFINDEX) {
                     lwIf.setSnmpPrimaryState(DbIpInterfaceEntry.SNMP_NOT_ELIGIBLE);
                 } else if (primarySnmpIf == null || !lwIf.getAddress().equals(primarySnmpIf.getHostAddress())) {
-                    if (CollectdConfigFactory.getInstance().lookupInterfaceServicePair(lwIf.getAddress(), "SNMP"))
+                    if (CollectdConfigFactory.getInstance().isServiceCollectionEnabled(lwIf.getAddress(), "SNMP"))
                         lwIf.setSnmpPrimaryState(DbIpInterfaceEntry.SNMP_SECONDARY);
                     else
                         lwIf.setSnmpPrimaryState(DbIpInterfaceEntry.SNMP_NOT_ELIGIBLE);
@@ -1679,6 +1683,162 @@ public abstract class CapsdConfigManager implements CapsdConfig {
     }
 
     /**
+	 * Utility method which compares two InetAddress objects based on the
+	 * provided method (MIN/MAX) and returns the InetAddress which is to be
+	 * considered the primary interface.
+	 * 
+	 * NOTE: In order for an interface to be considered primary, if strict is
+	 * true, it must be included by a Collectd package which supports the
+	 * specified service. This method will return null if the 'oldPrimary'
+	 * address is null and the 'currentIf' address does not pass the Collectd
+	 * package check, if strict is true..
+	 * 
+	 * @param factory TODO
+	 * @param svcName
+	 *            Service name
+	 * @param currentIf
+	 *            Interface with which to compare the 'oldPrimary' address.
+	 * @param oldPrimary
+	 *            Primary interface to be compared against the 'currentIf'
+	 *            address.
+	 * @param method
+	 *            Comparison method to be used (either "min" or "max")
+	 * @param strict
+	 *            require interface to be part of a Collectd package
+	 * @return InetAddress object of the primary interface based on the provided
+	 *         method or null if neither address is eligible to be primary.
+	 */
+	InetAddress compareAndSelectPrimaryCollectionInterface(
+			CollectdConfigFactory x, String svcName, InetAddress currentIf, InetAddress oldPrimary, String method, boolean strict) {
+				return compareAndSelectPrimaryCollectionInterface(svcName, currentIf, oldPrimary, method, strict);
+			}
+
+	/**
+	 * Utility method which compares two InetAddress objects based on the
+	 * provided method (MIN/MAX) and returns the InetAddress which is to be
+	 * considered the primary interface.
+	 * 
+	 * NOTE: In order for an interface to be considered primary, if strict is
+	 * true, it must be included by a Collectd package which supports the
+	 * specified service. This method will return null if the 'oldPrimary'
+	 * address is null and the 'currentIf' address does not pass the Collectd
+	 * package check, if strict is true..
+     * @param svcName
+	 *            Service name
+     * @param currentIf
+	 *            Interface with which to compare the 'oldPrimary' address.
+     * @param oldPrimary
+	 *            Primary interface to be compared against the 'currentIf'
+	 *            address.
+     * @param method
+	 *            Comparison method to be used (either "min" or "max")
+     * @param strict
+	 *            require interface to be part of a Collectd package
+     * @param factory TODO
+	 * 
+	 * @return InetAddress object of the primary interface based on the provided
+	 *         method or null if neither address is eligible to be primary.
+	 */
+	InetAddress compareAndSelectPrimaryCollectionInterface(
+			String svcName, InetAddress currentIf, InetAddress oldPrimary, String method, boolean strict) {
+		InetAddress newPrimary = null;
+		CollectdConfigFactory factory = CollectdConfigFactory.getInstance();
+	
+		if (oldPrimary == null && strict) {
+			if (factory.isServiceCollectionEnabled(currentIf.getHostAddress(), svcName))
+				return currentIf;
+			else
+				return oldPrimary;
+		}
+	
+		if (oldPrimary == null)
+			return currentIf;
+	
+		long current = IPSorter.convertToLong(currentIf.getAddress());
+		long primary = IPSorter.convertToLong(oldPrimary.getAddress());
+	
+		if (method.equals(CollectdConfigFactory.SELECT_METHOD_MIN)) {
+			// Smallest address wins
+			if (current < primary) {
+				// Replace the primary interface with the current
+				// interface only if the current interface is managed!
+				if (strict) {
+					if (factory.isServiceCollectionEnabled(currentIf.getHostAddress(),
+							svcName))
+						newPrimary = currentIf;
+				} else {
+					newPrimary = currentIf;
+				}
+			}
+		} else {
+			// Largest address wins
+			if (current > primary) {
+				// Replace the primary interface with the current
+				// interface only if the current interface is managed!
+				if (strict) {
+					if (factory.isServiceCollectionEnabled(currentIf.getHostAddress(),
+							svcName))
+						newPrimary = currentIf;
+				} else {
+					newPrimary = currentIf;
+				}
+			}
+		}
+	
+		if (newPrimary != null)
+			return newPrimary;
+		else
+			return oldPrimary;
+	}
+
+	/**
+	 * This method is responsbile for determining the node's primary SNMP
+	 * interface from the specified list of InetAddress objects.
+	 * @param addressList
+	 *            List of InetAddress objects representing all the interfaces
+	 *            belonging to a particular node which support the "SNMP"
+	 *            service and have a valid ifIndex.
+	 * @param strict
+	 *            Boolean variable which requires an interface to be part of a
+	 *            Collectd package to be eligible as a primary SNMP interface
+	 * 
+	 * @return InetAddress object of the primary SNMP interface or null if none
+	 *         of the node's interfaces are eligible.
+	 */
+	public InetAddress determinePrimarySnmpInterface(List addressList, boolean strict) {
+		InetAddress primaryIf = null;
+	
+		// For now hard-coding primary interface address selection method to MIN
+		String method = CollectdConfigFactory.SELECT_METHOD_MIN;
+	
+		// To be selected as the the primary SNMP interface for a node
+		// the interface must be included by a Collectd package if strict
+		// is true, and that package must include the SNMP service and
+		// the service must be enabled.
+		//
+		// Iterate over interface list and test each interface
+		//
+		Iterator iter = addressList.iterator();
+		while (iter.hasNext()) {
+			InetAddress ipAddr = (InetAddress) iter.next();
+			if (log().isDebugEnabled())
+				log().debug("determinePrimarySnmpIf: checking interface "
+						+ ipAddr.getHostAddress());
+			primaryIf = compareAndSelectPrimaryCollectionInterface("SNMP", ipAddr, primaryIf, method, strict);
+		}
+	
+		if (log().isDebugEnabled())
+			if (primaryIf != null)
+				log()
+						.debug("determinePrimarySnmpInterface: candidate primary SNMP interface: "
+								+ primaryIf.getHostAddress());
+			else
+				log()
+						.debug("determinePrimarySnmpInterface: no candidate primary SNMP interface found");
+		return primaryIf;
+	}
+
+	/**
      * This method is used to convert the passed IP address to a
      * <code>long</code> value. The address is converted in network byte order
      * (big endin). This is compatable with the number format of the JVM, and

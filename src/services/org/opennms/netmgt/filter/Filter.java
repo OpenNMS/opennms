@@ -367,4 +367,10 @@ public class Filter {
         parseRule(rule);
         getSQLStatement();
     }
+
+	public static List getMatchingIps(String filterRules) {
+		Filter filter = new Filter();
+		List ipList = filter.getIPList(filterRules);
+		return ipList;
+	}
 }

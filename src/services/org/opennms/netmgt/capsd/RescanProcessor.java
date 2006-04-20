@@ -2995,7 +2995,7 @@ public final class RescanProcessor implements Runnable {
         Iterator iter = snmpAddresses.iterator();
         while(iter.hasNext()) {
             InetAddress addr = (InetAddress) iter.next();
-            if (CollectdConfigFactory.getInstance().lookupInterfaceServicePair(addr.getHostAddress(), "SNMP")) {
+            if (CollectdConfigFactory.getInstance().isServiceCollectionEnabled(addr.getHostAddress(), "SNMP")) {
                 PreparedStatement stmt = dbc.prepareStatement("UPDATE ipInterface SET isSnmpPrimary='S' WHERE nodeId=? AND ipAddr=? AND isManaged!='D'");
                 stmt.setInt(1, dbNodeEntry.getNodeId());
                 stmt.setString(2, addr.getHostAddress());
@@ -3015,23 +3015,27 @@ public final class RescanProcessor implements Runnable {
                 }
             }
         }
+		CollectdConfigFactory r = CollectdConfigFactory.getInstance();
 
-        InetAddress newSnmpPrimaryIf = CollectdConfigFactory.getInstance().determinePrimarySnmpInterface(snmpLBAddresses, strict);
+        InetAddress newSnmpPrimaryIf = CapsdConfigFactory.getInstance().determinePrimarySnmpInterface(snmpLBAddresses, strict);
         String psiType = ConfigFileConstants.getFileName(ConfigFileConstants.COLLECTD_CONFIG_FILE_NAME) + " loopback addresses";
 
         if (newSnmpPrimaryIf == null) {
-            newSnmpPrimaryIf = CollectdConfigFactory.getInstance().determinePrimarySnmpInterface(snmpAddresses, strict);
+            CollectdConfigFactory r1 = CollectdConfigFactory.getInstance();
+			newSnmpPrimaryIf = CapsdConfigFactory.getInstance().determinePrimarySnmpInterface(snmpAddresses, strict);
             psiType = ConfigFileConstants.getFileName(ConfigFileConstants.COLLECTD_CONFIG_FILE_NAME) + " addresses";
         }
 
         strict = false;
         if (newSnmpPrimaryIf == null) {
-            newSnmpPrimaryIf = CollectdConfigFactory.getInstance().determinePrimarySnmpInterface(snmpLBAddresses, strict);
+            CollectdConfigFactory r1 = CollectdConfigFactory.getInstance();
+			newSnmpPrimaryIf = CapsdConfigFactory.getInstance().determinePrimarySnmpInterface(snmpLBAddresses, strict);
             psiType = "DB loopback addresses";
         }
 
         if (newSnmpPrimaryIf == null) {
-            newSnmpPrimaryIf = CollectdConfigFactory.getInstance().determinePrimarySnmpInterface(snmpAddresses, strict);
+            CollectdConfigFactory r1 = CollectdConfigFactory.getInstance();
+			newSnmpPrimaryIf = CapsdConfigFactory.getInstance().determinePrimarySnmpInterface(snmpAddresses, strict);
             psiType = "DB addresses";
         }
 

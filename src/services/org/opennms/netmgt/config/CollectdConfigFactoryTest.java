@@ -40,9 +40,9 @@ public class CollectdConfigFactoryTest extends TestCase {
 	
 	public void testGetName() {
 		String pkgName = "example1";
-		Package pkg = m_factory.getPackage(pkgName);
-		assertNotNull(pkg);
-		assertEquals(pkgName, pkg.getName());
+		CollectdPackage wpkg = m_factory.getPackage(pkgName);
+		assertNotNull(wpkg);
+		assertEquals(pkgName, wpkg.getName());
 	}
 
 }
