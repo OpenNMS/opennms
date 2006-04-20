@@ -199,6 +199,14 @@
 </table>
     
 <FORM METHOD="POST" name="manageAll" action="admin/manageNode">
+ 
+<%
+  ManagedInterface firstInterface = (ManagedInterface) interfaces.get(0);
+  int nodeId = firstInterface.getNodeid();
+%>
+
+<input type="hidden" name="node" value="<%= nodeId %>"/>
+
 <table width="100%" cellspacing="0" cellpadding="0" border="0">
   
   <tr>
