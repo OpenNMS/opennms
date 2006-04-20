@@ -216,6 +216,13 @@
     service cannot be managed if its interface is not managed.
   </p>
 
+  <%
+    ManagedInterface firstInterface = (ManagedInterface) interfaces.get(0);
+    int nodeId = firstInterface.getNodeid();
+  %>
+
+  <input type="hidden" name="node" value="<%= nodeId %>"/>
+
   <input type="button" value="Apply Changes" onClick="applyChanges()"/>
   <input type="button" value="Cancel" onClick="cancel()"/>
   <input type="button" value="Select All" onClick="checkAll()"/>
