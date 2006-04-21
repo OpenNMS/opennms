@@ -34,66 +34,74 @@
   	<property name="maxActive" value="${importer.maxActiveConnections}" />
   </bean>
   -->
-  <!-- AssetRecordFactory.register(m_dataSource) -->  
+  <!-- AssetRecordFactory.register(m_dataSource) 
   <bean id="assetRecordFactory" class="org.opennms.netmgt.dao.jdbc.asset.AssetRecordFactory">
   	<property name="dataSource" ref="dataSource" />
   </bean>
+  -->  
   <bean id="assetRecordDao" class="org.opennms.netmgt.dao.jdbc.AssetRecordDaoJdbc">
   	<property name="dataSource" ref="dataSource" />
   </bean>
   
-  <!-- DistPollerFactory.register(m_dataSource)  -->
+  <!-- DistPollerFactory.register(m_dataSource)  
   <bean id="distPollerFactory" class="org.opennms.netmgt.dao.jdbc.distpoller.DistPollerFactory">
   	<property name="dataSource" ref="dataSource" />
   </bean>
+  -->  
   <bean id="distPollerDao" class="org.opennms.netmgt.dao.jdbc.DistPollerDaoJdbc">
   	<property name="dataSource" ref="dataSource" />
   </bean>
   
-  <!-- IpInterfaceFactory.register(m_dataSource); -->
+  <!-- IpInterfaceFactory.register(m_dataSource); 
   <bean id="ipInterfaceFactory" class="org.opennms.netmgt.dao.jdbc.ipif.IpInterfaceFactory">
   	<property name="dataSource" ref="dataSource" />
   </bean>
+  -->  
   <bean id="ipInterfaceDao" class="org.opennms.netmgt.dao.jdbc.IpInterfaceDaoJdbc">
   	<property name="dataSource" ref="dataSource" />
   </bean>
   
-  <!-- MonitoredServiceFactory.register(m_dataSource); -->
+  <!-- MonitoredServiceFactory.register(m_dataSource); 
   <bean id="monitoredServiceFactory" class="org.opennms.netmgt.dao.jdbc.monsvc.MonitoredServiceFactory">
   	<property name="dataSource" ref="dataSource" />
   </bean>
+  -->  
   <bean id="monitoredServiceDao" class="org.opennms.netmgt.dao.jdbc.MonitoredServiceDaoJdbc">
   	<property name="dataSource" ref="dataSource" />
   </bean>
   
-  <!-- NodeFactory.register(m_dataSource); -->
+  <!-- NodeFactory.register(m_dataSource); 
   <bean id="nodeFactory" class="org.opennms.netmgt.dao.jdbc.node.NodeFactory">
   	<property name="dataSource" ref="dataSource" />
   </bean>
+  -->  
   <bean id="nodeDao" class="org.opennms.netmgt.dao.jdbc.NodeDaoJdbc">
   	<property name="dataSource" ref="dataSource" />
   </bean>
   
-  <!-- ServiceTypeFactory.register(m_dataSource); -->
+  <!-- ServiceTypeFactory.register(m_dataSource); 
   <bean id="serviceTypeFactory" class="org.opennms.netmgt.dao.jdbc.svctype.ServiceTypeFactory">
   	<property name="dataSource" ref="dataSource" />
   </bean>
+  -->  
   <bean id="serviceTypeDao" class="org.opennms.netmgt.dao.jdbc.ServiceTypeDaoJdbc">
   	<property name="dataSource" ref="dataSource" />
   </bean>
   
-  <!-- SnmpInterfaceFactory.register(m_dataSource); -->
+  <!-- SnmpInterfaceFactory.register(m_dataSource); 
   <bean id="snmpInterfaceFactory" class="org.opennms.netmgt.dao.jdbc.snmpif.SnmpInterfaceFactory">
   	<property name="dataSource" ref="dataSource" />
   </bean>
+  -->  
   <bean id="snmpInterfaceDao" class="org.opennms.netmgt.dao.jdbc.SnmpInterfaceDaoJdbc">
   	<property name="dataSource" ref="dataSource" />
   </bean>
   
-  <!-- CategoryFactory.register(m_dataSource); -->
+  <!-- CategoryFactory.register(m_dataSource); 
   <bean id="categoryFactory" class="org.opennms.netmgt.dao.jdbc.category.CategoryFactory">
   	<property name="dataSource" ref="dataSource" />
   </bean>
+  -->  
   <bean id="categoryDao" class="org.opennms.netmgt.dao.jdbc.CategoryDaoJdbc">
   	<property name="dataSource" ref="dataSource" />
   </bean>
