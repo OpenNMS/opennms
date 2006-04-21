@@ -18,11 +18,11 @@
   </bean>
 
   <bean id="dataSource-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-    <property name="staticMethod"><value>org.opennms.netmgt.config.DataSource.init</value></property>
+    <property name="staticMethod"><value>org.opennms.netmgt.config.DataSourceFactory.init</value></property>
   </bean>
   
   <bean id="dataSource" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" depends-on="dbConnectionFactory-init">
-    <property name="staticMethod"><value>org.opennms.netmgt.config.DataSource.getInstance</value></property>
+    <property name="staticMethod"><value>org.opennms.netmgt.config.DataSourceFactory.getInstance</value></property>
   </bean>
 
   <!--
