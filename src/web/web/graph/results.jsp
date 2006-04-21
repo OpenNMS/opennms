@@ -108,13 +108,12 @@
 
 <script type="text/javascript">
 function goRelativeTime(relativeTime) {
-      top.location.href = document.getElementsByTagName('base')[0].href
-        + 'graph/results'
+      setLocation('graph/results'
         + '?type=<c:out value="${param.type}"/>'
         + '&relativetime=' + relativeTime
         + '&intf=<c:out value="${requestScope.results.intf}"/>'
         + '&node=<c:out value="${requestScope.results.nodeId}"/>'
-        + '<c:out value="${reportList}" escapeXml="false"/>';
+        + '<c:out value="${reportList}" escapeXml="false"/>');
 }
 </script>
 

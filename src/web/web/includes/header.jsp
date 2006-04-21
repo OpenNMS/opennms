@@ -67,6 +67,7 @@
   </title>
   <base href="<%=org.opennms.web.Util.calculateUrlBase( request )%>" />
   <link rel="stylesheet" type="text/css" href="css/styles.css"/>
+  <script type="text/javascript" src="js/global.js"></script>
 </head>
 
 <body>
