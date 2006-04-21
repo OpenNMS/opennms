@@ -123,12 +123,12 @@
 
 <% if (action.equals("Save")) { %>
     <script>
-        window.location="KSC/index.jsp"
+        setLocation("KSC/index.jsp");
     </script>
 <% } %>
 <% if (action.equals("DelGraph")) { %>
     <script>
-        window.location="KSC/custom_report.jsp"
+        setLocation("KSC/custom_report.jsp");
     </script>
 <% } %>
 <% if (action.equals("AddGraph") || action.equals("ModGraph")) { %>

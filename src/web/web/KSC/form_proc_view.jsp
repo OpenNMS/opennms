@@ -155,7 +155,7 @@
 <% } %> 
 <% if (report_action.equals("Exit")) { %> 
        <script>
-           window.location="KSC/index.jsp";
+           setLocation("KSC/index.jsp");
        </script>
 <% } %> 
 

@@ -20,7 +20,7 @@
 	        <c:if test="${period.id == requestScope.results.relativeTime}">
 		  checked="checked"
 	        </c:if>
-		onclick="top.location = 'graph/domainResults?type=<c:out value="${param.type}"/>&relativetime=<c:out value="${period.id}"/>&intf=<c:out value="${requestScope.results.intf}"/>&domain=<c:out value="${requestScope.results.domain}"/><c:out value="${reportList}"/>'">
+                onclick="goRelativeTime('<c:out value="${period.id}"/>');"/>
 	    </td>
 	  </c:forEach>
         </tr>

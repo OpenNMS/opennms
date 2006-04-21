@@ -7,5 +7,5 @@ function getBaseHref() {
 }
 
 function setLocation(url) {
-      top.location.href = getBaseHref() + url;
+      window.location.href = getBaseHref() + url;
 }

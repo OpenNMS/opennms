@@ -87,7 +87,7 @@
 
 <% if (action.equals("Save") || action.equals("Cancel")) { %>
     <script>
-        window.location="KSC/custom_report.jsp"
+        setLocation("KSC/custom_report.jsp");
     </script>
 <% } %>
 

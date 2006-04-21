@@ -219,49 +219,4 @@
             new TimePeriod("lastyear", "Last Year", Calendar.DATE, -366)
         };
     }
-
-    private void printRelativeTimeForm(JspWriter out, String relativetime,
-    	 		       int nodeId, String intf, String[] reports,
-			       String URL) throws IOException {
-   	if (relativetime == null) {
-            relativetime = "unknown";
-        }
-
-        String reportList = "";
-	for (int i = 0; i < reports.length; i++) {
-	    reportList = reportList + "&reports=" + reports[i];
-	}
-
-	out.println("    <div align=\"center\">");
-	out.println("      <form name=\"reltimeform\" action=\"\">");
-	out.println("        <table class=\"periods\">");
-	out.println("	       <tbody>");
-
-	out.println("	         <tr>");
-	for (int i = 0; i < m_periods.length; i++) {
-	    out.println("	           <td>" + m_periods[i].getName() +
-	    		"</td>");
-	}
-	out.println("	         </tr>");
-
-	out.println("	         <tr>");
-	for (int i = 0; i < m_periods.length; i++) {
-	    out.println("	           <td>" +
-	    	        "<input type=\"radio\" name=\"rtstatus\"" +
-			(relativetime.equals(m_periods[i].getId()) ?
-			    " checked=\"checked\"" : "") +
-			" onclick=\"top.location = " +
-			"'" + URL + "?" +
-			"relativetime=" + m_periods[i].getId() +
-			"&intf=" + intf +
-			"&node=" + nodeId +
-			reportList + "'\"/></td>");
-	}
-	out.println("	         </tr>");
-	out.println("	       </tbody>");
-	out.println("        </table>");
-	out.println("      </form>");
-	out.println("    </div>");
-    }
-
 %>
