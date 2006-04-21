@@ -67,7 +67,6 @@ import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.DataCollectionConfigFactory;
 import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.SnmpPeerFactory;
-import org.opennms.netmgt.poller.NetworkInterface;
 import org.opennms.netmgt.rrd.RrdException;
 import org.opennms.netmgt.rrd.RrdUtils;
 import org.opennms.netmgt.snmp.CollectionTracker;
@@ -190,8 +189,8 @@ public class SnmpCollector implements ServiceCollector {
 	 * SQL statement to fetch the ifIndex, ifName, and ifDescr values for all
 	 * interfaces associated with a node
 	 */
-	static final String SQL_GET_SNMP_INFO = "SELECT DISTINCT snmpifindex, snmpiftype, snmpifname, "
-			+ "snmpifdescr, snmpphysaddr "
+	static final String SQL_GET_SNMP_INFO = "SELECT snmpifindex, snmpiftype, snmpifname, "
+			+ "snmpifdescr, snmpphysaddr, issnmpprimary "
 			+ "FROM snmpinterface, ipinterface "
 			+ "WHERE ipinterface.nodeid=snmpinterface.nodeid "
 			+ "AND ifindex = snmpifindex "
@@ -455,18 +454,7 @@ public class SnmpCollector implements ServiceCollector {
 	 *            interface belongs..
 	 */
 	public void initialize(CollectionInterface iface, Map parameters) {
-		
-		Initializer initializer = new Initializer(this, iface, parameters);
-		initializer.execute();
-	}
-
-	void setMaxVarsPerPdu(NetworkInterface iface, int maxVarsPerPdu) {
-		// Add max vars per pdu value as an attribute of the interface
-		iface.setAttribute(MAX_VARS_PER_PDU_STORAGE_KEY, new Integer(
-				maxVarsPerPdu));
-		if (log().isDebugEnabled()) {
-			log().debug("initialize: maxVarsPerPdu=" + maxVarsPerPdu);
-		}
+		new Initializer().execute(this, iface, parameters);
 	}
 
 	int getMaxVarsPerPdu(String collectionName) {
@@ -492,13 +480,6 @@ public class SnmpCollector implements ServiceCollector {
 			maxVarsPerPdu = Integer.MAX_VALUE;
 		}
 		return maxVarsPerPdu;
-	}
-
-	void setStorageFlag(NetworkInterface iface, String storageFlag) {
-		iface.setAttribute(SNMP_STORAGE_KEY, storageFlag);
-		if (log().isDebugEnabled()) {
-			log().debug("initialize: SNMP storage flag: '" + storageFlag + "'");
-		}
 	}
 
 	String getStorageFlag(String collectionName) {
@@ -544,32 +525,32 @@ public class SnmpCollector implements ServiceCollector {
 
 			SnmpNodeCollector nodeCollector = null;
 			// construct the nodeCollector
-			if (!getNodeInfo(iface).getOidList().isEmpty()) {
-				nodeCollector = new SnmpNodeCollector(getInetAddress(iface),
-						getNodeInfo(iface).getOidList());
+			if (!iface.getNodeInfo().getOidList().isEmpty()) {
+				nodeCollector = new SnmpNodeCollector(iface.getInetAddress(),
+						iface.getNodeInfo().getOidList());
 			}
 
 			IfNumberTracker ifNumber = null;
 			SnmpIfCollector ifCollector = null;
 			// construct the ifCollector
-			if (hasInterfaceOids(iface)) {
-				ifCollector = new SnmpIfCollector(getInetAddress(iface),
-						getIfMap(iface));
+			if (iface.hasInterfaceOids()) {
+				ifCollector = new SnmpIfCollector(iface.getInetAddress(),
+						iface.getIfMap());
 				ifNumber = new IfNumberTracker();
 			}
 
 			collectData(iface, ifNumber, nodeCollector, ifCollector);
 
-			if (hasInterfaceOids(iface)) {
-				int savedIfCount = getSavedIfCount(iface);
+			if (iface.hasInterfaceOids()) {
+				int savedIfCount = iface.getSavedIfCount();
 
 				int ifCount = ifNumber.getIfNumber();
 
-				saveIfCount(iface, ifCount);
+				iface.saveIfCount(ifCount);
 
 				log().debug(
-						"collect: nodeId: " + getNodeInfo(iface).getNodeId()
-								+ " interface: " + getHostAddress(iface)
+						"collect: nodeId: " + iface.getNodeInfo().getNodeId()
+								+ " interface: " + iface.getHostAddress()
 								+ " ifCount: " + ifCount + " savedIfCount: "
 								+ savedIfCount);
 
@@ -582,16 +563,16 @@ public class SnmpCollector implements ServiceCollector {
 				 */
 				if ((savedIfCount != -1) && (ifCount != savedIfCount)) {
 					if (!isForceRescanInProgress(
-							getNodeInfo(iface).getNodeId(),
-							getHostAddress(iface))) {
+							iface.getNodeInfo().getNodeId(),
+							iface.getHostAddress())) {
 						log()
 								.info(
 										"Number of interfaces on primary SNMP "
 												+ "interface "
-												+ getHostAddress(iface)
+												+ iface.getHostAddress()
 												+ " has changed, generating 'ForceRescan' event.");
-						generateForceRescanEvent(getHostAddress(iface),
-								getNodeInfo(iface).getNodeId(), eproxy);
+						generateForceRescanEvent(iface.getHostAddress(),
+								iface.getNodeInfo().getNodeId(), eproxy);
 					}
 				}
 			}
@@ -603,7 +584,7 @@ public class SnmpCollector implements ServiceCollector {
 			if (rrdError) {
 				log().warn(
 						"collect: RRD error during update for "
-								+ getHostAddress(iface));
+								+ iface.getHostAddress());
 			}
 
 			// return the status of the collection
@@ -625,16 +606,16 @@ public class SnmpCollector implements ServiceCollector {
 		} catch (Throwable t) {
 			log().error(
 					"Unexpected error during node SNMP collection for "
-							+ getHostAddress(iface), t);
+							+ iface.getHostAddress(), t);
 			return COLLECTION_FAILED;
 		}
 	}
 
-	private void collectData(NetworkInterface iface,
+	private void collectData(CollectionInterface iface,
 			CollectionTracker ifNumber, SnmpNodeCollector nodeCollector,
 			SnmpIfCollector ifCollector) throws CollectionWarning {
 		try {
-			InetAddress address = getInetAddress(iface);
+			InetAddress address = iface.getInetAddress();
 			List trackers = new ArrayList(3);
 
 			if (ifNumber != null) {
@@ -661,7 +642,7 @@ public class SnmpCollector implements ServiceCollector {
 				log().debug(
 						"collect: successfully instantiated "
 								+ "SnmpNodeCollector() for "
-								+ getHostAddress(iface));
+								+ iface.getHostAddress());
 			}
 
 			// wait for collection to finish
@@ -670,95 +651,23 @@ public class SnmpCollector implements ServiceCollector {
 			if (log().isDebugEnabled()) {
 				log().debug(
 						"collect: node SNMP query for address "
-								+ getHostAddress(iface) + " complete.");
+								+ iface.getHostAddress() + " complete.");
 			}
 
 			// Was the node collection successful?
 			if (walker.failed()) {
 				// Log error and return COLLECTION_FAILED
 				throw new CollectionWarning("collect: collection failed for "
-						+ getHostAddress(iface));
+						+ iface.getHostAddress());
 			}
 
-			setMaxVarsPdu(iface, walker.getMaxVarsPerPdu());
+			iface.setMaxVarsPerPdu(walker.getMaxVarsPerPdu());
 		} catch (InterruptedException e) {
 			Thread.currentThread().interrupt();
 			throw new CollectionWarning("collect: Collection of node SNMP "
-					+ "data for interface " + getHostAddress(iface)
+					+ "data for interface " + iface.getHostAddress()
 					+ " interrupted!", e);
 		}
-	}
-
-	private void setMaxVarsPdu(NetworkInterface iface, int maxVarsPerPdu) {
-		iface.setAttribute(MAX_VARS_PER_PDU_STORAGE_KEY, new Integer(
-				maxVarsPerPdu));
-	}
-
-	private void saveIfCount(NetworkInterface iface, int ifCount) {
-		/*
-		 * Add the interface count to the interface's attributes for retrieval
-		 * during poll()
-		 */
-		iface.setAttribute(INTERFACE_COUNT_KEY, new Integer(ifCount));
-	}
-
-	private int getSavedIfCount(NetworkInterface iface) {
-		int savedIfCount = -1;
-		Integer tmp = (Integer) iface.getAttribute(INTERFACE_COUNT_KEY);
-		if (tmp != null) {
-			savedIfCount = tmp.intValue();
-		}
-		return savedIfCount;
-	}
-
-	private boolean hasInterfaceOids(NetworkInterface iface)
-			throws CollectionError {
-		boolean hasInterfaceOids = false;
-		Iterator iter = getIfMap(iface).values().iterator();
-		while (iter.hasNext() && !hasInterfaceOids) {
-			IfInfo ifInfo = (IfInfo) iter.next();
-			if (ifInfo.getType() < 1) {
-				continue;
-			}
-			if (!ifInfo.getOidList().isEmpty()) {
-				hasInterfaceOids = true;
-			}
-		}
-		return hasInterfaceOids;
-	}
-
-	private Map getIfMap(NetworkInterface iface) throws CollectionError {
-		Map ifMap = (Map) iface.getAttribute(IF_MAP_KEY);
-		if (ifMap == null) {
-			throw new CollectionError("Interface map not available for "
-					+ "interface " + getHostAddress(iface));
-		}
-		return ifMap;
-	}
-
-	private NodeInfo getNodeInfo(NetworkInterface iface) throws CollectionError {
-		NodeInfo nodeInfo = (NodeInfo) iface.getAttribute(NODE_INFO_KEY);
-		if (nodeInfo == null) {
-			throw new CollectionError("Node info not available for interface "
-					+ getHostAddress(iface));
-		}
-		return nodeInfo;
-	}
-
-	private String getHostAddress(NetworkInterface iface) {
-		return getInetAddress(iface).getHostAddress();
-	}
-
-	InetAddress getInetAddress(NetworkInterface iface) {
-
-		if (iface.getType() != NetworkInterface.TYPE_IPV4)
-			throw new RuntimeException("Unsupported interface type, "
-					+ "only TYPE_IPV4 currently supported");
-
-
-
-		InetAddress ipaddr = (InetAddress) iface.getAddress();
-		return ipaddr;
 	}
 
 	String getCollectionName(Map parameters) {
@@ -775,7 +684,7 @@ public class SnmpCollector implements ServiceCollector {
 	 * @param collectionName
 	 *            SNMP data Collection name from 'datacollection-config.xml'
 	 * @param iface
-	 *            NetworkInterface object of the interface currently being
+	 *            CollectionInterface object of the interface currently being
 	 *            polled
 	 * @param nodeCollector
 	 *            Node level MIB data collected via SNMP for the polled
@@ -787,22 +696,22 @@ public class SnmpCollector implements ServiceCollector {
 	 * @exception RuntimeException
 	 *                Thrown if the data source list for the interface is null.
 	 */
-	private boolean updateRRDs(String collectionName, NetworkInterface iface,
+	private boolean updateRRDs(String collectionName, CollectionInterface iface,
 			SnmpNodeCollector nodeCollector, SnmpIfCollector ifCollector,
 			Map parms, EventProxy eproxy) throws CollectionError {
 		// Log4j category
-		InetAddress ipaddr = getInetAddress(iface);
+		InetAddress ipaddr = iface.getInetAddress();
 
 		// Retrieve SNMP storage attribute
-		String snmpStorage = getSnmpStorage(iface);
+		String snmpStorage = iface.getSnmpStorage();
 
 		// Get primary interface index from NodeInfo object
-		NodeInfo nodeInfo = getNodeInfo(iface);
+		NodeInfo nodeInfo = iface.getNodeInfo();
 		int nodeId = nodeInfo.getNodeId();
 		int primaryIfIndex = nodeInfo.getPrimarySnmpIfIndex();
 
 		// Retrieve interface map attribute
-		Map ifMap = getIfMap(iface);
+		Map ifMap = iface.getIfMap();
 
 		/*
 		 * Write relevant collected SNMP statistics to RRD database First the
@@ -1161,11 +1070,6 @@ public class SnmpCollector implements ServiceCollector {
 					.getNodeId(), eproxy);
 		}
 		return rrdError;
-	}
-
-	private String getSnmpStorage(NetworkInterface iface) {
-		String snmpStorage = (String) iface.getAttribute(SNMP_STORAGE_KEY);
-		return snmpStorage;
 	}
 
 	/**

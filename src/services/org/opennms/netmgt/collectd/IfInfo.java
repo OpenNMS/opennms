@@ -81,7 +81,11 @@ final class IfInfo {
         m_oidList = oidList;
     }
 
-    public int getIndex() {
+	public void setCollType(String snmpCollType) {
+		m_collType = snmpCollType;
+	}
+
+	public int getIndex() {
         return m_index;
     }
 
@@ -108,4 +112,5 @@ final class IfInfo {
     public List getOidList() {
         return m_oidList;
     }
+
 } // end class

@@ -262,14 +262,12 @@ public final class DataCollectionConfigFactory {
      * @return a list of MIB objects
      */
     public List getMibObjectList(String cName, String aSysoid, String anAddress, int ifType) {
-        Category log = ThreadCategory.getInstance(getClass());
-
-        if (log.isDebugEnabled())
-            log.debug("getMibObjectList: collection: " + cName + " sysoid: " + aSysoid + " address: " + anAddress + " ifType: " + ifType);
+        if (log().isDebugEnabled())
+            log().debug("getMibObjectList: collection: " + cName + " sysoid: " + aSysoid + " address: " + anAddress + " ifType: " + ifType);
 
         if (aSysoid == null) {
-            if (log.isDebugEnabled())
-                log.debug("getMibObjectList: aSysoid parameter is NULL...");
+            if (log().isDebugEnabled())
+                log().debug("getMibObjectList: aSysoid parameter is NULL...");
             return new ArrayList();
         }
 
@@ -342,16 +340,16 @@ public final class DataCollectionConfigFactory {
                     // SystemDef's sysoid is a mask, 'aSysoid' need only
                     // start with the sysoid mask in order to match
                     if (aSysoid.startsWith(currSysoid)) {
-                        if (log.isDebugEnabled())
-                            log.debug("getMibObjectList: includes sysoid " + aSysoid + " for system <name>: " + system.getName());
+                        if (log().isDebugEnabled())
+                            log().debug("getMibObjectList: includes sysoid " + aSysoid + " for system <name>: " + system.getName());
                         bMatchSysoid = true;
                     }
                 } else {
                     // System's sysoid is not a mask, 'aSysoid' must
                     // match the sysoid exactly.
                     if (aSysoid.equals(currSysoid)) {
-                        if (log.isDebugEnabled())
-                            log.debug("getMibObjectList: includes sysoid " + aSysoid + " for system <name>: " + system.getName());
+                        if (log().isDebugEnabled())
+                            log().debug("getMibObjectList: includes sysoid " + aSysoid + " for system <name>: " + system.getName());
                         bMatchSysoid = true;
                     }
                 }
@@ -377,8 +375,8 @@ public final class DataCollectionConfigFactory {
                     // First see if address is in list of specific addresses
                     if (addrList != null && addrList.size() > 0) {
                         if (addrList.contains(anAddress)) {
-                            if (log.isDebugEnabled())
-                                log.debug("getMibObjectList: addrList exists and does include IP address " + anAddress + " for system <name>: " + system.getName());
+                            if (log().isDebugEnabled())
+                                log().debug("getMibObjectList: addrList exists and does include IP address " + anAddress + " for system <name>: " + system.getName());
                             bMatchIPAddress = true;
                         }
                     }
@@ -392,8 +390,8 @@ public final class DataCollectionConfigFactory {
                             while (iter.hasNext()) {
                                 String currMask = (String) iter.next();
                                 if (anAddress.indexOf(currMask) == 0) {
-                                    if (log.isDebugEnabled())
-                                        log.debug("getMibObjectList: anAddress '" + anAddress + "' matches mask '" + currMask + "'");
+                                    if (log().isDebugEnabled())
+                                        log().debug("getMibObjectList: anAddress '" + anAddress + "' matches mask '" + currMask + "'");
                                     bMatchIPAddress = true;
                                     break;
                                 }
@@ -404,8 +402,8 @@ public final class DataCollectionConfigFactory {
             }
 
             if (bMatchSysoid && bMatchIPAddress) {
-                if (log.isDebugEnabled())
-                    log.debug("getMibObjectList: MATCH!! adding system '" + system.getName() + "'");
+                if (log().isDebugEnabled())
+                    log().debug("getMibObjectList: MATCH!! adding system '" + system.getName() + "'");
                 systemList.add(system);
             }
         }
@@ -431,6 +429,10 @@ public final class DataCollectionConfigFactory {
         return mibObjectList;
     }
 
+	private Category log() {
+		return ThreadCategory.getInstance(getClass());
+	}
+
     /**
      * Private utility method used by the getMibObjectList() method. This method
      * takes a group name and a list of MibObject objects as arguments and adds
@@ -450,7 +452,7 @@ public final class DataCollectionConfigFactory {
      *            List of MibObject objects being built.
      */
     private void processGroupName(String cName, String groupName, int ifType, List mibObjectList) {
-        Category log = ThreadCategory.getInstance(getClass());
+        Category log = log();
 
         // Using the collector name retrieve the group map
         Map groupMap = (Map) m_collectionGroupMap.get(cName);
