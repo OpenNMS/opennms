@@ -8,19 +8,21 @@
     <table class="periods">
       <tbody>
         <tr>
-	  <c:forEach var="period" items="${requestScope.results.relativeTimePeriods}">
+	  <c:forEach var="period"
+                     items="${requestScope.results.relativeTimePeriods}">
 	    <td><c:out value="${period.name}"/></td>
 	  </c:forEach>
         </tr>
 
         <tr>
-	  <c:forEach var="period" items="${requestScope.results.relativeTimePeriods}">
+	  <c:forEach var="period"
+                     items="${requestScope.results.relativeTimePeriods}">
 	    <td>
 	      <input type="radio" name="rtstatus"
 	        <c:if test="${period.id == requestScope.results.relativeTime}">
 		  checked="checked"
 	        </c:if>
-		onclick="top.location = 'graph/results?type=<c:out value="${param.type}"/>&relativetime=<c:out value="${period.id}"/>&intf=<c:out value="${requestScope.results.intf}"/>&node=<c:out value="${requestScope.results.nodeId}"/><c:out value="${reportList}"/>'">
+                onclick="goRelativeTime('<c:out value="${period.id}"/>');"/>
 	    </td>
 	  </c:forEach>
         </tr>
