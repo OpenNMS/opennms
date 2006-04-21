@@ -44,18 +44,34 @@ import org.springframework.jdbc.object.MappingSqlQuery;
 public class AssetMappingQuery extends MappingSqlQuery {
     
     public AssetMappingQuery(DataSource ds, String clause) {
-        super(ds, "SELECT assets.nodeID, assets.category, assets.manufacturer, assets.vendor, " +
-                "assets.modelNumber, assets.serialNumber, assets.description, " +
-                "assets.circuitId, assets.assetNumber, assets.operatingSystem, " +
-                "assets.rack, assets.slot, assets.port, " +
-                "assets.region, assets.division, assets.department, " +
-                "assets.address1, assets.address2, assets.city, assets.state, assets.zip, " +
-                "assets.building, assets.floor, assets.room, " +
-                "assets.vendorPhone, assets.vendorFax, assets.vendorAssetNumber, " +
-                "assets.userLastModified, assets.lastModifiedDate, assets.dateInstalled, " +
-                "assets.lease, assets.leaseExpires, assets.supportPhone, assets.maintContract, assets.maintContractExpires, " +
-                "assets.displayCategory, assets.notifyCategory, assets.pollerCategory, assets.thresholdCategory, " +
-                "assets.comment "+clause);
+        super(ds, "SELECT assets.nodeID as assets_nodeID, assets.category as assets_category, " +
+        		"assets.manufacturer as assets_manufacturer, assets.vendor as assets_vendor, " +
+                "assets.modelNumber as assets_modelNumber, assets.serialNumber as assets_serialNumber, " +
+                "assets.description as assets_description, " +
+                "assets.circuitId as assets_circuitId, assets.assetNumber as assets_assetNumber, " +
+                "assets.operatingSystem as assets_operatingSystem, " +
+                "assets.rack as assets_rack, assets.slot as assets_slot, " +
+                "assets.port as assets_port, " +
+                "assets.region as assets_region, assets.division as assets_division, " +
+                "assets.department as assets_department, " +
+                "assets.address1 as assets_address1, assets.address2 as assets_address2, " +
+                "assets.city as assets_city, assets.state as assets_state, " +
+                "assets.zip as assets_zip, " +
+                "assets.building as assets_building, assets.floor as assets_floor, " +
+                "assets.room as assets_room, " +
+                "assets.vendorPhone as assets_vendorPhone, assets.vendorFax as assets_vendorFax, " +
+                "assets.vendorAssetNumber as assets_vendorAssetNumber, " +
+                "assets.userLastModified as assets_userLastModified, " +
+                "assets.lastModifiedDate as assets_lastModifiedDate, " +
+                "assets.dateInstalled as assets_dateInstalled, " +
+                "assets.lease as assets_lease, assets.leaseExpires as assets_leaseExpires, " +
+                "assets.supportPhone as assets_supportPhone, " +
+                "assets.maintContract as assets_maintContract, assets.maintContractExpires as assets_maintContractExpires, " +
+                "assets.displayCategory as assets_displayCategory, " +
+                "assets.notifyCategory as assets_notifyCategory, " +
+                "assets.pollerCategory as assets_pollerCategory, " +
+                "assets.thresholdCategory as assets_thresholdCategory, " +
+                "assets.comment as assets_comment "+clause);
         
     }
     
@@ -64,48 +80,48 @@ public class AssetMappingQuery extends MappingSqlQuery {
     }
 
     protected Object mapRow(ResultSet rs, int rowNumber) throws SQLException {
-        Integer nodeId = (Integer)rs.getObject("assets.nodeId");
+        Integer nodeId = (Integer)rs.getObject("assets_nodeId");
         LazyAssetRecord asset = (LazyAssetRecord)Cache.obtain(OnmsAssetRecord.class, nodeId);
         asset.setLoaded(true);
-        asset.setCategory(rs.getString("assets.category"));
-        asset.setManufacturer(rs.getString("assets.manufacturer"));
-        asset.setVendor(rs.getString("assets.vendor"));
-        asset.setModelNumber(rs.getString("assets.modelnumber"));
-        asset.setSerialNumber(rs.getString("assets.serialnumber"));
-        asset.setDescription(rs.getString("assets.description"));
-        asset.setCircuitId(rs.getString("assets.circuitId"));
-        asset.setAssetNumber(rs.getString("assets.assetNumber"));
-        asset.setOperatingSystem(rs.getString("assets.operatingSystem"));
-        asset.setRack(rs.getString("assets.rack"));
-        asset.setSlot(rs.getString("assets.slot"));
-        asset.setPort(rs.getString("assets.port"));
-        asset.setRegion(rs.getString("assets.region"));
-        asset.setDivision(rs.getString("assets.division"));
-        asset.setDepartment(rs.getString("assets.department"));
-        asset.setAddress1(rs.getString("assets.address1"));
-        asset.setAddress2(rs.getString("assets.address2"));
-        asset.setCity(rs.getString("assets.city"));
-        asset.setState(rs.getString("assets.state"));
-        asset.setZip(rs.getString("assets.zip"));
-        asset.setBuilding(rs.getString("assets.building"));
-        asset.setFloor(rs.getString("assets.floor"));
-        asset.setRoom(rs.getString("assets.room"));
-        asset.setVendorPhone(rs.getString("assets.vendorPhone"));
-        asset.setVendorFax(rs.getString("assets.vendorFax"));
-        asset.setVendorAssetNumber(rs.getString("assets.vendorAssetNumber"));
-        asset.setLastModifiedBy(rs.getString("assets.userLastModified"));
-        asset.setLastModifiedDate(rs.getDate("assets.lastModifiedDate"));
-        asset.setDateInstalled(rs.getString("assets.dateInstalled"));
-        asset.setLease(rs.getString("assets.lease"));
-        asset.setLeaseExpires(rs.getString("assets.leaseExpires"));
-        asset.setSupportPhone(rs.getString("assets.supportPhone"));
-        asset.setMaintContractNumber(rs.getString("assets.maintContract"));
-        asset.setMaintContractExpiration(rs.getString("assets.maintContractExpires"));
-        asset.setDisplayCategory(rs.getString("assets.displayCategory"));
-        asset.setNotifyCategory(rs.getString("assets.notifyCategory"));
-        asset.setPollerCategory(rs.getString("assets.pollerCategory"));
-        asset.setThresholdCategory(rs.getString("assets.thresholdCategory"));
-        asset.setComment(rs.getString("assets.comment"));
+        asset.setCategory(rs.getString("assets_category"));
+        asset.setManufacturer(rs.getString("assets_manufacturer"));
+        asset.setVendor(rs.getString("assets_vendor"));
+        asset.setModelNumber(rs.getString("assets_modelnumber"));
+        asset.setSerialNumber(rs.getString("assets_serialnumber"));
+        asset.setDescription(rs.getString("assets_description"));
+        asset.setCircuitId(rs.getString("assets_circuitId"));
+        asset.setAssetNumber(rs.getString("assets_assetNumber"));
+        asset.setOperatingSystem(rs.getString("assets_operatingSystem"));
+        asset.setRack(rs.getString("assets_rack"));
+        asset.setSlot(rs.getString("assets_slot"));
+        asset.setPort(rs.getString("assets_port"));
+        asset.setRegion(rs.getString("assets_region"));
+        asset.setDivision(rs.getString("assets_division"));
+        asset.setDepartment(rs.getString("assets_department"));
+        asset.setAddress1(rs.getString("assets_address1"));
+        asset.setAddress2(rs.getString("assets_address2"));
+        asset.setCity(rs.getString("assets_city"));
+        asset.setState(rs.getString("assets_state"));
+        asset.setZip(rs.getString("assets_zip"));
+        asset.setBuilding(rs.getString("assets_building"));
+        asset.setFloor(rs.getString("assets_floor"));
+        asset.setRoom(rs.getString("assets_room"));
+        asset.setVendorPhone(rs.getString("assets_vendorPhone"));
+        asset.setVendorFax(rs.getString("assets_vendorFax"));
+        asset.setVendorAssetNumber(rs.getString("assets_vendorAssetNumber"));
+        asset.setLastModifiedBy(rs.getString("assets_userLastModified"));
+        asset.setLastModifiedDate(rs.getDate("assets_lastModifiedDate"));
+        asset.setDateInstalled(rs.getString("assets_dateInstalled"));
+        asset.setLease(rs.getString("assets_lease"));
+        asset.setLeaseExpires(rs.getString("assets_leaseExpires"));
+        asset.setSupportPhone(rs.getString("assets_supportPhone"));
+        asset.setMaintContractNumber(rs.getString("assets_maintContract"));
+        asset.setMaintContractExpiration(rs.getString("assets_maintContractExpires"));
+        asset.setDisplayCategory(rs.getString("assets_displayCategory"));
+        asset.setNotifyCategory(rs.getString("assets_notifyCategory"));
+        asset.setPollerCategory(rs.getString("assets_pollerCategory"));
+        asset.setThresholdCategory(rs.getString("assets_thresholdCategory"));
+        asset.setComment(rs.getString("assets_comment"));
         asset.setDirty(false);
         return asset;
     }

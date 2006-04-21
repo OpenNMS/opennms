@@ -46,7 +46,18 @@ import org.springframework.jdbc.object.MappingSqlQuery;
 public class MonitoredServiceMappingQuery extends MappingSqlQuery {
 
     public MonitoredServiceMappingQuery(DataSource ds, String clause) {
-        super(ds, "SELECT ifservices.nodeid, ifservices.ipAddr, ifservices.ifIndex, ifservices.serviceId, ifservices.lastGood, ifservices.lastFail, ifservices.qualifier, ifservices.status, ifservices.source, ifservices.notify "+clause);
+        super(ds, "SELECT " +
+        		"ifservices.nodeid as ifservices_nodeid, " +
+        		"ifservices.ipAddr as ifservices_ipAddr, " +
+        		"ifservices.ifIndex as ifservices_ifIndex, " +
+        		"ifservices.serviceId as ifservices_serviceId, " +
+        		"ifservices.lastGood as ifservices_lastGood, " +
+        		"ifservices.lastFail as ifservices_lastFail, " +
+        		"ifservices.qualifier as ifservices_qualifier, " +
+        		"ifservices.status as ifservices_status, " +
+        		"ifservices.source as ifservices_source, " +
+        		"ifservices.notify as ifservices_notify " +
+        		clause);
     }
     
     public DataSource getDataSource() {
@@ -54,21 +65,21 @@ public class MonitoredServiceMappingQuery extends MappingSqlQuery {
     }
 
     public Object mapRow(ResultSet rs, int rowNumber) throws SQLException {
-        Integer nodeId = (Integer)rs.getObject("ifservices.nodeid");       //nodeID                  integer,        
-        String ipAddr  = rs.getString("ifservices.ipAddr");                //ipAddr                  varchar(16) not null,
-        Integer ifIndex = (Integer)rs.getObject("ifservices.ifIndex");     //ifIndex                 integer,
-        Integer serviceId = (Integer)rs.getObject("ifservices.serviceId"); //serviceID               integer,
+        Integer nodeId = (Integer)rs.getObject("ifservices_nodeid");       //nodeID                  integer,        
+        String ipAddr  = rs.getString("ifservices_ipAddr");                //ipAddr                  varchar(16) not null,
+        Integer ifIndex = (Integer)rs.getObject("ifservices_ifIndex");     //ifIndex                 integer,
+        Integer serviceId = (Integer)rs.getObject("ifservices_serviceId"); //serviceID               integer,
         
         MonitoredServiceId id = new MonitoredServiceId(nodeId, ipAddr, ifIndex, serviceId);
     	
         LazyMonitoredService svc = (LazyMonitoredService)Cache.obtain(OnmsMonitoredService.class, id);
         svc.setLoaded(true);
-        svc.setLastGood(rs.getTimestamp("ifservices.lastGood"));           //lastGood                timestamp without time zone,
-        svc.setLastFail(rs.getTimestamp("ifservices.lastFail"));           //lastFail                timestamp without time zone,
-        svc.setQualifier(rs.getString("ifservices.qualifier"));            //qualifier               char(16),
-        svc.setStatus(rs.getString("ifservices.status"));                  //status                  char(1),
-        svc.setSource(rs.getString("ifservices.source"));                  //source                  char(1),
-        svc.setNotify(rs.getString("ifservices.notify"));                  //notify                  char(1),
+        svc.setLastGood(rs.getTimestamp("ifservices_lastGood"));           //lastGood                timestamp without time zone,
+        svc.setLastFail(rs.getTimestamp("ifservices_lastFail"));           //lastFail                timestamp without time zone,
+        svc.setQualifier(rs.getString("ifservices_qualifier"));            //qualifier               char(16),
+        svc.setStatus(rs.getString("ifservices_status"));                  //status                  char(1),
+        svc.setSource(rs.getString("ifservices_source"));                  //source                  char(1),
+        svc.setNotify(rs.getString("ifservices_notify"));                  //notify                  char(1),
         svc.setDirty(false);
         return svc;
     }

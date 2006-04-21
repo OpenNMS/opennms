@@ -47,10 +47,20 @@ public class SnmpInterfaceMappingQuery extends MappingSqlQuery {
     
     public SnmpInterfaceMappingQuery(DataSource ds, String clause) {
         
-        super(ds, "SELECT nodeid, ipaddr, snmpipadentnetmask" +
-                ", snmpphysaddr, snmpifindex, snmpifdescr" +
-                ", snmpiftype, snmpifname, snmpifspeed" +
-                ", snmpifadminstatus, snmpifoperstatus, snmpifalias "+clause);
+        super(ds, "SELECT " +
+        		"snmpinterface.nodeid as snmp_nodeid " +
+        		"snmpinterface.ipaddr as snmp_ipaddr " +
+        		"snmpinterface.snmpipadentnetmask as snmp_snmpipadentnetmask " +
+                "snmpinterface.snmpphysaddr as snmp_snmpphysaddr " +
+                "snmpinterface.snmpifindex as snmp_snmpifindex " +
+                "snmpinterface.snmpifdescr as snmp_snmpifdescr " +
+                "snmpinterface.snmpiftype as snmp_snmpiftype " +
+                "snmpinterface.snmpifname as snmp_snmpifname " +
+                "snmpinterface.snmpifspeed as snmp_snmpifspeed " +
+                "snmpinterface.snmpifadminstatus as snmp_snmpifadminstatus " +
+                "snmpinterface.snmpifoperstatus as snmp_snmpifoperstatus " +
+                "snmpinterface.snmpifalias " +
+                clause);
     }
     
     public DataSource getDataSource() {
@@ -59,23 +69,23 @@ public class SnmpInterfaceMappingQuery extends MappingSqlQuery {
     
     public Object mapRow(ResultSet rs, int rowNumber) throws SQLException {
         
-        Integer nodeId = (Integer)rs.getObject("nodeid");  //nodeid                  integer,
-        String ipAddr = rs.getString("ipaddr");            //ipaddr                  varchar(16) not null,
-        Integer ifIndex = (Integer)rs.getObject("snmpifindex");//snmpifindex                 integer,
+        Integer nodeId = (Integer)rs.getObject("snmp_nodeid");  //nodeid                  integer,
+        String ipAddr = rs.getString("snmp_ipaddr");            //ipaddr                  varchar(16) not null,
+        Integer ifIndex = (Integer)rs.getObject("snmp_snmpifindex");//snmpifindex                 integer,
         
         final SnmpInterfaceId key = new SnmpInterfaceId(nodeId, ipAddr, ifIndex);
         
         LazySnmpInterface iface = (LazySnmpInterface)Cache.obtain(OnmsSnmpInterface.class, key);
         iface.setLoaded(true);
         
-        iface.setIfAdminStatus((Integer)rs.getObject("snmpifadminstatus"));
-        iface.setIfAlias(rs.getString("snmpifalias"));
-        iface.setIfDescr(rs.getString("snmpifdescr"));
-        iface.setIfName(rs.getString("snmpifname"));
-        iface.setIfOperStatus((Integer)rs.getObject("snmpifoperstatus"));
-        Long ifSpeed = (rs.getObject("snmpifspeed") == null ? null : new Long(rs.getLong("snmpifspeed")));
+        iface.setIfAdminStatus((Integer)rs.getObject("snmp_snmpifadminstatus"));
+        iface.setIfAlias(rs.getString("snmp_snmpifalias"));
+        iface.setIfDescr(rs.getString("snmp_snmpifdescr"));
+        iface.setIfName(rs.getString("snmp_snmpifname"));
+        iface.setIfOperStatus((Integer)rs.getObject("snmp_snmpifoperstatus"));
+        Long ifSpeed = (rs.getObject("snmp_snmpifspeed") == null ? null : new Long(rs.getLong("snmp_snmpifspeed")));
 		iface.setIfSpeed(ifSpeed);
-        iface.setIfType((Integer)rs.getObject("snmpiftype"));
+        iface.setIfType((Integer)rs.getObject("snmp_snmpiftype"));
         
         iface.setDirty(false);
         return iface;

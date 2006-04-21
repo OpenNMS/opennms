@@ -46,7 +46,17 @@ import org.springframework.jdbc.object.MappingSqlQuery;
 public class DistPollerMappingQuery extends MappingSqlQuery {
 
     public DistPollerMappingQuery(DataSource ds, String clause) {
-        super(ds, "SELECT dpName, dpIP, dpComment, dpDiscLimit, dpLastNodePull, dpLastEventPull, dpLastPackagePush, dpAdminState, dpRunState "+clause);
+        super(ds, "SELECT " +
+        		"distPoller.dpName as distPoller_dpName, " +
+        		"distPoller.dpIP as distPoller_dpIP, " +
+        		"distPoller.dpComment as distPoller_dpComment, " +
+        		"distPoller.dpDiscLimit as distPoller_dpDiscLimit, " +
+        		"distPoller.dpLastNodePull as distPoller_dpLastNodePull, " +
+        		"distPoller.dpLastEventPull as distPoller_dpLastEventPull, " +
+        		"distPoller.dpLastPackagePush as distPoller_dpLastPackagePush, " +
+        		"distPoller.dpAdminState as distPoller_dpAdminState, " +
+        		"distPoller.dpRunState as distPoller_dpRunState "
+        		+clause);
 
 
     }
@@ -56,17 +66,17 @@ public class DistPollerMappingQuery extends MappingSqlQuery {
     }
 
     public Object mapRow(ResultSet rs, int rowNumber) throws SQLException {
-        String dpName = rs.getString("dpName"); //dpName                  varchar(12) not null,
+        String dpName = rs.getString("distPoller_dpName"); //dpName                  varchar(12) not null,
         LazyDistPoller distPoller = (LazyDistPoller)Cache.obtain(OnmsDistPoller.class, dpName);
         distPoller.setLoaded(true);
-        distPoller.setIpAddress(rs.getString("dpIP"));                 //dpIP                    varchar(16) not null,
-        distPoller.setComment(rs.getString("dpComment"));              //dpComment               varchar(256),
-        distPoller.setDiscoveryLimit(rs.getBigDecimal("dpDiscLimit")); //dpDiscLimit             numeric(5,2),
-        distPoller.setLastNodePull(rs.getTimestamp("dpLastNodePull")); //dpLastNodePull          timestamp without time zone,
-        distPoller.setLastEventPull(rs.getTimestamp("dpLastEventPull"));//dpLastEventPull         timestamp without time zone,
-        distPoller.setLastPackagePush(rs.getTimestamp("dpLastPackagePush"));//dpLastPackagePush       timestamp without time zone,
-        distPoller.setAdminState((Integer)rs.getObject("dpAdminState"));//dpAdminState            integer,
-        distPoller.setRunState((Integer)rs.getObject("dpRunState"));      //dpRunState              integer,
+        distPoller.setIpAddress(rs.getString("distPoller_dpIP"));                 //dpIP                    varchar(16) not null,
+        distPoller.setComment(rs.getString("distPoller_dpComment"));              //dpComment               varchar(256),
+        distPoller.setDiscoveryLimit(rs.getBigDecimal("distPoller_dpDiscLimit")); //dpDiscLimit             numeric(5,2),
+        distPoller.setLastNodePull(rs.getTimestamp("distPoller_dpLastNodePull")); //dpLastNodePull          timestamp without time zone,
+        distPoller.setLastEventPull(rs.getTimestamp("distPoller_dpLastEventPull"));//dpLastEventPull         timestamp without time zone,
+        distPoller.setLastPackagePush(rs.getTimestamp("distPoller_dpLastPackagePush"));//dpLastPackagePush       timestamp without time zone,
+        distPoller.setAdminState((Integer)rs.getObject("distPoller_dpAdminState"));//dpAdminState            integer,
+        distPoller.setRunState((Integer)rs.getObject("distPoller_dpRunState"));      //dpRunState              integer,
         return distPoller;
     }
     

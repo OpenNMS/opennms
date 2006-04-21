@@ -56,7 +56,7 @@ public class ServiceTypeDaoJdbc extends AbstractDaoJdbc implements ServiceTypeDa
     public static class FindByServiceTypeName extends ServiceTypeMappingQuery {
 
         public FindByServiceTypeName(DataSource ds) {
-            super(ds, "FROM service WHERE servicename = ?");
+            super(ds, "FROM service WHERE service.servicename = ?");
             super.declareParameter(new SqlParameter("servicename", Types.VARCHAR));
             compile();
         }

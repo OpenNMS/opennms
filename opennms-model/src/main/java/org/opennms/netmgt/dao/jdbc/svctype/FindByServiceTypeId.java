@@ -12,7 +12,7 @@ import org.springframework.jdbc.core.SqlParameter;
 public class FindByServiceTypeId extends ServiceTypeMappingQuery {
     
     public FindByServiceTypeId(DataSource ds) {
-        super(ds, "FROM service WHERE serviceid = ?");
+        super(ds, "FROM service WHERE service.serviceid = ?");
         super.declareParameter(new SqlParameter("serviceid", Types.INTEGER));
         compile();
     }

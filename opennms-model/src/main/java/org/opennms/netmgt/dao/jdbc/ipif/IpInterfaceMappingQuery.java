@@ -49,7 +49,16 @@ import org.springframework.jdbc.object.MappingSqlQuery;
 public class IpInterfaceMappingQuery extends MappingSqlQuery {
 
     public IpInterfaceMappingQuery(DataSource ds, String clause) {
-        super(ds, "SELECT ipInterface.nodeID, ipInterface.ipAddr, ipInterface.ifIndex, ipInterface.ipHostname, ipInterface.isManaged, ipInterface.ipStatus, ipInterface.ipLastCapsdPoll, ipInterface.isSnmpPrimary "+clause);
+        super(ds, "SELECT " +
+        		"ipInterface.nodeID as ipInterface_nodeID, " +
+        		"ipInterface.ipAddr as ipInterface_ipAddr, " +
+        		"ipInterface.ifIndex as ipInterface_ifIndex, " +
+        		"ipInterface.ipHostname as ipInterface_ipHostname, " +
+        		"ipInterface.isManaged as ipInterface_isManaged, " +
+        		"ipInterface.ipStatus as ipInterface_ipStatus, " +
+        		"ipInterface.ipLastCapsdPoll as ipInterface_ipLastCapsdPoll, " +
+        		"ipInterface.isSnmpPrimary as ipInterface_isSnmpPrimary " +
+        		clause);
     }
     
     public DataSource getDataSource() {
@@ -58,19 +67,19 @@ public class IpInterfaceMappingQuery extends MappingSqlQuery {
 
    public Object mapRow(ResultSet rs, int rowNumber) throws SQLException {
     	
-    	Integer nodeId = (Integer)rs.getObject("ipInterface.nodeID");  //nodeID                  integer,
-    	String ipAddr = rs.getString("ipInterface.ipAddr");            //ipAddr                  varchar(16) not null,
-		Integer ifIndex = (Integer)rs.getObject("ipInterface.ifIndex");//ifIndex                 integer,
+    	Integer nodeId = (Integer)rs.getObject("ipInterface_nodeID");  //nodeID                  integer,
+    	String ipAddr = rs.getString("ipInterface_ipAddr");            //ipAddr                  varchar(16) not null,
+		Integer ifIndex = (Integer)rs.getObject("ipInterface_ifIndex");//ifIndex                 integer,
 		
 		final IpInterfaceId key = new IpInterfaceId(nodeId, ipAddr, ifIndex);
     	
     	LazyIpInterface iface = (LazyIpInterface)Cache.obtain(OnmsIpInterface.class, key);
     	iface.setLoaded(true);
-        iface.setIpHostName(rs.getString("ipInterface.ipHostname"));              //ipHostname              varchar(256),
-        iface.setIsManaged(rs.getString("ipInterface.isManaged"));                //isManaged               char(1),
-        iface.setIpStatus(((Integer)rs.getObject("ipInterface.ipStatus")));       //ipStatus                integer,
-        iface.setIpLastCapsdPoll(rs.getTimestamp("ipInterface.ipLastCapsdPoll")); //ipLastCapsdPoll         timestamp without time zone,
-        iface.setIsSnmpPrimary(rs.getString("ipInterface.isSnmpPrimary"));        //isSnmpPrimary           char(1),
+        iface.setIpHostName(rs.getString("ipInterface_ipHostname"));              //ipHostname              varchar(256),
+        iface.setIsManaged(rs.getString("ipInterface_isManaged"));                //isManaged               char(1),
+        iface.setIpStatus(((Integer)rs.getObject("ipInterface_ipStatus")));       //ipStatus                integer,
+        iface.setIpLastCapsdPoll(rs.getTimestamp("ipInterface_ipLastCapsdPoll")); //ipLastCapsdPoll         timestamp without time zone,
+        iface.setIsSnmpPrimary(rs.getString("ipInterface_isSnmpPrimary"));        //isSnmpPrimary           char(1),
         
         LazySet.Loader svcLoader = new LazySet.Loader() {
 			public Set load() {

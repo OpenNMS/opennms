@@ -46,15 +46,18 @@ import org.springframework.jdbc.object.MappingSqlQuery;
 public class ServiceTypeMappingQuery extends MappingSqlQuery {
     
     public ServiceTypeMappingQuery(DataSource ds, String clause) {
-        super(ds, "SELECT serviceId, serviceName "+clause);
+        super(ds, "SELECT " +
+        		"service.serviceId as service_serviceId, " +
+        		"service.serviceName as service_serviceName " +
+        		clause);
     }
 
     protected Object mapRow(ResultSet rs, int rowNum) throws SQLException {
     	
-    	Integer id = (Integer) rs.getObject("serviceId");
+    	Integer id = (Integer) rs.getObject("service_serviceId");
     	LazyServiceType svcType = (LazyServiceType)Cache.obtain(OnmsServiceType.class, id);
     	svcType.setLoaded(true);
-        svcType.setName(rs.getString("serviceName"));
+        svcType.setName(rs.getString("service_serviceName"));
         return svcType;
     }
     
