@@ -48,17 +48,17 @@ public class SnmpInterfaceMappingQuery extends MappingSqlQuery {
     public SnmpInterfaceMappingQuery(DataSource ds, String clause) {
         
         super(ds, "SELECT " +
-        		"snmpinterface.nodeid as snmp_nodeid " +
-        		"snmpinterface.ipaddr as snmp_ipaddr " +
-        		"snmpinterface.snmpipadentnetmask as snmp_snmpipadentnetmask " +
-                "snmpinterface.snmpphysaddr as snmp_snmpphysaddr " +
-                "snmpinterface.snmpifindex as snmp_snmpifindex " +
-                "snmpinterface.snmpifdescr as snmp_snmpifdescr " +
-                "snmpinterface.snmpiftype as snmp_snmpiftype " +
-                "snmpinterface.snmpifname as snmp_snmpifname " +
-                "snmpinterface.snmpifspeed as snmp_snmpifspeed " +
-                "snmpinterface.snmpifadminstatus as snmp_snmpifadminstatus " +
-                "snmpinterface.snmpifoperstatus as snmp_snmpifoperstatus " +
+        		"snmpinterface.nodeid as snmp_nodeid, " +
+        		"snmpinterface.ipaddr as snmp_ipaddr, " +
+        		"snmpinterface.snmpipadentnetmask as snmp_snmpipadentnetmask, " +
+                "snmpinterface.snmpphysaddr as snmp_snmpphysaddr, " +
+                "snmpinterface.snmpifindex as snmp_snmpifindex, " +
+                "snmpinterface.snmpifdescr as snmp_snmpifdescr, " +
+                "snmpinterface.snmpiftype as snmp_snmpiftype, " +
+                "snmpinterface.snmpifname as snmp_snmpifname, " +
+                "snmpinterface.snmpifspeed as snmp_snmpifspeed, " +
+                "snmpinterface.snmpifadminstatus as snmp_snmpifadminstatus, " +
+                "snmpinterface.snmpifoperstatus as snmp_snmpifoperstatus, " +
                 "snmpinterface.snmpifalias " +
                 clause);
     }

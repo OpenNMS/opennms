@@ -65,8 +65,9 @@ public class JdbcDaoTestConfig extends DaoTestConfig {
         m_createDb = createDb;
         
         if (createDb) {
+        	System.err.println("user.dir = "+System.getProperty("user.dir"));
             String cmd = System.getProperty("psql.command", "psql") ;
-            Process p = Runtime.getRuntime().exec(cmd+" onmstest -U opennms -f etc/create.sql");
+            Process p = Runtime.getRuntime().exec(cmd+" brozow -U opennms -f etc/create.sql");
             p.waitFor();
             System.err.println("Got an exitValue of "+p.exitValue());
         }
