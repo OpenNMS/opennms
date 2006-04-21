@@ -155,14 +155,17 @@ shortDayNames.put("31","31st");
 // ******* Collectd outages config *********
    CollectdConfigFactory.init();
    Map collectionOutages=new HashMap();
-   org.opennms.netmgt.config.collectd.Package[] collectionPackages=CollectdConfigFactory.getInstance().getConfiguration().getPackage();
-   for(int i=0; i<collectionPackages.length; i++) {
-	org.opennms.netmgt.config.collectd.Package thisPackage=collectionPackages[i];
-	collectionOutages.put(thisPackage, thisPackage.getOutageCalendarCollection());
-	if(thisPackage.getOutageCalendarCollection().contains(theOutage.getName())) {
-		enabledOutages.add("collect-"+thisPackage.getName());
-	}	
+   Collection collectionPackages =CollectdConfigFactory.getInstance().getCollectdConfig().getPackages();
+   for(Iterator it = collectionPackages.iterator(); it.hasNext();) {
+			CollectdPackage pkg = (CollectdPackage)it.next();
+			org.opennms.netmgt.config.collectd.Package thisPackage=pkg.getPackage();
+			collectionOutages.put(thisPackage, thisPackage.getOutageCalendarCollection());
+			if(thisPackage.getOutageCalendarCollection().contains(theOutage.getName())) {
+					enabledOutages.add("collect-"+thisPackage.getName());
+			}	
    }
+   
+   
    
 
 
@@ -508,7 +511,7 @@ for(int i=0; i<nodeList.length; i++) {
 	<td><input type="image" src="images/redcross.gif" name="deleteNode<%=i%>"/></td>
 	</tr>
 <% } %>
-</tr>
+
 </table>
 </td><td valign="top">
 <b>Interfaces:</b><BR>

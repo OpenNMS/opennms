@@ -157,15 +157,14 @@ class Initializer {
 	}
 
 	private void getSnmpInfoForInterfaces() {
-		{
-			
-			PreparedStatement stmt = null;
+
+		PreparedStatement stmt = null;
 
 		try {
 			stmt = m_dsConn.prepareStatement(SnmpCollector.SQL_GET_SNMP_INFO);
 			stmt.setInt(1, m_nodeID);
 			ResultSet rs = stmt.executeQuery();
-			
+
 			addIfaceToSnmpPrimaryMap();
 
 			while (rs.next()) {
@@ -177,12 +176,12 @@ class Initializer {
 				String physAddr = rs.getString(5);
 				if (m_collector.log().isDebugEnabled()) {
 					m_collector.log()
-							.debug(
-									"initialize: snmpifindex = " + index
-											+ ", snmpifname = " + name
-											+ ", snmpifdescr = " + descr
-											+ ", snmpphysaddr = -"
-											+ physAddr + "-");
+					.debug(
+							"initialize: snmpifindex = " + index
+							+ ", snmpifname = " + name
+							+ ", snmpifdescr = " + descr
+							+ ", snmpphysaddr = -"
+							+ physAddr + "-");
 				}
 
 				/*
@@ -202,13 +201,13 @@ class Initializer {
 					label = AlphaNumeric.parseAndReplace(descr, SnmpCollector.nonAnRepl);
 				} else {
 					m_collector.log()
-							.warn(
-									"Interface (ifIndex/nodeId="
-											+ index
-											+ "/"
-											+ m_nodeID
-											+ ") has no ifName and no "
-											+ "ifDescr...setting to label to 'no_ifLabel'.");
+					.warn(
+							"Interface (ifIndex/nodeId="
+							+ index
+							+ "/"
+							+ m_nodeID
+							+ ") has no ifName and no "
+							+ "ifDescr...setting to label to 'no_ifLabel'.");
 					label = "no_ifLabel";
 				}
 
@@ -225,8 +224,8 @@ class Initializer {
 						if (m_collector.log().isDebugEnabled()) {
 							m_collector.log().debug(
 									"initialize: physical address len "
-											+ "is NOT 12, physAddr="
-											+ physAddr);
+									+ "is NOT 12, physAddr="
+									+ physAddr);
 						}
 					}
 				}
@@ -252,8 +251,8 @@ class Initializer {
 				 * remote agent for this interface.
 				 */
 				m_oidList = DataCollectionConfigFactory.getInstance()
-						.getMibObjectList(m_collectionName, m_sysoid,
-								m_ipAddr.getHostAddress(), type);
+				.getMibObjectList(m_collectionName, m_sysoid,
+						m_ipAddr.getHostAddress(), type);
 
 				/*
 				 * Now build a list of RRD data source objects from the list
@@ -290,9 +289,8 @@ class Initializer {
 			} catch (Exception e) {
 				m_collector.log().info(
 						"initialize: an error occured trying to close "
-								+ "an SQL statement", e);
+						+ "an SQL statement", e);
 			}
-		}
 		}
 
 		/*
@@ -304,7 +302,7 @@ class Initializer {
 					+ "interfaces for node " + m_nodeID
 					+ " from the database.");
 		}
-		
+
 		// Add the ifMap object as an attribute of the interface
 		m_iface.setAttribute(SnmpCollector.IF_MAP_KEY, m_ifMap);
 
@@ -495,7 +493,6 @@ class Initializer {
 		 * system object id from the node table. In addition to nodeid, the
 		 * interface's ifIndex and isSnmpPrimary fields are also retrieved.
 		 */
-		{
 		PreparedStatement stmt = null;
 		try {
 			stmt = m_dsConn.prepareStatement(SnmpCollector.SQL_GET_NODEID);
@@ -540,9 +537,9 @@ class Initializer {
 		if (m_collector.log().isDebugEnabled()) {
 			m_collector.log().debug(
 					"initialize: db retrieval info: nodeid = " + m_nodeID
-							+ ", address = " + m_ipAddr.getHostAddress()
-							+ ", primaryIfIndex = " + m_primaryIfIndex
-							+ ", isSnmpPrimary = " + m_isSnmpPrimary);
+					+ ", address = " + m_ipAddr.getHostAddress()
+					+ ", primaryIfIndex = " + m_primaryIfIndex
+					+ ", isSnmpPrimary = " + m_isSnmpPrimary);
 		}
 
 		/*
@@ -562,9 +559,9 @@ class Initializer {
 			if (m_collector.log().isDebugEnabled()) {
 				m_collector.log().debug(
 						"initialize: db retrieval info: node " + m_nodeID
-								+ " does not have a legitimate "
-								+ "primaryIfIndex.  Assume node does not "
-								+ "supply ipAddrTable and continue...");
+						+ " does not have a legitimate "
+						+ "primaryIfIndex.  Assume node does not "
+						+ "supply ipAddrTable and continue...");
 			}
 		}
 
@@ -573,7 +570,6 @@ class Initializer {
 					+ m_ipAddr.getHostAddress()
 					+ " is not the primary SNMP interface for nodeid "
 					+ m_nodeID);
-		}
 		}
 	}
 	
