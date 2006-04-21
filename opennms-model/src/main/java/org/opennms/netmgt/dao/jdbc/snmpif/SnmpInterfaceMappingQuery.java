@@ -59,7 +59,7 @@ public class SnmpInterfaceMappingQuery extends MappingSqlQuery {
                 "snmpinterface.snmpifspeed as snmp_snmpifspeed, " +
                 "snmpinterface.snmpifadminstatus as snmp_snmpifadminstatus, " +
                 "snmpinterface.snmpifoperstatus as snmp_snmpifoperstatus, " +
-                "snmpinterface.snmpifalias " +
+                "snmpinterface.snmpifalias as snmp_snmpifalias" +
                 clause);
     }
     
