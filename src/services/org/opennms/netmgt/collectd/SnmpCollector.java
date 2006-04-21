@@ -54,7 +54,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -525,9 +524,9 @@ public class SnmpCollector implements ServiceCollector {
 
 			SnmpNodeCollector nodeCollector = null;
 			// construct the nodeCollector
-			if (!iface.getNodeInfo().getOidList().isEmpty()) {
+			if (!getNodeInfo(iface).getOidList().isEmpty()) {
 				nodeCollector = new SnmpNodeCollector(iface.getInetAddress(),
-						iface.getNodeInfo().getOidList());
+						getNodeInfo(iface).getOidList());
 			}
 
 			IfNumberTracker ifNumber = null;
@@ -535,7 +534,7 @@ public class SnmpCollector implements ServiceCollector {
 			// construct the ifCollector
 			if (iface.hasInterfaceOids()) {
 				ifCollector = new SnmpIfCollector(iface.getInetAddress(),
-						iface.getIfMap());
+						getIfMap(iface));
 				ifNumber = new IfNumberTracker();
 			}
 
@@ -549,7 +548,7 @@ public class SnmpCollector implements ServiceCollector {
 				iface.saveIfCount(ifCount);
 
 				log().debug(
-						"collect: nodeId: " + iface.getNodeInfo().getNodeId()
+						"collect: nodeId: " + getNodeInfo(iface).getNodeId()
 								+ " interface: " + iface.getHostAddress()
 								+ " ifCount: " + ifCount + " savedIfCount: "
 								+ savedIfCount);
@@ -563,7 +562,7 @@ public class SnmpCollector implements ServiceCollector {
 				 */
 				if ((savedIfCount != -1) && (ifCount != savedIfCount)) {
 					if (!isForceRescanInProgress(
-							iface.getNodeInfo().getNodeId(),
+							getNodeInfo(iface).getNodeId(),
 							iface.getHostAddress())) {
 						log()
 								.info(
@@ -572,7 +571,7 @@ public class SnmpCollector implements ServiceCollector {
 												+ iface.getHostAddress()
 												+ " has changed, generating 'ForceRescan' event.");
 						generateForceRescanEvent(iface.getHostAddress(),
-								iface.getNodeInfo().getNodeId(), eproxy);
+								getNodeInfo(iface).getNodeId(), eproxy);
 					}
 				}
 			}
@@ -609,6 +608,24 @@ public class SnmpCollector implements ServiceCollector {
 							+ iface.getHostAddress(), t);
 			return COLLECTION_FAILED;
 		}
+	}
+
+	private Map getIfMap(CollectionInterface iface) throws CollectionError {
+		Map ifMap = iface.getIfMap();
+		if (ifMap == null) {
+			throw new CollectionError("Interface map not available for "
+					+ "interface " + iface.getHostAddress());
+		}
+		return ifMap;
+	}
+
+	private NodeInfo getNodeInfo(CollectionInterface iface) throws CollectionError {
+		NodeInfo nodeInfo = iface.getNodeInfo();
+		if (nodeInfo == null) {
+			throw new CollectionError("Node info not available for interface "
+					+ iface.getHostAddress());
+		}
+		return nodeInfo;
 	}
 
 	private void collectData(CollectionInterface iface,
@@ -706,12 +723,12 @@ public class SnmpCollector implements ServiceCollector {
 		String snmpStorage = iface.getSnmpStorage();
 
 		// Get primary interface index from NodeInfo object
-		NodeInfo nodeInfo = iface.getNodeInfo();
+		NodeInfo nodeInfo = getNodeInfo(iface);
 		int nodeId = nodeInfo.getNodeId();
 		int primaryIfIndex = nodeInfo.getPrimarySnmpIfIndex();
 
 		// Retrieve interface map attribute
-		Map ifMap = iface.getIfMap();
+		Map ifMap = getIfMap(iface);
 
 		/*
 		 * Write relevant collected SNMP statistics to RRD database First the
@@ -1139,54 +1156,6 @@ public class SnmpCollector implements ServiceCollector {
 			log.debug("getRRDIfAlias: ifAlias = " + snmpVar);
 		}
 		return snmpVar;
-	}
-
-	/**
-	 * This method is responsible for building a list of RRDDataSource objects
-	 * from the provided list of MibObject objects.
-	 * 
-	 * @param collectionName
-	 *            Collection name
-	 * @param oidList
-	 *            List of MibObject objects defining the oid's to be collected
-	 *            via SNMP.
-	 * 
-	 * @return list of RRDDataSource objects
-	 */
-	List buildDataSourceList(String collectionName, List oidList) {
-		// Log4j category
-		Category log = log();
-
-		/*
-		 * Retrieve the RRD expansion data source list which contains all the
-		 * expansion data source's. Use this list as a basis for building a data
-		 * source list for the current interface.
-		 */
-		List dsList = new LinkedList();
-
-		/*
-		 * Loop through the MIB object list to be collected for this interface
-		 * and add a corresponding RRD data source object. In this manner each
-		 * interface will have RRD files create which reflect only the data
-		 * sources pertinent to it.
-		 */
-		Iterator o = oidList.iterator();
-		while (o.hasNext()) {
-			MibObject obj = (MibObject) o.next();
-			DataSource ds = DataSource.dataSourceForMibObject(obj,
-					collectionName);
-			if (ds != null) {
-				// Add the new data source to the list
-				dsList.add(ds);
-			} else if (log.isEnabledFor(Priority.WARN)) {
-				log.warn("buildDataSourceList: Data type '" + obj.getType()
-						+ "' not supported.");
-				log.warn("buildDataSourceList: MIB object '" + obj.getAlias()
-						+ "' will not be mapped to a data source.");
-			}
-		}
-
-		return dsList;
 	}
 
 	/**

@@ -36,6 +36,8 @@ package org.opennms.netmgt.collectd;
 
 import java.util.List;
 
+import org.opennms.netmgt.config.DataCollectionConfigFactory;
+
 /**
  * This class encapsulates all of the node-level data required by the SNMP data
  * collector in order to successfully perform data collection for a scheduled
@@ -45,31 +47,31 @@ import java.util.List;
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
  */
 final class NodeInfo {
-    private int m_nodeId;
-
-    private int m_primarySnmpIfIndex;
-
     private List m_oidList;
 
     private List m_dsList;
 
-    public NodeInfo(int nodeId, int primaryIfIndex) {
-        m_nodeId = nodeId;
-        m_primarySnmpIfIndex = primaryIfIndex;
-        m_oidList = null;
-        m_dsList = null;
+	private CollectionInterface m_iface;
+
+	private String m_collectionName;
+
+    public NodeInfo(CollectionInterface iface, String collectionName) {
+    	m_iface = iface;
+    	m_collectionName = collectionName;
+    	loadOidList();
+    	loadDsList();
+    }
+    
+    public CollectionInterface getCollectionInterface() {
+    	return m_iface;
     }
 
     public int getNodeId() {
-        return m_nodeId;
-    }
-
-    public void setNodeId(int nodeId) {
-        m_nodeId = nodeId;
+        return m_iface.getNodeId();
     }
 
     public int getPrimarySnmpIfIndex() {
-        return m_primarySnmpIfIndex;
+        return m_iface.getIfIndex();
     }
 
     public void setDsList(List dsList) {
@@ -87,4 +89,21 @@ final class NodeInfo {
     public List getOidList() {
         return m_oidList;
     }
+
+	void loadOidList() {
+		/*
+		 * Retrieve list of mib objects to be collected from the remote
+		 * agent which are to be stored in the node-level RRD file. These
+		 * objects pertain to the node itself not any individual interfaces.
+		 */
+		List oidList = DataCollectionConfigFactory.getInstance()
+				.getMibObjectList(m_collectionName, getCollectionInterface().getSysObjectId(),
+						getCollectionInterface().getHostAddress(), -1);
+		setOidList(oidList);
+	}
+
+	void loadDsList() {
+		List dsList = DataCollectionConfigFactory.buildDataSourceList(m_collectionName, getOidList());
+		setDsList(dsList);
+	}
 } // end class

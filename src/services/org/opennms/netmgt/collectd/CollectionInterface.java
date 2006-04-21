@@ -80,33 +80,30 @@ public class CollectionInterface extends IPv4NetworkInterface {
 		return savedIfCount;
 	}
 
-	boolean hasInterfaceOids()
-			throws CollectionError {
-		boolean hasInterfaceOids = false;
-		Iterator iter = getIfMap().values().iterator();
-		while (iter.hasNext() && !hasInterfaceOids) {
+	boolean hasInterfaceOids() throws CollectionError {
+		
+		Map ifMap = getIfMap();
+		if (ifMap == null) return false;
+		
+		Iterator iter = ifMap.values().iterator();
+		while (iter.hasNext()) {
 			IfInfo ifInfo = (IfInfo) iter.next();
 			if (ifInfo.getType() < 1) {
 				continue;
 			}
 			if (!ifInfo.getOidList().isEmpty()) {
-				hasInterfaceOids = true;
+				return true;
 			}
 		}
-		return hasInterfaceOids;
+		return false;
 	}
 
 	Map getIfMap() throws CollectionError {
-		Map ifMap = (Map) getAttribute(SnmpCollector.IF_MAP_KEY);
-		if (ifMap == null) {
-			throw new CollectionError("Interface map not available for "
-					+ "interface " + getHostAddress());
-		}
-		return ifMap;
+		return m_collectionSet.getIfMap();
 	}
 
 	void setIfMap(Map ifMap) {
-		setAttribute(SnmpCollector.IF_MAP_KEY, ifMap);
+		m_collectionSet.setIfMap(ifMap);
 	}
 
 	public void setCollectionSet(CollectionSet collectionSet) {
@@ -118,16 +115,23 @@ public class CollectionInterface extends IPv4NetworkInterface {
 	}
 	
 	NodeInfo getNodeInfo() throws CollectionError {
-		NodeInfo nodeInfo = (NodeInfo) getAttribute(SnmpCollector.NODE_INFO_KEY);
-		if (nodeInfo == null) {
-			throw new CollectionError("Node info not available for interface "
-					+ getHostAddress());
-		}
-		return nodeInfo;
+		return m_collectionSet.getNodeInfo();
 	}
 
 	void setNodeInfo(NodeInfo nodeInfo) {
-		setAttribute(SnmpCollector.NODE_INFO_KEY, nodeInfo);
+		m_collectionSet.setNodeInfo(nodeInfo);
+	}
+
+	int getNodeId() {
+		return getIpInterface().getNode().getId().intValue();
+	}
+
+	int getIfIndex() {
+		return getIpInterface().getIfIndex().intValue();
+	}
+
+	String getSysObjectId() {
+		return getIpInterface().getNode().getSysObjectId();
 	}
 
 }
