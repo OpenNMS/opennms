@@ -12,7 +12,7 @@ import org.springframework.jdbc.core.SqlParameter;
 public class FindByAssetId extends AssetMappingQuery {
     
     public FindByAssetId(DataSource ds) {
-        super(ds, "FROM assets where nodeid = ?");
+        super(ds, "FROM assets where assets.nodeid = ?");
         super.declareParameter(new SqlParameter("id", Types.INTEGER));
         compile();
     }

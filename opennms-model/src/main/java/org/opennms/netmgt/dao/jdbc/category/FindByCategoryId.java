@@ -9,7 +9,7 @@ import org.springframework.jdbc.core.SqlParameter;
 public class FindByCategoryId extends CategoryMappingQuery {
 	
 	public FindByCategoryId(DataSource ds) {
-		super(ds, "FROM categories where categoryId = ?");
+		super(ds, "FROM categories where categoryies.categoryId = ?");
 		super.declareParameter(new SqlParameter("id", Types.INTEGER));
 		compile();
 	}
