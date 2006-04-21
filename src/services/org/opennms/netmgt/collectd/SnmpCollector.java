@@ -93,7 +93,7 @@ import org.opennms.netmgt.xml.event.Event;
  * @author <A HREF="mailto:mike@opennms.org">Mike Davidson </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
-final class SnmpCollector implements ServiceCollector {
+public class SnmpCollector implements ServiceCollector {
 	private final class IfNumberTracker extends SingleInstanceTracker {
 		int m_ifNumber = -1;
 
