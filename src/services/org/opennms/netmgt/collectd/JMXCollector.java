@@ -324,7 +324,7 @@ public abstract class JMXCollector implements ServiceCollector {
      *            interface belongs..
      */
 
-    public void initialize(NetworkInterface iface, Map parameters) {
+    public void initialize(CollectionInterface iface, Map parameters) {
         Category log = ThreadCategory.getInstance(getClass());
         InetAddress ipAddr = (InetAddress) iface.getAddress();
 
@@ -433,7 +433,7 @@ public abstract class JMXCollector implements ServiceCollector {
      *            Network interface to be released.
      */
 
-    public void release(NetworkInterface iface) {
+    public void release(CollectionInterface iface) {
         // Nothing to release...
     }
 
@@ -452,7 +452,7 @@ public abstract class JMXCollector implements ServiceCollector {
      *            belongs.
      */
 
-    public int collect(NetworkInterface iface, EventProxy eproxy, Map map) {
+    public int collect(CollectionInterface iface, EventProxy eproxy, Map map) {
         Category log = ThreadCategory.getInstance(getClass());
         InetAddress ipaddr = (InetAddress) iface.getAddress();
         String collectionName = (String) iface.getAttribute("collectionName");

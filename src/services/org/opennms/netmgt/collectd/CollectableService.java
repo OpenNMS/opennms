@@ -40,12 +40,13 @@ import java.io.File;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
+import org.apache.log4j.Category;
+import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.collectd.Collectd.SchedulingCompletedFlag;
 import org.opennms.netmgt.config.DataCollectionConfigFactory;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 import org.opennms.netmgt.model.OnmsIpInterface;
-import org.opennms.netmgt.poller.IPv4NetworkInterface;
 import org.opennms.netmgt.scheduler.ReadyRunnable;
 import org.opennms.netmgt.scheduler.Scheduler;
 import org.opennms.netmgt.xml.event.Event;
@@ -59,7 +60,7 @@ import org.opennms.netmgt.xml.event.Event;
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  * 
  */
-final class CollectableService extends IPv4NetworkInterface implements ReadyRunnable {
+final class CollectableService implements ReadyRunnable {
     /**
      * Interface's parent node identifier
      */
@@ -92,9 +93,9 @@ final class CollectableService extends IPv4NetworkInterface implements ReadyRunn
 
 	private CollectionSpecification m_spec;
 
-	private OnmsIpInterface m_iface;
-
 	private SchedulingCompletedFlag m_schedulingCompletedFlag;
+
+	private CollectionInterface m_collectionIface;
 
     /**
      * Constructs a new instance of a CollectableService object.
@@ -111,8 +112,7 @@ final class CollectableService extends IPv4NetworkInterface implements ReadyRunn
      * 
      */
     CollectableService(OnmsIpInterface iface, CollectionSpecification spec, Scheduler scheduler, SchedulingCompletedFlag schedulingCompletedFlag) {
-        super(iface.getInetAddress());
-        m_iface = iface;
+        m_collectionIface = new CollectionInterface(iface);
         m_spec = spec;
         m_scheduler = scheduler;
         m_schedulingCompletedFlag = schedulingCompletedFlag;
@@ -124,9 +124,13 @@ final class CollectableService extends IPv4NetworkInterface implements ReadyRunn
 
         m_lastScheduledCollectionTime = 0L;
         
-        m_spec.initialize(this);
+        m_spec.initialize(m_collectionIface);
 
 
+    }
+    
+    public Object getAddress() {
+    	return m_collectionIface.getAddress();
     }
     
     public CollectionSpecification getSpecification() {
@@ -210,7 +214,7 @@ final class CollectableService extends IPv4NetworkInterface implements ReadyRunn
         Event event = new Event();
         event.setUei(uei);
         event.setNodeid((long) m_nodeId);
-        event.setInterface(m_address.getHostAddress());
+        event.setInterface(getHostAddress());
         event.setService("SNMP");
         event.setSource("OpenNMS.Collectd");
         try {
@@ -227,13 +231,17 @@ final class CollectableService extends IPv4NetworkInterface implements ReadyRunn
             EventIpcManagerFactory.getIpcManager().sendNow(event);
 
             if (log().isDebugEnabled())
-                log().debug("sendEvent: Sent event " + uei + " for " + m_nodeId + "/" + m_address.getHostAddress() + "/" + getServiceName());
+                log().debug("sendEvent: Sent event " + uei + " for " + m_nodeId + "/" + getHostAddress() + "/" + getServiceName());
 
         } catch (Exception ex) {
-            log().error("Failed to send the event " + uei + " for interface " + m_address.getHostAddress(), ex);
+            log().error("Failed to send the event " + uei + " for interface " + getHostAddress(), ex);
         }
 
     }
+
+	private String getHostAddress() {
+		return m_collectionIface.getHostAddress();
+	}
 
     /**
      * This is the main method of the class. An instance is normally enqueued on
@@ -255,7 +263,7 @@ final class CollectableService extends IPv4NetworkInterface implements ReadyRunn
         // Check scheduled outages to see if any apply indicating
         // that the collection should be skipped
         //
-        if (!m_spec.scheduledOutage(m_iface)) {
+        if (!m_spec.scheduledOutage(m_collectionIface)) {
 
         	int status = doCollection();
         	updateStatus(status);
@@ -298,13 +306,13 @@ final class CollectableService extends IPv4NetworkInterface implements ReadyRunn
 		// Perform SNMP data collection
 		//
 		if (log().isDebugEnabled())
-			log().debug("run: starting new collection for " + m_address.getHostAddress());
+			log().debug("run: starting new collection for " + getHostAddress());
 
 		int status = ServiceCollector.COLLECTION_FAILED;
 		try {
-	        status = m_spec.collect(this);
+	        status = m_spec.collect(m_collectionIface);
 		} catch (Throwable t) {
-			log().error("run: An undeclared throwable was caught during SNMP collection for interface " + m_address.getHostAddress(), t);
+			log().error("run: An undeclared throwable was caught during SNMP collection for interface " + getHostAddress(), t);
 		}
 		return status;
 	}
@@ -330,7 +338,7 @@ final class CollectableService extends IPv4NetworkInterface implements ReadyRunn
                 // or rescheduling this collector.
                 //
                 if (log().isDebugEnabled())
-                    log().debug("Collector for  " + m_address.getHostAddress() + " is marked for deletion...skipping collection, will not reschedule.");
+                    log().debug("Collector for  " + getHostAddress() + " is marked for deletion...skipping collection, will not reschedule.");
 
                 return ABORT_COLLECTION;
             }
@@ -342,16 +350,16 @@ final class CollectableService extends IPv4NetworkInterface implements ReadyRunn
                 // reinit the collector for this interface
                 //
                 if (log().isDebugEnabled())
-                    log().debug("ReinitializationFlag set for " + m_address.getHostAddress());
+                    log().debug("ReinitializationFlag set for " + getHostAddress());
 
                 try {
                     reinitialize();
                     if (log().isDebugEnabled())
-                        log().debug("Completed reinitializing SNMP collector for " + m_address.getHostAddress());
+                        log().debug("Completed reinitializing SNMP collector for " + getHostAddress());
                 } catch (RuntimeException rE) {
-                    log().warn("Unable to initialize " + m_address.getHostAddress() + " for " + m_spec.getServiceName() + " collection, reason: " + rE.getMessage());
+                    log().warn("Unable to initialize " + getHostAddress() + " for " + m_spec.getServiceName() + " collection, reason: " + rE.getMessage());
                 } catch (Throwable t) {
-                    log().error("Uncaught exception, failed to intialize interface " + m_address.getHostAddress() + " for " + m_spec.getServiceName() + " data collection", t);
+                    log().error("Uncaught exception, failed to intialize interface " + getHostAddress() + " for " + m_spec.getServiceName() + " data collection", t);
                 }
             }
 
@@ -359,7 +367,7 @@ final class CollectableService extends IPv4NetworkInterface implements ReadyRunn
             //
             if (m_updates.isReparentingFlagSet()) {
                 if (log().isDebugEnabled())
-                    log().debug("ReparentingFlag set for " + m_address.getHostAddress());
+                    log().debug("ReparentingFlag set for " + getHostAddress());
 
                 // The interface has been reparented under a different node
                 // (with
@@ -461,14 +469,14 @@ final class CollectableService extends IPv4NetworkInterface implements ReadyRunn
                 //
                 try {
                     if (log().isDebugEnabled())
-                        log().debug("Reinitializing SNMP collector for " + m_address.getHostAddress());
+                        log().debug("Reinitializing SNMP collector for " + getHostAddress());
                     reinitialize();
                     if (log().isDebugEnabled())
-                        log().debug("Completed reinitializing SNMP collector for " + m_address.getHostAddress());
+                        log().debug("Completed reinitializing SNMP collector for " + getHostAddress());
                 } catch (RuntimeException rE) {
-                    log().warn("Unable to initialize " + m_address.getHostAddress() + " for " + m_spec.getServiceName() + " collection, reason: " + rE.getMessage());
+                    log().warn("Unable to initialize " + getHostAddress() + " for " + m_spec.getServiceName() + " collection, reason: " + rE.getMessage());
                 } catch (Throwable t) {
-                    log().error("Uncaught exception, failed to initialize interface " + m_address.getHostAddress() + " for " + m_spec.getServiceName() + " data collection", t);
+                    log().error("Uncaught exception, failed to initialize interface " + getHostAddress() + " for " + m_spec.getServiceName() + " data collection", t);
                 }
             }
 
@@ -479,9 +487,14 @@ final class CollectableService extends IPv4NetworkInterface implements ReadyRunn
 
         return !ABORT_COLLECTION;
     }
+    
+    Category log() {
+    	return ThreadCategory.getInstance(getClass());
+    }
 
 	private void reinitialize() {
-		m_spec.release(this);
-		m_spec.initialize(this);
+		m_spec.release(m_collectionIface);
+		m_spec.initialize(m_collectionIface);
 	}
+
 }

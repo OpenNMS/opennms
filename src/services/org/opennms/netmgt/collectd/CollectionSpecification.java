@@ -137,15 +137,15 @@ public class CollectionSpecification {
 	
 	}
 
-	public void initialize(CollectableService service) {
+	public void initialize(CollectionInterface service) {
 		m_collector.initialize(service, getPropertyMap());
 	}
 
-	public void release(CollectableService service) {
+	public void release(CollectionInterface service) {
 		m_collector.release(service);
 	}
 
-	public int collect(CollectableService service) {
+	public int collect(CollectionInterface service) {
 		return getCollector().collect(service, eventProxy(), getPropertyMap());
 	}
 
@@ -161,7 +161,8 @@ public class CollectionSpecification {
 		};
 	}
 
-	public boolean scheduledOutage(OnmsIpInterface iface) {
+	public boolean scheduledOutage(CollectionInterface collIface) {
+		OnmsIpInterface iface = collIface.getIpInterface();
 	
 	    Category log = log();
 	
