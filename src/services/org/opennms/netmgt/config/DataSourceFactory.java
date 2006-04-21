@@ -40,7 +40,6 @@ package org.opennms.netmgt.config;
 
 import java.beans.PropertyVetoException;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Connection;
@@ -54,6 +53,7 @@ import org.exolab.castor.jdo.conf.Database;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.ConfigFileConstants;
+import org.opennms.netmgt.dao.jdbc.Cache;
 
 /**
  * <p>
@@ -105,10 +105,17 @@ public final class DataSourceFactory implements DataSource {
      * 
      */
     public static synchronized void init() throws IOException, MarshalException, ValidationException, ClassNotFoundException, PropertyVetoException, SQLException {
-    		init("opennms");
+    	if (isLoaded("opennms")	) return;
+    	
+    	init("opennms");
+
+    	// FIXME: this is hardcoded here but should be set up in spring only one time somehow
+    	// ALSO we assume here that we are using JDBC not Hibernate.. 
+		Cache.registerFactories(getDataSource());
+    	
     }
 
-    public static synchronized void init(String dsName) throws IOException, MarshalException, ValidationException, ClassNotFoundException, PropertyVetoException, SQLException {
+	public static synchronized void init(String dsName) throws IOException, MarshalException, ValidationException, ClassNotFoundException, PropertyVetoException, SQLException {
         if (isLoaded(dsName)) {
             // init already called - return
             // to reload, reload() will need to be called

@@ -34,8 +34,20 @@ package org.opennms.netmgt.dao.jdbc;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.sql.DataSource;
+
+import org.opennms.netmgt.dao.jdbc.asset.AssetRecordFactory;
+import org.opennms.netmgt.dao.jdbc.category.CategoryFactory;
+import org.opennms.netmgt.dao.jdbc.distpoller.DistPollerFactory;
+import org.opennms.netmgt.dao.jdbc.event.EventFactory;
+import org.opennms.netmgt.dao.jdbc.ipif.IpInterfaceFactory;
+import org.opennms.netmgt.dao.jdbc.monsvc.MonitoredServiceFactory;
+import org.opennms.netmgt.dao.jdbc.node.NodeFactory;
+import org.opennms.netmgt.dao.jdbc.snmpif.SnmpInterfaceFactory;
+import org.opennms.netmgt.dao.jdbc.svctype.ServiceTypeFactory;
+
 public class Cache {
-    
+	
     private static final class CacheMap extends ThreadLocal {
         protected Object initialValue() {
             return new HashMap();
@@ -97,5 +109,17 @@ public class Cache {
     public static Object obtain(Class clazz, Object key) {
     	return findFactory(clazz).get(clazz, key);
     }
+
+	public static void registerFactories(DataSource dataSource) {
+		AssetRecordFactory.register(dataSource);
+		CategoryFactory.register(dataSource);
+		DistPollerFactory.register(dataSource);
+		EventFactory.register(dataSource);
+		IpInterfaceFactory.register(dataSource);
+		MonitoredServiceFactory.register(dataSource);
+		NodeFactory.register(dataSource);
+		ServiceTypeFactory.register(dataSource);
+		SnmpInterfaceFactory.register(dataSource);
+	}
     
 }
