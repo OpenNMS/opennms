@@ -38,8 +38,6 @@ import javax.sql.DataSource;
 
 import org.opennms.netmgt.dao.jdbc.Cache;
 import org.opennms.netmgt.dao.jdbc.JdbcSet;
-import org.opennms.netmgt.dao.jdbc.LazySet;
-import org.opennms.netmgt.dao.jdbc.ipif.FindByNode;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsEvent;
@@ -125,17 +123,8 @@ public class AlarmMappingQuery extends MappingSqlQuery {
         alarm.setTTicketState(new Integer(rs.getInt("tticketState")));
         alarm.setUei(rs.getString("eventUei"));
         
-        new LazySet.Loader() {
-
-			public Set load() {
-				return new FindByNode(getDataSource()).findSet(id);
-			}
-        	
-        };
-                
-                
         alarm.setDirty(false);
-        return event;
+        return alarm;
     }
     
     public OnmsAlarm findUnique() {

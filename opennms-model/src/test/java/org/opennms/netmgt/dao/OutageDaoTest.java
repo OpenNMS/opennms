@@ -32,7 +32,7 @@ public class OutageDaoTest extends AbstractDaoTestCase {
         outage.setMonitoredService(new OnmsMonitoredService(ipInterface, serviceType));
         getOutageDao().save(outage);
         //it works we're so smart! hehe
-        outage = getOutageDao().load(outage.getOutageId());
+        outage = getOutageDao().load(outage.getId());
         assertEquals("ICMP", outage.getMonitoredService().getServiceType().getName());
     }
 

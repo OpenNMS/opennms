@@ -19,7 +19,7 @@ public class OnmsOutage extends OnmsEntity implements Serializable {
     private static final long serialVersionUID = 3846398168228820151L;
 
     /** identifier field */
-    private Integer m_outageId;
+    private Integer m_id;
 
     /** persistent field */
     private OnmsIpInterface m_ipInteface;
@@ -41,7 +41,7 @@ public class OnmsOutage extends OnmsEntity implements Serializable {
 
     /** full constructor */
     public OnmsOutage(Integer outageId, OnmsIpInterface ipInterface, Date ifLostService, Date ifRegainedService, OnmsEvent eventBySvcRegainedEvent, OnmsEvent eventBySvcLostEvent, OnmsMonitoredService monitoredService) {
-        m_outageId = outageId;
+        m_id = outageId;
         m_ipInteface = ipInterface;
         m_ifLostService = ifLostService;
         m_ifRegainedService = ifRegainedService;
@@ -56,7 +56,7 @@ public class OnmsOutage extends OnmsEntity implements Serializable {
 
     /** minimal constructor */
     public OnmsOutage(Integer outageId, OnmsIpInterface ipInterface, Date ifLostService, OnmsEvent eventBySvcRegainedEvent, OnmsEvent eventBySvcLostEvent, OnmsMonitoredService monitoredService) {
-        m_outageId = outageId;
+        m_id = outageId;
         m_ipInteface = ipInterface;
         m_ifLostService = ifLostService;
         m_eventBySvcRegainedEvent = eventBySvcRegainedEvent;
@@ -68,12 +68,12 @@ public class OnmsOutage extends OnmsEntity implements Serializable {
      * @hibernate.id generator-class="assigned" type="java.lang.Integer" column="outageId"
      * @hibernate.generator-param name="sequence" value="outageNxtId"
      */
-    public Integer getOutageId() {
-        return m_outageId;
+    public Integer getId() {
+        return m_id;
     }
 
-    public void setOutageId(Integer outageId) {
-        m_outageId = outageId;
+    public void setId(Integer outageId) {
+        m_id = outageId;
     }
 
     /** 
@@ -164,7 +164,7 @@ public class OnmsOutage extends OnmsEntity implements Serializable {
 
     public String toString() {
         return new ToStringCreator(this)
-            .append("outageId", getOutageId())
+            .append("outageId", getId())
             .toString();
     }
 

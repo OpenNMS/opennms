@@ -38,8 +38,6 @@ import javax.sql.DataSource;
 
 import org.opennms.netmgt.dao.jdbc.Cache;
 import org.opennms.netmgt.dao.jdbc.JdbcSet;
-import org.opennms.netmgt.dao.jdbc.LazySet;
-import org.opennms.netmgt.dao.jdbc.ipif.FindByNode;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsEvent;
@@ -142,15 +140,6 @@ public class EventMappingQuery extends MappingSqlQuery {
         event.setEventAckUser(rs.getString("eventAckUser"));
         event.setEventAckTime(rs.getDate("eventAckTime"));
         
-        new LazySet.Loader() {
-
-			public Set load() {
-				return new FindByNode(getDataSource()).findSet(id);
-			}
-        	
-        };
-                
-                
         event.setDirty(false);
         return event;
     }

@@ -10,6 +10,10 @@ import org.opennms.netmgt.model.OnmsNode;
 
 public class LazyIpInterface extends OnmsIpInterface {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 3388830282688753457L;
 	private boolean m_loaded = false;
 	private DataSource m_dataSource;
 	private boolean m_dirty;

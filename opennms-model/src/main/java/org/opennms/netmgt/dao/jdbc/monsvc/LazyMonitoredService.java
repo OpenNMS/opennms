@@ -10,6 +10,10 @@ import org.opennms.netmgt.model.OnmsServiceType;
 
 public class LazyMonitoredService extends OnmsMonitoredService {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -8190622405479491506L;
 	private boolean m_loaded = false;
 	private DataSource m_dataSource;
 	private boolean m_dirty;

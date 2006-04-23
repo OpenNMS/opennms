@@ -1,26 +1,26 @@
 /**
  * 
  */
-package org.opennms.netmgt.dao.jdbc.alarm;
+package org.opennms.netmgt.dao.jdbc.outage;
 
 import java.sql.Types;
 
 import javax.sql.DataSource;
 
-import org.opennms.netmgt.model.OnmsAlarm;
+import org.opennms.netmgt.model.OnmsOutage;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.SqlParameter;
 import org.springframework.jdbc.object.SqlUpdate;
 
-public class AlarmDelete extends SqlUpdate {
+public class OutageDelete extends SqlUpdate {
     
-   public AlarmDelete(DataSource ds) {
-       super(ds, "delete from alarms where alarmid = ?");
+   public OutageDelete(DataSource ds) {
+       super(ds, "delete from outages where outageid = ?");
        declareParameter(new SqlParameter(Types.INTEGER));
        compile();
    }
 
-   public int doDelete(OnmsAlarm alarm) throws DataAccessException {
+   public int doDelete(OnmsOutage alarm) throws DataAccessException {
        return super.update(new Object[] { alarm.getId() });
    }
 }

@@ -6,7 +6,7 @@ package org.opennms.netmgt.dao.jdbc.alarm;
 import javax.sql.DataSource;
 
 import org.opennms.netmgt.dao.jdbc.Factory;
-import org.opennms.netmgt.model.OnmsEvent;
+import org.opennms.netmgt.model.OnmsAlarm;
 
 public class AlarmFactory extends Factory {
 	
@@ -21,11 +21,11 @@ public class AlarmFactory extends Factory {
 	}
 
 	public AlarmFactory() {
-        super(OnmsEvent.class);
+        super(OnmsAlarm.class);
     }
 
     protected void assignId(Object obj, Object id) {
-		((OnmsEvent)obj).setId((Integer)id);
+		((OnmsAlarm)obj).setId((Integer)id);
 	}
 
 	protected Object create() {

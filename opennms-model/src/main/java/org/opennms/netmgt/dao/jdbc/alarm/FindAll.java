@@ -9,7 +9,7 @@ import javax.sql.DataSource;
 public class FindAll extends AlarmMappingQuery {
 
     public FindAll(DataSource ds) {
-        super(ds, "FROM alarm as a");
+        super(ds, "FROM alarms as a");
         compile();
     }
     

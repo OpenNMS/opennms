@@ -8,7 +8,6 @@ import java.sql.Types;
 import javax.sql.DataSource;
 
 import org.opennms.netmgt.model.OnmsEvent;
-import org.opennms.netmgt.model.OnmsNode;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.SqlParameter;
 import org.springframework.jdbc.object.SqlUpdate;
