@@ -119,7 +119,7 @@ public class EventSaveOrUpdate extends SqlUpdate {
                 event.getEventDisplay(),   //eventDisplay
                 event.getEventAckUser(),   //eventAckUser
                 event.getEventAckTime(),   //eventAckTime
-                event.getAlarm().getAlarmid() };   //alarmID
+                event.getAlarm().getId() };   //alarmID
         
         return update(parms);
     }    

@@ -106,6 +106,23 @@
   	<property name="dataSource" ref="dataSource" />
   </bean>
 
+  <!-- Added these in case the importer is changed and requires these DAOs
+  EventFactory.register(m_dataSource); 
+  <bean id="eventFactory" class="org.opennms.netmgt.dao.jdbc.event.EventFactory">
+  	<property name="dataSource" ref="dataSource" />
+  </bean>
+  <bean id="eventDao" class="org.opennms.netmgt.dao.jdbc.EventDaoJdbc">
+  	<property name="dataSource" ref="dataSource" />
+  </bean>
+  AlarmFactory.register(m_dataSource); 
+  <bean id="alarmFactory" class="org.opennms.netmgt.dao.jdbc.alarm.AlarmFactory">
+  	<property name="dataSource" ref="dataSource" />
+  </bean>
+  <bean id="alarmDao" class="org.opennms.netmgt.dao.jdbc.AlarmDaoJdbc">
+  	<property name="dataSource" ref="dataSource" />
+  </bean>
+  -->  
+
   <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
   	<property name="dataSource" ref="dataSource" />
   </bean>

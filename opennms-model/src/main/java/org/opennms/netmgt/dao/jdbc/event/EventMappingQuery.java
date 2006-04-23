@@ -83,7 +83,7 @@ public class EventMappingQuery extends MappingSqlQuery {
         		"e.eventDisplay as eventDisplay, \n" + 
         		"e.eventAckUser as eventAckUser, \n" + 
         		"e.eventAckTime as eventAckTime, \n" + 
-        		"e.alarmID as alarmID,  "+clause);
+        		"e.alarmID as alarmID \n" +clause);
     }
     
     public DataSource getDataSource() {

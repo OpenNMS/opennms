@@ -36,6 +36,7 @@ import java.util.Map;
 
 import javax.sql.DataSource;
 
+import org.opennms.netmgt.dao.jdbc.alarm.AlarmFactory;
 import org.opennms.netmgt.dao.jdbc.asset.AssetRecordFactory;
 import org.opennms.netmgt.dao.jdbc.category.CategoryFactory;
 import org.opennms.netmgt.dao.jdbc.distpoller.DistPollerFactory;
@@ -120,6 +121,10 @@ public class Cache {
 		NodeFactory.register(dataSource);
 		ServiceTypeFactory.register(dataSource);
 		SnmpInterfaceFactory.register(dataSource);
+		
+		EventFactory.register(dataSource);
+		AlarmFactory.register(dataSource);
+		
 	}
     
 }

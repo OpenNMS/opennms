@@ -19,107 +19,107 @@ public class OnmsAlarm implements Serializable {
     private static final long serialVersionUID = -1342362989494090682L;
 
     /** identifier field */
-    private Integer alarmid;
+    private Integer m_id;
 
     /** persistent field */
-    private String eventuei;
+    private String m_uei;
 
     /** persistent field */
-    private String dpname;
+    private OnmsDistPoller m_distPoller;
 
     /** nullable persistent field */
-    private Integer nodeid;
+    private OnmsNode m_node;
 
     /** nullable persistent field */
-    private String ipaddr;
+    private String m_ipAddr;
 
     /** nullable persistent field */
-    private Integer serviceid;
+    private OnmsMonitoredService m_service;
 
     /** nullable persistent field */
-    private String reductionkey;
+    private String m_reductionKey;
 
     /** nullable persistent field */
-    private Integer alarmtype;
+    private Integer m_alarmType;
 
     /** persistent field */
-    private int counter;
+    private Integer m_counter;
 
     /** persistent field */
-    private int severity;
+    private Integer m_severity;
 
     /** persistent field */
-    private Date firsteventtime;
+    private Date m_firstEventTime;
 
     /** persistent field */
-    private Date lasteventtime;
+    private Date m_lastEventTime;
 
     /** nullable persistent field */
-    private String description;
+    private String m_description;
 
     /** nullable persistent field */
-    private String logmsg;
+    private String m_logMsg;
 
     /** nullable persistent field */
-    private String operinstruct;
+    private String m_operInstruct;
 
     /** nullable persistent field */
-    private String tticketid;
+    private String m_tTicketId;
 
     /** nullable persistent field */
-    private Integer tticketstate;
+    private Integer m_tTicketState;
 
     /** nullable persistent field */
-    private String mouseovertext;
+    private String m_mouseOverText;
 
     /** nullable persistent field */
-    private Date suppresseduntil;
+    private Date m_suppressedUntil;
 
     /** nullable persistent field */
-    private String suppresseduser;
+    private String m_suppressedUser;
 
     /** nullable persistent field */
-    private Date suppressedtime;
+    private Date m_suppressedTime;
 
     /** nullable persistent field */
-    private String alarmackuser;
+    private String m_alarmAckUser;
 
     /** nullable persistent field */
-    private Date alarmacktime;
+    private Date m_alarmAckTime;
 
     /** nullable persistent field */
-    private String clearuei;
+    private String m_clearUei;
 
     /** persistent field */
-    private org.opennms.netmgt.model.OnmsEvent event;
+    private org.opennms.netmgt.model.OnmsEvent m_lastEvent;
 
     /** full constructor */
-    public OnmsAlarm(Integer alarmid, String eventuei, String dpname, Integer nodeid, String ipaddr, Integer serviceid, String reductionkey, Integer alarmtype, int counter, int severity, Date firsteventtime, Date lasteventtime, String description, String logmsg, String operinstruct, String tticketid, Integer tticketstate, String mouseovertext, Date suppresseduntil, String suppresseduser, Date suppressedtime, String alarmackuser, Date alarmacktime, String clearuei, org.opennms.netmgt.model.OnmsEvent event) {
-        this.alarmid = alarmid;
-        this.eventuei = eventuei;
-        this.dpname = dpname;
-        this.nodeid = nodeid;
-        this.ipaddr = ipaddr;
-        this.serviceid = serviceid;
-        this.reductionkey = reductionkey;
-        this.alarmtype = alarmtype;
-        this.counter = counter;
-        this.severity = severity;
-        this.firsteventtime = firsteventtime;
-        this.lasteventtime = lasteventtime;
-        this.description = description;
-        this.logmsg = logmsg;
-        this.operinstruct = operinstruct;
-        this.tticketid = tticketid;
-        this.tticketstate = tticketstate;
-        this.mouseovertext = mouseovertext;
-        this.suppresseduntil = suppresseduntil;
-        this.suppresseduser = suppresseduser;
-        this.suppressedtime = suppressedtime;
-        this.alarmackuser = alarmackuser;
-        this.alarmacktime = alarmacktime;
-        this.clearuei = clearuei;
-        this.event = event;
+    public OnmsAlarm(Integer alarmid, String eventuei, OnmsDistPoller distPoller, OnmsNode node, String ipaddr, OnmsMonitoredService service, String reductionkey, Integer alarmtype, Integer counter, Integer severity, Date firsteventtime, Date lasteventtime, String description, String logmsg, String operinstruct, String tticketid, Integer tticketstate, String mouseovertext, Date suppresseduntil, String suppresseduser, Date suppressedtime, String alarmackuser, Date alarmacktime, String clearuei, org.opennms.netmgt.model.OnmsEvent event) {
+        this.m_id = alarmid;
+        this.m_uei = eventuei;
+        this.m_distPoller = distPoller;
+        this.m_node = node;
+        this.m_ipAddr = ipaddr;
+        this.m_service = service;
+        this.m_reductionKey = reductionkey;
+        this.m_alarmType = alarmtype;
+        this.m_counter = counter;
+        this.m_severity = severity;
+        this.m_firstEventTime = firsteventtime;
+        this.m_lastEventTime = lasteventtime;
+        this.m_description = description;
+        this.m_logMsg = logmsg;
+        this.m_operInstruct = operinstruct;
+        this.m_tTicketId = tticketid;
+        this.m_tTicketState = tticketstate;
+        this.m_mouseOverText = mouseovertext;
+        this.m_suppressedUntil = suppresseduntil;
+        this.m_suppressedUser = suppresseduser;
+        this.m_suppressedTime = suppressedtime;
+        this.m_alarmAckUser = alarmackuser;
+        this.m_alarmAckTime = alarmacktime;
+        this.m_clearUei = clearuei;
+        this.m_lastEvent = event;
     }
 
     /** default constructor */
@@ -127,15 +127,15 @@ public class OnmsAlarm implements Serializable {
     }
 
     /** minimal constructor */
-    public OnmsAlarm(Integer alarmid, String eventuei, String dpname, int counter, int severity, Date firsteventtime, Date lasteventtime, org.opennms.netmgt.model.OnmsEvent event) {
-        this.alarmid = alarmid;
-        this.eventuei = eventuei;
-        this.dpname = dpname;
-        this.counter = counter;
-        this.severity = severity;
-        this.firsteventtime = firsteventtime;
-        this.lasteventtime = lasteventtime;
-        this.event = event;
+    public OnmsAlarm(Integer alarmid, String eventuei, OnmsDistPoller distPoller, Integer counter, Integer severity, Date firsteventtime, Date lasteventtime, org.opennms.netmgt.model.OnmsEvent event) {
+        this.m_id = alarmid;
+        this.m_uei = eventuei;
+        this.m_distPoller = distPoller;
+        this.m_counter = counter;
+        this.m_severity = severity;
+        this.m_firstEventTime = firsteventtime;
+        this.m_lastEventTime = lasteventtime;
+        this.m_lastEvent = event;
     }
 
     /** 
@@ -145,12 +145,12 @@ public class OnmsAlarm implements Serializable {
      *             column="alarmid"
      *         
      */
-    public Integer getAlarmid() {
-        return this.alarmid;
+    public Integer getId() {
+        return this.m_id;
     }
 
-    public void setAlarmid(Integer alarmid) {
-        this.alarmid = alarmid;
+    public void setId(Integer alarmid) {
+        this.m_id = alarmid;
     }
 
     /** 
@@ -160,12 +160,12 @@ public class OnmsAlarm implements Serializable {
      *             not-null="true"
      *         
      */
-    public String getEventuei() {
-        return this.eventuei;
+    public String getUei() {
+        return this.m_uei;
     }
 
-    public void setEventuei(String eventuei) {
-        this.eventuei = eventuei;
+    public void setUei(String eventuei) {
+        this.m_uei = eventuei;
     }
 
     /** 
@@ -175,12 +175,12 @@ public class OnmsAlarm implements Serializable {
      *             not-null="true"
      *         
      */
-    public String getDpname() {
-        return this.dpname;
+    public OnmsDistPoller getDistPoller() {
+        return this.m_distPoller;
     }
 
-    public void setDpname(String dpname) {
-        this.dpname = dpname;
+    public void setDistPoller(OnmsDistPoller distPoller) {
+        this.m_distPoller = distPoller;
     }
 
     /** 
@@ -189,12 +189,12 @@ public class OnmsAlarm implements Serializable {
      *             length="4"
      *         
      */
-    public Integer getNodeid() {
-        return this.nodeid;
+    public OnmsNode getNode() {
+        return this.m_node;
     }
 
-    public void setNodeid(Integer nodeid) {
-        this.nodeid = nodeid;
+    public void setNodeId(OnmsNode node) {
+        this.m_node = node;
     }
 
     /** 
@@ -203,12 +203,12 @@ public class OnmsAlarm implements Serializable {
      *             length="16"
      *         
      */
-    public String getIpaddr() {
-        return this.ipaddr;
+    public String getIpAddr() {
+        return this.m_ipAddr;
     }
 
-    public void setIpaddr(String ipaddr) {
-        this.ipaddr = ipaddr;
+    public void setIpAddr(String ipaddr) {
+        this.m_ipAddr = ipaddr;
     }
 
     /** 
@@ -217,12 +217,12 @@ public class OnmsAlarm implements Serializable {
      *             length="4"
      *         
      */
-    public Integer getServiceid() {
-        return this.serviceid;
+    public OnmsMonitoredService getService() {
+        return this.m_service;
     }
 
-    public void setServiceid(Integer serviceid) {
-        this.serviceid = serviceid;
+    public void setService(OnmsMonitoredService service) {
+        this.m_service = service;
     }
 
     /** 
@@ -232,12 +232,12 @@ public class OnmsAlarm implements Serializable {
      *             length="256"
      *         
      */
-    public String getReductionkey() {
-        return this.reductionkey;
+    public String getReductionKey() {
+        return this.m_reductionKey;
     }
 
-    public void setReductionkey(String reductionkey) {
-        this.reductionkey = reductionkey;
+    public void setReductionKey(String reductionkey) {
+        this.m_reductionKey = reductionkey;
     }
 
     /** 
@@ -246,12 +246,12 @@ public class OnmsAlarm implements Serializable {
      *             length="4"
      *         
      */
-    public Integer getAlarmtype() {
-        return this.alarmtype;
+    public Integer getAlarmType() {
+        return this.m_alarmType;
     }
 
-    public void setAlarmtype(Integer alarmtype) {
-        this.alarmtype = alarmtype;
+    public void setAlarmType(Integer alarmtype) {
+        this.m_alarmType = alarmtype;
     }
 
     /** 
@@ -261,12 +261,12 @@ public class OnmsAlarm implements Serializable {
      *             not-null="true"
      *         
      */
-    public int getCounter() {
-        return this.counter;
+    public Integer getCounter() {
+        return this.m_counter;
     }
 
-    public void setCounter(int counter) {
-        this.counter = counter;
+    public void setCounter(Integer counter) {
+        this.m_counter = counter;
     }
 
     /** 
@@ -276,12 +276,12 @@ public class OnmsAlarm implements Serializable {
      *             not-null="true"
      *         
      */
-    public int getSeverity() {
-        return this.severity;
+    public Integer getSeverity() {
+        return this.m_severity;
     }
 
-    public void setSeverity(int severity) {
-        this.severity = severity;
+    public void setSeverity(Integer severity) {
+        this.m_severity = severity;
     }
 
     /** 
@@ -291,12 +291,12 @@ public class OnmsAlarm implements Serializable {
      *             not-null="true"
      *         
      */
-    public Date getFirsteventtime() {
-        return this.firsteventtime;
+    public Date getFirstEventTime() {
+        return this.m_firstEventTime;
     }
 
-    public void setFirsteventtime(Date firsteventtime) {
-        this.firsteventtime = firsteventtime;
+    public void setFirstEventTime(Date firsteventtime) {
+        this.m_firstEventTime = firsteventtime;
     }
 
     /** 
@@ -306,12 +306,12 @@ public class OnmsAlarm implements Serializable {
      *             not-null="true"
      *         
      */
-    public Date getLasteventtime() {
-        return this.lasteventtime;
+    public Date getLastEventTime() {
+        return this.m_lastEventTime;
     }
 
-    public void setLasteventtime(Date lasteventtime) {
-        this.lasteventtime = lasteventtime;
+    public void setLastEventTime(Date lasteventtime) {
+        this.m_lastEventTime = lasteventtime;
     }
 
     /** 
@@ -321,11 +321,11 @@ public class OnmsAlarm implements Serializable {
      *         
      */
     public String getDescription() {
-        return this.description;
+        return this.m_description;
     }
 
     public void setDescription(String description) {
-        this.description = description;
+        this.m_description = description;
     }
 
     /** 
@@ -334,12 +334,12 @@ public class OnmsAlarm implements Serializable {
      *             length="256"
      *         
      */
-    public String getLogmsg() {
-        return this.logmsg;
+    public String getLogMsg() {
+        return this.m_logMsg;
     }
 
-    public void setLogmsg(String logmsg) {
-        this.logmsg = logmsg;
+    public void setLogMsg(String logmsg) {
+        this.m_logMsg = logmsg;
     }
 
     /** 
@@ -348,12 +348,12 @@ public class OnmsAlarm implements Serializable {
      *             length="1024"
      *         
      */
-    public String getOperinstruct() {
-        return this.operinstruct;
+    public String getOperInstruct() {
+        return this.m_operInstruct;
     }
 
-    public void setOperinstruct(String operinstruct) {
-        this.operinstruct = operinstruct;
+    public void setOperInstruct(String operinstruct) {
+        this.m_operInstruct = operinstruct;
     }
 
     /** 
@@ -362,12 +362,12 @@ public class OnmsAlarm implements Serializable {
      *             length="128"
      *         
      */
-    public String getTticketid() {
-        return this.tticketid;
+    public String getTTicketId() {
+        return this.m_tTicketId;
     }
 
-    public void setTticketid(String tticketid) {
-        this.tticketid = tticketid;
+    public void setTTicketId(String tticketid) {
+        this.m_tTicketId = tticketid;
     }
 
     /** 
@@ -376,12 +376,12 @@ public class OnmsAlarm implements Serializable {
      *             length="4"
      *         
      */
-    public Integer getTticketstate() {
-        return this.tticketstate;
+    public Integer getTTicketState() {
+        return this.m_tTicketState;
     }
 
-    public void setTticketstate(Integer tticketstate) {
-        this.tticketstate = tticketstate;
+    public void setTTicketState(Integer tticketstate) {
+        this.m_tTicketState = tticketstate;
     }
 
     /** 
@@ -390,12 +390,12 @@ public class OnmsAlarm implements Serializable {
      *             length="64"
      *         
      */
-    public String getMouseovertext() {
-        return this.mouseovertext;
+    public String getMouseOverText() {
+        return this.m_mouseOverText;
     }
 
-    public void setMouseovertext(String mouseovertext) {
-        this.mouseovertext = mouseovertext;
+    public void setMouseOverText(String mouseovertext) {
+        this.m_mouseOverText = mouseovertext;
     }
 
     /** 
@@ -404,12 +404,12 @@ public class OnmsAlarm implements Serializable {
      *             length="8"
      *         
      */
-    public Date getSuppresseduntil() {
-        return this.suppresseduntil;
+    public Date getSuppressedUntil() {
+        return this.m_suppressedUntil;
     }
 
-    public void setSuppresseduntil(Date suppresseduntil) {
-        this.suppresseduntil = suppresseduntil;
+    public void setSuppressedUntil(Date suppresseduntil) {
+        this.m_suppressedUntil = suppresseduntil;
     }
 
     /** 
@@ -418,12 +418,12 @@ public class OnmsAlarm implements Serializable {
      *             length="256"
      *         
      */
-    public String getSuppresseduser() {
-        return this.suppresseduser;
+    public String getSuppressedUser() {
+        return this.m_suppressedUser;
     }
 
-    public void setSuppresseduser(String suppresseduser) {
-        this.suppresseduser = suppresseduser;
+    public void setSuppressedUser(String suppresseduser) {
+        this.m_suppressedUser = suppresseduser;
     }
 
     /** 
@@ -432,12 +432,12 @@ public class OnmsAlarm implements Serializable {
      *             length="8"
      *         
      */
-    public Date getSuppressedtime() {
-        return this.suppressedtime;
+    public Date getSuppressedTime() {
+        return this.m_suppressedTime;
     }
 
-    public void setSuppressedtime(Date suppressedtime) {
-        this.suppressedtime = suppressedtime;
+    public void setSuppressedTime(Date suppressedtime) {
+        this.m_suppressedTime = suppressedtime;
     }
 
     /** 
@@ -446,12 +446,12 @@ public class OnmsAlarm implements Serializable {
      *             length="256"
      *         
      */
-    public String getAlarmackuser() {
-        return this.alarmackuser;
+    public String getAlarmAckUser() {
+        return this.m_alarmAckUser;
     }
 
-    public void setAlarmackuser(String alarmackuser) {
-        this.alarmackuser = alarmackuser;
+    public void setAlarmAckUser(String alarmackuser) {
+        this.m_alarmAckUser = alarmackuser;
     }
 
     /** 
@@ -460,12 +460,12 @@ public class OnmsAlarm implements Serializable {
      *             length="8"
      *         
      */
-    public Date getAlarmacktime() {
-        return this.alarmacktime;
+    public Date getAlarmAckTime() {
+        return this.m_alarmAckTime;
     }
 
-    public void setAlarmacktime(Date alarmacktime) {
-        this.alarmacktime = alarmacktime;
+    public void setAlarmAckTime(Date alarmacktime) {
+        this.m_alarmAckTime = alarmacktime;
     }
 
     /** 
@@ -474,12 +474,12 @@ public class OnmsAlarm implements Serializable {
      *             length="256"
      *         
      */
-    public String getClearuei() {
-        return this.clearuei;
+    public String getClearUei() {
+        return this.m_clearUei;
     }
 
-    public void setClearuei(String clearuei) {
-        this.clearuei = clearuei;
+    public void setClearUei(String clearuei) {
+        this.m_clearUei = clearuei;
     }
 
     /** 
@@ -488,17 +488,17 @@ public class OnmsAlarm implements Serializable {
      *            @hibernate.column name="lasteventid"         
      *         
      */
-    public org.opennms.netmgt.model.OnmsEvent getEvent() {
-        return this.event;
+    public org.opennms.netmgt.model.OnmsEvent getLastEvent() {
+        return this.m_lastEvent;
     }
 
-    public void setEvent(org.opennms.netmgt.model.OnmsEvent event) {
-        this.event = event;
+    public void setLastEvent(org.opennms.netmgt.model.OnmsEvent event) {
+        this.m_lastEvent = event;
     }
 
     public String toString() {
         return new ToStringCreator(this)
-            .append("alarmid", getAlarmid())
+            .append("alarmid", getId())
             .toString();
     }
 

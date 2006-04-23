@@ -94,7 +94,7 @@ public class AbstractDaoTestCase extends TestCase {
 
         public void createDatabase() throws Exception {
             JdbcTemplate template = new JdbcTemplate(getAdminDataSource());
-            template.execute("create database brozow");
+            template.execute("create database test");
             
             initializeDatabase();
             
@@ -103,7 +103,7 @@ public class AbstractDaoTestCase extends TestCase {
         public void dropDatabase() {
             try {
                 JdbcTemplate template = new JdbcTemplate(getAdminDataSource());
-                template.execute("drop database brozow");
+                template.execute("drop database test");
             } catch (Exception e) {
                 System.err.println("Error dropping Database: "+e);
             }
@@ -113,7 +113,7 @@ public class AbstractDaoTestCase extends TestCase {
         public DataSource getDataSource() {
             
             PGSimpleDataSource dataSource = new PGSimpleDataSource();
-            dataSource.setDatabaseName("brozow");
+            dataSource.setDatabaseName("test");
             dataSource.setServerName("localhost");
             dataSource.setUser("opennms");
             dataSource.setPassword("opennms");
@@ -129,8 +129,8 @@ public class AbstractDaoTestCase extends TestCase {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }
-            pds.setJdbcUrl("jdbc:postgresql://localhost:5432/brozow");
-            //pds.setJdbcUrl("jdbc:postgresql://localhost:5432/brozow?loglevel=2");
+            pds.setJdbcUrl("jdbc:postgresql://localhost:5432/test");
+            //pds.setJdbcUrl("jdbc:postgresql://localhost:5432/test?loglevel=2");
             pds.setPassword("opennms");
             pds.setUser("opennms");
             return pds;
