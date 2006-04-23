@@ -329,3 +329,37 @@ TD.footer
 
 }
 
+/* Graph zoom styling */
+#zoomSensitiveZone div
+{
+	position: absolute;
+	overflow: none;
+	left: 0px;
+	top: 0px;
+	width: 0px;
+	height: 0px;
+	visibility: visible;
+	cursor: crosshair;
+	background: blue;
+	filter: alpha(opacity=0);
+	-moz-opacity: 0;
+	-khtml-opacity: 0;
+	opacity: 0;
+}
+
+#zoomBox div
+{
+	position: absolute;
+	overflow: none;
+	left: 0px;
+	top: 0px;
+	width: 0px;
+	height: 0px;
+	visibility: visible;
+	background: red;
+	filter: alpha(opacity=50);
+	-moz-opacity: 0.5;
+	-khtml-opacity: .5;
+	opacity: 0.5;
+}
+
