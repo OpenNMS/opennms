@@ -228,9 +228,6 @@ public class RTCHashMap {
      */
     public boolean isIpValidated(long nodeid, String ip, String catLabel) {
         List nodesList = getRTCNodes(nodeid, ip);
-        if (nodesList == null) {
-            return false;
-        }
         Iterator iter = nodesList.iterator();
         while (iter.hasNext()) {
             RTCNode node = (RTCNode) iter.next();
@@ -445,14 +442,14 @@ public class RTCHashMap {
 	public List getRTCNodes(long nodeid) {
 		Long key = new Long(nodeid);
 		List nodes = (List)get(key);
-		if (nodes == null) return null;
+		if (nodes == null) return Collections.EMPTY_LIST;
 		return Collections.unmodifiableList(nodes); 
 	}
 	
 	public List getRTCNodes(long nodeid, String ip) {
 		String key = Long.toString(nodeid)+ip;
 		List nodes = (List)get(key);
-		if (nodes == null) return null;
+		if (nodes == null) return Collections.EMPTY_LIST;
 		return Collections.unmodifiableList(nodes);
 	}
 

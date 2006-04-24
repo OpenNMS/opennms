@@ -536,13 +536,6 @@ public class DataManager extends Object {
      */
     public synchronized void interfaceDown(long nodeid, String ip, long t) {
         List nodesList = m_map.getRTCNodes(nodeid, ip);
-        if (nodesList == null) {
-            // nothing to do - node/ip probably does not belong
-            // to any of the categories
-            return;
-        }
-
-        // iterate through this list
         ListIterator listIter = nodesList.listIterator();
         while (listIter.hasNext()) {
             RTCNode rtcN = (RTCNode) listIter.next();
@@ -562,13 +555,6 @@ public class DataManager extends Object {
      */
     public synchronized void nodeDown(long nodeid, long t) {
     	List nodesList = m_map.getRTCNodes(nodeid);
-        if (nodesList == null) {
-            // nothing to do - node probably does not belong
-            // to any of the categories
-            return;
-        }
-
-        // iterate through this list
         ListIterator listIter = nodesList.listIterator();
         while (listIter.hasNext()) {
             RTCNode rtcN = (RTCNode) listIter.next();
@@ -588,13 +574,6 @@ public class DataManager extends Object {
      */
     public synchronized void nodeUp(long nodeid, long t) {
     	List nodesList = m_map.getRTCNodes(nodeid);
-        if (nodesList == null) {
-            // nothing to do - node probably does not belong
-            // to any of the categories
-            return;
-        }
-
-        // iterate through this list
         ListIterator listIter = nodesList.listIterator();
         while (listIter.hasNext()) {
             RTCNode rtcN = (RTCNode) listIter.next();
@@ -616,13 +595,6 @@ public class DataManager extends Object {
      */
     public synchronized void interfaceUp(long nodeid, String ip, long t) {
         List nodesList = m_map.getRTCNodes(nodeid, ip);
-        if (nodesList == null) {
-            // nothing to do - node/ip probably does not belong
-            // to any of the categories
-            return;
-        }
-
-        // iterate through this list
         ListIterator listIter = nodesList.listIterator();
         while (listIter.hasNext()) {
             RTCNode rtcN = (RTCNode) listIter.next();
@@ -783,13 +755,6 @@ public class DataManager extends Object {
     public synchronized void interfaceReparented(String ip, long oldNodeId, long newNodeId) {
         // get all RTCNodes with the ip/oldNodeId
     	List nodesList = m_map.getRTCNodes(oldNodeId, ip);
-        if (nodesList == null) {
-            // nothing to do - simply means ip does not belong
-            // to any of the categories
-            return;
-        }
-
-        // iterate through this list - make a copy as we modify it as we iterate
         ListIterator listIter = new LinkedList(nodesList).listIterator();
         while (listIter.hasNext()) {
             RTCNode rtcN = (RTCNode) listIter.next();
