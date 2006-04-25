@@ -27,13 +27,17 @@ public class OutageDaoTest extends AbstractDaoTestCase {
         OnmsOutage outage = new OnmsOutage();
         outage.setEventBySvcLostEvent(new OnmsEvent());
         outage.setIfLostService(new Date());
-        OnmsIpInterface ipInterface = new OnmsIpInterface("172.16.1.1", new OnmsNode(getDistPollerDao().load("localhost")));
-        OnmsServiceType serviceType = new OnmsServiceType("ICMP");
+        OnmsNode node = new OnmsNode(getDistPollerDao().load("localhost"));
+        OnmsIpInterface ipInterface = new OnmsIpInterface("172.16.1.1", node);
+        OnmsServiceType serviceType = getServiceTypeDao().findByName("ICMP");
         outage.setMonitoredService(new OnmsMonitoredService(ipInterface, serviceType));
+        getNodeDao().save(node);
         getOutageDao().save(outage);
         //it works we're so smart! hehe
         outage = getOutageDao().load(outage.getId());
         assertEquals("ICMP", outage.getMonitoredService().getServiceType().getName());
+//        outage.setEventBySvcRegainedEvent();
+        
     }
 
 }

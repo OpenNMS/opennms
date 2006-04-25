@@ -11,7 +11,7 @@ import org.springframework.core.style.ToStringCreator;
  *         table="outages"
  *     
 */
-public class OnmsOutage extends OnmsEntity implements Serializable {
+public class OnmsOutage implements Serializable {
 
     /**
      * 
@@ -20,9 +20,6 @@ public class OnmsOutage extends OnmsEntity implements Serializable {
 
     /** identifier field */
     private Integer m_id;
-
-    /** persistent field */
-    private OnmsIpInterface m_ipInteface;
 
     /** persistent field */
     private Date m_ifLostService;
@@ -40,9 +37,7 @@ public class OnmsOutage extends OnmsEntity implements Serializable {
     private OnmsMonitoredService m_monitoredService;
 
     /** full constructor */
-    public OnmsOutage(Integer outageId, OnmsIpInterface ipInterface, Date ifLostService, Date ifRegainedService, OnmsEvent eventBySvcRegainedEvent, OnmsEvent eventBySvcLostEvent, OnmsMonitoredService monitoredService) {
-        m_id = outageId;
-        m_ipInteface = ipInterface;
+    public OnmsOutage(Date ifLostService, Date ifRegainedService, OnmsEvent eventBySvcRegainedEvent, OnmsEvent eventBySvcLostEvent, OnmsMonitoredService monitoredService) {
         m_ifLostService = ifLostService;
         m_ifRegainedService = ifRegainedService;
         m_eventBySvcRegainedEvent = eventBySvcRegainedEvent;
@@ -55,11 +50,8 @@ public class OnmsOutage extends OnmsEntity implements Serializable {
     }
 
     /** minimal constructor */
-    public OnmsOutage(Integer outageId, OnmsIpInterface ipInterface, Date ifLostService, OnmsEvent eventBySvcRegainedEvent, OnmsEvent eventBySvcLostEvent, OnmsMonitoredService monitoredService) {
-        m_id = outageId;
-        m_ipInteface = ipInterface;
+    public OnmsOutage(Date ifLostService, OnmsEvent eventBySvcLostEvent, OnmsMonitoredService monitoredService) {
         m_ifLostService = ifLostService;
-        m_eventBySvcRegainedEvent = eventBySvcRegainedEvent;
         m_eventBySvcLostEvent = eventBySvcLostEvent;
         m_monitoredService = monitoredService;
     }
@@ -74,21 +66,6 @@ public class OnmsOutage extends OnmsEntity implements Serializable {
 
     public void setId(Integer outageId) {
         m_id = outageId;
-    }
-
-    /** 
-     *            @hibernate.property
-     *             column="ipInterface"
-     *             length="16"
-     *             not-null="true"
-     *         
-     */
-    public OnmsIpInterface getIpInteface() {
-        return m_ipInteface;
-    }
-
-    public void setIpInteface(OnmsIpInterface ipInterface) {
-        m_ipInteface = ipInterface;
     }
 
     /** 
@@ -165,12 +142,9 @@ public class OnmsOutage extends OnmsEntity implements Serializable {
     public String toString() {
         return new ToStringCreator(this)
             .append("outageId", getId())
+            .append("ifLostService", getIfLostService())
+            .append("ifRegainedService", getIfRegainedService())
             .toString();
     }
-
-	public void visit(EntityVisitor visitor) {
-		// TODO Auto-generated method stub
-		throw new RuntimeException("visitor method not implemented");
-	}
 
 }

@@ -105,7 +105,7 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
 
     private Date m_ipLastCapsdPoll;
 
-    private CollectionType m_isSnmpPrimary;
+    private CollectionType m_isSnmpPrimary = CollectionType.NO_COLLECT;
 
     private OnmsNode m_node;
     

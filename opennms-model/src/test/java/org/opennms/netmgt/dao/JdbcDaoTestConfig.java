@@ -47,9 +47,11 @@ import org.opennms.netmgt.dao.jdbc.SnmpInterfaceDaoJdbc;
 import org.opennms.netmgt.dao.jdbc.asset.AssetRecordFactory;
 import org.opennms.netmgt.dao.jdbc.category.CategoryFactory;
 import org.opennms.netmgt.dao.jdbc.distpoller.DistPollerFactory;
+import org.opennms.netmgt.dao.jdbc.event.EventFactory;
 import org.opennms.netmgt.dao.jdbc.ipif.IpInterfaceFactory;
 import org.opennms.netmgt.dao.jdbc.monsvc.MonitoredServiceFactory;
 import org.opennms.netmgt.dao.jdbc.node.NodeFactory;
+import org.opennms.netmgt.dao.jdbc.outage.OutageFactory;
 import org.opennms.netmgt.dao.jdbc.snmpif.SnmpInterfaceFactory;
 import org.opennms.netmgt.dao.jdbc.svctype.ServiceTypeFactory;
 import org.opennms.netmgt.model.OnmsDistPoller;
@@ -84,6 +86,8 @@ public class JdbcDaoTestConfig extends DaoTestConfig {
         CategoryFactory.register(m_dataSource);
         ServiceTypeFactory.register(m_dataSource);
         SnmpInterfaceFactory.register(m_dataSource);
+        OutageFactory.register(m_dataSource);
+        EventFactory.register(m_dataSource);
         
         return new DataSourceTransactionManager(m_dataSource);
     }

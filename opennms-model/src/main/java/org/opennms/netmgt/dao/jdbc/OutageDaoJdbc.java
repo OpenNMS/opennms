@@ -8,6 +8,8 @@ import java.util.Collection;
 import javax.sql.DataSource;
 
 import org.opennms.netmgt.dao.OutageDao;
+import org.opennms.netmgt.dao.jdbc.outage.FindByOutageId;
+import org.opennms.netmgt.dao.jdbc.outage.OutageSave;
 import org.opennms.netmgt.model.OnmsOutage;
 
 /**
@@ -27,16 +29,27 @@ public class OutageDaoJdbc extends AbstractDaoJdbc implements OutageDao {
      * @see org.opennms.netmgt.dao.OutageDao#load(java.lang.Integer)
      */
     public OnmsOutage load(Integer id) {
-        // TODO Auto-generated method stub
-        return null;
+        return new FindByOutageId(getDataSource()).findUnique(id);
     }
 
     /* (non-Javadoc)
      * @see org.opennms.netmgt.dao.OutageDao#save(org.opennms.netmgt.model.OnmsOutage)
      */
     public void save(OnmsOutage outage) {
-        // TODO Auto-generated method stub
+        if (outage.getId() != null)
+            throw new IllegalArgumentException("Cannot save an outage that already has a outageid");
+        
+        outage.setId(allocateOutageId());
+        getOutageSaver().doInsert(outage);
 
+    }
+
+    private OutageSave getOutageSaver() {
+        return new OutageSave(getDataSource());
+    }
+
+    private Integer allocateOutageId() {
+        return new Integer(getJdbcTemplate().queryForInt("SELECT nextval('outageNxtId')"));
     }
 
     /* (non-Javadoc)

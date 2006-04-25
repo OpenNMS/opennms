@@ -35,7 +35,7 @@ import java.sql.Types;
 
 import javax.sql.DataSource;
 
-import org.opennms.netmgt.model.OnmsAlarm;
+import org.opennms.netmgt.model.OnmsOutage;
 import org.springframework.jdbc.core.SqlParameter;
 import org.springframework.jdbc.object.SqlUpdate;
 
@@ -46,61 +46,28 @@ public class OutageSaveOrUpdate extends SqlUpdate {
         setSql(updateStmt);
         
         // assumes that the update and insert statements have the same parms in the same order
-        declareParameter(new SqlParameter(Types.INTEGER));  //alarmID
-        declareParameter(new SqlParameter(Types.VARCHAR));  //eventUei
-        declareParameter(new SqlParameter(Types.INTEGER));  //dpName
+        declareParameter(new SqlParameter(Types.INTEGER));  //svcLostEventID
+        declareParameter(new SqlParameter(Types.INTEGER));  //svcRegainedEventID
         declareParameter(new SqlParameter(Types.INTEGER));  //nodeID
         declareParameter(new SqlParameter(Types.VARCHAR));  //ipaddr
         declareParameter(new SqlParameter(Types.INTEGER));  //serviceID
-        declareParameter(new SqlParameter(Types.VARCHAR));  //reductionKey
-        declareParameter(new SqlParameter(Types.INTEGER));  //alarmType
-        declareParameter(new SqlParameter(Types.INTEGER));  //counter
-        declareParameter(new SqlParameter(Types.INTEGER));  //severity
-        declareParameter(new SqlParameter(Types.INTEGER));  //lastEventID
-        declareParameter(new SqlParameter(Types.TIMESTAMP));  //firstEventTime
-        declareParameter(new SqlParameter(Types.TIMESTAMP));  //lastEventTime
-        declareParameter(new SqlParameter(Types.VARCHAR));  //description
-        declareParameter(new SqlParameter(Types.VARCHAR));  //logMsg
-        declareParameter(new SqlParameter(Types.VARCHAR));  //operInstruct
-        declareParameter(new SqlParameter(Types.VARCHAR));  //tticketID
-        declareParameter(new SqlParameter(Types.INTEGER));  //tticketState
-        declareParameter(new SqlParameter(Types.VARCHAR));  //mouseOverText
-        declareParameter(new SqlParameter(Types.TIMESTAMP));  //suppressedUntil
-        declareParameter(new SqlParameter(Types.VARCHAR));  //suppressedUser
-        declareParameter(new SqlParameter(Types.TIMESTAMP));  //suppressedTime
-        declareParameter(new SqlParameter(Types.VARCHAR));  //alarmAckUser
-        declareParameter(new SqlParameter(Types.TIMESTAMP));  //alarmAckTime
-        declareParameter(new SqlParameter(Types.VARCHAR));  //clearUei
+        declareParameter(new SqlParameter(Types.TIMESTAMP));  //ifLostService
+        declareParameter(new SqlParameter(Types.TIMESTAMP));  //ifRegainedService
+        declareParameter(new SqlParameter(Types.INTEGER));  //OutageID
         compile();
     }
     
-    public int persist(OnmsAlarm alarm) {
+    public int persist(OnmsOutage outage) {
         Object[] parms = new Object[] {
-        		alarm.getId(), //alarmID
-        		alarm.getUei(), //eventUei
-        		alarm.getDistPoller(), //dpName
-        		alarm.getNode(), //nodeID
-        		alarm.getIpAddr(), //ipaddr
-        		alarm.getService(), //serviceID
-        		alarm.getReductionKey(), //reductionKey
-        		alarm.getAlarmType(), //alarmType
-        		alarm.getCounter(), //counter
-        		alarm.getSeverity(), //severity
-        		alarm.getLastEvent(), //lastEventID
-        		alarm.getFirstEventTime(), //firstEventTime
-        		alarm.getFirstEventTime(), //lastEventTime
-        		alarm.getDescription(), //description
-        		alarm.getLogMsg(), //logMsg
-        		alarm.getOperInstruct(), //operInstruct
-        		alarm.getTTicketId(), //tticketID
-        		alarm.getTTicketId(), //tticketState
-        		alarm.getMouseOverText(), //mouseOverText
-        		alarm.getSuppressedUntil(), //suppressedUntil
-        		alarm.getSuppressedUser(), //suppressedUser
-        		alarm.getSuppressedTime(), //suppressedTime
-        		alarm.getAlarmAckUser(), //alarmAckUser
-        		alarm.getAlarmAckTime(), //alarmAckTime
-        		alarm.getClearUei() }; //clearUei        
+                outage.getEventBySvcLostEvent().getId(),
+                (outage.getEventBySvcRegainedEvent() == null ? null : outage.getEventBySvcRegainedEvent().getId()),
+                outage.getMonitoredService().getNodeId(),
+                outage.getMonitoredService().getIpAddress(),
+                outage.getMonitoredService().getServiceId(),
+                outage.getIfLostService(),
+                outage.getIfRegainedService(),
+                outage.getId()
+        };         
         return update(parms);
     }    
 

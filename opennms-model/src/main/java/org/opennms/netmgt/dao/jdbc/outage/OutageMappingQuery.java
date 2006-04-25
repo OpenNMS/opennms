@@ -44,6 +44,7 @@ import org.opennms.netmgt.dao.jdbc.JdbcSet;
 import org.opennms.netmgt.dao.jdbc.ipif.IpInterfaceId;
 import org.opennms.netmgt.dao.jdbc.ipif.LazyIpInterface;
 import org.opennms.netmgt.dao.jdbc.monsvc.LazyMonitoredService;
+import org.opennms.netmgt.dao.jdbc.monsvc.MonitoredServiceId;
 import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
@@ -55,14 +56,15 @@ public class OutageMappingQuery extends MappingSqlQuery {
 
     public OutageMappingQuery(DataSource ds, String clause) {
         super(ds, "SELECT " + 
-        		"o.outageID as outageID, \n" + 
-        		"o.svcLostEventID as svcLostEventID, \n" + 
-        		"o.svcRegainedEventID as svcRegainedEventID, \n" + 
-        		"o.nodeID as nodeID, \n" + 
-        		"o.ipAddr as ipAddr, \n" + 
-        		"o.serviceID as serviceID, \n" + 
-        		"o.ifLostService as ifLostService, \n" + 
-        		"o.ifRegainedService as ifRegainedService " +clause);
+        		"outages.outageID as outages_outageID, " + 
+        		"outages.svcLostEventID as outages_svcLostEventID, " + 
+        		"outages.svcRegainedEventID as outages_svcRegainedEventID, " + 
+        		"outages.nodeID as outages_nodeID, " + 
+        		"outages.ipAddr as outages_ipAddr, " + 
+        		"outages.serviceID as outages_serviceID, " +
+                "ifservices.ifIndex as outages_ifIndex, " + 
+        		"outages.ifLostService as outages_ifLostService, " + 
+        		"outages.ifRegainedService as outages_ifRegainedService " +clause);
     }
     
     public DataSource getDataSource() {
@@ -70,35 +72,30 @@ public class OutageMappingQuery extends MappingSqlQuery {
     }
 
     public Object mapRow(ResultSet rs, int rowNumber) throws SQLException {
-        final Integer id = (Integer) rs.getObject("outageid");
+        final Integer id = (Integer) rs.getObject("outages_outageID");
 
         LazyOutage outage = (LazyOutage)Cache.obtain(OnmsOutage.class, id);
         outage.setLoaded(true);
         
-        Integer nodeId = new Integer(rs.getInt("nodeID"));
-        OnmsNode node = (OnmsNode)Cache.obtain(OnmsNode.class, nodeId);
-        String ipAddr = rs.getString("ipAddr");
-        IpInterfaceDao ifDao = new IpInterfaceDaoJdbc(DataSourceFactory.getInstance());
-        OnmsIpInterface ipIf = ifDao.get(node, ipAddr);
-        
-        Integer serviceId = new Integer(rs.getInt("serviceID"));
-        LazyMonitoredService svc = (LazyMonitoredService)Cache.obtain(OnmsMonitoredService.class, serviceId);
-        outage.setMonitoredService(svc);
+        Integer nodeId = new Integer(rs.getInt("outages_nodeID"));
+        String ipAddr = rs.getString("outages_ipAddr");
+        Integer serviceId = new Integer(rs.getInt("outages_serviceID"));
+        Integer ifIndex = (Integer)rs.getObject("outages_ifIndex");
 
-        IpInterfaceId key = new IpInterfaceId(ipIf.getNode().getId(), ipIf.getIpAddress(), ipIf.getIfIndex());
-    	LazyIpInterface iface = (LazyIpInterface)Cache.obtain(OnmsIpInterface.class, key);
-        outage.setIpInteface(iface);
-    	
-        Integer eventId = new Integer(rs.getInt("svcLostEventID"));
-        OnmsEvent event = (OnmsEvent)Cache.obtain(OnmsEvent.class, eventId);
-        outage.setEventBySvcLostEvent(event);
+        MonitoredServiceId monSvcId = new MonitoredServiceId(nodeId, ipAddr, ifIndex, serviceId);
+        OnmsMonitoredService monSvc = (OnmsMonitoredService)Cache.obtain(OnmsMonitoredService.class, monSvcId);
+        outage.setMonitoredService(monSvc);
+
+        Integer lostEventId = new Integer(rs.getInt("outages_svcLostEventID"));
+        OnmsEvent lostEvent = (OnmsEvent)Cache.obtain(OnmsEvent.class, lostEventId);
+        outage.setEventBySvcLostEvent(lostEvent);
+
+        Integer regainedEventId = (Integer)rs.getObject("outages_svcRegainedEventID");
+        OnmsEvent regainedEvent = (regainedEventId == null ? null : (OnmsEvent)Cache.obtain(OnmsEvent.class, regainedEventId));        
+        outage.setEventBySvcRegainedEvent(regainedEvent);
         
-        eventId = new Integer(rs.getInt("svcRegainedEventID"));
-        event = (OnmsEvent)Cache.obtain(OnmsEvent.class, eventId);        
-        outage.setEventBySvcRegainedEvent(event);
-        
-        outage.setIfLostService(rs.getTimestamp("ifLostService"));
-        outage.setIfRegainedService(rs.getTimestamp("ifRegainedService"));    	
+        outage.setIfLostService(rs.getTimestamp("outages_ifLostService"));
+        outage.setIfRegainedService(rs.getTimestamp("outages_ifRegainedService"));    	
         
         outage.setDirty(false);
         return outage;
@@ -133,5 +130,5 @@ public class OutageMappingQuery extends MappingSqlQuery {
         Set results = new JdbcSet(events);
         return results;
     }
-    
+        
 }
