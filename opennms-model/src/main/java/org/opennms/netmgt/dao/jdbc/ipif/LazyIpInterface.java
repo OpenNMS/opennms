@@ -42,7 +42,7 @@ public class LazyIpInterface extends OnmsIpInterface {
 		return super.getIsManaged();
 	}
 
-	public String getIsSnmpPrimary() {
+	public CollectionType getIsSnmpPrimary() {
 		load();
 		return super.getIsSnmpPrimary();
 	}
@@ -76,7 +76,7 @@ public class LazyIpInterface extends OnmsIpInterface {
 		super.setIsManaged(ismanaged);
 	}
 
-	public void setIsSnmpPrimary(String issnmpprimary) {
+	public void setIsSnmpPrimary(CollectionType issnmpprimary) {
 		load();
 		setDirty(true);
 		super.setIsSnmpPrimary(issnmpprimary);

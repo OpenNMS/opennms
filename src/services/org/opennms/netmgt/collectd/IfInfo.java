@@ -36,6 +36,8 @@ package org.opennms.netmgt.collectd;
 
 import java.util.List;
 
+import org.opennms.netmgt.model.OnmsIpInterface.CollectionType;
+
 /**
  * This class encapsulates all the information required by the SNMP collector in
  * order to perform data collection for an individual interface and store that
@@ -51,7 +53,7 @@ final class IfInfo {
 
     private String m_label;
 
-    private String m_collType;
+    private CollectionType m_collType;
 
     private boolean m_isPrimary;
 
@@ -59,7 +61,7 @@ final class IfInfo {
 
     private List m_dsList;
 
-    public IfInfo(int ifIndex, int ifType, String ifLabel, String collType) {
+    public IfInfo(int ifIndex, int ifType, String ifLabel, CollectionType collType) {
         m_index = ifIndex;
         m_type = ifType;
         m_label = ifLabel;
@@ -81,8 +83,8 @@ final class IfInfo {
         m_oidList = oidList;
     }
 
-	public void setCollType(String snmpCollType) {
-		m_collType = snmpCollType;
+	public void setCollType(CollectionType collType) {
+		m_collType = collType;
 	}
 
 	public int getIndex() {
@@ -97,7 +99,7 @@ final class IfInfo {
         return m_label;
     }
 
-    public String getCollType() {
+    public CollectionType getCollType() {
         return m_collType;
     }
 

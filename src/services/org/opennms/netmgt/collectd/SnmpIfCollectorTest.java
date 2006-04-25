@@ -42,6 +42,8 @@ import java.util.TreeMap;
 import junit.framework.TestSuite;
 
 import org.opennms.netmgt.config.SnmpPeerFactory;
+import org.opennms.netmgt.model.OnmsCategory;
+import org.opennms.netmgt.model.OnmsIpInterface.CollectionType;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpCollectorTestCase;
 import org.opennms.netmgt.snmp.SnmpUtils;
@@ -72,7 +74,7 @@ public class SnmpIfCollectorTest extends SnmpCollectorTestCase {
     }
 
     public void testZeroVars() throws Exception {
-        IfInfo ifInfo = new IfInfo(1, 24, "lo", "P");
+        IfInfo ifInfo = new IfInfo(1, 24, "lo", CollectionType.PRIMARY);
         
         ifInfo.setOidList(new ArrayList(m_objList));
         
@@ -114,7 +116,7 @@ public class SnmpIfCollectorTest extends SnmpCollectorTestCase {
     }
 
     public void testInvalidVar() throws Exception {
-        IfInfo ifInfo = new IfInfo(1, 24, "lo", "P");
+        IfInfo ifInfo = new IfInfo(1, 24, "lo", CollectionType.PRIMARY);
         
         addMibObject("invalid", "1.3.6.1.2.1.2.2.2.10", "ifIndex", "counter");
         
@@ -132,7 +134,7 @@ public class SnmpIfCollectorTest extends SnmpCollectorTestCase {
     
     public void testBadApple() throws Exception {
 
-        IfInfo ifInfo = new IfInfo(1, 24, "lo", "P");
+        IfInfo ifInfo = new IfInfo(1, 24, "lo", CollectionType.PRIMARY);
         
         addIfSpeed();
         addIfInOctets();
@@ -157,7 +159,7 @@ public class SnmpIfCollectorTest extends SnmpCollectorTestCase {
     public void testManyVars() throws Exception {
         addIfTable();
         
-        addIfInfo(createIfInfo(1, 24, "lo", "P"));
+        addIfInfo(createIfInfo(1, 24, "lo", CollectionType.PRIMARY));
         
         SnmpIfCollector collector = createSnmpIfCollector();
         waitForSignal();
@@ -177,7 +179,7 @@ public class SnmpIfCollectorTest extends SnmpCollectorTestCase {
         m_walker.waitFor();
     }
 
-    private IfInfo createIfInfo(int ifIndex, int ifType, String ifName, String ifCollType) {
+    private IfInfo createIfInfo(int ifIndex, int ifType, String ifName, CollectionType ifCollType) {
         IfInfo ifInfo = new IfInfo(ifIndex, ifType, ifName, ifCollType);
         ifInfo.setOidList(new ArrayList(m_objList));
         return ifInfo;
@@ -186,9 +188,9 @@ public class SnmpIfCollectorTest extends SnmpCollectorTestCase {
     public void testManyIfs() throws Exception {
         addIfTable();
         
-        addIfInfo(createIfInfo(1, 24, "lo0", "P"));
-        addIfInfo(createIfInfo(2, 55, "gif0", "S"));
-        addIfInfo(createIfInfo(3, 57, "stf0", "C"));
+        addIfInfo(createIfInfo(1, 24, "lo0", CollectionType.PRIMARY));
+        addIfInfo(createIfInfo(2, 55, "gif0", CollectionType.SECONDARY));
+        addIfInfo(createIfInfo(3, 57, "stf0", CollectionType.COLLECT));
         
         SnmpIfCollector collector = createSnmpIfCollector();
         waitForSignal();

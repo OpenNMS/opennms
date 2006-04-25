@@ -17,13 +17,84 @@ import org.springframework.core.style.ToStringCreator;
  *     
 */
 public class OnmsIpInterface extends OnmsEntity implements Serializable {
+	
+	public static class CollectionType implements Comparable {
+		private static final char[] s_order = {'N', 'C', 'S', 'P' };
+		char m_collType;
+		private CollectionType(char collType) {
+			m_collType = collType;
+		}
+		
+		public int compareTo(Object o) {
+			CollectionType collType = (CollectionType)o;
+			return getIndex(collType.m_collType) - getIndex(m_collType);
+		}
+		
+		private static int getIndex(char code) {
+			for (int i = 0; i < s_order.length; i++) {
+				if (s_order[i] == code) return i;
+			}
+			throw new IllegalArgumentException("illegal collType code '"+code+"'");
+		}
+		
+		public boolean equals(Object o) {
+			if (o instanceof CollectionType) {
+				return m_collType == ((CollectionType)o).m_collType;
+			}
+			return false;
+		}
+		
+		public int hashCode() {
+			return toString().hashCode();
+		}
+		
+		public String toString() {
+			return String.valueOf(m_collType);
+		}
+		
+		public CollectionType max(CollectionType collType) {
+			return (compareTo(collType) > 0 ? collType : this);
+		}
+
+		public CollectionType min(CollectionType collType) {
+			return (compareTo(collType) < 0 ? collType : this);
+		}
+
+		public static CollectionType get(char code) {
+			switch (code) {
+			case 'P': return PRIMARY;
+			case 'S': return SECONDARY;
+			case 'C': return COLLECT;
+			case 'N': return NO_COLLECT;
+			default:
+				throw new IllegalArgumentException("Connot create collType from code "+code);
+			}
+		}
+		
+		public static CollectionType get(String code) {
+			code = code.trim();
+			if (code == null || code.length() < 1)
+				return NO_COLLECT;
+			else if (code.length() > 1)
+				throw new IllegalArgumentException("Cannot convert string "+code+" to a collType");
+			else
+				return get(code.charAt(0));
+		}
+		
+		public static CollectionType PRIMARY = new CollectionType('P');
+		public static CollectionType SECONDARY = new CollectionType('S');
+		public static CollectionType COLLECT = new CollectionType('C');
+		public static CollectionType NO_COLLECT = new CollectionType('N');
+		
+		
+	}
 
     private static final long serialVersionUID = 7750043250236397014L;
     
     private Integer m_id;
 
     private String m_ipAddress;
-
+    
     private Integer m_ifIndex;
 
     private String m_ipHostName;
@@ -34,10 +105,10 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
 
     private Date m_ipLastCapsdPoll;
 
-    private String m_isSnmpPrimary;
+    private CollectionType m_isSnmpPrimary;
 
     private OnmsNode m_node;
-
+    
     private Set m_monitoredServices = new HashSet();
     
     public OnmsIpInterface() {
@@ -80,7 +151,7 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
     public void setIpAddress(String ipaddr) {
         this.m_ipAddress = ipaddr;
     }
-
+    
     /** 
      *                @hibernate.property
      *                 column="ifindex"
@@ -156,11 +227,11 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
      *                 length="1"
      *             
      */
-    public String getIsSnmpPrimary() {
+    public CollectionType getIsSnmpPrimary() {
         return this.m_isSnmpPrimary;
     }
 
-    public void setIsSnmpPrimary(String issnmpprimary) {
+    public void setIsSnmpPrimary(CollectionType issnmpprimary) {
         this.m_isSnmpPrimary = issnmpprimary;
     }
 

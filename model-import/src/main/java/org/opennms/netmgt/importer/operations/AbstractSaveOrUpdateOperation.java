@@ -51,6 +51,7 @@ import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
+import org.opennms.netmgt.model.OnmsIpInterface.CollectionType;
 
 public abstract class AbstractSaveOrUpdateOperation extends AbstractImportOperation implements SaveOrUpdateOperation {
 
@@ -92,7 +93,7 @@ public abstract class AbstractSaveOrUpdateOperation extends AbstractImportOperat
         Integer ifIndex = new Integer(-1);
         m_currentInterface = new OnmsIpInterface(ipAddr, m_node);
         m_currentInterface.setIsManaged(status == 3 ? "U" : "M");
-        m_currentInterface.setIsSnmpPrimary(snmpPrimary);
+        m_currentInterface.setIsSnmpPrimary(CollectionType.get(snmpPrimary));
         m_currentInterface.setIpStatus(status == 3 ? new Integer(3) : new Integer(1));
         m_currentInterface.setIfIndex(ifIndex);
         

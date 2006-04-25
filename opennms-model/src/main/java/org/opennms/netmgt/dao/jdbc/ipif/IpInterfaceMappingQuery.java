@@ -44,6 +44,7 @@ import org.opennms.netmgt.dao.jdbc.LazySet;
 import org.opennms.netmgt.dao.jdbc.monsvc.FindByInterfaceWithIfIndex;
 import org.opennms.netmgt.dao.jdbc.monsvc.FindByInterfaceWithNulIfIndex;
 import org.opennms.netmgt.model.OnmsIpInterface;
+import org.opennms.netmgt.model.OnmsIpInterface.CollectionType;
 import org.springframework.jdbc.object.MappingSqlQuery;
 
 public class IpInterfaceMappingQuery extends MappingSqlQuery {
@@ -79,7 +80,7 @@ public class IpInterfaceMappingQuery extends MappingSqlQuery {
         iface.setIsManaged(rs.getString("ipInterface_isManaged"));                //isManaged               char(1),
         iface.setIpStatus(((Integer)rs.getObject("ipInterface_ipStatus")));       //ipStatus                integer,
         iface.setIpLastCapsdPoll(rs.getTimestamp("ipInterface_ipLastCapsdPoll")); //ipLastCapsdPoll         timestamp without time zone,
-        iface.setIsSnmpPrimary(rs.getString("ipInterface_isSnmpPrimary"));        //isSnmpPrimary           char(1),
+        iface.setIsSnmpPrimary(CollectionType.get(rs.getString("ipInterface_isSnmpPrimary")));        //isSnmpPrimary           char(1),
         
         LazySet.Loader svcLoader = new LazySet.Loader() {
 			public Set load() {

@@ -19,5 +19,8 @@ public class CollectionSet {
 	public void setNodeInfo(NodeInfo nodeInfo) {
 		m_nodeInfo = nodeInfo;
 	}
+	void setNodeInfo(CollectionInterface collectionInterface, String collectionName) {
+		setNodeInfo(new NodeInfo(collectionInterface, collectionName));
+	}
 
 }

@@ -37,7 +37,7 @@ public class IpInterfaceFactory extends Factory {
 	private OnmsNode getNode(Integer nodeId) {
 		return (OnmsNode)Cache.obtain(OnmsNode.class, nodeId);
 	}
-
+	
 	protected Object create() {
 		return new LazyIpInterface(getDataSource());
 	}

@@ -31,51 +31,58 @@
 //
 package org.opennms.netmgt.model;
 
-
 public class NetworkBuilder {
 
-    OnmsDistPoller m_distPoller;
-    OnmsNode m_currentNode;
-    OnmsIpInterface m_currentIf;
-    OnmsMonitoredService m_currentMonSvc;
-    
-    public NetworkBuilder(OnmsDistPoller distPoller) {
-        m_distPoller = distPoller;
-    }
+	OnmsDistPoller m_distPoller;
 
-    public OnmsNode addNode(String label) {
-        m_currentNode = new OnmsNode(m_distPoller);
-        m_currentNode.setLabel(label);
-        return m_currentNode;
-    }
-    
+	OnmsNode m_currentNode;
+
+	OnmsIpInterface m_currentIf;
+
+	OnmsMonitoredService m_currentMonSvc;
+
+	public NetworkBuilder(OnmsDistPoller distPoller) {
+		m_distPoller = distPoller;
+	}
+
+	public OnmsNode addNode(String label) {
+		m_currentNode = new OnmsNode(m_distPoller);
+		m_currentNode.setLabel(label);
+		return m_currentNode;
+	}
+
     public OnmsIpInterface addInterface(String ipAddr) {
-        m_currentIf = new OnmsIpInterface(ipAddr, m_currentNode);
+		m_currentIf = new OnmsIpInterface(ipAddr, m_currentNode);
         return m_currentIf;
-    }
-    
+	}
+
     public class InterfaceBuilder {
-        OnmsIpInterface m_iface;
-        
-        InterfaceBuilder(OnmsIpInterface iface) {
-            m_iface = iface;
-        }
-        public InterfaceBuilder setIsManaged(String managed) {
-            m_iface.setIsManaged(managed);
-            return this;
-        }
-        public InterfaceBuilder setIsSnmpPrimary(String isSnmpPrimary) {
-            m_iface.setIsSnmpPrimary(isSnmpPrimary);
-            return this;
-        }
-        public OnmsIpInterface getInterface() {
-            return m_iface;
-        }
-        public InterfaceBuilder setIpStatus(int ipStatus) {
-            m_iface.setIpStatus(new Integer(ipStatus));
-            return this;
-        }
-    }
+		OnmsIpInterface m_iface;
+
+		InterfaceBuilder(OnmsIpInterface iface) {
+			m_iface = iface;
+		}
+
+		public InterfaceBuilder setIsManaged(String managed) {
+			m_iface.setIsManaged(managed);
+			return this;
+		}
+
+		public InterfaceBuilder setIsSnmpPrimary(String isSnmpPrimary) {
+			m_iface.setIsSnmpPrimary(OnmsIpInterface.CollectionType
+					.get(isSnmpPrimary));
+			return this;
+		}
+
+		public OnmsIpInterface getInterface() {
+			return m_iface;
+		}
+
+		public InterfaceBuilder setIpStatus(int ipStatus) {
+			m_iface.setIpStatus(new Integer(ipStatus));
+			return this;
+		}
+	}
 
     public InterfaceBuilder addInterface(String ipAddr, int ifIndex) {
         m_currentIf = new OnmsIpInterface(ipAddr, m_currentNode);
@@ -86,21 +93,20 @@ public class NetworkBuilder {
 	public SnmpInterfaceBuilder addSnmpInterface(String ipAddr, int ifIndex) {
 		OnmsSnmpInterface snmpIf = new OnmsSnmpInterface(ipAddr, ifIndex, m_currentNode);
 		return new SnmpInterfaceBuilder(snmpIf);
-		
+
 	}
-    
-    public OnmsMonitoredService addService(OnmsServiceType serviceType) {
-        m_currentMonSvc = new OnmsMonitoredService(m_currentIf, serviceType);
-        return m_currentMonSvc;
-    }
 
-    public void setDisplayCategory(String displayCategory) {
-        m_currentNode.getAssetRecord().setDisplayCategory(displayCategory);
-    }
+	public OnmsMonitoredService addService(OnmsServiceType serviceType) {
+		m_currentMonSvc = new OnmsMonitoredService(m_currentIf, serviceType);
+		return m_currentMonSvc;
+	}
 
-    public OnmsNode getCurrentNode() {
-        return m_currentNode;
-    }
+	public void setDisplayCategory(String displayCategory) {
+		m_currentNode.getAssetRecord().setDisplayCategory(displayCategory);
+	}
 
-    
+	public OnmsNode getCurrentNode() {
+		return m_currentNode;
+	}
+
 }

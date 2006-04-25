@@ -190,7 +190,7 @@ public class IpInterfaceDaoJdbc extends AbstractDaoJdbc implements IpInterfaceDa
             iface.getIsManaged(),
             iface.getIpStatus(),
             iface.getIpLastCapsdPoll(),
-            iface.getIsSnmpPrimary(),
+            iface.getIsSnmpPrimary().toString(),
             iface.getNode().getId(),
             iface.getIpAddress(),
             iface.getIfIndex(),
@@ -214,7 +214,7 @@ public class IpInterfaceDaoJdbc extends AbstractDaoJdbc implements IpInterfaceDa
     				iface.getIsManaged(),
     				iface.getIpStatus(),
     				iface.getIpLastCapsdPoll(),
-    				iface.getIsSnmpPrimary(),
+    				iface.getIsSnmpPrimary().toString(),
     				iface.getNode().getId(),
     				iface.getIpAddress(),
     		};

@@ -66,6 +66,7 @@ import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.DataCollectionConfigFactory;
 import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.SnmpPeerFactory;
+import org.opennms.netmgt.model.OnmsIpInterface.CollectionType;
 import org.opennms.netmgt.rrd.RrdException;
 import org.opennms.netmgt.rrd.RrdUtils;
 import org.opennms.netmgt.snmp.CollectionTracker;
@@ -188,12 +189,22 @@ public class SnmpCollector implements ServiceCollector {
 	 * SQL statement to fetch the ifIndex, ifName, and ifDescr values for all
 	 * interfaces associated with a node
 	 */
-	static final String SQL_GET_SNMP_INFO = "SELECT snmpifindex, snmpiftype, snmpifname, "
-			+ "snmpifdescr, snmpphysaddr, issnmpprimary "
+	static final String SQL_GET_SNMP_INFO = "SELECT DISTINCT snmpifindex, snmpiftype, snmpifname, "
+			+ "snmpifdescr, snmpphysaddr "
 			+ "FROM snmpinterface, ipinterface "
 			+ "WHERE ipinterface.nodeid=snmpinterface.nodeid "
 			+ "AND ifindex = snmpifindex "
 			+ "AND ipinterface.nodeid=? "
+			+ "AND (ipinterface.ismanaged!='D')";
+
+	/**
+	 * SQL statement to fetch the ifIndex, ifName, and ifDescr values for all
+	 * interfaces associated with a node
+	 */
+	static final String SQL_GET_ISSNMPPRIMARY_FOR_SNMPIF = "SELECT issnmpprimary "
+			+ "FROM ipinterface "
+			+ "WHERE ipinterface.nodeid = ? "
+			+ "AND ipinterface.ifindex=? "
 			+ "AND (ipinterface.ismanaged!='D')";
 
 	/**
@@ -940,8 +951,7 @@ public class SnmpCollector implements ServiceCollector {
 				}
 
 				if (snmpStorage.equals(SNMP_STORAGE_SELECT)) {
-					if (ifInfo.getCollType() == null
-							|| ifInfo.getCollType().equals("N")) {
+					if (ifInfo.getCollType().equals(CollectionType.NO_COLLECT)) {
 						if (override) {
 							if (log().isDebugEnabled()) {
 								log()

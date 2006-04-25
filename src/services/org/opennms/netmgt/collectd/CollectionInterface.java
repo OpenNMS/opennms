@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.OnmsIpInterface.CollectionType;
 import org.opennms.netmgt.poller.IPv4NetworkInterface;
 
 public class CollectionInterface extends IPv4NetworkInterface {
@@ -132,6 +133,10 @@ public class CollectionInterface extends IPv4NetworkInterface {
 
 	String getSysObjectId() {
 		return getIpInterface().getNode().getSysObjectId();
+	}
+
+	CollectionType getCollectionType() {
+		return getIpInterface().getIsSnmpPrimary();
 	}
 
 }
