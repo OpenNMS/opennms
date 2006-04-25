@@ -124,7 +124,7 @@ public class CollectionInterface extends IPv4NetworkInterface {
 	}
 
 	int getNodeId() {
-		return getIpInterface().getNode().getId().intValue();
+		return getIpInterface().getNode().getId() == null ? -1 : getIpInterface().getNode().getId().intValue();
 	}
 
 	int getIfIndex() {
