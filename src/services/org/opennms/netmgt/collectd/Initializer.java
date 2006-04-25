@@ -367,7 +367,7 @@ class Initializer {
 	}
 
 	private void validateIsSnmpPrimary() {
-		if (m_iface.getCollectionType() != CollectionType.NO_COLLECT) {
+		if (!CollectionType.PRIMARY.equals(m_iface.getCollectionType())) {
 			throw new RuntimeException("Interface "
 					+ m_iface.getHostAddress()
 					+ " is not the primary SNMP interface for nodeid "
