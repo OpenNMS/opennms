@@ -7,6 +7,7 @@ import java.util.Map;
 import org.jmock.Mock;
 import org.jmock.cglib.MockObjectTestCase;
 import org.opennms.netmgt.config.CollectdPackage;
+import org.opennms.netmgt.config.collectd.Filter;
 import org.opennms.netmgt.config.collectd.Package;
 import org.opennms.netmgt.config.collectd.Parameter;
 import org.opennms.netmgt.config.collectd.Service;
@@ -55,6 +56,9 @@ public class CollectdTest extends MockObjectTestCase {
 		
 		Package pkg = new Package();
 		pkg.setName("pkg");
+		Filter filter = new Filter();
+		filter.setContent("IPADDR IPLIKE *.*.*.*");
+		pkg.setFilter(filter);
 		Service svc = new Service();
 		pkg.addService(svc);
 		svc.setName("SNMP");
@@ -155,7 +159,7 @@ public class CollectdTest extends MockObjectTestCase {
 		setupInterface(iface);
 		setupSpecs(iface, svcName, specs);
 		
-		m_collector.expects(once()).method("initialize").with(isA(CollectableService.class), isA(Map.class));
+		m_collector.expects(once()).method("initialize").with(isA(CollectionInterface.class), isA(Map.class));
 
 		m_scheduler.next();
 		

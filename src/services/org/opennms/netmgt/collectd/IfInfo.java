@@ -36,6 +36,7 @@ package org.opennms.netmgt.collectd;
 
 import java.util.List;
 
+import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.OnmsIpInterface.CollectionType;
 
 /**
@@ -47,32 +48,17 @@ import org.opennms.netmgt.model.OnmsIpInterface.CollectionType;
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
  */
 final class IfInfo {
-    private int m_index;
-
-    private int m_type;
-
-    private String m_label;
-
-    private CollectionType m_collType;
-
-    private boolean m_isPrimary;
-
+	
+	OnmsSnmpInterface m_snmpIface;
+	
     private List m_oidList;
 
     private List m_dsList;
 
-    public IfInfo(int ifIndex, int ifType, String ifLabel, CollectionType collType) {
-        m_index = ifIndex;
-        m_type = ifType;
-        m_label = ifLabel;
-        m_collType = collType;
-        m_isPrimary = false;
+    public IfInfo(OnmsSnmpInterface snmpIface) {
+    	m_snmpIface = snmpIface;
         m_oidList = null;
         m_dsList = null;
-    }
-
-    public void setIsPrimary(boolean isPrimary) {
-        m_isPrimary = isPrimary;
     }
 
     public void setDsList(List dsList) {
@@ -83,28 +69,20 @@ final class IfInfo {
         m_oidList = oidList;
     }
 
-	public void setCollType(CollectionType collType) {
-		m_collType = collType;
-	}
-
 	public int getIndex() {
-        return m_index;
+        return m_snmpIface.getIfIndex().intValue();
     }
 
     public int getType() {
-        return m_type;
+        return m_snmpIface.getIfType().intValue();
     }
 
     public String getLabel() {
-        return m_label;
+        return m_snmpIface.computeLabelForRRD();
     }
 
     public CollectionType getCollType() {
-        return m_collType;
-    }
-
-    public boolean getIsPrimary() {
-        return m_isPrimary;
+        return m_snmpIface.getCollectionType();
     }
 
     public List getDsList() {

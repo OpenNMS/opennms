@@ -1,7 +1,14 @@
 package org.opennms.netmgt.model;
 
 import java.io.Serializable;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
+import org.apache.log4j.Category;
+import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.model.OnmsIpInterface.CollectionType;
+import org.opennms.netmgt.utils.AlphaNumeric;
 import org.springframework.core.style.ToStringCreator;
 
 
@@ -272,6 +279,84 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
 	public void visit(EntityVisitor visitor) {
 		visitor.visitSnmpInterface(this);
 		visitor.visitSnmpInterfaceComplete(this);
+	}
+
+	public Set getIpInterfaces() {
+		
+		Set ifsForSnmpIface = new LinkedHashSet();
+		for (Iterator it = getNode().getIpInterfaces().iterator(); it.hasNext();) {
+			OnmsIpInterface	iface = (OnmsIpInterface) it.next();		
+			if (getIfIndex().equals(iface.getIfIndex()))
+				ifsForSnmpIface.add(iface);
+		}
+		return ifsForSnmpIface;
+	}
+
+	public CollectionType getCollectionType() {
+		CollectionType maxCollType = CollectionType.NO_COLLECT;
+		for (Iterator it = getIpInterfaces().iterator(); it.hasNext();) {
+			OnmsIpInterface ipIface = (OnmsIpInterface) it.next();
+			maxCollType = maxCollType.max(ipIface.getIsSnmpPrimary());
+		}
+		return maxCollType;		
+	}
+
+	public Category log() {
+		return ThreadCategory.getInstance(getClass());
+	}
+
+	public String computePhysAddrForRRD() {
+		/*
+		 * In order to assure the uniqueness of the RRD file names
+		 * we now append the MAC/physical address to the end of
+		 * label if it is available.
+		 */
+		String physAddrForRRD = null;
+		if (getPhysAddr() != null) {
+			String parsedPhysAddr = AlphaNumeric.parseAndTrim(getPhysAddr());
+			if (parsedPhysAddr.length() == 12) {
+				physAddrForRRD = parsedPhysAddr;
+			} else {
+				Category log = log();
+				if (log.isDebugEnabled()) {
+					log.debug(
+							"physAddrForRRD: physical address len "
+							+ "is NOT 12, physAddr="
+							+ parsedPhysAddr);
+				}
+			}
+		}
+		return physAddrForRRD;
+	}
+
+	public String computeNameForRRD() {
+		/*
+		 * Determine the label for this interface. The label will be
+		 * used to create the RRD file name which holds SNMP data
+		 * retreived from the remote agent. If available ifName is
+		 * used to generate the label since it is guaranteed to be
+		 * unique. Otherwise ifDescr is used. In either case, all
+		 * non alpha numeric characters are converted to underscores
+		 * to ensure that the resuling string will make a decent
+		 * file name and that RRD won't have any problems using it
+		 */
+		String label = null;
+		if (getIfName() != null) {
+			label = AlphaNumeric.parseAndReplace(getIfName(), '_');
+		} else if (getIfDescr() != null) {
+			label = AlphaNumeric.parseAndReplace(getIfDescr(), '_');
+		} else {
+			log().warn("Interface ("+this+") has no ifName and no ifDescr...setting to label to 'no_ifLabel'.");
+			label = "no_ifLabel";
+		}
+		return label;
+	}
+
+	public String computeLabelForRRD() {
+		String name = computeNameForRRD();
+		String physAddrForRRD = computePhysAddrForRRD();
+		String label = (physAddrForRRD == null ? name : name + '-' + physAddrForRRD);
+		return label;
 	}
 
 }

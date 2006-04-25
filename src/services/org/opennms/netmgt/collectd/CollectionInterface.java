@@ -103,10 +103,6 @@ public class CollectionInterface extends IPv4NetworkInterface {
 		return m_collectionSet.getIfMap();
 	}
 
-	void setIfMap(Map ifMap) {
-		m_collectionSet.setIfMap(ifMap);
-	}
-
 	public void setCollectionSet(CollectionSet collectionSet) {
 		m_collectionSet = collectionSet;
 	}
@@ -117,10 +113,6 @@ public class CollectionInterface extends IPv4NetworkInterface {
 	
 	NodeInfo getNodeInfo() throws CollectionError {
 		return m_collectionSet.getNodeInfo();
-	}
-
-	void setNodeInfo(NodeInfo nodeInfo) {
-		m_collectionSet.setNodeInfo(nodeInfo);
 	}
 
 	int getNodeId() {

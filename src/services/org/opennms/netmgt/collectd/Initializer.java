@@ -12,17 +12,16 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.DataCollectionConfigFactory;
 import org.opennms.netmgt.config.DataSourceFactory;
-import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.OnmsIpInterface.CollectionType;
-import org.opennms.netmgt.utils.AlphaNumeric;
 
 class Initializer {
 
@@ -36,39 +35,27 @@ class Initializer {
 	private String m_collectionName;
 
 	// output parms
-	private NodeInfo m_nodeInfo;
-	private Map m_ifMap;
-	
-	private CollectionSet m_collectionSet = new CollectionSet();
+	private CollectionSet m_collectionSet;
 	
 	void execute(SnmpCollector collector, CollectionInterface iface, Map parameters) {
 		
 		initialize(collector, iface, parameters);
 
+
+		logCollectionParms();
+		
+		validateNodeID();
+		validatePrimaryIfIndex();
+		validateIsSnmpPrimary();
+		validateSysObjId();
+
+		m_collectionSet = new CollectionSet(m_iface, m_collectionName);
+		
+		computeSnmpInfoForInterfaces();
+		
+		verifyCollectionIsNecessary();
+			
 		m_iface.setCollectionSet(m_collectionSet);
-
-		/*
-		 * All database calls wrapped in try/finally block so we make certain
-		 * that the connection will be closed when we are finished.
-		 */
-		allocateDBConn();
-		try {
-			logCollectionParms();
-			
-			validateNodeID();
-			validatePrimaryIfIndex();
-			validateIsSnmpPrimary();
-			validateSysObjId();
-	
-			m_collectionSet.setNodeInfo(m_iface, m_collectionName);
-
-			computeSnmpInfoForInterfaces();
-	
-			verifyCollectionIsNecessary();
-			
-		} finally {
-			closeDBConn();
-		}
 	
 		logCompletion();
 	}
@@ -84,7 +71,6 @@ class Initializer {
 	
 		m_iface.setMaxVarsPerPdu(m_collector.getMaxVarsPerPdu(m_collectionName));
 
-		m_ifMap = new TreeMap();
 	}
 	
 
@@ -126,9 +112,9 @@ class Initializer {
 		 * interface. If no node objects and no interface objects then throw
 		 * exception
 		 */
-		if (m_nodeInfo.getOidList().isEmpty()) {
+		if (m_collectionSet.getNodeInfo().getOidList().isEmpty()) {
 			boolean hasInterfaceOids = false;
-			Iterator iter = m_ifMap.values().iterator();
+			Iterator iter = m_collectionSet.getIfMap().values().iterator();
 			while (iter.hasNext() && !hasInterfaceOids) {
 				IfInfo ifInfo = (IfInfo) iter.next();
 				if (!ifInfo.getOidList().isEmpty()) {
@@ -145,207 +131,80 @@ class Initializer {
 	}
 
 	private void computeSnmpInfoForInterfaces() {
-		OnmsNode node = new OnmsNode();
-		node.setId(new Integer(m_iface.getNodeId()));
+		OnmsNode node = m_iface.getNode();
 
-		PreparedStatement stmt = null;
-		try {
-			stmt = m_dsConn.prepareStatement(SnmpCollector.SQL_GET_SNMP_INFO);
-			stmt.setInt(1, m_iface.getNodeId());
-			ResultSet rs = stmt.executeQuery();
-			try {
-
-				while (rs.next()) {
-					// Extract retrieved database values from the result set
-					OnmsSnmpInterface snmpIface = new OnmsSnmpInterface();
-					snmpIface.setNode(node);
-					snmpIface.setIfIndex(new Integer(rs.getInt(1)));
-					snmpIface.setIfType(new Integer(rs.getInt(2)));
-					snmpIface.setIfName(rs.getString(3));
-					snmpIface.setIfDescr(rs.getString(4));
-					snmpIface.setPhysAddr(rs.getString(5));
-					String physAddr = snmpIface.getPhysAddr();
-					
-					
-					CollectionType collType = getCollType(snmpIface);
-
-					IfInfo ifInfo = (IfInfo)m_ifMap.get(new Integer(snmpIface.getIfIndex().intValue()));
-					if (ifInfo != null) {
-						if ("P".equals(collType)) ifInfo.setCollType(collType);
-					} else {
-
-						if (log().isDebugEnabled()) {
-							log()
-							.debug(
-									"initialize: snmpifindex = " + snmpIface.getIfIndex().intValue()
-									+ ", snmpifname = " + snmpIface.getIfName()
-									+ ", snmpifdescr = " + snmpIface.getIfDescr()
-									+ ", snmpphysaddr = -"
-									+ physAddr + "-");
-						}
-
-						/*
-						 * Determine the label for this interface. The label will be
-						 * used to create the RRD file name which holds SNMP data
-						 * retreived from the remote agent. If available ifName is
-						 * used to generate the label since it is guaranteed to be
-						 * unique. Otherwise ifDescr is used. In either case, all
-						 * non alpha numeric characters are converted to underscores
-						 * to ensure that the resuling string will make a decent
-						 * file name and that RRD won't have any problems using it
-						 */
-						String label = null;
-						if (snmpIface.getIfName() != null) {
-							label = AlphaNumeric.parseAndReplace(snmpIface.getIfName(), SnmpCollector.nonAnRepl);
-						} else if (snmpIface.getIfDescr() != null) {
-							label = AlphaNumeric.parseAndReplace(snmpIface.getIfDescr(), SnmpCollector.nonAnRepl);
-						} else {
-							log()
-							.warn(
-									"Interface (ifIndex/nodeId="
-									+ snmpIface.getIfIndex().intValue()
-									+ "/"
-									+ m_iface.getNodeId()
-									+ ") has no ifName and no "
-									+ "ifDescr...setting to label to 'no_ifLabel'.");
-							label = "no_ifLabel";
-						}
-
-						/*
-						 * In order to assure the uniqueness of the RRD file names
-						 * we now append the MAC/physical address to the end of
-						 * label if it is available.
-						 */
-						if (physAddr != null) {
-							physAddr = AlphaNumeric.parseAndTrim(physAddr);
-							if (physAddr.length() == 12) {
-								label = label + "-" + physAddr;
-							} else {
-								if (log().isDebugEnabled()) {
-									log().debug(
-											"initialize: physical address len "
-											+ "is NOT 12, physAddr="
-											+ physAddr);
-								}
-							}
-						}
-
-						if (log().isDebugEnabled()) {
-							log().debug("initialize: ifLabel = '" + label + "'");
-						}
-
-						// Create new IfInfo object
-						ifInfo = new IfInfo(snmpIface.getIfIndex().intValue(), snmpIface.getIfType().intValue(), label, collType);
-
-						if (snmpIface.getIfIndex().intValue() == m_iface.getIfIndex()) {
-							ifInfo.setIsPrimary(true);
-						} else {
-							ifInfo.setIsPrimary(false);
-						}
-
-						/*
-						 * Retrieve list of mib objects to be collected from the
-						 * remote agent for this interface.
-						 */
-						List oidList = DataCollectionConfigFactory.getInstance()
-						.getMibObjectList(m_collectionName, m_iface.getSysObjectId(),
-								m_iface.getHostAddress(), snmpIface.getIfType().intValue());
-
-						/*
-						 * Now build a list of RRD data source objects from the list
-						 * of mib objects
-						 */
-						List dsList = DataCollectionConfigFactory.buildDataSourceList(m_collectionName, oidList);
-
-						// Set MIB object and data source lists in IfInfo object
-						ifInfo.setOidList(oidList);
-						ifInfo.setDsList(dsList);
-
-						/*
-						 * Add the new IfInfo object to the interface map keyed by
-						 * interface index
-						 */
-						m_ifMap.put(new Integer(snmpIface.getIfIndex().intValue()), ifInfo);
-					}
-				}
-			} finally {
-				rs.close();
-			}
-		} catch (SQLException e) {
-			log().debug("initialize: SQL exception!!", e);
-			throw new RuntimeException("SQL exception while attempting "
-					+ "to retrieve snmp interface info", e);
-		} catch (NullPointerException e) {
-			/*
-			 * Thrown by ResultSet.getString() if database query did not
-			 * return anything
-			 */
-			log().debug("initialize: NullPointerException", e);
-			throw new RuntimeException("NullPointerException while "
-					+ "attempting to retrieve snmp interface info", e);
-		} finally {
-			try {
-				stmt.close();
-			} catch (Exception e) {
-				log().info(
-						"initialize: an error occured trying to close "
-						+ "an SQL statement", e);
-			}
+		Set snmpIfs = node.getSnmpInterfaces();
+		
+		for (Iterator it = snmpIfs.iterator(); it.hasNext();) {
+			OnmsSnmpInterface snmpIface = (OnmsSnmpInterface) it.next();
+			createIfInfoForInterface(snmpIface);
+			
 		}
+		
+		validateInterfacesExist();
 
+
+	}
+
+	private void validateInterfacesExist() {
 		/*
+		 * FIXME: Should we REALLY refuse to collect at all on interfaces
+		 * that have NO snmpInterfaces in the snmpInterface table?
 		 * Verify that we did find at least one eligible interface for the
 		 * node.
 		 */
-		if (m_ifMap.size() < 1) {
+		if (m_collectionSet.getIfMap().size() < 1) {
 			throw new RuntimeException("Failed to retrieve any eligible "
 					+ "interfaces for node " + m_iface.getNodeId()
 					+ " from the database.");
 		}
+	}
 
-		// Add the ifMap object as an attribute of the interface
-		m_iface.setIfMap(m_ifMap);
+	private void createIfInfoForInterface(OnmsSnmpInterface snmpIface) {
+		logInitializeSnmpIface(snmpIface);
 
+		if (log().isDebugEnabled()) {
+			log().debug("initialize: ifLabel = '" + snmpIface.computeLabelForRRD() + "'");
+		}
+
+		// Create new IfInfo object
+		IfInfo ifInfo = new IfInfo(snmpIface);
+
+		/*
+		 * Retrieve list of mib objects to be collected from the
+		 * remote agent for this interface.
+		 */
+		List oidList = DataCollectionConfigFactory.getInstance()
+		.getMibObjectList(m_collectionName, m_iface.getSysObjectId(),
+				m_iface.getHostAddress(), snmpIface.getIfType().intValue());
+		ifInfo.setOidList(oidList);
+
+		/*
+		 * Now build a list of RRD data source objects from the list
+		 * of mib objects
+		 */
+		List dsList = DataCollectionConfigFactory.buildDataSourceList(m_collectionName, oidList);
+		ifInfo.setDsList(dsList);
+
+		/*
+		 * Add the new IfInfo object to the interface map keyed by
+		 * interface index
+		 */
+		m_collectionSet.addIfInfo(ifInfo);
+	}
+
+	private void logInitializeSnmpIface(OnmsSnmpInterface snmpIface) {
+		if (log().isDebugEnabled()) {
+			log()
+			.debug(
+					"initialize: snmpifindex = " + snmpIface.getIfIndex().intValue()
+					+ ", snmpifname = " + snmpIface.getIfName()
+					+ ", snmpifdescr = " + snmpIface.getIfDescr()
+					+ ", snmpphysaddr = -"+ snmpIface.getPhysAddr() + "-");
+		}
 	}
 	
 	
-	private CollectionType getCollType(OnmsSnmpInterface snmpIface) throws SQLException {
-		List ipInterfaces = getIpInterfaces(snmpIface);
-		return getMaxCollType(ipInterfaces);		
-	}
-
-	private CollectionType getMaxCollType(List ipInterfaces) {
-		CollectionType maxCollType = CollectionType.NO_COLLECT;
-		for (Iterator it = ipInterfaces.iterator(); it.hasNext();) {
-			OnmsIpInterface ipIface = (OnmsIpInterface) it.next();
-			maxCollType = maxCollType.max(ipIface.getIsSnmpPrimary());
-		}
-		return maxCollType;
-	}
-
-	private List getIpInterfaces(OnmsSnmpInterface snmpIface) throws SQLException {
-		List ipInterfaces = new LinkedList();
-		PreparedStatement stmt = null;
-		try {
-			stmt = m_dsConn.prepareStatement(SnmpCollector.SQL_GET_ISSNMPPRIMARY_FOR_SNMPIF);
-			stmt.setInt(1, snmpIface.getNode().getId().intValue());
-			stmt.setInt(2, snmpIface.getIfIndex().intValue());
-			ResultSet rs = stmt.executeQuery();
-			try {
-				while (rs.next()) {
-					OnmsIpInterface ipIface = new OnmsIpInterface();
-					ipIface.setIsSnmpPrimary(CollectionType.get(rs.getString(1)));
-					ipInterfaces.add(ipIface);
-				}
-			} finally {
-				rs.close();
-			}
-		} finally {
-			stmt.close();
-		}
-		return ipInterfaces;
-	}
-
 	private void validateSysObjId() {
 		if (m_iface.getSysObjectId() == null) {
 			throw new RuntimeException("System Object ID for interface "

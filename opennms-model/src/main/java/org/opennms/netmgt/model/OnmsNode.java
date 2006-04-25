@@ -424,4 +424,9 @@ public class OnmsNode extends OnmsEntity implements Serializable {
 		visitor.visitNodeComplete(this);
 	}
 
+	public void addSnmpInterface(OnmsSnmpInterface snmpIface) {
+    	snmpIface.setNode(this);
+    	getSnmpInterfaces().add(snmpIface);
+	}
+
 }

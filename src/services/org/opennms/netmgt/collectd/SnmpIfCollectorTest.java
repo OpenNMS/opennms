@@ -42,7 +42,9 @@ import java.util.TreeMap;
 import junit.framework.TestSuite;
 
 import org.opennms.netmgt.config.SnmpPeerFactory;
-import org.opennms.netmgt.model.OnmsCategory;
+import org.opennms.netmgt.model.OnmsIpInterface;
+import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.OnmsIpInterface.CollectionType;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpCollectorTestCase;
@@ -74,7 +76,7 @@ public class SnmpIfCollectorTest extends SnmpCollectorTestCase {
     }
 
     public void testZeroVars() throws Exception {
-        IfInfo ifInfo = new IfInfo(1, 24, "lo", CollectionType.PRIMARY);
+        IfInfo ifInfo = createIfInfo(1, 24, "lo", CollectionType.PRIMARY);
         
         ifInfo.setOidList(new ArrayList(m_objList));
         
@@ -116,7 +118,7 @@ public class SnmpIfCollectorTest extends SnmpCollectorTestCase {
     }
 
     public void testInvalidVar() throws Exception {
-        IfInfo ifInfo = new IfInfo(1, 24, "lo", CollectionType.PRIMARY);
+        IfInfo ifInfo = createIfInfo(1, 24, "lo", CollectionType.PRIMARY);
         
         addMibObject("invalid", "1.3.6.1.2.1.2.2.2.10", "ifIndex", "counter");
         
@@ -134,7 +136,7 @@ public class SnmpIfCollectorTest extends SnmpCollectorTestCase {
     
     public void testBadApple() throws Exception {
 
-        IfInfo ifInfo = new IfInfo(1, 24, "lo", CollectionType.PRIMARY);
+        IfInfo ifInfo = createIfInfo(1, 24, "lo", CollectionType.PRIMARY);
         
         addIfSpeed();
         addIfInOctets();
@@ -180,7 +182,20 @@ public class SnmpIfCollectorTest extends SnmpCollectorTestCase {
     }
 
     private IfInfo createIfInfo(int ifIndex, int ifType, String ifName, CollectionType ifCollType) {
-        IfInfo ifInfo = new IfInfo(ifIndex, ifType, ifName, ifCollType);
+    	OnmsNode node = new OnmsNode();
+
+    	OnmsIpInterface iface = new OnmsIpInterface();
+    	iface.setIfIndex(new Integer(ifIndex));
+    	iface.setIsSnmpPrimary(ifCollType);
+    	node.addIpInterface(iface);
+
+    	OnmsSnmpInterface snmpIface = new OnmsSnmpInterface();
+    	snmpIface.setIfIndex(new Integer(ifIndex));
+    	snmpIface.setIfType(new Integer(ifType));
+    	snmpIface.setIfName(ifName);
+    	node.addSnmpInterface(snmpIface);
+
+    	IfInfo ifInfo = new IfInfo(snmpIface);
         ifInfo.setOidList(new ArrayList(m_objList));
         return ifInfo;
     }

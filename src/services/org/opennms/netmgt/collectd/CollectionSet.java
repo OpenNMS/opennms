@@ -1,11 +1,19 @@
 package org.opennms.netmgt.collectd;
 
 import java.util.Map;
+import java.util.TreeMap;
 
 public class CollectionSet {
 	
-	private NodeInfo m_nodeInfo;
-	private Map m_ifMap;
+	private CollectionInterface m_collectionInterface;
+	private String m_collectionName;
+	
+	private Map m_ifMap = new TreeMap();
+	
+	public CollectionSet(CollectionInterface collectionInterface, String collectionName) {
+		m_collectionInterface = collectionInterface;
+		m_collectionName = collectionName;
+	}
 	
 	public Map getIfMap() {
 		return m_ifMap;
@@ -14,13 +22,11 @@ public class CollectionSet {
 		m_ifMap = ifMap;
 	}
 	public NodeInfo getNodeInfo() {
-		return m_nodeInfo;
+		return new NodeInfo(m_collectionInterface, m_collectionName);
 	}
-	public void setNodeInfo(NodeInfo nodeInfo) {
-		m_nodeInfo = nodeInfo;
-	}
-	void setNodeInfo(CollectionInterface collectionInterface, String collectionName) {
-		setNodeInfo(new NodeInfo(collectionInterface, collectionName));
+
+	void addIfInfo(IfInfo ifInfo) {
+		getIfMap().put(new Integer(ifInfo.getIndex()), ifInfo);
 	}
 
 }
