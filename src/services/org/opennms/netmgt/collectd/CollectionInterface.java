@@ -128,7 +128,7 @@ public class CollectionInterface extends IPv4NetworkInterface {
 	}
 
 	int getIfIndex() {
-		return getIpInterface().getIfIndex().intValue();
+		return (getIpInterface().getIfIndex() == null ? -1 : getIpInterface().getIfIndex().intValue());
 	}
 
 	String getSysObjectId() {
