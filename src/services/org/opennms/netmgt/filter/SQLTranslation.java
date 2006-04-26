@@ -1,7 +1,7 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2002-2003 The OpenNMS Group, Inc.  All rights reserved.
+// OpenNMS(R) is Copyright (C) 2002-2006 The OpenNMS Group, Inc.  All rights reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included code and modified
 // code that was published under the GNU General Public License. Copyrights for modified 
 // and included code are below.
@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2006 Apr 25: Added setNodeMappingTranslation()
 // 2003 Aug 01: Created a proper Join for rules. Bug #752
 // 2003 Jan 31: Cleaned up some unused imports.
 // 2002 Oct 30: Changed some filter code for notifications.
@@ -379,7 +380,15 @@ public class SQLTranslation extends DepthFirstAdapter {
         m_selectList.add(addColumnToStatement("ipAddr"));
         m_selectList.add(addColumnToStatement("serviceName"));
 
-        // ");
+    }
+
+    public void setNodeMappingTranslation() {
+        m_selectModifier = "DISTINCT";
+
+        m_selectList.clear();
+        m_selectList.add(addColumnToStatement("nodeid"));
+        m_selectList.add(addColumnToStatement("nodelabel"));
+
     }
 
     /**

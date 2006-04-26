@@ -2,7 +2,7 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2002-2003 The OpenNMS Group, Inc.  All rights reserved.
+// OpenNMS(R) is Copyright (C) 2002-2006 The OpenNMS Group, Inc.  All rights reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included code and modified
 // code that was published under the GNU General Public License. Copyrights for modified 
 // and included code are below.
@@ -10,6 +10,8 @@
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
 // Modifications:
+//
+// 2006 Apr 17: File created
 //
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
@@ -58,10 +60,8 @@
         String dcpip = OpennmsServerConfigFactory.getInstance().getDefaultCriticalPathIp();
         String[] pthData = PathOutageFactory.getCriticalPathData(dcpip, "ICMP");
 %>
-        <BR>
-        <H3 align="center">Path Outage Table</H3>
-        <BR>
 
+        <br>
         <table class="standardfirst">
 
             <% if (dcpip != null && !dcpip.equals("")) { %>
@@ -84,13 +84,13 @@
                 String[] pth = (String[])iter2.next();
                 pthData = PathOutageFactory.getCriticalPathData(pth[0], pth[1]); %>
                 <% if((pthData[0] == null) || (pthData[0].equals(""))) { %>
-                    <td class="standard" align="center">(interface not in DB)</td>
+                    <td class="standardmorepadding">(interface not in DB)</td>
                 <% } else if (pthData[0].indexOf("nodes have this IP") > -1) { %>
-                    <td class="standard" align="center"><a href="element/nodelist.jsp?iplike=<%= pth[0] %>"><%= pthData[0] %></a></td>
+                    <td class="standardmorepadding"><a href="element/nodelist.jsp?iplike=<%= pth[0] %>"><%= pthData[0] %></a></td>
                 <% } else { %>
-                    <td class="standard" align="center"><a href="element/node.jsp?node=<%= pthData[1] %>"><%= pthData[0] %></a></td>
+                    <td class="standardmorepadding"><a href="element/node.jsp?node=<%= pthData[1] %>"><%= pthData[0] %></a></td>
                 <% } %>
-                <td class="standard" align="center"><%= pth[0] %></td>
+                <td class="standardmorepadding"><%= pth[0] %></td>
                 <td class="standard" bgcolor="<%= pthData[3] %>" align="center"><%= pth[1] %></td>
                 <td class="standard" align="center"><a href="pathOutage/showNodes.jsp?critIp=<%= pth[0] %>&critSvc=<%= pth[1] %>"><%= pthData[2] %></a></td>
                 </tr>

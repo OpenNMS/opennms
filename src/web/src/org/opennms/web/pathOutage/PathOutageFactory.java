@@ -1,7 +1,7 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2002-2003 The OpenNMS Group, Inc.  All rights reserved.
+// OpenNMS(R) is Copyright (C) 2002-2006 The OpenNMS Group, Inc.  All rights reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included code and modified
 // code that was published under the GNU General Public License. Copyrights for modified 
 // and included code are below.
@@ -9,6 +9,10 @@
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
 // Modifications:
+//
+// 2006 Apr 25: replaced getNodeLabelAndColor with getLabelAndStatus to
+//              speed things up
+// 2006 Apr 17: Created file
 //
 // Orignal code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
@@ -43,7 +47,6 @@ import java.util.List;
 import javax.servlet.ServletException;
 
 import org.opennms.core.resource.Vault;
-import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.EventConstants;
 
 /**
@@ -73,9 +76,7 @@ public class PathOutageFactory extends Object {
 
     private static final String IS_CRITICAL_PATH_MANAGED = "SELECT count(*) FROM ifservices WHERE ipaddr=? AND status='A' AND serviceid=(SELECT serviceid FROM service WHERE servicename=?)";
 
-    private static final String SQL_GET_LATEST_NODE_DOWN_EVENTID = "SELECT eventid FROM events WHERE nodeid=? AND eventuei='uei.opennms.org/nodes/nodeDown' ORDER BY eventid DESC LIMIT 1";
-
-    private static final String SQL_GET_LATEST_NODE_UP_EVENTID = "SELECT eventid FROM events WHERE nodeid=? AND eventuei='uei.opennms.org/nodes/nodeUp' ORDER BY eventid DESC LIMIT 1";
+    private static final String SQL_CRITICAL_SVC_OUTAGE = "SELECT count(*) FROM outages WHERE svcregainedeventid IS NULL AND nodeid=? AND serviceid=?";
 
     private static final String SQL_GET_EVENT_PARMS = "SELECT eventparms FROM events WHERE eventid=?";
 
@@ -139,83 +140,56 @@ public class PathOutageFactory extends Object {
 
     /**
      * This method is responsible for determining the 
-     * color based on the status of the node, and the
-     * node label
+     * node label of a node, and the up/down status
+     * and status color 
      * 
      * @param String nodeID
      *            the nodeID of the node being checked
      */
-    public static String[] getNodeLabelAndColor(String nodeID) throws SQLException {
+    public static String[] getLabelAndStatus(String nodeID, Connection conn) throws SQLException {
 
-        Connection conn = Vault.getDbConnection();
+	//TODO: replace critical service with config file critical service
+	int critSvcId=1; // ICMP
         int count = 0;
         String result[] = new String[3];
         result[1] = "lightblue";
         result[2] = "Unmanaged";
 
-        try {
-            PreparedStatement stmt = conn.prepareStatement(GET_NODELABEL_BY_NODEID);
-            stmt.setString(1, nodeID);
-            ResultSet rs = stmt.executeQuery();
-            while (rs.next()) {
-                result[0] = rs.getString(1);
-            }
-            rs.close();
-            stmt.close();
+        PreparedStatement stmt = conn.prepareStatement(GET_NODELABEL_BY_NODEID);
+        stmt.setString(1, nodeID);
+        ResultSet rs = stmt.executeQuery();
+        while (rs.next()) {
+            result[0] = rs.getString(1);
+        }
+        rs.close();
+        stmt.close();
 
-            stmt = conn.prepareStatement(COUNT_MANAGED_SVCS);
+        stmt = conn.prepareStatement(COUNT_MANAGED_SVCS);
+        stmt.setString(1, nodeID);
+        rs = stmt.executeQuery();
+        while (rs.next()) {
+            count = rs.getInt(1);
+        }
+        rs.close();
+        stmt.close();
+
+        if(count > 0) {
+            stmt = conn.prepareStatement(SQL_CRITICAL_SVC_OUTAGE);
             stmt.setString(1, nodeID);
+	    stmt.setInt(2, critSvcId);
             rs = stmt.executeQuery();
             while (rs.next()) {
                 count = rs.getInt(1);
             }
-            if(count > 0) {
-                PreparedStatement stmt1 = conn.prepareStatement(SQL_GET_LATEST_NODE_DOWN_EVENTID);
-                PreparedStatement stmt2 = conn.prepareStatement(SQL_GET_LATEST_NODE_UP_EVENTID);
-                stmt1.setString(1, nodeID);
-                stmt2.setString(1, nodeID);
-                ResultSet rs1 = stmt1.executeQuery();
-                if (rs1.next()) {
-                    int nodeDownEventId = rs1.getInt(1);
-                    ResultSet rs2 = stmt2.executeQuery();
-                    if (rs2.next()) {
-                        if(rs2.getInt(1) > nodeDownEventId) {
-                            result[1] = "green";
-                            result[2] = "Up";
-                        } else {
-                            // see if last node down was a path outage
-                            PreparedStatement stmt3 = conn.prepareStatement(SQL_GET_EVENT_PARMS);
-                            stmt3.setInt(1, nodeDownEventId);
-                            ResultSet rs3 = stmt3.executeQuery();
-                            if (rs3.next()) {
-                                if(rs3.getString(1).indexOf("eventReason=pathOutage") > -1) {
-                                    result[1] = "orange";
-                                    result[2] = "Path Outage";
-                                } else {
-                                    result[1] = "red";
-                                    result[2] = "Down";
-                                }
-                            }
-                            rs3.close();
-                            stmt3.close();
-                        }
-                    } else {
-                        result[1] = "red";
-                        result[2] = "Down";
-                    } 
-                    rs2.close();
-                    stmt2.close();
-                } else {
-                    result[1] = "green";
-                    result[2] = "Up";
-                }
-                rs1.close();
-                stmt1.close();
-            }
             rs.close();
             stmt.close();
-        } finally {
-            Vault.releaseDbConnection(conn);
+            if(count > 0) {
+                result[1] = "red";
+                result[2] = "Down";
+            } else {
+                result[1] = "green";
+                result[2] = "Up";
+            }
         }
         return result;
     }

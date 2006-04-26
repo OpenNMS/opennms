@@ -1,6 +1,7 @@
 /*
  Modifications:
- 
+
+ 2006 Apr 25: Added table.wdth600
  2005 Oct 01: More CSS work. -- DJ Gregor  
  2005 Sep 30: Hacked up heavily to use CSS for layout and markup.  Some code
               (particularly #nav bits) provided by Mike Huot. -- DJ Gregor
@@ -262,6 +263,14 @@ table.standardfirst
 table.standard
 { 
         width: 100%;
+	background-color: #cccccc;
+	border-collapse: collapse;
+        margin-top: 1em;
+}
+
+table.wdth600
+{ 
+        width: 600px;
 	background-color: #cccccc;
 	border-collapse: collapse;
         margin-top: 1em;

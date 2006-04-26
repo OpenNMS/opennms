@@ -3,7 +3,7 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2002-2003 The OpenNMS Group, Inc.  All rights reserved.
+// OpenNMS(R) is Copyright (C) 2002-2006 The OpenNMS Group, Inc.  All rights reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included code and modified
 // code that was published under the GNU General Public License. Copyrights for modified 
 // and included code are below.
@@ -12,6 +12,7 @@
 //
 // Modifications:
 //
+// 2006 Apr 25: Added link to Configure Path Outages
 // 2003 Feb 07: Fixed URLEncoder issues.
 // 2002 Nov 26: Fixed breadcrumbs issue.
 // 
@@ -61,6 +62,10 @@
   <p>
     <a href="admin/notification/destinationPaths.jsp">Configure Destination Paths</a>
   </p>
+
+  <p>
+    <a href="admin/notification/noticeWizard/buildPathOutage.jsp?newRule=IPADDR+IPLIKE+*.*.*.*&showNodes=on">Configure Path Outages</a>
+  </p>
 </div>
 
 <div style="width: 60%; float: left;">
@@ -80,6 +85,17 @@
     if escalation is needed. This wizard will walk you through setting up
     a resuable list of who to contact and how to contact them, 
     which are used in the event configuration.
+  </p>
+
+  <h3>Path Outages</h3>
+
+  <p>
+    Configuring a path outage consists of selecting an IP address/service pair
+    which defines the critical path to a group of nodes.  When a node down
+    condition occurs for a node in the group, the critical path will be tested.
+    If it fails to respond, the node down notifications will be suppressed. The
+    critical path service is typically ICMP, and at this time ICMP is the only
+    critical path service supported.
   </p>
 </div>
 

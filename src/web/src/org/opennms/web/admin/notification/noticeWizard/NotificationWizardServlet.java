@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2006 Apr 25: Added support for configuring path outages
 // 2006 Apr 05: Modifed replaceNotifications to preserve notice order.
 // 2004 Jun 03: Modified to allow rules other than IPADDR IPLIKE.
 //
@@ -38,9 +39,13 @@
 package org.opennms.web.admin.notification.noticeWizard;
 
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.SortedMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -50,6 +55,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.opennms.core.resource.Vault;
 import org.opennms.netmgt.config.NotificationFactory;
 import org.opennms.netmgt.config.notifications.Notification;
 import org.opennms.netmgt.config.notifications.Parameter;
@@ -72,7 +78,17 @@ public class NotificationWizardServlet extends HttpServlet {
 
     public static final String SOURCE_PAGE_VALIDATE = "validateRule.jsp";
 
+    public static final String SOURCE_PAGE_PATH_OUTAGE = "buildPathOutage.jsp";
+
+    public static final String SOURCE_PAGE_VALIDATE_PATH_OUTAGE = "validatePathOutage.jsp";
+
     public static final String SOURCE_PAGE_PATH = "choosePath.jsp";
+
+    public static final String SOURCE_PAGE_NOTIFICATION_INDEX = "../index.jsp";
+
+    private static final String SQL_DELETE_CRITICAL_PATH = "DELETE FROM pathoutage WHERE nodeid=?";
+
+    private static final String SQL_SET_CRITICAL_PATH = "INSERT INTO pathoutage (nodeid, criticalpathip, criticalpathservicename) VALUES (?, ?, ?)";
 
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String sourcePage = request.getParameter("sourcePage");
@@ -249,6 +265,67 @@ public class NotificationWizardServlet extends HttpServlet {
             }
 
             redirectString.append(SOURCE_PAGE_NOTICES);
+        } else if (sourcePage.equals(SOURCE_PAGE_PATH_OUTAGE)) {
+            rule.append(request.getParameter("newRule"));
+            rule = toSingleQuote(rule);
+            rule = stripExtraWhite(rule.toString());
+            rule = stripServices(rule.toString());
+            rule = checkParens(rule);
+            String newRule = rule.toString();
+            String redirectPage = SOURCE_PAGE_VALIDATE_PATH_OUTAGE;
+	    String criticalIp = request.getParameter("criticalIp");
+            Map params = new HashMap();
+	    if (newRule != null)
+	      params.put("newRule", newRule);
+	    if (request.getParameter("criticalSvc") != null)
+	      params.put("criticalSvc", request.getParameter("criticalSvc"));
+	    if (request.getParameter("showNodes") != null)
+	      params.put("showNodes", request.getParameter("showNodes"));
+            Filter filter = new Filter();
+	    if (criticalIp != null && !criticalIp.equals("")) {
+	      params.put("criticalIp", criticalIp);
+              try {
+                filter.validateRule("IPADDR IPLIKE " + criticalIp);
+              } catch (FilterParseException e) {
+                // page to redirect to if the critical IP is invalid
+                params.put("mode", "Critical path IP failed");
+                redirectPage = SOURCE_PAGE_PATH_OUTAGE;
+              }
+            }
+            try {
+                filter.validateRule(newRule);
+            } catch (FilterParseException e) {
+                // page to redirect to if the rule is invalid
+                params.put("mode", "Current rule failed");
+                redirectPage = SOURCE_PAGE_PATH_OUTAGE;
+            }
+            redirectString.append(redirectPage).append(makeQueryString(params));
+        } else if (sourcePage.equals(SOURCE_PAGE_VALIDATE_PATH_OUTAGE)) {
+            String redirectPage = SOURCE_PAGE_NOTIFICATION_INDEX;
+            String userAction = request.getParameter("userAction");
+            String criticalIp = request.getParameter("criticalIp");
+            String criticalSvc = request.getParameter("criticalSvc");
+            String newRule = request.getParameter("newRule");
+            Map params = new HashMap();
+            if (userAction != null && userAction.equals("rebuild")) {
+                params.put("newRule", newRule);
+                params.put("criticalIp", criticalIp);
+                params.put("criticalSvc", criticalSvc);
+	        if (request.getParameter("showNodes") != null)
+	            params.put("showNodes", request.getParameter("showNodes"));
+                redirectPage = SOURCE_PAGE_PATH_OUTAGE;
+            } else {
+                try {
+                    updatePaths(newRule, criticalIp, criticalSvc);
+                } catch (FilterParseException e) {
+                    params.put("mode", "Update failed");
+                    redirectPage = SOURCE_PAGE_PATH_OUTAGE;
+                } catch (SQLException e) {
+                    params.put("mode", "Update failed");
+                    redirectPage = SOURCE_PAGE_PATH_OUTAGE;
+                }
+            }
+            redirectString.append(redirectPage).append(makeQueryString(params));
         }
 
         if (redirectString.toString().equals(""))
@@ -353,4 +430,43 @@ public class NotificationWizardServlet extends HttpServlet {
         }
         return buffer;
     }
+
+    private void deleteCriticalPath(int node, Connection conn) throws SQLException {
+        PreparedStatement stmt = null;
+        stmt = conn.prepareStatement(SQL_DELETE_CRITICAL_PATH);
+        stmt.setInt(1, node);
+        stmt.execute();
+        stmt.close();
+    }
+
+    private void setCriticalPath(int node, String criticalIp, String criticalSvc, Connection conn) throws SQLException {
+        PreparedStatement stmt = null;
+        stmt = conn.prepareStatement(SQL_SET_CRITICAL_PATH);
+        stmt.setInt(1, node);
+        stmt.setString(2, criticalIp);
+        stmt.setString(3, criticalSvc);
+        stmt.execute();
+        stmt.close();
+    }
+
+    private void updatePaths(String rule, String criticalIp, String criticalSvc)
+                                 throws FilterParseException, SQLException {
+        Connection conn = Vault.getDbConnection();
+        StringBuffer buffer = new StringBuffer();
+        Filter filter = new Filter();
+	SortedMap nodes = filter.getNodeMap(rule);
+        try {
+            Iterator i = nodes.keySet().iterator();
+            while(i.hasNext()) {
+                Integer key = (Integer)i.next();
+                deleteCriticalPath(key.intValue(), conn);
+                if(criticalIp != null && !criticalIp.equals("")) {
+                    setCriticalPath(key.intValue(), criticalIp, criticalSvc, conn);
+                }
+            }
+        } finally {
+            Vault.releaseDbConnection(conn);
+        }
+    }
+
 }

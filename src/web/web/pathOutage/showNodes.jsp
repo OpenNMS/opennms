@@ -3,7 +3,7 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2002-2003 The OpenNMS Group, Inc.  All rights reserved.
+// OpenNMS(R) is Copyright (C) 2002-2006 The OpenNMS Group, Inc.  All rights reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included code and modified
 // code that was published under the GNU General Public License. Copyrights for modified 
 // and included code are below.
@@ -12,6 +12,8 @@
 //
 // Modifications:
 //
+// 2006 Apr 25: improved speed and appearance
+// 2006 Apr 17: Created file
 //
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
@@ -38,8 +40,10 @@
 --%>
 
 <%@page language="java" contentType="text/html" session="true"
-	import=" java.util.Iterator,
+	import=" java.sql.Connection,
+                java.util.Iterator,
 		java.util.List,
+                org.opennms.core.resource.Vault,
                 org.opennms.web.pathOutage.*" %>
 
 <jsp:include page="/includes/header.jsp" flush="false">
@@ -49,34 +53,42 @@
 
 </jsp:include>
 
-<%  String critIp = request.getParameter("critIp");
-    String critSvc = request.getParameter("critSvc");
-    List nodeList = PathOutageFactory.getNodesInPath(critIp, critSvc); %>
+<% 
+      String critIp = request.getParameter("critIp");
+      String critSvc = request.getParameter("critSvc");
+      String[] pthData = PathOutageFactory.getCriticalPathData(critIp, critSvc);
+      List nodeList = PathOutageFactory.getNodesInPath(critIp, critSvc); %>
 
-    <br>
-    <H3 align="center">Node List for Critical Path <%= critIp %> <%= critSvc%></H3>
-    <table class="standardfirst">
+      <br>
+      <table class="wdth600">
+          <tr>
+          <td class="standardbold" bgcolor="<%= pthData[3]%>" colspan="4" align="center">Node List for Critical Path <%= critIp %> <%= critSvc %></td>
+          </tr>
+          <tr>
+          <td class="standard" colspan="4">&nbsp</td>
+          </tr>
 
-        <tr>
-        <td class="standardheader" width="40%" align="center"><%= "Node" %></td>
-        <td class="standardheader" width="10%" align="center">Status</td>
-        </tr>
+          <tr>
+          <td class="standardheader" width="40%" align="center"><%= "Node" %></td>
+          <td class="standardheader" width="10%" align="center">Status</td>
+          </tr>
 
-<%      Iterator iter = nodeList.iterator();
-        while( iter.hasNext() ) {
-            String nodeid = (String)iter.next();
-            String labelColor[] = PathOutageFactory.getNodeLabelAndColor(nodeid); %>
-            <tr>
-            <td class="standard" align="center"><a href="element/node.jsp?node=<%= nodeid %>"><%= labelColor[0] %></a></td>
-            <td class="standard" bgcolor="<%= labelColor[1] %>"><%= labelColor[2] %></td>
-            </tr>
-        <% } %>
+<%        Iterator iter = nodeList.iterator();
+          Connection conn = Vault.getDbConnection();
+          try {
+              while( iter.hasNext() ) {
+                  String nodeid = (String)iter.next();
+                  String labelColor[] = PathOutageFactory.getLabelAndStatus(nodeid, conn); %>
+                  <tr>
+                  <td class="standard"><a href="element/node.jsp?node=<%= nodeid %>"><%= labelColor[0] %></a></td>
+                  <td class="standard" bgcolor="<%= labelColor[1] %>"><%= labelColor[2] %></td>
+                  </tr>
+              <% } %>
+          <% } finally {
+            Vault.releaseDbConnection(conn);
+          } %>
 
-    </table>
-
-<%--
-    </p>
---%>
+      </table>
 
 <jsp:include page="/includes/footer.jsp" flush="false" />
 

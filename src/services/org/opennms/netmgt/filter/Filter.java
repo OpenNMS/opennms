@@ -1,7 +1,7 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2002-2003 The OpenNMS Group, Inc.  All rights reserved.
+// OpenNMS(R) is Copyright (C) 2002-2006 The OpenNMS Group, Inc.  All rights reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included code and modified
 // code that was published under the GNU General Public License. Copyrights for modified 
 // and included code are below.
@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2006 Apr 25: Add method getNodeMap to return nodeIds and nodeLabels
 // 2003 Aug 01: Created a proper Join for rules. Bug #752
 // 2003 Apr 24: Allowed for null rules.
 // 2003 Jan 31: Cleaned up some unused imports.
@@ -44,6 +45,7 @@ import java.beans.PropertyVetoException;
 import java.io.IOException;
 import java.io.PushbackReader;
 import java.io.StringReader;
+import java.lang.Integer;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -52,6 +54,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.SortedMap;
 import java.util.TreeMap;
 
 import org.apache.log4j.Category;
@@ -324,6 +327,89 @@ public class Filter {
     }
 
     /**
+     * This method returns a map of all nodeids and nodelabels that match
+     * the rule that is passed in, sorted by nodeid.
+     * 
+     * @param rule
+     *            an expression rule to be parsed and executed.
+     * 
+     * @return SortedMap containing all nodeids/nodelabels selected by the rule.
+     * 
+     * @exception FilterParseException
+     *                if a rule is syntactically incorrect or failed in
+     *                executing the SQL statement
+     */
+    public SortedMap getNodeMap(String rule) throws FilterParseException {
+        Category log = ThreadCategory.getInstance(getClass());
+        SortedMap resultMap = new TreeMap();
+        String sqlString = null;
+
+        // parse the rule
+        parseRule(rule);
+
+        // get the database connection
+        Connection conn = null;
+        try {
+            DataSourceFactory.init();
+            conn = DataSourceFactory.getInstance().getConnection();
+
+            // parse the rule and get the sql select statement
+            sqlString = getNodeMappingStatement();
+            if (log.isDebugEnabled()) {
+                log.debug("Filter: SQL statement: \n" + sqlString);
+            }
+
+            // execute query
+            Statement stmt = conn.createStatement();
+            ResultSet rset = stmt.executeQuery(sqlString);
+
+            if (rset != null) {
+                // Iterate through the result and build the map
+                while (rset.next()) {
+                    resultMap.put(new Integer(rset.getInt(1)), rset.getString(2));
+                }
+            }
+
+            try {
+                rset.close();
+            } catch (SQLException e) {
+            }
+
+            try {
+                stmt.close();
+            } catch (SQLException e) {
+            }
+        } catch (ClassNotFoundException e) {
+            log.info("Class Not Found Exception occured getting node map", e);
+            throw new UndeclaredThrowableException(e);
+        } catch (SQLException e) {
+            log.info("SQL Exception occured getting node map", e);
+            throw new UndeclaredThrowableException(e);
+        } catch (IOException ie) {
+            log.fatal("IOException getting database connection", ie);
+            throw new UndeclaredThrowableException(ie);
+        } catch (MarshalException me) {
+            log.fatal("Marshall Exception getting database connection", me);
+            throw new UndeclaredThrowableException(me);
+        } catch (ValidationException ve) {
+            log.fatal("Validation Exception getting database connection", ve);
+            throw new UndeclaredThrowableException(ve);
+        } catch (PropertyVetoException ve) {
+            log.fatal("Property Veto Exception getting database connection", ve);
+            throw new UndeclaredThrowableException(ve);
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.close();
+                } catch (SQLException e) {
+                }
+            }
+        }
+
+        return resultMap;
+    }
+
+    /**
      * This method parses a rule and returns the SQL select statement equivalent
      * of the rule.
      * 
@@ -343,6 +429,12 @@ public class Filter {
     public String getIPServiceMappingStatement() {
         SQLTranslation translation = new SQLTranslation(m_parseTree);
         translation.setIPServiceMappingTranslation();
+        return translation.getStatement();
+    }
+
+    public String getNodeMappingStatement() {
+        SQLTranslation translation = new SQLTranslation(m_parseTree);
+        translation.setNodeMappingTranslation();
         return translation.getStatement();
     }
 
