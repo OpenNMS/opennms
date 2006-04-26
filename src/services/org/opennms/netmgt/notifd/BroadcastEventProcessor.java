@@ -1,7 +1,7 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2002-2003 The OpenNMS Group, Inc.  All rights reserved.
+// OpenNMS(R) is Copyright (C) 2002-2006 The OpenNMS Group, Inc.  All rights reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included code and modified
 // code that was published under the GNU General Public License. Copyrights for modified 
 // and included code are below.
@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2006 Apr 17: added path outage processing for nodeDown event
 // 2004 Nov 22: Fixed problem with notifications for threshold events on non-IP interfaces.
 // 2004 Aug 26: Added the ability to trigger notifications on an event and a parameter.
 // 2003 Sep 30: Added a change to support SNMP Thresholding notices.

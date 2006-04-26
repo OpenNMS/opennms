@@ -1,6 +1,6 @@
 --# create.sql -- SQL to build the initial tables for the OpenNMS Project
 --#
---# Copyright (C) 2005 The OpenNMS Group, Inc., Inc.  All rights reserved.
+--# Copyright (C) 2005-2006 The OpenNMS Group, Inc., Inc.  All rights reserved.
 --# Parts Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 --#
 --# This program is free software; you can redistribute it and/or modify
@@ -21,6 +21,9 @@
 --#      OpenNMS Licensing       <license@opennms.org>
 --#      http://www.opennms.org/
 --#      http://www.sortova.com/
+--#
+--# Modified: 2006-04-17
+--# Note: Added pathOutage table
 --#
 --# Modified: 2005-03-11
 --# Note: Added alarms table
