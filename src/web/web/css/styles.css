@@ -485,7 +485,7 @@ div.spacer
 
 div.center
 {
-        align: center;
+        text-align: center;
 }
 
 #headerlogo
