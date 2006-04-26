@@ -79,10 +79,17 @@
 
   <c:choose>
     <c:when test="${!empty param.zoom}">
-      <div id='zoomSensitiveZone' oncontextmenu='return false'></div>
-      <div id='zoomBox'></div>
-      <img id='zoomGraphImage' src="<c:out value="${results.graphs[0].graphURL}"/>&amp;props=<c:out value="${results.nodeId}"/>/strings.properties&amp;type=<c:out value="${param.type}"/>&amp;node=<c:out value="${results.nodeId}"/>&amp;intf=<c:out value="${results.intf}"/>"/>
-      <br/>
+	<div id='zoomBox' style='position:absolute; overflow:none; left:0px; top:0px; width:0px; height:0px; visibility:visible; background:red; filter:alpha(opacity=50); -moz-opacity:0.5; -khtml-opacity:.5; opacity:0.5'></div>
+	<div id='zoomSensitiveZone' style='position:absolute; overflow:none; left:0px; top:0px; width:0px; height:0px; visibility:visible; cursor:crosshair; background:blue; filter:alpha(opacity=0); -moz-opacity:0; -khtml-opacity:0; opacity:0' oncontextmenu='return false'></div>
+
+	<style media="print">
+	  /*Turn off the zoomBox*/
+	  div#zoomBox, div#zoomSensitiveZone {display: none}
+	  /*This keeps IE from cutting things off*/
+	  #why {position: static; width: auto}
+	</style>
+
+        <img id='zoomGraphImage' src="<c:out value="${results.graphs[0].graphURL}"/>&amp;props=<c:out value="${results.nodeId}"/>/strings.properties&amp;type=<c:out value="${param.type}"/>&amp;node=<c:out value="${results.nodeId}"/>&amp;intf=<c:out value="${results.intf}"/>"/>
     </c:when>
 
     <c:when test="${!empty results.graphs}">
