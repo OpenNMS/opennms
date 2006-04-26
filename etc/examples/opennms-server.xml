@@ -1,0 +1,12 @@
+<!-- example for configuring a default critical path used
+     with the optional path outage feature. Substitute
+     your default for 127.0.0.1. Usually this is the gateway
+     ip address on the OpenNMS subnet -->
+
+<local-server server-name="nms1"
+              defaultCriticalPathIp="127.0.0.1"
+              defaultCriticalPathService="ICMP"
+              defaultCriticalPathTimeout="1000"
+              defaultCriticalPathRetries="1"
+              verify-server="false">
+</local-server>
