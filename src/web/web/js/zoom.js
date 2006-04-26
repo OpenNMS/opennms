@@ -219,9 +219,12 @@ function zoomGraphObjRefresh() {
 	var titleFontSize = 0;
 
 	if (titleFontSize == 0) {
-		var cZoomBoxTopOffsetWOText = 15 - 1;
-		var cZoomBoxTopOffsetWText = 32 - 1;
-		var cZoomBoxRightOffset = -16;
+//		var cZoomBoxTopOffsetWOText = 15 - 1;
+//		var cZoomBoxTopOffsetWText = 32 - 1;
+//		var cZoomBoxRightOffset = -16;
+		var cZoomBoxTopOffsetWOText = 31;
+		var cZoomBoxTopOffsetWText = 0;
+		var cZoomBoxRightOffset = -22;
 	} else {
 		var cZoomBoxTopOffsetWOText = 10 - 1;
 		var cZoomBoxTopOffsetWText = titleFontSize + (titleFontSize * 1.6) + 10 - 1;
@@ -230,7 +233,8 @@ function zoomGraphObjRefresh() {
 
 	// zone outside of Zoom box where user can move cursor to without causing odd behavior
 	var cZoomSensitiveZoneName = "zoomSensitiveZone";
-	var cZoomSensitiveZoneOffset = 30;
+	var cZoomSensitiveZoneOffset = 0;
+//	var cZoomSensitiveZoneOffset = 30;
 
 	// variables
 	var imgObject;
@@ -516,7 +520,7 @@ function insideZoomBox() {
 /*++++++++++++++++++++++++++++  initEvents  +++++++++++++++++++++++++++++++++*/
 
 function initEvents() {
-	document.onmousemove = onMouseMouveEvent;
+	document.onmousemove = onMouseMoveEvent;
 	document.onmousedown = onMouseDownEvent;
 	document.onmouseup = onMouseUpEvent;
 	window.onresize = windowOnResizeEvent;
@@ -549,13 +553,13 @@ function onMouseDownEvent(e) {
 	}
 }
 
-/*+++++++++++++++++++++++++++  onMouseMouveEvent  +++++++++++++++++++++++++++*/
+/*+++++++++++++++++++++++++++  onMouseMoveEvent  +++++++++++++++++++++++++++*/
 
-function onMouseMouveEvent(e) {
+function onMouseMoveEvent(e) {
 	gMouseObj.setEvent(e);
 	if (gMouseObj.dragging) {
 		gMouseObj.getCurrentPosition();
-		gZoomGraphObj.drawSelection(gMouseObj.startedX, gMouseObj.startedY, gMouseObj.currentX, gMouseObj.currentY);
+		gZoomGraphObj.drawSelection(gMouseObj.startedX, gZoomGraphObj.zoomSensitiveZoneTop, gMouseObj.currentX, gZoomGraphObj.zoomSensitiveZoneBottom);
 	}
 }
 
