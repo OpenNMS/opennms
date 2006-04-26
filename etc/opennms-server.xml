@@ -1,7 +1,2 @@
-<local-server server-name="nms1"
-              defaultCriticalPathIp=""
-              defaultCriticalPathService="ICMP"
-              defaultCriticalPathTimeout="1000"
-              defaultCriticalPathRetries="1"
-              verify-server="false">
+<local-server server-name="nms1" verify-server="false">
 </local-server>
