@@ -222,9 +222,15 @@ function zoomGraphObjRefresh() {
 //		var cZoomBoxTopOffsetWOText = 15 - 1;
 //		var cZoomBoxTopOffsetWText = 32 - 1;
 //		var cZoomBoxRightOffset = -16;
-		var cZoomBoxTopOffsetWOText = 31;
+//		var cZoomBoxTopOffsetWOText = 31;
+//		var cZoomBoxTopOffsetWText = 0;
+//		var cZoomBoxRightOffset = -22;
+//		var cZoomBoxTopOffsetWOText = 33;
+//		var cZoomBoxTopOffsetWText = 0;
+//		var cZoomBoxRightOffset = -28;
+                var cZoomBoxTopOffsetWOText = gZoomBoxTopOffsetWOText;
 		var cZoomBoxTopOffsetWText = 0;
-		var cZoomBoxRightOffset = -22;
+                var cZoomBoxRightOffset = gZoomBoxRightOffset;
 	} else {
 		var cZoomBoxTopOffsetWOText = 10 - 1;
 		var cZoomBoxTopOffsetWText = titleFontSize + (titleFontSize * 1.6) + 10 - 1;

@@ -694,6 +694,10 @@ public class QueuingRrdStrategy implements RrdStrategy, Runnable {
         m_delegate = delegate;
     }
 
+    public RrdStrategy getDelegate() {
+        return m_delegate;
+    }
+
     //
     // RrdStrategy Implementation.. These methods just enqueue the calls as
     // operations

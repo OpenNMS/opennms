@@ -60,6 +60,45 @@
   <c:param name="breadcrumb" value="Results" />
 </c:import>
 
+<%
+
+org.opennms.netmgt.rrd.RrdStrategy strategy;
+org.opennms.netmgt.rrd.RrdUtils.graphicsInitialize();
+strategy = org.opennms.netmgt.rrd.RrdUtils.getStrategy();
+String strategy_name = strategy.getClass().getName();
+
+if (strategy instanceof org.opennms.netmgt.rrd.QueuingRrdStrategy) {
+    org.opennms.netmgt.rrd.QueuingRrdStrategy queuingStrategy;
+    queuingStrategy = (org.opennms.netmgt.rrd.QueuingRrdStrategy) strategy;
+
+    org.opennms.netmgt.rrd.RrdStrategy delegateStrategy;
+    delegateStrategy = queuingStrategy.getDelegate();
+
+    strategy_name = delegateStrategy.getClass().getName();
+}
+
+%>
+
+<script type="text/javascript">
+
+
+<%
+
+if ("org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy".equals(strategy_name)) {
+    out.println("var gZoomBoxTopOffsetWOText = 31;");
+    out.println("var gZoomBoxRightOffset = -22;");
+} else if ("org.opennms.netmgt.rrd.rrdtool.JniRrdStrategy".equals(strategy_name)) {
+    out.println("var gZoomBoxTopOffsetWOText = 33;");
+    out.println("var gZoomBoxRightOffset = -28;");
+} else {
+    throw new ServletException("Unknown RRD strategy: " + strategy_name);
+}
+
+%>
+
+</script>
+
+
 <div id="graph-results">
   <h3>
     Node: <a href="element/node.jsp?node=<c:out value="${results.nodeId}"/>"><c:out value="${results.nodeLabel}"/></a>

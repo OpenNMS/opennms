@@ -80,7 +80,7 @@ public class RrdUtils {
     
     private static String m_rrdExtension = RrdConfig.getProperty("org.opennms.rrd.fileExtension",".rrd");
 
-    private static RrdStrategy getStrategy() throws RrdException {
+    public static RrdStrategy getStrategy() throws RrdException {
         if (m_rrdStrategy == null)
             throw new IllegalStateException("RrdUtils not initiailzed");
         return m_rrdStrategy;
