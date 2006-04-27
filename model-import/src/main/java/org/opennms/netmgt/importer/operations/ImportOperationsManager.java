@@ -42,7 +42,6 @@ import java.util.Map;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.dao.AssetRecordDao;
 import org.opennms.netmgt.dao.OnmsDao;
 import org.opennms.netmgt.eventd.EventIpcManager;
 import org.opennms.netmgt.xml.event.Event;
@@ -70,6 +69,7 @@ public class ImportOperationsManager {
 	
 	private int m_scanThreads = 50;
 	private int m_writeThreads = 4;
+    private String m_foreignSource;
     
     public ImportOperationsManager(Map assetNumbers, ImportOperationFactory operationFactory) {
         m_assetNumbers = new HashMap(assetNumbers);
@@ -90,14 +90,14 @@ public class ImportOperationsManager {
     }
     
     private SaveOrUpdateOperation insertNode(String foreignId, String nodeLabel, String building, String city) {
-        InsertOperation insertOperation = m_operationFactory.createInsertOperation(foreignId, nodeLabel, building, city);
+        InsertOperation insertOperation = m_operationFactory.createInsertOperation(getForeignSource(), foreignId, nodeLabel, building, city);
         m_inserts.add(insertOperation);
         return insertOperation;
     }
 
     private SaveOrUpdateOperation updateNode(String foreignId, String nodeLabel, String building, String city) {
         Integer nodeId = processForeignId(foreignId);
-        UpdateOperation updateOperation = m_operationFactory.createUpdateOperation(nodeId, foreignId, nodeLabel, building, city);
+        UpdateOperation updateOperation = m_operationFactory.createUpdateOperation(nodeId, getForeignSource(), foreignId, nodeLabel, building, city);
         m_updates.add(updateOperation);
         return updateOperation;
     }
@@ -112,13 +112,13 @@ public class ImportOperationsManager {
         return (Integer)m_assetNumbers.remove(getAssetNumber(foreignId));
     }
     
-    public static String getAssetNumber(String foreignId) {
-        return AssetRecordDao.IMPORTED_ID+foreignId;
+    public String getAssetNumber(String foreignId) {
+        return getForeignSource()+foreignId;
     }
     
-    public static String getForeignId(String assetNumber) {
-        if (assetNumber.startsWith(AssetRecordDao.IMPORTED_ID)) {
-            return assetNumber.substring(AssetRecordDao.IMPORTED_ID.length());
+    public String getForeignId(String assetNumber) {
+        if (assetNumber.startsWith(getForeignSource())) {
+            return assetNumber.substring(getForeignSource().length());
         }
         return null;
     }
@@ -308,4 +308,11 @@ public class ImportOperationsManager {
 		m_stats = stats;
 	}
 
+    public void setForeignSource(String foreignSource) {
+        m_foreignSource = foreignSource;
+    }
+
+    public String getForeignSource() {
+        return m_foreignSource;
+    }
 }

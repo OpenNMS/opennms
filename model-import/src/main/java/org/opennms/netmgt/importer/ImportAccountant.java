@@ -42,7 +42,6 @@ import org.opennms.netmgt.importer.operations.SaveOrUpdateOperation;
 import org.opennms.netmgt.importer.specification.AbstractImportVisitor;
 
 public class ImportAccountant extends AbstractImportVisitor {
-    private ImportOperationsManager m_opsMgr;
     private SaveOrUpdateOperation m_currentOp;
         
     public ImportAccountant(ImportOperationsManager opsMgr) {

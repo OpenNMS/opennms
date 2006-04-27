@@ -334,7 +334,7 @@ public class AbstractDaoTestCase extends TestCase {
         getDistPollerDao().save(distPoller);
         
         NetworkBuilder builder = new NetworkBuilder(distPoller);
-        builder.addNode("node1").getAssetRecord().setAssetNumber(AssetRecordDao.IMPORTED_ID+"1");
+        builder.addNode("node1").getAssetRecord().setAssetNumber("imported:"+"1");
         builder.addInterface("192.168.1.1", 1).setIsManaged("M").setIsSnmpPrimary("P").setIpStatus(1);
         builder.addSnmpInterface("192.168.1.1", 1).setIfSpeed(10000000);
         builder.addService(getServiceType("ICMP"));
@@ -348,7 +348,7 @@ public class AbstractDaoTestCase extends TestCase {
         builder.addService(getServiceType("ICMP"));
         getNodeDao().save(builder.getCurrentNode());
         
-        builder.addNode("node2").getAssetRecord().setAssetNumber(AssetRecordDao.IMPORTED_ID+"2");
+        builder.addNode("node2").getAssetRecord().setAssetNumber("imported:"+"2");
         builder.addInterface("192.168.2.1", -1).setIsManaged("M").setIsSnmpPrimary("P").setIpStatus(1);
         builder.addService(getServiceType("ICMP"));
         builder.addService(getServiceType("SNMP"));
@@ -359,7 +359,7 @@ public class AbstractDaoTestCase extends TestCase {
         builder.addService(getServiceType("ICMP"));
         getNodeDao().save(builder.getCurrentNode());
         
-        builder.addNode("node3").getAssetRecord().setAssetNumber(AssetRecordDao.IMPORTED_ID+"3");
+        builder.addNode("node3").getAssetRecord().setAssetNumber("imported:"+"3");
         builder.addInterface("192.168.3.1", -1).setIsManaged("M").setIsSnmpPrimary("P").setIpStatus(1);
         builder.addService(getServiceType("ICMP"));
         builder.addService(getServiceType("SNMP"));
@@ -370,7 +370,7 @@ public class AbstractDaoTestCase extends TestCase {
         builder.addService(getServiceType("ICMP"));
         getNodeDao().save(builder.getCurrentNode());
         
-        builder.addNode("node4").getAssetRecord().setAssetNumber(AssetRecordDao.IMPORTED_ID+"4");
+        builder.addNode("node4").getAssetRecord().setAssetNumber("imported:"+"4");
         builder.addInterface("192.168.4.1", -1).setIsManaged("M").setIsSnmpPrimary("P").setIpStatus(1);
         builder.addService(getServiceType("ICMP"));
         builder.addService(getServiceType("SNMP"));
@@ -420,7 +420,7 @@ public class AbstractDaoTestCase extends TestCase {
         m_populate = populate;
     }
 
-    protected Map getAssetNumberMap() {
+    protected Map getAssetNumberMap(String foreignSource) {
 //        Map assetNumberMap = new HashMap();
 //        assetNumberMap.put(PopulatingVisitor.IMPORTED_ID+"1", new Long(1));
 //        assetNumberMap.put(PopulatingVisitor.IMPORTED_ID+"2", new Long(2));
@@ -428,7 +428,7 @@ public class AbstractDaoTestCase extends TestCase {
 //        assetNumberMap.put(PopulatingVisitor.IMPORTED_ID+"4", new Long(4));
 //        return assetNumberMap;
         AssetRecordDao dao = getAssetRecordDao();
-        return dao.findImportedAssetNumbersToNodeIds();
+        return dao.findImportedAssetNumbersToNodeIds(foreignSource);
     }
 
     protected void expectServiceTypeCreate(String string) {

@@ -40,8 +40,6 @@ import org.opennms.netmgt.model.OnmsAssetRecord;
 
 public interface AssetRecordDao extends OnmsDao {
     
-    public static final String IMPORTED_ID = "imported-id:";
-
 	public abstract OnmsAssetRecord load(Integer id);
 
     public abstract OnmsAssetRecord get(Integer id);
@@ -60,7 +58,7 @@ public interface AssetRecordDao extends OnmsDao {
      * @return a <code>Map</code> containing nodeid keys and assetNumber
      *         values.
      */
-    public abstract Map findImportedAssetNumbersToNodeIds();
+    public abstract Map findImportedAssetNumbersToNodeIds(String foreignSource);
 
     public abstract Collection findAll();
     

@@ -37,9 +37,9 @@ package org.opennms.netmgt.importer.operations;
 
 public interface ImportOperationFactory {
 
-    public abstract InsertOperation createInsertOperation(String foreignId, String nodeLabel, String building, String city);
+    public abstract InsertOperation createInsertOperation(String foreignSource, String foreignId, String nodeLabel, String building, String city);
 
-    public abstract UpdateOperation createUpdateOperation(Integer nodeId, String foreignId, String nodeLabel, String building, String city);
+    public abstract UpdateOperation createUpdateOperation(Integer nodeId, String foreignSource, String foreignId, String nodeLabel, String building, String city);
     
     public abstract DeleteOperation createDeleteOperation(Integer nodeId, String assetNumber);
 

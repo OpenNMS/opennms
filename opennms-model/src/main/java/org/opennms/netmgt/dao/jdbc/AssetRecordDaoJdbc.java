@@ -187,10 +187,10 @@ public class AssetRecordDaoJdbc extends AbstractDaoJdbc implements AssetRecordDa
     }
     
     
-    public Map findImportedAssetNumbersToNodeIds() {
+    public Map findImportedAssetNumbersToNodeIds(String foreignSource) {
         
         final Map assetNumbersToNodeIds = new HashMap();
-        getJdbcTemplate().query("select assetNumber, nodeId from assets where assetNumber like '"+AssetRecordDao.IMPORTED_ID+"%'", new RowCallbackHandler() {
+        getJdbcTemplate().query("select assetNumber, nodeId from assets where assetNumber like '"+foreignSource+"%'", new RowCallbackHandler() {
             public void processRow(ResultSet rs) throws SQLException {
                 assetNumbersToNodeIds.put(rs.getString("assetNumber"), rs.getObject("nodeId"));
             }

@@ -35,7 +35,7 @@ public class UpdateOperationTest extends TestCase {
 		SnmpPeerFactory.setInstance(new SnmpPeerFactory(rdr));
 		
 		
-		AbstractSaveOrUpdateOperation op = new UpdateOperation(new Integer(1), "1", "node1", "theoffice", "pittsboro");		
+		AbstractSaveOrUpdateOperation op = new UpdateOperation(new Integer(1), "imported:", "1", "node1", "theoffice", "pittsboro");		
 		op.foundInterface("192.168.0.102", "if1", "P", true, 1);
 		op.foundInterface("127.0.0.1", "if2", "N", true, 1);
 		op.updateSnmpData();

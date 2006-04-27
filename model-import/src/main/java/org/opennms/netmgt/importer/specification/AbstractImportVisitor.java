@@ -36,8 +36,11 @@ import org.opennms.netmgt.config.modelimport.Interface;
 import org.opennms.netmgt.config.modelimport.ModelImport;
 import org.opennms.netmgt.config.modelimport.MonitoredService;
 import org.opennms.netmgt.config.modelimport.Node;
+import org.opennms.netmgt.importer.operations.ImportOperationsManager;
 
 public class AbstractImportVisitor implements ImportVisitor {
+
+    protected ImportOperationsManager m_opsMgr;
 
     public void visitModelImport(ModelImport mi) {
     }

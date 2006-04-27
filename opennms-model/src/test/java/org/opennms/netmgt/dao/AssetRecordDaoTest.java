@@ -58,7 +58,7 @@ public class AssetRecordDaoTest extends AbstractDaoTestCase {
         assertEquals(7, getAssetRecordDao().countAll());
 
         //test build map of nodeids to assetNumbers from AssetRecord objects
-        Map arMap = getAssetRecordDao().findImportedAssetNumbersToNodeIds();
+        Map arMap = getAssetRecordDao().findImportedAssetNumbersToNodeIds("imported:");
         Integer id = assetRecord.getNode().getId();
         //assertEquals("imported-id: 7", arMap.get(id));
         assertEquals(arMap.get("imported-id: 7"), id);

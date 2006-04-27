@@ -50,12 +50,10 @@ import org.jmock.core.constraint.And;
 import org.opennms.netmgt.config.modelimport.Interface;
 import org.opennms.netmgt.config.modelimport.MonitoredService;
 import org.opennms.netmgt.config.modelimport.Node;
-import org.opennms.netmgt.dao.AssetRecordDao;
 import org.opennms.netmgt.dao.CategoryDao;
 import org.opennms.netmgt.dao.DistPollerDao;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.dao.ServiceTypeDao;
-import org.opennms.netmgt.importer.operations.ImportOperationsManager;
 import org.opennms.netmgt.importer.specification.AbstractImportVisitor;
 import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsIpInterface;
@@ -189,10 +187,10 @@ public class AbstractMockTestCase extends MockObjectTestCase {
     
     protected Map getAssetNumberMap() {
         Map assetNumberMap = new HashMap();
-        assetNumberMap.put(AssetRecordDao.IMPORTED_ID+"1", new Long(1));
-        assetNumberMap.put(AssetRecordDao.IMPORTED_ID+"2", new Long(2));
-        assetNumberMap.put(AssetRecordDao.IMPORTED_ID+"3", new Long(3));
-        assetNumberMap.put(AssetRecordDao.IMPORTED_ID+"4", new Long(4));
+        assetNumberMap.put("imported:"+"1", new Long(1));
+        assetNumberMap.put("imported:"+"2", new Long(2));
+        assetNumberMap.put("imported:"+"3", new Long(3));
+        assetNumberMap.put("imported:"+"4", new Long(4));
         return assetNumberMap;
     }
     
@@ -285,7 +283,7 @@ public class AbstractMockTestCase extends MockObjectTestCase {
             m_currentNodeConstraints = new LinkedList();
             
             m_currentNodeConstraints.add(isA(OnmsNode.class));
-            m_currentNodeConstraints.add(hasPropertyWithValue("assetRecord.assetNumber", ImportOperationsManager.getAssetNumber(node.getForeignId())));
+            m_currentNodeConstraints.add(hasPropertyWithValue("assetRecord.assetNumber", "imported:"+(node.getForeignId())));
             m_currentNodeConstraints.add(hasPropertyWithValue("label", node.getNodeLabel()));
             
             m_ifaceCount = 0;
@@ -346,7 +344,7 @@ public class AbstractMockTestCase extends MockObjectTestCase {
         }
         
         private boolean isExisting(Node node) {
-            return m_assetNumToNodeMap.containsKey(ImportOperationsManager.getAssetNumber(node.getForeignId()));
+            return m_assetNumToNodeMap.containsKey("imported:"+node.getForeignId());
         }
         
         

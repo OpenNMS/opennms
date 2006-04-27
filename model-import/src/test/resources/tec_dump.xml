@@ -5,7 +5,7 @@
     <!ENTITY uuml    "&#252;" >
     <!ENTITY szlig   "&#223;" >
   ]>
-<this:model-import xmlns:this="http://www.example.org/model-import" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemalLocation="http://www.example.org/model-import model-import.xsd" date-stamp="2006-03-09T00:03:09">
+<this:model-import xmlns:this="http://www.example.org/model-import" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemalLocation="http://www.example.org/model-import model-import.xsd" date-stamp="2006-03-09T00:03:09" foreign-source="matt:">
 	<this:node this:node-label="david" this:parent-node-label="apknd" foreign-id="4243">
 		<this:category name="AC"/>
 		<this:category name="UK"/>

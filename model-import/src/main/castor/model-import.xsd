@@ -11,6 +11,7 @@
         <element ref="this:node" minOccurs="1" maxOccurs="unbounded" />
       </sequence>
       <attribute name="date-stamp" type="dateTime" />
+      <attribute name="foreign-source" type="string" use="optional" default="imported:" />
     </complexType>
   </element>
   <element name="node">

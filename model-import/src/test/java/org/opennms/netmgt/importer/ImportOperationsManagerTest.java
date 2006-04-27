@@ -41,8 +41,8 @@ import java.util.Map;
 
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.dao.AbstractDaoTestCase;
-import org.opennms.netmgt.dao.AssetRecordDao;
 import org.opennms.netmgt.importer.operations.ImportOperationsManager;
+import org.opennms.netmgt.importer.specification.AbstractImportVisitor;
 import org.opennms.netmgt.importer.specification.SpecFile;
 import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsDistPoller;
@@ -96,22 +96,23 @@ public class ImportOperationsManagerTest extends AbstractDaoTestCase {
 //        }
 //    }
 
-    public void testGetAssetNumber() {
-        assertEquals(AssetRecordDao.IMPORTED_ID+"1", ImportOperationsManager.getAssetNumber("1"));
-        
-    }
-
-    public void testGetForeignId() {
-        assertEquals("1", ImportOperationsManager.getForeignId(AssetRecordDao.IMPORTED_ID+"1"));
-    }
+//    public void testGetAssetNumber() {
+//        assertEquals("imported:"+"1", ImportOperationsManager.getAssetNumber("1"));
+//        
+//    }
+//
+//    public void testGetForeignId() {
+//        assertEquals("1", ImportOperationsManager.getForeignId("imported:"+"1"));
+//    }
     
 //    class TestOperationFactory implements OperationFactory {
 //    }
 //    
     
     public void testGetOperations() {
-        Map assetNumberMap = getAssetNumberMap();
+        Map assetNumberMap = getAssetNumberMap("imported:");
         ImportOperationsManager opsMgr = new ImportOperationsManager(assetNumberMap, getModelImporter());
+        opsMgr.setForeignSource("imported:");
         opsMgr.foundNode("1", "node1", "myhouse", "durham");
         opsMgr.foundNode("3", "node3", "myhouse", "durham");
         opsMgr.foundNode("5", "node5", "theoffice", "pittsboro");
@@ -131,7 +132,7 @@ public class ImportOperationsManagerTest extends AbstractDaoTestCase {
             	OnmsServiceType snmp = getServiceTypeDao().findByName("SNMP");
                 OnmsDistPoller distPoller = getDistPollerDao().get("localhost");
                 NetworkBuilder builder = new NetworkBuilder(distPoller);
-                builder.addNode("node7").getAssetRecord().setAssetNumber(AssetRecordDao.IMPORTED_ID+"7");
+                builder.addNode("node7").getAssetRecord().setAssetNumber("imported:"+"7");
                 builder.getCurrentNode().getAssetRecord().setDisplayCategory("cat7");
                 builder.addInterface("192.168.7.1", -1).setIsManaged("M").setIsSnmpPrimary("P").setIpStatus(1);
                 builder.addService(icmp);
@@ -145,7 +146,7 @@ public class ImportOperationsManagerTest extends AbstractDaoTestCase {
 
         m_transTemplate.execute(new TransactionCallback() {
             public Object doInTransaction(TransactionStatus status) {
-            	OnmsNode node = getNodeDao().findByAssetNumber(AssetRecordDao.IMPORTED_ID+"7");
+            	OnmsNode node = getNodeDao().findByAssetNumber("imported:"+"7");
             	assertNotNull(node);
             	assertEquals("node7", node.getLabel());
             	assertEquals("cat7", node.getAssetRecord().getDisplayCategory());
@@ -219,16 +220,17 @@ public class ImportOperationsManagerTest extends AbstractDaoTestCase {
 
         Map assetNumbers = (Map)m_transTemplate.execute(new TransactionCallback() {
             public Object doInTransaction(TransactionStatus status) {
-                return getAssetNumberMap();
+                return getAssetNumberMap(specFile.getForeignSource());
             }
         });
         
         final ImportOperationsManager opsMgr = new ImportOperationsManager(assetNumbers, getModelImporter());
+        opsMgr.setForeignSource(specFile.getForeignSource());
         
         m_transTemplate.execute(new TransactionCallback() {
 
             public Object doInTransaction(TransactionStatus status) {
-                ImportAccountant accountant = new ImportAccountant(opsMgr);
+                AbstractImportVisitor accountant = new ImportAccountant(opsMgr);
                 specFile.visitImport(accountant);
                 return null;
             }

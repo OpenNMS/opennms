@@ -204,8 +204,8 @@ public class UpdateOperation extends AbstractSaveOrUpdateOperation {
 
     }
 
-    public UpdateOperation(Integer nodeId, String foreignId, String nodeLabel, String building, String city) {
-		super(nodeId, foreignId, nodeLabel, building, city);
+    public UpdateOperation(Integer nodeId, String foreignSource, String foreignId, String nodeLabel, String building, String city) {
+		super(nodeId, foreignSource, foreignId, nodeLabel, building, city);
 	}
 
 	public List doPersist() {

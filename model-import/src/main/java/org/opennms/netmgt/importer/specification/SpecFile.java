@@ -142,5 +142,9 @@ public class SpecFile {
         visitor.visitMonitoredService(svc);
         visitor.completeMonitoredService(svc);
     }
+    
+    public String getForeignSource() {
+        return m_mi.getForeignSource();
+    }
 
 }

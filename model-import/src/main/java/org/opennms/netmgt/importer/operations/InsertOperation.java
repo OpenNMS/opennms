@@ -41,8 +41,8 @@ import org.opennms.netmgt.model.OnmsDistPoller;
 
 public class InsertOperation extends AbstractSaveOrUpdateOperation {
     
-    public InsertOperation(String foreignId, String nodeLabel, String building, String city) {
-		super(foreignId, nodeLabel, building, city);
+    public InsertOperation(String foreignSource, String foreignId, String nodeLabel, String building, String city) {
+		super(foreignSource, foreignId, nodeLabel, building, city);
 	}
 
 	public List doPersist() {

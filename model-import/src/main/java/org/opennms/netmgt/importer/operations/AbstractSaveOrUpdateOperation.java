@@ -66,17 +66,17 @@ public abstract class AbstractSaveOrUpdateOperation extends AbstractImportOperat
     
     private IfSnmpCollector m_collector;
 
-    public AbstractSaveOrUpdateOperation(String foreignId, String nodeLabel, String building, String city) {
-		this(null, foreignId, nodeLabel, building, city);
+    public AbstractSaveOrUpdateOperation(String foreignSource, String foreignId, String nodeLabel, String building, String city) {
+		this(null, foreignSource, foreignId, nodeLabel, building, city);
 	}
 
-	public AbstractSaveOrUpdateOperation(Integer nodeId, String foreignId, String nodeLabel, String building, String city) {
+	public AbstractSaveOrUpdateOperation(Integer nodeId, String foreignSource, String foreignId, String nodeLabel, String building, String city) {
         m_node = new OnmsNode();
         m_node.setId(nodeId);
 		m_node.setLabel(nodeLabel);
 		m_node.setLabelSource("U");
 		m_node.setType("A");
-        m_node.getAssetRecord().setAssetNumber(ImportOperationsManager.getAssetNumber(foreignId));
+        m_node.getAssetRecord().setAssetNumber(foreignSource + foreignId);
         m_node.getAssetRecord().setBuilding(building);
         m_node.getAssetRecord().setCity(city);
 	}

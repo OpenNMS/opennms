@@ -64,8 +64,8 @@ public class AssetRecordDaoHibernate extends AbstractDaoHibernate implements Ass
         getHibernateTemplate().update(asset);
     }
 
-    public Map findImportedAssetNumbersToNodeIds() {
-        List assetNumbers = getHibernateTemplate().find("select a.node.id, a.assetNumber from OnmsAssetRecord a where a.assetNumber like '"+AssetRecordDao.IMPORTED_ID+"%'");
+    public Map findImportedAssetNumbersToNodeIds(String foreignSource) {
+        List assetNumbers = getHibernateTemplate().find("select a.node.id, a.assetNumber from OnmsAssetRecord a where a.assetNumber like '"+foreignSource+"%'");
         Map assetNumberMap = new HashMap();
         for (Iterator it = assetNumbers.iterator(); it.hasNext();) {
             Object[] an = (Object[]) it.next();
