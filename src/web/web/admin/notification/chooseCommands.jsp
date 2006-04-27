@@ -120,7 +120,7 @@ choose the desired behavior for automatic notification on "UP" events.</h3>
 
   <%=buildCommands(newPath, Integer.parseInt(request.getParameter("targetIndex")))%>
 
-  <div class="spacer"></div>
+  <div class="spacer"><!-- --></div>
 
   <br/>
 

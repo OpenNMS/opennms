@@ -169,7 +169,7 @@
   OSI Certified is a certification mark of the Open Source Initiative.
 </div>
 
-<div class="spacer"></div>
+<div class="spacer"><!-- --></div>
 
 <br/>
 

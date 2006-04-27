@@ -150,7 +150,7 @@
       --%>
     </div>
 
-  <div class="spacer"></div>
+  <div class="spacer"><!-- --></div>
   <br/>
 
 <jsp:include page="/includes/charts.jsp" flush="false" />

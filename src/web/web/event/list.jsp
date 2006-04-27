@@ -270,8 +270,7 @@
     </table>
 -->
 
-    <div class="spacer">
-    </div>
+    <div class="spacer"><!-- --></div>
 
     <form action="event/acknowledge" method="POST" name="acknowledge_form">
       <input type="hidden" name="redirectParms" value="<%=request.getQueryString()%>" />

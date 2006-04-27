@@ -212,7 +212,7 @@
 	</div>
         <% } /*end if */ %>
 
-	<div class="spacer"></div>
+	<div class="spacer"><!-- --></div>
 
 	<br/>
 

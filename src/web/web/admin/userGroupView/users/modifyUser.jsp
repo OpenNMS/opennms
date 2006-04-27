@@ -349,7 +349,7 @@
   </p>
 </div>
 
-<div class="spacer"></div>
+<div class="spacer"><!-- --></div>
 
 <p>
   <b>Duty Schedules</b>

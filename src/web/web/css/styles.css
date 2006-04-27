@@ -489,7 +489,7 @@ td.availcrit
 div.spacer
 {
         clear: both;
-        height: 0px;
+        height: 1px;
 }
 
 div.center
@@ -524,9 +524,8 @@ div.center
 {
         float: right;
         text-align: right;
-        padding: 4px;
 	font-weight: bold;
-        vertical-align: middle;
+	height: 82px;
 }
 
 #headerdate
@@ -626,45 +625,3 @@ div.center
         font-size: 10px;
 	font-family: Arial, Verdana, Helvetica, sans-serif; 
 }
-
-
-/* XXX hacking for vertical centering */
-
-#outer
-{
-	height: 82px;
-	overflow: hidden;
-	position: relative;
-}
-
-#outer[id]
-{
-	display: table;
-	position: static;
-}
-
-#middle
-{
-	position: absolute;
-	top: 50%;
-}  /* for explorer only*/
-
-#middle[id]
-{
-	display: table-cell;
-	vertical-align: middle;
-	position: static;
-}
-
-#inner
-{
-	position: relative;
-	top: -50%
-}  /* for explorer only */
-
-/* optional:
-#inner[id]
-{
-	position: static;
-}
-*/

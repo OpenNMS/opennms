@@ -132,7 +132,7 @@
         </p>
   </div>
 
-<div class="spacer"></div>
+<div class="spacer"><!-- --></div>
 <br/>
 <hr align="center" size="2" width="95%">
 <br/>

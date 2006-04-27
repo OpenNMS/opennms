@@ -179,7 +179,7 @@
       None found.
   <% } %>
 
-<div class="spacer"></div>
+<div class="spacer"><!-- --></div>
 <% if (listInterfaces) { %>
   <%=nodes.length%> Nodes, <%=interfaceCount%> Interfaces
 <% } else { %>

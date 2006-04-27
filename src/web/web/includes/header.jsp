@@ -70,6 +70,10 @@
   <script type="text/javascript" src="js/global.js"></script>
 </head>
 
+<!--[if lt IE 7.]>
+<script defer type="text/javascript" src="js/pngfix.js"></script>
+<![endif]-->
+
 <body>
 
 <c:choose>
@@ -97,34 +101,30 @@
 
 
   <div id="headertop">
-   <span id="headerlogo">
-<%--    <a href="index.jsp"><img src="images/logo.png" hspace="0" vspace="0" border="0" alt="OpenNMS Web Console Home"></a> --%>
+   <div id="headerlogo">
     <a href="index.jsp"><img src="images/logo.png" alt="OpenNMS Web Console Home"/></a>
-   </span><!-- /headerlogo -->
+   </div><!-- /headerlogo -->
   
-   <span id="headertitle">
+   <div id="headertitle">
     <c:out value="${param.title}"/>
-   </span><!-- /headertitle -->
+   </div><!-- /headertitle -->
   
    <div id="headerinfo">
-    <div id="outer">
-     <div id="middle">
-      <div id="inner">
+    <table style="height: 100%; padding: 4px;">
+     <tr>
+      <td valign="center" align="right">
           [<c:out value="${pageContext.request.remoteUser}"/>]<br/>
-    
           Notices <c:out value="${noticeStatus}" escapeXml="false"/><br/>
-          <div id="headerdate">
+          <span id="headerdate">
             <c:out value="${date}"/><br/>
             <c:out value="${time}"/>
-          </div><!-- /headerdate -->
-      </div><!-- /inner -->
-     </div><!-- /middle -->
-    </div><!-- /outer -->
+          </span><!-- /headerdate -->
+      </td>
+     </tr>
+    </table>
    </div><!-- /headerinfo -->
   
-   <div class="spacer">
-    &nbsp;
-   </div><!-- /spacer -->
+   <div class="spacer"><!-- --></div>
   
   </div><!-- /headertop -->
 
@@ -145,6 +145,7 @@
           </div>
 </div>
 
+  <div class="spacer"><!-- --></div>
 
 </div>
 
@@ -161,7 +162,6 @@
 
 --%>
 
-<div class="spacer"></div>
 
 </c:otherwise>
 </c:choose>

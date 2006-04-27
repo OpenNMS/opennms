@@ -240,7 +240,7 @@
 	</div>
         <% } /*end if */ %>
 
-	<div class="spacer"></div>
+	<div class="spacer"><!-- --></div>
 	<br/>
 
           <input type="button" value="Apply Changes" onClick="applyChanges()">

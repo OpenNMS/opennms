@@ -200,7 +200,7 @@
     </select>
   </div>
 
-  <div class="spacer"></div>
+  <div class="spacer"><!-- --></div>
   <br/>
 
   <input type="button" value="Submit" onclick="submitForm()"/>
