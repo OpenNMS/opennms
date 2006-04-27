@@ -36,19 +36,11 @@ import java.util.Set;
 
 import javax.sql.DataSource;
 
-import org.opennms.netmgt.config.DataSourceFactory;
-import org.opennms.netmgt.dao.IpInterfaceDao;
 import org.opennms.netmgt.dao.jdbc.Cache;
-import org.opennms.netmgt.dao.jdbc.IpInterfaceDaoJdbc;
 import org.opennms.netmgt.dao.jdbc.JdbcSet;
-import org.opennms.netmgt.dao.jdbc.ipif.IpInterfaceId;
-import org.opennms.netmgt.dao.jdbc.ipif.LazyIpInterface;
-import org.opennms.netmgt.dao.jdbc.monsvc.LazyMonitoredService;
 import org.opennms.netmgt.dao.jdbc.monsvc.MonitoredServiceId;
 import org.opennms.netmgt.model.OnmsEvent;
-import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
-import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsOutage;
 import org.springframework.jdbc.object.MappingSqlQuery;
 

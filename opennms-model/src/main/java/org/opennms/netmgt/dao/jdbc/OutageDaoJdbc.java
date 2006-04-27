@@ -8,8 +8,11 @@ import java.util.Collection;
 import javax.sql.DataSource;
 
 import org.opennms.netmgt.dao.OutageDao;
+import org.opennms.netmgt.dao.jdbc.outage.FindAllOutages;
 import org.opennms.netmgt.dao.jdbc.outage.FindByOutageId;
+import org.opennms.netmgt.dao.jdbc.outage.LazyOutage;
 import org.opennms.netmgt.dao.jdbc.outage.OutageSave;
+import org.opennms.netmgt.dao.jdbc.outage.OutageUpdate;
 import org.opennms.netmgt.model.OnmsOutage;
 
 /**
@@ -25,6 +28,11 @@ public class OutageDaoJdbc extends AbstractDaoJdbc implements OutageDao {
     public OutageDaoJdbc(DataSource ds) {
             super(ds);
     }
+    
+    public OnmsOutage load(int id) {
+        return load(new Integer(id));
+    }
+
     /* (non-Javadoc)
      * @see org.opennms.netmgt.dao.OutageDao#load(java.lang.Integer)
      */
@@ -56,48 +64,72 @@ public class OutageDaoJdbc extends AbstractDaoJdbc implements OutageDao {
      * @see org.opennms.netmgt.dao.OutageDao#update(org.opennms.netmgt.model.OnmsOutage)
      */
     public void update(OnmsOutage outage) {
-        // TODO Auto-generated method stub
-
+        if (outage.getId() == null)
+            throw new IllegalArgumentException("Cannot update a outage without a outageid");
+        
+        if (isDirty(outage))
+        		getOutageUpdater().doUpdate(outage);
+        
     }
 
     /* (non-Javadoc)
      * @see org.opennms.netmgt.dao.OutageDao#saveOrUpdate(org.opennms.netmgt.model.OnmsOutage)
      */
     public void saveOrUpdate(OnmsOutage outage) {
-        // TODO Auto-generated method stub
-
-    }
-
-    /* (non-Javadoc)
-     * @see org.opennms.netmgt.dao.OutageDao#findAll()
-     */
-    public Collection findAll() {
-        // TODO Auto-generated method stub
-        return null;
+        if (outage.getId() == null)
+            save(outage);
+        else
+            update(outage);
     }
 
     /* (non-Javadoc)
      * @see org.opennms.netmgt.dao.OnmsDao#flush()
      */
     public void flush() {
-        // TODO Auto-generated method stub
-
     }
 
     /* (non-Javadoc)
      * @see org.opennms.netmgt.dao.OnmsDao#clear()
      */
     public void clear() {
-        // TODO Auto-generated method stub
-
     }
 
     /* (non-Javadoc)
      * @see org.opennms.netmgt.dao.OnmsDao#countAll()
      */
     public int countAll() {
-        // TODO Auto-generated method stub
-        return 0;
+        return getJdbcTemplate().queryForInt("select count(*) from outages");
     }
+    
+    private boolean isDirty(OnmsOutage outage) {
+		if (outage instanceof LazyOutage) {
+			LazyOutage lazyOutage = (LazyOutage) outage;
+			return lazyOutage.isDirty();
+		}
+		return true;
+    }
+    
+    private OutageUpdate getOutageUpdater() {
+        return new OutageUpdate(getDataSource());
+    }
+
+    /* (non-Javadoc)
+     * @see org.opennms.netmgt.dao.OutageDao#findAll()
+     */
+    public Collection findAll() {
+        return new FindAllOutages(getDataSource()).findSet();
+	}
+
+    public OnmsOutage get(int id) {
+        return get(new Integer(id));
+    }
+
+    public OnmsOutage get(Integer id) {
+        if (Cache.retrieve(OnmsOutage.class, id) == null)
+            return new FindByOutageId(getDataSource()).findUnique(id);
+        else
+            return (OnmsOutage)Cache.retrieve(OnmsOutage.class, id);
+    }
+
 
 }
