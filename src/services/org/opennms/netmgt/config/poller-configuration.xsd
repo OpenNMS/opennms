@@ -79,6 +79,19 @@
           </restriction>
         </simpleType>
       </attribute>
+
+      <attribute default="false" name="pathOutageEnabled" use="optional">
+        <annotation>
+          <documentation>Flag which indicates if the optional path outage
+          feature is enabled</documentation>
+        </annotation>
+
+        <simpleType>
+          <restriction base="string">
+            <pattern value="(true|false)"/>
+          </restriction>
+        </simpleType>
+      </attribute>
     </complexType>
   </element>
 

@@ -1,12 +1,16 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2005 The OpenNMS Group, Inc.  All rights reserved.
+// OpenNMS(R) is Copyright (C) 2005-2006 The OpenNMS Group, Inc.  All rights reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included code and modified
 // code that was published under the GNU General Public License. Copyrights for modified 
 // and included code are below.
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+//
+// Modifications:
+//
+// 2006 Apr 27: Added support for pathOutageEnabled
 //
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
@@ -97,6 +101,16 @@ public interface PollerConfig {
      * generated in this scenario.
      */
     public abstract boolean serviceUnresponsiveEnabled();
+
+    /**
+     * Returns true if the path outage feature is enabled. If enabled, the code
+     * looks for a critical path specification when processing nodeDown events.
+     * If a critical path exists for the node, it will be tested. If the
+     * critical path fails to respond, the eventReason parameter on the
+     * nodeDown event is set to "pathOutage". This parameter will be used by
+     * notifd to suppress nodeDown notification.
+     */
+    public abstract boolean pathOutageEnabled();
 
     /**
      * This method is used to rebuild the package agaist iplist mapping when

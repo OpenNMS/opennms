@@ -1,12 +1,16 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2005 The OpenNMS Group, Inc.  All rights reserved.
+// OpenNMS(R) is Copyright (C) 2005-2006 The OpenNMS Group, Inc.  All rights reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included code and modified
 // code that was published under the GNU General Public License. Copyrights for modified 
 // and included code are below.
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+//
+// Modifications:
+//
+// 2006 Apr 27: Added support for pathOutageEnabled
 //
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
@@ -225,6 +229,20 @@ abstract public class PollerConfigManager implements PollerConfig {
      */
     public synchronized boolean getXmlrpc() {
         String flag = m_config.getXmlrpc();
+        if (flag.equals("true"))
+            return true;
+        else
+            return false;
+    }
+
+    /**
+     * This method returns the boolean flag pathOutageEnabled to indicate if
+     * path outage processing on nodeDown events is enabled
+     * 
+     * @return true if pathOutageEnabled
+     */
+    public synchronized boolean pathOutageEnabled() {
+        String flag = m_config.getPathOutageEnabled();
         if (flag.equals("true"))
             return true;
         else

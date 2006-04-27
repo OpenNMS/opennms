@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2006 Apr 27: added support for pathOutageEnabled
 // 2006 Apr 17: added path outage processing for nodeDown event
 // 2003 Nov 11: Merged changes from Rackspace project
 // 2003 Oct 08: Implemented the poller release function.
@@ -607,7 +608,7 @@ public class Poller extends ServiceDaemon {
         Parm eventParm = new Parm();
         Value parmValue = new Value();
 
-        if (uei.equals(EventConstants.NODE_DOWN_EVENT_UEI)) {
+        if (uei.equals(EventConstants.NODE_DOWN_EVENT_UEI) && getPollerConfig().pathOutageEnabled()) {
             String[] criticalPath = getCriticalPath(nodeId);
             boolean isPathOk = true;
             isPathOk = testCriticalPath(criticalPath);
@@ -634,6 +635,8 @@ public class Poller extends ServiceDaemon {
                 parmValue.setContent(criticalPath[1]);
                 eventParm.setValue(parmValue);
                 eventParms.addParm(eventParm);
+            } else {
+                log.debug("Critical path test passed for node " + nodeId);
             }
         }
 
