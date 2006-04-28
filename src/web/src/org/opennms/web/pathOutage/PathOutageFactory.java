@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2006 Apr 27: reworked getLabelAndStatus
 // 2006 Apr 25: replaced getNodeLabelAndColor with getLabelAndStatus to
 //              speed things up
 // 2006 Apr 17: Created file
@@ -44,7 +45,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import javax.servlet.ServletException;
 
 import org.opennms.core.resource.Vault;
 import org.opennms.netmgt.EventConstants;
@@ -64,6 +64,8 @@ public class PathOutageFactory extends Object {
 
     private static final String COUNT_MANAGED_SVCS = "SELECT count(*) FROM ifservices WHERE status ='A' and nodeid=?";
 
+    private static final String COUNT_OUTAGES = "SELECT count(*) FROM outages WHERE svcregainedeventid IS NULL and nodeid=?";
+
     private static final String COUNT_NODES_IN_PATH = "SELECT count(*) FROM pathoutage WHERE criticalpathip=? AND criticalpathservicename=?";
 
     private static final String GET_NODELABEL_BY_IP = "SELECT nodelabel FROM node WHERE nodeid IN (SELECT nodeid FROM ipinterface WHERE ipaddr=?)";
@@ -75,10 +77,6 @@ public class PathOutageFactory extends Object {
     private static final String GET_CRITICAL_PATH_STATUS = "SELECT count(*) FROM outages WHERE ipaddr=? AND ifregainedservice IS NULL AND serviceid=(SELECT serviceid FROM service WHERE servicename=?)";
 
     private static final String IS_CRITICAL_PATH_MANAGED = "SELECT count(*) FROM ifservices WHERE ipaddr=? AND status='A' AND serviceid=(SELECT serviceid FROM service WHERE servicename=?)";
-
-    private static final String SQL_CRITICAL_SVC_OUTAGE = "SELECT count(*) FROM outages WHERE svcregainedeventid IS NULL AND nodeid=? AND serviceid=?";
-
-    private static final String SQL_GET_EVENT_PARMS = "SELECT eventparms FROM events WHERE eventid=?";
 
     /**
      * <p>
@@ -148,9 +146,8 @@ public class PathOutageFactory extends Object {
      */
     public static String[] getLabelAndStatus(String nodeID, Connection conn) throws SQLException {
 
-	//TODO: replace critical service with config file critical service
-	int critSvcId=1; // ICMP
-        int count = 0;
+        int countManagedSvcs = 0;
+        int countOutages = 0;
         String result[] = new String[3];
         result[1] = "lightblue";
         result[2] = "Unmanaged";
@@ -168,27 +165,29 @@ public class PathOutageFactory extends Object {
         stmt.setString(1, nodeID);
         rs = stmt.executeQuery();
         while (rs.next()) {
-            count = rs.getInt(1);
+            countManagedSvcs = rs.getInt(1);
         }
         rs.close();
         stmt.close();
 
-        if(count > 0) {
-            stmt = conn.prepareStatement(SQL_CRITICAL_SVC_OUTAGE);
+        if(countManagedSvcs > 0) {
+            stmt = conn.prepareStatement(COUNT_OUTAGES);
             stmt.setString(1, nodeID);
-	    stmt.setInt(2, critSvcId);
             rs = stmt.executeQuery();
             while (rs.next()) {
-                count = rs.getInt(1);
+                countOutages = rs.getInt(1);
             }
             rs.close();
             stmt.close();
-            if(count > 0) {
+            if(countManagedSvcs == countOutages) {
                 result[1] = "red";
-                result[2] = "Down";
-            } else {
+                result[2] = "All Services Down";
+            } else if(countOutages == 0) {
                 result[1] = "green";
-                result[2] = "Up";
+                result[2] = "All Services Up";
+            } else {
+                result[1] = "orange";
+                result[2] = "Some Services Down";
             }
         }
         return result;

@@ -70,7 +70,7 @@
 
           <tr>
           <td class="standardheader" width="40%" align="center"><%= "Node" %></td>
-          <td class="standardheader" width="10%" align="center">Status</td>
+          <td class="standardheader" width="40%" align="center">Status</td>
           </tr>
 
 <%        Iterator iter = nodeList.iterator();
