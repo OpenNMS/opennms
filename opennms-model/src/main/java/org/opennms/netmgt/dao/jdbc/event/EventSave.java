@@ -12,19 +12,25 @@ public class EventSave extends EventSaveOrUpdate {
     // DO NOT CHANGE THIS STATEMENT UNLESS YOU CHANGE THE UPDATE STATEMENT AND THE
     // PARAMETERS IN EventSaveOrUpdate
     private static final String insertStmt = "insert into events (" +
-    		"eventID, eventUei, nodeID, eventTime, " + 
-    		"eventHost, eventSource, ipAddr, eventDpName, eventSnmphost, serviceID, eventSnmp, eventParms, " + 
-    		"eventCreateTime, eventDescr, eventLoggroup, eventLogmsg, eventSeverity, eventPathOutage, " + 
-    		"eventCorrelation, eventSuppressedCount, eventOperInstruct, eventAutoAction, eventOperAction, " + 
-    		"eventOperActionMenuText, eventNotification, eventTticket, eventTticketState, eventForward, " + 
-    		"eventMouseOverText, eventLog, eventDisplay, eventAckUser, eventAckTime, alarmID " +
+    		"eventUei, nodeID, eventTime, eventHost, " + 
+    		"eventSource, ipAddr, eventDpName, eventSnmphost, " +
+    		"serviceID, eventSnmp, eventParms, eventCreateTime, " +
+    		"eventDescr, eventLoggroup, eventLogmsg, eventSeverity, " +
+    		"eventPathOutage, eventCorrelation, eventSuppressedCount, eventOperInstruct, " +
+    		"eventAutoAction, eventOperAction, eventOperActionMenuText, eventNotification, " +
+    		"eventTticket, eventTticketState, eventForward, eventMouseOverText, " +
+    		"eventLog, eventDisplay, eventAckUser, eventAckTime, " +
+    		"alarmID, eventid) " +
     		"values (" + 
     		"?, ?, ?, ?, " +
-    		"?, ?, ?, ?, ?, ?, ?, ?, " +
-    		"?, ?, ?, ?, ?, ?, " +
-    		"?, ?, ?, ?, ?, " +
-    		"?, ?, ?, ?, ?, " +
-    		"?, ?, ?, ?, ?, ?)";
+    		"?, ?, ?, ?, " +
+    		"?, ?, ?, ?, " +
+    		"?, ?, ?, ?, " +
+    		"?, ?, ?, ?, " +
+    		"?, ?, ?, ?, " +
+    		"?, ?, ?, ?, " +
+    		"?, ?, ?, ?, " +
+    		"?, ?)";
 
     public EventSave(DataSource ds) {
         super(ds, insertStmt);

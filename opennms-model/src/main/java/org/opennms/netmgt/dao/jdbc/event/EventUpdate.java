@@ -12,7 +12,7 @@ public class EventUpdate extends EventSaveOrUpdate {
     // DO NOT CHANGE THIS STATEMENT UNLESS YOU CHANGE THE INSERT STATEMENT AND THE
     // PARAMETERS IN EventSaveOrUpdate
     private static final String updateStmt = "update events set " +
-    		"eventID = ?, eventUei = ?, nodeID = ?, eventTime = ?, eventHost = ?, " + 
+    		"eventUei = ?, nodeID = ?, eventTime = ?, eventHost = ?, " + 
     		"eventSource = ?, ipAddr = ?, eventDpName = ?, eventSnmphost = ?, serviceID = ?, " + 
     		"eventSnmp = ?, eventParms = ?, eventCreateTime = ?, eventDescr = ?, eventLoggroup = ?, " + 
     		"eventLogmsg = ?, eventSeverity = ?, eventPathOutage = ?, eventCorrelation = ?, eventSuppressedCount = ?, " + 

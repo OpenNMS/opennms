@@ -9,7 +9,7 @@ import javax.sql.DataSource;
 public class FindAll extends EventMappingQuery {
 
     public FindAll(DataSource ds) {
-        super(ds, "FROM event as e");
+        super(ds, "FROM events as events");
         compile();
     }
     

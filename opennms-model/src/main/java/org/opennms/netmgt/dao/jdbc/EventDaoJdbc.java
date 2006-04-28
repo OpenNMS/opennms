@@ -130,7 +130,7 @@ public class EventDaoJdbc extends AbstractDaoJdbc implements EventDao {
     }
 
 	private Integer allocateId() {
-        return new Integer(getJdbcTemplate().queryForInt("SELECT nextval('eventNxtId')"));
+        return new Integer(getJdbcTemplate().queryForInt("SELECT nextval('eventsNxtId')"));
     }
 
     private void cascadeSaveAssociations(OnmsEvent event) {

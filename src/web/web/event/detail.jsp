@@ -190,11 +190,11 @@
       </table>
       
       <br/>
-      <form mthod="post" action="event/acknowledge">
+      <form method="post" action="event/acknowledge">
         <input type="hidden" name="action" value="<%=action%>" />
         <input type="hidden" name="event" value="<%=event.getId()%>"/>
         <input type="hidden" name="redirect" value="<%=request.getContextPath() + request.getServletPath() + "?" + request.getQueryString()%>" />
-        <input type="submit" value="<%=buttonName%>"
+        <input type="submit" value="<%=buttonName%>"/>
       </form>
       
 <jsp:include page="/includes/footer.jsp" flush="false" />

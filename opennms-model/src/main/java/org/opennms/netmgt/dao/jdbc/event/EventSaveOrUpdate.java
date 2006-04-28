@@ -46,7 +46,6 @@ public class EventSaveOrUpdate extends SqlUpdate {
         setSql(updateStmt);
         
         // assumes that the update and insert statements have the same parms in the same order
-        declareParameter(new SqlParameter(Types.INTEGER));   //eventID
         declareParameter(new SqlParameter(Types.VARCHAR));   //eventUei
         declareParameter(new SqlParameter(Types.INTEGER));   //nodeID
         declareParameter(new SqlParameter(Types.TIMESTAMP));   //eventTime
@@ -62,7 +61,7 @@ public class EventSaveOrUpdate extends SqlUpdate {
         declareParameter(new SqlParameter(Types.VARCHAR));   //eventDescr
         declareParameter(new SqlParameter(Types.VARCHAR));   //eventLoggroup
         declareParameter(new SqlParameter(Types.VARCHAR));   //eventLogmsg
-        declareParameter(new SqlParameter(Types.VARCHAR));   //eventSeverity
+        declareParameter(new SqlParameter(Types.INTEGER));   //eventSeverity
         declareParameter(new SqlParameter(Types.VARCHAR));   //eventPathOutage
         declareParameter(new SqlParameter(Types.VARCHAR));   //eventCorrelation
         declareParameter(new SqlParameter(Types.INTEGER));   //eventSuppressedCount
@@ -80,13 +79,13 @@ public class EventSaveOrUpdate extends SqlUpdate {
         declareParameter(new SqlParameter(Types.VARCHAR));   //eventAckUser
         declareParameter(new SqlParameter(Types.TIMESTAMP));   //eventAckTime
         declareParameter(new SqlParameter(Types.INTEGER));   //alarmID
+        declareParameter(new SqlParameter(Types.INTEGER));   //eventID
 
         compile();
     }
     
     public int persist(OnmsEvent event) {
         Object[] parms = new Object[] {
-                event.getId(),   //eventID
                 event.getEventUei(),   //eventUei
                 event.getNode().getId(),   //nodeID
                 event.getEventTime(),   //eventTime
@@ -119,7 +118,9 @@ public class EventSaveOrUpdate extends SqlUpdate {
                 event.getEventDisplay(),   //eventDisplay
                 event.getEventAckUser(),   //eventAckUser
                 event.getEventAckTime(),   //eventAckTime
-                event.getAlarm().getId() };   //alarmID
+                event.getAlarm().getId(),   //alarmID
+                event.getId()				//eventID
+        };   
         
         return update(parms);
     }    

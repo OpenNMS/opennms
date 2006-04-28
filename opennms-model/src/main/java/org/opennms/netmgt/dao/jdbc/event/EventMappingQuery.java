@@ -98,10 +98,11 @@ public class EventMappingQuery extends MappingSqlQuery {
         OnmsNode node = (OnmsNode)Cache.obtain(OnmsNode.class, nodeId);
         event.setNode(node);
         
-        String dpName = rs.getString("dpName");
+        String dpName = rs.getString("eventDpName");
         OnmsDistPoller distPoller = (OnmsDistPoller)Cache.obtain(OnmsDistPoller.class, dpName);
         event.setDistPoller(distPoller);
 
+        
         Integer alarmId = new Integer(rs.getInt("alarmId"));
         OnmsAlarm alarm = (OnmsAlarm)Cache.obtain(OnmsAlarm.class, alarmId);
         event.setAlarm(alarm);
