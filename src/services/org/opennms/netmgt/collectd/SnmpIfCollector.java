@@ -40,17 +40,14 @@
 
 package org.opennms.netmgt.collectd;
 
-import java.lang.Integer;
 import java.net.InetAddress;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.config.CapsdConfigFactory;
 import org.opennms.netmgt.snmp.AggregateTracker;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
@@ -96,25 +93,30 @@ public class SnmpIfCollector extends AggregateTracker {
 	return m_ifAliasMibObject;
     }
 
-    /**
+	/**
      * The class constructor is used to initialize the collector and send out
      * the initial SNMP packet requesting data. The data is then received and
      * store by the object. When all the data has been collected the passed
      * signaler object is <EM>notified</EM> using the notifyAll() method.
      * @param address 
-     * @param ifMap
+	 * @param objList TODO
+	 * @param ifMap
      *            Map of org.opennms.netmgt.poller.collectd.IfInfo objects.
      */
-    public SnmpIfCollector(InetAddress address, Map ifMap) {
-        super(MibObject.getCollectionTrackers(SnmpIfCollector.buildV2CombinedOidList(ifMap)));
+    public SnmpIfCollector(InetAddress address, List objList) {
+        super(MibObject.getCollectionTrackers(appendIfAlias(objList)));
 
         // Process parameters
         //
         m_primaryIf = address.getHostAddress();
-        m_objList = SnmpIfCollector.buildV2CombinedOidList(ifMap);
-
-
+        m_objList = appendIfAlias(objList);
     }
+
+	private static List appendIfAlias(List objList) {
+		ArrayList list = new ArrayList(objList);
+		list.add(ifAliasMibObject());
+		return list;
+	}
 
     protected static Category log() {
         return ThreadCategory.getInstance(SnmpIfCollector.class);
@@ -129,43 +131,7 @@ public class SnmpIfCollector extends AggregateTracker {
         return new ArrayList(m_results.values());
     }
     
-    /**
-     * This method is responsible for building a new object list consisting of
-     * all unique oids to be collected for all interfaces represented within the
-     * interface map. The new list can then be used for SNMPv2 collection.
-     * 
-     * @param ifMap
-     *            Map of IfInfo objects indexed by ifIndex
-     * 
-     * @return unified MibObject list
-     */
-    private static List buildV2CombinedOidList(Map ifMap) {
-        List allOids = new ArrayList();
-
-        // Iterate over all the interface's in the interface map
-        //
-        if (ifMap != null) {
-            Iterator i = ifMap.values().iterator();
-            while (i.hasNext()) {
-                IfInfo ifInfo = (IfInfo) i.next();
-                List ifOidList = ifInfo.getOidList();
-
-                // Add unique interface oid's to the list
-                //
-                Iterator j = ifOidList.iterator();
-                while (j.hasNext()) {
-                    MibObject oid = (MibObject) j.next();
-                    if (!allOids.contains(oid))
-                        allOids.add(oid);
-                }
-            }
-	    allOids.add(ifAliasMibObject());
-        }
-
-        return allOids;
-    }
-
-    protected void reportGenErr(String msg) {
+	protected void reportGenErr(String msg) {
         log().warn(m_primaryIf+": genErr collecting ifData. "+msg);
     }
 

@@ -36,6 +36,7 @@ package org.opennms.netmgt.collectd;
 
 import java.util.List;
 
+import org.opennms.netmgt.config.DataCollectionConfigFactory;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.OnmsIpInterface.CollectionType;
 
@@ -51,22 +52,17 @@ final class IfInfo {
 	
 	OnmsSnmpInterface m_snmpIface;
 	
-    private List m_oidList;
+	private CollectionInterface m_collectionInterface;
 
-    private List m_dsList;
+	private String m_collectionName;
+	
+	private List m_oidList = null;
 
-    public IfInfo(OnmsSnmpInterface snmpIface) {
+    public IfInfo(CollectionInterface collectionInterface, String collectionName, OnmsSnmpInterface snmpIface) {
+    	m_collectionInterface = collectionInterface;
+    	m_collectionName = collectionName;
     	m_snmpIface = snmpIface;
-        m_oidList = null;
-        m_dsList = null;
-    }
-
-    public void setDsList(List dsList) {
-        m_dsList = dsList;
-    }
-
-    public void setOidList(List oidList) {
-        m_oidList = oidList;
+    	
     }
 
 	public int getIndex() {
@@ -86,11 +82,36 @@ final class IfInfo {
     }
 
     public List getDsList() {
-        return m_dsList;
+        List dsList = DataCollectionConfigFactory.buildDataSourceList(getCollectionName(), getOidList());
+		return dsList;
     }
 
     public List getOidList() {
-        return m_oidList;
+        return (m_oidList == null ? computeOidList() : m_oidList);
     }
+
+	private List computeOidList() {
+		/*
+		 * Retrieve list of mib objects to be collected from the
+		 * remote agent for this interface.
+		 */
+		List oidList = DataCollectionConfigFactory.getInstance()
+		.getMibObjectList(getCollectionName(), getCollectionInterface().getSysObjectId(),
+				getCollectionInterface().getHostAddress(), getIndex());
+		return oidList;
+	}
+
+	public CollectionInterface getCollectionInterface() {
+		return m_collectionInterface;
+	}
+
+	public String getCollectionName() {
+		return m_collectionName;
+	}
+
+	// FIXME: Figure out how to delete this since it is used by the tests
+	public void setOidList(List list) {
+		m_oidList = list;
+	}
 
 } // end class

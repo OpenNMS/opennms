@@ -1,7 +1,9 @@
 package org.opennms.netmgt.collectd;
 
 import java.net.InetAddress;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import org.opennms.netmgt.model.OnmsIpInterface;
@@ -81,26 +83,12 @@ public class CollectionInterface extends IPv4NetworkInterface {
 		return savedIfCount;
 	}
 
-	boolean hasInterfaceOids() throws CollectionError {
-		
-		Map ifMap = getIfMap();
-		if (ifMap == null) return false;
-		
-		Iterator iter = ifMap.values().iterator();
-		while (iter.hasNext()) {
-			IfInfo ifInfo = (IfInfo) iter.next();
-			if (ifInfo.getType() < 1) {
-				continue;
-			}
-			if (!ifInfo.getOidList().isEmpty()) {
-				return true;
-			}
-		}
-		return false;
+	boolean hasInterfaceOids() {
+		return m_collectionSet.hasInterfaceOids();
 	}
 
-	Map getIfMap() throws CollectionError {
-		return m_collectionSet.getIfMap();
+	Map getIfMap() {
+		return getCollectionSet().getIfMap();
 	}
 
 	public void setCollectionSet(CollectionSet collectionSet) {
@@ -111,7 +99,7 @@ public class CollectionInterface extends IPv4NetworkInterface {
 		return m_collectionSet;
 	}
 	
-	NodeInfo getNodeInfo() throws CollectionError {
+	NodeInfo getNodeInfo() {
 		return m_collectionSet.getNodeInfo();
 	}
 
@@ -129,6 +117,39 @@ public class CollectionInterface extends IPv4NetworkInterface {
 
 	CollectionType getCollectionType() {
 		return getIpInterface().getIsSnmpPrimary();
+	}
+
+	List getCombinedInterfaceOids() {
+		Map ifMap = getIfMap();
+	    List allOids = new ArrayList();
+	
+	    // Iterate over all the interface's in the interface map
+	    //
+	    if (ifMap != null) {
+	        Iterator i = ifMap.values().iterator();
+	        while (i.hasNext()) {
+	            IfInfo ifInfo = (IfInfo) i.next();
+	            List ifOidList = ifInfo.getOidList();
+	
+	            // Add unique interface oid's to the list
+	            //
+	            Iterator j = ifOidList.iterator();
+	            while (j.hasNext()) {
+	                MibObject oid = (MibObject) j.next();
+	                if (!allOids.contains(oid))
+	                    allOids.add(oid);
+	            }
+	        }
+	    }
+		return allOids;
+	}
+
+	List getNodeDsList() {
+		return getNodeInfo().getDsList();
+	}
+
+	List getNodeOidList() throws CollectionError {
+		return getNodeInfo().getOidList();
 	}
 
 }

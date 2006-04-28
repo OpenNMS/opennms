@@ -160,54 +160,6 @@ public class SnmpCollector implements ServiceCollector {
 			+ "ORDER BY eventid DESC " + "LIMIT 1";
 
 	/**
-	 * SQL statement to retrieve interface's 'ipinterface' table information.
-	 */
-	static final String SQL_GET_NODEID = "SELECT nodeid,ifindex,issnmpprimary "
-			+ "FROM ipinterface " + "WHERE ipaddr=? " + "AND ismanaged!='D'";
-
-	/**
-	 * SQL statement to retrieve interface's 'issnmpprimary' table information.
-	 */
-	static final String SQL_GET_ISSNMPPRIMARY = "SELECT ifindex,issnmpprimary "
-			+ "FROM ipinterface " + "WHERE nodeid=?";
-
-	/**
-	 * /** SQL statement to retrieve node's system object id.
-	 */
-	static final String SQL_GET_NODESYSOID = "SELECT nodesysoid "
-			+ "FROM node " + "WHERE nodeid=? " + "AND nodetype!='D'";
-
-	/**
-	 * SQL statement to check for SNMPv2 for a node
-	 */
-	static final String SQL_CHECK_SNMPV2 = "SELECT ifservices.serviceid "
-			+ "FROM service, ifservices "
-			+ "WHERE servicename='SNMPv2' "
-			+ "AND ifservices.serviceid = service.serviceid " + "AND nodeid=?";
-
-	/**
-	 * SQL statement to fetch the ifIndex, ifName, and ifDescr values for all
-	 * interfaces associated with a node
-	 */
-	static final String SQL_GET_SNMP_INFO = "SELECT DISTINCT snmpifindex, snmpiftype, snmpifname, "
-			+ "snmpifdescr, snmpphysaddr "
-			+ "FROM snmpinterface, ipinterface "
-			+ "WHERE ipinterface.nodeid=snmpinterface.nodeid "
-			+ "AND ifindex = snmpifindex "
-			+ "AND ipinterface.nodeid=? "
-			+ "AND (ipinterface.ismanaged!='D')";
-
-	/**
-	 * SQL statement to fetch the ifIndex, ifName, and ifDescr values for all
-	 * interfaces associated with a node
-	 */
-	static final String SQL_GET_ISSNMPPRIMARY_FOR_SNMPIF = "SELECT issnmpprimary "
-			+ "FROM ipinterface "
-			+ "WHERE ipinterface.nodeid = ? "
-			+ "AND ipinterface.ifindex=? "
-			+ "AND (ipinterface.ismanaged!='D')";
-
-	/**
 	 * Default object to collect if "oid" property not available. This is the
 	 * MIB-II System Object ID value.
 	 */
@@ -535,17 +487,15 @@ public class SnmpCollector implements ServiceCollector {
 
 			SnmpNodeCollector nodeCollector = null;
 			// construct the nodeCollector
-			if (!getNodeInfo(iface).getOidList().isEmpty()) {
-				nodeCollector = new SnmpNodeCollector(iface.getInetAddress(),
-						getNodeInfo(iface).getOidList());
+			if (!iface.getNodeOidList().isEmpty()) {
+				nodeCollector = new SnmpNodeCollector(iface.getInetAddress(), iface.getNodeOidList());
 			}
 
 			IfNumberTracker ifNumber = null;
 			SnmpIfCollector ifCollector = null;
 			// construct the ifCollector
 			if (iface.hasInterfaceOids()) {
-				ifCollector = new SnmpIfCollector(iface.getInetAddress(),
-						getIfMap(iface));
+				ifCollector = new SnmpIfCollector(iface.getInetAddress(), iface.getCombinedInterfaceOids());
 				ifNumber = new IfNumberTracker();
 			}
 
@@ -559,7 +509,7 @@ public class SnmpCollector implements ServiceCollector {
 				iface.saveIfCount(ifCount);
 
 				log().debug(
-						"collect: nodeId: " + getNodeInfo(iface).getNodeId()
+						"collect: nodeId: " + iface.getNodeId()
 								+ " interface: " + iface.getHostAddress()
 								+ " ifCount: " + ifCount + " savedIfCount: "
 								+ savedIfCount);
@@ -573,7 +523,7 @@ public class SnmpCollector implements ServiceCollector {
 				 */
 				if ((savedIfCount != -1) && (ifCount != savedIfCount)) {
 					if (!isForceRescanInProgress(
-							getNodeInfo(iface).getNodeId(),
+							iface.getNodeId(),
 							iface.getHostAddress())) {
 						log()
 								.info(
@@ -582,7 +532,7 @@ public class SnmpCollector implements ServiceCollector {
 												+ iface.getHostAddress()
 												+ " has changed, generating 'ForceRescan' event.");
 						generateForceRescanEvent(iface.getHostAddress(),
-								getNodeInfo(iface).getNodeId(), eproxy);
+								iface.getNodeId(), eproxy);
 					}
 				}
 			}
@@ -600,43 +550,44 @@ public class SnmpCollector implements ServiceCollector {
 			// return the status of the collection
 			return COLLECTION_SUCCEEDED;
 		} catch (CollectionError e) {
-			if (e.getCause() == null) {
-				log().error(e.getMessage());
-			} else {
-				log().error(e.getMessage(), e.getCause());
-			}
-			return COLLECTION_FAILED;
+			return collectionError(e);
 		} catch (CollectionWarning e) {
-			if (e.getCause() == null) {
-				log().warn(e.getMessage());
-			} else {
-				log().warn(e.getMessage(), e.getCause());
-			}
-			return COLLECTION_FAILED;
+			return collectionWarning(e);
 		} catch (Throwable t) {
-			log().error(
-					"Unexpected error during node SNMP collection for "
-							+ iface.getHostAddress(), t);
-			return COLLECTION_FAILED;
+			return unexpected(iface, t);
 		}
 	}
 
-	private Map getIfMap(CollectionInterface iface) throws CollectionError {
-		Map ifMap = iface.getIfMap();
+	private int unexpected(CollectionInterface iface, Throwable t) {
+		log().error(
+				"Unexpected error during node SNMP collection for "
+						+ iface.getHostAddress(), t);
+		return COLLECTION_FAILED;
+	}
+
+	private int collectionWarning(CollectionWarning e) {
+		if (e.getCause() == null) {
+			log().warn(e.getMessage());
+		} else {
+			log().warn(e.getMessage(), e.getCause());
+		}
+		return COLLECTION_FAILED;
+	}
+
+	private int collectionError(CollectionError e) {
+		if (e.getCause() == null) {
+			log().error(e.getMessage());
+		} else {
+			log().error(e.getMessage(), e.getCause());
+		}
+		return COLLECTION_FAILED;
+	}
+
+	private void verifyIfMap(CollectionInterface iface, Map ifMap) throws CollectionError {
 		if (ifMap == null) {
 			throw new CollectionError("Interface map not available for "
 					+ "interface " + iface.getHostAddress());
 		}
-		return ifMap;
-	}
-
-	private NodeInfo getNodeInfo(CollectionInterface iface) throws CollectionError {
-		NodeInfo nodeInfo = iface.getNodeInfo();
-		if (nodeInfo == null) {
-			throw new CollectionError("Node info not available for interface "
-					+ iface.getHostAddress());
-		}
-		return nodeInfo;
 	}
 
 	private void collectData(CollectionInterface iface,
@@ -734,12 +685,12 @@ public class SnmpCollector implements ServiceCollector {
 		String snmpStorage = iface.getSnmpStorage();
 
 		// Get primary interface index from NodeInfo object
-		NodeInfo nodeInfo = getNodeInfo(iface);
-		int nodeId = nodeInfo.getNodeId();
-		int primaryIfIndex = nodeInfo.getPrimarySnmpIfIndex();
+		int nodeId = iface.getNodeId();
+		int primaryIfIndex = iface.getIfIndex();
 
 		// Retrieve interface map attribute
-		Map ifMap = getIfMap(iface);
+		Map ifMap = iface.getIfMap();
+		verifyIfMap(iface, ifMap);
 
 		/*
 		 * Write relevant collected SNMP statistics to RRD database First the
@@ -766,7 +717,7 @@ public class SnmpCollector implements ServiceCollector {
 			 * commands to update each datasource which has a corresponding
 			 * value in the collected SNMP data.
 			 */
-			Iterator iter = nodeInfo.getDsList().iterator();
+			Iterator iter = iface.getNodeDsList().iterator();
 			while (iter.hasNext()) {
 				DataSource ds = (DataSource) iter.next();
 
@@ -1093,8 +1044,7 @@ public class SnmpCollector implements ServiceCollector {
 		} // end if(ifCollector != null)
 
 		if (forceRescan) {
-			generateForceRescanEvent(ipaddr.getHostAddress(), nodeInfo
-					.getNodeId(), eproxy);
+			generateForceRescanEvent(ipaddr.getHostAddress(), iface.getNodeId(), eproxy);
 		}
 		return rrdError;
 	}
