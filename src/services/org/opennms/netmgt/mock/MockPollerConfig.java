@@ -424,5 +424,10 @@ public class MockPollerConfig extends PollOutagesConfigManager implements Poller
         return Collections.EMPTY_LIST;
     }
 
+	public boolean pathOutageEnabled() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
 
 }
