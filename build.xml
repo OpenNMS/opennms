@@ -208,6 +208,7 @@ your distribution.
     <pathelement path="${packaged.lib.dir}/commons-codec-1.3.jar"/>
     <pathelement path="${packaged.lib.dir}/commons-httpclient-3.0.jar"/>
     <pathelement path="${packaged.lib.dir}/commons-logging.jar"/>
+    <pathelement path="${packaged.lib.dir}/oro204.jar"/>
     <pathelement path="${packaged.lib.dir}/regexp120.jar"/>
     <pathelement path="${dev.lib.dir}/servlet.jar"/>
     <pathelement path="${packaged.lib.dir}/openldap-jldap-2005.10.03.jar"/>
@@ -345,8 +346,8 @@ your distribution.
     <path refid="tomcatlib.jars.path"/>
     <path refid="mock.path"/>
     <pathelement path="${packaged.lib.dir}/commons-logging.jar"/>
-  	<pathelement path="${dev.lib.dir}/ant/lib/ant.jar"/>
-  	<pathelement path="${dev.lib.dir}/ant/lib/ant-launcher.jar"/>
+    <pathelement path="${dev.lib.dir}/ant/lib/ant.jar"/>
+    <pathelement path="${dev.lib.dir}/ant/lib/ant-launcher.jar"/>
   </path>
 
   <!-- Files in ${packaged.lib.dir} that are copied into ${install.dir}/lib.
