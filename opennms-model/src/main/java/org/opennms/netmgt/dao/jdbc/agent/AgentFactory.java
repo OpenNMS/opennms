@@ -6,7 +6,7 @@ package org.opennms.netmgt.dao.jdbc.agent;
 import javax.sql.DataSource;
 
 import org.opennms.netmgt.dao.jdbc.Factory;
-import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.OnmsAgent;
 
 public class AgentFactory extends Factory {
 	
@@ -21,11 +21,11 @@ public class AgentFactory extends Factory {
 	}
 
 	public AgentFactory() {
-        super(OnmsNode.class);
+        super(OnmsAgent.class);
     }
 
     protected void assignId(Object obj, Object id) {
-		((OnmsNode)obj).setId((Integer)id);
+		((OnmsAgent)obj).setId((Integer)id);
 	}
 
 	protected Object create() {

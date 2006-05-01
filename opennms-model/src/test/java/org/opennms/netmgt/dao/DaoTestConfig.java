@@ -55,6 +55,8 @@ public abstract class DaoTestConfig {
     protected abstract OutageDao createOutageDao();
     
     protected abstract EventDao createEventDao();
+    
+    protected abstract AgentDao createAgentDao();
 
     protected abstract void tearDown();
 
@@ -70,6 +72,7 @@ public abstract class DaoTestConfig {
 	private SnmpInterfaceDao m_snmpIfDao;
     private OutageDao m_outageDao;
 	private EventDao m_eventDao;
+	private AgentDao m_agentDao;
 
     public DistPollerDao getDistPollerDao() {
         if (m_dpDao == null) {
@@ -147,6 +150,13 @@ public abstract class DaoTestConfig {
 			m_snmpIfDao = createSnmpInterfaceDao();
 		}
 		return m_snmpIfDao;
+	}
+
+	public AgentDao getAgentDao() {
+		if (m_agentDao == null) {
+			m_agentDao = createAgentDao();
+		}
+		return m_agentDao;
 	}
 
 

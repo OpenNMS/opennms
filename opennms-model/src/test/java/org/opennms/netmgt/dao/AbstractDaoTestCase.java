@@ -323,6 +323,9 @@ public class AbstractDaoTestCase extends TestCase {
     protected EventDao getEventDao() {
     	return m_testConfig.getEventDao();
     }
+    protected AgentDao getAgentDao() {
+    	return m_testConfig.getAgentDao();
+    }
     private void populateDB(DistPollerDao dao) {
         //OnmsDistPoller distPoller = dao.load("localhost");
 

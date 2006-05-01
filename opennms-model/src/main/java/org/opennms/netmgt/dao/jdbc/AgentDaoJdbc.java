@@ -2,6 +2,8 @@ package org.opennms.netmgt.dao.jdbc;
 
 import java.util.Collection;
 
+import javax.sql.DataSource;
+
 import org.opennms.netmgt.dao.AgentDao;
 import org.opennms.netmgt.dao.jdbc.agent.FindAgentsForNode;
 import org.opennms.netmgt.dao.jdbc.agent.FindAgentsForNodeOfType;
@@ -11,6 +13,10 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsServiceType;
 
 public class AgentDaoJdbc extends AbstractDaoJdbc implements AgentDao {
+
+	public AgentDaoJdbc(DataSource dataSource) {
+		super(dataSource);
+	}
 
 	public Collection findForType(OnmsServiceType serviceType) {
 		return new FindAgentsForType(getDataSource()).findSet(serviceType.getId());

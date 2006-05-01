@@ -34,6 +34,7 @@ package org.opennms.netmgt.dao;
 import javax.sql.DataSource;
 
 import org.opennms.netmgt.dao.AbstractDaoTestCase.DB;
+import org.opennms.netmgt.dao.jdbc.AgentDaoJdbc;
 import org.opennms.netmgt.dao.jdbc.AssetRecordDaoJdbc;
 import org.opennms.netmgt.dao.jdbc.CategoryDaoJdbc;
 import org.opennms.netmgt.dao.jdbc.DistPollerDaoJdbc;
@@ -44,6 +45,7 @@ import org.opennms.netmgt.dao.jdbc.NodeDaoJdbc;
 import org.opennms.netmgt.dao.jdbc.OutageDaoJdbc;
 import org.opennms.netmgt.dao.jdbc.ServiceTypeDaoJdbc;
 import org.opennms.netmgt.dao.jdbc.SnmpInterfaceDaoJdbc;
+import org.opennms.netmgt.dao.jdbc.agent.AgentFactory;
 import org.opennms.netmgt.dao.jdbc.asset.AssetRecordFactory;
 import org.opennms.netmgt.dao.jdbc.category.CategoryFactory;
 import org.opennms.netmgt.dao.jdbc.distpoller.DistPollerFactory;
@@ -89,6 +91,7 @@ public class JdbcDaoTestConfig extends DaoTestConfig {
         SnmpInterfaceFactory.register(m_dataSource);
         OutageFactory.register(m_dataSource);
         EventFactory.register(m_dataSource);
+        AgentFactory.register(m_dataSource);
         
         return new DataSourceTransactionManager(m_dataSource);
     }
@@ -131,6 +134,10 @@ public class JdbcDaoTestConfig extends DaoTestConfig {
     protected OutageDao createOutageDao() {
         return new OutageDaoJdbc(m_dataSource);
     }
+
+	protected AgentDao createAgentDao() {
+		return new AgentDaoJdbc(m_dataSource);
+	}
 
     protected EventDao createEventDao() {
         return new EventDaoJdbc(m_dataSource);

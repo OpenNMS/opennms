@@ -178,13 +178,15 @@ public class HibernateDaoTestConfig extends DaoTestConfig {
 	}
 
     protected OutageDao createOutageDao() {
-        // TODO Auto-generated method stub
-        return null;
+        throw new RuntimeException("OutageDao is not yet implemented in hibernate!");
     }
 
 	protected EventDao createEventDao() {
-		// TODO Auto-generated method stub
-		return null;
+        throw new RuntimeException("EventDao is not yet implemented in hibernate!");
+	}
+	
+	protected AgentDao createAgentDao() {
+        throw new RuntimeException("AgentDao is not yet implemented in hibernate!");
 	}
     
 

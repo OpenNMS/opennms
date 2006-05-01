@@ -14,7 +14,7 @@ public class FindAllAgents extends AgentMappingQuery {
         		"WHERE " +
         		"node.nodeid = ipInterface.nodeid " +
         		"and ipInterface.nodeid = ifservices.nodeid " +
-        		"and ipInterface.ipAddr = ifservice.ipAddr " +
+        		"and ipInterface.ipAddr = ifservices.ipAddr " +
         		"and ipInterface.ifIndex = ifservices.ifIndex " +
         		"and ipInterface.isSnmpPrimary = 'P' " +
         	"");  
