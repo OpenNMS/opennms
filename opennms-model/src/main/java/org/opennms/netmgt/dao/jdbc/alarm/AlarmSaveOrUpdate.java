@@ -46,7 +46,6 @@ public class AlarmSaveOrUpdate extends SqlUpdate {
         setSql(updateStmt);
         
         // assumes that the update and insert statements have the same parms in the same order
-        declareParameter(new SqlParameter(Types.INTEGER));  //alarmID
         declareParameter(new SqlParameter(Types.VARCHAR));  //eventUei
         declareParameter(new SqlParameter(Types.INTEGER));  //dpName
         declareParameter(new SqlParameter(Types.INTEGER));  //nodeID
@@ -71,12 +70,12 @@ public class AlarmSaveOrUpdate extends SqlUpdate {
         declareParameter(new SqlParameter(Types.VARCHAR));  //alarmAckUser
         declareParameter(new SqlParameter(Types.TIMESTAMP));  //alarmAckTime
         declareParameter(new SqlParameter(Types.VARCHAR));  //clearUei
+        declareParameter(new SqlParameter(Types.INTEGER));  //alarmID
         compile();
     }
     
     public int persist(OnmsAlarm alarm) {
         Object[] parms = new Object[] {
-        		alarm.getId(), //alarmID
         		alarm.getUei(), //eventUei
         		alarm.getDistPoller(), //dpName
         		alarm.getNode(), //nodeID
@@ -100,7 +99,8 @@ public class AlarmSaveOrUpdate extends SqlUpdate {
         		alarm.getSuppressedTime(), //suppressedTime
         		alarm.getAlarmAckUser(), //alarmAckUser
         		alarm.getAlarmAckTime(), //alarmAckTime
-        		alarm.getClearUei() }; //clearUei        
+        		alarm.getClearUei(), //clearUei        
+        		alarm.getId()}; //alarmID
         return update(parms);
     }    
 

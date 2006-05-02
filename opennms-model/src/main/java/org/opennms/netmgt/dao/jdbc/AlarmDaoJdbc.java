@@ -78,6 +78,8 @@ public class AlarmDaoJdbc extends AbstractDaoJdbc implements AlarmDao {
     }
 
     public OnmsAlarm get(Integer id) {
+        if (id == null)
+            throw new IllegalArgumentException("cannot retrieve null alarm");
         if (Cache.retrieve(OnmsAlarm.class, id) == null)
             return new FindByAlarmId(getDataSource()).findUnique(id);
         else

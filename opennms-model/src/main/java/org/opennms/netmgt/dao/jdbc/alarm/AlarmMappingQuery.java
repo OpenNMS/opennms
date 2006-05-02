@@ -49,31 +49,31 @@ public class AlarmMappingQuery extends MappingSqlQuery {
 
     public AlarmMappingQuery(DataSource ds, String clause) {
         super(ds, "SELECT " + 
-        		"a.alarmID as alarmID, \n" + 
-        		"a.eventUei as eventUei, \n" + 
-        		"a.dpName as dpName, \n" + 
-        		"a.nodeID as nodeID, \n" + 
-        		"a.ipaddr as ipaddr, \n" + 
-        		"a.serviceID as serviceID, \n" + 
-        		"a.reductionKey as reductionKey, \n" + 
-        		"a.alarmType as alarmType, \n" + 
-        		"a.counter as counter, \n" + 
-        		"a.severity as severity, \n" + 
-        		"a.lastEventID as lastEventID, \n" + 
-        		"a.firstEventTime as firstEventTime, \n" + 
-        		"a.lastEventTime as lastEventTime, \n" + 
-        		"a.description as description, \n" + 
-        		"a.logMsg as logMsg, \n" + 
-        		"a.operInstruct as operInstruct, \n" + 
-        		"a.tticketID as tticketID, \n" + 
-        		"a.tticketState as tticketState, \n" + 
-        		"a.mouseOverText as mouseOverText, \n" + 
-        		"a.suppressedUntil as suppressedUntil, \n" + 
-        		"a.suppressedUser as suppressedUser, \n" + 
-        		"a.suppressedTime as suppressedTime, \n" + 
-        		"a.alarmAckUser as alarmAckUser, \n" + 
-        		"a.alarmAckTime as alarmAckTime, \n" + 
-        		"a.clearUei as clearUei " +clause);
+        		"a.eventUei as eventUei, " + 
+        		"a.dpName as dpName, " + 
+        		"a.nodeID as nodeID, " + 
+        		"a.ipaddr as ipaddr, " + 
+        		"a.serviceID as serviceID, " + 
+        		"a.reductionKey as reductionKey, " + 
+        		"a.alarmType as alarmType, " + 
+        		"a.counter as counter, " + 
+        		"a.severity as severity, " + 
+        		"a.lastEventID as lastEventID, " + 
+        		"a.firstEventTime as firstEventTime, " + 
+        		"a.lastEventTime as lastEventTime, " + 
+        		"a.description as description, " + 
+        		"a.logMsg as logMsg, " + 
+        		"a.operInstruct as operInstruct, " + 
+        		"a.tticketID as tticketID, " + 
+        		"a.tticketState as tticketState, " + 
+        		"a.mouseOverText as mouseOverText, " + 
+        		"a.suppressedUntil as suppressedUntil, " + 
+        		"a.suppressedUser as suppressedUser, " + 
+        		"a.suppressedTime as suppressedTime, " + 
+        		"a.alarmAckUser as alarmAckUser, " + 
+        		"a.alarmAckTime as alarmAckTime, " + 
+        		"a.clearUei as clearUei, " +
+			"a.alarmID as alarmID" +clause);
     }
     
     public DataSource getDataSource() {

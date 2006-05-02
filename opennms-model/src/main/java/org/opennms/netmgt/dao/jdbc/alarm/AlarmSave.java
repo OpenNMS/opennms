@@ -12,12 +12,11 @@ public class AlarmSave extends AlarmSaveOrUpdate {
     // DO NOT CHANGE THIS STATEMENT UNLESS YOU CHANGE THE UPDATE STATEMENT AND THE
     // PARAMETERS IN AlarmSaveOrUpdate
     private static final String insertStmt = "insert into alarms (" +
-    
-    "alarmID, eventUei, dpName, nodeID, ipaddr,\n" + 
-    "serviceID, reductionKey, alarmType, counter, severity,\n" + 
-    "lastEventID, firstEventTime, lastEventTime, description, logMsg,\n" + 
-    "operInstruct, tticketID, tticketState, mouseOverText, suppressedUntil,\n" + 
-    "suppressedUser, suppressedTime, alarmAckUser, alarmAckTime, clearUei\n" + 
+    "eventUei, dpName, nodeID, ipaddr, serviceID, " + 
+    "reductionKey, alarmType, counter, severity, lastEventID, " + 
+    "firstEventTime, lastEventTime, description, logMsg, operInstruct, " + 
+    "tticketID, tticketState, mouseOverText, suppressedUntil, suppressedUser, " + 
+    "suppressedTime, alarmAckUser, alarmAckTime, clearUei, alarmID " + 
     "values (" + 
     "?, ?, ?, ?, ?,\n" + 
     "?, ?, ?, ?, ?,\n" + 
