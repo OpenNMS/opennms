@@ -1,7 +1,6 @@
 package org.opennms.netmgt.dao.castor.collector;
 
 import java.io.IOException;
-import java.lang.reflect.Proxy;
 
 import junit.framework.TestCase;
 
@@ -15,8 +14,8 @@ public class DataCollectionConfigFileTest extends TestCase {
 
     protected void setUp() throws Exception {
         super.setUp();
-        m_invocationAnticipator = new InvocationAnticipator();
-        m_visitor = (DataCollectionVisitor)Proxy.newProxyInstance(getClass().getClassLoader(), new Class[] { DataCollectionVisitor.class }, m_invocationAnticipator);
+        m_invocationAnticipator = new InvocationAnticipator(DataCollectionVisitor.class);
+        m_visitor = (DataCollectionVisitor)m_invocationAnticipator.getProxy();
     }
 
     protected void tearDown() throws Exception {
@@ -24,6 +23,7 @@ public class DataCollectionConfigFileTest extends TestCase {
     }
     
     public void testVisitTop() throws IOException {
+        
         ClassPathResource resource = new ClassPathResource("/datacollectionconfigfile-testdata.xml");
         DataCollectionConfigFile configFile = new DataCollectionConfigFile(resource.getFile());
         
