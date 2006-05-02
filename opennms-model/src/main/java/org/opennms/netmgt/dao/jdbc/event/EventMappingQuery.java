@@ -103,9 +103,9 @@ public class EventMappingQuery extends MappingSqlQuery {
         event.setDistPoller(distPoller);
 
         
-        Integer alarmId = new Integer(rs.getInt("alarmId"));
-        OnmsAlarm alarm = (OnmsAlarm)Cache.obtain(OnmsAlarm.class, alarmId);
-        event.setAlarm(alarm);
+//        Integer alarmId = new Integer(rs.getInt("alarmId"));
+//        OnmsAlarm alarm = (OnmsAlarm)Cache.obtain(OnmsAlarm.class, alarmId);
+//        event.setAlarm(alarm);
         
         Integer serviceId = new Integer(rs.getInt("serviceId"));
         OnmsMonitoredService service = (OnmsMonitoredService)Cache.obtain(OnmsMonitoredService.class, serviceId);
