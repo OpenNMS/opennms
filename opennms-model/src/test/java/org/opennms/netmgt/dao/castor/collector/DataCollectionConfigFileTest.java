@@ -1,4 +1,4 @@
-package org.opennms.netmgt.dao.castor.collectd;
+package org.opennms.netmgt.dao.castor.collector;
 
 import java.io.IOException;
 
@@ -36,6 +36,8 @@ public class DataCollectionConfigFileTest extends TestCase {
         DataCollectionConfigFile configFile = new DataCollectionConfigFile(resource.getFile());
         
         TopLevelCountingVisitor visitor = new TopLevelCountingVisitor();
+        
+        configFile.visit(visitor);
         
         assertTrue(visitor.visited);
         assertTrue(visitor.completed);
