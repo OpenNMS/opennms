@@ -33,12 +33,16 @@ public class EventDaoTest extends AbstractDaoTestCase {
         OnmsIpInterface iface = (OnmsIpInterface)node.getIpInterfaces().iterator().next();
         OnmsMonitoredService service = (OnmsMonitoredService)iface.getMonitoredServices().iterator().next();
         event.setNode(node);
-	    event.setService(service);
+	    event.setServiceType(service.getServiceType());
         OnmsAlarm alarm = new OnmsAlarm();
 	    event.setAlarm(alarm);
+        event.setIpAddr(iface.getIpAddress());
         getEventDao().save(event);
-        //it works we're so smart! hehe
-        event = getEventDao().load(event.getId());
-        assertEquals("uei://org/opennms/test/EventDaoTest", event.getEventUei());
+       
+        OnmsEvent newEvent = getEventDao().load(event.getId());
+        assertEquals("uei://org/opennms/test/EventDaoTest", newEvent.getEventUei());
+        assertNotNull(newEvent.getServiceType());
+        assertEquals(service.getNodeId(), newEvent.getNode().getId());
+        assertEquals(event.getIpAddr(), newEvent.getIpAddr());
     }
 }

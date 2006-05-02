@@ -42,7 +42,7 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	private String m_eventSnmpHost;
 
 	/** nullable persistent field */
-	private OnmsMonitoredService m_service;
+	private OnmsServiceType m_serviceType;
 
 	/** nullable persistent field */
 	private String m_eventSnmp;
@@ -131,7 +131,7 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	/** full constructor */
 	public OnmsEvent(Integer eventid, String eventuei, Date eventtime,
 			String eventhost, String eventsource, String ipaddr,
-			OnmsDistPoller distPoller, String eventsnmphost, OnmsMonitoredService service,
+			OnmsDistPoller distPoller, String eventsnmphost, OnmsServiceType service,
 			String eventsnmp, String eventparms, Date eventcreatetime,
 			String eventdescr, String eventloggroup, String eventlogmsg,
 			Integer eventseverity, String eventpathoutage, String eventcorrelation,
@@ -152,7 +152,7 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 		m_ipAddr = ipaddr;
 		m_distPoller = distPoller;
 		m_eventSnmpHost = eventsnmphost;
-		m_service = service;
+		m_serviceType = service;
 		m_eventSnmp = eventsnmp;
 		m_eventParms = eventparms;
 		m_eventCreateTime = eventcreatetime;
@@ -310,12 +310,12 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	 * @hibernate.property column="serviceid" length="4"
 	 * 
 	 */
-	public OnmsMonitoredService getService() {
-		return m_service;
+	public OnmsServiceType getServiceType() {
+		return m_serviceType;
 	}
 
-	public void setService(OnmsMonitoredService service) {
-		m_service = service;
+	public void setServiceType(OnmsServiceType serviceType) {
+		m_serviceType = serviceType;
 	}
 
 	/**

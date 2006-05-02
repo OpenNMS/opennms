@@ -38,11 +38,16 @@ import javax.sql.DataSource;
 
 import org.opennms.netmgt.dao.jdbc.Cache;
 import org.opennms.netmgt.dao.jdbc.JdbcSet;
+import org.opennms.netmgt.dao.jdbc.ipif.IpInterfaceId;
+import org.opennms.netmgt.dao.jdbc.monsvc.MonitoredServiceId;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsDistPoller;
+import org.opennms.netmgt.model.OnmsEntity;
 import org.opennms.netmgt.model.OnmsEvent;
+import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.OnmsServiceType;
 import org.springframework.jdbc.object.MappingSqlQuery;
 
 public class EventMappingQuery extends MappingSqlQuery {
@@ -94,22 +99,28 @@ public class EventMappingQuery extends MappingSqlQuery {
         LazyEvent event = (LazyEvent)Cache.obtain(OnmsEvent.class, id);
         event.setLoaded(true);
         
-        Integer nodeId = new Integer(rs.getInt("nodeID"));
-        OnmsNode node = (OnmsNode)Cache.obtain(OnmsNode.class, nodeId);
+//        String ipAddr = rs.getString("ipAddr");
+//        
+//        OnmsEntity entity = getEntity(nodeId, ipAddr, null, serviceId);
+
+        
+        Integer nodeId = (Integer)rs.getObject("nodeID");
+        OnmsNode node = (nodeId == null) ? null : (OnmsNode)Cache.obtain(OnmsNode.class, nodeId);
         event.setNode(node);
         
+
         String dpName = rs.getString("eventDpName");
-        OnmsDistPoller distPoller = (OnmsDistPoller)Cache.obtain(OnmsDistPoller.class, dpName);
+        OnmsDistPoller distPoller = (dpName == null) ? null : (OnmsDistPoller)Cache.obtain(OnmsDistPoller.class, dpName);
         event.setDistPoller(distPoller);
 
         
-        Integer alarmId = new Integer(rs.getInt("alarmId"));
-        OnmsAlarm alarm = (alarmId.intValue() == 0) ? null : (OnmsAlarm)Cache.obtain(OnmsAlarm.class, alarmId);
+        Integer alarmId = (Integer)rs.getObject("alarmId");
+        OnmsAlarm alarm = alarmId == null ? null : (OnmsAlarm)Cache.obtain(OnmsAlarm.class, alarmId);
         event.setAlarm(alarm);
         
-        Integer serviceId = new Integer(rs.getInt("serviceId"));
-        OnmsMonitoredService service = (serviceId.intValue() == 0) ? null : (OnmsMonitoredService)Cache.obtain(OnmsMonitoredService.class, serviceId);
-        event.setService(service);
+        Integer serviceId = (Integer)rs.getObject("serviceId");
+        OnmsServiceType service = (serviceId == null) ? null : (OnmsServiceType)Cache.obtain(OnmsServiceType.class, serviceId);
+        event.setServiceType(service);
 
         event.setEventUei(rs.getString("eventUei"));
         event.setEventTime(rs.getDate("eventTime"));
@@ -145,6 +156,20 @@ public class EventMappingQuery extends MappingSqlQuery {
         return event;
     }
     
+    private OnmsEntity getEntity(Integer nodeId, String ipAddr, Integer ifIndex, Integer serviceId) {
+        
+        if (ipAddr == null && serviceId == null) {
+            return (OnmsNode)Cache.obtain(OnmsNode.class, nodeId);
+        } else if (serviceId == null)
+        {
+            IpInterfaceId ifaceId = new IpInterfaceId(nodeId, ipAddr, ifIndex);
+            return (OnmsIpInterface)Cache.obtain(OnmsIpInterface.class, ifaceId);
+        } else {
+            MonitoredServiceId monSvcId = new MonitoredServiceId(nodeId, ipAddr, ifIndex, serviceId);
+            return (OnmsMonitoredService)Cache.obtain(OnmsMonitoredService.class, monSvcId);
+        }
+    }
+
     public OnmsEvent findUnique() {
         return findUnique((Object[])null);
     }

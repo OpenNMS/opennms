@@ -94,7 +94,7 @@ public class EventSaveOrUpdate extends SqlUpdate {
                 event.getIpAddr(),   //ipAddr
                 event.getDistPoller().getName(),   //eventDpName
                 event.getEventSnmpHost(),   //eventSnmphost
-                event.getService().getId(),   //serviceID
+                event.getServiceType().getId(),   //serviceID
                 event.getEventSnmp(),   //eventSnmp
                 event.getEventParms(),   //eventParms
                 event.getEventCreateTime(),   //eventCreateTime
