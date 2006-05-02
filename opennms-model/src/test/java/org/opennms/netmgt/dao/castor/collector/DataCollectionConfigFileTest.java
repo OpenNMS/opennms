@@ -1,30 +1,22 @@
 package org.opennms.netmgt.dao.castor.collector;
 
 import java.io.IOException;
-
-import org.opennms.netmgt.config.datacollection.DatacollectionConfig;
-import org.opennms.netmgt.dao.castor.collector.DataCollectionConfigFile;
-import org.opennms.netmgt.dao.castor.collector.DataCollectionVisitor;
-import org.springframework.core.io.ClassPathResource;
+import java.lang.reflect.Proxy;
 
 import junit.framework.TestCase;
 
+import org.opennms.netmgt.dao.castor.InvocationAnticipator;
+import org.springframework.core.io.ClassPathResource;
+
 public class DataCollectionConfigFileTest extends TestCase {
-
-    private final class TopLevelCountingVisitor implements DataCollectionVisitor {
-        boolean visited = false;
-        boolean completed = false;
-        public void completeDataCollectionConfig(DatacollectionConfig dataCollectionConfig) {
-            completed = true;
-        }
-
-        public void visitDataCollectionConfig(DatacollectionConfig dataCollectionConfig) {
-            visited = true;
-        }
-    }
+    
+    private InvocationAnticipator m_invocationAnticipator;
+    private DataCollectionVisitor m_visitor;
 
     protected void setUp() throws Exception {
         super.setUp();
+        m_invocationAnticipator = new InvocationAnticipator();
+        m_visitor = (DataCollectionVisitor)Proxy.newProxyInstance(getClass().getClassLoader(), new Class[] { DataCollectionVisitor.class }, m_invocationAnticipator);
     }
 
     protected void tearDown() throws Exception {
@@ -32,15 +24,18 @@ public class DataCollectionConfigFileTest extends TestCase {
     }
     
     public void testVisitTop() throws IOException {
-        ClassPathResource resource = new ClassPathResource("/datacollection-config.xml");
+        ClassPathResource resource = new ClassPathResource("/datacollectionconfigfile-testdata.xml");
         DataCollectionConfigFile configFile = new DataCollectionConfigFile(resource.getFile());
         
-        TopLevelCountingVisitor visitor = new TopLevelCountingVisitor();
+        m_invocationAnticipator.anticipateCalls(1, "visitDataCollectionConfig");
+        m_invocationAnticipator.anticipateCalls(1, "completeDataCollectionConfig");
+        m_invocationAnticipator.anticipateCalls(1, "visitSnmpCollection");
+        m_invocationAnticipator.anticipateCalls(1, "completeSnmpCollection");
         
-        configFile.visit(visitor);
+        configFile.visit(m_visitor);
         
-        assertTrue(visitor.visited);
-        assertTrue(visitor.completed);
+        m_invocationAnticipator.verify();
+        
     }
 
 }

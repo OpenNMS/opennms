@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Iterator;
 
 import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
@@ -11,6 +12,7 @@ import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.datacollection.DatacollectionConfig;
+import org.opennms.netmgt.config.datacollection.SnmpCollection;
 
 public class DataCollectionConfigFile {
 	
@@ -23,10 +25,20 @@ public class DataCollectionConfigFile {
 	public void visit(DataCollectionVisitor visitor) {
         DatacollectionConfig dataCollectionConfig = getDataCollectionConfig();
         visitor.visitDataCollectionConfig(dataCollectionConfig);
+        
+        for (Iterator it = dataCollectionConfig.getSnmpCollectionCollection().iterator(); it.hasNext();) {
+            SnmpCollection snmpCollection = (SnmpCollection) it.next();
+            doVisit(snmpCollection, visitor);
+        }
         visitor.completeDataCollectionConfig(dataCollectionConfig);
     }
 	
-	private DatacollectionConfig getDataCollectionConfig() {
+	private void doVisit(SnmpCollection snmpCollection, DataCollectionVisitor visitor) {
+        visitor.visitSnmpCollection(snmpCollection);
+        visitor.completeSnmpCollection(snmpCollection);
+    }
+
+    private DatacollectionConfig getDataCollectionConfig() {
 		FileReader in = null;
 		try {
 			in = new FileReader(m_file);
