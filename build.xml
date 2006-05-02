@@ -1462,6 +1462,7 @@ OpenNMS as part of the post-install.
    debug="${compiler.debug}"
    optimize="${compiler.optimize}"
    verbose="${compiler.verbose}"
+   target="1.4" 
    deprecation="${compiler.deprecation}">
    <src>
     <path refid="test.java.path"/>
