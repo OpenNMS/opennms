@@ -1265,6 +1265,7 @@ OpenNMS as part of the post-install.
 	 optimize="${compiler.optimize}"
 	 verbose="${compiler.verbose}"
 	 classpathref="libraries.java.path"
+   target="1.4" 
 	 deprecation="${compiler.deprecation}">
    <src>
     <path refid="sources.java.path"/>
@@ -1426,6 +1427,7 @@ OpenNMS as part of the post-install.
 	  debug="${compiler.debug}"
 	  optimize="${compiler.optimize}"
 	  verbose="${compiler.verbose}"
+    target="1.4"
 	  deprecation="${compiler.deprecation}">
      <src path="${build.dir}/jsp-source"/>
      <classpath>
@@ -1441,6 +1443,7 @@ OpenNMS as part of the post-install.
 	 debug="${compiler.debug}"
 	 optimize="${compiler.optimize}"
 	 verbose="${compiler.verbose}"
+   target="1.4" 
 	 deprecation="${compiler.deprecation}">
    <src>
     <path refid="sources.java.path"/>
