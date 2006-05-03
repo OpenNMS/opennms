@@ -195,13 +195,13 @@ table.data th { color:#666; text-align:left; padding:5px }
             <div class="dataValue normal"><xsl:value-of select="format-number(@pctValue,'0.00')"/></div>
             </td>
              </xsl:when>
-             <xsl:when test="../../../../../warning >= @pctValue">
+             <xsl:when test="../../../../../warning >= number(@pctValue)">
                <td class="critical">
             <div class="date"><xsl:value-of select="@date"/></div>
             <div class="dataValue normal"><xsl:value-of select="format-number(@pctValue,'0.00')"/></div>
             </td>
              </xsl:when>
-             <xsl:when test="../../../../../normal >= @pctValue">
+             <xsl:when test="../../../../../normal >= number(@pctValue)">
                <td class="warning">
             <div class="date"><xsl:value-of select="@date"/></div>
             <div class="dataValue normal"><xsl:value-of select="format-number(@pctValue,'0.00')"/></div>

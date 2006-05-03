@@ -230,14 +230,14 @@ xmlns:fo="http://www.w3.org/1999/XSL/Format">
      </fo:table-cell>
     </xsl:when>
     <!-- value is below warning level so colour it red -->
-    <xsl:when test="../../../../../warning >= @pctValue">
+    <xsl:when test="../../../../../warning >= number(@pctValue)">
      <fo:table-cell xsl:use-attribute-sets = "critical-cell-attrs">
       <fo:block xsl:use-attribute-sets = "date-attrs"><xsl:value-of select="@date"/></fo:block>
       <fo:block xsl:use-attribute-sets = "pct-val-attrs"><xsl:value-of select="format-number(@pctValue,'0.00')"/></fo:block>
      </fo:table-cell>
     </xsl:when>
      <!-- value is below normal level so colour it yellow -->
-    <xsl:when test="../../../../../normal >= @pctValue">
+    <xsl:when test="../../../../../normal >= number(@pctValue)">
      <fo:table-cell xsl:use-attribute-sets = "warning-cell-attrs">
       <fo:block xsl:use-attribute-sets = "date-attrs"><xsl:value-of select="@date"/></fo:block>
       <fo:block xsl:use-attribute-sets = "pct-val-attrs"><xsl:value-of select="format-number(@pctValue,'0.00')"/></fo:block>

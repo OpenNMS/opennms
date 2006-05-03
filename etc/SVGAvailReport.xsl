@@ -1014,7 +1014,7 @@ xmlns:svg="http://www.w3.org/2000/svg">
      </svg:circle>
     </xsl:when>
     <!-- critical value -->
-    <xsl:when test="$warning >= @pctValue">
+    <xsl:when test="$warning >= number(@pctValue)">
      <!-- add red circle for critical data  -->
      <svg:circle>
      <xsl:attribute name="fill">red</xsl:attribute>
@@ -1040,7 +1040,7 @@ xmlns:svg="http://www.w3.org/2000/svg">
      </svg:text>
     </xsl:when>
     <!-- warning value -->
-    <xsl:when test="$normal >= @pctValue">
+    <xsl:when test="$normal >= number(@pctValue)">
      <!-- add yellow cricle for warning data  -->
      <svg:circle>
      <xsl:attribute name="fill">yellow</xsl:attribute>
