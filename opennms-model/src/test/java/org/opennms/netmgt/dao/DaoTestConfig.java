@@ -57,6 +57,8 @@ public abstract class DaoTestConfig {
     protected abstract EventDao createEventDao();
     
     protected abstract AgentDao createAgentDao();
+    
+    protected abstract AlarmDao createAlarmDao();
 
     protected abstract void tearDown();
 
@@ -73,6 +75,7 @@ public abstract class DaoTestConfig {
     private OutageDao m_outageDao;
 	private EventDao m_eventDao;
 	private AgentDao m_agentDao;
+    private AlarmDao m_alarmDao;
 
     public DistPollerDao getDistPollerDao() {
         if (m_dpDao == null) {
@@ -158,6 +161,13 @@ public abstract class DaoTestConfig {
 		}
 		return m_agentDao;
 	}
+
+    public AlarmDao getAlarmDao() {
+        if (m_alarmDao == null) {
+            m_alarmDao = createAlarmDao();
+        }
+        return m_alarmDao;
+    }
 
 
 }

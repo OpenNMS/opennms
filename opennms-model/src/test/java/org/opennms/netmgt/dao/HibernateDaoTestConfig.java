@@ -188,6 +188,10 @@ public class HibernateDaoTestConfig extends DaoTestConfig {
 	protected AgentDao createAgentDao() {
         throw new RuntimeException("AgentDao is not yet implemented in hibernate!");
 	}
+
+    protected AlarmDao createAlarmDao() {
+        throw new RuntimeException("AlarmDao is not yet implemented in hibernate");
+    }
     
 
 }

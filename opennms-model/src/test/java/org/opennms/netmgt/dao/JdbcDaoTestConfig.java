@@ -35,6 +35,7 @@ import javax.sql.DataSource;
 
 import org.opennms.netmgt.dao.AbstractDaoTestCase.DB;
 import org.opennms.netmgt.dao.jdbc.AgentDaoJdbc;
+import org.opennms.netmgt.dao.jdbc.AlarmDaoJdbc;
 import org.opennms.netmgt.dao.jdbc.AssetRecordDaoJdbc;
 import org.opennms.netmgt.dao.jdbc.CategoryDaoJdbc;
 import org.opennms.netmgt.dao.jdbc.DistPollerDaoJdbc;
@@ -46,6 +47,7 @@ import org.opennms.netmgt.dao.jdbc.OutageDaoJdbc;
 import org.opennms.netmgt.dao.jdbc.ServiceTypeDaoJdbc;
 import org.opennms.netmgt.dao.jdbc.SnmpInterfaceDaoJdbc;
 import org.opennms.netmgt.dao.jdbc.agent.AgentFactory;
+import org.opennms.netmgt.dao.jdbc.alarm.AlarmFactory;
 import org.opennms.netmgt.dao.jdbc.asset.AssetRecordFactory;
 import org.opennms.netmgt.dao.jdbc.category.CategoryFactory;
 import org.opennms.netmgt.dao.jdbc.distpoller.DistPollerFactory;
@@ -92,6 +94,7 @@ public class JdbcDaoTestConfig extends DaoTestConfig {
         OutageFactory.register(m_dataSource);
         EventFactory.register(m_dataSource);
         AgentFactory.register(m_dataSource);
+        AlarmFactory.register(m_dataSource);
         
         return new DataSourceTransactionManager(m_dataSource);
     }
@@ -147,6 +150,10 @@ public class JdbcDaoTestConfig extends DaoTestConfig {
         if (!m_createDb) return;
         OnmsDistPoller distPoller = getDistPollerDao().get("localhost");
         getDistPollerDao().delete(distPoller); 
+    }
+
+    protected AlarmDao createAlarmDao() {
+        return new AlarmDaoJdbc(m_dataSource);
     }
 
 }

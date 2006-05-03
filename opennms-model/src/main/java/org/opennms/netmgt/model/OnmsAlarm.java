@@ -51,9 +51,6 @@ public class OnmsAlarm implements Serializable {
     /** persistent field */
     private Date m_firstEventTime;
 
-    /** persistent field */
-    private Date m_lastEventTime;
-
     /** nullable persistent field */
     private String m_description;
 
@@ -94,7 +91,7 @@ public class OnmsAlarm implements Serializable {
     private org.opennms.netmgt.model.OnmsEvent m_lastEvent;
 
     /** full constructor */
-    public OnmsAlarm(Integer alarmid, String eventuei, OnmsDistPoller distPoller, OnmsNode node, String ipaddr, OnmsMonitoredService service, String reductionkey, Integer alarmtype, Integer counter, Integer severity, Date firsteventtime, Date lasteventtime, String description, String logmsg, String operinstruct, String tticketid, Integer tticketstate, String mouseovertext, Date suppresseduntil, String suppresseduser, Date suppressedtime, String alarmackuser, Date alarmacktime, String clearuei, org.opennms.netmgt.model.OnmsEvent event) {
+    public OnmsAlarm(Integer alarmid, String eventuei, OnmsDistPoller distPoller, OnmsNode node, String ipaddr, OnmsMonitoredService service, String reductionkey, Integer alarmtype, Integer counter, Integer severity, Date firsteventtime, String description, String logmsg, String operinstruct, String tticketid, Integer tticketstate, String mouseovertext, Date suppresseduntil, String suppresseduser, Date suppressedtime, String alarmackuser, Date alarmacktime, String clearuei, org.opennms.netmgt.model.OnmsEvent event) {
         this.m_id = alarmid;
         this.m_uei = eventuei;
         this.m_distPoller = distPoller;
@@ -106,7 +103,6 @@ public class OnmsAlarm implements Serializable {
         this.m_counter = counter;
         this.m_severity = severity;
         this.m_firstEventTime = firsteventtime;
-        this.m_lastEventTime = lasteventtime;
         this.m_description = description;
         this.m_logMsg = logmsg;
         this.m_operInstruct = operinstruct;
@@ -127,14 +123,13 @@ public class OnmsAlarm implements Serializable {
     }
 
     /** minimal constructor */
-    public OnmsAlarm(Integer alarmid, String eventuei, OnmsDistPoller distPoller, Integer counter, Integer severity, Date firsteventtime, Date lasteventtime, org.opennms.netmgt.model.OnmsEvent event) {
+    public OnmsAlarm(Integer alarmid, String eventuei, OnmsDistPoller distPoller, Integer counter, Integer severity, Date firsteventtime, OnmsEvent event) {
         this.m_id = alarmid;
         this.m_uei = eventuei;
         this.m_distPoller = distPoller;
         this.m_counter = counter;
         this.m_severity = severity;
         this.m_firstEventTime = firsteventtime;
-        this.m_lastEventTime = lasteventtime;
         this.m_lastEvent = event;
     }
 
@@ -193,7 +188,7 @@ public class OnmsAlarm implements Serializable {
         return this.m_node;
     }
 
-    public void setNodeId(OnmsNode node) {
+    public void setNode(OnmsNode node) {
         this.m_node = node;
     }
 
@@ -297,21 +292,6 @@ public class OnmsAlarm implements Serializable {
 
     public void setFirstEventTime(Date firsteventtime) {
         this.m_firstEventTime = firsteventtime;
-    }
-
-    /** 
-     *            @hibernate.property
-     *             column="lasteventtime"
-     *             length="8"
-     *             not-null="true"
-     *         
-     */
-    public Date getLastEventTime() {
-        return this.m_lastEventTime;
-    }
-
-    public void setLastEventTime(Date lasteventtime) {
-        this.m_lastEventTime = lasteventtime;
     }
 
     /** 

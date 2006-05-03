@@ -88,7 +88,7 @@ public class AlarmMappingQuery extends MappingSqlQuery {
         
         Integer nodeId = new Integer(rs.getInt("nodeID"));
         OnmsNode node = (OnmsNode)Cache.obtain(OnmsNode.class, nodeId);
-        alarm.setNodeId(node);
+        alarm.setNode(node);
         
         String dpName = rs.getString("dpName");
         OnmsDistPoller distPoller = (OnmsDistPoller)Cache.obtain(OnmsDistPoller.class, dpName);
@@ -110,7 +110,6 @@ public class AlarmMappingQuery extends MappingSqlQuery {
         alarm.setDescription(rs.getString("description"));
         alarm.setFirstEventTime(rs.getTimestamp("firstEventTime"));
         alarm.setIpAddr(rs.getString("ipAddr"));
-        alarm.setLastEventTime(rs.getTimestamp("lastEventTime"));
         alarm.setLogMsg(rs.getString("logMsg"));
         alarm.setMouseOverText(rs.getString("mouseOverText"));
         alarm.setOperInstruct(rs.getString("operInstruct"));

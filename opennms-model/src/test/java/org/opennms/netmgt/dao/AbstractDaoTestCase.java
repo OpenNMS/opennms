@@ -326,6 +326,9 @@ public class AbstractDaoTestCase extends TestCase {
     protected AgentDao getAgentDao() {
     	return m_testConfig.getAgentDao();
     }
+    protected AlarmDao getAlarmDao() {
+        return m_testConfig.getAlarmDao();
+    }
     private void populateDB(DistPollerDao dao) {
         //OnmsDistPoller distPoller = dao.load("localhost");
 
