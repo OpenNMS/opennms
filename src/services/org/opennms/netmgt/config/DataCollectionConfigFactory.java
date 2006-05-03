@@ -689,7 +689,25 @@ public final class DataCollectionConfigFactory {
         return m_config.getRrdRepository();
     }
 
-	/**
+	public String getRrdPath() {
+        String rrdPath = getRrdRepository();
+    	if (rrdPath == null) {
+    		throw new RuntimeException("Configuration error, failed to "
+    				+ "retrieve path to RRD repository.");
+    	}
+    
+    	/*
+    	 * TODO: make a path utils class that has the below in it strip the
+    	 * File.separator char off of the end of the path.
+    	 */
+    	if (rrdPath.endsWith(File.separator)) {
+    		rrdPath = rrdPath.substring(0, (rrdPath.length() - File.separator.length()));
+    	}
+        
+        return rrdPath;
+    }
+
+    /**
 	 * This method is responsible for building a list of RRDDataSource objects
 	 * from the provided list of MibObject objects.
 	 * 
