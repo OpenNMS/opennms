@@ -192,6 +192,10 @@ public class HibernateDaoTestConfig extends DaoTestConfig {
     protected AlarmDao createAlarmDao() {
         throw new RuntimeException("AlarmDao is not yet implemented in hibernate");
     }
+
+    protected NotificationDao createNotificationDao() {
+        throw new RuntimeException("NotificationDao is not yet implemented in hibernate");
+    }
     
 
 }

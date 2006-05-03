@@ -69,9 +69,6 @@ public class OnmsMonitoredService extends OnmsEntity implements Serializable {
         return m_ipInterface.getIpAddress();
     }
 
-    private void setIpAddress(String ipaddr) {
-    }
-
     /** 
      *                @hibernate.property
      *                 column="ifindex"
@@ -80,9 +77,6 @@ public class OnmsMonitoredService extends OnmsEntity implements Serializable {
      */
     public Integer getIfIndex() {
         return m_ipInterface.getIfIndex();
-    }
-
-    private void setIfIndex(Integer ifindex) {
     }
 
     /** 
@@ -187,9 +181,6 @@ public class OnmsMonitoredService extends OnmsEntity implements Serializable {
      */
     public Integer getNodeId() {
         return m_ipInterface.getNode().getId();
-    }
-
-    private void setNodeId(Integer nodeId) {
     }
 
     /** 

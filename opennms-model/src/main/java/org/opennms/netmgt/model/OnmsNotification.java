@@ -50,9 +50,6 @@ public class OnmsNotification extends OnmsEntity implements Serializable {
     private String m_queueId;
 
     /** persistent field */
-    private String m_eventUEI;
-
-    /** persistent field */
     private org.opennms.netmgt.model.OnmsEvent m_event;
 
     /** persistent field */
@@ -62,7 +59,7 @@ public class OnmsNotification extends OnmsEntity implements Serializable {
     private Set m_usersNotified;
 
     /** full constructor */
-    public OnmsNotification(Integer notifyId, String textMsg, String subject, String numericMsg, Date pageTime, Date respondTime, String answeredBy, OnmsIpInterface ipInterface, OnmsMonitoredService service, String queueId, String eventUEI, org.opennms.netmgt.model.OnmsEvent event, org.opennms.netmgt.model.OnmsNode node, Set usersNotified) {
+    public OnmsNotification(Integer notifyId, String textMsg, String subject, String numericMsg, Date pageTime, Date respondTime, String answeredBy, OnmsIpInterface ipInterface, OnmsMonitoredService service, String queueId, org.opennms.netmgt.model.OnmsEvent event, org.opennms.netmgt.model.OnmsNode node, Set usersNotified) {
         m_notifyId = notifyId;
         m_textMsg = textMsg;
         m_subject = subject;
@@ -73,7 +70,6 @@ public class OnmsNotification extends OnmsEntity implements Serializable {
         m_interface = ipInterface;
         m_service = service;
         m_queueId = queueId;
-        m_eventUEI = eventUEI;
         m_event = event;
         m_node = node;
         m_usersNotified = usersNotified;
@@ -84,10 +80,9 @@ public class OnmsNotification extends OnmsEntity implements Serializable {
     }
 
     /** minimal constructor */
-    public OnmsNotification(Integer notifyId, String textMsg, String eventUEI, org.opennms.netmgt.model.OnmsEvent event, org.opennms.netmgt.model.OnmsNode node, Set usersNotified) {
+    public OnmsNotification(Integer notifyId, String textMsg, org.opennms.netmgt.model.OnmsEvent event, org.opennms.netmgt.model.OnmsNode node, Set usersNotified) {
         m_notifyId = notifyId;
         m_textMsg = textMsg;
-        m_eventUEI = eventUEI;
         m_event = event;
         m_node = node;
         m_usersNotified = usersNotified;
@@ -233,21 +228,6 @@ public class OnmsNotification extends OnmsEntity implements Serializable {
     }
 
     /** 
-     *            @hibernate.property
-     *             column="eventuei"
-     *             length="256"
-     *             not-null="true"
-     *         
-     */
-    public String getEventUEI() {
-        return m_eventUEI;
-    }
-
-    public void setEventUEI(String eventuei) {
-        m_eventUEI = eventuei;
-    }
-
-    /** 
      *            @hibernate.many-to-one
      *             not-null="true"
      *            @hibernate.column name="eventid"         
@@ -307,9 +287,7 @@ public class OnmsNotification extends OnmsEntity implements Serializable {
     }
 
 	public void visit(EntityVisitor visitor) {
-		// TODO Auto-generated method stub
 		throw new RuntimeException("visitor method not implemented");
-	
 	}
 
 }
