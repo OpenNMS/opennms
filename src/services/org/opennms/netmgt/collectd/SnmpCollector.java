@@ -58,7 +58,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Category;
-import org.apache.log4j.Priority;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
@@ -176,7 +175,7 @@ public class SnmpCollector implements ServiceCollector {
 	 * XML file. "primary" = only primary SNMP interface should be collected and
 	 * stored "all" = all primary SNMP interfaces should be collected and stored
 	 */
-	private static String SNMP_STORAGE_PRIMARY = "primary";
+	static String SNMP_STORAGE_PRIMARY = "primary";
 
 	private static String SNMP_STORAGE_ALL = "all";
 
@@ -188,7 +187,7 @@ public class SnmpCollector implements ServiceCollector {
 	 * kept relatively small in order to communicate successfully with the
 	 * largest possible number of agents.
 	 */
-	private static int DEFAULT_MAX_VARS_PER_PDU = 30;
+	static int DEFAULT_MAX_VARS_PER_PDU = 30;
 
 	/**
 	 * Path to SNMP RRD file repository.
@@ -416,47 +415,9 @@ public class SnmpCollector implements ServiceCollector {
 	 *            interface belongs..
 	 */
 	public void initialize(CollectionInterface iface, Map parameters) {
-		new Initializer().execute(this, iface, parameters);
-	}
-
-	int getMaxVarsPerPdu(String collectionName) {
-		// Retrieve configured value for max number of vars per PDU
-		int maxVarsPerPdu = DataCollectionConfigFactory.getInstance()
-				.getMaxVarsPerPdu(collectionName);
-		if (maxVarsPerPdu == -1) {
-			if (log().isEnabledFor(Priority.WARN)) {
-				log().warn(
-						"initialize: Configuration error, failed to "
-								+ "retrieve max vars per pdu from collection: "
-								+ collectionName);
-			}
-			maxVarsPerPdu = DEFAULT_MAX_VARS_PER_PDU;
-		} else if (maxVarsPerPdu == 0) {
-			/*
-			 * Special case, zero indicates "no limit" on number of vars in a
-			 * single PDU...so set maxVarsPerPdu to maximum integer value:
-			 * Integer.MAX_VALUE. This is a lot easier than building in special
-			 * logic to handle a value of zero. Doubt anyone will attempt to
-			 * collect over 2 billion oids.
-			 */
-			maxVarsPerPdu = Integer.MAX_VALUE;
-		}
-		return maxVarsPerPdu;
-	}
-
-	String getStorageFlag(String collectionName) {
-		String storageFlag = DataCollectionConfigFactory.getInstance()
-				.getSnmpStorageFlag(collectionName);
-		if (storageFlag == null) {
-			if (log().isEnabledFor(Priority.WARN)) {
-				log().warn(
-						"initialize: Configuration error, failed to "
-								+ "retrieve SNMP storage flag for collection: "
-								+ collectionName);
-			}
-			storageFlag = SNMP_STORAGE_PRIMARY;
-		}
-		return storageFlag;
+        
+        iface.setCollection(getCollectionName(parameters));
+        iface.initialize();
 	}
 
 	/**
@@ -506,7 +467,7 @@ public class SnmpCollector implements ServiceCollector {
 
 				int ifCount = ifNumber.getIfNumber();
 
-				iface.saveIfCount(ifCount);
+				iface.setSavedIfCount(ifCount);
 
 				log().debug(
 						"collect: nodeId: " + iface.getNodeId()
@@ -609,6 +570,7 @@ public class SnmpCollector implements ServiceCollector {
 
 			SnmpAgentConfig agentConfig = SnmpPeerFactory.getInstance()
 					.getAgentConfig(address);
+            agentConfig.setMaxVarsPerPdu(iface.getMaxVarsPerPdu());
 
 			// now collect the data
 			SnmpWalker walker = SnmpUtils.createWalker(agentConfig,

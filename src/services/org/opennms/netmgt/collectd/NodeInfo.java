@@ -66,14 +66,6 @@ final class NodeInfo {
     	return m_iface;
     }
 
-    public int getNodeId() {
-        return m_iface.getNodeId();
-    }
-
-    public int getPrimarySnmpIfIndex() {
-        return m_iface.getIfIndex();
-    }
-
     public void setDsList(List dsList) {
         m_dsList = dsList;
     }
