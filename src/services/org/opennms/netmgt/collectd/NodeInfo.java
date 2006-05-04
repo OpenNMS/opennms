@@ -47,55 +47,35 @@ import org.opennms.netmgt.config.DataCollectionConfigFactory;
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
  */
 final class NodeInfo {
-    private List m_oidList;
-
-    private List m_dsList;
 
 	private CollectionInterface m_iface;
 
 	private String m_collectionName;
 
+    private List m_attrList;
+
     public NodeInfo(CollectionInterface iface, String collectionName) {
     	m_iface = iface;
     	m_collectionName = collectionName;
-    	loadOidList();
-    	loadDsList();
+    	loadAttributeList();
     }
     
     public CollectionInterface getCollectionInterface() {
     	return m_iface;
     }
 
-    public void setDsList(List dsList) {
-        m_dsList = dsList;
-    }
-
-    public void setOidList(List oidList) {
-        m_oidList = oidList;
-    }
-
-    public List getDsList() {
-        return m_dsList;
-    }
-
-    public List getOidList() {
-        return m_oidList;
-    }
-
-	void loadOidList() {
-		/*
+	void loadAttributeList() {
+        /*
 		 * Retrieve list of mib objects to be collected from the remote
 		 * agent which are to be stored in the node-level RRD file. These
 		 * objects pertain to the node itself not any individual interfaces.
 		 */
-		List oidList = DataCollectionConfigFactory.getInstance()
-				.getMibObjectList(m_collectionName, getCollectionInterface().getSysObjectId(),
-						getCollectionInterface().getHostAddress(), -1);
-		setOidList(oidList);
+        m_attrList = DataCollectionConfigFactory.getInstance().buildCollectionAttributes(m_collectionName, m_iface.getSysObjectId(), m_iface.getHostAddress(), -1);
+        
 	}
 
-	void loadDsList() {
-		List dsList = DataCollectionConfigFactory.buildDataSourceList(m_collectionName, getOidList());
-		setDsList(dsList);
-	}
+    public List getAttributeList() {
+        return m_attrList;
+    }
+
 } // end class

@@ -47,7 +47,6 @@ import org.opennms.netmgt.snmp.AggregateTracker;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpValue;
-import org.opennms.netmgt.snmp.SnmpWalker;
 
 /**
  * The SnmpNodeCollector class is responsible for performing the actual SNMP
@@ -78,8 +77,6 @@ public class SnmpNodeCollector extends AggregateTracker {
      */
     private String m_primaryIf;
 
-    private SnmpWalker m_walker;
-
     /**
      * The class constructor is used to initialize the collector and send out
      * the initial SNMP packet requesting data. The data is then received and
@@ -90,7 +87,7 @@ public class SnmpNodeCollector extends AggregateTracker {
      *            The list of object id's to be collected.
      */
     public SnmpNodeCollector(InetAddress address, List objList) {
-        super(MibObject.getCollectionTrackers(objList));
+        super(CollectionAttribute.getCollectionTrackers(objList));
         
         m_primaryIf = address.getHostAddress();
         m_collectorEntry = new SNMPCollectorEntry(objList);

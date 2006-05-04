@@ -31,7 +31,7 @@
 //
 package org.opennms.netmgt.collectd;
 
-public class CollectionWarning extends Exception {
+public class CollectionWarning extends CollectionError {
 
     public CollectionWarning() {
         super();
@@ -47,6 +47,14 @@ public class CollectionWarning extends Exception {
 
     public CollectionWarning(Throwable cause) {
         super(cause);
+    }
+
+    protected void logError() {
+        if (getCause() == null) {
+    		log().warn(getMessage());
+    	} else {
+    		log().warn(getMessage(), getCause());
+    	}
     }
 
 }

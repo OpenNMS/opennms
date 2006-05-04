@@ -291,6 +291,12 @@ public class MibObject implements Collectable {
         return false;
 
     }
+    
+    
+
+    public int hashCode() {
+        return m_oid.hashCode();
+    }
 
     /**
      * This method is responsible for returning a String object which represents

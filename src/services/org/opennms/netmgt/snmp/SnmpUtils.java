@@ -55,15 +55,19 @@ public class SnmpUtils {
     }
 
     public static SnmpWalker createWalker(SnmpAgentConfig agentConfig, String name, CollectionTracker[] trackers) {
-        return createWalker(agentConfig, name, new TooBigReportingAggregator(trackers, agentConfig.getAddress()));
+        return getStrategy().createWalker(agentConfig, name, createTooBigTracker(agentConfig, trackers));
+    }
+
+    private static TooBigReportingAggregator createTooBigTracker(SnmpAgentConfig agentConfig, CollectionTracker[] trackers) {
+        return new TooBigReportingAggregator(trackers, agentConfig.getAddress());
     }
     
     public static SnmpWalker createWalker(SnmpAgentConfig agentConfig, String name, CollectionTracker tracker) {
-        return getStrategy().createWalker(agentConfig, name, tracker);
-        
+        return getStrategy().createWalker(agentConfig, name, createTooBigTracker(agentConfig, tracker));
     }
-    public static SnmpWalker createWalker(SnmpAgentConfig agentConfig, String name, ColumnTracker tracker) {
-        return getStrategy().createWalker(agentConfig, name, tracker);
+
+    private static TooBigReportingAggregator createTooBigTracker(SnmpAgentConfig agentConfig, CollectionTracker tracker) {
+        return createTooBigTracker(agentConfig, new CollectionTracker[] { tracker });
     }
     
     public static SnmpValue get(SnmpAgentConfig agentConfig, SnmpObjId oid) {

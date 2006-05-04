@@ -99,4 +99,27 @@ public final class SNMPCollectorEntry extends AbstractSnmpStore {
             putIfIndex(inst.toInt());
         log().debug("storeResult: added value for "+mibObject.getAlias()+": ["+base+"].["+inst+"] = "+val);
     }
+
+
+    String getValueForBase(String baseOid) {
+    
+        String instance = String.valueOf(getIfIndex()); 
+        if (instance == null || instance.equals("")) 
+            return null;
+        
+    
+        String fullOid = baseOid + "." + instance;
+    
+        String snmpVar = getDisplayString(fullOid);
+        if (snmpVar == null)
+            return null;
+    
+        snmpVar.trim();
+    
+        if (snmpVar.equals(""))
+            return null;
+    
+        return snmpVar;
+    
+    }
 }

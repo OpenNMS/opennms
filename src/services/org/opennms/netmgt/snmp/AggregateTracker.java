@@ -35,9 +35,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.log4j.Category;
-import org.opennms.core.utils.ThreadCategory;
-
 public class AggregateTracker extends CollectionTracker {
 
     private static class ChildTrackerPduBuilder extends PduBuilder {
@@ -220,6 +217,14 @@ public class AggregateTracker extends CollectionTracker {
     }
 
     private CollectionTracker[] m_children;
+    
+    public AggregateTracker(List children) {
+        this(children, null);
+    }
+
+    public AggregateTracker(List children, CollectionTracker parent) {
+        this((CollectionTracker[]) children.toArray(new CollectionTracker[children.size()]), parent);
+    }
 
     public AggregateTracker(CollectionTracker[] children) {
         this(children, null);
@@ -296,10 +301,6 @@ public class AggregateTracker extends CollectionTracker {
         // construct a response processor that tracks the changes and informs the response processors
         // for the child trackers
         return new ChildTrackerResponseProcessor(parentBuilder, builders, nonRepeaters, repeaters);
-    }
-
-    private final Category log() {
-        return ThreadCategory.getInstance(getClass());
     }
 
 }

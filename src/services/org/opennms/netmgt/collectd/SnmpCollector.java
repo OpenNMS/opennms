@@ -416,9 +416,7 @@ public class SnmpCollector implements ServiceCollector {
 	}
 
     private String getCollectionName(Map parameters) {
-		String collectionName = ParameterMap.getKeyedString(parameters,
-				"collection", "default");
-		return collectionName;
+		return ParameterMap.getKeyedString(parameters, "collection", "default");
 	}
 
 	Category log() {

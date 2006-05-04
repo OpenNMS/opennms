@@ -34,6 +34,8 @@
 //
 package org.opennms.netmgt.collectd;
 
+import org.apache.log4j.Category;
+import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpValue;
 
@@ -182,4 +184,45 @@ public abstract class DataSource {
 	public String getName() {
 		return m_name;
 	}
+
+    /**
+     * @param collectorEntry
+     * @param log
+     * @param dsVal
+     * @param method TODO
+     * @return
+     * @throws Exception
+     */
+    String getRRDValue(SNMPCollectorEntry collectorEntry) {
+    	// Make sure we have an actual object id value.
+    	if (getOid() == null) {
+    		return null;
+    	}
+    
+    	String instance = null;
+    	if (getInstance().equals(MibObject.INSTANCE_IFINDEX)) {
+    		instance = collectorEntry.getIfIndex().toString();
+    	} else {
+    		instance = getInstance();
+    	}
+    
+    	String fullOid = SnmpObjId.get(getOid(), instance).toString();
+    
+    	SnmpValue snmpVar = collectorEntry.getValue(fullOid);
+    	if (snmpVar == null) {
+    		// No value retrieved matching this oid
+    		return null;
+    	}
+    
+    	if (log().isDebugEnabled()) {
+    		log().debug("issueRRDUpdate: name:oid:value - " + getName() + ":"
+    				+ fullOid + ":" + snmpVar.toString());
+    	}
+    
+    	return getStorableValue(snmpVar);
+    }
+
+    private Category log() {
+        return ThreadCategory.getInstance(getClass());
+    }
 }

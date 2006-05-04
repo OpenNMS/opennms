@@ -100,6 +100,16 @@ final class IfInfo {
 				getCollectionInterface().getHostAddress(), getIndex());
 		return oidList;
 	}
+    
+	public List getAttributeList() {
+	    /*
+	     * Retrieve list of mib objects to be collected from the
+	     * remote agent for this interface.
+	     */
+	    return DataCollectionConfigFactory.getInstance()
+	    .buildCollectionAttributes(getCollectionName(), getCollectionInterface().getSysObjectId(),
+	            getCollectionInterface().getHostAddress(), getType());
+	}
 
 	public CollectionInterface getCollectionInterface() {
 		return m_collectionInterface;

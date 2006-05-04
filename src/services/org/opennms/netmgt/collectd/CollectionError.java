@@ -31,7 +31,12 @@
 //
 package org.opennms.netmgt.collectd;
 
+import org.apache.log4j.Category;
+import org.opennms.core.utils.ThreadCategory;
+
 public class CollectionError extends Exception {
+    
+    private int m_errorCode = ServiceCollector.COLLECTION_FAILED;
 
     public CollectionError() {
         super();
@@ -47,6 +52,31 @@ public class CollectionError extends Exception {
 
     public CollectionError(Throwable cause) {
         super(cause);
+    }
+
+    public int reportError() {
+        logError();
+    	return getErrorCode();
+    }
+
+    protected void logError() {
+        if (getCause() == null) {
+            log().error(getMessage());
+    	} else {
+            log().error(getMessage(), getCause());
+    	}
+    }
+
+    protected Category log() {
+        return ThreadCategory.getInstance(getClass());
+    }
+
+    void setErrorCode(int errorCode) {
+        m_errorCode = errorCode;
+    }
+
+    int getErrorCode() {
+        return m_errorCode;
     }
 
 }

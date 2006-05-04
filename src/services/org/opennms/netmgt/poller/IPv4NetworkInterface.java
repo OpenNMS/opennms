@@ -162,7 +162,7 @@ public class IPv4NetworkInterface implements NetworkInterface {
         return m_properties.put(property, value);
     }
     
-	protected Category log() {
+	public Category log() {
 		return ThreadCategory.getInstance(getClass());
 	}
 
