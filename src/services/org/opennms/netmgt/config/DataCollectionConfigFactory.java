@@ -42,9 +42,8 @@ package org.opennms.netmgt.config;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.InetAddress;
+import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -120,53 +119,23 @@ public final class DataCollectionConfigFactory {
      *                Thrown if the contents do not match the required schema.
      */
     private DataCollectionConfigFactory(String configFile) throws IOException, MarshalException, ValidationException {
-        InputStream cfgIn = new FileInputStream(configFile);
+        Reader inputStreamReader = new InputStreamReader(new FileInputStream(configFile));
+        marshal(inputStreamReader);
+        inputStreamReader.close();
+    }
+    
+    public DataCollectionConfigFactory(Reader rdr) throws MarshalException, ValidationException {
+        marshal(rdr);
+    }
 
-        m_config = (DatacollectionConfig) Unmarshaller.unmarshal(DatacollectionConfig.class, new InputStreamReader(cfgIn));
-        cfgIn.close();
-
-        // Build collection map which is a hash map of Collection
-        // objects indexed by collection name...also build
-        // collection group map which is a hash map indexed
-        // by collection name with a hash map as the value
-        // containing a map of the collections's group names
-        // to the Group object containing all the information
-        // for that group. So the associations are:
-        //
-        // CollectionMap
-        // collectionName -> Collection
-        //
-        // CollectionGroupMap
-        // collectionName -> groupMap
-        // 
-        // GroupMap
-        // groupMapName -> Group
-        //
-        // This is parsed and built at initialization for
-        // faster processing at run-timne.
-        // 
-        m_collectionMap = new HashMap();
-        m_collectionGroupMap = new HashMap();
-
-        java.util.Collection collections = m_config.getSnmpCollectionCollection();
-        Iterator citer = collections.iterator();
-        while (citer.hasNext()) {
-            SnmpCollection collection = (SnmpCollection) citer.next();
-
-            // Build group map for this collection
-            Map groupMap = new HashMap();
-
-            Groups groups = collection.getGroups();
-            java.util.Collection groupList = groups.getGroupCollection();
-            Iterator giter = groupList.iterator();
-            while (giter.hasNext()) {
-                Group group = (Group) giter.next();
-                groupMap.put(group.getName(), group);
-            }
-
-            m_collectionGroupMap.put(collection.getName(), groupMap);
-            m_collectionMap.put(collection.getName(), collection);
-        }
+    private void marshal(Reader rdr) throws MarshalException, ValidationException {
+        m_config = (DatacollectionConfig) Unmarshaller.unmarshal(DatacollectionConfig.class, rdr);        
+        buildCollectionMap();
+    }
+    
+    public static void setInstance(DataCollectionConfigFactory instance) {
+        m_singleton = instance;
+        m_loaded = true;
     }
 
     /**
@@ -226,25 +195,6 @@ public final class DataCollectionConfigFactory {
             throw new IllegalStateException("The factory has not been initialized");
 
         return m_singleton;
-    }
-
-    /**
-     * Converts the internet address to a long value so that it can be compared
-     * using simple opertions. The address is converted in network byte order
-     * (big endin) and allows for comparisions like &lt;, &gt;, &lt;=, &gt;=,
-     * ==, and !=.
-     * 
-     * @param addr
-     *            The address to convert to a long
-     * 
-     * @return The address as a long value.
-     * 
-     */
-    private static long toLong(InetAddress addr) {
-        byte[] baddr = addr.getAddress();
-        long result = ((long) baddr[0] & 0xffL) << 24 | ((long) baddr[1] & 0xffL) << 16 | ((long) baddr[2] & 0xffL) << 8 | ((long) baddr[3] & 0xffL);
-
-        return result;
     }
 
     /**
@@ -754,5 +704,51 @@ public final class DataCollectionConfigFactory {
 	
 		return dsList;
 	}
+    
+    private void buildCollectionMap() {
+        // Build collection map which is a hash map of Collection
+        // objects indexed by collection name...also build
+        // collection group map which is a hash map indexed
+        // by collection name with a hash map as the value
+        // containing a map of the collections's group names
+        // to the Group object containing all the information
+        // for that group. So the associations are:
+        //
+        // CollectionMap
+        // collectionName -> Collection
+        //
+        // CollectionGroupMap
+        // collectionName -> groupMap
+        // 
+        // GroupMap
+        // groupMapName -> Group
+        //
+        // This is parsed and built at initialization for
+        // faster processing at run-timne.
+        // 
+        m_collectionMap = new HashMap();
+        m_collectionGroupMap = new HashMap();
+
+        java.util.Collection collections = m_config.getSnmpCollectionCollection();
+        Iterator citer = collections.iterator();
+        while (citer.hasNext()) {
+            SnmpCollection collection = (SnmpCollection) citer.next();
+
+            // Build group map for this collection
+            Map groupMap = new HashMap();
+
+            Groups groups = collection.getGroups();
+            java.util.Collection groupList = groups.getGroupCollection();
+            Iterator giter = groupList.iterator();
+            while (giter.hasNext()) {
+                Group group = (Group) giter.next();
+                groupMap.put(group.getName(), group);
+            }
+
+            m_collectionGroupMap.put(collection.getName(), groupMap);
+            m_collectionMap.put(collection.getName(), collection);
+        }
+    }
+
 
 }
