@@ -75,18 +75,17 @@ public class CollectionSet {
 	}
 
 	boolean hasDataToCollect() {
-		boolean hasInterfaceOids = false;
-		if (getNodeInfo().getAttributeList().isEmpty()) {
-			hasInterfaceOids = false;
-			Iterator iter = getIfMap().values().iterator();
-			while (iter.hasNext() && !hasInterfaceOids) {
-				IfInfo ifInfo = (IfInfo) iter.next();
-				if (!ifInfo.getOidList().isEmpty()) {
-					hasInterfaceOids = true;
-				}
-			}
-		}
-		return hasInterfaceOids;
+        if (!getNodeInfo().getAttributeList().isEmpty()) return true;
+        
+        Iterator iter = getIfMap().values().iterator();
+        while (iter.hasNext()) {
+            IfInfo ifInfo = (IfInfo) iter.next();
+            if (!ifInfo.getOidList().isEmpty()) {
+                return true;
+            }
+        }
+
+        return false;
 	}
 
 	public String getCollectionName() {
