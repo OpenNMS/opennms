@@ -53,7 +53,7 @@ import org.opennms.netmgt.utils.ParameterMap;
 
 public class UpdateRRDs {
 
-    private CollectionInterface m_iface;
+    private CollectionAgent m_agent;
     private SnmpNodeCollector m_nodeCollector;
     private SnmpIfCollector m_IfCollector;
     private Map m_parameters;
@@ -61,8 +61,8 @@ public class UpdateRRDs {
     private boolean m_forceRescan;
     private boolean m_rescanPending;
 
-    void execute(CollectionInterface collectionInterface, SnmpNodeCollector snc, SnmpIfCollector sIfC, Map parms, EventProxy eproxy) {
-        m_iface = collectionInterface;
+    void execute(CollectionAgent agent, SnmpNodeCollector snc, SnmpIfCollector sIfC, Map parms, EventProxy eproxy) {
+        m_agent = agent;
         m_nodeCollector = snc;
         m_IfCollector = sIfC;
         m_parameters = parms;
@@ -85,7 +85,7 @@ public class UpdateRRDs {
     		logIfAliasConfig();
     
             // get the snmpIfAliases
-            if (m_iface.isForceRescanInProgress()) {
+            if (m_agent.isForceRescanInProgress()) {
                 m_rescanPending = true;
             }
     
@@ -97,7 +97,7 @@ public class UpdateRRDs {
             if (snmpCollectorEntries.size() == 0) {
     			log().warn(
     					"updateRRDs: No data retrieved for the interface "
-    							+ m_iface.getInetAddress().getHostAddress());
+    							+ m_agent.getInetAddress().getHostAddress());
     		}
     
     		// Iterate over the SNMP collector entries
@@ -113,7 +113,7 @@ public class UpdateRRDs {
                  * Use ifIndex to lookup the IfInfo object from the interface
                  * map.
                  */
-                IfInfo ifInfo = (IfInfo) m_iface.getIfMap().get(new Integer(ifEntry.getIfIndex().intValue()));
+                IfInfo ifInfo = (IfInfo) m_agent.getIfMap().get(new Integer(ifEntry.getIfIndex().intValue()));
                 if (ifInfo == null) {
                     // no data needed for this interface
                     continue;
@@ -163,7 +163,7 @@ public class UpdateRRDs {
     	} // end if(ifCollector != null)
     
     	if (m_forceRescan) {
-    		m_iface.sendForceRescanEvent(m_eventProxy);
+    		m_agent.sendForceRescanEvent(m_eventProxy);
     	}
     }
 
@@ -172,16 +172,16 @@ public class UpdateRRDs {
    
         log().warn(
         		"updateRRDs: call to buildRRDUpdateCmd() "
-        				+ "failed for node/ifindex: " + m_iface.getNodeId()
+        				+ "failed for node/ifindex: " + m_agent.getNodeId()
         				+ "/" + ifEntry.getIfIndex().intValue() + " datasource: "
         				+ ds.getName());
     }
 
     private void storeByNode(SNMPCollectorEntry ifEntry, IfInfo ifInfo, DataSource ds, String dsVal) {
         String ifRepository = getRrdPath() + File.separator
-        + String.valueOf(m_iface.getNodeId()) + File.separator
+        + String.valueOf(m_agent.getNodeId()) + File.separator
         + ifInfo.getLabel();
-        if (ds.performUpdate(m_iface.getCollection(), m_iface.getInetAddress().getHostAddress(), ifRepository, ds.getName(), dsVal)) {
+        if (ds.performUpdate(m_agent.getCollection(), m_agent.getInetAddress().getHostAddress(), ifRepository, ds.getName(), dsVal)) {
         	logUpdateFailed(ifEntry, ds);
         }
     }
@@ -191,7 +191,7 @@ public class UpdateRRDs {
         	String ifAliasRepository = getRrdPath() + File.separator
         			+ getDomain() + File.separator
         			+ aliasVal;
-        	if (ds.performUpdate(m_iface.getCollection(), m_iface.getInetAddress()
+        	if (ds.performUpdate(m_agent.getCollection(), m_agent.getInetAddress()
         			.getHostAddress(), ifAliasRepository, ds
         			.getName(), dsVal)) {
         		logIfAliasUpdateFailed(ifEntry, aliasVal, ds);
@@ -224,7 +224,7 @@ public class UpdateRRDs {
         				"updateRRDs: "
         						+ "ds.performUpdate() failed for "
         						+ "node/ifindex/domain/alias: "
-        						+ m_iface.getNodeId()
+        						+ m_agent.getNodeId()
         						+ "/"
         						+ ifEntry.getIfIndex().intValue()
         						+ "/"
@@ -241,7 +241,7 @@ public class UpdateRRDs {
         				"updateRRDs: "
         						+ "ds.performUpdate() failed for "
         						+ "node/ifindex: "
-        						+ m_iface.getNodeId() + "/"
+        						+ m_agent.getNodeId() + "/"
         						+ ifEntry.getIfIndex().intValue()
         						+ " datasource: "
         						+ ds.getName());
@@ -253,7 +253,7 @@ public class UpdateRRDs {
         	log().debug(
         			"updateRRDs: Skipping update, "
         					+ "no data retrieved for "
-        					+ "node/ifindex: " + m_iface.getNodeId()
+        					+ "node/ifindex: " + m_agent.getNodeId()
         					+ "/" + ifEntry.getIfIndex().intValue()
         					+ " datasource: "
         					+ ds.getName());
@@ -264,7 +264,7 @@ public class UpdateRRDs {
         if (ifInfo.getDsList() == null) {
             throw new RuntimeException("Data Source list not "
                     + "available for primary IP addr "
-                    + m_iface.getInetAddress().getHostAddress() + " and ifIndex "
+                    + m_agent.getInetAddress().getHostAddress() + " and ifIndex "
                     + ifInfo.getIndex());
         }
     }
@@ -282,15 +282,15 @@ public class UpdateRRDs {
     }
 
     private boolean storingOnlySelect() {
-        return m_iface.getSnmpStorage().equals(SnmpCollector.SNMP_STORAGE_SELECT);
+        return m_agent.getSnmpStorage().equals(SnmpCollector.SNMP_STORAGE_SELECT);
     }
 
     private boolean ifEntryIsNotPrimary(SNMPCollectorEntry ifEntry) {
-        return ifEntry.getIfIndex().intValue() != m_iface.getIfIndex();
+        return ifEntry.getIfIndex().intValue() != m_agent.getIfIndex();
     }
 
     private boolean storingOnlyPrimary() {
-        return m_iface.getSnmpStorage().equals(SnmpCollector.SNMP_STORAGE_PRIMARY);
+        return m_agent.getSnmpStorage().equals(SnmpCollector.SNMP_STORAGE_PRIMARY);
     }
 
     private void logSkip(SNMPCollectorEntry ifEntry, IfInfo ifInfo) {
@@ -299,7 +299,7 @@ public class UpdateRRDs {
         			.debug(
         					"updateRRDs: selectively storing "
         							+ "SNMP data for primary interface ("
-        							+ m_iface.getIfIndex()
+        							+ m_agent.getIfIndex()
         							+ "), skipping ifIndex: "
         							+ Integer.toString(ifEntry.getIfIndex().intValue())
         							+ " because collType = "
@@ -313,7 +313,7 @@ public class UpdateRRDs {
         			.debug(
         					"updateRRDs: only storing "
         							+ "SNMP data for primary interface ("
-        							+ m_iface.getIfIndex()
+        							+ m_agent.getIfIndex()
         							+ "), skipping ifIndex: "
         							+ Integer.toString(ifEntry.getIfIndex().intValue()));
         }
@@ -352,7 +352,7 @@ public class UpdateRRDs {
         	 * rescan if not.
         	 */
         	if (!m_rescanPending) {
-                Map snmpIfAliasMap = getIfAliasesFromDb(m_iface.getNodeId());
+                Map snmpIfAliasMap = getIfAliasesFromDb(m_agent.getNodeId());
         		if (ifAliasChanged(Integer.toString(ifEntry.getIfIndex().intValue()), aliasVal, snmpIfAliasMap)) {
         			m_rescanPending = true;
         			m_forceRescan = true;
@@ -408,7 +408,7 @@ public class UpdateRRDs {
         	 * Build path to node RRD repository. createRRD() will make the
         	 * appropriate directories if they do not already exist.
         	 */
-        	String nodeRepository = getRrdPath() + File.separator + String.valueOf(m_iface.getNodeId());
+        	String nodeRepository = getRrdPath() + File.separator + String.valueOf(m_agent.getNodeId());
         
         	SNMPCollectorEntry nodeEntry = m_nodeCollector.getEntry();
         
@@ -417,7 +417,7 @@ public class UpdateRRDs {
         	 * commands to update each datasource which has a corresponding
         	 * value in the collected SNMP data.
         	 */
-        	Iterator it = m_iface.getNodeAttributeList().iterator();
+        	Iterator it = m_agent.getNodeAttributeList().iterator();
         	while (it.hasNext()) {
                 CollectionAttribute attr = (CollectionAttribute)it.next();
         		DataSource ds = attr.getDs();
@@ -428,7 +428,7 @@ public class UpdateRRDs {
         				// Do nothing, no update is necessary
         				logNoDataForValue(ds);
         			} else {
-        				if (ds.performUpdate(m_iface.getCollection(), m_iface.getInetAddress().getHostAddress(), nodeRepository, ds.getName(), dsVal)) {
+        				if (ds.performUpdate(m_agent.getCollection(), m_agent.getInetAddress().getHostAddress(), nodeRepository, ds.getName(), dsVal)) {
         					logUpdateFailed(ds);
         				}
         			}
@@ -482,14 +482,14 @@ public class UpdateRRDs {
         log().warn("getRRDValue: " + e1.getMessage());
         log().warn(
         		"updateRRDs: call to getRRDValue() failed "
-        				+ "for node: " + m_iface.getNodeId() + " datasource: "
+        				+ "for node: " + m_agent.getNodeId() + " datasource: "
         				+ ds1.getName());
     }
 
     private void logUpdateFailed(DataSource ds1) {
         log().warn(
         		"updateRRDs: ds.performUpdate() "
-        				+ "failed for node: " + m_iface.getNodeId()
+        				+ "failed for node: " + m_agent.getNodeId()
         				+ " datasource: " + ds1.getName());
     }
 
@@ -498,7 +498,7 @@ public class UpdateRRDs {
         	log().debug(
         			"updateRRDs: Skipping update, no "
         					+ "data retrieved for nodeId: "
-        					+ m_iface.getNodeId() + " datasource: "
+        					+ m_agent.getNodeId() + " datasource: "
         					+ ds1.getName());
         }
     }

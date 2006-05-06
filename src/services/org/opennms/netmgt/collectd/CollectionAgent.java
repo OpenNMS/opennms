@@ -20,7 +20,7 @@ import org.opennms.netmgt.utils.EventProxy;
 import org.opennms.netmgt.utils.EventProxyException;
 import org.opennms.netmgt.xml.event.Event;
 
-public class CollectionInterface extends IPv4NetworkInterface {
+public class CollectionAgent extends IPv4NetworkInterface {
 
 	private OnmsIpInterface m_iface;
     private String m_collectionName;
@@ -28,7 +28,7 @@ public class CollectionInterface extends IPv4NetworkInterface {
     private int m_maxVarsPerPdu;
     private int m_ifCount = -1;
 
-	public CollectionInterface(OnmsIpInterface iface) {
+	public CollectionAgent(OnmsIpInterface iface) {
 		super(iface.getInetAddress());
 		m_iface = iface;
 	}
@@ -51,7 +51,7 @@ public class CollectionInterface extends IPv4NetworkInterface {
 
 	InetAddress getInetAddress() {
 	
-		if (getType() != CollectionInterface.TYPE_IPV4)
+		if (getType() != CollectionAgent.TYPE_IPV4)
 			throw new RuntimeException("Unsupported interface type, "
 					+ "only TYPE_IPV4 currently supported");
 	

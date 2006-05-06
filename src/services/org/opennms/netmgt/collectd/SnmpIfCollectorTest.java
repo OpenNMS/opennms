@@ -158,7 +158,7 @@ public class SnmpIfCollectorTest extends SnmpCollectorTestCase {
     }
 
     private SnmpIfCollector createSnmpIfCollector() throws UnknownHostException {
-        SnmpIfCollector collector = new SnmpIfCollector(InetAddress.getLocalHost(), new CollectionInterface(null).getCombinedInterfaceAttributes());
+        SnmpIfCollector collector = new SnmpIfCollector(InetAddress.getLocalHost(), new CollectionAgent(null).getCombinedInterfaceAttributes());
         SnmpAgentConfig agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getLocalHost());
         m_walker = SnmpUtils.createWalker(agentConfig, "snmpIfCollector", collector);
         m_walker.start();
@@ -183,8 +183,8 @@ public class SnmpIfCollectorTest extends SnmpCollectorTestCase {
     	m_snmpIface.setIfName(ifName);
     	m_node.addSnmpInterface(m_snmpIface);
 
-    	CollectionInterface m_collectionInterface = new CollectionInterface(m_iface);
-		IfInfo ifInfo = new IfInfo(m_collectionInterface, "default", m_snmpIface);
+    	CollectionAgent agent = new CollectionAgent(m_iface);
+		IfInfo ifInfo = new IfInfo(agent, "default", m_snmpIface);
         ifInfo.setOidList(new ArrayList(m_objList));
         return ifInfo;
     }

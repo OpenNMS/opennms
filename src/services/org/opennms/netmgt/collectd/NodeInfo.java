@@ -48,20 +48,20 @@ import org.opennms.netmgt.config.DataCollectionConfigFactory;
  */
 final class NodeInfo {
 
-	private CollectionInterface m_iface;
+	private CollectionAgent m_agent;
 
 	private String m_collectionName;
 
     private List m_attrList;
 
-    public NodeInfo(CollectionInterface iface, String collectionName) {
-    	m_iface = iface;
+    public NodeInfo(CollectionAgent agent, String collectionName) {
+    	m_agent = agent;
     	m_collectionName = collectionName;
     	loadAttributeList();
     }
     
-    public CollectionInterface getCollectionInterface() {
-    	return m_iface;
+    public CollectionAgent getCollectionAgent() {
+    	return m_agent;
     }
 
 	void loadAttributeList() {
@@ -70,7 +70,7 @@ final class NodeInfo {
 		 * agent which are to be stored in the node-level RRD file. These
 		 * objects pertain to the node itself not any individual interfaces.
 		 */
-        m_attrList = DataCollectionConfigFactory.getInstance().buildCollectionAttributes(m_collectionName, m_iface.getSysObjectId(), m_iface.getHostAddress(), -1);
+        m_attrList = DataCollectionConfigFactory.getInstance().buildCollectionAttributes(m_collectionName, m_agent.getSysObjectId(), m_agent.getHostAddress(), -1);
         
 	}
 

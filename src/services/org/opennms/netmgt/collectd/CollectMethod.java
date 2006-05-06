@@ -49,15 +49,15 @@ import org.opennms.netmgt.utils.EventProxy;
 
 public class CollectMethod {
 
-    private CollectionInterface m_iface;
+    private CollectionAgent m_agent;
     private EventProxy m_eproxy;
     private Map m_parameters;
     private SnmpNodeCollector m_nodeCollector;
     private IfNumberTracker m_ifNumber;
     private SnmpIfCollector m_ifCollector;
 
-    int execute(CollectionInterface iface, EventProxy eproxy, Map parameters) {
-        m_iface = iface;
+    int execute(CollectionAgent agent, EventProxy eproxy, Map parameters) {
+        m_agent = agent;
         m_eproxy = eproxy;
         m_parameters = parameters;
         try {
@@ -68,7 +68,7 @@ public class CollectMethod {
     	} catch (CollectionError e) {
     		return e.reportError();
     	} catch (Throwable t) {
-    		return unexpected(m_iface, t);
+    		return unexpected(m_agent, t);
     	}
     }
 
@@ -92,7 +92,7 @@ public class CollectMethod {
     }
 
     private void checkForNewInterfaces() {
-        if (!m_iface.hasInterfaceOids()) return;
+        if (!m_agent.hasInterfaceOids()) return;
         
         logIfCounts();
 
@@ -100,54 +100,54 @@ public class CollectMethod {
             sendForceRescanEvent();
         }
 
-        m_iface.setSavedIfCount(m_ifNumber.getIfNumber());
+        m_agent.setSavedIfCount(m_ifNumber.getIfNumber());
             
     }
 
     private void sendForceRescanEvent() {
-        if (!m_iface.isForceRescanInProgress()) {
+        if (!m_agent.isForceRescanInProgress()) {
             logIfCountChangedForceRescan();
-            m_iface.sendForceRescanEvent(m_eproxy);
+            m_agent.sendForceRescanEvent(m_eproxy);
         }
     }
 
     private void createIfCollector() {
         m_ifCollector = null;
         // construct the ifCollector
-        if (m_iface.hasInterfaceOids()) {
-        	m_ifCollector = new SnmpIfCollector(m_iface.getInetAddress(), m_iface.getCombinedInterfaceAttributes());
+        if (m_agent.hasInterfaceOids()) {
+        	m_ifCollector = new SnmpIfCollector(m_agent.getInetAddress(), m_agent.getCombinedInterfaceAttributes());
         }
     }
 
     private void createIfNumberTracker() {
         m_ifNumber = null;
-        if (m_iface.hasInterfaceOids()) {
+        if (m_agent.hasInterfaceOids()) {
             m_ifNumber = new IfNumberTracker();
         }
     }
 
     private void createNodeCollector() throws CollectionError {
         m_nodeCollector = null;
-        if (!m_iface.getNodeAttributeList().isEmpty()) {
-        	m_nodeCollector = new SnmpNodeCollector(m_iface.getInetAddress(), m_iface.getNodeAttributeList());
+        if (!m_agent.getNodeAttributeList().isEmpty()) {
+        	m_nodeCollector = new SnmpNodeCollector(m_agent.getInetAddress(), m_agent.getNodeAttributeList());
         }
     }
 
     private void logIfCountChangedForceRescan() {
         log().info("Number of interfaces on primary SNMP "
-                + "interface " + m_iface.getHostAddress()
+                + "interface " + m_agent.getHostAddress()
                 + " has changed, generating 'ForceRescan' event.");
     }
 
     private boolean ifCountHasChanged() {
-        return (m_iface.getSavedIfCount() != -1) && (m_ifNumber.getIfNumber() != m_iface.getSavedIfCount());
+        return (m_agent.getSavedIfCount() != -1) && (m_ifNumber.getIfNumber() != m_agent.getSavedIfCount());
     }
 
     private void logIfCounts() {
-        log().debug("collect: nodeId: " + m_iface.getNodeId()
-        				+ " interface: " + m_iface.getHostAddress()
+        log().debug("collect: nodeId: " + m_agent.getNodeId()
+        				+ " interface: " + m_agent.getHostAddress()
         				+ " ifCount: " + m_ifNumber.getIfNumber() 
-                       + " savedIfCount: " + m_iface.getSavedIfCount());
+                       + " savedIfCount: " + m_agent.getSavedIfCount());
     }
 
     Category log() {
@@ -179,25 +179,25 @@ public class CollectMethod {
     }
 
     private SnmpWalker createWalker() {
-        return SnmpUtils.createWalker(getAgentConfig(), "SnmpCollectors for " + m_iface.getInetAddress().getHostAddress(), createCollectionTracker());
+        return SnmpUtils.createWalker(getAgentConfig(), "SnmpCollectors for " + m_agent.getInetAddress().getHostAddress(), createCollectionTracker());
     }
 
     private void warnOfInterruption(InterruptedException e) throws CollectionWarning {
         Thread.currentThread().interrupt();
         throw new CollectionWarning("collect: Collection of node SNMP "
-        		+ "data for interface " + m_iface.getHostAddress()
+        		+ "data for interface " + m_agent.getHostAddress()
         		+ " interrupted!", e);
     }
 
     private void saveMaxVarsPerPdu(SnmpWalker walker) {
-        m_iface.setMaxVarsPerPdu(walker.getMaxVarsPerPdu());
+        m_agent.setMaxVarsPerPdu(walker.getMaxVarsPerPdu());
     }
 
     private void verifySuccessfulWalk(SnmpWalker walker) throws CollectionWarning {
         if (walker.failed()) {
         	// Log error and return COLLECTION_FAILED
         	throw new CollectionWarning("collect: collection failed for "
-        			+ m_iface.getHostAddress());
+        			+ m_agent.getHostAddress());
         }
     }
 
@@ -205,7 +205,7 @@ public class CollectMethod {
         if (log().isDebugEnabled()) {
         	log().debug(
         			"collect: node SNMP query for address "
-        					+ m_iface.getHostAddress() + " complete.");
+        					+ m_agent.getHostAddress() + " complete.");
         }
     }
 
@@ -214,13 +214,13 @@ public class CollectMethod {
         	log().debug(
         			"collect: successfully instantiated "
         					+ "SnmpNodeCollector() for "
-        					+ m_iface.getHostAddress());
+        					+ m_agent.getHostAddress());
         }
     }
 
     private SnmpAgentConfig getAgentConfig() {
-        SnmpAgentConfig agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(m_iface.getInetAddress());
-        agentConfig.setMaxVarsPerPdu(m_iface.getMaxVarsPerPdu());
+        SnmpAgentConfig agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(m_agent.getInetAddress());
+        agentConfig.setMaxVarsPerPdu(m_agent.getMaxVarsPerPdu());
         return agentConfig;
     }
 
@@ -264,13 +264,13 @@ public class CollectMethod {
      */
     private void updateRRDs() throws CollectionError {
     
-        new UpdateRRDs().execute(m_iface, m_nodeCollector, m_ifCollector, m_parameters, m_eproxy);
+        new UpdateRRDs().execute(m_agent, m_nodeCollector, m_ifCollector, m_parameters, m_eproxy);
     }
 
-    private int unexpected(CollectionInterface iface, Throwable t) {
+    private int unexpected(CollectionAgent agent, Throwable t) {
     	log().error(
     			"Unexpected error during node SNMP collection for "
-    					+ iface.getHostAddress(), t);
+    					+ agent.getHostAddress(), t);
     	return ServiceCollector.COLLECTION_FAILED;
     }
 

@@ -49,13 +49,13 @@ import org.opennms.netmgt.model.OnmsSnmpInterface;
 
 public class CollectionSet {
 	
-	private CollectionInterface m_collectionInterface;
+	private CollectionAgent m_agent;
 	private String m_collectionName;
 	
 	private Map m_ifMap = new TreeMap();
 	
-	public CollectionSet(CollectionInterface collectionInterface, String collectionName) {
-		m_collectionInterface = collectionInterface;
+	public CollectionSet(CollectionAgent agent, String collectionName) {
+		m_agent = agent;
 		m_collectionName = collectionName;
 		addSnmpInterfacesToCollectionSet();
 	}
@@ -67,7 +67,7 @@ public class CollectionSet {
 		m_ifMap = ifMap;
 	}
 	public NodeInfo getNodeInfo() {
-		return new NodeInfo(m_collectionInterface, m_collectionName);
+		return new NodeInfo(m_agent, m_collectionName);
 	}
 
 	void addIfInfo(IfInfo ifInfo) {
@@ -93,12 +93,12 @@ public class CollectionSet {
 		return m_collectionName;
 	}
 	
-	public CollectionInterface getCollectionInterface() {
-		return m_collectionInterface;
+	public CollectionAgent getCollectionAgent() {
+		return m_agent;
 	}
 
 	void addSnmpInterface(OnmsSnmpInterface snmpIface) {
-		addIfInfo(new IfInfo(m_collectionInterface, m_collectionName, snmpIface));
+		addIfInfo(new IfInfo(m_agent, m_collectionName, snmpIface));
 	}
 
 	boolean hasInterfaceOids() {
@@ -141,8 +141,8 @@ public class CollectionSet {
 	}
 
 	void addSnmpInterfacesToCollectionSet() {
-		CollectionInterface collectionInterface = getCollectionInterface();
-		OnmsNode node = collectionInterface.getNode();
+		CollectionAgent agent = getCollectionAgent();
+		OnmsNode node = agent.getNode();
 	
 		Set snmpIfs = node.getSnmpInterfaces();
 		
@@ -196,7 +196,7 @@ public class CollectionSet {
     	return maxVarsPerPdu;
     }
 
-    void verifyCollectionIsNecessary(CollectionInterface iface) {
+    void verifyCollectionIsNecessary(CollectionAgent agent) {
         /*
     	 * Verify that there is something to collect from this primary SMP
     	 * interface. If no node objects and no interface objects then throw
@@ -205,7 +205,7 @@ public class CollectionSet {
     	if (!hasDataToCollect()) {
             throw new RuntimeException("collection '" + getCollectionName()
     				+ "' defines nothing to collect for "
-    				+ iface);
+    				+ agent);
     	}
     }
 

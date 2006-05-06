@@ -52,14 +52,14 @@ final class IfInfo {
 	
 	OnmsSnmpInterface m_snmpIface;
 	
-	private CollectionInterface m_collectionInterface;
+	private CollectionAgent m_agent;
 
 	private String m_collectionName;
 	
 	private List m_oidList = null;
 
-    public IfInfo(CollectionInterface collectionInterface, String collectionName, OnmsSnmpInterface snmpIface) {
-    	m_collectionInterface = collectionInterface;
+    public IfInfo(CollectionAgent agent, String collectionName, OnmsSnmpInterface snmpIface) {
+    	m_agent = agent;
     	m_collectionName = collectionName;
     	m_snmpIface = snmpIface;
     	
@@ -96,8 +96,8 @@ final class IfInfo {
 		 * remote agent for this interface.
 		 */
 		List oidList = DataCollectionConfigFactory.getInstance()
-		.getMibObjectList(getCollectionName(), getCollectionInterface().getSysObjectId(),
-				getCollectionInterface().getHostAddress(), getIndex());
+		.getMibObjectList(getCollectionName(), getCollectionAgent().getSysObjectId(),
+				getCollectionAgent().getHostAddress(), getIndex());
 		return oidList;
 	}
     
@@ -107,12 +107,12 @@ final class IfInfo {
 	     * remote agent for this interface.
 	     */
 	    return DataCollectionConfigFactory.getInstance()
-	    .buildCollectionAttributes(getCollectionName(), getCollectionInterface().getSysObjectId(),
-	            getCollectionInterface().getHostAddress(), getType());
+	    .buildCollectionAttributes(getCollectionName(), getCollectionAgent().getSysObjectId(),
+	            getCollectionAgent().getHostAddress(), getType());
 	}
 
-	public CollectionInterface getCollectionInterface() {
-		return m_collectionInterface;
+	public CollectionAgent getCollectionAgent() {
+		return m_agent;
 	}
 
 	public String getCollectionName() {

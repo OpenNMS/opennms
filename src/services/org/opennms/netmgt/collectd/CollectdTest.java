@@ -159,7 +159,7 @@ public class CollectdTest extends MockObjectTestCase {
 		setupInterface(iface);
 		setupSpecs(iface, svcName, specs);
 		
-		m_collector.expects(once()).method("initialize").with(isA(CollectionInterface.class), isA(Map.class));
+		m_collector.expects(once()).method("initialize").with(isA(CollectionAgent.class), isA(Map.class));
 
 		m_scheduler.next();
 		

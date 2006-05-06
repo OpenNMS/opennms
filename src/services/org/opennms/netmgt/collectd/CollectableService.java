@@ -95,7 +95,7 @@ final class CollectableService implements ReadyRunnable {
 
 	private SchedulingCompletedFlag m_schedulingCompletedFlag;
 
-	private CollectionInterface m_collectionIface;
+	private CollectionAgent m_agent;
 
     /**
      * Constructs a new instance of a CollectableService object.
@@ -112,7 +112,7 @@ final class CollectableService implements ReadyRunnable {
      * 
      */
     CollectableService(OnmsIpInterface iface, CollectionSpecification spec, Scheduler scheduler, SchedulingCompletedFlag schedulingCompletedFlag) {
-        m_collectionIface = new CollectionInterface(iface);
+        m_agent = new CollectionAgent(iface);
         m_spec = spec;
         m_scheduler = scheduler;
         m_schedulingCompletedFlag = schedulingCompletedFlag;
@@ -124,13 +124,13 @@ final class CollectableService implements ReadyRunnable {
 
         m_lastScheduledCollectionTime = 0L;
         
-        m_spec.initialize(m_collectionIface);
+        m_spec.initialize(m_agent);
 
 
     }
     
     public Object getAddress() {
-    	return m_collectionIface.getAddress();
+    	return m_agent.getAddress();
     }
     
     public CollectionSpecification getSpecification() {
@@ -240,7 +240,7 @@ final class CollectableService implements ReadyRunnable {
     }
 
 	private String getHostAddress() {
-		return m_collectionIface.getHostAddress();
+		return m_agent.getHostAddress();
 	}
 
     /**
@@ -263,7 +263,7 @@ final class CollectableService implements ReadyRunnable {
         // Check scheduled outages to see if any apply indicating
         // that the collection should be skipped
         //
-        if (!m_spec.scheduledOutage(m_collectionIface)) {
+        if (!m_spec.scheduledOutage(m_agent)) {
 
         	int status = doCollection();
         	updateStatus(status);
@@ -310,7 +310,7 @@ final class CollectableService implements ReadyRunnable {
 
 		int status = ServiceCollector.COLLECTION_FAILED;
 		try {
-	        status = m_spec.collect(m_collectionIface);
+	        status = m_spec.collect(m_agent);
 		} catch (Throwable t) {
 			log().error("run: An undeclared throwable was caught during SNMP collection for interface " + getHostAddress(), t);
 		}
@@ -493,8 +493,8 @@ final class CollectableService implements ReadyRunnable {
     }
 
 	private void reinitialize() {
-		m_spec.release(m_collectionIface);
-		m_spec.initialize(m_collectionIface);
+		m_spec.release(m_agent);
+		m_spec.initialize(m_agent);
 	}
 
 }

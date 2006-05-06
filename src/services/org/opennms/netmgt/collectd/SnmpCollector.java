@@ -377,33 +377,33 @@ public class SnmpCollector implements ServiceCollector {
 	 * Responsible for performing all necessary initialization for the specified
 	 * interface in preparation for data collection.
 	 * 
-	 * @param iface
+	 * @param agent
 	 *            Network interface to be prepped for collection.
 	 * @param parameters
 	 *            Key/value pairs associated with the package to which the
 	 *            interface belongs..
 	 */
-	public void initialize(CollectionInterface iface, Map parameters) {
+	public void initialize(CollectionAgent agent, Map parameters) {
         
-        iface.setCollection(getCollectionName(parameters));
-        iface.initialize();
+        agent.setCollection(getCollectionName(parameters));
+        agent.initialize();
 	}
 
 	/**
 	 * Responsible for releasing any resources associated with the specified
 	 * interface.
 	 * 
-	 * @param iface
+	 * @param agent
 	 *            Network interface to be released.
 	 */
-	public void release(CollectionInterface iface) {
+	public void release(CollectionAgent agent) {
 		// Nothing to release...
 	}
 
 	/**
 	 * Perform data collection.
 	 * 
-	 * @param iface
+	 * @param agent
 	 *            Network interface to be data collected.
 	 * @param eproxy
 	 *            Eventy proxy for sending events.
@@ -411,8 +411,8 @@ public class SnmpCollector implements ServiceCollector {
 	 *            Key/value pairs from the package to which the interface
 	 *            belongs.
 	 */
-	public int collect(CollectionInterface iface, EventProxy eproxy, Map parameters) {
-		return new CollectMethod().execute(iface, eproxy, parameters);
+	public int collect(CollectionAgent agent, EventProxy eproxy, Map parameters) {
+		return new CollectMethod().execute(agent, eproxy, parameters);
 	}
 
     private String getCollectionName(Map parameters) {

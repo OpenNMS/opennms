@@ -64,12 +64,12 @@ public interface ServiceCollector {
 
     public void release();
 
-    public void initialize(CollectionInterface iface, Map parameters);
+    public void initialize(CollectionAgent agent, Map parameters);
 
-    public void release(CollectionInterface iface);
+    public void release(CollectionAgent agent);
 
     /**
      * Invokes a collection on the object.
      */
-    public int collect(CollectionInterface iface, EventProxy eproxy, Map parameters);
+    public int collect(CollectionAgent agent, EventProxy eproxy, Map parameters);
 }

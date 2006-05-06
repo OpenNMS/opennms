@@ -317,16 +317,16 @@ public abstract class JMXCollector implements ServiceCollector {
      * Responsible for performing all necessary initialization for the
      * specified interface in preparation for data collection.
      * 
-     * @param iface
+     * @param agent
      *            Network interface to be prepped for collection.
      * @param parameters
      *            Key/value pairs associated with the package to which the
      *            interface belongs..
      */
 
-    public void initialize(CollectionInterface iface, Map parameters) {
+    public void initialize(CollectionAgent agent, Map parameters) {
         Category log = ThreadCategory.getInstance(getClass());
-        InetAddress ipAddr = (InetAddress) iface.getAddress();
+        InetAddress ipAddr = (InetAddress) agent.getAddress();
 
         log.debug("initialize: " + m_rrdPath);
         if (m_rrdPath == null) {
@@ -395,7 +395,7 @@ public abstract class JMXCollector implements ServiceCollector {
 
         JMXNodeInfo nodeInfo = new JMXNodeInfo(nodeID);
         log.debug("nodeInfo: " + ipAddr.getHostAddress() + " " + nodeID + " "
-                  + iface);
+                  + agent);
 
         /*
          * Retrieve list of MBean objects to be collected from the
@@ -415,8 +415,8 @@ public abstract class JMXCollector implements ServiceCollector {
                                                                                      collectionName));
 
         // Add the JMXNodeInfo object as an attribute of the interface
-        iface.setAttribute(NODE_INFO_KEY, nodeInfo);
-        iface.setAttribute("collectionName", collectionName);
+        agent.setAttribute(NODE_INFO_KEY, nodeInfo);
+        agent.setAttribute("collectionName", collectionName);
 
         File repos = new File(m_rrdPath + "/" + nodeID + "/" + collectionName);
         if (!repos.exists()) {
@@ -429,11 +429,11 @@ public abstract class JMXCollector implements ServiceCollector {
      * Responsible for releasing any resources associated with the specified
      * interface.
      * 
-     * @param iface
+     * @param agent
      *            Network interface to be released.
      */
 
-    public void release(CollectionInterface iface) {
+    public void release(CollectionAgent agent) {
         // Nothing to release...
     }
 
@@ -443,7 +443,7 @@ public abstract class JMXCollector implements ServiceCollector {
     /**
      * Perform data collection.
      * 
-     * @param iface
+     * @param agent
      *            Network interface to be data collected
      * @param eproxy
      *            Eventy proxy for sending events.
@@ -452,11 +452,11 @@ public abstract class JMXCollector implements ServiceCollector {
      *            belongs.
      */
 
-    public int collect(CollectionInterface iface, EventProxy eproxy, Map map) {
+    public int collect(CollectionAgent agent, EventProxy eproxy, Map map) {
         Category log = ThreadCategory.getInstance(getClass());
-        InetAddress ipaddr = (InetAddress) iface.getAddress();
-        String collectionName = (String) iface.getAttribute("collectionName");
-        JMXNodeInfo nodeInfo = (JMXNodeInfo) iface.getAttribute(NODE_INFO_KEY);
+        InetAddress ipaddr = (InetAddress) agent.getAddress();
+        String collectionName = (String) agent.getAttribute("collectionName");
+        JMXNodeInfo nodeInfo = (JMXNodeInfo) agent.getAttribute(NODE_INFO_KEY);
         HashMap mbeans = nodeInfo.getMBeans();
         String collDir = serviceName;
 
@@ -513,7 +513,7 @@ public abstract class JMXCollector implements ServiceCollector {
                                         mbeanServer.getAttributes(oName,
                                                                   attrNames);
                                     updateRRDs(objectName, collectionName,
-                                               iface, attrList, collDir,
+                                               agent, attrList, collDir,
                                                null, null);
                                 }
                             } catch (InstanceNotFoundException e) {
@@ -550,7 +550,7 @@ public abstract class JMXCollector implements ServiceCollector {
                                                                           attrNames);
                                             updateRRDs(objectName,
                                                        collectionName,
-                                                       iface,
+                                                       agent,
                                                        attrList,
                                                        collDir,
                                                        oName.getKeyProperty(beanInfo.getKeyField()),
@@ -581,7 +581,7 @@ public abstract class JMXCollector implements ServiceCollector {
                                                                               attrNames);
                                                 updateRRDs(objectName,
                                                            collectionName,
-                                                           iface,
+                                                           agent,
                                                            attrList,
                                                            collDir,
                                                            oName.getKeyProperty(beanInfo.getKeyField()),
@@ -602,7 +602,7 @@ public abstract class JMXCollector implements ServiceCollector {
                     e.fillInStackTrace();
                     log.debug(serviceName
                               + " Collector.collect: IOException while collect "
-                              + "address: " + iface.getAddress(), e);
+                              + "address: " + agent.getAddress(), e);
                 }
             } // of for
         } catch (Exception e) {
