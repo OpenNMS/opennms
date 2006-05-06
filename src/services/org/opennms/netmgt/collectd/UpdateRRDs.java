@@ -54,17 +54,14 @@ import org.opennms.netmgt.utils.ParameterMap;
 public class UpdateRRDs {
 
     private CollectionAgent m_agent;
-    private SnmpNodeCollector m_nodeCollector;
-    private SnmpIfCollector m_IfCollector;
+
     private Map m_parameters;
     private EventProxy m_eventProxy;
     private boolean m_forceRescan;
     private boolean m_rescanPending;
 
-    void execute(CollectionAgent agent, SnmpNodeCollector snc, SnmpIfCollector sIfC, Map parms, EventProxy eproxy) {
+    void execute(CollectionAgent agent, Map parms, EventProxy eproxy) {
         m_agent = agent;
-        m_nodeCollector = snc;
-        m_IfCollector = sIfC;
         m_parameters = parms;
         m_eventProxy = eproxy;
         
@@ -80,7 +77,15 @@ public class UpdateRRDs {
     	m_forceRescan = false;
         m_rescanPending = false;
 
-        if (m_IfCollector != null) {
+        saveInterfaceData();
+    
+    	if (m_forceRescan) {
+    		m_agent.sendForceRescanEvent(m_eventProxy);
+    	}
+    }
+
+    private void saveInterfaceData() {
+        if (getIfCollector() != null) {
             
     		logIfAliasConfig();
     
@@ -93,22 +98,23 @@ public class UpdateRRDs {
     		 * Retrieve list of SNMP collector entries generated for the remote
     		 * node's interfaces.
     		 */
-    		List snmpCollectorEntries = m_IfCollector.getEntries();
+    		List snmpCollectorEntries = getIfCollector().getEntries();
             if (snmpCollectorEntries.size() == 0) {
     			log().warn(
     					"updateRRDs: No data retrieved for the interface "
     							+ m_agent.getInetAddress().getHostAddress());
     		}
+            
+            
     
     		// Iterate over the SNMP collector entries
     		Iterator iter = snmpCollectorEntries.iterator();
     		while (iter.hasNext()) {
     			SNMPCollectorEntry ifEntry = (SNMPCollectorEntry) iter.next();
+                
+                sendAliasChangedEvent(ifEntry);
     
     			// get the ifAlias if one exists
-    			String aliasVal = getCurrentIfAliasSendingEventsIfNecessary(ifEntry);
-    
-    
                 /*
                  * Use ifIndex to lookup the IfInfo object from the interface
                  * map.
@@ -121,12 +127,12 @@ public class UpdateRRDs {
     
                 validateDsList(ifInfo);
 
-                if (notScheduledForCollection(ifEntry, ifInfo) && !forceStoreByAlias(aliasVal)) {
+                if (notScheduledForCollection(ifEntry, ifInfo) && !forceStoreByAlias(getAliasDirName(ifEntry))) {
                     logSkip(ifEntry, ifInfo);
                     continue;
                 }
 
-    			if (notScheduledForCollection(ifEntry, ifInfo) && forceStoreByAlias(aliasVal)) {
+    			if (notScheduledForCollection(ifEntry, ifInfo) && forceStoreByAlias(getAliasDirName(ifEntry))) {
                 	logStore(ifEntry, ifInfo);
                 }
                 
@@ -150,7 +156,7 @@ public class UpdateRRDs {
                                 storeByNode(ifEntry, ifInfo, ds, dsVal);
     						}
     						if (shouldStoreByAlias()) {
-    							storeByAlias(ifEntry, aliasVal, ds, dsVal);
+    							storeByAlias(ifEntry, getAliasDirName(ifEntry), ds, dsVal);
     						}
     
     					}
@@ -161,10 +167,6 @@ public class UpdateRRDs {
     			} // end while(more datasources)
     		} // end while(more SNMP collector entries)
     	} // end if(ifCollector != null)
-    
-    	if (m_forceRescan) {
-    		m_agent.sendForceRescanEvent(m_eventProxy);
-    	}
     }
 
     private void logUpdateFailed(SNMPCollectorEntry ifEntry, DataSource ds, IllegalArgumentException e) {
@@ -307,18 +309,6 @@ public class UpdateRRDs {
         }
     }
 
-    private void logSkipNonPrimary(SNMPCollectorEntry ifEntry) {
-        if (log().isDebugEnabled()) {
-        	log()
-        			.debug(
-        					"updateRRDs: only storing "
-        							+ "SNMP data for primary interface ("
-        							+ m_agent.getIfIndex()
-        							+ "), skipping ifIndex: "
-        							+ Integer.toString(ifEntry.getIfIndex().intValue()));
-        }
-    }
-
     private void logStore(SNMPCollectorEntry ifEntry, IfInfo ifInfo) {
         if (log().isDebugEnabled()) {
             log()
@@ -331,34 +321,73 @@ public class UpdateRRDs {
         }
     }
 
-    private void logStoreNonPrimary(SNMPCollectorEntry ifEntry) {
-        if (log().isDebugEnabled()) {
-        	log()
-        			.debug(
-        					"updateRRDs: storFlagOverride "
-        							+ "= true. Storing SNMP data for "
-        							+ "non-primary interface "
-        							+ Integer.toString(ifEntry.getIfIndex().intValue()));
-        }
-    }
-
-    private String getCurrentIfAliasSendingEventsIfNecessary(SNMPCollectorEntry ifEntry) {
-        String aliasVal = ifEntry.getValueForBase(SnmpCollector.IFALIAS_OID);
-        if (isValidAlias(aliasVal)) {
-        	aliasVal = aliasVal.trim();
-   
+    private void sendAliasChangedEvent(SNMPCollectorEntry ifEntry) {
+        if (isValidAlias(ifEntry.getValueForBase(SnmpCollector.IFALIAS_OID))) {
         	/*
         	 * Check DB to see if ifAlias is current and flag a forced
         	 * rescan if not.
         	 */
         	if (!m_rescanPending) {
-                Map snmpIfAliasMap = getIfAliasesFromDb(m_agent.getNodeId());
-        		if (ifAliasChanged(Integer.toString(ifEntry.getIfIndex().intValue()), aliasVal, snmpIfAliasMap)) {
+        		if (ifAliasChanged(ifEntry)) {
         			m_rescanPending = true;
         			m_forceRescan = true;
-        			logForceRescan(ifEntry, aliasVal, snmpIfAliasMap);
+        			logForceRescan(ifEntry);
         		}
         	}
+        }
+    }
+
+    private boolean ifAliasChanged(SNMPCollectorEntry ifEntry) {
+        String dbAlias = getSavedIfAlias(ifEntry);
+        return dbAlias == null || !dbAlias.equals(ifEntry.getValueForBase(SnmpCollector.IFALIAS_OID));
+    }
+
+    private String getSavedIfAlias(SNMPCollectorEntry ifEntry) {
+        int nodeId = m_agent.getNodeId();
+        int ifIndex = ifEntry.getIfIndex().intValue();
+        return getSavedIfAlias(nodeId, ifIndex);
+    }
+
+    private String getSavedIfAlias(int nodeId, int ifIndex) {
+        java.sql.Connection dsConn = null;
+        Category log = log();
+        if (log.isDebugEnabled()) {
+        	log.debug("building ifAliasMap for node " + nodeId);
+        }
+        
+        try {
+        	dsConn = DataSourceFactory.getInstance().getConnection();
+        
+        	PreparedStatement stmt = dsConn
+        			.prepareStatement(SnmpCollector.SQL_GET_SNMPIFALIASES);
+        	stmt.setInt(1, nodeId);
+            stmt.setInt(2, ifIndex);
+        	try {
+        		ResultSet rs = stmt.executeQuery();
+        		if (rs.next()) {
+        		    return rs.getString(1);        		}
+                return null;
+        	} catch (SQLException e) {
+        		throw e;
+        	}
+        } catch (SQLException e) {
+        	log.error("Failed getting connection to the database.", e);
+        	throw new UndeclaredThrowableException(e);
+        } finally {
+        	// Done with the database so close the connection
+        	try {
+        		dsConn.close();
+        	} catch (SQLException e) {
+        		log
+        				.info("SQLException while closing database connection",
+        						e);
+        	}
+        }
+    }
+
+    private String getAliasDirName(SNMPCollectorEntry ifEntry) {
+        String aliasVal = ifEntry.getValueForBase(SnmpCollector.IFALIAS_OID);
+        if (isValidAlias(aliasVal)) {
         	if (getIfAliasComment() != null) {
         		int si = aliasVal.indexOf(getIfAliasComment());
         		if (si > -1) {
@@ -382,13 +411,13 @@ public class UpdateRRDs {
         }
     }
 
-    private void logForceRescan(SNMPCollectorEntry ifEntry, String aliasVal, Map snmpIfAliasMap) {
+    private void logForceRescan(SNMPCollectorEntry ifEntry) {
         if (log().isDebugEnabled()) {
         	log().debug(
-        			"Forcing rescan.  IfAlias " + aliasVal
+        			"Forcing rescan.  IfAlias " + ifEntry.getValueForBase(SnmpCollector.IFALIAS_OID)
         					+ " for index " + Integer.toString(ifEntry.getIfIndex().intValue())
         					+ " does not match DB value: "
-        					+ snmpIfAliasMap.get(Integer.toString(ifEntry.getIfIndex().intValue())));
+                            + getSavedIfAlias(ifEntry));
         }
     }
 
@@ -396,12 +425,8 @@ public class UpdateRRDs {
         return aliasVal != null;
     }
 
-    private boolean ifAliasChanged(String ifIdx, String aliasVal, Map snmpIfAliasMap) {
-        return snmpIfAliasMap.get(ifIdx) == null || !snmpIfAliasMap.get(ifIdx).equals(aliasVal);
-    }
-
     private void storeNodeData() {
-        if (m_nodeCollector != null) {
+        if (getNodeCollector() != null) {
         	log().debug("updateRRDs: processing node-level collection...");
         
             /*
@@ -410,7 +435,7 @@ public class UpdateRRDs {
         	 */
         	String nodeRepository = getRrdPath() + File.separator + String.valueOf(m_agent.getNodeId());
         
-        	SNMPCollectorEntry nodeEntry = m_nodeCollector.getEntry();
+        	SNMPCollectorEntry nodeEntry = getNodeCollector().getEntry();
         
         	/*
         	 * Iterate over the node datasource list and issue RRD update
@@ -515,8 +540,9 @@ public class UpdateRRDs {
      * This method is responsible for retrieving an array of ifaliases indexed
      * by ifindex for the specified node
      * @param nodeID nodeID the nodeID of the node being checked
+     * @param ifIndex TODO
      */
-    private Map getIfAliasesFromDb(int nodeID) {
+    private String getIfAliasesFromDb(int nodeID, int ifIndex) {
     	java.sql.Connection dsConn = null;
     	Map ifAliasMap = new HashMap();
     	Category log = log();
@@ -551,7 +577,15 @@ public class UpdateRRDs {
     							e);
     		}
     	}
-    	return ifAliasMap;
+    	return (String)ifAliasMap.get(String.valueOf(ifIndex));
+    }
+
+    private SnmpNodeCollector getNodeCollector() {
+        return m_agent.getNodeCollector();
+    }
+
+    private SnmpIfCollector getIfCollector() {
+        return m_agent.getIfCollector();
     }
 
 

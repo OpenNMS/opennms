@@ -119,9 +119,10 @@ public class SnmpCollector implements ServiceCollector {
 	 * SQL statement to retrieve snmpifaliases and snmpifindexes for a given
 	 * node.
 	 */
-	static final String SQL_GET_SNMPIFALIASES = "SELECT snmpifindex, snmpifalias "
+	static final String SQL_GET_SNMPIFALIASES = "SELECT snmpifalias "
 			+ "FROM snmpinterface "
 			+ "WHERE nodeid=? "
+            + "AND snmpifindex = ? "
 			+ "AND snmpifalias != ''";
 
 	/**
@@ -412,7 +413,22 @@ public class SnmpCollector implements ServiceCollector {
 	 *            belongs.
 	 */
 	public int collect(CollectionAgent agent, EventProxy eproxy, Map parameters) {
-		return new CollectMethod().execute(agent, eproxy, parameters);
+        try {
+        
+            agent.collect();
+            
+            checkForNewInterfaces(agent, eproxy);
+            
+            // Update RRD with values retrieved in SNMP collection
+            updateRRds(agent, parameters, eproxy);
+        
+        	// return the status of the collection
+        	return ServiceCollector.COLLECTION_SUCCEEDED;
+        } catch (CollectionError e) {
+        	return e.reportError();
+        } catch (Throwable t) {
+        	return this.unexpected(agent, t);
+        }
 	}
 
     private String getCollectionName(Map parameters) {
@@ -422,4 +438,40 @@ public class SnmpCollector implements ServiceCollector {
 	Category log() {
 		return ThreadCategory.getInstance(SnmpCollector.class);
 	}
+
+    void checkForNewInterfaces(CollectionAgent agent, EventProxy eventProxy) {
+        if (!agent.hasInterfaceOids()) return;
+        
+        agent.logIfCounts();
+    
+        if (agent.ifCountHasChanged()) {
+            sendForceRescanEvent(agent, eventProxy);
+        }
+    
+        agent.setSavedIfCount(agent.getIfNumber().getIfNumber());
+    }
+
+    void updateRRds(CollectionAgent agent, Map parms, EventProxy eventProxy) {
+        new UpdateRRDs().execute(agent, parms, eventProxy);
+    }
+
+    void sendForceRescanEvent(CollectionAgent agent, EventProxy eventProxy) {
+        if (!agent.isForceRescanInProgress()) {
+            logIfCountChangedForceRescan(agent);
+            agent.sendForceRescanEvent(eventProxy);
+        }
+    }
+
+    void logIfCountChangedForceRescan(CollectionAgent agent) {
+        log().info("Number of interfaces on primary SNMP "
+                + "interface " + agent.getHostAddress()
+                + " has changed, generating 'ForceRescan' event.");
+    }
+
+    int unexpected(CollectionAgent agent, Throwable t) {
+    	log().error(
+    			"Unexpected error during node SNMP collection for "
+    					+ agent.getHostAddress(), t);
+    	return ServiceCollector.COLLECTION_FAILED;
+    }
 }

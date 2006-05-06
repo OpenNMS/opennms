@@ -6,23 +6,39 @@ import java.net.UnknownHostException;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Category;
 import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.collectd.SnmpCollector.IfNumberTracker;
 import org.opennms.netmgt.config.DataSourceFactory;
+import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsIpInterface.CollectionType;
 import org.opennms.netmgt.poller.IPv4NetworkInterface;
+import org.opennms.netmgt.snmp.AggregateTracker;
+import org.opennms.netmgt.snmp.CollectionTracker;
+import org.opennms.netmgt.snmp.SnmpAgentConfig;
+import org.opennms.netmgt.snmp.SnmpUtils;
+import org.opennms.netmgt.snmp.SnmpWalker;
 import org.opennms.netmgt.utils.EventProxy;
 import org.opennms.netmgt.utils.EventProxyException;
 import org.opennms.netmgt.xml.event.Event;
 
 public class CollectionAgent extends IPv4NetworkInterface {
 
+    // the interface of the Agent
 	private OnmsIpInterface m_iface;
+    
+    // collection trackers
+    private SnmpNodeCollector m_nodeCollector;
+    private IfNumberTracker m_ifNumber;
+    private SnmpIfCollector m_ifCollector;
+
+    // miscellaneous junk?
     private String m_collectionName;
 	private CollectionSet m_collectionSet;
     private int m_maxVarsPerPdu;
@@ -335,6 +351,147 @@ public class CollectionAgent extends IPv4NetworkInterface {
     				+ "forceRescan event.", e);
     	}
     }
+
+    SnmpAgentConfig getAgentConfig() {
+        SnmpAgentConfig agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(getInetAddress());
+        agentConfig.setMaxVarsPerPdu(getMaxVarsPerPdu());
+        return agentConfig;
+    }
+
+    public SnmpIfCollector getIfCollector() {
+        if (m_ifCollector == null)
+            m_ifCollector = createIfCollector();
+        return m_ifCollector;
+    }
+
+    public IfNumberTracker getIfNumber() {
+        if (m_ifNumber == null)
+            m_ifNumber = createIfNumberTracker();
+        return m_ifNumber;
+    }
+
+    public SnmpNodeCollector getNodeCollector() {
+        if (m_nodeCollector == null)
+            m_nodeCollector = createNodeCollector();
+        return m_nodeCollector;
+    }
+
+    private SnmpNodeCollector createNodeCollector() {
+        SnmpNodeCollector nodeCollector = null;
+        if (!getNodeAttributeList().isEmpty()) {
+        	nodeCollector = new SnmpNodeCollector(getInetAddress(), getNodeAttributeList());
+        }
+        return nodeCollector;
+    }
+
+    private IfNumberTracker createIfNumberTracker() {
+        IfNumberTracker ifNumber = null;
+        if (hasInterfaceOids()) {
+            ifNumber = new IfNumberTracker();
+        }
+        return ifNumber;
+    }
+
+    private SnmpIfCollector createIfCollector() {
+        SnmpIfCollector ifCollector = null;
+        // construct the ifCollector
+        if (hasInterfaceOids()) {
+        	ifCollector = new SnmpIfCollector(getInetAddress(), getCombinedInterfaceAttributes());
+        }
+        return ifCollector;
+    }
+
+    CollectionTracker getCollectionTracker() {
+        List trackers = new ArrayList(3);
+       
+        if (getIfNumber() != null) {
+        	trackers.add(getIfNumber());
+        }
+        if (getNodeCollector() != null) {
+        	trackers.add(getNodeCollector());
+        }
+        if (getIfCollector() != null) {
+        	trackers.add(getIfCollector());
+        }
+       
+        return new AggregateTracker(trackers);
+    }
+
+    SnmpWalker createWalker() {
+        return SnmpUtils.createWalker(getAgentConfig(), "SnmpCollectors for " + getHostAddress(), getCollectionTracker());
+    }
+
+    void saveMaxVarsPerPdu(SnmpWalker walker) {
+        setMaxVarsPerPdu(walker.getMaxVarsPerPdu());
+    }
+
+    void logStartedWalker() {
+        if (log().isDebugEnabled()) {
+        	log().debug(
+        			"collect: successfully instantiated "
+        					+ "SnmpNodeCollector() for "
+        					+ getHostAddress());
+        }
+    }
+
+    void logFinishedWalker() {
+        if (log().isDebugEnabled()) {
+        	log().debug(
+        			"collect: node SNMP query for address "
+        					+ getHostAddress() + " complete.");
+        }
+    }
+
+    void verifySuccessfulWalk(SnmpWalker walker) throws CollectionWarning {
+        if (walker.failed()) {
+        	// Log error and return COLLECTION_FAILED
+        	throw new CollectionWarning("collect: collection failed for "
+        			+ getHostAddress());
+        }
+    }
+
+    void warnOfInterruption(InterruptedException e) throws CollectionWarning {
+        Thread.currentThread().interrupt();
+        throw new CollectionWarning("collect: Collection of node SNMP "
+        		+ "data for interface " + getHostAddress()
+        		+ " interrupted!", e);
+    }
+
+    void collect() throws CollectionWarning {
+    	try {
+    
+            // now collect the data
+    		SnmpWalker walker = createWalker();
+    		walker.start();
+    
+            logStartedWalker();
+    
+    		// wait for collection to finish
+    		walker.waitFor();
+    
+    		logFinishedWalker();
+    
+    		// Was the collection successful?
+    		verifySuccessfulWalk(walker);
+    
+    		saveMaxVarsPerPdu(walker);
+            
+    	} catch (InterruptedException e) {
+    		warnOfInterruption(e);
+    	}
+    }
+
+    void logIfCounts() {
+        log().debug("collect: nodeId: " + getNodeId()
+        				+ " interface: " + getHostAddress()
+        				+ " ifCount: " + getIfNumber().getIfNumber() 
+                       + " savedIfCount: " + getSavedIfCount());
+    }
+
+    boolean ifCountHasChanged() {
+        return (getSavedIfCount() != -1) && (getIfNumber().getIfNumber() != getSavedIfCount());
+    }
+
 
 
 }
