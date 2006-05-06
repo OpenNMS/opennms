@@ -52,12 +52,10 @@ public class CollectionAttribute {
 
     private MibObject m_mibObj;
     private DataSource m_ds;
-    private String m_collectionName;
 
     public CollectionAttribute(String collectionName, MibObject mibObj) {
-        m_collectionName = collectionName;
         m_mibObj = mibObj;
-        m_ds = DataSource.dataSourceForMibObject(m_mibObj, m_collectionName);
+        m_ds = DataSource.dataSourceForMibObject(m_mibObj, collectionName);
     }
 
     public MibObject getMibObj() {

@@ -42,6 +42,7 @@ package org.opennms.netmgt.collectd;
 
 import java.net.InetAddress;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -49,6 +50,7 @@ import java.util.TreeMap;
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.snmp.AggregateTracker;
+import org.opennms.netmgt.snmp.CollectionTracker;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpValue;
@@ -84,13 +86,14 @@ public class SnmpIfCollector extends AggregateTracker {
     /**
      * The mib object for MIB-2 ifXtable ifAlias
      */
-    private static MibObject ifAliasMibObject() {
-        MibObject m_ifAliasMibObject = new MibObject();
-        m_ifAliasMibObject.setOid(".1.3.6.1.2.1.31.1.1.1.18");
-        m_ifAliasMibObject.setAlias("ifAlias");
-        m_ifAliasMibObject.setType("DisplayString");
-        m_ifAliasMibObject.setInstance("ifIndex");
-	return m_ifAliasMibObject;
+    private static CollectionAttribute ifAliasMibObject() {
+        MibObject ifAliasMibObject = new MibObject();
+        ifAliasMibObject.setOid(".1.3.6.1.2.1.31.1.1.1.18");
+        ifAliasMibObject.setAlias("ifAlias");
+        ifAliasMibObject.setType("DisplayString");
+        ifAliasMibObject.setInstance("ifIndex");
+        CollectionAttribute attr = new CollectionAttribute("default", ifAliasMibObject);
+        return attr;
     }
 
 	/**
@@ -104,7 +107,7 @@ public class SnmpIfCollector extends AggregateTracker {
      *            Map of org.opennms.netmgt.poller.collectd.IfInfo objects.
      */
     public SnmpIfCollector(InetAddress address, List objList) {
-        super(MibObject.getCollectionTrackers(appendIfAlias(objList)));
+        super(CollectionAttribute.getCollectionTrackers(appendIfAlias(objList)));
 
         // Process parameters
         //
