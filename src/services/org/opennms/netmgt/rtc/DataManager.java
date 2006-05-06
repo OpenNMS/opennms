@@ -344,9 +344,9 @@ public class DataManager extends Object {
     			"               OR  o.ifRegainedService is null " +
     			"            )" +
     			"          ) " +
-    			"order by " + 
-    			"       ifsvc.nodeid, ifsvc.ipAddr, ifsvc.serviceid, o.ifLostService " +
-    			(query == null ? "" : "where "+query);
+                (query == null ? "" : "where "+query) +
+    			" order by " + 
+    			"       ifsvc.nodeid, ifsvc.ipAddr, ifsvc.serviceid, o.ifLostService ";
     	
 		long window = (new Date()).getTime() - RTCManager.getRollingWindow();
 		Timestamp windowTS = new Timestamp(window);
