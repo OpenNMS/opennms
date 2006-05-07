@@ -64,7 +64,8 @@ your distribution.
   <!--compiler options-->
   <property name="compiler.debug" value="true"/>
   <property name="compiler.optimize" value="true"/>
-  <property name="compiler.verbose" value="false"/>
+  <property name="compiler.source.version" value="1.4"/>
+  <property name="compiler.target.version" value="1.4"/>
   <!-- XXX This should be true, but will have to set it false for now -->
   <property name="compiler.deprecation" value="false"/>
 
@@ -663,10 +664,10 @@ your distribution.
 
   <target name="java.check">
     <condition property="java.versionokay">
-    	  <or>
-      <contains string="${java.vm.version}" substring="1.4."/>
-    	  <contains string="${java.vm.version}" substring="1.5."/>
-    	  </or>
+      <or>
+        <contains string="${java.vm.version}" substring="1.4."/>
+    	<contains string="${java.vm.version}" substring="1.5."/>
+      </or>
     </condition>
 
     <fail unless="java.versionokay">
@@ -1265,8 +1266,8 @@ OpenNMS as part of the post-install.
 	 optimize="${compiler.optimize}"
 	 verbose="${compiler.verbose}"
 	 classpathref="libraries.java.path"
-	 source="1.4"
-	 target="1.4" 
+         source="${compiler.source.version}" 
+         target="${compiler.target.version}" 
 	 deprecation="${compiler.deprecation}">
    <src>
     <path refid="sources.java.path"/>
@@ -1428,7 +1429,8 @@ OpenNMS as part of the post-install.
 	  debug="${compiler.debug}"
 	  optimize="${compiler.optimize}"
 	  verbose="${compiler.verbose}"
-    target="1.4"
+          source="${compiler.source.version}" 
+          target="${compiler.target.version}" 
 	  deprecation="${compiler.deprecation}">
      <src path="${build.dir}/jsp-source"/>
      <classpath>
@@ -1444,7 +1446,8 @@ OpenNMS as part of the post-install.
 	 debug="${compiler.debug}"
 	 optimize="${compiler.optimize}"
 	 verbose="${compiler.verbose}"
-   target="1.4" 
+         source="${compiler.source.version}" 
+         target="${compiler.target.version}" 
 	 deprecation="${compiler.deprecation}">
    <src>
     <path refid="sources.java.path"/>
@@ -1460,11 +1463,12 @@ OpenNMS as part of the post-install.
    </classpath>
   </javac>
   <javac destdir="${build.tests.dir}"
-   debug="${compiler.debug}"
-   optimize="${compiler.optimize}"
-   verbose="${compiler.verbose}"
-   target="1.4" 
-   deprecation="${compiler.deprecation}">
+         debug="${compiler.debug}"
+         optimize="${compiler.optimize}"
+         verbose="${compiler.verbose}"
+         source="${compiler.source.version}" 
+         target="${compiler.target.version}" 
+         deprecation="${compiler.deprecation}">
    <src>
     <path refid="test.java.path"/>
    </src>
@@ -1733,15 +1737,15 @@ OpenNMS as part of the post-install.
 	   failonerror="true"
 	   classpathref="libraries.java.path"
 	   maxmemory="512m">
-  <link href="http://java.sun.com/j2se/1.4.2/docs/api/"/>
-  <link href="http://jakarta.apache.org/log4j/docs/api/"/>
-  <classpath>
-   <path refid="libraries.java.path"/>
-   <path refid="test.path"/>
-   <path refid="webtest.path"/>
-  </classpath>
-  <sourcepath refid="sources.java.path"/>
-  <excludepackage name="org.opennms.netmgt.notifd.growl" />
+   <link href="http://java.sun.com/j2se/1.4.2/docs/api/"/>
+   <link href="http://jakarta.apache.org/log4j/docs/api/"/>
+   <classpath>
+    <path refid="libraries.java.path"/>
+    <path refid="test.path"/>
+    <path refid="webtest.path"/>
+   </classpath>
+   <sourcepath refid="sources.java.path"/>
+   <excludepackage name="org.opennms.netmgt.notifd.growl" />
   </javadoc>
  </target>
 
