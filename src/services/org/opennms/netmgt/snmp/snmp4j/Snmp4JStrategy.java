@@ -32,7 +32,6 @@
 package org.opennms.netmgt.snmp.snmp4j;
 
 import java.io.IOException;
-import java.net.InetAddress;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -58,18 +57,11 @@ import org.snmp4j.PDUv1;
 import org.snmp4j.Snmp;
 import org.snmp4j.Target;
 import org.snmp4j.TransportMapping;
-import org.snmp4j.UserTarget;
 import org.snmp4j.event.ResponseEvent;
 import org.snmp4j.mp.MPv3;
 import org.snmp4j.mp.MessageProcessingModel;
 import org.snmp4j.mp.PduHandle;
 import org.snmp4j.mp.SnmpConstants;
-import org.snmp4j.security.AuthMD5;
-import org.snmp4j.security.AuthSHA;
-import org.snmp4j.security.PrivAES128;
-import org.snmp4j.security.PrivAES192;
-import org.snmp4j.security.PrivAES256;
-import org.snmp4j.security.PrivDES;
 import org.snmp4j.security.SecurityLevel;
 import org.snmp4j.security.SecurityModel;
 import org.snmp4j.security.SecurityModels;
@@ -113,12 +105,12 @@ public class Snmp4JStrategy implements SnmpStrategy {
     /**
      * SNMP4J createWalker implemenetation.
      * 
-     * @param agentConfig
+     * @param snmpAgentConfig
      * @param name
      * @param tracker
      */
-    public SnmpWalker createWalker(SnmpAgentConfig agentConfig, String name, CollectionTracker tracker) {
-        return new Snmp4JWalker(agentConfig, name, tracker);
+    public SnmpWalker createWalker(SnmpAgentConfig snmpAgentConfig, String name, CollectionTracker tracker) {
+        return new Snmp4JWalker(new Snmp4JAgentConfig(snmpAgentConfig), name, tracker);
     }
     
     /**
@@ -141,10 +133,6 @@ public class Snmp4JStrategy implements SnmpStrategy {
         if (log().isDebugEnabled())
             log().debug("get: OID: "+oid+" for Agent:"+agentConfig);
         
-        if (!agentConfig.isAdapted())
-            adaptConfig(agentConfig);
-        
-        agentConfig.setPduType(PDU.GET);
         SnmpObjId[] oids = {oid};
         SnmpValue[] values = get(agentConfig, oids);
         
@@ -161,15 +149,12 @@ public class Snmp4JStrategy implements SnmpStrategy {
      *        get was unsuccessful, then the first elment
      *        of the array will be null and lenth of 1. 
      */
-    public SnmpValue[] get(SnmpAgentConfig agentConfig, SnmpObjId[] oids) {
+    public SnmpValue[] get(SnmpAgentConfig snmpAgentConfig, SnmpObjId[] oids) {
+        Snmp4JAgentConfig agentConfig = new Snmp4JAgentConfig(snmpAgentConfig);
         if (log().isDebugEnabled())
             log().debug("get: OID: "+oids+" for Agent:"+agentConfig);
         
-        if (!agentConfig.isAdapted())
-            adaptConfig(agentConfig);
-        
-        agentConfig.setPduType(PDU.GET);
-        return send(agentConfig, oids);
+        return send(agentConfig, PDU.GET, oids);
     }
     
     /**
@@ -183,12 +168,8 @@ public class Snmp4JStrategy implements SnmpStrategy {
         if (log().isDebugEnabled())
             log().debug("getNext: OID: "+oid+" for Agent:"+agentConfig);
         
-        if (!agentConfig.isAdapted())
-            adaptConfig(agentConfig);
-        
-        agentConfig.setPduType(PDU.GETNEXT);
         SnmpObjId[] oids = { oid };
-        SnmpValue[] values = send(agentConfig, oids);
+        SnmpValue[] values = getNext(agentConfig, oids);
         return values[0];
     }
     
@@ -202,15 +183,12 @@ public class Snmp4JStrategy implements SnmpStrategy {
      *        getNext was unsuccessful, then the first elment
      *        of the array will be null and lenth of 1. 
      */
-    public SnmpValue[] getNext(SnmpAgentConfig agentConfig, SnmpObjId[] oids) {
+    public SnmpValue[] getNext(SnmpAgentConfig snmpAgentConfig, SnmpObjId[] oids) {
+        Snmp4JAgentConfig agentConfig = new Snmp4JAgentConfig(snmpAgentConfig);
         if (log().isDebugEnabled())
             log().debug("get: OID: "+oids+" for Agent:"+agentConfig);
         
-        if (!agentConfig.isAdapted())
-            adaptConfig(agentConfig);
-        
-        agentConfig.setPduType(PDU.GETNEXT);
-        return send(agentConfig, oids);
+        return send(agentConfig, PDU.GETNEXT, oids);
     }
 
     
@@ -219,10 +197,11 @@ public class Snmp4JStrategy implements SnmpStrategy {
      * adapted from default SnmpAgentConfig values to those compatible with the SNMP4J library.
      * 
      * @param agentConfig
+     * @param pduType TODO
      * @param oids
      * @return
      */
-    private SnmpValue[] send(SnmpAgentConfig agentConfig, SnmpObjId[] oids) {
+    private SnmpValue[] send(Snmp4JAgentConfig agentConfig, int pduType, SnmpObjId[] oids) {
         
         SnmpValue[] values = { null };
         Snmp session = null;
@@ -232,15 +211,16 @@ public class Snmp4JStrategy implements SnmpStrategy {
             session = new Snmp(new DefaultUdpTransportMapping());
             session.listen();
             
-            session.getUSM().addUser((createOctetString(agentConfig.getSecurityName())),
-                    new UsmUser(createOctetString(agentConfig.getSecurityName()),
-                            convertAuthProtocol(agentConfig.getAuthProtocol()),
-                            createOctetString(agentConfig.getAuthPassPhrase()),
-                            convertPrivProtocol(agentConfig.getPrivProtocol()),
-                            createOctetString(agentConfig.getPrivPassPhrase())));
+            session.getUSM().addUser((agentConfig.getSecurityName()),
+                    new UsmUser(agentConfig.getSecurityName(),
+                            agentConfig.getAuthProtocol(),
+                            agentConfig.getAuthPassPhrase(),
+                            agentConfig.getPrivProtocol(),
+                            agentConfig.getPrivPassPhrase()));
             
-            Target target = getTarget(agentConfig);
-            PDU pdu = SnmpHelpers.createPDU(agentConfig);
+            Target target = agentConfig.getTarget();
+            PDU pdu = SnmpHelpers.createPDU(agentConfig.getVersion());
+            pdu.setType(pduType);
             
             //TODO:log this
             if (!buildPdu(pdu, oids))
@@ -300,211 +280,10 @@ public class Snmp4JStrategy implements SnmpStrategy {
         
     }
 
-    static OID convertAuthProtocol(String authProtocol) {
-        
-        //Returning null here is okay because the SNMP4J library supports
-        //this value as null when creating the Snmp session.
-        if (authProtocol == null)
-            return null;
-        
-        if (authProtocol.equals("MD5")) {
-            return AuthMD5.ID;
-        } else if (authProtocol.equals("SHA")) {
-            return AuthSHA.ID;
-        } else {
-            throw new IllegalArgumentException("Authentication protocol unsupported: " + authProtocol);
-        }            
-    }
-
-    static OID convertPrivProtocol(String privProtocol) {
-
-        //Returning null here is okay because the SNMP4J library supports
-        //this value as null when creating the Snmp session.
-        if (privProtocol == null)
-            return null;
-        
-        if (privProtocol.equals("DES")) {
-            return PrivDES.ID;
-        } else if ((privProtocol.equals("AES128")) || (privProtocol.equals("AES"))) {
-            return PrivAES128.ID;
-        } else if (privProtocol.equals("AES192")) {
-            return PrivAES192.ID;
-        } else if (privProtocol.equals("AES256")) {
-            return PrivAES256.ID;
-        } else {
-            throw new IllegalArgumentException("Privacy protocol " + privProtocol + " not supported");
-        }
-
-    }
-
-    /**
-     * Adapts the agent's values defined by SnmpAgentConfig's constants
-     * to SNMP4J compatible constants.
-     * @param agentConfig
-     */
-    public static void adaptConfig(SnmpAgentConfig agentConfig) {
-        
-        //fail-safe for those not checking prior to this call
-        if(agentConfig.isAdapted())
-            return;
-        
-        agentConfig.setPduType(convertPduType(agentConfig.getPduType()));
-        agentConfig.setSecurityLevel(convertSecurityLevel(agentConfig.getSecurityLevel()));
-        agentConfig.setVersion(convertVersion(agentConfig.getVersion()));
-        agentConfig.setAdapted(true);
-    }
-
     private Category log() {
         return ThreadCategory.getInstance(getClass());
     }
     
-    /**
-     * Adapts the OpenNMS SNMPv3 community name to an SNMP4J compatible
-     * community name (String -> OctetString)
-     * 
-     * @param agentConfig
-     * @return
-     */
-    public static OctetString convertCommunity(String community) {
-        return new OctetString(community);
-    }
-
-    /**
-     * This method adapts the OpenNMS SNMP version constants
-     * to SNMP4J defined constants.
-     * 
-     * @param version
-     * @return
-     */
-    public static int convertVersion(int version) {
-
-        switch (version) {
-        case SnmpAgentConfig.VERSION3 :
-            return SnmpConstants.version3;
-        case SnmpAgentConfig.VERSION2C :
-            return SnmpConstants.version2c;
-        default :
-            return SnmpConstants.version1;
-        }
-    }
-
-    /**
-     * Adapts the OpenNMS SNMPv3 security name to an SNMP4J compatible
-     * security name (String -> OctetString)
-     * 
-     * @param securityName
-     * @return
-     */
-    public static OctetString convertSecurityName(String securityName) {
-        return new OctetString(securityName);
-    }
-
-    /**
-     * This method adapts the OpenNMS SNMPv3 security level constants
-     * to SNMP4J defined constants.
-     * 
-     * @param securityLevel
-     * @return
-     */
-    public static int convertSecurityLevel(int securityLevel) {
-        
-    
-        switch (securityLevel) {
-        case SnmpAgentConfig.AUTH_NOPRIV :
-            securityLevel = SecurityLevel.AUTH_NOPRIV;
-            break;
-        case SnmpAgentConfig.AUTH_PRIV :
-            securityLevel = SecurityLevel.AUTH_PRIV;
-            break;
-        case SnmpAgentConfig.NOAUTH_NOPRIV :
-            securityLevel = SecurityLevel.NOAUTH_NOPRIV;
-            break;
-        default :
-           securityLevel = SecurityLevel.NOAUTH_NOPRIV;
-        }
-        
-        return securityLevel;
-    }
-
-    /**
-     * This method converts an InetAddress to an implementation of an SNMP4J Address
-     * (UdpAddress or TcpAddress)
-     * 
-     * TODO: This needs to be updated when the protocol flag is added to the SNMP Config
-     * so that UDP or TCP can be used in v3 operations.
-     */
-    public static Address convertAddress(InetAddress address, int port) {
-        String transportAddress = address.getHostAddress();
-        transportAddress += "/" + port;
-        Address targetAddress = new UdpAddress(transportAddress);
-        return targetAddress;
-    }
-    
-    /**
-     * Converts OpenNMS PDU type constant to that value used in the SNMP4J library.
-     * 
-     * @param agentConfig
-     * @return
-     */
-    public static int convertPduType(int pduType) {
-        
-        switch (pduType) {
-        case SnmpAgentConfig.GET_PDU :
-            return PDU.GET;
-        case SnmpAgentConfig.GETNEXT_PDU :
-            return PDU.GETNEXT;
-        case SnmpAgentConfig.GETBULK_PDU :
-            return PDU.GETBULK;
-        case SnmpAgentConfig.SET_PDU :
-            return PDU.SET;
-        default :
-            ThreadCategory.getInstance(Snmp4JStrategy.class).warn("convertPduType: Unknown SnmpAgentConfig PDU type requested...Defaulting to GET. Type requested: "+pduType);
-            return PDU.SET;
-        }
-    }
-
-    protected static Target getTarget(SnmpAgentConfig agentConfig) {
-    
-        Target target = null;
-        
-        //TODO: Need to do something better than this.
-        if (!agentConfig.isAdapted()) {
-            return target;
-        }
-        
-        if (agentConfig.getVersion() == SnmpConstants.version3) {
-            target = new UserTarget();
-            ((UserTarget)target).setSecurityLevel(agentConfig.getSecurityLevel());
-            ((UserTarget)target).setSecurityName(convertSecurityName(agentConfig.getSecurityName()));
-        } else {
-            target = new CommunityTarget();
-            ((CommunityTarget)target).setCommunity(convertCommunity(agentConfig.getReadCommunity()));
-        }
-    
-        target.setVersion((agentConfig.getVersion()));
-        target.setRetries(agentConfig.getRetries());
-        target.setTimeout(agentConfig.getTimeout());
-        target.setAddress(convertAddress(agentConfig.getAddress(), agentConfig.getPort()));
-        target.setMaxSizeRequestPDU(agentConfig.getMaxRequestSize());
-            
-        return target;
-    }
-    
-    static OctetString createOctetString(String s) {
-        
-        if (s == null) {
-            return null;
-        }
-        
-        OctetString octetString;
-        if (s.startsWith("0x")) {
-            octetString = OctetString.fromHexString(s.substring(2), ':');
-        } else {
-            octetString = new OctetString(s);
-        }
-        return octetString;
-    }
-
     public SnmpValueFactory getValueFactory() {
         if (m_valueFactory == null)
             m_valueFactory = new Snmp4JValueFactory();

@@ -169,16 +169,14 @@ public class Snmp4JWalker extends SnmpWalker {
     private Snmp m_session;
     private Target m_tgt;
     private ResponseListener m_listener;
-    private SnmpAgentConfig m_agentConfig;
+    private Snmp4JAgentConfig m_agentConfig;
 
-    public Snmp4JWalker(SnmpAgentConfig agentConfig, String name, CollectionTracker tracker) {
-        super(agentConfig.getAddress(), name, agentConfig.getMaxVarsPerPdu(), tracker);
+    public Snmp4JWalker(Snmp4JAgentConfig agentConfig, String name, CollectionTracker tracker) {
+        super(agentConfig.getInetAddress(), name, agentConfig.getMaxVarsPerPdu(), tracker);
         
-        if(!agentConfig.isAdapted())
-            Snmp4JStrategy.adaptConfig(agentConfig);
         m_agentConfig = agentConfig;
         
-        m_tgt = Snmp4JStrategy.getTarget(agentConfig);
+        m_tgt = agentConfig.getTarget();
         m_listener = new Snmp4JResponseListener();
     }
     

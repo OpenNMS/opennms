@@ -31,7 +31,7 @@ public class CollectionAgent extends IPv4NetworkInterface {
     // miscellaneous junk?
     private String m_collectionName;
 	private CollectionSet m_collectionSet;
-    private int m_maxVarsPerPdu;
+    private int m_maxVarsPerPdu = 0;
     private int m_ifCount = -1;
 
 	public CollectionAgent(OnmsIpInterface iface) {
@@ -87,10 +87,6 @@ public class CollectionAgent extends IPv4NetworkInterface {
         return m_ifCount;
 	}
 
-	boolean hasInterfaceOids() {
-		return m_collectionSet.hasInterfaceOids();
-	}
-
 	Map getIfMap() {
 		return m_collectionSet.getIfMap();
 	}
@@ -111,10 +107,6 @@ public class CollectionAgent extends IPv4NetworkInterface {
 		return getIpInterface().getIsSnmpPrimary();
 	}
 
-	List getCombinedInterfaceOids() {
-        return m_collectionSet.getCombinedInterfaceOids();
-	}
-    
     List getCombinedInterfaceAttributes() {
         return m_collectionSet.getCombinedInterfaceAttributes();
     }
@@ -124,8 +116,23 @@ public class CollectionAgent extends IPv4NetworkInterface {
     }
 
     public int getMaxVarsPerPdu() {
-        if (m_maxVarsPerPdu == -1)
+        
+        if (m_maxVarsPerPdu < 1) {
             m_maxVarsPerPdu = m_collectionSet.getMaxVarsPerPdu();
+            log().info("using maxVarsPerPdu from dataCollectionConfig");
+        }
+        
+        if (m_maxVarsPerPdu < 1) {
+            SnmpAgentConfig agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(getInetAddress());
+            m_maxVarsPerPdu = agentConfig.getMaxVarsPerPdu();
+            log().info("using maxVarsPerPdu from snmpconfig");
+        }
+        
+        if (m_maxVarsPerPdu < 1) {
+            log().warn("MaxVarsPerPdu CANNOT BE LESS THAN 1.  Using 10");
+            return 10;
+        }
+
         return m_maxVarsPerPdu;
     }
 
@@ -213,7 +220,7 @@ public class CollectionAgent extends IPv4NetworkInterface {
         return getHostAddress();
     }
 
-    SnmpAgentConfig getAgentConfig() {
+    public SnmpAgentConfig getAgentConfig() {
         SnmpAgentConfig agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(getInetAddress());
         agentConfig.setMaxVarsPerPdu(getMaxVarsPerPdu());
         return agentConfig;
@@ -247,7 +254,7 @@ public class CollectionAgent extends IPv4NetworkInterface {
 
     private IfNumberTracker createIfNumberTracker() {
         IfNumberTracker ifNumber = null;
-        if (hasInterfaceOids()) {
+        if (hasInterfaceDataToCollect()) {
             ifNumber = new IfNumberTracker();
         }
         return ifNumber;
@@ -256,10 +263,14 @@ public class CollectionAgent extends IPv4NetworkInterface {
     private SnmpIfCollector createIfCollector() {
         SnmpIfCollector ifCollector = null;
         // construct the ifCollector
-        if (hasInterfaceOids()) {
+        if (hasInterfaceDataToCollect()) {
         	ifCollector = new SnmpIfCollector(getInetAddress(), getCombinedInterfaceAttributes());
         }
         return ifCollector;
+    }
+
+    boolean hasInterfaceDataToCollect() {
+        return m_collectionSet.hasInterfaceDataTo‚ollect();
     }
 
     CollectionTracker getCollectionTracker() {
@@ -351,6 +362,10 @@ public class CollectionAgent extends IPv4NetworkInterface {
 
     boolean ifCountHasChanged() {
         return (getSavedIfCount() != -1) && (getIfNumber().getIfNumber() != getSavedIfCount());
+    }
+
+    IfInfo getIfInfo(int ifIndex) {
+        return (IfInfo) getIfMap().get(new Integer(ifIndex));
     }
 
 

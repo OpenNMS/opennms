@@ -46,36 +46,23 @@ import org.opennms.netmgt.config.DataCollectionConfigFactory;
  * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
  */
-final class NodeInfo {
+final class NodeInfo extends CollectionResource {
 
 	private CollectionAgent m_agent;
 
 	private String m_collectionName;
 
-    private List m_attrList;
-
     public NodeInfo(CollectionAgent agent, String collectionName) {
     	m_agent = agent;
     	m_collectionName = collectionName;
-    	loadAttributeList();
     }
     
     public CollectionAgent getCollectionAgent() {
     	return m_agent;
     }
 
-	void loadAttributeList() {
-        /*
-		 * Retrieve list of mib objects to be collected from the remote
-		 * agent which are to be stored in the node-level RRD file. These
-		 * objects pertain to the node itself not any individual interfaces.
-		 */
-        m_attrList = DataCollectionConfigFactory.getInstance().buildCollectionAttributes(m_collectionName, m_agent.getSysObjectId(), m_agent.getHostAddress(), -1);
-        
-	}
-
     public List getAttributeList() {
-        return m_attrList;
+        return DataCollectionConfigFactory.getInstance().buildCollectionAttributes(m_collectionName, m_agent.getSysObjectId(), m_agent.getHostAddress(), -1);
     }
 
 } // end class

@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<session version="1.0" comment="Inline deprecated method">
+<refactoring id="org.eclipse.jdt.ui.inline.method" flags="393222" description="Inline method 'org.opennms.netmgt.snmp.SnmpCollectorTestCase.addAttribute(...)'" comment="Inline deprecated method" project="opennms" input="unit://src/services/org/opennms/netmgt/snmp/SnmpCollectorTestCase.java" mode="0" delete="false" selection="-1 -1" version="1.0"/>
+</session>

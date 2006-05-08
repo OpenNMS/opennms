@@ -159,7 +159,7 @@ public class SnmpCollector implements ServiceCollector {
 	 * XML file. "primary" = only primary SNMP interface should be collected and
 	 * stored "all" = all primary SNMP interfaces should be collected and stored
 	 */
-	static String SNMP_STORAGE_PRIMARY = "primary";
+	public static String SNMP_STORAGE_PRIMARY = "primary";
 
 	private static String SNMP_STORAGE_ALL = "all";
 
@@ -267,8 +267,6 @@ public class SnmpCollector implements ServiceCollector {
 	}
 
 	private void initializeRrdRepository() {
-		DataCollectionConfigFactory.getInstance().getRrdPath();
-
         logInitialRrdPath();
 
         initializeRrdDirs();
@@ -423,11 +421,6 @@ public class SnmpCollector implements ServiceCollector {
         	return e.reportError();
         } catch (Throwable t) {
         	return this.unexpected(agent, t);
-        } finally {
-            
-            // want to make sure we send any pending events 
-            forceRescanState.sendEvent();
-            
         }
 	}
 
@@ -440,7 +433,7 @@ public class SnmpCollector implements ServiceCollector {
 	}
 
     void checkForNewInterfaces(CollectionAgent agent, ForceRescanState forceRescanState) {
-        if (!agent.hasInterfaceOids()) return;
+        if (!agent.hasInterfaceDataToCollect()) return;
         
         agent.logIfCounts();
     

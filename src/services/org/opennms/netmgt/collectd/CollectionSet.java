@@ -76,17 +76,20 @@ public class CollectionSet {
 
 	boolean hasDataToCollect() {
         if (!getNodeInfo().getAttributeList().isEmpty()) return true;
-        
+        return hasInterfaceDataTo‚ollect();
+	}
+
+    boolean hasInterfaceDataTo‚ollect() {
         Iterator iter = getIfMap().values().iterator();
         while (iter.hasNext()) {
             IfInfo ifInfo = (IfInfo) iter.next();
-            if (!ifInfo.getOidList().isEmpty()) {
+            if (!ifInfo.getAttributeList().isEmpty()) {
                 return true;
             }
         }
 
         return false;
-	}
+    }
 
 	public String getCollectionName() {
 		return m_collectionName;
@@ -98,24 +101,6 @@ public class CollectionSet {
 
 	void addSnmpInterface(OnmsSnmpInterface snmpIface) {
 		addIfInfo(new IfInfo(m_agent, m_collectionName, snmpIface));
-	}
-
-	boolean hasInterfaceOids() {
-		
-		Map ifMap = getIfMap();
-		if (ifMap == null) return false;
-		
-		Iterator iter = ifMap.values().iterator();
-		while (iter.hasNext()) {
-			IfInfo ifInfo = (IfInfo) iter.next();
-			if (ifInfo.getType() < 1) {
-				continue;
-			}
-			if (!ifInfo.getOidList().isEmpty()) {
-				return true;
-			}
-		}
-		return false;
 	}
 
 	void logInitializeSnmpIface(OnmsSnmpInterface snmpIface) {
@@ -172,8 +157,7 @@ public class CollectionSet {
 
     int getMaxVarsPerPdu() {
     	// Retrieve configured value for max number of vars per PDU
-    	int maxVarsPerPdu = DataCollectionConfigFactory.getInstance()
-    			.getMaxVarsPerPdu(m_collectionName);
+    	int maxVarsPerPdu = DataCollectionConfigFactory.getInstance().getMaxVarsPerPdu(m_collectionName);
     	if (maxVarsPerPdu == -1) {
             if (log().isEnabledFor(Priority.WARN)) {
     			log().warn(
@@ -182,17 +166,8 @@ public class CollectionSet {
     							+ m_collectionName);
     		}
     		maxVarsPerPdu = SnmpCollector.DEFAULT_MAX_VARS_PER_PDU;
-    	} else if (maxVarsPerPdu == 0) {
-    		/*
-    		 * Special case, zero indicates "no limit" on number of vars in a
-    		 * single PDU...so set maxVarsPerPdu to maximum integer value:
-    		 * Integer.MAX_VALUE. This is a lot easier than building in special
-    		 * logic to handle a value of zero. Doubt anyone will attempt to
-    		 * collect over 2 billion oids.
-    		 */
-    		maxVarsPerPdu = Integer.MAX_VALUE;
-    	}
-    	return maxVarsPerPdu;
+    	} 
+        return maxVarsPerPdu;
     }
 
     void verifyCollectionIsNecessary(CollectionAgent agent) {
@@ -212,31 +187,6 @@ public class CollectionSet {
         return getNodeInfo().getAttributeList();
     }
 
-    List getCombinedInterfaceOids() {
-        Map ifMap = getIfMap();
-        List allOids = new ArrayList();
-    
-        // Iterate over all the interface's in the interface map
-        //
-        if (ifMap != null) {
-            Iterator i = ifMap.values().iterator();
-            while (i.hasNext()) {
-                IfInfo ifInfo = (IfInfo) i.next();
-                List ifOidList = ifInfo.getOidList();
-    
-                // Add unique interface oid's to the list
-                //
-                Iterator j = ifOidList.iterator();
-                while (j.hasNext()) {
-                    MibObject oid = (MibObject) j.next();
-                    if (!allOids.contains(oid))
-                        allOids.add(oid);
-                }
-            }
-        }
-    	return allOids;
-    }
-    
     List getCombinedInterfaceAttributes() {
         Set attributes = new LinkedHashSet();
         for (Iterator it = getIfMap().values().iterator(); it.hasNext();) {

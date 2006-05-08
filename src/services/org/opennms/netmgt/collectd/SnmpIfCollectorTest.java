@@ -33,23 +33,16 @@ package org.opennms.netmgt.collectd;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.Set;
 
 import junit.framework.TestSuite;
 
-import org.opennms.netmgt.config.SnmpPeerFactory;
-import org.opennms.netmgt.model.OnmsIpInterface;
-import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.OnmsIpInterface.CollectionType;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpCollectorTestCase;
-import org.opennms.netmgt.snmp.SnmpUtils;
-import org.opennms.netmgt.snmp.SnmpWalker;
 import org.opennms.netmgt.snmp.VersionSettingTestSuite;
 
 
@@ -63,12 +56,8 @@ public class SnmpIfCollectorTest extends SnmpCollectorTestCase {
         return suite;
     }
 
-    private Map m_ifMap;
-    private SnmpWalker m_walker;
-
     protected void setUp() throws Exception {
         super.setUp();
-        m_ifMap = new TreeMap();
     }
 
     protected void tearDown() throws Exception {
@@ -76,53 +65,56 @@ public class SnmpIfCollectorTest extends SnmpCollectorTestCase {
     }
 
     public void testZeroVars() throws Exception {
-        addIfInfo(createIfInfo(1, 24, "lo", CollectionType.PRIMARY));
+        try {
+            createSnmpInterface(1, 24, "lo", CollectionType.PRIMARY);
+
+            SnmpIfCollector collector = createSnmpIfCollector();
+            waitForSignal();
+
+            fail("Expected an exception to be thrown with no data to collect");
+
+        } catch (RuntimeException e) {
+
+        }
         
-        SnmpIfCollector collector = createSnmpIfCollector();
-        waitForSignal();
-        
-        assertInterfaceMibObjectsPresent(collector.getEntries());
     }
 
     private void assertInterfaceMibObjectsPresent(List entries) {
         assertNotNull(entries);
-        for (Iterator it = entries.iterator(); it.hasNext();) {
-            SNMPCollectorEntry entry = (SNMPCollectorEntry) it.next();
-            int ifIndex = entry.getIfIndex().intValue();
-            IfInfo info = (IfInfo)m_ifMap.get(new Integer(ifIndex));
-            if (info == null) continue;
-            assertMibObjectsPresent(entry, m_objList);
-        }
-        
-        for (Iterator it = m_ifMap.values().iterator(); it.hasNext();) {
-            IfInfo info = (IfInfo) it.next();
-            if (m_objList.size() == 0) continue;
-            SNMPCollectorEntry entry = findEntryWithIfIndex(info.getIndex(), entries);
-            assertNotNull("Could not locate entry for ifIndex "+info.getIndex()+" entries.size() = "+entries.size(), entry);
-            assertMibObjectsPresent(entry, m_objList);
+
+        for (Iterator it = getSnmpInterfaces().iterator(); it.hasNext();) {
+            OnmsSnmpInterface info = (OnmsSnmpInterface) it.next();
+            if (getAttributeList().size() == 0) continue;
+            SNMPCollectorEntry entry = findEntryWithIfIndex(info.getIfIndex(), entries);
+            assertNotNull("Could not locate entry for ifIndex "+info.getIfIndex()+" entries.size() = "+entries.size(), entry);
+            assertMibObjectsPresent(entry, getAttributeList());
         }
     }
 
-    private SNMPCollectorEntry findEntryWithIfIndex(int index, List entries) {
+    private Set getSnmpInterfaces() {
+        return m_agent.getNode().getSnmpInterfaces();
+    }
+
+    private SNMPCollectorEntry findEntryWithIfIndex(Integer ifIndex, List entries) {
+        assertNotNull(ifIndex);
         assertNotNull(entries);
         for (Iterator it = entries.iterator(); it.hasNext();) {
             SNMPCollectorEntry entry = (SNMPCollectorEntry) it.next();
-            int ifIndex = entry.getIfIndex().intValue();
-            if (ifIndex == index) return entry;
+            if (ifIndex.equals(entry.getIfIndex())) return entry;
         }
         return null;
     }
 
     public void testInvalidVar() throws Exception {
-        addMibObject("invalid", "1.3.6.1.2.1.2.2.2.10", "ifIndex", "counter");
+        addAttribute("invalid", "1.3.6.1.2.1.2.2.2.10", "ifIndex", "counter");
         
-        addIfInfo(createIfInfo(1, 24, "lo", CollectionType.PRIMARY));
+        createSnmpInterface(1, 24, "lo", CollectionType.PRIMARY);
         
         SnmpIfCollector collector = createSnmpIfCollector();
         waitForSignal();
         
         // remove the failing element.  Now entries should match
-        m_objList.remove(0);
+        getAttributeList().remove(0);
         assertInterfaceMibObjectsPresent(collector.getEntries());
     }
     
@@ -131,25 +123,25 @@ public class SnmpIfCollectorTest extends SnmpCollectorTestCase {
         addIfSpeed();
         addIfInOctets();
         // the oid below is wrong.  Make sure we collect the others anyway
-        addMibObject("invalid", "1.3.66.1.2.1.2.2.299.16", "ifIndex", "counter");
+        addAttribute("invalid", "1.3.66.1.2.1.2.2.299.16", "ifIndex", "counter");
         addIfInErrors();
         addIfOutErrors();
         addIfInDiscards();
         
-        addIfInfo(createIfInfo(1, 24, "lo", CollectionType.PRIMARY));
+        createSnmpInterface(1, 24, "lo", CollectionType.PRIMARY);
         
         SnmpIfCollector collector = createSnmpIfCollector();
         waitForSignal();
         
         // remove the bad apple before compare
-        m_objList.remove(2);
+        getAttributeList().remove(2);
         assertInterfaceMibObjectsPresent(collector.getEntries());
     }
     
     public void testManyVars() throws Exception {
         addIfTable();
         
-        addIfInfo(createIfInfo(1, 24, "lo", CollectionType.PRIMARY));
+        createSnmpInterface(1, 24, "lo", CollectionType.PRIMARY);
         
         SnmpIfCollector collector = createSnmpIfCollector();
         waitForSignal();
@@ -158,43 +150,30 @@ public class SnmpIfCollectorTest extends SnmpCollectorTestCase {
     }
 
     private SnmpIfCollector createSnmpIfCollector() throws UnknownHostException {
-        SnmpIfCollector collector = new SnmpIfCollector(InetAddress.getLocalHost(), new CollectionAgent(null).getCombinedInterfaceAttributes());
-        SnmpAgentConfig agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getLocalHost());
-        m_walker = SnmpUtils.createWalker(agentConfig, "snmpIfCollector", collector);
-        m_walker.start();
+        m_agent.initialize();
+        SnmpIfCollector collector = new SnmpIfCollector(InetAddress.getLocalHost(), m_agent.getCombinedInterfaceAttributes());
+        
+        createWalker(collector);
         return collector;
     }
-    
-    private void waitForSignal() throws InterruptedException {
-        m_walker.waitFor();
-    }
 
-    private IfInfo createIfInfo(int ifIndex, int ifType, String ifName, CollectionType ifCollType) {
-    	OnmsNode m_node = new OnmsNode();
-
-    	OnmsIpInterface m_iface = new OnmsIpInterface();
-    	m_iface.setIfIndex(new Integer(ifIndex));
-    	m_iface.setIsSnmpPrimary(ifCollType);
-    	m_node.addIpInterface(m_iface);
-
-    	OnmsSnmpInterface m_snmpIface = new OnmsSnmpInterface();
+    private OnmsSnmpInterface createSnmpInterface(int ifIndex, int ifType, String ifName, CollectionType ifCollType) {
+        OnmsSnmpInterface m_snmpIface = new OnmsSnmpInterface();
     	m_snmpIface.setIfIndex(new Integer(ifIndex));
     	m_snmpIface.setIfType(new Integer(ifType));
     	m_snmpIface.setIfName(ifName);
-    	m_node.addSnmpInterface(m_snmpIface);
+    	m_agent.getNode().addSnmpInterface(m_snmpIface);
+        
+    	return m_snmpIface;
 
-    	CollectionAgent agent = new CollectionAgent(m_iface);
-		IfInfo ifInfo = new IfInfo(agent, "default", m_snmpIface);
-        ifInfo.setOidList(new ArrayList(m_objList));
-        return ifInfo;
     }
 
     public void testManyIfs() throws Exception {
         addIfTable();
         
-        addIfInfo(createIfInfo(1, 24, "lo0", CollectionType.PRIMARY));
-        addIfInfo(createIfInfo(2, 55, "gif0", CollectionType.SECONDARY));
-        addIfInfo(createIfInfo(3, 57, "stf0", CollectionType.COLLECT));
+        createSnmpInterface(1, 24, "lo0", CollectionType.PRIMARY);
+        createSnmpInterface(2, 55, "gif0", CollectionType.SECONDARY);
+        createSnmpInterface(3, 57, "stf0", CollectionType.COLLECT);
         
         SnmpIfCollector collector = createSnmpIfCollector();
         waitForSignal();
@@ -205,8 +184,4 @@ public class SnmpIfCollectorTest extends SnmpCollectorTestCase {
     // TODO: add test for very large v2 request
 
     
-    private void addIfInfo(IfInfo ifInfo) {
-        m_ifMap.put(new Integer(ifInfo.getIndex()), ifInfo);
-    }
-
 }

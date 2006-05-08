@@ -387,17 +387,7 @@ final class CollectableService implements ReadyRunnable {
 
                 // Get path to RRD repository
                 //
-                String rrdPath = DataCollectionConfigFactory.getInstance().getRrdRepository();
-
-                if (rrdPath == null) {
-                    log().warn("Configuration error, failed to retrieve path to RRD repository. Unable to process reparenting updated.");
-                    return !ABORT_COLLECTION;
-                }
-
-                // Strip the File.separator char off of the end of the path
-                if (rrdPath.endsWith(File.separator)) {
-                    rrdPath = rrdPath.substring(0, (rrdPath.length() - File.separator.length()));
-                }
+                String rrdPath = DataCollectionConfigFactory.getInstance().getRrdPath();
 
                 // Does the <newNodeId> directory already exist?
                 File newNodeDir = new File(rrdPath + File.separator + m_updates.getReparentNewNodeId());

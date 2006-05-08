@@ -33,6 +33,7 @@ package org.opennms.netmgt.collectd;
 
 
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 
 import junit.framework.TestSuite;
@@ -56,19 +57,23 @@ public class SnmpNodeCollectorTest extends SnmpCollectorTestCase {
 
 
     public void testZeroVars() throws Exception {
-        SnmpNodeCollector collector = createNodeCollector(50);
-        assertTrue(collector.getEntry().isEmpty());
+        try {
+            SnmpNodeCollector collector = createNodeCollector(50);
+            fail("An exception should be thrown here");
+        } catch (RuntimeException e) {
+            
+        }
     }
 
 
     public void testInvalidVar() throws Exception {
-        addMibObject("invalid", ".1.3.6.1.2.1.2", "0", "string");
+        addAttribute("invalid", ".1.3.6.1.2.1.2", "0", "string");
         SnmpNodeCollector collector = createNodeCollector(50);
         assertTrue(collector.getEntry().isEmpty());
     }
 
     public void testInvalidInst() throws Exception {
-        addMibObject("invalid", ".1.3.6.1.2.1.1.3", "1", "timeTicks");
+        addAttribute("invalid", ".1.3.6.1.2.1.1.3", "1", "timeTicks");
         SnmpNodeCollector collector = createNodeCollector(50);
         assertTrue(collector.getEntry().isEmpty());
     }
@@ -76,16 +81,15 @@ public class SnmpNodeCollectorTest extends SnmpCollectorTestCase {
     public void testOneVar() throws Exception {
         addSysName();
         SnmpNodeCollector collector = createNodeCollector(50);
-        assertMibObjectsPresent(collector.getEntry(), m_objList);
+        assertMibObjectsPresent(collector.getEntry(), getAttributeList());
     }
 
     private SnmpNodeCollector createNodeCollector(int maxVarsPerPdu) throws Exception, InterruptedException {
-        InetAddress address = InetAddress.getLocalHost();
-        SnmpAgentConfig agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(address);
-        SnmpNodeCollector collector = new SnmpNodeCollector(address, new ArrayList(m_objList));
-        SnmpWalker walker = SnmpUtils.createWalker(agentConfig, "SnmpNodeCollector for "+address.getHostAddress(), collector);
-        walker.start();
-        walker.waitFor();
+        m_agent.initialize();
+        SnmpNodeCollector collector = new SnmpNodeCollector(InetAddress.getLocalHost(), m_agent.getNodeAttributeList());
+
+        createWalker(collector);
+        waitForSignal();
         assertNotNull(collector.getEntry());
         return collector;
     }
@@ -102,7 +106,7 @@ public class SnmpNodeCollectorTest extends SnmpCollectorTestCase {
         addSystemGroup();
         addIfNumber();
         SnmpNodeCollector collector = createNodeCollector(maxVarsPerPdu);
-        assertMibObjectsPresent(collector.getEntry(), m_objList);
+        assertMibObjectsPresent(collector.getEntry(), getAttributeList());
     }
 
 }

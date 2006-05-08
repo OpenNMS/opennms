@@ -162,14 +162,13 @@ public class JoeSnmpWalker extends SnmpWalker {
     private SnmpPeer m_peer;
     private SnmpSession m_session;
 
-    public JoeSnmpWalker(SnmpAgentConfig agentConfig, String name, CollectionTracker tracker) {
+    public JoeSnmpWalker(JoeSnmpAgentConfig agentConfig, String name, CollectionTracker tracker) {
         super(agentConfig.getAddress(), name, agentConfig.getMaxVarsPerPdu(), tracker);
-        JoeSnmpStrategy.adaptConfig(agentConfig);
         m_peer = getPeer(agentConfig);
         m_handler = new JoeSnmpResponseHandler();
     }
     
-    private SnmpPeer getPeer(SnmpAgentConfig agentConfig) {
+    private SnmpPeer getPeer(JoeSnmpAgentConfig agentConfig) {
         SnmpPeer peer = new SnmpPeer(agentConfig.getAddress());
         peer.getParameters().setVersion(agentConfig.getVersion());
         peer.getParameters().setReadCommunity(agentConfig.getReadCommunity());

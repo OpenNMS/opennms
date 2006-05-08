@@ -39,7 +39,7 @@ import org.snmp4j.ScopedPDU;
 import org.snmp4j.Snmp;
 import org.snmp4j.TransportMapping;
 import org.snmp4j.mp.SnmpConstants;
-import org.snmp4j.security.UsmUser;
+import org.snmp4j.smi.OID;
 import org.snmp4j.transport.DefaultUdpTransportMapping;
 
 /**
@@ -47,25 +47,6 @@ import org.snmp4j.transport.DefaultUdpTransportMapping;
  *
  */
 public class SnmpHelpers {
-    
-    /**
-     * Creates an SNMP4J PDU based on version and PDU type
-     * set in the agentConfig parameter
-     * 
-     * @param agentConfig
-     * @return
-     */
-    public static PDU createPDU(SnmpAgentConfig agentConfig) {
-        
-        //TODO: need to do something better here.
-        if (!agentConfig.isAdapted()) {
-            return null;
-        }
-        
-        PDU request = createPDU(agentConfig.getVersion());
-        request.setType((agentConfig.getPduType()));
-        return request;
-    }
     
     /**
      * Creates an SNMP4J PDU using the OpenNMS default version constant
@@ -98,24 +79,15 @@ public class SnmpHelpers {
         return snmp;
     }
     
-    public static Snmp createSnmpSession(SnmpAgentConfig agentConfig) throws IOException {
-        if (!agentConfig.isAdapted()) {
-            throw new IllegalArgumentException("Error creating SNMP session... agentConfig has not been adapted to SNMP4J.");
-        }
-        
+    public static Snmp createSnmpSession(Snmp4JAgentConfig agentConfig) throws IOException {
+
         Snmp session = createSnmpSession();
-        if (agentConfig.getVersion() == SnmpConstants.version3) {
-            session.getUSM().addUser((Snmp4JStrategy.createOctetString(agentConfig.getSecurityName())),
-                    new UsmUser(Snmp4JStrategy.createOctetString(agentConfig.getSecurityName()),
-                            Snmp4JStrategy.convertAuthProtocol(agentConfig.getAuthProtocol()),
-                            Snmp4JStrategy.createOctetString(agentConfig.getAuthPassPhrase()),
-                            Snmp4JStrategy.convertPrivProtocol(agentConfig.getPrivProtocol()),
-                            Snmp4JStrategy.createOctetString(agentConfig.getPrivPassPhrase())));
+        if (agentConfig.isSnmpV3()) {
+            session.getUSM().addUser((agentConfig.getSecurityName()), agentConfig.getUser());
 
         }
         return session;
     }
-
 
     /**
      * Returns a string representation of the SNMP4J version constants

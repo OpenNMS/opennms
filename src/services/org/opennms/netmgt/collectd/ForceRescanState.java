@@ -20,7 +20,7 @@ public class ForceRescanState {
     private CollectionAgent m_agent;
     private EventProxy m_eventProxy;
     
-    private boolean m_forceRescanNeeded;
+    private boolean m_forceRescanSent = false;
 
     public ForceRescanState(CollectionAgent agent, EventProxy eventProxy) {
         m_agent = agent;
@@ -93,13 +93,11 @@ public class ForceRescanState {
     	}
     }
     
-    void sendEvent() {
-        if (m_forceRescanNeeded)
-            sendForceRescanEvent();
-    }
-
     void rescanIndicated() {
-        m_forceRescanNeeded = true;
+        if (!m_forceRescanSent) {
+            sendForceRescanEvent();
+            m_forceRescanSent = true;
+        }
     }
 
 }
