@@ -94,7 +94,6 @@ public final class SnmpPlugin extends AbstractPlugin {
     public boolean isProtocolSupported(InetAddress address) {
         try {
             SnmpAgentConfig agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(address);
-            agentConfig.setPduType(SnmpAgentConfig.GET_PDU);
             return (getValue(agentConfig, DEFAULT_OID) != null);
 
         } catch (Throwable t) {

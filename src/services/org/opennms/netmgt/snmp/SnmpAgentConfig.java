@@ -47,10 +47,6 @@ public class SnmpAgentConfig {
     public static final int VERSION2C = 2;
     public static final int VERSION3 = 3;
     public static final int DEFAULT_VERSION = VERSION1;
-    public static final int GET_PDU = 1;
-    public static final int GETNEXT_PDU = 2;
-    public static final int GETBULK_PDU = 3;
-    public static final int SET_PDU = 4;
     public static final int DEFAULT_RETRIES = 1;
     public static final int DEFAULT_MAX_REQUEST_SIZE = 65535;
     public static final int NOAUTH_NOPRIV = 1;
@@ -58,7 +54,6 @@ public class SnmpAgentConfig {
     public static final int AUTH_PRIV = 3;
     public static final String DEFAULT_READ_COMMUNITY = "public";
     public static final int DEFAULT_MAX_VARS_PER_PDU = 50;
-    public static final int DEFAULT_PDU_TYPE = GET_PDU;
     public static final String DEFAULT_WRITE_COMMUNITY = "private";
     public static final int DEFAULT_SECURITY_LEVEL = NOAUTH_NOPRIV;
     public static final String DEFAULT_SECURITY_NAME = "opennmsUser";
@@ -77,7 +72,6 @@ public class SnmpAgentConfig {
     private String m_securityName;
     private String m_readCommunity;
     private int m_maxVarsPerPdu;
-    private int m_pduType;
     private boolean m_adapted;
     private String m_writeCommunity;
     private String m_authPassPhrase;
@@ -108,7 +102,6 @@ public class SnmpAgentConfig {
         m_privPassPhrase = DEFAULT_PRIV_PASS_PHRASE;
         m_readCommunity = DEFAULT_READ_COMMUNITY;
         m_maxVarsPerPdu = DEFAULT_MAX_VARS_PER_PDU;
-        m_pduType = DEFAULT_PDU_TYPE;
         m_adapted = false;
         m_writeCommunity = DEFAULT_WRITE_COMMUNITY;
     }
@@ -214,14 +207,6 @@ public class SnmpAgentConfig {
 
     public void setMaxVarsPerPdu(int maxVarsPerPdu) {
         m_maxVarsPerPdu = maxVarsPerPdu;
-    }
-
-    public int getPduType() {
-        return m_pduType;
-    }
-
-    public void setPduType(int pduType) {
-        m_pduType = pduType;
     }
 
     public void setAdapted(boolean adapted) {

@@ -32,7 +32,7 @@
 package org.opennms.netmgt.snmp;
 
 
-public abstract class CollectionTracker {
+public abstract class CollectionTracker implements Collectable {
     
     public static final int NO_ERR = 0;
     public static final int TOO_BIG_ERR = 1;
@@ -95,6 +95,10 @@ public abstract class CollectionTracker {
     protected void reportNoSuchNameErr(String msg) {
         if (m_parent != null)
             m_parent.reportNoSuchNameErr(msg);
+    }
+    
+    public CollectionTracker getCollectionTracker() {
+        return this;
     }
 
 }

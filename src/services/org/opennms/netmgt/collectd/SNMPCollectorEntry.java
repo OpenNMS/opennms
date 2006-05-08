@@ -69,11 +69,11 @@ public final class SNMPCollectorEntry extends AbstractSnmpStore {
      * The list of MIBObjects that will used for associating the the data within
      * the map.
      */
-    private java.util.List m_objList;
+    private List m_attrList;
 
-    public SNMPCollectorEntry(List objList) {
-        if (objList == null) throw new NullPointerException("objList is null!");
-        m_objList = objList;
+    public SNMPCollectorEntry(List attrList) {
+        if (attrList == null) throw new NullPointerException("attrList is null!");
+        m_attrList = attrList;
     }
 
 
@@ -81,23 +81,24 @@ public final class SNMPCollectorEntry extends AbstractSnmpStore {
         return ThreadCategory.getInstance(getClass());
     }
     
-    private MibObject findMibObjectWitOid(SnmpObjId base) {
-        for (Iterator it = m_objList.iterator(); it.hasNext();) {
-            MibObject mibObj = (MibObject) it.next();
-            if (base.equals(mibObj.getSnmpObjId()))
-                return mibObj;
+    private CollectionAttribute findMibObjectWitOid(SnmpObjId base) {
+        for (Iterator it = m_attrList.iterator(); it.hasNext();) {
+            CollectionAttribute attr = (CollectionAttribute)it.next();
+            if (base.equals(attr.getSnmpObjId()))
+                return attr;
         }
         return null;
     }
-    
+
+
     public void storeResult(SnmpObjId base, SnmpInstId inst, SnmpValue val) {
         String key = base.append(inst).toString();
         putValue(key, val);
-        MibObject mibObject = findMibObjectWitOid(base);
-        if (mibObject == null) throw new IllegalArgumentException("Received result for unexpected oid ["+base+"].["+inst+"]");
-        if (mibObject.getInstance().equals(MibObject.INSTANCE_IFINDEX))
+        CollectionAttribute attr = findMibObjectWitOid(base);
+        if (attr == null) throw new IllegalArgumentException("Received result for unexpected oid ["+base+"].["+inst+"]");
+        if (attr.getInstance().equals(MibObject.INSTANCE_IFINDEX))
             putIfIndex(inst.toInt());
-        log().debug("storeResult: added value for "+mibObject.getAlias()+": ["+base+"].["+inst+"] = "+val);
+        log().debug("storeResult: added value for "+attr.getAlias()+": ["+base+"].["+inst+"] = "+val);
     }
 
 

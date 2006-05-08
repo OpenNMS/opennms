@@ -83,11 +83,11 @@ import org.opennms.netmgt.config.datacollection.SystemDefChoice;
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
  * 
  */
-public final class DataCollectionConfigFactory {
+public final class DataCollectionConfigFactory implements DataCollectionConfig {
     /**
      * The singleton instance of this factory
      */
-    private static DataCollectionConfigFactory m_singleton = null;
+    private static DataCollectionConfig m_singleton = null;
 
     /**
      * The config class loaded from the config file
@@ -134,7 +134,7 @@ public final class DataCollectionConfigFactory {
         buildCollectionMap();
             }
 
-    public static void setInstance(DataCollectionConfigFactory instance) {
+    public static void setInstance(DataCollectionConfig instance) {
         m_singleton = instance;
         m_loaded = true;
         }
@@ -191,7 +191,7 @@ public final class DataCollectionConfigFactory {
      * @throws java.lang.IllegalStateException
      *             Thrown if the factory has not yet been initialized.
      */
-    public static synchronized DataCollectionConfigFactory getInstance() {
+    public static synchronized DataCollectionConfig getInstance() {
         if (!m_loaded)
             throw new IllegalStateException("The factory has not been initialized");
 
@@ -636,7 +636,7 @@ public final class DataCollectionConfigFactory {
      * 
      * @return RRD repository path.
      */
-    public String getRrdRepository() {
+    private String getRrdRepository() {
         return m_config.getRrdRepository();
     }
 

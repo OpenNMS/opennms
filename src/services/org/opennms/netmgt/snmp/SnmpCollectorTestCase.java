@@ -31,85 +31,35 @@
 //
 package org.opennms.netmgt.snmp;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.TreeMap;
 
 import org.opennms.core.concurrent.BarrierSignaler;
-import org.opennms.netmgt.collectd.MibObject;
+import org.opennms.netmgt.collectd.CollectionAgent;
+import org.opennms.netmgt.collectd.CollectionAttribute;
 import org.opennms.netmgt.collectd.SNMPCollectorEntry;
+import org.opennms.netmgt.config.DataCollectionConfigFactory;
+import org.opennms.netmgt.mock.MockDataCollectionConfig;
 import org.opennms.netmgt.mock.OpenNMSTestCase;
+import org.opennms.netmgt.model.OnmsIpInterface;
+import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.OnmsIpInterface.CollectionType;
 import org.opennms.netmgt.snmp.mock.TestAgent;
 
 public class SnmpCollectorTestCase extends OpenNMSTestCase {
 
     protected BarrierSignaler m_signaler;
-    protected List m_objList;
-    private TreeMap m_mibObjectMap;
-    public TestAgent m_agent = new TestAgent();
+    public TestAgent m_testAgent = new TestAgent();
+    public MockDataCollectionConfig m_config;
     
-    private static final String initalMibObjects[][] = {
-        {
-            "sysLocation", ".1.3.6.1.2.1.1.6", "0", "string"
-        },
-
-        {
-            "sysName",     ".1.3.6.1.2.1.1.5", "0", "string"
-        },
-
-        {
-            "sysContact",  ".1.3.6.1.2.1.1.4", "0", "string"
-        },
-
-        {
-            "sysUptime",   ".1.3.6.1.2.1.1.3", "0", "timeTicks"
-        },
-
-        {
-            "sysOid",      ".1.3.6.1.2.1.1.2", "0", "objectid"
-        },
-
-        {
-            "sysDescr", ".1.3.6.1.2.1.1.1", "0", "string"
-        },
-        { 
-            "ifNumber",    ".1.3.6.1.2.1.2.1", "0", "integer" 
-        },
-        
-        {
-            "ifInDiscards", ".1.3.6.1.2.1.2.2.1.13", "ifIndex", "counter"
-        },
-
-        {
-            "ifOutErrors", ".1.3.6.1.2.1.2.2.1.20", "ifIndex", "counter"
-        },
-
-        {
-            "ifInErrors", ".1.3.6.1.2.1.2.2.1.14", "ifIndex", "counter"
-        },
-
-        {
-            "ifOutOctets", ".1.3.6.1.2.1.2.2.1.16", "ifIndex", "counter"
-        },
-
-        {
-            "ifInOctets", ".1.3.6.1.2.1.2.2.1.10", "ifIndex", "counter"
-        },
-
-        {
-            "ifSpeed", ".1.3.6.1.2.1.2.2.1.5", "ifIndex", "gauge"
-        },
-        
-
-    };
-
     protected SnmpObjId m_sysNameOid;
     protected SnmpObjId m_ifDescr;
     protected SnmpObjId m_ifOutOctets;
     protected SnmpObjId m_invalid;
     
     private int m_version = SnmpAgentConfig.VERSION1;
+    protected CollectionAgent m_agent;
+    private SnmpWalker m_walker;
     
     public void setVersion(int version) {
         super.setVersion(version);
@@ -119,33 +69,31 @@ public class SnmpCollectorTestCase extends OpenNMSTestCase {
     protected void setUp() throws Exception {
         setStartEventd(false);
         super.setUp();
+        
+        m_config = new MockDataCollectionConfig();
+        DataCollectionConfigFactory.setInstance(m_config);
+        
         m_signaler = new BarrierSignaler(1);
-        m_objList = new ArrayList();
-        m_mibObjectMap = new TreeMap();
-        
-        for (int i = 0; i < initalMibObjects.length; i++) {
-            String[] mibData = initalMibObjects[i];
-            defineMibObject(mibData[0], mibData[1], mibData[2], mibData[3]);
-            
-        }
-        
+
         m_sysNameOid = SnmpObjId.get(".1.3.6.1.2.1.1.5");
         m_ifOutOctets = SnmpObjId.get("..1.3.6.1.2.1.2.2.1.16");
         m_invalid = SnmpObjId.get(".1.5.6.1.2.1.1.5");
         m_ifDescr = SnmpObjId.get(".1.3.6.1.2.1.2.2.1.2");
+        
+        createAgent(1, CollectionType.PRIMARY);
 
     }
-    
+
     protected void tearDown() throws Exception {
         super.tearDown();
     }
     
-    protected void assertMibObjectsPresent(SNMPCollectorEntry entry, List objList) {
+    protected void assertMibObjectsPresent(SNMPCollectorEntry entry, List attrList) {
         assertNotNull(entry);
-        assertEquals("Unexpected size for "+entry, objList.size(), getEntrySize(entry));
-        for (Iterator it = objList.iterator(); it.hasNext();) {
-            MibObject mibObject = (MibObject) it.next();
-            assertMibObjectPresent(entry, mibObject);
+        assertEquals("Unexpected size for "+entry, attrList.size(), getEntrySize(entry));
+        for (Iterator it = attrList.iterator(); it.hasNext();) {
+            CollectionAttribute attr = (CollectionAttribute) it.next();
+            assertMibObjectPresent(entry, attr);
         }
     }
 
@@ -153,19 +101,19 @@ public class SnmpCollectorTestCase extends OpenNMSTestCase {
         return entry.size() - (entry.getIfIndex() == null ? 0 : 1);
     }
 
-    private void assertMibObjectPresent(SNMPCollectorEntry entry, MibObject mibObject) {
-        String inst = getObjectInstance(entry, mibObject);
-        SnmpValue value = entry.getValue(mibObject.getOid()+"."+inst);
+    private void assertMibObjectPresent(SNMPCollectorEntry entry, CollectionAttribute attr) {
+        String inst = getObjectInstance(entry, attr);
+        SnmpValue value = entry.getValue(attr.getOid()+"."+inst);
         assertNotNull(value);
-        assertExpectedType(mibObject, value);
+        assertExpectedType(attr, value);
     }
 
-    private void assertExpectedType(MibObject mibObject, SnmpValue value) {
-        assertEquals(expectNumeric(mibObject.getType()), value.isNumeric());
+    private void assertExpectedType(CollectionAttribute attr, SnmpValue value) {
+        assertEquals(expectNumeric(attr.getType()), value.isNumeric());
     }
 
-    private String getObjectInstance(SNMPCollectorEntry entry, MibObject mibObject) {
-        return (mibObject.getInstance() == "ifIndex" ? entry.getIfIndex().toString() : mibObject.getInstance());
+    private String getObjectInstance(SNMPCollectorEntry entry, CollectionAttribute attr) {
+        return (attr.getInstance() == "ifIndex" ? entry.getIfIndex().toString() : attr.getInstance());
     }
 
     private boolean expectNumeric(String type) {
@@ -185,24 +133,8 @@ public class SnmpCollectorTestCase extends OpenNMSTestCase {
         return false;
     }
 
-    protected MibObject defineMibObject(String alias, String oid, String instance, String type) {
-        MibObject mibObj = createMibObject(alias, oid, instance, type);
-        m_mibObjectMap.put(mibObj.getAlias(), mibObj);
-        m_mibObjectMap.put(mibObj.getOid(), mibObj);
-        return mibObj;
-    }
-
-    protected MibObject createMibObject(String alias, String oid, String instance, String type) {
-        MibObject mibObj = new MibObject();
-        mibObj.setAlias(alias);
-        mibObj.setOid(oid);
-        mibObj.setType(type);
-        mibObj.setInstance(instance);
-        return mibObj;
-    }
-
     protected void addIfNumber() {
-        addMibObject("ifNumber",    ".1.3.6.1.2.1.2.1", "0", "integer");
+        addAttribute("ifNumber",    ".1.3.6.1.2.1.2.1", "0", "integer");
     }
 
     protected void addSystemGroup() {
@@ -214,42 +146,31 @@ public class SnmpCollectorTestCase extends OpenNMSTestCase {
     }
 
     protected void addSysLocation() {
-        addMibObject("sysLocation", ".1.3.6.1.2.1.1.6", "0", "string");
+        addAttribute("sysLocation", ".1.3.6.1.2.1.1.6", "0", "string");
     }
 
     protected void addSysName() {
-        addMibObject("sysName",     ".1.3.6.1.2.1.1.5", "0", "string");
+        addAttribute("sysName",     ".1.3.6.1.2.1.1.5", "0", "string");
     }
 
     protected void addSysContact() {
-        addMibObject("sysContact",  ".1.3.6.1.2.1.1.4", "0", "string");
+        addAttribute("sysContact",  ".1.3.6.1.2.1.1.4", "0", "string");
     }
 
     protected void addSysUptime() {
-        addMibObject("sysUptime",   ".1.3.6.1.2.1.1.3", "0", "timeTicks");
+        addAttribute("sysUptime",   ".1.3.6.1.2.1.1.3", "0", "timeTicks");
     }
 
     protected void addSysOid() {
-        addMibObject("sysOid",      ".1.3.6.1.2.1.1.2", "0", "objectid");
+        addAttribute("sysOid",      ".1.3.6.1.2.1.1.2", "0", "objectid");
     }
 
     protected void addSysDescr() {
-        addMibObject("sysDescr", ".1.3.6.1.2.1.1.1", "0", "string");
+        addAttribute("sysDescr", ".1.3.6.1.2.1.1.1", "0", "string");
     }
 
-    protected void addMibObject(String alias, String oid, String inst, String type) {
-        m_objList.add(getMibObject(alias,    oid, inst, type));
-    }
-
-    protected MibObject getMibObject(String alias, String oid, String inst, String type) {
-        MibObject mibObj = getMibObject(alias);
-        if (mibObj != null) return mibObj;
-        return defineMibObject(alias, oid, inst, type);
-        
-    }
-
-    protected MibObject getMibObject(String aliasOrOid) {
-        return (MibObject)m_mibObjectMap.get(aliasOrOid);
+    protected void addAttribute(String alias, String oid, String inst, String type) {
+        m_config.addAttribute(this, alias, oid, inst, type);
     }
 
     protected void addIfTable() {
@@ -269,7 +190,7 @@ public class SnmpCollectorTestCase extends OpenNMSTestCase {
     }
     
     protected void addInvalid() {
-        addMibObject("invalid", ".1.5.6.1.2.1.4.20.1.4", "ifIndex", "counter");
+        addAttribute("invalid", ".1.5.6.1.2.1.4.20.1.4", "ifIndex", "counter");
         
     }
     
@@ -278,52 +199,78 @@ public class SnmpCollectorTestCase extends OpenNMSTestCase {
     protected void addIpAdEntBcastAddr() {
         // .1.3.6.1.2.1.4.20.1.4
         // FIXME: be better about non specific instances.. They are not all ifIndex but we are using that to mean a column
-        addMibObject("addIpAdEntBcastAddr", ".1.3.6.1.2.1.4.20.1.4", "ifIndex", "ipAddress");
+        addAttribute("addIpAdEntBcastAddr", ".1.3.6.1.2.1.4.20.1.4", "ifIndex", "ipAddress");
     }
 
     protected void addIpAdEntNetMask() {
         // .1.3.6.1.2.1.4.20.1.3
-        addMibObject("addIpAdEntNetMask", ".1.3.6.1.2.1.4.20.1.3", "ifIndex", "ipAddress");
+        addAttribute("addIpAdEntNetMask", ".1.3.6.1.2.1.4.20.1.3", "ifIndex", "ipAddress");
         
     }
 
     protected void addIpAdEntIfIndex() {
         // .1.3.6.1.2.1.4.20.1.2
-        addMibObject("addIpAdEntIfIndex", ".1.3.6.1.2.1.4.20.1.2", "ifIndex", "integer");
+        addAttribute("addIpAdEntIfIndex", ".1.3.6.1.2.1.4.20.1.2", "ifIndex", "integer");
         
     }
 
     protected void addIpAdEntAddr() {
         // .1.3.6.1.2.1.4.20.1.1
-        addMibObject("addIpAdEntAddr", ".1.3.6.1.2.1.4.20.1.1", "ifIndex", "ipAddress");
+        addAttribute("addIpAdEntAddr", ".1.3.6.1.2.1.4.20.1.1", "ifIndex", "ipAddress");
         
     }
 
     protected void addIfInDiscards() {
-        addMibObject("ifInDiscards", ".1.3.6.1.2.1.2.2.1.13", "ifIndex", "counter");
+        addAttribute("ifInDiscards", ".1.3.6.1.2.1.2.2.1.13", "ifIndex", "counter");
     }
 
     protected void addIfOutErrors() {
-        addMibObject("ifOutErrors", ".1.3.6.1.2.1.2.2.1.20", "ifIndex", "counter");
+        addAttribute("ifOutErrors", ".1.3.6.1.2.1.2.2.1.20", "ifIndex", "counter");
     }
 
     protected void addIfInErrors() {
-        addMibObject("ifInErrors", ".1.3.6.1.2.1.2.2.1.14", "ifIndex", "counter");
+        addAttribute("ifInErrors", ".1.3.6.1.2.1.2.2.1.14", "ifIndex", "counter");
     }
 
     protected void addIfOutOctets() {
-        addMibObject("ifOutOctets", ".1.3.6.1.2.1.2.2.1.16", "ifIndex", "counter");
+        addAttribute("ifOutOctets", ".1.3.6.1.2.1.2.2.1.16", "ifIndex", "counter");
     }
 
     protected void addIfInOctets() {
-        addMibObject("ifInOctets", ".1.3.6.1.2.1.2.2.1.10", "ifIndex", "counter");
+        addAttribute("ifInOctets", ".1.3.6.1.2.1.2.2.1.10", "ifIndex", "counter");
     }
 
     protected void addIfSpeed() {
-        addMibObject("ifSpeed", ".1.3.6.1.2.1.2.2.1.5", "ifIndex", "gauge");
+        addAttribute("ifSpeed", ".1.3.6.1.2.1.2.2.1.5", "ifIndex", "gauge");
     }
     
     public void testDoNothing() {}
+
+    public List getAttributeList() {
+        return m_config.getAttrList();
+    }
+
+    protected void createAgent(int ifIndex, CollectionType ifCollType) {
+        OnmsNode m_node = new OnmsNode();
+        m_node.setSysObjectId(".1.2.3.4.5.6.7");
+    
+    	OnmsIpInterface m_iface = new OnmsIpInterface();
+        m_iface.setIpAddress("172.20.1.172");
+    	m_iface.setIfIndex(new Integer(ifIndex));
+    	m_iface.setIsSnmpPrimary(ifCollType);
+    	m_node.addIpInterface(m_iface);
+        m_agent = new CollectionAgent(m_iface);
+        m_agent.setCollection("default");
+    }
+
+    protected void createWalker(CollectionTracker collector) {
+        m_walker = SnmpUtils.createWalker(m_agent.getAgentConfig(), getName(), collector);
+        m_walker.start();
+    }
+
+    protected void waitForSignal() throws InterruptedException {
+        m_walker.waitFor();
+    }
     
     
 

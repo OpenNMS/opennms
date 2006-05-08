@@ -39,7 +39,7 @@ public class SnmpObjIdTest extends TestCase {
         if (a == null) {
             assertNull("expected value is null but actual value is "+b, b);
         } else {
-            if (b == null) SnmpCollectionTrackerTest.fail("Expected value is "+a+" but actual value is null"); 
+            if (b == null) fail("Expected value is "+a+" but actual value is null"); 
             assertEquals("arrays have different length", a.length, b.length);
             for(int i = 0; i < a.length; i++) {
                 assertEquals("array differ at index "+i+" expected: "+a+", actual: "+b, a[i], b[i]);

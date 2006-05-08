@@ -69,17 +69,17 @@ public class JoeSnmpStrategy implements SnmpStrategy {
     private JoeSnmpValueFactory m_valueFactory;
     private static SnmpTrapSession sm_trapSession;
 
-    public SnmpWalker createWalker(SnmpAgentConfig agentConfig, String name, CollectionTracker tracker) {
-        return new JoeSnmpWalker(agentConfig, name, tracker);
+    public SnmpWalker createWalker(SnmpAgentConfig snmpAgentConfig, String name, CollectionTracker tracker) {
+        return new JoeSnmpWalker(new JoeSnmpAgentConfig(snmpAgentConfig), name, tracker);
     }
     
-    public SnmpValue get(SnmpAgentConfig agentConfig, SnmpObjId oid) {
+    public SnmpValue get(SnmpAgentConfig snmpAgentConfig, SnmpObjId oid) {
         SnmpObjId[] oids = { oid };
-        return get(agentConfig, oids)[0];
+        return get(snmpAgentConfig, oids)[0];
     }
 
-    public SnmpValue[] get(SnmpAgentConfig agentConfig, SnmpObjId[] oids) {
-        adaptConfig(agentConfig);
+    public SnmpValue[] get(SnmpAgentConfig snmpAgentConfig, SnmpObjId[] oids) {
+        JoeSnmpAgentConfig agentConfig = new JoeSnmpAgentConfig(snmpAgentConfig);
         SnmpSession session = null;
         SnmpValue[] values = { null };
         
@@ -104,13 +104,13 @@ public class JoeSnmpStrategy implements SnmpStrategy {
         return values;
     }
     
-    public SnmpValue getNext(SnmpAgentConfig agentConfig, SnmpObjId oid) {
+    public SnmpValue getNext(SnmpAgentConfig snmpAgentConfig, SnmpObjId oid) {
         SnmpObjId[] oids = { oid };
-        return getNext(agentConfig, oids)[0];
+        return getNext(snmpAgentConfig, oids)[0];
     }
 
-    public SnmpValue[] getNext(SnmpAgentConfig agentConfig, SnmpObjId[] oids) {
-        adaptConfig(agentConfig);
+    public SnmpValue[] getNext(SnmpAgentConfig snmpAgentConfig, SnmpObjId[] oids) {
+        JoeSnmpAgentConfig agentConfig = new JoeSnmpAgentConfig(snmpAgentConfig);
         SnmpSession session = null;
         SnmpValue[] values = { null };
         
@@ -174,17 +174,17 @@ public class JoeSnmpStrategy implements SnmpStrategy {
         return jOids;
     }
 
-    private void configurePeer(SnmpPeer peer, SnmpAgentConfig agentConfig) {
+    private void configurePeer(SnmpPeer peer, JoeSnmpAgentConfig agentConfig) {
         peer.setPort(agentConfig.getPort());
         peer.setRetries(agentConfig.getRetries());
         peer.setTimeout(agentConfig.getTimeout());
     }
 
-    private SnmpPeer createPeer(SnmpAgentConfig agentConfig) {
+    private SnmpPeer createPeer(JoeSnmpAgentConfig agentConfig) {
         return new SnmpPeer(agentConfig.getAddress());
     }
 
-    private void setParameters(SnmpAgentConfig agentConfig, SnmpParameters params) {
+    private void setParameters(JoeSnmpAgentConfig agentConfig, SnmpParameters params) {
         params.setVersion(agentConfig.getVersion());
         params.setReadCommunity(agentConfig.getReadCommunity());
         params.setWriteCommunity(agentConfig.getWriteCommunity());
@@ -199,19 +199,6 @@ public class JoeSnmpStrategy implements SnmpStrategy {
         return null;
     }
 
-    public static void adaptConfig(SnmpAgentConfig agentConfig) {
-        agentConfig.setVersion(convertVersion(agentConfig.getVersion()));
-    }
-
-    public static int convertVersion(int version) {
-        switch (version) {
-        case SnmpAgentConfig.VERSION2C :
-            return SnmpSMI.SNMPV2;
-        default :
-            return SnmpSMI.SNMPV1;
-        }
-    }
-    
     public static class RegistrationInfo {
         public TrapNotificationListener m_listener;
         int m_trapPort;

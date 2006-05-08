@@ -85,12 +85,22 @@ public class UpdateRRDs {
     		}
             
             
-    
     		// Iterate over the SNMP collector entries
     		Iterator iter = getIfCollector().getEntries().iterator();
     		while (iter.hasNext()) {
     			SNMPCollectorEntry ifEntry = (SNMPCollectorEntry) iter.next();
 
+                int ifIndex = ifEntry.getIfIndex().intValue();
+                /*
+                 * Use ifIndex to lookup the IfInfo object from the interface
+                 * map.
+                 */
+                IfInfo ifInfo = m_agent.getIfInfo(ifIndex);
+                if (ifInfo == null) {
+                    m_forceRescanState.rescanIndicated();
+                    continue;
+                }
+    
                 // TODO: This will send rescans for entries that have no IfInfo... so moving below IfInfo may fail to catch all the cases
                 // However... since we send an event if ifNumber changed maybe we don't need these?
                 if (currentAliasIsOutOfDate(ifEntry)) {
@@ -98,17 +108,7 @@ public class UpdateRRDs {
                     logForceRescan(ifEntry);
                 }
     
-                /*
-                 * Use ifIndex to lookup the IfInfo object from the interface
-                 * map.
-                 */
-                IfInfo ifInfo = (IfInfo) m_agent.getIfMap().get(new Integer(ifEntry.getIfIndex().intValue()));
-                if (ifInfo == null) {
-                    // no data needed for this interface
-                    continue;
-                }
-    
-                validateDsList(ifInfo);
+                validateAttrList(ifInfo);
 
                 if (notScheduledForCollection(ifEntry, ifInfo) && !forceStoreByAlias(getAliasDirName(ifEntry))) {
                     logSkip(ifEntry, ifInfo);
@@ -124,9 +124,10 @@ public class UpdateRRDs {
     			 * update commands to update each datasource which has a
     			 * corresponding value in the collected SNMP data.
     			 */
-    			Iterator i = ifInfo.getDsList().iterator();
+    			Iterator i = ifInfo.getAttributeList().iterator();
     			while (i.hasNext()) {
-    				DataSource ds = (DataSource) i.next();
+                    CollectionAttribute attr = (CollectionAttribute)i.next();
+    				DataSource ds = attr.getDs();
     
     				try {
     					String dsVal = ds.getRRDValue(ifEntry);
@@ -238,8 +239,8 @@ public class UpdateRRDs {
         }
     }
 
-    private void validateDsList(IfInfo ifInfo) {
-        if (ifInfo.getDsList() == null) {
+    private void validateAttrList(IfInfo ifInfo) {
+        if (ifInfo.getAttributeList() == null) {
             throw new RuntimeException("Data Source list not "
                     + "available for primary IP addr "
                     + m_agent.getInetAddress().getHostAddress() + " and ifIndex "

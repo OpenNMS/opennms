@@ -36,6 +36,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.opennms.netmgt.snmp.SnmpObjId;
+
 public class CollectionAttribute {
     
     public boolean equals(Object obj) {
@@ -51,11 +53,12 @@ public class CollectionAttribute {
     }
 
     private MibObject m_mibObj;
-    private DataSource m_ds;
+    private DataSource m_ds = null;
+    private String m_collectionName;
 
     public CollectionAttribute(String collectionName, MibObject mibObj) {
+        m_collectionName = collectionName;
         m_mibObj = mibObj;
-        m_ds = DataSource.dataSourceForMibObject(m_mibObj, collectionName);
     }
 
     public MibObject getMibObj() {
@@ -63,6 +66,9 @@ public class CollectionAttribute {
     }
 
     public DataSource getDs() {
+        if (m_ds == null) {
+            m_ds = DataSource.dataSourceForMibObject(m_mibObj, m_collectionName);
+        }
         return m_ds;
     }
 
@@ -77,6 +83,26 @@ public class CollectionAttribute {
         }
         
         return trackers;
+    }
+
+    public String getAlias() {
+        return m_mibObj.getAlias();
+    }
+    
+    public String getOid() {
+        return m_mibObj.getOid();
+    }
+
+    public String getInstance() {
+        return m_mibObj.getInstance();
+    }
+
+    public String getType() {
+        return m_mibObj.getType();
+    }
+
+    SnmpObjId getSnmpObjId() {
+        return getMibObj().getSnmpObjId();
     }
 
 }

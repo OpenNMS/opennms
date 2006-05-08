@@ -34,6 +34,7 @@
 
 package org.opennms.netmgt.collectd;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.opennms.netmgt.config.DataCollectionConfigFactory;
@@ -48,16 +49,16 @@ import org.opennms.netmgt.model.OnmsIpInterface.CollectionType;
  * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
  */
-final class IfInfo {
+final class IfInfo extends CollectionResource {
 	
 	OnmsSnmpInterface m_snmpIface;
 	
 	private CollectionAgent m_agent;
 
 	private String m_collectionName;
-	
-	private List m_oidList = null;
 
+    private List m_attributeList;
+	
     public IfInfo(CollectionAgent agent, String collectionName, OnmsSnmpInterface snmpIface) {
     	m_agent = agent;
     	m_collectionName = collectionName;
@@ -81,35 +82,22 @@ final class IfInfo {
         return m_snmpIface.getCollectionType();
     }
 
-    public List getDsList() {
-        List dsList = DataCollectionConfigFactory.buildDataSourceList(getCollectionName(), getOidList());
-		return dsList;
-    }
-
-    public List getOidList() {
-        return (m_oidList == null ? computeOidList() : m_oidList);
-    }
-
-	private List computeOidList() {
-		/*
-		 * Retrieve list of mib objects to be collected from the
-		 * remote agent for this interface.
-		 */
-		List oidList = DataCollectionConfigFactory.getInstance()
-		.getMibObjectList(getCollectionName(), getCollectionAgent().getSysObjectId(),
-				getCollectionAgent().getHostAddress(), getIndex());
-		return oidList;
-	}
-    
 	public List getAttributeList() {
 	    /*
 	     * Retrieve list of mib objects to be collected from the
 	     * remote agent for this interface.
 	     */
-	    return DataCollectionConfigFactory.getInstance()
+        if (m_attributeList == null) {
+            m_attributeList = computeAttributeList();
+        }
+	    return m_attributeList;
+	}
+
+    private List computeAttributeList() {
+        return DataCollectionConfigFactory.getInstance()
 	    .buildCollectionAttributes(getCollectionName(), getCollectionAgent().getSysObjectId(),
 	            getCollectionAgent().getHostAddress(), getType());
-	}
+    }
 
 	public CollectionAgent getCollectionAgent() {
 		return m_agent;
@@ -119,9 +107,8 @@ final class IfInfo {
 		return m_collectionName;
 	}
 
-	// FIXME: Figure out how to delete this since it is used by the tests
-	public void setOidList(List list) {
-		m_oidList = list;
-	}
+	public void setAttributeList(ArrayList list) {
+        m_attributeList = list;
+    }
 
 } // end class
