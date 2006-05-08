@@ -155,4 +155,8 @@ public class SnmpIfCollector extends AggregateTracker {
         entry.storeResult(base, inst, val);
 
     }
+    
+    public boolean hasData() {
+        return !m_results.isEmpty();
+    }
 }

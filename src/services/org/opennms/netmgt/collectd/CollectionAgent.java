@@ -1,19 +1,12 @@
 package org.opennms.netmgt.collectd;
 
-import java.lang.reflect.UndeclaredThrowableException;
 import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Category;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.collectd.SnmpCollector.IfNumberTracker;
-import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
@@ -24,9 +17,6 @@ import org.opennms.netmgt.snmp.CollectionTracker;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpWalker;
-import org.opennms.netmgt.utils.EventProxy;
-import org.opennms.netmgt.utils.EventProxyException;
-import org.opennms.netmgt.xml.event.Event;
 
 public class CollectionAgent extends IPv4NetworkInterface {
 
@@ -221,135 +211,6 @@ public class CollectionAgent extends IPv4NetworkInterface {
     
     public String toString() {
         return getHostAddress();
-    }
-
-    /**
-     * This method is responsible for determining if a forced rescan has been
-     * started, but is not yet complete for the given nodeID
-     * @param m_iface TODO
-     * @param nodeID TODO
-     * @param addr TODO
-     * @param method TODO
-     * @param int
-     *            nodeID the nodeID of the node being checked
-     */
-    boolean isForceRescanInProgress() {
-        int nodeID = getNodeId();
-        String addr = getHostAddress();
-    	java.sql.Connection dsConn = null;
-    	boolean force = true;
-    
-        try {
-    		dsConn = DataSourceFactory.getInstance().getConnection();
-    
-    		PreparedStatement stmt1 = dsConn
-    				.prepareStatement(SnmpCollector.SQL_GET_LATEST_FORCED_RESCAN_EVENTID);
-    		PreparedStatement stmt2 = dsConn
-    				.prepareStatement(SnmpCollector.SQL_GET_LATEST_RESCAN_COMPLETED_EVENTID);
-    		stmt1.setInt(1, nodeID);
-    		stmt1.setString(2, addr);
-    		stmt2.setInt(1, nodeID);
-    		try {
-    			// Issue database query
-    			ResultSet rs1 = stmt1.executeQuery();
-    			if (rs1.next()) {
-    				int forcedRescanEventId = rs1.getInt(1);
-    				try {
-    					ResultSet rs2 = stmt2.executeQuery();
-    					if (rs2.next()) {
-    						if (rs2.getInt(1) > forcedRescanEventId) {
-    							force = false;
-    						} else {
-    							if (log().isDebugEnabled()) {
-    								log().debug("Rescan already pending on "
-    										+ "node " + nodeID);
-    							}
-    						}
-    					}
-    				} catch (SQLException e) {
-    					throw e;
-    				} finally {
-    					stmt2.close();
-    				}
-    			} else {
-    				force = false;
-    			}
-    		} catch (SQLException e) {
-    			throw e;
-    		} finally {
-    			stmt1.close();
-    		}
-    	} catch (SQLException e) {
-    		log().error("Failed getting connection to the database.", e);
-    		throw new UndeclaredThrowableException(e);
-    	} finally {
-    		// Done with the database so close the connection
-    		try {
-    			dsConn.close();
-    		} catch (SQLException e) {
-    			log()
-    					.info("SQLException while closing database connection",
-    							e);
-    		}
-    	}
-    	return force;
-    }
-
-    String determineLocalHostName() {
-    	// Get local host name (used when generating threshold events)
-    	try {
-    		return InetAddress.getLocalHost().getHostName();
-    	} catch (UnknownHostException e) {
-    		log().warn("initialize: Unable to resolve local host name.", e);
-    		return "unresolved.host";
-    	}
-    }
-    
-    Event createForceRescanEvent() {
-        // create the event to be sent
-        Event newEvent = new Event();
-        
-        newEvent.setUei(EventConstants.FORCE_RESCAN_EVENT_UEI);
-        
-        newEvent.setSource("SNMPServiceMonitor");
-        
-        newEvent.setInterface(this.getHostAddress());
-        
-        newEvent.setService(SnmpCollector.SERVICE_NAME);
-        
-        newEvent.setHost(this.determineLocalHostName());
-        
-        newEvent.setTime(EventConstants.formatToString(new java.util.Date()));
-        
-        newEvent.setNodeid(this.getNodeId());
-        return newEvent;
-    }
-
-    /**
-     * This method is responsible for building a Capsd forceRescan event object
-     * and sending it out over the EventProxy.
-     * @param ifAddress
-     *            interface address to which this event pertains
-     * @param nodeId TODO
-     * @param eventProxy
-     *            proxy over which an event may be sent to eventd
-     */
-    void sendForceRescanEvent(EventProxy eventProxy) {
-    	Category log = log();
-        // Log4j category
-    	if (log.isDebugEnabled()) {
-    		log.debug("generateForceRescanEvent: interface = " + getHostAddress());
-    	}
-    
-    	Event newEvent = createForceRescanEvent();
-    
-    	// Send event via EventProxy
-    	try {
-            eventProxy.send(newEvent);
-    	} catch (EventProxyException e) {
-    		log.error("generateForceRescanEvent: Unable to send "
-    				+ "forceRescan event.", e);
-    	}
     }
 
     SnmpAgentConfig getAgentConfig() {

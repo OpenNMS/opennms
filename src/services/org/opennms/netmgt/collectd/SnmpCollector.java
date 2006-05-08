@@ -53,7 +53,6 @@ import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.DataCollectionConfigFactory;
 import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.SnmpPeerFactory;
@@ -65,7 +64,6 @@ import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.netmgt.utils.EventProxy;
 import org.opennms.netmgt.utils.ParameterMap;
-import org.opennms.netmgt.xml.event.Event;
 
 /**
  * <P>
@@ -179,11 +177,6 @@ public class SnmpCollector implements ServiceCollector {
 	 * Path to SNMP RRD file repository.
 	 */
 	private String m_rrdPath;
-
-	/**
-	 * Local host name
-	 */
-	private String m_host;
 
 	/* -------------------------------------------------------------- */
 	/* Attribute key names */
@@ -406,21 +399,23 @@ public class SnmpCollector implements ServiceCollector {
 	 * 
 	 * @param agent
 	 *            Network interface to be data collected.
-	 * @param eproxy
+	 * @param eventProxy
 	 *            Eventy proxy for sending events.
 	 * @param parameters
 	 *            Key/value pairs from the package to which the interface
 	 *            belongs.
 	 */
-	public int collect(CollectionAgent agent, EventProxy eproxy, Map parameters) {
+	public int collect(CollectionAgent agent, EventProxy eventProxy, Map parameters) {
+        ForceRescanState forceRescanState = new ForceRescanState(agent, eventProxy);
         try {
         
             agent.collect();
             
-            checkForNewInterfaces(agent, eproxy);
+            checkForNewInterfaces(agent, forceRescanState);
             
             // Update RRD with values retrieved in SNMP collection
-            updateRRds(agent, parameters, eproxy);
+            updateRRds(agent, parameters, forceRescanState);
+            
         
         	// return the status of the collection
         	return ServiceCollector.COLLECTION_SUCCEEDED;
@@ -428,6 +423,11 @@ public class SnmpCollector implements ServiceCollector {
         	return e.reportError();
         } catch (Throwable t) {
         	return this.unexpected(agent, t);
+        } finally {
+            
+            // want to make sure we send any pending events 
+            forceRescanState.sendEvent();
+            
         }
 	}
 
@@ -439,27 +439,21 @@ public class SnmpCollector implements ServiceCollector {
 		return ThreadCategory.getInstance(SnmpCollector.class);
 	}
 
-    void checkForNewInterfaces(CollectionAgent agent, EventProxy eventProxy) {
+    void checkForNewInterfaces(CollectionAgent agent, ForceRescanState forceRescanState) {
         if (!agent.hasInterfaceOids()) return;
         
         agent.logIfCounts();
     
         if (agent.ifCountHasChanged()) {
-            sendForceRescanEvent(agent, eventProxy);
+            forceRescanState.rescanIndicated();
+            logIfCountChangedForceRescan(agent);
         }
     
         agent.setSavedIfCount(agent.getIfNumber().getIfNumber());
     }
 
-    void updateRRds(CollectionAgent agent, Map parms, EventProxy eventProxy) {
-        new UpdateRRDs().execute(agent, parms, eventProxy);
-    }
-
-    void sendForceRescanEvent(CollectionAgent agent, EventProxy eventProxy) {
-        if (!agent.isForceRescanInProgress()) {
-            logIfCountChangedForceRescan(agent);
-            agent.sendForceRescanEvent(eventProxy);
-        }
+    void updateRRds(CollectionAgent agent, Map parms, ForceRescanState forceRescanState) {
+        new UpdateRRDs().execute(agent, parms, forceRescanState);
     }
 
     void logIfCountChangedForceRescan(CollectionAgent agent) {
