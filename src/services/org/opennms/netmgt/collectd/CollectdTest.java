@@ -35,6 +35,8 @@ public class CollectdTest extends MockObjectTestCase {
 
 
 	protected void setUp() throws Exception {
+        
+        // Test setup
 		
 		m_eventIpcManager = mock(EventIpcManager.class);
 		m_collectorConfigDao = mock(CollectorConfigDao.class);
