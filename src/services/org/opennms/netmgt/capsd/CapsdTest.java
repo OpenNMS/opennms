@@ -34,18 +34,23 @@
 package org.opennms.netmgt.capsd;
 
 import java.io.IOException;
+import java.io.ByteArrayInputStream;
 import java.io.StringReader;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.config.CapsdConfigFactory;
 import org.opennms.netmgt.config.CollectdConfigFactory;
+import org.opennms.netmgt.config.DataCollectionConfigFactory;
 import org.opennms.netmgt.config.DatabaseSchemaConfigFactory;
 import org.opennms.netmgt.config.OpennmsServerConfigFactory;
 import org.opennms.netmgt.config.PollerConfigFactory;
 import org.opennms.netmgt.mock.MockPollerConfig;
 import org.opennms.netmgt.mock.OpenNMSTestCase;
 import org.opennms.netmgt.poller.Poller;
+import org.opennms.netmgt.rrd.RrdConfig;
+import org.opennms.netmgt.rrd.RrdUtils;
+
 public class CapsdTest extends OpenNMSTestCase {
     
     private Capsd m_capsd;
@@ -208,6 +213,39 @@ public class CapsdTest extends OpenNMSTestCase {
             "</database-schema>\n" + 
             "\n" + 
             "";
+
+    private static final String DATACOLLECTION_CONFIG =
+"<?xml version=\"1.0\"?>\n" +
+"<datacollection-config\n" +
+"  rrdRepository = \"/tmp\">\n" +
+"  <snmp-collection name=\"default\"\n" +
+"    maxVarsPerPdu = \"10\"\n" +
+"    snmpStorageFlag = \"select\">\n" +
+"    <rrd step = \"300\">\n" +
+"      <rra>RRA:AVERAGE:0.5:1:8928</rra>\n" +
+"      <rra>RRA:AVERAGE:0.5:12:8784</rra>\n" +
+"      <rra>RRA:MIN:0.5:12:8784</rra>\n" +
+"      <rra>RRA:MAX:0.5:12:8784</rra>\n" +
+"    </rrd>\n" +
+"    <groups>\n" +
+"      <!-- data from standard (mib-2) sources -->\n" +
+"      <group  name = \"mib2-interfaces\" ifType = \"all\">\n" + 
+"        <mibObj oid=\".1.3.6.1.2.1.2.2.1.10\" instance=\"ifIndex\"\n" +
+"          alias=\"ifInOctets\" type=\"counter\"/>\n" +
+"      </group>\n" +
+"    </groups>\n" +
+"    <systems>\n" +
+"      <systemDef name = \"Enterprise\">\n" +
+"        <sysoidMask>.1.3.6.1.4.1.</sysoidMask>\n" +
+"        <collect>\n" +
+"          <includeGroup>mib2-interfaces</includeGroup>\n" +
+"        </collect>\n" +
+"      </systemDef>\n" +
+"    </systems>\n" +
+"  </snmp-collection>\n" +
+"</datacollection-config>\n";
+
+    private static final String RRD_CONFIG = "org.opennms.rrd.strategyClass=org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy";
     
     private static final String COLLECTD_CONFIG = "<?xml version=\"1.0\"?>\n" + 
             "<?castor class-name=\"org.opennms.netmgt.collectd.CollectdConfiguration\"?>\n" + 
@@ -251,6 +289,13 @@ public class CapsdTest extends OpenNMSTestCase {
         OpennmsServerConfigFactory onmsSvrConfig = new OpennmsServerConfigFactory(new StringReader(SVR_CONFIG));
         OpennmsServerConfigFactory.setInstance(onmsSvrConfig);
         PollerConfigFactory.setInstance(new PollerConfigFactory(System.currentTimeMillis(), new StringReader(POLLER_CONFIG), onmsSvrConfig.getServerName(), onmsSvrConfig.verifyServer()));
+
+	RrdConfig.loadProperties(new ByteArrayInputStream(RRD_CONFIG.getBytes()));
+	// This isn't needed here, but it makes error pop up earlier
+	RrdUtils.initialize();
+
+	DataCollectionConfigFactory.setInstance(new DataCollectionConfigFactory(new StringReader(DATACOLLECTION_CONFIG)));
+
         CollectdConfigFactory.setInstance(new CollectdConfigFactory(new StringReader(COLLECTD_CONFIG), onmsSvrConfig.getServerName(), onmsSvrConfig.verifyServer()));
     }
 
