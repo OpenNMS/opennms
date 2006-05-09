@@ -8,7 +8,7 @@ import java.lang.reflect.UndeclaredThrowableException;
 import java.util.LinkedList;
 import java.util.ListIterator;
 
-import org.opennms.install.ProcessExec;
+import org.opennms.core.utils.ProcessExec;
 
 import junit.framework.Assert;
 

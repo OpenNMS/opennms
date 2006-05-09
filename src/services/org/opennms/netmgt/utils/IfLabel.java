@@ -50,6 +50,7 @@ import java.util.regex.Pattern;
 
 import org.apache.log4j.Category;
 import org.opennms.core.resource.Vault;
+import org.opennms.core.utils.AlphaNumeric;
 import org.opennms.core.utils.ThreadCategory;
 
 /**

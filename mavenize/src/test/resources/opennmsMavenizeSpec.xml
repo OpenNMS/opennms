@@ -28,6 +28,7 @@
 		</sources>
 		<dependencies />
 	</module>
+
 	<module module-id="opennms-bootstrap" module-type="jar"
 		module-name="OpenNMS Launcher">
 		<sources source-type="java">
@@ -52,6 +53,7 @@
 		   </configuration>
 		</plugin>	
 	</module>
+
 	<!-- joesnmp module -->
 	<module module-id="opennms-joesnmp" module-type="jar"
 		module-name="OpenNMS JoeSNMP library">
@@ -107,7 +109,115 @@
 		   </configuration>
 		</plugin>
 		<dependencies>
+                  <module-dependency module-id="opennms-web"/>
+                  <module-dependency module-id="opennms-core"/>
+                  <module-dependency module-id="opennms-test" scope="test"/>
 		  <dependency groupId="postgresql" artifactId="postgresql" version="8.1-404.jdbc3"/>
+		</dependencies>
+	</module>
+
+	<!-- test module -->
+	<module module-id="opennms-test" module-type="jar"
+		module-name="OpenNMS Test Components">
+		<sources source-type="java">
+			<fileset dir="${opennms.dir}/src/test">
+				<include name="**/*.java"/>
+				<include name="**/*.html"/>
+				<exclude name="**/*Test*.java"/>
+			</fileset>
+		</sources>
+		<sources source-type="test">
+			<fileset dir="${opennms.dir}/src/test">
+				<include name="**/*Test*.java"/>
+			</fileset>
+		</sources>
+		<dependencies>
+                  <module-dependency module-id="opennms-core"/>
+		</dependencies>
+	</module>
+
+	<!-- DAO module -->
+	<module module-id="opennms-model" module-type="jar"
+		module-name="OpenNMS Data Model Components">
+		<sources source-type="java">
+			<fileset dir="${opennms.dir}/opennms-model/src/main/java">
+				<include name="**"/>
+				<exclude name="**/CVS/**" />
+				<exclude name="**/.svn/**" />
+				<exclude name="**/.cvsignore" />
+			</fileset>
+		</sources>
+
+		<sources source-type="resource">
+			<fileset dir="${opennms.dir}/opennms-model/src/main/resources">
+				<include name="**"/>
+				<exclude name="**/CVS/**" />
+				<exclude name="**/.svn/**" />
+				<exclude name="**/.cvsignore" />
+			</fileset>
+		</sources>
+
+		<sources source-type="test">
+			<fileset dir="${opennms.dir}/opennms-model/src/test/java">
+				<include name="**"/>
+				<exclude name="**/CVS/**" />
+				<exclude name="**/.svn/**" />
+				<exclude name="**/.cvsignore" />
+			</fileset>
+		</sources>
+
+		<sources source-type="test-resource">
+			<fileset dir="${opennms.dir}/opennms-model/src/test/resources">
+				<include name="**"/>
+				<exclude name="**/CVS/**" />
+				<exclude name="**/.svn/**" />
+				<exclude name="**/.cvsignore" />
+			</fileset>
+		</sources>
+
+		<dependencies>
+                  	<module-dependency module-id="opennms-core"/>
+                  	<module-dependency module-id="opennms-config"/>
+                  	<module-dependency module-id="opennms-snmp-api"/>
+			<dependency groupId="c3p0" artifactId="c3p0"
+				version="0.9.0-pre5" scope="provided" />
+			<dependency groupId="commons-beanutils"
+				artifactId="commons-beanutils-core"
+				version="1.7.0" scope="test" />
+			<dependency groupId="jmock" artifactId="jmock"
+				version="1.0.1" scope="test" />
+			<dependency groupId="commons-logging"
+				artifactId="commons-logging"
+				version="1.0.4" scope="provided" />
+			<dependency groupId="commons-dbcp"
+				artifactId="commons-dbcp"
+				version="1.2" />
+			<dependency groupId="org.springframework"
+				artifactId="spring"
+				version="1.2.6" scope="provided" />
+			<dependency groupId="commons-lang"
+				artifactId="commons-lang"
+				version="2.1" />
+			<dependency groupId="org.hibernate"
+				artifactId="hibernate"
+				version="3.0.5" />
+			<dependency groupId="hsqldb"
+				artifactId="hsqldb"
+				version="1.7.3.3" scope="test" />
+			<dependency groupId="postgresql"
+				artifactId="postgresql"
+				version="8.1-404.jdbc3" scope="test"/>
+			<dependency groupId="junit"
+				artifactId="junit"
+				version="3.8.1" scope="test" />
+			<dependency groupId="commons-io"
+				artifactId="commons-io"
+				version="1.1" />
+			<dependency groupId="log4j"
+				artifactId="log4j"
+				version="1.2.7" scope="provided" />
+			<dependency groupId="castor" artifactId="castor"
+				version="0.9.6" />
 		</dependencies>
 	</module>
 
@@ -125,18 +235,22 @@
 		</dependencies>
 	</module>
 
-	<!-- the db module - this has the DatabaseConnectionFactory -->
+	<!-- the db module - this has the DataSourceFactory -->
 	<module module-id="opennms-db" module-type="jar"
 		module-name="OpenNMS DB Access">
 		<sources source-type="java">
 			<fileset dir="${opennms.dir}/src/services">
-				<include
-					name="org/opennms/netmgt/config/*ConnectionFactory.java" />
+				<include name="org/opennms/netmgt/config/DataSourceFactory.java" />
+				<include name="org/opennms/netmgt/config/DbConnectionFactory.java" />
+				<include name="org/opennms/netmgt/config/DbConnectionFactory.java" />
+				<include name="org/opennms/netmgt/config/C3P0ConnectionFactory.java" />
+				<include name="org/opennms/netmgt/config/LegacyDatabaseConnectionFactory.java" />
 			</fileset>
 		</sources>
 		<dependencies>
 			<module-dependency module-id="opennms-core" />
 			<module-dependency module-id="opennms-config-utils" />
+			<module-dependency module-id="opennms-model" />
 			<dependency groupId="castor" artifactId="castor"
 				version="0.9.6" />
 			<dependency groupId="xerces" artifactId="xerces"
@@ -360,8 +474,8 @@
 
 	</module>
 
-	<module module-id="opennms-services" module-type="jar"
-		module-name="OpenNMS Services">
+	<module module-id="opennms-config" module-type="jar"
+		module-name="OpenNMS Configuration">
 		<sources source-type="castor">
 			<fileset
 				dir="${opennms.dir}/src/services/org/opennms/netmgt/config">
@@ -376,6 +490,14 @@
 				<include name="castorbuilder.properties" />
 			</fileset>
 		</sources>
+		<dependencies>
+			<dependency groupId="castor" artifactId="castor"
+				version="0.9.6" />
+		</dependencies>
+	</module>
+
+	<module module-id="opennms-services" module-type="jar"
+		module-name="OpenNMS Services">
 		<sources source-type="resource">
 			<fileset dir="${opennms.dir}/src/services">
 				<include name="castor.properties" />
@@ -400,7 +522,7 @@
 				<exclude
 					name="org/opennms/netmgt/ConfigFileConstants.java" />
 				<exclude
-					name="org/opennms/netmgt/config/DatabaseConnectionFactory.java" />
+					name="org/opennms/netmgt/config/DataSourceFactory.java" />
 				<exclude
 					name="org/opennms/netmgt/config/DbConnectionFactory.java" />
 				<exclude
@@ -449,12 +571,14 @@
 		-->
 		<dependencies>
 			<module-dependency module-id="opennms-core" />
+			<module-dependency module-id="opennms-config" />
 			<module-dependency module-id="opennms-config-utils" />
 			<module-dependency module-id="opennms-db" />
 			<module-dependency module-id="opennms-snmp-api" />
 			<module-dependency module-id="opennms-rrd-api" />
 			<module-dependency module-id="opennms-filter" />
 			<module-dependency module-id="opennms-icmp-api" />
+			<module-dependency module-id="opennms-model" />
 			<!-- modules needed only at runtime or this case to run the tests -->
 			<!-- we only actually need one of these so we'll have to figure that out -->
 			<module-dependency module-id="opennms-snmp-joesnmp" scope="runtime" />
@@ -492,6 +616,8 @@
 				artifactId="spring-context" version="1.2.5" />
 			<dependency groupId="org.springframework"
 				artifactId="spring-remoting" version="1.2.5" />
+			<dependency groupId="org.springframework"
+				artifactId="spring-jdbc" version="1.2.5" />
 			<dependency groupId="bsf" artifactId="bsf" version="2.2" />
 			<dependency groupId="bsh" artifactId="bsh" version="1.2b7" />
 			<dependency groupId="geronimo-spec"
@@ -603,6 +729,7 @@
 			<fileset dir="${opennms.dir}/src/web/web">
 				<include name="**" />
 				<exclude name="**/CVS/**" />
+				<exclude name="**/.svn/**" />
 				<exclude name="**/.cvsignore" />
 			</fileset>
 		</sources>
@@ -635,6 +762,7 @@
 			<fileset dir="${opennms.dir}/docs">
 				<include name="**"/>
 				<exclude name="**/CVS/**"/>
+				<exclude name="**/.svn/**" />
 			</fileset>
 		</sources>
 	</module>
@@ -649,22 +777,26 @@
 			<fileset dir="${opennms.dir}/etc">
 				<include name="**/*"/>
 				<exclude name="**/CVS/**"/>
+				<exclude name="**/.svn/**" />
 			</fileset>
 		</sources>
 		<sources source-type="filtered" target-dir="src/main/filtered/bin">
 			<fileset dir="${opennms.dir}/tools/run">
 				<include name="**/*"/>
 				<exclude name="**/CVS/**"/>
+				<exclude name="**/.svn/**" />
 			</fileset>
 			<fileset dir="${opennms.dir}/tools/contrib">
 				<include name="**/*"/>
 				<exclude name="**/CVS/**"/>
+				<exclude name="**/.svn/**" />
 			</fileset>
 		</sources>
 		<sources source-type="resource" target-dir="src/main/resources/contrib">
 			<fileset dir="${opennms.dir}/contrib">
 				<include name="**/*"/>
 				<exclude name="**/CVS/**"/>
+				<exclude name="**/.svn/**" />
 			</fileset>
 		</sources>
 		<sources source-type="filter">

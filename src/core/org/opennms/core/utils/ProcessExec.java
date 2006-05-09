@@ -32,7 +32,7 @@
 //      http://www.opennms.com/
 //
 
-package org.opennms.install;
+package org.opennms.core.utils;
 
 import java.io.BufferedReader;
 import java.io.IOException;
