@@ -6,9 +6,9 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 import org.apache.log4j.Category;
+import org.opennms.core.utils.AlphaNumeric;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.model.OnmsIpInterface.CollectionType;
-import org.opennms.netmgt.utils.AlphaNumeric;
 import org.springframework.core.style.ToStringCreator;
 
 
