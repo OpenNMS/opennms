@@ -76,10 +76,10 @@ public class CollectionSet {
 
 	boolean hasDataToCollect() {
         if (!getNodeInfo().getAttributeList().isEmpty()) return true;
-        return hasInterfaceDataTo‚ollect();
+        return hasInterfaceDataToCollect();
 	}
 
-    boolean hasInterfaceDataTo‚ollect() {
+    boolean hasInterfaceDataToCollect() {
         Iterator iter = getIfMap().values().iterator();
         while (iter.hasNext()) {
             IfInfo ifInfo = (IfInfo) iter.next();
