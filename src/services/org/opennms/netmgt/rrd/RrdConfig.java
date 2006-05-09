@@ -62,15 +62,18 @@ public class RrdConfig {
      */
     private static synchronized Properties getProperties() throws IOException {
         if (m_properties == null) {
-            Properties properties = new Properties(System.getProperties());
             File configFile = ConfigFileConstants.getFile(ConfigFileConstants.RRD_CONFIG_FILE_NAME);
-            InputStream in = new FileInputStream(configFile);
-            properties.load(in);
-            in.close();
-            m_properties = properties;
+	    loadProperties(new FileInputStream(configFile));
         }
         return m_properties;
 
+    }
+
+    public static synchronized void loadProperties(InputStream in) throws IOException {
+	Properties properties = new Properties(System.getProperties());
+	properties.load(in);
+	in.close();
+	m_properties = properties;
     }
     
     

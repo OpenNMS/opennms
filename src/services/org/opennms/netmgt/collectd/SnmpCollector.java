@@ -283,7 +283,7 @@ public class SnmpCollector implements ServiceCollector {
 		if (!f.isDirectory()) {
 			if (!f.mkdirs()) {
 				throw new RuntimeException("Unable to create RRD file "
-						+ "repository, path: " + DataCollectionConfigFactory.getInstance().getRrdPath());
+						+ "repository.  Path doesn't already exist and could not make directory: " + DataCollectionConfigFactory.getInstance().getRrdPath());
 			}
 		}
     }
@@ -330,7 +330,7 @@ public class SnmpCollector implements ServiceCollector {
 
 	private void initDataCollectionConfig() {
 		try {
-			DataCollectionConfigFactory.reload();
+			DataCollectionConfigFactory.init();
 		} catch (MarshalException e) {
 			log().fatal("initialize: Failed to load data collection configuration", e);
 			throw new UndeclaredThrowableException(e);
