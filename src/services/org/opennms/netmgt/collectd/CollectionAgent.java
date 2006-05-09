@@ -270,7 +270,7 @@ public class CollectionAgent extends IPv4NetworkInterface {
     }
 
     boolean hasInterfaceDataToCollect() {
-        return m_collectionSet.hasInterfaceDataTo‚ollect();
+        return m_collectionSet.hasInterfaceDataToCollect();
     }
 
     CollectionTracker getCollectionTracker() {
