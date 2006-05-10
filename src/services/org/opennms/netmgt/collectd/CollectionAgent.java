@@ -72,7 +72,7 @@ public class CollectionAgent extends IPv4NetworkInterface {
         if (getSnmpStorage().equals(SnmpCollector.SNMP_STORAGE_PRIMARY))
             return CollectionType.PRIMARY;
         if (getSnmpStorage().equals(SnmpCollector.SNMP_STORAGE_SELECT))
-            return CollectionType.SECONDARY;
+            return CollectionType.COLLECT;
         
         return CollectionType.NO_COLLECT;
     }
@@ -388,7 +388,7 @@ public class CollectionAgent extends IPv4NetworkInterface {
             NodeInfo nodeInfo = getNodeInfo();
         	SNMPCollectorEntry nodeEntry = getNodeCollector().getEntry();
             nodeInfo.setEntry(nodeEntry);
-            nodeInfo.saveAttributeData(rrdBaseDir);
+            nodeInfo.storeAttributes(rrdBaseDir);
     
         } // end if(nodeCollector != null)
     }

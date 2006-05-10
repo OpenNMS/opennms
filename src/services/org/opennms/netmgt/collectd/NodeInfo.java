@@ -35,7 +35,6 @@
 package org.opennms.netmgt.collectd;
 
 import java.io.File;
-import java.util.Iterator;
 
 import org.apache.log4j.Category;
 
@@ -48,7 +47,7 @@ import org.apache.log4j.Category;
  * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
  */
-final class NodeInfo extends CollectionResource {
+final class NodeInfo extends DbCollectionResource {
 
 	private SNMPCollectorEntry m_entry;
 
@@ -60,70 +59,21 @@ final class NodeInfo extends CollectionResource {
         return -1;
     }
 
-    File getResourceDir(File rrdBaseDir) {
+    protected File getResourceDir(File rrdBaseDir) {
         File nodeRepo = new File(rrdBaseDir, String.valueOf(getCollectionAgent().getNodeId()));
         return nodeRepo;
     }
 
-    void logUpdateFailed(CollectionAttribute attr) {
-        log().warn(
-        		"updateRRDs: ds.performUpdate() "
-        				+ "failed for node: " + getCollectionAgent().getNodeId()
-        				+ " datasource: " + attr.getName());
-    }
-
-    public void store(SNMPCollectorEntry nodeEntry, CollectionAttribute attr, File baseDir) {
-        if (attr.getDs().performUpdate(getCollectionAgent().getCollection(), getCollectionAgent().getHostAddress(), getResourceDir(baseDir), attr.getDs().getName(), attr.getDs().getRRDValue(nodeEntry))) {
-        	logUpdateFailed(attr);
-        }
-    }
-
-    void logNoDataForValue(DataSource ds1) {
-        Category log = log();
-        if (log.isDebugEnabled()) {
-        	log.debug(
-        			"updateRRDs: Skipping update, no "
-        					+ "data retrieved for nodeId: "
-        					+ getCollectionAgent().getNodeId() + " datasource: "
-        					+ ds1.getName());
-        }
-    }
-
-    void logExceptionOnUpdate(DataSource ds1, IllegalArgumentException e1) {
-        Category log = log();
-        log.warn("getRRDValue: " + e1.getMessage());
-        log.warn(
-        		"updateRRDs: call to getRRDValue() failed "
-        				+ "for node: " + getCollectionAgent().getNodeId() + " datasource: "
-        				+ ds1.getName());
-    }
-
-    public void saveAttributeData(File rrdBaseDir) {
-        /*
-         * Iterate over the node datasource list and issue RRD update
-         * commands to update each datasource which has a corresponding
-         * value in the collected SNMP data.
-         */
-        Iterator it = getAttributeList().iterator();
-        while (it.hasNext()) {
-            CollectionAttribute attr = (CollectionAttribute)it.next();
-        	try {
-        		if (attr.getDs().getRRDValue(m_entry) == null) {
-        			// Do nothing, no update is necessary
-        			logNoDataForValue(attr.getDs());
-        		} else {
-        			
-                    store(m_entry, attr, rrdBaseDir);
-        		}
-        	} catch (IllegalArgumentException e) {
-        		logExceptionOnUpdate(attr.getDs(), e);
-        	}
-      
-        } // end while(more datasources)
+    public String toString() {
+        return String.valueOf(getCollectionAgent().getNodeId());
     }
 
     public void setEntry(SNMPCollectorEntry nodeEntry) {
         m_entry = nodeEntry;
+    }
+    
+    protected SNMPCollectorEntry getEntry() {
+        return m_entry;
     }
 
 } // end class
