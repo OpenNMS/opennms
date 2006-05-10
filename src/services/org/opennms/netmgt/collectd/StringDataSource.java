@@ -70,14 +70,14 @@ public class StringDataSource extends DataSource {
 	public boolean performUpdate(
 	        String collectionName,
 	        String owner,
-	        String repository,
+	        File repository,
 	        String dsName,
 	        String val) {
 	    
 	    Category log = ThreadCategory.getInstance(getClass());
 	    	    
 	    Properties props = new Properties();
-	    File propertiesFile =	 new File(repository + File.separator + "strings.properties");
+	    File propertiesFile =	 new File(repository,"strings.properties");
 	    
         FileInputStream fileInputStream = null;
 	    //Preload existing data

@@ -34,9 +34,11 @@
 
 package org.opennms.netmgt.collectd;
 
-import java.util.List;
+import java.io.File;
+import java.util.Iterator;
 
-import org.opennms.netmgt.config.DataCollectionConfigFactory;
+import org.apache.log4j.Category;
+
 
 /**
  * This class encapsulates all of the node-level data required by the SNMP data
@@ -48,21 +50,80 @@ import org.opennms.netmgt.config.DataCollectionConfigFactory;
  */
 final class NodeInfo extends CollectionResource {
 
-	private CollectionAgent m_agent;
-
-	private String m_collectionName;
+	private SNMPCollectorEntry m_entry;
 
     public NodeInfo(CollectionAgent agent, String collectionName) {
-    	m_agent = agent;
-    	m_collectionName = collectionName;
+        super(agent, collectionName);
     }
     
-    public CollectionAgent getCollectionAgent() {
-    	return m_agent;
+     public int getType() {
+        return -1;
     }
 
-    public List getAttributeList() {
-        return DataCollectionConfigFactory.getInstance().buildCollectionAttributes(m_collectionName, m_agent.getSysObjectId(), m_agent.getHostAddress(), -1);
+    File getResourceDir(File rrdBaseDir) {
+        File nodeRepo = new File(rrdBaseDir, String.valueOf(getCollectionAgent().getNodeId()));
+        return nodeRepo;
+    }
+
+    void logUpdateFailed(CollectionAttribute attr) {
+        log().warn(
+        		"updateRRDs: ds.performUpdate() "
+        				+ "failed for node: " + getCollectionAgent().getNodeId()
+        				+ " datasource: " + attr.getName());
+    }
+
+    public void store(SNMPCollectorEntry nodeEntry, CollectionAttribute attr, File baseDir) {
+        if (attr.getDs().performUpdate(getCollectionAgent().getCollection(), getCollectionAgent().getHostAddress(), getResourceDir(baseDir), attr.getDs().getName(), attr.getDs().getRRDValue(nodeEntry))) {
+        	logUpdateFailed(attr);
+        }
+    }
+
+    void logNoDataForValue(DataSource ds1) {
+        Category log = log();
+        if (log.isDebugEnabled()) {
+        	log.debug(
+        			"updateRRDs: Skipping update, no "
+        					+ "data retrieved for nodeId: "
+        					+ getCollectionAgent().getNodeId() + " datasource: "
+        					+ ds1.getName());
+        }
+    }
+
+    void logExceptionOnUpdate(DataSource ds1, IllegalArgumentException e1) {
+        Category log = log();
+        log.warn("getRRDValue: " + e1.getMessage());
+        log.warn(
+        		"updateRRDs: call to getRRDValue() failed "
+        				+ "for node: " + getCollectionAgent().getNodeId() + " datasource: "
+        				+ ds1.getName());
+    }
+
+    public void saveAttributeData(File rrdBaseDir) {
+        /*
+         * Iterate over the node datasource list and issue RRD update
+         * commands to update each datasource which has a corresponding
+         * value in the collected SNMP data.
+         */
+        Iterator it = getAttributeList().iterator();
+        while (it.hasNext()) {
+            CollectionAttribute attr = (CollectionAttribute)it.next();
+        	try {
+        		if (attr.getDs().getRRDValue(m_entry) == null) {
+        			// Do nothing, no update is necessary
+        			logNoDataForValue(attr.getDs());
+        		} else {
+        			
+                    store(m_entry, attr, rrdBaseDir);
+        		}
+        	} catch (IllegalArgumentException e) {
+        		logExceptionOnUpdate(attr.getDs(), e);
+        	}
+      
+        } // end while(more datasources)
+    }
+
+    public void setEntry(SNMPCollectorEntry nodeEntry) {
+        m_entry = nodeEntry;
     }
 
 } // end class

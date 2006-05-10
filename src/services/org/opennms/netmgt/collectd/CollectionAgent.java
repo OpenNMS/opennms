@@ -1,11 +1,11 @@
 package org.opennms.netmgt.collectd;
 
+import java.io.File;
 import java.net.InetAddress;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 
-import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.collectd.SnmpCollector.IfNumberTracker;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.model.OnmsIpInterface;
@@ -67,6 +67,15 @@ public class CollectionAgent extends IPv4NetworkInterface {
 	String getSnmpStorage() {
         return m_collectionSet.getStorageFlag();
 	}
+    
+    CollectionType getMinimumCollectionType() {
+        if (getSnmpStorage().equals(SnmpCollector.SNMP_STORAGE_PRIMARY))
+            return CollectionType.PRIMARY;
+        if (getSnmpStorage().equals(SnmpCollector.SNMP_STORAGE_SELECT))
+            return CollectionType.SECONDARY;
+        
+        return CollectionType.NO_COLLECT;
+    }
 
 	public void setMaxVarsPerPdu(int maxVarsPerPdu) {
         m_maxVarsPerPdu = maxVarsPerPdu;
@@ -85,10 +94,6 @@ public class CollectionAgent extends IPv4NetworkInterface {
 
 	int getSavedIfCount() {
         return m_ifCount;
-	}
-
-	Map getIfMap() {
-		return m_collectionSet.getIfMap();
 	}
 
 	int getNodeId() {
@@ -365,7 +370,31 @@ public class CollectionAgent extends IPv4NetworkInterface {
     }
 
     IfInfo getIfInfo(int ifIndex) {
-        return (IfInfo) getIfMap().get(new Integer(ifIndex));
+        return m_collectionSet.getIfInfo(ifIndex);
+    }
+
+    public NodeInfo getNodeInfo() {
+        return m_collectionSet.getNodeInfo();
+    }
+
+    void storeNodeData(File rrdBaseDir) {
+        if (getNodeCollector() != null) {
+        	log().debug("updateRRDs: processing node-level collection...");
+        
+            /*
+        	 * Build path to node RRD repository. createRRD() will make the
+        	 * appropriate directories if they do not already exist.
+        	 */
+            NodeInfo nodeInfo = getNodeInfo();
+        	SNMPCollectorEntry nodeEntry = getNodeCollector().getEntry();
+            nodeInfo.setEntry(nodeEntry);
+            nodeInfo.saveAttributeData(rrdBaseDir);
+    
+        } // end if(nodeCollector != null)
+    }
+
+    public Collection getIfInfos() {
+        return m_collectionSet.getIfInfos();
     }
 
 

@@ -33,6 +33,7 @@
 //
 
 package org.opennms.netmgt.collectd;
+import java.io.File;
 import java.util.List;
 
 import org.apache.log4j.Category;
@@ -329,7 +330,7 @@ public class RRDDataSource extends DataSource {
 	public boolean performUpdate(
 		String collectionName,
 		String owner,
-                String repository,
+                File repository,
 		String dsName,
 		String val) {
 
@@ -337,10 +338,10 @@ public class RRDDataSource extends DataSource {
 	        List rraList = DataCollectionConfigFactory.getInstance().getRRAList(collectionName);
 		boolean result=false;
 		try {
-		        RrdUtils.createRRD(owner, repository, this.getName(), step, this.getType(), this.getHeartbeat(), 
+		        RrdUtils.createRRD(owner, repository.getAbsolutePath(), this.getName(), step, this.getType(), this.getHeartbeat(), 
 				this.getMin(), this.getMax(), rraList);
 	
-			RrdUtils.updateRRD(owner, repository, dsName, val);
+			RrdUtils.updateRRD(owner, repository.getAbsolutePath(), dsName, val);
 		} catch (RrdException e) {
 			result=true;
 		}
