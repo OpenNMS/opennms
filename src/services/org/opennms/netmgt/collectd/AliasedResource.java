@@ -54,4 +54,12 @@ public class AliasedResource extends CollectionResource {
         getIfInfo().checkForChangedIfAlias(forceRescanState);
     }
 
+    public boolean isScheduledForCollection() {
+        return getIfInfo().isScheduledForCollection();
+    }
+
+    public boolean shouldPersist(ServiceParameters serviceParameters) {
+        return (serviceParameters.aliasesEnabled() && getAliasDir() != null) && (isScheduledForCollection() || serviceParameters.forceStoreByAlias(getAliasDir()));
+    }
+
 }
