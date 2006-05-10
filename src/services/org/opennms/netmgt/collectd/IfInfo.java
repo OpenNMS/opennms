@@ -156,4 +156,15 @@ final class IfInfo extends DbCollectionResource {
         return getCollectionAgent().getNodeId() + "/" + getIndex();
     }
 
+    boolean shouldStore(ServiceParameters serviceParameters) {
+        if (serviceParameters.getStoreByNodeID().equals("normal"))
+            return isScheduledForCollection();
+        else
+            return serviceParameters.getStoreByNodeID().equals("true");
+    }
+
+    public boolean shouldPersist(ServiceParameters serviceParameters) {
+        return shouldStore(serviceParameters) && (isScheduledForCollection() || serviceParameters.forceStoreByAlias(getNewIfAlias()));
+    }
+
 } // end class

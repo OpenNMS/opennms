@@ -36,8 +36,6 @@ package org.opennms.netmgt.collectd;
 
 import java.io.File;
 
-import org.apache.log4j.Category;
-
 
 /**
  * This class encapsulates all of the node-level data required by the SNMP data
@@ -74,6 +72,10 @@ final class NodeInfo extends DbCollectionResource {
     
     protected SNMPCollectorEntry getEntry() {
         return m_entry;
+    }
+
+    public boolean shouldPersist(ServiceParameters params) {
+        return true;
     }
 
 } // end class

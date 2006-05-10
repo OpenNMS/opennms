@@ -4,6 +4,8 @@ import java.io.File;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.opennms.netmgt.collectd.SnmpCollector.IfNumberTracker;
@@ -377,7 +379,50 @@ public class CollectionAgent extends IPv4NetworkInterface {
         return m_collectionSet.getNodeInfo();
     }
 
-    void storeNodeData(File rrdBaseDir) {
+    public Collection getIfInfos() {
+        return m_collectionSet.getIfInfos();
+    }
+
+    Collection getIfResouces(ForceRescanState forceRescanState, ServiceParameters serviceParameters) {
+        // Iterate over the SNMP collector entries
+         List resources = new LinkedList();
+        Iterator iter = getIfCollector().getEntries().iterator();
+        while (iter.hasNext()) {
+            SNMPCollectorEntry ifEntry = (SNMPCollectorEntry) iter.next();
+    
+            int ifIndex = ifEntry.getIfIndex().intValue();
+            /*
+             * Use ifIndex to lookup the IfInfo object from the interface
+             * map.
+             */
+            IfInfo ifInfo = getIfInfo(ifIndex);
+            if (ifInfo == null) {
+                forceRescanState.rescanIndicated();
+                continue;
+            } else {
+                ifInfo.setEntry(ifEntry);
+            }
+            
+            resources.add(ifInfo);
+            AliasedResource aliasedResource = new AliasedResource(serviceParameters.getDomain(), ifInfo, serviceParameters.getIfAliasComment());
+            aliasedResource.checkForAliasChanged(forceRescanState);
+            resources.add(aliasedResource);
+    
+        }
+        
+        return resources;
+    }
+
+    List getResources(ForceRescanState forceRescanState, ServiceParameters serviceParameters) {
+        List resources = new LinkedList();
+        
+        /*
+    	 * Write relevant collected SNMP statistics to RRD database First the
+    	 * node level RRD info will be updated. Secondly the interface level RRD
+    	 * info will be updated.
+    	 */
+    
+        // Node data
         if (getNodeCollector() != null) {
         	log().debug("updateRRDs: processing node-level collection...");
         
@@ -388,13 +433,57 @@ public class CollectionAgent extends IPv4NetworkInterface {
             NodeInfo nodeInfo = getNodeInfo();
         	SNMPCollectorEntry nodeEntry = getNodeCollector().getEntry();
             nodeInfo.setEntry(nodeEntry);
-            nodeInfo.storeAttributes(rrdBaseDir);
+            
+            resources.add(nodeInfo);
     
         } // end if(nodeCollector != null)
+    
+        if (getIfCollector() != null) {
+        
+            serviceParameters.logIfAliasConfig();
+        
+            /*
+             * Retrieve list of SNMP collector entries generated for the remote
+             * node's interfaces.
+             */
+            if (!getIfCollector().hasData()) {
+                log().warn("updateRRDs: No data retrieved for the agent at " + getHostAddress());
+            }
+        
+            resources.addAll(getIfResouces(forceRescanState, serviceParameters));
+        
+        } // end if(ifCollector != null)
+        return resources;
     }
 
-    public Collection getIfInfos() {
-        return m_collectionSet.getIfInfos();
+    public void storeResourceAttributes(File rrdBaseDir, ServiceParameters params, List resources) {
+        for (Iterator iter = resources.iterator(); iter.hasNext();) {
+            CollectionResource resource = (CollectionResource) iter.next();
+            
+            if (resource.shouldPersist(params)) {
+                resource.storeAttributes(rrdBaseDir);
+            }
+            
+        }
+    }
+
+    void checkForNewInterfaces(ForceRescanState forceRescanState) {
+        if (!hasInterfaceDataToCollect()) return;
+        
+        logIfCounts();
+    
+        if (ifCountHasChanged()) {
+            forceRescanState.rescanIndicated();
+            logIfCountChangedForceRescan();
+        }
+    
+        setSavedIfCount(getIfNumber().getIfNumber());
+    }
+
+    void logIfCountChangedForceRescan() {
+        log().info("Number of interfaces on primary SNMP "
+                + "interface " + getHostAddress()
+                + " has changed, generating 'ForceRescan' event.");
     }
 
 

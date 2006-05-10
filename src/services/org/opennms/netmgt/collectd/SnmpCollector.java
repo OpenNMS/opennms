@@ -47,6 +47,7 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Category;
@@ -405,14 +406,18 @@ public class SnmpCollector implements ServiceCollector {
 	 */
 	public int collect(CollectionAgent agent, EventProxy eventProxy, Map parameters) {
         ForceRescanState forceRescanState = new ForceRescanState(agent, eventProxy);
+        ServiceParameters params = new ServiceParameters(parameters);
+       
         try {
         
             agent.collect();
             
-            checkForNewInterfaces(agent, forceRescanState);
+            agent.checkForNewInterfaces(forceRescanState);
             
             // Update RRD with values retrieved in SNMP collection
-            updateRRds(agent, parameters, forceRescanState);
+            List resources = agent.getResources(forceRescanState, params);
+            
+            agent.storeResourceAttributes(getRrdBaseDir(), params, resources);
             
         
         	// return the status of the collection
@@ -432,33 +437,16 @@ public class SnmpCollector implements ServiceCollector {
 		return ThreadCategory.getInstance(SnmpCollector.class);
 	}
 
-    void checkForNewInterfaces(CollectionAgent agent, ForceRescanState forceRescanState) {
-        if (!agent.hasInterfaceDataToCollect()) return;
-        
-        agent.logIfCounts();
-    
-        if (agent.ifCountHasChanged()) {
-            forceRescanState.rescanIndicated();
-            logIfCountChangedForceRescan(agent);
-        }
-    
-        agent.setSavedIfCount(agent.getIfNumber().getIfNumber());
-    }
-
-    void updateRRds(CollectionAgent agent, Map parms, ForceRescanState forceRescanState) {
-        new UpdateRRDs().execute(agent, parms, forceRescanState);
-    }
-
-    void logIfCountChangedForceRescan(CollectionAgent agent) {
-        log().info("Number of interfaces on primary SNMP "
-                + "interface " + agent.getHostAddress()
-                + " has changed, generating 'ForceRescan' event.");
-    }
-
     int unexpected(CollectionAgent agent, Throwable t) {
     	log().error(
     			"Unexpected error during node SNMP collection for "
     					+ agent.getHostAddress(), t);
     	return ServiceCollector.COLLECTION_FAILED;
+    }
+
+    File getRrdBaseDir() {
+        String rrdPath = DataCollectionConfigFactory.getInstance().getRrdPath();
+        File rrdBaseDir = new File(rrdPath);
+        return rrdBaseDir;
     }
 }

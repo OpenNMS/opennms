@@ -13,6 +13,8 @@ public abstract class CollectionResource {
     public abstract CollectionAgent getCollectionAgent();
 
     public abstract List getAttributeList();
+    
+    public abstract boolean shouldPersist(ServiceParameters params);
 
     protected abstract File getResourceDir(File rrdBaseDir);
     
