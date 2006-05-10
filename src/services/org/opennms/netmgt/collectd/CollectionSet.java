@@ -202,7 +202,7 @@ public class CollectionSet {
     }
 
     public Collection getIfInfos() {
-        return getIfMap().keySet();
+        return getIfMap().values();
     }
 
 }
