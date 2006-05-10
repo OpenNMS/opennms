@@ -49,8 +49,8 @@ final class NodeInfo extends DbCollectionResource {
 
 	private SNMPCollectorEntry m_entry;
 
-    public NodeInfo(CollectionAgent agent, String collectionName) {
-        super(agent, collectionName);
+    public NodeInfo(NodeResourceDef def, CollectionAgent agent, String collectionName) {
+        super(def, agent, collectionName);
     }
     
      public int getType() {

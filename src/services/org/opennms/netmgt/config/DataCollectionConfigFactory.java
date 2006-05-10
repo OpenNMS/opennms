@@ -450,7 +450,7 @@ public final class DataCollectionConfigFactory implements DataCollectionConfig {
         String groupIfType = group.getIfType();
 
         boolean addGroupObjects = false;
-        if (ifType == -1) {
+        if (ifType == NODE_ATTRIBUTES) {
             if (groupIfType.equals("ignore")) {
                 addGroupObjects = true;
             }
@@ -459,6 +459,8 @@ public final class DataCollectionConfigFactory implements DataCollectionConfig {
                 addGroupObjects = true;
             } else if (groupIfType.equals("ignore")) {
                 // Do nothing
+            } else if (ifType == ALL_IF_ATTRIBUTES) {
+                addGroupObjects = true;
             } else {
                 // First determine if the group's ifType value contains
                 // a single type value or a list of values. In the case

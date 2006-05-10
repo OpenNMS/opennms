@@ -3,6 +3,9 @@ package org.opennms.netmgt.config;
 import java.util.List;
 
 public interface DataCollectionConfig {
+    
+    public static final int NODE_ATTRIBUTES = -1;
+    public static final int ALL_IF_ATTRIBUTES = -2;
 
     int getMaxVarsPerPdu(String collectionName);
 
