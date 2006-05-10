@@ -33,6 +33,7 @@
 package org.opennms.netmgt.collectd;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -82,7 +83,7 @@ public class CollectionSet {
     boolean hasInterfaceDataToCollect() {
         Iterator iter = getIfMap().values().iterator();
         while (iter.hasNext()) {
-            IfInfo ifInfo = (IfInfo) iter.next();
+            CollectionResource ifInfo = (CollectionResource) iter.next();
             if (!ifInfo.getAttributeList().isEmpty()) {
                 return true;
             }
@@ -190,10 +191,18 @@ public class CollectionSet {
     List getCombinedInterfaceAttributes() {
         Set attributes = new LinkedHashSet();
         for (Iterator it = getIfMap().values().iterator(); it.hasNext();) {
-            IfInfo ifInfo = (IfInfo) it.next();
+            CollectionResource ifInfo = (CollectionResource) it.next();
             attributes.addAll(ifInfo.getAttributeList());
         }
         return new ArrayList(attributes);
+    }
+
+    IfInfo getIfInfo(int ifIndex) {
+        return (IfInfo) getIfMap().get(new Integer(ifIndex));
+    }
+
+    public Collection getIfInfos() {
+        return getIfMap().keySet();
     }
 
 }

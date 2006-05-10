@@ -34,12 +34,12 @@
 
 package org.opennms.netmgt.collectd;
 
-import java.util.ArrayList;
-import java.util.List;
 
-import org.opennms.netmgt.config.DataCollectionConfigFactory;
+import org.apache.log4j.Category;
+import org.opennms.core.utils.AlphaNumeric;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.OnmsIpInterface.CollectionType;
+
 
 /**
  * This class encapsulates all the information required by the SNMP collector in
@@ -52,16 +52,10 @@ import org.opennms.netmgt.model.OnmsIpInterface.CollectionType;
 final class IfInfo extends CollectionResource {
 	
 	OnmsSnmpInterface m_snmpIface;
+    private SNMPCollectorEntry m_entry;
 	
-	private CollectionAgent m_agent;
-
-	private String m_collectionName;
-
-    private List m_attributeList;
-	
-    public IfInfo(CollectionAgent agent, String collectionName, OnmsSnmpInterface snmpIface) {
-    	m_agent = agent;
-    	m_collectionName = collectionName;
+	public IfInfo(CollectionAgent agent, String collectionName, OnmsSnmpInterface snmpIface) {
+        super(agent, collectionName);
     	m_snmpIface = snmpIface;
     	
     }
@@ -82,33 +76,72 @@ final class IfInfo extends CollectionResource {
         return m_snmpIface.getCollectionType();
     }
 
-	public List getAttributeList() {
-	    /*
-	     * Retrieve list of mib objects to be collected from the
-	     * remote agent for this interface.
-	     */
-        if (m_attributeList == null) {
-            m_attributeList = computeAttributeList();
-        }
-	    return m_attributeList;
-	}
-
-    private List computeAttributeList() {
-        return DataCollectionConfigFactory.getInstance()
-	    .buildCollectionAttributes(getCollectionName(), getCollectionAgent().getSysObjectId(),
-	            getCollectionAgent().getHostAddress(), getType());
+    public void setEntry(SNMPCollectorEntry ifEntry) {
+        m_entry = ifEntry;
+    }
+    
+    SNMPCollectorEntry getEntry() {
+        return m_entry;
     }
 
-	public CollectionAgent getCollectionAgent() {
-		return m_agent;
-	}
+    String getNewIfAlias() {
+        return getEntry().getValueForBase(SnmpCollector.IFALIAS_OID);
+    }
 
-	public String getCollectionName() {
-		return m_collectionName;
-	}
+    String getCurrentIfAlias() {
+        return m_snmpIface.getIfAlias();
+    }
 
-	public void setAttributeList(ArrayList list) {
-        m_attributeList = list;
+    boolean currentAliasIsOutOfDate() {
+        return getNewIfAlias() != null && !getNewIfAlias().equals(getCurrentIfAlias());
+    }
+
+    void logAlias() {
+        Category log = log();
+        if (log.isDebugEnabled()) {
+            log.debug("getRRDIfAlias: ifAlias = " + getNewIfAlias());
+        }
+    }
+
+    String getAliasDir(String ifAliasComment) {
+        String aliasVal = getNewIfAlias();
+        if (aliasVal != null) {
+            if (ifAliasComment != null) {
+        		int si = aliasVal.indexOf(ifAliasComment);
+        		if (si > -1) {
+        			aliasVal = aliasVal.substring(0, si).trim();
+        		}
+        	}
+        	if (aliasVal != null) {
+        		aliasVal = AlphaNumeric.parseAndReplaceExcept(aliasVal,
+        				SnmpCollector.nonAnRepl, SnmpCollector.AnReplEx);
+        	}
+        }
+        
+        logAlias();
+    
+        return aliasVal;
+    }
+
+    void logForceRescan() {
+        
+        if (log().isDebugEnabled()) {
+        	log().debug("Forcing rescan.  IfAlias " + getNewIfAlias()
+        					+ " for index " + getIndex()
+        					+ " does not match DB value: "
+                            + getCurrentIfAlias());
+        }
+    }
+
+    void checkForChangedIfAlias(ForceRescanState forceRescanState) {
+        if (currentAliasIsOutOfDate()) {
+            forceRescanState.rescanIndicated();
+            logForceRescan();
+        }
+    }
+
+    boolean isScheduledForCollection() {
+        return getCollType().compareTo(getCollectionAgent().getMinimumCollectionType()) >= 0;
     }
 
 } // end class

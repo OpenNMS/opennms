@@ -34,6 +34,8 @@
 //
 package org.opennms.netmgt.collectd;
 
+import java.io.File;
+
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.snmp.SnmpObjId;
@@ -103,7 +105,7 @@ public abstract class DataSource {
 	public abstract boolean performUpdate(
 		String collectionName,
 		String owner,
-		String repository,
+		File repository,
 		String dsName,
 		String val);
 

@@ -37,13 +37,9 @@ import java.util.Iterator;
 import java.util.Map;
 
 import org.apache.log4j.Category;
-import org.opennms.core.utils.AlphaNumeric;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.DataCollectionConfigFactory;
-import org.opennms.netmgt.config.DataSourceFactory;
-import org.opennms.netmgt.model.OnmsIpInterface.CollectionType;
 import org.opennms.netmgt.utils.ParameterMap;
-import org.springframework.jdbc.core.JdbcTemplate;
 
 public class UpdateRRDs {
 
@@ -65,14 +61,14 @@ public class UpdateRRDs {
     	 */
     
         // Node data
-        storeNodeData();
+        m_agent.storeNodeData(getRrdBaseDir());
     
         saveInterfaceData();
     
     }
 
     private void saveInterfaceData() {
-        if (getIfCollector() != null) {
+        if (m_agent.getIfCollector() != null) {
             
     		logIfAliasConfig();
     
@@ -80,42 +76,25 @@ public class UpdateRRDs {
     		 * Retrieve list of SNMP collector entries generated for the remote
     		 * node's interfaces.
     		 */
-            if (!getIfCollector().hasData()) {
+            if (!m_agent.getIfCollector().hasData()) {
     			log().warn("updateRRDs: No data retrieved for the agent at " + m_agent.getHostAddress());
     		}
             
+            putEntriesInIfInfos();
             
-    		// Iterate over the SNMP collector entries
-    		Iterator iter = getIfCollector().getEntries().iterator();
-    		while (iter.hasNext()) {
-    			SNMPCollectorEntry ifEntry = (SNMPCollectorEntry) iter.next();
+            for (Iterator iter = m_agent.getIfInfos().iterator(); iter.hasNext();) {
+                IfInfo ifInfo = (IfInfo) iter.next();
+                
+    			SNMPCollectorEntry ifEntry = ifInfo.getEntry();
 
-                int ifIndex = ifEntry.getIfIndex().intValue();
-                /*
-                 * Use ifIndex to lookup the IfInfo object from the interface
-                 * map.
-                 */
-                IfInfo ifInfo = m_agent.getIfInfo(ifIndex);
-                if (ifInfo == null) {
-                    m_forceRescanState.rescanIndicated();
-                    continue;
-                }
+                ifInfo.checkForChangedIfAlias(m_forceRescanState);
     
-                // TODO: This will send rescans for entries that have no IfInfo... so moving below IfInfo may fail to catch all the cases
-                // However... since we send an event if ifNumber changed maybe we don't need these?
-                if (currentAliasIsOutOfDate(ifEntry)) {
-                    m_forceRescanState.rescanIndicated();
-                    logForceRescan(ifEntry);
-                }
-    
-                validateAttrList(ifInfo);
-
-                if (notScheduledForCollection(ifEntry, ifInfo) && !forceStoreByAlias(getAliasDirName(ifEntry))) {
+                if ((!ifInfo.isScheduledForCollection()) && !forceStoreByAlias(ifInfo.getAliasDir(getIfAliasComment()))) {
                     logSkip(ifEntry, ifInfo);
                     continue;
                 }
 
-    			if (notScheduledForCollection(ifEntry, ifInfo) && forceStoreByAlias(getAliasDirName(ifEntry))) {
+    			if ((!ifInfo.isScheduledForCollection()) && forceStoreByAlias(ifInfo.getAliasDir(getIfAliasComment()))) {
                 	logStore(ifEntry, ifInfo);
                 }
                 
@@ -127,30 +106,49 @@ public class UpdateRRDs {
     			Iterator i = ifInfo.getAttributeList().iterator();
     			while (i.hasNext()) {
                     CollectionAttribute attr = (CollectionAttribute)i.next();
-    				DataSource ds = attr.getDs();
-    
     				try {
-    					String dsVal = ds.getRRDValue(ifEntry);
-    
-    					// Build RRD update command
-    					if (dsVal == null) {
-    						logNoDataRetrieved(ifEntry, ds);
-    					} else {
-    						if (shouldStoreByNode(ifEntry, ifInfo)) {
-                                storeByNode(ifEntry, ifInfo, ds, dsVal);
-    						}
-    						if (shouldStoreByAlias()) {
-    							storeByAlias(ifEntry, getAliasDirName(ifEntry), ds, dsVal);
-    						}
-    
-    					}
-    				} catch (IllegalArgumentException e) {
-    					logUpdateFailed(ifEntry, ds, e);
-    				}
+                    	// Build RRD update command
+                    	if (attr.getDs().getRRDValue(ifEntry) == null) {
+                    		logNoDataRetrieved(ifEntry, attr.getDs());
+                    	} else {
+                    		if (shouldStoreByNode(ifEntry, ifInfo)) {
+                                storeByNode(ifEntry, ifInfo, attr.getDs(), attr.getDs().getRRDValue(ifEntry));
+                    		}
+                    		if (shouldStoreByAlias(ifEntry, ifInfo)) {
+                    			storeByAlias(ifEntry, ifInfo.getAliasDir(getIfAliasComment()), attr.getDs(), attr.getDs().getRRDValue(ifEntry));
+                    		}
+                    
+                    	}
+                    } catch (IllegalArgumentException e) {
+                    	logUpdateFailed(ifEntry, attr.getDs(), e);
+                    }
     
     			} // end while(more datasources)
     		} // end while(more SNMP collector entries)
     	} // end if(ifCollector != null)
+    }
+
+    private void putEntriesInIfInfos() {
+        // Iterate over the SNMP collector entries
+        Iterator iter = m_agent.getIfCollector().getEntries().iterator();
+        while (iter.hasNext()) {
+            SNMPCollectorEntry ifEntry = (SNMPCollectorEntry) iter.next();
+
+            int ifIndex = ifEntry.getIfIndex().intValue();
+            /*
+             * Use ifIndex to lookup the IfInfo object from the interface
+             * map.
+             */
+            IfInfo ifInfo = m_agent.getIfInfo(ifIndex);
+            if (ifInfo == null) {
+                m_forceRescanState.rescanIndicated();
+                continue;
+            } else {
+                ifInfo.setEntry(ifEntry);
+            }
+
+        }
+     
     }
 
     private void logUpdateFailed(SNMPCollectorEntry ifEntry, DataSource ds, IllegalArgumentException e) {
@@ -164,34 +162,42 @@ public class UpdateRRDs {
     }
 
     private void storeByNode(SNMPCollectorEntry ifEntry, IfInfo ifInfo, DataSource ds, String dsVal) {
-        String ifRepository = getRrdPath() + File.separator
-        + String.valueOf(m_agent.getNodeId()) + File.separator
-        + ifInfo.getLabel();
-        if (ds.performUpdate(m_agent.getCollection(), m_agent.getInetAddress().getHostAddress(), ifRepository, ds.getName(), dsVal)) {
+        if (ds.performUpdate(m_agent.getCollection(), m_agent.getInetAddress().getHostAddress(), getInterfaceRepo(ifInfo), ds.getName(), dsVal)) {
         	logUpdateFailed(ifEntry, ds);
         }
     }
 
+    private File getInterfaceRepo(IfInfo ifInfo) {
+        File rrdBaseDir = getRrdBaseDir();
+        File nodeDir = new File(rrdBaseDir, String.valueOf(ifInfo.getCollectionAgent().getNodeId()));
+        File ifDir = new File(nodeDir, ifInfo.getLabel());
+        return ifDir;
+    }
+
     private void storeByAlias(SNMPCollectorEntry ifEntry, String aliasVal, DataSource ds, String dsVal) {
-        if (aliasVal != null) {
-        	String ifAliasRepository = getRrdPath() + File.separator
-        			+ getDomain() + File.separator
-        			+ aliasVal;
-        	if (ds.performUpdate(m_agent.getCollection(), m_agent.getInetAddress()
-        			.getHostAddress(), ifAliasRepository, ds
-        			.getName(), dsVal)) {
-        		logIfAliasUpdateFailed(ifEntry, aliasVal, ds);
-        	}
+        if (ds.performUpdate(m_agent.getCollection(), m_agent.getInetAddress().getHostAddress(), getAliasRepo(aliasVal), ds.getName(), dsVal)) {
+            logIfAliasUpdateFailed(ifEntry, aliasVal, ds);
         }
     }
 
-    private boolean shouldStoreByAlias() {
+    private File getAliasRepo(String aliasVal) {
+        File rrdBaseDir = getRrdBaseDir();
+        File domainDir = new File(rrdBaseDir, getDomain());
+        File aliasDir = new File(domainDir, aliasVal);
+        return aliasDir;
+    }
+
+    private boolean shouldStoreByAlias(SNMPCollectorEntry ifEntry, IfInfo ifInfo) {
+        return aliasesEnabled() && ifInfo.getAliasDir(getIfAliasComment()) != null;
+    }
+
+    private boolean aliasesEnabled() {
         return getStoreByIfAlias().equals("true");
     }
 
     private boolean shouldStoreByNode(SNMPCollectorEntry ifEntry, IfInfo ifInfo) {
         String byNode = getStoreByNodeID();
-        if (notScheduledForCollection(ifEntry, ifInfo)) {
+        if (!ifInfo.isScheduledForCollection()) {
             if (byNode.equals("normal")) {
                 byNode = "false";
             }                    
@@ -239,37 +245,8 @@ public class UpdateRRDs {
         }
     }
 
-    private void validateAttrList(IfInfo ifInfo) {
-        if (ifInfo.getAttributeList() == null) {
-            throw new RuntimeException("Data Source list not "
-                    + "available for primary IP addr "
-                    + m_agent.getInetAddress().getHostAddress() + " and ifIndex "
-                    + ifInfo.getIndex());
-        }
-    }
-
     private boolean forceStoreByAlias(String aliasVal) {
         return !getStorFlagOverride().equals("false") && ((aliasVal != null));
-    }
-
-    private boolean notScheduledForCollection(SNMPCollectorEntry ifEntry, IfInfo ifInfo) {
-        return (storingOnlyPrimary() && ifEntryIsNotPrimary(ifEntry)) || (storingOnlySelect() && ifaceIsNotSelect(ifInfo));
-    }
-
-    private boolean ifaceIsNotSelect(IfInfo ifInfo) {
-        return ifInfo.getCollType().equals(CollectionType.NO_COLLECT);
-    }
-
-    private boolean storingOnlySelect() {
-        return m_agent.getSnmpStorage().equals(SnmpCollector.SNMP_STORAGE_SELECT);
-    }
-
-    private boolean ifEntryIsNotPrimary(SNMPCollectorEntry ifEntry) {
-        return ifEntry.getIfIndex().intValue() != m_agent.getIfIndex();
-    }
-
-    private boolean storingOnlyPrimary() {
-        return m_agent.getSnmpStorage().equals(SnmpCollector.SNMP_STORAGE_PRIMARY);
     }
 
     private void logSkip(SNMPCollectorEntry ifEntry, IfInfo ifInfo) {
@@ -298,96 +275,14 @@ public class UpdateRRDs {
         }
     }
 
-    private boolean currentAliasIsOutOfDate(SNMPCollectorEntry ifEntry) {
-        return getNewIfAlias(ifEntry) != null && !getNewIfAlias(ifEntry).equals(getCurrentIfAlias(ifEntry));
-    }
-
-    private String getNewIfAlias(SNMPCollectorEntry ifEntry) {
-        return ifEntry.getValueForBase(SnmpCollector.IFALIAS_OID);
-    }
-
-    private String getCurrentIfAlias(SNMPCollectorEntry ifEntry) {
-         JdbcTemplate template = new JdbcTemplate(DataSourceFactory.getInstance());
-        return (String)template.queryForObject(SnmpCollector.SQL_GET_SNMPIFALIASES, new Object[] { m_agent.getNode().getId(), ifEntry.getIfIndex() }, String.class);
-    }
-
-    private String getAliasDirName(SNMPCollectorEntry ifEntry) {
-        String aliasVal = getNewIfAlias(ifEntry);
-        if (aliasVal != null) {
-        	if (getIfAliasComment() != null) {
-        		int si = aliasVal.indexOf(getIfAliasComment());
-        		if (si > -1) {
-        			aliasVal = aliasVal.substring(0, si).trim();
-        		}
-        	}
-        	if (aliasVal != null) {
-        		aliasVal = AlphaNumeric.parseAndReplaceExcept(aliasVal,
-        				SnmpCollector.nonAnRepl, SnmpCollector.AnReplEx);
-        	}
-        }
-        
-        logAlias(getNewIfAlias(ifEntry));
-
-        return aliasVal;
-    }
-
-    private void logAlias(String alias) {
-        if (log().isDebugEnabled()) {
-            log().debug("getRRDIfAlias: ifAlias = " + alias);
-        }
-    }
-
-    private void logForceRescan(SNMPCollectorEntry ifEntry) {
-        if (log().isDebugEnabled()) {
-        	log().debug("Forcing rescan.  IfAlias " + getNewIfAlias(ifEntry)
-        					+ " for index " + Integer.toString(ifEntry.getIfIndex().intValue())
-        					+ " does not match DB value: "
-                            + getCurrentIfAlias(ifEntry));
-        }
-    }
-
-    private void storeNodeData() {
-        if (getNodeCollector() != null) {
-        	log().debug("updateRRDs: processing node-level collection...");
-        
-            /*
-        	 * Build path to node RRD repository. createRRD() will make the
-        	 * appropriate directories if they do not already exist.
-        	 */
-        	String nodeRepository = getRrdPath() + File.separator + String.valueOf(m_agent.getNodeId());
-        
-        	SNMPCollectorEntry nodeEntry = getNodeCollector().getEntry();
-        
-        	/*
-        	 * Iterate over the node datasource list and issue RRD update
-        	 * commands to update each datasource which has a corresponding
-        	 * value in the collected SNMP data.
-        	 */
-        	Iterator it = m_agent.getNodeAttributeList().iterator();
-        	while (it.hasNext()) {
-                CollectionAttribute attr = (CollectionAttribute)it.next();
-        		DataSource ds = attr.getDs();
-        
-        		try {
-        			String dsVal = ds.getRRDValue(nodeEntry);
-        			if (dsVal == null) {
-        				// Do nothing, no update is necessary
-        				logNoDataForValue(ds);
-        			} else {
-        				if (ds.performUpdate(m_agent.getCollection(), m_agent.getInetAddress().getHostAddress(), nodeRepository, ds.getName(), dsVal)) {
-        					logUpdateFailed(ds);
-        				}
-        			}
-        		} catch (IllegalArgumentException e) {
-        			logExceptionOnUpdate(ds, e);
-        		}
-        
-        	} // end while(more datasources)
-        } // end if(nodeCollector != null)
+    File getRrdBaseDir() {
+        String rrdPath = DataCollectionConfigFactory.getInstance().getRrdPath();
+        File rrdBaseDir = new File(rrdPath);
+        return rrdBaseDir;
     }
 
     private void logIfAliasConfig() {
-        if (shouldStoreByAlias()) {
+        if (aliasesEnabled()) {
         	log()
             .debug(
             		"domain:storeByNodeID:storeByIfAlias:"
@@ -424,45 +319,8 @@ public class UpdateRRDs {
         		"default");
     }
 
-    private void logExceptionOnUpdate(DataSource ds1, IllegalArgumentException e1) {
-        log().warn("getRRDValue: " + e1.getMessage());
-        log().warn(
-        		"updateRRDs: call to getRRDValue() failed "
-        				+ "for node: " + m_agent.getNodeId() + " datasource: "
-        				+ ds1.getName());
-    }
-
-    private void logUpdateFailed(DataSource ds1) {
-        log().warn(
-        		"updateRRDs: ds.performUpdate() "
-        				+ "failed for node: " + m_agent.getNodeId()
-        				+ " datasource: " + ds1.getName());
-    }
-
-    private void logNoDataForValue(DataSource ds1) {
-        if (log().isDebugEnabled()) {
-        	log().debug(
-        			"updateRRDs: Skipping update, no "
-        					+ "data retrieved for nodeId: "
-        					+ m_agent.getNodeId() + " datasource: "
-        					+ ds1.getName());
-        }
-    }
-
     Category log() {
         return ThreadCategory.getInstance(getClass());
-    }
-
-    private String getRrdPath() {
-        return DataCollectionConfigFactory.getInstance().getRrdPath();
-    }
-
-    private SnmpNodeCollector getNodeCollector() {
-        return m_agent.getNodeCollector();
-    }
-
-    private SnmpIfCollector getIfCollector() {
-        return m_agent.getIfCollector();
     }
 
 

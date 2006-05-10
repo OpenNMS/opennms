@@ -105,4 +105,8 @@ public class CollectionAttribute {
         return getMibObj().getSnmpObjId();
     }
 
+    public String getName() {
+        return getAlias();
+    }
+
 }

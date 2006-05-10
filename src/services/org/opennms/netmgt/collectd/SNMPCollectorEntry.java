@@ -81,7 +81,7 @@ public final class SNMPCollectorEntry extends AbstractSnmpStore {
         return ThreadCategory.getInstance(getClass());
     }
     
-    private CollectionAttribute findMibObjectWitOid(SnmpObjId base) {
+    private CollectionAttribute findAttributeForOid(SnmpObjId base) {
         for (Iterator it = m_attrList.iterator(); it.hasNext();) {
             CollectionAttribute attr = (CollectionAttribute)it.next();
             if (base.equals(attr.getSnmpObjId()))
@@ -94,7 +94,7 @@ public final class SNMPCollectorEntry extends AbstractSnmpStore {
     public void storeResult(SnmpObjId base, SnmpInstId inst, SnmpValue val) {
         String key = base.append(inst).toString();
         putValue(key, val);
-        CollectionAttribute attr = findMibObjectWitOid(base);
+        CollectionAttribute attr = findAttributeForOid(base);
         if (attr == null) throw new IllegalArgumentException("Received result for unexpected oid ["+base+"].["+inst+"]");
         if (attr.getInstance().equals(MibObject.INSTANCE_IFINDEX))
             putIfIndex(inst.toInt());

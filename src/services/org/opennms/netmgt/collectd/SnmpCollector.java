@@ -161,7 +161,7 @@ public class SnmpCollector implements ServiceCollector {
 	 */
 	public static String SNMP_STORAGE_PRIMARY = "primary";
 
-	private static String SNMP_STORAGE_ALL = "all";
+	static String SNMP_STORAGE_ALL = "all";
 
 	static String SNMP_STORAGE_SELECT = "select";
 
@@ -330,7 +330,7 @@ public class SnmpCollector implements ServiceCollector {
 
 	private void initDataCollectionConfig() {
 		try {
-			DataCollectionConfigFactory.init();
+			DataCollectionConfigFactory.reload();
 		} catch (MarshalException e) {
 			log().fatal("initialize: Failed to load data collection configuration", e);
 			throw new UndeclaredThrowableException(e);
