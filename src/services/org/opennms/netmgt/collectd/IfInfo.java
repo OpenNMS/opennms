@@ -35,6 +35,8 @@
 package org.opennms.netmgt.collectd;
 
 
+import java.io.File;
+
 import org.apache.log4j.Category;
 import org.opennms.core.utils.AlphaNumeric;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
@@ -49,7 +51,7 @@ import org.opennms.netmgt.model.OnmsIpInterface.CollectionType;
  * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
  */
-final class IfInfo extends CollectionResource {
+final class IfInfo extends DbCollectionResource {
 	
 	OnmsSnmpInterface m_snmpIface;
     private SNMPCollectorEntry m_entry;
@@ -80,7 +82,7 @@ final class IfInfo extends CollectionResource {
         m_entry = ifEntry;
     }
     
-    SNMPCollectorEntry getEntry() {
+    protected SNMPCollectorEntry getEntry() {
         return m_entry;
     }
 
@@ -142,6 +144,16 @@ final class IfInfo extends CollectionResource {
 
     boolean isScheduledForCollection() {
         return getCollType().compareTo(getCollectionAgent().getMinimumCollectionType()) >= 0;
+    }
+
+    protected File getResourceDir(File rrdBaseDir) {
+        File nodeDir = new File(rrdBaseDir, String.valueOf(getCollectionAgent().getNodeId()));
+        File ifDir = new File(nodeDir, getLabel());
+        return ifDir;
+    }
+
+    public String toString() {
+        return getCollectionAgent().getNodeId() + "/" + getIndex();
     }
 
 } // end class

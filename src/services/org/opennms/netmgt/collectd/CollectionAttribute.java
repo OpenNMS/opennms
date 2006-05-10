@@ -32,6 +32,7 @@
 
 package org.opennms.netmgt.collectd;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -107,6 +108,14 @@ public class CollectionAttribute {
 
     public String getName() {
         return getAlias();
+    }
+
+    String getValue(SNMPCollectorEntry entry) {
+        return getDs().getRRDValue(entry);
+    }
+
+    boolean performUpdate(CollectionAgent collectionAgent, File resourceDir, SNMPCollectorEntry entry) {
+        return getDs().performUpdate(collectionAgent.getCollection(), collectionAgent.getHostAddress(), resourceDir, getName(), getValue(entry));
     }
 
 }
