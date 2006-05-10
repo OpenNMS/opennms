@@ -277,7 +277,7 @@ public class CollectionAgent extends IPv4NetworkInterface {
     }
 
     boolean hasInterfaceDataToCollect() {
-        return m_collectionSet.hasInterfaceDataToCollect();
+        return m_collectionSet.m_ifResourceDef.hasDataToCollect();
     }
 
     CollectionTracker getCollectionTracker() {
@@ -372,7 +372,7 @@ public class CollectionAgent extends IPv4NetworkInterface {
     }
 
     IfInfo getIfInfo(int ifIndex) {
-        return m_collectionSet.getIfInfo(ifIndex);
+        return m_collectionSet.m_ifResourceDef.getIfInfo(ifIndex);
     }
 
     public NodeInfo getNodeInfo() {

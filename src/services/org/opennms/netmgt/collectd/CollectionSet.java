@@ -32,67 +32,37 @@
 
 package org.opennms.netmgt.collectd;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
 
 import org.apache.log4j.Category;
 import org.apache.log4j.Priority;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.DataCollectionConfigFactory;
-import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.model.OnmsSnmpInterface;
 
 public class CollectionSet {
 	
 	private CollectionAgent m_agent;
 	private String m_collectionName;
-	
-	private Map m_ifMap = new TreeMap();
+    private NodeResourceDef m_nodeResourceDef;
+    IfResourceDef m_ifResourceDef;
 	
 	public CollectionSet(CollectionAgent agent, String collectionName) {
 		m_agent = agent;
 		m_collectionName = collectionName;
-		addSnmpInterfacesToCollectionSet();
+        m_nodeResourceDef = new NodeResourceDef(m_agent, m_collectionName);
+        m_ifResourceDef = new IfResourceDef(m_agent, m_collectionName);
 	}
 	
-	public Map getIfMap() {
-		return m_ifMap;
-	}
-	public void setIfMap(Map ifMap) {
-		m_ifMap = ifMap;
-	}
 	public NodeInfo getNodeInfo() {
-		return new NodeInfo(m_agent, m_collectionName);
-	}
-
-	void addIfInfo(IfInfo ifInfo) {
-		getIfMap().put(new Integer(ifInfo.getIndex()), ifInfo);
+        return m_nodeResourceDef.getNodeInfo();
 	}
 
 	boolean hasDataToCollect() {
-        if (!getNodeInfo().getAttributeList().isEmpty()) return true;
-        return hasInterfaceDataToCollect();
+        return (m_nodeResourceDef.hasDataToCollect() || m_ifResourceDef.hasDataToCollect());
 	}
 
-    boolean hasInterfaceDataToCollect() {
-        Iterator iter = getIfMap().values().iterator();
-        while (iter.hasNext()) {
-            CollectionResource ifInfo = (CollectionResource) iter.next();
-            if (!ifInfo.getAttributeList().isEmpty()) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-	public String getCollectionName() {
+    public String getCollectionName() {
 		return m_collectionName;
 	}
 	
@@ -100,47 +70,11 @@ public class CollectionSet {
 		return m_agent;
 	}
 
-	void addSnmpInterface(OnmsSnmpInterface snmpIface) {
-		addIfInfo(new IfInfo(m_agent, m_collectionName, snmpIface));
-	}
-
-	void logInitializeSnmpIface(OnmsSnmpInterface snmpIface) {
-		if (log().isDebugEnabled()) {
-			log()
-			.debug(
-					"initialize: snmpifindex = " + snmpIface.getIfIndex().intValue()
-					+ ", snmpifname = " + snmpIface.getIfName()
-					+ ", snmpifdescr = " + snmpIface.getIfDescr()
-					+ ", snmpphysaddr = -"+ snmpIface.getPhysAddr() + "-");
-		}
-		
-		if (log().isDebugEnabled()) {
-			log().debug("initialize: ifLabel = '" + snmpIface.computeLabelForRRD() + "'");
-		}
-	
-	
-	}
-
-	private Category log() {
+	Category log() {
 		return ThreadCategory.getInstance(getClass());
 	}
 
-	void addSnmpInterfacesToCollectionSet() {
-		CollectionAgent agent = getCollectionAgent();
-		OnmsNode node = agent.getNode();
-	
-		Set snmpIfs = node.getSnmpInterfaces();
-		
-		for (Iterator it = snmpIfs.iterator(); it.hasNext();) {
-			OnmsSnmpInterface snmpIface = (OnmsSnmpInterface) it.next();
-			logInitializeSnmpIface(snmpIface);
-			addSnmpInterface(snmpIface);
-			
-		}
-		
-	}
-
-    public String getStorageFlag() {
+	public String getStorageFlag() {
         String collectionName = m_collectionName;
     	String storageFlag = DataCollectionConfigFactory.getInstance()
     			.getSnmpStorageFlag(collectionName);
@@ -188,21 +122,18 @@ public class CollectionSet {
         return getNodeInfo().getAttributeList();
     }
 
+    /**
+     * @deprecated Use {@link org.opennms.netmgt.collectd.IfResourceDef#getCombinedInterfaceAttributes()} instead
+     */
     List getCombinedInterfaceAttributes() {
-        Set attributes = new LinkedHashSet();
-        for (Iterator it = getIfMap().values().iterator(); it.hasNext();) {
-            CollectionResource ifInfo = (CollectionResource) it.next();
-            attributes.addAll(ifInfo.getAttributeList());
-        }
-        return new ArrayList(attributes);
+        return m_ifResourceDef.getCombinedInterfaceAttributes();
     }
 
-    IfInfo getIfInfo(int ifIndex) {
-        return (IfInfo) getIfMap().get(new Integer(ifIndex));
-    }
-
+    /**
+     * @deprecated Use {@link org.opennms.netmgt.collectd.IfResourceDef#getIfInfos()} instead
+     */
     public Collection getIfInfos() {
-        return getIfMap().values();
+        return m_ifResourceDef.getIfInfos();
     }
 
 }
