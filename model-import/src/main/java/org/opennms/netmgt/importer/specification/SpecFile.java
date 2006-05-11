@@ -146,5 +146,9 @@ public class SpecFile {
     public String getForeignSource() {
         return m_mi.getForeignSource();
     }
+    
+    public void setForeignSource(String foreignSource) {
+        m_mi.setForeignSource(foreignSource);
+    }
 
 }

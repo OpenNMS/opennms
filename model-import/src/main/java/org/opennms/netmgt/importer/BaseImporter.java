@@ -45,6 +45,7 @@ import org.opennms.netmgt.dao.IpInterfaceDao;
 import org.opennms.netmgt.dao.MonitoredServiceDao;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.dao.ServiceTypeDao;
+import org.opennms.netmgt.eventd.EventUtil;
 import org.opennms.netmgt.importer.operations.DefaultImportStatistics;
 import org.opennms.netmgt.importer.operations.DeleteOperation;
 import org.opennms.netmgt.importer.operations.ImportOperationFactory;
@@ -56,7 +57,9 @@ import org.opennms.netmgt.importer.specification.AbstractImportVisitor;
 import org.opennms.netmgt.importer.specification.SpecFile;
 import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.xml.event.Event;
 import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
@@ -160,10 +163,14 @@ public class BaseImporter implements ImportOperationFactory {
     }
     
     protected void importModelFromResource(Resource resource) throws IOException, ModelImportException {
-    	importModelFromResource(resource, new DefaultImportStatistics());
+    	importModelFromResource(resource, new DefaultImportStatistics(), null);
     }
 
-    protected void importModelFromResource(Resource resource, ImportStatistics stats) throws IOException, ModelImportException {
+    protected void importModelFromResource(Resource resource, ImportStatistics stats, Event event) throws IOException, ModelImportException {
+        
+        if (event != null && EventUtil.getNamedParmValue("url", event) != null)
+            resource = new UrlResource(EventUtil.getNamedParmValue("url", event));
+
     	stats.beginImporting();
     	stats.beginLoadingResource(resource);
     	
@@ -171,6 +178,11 @@ public class BaseImporter implements ImportOperationFactory {
         specFile.loadResource(resource);
         
         stats.finishLoadingResource(resource);
+        
+        
+        if (event != null && EventUtil.getNamedParmValue("foreignSource", event) != null) {
+            specFile.setForeignSource(EventUtil.getNamedParmValue("foreignSource", event));
+        }
         
         stats.beginAuditNodes();
         createDistPollerIfNecessary();

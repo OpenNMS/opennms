@@ -290,9 +290,12 @@
       <event-label>OpenNMS-defined internal event: importer reloadImport</event-label>
       <descr>
         &lt;p&gt;This event will cause the importer to run the model-import process.
+        The parameters include foreignSource, url, and deleteThreshold that override
+        configuration properties as well as XML and default values.&lt;/p&gt;
       </descr>
       <logmsg dest='logndisplay'>
-        &lt;p&gt;A request had been made to run the model-import process.
+        &lt;p&gt;A request had been made to run the model-import process with the
+        parms: %parm[all]%.&lt;/p&gt;
       </logmsg>
       <severity>Normal</severity>
     </event>
