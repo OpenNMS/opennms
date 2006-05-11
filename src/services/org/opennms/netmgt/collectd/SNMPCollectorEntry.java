@@ -38,6 +38,7 @@
 
 package org.opennms.netmgt.collectd;
 
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
@@ -69,9 +70,9 @@ public final class SNMPCollectorEntry extends AbstractSnmpStore {
      * The list of MIBObjects that will used for associating the the data within
      * the map.
      */
-    private List m_attrList;
+    private Collection m_attrList;
 
-    public SNMPCollectorEntry(List attrList) {
+    public SNMPCollectorEntry(Collection attrList) {
         if (attrList == null) throw new NullPointerException("attrList is null!");
         m_attrList = attrList;
     }
@@ -81,11 +82,11 @@ public final class SNMPCollectorEntry extends AbstractSnmpStore {
         return ThreadCategory.getInstance(getClass());
     }
     
-    private CollectionAttribute findAttributeForOid(SnmpObjId base) {
+    private AttributeType findAttributeTypeForOid(SnmpObjId base) {
         for (Iterator it = m_attrList.iterator(); it.hasNext();) {
-            CollectionAttribute attr = (CollectionAttribute)it.next();
-            if (base.equals(attr.getSnmpObjId()))
-                return attr;
+            AttributeType attrType = (AttributeType)it.next();
+            if (base.equals(attrType.getSnmpObjId()))
+                return attrType;
         }
         return null;
     }
@@ -94,11 +95,14 @@ public final class SNMPCollectorEntry extends AbstractSnmpStore {
     public void storeResult(SnmpObjId base, SnmpInstId inst, SnmpValue val) {
         String key = base.append(inst).toString();
         putValue(key, val);
-        CollectionAttribute attr = findAttributeForOid(base);
-        if (attr == null) throw new IllegalArgumentException("Received result for unexpected oid ["+base+"].["+inst+"]");
-        if (attr.getInstance().equals(MibObject.INSTANCE_IFINDEX))
+        AttributeType attrType = findAttributeTypeForOid(base);
+        if (attrType == null) throw new IllegalArgumentException("Received result for unexpected oid ["+base+"].["+inst+"]");
+        
+        attrType.storeResult(base, inst, val);
+
+        if (attrType.getInstance().equals(MibObject.INSTANCE_IFINDEX))
             putIfIndex(inst.toInt());
-        log().debug("storeResult: added value for "+attr.getAlias()+": ["+base+"].["+inst+"] = "+val);
+        log().debug("storeResult: added value for "+attrType.getAlias()+": ["+base+"].["+inst+"] = "+val);
     }
 
 

@@ -65,18 +65,13 @@ public class SnmpIfCollectorTest extends SnmpCollectorTestCase {
     }
 
     public void testZeroVars() throws Exception {
-        try {
             createSnmpInterface(1, 24, "lo", CollectionType.PRIMARY);
 
             SnmpIfCollector collector = createSnmpIfCollector();
             waitForSignal();
 
-            fail("Expected an exception to be thrown with no data to collect");
 
-        } catch (RuntimeException e) {
-
-        }
-        
+            assertInterfaceMibObjectsPresent(collector.getEntries());
     }
 
     private void assertInterfaceMibObjectsPresent(List entries) {
@@ -150,7 +145,8 @@ public class SnmpIfCollectorTest extends SnmpCollectorTestCase {
     }
 
     private SnmpIfCollector createSnmpIfCollector() throws UnknownHostException {
-        m_agent.initialize();
+        initializeAgent();
+        
         SnmpIfCollector collector = new SnmpIfCollector(InetAddress.getLocalHost(), m_agent.getCombinedInterfaceAttributes());
         
         createWalker(collector);

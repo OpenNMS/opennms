@@ -57,12 +57,8 @@ public class SnmpNodeCollectorTest extends SnmpCollectorTestCase {
 
 
     public void testZeroVars() throws Exception {
-        try {
-            SnmpNodeCollector collector = createNodeCollector(50);
-            fail("An exception should be thrown here");
-        } catch (RuntimeException e) {
-            
-        }
+        SnmpNodeCollector collector = createNodeCollector(50);
+        assertMibObjectsPresent(collector.getEntry(), getAttributeList());
     }
 
 
@@ -85,7 +81,8 @@ public class SnmpNodeCollectorTest extends SnmpCollectorTestCase {
     }
 
     private SnmpNodeCollector createNodeCollector(int maxVarsPerPdu) throws Exception, InterruptedException {
-        m_agent.initialize();
+        initializeAgent();
+        
         SnmpNodeCollector collector = new SnmpNodeCollector(InetAddress.getLocalHost(), m_agent.getNodeAttributeList());
 
         createWalker(collector);

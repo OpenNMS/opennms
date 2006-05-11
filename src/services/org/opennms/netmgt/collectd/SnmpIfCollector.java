@@ -83,19 +83,6 @@ public class SnmpIfCollector extends AggregateTracker {
 
     private List m_objList;
 
-    /**
-     * The mib object for MIB-2 ifXtable ifAlias
-     */
-    private static CollectionAttribute ifAliasMibObject() {
-        MibObject ifAliasMibObject = new MibObject();
-        ifAliasMibObject.setOid(".1.3.6.1.2.1.31.1.1.1.18");
-        ifAliasMibObject.setAlias("ifAlias");
-        ifAliasMibObject.setType("DisplayString");
-        ifAliasMibObject.setInstance("ifIndex");
-        CollectionAttribute attr = new CollectionAttribute("default", ifAliasMibObject);
-        return attr;
-    }
-
 	/**
      * The class constructor is used to initialize the collector and send out
      * the initial SNMP packet requesting data. The data is then received and
@@ -107,19 +94,12 @@ public class SnmpIfCollector extends AggregateTracker {
      *            Map of org.opennms.netmgt.poller.collectd.IfInfo objects.
      */
     public SnmpIfCollector(InetAddress address, List objList) {
-        super(CollectionAttribute.getCollectionTrackers(appendIfAlias(objList)));
-
+        super(AttributeType.getCollectionTrackers(objList));
         // Process parameters
         //
         m_primaryIf = address.getHostAddress();
-        m_objList = appendIfAlias(objList);
+        m_objList = objList;
     }
-
-	private static List appendIfAlias(List objList) {
-		ArrayList list = new ArrayList(objList);
-		list.add(ifAliasMibObject());
-		return list;
-	}
 
     protected static Category log() {
         return ThreadCategory.getInstance(SnmpIfCollector.class);

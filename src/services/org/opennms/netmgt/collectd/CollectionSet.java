@@ -36,36 +36,34 @@ import java.util.Collection;
 import java.util.List;
 
 import org.apache.log4j.Category;
-import org.apache.log4j.Priority;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.config.DataCollectionConfigFactory;
 
 public class CollectionSet {
 	
 	private CollectionAgent m_agent;
-	private String m_collectionName;
-    private NodeResourceDef m_nodeResourceDef;
-    IfResourceDef m_ifResourceDef;
+    private NodeResourceType m_nodeResourceType;
+    private IfResourceType m_ifResourceType;
+    private OnmsSnmpCollection m_snmpCollection;
 	
-	public CollectionSet(CollectionAgent agent, String collectionName) {
+	public CollectionSet(CollectionAgent agent, OnmsSnmpCollection snmpCollection) {
 		m_agent = agent;
-		m_collectionName = collectionName;
-        m_nodeResourceDef = new NodeResourceDef(m_agent, m_collectionName);
-        m_ifResourceDef = new IfResourceDef(m_agent, m_collectionName);
+        m_snmpCollection = snmpCollection;
+        m_nodeResourceType = new NodeResourceType(m_agent, snmpCollection);
+        m_ifResourceType = new IfResourceType(m_agent, snmpCollection);
 	}
 	
 	public NodeInfo getNodeInfo() {
-        return m_nodeResourceDef.getNodeInfo();
+        return m_nodeResourceType.getNodeInfo();
 	}
 
 	boolean hasDataToCollect() {
-        return (m_nodeResourceDef.hasDataToCollect() || m_ifResourceDef.hasDataToCollect());
+        return (m_nodeResourceType.hasDataToCollect() || m_ifResourceType.hasDataToCollect());
 	}
+    
+    boolean hasInterfaceDataToCollect() {
+        return m_ifResourceType.hasDataToCollect();
+    }
 
-    public String getCollectionName() {
-		return m_collectionName;
-	}
-	
 	public CollectionAgent getCollectionAgent() {
 		return m_agent;
 	}
@@ -75,34 +73,11 @@ public class CollectionSet {
 	}
 
 	public String getStorageFlag() {
-        String collectionName = m_collectionName;
-    	String storageFlag = DataCollectionConfigFactory.getInstance()
-    			.getSnmpStorageFlag(collectionName);
-    	if (storageFlag == null) {
-            if (log().isEnabledFor(Priority.WARN)) {
-    			log().warn(
-    					"initialize: Configuration error, failed to "
-    							+ "retrieve SNMP storage flag for collection: "
-    							+ collectionName);
-    		}
-    		storageFlag = SnmpCollector.SNMP_STORAGE_PRIMARY;
-    	}
-    	return storageFlag;
+        return m_snmpCollection.getStorageFlag();
     }
 
     int getMaxVarsPerPdu() {
-    	// Retrieve configured value for max number of vars per PDU
-    	int maxVarsPerPdu = DataCollectionConfigFactory.getInstance().getMaxVarsPerPdu(m_collectionName);
-    	if (maxVarsPerPdu == -1) {
-            if (log().isEnabledFor(Priority.WARN)) {
-    			log().warn(
-    					"initialize: Configuration error, failed to "
-    							+ "retrieve max vars per pdu from collection: "
-    							+ m_collectionName);
-    		}
-    		maxVarsPerPdu = SnmpCollector.DEFAULT_MAX_VARS_PER_PDU;
-    	} 
-        return maxVarsPerPdu;
+        return m_snmpCollection.getMaxVarsPerPdu();
     }
 
     void verifyCollectionIsNecessary(CollectionAgent agent) {
@@ -112,28 +87,32 @@ public class CollectionSet {
     	 * exception
     	 */
     	if (!hasDataToCollect()) {
-            throw new RuntimeException("collection '" + getCollectionName()
-    				+ "' defines nothing to collect for "
-    				+ agent);
+            throw new RuntimeException("collection '" + this
+                    + "' defines nothing to collect for " + agent);
     	}
     }
 
-    List getAttributeList() {
+    Collection getAttributeList() {
         return getNodeInfo().getAttributeList();
     }
 
     /**
-     * @deprecated Use {@link org.opennms.netmgt.collectd.IfResourceDef#getCombinedInterfaceAttributes()} instead
+     * @deprecated Use {@link org.opennms.netmgt.collectd.IfResourceType#getCombinedInterfaceAttributes()} instead
      */
     List getCombinedInterfaceAttributes() {
-        return m_ifResourceDef.getCombinedInterfaceAttributes();
+        return m_ifResourceType.getCombinedInterfaceAttributes();
     }
 
     /**
-     * @deprecated Use {@link org.opennms.netmgt.collectd.IfResourceDef#getIfInfos()} instead
+     * @deprecated Use {@link org.opennms.netmgt.collectd.IfResourceType#getIfInfos()} instead
      */
     public Collection getIfInfos() {
-        return m_ifResourceDef.getIfInfos();
+        return m_ifResourceType.getIfInfos();
     }
+
+    public IfInfo getIfInfo(int ifIndex) {
+        return m_ifResourceType.getIfInfo(ifIndex);
+    }
+
 
 }

@@ -36,7 +36,9 @@ import java.util.List;
 
 import org.opennms.core.concurrent.BarrierSignaler;
 import org.opennms.netmgt.collectd.CollectionAgent;
-import org.opennms.netmgt.collectd.CollectionAttribute;
+import org.opennms.netmgt.collectd.AttributeType;
+import org.opennms.netmgt.collectd.MibObject;
+import org.opennms.netmgt.collectd.OnmsSnmpCollection;
 import org.opennms.netmgt.collectd.SNMPCollectorEntry;
 import org.opennms.netmgt.config.DataCollectionConfigFactory;
 import org.opennms.netmgt.mock.MockDataCollectionConfig;
@@ -92,7 +94,7 @@ public class SnmpCollectorTestCase extends OpenNMSTestCase {
         assertNotNull(entry);
         assertEquals("Unexpected size for "+entry, attrList.size(), getEntrySize(entry));
         for (Iterator it = attrList.iterator(); it.hasNext();) {
-            CollectionAttribute attr = (CollectionAttribute) it.next();
+            MibObject attr = (MibObject) it.next();
             assertMibObjectPresent(entry, attr);
         }
     }
@@ -101,18 +103,18 @@ public class SnmpCollectorTestCase extends OpenNMSTestCase {
         return entry.size() - (entry.getIfIndex() == null ? 0 : 1);
     }
 
-    private void assertMibObjectPresent(SNMPCollectorEntry entry, CollectionAttribute attr) {
+    private void assertMibObjectPresent(SNMPCollectorEntry entry, MibObject attr) {
         String inst = getObjectInstance(entry, attr);
         SnmpValue value = entry.getValue(attr.getOid()+"."+inst);
         assertNotNull(value);
         assertExpectedType(attr, value);
     }
 
-    private void assertExpectedType(CollectionAttribute attr, SnmpValue value) {
+    private void assertExpectedType(MibObject attr, SnmpValue value) {
         assertEquals(expectNumeric(attr.getType()), value.isNumeric());
     }
 
-    private String getObjectInstance(SNMPCollectorEntry entry, CollectionAttribute attr) {
+    private String getObjectInstance(SNMPCollectorEntry entry, MibObject attr) {
         return (attr.getInstance() == "ifIndex" ? entry.getIfIndex().toString() : attr.getInstance());
     }
 
@@ -170,7 +172,7 @@ public class SnmpCollectorTestCase extends OpenNMSTestCase {
     }
 
     protected void addAttribute(String alias, String oid, String inst, String type) {
-        m_config.addAttribute(this, alias, oid, inst, type);
+        m_config.addAttributeType(this, alias, oid, inst, type);
     }
 
     protected void addIfTable() {
@@ -255,12 +257,15 @@ public class SnmpCollectorTestCase extends OpenNMSTestCase {
         m_node.setSysObjectId(".1.2.3.4.5.6.7");
     
     	OnmsIpInterface m_iface = new OnmsIpInterface();
-        m_iface.setIpAddress("172.20.1.172");
+        m_iface.setIpAddress("172.20.1.176");
     	m_iface.setIfIndex(new Integer(ifIndex));
     	m_iface.setIsSnmpPrimary(ifCollType);
     	m_node.addIpInterface(m_iface);
         m_agent = new CollectionAgent(m_iface);
-        m_agent.setCollection("default");
+    }
+    
+    protected void initializeAgent() {
+        m_agent.initialize(new OnmsSnmpCollection("default"));
     }
 
     protected void createWalker(CollectionTracker collector) {

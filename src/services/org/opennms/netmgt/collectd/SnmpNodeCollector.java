@@ -39,6 +39,7 @@
 package org.opennms.netmgt.collectd;
 
 import java.net.InetAddress;
+import java.util.Collection;
 import java.util.List;
 
 import org.apache.log4j.Category;
@@ -86,8 +87,8 @@ public class SnmpNodeCollector extends AggregateTracker {
      * @param objList
      *            The list of object id's to be collected.
      */
-    public SnmpNodeCollector(InetAddress address, List objList) {
-        super(CollectionAttribute.getCollectionTrackers(objList));
+    public SnmpNodeCollector(InetAddress address, Collection objList) {
+        super(AttributeType.getCollectionTrackers(objList));
         
         m_primaryIf = address.getHostAddress();
         m_collectorEntry = new SNMPCollectorEntry(objList);

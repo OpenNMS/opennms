@@ -87,11 +87,6 @@ public class MibObject implements Collectable {
     private String m_minval;
 
     /**
-     * True if this object resides in a table.
-     */
-    private boolean tabular; // NOT CURRENTLY USED?
-
-    /**
      * Object's instance to be retrieved. Indicates a value to be appended to
      * the objects' oid string prior to issuing an SNMP GET request.
      * 

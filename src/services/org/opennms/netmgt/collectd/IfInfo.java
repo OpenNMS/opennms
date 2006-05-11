@@ -56,10 +56,9 @@ final class IfInfo extends DbCollectionResource {
 	OnmsSnmpInterface m_snmpIface;
     private SNMPCollectorEntry m_entry;
 	
-	public IfInfo(ResourceDef def, CollectionAgent agent, String collectionName, OnmsSnmpInterface snmpIface) {
-        super(def, agent, collectionName);
+	public IfInfo(ResourceType def, CollectionAgent agent, OnmsSnmpInterface snmpIface) {
+        super(def, agent);
     	m_snmpIface = snmpIface;
-    	
     }
 
 	public int getIndex() {

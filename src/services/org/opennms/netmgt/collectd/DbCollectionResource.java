@@ -1,21 +1,19 @@
 package org.opennms.netmgt.collectd;
 
-import java.util.List;
+import java.util.Collection;
 
 
 public abstract class DbCollectionResource extends CollectionResource {
 
     private CollectionAgent m_agent;
-    private String m_collectionName;
-    private ResourceDef m_resourceDef;
+    private ResourceType m_resourceDef;
 
-    public DbCollectionResource(ResourceDef def, CollectionAgent agent, String collectionName) {
+    public DbCollectionResource(ResourceType def, CollectionAgent agent) {
         m_resourceDef = def;
         m_agent = agent;
-        m_collectionName = collectionName;
     }
 
-    public List getAttributeList() {
+    public Collection getAttributeList() {
         return m_resourceDef.getAttributeDefs();
     }
 

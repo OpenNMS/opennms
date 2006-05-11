@@ -6,8 +6,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.opennms.netmgt.collectd.CollectionAttribute;
+import org.opennms.netmgt.collectd.AttributeType;
+import org.opennms.netmgt.collectd.CollectionAgent;
 import org.opennms.netmgt.collectd.MibObject;
+import org.opennms.netmgt.collectd.OnmsSnmpCollection;
 import org.opennms.netmgt.collectd.SnmpCollector;
 import org.opennms.netmgt.config.DataCollectionConfig;
 import org.opennms.netmgt.snmp.SnmpCollectorTestCase;
@@ -77,7 +79,7 @@ public class MockDataCollectionConfig implements DataCollectionConfig {
     public MockDataCollectionConfig() {
         setAttrList(new ArrayList());
         setAttrMap(new TreeMap());
-        addInitialAttributes();
+        addInitialAttributeTypes();
     }
 
     public void setAttrList(List attrList) {
@@ -104,46 +106,40 @@ public class MockDataCollectionConfig implements DataCollectionConfig {
         mibObj.setInstance(instance);
         return mibObj;
     }
-    public CollectionAttribute createAttribute(String alias, String oid, String instance, String type) {
-        MibObject mibObj = createMibObject(alias, oid, instance, type);
-        CollectionAttribute attr = new CollectionAttribute("default", mibObj);
-        return attr;
+    public MibObject createAttributeType(String alias, String oid, String instance, String type) {
+        return createMibObject(alias, oid, instance, type);
     }
-    public CollectionAttribute defineAttribute(String alias, String oid, String instance, String type) {
-        CollectionAttribute attr = createAttribute(alias, oid, instance, type);
-        getAttrMap().put(attr.getAlias(), attr);
-        getAttrMap().put(attr.getOid(), attr);
-        return attr;
+    public MibObject defineAttributeType(String alias, String oid, String instance, String type) {
+        MibObject mibObj = createAttributeType(alias, oid, instance, type);
+        getAttrMap().put(mibObj.getAlias(), mibObj);
+        getAttrMap().put(mibObj.getOid(), mibObj);
+        return mibObj;
     }
-    public void addInitialAttributes() {
+    public void addInitialAttributeTypes() {
         for (int i = 0; i < MockDataCollectionConfig.initalMibObjects.length; i++) {
             String[] mibData = MockDataCollectionConfig.initalMibObjects[i];
-            defineAttribute(mibData[0], mibData[1], mibData[2], mibData[3]);
+            defineAttributeType(mibData[0], mibData[1], mibData[2], mibData[3]);
             
         }
     }
 
-    public CollectionAttribute getAttribute(SnmpCollectorTestCase case1, String alias, String oid, String inst, String type) {
-        CollectionAttribute attr = case1.m_config.getAttribute(alias);
-        if (attr != null) return attr;
-        return defineAttribute(alias, oid, inst, type);
+    public MibObject getAttributeType(String alias, String oid, String inst, String type) {
+        MibObject attrType = getAttributeType(alias);
+        if (attrType != null) return attrType;
+        return defineAttributeType(alias, oid, inst, type);
         
     }
 
-    public CollectionAttribute getAttribute(String aliasOrOid) {
-        return (CollectionAttribute)getAttrMap().get(aliasOrOid);
+    public MibObject getAttributeType(String aliasOrOid) {
+        return (MibObject)getAttrMap().get(aliasOrOid);
     }
 
-    public void addAttribute(SnmpCollectorTestCase case1, String alias, String oid, String inst, String type) {
-        CollectionAttribute attr = getAttribute(case1, alias,    oid, inst, type);
-        case1.getAttributeList().add(attr);
+    public void addAttributeType(SnmpCollectorTestCase case1, String alias, String oid, String inst, String type) {
+        MibObject attrType = getAttributeType(alias, oid,    inst, type);
+        getAttrList().add(attrType);
     }
 
-    public List buildCollectionAttributes(String collectionName, String sysObjectId, String hostAddress, int type) {
-        return new ArrayList(m_attrList);
-    }
-
-    public int getMaxVarsPerPdu(String collectionName) {
+     public int getMaxVarsPerPdu(String collectionName) {
         return 10;
     }
 
@@ -161,6 +157,10 @@ public class MockDataCollectionConfig implements DataCollectionConfig {
 
     public int getStep(String collectionName) {
         return 300;
+    }
+
+    public List getMibObjectList(String cName, String aSysoid, String anAddress, int ifType) {
+        return getAttrList();
     }
 
 }

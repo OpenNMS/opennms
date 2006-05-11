@@ -378,8 +378,8 @@ public class SnmpCollector implements ServiceCollector {
 	 */
 	public void initialize(CollectionAgent agent, Map parameters) {
         
-        agent.setCollection(getCollectionName(parameters));
-        agent.initialize();
+        OnmsSnmpCollection snmpCollection = getCollection(parameters);
+        agent.initialize(snmpCollection);
 	}
 
 	/**
@@ -432,6 +432,10 @@ public class SnmpCollector implements ServiceCollector {
     private String getCollectionName(Map parameters) {
 		return ParameterMap.getKeyedString(parameters, "collection", "default");
 	}
+    
+    private OnmsSnmpCollection getCollection(Map parameters) {
+        return new OnmsSnmpCollection(getCollectionName(parameters));
+    }
 
 	Category log() {
 		return ThreadCategory.getInstance(SnmpCollector.class);
