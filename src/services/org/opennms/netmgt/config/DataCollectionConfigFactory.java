@@ -59,7 +59,6 @@ import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.ConfigFileConstants;
-import org.opennms.netmgt.collectd.CollectionAttribute;
 import org.opennms.netmgt.collectd.DataSource;
 import org.opennms.netmgt.collectd.MibObject;
 import org.opennms.netmgt.config.datacollection.DatacollectionConfig;
@@ -132,12 +131,12 @@ public final class DataCollectionConfigFactory implements DataCollectionConfig {
     private void marshal(Reader rdr) throws MarshalException, ValidationException {
         m_config = (DatacollectionConfig) Unmarshaller.unmarshal(DatacollectionConfig.class, rdr);        
         buildCollectionMap();
-            }
+    }
 
     public static void setInstance(DataCollectionConfig instance) {
         m_singleton = instance;
         m_loaded = true;
-        }
+    }
 
     /**
      * Load the config from the default config file and create the singleton
@@ -660,20 +659,7 @@ public final class DataCollectionConfigFactory implements DataCollectionConfig {
         return rrdPath;
     }
 
-    public List buildCollectionAttributes(String collectionName, String sysObjectId, String hostAddress, int ifType) {
-        List oidList = getMibObjectList(collectionName, sysObjectId,
-    					hostAddress, ifType);
-        
-        List attrList = new LinkedList();
-        for (Iterator it = oidList.iterator(); it.hasNext();) {
-            MibObject mibObject = (MibObject) it.next();
-            CollectionAttribute attr = new CollectionAttribute(collectionName, mibObject);
-            attrList.add(attr);
-        }
-        return attrList;
-    }
-
-    /**
+     /**
 	 * This method is responsible for building a list of RRDDataSource objects
 	 * from the provided list of MibObject objects.
 	 * 

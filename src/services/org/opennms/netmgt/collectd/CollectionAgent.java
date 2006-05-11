@@ -31,7 +31,6 @@ public class CollectionAgent extends IPv4NetworkInterface {
     private SnmpIfCollector m_ifCollector;
 
     // miscellaneous junk?
-    private String m_collectionName;
 	private CollectionSet m_collectionSet;
     private int m_maxVarsPerPdu = 0;
     private int m_ifCount = -1;
@@ -49,14 +48,6 @@ public class CollectionAgent extends IPv4NetworkInterface {
 		return m_iface.getNode();
 	}
     
-    String getCollection() {
-        return m_collectionName;
-    }
-    
-    public void setCollection(String collectionName) {
-        m_collectionName = collectionName;
-    }
-
 	InetAddress getInetAddress() {
 	
 		if (getType() != CollectionAgent.TYPE_IPV4)
@@ -67,7 +58,7 @@ public class CollectionAgent extends IPv4NetworkInterface {
 	}
 
 	String getSnmpStorage() {
-        return m_collectionSet.getStorageFlag();
+        return getCollectionSet().getStorageFlag();
 	}
     
     CollectionType getMinimumCollectionType() {
@@ -86,7 +77,7 @@ public class CollectionAgent extends IPv4NetworkInterface {
 		}
 	}
 
-	String getHostAddress() {
+	public String getHostAddress() {
 		return getInetAddress().getHostAddress();
 	}
 
@@ -106,7 +97,7 @@ public class CollectionAgent extends IPv4NetworkInterface {
 		return (getIpInterface().getIfIndex() == null ? -1 : getIpInterface().getIfIndex().intValue());
 	}
 
-	String getSysObjectId() {
+	public String getSysObjectId() {
 		return getIpInterface().getNode().getSysObjectId();
 	}
 
@@ -115,17 +106,17 @@ public class CollectionAgent extends IPv4NetworkInterface {
 	}
 
     List getCombinedInterfaceAttributes() {
-        return m_collectionSet.getCombinedInterfaceAttributes();
+        return getCollectionSet().getCombinedInterfaceAttributes();
     }
 
-    List getNodeAttributeList() {
-       return m_collectionSet.getAttributeList(); 
+    Collection getNodeAttributeList() {
+       return getCollectionSet().getAttributeList(); 
     }
 
     public int getMaxVarsPerPdu() {
         
         if (m_maxVarsPerPdu < 1) {
-            m_maxVarsPerPdu = m_collectionSet.getMaxVarsPerPdu();
+            m_maxVarsPerPdu = getCollectionSet().getMaxVarsPerPdu();
             log().info("using maxVarsPerPdu from dataCollectionConfig");
         }
         
@@ -158,7 +149,7 @@ public class CollectionAgent extends IPv4NetworkInterface {
     }
 
     private void verifyCollectionIsNecessary() {
-        m_collectionSet.verifyCollectionIsNecessary(this);
+        getCollectionSet().verifyCollectionIsNecessary(this);
     }
 
     private void validateSysObjId() {
@@ -214,12 +205,8 @@ public class CollectionAgent extends IPv4NetworkInterface {
         logCompletion();
     }
 
-    private void createCollectionSet() {
-        m_collectionSet = new CollectionSet(this, getCollection());
-    }
-
-    public void initialize() {
-        createCollectionSet();
+    public void initialize(OnmsSnmpCollection snmpCollection) {
+        setCollectionSet(snmpCollection.createCollectionSet(this));
     	validateAgent();
     }
     
@@ -277,7 +264,7 @@ public class CollectionAgent extends IPv4NetworkInterface {
     }
 
     boolean hasInterfaceDataToCollect() {
-        return m_collectionSet.m_ifResourceDef.hasDataToCollect();
+        return getCollectionSet().hasInterfaceDataToCollect();
     }
 
     CollectionTracker getCollectionTracker() {
@@ -372,15 +359,15 @@ public class CollectionAgent extends IPv4NetworkInterface {
     }
 
     IfInfo getIfInfo(int ifIndex) {
-        return m_collectionSet.m_ifResourceDef.getIfInfo(ifIndex);
+        return getCollectionSet().getIfInfo(ifIndex);
     }
 
     public NodeInfo getNodeInfo() {
-        return m_collectionSet.getNodeInfo();
+        return getCollectionSet().getNodeInfo();
     }
 
     public Collection getIfInfos() {
-        return m_collectionSet.getIfInfos();
+        return getCollectionSet().getIfInfos();
     }
 
     Collection getIfResouces(ForceRescanState forceRescanState, ServiceParameters serviceParameters) {
@@ -484,6 +471,14 @@ public class CollectionAgent extends IPv4NetworkInterface {
         log().info("Number of interfaces on primary SNMP "
                 + "interface " + getHostAddress()
                 + " has changed, generating 'ForceRescan' event.");
+    }
+
+    private void setCollectionSet(CollectionSet collectionSet) {
+        m_collectionSet = collectionSet;
+    }
+
+    private CollectionSet getCollectionSet() {
+        return m_collectionSet;
     }
 
 

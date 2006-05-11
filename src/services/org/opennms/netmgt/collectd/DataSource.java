@@ -68,6 +68,8 @@ public abstract class DataSource {
 	 */
 	protected String m_name;
 
+    private String m_collectionName;
+
 	public static DataSource dataSourceForMibObject(MibObject obj, String collectionName) {
 		// Check if this object has an appropriate "integer" data type
 		// which can be stored in an RRD database file (must map to one of 
@@ -76,7 +78,7 @@ public abstract class DataSource {
 			RRDDataSource ds=new RRDDataSource(obj, collectionName);
 			return ds;
 		} else if(StringDataSource.handlesType(obj.getType())){
-			return new StringDataSource(obj);
+			return new StringDataSource(obj, collectionName);
 		}
 		return null;
 	}
@@ -91,8 +93,9 @@ public abstract class DataSource {
 	/**
 	 * @param obj
 	 */
-	public DataSource(MibObject obj) {
+	public DataSource(MibObject obj, String collectionName) {
 		this();
+        m_collectionName = collectionName;
 		this.setOid(obj.getOid());
 		this.setInstance(obj.getInstance());
 		this.setName(obj.getAlias());
@@ -103,10 +106,8 @@ public abstract class DataSource {
 	 * the store if need be (e.g. an rrd file, or a properties file, or whatever)
 	 */
 	public abstract boolean performUpdate(
-		String collectionName,
 		String owner,
 		File repository,
-		String dsName,
 		String val);
 
 
@@ -186,6 +187,10 @@ public abstract class DataSource {
 	public String getName() {
 		return m_name;
 	}
+    
+    public String getCollectionName() {
+        return m_collectionName;
+    }
 
     /**
      * @param collectorEntry
@@ -224,7 +229,7 @@ public abstract class DataSource {
     	return getStorableValue(snmpVar);
     }
 
-    private Category log() {
+    protected Category log() {
         return ThreadCategory.getInstance(getClass());
     }
 }

@@ -1,6 +1,7 @@
 package org.opennms.netmgt.collectd;
 
 import java.io.File;
+import java.util.Collection;
 import java.util.List;
 
 
@@ -20,7 +21,7 @@ public class AliasedResource extends CollectionResource {
         return m_ifInfo;
     }
 
-    public List getAttributeList() {
+    public Collection getAttributeList() {
         return m_ifInfo.getAttributeList();
     }
 

@@ -1,18 +1,20 @@
 package org.opennms.netmgt.collectd;
 
 import java.io.File;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.snmp.SnmpValue;
 
 
 public abstract class CollectionResource {
     
     public abstract CollectionAgent getCollectionAgent();
 
-    public abstract List getAttributeList();
+    public abstract Collection getAttributeList();
     
     public abstract boolean shouldPersist(ServiceParameters params);
 
@@ -24,32 +26,32 @@ public abstract class CollectionResource {
         return ThreadCategory.getInstance(getClass());
     }
 
-    protected void logNoDataForAttribute(CollectionAttribute attr) {
+    protected void logNoDataForAttribute(AttributeType attrType) {
         if (log().isDebugEnabled()) {
             log().debug(
         			"updateRRDs: Skipping update, "
         					+ "no data retrieved for resource: " + this + 
-                            " attribute: " + attr.getName());
+                            " attribute: " + attrType.getName());
         }
     }
 
-    protected void logUpdateFailed(CollectionAttribute attr) {
+    protected void logUpdateFailed(AttributeType attrType) {
         log().warn("updateRRDs: ds.performUpdate() failed for resource: "
                 + this
                 + " datasource: "
-                + attr.getName());
+                + attrType.getName());
     }
 
-    protected void store(CollectionAttribute attr, File rrdBaseDir) {
+    protected void store(AttributeType attrType, File rrdBaseDir) {
         CollectionAgent collectionAgent = getCollectionAgent();
-        if (attr.performUpdate(collectionAgent, getResourceDir(rrdBaseDir), getEntry())) {
-            logUpdateFailed(attr);
+        if (attrType.performUpdate(collectionAgent, getResourceDir(rrdBaseDir), getEntry())) {
+            logUpdateFailed(attrType);
         }
     }
 
-    protected void logUpdateException(CollectionAttribute attr, IllegalArgumentException e) {
+    protected void logUpdateException(AttributeType attrType, IllegalArgumentException e) {
         log().warn("updateRRDs: exception saving data for resource: " + this
-        			+ " datasource: " + attr.getName(), e);
+        			+ " datasource: " + attrType.getName(), e);
     }
 
     protected void storeAttributes(File rrdBaseDir) {
@@ -60,18 +62,23 @@ public abstract class CollectionResource {
          */
         Iterator i = getAttributeList().iterator();
         while (i.hasNext()) {
-            CollectionAttribute attr = (CollectionAttribute)i.next();
+            AttributeType attrType = (AttributeType)i.next();
             try {
-                if (attr.getValue(getEntry()) == null) {
-                    logNoDataForAttribute(attr);
+                if (attrType.getValue(getEntry()) == null) {
+                    logNoDataForAttribute(attrType);
                 } else {
-                    store(attr, rrdBaseDir);
+                    store(attrType, rrdBaseDir);
                 }
             } catch (IllegalArgumentException e) {
-                logUpdateException(attr, e);
+                logUpdateException(attrType, e);
             }
     
         }
+    }
+
+    public void setAttributeValue(AttributeType type, SnmpValue val) {
+        // TODO Auto-generated method stub
+        
     }
 
 }

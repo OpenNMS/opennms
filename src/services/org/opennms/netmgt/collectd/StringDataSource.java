@@ -41,8 +41,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Properties;
 
-import org.apache.log4j.Category;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.snmp.SnmpValue;
 
 /**
@@ -62,20 +60,13 @@ public class StringDataSource extends DataSource {
 	/**
 	 * @param obj mibObject to use as the basis for configuring this datasource
 	 */
-	public StringDataSource(MibObject obj) {
-		super(obj);
+	public StringDataSource(MibObject obj, String collectionName) {
+		super(obj, collectionName);
 		//Nothing else custom to do
 	}
 
-	public boolean performUpdate(
-	        String collectionName,
-	        String owner,
-	        File repository,
-	        String dsName,
-	        String val) {
+	public boolean performUpdate(String owner, File repository, String val) {
 	    
-	    Category log = ThreadCategory.getInstance(getClass());
-	    	    
 	    Properties props = new Properties();
 	    File propertiesFile =	 new File(repository,"strings.properties");
 	    
@@ -86,13 +77,13 @@ public class StringDataSource extends DataSource {
 	            fileInputStream = new FileInputStream(propertiesFile);
 	            props.load(fileInputStream);
 	        } catch (Exception e) {
-                log.error("performUpdate: Error openning properties file.", e);
+                log().error("performUpdate: Error openning properties file.", e);
 	            return true;
 	        } finally {
 	            try {
                     if (fileInputStream != null) fileInputStream.close();
                 } catch (IOException e) {
-                    log.error("performUpdate: Error closing file.", e);
+                    log().error("performUpdate: Error closing file.", e);
                 }
             }
 	    }
@@ -112,7 +103,7 @@ public class StringDataSource extends DataSource {
 	                fileOutputStream.close();
 	            }
 	        } catch (IOException e) {
-	            log.error("performUpdate: Error closing file.", e);
+	            log().error("performUpdate: Error closing file.", e);
 	        }
         }
 	    return false;

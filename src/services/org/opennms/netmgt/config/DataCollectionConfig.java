@@ -11,7 +11,7 @@ public interface DataCollectionConfig {
 
     String getSnmpStorageFlag(String collectionName);
 
-    List buildCollectionAttributes(String collectionName, String sysObjectId, String hostAddress, int type);
+    public List getMibObjectList(String cName, String aSysoid, String anAddress, int ifType);
 
     int getStep(String collectionName);
 

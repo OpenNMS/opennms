@@ -189,7 +189,8 @@ public class RRDDataSource extends DataSource {
     }
 
        public RRDDataSource(MibObject obj, String collectionName) {
-                super(obj);
+                super(obj, collectionName);
+                
                 Category log = ThreadCategory.getInstance(getClass());
 
                 // Assign heartbeat using formula (2 * step) and hard code
@@ -328,20 +329,18 @@ public class RRDDataSource extends DataSource {
     }
        
 	public boolean performUpdate(
-		String collectionName,
 		String owner,
-                File repository,
-		String dsName,
-		String val) {
-
+		File repository,
+                String val) {
+        
+            String collectionName = getCollectionName();
 	        int step = DataCollectionConfigFactory.getInstance().getStep(collectionName);
 	        List rraList = DataCollectionConfigFactory.getInstance().getRRAList(collectionName);
 		boolean result=false;
 		try {
-		        RrdUtils.createRRD(owner, repository.getAbsolutePath(), this.getName(), step, this.getType(), this.getHeartbeat(), 
-				this.getMin(), this.getMax(), rraList);
+		        RrdUtils.createRRD(owner, repository.getAbsolutePath(), getName(), step, getType(), getHeartbeat(), getMin(), getMax(), rraList);
 	
-			RrdUtils.updateRRD(owner, repository.getAbsolutePath(), dsName, val);
+			RrdUtils.updateRRD(owner, repository.getAbsolutePath(), getName(), val);
 		} catch (RrdException e) {
 			result=true;
 		}

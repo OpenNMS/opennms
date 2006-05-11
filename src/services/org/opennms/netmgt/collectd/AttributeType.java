@@ -34,17 +34,22 @@ package org.opennms.netmgt.collectd;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.log4j.Category;
+import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
+import org.opennms.netmgt.snmp.SnmpValue;
 
-public class CollectionAttribute {
+public class AttributeType {
     
     public boolean equals(Object obj) {
-        if (obj instanceof CollectionAttribute) {
-            CollectionAttribute attr = (CollectionAttribute) obj;
-            return attr.m_mibObj.equals(m_mibObj);
+        if (obj instanceof AttributeType) {
+            AttributeType attrType = (AttributeType) obj;
+            return attrType.m_mibObj.equals(m_mibObj);
         }
         return false;
     }
@@ -56,8 +61,10 @@ public class CollectionAttribute {
     private MibObject m_mibObj;
     private DataSource m_ds = null;
     private String m_collectionName;
+    private ResourceType m_resourceType;
 
-    public CollectionAttribute(String collectionName, MibObject mibObj) {
+    public AttributeType(ResourceType resourceType, String collectionName, MibObject mibObj) {
+        m_resourceType = resourceType;
         m_collectionName = collectionName;
         m_mibObj = mibObj;
     }
@@ -76,11 +83,11 @@ public class CollectionAttribute {
     // FIXME: CollectionAttribute should be a tracker of its own
     // Also these should be created directly by the DAO rather 
     // than MibObject.
-    public static List getCollectionTrackers(List objList) {
+    public static List getCollectionTrackers(Collection objList) {
         ArrayList trackers = new ArrayList(objList.size());
         for (Iterator iter = objList.iterator(); iter.hasNext();) {
-            CollectionAttribute attr = (CollectionAttribute) iter.next();
-            trackers.add(attr.getMibObj().getCollectionTracker());
+            AttributeType attrType = (AttributeType) iter.next();
+            trackers.add(attrType.getMibObj().getCollectionTracker());
         }
         
         return trackers;
@@ -115,7 +122,28 @@ public class CollectionAttribute {
     }
 
     boolean performUpdate(CollectionAgent collectionAgent, File resourceDir, SNMPCollectorEntry entry) {
-        return getDs().performUpdate(collectionAgent.getCollection(), collectionAgent.getHostAddress(), resourceDir, getName(), getValue(entry));
+        return getDs().performUpdate(collectionAgent.getHostAddress(), resourceDir, getValue(entry));
+    }
+
+    public void storeResult(SnmpObjId base, SnmpInstId inst, SnmpValue val) {
+        CollectionResource resource = m_resourceType.findResource(inst);
+        if (resource == null) {
+            logNoSuchResource(base, inst, val);
+            return;
+        }
+        resource.setAttributeValue(this, val);
+    }
+
+    private void logNoSuchResource(SnmpObjId base, SnmpInstId inst, SnmpValue val) {
+        log().info("Unable to locate resource with instance id "+inst+" while collecting attribute "+this);
+    }
+    
+    public String toString() {
+        return getAlias()+" ["+getOid()+"]";
+    }
+
+    private Category log() {
+        return ThreadCategory.getInstance(getClass());
     }
 
 }

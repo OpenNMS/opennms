@@ -2,6 +2,7 @@ package org.opennms.netmgt.collectd;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -14,13 +15,14 @@ import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.DataCollectionConfig;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
+import org.opennms.netmgt.snmp.SnmpInstId;
 
-public class IfResourceDef extends ResourceDef {
+public class IfResourceType extends ResourceType {
 
     private TreeMap m_ifMap;
 
-    public IfResourceDef(CollectionAgent agent, String collectionName) {
-        super(agent, collectionName);
+    public IfResourceType(CollectionAgent agent, OnmsSnmpCollection snmpCollection) {
+        super(agent, snmpCollection);
         m_ifMap = new TreeMap();
         addIfResources();
 
@@ -52,9 +54,7 @@ public class IfResourceDef extends ResourceDef {
     }
 
     void addSnmpInterface(OnmsSnmpInterface snmpIface) {
-    	CollectionAgent collectionAgent = getAgent();
-        String collectionName = getCollectionName();
-        addIfInfo(new IfInfo(this, collectionAgent, collectionName, snmpIface));
+        addIfInfo(new IfInfo(this, getAgent(), snmpIface));
     }
 
     void addIfResources() {
@@ -91,6 +91,21 @@ public class IfResourceDef extends ResourceDef {
 
     public int getType() {
         return DataCollectionConfig.ALL_IF_ATTRIBUTES;
+    }
+
+    public CollectionResource findResource(SnmpInstId inst) {
+        return getIfInfo(inst.toInt());
+    }
+
+    protected Collection identityAttributeTypes() {
+        MibObject ifAliasMibObject = new MibObject();
+        ifAliasMibObject.setOid(".1.3.6.1.2.1.31.1.1.1.18");
+        ifAliasMibObject.setAlias("ifAlias");
+        ifAliasMibObject.setType("DisplayString");
+        ifAliasMibObject.setInstance("ifIndex");
+
+        AttributeType type = new AttributeType(this, getCollectionName(), ifAliasMibObject);
+        return Collections.singleton(type);
     }
 
 }
