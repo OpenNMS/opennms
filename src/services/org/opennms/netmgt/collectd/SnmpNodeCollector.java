@@ -40,7 +40,6 @@ package org.opennms.netmgt.collectd;
 
 import java.net.InetAddress;
 import java.util.Collection;
-import java.util.List;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
@@ -78,6 +77,8 @@ public class SnmpNodeCollector extends AggregateTracker {
      */
     private String m_primaryIf;
 
+    private CollectionSet m_collectionSet;
+
     /**
      * The class constructor is used to initialize the collector and send out
      * the initial SNMP packet requesting data. The data is then received and
@@ -86,12 +87,14 @@ public class SnmpNodeCollector extends AggregateTracker {
      * @param address TODO
      * @param objList
      *            The list of object id's to be collected.
+     * @param collectionSet TODO
      */
-    public SnmpNodeCollector(InetAddress address, Collection objList) {
+    public SnmpNodeCollector(InetAddress address, Collection objList, CollectionSet collectionSet) {
         super(AttributeType.getCollectionTrackers(objList));
         
         m_primaryIf = address.getHostAddress();
-        m_collectorEntry = new SNMPCollectorEntry(objList);
+        m_collectorEntry = new SNMPCollectorEntry(objList, m_collectionSet);
+        m_collectionSet = collectionSet;
 
 
     }

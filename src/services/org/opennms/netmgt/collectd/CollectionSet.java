@@ -43,7 +43,11 @@ import org.opennms.netmgt.collectd.SnmpCollector.IfNumberTracker;
 import org.opennms.netmgt.snmp.AggregateTracker;
 import org.opennms.netmgt.snmp.Collectable;
 import org.opennms.netmgt.snmp.CollectionTracker;
+import org.opennms.netmgt.snmp.SnmpAgentConfig;
+import org.opennms.netmgt.snmp.SnmpInstId;
+import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpUtils;
+import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.netmgt.snmp.SnmpWalker;
 
 public class CollectionSet implements Collectable {
@@ -97,7 +101,7 @@ public class CollectionSet implements Collectable {
     private SnmpNodeCollector createNodeCollector() {
         SnmpNodeCollector nodeCollector = null;
         if (!getAttributeList().isEmpty()) {
-            nodeCollector = new SnmpNodeCollector(m_agent.getInetAddress(), getAttributeList());
+            nodeCollector = new SnmpNodeCollector(m_agent.getInetAddress(), getAttributeList(), this);
         }
         return nodeCollector;
     }
@@ -114,7 +118,7 @@ public class CollectionSet implements Collectable {
         SnmpIfCollector ifCollector = null;
         // construct the ifCollector
         if (hasInterfaceDataToCollect()) {
-            ifCollector = new SnmpIfCollector(m_agent.getInetAddress(), getCombinedInterfaceAttributes());
+            ifCollector = new SnmpIfCollector(m_agent.getInetAddress(), getCombinedInterfaceAttributes(), this);
         }
         return ifCollector;
     }
@@ -139,11 +143,7 @@ public class CollectionSet implements Collectable {
 		return ThreadCategory.getInstance(getClass());
 	}
 
-	int getMaxVarsPerPdu() {
-        return m_snmpCollection.getMaxVarsPerPdu();
-    }
-
-    void verifyCollectionIsNecessary() {
+	void verifyCollectionIsNecessary() {
         /*
     	 * Verify that there is something to collect from this primary SMP
     	 * interface. If no node objects and no interface objects then throw
@@ -224,7 +224,7 @@ public class CollectionSet implements Collectable {
 
     SnmpWalker createWalker() {
         CollectionAgent agent = getCollectionAgent();
-        return SnmpUtils.createWalker(agent.getAgentConfig(), "SnmpCollectors for " + agent.getHostAddress(), getTracker());
+        return SnmpUtils.createWalker(getAgentConfig(), "SnmpCollectors for " + agent.getHostAddress(), getTracker());
     }
 
     void logStartedWalker() {
@@ -315,6 +315,36 @@ public class CollectionSet implements Collectable {
         return rescanNeeded.rescanIsNeeded();
     }
     
+    public SnmpAgentConfig getAgentConfig() {
+        SnmpAgentConfig agentConfig = getCollectionAgent().getAgentConfig();
+        agentConfig.setMaxVarsPerPdu(computeMaxVarsPerPdu(agentConfig));
+        return agentConfig;
+    }
+
+    private int computeMaxVarsPerPdu(SnmpAgentConfig agentConfig) {
+        int maxVarsPerPdu = getCollectionAgent().getMaxVarsPerPdu();
+        if (maxVarsPerPdu < 1) {
+            maxVarsPerPdu = m_snmpCollection.getMaxVarsPerPdu();
+            log().info("using maxVarsPerPdu from dataCollectionConfig");
+        }
+
+        if (maxVarsPerPdu < 1) {
+            maxVarsPerPdu = agentConfig.getMaxVarsPerPdu();
+            log().info("using maxVarsPerPdu from snmpconfig");
+        }
+
+        if (maxVarsPerPdu < 1) {
+            log().warn("maxVarsPerPdu CANNOT BE LESS THAN 1.  Using 10");
+            return 10;
+        }
+        return maxVarsPerPdu;
+    }
+
+    public void notifyIfNotFound(SnmpObjId base, SnmpInstId inst, SnmpValue val) {
+        triggerRescan();
+        log().info("Unable to locate resource with instance id "+inst+" while collecting attribute "+this);
+    }
+
  
 
 }

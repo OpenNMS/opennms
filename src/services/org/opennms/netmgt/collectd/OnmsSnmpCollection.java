@@ -5,7 +5,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 
 import org.apache.log4j.Category;
 import org.apache.log4j.Priority;
@@ -68,7 +67,7 @@ public class OnmsSnmpCollection {
         return getName();
     }
 
-    CollectionSet createCollectionSet(CollectionAgent agent) {
+    public CollectionSet createCollectionSet(CollectionAgent agent) {
         return new CollectionSet(agent, this);
     }
     

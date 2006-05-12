@@ -47,8 +47,6 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.sql.SQLException;
-import java.util.Collection;
-import java.util.Iterator;
 import java.util.Map;
 
 import org.apache.log4j.Category;
@@ -377,10 +375,7 @@ public class SnmpCollector implements ServiceCollector {
 	 *            interface belongs..
 	 */
 	public void initialize(CollectionAgent agent, Map parameters) {
-        ServiceParameters params = new ServiceParameters(parameters);
-
-        OnmsSnmpCollection snmpCollection = new OnmsSnmpCollection(params);
-        agent.initialize(snmpCollection);
+        agent.validateAgent();
 	}
 
 	/**
@@ -406,36 +401,42 @@ public class SnmpCollector implements ServiceCollector {
 	 *            belongs.
 	 */
 	public int collect(CollectionAgent agent, EventProxy eventProxy, Map parameters) {
-        final ForceRescanState forceRescanState = new ForceRescanState(agent, eventProxy);
-        final ServiceParameters params = new ServiceParameters(parameters);
-       
-        try {
-        
-            agent.getCollectionSet().collect();
+	    try {
 
-            if (agent.getCollectionSet().rescanNeeded())
-                forceRescanState.rescanIndicated();
-            
-            // Update RRD with values retrieved in SNMP collection
-            params.logIfAliasConfig();
-            
-            agent.getCollectionSet().visit(new ResourceVisitor() {
+	        final ForceRescanState forceRescanState = new ForceRescanState(agent, eventProxy);
+	        final ServiceParameters params = new ServiceParameters(parameters);
 
-                public void visitResource(CollectionResource resource) {
-                    if (resource.shouldPersist(params)) {
-                        resource.storeAttributes(getRrdBaseDir());
-                    }
-                }
-                
-            });
-            
-        	// return the status of the collection
-        	return ServiceCollector.COLLECTION_SUCCEEDED;
-        } catch (CollectionError e) {
-        	return e.reportError();
-        } catch (Throwable t) {
-        	return this.unexpected(agent, t);
-        }
+	        OnmsSnmpCollection snmpCollection = new OnmsSnmpCollection(params);
+
+	        CollectionSet collectionSet = snmpCollection.createCollectionSet(agent);
+	        collectionSet.verifyCollectionIsNecessary();
+
+
+	        collectionSet.collect();
+
+	        if (collectionSet.rescanNeeded())
+	            forceRescanState.rescanIndicated();
+
+	        params.logIfAliasConfig();
+
+	        collectionSet.visit(new ResourceVisitor() {
+
+	            public void visitResource(CollectionResource resource) {
+	                if (resource.shouldPersist(params)) {
+	                    // FIXME: make sure we don't store attributes that don't make the ifType
+	                    resource.storeAttributes(getRrdBaseDir());
+	                }
+	            }
+
+	        });
+
+	        // return the status of the collection
+	        return ServiceCollector.COLLECTION_SUCCEEDED;
+	    } catch (CollectionError e) {
+	        return e.reportError();
+	    } catch (Throwable t) {
+	        return this.unexpected(agent, t);
+	    }
 	}
 
     Category log() {

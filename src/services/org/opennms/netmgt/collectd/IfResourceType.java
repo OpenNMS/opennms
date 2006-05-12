@@ -88,10 +88,7 @@ public class IfResourceType extends DbResourceType {
     }
 
     public CollectionResource findResource(SnmpInstId inst) {
-        IfInfo ifInfo = getIfInfo(inst.toInt());
-        if (ifInfo == null)
-            getAgent().triggerRescan();
-        return ifInfo;
+        return getIfInfo(inst.toInt());
     }
 
     protected Collection identityAttributeTypes() {

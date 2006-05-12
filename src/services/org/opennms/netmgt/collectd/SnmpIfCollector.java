@@ -42,7 +42,6 @@ package org.opennms.netmgt.collectd;
 
 import java.net.InetAddress;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -50,7 +49,6 @@ import java.util.TreeMap;
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.snmp.AggregateTracker;
-import org.opennms.netmgt.snmp.CollectionTracker;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpValue;
@@ -83,6 +81,8 @@ public class SnmpIfCollector extends AggregateTracker {
 
     private List m_objList;
 
+    private CollectionSet m_collectionSet;
+
 	/**
      * The class constructor is used to initialize the collector and send out
      * the initial SNMP packet requesting data. The data is then received and
@@ -90,15 +90,17 @@ public class SnmpIfCollector extends AggregateTracker {
      * signaler object is <EM>notified</EM> using the notifyAll() method.
      * @param address 
 	 * @param objList TODO
+	 * @param collectionSet TODO
 	 * @param ifMap
      *            Map of org.opennms.netmgt.poller.collectd.IfInfo objects.
      */
-    public SnmpIfCollector(InetAddress address, List objList) {
+    public SnmpIfCollector(InetAddress address, List objList, CollectionSet collectionSet) {
         super(AttributeType.getCollectionTrackers(objList));
         // Process parameters
         //
         m_primaryIf = address.getHostAddress();
         m_objList = objList;
+        m_collectionSet = collectionSet;
     }
 
     protected static Category log() {
@@ -129,7 +131,7 @@ public class SnmpIfCollector extends AggregateTracker {
     protected void storeResult(SnmpObjId base, SnmpInstId inst, SnmpValue val) {
         SNMPCollectorEntry entry = (SNMPCollectorEntry)m_results.get(inst);
         if (entry == null) {
-            entry = new SNMPCollectorEntry(m_objList);
+            entry = new SNMPCollectorEntry(m_objList, m_collectionSet);
             m_results.put(inst, entry);
         }
         entry.storeResult(base, inst, val);
