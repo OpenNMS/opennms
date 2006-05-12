@@ -11,7 +11,7 @@
     file. Version: $Id$. </documentation>
   </annotation>
 
-  <element name="actiond-configuration">
+  <element name="actiond-configuration"> 
     <annotation>
       <documentation>Top-level element for the actiond-configuration.xml
       configuration file.</documentation>
