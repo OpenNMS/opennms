@@ -1,21 +1,13 @@
 package org.opennms.netmgt.collectd;
 
 import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedHashSet;
 
+import org.apache.log4j.Category;
+import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.snmp.SnmpInstId;
 
 public abstract class ResourceType {
     
-    static ResourceType getResourceType(String instanceName, CollectionAgent agent, OnmsSnmpCollection snmpCollection) {
-        if ("ifIndex".equals(instanceName)) {
-            return new IfResourceType(agent, snmpCollection);
-        } else {
-            return new NodeResourceType(agent, snmpCollection);
-        }
-    }
-
     private CollectionAgent m_agent;
     private OnmsSnmpCollection m_snmpCollection;
 
@@ -31,22 +23,20 @@ public abstract class ResourceType {
     protected String getCollectionName() {
         return m_snmpCollection.getName();
     }
-
-    abstract public int getType();
-
-    Collection getAttributeDefs() {
-        LinkedHashSet attrList = new LinkedHashSet(m_snmpCollection.getAttributeTypes(m_agent, getType()));
-        attrList.addAll(identityAttributeTypes());
-        return attrList;
-    }
     
-    protected Collection identityAttributeTypes() {
-        return Collections.EMPTY_SET;
+    protected OnmsSnmpCollection getCollection() {
+        return m_snmpCollection;
     }
+
+    abstract public Collection getAttributeTypes();
 
     protected boolean hasDataToCollect() {
-        return !getAttributeDefs().isEmpty();
+        return !getAttributeTypes().isEmpty();
     }
 
     public abstract CollectionResource findResource(SnmpInstId inst);
+    
+    public abstract Collection getResources();
+    
+    public Category log() { return ThreadCategory.getInstance(getClass()); }
 }

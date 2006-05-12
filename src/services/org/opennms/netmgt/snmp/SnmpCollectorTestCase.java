@@ -31,6 +31,7 @@
 //
 package org.opennms.netmgt.snmp;
 
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
@@ -40,6 +41,7 @@ import org.opennms.netmgt.collectd.AttributeType;
 import org.opennms.netmgt.collectd.MibObject;
 import org.opennms.netmgt.collectd.OnmsSnmpCollection;
 import org.opennms.netmgt.collectd.SNMPCollectorEntry;
+import org.opennms.netmgt.collectd.ServiceParameters;
 import org.opennms.netmgt.config.DataCollectionConfigFactory;
 import org.opennms.netmgt.mock.MockDataCollectionConfig;
 import org.opennms.netmgt.mock.OpenNMSTestCase;
@@ -265,7 +267,8 @@ public class SnmpCollectorTestCase extends OpenNMSTestCase {
     }
     
     protected void initializeAgent() {
-        m_agent.initialize(new OnmsSnmpCollection("default"));
+        ServiceParameters params = new ServiceParameters(new HashMap());
+        m_agent.initialize(new OnmsSnmpCollection(params));
     }
 
     protected void createWalker(CollectionTracker collector) {

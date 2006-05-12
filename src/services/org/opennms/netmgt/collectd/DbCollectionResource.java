@@ -6,15 +6,14 @@ import java.util.Collection;
 public abstract class DbCollectionResource extends CollectionResource {
 
     private CollectionAgent m_agent;
-    private ResourceType m_resourceDef;
 
     public DbCollectionResource(ResourceType def, CollectionAgent agent) {
-        m_resourceDef = def;
+        super(def);
         m_agent = agent;
     }
 
     public Collection getAttributeList() {
-        return m_resourceDef.getAttributeDefs();
+        return getResourceType().getAttributeTypes();
     }
 
     public CollectionAgent getCollectionAgent() {

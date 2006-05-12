@@ -10,21 +10,19 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
-import org.apache.log4j.Category;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.DataCollectionConfig;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.snmp.SnmpInstId;
 
-public class IfResourceType extends ResourceType {
+public class IfResourceType extends DbResourceType {
 
     private TreeMap m_ifMap;
 
     public IfResourceType(CollectionAgent agent, OnmsSnmpCollection snmpCollection) {
         super(agent, snmpCollection);
         m_ifMap = new TreeMap();
-        addIfResources();
+        addKnownIfResources();
 
     }
     
@@ -49,15 +47,11 @@ public class IfResourceType extends ResourceType {
     
     }
 
-    private Category log() {
-        return ThreadCategory.getInstance(getClass());
-    }
-
     void addSnmpInterface(OnmsSnmpInterface snmpIface) {
         addIfInfo(new IfInfo(this, getAgent(), snmpIface));
     }
 
-    void addIfResources() {
+    void addKnownIfResources() {
     	CollectionAgent agent = getAgent();
     	OnmsNode node = agent.getNode();
     
@@ -94,7 +88,10 @@ public class IfResourceType extends ResourceType {
     }
 
     public CollectionResource findResource(SnmpInstId inst) {
-        return getIfInfo(inst.toInt());
+        IfInfo ifInfo = getIfInfo(inst.toInt());
+        if (ifInfo == null)
+            getAgent().triggerRescan();
+        return ifInfo;
     }
 
     protected Collection identityAttributeTypes() {
@@ -106,6 +103,10 @@ public class IfResourceType extends ResourceType {
 
         AttributeType type = new AttributeType(this, getCollectionName(), ifAliasMibObject);
         return Collections.singleton(type);
+    }
+
+    public Collection getResources() {
+        return m_ifMap.values();
     }
 
 }

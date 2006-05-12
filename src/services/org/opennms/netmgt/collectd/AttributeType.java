@@ -49,7 +49,7 @@ public class AttributeType {
     public boolean equals(Object obj) {
         if (obj instanceof AttributeType) {
             AttributeType attrType = (AttributeType) obj;
-            return attrType.m_mibObj.equals(m_mibObj);
+            return attrType.m_resourceType.equals(m_resourceType) && attrType.getAlias().equals(getAlias());
         }
         return false;
     }
@@ -124,9 +124,10 @@ public class AttributeType {
     boolean performUpdate(CollectionAgent collectionAgent, File resourceDir, SNMPCollectorEntry entry) {
         return getDs().performUpdate(collectionAgent.getHostAddress(), resourceDir, getValue(entry));
     }
-
-    public void storeResult(SnmpObjId base, SnmpInstId inst, SnmpValue val) {
+    
+    public void storeResult(SNMPCollectorEntry entry, SnmpObjId base, SnmpInstId inst, SnmpValue val) {
         CollectionResource resource = m_resourceType.findResource(inst);
+        resource.setEntry(entry);
         if (resource == null) {
             logNoSuchResource(base, inst, val);
             return;

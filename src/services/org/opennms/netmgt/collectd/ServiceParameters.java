@@ -72,4 +72,8 @@ public class ServiceParameters {
         return overrideStorageFlag() && ((alias != null));
     }
 
+    String getCollectionName() {
+    	return ParameterMap.getKeyedString(m_parameters, "collection", "default");
+    }
+
 }
