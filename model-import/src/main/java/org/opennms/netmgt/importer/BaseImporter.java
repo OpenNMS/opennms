@@ -168,8 +168,8 @@ public class BaseImporter implements ImportOperationFactory {
 
     protected void importModelFromResource(Resource resource, ImportStatistics stats, Event event) throws IOException, ModelImportException {
         
-        if (event != null && EventUtil.getValueOfParm("url", event) != null)
-            resource = new UrlResource(EventUtil.getValueOfParm("url", event));
+        if (event != null && EventUtil.getNamedParmValue("parm[url]", event) != null)
+            resource = new UrlResource(EventUtil.getNamedParmValue("parm[url]", event));
 
     	stats.beginImporting();
     	stats.beginLoadingResource(resource);
@@ -180,8 +180,8 @@ public class BaseImporter implements ImportOperationFactory {
         stats.finishLoadingResource(resource);
         
         
-        if (event != null && EventUtil.getValueOfParm("foreignSource", event) != null) {
-            specFile.setForeignSource(EventUtil.getValueOfParm("foreignSource", event));
+        if (event != null && EventUtil.getNamedParmValue("parm[foreignSource]", event) != null) {
+            specFile.setForeignSource(EventUtil.getNamedParmValue("parm[foreignSource]", event));
         }
         
         stats.beginAuditNodes();

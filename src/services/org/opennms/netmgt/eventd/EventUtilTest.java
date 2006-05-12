@@ -33,6 +33,7 @@
 
 package org.opennms.netmgt.eventd;
 
+import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.eventd.db.Constants;
 import org.opennms.netmgt.mock.MockService;
 import org.opennms.netmgt.mock.MockUtil;
@@ -78,6 +79,9 @@ public class EventUtilTest extends OpenNMSTestCase {
         m_svcLostEvent.setSeverity(Constants.getSeverityString(Constants.SEV_MINOR));
         testString = EventUtil.getValueOfParm(EventUtil.TAG_SEVERITY, m_svcLostEvent);
         assertEquals("Minor", testString);
+        
+        Event event = MockUtil.createNodeLostServiceEvent("Test", m_svc, "noReasonAtAll");
+        assertEquals("noReasonAtAll", EventUtil.getNamedParmValue("parm["+EventConstants.PARM_LOSTSERVICE_REASON+"]", event));
     }
 
     /*
