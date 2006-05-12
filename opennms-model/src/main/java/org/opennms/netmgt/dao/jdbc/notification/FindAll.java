@@ -9,7 +9,7 @@ import javax.sql.DataSource;
 public class FindAll extends NotificationMappingQuery {
 
     public FindAll(DataSource ds) {
-        super(ds, "FROM notifcations as n");
+        super(ds, "FROM notifications as n");
         compile();
     }
     

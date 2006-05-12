@@ -47,6 +47,7 @@ import org.opennms.netmgt.dao.jdbc.node.NodeFactory;
 import org.opennms.netmgt.dao.jdbc.notification.NotificationFactory;
 import org.opennms.netmgt.dao.jdbc.snmpif.SnmpInterfaceFactory;
 import org.opennms.netmgt.dao.jdbc.svctype.ServiceTypeFactory;
+import org.opennms.netmgt.dao.jdbc.usernotification.UserNotificationFactory;
 
 public class Cache {
 	
@@ -124,7 +125,8 @@ public class Cache {
 		SnmpInterfaceFactory.register(dataSource);
 		EventFactory.register(dataSource);
 		AlarmFactory.register(dataSource);
-        NotificationFactory.register(dataSource);
+		NotificationFactory.register(dataSource);
+		UserNotificationFactory.register(dataSource);
 		
 	}
     

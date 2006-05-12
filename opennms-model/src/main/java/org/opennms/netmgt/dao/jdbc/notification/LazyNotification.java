@@ -1,7 +1,14 @@
 package org.opennms.netmgt.dao.jdbc.notification;
 
+import java.util.Date;
+import java.util.Set;
+
 import javax.sql.DataSource;
 
+import org.opennms.netmgt.model.OnmsEvent;
+import org.opennms.netmgt.model.OnmsIpInterface;
+import org.opennms.netmgt.model.OnmsMonitoredService;
+import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsNotification;
 
 public class LazyNotification extends OnmsNotification {
@@ -42,5 +49,135 @@ public class LazyNotification extends OnmsNotification {
 			new FindByNotifyId(m_dataSource).findUnique(getNotifyId());
 		}
 	}
+
+    public String getAnsweredBy() {
+        load();
+        return super.getAnsweredBy();
+    }
+
+    public OnmsEvent getEvent() {
+        load();
+        return super.getEvent();
+    }
+
+    public OnmsIpInterface getInterface() {
+        load();
+        return super.getInterface();
+    }
+
+    public OnmsNode getNode() {
+        load();
+        return super.getNode();
+    }
+
+    public Integer getNotifyId() {
+        load();
+        return super.getNotifyId();
+    }
+
+    public String getNumericMsg() {
+        load();
+        return super.getNumericMsg();
+    }
+
+    public Date getPageTime() {
+        load();
+        return super.getPageTime();
+    }
+
+    public String getQueueId() {
+        load();
+        return super.getQueueId();
+    }
+
+    public Date getRespondTime() {
+        load();
+        return super.getRespondTime();
+    }
+
+    public OnmsMonitoredService getService() {
+        load();
+        return super.getService();
+    }
+
+    public String getSubject() {
+        load();
+        return super.getSubject();
+    }
+
+    public String getTextMsg() {
+        load();
+        return super.getTextMsg();
+    }
+
+    public Set getUsersNotified() {
+        load();
+        return super.getUsersNotified();
+    }
+
+    public void setAnsweredBy(String answeredby) {
+        load();
+        super.setAnsweredBy(answeredby);
+    }
+
+    public void setEvent(OnmsEvent event) {
+        load();
+        super.setEvent(event);
+    }
+
+    public void setInterface(OnmsIpInterface interfaceId) {
+        load();
+        super.setInterface(interfaceId);
+    }
+
+    public void setNode(OnmsNode node) {
+        load();
+        super.setNode(node);
+    }
+
+    public void setNotifyId(Integer notifyid) {
+        load();
+        super.setNotifyId(notifyid);
+    }
+
+    public void setNumericMsg(String numericmsg) {
+        load();
+        super.setNumericMsg(numericmsg);
+    }
+
+    public void setPageTime(Date pagetime) {
+        load();
+        super.setPageTime(pagetime);
+    }
+
+    public void setQueueId(String queueid) {
+        load();
+        super.setQueueId(queueid);
+    }
+
+    public void setRespondTime(Date respondtime) {
+        load();
+        super.setRespondTime(respondtime);
+    }
+
+    public void setService(OnmsMonitoredService serviceId) {
+        load();
+        super.setService(serviceId);
+    }
+
+    public void setSubject(String subject) {
+        load();
+        super.setSubject(subject);
+    }
+
+    public void setTextMsg(String textmsg) {
+        load();
+        super.setTextMsg(textmsg);
+    }
+
+    public void setUsersNotified(Set usersnotifieds) {
+        load();
+        super.setUsersNotified(usersnotifieds);
+    }
 
 }

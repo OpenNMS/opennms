@@ -16,8 +16,8 @@ public abstract class FindById extends SnmpInterfaceMappingQuery {
 			return new FindByKeyIfIndex(ds);
 	}
     
-    public FindById(DataSource ds, String sql) {
-        super(ds, sql);
+    public FindById(DataSource ds, String clause) {
+        super(ds, clause);
     }
     
     public abstract OnmsSnmpInterface find(SnmpInterfaceId id);
