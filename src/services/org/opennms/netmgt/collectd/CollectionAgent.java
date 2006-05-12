@@ -1,9 +1,6 @@
 package org.opennms.netmgt.collectd;
 
-import java.io.File;
 import java.net.InetAddress;
-import java.util.Collection;
-import java.util.Iterator;
 
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.model.OnmsIpInterface;
@@ -50,6 +47,10 @@ public class CollectionAgent extends IPv4NetworkInterface {
 			log().debug("maxVarsPerPdu=" + maxVarsPerPdu);
 		}
 	}
+    
+    public int getMaxVarsPerPdu() {
+        return m_maxVarsPerPdu;
+    }
 
 	public String getHostAddress() {
 		return getInetAddress().getHostAddress();
@@ -78,29 +79,6 @@ public class CollectionAgent extends IPv4NetworkInterface {
 	private CollectionType getCollectionType() {
 		return getIpInterface().getIsSnmpPrimary();
 	}
-
-    // TODO: I probably need to do this a little differently so I can remove
-    // the getCollectionSet reference
-    public int getMaxVarsPerPdu() {
-        
-        if (m_maxVarsPerPdu < 1) {
-            m_maxVarsPerPdu = getCollectionSet().getMaxVarsPerPdu();
-            log().info("using maxVarsPerPdu from dataCollectionConfig");
-        }
-        
-        if (m_maxVarsPerPdu < 1) {
-            SnmpAgentConfig agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(getInetAddress());
-            m_maxVarsPerPdu = agentConfig.getMaxVarsPerPdu();
-            log().info("using maxVarsPerPdu from snmpconfig");
-        }
-        
-        if (m_maxVarsPerPdu < 1) {
-            log().warn("MaxVarsPerPdu CANNOT BE LESS THAN 1.  Using 10");
-            return 10;
-        }
-
-        return m_maxVarsPerPdu;
-    }
 
     private void logCompletion() {
     	
@@ -160,28 +138,20 @@ public class CollectionAgent extends IPv4NetworkInterface {
     	}
     }
 
-    private void validateAgent() {
+    public void validateAgent() {
         logCollectionParms();
         validateIsSnmpPrimary();
         validatePrimaryIfIndex();
         validateSysObjId();
-        getCollectionSet().verifyCollectionIsNecessary();
         logCompletion();
     }
 
-    public void initialize(OnmsSnmpCollection snmpCollection) {
-        setCollectionSet(snmpCollection.createCollectionSet(this));
-    	validateAgent();
-    }
-    
     public String toString() {
         return getHostAddress();
     }
 
     public SnmpAgentConfig getAgentConfig() {
-        SnmpAgentConfig agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(getInetAddress());
-        agentConfig.setMaxVarsPerPdu(getMaxVarsPerPdu());
-        return agentConfig;
+        return SnmpPeerFactory.getInstance().getAgentConfig(getInetAddress());
     }
 
     void logIfCounts(CollectionSet collectionSet) {
@@ -195,16 +165,12 @@ public class CollectionAgent extends IPv4NetworkInterface {
         return (getSavedIfCount() != -1) && (m_collectionSet.getIfNumber().getIfNumber() != getSavedIfCount());
     }
 
-    private void setCollectionSet(CollectionSet collectionSet) {
+    public void setCollectionSet(CollectionSet collectionSet) {
         m_collectionSet = collectionSet;
     }
 
     CollectionSet getCollectionSet() {
         return m_collectionSet;
-    }
-
-    public void triggerRescan() {
-        m_collectionSet.triggerRescan();       
     }
 
 

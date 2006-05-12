@@ -70,10 +70,12 @@ public final class SNMPCollectorEntry extends AbstractSnmpStore {
      * the map.
      */
     private Collection m_attrList;
+    private CollectionSet m_collectionSet;
 
-    public SNMPCollectorEntry(Collection attrList) {
+    public SNMPCollectorEntry(Collection attrList, CollectionSet collectionSet) {
         if (attrList == null) throw new NullPointerException("attrList is null!");
         m_attrList = attrList;
+        m_collectionSet = collectionSet;
     }
 
 
@@ -103,7 +105,7 @@ public final class SNMPCollectorEntry extends AbstractSnmpStore {
         log().debug("storeResult: added value for "+attrType.getAlias()+": ["+base+"].["+inst+"] = "+val);
 
         
-        attrType.storeResult(this, base, inst, val);
+        attrType.storeResult(m_collectionSet, this, base, inst, val);
 
     }
 

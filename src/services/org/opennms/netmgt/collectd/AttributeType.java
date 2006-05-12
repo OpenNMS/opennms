@@ -125,20 +125,16 @@ public class AttributeType {
         return getDs().performUpdate(collectionAgent.getHostAddress(), resourceDir, getValue(entry));
     }
     
-    public void storeResult(SNMPCollectorEntry entry, SnmpObjId base, SnmpInstId inst, SnmpValue val) {
+    public void storeResult(CollectionSet collectionSet, SNMPCollectorEntry entry, SnmpObjId base, SnmpInstId inst, SnmpValue val) {
         CollectionResource resource = m_resourceType.findResource(inst);
         resource.setEntry(entry);
         if (resource == null) {
-            logNoSuchResource(base, inst, val);
-            return;
+            collectionSet.notifyIfNotFound(base, inst, val);
+        } else {
+            resource.setAttributeValue(this, val);
         }
-        resource.setAttributeValue(this, val);
     }
 
-    private void logNoSuchResource(SnmpObjId base, SnmpInstId inst, SnmpValue val) {
-        log().info("Unable to locate resource with instance id "+inst+" while collecting attribute "+this);
-    }
-    
     public String toString() {
         return getAlias()+" ["+getOid()+"]";
     }

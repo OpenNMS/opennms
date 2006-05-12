@@ -38,6 +38,7 @@ import java.util.List;
 import org.opennms.core.concurrent.BarrierSignaler;
 import org.opennms.netmgt.collectd.CollectionAgent;
 import org.opennms.netmgt.collectd.AttributeType;
+import org.opennms.netmgt.collectd.CollectionSet;
 import org.opennms.netmgt.collectd.MibObject;
 import org.opennms.netmgt.collectd.OnmsSnmpCollection;
 import org.opennms.netmgt.collectd.SNMPCollectorEntry;
@@ -64,6 +65,7 @@ public class SnmpCollectorTestCase extends OpenNMSTestCase {
     private int m_version = SnmpAgentConfig.VERSION1;
     protected CollectionAgent m_agent;
     private SnmpWalker m_walker;
+    protected CollectionSet m_collectionSet;
     
     public void setVersion(int version) {
         super.setVersion(version);
@@ -268,7 +270,14 @@ public class SnmpCollectorTestCase extends OpenNMSTestCase {
     
     protected void initializeAgent() {
         ServiceParameters params = new ServiceParameters(new HashMap());
-        m_agent.initialize(new OnmsSnmpCollection(params));
+        OnmsSnmpCollection snmpCollection = new OnmsSnmpCollection(params);
+        m_collectionSet = snmpCollection.createCollectionSet(m_agent);
+        m_agent.setCollectionSet(m_collectionSet);
+        m_agent.validateAgent();
+    }
+    
+    protected CollectionSet getCollectionSet() {
+        return m_collectionSet;
     }
 
     protected void createWalker(CollectionTracker collector) {
