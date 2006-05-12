@@ -253,11 +253,13 @@ your distribution.
        JAR file -->
   <path id="install.manifest.jars">
     <pathelement path="${packaged.lib.dir}/${postgresql.jar}"/>
+    <pathelement path="${build.jar.dir}/opennms_core.jar"/>
   </path>
 
   <pathconvert refid="install.manifest.jars" pathsep=" "
 	       property="install.manifest.classes">
     <map from="${packaged.lib.dir}/" to=""/>
+    <map from="${build.jar.dir}/" to=""/>
   </pathconvert>
 
   <!-- Libraries that are linked into Tomcat's server/lib directory from
