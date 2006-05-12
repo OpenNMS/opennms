@@ -83,7 +83,7 @@ public class SnmpNodeCollectorTest extends SnmpCollectorTestCase {
     private SnmpNodeCollector createNodeCollector(int maxVarsPerPdu) throws Exception, InterruptedException {
         initializeAgent();
         
-        SnmpNodeCollector collector = new SnmpNodeCollector(InetAddress.getLocalHost(), m_agent.getNodeAttributeList());
+        SnmpNodeCollector collector = new SnmpNodeCollector(InetAddress.getLocalHost(), m_agent.getCollectionSet().getAttributeList());
 
         createWalker(collector);
         waitForSignal();

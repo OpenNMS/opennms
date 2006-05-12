@@ -142,7 +142,11 @@ final class IfInfo extends DbCollectionResource {
     }
 
     boolean isScheduledForCollection() {
-        return getCollType().compareTo(getCollectionAgent().getMinimumCollectionType()) >= 0;
+        return getCollType().compareTo(getCollection().getMinimumCollectionType()) >= 0;
+    }
+
+    private OnmsSnmpCollection getCollection() {
+        return getResourceType().getCollection();
     }
 
     protected File getResourceDir(File rrdBaseDir) {

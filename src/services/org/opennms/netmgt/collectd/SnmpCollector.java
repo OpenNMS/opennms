@@ -47,7 +47,8 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.sql.SQLException;
-import java.util.List;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.Map;
 
 import org.apache.log4j.Category;
@@ -64,14 +65,13 @@ import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.netmgt.utils.EventProxy;
-import org.opennms.netmgt.utils.ParameterMap;
 
 /**
  * <P>
  * The SnmpCollector class ...
  * </P>
  * 
- * @author <A HREF="mailto:mike@opennms.org">Mike Davidson </A>
+ * @author <A HREF="mailto:brozow@opennms.org">Matt Brozowski</A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
 public class SnmpCollector implements ServiceCollector {
@@ -153,7 +153,7 @@ public class SnmpCollector implements ServiceCollector {
 	 * Object identifier used to retrieve interface count. This is the MIB-II
 	 * interfaces.ifNumber value.
 	 */
-	private static final String INTERFACES_IFNUMBER = ".1.3.6.1.2.1.2.1";
+	static final String INTERFACES_IFNUMBER = ".1.3.6.1.2.1.2.1";
 
 	/**
 	 * Valid values for the 'snmpStorageFlag' attribute in datacollection-config
@@ -377,8 +377,9 @@ public class SnmpCollector implements ServiceCollector {
 	 *            interface belongs..
 	 */
 	public void initialize(CollectionAgent agent, Map parameters) {
-        
-        OnmsSnmpCollection snmpCollection = getCollection(parameters);
+        ServiceParameters params = new ServiceParameters(parameters);
+
+        OnmsSnmpCollection snmpCollection = new OnmsSnmpCollection(params);
         agent.initialize(snmpCollection);
 	}
 
@@ -405,21 +406,29 @@ public class SnmpCollector implements ServiceCollector {
 	 *            belongs.
 	 */
 	public int collect(CollectionAgent agent, EventProxy eventProxy, Map parameters) {
-        ForceRescanState forceRescanState = new ForceRescanState(agent, eventProxy);
-        ServiceParameters params = new ServiceParameters(parameters);
+        final ForceRescanState forceRescanState = new ForceRescanState(agent, eventProxy);
+        final ServiceParameters params = new ServiceParameters(parameters);
        
         try {
         
-            agent.collect();
-            
-            agent.checkForNewInterfaces(forceRescanState);
+            agent.getCollectionSet().collect();
+
+            if (agent.getCollectionSet().rescanNeeded())
+                forceRescanState.rescanIndicated();
             
             // Update RRD with values retrieved in SNMP collection
-            List resources = agent.getResources(forceRescanState, params);
+            params.logIfAliasConfig();
             
-            agent.storeResourceAttributes(getRrdBaseDir(), params, resources);
+            agent.getCollectionSet().visit(new ResourceVisitor() {
+
+                public void visitResource(CollectionResource resource) {
+                    if (resource.shouldPersist(params)) {
+                        resource.storeAttributes(getRrdBaseDir());
+                    }
+                }
+                
+            });
             
-        
         	// return the status of the collection
         	return ServiceCollector.COLLECTION_SUCCEEDED;
         } catch (CollectionError e) {
@@ -429,15 +438,7 @@ public class SnmpCollector implements ServiceCollector {
         }
 	}
 
-    private String getCollectionName(Map parameters) {
-		return ParameterMap.getKeyedString(parameters, "collection", "default");
-	}
-    
-    private OnmsSnmpCollection getCollection(Map parameters) {
-        return new OnmsSnmpCollection(getCollectionName(parameters));
-    }
-
-	Category log() {
+    Category log() {
 		return ThreadCategory.getInstance(SnmpCollector.class);
 	}
 

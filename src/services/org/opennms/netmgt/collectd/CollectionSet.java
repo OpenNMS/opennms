@@ -32,18 +32,42 @@
 
 package org.opennms.netmgt.collectd;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.collectd.SnmpCollector.IfNumberTracker;
+import org.opennms.netmgt.snmp.AggregateTracker;
+import org.opennms.netmgt.snmp.Collectable;
+import org.opennms.netmgt.snmp.CollectionTracker;
+import org.opennms.netmgt.snmp.SnmpUtils;
+import org.opennms.netmgt.snmp.SnmpWalker;
 
-public class CollectionSet {
+public class CollectionSet implements Collectable {
 	
-	private CollectionAgent m_agent;
+	public static class RescanNeeded {
+        boolean rescanNeeded = false;
+        public void rescanIndicated() {
+            rescanNeeded = true;
+        }
+        
+        public boolean rescanIsNeeded() {
+            return rescanNeeded;
+        }
+        
+    }
+
+    private CollectionAgent m_agent;
     private NodeResourceType m_nodeResourceType;
     private IfResourceType m_ifResourceType;
     private OnmsSnmpCollection m_snmpCollection;
+    private boolean m_rescanTriggered;
+    private SnmpIfCollector m_ifCollector;
+    private IfNumberTracker m_ifNumber;
+    private SnmpNodeCollector m_nodeCollector;
 	
 	public CollectionSet(CollectionAgent agent, OnmsSnmpCollection snmpCollection) {
 		m_agent = agent;
@@ -51,6 +75,49 @@ public class CollectionSet {
         m_nodeResourceType = new NodeResourceType(m_agent, snmpCollection);
         m_ifResourceType = new IfResourceType(m_agent, snmpCollection);
 	}
+    
+    public SnmpIfCollector getIfCollector() {
+        if (m_ifCollector == null)
+            m_ifCollector = createIfCollector();
+        return m_ifCollector;
+    }
+
+    public IfNumberTracker getIfNumber() {
+        if (m_ifNumber == null)
+            m_ifNumber = createIfNumberTracker();
+        return m_ifNumber;
+    }
+
+    public SnmpNodeCollector getNodeCollector() {
+        if (m_nodeCollector == null)
+            m_nodeCollector = createNodeCollector();
+        return m_nodeCollector;
+    }
+
+    private SnmpNodeCollector createNodeCollector() {
+        SnmpNodeCollector nodeCollector = null;
+        if (!getAttributeList().isEmpty()) {
+            nodeCollector = new SnmpNodeCollector(m_agent.getInetAddress(), getAttributeList());
+        }
+        return nodeCollector;
+    }
+
+    private IfNumberTracker createIfNumberTracker() {
+        IfNumberTracker ifNumber = null;
+        if (hasInterfaceDataToCollect()) {
+            ifNumber = new IfNumberTracker();
+        }
+        return ifNumber;
+    }
+
+    private SnmpIfCollector createIfCollector() {
+        SnmpIfCollector ifCollector = null;
+        // construct the ifCollector
+        if (hasInterfaceDataToCollect()) {
+            ifCollector = new SnmpIfCollector(m_agent.getInetAddress(), getCombinedInterfaceAttributes());
+        }
+        return ifCollector;
+    }
 	
 	public NodeInfo getNodeInfo() {
         return m_nodeResourceType.getNodeInfo();
@@ -72,15 +139,11 @@ public class CollectionSet {
 		return ThreadCategory.getInstance(getClass());
 	}
 
-	public String getStorageFlag() {
-        return m_snmpCollection.getStorageFlag();
-    }
-
-    int getMaxVarsPerPdu() {
+	int getMaxVarsPerPdu() {
         return m_snmpCollection.getMaxVarsPerPdu();
     }
 
-    void verifyCollectionIsNecessary(CollectionAgent agent) {
+    void verifyCollectionIsNecessary() {
         /*
     	 * Verify that there is something to collect from this primary SMP
     	 * interface. If no node objects and no interface objects then throw
@@ -88,7 +151,7 @@ public class CollectionSet {
     	 */
     	if (!hasDataToCollect()) {
             throw new RuntimeException("collection '" + this
-                    + "' defines nothing to collect for " + agent);
+                    + "' defines nothing to collect for " + m_agent);
     	}
     }
 
@@ -114,5 +177,144 @@ public class CollectionSet {
         return m_ifResourceType.getIfInfo(ifIndex);
     }
 
+    public CollectionTracker getCollectionTracker() {
+        return new AggregateTracker(getAttributeTypes());
+    }
+
+    private Collection getAttributeTypes() {
+        return m_snmpCollection.getAttributeTypes(m_agent);
+    }
+
+    public Collection getResources() {
+        return m_snmpCollection.getResources(m_agent);
+    }
+
+    public void visit(CollectionSetVisitor visitor) {
+        visitor.visitCollectionSet(this);
+        
+        for (Iterator iter = getResources().iterator(); iter.hasNext();) {
+            CollectionResource resource = (CollectionResource) iter.next();
+            resource.visit(visitor);
+        }
+    }
+    
+    public void triggerRescan() {
+        m_rescanTriggered = true;
+    }
+
+    public boolean rescanTriggered() {
+        return m_rescanTriggered;
+    }
+
+    CollectionTracker getTracker() {
+        List trackers = new ArrayList(3);
+       
+        if (getIfNumber() != null) {
+        	trackers.add(getIfNumber());
+        }
+        if (getNodeCollector() != null) {
+        	trackers.add(getNodeCollector());
+        }
+        if (getIfCollector() != null) {
+        	trackers.add(getIfCollector());
+        }
+       
+        return new AggregateTracker(trackers);
+    }
+
+    SnmpWalker createWalker() {
+        CollectionAgent agent = getCollectionAgent();
+        return SnmpUtils.createWalker(agent.getAgentConfig(), "SnmpCollectors for " + agent.getHostAddress(), getTracker());
+    }
+
+    void logStartedWalker() {
+        if (log().isDebugEnabled()) {
+        	log().debug(
+        			"collect: successfully instantiated "
+        					+ "SnmpNodeCollector() for "
+        					+ getCollectionAgent().getHostAddress());
+        }
+    }
+
+    void logFinishedWalker() {
+        if (log().isDebugEnabled()) {
+            log().debug(
+        			"collect: node SNMP query for address "
+        					+ getCollectionAgent().getHostAddress() + " complete.");
+        }
+    }
+
+    void verifySuccessfulWalk(SnmpWalker walker) throws CollectionWarning {
+        if (walker.failed()) {
+        	// Log error and return COLLECTION_FAILED
+        	throw new CollectionWarning("collect: collection failed for "
+        			+ getCollectionAgent().getHostAddress());
+        }
+    }
+
+    void collect() throws CollectionWarning {
+        try {
+    
+            // now collect the data
+    		SnmpWalker walker = createWalker();
+    		walker.start();
+    
+            logStartedWalker();
+    
+    		// wait for collection to finish
+    		walker.waitFor();
+    
+    		logFinishedWalker();
+    
+    		// Was the collection successful?
+    		verifySuccessfulWalk(walker);
+    
+    		getCollectionAgent().setMaxVarsPerPdu(walker.getMaxVarsPerPdu());
+            
+    	} catch (InterruptedException e) {
+    		Thread.currentThread().interrupt();
+            throw new CollectionWarning("collect: Collection of node SNMP "
+            		+ "data for interface " + getCollectionAgent().getHostAddress()
+            		+ " interrupted!", e);
+    	}
+    }
+
+    void logIfCountChangedForceRescan() {
+        log().info("Number of interfaces on primary SNMP "
+                + "interface " + getCollectionAgent().getHostAddress()
+                + " has changed, generating 'ForceRescan' event.");
+    }
+
+    void checkForNewInterfaces(CollectionSet.RescanNeeded rescanNeeded) {
+        if (!hasInterfaceDataToCollect()) return;
+        getCollectionAgent().logIfCounts(this);
+    
+        if (getCollectionAgent().ifCountHasChanged()) {
+            rescanNeeded.rescanIndicated();
+            logIfCountChangedForceRescan();
+        }
+    
+        getCollectionAgent().setSavedIfCount(getIfNumber().getIfNumber());
+    }
+    
+    public boolean rescanNeeded() {
+        if (rescanTriggered()) return true;
+        
+        final RescanNeeded rescanNeeded = new RescanNeeded();
+        visit(new ResourceVisitor() {
+        
+            public void visitResource(CollectionResource resource) {
+                if (resource.rescanNeeded())
+                    rescanNeeded.rescanIndicated();
+            }
+            
+        });
+            
+        checkForNewInterfaces(rescanNeeded);
+        
+        return rescanNeeded.rescanIsNeeded();
+    }
+    
+ 
 
 }

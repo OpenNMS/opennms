@@ -32,6 +32,7 @@
 package org.opennms.netmgt.snmp;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
@@ -218,23 +219,26 @@ public class AggregateTracker extends CollectionTracker {
 
     private CollectionTracker[] m_children;
     
-    public AggregateTracker(List children) {
+    public AggregateTracker(Collection children) {
         this(children, null);
     }
 
-    public AggregateTracker(List children, CollectionTracker parent) {
-        this((CollectionTracker[]) children.toArray(new CollectionTracker[children.size()]), parent);
+    public AggregateTracker(Collection children, CollectionTracker parent) {
+        this((Collectable[]) children.toArray(new Collectable[children.size()]), parent);
     }
 
-    public AggregateTracker(CollectionTracker[] children) {
+    public AggregateTracker(Collectable[] children) {
         this(children, null);
     }
 
-    public AggregateTracker(CollectionTracker[] children, CollectionTracker parent) {
+    public AggregateTracker(Collectable[] children, CollectionTracker parent) {
         super(parent);
-        m_children = children;
-        for(int i = 0; i < m_children.length; i++)
+        
+        m_children = new CollectionTracker[children.length];
+        for(int i = 0; i < m_children.length; i++) {
+            m_children[i] = children[i].getCollectionTracker();
             m_children[i].setParent(this);
+        }
     }
     
     public void setFailed(boolean failed) {

@@ -2,7 +2,6 @@ package org.opennms.netmgt.collectd;
 
 import java.io.File;
 import java.util.Collection;
-import java.util.List;
 
 
 public class AliasedResource extends CollectionResource {
@@ -11,7 +10,8 @@ public class AliasedResource extends CollectionResource {
     private String m_ifAliasComment;
     private String m_domain;
 
-    public AliasedResource(String domain, IfInfo ifInfo, String ifAliasComment) {
+    public AliasedResource(ResourceType resourceType, String domain, IfInfo ifInfo, String ifAliasComment) {
+        super(resourceType);
         m_domain = domain;
         m_ifInfo = ifInfo;
         m_ifAliasComment = ifAliasComment;
@@ -50,9 +50,14 @@ public class AliasedResource extends CollectionResource {
     protected SNMPCollectorEntry getEntry() {
         return getIfInfo().getEntry();
     }
+    
 
     void checkForAliasChanged(ForceRescanState forceRescanState) {
         getIfInfo().checkForChangedIfAlias(forceRescanState);
+    }
+    
+    public boolean rescanNeeded() {
+        return getIfInfo().currentAliasIsOutOfDate();
     }
 
     public boolean isScheduledForCollection() {
@@ -61,6 +66,11 @@ public class AliasedResource extends CollectionResource {
 
     public boolean shouldPersist(ServiceParameters serviceParameters) {
         return (serviceParameters.aliasesEnabled() && getAliasDir() != null) && (isScheduledForCollection() || serviceParameters.forceStoreByAlias(getAliasDir()));
+    }
+
+    public void setEntry(SNMPCollectorEntry entry) {
+        // TODO Auto-generated method stub
+        
     }
 
 }

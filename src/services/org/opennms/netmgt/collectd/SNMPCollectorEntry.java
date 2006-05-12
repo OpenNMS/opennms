@@ -40,7 +40,6 @@ package org.opennms.netmgt.collectd;
 
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.List;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
@@ -98,11 +97,14 @@ public final class SNMPCollectorEntry extends AbstractSnmpStore {
         AttributeType attrType = findAttributeTypeForOid(base);
         if (attrType == null) throw new IllegalArgumentException("Received result for unexpected oid ["+base+"].["+inst+"]");
         
-        attrType.storeResult(base, inst, val);
 
         if (attrType.getInstance().equals(MibObject.INSTANCE_IFINDEX))
             putIfIndex(inst.toInt());
         log().debug("storeResult: added value for "+attrType.getAlias()+": ["+base+"].["+inst+"] = "+val);
+
+        
+        attrType.storeResult(this, base, inst, val);
+
     }
 
 
