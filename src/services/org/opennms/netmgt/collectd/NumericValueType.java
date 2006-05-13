@@ -58,7 +58,7 @@ import org.opennms.netmgt.snmp.SnmpValue;
  * @version 1.1.1.1
  * 
  */
-public class RRDDataSource extends DataSource {
+public class NumericValueType extends ValueType {
 	private static final int MAX_DS_NAME_LENGTH = 19;
 	public static final String RRD_ERROR = "RRD_ERROR";
 
@@ -127,7 +127,7 @@ public class RRDDataSource extends DataSource {
           * @return true if RRDDataSource can  handle the given type, false if it can't
           */
          public static boolean handlesType(String objectType) {
-                 return (RRDDataSource.mapType(objectType)!=null);
+                 return (NumericValueType.mapType(objectType)!=null);
          }
 
 
@@ -180,7 +180,7 @@ public class RRDDataSource extends DataSource {
     /**
      * Constructor
      */
-    public RRDDataSource() {
+    public NumericValueType() {
 	super();
         m_type = null;
         m_heartbeat = 600; // 10 minutes
@@ -188,7 +188,7 @@ public class RRDDataSource extends DataSource {
         m_max = "U";
     }
 
-       public RRDDataSource(MibObject obj, String collectionName) {
+       public NumericValueType(MibObject obj, String collectionName) {
                 super(obj, collectionName);
                 
                 Category log = ThreadCategory.getInstance(getClass());
@@ -213,7 +213,7 @@ public class RRDDataSource extends DataSource {
                 }
 
                 // Map MIB object data type to RRD data type
-                this.setType(RRDDataSource.mapType(obj.getType()));
+                this.setType(NumericValueType.mapType(obj.getType()));
                 this.m_min = "U";
                 this.m_max = "U";
 
@@ -244,7 +244,7 @@ public class RRDDataSource extends DataSource {
      *            The object to make a duplicate of.
      * 
      */
-    public RRDDataSource(RRDDataSource second) {
+    public NumericValueType(NumericValueType second) {
         m_oid = second.m_oid;
         m_instance = second.m_instance;
         m_name = second.m_name;
@@ -298,16 +298,6 @@ public class RRDDataSource extends DataSource {
     }
 
     /**
-     * Used to get a duplicate of self. The duplicate is identical to self but
-     * shares no common data.
-     * 
-     * @return A newly created copy of self.
-     */
-    public Object clone() {
-        return new RRDDataSource(this);
-    }
-
-    /**
      * This method is responsible for returning a String object which represents
      * the content of this RRDDataSource object. Primarily used for debugging
      * purposes.
@@ -328,26 +318,28 @@ public class RRDDataSource extends DataSource {
         return buffer.toString();
     }
        
-	public boolean performUpdate(
-		String owner,
-		File repository,
-                SnmpValue value) {
+    public boolean performUpdate(RrdRepository repository, CollectionResource resource, SnmpValue value) {
+
+        String owner = resource.getCollectionAgent().getHostAddress();
+        File resourceDir = resource.getResourceDir(repository);
+
+        String val = getStorableValue(value);
+
+        int step = repository.getStep();
+        List rraList = repository.getRraList();
         
-            String val = getStorableValue(value);
-        
-            String collectionName = getCollectionName();
-	        int step = DataCollectionConfigFactory.getInstance().getStep(collectionName);
-	        List rraList = DataCollectionConfigFactory.getInstance().getRRAList(collectionName);
-		boolean result=false;
-		try {
-		        RrdUtils.createRRD(owner, repository.getAbsolutePath(), getName(), step, getType(), getHeartbeat(), getMin(), getMax(), rraList);
-	
-			RrdUtils.updateRRD(owner, repository.getAbsolutePath(), getName(), val);
-		} catch (RrdException e) {
-			result=true;
-		}
-		return result;
-	}
+        boolean result=false;
+        try {
+            RrdUtils.createRRD(owner, resourceDir.getAbsolutePath(), getName(), step, getType(), getHeartbeat(), getMin(), getMax(), rraList);
+
+            RrdUtils.updateRRD(owner, resourceDir.getAbsolutePath(), getName(), val);
+        } catch (RrdException e) {
+            result=true;
+        }
+        return result;
+    }
+
+
 
     public String getStorableValue(SnmpValue snmpVal) {
         return (snmpVal == null ? null : Long.toString(snmpVal.toLong()));
