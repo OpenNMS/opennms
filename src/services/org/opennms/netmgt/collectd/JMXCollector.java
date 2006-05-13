@@ -618,7 +618,7 @@ public abstract class JMXCollector implements ServiceCollector {
     }
 
     public boolean createRRD(String collectionName, InetAddress ipaddr,
-            String directory, RRDDataSource ds, String collectionDir,
+            String directory, JMXDataSource ds, String collectionDir,
             String keyField) throws RrdException {
         String creator = "primary " + serviceName + " interface "
                 + ipaddr.getHostAddress();
@@ -709,7 +709,7 @@ public abstract class JMXCollector implements ServiceCollector {
         try {
             for (int i = 0; i < attributeList.size(); i++) {
                 Attribute attribute = (Attribute) attributeList.get(i);
-                RRDDataSource ds = (RRDDataSource) dsMap.get(objectName + "|"
+                JMXDataSource ds = (JMXDataSource) dsMap.get(objectName + "|"
                         + attribute.getName());
 
                 if (keyField == null) {
@@ -790,7 +790,7 @@ public abstract class JMXCollector implements ServiceCollector {
      * @return
      * @throws Exception
      */
-    public String getRRDValue_isthis_used_(RRDDataSource ds,
+    public String getRRDValue_isthis_used_(JMXDataSource ds,
             JMXCollectorEntry collectorEntry) throws IllegalArgumentException {
 
         Category log = ThreadCategory.getInstance(getClass());
@@ -849,14 +849,14 @@ public abstract class JMXCollector implements ServiceCollector {
             Iterator iter = list.iterator();
             while (iter.hasNext()) {
                 Attrib attr = (Attrib) iter.next();
-                RRDDataSource ds = null;
+                JMXDataSource ds = null;
 
                 /*
                  * Verify that this object has an appropriate "integer" data
                  * type which can be stored in an RRD database file (must map to
                  * one of the supported RRD data source types: COUNTER or GAUGE).
                  * */
-                String ds_type = RRDDataSource.mapType(attr.getType());
+                String ds_type = JMXDataSource.mapType(attr.getType());
                 if (ds_type != null) {
                     /*
                      * Passed!! Create new data source instance for this MBean
@@ -864,7 +864,7 @@ public abstract class JMXCollector implements ServiceCollector {
                      * Assign heartbeat using formula (2 * step) and hard code
                      * min & max values to "U" ("unknown").
                      */
-                    ds = new RRDDataSource();
+                    ds = new JMXDataSource();
                     ds.setHeartbeat(2 * JMXDataCollectionConfigFactory.getInstance().getStep(
                                                                                              collectionName));
                     // For completeness, adding a minval option to the variable.
