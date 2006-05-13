@@ -38,9 +38,6 @@ import javax.sql.DataSource;
 
 import org.opennms.netmgt.dao.jdbc.Cache;
 import org.opennms.netmgt.dao.jdbc.JdbcSet;
-import org.opennms.netmgt.model.OnmsEvent;
-import org.opennms.netmgt.model.OnmsMonitoredService;
-import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsNotification;
 import org.opennms.netmgt.model.OnmsUserNotification;
 import org.springframework.jdbc.object.MappingSqlQuery;
@@ -84,14 +81,14 @@ public class UserNotificationMappingQuery extends MappingSqlQuery {
         return findUnique((Object[])null);
     }
     
-    public OnmsNotification findUnique(Object obj) {
-        return findUnique(new Object[] { obj });
+    public OnmsNotification findUnique(Object o1, Object o2) {
+        return findUnique(new Object[] { o1, o2 });
     }
 
     public OnmsNotification findUnique(Object[] objs) {
-        List events = execute(objs);
-        if (events.size() > 0)
-            return (OnmsNotification) events.get(0);
+        List userNotifications = execute(objs);
+        if (userNotifications.size() > 0)
+            return (OnmsNotification) userNotifications.get(0);
         else
             return null;
     }

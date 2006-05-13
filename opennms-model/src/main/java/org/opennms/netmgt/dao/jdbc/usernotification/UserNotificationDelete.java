@@ -21,6 +21,6 @@ public class UserNotificationDelete extends SqlUpdate {
    }
 
    public int doDelete(OnmsUserNotification userNotification) throws DataAccessException {
-       return super.update(new Object[] { userNotification.getId() }); //TODO: This is wrong and needs to be fixed
+       return super.update(new Object[] { userNotification.getNotification().getNotifyId() }); //TODO: This is wrong and needs to be fixed
    }
 }

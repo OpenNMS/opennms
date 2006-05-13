@@ -18,8 +18,6 @@ public class OnmsUserNotification extends OnmsEntity implements Serializable {
      */
     private static final long serialVersionUID = -1750912427062821742L;
     
-    private Integer m_id;
-
     /** identifier field */
     private String m_userId;
 
@@ -52,21 +50,6 @@ public class OnmsUserNotification extends OnmsEntity implements Serializable {
     public OnmsUserNotification() {
     }
     
-    /**
-     * Unique identifier for ipInterface.
-     * 
-     * @hibernate.id generator-class="native" column="id"
-     * @hibernate.generator-param name="sequence" value="usrNotifNxtId"
-     *         
-     */
-    public Integer getId() {
-        return m_id;
-    }
-    
-    public void setId(Integer id) {
-        m_id = id;
-    }
-
     /** 
      *                @hibernate.property
      *                 column="userId"
