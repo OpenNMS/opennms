@@ -1,6 +1,5 @@
 package org.opennms.netmgt.dao.jdbc.usernotification;
 
-import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsUserNotification;
 
 
@@ -14,7 +13,7 @@ public class UserNotificationId {
     }
     
     public UserNotificationId(OnmsUserNotification userNotification) {
-        this(userNotification.getUserId(), userNotification.getId());
+        this(userNotification.getUserId(), userNotification.getNotification().getNotifyId());
     }
 
     

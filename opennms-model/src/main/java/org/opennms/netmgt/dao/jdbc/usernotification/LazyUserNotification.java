@@ -58,11 +58,6 @@ public class LazyUserNotification extends OnmsUserNotification {
         return super.getContactInfo();
     }
 
-    public Integer getId() {
-        load();
-        return super.getId();
-    }
-
     public String getMedia() {
         load();
         return super.getMedia();
@@ -91,11 +86,6 @@ public class LazyUserNotification extends OnmsUserNotification {
     public void setContactInfo(String contactInfo) {
         load();
         super.setContactInfo(contactInfo);
-    }
-
-    public void setId(Integer id) {
-        load();
-        super.setId(id);
     }
 
     public void setMedia(String media) {

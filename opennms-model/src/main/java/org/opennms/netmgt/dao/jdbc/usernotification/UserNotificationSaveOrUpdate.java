@@ -35,7 +35,7 @@ import java.sql.Types;
 
 import javax.sql.DataSource;
 
-import org.opennms.netmgt.model.OnmsNotification;
+import org.opennms.netmgt.model.OnmsUserNotification;
 import org.springframework.jdbc.core.SqlParameter;
 import org.springframework.jdbc.object.SqlUpdate;
 
@@ -46,37 +46,24 @@ public class UserNotificationSaveOrUpdate extends SqlUpdate {
         setSql(updateStmt);
         
         // assumes that the update and insert statements have the same parms in the same order
-        declareParameter(new SqlParameter(Types.VARCHAR));  //textMsg
-        declareParameter(new SqlParameter(Types.VARCHAR));  //subject
-        declareParameter(new SqlParameter(Types.VARCHAR));  //numericMsg
-        declareParameter(new SqlParameter(Types.TIMESTAMP));  //pageTime
-        declareParameter(new SqlParameter(Types.TIMESTAMP));  //respondTime
-        declareParameter(new SqlParameter(Types.VARCHAR));  //answeredBy
-        declareParameter(new SqlParameter(Types.INTEGER));  //nodeID
-        declareParameter(new SqlParameter(Types.VARCHAR));  //interfaceID
-        declareParameter(new SqlParameter(Types.INTEGER));  //serviceID
-        declareParameter(new SqlParameter(Types.VARCHAR));  //queueID
-        declareParameter(new SqlParameter(Types.INTEGER));  //eventID
-        declareParameter(new SqlParameter(Types.VARCHAR));  //eventUEI
+        declareParameter(new SqlParameter(Types.TIMESTAMP));  //notifyTime
+        declareParameter(new SqlParameter(Types.VARCHAR));  //media
+        declareParameter(new SqlParameter(Types.VARCHAR));  //contactInfo
+        declareParameter(new SqlParameter(Types.VARCHAR));  //autoNotify
+        declareParameter(new SqlParameter(Types.VARCHAR));  //userID
         declareParameter(new SqlParameter(Types.INTEGER));  //notifyID
         compile();
     }
     
-    public int persist(OnmsNotification notification) {
+    public int persist(OnmsUserNotification userNotification) {
         Object[] parms = new Object[] {
-        		notification.getTextMsg(), //textMsg
-             notification.getSubject(), //subject
-             notification.getNumericMsg(), //numericMsg
-             notification.getPageTime(), //pageTime
-             notification.getRespondTime(), //respondTime
-             notification.getAnsweredBy(), //answeredBy
-             notification.getNode().getId(), //nodeID
-             notification.getInterface().getId(), //interfaceID
-             notification.getService().getId(), //serviceID
-             notification.getQueueId(), //queueID
-             notification.getEvent().getId(), //eventID
-             notification.getEvent().getEventUei(), //eventUEI
-             notification.getNotifyId()}; //notificationID
+        		userNotification.getNotifyTime(), //notifyTime
+             userNotification.getMedia(), //media
+             userNotification.getContactInfo(), //contactInfo
+             userNotification.getAutoNotify(), //autoNotify
+             userNotification.getUserId(), //userID
+             userNotification.getNotification().getNotifyId() //notifyID
+        };
         return update(parms);
     }    
 
