@@ -78,7 +78,7 @@ public class IfResourceType extends DbResourceType {
         Set attributes = new LinkedHashSet();
         for (Iterator it = getIfInfos().iterator(); it.hasNext();) {
             CollectionResource ifInfo = (CollectionResource) it.next();
-            attributes.addAll(ifInfo.getAttributeList());
+            attributes.addAll(ifInfo.getAttributeTypes());
         }
         return new ArrayList(attributes);
     }

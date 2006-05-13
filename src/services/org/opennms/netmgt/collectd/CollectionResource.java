@@ -25,11 +25,11 @@ public abstract class CollectionResource {
 
     public abstract CollectionAgent getCollectionAgent();
 
-    public abstract Collection getAttributeList();
+    public abstract Collection getAttributeTypes();
     
     public abstract boolean shouldPersist(ServiceParameters params);
 
-    protected abstract File getResourceDir(File rrdBaseDir);
+    protected abstract File getResourceDir(RrdRepository repository);
     
     /**
      * @deprecated
@@ -47,52 +47,15 @@ public abstract class CollectionResource {
 
     public boolean rescanNeeded() { return false; }
     
-    protected void logNoDataForAttribute(AttributeType attrType) {
-        if (log().isDebugEnabled()) {
-            log().debug(
-        			"updateRRDs: Skipping update, "
-        					+ "no data retrieved for resource: " + this + 
-                            " attribute: " + attrType.getName());
-        }
-    }
-
-    protected void logUpdateFailed(AttributeType attrType) {
-        log().warn("updateRRDs: ds.performUpdate() failed for resource: "
-                + this
-                + " datasource: "
-                + attrType.getName());
-    }
-
-    protected void store(AttributeType attrType, File rrdBaseDir) {
-        CollectionAgent collectionAgent = getCollectionAgent();
-        if (attrType.performUpdate(collectionAgent, getResourceDir(rrdBaseDir), getEntry())) {
-            logUpdateFailed(attrType);
-        }
-    }
-
-    protected void logUpdateException(AttributeType attrType, IllegalArgumentException e) {
-        log().warn("updateRRDs: exception saving data for resource: " + this
-        			+ " datasource: " + attrType.getName(), e);
-    }
-
-    protected void storeAttributes(File rrdBaseDir) {
+    protected void storeAttributes(RrdRepository repository) {
         /*
          * Iterate over the resource attribute list and issue RRD
          * update commands to update each datasource which has a
          * corresponding value in the collected SNMP data.
          */
-        Iterator i = getAttributeList().iterator();
-        while (i.hasNext()) {
-            AttributeType attrType = (AttributeType)i.next();
-            try {
-                if (attrType.getValue(getEntry()) == null) {
-                    logNoDataForAttribute(attrType);
-                } else {
-                    store(attrType, rrdBaseDir);
-                }
-            } catch (IllegalArgumentException e) {
-                logUpdateException(attrType, e);
-            }
+        for (Iterator iter = getAttributes().iterator(); iter.hasNext();) {
+            Attribute attr = (Attribute) iter.next();
+            attr.storeAttribute(repository);
     
         }
     }

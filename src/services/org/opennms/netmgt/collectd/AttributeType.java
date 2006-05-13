@@ -117,20 +117,18 @@ public class AttributeType {
         return getAlias();
     }
 
-    String getValue(SNMPCollectorEntry entry) {
-        return getDs().getRRDValue(entry);
-    }
-
-    boolean performUpdate(CollectionAgent collectionAgent, File resourceDir, SNMPCollectorEntry entry) {
-        return getDs().performUpdate(collectionAgent.getHostAddress(), resourceDir, getValue(entry));
+    boolean performUpdate(RrdRepository repository, CollectionResource resource, SnmpValue value) {
+        CollectionAgent collectionAgent = resource.getCollectionAgent();
+        File resourceDir = resource.getResourceDir(repository);
+        return getDs().performUpdate(collectionAgent.getHostAddress(), resourceDir, value);
     }
     
     public void storeResult(CollectionSet collectionSet, SNMPCollectorEntry entry, SnmpObjId base, SnmpInstId inst, SnmpValue val) {
         CollectionResource resource = m_resourceType.findResource(inst);
-        resource.setEntry(entry);
         if (resource == null) {
             collectionSet.notifyIfNotFound(base, inst, val);
         } else {
+            resource.setEntry(entry);
             resource.setAttributeValue(this, val);
         }
     }

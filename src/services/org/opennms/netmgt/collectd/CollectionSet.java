@@ -156,7 +156,7 @@ public class CollectionSet implements Collectable {
     }
 
     Collection getAttributeList() {
-        return getNodeInfo().getAttributeList();
+        return getNodeInfo().getAttributeTypes();
     }
 
     /**

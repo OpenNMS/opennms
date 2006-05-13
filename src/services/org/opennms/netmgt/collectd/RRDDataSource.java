@@ -331,7 +331,9 @@ public class RRDDataSource extends DataSource {
 	public boolean performUpdate(
 		String owner,
 		File repository,
-                String val) {
+                SnmpValue value) {
+        
+            String val = getStorableValue(value);
         
             String collectionName = getCollectionName();
 	        int step = DataCollectionConfigFactory.getInstance().getStep(collectionName);
@@ -347,7 +349,7 @@ public class RRDDataSource extends DataSource {
 		return result;
 	}
 
-    public String getStorableValue(SnmpValue snmpVar) {
-        return Long.toString(snmpVar.toLong());
+    public String getStorableValue(SnmpValue snmpVal) {
+        return (snmpVal == null ? null : Long.toString(snmpVal.toLong()));
     }
 }
