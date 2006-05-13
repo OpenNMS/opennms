@@ -59,7 +59,7 @@ import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.ConfigFileConstants;
-import org.opennms.netmgt.collectd.DataSource;
+import org.opennms.netmgt.collectd.ValueType;
 import org.opennms.netmgt.collectd.MibObject;
 import org.opennms.netmgt.config.datacollection.DatacollectionConfig;
 import org.opennms.netmgt.config.datacollection.Group;
@@ -691,7 +691,7 @@ public final class DataCollectionConfigFactory implements DataCollectionConfig {
 		Iterator o = oidList.iterator();
 		while (o.hasNext()) {
 			MibObject obj = (MibObject) o.next();
-			DataSource ds = DataSource.dataSourceForMibObject(obj,
+			ValueType ds = ValueType.dataSourceForMibObject(obj,
 					collectionName);
 			if (ds != null) {
 				// Add the new data source to the list

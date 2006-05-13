@@ -59,7 +59,7 @@ public class AttributeType {
     }
 
     private MibObject m_mibObj;
-    private DataSource m_ds = null;
+    private ValueType m_ds = null;
     private String m_collectionName;
     private ResourceType m_resourceType;
 
@@ -73,9 +73,9 @@ public class AttributeType {
         return m_mibObj;
     }
 
-    public DataSource getDs() {
+    public ValueType getDs() {
         if (m_ds == null) {
-            m_ds = DataSource.dataSourceForMibObject(m_mibObj, m_collectionName);
+            m_ds = ValueType.dataSourceForMibObject(m_mibObj, m_collectionName);
         }
         return m_ds;
     }
@@ -120,7 +120,7 @@ public class AttributeType {
     boolean performUpdate(RrdRepository repository, CollectionResource resource, SnmpValue value) {
         CollectionAgent collectionAgent = resource.getCollectionAgent();
         File resourceDir = resource.getResourceDir(repository);
-        return getDs().performUpdate(collectionAgent.getHostAddress(), resourceDir, value);
+        return getDs().performUpdate(repository, resource, value);
     }
     
     public void storeResult(CollectionSet collectionSet, SNMPCollectorEntry entry, SnmpObjId base, SnmpInstId inst, SnmpValue val) {

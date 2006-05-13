@@ -34,7 +34,6 @@
 //
 package org.opennms.netmgt.collectd;
 
-import java.io.File;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
@@ -46,7 +45,7 @@ import org.opennms.netmgt.snmp.SnmpValue;
  * @author craig.miskell@agresearch.co.nz
  *  
  */
-public abstract class DataSource {
+public abstract class ValueType {
 
 	/**
 	 * Object's identifier in dotted-decimal notation (e.g,
@@ -70,20 +69,20 @@ public abstract class DataSource {
 
     private String m_collectionName;
 
-	public static DataSource dataSourceForMibObject(MibObject obj, String collectionName) {
+	public static ValueType dataSourceForMibObject(MibObject obj, String collectionName) {
 		// Check if this object has an appropriate "integer" data type
 		// which can be stored in an RRD database file (must map to one of 
 		// the supported RRD data source types:  COUNTER or GAUGE).
-		if (RRDDataSource.handlesType(obj.getType())) {
-			RRDDataSource ds=new RRDDataSource(obj, collectionName);
+		if (NumericValueType.handlesType(obj.getType())) {
+			NumericValueType ds=new NumericValueType(obj, collectionName);
 			return ds;
-		} else if(StringDataSource.handlesType(obj.getType())){
-			return new StringDataSource(obj, collectionName);
+		} else if(StringValueType.handlesType(obj.getType())){
+			return new StringValueType(obj, collectionName);
 		}
 		return null;
 	}
 	
-	public DataSource() {
+	public ValueType() {
 		super();
 		m_oid = null;
 		m_instance = null;
@@ -93,7 +92,7 @@ public abstract class DataSource {
 	/**
 	 * @param obj
 	 */
-	public DataSource(MibObject obj, String collectionName) {
+	public ValueType(MibObject obj, String collectionName) {
 		this();
         m_collectionName = collectionName;
 		this.setOid(obj.getOid());
@@ -104,12 +103,11 @@ public abstract class DataSource {
 	/**
 	 * Stores the value <code>val</code> in the datasource named dsName, in repository repository.  Creates
 	 * the store if need be (e.g. an rrd file, or a properties file, or whatever)
+	 * @param repository TODO
+	 * @param resource TODO
 	 * @param value TODO
 	 */
-	public abstract boolean performUpdate(
-		String owner,
-		File repository,
-		SnmpValue value);
+	public abstract boolean performUpdate(RrdRepository repository, CollectionResource resource, SnmpValue value);
 
 
 	/**

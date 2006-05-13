@@ -47,7 +47,7 @@ import org.opennms.netmgt.snmp.SnmpValue;
  * @author craig.miskell@agresearch.co.nz
  *  
  */
-public class StringDataSource extends DataSource {
+public class StringValueType extends ValueType {
 	
 	/**
 	 * @param objectType MIB object type being inquired about
@@ -60,16 +60,19 @@ public class StringDataSource extends DataSource {
 	/**
 	 * @param obj mibObject to use as the basis for configuring this datasource
 	 */
-	public StringDataSource(MibObject obj, String collectionName) {
+	public StringValueType(MibObject obj, String collectionName) {
 		super(obj, collectionName);
 		//Nothing else custom to do
 	}
 
-	public boolean performUpdate(String owner, File repository, SnmpValue value) {
-	    
+	public boolean performUpdate(RrdRepository repository, CollectionResource resource, SnmpValue value) {
+        
+        String owner = resource.getCollectionAgent().getHostAddress();
+        File resourceDir = resource.getResourceDir(repository);
+
         String val = getStorableValue(value);
 	    Properties props = new Properties();
-	    File propertiesFile =	 new File(repository,"strings.properties");
+	    File propertiesFile =	 new File(resourceDir,"strings.properties");
 	    
         FileInputStream fileInputStream = null;
 	    //Preload existing data
