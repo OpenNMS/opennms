@@ -104,11 +104,12 @@ public abstract class DataSource {
 	/**
 	 * Stores the value <code>val</code> in the datasource named dsName, in repository repository.  Creates
 	 * the store if need be (e.g. an rrd file, or a properties file, or whatever)
+	 * @param value TODO
 	 */
 	public abstract boolean performUpdate(
 		String owner,
 		File repository,
-		String val);
+		SnmpValue value);
 
 
 	/**
@@ -215,18 +216,13 @@ public abstract class DataSource {
     
     	String fullOid = SnmpObjId.get(getOid(), instance).toString();
     
-    	SnmpValue snmpVar = collectorEntry.getValue(fullOid);
-    	if (snmpVar == null) {
-    		// No value retrieved matching this oid
-    		return null;
-    	}
-    
+    	SnmpValue snmpVal = collectorEntry.getValue(fullOid);
     	if (log().isDebugEnabled()) {
     		log().debug("issueRRDUpdate: name:oid:value - " + getName() + ":"
-    				+ fullOid + ":" + snmpVar.toString());
+    				+ fullOid + ":" + snmpVal);
     	}
     
-    	return getStorableValue(snmpVar);
+        return getStorableValue(snmpVal);
     }
 
     protected Category log() {

@@ -402,29 +402,30 @@ public class SnmpCollector implements ServiceCollector {
 	 */
 	public int collect(CollectionAgent agent, EventProxy eventProxy, Map parameters) {
 	    try {
+            
 
 	        final ForceRescanState forceRescanState = new ForceRescanState(agent, eventProxy);
 	        final ServiceParameters params = new ServiceParameters(parameters);
+            params.logIfAliasConfig();
 
 	        OnmsSnmpCollection snmpCollection = new OnmsSnmpCollection(params);
 
+
 	        CollectionSet collectionSet = snmpCollection.createCollectionSet(agent);
 	        collectionSet.verifyCollectionIsNecessary();
-
 
 	        collectionSet.collect();
 
 	        if (collectionSet.rescanNeeded())
 	            forceRescanState.rescanIndicated();
 
-	        params.logIfAliasConfig();
-
+            final RrdRepository repository = new RrdRepository(params.getCollectionName());
 	        collectionSet.visit(new ResourceVisitor() {
 
 	            public void visitResource(CollectionResource resource) {
 	                if (resource.shouldPersist(params)) {
 	                    // FIXME: make sure we don't store attributes that don't make the ifType
-	                    resource.storeAttributes(getRrdBaseDir());
+	                    resource.storeAttributes(repository);
 	                }
 	            }
 
@@ -448,11 +449,5 @@ public class SnmpCollector implements ServiceCollector {
     			"Unexpected error during node SNMP collection for "
     					+ agent.getHostAddress(), t);
     	return ServiceCollector.COLLECTION_FAILED;
-    }
-
-    File getRrdBaseDir() {
-        String rrdPath = DataCollectionConfigFactory.getInstance().getRrdPath();
-        File rrdBaseDir = new File(rrdPath);
-        return rrdBaseDir;
     }
 }

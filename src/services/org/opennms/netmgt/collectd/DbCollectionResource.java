@@ -12,7 +12,7 @@ public abstract class DbCollectionResource extends CollectionResource {
         m_agent = agent;
     }
 
-    public Collection getAttributeList() {
+    public Collection getAttributeTypes() {
         return getResourceType().getAttributeTypes();
     }
 

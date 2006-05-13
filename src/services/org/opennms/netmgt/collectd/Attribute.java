@@ -1,5 +1,7 @@
 package org.opennms.netmgt.collectd;
 
+import org.apache.log4j.Category;
+import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.snmp.SnmpValue;
 
 public class Attribute {
@@ -28,6 +30,62 @@ public class Attribute {
 
     public void visitAttribute(CollectionSetVisitor visitor) {
         visitor.visitAttribute(this);
+    }
+
+    public AttributeType getAttributeType() {
+        return m_type;
+    }
+
+    public Category log() {
+        return ThreadCategory.getInstance(getClass());
+    }
+
+    public CollectionResource getResource() {
+        return m_resource;
+    }
+
+    void logNoDataForAttribute() {
+        Category log = log();
+        if (log.isDebugEnabled()) {
+            log.debug(
+        			"updateRRDs: Skipping update, "
+        					+ "no data retrieved for resource: " + getResource() + 
+                            " attribute: " + getAttributeType().getName());
+        }
+    }
+
+    void logUpdateException(IllegalArgumentException e) {
+        log().warn("updateRRDs: exception saving data for resource: " + getResource()
+        + " datasource: " + getAttributeType().getName(), e);
+    }
+
+    public SnmpValue getValue() {
+        return m_val;
+    }
+
+    void logUpdateFailed() {
+        log().warn("updateRRDs: ds.performUpdate() failed for resource: "
+        + getResource()
+        + " datasource: "
+        + getAttributeType().getName());
+    }
+
+    void store(RrdRepository repository) {
+        if (getAttributeType().performUpdate(repository, getResource(), getValue())) {
+            logUpdateFailed();
+        }
+    }
+
+    void storeAttribute(RrdRepository repository) {
+        try {
+            if (getValue() == null) {
+                logNoDataForAttribute();
+            } else {
+                store(repository);
+            }
+        } catch (IllegalArgumentException e) {
+            logUpdateException(e);
+        }
     }
     
     

@@ -149,7 +149,8 @@ final class IfInfo extends DbCollectionResource {
         return getResourceType().getCollection();
     }
 
-    protected File getResourceDir(File rrdBaseDir) {
+    protected File getResourceDir(RrdRepository repository) {
+        File rrdBaseDir = repository.getRrdBaseDir();
         File nodeDir = new File(rrdBaseDir, String.valueOf(getCollectionAgent().getNodeId()));
         File ifDir = new File(nodeDir, getLabel());
         return ifDir;

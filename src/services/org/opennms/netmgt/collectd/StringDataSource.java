@@ -65,8 +65,9 @@ public class StringDataSource extends DataSource {
 		//Nothing else custom to do
 	}
 
-	public boolean performUpdate(String owner, File repository, String val) {
+	public boolean performUpdate(String owner, File repository, SnmpValue value) {
 	    
+        String val = getStorableValue(value);
 	    Properties props = new Properties();
 	    File propertiesFile =	 new File(repository,"strings.properties");
 	    
@@ -121,7 +122,7 @@ public class StringDataSource extends DataSource {
 	}
 
     public String getStorableValue(SnmpValue snmpVar) {
-        return snmpVar.toString();
+        return (snmpVar == null ? null : snmpVar.toString());
     }
 
 }
