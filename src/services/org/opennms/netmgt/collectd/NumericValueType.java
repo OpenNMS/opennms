@@ -36,10 +36,7 @@ package org.opennms.netmgt.collectd;
 import java.io.File;
 import java.util.List;
 
-import org.apache.log4j.Category;
 import org.apache.log4j.Priority;
-import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.config.DataCollectionConfigFactory;
 import org.opennms.netmgt.rrd.RrdException;
 import org.opennms.netmgt.rrd.RrdUtils;
 import org.opennms.netmgt.snmp.SnmpValue;
@@ -102,13 +99,6 @@ public class NumericValueType extends ValueType {
      * type values: GAUGE, COUNTER, DERIVE, or ABSOLUTE
      */
     private String m_type;
-
-    /**
-     * Data Source Heartbeat. This is the maximum number of seconds that may
-     * pass between updates of this data source before the value of the data
-     * source is assumed to be 'Unknown'.
-     */
-    private int m_heartbeat;
 
     /**
      * Minimum Expected Range. Together with m_max defines the expected range of
@@ -183,56 +173,58 @@ public class NumericValueType extends ValueType {
     public NumericValueType() {
 	super();
         m_type = null;
-        m_heartbeat = 600; // 10 minutes
         m_min = "U";
         m_max = "U";
     }
 
-       public NumericValueType(MibObject obj, String collectionName) {
-                super(obj, collectionName);
-                
-                Category log = ThreadCategory.getInstance(getClass());
+    public NumericValueType(MibObject obj, String collectionName) {
+        super(obj, collectionName);
 
-                // Assign heartbeat using formula (2 * step) and hard code
-                // min & max values to "U" ("unknown").
-                this.setHeartbeat(
-                        2
-                                * DataCollectionConfigFactory.getInstance().getStep(
-                                        collectionName));
-
-                // Truncate MIB object name/alias if it exceeds the 19 char max for
-                // RRD data source names.
-                if (this.getName().length() > MAX_DS_NAME_LENGTH) {
-                        if (log.isEnabledFor(Priority.WARN))
-                                log.warn(
-                                        "buildDataSourceList: Mib object name/alias '"
-                                                + obj.getAlias()
-                                                + "' exceeds 19 char maximum for RRD data source names, truncatin g.");
-                        char[] temp = this.getName().toCharArray();
-                        this.setName(String.copyValueOf(temp, 0, MAX_DS_NAME_LENGTH));
-                }
-
-                // Map MIB object data type to RRD data type
-                this.setType(NumericValueType.mapType(obj.getType()));
-                this.m_min = "U";
-                this.m_max = "U";
-
-                // Assign the data source object identifier and instance
-                if (log.isDebugEnabled()) {
-                        log.debug(
-                                "buildDataSourceList: ds_name: "
-                                        + this.getName()
-                                        + " ds_oid: "
-                                        + this.getOid()
-                                        + "."
-                                        + this.getInstance()
-                                        + " ds_max: "
-                                        + this.getMax()
-                                        + " ds_min: "
-                                        + this.getMin());
-                }
-
+        // Truncate MIB object name/alias if it exceeds the 19 char max for
+        // RRD data source names.
+        if (this.getName().length() > MAX_DS_NAME_LENGTH) {
+            logNameTooLong(obj);
+            truncateName();
         }
+
+        // Map MIB object data type to RRD data type
+        setType(NumericValueType.mapType(obj.getType()));
+        m_min = "U";
+        m_max = "U";
+
+        // Assign the data source object identifier and instance
+        if (log().isDebugEnabled()) {
+            log().debug(
+                    "buildDataSourceList: ds_name: "
+                    + this.getName()
+                    + " ds_oid: "
+                    + this.getOid()
+                    + "."
+                    + this.getInstance()
+                    + " ds_max: "
+                    + this.getMax()
+                    + " ds_min: "
+                    + this.getMin());
+        }
+
+    }
+
+
+
+    private void truncateName() {
+        char[] temp = this.getName().toCharArray();
+        this.setName(String.copyValueOf(temp, 0, MAX_DS_NAME_LENGTH));
+    }
+
+
+
+    private void logNameTooLong(MibObject obj) {
+        if (log().isEnabledFor(Priority.WARN))
+                log().warn(
+                        "buildDataSourceList: Mib object name/alias '"
+                                + obj.getAlias()
+                                + "' exceeds 19 char maximum for RRD data source names, truncatin g.");
+    }
 
 
     /**
@@ -249,7 +241,6 @@ public class NumericValueType extends ValueType {
         m_instance = second.m_instance;
         m_name = second.m_name;
         m_type = second.m_type;
-        m_heartbeat = second.m_heartbeat;
         m_min = second.m_min;
         m_max = second.m_max;
     }
@@ -262,10 +253,6 @@ public class NumericValueType extends ValueType {
      */
     public void setType(String type) {
         m_type = type;
-    }
-
-    public void setHeartbeat(int heartbeat) {
-        m_heartbeat = heartbeat;
     }
 
     public void setMin(String minimum) {
@@ -283,10 +270,6 @@ public class NumericValueType extends ValueType {
      */
     public String getType() {
         return m_type;
-    }
-
-    public int getHeartbeat() {
-        return m_heartbeat;
     }
 
     public String getMin() {
@@ -311,7 +294,6 @@ public class NumericValueType extends ValueType {
         buffer.append("\n   oid:       ").append(m_oid);
         buffer.append("\n   name: 	 ").append(m_name);
         buffer.append("\n   type:      ").append(m_type);
-        buffer.append("\n   heartbeat: ").append(m_heartbeat);
         buffer.append("\n   min:       ").append(m_min);
         buffer.append("\n   max:       ").append(m_max);
 
@@ -330,7 +312,8 @@ public class NumericValueType extends ValueType {
         
         boolean result=false;
         try {
-            RrdUtils.createRRD(owner, resourceDir.getAbsolutePath(), getName(), step, getType(), getHeartbeat(), getMin(), getMax(), rraList);
+            int heartBeat = repository.getHeartBeat();
+            RrdUtils.createRRD(owner, resourceDir.getAbsolutePath(), getName(), step, getType(), heartBeat, getMin(), getMax(), rraList);
 
             RrdUtils.updateRRD(owner, resourceDir.getAbsolutePath(), getName(), val);
         } catch (RrdException e) {
