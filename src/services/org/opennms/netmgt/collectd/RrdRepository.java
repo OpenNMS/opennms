@@ -30,5 +30,9 @@ public class RrdRepository {
     int getStep() {
         return DataCollectionConfigFactory.getInstance().getStep(getCollectionName());
     }
+    
+    int getHeartBeat() {
+        return (2 * DataCollectionConfigFactory.getInstance().getStep(getCollectionName()));
+    }
 
 }
