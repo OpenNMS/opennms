@@ -49,7 +49,7 @@ public class NodeResourceType extends DbResourceType {
             ifNumberMibObject.setType("gauge");
             ifNumberMibObject.setInstance("0");
 
-            m_ifNumberType = new AttributeType(this, getCollectionName(), ifNumberMibObject);
+            m_ifNumberType = AttributeType.create(this, getCollectionName(), ifNumberMibObject);
         }
         return m_ifNumberType;
     }

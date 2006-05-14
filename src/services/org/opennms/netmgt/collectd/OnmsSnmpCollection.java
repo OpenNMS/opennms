@@ -77,13 +77,13 @@ public class OnmsSnmpCollection {
         String hostAddress = agent.getHostAddress();
         List oidList = DataCollectionConfigFactory.getInstance().getMibObjectList(getName(), sysObjectId, hostAddress, ifType);
         
-        List attrList = new LinkedList();
+        List typeList = new LinkedList();
         for (Iterator it = oidList.iterator(); it.hasNext();) {
             MibObject mibObject = (MibObject) it.next();
             String instanceName = mibObject.getInstance();
-            attrList.add(new AttributeType(getResourceType(agent, instanceName), getName(), mibObject));
+            typeList.add(AttributeType.create(getResourceType(agent, instanceName), getName(), mibObject));
         }
-        return attrList;
+        return typeList;
     }
 
     public ResourceType getResourceType(CollectionAgent agent, String instanceName) {

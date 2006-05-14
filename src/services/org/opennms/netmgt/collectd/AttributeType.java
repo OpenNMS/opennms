@@ -32,7 +32,6 @@
 
 package org.opennms.netmgt.collectd;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -44,41 +43,23 @@ import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpValue;
 
-public class AttributeType {
+public abstract class AttributeType {
     
-    public boolean equals(Object obj) {
-        if (obj instanceof AttributeType) {
-            AttributeType attrType = (AttributeType) obj;
-            return attrType.m_resourceType.equals(m_resourceType) && attrType.getAlias().equals(getAlias());
-        }
-        return false;
-    }
-
-    public int hashCode() {
-        return m_mibObj.hashCode();
-    }
-
     private MibObject m_mibObj;
-    private ValueType m_ds = null;
     private String m_collectionName;
     private ResourceType m_resourceType;
 
-    public AttributeType(ResourceType resourceType, String collectionName, MibObject mibObj) {
+    protected AttributeType(ResourceType resourceType, String collectionName, MibObject mibObj) {
         m_resourceType = resourceType;
         m_collectionName = collectionName;
         m_mibObj = mibObj;
     }
 
-    public MibObject getMibObj() {
+    protected MibObject getMibObj() {
         return m_mibObj;
     }
-
-    public ValueType getDs() {
-        if (m_ds == null) {
-            m_ds = ValueType.dataSourceForMibObject(m_mibObj, m_collectionName);
-        }
-        return m_ds;
-    }
+    
+    protected String getCollectionName() { return m_collectionName; }
 
     // FIXME: CollectionAttribute should be a tracker of its own
     // Also these should be created directly by the DAO rather 
@@ -91,6 +72,15 @@ public class AttributeType {
         }
         
         return trackers;
+    }
+
+    public static AttributeType create(ResourceType resourceType, String collectionName, MibObject mibObj) {
+        if (NumericAttributeType.supportsType(mibObj.getType()))
+            return new NumericAttributeType(resourceType, collectionName, mibObj);
+        if (StringAttributeType.supportsType(mibObj.getType()))
+            return new StringAttributeType(resourceType, collectionName, mibObj);
+        
+        throw new IllegalArgumentException("Unable to create attribute type from "+mibObj);
     }
 
     public String getAlias() {
@@ -110,25 +100,20 @@ public class AttributeType {
     }
 
     SnmpObjId getSnmpObjId() {
-        return getMibObj().getSnmpObjId();
+        return m_mibObj.getSnmpObjId();
     }
 
     public String getName() {
         return getAlias();
     }
 
-    boolean performUpdate(RrdRepository repository, CollectionResource resource, SnmpValue value) {
-        CollectionAgent collectionAgent = resource.getCollectionAgent();
-        File resourceDir = resource.getResourceDir(repository);
-        return getDs().performUpdate(repository, resource, value);
-    }
+    protected abstract boolean performUpdate(RrdRepository repository, Attribute attribute);
     
     public void storeResult(CollectionSet collectionSet, SNMPCollectorEntry entry, SnmpObjId base, SnmpInstId inst, SnmpValue val) {
         CollectionResource resource = m_resourceType.findResource(inst);
         if (resource == null) {
             collectionSet.notifyIfNotFound(base, inst, val);
         } else {
-            resource.setEntry(entry);
             resource.setAttributeValue(this, val);
         }
     }
@@ -137,8 +122,22 @@ public class AttributeType {
         return getAlias()+" ["+getOid()+"]";
     }
 
-    private Category log() {
+    public boolean equals(Object obj) {
+        if (obj instanceof AttributeType) {
+            AttributeType attrType = (AttributeType) obj;
+            return attrType.m_resourceType.equals(m_resourceType) && attrType.getAlias().equals(getAlias());
+        }
+        return false;
+    }
+
+    public int hashCode() {
+        return m_mibObj.hashCode();
+    }
+    
+    public Category log() {
         return ThreadCategory.getInstance(getClass());
     }
+
+
 
 }

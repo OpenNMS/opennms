@@ -48,18 +48,15 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Category;
-import org.apache.log4j.Priority;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.ConfigFileConstants;
-import org.opennms.netmgt.collectd.ValueType;
 import org.opennms.netmgt.collectd.MibObject;
 import org.opennms.netmgt.config.datacollection.DatacollectionConfig;
 import org.opennms.netmgt.config.datacollection.Group;
@@ -658,54 +655,6 @@ public final class DataCollectionConfigFactory implements DataCollectionConfig {
         
         return rrdPath;
     }
-
-     /**
-	 * This method is responsible for building a list of RRDDataSource objects
-	 * from the provided list of MibObject objects.
-	 * 
-	 * @param collectionName
-	 *            Collection name
-	 * @param oidList
-	 *            List of MibObject objects defining the oid's to be collected
-	 *            via SNMP.
-	 * 
-	 * @return list of RRDDataSource objects
-	 */
-	public static List buildDataSourceList(String collectionName, List oidList) {
-		// Log4j category
-		Category log = ThreadCategory.getInstance();
-	
-		/*
-		 * Retrieve the RRD expansion data source list which contains all the
-		 * expansion data source's. Use this list as a basis for building a data
-		 * source list for the current interface.
-		 */
-		List dsList = new LinkedList();
-	
-		/*
-		 * Loop through the MIB object list to be collected for this interface
-		 * and add a corresponding RRD data source object. In this manner each
-		 * interface will have RRD files create which reflect only the data
-		 * sources pertinent to it.
-		 */
-		Iterator o = oidList.iterator();
-		while (o.hasNext()) {
-			MibObject obj = (MibObject) o.next();
-			ValueType ds = ValueType.dataSourceForMibObject(obj,
-					collectionName);
-			if (ds != null) {
-				// Add the new data source to the list
-				dsList.add(ds);
-			} else if (log.isEnabledFor(Priority.WARN)) {
-				log.warn("buildDataSourceList: Data type '" + obj.getType()
-						+ "' not supported.");
-				log.warn("buildDataSourceList: MIB object '" + obj.getAlias()
-						+ "' will not be mapped to a data source.");
-			}
-		}
-	
-		return dsList;
-	}
 
     private void buildCollectionMap() {
         // Build collection map which is a hash map of Collection

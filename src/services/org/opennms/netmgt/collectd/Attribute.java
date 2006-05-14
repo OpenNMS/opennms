@@ -71,7 +71,7 @@ public class Attribute {
     }
 
     void store(RrdRepository repository) {
-        if (getAttributeType().performUpdate(repository, getResource(), getValue())) {
+        if (getAttributeType().performUpdate(repository, this)) {
             logUpdateFailed();
         }
     }
@@ -87,7 +87,5 @@ public class Attribute {
             logUpdateException(e);
         }
     }
-    
-    
 
 }

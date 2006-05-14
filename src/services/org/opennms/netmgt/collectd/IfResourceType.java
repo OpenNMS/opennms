@@ -91,17 +91,6 @@ public class IfResourceType extends DbResourceType {
         return getIfInfo(inst.toInt());
     }
 
-    protected Collection identityAttributeTypes() {
-        MibObject ifAliasMibObject = new MibObject();
-        ifAliasMibObject.setOid(".1.3.6.1.2.1.31.1.1.1.18");
-        ifAliasMibObject.setAlias("ifAlias");
-        ifAliasMibObject.setType("DisplayString");
-        ifAliasMibObject.setInstance("ifIndex");
-
-        AttributeType type = new AttributeType(this, getCollectionName(), ifAliasMibObject);
-        return Collections.singleton(type);
-    }
-
     public Collection getResources() {
         return m_ifMap.values();
     }

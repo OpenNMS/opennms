@@ -48,11 +48,6 @@ public class AliasedResource extends CollectionResource {
         return getDomain()+'/'+getAliasDir()+" ["+m_ifInfo+']';
     }
 
-    protected SNMPCollectorEntry getEntry() {
-        return getIfInfo().getEntry();
-    }
-    
-
     void checkForAliasChanged(ForceRescanState forceRescanState) {
         getIfInfo().checkForChangedIfAlias(forceRescanState);
     }
