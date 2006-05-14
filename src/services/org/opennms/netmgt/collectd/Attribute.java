@@ -28,7 +28,7 @@ public class Attribute {
         return (m_resource.hashCode() ^ m_type.hashCode());
     }
 
-    public void visitAttribute(CollectionSetVisitor visitor) {
+    public void visit(CollectionSetVisitor visitor) {
         visitor.visitAttribute(this);
     }
 
@@ -90,6 +90,14 @@ public class Attribute {
 
     public String toString() {
         return getResource()+"."+getAttributeType()+" = "+getValue();
+    }
+
+    public String getGroupName() {
+        return getAttributeType().getGroupName();
+    }
+    
+    public String getType() {
+        return getAttributeType().getType();
     }
 
 }

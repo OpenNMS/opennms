@@ -99,6 +99,8 @@ public class MibObject implements Collectable {
      */
     private String m_instance;
 
+    private String m_groupName;
+
     /**
      * Reserved instance keywords.
      */
@@ -193,6 +195,10 @@ public class MibObject implements Collectable {
     public void setInstance(String instance) {
         m_instance = instance;
     }
+    
+    public void setGroupName(String groupName) {
+        m_groupName = groupName;
+    }
 
     /**
      * Returns the object's identifier.
@@ -249,6 +255,10 @@ public class MibObject implements Collectable {
     public String getInstance() {
         return m_instance;
     }
+    
+    public String getGroupName() {
+        return m_groupName;
+    }
 
     /**
      * This method is responsible for comparing this MibObject with the passed
@@ -303,6 +313,7 @@ public class MibObject implements Collectable {
         StringBuffer buffer = new StringBuffer();
 
         // Build the buffer
+        buffer.append("\n   group:    ").append(m_groupName);
         buffer.append("\n   oid:      ").append(m_oid);
         buffer.append("\n   instance: ").append(m_instance);
         buffer.append("\n   alias:    ").append(m_alias);
@@ -336,5 +347,6 @@ public class MibObject implements Collectable {
         
         return m_snmpObjId;
     }
+
 
 }

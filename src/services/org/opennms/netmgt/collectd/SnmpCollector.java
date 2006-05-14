@@ -58,10 +58,6 @@ import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.rrd.RrdException;
 import org.opennms.netmgt.rrd.RrdUtils;
-import org.opennms.netmgt.snmp.SingleInstanceTracker;
-import org.opennms.netmgt.snmp.SnmpInstId;
-import org.opennms.netmgt.snmp.SnmpObjId;
-import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.netmgt.utils.EventProxy;
 
 /**
@@ -73,23 +69,6 @@ import org.opennms.netmgt.utils.EventProxy;
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
 public class SnmpCollector implements ServiceCollector {
-	static public final class IfNumberTracker extends SingleInstanceTracker {
-		int m_ifNumber = -1;
-
-		IfNumberTracker() {
-			super(SnmpObjId.get(INTERFACES_IFNUMBER), SnmpInstId.INST_ZERO);
-		}
-
-		protected void storeResult(SnmpObjId base, SnmpInstId inst,
-				SnmpValue val) {
-			m_ifNumber = val.toInt();
-		}
-
-		public int getIfNumber() {
-			return m_ifNumber;
-		}
-	}
-
 	/**
 	 * Name of monitored service.
 	 */
@@ -419,17 +398,7 @@ public class SnmpCollector implements ServiceCollector {
 	        if (collectionSet.rescanNeeded())
 	            forceRescanState.rescanIndicated();
 
-            final RrdRepository repository = new RrdRepository(params.getCollectionName());
-	        collectionSet.visit(new ResourceVisitor() {
-
-	            public void visitResource(CollectionResource resource) {
-	                if (resource.shouldPersist(params)) {
-	                    // FIXME: make sure we don't store attributes that don't make the ifType
-	                    resource.storeAttributes(repository);
-	                }
-	            }
-
-	        });
+            collectionSet.saveAttributes(params);
 
 	        // return the status of the collection
 	        return ServiceCollector.COLLECTION_SUCCEEDED;

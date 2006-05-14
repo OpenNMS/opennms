@@ -6,6 +6,8 @@ public interface CollectionSetVisitor {
 
     void visitResource(CollectionResource resource);
 
+    void visitGroup(AttributeGroup group);
+
     void visitAttribute(Attribute attribute);
 
 }

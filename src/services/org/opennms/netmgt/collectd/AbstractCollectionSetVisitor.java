@@ -8,6 +8,9 @@ public class AbstractCollectionSetVisitor implements CollectionSetVisitor {
     public void visitCollectionSet(CollectionSet set) {
     }
 
+    public void visitGroup(AttributeGroup group) {
+    }
+
     public void visitResource(CollectionResource resource) {
     }
 
