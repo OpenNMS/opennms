@@ -154,24 +154,4 @@ public class CollectionAgent extends IPv4NetworkInterface {
         return SnmpPeerFactory.getInstance().getAgentConfig(getInetAddress());
     }
 
-    void logIfCounts(CollectionSet collectionSet) {
-        log().debug("collect: nodeId: " + getNodeId()
-        				+ " interface: " + getHostAddress()
-        				+ " ifCount: " + collectionSet.getIfNumber().getIfNumber() 
-                       + " savedIfCount: " + getSavedIfCount());
-    }
-
-    boolean ifCountHasChanged() {
-        return (getSavedIfCount() != -1) && (m_collectionSet.getIfNumber().getIfNumber() != getSavedIfCount());
-    }
-
-    public void setCollectionSet(CollectionSet collectionSet) {
-        m_collectionSet = collectionSet;
-    }
-
-    CollectionSet getCollectionSet() {
-        return m_collectionSet;
-    }
-
-
 }

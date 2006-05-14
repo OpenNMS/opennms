@@ -304,14 +304,23 @@ public class CollectionSet implements Collectable {
 
     void checkForNewInterfaces(CollectionSet.RescanNeeded rescanNeeded) {
         if (!hasInterfaceDataToCollect()) return;
-        getCollectionAgent().logIfCounts(this);
+        
+        logIfCounts();
     
-        if (getCollectionAgent().ifCountHasChanged()) {
+        if (ifCountHasChanged(getCollectionAgent())) {
             rescanNeeded.rescanIndicated();
             logIfCountChangedForceRescan();
         }
     
         getCollectionAgent().setSavedIfCount(getIfNumber().getIfNumber());
+    }
+
+    private void logIfCounts() {
+        CollectionAgent agent = getCollectionAgent();
+        log().debug("collect: nodeId: " + agent.getNodeId()
+                + " interface: " + agent.getHostAddress()
+                + " ifCount: " + getIfNumber().getIfNumber() 
+                + " savedIfCount: " + agent.getSavedIfCount());
     }
     
     public boolean rescanNeeded() {
@@ -374,6 +383,10 @@ public class CollectionSet implements Collectable {
             }
     
         });
+    }
+
+    boolean ifCountHasChanged(CollectionAgent agent) {
+        return (agent.getSavedIfCount() != -1) && (getIfNumber().getIfNumber() != agent.getSavedIfCount());
     }
 
  
