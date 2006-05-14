@@ -188,4 +188,9 @@ public class StringUtils {
         return (String[]) tokenList.toArray(new String[tokenList.size()]);
     }
 
+    public static String truncate(String name, int length) {
+        if (name.length() <= length) return name;
+        return name.substring(0, length);
+    }
+
 }

@@ -31,16 +31,6 @@ public abstract class CollectionResource {
 
     protected abstract File getResourceDir(RrdRepository repository);
     
-    /**
-     * @deprecated
-     */
-    protected abstract SNMPCollectorEntry getEntry();
-
-    /**
-     * @deprecated 
-     */
-    public abstract void setEntry(SNMPCollectorEntry entry);
-
     public Category log() {
         return ThreadCategory.getInstance(getClass());
     }

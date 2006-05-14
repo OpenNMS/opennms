@@ -41,7 +41,7 @@ public class IfAliasResourceType extends ResourceType {
         ifAliasMibObject.setType("string");
         ifAliasMibObject.setInstance("ifIndex");
 
-        AttributeType type = new AttributeType(this, getCollectionName(), ifAliasMibObject);
+        AttributeType type = AttributeType.create(this, getCollectionName(), ifAliasMibObject);
         return Collections.singleton(type);
    }
 
