@@ -160,19 +160,7 @@ public class CollectionSet implements Collectable {
 		return ThreadCategory.getInstance(getClass());
 	}
 
-	void verifyCollectionIsNecessary() {
-        /*
-    	 * Verify that there is something to collect from this primary SMP
-    	 * interface. If no node objects and no interface objects then throw
-    	 * exception
-    	 */
-    	if (!hasDataToCollect()) {
-            throw new RuntimeException("collection '" + this
-                    + "' defines nothing to collect for " + m_agent);
-    	}
-    }
-
-    Collection getAttributeList() {
+	Collection getAttributeList() {
         return getNodeInfo().getAttributeTypes();
     }
 
@@ -213,6 +201,8 @@ public class CollectionSet implements Collectable {
             CollectionResource resource = (CollectionResource) iter.next();
             resource.visit(visitor);
         }
+        
+        visitor.completeCollectionSet(this);
     }
     
     public void triggerRescan() {
@@ -372,20 +362,15 @@ public class CollectionSet implements Collectable {
     }
 
     void saveAttributes(final ServiceParameters params) {
-        final RrdRepository repository = new RrdRepository(params.getCollectionName());
-        visit(new ResourceVisitor() {
-    
-            public void visitResource(CollectionResource resource) {
-                if (resource.shouldPersist(params)) {
-                    // FIXME: make sure we don't store attributes that don't make the ifType
-                    resource.storeAttributes(repository);
-                }
-            }
-    
-        });
+        OneToOnePersister persister = createPersister(params);
+        visit(persister);
     }
 
-    boolean ifCountHasChanged(CollectionAgent agent) {
+    private OneToOnePersister createPersister(ServiceParameters params) {
+        return new OneToOnePersister(params);
+    }
+
+    private boolean ifCountHasChanged(CollectionAgent agent) {
         return (agent.getSavedIfCount() != -1) && (getIfNumber().getIfNumber() != agent.getSavedIfCount());
     }
 

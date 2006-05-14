@@ -428,7 +428,7 @@ final class ThresholdEntity implements Cloneable {
 	        if (getDatasourceType().equals("if")) {
 	            log().debug("Fetching last value from dataSource '" + datasource + "'");
 	            
-	            File rrdFile = new  File(latIface.getLatencyDir(), datasource+RrdUtils.get_extension());
+	            File rrdFile = new  File(latIface.getLatencyDir(), datasource+RrdUtils.getExtension());
 	            if (!rrdFile.exists()) {
 	                log().info("rrd file "+rrdFile+" does not exist");
 	                return null;

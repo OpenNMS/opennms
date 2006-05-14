@@ -50,7 +50,7 @@ public class RrdFileConstants extends Object {
     public static final int MAX_RRD_FILENAME_LENGTH = 1024;
 
     /** Suffix common to all RRD filenames. */
-    public static final String RRD_SUFFIX = RrdUtils.get_extension();
+    public static final String RRD_SUFFIX = RrdUtils.getExtension();
 
     /** Convenience filter that matches only RRD files. */
     public static final FilenameFilter RRD_FILENAME_FILTER = new FilenameFilter() {

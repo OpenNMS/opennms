@@ -58,6 +58,7 @@ import org.jrobin.graph.RrdGraph;
 import org.jrobin.graph.RrdGraphDef;
 import org.opennms.core.utils.StringUtils;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.rrd.RrdDataSource;
 import org.opennms.netmgt.rrd.RrdStrategy;
 import org.opennms.netmgt.rrd.RrdUtils;
 
@@ -77,25 +78,26 @@ public class JRobinRrdStrategy implements RrdStrategy {
         ((RrdDb) rrdFile).close();
     }
 
-    /**
-     * Creates and returns a RrdDef represented by the parameters.
-     */
-    public Object createDefinition(String creator, String directory, String dsName, int step, String dsType, int dsHeartbeat, String dsMin, String dsMax, List rraList) throws Exception {
-
+    public Object createDefinition(String creator, String directory, String rrdName, int step, List dataSources, List rraList) throws Exception {
         File f = new File(directory);
         f.mkdirs();
 
-        String fileName = directory + File.separator + dsName + RrdUtils.get_extension();
+        String fileName = directory + File.separator + rrdName + RrdUtils.getExtension();
 
         RrdDef def = new RrdDef(fileName);
 
         // def.setStartTime(System.currentTimeMillis()/1000L - 2592000L);
         def.setStartTime(1000);
         def.setStep(step);
-
-        double min = (dsMin == null || "U".equals(dsMin) ? Double.NaN : Double.parseDouble(dsMin));
-        double max = (dsMax == null || "U".equals(dsMax) ? Double.NaN : Double.parseDouble(dsMax));
-        def.addDatasource(dsName, dsType, dsHeartbeat, min, max);
+        
+        for (Iterator iter = dataSources.iterator(); iter.hasNext();) {
+            RrdDataSource dataSource = (RrdDataSource) iter.next();
+            String dsMin = dataSource.getMin();
+            String dsMax = dataSource.getMax();
+            double min = (dsMin == null || "U".equals(dsMin) ? Double.NaN : Double.parseDouble(dsMin));
+            double max = (dsMax == null || "U".equals(dsMax) ? Double.NaN : Double.parseDouble(dsMax));
+            def.addDatasource(dataSource.getName(), dataSource.getType(), dataSource.getHeartBeat(), min, max);
+        }
 
         for (Iterator it = rraList.iterator(); it.hasNext();) {
             String rra = (String) it.next();
@@ -103,8 +105,8 @@ public class JRobinRrdStrategy implements RrdStrategy {
         }
 
         return def;
-
     }
+
 
     /**
      * Creates the JRobin RrdDb from the def by opening the file and then
@@ -525,4 +527,5 @@ public class JRobinRrdStrategy implements RrdStrategy {
     public String getStats() {
         return "";
     }
+
 }

@@ -30,6 +30,7 @@ public class Attribute {
 
     public void visit(CollectionSetVisitor visitor) {
         visitor.visitAttribute(this);
+        visitor.completeAttribute(this);
     }
 
     public AttributeType getAttributeType() {
@@ -44,48 +45,16 @@ public class Attribute {
         return m_resource;
     }
 
-    void logNoDataForAttribute() {
-        Category log = log();
-        if (log.isDebugEnabled()) {
-            log.debug(
-        			"updateRRDs: Skipping update, "
-        					+ "no data retrieved for resource: " + getResource() + 
-                            " attribute: " + getAttributeType().getName());
-        }
-    }
-
-    void logUpdateException(IllegalArgumentException e) {
-        log().warn("updateRRDs: exception saving data for resource: " + getResource()
-        + " datasource: " + getAttributeType().getName(), e);
-    }
-
     public SnmpValue getValue() {
         return m_val;
     }
 
-    void logUpdateFailed() {
-        log().warn("updateRRDs: ds.performUpdate() failed for resource: "
-        + getResource()
-        + " datasource: "
-        + getAttributeType().getName());
+    void store(Persister persister) {
+        getAttributeType().storeAttribute(this, persister);
     }
 
-    void store(RrdRepository repository) {
-        if (getAttributeType().performUpdate(repository, this)) {
-            logUpdateFailed();
-        }
-    }
-
-    void storeAttribute(RrdRepository repository) {
-        try {
-            if (getValue() == null) {
-                logNoDataForAttribute();
-            } else {
-                store(repository);
-            }
-        } catch (IllegalArgumentException e) {
-            logUpdateException(e);
-        }
+    void storeAttribute(Persister persister) {
+        getAttributeType().storeAttribute(this, persister);
     }
 
     public String toString() {
@@ -98,6 +67,18 @@ public class Attribute {
     
     public String getType() {
         return getAttributeType().getType();
+    }
+
+    public boolean shouldPersist(ServiceParameters params) {
+        return true;
+    }
+
+    public String getGroupIfType() {
+        return getAttributeType().getGroupIfType();
+    }
+
+    public String getName() {
+        return getAttributeType().getName();
     }
 
 }

@@ -72,25 +72,19 @@ public interface RrdStrategy {
      *            msgs
      * @param directory -
      *            The directory to create the file in
-     * @param dsName -
-     *            The datasource name for use in the round robin database
+     * @param rrdName -
+     *            The name to use for the round robin database
      * @param step -
      *            the step for the database
-     * @param dsType -
-     *            the type for the datasource
-     * @param dsHeartbeat -
-     *            the heartbeat for the datasouce
-     * @param dsMin -
-     *            the minimum allowable value for the datasource
-     * @param dsMax -
-     *            the maximum allowable value for the datasouce
+     * @param dataSources -
+     *            the datasources to use for round robin database
      * @param rraList -
      *            a List of the round robin archives to create in the database
      * @return an object representing the definition of an round robin database
      * @throws Exception
      *             If an error occurs while creating the definition
      */
-    Object createDefinition(String creator, String directory, String dsName, int step, String dsType, int dsHeartbeat, String dsMin, String dsMax, List rraList) throws Exception;
+    Object createDefinition(String creator, String directory, String rrdName, int step, List dataSources, List rraList) throws Exception;
 
     /**
      * Creates the round robin database defined by the supplied definition.

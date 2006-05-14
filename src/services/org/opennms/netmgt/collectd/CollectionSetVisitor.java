@@ -10,4 +10,12 @@ public interface CollectionSetVisitor {
 
     void visitAttribute(Attribute attribute);
 
+    void completeAttribute(Attribute attribute);
+
+    void completeGroup(AttributeGroup group);
+
+    void completeResource(CollectionResource resource);
+
+    void completeCollectionSet(CollectionSet set);
+
 }

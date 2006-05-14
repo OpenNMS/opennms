@@ -64,9 +64,8 @@ public class AliasedResource extends CollectionResource {
         return (serviceParameters.aliasesEnabled() && getAliasDir() != null) && (isScheduledForCollection() || serviceParameters.forceStoreByAlias(getAliasDir()));
     }
 
-    public void setEntry(SNMPCollectorEntry entry) {
-        // TODO Auto-generated method stub
-        
+    protected int getType() {
+        return getIfInfo().getType();
     }
 
 }

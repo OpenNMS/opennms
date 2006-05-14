@@ -111,7 +111,7 @@ public abstract class AttributeType {
         return getAlias();
     }
 
-    protected abstract boolean performUpdate(RrdRepository repository, Attribute attribute);
+    protected abstract void storeAttribute(Attribute attribute, Persister persister);
     
     public void storeResult(CollectionSet collectionSet, SNMPCollectorEntry entry, SnmpObjId base, SnmpInstId inst, SnmpValue val) {
         CollectionResource resource = m_resourceType.findResource(inst);
@@ -140,6 +140,10 @@ public abstract class AttributeType {
     
     public Category log() {
         return ThreadCategory.getInstance(getClass());
+    }
+
+    public String getGroupIfType() {
+        return m_mibObj.getGroupIfType();
     }
 
 

@@ -96,4 +96,9 @@ public class MockRrdStrategy implements RrdStrategy {
 		return null;
 	}
 
+    public Object createDefinition(String creator, String directory, String rrdName, int step, List dataSources, List rraList) throws Exception {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
 }

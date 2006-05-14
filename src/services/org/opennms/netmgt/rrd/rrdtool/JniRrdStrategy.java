@@ -54,6 +54,7 @@ import org.apache.log4j.Priority;
 import org.opennms.core.utils.StreamUtils;
 import org.opennms.core.utils.StringUtils;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.rrd.RrdDataSource;
 import org.opennms.netmgt.rrd.RrdException;
 import org.opennms.netmgt.rrd.RrdStrategy;
 import org.opennms.netmgt.rrd.RrdUtils;
@@ -101,19 +102,13 @@ public class JniRrdStrategy implements RrdStrategy {
             throw new IllegalStateException("the " + methodName + " method cannot be called before initialize");
     }
 
-    /**
-     * Constructs an rrdtool create command string that can be used to create
-     * the rrd file and returns it as the rrdDefinition object.
-     * 
-     */
-    public Object createDefinition(String creator, String directory, String dsName, int step, String dsType, int dsHeartbeat, String dsMin, String dsMax, List rraList) throws Exception {
-
+    public Object createDefinition(String creator, String directory, String rrdName, int step, List dataSources, List rraList) throws Exception {
         checkState("createDefinition");
 
         File f = new File(directory);
         f.mkdirs();
 
-        String fileName = directory + File.separator + dsName + RrdUtils.get_extension();
+        String fileName = directory + File.separator + rrdName + RrdUtils.getExtension();
 
         StringBuffer createCmd = new StringBuffer("create");
 
@@ -122,8 +117,17 @@ public class JniRrdStrategy implements RrdStrategy {
         createCmd.append(" --start=" + (System.currentTimeMillis() / 1000L - 10L));
 
         createCmd.append(" --step=" + step);
+        
+        for (Iterator iter = dataSources.iterator(); iter.hasNext();) {
+            RrdDataSource dataSource = (RrdDataSource) iter.next();
+            createCmd.append(" DS:");
+            createCmd.append(dataSource.getName()).append(':');
+            createCmd.append(dataSource.getType()).append(":");
+            createCmd.append(dataSource.getHeartBeat()).append(':');
+            createCmd.append(dataSource.getMin()).append(':');
+            createCmd.append(dataSource.getMax());
+        }
 
-        createCmd.append(" DS:" + dsName + ":" + dsType + ":" + dsHeartbeat + ':' + dsMin + ':' + dsMax);
 
         for (Iterator it = rraList.iterator(); it.hasNext();) {
             String rra = (String) it.next();
@@ -133,6 +137,7 @@ public class JniRrdStrategy implements RrdStrategy {
 
         return createCmd.toString();
     }
+
 
     /**
      * Creates a the rrd file from the rrdDefinition. Since this definition is
@@ -419,4 +424,5 @@ public class JniRrdStrategy implements RrdStrategy {
     public String getStats() {
         return "";
     }
+
 }

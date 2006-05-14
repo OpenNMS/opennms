@@ -40,6 +40,7 @@ package org.opennms.netmgt.rrd;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -49,6 +50,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Category;
+import org.opennms.netmgt.collectd.RrdRepository;
 
 /**
  * Provides queueing implementation of RrdStrategy.
@@ -718,10 +720,15 @@ public class QueuingRrdStrategy implements RrdStrategy, Runnable {
      * @see RrdStrategy#createDefinition(java.lang.String)
      */
     public Object createDefinition(String creator, String directory, String dsName, int step, String dsType, int dsHeartbeat, String dsMin, String dsMax, List rraList) throws Exception {
-        String fileName = directory + File.separator + dsName + RrdUtils.get_extension();
-        Object def = m_delegate.createDefinition(creator, directory, dsName, step, dsType, dsHeartbeat, dsMin, dsMax, rraList);
+        return createDefinition(creator, directory, dsName, step, Collections.singletonList(new RrdDataSource(dsName, dsType, dsHeartbeat, dsMin, dsMax)), rraList);
+    }
+    
+    public Object createDefinition(String creator, String directory, String rrdName, int step, List dataSources, List rraList) throws Exception {
+        String fileName = directory + File.separator + rrdName + RrdUtils.getExtension();
+        Object def = m_delegate.createDefinition(creator, directory, rrdName, step, dataSources, rraList);
         return makeCreateOperation(fileName, def);
     }
+
 
     /*
      * (non-Javadoc)
@@ -963,5 +970,6 @@ public class QueuingRrdStrategy implements RrdStrategy, Runnable {
         lastLap = newLap;
         return "[" + seconds + " sec]";
     }
+
 
 }

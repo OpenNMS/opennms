@@ -33,36 +33,28 @@ public abstract class CollectionResource {
 
     protected abstract File getResourceDir(RrdRepository repository);
     
+    protected abstract int getType();
+    
     public Category log() {
         return ThreadCategory.getInstance(getClass());
     }
 
     public boolean rescanNeeded() { return false; }
     
-    protected void storeAttributes(final RrdRepository repository) {
-        visit(new AttributeVisitor() {
-
-            public void visitAttribute(Attribute attribute) {
-                attribute.storeAttribute(repository);
-            }
-
-        });
-    }
-
     public void setAttributeValue(AttributeType type, SnmpValue val) {
         Attribute attr = new Attribute(this, type, val);
         addAttribute(attr);
     }
 
     private void addAttribute(Attribute attr) {
-        AttributeGroup group = getGroup(attr.getGroupName());
+        AttributeGroup group = getGroup(attr.getGroupName(), attr.getGroupIfType());
         group.addAttribute(attr);
     }
 
-    private AttributeGroup getGroup(String groupName) {
+    private AttributeGroup getGroup(String groupName, String ifType) {
         AttributeGroup group = (AttributeGroup)m_groups.get(groupName);
         if (group == null) {
-            group = new AttributeGroup(this, groupName);
+            group = new AttributeGroup(this, groupName, ifType);
             m_groups.put(group.getName(), group);
         }
         return group;
@@ -75,6 +67,8 @@ public abstract class CollectionResource {
             AttributeGroup group = (AttributeGroup) it.next();
             group.visit(visitor);
         }
+        
+        visitor.completeResource(this);
     }
 
     private Collection getGroups() {
