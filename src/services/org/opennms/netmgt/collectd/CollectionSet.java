@@ -39,10 +39,10 @@ import java.util.List;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.collectd.SnmpCollector.IfNumberTracker;
 import org.opennms.netmgt.snmp.AggregateTracker;
 import org.opennms.netmgt.snmp.Collectable;
 import org.opennms.netmgt.snmp.CollectionTracker;
+import org.opennms.netmgt.snmp.SingleInstanceTracker;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
@@ -64,13 +64,30 @@ public class CollectionSet implements Collectable {
         
     }
 
+    static public final class IfNumberTracker extends SingleInstanceTracker {
+    	int m_ifNumber = -1;
+    
+    	IfNumberTracker() {
+    		super(SnmpObjId.get(SnmpCollector.INTERFACES_IFNUMBER), SnmpInstId.INST_ZERO);
+    	}
+    
+    	protected void storeResult(SnmpObjId base, SnmpInstId inst,
+    			SnmpValue val) {
+    		m_ifNumber = val.toInt();
+    	}
+    
+    	public int getIfNumber() {
+    		return m_ifNumber;
+    	}
+    }
+
     private CollectionAgent m_agent;
     private NodeResourceType m_nodeResourceType;
     private IfResourceType m_ifResourceType;
     private OnmsSnmpCollection m_snmpCollection;
     private boolean m_rescanTriggered;
     private SnmpIfCollector m_ifCollector;
-    private IfNumberTracker m_ifNumber;
+    private CollectionSet.IfNumberTracker m_ifNumber;
     private SnmpNodeCollector m_nodeCollector;
 	
 	public CollectionSet(CollectionAgent agent, OnmsSnmpCollection snmpCollection) {
@@ -86,7 +103,7 @@ public class CollectionSet implements Collectable {
         return m_ifCollector;
     }
 
-    public IfNumberTracker getIfNumber() {
+    public CollectionSet.IfNumberTracker getIfNumber() {
         if (m_ifNumber == null)
             m_ifNumber = createIfNumberTracker();
         return m_ifNumber;
@@ -106,10 +123,10 @@ public class CollectionSet implements Collectable {
         return nodeCollector;
     }
 
-    private IfNumberTracker createIfNumberTracker() {
-        IfNumberTracker ifNumber = null;
+    private CollectionSet.IfNumberTracker createIfNumberTracker() {
+        CollectionSet.IfNumberTracker ifNumber = null;
         if (hasInterfaceDataToCollect()) {
-            ifNumber = new IfNumberTracker();
+            ifNumber = new CollectionSet.IfNumberTracker();
         }
         return ifNumber;
     }
@@ -343,6 +360,20 @@ public class CollectionSet implements Collectable {
     public void notifyIfNotFound(SnmpObjId base, SnmpInstId inst, SnmpValue val) {
         triggerRescan();
         log().info("Unable to locate resource with instance id "+inst+" while collecting attribute "+this);
+    }
+
+    void saveAttributes(final ServiceParameters params) {
+        final RrdRepository repository = new RrdRepository(params.getCollectionName());
+        visit(new ResourceVisitor() {
+    
+            public void visitResource(CollectionResource resource) {
+                if (resource.shouldPersist(params)) {
+                    // FIXME: make sure we don't store attributes that don't make the ifType
+                    resource.storeAttributes(repository);
+                }
+            }
+    
+        });
     }
 
  

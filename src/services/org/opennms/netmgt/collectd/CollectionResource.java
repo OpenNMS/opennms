@@ -2,8 +2,9 @@ package org.opennms.netmgt.collectd;
 
 import java.io.File;
 import java.util.Collection;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
@@ -14,7 +15,7 @@ public abstract class CollectionResource {
     
     private ResourceType m_resourceType;
 
-    private Collection m_attrSet = new HashSet();
+    private Map m_groups = new HashMap();
 
     public CollectionResource(ResourceType def) {
         m_resourceType = def;
@@ -38,37 +39,46 @@ public abstract class CollectionResource {
 
     public boolean rescanNeeded() { return false; }
     
-    protected void storeAttributes(RrdRepository repository) {
-        /*
-         * Iterate over the resource attribute list and issue RRD
-         * update commands to update each datasource which has a
-         * corresponding value in the collected SNMP data.
-         */
-        for (Iterator iter = getAttributes().iterator(); iter.hasNext();) {
-            Attribute attr = (Attribute) iter.next();
-            attr.storeAttribute(repository);
-    
-        }
+    protected void storeAttributes(final RrdRepository repository) {
+        visit(new AttributeVisitor() {
+
+            public void visitAttribute(Attribute attribute) {
+                attribute.storeAttribute(repository);
+            }
+
+        });
     }
 
     public void setAttributeValue(AttributeType type, SnmpValue val) {
         Attribute attr = new Attribute(this, type, val);
-        m_attrSet.add(attr);
+        addAttribute(attr);
+    }
+
+    private void addAttribute(Attribute attr) {
+        AttributeGroup group = getGroup(attr.getGroupName());
+        group.addAttribute(attr);
+    }
+
+    private AttributeGroup getGroup(String groupName) {
+        AttributeGroup group = (AttributeGroup)m_groups.get(groupName);
+        if (group == null) {
+            group = new AttributeGroup(this, groupName);
+            m_groups.put(group.getName(), group);
+        }
+        return group;
     }
 
     public void visit(CollectionSetVisitor visitor) {
         visitor.visitResource(this);
         
-        for (Iterator it = getAttributes().iterator(); it.hasNext();) {
-            Attribute attr = (Attribute) it.next();
-            attr.visitAttribute(visitor);
+        for (Iterator it = getGroups().iterator(); it.hasNext();) {
+            AttributeGroup group = (AttributeGroup) it.next();
+            group.visit(visitor);
         }
     }
 
-    private Collection getAttributes() {
-       return m_attrSet;
+    private Collection getGroups() {
+        return m_groups.values();
     }
-    
-    
 
 }

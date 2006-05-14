@@ -55,7 +55,7 @@ public abstract class AttributeType {
         m_mibObj = mibObj;
     }
 
-    protected MibObject getMibObj() {
+    private MibObject getMibObj() {
         return m_mibObj;
     }
     
@@ -81,6 +81,10 @@ public abstract class AttributeType {
             return new StringAttributeType(resourceType, collectionName, mibObj);
         
         throw new IllegalArgumentException("Unable to create attribute type from "+mibObj);
+    }
+    
+    public String getGroupName() {
+        return m_mibObj.getGroupName();
     }
 
     public String getAlias() {

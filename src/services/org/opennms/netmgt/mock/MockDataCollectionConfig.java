@@ -100,6 +100,7 @@ public class MockDataCollectionConfig implements DataCollectionConfig {
     
     private MibObject createMibObject(String alias, String oid, String instance, String type) {
         MibObject mibObj = new MibObject();
+        mibObj.setGroupName("test");
         mibObj.setAlias(alias);
         mibObj.setOid(oid);
         mibObj.setType(type);
