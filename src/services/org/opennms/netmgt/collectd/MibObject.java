@@ -101,6 +101,8 @@ public class MibObject implements Collectable {
 
     private String m_groupName;
 
+    private String m_groupIfType;
+
     /**
      * Reserved instance keywords.
      */
@@ -346,6 +348,14 @@ public class MibObject implements Collectable {
             m_snmpObjId = SnmpObjId.get(getOid());
         
         return m_snmpObjId;
+    }
+
+    public void setGroupIfType(String groupIfType) {
+        m_groupIfType = groupIfType;
+    }
+    
+    public String getGroupIfType() {
+        return m_groupIfType;
     }
 
 

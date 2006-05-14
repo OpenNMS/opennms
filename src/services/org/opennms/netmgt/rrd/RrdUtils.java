@@ -41,6 +41,7 @@ package org.opennms.netmgt.rrd;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.log4j.Category;
@@ -175,7 +176,7 @@ public class RrdUtils {
      * @return true if the file was actually created, false otherwise
      */
     public static boolean createRRD(String creator, String directory, String dsName, int step, String dsType, int dsHeartbeat, String dsMin, String dsMax, List rraList) throws RrdException {
-        String fileName = dsName + get_extension();
+        String fileName = dsName + getExtension();
 
         if (log().isDebugEnabled())
             log().debug("createRRD: rrd path and file name to create: " + directory + File.separator + fileName);
@@ -198,7 +199,7 @@ public class RrdUtils {
         }
 
         try {
-            Object def = getStrategy().createDefinition(creator, directory, dsName, step, dsType, dsHeartbeat, dsMin, dsMax, rraList);
+            Object def = getStrategy().createDefinition(creator, directory, dsName, step, Collections.singletonList(new RrdDataSource(dsName, dsType, dsHeartbeat, dsMin, dsMax)), rraList);
             getStrategy().createFile(def);
             return true;
         } catch (Exception e) {
@@ -228,7 +229,7 @@ public class RrdUtils {
      */
     public static void updateRRD(String owner, String repositoryDir, String dsName, String val) throws RrdException {
         // Issue the RRD update
-        String rrdFile = repositoryDir + File.separator + dsName + get_extension();
+        String rrdFile = repositoryDir + File.separator + dsName + getExtension();
         long time = (System.currentTimeMillis() + 500L) / 1000L;
 
         String updateVal = Long.toString(time) + ":" + val;
@@ -321,7 +322,7 @@ public class RrdUtils {
         return getStrategy().createGraph(command, workDir);
     }
 
-	public static String get_extension() {
+	public static String getExtension() {
 		return m_rrdExtension;
 	}
 

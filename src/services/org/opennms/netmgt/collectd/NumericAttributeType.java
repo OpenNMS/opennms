@@ -1,13 +1,7 @@
 package org.opennms.netmgt.collectd;
 
-import java.io.File;
-import java.util.List;
 
 import org.apache.log4j.Priority;
-import org.opennms.core.utils.StringUtils;
-import org.opennms.netmgt.rrd.RrdException;
-import org.opennms.netmgt.rrd.RrdUtils;
-import org.opennms.netmgt.snmp.SnmpValue;
 
 public class NumericAttributeType extends AttributeType {
     
@@ -53,38 +47,11 @@ public class NumericAttributeType extends AttributeType {
 
     }
     
-    protected boolean performUpdate(RrdRepository repository, Attribute attribute) {
-        CollectionResource resource = attribute.getResource();
-        SnmpValue value = attribute.getValue();
-        String owner = resource.getCollectionAgent().getHostAddress();
-        File resourceDir = resource.getResourceDir(repository);
-
-        String val = (value == null ? null : Long.toString(value.toLong()));
-
-        int step = repository.getStep();
-        List rraList = repository.getRraList();
-
-        boolean result=false;
-        try {
-            int heartBeat = repository.getHeartBeat();
-            String name = getName();
-            String type = getType();
-            // FIXME: pull these values from config file
-            String min = "U";
-            String max = "U";
-            String truncated = StringUtils.truncate(name, NumericAttributeType.MAX_DS_NAME_LENGTH);
-            RrdUtils.createRRD(owner, resourceDir.getAbsolutePath(), truncated, step, NumericAttributeType.mapType(type), heartBeat, min, max, rraList);
-
-            RrdUtils.updateRRD(owner, resourceDir.getAbsolutePath(), truncated, val);
-        } catch (RrdException e) {
-            result=true;
-        }
-        return result;
+    protected void storeAttribute(Attribute attribute, Persister persister) {
+        persister.persistNumericAttribute(attribute);
     }
 
-
-
-   void logNameTooLong() {
+    void logNameTooLong() {
 
        if (log().isEnabledFor(Priority.WARN))
            log().warn(

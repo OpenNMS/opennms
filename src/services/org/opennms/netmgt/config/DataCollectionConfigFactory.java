@@ -524,7 +524,7 @@ public final class DataCollectionConfigFactory implements DataCollectionConfig {
             if (log.isDebugEnabled())
                 log.debug("processGroupName: OIDs from group '" + group.getName() + ":" + group.getIfType() + "' are included for ifType: " + ifType);
             List objectList = (List) group.getMibObjCollection();
-            processObjectList(groupName, objectList, mibObjectList);
+            processObjectList(groupName, groupIfType, objectList, mibObjectList);
         } else {
             if (log.isDebugEnabled())
                 log.debug("processGroupName: OIDs from group '" + group.getName() + ":" + group.getIfType() + "' are excluded for ifType: " + ifType);
@@ -536,13 +536,14 @@ public final class DataCollectionConfigFactory implements DataCollectionConfig {
      * creating corresponding MibObject objects and adding them to the supplied
      * MibObject list.
      * @param groupName TODO
+     * @param groupIfType TODO
      * @param objectList
      *            List of MibObject objects parsed from
      *            'datacollection-config.xml'
      * @param mibObjectList
      *            List of MibObject objects currently being built
      */
-    static void processObjectList(String groupName, List objectList, List mibObjectList) {
+    static void processObjectList(String groupName, String groupIfType, List objectList, List mibObjectList) {
         Iterator i = objectList.iterator();
         while (i.hasNext()) {
             MibObj mibObj = (MibObj) i.next();
@@ -550,6 +551,7 @@ public final class DataCollectionConfigFactory implements DataCollectionConfig {
             // Create a MibObject from the castor MibObj
             MibObject aMibObject = new MibObject();
             aMibObject.setGroupName(groupName);
+            aMibObject.setGroupIfType(groupIfType);
             aMibObject.setOid(mibObj.getOid());
             aMibObject.setAlias(mibObj.getAlias());
             aMibObject.setType(mibObj.getType());

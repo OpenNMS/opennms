@@ -20,7 +20,5 @@ public abstract class DbCollectionResource extends CollectionResource {
     	return m_agent;
     }
 
-    public abstract int getType();
-
 
 }

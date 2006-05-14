@@ -391,7 +391,8 @@ public class SnmpCollector implements ServiceCollector {
 
 
 	        CollectionSet collectionSet = snmpCollection.createCollectionSet(agent);
-	        collectionSet.verifyCollectionIsNecessary();
+            if (!collectionSet.hasDataToCollect())
+                logNoDataToCollect(agent);
 
 	        collectionSet.collect();
 
@@ -408,6 +409,10 @@ public class SnmpCollector implements ServiceCollector {
 	        return this.unexpected(agent, t);
 	    }
 	}
+
+    private void logNoDataToCollect(CollectionAgent agent) {
+        log().info("agent "+agent+" defines no data to collect.  Skipping.");
+    }
 
     Category log() {
 		return ThreadCategory.getInstance(SnmpCollector.class);
