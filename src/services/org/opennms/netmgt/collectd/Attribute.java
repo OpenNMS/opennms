@@ -88,4 +88,8 @@ public class Attribute {
         }
     }
 
+    public String toString() {
+        return getResource()+"."+getAttributeType()+" = "+getValue();
+    }
+
 }

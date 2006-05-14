@@ -58,7 +58,7 @@ public class SnmpNodeCollectorTest extends SnmpCollectorTestCase {
 
     public void testZeroVars() throws Exception {
         SnmpNodeCollector collector = createNodeCollector(50);
-        assertMibObjectsPresent(collector.getEntry(), getAttributeList());
+        assertMibObjectsPresent(collector.getCollectionSet().getNodeInfo(), getAttributeList());
     }
 
 
@@ -77,7 +77,7 @@ public class SnmpNodeCollectorTest extends SnmpCollectorTestCase {
     public void testOneVar() throws Exception {
         addSysName();
         SnmpNodeCollector collector = createNodeCollector(50);
-        assertMibObjectsPresent(collector.getEntry(), getAttributeList());
+        assertMibObjectsPresent(collector.getCollectionSet().getNodeInfo(), getAttributeList());
     }
 
     private SnmpNodeCollector createNodeCollector(int maxVarsPerPdu) throws Exception, InterruptedException {
@@ -103,7 +103,7 @@ public class SnmpNodeCollectorTest extends SnmpCollectorTestCase {
         addSystemGroup();
         addIfNumber();
         SnmpNodeCollector collector = createNodeCollector(maxVarsPerPdu);
-        assertMibObjectsPresent(collector.getEntry(), getAttributeList());
+        assertMibObjectsPresent(collector.getCollectionSet().getNodeInfo(), getAttributeList());
     }
 
 }

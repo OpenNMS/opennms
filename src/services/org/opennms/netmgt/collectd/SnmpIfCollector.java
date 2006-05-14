@@ -141,4 +141,8 @@ public class SnmpIfCollector extends AggregateTracker {
     public boolean hasData() {
         return !m_results.isEmpty();
     }
+    
+    public CollectionSet getCollectionSet() {
+        return m_collectionSet;
+    }
 }
