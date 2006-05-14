@@ -34,7 +34,7 @@ public class MockDataCollectionConfig implements DataCollectionConfig {
         },
     
         {
-            "sysOid",      ".1.3.6.1.2.1.1.2", "0", "objectid"
+            "sysOid",      ".1.3.6.1.2.1.1.2", "0", "string"
         },
     
         {

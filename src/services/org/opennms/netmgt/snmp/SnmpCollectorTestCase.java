@@ -36,12 +36,13 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.opennms.core.concurrent.BarrierSignaler;
+import org.opennms.netmgt.collectd.Attribute;
+import org.opennms.netmgt.collectd.AttributeVisitor;
 import org.opennms.netmgt.collectd.CollectionAgent;
-import org.opennms.netmgt.collectd.AttributeType;
+import org.opennms.netmgt.collectd.CollectionResource;
 import org.opennms.netmgt.collectd.CollectionSet;
 import org.opennms.netmgt.collectd.MibObject;
 import org.opennms.netmgt.collectd.OnmsSnmpCollection;
-import org.opennms.netmgt.collectd.SNMPCollectorEntry;
 import org.opennms.netmgt.collectd.ServiceParameters;
 import org.opennms.netmgt.config.DataCollectionConfigFactory;
 import org.opennms.netmgt.mock.MockDataCollectionConfig;
@@ -94,49 +95,25 @@ public class SnmpCollectorTestCase extends OpenNMSTestCase {
         super.tearDown();
     }
     
-    protected void assertMibObjectsPresent(SNMPCollectorEntry entry, List attrList) {
-        assertNotNull(entry);
-        assertEquals("Unexpected size for "+entry, attrList.size(), getEntrySize(entry));
+    protected void assertMibObjectsPresent(CollectionResource resource, final List attrList) {
+        assertNotNull(resource);
+        
+        resource.visit(new AttributeVisitor() {
+
+            public void visitAttribute(Attribute attribute) {
+                assertMibObjectPresent(attribute, attrList);
+            }
+            
+        });
+    }
+
+    protected void assertMibObjectPresent(Attribute attribute, List attrList) {
         for (Iterator it = attrList.iterator(); it.hasNext();) {
-            MibObject attr = (MibObject) it.next();
-            assertMibObjectPresent(entry, attr);
+            MibObject mibObj = (MibObject) it.next();
+            if (mibObj.getOid().equals(attribute.getAttributeType().getOid()))
+                return;
         }
-    }
-
-    private int getEntrySize(SNMPCollectorEntry entry) {
-        return entry.size() - (entry.getIfIndex() == null ? 0 : 1);
-    }
-
-    private void assertMibObjectPresent(SNMPCollectorEntry entry, MibObject attr) {
-        String inst = getObjectInstance(entry, attr);
-        SnmpValue value = entry.getValue(attr.getOid()+"."+inst);
-        assertNotNull(value);
-        assertExpectedType(attr, value);
-    }
-
-    private void assertExpectedType(MibObject attr, SnmpValue value) {
-        assertEquals(expectNumeric(attr.getType()), value.isNumeric());
-    }
-
-    private String getObjectInstance(SNMPCollectorEntry entry, MibObject attr) {
-        return (attr.getInstance() == "ifIndex" ? entry.getIfIndex().toString() : attr.getInstance());
-    }
-
-    private boolean expectNumeric(String type) {
-        if ("string".equals(type)) {
-            return false;
-        } else if ("timeTicks".equals(type)) {
-            return true;
-        } else if ("objectid".equals(type)) {
-            return false;
-        } else if ("integer".equals(type)) {
-            return true;
-        } else if ("counter".equals(type)) {
-            return true;
-        } else if ("gauge".equals(type)) {
-            return true;
-        }
-        return false;
+        fail("Unable to find attribue "+attribute+" in attribute list");
     }
 
     protected void addIfNumber() {
@@ -168,7 +145,7 @@ public class SnmpCollectorTestCase extends OpenNMSTestCase {
     }
 
     protected void addSysOid() {
-        addAttribute("sysOid",      ".1.3.6.1.2.1.1.2", "0", "objectid");
+        addAttribute("sysOid",      ".1.3.6.1.2.1.1.2", "0", "string");
     }
 
     protected void addSysDescr() {
@@ -261,7 +238,7 @@ public class SnmpCollectorTestCase extends OpenNMSTestCase {
         m_node.setSysObjectId(".1.2.3.4.5.6.7");
     
     	OnmsIpInterface m_iface = new OnmsIpInterface();
-        m_iface.setIpAddress("172.20.1.176");
+        m_iface.setIpAddress("172.20.1.174");
     	m_iface.setIfIndex(new Integer(ifIndex));
     	m_iface.setIsSnmpPrimary(ifCollType);
     	m_node.addIpInterface(m_iface);

@@ -71,19 +71,26 @@ public class SnmpIfCollectorTest extends SnmpCollectorTestCase {
             waitForSignal();
 
 
-            assertInterfaceMibObjectsPresent(collector.getEntries());
+            assertInterfaceMibObjectsPresent(collector.getCollectionSet());
     }
 
-    private void assertInterfaceMibObjectsPresent(List entries) {
-        assertNotNull(entries);
+    private void assertInterfaceMibObjectsPresent(CollectionSet collectionSet) {
+        assertNotNull(collectionSet);
+      
+        if (getAttributeList().isEmpty()) return;
+        
+        collectionSet.visit(new ResourceVisitor() {
 
-        for (Iterator it = getSnmpInterfaces().iterator(); it.hasNext();) {
-            OnmsSnmpInterface info = (OnmsSnmpInterface) it.next();
-            if (getAttributeList().size() == 0) continue;
-            SNMPCollectorEntry entry = findEntryWithIfIndex(info.getIfIndex(), entries);
-            assertNotNull("Could not locate entry for ifIndex "+info.getIfIndex()+" entries.size() = "+entries.size(), entry);
-            assertMibObjectsPresent(entry, getAttributeList());
-        }
+            public void visitResource(CollectionResource resource) {
+                if (!(resource instanceof IfInfo)) return;
+                
+                IfInfo ifInfo = (IfInfo) resource;
+                assertMibObjectsPresent(ifInfo, getAttributeList());
+                    
+            }
+            
+        });
+
     }
 
     private Set getSnmpInterfaces() {
@@ -110,7 +117,7 @@ public class SnmpIfCollectorTest extends SnmpCollectorTestCase {
         
         // remove the failing element.  Now entries should match
         getAttributeList().remove(0);
-        assertInterfaceMibObjectsPresent(collector.getEntries());
+        assertInterfaceMibObjectsPresent(collector.getCollectionSet());
     }
     
     public void testBadApple() throws Exception {
@@ -130,7 +137,7 @@ public class SnmpIfCollectorTest extends SnmpCollectorTestCase {
         
         // remove the bad apple before compare
         getAttributeList().remove(2);
-        assertInterfaceMibObjectsPresent(collector.getEntries());
+        assertInterfaceMibObjectsPresent(collector.getCollectionSet());
     }
     
     public void testManyVars() throws Exception {
@@ -141,7 +148,7 @@ public class SnmpIfCollectorTest extends SnmpCollectorTestCase {
         SnmpIfCollector collector = createSnmpIfCollector();
         waitForSignal();
         
-        assertInterfaceMibObjectsPresent(collector.getEntries());
+        assertInterfaceMibObjectsPresent(collector.getCollectionSet());
     }
 
     private SnmpIfCollector createSnmpIfCollector() throws UnknownHostException {
@@ -174,7 +181,7 @@ public class SnmpIfCollectorTest extends SnmpCollectorTestCase {
         SnmpIfCollector collector = createSnmpIfCollector();
         waitForSignal();
         
-        assertInterfaceMibObjectsPresent(collector.getEntries());
+        assertInterfaceMibObjectsPresent(collector.getCollectionSet());
     }
 
     // TODO: add test for very large v2 request

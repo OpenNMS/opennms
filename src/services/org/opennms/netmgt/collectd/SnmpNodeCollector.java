@@ -124,4 +124,9 @@ public class SnmpNodeCollector extends AggregateTracker {
     protected void storeResult(SnmpObjId base, SnmpInstId inst, SnmpValue val) {
         m_collectorEntry.storeResult(base, inst, val);
     }
+
+
+    public CollectionSet getCollectionSet() {
+        return m_collectionSet;
+    }
 }

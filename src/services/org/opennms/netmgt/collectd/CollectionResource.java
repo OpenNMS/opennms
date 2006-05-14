@@ -2,6 +2,7 @@ package org.opennms.netmgt.collectd;
 
 import java.io.File;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 
 import org.apache.log4j.Category;
@@ -13,7 +14,7 @@ public abstract class CollectionResource {
     
     private ResourceType m_resourceType;
 
-    private Collection m_attrSet;
+    private Collection m_attrSet = new HashSet();
 
     public CollectionResource(ResourceType def) {
         m_resourceType = def;
