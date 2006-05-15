@@ -59,7 +59,6 @@ import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.xml.event.Event;
 import org.springframework.core.io.Resource;
-import org.springframework.core.io.UrlResource;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
@@ -168,9 +167,6 @@ public class BaseImporter implements ImportOperationFactory {
 
     protected void importModelFromResource(Resource resource, ImportStatistics stats, Event event) throws IOException, ModelImportException {
         
-        if (event != null && EventUtil.getNamedParmValue("parm[url]", event) != null)
-            resource = new UrlResource(EventUtil.getNamedParmValue("parm[url]", event));
-
     	stats.beginImporting();
     	stats.beginLoadingResource(resource);
     	
@@ -180,8 +176,8 @@ public class BaseImporter implements ImportOperationFactory {
         stats.finishLoadingResource(resource);
         
         
-        if (event != null && EventUtil.getNamedParmValue("parm[foreignSource]", event) != null) {
-            specFile.setForeignSource(EventUtil.getNamedParmValue("parm[foreignSource]", event));
+        if (event != null && getEventForeignSource(event) != null) {
+            specFile.setForeignSource(getEventForeignSource(event));
         }
         
         stats.beginAuditNodes();
@@ -207,6 +203,10 @@ public class BaseImporter implements ImportOperationFactory {
         stats.finishRelateNodes();
     
         stats.finishImporting();
+    }
+
+    private String getEventForeignSource(Event event) {
+        return EventUtil.getNamedParmValue("parm[foreignSource]", event);
     }
 
 	protected ImportOperationsManager createImportOperationsManager(Map assetNumbersToNodes, ImportStatistics stats) {
