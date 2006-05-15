@@ -40,14 +40,15 @@ public class GroupPersister extends BasePersister {
     }
 
     public void visitGroup(AttributeGroup group) {
-        super.visitGroup(group);
-        createBuilder(group.getResource(), group.getName(), group.getGroupType().getAttributeTypes());
+        pushShouldPersist(group);
+        if (shouldPersist()) 
+            createBuilder(group.getResource(), group.getName(), group.getGroupType().getAttributeTypes());
     }
 
 
     public void completeGroup(AttributeGroup group) {
-        commitBuilder();
-        super.completeGroup(group);
+        if (shouldPersist()) commitBuilder();
+        popShouldPersist();
     }
 
 
