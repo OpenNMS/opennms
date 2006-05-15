@@ -120,6 +120,7 @@ public abstract class AttributeType {
     protected abstract void storeAttribute(Attribute attribute, Persister persister);
     
     public void storeResult(CollectionSet collectionSet, SNMPCollectorEntry entry, SnmpObjId base, SnmpInstId inst, SnmpValue val) {
+        log().debug("Setting attribute: "+this+".["+inst+"] = '"+val+"'");
         CollectionResource resource = m_resourceType.findResource(inst);
         if (resource == null) {
             collectionSet.notifyIfNotFound(base, inst, val);
