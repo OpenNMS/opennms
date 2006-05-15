@@ -146,7 +146,7 @@ final class IfInfo extends DbCollectionResource {
         log().debug("minCollType = "+getCollection().getMinimumCollectionType());
         
         boolean isScheduled = !getCollType().isLessThan(getCollection().getMinimumCollectionType());
-        log().debug(getCollType()+" < "+getCollection().getMinimumCollectionType()+" = "+isScheduled);
+        log().debug(getCollType()+" >= "+getCollection().getMinimumCollectionType()+" = "+isScheduled);
         return isScheduled;
         
     }
