@@ -29,20 +29,23 @@
 //     http://www.opennms.org/
 //     http://www.opennms.com/
 //
+
 package org.opennms.netmgt.collectd;
 
-public class StringAttributeType extends AttributeType {
-    
-    public static boolean supportsType(String rawType) {
-        return rawType.toLowerCase().startsWith("string");
-    }
-    
-    public StringAttributeType(ResourceType resourceType, String collectionName, MibObject mibObj, AttributeGroupType groupType) {
-        super(resourceType, collectionName, mibObj, groupType);
-    }
+import java.util.Comparator;
 
-    protected void storeAttribute(Attribute attribute, Persister persister) {
-        persister.persistStringAttribute(attribute);
-    }
+final class ByNameComparator implements Comparator {
 
+    public int compare(Object arg0, Object arg1) {
+        AttributeType type0 = (AttributeType)arg0;
+        AttributeType type1 = (AttributeType)arg1;
+        return type0.getName().compareTo(type1.getName());
+    }
+    
+    public boolean equals(Object o) {
+        return o instanceof ByNameComparator;
+    }
+    
+    public int hashCode() { return 0; }
+    
 }

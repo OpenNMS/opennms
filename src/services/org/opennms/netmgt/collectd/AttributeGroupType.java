@@ -29,20 +29,60 @@
 //     http://www.opennms.org/
 //     http://www.opennms.com/
 //
+
 package org.opennms.netmgt.collectd;
 
-public class StringAttributeType extends AttributeType {
+import java.util.Collections;
+import java.util.SortedSet;
+import java.util.TreeSet;
+
+public class AttributeGroupType {
+
+    private String m_name;
+    private String m_ifType;
     
-    public static boolean supportsType(String rawType) {
-        return rawType.toLowerCase().startsWith("string");
-    }
-    
-    public StringAttributeType(ResourceType resourceType, String collectionName, MibObject mibObj, AttributeGroupType groupType) {
-        super(resourceType, collectionName, mibObj, groupType);
+    private SortedSet m_attributeTypes = new TreeSet(new ByNameComparator());
+
+    public AttributeGroupType(String groupName, String groupIfType) {
+        if (groupName == null) throw new NullPointerException("groupName cannot be null");
+        if (groupIfType == null) throw new NullPointerException("groupName cannot be null");
+        
+        m_name = groupName;
+        m_ifType = groupIfType;
     }
 
-    protected void storeAttribute(Attribute attribute, Persister persister) {
-        persister.persistStringAttribute(attribute);
+    public boolean equals(Object obj) {
+        if (obj instanceof AttributeGroupType) {
+            AttributeGroupType groupType = (AttributeGroupType)obj;
+            return m_name.equals(groupType.m_name);
+        }
+        return false;
     }
+
+    public int hashCode() {
+        return m_name.hashCode();
+    }
+
+    public String getIfType() {
+        return m_ifType;
+    }
+
+    public String getName() {
+        return m_name;
+    }
+    
+    public void addAttributeType(AttributeType attrType) {
+        m_attributeTypes.add(attrType);
+    }
+    
+    public SortedSet getAttributeTypes() {
+        return Collections.unmodifiableSortedSet(m_attributeTypes);
+    }
+
+    public String toString() {
+        return "AttrGroupType: "+m_name;
+    }
+    
+    
 
 }
