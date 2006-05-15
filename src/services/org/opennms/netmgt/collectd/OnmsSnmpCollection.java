@@ -118,7 +118,9 @@ public class OnmsSnmpCollection {
             MibObject mibObject = (MibObject) it.next();
             String instanceName = mibObject.getInstance();
             AttributeGroupType groupType = getGroup(groupTypes, mibObject);
-            typeList.add(AttributeType.create(getResourceType(agent, instanceName), getName(), mibObject, groupType));
+            AttributeType attrType = AttributeType.create(getResourceType(agent, instanceName), getName(), mibObject, groupType);
+            groupType.addAttributeType(attrType);
+            typeList.add(attrType);
         }
         return typeList;
     }
