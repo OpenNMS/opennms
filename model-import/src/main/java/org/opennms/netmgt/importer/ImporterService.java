@@ -50,6 +50,7 @@ import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.eventd.EventIpcManager;
 import org.opennms.netmgt.eventd.EventListener;
+import org.opennms.netmgt.eventd.EventUtil;
 import org.opennms.netmgt.importer.operations.AbstractSaveOrUpdateOperation;
 import org.opennms.netmgt.importer.operations.ImportOperation;
 import org.opennms.netmgt.importer.operations.ImportOperationsManager;
@@ -61,6 +62,7 @@ import org.opennms.netmgt.xml.event.Value;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 
 public class ImporterService extends BaseImporter implements InitializingBean, DisposableBean, EventListener {
 	
@@ -94,21 +96,27 @@ public class ImporterService extends BaseImporter implements InitializingBean, D
     public void doImport(Event event) {
     	ThreadCategory.setPrefix(NAME);
         
+        Resource resource = null;
         try {
         	sendImportStarted();
             m_stats = new ImporterStats();
-			importModelFromResource(m_importResource, m_stats, event);
+            resource = ((event != null && getEventUrl(event) != null) ? new UrlResource(getEventUrl(event)) : m_importResource); 
+			importModelFromResource(resource, m_stats, event);
             log().info("Finished Importing: "+m_stats);
             sendImportSuccessful(m_stats);
         } catch (IOException e) {
-            String msg = "IOException importing "+m_importResource;
+            String msg = "IOException importing "+resource;
 			log().error(msg, e);
             sendImportFailed(msg+": "+e.getMessage());
         } catch (ModelImportException e) {
-            String msg = "Error parsing import data from "+m_importResource;
+            String msg = "Error parsing import data from "+resource;
 			log().error(msg, e);
             sendImportFailed(msg+": "+e.getMessage());
         }
+    }
+
+    private String getEventUrl(Event event) {
+        return EventUtil.getNamedParmValue("parm[url]", event);
     }
     
     public String getStats() { return (m_stats == null ? "No Stats Availabile" : m_stats.toString()); }
