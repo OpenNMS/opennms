@@ -367,8 +367,10 @@ public class CollectionSet implements Collectable {
     }
 
     private BasePersister createPersister(ServiceParameters params) {
-        //return new GroupPersister(params);
-        return new OneToOnePersister(params);
+        if (Boolean.getBoolean("rrd.storeByGroup"))
+            return new GroupPersister(params);
+        else
+            return new OneToOnePersister(params);
     }
 
     private boolean ifCountHasChanged(CollectionAgent agent) {
