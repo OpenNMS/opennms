@@ -40,15 +40,16 @@ public class OneToOnePersister extends BasePersister {
     }
     
     public void visitAttribute(Attribute attribute) {
-        super.visitAttribute(attribute);
-        log().debug("Should persist for "+attribute+" is "+top());
-        createBuilder(attribute.getResource(), attribute.getName(), attribute.getAttributeType());
+        pushShouldPersist(attribute);
+        if (shouldPersist()) {
+            createBuilder(attribute.getResource(), attribute.getName(), attribute.getAttributeType());
+            storeAttribute(attribute);
+        }
     }
 
     public void completeAttribute(Attribute attribute) {
-        commitBuilder();
-        super.completeAttribute(attribute);
-
+        if (shouldPersist()) commitBuilder();
+        popShouldPersist();
     }
 
 

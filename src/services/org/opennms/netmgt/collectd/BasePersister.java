@@ -63,43 +63,43 @@ public class BasePersister extends AbstractCollectionSetVisitor implements Persi
         m_params = params;
         m_repository = new RrdRepository(params.getCollectionName());
     }
-
-    public void visitResource(CollectionResource resource) {
-        push(resource.shouldPersist(m_params));
-    }
-
-    protected void push(boolean b) {
-        stack.addLast(Boolean.valueOf(b));
-    }
-
-    protected boolean top() {
-        return ((Boolean)stack.getLast()).booleanValue();
-    }
-
-    protected boolean pop() {
-        boolean top = top();
-        stack.removeLast();
-        return top;
-    }
-
-    protected void saveUpdatedProperties(File propertiesFile, Properties props) throws FileNotFoundException, IOException {
-        FileOutputStream fileOutputStream = null;
+    
+    protected void commitBuilder() {
+        String name = m_builder.getName();
         try {
-            fileOutputStream = new FileOutputStream(propertiesFile);
-            props.store(fileOutputStream, null);
-        } finally {
-            try {
-                if (fileOutputStream != null) {
-                    fileOutputStream.flush();
-                    fileOutputStream.close();
-                }
-            } catch (IOException e) {
-                log().error("performUpdate: Error closing file.", e);
-            }
+            m_builder.commit();
+            m_builder = null;
+        } catch (RrdException e) {
+            log().error("Unable to persist data for "+name, e);
+    
         }
     }
 
-    protected Properties getCurrentProperties(File propertiesFile) throws FileNotFoundException, IOException {
+    public void completeAttribute(Attribute attribute) {
+        popShouldPersist();
+    }
+
+    public void completeGroup(AttributeGroup group) {
+        popShouldPersist();
+    }
+
+    public void completeResource(CollectionResource resource) {
+        popShouldPersist();
+    }
+    
+    protected void createBuilder(CollectionResource resource, String name, AttributeType attributeType) {
+        createBuilder(resource, name, Collections.singleton(attributeType));
+    }
+
+    protected void createBuilder(CollectionResource resource, String name, Set attributeTypes) {
+        m_builder = new PersistOperationBuilder(m_repository, resource, name);
+        for (Iterator iter = attributeTypes.iterator(); iter.hasNext();) {
+            AttributeType attrType = (AttributeType) iter.next();
+            m_builder.declareAttribute(attrType);
+        }
+    }
+
+    private Properties getCurrentProperties(File propertiesFile) throws FileNotFoundException, IOException {
         Properties props = new Properties();
     
         FileInputStream fileInputStream = null;
@@ -121,24 +121,6 @@ public class BasePersister extends AbstractCollectionSetVisitor implements Persi
 
     protected Category log() {
         return ThreadCategory.getInstance(getClass());
-    }
-
-    public void completeResource(CollectionResource resource) {
-        pop();
-    }
-
-    public void visitGroup(AttributeGroup group) {
-        boolean shouldPersist = top() && group.shouldPersist(m_params);
-        push(shouldPersist);
-    }
-
-    public void completeGroup(AttributeGroup group) {
-        pop();
-    }
-
-    public void visitAttribute(Attribute attribute) {
-        if (top() && attribute.shouldPersist(m_params))
-            attribute.storeAttribute(this);
     }
 
     public void persistNumericAttribute(Attribute attribute) {
@@ -169,27 +151,75 @@ public class BasePersister extends AbstractCollectionSetVisitor implements Persi
         }
     }
 
-    protected void createBuilder(CollectionResource resource, String name, Set attributeTypes) {
-        m_builder = new PersistOperationBuilder(m_repository, resource, name);
-        for (Iterator iter = attributeTypes.iterator(); iter.hasNext();) {
-            AttributeType attrType = (AttributeType) iter.next();
-            m_builder.declareAttribute(attrType);
-        }
-    }
-    
-    protected void createBuilder(CollectionResource resource, String name, AttributeType attributeType) {
-        createBuilder(resource, name, Collections.singleton(attributeType));
+    private boolean pop() {
+        boolean top = top();
+        stack.removeLast();
+        return top;
     }
 
-    protected void commitBuilder() {
-        String name = m_builder.getName();
-        try {
-            m_builder.commit();
-            m_builder = null;
-        } catch (RrdException e) {
-            log().error("Unable to persist data for group "+name, e);
+    protected boolean popShouldPersist() {
+        return pop();
+    }
     
+    private void push(boolean b) {
+        stack.addLast(Boolean.valueOf(b));
+    }
+
+    protected void pushShouldPersist(Attribute attribute) {
+        pushShouldPersist(attribute.shouldPersist(m_params));
+    }
+
+    protected void pushShouldPersist(AttributeGroup group) {
+        pushShouldPersist(group.shouldPersist(m_params));
+    }
+
+    private void pushShouldPersist(boolean shouldPersist) {
+        push(top() && shouldPersist);
+    }
+
+    protected void pushShouldPersist(CollectionResource resource) {
+        push(resource.shouldPersist(m_params));
+    }
+
+    private void saveUpdatedProperties(File propertiesFile, Properties props) throws FileNotFoundException, IOException {
+        FileOutputStream fileOutputStream = null;
+        try {
+            fileOutputStream = new FileOutputStream(propertiesFile);
+            props.store(fileOutputStream, null);
+        } finally {
+            try {
+                if (fileOutputStream != null) {
+                    fileOutputStream.flush();
+                    fileOutputStream.close();
+                }
+            } catch (IOException e) {
+                log().error("performUpdate: Error closing file.", e);
+            }
         }
+    }
+
+    protected boolean shouldPersist() { return top(); }
+
+    protected void storeAttribute(Attribute attribute) {
+        if (shouldPersist())
+            attribute.storeAttribute(this);
+    }
+    
+    private boolean top() {
+        return ((Boolean)stack.getLast()).booleanValue();
+    }
+
+    public void visitAttribute(Attribute attribute) {
+        pushShouldPersist(attribute);
+        storeAttribute(attribute);
+    }
+
+    public void visitGroup(AttributeGroup group) {
+        pushShouldPersist(group);
+    }
+
+    public void visitResource(CollectionResource resource) {
+        pushShouldPersist(resource);
     }
 
 }
