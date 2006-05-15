@@ -142,11 +142,13 @@ public class BasePersister extends AbstractCollectionSetVisitor implements Persi
     }
 
     public void persistNumericAttribute(Attribute attribute) {
+        log().debug("Persisting "+attribute);
         m_builder.setAttributeValue(attribute.getAttributeType(), attribute.getNumericValue());
     }
 
     public void persistStringAttribute(Attribute attribute) {
         try {
+            log().debug("Persisting "+attribute);
             RrdRepository repository = m_repository;
             CollectionResource resource = attribute.getResource();
             SnmpValue value = attribute.getValue();
