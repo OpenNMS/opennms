@@ -142,7 +142,13 @@ final class IfInfo extends DbCollectionResource {
     }
 
     boolean isScheduledForCollection() {
-        return getCollType().compareTo(getCollection().getMinimumCollectionType()) >= 0;
+        log().debug(this+".isSnmpPrimary = "+getCollType());
+        log().debug("minCollType = "+getCollection().getMinimumCollectionType());
+        
+        int compare = getCollType().compareTo(getCollection().getMinimumCollectionType());
+        
+        log().debug(getCollType()+".compareTo("+getCollection().getMinimumCollectionType()+") = "+compare);
+        return compare >= 0;
     }
 
     private OnmsSnmpCollection getCollection() {
@@ -168,6 +174,7 @@ final class IfInfo extends DbCollectionResource {
     }
 
     public boolean shouldPersist(ServiceParameters serviceParameters) {
+        
         return shouldStore(serviceParameters) && (isScheduledForCollection() || serviceParameters.forceStoreByAlias(getNewIfAlias()));
     }
 

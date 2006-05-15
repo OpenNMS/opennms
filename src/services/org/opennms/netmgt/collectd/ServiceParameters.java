@@ -84,7 +84,6 @@ public class ServiceParameters {
     }
 
     void logIfAliasConfig() {
-        if (aliasesEnabled()) {
         	log()
             .debug(
             		"domain:storeByNodeID:storeByIfAlias:"
@@ -93,7 +92,6 @@ public class ServiceParameters {
             				+ getStoreByIfAlias() + ":"
             				+ getStorFlagOverride() + ":"
             				+ getIfAliasComment());
-        }
     }
 
     private Category log() {
