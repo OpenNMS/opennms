@@ -27,7 +27,7 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
 		
 		public int compareTo(Object o) {
 			CollectionType collType = (CollectionType)o;
-			return getIndex(collType.m_collType) - getIndex(m_collType);
+			return getIndex(m_collType) - getIndex(collType.m_collType);
 		}
 		
 		private static int getIndex(char code) {

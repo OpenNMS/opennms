@@ -84,9 +84,7 @@ public class ServiceParameters {
     }
 
     void logIfAliasConfig() {
-        	log()
-            .debug(
-            		"domain:storeByNodeID:storeByIfAlias:"
+        	log().debug("domain:storeByNodeID:storeByIfAlias:"
             				+ "storFlagOverride:ifAliasComment = "
             				+ getDomain() + ":" + getStoreByNodeID() + ":"
             				+ getStoreByIfAlias() + ":"
