@@ -145,10 +145,10 @@ final class IfInfo extends DbCollectionResource {
         log().debug(this+".isSnmpPrimary = "+getCollType());
         log().debug("minCollType = "+getCollection().getMinimumCollectionType());
         
-        int compare = getCollType().compareTo(getCollection().getMinimumCollectionType());
+        boolean isScheduled = !getCollType().isLessThan(getCollection().getMinimumCollectionType());
+        log().debug(getCollType()+" < "+getCollection().getMinimumCollectionType()+" = "+isScheduled);
+        return isScheduled;
         
-        log().debug(getCollType()+".compareTo("+getCollection().getMinimumCollectionType()+") = "+compare);
-        return compare >= 0;
     }
 
     private OnmsSnmpCollection getCollection() {

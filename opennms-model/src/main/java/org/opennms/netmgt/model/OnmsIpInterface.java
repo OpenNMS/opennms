@@ -51,14 +51,22 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
 		public String toString() {
 			return String.valueOf(m_collType);
 		}
+        
+        public boolean isLessThan(CollectionType collType) {
+            return compareTo(collType) < 0;
+        }
+        
+        public boolean isGreaterThan(CollectionType collType) {
+            return compareTo(collType) > 0;
+        }
 		
 		public CollectionType max(CollectionType collType) {
-			return (compareTo(collType) > 0 ? collType : this);
+            return this.isLessThan(collType) ? collType : this;
 		}
 
 		public CollectionType min(CollectionType collType) {
-			return (compareTo(collType) < 0 ? collType : this);
-		}
+            return this.isLessThan(collType) ? this : collType;
+ 		}
 
 		public static CollectionType get(char code) {
 			switch (code) {
