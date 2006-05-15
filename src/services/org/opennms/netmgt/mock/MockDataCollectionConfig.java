@@ -105,6 +105,8 @@ public class MockDataCollectionConfig implements DataCollectionConfig {
         mibObj.setOid(oid);
         mibObj.setType(type);
         mibObj.setInstance(instance);
+        mibObj.setGroupName("ifIndex".equals(instance) ? "interface" : "node");
+        mibObj.setGroupIfType("ifIndex".equals(instance) ? "all" : "ignored");
         return mibObj;
     }
     public MibObject createAttributeType(String alias, String oid, String instance, String type) {
