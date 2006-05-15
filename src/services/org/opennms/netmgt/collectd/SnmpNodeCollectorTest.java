@@ -88,6 +88,8 @@ public class SnmpNodeCollectorTest extends SnmpCollectorTestCase {
         createWalker(collector);
         waitForSignal();
         assertNotNull(collector.getEntry());
+        assertFalse(collector.timedOut());
+        assertFalse(collector.failed());
         return collector;
     }
 

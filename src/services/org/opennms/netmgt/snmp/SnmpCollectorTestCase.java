@@ -238,7 +238,7 @@ public class SnmpCollectorTestCase extends OpenNMSTestCase {
         m_node.setSysObjectId(".1.2.3.4.5.6.7");
     
     	OnmsIpInterface m_iface = new OnmsIpInterface();
-        m_iface.setIpAddress("172.20.1.174");
+        m_iface.setIpAddress("172.20.1.171");
     	m_iface.setIfIndex(new Integer(ifIndex));
     	m_iface.setIsSnmpPrimary(ifCollType);
     	m_node.addIpInterface(m_iface);
