@@ -71,6 +71,7 @@ import org.opennms.netmgt.rrd.RrdUtils;
  * See the individual methods for more details
  */
 public class JniRrdStrategy implements RrdStrategy {
+    
 
     boolean initialized = false;
 
@@ -83,6 +84,7 @@ public class JniRrdStrategy implements RrdStrategy {
      */
     public void closeFile(Object rrd) throws Exception {
         checkState("closeFile");
+        log().debug("Executing: rrdtool "+rrd.toString());
         String[] results = Interface.launch(rrd.toString());
         if (results[0] != null) {
             throw new Exception(results[0]);
@@ -145,6 +147,7 @@ public class JniRrdStrategy implements RrdStrategy {
      */
     public void createFile(Object rrdDef) throws Exception {
         checkState("createFile");
+        log().debug("Executing: rrdtool "+rrdDef.toString());
         Interface.launch((String) rrdDef);
     }
 
@@ -423,6 +426,10 @@ public class JniRrdStrategy implements RrdStrategy {
      */
     public String getStats() {
         return "";
+    }
+    
+    public Category log() {
+        return ThreadCategory.getInstance(getClass());
     }
 
 }
