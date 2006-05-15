@@ -41,6 +41,7 @@ public class OneToOnePersister extends BasePersister {
     
     public void visitAttribute(Attribute attribute) {
         super.visitAttribute(attribute);
+        log().debug("Should persist for "+attribute+" is "+top());
         createBuilder(attribute.getResource(), attribute.getName(), attribute.getAttributeType());
     }
 
