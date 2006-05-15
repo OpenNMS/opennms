@@ -48,11 +48,13 @@ public abstract class AttributeType {
     private MibObject m_mibObj;
     private String m_collectionName;
     private ResourceType m_resourceType;
+    private AttributeGroupType m_groupType;
 
-    protected AttributeType(ResourceType resourceType, String collectionName, MibObject mibObj) {
+    protected AttributeType(ResourceType resourceType, String collectionName, MibObject mibObj, AttributeGroupType groupType) {
         m_resourceType = resourceType;
         m_collectionName = collectionName;
         m_mibObj = mibObj;
+        m_groupType = groupType;
     }
 
     private MibObject getMibObj() {
@@ -74,17 +76,21 @@ public abstract class AttributeType {
         return trackers;
     }
 
-    public static AttributeType create(ResourceType resourceType, String collectionName, MibObject mibObj) {
+    public static AttributeType create(ResourceType resourceType, String collectionName, MibObject mibObj, AttributeGroupType groupType) {
         if (NumericAttributeType.supportsType(mibObj.getType()))
-            return new NumericAttributeType(resourceType, collectionName, mibObj);
+            return new NumericAttributeType(resourceType, collectionName, mibObj, groupType);
         if (StringAttributeType.supportsType(mibObj.getType()))
-            return new StringAttributeType(resourceType, collectionName, mibObj);
+            return new StringAttributeType(resourceType, collectionName, mibObj, groupType);
         
         throw new IllegalArgumentException("Unable to create attribute type from "+mibObj);
     }
     
+    public AttributeGroupType getGroupType() {
+        return m_groupType;        
+    }
+    
     public String getGroupName() {
-        return m_mibObj.getGroupName();
+        return m_groupType.getName();
     }
 
     public String getAlias() {
@@ -143,7 +149,7 @@ public abstract class AttributeType {
     }
 
     public String getGroupIfType() {
-        return m_mibObj.getGroupIfType();
+        return m_groupType.getIfType();
     }
 
 

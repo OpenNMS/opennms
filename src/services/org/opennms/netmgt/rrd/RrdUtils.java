@@ -176,30 +176,20 @@ public class RrdUtils {
      * @return true if the file was actually created, false otherwise
      */
     public static boolean createRRD(String creator, String directory, String dsName, int step, String dsType, int dsHeartbeat, String dsMin, String dsMax, List rraList) throws RrdException {
-        String fileName = dsName + getExtension();
+        return createRRD(creator, directory, dsName, step, Collections.singletonList(new RrdDataSource(dsName, dsType, dsHeartbeat, dsMin, dsMax)), rraList);
+    }
 
-        if (log().isDebugEnabled())
-            log().debug("createRRD: rrd path and file name to create: " + directory + File.separator + fileName);
+    public static boolean createRRD(String creator, String directory, String rrdName, int step, List dataSources, List rraList) throws RrdException {
+        String fileName = rrdName + getExtension();
 
         String completePath = directory + File.separator + fileName;
 
-        // Create directories if necessary
-        //
+        if (log().isDebugEnabled())
+            log().debug("createRRD: rrd path and file name to create: " + completePath);
 
-        File f = new File(completePath);
-        if (f.exists()) {
-            return false;
-        }
-
-        File dir = new File(directory);
-        if (!dir.isDirectory()) {
-            if (!dir.mkdirs()) {
-                throw new org.opennms.netmgt.rrd.RrdException("Unable to create RRD repository directory: " + directory);
-            }
-        }
 
         try {
-            Object def = getStrategy().createDefinition(creator, directory, dsName, step, Collections.singletonList(new RrdDataSource(dsName, dsType, dsHeartbeat, dsMin, dsMax)), rraList);
+            Object def = getStrategy().createDefinition(creator, directory, rrdName, step, dataSources, rraList);
             getStrategy().createFile(def);
             return true;
         } catch (Exception e) {
@@ -208,29 +198,49 @@ public class RrdUtils {
         }
     }
 
+
     private static Category log() {
         return ThreadCategory.getInstance(RrdUtils.class);
     }
 
     /**
-     * Add a datapoint to a round robin database.
+     * Add datapoints to a round robin database using the current system time as the timestamp for the values
      * 
      * @param owner
      *            the owner of the file. This is used in log messages
      * @param repositoryDir
      *            the directory the file resides in
-     * @param dsName
-     *            the datasource name for file. (Also becames the basename of
-     *            the file)
+     * @param rrdName
+     *            the name for the rrd file.
      * @param val
-     *            the value to be stored. This should be a string representation
-     *            of a number
+     *            a colon separated list of values representing the updates for datasources for this rrd
+     *            
      * @throws RrdException
      */
-    public static void updateRRD(String owner, String repositoryDir, String dsName, String val) throws RrdException {
+    public static void updateRRD(String owner, String repositoryDir, String rrdName, String val) throws RrdException {
+        updateRRD(owner, repositoryDir, rrdName, System.currentTimeMillis(), val);
+    }
+
+    /**
+     * Add datapoints to a round robin database.
+     * 
+     * @param owner
+     *            the owner of the file. This is used in log messages
+     * @param repositoryDir
+     *            the directory the file resides in
+     * @param rrdName
+     *            the name for the rrd file.
+     * @param timestamp
+     *            the timestamp in millis to use for the rrd update (this gets rounded to the nearest second)
+     * @param val
+     *            a colon separated list of values representing the updates for datasources for this rrd
+     *            
+     * @throws RrdException
+     */
+    public static void updateRRD(String owner, String repositoryDir, String rrdName, long timestamp, String val) throws RrdException {
         // Issue the RRD update
-        String rrdFile = repositoryDir + File.separator + dsName + getExtension();
-        long time = (System.currentTimeMillis() + 500L) / 1000L;
+        String rrdFile = repositoryDir + File.separator + rrdName + getExtension();
+        long time = (timestamp + 500L) / 1000L;
 
         String updateVal = Long.toString(time) + ":" + val;
 

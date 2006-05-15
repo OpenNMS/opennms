@@ -1,3 +1,35 @@
+//
+// This file is part of the OpenNMS(R) Application.
+//
+// OpenNMS(R) is Copyright (C) 2006 The OpenNMS Group, Inc.  All rights reserved.
+// OpenNMS(R) is a derivative work, containing both original code, included code and modified
+// code that was published under the GNU General Public License. Copyrights for modified 
+// and included code are below.
+//
+// OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+//
+// Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
+//
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 2 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+//
+// For more information contact:
+// OpenNMS Licensing       <license@opennms.org>
+//     http://www.opennms.org/
+//     http://www.opennms.com/
+//
+
 package org.opennms.netmgt.collectd;
 
 
@@ -19,18 +51,9 @@ public class NumericAttributeType extends AttributeType {
 
 
 
-    /**
-     * RRDTool defined Data Source Types NOTE: "DERIVE" and "ABSOLUTE" not
-     * currently supported.
-     */
-    static final String DST_GAUGE = "GAUGE";
     static final String DST_COUNTER = "COUNTER";
-    public static final int MAX_DS_NAME_LENGTH = 19;
-    
-    
-
-    public NumericAttributeType(ResourceType resourceType, String collectionName, MibObject mibObj) {
-        super(resourceType, collectionName, mibObj);
+    public NumericAttributeType(ResourceType resourceType, String collectionName, MibObject mibObj, AttributeGroupType groupType) {
+        super(resourceType, collectionName, mibObj, groupType);
         
             // Assign the data source object identifier and instance
             if (log().isDebugEnabled()) {
@@ -40,7 +63,8 @@ public class NumericAttributeType extends AttributeType {
                         + "." + getInstance());
             }
             
-            if (getAlias().length() > NumericAttributeType.MAX_DS_NAME_LENGTH) {
+            String alias = getAlias();
+            if (alias.length() > PersistOperationBuilder.MAX_DS_NAME_LENGTH) {
                 logNameTooLong();
             }
 
@@ -59,25 +83,6 @@ public class NumericAttributeType extends AttributeType {
                    + getAlias()
                    + "' exceeds 19 char maximum for RRD data source names, truncatin g.");
    }
-
-/**
- * Static method which takes a MIB object type (counter, counter32,
- * octetstring, etc...) and returns the appropriate RRD data type. If the
- * object type cannot be mapped to an RRD type, null is returned. RRD only
- * supports integer data so MIB objects of type 'octetstring' are not
- * supported.
- * 
- * @param objectType -
- *            MIB object type to be mapped.
- * 
- * @return RRD type string or NULL object type is not supported.
- */
-public static String mapType(String objectType) {
-    if (objectType.toLowerCase().startsWith("counter"))
-        return DST_COUNTER;
-    
-    return DST_GAUGE;
-}
 
 
 }
