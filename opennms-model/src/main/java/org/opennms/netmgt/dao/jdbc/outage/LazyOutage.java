@@ -1,7 +1,11 @@
 package org.opennms.netmgt.dao.jdbc.outage;
 
+import java.util.Date;
+
 import javax.sql.DataSource;
 
+import org.opennms.netmgt.model.OnmsEvent;
+import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsOutage;
 
 public class LazyOutage extends OnmsOutage {
@@ -42,5 +46,65 @@ public class LazyOutage extends OnmsOutage {
 			new FindByOutageId(m_dataSource).findUnique(getId());
 		}
 	}
+
+    public OnmsEvent getEventBySvcLostEvent() {
+        load();
+        return super.getEventBySvcLostEvent();
+    }
+
+    public OnmsEvent getEventBySvcRegainedEvent() {
+        load();
+        return super.getEventBySvcRegainedEvent();
+    }
+
+    public Integer getId() {
+        load();
+        return super.getId();
+    }
+
+    public Date getIfLostService() {
+        load();
+        return super.getIfLostService();
+    }
+
+    public Date getIfRegainedService() {
+        load();
+        return super.getIfRegainedService();
+    }
+
+    public OnmsMonitoredService getMonitoredService() {
+        load();
+        return super.getMonitoredService();
+    }
+
+    public void setEventBySvcLostEvent(OnmsEvent eventBySvcLostEvent) {
+        load();
+        super.setEventBySvcLostEvent(eventBySvcLostEvent);
+    }
+
+    public void setEventBySvcRegainedEvent(OnmsEvent eventBySvcRegainedEvent) {
+        load();
+        super.setEventBySvcRegainedEvent(eventBySvcRegainedEvent);
+    }
+
+    public void setId(Integer outageId) {
+        load();
+        super.setId(outageId);
+    }
+
+    public void setIfLostService(Date ifLostService) {
+        load();
+        super.setIfLostService(ifLostService);
+    }
+
+    public void setIfRegainedService(Date ifRegainedService) {
+        load();
+        super.setIfRegainedService(ifRegainedService);
+    }
+
+    public void setMonitoredService(OnmsMonitoredService monitoredService) {
+        load();
+        super.setMonitoredService(monitoredService);
+    }
 
 }
