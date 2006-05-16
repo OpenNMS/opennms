@@ -312,6 +312,7 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
 		 * label if it is available.
 		 */
 		String physAddrForRRD = null;
+        
 		if (getPhysAddr() != null) {
 			String parsedPhysAddr = AlphaNumeric.parseAndTrim(getPhysAddr());
 			if (parsedPhysAddr.length() == 12) {
@@ -325,6 +326,7 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
 				}
 			}
 		}
+        log().debug("computed physAddr for "+this+" to be "+physAddrForRRD);
 		return physAddrForRRD;
 	}
 
