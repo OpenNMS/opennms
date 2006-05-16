@@ -111,6 +111,9 @@ public class JniRrdStrategy implements RrdStrategy {
         f.mkdirs();
 
         String fileName = directory + File.separator + rrdName + RrdUtils.getExtension();
+        
+        if (new File(fileName).exists())
+            return null;
 
         StringBuffer createCmd = new StringBuffer("create");
 
@@ -147,6 +150,7 @@ public class JniRrdStrategy implements RrdStrategy {
      */
     public void createFile(Object rrdDef) throws Exception {
         checkState("createFile");
+        if (rrdDef == null) return;
         log().debug("Executing: rrdtool "+rrdDef.toString());
         Interface.launch((String) rrdDef);
     }
