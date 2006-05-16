@@ -444,8 +444,13 @@
   </servlet>
   
   <servlet>
-  	<servlet-name>roles</servlet-name>
-  	<servlet-class>org.opennms.web.admin.roles.RoleServlet</servlet-class>
+  	<servlet-name>admin-roles</servlet-name>
+  	<servlet-class>org.opennms.web.admin.roles.AdminRoleServlet</servlet-class>
+  </servlet>
+  
+  <servlet>
+  	<servlet-name>user-roles</servlet-name>
+  	<servlet-class>org.opennms.web.admin.roles.UserRoleServlet</servlet-class>
   </servlet>
   
   <servlet>
@@ -1036,8 +1041,13 @@
   <!-- end of group configuration servlets -->
   
   <servlet-mapping>
-    <servlet-name>roles</servlet-name>
+    <servlet-name>admin-roles</servlet-name>
     <url-pattern>/admin/userGroupView/roles</url-pattern>
+  </servlet-mapping>
+
+  <servlet-mapping>
+    <servlet-name>user-roles</servlet-name>
+    <url-pattern>/roles</url-pattern>
   </servlet-mapping>
 
   <!-- view configuration servlets -->
