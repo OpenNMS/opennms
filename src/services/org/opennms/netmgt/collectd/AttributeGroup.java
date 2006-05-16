@@ -92,7 +92,7 @@ public class AttributeGroup {
     }
 
     private boolean doShouldPersist() {
-        if ("ignored".equals(getIfType())) return true;
+        if ("ignore".equals(getIfType())) return true;
         if ("all".equals(getIfType())) return true;
         
         String type = String.valueOf(m_resource.getType());
