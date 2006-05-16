@@ -83,6 +83,9 @@ public class JRobinRrdStrategy implements RrdStrategy {
         f.mkdirs();
 
         String fileName = directory + File.separator + rrdName + RrdUtils.getExtension();
+        
+        if (new File(fileName).exists())
+            return null;
 
         RrdDef def = new RrdDef(fileName);
 
@@ -114,6 +117,8 @@ public class JRobinRrdStrategy implements RrdStrategy {
      * opened.
      */
     public void createFile(Object rrdDef) throws Exception {
+        if (rrdDef == null) return;
+        
         RrdDb rrd = new RrdDb((RrdDef) rrdDef);
         rrd.close();
     }
