@@ -163,7 +163,7 @@ final class IfInfo extends DbCollectionResource {
     }
 
     public String toString() {
-        return getCollectionAgent().getNodeId() + "/" + getIndex();
+        return "Node["+getCollectionAgent().getNodeId() + "]/ifIndex[" + getIndex() + ']';
     }
 
     boolean shouldStore(ServiceParameters serviceParameters) {

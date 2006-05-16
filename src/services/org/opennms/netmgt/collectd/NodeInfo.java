@@ -64,7 +64,7 @@ final class NodeInfo extends DbCollectionResource {
     }
 
     public String toString() {
-        return String.valueOf(getCollectionAgent().getNodeId());
+        return "Node["+String.valueOf(getCollectionAgent().getNodeId())+']';
     }
 
     public void setEntry(SNMPCollectorEntry nodeEntry) {

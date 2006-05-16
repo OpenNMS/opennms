@@ -38,6 +38,9 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.StringTokenizer;
 
+import org.apache.log4j.Category;
+import org.opennms.core.utils.ThreadCategory;
+
 public class AttributeGroup {
     
     private CollectionResource m_resource;
@@ -77,6 +80,18 @@ public class AttributeGroup {
     }
     
     public boolean shouldPersist(ServiceParameters params) {
+        boolean shouldPersist = doShouldPersist();
+        log().debug(this+".shouldPersist = "+shouldPersist);
+        return shouldPersist;   
+ 
+        
+    }
+
+    private Category log() {
+        return ThreadCategory.getInstance(getClass());
+    }
+
+    private boolean doShouldPersist() {
         if ("ignored".equals(getIfType())) return true;
         if ("all".equals(getIfType())) return true;
         
@@ -89,9 +104,7 @@ public class AttributeGroup {
             if (type.equals(tokenizer.nextToken()))
                 return true;
         }
-        return false;   
- 
-        
+        return false;
     }
 
     private String getIfType() {
