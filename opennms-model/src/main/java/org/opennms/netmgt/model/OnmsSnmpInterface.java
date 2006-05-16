@@ -317,9 +317,8 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
 			if (parsedPhysAddr.length() == 12) {
 				physAddrForRRD = parsedPhysAddr;
 			} else {
-				Category log = log();
-				if (log.isDebugEnabled()) {
-					log.debug(
+				if (log().isDebugEnabled()) {
+					log().debug(
 							"physAddrForRRD: physical address len "
 							+ "is NOT 12, physAddr="
 							+ parsedPhysAddr);
@@ -355,8 +354,7 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
 	public String computeLabelForRRD() {
 		String name = computeNameForRRD();
 		String physAddrForRRD = computePhysAddrForRRD();
-		String label = (physAddrForRRD == null ? name : name + '-' + physAddrForRRD);
-		return label;
+		return (physAddrForRRD == null ? name : name + '-' + physAddrForRRD);
 	}
 
 }

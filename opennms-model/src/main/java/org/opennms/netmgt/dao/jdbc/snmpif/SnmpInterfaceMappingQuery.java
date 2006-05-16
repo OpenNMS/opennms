@@ -50,9 +50,9 @@ public class SnmpInterfaceMappingQuery extends MappingSqlQuery {
         super(ds, "SELECT " +
         		"snmpinterface.nodeid as snmp_nodeid, " +
         		"snmpinterface.ipaddr as snmp_ipaddr, " +
-        		"snmpinterface.snmpipadentnetmask as snmp_snmpipadentnetmask, " +
-                "snmpinterface.snmpphysaddr as snmp_snmpphysaddr, " +
                 "snmpinterface.snmpifindex as snmp_snmpifindex, " +
+                "snmpinterface.snmpipadentnetmask as snmp_snmpipadentnetmask, " +
+                "snmpinterface.snmpphysaddr as snmp_snmpphysaddr, " +
                 "snmpinterface.snmpifdescr as snmp_snmpifdescr, " +
                 "snmpinterface.snmpiftype as snmp_snmpiftype, " +
                 "snmpinterface.snmpifname as snmp_snmpifname, " +
@@ -78,15 +78,18 @@ public class SnmpInterfaceMappingQuery extends MappingSqlQuery {
         LazySnmpInterface iface = (LazySnmpInterface)Cache.obtain(OnmsSnmpInterface.class, key);
         iface.setLoaded(true);
         
-        iface.setIfAdminStatus((Integer)rs.getObject("snmp_snmpifadminstatus"));
-        iface.setIfAlias(rs.getString("snmp_snmpifalias"));
-        iface.setIfDescr(rs.getString("snmp_snmpifdescr"));
-        iface.setIfName(rs.getString("snmp_snmpifname"));
-        iface.setIfOperStatus((Integer)rs.getObject("snmp_snmpifoperstatus"));
-        Long ifSpeed = (rs.getObject("snmp_snmpifspeed") == null ? null : new Long(rs.getLong("snmp_snmpifspeed")));
-		iface.setIfSpeed(ifSpeed);
-        iface.setIfType((Integer)rs.getObject("snmp_snmpiftype"));
+        iface.setNetMask(rs.getString("snmp_snmpipadentnetmask"));//"snmpinterface.snmpipadentnetmask as snmp_snmpipadentnetmask, " +
+        iface.setPhysAddr(rs.getString("snmp_snmpipadentnetmask"));//"snmpinterface.snmpphysaddr as snmp_snmpphysaddr, " +
+        iface.setIfDescr(rs.getString("snmp_snmpifdescr"));//"snmpinterface.snmpifdescr as snmp_snmpifdescr, " +
+        iface.setIfType((Integer)rs.getObject("snmp_snmpiftype"));//"snmpinterface.snmpiftype as snmp_snmpiftype, " +
+        iface.setIfName(rs.getString("snmp_snmpifname"));//"snmpinterface.snmpifname as snmp_snmpifname, " +
         
+        long ifSpeed = rs.getLong("snmp_snmpifspeed");
+        iface.setIfSpeed(rs.wasNull() ? null : new Long(ifSpeed));//"snmpinterface.snmpifspeed as snmp_snmpifspeed, " +
+        iface.setIfAdminStatus((Integer)rs.getObject("snmp_snmpifadminstatus"));//"snmpinterface.snmpifadminstatus as snmp_snmpifadminstatus, " +
+        iface.setIfOperStatus((Integer)rs.getObject("snmp_snmpifoperstatus"));//"snmpinterface.snmpifoperstatus as snmp_snmpifoperstatus, " +
+        iface.setIfAlias(rs.getString("snmp_snmpifalias"));//"snmpinterface.snmpifalias as snmp_snmpifalias " +
+
         iface.setDirty(false);
         return iface;
     }
