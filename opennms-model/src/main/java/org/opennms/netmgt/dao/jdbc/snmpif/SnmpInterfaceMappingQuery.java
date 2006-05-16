@@ -79,7 +79,7 @@ public class SnmpInterfaceMappingQuery extends MappingSqlQuery {
         iface.setLoaded(true);
         
         iface.setNetMask(rs.getString("snmp_snmpipadentnetmask"));//"snmpinterface.snmpipadentnetmask as snmp_snmpipadentnetmask, " +
-        iface.setPhysAddr(rs.getString("snmp_snmpipadentnetmask"));//"snmpinterface.snmpphysaddr as snmp_snmpphysaddr, " +
+        iface.setPhysAddr(rs.getString("snmp_snmpphysaddr"));//"snmpinterface.snmpphysaddr as snmp_snmpphysaddr, " +
         iface.setIfDescr(rs.getString("snmp_snmpifdescr"));//"snmpinterface.snmpifdescr as snmp_snmpifdescr, " +
         iface.setIfType((Integer)rs.getObject("snmp_snmpiftype"));//"snmpinterface.snmpiftype as snmp_snmpiftype, " +
         iface.setIfName(rs.getString("snmp_snmpifname"));//"snmpinterface.snmpifname as snmp_snmpifname, " +
