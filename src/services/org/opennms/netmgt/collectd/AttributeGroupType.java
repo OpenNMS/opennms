@@ -80,7 +80,7 @@ public class AttributeGroupType {
     }
 
     public String toString() {
-        return "AttrGroupType: "+m_name;
+        return "AttrGroupType[name="+m_name+", ifType="+m_ifType+']' ;
     }
     
     
