@@ -95,77 +95,71 @@ public class LazySnmpInterface extends OnmsSnmpInterface {
 
     /*Override*/
     public void setIfAdminStatus(Integer snmpifadminstatus) {
+        load();
         setDirty(true);
         super.setIfAdminStatus(snmpifadminstatus);
     }
 
     /*Override*/
     public void setIfAlias(String snmpifalias) {
+        load();
         setDirty(true);
         super.setIfAlias(snmpifalias);
     }
 
     /*Override*/
     public void setIfDescr(String snmpifdescr) {
+        load();
         setDirty(true);
         super.setIfDescr(snmpifdescr);
     }
 
     /*Override*/
     public void setIfName(String snmpifname) {
+        load();
         setDirty(true);
         super.setIfName(snmpifname);
     }
 
     /*Override*/
     public void setIfOperStatus(Integer snmpifoperstatus) {
+        load();
         setDirty(true);
         super.setIfOperStatus(snmpifoperstatus);
     }
 
     /*Override*/
     public void setIfSpeed(Long snmpifspeed) {
+        load();
         setDirty(true);
         super.setIfSpeed(snmpifspeed);
     }
 
     /*Override*/
     public void setIfType(Integer snmpiftype) {
+        load();
         setDirty(true);
         super.setIfType(snmpiftype);
     }
 
     /*Override*/
     public void setNetMask(String snmpipadentnetmask) {
+        load();
         setDirty(true);
         super.setNetMask(snmpipadentnetmask);
     }
 
     /*Override*/
     public void setPhysAddr(String snmpphysaddr) {
+        load();
         setDirty(true);
         super.setPhysAddr(snmpphysaddr);
     }
 
     /*Override*/
     public String toString() {
-        setDirty(true);
+        load();
         return super.toString();
     }
-
-	public void setIfIndex(Integer ifindex) {
-		setDirty(true);
-		super.setIfIndex(ifindex);
-	}
-
-	public void setIpAddress(String ipaddr) {
-		setDirty(true);
-		super.setIpAddress(ipaddr);
-	}
-
-	public void setNode(OnmsNode node) {
-		setDirty(true);
-		super.setNode(node);
-	}
 
 }
