@@ -143,20 +143,20 @@ public class OnmsSnmpCollection {
         }
     }
 
-    private NodeResourceType getNodeResourceType(CollectionAgent agent) {
+    public NodeResourceType getNodeResourceType(CollectionAgent agent) {
         if (m_nodeResourceType == null)
             m_nodeResourceType = new NodeResourceType(agent, this);
         return m_nodeResourceType;
     }
 
-    private IfResourceType getIfResourceType(CollectionAgent agent) {
+    public IfResourceType getIfResourceType(CollectionAgent agent) {
         if (m_ifResourceType == null) {
             m_ifResourceType = new IfResourceType(agent, this);
         }
         return m_ifResourceType;
     }
     
-    private IfAliasResourceType getIfAliasResourceType(CollectionAgent agent) {
+    public IfAliasResourceType getIfAliasResourceType(CollectionAgent agent) {
         if (m_ifAliasResourceType == null) {
             m_ifAliasResourceType = new IfAliasResourceType(agent, this, m_params, getIfResourceType(agent));            
         }
