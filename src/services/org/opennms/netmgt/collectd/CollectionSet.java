@@ -82,8 +82,6 @@ public class CollectionSet implements Collectable {
     }
 
     private CollectionAgent m_agent;
-    private NodeResourceType m_nodeResourceType;
-    private IfResourceType m_ifResourceType;
     private OnmsSnmpCollection m_snmpCollection;
     private boolean m_rescanTriggered;
     private SnmpIfCollector m_ifCollector;
@@ -93,8 +91,6 @@ public class CollectionSet implements Collectable {
 	public CollectionSet(CollectionAgent agent, OnmsSnmpCollection snmpCollection) {
 		m_agent = agent;
         m_snmpCollection = snmpCollection;
-        m_nodeResourceType = new NodeResourceType(m_agent, snmpCollection);
-        m_ifResourceType = new IfResourceType(m_agent, snmpCollection);
 	}
     
     public SnmpIfCollector getIfCollector() {
@@ -141,15 +137,15 @@ public class CollectionSet implements Collectable {
     }
 	
 	public NodeInfo getNodeInfo() {
-        return m_nodeResourceType.getNodeInfo();
+        return getNodeResourceType().getNodeInfo();
 	}
 
 	boolean hasDataToCollect() {
-        return (m_nodeResourceType.hasDataToCollect() || m_ifResourceType.hasDataToCollect());
+        return (getNodeResourceType().hasDataToCollect() || getIfResourceType().hasDataToCollect());
 	}
     
     boolean hasInterfaceDataToCollect() {
-        return m_ifResourceType.hasDataToCollect();
+        return getIfResourceType().hasDataToCollect();
     }
 
 	public CollectionAgent getCollectionAgent() {
@@ -168,18 +164,18 @@ public class CollectionSet implements Collectable {
      * @deprecated Use {@link org.opennms.netmgt.collectd.IfResourceType#getCombinedInterfaceAttributes()} instead
      */
     List getCombinedInterfaceAttributes() {
-        return m_ifResourceType.getCombinedInterfaceAttributes();
+        return getIfResourceType().getCombinedInterfaceAttributes();
     }
 
     /**
      * @deprecated Use {@link org.opennms.netmgt.collectd.IfResourceType#getIfInfos()} instead
      */
     public Collection getIfInfos() {
-        return m_ifResourceType.getIfInfos();
+        return getIfResourceType().getIfInfos();
     }
 
     public IfInfo getIfInfo(int ifIndex) {
-        return m_ifResourceType.getIfInfo(ifIndex);
+        return getIfResourceType().getIfInfo(ifIndex);
     }
 
     public CollectionTracker getCollectionTracker() {
@@ -375,6 +371,14 @@ public class CollectionSet implements Collectable {
 
     private boolean ifCountHasChanged(CollectionAgent agent) {
         return (agent.getSavedIfCount() != -1) && (getIfNumber().getIfNumber() != agent.getSavedIfCount());
+    }
+
+    private NodeResourceType getNodeResourceType() {
+        return m_snmpCollection.getNodeResourceType(getCollectionAgent());
+    }
+
+    private IfResourceType getIfResourceType() {
+        return m_snmpCollection.getIfResourceType(getCollectionAgent());
     }
 
  
