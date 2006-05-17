@@ -283,7 +283,7 @@ public class CollectionSet implements Collectable {
     }
 
     void logIfCountChangedForceRescan() {
-        log().info("Number of interfaces on primary SNMP "
+        log().info("Sending rescan event because the number of interfaces on primary SNMP "
                 + "interface " + getCollectionAgent().getHostAddress()
                 + " has changed, generating 'ForceRescan' event.");
     }
@@ -310,13 +310,17 @@ public class CollectionSet implements Collectable {
     }
     
     public boolean rescanNeeded() {
-        if (rescanTriggered()) return true;
+        if (rescanTriggered()) {
+            log().debug("Sending rescan event for "+getCollectionAgent()+" because it was triggered by a missing resource");
+            return true;
+        }
         
         final RescanNeeded rescanNeeded = new RescanNeeded();
         visit(new ResourceVisitor() {
         
             public void visitResource(CollectionResource resource) {
                 if (resource.rescanNeeded())
+                    log().debug("Sending rescan event for "+getCollectionAgent()+" because resource "+resource+" indicated it was needed");
                     rescanNeeded.rescanIndicated();
             }
             
