@@ -24,6 +24,7 @@
         <event-file>@install.etc.dir@/events/Cisco.5300dchan.events.xml</event-file>
         <event-file>@install.etc.dir@/events/Cisco.events.xml</event-file>
 	<!-- CIM.events.xml has been deprecated by CPQHPIM.events.xml -->
+        <event-file>@install.etc.dir@/events/Colubris.events.xml</event-file>
         <event-file>@install.etc.dir@/events/CPQHPIM.events.xml</event-file>
         <event-file>@install.etc.dir@/events/Clarent.events.xml</event-file>
         <event-file>@install.etc.dir@/events/Clarinet.events.xml</event-file>
@@ -50,6 +51,7 @@
         <event-file>@install.etc.dir@/events/Novell.events.xml</event-file>
         <event-file>@install.etc.dir@/events/Oracle.events.xml</event-file>
         <event-file>@install.etc.dir@/events/Patrol.events.xml</event-file>
+        <event-file>@install.etc.dir@/events/Pixmet.events.xml</event-file>
         <event-file>@install.etc.dir@/events/Quintum.events.xml</event-file>
         <event-file>@install.etc.dir@/events/Redline.events.xml</event-file>
         <event-file>@install.etc.dir@/events/Sensaphone.events.xml</event-file>
