@@ -194,8 +194,6 @@ public final class Collectd extends ServiceDaemon implements EventListener {
     private ReadyRunnable ifScheduler() {
         // Schedule existing interfaces for data collection
         
-        ThreadCategory.setPrefix(LOG4J_CATEGORY);
-
         ReadyRunnable interfaceScheduler = new ReadyRunnable() {
 
             public boolean isReady() {
@@ -204,6 +202,7 @@ public final class Collectd extends ServiceDaemon implements EventListener {
 
             public void run() {
                 try {
+                    ThreadCategory.setPrefix(LOG4J_CATEGORY);
                     scheduleExistingInterfaces();
                 } catch (SQLException e) {
                     log().error("start: Failed to schedule existing interfaces", e);
