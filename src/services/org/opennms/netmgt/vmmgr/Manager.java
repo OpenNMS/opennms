@@ -390,8 +390,6 @@ public class Manager implements ManagerMBean {
             InvokerService[] invokerServices,
             InvokeAtType at, boolean reverse,
             boolean failFast) {
-        Category invokerLog = log();
-
         Integer[] serviceIndexes = new Integer[invokerServices.length];
         for (int i = 0; i < invokerServices.length; i++) {
             if (!reverse) {
@@ -403,16 +401,16 @@ public class Manager implements ManagerMBean {
 
         List resultInfo = new ArrayList(invokerServices.length);
         for (int pass = 0, end = getEndPass(invokerServices); pass <= end; pass++) {
-            if (invokerLog.isDebugEnabled()) {
-                invokerLog.debug("starting pass " + pass);
+            if (log().isDebugEnabled()) {
+                log().debug("starting pass " + pass);
             }
 
             for (int i = 0; i < serviceIndexes.length; i++) {
                 int j = serviceIndexes[i].intValue();
                 String name = invokerServices[j].getService().getName();
                 if (invokerServices[j].isBadService()) {
-                    if (invokerLog.isDebugEnabled()) {
-                        invokerLog.debug("pass " + pass + " on service " + name
+                    if (log().isDebugEnabled()) {
+                        log().debug("pass " + pass + " on service " + name
                                 + " is bad: not invoking any more methods"); 
                     }
                     break;
@@ -426,14 +424,14 @@ public class Manager implements ManagerMBean {
                     Service service = invokerServices[j].getService();
                     ObjectInstance mbean = invokerServices[j].getMbean();
 
-                    if (invokerLog.isDebugEnabled()) {
-                        invokerLog.debug("pass " + pass + " on service " + name
+                    if (log().isDebugEnabled()) {
+                        log().debug("pass " + pass + " on service " + name
                                 + " will invoke method \""
                                 + todo[k].getMethod() + "\""); 
                     }
 
                     try {
-                        Object result = invoke(server, todo[k], mbean, invokerLog);
+                        Object result = invoke(server, todo[k], mbean);
                         resultInfo.add(new InvokerResult(service, mbean, result, null));
                     } catch (Throwable t) {
                         resultInfo.add(new InvokerResult(service, mbean, null, t));
@@ -443,8 +441,8 @@ public class Manager implements ManagerMBean {
                     }
                 }
             }
-            if (invokerLog.isDebugEnabled()) {
-                invokerLog.debug("completed pass " + pass);
+            if (log().isDebugEnabled()) {
+                log().debug("completed pass " + pass);
             }
         }
 
@@ -452,7 +450,8 @@ public class Manager implements ManagerMBean {
     }
 
     private static Category log() {
-        return ThreadCategory.getInstance(Manager.class);
+        ThreadCategory.setPrefix(LOG4J_CATEGORY);
+        return ThreadCategory.getInstance(LOG4J_CATEGORY);
     }
 
     private static int getEndPass(InvokerService[] invokerServices) {
@@ -470,7 +469,7 @@ public class Manager implements ManagerMBean {
     }
 
     private static Object invoke(MBeanServer server, Invoke invoke,
-                                 ObjectInstance mbean, Category log) throws Throwable {
+                                 ObjectInstance mbean) throws Throwable {
 
         // invoke!
         try {
@@ -487,8 +486,8 @@ public class Manager implements ManagerMBean {
                 }
             }
 
-            if (log.isDebugEnabled()) {
-                log.debug("Invoking " + invoke.getMethod()
+            if (log().isDebugEnabled()) {
+                log().debug("Invoking " + invoke.getMethod()
                           + " on object "
                           + mbean.getObjectName());
             }
@@ -496,7 +495,7 @@ public class Manager implements ManagerMBean {
             return server.invoke(mbean.getObjectName(),
                                  invoke.getMethod(), parms, sig);
         } catch (Throwable t) {
-            log.error("An error occured invoking operation "
+            log().error("An error occured invoking operation "
                       + invoke.getMethod() + " on MBean "
                       + mbean.getObjectName(), t);
             throw t;
