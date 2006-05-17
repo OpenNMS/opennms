@@ -178,7 +178,7 @@ public class CollectionAgent extends IPv4NetworkInterface {
     }
 
     public String toString() {
-        return getHostAddress();
+        return "Agent[nodeid = "+getNodeId()+" ipaddr= "+getHostAddress()+']';
     }
 
     public SnmpAgentConfig getAgentConfig() {

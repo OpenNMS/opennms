@@ -352,9 +352,10 @@ public class CollectionSet implements Collectable {
         return maxVarsPerPdu;
     }
 
-    public void notifyIfNotFound(SnmpObjId base, SnmpInstId inst, SnmpValue val) {
-        triggerRescan();
-        log().info("Unable to locate resource with instance id "+inst+" while collecting attribute "+this);
+    public void notifyIfNotFound(AttributeType attrType, SnmpObjId base, SnmpInstId inst, SnmpValue val) {
+        // Don't bother sending a rescan event in this case since localhost is not going to be there anyway
+        //triggerRescan();
+        log().info("Unable to locate resource for agent "+getCollectionAgent()+" with instance id "+inst+" while collecting attribute "+attrType);
     }
 
     void saveAttributes(final ServiceParameters params) {

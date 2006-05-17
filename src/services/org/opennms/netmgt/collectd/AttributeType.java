@@ -123,7 +123,7 @@ public abstract class AttributeType {
         log().debug("Setting attribute: "+this+".["+inst+"] = '"+val+"'");
         CollectionResource resource = m_resourceType.findResource(inst);
         if (resource == null) {
-            collectionSet.notifyIfNotFound(base, inst, val);
+            collectionSet.notifyIfNotFound(this, base, inst, val);
         } else {
             resource.setAttributeValue(this, val);
         }
