@@ -282,20 +282,16 @@ public class CollectionSet implements Collectable {
     	}
     }
 
-    void logIfCountChangedForceRescan() {
-        log().info("Sending rescan event because the number of interfaces on primary SNMP "
-                + "interface " + getCollectionAgent().getHostAddress()
-                + " has changed, generating 'ForceRescan' event.");
-    }
-
     void checkForNewInterfaces(CollectionSet.RescanNeeded rescanNeeded) {
         if (!hasInterfaceDataToCollect()) return;
         
         logIfCounts();
     
         if (ifCountHasChanged(getCollectionAgent())) {
+            log().info("Sending rescan event because the number of interfaces on primary SNMP "
+            + "interface " + getCollectionAgent().getHostAddress()
+            + " has changed, generating 'ForceRescan' event.");
             rescanNeeded.rescanIndicated();
-            logIfCountChangedForceRescan();
         }
     
         getCollectionAgent().setSavedIfCount(getIfNumber().getIfNumber());
