@@ -964,13 +964,14 @@
         <mibObj oid=".1.3.6.1.4.1.43.2.13.3.1.1.5" instance="0" alias="a3sysMemSize" type="integer" />
         <mibObj oid=".1.3.6.1.4.1.43.2.13.8.4" instance="0" alias="a3sysCpuUtil" type="integer" />
       </group>
+
+      <!-- Colubris MIBs -->
+      <group name="colubris-access-mib" ifType="ignore">
+        <mibObj oid=".1.3.6.1.4.1.8744.5.1.1.3.2" instance="0" alias="colPubAccUsrCnt" type="Gauge32" />
+        <mibObj oid=".1.3.6.1.4.1.8744.5.1.1.3.3" instance="0" alias="colPubAccUsrThresh" type="Integer" />
+      </group>
+
     </groups>
-    
-    <!-- Colubris MIBs -->
-    <group name="colubris-access-mib" ifType="ignore">
-      <mibObj oid=".1.3.6.1.4.1.8744.5.1.1.3.2" instance="0" alias="colPubAccUsrCnt" type="Gauge32" />
-      <mibObj oid=".1.3.6.1.4.1.8744.5.1.1.3.3" instance="0" alias="colPubAccUsrThresh" type="Integer" />
-    </group>
 
     <systems>
       <systemDef name="Enterprise">
