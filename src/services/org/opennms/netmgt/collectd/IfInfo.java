@@ -134,13 +134,6 @@ final class IfInfo extends DbCollectionResource {
         }
     }
 
-    void checkForChangedIfAlias(ForceRescanState forceRescanState) {
-        if (currentAliasIsOutOfDate()) {
-            forceRescanState.rescanIndicated();
-            logForceRescan();
-        }
-    }
-
     boolean isScheduledForCollection() {
         log().debug(this+".isSnmpPrimary = "+getCollType());
         log().debug("minCollType = "+getCollection().getMinimumCollectionType());

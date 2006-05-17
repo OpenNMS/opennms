@@ -80,10 +80,6 @@ public class AliasedResource extends CollectionResource {
         return getDomain()+'/'+getAliasDir()+" ["+m_ifInfo+']';
     }
 
-    void checkForAliasChanged(ForceRescanState forceRescanState) {
-        getIfInfo().checkForChangedIfAlias(forceRescanState);
-    }
-    
     public boolean rescanNeeded() {
         return getIfInfo().currentAliasIsOutOfDate();
     }
