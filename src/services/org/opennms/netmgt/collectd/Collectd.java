@@ -193,6 +193,8 @@ public final class Collectd extends ServiceDaemon implements EventListener {
 
     private ReadyRunnable ifScheduler() {
         // Schedule existing interfaces for data collection
+        
+        ThreadCategory.setPrefix(LOG4J_CATEGORY);
 
         ReadyRunnable interfaceScheduler = new ReadyRunnable() {
 
