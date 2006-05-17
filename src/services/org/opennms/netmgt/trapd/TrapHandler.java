@@ -86,7 +86,7 @@ public class TrapHandler implements PausableFiber, TrapProcessorFactory, TrapNot
 	/**
 	 * The name of the logging category for Trapd.
 	 */
-	private static final String LOG4J_CATEGORY = "OpenNMS.TrapHandler";
+	private static final String LOG4J_CATEGORY = "OpenNMS.Trapd";
 
 	/**
 	 * The singlton instance.
