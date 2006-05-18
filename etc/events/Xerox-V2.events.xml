@@ -1,0 +1,1873 @@
+<!--
+Xerox SNMP V2 Detailed Trap Events for OpenNMS
+
+Replaces "Xerox.Events.xml" file included with OpenNMS 1.2.7-1
+
+Revised May-03-2006
+mike@wilson-nmi.net
+-->
+
+<!--
+This Events File was created using the following MIB & TC files obtained from Xerox Support on Apr-17-2006
+XEROX-COMMON-MIB
+XEROX-COMMS-CONFIG-MIB
+XEROX-COMMS-CONFIG-TC
+XEROX-COMMS-ENGINE-MIB
+XEROX-COMMS-ENGINE-TC
+XEROX-GENERAL-MIB
+XEROX-GENERAL-TC
+XEROX-HOST-RESOURCES-EXT-MIB
+XEROX-HOST-RESOURCES-EXT-TC
+XEROX-JOB-MONITORING-EXT-MIB
+XEROX-JOB-MONITORING-MIB
+XEROX-JOB-MONITORING-TC
+XEROX-PRINTER-EXT-MIB
+XEROX-PRINTER-EXT-TC
+XEROX-PRODUCT-ID-TC
+XEROX-RESOURCES-MIB
+XEROX-RESOURCES-TC
+XEROX-SERVICE-MONITORING-MIB
+XEROX-SERVICE-MONITORING-TC
+XEROX-SIMPLE-JOB-MGMT-MIB
+XEROX-SIMPLE-JOB-MGMT-TC
+-->
+
+
+<!-- Start of Xerox Traps -->
+<events>
+
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.253.8.53.3.1</mevalue>
+		</maskelement>		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+<maskelement>
+			<mename>specific</mename>
+			<mevalue>1</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/xerox/traps/xcmHrDevInfoV2Event</uei>
+	<event-label>XEROX-HOST-RESOURCES-EXT-MIB defined trap event: xcmHrDevInfoV2Event</event-label>
+	<descr>
+&lt;p&gt;This trap is sent whenever 'hrDeviceStatus' and/or
+'xcmHrDevInfo[XStatus|Conditions|XConditions]' changes.
+
+Note:   The variable-bindings of this trap have been chosen to
+specify a complete device status change while keeping
+trap messages reasonably concise (generally a few hundred octets
+at most).
+
+
+This notification has the following special semantics:
+
+    o   The device's 'hrDeviceIndex' field
+        value SHALL be appended to this trap object ID,
+        as a BER binary OID suffix.
+
+This trap OID qualifier allows device management/monitoring
+applications to limit the alerts they receive to ones generated
+by devices of interest.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	hrDeviceIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	hrDeviceStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		unknown(1)
+		running(2)
+		warning(3)
+		testing(4)
+		down(5)
+	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	xcmHrDevInfoXStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		commonNone(0)
+		commonOther(1)
+		commonUnknown(2)
+		commonLast(99)
+		otherNone(100)
+		unknownNone(200)
+		processorNone(300)
+		networkNone(400)
+		printerNone(500)
+		printerOther(501)
+		printerUnknown(502)
+		printerIdle(503)
+		printerPrinting(504)
+		printerNeedsAttention(505)
+		printerPaused(506)
+		printerShutdown(507)
+		printerJobStartWait(508)
+		printerJobEndWait(509)
+		printerNeedsKeyOperator(510)
+		printerJobPasswordWait(511)
+		printerTimedOut(512)
+		printerConnectingToPrinter(513)
+		diskStorageNone(600)
+		videoNone(1000)
+		audioNone(1100)
+		coprocessorNone(1200)
+		keyboardNone(1300)
+		modemNone(1400)
+		parallelPortNone(1500)
+		pointingNone(1600)
+		serialPortNone(1700)
+		tapeNone(1800)
+		clockNone(1900)
+		volatileMemoryNone(2000)
+		nonVolatileMemoryNone(2100)
+		hostSystemNone(10100)
+		scannerNone(10200)
+		copierNone(10300)
+		faxNone(10400)
+		mailboxNone(10500)
+		markerNone(11100)
+		finisherBFMNone(11200)
+		finisherMFFNone(11300)
+		finisherXIMNone(11400)
+		finisher3rdPartyNone(11500)
+		paymentInterfaceNone(11600)
+		interposerNone(11700)
+		internetFaxNone(11800)
+		serverFaxNone(11900)
+		embeddedFaxNone(12000)
+		foreignInterfaceNone(12100)
+		securityInterfaceNone(12200)
+		accountingInterfaceNone(12300)
+		cruNone(20000)
+		cruOther(20001)
+		cruUnknown(20002)
+		cruReady(20003)
+		cruReorder(20004)
+		cruReplace(20005)
+		cruFault(20006)
+		reserved(40000)
+	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	xcmHrDevInfoConditions&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	xcmHrDevInfoXConditions&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			xcmHrDevInfoV2Event trap received 
+			hrDeviceIndex=%parm[#1]% 
+			hrDeviceStatus=%parm[#2]% 
+			xcmHrDevInfoXStatus=%parm[#3]% 
+			xcmHrDevInfoConditions=%parm[#4]% 
+			xcmHrDevInfoXConditions=%parm[#5]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.253.8.53.5.1</mevalue>
+		</maskelement>		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+<maskelement>
+			<mename>specific</mename>
+			<mevalue>1</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/xerox/traps/xcmHrDevMgmtV2Event</uei>
+	<event-label>XEROX-HOST-RESOURCES-EXT-MIB defined trap event: xcmHrDevMgmtV2Event</event-label>
+	<descr>
+&lt;p&gt;This trap is sent whenever an 'XcmHrDevMgmtCommandRequest'
+completes, ie, when 'xcmHrDevMgmtCommandStatus' becomes the
+completed operation status and 'XcmHrDevMgmtCommandInProgress'
+goes from 'true' to 'false'.
+
+Note:   The variable-bindings of this trap have been chosen to
+specify a complete management operation result while keeping
+trap messages reasonably concise (generally a few hundred octets
+at most).
+
+This notification has the following special semantics:
+
+    o   The device's 'hrDeviceIndex' field
+        value SHALL be appended to this trap object ID,
+        as a BER binary OID suffix.
+
+This trap OID qualifier allows device management/monitoring
+applications to limit the alerts they receive to ones generated 
+by requests they have submitted.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	hrDeviceIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	hrDeviceStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		unknown(1)
+		running(2)
+		warning(3)
+		testing(4)
+		down(5)
+	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	xcmHrDevInfoXStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		commonNone(0)
+		commonOther(1)
+		commonUnknown(2)
+		commonLast(99)
+		otherNone(100)
+		unknownNone(200)
+		processorNone(300)
+		networkNone(400)
+		printerNone(500)
+		printerOther(501)
+		printerUnknown(502)
+		printerIdle(503)
+		printerPrinting(504)
+		printerNeedsAttention(505)
+		printerPaused(506)
+		printerShutdown(507)
+		printerJobStartWait(508)
+		printerJobEndWait(509)
+		printerNeedsKeyOperator(510)
+		printerJobPasswordWait(511)
+		printerTimedOut(512)
+		printerConnectingToPrinter(513)
+		diskStorageNone(600)
+		videoNone(1000)
+		audioNone(1100)
+		coprocessorNone(1200)
+		keyboardNone(1300)
+		modemNone(1400)
+		parallelPortNone(1500)
+		pointingNone(1600)
+		serialPortNone(1700)
+		tapeNone(1800)
+		clockNone(1900)
+		volatileMemoryNone(2000)
+		nonVolatileMemoryNone(2100)
+		hostSystemNone(10100)
+		scannerNone(10200)
+		copierNone(10300)
+		faxNone(10400)
+		mailboxNone(10500)
+		markerNone(11100)
+		finisherBFMNone(11200)
+		finisherMFFNone(11300)
+		finisherXIMNone(11400)
+		finisher3rdPartyNone(11500)
+		paymentInterfaceNone(11600)
+		interposerNone(11700)
+		internetFaxNone(11800)
+		serverFaxNone(11900)
+		embeddedFaxNone(12000)
+		foreignInterfaceNone(12100)
+		securityInterfaceNone(12200)
+		accountingInterfaceNone(12300)
+		cruNone(20000)
+		cruOther(20001)
+		cruUnknown(20002)
+		cruReady(20003)
+		cruReorder(20004)
+		cruReplace(20005)
+		cruFault(20006)
+		reserved(40000)
+	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	xcmHrDevInfoConditions&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	xcmHrDevInfoXConditions&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	xcmHrDevMgmtCommandRequest&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		none(1)
+		startup(2)
+		resetWarning(3)
+		test(4)
+		shutdown(5)
+		quiesce(6)
+		resetCounters(7)
+		resetWarm(8)
+		resetCold(9)
+		resetFactory(10)
+		flushInput(11)
+		flushOutput(12)
+		flushInOut(13)
+		manage(14)
+		refresh(15)
+		warmUp(16)
+		coolDown(17)
+		energySave(18)
+		wakeUp(19)
+		powerToReady(20)
+		powerToStandby(21)
+		powerToSleep(22)
+		deviceCreate(1301)
+		deviceDelete(1302)
+		deviceList(1303)
+		deviceSet(1304)
+		deviceClean(1305)
+		deviceDisable(1306)
+		deviceEnable(1307)
+		devicePause(1308)
+		deviceResume(1309)
+		deviceShutdown(1310)
+		deviceQueueList(1311)
+		deviceJobCreate(1312)
+		entityCreate(1901)
+		entityDelete(1902)
+		entityList(1903)
+		entitySet(1904)
+		entityClean(1905)
+		entityDisable(1906)
+		entityEnable(1907)
+		entityPause(1908)
+		entityResume(1909)
+		entityShutdown(1910)
+		entityQueueList(1911)
+		entityJobCreate(1912)
+		deviceManage(2301)
+		deviceRestart(2302)
+		deviceInstall(2321)
+		deviceUpgrade(2322)
+		deviceBackup(2323)
+		deviceRestore(2324)
+		deviceConfigure(2325)
+		deviceDiagnose(2326)
+		deviceResetCounters(2331)
+		deviceResetWarm(2332)
+		deviceResetCold(2333)
+		deviceResetFactory(2334)
+		deviceFormat(2335)
+		deviceRefresh(2336)
+		deviceLogin(2341)
+		deviceLogout(2342)
+		entityManage(2901)
+		entityRestart(2902)
+		entityInstall(2921)
+		entityUpgrade(2922)
+		entityBackup(2923)
+		entityRestore(2924)
+		entityConfigure(2925)
+		entityDiagnose(2926)
+		entityResetCounters(2931)
+		entityResetWarm(2932)
+		entityResetCold(2933)
+		entityResetFactory(2934)
+		entityFormat(2935)
+		entityRefresh(2936)
+		entityLogin(2941)
+		entityLogout(2942)
+	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	xcmHrDevMgmtCommandStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		noError(0)
+		tooBig(1)
+		noSuchName(2)
+		badValue(3)
+		readOnly(4)
+		genErr(5)
+		noAccess(6)
+		wrongType(7)
+		wrongLength(8)
+		wrongEncoding(9)
+		wrongValue(10)
+		noCreation(11)
+		inconsistentValue(12)
+		resourceUnavailable(13)
+		commitFailed(14)
+		undoFailed(15)
+		authorizationError(16)
+		notWritable(17)
+		inconsistentName(18)
+	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			xcmHrDevMgmtV2Event trap received 
+			hrDeviceIndex=%parm[#1]% 
+			hrDeviceStatus=%parm[#2]% 
+			xcmHrDevInfoXStatus=%parm[#3]% 
+			xcmHrDevInfoConditions=%parm[#4]% 
+			xcmHrDevInfoXConditions=%parm[#5]% 
+			xcmHrDevMgmtCommandRequest=%parm[#6]% 
+			xcmHrDevMgmtCommandStatus=%parm[#7]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.253.8.53.13.1</mevalue>
+		</maskelement>		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+<maskelement>
+			<mename>specific</mename>
+			<mevalue>1</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/xerox/traps/xcmHrDevDetailV2Event</uei>
+	<event-label>XEROX-HOST-RESOURCES-EXT-MIB defined trap event: xcmHrDevDetailV2Event</event-label>
+	<descr>
+&lt;p&gt;This trap is sent when 'xcmHrDevDetailIndex' is shared
+between a counter detail and a limit detail which are
+specified in 'xcmHrDevDetailValueInteger', OR
+when 'xcmHrDevDetailValueString' specifies a trigger date.
+
+Note:   The variable-bindings of this trap have been chosen to
+specify a complete device status change while keeping
+trap messages reasonably concise (generally a few hundred octets
+at most).
+
+This notification has the following special semantics:
+
+    o   The detail's 'hrDeviceIndex' value,
+        the detail's 'xcmHrDevDetailType' value, and
+        the detail's 'xcmHrDevDetailIndex' value
+        SHALL be appended to this trap object ID,
+        as a BER binary OID suffix.
+
+This trap OID qualifier allows device management/monitoring
+applications to limit the alerts they receive to ones generated
+by device details of interest.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	hrDeviceIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	xcmHrDevDetailType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		other(1)
+		unknown(2)
+		deviceName(3)
+		deviceAlias(4)
+		deviceType(5)
+		deviceDescription(6)
+		deviceID(7)
+		deviceTree(8)
+		deviceContext(9)
+		deviceManufacturer(10)
+		deviceModel(11)
+		deviceSerialNumber(12)
+		deviceVendor(13)
+		deviceVersion(14)
+		deviceServiceByCustomer(15)
+		deviceReplaceByCustomer(16)
+		deviceServicePlanName(17)
+		deviceServicePlanPassword(18)
+		deviceReplaceByWarranty(19)
+		deviceLifetimeUsage(20)
+		deviceReorderLifetimeLimit(21)
+		deviceWarningLifetimeLimit(22)
+		deviceReplaceLifetimeLimit(23)
+		deviceMaximumLifetimeLimit(24)
+		deviceDaysUntilReorderMsg(25)
+		deviceDaysUntilWarningMsg(26)
+		deviceDaysUntilReplaceMsg(27)
+		deviceDaysUntilMaximumMsg(28)
+		deviceLifetimeMsgDisplay(29)
+		deviceAccountingUsage(30)
+		deviceReorderOnDate(31)
+		deviceWarningOnDate(32)
+		deviceReplaceOnDate(33)
+		deviceMaximumOnDate(34)
+		deviceLifetimeErrorCount(35)
+		deviceLifetimeErrorLimit(36)
+		deviceLifetimeWarningCount(37)
+		deviceLifetimeWarningLimit(38)
+		deviceTriggerDaysForReorder(41)
+		deviceTriggerDaysForWarning(42)
+		deviceTriggerDaysForReplace(43)
+		deviceTriggerDaysForMaximum(44)
+		deviceReorderMsgSentDate(51)
+		deviceWarningMsgSentDate(52)
+		deviceReplaceMsgSentDate(53)
+		deviceMaximumMsgSentDate(54)
+		deviceReorderToVendorDate(55)
+		deviceReorderConfirmDate(56)
+		deviceReplaceDate(57)
+		deviceReplaceSystemUsage(58)
+		deviceReplaceWithGeneric(59)
+		deviceHelpName(60)
+		deviceHelpAddress(61)
+		deviceHelpDescription(62)
+		deviceHelpLocation(63)
+		deviceHelpURI(64)
+		deviceTranslatorSupport(71)
+		deviceTranslatorReady(72)
+		deviceInitialValueJobSupport(73)
+		deviceInitialValueDocSupport(74)
+		deviceMultipleDocSupport(75)
+		deviceCancelDocSupport(76)
+		deviceForeignJobsVisible(77)
+		deviceInitialValueJobDefault(78)
+		deviceInitialValueDocDefault(79)
+		deviceInputMaxSpeedTrafficUnit(80)
+		deviceInputMaxSpeedTimeUnit(81)
+		deviceInputMaxSpeed(82)
+		deviceOutputMaxSpeedTrafficUnit(83)
+		deviceOutputMaxSpeedTimeUnit(84)
+		deviceOutputMaxSpeed(85)
+		deviceFeedResolutionSupport(86)
+		deviceXFeedResolutionSupport(87)
+		deviceSchedulerSupport(88)
+		deviceSchedulerReady(89)
+		devicePhysicalNameSupport(90)
+		devicePhysicalNameReady(91)
+		deviceLogicalNameSupport(92)
+		deviceLogicalNameReady(93)
+		devicePhysicalIndexSupport(94)
+		devicePhysicalIndexReady(95)
+		deviceLogicalIndexSupport(96)
+		deviceLogicalIndexReady(97)
+		deviceJobServiceDeviceIndex(98)
+		deviceJobHistoryDeviceIndex(99)
+		deviceFontIndexSupport(100)
+		deviceFontIndexReady(101)
+		deviceResourceIndexSupport(102)
+		deviceResourceIndexReady(103)
+		devicePowerModeName(110)
+		devicePowerModeType(111)
+		devicePowerModeDescription(112)
+		devicePowerModeSupport(113)
+		devicePowerTimeUnit(114)
+		devicePowerWarmerSupport(115)
+		devicePowerCoolerSupport(116)
+		devicePowerWarmerDelay(117)
+		devicePowerWarmerDuration(118)
+		devicePowerCoolerDelay(119)
+		devicePowerCoolerDuration(120)
+		devicePowerWarmerTrigger(121)
+		devicePowerCoolerTrigger(122)
+		deviceNextWarmerModeIndex(123)
+		deviceNextCoolerModeIndex(124)
+		deviceEnergyStarSuspendMode(125)
+		deviceProcessorFrwID(130)
+		deviceNetworkIfIndex(140)
+		deviceDiskStorageAccess(160)
+		deviceDiskStorageMedia(161)
+		deviceDiskStorageRemovable(162)
+		deviceDiskStorageCapacity(163)
+		deviceMemorySize(170)
+		deviceConfigurationSetting(180)
+		deviceJobIncompleteTimeout(191)
+		deviceJobProgrammingTimeout(192)
+		deviceJobHoldDeleteTimeout(193)
+		deviceJobPauseResumeTimeout(194)
+		deviceGuestJobPolicy(200)
+		deviceAlienJobPolicy(201)
+		deviceEventLogFullPolicy(202)
+		deviceJobLogFullPolicy(203)
+		deviceRequestLogFullPolicy(204)
+		deviceUniversalProductCode(210)
+		deviceModelName(211)
+		deviceModelDescription(212)
+		deviceModelNumber(213)
+		deviceManufacturerURI(220)
+		deviceModelURI(221)
+		deviceServiceUsage(230)
+		deviceDeltaServiceUsage(231)
+		deviceRolloverValue(232)
+		deviceCPMenuControl(235)
+		deviceUsageWarningThreshold(240)
+	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	xcmHrDevDetailIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			xcmHrDevDetailV2Event trap received 
+			hrDeviceIndex=%parm[#1]% 
+			xcmHrDevDetailType=%parm[#2]% 
+			xcmHrDevDetailIndex=%parm[#3]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.253.8.53.17.1</mevalue>
+		</maskelement>		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+<maskelement>
+			<mename>specific</mename>
+			<mevalue>1</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/xerox/traps/xcmHrDevAlertV2Event</uei>
+	<event-label>XEROX-HOST-RESOURCES-EXT-MIB defined trap event: xcmHrDevAlertV2Event</event-label>
+	<descr>
+&lt;p&gt;This trap is sent whenever a device alert row transitions
+to 'active' row status or (optionally) transitions to
+'notInService' row status in 'xcmHrDevAlertTable'.
+This trap is sent when requested by a prior subscription.
+
+Note:   The variable-bindings of this trap have been chosen to
+specify a complete device alert event while keeping
+trap messages reasonably concise (generally a few hundred octets
+at most).
+
+This notification has the following special semantics:
+
+    o   The device's 'hrDeviceIndex' field
+        value SHALL be appended to this trap object ID,
+        as a BER binary OID suffix.
+
+This trap OID qualifier allows device management/monitoring
+applications to limit the alerts they receive to ones generated
+by devices of interest.
+
+Systems MAY add other variable-bindings from any MIB.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	xcmHrDevAlertRowStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		active(1)
+		notInService(2)
+		notReady(3)
+		createAndGo(4)
+		createAndWait(5)
+		destroy(6)
+	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	xcmHrDevAlertSeverityLevel&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	xcmHrDevAlertTrainingLevel&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	xcmHrDevAlertCodeInteger&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	xcmHrDevAlertCodeString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			xcmHrDevAlertV2Event trap received 
+			xcmHrDevAlertRowStatus=%parm[#1]% 
+			xcmHrDevAlertSeverityLevel=%parm[#2]% 
+			xcmHrDevAlertTrainingLevel=%parm[#3]% 
+			xcmHrDevAlertCodeInteger=%parm[#4]% 
+			xcmHrDevAlertCodeString=%parm[#5]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.253.8.83.2.1</mevalue>
+		</maskelement>		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+<maskelement>
+			<mename>specific</mename>
+			<mevalue>1</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/xerox/traps/xcmJmxJobOperationV2Trap</uei>
+	<event-label>XEROX-JOB-MONITORING-EXT-MIB defined trap event: xcmJmxJobOperationV2Trap</event-label>
+	<descr>
+&lt;p&gt;This SMIv2 trap corresponds to a Job operation complete event.
+
+The values of 'jmGeneralJobSetIndex' and 'jmJobIndex' for
+use with 'jmJobTable' for this Job are conveyed in the
+instance qualifier (OID suffix) of 'jmJobOperation'.
+
+Additional variable-bindings MAY be appended to this trap:
+- Systems with the Host Resources MIB (RFC 2790) MAY add
+  'hrSystemDate'
+  (compare to IPP 'printer-current-time')
+- Systems MAY add other variable-bindings from any MIB&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jmJobState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		unknown(2)
+		pending(3)
+		pendingHeld(4)
+		processing(5)
+		processingStopped(6)
+		canceled(7)
+		aborted(8)
+		completed(9)
+	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jmJobStateReasons1&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	xcmJmxJobAdminOperation&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		other(1)
+		unknown(2)
+		cancelJob(3)
+		holdJob(4)
+		releaseJob(5)
+		restartJob(6)
+		reprocessJob(7)
+		suspendJob(8)
+		resumeJob(9)
+		promoteJob(10)
+	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	xcmJmxJobAdminStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		noError(0)
+		tooBig(1)
+		noSuchName(2)
+		badValue(3)
+		readOnly(4)
+		genErr(5)
+		noAccess(6)
+		wrongType(7)
+		wrongLength(8)
+		wrongEncoding(9)
+		wrongValue(10)
+		noCreation(11)
+		inconsistentValue(12)
+		resourceUnavailable(13)
+		commitFailed(14)
+		undoFailed(15)
+		authorizationError(16)
+		notWritable(17)
+		inconsistentName(18)
+	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			xcmJmxJobOperationV2Trap trap received 
+			jmJobState=%parm[#1]% 
+			jmJobStateReasons1=%parm[#2]% 
+			xcmJmxJobAdminOperation=%parm[#3]% 
+			xcmJmxJobAdminStatus=%parm[#4]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.253.8.83.2.2</mevalue>
+		</maskelement>		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+<maskelement>
+			<mename>specific</mename>
+			<mevalue>1</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/xerox/traps/xcmJmxJobStateV2Trap</uei>
+	<event-label>XEROX-JOB-MONITORING-EXT-MIB defined trap event: xcmJmxJobStateV2Trap</event-label>
+	<descr>
+&lt;p&gt;This SMIv2 trap corresponds to IPP 'job-state-changed' event.
+
+The values of 'jmGeneralJobSetIndex' and 'jmJobIndex' for
+use with 'jmJobTable' for this Job are conveyed in the
+instance qualifier (OID suffix) of 'jmJobState'.
+
+Additional variable-bindings MAY be appended to this trap:
+- Systems with the Host Resources MIB (RFC 2790) MAY add
+  'hrSystemDate'
+  (compare to IPP 'printer-current-time')
+- Systems MAY add other variable-bindings from any MIB&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jmJobState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		unknown(2)
+		pending(3)
+		pendingHeld(4)
+		processing(5)
+		processingStopped(6)
+		canceled(7)
+		aborted(8)
+		completed(9)
+	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jmJobStateReasons1&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			xcmJmxJobStateV2Trap trap received 
+			jmJobState=%parm[#1]% 
+			jmJobStateReasons1=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.253.8.83.2.3</mevalue>
+		</maskelement>		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+<maskelement>
+			<mename>specific</mename>
+			<mevalue>1</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/xerox/traps/xcmJmxJobCreatedV2Trap</uei>
+	<event-label>XEROX-JOB-MONITORING-EXT-MIB defined trap event: xcmJmxJobCreatedV2Trap</event-label>
+	<descr>
+&lt;p&gt;This SMIv2 trap corresponds to IPP 'job-created' event.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jmJobState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		unknown(2)
+		pending(3)
+		pendingHeld(4)
+		processing(5)
+		processingStopped(6)
+		canceled(7)
+		aborted(8)
+		completed(9)
+	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jmJobStateReasons1&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jmNumberOfInterveningJobs&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			xcmJmxJobCreatedV2Trap trap received 
+			jmJobState=%parm[#1]% 
+			jmJobStateReasons1=%parm[#2]% 
+			jmNumberOfInterveningJobs=%parm[#3]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.253.8.83.2.4</mevalue>
+		</maskelement>		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+<maskelement>
+			<mename>specific</mename>
+			<mevalue>1</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/xerox/traps/xcmJmxJobCompletedV2Trap</uei>
+	<event-label>XEROX-JOB-MONITORING-EXT-MIB defined trap event: xcmJmxJobCompletedV2Trap</event-label>
+	<descr>
+&lt;p&gt;This SMIv2 trap corresponds to IPP 'job-completed' event.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jmJobState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		unknown(2)
+		pending(3)
+		pendingHeld(4)
+		processing(5)
+		processingStopped(6)
+		canceled(7)
+		aborted(8)
+		completed(9)
+	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jmJobStateReasons1&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jmJobKOctetsProcessed&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jmJobImpressionsCompleted&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			xcmJmxJobCompletedV2Trap trap received 
+			jmJobState=%parm[#1]% 
+			jmJobStateReasons1=%parm[#2]% 
+			jmJobKOctetsProcessed=%parm[#3]% 
+			jmJobImpressionsCompleted=%parm[#4]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.253.8.83.2.5</mevalue>
+		</maskelement>		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+<maskelement>
+			<mename>specific</mename>
+			<mevalue>1</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/xerox/traps/xcmJmxJobStoppedV2Trap</uei>
+	<event-label>XEROX-JOB-MONITORING-EXT-MIB defined trap event: xcmJmxJobStoppedV2Trap</event-label>
+	<descr>
+&lt;p&gt;This SMIv2 trap corresponds to IPP 'job-stopped' event.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jmJobState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		unknown(2)
+		pending(3)
+		pendingHeld(4)
+		processing(5)
+		processingStopped(6)
+		canceled(7)
+		aborted(8)
+		completed(9)
+	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jmJobStateReasons1&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jmJobKOctetsProcessed&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jmJobImpressionsCompleted&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			xcmJmxJobStoppedV2Trap trap received 
+			jmJobState=%parm[#1]% 
+			jmJobStateReasons1=%parm[#2]% 
+			jmJobKOctetsProcessed=%parm[#3]% 
+			jmJobImpressionsCompleted=%parm[#4]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.253.8.83.2.6</mevalue>
+		</maskelement>		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+<maskelement>
+			<mename>specific</mename>
+			<mevalue>1</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/xerox/traps/xcmJmxJobConfigV2Trap</uei>
+	<event-label>XEROX-JOB-MONITORING-EXT-MIB defined trap event: xcmJmxJobConfigV2Trap</event-label>
+	<descr>
+&lt;p&gt;This SMIv2 trap corresponds to IPP 'job-config-changed' event.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jmJobState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		unknown(2)
+		pending(3)
+		pendingHeld(4)
+		processing(5)
+		processingStopped(6)
+		canceled(7)
+		aborted(8)
+		completed(9)
+	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jmJobStateReasons1&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jmNumberOfInterveningJobs&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			xcmJmxJobConfigV2Trap trap received 
+			jmJobState=%parm[#1]% 
+			jmJobStateReasons1=%parm[#2]% 
+			jmNumberOfInterveningJobs=%parm[#3]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.253.8.83.2.7</mevalue>
+		</maskelement>		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+<maskelement>
+			<mename>specific</mename>
+			<mevalue>1</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/xerox/traps/xcmJmxJobProgressV2Trap</uei>
+	<event-label>XEROX-JOB-MONITORING-EXT-MIB defined trap event: xcmJmxJobProgressV2Trap</event-label>
+	<descr>
+&lt;p&gt;This SMIv2 trap corresponds to an IPP 'job-progress' event.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jmJobKOctetsPerCopyRequested&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jmJobKOctetsProcessed&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jmJobImpressionsPerCopyRequested&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	jmJobImpressionsCompleted&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			xcmJmxJobProgressV2Trap trap received 
+			jmJobKOctetsPerCopyRequested=%parm[#1]% 
+			jmJobKOctetsProcessed=%parm[#2]% 
+			jmJobImpressionsPerCopyRequested=%parm[#3]% 
+			jmJobImpressionsCompleted=%parm[#4]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.253.8.59.19.4</mevalue>
+		</maskelement>		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+<maskelement>
+			<mename>specific</mename>
+			<mevalue>1</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/xerox/traps/xcmJobV2AlertNew</uei>
+	<event-label>XEROX-JOB-MONITORING-MIB defined trap event: xcmJobV2AlertNew</event-label>
+	<descr>
+&lt;p&gt;This trap is sent whenever the state of a job changes.  The
+'state of a job' is comprised by the aggregate values of the
+xcmJobCurrentState, xcmJobPriority, xcmJobStateReasons,
+xcmJobXStateReasons, xcmJobX2StateReasons,
+xcmDevicesAssigned and xcmDeviceStateOfDevicesAssigned
+fields of the job's table entries:  This notification is
+sent whenever any of these values changes with the following
+exceptions:
+
+1. Changes in xcmDeviceStateOfDevicesAssigned shall only
+generate traps when the job is in the processing state
+(NOTE - xcmJMDevicesAssignedGroup is deprecated)
+
+2. Changes in xcmJobStateReasons, xcmJobXStateReasons, and
+xcmJobX2StateReasons shall only generate traps when the job is
+in the processing state (rare).  The normal polling cycle will
+pick up any changes while the job is not in the processing
+state.  Since most changes in reasons also accompany a job state
+change, the chances that a change in a reason will have to wait
+for the normal polling cycle is very small.  For example, a
+requester further modifies a held job adding more reasons for it
+to be held will have to wait for the polling cycle, since the
+job does not change state (remaining in the held state).
+
+
+NOTE - the hrDeviceIndex is included for convenience, even
+though the Printer MIB (RFC 1759) doesn't include hrDeviceIndex
+in its traps.  Then the management station doesn't have to parse
+the received varBind OIDs on a trap in order to discover which
+device trapped.
+
+NOTE - the addition of an entire row to the job tables
+corresponds to the acceptance of another job by the server.  The
+state of the job changes from unknown to a specific value
+(usually pending).  Therefore, the agent shall generate a trap
+when a job is accepted (so that the management station can
+display the newly arrived job in a timely fashion).
+
+Similarly when the server removes a job because the job has been
+in the completed state for a sufficient time or the job has been
+deleted by a Delete operation, the SNMP agent shall reflect
+that removal by removing the row from the job tables, and shall
+generate a trap (since the state of the job has changed to
+non-existent).
+
+The IETF Printer MIB maintains a table which serves as a sort
+of 'audit-trail' of recent alerts.  There is no need for such
+a table here, since the job's tables will serve virtually the
+same purpose.
+
+As with all SNMP notifications, critical applications cannot
+completely rely upon delivery:  some amount of polling is
+recommended.
+
+The variable-bindings of this trap have been chosen to give the
+minimum of information:  the xcmJobIdentifierOnSystem
+value and hrDeviceIndex are provided.  With these an application
+is able to obtain the full job table entry.  An application has
+to look at the job tables anyway.  The time of the alert is
+returned as part of any SNMP trap.
+
+The hrDeviceIndex maps one-to-one with the PWG Job Mon
+jmGeneralJobSetIndex.  (The PWG Job Mon does not require the
+Host Resources MIB, so the name of the primary index for all PWG
+Job Mon tables is not hrDeviceIndex, but serves the same
+purpose of allowing multiple instances in a single device or
+server.
+
+The Job Alert's special semantics is covered by U.S. patent
+5778183.
+This notification has the following special semantics:
+
+    o  If the job's xcmJobClientId field is not empty,
+       its value will also be appended to trap object ID.
+
+       NOTE: If the format of the xcmJobClientId is dotted
+       decimal representation, then it will be encoded as a BER
+       binary OID appended to the trap object ID.
+
+
+       NOTE: The BER binary OID shall not include the ASN.1/BER
+       tag of 6 indicating an OID and shall not include the
+       ASN.1/BER length field in octets of the OID.
+
+This trap OID qualifier allows job-submission and monitoring
+applications to limit the alerts they receive to ones generated
+by jobs which they have submitted.
+
+NOTE: The sum of the trap var bind values must be less than can
+fit into a PDU on any transport, roughly 540 octets on some
+transports.  Thus implementers are warned to minimize the length
+of the xcmJobClientId and xcmJobIdentifierOnSystem objects.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	hrDeviceIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	xcmJobIdentifierOnSystem&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			xcmJobV2AlertNew trap received 
+			hrDeviceIndex=%parm[#1]% 
+			xcmJobIdentifierOnSystem=%parm[#2]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.253.8.59.20.4</mevalue>
+		</maskelement>		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+<maskelement>
+			<mename>specific</mename>
+			<mevalue>1</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/xerox/traps/xcmDocV2AlertNew</uei>
+	<event-label>XEROX-JOB-MONITORING-MIB defined trap event: xcmDocV2AlertNew</event-label>
+	<descr>
+&lt;p&gt;This trap is sent whenever the state of one of the documents in
+a job changes.  The state of a single document is represented in
+the xcmDocGenBasicTable column: xcmDocState.
+
+The job's xcmJobIdentifierOnSystem and the document's
+xcmDocSequenceNumber are included in the trap's variable
+bindings; these can be used to reference the document's
+xcmDocGenBasicTable entry.
+
+NOTE - the addition of an entire row to the document tables
+corresponds to the acceptance of another document (in a job) by
+the server.  The state of the document changes from unknown to a
+specific value (usually transfer pending).  Therefore, the agent
+generates a trap when a document (within a job) is accepted (so
+that the management station can display the newly arrived
+document in a timely fashion).
+
+This notification has the following special semantics:
+
+    1  The agent shall append the document's job's
+       xcmJobClientId to the trap object ID, if the document's
+       job's xcmJobClientId field is not empty.
+       NOTE: If the format of the xcmJobClientId is dotted
+
+
+       decimal representation, then it will be encoded as a BER
+       binary OID appended to the trap object ID.
+
+       NOTE: The BER binary OID shall not include the ASN.1/BER
+       tag of 6 indicating an OID and shall not include the
+       ASN.1/BER length field in octets of the OID.
+
+    2  The agent shall append the value of the document's
+       xcmDocSequenceNumber field to the trap object ID.
+
+These trap OID qualifiers allow job-submission and monitoring
+applications to specify exactly which alerts they are interested
+in and to limit the alerts they receive to ones generated by
+jobs or jobs and documents that they have submitted.
+
+NOTE: The sum of the trap var bind values must be less than can
+fit into a PDU on any transport, roughly 540 octets on some
+transports.  Thus implementers are warned to minimize the length
+of the xcmJobClientId and xcmJobIdentifierOnSystem objects.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	hrDeviceIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	xcmJobIdentifierOnSystem&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	xcmDocSequenceNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			xcmDocV2AlertNew trap received 
+			hrDeviceIndex=%parm[#1]% 
+			xcmJobIdentifierOnSystem=%parm[#2]% 
+			xcmDocSequenceNumber=%parm[#3]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.253.8.57.3.2</mevalue>
+		</maskelement>		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+<maskelement>
+			<mename>specific</mename>
+			<mevalue>1</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/xerox/traps/xcmRsrcV2Event</uei>
+	<event-label>XEROX-RESOURCES-MIB defined trap event: xcmRsrcV2Event</event-label>
+	<descr>
+&lt;p&gt;This trap is sent whenever ANY object in a resource entry
+or in a subordinate entry changes.
+
+This notification has the following special semantics:
+
+    o   Any resource entry object (e.g. 'xcmRsrcPersistence'
+        in the Resource table) whose value has changed SHOULD
+        also be added to this trap's variable-bindings.
+    o   Any subordinate entry object (e.g. 'xcmFontRowStatus'
+        in the Font table) whose value has changed MAY
+        also be added to this trap's variable-bindings.
+
+The above special semantics permit optimizations by agreement
+between SNMP manager and SNMP agent implementers.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	xcmRsrcRowStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		active(1)
+		notInService(2)
+		notReady(3)
+		createAndGo(4)
+		createAndWait(5)
+		destroy(6)
+	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			xcmRsrcV2Event trap received 
+			xcmRsrcRowStatus=%parm[#1]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.253.8.74.4.1</mevalue>
+		</maskelement>		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+<maskelement>
+			<mename>specific</mename>
+			<mevalue>1</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/xerox/traps/xcmSvcMonQueueExtV2Event</uei>
+	<event-label>XEROX-SERVICE-MONITORING-MIB defined trap event: xcmSvcMonQueueExtV2Event</event-label>
+	<descr>
+&lt;p&gt;This is the definition of the SNMPv2 trap sent whenever
+'xcmSvcMonQueue[State|Conditions|FaultCount]' changes.
+
+Note:   The variable-bindings of this trap have been chosen to
+specify a complete associated queue status change while keeping
+trap messages reasonably concise (generally a few hundred octets
+at most).
+
+This notification has the following special semantics:
+
+    o   The queue's 'xcmSvcMonQueueIndex' field
+        value SHALL be appended to this trap object ID,
+        as a BER binary OID suffix.
+
+This trap OID qualifier allows service management/monitoring
+applications to limit the alerts they receive to ones generated 
+by associated queues of interest.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	xcmSvcMonQueueIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	xcmSvcMonQueueOnSystem&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		true(1)
+		false(2)
+	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	xcmSvcMonQueueState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		other(1)
+		unknown(2)
+		inoperative(3)
+		testing(4)
+		closed(5)
+		closing(6)
+		opening(7)
+		recovering(8)
+		opened(9)
+	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	xcmSvcMonQueueConditions&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	xcmSvcMonQueueFaultCount&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	xcmSvcMonQueueFaultCode&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	xcmSvcMonQueueFaultString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#7]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			xcmSvcMonQueueExtV2Event trap received 
+			xcmSvcMonQueueIndex=%parm[#1]% 
+			xcmSvcMonQueueOnSystem=%parm[#2]% 
+			xcmSvcMonQueueState=%parm[#3]% 
+			xcmSvcMonQueueConditions=%parm[#4]% 
+			xcmSvcMonQueueFaultCount=%parm[#5]% 
+			xcmSvcMonQueueFaultCode=%parm[#6]% 
+			xcmSvcMonQueueFaultString=%parm[#7]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.253.8.74.5.1</mevalue>
+		</maskelement>		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+<maskelement>
+			<mename>specific</mename>
+			<mevalue>1</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/xerox/traps/xcmSvcMonServiceV2Event</uei>
+	<event-label>XEROX-SERVICE-MONITORING-MIB defined trap event: xcmSvcMonServiceV2Event</event-label>
+	<descr>
+&lt;p&gt;This trap is sent whenever
+'XcmSvcMonService[CurrentState|Conditions]' changes.
+
+Note:   The variable-bindings of this trap have been chosen to
+specify a complete service status change while keeping
+trap messages reasonably concise (generally a few hundred octets
+at most).
+
+This notification has the following special semantics:
+
+    o   The service's 'xcmSvcMonServiceIndex' field
+        value SHALL be appended to this trap object ID,
+        as a BER binary OID suffix.
+
+This trap OID qualifier allows service management/monitoring
+applications to limit the alerts they receive to ones generated 
+by services of interest.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	xcmSvcMonServiceIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	xcmSvcMonServiceCurrentState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		ready(1)
+		onRequest(2)
+		unavailable(3)
+		unknown(4)
+		busy(5)
+		initializing(6)
+		terminating(7)
+	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	xcmSvcMonServicePreviousState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		ready(1)
+		onRequest(2)
+		unavailable(3)
+		unknown(4)
+		busy(5)
+		initializing(6)
+		terminating(7)
+	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	xcmSvcMonServiceConditions&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			xcmSvcMonServiceV2Event trap received 
+			xcmSvcMonServiceIndex=%parm[#1]% 
+			xcmSvcMonServiceCurrentState=%parm[#2]% 
+			xcmSvcMonServicePreviousState=%parm[#3]% 
+			xcmSvcMonServiceConditions=%parm[#4]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.253.8.74.7.1</mevalue>
+		</maskelement>		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+<maskelement>
+			<mename>specific</mename>
+			<mevalue>1</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/xerox/traps/xcmSvcMonServiceMgmtV2Event</uei>
+	<event-label>XEROX-SERVICE-MONITORING-MIB defined trap event: xcmSvcMonServiceMgmtV2Event</event-label>
+	<descr>
+&lt;p&gt;This trap is sent whenever an 'XcmSvcMonServiceMgmtOperation'
+completes, ie, when 'xcmSvcMonServiceMgmtStatus' becomes the
+completed operation status and 'XcmSvcMonServiceMgmtInProgress'
+goes from 'true' to 'false'.
+
+Note:   The variable-bindings of this trap have been chosen to
+specify a complete management operation result while keeping
+trap messages reasonably concise (generally a few hundred octets
+at most).
+
+This notification has the following special semantics:
+
+    o   The service's 'xcmSvcMonServiceIndex' field
+        value SHALL be appended to this trap object ID,
+        as a BER binary OID suffix.
+
+This trap OID qualifier allows service management/monitoring
+applications to limit the alerts they receive to ones generated 
+
+
+by requests they have submitted.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	xcmSvcMonServiceIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	xcmSvcMonServiceMgmtOperation&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		none(0)
+		other(1)
+		unknown(2)
+		serviceCreate(1201)
+		serviceDelete(1202)
+		serviceList(1203)
+		serviceSet(1204)
+		serviceClean(1205)
+		serviceDisable(1206)
+		serviceEnable(1207)
+		servicePause(1208)
+		serviceResume(1209)
+		serviceShutdown(1210)
+		serviceManage(2201)
+		serviceRestart(2202)
+		serviceInstall(2221)
+		serviceUpgrade(2222)
+		serviceBackup(2223)
+		serviceRestore(2224)
+		serviceConfigure(2225)
+		serviceDiagnose(2226)
+		serviceResetCounters(2231)
+		serviceResetWarm(2232)
+		serviceResetCold(2233)
+		serviceResetFactory(2234)
+		serviceLogin(2241)
+		serviceLogout(2242)
+	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	xcmSvcMonServiceMgmtStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		noError(0)
+		tooBig(1)
+		noSuchName(2)
+		badValue(3)
+		readOnly(4)
+		genErr(5)
+		noAccess(6)
+		wrongType(7)
+		wrongLength(8)
+		wrongEncoding(9)
+		wrongValue(10)
+		noCreation(11)
+		inconsistentValue(12)
+		resourceUnavailable(13)
+		commitFailed(14)
+		undoFailed(15)
+		authorizationError(16)
+		notWritable(17)
+		inconsistentName(18)
+	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			xcmSvcMonServiceMgmtV2Event trap received 
+			xcmSvcMonServiceIndex=%parm[#1]% 
+			xcmSvcMonServiceMgmtOperation=%parm[#2]% 
+			xcmSvcMonServiceMgmtStatus=%parm[#3]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.253.8.76.3.1</mevalue>
+		</maskelement>		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+<maskelement>
+			<mename>specific</mename>
+			<mevalue>1</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/xerox/traps/xcmSimpleJobMgmtV2Event</uei>
+	<event-label>XEROX-SIMPLE-JOB-MGMT-MIB defined trap event: xcmSimpleJobMgmtV2Event</event-label>
+	<descr>
+&lt;p&gt;This trap is sent whenever an 'XcmSimpleJobMgmtOperation'
+completes, ie, when 'xcmSimpleJobMgmtStatus' becomes a
+completed operation status and 'XcmSimpleJobMgmtInProgress'
+goes from 'true' to 'false'.
+
+Note:  The 'hrDeviceIndex' is included for convenience, even
+though the IETF Printer MIB doesn't include 'hrDeviceIndex'
+in its traps.  Then the management station doesn't have to parse
+the received varBind OIDs on a trap in order to discover which 
+device trapped.
+
+Note:   The variable-bindings of this trap have been chosen to
+specify a complete job management operation result while keeping
+trap messages reasonably concise (generally a few hundred octets
+at most).
+
+This notification has the following special semantics:
+
+    o   If the job's 'xcmJobClientId' field is non-empty and
+        it is a valid 'XcmGlobalUniqueID' representation, its
+        value shall ALWAYS be appended to this trap object ID,
+        as a BER binary OID suffix.
+
+        Note:   The BER binary OID suffix shall NOT include the
+
+
+        BER tag of 6 indicating an OID and shall NOT include the
+        BER length field in octets of the OID suffix.
+
+This trap OID qualifier allows job-submission and job-monitoring
+applications to limit the alerts they receive to ones generated 
+by jobs which they have submitted.
+
+Note:   The sum of the trap varBind values must be less than
+can fit into a PDU on any transport, roughly 540 octets on some
+transports.  Thus implementors are warned to minimize the length
+of the 'xcmJobClientId' and 'xcmJobIdentifierOnSystem' objects.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	hrDeviceIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	xcmJobIdentifierOnSystem&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	xcmSimpleJobMgmtOperation&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		none(0)
+		other(1)
+		unknown(2)
+		jobCreate(1401)
+		jobDelete(1402)
+		jobList(1403)
+		jobSet(1404)
+		jobPause(1408)
+		jobResume(1409)
+		jobInterrupt(1411)
+		jobModify(1412)
+		jobPromote(1413)
+		jobRemove(1414)
+		jobResubmit(1415)
+		docDelete(1502)
+		docList(1503)
+		docSet(1504)
+		docModify(1512)
+		docRemove(1514)
+		jobManage(2401)
+		docManage(2501)
+	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	xcmSimpleJobMgmtStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		noError(0)
+		tooBig(1)
+		noSuchName(2)
+		badValue(3)
+		readOnly(4)
+		genErr(5)
+		noAccess(6)
+		wrongType(7)
+		wrongLength(8)
+		wrongEncoding(9)
+		wrongValue(10)
+		noCreation(11)
+		inconsistentValue(12)
+		resourceUnavailable(13)
+		commitFailed(14)
+		undoFailed(15)
+		authorizationError(16)
+		notWritable(17)
+		inconsistentName(18)
+	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			xcmSimpleJobMgmtV2Event trap received 
+			hrDeviceIndex=%parm[#1]% 
+			xcmJobIdentifierOnSystem=%parm[#2]% 
+			xcmSimpleJobMgmtOperation=%parm[#3]% 
+			xcmSimpleJobMgmtStatus=%parm[#4]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+<event>
+	<mask>
+		<maskelement>
+			<mename>id</mename>
+			<mevalue>.1.3.6.1.4.1.253.8.76.4.1</mevalue>
+		</maskelement>		<maskelement>
+			<mename>generic</mename>
+			<mevalue>6</mevalue>
+		</maskelement>
+<maskelement>
+			<mename>specific</mename>
+			<mevalue>1</mevalue>
+		</maskelement>
+	</mask>
+	<uei>uei.opennms.org/vendor/xerox/traps/xcmSimpleJobInterceptV2Event</uei>
+	<event-label>XEROX-SIMPLE-JOB-MGMT-MIB defined trap event: xcmSimpleJobInterceptV2Event</event-label>
+	<descr>
+&lt;p&gt;This trap is sent whenever an 'XcmSimpleJobInterceptOperation'
+completes.
+
+Note:   The variable-bindings of this trap have been chosen to
+specify a complete job intercept operation result while keeping
+trap messages reasonably concise (generally a few hundred octets
+at most).
+
+This notification has the following special semantics:
+
+    o   If 'xcmSimpleJobInterceptClientId' is non-empty and
+        it is a valid 'XcmGlobalUniqueID' representation, its
+        value shall ALWAYS be appended to this trap object ID,
+        as a BER binary OID suffix.
+
+        Note:   The BER binary OID suffix shall NOT include the
+        BER tag of 6 indicating an OID and shall NOT include the
+        BER length field in octets of the OID suffix.
+
+This trap OID qualifier allows job-submission and job-monitoring
+applications to limit the alerts they receive to ones generated 
+
+
+by jobs which they have submitted.
+
+Note:   The sum of the trap varBind values must be less than
+can fit into a PDU on any transport, roughly 540 octets on some
+transports.  Thus implementors are warned to minimize the length
+of the 'xcmJobClientId' and 'xcmJobIdentifierOnSystem' objects.&lt;/p&gt;&lt;table&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	xcmSimpleJobInterceptClientId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	xcmSimpleJobInterceptOperation&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		none(0)
+		other(1)
+		unknown(2)
+		jobCreate(1401)
+		jobDelete(1402)
+		jobList(1403)
+		jobSet(1404)
+		jobPause(1408)
+		jobResume(1409)
+		jobInterrupt(1411)
+		jobModify(1412)
+		jobPromote(1413)
+		jobRemove(1414)
+		jobResubmit(1415)
+		docDelete(1502)
+		docList(1503)
+		docSet(1504)
+		docModify(1512)
+		docRemove(1514)
+		jobManage(2401)
+		docManage(2501)
+	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
+	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+
+	xcmSimpleJobInterceptStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
+	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+		noError(0)
+		tooBig(1)
+		noSuchName(2)
+		badValue(3)
+		readOnly(4)
+		genErr(5)
+		noAccess(6)
+		wrongType(7)
+		wrongLength(8)
+		wrongEncoding(9)
+		wrongValue(10)
+		noCreation(11)
+		inconsistentValue(12)
+		resourceUnavailable(13)
+		commitFailed(14)
+		undoFailed(15)
+		authorizationError(16)
+		notWritable(17)
+		inconsistentName(18)
+	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
+	</descr>
+		<logmsg dest='logndisplay'>&lt;p&gt;
+			xcmSimpleJobInterceptV2Event trap received 
+			xcmSimpleJobInterceptClientId=%parm[#1]% 
+			xcmSimpleJobInterceptOperation=%parm[#2]% 
+			xcmSimpleJobInterceptStatus=%parm[#3]%&lt;/p&gt;
+		</logmsg>
+	<severity>Indeterminate</severity>
+</event>
+
+
+<!-- HTRN Note - Generic Undefined Event from origional Xerox.events.xml file -->
+<event>
+ <mask>
+  <maskelement>
+   <mename>id</mename>
+   <mevalue>.1.3.6.1.4.1.253.%</mevalue>
+  </maskelement>
+  <maskelement>
+   <mename>generic</mename>
+   <mevalue>6</mevalue>
+  </maskelement>
+ </mask>
+ <uei>uei.opennms.org/vendor/Xerox/traps/EnterpriseDefault</uei>
+ <event-label>OpenNMS-defined trap event: Xerox EnterpriseDefault</event-label>
+ <descr>
+ &lt;p&gt;This is the default event format used when an
+ enterprise specific event (trap) is received from a Xerox device for which no
+ format has been configured (i.e. no event definition
+ exists).&lt;/p&gt;
+ </descr>
+ <logmsg dest='logndisplay'>
+ Received unformatted enterprise event (enterprise:%id% generic:%generic%
+ specific:%specific%). %parm[##]%
+ args: %parm[all]%
+ </logmsg>
+ <severity>Indeterminate</severity>
+</event>
+
+<!-- End of Xerox Traps -->
+</events>
