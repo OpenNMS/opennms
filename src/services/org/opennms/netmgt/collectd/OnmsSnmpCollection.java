@@ -60,6 +60,10 @@ public class OnmsSnmpCollection {
     public String getName() {
         return m_params.getCollectionName();
     }
+    
+    public int getSnmpPort() {
+        return m_params.getSnmpPort();
+    }
 
     public Category log() {
         return ThreadCategory.getInstance(getClass());
