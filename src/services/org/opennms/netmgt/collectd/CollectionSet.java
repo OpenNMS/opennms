@@ -330,6 +330,9 @@ public class CollectionSet implements Collectable {
     public SnmpAgentConfig getAgentConfig() {
         SnmpAgentConfig agentConfig = getCollectionAgent().getAgentConfig();
         agentConfig.setMaxVarsPerPdu(computeMaxVarsPerPdu(agentConfig));
+        int snmpPort = m_snmpCollection.getSnmpPort();
+        if (snmpPort > -1)
+            agentConfig.setPort(snmpPort);
         return agentConfig;
     }
 

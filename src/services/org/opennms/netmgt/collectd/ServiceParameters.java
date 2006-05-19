@@ -104,4 +104,8 @@ public class ServiceParameters {
     	return ParameterMap.getKeyedString(m_parameters, "collection", "default");
     }
 
+    public int getSnmpPort() {
+        return ParameterMap.getKeyedInteger(getParameters(), "port", -1);
+    }
+
 }
