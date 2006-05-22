@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry excluding="**/classlist" output=".deployables/opennms/WEB-INF/classes" kind="src" path="src/core"/>
 	<classpathentry excluding="**/classlist|org/opennms/install/MANIFEST.MF|org/opennms/install/installer.properties" kind="src" path="src/install"/>
+	<classpathentry kind="src" path="opennms-util/src/main/java"/>
+	<classpathentry kind="src" path="opennms-util/src/test/java"/>
 	<classpathentry excluding="**/classlist" kind="src" path="src/joesnmp"/>
 	<classpathentry excluding="**/classlist" kind="src" path="src/test"/>
 	<classpathentry excluding="**/classlist" output=".deployables/opennms/WEB-INF/classes" kind="src" path="src/report"/>
