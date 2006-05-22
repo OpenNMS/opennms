@@ -71,7 +71,7 @@ your distribution.
 
   <!--source directories -->
   <property name="source.dir" value="${basedir}/src"/>
-  <property name="core.source.dir" value="${source.dir}/core"/>
+  <property name="core.source.dir" value="${basedir}/opennms-util/src/main/java"/>
   <property name="joesnmp.source.dir" value="${source.dir}/joesnmp"/>
   <property name="postgresql.source.dir" value="${source.dir}/postgresql"/>
   <property name="report.source.dir" value="${source.dir}/report"/>
@@ -184,6 +184,7 @@ your distribution.
  <path id="test.java.path">
   <pathelement path="${basedir}/model-import/src/test/java"/>
   <pathelement path="${basedir}/opennms-model/src/test/java"/>
+  <pathelement path="${basedir}/opennms-util/src/test/java"/>
  </path>
 	
   <path id="javadoc.sources">
@@ -680,7 +681,7 @@ your distribution.
     </fail>
   </target>
 
-  <target name="compile.check" depends="prep">
+  <target name="compile.check" depends="prep" unless="dont.check">
     <condition property="compile.check.postgresql.include">
       <available file="${build.postgresql.include.dir}/postgres.h"/>
     </condition>
@@ -1508,7 +1509,7 @@ OpenNMS as part of the post-install.
        <fileset dir="${source.dir}/install">
          <include name="**/*Test.java" />
        </fileset>
-       <fileset dir="${source.dir}/core">
+       <fileset dir="${basedir}/opennms-util/src/test/java">
          <include name="**/*Test.java" />
        </fileset>
      </batchtest>
