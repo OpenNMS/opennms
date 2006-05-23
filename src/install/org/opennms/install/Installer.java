@@ -2304,6 +2304,7 @@ public class Installer {
 					obj = null;
 				}
 
+                // MH - Need to look at this for UserNotifiedID
 				if (table.equals("outages") && name.equals("outageid")) {
 					obj = new Integer(current_row + 1);
 				}

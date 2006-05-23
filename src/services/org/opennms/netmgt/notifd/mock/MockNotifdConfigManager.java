@@ -50,6 +50,7 @@ public class MockNotifdConfigManager extends NotifdConfigManager {
         
     private String m_configString;
     private String m_nextNotifIdSql;
+    private String m_nextUserNotifIdSql;
 
     /*
      * init the mock config
@@ -93,4 +94,14 @@ public class MockNotifdConfigManager extends NotifdConfigManager {
     public void setNextNotifIdSql(String sql) {
         m_nextNotifIdSql = sql;
     }
+
+    public String getNextUserNotifIdSql() throws IOException, MarshalException, ValidationException {
+        // TODO Auto-generated method stub
+        return m_nextUserNotifIdSql;
+    }
+
+    public void setNextUserNotifIdSql(String sql) {
+        m_nextUserNotifIdSql = sql;
+    }
+    
 }

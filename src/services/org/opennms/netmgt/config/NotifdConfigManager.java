@@ -227,5 +227,9 @@ public abstract class NotifdConfigManager {
         return parmmatch;
     }
 
+    public String getNextUserNotifIdSql() throws IOException, MarshalException, ValidationException {
+        return getConfiguration().getNextUserNotifId();
+    }
+
 
 }

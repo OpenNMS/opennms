@@ -217,7 +217,7 @@ public class NotificationTask extends Thread {
                         cntct = getContactInfo(m_commands[i].getName());
                         try {
                             m_notifd.getNotificationManager().updateNoticeWithUserInfo(m_user.getUserId(), m_notifyId, m_commands[i].getName(), cntct, m_autoNotify);
-                        } catch (SQLException e) {
+                        } catch (Exception e) {
                             log.error("Could not insert notice info into database, aborting send notice...", e);
                             continue;
                         }
