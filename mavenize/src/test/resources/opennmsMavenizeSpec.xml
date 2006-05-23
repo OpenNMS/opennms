@@ -12,18 +12,17 @@
 	groupId="org.opennms" artifactId="opennms" version="2.0-SNAPSHOT" name="OpenNMS">
 
 	<!-- core module -->
-	<module module-id="opennms-core" module-type="jar"
-		module-name="OpenNMS Core Utilities">
+	<module module-id="opennms-util" module-type="jar"
+		module-name="OpenNMS Utilities">
 		<sources source-type="java">
-			<fileset dir="${opennms.dir}/src/core">
+			<fileset dir="${opennms.dir}/opennms-util/src/main/java">
 				<include name="**/*.java"/>
 				<include name="**/*.html"/>
-				<exclude name="**/*Test*.java"/>
 			</fileset>
 		</sources>
 		<sources source-type="test">
-			<fileset dir="${opennms.dir}/src/core">
-				<include name="**/*Test*.java"/>
+			<fileset dir="${opennms.dir}/opennms-util/src/test/java">
+				<include name="**/*.java"/>
 			</fileset>
 		</sources>
 		<dependencies />
@@ -110,7 +109,7 @@
 		</plugin>
 		<dependencies>
                   <module-dependency module-id="opennms-web"/>
-                  <module-dependency module-id="opennms-core"/>
+                  <module-dependency module-id="opennms-util"/>
                   <module-dependency module-id="opennms-test" scope="test"/>
 		  <dependency groupId="postgresql" artifactId="postgresql" version="8.1-404.jdbc3"/>
 		</dependencies>
@@ -132,7 +131,7 @@
 			</fileset>
 		</sources>
 		<dependencies>
-                  <module-dependency module-id="opennms-core"/>
+                  <module-dependency module-id="opennms-util"/>
 		</dependencies>
 	</module>
 
@@ -176,7 +175,7 @@
 		</sources>
 
 		<dependencies>
-                  	<module-dependency module-id="opennms-core"/>
+                  	<module-dependency module-id="opennms-util"/>
                   	<module-dependency module-id="opennms-config"/>
                   	<module-dependency module-id="opennms-snmp-api"/>
 			<dependency groupId="c3p0" artifactId="c3p0"
@@ -231,7 +230,7 @@
 			</fileset>
 		</sources>
 		<dependencies>
-			<module-dependency module-id="opennms-core" />
+			<module-dependency module-id="opennms-util" />
 		</dependencies>
 	</module>
 
@@ -248,7 +247,7 @@
 			</fileset>
 		</sources>
 		<dependencies>
-			<module-dependency module-id="opennms-core" />
+			<module-dependency module-id="opennms-util" />
 			<module-dependency module-id="opennms-config-utils" />
 			<module-dependency module-id="opennms-model" />
 			<dependency groupId="castor" artifactId="castor"
@@ -289,7 +288,7 @@
 			</fileset>
 		</sources>
 		<dependencies>
-			<module-dependency module-id="opennms-core" />
+			<module-dependency module-id="opennms-util" />
 			<module-dependency module-id="opennms-db" />
 			<dependency groupId="castor" artifactId="castor"
 				version="0.9.6" />
@@ -314,7 +313,7 @@
 				</fileset>
 			</sources>
 			<dependencies>
-				<module-dependency module-id="opennms-core" />
+				<module-dependency module-id="opennms-util" />
 			</dependencies>
 		</module>
 
@@ -346,7 +345,7 @@
 				</fileset>
 			</sources>
 			<dependencies>
-				<module-dependency module-id="opennms-core" />
+				<module-dependency module-id="opennms-util" />
 				<module-dependency module-id="opennms-config-utils" />
 			</dependencies>
 		</module>
@@ -429,7 +428,7 @@
 				</fileset>
 			</sources>
 			<dependencies>
-				<module-dependency module-id="opennms-core" />
+				<module-dependency module-id="opennms-util" />
 			</dependencies>
 		</module>
 
@@ -570,7 +569,7 @@
 			</sources>
 		-->
 		<dependencies>
-			<module-dependency module-id="opennms-core" />
+			<module-dependency module-id="opennms-util" />
 			<module-dependency module-id="opennms-config" />
 			<module-dependency module-id="opennms-config-utils" />
 			<module-dependency module-id="opennms-db" />
@@ -620,12 +619,8 @@
 				artifactId="spring-jdbc" version="1.2.5" />
 			<dependency groupId="bsf" artifactId="bsf" version="2.2" />
 			<dependency groupId="bsh" artifactId="bsh" version="1.2b7" />
-			<dependency groupId="geronimo-spec"
-				artifactId="geronimo-spec-javamail" version="1.3.1-rc5"
-				scope="provided" />
-			<dependency groupId="geronimo-spec"
-				artifactId="geronimo-spec-activation" version="1.0.2-rc4"
-				scope="provided" />
+			<dependency groupId="javax.mail" artifactId="mail" version="1.4" />
+			<dependency groupId="javax.activation" artifactId="activation" version="1.1" />
 			<!-- needed to add gnujaxp to opennms repo to get this to work -->
 			<dependency groupId="jfree" artifactId="jfreechart"
 				version="1.0.0-rc1" />
@@ -638,8 +633,6 @@
 				version="1.8.0.1" scope="test" />
 			<dependency groupId="alt.dev.jmta" artifactId="jmta"
 				version="1.0" scope="test" />
-			<dependency groupId="javax.mail" artifactId="mail"
-				version="1.3.2" scope="test" />
 			<!-- plugin/monitor dependencies -->
 			<dependency groupId="openldap" artifactId="jldap"
 				version="2005.10.03" />
@@ -671,7 +664,7 @@
 			</fileset>
 		</sources>
 		<dependencies>
-			<module-dependency module-id="opennms-core" />
+			<module-dependency module-id="opennms-util" />
 			<module-dependency module-id="opennms-services" />
 			<!-- <module-dependency module-id="opennms-services" scope="test" type="test-jar" /> -->
 			<module-dependency module-id="opennms-config-utils" />
@@ -817,8 +810,6 @@
 		   <module-dependency module-id="opennms-snmp-joesnmp"/>
 		   <module-dependency module-id="opennms-snmp-snmp4j"/>
 		   <dependency groupId="postgresql" artifactId="postgresql" version="8.1-404.jdbc3" scope="runtime"/>
-		   <dependency groupId="javax.mail" artifactId="mail" version="1.3.2" scope="runtime"/>
-		   <dependency groupId="javax.activation" artifactId="activation" version="1.0.2" scope="runtime"/>
 		   
 		</dependencies>
 	</module>
