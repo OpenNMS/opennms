@@ -50,7 +50,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Category;
-import org.opennms.netmgt.collectd.RrdRepository;
 
 /**
  * Provides queueing implementation of RrdStrategy.
