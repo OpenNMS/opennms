@@ -728,9 +728,11 @@ create index notifications_eventuei_idx on notifications (eventuei);
 --########################################################################
 --#
 --# This table contains the following fields:
+--# id			: ID column for the table
 --# userID      : The user id of the person being paged, from the users.xml
 --#               file.
 --# notifyID    : The index of the row from the notification table.
+--# notifyTime	: The timestamp of when the notification was sent
 --# media       : A string describing the type of contact being made, ie text
 --#               page, numeric page, email, etc...
 --# contactInfo : A field for storing the information used to contact the user,
@@ -741,6 +743,7 @@ create index notifications_eventuei_idx on notifications (eventuei);
 --########################################################################
 
 create table usersNotified (
+		id				integer not null, 
         userID          varchar(256) not null,
         notifyID        integer,
         notifyTime      timestamp without time zone,
@@ -748,6 +751,7 @@ create table usersNotified (
         contactinfo     varchar(64),
         autonotify      char(1),
 
+	constraint pk_userNotificationID primary key (id),
 	constraint fk_notifID2 foreign key (notifyID) references notifications (notifyID) ON DELETE CASCADE
 );
 
@@ -1037,6 +1041,11 @@ create sequence vulnNxtId minvalue 1;
 --#          sequence, column, table
 --# install: catNxtId id   categories
 create sequence catNxtId minvalue 1;
+
+--# Sequence for the id column in the usersNotified table
+--#          sequence, column, table
+--# install: userNotifNxtId id   usersNotified
+create sequence userNotifNxtId minvalue 1;
 
 --##################################################################
 --# The following command adds the initial loopback poller entry to

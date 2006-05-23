@@ -225,12 +225,14 @@ public class MockDatabase implements DataSource, EventWriter {
                 "       );");
         
         update("create table usersNotified (\n" + 
+                "        id              integer not null, " +
                 "        userID          varchar(256) not null," + 
                 "        notifyID        integer," + 
                 "        notifyTime      timestamp," + 
                 "        media           varchar(32)," + 
                 "        contactinfo     varchar(64)," + 
                 "        autonotify         char(1)," + 
+                "           constraint pk_userNotificationID primary key (id)," +
                 "           constraint fk_notifID2 foreign key (notifyID) references notifications (notifyID) ON DELETE CASCADE" + 
                 ");");
         
@@ -271,6 +273,7 @@ public class MockDatabase implements DataSource, EventWriter {
         update("create sequence serviceNxtId start with 1;");
         update("create sequence alarmNxtId start with 1;");
         update("create sequence notifNxtId start with 1;");
+        update("create sequence userNotifNxtId start with 1;");
         update("create table seqQueryTable (row integer);");
         update("insert into seqQueryTable (row) values (0);");
         
@@ -688,6 +691,10 @@ public class MockDatabase implements DataSource, EventWriter {
 
     public int getLoginTimeout() throws SQLException {
         return DriverManager.getLoginTimeout();
+    }
+
+    public String getNextUserNotifIdSql() {
+        return "select next value for userNotifNxtId from seqQueryTable";
     }
     
 

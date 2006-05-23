@@ -34,6 +34,8 @@
 
       <attribute name="next-notif-id" type="string" use="required"/>
 
+      <attribute name="next-user-notif-id" type="string" use="required"/>
+
       <attribute name="next-group-id" type="string" use="required"/>
 
       <attribute name="outstanding-notices-sql" type="string" use="required"/>

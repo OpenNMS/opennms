@@ -293,14 +293,20 @@ public abstract class NotificationManager {
      *         database trouble
      */
     public synchronized int getNoticeId() throws SQLException, IOException, MarshalException, ValidationException {
-        int id = 0;
-    
-        Connection connection = null;
-    
-        try {
+        return getNxtId(m_configManager.getNextNotifIdSql());
+    }
+
+    public synchronized int getUserNotifId() throws SQLException, IOException, MarshalException, ValidationException {
+        return getNxtId(m_configManager.getNextUserNotifIdSql());
+    }
+
+	private int getNxtId(String sql) throws SQLException {
+		int id = 0;
+		Connection connection = null;
+		try {
             connection = getConnection();
             Statement stmt = connection.createStatement();
-            ResultSet results = stmt.executeQuery(m_configManager.getNextNotifIdSql());
+            ResultSet results = stmt.executeQuery(sql);
     
             results.next();
     
@@ -316,8 +322,8 @@ public abstract class NotificationManager {
                 }
             }
         }
-        return id;
-    }
+		return id;
+	}
     /**
      * This method returns a boolean indicating if the page has been responded
      * to by any member of the group the page was sent to.
@@ -525,25 +531,29 @@ public abstract class NotificationManager {
         }
     }
     /**
+     * @throws IOException 
+     * @throws ValidationException 
+     * @throws MarshalException 
      * 
      */
-    public void updateNoticeWithUserInfo(String userId, int noticeId, String media, String contactInfo, String autoNotify) throws SQLException {
+    public void updateNoticeWithUserInfo(String userId, int noticeId, String media, String contactInfo, String autoNotify) throws SQLException, MarshalException, ValidationException, IOException {
         Category log = ThreadCategory.getInstance(getClass());
         if (noticeId < 0) return;
-        log.debug("updating usersnotified: User = " + userId + ", notice ID = " + noticeId + ", conctactinfo = " + contactInfo + ", media = " + media + ", autoNotify = " + autoNotify);
+        log.debug("updating usersnotified: ID = " + getUserNotifId()+ " User = " + userId + ", notice ID = " + noticeId + ", conctactinfo = " + contactInfo + ", media = " + media + ", autoNotify = " + autoNotify);
         Connection connection = null;
         try {
             connection = getConnection();
-            PreparedStatement insert = connection.prepareStatement("INSERT INTO usersNotified (userid, notifyid, notifytime, media, contactinfo, autonotify) values (?,?,?,?,?,?)");
+            PreparedStatement insert = connection.prepareStatement("INSERT INTO usersNotified (id, userid, notifyid, notifytime, media, contactinfo, autonotify) values (?,?,?,?,?,?,?)");
     
-            insert.setString(1, userId);
-            insert.setInt(2, noticeId);
+            insert.setInt(1, getUserNotifId());
+            insert.setString(2, userId);
+            insert.setInt(3, noticeId);
     
-            insert.setTimestamp(3, new Timestamp((new Date()).getTime()));
+            insert.setTimestamp(4, new Timestamp((new Date()).getTime()));
     
-            insert.setString(4, media);
-            insert.setString(5, contactInfo);
-            insert.setString(6, autoNotify);
+            insert.setString(5, media);
+            insert.setString(6, contactInfo);
+            insert.setString(7, autoNotify);
     
             insert.executeUpdate();
             insert.close();

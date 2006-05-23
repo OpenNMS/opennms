@@ -77,6 +77,7 @@ public class NotificationsTestCase extends TestCase {
                 "        status=\"on\"\n" + 
                 "        pages-sent=\"SELECT * FROM notifications\"\n" + 
                 "        next-notif-id=\"SELECT nextval(\'notifynxtid\')\"\n" + 
+                "        next-user-notif-id=\"SELECT nextval(\'usernotifynxtid\')\"\n" +     
                 "        next-group-id=\"SELECT nextval(\'notifygrpid\')\"\n" + 
                 "        service-id-sql=\"SELECT serviceID from service where serviceName = ?\"\n" + 
                 "        outstanding-notices-sql=\"SELECT notifyid FROM notifications where notifyId = ? AND respondTime is not null\"\n" + 
@@ -496,6 +497,7 @@ public class NotificationsTestCase extends TestCase {
         
         m_notifdConfig = new MockNotifdConfigManager(NOTIFD_CONFIG_MANAGER);
         m_notifdConfig.setNextNotifIdSql(m_db.getNextNotifIdSql());
+        m_notifdConfig.setNextUserNotifIdSql(m_db.getNextUserNotifIdSql());
         
         m_groupManager = createGroupManager();
         m_userManager = createUserManager(m_groupManager);
