@@ -140,7 +140,7 @@ public class NsclientPlugin extends AbstractPlugin {
                                        timeout, params);
 
         if (pack == null) {
-            log.error("Received a null packet response from isServer.");
+            log.info("Received a null packet response from isServer.");
             return false;
         }
 
@@ -206,7 +206,7 @@ public class NsclientPlugin extends AbstractPlugin {
                 return response;
             } catch (NsclientException e) {
                 log.debug("NsclientPlugin: Check failed: " + e.getMessage());
-                log.error("NsclientManager returned exception: "
+                log.info("NsclientManager returned exception: "
                         + e.getMessage() + " : " + e.getCause().getMessage());
                 isAServer = false;
             }

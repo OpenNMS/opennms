@@ -156,19 +156,6 @@ final public class NrpeMonitor extends IPv4LatencyMonitor {
             dsName = DS_NAME;
         }
 
-		/*
-        // Port
-        //
-        int port = ParameterMap.getKeyedInteger(parameters, "port", DEFAULT_PORT);
-        if (port == DEFAULT_PORT) {
-            throw new RuntimeException("NrpeMonitor: required parameter 'port' is not present in supplied properties.");
-        }
-        */
-
-        // BannerMatch
-        //
-        //Commented out because it is not currently referenced in this monitor
-        //String strBannerMatch = (String) parameters.get("banner");
 
         // Get the address instance.
         //
@@ -202,12 +189,6 @@ final public class NrpeMonitor extends IPv4LatencyMonitor {
 		byte[] b = p.buildPacket(padding);
                 OutputStream o = socket.getOutputStream();
                 o.write(b);
-
-				/*
-	                        DatagramPacket incoming = new DatagramPacket(data, data.length);
-           	                socket.receive(incoming);
-                    		responseTime = System.currentTimeMillis() - sentTime;
-				*/
 
 		NrpePacket response = NrpePacket.receivePacket(socket.getInputStream(), padding);
                 responseTime = System.currentTimeMillis() - sentTime;
