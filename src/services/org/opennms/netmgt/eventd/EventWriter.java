@@ -454,7 +454,7 @@ final class EventWriter {
 
         // eventSnmp
         if (event.getSnmp() != null)
-            m_eventInsStmt.setString(10, SnmpInfo.format(event.getSnmp(), EVENT_SNMP_FIELD_SIZE).replaceAll("\0",""));
+            m_eventInsStmt.setString(10, SnmpInfo.format(event.getSnmp(), EVENT_SNMP_FIELD_SIZE));
         else
             m_eventInsStmt.setNull(10, Types.VARCHAR);
 

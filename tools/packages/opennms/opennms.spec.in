@@ -83,6 +83,15 @@
 %define platform_match  true
 %endif
 
+%if "%{platform}" == "linux-i386-fedora-5"
+%define initdir         /etc
+%define psql_service    postgresql
+%define requires        postgresql-server >= 7.2, j2sdk >= 1.4, xorg-x11-deprecated-libs
+%define webapp_requires tomcat4 >= 4.1.18
+%define release_pkg     %{release}_fc5
+%define platform_match  true
+%endif
+
 %if "%{platform}" == "linux-i386-mandrake-7"
 %define	initdir		/etc
 %define psql_service	postgresql
@@ -197,6 +206,15 @@
 %define requires	postgresql >= 7.2, postgresql-server >= 7.2, java2 >= 1.4
 %define webapp_requires tomcat >= 4.1.18, tomcat < 5
 %define release_pkg     %{release}_suse9
+%define platform_match	true
+%endif
+
+%if "%{platform}" == "linux-i386-suse-10"
+%define	initdir		/etc
+%define psql_service	postgresql
+%define requires	postgresql >= 7.2, postgresql-server >= 7.2, java2 >= 1.4
+%define webapp_requires tomcat >= 4.1.18, tomcat < 5
+%define release_pkg     %{release}_suse10
 %define platform_match	true
 %endif
 

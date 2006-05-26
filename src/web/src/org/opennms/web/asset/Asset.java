@@ -39,17 +39,21 @@ public class Asset extends Object {
 
     public static final String UNSPECIFIED_CATEGORY = "Unspecified";
 
-    public static final String NETWORK_CATEGORY = "WAN & Voice";
+    public static final String INFRASTRUCTURE_CATEGORY = "Infrastructure";
 
-    public static final String UNIX_CATEGORY = "Unix Servers";
+    public static final String SERVER_CATEGORY = "Server";
 
-    public static final String WINDOWS_CATEGORY = "Windows Servers";
+    public static final String DESKTOP_CATEGORY = "Desktop";
 
-    public static final String LAN_CATEGORY = "LAN & Voice";
+    public static final String LAPTOP_CATEGORY = "Laptop";
+
+    public static final String PRINTER_CATEGORY = "Printer";
+
+    public static final String TELEPHONY_CATEGORY = "Telephony";
 
     public static final String OTHER_CATEGORY = "Other";
 
-    public static final String[] CATEGORIES = new String[] { UNSPECIFIED_CATEGORY, NETWORK_CATEGORY, UNIX_CATEGORY, WINDOWS_CATEGORY, LAN_CATEGORY, OTHER_CATEGORY };
+    public static final String[] CATEGORIES = new String[] { UNSPECIFIED_CATEGORY, INFRASTRUCTURE_CATEGORY, SERVER_CATEGORY, DESKTOP_CATEGORY, LAPTOP_CATEGORY, PRINTER_CATEGORY, TELEPHONY_CATEGORY, OTHER_CATEGORY };
 
     protected int nodeId;
 

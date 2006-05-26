@@ -104,18 +104,6 @@ class TrapQueueProcessor implements Runnable, PausableFiber {
      */
     private static final String SNMP_TRAP_OID = ".1.3.6.1.6.3.1.1.4.1.0";
 
-    /** 
-	OID For snort, to trick the interface settings, varbind 13 will be 
-	the address for the event
-    */
-
-    private static final String SNORT_OID = ".1.3.6.1.4.1.10234.2.1.3.3";
-    private static final String SNORT_SENSOR = ".1.3.6.1.4.1.10234.2.1.1.1.6";
-    private static final String SNORT_SCAN_TARGET = ".1.3.6.1.4.1.10234.2.1.2.1.9";
-    private static final String SNORT_ATTACK_TARGET = ".1.3.6.1.4.1.10234.2.1.2.1.7";
-    private static final String SNORT_PROTO = ".1.3.6.1.4.1.10234.2.1.2.1.28";
-  
-
     /**
      * The snmp trap enterprise OID, which if present in a V2 trap is the last
      * varbind.
@@ -345,6 +333,7 @@ class TrapQueueProcessor implements Runnable, PausableFiber {
             // Get the value for the snmpTrapOID
             SnmpObjectId snmpTrapOid = (SnmpObjectId) pdu.getVarBindAt(SNMP_TRAP_OID_INDEX).getValue();
             String snmpTrapOidValue = snmpTrapOid.toString();
+
             // Force leading "." (dot) if not present
             if (!snmpTrapOidValue.startsWith(".")) {
                 snmpTrapOidValue = "." + snmpTrapOidValue;
@@ -352,56 +341,6 @@ class TrapQueueProcessor implements Runnable, PausableFiber {
 
             if (log.isDebugEnabled())
                 log.debug("snmpTrapOID: " + snmpTrapOidValue);
-		
-	    // This handles hardcoded Snort PDU's where the 13th parameter is the Destination 
-	    //  address of the alarm, that if used as agent id....
-		
-	    if (snmpTrapOidValue.equals(SNORT_OID)) {
-	        String snortTarget = null;
-		//.1.3.6.1.4.1.10234.2.1.1.1.6
-		boolean sensor = false ;
-		String  snortSensor = null;
-		String  snortAttack = null;
-		String  snortScan = null;
-		String  snortProto = null;
-		for (int i = 2; i < pdu.getLength(); i++) {
-	               	String name = pdu.getVarBindAt(i).getName().toString();
-			log.info("V2 Name : " + name + " Value " + pdu.getVarBindAt(i).getValue());
-			// PROTO255 = SCAN
-			if (name.startsWith(SNORT_PROTO)) {
-				snortProto = pdu.getVarBindAt(i).getValue().toString();
-			}	
-			if (name.startsWith(SNORT_SENSOR)) {
-				snortSensor = pdu.getVarBindAt(i).getValue().toString();
-			}
-			if (name.startsWith(SNORT_ATTACK_TARGET)) {
-			        snortAttack = pdu.getVarBindAt(i).getValue().toString();	
-			}
-			if (name.startsWith(SNORT_SCAN_TARGET)) {
-				snortScan = pdu.getVarBindAt(i).getValue().toString();
-			}
-		}
-		if (snortProto.endsWith("PROTO255")) {
-			snortTarget = snortScan;
-		} else { 
-			snortTarget = snortAttack;
-		}
-		log.debug("V2 trap from a SNORT Sensor at " + trapInterface + " target of attack " + snortTarget);	
-		trapInterface = snortTarget;
-		event.setHost(trapInterface);
-	        event.setSnmphost(trapInterface);
-	        event.setInterface(trapInterface);
-		ipNodeId = TrapdIPMgr.getNodeId(trapInterface);
-	        if (ipNodeId != null) {
-	            int intNodeId = Integer.parseInt(ipNodeId);
-	            event.setNodeid((long) intNodeId);
-	        } else { 
-			event.setNodeid((long) -1);
-		}
-	    }		
-	     if (log.isDebugEnabled())
-            log.debug("V2 trap - trapInterface: " + trapInterface);
-
 
             // get the last subid
             int length = snmpTrapOidValue.length();
@@ -533,7 +472,7 @@ class TrapQueueProcessor implements Runnable, PausableFiber {
 
                     // DEBUG
                     if (!asHex && log.isDebugEnabled()) {
-                        log.debug("snmpReceivedTrap: string varbind: " + name + " "  + (((SnmpOctetString) obj).toString()));
+                        log.debug("snmpReceivedTrap: string varbind: " + (((SnmpOctetString) obj).toString()));
                     }
                 } else if (obj instanceof SnmpCounter64) {
                     val.setType(EventConstants.TYPE_SNMP_COUNTER64);
@@ -544,7 +483,7 @@ class TrapQueueProcessor implements Runnable, PausableFiber {
                     val.setEncoding(EventConstants.XML_ENCODING_TEXT);
                     val.setContent(obj.toString());
                 }
-		
+
                 Parm parm = new Parm();
                 parm.setParmName(name);
                 parm.setValue(val);

@@ -7,7 +7,7 @@ package org.opennms.netmgt.notifd;
  * $Id$
  *
  * Revisions:
- * $Log$
+ * $Log: Growl.java,v $
  * Revision 1.1.2.3  2005/03/25 16:15:09  rangerrick
  * fix growl to not build if you don't have the apple java APIs
  *
