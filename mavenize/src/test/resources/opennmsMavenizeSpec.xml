@@ -96,6 +96,11 @@
 				<include name="**/*Test*.java"/>
 			</fileset>
 		</sources>
+		<sources source-type="test">
+			<fileset dir="${opennms.dir}/src/test">
+				<include name="**/*.java"/>
+			</fileset>
+		</sources>
 		<plugin groupId="org.apache.maven.plugins" artifactId="maven-jar-plugin">
 		   <configuration>
               <archive>
@@ -108,30 +113,8 @@
 		   </configuration>
 		</plugin>
 		<dependencies>
-                  <module-dependency module-id="opennms-web"/>
                   <module-dependency module-id="opennms-util"/>
-                  <module-dependency module-id="opennms-test" scope="test"/>
 		  <dependency groupId="postgresql" artifactId="postgresql" version="8.1-404.jdbc3"/>
-		</dependencies>
-	</module>
-
-	<!-- test module -->
-	<module module-id="opennms-test" module-type="jar"
-		module-name="OpenNMS Test Components">
-		<sources source-type="java">
-			<fileset dir="${opennms.dir}/src/test">
-				<include name="**/*.java"/>
-				<include name="**/*.html"/>
-				<exclude name="**/*Test*.java"/>
-			</fileset>
-		</sources>
-		<sources source-type="test">
-			<fileset dir="${opennms.dir}/src/test">
-				<include name="**/*Test*.java"/>
-			</fileset>
-		</sources>
-		<dependencies>
-                  <module-dependency module-id="opennms-util"/>
 		</dependencies>
 	</module>
 
@@ -550,7 +533,6 @@
 					name="org/opennms/netmgt/poller/monitors/PassiveServiceMonitor.java" />
 			</fileset>
 		</sources>
-		<!--
 			<sources source-type="test">
 			<fileset dir="${opennms.dir}/src/services">
 			<include name="**/*Test*.java"/>
@@ -567,7 +549,6 @@
 			<exclude name="**/SpringBoardMBeanTest.java" />
 			</fileset>
 			</sources>
-		-->
 		<dependencies>
 			<module-dependency module-id="opennms-util" />
 			<module-dependency module-id="opennms-config" />
@@ -648,13 +629,11 @@
 				<exclude name="**/*Test*.java" />
 			</fileset>
 		</sources>
-		<!--
 			<sources source-type="test">
 			<fileset dir="${opennms.dir}/src/report">
 			<include name="**/*Test*.java"/>
 			</fileset>
 			</sources>
-		-->
 		<sources source-type="castor">
 			<fileset dir="${opennms.dir}/schema/xsd">
 				<include name="availability_report.xsd" />
@@ -686,13 +665,11 @@
 				<exclude name="**/*Test*.java" />
 			</fileset>
 		</sources>
-		<!--
 			<sources source-type="test">
 			<fileset dir="${opennms.dir}/src/web/src">
 			<include name="**/*Test*.java"/>
 			</fileset>
 			</sources>
-		-->
 		<dependencies>
 			<module-dependency module-id="opennms-services" />
 			<module-dependency module-id="opennms-reporting" />

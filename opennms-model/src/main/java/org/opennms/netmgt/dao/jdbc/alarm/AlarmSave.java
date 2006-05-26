@@ -16,8 +16,8 @@ public class AlarmSave extends AlarmSaveOrUpdate {
     "reductionKey, alarmType, counter, severity, lastEventID, " + 
     "firstEventTime, lastEventTime, description, logMsg, operInstruct, " + 
     "tticketID, tticketState, mouseOverText, suppressedUntil, suppressedUser, " + 
-    "suppressedTime, alarmAckUser, alarmAckTime, clearUei, alarmID " + 
-    "values (" + 
+    "suppressedTime, alarmAckUser, alarmAckTime, clearUei, alarmID" + 
+    ") values (" + 
     "?, ?, ?, ?, ?,\n" + 
     "?, ?, ?, ?, ?,\n" + 
     "?, ?, ?, ?, ?,\n" + 

@@ -132,7 +132,7 @@ public class AlarmDaoJdbc extends AbstractDaoJdbc implements AlarmDao {
     }
 
 	private Integer allocateId() {
-        return new Integer(getJdbcTemplate().queryForInt("SELECT nextval('alarmNxtId')"));
+        return new Integer(getJdbcTemplate().queryForInt("SELECT nextval('alarmsNxtId')"));
     }
 
     private void cascadeSaveAssociations(OnmsAlarm alarm) {

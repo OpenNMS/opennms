@@ -73,7 +73,7 @@ public class AlarmMappingQuery extends MappingSqlQuery {
         		"a.alarmAckUser as alarmAckUser, " + 
         		"a.alarmAckTime as alarmAckTime, " + 
         		"a.clearUei as clearUei, " +
-			"a.alarmID as alarmID" +clause);
+			"a.alarmID as alarmID " +clause);
     }
     
     public DataSource getDataSource() {
