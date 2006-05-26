@@ -57,6 +57,7 @@ drop sequence eventsNxtId;
 drop sequence alarmsNxtId;
 drop sequence outageNxtId;
 drop sequence notifyNxtId;
+drop sequence userNotifNxtId;
 drop sequence vulnNxtId;
 
 --########################################################################

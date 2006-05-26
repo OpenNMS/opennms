@@ -31,6 +31,8 @@
 //
 package org.opennms.netmgt.dao;
 
+import java.io.File;
+
 import javax.sql.DataSource;
 
 import org.opennms.netmgt.dao.AbstractDaoTestCase.DB;
@@ -75,11 +77,14 @@ public class JdbcDaoTestConfig extends DaoTestConfig {
         	System.err.println("user.dir = "+System.getProperty("user.dir"));
             String cmd = System.getProperty("psql.command", "psql") ;
             System.err.println("psql.command = "+cmd);
-            Process p = Runtime.getRuntime().exec(cmd+" test -U opennms -f etc/create.sql");
+            String createSqlDir = System.getProperty("create.sql.dir", "etc");
+            System.err.println("create.sql.dir = "+createSqlDir);
+            File createSql = new File(createSqlDir, "create.sql");
+            Process p = Runtime.getRuntime().exec(cmd+" test -U opennms -f "+createSql.getAbsolutePath());
             p.waitFor();
             System.err.println("Got an exitValue of "+p.exitValue());
         }
-        
+                
         //m_dataSource = db.getDataSource();
         m_dataSource = db.getPoolingDataSource();
         

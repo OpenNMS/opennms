@@ -18,7 +18,7 @@ public class AlarmDaoTest extends AbstractDaoTestCase {
         alarm.setDistPoller(getDistPollerDao().load("localhost"));
         OnmsEvent event = new OnmsEvent();
         event.setDistPoller(getDistPollerDao().load("localhost"));
-        event.setEventCreateTime(new Date());
+        event.setEventTime(new Date());
         event.setEventSeverity(new Integer(7));
         event.setEventUei("uei://org/opennms/test/EventDaoTest");
         OnmsNode node = (OnmsNode) getNodeDao().findAll().iterator().next();
@@ -27,6 +27,7 @@ public class AlarmDaoTest extends AbstractDaoTestCase {
         alarm.setSeverity(event.getEventSeverity());
         alarm.setFirstEventTime(event.getEventTime());
         alarm.setLastEvent(event);
+        alarm.setCounter(new Integer(1));
         
         getAlarmDao().save(alarm);
         //it works we're so smart! hehe

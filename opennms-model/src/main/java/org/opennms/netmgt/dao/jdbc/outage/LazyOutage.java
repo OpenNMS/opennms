@@ -57,11 +57,6 @@ public class LazyOutage extends OnmsOutage {
         return super.getEventBySvcRegainedEvent();
     }
 
-    public Integer getId() {
-        load();
-        return super.getId();
-    }
-
     public Date getIfLostService() {
         load();
         return super.getIfLostService();
@@ -85,11 +80,6 @@ public class LazyOutage extends OnmsOutage {
     public void setEventBySvcRegainedEvent(OnmsEvent eventBySvcRegainedEvent) {
         load();
         super.setEventBySvcRegainedEvent(eventBySvcRegainedEvent);
-    }
-
-    public void setId(Integer outageId) {
-        load();
-        super.setId(outageId);
     }
 
     public void setIfLostService(Date ifLostService) {
