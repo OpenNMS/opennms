@@ -154,8 +154,8 @@ public class MockLogAppender extends AppenderSkeleton {
 				"log level " + level.toString() + " received:");
 
 		for (int i = 0; i < events.length; i++) {
-			message.append("\n\t[" + events[0].getLevel().toString() + "] " + events[0].getLoggerName() +": " +
-					events[0].getMessage());
+			message.append("\n\t[" + events[i].getLevel().toString() + "] " + events[i].getLoggerName() +": " +
+					events[i].getMessage());
 		}
 		
 		throw new AssertionFailedError(message.toString());
