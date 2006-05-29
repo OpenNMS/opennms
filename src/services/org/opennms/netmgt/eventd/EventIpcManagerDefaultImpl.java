@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2006 May 29: Throw IllegalStateException in init() if m_eventdConfigMgr is null - dj@gregor.com
 // 2003 Jan 31: Cleaned up some unused imports.
 // 2002 Oct 24: Changed all references to HashTable to HashMap
 //
