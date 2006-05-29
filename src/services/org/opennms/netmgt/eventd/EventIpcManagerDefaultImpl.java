@@ -204,11 +204,15 @@ public class EventIpcManagerDefaultImpl implements EventIpcManager {
     }
 
     public EventIpcManagerDefaultImpl(EventdConfigManager configMgr) {
-        m_eventdConfigMgr = configMgr;
+        setEventdConfigMgr(configMgr);
         init();
     }
 
     public void init() {
+        if (m_eventdConfigMgr == null) {
+            throw new IllegalStateException("eventd configuration manager not set");
+        }
+        
         m_ueiListeners = new HashMap();
         m_listeners = new ArrayList();
         m_listenerThreads = new HashMap();
