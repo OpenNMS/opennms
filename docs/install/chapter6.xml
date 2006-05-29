@@ -461,6 +461,20 @@ opennms=# </computeroutput><command>ALTER TABLE node_old_11033991291234 RENAME T
       <para>Note that step 2 will delete any changes you made to the
       postgresql configuration files and you'll need to redo them.</para>
     </section>
+
+    <section>
+      <title>Error subscribing to RTC POSTs</title>
+
+      <para>This error means that the web application couldn't connect to
+      the main OpenNMS daemon to register for RTC (real time category)
+      updates.  The web application checks every two minutes to see if the
+      RTC information is up-to-date, and if not, it attempts to sent events
+      to the OpenNMS daemon to register for updates.  If the Tomcat server
+      is running with the OpenNMS web application installed, and if the
+      OpenNMS daemon is not running, then this error will occur regularly.
+
+      <para>To stop this error, start the main OpenNMS daemon (grin).</para>
+    </section>
   </section>
 
   <section>
