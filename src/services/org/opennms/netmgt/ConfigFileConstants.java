@@ -211,6 +211,11 @@ public final class ConfigFileConstants {
      */
     public static final int JMX_DATA_COLLECTION_CONF_FILE_NAME;
 
+    /**
+     * The config file for syslogd
+     */
+    public static final int SYSLOGD_CONFIG_FILE_NAME;
+
     //
     // End services config files
     //
@@ -467,10 +472,12 @@ public final class ConfigFileConstants {
         JMX_DATA_COLLECTION_CONF_FILE_NAME = 56;
         
         TRANSLATOR_CONFIG_FILE_NAME = 57;
+
+        SYSLOGD_CONFIG_FILE_NAME = 58;
         
         // Allocate and build the mapping of identifiers to names
         //
-        FILE_ID_TO_NAME = new String[58];
+        FILE_ID_TO_NAME = new String[59];
 
         FILE_ID_TO_NAME[DB_CONFIG_FILE_NAME] = "opennms-database.xml";
         FILE_ID_TO_NAME[JMS_CONFIG_FILE_NAME] = "opennms-jms.xml";
@@ -549,6 +556,8 @@ public final class ConfigFileConstants {
         FILE_ID_TO_NAME[JMX_DATA_COLLECTION_CONF_FILE_NAME] = "jmx-datacollection-config.xml";
         
         FILE_ID_TO_NAME[TRANSLATOR_CONFIG_FILE_NAME] = "translator-configuration.xml";
+
+        FILE_ID_TO_NAME[SYSLOGD_CONFIG_FILE_NAME] = "syslogd-configuration.xml";
     }
 
     /**

@@ -1,0 +1,260 @@
+
+package org.opennms.netmgt.syslogd;
+
+import java.text.ParseException;
+import java.util.Hashtable;
+
+public class
+SyslogDefs
+	{
+	public static final String		RCS_ID = "$Id: SyslogDefs-OLD.java,v 1.1.1.1 1998/02/22 05:47:54 time Exp $";
+	public static final String		RCS_REV = "$Revision: 1.1.1.1 $";
+	public static final String		RCS_NAME = "$Name:  $";
+
+	//
+	// SyslogLvl
+	//
+	public static final int LOG_EMERG	= 0; /* system is unusable */
+	public static final int LOG_ALERT	= 1; /* action must be taken immediately */
+	public static final int LOG_CRIT	= 2; /* critical conditions */
+	public static final int LOG_ERR		= 3; /* error conditions */
+	public static final int LOG_WARNING	= 4; /* warning conditions */
+	public static final int LOG_NOTICE	= 5; /* normal but significant condition */
+	public static final int LOG_INFO	= 6; /* informational */
+	public static final int LOG_DEBUG	= 7; /* debug-level messages */
+	public static final int LOG_ALL		= 8; /* '*' in config, all levels */
+	
+	//
+	// SyslogFac
+	//
+	public static final int LOG_KERN	= 0; /* kernel messages */
+	public static final int LOG_USER	= 1; /* random user-level messages */
+	public static final int LOG_MAIL	= 2; /* mail system */
+	public static final int LOG_DAEMON	= 3; /* system daemons */
+	public static final int LOG_AUTH	= 4; /* security/authorization messages */
+	public static final int LOG_SYSLOG	= 5; /* messages generated internally by syslogd */
+	public static final int LOG_LPR		= 6; /* line printer subsystem */
+	public static final int LOG_NEWS	= 7; /* network news subsystem */
+	public static final int LOG_UUCP	= 8; /* UUCP subsystem */
+	public static final int LOG_CRON	= 9; /* clock daemon */
+
+        /* other codes through 15 reserved for system use */
+
+	public static final int LOG_LOCAL0	= 16; /* reserved for local use */
+	public static final int LOG_LOCAL1	= 17; /* reserved for local use */
+	public static final int LOG_LOCAL2	= 18; /* reserved for local use */
+	public static final int LOG_LOCAL3	= 19; /* reserved for local use */
+	public static final int LOG_LOCAL4	= 20; /* reserved for local use */
+	public static final int LOG_LOCAL5	= 21; /* reserved for local use */
+	public static final int LOG_LOCAL6	= 22; /* reserved for local use */
+	public static final int LOG_LOCAL7	= 23; /* reserved for local use */
+	
+	public static final int LOG_NFACILITIES	= 24;	/* current number of facilities */
+
+	public static final int LOG_PRIMASK	= 0x07;		/* mask to extract priority part (internal) */			
+	public static final int LOG_FACMASK	= 0x03F8;	/* mask to extract facility part */
+	public static final int INTERNAL_NOPRI = 0x10;	/* the "no priority" priority */
+	
+	public static final int LOG_PID		= 0x01;	/* log the pid with each message */
+	public static final int LOG_CONS	= 0x02;	/* log on the console if errors in sending */
+	public static final int LOG_ODELAY	= 0x04;	/* delay open until first syslog() (default) */
+	public static final int LOG_NDELAY	= 0x08;	/* don't delay open */
+	public static final int LOG_NOWAIT	= 0x10;	/* don't wait for console forks: DEPRECATED */
+	public static final int LOG_PERROR	= 0x20;	/* log to stderr as well */
+
+	public static final int	DEFAULT_PORT = 514;
+
+
+	static private Hashtable	facHash;
+	static private Hashtable	lvlHash;
+	static private Hashtable	priHash;
+	
+
+
+	static
+		{
+		facHash = new Hashtable( 20 );
+
+		facHash.put( "KERN",		new Integer(SyslogDefs.LOG_KERN) );
+		facHash.put( "KERNEL",		new Integer(SyslogDefs.LOG_KERN) );
+		facHash.put( "USER",		new Integer(SyslogDefs.LOG_USER) );
+		facHash.put( "MAIL",		new Integer(SyslogDefs.LOG_MAIL) );
+		facHash.put( "DAEMON",		new Integer(SyslogDefs.LOG_DAEMON) );
+		facHash.put( "AUTH",		new Integer(SyslogDefs.LOG_AUTH) );
+		facHash.put( "SYSLOG",		new Integer(SyslogDefs.LOG_SYSLOG) );
+		facHash.put( "LPR",			new Integer(SyslogDefs.LOG_LPR) );
+		facHash.put( "NEWS",		new Integer(SyslogDefs.LOG_NEWS) );
+		facHash.put( "UUCP",		new Integer(SyslogDefs.LOG_UUCP) );
+		facHash.put( "CRON",		new Integer(SyslogDefs.LOG_CRON) );
+		facHash.put( "LOCAL0",		new Integer(SyslogDefs.LOG_LOCAL0) );
+		facHash.put( "LOCAL1",		new Integer(SyslogDefs.LOG_LOCAL1) );
+		facHash.put( "LOCAL2",		new Integer(SyslogDefs.LOG_LOCAL2) );
+		facHash.put( "LOCAL3",		new Integer(SyslogDefs.LOG_LOCAL3) );
+		facHash.put( "LOCAL4",		new Integer(SyslogDefs.LOG_LOCAL4) );
+		facHash.put( "LOCAL5",		new Integer(SyslogDefs.LOG_LOCAL5) );
+		facHash.put( "LOCAL6",		new Integer(SyslogDefs.LOG_LOCAL6) );
+		facHash.put( "LOCAL7",		new Integer(SyslogDefs.LOG_LOCAL7) );
+
+		priHash = new Hashtable( 20 );
+
+		priHash.put( "EMERG",			new Integer(SyslogDefs.LOG_EMERG) );
+		priHash.put( "EMERGENCY",		new Integer(SyslogDefs.LOG_EMERG) );
+		priHash.put( "LOG_EMERG",		new Integer(SyslogDefs.LOG_EMERG) );
+		priHash.put( "ALERT",			new Integer(SyslogDefs.LOG_ALERT) );
+		priHash.put( "LOG_ALERT",		new Integer(SyslogDefs.LOG_ALERT) );
+		priHash.put( "CRIT",			new Integer(SyslogDefs.LOG_CRIT) );
+		priHash.put( "CRITICAL",		new Integer(SyslogDefs.LOG_CRIT) );
+		priHash.put( "LOG_CRIT",		new Integer(SyslogDefs.LOG_CRIT) );
+		priHash.put( "ERR",				new Integer(SyslogDefs.LOG_ERR) );
+		priHash.put( "ERROR",			new Integer(SyslogDefs.LOG_ERR) );
+		priHash.put( "LOG_ERR",			new Integer(SyslogDefs.LOG_ERR) );
+		priHash.put( "WARNING",			new Integer(SyslogDefs.LOG_WARNING) );
+		priHash.put( "LOG_WARNING",		new Integer(SyslogDefs.LOG_WARNING) );
+		priHash.put( "NOTICE",			new Integer(SyslogDefs.LOG_NOTICE) );
+		priHash.put( "LOG_NOTICE",		new Integer(SyslogDefs.LOG_NOTICE) );
+		priHash.put( "INFO",			new Integer(SyslogDefs.LOG_INFO) );
+		priHash.put( "LOG_INFO",		new Integer(SyslogDefs.LOG_INFO) );
+		priHash.put( "DEBUG",			new Integer(SyslogDefs.LOG_DEBUG) );
+		priHash.put( "LOG_DEBUG",		new Integer(SyslogDefs.LOG_DEBUG) );
+		}
+
+
+	static public int
+	extractFacility( int code )
+		{
+		return ( (code & SyslogDefs.LOG_FACMASK) >> 3 );
+		}
+
+	static public int
+	extractPriority( int code )
+		{
+		return ( code & SyslogDefs.LOG_PRIMASK );
+		}
+
+	static public int
+	computeCode( int facility, int priority )
+		{
+		return ( (facility << 3) | priority );
+		}
+    
+    /*
+     *  
+    Critical (red) 
+    This event means numerous devices on the network are affected by the event. 
+    Everyone who can should stop what they are doing and focus on fixing the problem. 
+    Major (orange) 
+    A device is completely down or in danger of going down. 
+    Attention needs to be paid to this problem immediately. 
+    Minor (yellow) 
+    A part of a device (a service, and interface, a power supply, etc.) 
+    has stopped functioning. The device needs attention. 
+    Warning (cyan) 
+    An event has occurred that may require action. 
+    This severity can also be used to indicate a condition 
+    that should be noted (logged) but does not require direct action. 
+    Normal (green) 
+    Informational message. No action required. 
+    Cleared (white) 
+    This event indicates that a prior error condition has been 
+    corrected and service is restored. 
+    Indeterminate (light blue) 
+    The severity of the event cannot be determined.
+    
+     */
+    
+
+	static public String
+	getPriorityName( int level )
+		{
+		switch ( level )
+			{
+			case SyslogDefs.LOG_EMERG:		return "Critical";
+			case SyslogDefs.LOG_ALERT:		return "Major";
+			case SyslogDefs.LOG_CRIT:		return "Major";
+			case SyslogDefs.LOG_ERR:		return "Minor";
+			case SyslogDefs.LOG_WARNING:	return "Warning";
+			case SyslogDefs.LOG_NOTICE:		return "Normal";
+			case SyslogDefs.LOG_INFO:		return "Normal";
+			case SyslogDefs.LOG_DEBUG:		return "Normal";
+        
+            //This is a really lazy way of mapping syslog
+            //to OpenNMS, but it should conform to thinking...
+        /*
+            case SyslogDefs.LOG_EMERG:      return "1";
+            case SyslogDefs.LOG_ALERT:      return "1";
+            case SyslogDefs.LOG_CRIT:       return "2";
+            case SyslogDefs.LOG_ERR:        return "2";
+            case SyslogDefs.LOG_WARNING:    return "3";
+            case SyslogDefs.LOG_NOTICE:     return "4";
+            case SyslogDefs.LOG_INFO:       return "5";
+            case SyslogDefs.LOG_DEBUG:      return "5";*/
+			}
+
+		return "unknown level='" + level + "'";
+		}
+	
+	static public String
+	getFacilityName( int facility )
+		{
+		switch ( facility )
+			{
+			case SyslogDefs.LOG_KERN:		return "kernel";
+			case SyslogDefs.LOG_USER:		return "user";
+			case SyslogDefs.LOG_MAIL:		return "mail";
+			case SyslogDefs.LOG_DAEMON:		return "daemon";
+			case SyslogDefs.LOG_AUTH:		return "auth";
+			case SyslogDefs.LOG_SYSLOG:		return "syslog";
+			case SyslogDefs.LOG_LPR:		return "lpr";
+			case SyslogDefs.LOG_NEWS:		return "news";
+			case SyslogDefs.LOG_UUCP:		return "uucp";
+			case SyslogDefs.LOG_CRON:		return "cron";
+
+			case SyslogDefs.LOG_LOCAL0:		return "local0";
+			case SyslogDefs.LOG_LOCAL1:		return "local1";
+			case SyslogDefs.LOG_LOCAL2:		return "local2";
+			case SyslogDefs.LOG_LOCAL3:		return "local3";
+			case SyslogDefs.LOG_LOCAL4:		return "local4";
+			case SyslogDefs.LOG_LOCAL5:		return "local5";
+			case SyslogDefs.LOG_LOCAL6:		return "local6";
+			case SyslogDefs.LOG_LOCAL7:		return "local7";
+			}
+
+		return "unknown facility='" + facility + "'";
+		}
+
+	static public String
+	getPriority( String priority )
+		throws ParseException
+		{
+		String priKey = priority.toUpperCase();
+		String result = (String) SyslogDefs.priHash.get( priKey );
+
+		if ( result == null )
+			{
+			throw new ParseException
+				( "unknown priority '" + priority + "'", 0 );
+			}
+
+		return result;
+		}
+
+	static public int
+	getFacility( String facility )
+		throws ParseException
+		{
+		String facKey = facility.toUpperCase();
+		Integer result = (Integer)
+			SyslogDefs.facHash.get( facKey );
+
+		if ( result == null )
+			{
+			throw new ParseException
+				( "unknown facility '" + facility + "'", 0 );
+			}
+
+		return result.intValue();
+		}
+    
+    
+
+	}

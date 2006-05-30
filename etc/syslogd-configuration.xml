@@ -1,0 +1,3 @@
+<?xml version="1.0"?>
+<syslogd-configuration syslog-port="514" new-suspect-on-message="true"/>
+

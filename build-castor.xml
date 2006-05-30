@@ -171,6 +171,7 @@
 		<castor-gen file="${castor.config.dir}/service-configuration.xsd" srcpackage="org.opennms.netmgt.config.service" />
 		<castor-gen file="${castor.config.dir}/snmp-config.xsd" srcpackage="org.opennms.netmgt.config.snmp" />
 		<castor-gen file="${castor.config.dir}/trapd-configuration.xsd" srcpackage="org.opennms.netmgt.config.trapd" />
+		<castor-gen file="${castor.config.dir}/syslogd-configuration.xsd" srcpackage="org.opennms.netmgt.config.syslogd" />
 		<castor-gen file="${castor.config.dir}/vulnscand-configuration.xsd" srcpackage="org.opennms.netmgt.config.vulnscand" />
 		<castor-gen file="${castor.config.dir}/xmlrpcd-configuration.xsd" srcpackage="org.opennms.netmgt.config.xmlrpcd" />
 		<castor-gen file="${castor.config.dir}/users.xsd" srcpackage="org.opennms.netmgt.config.users" />
