@@ -472,7 +472,7 @@ public abstract class JMXThresholder implements ServiceThresholder {
         try {
             checkNodeDir(nodeDirectory, nodeId, primary, range, interval, dateStamp, nodeMap, events);
         } catch (IllegalArgumentException e) {
-            log.error("check: Threshold checking failed for primary " + serviceName + " interface " + primary.getHostAddress(), e);
+            log.info("check: Threshold checking failed for primary " + serviceName + " interface " + primary.getHostAddress(), e);
             return THRESHOLDING_FAILED;
         }
 
@@ -493,7 +493,7 @@ public abstract class JMXThresholder implements ServiceThresholder {
                     // Found interface directory...
                     checkIfDir(files[i], nodeId, primary, interval, range, dateStamp, baseIfMap, allIfMap, events);
                 } catch (IllegalArgumentException e) {
-                    log.error("check: Threshold checking failed for primary " + serviceName + " interface " + primary.getHostAddress(), e);
+                    log.info("check: Threshold checking failed for primary " + serviceName + " interface " + primary.getHostAddress(), e);
                     return THRESHOLDING_FAILED;
                 }
             }
@@ -507,7 +507,7 @@ public abstract class JMXThresholder implements ServiceThresholder {
                 eventLog.setEvents(events);
                 eproxy.send(eventLog);
             } catch (EventProxyException e) {
-                log.error("check: Failed sending threshold events via event proxy...", e);
+                log.warn("check: Failed sending threshold events via event proxy...", e);
                 return THRESHOLDING_FAILED;
             }
         }
@@ -591,7 +591,7 @@ public abstract class JMXThresholder implements ServiceThresholder {
                 } catch (NumberFormatException nfe) {
                     log.warn("Unable to convert retrieved value for datasource '" + datasource + "' to a double, skipping evaluation.");
                 } catch (RrdException e) {
-                    log.error("An error occurred retriving the last value for datasource '" + datasource + "'", e);
+                    log.info("An error occurred retriving the last value for datasource '" + datasource + "'", e);
                 }
 
                 if (dsValue != null && !dsValue.isNaN()) {
@@ -745,7 +745,7 @@ public abstract class JMXThresholder implements ServiceThresholder {
                 } catch (NumberFormatException nfe) {
                     log.warn("Unable to convert retrieved value for datasource '" + datasource + "' to a double, skipping evaluation.");
                 } catch (RrdException e) {
-                    log.error("An error occurred retriving the last value for datasource '" + datasource + "'", e);
+                    log.info("An error occurred retriving the last value for datasource '" + datasource + "'", e);
                 }
 
                 if (dsValue != null && !dsValue.isNaN()) {
