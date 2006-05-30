@@ -1,14 +1,16 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2002-2003 The OpenNMS Group, Inc.  All rights reserved.
+// OpenNMS(R) is Copyright (C) 2002-2006 The OpenNMS Group, Inc.  All rights reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included code and modified
 // code that was published under the GNU General Public License. Copyrights for modified 
 // and included code are below.
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
-// Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
+// 2006 May 30: added a way to choose the date to run the availability reports.
+//
+// Orginal code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -82,6 +84,13 @@ public class ReportMailer extends Object implements Runnable {
 	
 	protected String monthFormat = null;
 
+    protected String startMonth = null;
+
+    protected String startDate = null;
+
+    protected String startYear = null;
+
+
     protected String categoryName = null;
 
     Category log;
@@ -91,20 +100,28 @@ public class ReportMailer extends Object implements Runnable {
         log = ThreadCategory.getInstance(this.getClass());
     }
 
-    public void initialise(String fileName, String userName, String generateReport, String mailReport, String parms, String fmt, String monthFmt) throws ServletException {
+    public void initialise(String fileName, String userName, String generateReport, String mailReport, String parms, String fmt, String monthFmt, String startMonth, String startDate, String startYear) throws ServletException {
 
         filename = fileName;
         commandParms = parms;
         this.scriptGenerateReport = generateReport;
         this.scriptMailReport = mailReport;
         this.format = fmt;
-		this.monthFormat = monthFmt;
+        this.monthFormat = monthFmt;
+        this.startMonth = startMonth;
+        this.startDate = startDate;
+        this.startYear = startYear;
+
 
         if (log.isDebugEnabled()) {
             log.debug("scriptGenerateReport " + scriptGenerateReport);
             log.debug("parms " + parms);
             log.debug("fmt " + fmt);
-			log.debug("monthFmt " + monthFmt);
+            log.debug("monthFmt " + monthFmt);
+            log.debug("startMonth " + startMonth);
+            log.debug("startDate " + startDate);
+            log.debug("startYear " + startYear);
+
         }
         if (this.scriptGenerateReport == null) {
             throw new ServletException("Missing required init parameter: script.generateReport");
@@ -223,7 +240,7 @@ public class ReportMailer extends Object implements Runnable {
         // java.lang.Process process = Runtime.getRuntime().exec( cmdArgs );
 		// TODO: Add code to generate "calendar" as well as "classic" reports
         try {
-            AvailabilityReport.generateReport(getLogoUrl(), getCategoryName(), getFormat(), getMonthFormat());
+            AvailabilityReport.generateReport(getLogoUrl(), getCategoryName(), getFormat(), getMonthFormat(), getStartMonth(), getStartDate(), getStartYear());
         } catch (Exception e) {
             log.error("Caught exception generating report: ", e);
         }
@@ -365,4 +382,50 @@ public class ReportMailer extends Object implements Runnable {
     public void setFormat(String format) {
         this.format = format;
     }
+
+    /**
+     * @return Returns the startMonth.
+     */
+    public String getStartMonth() {
+        return startMonth;
+    }
+
+    /**
+     * @param format
+     *            The startMonth to set.
+     */
+    public void setStartMonth(String startMonth) {
+        this.startMonth = startMonth;
+    }
+
+    /**
+     * @return Returns the startDate.
+     */
+    public String getStartDate() {
+        return startDate;
+    }
+
+    /**
+     * @param format
+     *            The startDate to set.
+     */
+    public void setStartDate(String startMonth) {
+        this.startDate = startDate;
+    }
+
+    /**
+     * @return Returns the startYear.
+     */
+    public String getStartYear() {
+        return startYear;
+    }
+
+    /**
+     * @param format
+     *            The startYear to set.
+     */
+    public void setStartYear(String startYear) {
+        this.startYear = startYear;
+    }
+ 
 }
