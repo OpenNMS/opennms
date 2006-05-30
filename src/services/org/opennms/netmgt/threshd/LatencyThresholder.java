@@ -174,7 +174,7 @@ final class LatencyThresholder implements ServiceThresholder {
             RrdUtils.initialize();
         } catch (RrdException e) {
             if (log.isEnabledFor(Priority.ERROR))
-                log.error("initialize: Unable to initialize RrdUtils", e);
+                log.warn("initialize: Unable to initialize RrdUtils", e);
             throw new RuntimeException("Unable to initialize RrdUtils", e);
         }
 
@@ -238,7 +238,7 @@ final class LatencyThresholder implements ServiceThresholder {
             dbConn = DatabaseConnectionFactory.getInstance().getConnection();
         } catch (SQLException sqlE) {
             if (log.isEnabledFor(Priority.ERROR))
-                log.error("initialize: Failed getting connection to the database.", sqlE);
+                log.warn("initialize: Failed getting connection to the database.", sqlE);
             throw new UndeclaredThrowableException(sqlE);
         }
 
@@ -418,7 +418,7 @@ final class LatencyThresholder implements ServiceThresholder {
         if (tmp != null)
             nodeId = tmp.intValue();
         if (nodeId == -1) {
-            log.error("Threshold checking failed for " + m_svcName + "/" + ipAddr.getHostAddress() + ", missing nodeId.");
+            log.info("Threshold checking failed for " + m_svcName + "/" + ipAddr.getHostAddress() + ", missing nodeId.");
             return THRESHOLDING_FAILED;
         }
 
@@ -439,12 +439,12 @@ final class LatencyThresholder implements ServiceThresholder {
         // '/opt/OpenNMS/share/rrd/<svc_name>/<ipAddress>/' directory
         File latencyDir = new File(repository + File.separator + ipAddr.getHostAddress());
         if (!latencyDir.exists()) {
-            log.error("Latency directory for " + m_svcName + "/" + ipAddr.getHostAddress() + " does not exist.");
-            log.error("Threshold checking failed for " + ipAddr.getHostAddress());
+            log.info("Latency directory for " + m_svcName + "/" + ipAddr.getHostAddress() + " does not exist.");
+            log.info("Threshold checking failed for " + ipAddr.getHostAddress());
             return THRESHOLDING_FAILED;
         } else if (!RrdFileConstants.isValidRRDLatencyDir(latencyDir)) {
-            log.error("Latency directory for " + m_svcName + "/" + ipAddr.getHostAddress() + " is not a valid RRD latency directory.");
-            log.error("Threshold checking failed for " + ipAddr.getHostAddress());
+            log.info("Latency directory for " + m_svcName + "/" + ipAddr.getHostAddress() + " is not a valid RRD latency directory.");
+            log.info("Threshold checking failed for " + ipAddr.getHostAddress());
             return THRESHOLDING_FAILED;
         }
 
@@ -460,7 +460,7 @@ final class LatencyThresholder implements ServiceThresholder {
                                                                             // events
                         thresholdMap, events);
         } catch (IllegalArgumentException e) {
-            log.error("check: Threshold checking failed for " + m_svcName + "/" + ipAddr.getHostAddress(), e);
+            log.info("check: Threshold checking failed for " + m_svcName + "/" + ipAddr.getHostAddress(), e);
             return THRESHOLDING_FAILED;
         }
 
@@ -472,7 +472,7 @@ final class LatencyThresholder implements ServiceThresholder {
                 eventLog.setEvents(events);
                 eproxy.send(eventLog);
             } catch (EventProxyException e) {
-                log.error("check: Failed sending threshold events via event proxy...", e);
+                log.warn("check: Failed sending threshold events via event proxy...", e);
                 return THRESHOLDING_FAILED;
             }
         }
@@ -555,7 +555,7 @@ final class LatencyThresholder implements ServiceThresholder {
                 } catch (NumberFormatException nfe) {
                     log.warn("Unable to convert retrieved value for datasource '" + datasource + "' to a double, skipping evaluation.");
                 } catch (RrdException e) {
-                    log.error("An error occurred retriving the last value for datasource '" + datasource + "'", e);
+                    log.info("An error occurred retriving the last value for datasource '" + datasource + "'", e);
                 }
 
                 if (dsValue != null && !dsValue.isNaN()) {

@@ -491,8 +491,8 @@ final class SnmpThresholder implements ServiceThresholder {
         // Get File object representing the node directory
         File nodeDirectory = new File(repository + File.separator + nodeId.toString());
         if (!RrdFileConstants.isValidRRDNodeDir(nodeDirectory)) {
-            log.error("Node directory for " + nodeId + "/" + primary.getHostAddress() + " does not exist or is not a valid RRD node directory.");
-            log.error("Threshold checking failed for primary SNMP interface " + primary.getHostAddress());
+            log.info("Node directory for " + nodeId + "/" + primary.getHostAddress() + " does not exist or is not a valid RRD node directory.");
+            log.info("Threshold checking failed for primary SNMP interface " + primary.getHostAddress());
             return THRESHOLDING_FAILED;
         }
 
@@ -506,7 +506,7 @@ final class SnmpThresholder implements ServiceThresholder {
         try {
             checkNodeDir(nodeDirectory, nodeId, primary, interval, range, dateStamp, nodeMap, events);
         } catch (IllegalArgumentException e) {
-            log.error("check: Threshold checking failed for primary SNMP interface " + primary.getHostAddress(), e);
+            log.info("check: Threshold checking failed for primary SNMP interface " + primary.getHostAddress(), e);
             return THRESHOLDING_FAILED;
         }
 
@@ -527,7 +527,7 @@ final class SnmpThresholder implements ServiceThresholder {
                     // Found interface directory...
                     checkIfDir(files[i], nodeId, primary, interval, dateStamp, baseIfMap, allIfMap, events);
                 } catch (IllegalArgumentException e) {
-                    log.error("check: Threshold checking failed for primary SNMP interface " + primary.getHostAddress(), e);
+                    log.info("check: Threshold checking failed for primary SNMP interface " + primary.getHostAddress(), e);
                     return THRESHOLDING_FAILED;
                 }
             }
@@ -541,7 +541,7 @@ final class SnmpThresholder implements ServiceThresholder {
                 eventLog.setEvents(events);
                 eproxy.send(eventLog);
             } catch (EventProxyException e) {
-                log.error("check: Failed sending threshold events via event proxy...", e);
+                log.info("check: Failed sending threshold events via event proxy...", e);
                 return THRESHOLDING_FAILED;
             }
         }
@@ -640,7 +640,7 @@ final class SnmpThresholder implements ServiceThresholder {
                 } catch (NumberFormatException nfe) {
                     log.warn("Unable to convert retrieved value for datasource '" + datasource + "' to a double, skipping evaluation.");
                 } catch (RrdException e) {
-                    log.error("An error occurred retriving the last value for datasource '" + datasource + "'", e);
+                    log.info("An error occurred retriving the last value for datasource '" + datasource + "'", e);
                 }
 
 	        if (log.isDebugEnabled())
@@ -786,7 +786,7 @@ final class SnmpThresholder implements ServiceThresholder {
                 } catch (NumberFormatException nfe) {
                     log.warn("Unable to convert retrieved value for datasource '" + datasource + "' to a double, skipping evaluation.");
                 } catch (RrdException e) {
-                    log.error("An error occurred retriving the last value for datasource '" + datasource + "'", e);
+                    log.info("An error occurred retriving the last value for datasource '" + datasource + "'", e);
                 }
 
                 if (dsValue != null && !dsValue.isNaN()) {
