@@ -1,14 +1,16 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2002-2003 The OpenNMS Group, Inc.  All rights reserved.
+// OpenNMS(R) is Copyright (C) 2002-2006 The OpenNMS Group, Inc.  All rights reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included code and modified
 // code that was published under the GNU General Public License. Copyrights for modified 
 // and included code are below.
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
-// Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
+// 2006 May 30: added a way to choose the date to run the availability reports.
+//
+// Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -79,21 +81,45 @@ public class AvailabilityReport extends Object {
 	
 	private Category log;
 
+     /**
+     * String of Months
+     */
+
+    public static String[] months = new String[] {
+        "January",
+        "February",
+        "March",
+        "April",
+        "May",
+        "June",
+        "July",
+        "August",
+        "September",
+        "October",
+        "November",
+        "December"
+    };
+
+
     /**
      * Default constructor
      */
-    public AvailabilityReport(String author) {
+    public AvailabilityReport(String author, String startMonth, String startDate, String startYear) {
         ThreadCategory.setPrefix(LOG4J_CATEGORY);
         log = ThreadCategory.getInstance(this.getClass());
         if (log.isDebugEnabled())
             log.debug("Inside AvailabilityReport");
 
         Calendar today = new GregorianCalendar();
-        int day = today.get(Calendar.DAY_OF_MONTH);
-        int year = today.get(Calendar.YEAR);
-        SimpleDateFormat smpMonth = new SimpleDateFormat("MMMMMMMMMMM");
-        String month = smpMonth.format(new java.util.Date(today.getTime().getTime()));
+        int day = Integer.parseInt(startDate);
+        int year = Integer.parseInt(startYear);
+        // int month = Integer.parseInt(startMonth);
+        // int day = today.get(Calendar.DAY_OF_MONTH);
+        // int year = today.get(Calendar.YEAR);
+        // SimpleDateFormat smpMonth = new SimpleDateFormat("MMMMMMMMMMM");
+        // String month = smpMonth.format(new java.util.Date(today.getTime().getTime()));
         // int month = today.get(Calendar.MONTH) + 1;
+        String month = months[Integer.parseInt(startMonth)];
         int hour = today.get(Calendar.HOUR);
         int minute = today.get(Calendar.MINUTE);
         int second = today.get(Calendar.SECOND);
@@ -129,7 +155,8 @@ public class AvailabilityReport extends Object {
      *            Format for month data ("classic"/"calendar")
      * 
      */
-	public void getReportData(String logourl, String categoryName, String reportFormat, String monthFormat) {
+	public void getReportData(String logourl, String categoryName, String reportFormat, String monthFormat, String startMonth, String startDate, 
+String startYear) {
 
 		if (log.isDebugEnabled()) {
             log.debug("inside getReportData");
@@ -138,7 +165,7 @@ public class AvailabilityReport extends Object {
             log.debug("logo  " + logourl);
 			log.debug("monthFormat "+monthFormat);
         }
-		populateReport(logourl, categoryName, reportFormat, monthFormat);
+		populateReport(logourl, categoryName, reportFormat, monthFormat, startMonth, startDate, startYear);
 		try {
 			marshalReport();
 		} catch (Exception e) {
@@ -160,7 +187,7 @@ public class AvailabilityReport extends Object {
      *            Format for month data ("classic"/"calendar")
      * 
      */
-    public void populateReport(String logourl, String categoryName, String reportFormat, String monthFormat) {
+    public void populateReport(String logourl, String categoryName, String reportFormat, String monthFormat,  String startMonth, String startDate, String startYear) {
         m_report.setLogo(logourl);
         ViewInfo viewInfo = new ViewInfo();
         m_report.setViewInfo(viewInfo);
@@ -168,7 +195,7 @@ public class AvailabilityReport extends Object {
         m_report.setCategories(categories);
         try {
 			Calendar calendar = new GregorianCalendar();
-			AvailabilityData availData = new AvailabilityData(categoryName, m_report, reportFormat, monthFormat, calendar);
+			AvailabilityData availData = new AvailabilityData(categoryName, m_report, reportFormat, monthFormat, calendar, startMonth, startDate, startYear);
 		} catch (MarshalException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -258,9 +285,12 @@ public class AvailabilityReport extends Object {
 		String monthFormat = System.getProperty("MonthFormat");
         if (monthFormat == null || format.equals(""))
             monthFormat = MONTH_FORMAT_CLASSIC;
+        String startMonth = System.getProperty("startMonth");
+        String startDate = System.getProperty("startDate");
+        String startYear = System.getProperty("startYear");
 
         try {
-            generateReport(logourl, categoryName, format, monthFormat);
+            generateReport(logourl, categoryName, format, monthFormat, startMonth, startDate, startYear);
         } catch (Exception e) {
             log.error("Caught Exception generating report", e);
         }
@@ -271,7 +301,7 @@ public class AvailabilityReport extends Object {
      * @param categoryName
      * @param format
      */
-    public static void generateReport(String logourl, String categoryName, String format, String monthFormat) throws Exception {
+    public static void generateReport(String logourl, String categoryName, String format, String monthFormat, String startMonth, String startDate, String startYear) throws Exception {
 
         // This report will be invoked by the mailer script.
         // Only SVG formatted reports are needed.
@@ -287,8 +317,8 @@ public class AvailabilityReport extends Object {
         else if (format.equals("HTML"))
             pdfFileName = ConfigFileConstants.getHome() + "/share/reports/AVAIL-HTML-" + catFileName + fmt.format(new java.util.Date()) + ".html";
         try {
-            AvailabilityReport report = new AvailabilityReport("Unknown");
-            report.getReportData(logourl, categoryName, format, monthFormat);
+            AvailabilityReport report = new AvailabilityReport("Unknown", startMonth, startDate, startYear);
+            report.getReportData(logourl, categoryName, format, monthFormat, startMonth, startDate, startYear);
             if (log.isInfoEnabled())
                 log.info("Generated Report Data... ");
             File file = new File(pdfFileName);

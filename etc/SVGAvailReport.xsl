@@ -866,9 +866,16 @@ xmlns:svg="http://www.w3.org/2000/svg">
 							<xsl:with-param name="warning" select="$warning"/>
 							<xsl:with-param name="normal" select="$normal"/>
 
+							<!-- JS tweaks for Tarus -->
 							<xsl:with-param name="y-offset-hor">
-								<!--xsl:value-of select="30 + position() * 15" /-->
-								<xsl:value-of select="30 + $position * 15" />
+								<xsl:choose>
+									<xsl:when test="$graphtype='lastMoTop20offenders'">
+										<xsl:value-of select="30 + (21 - $position) * 15" />
+									</xsl:when>
+									<xsl:otherwise>
+										<xsl:value-of select="30 + $position * 15" />
+									</xsl:otherwise>
+								</xsl:choose>
 							</xsl:with-param>
 							<xsl:with-param name="x-offset-hor" select="25"/>
 							<xsl:with-param name="x-offset-ver">

@@ -1,5 +1,8 @@
 1.3.1 to 1.3.2
 ----------------------------------------------------------------------
+- Reordered the top offenders from worst to best.
+- Added a date to the availability reports to choose which day to
+  run.
 - Added eventconf file for Pixel Metrics Traps/Notifications
 - Added new partial object model to support new Importer integration
 - Added new Importer service to be used in place of discovery and

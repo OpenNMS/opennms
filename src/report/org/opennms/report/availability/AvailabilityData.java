@@ -1,7 +1,7 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2002-2003 The OpenNMS Group, Inc. All rights
+// OpenNMS(R) is Copyright (C) 2002-2006 The OpenNMS Group, Inc. All rights
 // reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included
 // code and modified
@@ -11,7 +11,9 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
-// Copyright (C) 1999-2001 Oculan Corp. All rights reserved.
+// 2006 May 30: Added a way to choose the date to run the availability reports.
+//
+// Original code base Copyright (C) 1999-2001 Oculan Corp. All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -146,7 +148,8 @@ public class AvailabilityData extends Object {
      * Constructor
      */
     public AvailabilityData(String categoryName, Report report,
-            String format, String monthFormat, Calendar calendar)
+            String format, String monthFormat, Calendar calendar,
+            String startMonth, String startDate, String startYear)
             throws IOException, MarshalException, ValidationException,
             Exception {
         ThreadCategory.setPrefix(LOG4J_CATEGORY);
@@ -154,7 +157,7 @@ public class AvailabilityData extends Object {
         log.debug("Inside AvailabilityData");
 
         m_nodes = new ArrayList();
-        initialiseInterval(calendar);
+        initialiseInterval(calendar, startMonth, startDate, startYear);
         m_categoryName = categoryName;
         Catinfo config = null;
         try {
@@ -347,14 +350,17 @@ public class AvailabilityData extends Object {
      * Initialise the endTime, last Months end time and number of days in the
      * last month.
      */
-    private void initialiseInterval(Calendar calendar) {
+    private void initialiseInterval(Calendar calendar, String startMonth, String startDate, String startYear) {
         org.apache.log4j.Category log =
             ThreadCategory.getInstance(this.getClass());
 
-        int month = calendar.get(Calendar.MONTH);
-        int day = calendar.get(Calendar.DAY_OF_MONTH);
-        int year = calendar.get(Calendar.YEAR);
-        calendar.set(year, month, day - 1, 23, 59, 59); // Set the end Time
+        int month = Integer.parseInt(startMonth);
+        int day = Integer.parseInt(startDate);
+        int year = Integer.parseInt(startYear);
+        // int month = calendar.get(Calendar.MONTH);
+        // int day = calendar.get(Calendar.DAY_OF_MONTH);
+        // int year = calendar.get(Calendar.YEAR);
+	calendar.set(year, month, day - 1, 23, 59, 59); // Set the end Time
         m_endTime = calendar.getTime().getTime();
 
         calendar.add(Calendar.YEAR, -1);
