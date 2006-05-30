@@ -1,14 +1,17 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2002-2003 The OpenNMS Group, Inc.  All rights reserved.
+// OpenNMS(R) is Copyright (C) 2002-2006 The OpenNMS Group, Inc.  All rights reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included code and modified
 // code that was published under the GNU General Public License. Copyrights for modified 
 // and included code are below.
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
-// Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
+//
+// 2006 May 30: added a way to choose the date to run the availability reports.
+//
+// Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -137,6 +140,9 @@ public class AvailabilityServlet extends HttpServlet {
 		String monthFormat = request.getParameter("monthformat");
         String category = request.getParameter("category");
         String username = request.getRemoteUser();
+        String startMonth = request.getParameter("startMonth");
+        String startDate = request.getParameter("startDate");
+        String startYear = request.getParameter("startYear");
         ServletConfig config = this.getServletConfig();
 
         if (view == null) {
@@ -155,6 +161,10 @@ public class AvailabilityServlet extends HttpServlet {
             username = "";
         }
 
+        if ((startMonth == null) || (startYear == null) || (startDate == null )) {
+            throw new MissingParameterException("Missing date parameter.");
+        }
+
         // TODO: Rework this so that initialise doesn't get called and the nasty
         // if then else is done better
         try {
@@ -166,7 +176,7 @@ public class AvailabilityServlet extends HttpServlet {
                 String catFileName = category.replace(' ', '-');
                 String filename = ConfigFileConstants.getHome() + "/share/reports/AVAIL-HTML-" + catFileName + fmt.format(new java.util.Date()) + ".html";
 				
-                reportMailer.initialise(filename, username, scriptGenerateReport, scriptMailReport, category, "HTML", monthFormat);
+                reportMailer.initialise(filename, username, scriptGenerateReport, scriptMailReport, category, "HTML", monthFormat, startMonth, startDate, startYear);
                 reportMailer.setLogoUrl(logo);
                 reportMailer.setCategoryName(category);
                 reportMailer.setFormat("HTML");
@@ -187,7 +197,7 @@ public class AvailabilityServlet extends HttpServlet {
                 SimpleDateFormat fmt = new SimpleDateFormat("yyyyMMdd");
                 String catFileName = category.replace(' ', '-');
                 String filename = ConfigFileConstants.getHome() + "/share/reports/AVAIL-PDF-" + catFileName + fmt.format(new java.util.Date()) + ".pdf";
-                reportMailer.initialise(filename, username, scriptGenerateReport, scriptMailReport, category, "PDF", monthFormat);
+                reportMailer.initialise(filename, username, scriptGenerateReport, scriptMailReport, category, "PDF", monthFormat, startMonth, startDate, startYear);
                 reportMailer.setLogoUrl(logo);
                 reportMailer.setCategoryName(category);
                 reportMailer.setFormat("PDF");
@@ -206,7 +216,7 @@ public class AvailabilityServlet extends HttpServlet {
                 SimpleDateFormat fmt = new SimpleDateFormat("yyyyMMdd");
                 String catFileName = category.replace(' ', '-');
                 String filename = ConfigFileConstants.getHome() + "/share/reports/AVAIL-SVG-" + catFileName + fmt.format(new java.util.Date()) + ".pdf";
-                reportMailer.initialise(filename, username, scriptGenerateReport, scriptMailReport, category, "SVG", monthFormat);
+                reportMailer.initialise(filename, username, scriptGenerateReport, scriptMailReport, category, "SVG", monthFormat, startMonth, startDate, startYear);
                 reportMailer.setLogoUrl(logo);
                 reportMailer.setCategoryName(category);
                 reportMailer.setFormat("SVG");

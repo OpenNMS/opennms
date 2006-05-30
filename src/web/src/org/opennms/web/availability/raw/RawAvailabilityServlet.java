@@ -1,14 +1,17 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2002-2003 The OpenNMS Group, Inc.  All rights reserved.
+// OpenNMS(R) is Copyright (C) 2002-2006 The OpenNMS Group, Inc.  All rights reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included code and modified
 // code that was published under the GNU General Public License. Copyrights for modified 
 // and included code are below.
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
-// Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
+//
+// 2006 May 30: added a way to choose the date to run the availability reports.
+//
+// Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -61,6 +64,10 @@ public class RawAvailabilityServlet extends HttpServlet {
 
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String category = request.getParameter("category");
+        String startMonth = request.getParameter("startMonth");
+        String startDate = request.getParameter("startDate");
+        String startYear = request.getParameter("startYear");
+
         String username = request.getRemoteUser();
         ServletConfig config = this.getServletConfig();
 
@@ -72,6 +79,10 @@ public class RawAvailabilityServlet extends HttpServlet {
             username = "";
         }
 
+        if ((startMonth == null) || (startYear == null) || (startDate == null )) {
+            throw new MissingParameterException("Missing date parameter.");
+        }
+
         try {
             // String url =
             // config.getServletContext().getRealPath(request.getRequestURI());
@@ -80,8 +91,8 @@ public class RawAvailabilityServlet extends HttpServlet {
             String urlReplace = url.substring(0, index);
             urlReplace += "/images/logo.gif";
 
-            AvailabilityReport report = new AvailabilityReport(username);
-            report.getReportData(urlReplace, category, "all", null);
+            AvailabilityReport report = new AvailabilityReport(username, startMonth, startDate, startYear);
+            report.getReportData(urlReplace, category, "all", null, startMonth, startDate, startYear);
 
             if (log.isDebugEnabled())
                 log.info("Generated Report Data... ");

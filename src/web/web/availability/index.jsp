@@ -3,7 +3,7 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2002-2003 The OpenNMS Group, Inc.  All rights reserved.
+// OpenNMS(R) is Copyright (C) 2002-2006 The OpenNMS Group, Inc.  All rights reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included code and modified
 // code that was published under the GNU General Public License. Copyrights for modified 
 // and included code are below.
@@ -12,6 +12,7 @@
 //
 // Modifications:
 //
+// 2006 May 30: Added a way to choose the date to run the availability reports.
 // 2003 Feb 07: Fixed URLEncoder issues.
 // 2002 Nov 26: Fixed breadcrumbs issue.
 // 
@@ -41,6 +42,7 @@
 <%@page language="java" contentType="text/html" session="true" import="org.opennms.netmgt.config.*,org.opennms.netmgt.config.categories.*,java.util.*" %>
 
 <%
+	Calendar now = Calendar.getInstance();
 	Catinfo catconfig  = null;
         CatFactory catFactory;
         try
@@ -134,6 +136,23 @@
 	  %>
 	<input type="hidden" name="categoryvalue" value="<%= catval %>" /> <br />
         <input type="submit" value="generate"  class="button" />
+        <br/>
+        <br/>
+        <b>Choose the date to use for this report.</b><br/>
+        <br/>
+
+        <select name="startMonth" size="1">
+              <% for( int i = 0; i < 12; i++ ) { %>
+         <option value="<%=i%>" <% if( now.get( Calendar.MONTH ) == i ) out.print("selected ");%>><%=months[i]%></option>
+              <% } %>
+            </select>
+
+            <input type="text" name="startDate" size="4" maxlength="2" value="<%=now.get( Calendar.DATE )%>" />
+            <input type="text" name="startYear" size="6" maxlength="4" value="<%=now.get( Calendar.YEAR )%>" />
+
+      </form>
+    </td>
+
       </form>
     </td>
 
@@ -160,3 +179,22 @@
 
 </body>
 </html>
+
+<%!
+    //note these run from 0-11, this is because of java.util.Calendar!
+    public static String[] months = new String[] {
+        "January",
+        "February",
+        "March",
+        "April",
+        "May",
+        "June",
+        "July",
+        "August",
+        "September",
+        "October",
+        "November",
+        "December"
+    };
+%>
+

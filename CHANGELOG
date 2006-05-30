@@ -1,5 +1,7 @@
 1.2.7 to 1.2.8
 ----------------------------------------------------------------------
+- Added a date to the availability reports to choose which day to
+  run.
 - Backported NSClient and NRPE to stable. Bug 1465. Thx joed.
 
 1.2.6 to 1.2.7
