@@ -51,7 +51,8 @@ public class UserNotificationMappingQuery extends MappingSqlQuery {
              "u.notifyTime as notifyTime, " +
              "u.media as media, " +
              "u.contactinfo as contactinfo, " +
-             "u.autonotify as autonotify " + clause);
+             "u.autonotify as autonotify, " +
+             "u.id as id" + clause);
     }
     
     public DataSource getDataSource() {
@@ -60,14 +61,16 @@ public class UserNotificationMappingQuery extends MappingSqlQuery {
 
     public Object mapRow(ResultSet rs, int rowNumber) throws SQLException {
         
-        final String userID = rs.getString("userID");
-        final Integer notifyID = (Integer) rs.getObject("notifyID");
+        final Integer id = (Integer) rs.getObject("id");
         
-        final UserNotificationId key = new UserNotificationId(userID, notifyID);
-
-        LazyUserNotification userNotification = (LazyUserNotification)Cache.obtain(OnmsUserNotification.class, key);
+        LazyUserNotification userNotification = (LazyUserNotification)Cache.obtain(OnmsUserNotification.class, id);
         userNotification.setLoaded(true);
         
+        final String userID = rs.getString("userID");
+        userNotification.setUserId(userID);
+        final Integer notifyID = (Integer) rs.getObject("notifyID");
+        OnmsNotification notif = (OnmsNotification)Cache.obtain(OnmsNotification.class, notifyID);
+        userNotification.setNotification(notif);
         userNotification.setNotifyTime(rs.getTimestamp("testMsg"));
         userNotification.setMedia(rs.getString("media"));
         userNotification.setContactInfo(rs.getString("contactinfo"));
@@ -77,18 +80,22 @@ public class UserNotificationMappingQuery extends MappingSqlQuery {
         return userNotification;
     }
     
-    public OnmsNotification findUnique() {
+    public OnmsUserNotification findUnique() {
         return findUnique((Object[])null);
     }
     
-    public OnmsNotification findUnique(Object o1, Object o2) {
+    public OnmsUserNotification findUnique(Object o1) {
+        return findUnique(new Object[] { o1 });
+    }
+
+    public OnmsUserNotification findUnique(Object o1, Object o2) {
         return findUnique(new Object[] { o1, o2 });
     }
 
-    public OnmsNotification findUnique(Object[] objs) {
+    public OnmsUserNotification findUnique(Object[] objs) {
         List userNotifications = execute(objs);
         if (userNotifications.size() > 0)
-            return (OnmsNotification) userNotifications.get(0);
+            return (OnmsUserNotification)userNotifications.get(0);
         else
             return null;
     }

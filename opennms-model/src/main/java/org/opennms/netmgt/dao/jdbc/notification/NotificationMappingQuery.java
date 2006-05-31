@@ -38,10 +38,12 @@ import javax.sql.DataSource;
 
 import org.opennms.netmgt.dao.jdbc.Cache;
 import org.opennms.netmgt.dao.jdbc.JdbcSet;
+import org.opennms.netmgt.dao.jdbc.outage.LazyOutage;
 import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsNotification;
+import org.opennms.netmgt.model.OnmsOutage;
 import org.springframework.jdbc.object.MappingSqlQuery;
 
 public class NotificationMappingQuery extends MappingSqlQuery {
@@ -66,29 +68,31 @@ public class NotificationMappingQuery extends MappingSqlQuery {
     }
 
     public Object mapRow(ResultSet rs, int rowNumber) throws SQLException {
-        final Integer id = (Integer) rs.getObject("alarmid");
+        final Integer id = (Integer) rs.getObject("notifyID");
 
         LazyNotification notification = (LazyNotification)Cache.obtain(OnmsNotification.class, id);
         notification.setLoaded(true);
         
-        notification.setTextMsg(rs.getString("testMsg"));
+        notification.setTextMsg(rs.getString("textMsg"));
         notification.setSubject(rs.getString("subject"));
+        notification.setNumericMsg(rs.getString("numericMsg"));
         notification.setPageTime(rs.getTimestamp("pageTime"));
         notification.setRespondTime(rs.getTimestamp("respondTime"));
         notification.setAnsweredBy(rs.getString("answeredBy"));
-       
+        notification.setQueueId(rs.getString("queueID"));
+        
         Integer nodeId = new Integer(rs.getInt("nodeID"));
         OnmsNode node = (OnmsNode)Cache.obtain(OnmsNode.class, nodeId);
         notification.setNode(node);
         
-        Integer eventId = new Integer(rs.getInt("lastEventId"));
+        Integer eventId = new Integer(rs.getInt("eventID"));
         OnmsEvent event = (OnmsEvent)Cache.obtain(OnmsEvent.class, eventId);
         notification.setEvent(event);
         
         Integer serviceId = new Integer(rs.getInt("serviceId"));
         OnmsMonitoredService service = (OnmsMonitoredService)Cache.obtain(OnmsMonitoredService.class, serviceId);
         notification.setService(service);
-       
+
         notification.setDirty(false);
         return notification;
     }
@@ -102,9 +106,9 @@ public class NotificationMappingQuery extends MappingSqlQuery {
     }
 
     public OnmsNotification findUnique(Object[] objs) {
-        List events = execute(objs);
-        if (events.size() > 0)
-            return (OnmsNotification) events.get(0);
+        List notifs = execute(objs);
+        if (notifs.size() > 0)
+            return (OnmsNotification) notifs.get(0);
         else
             return null;
     }

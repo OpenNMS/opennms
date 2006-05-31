@@ -196,6 +196,10 @@ public class HibernateDaoTestConfig extends DaoTestConfig {
     protected NotificationDao createNotificationDao() {
         throw new RuntimeException("NotificationDao is not yet implemented in hibernate");
     }
+
+    protected UserNotificationDao createUserNotificationDao() {
+        throw new RuntimeException("UserNotificationDao is not yet implemented in hibernate");
+    }
     
 
 }

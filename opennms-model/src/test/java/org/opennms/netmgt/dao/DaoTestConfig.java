@@ -62,6 +62,8 @@ public abstract class DaoTestConfig {
 
     protected abstract NotificationDao createNotificationDao();
 
+    protected abstract UserNotificationDao createUserNotificationDao();
+
     protected abstract void tearDown();
 
     protected abstract PlatformTransactionManager setUp(DB db, boolean createDb) throws Exception;
@@ -79,6 +81,7 @@ public abstract class DaoTestConfig {
 	private AgentDao m_agentDao;
     private AlarmDao m_alarmDao;
     private NotificationDao m_notificationDao;
+    private UserNotificationDao m_userNotificationDao;
 
     public DistPollerDao getDistPollerDao() {
         if (m_dpDao == null) {
@@ -179,5 +182,11 @@ public abstract class DaoTestConfig {
         return m_notificationDao;
     }
 
+    public UserNotificationDao getUserNotificationDao() {
+        if (m_userNotificationDao == null) {
+            m_userNotificationDao = createUserNotificationDao();
+        }
+        return m_userNotificationDao;
+    }
 
 }

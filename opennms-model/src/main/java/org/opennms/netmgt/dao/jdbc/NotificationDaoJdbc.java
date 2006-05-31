@@ -39,6 +39,7 @@ import org.opennms.netmgt.dao.NotificationDao;
 import org.opennms.netmgt.dao.jdbc.notification.FindAll;
 import org.opennms.netmgt.dao.jdbc.notification.FindByNotifyId;
 import org.opennms.netmgt.dao.jdbc.notification.LazyNotification;
+import org.opennms.netmgt.dao.jdbc.notification.NotificationSave;
 import org.opennms.netmgt.dao.jdbc.notification.NotificationSaveOrUpdate;
 import org.opennms.netmgt.model.OnmsNotification;
 
@@ -146,8 +147,24 @@ public class NotificationDaoJdbc extends AbstractDaoJdbc implements Notification
         return notification;
     }
 
-    public void save(OnmsNotification notification) {
-        new Save(getDataSource()).doInsert(notification);
+//    public void save(OnmsNotification notification) {
+//        new Save(getDataSource()).doInsert(notification);
+//    }
+    public void save(OnmsNotification notif) {
+        if (notif.getNotifyId() != null)
+            throw new IllegalArgumentException("Cannot save an notification that already has a notifyID");
+        
+        notif.setNotifyId(allocateNotificationId());
+        getNotificationSaver().doInsert(notif);
+
+    }
+
+    private NotificationSave getNotificationSaver() {
+        return new NotificationSave(getDataSource());
+    }
+
+    private Integer allocateNotificationId() {
+        return new Integer(getJdbcTemplate().queryForInt("SELECT nextval('notifyNxtId')"));
     }
 
     public void update(OnmsNotification notification) {
