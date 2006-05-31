@@ -49,6 +49,7 @@ import org.opennms.netmgt.dao.jdbc.NotificationDaoJdbc;
 import org.opennms.netmgt.dao.jdbc.OutageDaoJdbc;
 import org.opennms.netmgt.dao.jdbc.ServiceTypeDaoJdbc;
 import org.opennms.netmgt.dao.jdbc.SnmpInterfaceDaoJdbc;
+import org.opennms.netmgt.dao.jdbc.UserNotificationDaoJdbc;
 import org.opennms.netmgt.dao.jdbc.agent.AgentFactory;
 import org.opennms.netmgt.dao.jdbc.alarm.AlarmFactory;
 import org.opennms.netmgt.dao.jdbc.asset.AssetRecordFactory;
@@ -164,6 +165,10 @@ public class JdbcDaoTestConfig extends DaoTestConfig {
 
     protected NotificationDao createNotificationDao() {
         return new NotificationDaoJdbc(m_dataSource);
+    }
+
+    protected UserNotificationDao createUserNotificationDao() {
+        return new UserNotificationDaoJdbc(m_dataSource);
     }
 
 }

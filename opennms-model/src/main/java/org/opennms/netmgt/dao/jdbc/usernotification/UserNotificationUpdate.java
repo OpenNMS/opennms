@@ -13,7 +13,8 @@ public class UserNotificationUpdate extends UserNotificationSaveOrUpdate {
     // PARAMETERS IN UserNotificationSaveOrUpdate
     private static final String updateStmt = "update usersNotified set " +
 	    "notifyTime = ?, media = ?, contactinfo = ?, autonotify = ? " + 
-	    "where userID = ? and notifyID = ?";
+	    "where userID = ? and notifyID = ? " +
+        "where id = ?";
 
     public UserNotificationUpdate(DataSource ds) {
         super(ds, updateStmt);

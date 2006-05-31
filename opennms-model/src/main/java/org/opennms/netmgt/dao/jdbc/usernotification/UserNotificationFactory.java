@@ -5,9 +5,7 @@ package org.opennms.netmgt.dao.jdbc.usernotification;
 
 import javax.sql.DataSource;
 
-import org.opennms.netmgt.dao.jdbc.Cache;
 import org.opennms.netmgt.dao.jdbc.Factory;
-import org.opennms.netmgt.model.OnmsNotification;
 import org.opennms.netmgt.model.OnmsUserNotification;
 
 public class UserNotificationFactory extends Factory {
@@ -27,14 +25,7 @@ public class UserNotificationFactory extends Factory {
     }
 
     protected void assignId(Object obj, Object id) {
-        OnmsUserNotification userNotification = (OnmsUserNotification) obj;
-        UserNotificationId userNotificationId = (UserNotificationId) id;
-        userNotification.setUserId(userNotificationId.getUserID());
-        userNotification.setNotification(getNotification(userNotificationId.getNotifyID()));
-    }
-
-    private OnmsNotification getNotification(Integer notifyId) {
-        return (OnmsNotification)Cache.obtain(OnmsNotification.class, notifyId);
+        ((OnmsUserNotification)obj).setId((Integer)id);
     }
 
 	protected Object create() {

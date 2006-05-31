@@ -70,9 +70,9 @@ public class NotificationSaveOrUpdate extends SqlUpdate {
              notification.getPageTime(), //pageTime
              notification.getRespondTime(), //respondTime
              notification.getAnsweredBy(), //answeredBy
-             notification.getNode().getId(), //nodeID
-             notification.getInterface().getId(), //interfaceID
-             notification.getService().getId(), //serviceID
+             (notification.getNode() == null ? null : notification.getNode().getId()), //nodeID
+             (notification.getInterface() == null ? null : notification.getInterface().getId()), //interfaceID
+             (notification.getService() == null ? null : notification.getService().getId()), //serviceID
              notification.getQueueId(), //queueID
              notification.getEvent().getId(), //eventID
              notification.getEvent().getEventUei(), //eventUEI

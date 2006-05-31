@@ -4,6 +4,7 @@ import java.util.Date;
 
 import javax.sql.DataSource;
 
+import org.opennms.netmgt.dao.jdbc.event.FindByEventId;
 import org.opennms.netmgt.model.EntityVisitor;
 import org.opennms.netmgt.model.OnmsNotification;
 import org.opennms.netmgt.model.OnmsUserNotification;
@@ -43,8 +44,7 @@ public class LazyUserNotification extends OnmsUserNotification {
 
     private void load() {
 		if (!m_loaded) {
-            UserNotificationId key = new UserNotificationId(this);
-            FindByKey.get(m_dataSource, key).find(key);
+            new FindByEventId(m_dataSource).findUnique(getId());
 		}
 	}
 

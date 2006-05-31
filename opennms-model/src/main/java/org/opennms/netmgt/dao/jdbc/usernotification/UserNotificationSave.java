@@ -14,10 +14,10 @@ public class UserNotificationSave extends UserNotificationSaveOrUpdate {
     // PARAMETERS IN UserNotificationSaveOrUpdate
     private static final String insertStmt = "insert into usersNotified (" +
     "notifyTime, media, contactinfo, autonotify, " + 
-    "userID, notifyID " + 
+    "userID, notifyID, id " + 
     "values (" + 
     "?, ?, ?, ?, " + 
-    "?, ?)";
+    "?, ?, ?)";
     
 
     public UserNotificationSave(DataSource ds) {

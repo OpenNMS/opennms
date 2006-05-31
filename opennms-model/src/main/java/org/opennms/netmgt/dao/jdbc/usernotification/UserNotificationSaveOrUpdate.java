@@ -52,6 +52,8 @@ public class UserNotificationSaveOrUpdate extends SqlUpdate {
         declareParameter(new SqlParameter(Types.VARCHAR));  //autoNotify
         declareParameter(new SqlParameter(Types.VARCHAR));  //userID
         declareParameter(new SqlParameter(Types.INTEGER));  //notifyID
+        declareParameter(new SqlParameter(Types.INTEGER));   //ID
+
         compile();
     }
     
@@ -62,7 +64,8 @@ public class UserNotificationSaveOrUpdate extends SqlUpdate {
              userNotification.getContactInfo(), //contactInfo
              userNotification.getAutoNotify(), //autoNotify
              userNotification.getUserId(), //userID
-             userNotification.getNotification().getNotifyId() //notifyID
+             userNotification.getNotification().getNotifyId(), //notifyID
+             userNotification.getId() //ID
         };
         return update(parms);
     }    

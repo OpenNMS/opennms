@@ -15,12 +15,12 @@ import org.springframework.jdbc.object.SqlUpdate;
 public class UserNotificationDelete extends SqlUpdate {
     
    public UserNotificationDelete(DataSource ds) {
-       super(ds, "delete from userNotified where alarmid = ?");
+       super(ds, "delete from userNotified where id = ?");
        declareParameter(new SqlParameter(Types.INTEGER));
        compile();
    }
 
    public int doDelete(OnmsUserNotification userNotification) throws DataAccessException {
-       return super.update(new Object[] { userNotification.getNotification().getNotifyId() }); //TODO: This is wrong and needs to be fixed
+       return super.update(new Object[] { userNotification.getId() }); 
    }
 }
