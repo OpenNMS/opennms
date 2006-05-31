@@ -75,8 +75,16 @@ import org.opennms.netmgt.xml.event.Operaction;
  * @see org.opennms.netmgt.eventd.db.Constants#DB_ATTRIB_DELIM
  * @see org.opennms.netmgt.eventd.db.Constants#NAME_VAL_DELIM
  * 
- * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Nataraj </A>
+ * @author <A HREF="mailto:david@opennms.org">David Hustace </A>
+ * @author Sowmya Nataraj </A>
  * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
+ * 
+ * Changes:
+ * 
+ * - Alarm persisting added (many moons ago)
+ * - Alarm persisting now removes oldest events by default.  Use "auto-clean" attribute
+ *   in eventconf files.
+ * 
  */
 class Persist {
     //
@@ -351,23 +359,54 @@ class Persist {
     
     public void insertOrUpdateAlarm(Header eventHeader, Event event) throws SQLException {
         
-        Category log = ThreadCategory.getInstance(AlarmWriter.class);
         int alarmId = isReductionNeeded(eventHeader, event);
         if (alarmId != -1) {
-            log.debug("AlarmWriter is reducing event for: " +event.getDbid()+ ": "+ event.getUei());
+            log().debug("AlarmWriter is reducing event for: " +event.getDbid()+ ": "+ event.getUei());
             updateAlarm(eventHeader, event, alarmId);
+            
+            /*
+             * This removes all previous events that have been reduced.
+             */
+            if (event.getAlarmData().getAutoClean() == true) {
+                cleanPreviousEvents(alarmId, event.getDbid());
+            }
+            
         } else {
-            log.debug("AlarmWriter is not reducing event for: " +event.getDbid()+ ": "+ event.getUei());
+            log().debug("AlarmWriter is not reducing event for: " +event.getDbid()+ ": "+ event.getUei());
             insertAlarm(eventHeader, event);
         }
     }
     
+    /*
+     * Don't throw from here, deal with any SQL exception and don't effect updating an alarm.
+     */
+    private void cleanPreviousEvents(int alarmId, int eventId) {
+        PreparedStatement stmt = null;
+        try {
+            stmt = m_dsConn.prepareStatement("DELETE FROM events WHERE alarmId = ? AND eventId != ?");
+            stmt.setInt(1, alarmId);
+            stmt.setInt(2, eventId);
+            stmt.execute();
+        } catch (SQLException e) {
+            log().error("cleanPreviousEvents: Couldn't remove old events.", e);
+        }
+
+        try {
+            stmt.close();
+        } catch (SQLException e) {
+            log().error("cleanPreviousEvents: Couldn't close statement.", e);
+        }
+    }
+
+    private Category log() {
+        Category log = ThreadCategory.getInstance(AlarmWriter.class);
+        return log;
+    }
+
     private int isReductionNeeded(Header eventHeader, Event event) throws SQLException {
         
-        Category log = ThreadCategory.getInstance(AlarmWriter.class);
-                
-        if (log.isDebugEnabled()) {
-            log.debug("Persist.isReductionNeeded: reductionKey: "+event.getAlarmData().getReductionKey());
+        if (log().isDebugEnabled()) {
+            log().debug("Persist.isReductionNeeded: reductionKey: "+event.getAlarmData().getReductionKey());
         }
 
         m_reductionQuery.setString(1, event.getAlarmData().getReductionKey());
