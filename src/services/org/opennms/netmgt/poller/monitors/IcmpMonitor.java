@@ -278,6 +278,7 @@ final public class IcmpMonitor extends IPv4LatencyMonitor {
         int timeout = ParameterMap.getKeyedInteger(parameters, "timeout", DEFAULT_TIMEOUT);
         String rrdPath = ParameterMap.getKeyedString(parameters, "rrd-repository", null);
         String dsName = ParameterMap.getKeyedString(parameters, "ds-name", null);
+	String invertResult = ParameterMap.getKeyedString(parameters, "invert", "false");
 
         if (rrdPath == null) {
             log.info("poll: RRD repository not specified in parameters, latency data will not be stored.");
@@ -352,6 +353,11 @@ final public class IcmpMonitor extends IPv4LatencyMonitor {
                 }
             }
         }
+
+	if (invertResult.equals("true") && serviceStatus == ServiceMonitor.SERVICE_AVAILABLE)
+		serviceStatus = ServiceMonitor.SERVICE_UNAVAILABLE;
+	else if (invertResult.equals("true"))
+		serviceStatus = ServiceMonitor.SERVICE_AVAILABLE;
 
         return serviceStatus;
     }

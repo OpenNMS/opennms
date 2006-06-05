@@ -1,5 +1,6 @@
 1.2.7 to 1.2.8
 ----------------------------------------------------------------------
+- Added an "invert" parameter to IcmpMonitor.
 - Added %assetcomment% and %assetdescr% as fields that can be used 
   in notifications.
 - Added a date to the availability reports to choose which day to
