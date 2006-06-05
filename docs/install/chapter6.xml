@@ -471,7 +471,7 @@ opennms=# </computeroutput><command>ALTER TABLE node_old_11033991291234 RENAME T
       RTC information is up-to-date, and if not, it attempts to sent events
       to the OpenNMS daemon to register for updates.  If the Tomcat server
       is running with the OpenNMS web application installed, and if the
-      OpenNMS daemon is not running, then this error will occur regularly.
+      OpenNMS daemon is not running, then this error will occur regularly.</para>
 
       <para>To stop this error, start the main OpenNMS daemon (grin).</para>
     </section>
