@@ -1,74 +1,31 @@
-<?xml version="1.0"?>
-<project>
+<?xml version="1.0" encoding="UTF-8"?><project>
+  <parent>
+    <artifactId>opennms</artifactId>
+    <groupId>org.opennms</groupId>
+    <version>2.0-SNAPSHOT</version>
+  </parent>
   <modelVersion>4.0.0</modelVersion>
-  <groupId>org.opennms</groupId>
   <artifactId>opennms-model</artifactId>
-  <name>OpenNMS Data Model</name>
-  <version>1.3.2-SNAPSHOT</version>
-  <url>http://maven.apache.org</url>
-  <build>
-    <plugins>
-  <!--
-      <plugin>
-        <groupId>xdoclet</groupId>
-        <artifactId>maven2-xdoclet2-plugin</artifactId>
-        <executions>
-          <execution>
-            <goals>
-              <goal>xdoclet</goal>
-            </goals>
-          </execution>
-        </executions>
-        <dependencies>
-          <dependency>
-            <groupId>xdoclet-plugins</groupId>
-            <artifactId>xdoclet-plugin-hibernate</artifactId>
-            <version>1.0.4-SNAPSHOT</version>
-          </dependency>
-        </dependencies>
-        <configuration>
-          <configs>
-            <config>
-              <plugin>
-                org.xdoclet.plugin.hibernate.HibernateMappingPlugin
-              </plugin>
-              <params>
-                <version>3.0</version>
-                <destdir>
-                  ${project.build.directory}/generated-sources/xdoclet
-                </destdir>
-              </params>
-            </config>
-          </configs>
-        </configuration>
-      </plugin>
--->
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-surefire-plugin</artifactId>
-        <configuration>
-          <forkMode>pertest</forkMode>
-          <argLine>-Xmx256m</argLine>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
-  <repositories>
-    <repository>
-      <id>opennms-repo</id>
-      <name>OpenNMS Rep</name>
-      <url>http://repo.opennms.org/maven2</url>
-    </repository>
-  </repositories>
-  <pluginRepositories>
-    <pluginRepository>
-      <releases />
-      <snapshots />
-      <id>codehaus-plugins</id>
-      <url>http://dist.codehaus.org/</url>
-    </pluginRepository>
-  </pluginRepositories>
+  <name>OpenNMS Data Model Components</name>
   <dependencies>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-util</artifactId>
+      <version>2.0-SNAPSHOT</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-config</artifactId>
+      <version>2.0-SNAPSHOT</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-snmp-api</artifactId>
+      <version>2.0-SNAPSHOT</version>
+      <scope>compile</scope>
+    </dependency>
     <dependency>
       <groupId>c3p0</groupId>
       <artifactId>c3p0</artifactId>
@@ -97,22 +54,29 @@
       <groupId>commons-dbcp</groupId>
       <artifactId>commons-dbcp</artifactId>
       <version>1.2</version>
+      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring</artifactId>
-      <version>1.2.6</version>
-      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>commons-lang</groupId>
       <artifactId>commons-lang</artifactId>
       <version>2.1</version>
+      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.hibernate</groupId>
       <artifactId>hibernate</artifactId>
       <version>3.0.5</version>
+      <scope>compile</scope>
+      <exclusions>
+        <exclusion>
+	  <groupId>javax.transaction</groupId>
+	  <artifactId>jta</artifactId>
+	</exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>hsqldb</groupId>
@@ -136,12 +100,19 @@
       <groupId>commons-io</groupId>
       <artifactId>commons-io</artifactId>
       <version>1.1</version>
+      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>log4j</groupId>
       <artifactId>log4j</artifactId>
       <version>1.2.7</version>
       <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>castor</groupId>
+      <artifactId>castor</artifactId>
+      <version>0.9.6</version>
+      <scope>compile</scope>
     </dependency>
   </dependencies>
 </project>

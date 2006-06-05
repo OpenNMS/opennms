@@ -1,6 +1,0 @@
-org/opennms/netmgt/**/*.class
-org/opennms/netmgt/**/*-context.xml
-org/opennms/netmgt/**/*.dat
-org/opennms/protocols/dns/**/*.class
-org/opennms/protocols/icmp/**/*.class
-org/opennms/protocols/ip/**/*.class
