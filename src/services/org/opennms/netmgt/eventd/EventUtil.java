@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2006 Jun 05: Added asset description and asset comment tags.
 // 2002 Nov 14: Added non-blocking I/O classes to speed capsd and pollers.
 // 2002 Nov 13: Added two new notification fields: nodelabel and interfaceresolve.
 //
@@ -189,6 +190,16 @@ public final class EventUtil {
 	 * The event mouseovertext xml tag
 	 */
 	static final String TAG_MOUSEOVERTEXT = "mouseovertext";
+
+	/**
+	 * The asset description field
+	 */
+	static final String TAG_ASSET_DESCR = "assetdescr";
+
+	/**
+	 * The asset comment field
+	 */
+	static final String TAG_ASSET_COMMENT = "assetcomment";
 
 	/**
 	 * The '%' sign used to indicate parms to be expanded
@@ -546,6 +557,34 @@ public final class EventUtil {
 			retParmVal = event.getOperinstruct();
 		} else if (parm.equals(TAG_MOUSEOVERTEXT)) {
 			retParmVal = event.getMouseovertext();
+		} else if (parm.equals(TAG_ASSET_DESCR)) {
+			retParmVal = Long.toString(event.getNodeid());
+			String assetdescr = null;
+			if (event.getNodeid() > 0) {
+				try {
+					assetdescr = getAssetInfo(event.getNodeid(), "description");
+				} catch (SQLException sqlE) {
+					// do nothing
+				}
+			}
+			if (assetdescr != null)
+				retParmVal = assetdescr;
+			else
+				retParmVal = "Unknown";
+		} else if (parm.equals(TAG_ASSET_COMMENT)) {
+			retParmVal = Long.toString(event.getNodeid());
+			String assetcomment = null;
+			if (event.getNodeid() > 0) {
+				try {
+					assetcomment = getAssetInfo(event.getNodeid(), "comment");
+				} catch (SQLException sqlE) {
+					// do nothing
+				}
+			}
+			if (assetcomment != null)
+				retParmVal = assetcomment;
+			else
+				retParmVal = "Unknown";
 		} else if (parm.equals(PARMS_VALUES)) {
 			if (event.getParms() != null
 					&& event.getParms().getParmCount() <= 0)
@@ -879,4 +918,58 @@ public final class EventUtil {
 		
 		return ifAlias;
 	}	
+
+	/**
+	 * Retrieve asset info from the asset table of the database given a particular
+	 * nodeId and field.
+	 * 
+	 * @param nodeId
+	 *            Node identifier
+	 * @param assetField
+	 *	      Field from the asset table
+	 * 
+	 * @return assetInfo Retreived assetinfo
+	 * 
+	 * @throws SQLException
+	 *             if database error encountered
+	 */
+	private static String getAssetInfo(long nodeId, String assetField) throws SQLException {
+
+		String assetInfo = null;
+		java.sql.Connection dbConn = null;
+		Statement stmt = null;
+		try {
+			// Get datbase connection from the factory
+			dbConn = DatabaseConnectionFactory.getInstance().getConnection();
+
+			// Issue query and extract nodeLabel from result set
+			stmt = dbConn.createStatement();
+			ResultSet rs = stmt
+					.executeQuery("SELECT " + assetField + " FROM assets WHERE nodeid="
+							+ String.valueOf(nodeId));
+			if (rs.next()) {
+				assetInfo = (String) rs.getString(assetField);
+			}
+		} finally {
+			// Close the statement
+			if (stmt != null) {
+				try {
+					stmt.close();
+				} catch (Exception e) {
+					// do nothing
+				}
+			}
+
+			// Close the database connection
+			if (dbConn != null) {
+				try {
+					dbConn.close();
+				} catch (Throwable t) {
+					// do nothing
+				}
+			}
+		}
+
+		return assetInfo;
+	}
 }
