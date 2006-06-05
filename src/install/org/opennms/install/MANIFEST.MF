@@ -1,3 +1,0 @@
-Manifest-Version: 1.0
-Main-Class: org.opennms.install.Installer
-Class-Path: @install.manifest.classes@

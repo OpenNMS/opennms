@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?><project>
+  <parent>
+    <artifactId>opennms-rrd</artifactId>
+    <groupId>org.opennms</groupId>
+    <version>2.0-SNAPSHOT</version>
+  </parent>
+  <modelVersion>4.0.0</modelVersion>
+  <artifactId>opennms-rrd-rrdtool</artifactId>
+  <packaging>pom</packaging>
+  <name>OpenNMS RRDTool RRD Implementation</name>
+  <modules>
+    <module>opennms-rrdtool-api</module>
+    <module>opennms-rrdtool-jni</module>
+  </modules>
+</project>

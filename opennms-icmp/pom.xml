@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?><project>
+  <parent>
+    <artifactId>opennms</artifactId>
+    <groupId>org.opennms</groupId>
+    <version>2.0-SNAPSHOT</version>
+  </parent>
+  <modelVersion>4.0.0</modelVersion>
+  <artifactId>opennms-icmp</artifactId>
+  <packaging>pom</packaging>
+  <name>OpenNMS ICMP Library</name>
+  <modules>
+    <module>opennms-icmp-api</module>
+    <module>opennms-icmp-jni</module>
+  </modules>
+</project>

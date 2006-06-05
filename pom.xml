@@ -7,9 +7,55 @@
   <version>2.0-SNAPSHOT</version>
   <modules>
     <module>opennms-util</module>
+    <module>opennms-bootstrap</module>
+    <module>opennms-joesnmp</module>
+    <module>opennms-install</module>
+    <module>opennms-model</module>
+    <module>opennms-config-utils</module>
+    <module>opennms-db</module>
+    <module>opennms-filter</module>
+    <module>opennms-icmp</module>
+    <module>opennms-rrd</module>
+    <module>opennms-iplike</module>
+    <module>opennms-snmp</module>
+    <module>opennms-config</module>
+    <module>opennms-services</module>
+    <module>opennms-import</module>
+    <module>opennms-reporting</module>
+    <module>opennms-web</module>
+    <module>opennms-webapp</module>
+    <module>opennms-site</module>
+    <module>opennms-daemon</module>
   </modules>
   <build>
-    <plugins>
+   <plugins>
+     <plugin>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <executions>
+          <execution>
+            <phase>validate</phase>
+            <configuration>
+              <tasks>
+                <echo>
+M2 Project Info via AntRun
+--------------------------
+project.basedir = ${project.basedir}
+project.groupId = ${project.groupId}
+project.artifactId = ${project.artifactId}
+project.version = ${project.version}
+project.build.directory = ${project.build.directory}
+project.build.outputDirectory = ${project.build.outputDirectory}
+project.build.testOutputDirectory = ${project.build.testOutputDirectory}
+platform = ${platform}
+                </echo>
+              </tasks>
+            </configuration>
+            <goals>
+              <goal>run</goal>
+            </goals>
+          </execution>
+        </executions>
+     </plugin>
       <plugin>
         <artifactId>maven-source-plugin</artifactId>
         <executions>
@@ -20,8 +66,168 @@
           </execution>
         </executions>
       </plugin>
-    </plugins>
+   </plugins>
   </build>
+  <properties>
+  <relative.install.dir>dist</relative.install.dir>
+  <install.dir>${basedir}/${relative.install.dir}</install.dir>
+
+  <install.init.dir>${install.dir}/bin</install.init.dir>
+  <install.webapps.dir>${install.dir}/webapps</install.webapps.dir>
+  <install.servlet.dir>${install.webapps.dir}/opennms</install.servlet.dir>
+  <install.share.dir>${install.dir}/share</install.share.dir>
+  <install.bin.dir>${install.dir}/bin</install.bin.dir>
+  <install.postgresql.dir>${install.dir}/lib</install.postgresql.dir>
+  <install.contrib.dir>${install.dir}/contrib</install.contrib.dir>
+  <install.etc.dir>${install.dir}/etc</install.etc.dir>
+  <install.logs.dir>${install.dir}/logs</install.logs.dir>
+  <install.pid.file>${install.dir}/logs/opennms.pid</install.pid.file>
+        
+  <!-- install.prefix: a prefix used for installation in or chroot -->
+  <install.prefix></install.prefix>
+  
+  <install.postgresql.service>postgresql</install.postgresql.service>
+  <install.database.name>opennms</install.database.name>
+  <install.database.user>opennms</install.database.user>
+  <install.database.password>opennms</install.database.password>
+  <install.database.driver>org.postgresql.Driver</install.database.driver> 
+  <!-- XXX why is compatible=7.1 being used?
+       It's not added here... see etc/opennms-database.xml and
+       src/web/etc/web.xml where @install.database.driver@ is used. -->
+  <install.database.url>jdbc:postgresql://localhost:5432/</install.database.url>
+  <install.database.bindir>/usr/bin</install.database.bindir>
+  <install.rrdtool.bin>/usr/bin/rrdtool</install.rrdtool.bin>
+  <install.perl.bin>/usr/bin/perl</install.perl.bin>
+  
+  <!-- rpm specific -->
+  <rpm.install.dir>/opt/OpenNMS</rpm.install.dir>
+  <rpm.build.executable>rpmbuild</rpm.build.executable>
+  <rpm.build.docs>1</rpm.build.docs>
+  <rpm.sign>false</rpm.sign>
+  <rpm.buildtests>false</rpm.buildtests>
+  <rpm.database.user>opennms</rpm.database.user>
+  <rpm.additional.args></rpm.additional.args> 
+  <rpm.database.name>opennms</rpm.database.name>
+  <rpm.database.password>opennms</rpm.database.password>
+  </properties>
+  <profiles>
+    <profile>
+      <id>opennms-growl</id>
+      <activation>
+        <file>
+          <exists>/System/Library/Java</exists>
+        </file>
+      </activation>
+      <modules>
+        <module>opennms-growl</module>
+      </modules>
+   </profile>
+  <profile>
+    <id>darwinPorts</id>
+    
+    <activation>
+      <file>
+        <exists>/opt/local/bin/port</exists>
+      </file>
+    </activation>
+
+    <properties>
+      <platform>macosx</platform>
+      <platform.shlib>dylib</platform.shlib>
+      <platform.jni>jnilib</platform.jni>
+      <build.rrd.include.dir>/opt/local/include</build.rrd.include.dir>
+      <build.rrd.lib.dir>/opt/local/lib</build.rrd.lib.dir>
+      <build.postgresql.include.dir>/opt/local/include/pgsql8/server</build.postgresql.include.dir>
+
+      <!-- filters 
+      build.soext=${platform.shlib}
+install.share.dir=${install.share.dir}
+install.bin.dir=${install.bin.dir}
+install.database.bindir=${install.database.bindir}
+install.database.driver=${install.database.driver}
+install.database.name=${install.database.name}
+install.database.password=${install.database.password}
+install.database.url=${install.database.url}
+install.database.user=${install.databse.user}
+install.dir=${install.dir}
+install.etc.dir=${install.etc.dir}
+install.init.dir=${install.init.dir}
+install.logs.dir=${install.logs.dir}
+install.manifest.classes=${install.manifest.classes}
+install.perl.bin=${install.perl.bin}
+install.pid.file=${install.pid.file}
+install.postgresql.dir=${install.postgresql.dir}
+install.postgresql.service=${install.postgresql.service}
+install.rrdtool.bin=${install.rrdtool.bin}
+install.servlet.dir=${install.servlet.dir}
+install.tomcat.serverlibs=${install.tomcat.serverlibs}
+install.webapps.dir=${install.webapps.dir}
+-->
+    </properties>
+  </profile>
+
+  <profile>
+    <id>centos</id>
+    
+    <activation>
+      <file>
+        <exists>/etc/redhat-release</exists>
+      </file>
+    </activation>
+
+    <properties>
+      <platform>linux</platform>
+      <platform.shlib>so</platform.shlib>
+      <platform.jni>so</platform.jni>
+      <build.rrd.include.dir>/usr/include</build.rrd.include.dir>
+      <build.rrd.lib.dir>/usr/lib</build.rrd.lib.dir>
+      <build.postgresql.include.dir>/usr/include/pgsql/server</build.postgresql.include.dir>
+    </properties>
+  </profile>
+
+  <profile>
+    <id>debian</id>
+    <activation>
+      <file>
+        <exists>/etc/debian_version</exists>
+      </file>
+    </activation>
+
+    <properties>
+      <platform>linux</platform>
+      <platform.shlib>so</platform.shlib>
+      <platform.jni>so</platform.jni>
+      <build.rrd.include.dir>/usr/include</build.rrd.include.dir>
+      <build.rrd.lib.dir>/usr/lib</build.rrd.lib.dir>
+    </properties>
+  </profile>
+  
+  <profile>
+    <id>debian-postgres8</id>
+    <activation>
+      <file>
+        <exists>/usr/include/postgresql/8.0/server</exists>
+      </file>
+    </activation>
+
+    <properties>
+      <build.postgresql.include.dir>/usr/include/postgresql/8.0/server</build.postgresql.include.dir>
+    </properties>
+  </profile>
+
+  <profile>
+    <id>debian-postgres7</id>
+    <activation>
+      <file>
+        <exists>/usr/include/postgresql/server</exists>
+      </file>
+    </activation>
+
+    <properties>
+      <build.postgresql.include.dir>/usr/include/postgresql/server</build.postgresql.include.dir>
+    </properties>
+  </profile>
+  </profiles>
   <repositories>
     <repository>
       <releases />
@@ -58,14 +264,53 @@
     <dependency>
       <groupId>log4j</groupId>
       <artifactId>log4j</artifactId>
-      <version>1.2.7</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <version>3.8.1</version>
-      <scope>compile</scope>
+      <scope>test</scope>
     </dependency>
   </dependencies>
+  <dependencyManagement>
+    <dependencies>
+    <dependency>
+      <groupId>log4j</groupId>
+      <artifactId>log4j</artifactId>
+      <version>1.2.7</version>
+    </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>3.8.1</version>
+      </dependency>
+      <dependency>
+        <groupId>postgresql</groupId>
+        <artifactId>postgresql</artifactId>
+        <version>8.1-404.jdbc3</version>
+      </dependency>
+      <dependency>
+        <groupId>org.hibernate</groupId>
+        <artifactId>hibernate</artifactId>
+        <version>3.0.5</version>
+        <exclusions>
+          <exclusion>
+            <groupId>javax.transaction</groupId>
+            <artifactId>jta</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring</artifactId>
+        <version>1.2.6</version>
+        <exclusions>
+          <exclusion>
+            <groupId>javax.transaction</groupId>
+            <artifactId>jta</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
 </project>
