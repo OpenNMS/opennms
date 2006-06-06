@@ -186,6 +186,24 @@ install.webapps.dir=${install.webapps.dir}
   </profile>
 
   <profile>
+    <id>suse</id>
+    <activation>
+      <file>
+        <exists>/etc/SuSE-release</exists>
+      </file>
+    </activation>
+
+    <properties>
+      <platform>linux</platform>
+      <platform.shlib>so</platform.shlib>
+      <platform.jni>so</platform.jni>
+      <build.rrd.include.dir>/usr/include</build.rrd.include.dir>
+      <build.rrd.lib.dir>/usr/lib</build.rrd.lib.dir>
+      <build.postgresql.include.dir>/usr/include/pgsql/server</build.postgresql.include.dir>
+    </properties>
+  </profile>
+  
+  <profile>
     <id>debian</id>
     <activation>
       <file>
