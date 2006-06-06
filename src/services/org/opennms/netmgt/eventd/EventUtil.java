@@ -97,6 +97,11 @@ public final class EventUtil {
 	static final String TAG_DESCR = "descr";
 
 	/**
+	* The event logmsg xml tag
+	*/
+	static final String TAG_LOGMSG = "logmsg";
+
+	/**
 	 * The event time xml tag
 	 */
 	static final String TAG_TIME = "time";
@@ -425,6 +430,8 @@ public final class EventUtil {
 			retParmVal = event.getSource();
 		} else if (parm.equals(TAG_DESCR)) {
 			retParmVal = event.getDescr();
+		} else if (parm.equals(TAG_LOGMSG)) {
+			retParmVal = event.getLogmsg();
 		} else if (parm.equals(TAG_NODEID)) {
 			retParmVal = Long.toString(event.getNodeid());
 		} else if (parm.equals(TAG_NODELABEL)) {
