@@ -298,6 +298,11 @@ install.webapps.dir=${install.webapps.dir}
       <version>1.2.7</version>
     </dependency>
     <dependency>
+      <groupId>httpunit</groupId>
+      <artifactId>httpunit</artifactId>
+      <version>1.6.1</version>
+    </dependency>
+    <dependency>
       <groupId>jwebunit</groupId>
       <artifactId>jwebunit</artifactId>
       <version>1.2</version>
