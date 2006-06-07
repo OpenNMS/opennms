@@ -51,4 +51,4 @@ fi
 #    -jar devlib/ant/lib/ant-launcher.jar "$@"
 
 export M2_OPTS=-Xmx256m
-devlib/maven-2.0.4/bin/mvn -Dmaven.test.skip=true "$@"
+devlib/maven-2.0.4/bin/mvn -Dmaven.test.failure.ignore=true "$@"
