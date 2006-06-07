@@ -4,6 +4,16 @@
 
   <subtitle>About This Release</subtitle>
 
+  <para>OpenNMS 1.2.8 contains a number of new features, most back-ported from
+  the development version of OpenNMS. These include Nagios support, the "zoom"
+  feature from Cacti and support for Tomcat 5. None of these features resulted
+  in code changes to the main part of OpenNMS, so the stability of the
+  production release should not be impacted. Numerous bug fixes, however, do
+  add to the stability of this release, and it is recommended that all users
+  of OpenNMS 1.2.x upgrade.</para>
+
+  <para>The code word for 1.2.8 is "galsteed".</para>
+
   <para>Before 1.2.6 had time to really get out there, an issue was discovered
   with using the new SNMPv1 and SNMPv2 services. This was corrected, and since
   1.2.6 had not been formally released, but had been tagged, the fixed release

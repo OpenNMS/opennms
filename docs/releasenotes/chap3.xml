@@ -7,6 +7,17 @@
   <para>Here is the list of known issues in this release of OpenNMS.</para>
 
   <section>
+    <title>Notes About Java Version</title>
+
+    <para>For the RPMs created on Sourceforge, Sun's SDK version 1.4.2 was
+    used for all 32-bit distros, and Sun's Java 5 (version 1.5) was used for
+    all 64-bit distros. You should be able to build OpenNMS on either SDK, but
+    since 64-bit Java is best supported under Java 5, that was the version
+    that was used. Please run Tomcat under the same version of Java that
+    OpenNMS uses.</para>
+  </section>
+
+  <section>
     <title>Invalid Symbolic Link on Some Distros</title>
 
     <para>On Mandrake 10, and perhaps others, the symbolic link created in
