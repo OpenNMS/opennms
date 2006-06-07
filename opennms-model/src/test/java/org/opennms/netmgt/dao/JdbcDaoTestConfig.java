@@ -78,10 +78,14 @@ public class JdbcDaoTestConfig extends DaoTestConfig {
         	System.err.println("user.dir = "+System.getProperty("user.dir"));
             String cmd = System.getProperty("psql.command", "psql") ;
             System.err.println("psql.command = "+cmd);
-            String createSqlDir = System.getProperty("create.sql.dir", "etc");
+            String basedir = System.getProperty("basedir");
+            System.err.println("basedir = "+ basedir);
+            String createSqlDir = System.getProperty("create.sql.dir", basedir+"/src/test/resources");
             System.err.println("create.sql.dir = "+createSqlDir);
             File createSql = new File(createSqlDir, "create.sql");
-            Process p = Runtime.getRuntime().exec(cmd+" test -U opennms -f "+createSql.getAbsolutePath());
+            cmd = cmd+" test -U opennms -f "+createSql.getAbsolutePath();
+            System.err.println("Executing: "+cmd);
+            Process p = Runtime.getRuntime().exec(cmd);
             p.waitFor();
             System.err.println("Got an exitValue of "+p.exitValue());
         }

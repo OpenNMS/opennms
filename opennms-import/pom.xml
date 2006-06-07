@@ -153,6 +153,13 @@
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
+      <artifactId>opennms-model</artifactId>
+      <type>test-jar</type>
+      <version>${project.version}</version>
+      <scope>type</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
       <artifactId>opennms-services</artifactId>
       <version>${project.version}</version>
     </dependency>
