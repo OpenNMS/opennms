@@ -21,6 +21,11 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
+      <groupId>jwebunit</groupId>
+      <artifactId>jwebunit</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>xerces</groupId>
       <artifactId>xerces</artifactId>
       <version>1.4.0</version>
