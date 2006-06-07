@@ -90,8 +90,6 @@
         &lt;property key="timeout" value="3000" /&gt;
         &lt;property key="retry" value="2" /&gt;
         &lt;property key="command" value="USEDDISKSPACE" /&gt;
-        &lt;property key="warningPercent" value="80" /&gt;
-        &lt;property key="criticalPercent" value="90" /&gt;
         &lt;property key="parameter" value="C:" /&gt;
 &lt;/protocol-plugin&gt;</programlisting></para>
 
@@ -114,7 +112,7 @@
 
       <para><programlisting>&lt;monitor service="NSC_C_SPACE"  class-name="org.opennms.netmgt.poller.monitors.NsclientMonitor"/&gt;</programlisting></para>
 
-      <para>then restart OpenNMS. </para>
+      <para>then restart OpenNMS.</para>
 
       <para>Note that OpenNMS services are either "up" or "down". At the
       moment, there is no concept of "warning". So if the poll fails at either
