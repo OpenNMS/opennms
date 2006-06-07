@@ -431,7 +431,7 @@ public final class EventUtil {
 		} else if (parm.equals(TAG_DESCR)) {
 			retParmVal = event.getDescr();
 		} else if (parm.equals(TAG_LOGMSG)) {
-			retParmVal = event.getLogmsg();
+			retParmVal = event.getLogmsg().getContent();
 		} else if (parm.equals(TAG_NODEID)) {
 			retParmVal = Long.toString(event.getNodeid());
 		} else if (parm.equals(TAG_NODELABEL)) {
