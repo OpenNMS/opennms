@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<beansProjectDescription>
-	<configs>
-		<config>src/services/org/opennms/netmgt/xmlrpcd/provisioner-context.xml</config>
-		<config>opennms-appContext.xml</config>
-	</configs>
-	<configSets>
-	</configSets>
-</beansProjectDescription>
