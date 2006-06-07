@@ -21,6 +21,11 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
+      <groupId>httpunit</groupId>
+      <artifactId>httpunit</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>jwebunit</groupId>
       <artifactId>jwebunit</artifactId>
       <scope>test</scope>
