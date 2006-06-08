@@ -130,17 +130,6 @@ platform = ${platform}
   <rpm.database.password>opennms</rpm.database.password>
   </properties>
   <profiles>
-    <profile>
-      <id>opennms-growl</id>
-      <activation>
-        <file>
-          <exists>/System/Library/Java</exists>
-        </file>
-      </activation>
-      <modules>
-        <module>opennms-growl</module>
-      </modules>
-   </profile>
   <profile>
     <id>darwinPorts</id>
     
