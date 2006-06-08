@@ -83,11 +83,9 @@ public class Snmp4JWalker extends SnmpWalker {
         }
 
         public void setNonRepeaters(int numNonRepeaters) {
-            m_nextPdu.setNonRepeaters(numNonRepeaters);
         }
 
         public void setMaxRepetitions(int maxRepititions) {
-            m_nextPdu.setMaxRepetitions(maxRepititions);
         }
         
     }
