@@ -265,38 +265,6 @@ install.webapps.dir=${install.webapps.dir}
     </properties>
   </profile>
   </profiles>
-  <repositories>
-    <repository>
-      <releases />
-      <snapshots />
-      <id>opennms-repo</id>
-      <name>OpenNMS Repository</name>
-      <url>http://repo.opennms.org/maven2</url>
-    </repository>
-    <repository>
-      <releases />
-      <snapshots />
-      <id>codehaus-shapshots</id>
-      <name>Maven/Codehaus Snapshot Repository</name>
-      <url>http://snapshots.maven.codehaus.org/maven2</url>
-    </repository>
-  </repositories>
-  <pluginRepositories>
-    <pluginRepository>
-      <releases />
-      <snapshots />
-      <id>opennms-repo</id>
-      <name>OpenNMS Repository</name>
-      <url>http://repo.opennms.org/maven2</url>
-    </pluginRepository>
-    <pluginRepository>
-      <releases />
-      <snapshots />
-      <id>codehaus-shapshots</id>
-      <name>Maven/Codehaus Snapshot Repository</name>
-      <url>http://snapshots.maven.codehaus.org/maven2</url>
-    </pluginRepository>
-  </pluginRepositories>
   <dependencies>
     <dependency>
       <groupId>log4j</groupId>
@@ -360,4 +328,57 @@ install.webapps.dir=${install.webapps.dir}
       </dependency>
     </dependencies>
   </dependencyManagement>
+  <repositories>
+    <repository>
+      <releases />
+      <id>opennms-repo</id>
+      <name>OpenNMS Repository</name>
+      <url>http://repo.opennms.org/maven2</url>
+    </repository>
+    <repository>
+      <snapshots />
+      <id>opennms-snapshots</id>
+      <name>OpenNMS Repository</name>
+      <url>http://repo.opennms.org/snapshots</url>
+    </repository>
+    <repository>
+      <snapshots />
+      <id>codehaus-shapshots</id>
+      <name>Maven/Codehaus Snapshot Repository</name>
+      <url>http://snapshots.maven.codehaus.org/maven2</url>
+    </repository>
+  </repositories>
+  <pluginRepositories>
+    <pluginRepository>
+      <releases />
+      <snapshots />
+      <id>opennms-repo</id>
+      <name>OpenNMS Repository</name>
+      <url>http://repo.opennms.org/maven2</url>
+    </pluginRepository>
+    <pluginRepository>
+      <releases />
+      <snapshots />
+      <id>codehaus-shapshots</id>
+      <name>Maven/Codehaus Snapshot Repository</name>
+      <url>http://snapshots.maven.codehaus.org/maven2</url>
+    </pluginRepository>
+  </pluginRepositories>
+  <distributionManagement>
+    <site>
+      <id>opennms-site</id>
+      <name>OpenNMS Build Website</name>
+      <url>scpexe://repo.opennms.org/var/www/sites/opennms.org/site/repo/sites</url>
+    </site>
+    <repository>
+      <id>opennms-repo</id>
+      <name>OpenNMS Maven Repository</name>
+      <url>scpexe://repo.opennms.org/var/www/sites/opennms.org/site/repo/maven2</url>
+    </repository>
+    <snapshotRepository>
+      <id>opennms-snapshots</id>
+      <name>OpenNMS Snapshot Maven Repository</name>
+      <url>scpexe://repo.opennms.org/var/www/sites/opennms.org/site/repo/snapshots</url>
+    </snapshotRepository>
+  </distributionManagement>
 </project>
