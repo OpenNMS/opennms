@@ -274,10 +274,6 @@ install.webapps.dir=${install.webapps.dir}
        <build.postgresql.include.dir>/usr/local/pgsql/include/server</build.postgresql.include.dir>
     </properties>
   </profile>
-
-
-  <profile>
-
   </profiles>
   <dependencies>
     <dependency>
