@@ -32,9 +32,6 @@ else
 	fi
 fi
 
-# Lets start some place standard like the head of the build tree ...
-cd $PREFIX
-
 VERBOSE=0
 for a in "$@"; do
     if [ x"$a" = x"-debug" -o x"$a" = x"-verbose" ]; then
@@ -51,4 +48,4 @@ fi
 #    -jar devlib/ant/lib/ant-launcher.jar "$@"
 
 export M2_OPTS=-Xmx256m
-devlib/maven-2.0.4/bin/mvn -Dmaven.test.failure.ignore=true "$@"
+$PREFIX/devlib/maven-2.0.4/bin/mvn -Dmaven.test.failure.ignore=true "$@"
