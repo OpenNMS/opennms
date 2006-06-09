@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beansProjectDescription>
+	<configs>
+		<config>src/main/webapp/WEB-INF/secret-servlet.xml</config>
+		<config>src/main/webapp/WEB-INF/secret-service.xml</config>
+		<config>src/main/webapp/WEB-INF/secret-data.xml</config>
+	</configs>
+	<configSets>
+		<configSet>
+			<name>Secret</name>
+			<allowBeanDefinitionOverriding>false</allowBeanDefinitionOverriding>
+			<incomplete>false</incomplete>
+			<configs>
+				<config>src/main/webapp/WEB-INF/secret-data.xml</config>
+				<config>src/main/webapp/WEB-INF/secret-service.xml</config>
+				<config>src/main/webapp/WEB-INF/secret-servlet.xml</config>
+			</configs>
+		</configSet>
+	</configSets>
+</beansProjectDescription>
