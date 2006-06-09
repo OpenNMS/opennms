@@ -80,6 +80,8 @@
                 format = this.formatter.format( count );
                 out.println( java.text.MessageFormat.format( format, new Object[] { new Integer(count) } ));
              %>
+            <br/>
+	    <a href="roles">Check On-Call Schedule</a>
     </td>
   </tr>
 </table>

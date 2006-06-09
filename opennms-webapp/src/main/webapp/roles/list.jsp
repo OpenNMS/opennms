@@ -48,11 +48,7 @@
 
 <jsp:include page="/includes/header.jsp" flush="false">
 	<jsp:param name="title" value="Role Configuration" />
-	<jsp:param name="headTitle" value="List" />
 	<jsp:param name="headTitle" value="Roles" />
-	<jsp:param name="headTitle" value="Admin" />
-	<jsp:param name="breadcrumb" value="<a href='admin/index.jsp'>Admin</a>" />
-	<jsp:param name="breadcrumb" value="<a href='admin/userGroupView/index.jsp'>Users, Groups and Roles</a>" />
 	<jsp:param name="breadcrumb" value="Role List" />
 </jsp:include>
 
@@ -78,11 +74,6 @@
 </form>
 
 <h3>Role Configuration</h3>
-
-<form action="<c:url value='${reqUrl}'/>" method="post" name="newForm">
-  <input name="operation" type="hidden" value="new"/>
-  <input type="submit" value="New Role"/>
-</form>
 
 <table width="100%" border="1" cellspacing="0" cellpadding="2" bordercolor="black">
 
