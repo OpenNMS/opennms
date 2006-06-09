@@ -1,0 +1,742 @@
+/*
+ Modifications:
+ 
+ 2005 Oct 01: More CSS work. -- DJ Gregor  
+ 2005 Sep 30: Hacked up heavily to use CSS for layout and markup.  Some code
+              (particularly #nav bits) provided by Mike Huot. -- DJ Gregor
+ 
+ */
+
+/* Color the unvisited and visited links the same blue */
+A:link    { color: #0000cc }
+A:active  { color: #ff0000 }
+A:visited { color: #0000cc }
+
+/* I don't specify the margins here because Netscape 4.x ignores them. */
+BODY {
+ 	margin: 0px;
+  	padding: 0px;
+	background:    #ffffff;
+	color:         #000000;
+}
+
+
+TD.footer
+{
+	background:    #c9dfc9;
+}
+
+
+
+/* Widget Box Body */
+.widget-box
+{
+    background: #cccccc;    
+}
+
+
+/*
+ * value in a widget-box that serves as the fieldname for the value to its right 
+ */
+.widget-box-fieldname
+{
+    background: #999999; 
+
+}
+
+#eventlist tr.eventlist-head
+{
+	font-size: 10px;
+	font-family: Verdana, Arial, Helvetica, sans-serif; 
+	background-color: #999999;
+}
+
+#eventlist tr.eventlist-odd
+{
+	font-size: 10px;
+	font-family: Verdana, Arial, Helvetica, sans-serif; 
+	background-color: white;
+}
+#eventlist tr.eventlist-even
+{
+	font-size: 10px;
+	font-family: Verdana, Arial, Helvetica, sans-serif; 
+	background-color: #cccccc;
+}
+
+
+
+#nav, #nav ul { /* all lists */
+	padding: 0;
+	margin: 0;
+	list-style: none;
+	float: left;
+	width: 11em;
+}
+
+#nav li { /* all list items */
+	position: relative;
+	float: left;
+	line-height: 1.25em;
+	margin-bottom: -1px;
+	width: 11em;
+}
+	
+#nav li ul { /* second-level lists */
+	position: absolute;
+	left: -999em;
+	margin-left: 11.05em;
+	margin-top: -1.35em;
+}
+
+#nav li ul ul { /* third-and-above-level lists */
+	left: -999em;
+}
+
+#nav li a {
+	width: 11em;
+	w\idth: 10em;
+	display: block;
+	color: black;
+	font-weight: bold;
+	text-decoration: none;
+	background-color: white;
+	border: 1px solid #c9dfc9;
+	padding: 0 0.5em;
+}
+
+#nav li a:hover {
+	color: #cccccc;
+	background-color: black;
+}
+
+#nav li:hover ul ul, #nav li:hover ul ul ul, #nav li.sfhover ul ul, #nav li.sfhover ul ul ul {
+	left: -999em;
+}
+	
+#nav li:hover ul, #nav li li:hover ul, #nav li li li:hover ul, #nav li.sfhover ul, #nav li li.sfhover ul, #nav li li li.sfhover ul { /* lists nested under hovered list items */
+	left: auto;
+}
+
+#content {
+	margin-left: 12em;
+}
+
+#navbar ul
+{ 
+  list-style: none;
+  display: inline;
+}
+
+
+#navbar li
+{ 
+  padding: 0 0.2em 0 0.5em;
+  border-style: solid;
+  border-color: black;
+  border-width: 0 1px 0 0;
+  list-style: none;
+  display: inline;
+}
+
+#navbar li.last
+{ 
+  padding: 0 0.2em 0 0.5em;
+  border-style: solid;
+  border-color: black;
+  border-width: 0 0 0 0;
+  list-style: none;
+  display: inline;
+}
+
+/*
+#footer { 
+        text-align: center;
+        padding: 2px;
+	background-color: #c9dfc9;
+        font-size: 10px;
+	font-family: Arial, Verdana, Helvetica, sans-serif; 
+}
+*/
+
+#linkbar
+{
+  padding: 0 0 1em 0;
+}
+
+#linkbar ul
+{ 
+  list-style: none;
+  display: inline;
+  padding: 0 0 0 0;
+}
+
+#linkbar li
+{ 
+  list-style: none;
+  display: inline;
+  padding-right: 0.75em;
+}
+
+#graph {
+        clear: both;
+        padding: 0.1em 1.0em 0.75em 0.75em;
+}
+
+#data-list {
+        float: left;
+        padding: 0.5em;
+        border: 1px solid #aaaaaa;
+        width: 200px;
+}
+
+#data-list h2 { 
+        margin-top: 0;
+}
+
+#graph-right {
+	float: left;
+	padding: 1em;
+}
+
+#graph-box {
+	float: left;
+	margin-bottom: 8px;
+}
+
+div.updating_indicator {
+	height:40px;
+	padding-top:10px;
+}
+
+#data-list li {
+	margin-top: 0.4em;
+}
+
+#data-list li.newGroup {
+	margin-top: 1em;
+}
+
+#data-list font {
+	border: 1px solid #aaaaaa;
+	padding: 1px;
+}
+
+#data-list a {
+	font-size: 10px;
+	margin-left: 0.3em;
+}
+
+#data-list a:before {
+	content: "Add";
+}
+
+
+ul.cart-items {
+	list-style: none;
+    display: inline;
+}
+
+li.cart-items {
+	margin-top: 0.4em;
+}
+
+font.cart-items {
+	border: 1px solid #aaaaaa;
+	padding: 1px;
+}
+
+li.spacer {
+	list-style: none;
+    display: inline;
+}
+
+#node {
+        clear: both;
+        padding: 0.1em 1.0em 0.75em 0.75em;
+}
+
+#node table.first { 
+        width: 100%;
+	background-color: black;
+        margin-top: 0;
+}
+
+#node table { 
+        width: 100%;
+	background-color: black;
+        margin-top: 1em;
+}
+
+#node td.header {
+	background-color: #999999;
+	font-weight: bold;
+}
+
+#node td.headerplain {
+	background-color: #999999;
+}
+
+#node td.navlinks { 
+        width: 25%;
+}
+
+#node td.warning { 
+        background-color: cyan;
+}
+
+#node td { 
+	background-color: #cccccc;
+}
+
+
+#interface {
+        clear: both;
+        padding: 0.1em 1.0em 0.75em 0.75em;
+}
+
+
+#interface table.first { 
+        width: 100%;
+	background-color: black;
+        margin-top: 0;
+}
+
+#interface table { 
+	background-color: black;
+        width: 100%;
+        margin-top: 1em;
+}
+
+#interface td.header {
+	background-color: #999999;
+	font-weight: bold;
+}
+
+#interface td.headerplain {
+	background-color: #999999;
+}
+
+#interface td { 
+	background-color: #cccccc;
+}
+
+
+#availability-box table.inner
+{ 
+  margin-top: 0;
+}
+
+#availability-box td.header
+{
+  width: 70%;
+  background-color: #999999;
+  font-weight: bold;
+}
+
+#availability-box td.headerplain
+{
+  width: 70%;
+  background-color: #999999;
+}
+
+#availability-box td.availnode { 
+        text-align: left;
+        vertical-align: top;
+        width: 25%;
+}
+
+#availability-box td.availunmanaged { 
+	background-color: #cccccc;
+	font-weight: bold;
+        text-align: right;
+}
+
+#availability-box td.availgood { 
+	background-color: green;
+	font-weight: bold;
+        text-align: right;
+}
+
+#availability-box td.availwarn { 
+	background-color: #ffff33;
+	font-weight: bold;
+        text-align: right;
+}
+
+#availability-box td.availcrit { 
+	background-color: #ff3333;
+	font-weight: bold;
+        text-align: right;
+}
+
+#eventlist {
+        clear: both;
+        padding: 0.1em 1.0em 0.75em 0.75em;
+}
+
+#include-bookmark
+{
+}
+
+#include-eventlist table { 
+        width: 100%;
+	background-color: black;
+        margin-top: 0;
+}
+
+#include-eventlist td.header {
+	background-color: #999999;
+	font-weight: bold;
+}
+
+#include-eventlist td.headerplain {
+	background-color: #999999;
+}
+
+#include-eventlist td.sev_indeterminate {
+        background-color: lightblue;
+}
+
+#include-eventlist td.sev_cleared {
+        background-color: white;
+}
+
+#include-eventlist td.sev_normal {
+        background-color: green;
+}
+
+#include-eventlist td.sev_warning {
+        background-color: cyan;
+}
+
+#include-eventlist td.sev_minor {
+        background-color: yellow;
+}
+
+#include-eventlist td.sev_major {
+        background-color: orange;
+}
+
+#include-eventlist td.sev_critical {
+        background-color: red;
+}
+
+#include-eventlist td { 
+	background-color: #cccccc;
+}
+
+#include-charts
+{ 
+  text-align: center;
+  clear: both;
+}
+
+#performance-results { 
+	text-align: center;
+}
+
+/*#performance-results-periods td */
+
+#performance-results .periods td { 
+	width: 80px;
+	text-align: center;
+}
+
+#header { 
+	margin-bottom: 2em;
+}
+
+#headertop { 
+	background: url(../images/logo-background.gif) repeat;
+/*  height: 82px; */
+}
+
+div.spacer { 
+	clear: both;
+	height: 0px;
+}
+
+div.center { 
+	align: center;
+}
+
+#headerlogo {
+	width: 30%;
+	float: left;
+	padding: 6px 2px 6px 2px;
+}
+
+#headertitle {
+	width: 50%;
+	float: left;
+	font-weight: bold;
+	text-align: center;
+	height: 82px;
+	line-height: 82px;
+	vertical-align: middle;
+}
+
+#headerinfo {
+	float: right;
+	text-align: right;
+	padding: 4px;
+	font-weight: bold;
+	vertical-align: middle;
+}
+
+#headerdate {
+	float: right;
+	text-align: right;
+	font-weight: bold;
+/*  padding-bottom: 4px; */
+	vertical-align: middle;
+	font-size: 10px;
+	font-family: Arial, Verdana, Helvetica, sans-serif;
+}
+
+#headernavbarleft {
+        clear: both;
+        float: left;
+        padding: 2px;
+        font-size: 10px;
+	font-family: Arial, Verdana, Helvetica, sans-serif; 
+}
+
+#headernavbarright {
+        float: right;
+        padding: 2px;
+        font-size: 10px;
+	font-family: Arial, Verdana, Helvetica, sans-serif; 
+}
+
+#contentleft {
+        width: 48%;
+        float: left;
+}
+
+#contentleft td { 
+        padding: 2px;
+}
+
+#contentright { 
+        width: 48%;
+        float: right;
+}
+
+#index-contentleft {
+        width: 24%;
+        float: left;
+        padding-left: 1%;
+}
+
+#index-contentmiddle {
+        width: 48%;
+        float: left;
+        padding-left: 1%;
+}
+
+#index-contentright { 
+        width: 24%;
+        float: right;
+        padding-left: 1%;
+        padding-right: 1%;
+}
+
+#prefooter { 
+        clear: both;
+        padding-top: 16px;
+}
+
+#footer { 
+        text-align: center;
+        padding: 2px;
+	background-color: #c9dfc9;
+        font-size: 10px;
+	font-family: Arial, Verdana, Helvetica, sans-serif; 
+}
+
+#autocomplete_choices { 
+        text-align: left;
+        padding: 2px;
+ 		background-color: #b9cfb9;
+ 		border: 1px solid #aaaaaa;
+        font-size: 12px;
+		font-family: Arial, Verdana, Helvetica, sans-serif; 
+}
+
+#autocomplete_choices ul
+{ 
+  list-style: none;
+  display: inline;
+}
+
+#autocomplete_choices ul li.selected
+{ 
+		background-color: #c9dff9;
+}
+
+
+/*
+#footer a { 
+        padding: 0 0.25em;
+	border: 1px solid #ffffff;
+}
+*/
+
+#copyright { 
+        text-align: center;
+        padding: 3px;
+        font-size: 10px;
+	font-family: Arial, Verdana, Helvetica, sans-serif; 
+}
+
+
+/* XXX hacking for vertical centering */
+
+#outer {height: 82px; overflow: hidden; position: relative;}
+#outer[id] {display: table; position: static;}
+
+#middle {position: absolute; top: 50%;}  /* for explorer only*/
+#middle[id] {display: table-cell; vertical-align: middle; position: static;}
+
+#inner {position: relative; top: -50%}  /* for explorer only */
+/* optional: #inner[id] {position: static;} */
+
+
+/* for drag-and-drop demos */
+
+div.shopping_demo {
+  height:110px;
+}
+
+img.products {
+  float:left;
+  width:100px;
+  height:100px;
+  margin-right:10px;
+  cursor:move;
+}
+
+/*  background-color:white;*/
+/*  width:500px; */
+
+div.cart {
+  clear:both;
+}
+
+#items {
+	padding:8px;
+	border:1px solid #E8A400;
+	height:132px;
+}
+
+#items li {
+	margin-top: 0.5em;
+}
+
+#items a {
+	font-size: 10px;
+	margin-left: 0.3em;
+}
+
+#items a:before {
+	content: "Remove";
+}
+
+
+
+span.title {
+  margin:0;
+  padding:0;
+  padding-top:10px;
+  font-size: 12px;
+  color: #444;
+  font-weight:normal;
+}
+
+div#wastebin {
+/*  width:500px; */
+  padding:8px;
+  margin-top:8px;
+  height:25px;
+  color:#ccc;
+  border:1px dashed #888;
+  font-size:20px;
+  font-weight:bold;
+  text-align:center;
+}
+
+/*
+div.cart img {
+  float:left;
+  width:32px;
+  height:32px;
+  margin-right:10px;
+}
+*/
+
+div.cart div {
+  font-size:12px/14px;
+  font-weight:normal;
+  color:#444;
+  clear:left;
+}
+
+ul.sortablelist {
+  list-style-image:none;
+  list-style-type:none;
+  margin-top:5px;
+  margin:0px;
+  padding:0px;
+}
+
+ul.sortabledemo li {
+  padding:0px;
+  margin:0px;
+}
+
+span.handle {
+  background-color: #E8A400;
+  color:white;
+  cursor: move;
+}
+
+li.green {
+  background-color: #ECF3E1;
+  border:1px solid #C5DEA1;
+  cursor: move;
+}
+
+li.orange {
+  border:1px solid #E8A400;
+  background-color: #FFF4D8;
+}
+
+#puzzle {
+  margin-left:10px;
+  width:450px;
+  height:450px;
+  border:1px solid #e8a400;
+}
+
+#puzzle img {
+  float:left;
+  margin:0px;
+  cursor:move;
+}
+
+span.congrats {
+  background-color: #E8A400;
+  color:white;
+  font-weight: bold;  
+}
+
+div.cart-active {
+  background-color: #FFF4D8;
+}
+
+div.wastebin-active {
+  background-color: #FFF4D8;
+  border:1px solid #E8A400;
+}
