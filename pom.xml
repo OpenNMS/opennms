@@ -90,6 +90,7 @@ OpenNMS is the world's first enterprise grade network management platform develo
     <module>opennms-reporting</module>
     <module>opennms-web</module>
     <module>opennms-webapp</module>
+    <module>opennms-webapp-ng</module>
     <module>opennms-site</module>
     <module>opennms-daemon</module>
   </modules>
