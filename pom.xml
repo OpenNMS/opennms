@@ -2,9 +2,75 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms</groupId>
   <artifactId>opennms</artifactId>
+  <version>2.0-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>OpenNMS</name>
-  <version>2.0-SNAPSHOT</version>
+  <url>http://opennms.org</url>
+  <description>
+OpenNMS is the world's first enterprise grade network management platform developed under the open source model. It consists of a community supported open-source project as well as a commercial services, training and support organization. 
+  </description>
+  <issueManagement>
+    <system>Bugzilla</system>
+    <url>http://bugs.opennms.org</url>
+  </issueManagement>  
+  <ciManagement>
+    <system>CruiseControl</system>
+    <url>http://ci.opennms.org</url>
+    <notifiers>
+      <notifier>
+        <type>mail</type>
+        <address>opennms-devel@lists.sourceforge.net</address>
+      </notifier>
+    </notifiers>
+  </ciManagement>
+  <developers>
+    <developer>
+      <id>brozow</id>
+      <name>Matt Brozowski</name>
+      <email>brozow@opennms.org</email>
+      <roles>
+        <role>OGP Member</role>
+        <role>Software Architect</role>
+      </roles>
+      <organization>The OpenNMS Group</organization>
+      <timezone>-5</timezone>
+    </developer>
+  </developers>
+  <mailingLists>
+    <mailingList>
+      <name>OpenNMS Discuss List</name>
+      <subscribe>https://lists.sourceforge.net/lists/listinfo/opennms-discuss</subscribe>
+      <unsubscribe>https://lists.sourceforge.net/lists/listinfo/opennms-discuss</unsubscribe>
+      <post>opennms-discuss@lists.sourcforge.net</post>
+      <archive>http://sourceforge.net/mailarchive/forum.php?forum=opennms-discuss</archive>
+    </mailingList>
+    <mailingList>
+      <name>OpenNMS Developer's List</name>
+      <subscribe>https://lists.sourceforge.net/lists/listinfo/opennms-devel</subscribe>
+      <unsubscribe>https://lists.sourceforge.net/lists/listinfo/opennms-devel</unsubscribe>
+      <post>opennms-devel@lists.sourcforge.net</post>
+      <archive>http://sourceforge.net/mailarchive/forum.php?forum=opennms-devel</archive>
+    </mailingList>
+    <mailingList>
+      <name>OpenNMS Install Help List</name>
+      <subscribe>https://lists.sourceforge.net/lists/listinfo/opennms-install</subscribe>
+      <unsubscribe>https://lists.sourceforge.net/lists/listinfo/opennms-install</unsubscribe>
+      <post>opennms-install@lists.sourcforge.net</post>
+      <archive>http://sourceforge.net/mailarchive/forum.php?forum=opennms-install</archive>
+    </mailingList>
+    <mailingList>
+      <name>OpenNMS Source Control List</name>
+      <subscribe>https://lists.sourceforge.net/lists/listinfo/opennms-cvs</subscribe>
+      <unsubscribe>https://lists.sourceforge.net/lists/listinfo/opennms-cvs</unsubscribe>
+      <post>opennms-cvs@lists.sourcforge.net</post>
+      <archive>http://sourceforge.net/mailarchive/forum.php?forum=opennms-cvs</archive>
+    </mailingList>
+  </mailingLists>
+  <scm>
+    <connection>scm:svn:https://svn.sourceforge.net/svnroot/opennms/opennms/trunk</connection>
+    <developerConnection>scm:svn:https://svn.sourceforge.net/svnroot/opennms/opennms/trunk</developerConnection>
+    <url>http://svn.sourceforge.net/viewcvs.cgi/opennms/opennms/trunk</url>
+  </scm>
   <modules>
     <module>opennms-util</module>
     <module>opennms-bootstrap</module>
@@ -87,6 +153,34 @@ platform = ${platform}
       </plugin>
    </plugins>
   </build>
+  <reporting>
+    <plugins>
+     <plugin>
+        <artifactId>maven-javadoc-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>jxr-maven-plugin</artifactId>
+      </plugin>      
+     <plugin>
+        <artifactId>maven-surefire-report-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <artifactId>maven-pmd-plugin</artifactId>
+         <configuration>
+            <targetjdk>1.4</targetjdk>
+            <rulesets>
+               <ruleset>/rulesets/basic.xml</ruleset>
+               <ruleset>/rulesets/controversial.xml</ruleset>
+            </rulesets>
+            <format>xml</format>
+            <linkXref>true</linkXref>
+            <sourceEncoding>utf-8</sourceEncoding>
+            <minimumTokens>100</minimumTokens>
+         </configuration>
+      </plugin>
+    </plugins>
+  </reporting>
   <properties>
   <relative.install.dir>dist</relative.install.dir>
   <install.dir>${basedir}/${relative.install.dir}</install.dir>
@@ -295,6 +389,16 @@ install.webapps.dir=${install.webapps.dir}
       <version>1.2.7</version>
     </dependency>
     <dependency>
+      <groupId>castor</groupId>
+      <artifactId>castor</artifactId>
+      <version>0.9.6</version>
+    </dependency>
+    <dependency>
+      <groupId>oro</groupId>
+      <artifactId>oro</artifactId>
+      <version>2.0.8</version>
+    </dependency>
+    <dependency>
       <groupId>httpunit</groupId>
       <artifactId>httpunit</artifactId>
       <version>1.6.1</version>
@@ -310,9 +414,45 @@ install.webapps.dir=${install.webapps.dir}
       <version>3.8.1</version>
       </dependency>
       <dependency>
+        <groupId>hsqldb</groupId>
+        <artifactId>hsqldb</artifactId>
+        <version>1.7.3.3</version>
+      </dependency>
+      <dependency>
         <groupId>postgresql</groupId>
         <artifactId>postgresql</artifactId>
         <version>8.1-404.jdbc3</version>
+      </dependency>
+      <dependency>
+        <groupId>jrobin</groupId>
+        <artifactId>jrobin</artifactId>
+        <version>1.4.0</version>
+      </dependency>
+      <dependency>
+        <groupId>jrobin</groupId>
+        <artifactId>jrobin</artifactId>
+        <version>1.4.0</version>
+      </dependency>
+      <dependency>
+        <groupId>commons-dbcp</groupId>
+        <artifactId>commons-dbcp</artifactId>
+        <version>1.2</version>
+      </dependency>
+      <dependency>
+        <groupId>commons-io</groupId>
+        <artifactId>commons-io</artifactId>
+        <version>1.1</version>
+      </dependency>
+      <dependency>
+        <groupId>struts</groupId>
+        <artifactId>struts</artifactId>
+        <version>1.2.7</version>
+      </dependency>
+      <dependency>
+        <groupId>javax.servlet</groupId>
+        <artifactId>servlet-api</artifactId>
+        <version>2.3</version>
+        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.hibernate</groupId>
