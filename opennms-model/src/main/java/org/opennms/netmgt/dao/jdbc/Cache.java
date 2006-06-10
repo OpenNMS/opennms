@@ -98,7 +98,11 @@ public class Cache {
     }
     
     public static Factory findFactory(Class clazz) {
-    	return (Factory)s_factories.get(clazz);
+    	Factory factory = (Factory)s_factories.get(clazz);
+    	if (factory == null) {
+    		throw new IllegalArgumentException("Unable to find factory for class "+clazz+" did you remember to register it in Cache.registerFactories?");
+    	}
+		return factory;
     }
     
     public static Object retrieve(Class clazz, Object key) {
