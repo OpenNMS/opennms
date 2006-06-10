@@ -44,6 +44,7 @@ import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsNotification;
 import org.opennms.netmgt.model.OnmsOutage;
+import org.opennms.netmgt.model.OnmsServiceType;
 import org.springframework.jdbc.object.MappingSqlQuery;
 
 public class NotificationMappingQuery extends MappingSqlQuery {
@@ -52,11 +53,12 @@ public class NotificationMappingQuery extends MappingSqlQuery {
         super(ds, "SELECT " + 
              "n.textMsg as textMsg, " +
              "n.subject as subject, " +
+             "n.numericMsg as numericMsg, " +
              "n.pageTime as pageTime, " +
              "n.respondTime as respondTime, " +
              "n.answeredby as answeredby, " +
              "n.nodeID as nodeID, " +
-             "n.interfaceID as interfaceID, " +
+             "n.interfaceID as ipAddr, " +
              "n.serviceID as serviceID, " +
              "n.queueID as queueID, " +
              "n.eventID as eventID, " +
@@ -90,8 +92,8 @@ public class NotificationMappingQuery extends MappingSqlQuery {
         notification.setEvent(event);
         
         Integer serviceId = new Integer(rs.getInt("serviceId"));
-        OnmsMonitoredService service = (OnmsMonitoredService)Cache.obtain(OnmsMonitoredService.class, serviceId);
-        notification.setService(service);
+        OnmsServiceType service = (OnmsServiceType)Cache.obtain(OnmsServiceType.class, serviceId);
+        notification.setServiceType(service);
 
         notification.setDirty(false);
         return notification;
