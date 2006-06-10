@@ -39,6 +39,7 @@ import org.opennms.netmgt.dao.AbstractDaoTestCase.DB;
 import org.opennms.netmgt.dao.jdbc.AgentDaoJdbc;
 import org.opennms.netmgt.dao.jdbc.AlarmDaoJdbc;
 import org.opennms.netmgt.dao.jdbc.AssetRecordDaoJdbc;
+import org.opennms.netmgt.dao.jdbc.Cache;
 import org.opennms.netmgt.dao.jdbc.CategoryDaoJdbc;
 import org.opennms.netmgt.dao.jdbc.DistPollerDaoJdbc;
 import org.opennms.netmgt.dao.jdbc.EventDaoJdbc;
@@ -59,10 +60,14 @@ import org.opennms.netmgt.dao.jdbc.event.EventFactory;
 import org.opennms.netmgt.dao.jdbc.ipif.IpInterfaceFactory;
 import org.opennms.netmgt.dao.jdbc.monsvc.MonitoredServiceFactory;
 import org.opennms.netmgt.dao.jdbc.node.NodeFactory;
+import org.opennms.netmgt.dao.jdbc.notification.NotificationFactory;
 import org.opennms.netmgt.dao.jdbc.outage.OutageFactory;
 import org.opennms.netmgt.dao.jdbc.snmpif.SnmpInterfaceFactory;
 import org.opennms.netmgt.dao.jdbc.svctype.ServiceTypeFactory;
+import org.opennms.netmgt.dao.jdbc.usernotification.UserNotificationFactory;
 import org.opennms.netmgt.model.OnmsDistPoller;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
 
@@ -75,15 +80,14 @@ public class JdbcDaoTestConfig extends DaoTestConfig {
         m_createDb = createDb;
         
         if (createDb) {
-        	System.err.println("user.dir = "+System.getProperty("user.dir"));
+        	
+        	Resource resource = new ClassPathResource("create.sql");
+        	File createSql = resource.getFile();
+        	
             String cmd = System.getProperty("psql.command", "psql") ;
             System.err.println("psql.command = "+cmd);
-            String basedir = System.getProperty("basedir");
-            System.err.println("basedir = "+ basedir);
-            String createSqlDir = System.getProperty("create.sql.dir", basedir+"/src/test/resources");
-            System.err.println("create.sql.dir = "+createSqlDir);
-            File createSql = new File(createSqlDir, "create.sql");
             cmd = cmd+" test -U opennms -f "+createSql.getAbsolutePath();
+
             System.err.println("Executing: "+cmd);
             Process p = Runtime.getRuntime().exec(cmd);
             p.waitFor();
@@ -94,18 +98,7 @@ public class JdbcDaoTestConfig extends DaoTestConfig {
         m_dataSource = db.getPoolingDataSource();
         
         // initialize the factory classs and register them with the Cache
-        AssetRecordFactory.register(m_dataSource);
-        DistPollerFactory.register(m_dataSource);
-        IpInterfaceFactory.register(m_dataSource);
-        MonitoredServiceFactory.register(m_dataSource);
-        NodeFactory.register(m_dataSource);
-        CategoryFactory.register(m_dataSource);
-        ServiceTypeFactory.register(m_dataSource);
-        SnmpInterfaceFactory.register(m_dataSource);
-        OutageFactory.register(m_dataSource);
-        EventFactory.register(m_dataSource);
-        AgentFactory.register(m_dataSource);
-        AlarmFactory.register(m_dataSource);
+        Cache.registerFactories(m_dataSource);
         
         return new DataSourceTransactionManager(m_dataSource);
     }
