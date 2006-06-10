@@ -44,7 +44,7 @@ public class OnmsNotification extends OnmsEntity implements Serializable {
     private OnmsIpInterface m_interface;
 
     /** nullable persistent field */
-    private OnmsMonitoredService m_service;
+    private OnmsServiceType m_serviceType;
 
     /** nullable persistent field */
     private String m_queueId;
@@ -59,7 +59,7 @@ public class OnmsNotification extends OnmsEntity implements Serializable {
     private Set m_usersNotified;
 
     /** full constructor */
-    public OnmsNotification(Integer notifyId, String textMsg, String subject, String numericMsg, Date pageTime, Date respondTime, String answeredBy, OnmsIpInterface ipInterface, OnmsMonitoredService service, String queueId, org.opennms.netmgt.model.OnmsEvent event, org.opennms.netmgt.model.OnmsNode node, Set usersNotified) {
+    public OnmsNotification(Integer notifyId, String textMsg, String subject, String numericMsg, Date pageTime, Date respondTime, String answeredBy, OnmsIpInterface ipInterface, OnmsServiceType serviceType, String queueId, org.opennms.netmgt.model.OnmsEvent event, org.opennms.netmgt.model.OnmsNode node, Set usersNotified) {
         m_notifyId = notifyId;
         m_textMsg = textMsg;
         m_subject = subject;
@@ -68,7 +68,7 @@ public class OnmsNotification extends OnmsEntity implements Serializable {
         m_respondTime = respondTime;
         m_answeredBy = answeredBy;
         m_interface = ipInterface;
-        m_service = service;
+        m_serviceType = serviceType;
         m_queueId = queueId;
         m_event = event;
         m_node = node;
@@ -205,12 +205,12 @@ public class OnmsNotification extends OnmsEntity implements Serializable {
      *             length="4"
      *         
      */
-    public OnmsMonitoredService getService() {
-        return m_service;
+    public OnmsServiceType getServiceType() {
+        return m_serviceType;
     }
 
-    public void setService(OnmsMonitoredService serviceId) {
-        m_service = serviceId;
+    public void setServiceType(OnmsServiceType serviceType) {
+        m_serviceType = serviceType;
     }
 
     /** 

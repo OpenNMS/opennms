@@ -10,6 +10,7 @@ import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsNotification;
+import org.opennms.netmgt.model.OnmsServiceType;
 
 public class LazyNotification extends OnmsNotification {
 
@@ -70,11 +71,6 @@ public class LazyNotification extends OnmsNotification {
         return super.getNode();
     }
 
-    public Integer getNotifyId() {
-        load();
-        return super.getNotifyId();
-    }
-
     public String getNumericMsg() {
         load();
         return super.getNumericMsg();
@@ -95,9 +91,9 @@ public class LazyNotification extends OnmsNotification {
         return super.getRespondTime();
     }
 
-    public OnmsMonitoredService getService() {
+    public OnmsServiceType getServiceType() {
         load();
-        return super.getService();
+        return super.getServiceType();
     }
 
     public String getSubject() {
@@ -135,11 +131,6 @@ public class LazyNotification extends OnmsNotification {
         super.setNode(node);
     }
 
-    public void setNotifyId(Integer notifyid) {
-        load();
-        super.setNotifyId(notifyid);
-    }
-
     public void setNumericMsg(String numericmsg) {
         load();
         super.setNumericMsg(numericmsg);
@@ -160,9 +151,9 @@ public class LazyNotification extends OnmsNotification {
         super.setRespondTime(respondtime);
     }
 
-    public void setService(OnmsMonitoredService serviceId) {
+    public void setServiceType(OnmsServiceType serviceType) {
         load();
-        super.setService(serviceId);
+        super.setServiceType(serviceType);
     }
 
     public void setSubject(String subject) {
