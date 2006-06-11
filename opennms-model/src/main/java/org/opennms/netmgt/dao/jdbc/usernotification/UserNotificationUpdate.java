@@ -40,8 +40,8 @@ public class UserNotificationUpdate extends UserNotificationSaveOrUpdate {
     // DO NOT CHANGE THIS STATEMENT UNLESS YOU CHANGE THE INSERT STATEMENT AND THE
     // PARAMETERS IN UserNotificationSaveOrUpdate
     private static final String updateStmt = "update usersNotified set " +
-	    "notifyTime = ?, media = ?, contactinfo = ?, autonotify = ? " + 
-	    "where userID = ? and notifyID = ? " +
+	    "userID = ?, notifyID = ?, notifyTime = ?, media = ?, " + 
+	    "contactinfo = ?, autonotify = ?  " +
         "where id = ?";
 
     public UserNotificationUpdate(DataSource ds) {
