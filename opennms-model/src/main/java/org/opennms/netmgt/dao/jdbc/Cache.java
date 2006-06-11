@@ -45,6 +45,7 @@ import org.opennms.netmgt.dao.jdbc.ipif.IpInterfaceFactory;
 import org.opennms.netmgt.dao.jdbc.monsvc.MonitoredServiceFactory;
 import org.opennms.netmgt.dao.jdbc.node.NodeFactory;
 import org.opennms.netmgt.dao.jdbc.notification.NotificationFactory;
+import org.opennms.netmgt.dao.jdbc.outage.OutageFactory;
 import org.opennms.netmgt.dao.jdbc.snmpif.SnmpInterfaceFactory;
 import org.opennms.netmgt.dao.jdbc.svctype.ServiceTypeFactory;
 import org.opennms.netmgt.dao.jdbc.usernotification.UserNotificationFactory;
@@ -131,6 +132,7 @@ public class Cache {
 		AlarmFactory.register(dataSource);
 		NotificationFactory.register(dataSource);
 		UserNotificationFactory.register(dataSource);
+		OutageFactory.register(dataSource);
 		
 	}
     

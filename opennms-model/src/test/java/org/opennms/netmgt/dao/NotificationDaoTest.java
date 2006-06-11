@@ -71,9 +71,11 @@ public class NotificationDaoTest extends AbstractDaoTestCase {
 	    event.setServiceType(service.getServiceType());
         event.setIpAddr(iface.getIpAddress());
         getEventDao().save(event);
+        OnmsEvent newEvent = getEventDao().load(event.getId());
+        assertEquals("uei://org/opennms/test/NotificationDaoTest", newEvent.getEventUei());
         
         OnmsNotification notification = new OnmsNotification();
-        notification.setEvent(event);
+        notification.setEvent(newEvent);
         notification.setTextMsg("Tests are fun!");
         getNotificationDao().save(notification);
        
