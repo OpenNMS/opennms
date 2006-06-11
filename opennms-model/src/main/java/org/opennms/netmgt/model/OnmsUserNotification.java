@@ -70,13 +70,14 @@ public class OnmsUserNotification extends OnmsEntity implements Serializable {
     private OnmsNotification m_notification;
 
     /** full constructor */
-    public OnmsUserNotification(String userId, Date notifyTime, String media, String contactInfo, String autoNotify, OnmsNotification notification) {
+    public OnmsUserNotification(String userId, Date notifyTime, String media, String contactInfo, String autoNotify, OnmsNotification notification, Integer id) {
         m_userId = userId;
         m_notifyTime = notifyTime;
         m_media = media;
         m_contactInfo = contactInfo;
         m_autoNotify = autoNotify;
         m_notification = notification;
+        m_id = id;
     }
 
     /** default constructor */
@@ -174,6 +175,7 @@ public class OnmsUserNotification extends OnmsEntity implements Serializable {
             .append("media", getMedia())
             .append("contactInfo", getContactInfo())
             .append("autoNotify", getAutoNotify())
+            .append("id", getId())
             .toString();
     }
 
@@ -183,6 +185,11 @@ public class OnmsUserNotification extends OnmsEntity implements Serializable {
 
 	}
 
+	/**
+	 * @hibernate.id generator-class="assigned" type="java.lang.Integer"
+	 *               column="id"
+	 * @hibernate.generator-param name="sequence" value="userNotifNxtId"
+	 */
     public Integer getId() {
         return m_id;
     }

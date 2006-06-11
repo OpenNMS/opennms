@@ -42,7 +42,7 @@ public class UserNotificationSave extends UserNotificationSaveOrUpdate {
     // PARAMETERS IN UserNotificationSaveOrUpdate
     private static final String insertStmt = "insert into usersNotified (" +
     "userID, notifyID, notifyTime, media, " + 
-    "contactinfo, autonotify, id " + 
+    "contactinfo, autonotify, id) " + 
     "values (" + 
     "?, ?, ?, ?, " + 
     "?, ?, ?)";

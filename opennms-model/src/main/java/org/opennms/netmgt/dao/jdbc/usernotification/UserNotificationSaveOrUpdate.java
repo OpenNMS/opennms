@@ -69,5 +69,10 @@ public class UserNotificationSaveOrUpdate extends SqlUpdate {
         };
         return update(parms);
     }    
+    
+    public int doInsert(OnmsUserNotification userNotification) {
+        return persist(userNotification);
+    }
+
 
 }
