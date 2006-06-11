@@ -71,7 +71,7 @@ public class UserNotificationMappingQuery extends MappingSqlQuery {
         final Integer notifyID = (Integer) rs.getObject("notifyID");
         OnmsNotification notif = (OnmsNotification)Cache.obtain(OnmsNotification.class, notifyID);
         userNotification.setNotification(notif);
-        userNotification.setNotifyTime(rs.getTimestamp("testMsg"));
+        userNotification.setNotifyTime(rs.getTimestamp("notifyTime"));
         userNotification.setMedia(rs.getString("media"));
         userNotification.setContactInfo(rs.getString("contactinfo"));
         userNotification.setAutoNotify(rs.getString("autonotify"));

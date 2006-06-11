@@ -46,12 +46,12 @@ public class UserNotificationSaveOrUpdate extends SqlUpdate {
         setSql(updateStmt);
         
         // assumes that the update and insert statements have the same parms in the same order
+        declareParameter(new SqlParameter(Types.VARCHAR));  //userID
+        declareParameter(new SqlParameter(Types.INTEGER));  //notifyID
         declareParameter(new SqlParameter(Types.TIMESTAMP));  //notifyTime
         declareParameter(new SqlParameter(Types.VARCHAR));  //media
         declareParameter(new SqlParameter(Types.VARCHAR));  //contactInfo
         declareParameter(new SqlParameter(Types.VARCHAR));  //autoNotify
-        declareParameter(new SqlParameter(Types.VARCHAR));  //userID
-        declareParameter(new SqlParameter(Types.INTEGER));  //notifyID
         declareParameter(new SqlParameter(Types.INTEGER));   //ID
 
         compile();
@@ -59,12 +59,12 @@ public class UserNotificationSaveOrUpdate extends SqlUpdate {
     
     public int persist(OnmsUserNotification userNotification) {
         Object[] parms = new Object[] {
+             userNotification.getUserId(), //userID
+             userNotification.getNotification().getNotifyId(), //notifyID
         		userNotification.getNotifyTime(), //notifyTime
              userNotification.getMedia(), //media
              userNotification.getContactInfo(), //contactInfo
              userNotification.getAutoNotify(), //autoNotify
-             userNotification.getUserId(), //userID
-             userNotification.getNotification().getNotifyId(), //notifyID
              userNotification.getId() //ID
         };
         return update(parms);
