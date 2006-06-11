@@ -36,6 +36,7 @@ import java.util.Collection;
 import javax.sql.DataSource;
 
 import org.opennms.netmgt.dao.UserNotificationDao;
+import org.opennms.netmgt.dao.jdbc.usernotification.UserNotificationSave;
 import org.opennms.netmgt.dao.jdbc.usernotification.FindAll;
 import org.opennms.netmgt.dao.jdbc.usernotification.FindById;
 import org.opennms.netmgt.dao.jdbc.usernotification.LazyUserNotification;
@@ -143,7 +144,19 @@ public class UserNotificationDaoJdbc extends AbstractDaoJdbc implements UserNoti
     }
 
     public void save(OnmsUserNotification userNotif) {
-        new Save(getDataSource()).doInsert(userNotif);
+        if (userNotif.getId() != null)
+            throw new IllegalArgumentException("Cannot save an userNotification that already has an ID");
+        
+        userNotif.setId(allocateUserNotificationId());
+        getUserNotificationSaver().doInsert(userNotif);
+    }
+
+    private UserNotificationSave getUserNotificationSaver() {
+        return new UserNotificationSave(getDataSource());
+    }
+
+    private Integer allocateUserNotificationId() {
+        return new Integer(getJdbcTemplate().queryForInt("SELECT nextval('userNotifNxtId')"));
     }
 
     public void update(OnmsUserNotification userNotif) {
