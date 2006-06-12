@@ -45,6 +45,13 @@
        </includes>
     </dependencySet>
     <dependencySet>
+       <outputDirectory>webapps/opennms</outputDirectory>
+       <unpack>true</unpack>
+       <includes>
+         <include>org.opennms:opennms-webapp</include>
+       </includes>
+    </dependencySet>
+    <dependencySet>
        <outputFileNameMapping>libjicmp.${extension}</outputFileNameMapping>
        <outputDirectory>lib</outputDirectory>
        <!-- all the platforms need to be listed until the IncludesArtifactFiler supports wildcards -->
@@ -94,6 +101,7 @@
          <exclude>org.opennms:opennms-iplike-linux</exclude>
          <exclude>org.opennms:opennms-iplike-freebsd</exclude>
          <exclude>org.opennms:opennms-iplike-solaris</exclude>
+         <exclude>org.opennms:opennms-webapp</exclude>
       </excludes>
     </dependencySet>
   </dependencySets>

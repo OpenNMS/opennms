@@ -9,26 +9,17 @@
   <packaging>war</packaging>
   <name>OpenNMS Web Application</name>
   <build>
-    <resources>
-      <resource>
-        <directory>src/main/resources</directory>
-      </resource>
-      <resource>
-        <filtering>true</filtering>
-        <directory>src/main/filtered</directory>
-      </resource>
-    </resources>
     <plugins>
       <plugin>
-        <artifactId>maven-resources-plugin</artifactId>
-        <executions>
-          <execution>
-            <phase>process-resources</phase>
-            <goals>
-              <goal>resources</goal>
-            </goals>
-          </execution>
-        </executions>
+        <artifactId>maven-war-plugin</artifactId>
+        <configuration>
+        <webResources>
+          <resource>
+            <filtering>true</filtering>
+            <directory>${basedir}/src/main/filtered</directory>
+          </resource>
+          </webResources>
+        </configuration>
       </plugin>
     </plugins>
   </build>
