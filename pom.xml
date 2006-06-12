@@ -114,6 +114,8 @@ project.build.directory = ${project.build.directory}
 project.build.outputDirectory = ${project.build.outputDirectory}
 project.build.testOutputDirectory = ${project.build.testOutputDirectory}
 platform = ${platform}
+install.dir = ${install.dir}
+my.install.dir = ${my.install.dir}
                 </echo>
               </tasks>
             </configuration>
@@ -184,7 +186,8 @@ platform = ${platform}
   </reporting>
   <properties>
   <relative.install.dir>dist</relative.install.dir>
-  <install.dir>${basedir}/${relative.install.dir}</install.dir>
+  <my.install.dir>${basedir}/${relative.install.dir}</my.install.dir>
+  <install.dir>${my.install.dir}</install.dir>
 
   <install.init.dir>${install.dir}/bin</install.init.dir>
   <install.webapps.dir>${install.dir}/webapps</install.webapps.dir>
