@@ -31,7 +31,7 @@
             </source>
           </sources>
           <linkerStartOptions>
-            <linkerStartOption>-prebind -dynamiclib -lc -ldl</linkerStartOption>
+            <linkerStartOption>-bundle -lc -ldl</linkerStartOption>
           </linkerStartOptions>
         </configuration>
       </plugin>
