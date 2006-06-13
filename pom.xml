@@ -115,7 +115,7 @@ project.build.outputDirectory = ${project.build.outputDirectory}
 project.build.testOutputDirectory = ${project.build.testOutputDirectory}
 platform = ${platform}
 install.dir = ${install.dir}
-my.install.dir = ${my.install.dir}
+opennms.home = ${opennms.home}
                 </echo>
               </tasks>
             </configuration>
@@ -185,9 +185,8 @@ my.install.dir = ${my.install.dir}
     </plugins>
   </reporting>
   <properties>
-  <relative.install.dir>dist</relative.install.dir>
-  <my.install.dir>${basedir}/${relative.install.dir}</my.install.dir>
-  <install.dir>${my.install.dir}</install.dir>
+  <opennms.home>${user.dir}/dist</opennms.home>
+  <install.dir>${opennms.home}</install.dir>
 
   <install.init.dir>${install.dir}/bin</install.init.dir>
   <install.webapps.dir>${install.dir}/webapps</install.webapps.dir>
@@ -215,6 +214,9 @@ my.install.dir = ${my.install.dir}
   <install.database.bindir>/usr/bin</install.database.bindir>
   <install.rrdtool.bin>/usr/bin/rrdtool</install.rrdtool.bin>
   <install.perl.bin>/usr/bin/perl</install.perl.bin>
+
+  <!-- platform specific -->
+  <build.soext>${platform.shlib}</build.soext>
   
   <!-- rpm specific -->
   <rpm.install.dir>/opt/OpenNMS</rpm.install.dir>
