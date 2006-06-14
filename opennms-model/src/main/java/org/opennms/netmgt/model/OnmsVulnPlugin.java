@@ -49,7 +49,7 @@ public class OnmsVulnPlugin extends OnmsEntity implements Serializable {
     private static final long serialVersionUID = 6665164524726559523L;
 
     /** identifier field */
-    private Integer m_plugInId;
+    private Integer m_pluginId;
 
     /** identifier field */
     private Integer m_pluginSubId;
@@ -85,7 +85,7 @@ public class OnmsVulnPlugin extends OnmsEntity implements Serializable {
 
     /** full constructor */
     public OnmsVulnPlugin(Integer pluginId, Integer pluginSubId, String name, String category, String copyright, String descr, String summary, String family, String version, String cveEntry, String md5) {
-        m_plugInId = pluginId;
+        m_pluginId = pluginId;
         m_pluginSubId = pluginSubId;
         m_name = name;
         m_category = category;
@@ -125,12 +125,12 @@ public class OnmsVulnPlugin extends OnmsEntity implements Serializable {
      *                 length="4"
      *             
      */
-    public Integer getPlugInId() {
-        return m_plugInId;
+    public Integer getPluginId() {
+        return m_pluginId;
     }
 
-    public void setPlugInId(Integer pluginId) {
-        m_plugInId = pluginId;
+    public void setPluginId(Integer pluginId) {
+        m_pluginId = pluginId;
     }
 
     /** 
@@ -275,7 +275,7 @@ public class OnmsVulnPlugin extends OnmsEntity implements Serializable {
 
     public String toString() {
         return new ToStringCreator(this)
-            .append("pluginId", getPlugInId())
+            .append("pluginId", getPluginId())
             .append("pluginSubId", getPluginSubId())
             .append("name", getName())
             .append("category", getCategory())
