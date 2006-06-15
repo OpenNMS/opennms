@@ -56,37 +56,6 @@
 	<build>
 		<plugins>
 			<plugin>
-				<artifactId>maven-eclipse-plugin</artifactId>
-				<configuration>
-					<buildcommands>
-						<java.lang.String>
-							org.eclipse.wst.common.modulecore.ComponentStructuralBuilder
-						</java.lang.String>
-						<java.lang.String>
-							org.eclipse.jdt.core.javabuilder
-						</java.lang.String>
-						<java.lang.String>
-							org.springframework.ide.eclipse.core.springbuilder
-						</java.lang.String>
-						<java.lang.String>
-							org.eclipse.wst.common.modulecore.ComponentStructuralBuilderDependencyResolver
-						</java.lang.String>
-
-					</buildcommands>
-					<projectnatures>
-						<java.lang.String>
-							org.eclipse.jdt.core.javanature
-						</java.lang.String>
-						<java.lang.String>
-							org.eclipse.wst.common.modulecore.ModuleCoreNature
-						</java.lang.String>
-						<java.lang.String>
-							org.springframework.ide.eclipse.core.springnature
-						</java.lang.String>
-					</projectnatures>
-				</configuration>
-			</plugin>
-			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>xdoclet-maven-plugin</artifactId>
 				<version>1.0-alpha-2</version>
