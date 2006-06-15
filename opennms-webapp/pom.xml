@@ -16,7 +16,7 @@
         <webResources>
           <resource>
             <filtering>true</filtering>
-            <directory>${basedir}/src/main/filtered</directory>
+            <directory>${basedir}/src/main/web-filtered</directory>
           </resource>
           </webResources>
         </configuration>
