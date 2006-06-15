@@ -142,7 +142,7 @@
       <artifactId>opennms-model</artifactId>
       <type>test-jar</type>
       <version>${project.version}</version>
-      <scope>type</scope>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
