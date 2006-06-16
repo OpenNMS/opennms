@@ -185,7 +185,7 @@ opennms.home = ${opennms.home}
     </plugins>
   </reporting>
   <properties>
-  <opennms.home>${user.dir}/dist</opennms.home>
+  <opennms.home>${root.dir}/opennms-daemon/target/opennms-daemon-${project.version}-dist</opennms.home>
   <install.dir>${opennms.home}</install.dir>
 
   <install.init.dir>${install.dir}/bin</install.init.dir>
@@ -390,6 +390,21 @@ install.webapps.dir=${install.webapps.dir}
   <dependencyManagement>
     <dependencies>
     <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-util</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-config</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-services</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
       <groupId>log4j</groupId>
       <artifactId>log4j</artifactId>
       <version>1.2.7</version>
@@ -398,6 +413,23 @@ install.webapps.dir=${install.webapps.dir}
       <groupId>castor</groupId>
       <artifactId>castor</artifactId>
       <version>0.9.6</version>
+    </dependency>
+    <dependency>
+      <groupId>xerces</groupId>
+      <artifactId>xerces</artifactId>
+      <version>1.4.0</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>xerces</groupId>
+      <artifactId>xercesImpl</artifactId>
+      <version>2.6.2</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>tomcat</groupId>
+      <artifactId>catalina</artifactId>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>oro</groupId>
@@ -492,6 +524,12 @@ install.webapps.dir=${install.webapps.dir}
             <artifactId>jta</artifactId>
           </exclusion>
         </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>tomcat</groupId>
+        <artifactId>catalina</artifactId>
+        <version>4.1.31</version>
+        <scope>provided</scope>
       </dependency>
     </dependencies>
   </dependencyManagement>
