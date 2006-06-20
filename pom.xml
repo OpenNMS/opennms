@@ -429,6 +429,7 @@ install.webapps.dir=${install.webapps.dir}
     <dependency>
       <groupId>tomcat</groupId>
       <artifactId>catalina</artifactId>
+      <version>4.1.31</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
