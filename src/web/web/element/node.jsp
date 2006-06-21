@@ -222,6 +222,7 @@
 
       <p>
         <a href="event/list?filter=node%3D<%=nodeId%>">View Events</a>
+        &nbsp;&nbsp;&nbsp;<a href="vulnerability/list?filter=node%3D<%=nodeId%>&limit=100&sortby=severity&restype=open">View Nessus</a>
         &nbsp;&nbsp;&nbsp;<a href="asset/modify.jsp?node=<%=nodeId%>">Asset Info</a>
          
         <% if( telnetIp != null ) { %>

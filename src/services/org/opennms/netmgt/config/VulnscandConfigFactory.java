@@ -63,6 +63,7 @@ import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.ConfigFileConstants;
+import org.opennms.protocols.ip.IPv4Address;
 import org.opennms.netmgt.config.vulnscand.Excludes;
 import org.opennms.netmgt.config.vulnscand.Range;
 import org.opennms.netmgt.config.vulnscand.ScanLevel;
@@ -424,10 +425,12 @@ public final class VulnscandConfigFactory {
 
             try {
                 for (long i = Long.parseLong(ir.getBegin()); i <= Long.parseLong(ir.getEnd()); i++) {
-                    retval.add(toInetAddress(i));
+	              retval.add(toInetAddress(i));
                 }
-            } catch (UnknownHostException uhE) {
-                ThreadCategory.getInstance(getClass()).warn("Failed to convert address range (" + ir.getBegin() + ", " + ir.getEnd() + ")", uhE);
+	    } catch (NumberFormatException ex) {
+            	ThreadCategory.getInstance(getClass()).warn("Failed to convert address range (" + ir.getBegin() + ", " + ir.getEnd() + ")", ex);
+            } catch (UnknownHostException ex) {
+                ThreadCategory.getInstance(getClass()).warn("Failed to convert address range (" + ir.getBegin() + ", " + ir.getEnd() + ")", ex);
             }
 
         }
@@ -446,6 +449,7 @@ public final class VulnscandConfigFactory {
     }
 
     public Set getAllExcludes() {
+	Category log = ThreadCategory.getInstance(VulnscandConfigFactory.class);
         if (m_excludes == null) {
             m_excludes = new TreeSet();
 
@@ -471,11 +475,8 @@ public final class VulnscandConfigFactory {
                     Enumeration e = excludes.enumerateSpecific();
                     while (e.hasMoreElements()) {
                         String current = (String) e.nextElement();
-                        try {
-                            m_excludes.add(InetAddress.getByName(current));
-                        } catch (UnknownHostException uhE) {
-                            ThreadCategory.getInstance().warn("Failed to convert address: " + current, uhE);
-                        }
+        		log.debug("excludes: Specific  " + current + " Converted:" + new IPv4Address(current).getAddress());
+			m_excludes.add(current);
                     }
                 }
             }

@@ -1,3 +1,8 @@
+Post-1.2.8
+----------------------------------------------------------------------
+- Patches from Johan Edstrom <johan.edstrom@sca.com> to make vulscand
+  functional with current versions of Nessus.  Bug #1522.
+
 1.2.7 to 1.2.8
 ----------------------------------------------------------------------
 - Added an "invert" parameter to IcmpMonitor.

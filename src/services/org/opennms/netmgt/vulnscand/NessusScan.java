@@ -263,10 +263,11 @@ class NessusScan implements Runnable {
             }
         }
 
-        // Perform a Nessus scan of the target IP address. As each vulnerability
-        // is
-        // found, a new entry is put into the database or the existing entry is
-        // updated.
+	/*
+	 * Perform a Nessus scan of the target IP address.  As each
+	 * vulnerability is found, a new entry is put into the database
+	 * or the existing entry is updated.
+	 */
         Socket nessusSocket = null;
         try {
             nessusSocket = NessusConnectionFactory.getConnection(config.hostname, config.hostport);
@@ -406,10 +407,12 @@ class NessusScan implements Runnable {
                     lines = readLines(in);
             }
 
-            // I'm using the NEW_ATTACK directive, since I don't
-            // care about command strings getting too long (which
-            // you would use the LONG_ATTACK directive for).
-            out.write((NTP_CLIENT_ENTITY + NTP_SEP + "NEW_ATTACK" + NTP_SEP + config.targetAddress.toString() + NTP_SEP + NTP_CLIENT_ENTITY + "\n").getBytes());
+	    /*
+	     * I'm using the NEW_ATTACK directive, since I don't
+	     * care about command strings getting too long (which
+	     * you would use the LONG_ATTACK directive for).
+	     */
+            out.write((NTP_CLIENT_ENTITY + NTP_SEP + "NEW_ATTACK" + NTP_SEP + config.targetAddress.toString().replaceAll("/", "") + NTP_SEP + NTP_CLIENT_ENTITY + "\n").getBytes());
 
             log.debug("Sent NEW_ATTACK directive against target: " + config.targetAddress.toString());
 

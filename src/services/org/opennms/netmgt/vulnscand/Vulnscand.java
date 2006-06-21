@@ -178,7 +178,6 @@ public class Vulnscand implements PausableFiber {
         m_status = STARTING;
 
         // Initialize the Vulnscand configuration factory.
-        //
         try {
             VulnscandConfigFactory.reload();
         } catch (MarshalException ex) {
@@ -193,7 +192,6 @@ public class Vulnscand implements PausableFiber {
         }
 
         // Initialize the Database configuration factory
-        //
         try {
             DatabaseConnectionFactory.init();
         } catch (IOException ie) {
@@ -225,7 +223,6 @@ public class Vulnscand implements PausableFiber {
         m_scheduledScanRunner.start();
 
         // Create and start the rescan scheduler
-        //
         if (log.isDebugEnabled())
             log.debug("start: Creating rescan scheduler");
         try {
@@ -238,11 +235,11 @@ public class Vulnscand implements PausableFiber {
         } catch (Throwable t) {
             log.error("Failed to initialize the rescan scheduler.", t);
             throw new UndeclaredThrowableException(t);
-        }
+	}
+	
         m_scheduler.start();
 
         // Create an event receiver.
-        //
         try {
             if (log.isDebugEnabled())
                 log.debug("start: Creating event broadcast event receiver");
