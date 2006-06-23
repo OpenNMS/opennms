@@ -1,8 +1,7 @@
 <assembly>
-  <id>dist</id>
+  <id>daemon</id>
   <formats>
-    <format>dir</format>
-    <format>tar.gz</format>
+    <format>tgz</format>
   </formats>
   <includeBaseDirectory>false</includeBaseDirectory>
   <fileSets>
@@ -41,20 +40,6 @@
        <outputDirectory>lib</outputDirectory>
        <includes>
          <include>org.opennms:opennms-install</include>
-       </includes>
-    </dependencySet>
-    <dependencySet>
-      <outputDirectory>tomcat/server/lib</outputDirectory>
-      <includes>
-        <include>org.opennms:opennms-tomcat-assembly:tgz</include>
-      </includes>
-      <unpack>true</unpack>
-    </dependencySet>
-    <dependencySet>
-       <outputDirectory>webapps/opennms</outputDirectory>
-       <unpack>true</unpack>
-       <includes>
-         <include>org.opennms:opennms-webapp</include>
        </includes>
     </dependencySet>
     <dependencySet>
@@ -107,7 +92,6 @@
          <exclude>org.opennms:opennms-iplike-linux</exclude>
          <exclude>org.opennms:opennms-iplike-freebsd</exclude>
          <exclude>org.opennms:opennms-iplike-solaris</exclude>
-         <exclude>org.opennms:opennms-webapp</exclude>
       </excludes>
     </dependencySet>
   </dependencySets>
