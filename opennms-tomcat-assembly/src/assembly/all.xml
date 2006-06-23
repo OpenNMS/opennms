@@ -1,7 +1,7 @@
 <assembly>
   <id>all</id>
   <formats>
-    <format>tar.gz</format>
+    <format>tgz</format>
   </formats>
   <includeBaseDirectory>false</includeBaseDirectory>
   <dependencySets>

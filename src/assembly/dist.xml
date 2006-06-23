@@ -1,0 +1,36 @@
+<assembly>
+  <id>dist</id>
+  <formats>
+    <format>tar.gz</format>
+  </formats>
+  <includeBaseDirectory>false</includeBaseDirectory>
+  <moduleSets>
+    <moduleSet>
+      <includes>
+        <include>org.opennms:opennms-webapp</include>
+      </includes>
+      <binaries>
+        <outputDirectory>webapps/opennms</outputDirectory>
+        <unpack>true</unpack>
+      </binaries>
+    </moduleSet>
+    <moduleSet>
+      <includes>
+        <include>org.opennms:opennms-daemon</include>
+      </includes>
+      <binaries>
+        <outputDirectory>/</outputDirectory>
+        <unpack>true</unpack>
+      </binaries>      
+    </moduleSet>
+    <moduleSet>
+      <includes>
+        <include>org.opennms:opennms-tomcat-assembly</include>
+      </includes>
+      <binaries>
+        <outputDirectory>tomcat/server/lib</outputDirectory>
+        <unpack>true</unpack>
+      </binaries>
+    </moduleSet>
+  </moduleSets>
+</assembly>
