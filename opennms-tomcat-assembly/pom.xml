@@ -12,7 +12,7 @@
     <plugins>
       <plugin>
         <groupId>org.opennms.maven.plugins</groupId>
-        <artifactId>assembly-maven-plugin</artifactId>
+        <artifactId>tgz-maven-plugin</artifactId>
         <extensions>true</extensions>
         <configuration>
           <appendAssemblyId>false</appendAssemblyId>
