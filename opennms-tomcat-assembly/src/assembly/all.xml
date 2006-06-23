@@ -1,0 +1,16 @@
+<assembly>
+  <id>all</id>
+  <formats>
+    <format>tar.gz</format>
+  </formats>
+  <includeBaseDirectory>false</includeBaseDirectory>
+  <dependencySets>
+    <dependencySet>
+      <outputDirectory>/</outputDirectory>
+      <excludes>
+        <exclude>org.opennms:opennms-tomcat-dist</exclude>
+      </excludes>
+      <scope>runtime</scope>
+    </dependencySet>
+  </dependencySets>
+</assembly>
