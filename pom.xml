@@ -164,6 +164,7 @@ opennms.home = ${opennms.home}
                 <descriptor>src/assembly/dist.xml</descriptor>
               </descriptors>
               <appendAssemblyId>false</appendAssemblyId>
+              <tarLongFileMode>gnu</tarLongFileMode>
             </configuration>
       </plugin>
    </plugins>
