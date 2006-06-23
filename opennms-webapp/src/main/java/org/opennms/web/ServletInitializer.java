@@ -50,7 +50,6 @@ import org.apache.log4j.PropertyConfigurator;
 import org.opennms.core.resource.Vault;
 import org.opennms.core.resource.db.DbConnectionFactory;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.web.log.Log4JLogger;
 
 /**
  * Encapsulates all initialization and configuration needed by the OpenNMS
@@ -138,7 +137,7 @@ public class ServletInitializer extends Object {
 
                 // initialize Log4J for use inside the webapp
                 org.apache.log4j.LogManager.resetConfiguration();
-                PropertyConfigurator.configure(homeDir + Log4JLogger.propFilename);
+                PropertyConfigurator.configure(homeDir + "/etc/log4j.properties");
 
                 // get the database parameters from the bluebird properties
                 String dbUrl = properties.getProperty("opennms.db.url");

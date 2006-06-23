@@ -88,9 +88,10 @@ OpenNMS is the world's first enterprise grade network management platform develo
     <module>opennms-services</module>
     <module>opennms-import</module>
     <module>opennms-reporting</module>
-    <module>opennms-web</module>
     <module>opennms-webapp</module>
     <module>opennms-webapp-ng</module>
+    <module>opennms-tomcat</module>
+    <module>opennms-tomcat-assembly</module>
     <module>opennms-site</module>
     <module>opennms-daemon</module>
   </modules>
@@ -396,6 +397,16 @@ install.webapps.dir=${install.webapps.dir}
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
+      <artifactId>opennms-tomcat</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-tomcat-assembly</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
       <artifactId>opennms-config</artifactId>
       <version>${project.version}</version>
     </dependency>
@@ -526,12 +537,6 @@ install.webapps.dir=${install.webapps.dir}
           </exclusion>
         </exclusions>
       </dependency>
-      <dependency>
-        <groupId>tomcat</groupId>
-        <artifactId>catalina</artifactId>
-        <version>4.1.31</version>
-        <scope>provided</scope>
-      </dependency>
     </dependencies>
   </dependencyManagement>
   <repositories>
@@ -568,6 +573,12 @@ install.webapps.dir=${install.webapps.dir}
       <id>codehaus-shapshots</id>
       <name>Maven/Codehaus Snapshot Repository</name>
       <url>http://snapshots.maven.codehaus.org/maven2</url>
+    </pluginRepository>
+    <pluginRepository>
+      <snapshots />
+      <id>apache.snapshots</id>
+      <name>Apache Snapshot Repository</name>
+      <url>http://people.apache.org/maven-snapshot-repository</url>
     </pluginRepository>
   </pluginRepositories>
   <distributionManagement>
