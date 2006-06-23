@@ -165,6 +165,8 @@ opennms.home = ${opennms.home}
               </descriptors>
               <appendAssemblyId>false</appendAssemblyId>
               <tarLongFileMode>gnu</tarLongFileMode>
+              <outputDirectory>${dist.dir}</outputDirectory>
+              <finalName>${dist.name}</finalName>
             </configuration>
       </plugin>
    </plugins>
@@ -198,7 +200,9 @@ opennms.home = ${opennms.home}
     </plugins>
   </reporting>
   <properties>
-  <opennms.home>${root.dir}/opennms-daemon/target/opennms-daemon-${project.version}-dist</opennms.home>
+  <opennms.home>${dist.dir}/${dist.name}</opennms.home>
+  <dist.dir>${root.dir}/target</dist.dir>
+  <dist.name>${project.build.finalName}</dist.name>
   <install.dir>${opennms.home}</install.dir>
 
   <install.init.dir>${install.dir}/bin</install.init.dir>
