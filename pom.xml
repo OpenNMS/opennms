@@ -7,15 +7,18 @@
   <name>OpenNMS</name>
   <url>http://opennms.org</url>
   <description>
-OpenNMS is the world's first enterprise grade network management platform developed under the open source model. It consists of a community supported open-source project as well as a commercial services, training and support organization. 
+    OpenNMS is the world's first enterprise grade network management
+    platform developed under the open source model. It consists of a
+    community supported open-source project as well as a commercial
+    services, training and support organization. 
   </description>
   <issueManagement>
     <system>Bugzilla</system>
-    <url>http://bugs.opennms.org</url>
+    <url>http://bugs.opennms.org/</url>
   </issueManagement>  
   <ciManagement>
     <system>CruiseControl</system>
-    <url>http://ci.opennms.org</url>
+    <url>http://ci.opennms.org/</url>
     <notifiers>
       <notifier>
         <type>mail</type>
@@ -161,28 +164,28 @@ opennms.home = ${opennms.home}
         <inherited>false</inherited>
         <artifactId>maven-assembly-plugin</artifactId>
         <version>2.1</version>
-            <configuration>
-              <descriptors>
-                <descriptor>src/assembly/dist.xml</descriptor>
-              </descriptors>
-              <appendAssemblyId>false</appendAssemblyId>
-              <tarLongFileMode>gnu</tarLongFileMode>
-              <outputDirectory>${dist.dir}</outputDirectory>
-              <finalName>${dist.name}</finalName>
-            </configuration>
+        <configuration>
+          <descriptors>
+            <descriptor>src/assembly/dist.xml</descriptor>
+          </descriptors>
+          <appendAssemblyId>false</appendAssemblyId>
+          <tarLongFileMode>gnu</tarLongFileMode>
+          <outputDirectory>${dist.dir}</outputDirectory>
+          <finalName>${dist.name}</finalName>
+        </configuration>
       </plugin>
    </plugins>
   </build>
   <reporting>
     <plugins>
-     <plugin>
+      <plugin>
         <artifactId>maven-javadoc-plugin</artifactId>
       </plugin>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>jxr-maven-plugin</artifactId>
       </plugin>      
-     <plugin>
+      <plugin>
         <artifactId>maven-surefire-report-plugin</artifactId>
       </plugin>
       <plugin>
@@ -202,200 +205,200 @@ opennms.home = ${opennms.home}
     </plugins>
   </reporting>
   <properties>
-  <opennms.home>${dist.dir}/${dist.name}</opennms.home>
-  <dist.dir>${root.dir}/target</dist.dir>
-  <dist.name>${project.build.finalName}</dist.name>
-  <install.dir>${opennms.home}</install.dir>
-
-  <install.init.dir>${install.dir}/bin</install.init.dir>
-  <install.webapps.dir>${install.dir}/webapps</install.webapps.dir>
-  <install.servlet.dir>${install.webapps.dir}/opennms</install.servlet.dir>
-  <install.share.dir>${install.dir}/share</install.share.dir>
-  <install.bin.dir>${install.dir}/bin</install.bin.dir>
-  <install.postgresql.dir>${install.dir}/lib</install.postgresql.dir>
-  <install.contrib.dir>${install.dir}/contrib</install.contrib.dir>
-  <install.etc.dir>${install.dir}/etc</install.etc.dir>
-  <install.logs.dir>${install.dir}/logs</install.logs.dir>
-  <install.pid.file>${install.dir}/logs/opennms.pid</install.pid.file>
-        
-  <!-- install.prefix: a prefix used for installation in or chroot -->
-  <install.prefix></install.prefix>
-  
-  <install.postgresql.service>postgresql</install.postgresql.service>
-  <install.database.name>opennms</install.database.name>
-  <install.database.user>opennms</install.database.user>
-  <install.database.password>opennms</install.database.password>
-  <install.database.driver>org.postgresql.Driver</install.database.driver> 
-  <!-- XXX why is compatible=7.1 being used?
-       It's not added here... see etc/opennms-database.xml and
-       src/web/etc/web.xml where @install.database.driver@ is used. -->
-  <install.database.url>jdbc:postgresql://localhost:5432/</install.database.url>
-  <install.database.bindir>/usr/bin</install.database.bindir>
-  <install.rrdtool.bin>/usr/bin/rrdtool</install.rrdtool.bin>
-  <install.perl.bin>/usr/bin/perl</install.perl.bin>
-
-  <!-- platform specific -->
-  <build.soext>${platform.shlib}</build.soext>
-  
-  <!-- rpm specific -->
-  <rpm.install.dir>/opt/OpenNMS</rpm.install.dir>
-  <rpm.build.executable>rpmbuild</rpm.build.executable>
-  <rpm.build.docs>1</rpm.build.docs>
-  <rpm.sign>false</rpm.sign>
-  <rpm.buildtests>false</rpm.buildtests>
-  <rpm.database.user>opennms</rpm.database.user>
-  <rpm.additional.args></rpm.additional.args> 
-  <rpm.database.name>opennms</rpm.database.name>
-  <rpm.database.password>opennms</rpm.database.password>
-  </properties>
-  <profiles>
-  <profile>
-    <id>darwinPorts</id>
+    <opennms.home>${dist.dir}/${dist.name}</opennms.home>
+    <dist.dir>${root.dir}/target</dist.dir>
+    <dist.name>${project.build.finalName}</dist.name>
+    <install.dir>${opennms.home}</install.dir>
+    <install.init.dir>${install.dir}/bin</install.init.dir>
+    <install.webapps.dir>${install.dir}/webapps</install.webapps.dir>
+    <install.servlet.dir>${install.webapps.dir}/opennms</install.servlet.dir>
+    <install.share.dir>${install.dir}/share</install.share.dir>
+    <install.bin.dir>${install.dir}/bin</install.bin.dir>
+    <install.postgresql.dir>${install.dir}/lib</install.postgresql.dir>
+    <install.contrib.dir>${install.dir}/contrib</install.contrib.dir>
+    <install.etc.dir>${install.dir}/etc</install.etc.dir>
+    <install.logs.dir>${install.dir}/logs</install.logs.dir>
+    <install.pid.file>${install.dir}/logs/opennms.pid</install.pid.file>
+          
+    <!-- install.prefix: a prefix used for installation in or chroot -->
+    <install.prefix></install.prefix>
     
-    <activation>
-      <file>
-        <exists>/opt/local/bin/port</exists>
-      </file>
-    </activation>
+    <install.postgresql.service>postgresql</install.postgresql.service>
+    <install.database.name>opennms</install.database.name>
+    <install.database.user>opennms</install.database.user>
+    <install.database.password>opennms</install.database.password>
+    <install.database.driver>org.postgresql.Driver</install.database.driver> 
+    <!-- XXX why is compatible=7.1 being used?
+         It's not added here... see etc/opennms-database.xml and
+         src/web/etc/web.xml where @install.database.driver@ is used. -->
+    <install.database.url>jdbc:postgresql://localhost:5432/</install.database.url>
+    <install.database.bindir>/usr/bin</install.database.bindir>
+    <install.rrdtool.bin>/usr/bin/rrdtool</install.rrdtool.bin>
+    <install.perl.bin>/usr/bin/perl</install.perl.bin>
+  
+    <!-- platform specific -->
+    <build.soext>${platform.shlib}</build.soext>
+    
+    <!-- rpm specific -->
+    <rpm.install.dir>/opt/OpenNMS</rpm.install.dir>
+    <rpm.build.executable>rpmbuild</rpm.build.executable>
+    <rpm.build.docs>1</rpm.build.docs>
+    <rpm.sign>false</rpm.sign>
+    <rpm.buildtests>false</rpm.buildtests>
+    <rpm.database.user>opennms</rpm.database.user>
+    <rpm.additional.args></rpm.additional.args> 
+    <rpm.database.name>opennms</rpm.database.name>
+    <rpm.database.password>opennms</rpm.database.password>
 
-    <properties>
-      <platform>macosx</platform>
-      <platform.shlib>dylib</platform.shlib>
-      <platform.jni>jnilib</platform.jni>
-      <build.rrd.include.dir>/opt/local/include</build.rrd.include.dir>
-      <build.rrd.lib.dir>/opt/local/lib</build.rrd.lib.dir>
-      <build.postgresql.include.dir>/opt/local/include/pgsql8/server</build.postgresql.include.dir>
-
-      <install.rrdtool.bin>/opt/local/bin/rrdtool</install.rrdtool.bin>
-
-      <!-- filters 
+    <!-- filters 
       build.soext=${platform.shlib}
-install.share.dir=${install.share.dir}
-install.bin.dir=${install.bin.dir}
-install.database.bindir=${install.database.bindir}
-install.database.driver=${install.database.driver}
-install.database.name=${install.database.name}
-install.database.password=${install.database.password}
-install.database.url=${install.database.url}
-install.database.user=${install.databse.user}
-install.dir=${install.dir}
-install.etc.dir=${install.etc.dir}
-install.init.dir=${install.init.dir}
-install.logs.dir=${install.logs.dir}
-install.manifest.classes=${install.manifest.classes}
-install.perl.bin=${install.perl.bin}
-install.pid.file=${install.pid.file}
-install.postgresql.dir=${install.postgresql.dir}
-install.postgresql.service=${install.postgresql.service}
-install.rrdtool.bin=${install.rrdtool.bin}
-install.servlet.dir=${install.servlet.dir}
-install.tomcat.serverlibs=${install.tomcat.serverlibs}
-install.webapps.dir=${install.webapps.dir}
--->
-    </properties>
-  </profile>
+      install.share.dir=${install.share.dir}
+      install.bin.dir=${install.bin.dir}
+      install.database.bindir=${install.database.bindir}
+      install.database.driver=${install.database.driver}
+      install.database.name=${install.database.name}
+      install.database.password=${install.database.password}
+      install.database.url=${install.database.url}
+      install.database.user=${install.databse.user}
+      install.dir=${install.dir}
+      install.etc.dir=${install.etc.dir}
+      install.init.dir=${install.init.dir}
+      install.logs.dir=${install.logs.dir}
+      install.manifest.classes=${install.manifest.classes}
+      install.perl.bin=${install.perl.bin}
+      install.pid.file=${install.pid.file}
+      install.postgresql.dir=${install.postgresql.dir}
+      install.postgresql.service=${install.postgresql.service}
+      install.rrdtool.bin=${install.rrdtool.bin}
+      install.servlet.dir=${install.servlet.dir}
+      install.tomcat.serverlibs=${install.tomcat.serverlibs}
+      install.webapps.dir=${install.webapps.dir}
+    -->
+  </properties>
 
-  <profile>
-    <id>centos</id>
+  <profiles>
+    <profile>
+      <id>darwinPorts</id>
+      
+      <activation>
+        <file>
+          <exists>/opt/local/bin/port</exists>
+        </file>
+      </activation>
+  
+      <properties>
+        <platform>macosx</platform>
+        <platform.shlib>dylib</platform.shlib>
+        <platform.jni>jnilib</platform.jni>
+        <build.rrd.include.dir>/opt/local/include</build.rrd.include.dir>
+        <build.rrd.lib.dir>/opt/local/lib</build.rrd.lib.dir>
+        <build.postgresql.include.dir>/opt/local/include/pgsql8/server</build.postgresql.include.dir>
+  
+        <install.rrdtool.bin>/opt/local/bin/rrdtool</install.rrdtool.bin>
+      </properties>
+    </profile>
+  
+    <profile>
+      <id>centos</id>
+      
+      <activation>
+        <file>
+          <exists>/etc/redhat-release</exists>
+        </file>
+      </activation>
+  
+      <properties>
+        <platform>linux</platform>
+        <platform.shlib>so</platform.shlib>
+        <platform.jni>so</platform.jni>
+        <build.rrd.include.dir>/usr/include</build.rrd.include.dir>
+        <build.rrd.lib.dir>/usr/lib</build.rrd.lib.dir>
+        <build.postgresql.include.dir>/usr/include/pgsql/server</build.postgresql.include.dir>
+      </properties>
+    </profile>
+  
+    <profile>
+      <id>suse</id>
+      <activation>
+        <file>
+          <exists>/etc/SuSE-release</exists>
+        </file>
+      </activation>
+  
+      <properties>
+        <platform>linux</platform>
+        <platform.shlib>so</platform.shlib>
+        <platform.jni>so</platform.jni>
+        <build.rrd.include.dir>/usr/include</build.rrd.include.dir>
+        <build.rrd.lib.dir>/usr/lib</build.rrd.lib.dir>
+        <build.postgresql.include.dir>/usr/include/pgsql/server</build.postgresql.include.dir>
+      </properties>
+    </profile>
     
-    <activation>
-      <file>
-        <exists>/etc/redhat-release</exists>
-      </file>
-    </activation>
-
-    <properties>
-      <platform>linux</platform>
-      <platform.shlib>so</platform.shlib>
-      <platform.jni>so</platform.jni>
-      <build.rrd.include.dir>/usr/include</build.rrd.include.dir>
-      <build.rrd.lib.dir>/usr/lib</build.rrd.lib.dir>
-      <build.postgresql.include.dir>/usr/include/pgsql/server</build.postgresql.include.dir>
-    </properties>
-  </profile>
-
-  <profile>
-    <id>suse</id>
-    <activation>
-      <file>
-        <exists>/etc/SuSE-release</exists>
-      </file>
-    </activation>
-
-    <properties>
-      <platform>linux</platform>
-      <platform.shlib>so</platform.shlib>
-      <platform.jni>so</platform.jni>
-      <build.rrd.include.dir>/usr/include</build.rrd.include.dir>
-      <build.rrd.lib.dir>/usr/lib</build.rrd.lib.dir>
-      <build.postgresql.include.dir>/usr/include/pgsql/server</build.postgresql.include.dir>
-    </properties>
-  </profile>
+    <profile>
+      <id>debian</id>
+      <activation>
+        <file>
+          <exists>/etc/debian_version</exists>
+        </file>
+      </activation>
   
-  <profile>
-    <id>debian</id>
-    <activation>
-      <file>
-        <exists>/etc/debian_version</exists>
-      </file>
-    </activation>
-
-    <properties>
-      <platform>linux</platform>
-      <platform.shlib>so</platform.shlib>
-      <platform.jni>so</platform.jni>
-      <build.rrd.include.dir>/usr/include</build.rrd.include.dir>
-      <build.rrd.lib.dir>/usr/lib</build.rrd.lib.dir>
-    </properties>
-  </profile>
+      <properties>
+        <platform>linux</platform>
+        <platform.shlib>so</platform.shlib>
+        <platform.jni>so</platform.jni>
+        <build.rrd.include.dir>/usr/include</build.rrd.include.dir>
+        <build.rrd.lib.dir>/usr/lib</build.rrd.lib.dir>
+      </properties>
+    </profile>
+    
+    <profile>
+      <id>debian-postgres8</id>
+      <activation>
+        <file>
+          <exists>/usr/include/postgresql/8.0/server</exists>
+        </file>
+      </activation>
   
-  <profile>
-    <id>debian-postgres8</id>
-    <activation>
-      <file>
-        <exists>/usr/include/postgresql/8.0/server</exists>
-      </file>
-    </activation>
-
-    <properties>
-      <build.postgresql.include.dir>/usr/include/postgresql/8.0/server</build.postgresql.include.dir>
-    </properties>
-  </profile>
-
-  <profile>
-    <id>debian-postgres7</id>
-    <activation>
-      <file>
-        <exists>/usr/include/postgresql/server</exists>
-      </file>
-    </activation>
-
-    <properties>
-      <build.postgresql.include.dir>/usr/include/postgresql/server</build.postgresql.include.dir>
-    </properties>
-  </profile>
-
-     <profile>
-    <id>slackware</id>
-    <activation>
-      <file>
-        <exists>/etc/slackware-version</exists>
-      </file>
-    </activation>
-
-    <properties>
-      <platform>linux</platform>
-      <platform.shlib>so</platform.shlib>
-      <platform.jni>so</platform.jni>
-      <install.dir>/usr/local/openNMS</install.dir>
-      <build.rrd.include.dir>/usr/local/rrdtool-1.2.12/include</build.rrd.include.dir>
-      <build.rrd.lib.dir>/usr/local/rrdtool-1.2.12/lib</build.rrd.lib.dir>
-      <build.postgresql.include.dir>/usr/local/pgsql/include/server</build.postgresql.include.dir>
-      <build.postgresql.lib.dir>/usr/local/pgsql/lib</build.postgresql.lib.dir>
-    </properties>
-  </profile>
-
+      <properties>
+        <build.postgresql.include.dir>/usr/include/postgresql/8.0/server</build.postgresql.include.dir>
+      </properties>
+    </profile>
+  
+    <profile>
+      <id>debian-postgres7</id>
+      <activation>
+        <file>
+          <exists>/usr/include/postgresql/server</exists>
+        </file>
+      </activation>
+  
+      <properties>
+        <build.postgresql.include.dir>/usr/include/postgresql/server</build.postgresql.include.dir>
+      </properties>
+    </profile>
+  
+    <profile>
+      <id>slackware</id>
+      <activation>
+        <file>
+          <exists>/etc/slackware-version</exists>
+        </file>
+      </activation>
+  
+      <properties>
+        <platform>linux</platform>
+        <platform.shlib>so</platform.shlib>
+        <platform.jni>so</platform.jni>
+        <install.dir>/usr/local/OpenNMS</install.dir>
+        <build.rrd.include.dir>/usr/local/rrdtool-1.2.12/include</build.rrd.include.dir>
+        <build.rrd.lib.dir>/usr/local/rrdtool-1.2.12/lib</build.rrd.lib.dir>
+        <build.postgresql.include.dir>/usr/local/pgsql/include/server</build.postgresql.include.dir>
+        <build.postgresql.lib.dir>/usr/local/pgsql/lib</build.postgresql.lib.dir>
+      </properties>
+    </profile>
   </profiles>
+
   <dependencies>
     <dependency>
       <groupId>log4j</groupId>
@@ -410,8 +413,8 @@ install.webapps.dir=${install.webapps.dir}
   </dependencies>
   <dependencyManagement>
     <dependencies>
-      <!--  PLEASE KEEP THESE IN ALPHABETICAL ORDER -->
       <!--  opennms dependencies -->
+      <!--  PLEASE KEEP THESE IN ALPHABETICAL ORDER -->
       <dependency>
         <groupId>org.opennms</groupId>
         <artifactId>opennms-bootstrap</artifactId>
@@ -532,8 +535,9 @@ install.webapps.dir=${install.webapps.dir}
         <artifactId>opennms-webapp-ng</artifactId>
         <version>${project.version}</version>
       </dependency>
-      <!--  PLEASE KEEP THESE IN ALPHABETICAL ORDER -->
+
       <!--  external dependencies -->
+      <!--  PLEASE KEEP THESE IN ALPHABETICAL ORDER -->
       <dependency>
         <groupId>alt.dev.jmta</groupId>
         <artifactId>jmta</artifactId>
