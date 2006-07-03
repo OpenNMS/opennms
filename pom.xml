@@ -206,10 +206,10 @@ opennms.home = ${opennms.home}
     </plugins>
   </reporting>
   <properties>
+    <install.version>${project.version}</install.version>
     <opennms.home>${dist.dir}/${dist.name}</opennms.home>
     <dist.dir>${root.dir}/target</dist.dir>
     <dist.name>opennms-${project.version}</dist.name>
-<!--    <dist.name>opennms-1.3.2-SNAPSHOT</dist.name> -->
     <install.dir>${opennms.home}</install.dir>
     <install.init.dir>${install.dir}/bin</install.init.dir>
     <install.webapps.dir>${install.dir}/webapps</install.webapps.dir>
@@ -221,7 +221,7 @@ opennms.home = ${opennms.home}
     <install.etc.dir>${install.dir}/etc</install.etc.dir>
     <install.logs.dir>${install.dir}/logs</install.logs.dir>
     <install.pid.file>${install.dir}/logs/opennms.pid</install.pid.file>
-          
+
     <!-- install.prefix: a prefix used for installation in or chroot -->
     <install.prefix></install.prefix>
     
