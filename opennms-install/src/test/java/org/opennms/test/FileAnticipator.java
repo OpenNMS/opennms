@@ -26,12 +26,10 @@ public class FileAnticipator extends Assert {
             for (ListIterator i = m_deleteMe.listIterator(m_deleteMe.size());
                  i.hasPrevious(); ) {
                 File f = (File) i.previous();
-                if (f.exists()) {
-                    if (!f.delete()) {
-                        fail("Could not delete " + f.getAbsolutePath()
-                             + ": is it a non-empty directory?");
-                    }
-                }   
+                if (!f.delete()) {
+                    fail("Could not delete " + f.getAbsolutePath()
+                         + ": is it a non-empty directory?");
+                }
             }
             if (m_tempDir != null) {
                 assertFalse(m_tempDir + " exists", m_tempDir.exists());
@@ -136,7 +134,6 @@ public class FileAnticipator extends Assert {
         for (ListIterator i = m_expecting.listIterator(m_expecting.size());
              i.hasPrevious(); ) {
             File f = (File) i.previous();
-            assertTrue("\"" + f.getAbsolutePath() + "\" exists", f.exists());
             assertTrue("\"" + f.getAbsolutePath() + "\" deleted", f.delete());
             i.remove();
         }

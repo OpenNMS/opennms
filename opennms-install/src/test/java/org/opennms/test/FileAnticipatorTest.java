@@ -40,7 +40,7 @@ public class FileAnticipatorTest extends TestCase {
     
     public void testExpectingDeleteExpectedBogus() {
         String file = "/FileAnticipatorTest_bogus_" + System.currentTimeMillis();
-        String expected = "\"" + file + "\" exists";
+        String expected = "\"" + file + "\" deleted";
                 
         try {
             m_anticipator.expecting(null, file);
