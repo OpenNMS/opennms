@@ -136,7 +136,7 @@ public class Installer {
 
 	String m_tomcatserverlibdir = null;
 
-	String m_install_webappsdir = null;
+	String m_install_servletdir = null;
 
 	String m_tomcat_serverlibs = null;
 
@@ -331,7 +331,7 @@ public class Installer {
 		m_pg_url = fetchProperty("install.database.url");
 		m_pg_bindir = fetchProperty("install.database.bindir");
 		m_sql_dir = fetchProperty("install.etc.dir");
-		m_install_webappsdir = fetchProperty("install.webapps.dir");
+		m_install_servletdir = fetchProperty("install.servlet.dir");
 		m_tomcat_serverlibs = fetchProperty("install.tomcat.serverlibs");
 
 		String soext = fetchProperty("build.soext");
@@ -1338,8 +1338,8 @@ public class Installer {
 			verifyFileExists(true, m_tomcatserverlibdir,
 					"Tomcat server library directory", "-W option");
 
-			verifyFileExists(true, m_install_webappsdir,
-					"OpenNMS webapps directory", "install.webapps.dir property");
+			verifyFileExists(true, m_install_servletdir,
+					"OpenNMS servlet directory", "install.servlet.dir property");
 		}
 	}
 
@@ -1542,12 +1542,13 @@ public class Installer {
 
 		m_out.println("- Install OpenNMS webapp... ");
 
-		installLink(m_install_webappsdir + File.separator + "opennms.xml",
+		installLink(m_install_servletdir + File.separator
+			        + "META-INF" + File.separator + "context.xml",
 				m_webappdir + File.separator + "opennms.xml",
 				"web application context", false);
 
 		for (int i = 0; i < jars.length; i++) {
-			String source = m_install_webappsdir + File.separator + "opennms" +
+			String source = m_install_servletdir +
 				File.separator + "WEB-INF" + File.separator + "lib" +
 				File.separator + jars[i];
 			String destination = m_tomcatserverlibdir + File.separator
