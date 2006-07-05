@@ -14,6 +14,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Properties;
 import java.util.StringTokenizer;
@@ -172,13 +173,11 @@ public class Bootstrap {
         Properties p = new Properties();
         p.load(is);
 
-        String[] propertyNames = new String[] { "opennms.classpath",
-                "opennms.library.jicmp", "opennms.library.jrrd" };
-
-        for (int i = 0; i < propertyNames.length; i++) {
-            String value = p.getProperty(propertyNames[i]);
+        for (Iterator it = p.keySet().iterator(); it.hasNext();) {
+			String propertyName = (String) it.next();
+            String value = p.getProperty(propertyName);
             if (value != null) {
-                System.setProperty(propertyNames[i], value);
+                System.setProperty(propertyName, value);
             }
         }
     }
@@ -219,10 +218,6 @@ public class Bootstrap {
     public static void main(String[] args) throws Exception {
         final String bootPropertiesName = "bootstrap.properties";
         final String opennmsHomeProperty = "opennms.home";
-
-        final String classToExec = "org.opennms.netmgt.vmmgr.Manager";
-        final String classToExecMethod = "main";
-        final String[] classToExecArgs = args;
 
         boolean propertiesLoaded = false;
         String opennmsHome = System.getProperty(opennmsHomeProperty);
@@ -266,6 +261,11 @@ public class Bootstrap {
 
             System.setProperty(opennmsHomeProperty, parent.getPath());
         }
+        
+        final String classToExec = System.getProperty("opennms.manager.class", "org.opennms.netmgt.vmmgr.Manager");
+        final String classToExecMethod = "main";
+        final String[] classToExecArgs = args;
+
 
         String dir = System.getProperty("opennms.classpath");
         if (dir == null) {
