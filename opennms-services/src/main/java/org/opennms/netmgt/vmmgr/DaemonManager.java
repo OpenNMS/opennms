@@ -1,7 +1,7 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2005 The OpenNMS Group, Inc.  All rights reserved.
+// OpenNMS(R) is Copyright (C) 2006 The OpenNMS Group, Inc.  All rights reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included code and modified
 // code that was published under the GNU General Public License. Copyrights for modified 
 // and included code are below.
@@ -29,56 +29,22 @@
 //     http://www.opennms.org/
 //     http://www.opennms.com/
 //
-package org.opennms.netmgt.daemon;
 
-import org.opennms.core.fiber.PausableFiber;
 
-public abstract class ServiceDaemon implements PausableFiber {
-    /**
-     * The current status of this fiber
-     */
-    private int m_status;
+package org.opennms.netmgt.vmmgr;
 
-    abstract public void pause();
+import java.util.Map;
 
-    abstract public void resume();
-
-    abstract public void start();
-
-    abstract public void stop();
-
-    abstract public String getName();
-
-    protected synchronized void setStatus(int status) {
-        m_status = status;
-    }
-
-    public synchronized int getStatus() {
-        return m_status;
-    }
-    
-    public String getStatusText() {
-        return STATUS_NAMES[getStatus()];
-    }
-
-    public String status() {
-        return getStatusText();
-    }
-
-    protected synchronized boolean isStartPending() {
-        return m_status == START_PENDING;
-    }
-
-    protected synchronized boolean isRunning() {
-        return m_status == RUNNING;
-    }
-
-    protected synchronized boolean isPaused() {
-        return m_status == PAUSED;
-    }
-
-    protected synchronized boolean isStarting() {
-        return m_status == STARTING;
-    }
+public interface DaemonManager {
+	
+	public void start();
+	
+	public void stop();
+	
+	public void pause();
+	
+	public void resume();
+	
+	public Map status();
 
 }

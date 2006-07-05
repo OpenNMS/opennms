@@ -1,7 +1,7 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2005 The OpenNMS Group, Inc.  All rights reserved.
+// OpenNMS(R) is Copyright (C) 2006 The OpenNMS Group, Inc.  All rights reserved.
 // OpenNMS(R) is a derivative work, containing both original code, included code and modified
 // code that was published under the GNU General Public License. Copyrights for modified 
 // and included code are below.
@@ -29,56 +29,54 @@
 //     http://www.opennms.org/
 //     http://www.opennms.com/
 //
-package org.opennms.netmgt.daemon;
 
-import org.opennms.core.fiber.PausableFiber;
+package org.opennms.netmgt.vmmgr;
 
-public abstract class ServiceDaemon implements PausableFiber {
-    /**
-     * The current status of this fiber
-     */
-    private int m_status;
+import junit.framework.TestCase;
 
-    abstract public void pause();
+import org.opennms.core.fiber.Fiber;
+import org.opennms.netmgt.Registry;
+import org.opennms.netmgt.daemon.ServiceDaemon;
 
-    abstract public void resume();
+public class SpringLoaderTest extends TestCase {
 
-    abstract public void start();
+	protected void setUp() throws Exception {
+		super.setUp();
+	}
 
-    abstract public void stop();
+	protected void tearDown() throws Exception {
+		super.tearDown();
+	}
+	
+	public void testStart() {
+		System.setProperty("opennms.startup.context", "classpath:/startup.xml");
+		SpringLoader.main(new String[] { "start" });
 
-    abstract public String getName();
+		assertNoSuchBean("nothere");
 
-    protected synchronized void setStatus(int status) {
-        m_status = status;
+		assertBeanExists("component1");
+		
+		assertBeanExists("testDaemon");
+		
+		ServiceDaemon daemon = (ServiceDaemon)Registry.getBean("testDaemon");
+		
+		assertEquals(Fiber.RUNNING, daemon.getStatus());
+	}
+	
+    public void testStatus() {
+		SpringLoader.main(new String[] { "status" });
     }
+	
+	public void testStop() {
+		SpringLoader.main(new String[] { "stop" });
+	}
+	
+	private void assertNoSuchBean(String beanName) {
+		assertFalse(Registry.containsBean(beanName));
+	}
 
-    public synchronized int getStatus() {
-        return m_status;
-    }
-    
-    public String getStatusText() {
-        return STATUS_NAMES[getStatus()];
-    }
-
-    public String status() {
-        return getStatusText();
-    }
-
-    protected synchronized boolean isStartPending() {
-        return m_status == START_PENDING;
-    }
-
-    protected synchronized boolean isRunning() {
-        return m_status == RUNNING;
-    }
-
-    protected synchronized boolean isPaused() {
-        return m_status == PAUSED;
-    }
-
-    protected synchronized boolean isStarting() {
-        return m_status == STARTING;
-    }
+	private void assertBeanExists(String beanName) {
+		assertTrue(Registry.containsBean(beanName));
+	}
 
 }

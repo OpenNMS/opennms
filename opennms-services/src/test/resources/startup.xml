@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans default-lazy-init="true">
+
+  <bean id="testDaemon" class="org.opennms.netmgt.vmmgr.TestDaemon">
+    <!-- collaborators and configuration for this bean go here -->
+  </bean>
+  
+  <bean id="serviceDaemons" class="java.util.ArrayList">
+    <constructor-arg index="0">
+			<list>
+				<ref bean="testDaemon"/>
+  		</list>
+		</constructor-arg>
+  </bean>
+
+  <bean id="serviceMap" class="org.springframework.beans.factory.config.MapFactoryBean">
+    <property name="sourceMap">
+      <map>
+        <entry key="testDaemon" value-ref="testDaemon"/>
+      </map>
+    </property>
+  </bean>
+  
+  <!-- more bean definitions go here... -->
+</beans>
