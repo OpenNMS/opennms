@@ -32,6 +32,7 @@
 
 package org.opennms.netmgt.vmmgr;
 
+import java.io.File;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -44,12 +45,36 @@ public class SpringLoader {
 	private ApplicationContext m_appContext;
 	
 	public SpringLoader() {
-		String startupUrl = System.getProperty("opennms.startup.context", "classpath:/META-INF/opennms/default-startup.xml");
+		String startupUrl = getStartupResource();
 		String[] paths = new String[] {startupUrl, "classpath:/META-INF/opennms/manager.xml", "classpath*:/META-INF/opennms/context.xml"};
 		m_appContext = new ClassPathXmlApplicationContext(paths);
 		
 		Registry.setAppContext(m_appContext);
 		
+	}
+
+	private String getStartupResource() {
+		String startupUrl = System.getProperty("opennms.startup.context");
+		if (startupUrl != null) return startupUrl;
+		
+		String etcDir = getEtcDir();
+		if (etcDir != null) {
+			File startupFile = new File(etcDir, "startup.xml");
+			if (startupFile.exists())
+				return startupFile.toURI().toString();
+		}
+		
+		return "classpath:/META-INF/opennms/default-startup.xml";
+	}
+
+	private String getEtcDir() {
+		String etcDir = System.getProperty("opennms.etc");
+		if (etcDir != null) return etcDir;
+
+		String homeDir = System.getProperty("opennms.home");
+		if (homeDir != null) return homeDir + File.separator + "etc";
+		
+		return null;
 	}
 
 	public void start() {
