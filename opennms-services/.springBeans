@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beansProjectDescription>
+	<configExtensions>
+		<configExtension>xml</configExtension>
+	</configExtensions>
+	<configs>
+		<config>src/main/resources/META-INF/opennms/default-startup.xml</config>
+		<config>src/test/resources/startup.xml</config>
+		<config>src/main/resources/META-INF/opennms/manager.xml</config>
+	</configs>
+	<configSets>
+	</configSets>
+</beansProjectDescription>
