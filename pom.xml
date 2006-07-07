@@ -300,6 +300,27 @@ opennms.home = ${opennms.home}
         <install.rrdtool.bin>/opt/local/bin/rrdtool</install.rrdtool.bin>
       </properties>
     </profile>
+
+    <profile>
+      <id>fink</id>
+      
+      <activation>
+        <file>
+          <exists>/sw/fink/VERSION</exists>
+        </file>
+      </activation>
+  
+      <properties>
+        <platform>macosx</platform>
+        <platform.shlib>dylib</platform.shlib>
+        <platform.jni>jnilib</platform.jni>
+        <build.rrd.include.dir>/sw/include</build.rrd.include.dir>
+        <build.rrd.lib.dir>/sw/lib</build.rrd.lib.dir>
+        <build.postgresql.include.dir>/sw/include/postgresql</build.postgresql.include.dir>
+  
+        <install.rrdtool.bin>/sw/bin/rrdtool</install.rrdtool.bin>
+      </properties>
+    </profile>
   
     <profile>
       <id>centos</id>
