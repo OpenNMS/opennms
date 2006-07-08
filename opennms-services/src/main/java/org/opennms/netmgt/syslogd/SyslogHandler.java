@@ -48,6 +48,7 @@ import org.opennms.core.queue.FifoQueueException;
 import org.opennms.core.queue.FifoQueueImpl;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.SyslogdConfig;
+import org.opennms.netmgt.config.TrapdConfig;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.EventReceipt;
 import org.opennms.netmgt.syslogd.QueueManager;
@@ -67,7 +68,7 @@ public final class SyslogHandler  {
      * The default User Datagram Port for the receipt and transmission of
      * events.
      */
-    private static final int UDP_PORT = 514;
+//    private static final int UDP_PORT = 514; 
 
     /**
      * The UDP receiver thread.
@@ -119,6 +120,11 @@ public final class SyslogHandler  {
      */
     private String m_logPrefix;
     
+	/**
+	 * Set the Trapd configuration
+	 */
+	private static SyslogdConfig m_syslogdConfig;
+    
     static QueueManager queueManager = new QueueManager();
     
 
@@ -129,8 +135,8 @@ public final class SyslogHandler  {
 
     public SyslogHandler() {
         m_dgSock = null;
-        m_dgPort = UDP_PORT;
-
+        m_dgPort = m_syslogdConfig.getSyslogPort();
+        
         m_eventsIn = new LinkedList();
         m_eventsOut = new LinkedList();
 
@@ -143,23 +149,32 @@ public final class SyslogHandler  {
         //m_output = null;
         m_logPrefix = null;
     }
-
-    public SyslogHandler(int port) {
-        m_dgSock = null;
-        m_dgPort = port;
-
-        m_eventsIn = new LinkedList();
-        m_eventsOut = new LinkedList();
-
-        m_handlers = new ArrayList(3);
-        m_status = START_PENDING;
-
-        m_dgSock = null;
-        m_receiver = null;
-        m_processor = null;
-     //   m_output = null;
-        m_logPrefix = null;
+    
+    public static void setSyslogConfig(SyslogdConfig syslogdConfig) {
+        // TODO Auto-generated method stub
+        m_syslogdConfig = syslogdConfig;
+        
     }
+    
+
+
+//    public SyslogHandler(int port) {
+//        m_dgSock = null;
+//        m_dgPort = port;
+//
+//        m_eventsIn = new LinkedList();
+//        m_eventsOut = new LinkedList();
+//
+//        m_handlers = new ArrayList(3);
+//        m_status = START_PENDING;
+//
+//        m_dgSock = null;
+//        m_receiver = null;
+//        m_processor = null;
+//     //   m_output = null;
+//        m_logPrefix = null;
+//    }
+//
 
     public synchronized void start() {
         if (m_status != START_PENDING)
@@ -172,8 +187,6 @@ public final class SyslogHandler  {
             
             //Instantiate a class object named QueueManager which 
             // will manage the producer/consumer model.
-           
-            
             m_backlogQ = new FifoQueueImpl();
             
             m_receiver = new SyslogReceiver(m_dgSock);
@@ -351,14 +364,8 @@ public final class SyslogHandler  {
         public void receiptSent(EventReceipt receipt);
     }
     
-    private static SyslogdConfig m_syslogdConfig;
+//    private static SyslogdConfig m_syslogdConfig;
 
-    public static void setSyslogConfig(SyslogdConfig syslogdConfig) {
-        // TODO Auto-generated method stub
-        m_syslogdConfig = syslogdConfig;
-        
-    }
-    
     
     
 }

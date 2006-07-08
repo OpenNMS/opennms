@@ -155,7 +155,7 @@ public class Syslogd implements PausableFiber {
           //log.debug("On port : " + m_syslogdConfig.getSyslogPort());
           
           //m_udpEventReceiver = new SyslogHandler(m_syslogdConfig.getSyslogPort());
-          m_udpEventReceiver = new SyslogHandler(514);
+          m_udpEventReceiver = new SyslogHandler();
           //m_udpEventReceiver.addEventHandler(this);
 
         
