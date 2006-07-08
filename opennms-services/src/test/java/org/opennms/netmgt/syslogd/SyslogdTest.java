@@ -9,7 +9,7 @@ import java.io.StringReader;
 import java.net.InetAddress;
 
 import org.opennms.netmgt.config.DataSourceFactory;
-import org.opennms.netmgt.config.TrapdConfigFactory;
+import org.opennms.netmgt.config.SyslogdConfigFactory;
 import org.opennms.netmgt.mock.EventAnticipator;
 import org.opennms.netmgt.mock.OpenNMSTestCase;
 import org.opennms.netmgt.snmp.SnmpObjId;
@@ -20,9 +20,9 @@ import org.opennms.netmgt.xml.event.Logmsg;
 
 public class SyslogdTest extends OpenNMSTestCase {
     private static int m_port = 1162;
-	private static Syslogd m_trapd = new Syslogd();
+	private static Syslogd m_syslogd = new Syslogd();
     private static String SYSLOGD_CONFIG = "<?xml version=\"1.0\"?>\n" + 
-            "<trapd-configuration snmp-trap-port=\""+m_port+"\" new-suspect-on-trap=\"true\"/>\n" + 
+            "<syslogd-configuration syslog-port=\""+m_port+"\" new-suspect-on-message=\"true\"/>\n" + 
             "\n";
 
 	protected void setUp() throws Exception {
@@ -30,15 +30,15 @@ public class SyslogdTest extends OpenNMSTestCase {
 
         assertNotNull(DataSourceFactory.getInstance());
         Reader rdr = new StringReader(SYSLOGD_CONFIG);
-        TrapdConfigFactory.setInstance(new TrapdConfigFactory(rdr));
-        m_trapd = new Syslogd();
-		m_trapd.init();
-        m_trapd.start();
+        SyslogdConfigFactory.setInstance(new SyslogdConfigFactory(rdr));
+        m_syslogd = new Syslogd();
+		m_syslogd.init();
+        m_syslogd.start();
 	}
 
 	public void tearDown() throws Exception {
-		m_trapd.stop();
-		m_trapd = null;
+		m_syslogd.stop();
+		m_syslogd = null;
         super.tearDown();
 	}
 
