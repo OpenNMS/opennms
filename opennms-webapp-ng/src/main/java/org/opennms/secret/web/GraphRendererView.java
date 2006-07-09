@@ -52,8 +52,10 @@ public class GraphRendererView implements View {
 
     private GraphRenderer m_renderer;
 
+    private static final String s_contentType = "image/png";
+
     public void render(Map model, HttpServletRequest request, HttpServletResponse response) throws Exception {
-        response.setContentType("image/png");
+        response.setContentType(s_contentType);
         response.setHeader("Cache-control", "no-cache");
         
         InputStream graphStream = getGraphStream(request);
@@ -95,4 +97,7 @@ public class GraphRendererView implements View {
         m_renderer = renderer;
     }
 
+    public String getContentType() {
+        return s_contentType;
+    }
 }
