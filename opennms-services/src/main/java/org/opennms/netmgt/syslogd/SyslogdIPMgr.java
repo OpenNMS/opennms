@@ -75,9 +75,11 @@ final class SyslogdIPMgr {
      *             Always thrown.
      * 
      */
-    private SyslogdIPMgr() {
-        throw new UnsupportedOperationException("Construction is not supported");
-    }
+    
+    // WTF, This is a straight Cut'n paste from TRAPD
+    //private SyslodIPMgr() {
+    //    throw new UnsupportedOperationException("Construction is not supported");
+    //}
 
     /**
      * Clears and synchronizes the internal known IP address cache with the
@@ -176,4 +178,4 @@ final class SyslogdIPMgr {
     }
 
 
-} // end TrapdIPMgr
+} // end SyslodIPMgr

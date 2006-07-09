@@ -48,10 +48,13 @@ import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.fiber.PausableFiber;
+import org.opennms.core.queue.FifoQueue;
+import org.opennms.core.queue.FifoQueueImpl;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.SyslogdConfig;
 import org.opennms.netmgt.config.SyslogdConfigFactory;
 import org.opennms.netmgt.eventd.EventIpcManager;
+import org.opennms.netmgt.syslogd.BroadcastEventProcessor;
 import org.opennms.netmgt.xml.event.Event;
 
 /**
@@ -105,6 +108,8 @@ public class Syslogd implements PausableFiber {
     private SyslogHandler m_udpEventReceiver;
 
     private int m_status;
+    
+    private BroadcastEventProcessor m_eventReader;
 
     /**
      * <P>
@@ -157,8 +162,19 @@ public class Syslogd implements PausableFiber {
           //m_udpEventReceiver = new SyslogHandler(m_syslogdConfig.getSyslogPort());
           m_udpEventReceiver = new SyslogHandler();
           //m_udpEventReceiver.addEventHandler(this);
+          
+          // A queue for execution
 
-        
+          FifoQueue execQ = new FifoQueueImpl();
+
+          // start the event reader
+
+          try {
+              m_eventReader = new BroadcastEventProcessor();
+          } catch (Exception ex) {
+              log.error("Failed to setup event reader", ex);
+              throw new UndeclaredThrowableException(ex);
+          }
 
     }
 
