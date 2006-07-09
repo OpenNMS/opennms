@@ -49,6 +49,10 @@
 			<artifactId>spring</artifactId>
 		</dependency>
 		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-hibernate3</artifactId>
+		</dependency>
+		<dependency>
 		  <groupId>javax.transaction</groupId>
 		  <artifactId>jta</artifactId>
 		  <version>1.0.1B</version>
