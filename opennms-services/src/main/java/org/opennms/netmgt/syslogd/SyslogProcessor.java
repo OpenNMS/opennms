@@ -45,7 +45,9 @@ import org.apache.log4j.Category;
 import org.opennms.core.queue.FifoQueue;
 import org.opennms.core.queue.FifoQueueException;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.config.SyslogdConfig;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
+import org.opennms.netmgt.syslogd.BroadcastEventProcessor;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
 
@@ -61,6 +63,11 @@ import org.opennms.netmgt.xml.event.Parm;
  * 
  */
 final class SyslogProcessor implements Runnable {
+    
+    private static SyslogdConfig m_syslogdConfig;
+
+    private BroadcastEventProcessor m_eventReader;
+    
     /**
      * The UDP receiver thread.
      */
@@ -85,6 +92,8 @@ final class SyslogProcessor implements Runnable {
      * The stop flag
      */
     private volatile boolean m_stop;
+    
+    public boolean m_NewSuspectOnMessage;
 
     /**
      * The UDP socket for receipt and transmission of packets from agents.
@@ -100,13 +109,23 @@ final class SyslogProcessor implements Runnable {
     private String m_logPrefix;
     
     private String m_localAddr;
+    
+    
+    public static void setSyslogConfig(SyslogdConfig syslogdConfig) {
+        // TODO Auto-generated method stub
+        m_syslogdConfig = syslogdConfig;
+        
+    }
 
-    SyslogProcessor() {
+    SyslogProcessor(boolean newSuspectOnMessage) {
         m_context = null;
         m_stop = false;
+        m_NewSuspectOnMessage = newSuspectOnMessage;
         
         
         m_logPrefix = Syslogd.LOG4J_CATEGORY;
+        
+        
         
         try {
             m_localAddr = InetAddress.getLocalHost().getHostName();
@@ -203,9 +222,18 @@ final class SyslogProcessor implements Runnable {
                                 log.debug("  }");
                             }
                             log.debug("}");    
+                            
                             EventIpcManagerFactory.getIpcManager().sendNow(o.getEvent());
+                            //!event.hasNodeid() && m_newSuspect
+                            if (m_NewSuspectOnMessage && !o.getEvent().hasNodeid()) {
+                                    log.debug("Syslogd: Found a new suspect " + o.getEvent().getInterface());
+                                    sendNewSuspectEvent(o.getEvent().getInterface());
+                            }
+                            
+                            
                         } catch (Throwable t) {
                             log.error("Unexpected error processing SyslogMessage - Could not send", t);
+                            
                         }
                     }
                 
@@ -213,6 +241,7 @@ final class SyslogProcessor implements Runnable {
             }
         
     } // end run()
+
 
     void setLogPrefix(String prefix) {
         m_logPrefix = prefix;

@@ -44,11 +44,9 @@ import java.util.List;
 
 import org.apache.log4j.Category;
 import org.opennms.core.queue.FifoQueue;
-import org.opennms.core.queue.FifoQueueException;
 import org.opennms.core.queue.FifoQueueImpl;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.SyslogdConfig;
-import org.opennms.netmgt.config.TrapdConfig;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.EventReceipt;
 import org.opennms.netmgt.syslogd.QueueManager;
@@ -109,6 +107,10 @@ public final class SyslogHandler  {
      * The UDP socket for receipt and transmission of packets from agents.
      */
     private DatagramSocket m_dgSock;
+    
+    private boolean m_NewSuspectOnMessage;
+    
+    
 
     /**
      * The UDP socket port binding.
@@ -136,6 +138,8 @@ public final class SyslogHandler  {
     public SyslogHandler() {
         m_dgSock = null;
         m_dgPort = m_syslogdConfig.getSyslogPort();
+        
+        m_NewSuspectOnMessage = m_syslogdConfig.getNewSuspectOnMessage();
         
         m_eventsIn = new LinkedList();
         m_eventsOut = new LinkedList();
@@ -190,7 +194,7 @@ public final class SyslogHandler  {
             m_backlogQ = new FifoQueueImpl();
             
             m_receiver = new SyslogReceiver(m_dgSock);
-            m_processor = new SyslogProcessor();
+            m_processor = new SyslogProcessor(m_NewSuspectOnMessage);
         //    m_output = new UdpUuidSender(m_dgSock, m_eventUuidsOut, m_handlers);
 
             if (m_logPrefix != null) {
