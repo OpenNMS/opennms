@@ -37,12 +37,7 @@ import java.util.Set;
 import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsNode;
 
-public class NodeDaoTest extends AbstractDaoTestCase {
-    
-    public void setUp() throws Exception {
-        //setPopulate(false);
-        super.setUp();
-    }
+public class NodeDaoTest extends BaseDaoTestCase {
     
     public void testSave() {
         OnmsDistPoller distPoller = new OnmsDistPoller("localhost", "127.0.0.1");
