@@ -33,14 +33,9 @@ package org.opennms.netmgt.dao;
 
 import org.opennms.netmgt.model.OnmsDistPoller;
 
-public class DistPollerDaoTest extends AbstractDaoTestCase {
-    
-    public void setUp() throws Exception {
-        //setCreateDb(false);
-        super.setUp();
-    }
-
-    public void testCreate() {
+public class DistPollerDaoTest extends BaseDaoTestCase {
+	
+	public void testCreate() {
         OnmsDistPoller distPoller = new OnmsDistPoller("otherpoller", "192.168.7.7");        
         getDistPollerDao().save(distPoller);
         
@@ -55,5 +50,6 @@ public class DistPollerDaoTest extends AbstractDaoTestCase {
         assertNotNull(distPoller);
         
     }
+
 
 }
