@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
 <beans>
-  <bean id="test" class="java.lang.String">
-    <!-- collaborators and configuration for this bean go here -->
+  <bean id="serviceDaemons" class="org.springframework.beans.factory.config.ListFactoryBean">
+    <property name="sourceList">
+			<list>
+				<ref bean="collectd"/>
+  		</list>
+		</property>
   </bean>
-  <bean id="test2" class="java.lang.String">
-    <!-- collaborators and configuration for this bean go here -->
-  </bean>
-  <!-- more bean definitions go here... -->
 </beans>

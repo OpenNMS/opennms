@@ -6,21 +6,12 @@
     <!-- collaborators and configuration for this bean go here -->
   </bean>
   
-  <bean id="serviceDaemons" class="java.util.ArrayList">
-    <constructor-arg index="0">
-			<list>
-				<ref bean="testDaemon"/>
+  <bean id="serviceDaemons" class="org.springframework.beans.factory.config.ListFactoryBean">
+    <property name="sourceList">
+		<list>
+			<ref bean="testDaemon"/>
   		</list>
-		</constructor-arg>
+	</property>
   </bean>
 
-  <bean id="serviceMap" class="org.springframework.beans.factory.config.MapFactoryBean">
-    <property name="sourceMap">
-      <map>
-        <entry key="testDaemon" value-ref="testDaemon"/>
-      </map>
-    </property>
-  </bean>
-  
-  <!-- more bean definitions go here... -->
-</beans>
+ </beans>

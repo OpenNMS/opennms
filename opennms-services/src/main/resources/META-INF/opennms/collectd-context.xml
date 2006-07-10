@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans default-lazy-init="true">
+
+  <bean name="collectd:collectorConfig" class="org.opennms.netmgt.collectd.CollectorConfigDaoImpl" />
+  
+	<bean name="collectd" class="org.opennms.netmgt.collectd.Collectd">
+		<property name="collectorConfigDao" ref="collectd:collectorConfig"/>
+		<property name="eventIpcManager" ref="eventIpcManager" />
+		<property name="ipInterfaceDao" ref="dao:ipInterfaceDao" />
+		<property name="monitoredServiceDao" ref="dao:monitoredServiceDao" />
+	</bean>
+
+
+</beans>
