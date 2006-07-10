@@ -5,9 +5,31 @@
 	</configExtensions>
 	<configs>
 		<config>src/main/resources/META-INF/opennms/default-startup.xml</config>
+		<config>src/main/resources/META-INF/opennms/context.xml</config>
 		<config>src/test/resources/startup.xml</config>
-		<config>src/main/resources/META-INF/opennms/manager.xml</config>
+		<config>src/main/resources/META-INF/opennms/collectd-context.xml</config>
 	</configs>
 	<configSets>
+		<configSet>
+			<name>testStartup</name>
+			<allowBeanDefinitionOverriding>false</allowBeanDefinitionOverriding>
+			<incomplete>false</incomplete>
+			<configs>
+				<config>src/main/resources/META-INF/opennms/collectd-context.xml</config>
+				<config>src/main/resources/META-INF/opennms/context.xml</config>
+				<config>src/test/resources/startup.xml</config>
+			</configs>
+		</configSet>
+		<configSet>
+			<name>defaultStartup</name>
+			<allowBeanDefinitionOverriding>false</allowBeanDefinitionOverriding>
+			<incomplete>false</incomplete>
+			<configs>
+				<config>src/main/resources/META-INF/opennms/collectd-context.xml</config>
+				<config>src/main/resources/META-INF/opennms/context.xml</config>
+				<config>src/main/resources/META-INF/opennms/default-startup.xml</config>
+				<config>src/main/resources/META-INF/opennms/manager.xml</config>
+			</configs>
+		</configSet>
 	</configSets>
 </beansProjectDescription>

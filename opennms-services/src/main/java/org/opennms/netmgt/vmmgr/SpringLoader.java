@@ -44,9 +44,14 @@ public class SpringLoader {
 	
 	private ApplicationContext m_appContext;
 	
-	public SpringLoader() {
+	public SpringLoader(String operation) {
 		String startupUrl = getStartupResource();
-		String[] paths = new String[] {startupUrl, "classpath:/META-INF/opennms/manager.xml", "classpath*:/META-INF/opennms/context.xml"};
+		
+		String[] paths = { "classpath:/org/opennms/netmgt/vmmgr/remote-access.xml" };
+		if ("start".equals(operation)) {
+			paths = new String[] { startupUrl, "classpath:/org/opennms/netmgt/vmmgr/local-access.xml", "classpath*:/META-INF/opennms/context.xml" } ;
+		}
+		
 		m_appContext = new ClassPathXmlApplicationContext(paths);
 		
 		Registry.setAppContext(m_appContext);
@@ -78,23 +83,27 @@ public class SpringLoader {
 	}
 
 	public void start() {
-		Registry.getBean("start");
+		getDaemonMgr().start();
+	}
+
+	private DaemonManager getDaemonMgr() {
+		return (DaemonManager)m_appContext.getBean("daemonMgr");
 	}
 
 	private void stop() {
-		Registry.getBean("stop");
+		getDaemonMgr().stop();
 	}
 	
 	private void pause() {
-		Registry.getBean("pause");
+		getDaemonMgr().pause();
 	}
 	
 	private void resume() {
-		Registry.getBean("resume");
+		getDaemonMgr().resume();
 	}
 	
 	private void status() {
-		Map stati = (Map)Registry.getBean("status");
+		Map stati = getDaemonMgr().status();
 		for (Iterator it = stati.keySet().iterator(); it.hasNext();) {
 			String name = (String) it.next();
 			System.err.println(name+": "+stati.get(name));
@@ -103,7 +112,7 @@ public class SpringLoader {
 	
 	
 	public static void main(String[] args) {
-		SpringLoader loader = new SpringLoader();
+		SpringLoader loader = new SpringLoader(args[0]);
 		if ("start".equals(args[0]))
 			loader.start();
 		else if ("stop".equals(args[0]))
@@ -114,8 +123,14 @@ public class SpringLoader {
 			loader.resume();
 		else if ("status".equals(args[0]))
 			loader.status();
+		else
+			usage();
 		
 		
+	}
+
+	private static void usage() {
+		System.err.println("opennms.sh [start|pause|resume|stop|status]");
 	}
 
 
