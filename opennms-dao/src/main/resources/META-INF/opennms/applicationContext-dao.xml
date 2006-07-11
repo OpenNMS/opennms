@@ -10,7 +10,7 @@
 		<property name="password" value="opennms" />
 	</bean>
 	
-	<bean id="setup-datasource-factory" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" depends-on="dataSource-init">
+	<bean id="setup-datasource-factory" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
 		<property name="staticMethod"><value>org.opennms.netmgt.config.DataSourceFactory.setInstance</value></property>
 		<property name="arguments">
 		  <list>

@@ -44,6 +44,10 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsServiceType;
 
 public class AgentDaoJdbc extends AbstractDaoJdbc implements AgentDao {
+	
+	public AgentDaoJdbc() {
+		super();
+	}
 
 	public AgentDaoJdbc(DataSource dataSource) {
 		super(dataSource);
