@@ -118,6 +118,9 @@ public class Cache {
     	return findFactory(clazz).get(clazz, key);
     }
 
+    /**
+     * @deprecated
+     */
 	public static void registerFactories(DataSource dataSource) {
 		AssetRecordFactory.register(dataSource);
 		CategoryFactory.register(dataSource);
