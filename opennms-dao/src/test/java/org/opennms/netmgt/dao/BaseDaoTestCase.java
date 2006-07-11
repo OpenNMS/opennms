@@ -10,7 +10,7 @@ public class BaseDaoTestCase extends
 	
 
 	protected String[] getConfigLocations() {
-		return new String[] { "classpath:/org/opennms/netmgt/dao/applicationContext-dao.xml" };
+		return new String[] { "classpath:/META-INF/opennms/applicationContext-dao.xml" };
 	}
 
 	public void setDistPollerDao(DistPollerDao distPollerDao) {

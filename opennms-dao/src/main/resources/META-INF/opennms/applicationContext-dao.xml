@@ -10,20 +10,50 @@
 		<property name="password" value="opennms" />
 	</bean>
 	
-<!-- 
-  <bean id="dataSource-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-    <property name="staticMethod"><value>org.opennms.netmgt.config.DataSourceFactory.init</value></property>
-  </bean>
-  
-  <bean id="dataSource" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" depends-on="dataSource-init">
-    <property name="staticMethod"><value>org.opennms.netmgt.config.DataSourceFactory.getInstance</value></property>
-  </bean>
- -->	
+	<bean id="setup-datasource-factory" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" depends-on="dataSource-init">
+		<property name="staticMethod"><value>org.opennms.netmgt.config.DataSourceFactory.setInstance</value></property>
+		<property name="arguments">
+		  <list>
+		    <ref bean="dataSource"/>
+		  </list>
+		</property>
+	</bean>
 	
-
 	<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
 		<property name="dataSource" ref="dataSource" />
 	</bean>
+	
+  <bean id="agentFactory" class="org.opennms.netmgt.dao.jdbc.agent.AgentFactory">
+  	<property name="dataSource" ref="dataSource"/>
+  </bean>
+  
+  <bean id="agentDao" class="org.opennms.netmgt.dao.jdbc.AgentDaoJdbc">
+  	<property name="dataSource" ref="dataSource"/>
+  </bean>
+
+  <bean id="alarmFactory" class="org.opennms.netmgt.dao.jdbc.alarm.AlarmFactory">
+  	<property name="dataSource" ref="dataSource" />
+  </bean>
+
+  <bean id="alarmDao" class="org.opennms.netmgt.dao.jdbc.AlarmDaoJdbc">
+  	<property name="dataSource" ref="dataSource" />
+  </bean>
+
+  <bean id="assetRecordFactory" class="org.opennms.netmgt.dao.jdbc.asset.AssetRecordFactory">
+  	<property name="dataSource" ref="dataSource" />
+  </bean>
+
+  <bean id="assetRecordDao" class="org.opennms.netmgt.dao.jdbc.AssetRecordDaoJdbc">
+  	<property name="dataSource" ref="dataSource" />
+  </bean>
+  
+  <bean id="categoryFactory" class="org.opennms.netmgt.dao.jdbc.category.CategoryFactory">
+  	<property name="dataSource" ref="dataSource" />
+  </bean>
+
+  <bean id="categoryDao" class="org.opennms.netmgt.dao.jdbc.CategoryDaoJdbc">
+  	<property name="dataSource" ref="dataSource" />
+  </bean>
 
     <bean id="distPollerFactory" class="org.opennms.netmgt.dao.jdbc.distpoller.DistPollerFactory">
       <property name="dataSource" ref="dataSource" />
@@ -33,14 +63,14 @@
 		<property name="dataSource" ref="dataSource" />
 	</bean>
 	
-  <bean id="assetRecordFactory" class="org.opennms.netmgt.dao.jdbc.asset.AssetRecordFactory">
+  <bean id="eventFactory" class="org.opennms.netmgt.dao.jdbc.event.EventFactory">
   	<property name="dataSource" ref="dataSource" />
   </bean>
 
-  <bean id="assetRecordDao" class="org.opennms.netmgt.dao.jdbc.AssetRecordDaoJdbc">
+  <bean id="eventDao" class="org.opennms.netmgt.dao.jdbc.EventDaoJdbc">
   	<property name="dataSource" ref="dataSource" />
   </bean>
-  
+
   <bean id="ipInterfaceFactory" class="org.opennms.netmgt.dao.jdbc.ipif.IpInterfaceFactory">
   	<property name="dataSource" ref="dataSource" />
   </bean>
@@ -65,6 +95,22 @@
   	<property name="dataSource" ref="dataSource" />
   </bean>
   
+  <bean id="notificationFactory" class="org.opennms.netmgt.dao.jdbc.notification.NotificationFactory">
+  	<property name="dataSource" ref="dataSource" />
+  </bean>
+
+  <bean id="notifiactionDao" class="org.opennms.netmgt.dao.jdbc.NotificationDaoJdbc">
+  	<property name="dataSource" ref="dataSource" />
+  </bean>
+  
+  <bean id="outageFactory" class="org.opennms.netmgt.dao.jdbc.outage.OutageFactory">
+  	<property name="dataSource" ref="dataSource" />
+  </bean>
+  
+  <bean id="outageDao" class="org.opennms.netmgt.dao.jdbc.OutageDaoJdbc">
+  	<property name="dataSource" ref="dataSource" />
+  </bean>
+  
   <bean id="serviceTypeFactory" class="org.opennms.netmgt.dao.jdbc.svctype.ServiceTypeFactory">
   	<property name="dataSource" ref="dataSource" />
   </bean>
@@ -80,28 +126,12 @@
   <bean id="snmpInterfaceDao" class="org.opennms.netmgt.dao.jdbc.SnmpInterfaceDaoJdbc">
   	<property name="dataSource" ref="dataSource" />
   </bean>
-  
-  <bean id="categoryFactory" class="org.opennms.netmgt.dao.jdbc.category.CategoryFactory">
+
+  <bean id="userNotificationFactory" class="org.opennms.netmgt.dao.jdbc.usernotification.UserNotificationFactory">
   	<property name="dataSource" ref="dataSource" />
   </bean>
 
-  <bean id="categoryDao" class="org.opennms.netmgt.dao.jdbc.CategoryDaoJdbc">
-  	<property name="dataSource" ref="dataSource" />
-  </bean>
-
-  <bean id="eventFactory" class="org.opennms.netmgt.dao.jdbc.event.EventFactory">
-  	<property name="dataSource" ref="dataSource" />
-  </bean>
-
-  <bean id="eventDao" class="org.opennms.netmgt.dao.jdbc.EventDaoJdbc">
-  	<property name="dataSource" ref="dataSource" />
-  </bean>
-
-  <bean id="alarmFactory" class="org.opennms.netmgt.dao.jdbc.alarm.AlarmFactory">
-  	<property name="dataSource" ref="dataSource" />
-  </bean>
-
-  <bean id="alarmDao" class="org.opennms.netmgt.dao.jdbc.AlarmDaoJdbc">
+  <bean id="userNotificationDao" class="org.opennms.netmgt.dao.jdbc.UserNotificationDaoJdbc">
   	<property name="dataSource" ref="dataSource" />
   </bean>
 
