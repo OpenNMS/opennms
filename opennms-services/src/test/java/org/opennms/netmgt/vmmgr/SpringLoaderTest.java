@@ -54,8 +54,6 @@ public class SpringLoaderTest extends TestCase {
 
 		assertNoSuchBean("nothere");
 
-		assertBeanExists("component1");
-		
 		assertBeanExists("testDaemon");
 		
 		ServiceDaemon daemon = (ServiceDaemon)Registry.getBean("testDaemon");

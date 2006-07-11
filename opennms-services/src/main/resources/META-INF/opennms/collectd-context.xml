@@ -7,8 +7,8 @@
 	<bean name="collectd" class="org.opennms.netmgt.collectd.Collectd">
 		<property name="collectorConfigDao" ref="collectd:collectorConfig"/>
 		<property name="eventIpcManager" ref="eventIpcManager" />
-		<property name="ipInterfaceDao" ref="dao:ipInterfaceDao" />
-		<property name="monitoredServiceDao" ref="dao:monitoredServiceDao" />
+		<property name="ipInterfaceDao" ref="ipInterfaceDao" />
+		<property name="monitoredServiceDao" ref="monitoredServiceDao" />
 	</bean>
 
 
