@@ -67,7 +67,7 @@ public class SpringLoaderTest extends TestCase {
 		
 
 		ServiceDaemon daemon = (ServiceDaemon)Registry.getBean("collectd");
-		assertEquals(Fiber.RUNNING, daemon.status());
+		assertEquals(Fiber.RUNNING, daemon.getStatus());
 	}
 	
     public void testStatus() {
