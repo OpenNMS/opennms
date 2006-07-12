@@ -2,16 +2,33 @@
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.springframework.org/schema/beans
         http://www.springframework.org/schema/beans/spring-beans.xsd">
 
-  <bean id="eventIpcManager-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+  <bean id="eventdConfigManager-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" >
+    <property name="staticMethod" value="org.opennms.netmgt.eventd.EventdConfigFactory.init" />
+  </bean>
+  
+  <bean id="eventConfigManager" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" depends-on="eventdConfigManager-init">
+    <property name="staticMethod">
+      <value>org.opennms.netmgt.eventd.EventdConfigFactory.getInstance</value>
+    </property>
+  </bean>
+  
+  <bean id="eventIpcManager" class="org.opennms.netmgt.eventd.EventIpcManagerImpl" depends-on="eventConfigManager" >
+    <constructor-arg ref="eventConfigManager"/>
+  </bean>
+  
+  <bean id="eventIpcManagerFactory" class="org.opennms.netmgt.eventd.EventIpcManagerFactory" >
+    <property name="ipcManager" ref="eventIpcManager" />
+  </bean>
+  
+  <bean id="eventIpcManagerFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
     <property name="staticMethod">
       <value>org.opennms.netmgt.eventd.EventIpcManagerFactory.init</value>
     </property>
   </bean>
-
-  <bean id="eventIpcManager" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" depends-on="eventIpcManager-init">
-    <property name="staticMethod">
-      <value>org.opennms.netmgt.eventd.EventIpcManagerFactory.getIpcManager</value>
-    </property>
+  
+  <bean name="eventd" class="org.opennms.netmgt.eventd.Eventd" depends-on="setup-datasource-factory, eventIpcManagerFactory-init" >
+    <property name="eventIpcManager" ref="eventIpcManager" />
+    <property name="configManager" ref="eventdConfigManager" />
   </bean>
 
 </beans>
