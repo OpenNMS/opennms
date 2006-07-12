@@ -29,6 +29,7 @@
   <bean name="eventd" class="org.opennms.netmgt.eventd.Eventd" depends-on="setup-datasource-factory, eventIpcManagerFactory-init" >
     <property name="eventIpcManager" ref="eventIpcManager" />
     <property name="configManager" ref="eventdConfigManager" />
+    <property name="eventDao" ref="eventDao"/>
   </bean>
 
 </beans>
