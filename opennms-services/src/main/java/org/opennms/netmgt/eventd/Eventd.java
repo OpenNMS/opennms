@@ -55,6 +55,7 @@ import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.EventdConfigManager;
 import org.opennms.netmgt.daemon.ServiceDaemon;
+import org.opennms.netmgt.dao.EventDao;
 import org.opennms.netmgt.eventd.adaptors.EventReceiver;
 import org.opennms.netmgt.eventd.adaptors.tcp.TcpEventReceiver;
 import org.opennms.netmgt.eventd.adaptors.udp.UdpEventReceiver;
@@ -130,6 +131,7 @@ public final class Eventd extends ServiceDaemon implements org.opennms.netmgt.ev
     private String m_address = null;
 
     private EventdConfigManager m_eFactory;
+    private EventDao m_eventDao;
 
 //    private DbConnectionFactory m_dbConnectionFactory;
 
@@ -398,4 +400,11 @@ public final class Eventd extends ServiceDaemon implements org.opennms.netmgt.ev
         m_eventIpcManager = manager;
     }
     
+    public void setEventDao(EventDao dao) {
+        m_eventDao = dao;
+    }
+
+    public EventDao getEventDao() {
+        return m_eventDao;
+    }
 }
