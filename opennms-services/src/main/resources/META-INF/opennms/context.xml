@@ -3,5 +3,6 @@
 <beans default-lazy-init="true">
 
 	<import resource="collectd-context.xml"/>
+	<import resource="eventd-context.xml"/>
 	
 </beans>
