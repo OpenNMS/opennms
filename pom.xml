@@ -785,7 +785,7 @@ opennms.home = ${opennms.home}
       <dependency>
         <groupId>tomcat</groupId>
         <artifactId>catalina</artifactId>
-        <version>4.1.31</version>
+        <version>5.0.28</version>
         <scope>provided</scope>
       </dependency>
       <dependency>
