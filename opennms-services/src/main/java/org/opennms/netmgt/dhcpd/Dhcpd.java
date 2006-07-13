@@ -469,4 +469,10 @@ public final class Dhcpd extends ServiceDaemon implements Runnable, Observer {
     public static long isServer(InetAddress address) throws IOException {
         return Poller.isServer(address, Poller.DEFAULT_TIMEOUT, Poller.DEFAULT_RETRIES);
     }
+
+    @Override
+    public void init() {
+        // TODO Auto-generated method stub
+        
+    }
 }

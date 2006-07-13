@@ -85,4 +85,10 @@ public class TestDaemon extends ServiceDaemon {
 
 	}
 
+    @Override
+    public void init() {
+        // TODO Auto-generated method stub
+        
+    }
+
 }

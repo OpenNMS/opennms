@@ -304,4 +304,10 @@ public class Vulnscand extends ServiceDaemon {
     static Object getDbSyncLock() {
         return m_dbSyncLock;
     }
+
+    @Override
+    public void init() {
+        // TODO Auto-generated method stub
+        
+    }
 } // end Vulnscand class
