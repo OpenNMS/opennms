@@ -315,9 +315,10 @@ public class CollectionSet implements Collectable {
         visit(new ResourceVisitor() {
         
             public void visitResource(CollectionResource resource) {
-                if (resource.rescanNeeded())
+                if (resource.rescanNeeded()) {
                     log().debug("Sending rescan event for "+getCollectionAgent()+" because resource "+resource+" indicated it was needed");
                     rescanNeeded.rescanIndicated();
+                }
             }
             
         });
