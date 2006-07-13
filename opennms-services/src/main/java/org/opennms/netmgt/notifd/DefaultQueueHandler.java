@@ -179,13 +179,11 @@ public class DefaultQueueHandler implements NotifdQueueHandler {
             while (i.hasNext()) {
                 Object o = i.next();
                 if (o instanceof NotificationTask) {
-                    NotificationTask task = (NotificationTask) o;
-                    task.start();
+                    startTask((NotificationTask) o);
                 } else if (o instanceof List) {
                     List list = (List) o;
                     for (int j = 0; j < list.size(); j++) {
-                        NotificationTask task = (NotificationTask) list.get(j);
-                        task.start();
+                        startTask((NotificationTask) list.get(j));
                     }
                 }
             }
@@ -195,8 +193,14 @@ public class DefaultQueueHandler implements NotifdQueueHandler {
             log.debug("\n" + m_noticeQueue);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
+            
         }
     }
+
+	private void startTask(NotificationTask task) {
+		if (!task.isStarted())
+			task.start();
+	}
 
     /**
      * Starts the fiber. If the fiber has already been run or is currently
