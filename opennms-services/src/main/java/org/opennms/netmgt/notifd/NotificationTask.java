@@ -99,6 +99,8 @@ public class NotificationTask extends Thread {
     private long m_sendTime;
 
     private Notifd m_notifd;
+    
+    private boolean m_started = false;
 
     /**
      * Constructor, initializes some information
@@ -312,5 +314,14 @@ public class NotificationTask extends Thread {
     public String getEmail() throws IOException, MarshalException, ValidationException {
         return getContactInfo("email");
     }
+
+	public synchronized void start() {
+		m_started = true;
+		super.start();
+	}
+
+	public boolean isStarted() {
+		return m_started;
+	}
     
 }
