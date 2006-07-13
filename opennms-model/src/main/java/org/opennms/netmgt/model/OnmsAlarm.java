@@ -65,7 +65,7 @@ public class OnmsAlarm implements Serializable {
     private String m_ipAddr;
 
     /** nullable persistent field */
-    private OnmsMonitoredService m_service;
+    private OnmsServiceType m_serviceType;
 
     /** nullable persistent field */
     private String m_reductionKey;
@@ -122,13 +122,13 @@ public class OnmsAlarm implements Serializable {
     private org.opennms.netmgt.model.OnmsEvent m_lastEvent;
 
     /** full constructor */
-    public OnmsAlarm(Integer alarmid, String eventuei, OnmsDistPoller distPoller, OnmsNode node, String ipaddr, OnmsMonitoredService service, String reductionkey, Integer alarmtype, Integer counter, Integer severity, Date firsteventtime, String description, String logmsg, String operinstruct, String tticketid, Integer tticketstate, String mouseovertext, Date suppresseduntil, String suppresseduser, Date suppressedtime, String alarmackuser, Date alarmacktime, String clearuei, org.opennms.netmgt.model.OnmsEvent event) {
+    public OnmsAlarm(Integer alarmid, String eventuei, OnmsDistPoller distPoller, OnmsNode node, String ipaddr, OnmsServiceType serviceType, String reductionkey, Integer alarmtype, Integer counter, Integer severity, Date firsteventtime, String description, String logmsg, String operinstruct, String tticketid, Integer tticketstate, String mouseovertext, Date suppresseduntil, String suppresseduser, Date suppressedtime, String alarmackuser, Date alarmacktime, String clearuei, org.opennms.netmgt.model.OnmsEvent event) {
         this.m_id = alarmid;
         this.m_uei = eventuei;
         this.m_distPoller = distPoller;
         this.m_node = node;
         this.m_ipAddr = ipaddr;
-        this.m_service = service;
+        this.m_serviceType = serviceType;
         this.m_reductionKey = reductionkey;
         this.m_alarmType = alarmtype;
         this.m_counter = counter;
@@ -243,12 +243,12 @@ public class OnmsAlarm implements Serializable {
      *             length="4"
      *         
      */
-    public OnmsMonitoredService getService() {
-        return this.m_service;
+    public OnmsServiceType getServiceType() {
+        return this.m_serviceType;
     }
 
-    public void setService(OnmsMonitoredService service) {
-        this.m_service = service;
+    public void setServiceType(OnmsServiceType service) {
+        this.m_serviceType = service;
     }
 
     /** 
