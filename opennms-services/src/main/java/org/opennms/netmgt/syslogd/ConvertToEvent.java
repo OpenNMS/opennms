@@ -49,6 +49,7 @@ import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
+import org.opennms.core.utils.AlphaNumeric;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Log;
@@ -215,8 +216,7 @@ final class ConvertToEvent {
         int rbIdx = message.indexOf('>');
 
         if (lbIdx < 0 || rbIdx < 0 || lbIdx >= (rbIdx - 1)) {
-            log.debug("BAD MSG {" + message + "}");
-            
+            log.warn("Syslogd received an unparsable message!");
         }
 
         int priCode = 0;
