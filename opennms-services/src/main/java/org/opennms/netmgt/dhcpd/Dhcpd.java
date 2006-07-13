@@ -470,9 +470,6 @@ public final class Dhcpd extends ServiceDaemon implements Runnable, Observer {
         return Poller.isServer(address, Poller.DEFAULT_TIMEOUT, Poller.DEFAULT_RETRIES);
     }
 
-    @Override
     public void init() {
-        // TODO Auto-generated method stub
-        
     }
 }
