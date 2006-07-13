@@ -43,6 +43,7 @@ import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.OnmsServiceType;
 import org.springframework.jdbc.object.MappingSqlQuery;
 
 public class AlarmMappingQuery extends MappingSqlQuery {
@@ -99,8 +100,8 @@ public class AlarmMappingQuery extends MappingSqlQuery {
         alarm.setLastEvent(event);
         
         Integer serviceId = new Integer(rs.getInt("serviceId"));
-        OnmsMonitoredService service = (OnmsMonitoredService)Cache.obtain(OnmsMonitoredService.class, serviceId);
-        alarm.setService(service);
+        OnmsServiceType service = (OnmsServiceType)Cache.obtain(OnmsServiceType.class, serviceId);
+        alarm.setServiceType(service);
 
         alarm.setAlarmAckTime(rs.getTimestamp("alarmAckTime"));
         alarm.setAlarmAckUser(rs.getString("alarmackuser"));

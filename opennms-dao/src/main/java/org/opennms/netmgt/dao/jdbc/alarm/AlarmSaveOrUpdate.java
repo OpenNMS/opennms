@@ -80,7 +80,7 @@ public class AlarmSaveOrUpdate extends SqlUpdate {
         		(alarm.getDistPoller() == null ? null : alarm.getDistPoller().getName()), //dpName
         		(alarm.getNode() == null ? null : alarm.getNode().getId()), //nodeID
         		alarm.getIpAddr(), //ipaddr
-        		(alarm.getService() == null ? null : alarm.getService().getServiceType().getId()), //serviceID
+        		(alarm.getServiceType() == null ? null : alarm.getServiceType().getId()), //serviceID
         		alarm.getReductionKey(), //reductionKey
         		alarm.getAlarmType(), //alarmType
         		alarm.getCounter(), //counter

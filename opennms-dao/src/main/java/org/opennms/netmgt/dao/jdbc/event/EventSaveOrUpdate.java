@@ -87,14 +87,14 @@ public class EventSaveOrUpdate extends SqlUpdate {
     public int persist(OnmsEvent event) {
         Object[] parms = new Object[] {
                 event.getEventUei(),   //eventUei
-                event.getNode().getId(),   //nodeID
+                (event.getNode() == null ? null : event.getNode().getId()),   //nodeID
                 event.getEventTime(),   //eventTime
                 event.getEventHost(),   //eventHost
                 event.getEventSource(),   //eventSource
                 event.getIpAddr(),   //ipAddr
                 event.getDistPoller().getName(),   //eventDpName
                 event.getEventSnmpHost(),   //eventSnmphost
-                event.getServiceType().getId(),   //serviceID
+                (event.getServiceType() == null ? null : event.getServiceType().getId()),   //serviceID
                 event.getEventSnmp(),   //eventSnmp
                 event.getEventParms(),   //eventParms
                 event.getEventCreateTime(),   //eventCreateTime
@@ -118,7 +118,7 @@ public class EventSaveOrUpdate extends SqlUpdate {
                 event.getEventDisplay(),   //eventDisplay
                 event.getEventAckUser(),   //eventAckUser
                 event.getEventAckTime(),   //eventAckTime
-                event.getAlarm().getId(),   //alarmID
+                (event.getAlarm() == null ? null : event.getAlarm().getId()),   //alarmID
                 event.getId()				//eventID
         };   
         
