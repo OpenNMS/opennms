@@ -155,6 +155,12 @@ opennms.home = ${opennms.home}
       <plugin>
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
+          <systemProperties>
+            <property>
+              <name>mock.logLevel</name>
+              <value>${mock.logLevel}</value>
+            </property>
+          </systemProperties>
 	  <forkMode>pertest</forkMode>
           <includes>
             <include>**/*Test.java</include>
