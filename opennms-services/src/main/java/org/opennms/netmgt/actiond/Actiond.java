@@ -75,18 +75,20 @@ public final class Actiond extends ServiceDaemon {
     /**
      * The execution launcher and reaper
      */
-    private Executor m_execution;
+    private Executor m_executor;
 
     /**
      * The broadcast event receiver.
      */
     private BroadcastEventProcessor m_eventReader;
 
+    private ActiondConfigFactory m_actiondConfig;
+
     /**
      * Constructs a new Action execution daemon.
      */
     private Actiond() {
-        m_execution = null;
+        m_executor = null;
         m_eventReader = null;
         setStatus(START_PENDING);
     }
@@ -94,23 +96,6 @@ public final class Actiond extends ServiceDaemon {
     public synchronized void init() {
         ThreadCategory.setPrefix(LOG4J_CATEGORY);
         Category log = ThreadCategory.getInstance();
-
-        // Load the configuration informatin
-        //
-        ActiondConfigFactory aFactory = null;
-        try {
-            ActiondConfigFactory.reload();
-            aFactory = ActiondConfigFactory.getInstance();
-        } catch (MarshalException ex) {
-            log.error("Failed to load actiond configuration", ex);
-            throw new UndeclaredThrowableException(ex);
-        } catch (ValidationException ex) {
-            log.error("Failed to load actiond configuration", ex);
-            throw new UndeclaredThrowableException(ex);
-        } catch (IOException ex) {
-            log.error("Failed to load actiond configuration", ex);
-            throw new UndeclaredThrowableException(ex);
-        }
 
         // A queue for execution
         //
@@ -125,7 +110,7 @@ public final class Actiond extends ServiceDaemon {
             throw new UndeclaredThrowableException(ex);
         }
 
-        m_execution = new Executor(execQ, aFactory.getMaxProcessTime(), aFactory.getMaxOutstandingActions());
+        m_executor = new Executor(execQ, m_actiondConfig.getMaxProcessTime(), m_actiondConfig.getMaxOutstandingActions());
     }
 
     /**
@@ -143,15 +128,15 @@ public final class Actiond extends ServiceDaemon {
 
         if (isStartPending()) {
             setStatus(STARTING);
-            if (m_execution == null) {
+            if (m_executor == null) {
                 init();
             }
 
-            m_execution.start();
+            m_executor.start();
             log.info("Actiond running");
 
             setStatus(RUNNING);
-        } else if (m_execution != null && m_execution.getStatus() != STOPPED) {
+        } else if (m_executor != null && m_executor.getStatus() != STOPPED) {
             // Service is already running?
             throw new IllegalStateException("The actiond service is already running");
         }
@@ -166,8 +151,8 @@ public final class Actiond extends ServiceDaemon {
         setStatus(STOP_PENDING);
 
         try {
-            if (m_execution != null) {
-                m_execution.stop();
+            if (m_executor != null) {
+                m_executor.stop();
             }
         } catch (Exception e) {
         }
@@ -177,7 +162,7 @@ public final class Actiond extends ServiceDaemon {
         }
 
         m_eventReader = null;
-        m_execution = null;
+        m_executor = null;
         setStatus(STOPPED);
     }
 
@@ -200,7 +185,7 @@ public final class Actiond extends ServiceDaemon {
 
         setStatus(PAUSE_PENDING);
 
-        m_execution.pause();
+        m_executor.pause();
         setStatus(PAUSED);
     }
 
@@ -214,7 +199,7 @@ public final class Actiond extends ServiceDaemon {
 
         setStatus(RESUME_PENDING);
 
-        m_execution.resume();
+        m_executor.resume();
         setStatus(RUNNING);
     }
 
@@ -224,5 +209,29 @@ public final class Actiond extends ServiceDaemon {
      */
     public static Actiond getInstance() {
         return m_singleton;
+    }
+
+    public BroadcastEventProcessor getEventReader() {
+        return m_eventReader;
+    }
+
+    public void setEventReader(BroadcastEventProcessor eventReader) {
+        m_eventReader = eventReader;
+    }
+
+    public Executor getExecutor() {
+        return m_executor;
+    }
+
+    public void setExecutor(Executor executor) {
+        m_executor = executor;
+    }
+
+    public ActiondConfigFactory getActiondConfig() {
+        return m_actiondConfig;
+    }
+
+    public void setActiondConfig(ActiondConfigFactory actiondConfig) {
+        m_actiondConfig = actiondConfig;
     }
 }

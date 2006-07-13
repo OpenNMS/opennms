@@ -32,12 +32,19 @@
 package org.opennms.netmgt.daemon;
 
 import org.opennms.core.fiber.PausableFiber;
+import org.springframework.beans.factory.InitializingBean;
 
-public abstract class ServiceDaemon implements PausableFiber {
+public abstract class ServiceDaemon implements PausableFiber, InitializingBean {
+    public void afterPropertiesSet() throws Exception {
+        init();
+    }
+
     /**
      * The current status of this fiber
      */
     private int m_status;
+    
+    abstract public void init();
 
     abstract public void pause();
 
