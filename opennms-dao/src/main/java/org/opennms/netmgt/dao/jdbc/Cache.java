@@ -36,6 +36,7 @@ import java.util.Map;
 
 import javax.sql.DataSource;
 
+import org.opennms.netmgt.dao.jdbc.agent.AgentFactory;
 import org.opennms.netmgt.dao.jdbc.alarm.AlarmFactory;
 import org.opennms.netmgt.dao.jdbc.asset.AssetRecordFactory;
 import org.opennms.netmgt.dao.jdbc.category.CategoryFactory;
@@ -122,6 +123,7 @@ public class Cache {
      * @deprecated
      */
 	public static void registerFactories(DataSource dataSource) {
+		AgentFactory.register(dataSource);
 		AssetRecordFactory.register(dataSource);
 		CategoryFactory.register(dataSource);
 		DistPollerFactory.register(dataSource);
