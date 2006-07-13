@@ -139,7 +139,7 @@
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
-      <artifactId>opennms-model</artifactId>
+      <artifactId>opennms-dao</artifactId>
       <type>test-jar</type>
       <version>${project.version}</version>
       <scope>test</scope>
@@ -147,7 +147,6 @@
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-services</artifactId>
-      <version>${project.version}</version>
     </dependency>
   </dependencies>
 </project>
