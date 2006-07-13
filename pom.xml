@@ -206,6 +206,8 @@ opennms.home = ${opennms.home}
     </plugins>
   </reporting>
   <properties>
+    <!-- turn down the default DEBUG logLevel. Override on the command line if you want -->
+    <mock.logLevel>WARN</mock.logLevel>
     <install.version>${project.version}</install.version>
     <opennms.home>${dist.dir}/${dist.name}</opennms.home>
     <dist.dir>${root.dir}/target</dist.dir>
