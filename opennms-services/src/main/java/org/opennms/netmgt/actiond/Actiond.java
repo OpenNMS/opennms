@@ -38,12 +38,9 @@
 
 package org.opennms.netmgt.actiond;
 
-import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
 
 import org.apache.log4j.Category;
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.queue.FifoQueue;
 import org.opennms.core.queue.FifoQueueImpl;
 import org.opennms.core.utils.ThreadCategory;
@@ -163,6 +160,7 @@ public final class Actiond extends ServiceDaemon {
 
         m_eventReader = null;
         m_executor = null;
+        m_actiondConfig = null;
         setStatus(STOPPED);
     }
 
