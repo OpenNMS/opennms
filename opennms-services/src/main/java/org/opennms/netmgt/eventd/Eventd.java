@@ -50,6 +50,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.sql.DataSource;
+
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.DataSourceFactory;
@@ -132,6 +134,8 @@ public final class Eventd extends ServiceDaemon implements org.opennms.netmgt.ev
 
     private EventdConfigManager m_eFactory;
     private EventDao m_eventDao;
+    
+    private DataSource m_dataSource;
 
 //    private DbConnectionFactory m_dbConnectionFactory;
 
@@ -200,7 +204,7 @@ public final class Eventd extends ServiceDaemon implements org.opennms.netmgt.ev
         //
         java.sql.Connection tempConn = null;
         try {
-            tempConn = DataSourceFactory.getInstance().getConnection();
+            tempConn = m_dataSource.getConnection();
 
             // create the service table map
             //
@@ -215,19 +219,8 @@ public final class Eventd extends ServiceDaemon implements org.opennms.netmgt.ev
 
             rset.close();
             stmt.close();
-/*        } catch (IOException ie) {
-            log.fatal("IOException getting database connection", ie);
-           throw new UndeclaredThrowableException(ie);
-        } catch (MarshalException me) {
-            log.fatal("Marshall Exception getting database connection", me);
-            throw new UndeclaredThrowableException(me);
-        } catch (ValidationException ve) {
-            log.fatal("Validation Exception getting database connection", ve);
-            throw new UndeclaredThrowableException(ve); */
         } catch (SQLException sqlE) {
             throw new UndeclaredThrowableException(sqlE);
-/*        } catch (ClassNotFoundException cnfE) {
-            throw new UndeclaredThrowableException(cnfE); */
         } finally {
             try {
                 if (tempConn != null)
@@ -384,6 +377,10 @@ public final class Eventd extends ServiceDaemon implements org.opennms.netmgt.ev
 
     public void receiptSent(EventReceipt event) {
         // do nothing
+    }
+    
+    public void setDataSource(DataSource dataSource) {
+    	m_dataSource = dataSource;
     }
 
     public void setConfigManager(EventdConfigManager configManager) {

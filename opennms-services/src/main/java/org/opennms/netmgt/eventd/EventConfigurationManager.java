@@ -39,6 +39,7 @@
 
 package org.opennms.netmgt.eventd;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
@@ -52,6 +53,7 @@ import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.ConfigFileConstants;
 import org.opennms.netmgt.eventd.datablock.EventConfData;
 import org.opennms.netmgt.xml.eventconf.Event;
 import org.opennms.netmgt.xml.eventconf.Events;
@@ -106,6 +108,11 @@ public final class EventConfigurationManager {
      */
     public static boolean isConfigured() {
         return m_loaded;
+    }
+    
+    public static void init() throws MarshalException, ValidationException, IOException {
+    	File configFile = ConfigFileConstants.getFile(ConfigFileConstants.EVENT_CONF_FILE_NAME);
+    	loadConfiguration(configFile.getPath());
     }
 
     /**

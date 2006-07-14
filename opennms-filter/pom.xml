@@ -56,8 +56,7 @@
     </dependency>
     <dependency>
       <groupId>xerces</groupId>
-      <artifactId>xerces</artifactId>
-      <version>1.4.0</version>
+      <artifactId>xercesImpl</artifactId>
       <scope>runtime</scope>
     </dependency>
   </dependencies>
