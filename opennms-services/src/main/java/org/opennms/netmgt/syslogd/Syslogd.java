@@ -10,12 +10,6 @@
 //
 // Modifications:
 //
-// 2003 Jan 31: Cleaned up some unused imports.
-// 2003 Jan 08: Added code to associate the IP address in traps with nodes
-//              and added the option to discover nodes based on traps.
-//
-// Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
-//
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2 of the License, or
@@ -48,14 +42,9 @@ import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.fiber.PausableFiber;
-import org.opennms.core.queue.FifoQueue;
-import org.opennms.core.queue.FifoQueueImpl;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.config.SyslogdConfig;
 import org.opennms.netmgt.config.SyslogdConfigFactory;
-import org.opennms.netmgt.eventd.EventIpcManager;
-import org.opennms.netmgt.syslogd.BroadcastEventProcessor;
-import org.opennms.netmgt.xml.event.Event;
+import org.opennms.netmgt.dao.EventDao;
 
 /**
  * The received messages are converted into XML and sent to eventd
@@ -67,12 +56,6 @@ import org.opennms.netmgt.xml.event.Event;
  * processing of traps
  * </p>
  * 
- * @author <A HREF="mailto:weave@oculan.com">Brian Weaver </A>
- * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Nataraj </A>
- * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
- * @author <A HREF="mailto:mike@opennms.org">Mike Davidson </A>
- * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog </A>
- * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
  * 
  */
 public class Syslogd implements PausableFiber {
@@ -86,31 +69,18 @@ public class Syslogd implements PausableFiber {
      */
     private static final Syslogd m_singleton = new Syslogd();
 
-
-    private String m_name;
-
-    private static EventIpcManager m_eventIpcManager;
+    private String m_name = LOG4J_CATEGORY;
 
     public synchronized static Syslogd getSingleton() {
         return m_singleton;
-    }
-
-    public EventIpcManager getEventManager() {
-        return m_eventIpcManager;
-    }
-
-    private SyslogdConfig m_syslogdConfig;
-
-    public void setSyslogdConfig(SyslogdConfig syslogdConfig) {
-        m_syslogdConfig = syslogdConfig;
     }
 
     private SyslogHandler m_udpEventReceiver;
 
     private int m_status;
     
-    private BroadcastEventProcessor m_eventReader;
-
+    private EventDao m_eventDao;
+    
     /**
      * <P>
      * Constructs a new Trapd object that receives and forwards trap messages
@@ -121,11 +91,6 @@ public class Syslogd implements PausableFiber {
      * 
      * @see org.opennms.protocols.snmp.SyslogMessageSession
      */
-    // public Syslogd() {
-    // m_name = LOG4J_CATEGORY;
-    // }
-    
-
     
     public synchronized void init() {
         ThreadCategory.setPrefix(LOG4J_CATEGORY);
@@ -156,25 +121,9 @@ public class Syslogd implements PausableFiber {
 
           
         SyslogHandler.setSyslogConfig(SyslogdConfigFactory.getInstance());
-          log.debug("Starting SyslogProcessor");
-          //log.debug("On port : " + m_syslogdConfig.getSyslogPort());
+        log.debug("Starting SyslogProcessor");
           
-          //m_udpEventReceiver = new SyslogHandler(m_syslogdConfig.getSyslogPort());
-          m_udpEventReceiver = new SyslogHandler();
-          //m_udpEventReceiver.addEventHandler(this);
-          
-          // A queue for execution
-
-          FifoQueue execQ = new FifoQueueImpl();
-
-          // start the event reader
-
-          try {
-              m_eventReader = new BroadcastEventProcessor();
-          } catch (Exception ex) {
-              log.error("Failed to setup event reader", ex);
-              throw new UndeclaredThrowableException(ex);
-          }
+        m_udpEventReceiver = new SyslogHandler();
 
     }
 
@@ -193,19 +142,14 @@ public class Syslogd implements PausableFiber {
         ThreadCategory.setPrefix(LOG4J_CATEGORY);
 
         Category log = ThreadCategory.getInstance(getClass());
-        boolean isTracing = log.isDebugEnabled();
-
-        m_status = RUNNING;
-
-        log.debug("start: Syslogd ready to receive messages");
 
         m_udpEventReceiver.start();
+        m_status = RUNNING;
 
         if (log.isDebugEnabled()) {
             log.debug("Listener threads started");
         }
 
-	//        log.debug("Fired up the UDP Receiver on port "
     }
 
     /**
@@ -234,22 +178,14 @@ public class Syslogd implements PausableFiber {
         ThreadCategory.setPrefix(LOG4J_CATEGORY);
         if (m_status != PAUSED) {
             return;
-    }
+        }
 
-    m_status = RESUME_PENDING;
+        m_status = RESUME_PENDING;
 
-    Category log = ThreadCategory.getInstance(getClass());
+        Category log = ThreadCategory.getInstance(getClass());
+        m_status = RUNNING;
 
-    log.debug("Calling resume on processor");
-
-    //m_processor.resume();
-
-    log.debug("Processor resumed");
-
-    m_status = RUNNING;
-
-    log.debug("Syslogd resumed");
-
+        log.debug("Syslogd resumed");
 
     }
 
@@ -268,26 +204,20 @@ public class Syslogd implements PausableFiber {
         log.debug("exit: closing communication paths.");
 
         try {
-                log.debug("stop: Closing SYSLOGD message session.");
+            log.debug("stop: Closing SYSLOGD message session.");
 
-                log.debug("stop: Syslog message session closed.");
-} catch (IllegalStateException e) {
-                log.debug("stop: The Syslog session was already closed");
+            log.debug("stop: Syslog message session closed.");
+        } catch (IllegalStateException e) {
+            log.debug("stop: The Syslog session was already closed");
         }
 
         log.debug("stop: Stopping queue processor.");
 
-        // interrupt the processor daemon thread
-        //m_processor.stop();
-
         m_status = STOPPED;
+        m_udpEventReceiver.stop();
 
-m_udpEventReceiver.stop();
-
-log.debug("Stopped the UDP Receiver on port 514");
-
+        log.debug("Stopped the UDP Receiver on port 514");
         log.debug("stop: Syslogd stopped");
-
 
     }
 
@@ -318,9 +248,12 @@ log.debug("Stopped the UDP Receiver on port 514");
         return m_singleton;
     }
 
-    public boolean processEvent(Event event) {
-        m_eventIpcManager.sendNow(event);
-        return true;
+    public EventDao getEventDao() {
+        return m_eventDao;
+    }
+
+    public void setEventDao(EventDao eventDao) {
+        m_eventDao = eventDao;
     }
 
 }

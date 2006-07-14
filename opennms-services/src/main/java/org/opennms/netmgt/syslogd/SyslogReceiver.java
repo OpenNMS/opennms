@@ -43,9 +43,7 @@ import java.net.DatagramSocket;
 import java.net.SocketException;
 
 import org.apache.log4j.Category;
-import org.opennms.core.queue.FifoQueue;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.eventd.EventIpcManager;
 
 /**
  * 
@@ -59,7 +57,6 @@ class SyslogReceiver implements Runnable {
     
     private static final String LOG4J_CATEGORY = "OpenNMS.Syslogd";
 
-    private FifoQueue m_queue;
     /**
      * The Fiber's status.
      */
@@ -80,8 +77,6 @@ class SyslogReceiver implements Runnable {
      */
     private String m_logPrefix;
     
-    private static EventIpcManager m_eventIpcManager;
-
     /**
      * construct a new receiver
      */
@@ -125,7 +120,6 @@ class SyslogReceiver implements Runnable {
         //
         ThreadCategory.setPrefix(m_logPrefix);
         Category log = ThreadCategory.getInstance(getClass());
-        boolean isTracing = log.isDebugEnabled();
 
         if (m_stop) {
                 log.debug("Stop flag set before thread started, exiting");
@@ -143,9 +137,8 @@ class SyslogReceiver implements Runnable {
         // if a socket is closed.
         //
         try {
-           
-                log.debug("Setting socket timeout to 500ms");
-                m_dgSock.setSoTimeout(500);
+            log.debug("Setting socket timeout to 500ms");
+            m_dgSock.setSoTimeout(500);
         } catch (SocketException e) {
             log.warn("An I/O error occured while trying to set the socket timeout", e);
         }
@@ -172,7 +165,7 @@ class SyslogReceiver implements Runnable {
 
             try {
                 if (!ioInterrupted)
-                log.debug("Wating on a datagram to arrive");
+                    log.debug("Wating on a datagram to arrive");
                 m_dgSock.receive(pkt);
                 Thread worker = new Thread(new SyslogConnection(pkt));
                 worker.start();
@@ -184,25 +177,20 @@ class SyslogReceiver implements Runnable {
                 log.error("An I/O exception occured on the datagram receipt port, exiting", e);
                 break;
             }
-            
+
             // Fire off a new worker bee to handle
             // this connction
-            
-            
 
             pkt = new DatagramPacket(buffer, length);
-            
+
+
+        } // end while status ok
         
-            } // end while status ok
-        
-            log.debug("Thread context exiting");
+        log.debug("Thread context exiting");
 
     } // end run method
 
-        
-        void setLogPrefix(String prefix) {
+    protected void setLogPrefix(String prefix) {
         m_logPrefix = prefix;
     }
 }
- 
-    
