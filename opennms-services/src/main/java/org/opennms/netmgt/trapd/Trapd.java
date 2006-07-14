@@ -50,6 +50,7 @@ import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.fiber.PausableFiber;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.TrapdConfigFactory;
+import org.opennms.netmgt.dao.EventDao;
 import org.opennms.netmgt.eventd.EventIpcManager;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 
@@ -90,6 +91,8 @@ public class Trapd implements PausableFiber {
 	private static final Trapd m_singleton = new Trapd();
 
 	private String m_name;
+    
+    private EventDao m_eventDao;
 
 	/**
 	 * <P>
@@ -222,4 +225,12 @@ public class Trapd implements PausableFiber {
 
 		return TrapHandler.getInstance();
 	}
+
+    public EventDao getEventDao() {
+        return m_eventDao;
+    }
+
+    public void setEventDao(EventDao eventDao) {
+        m_eventDao = eventDao;
+    }
 }

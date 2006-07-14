@@ -74,7 +74,6 @@ maintained
 		<invoke at="status" pass="0" method="status"/>
 		<invoke at="stop" pass="0" method="stop"/>
 	</service>
-<!-- Matt, working on Trapd now -->
 	<service>
 		<name>OpenNMS:Name=Trapd</name>
 		<class-name>org.opennms.netmgt.trapd.jmx.Trapd</class-name>
@@ -83,8 +82,8 @@ maintained
 		<invoke at="status" pass="0" method="status"/>
 		<invoke at="stop" pass="0" method="stop"/>
 	</service>
-<!-- Matt, working on Trapd now -->
 	<service>
+<!-- Matt, working on this one now -->
 		<name>OpenNMS:Name=Syslogd</name>
 		<class-name>org.opennms.netmgt.syslogd.jmx.Syslogd</class-name>
 		<invoke at="start" pass="0" method="init"/>
