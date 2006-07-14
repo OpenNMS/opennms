@@ -38,18 +38,12 @@ package org.opennms.netmgt.syslogd;
 
 import java.io.IOException;
 import java.net.DatagramSocket;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
 
 import org.apache.log4j.Category;
-import org.opennms.core.queue.FifoQueue;
-import org.opennms.core.queue.FifoQueueImpl;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.SyslogdConfig;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.EventReceipt;
-import org.opennms.netmgt.syslogd.QueueManager;
 
 /**
  * This class implements the User Datagram Protocol (UDP) event receiver. When
@@ -66,7 +60,6 @@ public final class SyslogHandler  {
      * The default User Datagram Port for the receipt and transmission of
      * events.
      */
-//    private static final int UDP_PORT = 514; 
 
     /**
      * The UDP receiver thread.
@@ -77,26 +70,6 @@ public final class SyslogHandler  {
      * The user datagram packet processor
      */
     private SyslogProcessor m_processor;
-
-    /**
-     * The event receipt generator and sender thread.
-     */
-   // private SyslogDispatcher m_output;
-
-    /**
-     * The list of incomming events.
-     */
-    private List m_eventsIn;
-
-    /**
-     * The list of outgoing event-receipts by UUID.
-     */
-    private List m_eventsOut;
-
-    /**
-     * The list of registered event handlers.
-     */
-    private List m_handlers;
 
     /**
      * The Fiber's status.
@@ -130,34 +103,22 @@ public final class SyslogHandler  {
     static QueueManager queueManager = new QueueManager();
     
 
-    /**
-     * The communication queue
-     */
-    private static FifoQueue m_backlogQ;
-
     public SyslogHandler() {
         m_dgSock = null;
         m_dgPort = m_syslogdConfig.getSyslogPort();
         
         m_NewSuspectOnMessage = m_syslogdConfig.getNewSuspectOnMessage();
         
-        m_eventsIn = new LinkedList();
-        m_eventsOut = new LinkedList();
-
-        m_handlers = new ArrayList(3);
         m_status = START_PENDING;
 
         m_dgSock = null;
         m_receiver = null;
         m_processor = null;
-        //m_output = null;
         m_logPrefix = null;
     }
     
     public static void setSyslogConfig(SyslogdConfig syslogdConfig) {
-        // TODO Auto-generated method stub
         m_syslogdConfig = syslogdConfig;
-        
     }
     
 
@@ -189,13 +150,8 @@ public final class SyslogHandler  {
         try {
             m_dgSock = new DatagramSocket(m_dgPort);
             
-            //Instantiate a class object named QueueManager which 
-            // will manage the producer/consumer model.
-            m_backlogQ = new FifoQueueImpl();
-            
             m_receiver = new SyslogReceiver(m_dgSock);
             m_processor = new SyslogProcessor(m_NewSuspectOnMessage);
-        //    m_output = new UdpUuidSender(m_dgSock, m_eventUuidsOut, m_handlers);
 
             if (m_logPrefix != null) {
                 m_receiver.setLogPrefix(m_logPrefix);
