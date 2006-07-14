@@ -22,7 +22,7 @@
     <url>http://ci.opennms.org/</url>
     <notifiers>
       <notifier>
-        <type>mail</type>
+        <type>htmlmail</type>
         <address>opennms-devel@lists.sourceforge.net</address>
       </notifier>
     </notifiers>
@@ -659,7 +659,7 @@ opennms.home = ${opennms.home}
       <dependency>
         <groupId>jfree</groupId>
         <artifactId>jfreechart</artifactId>
-        <version>1.0.0-rc1</version>
+        <version>1.0.1</version>
       </dependency>
       <dependency>
         <groupId>jivesoftware</groupId>
@@ -800,11 +800,6 @@ opennms.home = ${opennms.home}
         <artifactId>catalina</artifactId>
         <version>5.0.28</version>
         <scope>provided</scope>
-      </dependency>
-      <dependency>
-        <groupId>xerces</groupId>
-        <artifactId>xerces</artifactId>
-        <version>1.4.0</version>
       </dependency>
       <dependency>
         <groupId>xerces</groupId>
