@@ -125,10 +125,8 @@ public final class Eventd extends ServiceDaemon implements org.opennms.netmgt.ev
     private EventReceiver m_udpReceiver;
 
     /**
-     * <P>
      * Contains dotted-decimal representation of the IP address where Eventd is
-     * running. Used when eventd sends events out
-     * </P>
+     * running. Used when eventd broadcasts events.
      */
     private String m_address = null;
 
@@ -168,25 +166,27 @@ public final class Eventd extends ServiceDaemon implements org.opennms.netmgt.ev
         setStatus(STOP_PENDING);
 
         Category log = ThreadCategory.getInstance();
-        if (log.isDebugEnabled())
+        if (log.isDebugEnabled()) {
             log.debug("Beginning shutdown process");
+        }
 
-        //
         // Stop listener threads
-        //
-        if (log.isDebugEnabled())
+        if (log.isDebugEnabled()) {
             log.debug("calling shutdown on tcp/udp listener threads");
+        }
 
         m_tcpReceiver.stop();
         m_udpReceiver.stop();
 
-        if (log.isDebugEnabled())
+        if (log.isDebugEnabled()) {
             log.debug("shutdown on tcp/udp listener threads returned");
+        }
 
         setStatus(STOPPED);
 
-        if (log.isDebugEnabled())
+        if (log.isDebugEnabled()) {
             log.debug("Eventd shutdown complete");
+        }
     }
 
     /**
@@ -201,13 +201,11 @@ public final class Eventd extends ServiceDaemon implements org.opennms.netmgt.ev
         Category log = ThreadCategory.getInstance();
 
         // Get a database connection and create the service table map
-        //
         java.sql.Connection tempConn = null;
         try {
             tempConn = m_dataSource.getConnection();
 
             // create the service table map
-            //
             PreparedStatement stmt = tempConn.prepareStatement(EventdConstants.SQL_DB_SVC_TABLE_READ);
             ResultSet rset = stmt.executeQuery();
             while (rset.next()) {
@@ -223,16 +221,15 @@ public final class Eventd extends ServiceDaemon implements org.opennms.netmgt.ev
             throw new UndeclaredThrowableException(sqlE);
         } finally {
             try {
-                if (tempConn != null)
+                if (tempConn != null) {
                     tempConn.close();
+                }
             } catch (SQLException sqlE) {
                 log.warn("An error occured closing the database connection, ignoring", sqlE);
             }
         }
 
-        //
         // Create all the threads
-        //
 
         m_tcpReceiver = null;
         m_udpReceiver = null;
@@ -279,8 +276,9 @@ public final class Eventd extends ServiceDaemon implements org.opennms.netmgt.ev
      * Pauses all the threads
      */
     public void pause() {
-        if (!isRunning())
+        if (!isRunning()) {
             return;
+        }
 
         setStatus(PAUSE_PENDING);
 
@@ -294,11 +292,13 @@ public final class Eventd extends ServiceDaemon implements org.opennms.netmgt.ev
         // m_tcpReceiver.pause();
         // m_udpReceiver.pause();
 
-        // if(log.isDebugEnabled())
-        // log.debug("tcp/udp listeners paused");
+        // if(log.isDebugEnabled()) {
+        //     log.debug("tcp/udp listeners paused");
+        // }
 
-        if (log.isDebugEnabled())
+        if (log.isDebugEnabled()) {
             log.debug("Finished pausing all threads");
+        }
 
         setStatus(PAUSED);
     }
@@ -307,27 +307,32 @@ public final class Eventd extends ServiceDaemon implements org.opennms.netmgt.ev
      * Resumes all the threads
      */
     public void resume() {
-        if (!isPaused())
+        if (!isPaused()) {
             return;
+        }
 
         setStatus(RESUME_PENDING);
 
         Category log = ThreadCategory.getInstance();
 
-        // if(log.isDebugEnabled())
-        // log.debug("Calling resume thread on tcp/udp listeners");
+        // if(log.isDebugEnabled()) {
+        //     log.debug("Calling resume thread on tcp/udp listeners");
+        // }
 
         // m_tcpReceiver.resume();
         // m_udpReceiver.resume();
 
-        // if(log.isDebugEnabled())
-        // log.debug("TCP/UDP Listener threads resumed");
+        // if(log.isDebugEnabled()) {
+        //     log.debug("TCP/UDP Listener threads resumed");
+        // }
 
-        // if(log.isDebugEnabled())
-        // log.debug("Event handlers resumed");
+        // if(log.isDebugEnabled()) {
+        //     log.debug("Event handlers resumed");
+        // }
 
-        if (log.isDebugEnabled())
+        if (log.isDebugEnabled()) {
             log.debug("Finished resuming ");
+        }
 
         setStatus(RUNNING);
     }
