@@ -31,7 +31,9 @@
 //
 package org.opennms.netmgt.daemon;
 
+import org.apache.log4j.Category;
 import org.opennms.core.fiber.PausableFiber;
+import org.opennms.core.utils.ThreadCategory;
 import org.springframework.beans.factory.InitializingBean;
 
 public abstract class ServiceDaemon implements PausableFiber, InitializingBean {
@@ -86,6 +88,10 @@ public abstract class ServiceDaemon implements PausableFiber, InitializingBean {
 
     protected synchronized boolean isStarting() {
         return m_status == STARTING;
+    }
+    
+    protected Category log() {
+    	return ThreadCategory.getInstance(getClass());
     }
 
 }
