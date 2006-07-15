@@ -59,9 +59,13 @@ public class SpringLoader {
 			m_appContext = new ClassPathXmlApplicationContext(paths);
 			
 		} catch (BeanCreationException e) {
+			e.printStackTrace();
 			Throwable rc = e.getRootCause();
 			System.err.println("ROOT CAUSE is "+rc);
-			throw rc;
+			if (rc == null)
+				throw e;
+			else
+				throw rc;
 		}
 		
 		Registry.setAppContext(m_appContext);

@@ -177,8 +177,4 @@ public class EventTranslator extends ServiceDaemon implements EventListener {
         m_dataSource = dataSource;
     }
     
-    private Category log() {
-        return ThreadCategory.getInstance(EventTranslator.class);
-    }
-
 }

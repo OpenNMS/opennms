@@ -44,6 +44,7 @@ import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.fiber.PausableFiber;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.SyslogdConfigFactory;
+import org.opennms.netmgt.daemon.ServiceDaemon;
 import org.opennms.netmgt.dao.EventDao;
 
 /**
@@ -58,7 +59,7 @@ import org.opennms.netmgt.dao.EventDao;
  * 
  * 
  */
-public class Syslogd implements PausableFiber {
+public class Syslogd extends ServiceDaemon implements PausableFiber {
     /**
      * The name of the logging category for Trapd.
      */
@@ -77,9 +78,11 @@ public class Syslogd implements PausableFiber {
 
     private SyslogHandler m_udpEventReceiver;
 
-    private int m_status;
-    
     private EventDao m_eventDao;
+    
+    public Syslogd() {
+    	setStatus(START_PENDING);
+    }
     
     /**
      * <P>
@@ -95,7 +98,7 @@ public class Syslogd implements PausableFiber {
     public synchronized void init() {
         ThreadCategory.setPrefix(LOG4J_CATEGORY);
 
-        Category log = ThreadCategory.getInstance();
+        Category log = log();
 
         try {
             log.debug("start: Initializing the syslogd config factory");
@@ -138,13 +141,15 @@ public class Syslogd implements PausableFiber {
      * @see org.opennms.protocols.snmp.SnmpTrapHandler
      */
     public synchronized void start() {
+    	setStatus(STARTING);
         // Set the category prefix
         ThreadCategory.setPrefix(LOG4J_CATEGORY);
 
         Category log = ThreadCategory.getInstance(getClass());
 
         m_udpEventReceiver.start();
-        m_status = RUNNING;
+
+        setStatus(RUNNING);
 
         if (log.isDebugEnabled()) {
             log.debug("Listener threads started");
@@ -158,15 +163,15 @@ public class Syslogd implements PausableFiber {
     public void pause() {
         // Set the category prefix
         ThreadCategory.setPrefix(LOG4J_CATEGORY);
-        if (m_status != RUNNING) {
+        if (!isRunning()) {
             return;
         }
         Category log = ThreadCategory.getInstance();
-        m_status = PAUSE_PENDING;
+        setStatus(PAUSE_PENDING);
 
         log.debug("Processor paused");
 
-        m_status = PAUSED;
+        setStatus(PAUSED);
 
         log.debug("Syslogd paused");
 
@@ -176,14 +181,15 @@ public class Syslogd implements PausableFiber {
     public void resume() {
         // Set the category prefix
         ThreadCategory.setPrefix(LOG4J_CATEGORY);
-        if (m_status != PAUSED) {
+        if (!isPaused()) {
             return;
         }
 
-        m_status = RESUME_PENDING;
+        setStatus(RESUME_PENDING);
 
-        Category log = ThreadCategory.getInstance(getClass());
-        m_status = RUNNING;
+        Category log = log();
+        
+        setStatus(RUNNING);
 
         log.debug("Syslogd resumed");
 
@@ -196,9 +202,9 @@ public class Syslogd implements PausableFiber {
     public synchronized void stop() {
         // Set the category prefix
         ThreadCategory.setPrefix(LOG4J_CATEGORY);
-        Category log = ThreadCategory.getInstance(getClass());
+        Category log = log();
 
-        m_status = STOP_PENDING;
+        setStatus(STOP_PENDING);
 
         // shutdown and wait on the background processing thread to exit.
         log.debug("exit: closing communication paths.");
@@ -213,21 +219,11 @@ public class Syslogd implements PausableFiber {
 
         log.debug("stop: Stopping queue processor.");
 
-        m_status = STOPPED;
         m_udpEventReceiver.stop();
-
         log.debug("Stopped the UDP Receiver on port 514");
+
+        setStatus(STOPPED);
         log.debug("stop: Syslogd stopped");
-
-    }
-
-    /**
-     * Returns the current status of the service.
-     * 
-     * @return The service's status.
-     */
-    public synchronized int getStatus() {
-        return m_status;
 
     }
 

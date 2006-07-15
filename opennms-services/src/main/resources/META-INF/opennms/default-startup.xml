@@ -5,7 +5,10 @@
     <property name="sourceList">
 			<list>
 				<ref bean="eventd"/>
+				<ref bean="actiond" />
 				<ref bean="collectd"/>
+				<ref bean="syslogd" />
+				<ref bean="trapd" />
   		</list>
 		</property>
   </bean>

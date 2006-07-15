@@ -221,8 +221,4 @@ public class PassiveStatusKeeper extends ServiceDaemon implements EventListener 
         m_dbConnectionFactory = dbConnectionFactory;
     }
     
-    private Category log() {
-        return ThreadCategory.getInstance(PassiveStatusKeeper.class);
-    }
-
 }

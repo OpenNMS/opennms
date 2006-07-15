@@ -140,11 +140,6 @@ public final class Collectd extends ServiceDaemon implements EventListener {
 
     }
 
-    private Category log() {
-		ThreadCategory.setPrefix(LOG4J_CATEGORY);
-		return ThreadCategory.getInstance();
-	}
-
 	private void installMessageSelectors() {
 		// Create the JMS selector for the ueis this service is interested in
 		//
