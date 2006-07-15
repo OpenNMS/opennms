@@ -1418,6 +1418,7 @@ public class OpenNMSTestCase extends TestCase {
             
             if (isStartEventd()) {
                 m_eventd = new Eventd();
+                m_eventd.setDataSource(m_db);
                 m_eventdConfigMgr = new MockEventConfigManager(MOCK_EVENT_CONFIG);
                 m_eventd.setConfigManager(m_eventdConfigMgr);
                 
