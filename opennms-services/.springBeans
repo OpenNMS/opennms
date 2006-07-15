@@ -4,10 +4,15 @@
 		<configExtension>xml</configExtension>
 	</configExtensions>
 	<configs>
+		<config>src/main/resources/META-INF/opennms/actiond-context.xml</config>
 		<config>src/main/resources/META-INF/opennms/default-startup.xml</config>
 		<config>src/main/resources/META-INF/opennms/context.xml</config>
 		<config>src/test/resources/startup.xml</config>
+		<config>src/main/resources/META-INF/opennms/eventd-context.xml</config>
+		<config>src/main/resources/META-INF/opennms/poll-outages-context.xml</config>
+		<config>src/main/resources/META-INF/opennms/trapd-context.xml</config>
 		<config>src/main/resources/META-INF/opennms/collectd-context.xml</config>
+		<config>src/main/resources/META-INF/opennms/syslogd-context.xml</config>
 	</configs>
 	<configSets>
 		<configSet>
@@ -18,6 +23,11 @@
 				<config>src/main/resources/META-INF/opennms/collectd-context.xml</config>
 				<config>src/main/resources/META-INF/opennms/context.xml</config>
 				<config>src/test/resources/startup.xml</config>
+				<config>src/main/resources/META-INF/opennms/actiond-context.xml</config>
+				<config>src/main/resources/META-INF/opennms/eventd-context.xml</config>
+				<config>src/main/resources/META-INF/opennms/poll-outages-context.xml</config>
+				<config>src/main/resources/META-INF/opennms/syslogd-context.xml</config>
+				<config>src/main/resources/META-INF/opennms/trapd-context.xml</config>
 			</configs>
 		</configSet>
 		<configSet>
@@ -29,6 +39,11 @@
 				<config>src/main/resources/META-INF/opennms/context.xml</config>
 				<config>src/main/resources/META-INF/opennms/default-startup.xml</config>
 				<config>src/main/resources/META-INF/opennms/manager.xml</config>
+				<config>src/main/resources/META-INF/opennms/actiond-context.xml</config>
+				<config>src/main/resources/META-INF/opennms/eventd-context.xml</config>
+				<config>src/main/resources/META-INF/opennms/poll-outages-context.xml</config>
+				<config>src/main/resources/META-INF/opennms/syslogd-context.xml</config>
+				<config>src/main/resources/META-INF/opennms/trapd-context.xml</config>
 			</configs>
 		</configSet>
 	</configSets>

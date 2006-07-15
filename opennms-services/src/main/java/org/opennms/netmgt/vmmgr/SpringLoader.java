@@ -56,7 +56,10 @@ public class SpringLoader {
 		
 		try {
 		
-			m_appContext = new ClassPathXmlApplicationContext(paths);
+			ClassPathXmlApplicationContext classPathXmlApplicationContext = new ClassPathXmlApplicationContext(paths);
+			classPathXmlApplicationContext.registerShutdownHook();
+			m_appContext = classPathXmlApplicationContext;
+			
 			
 		} catch (BeanCreationException e) {
 			e.printStackTrace();

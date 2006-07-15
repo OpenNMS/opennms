@@ -39,6 +39,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.opennms.netmgt.daemon.ServiceDaemon;
+import org.springframework.beans.BeansException;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 public class DaemonManagerDefault implements DaemonManager {
 	
@@ -81,9 +85,19 @@ public class DaemonManagerDefault implements DaemonManager {
 	public void stop() {
 		for (Iterator it = m_serviceDaemons.iterator(); it.hasNext();) {
 			ServiceDaemon serviceDaemon = (ServiceDaemon) it.next();
-			serviceDaemon.stop();
+			stopService(serviceDaemon);
 		}
 		System.exit(0);
+	}
+
+	
+	private void stopService(ServiceDaemon serviceDaemon) {
+		try {
+			serviceDaemon.stop();
+		} catch (Exception e) {
+			System.err.println("An exception occurred stoppoing service "+serviceDaemon.getName());
+			e.printStackTrace();
+		}
 	}
 
 }
