@@ -200,6 +200,10 @@ public final class Eventd extends ServiceDaemon implements org.opennms.netmgt.ev
         ThreadCategory.setPrefix(LOG4J_CATEGORY);
         Category log = ThreadCategory.getInstance();
 
+        if (m_dataSource == null) {
+            throw new IllegalStateException("dataSource not initialized");
+        }
+
         // Get a database connection and create the service table map
         java.sql.Connection tempConn = null;
         try {
