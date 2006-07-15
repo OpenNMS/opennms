@@ -4,7 +4,7 @@
 
   <bean name="collectd:collectorConfig" class="org.opennms.netmgt.collectd.CollectorConfigDaoImpl" />
 
-  <bean name="collectd" class="org.opennms.netmgt.collectd.Collectd">
+  <bean name="collectd" class="org.opennms.netmgt.collectd.Collectd" depends-on="pollOutagesConfigFactory-init">
     <property name="collectorConfigDao" ref="collectd:collectorConfig" />
     <property name="eventIpcManager" ref="eventIpcManager" />
     <property name="ipInterfaceDao" ref="ipInterfaceDao" />
