@@ -33,10 +33,12 @@
 package org.opennms.netmgt.vmmgr;
 
 import java.io.File;
+import java.rmi.ConnectException;
 import java.util.Iterator;
 import java.util.Map;
 
 import org.opennms.netmgt.Registry;
+import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -44,7 +46,7 @@ public class SpringLoader {
 	
 	private ApplicationContext m_appContext;
 	
-	public SpringLoader(String operation) {
+	public SpringLoader(String operation) throws Throwable {
 		String startupUrl = getStartupResource();
 		
 		String[] paths = { "classpath:/org/opennms/netmgt/vmmgr/remote-access.xml" };
@@ -52,7 +54,15 @@ public class SpringLoader {
 			paths = new String[] { startupUrl, "classpath:/org/opennms/netmgt/vmmgr/local-access.xml", "classpath*:/META-INF/opennms/context.xml" } ;
 		}
 		
-		m_appContext = new ClassPathXmlApplicationContext(paths);
+		try {
+		
+			m_appContext = new ClassPathXmlApplicationContext(paths);
+			
+		} catch (BeanCreationException e) {
+			Throwable rc = e.getRootCause();
+			System.err.println("ROOT CAUSE is "+rc);
+			throw rc;
+		}
 		
 		Registry.setAppContext(m_appContext);
 		
@@ -82,27 +92,35 @@ public class SpringLoader {
 		return null;
 	}
 
-	public void start() {
+	public void start() throws Throwable {
 		getDaemonMgr().start();
 	}
 
-	private DaemonManager getDaemonMgr() {
-		return (DaemonManager)m_appContext.getBean("daemonMgr");
+	private DaemonManager getDaemonMgr() throws Throwable {
+		try {
+			return (DaemonManager)m_appContext.getBean("daemonMgr");
+		} catch (BeanCreationException e) {
+			
+			Throwable rc = e.getRootCause();
+			System.err.println("ROOT CAUSE is "+rc);
+			throw rc;
+		}
 	}
 
-	private void stop() {
+	private void stop() throws Throwable {
 		getDaemonMgr().stop();
 	}
 	
-	private void pause() {
+	private void pause() throws Throwable {
 		getDaemonMgr().pause();
 	}
 	
-	private void resume() {
+	private void resume() throws Throwable {
 		getDaemonMgr().resume();
 	}
 	
-	private void status() {
+	private void status() throws Throwable {
+		
 		Map stati = getDaemonMgr().status();
 		for (Iterator it = stati.keySet().iterator(); it.hasNext();) {
 			String name = (String) it.next();
@@ -112,25 +130,38 @@ public class SpringLoader {
 	
 	
 	public static void main(String[] args) {
-		SpringLoader loader = new SpringLoader(args[0]);
-		if ("start".equals(args[0]))
-			loader.start();
-		else if ("stop".equals(args[0]))
-			loader.stop();
-		else if ("pause".equals(args[0]))
-			loader.pause();
-		else if ("resume".equals(args[0]))
-			loader.resume();
-		else if ("status".equals(args[0]))
-			loader.status();
-		else
-			usage();
-		
+		try {
+			String cmd = args[0];
+			if ("-u".equals(cmd)) {
+				cmd = args[2];
+			}
+			SpringLoader loader = new SpringLoader(cmd);
+			if ("start".equals(cmd))
+				loader.start();
+			else if ("stop".equals(cmd))
+				loader.stop();
+			else if ("pause".equals(cmd))
+				loader.pause();
+			else if ("resume".equals(cmd))
+				loader.resume();
+			else if ("status".equals(cmd))
+				loader.status();
+			else
+				usage();
+		} catch (ConnectException e) {
+			System.err.println("opennms is not running.");
+			System.exit(3);
+		} catch (Throwable e) {
+			System.err.println("Exception occurred: "+e);
+			e.printStackTrace();
+			System.exit(2);
+		}
 		
 	}
 
 	private static void usage() {
 		System.err.println("opennms.sh [start|pause|resume|stop|status]");
+		System.exit(1);
 	}
 
 
