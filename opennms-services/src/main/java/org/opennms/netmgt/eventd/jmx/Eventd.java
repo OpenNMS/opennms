@@ -114,6 +114,8 @@ public class Eventd implements EventdMBean {
         EventIpcManager ipcMgr = new EventIpcManagerDefaultImpl(EventdConfigFactory.getInstance());
         EventIpcManagerFactory.setIpcManager(ipcMgr);
         EventIpcManagerFactory.init();
+        
+        e.setDataSource(DataSourceFactory.getDataSource());
         e.setEventIpcManager(ipcMgr);
         e.init();
         
