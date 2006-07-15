@@ -4,6 +4,7 @@
   <bean id="serviceDaemons" class="org.springframework.beans.factory.config.ListFactoryBean">
     <property name="sourceList">
 			<list>
+				<ref bean="eventd"/>
 				<ref bean="collectd"/>
   		</list>
 		</property>

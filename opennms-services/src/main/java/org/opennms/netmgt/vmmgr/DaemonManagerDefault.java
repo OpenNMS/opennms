@@ -83,6 +83,7 @@ public class DaemonManagerDefault implements DaemonManager {
 			ServiceDaemon serviceDaemon = (ServiceDaemon) it.next();
 			serviceDaemon.stop();
 		}
+		System.exit(0);
 	}
 
 }
