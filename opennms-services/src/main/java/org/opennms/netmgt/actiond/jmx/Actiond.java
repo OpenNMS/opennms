@@ -34,9 +34,22 @@
 
 package org.opennms.netmgt.actiond.jmx;
 
+import java.lang.reflect.UndeclaredThrowableException;
+
+import org.opennms.netmgt.config.ActiondConfigFactory;
+
 public class Actiond implements ActiondMBean {
     public void init() {
+    	
+    	try {
+			ActiondConfigFactory.init();
+		} catch (Exception e) {
+			throw new UndeclaredThrowableException(e);
+		}
+    	ActiondConfigFactory actiondConfig = ActiondConfigFactory.getInstance();
+    	
         org.opennms.netmgt.actiond.Actiond actiond = org.opennms.netmgt.actiond.Actiond.getInstance();
+        actiond.setActiondConfig(actiondConfig);
         actiond.init();
     }
 
