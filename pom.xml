@@ -254,6 +254,10 @@ opennms.home = ${opennms.home}
   
     <!-- platform specific -->
     <build.soext>${platform.shlib}</build.soext>
+    <build.jni.compiler.arg></build.jni.compiler.arg>
+    <build.jni.linker.arg></build.jni.linker.arg>
+    <build.postgresql.compiler.arg></build.postgresql.compiler.arg>
+    <build.postgresql.linker.arg></build.postgresql.linker.arg>
     
     <!-- rpm specific -->
     <rpm.install.dir>/opt/OpenNMS</rpm.install.dir>

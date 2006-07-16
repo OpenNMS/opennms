@@ -28,12 +28,9 @@
         <configuration>
           <compilerProvider>generic</compilerProvider>
           <compilerStartOptions>
-            <compilerStartOption>-fPIC -O -D__DARWIN__</compilerStartOption>
+            <compilerStartOption>-fPIC -O -D__DARWIN__ ${build.jni.compiler.arg}</compilerStartOption>
           </compilerStartOptions>
           <sources>
-            <source>
-              <directory>${build.rrd.include.dir}</directory>
-            </source>
             <source>
               <directory>../src/main/native</directory>
               <fileNames>
@@ -42,7 +39,7 @@
             </source>
           </sources>
           <linkerStartOptions>
-            <linkerStartOption>-prebind -dynamiclib  -L${build.rrd.lib.dir} -lrrd -lc -ldl</linkerStartOption>
+            <linkerStartOption>-prebind -dynamiclib ${build.jni.compiler.arg} ${build.jni.linker.arg} -lc -ldl</linkerStartOption>
           </linkerStartOptions>
           <javahOS>macosx</javahOS>
           <jdkIncludePath>${java.home}/include</jdkIncludePath>

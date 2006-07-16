@@ -25,7 +25,7 @@
         <configuration>
           <compilerProvider>generic</compilerProvider>
           <compilerStartOptions>
-            <compilerStartOption>-fPIC -O -D__LINUX__</compilerStartOption>
+            <compilerStartOption>-fPIC -O -D__LINUX__ ${build.jni.compiler.arg}</compilerStartOption>
           </compilerStartOptions>
           <sources>
             <source>
@@ -39,7 +39,7 @@
             </source>
           </sources>
           <linkerStartOptions>
-            <linkerStartOption>-shared  -L${build.rrd.lib.dir} -lrrd -lc -ldl</linkerStartOption>
+            <linkerStartOption>-shared ${build.jni.compiler.arg} ${build.jni.linker.arg} -L${build.rrd.lib.dir} -lrrd -lc -ldl</linkerStartOption>
           </linkerStartOptions>
           <javahOS>linux</javahOS>
         </configuration>
