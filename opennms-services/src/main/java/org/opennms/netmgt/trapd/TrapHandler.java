@@ -82,73 +82,74 @@ import org.opennms.netmgt.snmp.TrapProcessorFactory;
  * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
  * 
  */
-public class TrapHandler implements PausableFiber, TrapProcessorFactory, TrapNotificationListener {
-	/**
-	 * The name of the logging category for Trapd.
-	 */
-	private static final String LOG4J_CATEGORY = "OpenNMS.Trapd";
+public class TrapHandler implements PausableFiber, TrapProcessorFactory,
+                                    TrapNotificationListener {
+    /**
+     * The name of the logging category for Trapd.
+     */
+    private static final String LOG4J_CATEGORY = "OpenNMS.Trapd";
 
-	/**
-	 * The singlton instance.
-	 */
-	private static final TrapHandler m_singleton = new TrapHandler();
+    /**
+     * The singlton instance.
+     */
+    private static final TrapHandler m_singleton = new TrapHandler();
 
-	/**
-	 * Set the Trapd configuration
-	 */
-	private TrapdConfig m_trapdConfig;
-	
-	/**
-	 * Event manager
-	 */
-	private EventIpcManager m_eventMgr;
+    /**
+     * Set the Trapd configuration
+     */
+    private TrapdConfig m_trapdConfig;
+    
+    /**
+     * Event manager
+     */
+    private EventIpcManager m_eventMgr;
 
-	/**
-	 * The name of this service.
-	 */
-	private String m_name = LOG4J_CATEGORY;
+    /**
+     * The name of this service.
+     */
+    private String m_name = LOG4J_CATEGORY;
 
-	/**
-	 * The last status sent to the service control manager.
-	 */
-	private int m_status = START_PENDING;
+    /**
+     * The last status sent to the service control manager.
+     */
+    private int m_status = START_PENDING;
 
-	/**
-	 * The communication queue
-	 */
-	private FifoQueue m_backlogQ;
+    /**
+     * The communication queue
+     */
+    private FifoQueue m_backlogQ;
 
-	/**
-	 * The list of known IPs
-	 */
-	private Map m_knownIps;
+    /**
+     * The list of known IPs
+     */
+    private Map m_knownIps;
 
-	/**
-	 * The queue processing thread
-	 */
-	private TrapQueueProcessor m_processor;
+    /**
+     * The queue processing thread
+     */
+    private TrapQueueProcessor m_processor;
 
-	/**
-	 * The class instance used to recieve new events from for the system.
-	 */
-	private BroadcastEventProcessor m_eventReader;
+    /**
+     * The class instance used to recieve new events from for the system.
+     */
+    private BroadcastEventProcessor m_eventReader;
 
-	/**
-	 * <P>
-	 * Constructs a new Trapd object that receives and forwards trap messages
-	 * via JSDT. The session is initialized with the default client name of <EM>
-	 * OpenNMS.trapd</EM>. The trap session is started on the default port, as
-	 * defined by the SNMP libarary.
-	 * </P>
-	 * 
-	 * @see org.opennms.protocols.snmp.SnmpTrapSession
-	 */
-	public TrapHandler() {
-	}
+    /**
+     * <P>
+     * Constructs a new Trapd object that receives and forwards trap messages
+     * via JSDT. The session is initialized with the default client name of <EM>
+     * OpenNMS.trapd</EM>. The trap session is started on the default port, as
+     * defined by the SNMP libarary.
+     * </P>
+     * 
+     * @see org.opennms.protocols.snmp.SnmpTrapSession
+     */
+    public TrapHandler() {
+    }
 
-	public void setTrapdConfig(TrapdConfig trapdConfig) {
-		m_trapdConfig = trapdConfig;
-	}
+    public void setTrapdConfig(TrapdConfig trapdConfig) {
+        m_trapdConfig = trapdConfig;
+    }
     
     public TrapProcessor createTrapProcessor() {
         return new EventCreator();
@@ -158,185 +159,185 @@ public class TrapHandler implements PausableFiber, TrapProcessorFactory, TrapNot
         addTrap(trapNotification);
     }
 
-	private void addTrap(TrapNotification o) {
-		try {
-			m_backlogQ.add(o);
-		} catch (InterruptedException ie) {
-			Category log = ThreadCategory.getInstance(getClass());
-			log.warn("snmpReceivedTrap: Error adding trap to queue, it was interrupted", ie);
-		} catch (FifoQueueException qe) {
-			Category log = ThreadCategory.getInstance(getClass());
-			log.warn("snmpReceivedTrap: Error adding trap to queue", qe);
-		}
-	}
+    private void addTrap(TrapNotification o) {
+        Category log = ThreadCategory.getInstance(getClass());
+        try {
+            m_backlogQ.add(o);
+        } catch (InterruptedException e) {
+            log.warn("snmpReceivedTrap: Error adding trap to queue, it was "
+                     + "interrupted", e);
+        } catch (FifoQueueException e) {
+            log.warn("snmpReceivedTrap: Error adding trap to queue", e);
+        }
+    }
 
-	public synchronized void init() {
-		ThreadCategory.setPrefix(LOG4J_CATEGORY);
+    public synchronized void init() {
+        ThreadCategory.setPrefix(LOG4J_CATEGORY);
 
-		Category log = ThreadCategory.getInstance();
+        Category log = ThreadCategory.getInstance();
 
-		try {
-			// Get the newSuspectOnTrap flag
-			boolean m_newSuspect = m_trapdConfig.getNewSuspectOnTrap();
+        try {
+            // Get the newSuspectOnTrap flag
+            boolean m_newSuspect = m_trapdConfig.getNewSuspectOnTrap();
 
-			// set up the trap processor
-			m_backlogQ = new FifoQueueImpl();
-			m_processor = new TrapQueueProcessor(m_backlogQ, m_newSuspect, m_eventMgr);
+            // set up the trap processor
+            m_backlogQ = new FifoQueueImpl();
+            m_processor = new TrapQueueProcessor(m_backlogQ, m_newSuspect,
+                                                 m_eventMgr);
 
-			log.debug("start: Creating the trap queue processor");
+            log.debug("start: Creating the trap queue processor");
             
-            SnmpUtils.registerForTraps(this, this, m_trapdConfig.getSnmpTrapPort());
+            SnmpUtils.registerForTraps(this, this,
+                                       m_trapdConfig.getSnmpTrapPort());
 
-			log.debug("start: Creating the trap session");
-		} catch (IOException e) {
-			log.error("Failed to setup SNMP trap port", e);
-			throw new UndeclaredThrowableException(e);
-		}
+            log.debug("start: Creating the trap session");
+        } catch (IOException e) {
+            log.error("Failed to setup SNMP trap port", e);
+            throw new UndeclaredThrowableException(e);
+        }
 
-			// Is this ever used?
-		/*
-		try {
-			m_eventReader = new BroadcastEventProcessor();
-		} catch (Exception ex) {
-			ThreadCategory.getInstance().error("Failed to create event reader",
-					ex);
-			throw new UndeclaredThrowableException(ex);
-		}
-		*/
-	}
+        try {
+            m_eventReader = new BroadcastEventProcessor();
+        } catch (Exception e) {
+            ThreadCategory.getInstance().error("Failed to create event reader",
+                                               e);
+            throw new UndeclaredThrowableException(e);
+        }
+    }
 
     /**
-	 * Create the SNMP trap session and create the JSDT communication channel to
-	 * communicate with eventd.
-	 * 
-	 * @exception java.lang.reflect.UndeclaredThrowableException
-	 *                if an unexpected database, or IO exception occurs.
-	 * 
-	 * @see org.opennms.protocols.snmp.SnmpTrapSession
-	 * @see org.opennms.protocols.snmp.SnmpTrapHandler
-	 */
-	public synchronized void start() {
-		m_status = STARTING;
+     * Create the SNMP trap session and create the communication channel
+     * to communicate with eventd.
+     * 
+     * @exception java.lang.reflect.UndeclaredThrowableException
+     *                if an unexpected database, or IO exception occurs.
+     * 
+     * @see org.opennms.protocols.snmp.SnmpTrapSession
+     * @see org.opennms.protocols.snmp.SnmpTrapHandler
+     */
+    public synchronized void start() {
+        m_status = STARTING;
 
-		ThreadCategory.setPrefix(LOG4J_CATEGORY);
+        ThreadCategory.setPrefix(LOG4J_CATEGORY);
 
-		Category log = ThreadCategory.getInstance();
+        Category log = ThreadCategory.getInstance();
 
-		log.debug("start: Initializing the trapd config factory");
+        log.debug("start: Initializing the trapd config factory");
 
-		m_processor.start();
+        m_processor.start();
 
-		m_status = RUNNING;
+        m_status = RUNNING;
 
-		log.debug("start: Trapd ready to receive traps");
-	}
+        log.debug("start: Trapd ready to receive traps");
+    }
 
-	/**
-	 * Pauses Trapd
-	 */
-	public void pause() {
-		if (m_status != RUNNING) {
-			return;
-		}
+    /**
+     * Pauses Trapd
+     */
+    public void pause() {
+        if (m_status != RUNNING) {
+            return;
+        }
 
-		m_status = PAUSE_PENDING;
+        m_status = PAUSE_PENDING;
 
-		Category log = ThreadCategory.getInstance(getClass());
+        Category log = ThreadCategory.getInstance(getClass());
 
-		log.debug("Calling pause on processor");
+        log.debug("Calling pause on processor");
 
-		m_processor.pause();
+        m_processor.pause();
 
-		log.debug("Processor paused");
+        log.debug("Processor paused");
 
-		m_status = PAUSED;
+        m_status = PAUSED;
 
-		log.debug("Trapd paused");
-	}
+        log.debug("Trapd paused");
+    }
 
-	/**
-	 * Resumes Trapd
-	 */
-	public void resume() {
-		if (m_status != PAUSED) {
-			return;
-		}
+    /**
+     * Resumes Trapd
+     */
+    public void resume() {
+        if (m_status != PAUSED) {
+            return;
+        }
 
-		m_status = RESUME_PENDING;
+        m_status = RESUME_PENDING;
 
-		Category log = ThreadCategory.getInstance(getClass());
+        Category log = ThreadCategory.getInstance(getClass());
 
-		log.debug("Calling resume on processor");
+        log.debug("Calling resume on processor");
 
-		m_processor.resume();
+        m_processor.resume();
 
-		log.debug("Processor resumed");
+        log.debug("Processor resumed");
 
-		m_status = RUNNING;
+        m_status = RUNNING;
 
-		log.debug("Trapd resumed");
-	}
+        log.debug("Trapd resumed");
+    }
 
-	/**
-	 * Stops the currently running service. If the service is not running then
-	 * the command is silently discarded.
-	 */
-	public synchronized void stop() {
-		Category log = ThreadCategory.getInstance(getClass());
+    /**
+     * Stops the currently running service. If the service is not running then
+     * the command is silently discarded.
+     */
+    public synchronized void stop() {
+        Category log = ThreadCategory.getInstance(getClass());
 
-		m_status = STOP_PENDING;
+        m_status = STOP_PENDING;
 
-		// shutdown and wait on the background processing thread to exit.
-		log.debug("exit: closing communication paths.");
+        // shutdown and wait on the background processing thread to exit.
+        log.debug("exit: closing communication paths.");
 
-		try {
-			log.debug("stop: Closing SNMP trap session.");
+        try {
+            log.debug("stop: Closing SNMP trap session.");
 
-            SnmpUtils.unregisterForTraps(this, m_trapdConfig.getSnmpTrapPort());
+            SnmpUtils.unregisterForTraps(this,
+                                         m_trapdConfig.getSnmpTrapPort());
 
-			log.debug("stop: SNMP trap session closed.");
+            log.debug("stop: SNMP trap session closed.");
         } catch (IOException e) {
             log.warn("stop: exception occurred closing session", e);
-		} catch (IllegalStateException e) {
-			log.debug("stop: The SNMP session was already closed");
-		}
+        } catch (IllegalStateException e) {
+            log.debug("stop: The SNMP session was already closed");
+        }
 
-		log.debug("stop: Stopping queue processor.");
+        log.debug("stop: Stopping queue processor.");
 
-		// interrupt the processor daemon thread
-		m_processor.stop();
+        // interrupt the processor daemon thread
+        m_processor.stop();
 
-		m_status = STOPPED;
+        m_status = STOPPED;
 
-		log.debug("stop: Trapd stopped");
-	}
+        log.debug("stop: Trapd stopped");
+    }
 
     /**
-	 * Returns the current status of the service.
-	 * 
-	 * @return The service's status.
-	 */
-	public synchronized int getStatus() {
-		return m_status;
-	}
+     * Returns the current status of the service.
+     * 
+     * @return The service's status.
+     */
+    public synchronized int getStatus() {
+        return m_status;
+    }
 
-	/**
-	 * Returns the singular instance of the trapd daemon. There can be only one
-	 * instance of this service per virtual machine.
-	 */
-	public static TrapHandler getInstance() {
-		return m_singleton;
-	}
+    /**
+     * Returns the singular instance of the trapd daemon. There can be only one
+     * instance of this service per virtual machine.
+     */
+    public static TrapHandler getInstance() {
+        return m_singleton;
+    }
 
-	/**
-	 * Returns the name of the service.
-	 * 
-	 * @return The service's name.
-	 */
-	public String getName() {
-		return m_name;
-	}
-	
+    /**
+     * Returns the name of the service.
+     * 
+     * @return The service's name.
+     */
+    public String getName() {
+        return m_name;
+    }
+    
     public EventIpcManager getEventManager() {
         return m_eventMgr;
     }
@@ -348,6 +349,6 @@ public class TrapHandler implements PausableFiber, TrapProcessorFactory, TrapNot
     public void trapError(int error, String msg) {
         Category log = ThreadCategory.getInstance(getClass());
         log.warn("Error Processing Received Trap: error = " + error
-                + (msg != null ? ", ref = " + msg : ""));
+                 + (msg != null ? ", ref = " + msg : ""));
     }
 }
