@@ -59,14 +59,11 @@ final class BroadcastEventProcessor implements EventListener {
      */
     BroadcastEventProcessor() {
         // Create the selector for the ueis this service is interested in
-        //
         List ueiList = new ArrayList();
 
-        // nodeGainedInterface
         ueiList.add(EventConstants.NODE_GAINED_INTERFACE_EVENT_UEI);
-
-        // interfaceDeleted
         ueiList.add(EventConstants.INTERFACE_DELETED_EVENT_UEI);
+        ueiList.add(EventConstants.INTERFACE_REPARENTED_EVENT_UEI);
 
         EventIpcManagerFactory.init();
         EventIpcManagerFactory.getIpcManager().addEventListener(this, ueiList);
@@ -92,33 +89,43 @@ final class BroadcastEventProcessor implements EventListener {
         Category log = ThreadCategory.getInstance(getClass());
 
         String eventUei = event.getUei();
-        if (eventUei == null)
+        if (eventUei == null) {
+            log.warn("Received an unexpected event with a null UEI");
             return;
+        }
 
-        if (log.isDebugEnabled())
+        if (log.isDebugEnabled()) {
             log.debug("Received event: " + eventUei);
+        }
 
-        if (eventUei.equals(EventConstants.NODE_GAINED_INTERFACE_EVENT_UEI)) {
-            // add to known nodes
-            if (Long.toString(event.getNodeid()) != null && event.getInterface() != null) {
+        if (eventUei.equals(EventConstants.NODE_GAINED_INTERFACE_EVENT_UEI)
+            || eventUei.equals(EventConstants.INTERFACE_REPARENTED_EVENT_UEI)) {
+            String action = eventUei.equals(EventConstants.INTERFACE_REPARENTED_EVENT_UEI) ?
+                "reparent" : "add";
+            if (Long.toString(event.getNodeid()) == null) {
+                log.warn("Not " + action + "ing interface to known node list: "
+                    + "nodeId is null");
+            } else if (event.getInterface() == null) {
+                log.warn("Not " + action + "ing interface to known node list: "
+                    + "interface is null");
+            } else {
                 TrapdIPMgr.setNodeId(event.getInterface(), event.getNodeid());
+                if (log.isDebugEnabled()) {
+                    log.debug("Successfully " + action + "ed "
+                              + event.getInterface() + " to known node list");
+                }
             }
-            if (log.isDebugEnabled())
-                log.debug("Added " + event.getInterface() + " to known node list");
         } else if (eventUei.equals(EventConstants.INTERFACE_DELETED_EVENT_UEI)) {
-            // remove from known nodes
             if (event.getInterface() != null) {
                 TrapdIPMgr.removeNodeId(event.getInterface());
             }
-            if (log.isDebugEnabled())
-                log.debug("Removed " + event.getInterface() + " from known node list");
-        } else if (eventUei.equals(EventConstants.INTERFACE_REPARENTED_EVENT_UEI)) {
-            // add to known nodes
-            if (Long.toString(event.getNodeid()) != null && event.getInterface() != null) {
-                TrapdIPMgr.setNodeId(event.getInterface(), event.getNodeid());
+            if (log.isDebugEnabled()) {
+                log.debug("Removed " + event.getInterface()
+                    + " from known node list");
             }
-            if (log.isDebugEnabled())
-                log.debug("Reparented " + event.getInterface() + " to known node list");
+        } else {
+            log.warn("Received an unexpected event with UEI of \""
+                     + eventUei + "\"");
         }
     }
 
