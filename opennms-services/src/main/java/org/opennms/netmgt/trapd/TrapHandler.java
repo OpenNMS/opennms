@@ -196,13 +196,17 @@ public class TrapHandler implements PausableFiber, TrapProcessorFactory,
             throw new UndeclaredThrowableException(e);
         }
 
+/*
         try {
             m_eventReader = new BroadcastEventProcessor();
+            m_eventReader.setEventManager(m_eventMgr);
+            m_eventReader.open();
         } catch (Exception e) {
             ThreadCategory.getInstance().error("Failed to create event reader",
                                                e);
             throw new UndeclaredThrowableException(e);
         }
+*/
     }
 
     /**
@@ -306,6 +310,8 @@ public class TrapHandler implements PausableFiber, TrapProcessorFactory,
 
         // interrupt the processor daemon thread
         m_processor.stop();
+
+//        m_eventReader.close();
 
         m_status = STOPPED;
 

@@ -44,7 +44,7 @@ import java.util.List;
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
-import org.opennms.netmgt.eventd.EventIpcManagerFactory;
+import org.opennms.netmgt.eventd.EventIpcManager;
 import org.opennms.netmgt.eventd.EventListener;
 import org.opennms.netmgt.xml.event.Event;
 
@@ -53,27 +53,42 @@ import org.opennms.netmgt.xml.event.Event;
  * @author <a href="mailto:tarus@opennms.org">Tarus Balog </a>
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
  */
-final class BroadcastEventProcessor implements EventListener {
+public final class BroadcastEventProcessor implements EventListener {
+    private EventIpcManager m_eventMgr;
+
+    public EventIpcManager getEventManager() {
+        return m_eventMgr;
+    }
+
+    public void setEventManager(EventIpcManager eventMgr) {
+        m_eventMgr = eventMgr;
+    }
+
     /**
      * Create message selector to set to the subscription
      */
-    BroadcastEventProcessor() {
-        // Create the selector for the ueis this service is interested in
-        List ueiList = new ArrayList();
+    public void open() {
+        verifyState();
 
+        List ueiList = new ArrayList();
         ueiList.add(EventConstants.NODE_GAINED_INTERFACE_EVENT_UEI);
         ueiList.add(EventConstants.INTERFACE_DELETED_EVENT_UEI);
         ueiList.add(EventConstants.INTERFACE_REPARENTED_EVENT_UEI);
-
-        EventIpcManagerFactory.init();
-        EventIpcManagerFactory.getIpcManager().addEventListener(this, ueiList);
+        m_eventMgr.addEventListener(this, ueiList);
     }
 
     /**
      * Unsubscribe from eventd
      */
     public void close() {
-        EventIpcManagerFactory.getIpcManager().removeEventListener(this);
+        verifyState();
+        m_eventMgr.removeEventListener(this);
+    }
+
+    private void verifyState() {
+        if (m_eventMgr == null) {
+            throw new IllegalStateException("event manager not set");
+        }
     }
 
     /**
