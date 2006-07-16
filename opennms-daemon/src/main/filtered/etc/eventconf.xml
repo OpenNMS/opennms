@@ -65,6 +65,7 @@
         <event-file>@install.etc.dir@/events/Uptime.events.xml</event-file>
         <event-file>@install.etc.dir@/events/Xerox-V2.events.xml</event-file>
         <event-file>@install.etc.dir@/events/Xerox.events.xml</event-file>
+        <event-file>@install.etc.dir@/events/Syslogd.events.xml</event-file>
 
         <event-file>@install.etc.dir@/events/Standard.events.xml</event-file>
         <event>
@@ -1182,96 +1183,7 @@
 		</logmsg>
 		<severity>Normal</severity>
 	</event>
-	<event>
-                <uei>uei.opennms.org/syslogd/messageCritical</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
-                <descr>
-                        &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;/p&gt;
-                        Node ID: %nodeid%&lt;br&gt;
-                        Host: %nodelabel%&lt;br&gt;
-                        Interface: %interface% &lt;br&gt;
-                        Message: %parm[syslogmessage]% &lt;br&gt;
-                        Process: %parm[process]% &lt;br&gt;
-                        PID: %parm[processid]% &lt;br&gt;
-                </descr>
-                <logmsg dest='logndisplay'>
-                        &lt;p&gt;An OpenNMS Event has been received as a Syslog Message &lt;/p&gt;
-                        Message: %parm[syslogmessage]% &lt;br&gt;
-                 </logmsg>
-                 <severity>Critical</severity>
-        </event>
-        <event>
-                <uei>uei.opennms.org/syslogd/messageMajor</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
-                <descr>
-                        &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;/p&gt;
-                        Node ID: %nodeid%&lt;br&gt;
-                        Host: %nodelabel%&lt;br&gt;
-                        Interface: %interface% &lt;br&gt;
-                        Message: %parm[syslogmessage]% &lt;br&gt;
-                        Process: %parm[process]% &lt;br&gt;
-                        PID: %parm[processid]% &lt;br&gt;
-                </descr>
-                <logmsg dest='logndisplay'>
-                        &lt;p&gt;An OpenNMS Event has been received as a Syslog Message &lt;/p&gt;
-                        Message: %parm[syslogmessage]% &lt;br&gt;
-                 </logmsg>
-                 <severity>Major</severity>
-       		</event>
-	         <event>
-                <uei>uei.opennms.org/syslogd/messageMinor</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
-                <descr>
-                        &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;/p&gt;
-                        Node ID: %nodeid%&lt;br&gt;
-                        Host: %nodelabel%&lt;br&gt;
-                        Interface: %interface% &lt;br&gt;
-                        Message: %parm[syslogmessage]% &lt;br&gt;
-                        Process: %parm[process]% &lt;br&gt;
-                        PID: %parm[processid]% &lt;br&gt;
-                </descr>
-                <logmsg dest='logndisplay'>
-                        &lt;p&gt;An OpenNMS Event has been received as a Syslog Message &lt;/p&gt;
-                        Message: %parm[syslogmessage]% &lt;br&gt;
-                 </logmsg>
-                 <severity>Minor</severity>
-        </event>
-        <event>
-                <uei>uei.opennms.org/syslogd/messageWarning</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
-                <descr>
-                        &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;/p&gt;
-                        Node ID: %nodeid%&lt;br&gt;
-                        Host: %nodelabel%&lt;br&gt;
-                        Interface: %interface% &lt;br&gt;
-                        Message: %parm[syslogmessage]% &lt;br&gt;
-                        Process: %parm[process]% &lt;br&gt;
-                        PID: %parm[processid]% &lt;br&gt;
-                </descr>
-                <logmsg dest='logndisplay'>
-                        &lt;p&gt;An OpenNMS Event has been received as a Syslog Message &lt;/p&gt;
-                        Message: %parm[syslogmessage]% &lt;br&gt;
-                 </logmsg>
-                 <severity>Warning</severity>
-        </event>
-        <event>
-                <uei>uei.opennms.org/syslogd/messageNormal</uei>
-                <event-label>OpenNMS-defined node event: syslogdMessage</event-label>
-                <descr>
-                        &lt;p&gt;The interface %interface% generated a Syslog Message.&lt;/p&gt;
-                        Node ID: %nodeid%&lt;br&gt;
-                        Host: %nodelabel%&lt;br&gt;
-                        Interface: %interface% &lt;br&gt;
-                        Message: %parm[syslogmessage]% &lt;br&gt;
-                        Process: %parm[process]% &lt;br&gt;
-                        PID: %parm[processid]% &lt;br&gt;
-                </descr>
-                <logmsg dest='logndisplay'>
-                        &lt;p&gt;An OpenNMS Event has been received as a Syslog Message &lt;/p&gt;
-                        Message: %parm[syslogmessage]% &lt;br&gt;
-                 </logmsg>
-                 <severity>Normal</severity>
-        </event>
+	
 	<event>
 		<uei>uei.opennms.org/services/passiveServiceStatus</uei>
 		<event-label>OpenNMS-defined service event: passiveServiceStatus</event-label>

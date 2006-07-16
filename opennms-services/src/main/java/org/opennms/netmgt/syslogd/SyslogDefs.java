@@ -168,14 +168,14 @@ SyslogDefs
 		{
 		switch ( level )
 			{
-			case SyslogDefs.LOG_EMERG:		return "Critical";
-			case SyslogDefs.LOG_ALERT:		return "Major";
-			case SyslogDefs.LOG_CRIT:		return "Major";
-			case SyslogDefs.LOG_ERR:		return "Minor";
+			case SyslogDefs.LOG_EMERG:		return "Emergency";
+			case SyslogDefs.LOG_ALERT:		return "Alert";
+			case SyslogDefs.LOG_CRIT:		return "Critical";
+			case SyslogDefs.LOG_ERR:		return "Error";
 			case SyslogDefs.LOG_WARNING:	return "Warning";
-			case SyslogDefs.LOG_NOTICE:		return "Normal";
-			case SyslogDefs.LOG_INFO:		return "Normal";
-			case SyslogDefs.LOG_DEBUG:		return "Normal";
+			case SyslogDefs.LOG_NOTICE:		return "Notice";
+			case SyslogDefs.LOG_INFO:		return "Info";
+			case SyslogDefs.LOG_DEBUG:		return "Debug";
         
             //This is a really lazy way of mapping syslog
             //to OpenNMS, but it should conform to thinking...

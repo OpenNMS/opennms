@@ -47,6 +47,10 @@ import org.opennms.netmgt.config.SyslogdConfigFactory;
 import org.opennms.netmgt.daemon.ServiceDaemon;
 import org.opennms.netmgt.dao.EventDao;
 
+import org.opennms.netmgt.eventd.EventIpcManager;    
+import org.opennms.netmgt.syslogd.BroadcastEventProcessor;   
+import org.opennms.netmgt.xml.event.Event;
+
 /**
  * The received messages are converted into XML and sent to eventd
  * </p>
@@ -79,21 +83,12 @@ public class Syslogd extends ServiceDaemon implements PausableFiber {
     private SyslogHandler m_udpEventReceiver;
 
     private EventDao m_eventDao;
+
+    private BroadcastEventProcessor m_eventReader;
     
     public Syslogd() {
     	setStatus(START_PENDING);
     }
-    
-    /**
-     * <P>
-     * Constructs a new Trapd object that receives and forwards trap messages
-     * via JSDT. The session is initialized with the default client name of <EM>
-     * OpenNMS.trapd</EM>. The trap session is started on the default port, as
-     * defined by the SNMP libarary.
-     * </P>
-     * 
-     * @see org.opennms.protocols.snmp.SyslogMessageSession
-     */
     
     public synchronized void init() {
         ThreadCategory.setPrefix(LOG4J_CATEGORY);
@@ -148,6 +143,18 @@ public class Syslogd extends ServiceDaemon implements PausableFiber {
         Category log = ThreadCategory.getInstance(getClass());
 
         m_udpEventReceiver.start();
+        
+//      // start the event reader  
+        // The Node list is update with new suspects
+        // Also this enables the syslogd to act as 
+        // trapd and see New suspects.
+         
+        try {    
+            m_eventReader = new BroadcastEventProcessor();   
+        } catch (Exception ex) {     
+            log.error("Failed to setup event reader", ex);   
+            throw new UndeclaredThrowableException(ex);      
+        }
 
         setStatus(RUNNING);
 
@@ -220,7 +227,7 @@ public class Syslogd extends ServiceDaemon implements PausableFiber {
         log.debug("stop: Stopping queue processor.");
 
         m_udpEventReceiver.stop();
-        log.debug("Stopped the UDP Receiver on port 514");
+        log.debug("Stopped the Syslog UDP Receiver");
 
         setStatus(STOPPED);
         log.debug("stop: Syslogd stopped");
