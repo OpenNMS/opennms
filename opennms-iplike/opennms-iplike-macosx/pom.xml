@@ -17,7 +17,7 @@
         <configuration>
           <compilerProvider>generic</compilerProvider>
           <compilerStartOptions>
-            <compilerStartOption>-fPIC -O -D__DARWIN__</compilerStartOption>
+            <compilerStartOption>-fPIC -O -D__DARWIN__ ${build.postgresql.compiler.arg}</compilerStartOption>
           </compilerStartOptions>
           <sources>
             <source>
@@ -31,7 +31,7 @@
             </source>
           </sources>
           <linkerStartOptions>
-            <linkerStartOption>-bundle -lc -ldl</linkerStartOption>
+            <linkerStartOption>-bundle ${build.postgresql.compiler.arg} ${build.postgresql.linker.arg} -lc -ldl</linkerStartOption>
           </linkerStartOptions>
         </configuration>
       </plugin>

@@ -25,11 +25,11 @@
         <configuration>
           <compilerProvider>generic</compilerProvider>
           <compilerStartOptions>
-            <compilerStartOption>-fPIC -O -D__SOLARIS__</compilerStartOption>
+            <compilerStartOption>-fPIC -O -D__SOLARIS__ ${build.jni.compiler.arg}</compilerStartOption>
           </compilerStartOptions>
           <sources>
             <source>
-              <directory>${build.postgresql.include.dir}</directory>
+              <directory>${build.rrd.include.dir}</directory>
             </source>
             <source>
               <directory>../src/main/native</directory>
@@ -39,7 +39,7 @@
             </source>
           </sources>
           <linkerStartOptions>
-            <linkerStartOption>-shared -lc -ldl</linkerStartOption>
+            <linkerStartOption>-shared ${build.jni.compiler.arg} ${build.jni.linker.arg} -L${build.rrd.lib.dir} -lc -ldl</linkerStartOption>
           </linkerStartOptions>
         </configuration>
       </plugin>
