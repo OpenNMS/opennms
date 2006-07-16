@@ -233,9 +233,12 @@ final class ConvertToEvent {
         int priority = SyslogDefs.extractPriority(priCode);
         
         String priorityTxt = SyslogDefs.getPriorityName(priority);
-        event.setSeverity(priorityTxt);
+        //event.setSeverity(priorityTxt);
         
-        event.setUei("uei.opennms.org/syslogd/message" + priorityTxt);
+        String facilityTxt = SyslogDefs.getFacilityName(facility);
+        
+        
+        event.setUei("uei.opennms.org/syslogd/" +facilityTxt + "/" + priorityTxt);
 
         // message = message.substring(rbIdx + 1, (message.length() - 1));
 
