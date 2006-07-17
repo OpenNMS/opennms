@@ -40,12 +40,10 @@ package org.opennms.netmgt.actiond;
 
 import java.lang.reflect.UndeclaredThrowableException;
 
-import org.apache.log4j.Category;
 import org.opennms.core.queue.FifoQueue;
 import org.opennms.core.queue.FifoQueueImpl;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.ActiondConfigFactory;
-import org.opennms.netmgt.daemon.ServiceDaemon;
+import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 
 /**
  * This class is used to represent the auto action execution service. When an
@@ -58,13 +56,9 @@ import org.opennms.netmgt.daemon.ServiceDaemon;
  * @author <a href="http://www.opennms.org/">OpenNMS.org </a>
  * 
  */
-public final class Actiond extends ServiceDaemon {
-    /**
-     * The log4j category used to log debug messsages and statements.
-     */
-    private static final String LOG4J_CATEGORY = "OpenNMS.Actiond";
+public final class Actiond extends AbstractServiceDaemon {
 
-    /**
+	/**
      * The singleton instance.
      */
     private static final Actiond m_singleton = new Actiond();
@@ -85,16 +79,13 @@ public final class Actiond extends ServiceDaemon {
      * Constructs a new Action execution daemon.
      */
     private Actiond() {
+    	super("OpenNMS.Actiond");
         m_executor = null;
         m_eventReader = null;
-        setStatus(START_PENDING);
     }
 
-    public synchronized void init() {
-        ThreadCategory.setPrefix(LOG4J_CATEGORY);
-        Category log = ThreadCategory.getInstance();
-
-        // A queue for execution
+	protected void onInit() {
+		// A queue for execution
         //
         FifoQueue execQ = new FifoQueueImpl();
 
@@ -103,51 +94,23 @@ public final class Actiond extends ServiceDaemon {
         try {
             m_eventReader = new BroadcastEventProcessor(execQ);
         } catch (Exception ex) {
-            log.error("Failed to setup event reader", ex);
+            log().error("Failed to setup event reader", ex);
             throw new UndeclaredThrowableException(ex);
         }
 
         m_executor = new Executor(execQ, m_actiondConfig.getMaxProcessTime(), m_actiondConfig.getMaxOutstandingActions());
-    }
+	}
 
-    /**
-     * Starts the <em>Actiond</em> service. The process of starting the
-     * service involves reading the configuration data, starting an event
-     * receiver, and creating an execution fiber. If the services is already
-     * running then an exception is thrown.
-     * 
-     * @throws java.lang.IllegalStateException
-     *             Thrown if the service is already running.
-     */
-    public synchronized void start() {
-        ThreadCategory.setPrefix(LOG4J_CATEGORY);
-        Category log = ThreadCategory.getInstance();
+    protected void onStart() {
+		if (m_executor == null) {
+		    init();
+		}
 
-        if (isStartPending()) {
-            setStatus(STARTING);
-            if (m_executor == null) {
-                init();
-            }
+		m_executor.start();
+	}
 
-            m_executor.start();
-            log.info("Actiond running");
-
-            setStatus(RUNNING);
-        } else if (m_executor != null && m_executor.getStatus() != STOPPED) {
-            // Service is already running?
-            throw new IllegalStateException("The actiond service is already running");
-        }
-    }
-
-    /**
-     * Stops the currently running service. If the service is not running then
-     * the command is silently discarded.
-     * 
-     */
-    public synchronized void stop() {
-        setStatus(STOP_PENDING);
-
-        try {
+    protected void onStop() {
+		try {
             if (m_executor != null) {
                 m_executor.stop();
             }
@@ -161,45 +124,15 @@ public final class Actiond extends ServiceDaemon {
         m_eventReader = null;
         m_executor = null;
         m_actiondConfig = null;
-        setStatus(STOPPED);
-    }
+	}
 
-    /**
-     * Returns the name of the service.
-     * 
-     * @return The service's name.
-     */
-    public String getName() {
-        return "OpenNMS.Actiond";
-    }
+    protected void onPause() {
+		m_executor.pause();
+	}
 
-    /**
-     * Pauses the service if its currently running
-     */
-    public synchronized void pause() {
-        if (!isRunning()) {
-            return;
-        }
-
-        setStatus(PAUSE_PENDING);
-
-        m_executor.pause();
-        setStatus(PAUSED);
-    }
-
-    /**
-     * Resumes the service if its currently paused
-     */
-    public synchronized void resume() {
-        if (!isPaused()) {
-            return;
-        }
-
-        setStatus(RESUME_PENDING);
-
-        m_executor.resume();
-        setStatus(RUNNING);
-    }
+    protected void onResume() {
+		m_executor.resume();
+	}
 
     /**
      * Returns the singular instance of the actiond daemon. There can be only

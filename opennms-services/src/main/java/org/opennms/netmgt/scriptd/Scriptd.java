@@ -47,9 +47,8 @@ import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.queue.FifoQueue;
 import org.opennms.core.queue.FifoQueueImpl;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.ScriptdConfigFactory;
-import org.opennms.netmgt.daemon.ServiceDaemon;
+import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 
 /**
  * This class implements a script execution service. This service subscribes to
@@ -61,11 +60,7 @@ import org.opennms.netmgt.daemon.ServiceDaemon;
  * @author <a href="mailto:jim.doble@tavve.com">Jim Doble </a>
  * @author <a href="http://www.opennms.org/">OpenNMS.org </a>
  */
-public final class Scriptd extends ServiceDaemon {
-    /**
-     * The log4j category used to log debug messsages and statements.
-     */
-    private static final String LOG4J_CATEGORY = "OpenNMS.Scriptd";
+public final class Scriptd extends AbstractServiceDaemon {
 
     /**
      * The singleton instance.
@@ -86,17 +81,15 @@ public final class Scriptd extends ServiceDaemon {
      * Constructs a new Script execution daemon.
      */
     private Scriptd() {
+    	super("OpenNMS.Scriptd");
         m_execution = null;
         m_eventReader = null;
-        setStatus(START_PENDING);
     }
 
     /**
      * Initialize the <em>Scriptd</em> service.
      */
-    public synchronized void init() {
-        ThreadCategory.setPrefix(LOG4J_CATEGORY);
-        Category log = ThreadCategory.getInstance();
+    protected void onInit() {
 
         // Load the configuration information
         //
@@ -106,13 +99,13 @@ public final class Scriptd extends ServiceDaemon {
             ScriptdConfigFactory.reload();
             aFactory = ScriptdConfigFactory.getInstance();
         } catch (MarshalException ex) {
-            log.error("Failed to load scriptd configuration", ex);
+            log().error("Failed to load scriptd configuration", ex);
             throw new UndeclaredThrowableException(ex);
         } catch (ValidationException ex) {
-            log.error("Failed to load scriptd configuration", ex);
+            log().error("Failed to load scriptd configuration", ex);
             throw new UndeclaredThrowableException(ex);
         } catch (IOException ex) {
-            log.error("Failed to load scriptd configuration", ex);
+            log().error("Failed to load scriptd configuration", ex);
             throw new UndeclaredThrowableException(ex);
         }
 
@@ -125,50 +118,24 @@ public final class Scriptd extends ServiceDaemon {
         try {
             m_eventReader = new BroadcastEventProcessor(execQ);
         } catch (Exception ex) {
-            log.error("Failed to setup event reader", ex);
+            log().error("Failed to setup event reader", ex);
             throw new UndeclaredThrowableException(ex);
         }
 
         m_execution = new Executor(execQ, aFactory);
     }
 
-    /**
-     * Starts the <em>Scriptd</em> service. The process of starting the
-     * service involves reading the configuration data, starting an event
-     * receiver, and creating an execution fiber. If the service is already
-     * running then an exception is thrown.
-     * 
-     * @throws java.lang.IllegalStateException
-     *             Thrown if the service is already running.
-     */
-    public synchronized void start() {
-        ThreadCategory.setPrefix(LOG4J_CATEGORY);
-        Category log = ThreadCategory.getInstance();
+    protected void onStart() {
+		if (m_execution == null) {
+		    init();
+		}
 
-        if (isStartPending()) {
-            setStatus(STARTING);
-            if (m_execution == null) {
-                init();
-            }
+		m_execution.start();
+		log().info("Scriptd running");
+	}
 
-            m_execution.start();
-            setStatus(RUNNING);
-
-            log.info("Scriptd running");
-        } else if (m_execution != null && m_execution.getStatus() != STOPPED) {
-            // Service is already running?
-            throw new IllegalStateException("The scriptd service is already running");
-        }
-    }
-
-    /**
-     * Stops the <em>Scriptd</em> service. If the service is not running then
-     * the command is silently discarded.
-     */
-    public synchronized void stop() {
-        setStatus(STOP_PENDING);
-
-        try {
+    protected void onStop() {
+		try {
             if (m_execution != null) {
                 m_execution.stop();
             }
@@ -181,45 +148,15 @@ public final class Scriptd extends ServiceDaemon {
 
         m_eventReader = null;
         m_execution = null;
-        setStatus(STOPPED);
-    }
+	}
 
-    /**
-     * Returns the name of the <em>Scriptd</em> service.
-     * 
-     * @return The service's name.
-     */
-    public String getName() {
-        return "OpenNMS.Scriptd";
-    }
+    protected void onPause() {
+		m_execution.pause();
+	}
 
-    /**
-     * Pauses the <em>Scriptd</em> service if its currently running
-     */
-    public synchronized void pause() {
-        if (!isRunning()) {
-            return;
-        }
-
-        setStatus(PAUSE_PENDING);
-
-        m_execution.pause();
-        setStatus(PAUSED);
-    }
-
-    /**
-     * Resumes the <em>Scriptd</em> service if its currently paused
-     */
-    public synchronized void resume() {
-        if (!isPaused()) {
-            return;
-        }
-
-        setStatus(RESUME_PENDING);
-
-        m_execution.resume();
-        setStatus(RUNNING);
-    }
+    protected void onResume() {
+		m_execution.resume();
+	}
 
     /**
      * Returns the singular instance of the <em>Scriptd</em> daemon. There can

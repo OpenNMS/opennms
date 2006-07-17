@@ -116,7 +116,6 @@ public class EventTranslatorTest extends MockObjectTestCase {
     protected void tearDown() throws Exception {
         m_eventMgr.finishProcessingEvents();
         m_translator.stop();
-        m_translator.destroy();
         sleep(200);
         MockLogAppender.assertNoWarningsOrGreater();
         DataSourceFactory.setInstance(null);

@@ -54,22 +54,17 @@ import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.VacuumdConfigFactory;
 import org.opennms.netmgt.config.vacuumd.Automation;
-import org.opennms.netmgt.daemon.ServiceDaemon;
+import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.eventd.EventIpcManager;
-import org.opennms.netmgt.scheduler.Schedule;
 import org.opennms.netmgt.scheduler.LegacyScheduler;
+import org.opennms.netmgt.scheduler.Schedule;
 import org.opennms.netmgt.scheduler.Scheduler;
 
 /**
  * Implements a daemon whose job it is to run periodic updates against the
  * database for database maintenance work.
  */
-public class Vacuumd extends ServiceDaemon implements Runnable {
-
-    /**
-     * The log4j category used to log debug messsages and statements.
-     */
-    private static final String LOG4J_CATEGORY = "OpenNMS.Vacuumd";
+public class Vacuumd extends AbstractServiceDaemon implements Runnable {
 
     private static Vacuumd m_singleton;
 
@@ -89,120 +84,61 @@ public class Vacuumd extends ServiceDaemon implements Runnable {
         }
         return m_singleton;
     }
+    
+    public Vacuumd() {
+    	super("OpenNMS.Vacuumd");
+    }
 
     /*
      * (non-Javadoc)
      * 
      * @see org.opennms.netmgt.vacuumd.jmx.VacuumdMBean#init()
      */
-    public void init() {
+    protected void onInit() {
 
-        ThreadCategory.setPrefix(LOG4J_CATEGORY);
-
-        Category log = ThreadCategory.getInstance(getClass());
 
         try {
-            log.info("Loading the configuration file.");
+            log().info("Loading the configuration file.");
             VacuumdConfigFactory.reload();
         } catch (MarshalException ex) {
-            log.error("Failed to load outage configuration", ex);
+            log().error("Failed to load outage configuration", ex);
             throw new UndeclaredThrowableException(ex);
         } catch (ValidationException ex) {
-            log.error("Failed to load outage configuration", ex);
+            log().error("Failed to load outage configuration", ex);
             throw new UndeclaredThrowableException(ex);
         } catch (IOException ex) {
-            log.error("Failed to load outage configuration", ex);
+            log().error("Failed to load outage configuration", ex);
             throw new UndeclaredThrowableException(ex);
         }
 
-        log.info("Vaccumd initialization complete");
+        log().info("Vaccumd initialization complete");
         
         createScheduler();
         scheduleAutomations();
 
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.opennms.core.fiber.Fiber#start()
-     */
-    public void start() {
-        ThreadCategory.setPrefix(LOG4J_CATEGORY);
-        Category log = ThreadCategory.getInstance(getClass());
-        log.info("Starting Vacuumd");
-
-        setStatus(START_PENDING);
-        m_startTime = System.currentTimeMillis();
+    protected void onStart() {
+		m_startTime = System.currentTimeMillis();
         m_thread = new Thread(this, "Vacuumd-Thread");
-        setStatus(STARTING);
         m_thread.start();
         m_scheduler.start();
+	}
 
-    }
+    protected void onStop() {
+		m_stopped = true;
+	}
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.opennms.core.fiber.Fiber#stop()
-     */
-    public void stop() {
-        ThreadCategory.setPrefix(LOG4J_CATEGORY);
-        Category log = ThreadCategory.getInstance(getClass());
-        log.info("Stopping Vacuumd");
+    protected void onPause() {
+		m_scheduler.pause();
+        onStop();
+	}
 
-        setStatus(STOP_PENDING);
-        m_stopped = true;
-        setStatus(STOPPED);
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.opennms.core.fiber.PausableFiber#pause()
-     */
-    public void pause() {
-        if (!isRunning())
-            return;
-
-        ThreadCategory.setPrefix(LOG4J_CATEGORY);
-        Category log = ThreadCategory.getInstance(getClass());
-        log.info("Pausing Vacuumd");
-
-        setStatus(PAUSE_PENDING);
-        m_scheduler.pause();
-        m_stopped = true;
-        setStatus(PAUSED);
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.opennms.core.fiber.PausableFiber#resume()
-     */
-    public void resume() {
-        if (!isPaused())
-            return;
-
-        setStatus(RESUME_PENDING);
-        ThreadCategory.setPrefix(LOG4J_CATEGORY);
-        Category log = ThreadCategory.getInstance(getClass());
-        log.info("Resuming Vacuumd");
-
-        m_thread = new Thread(this, "Vacuumd-Thread");
-        setStatus(STARTING);
+    protected void onResume() {
+		m_thread = new Thread(this, "Vacuumd-Thread");
         m_scheduler.resume();
         m_thread.start();
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.opennms.core.fiber.Fiber#getName()
-     */
-    public String getName() {
-        return "OpenNMS.Vacuumd";
-    }
+	}
 
     /*
      * (non-Javadoc)
@@ -210,7 +146,7 @@ public class Vacuumd extends ServiceDaemon implements Runnable {
      * @see java.lang.Runnable#run()
      */
     public void run() {
-        ThreadCategory.setPrefix(LOG4J_CATEGORY);
+        ThreadCategory.setPrefix(getName());
         Category log = ThreadCategory.getInstance(getClass());
         log.info("Vacuumd scheduling started");
         setStatus(RUNNING);

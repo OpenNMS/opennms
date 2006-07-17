@@ -63,25 +63,20 @@ import org.opennms.netmgt.config.ThreshdConfigManager;
 import org.opennms.netmgt.config.threshd.Package;
 import org.opennms.netmgt.config.threshd.ThreshdConfiguration;
 import org.opennms.netmgt.config.threshd.Thresholder;
-import org.opennms.netmgt.daemon.ServiceDaemon;
+import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
-import org.opennms.netmgt.scheduler.ReadyRunnable;
 import org.opennms.netmgt.scheduler.LegacyScheduler;
+import org.opennms.netmgt.scheduler.ReadyRunnable;
 import org.opennms.netmgt.utils.EventProxy;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Log;
 
-public final class Threshd extends ServiceDaemon {
+public final class Threshd extends AbstractServiceDaemon {
     /**
      * SQL used to retrieve all the interfaces which support a particular
      * service.
      */
     private final static String SQL_RETRIEVE_INTERFACES = "SELECT nodeid,ipaddr FROM ifServices, service WHERE ifServices.serviceid = service.serviceid AND service.servicename = ?";
-
-    /**
-     * SQL used to retrieve all the service id's and names from the database.
-     */
-    private final static String SQL_RETRIEVE_SERVICE_IDS = "SELECT serviceid,servicename FROM service";
 
     /**
      * Singleton instance of the Threshd class
@@ -124,8 +119,8 @@ public final class Threshd extends ServiceDaemon {
      * Constructor.
      */
     Threshd() {
+    	super("OpenNMS.Threshd");
         m_scheduler = null;
-        setStatus(START_PENDING);
         m_svcThresholders = Collections.synchronizedMap(new TreeMap());
         m_thresholdableServices = Collections.synchronizedList(new LinkedList());
 
@@ -140,18 +135,14 @@ public final class Threshd extends ServiceDaemon {
         };
     }
 
-    public synchronized void init() {
-        // get the category logger
-        final Category log = ThreadCategory.getInstance(getClass());
+    protected void onInit() {
 
-        if (log.isDebugEnabled())
-            log.debug("start: Initializing thresholding daemon");
+    	// get the category logger
+        if (log().isDebugEnabled())
+            log().debug("start: Initializing thresholding daemon");
 
-
-
-
-        if (log.isDebugEnabled())
-            log.debug("start: Loading thresholders");
+        if (log().isDebugEnabled())
+            log().debug("start: Loading thresholders");
 
         // Threshd configuration
         //
@@ -165,8 +156,8 @@ public final class Threshd extends ServiceDaemon {
         while (eiter.hasMoreElements()) {
             Thresholder thresholder = (Thresholder) eiter.nextElement();
             try {
-                if (log.isDebugEnabled()) {
-                    log.debug("start: Loading thresholder " + thresholder.getService() + ", classname " + thresholder.getClassName());
+                if (log().isDebugEnabled()) {
+                    log().debug("start: Loading thresholder " + thresholder.getService() + ", classname " + thresholder.getClassName());
                 }
                 Class tc = Class.forName(thresholder.getClassName());
                 ServiceThresholder st = (ServiceThresholder) tc.newInstance();
@@ -182,8 +173,8 @@ public final class Threshd extends ServiceDaemon {
 
                 m_svcThresholders.put(thresholder.getService(), st);
             } catch (Throwable t) {
-                if (log.isEnabledFor(Priority.WARN)) {
-                    log.warn("start: Failed to load thresholder " + thresholder.getClassName() + " for service " + thresholder.getService(), t);
+                if (log().isEnabledFor(Priority.WARN)) {
+                    log().warn("start: Failed to load thresholder " + thresholder.getClassName() + " for service " + thresholder.getService(), t);
                 }
             }
         }
@@ -191,18 +182,18 @@ public final class Threshd extends ServiceDaemon {
         // Create a scheduler
         //
         try {
-            if (log.isDebugEnabled())
-                log.debug("start: Creating threshd scheduler");
+            if (log().isDebugEnabled())
+                log().debug("start: Creating threshd scheduler");
 
             m_scheduler = new LegacyScheduler("Threshd", config.getThreads());
         } catch (RuntimeException e) {
-            if (log.isEnabledFor(Priority.FATAL))
-                log.fatal("start: Failed to create threshd scheduler", e);
+            if (log().isEnabledFor(Priority.FATAL))
+                log().fatal("start: Failed to create threshd scheduler", e);
             throw e;
         }
 
-        if (log.isDebugEnabled())
-            log.debug("start: Scheduling existing interfaces");
+        if (log().isDebugEnabled())
+            log().debug("start: Scheduling existing interfaces");
 
         // Schedule existing interfaces for thresholding
         //
@@ -218,8 +209,8 @@ public final class Threshd extends ServiceDaemon {
                 try {
                     scheduleExistingInterfaces();
                 } catch (SQLException sqlE) {
-                    if (log.isEnabledFor(Priority.ERROR))
-                        log.error("start: Failed to schedule existing interfaces", sqlE);
+                    if (log().isEnabledFor(Priority.ERROR))
+                        log().error("start: Failed to schedule existing interfaces", sqlE);
                 } finally {
                     setSchedulingCompleted(true);
                 }
@@ -234,13 +225,13 @@ public final class Threshd extends ServiceDaemon {
         // interfaces, and schedulers them.
         //
         try {
-            if (log.isDebugEnabled())
-                log.debug("start: Creating event broadcast event processor");
+            if (log().isDebugEnabled())
+                log().debug("start: Creating event broadcast event processor");
 
             m_receiver = new BroadcastEventProcessor(this, m_thresholdableServices);
         } catch (Throwable t) {
-            if (log.isEnabledFor(Priority.FATAL))
-                log.fatal("start: Failed to initialized the broadcast event receiver", t);
+            if (log().isEnabledFor(Priority.FATAL))
+                log().fatal("start: Failed to initialized the broadcast event receiver", t);
 
             throw new UndeclaredThrowableException(t);
         }
@@ -249,96 +240,47 @@ public final class Threshd extends ServiceDaemon {
         //
         setStatus(RUNNING);
 
-        if (log.isDebugEnabled())
-            log.debug("start: Threshd running");
+        if (log().isDebugEnabled())
+            log().debug("start: Threshd running");
     }
 
-    /**
-     * Responsible for starting the thresholding daemon.
-     */
-    public synchronized void start() {
-        setStatus(STARTING);
-
-        // get the category logger
-        Category log = ThreadCategory.getInstance(getClass());
-
-        if (log.isDebugEnabled())
-            log.debug("start: Initializing thresholding daemon");
+    protected void onStart() {
+		// get the category logger
+        if (log().isDebugEnabled())
+            log().debug("start: Initializing thresholding daemon");
 
         // start the scheduler
         //
         try {
-            if (log.isDebugEnabled())
-                log.debug("start: Starting threshd scheduler");
+            if (log().isDebugEnabled())
+                log().debug("start: Starting threshd scheduler");
 
             m_scheduler.start();
         } catch (RuntimeException e) {
-            if (log.isEnabledFor(Priority.FATAL))
-                log.fatal("start: Failed to start scheduler", e);
+            if (log().isEnabledFor(Priority.FATAL))
+                log().fatal("start: Failed to start scheduler", e);
             throw e;
         }
 
-        // Set the status of the service as running.
-        //
-        setStatus(RUNNING);
 
-        if (log.isDebugEnabled())
-            log.debug("start: Threshd running");
-    }
+        if (log().isDebugEnabled())
+            log().debug("start: Threshd running");
+	}
 
-    /**
-     * Responsible for stopping the thresholding daemon.
-     */
-    public synchronized void stop() {
-        setStatus(STOP_PENDING);
-        m_scheduler.stop();
+    protected void onStop() {
+		m_scheduler.stop();
         m_receiver.close();
 
         m_scheduler = null;
-        setStatus(STOPPED);
-        Category log = ThreadCategory.getInstance(getClass());
-        if (log.isDebugEnabled())
-            log.debug("stop: Threshd stopped");
-    }
+	}
 
-    /**
-     * Responsible for pausing the thresholding daemon.
-     */
-    public synchronized void pause() {
-        if (!isRunning())
-            return;
+    protected void onPause() {
+		m_scheduler.pause();
+	}
 
-        setStatus(PAUSE_PENDING);
-        m_scheduler.pause();
-        setStatus(PAUSED);
-
-        Category log = ThreadCategory.getInstance(getClass());
-        if (log.isDebugEnabled())
-            log.debug("pause: Threshd paused");
-    }
-
-    /**
-     * Responsible for resuming the thresholding daemon.
-     */
-    public synchronized void resume() {
-        if (!isPaused())
-            return;
-
-        setStatus(RESUME_PENDING);
-        m_scheduler.resume();
-        setStatus(RUNNING);
-
-        Category log = ThreadCategory.getInstance(getClass());
-        if (log.isDebugEnabled())
-            log.debug("resume: Threshd resumed");
-    }
-
-    /**
-     * Returns the name of the thresholding daemon.
-     */
-    public String getName() {
-        return "OpenNMS.Threshd";
-    }
+    protected void onResume() {
+		m_scheduler.resume();
+	}
 
     /**
      * Returns singleton instance of the thresholding daemon.

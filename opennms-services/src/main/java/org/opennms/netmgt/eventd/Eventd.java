@@ -54,9 +54,8 @@ import javax.sql.DataSource;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.EventdConfigManager;
-import org.opennms.netmgt.daemon.ServiceDaemon;
+import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.dao.EventDao;
 import org.opennms.netmgt.eventd.adaptors.EventReceiver;
 import org.opennms.netmgt.eventd.adaptors.tcp.TcpEventReceiver;
@@ -97,7 +96,7 @@ import org.opennms.netmgt.xml.event.EventReceipt;
  * @author <A HREF="mailto:sowmya@opennms.org">Sowmya Nataraj </A>
  * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
  */
-public final class Eventd extends ServiceDaemon implements org.opennms.netmgt.eventd.adaptors.EventHandler {
+public final class Eventd extends AbstractServiceDaemon implements org.opennms.netmgt.eventd.adaptors.EventHandler {
     private static EventIpcManager m_eventIpcManager;
     /**
      * The log4j category used to log debug messsages and statements.
@@ -147,6 +146,7 @@ public final class Eventd extends ServiceDaemon implements org.opennms.netmgt.ev
      * eventd originates events during correlation) and the broadcast queue
      */
     public Eventd() {
+    	super("OpenNMS.Eventd");
         try {
             m_address = InetAddress.getLocalHost().getHostAddress();
         } catch (UnknownHostException uhE) {
@@ -156,51 +156,25 @@ public final class Eventd extends ServiceDaemon implements org.opennms.netmgt.ev
             log.warn("Could not lookup the host name for the local host machine, address set to localhost", uhE);
         }
 
-        setStatus(START_PENDING);
     }
 
-    /**
-     * Stops all the eventd threads
-     */
-    public void stop() {
-        setStatus(STOP_PENDING);
-
-        Category log = ThreadCategory.getInstance();
-        if (log.isDebugEnabled()) {
-            log.debug("Beginning shutdown process");
-        }
-
-        // Stop listener threads
-        if (log.isDebugEnabled()) {
-            log.debug("calling shutdown on tcp/udp listener threads");
+    protected void onStop() {
+		// Stop listener threads
+        if (log().isDebugEnabled()) {
+            log().debug("calling shutdown on tcp/udp listener threads");
         }
 
         m_tcpReceiver.stop();
         m_udpReceiver.stop();
 
-        if (log.isDebugEnabled()) {
-            log.debug("shutdown on tcp/udp listener threads returned");
+        if (log().isDebugEnabled()) {
+            log().debug("shutdown on tcp/udp listener threads returned");
         }
+	}
 
-        setStatus(STOPPED);
+    protected void onInit() {
 
-        if (log.isDebugEnabled()) {
-            log.debug("Eventd shutdown complete");
-        }
-    }
-
-    /**
-     * Returns a name/id for this process
-     */
-    public String getName() {
-        return "OpenNMS.Eventd";
-    }
-
-    public void init() {
-        ThreadCategory.setPrefix(LOG4J_CATEGORY);
-        Category log = ThreadCategory.getInstance();
-
-        if (m_dataSource == null) {
+    	if (m_dataSource == null) {
             throw new IllegalStateException("dataSource not initialized");
         }
 
@@ -229,7 +203,7 @@ public final class Eventd extends ServiceDaemon implements org.opennms.netmgt.ev
                     tempConn.close();
                 }
             } catch (SQLException sqlE) {
-                log.warn("An error occured closing the database connection, ignoring", sqlE);
+                log().warn("An error occured closing the database connection, ignoring", sqlE);
             }
         }
 
@@ -246,102 +220,27 @@ public final class Eventd extends ServiceDaemon implements org.opennms.netmgt.ev
             m_udpReceiver.addEventHandler(this);
 
         } catch (IOException e) {
-            log.error("Error starting up the TCP/UDP threads of eventd", e);
+            log().error("Error starting up the TCP/UDP threads of eventd", e);
             throw new UndeclaredThrowableException(e);
         }
 
 
     }
 
-    /**
-     * Read the eventd configuration xml, create and start all the subthreads
-     */
-    public void start() {
-        setStatus(STARTING);
-
-        ThreadCategory.setPrefix(LOG4J_CATEGORY);
-        Category log = ThreadCategory.getInstance();
-
-        m_tcpReceiver.start();
+    protected void onStart() {
+		m_tcpReceiver.start();
         m_udpReceiver.start();
 
-        if (log.isDebugEnabled()) {
-            log.debug("Listener threads started");
+        if (log().isDebugEnabled()) {
+            log().debug("Listener threads started");
         }
 
-        if (log.isDebugEnabled()) {
-            log.debug("Eventd running");
+        if (log().isDebugEnabled()) {
+            log().debug("Eventd running");
         }
+	}
 
-        setStatus(RUNNING);
-    }
-
-    /**
-     * Pauses all the threads
-     */
-    public void pause() {
-        if (!isRunning()) {
-            return;
-        }
-
-        setStatus(PAUSE_PENDING);
-
-        Category log = ThreadCategory.getInstance();
-
-        // pause the listening threads
-        //
-        // if(log.isDebugEnabled())
-        // log.debug("Calling pause thread on tcp/udp listeners");
-
-        // m_tcpReceiver.pause();
-        // m_udpReceiver.pause();
-
-        // if(log.isDebugEnabled()) {
-        //     log.debug("tcp/udp listeners paused");
-        // }
-
-        if (log.isDebugEnabled()) {
-            log.debug("Finished pausing all threads");
-        }
-
-        setStatus(PAUSED);
-    }
-
-    /**
-     * Resumes all the threads
-     */
-    public void resume() {
-        if (!isPaused()) {
-            return;
-        }
-
-        setStatus(RESUME_PENDING);
-
-        Category log = ThreadCategory.getInstance();
-
-        // if(log.isDebugEnabled()) {
-        //     log.debug("Calling resume thread on tcp/udp listeners");
-        // }
-
-        // m_tcpReceiver.resume();
-        // m_udpReceiver.resume();
-
-        // if(log.isDebugEnabled()) {
-        //     log.debug("TCP/UDP Listener threads resumed");
-        // }
-
-        // if(log.isDebugEnabled()) {
-        //     log.debug("Event handlers resumed");
-        // }
-
-        if (log.isDebugEnabled()) {
-            log.debug("Finished resuming ");
-        }
-
-        setStatus(RUNNING);
-    }
-
-    /**
+	/**
      * Used to retrieve the local host address. The address of the machine on
      * which Eventd is running.
      * 

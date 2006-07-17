@@ -38,20 +38,18 @@ import java.util.Map;
 
 import javax.sql.DataSource;
 
-import org.apache.log4j.Category;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.capsd.EventUtils;
 import org.opennms.netmgt.config.PassiveStatusKey;
 import org.opennms.netmgt.config.PassiveStatusValue;
-import org.opennms.netmgt.daemon.ServiceDaemon;
+import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.eventd.EventIpcManager;
 import org.opennms.netmgt.eventd.EventListener;
 import org.opennms.netmgt.poller.pollables.PollStatus;
 import org.opennms.netmgt.utils.Querier;
 import org.opennms.netmgt.xml.event.Event;
 
-public class PassiveStatusKeeper extends ServiceDaemon implements EventListener {
+public class PassiveStatusKeeper extends AbstractServiceDaemon implements EventListener {
     
     private static PassiveStatusKeeper s_instance = new PassiveStatusKeeper();
     
@@ -65,9 +63,11 @@ public class PassiveStatusKeeper extends ServiceDaemon implements EventListener 
 
     
     public PassiveStatusKeeper() {
+    	super("OpenNMS.PassiveStatusKeeper");
     }
     
     public PassiveStatusKeeper(EventIpcManager eventMgr) {
+    	this();
         setEventManager(eventMgr);
     }
     
@@ -80,7 +80,7 @@ public class PassiveStatusKeeper extends ServiceDaemon implements EventListener 
     }
 
     
-    public void init() {
+    protected void onInit() {
         if (m_initialized) return;
         
         checkPreRequisites();
@@ -108,7 +108,6 @@ public class PassiveStatusKeeper extends ServiceDaemon implements EventListener 
         
         
         m_initialized = true;
-        setStatus(START_PENDING);
     }
 
     private void checkPreRequisites() {
@@ -118,32 +117,11 @@ public class PassiveStatusKeeper extends ServiceDaemon implements EventListener 
             throw new IllegalStateException("dbConnectionFactory has not been set");
     }
 
-    public void start() {
-        setStatus(RUNNING);
-    }
-
-    public void stop() {
-        setStatus(STOP_PENDING);
-        setStatus(STOPPED);
-    }
-    
-    public void destroy() {
+    protected void onStop() {
         setStatus(STOPPED);
         m_initialized = false;
         m_eventMgr = null;
         m_statusTable = null;
-    }
-
-    public String getName() {
-        return "OpenNMS.PassiveStatusKeeper";
-    }
-
-    public void pause() {
-        setStatus(PAUSED);
-    }
-
-    public void resume() {
-        setStatus(RESUME_PENDING);
     }
 
     public void setStatus(String nodeLabel, String ipAddr, String svcName, PollStatus pollStatus) {

@@ -57,7 +57,7 @@ import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.DhcpdConfigFactory;
-import org.opennms.netmgt.daemon.ServiceDaemon;
+import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.utils.IpValidator;
 
 /**
@@ -106,11 +106,7 @@ import org.opennms.netmgt.utils.IpValidator;
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  * 
  */
-public final class Dhcpd extends ServiceDaemon implements Runnable, Observer {
-    /**
-     * Log4J prefix
-     */
-    private static final String LOG4J_CATEGORY = "OpenNMS.Dhcpd";
+public final class Dhcpd extends AbstractServiceDaemon implements Runnable, Observer {
 
     /**
      * The singular instance of the DHCP server.
@@ -149,36 +145,17 @@ public final class Dhcpd extends ServiceDaemon implements Runnable, Observer {
      * 
      */
     private Dhcpd() {
+    	super("OpenNMS.Dhcpd");
         m_clients = null;
         m_server = null;
         m_listener = null;
-        setStatus(START_PENDING);
         m_worker = null;
     }
 
-    /**
-     * Starts the server instance. If the server is running then an exception is
-     * thrown. Also, since the opening of sockets and other resources are
-     * delayed until this method is invoked, standard exceptions are rethrown as
-     * an {@link java.lang.reflect.UndeclaredThrowableExceptionundeclared
-     * throwable}.
-     * 
-     * @throws java.lang.IllegalStateException
-     *             Thrown if the server is already running.
-     * 
-     * @throws java.lang.reflect.UndeclaredThrowableException
-     *             Thrown if a non-runtime exception is genereated during
-     *             startup.
-     * 
-     */
-    public synchronized void start() {
-        ThreadCategory.setPrefix(LOG4J_CATEGORY);
-        Category log = ThreadCategory.getInstance(getClass());
-        boolean relayMode = false;
-        if (log.isDebugEnabled())
-            log.debug("start: DHCP client daemon starting...");
-
-        setStatus(STARTING);
+    protected void onStart() {
+		boolean relayMode = false;
+        if (log().isDebugEnabled())
+            log().debug("start: DHCP client daemon starting...");
 
         // Only allow start to be called once.
         //
@@ -201,21 +178,21 @@ public final class Dhcpd extends ServiceDaemon implements Runnable, Observer {
             DhcpdConfigFactory.reload();
             dFactory = DhcpdConfigFactory.getInstance();
         } catch (MarshalException ex) {
-            log.error("Failed to load dhcpd configuration", ex);
+            log().error("Failed to load dhcpd configuration", ex);
             throw new UndeclaredThrowableException(ex);
         } catch (ValidationException ex) {
-            log.error("Failed to load dhcpd configuration", ex);
+            log().error("Failed to load dhcpd configuration", ex);
             throw new UndeclaredThrowableException(ex);
         } catch (IOException ex) {
-            log.error("Failed to load dhcpd configuration", ex);
+            log().error("Failed to load dhcpd configuration", ex);
             throw new UndeclaredThrowableException(ex);
         }
 
         // open the server
         //
         try {
-            if (log.isDebugEnabled())
-                log.debug("start: listening on TCP port " + dFactory.getPort() + " for incoming client requests.");
+            if (log().isDebugEnabled())
+                log().debug("start: listening on TCP port " + dFactory.getPort() + " for incoming client requests.");
             m_server = new ServerSocket(dFactory.getPort());
         } catch (IOException ex) {
             throw new UndeclaredThrowableException(ex);
@@ -223,21 +200,21 @@ public final class Dhcpd extends ServiceDaemon implements Runnable, Observer {
 
         // see if we have a valid relay address
         String myIpStr = DhcpdConfigFactory.getInstance().getMyIpAddress();
-        if (log.isDebugEnabled())
-            log.debug("Checking string \"" + myIpStr + "\" to see if we have an IP address");
+        if (log().isDebugEnabled())
+            log().debug("Checking string \"" + myIpStr + "\" to see if we have an IP address");
         if (myIpStr != null &&  !myIpStr.equals("") && !myIpStr.equalsIgnoreCase("broadcast")) {
             if(IpValidator.isIpValid(myIpStr)) {
                 relayMode = true;
             }
         }
-        if (log.isDebugEnabled())
-            log.debug("Setting relay mode " + relayMode);
+        if (log().isDebugEnabled())
+            log().debug("Setting relay mode " + relayMode);
         // open the receiver socket(s)
         //
         if(!relayMode || (dFactory.getExtendedMode() != null && dFactory.getExtendedMode().equalsIgnoreCase("true"))) {
             try {
-                if (log.isDebugEnabled())
-                    log.debug("start: starting receiver thread for port 68");
+                if (log().isDebugEnabled())
+                    log().debug("start: starting receiver thread for port 68");
                 m_listener = new Receiver(m_clients);
                 m_listener.start();
             } catch (IOException ex) {
@@ -251,8 +228,8 @@ public final class Dhcpd extends ServiceDaemon implements Runnable, Observer {
 
         if(relayMode) {
             try {
-                if (log.isDebugEnabled())
-                    log.debug("start: starting receiver thread for port 67");
+                if (log().isDebugEnabled())
+                    log().debug("start: starting receiver thread for port 67");
                 m_listener2 = new Receiver2(m_clients);
                 m_listener2.start();
             } catch (IOException ex) {
@@ -266,21 +243,11 @@ public final class Dhcpd extends ServiceDaemon implements Runnable, Observer {
 
         m_worker = new Thread(this, getName());
         m_worker.start();
-    }
+	}
 
-    /**
-     * Stops the currently running instance of the DHCP server. If the server is
-     * not running, then this command is silently discarded.
-     * 
-     */
-    public synchronized void stop() {
-        if (m_worker == null)
+    protected void onStop() {
+		if (m_worker == null)
             return;
-
-        // set the pending status
-        //
-        setStatus(STOP_PENDING);
-
         // stop the receiver
         //
         m_listener.stop();
@@ -307,31 +274,7 @@ public final class Dhcpd extends ServiceDaemon implements Runnable, Observer {
         m_clients = null;
         m_worker = null;
         m_listener = null;
-        setStatus(STOPPED);
-    }
-
-    /**
-     * Returns the current name of the fiber.
-     */
-    public String getName() {
-        return "OpenNMS.Dhcpd";
-    }
-
-    /**
-     * Pauses Dhcpd
-     */
-    public void pause() {
-        // do nothing
-        setStatus(PAUSED);
-    }
-
-    /**
-     * Resumes Trapd
-     */
-    public void resume() {
-        // do nothing
-        setStatus(RUNNING);
-    }
+	}
 
     /**
      * The main routine of the DHCP server. This method accepts incomming client
@@ -470,6 +413,7 @@ public final class Dhcpd extends ServiceDaemon implements Runnable, Observer {
         return Poller.isServer(address, Poller.DEFAULT_TIMEOUT, Poller.DEFAULT_RETRIES);
     }
 
-    public void init() {
+    protected void onInit() {
+    	
     }
 }

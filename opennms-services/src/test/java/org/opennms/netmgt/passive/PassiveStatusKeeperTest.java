@@ -114,7 +114,6 @@ public class PassiveStatusKeeperTest extends MockObjectTestCase {
     protected void tearDown() throws Exception {
         m_eventMgr.finishProcessingEvents();
         m_psk.stop();
-        m_psk.destroy();
         sleep(200);
         MockLogAppender.assertNoWarningsOrGreater();
         DataSourceFactory.setInstance(null);
@@ -234,7 +233,7 @@ public class PassiveStatusKeeperTest extends MockObjectTestCase {
         m_db.createOutage(svc, downEvent);
 
         m_psk.stop();
-        m_psk.destroy();
+        m_psk.onStop();
         
         
         m_psk.setEventManager(m_eventMgr);

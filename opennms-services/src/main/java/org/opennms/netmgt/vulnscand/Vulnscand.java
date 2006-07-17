@@ -46,7 +46,7 @@ import org.opennms.core.concurrent.RunnableConsumerThreadPool;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.VulnscandConfigFactory;
-import org.opennms.netmgt.daemon.ServiceDaemon;
+import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 
 /**
  * <P>
@@ -67,16 +67,11 @@ import org.opennms.netmgt.daemon.ServiceDaemon;
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  * 
  */
-public class Vulnscand extends ServiceDaemon {
+public class Vulnscand extends AbstractServiceDaemon {
     /**
      * The log4j category used to log messages.
      */
     private static final String LOG4J_CATEGORY = "OpenNMS.Vulnscand";
-
-    /**
-     * The prefix for the fiber name.
-     */
-    private static final String FIBER_NAME = "Vulnscand";
 
     /**
      * Singleton instance of the Vulnscand class
@@ -138,17 +133,12 @@ public class Vulnscand extends ServiceDaemon {
      * Constructs the Vulnscand objec
      */
     public Vulnscand() {
+    	super("OpenNMS.Vulnscand");
         m_scheduler = null;
-        setStatus(START_PENDING);
     }
 
-    /**
-     * Stop the Vulnscand threads.
-     */
-    public void stop() {
-        setStatus(STOP_PENDING);
-
-        // Stop the broadcast event receiver
+    protected void onStop() {
+		// Stop the broadcast event receiver
         //
         m_receiver.close();
 
@@ -159,32 +149,21 @@ public class Vulnscand extends ServiceDaemon {
         // Stop the Rescan Processor thread pool
         //
         m_scheduledScanRunner.stop();
+	}
 
-        setStatus(STOPPED);
-    }
-
-    /**
-     * Start the Vulnscand threads.
-     */
-    public void start() {
-        ThreadCategory.setPrefix(LOG4J_CATEGORY);
-
-        Category log = ThreadCategory.getInstance();
-
-        setStatus(STARTING);
-
-        // Initialize the Vulnscand configuration factory.
+    protected void onStart() {
+		// Initialize the Vulnscand configuration factory.
         //
         try {
             VulnscandConfigFactory.reload();
         } catch (MarshalException ex) {
-            log.error("Failed to load Vulnscand configuration", ex);
+            log().error("Failed to load Vulnscand configuration", ex);
             throw new UndeclaredThrowableException(ex);
         } catch (ValidationException ex) {
-            log.error("Failed to load Vulnscand configuration", ex);
+            log().error("Failed to load Vulnscand configuration", ex);
             throw new UndeclaredThrowableException(ex);
         } catch (IOException ex) {
-            log.error("Failed to load Vulnscand configuration", ex);
+            log().error("Failed to load Vulnscand configuration", ex);
             throw new UndeclaredThrowableException(ex);
         }
 
@@ -193,22 +172,22 @@ public class Vulnscand extends ServiceDaemon {
         try {
             DataSourceFactory.init();
         } catch (IOException ie) {
-            log.fatal("IOException loading database config", ie);
+            log().fatal("IOException loading database config", ie);
             throw new UndeclaredThrowableException(ie);
         } catch (MarshalException me) {
-            log.fatal("Marshall Exception loading database config", me);
+            log().fatal("Marshall Exception loading database config", me);
             throw new UndeclaredThrowableException(me);
         } catch (ValidationException ve) {
-            log.fatal("Validation Exception loading database config", ve);
+            log().fatal("Validation Exception loading database config", ve);
             throw new UndeclaredThrowableException(ve);
         } catch (ClassNotFoundException ce) {
-            log.fatal("Class lookup failure loading database config", ce);
+            log().fatal("Class lookup failure loading database config", ce);
             throw new UndeclaredThrowableException(ce);
         } catch (PropertyVetoException e) {
-            log.fatal("Property Veto Exception loading database config", e);
+            log().fatal("Property Veto Exception loading database config", e);
             throw new UndeclaredThrowableException(e);
         } catch (SQLException e) {
-            log.fatal("SQL Exception loading database config", e);
+            log().fatal("SQL Exception loading database config", e);
             throw new UndeclaredThrowableException(e);
         }
         
@@ -221,25 +200,25 @@ public class Vulnscand extends ServiceDaemon {
 
         // Start the suspect event and rescan thread pools
         //
-        if (log.isDebugEnabled())
-            log.debug("start: Starting runnable thread pools...");
+        if (log().isDebugEnabled())
+            log().debug("start: Starting runnable thread pools...");
 
         m_specificScanRunner.start();
         m_scheduledScanRunner.start();
 
         // Create and start the rescan scheduler
         //
-        if (log.isDebugEnabled())
-            log.debug("start: Creating rescan scheduler");
+        if (log().isDebugEnabled())
+            log().debug("start: Creating rescan scheduler");
         try {
             // During instantiation, the scheduler will load the
             // list of known nodes from the database
             m_scheduler = new Scheduler(m_scheduledScanRunner.getRunQueue());
         } catch (SQLException sqlE) {
-            log.error("Failed to initialize the rescan scheduler.", sqlE);
+            log().error("Failed to initialize the rescan scheduler.", sqlE);
             throw new UndeclaredThrowableException(sqlE);
         } catch (Throwable t) {
-            log.error("Failed to initialize the rescan scheduler.", t);
+            log().error("Failed to initialize the rescan scheduler.", t);
             throw new UndeclaredThrowableException(t);
         }
         m_scheduler.start();
@@ -247,47 +226,15 @@ public class Vulnscand extends ServiceDaemon {
         // Create an event receiver.
         //
         try {
-            if (log.isDebugEnabled())
-                log.debug("start: Creating event broadcast event receiver");
+            if (log().isDebugEnabled())
+                log().debug("start: Creating event broadcast event receiver");
 
             m_receiver = new BroadcastEventProcessor(m_specificScanRunner.getRunQueue(), m_scheduler);
         } catch (Throwable t) {
-            log.error("Failed to initialized the broadcast event receiver", t);
+            log().error("Failed to initialized the broadcast event receiver", t);
             throw new UndeclaredThrowableException(t);
         }
-
-        setStatus(RUNNING);
-    }
-
-    public void pause() {
-        Category log = ThreadCategory.getInstance(getClass());
-
-        if (log.isDebugEnabled())
-            log.debug("pause: Cannot pause vulnscand, status is unchanged");
-    }
-
-    public void resume() {
-        if (!isPaused())
-            return;
-
-        setStatus(RESUME_PENDING);
-
-        Category log = ThreadCategory.getInstance(getClass());
-
-        // TBD - Resume all threads
-
-        setStatus(RUNNING);
-
-        if (log.isDebugEnabled())
-            log.debug("resume: Finished resuming all threads");
-    }
-
-    /**
-     * Returns a name/id for this process
-     */
-    public String getName() {
-        return "OpenNMS.Vulnscand";
-    }
+	}
 
     /**
      * Used to retrieve the local host name/address. The name/address of the
@@ -305,6 +252,6 @@ public class Vulnscand extends ServiceDaemon {
         return m_dbSyncLock;
     }
 
-    public void init() {
+    protected void onInit() {
     }
 } // end Vulnscand class
