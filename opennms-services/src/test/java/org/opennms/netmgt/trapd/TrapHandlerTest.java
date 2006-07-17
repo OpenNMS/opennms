@@ -11,6 +11,7 @@ import java.net.InetAddress;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
+import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.eventd.EventConfigurationManager;
 import org.opennms.netmgt.mock.EventAnticipator;
 import org.opennms.netmgt.mock.EventWrapper;
@@ -36,15 +37,18 @@ public class TrapHandlerTest extends TestCase {
     }
 
 
-    TrapHandler m_trapHandler = null;
+    private TrapHandler m_trapHandler = null;
 
-    EventAnticipator m_anticipator = null;
+    private EventAnticipator m_anticipator = null;
 
-    MockEventIpcManager m_eventMgr = null;
+    private MockEventIpcManager m_eventMgr = null;
     
-    InetAddress m_localhost = null;
+    private InetAddress m_localhost = null;
     
-    int m_port = 10000; 
+    private int m_port = 10000; 
+
+    private static final String m_ip = "127.0.0.1";
+    private static final long m_nodeId = 1;
 
     protected void setUp() throws Exception {
         MockLogAppender.setupLogging();
@@ -54,7 +58,7 @@ public class TrapHandlerTest extends TestCase {
         m_eventMgr = new MockEventIpcManager();
         m_eventMgr.setEventAnticipator(m_anticipator);
         
-        m_localhost = InetAddress.getByName("127.0.0.1");
+        m_localhost = InetAddress.getByName(m_ip);
 
         String eventconf =
             "<events xmlns=\"http://xmlns.opennms.org/xsd/eventconf\">\n" +
@@ -157,6 +161,9 @@ public class TrapHandlerTest extends TestCase {
         StringReader reader = new StringReader(eventconf);
 
         EventConfigurationManager.loadConfiguration(reader);
+
+        TrapdIPMgr.clearKnownIpsMap();
+        TrapdIPMgr.setNodeId(m_ip, m_nodeId);
     }
     
     protected void setUpTrapHandler(boolean newSuspectOnTrap) {
@@ -189,114 +196,202 @@ public class TrapHandlerTest extends TestCase {
     }
 
     public void testV1TrapNoNewSuspect() throws Exception {
-        anticipateAndSend(false, "uei.opennms.org/default/trap", "v1", null,
-                          6, 1);
+        TrapdIPMgr.clearKnownIpsMap();
+        anticipateAndSend(false, false, "uei.opennms.org/default/trap", "v1",
+                          null, 6, 1);
     }
     
     public void testV2TrapNoNewSuspect() throws Exception {
-        anticipateAndSend(false, "uei.opennms.org/default/trap", "v2c", null,
-                          6, 1);
+        TrapdIPMgr.clearKnownIpsMap();
+        anticipateAndSend(false, false, "uei.opennms.org/default/trap",
+                          "v2c", null, 6, 1);
     }
     
     public void testV1TrapNewSuspect() throws Exception {
-        anticipateAndSend(true, "uei.opennms.org/default/trap", "v1", null,
-                          6, 1);
+        TrapdIPMgr.clearKnownIpsMap();
+        anticipateAndSend(true, false, "uei.opennms.org/default/trap",
+                          "v1", null, 6, 1);
     }
     
     public void testV2TrapNewSuspect() throws Exception {
-        anticipateAndSend(true, "uei.opennms.org/default/trap", "v2c", null,
-                          6, 1);
+        TrapdIPMgr.clearKnownIpsMap();
+        anticipateAndSend(true, false, "uei.opennms.org/default/trap",
+                          "v2c", null, 6, 1);
     }
     
     public void testV1EnterpriseIdAndGenericMatch() throws Exception {
-        anticipateAndSend(false,
+        anticipateAndSend(false, true,
                           "uei.opennms.org/IETF/BGP/traps/bgpEstablished",
                           "v1", ".1.3.6.1.2.1.15.7", 6, 1);
     }
     
     public void testV2EnterpriseIdAndGenericAndSpecificMatch()
         throws Exception {
-        anticipateAndSend(false,
+        anticipateAndSend(false, true,
                           "uei.opennms.org/IETF/BGP/traps/bgpEstablished",
                           "v2c", ".1.3.6.1.2.1.15.7", 6, 1);
     }
 
     public void testV2EnterpriseIdAndGenericAndSpecificMatchWithZero()
         throws Exception {
-        anticipateAndSend(false,
+        anticipateAndSend(false, true,
                           "uei.opennms.org/IETF/BGP/traps/bgpEstablished",
                           "v2c", ".1.3.6.1.2.1.15.7.0", 6, 1);
     }
     
     public void testV2EnterpriseIdAndGenericAndSpecificMissWithExtraZeros()
         throws Exception {
-        anticipateAndSend(false, "uei.opennms.org/default/trap", "v2c",
+        anticipateAndSend(false, true, "uei.opennms.org/default/trap", "v2c",
                           ".1.3.6.1.2.1.15.7.0.0", 6, 1);
     }
 
     public void testV1EnterpriseIdAndGenericAndSpecificMissWithWrongGeneric()
         throws Exception {
-        anticipateAndSend(false, "uei.opennms.org/default/trap", "v1",
+        anticipateAndSend(false, true, "uei.opennms.org/default/trap", "v1",
                           ".1.3.6.1.2.1.15.7", 5, 1);
     }
     
     public void testV1EnterpriseIdAndGenericAndSpecificMissWithWrongSpecific()
         throws Exception {
-        anticipateAndSend(false, "uei.opennms.org/default/trap", "v1",
+        anticipateAndSend(false, true, "uei.opennms.org/default/trap", "v1",
                           ".1.3.6.1.2.1.15.7", 6, 50);
     }
 
     public void testV1GenericMatch() throws Exception {
-        anticipateAndSend(false,
+        anticipateAndSend(false, true,
                           "uei.opennms.org/generic/traps/SNMP_Cold_Start",
                           "v1", null, 0, 0);
     }
     
     public void testV2GenericMatch() throws Exception {
-        anticipateAndSend(false,
+        anticipateAndSend(false, true,
                           "uei.opennms.org/generic/traps/SNMP_Cold_Start",
                           "v2c", ".1.3.6.1.6.3.1.1.5.1", 0, 0);
     }
     
     public void testV1TrapDroppedEvent() throws Exception {
-        anticipateAndSend(false, null, "v1", ".1.3.6.1.2.1.15.7", 6, 2);
+        anticipateAndSend(false, true, null, "v1", ".1.3.6.1.2.1.15.7", 6, 2);
     }
     
     public void testV2TrapDroppedEvent() throws Exception {
-        anticipateAndSend(false, null, "v2c", ".1.3.6.1.2.1.15.7", 6, 2);
+        anticipateAndSend(false, true, null, "v2c", ".1.3.6.1.2.1.15.7", 6, 2);
     }
     
     public void testV1TrapDefaultEvent() throws Exception {
-        anticipateAndSend(false, "uei.opennms.org/default/trap", "v1", null,
-                          6, 1);
+        anticipateAndSend(false, true, "uei.opennms.org/default/trap",
+                          "v1", null, 6, 1);
     }
     
     public void testV2TrapDefaultEvent() throws Exception {
-        anticipateAndSend(false, "uei.opennms.org/default/trap", "v2c", null,
-                          6, 1);
+        anticipateAndSend(false, true, "uei.opennms.org/default/trap",
+                          "v2c", null, 6, 1);
+    }
+ 
+    public void testNodeGainedModifiesIpMgr() throws Exception {
+        long nodeId = 2;
+        setUpTrapHandler(true);
+        
+        anticipateEvent("uei.opennms.org/default/trap", m_ip, nodeId);
+
+        Event event =
+            anticipateEvent(EventConstants.NODE_GAINED_INTERFACE_EVENT_UEI,
+                            m_ip, nodeId);
+        m_eventMgr.sendNow(event);
+
+        try {
+            Thread.sleep(100);
+        } catch (InterruptedException e) {
+            // do nothing
+        }
+        
+        sendTrap("v1", null, 6, 1);
+        
+        finishUp();
+    }
+
+    public void testInterfaceReparentedModifiesIpMgr() throws Exception {
+        long nodeId = 2;
+        setUpTrapHandler(true);
+        
+        anticipateEvent("uei.opennms.org/default/trap", m_ip, nodeId);
+
+        Event event =
+            anticipateEvent(EventConstants.INTERFACE_REPARENTED_EVENT_UEI,
+                            m_ip, nodeId);
+        m_eventMgr.sendNow(event);
+
+        try {
+            Thread.sleep(100);
+        } catch (InterruptedException e) {
+            // do nothing
+        }
+        
+        sendTrap("v1", null, 6, 1);
+        
+        finishUp();
+    }
+
+    public void testInterfaceDeletedModifiesIpMgr() throws Exception {
+        long nodeId = 0;
+        setUpTrapHandler(true);
+        
+        anticipateEvent("uei.opennms.org/default/trap", m_ip, nodeId);
+
+        Event event =
+            anticipateEvent(EventConstants.INTERFACE_DELETED_EVENT_UEI,
+                            m_ip, nodeId);
+        m_eventMgr.sendNow(event);
+
+        anticipateEvent("uei.opennms.org/internal/discovery/newSuspect",
+                        m_ip, nodeId);
+
+        try {
+            Thread.sleep(100);
+        } catch (InterruptedException e) {
+            // do nothing
+        }
+        
+        sendTrap("v1", null, 6, 1);
+        
+        finishUp();
     }
     
-    public void anticipateEvent(String uei) {
+    public Event anticipateEvent(String uei) {
+        return anticipateEvent(uei, m_ip, m_nodeId);
+    }
+
+    public Event anticipateEvent(String uei, String ip, long nodeId) {
         Event event = new Event();
-        event.setInterface("127.0.0.1");
-        event.setNodeid(0);
+        event.setInterface(ip);
+        event.setNodeid(nodeId);
         event.setUei(uei);
-//        System.out.println("Anticipating: " + new EventWrapper(event));
         m_anticipator.anticipateEvent(event);
+        return event;
     }
 
     
-    public void anticipateAndSend(boolean newSuspectOnTrap, String event,
+    public void anticipateAndSend(boolean newSuspectOnTrap, boolean nodeKnown,
+                                  String event,
                                   String version, String enterprise,
                                   int generic, int specific) throws Exception {
         setUpTrapHandler(newSuspectOnTrap);
         
         if (newSuspectOnTrap) {
-            anticipateEvent("uei.opennms.org/internal/discovery/newSuspect");
+            // Note: the nodeId will be zero because the node is not known
+            anticipateEvent("uei.opennms.org/internal/discovery/newSuspect",
+                            m_ip, 0);
         }
 
         if (event != null) {
-            anticipateEvent(event);
+            if (nodeKnown) {
+                anticipateEvent(event);
+            } else {
+                /*
+                 * If the node is unknown, the nodeId on the trap event
+                 * will be zero.
+                 */
+                anticipateEvent(event, m_ip, 0);
+            }
         }
         
         sendTrap(version, enterprise, generic, specific);
