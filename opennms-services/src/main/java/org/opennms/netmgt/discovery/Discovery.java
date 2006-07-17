@@ -55,7 +55,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.log4j.Category;
-import org.apache.log4j.Priority;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.queue.FifoQueue;
@@ -67,7 +66,7 @@ import org.opennms.netmgt.config.discovery.DiscoveryConfiguration;
 import org.opennms.netmgt.config.discovery.IncludeRange;
 import org.opennms.netmgt.config.discovery.IncludeUrl;
 import org.opennms.netmgt.config.discovery.Specific;
-import org.opennms.netmgt.daemon.ServiceDaemon;
+import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 
 /**
@@ -80,11 +79,7 @@ import org.opennms.netmgt.eventd.EventIpcManagerFactory;
  * @author <a href="http://www.opennms.org/">OpenNMS.org </a>
  * 
  */
-public final class Discovery extends ServiceDaemon {
-    /**
-     * The log4j category used to log messages.
-     */
-    private static final String LOG4J_CATEGORY = "OpenNMS.Discovery";
+public final class Discovery extends AbstractServiceDaemon {
 
     /**
      * The string indicating the start of the comments in a line containing the
@@ -128,11 +123,11 @@ public final class Discovery extends ServiceDaemon {
      * Constructs a new discovery instance.
      */
     private Discovery() {
+    	super("OpenNMS.Discovery");
         m_generator = null;
         m_eventWriter = null;
         m_eventReader = null;
         m_manager = null;
-        setStatus(START_PENDING);
     }
 
     /**
@@ -222,14 +217,12 @@ public final class Discovery extends ServiceDaemon {
         return bRet;
     }
 
-    public synchronized void init() {
-        ThreadCategory.setPrefix(LOG4J_CATEGORY);
-        Category log = ThreadCategory.getInstance();
-
-	if (m_manager != null) {
-	    log.error("The discovery service is already running and init() was called");
-            throw new IllegalStateException("The discovery service is already running");
-	}
+    protected void onInit() {
+    	
+        if (m_manager != null) {
+        	log().error("The discovery service is already running and init() was called");
+        	throw new IllegalStateException("The discovery service is already running");
+        }
 
         // Initialize the Database configuration factory and verify
         // that we can get a database connection.
@@ -239,22 +232,22 @@ public final class Discovery extends ServiceDaemon {
             DataSourceFactory.init();
             ctest = DataSourceFactory.getInstance().getConnection();
         } catch (IOException ie) {
-            log.fatal("IOException getting database connection", ie);
+            log().fatal("IOException getting database connection", ie);
             throw new UndeclaredThrowableException(ie);
         } catch (MarshalException me) {
-            log.fatal("Marshall Exception getting database connection", me);
+            log().fatal("Marshall Exception getting database connection", me);
             throw new UndeclaredThrowableException(me);
         } catch (ValidationException ve) {
-            log.fatal("Validation Exception getting database connection", ve);
+            log().fatal("Validation Exception getting database connection", ve);
             throw new UndeclaredThrowableException(ve);
         } catch (SQLException sqlE) {
-            log.fatal("SQL Exception getting database connection", sqlE);
+            log().fatal("SQL Exception getting database connection", sqlE);
             throw new UndeclaredThrowableException(sqlE);
         } catch (ClassNotFoundException cnfE) {
-            log.fatal("Class Not Found Exception getting database connection", cnfE);
+            log().fatal("Class Not Found Exception getting database connection", cnfE);
             throw new UndeclaredThrowableException(cnfE);
         } catch (PropertyVetoException e) {
-            log.fatal("initialize: Failed getting connection to the database.", e);
+            log().fatal("initialize: Failed getting connection to the database.", e);
             throw new UndeclaredThrowableException(e);
         } finally {
             try {
@@ -271,13 +264,13 @@ public final class Discovery extends ServiceDaemon {
             DiscoveryConfigFactory.reload();
             dFactory = DiscoveryConfigFactory.getInstance();
         } catch (MarshalException ex) {
-            log.error("Failed to load discovery configuration", ex);
+            log().error("Failed to load discovery configuration", ex);
             throw new UndeclaredThrowableException(ex);
         } catch (ValidationException ex) {
-            log.error("Failed to load discovery configuration", ex);
+            log().error("Failed to load discovery configuration", ex);
             throw new UndeclaredThrowableException(ex);
         } catch (IOException ex) {
-            log.error("Failed to load discovery configuration", ex);
+            log().error("Failed to load discovery configuration", ex);
             throw new UndeclaredThrowableException(ex);
         }
 
@@ -312,7 +305,7 @@ public final class Discovery extends ServiceDaemon {
             try {
                 specifics.add(new IPPollAddress(s.getContent(), timeout, retries));
             } catch (UnknownHostException uhE) {
-                log.warn("Failed to convert address " + s.getContent(), uhE);
+                log().warn("Failed to convert address " + s.getContent(), uhE);
             }
         }
 
@@ -337,7 +330,7 @@ public final class Discovery extends ServiceDaemon {
             try {
                 includes.add(new IPPollRange(ir.getBegin(), ir.getEnd(), timeout, retries));
             } catch (UnknownHostException uhE) {
-                log.warn("Failed to convert address range (" + ir.getBegin() + ", " + ir.getEnd() + ")", uhE);
+                log().warn("Failed to convert address range (" + ir.getBegin() + ", " + ir.getEnd() + ")", uhE);
             }
         }
 
@@ -390,7 +383,7 @@ public final class Discovery extends ServiceDaemon {
 		new SuspectEventGenerator(responsive,
 					  cfg.getRestartSleepTime());
         } catch (Exception ex) {
-            log.error("Failed to create event writer", ex);
+            log().error("Failed to create event writer", ex);
             throw new UndeclaredThrowableException(ex);
         }
 
@@ -402,7 +395,7 @@ public final class Discovery extends ServiceDaemon {
             } catch (Exception exx) {
             }
 
-	    log.error("Failed to create event reader", ex);
+	    log().error("Failed to create event reader", ex);
             throw new UndeclaredThrowableException(ex);
         }
 
@@ -412,45 +405,22 @@ public final class Discovery extends ServiceDaemon {
 					cfg.getPacketsPerSecond());
         } catch (Throwable ex) {
 	    ex.printStackTrace();
-	    log.error("Failed to create ping manager in init()", ex);
+	    log().error("Failed to create ping manager in init()", ex);
             throw new UndeclaredThrowableException(ex);
         }
     }
 
-    /**
-     * <p>
-     * This method is used to start the discovery process. When called the
-     * discovery configuration file is parsed and the internal state for
-     * discovery is setup. If the discovery process has already started then an
-     * exception is generated.
-     * </p>
-     * 
-     * <p>
-     * The discovery process may be restarted if, and only if, is has first been
-     * stopped.
-     * </p>
-     * 
-     * @throws java.lang.IllegalStateException
-     *             Thrown if the service is already running.
-     * @throws java.lang.reflect.UndeclaredThrowableException
-     *             Thrown if an error occurs that is not recoverable.
-     * 
-     */
-    public synchronized void start() {
-        ThreadCategory.setPrefix(LOG4J_CATEGORY);
-        Category log = ThreadCategory.getInstance();
+    protected void onStart() {
+		if (m_manager == null) {
+    	    log().error("The discovery service has not been initialized and start() was called");
+                throw new IllegalStateException("The discovery service has not been successfully initialized");
+    	}
 
-	if (m_manager == null) {
-	    log.error("The discovery service has not been initialized and start() was called");
-            throw new IllegalStateException("The discovery service has not been successfully initialized");
-	}
 
-        setStatus(STARTING);
-
-        try {
+    	try {
             m_eventWriter.start();
         } catch (Exception ex) {
-            log.error("Failed to start event writer", ex);
+            log().error("Failed to start event writer", ex);
             throw new UndeclaredThrowableException(ex);
         }
 
@@ -462,22 +432,13 @@ public final class Discovery extends ServiceDaemon {
             } catch (Exception exx) {
             }
 
-            log.error("Failed to start ping manager", ex);
+            log().error("Failed to start ping manager", ex);
             throw new UndeclaredThrowableException(ex);
         }
+	}
 
-        setStatus(RUNNING);
-    }
-
-    /**
-     * Stops the current discovery process. After a successful call this method
-     * the discovery process may be restared.
-     * 
-     */
-    public synchronized void stop() {
-        setStatus(STOP_PENDING);
-
-        try {
+    protected void onStop() {
+		try {
             if (m_eventReader != null) {
                 m_eventReader.close();
             }
@@ -502,59 +463,24 @@ public final class Discovery extends ServiceDaemon {
         } catch (Exception e) {
         }
         m_manager = null;
-        setStatus(STOPPED);
+	}
+
+    protected void onPause() {
+    	if (m_manager == null) {
+    		log().error("The discovery service has not been initialized and pause() was called");
+    		throw new IllegalStateException("The discovery service has not been successfully initialized");
+    	}
+
+    	m_manager.pause();
     }
 
-    /**
-     * Returns the name of this fiber.
-     */
-    public String getName() {
-        return "OpenNMS.Discovery";
-    }
+    protected void onResume() {
+    	if (m_manager == null) {
+    		log().error("The discovery service has not been initialized and resume() was called");
+    		throw new IllegalStateException("The discovery service has not been successfully initialized");
+    	}
 
-    /**
-     * Pauses the discovery process if its currently running
-     */
-    public synchronized void pause() {
-        ThreadCategory.setPrefix(LOG4J_CATEGORY);
-        Category log = ThreadCategory.getInstance();
-
-        if (!isRunning()) {
-	    log.warn("The discovery service is not running but pause() was called");
-            return;
-	}
-
-        setStatus(PAUSE_PENDING);
-
-	if (m_manager == null) {
-	    log.error("The discovery service has not been initialized and pause() was called");
-            throw new IllegalStateException("The discovery service has not been successfully initialized");
-	}
-
-        m_manager.pause();
-        setStatus(PAUSED);
-    }
-
-    /**
-     * Resumes the discovery process if its currently paused
-     */
-    public synchronized void resume() {
-        ThreadCategory.setPrefix(LOG4J_CATEGORY);
-        Category log = ThreadCategory.getInstance();
-
-        if (!isPaused()) {
-	    log.warn("The discovery service is not paused but resume() was called");
-            return;
-	}
-
-	if (m_manager == null) {
-	    log.error("The discovery service has not been initialized and resume() was called");
-            throw new IllegalStateException("The discovery service has not been successfully initialized");
-	}
-
-        setStatus(RESUME_PENDING);
-        m_manager.resume();
-        setStatus(RUNNING);
+    	m_manager.resume();
     }
 
     /**

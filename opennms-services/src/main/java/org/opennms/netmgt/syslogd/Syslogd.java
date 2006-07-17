@@ -41,15 +41,9 @@ import java.sql.SQLException;
 import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
-import org.opennms.core.fiber.PausableFiber;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.SyslogdConfigFactory;
-import org.opennms.netmgt.daemon.ServiceDaemon;
+import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.dao.EventDao;
-
-import org.opennms.netmgt.eventd.EventIpcManager;    
-import org.opennms.netmgt.syslogd.BroadcastEventProcessor;   
-import org.opennms.netmgt.xml.event.Event;
 
 /**
  * The received messages are converted into XML and sent to eventd
@@ -63,7 +57,7 @@ import org.opennms.netmgt.xml.event.Event;
  * 
  * 
  */
-public class Syslogd extends ServiceDaemon implements PausableFiber {
+public class Syslogd extends AbstractServiceDaemon {
     /**
      * The name of the logging category for Trapd.
      */
@@ -73,8 +67,6 @@ public class Syslogd extends ServiceDaemon implements PausableFiber {
      * The singlton instance.
      */
     private static final Syslogd m_singleton = new Syslogd();
-
-    private String m_name = LOG4J_CATEGORY;
 
     public synchronized static Syslogd getSingleton() {
         return m_singleton;
@@ -87,25 +79,22 @@ public class Syslogd extends ServiceDaemon implements PausableFiber {
     private BroadcastEventProcessor m_eventReader;
     
     public Syslogd() {
-    	setStatus(START_PENDING);
+    	super("OpenNMS.Syslogd");
     }
     
-    public synchronized void init() {
-        ThreadCategory.setPrefix(LOG4J_CATEGORY);
-
-        Category log = log();
+    protected void onInit() {
 
         try {
-            log.debug("start: Initializing the syslogd config factory");
+            log().debug("start: Initializing the syslogd config factory");
             SyslogdConfigFactory.init();
         } catch (MarshalException e) {
-            log.error("Failed to load configuration", e);
+            log().error("Failed to load configuration", e);
             throw new UndeclaredThrowableException(e);
         } catch (ValidationException e) {
-            log.error("Failed to load configuration", e);
+            log().error("Failed to load configuration", e);
             throw new UndeclaredThrowableException(e);
         } catch (IOException e) {
-            log.error("Failed to load configuration", e);
+            log().error("Failed to load configuration", e);
             throw new UndeclaredThrowableException(e);
         }
 
@@ -113,36 +102,20 @@ public class Syslogd extends ServiceDaemon implements PausableFiber {
             // clear out the known nodes
             SyslogdIPMgr.dataSourceSync();
         } catch (SQLException e) {
-            log.error("Failed to load known IP address list", e);
+            log().error("Failed to load known IP address list", e);
             throw new UndeclaredThrowableException(e);
         }
 
           
         SyslogHandler.setSyslogConfig(SyslogdConfigFactory.getInstance());
-        log.debug("Starting SyslogProcessor");
+        log().debug("Starting SyslogProcessor");
           
         m_udpEventReceiver = new SyslogHandler();
 
     }
 
-    /**
-     * Create the Syslogd session and create the JSDT communication channel to
-     * communicate with eventd.
-     * 
-     * @exception java.lang.reflect.UndeclaredThrowableException
-     *                if an unexpected database, or IO exception occurs.
-     * 
-     * @see org.opennms.protocols.snmp.SyslogMessageSession
-     * @see org.opennms.protocols.snmp.SnmpTrapHandler
-     */
-    public synchronized void start() {
-    	setStatus(STARTING);
-        // Set the category prefix
-        ThreadCategory.setPrefix(LOG4J_CATEGORY);
-
-        Category log = ThreadCategory.getInstance(getClass());
-
-        m_udpEventReceiver.start();
+    protected void onStart() {
+		m_udpEventReceiver.start();
         
 //      // start the event reader  
         // The Node list is update with new suspects
@@ -152,96 +125,28 @@ public class Syslogd extends ServiceDaemon implements PausableFiber {
         try {    
             m_eventReader = new BroadcastEventProcessor();   
         } catch (Exception ex) {     
-            log.error("Failed to setup event reader", ex);   
+            log().error("Failed to setup event reader", ex);   
             throw new UndeclaredThrowableException(ex);      
         }
+	}
 
-        setStatus(RUNNING);
-
-        if (log.isDebugEnabled()) {
-            log.debug("Listener threads started");
-        }
-
-    }
-
-    /**
-     * Pauses Syslogd
-     */
-    public void pause() {
-        // Set the category prefix
-        ThreadCategory.setPrefix(LOG4J_CATEGORY);
-        if (!isRunning()) {
-            return;
-        }
-        Category log = ThreadCategory.getInstance();
-        setStatus(PAUSE_PENDING);
-
-        log.debug("Processor paused");
-
-        setStatus(PAUSED);
-
-        log.debug("Syslogd paused");
-
-    }
-
-   
-    public void resume() {
-        // Set the category prefix
-        ThreadCategory.setPrefix(LOG4J_CATEGORY);
-        if (!isPaused()) {
-            return;
-        }
-
-        setStatus(RESUME_PENDING);
-
-        Category log = log();
-        
-        setStatus(RUNNING);
-
-        log.debug("Syslogd resumed");
-
-    }
-
-    /**
-     * Stops the currently running service. If the service is not running then
-     * the command is silently discarded.
-     */
-    public synchronized void stop() {
-        // Set the category prefix
-        ThreadCategory.setPrefix(LOG4J_CATEGORY);
-        Category log = log();
-
-        setStatus(STOP_PENDING);
-
-        // shutdown and wait on the background processing thread to exit.
-        log.debug("exit: closing communication paths.");
+    protected void onStop() {
+		// shutdown and wait on the background processing thread to exit.
+        log().debug("exit: closing communication paths.");
 
         try {
-            log.debug("stop: Closing SYSLOGD message session.");
+            log().debug("stop: Closing SYSLOGD message session.");
 
-            log.debug("stop: Syslog message session closed.");
+            log().debug("stop: Syslog message session closed.");
         } catch (IllegalStateException e) {
-            log.debug("stop: The Syslog session was already closed");
+            log().debug("stop: The Syslog session was already closed");
         }
 
-        log.debug("stop: Stopping queue processor.");
+        log().debug("stop: Stopping queue processor.");
 
         m_udpEventReceiver.stop();
-        log.debug("Stopped the Syslog UDP Receiver");
-
-        setStatus(STOPPED);
-        log.debug("stop: Syslogd stopped");
-
-    }
-
-    /**
-     * Returns the name of the service.
-     * 
-     * @return The service's name.
-     */
-    public String getName() {
-        return m_name;
-    }
+        log().debug("Stopped the Syslog UDP Receiver");
+	}
 
     /**
      * Returns the singular instance of the syslogd daemon. There can be only

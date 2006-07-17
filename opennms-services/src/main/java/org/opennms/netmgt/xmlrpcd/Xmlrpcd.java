@@ -42,15 +42,13 @@ import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.util.Enumeration;
 
-import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.queue.FifoQueue;
 import org.opennms.core.queue.FifoQueueImpl;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.OpennmsServerConfigFactory;
 import org.opennms.netmgt.config.XmlrpcdConfigFactory;
-import org.opennms.netmgt.daemon.ServiceDaemon;
+import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 
 /**
  * <p>
@@ -61,21 +59,12 @@ import org.opennms.netmgt.daemon.ServiceDaemon;
  * @author <A HREF="mailto:jamesz@opennms.com">James Zuo </A>
  * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
  */
-public class Xmlrpcd extends ServiceDaemon {
-    /**
-     * The name of the logging category for Xmlrpcd.
-     */
-    private static final String LOG4J_CATEGORY = "OpenNMS.Xmlrpcd";
+public class Xmlrpcd extends AbstractServiceDaemon {
 
-    /**
+	/**
      * The singlton instance.
      */
-    private static final Xmlrpcd m_singleton = new Xmlrpcd();
-
-    /**
-     * The name of this service.
-     */
-    private String m_name;
+    private static final AbstractServiceDaemon m_singleton = new Xmlrpcd();
 
     /**
      * The communication queue
@@ -99,23 +88,21 @@ public class Xmlrpcd extends ServiceDaemon {
      * XMLRPC server via XMLRPC protocol.
      */
     public Xmlrpcd() {
-        m_name = "OpenNMS.Xmlrpcd";
+    	super("OpenNMS.Xmlrpcd");
     }
 
-    public synchronized void init() {
-        ThreadCategory.setPrefix(LOG4J_CATEGORY);
+    protected void onInit() {
 
-        Category log = ThreadCategory.getInstance();
 
-        if (log.isDebugEnabled())
-            log.debug("start: Creating the xmlrpc event queue processor");
+        if (log().isDebugEnabled())
+            log().debug("start: Creating the xmlrpc event queue processor");
 
         // set up the event queue processor
         m_eventlogQ = new FifoQueueImpl();
 
         try {
-            if (log.isDebugEnabled())
-                log.debug("start: Initializing the xmlrpcd config factory");
+            if (log().isDebugEnabled())
+                log().debug("start: Initializing the xmlrpcd config factory");
 
             XmlrpcdConfigFactory.reload();
             OpennmsServerConfigFactory.reload();
@@ -133,133 +120,66 @@ public class Xmlrpcd extends ServiceDaemon {
             m_processor = new EventQueueProcessor(m_eventlogQ, xFactory.getXmlrpcServer(), xFactory.getRetries(), xFactory.getElapseTime(), verifyServer, localServer, xFactory.getMaxQueueSize());
 
         } catch (MarshalException e) {
-            log.error("Failed to load configuration", e);
+            log().error("Failed to load configuration", e);
             throw new UndeclaredThrowableException(e);
         } catch (ValidationException e) {
-            log.error("Failed to load configuration", e);
+            log().error("Failed to load configuration", e);
             throw new UndeclaredThrowableException(e);
         } catch (IOException e) {
-            log.error("Failed to load configuration", e);
+            log().error("Failed to load configuration", e);
             throw new UndeclaredThrowableException(e);
         } catch (Throwable t) {
-            log.error("Failed to load configuration", t);
+            log().error("Failed to load configuration", t);
         }
     }
 
-    /**
-     * 
-     * @exception java.lang.reflect.UndeclaredThrowableException
-     *                if an unexpected database, or IO exception occurs.
-     * 
-     */
-    public synchronized void start() {
-        setStatus(STARTING);
-
-        ThreadCategory.setPrefix(LOG4J_CATEGORY);
-
-        Category log = ThreadCategory.getInstance();
-
-        if (log.isDebugEnabled())
-            log.debug("start: Initializing the xmlrpcd config factory");
+    protected void onStart() {
+		if (log().isDebugEnabled())
+            log().debug("start: Initializing the xmlrpcd config factory");
 
         m_processor.start();
 
-        setStatus(RUNNING);
+        if (log().isDebugEnabled())
+            log().debug("start: xmlrpcd ready to process events");
+	}
 
-        if (log.isDebugEnabled())
-            log.debug("start: xmlrpcd ready to process events");
+    protected void onPause() {
+		if (log().isDebugEnabled())
+            log().debug("Calling pause on processor");
 
-    }
+        m_processor.pause(); 
 
-    /**
-     * Pauses Xmlrpcd
-     */
-    public void pause() {
-        if (!isRunning())
-            return;
+        if (log().isDebugEnabled())
+            log().debug("Processor paused");
+	}
 
-        setStatus(PAUSE_PENDING);
-
-        Category log = ThreadCategory.getInstance(getClass());
-
-        if (log.isDebugEnabled())
-            log.debug("Calling pause on processor");
-
-        m_processor.pause();
-
-        if (log.isDebugEnabled())
-            log.debug("Processor paused");
-
-        setStatus(PAUSED);
-
-        if (log.isDebugEnabled())
-            log.debug("Xmlrpcd paused");
-    }
-
-    /**
-     * Resumes Xmlrpcd
-     */
-    public void resume() {
-        if (!isPaused())
-            return;
-
-        setStatus(RESUME_PENDING);
-
-        Category log = ThreadCategory.getInstance(getClass());
-
-        if (log.isDebugEnabled())
-            log.debug("Calling resume on processor");
+    protected void onResume() {
+		if (log().isDebugEnabled())
+            log().debug("Calling resume on processor");
 
         m_processor.resume();
 
-        if (log.isDebugEnabled())
-            log.debug("Processor resumed");
+        if (log().isDebugEnabled())
+            log().debug("Processor resumed");
+	}
 
-        setStatus(RUNNING);
+    protected void onStop() {
+		// shutdown and wait on the background processing thread to exit.
+        if (log().isDebugEnabled())
+            log().debug("exit: closing communication paths.");
 
-        if (log.isDebugEnabled())
-            log.debug("Xmlrpcd resumed");
-    }
-
-    /**
-     * Stops the currently running service. If the service is not running then
-     * the command is silently discarded.
-     */
-    public synchronized void stop() {
-        Category log = ThreadCategory.getInstance(getClass());
-
-        setStatus(STOP_PENDING);
-
-        // shutdown and wait on the background processing thread to exit.
-        if (log.isDebugEnabled())
-            log.debug("exit: closing communication paths.");
-
-        if (log.isDebugEnabled())
-            log.debug("stop: Stopping queue processor.");
+        if (log().isDebugEnabled())
+            log().debug("stop: Stopping queue processor.");
 
         // interrupt the processor daemon thread
         m_processor.stop();
-
-        setStatus(STOPPED);
-
-        if (log.isDebugEnabled())
-            log.debug("stop: Xmlrpcd stopped");
-    }
-
-    /**
-     * Returns the name of the service.
-     * 
-     * @return The service's name.
-     */
-    public String getName() {
-        return m_name;
-    }
+	}
 
     /**
      * Returns the singular instance of the xmlrpcd daemon. There can be only
      * one instance of this service per virtual machine.
      */
-    public static Xmlrpcd getInstance() {
+    public static AbstractServiceDaemon getInstance() {
         return m_singleton;
     }
 

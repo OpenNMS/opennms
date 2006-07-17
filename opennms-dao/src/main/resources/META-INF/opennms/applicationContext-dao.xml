@@ -19,9 +19,14 @@
 		</property>
 	</bean>
 	
-	<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
-		<property name="dataSource" ref="dataSource" />
-	</bean>
+  <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+    <property name="dataSource" ref="dataSource" />
+  </bean>
+	
+  <bean id="transactionTemplate" class="org.springframework.transaction.support.TransactionTemplate">
+    <property name="transactionManager" ref="transactionManager" />
+  </bean>
+	
 	
   <bean id="agentFactory" class="org.opennms.netmgt.dao.jdbc.agent.AgentFactory">
   	<property name="dataSource" ref="dataSource"/>
@@ -134,5 +139,8 @@
   <bean id="userNotificationDao" class="org.opennms.netmgt.dao.jdbc.UserNotificationDaoJdbc">
   	<property name="dataSource" ref="dataSource" />
   </bean>
+  
+  
+  
 
 </beans>

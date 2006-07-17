@@ -56,7 +56,7 @@ import org.opennms.netmgt.config.CollectdConfigFactory;
 import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.PollerConfigFactory;
 import org.opennms.netmgt.config.SnmpPeerFactory;
-import org.opennms.netmgt.daemon.ServiceDaemon;
+import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 
 /**
  * <P>
@@ -74,7 +74,7 @@ import org.opennms.netmgt.daemon.ServiceDaemon;
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  * 
  */
-public class Capsd extends ServiceDaemon {
+public class Capsd extends AbstractServiceDaemon {
     /**
      * The log4j category used to log messages.
      */
@@ -141,17 +141,12 @@ public class Capsd extends ServiceDaemon {
      * Constructs the Capsd objec
      */
     public Capsd() {
+    	super("OpenNMS.Capsd");
         m_scheduler = null;
-        setStatus(START_PENDING);
     }
 
-    /**
-     * Stop the Capsd threads.
-     */
-    public void stop() {
-        setStatus(STOP_PENDING);
-
-        // Stop the broadcast event receiver
+    protected void onStop() {
+		// Stop the broadcast event receiver
         m_receiver.close();
 
         // Stop the Suspect Event Processor thread pool
@@ -159,28 +154,20 @@ public class Capsd extends ServiceDaemon {
 
         // Stop the Rescan Processor thread pool
         m_rescanRunner.stop();
+	}
 
-        setStatus(STOPPED);
-    }
-
-    /**
-     * Start the Capsd threads.
-     */
-    public void init() {
-        ThreadCategory.setPrefix(LOG4J_CATEGORY);
-        Category log = ThreadCategory.getInstance();
-
-        // Initialize the Capsd configuration factory.
+	protected void onInit() {
+		// Initialize the Capsd configuration factory.
         try {
             CapsdConfigFactory.init();
         } catch (MarshalException ex) {
-            log.error("Failed to load Capsd configuration", ex);
+            log().error("Failed to load Capsd configuration", ex);
             throw new UndeclaredThrowableException(ex);
         } catch (ValidationException ex) {
-            log.error("Failed to load Capsd configuration", ex);
+            log().error("Failed to load Capsd configuration", ex);
             throw new UndeclaredThrowableException(ex);
         } catch (IOException ex) {
-            log.error("Failed to load Capsd configuration", ex);
+            log().error("Failed to load Capsd configuration", ex);
             throw new UndeclaredThrowableException(ex);
         }
 
@@ -188,13 +175,13 @@ public class Capsd extends ServiceDaemon {
         try {
             PollerConfigFactory.init();
         } catch (MarshalException ex) {
-            log.error("Failed to load poller configuration", ex);
+            log().error("Failed to load poller configuration", ex);
             throw new UndeclaredThrowableException(ex);
         } catch (ValidationException ex) {
-            log.error("Failed to load poller configuration", ex);
+            log().error("Failed to load poller configuration", ex);
             throw new UndeclaredThrowableException(ex);
         } catch (IOException ex) {
-            log.error("Failed to load poller configuration", ex);
+            log().error("Failed to load poller configuration", ex);
             throw new UndeclaredThrowableException(ex);
         }
 
@@ -202,13 +189,13 @@ public class Capsd extends ServiceDaemon {
         try {
             CollectdConfigFactory.init();
         } catch (MarshalException ex) {
-            log.error("Failed to load collectd configuration", ex);
+            log().error("Failed to load collectd configuration", ex);
             throw new UndeclaredThrowableException(ex);
         } catch (ValidationException ex) {
-            log.error("Failed to load collectd configuration", ex);
+            log().error("Failed to load collectd configuration", ex);
             throw new UndeclaredThrowableException(ex);
         } catch (IOException ex) {
-            log.error("Failed to load collectd configuration", ex);
+            log().error("Failed to load collectd configuration", ex);
             throw new UndeclaredThrowableException(ex);
         }
 
@@ -216,22 +203,22 @@ public class Capsd extends ServiceDaemon {
         try {
             DataSourceFactory.init();
         } catch (IOException ie) {
-            log.fatal("IOException loading database config", ie);
+            log().fatal("IOException loading database config", ie);
             throw new UndeclaredThrowableException(ie);
         } catch (MarshalException me) {
-            log.fatal("Marshall Exception loading database config", me);
+            log().fatal("Marshall Exception loading database config", me);
             throw new UndeclaredThrowableException(me);
         } catch (ValidationException ve) {
-            log.fatal("Validation Exception loading database config", ve);
+            log().fatal("Validation Exception loading database config", ve);
             throw new UndeclaredThrowableException(ve);
         } catch (ClassNotFoundException ce) {
-            log.fatal("Class lookup failure loading database config", ce);
+            log().fatal("Class lookup failure loading database config", ce);
             throw new UndeclaredThrowableException(ce);
         } catch (PropertyVetoException pve) {
-            log.fatal("Property veto failure loading database config", pve);
+            log().fatal("Property veto failure loading database config", pve);
             throw new UndeclaredThrowableException(pve);
         } catch (SQLException sqle) {
-            log.fatal("SQL exception loading database config", sqle);
+            log().fatal("SQL exception loading database config", sqle);
             throw new UndeclaredThrowableException(sqle);
         }
 
@@ -239,13 +226,13 @@ public class Capsd extends ServiceDaemon {
         try {
             SnmpPeerFactory.init();
         } catch (MarshalException ex) {
-            log.error("Failed to load SNMP configuration", ex);
+            log().error("Failed to load SNMP configuration", ex);
             throw new UndeclaredThrowableException(ex);
         } catch (ValidationException ex) {
-            log.error("Failed to load SNMP configuration", ex);
+            log().error("Failed to load SNMP configuration", ex);
             throw new UndeclaredThrowableException(ex);
         } catch (IOException ex) {
-            log.error("Failed to load SNMP configuration", ex);
+            log().error("Failed to load SNMP configuration", ex);
             throw new UndeclaredThrowableException(ex);
         }
 
@@ -269,23 +256,23 @@ public class Capsd extends ServiceDaemon {
         java.sql.Connection conn = null;
         try {
             conn = DataSourceFactory.getInstance().getConnection();
-            if (log.isDebugEnabled()) {
-                log.debug("init: Loading services into database...");
+            if (log().isDebugEnabled()) {
+                log().debug("init: Loading services into database...");
             }
             CapsdConfigFactory.getInstance().syncServices(conn);
-            if (log.isDebugEnabled()) {
-                log.debug("init: Syncing management state...");
+            if (log().isDebugEnabled()) {
+                log().debug("init: Syncing management state...");
             }
             CapsdConfigFactory.getInstance().syncManagementState(conn);
-            if (log.isDebugEnabled()) {
-                log.debug("init: Syncing primary SNMP interface state...");
+            if (log().isDebugEnabled()) {
+                log().debug("init: Syncing primary SNMP interface state...");
             }
             CapsdConfigFactory.getInstance().syncSnmpPrimaryState(conn);
         } catch (SQLException sqlE) {
-            log.fatal("SQL Exception while syncing database with latest configuration information.", sqlE);
+            log().fatal("SQL Exception while syncing database with latest configuration information.", sqlE);
             throw new UndeclaredThrowableException(sqlE);
         } catch (Throwable t) {
-            log.fatal("Unknown error while syncing database with latest configuration information.", t);
+            log().fatal("Unknown error while syncing database with latest configuration information.", t);
             throw new UndeclaredThrowableException(t);
         } finally {
             try {
@@ -309,8 +296,8 @@ public class Capsd extends ServiceDaemon {
                 CapsdConfigFactory.getInstance().getMaxRescanThreadPoolSize());
 
         // Create the rescan scheduler
-        if (log.isDebugEnabled()) {
-            log.debug("init: Creating rescan scheduler");
+        if (log().isDebugEnabled()) {
+            log().debug("init: Creating rescan scheduler");
         }
         try {
             /*
@@ -319,92 +306,50 @@ public class Capsd extends ServiceDaemon {
              */
             m_scheduler = new Scheduler(m_rescanRunner.getRunQueue());
         } catch (SQLException sqlE) {
-            log.error("Failed to initialize the rescan scheduler.", sqlE);
+            log().error("Failed to initialize the rescan scheduler.", sqlE);
             throw new UndeclaredThrowableException(sqlE);
         } catch (Throwable t) {
-            log.error("Failed to initialize the rescan scheduler.", t);
+            log().error("Failed to initialize the rescan scheduler.", t);
             throw new UndeclaredThrowableException(t);
         }
 
         // Create an event receiver.
         try {
-            if (log.isDebugEnabled()) {
-                log.debug("init: Creating event broadcast event receiver");
+            if (log().isDebugEnabled()) {
+                log().debug("init: Creating event broadcast event receiver");
             }
 
             m_receiver = new BroadcastEventProcessor(m_suspectRunner.getRunQueue(), m_scheduler);
         } catch (Throwable t) {
-            log.error("Failed to initialized the broadcast event receiver", t);
+            log().error("Failed to initialized the broadcast event receiver", t);
             throw new UndeclaredThrowableException(t);
         }
-    }
+	}
 
-    /**
-     * Start the Capsd threads.
-     */
-    public void start() {
-        ThreadCategory.setPrefix(LOG4J_CATEGORY);
-        Category log = ThreadCategory.getInstance();
-
-        setStatus(STARTING);
-
-        // Start the suspect event and rescan thread pools
-        if (log.isDebugEnabled()) {
-            log.debug("start: Starting runnable thread pools...");
+    protected void onStart() {
+		// Start the suspect event and rescan thread pools
+        if (log().isDebugEnabled()) {
+            log().debug("start: Starting runnable thread pools...");
         }
         m_suspectRunner.start();
         m_rescanRunner.start();
 
         // Start the rescan scheduler
-        if (log.isDebugEnabled()) {
-            log.debug("start: Starting rescan scheduler");
+        if (log().isDebugEnabled()) {
+            log().debug("start: Starting rescan scheduler");
         }
         m_scheduler.start();
+	}
 
-        setStatus(RUNNING);
-    }
-
-    public void pause() {
-        if (!isRunning())
-            return;
-
-        setStatus(PAUSE_PENDING);
-
-        Category log = ThreadCategory.getInstance();
-
+    protected void onPause() {
         // XXX Pause all threads?
-
-        setStatus(PAUSED);
-
-        if (log.isDebugEnabled()) {
-            log.debug("pause: Finished pausing all threads");
-        }
     }
 
-    public void resume() {
-        if (!isPaused()) {
-            return;
-        }
-
-        setStatus(RESUME_PENDING);
-
-        Category log = ThreadCategory.getInstance();
-
+    protected void onResume() {
         // XXX Resume all threads?
+	}
 
-        setStatus(RUNNING);
 
-        if (log.isDebugEnabled()) {
-            log.debug("pause: Finished resuming all threads");
-        }
-    }
-
-    /**
-     * Returns a name/id for this process
-     */
-    public String getName() {
-        return "OpenNMS.Capsd";
-    }
 
     /**
      * Used to retrieve the local host name/address. The name/address of the
@@ -438,7 +383,7 @@ public class Capsd extends ServiceDaemon {
     public void scanSuspectInterface(String ifAddr) throws UnknownHostException {
         String prefix = ThreadCategory.getPrefix();
         try {
-            ThreadCategory.setPrefix(LOG4J_CATEGORY);
+            ThreadCategory.setPrefix(getName());
             InetAddress addr = InetAddress.getByName(ifAddr);
             SuspectEventProcessor proc = new SuspectEventProcessor(addr.getHostAddress());
             proc.run();
@@ -459,7 +404,7 @@ public class Capsd extends ServiceDaemon {
     public void rescanInterfaceParent(Integer nodeId) {
         String prefix = ThreadCategory.getPrefix();
         try {
-            ThreadCategory.setPrefix(LOG4J_CATEGORY);
+            ThreadCategory.setPrefix(getName());
             m_scheduler.forceRescan(nodeId.intValue());
         } finally {
             ThreadCategory.setPrefix(prefix);

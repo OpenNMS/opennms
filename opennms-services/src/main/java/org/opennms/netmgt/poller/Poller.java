@@ -41,7 +41,6 @@
 package org.opennms.netmgt.poller;
 
 import java.io.IOException;
-import java.lang.Integer;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -68,7 +67,7 @@ import org.opennms.netmgt.config.OpennmsServerConfigFactory;
 import org.opennms.netmgt.config.PollOutagesConfig;
 import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.config.poller.Package;
-import org.opennms.netmgt.daemon.ServiceDaemon;
+import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.eventd.EventIpcManager;
 import org.opennms.netmgt.poller.pollables.DbPollEvent;
 import org.opennms.netmgt.poller.pollables.PollEvent;
@@ -80,8 +79,8 @@ import org.opennms.netmgt.poller.pollables.PollableService;
 import org.opennms.netmgt.poller.pollables.PollableServiceConfig;
 import org.opennms.netmgt.poller.pollables.PollableVisitor;
 import org.opennms.netmgt.poller.pollables.PollableVisitorAdaptor;
-import org.opennms.netmgt.scheduler.Schedule;
 import org.opennms.netmgt.scheduler.LegacyScheduler;
+import org.opennms.netmgt.scheduler.Schedule;
 import org.opennms.netmgt.scheduler.Scheduler;
 import org.opennms.netmgt.utils.Querier;
 import org.opennms.netmgt.utils.Updater;
@@ -90,7 +89,7 @@ import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.Parms;
 import org.opennms.netmgt.xml.event.Value;
 
-public class Poller extends ServiceDaemon {
+public class Poller extends AbstractServiceDaemon {
 
     private final static Poller m_singleton = new Poller();
 
@@ -112,38 +111,38 @@ public class Poller extends ServiceDaemon {
 
     private DataSource m_dbConnectionFactory;
 
-    public static final String EVENT_SOURCE = "OpenNMS.Poller";
+    public Poller() {
+    	super("OpenNMS.Poller");
+    }
 
-    public synchronized void init() {
+    protected void onInit() {
 
         // get the category logger
-        Category log = ThreadCategory.getInstance(getClass());
-        
         // set the DbConnectionFactory in the QueryManager
         m_queryMgr.setDbConnectionFactory(m_dbConnectionFactory);
 
         // serviceUnresponsive behavior enabled/disabled?
-        log.debug("init: serviceUnresponsive behavior: " + (getPollerConfig().serviceUnresponsiveEnabled() ? "enabled" : "disabled"));
+        log().debug("init: serviceUnresponsive behavior: " + (getPollerConfig().serviceUnresponsiveEnabled() ? "enabled" : "disabled"));
 
         createScheduler();
         
         try {
-            log.debug("init: Closing outages for unmanaged services");
+            log().debug("init: Closing outages for unmanaged services");
             
             closeOutagesForUnmanagedServices();
         } catch (Exception e) {
-            log.error("init: Failed to close ouates for unmanage services", e);
+            log().error("init: Failed to close ouates for unmanage services", e);
         }
         
 
         // Schedule the interfaces currently in the database
         //
         try {
-            log.debug("start: Scheduling existing interfaces");
+            log().debug("start: Scheduling existing interfaces");
 
             scheduleExistingServices();
         } catch (Exception sqlE) {
-            log.error("start: Failed to schedule existing interfaces", sqlE);
+            log().error("start: Failed to schedule existing interfaces", sqlE);
         }
 
         // Create an event receiver. The receiver will
@@ -151,11 +150,11 @@ public class Poller extends ServiceDaemon {
         // interfaces, and schedulers them.
         //
         try {
-            log.debug("start: Creating event broadcast event processor");
+            log().debug("start: Creating event broadcast event processor");
 
             m_receiver = new PollerEventProcessor(this);
         } catch (Throwable t) {
-            log.fatal("start: Failed to initialized the broadcast event receiver", t);
+            log().fatal("start: Failed to initialized the broadcast event receiver", t);
 
             throw new UndeclaredThrowableException(t);
         }
@@ -218,36 +217,24 @@ public class Poller extends ServiceDaemon {
         }
     }
 
-    public synchronized void start() {
-        setStatus(STARTING);
-
-        // get the category logger
-        Category log = ThreadCategory.getInstance(getClass());
-
+    protected void onStart() {
+		// get the category logger
         // start the scheduler
         //
         try {
-            if (log.isDebugEnabled())
-                log.debug("start: Starting poller scheduler");
+            if (log().isDebugEnabled())
+                log().debug("start: Starting poller scheduler");
 
             m_scheduler.start();
         } catch (RuntimeException e) {
-            if (log.isEnabledFor(Priority.FATAL))
-                log.fatal("start: Failed to start scheduler", e);
+            if (log().isEnabledFor(Priority.FATAL))
+                log().fatal("start: Failed to start scheduler", e);
             throw e;
         }
+	}
 
-        // Set the status of the service as running.
-        //
-        setStatus(RUNNING);
-
-        if (log.isDebugEnabled())
-            log.debug("start: Poller running");
-    }
-
-    public synchronized void stop() {
-        setStatus(STOP_PENDING);
-        m_scheduler.stop();
+    protected void onStop() {
+		m_scheduler.stop();
         m_receiver.close();
 
         Iterator iter = getServiceMonitors().values().iterator();
@@ -256,41 +243,15 @@ public class Poller extends ServiceDaemon {
             sm.release();
         }
         m_scheduler = null;
-        setStatus(STOPPED);
-        Category log = ThreadCategory.getInstance(getClass());
-        if (log.isDebugEnabled())
-            log.debug("stop: Poller stopped");
-    }
+	}
 
-    public synchronized void pause() {
-        if (!isRunning())
-            return;
+    protected void onPause() {
+		m_scheduler.pause();
+	}
 
-        setStatus(PAUSE_PENDING);
-        m_scheduler.pause();
-        setStatus(PAUSED);
-
-        Category log = ThreadCategory.getInstance(getClass());
-        if (log.isDebugEnabled())
-            log.debug("pause: Poller paused");
-    }
-
-    public synchronized void resume() {
-        if (!isPaused())
-            return;
-
-        setStatus(RESUME_PENDING);
-        m_scheduler.resume();
-        setStatus(RUNNING);
-
-        Category log = ThreadCategory.getInstance(getClass());
-        if (log.isDebugEnabled())
-            log.debug("resume: Poller resumed");
-    }
-
-    public String getName() {
-        return "OpenNMS.Poller";
-    }
+    protected void onResume() {
+		m_scheduler.resume();
+	}
 
     public static Poller getInstance() {
         return m_singleton;
@@ -584,7 +545,7 @@ public class Poller extends ServiceDaemon {
         // create the event to be sent
         Event newEvent = new Event();
         newEvent.setUei(uei);
-        newEvent.setSource(Poller.EVENT_SOURCE);
+        newEvent.setSource(getName());
         newEvent.setNodeid((long) nodeId);
         if (address != null)
             newEvent.setInterface(address.getHostAddress());

@@ -58,7 +58,7 @@ import org.opennms.netmgt.capsd.EventUtils;
 import org.opennms.netmgt.capsd.InsufficientInformationException;
 import org.opennms.netmgt.config.CollectdConfigFactory;
 import org.opennms.netmgt.config.SnmpPeerFactory;
-import org.opennms.netmgt.daemon.ServiceDaemon;
+import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.dao.CollectorConfigDao;
 import org.opennms.netmgt.dao.IpInterfaceDao;
 import org.opennms.netmgt.dao.MonitoredServiceDao;
@@ -75,7 +75,7 @@ import org.opennms.netmgt.xml.event.Parms;
 import org.opennms.netmgt.xml.event.Value;
 import org.opennms.protocols.ip.IPv4Address;
 
-public final class Collectd extends ServiceDaemon implements EventListener {
+public final class Collectd extends AbstractServiceDaemon implements EventListener {
     /**
      * Log4j category
      */
@@ -121,24 +121,19 @@ public final class Collectd extends ServiceDaemon implements EventListener {
      * Constructor.
      */
     public Collectd() {
-        
-        setStatus(START_PENDING);
+    	super(LOG4J_CATEGORY);
         
         m_collectableServices = Collections.synchronizedList(new LinkedList());
     }
 
-    /**
-     * Responsible for starting the collection daemon.
-     */
-    public synchronized void init() {
-        // Set the category prefix
+	protected void onInit() {
+		// Set the category prefix
         log().debug("init: Initializing collection daemon");
 
         getScheduler().schedule(0, ifScheduler());
         
         installMessageSelectors();
-
-    }
+	}
 
 	private void installMessageSelectors() {
 		// Create the JMS selector for the ueis this service is interested in
@@ -223,15 +218,8 @@ public final class Collectd extends ServiceDaemon implements EventListener {
         }
     }
 
-	/**
-     * Responsible for starting the collection daemon.
-     */
-    public synchronized void start() {
-        setStatus(STARTING);
-
-        log().debug("start: Initializing collection daemon");
-
-        // start the scheduler
+	protected void onStart() {
+		// start the scheduler
         try {
             log().debug("start: Starting collectd scheduler");
 
@@ -240,65 +228,24 @@ public final class Collectd extends ServiceDaemon implements EventListener {
             log().fatal("start: Failed to start scheduler", e);
             throw e;
         }
+	}
 
-        // Set the status of the service as running.
-        //
-        setStatus(RUNNING);
-
-        log().debug("start: Collectd running");
-    }
-
-    /**
-     * Responsible for stopping the collection daemon.
-     */
-    public synchronized void stop() {
-        setStatus(STOP_PENDING);
-        getScheduler().stop();
+    protected void onStop() {
+		getScheduler().stop();
         deinstallMessageSelectors();
 
         setScheduler(null);
-        setStatus(STOPPED);
-        log().debug("stop: Collectd stopped");
-    }
+	}
 
-    /**
-     * Responsible for pausing the collection daemon.
-     */
-    public synchronized void pause() {
-        if (!isRunning()) {
-            return;
-        }
+    protected void onPause() {
+		getScheduler().pause();
+	}
 
-        setStatus(PAUSE_PENDING);
-        getScheduler().pause();
-        setStatus(PAUSED);
-
-        log().debug("pause: Collectd paused");
-    }
-
-    /**
-     * Responsible for resuming the collection daemon.
-     */
-    public synchronized void resume() {
-        if (!isPaused()) {
-            return;
-        }
-
-        setStatus(RESUME_PENDING);
+    protected void onResume() {
         getScheduler().resume();
-        setStatus(RUNNING);
+	}
 
-        log().debug("resume: Collectd resumed");
-    }
-
-    /**
-     * Return sthe name of the collection daemon.
-     */
-    public String getName() {
-        return "OpenNMS.Collectd";
-    }
-
-    /**
+	/**
      * Schedule existing interfaces for data collection.
      * 
      * @throws SQLException

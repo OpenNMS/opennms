@@ -44,13 +44,11 @@ import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.sql.SQLException;
 
-import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
-import org.opennms.core.fiber.PausableFiber;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.TrapdConfigFactory;
-import org.opennms.netmgt.daemon.ServiceDaemon;
+import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.dao.EventDao;
 import org.opennms.netmgt.eventd.EventIpcManager;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
@@ -80,7 +78,7 @@ import org.opennms.netmgt.eventd.EventIpcManagerFactory;
  * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
  * 
  */
-public class Trapd extends ServiceDaemon {
+public class Trapd extends AbstractServiceDaemon {
 	/**
 	 * The name of the logging category for Trapd.
 	 */
@@ -91,8 +89,6 @@ public class Trapd extends ServiceDaemon {
 	 */
 	private static final Trapd m_singleton = new Trapd();
 
-	private String m_name;
-    
     private EventDao m_eventDao;
 
 	/**
@@ -106,25 +102,23 @@ public class Trapd extends ServiceDaemon {
 	 * @see org.opennms.protocols.snmp.SnmpTrapSession
 	 */
 	public Trapd() {
-		m_name = LOG4J_CATEGORY;
+		super("OpenNMS.Trapd");
 	}
 
-	public synchronized void init() {
-		ThreadCategory.setPrefix(LOG4J_CATEGORY);
+    protected void onInit() {
 
-		Category log = ThreadCategory.getInstance();
 
 		try {
-			log.debug("start: Initializing the trapd config factory");
+			log().debug("start: Initializing the trapd config factory");
 			TrapdConfigFactory.init();
 		} catch (MarshalException e) {
-			log.error("Failed to load configuration", e);
+			log().error("Failed to load configuration", e);
 			throw new UndeclaredThrowableException(e);
 		} catch (ValidationException e) {
-			log.error("Failed to load configuration", e);
+			log().error("Failed to load configuration", e);
 			throw new UndeclaredThrowableException(e);
 		} catch (IOException e) {
-			log.error("Failed to load configuration", e);
+			log().error("Failed to load configuration", e);
 			throw new UndeclaredThrowableException(e);
 		}
 
@@ -132,7 +126,7 @@ public class Trapd extends ServiceDaemon {
 			// clear out the known nodes
 			TrapdIPMgr.dataSourceSync();
 		} catch (SQLException e) {
-			log.error("Failed to load known IP address list", e);
+			log().error("Failed to load known IP address list", e);
 			throw new UndeclaredThrowableException(e);
 		}
 
@@ -146,59 +140,19 @@ public class Trapd extends ServiceDaemon {
 		trapHandler.init();
 	}
 
-	/**
-	 * Create the SNMP trap session and create the JSDT communication channel to
-	 * communicate with eventd.
-	 * 
-	 * @exception java.lang.reflect.UndeclaredThrowableException
-	 *                if an unexpected database, or IO exception occurs.
-	 * 
-	 * @see org.opennms.protocols.snmp.SnmpTrapSession
-	 * @see org.opennms.protocols.snmp.SnmpTrapHandler
-	 */
-	public synchronized void start() {
-		// Set the category prefix
-		ThreadCategory.setPrefix(LOG4J_CATEGORY);
-
+	protected void onStart() {
 		getTrapHandler().start();
-		
 	}
 
-	/**
-	 * Pauses Trapd
-	 */
-	public void pause() {
-		if (!isRunning()) {
-			return;
-		}
-		// Set the category prefix
-		ThreadCategory.setPrefix(LOG4J_CATEGORY);
-
-		setStatus(PAUSE_PENDING);
-
+	protected void onPause() {
 		getTrapHandler().pause();
-		
-		setStatus(PAUSED);
 	}
 
-	/**
-	 * Resumes Trapd
-	 */
-	public void resume() {
-		// Set the category prefix
-		ThreadCategory.setPrefix(LOG4J_CATEGORY);
-
+	protected void onResume() {
 		getTrapHandler().resume();
 	}
 
-	/**
-	 * Stops the currently running service. If the service is not running then
-	 * the command is silently discarded.
-	 */
-	public synchronized void stop() {
-		// Set the category prefix
-		ThreadCategory.setPrefix(LOG4J_CATEGORY);
-
+	protected void onStop() {
 		getTrapHandler().stop();
 	}
 
@@ -209,15 +163,6 @@ public class Trapd extends ServiceDaemon {
 	 */
 	public synchronized int getStatus() {
 		return getTrapHandler().getStatus();
-	}
-
-	/**
-	 * Returns the name of the service.
-	 * 
-	 * @return The service's name.
-	 */
-	public String getName() {
-		return m_name;
 	}
 
 	/**

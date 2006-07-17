@@ -46,7 +46,7 @@ import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.concurrent.RunnableConsumerThreadPool;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.RTCConfigFactory;
-import org.opennms.netmgt.daemon.ServiceDaemon;
+import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 
 /**
  * Maintains calculations for categories.
@@ -83,11 +83,7 @@ import org.opennms.netmgt.daemon.ServiceDaemon;
  * @see org.opennms.netmgt.rtc.DataSender
  * @see org.opennms.netmgt.rtc.DataManager
  */
-public final class RTCManager extends ServiceDaemon {
-    /**
-     * The log4j category used to log debug messsages and statements.
-     */
-    private static final String LOG4J_CATEGORY = "OpenNMS.RTCManager";
+public final class RTCManager extends AbstractServiceDaemon {
 
     /**
      * Singleton instance of this class
@@ -318,7 +314,7 @@ public final class RTCManager extends ServiceDaemon {
      * 
      */
     public RTCManager() {
-        setStatus(START_PENDING);
+    	super("OpenNMS.RTCManager");
     }
 
     /**
@@ -441,17 +437,7 @@ public final class RTCManager extends ServiceDaemon {
 
     }
 
-    /**
-     * Returns a name/id for this process.
-     */
-    public String getName() {
-        return "OpenNMS.RTCManager";
-    }
-
-    public void init() {
-        ThreadCategory.setPrefix(LOG4J_CATEGORY);
-
-        Category log = ThreadCategory.getInstance(getClass());
+    protected void onInit() {
 
         // load the rtc configuration
         RTCConfigFactory rFactory = null;
@@ -460,13 +446,13 @@ public final class RTCManager extends ServiceDaemon {
             rFactory = RTCConfigFactory.getInstance();
 
         } catch (IOException ex) {
-            log.error("Failed to load rtc configuration", ex);
+            log().error("Failed to load rtc configuration", ex);
             throw new UndeclaredThrowableException(ex);
         } catch (MarshalException ex) {
-            log.error("Failed to load rtc configuration", ex);
+            log().error("Failed to load rtc configuration", ex);
             throw new UndeclaredThrowableException(ex);
         } catch (ValidationException ex) {
-            log.error("Failed to load rtc configuration", ex);
+            log().error("Failed to load rtc configuration", ex);
             throw new UndeclaredThrowableException(ex);
         }
 
@@ -492,11 +478,11 @@ public final class RTCManager extends ServiceDaemon {
             try {
                 m_userRefreshInterval = rFactory.getUserRefreshInterval();
             } catch (Exception nfE) {
-                log.warn("User refresh time has an incorrect format - using 1 minute instead");
+                log().warn("User refresh time has an incorrect format - using 1 minute instead");
                 m_userRefreshInterval = 60 * 1000;
             }
         } else {
-            log.warn("User refresh time not specified - using 1 minute instead");
+            log().warn("User refresh time not specified - using 1 minute instead");
             m_userRefreshInterval = 60 * 1000;
         }
 
@@ -507,16 +493,16 @@ public final class RTCManager extends ServiceDaemon {
 
         // if high threshold is smaller than the low threshold, swap 'em
         if (m_highThresholdInterval < m_lowThresholdInterval) {
-            log.warn("Swapping high and low threshold intervals..");
+            log().warn("Swapping high and low threshold intervals..");
             long tmp = m_highThresholdInterval;
             m_highThresholdInterval = m_lowThresholdInterval;
             m_lowThresholdInterval = tmp;
         }
 
-        log.info("Rolling Window: " + m_rollingWindow + "(milliseconds)");
-        log.info("Low Threshold Refresh Interval: " + m_lowThresholdInterval + "(milliseconds)");
-        log.info("High Threshold Refresh Interval: " + m_highThresholdInterval + "(milliseconds)");
-        log.info("User Refresh Interval: " + m_userRefreshInterval + "(milliseconds)");
+        log().info("Rolling Window: " + m_rollingWindow + "(milliseconds)");
+        log().info("Low Threshold Refresh Interval: " + m_lowThresholdInterval + "(milliseconds)");
+        log().info("High Threshold Refresh Interval: " + m_highThresholdInterval + "(milliseconds)");
+        log().info("User Refresh Interval: " + m_userRefreshInterval + "(milliseconds)");
 
         // Intialize the data from the database
         try {
@@ -527,67 +513,49 @@ public final class RTCManager extends ServiceDaemon {
 
         m_updaterPool = new RunnableConsumerThreadPool("RTC Updater Pool", 0.6f, 1.0f, rFactory.getUpdaters());
 
-        if (log.isDebugEnabled())
-            log.debug("Created updater pool");
+        if (log().isDebugEnabled())
+            log().debug("Created updater pool");
 
         m_eventReceiver = new BroadcastEventProcessor(m_updaterPool.getRunQueue());
-        if (log.isDebugEnabled())
-            log.debug("Created event receiver");
+        if (log().isDebugEnabled())
+            log().debug("Created event receiver");
 
         // create the data sender
         m_dataSender = new DataSender(getCategories(), rFactory.getSenders());
-        log.debug("Created DataSender");
+        log().debug("Created DataSender");
 
         // create the timer
         m_timer = new Timer();
 
-        setStatus(RUNNING);
-
-        if (log.isDebugEnabled()) {
-            log.debug("RTC ready to receive events");
+        if (log().isDebugEnabled()) {
+            log().debug("RTC ready to receive events");
         }
     }
 
-    /**
-     * Start the RTCManager. Reads the rtc configuration xml, creates and starts
-     * all subthreads.
-     * 
-     * Reads and checks all configurable properties. If any of the required
-     * properties is not present/incorrect, throws an exception.
-     * 
-     * Creates the DataManager which initializes data from the database and
-     * starts the data updater(s) and the data sender
-     */
-    public void start() {
-        setStatus(STARTING);
-
-        ThreadCategory.setPrefix(LOG4J_CATEGORY);
-
-        Category log = ThreadCategory.getInstance(getClass());
-
-        //
+    protected void onStart() {
+		//
         // Start all the threads
         //
-        if (log.isDebugEnabled()) {
-            log.debug("Starting updater pool");
+        if (log().isDebugEnabled()) {
+            log().debug("Starting updater pool");
         }
 
         m_updaterPool.start();
 
-        if (log.isDebugEnabled()) {
-            log.debug("Starting data sender ");
+        if (log().isDebugEnabled()) {
+            log().debug("Starting data sender ");
         }
 
         m_dataSender.start();
 
-        if (log.isDebugEnabled()) {
-            log.debug("Updater threads and datasender started");
+        if (log().isDebugEnabled()) {
+            log().debug("Updater threads and datasender started");
         }
 
         // set the user refresh timer
         m_timer.schedule((m_userTask = new RTCTimerTask(USERTIMER)), 0, m_userRefreshInterval);
-        if (log.isDebugEnabled())
-            log.debug(USERTIMER + " scheduled");
+        if (log().isDebugEnabled())
+            log().debug(USERTIMER + " scheduled");
 
         //
         // Subscribe to events
@@ -596,72 +564,30 @@ public final class RTCManager extends ServiceDaemon {
             m_eventReceiver.start();
         } catch (Throwable t) {
             m_dataSender.stop();
-            if (log.isDebugEnabled())
-                log.debug("DataSender shutdown");
+            if (log().isDebugEnabled())
+                log().debug("DataSender shutdown");
 
             m_updaterPool.stop();
-            if (log.isDebugEnabled())
-                log.debug("Updater pool shutdown");
+            if (log().isDebugEnabled())
+                log().debug("Updater pool shutdown");
 
             m_timer.cancel();
-            if (log.isDebugEnabled())
-                log.debug("Timer cancelled");
+            if (log().isDebugEnabled())
+                log().debug("Timer cancelled");
 
             throw new UndeclaredThrowableException(t);
         }
 
-        setStatus(RUNNING);
 
-        if (log.isDebugEnabled()) {
-            log.debug("RTC ready to receive events");
+        if (log().isDebugEnabled()) {
+            log().debug("RTC ready to receive events");
         }
-    }
+	}
 
-    /**
-     * Pauses all the threads.
-     */
-    public void pause() {
-        if (!isRunning())
-            return;
-
-        setStatus(PAUSE_PENDING);
-
-        Category log = ThreadCategory.getInstance(getClass());
-
-        setStatus(PAUSED);
-
-        if (log.isDebugEnabled())
-            log.debug("Finished pausing all threads");
-    }
-
-    /**
-     * Resumes all the threads.
-     */
-    public void resume() {
-        if (!isPaused())
-            return;
-
-        setStatus(RESUME_PENDING);
-
-        Category log = ThreadCategory.getInstance(getClass());
-
-        setStatus(RUNNING);
-
-        if (log.isDebugEnabled())
-            log.debug("Finished resuming ");
-    }
-
-    /**
-     * Stops all the threads.
-     */
-    public void stop() {
-        setStatus(STOP_PENDING);
-
-        Category log = ThreadCategory.getInstance(getClass());
-
-        try {
-            if (log.isDebugEnabled())
-                log.debug("Beginning shutdown process");
+    protected void onStop() {
+		try {
+            if (log().isDebugEnabled())
+                log().debug("Beginning shutdown process");
 
             //
             // Close connection to the event subsystem and free associated
@@ -669,22 +595,22 @@ public final class RTCManager extends ServiceDaemon {
             //
             m_eventReceiver.close();
 
-            if (log.isDebugEnabled())
-                log.debug("Shutting down the data sender");
+            if (log().isDebugEnabled())
+                log().debug("Shutting down the data sender");
 
             // shutdown the data sender
             m_dataSender.stop();
 
-            if (log.isDebugEnabled())
-                log.debug("DataSender shutdown");
+            if (log().isDebugEnabled())
+                log().debug("DataSender shutdown");
 
-            if (log.isDebugEnabled())
-                log.debug("sending shutdown to updaters");
+            if (log().isDebugEnabled())
+                log().debug("sending shutdown to updaters");
 
             m_updaterPool.stop();
 
-            if (log.isDebugEnabled())
-                log.debug("RTC Updaters shutdown");
+            if (log().isDebugEnabled())
+                log().debug("RTC Updaters shutdown");
 
             // cancel the timer and the timer tasks
             if (m_lowTtask != null)
@@ -696,21 +622,18 @@ public final class RTCManager extends ServiceDaemon {
             if (m_userTask != null)
                 m_userTask.cancel();
 
-            if (log.isDebugEnabled())
-                log.debug("shutdown: Timer tasks Canceled");
+            if (log().isDebugEnabled())
+                log().debug("shutdown: Timer tasks Canceled");
 
             m_timer.cancel();
 
-            if (log.isDebugEnabled())
-                log.debug("shutdown: Timer Canceled");
+            if (log().isDebugEnabled())
+                log().debug("shutdown: Timer Canceled");
 
-            setStatus(STOPPED);
-
-            log.info("RTCManager shutdown complete");
         } catch (Exception e) {
-            log.error(e.getLocalizedMessage(), e);
+            log().error(e.getLocalizedMessage(), e);
         }
-    }
+	}
 
     /**
      * Updates the number of events received. Increment the counter that keeps

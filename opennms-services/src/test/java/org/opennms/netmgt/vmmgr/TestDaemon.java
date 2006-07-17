@@ -31,28 +31,17 @@
 
 package org.opennms.netmgt.vmmgr;
 
-import org.opennms.netmgt.daemon.ServiceDaemon;
+import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 
-public class TestDaemon extends ServiceDaemon {
+public class TestDaemon extends AbstractServiceDaemon {
 
 	public TestDaemon() {
+		super("TestDaemon");
 		System.err.println("Creating: "+getName());
-		setStatus(START_PENDING);
 	}
 
-	public String getName() {
-		return "TestDaemon";
-	}
-
-	public void pause() {
-		if (!isRunning()) {
-			return;
-		}
-
-		setStatus(PAUSE_PENDING);
+	protected void onPause() {
 		System.err.println("Pausing: "+getName());
-		setStatus(PAUSED);
-
 	}
 
 	public String status() {
@@ -61,31 +50,19 @@ public class TestDaemon extends ServiceDaemon {
 		return status;
 	}
 
-	public void resume() {
-		if (!isPaused()) {
-			return;
-		}
-
-		setStatus(RESUME_PENDING);
+	protected void onResume() {
 		System.err.println("Resuming: "+getName());
-		setStatus(RUNNING);
 	}
 
-	public void start() {
-		setStatus(STARTING);
+	protected void onStart() {
 		System.err.println("Starting: "+getName());
-		setStatus(RUNNING);
-
 	}
 
-	public void stop() {
-		setStatus(STOP_PENDING);
+	protected void onStop() {
 		System.err.println("Stopping: "+getName());
-		setStatus(STOPPED);
-
 	}
 
-    public void init() {
+    protected void onInit() {
     }
 
 }

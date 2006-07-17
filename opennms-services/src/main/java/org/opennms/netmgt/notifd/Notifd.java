@@ -45,6 +45,7 @@ import java.util.Map;
 
 import javax.sql.DataSource;
 
+import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.DestinationPathManager;
 import org.opennms.netmgt.config.GroupManager;
@@ -54,7 +55,7 @@ import org.opennms.netmgt.config.NotificationManager;
 import org.opennms.netmgt.config.PollOutagesConfigManager;
 import org.opennms.netmgt.config.UserManager;
 import org.opennms.netmgt.config.notifd.Queue;
-import org.opennms.netmgt.daemon.ServiceDaemon;
+import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.eventd.EventIpcManager;
 
 /**
@@ -68,7 +69,7 @@ import org.opennms.netmgt.eventd.EventIpcManager;
  * @author <a href="http://www.opennms.org/">OpenNMS.org </a>
  * 
  */
-public final class Notifd extends ServiceDaemon {
+public final class Notifd extends AbstractServiceDaemon {
 
     /**
      * The signlton instance.
@@ -112,16 +113,17 @@ public final class Notifd extends ServiceDaemon {
      * Constructs a new Notifd service daemon.
      */
     Notifd() {
+    	super("OpenNMS.Notifd");
     }
 
-    public synchronized void init() {
+    protected void onInit() {
 
         m_noticeQueues = new HashMap();
         m_queueHandlers = new HashMap();
         m_eventReader = null;
-        try {
+		try {
 
-            ThreadCategory.getInstance(getClass()).info("Notification status = " + getConfigManager().getNotificationStatus());
+            log().info("Notification status = " + getConfigManager().getNotificationStatus());
 
             Queue queues[] = getConfigManager().getConfiguration().getQueue();
             for (int i = 0; i < queues.length; i++) {
@@ -138,7 +140,7 @@ public final class Notifd extends ServiceDaemon {
                 m_queueHandlers.put(queues[i].getQueueId(), handlerQueue);
             }
         } catch (Throwable t) {
-            ThreadCategory.getInstance(getClass()).warn("start: Failed to load notifd queue handlers.", t);
+            log().warn("start: Failed to load notifd queue handlers.", t);
         }
 
         // start the event reader
@@ -146,7 +148,7 @@ public final class Notifd extends ServiceDaemon {
         try {
             m_eventReader = new BroadcastEventProcessor(this, m_noticeQueues);
         } catch (Exception ex) {
-            ThreadCategory.getInstance(getClass()).error("Failed to setup event receiver", ex);
+            log().error("Failed to setup event receiver", ex);
             throw new UndeclaredThrowableException(ex);
         }
     }
@@ -206,31 +208,16 @@ public final class Notifd extends ServiceDaemon {
         return m_eventReader;
     }
 
-    /**
-     * Starts the <em>Notifd</em> service. The process of starting the service
-     * involves starting the queue handlers and starting an event receiver.
-     */
-    public synchronized void start() {
-
-        Iterator i = m_queueHandlers.keySet().iterator();
+    protected void onStart() {
+		Iterator i = m_queueHandlers.keySet().iterator();
         while (i.hasNext()) {
             NotifdQueueHandler curHandler = (NotifdQueueHandler) m_queueHandlers.get(i.next());
             curHandler.start();
         }
+	}
 
-        // create the control receiver
-        setStatus(RUNNING);
-    }
-
-    /**
-     * Stops the currently running service. If the service is not running then
-     * the command is silently discarded.
-     * 
-     */
-    public synchronized void stop() {
-        setStatus(STOP_PENDING);
-
-        try {
+    protected void onStop() {
+		try {
             Iterator i = m_queueHandlers.keySet().iterator();
             while (i.hasNext()) {
                 NotifdQueueHandler curHandler = (NotifdQueueHandler) m_queueHandlers.get(i.next());
@@ -243,55 +230,23 @@ public final class Notifd extends ServiceDaemon {
             m_eventReader.close();
 
         m_eventReader = null;
+	}
 
-        setStatus(STOPPED);
-
-    }
-
-    /**
-     * Returns the name of the service.
-     * 
-     * @return The service's name.
-     */
-    public String getName() {
-        return "OpenNMS.Notifd";
-    }
-
-    /**
-     * Pauses the service if its currently running
-     */
-    public synchronized void pause() {
-        if (!isRunning())
-            return;
-
-        setStatus(PAUSE_PENDING);
-
-        Iterator i = m_queueHandlers.keySet().iterator();
+    protected void onPause() {
+		Iterator i = m_queueHandlers.keySet().iterator();
         while (i.hasNext()) {
             NotifdQueueHandler curHandler = (NotifdQueueHandler) m_queueHandlers.get(i.next());
             curHandler.pause();
         }
+	}
 
-        setStatus(PAUSED);
-    }
-
-    /**
-     * Resumes the service if its currently paused
-     */
-    public synchronized void resume() {
-        if (!isPaused())
-            return;
-
-        setStatus(RESUME_PENDING);
-
-        Iterator i = m_queueHandlers.keySet().iterator();
+    protected void onResume() {
+		Iterator i = m_queueHandlers.keySet().iterator(); 
         while (i.hasNext()) {
             NotifdQueueHandler curHandler = (NotifdQueueHandler) m_queueHandlers.get(i.next());
             curHandler.resume();
         }
-
-        setStatus(RUNNING);
-    }
+	}
 
     /**
      * Returns the singular instance of the Notifd daemon. There can be only one

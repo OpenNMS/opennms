@@ -36,18 +36,16 @@ import java.util.List;
 
 import javax.sql.DataSource;
 
-import org.apache.log4j.Category;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.capsd.EventUtils;
 import org.opennms.netmgt.config.EventTranslatorConfig;
-import org.opennms.netmgt.daemon.ServiceDaemon;
+import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.eventd.EventIpcManager;
 import org.opennms.netmgt.eventd.EventListener;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Events;
 import org.opennms.netmgt.xml.event.Log;
 
-public class EventTranslator extends ServiceDaemon implements EventListener {
+public class EventTranslator extends AbstractServiceDaemon implements EventListener {
     
     private static EventTranslator s_instance = new EventTranslator();
 
@@ -59,9 +57,11 @@ public class EventTranslator extends ServiceDaemon implements EventListener {
 
     
     public EventTranslator() {
+    	super(EventTranslatorConfig.TRANSLATOR_NAME);
     }
     
     public EventTranslator(EventIpcManager eventMgr) {
+    	this();
         setEventManager(eventMgr);
     }
     
@@ -74,14 +74,13 @@ public class EventTranslator extends ServiceDaemon implements EventListener {
     }
 
     
-    public void init() {
+    protected void onInit() {
         if (m_initialized) return;
         
         checkPreRequisites();
         createMessageSelectorAndSubscribe();
                 
         m_initialized = true;
-        setStatus(START_PENDING);
     }
 
     private void checkPreRequisites() {
@@ -93,32 +92,10 @@ public class EventTranslator extends ServiceDaemon implements EventListener {
             throw new IllegalStateException("dataSource has not been set");
     }
 
-    public void start() {
-        setStatus(RUNNING);
-    }
-
-    public void stop() {
-        setStatus(STOP_PENDING);
-        setStatus(STOPPED);
-    }
-    
-    public void destroy() {
-        setStatus(STOPPED);
+    protected void onStop() {
         m_initialized = false;
         m_eventMgr = null;
         m_config = null;
-    }
-
-    public String getName() {
-        return EventTranslatorConfig.TRANSLATOR_NAME;
-    }
-
-    public void pause() {
-        setStatus(PAUSED);
-    }
-
-    public void resume() {
-        setStatus(RESUME_PENDING);
     }
 
     private void createMessageSelectorAndSubscribe() {

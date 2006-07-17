@@ -26,7 +26,7 @@ public class ImporterService implements ImporterServiceMBean {
     	ThreadCategory.setPrefix(ImporterService.NAME);
         m_status = Fiber.STARTING;
         ThreadCategory.getInstance().debug("SPRING: thread.classLoader="+Thread.currentThread().getContextClassLoader());;
-        m_context = new ClassPathXmlApplicationContext("/org/opennms/netmgt/importer/importer-context.xml");
+        m_context = new ClassPathXmlApplicationContext(new String[] { "/org/opennms/netmgt/importer/importer-context.xml" , "/META-INF/applicationDao-context.xml" });
         ThreadCategory.getInstance().debug("SPRING: context.classLoader="+m_context.getClassLoader());
         m_status = Fiber.RUNNING;
     }
