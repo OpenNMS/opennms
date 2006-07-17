@@ -56,8 +56,8 @@ public class OpenNMSTestCase extends TestCase {
      * is running.
      */
     protected static String MOCK_EVENT_CONFIG = "<EventdConfiguration\n" + 
-            "   TCPPort=\"5827\"\n" + 
-            "   UDPPort=\"5827\"\n" + 
+            "   TCPPort=\"5837\"\n" + 
+            "   UDPPort=\"5837\"\n" + 
             "   receivers=\"5\"\n" + 
 //            "   getNextEventID=\"SELECT max(eventId)+1 from events\"\n" + 
             "   getNextEventID=\"select next value for eventNxtId from seqQueryTable\"\n" +
