@@ -100,8 +100,9 @@ public class EventCreator implements TrapProcessor {
         m_event.setSnmphost(trapInterface);
         m_event.setInterface(trapInterface);
         long nodeId = TrapdIPMgr.getNodeId(trapInterface);
-        if (nodeId != -1)
+        if (nodeId != -1) {
             m_event.setNodeid(nodeId);
+        }
     }
 
     public void setTrapIdentity(TrapIdentity trapIdentity) {

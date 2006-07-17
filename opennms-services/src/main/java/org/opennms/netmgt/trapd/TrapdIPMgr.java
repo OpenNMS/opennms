@@ -90,7 +90,7 @@ final class TrapdIPMgr {
      *             error occurs.
      * 
      */
-    static synchronized void dataSourceSync() throws SQLException {
+    protected static synchronized void dataSourceSync() throws SQLException {
         java.sql.Connection c = null;
         try {
             // Get database connection
@@ -132,10 +132,11 @@ final class TrapdIPMgr {
      * @return The node ID of the IP Address if known.
      * 
      */
-    static synchronized long getNodeId(String addr) {
-        if (addr == null)
+    protected static synchronized long getNodeId(String addr) {
+        if (addr == null) {
             return -1;
-        return longValue((Long)m_knownips.get(addr));
+        }
+        return longValue((Long) m_knownips.get(addr));
     }
 
     /**
@@ -149,9 +150,10 @@ final class TrapdIPMgr {
      * @return The nodeid if it existed in the map.
      * 
      */
-    static synchronized long setNodeId(String addr, long nodeid) {
-        if (addr == null || nodeid == -1)
+    protected static synchronized long setNodeId(String addr, long nodeid) {
+        if (addr == null || nodeid == -1) {
             return -1;
+        }
         
         return longValue((Long) m_knownips.put(addr, new Long(nodeid)));
     }
@@ -165,10 +167,15 @@ final class TrapdIPMgr {
      * @return The nodeid that was in the map.
      * 
      */
-    static long removeNodeId(String addr) {
-        if (addr == null)
+    protected static synchronized long removeNodeId(String addr) {
+        if (addr == null) {
             return -1;
+        }
         return longValue((Long) m_knownips.remove(addr));
+    }
+
+    protected static synchronized void clearKnownIpsMap() {
+        m_knownips = new HashMap();
     }
 
     private static long longValue(Long result) {
@@ -176,4 +183,4 @@ final class TrapdIPMgr {
     }
 
 
-} // end TrapdIPMgr
+}
