@@ -63,6 +63,11 @@
 		  <version>1.0.6</version>
 		</dependency>
 		<dependency>
+		  <groupId>taglibs</groupId>
+		  <artifactId>standard</artifactId>
+		  <version>1.0.6</version>
+		</dependency>
+		<dependency>
 			<groupId>struts</groupId>
 			<artifactId>struts</artifactId>
 		</dependency>
