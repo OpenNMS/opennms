@@ -630,6 +630,12 @@ opennms.home = ${opennms.home}
         <version>1.0.4</version>
       </dependency>
       <dependency>
+        <groupId>easymock</groupId>
+        <artifactId>easymock</artifactId>
+        <version>2.0</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
         <groupId>hsqldb</groupId>
         <artifactId>hsqldb</artifactId>
         <version>1.7.3.3</version>
