@@ -5,7 +5,9 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.io.Reader;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.HashMap;
@@ -35,6 +37,8 @@ import org.opennms.netmgt.xml.event.Log;
 import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.Parms;
 import org.opennms.netmgt.xml.event.Value;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 
 public class ThresholderTestCase extends MockObjectTestCase {
 
@@ -93,7 +97,9 @@ public class ThresholderTestCase extends MockObjectTestCase {
 		m_serviceParameters.put("svcName", serviceName);
 		m_parameters = new HashMap();
 		m_parameters.put("thresholding-group", groupName);
-		FileReader r = new FileReader("etc/examples/thresholds.xml");
+		
+		Resource config = new ClassPathResource("/test-thresholds.xml");
+		Reader r = new InputStreamReader(config.getInputStream());
 		ThresholdingConfigFactory.setInstance(new ThresholdingConfigFactory(r));
 		r.close();
 		ThresholdingConfigFactory.getInstance().getGroup(groupName).setRrdRepository("/tmp");
