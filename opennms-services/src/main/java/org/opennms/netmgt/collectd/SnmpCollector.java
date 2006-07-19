@@ -308,7 +308,7 @@ public class SnmpCollector implements ServiceCollector {
 
 	private void initDataCollectionConfig() {
 		try {
-			DataCollectionConfigFactory.reload();
+			DataCollectionConfigFactory.init();
 		} catch (MarshalException e) {
 			log().fatal("initialize: Failed to load data collection configuration", e);
 			throw new UndeclaredThrowableException(e);
