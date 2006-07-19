@@ -1,6 +1,7 @@
 package org.opennms.netmgt.threshd;
 
 import java.io.FileReader;
+import java.io.InputStreamReader;
 import java.util.Properties;
 
 import org.opennms.netmgt.config.DatabaseSchemaConfigFactory;
@@ -13,6 +14,8 @@ import org.opennms.netmgt.mock.MockLogAppender;
 import org.opennms.netmgt.mock.MockUtil;
 import org.opennms.netmgt.rrd.RrdConfig;
 import org.opennms.netmgt.threshd.mock.MockThreshdConfigManager;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 
 public class ThreshdTest extends ThresholderTestCase {
     
@@ -80,12 +83,14 @@ public class ThreshdTest extends ThresholderTestCase {
         
 		setupDatabase();
 		
-        FileReader rdr = new FileReader("etc/database-schema.xml");
-        DatabaseSchemaConfigFactory.setInstance(new DatabaseSchemaConfigFactory(rdr));
-        rdr.close();
+        Resource dbConfig = new ClassPathResource("/org/opennms/netmgt/config/test-database-schema.xml");
+        InputStreamReader r = new InputStreamReader(dbConfig.getInputStream());
+        DatabaseSchemaConfigFactory dscf = new DatabaseSchemaConfigFactory(r);
+        r.close();
+        DatabaseSchemaConfigFactory.setInstance(dscf);
         
         Properties rrdProperties = new Properties();
-        rrdProperties.put("org.opennms.rrd.strategyClass", "org.opennms.netmgt.mock.MockRrdStrategy");
+        rrdProperties.put("org.opennms.rrd.strategyClass", "org.opennms.netmgt.mock.NullRrdStrategy");
         rrdProperties.put("org.opennms.rrd.usequeue", "false");
         RrdConfig.setProperties(rrdProperties);
         
@@ -99,7 +104,8 @@ public class ThreshdTest extends ThresholderTestCase {
 		
 		setupThresholdConfig(dirName, fileName, ipAddress, serviceName, groupName);
         
-        FileReader pollOutagesRdr = new FileReader("etc/poll-outages.xml");
+		Resource resource = new ClassPathResource("etc/poll-outages.xml");
+		InputStreamReader pollOutagesRdr = new InputStreamReader(resource.getInputStream());
         PollOutagesConfigFactory.setInstance(new PollOutagesConfigFactory(pollOutagesRdr));
         pollOutagesRdr.close();
         
