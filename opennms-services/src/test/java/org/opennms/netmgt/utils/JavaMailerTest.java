@@ -7,6 +7,8 @@
 package org.opennms.netmgt.utils;
 
 
+import java.io.File;
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Calendar;
@@ -24,6 +26,8 @@ import junit.framework.TestCase;
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.mock.MockLogAppender;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 
 import alt.dev.jmta.JMTA;
 /**
@@ -31,9 +35,14 @@ import alt.dev.jmta.JMTA;
  */
 public class JavaMailerTest extends TestCase {
     
-    protected void setUp() {
+    protected void setUp() throws IOException {
         MockLogAppender.setupLogging();
-        System.setProperty("opennms.home", ".");
+        
+    	Resource resource = new ClassPathResource("/etc/javamail-configuration.properties");
+    	
+    	File homeDir = resource.getFile().getParentFile().getParentFile();
+
+        System.setProperty("opennms.home", homeDir.getAbsolutePath());
     }
     
     protected void tearDown() {
