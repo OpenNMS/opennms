@@ -58,6 +58,7 @@ import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.poller.mock.MockScheduler;
 import org.opennms.netmgt.scheduler.Scheduler;
+import org.opennms.netmgt.utils.EventProxy;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 
@@ -247,6 +248,9 @@ public class CollectdTest extends MockObjectTestCase {
 		m_scheduler.next();
 		
 		assertEquals(1, m_scheduler.getEntryCount());
+		
+		//public int collect(CollectionAgent agent, EventProxy eproxy, Map parameters);
+		m_collector.expects(once()).method("collect").with(isA(CollectionAgent.class), isA(EventProxy.class), isA(Map.class));
 		
 		m_scheduler.next();
 		
