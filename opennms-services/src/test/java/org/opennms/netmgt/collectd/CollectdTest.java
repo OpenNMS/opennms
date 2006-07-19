@@ -275,7 +275,6 @@ public class CollectdTest extends MockObjectTestCase {
 			will(returnValue(Collections.singleton(svcName)));
 	}
 
-	@Override
 	public void runTest() throws Throwable {
 		// TODO Auto-generated method stub
 		super.runTest();
