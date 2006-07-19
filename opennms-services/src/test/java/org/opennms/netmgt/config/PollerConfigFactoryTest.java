@@ -33,6 +33,7 @@ package org.opennms.netmgt.config;
 
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.StringReader;
 
 import junit.framework.TestCase;
@@ -48,6 +49,8 @@ import org.opennms.netmgt.config.poller.Service;
 import org.opennms.netmgt.mock.MockDatabase;
 import org.opennms.netmgt.mock.MockLogAppender;
 import org.opennms.netmgt.mock.MockNetwork;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 
 public class PollerConfigFactoryTest extends TestCase {
 
@@ -80,7 +83,10 @@ public class PollerConfigFactoryTest extends TestCase {
         super.setUp();
         MockLogAppender.setupLogging();
         
-        DatabaseSchemaConfigFactory dscf = new DatabaseSchemaConfigFactory(new FileReader("etc/database-schema.xml"));
+        Resource dbConfig = new ClassPathResource("/org/opennms/netmgt/config/test-database-schema.xml");
+        InputStreamReader r = new InputStreamReader(dbConfig.getInputStream());
+        DatabaseSchemaConfigFactory dscf = new DatabaseSchemaConfigFactory(r);
+        r.close();
         DatabaseSchemaConfigFactory.setInstance(dscf);
         
         MockNetwork network = new MockNetwork();
