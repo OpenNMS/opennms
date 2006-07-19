@@ -32,6 +32,7 @@
 
 package org.opennms.netmgt.collectd;
 
+import java.io.InputStreamReader;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -39,6 +40,7 @@ import java.util.Map;
 import org.jmock.Mock;
 import org.jmock.cglib.MockObjectTestCase;
 import org.opennms.netmgt.config.CollectdPackage;
+import org.opennms.netmgt.config.PollOutagesConfigFactory;
 import org.opennms.netmgt.config.collectd.Filter;
 import org.opennms.netmgt.config.collectd.Package;
 import org.opennms.netmgt.config.collectd.Parameter;
@@ -47,10 +49,13 @@ import org.opennms.netmgt.dao.CollectorConfigDao;
 import org.opennms.netmgt.dao.IpInterfaceDao;
 import org.opennms.netmgt.dao.MonitoredServiceDao;
 import org.opennms.netmgt.eventd.EventIpcManager;
+import org.opennms.netmgt.mock.MockLogAppender;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.poller.mock.MockScheduler;
 import org.opennms.netmgt.scheduler.Scheduler;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 
 public class CollectdTest extends MockObjectTestCase {
 	
@@ -67,6 +72,8 @@ public class CollectdTest extends MockObjectTestCase {
 
 
 	protected void setUp() throws Exception {
+		
+		MockLogAppender.setupLogging();
         
         // Test setup
 		
@@ -80,6 +87,12 @@ public class CollectdTest extends MockObjectTestCase {
 		m_scheduler = new MockScheduler();
 		
 		m_eventIpcManager.stubs();
+		
+		Resource resource = new ClassPathResource("etc/poll-outages.xml"); 
+		InputStreamReader pollOutagesRdr = new InputStreamReader(resource.getInputStream());
+        PollOutagesConfigFactory.setInstance(new PollOutagesConfigFactory(pollOutagesRdr));
+        pollOutagesRdr.close();
+
 		
 		m_collectd = new Collectd();
 		m_collectd.setEventIpcManager(getEventIpcManager());
@@ -220,6 +233,15 @@ public class CollectdTest extends MockObjectTestCase {
 	private void setupCollector(String svcName) {
 		m_collectorConfigDao.expects(once()).method("getCollectorNames").
 			will(returnValue(Collections.singleton(svcName)));
+	}
+
+	@Override
+	public void runTest() throws Throwable {
+		// TODO Auto-generated method stub
+		super.runTest();
+		MockLogAppender.assertNoWarningsOrGreater();
+		
+		
 	}
 
 }
