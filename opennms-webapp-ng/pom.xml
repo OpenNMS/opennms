@@ -12,6 +12,18 @@
 	<name>OpenNMS NextGen WebApp</name>
 	<url>http://maven.apache.org</url>
 	<dependencies>
+	    <dependency>
+	    	<groupId>org.opennms</groupId>
+	    	<artifactId>opennms-model</artifactId>
+	    </dependency>
+	    <dependency>
+	    	<groupId>org.opennms</groupId>
+	    	<artifactId>opennms-dao</artifactId>
+	    </dependency>
+	    <dependency>
+	    	<groupId>easymock</groupId>
+	    	<artifactId>easymock</artifactId>
+	    </dependency>
 		<dependency>
 			<groupId>commons-dbcp</groupId>
 			<artifactId>commons-dbcp</artifactId>
