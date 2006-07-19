@@ -319,13 +319,12 @@ public class CapsdTest extends OpenNMSTestCase {
         //TODO Implement stop().
     }
 */
-    public final void testInit() throws MarshalException, ValidationException, IOException {
+    public final void testStartStop() throws MarshalException, ValidationException, IOException {
         m_capsd.init();
+        m_capsd.start();
+        m_capsd.stop();
     }
     
-    public final void testStart() throws MarshalException, ValidationException, IOException {
-        m_capsd.start();
-    }
 
 /*    public final void testGetLocalHostAddress() {
         //TODO Implement getLocalHostAddress().
