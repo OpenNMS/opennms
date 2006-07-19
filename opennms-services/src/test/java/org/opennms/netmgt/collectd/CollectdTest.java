@@ -276,7 +276,6 @@ public class CollectdTest extends MockObjectTestCase {
 	}
 
 	public void runTest() throws Throwable {
-		// TODO Auto-generated method stub
 		super.runTest();
 		MockLogAppender.assertNoWarningsOrGreater();
 		
