@@ -87,9 +87,9 @@ public class SnmpNodeCollectorTest extends SnmpCollectorTestCase {
 
         createWalker(collector);
         waitForSignal();
-        assertNotNull(collector.getEntry());
-        assertFalse(collector.timedOut());
-        assertFalse(collector.failed());
+        assertNotNull("No entry data", collector.getEntry());
+        assertFalse("Timeout collecting data", collector.timedOut());
+        assertFalse("Collector failed to collect data", collector.failed());
         return collector;
     }
 
