@@ -40,6 +40,8 @@ import java.util.Map;
 import org.jmock.Mock;
 import org.jmock.cglib.MockObjectTestCase;
 import org.opennms.netmgt.config.CollectdPackage;
+import org.opennms.netmgt.config.DataSourceFactory;
+import org.opennms.netmgt.config.DatabaseSchemaConfigFactory;
 import org.opennms.netmgt.config.PollOutagesConfigFactory;
 import org.opennms.netmgt.config.collectd.Filter;
 import org.opennms.netmgt.config.collectd.Package;
@@ -49,7 +51,9 @@ import org.opennms.netmgt.dao.CollectorConfigDao;
 import org.opennms.netmgt.dao.IpInterfaceDao;
 import org.opennms.netmgt.dao.MonitoredServiceDao;
 import org.opennms.netmgt.eventd.EventIpcManager;
+import org.opennms.netmgt.mock.MockDatabase;
 import org.opennms.netmgt.mock.MockLogAppender;
+import org.opennms.netmgt.mock.MockNetwork;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.poller.mock.MockScheduler;
@@ -87,6 +91,38 @@ public class CollectdTest extends MockObjectTestCase {
 		m_scheduler = new MockScheduler();
 		
 		m_eventIpcManager.stubs();
+		
+        MockNetwork m_network = new MockNetwork();
+        m_network.setCriticalService("ICMP");
+        m_network.addNode(1, "Router");
+        m_network.addInterface("192.168.1.1");
+        m_network.addService("ICMP");
+        m_network.addService("SMTP");
+        m_network.addInterface("192.168.1.2");
+        m_network.addService("ICMP");
+        m_network.addService("SMTP");
+        m_network.addNode(2, "Server");
+        m_network.addInterface("192.168.1.3");
+        m_network.addService("ICMP");
+        m_network.addService("HTTP");
+        m_network.addNode(3, "Firewall");
+        m_network.addInterface("192.168.1.4");
+        m_network.addService("SMTP");
+        m_network.addService("HTTP");
+        m_network.addInterface("192.168.1.5");
+        m_network.addService("SMTP");
+        m_network.addService("HTTP");
+        
+        MockDatabase m_db = new MockDatabase();
+        m_db.populate(m_network);
+        
+        DataSourceFactory.setInstance(m_db);
+
+        Resource dbConfig = new ClassPathResource("/org/opennms/netmgt/config/test-database-schema.xml");
+        InputStreamReader r = new InputStreamReader(dbConfig.getInputStream());
+        DatabaseSchemaConfigFactory dscf = new DatabaseSchemaConfigFactory(r);
+        r.close();
+        DatabaseSchemaConfigFactory.setInstance(dscf);
 		
 		Resource resource = new ClassPathResource("etc/poll-outages.xml"); 
 		InputStreamReader pollOutagesRdr = new InputStreamReader(resource.getInputStream());
