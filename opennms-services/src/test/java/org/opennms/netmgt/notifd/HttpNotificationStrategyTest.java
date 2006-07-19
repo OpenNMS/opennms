@@ -19,7 +19,7 @@ public class HttpNotificationStrategyTest extends OpenNMSTestCase {
     /*
      * Test method for 'org.opennms.netmgt.notifd.HttpNotificationStrategy.send(List)'
      */
-    public void testSend() {
+    public void XXXtestSend() {
         
         try {
         NotificationStrategy ns = new HttpNotificationStrategy();
