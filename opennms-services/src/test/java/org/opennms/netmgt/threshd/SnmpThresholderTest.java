@@ -1,6 +1,8 @@
 package org.opennms.netmgt.threshd;
 
 import java.io.FileReader;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.net.InetAddress;
 import java.util.HashMap;
 import java.util.Properties;
@@ -13,6 +15,8 @@ import org.opennms.netmgt.poller.IPv4NetworkInterface;
 import org.opennms.netmgt.rrd.RrdConfig;
 import org.opennms.netmgt.rrd.RrdStrategy;
 import org.opennms.netmgt.rrd.RrdUtils;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 
 public class SnmpThresholderTest extends ThresholderTestCase {
 
@@ -38,9 +42,10 @@ public class SnmpThresholderTest extends ThresholderTestCase {
         RrdUtils.setStrategy((RrdStrategy)m_mockRrdStrategy.proxy());
         m_mockRrdStrategy.expects(atLeastOnce()).method("initialize");
 
-		FileReader r = new FileReader("etc/examples/thresholds.xml");
-        ThresholdingConfigFactory.setInstance(new ThresholdingConfigFactory(r));
-        r.close();
+		Resource config = new ClassPathResource("/test-thresholds.xml");
+		Reader r = new InputStreamReader(config.getInputStream());
+		ThresholdingConfigFactory.setInstance(new ThresholdingConfigFactory(r));
+		r.close();
 
         m_iface = new IPv4NetworkInterface(InetAddress.getByName("192.168.1.1"));
         m_serviceParameters = new HashMap();
