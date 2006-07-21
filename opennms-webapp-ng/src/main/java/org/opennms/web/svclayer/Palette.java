@@ -1,13 +1,13 @@
 package org.opennms.web.svclayer;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
+import java.util.List;
 
 public class Palette {
 	
 	private String m_label;
-	private Collection<PaletteCategory> m_categories = new LinkedList<PaletteCategory>();
+	private List<PaletteCategory> m_categories = new LinkedList<PaletteCategory>();
 	
 	public Palette() {
 		this(null);
@@ -25,8 +25,8 @@ public class Palette {
 		m_label = label;
 	}
 	
-	public Collection<PaletteCategory> getCategories() {
-		return Collections.unmodifiableCollection(m_categories);
+	public List<PaletteCategory> getCategories() {
+		return Collections.unmodifiableList(m_categories);
 	}
 	
 	public void addCategory(PaletteCategory category) {
