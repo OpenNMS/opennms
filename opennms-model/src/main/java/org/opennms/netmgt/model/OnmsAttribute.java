@@ -32,27 +32,32 @@
 package org.opennms.netmgt.model;
 
 public class OnmsAttribute {
-
-	private OnmsRepository m_repository;
-	private OnmsResource m_resource;
-	private OnmsAttributeDefinition m_definition;
 	
-	public OnmsAttributeDefinition getDefinition() {
-		return m_definition;
+	private String m_label;
+	private String m_id;
+	
+	public OnmsAttribute() {
+		
 	}
-	public void setDefinition(OnmsAttributeDefinition definition) {
-		m_definition = definition;
+	
+	public OnmsAttribute(String id, String label) {
+		m_id = id;
+		m_label = label;
 	}
-	public OnmsRepository getRepository() {
-		return m_repository;
+
+	public String getId() {
+		return m_id;
 	}
-	public void setRepository(OnmsRepository repository) {
-		m_repository = repository;
+	public void setId(String id) {
+		m_id = id;
 	}
-	public OnmsResource getResource() {
-		return m_resource;
+	
+	public String getLabel() {
+		return m_label;
 	}
-	public void setResource(OnmsResource resource) {
-		m_resource = resource;
+	public void setLabel(String label) {
+		m_label = label;
 	}
+	
+
 }
