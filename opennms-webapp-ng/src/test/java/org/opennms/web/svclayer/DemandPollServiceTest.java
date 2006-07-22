@@ -1,13 +1,19 @@
 package org.opennms.web.svclayer;
 
-import static org.easymock.EasyMock.*;
+import static org.easymock.EasyMock.createMock;
+import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.expectLastCall;
+import static org.easymock.EasyMock.getCurrentArguments;
+import static org.easymock.EasyMock.isA;
+import static org.easymock.EasyMock.replay;
+import static org.easymock.EasyMock.verify;
+
+import junit.framework.TestCase;
 
 import org.easymock.IAnswer;
 import org.opennms.netmgt.dao.PollResultDao;
 import org.opennms.netmgt.model.PollResult;
 import org.opennms.netmgt.poller.PollerAPI;
-
-import junit.framework.TestCase;
 
 public class DemandPollServiceTest extends TestCase {
 	
