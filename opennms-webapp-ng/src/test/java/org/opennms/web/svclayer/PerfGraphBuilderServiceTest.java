@@ -6,10 +6,8 @@ import static org.easymock.EasyMock.replay;
 import static org.easymock.EasyMock.verify;
 import static org.opennms.web.svclayer.PaletteTestUtils.assertPaletteEquals;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.List;
 
 import junit.framework.TestCase;
 
