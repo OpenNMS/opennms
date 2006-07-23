@@ -69,11 +69,6 @@
 			<artifactId>spring-hibernate3</artifactId>
 		</dependency>
 		<dependency>
-		  <groupId>javax.transaction</groupId>
-		  <artifactId>jta</artifactId>
-		  <version>1.0.1B</version>
-		</dependency>
-		<dependency>
 		  <groupId>javax.servlet</groupId>
 		  <artifactId>jstl</artifactId>
 		  <version>1.0.6</version>
