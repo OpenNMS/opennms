@@ -1,10 +1,12 @@
 package org.opennms.netmgt.model;
 
 
+
 public class PollResult {
 	
 	private int m_id;
-	private String[] m_messages;
+	private OnmsMonitoredService m_monitoredService;
+	private PollStatus m_status;
 	
 	public PollResult() {
 		

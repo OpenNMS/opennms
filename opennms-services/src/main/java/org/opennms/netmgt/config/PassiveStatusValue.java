@@ -31,7 +31,7 @@
 //
 package org.opennms.netmgt.config;
 
-import org.opennms.netmgt.poller.pollables.PollStatus;
+import org.opennms.netmgt.model.PollStatus;
 
 public class PassiveStatusValue {
     

@@ -37,12 +37,12 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.HashMap;
 
+import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.passive.PassiveStatusKeeper;
 import org.opennms.netmgt.passive.PassiveStatusKeeperTest;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.poller.mock.MockPollContext;
-import org.opennms.netmgt.poller.pollables.PollStatus;
 import org.opennms.netmgt.poller.pollables.PollableInterface;
 import org.opennms.netmgt.poller.pollables.PollableNetwork;
 import org.opennms.netmgt.poller.pollables.PollableNode;
@@ -54,7 +54,7 @@ public class PassiveServiceMonitorTest extends PassiveStatusKeeperTest {
     public void testPoll() throws UnknownHostException {
         
         PassiveStatusKeeper psk = PassiveStatusKeeper.getInstance();
-        psk.setStatus("localhost", "127.0.0.1", "my-passive-service", PollStatus.getPollStatus(ServiceMonitor.SERVICE_UNAVAILABLE, "testing failure"));
+        psk.setStatus("localhost", "127.0.0.1", "my-passive-service", PollStatus.getPollStatus(PollStatus.SERVICE_UNAVAILABLE, "testing failure"));
         
         ServiceMonitor sm = new PassiveServiceMonitor();
         
@@ -62,7 +62,7 @@ public class PassiveServiceMonitorTest extends PassiveStatusKeeperTest {
         PollStatus ps = sm.poll(ms, new HashMap(), new org.opennms.netmgt.config.poller.Package());
         assertEquals(PollStatus.STATUS_DOWN, ps);
 
-        psk.setStatus("localhost", "127.0.0.1", "my-passive-service", PollStatus.getPollStatus(ServiceMonitor.SERVICE_AVAILABLE, "testing failure"));
+        psk.setStatus("localhost", "127.0.0.1", "my-passive-service", PollStatus.getPollStatus(PollStatus.SERVICE_AVAILABLE, "testing failure"));
         ps = sm.poll(ms, new HashMap(), new org.opennms.netmgt.config.poller.Package());
         assertEquals(PollStatus.STATUS_UP, ps);
     }

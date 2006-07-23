@@ -46,9 +46,9 @@ import org.opennms.netmgt.config.poller.Parameter;
 import org.opennms.netmgt.mock.MockLogAppender;
 import org.opennms.netmgt.mock.MockMonitoredService;
 import org.opennms.netmgt.mock.MockUtil;
+import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.ServiceMonitor;
-import org.opennms.netmgt.poller.pollables.PollStatus;
 import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.Parms;
 import org.opennms.netmgt.xml.event.Value;
@@ -109,7 +109,7 @@ public class HttpMonitorTest extends TestCase {
         
         PollStatus status = monitor.poll(svc, m, pkg);        
         MockUtil.println("Reason: "+status.getReason());
-        assertEquals(ServiceMonitor.SERVICE_UNAVAILABLE, status.getStatusCode());
+        assertEquals(PollStatus.SERVICE_UNAVAILABLE, status.getStatusCode());
         assertNotNull(status.getReason());
         
     }
@@ -144,7 +144,7 @@ public class HttpMonitorTest extends TestCase {
         
         PollStatus status = monitor.poll(svc, m, pkg);        
         MockUtil.println("Reason: "+status.getReason());
-        assertEquals(ServiceMonitor.SERVICE_UNAVAILABLE, status.getStatusCode());
+        assertEquals(PollStatus.SERVICE_UNAVAILABLE, status.getStatusCode());
         assertNotNull(status.getReason());
 
         p.setKey("response");
@@ -154,7 +154,7 @@ public class HttpMonitorTest extends TestCase {
         monitor = new HttpMonitor();
         status = monitor.poll(svc, m, pkg);        
         MockUtil.println("Reason: "+status.getReason());
-        assertEquals(ServiceMonitor.SERVICE_AVAILABLE, status.getStatusCode());
+        assertEquals(PollStatus.SERVICE_AVAILABLE, status.getStatusCode());
         assertNull(status.getReason());
 
         p.setKey("response");
@@ -164,7 +164,7 @@ public class HttpMonitorTest extends TestCase {
         monitor = new HttpMonitor();
         status = monitor.poll(svc, m, pkg);        
         MockUtil.println("Reason: "+status.getReason());
-        assertEquals(ServiceMonitor.SERVICE_AVAILABLE, status.getStatusCode());
+        assertEquals(PollStatus.SERVICE_AVAILABLE, status.getStatusCode());
         assertNull(status.getReason());
     }
     
@@ -243,7 +243,7 @@ public class HttpMonitorTest extends TestCase {
 
         status = monitor.poll(svc, m, pkg);        
         MockUtil.println("Reason: "+status.getReason());
-        assertEquals(ServiceMonitor.SERVICE_UNAVAILABLE, status.getStatusCode());
+        assertEquals(PollStatus.SERVICE_UNAVAILABLE, status.getStatusCode());
         assertNotNull(status.getReason());
 
         p.setKey("response-text");
@@ -254,7 +254,7 @@ public class HttpMonitorTest extends TestCase {
         monitor = new HttpMonitor();
         status = monitor.poll(svc, m, pkg);
         MockUtil.println("Reason: "+status.getReason());
-        assertEquals(ServiceMonitor.SERVICE_AVAILABLE, status.getStatusCode());
+        assertEquals(PollStatus.SERVICE_AVAILABLE, status.getStatusCode());
         assertNull(status.getReason());
 
         p.setKey("response-text");
@@ -265,7 +265,7 @@ public class HttpMonitorTest extends TestCase {
         monitor = new HttpMonitor();
         status = monitor.poll(svc, m, pkg);
         MockUtil.println("Reason: "+status.getReason());
-        assertEquals(ServiceMonitor.SERVICE_AVAILABLE, status.getStatusCode());
+        assertEquals(PollStatus.SERVICE_AVAILABLE, status.getStatusCode());
         assertNull(status.getReason());
 
     }
@@ -330,7 +330,7 @@ public class HttpMonitorTest extends TestCase {
         
         status = monitor.poll(svc, m, pkg);
         MockUtil.println("Reason: "+status.getReason());
-        assertEquals(ServiceMonitor.SERVICE_AVAILABLE, status.getStatusCode());
+        assertEquals(PollStatus.SERVICE_AVAILABLE, status.getStatusCode());
         assertNull(status.getReason());
         
     }
@@ -377,7 +377,7 @@ public class HttpMonitorTest extends TestCase {
         
         status = monitor.poll(svc, m, pkg);
         MockUtil.println("Reason: "+status.getReason());
-        assertEquals(ServiceMonitor.SERVICE_AVAILABLE, status.getStatusCode());
+        assertEquals(PollStatus.SERVICE_AVAILABLE, status.getStatusCode());
         assertNull(status.getReason());
         
     }
@@ -425,7 +425,7 @@ public class HttpMonitorTest extends TestCase {
         
         status = monitor.poll(svc, m, pkg);
         MockUtil.println("Reason: "+status.getReason());
-        assertEquals(ServiceMonitor.SERVICE_AVAILABLE, status.getStatusCode());
+        assertEquals(PollStatus.SERVICE_AVAILABLE, status.getStatusCode());
         assertNull(status.getReason());
 
     }

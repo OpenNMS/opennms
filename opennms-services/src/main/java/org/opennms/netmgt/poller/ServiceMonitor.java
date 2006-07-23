@@ -39,7 +39,7 @@ package org.opennms.netmgt.poller;
 import java.util.Map;
 
 import org.opennms.netmgt.config.PollerConfig;
-import org.opennms.netmgt.poller.pollables.PollStatus;
+import org.opennms.netmgt.model.PollStatus;
 
 /**
  * <p>
@@ -71,36 +71,38 @@ import org.opennms.netmgt.poller.pollables.PollStatus;
  * 
  */
 public interface ServiceMonitor {
-    /**
-     * The constant the defines a status is unknown. Used mostly internally
-     */
-    public static final int SERVICE_UNKNOWN = 0;
+	
+	/**
+	 * <P>
+	 * The constant that defines a service that is up but is most likely
+	 * suffering due to excessive load or latency issues and because of that has
+	 * not responded within the configured timeout period.
+	 * </P>
+	 */
+	public static final int SERVICE_UNRESPONSIVE = PollStatus.SERVICE_UNRESPONSIVE;
 
-    /**
-     * <P>
-     * The constant that defines a service as being in a normal state. If this
-     * is returned by the poll() method then the framework will re-schedule the
-     * service for its next poll using the standard uptime interval
-     * </P>
-     */
-    public static final int SERVICE_AVAILABLE = 1;
+	/**
+	 * <P>
+	 * The constant that defines a service that is not working normally and
+	 * should be scheduled using the downtime models.
+	 * </P>
+	 */
+	public static final int SERVICE_UNAVAILABLE = PollStatus.SERVICE_UNAVAILABLE;
 
-    /**
-     * <P>
-     * The constant that defines a service that is not working normally and
-     * should be scheduled using the downtime models.
-     * </P>
-     */
-    public static final int SERVICE_UNAVAILABLE = 2;
+	/**
+	 * <P>
+	 * The constant that defines a service as being in a normal state. If this
+	 * is returned by the poll() method then the framework will re-schedule the
+	 * service for its next poll using the standard uptime interval
+	 * </P>
+	 */
+	public static final int SERVICE_AVAILABLE = PollStatus.SERVICE_AVAILABLE;
+	
 
-    /**
-     * <P>
-     * The constant that defines a service that is up but is most likely
-     * suffering due to excessive load or latency issues and because of that has
-     * not responded within the configured timeout period.
-     * </P>
-     */
-    public static final int SERVICE_UNRESPONSIVE = 3;
+	/**
+	 * The constant the defines a status is unknown. Used mostly internally
+	 */
+	public static final int SERVICE_UNKNOWN = PollStatus.SERVICE_UNKNOWN;
 
     /**
      * <P>
@@ -242,8 +244,8 @@ public interface ServiceMonitor {
      *                interface from being monitored.
      * 
      * @see #SURPRESS_EVENT_MASK
-     * @see #SERVICE_AVAILABLE
-     * @see #SERVICE_UNAVAILABLE
+     * @see PollStatus#SERVICE_AVAILABLE
+     * @see PollStatus#SERVICE_UNAVAILABLE
      */
     public PollStatus poll(MonitoredService svc, Map parameters, org.opennms.netmgt.config.poller.Package pkg);
 }

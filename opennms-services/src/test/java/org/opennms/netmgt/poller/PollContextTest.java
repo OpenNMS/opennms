@@ -47,6 +47,7 @@ import org.opennms.netmgt.mock.MockNetwork;
 import org.opennms.netmgt.mock.MockPollerConfig;
 import org.opennms.netmgt.mock.MockService;
 import org.opennms.netmgt.mock.OutageAnticipator;
+import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.pollables.PollEvent;
 import org.opennms.netmgt.poller.pollables.PollableNetwork;
 import org.opennms.netmgt.poller.pollables.PollableService;
@@ -198,7 +199,7 @@ public class PollContextTest extends TestCase {
 
     public void testCreateEvent() throws Exception {
         Date date = new Date();
-        Event nodeEvent = m_pollContext.createEvent(EventConstants.NODE_DOWN_EVENT_UEI, 1, null, null, date, String.valueOf(ServiceMonitor.SERVICE_UNAVAILABLE));
+        Event nodeEvent = m_pollContext.createEvent(EventConstants.NODE_DOWN_EVENT_UEI, 1, null, null, date, String.valueOf(PollStatus.SERVICE_UNAVAILABLE));
         assertEquals(EventConstants.NODE_DOWN_EVENT_UEI, nodeEvent.getUei());
         assertEquals(1L, nodeEvent.getNodeid());
         assertEquals(null, nodeEvent.getInterface());

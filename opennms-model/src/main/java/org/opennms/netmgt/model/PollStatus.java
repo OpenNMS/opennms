@@ -29,9 +29,8 @@
 //     http://www.opennms.org/
 //     http://www.opennms.com/
 //
-package org.opennms.netmgt.poller.pollables;
+package org.opennms.netmgt.model;
 
-import org.opennms.netmgt.poller.ServiceMonitor;
 
 /**
  * Represents the status of a node, interface or services
@@ -43,25 +42,56 @@ public class PollStatus {
      * Status of the pollable object.
      */
 
-    public static final PollStatus STATUS_UP = new PollStatus(ServiceMonitor.SERVICE_AVAILABLE, "Up");
+    public static final PollStatus STATUS_UP = new PollStatus(PollStatus.SERVICE_AVAILABLE, "Up");
 
-    public static final PollStatus STATUS_DOWN = new PollStatus(ServiceMonitor.SERVICE_UNAVAILABLE, "Down");
+    public static final PollStatus STATUS_DOWN = new PollStatus(PollStatus.SERVICE_UNAVAILABLE, "Down");
     
-    public static final PollStatus STATUS_UNRESPONSIVE = new PollStatus(ServiceMonitor.SERVICE_UNRESPONSIVE, "Unresponsive");
+    public static final PollStatus STATUS_UNRESPONSIVE = new PollStatus(PollStatus.SERVICE_UNRESPONSIVE, "Unresponsive");
     
-    public static final PollStatus STATUS_UNKNOWN = new PollStatus(ServiceMonitor.SERVICE_UNKNOWN, "Unknown");
+    public static final PollStatus STATUS_UNKNOWN = new PollStatus(PollStatus.SERVICE_UNKNOWN, "Unknown");
     
     int m_statusCode;
     String m_statusName;
     String m_reason;
+
+	/**
+	 * <P>
+	 * The constant that defines a service that is up but is most likely
+	 * suffering due to excessive load or latency issues and because of that has
+	 * not responded within the configured timeout period.
+	 * </P>
+	 */
+	public static final int SERVICE_UNRESPONSIVE = 3;
+
+	/**
+	 * <P>
+	 * The constant that defines a service that is not working normally and
+	 * should be scheduled using the downtime models.
+	 * </P>
+	 */
+	public static final int SERVICE_UNAVAILABLE = 2;
+
+	/**
+	 * <P>
+	 * The constant that defines a service as being in a normal state. If this
+	 * is returned by the poll() method then the framework will re-schedule the
+	 * service for its next poll using the standard uptime interval
+	 * </P>
+	 */
+	public static final int SERVICE_AVAILABLE = 1;
+
+	/**
+	 * The constant the defines a status is unknown. Used mostly internally
+	 */
+	public static final int SERVICE_UNKNOWN = 0;
     
     public static PollStatus getPollStatus(int status) {
         switch (status) {
-        case ServiceMonitor.SERVICE_AVAILABLE:
+        case PollStatus.SERVICE_AVAILABLE:
             return STATUS_UP;
-        case ServiceMonitor.SERVICE_UNRESPONSIVE:
+        case PollStatus.SERVICE_UNRESPONSIVE:
             return STATUS_UNRESPONSIVE;
-        case ServiceMonitor.SERVICE_UNAVAILABLE:
+        case PollStatus.SERVICE_UNAVAILABLE:
         default:
             return STATUS_DOWN;
         }

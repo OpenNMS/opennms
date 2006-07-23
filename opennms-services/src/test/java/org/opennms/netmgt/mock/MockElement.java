@@ -34,7 +34,7 @@ package org.opennms.netmgt.mock;
 
 import java.util.Date;
 
-import org.opennms.netmgt.poller.pollables.PollStatus;
+import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.xml.event.Event;
 
 /**

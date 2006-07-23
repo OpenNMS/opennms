@@ -35,6 +35,7 @@ import java.net.InetAddress;
 import java.util.Date;
 
 import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.xml.event.Event;
 
 /**

@@ -33,7 +33,8 @@
 
 package org.opennms.netmgt.poller.pollables;
 
-import org.opennms.netmgt.poller.ServiceMonitor;
+
+import org.opennms.netmgt.model.PollStatus;
 
 import junit.framework.TestCase;
 public class PollStatusTest extends TestCase {
@@ -72,7 +73,7 @@ public class PollStatusTest extends TestCase {
         assertTrue(statusDown1 == statusDown2);
         assertTrue(statusDown1.equals(statusDown2));
         
-        statusDown2 = PollStatus.getPollStatus(ServiceMonitor.SERVICE_UNAVAILABLE, null);
+        statusDown2 = PollStatus.getPollStatus(PollStatus.SERVICE_UNAVAILABLE, null);
         assertFalse(statusDown1 == statusDown2);
         assertTrue(statusDown1.equals(statusDown2));
         

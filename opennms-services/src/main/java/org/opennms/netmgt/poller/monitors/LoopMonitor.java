@@ -38,9 +38,9 @@ import java.util.Map;
 import org.opennms.netmgt.capsd.plugins.LoopPlugin;
 import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.config.poller.Package;
+import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.ServiceMonitor;
-import org.opennms.netmgt.poller.pollables.PollStatus;
 import org.opennms.netmgt.utils.ParameterMap;
 /**
  * @author david
@@ -82,7 +82,7 @@ public class LoopMonitor implements ServiceMonitor {
     public PollStatus poll(MonitoredService svc, Map parameters, Package pkg) {
         LoopPlugin lp = new LoopPlugin();
         boolean isAvailable = lp.isProtocolSupported(svc.getAddress(), parameters);
-        int status = (isAvailable ? ServiceMonitor.SERVICE_AVAILABLE : ServiceMonitor.SERVICE_UNAVAILABLE);
+        int status = (isAvailable ? PollStatus.SERVICE_AVAILABLE : PollStatus.SERVICE_UNAVAILABLE);
         StringBuffer sb = new StringBuffer();
         sb.append("LoopMonitor configured with is-supported =  ");
         sb.append(ParameterMap.getKeyedString(parameters, "is-supported", "false"));
