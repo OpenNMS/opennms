@@ -178,6 +178,11 @@
       <scope>test</scope>
     </dependency>
     <dependency>
+      <groupId>postgresql</groupId>
+      <artifactId>postgresql</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>alt.dev.jmta</groupId>
       <artifactId>jmta</artifactId>
       <scope>test</scope>
