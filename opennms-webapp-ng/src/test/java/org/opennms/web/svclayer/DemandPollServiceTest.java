@@ -7,14 +7,11 @@ import static org.easymock.EasyMock.getCurrentArguments;
 import static org.easymock.EasyMock.isA;
 import static org.easymock.EasyMock.replay;
 import static org.easymock.EasyMock.verify;
-
 import junit.framework.TestCase;
 
 import org.easymock.IAnswer;
 import org.opennms.netmgt.dao.DemandPollDao;
-import org.opennms.netmgt.dao.PollResultDao;
 import org.opennms.netmgt.model.DemandPoll;
-import org.opennms.netmgt.model.PollResult;
 import org.opennms.web.services.PollerService;
 
 public class DemandPollServiceTest extends TestCase {
