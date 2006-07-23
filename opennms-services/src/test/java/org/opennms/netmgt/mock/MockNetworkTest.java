@@ -48,12 +48,12 @@ import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.config.poller.Service;
 import org.opennms.netmgt.eventd.EventListener;
+import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.IPv4NetworkInterface;
 import org.opennms.netmgt.poller.IfKey;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.QueryManager;
 import org.opennms.netmgt.poller.ServiceMonitor;
-import org.opennms.netmgt.poller.pollables.PollStatus;
 import org.opennms.netmgt.xml.event.Event;
 
 /**
@@ -336,7 +336,7 @@ public class MockNetworkTest extends TestCase {
 
         MockVisitor lostSvcSender = new MockVisitorAdapter() {
             public void visitService(MockService svc) {
-                Event event = MockUtil.createEvent("Test", EventConstants.NODE_LOST_SERVICE_EVENT_UEI, svc.getNodeId(), svc.getIpAddr(), svc.getSvcName(), String.valueOf(ServiceMonitor.SERVICE_UNAVAILABLE));
+                Event event = MockUtil.createEvent("Test", EventConstants.NODE_LOST_SERVICE_EVENT_UEI, svc.getNodeId(), svc.getIpAddr(), svc.getSvcName(), String.valueOf(PollStatus.SERVICE_UNAVAILABLE));
                 m_eventMgr.sendNow(event);
             }
         };

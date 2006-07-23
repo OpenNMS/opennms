@@ -37,10 +37,10 @@ import java.util.Map;
 
 import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.config.poller.Package;
+import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.passive.PassiveStatusKeeper;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.ServiceMonitor;
-import org.opennms.netmgt.poller.pollables.PollStatus;
 /**
  * @author david
  *

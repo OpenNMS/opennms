@@ -13,17 +13,17 @@ import junit.framework.TestCase;
 import org.easymock.IAnswer;
 import org.opennms.netmgt.dao.PollResultDao;
 import org.opennms.netmgt.model.PollResult;
-import org.opennms.netmgt.poller.PollerAPI;
+import org.opennms.web.services.PollerService;
 
 public class DemandPollServiceTest extends TestCase {
 	
 	private DefaultDemandPollService m_demandPollService;
 	private PollResultDao m_pollResultDao;
-	private PollerAPI m_pollerAPI;
+	private PollerService m_pollerAPI;
 
 	protected void setUp() throws Exception {
 		m_pollResultDao = createMock(PollResultDao.class);
-		m_pollerAPI = createMock(PollerAPI.class);
+		m_pollerAPI = createMock(PollerService.class);
 
 		m_demandPollService = new DefaultDemandPollService();
 		m_demandPollService.setPollResultDao(m_pollResultDao);

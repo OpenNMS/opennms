@@ -41,9 +41,9 @@ import junit.framework.TestCase;
 
 import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.mock.MockMonitoredService;
+import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.ServiceMonitor;
-import org.opennms.netmgt.poller.pollables.PollStatus;
 public class LoopMonitorTest extends TestCase {
 
     protected void setUp() throws Exception {

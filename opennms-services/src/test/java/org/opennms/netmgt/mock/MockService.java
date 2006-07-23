@@ -41,11 +41,10 @@ import java.util.List;
 import java.util.Set;
 
 import org.opennms.netmgt.config.poller.Package;
+import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.IPv4NetworkInterface;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.NetworkInterface;
-import org.opennms.netmgt.poller.ServiceMonitor;
-import org.opennms.netmgt.poller.pollables.PollStatus;
 import org.opennms.netmgt.xml.event.Event;
 
 /**
@@ -199,7 +198,7 @@ public class MockService extends MockElement implements MonitoredService {
      * @return
      */
     public Event createUnresponsiveEvent() {
-        return MockUtil.createServiceUnresponsiveEvent("Test", this, String.valueOf(ServiceMonitor.SERVICE_UNAVAILABLE));
+        return MockUtil.createServiceUnresponsiveEvent("Test", this, String.valueOf(PollStatus.SERVICE_UNAVAILABLE));
     }
 
     /**

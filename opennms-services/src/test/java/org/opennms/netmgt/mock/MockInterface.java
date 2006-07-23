@@ -36,7 +36,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.List;
 
-import org.opennms.netmgt.poller.pollables.PollStatus;
+import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.xml.event.Event;
 
 /**
