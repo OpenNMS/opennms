@@ -23,6 +23,22 @@ public class PollResult {
 	public void setId(int id) {
 		m_id = id;
 	}
+
+	public OnmsMonitoredService getMonitoredService() {
+		return m_monitoredService;
+	}
+
+	public void setMonitoredService(OnmsMonitoredService monitoredService) {
+		m_monitoredService = monitoredService;
+	}
+
+	public PollStatus getStatus() {
+		return m_status;
+	}
+
+	public void setStatus(PollStatus status) {
+		m_status = status;
+	}
 	
 	
 
