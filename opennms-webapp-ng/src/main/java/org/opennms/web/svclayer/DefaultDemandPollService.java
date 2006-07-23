@@ -1,31 +1,35 @@
 package org.opennms.web.svclayer;
 
-import org.opennms.netmgt.dao.PollResultDao;
-import org.opennms.netmgt.model.PollResult;
+import java.util.Date;
+
+import org.opennms.netmgt.dao.DemandPollDao;
+import org.opennms.netmgt.model.DemandPoll;
 import org.opennms.web.services.PollerService;
 
 public class DefaultDemandPollService implements DemandPollService {
 	
-	private PollResultDao m_pollResultDao;
-	private PollerService m_pollerAPI;
+	private PollerService m_pollerService;
+	private DemandPollDao m_demandPollDao;
 	
-	public void setPollResultDao(PollResultDao pollResultDao) {
-		m_pollResultDao = pollResultDao;
+	public void setDemandPollDao(DemandPollDao demandPollDao) {
+		m_demandPollDao = demandPollDao;
 	}
 	
 	public void setPollerAPI(PollerService pollerAPI) {
-		m_pollerAPI = pollerAPI;
+		m_pollerService = pollerAPI;
 	}
 	
-	public PollResult pollMonitoredService(int nodeid, String ipAddr, int ifIndex, int serviceId) {
-		PollResult pollResult = new PollResult();
-		m_pollResultDao.save(pollResult);
-		m_pollerAPI.poll(nodeid, ipAddr, ifIndex, serviceId, pollResult.getId());
-		return pollResult;
+	public DemandPoll pollMonitoredService(int nodeid, String ipAddr, int ifIndex, int serviceId) {
+		DemandPoll demandPoll = new DemandPoll();
+		demandPoll.setRequestTime(new Date());
+		
+		m_demandPollDao.save(demandPoll);
+		m_pollerService.poll(nodeid, ipAddr, ifIndex, serviceId, demandPoll.getId());
+		return demandPoll;
 	}
 
-	public PollResult getUpdatedResults(int resultId) {
-		return m_pollResultDao.get(resultId);
+	public DemandPoll getUpdatedResults(int resultId) {
+		return m_demandPollDao.get(resultId);
 	}
 
 }

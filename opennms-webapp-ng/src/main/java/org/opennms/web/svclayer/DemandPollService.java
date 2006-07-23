@@ -1,11 +1,11 @@
 package org.opennms.web.svclayer;
 
-import org.opennms.netmgt.model.PollResult;
+import org.opennms.netmgt.model.DemandPoll;
 
 public interface DemandPollService {
 	
-	 PollResult pollMonitoredService(int nodeid, String ipAddr, int ifIndex, int serviceId);
+	 DemandPoll pollMonitoredService(int nodeid, String ipAddr, int ifIndex, int serviceId);
 	 
-	 PollResult getUpdatedResults(int resultId);
+	 DemandPoll getUpdatedResults(int resultId);
 
 }
