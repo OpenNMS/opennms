@@ -593,9 +593,34 @@ opennms.home = ${opennms.home}
         <version>1.0</version>
       </dependency>
       <dependency>
-        <groupId>bsf</groupId>
-        <artifactId>bsf</artifactId>
-        <version>2.2</version>
+        <groupId>batik</groupId>
+        <artifactId>batik-dom</artifactId>
+        <version>1.5</version>
+      </dependency>
+      <dependency>
+        <groupId>batik</groupId>
+        <artifactId>batik-svg-dom</artifactId>
+        <version>1.5</version>
+      </dependency>
+      <dependency>
+        <groupId>batik</groupId>
+        <artifactId>batik-transcoder</artifactId>
+        <version>1.5</version>
+      </dependency>
+      <dependency>
+        <groupId>batik</groupId>
+        <artifactId>batik-xml</artifactId>
+        <version>1.5</version>
+      </dependency>
+      <dependency>
+        <groupId>batik</groupId>
+        <artifactId>batik-util</artifactId>
+        <version>1.5</version>
+      </dependency>
+        <dependency>
+          <groupId>bsf</groupId>
+          <artifactId>bsf</artifactId>
+          <version>2.2</version>
       </dependency>
       <dependency>
         <groupId>bsh</groupId>
@@ -667,6 +692,12 @@ opennms.home = ${opennms.home}
         <groupId>javax.mail</groupId>
         <artifactId>mail</artifactId>
         <version>1.4</version>
+      </dependency>
+      <dependency>
+        <groupId>javax.servlet</groupId>
+        <artifactId>jstl</artifactId>
+        <version>1.1.2</version>
+        <scope>runtime</scope>
       </dependency>
       <dependency>
         <groupId>javax.servlet</groupId>
@@ -812,6 +843,12 @@ opennms.home = ${opennms.home}
         <groupId>struts</groupId>
         <artifactId>struts</artifactId>
         <version>1.2.7</version>
+      </dependency>
+      <dependency>
+        <groupId>taglibs</groupId>
+        <artifactId>standard</artifactId>
+        <version>1.1.2</version>
+        <scope>runtime</scope>
       </dependency>
       <dependency>
         <groupId>tomcat</groupId>

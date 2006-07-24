@@ -1,4 +1,5 @@
-<?xml version="1.0" encoding="UTF-8"?><project>
+<?xml version="1.0" encoding="UTF-8"?>
+<project>
   <parent>
     <artifactId>opennms</artifactId>
     <groupId>org.opennms</groupId>
@@ -24,7 +25,37 @@
     </plugins>
   </build>
   <dependencies>
-   <dependency>
+    <!--
+         Sort dependencies by groupId then artifactId, but put dependencies
+         with a groupId of org.opennms first.
+      -->
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-reporting</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-rrd-api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-rrd-jrobin</artifactId>
+      <version>${project.version}</version>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-rrdtool-api</artifactId>
+      <version>${project.version}</version>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-services</artifactId>
+    </dependency>
+    <!-- XXX the required test JARs should be moved into a separate project -->
+    <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-services</artifactId>
       <version>1.3.2-SNAPSHOT</version>
@@ -33,36 +64,27 @@
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
-      <artifactId>opennms-rrd-api</artifactId>
-      <version>1.3.2-SNAPSHOT</version>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-rrd-jrobin</artifactId>
-      <version>1.3.2-SNAPSHOT</version>
-      <scope>runtime</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-rrdtool-api</artifactId>
-      <version>1.3.2-SNAPSHOT</version>
-      <scope>runtime</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-services</artifactId>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-reporting</artifactId>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
       <artifactId>opennms-tomcat</artifactId>
-      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>batik</groupId>
+      <artifactId>batik-dom</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>batik</groupId>
+      <artifactId>batik-svg-dom</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>batik</groupId>
+      <artifactId>batik-transcoder</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>batik</groupId>
+      <artifactId>batik-xml</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>batik</groupId>
+      <artifactId>batik-util</artifactId>
     </dependency>
     <dependency>
       <groupId>httpunit</groupId>
@@ -70,30 +92,8 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>jwebunit</groupId>
-      <artifactId>jwebunit</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>xerces</groupId>
-      <artifactId>xercesImpl</artifactId>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>postgresql</groupId>
-      <artifactId>postgresql</artifactId>
-      <scope>runtime</scope>
-    </dependency>
-    <dependency>
       <groupId>javax.servlet</groupId>
       <artifactId>jstl</artifactId>
-      <version>1.1.2</version>
-      <scope>runtime</scope>
-    </dependency>
-    <dependency>
-      <groupId>taglibs</groupId>
-      <artifactId>standard</artifactId>
-      <version>1.1.2</version>
       <scope>runtime</scope>
     </dependency>
     <dependency>
@@ -101,34 +101,23 @@
       <artifactId>servlet-api</artifactId>
     </dependency>
     <dependency>
-      <groupId>batik</groupId>
-      <artifactId>batik-dom</artifactId>
-      <version>1.5</version>
-      <scope>compile</scope>
+      <groupId>jwebunit</groupId>
+      <artifactId>jwebunit</artifactId>
+      <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>batik</groupId>
-      <artifactId>batik-svg-dom</artifactId>
-      <version>1.5</version>
-      <scope>compile</scope>
+      <groupId>postgresql</groupId>
+      <artifactId>postgresql</artifactId>
+      <scope>runtime</scope>
     </dependency>
     <dependency>
-      <groupId>batik</groupId>
-      <artifactId>batik-transcoder</artifactId>
-      <version>1.5</version>
-      <scope>compile</scope>
+      <groupId>taglibs</groupId>
+      <artifactId>standard</artifactId>
+      <scope>runtime</scope>
     </dependency>
     <dependency>
-      <groupId>batik</groupId>
-      <artifactId>batik-xml</artifactId>
-      <version>1.5</version>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>batik</groupId>
-      <artifactId>batik-util</artifactId>
-      <version>1.5</version>
-      <scope>compile</scope>
+      <groupId>xerces</groupId>
+      <artifactId>xercesImpl</artifactId>
     </dependency>
   </dependencies>
 </project>
