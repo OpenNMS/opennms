@@ -63,7 +63,6 @@ public class PollerServiceTest extends TestCase {
 		
 		replay(m_eventProxy);
 		
-		
 		m_pollerService.poll(monSvc, expectedPolldId);
 		
 		verify(m_eventProxy);
