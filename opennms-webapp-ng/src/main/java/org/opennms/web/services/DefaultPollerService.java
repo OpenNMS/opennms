@@ -1,10 +1,41 @@
 package org.opennms.web.services;
 
-public class DefaultPollerService implements PollerService {
+import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.capsd.EventUtils;
+import org.opennms.netmgt.model.OnmsMonitoredService;
+import org.opennms.netmgt.utils.EventProxy;
+import org.opennms.netmgt.utils.EventProxyException;
+import org.opennms.netmgt.xml.event.Event;
 
-	public void poll(int nodeId, String ipAddr, int ifIndex, int serviceId, int pollResultId) {
-		// TODO Auto-generated method stub
+public class DefaultPollerService implements PollerService {
+	
+	private EventProxy m_eventProxy;
+	
+	public void setEventProxy(EventProxy eventProxy) {
+		m_eventProxy = eventProxy;
+	}
+	
+	public void poll(OnmsMonitoredService monSvc, int pollResultId) {
 		
+		
+		Event demandPollEvent = new Event();
+		demandPollEvent.setUei("uei.opennms.org/internal/demandPollService");
+		demandPollEvent.setNodeid(monSvc.getNodeId());
+		demandPollEvent.setInterface(monSvc.getIpAddress());
+		demandPollEvent.setIfIndex(Integer.toString(monSvc.getIfIndex()));
+		demandPollEvent.setService(monSvc.getServiceType().getName());
+		
+		EventUtils.addParam(demandPollEvent, EventConstants.PARM_DEMAND_POLL_ID, pollResultId);
+
+		sendEvent(demandPollEvent);
+	}
+
+	private void sendEvent(Event demandPollEvent) {
+		try {
+			m_eventProxy.send(demandPollEvent);
+		} catch (EventProxyException e) {
+			throw new ServiceException("Exception occurred sending demandPollEvent", e);
+		}
 	}
 
 }

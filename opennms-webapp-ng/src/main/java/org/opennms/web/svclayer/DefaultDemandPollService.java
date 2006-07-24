@@ -3,13 +3,17 @@ package org.opennms.web.svclayer;
 import java.util.Date;
 
 import org.opennms.netmgt.dao.DemandPollDao;
+import org.opennms.netmgt.dao.MonitoredServiceDao;
 import org.opennms.netmgt.model.DemandPoll;
+import org.opennms.netmgt.model.OnmsMonitoredService;
+import org.opennms.netmgt.utils.EventProxyException;
 import org.opennms.web.services.PollerService;
 
 public class DefaultDemandPollService implements DemandPollService {
 	
 	private PollerService m_pollerService;
 	private DemandPollDao m_demandPollDao;
+	private MonitoredServiceDao m_monitoredServiceDao;
 	
 	public void setDemandPollDao(DemandPollDao demandPollDao) {
 		m_demandPollDao = demandPollDao;
@@ -19,12 +23,19 @@ public class DefaultDemandPollService implements DemandPollService {
 		m_pollerService = pollerAPI;
 	}
 	
-	public DemandPoll pollMonitoredService(int nodeid, String ipAddr, int ifIndex, int serviceId) {
+	public void setMonitoredServiceDao(MonitoredServiceDao monitoredServiceDao) {
+		m_monitoredServiceDao = monitoredServiceDao;
+	}
+	
+	public DemandPoll pollMonitoredService(int nodeId, String ipAddr, int ifIndex, int serviceId) {
 		DemandPoll demandPoll = new DemandPoll();
 		demandPoll.setRequestTime(new Date());
 		
 		m_demandPollDao.save(demandPoll);
-		m_pollerService.poll(nodeid, ipAddr, ifIndex, serviceId, demandPoll.getId());
+		
+		OnmsMonitoredService monSvc = m_monitoredServiceDao.get(nodeId, ipAddr, ifIndex, serviceId);
+		
+		m_pollerService.poll(monSvc, demandPoll.getId());
 		return demandPoll;
 	}
 

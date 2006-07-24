@@ -11,24 +11,33 @@ import junit.framework.TestCase;
 
 import org.easymock.IAnswer;
 import org.opennms.netmgt.dao.DemandPollDao;
+import org.opennms.netmgt.dao.MonitoredServiceDao;
 import org.opennms.netmgt.model.DemandPoll;
+import org.opennms.netmgt.model.OnmsIpInterface;
+import org.opennms.netmgt.model.OnmsMonitoredService;
+import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.OnmsServiceType;
+import org.opennms.netmgt.utils.EventProxyException;
 import org.opennms.web.services.PollerService;
 
 public class DemandPollServiceTest extends TestCase {
 	
 	private DefaultDemandPollService m_demandPollService;
 	private DemandPollDao m_demandPollDao;
+	private MonitoredServiceDao m_monitoredServiceDao;
 	private PollerService m_pollerService;
 	private SingleDemandPollStore m_pollStore;
 
 	protected void setUp() throws Exception {
 		m_demandPollDao = createMock(DemandPollDao.class);
+		m_monitoredServiceDao = createMock(MonitoredServiceDao.class);
 		m_pollerService = createMock(PollerService.class);
 		m_pollStore = new SingleDemandPollStore();
 
 		m_demandPollService = new DefaultDemandPollService();
 		m_demandPollService.setDemandPollDao(m_demandPollDao);
 		m_demandPollService.setPollerAPI(m_pollerService);
+		m_demandPollService.setMonitoredServiceDao(m_monitoredServiceDao);
 	}
 
 	protected void tearDown() throws Exception {
@@ -57,7 +66,7 @@ public class DemandPollServiceTest extends TestCase {
 		
 	}
 	
-	public void testPollMonitoredService() {
+	public void testPollMonitoredService() throws EventProxyException {
 		
 		final int expectedResultId = m_pollStore.getExpectedId();
 
@@ -73,15 +82,27 @@ public class DemandPollServiceTest extends TestCase {
 			
 		});
 		
+		OnmsServiceType svcType = new OnmsServiceType();
+		svcType.setId(3);
+		svcType.setName("HTTP");
+		OnmsNode node = new OnmsNode();
+		node.setId(1);
+		OnmsIpInterface iface = new OnmsIpInterface("192.168.1.1", node);
+		iface.setIfIndex(1);
+		OnmsMonitoredService monSvc = new OnmsMonitoredService(iface, svcType);
 
-		m_pollerService.poll(1, "192.168.1.1", 1, 3, expectedResultId);
+		expect(m_monitoredServiceDao.get(1, "192.168.1.1", 1, 3)).andReturn(monSvc);
+
+		m_pollerService.poll(monSvc, expectedResultId);
 		
 		replay(m_demandPollDao);
+		replay(m_monitoredServiceDao);
 		replay(m_pollerService);
 		
 		DemandPoll result = m_demandPollService.pollMonitoredService(1, "192.168.1.1", 1, 3);
 
 		verify(m_demandPollDao);
+		verify(m_monitoredServiceDao);
 		verify(m_pollerService);
 
 		assertNotNull("Null is an invalid response from pollMonitoredService", result);
