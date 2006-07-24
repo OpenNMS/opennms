@@ -46,6 +46,7 @@ public interface MonitoredServiceDao extends OnmsDao {
     
     public abstract OnmsMonitoredService load(Long id);
     public abstract OnmsMonitoredService get(Long id);
+	public abstract OnmsMonitoredService get(int nodeId, String ipAddr, int ifIndex, int serviceId);
 	public abstract OnmsMonitoredService get(int nodeId, String ipAddress, String svcName);
     public abstract void save(OnmsMonitoredService svc);
     public abstract void update(OnmsMonitoredService svc);

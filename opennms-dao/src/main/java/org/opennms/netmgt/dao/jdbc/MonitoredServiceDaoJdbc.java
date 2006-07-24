@@ -42,11 +42,13 @@ import javax.sql.DataSource;
 
 import org.opennms.netmgt.dao.MonitoredServiceDao;
 import org.opennms.netmgt.dao.jdbc.monsvc.FindAll;
+import org.opennms.netmgt.dao.jdbc.monsvc.FindById;
 import org.opennms.netmgt.dao.jdbc.monsvc.FindByInterfaceWithIfIndex;
 import org.opennms.netmgt.dao.jdbc.monsvc.FindByInterfaceWithNulIfIndex;
 import org.opennms.netmgt.dao.jdbc.monsvc.FindByNodeIpAddrSvcName;
 import org.opennms.netmgt.dao.jdbc.monsvc.FindByType;
 import org.opennms.netmgt.dao.jdbc.monsvc.LazyMonitoredService;
+import org.opennms.netmgt.dao.jdbc.monsvc.MonitoredServiceId;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 
@@ -161,6 +163,10 @@ public class MonitoredServiceDaoJdbc extends AbstractDaoJdbc implements Monitore
 			findUnique(new Object[] {new Integer(nodeId), ipAddress, svcName});
 	}
 
+	public OnmsMonitoredService get(int nodeId, String ipAddr, int ifIndex, int serviceId) {
+		MonitoredServiceId id = new MonitoredServiceId(nodeId, ipAddr, ifIndex, serviceId);
+		return FindById.get(getDataSource(), id).find(id);
+	}
 
 
     public Collection findAll() {
