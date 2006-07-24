@@ -497,6 +497,12 @@ public class EventConstants {
      * supression of a notification
      */
     public final static String PARM_CRITICAL_PATH_NOTICE_SUPRESSED = "noticeSupressed";
+    
+    /**
+     * This parameter is set to indicate the id of the demandPoll object to store the results
+     * of a demandPoll in
+     */
+    public final static String PARM_DEMAND_POLL_ID = "demandPollId";
 
     /**
      * The nodeSysName from the node table when sent as an event parm
