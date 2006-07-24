@@ -423,6 +423,19 @@ opennms.home = ${opennms.home}
     </profile>
   
     <profile>
+      <id>debian-postgres8.1</id>
+      <activation>
+        <file>
+          <exists>/usr/include/postgresql/8.1/server</exists>
+        </file>
+      </activation>
+  
+      <properties>
+        <build.postgresql.include.dir>/usr/include/postgresql/8.1/server</build.postgresql.include.dir>
+      </properties>
+    </profile>
+  
+    <profile>
       <id>debian-postgres7</id>
       <activation>
         <file>
