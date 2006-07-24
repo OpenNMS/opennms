@@ -462,6 +462,11 @@ public class EventConstants {
     public final static String SPECIFIC_VULN_SCAN_EVENT_UEI = "uei.opennms.org/vulnscand/specificVulnerabilityScan";
 
     /**
+     * Demand poll service event ui
+     */
+	public static final String DEMAND_POLL_SERVICE_EVENT_UEI = "uei.opennms.org/internal/demandPollService";
+
+    /**
      * An event to signal that a user has changed asset information via the web
      * UI
      */
@@ -775,4 +780,5 @@ public class EventConstants {
     public static final String formatToUIString(Date date) {
         return DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM).format(date);
     }
+
 }
