@@ -19,7 +19,7 @@ public class DefaultPollerService implements PollerService {
 		
 		
 		Event demandPollEvent = new Event();
-		demandPollEvent.setUei("uei.opennms.org/internal/demandPollService");
+		demandPollEvent.setUei(EventConstants.DEMAND_POLL_SERVICE_EVENT_UEI);
 		demandPollEvent.setNodeid(monSvc.getNodeId());
 		demandPollEvent.setInterface(monSvc.getIpAddress());
 		demandPollEvent.setIfIndex(Integer.toString(monSvc.getIfIndex()));

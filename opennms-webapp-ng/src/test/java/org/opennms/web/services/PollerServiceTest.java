@@ -49,7 +49,7 @@ public class PollerServiceTest extends TestCase {
 
 			public Object answer() throws Throwable {
 				Event event = (Event)getCurrentArguments()[0];
-				assertEquals("Incorrect uei for demandPollService event", "uei.opennms.org/internal/demandPollService", event.getUei());
+				assertEquals("Incorrect uei for demandPollService event", EventConstants.DEMAND_POLL_SERVICE_EVENT_UEI, event.getUei());
 				assertEquals("Incorrect nodeid for demandPollService event", monSvc.getNodeId().longValue(), event.getNodeid());
 				assertEquals("Incorrect ipadr for demandPollService event", monSvc.getIpAddress(), event.getInterface());
 				assertEquals("Incorrect ifIndex for demandPollService event", monSvc.getIfIndex().toString(), event.getIfIndex());
