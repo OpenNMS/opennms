@@ -438,6 +438,32 @@ public class EventUtils {
     }
 
     /**
+     * Retrieve the value associated with an event parameter and parse it to an
+     * int. If the value can not be found, return a default value.
+     * 
+     * @param e
+     *            the Event to retrieve the parameter from
+     * @param parmName
+     *            the name of the parameter to retrieve
+     * @param defaultValue
+     *            the value to return if the paramter can not be retrieved or
+     *            parsed
+     * @return the value of the parameter as a long
+     */
+    public static int getIntParm(Event e, String parmName, int defaultValue) {
+        String intVal = getParm(e, parmName);
+
+        if (intVal == null)
+            return defaultValue;
+
+        try {
+            return Integer.parseInt(intVal);
+        } catch (NumberFormatException ex) {
+            return defaultValue;
+        }
+    }
+
+    /**
      * Return the nodeId of the node associated with and event, or -1 of no node
      * is associated.
      * 
@@ -1350,5 +1376,27 @@ public class EventUtils {
     	b.append("End Snmp\n");
     	return b.toString();
     }
+
+	public static void addParam(Event event, String parmName, Object pollResultId) {
+		
+        // Add appropriate parms
+		Parms eventParms = event.getParms();
+		if (eventParms == null) {
+			eventParms = new Parms();
+			event.setParms(eventParms);
+		}
+        
+        Parm eventParm = null;
+        Value parmValue = null;
+
+        eventParm = new Parm();
+        eventParm.setParmName(parmName);
+        parmValue = new Value();
+        parmValue.setContent(String.valueOf(pollResultId));
+        eventParm.setValue(parmValue);
+        eventParms.addParm(eventParm);
+
+
+	}
 
 }
