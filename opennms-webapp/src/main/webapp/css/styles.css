@@ -625,3 +625,288 @@ div.center
         font-size: 10px;
 	font-family: Arial, Verdana, Helvetica, sans-serif; 
 }
+
+#autocomplete_choices
+{ 
+	text-align: left;
+	padding: 2px;
+	background-color: #b9cfb9;
+	border: 1px solid #aaaaaa;
+	font-size: 12px;
+	font-family: Arial, Verdana, Helvetica, sans-serif; 
+}
+
+#autocomplete_choices ul
+{
+	list-style: none;
+	display: inline;
+}
+
+#autocomplete_choices ul li.selected
+{ 
+	background-color: #c9dff9;
+}
+
+/* for drag-and-drop demos */
+
+div.shopping_demo
+{
+	height: 110px;
+}
+
+img.products
+{
+	float: left;
+	width: 100px;
+	height: 100px;
+	margin-right: 10px;
+	cursor: move;
+}
+
+/*  background-color:white;*/
+/*  width:500px; */
+
+div.cart
+{
+	clear: both;
+}
+
+#items
+{
+	padding: 8px;
+	border: 1px solid #E8A400;
+	height: 132px;
+}
+
+#items li
+{
+	margin-top: 0.5em;
+}
+
+#items a
+{
+	font-size: 10px;
+	margin-left: 0.3em;
+}
+
+#items a:before
+{
+	content: "Remove";
+}
+
+span.title
+{
+	margin: 0;
+	padding: 0;
+	padding-top: 10px;
+	font-size: 12px;
+	color: #444;
+	font-weight: normal;
+}
+
+div#wastebin
+{
+/*	width: 500px; */
+	padding: 8px;
+	margin-top: 8px;
+	height: 25px;
+	color: #ccc;
+	border: 1px dashed #888;
+	font-size: 20px;
+	font-weight: bold;
+	text-align: center;
+}
+
+/*
+div.cart img
+{
+	float: left;
+	width: 32px;
+	height: 32px;
+	margin-right: 10px;
+}
+*/
+
+div.cart div
+{
+	font-size: 12px/14px;
+	font-weight: normal;
+	color: #444;
+	clear: left;
+}
+
+ul.sortablelist
+{
+	list-style-image: none;
+	list-style-type: none;
+	margin-top: 5px;
+	margin: 0px;
+	padding: 0px;
+}
+
+ul.sortabledemo li
+{
+	padding: 0px;
+	margin: 0px;
+}
+
+span.handle
+{
+	background-color: #E8A400;
+	color: white;
+	cursor: move;
+}
+
+li.green
+{
+	background-color: #ECF3E1;
+	border: 1px solid #C5DEA1;
+	cursor: move;
+}
+
+li.orange
+{
+	border: 1px solid #E8A400;
+	background-color: #FFF4D8;
+}
+
+#puzzle
+{
+	margin-left: 10px;
+	width: 450px;
+	height: 450px;
+	border: 1px solid #e8a400;
+}
+
+#puzzle img
+{
+	float: left;
+	margin: 0px;
+	cursor: move;
+}
+
+span.congrats
+{
+	background-color: #E8A400;
+	color: white;
+	font-weight: bold;  
+}
+
+div.cart-active
+{
+	background-color: #FFF4D8;
+}
+
+div.wastebin-active
+{
+	background-color: #FFF4D8;
+	border: 1px solid #E8A400;
+}
+
+#graph
+{
+	clear: both;
+	padding: 0.1em 1.0em 0.75em 0.75em;
+}
+
+#data-list
+{
+	float: left;
+	padding: 0.5em;
+	border: 1px solid #aaaaaa;
+	width: 200px;
+}
+
+#data-list h2
+{ 
+	margin-top: 0px;
+}
+
+#graph-right
+{
+	float: left;
+	padding: 1em;
+}
+
+#graph-box
+{
+	float: left;
+	margin-bottom: 8px;
+}
+
+div.updating_indicator
+{
+	height: 40px;
+	padding-top: 10px;
+}
+
+#data-list li
+{
+	margin-top: 0.4em;
+}
+
+#data-list li.newGroup
+{
+	margin-top: 1em;
+}
+
+#data-list font
+{
+	border: 1px solid #aaaaaa;
+	padding: 1px;
+}
+
+#data-list a
+{
+	font-size: 10px;
+	margin-left: 0.3em;
+}
+
+#data-list a:before
+{
+	content: "Add";
+}
+
+
+ul.cart-items
+{
+	list-style: none;
+	display: inline;
+}
+
+li.cart-items
+{
+	margin-top: 0.4em;
+}
+
+font.cart-items
+{
+	border: 1px solid #aaaaaa;
+	padding: 1px;
+}
+
+li.spacer
+{
+	list-style: none;
+	display: inline;
+}
+
+#node
+{
+	clear: both;
+        padding: 0.1em 1.0em 0.75em 0.75em;
+}
+
+#node table.first
+{ 
+	width: 100%;
+	background-color: black;
+	margin-top: 0px;
+}
+
+#node table
+{ 
+	width: 100%;
+	background-color: black;
+	margin-top: 1em;
+}
