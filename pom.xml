@@ -93,7 +93,6 @@
     <module>opennms-import</module>
     <module>opennms-reporting</module>
     <module>opennms-webapp</module>
-    <module>opennms-webapp-ng</module>
     <module>opennms-tomcat</module>
     <module>opennms-tomcat-assembly</module>
     <module>opennms-site</module>
