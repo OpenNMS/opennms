@@ -828,7 +828,7 @@
   	<servlet-class>org.opennms.web.graph.GraphResultsServlet</servlet-class>
   </servlet>
 
-  <!-- python servlet for testing purposes - ->
+  <!-- python servlet for testing purposes -->
   <servlet>
       <servlet-name>PyServlet</servlet-name>
       <servlet-class>org.python.util.PyServlet</servlet-class>
