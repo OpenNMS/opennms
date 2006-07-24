@@ -1,7 +1,9 @@
 package org.opennms.web.services;
 
+import org.opennms.netmgt.model.OnmsMonitoredService;
+
 public interface PollerService {
 
-	void poll(int nodeId, String ipAddr, int ifIndex, int serviceId, int pollResultId);
+	void poll(OnmsMonitoredService monSvc, int demandPollId);
 
 }
