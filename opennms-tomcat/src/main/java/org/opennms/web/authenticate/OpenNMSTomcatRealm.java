@@ -52,7 +52,7 @@ import org.apache.catalina.LifecycleException;
 import org.apache.catalina.realm.Constants;
 import org.apache.catalina.realm.RealmBase;
 import org.apache.catalina.util.StringManager;
-import org.apache.log4j.Category;
+//import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.resource.Vault;
@@ -83,70 +83,70 @@ public class OpenNMSTomcatRealm extends RealmBase {
     /**
      * Descriptive information about this Realm implementation.
      */
-    protected final String info = "org.opennms.web.authenticate.OpenNMSTomcatRealm/1.0";
+    protected final String m_info = "org.opennms.web.authenticate.OpenNMSTomcatRealm/1.0";
 
     /**
      * Descriptive information about this Realm implementation.
      */
-    protected static final String name = "OpenNMSTomcatRealm";
+    protected static final String m_name = "OpenNMSTomcatRealm";
 
         /**
      * The global JNDI name of the <code>UserDatabase</code> resource
      * we will be utilizing.
      */
-    protected String resourceName = "UserDatabase";
+    protected String m_resourceName = "UserDatabase";
 
     /**
      * The string manager for this package.
      */
-    private static StringManager sm =
-        StringManager.getManager(Constants.Package);
+//    private static StringManager sm =
+//        StringManager.getManager(Constants.Package);
 
     /**
      * The set of valid Principals for this Realm, keyed by user name.
      */
-    protected HashMap principals = new HashMap();
+    protected HashMap m_principals = new HashMap();
 
     /**
      * Convenient support for <em>PropertyChangeEvents</em>.
      */
-    protected PropertyChangeSupport propertyChangeSupport;
+    protected PropertyChangeSupport m_propertyChangeSupport;
 
     /**
      * The magic-users.properties file that is read for the list of special
      * users, their passwords, and authorization roles.
      */
-    protected File magicUsersFile;
+    protected File m_magicUsersFile;
 
     /**
      * The time (in milliseconds) that the magic-users.properties file was
      * last modified.  This value is kept so that the users.xml
      * file will be reparsed anytime it is modified.
      */
-    protected long magicUsersLastModified = 0;
+    protected long m_magicUsersLastModified = 0;
 
     /**
      * The Log4J category for logging web authentication messages.
      */
-    protected Category log = Authentication.log;
+    //protected Category log = Authentication.log;
 
     /**
      * A mapping of special roles to authorized users.  Each role name key
      * contains a <code>List</code> value of authorized user names.
      */
-    protected Map magicRoleMapping = new HashMap();
+    protected Map m_magicRoleMapping = new HashMap();
     
     /**
      * Indicates that the user factory has been initialized
      */
-    protected boolean initialized = false;
-
+    protected boolean m_initialized = false;
 
     /**
      * Create a new instance.
      */
     public OpenNMSTomcatRealm() {
-        this.propertyChangeSupport = new PropertyChangeSupport(this);
+        containerLog = new OurLogger();
+        m_propertyChangeSupport = new PropertyChangeSupport(this);
         Vault.getProperties().setProperty("opennms.home", HOME_DIR);
     }
 
@@ -155,9 +155,7 @@ public class OpenNMSTomcatRealm extends RealmBase {
      * we will be using.
      */
     public String getResourceName() {
-
-        return resourceName;
-
+        return m_resourceName;
     }
 
 
@@ -169,7 +167,7 @@ public class OpenNMSTomcatRealm extends RealmBase {
      */
     public void setResourceName(String resourceName) {
 
-        this.resourceName = resourceName;
+        m_resourceName = resourceName;
 
     }
 
@@ -182,41 +180,41 @@ public class OpenNMSTomcatRealm extends RealmBase {
      */
     protected synchronized void parse() {
         //reset the principals cache        
-        this.principals = new HashMap();
+        m_principals = new HashMap();
 
         try {
             UserFactory.init();
             UserManager factory = UserFactory.getInstance();
-            //this.log.debug("Reloaded the users.xml file into memory");
+            containerLog.debug("Reloaded the users.xml file into memory");
 
             Map map = factory.getUsers();
-            //this.log.debug("Loaded " + map.size() + " users into memory");
+            containerLog.debug("Loaded " + map.size() + " users into memory");
 
             Iterator iterator = map.keySet().iterator();
 
             while (iterator.hasNext()) {
                 String key = (String) iterator.next();
                 OpenNMSPrincipal principal = new OpenNMSPrincipal((User) map.get(key));
-                this.principals.put(key, principal);
+                m_principals.put(key, principal);
             }
 
-            //this.log.debug("Loaded the regular users into the principal cache");
+            containerLog.debug("Loaded the regular users into the principal cache");
         } catch (MarshalException e) {
-            //this.log.error("Could not parse the users.xml file", e);
+            containerLog.error("Could not parse the users.xml file", e);
         } catch (ValidationException e) {
-            //this.log.error("Could not parse the users.xml file", e);
+            containerLog.error("Could not parse the users.xml file", e);
         } catch (FileNotFoundException e) {
-            //this.log.error("Could not find the users.xml file", e);
+            containerLog.error("Could not find the users.xml file", e);
         } catch (Exception e) {
-            //this.log.error("Unexpected exception parsing users.xml file", e);
+            containerLog.error("Unexpected exception parsing users.xml file", e);
         }
 
         try {
             //load the "magic" users
-            Map[] maps = this.parseMagicUsers();
+            Map[] maps = parseMagicUsers();
             Map magicUserToPasswordMapping = maps[0];
-            this.magicRoleMapping = maps[1];
-            //this.log.debug("Loaded the magic user config file");
+            m_magicRoleMapping = maps[1];
+            containerLog.debug("Loaded the magic user config file");
 
             Iterator iterator = magicUserToPasswordMapping.keySet().iterator();
 
@@ -228,19 +226,19 @@ public class OpenNMSTomcatRealm extends RealmBase {
                 magicUser.setUserId(name);
                 magicUser.setPassword(UserFactory.getInstance().encryptedPassword(password));
 
-                this.principals.put(name, new OpenNMSPrincipal(magicUser));
+                m_principals.put(name, new OpenNMSPrincipal(magicUser));
             }
 
-            //this.log.debug("Loaded the magic users into the principal cache");
+            containerLog.debug("Loaded the magic users into the principal cache");
 
-            this.magicUsersLastModified = this.magicUsersFile.lastModified();
-            //this.log.debug("Updated the magic user file last modified time stamp to " + this.magicUsersLastModified);
+            m_magicUsersLastModified = m_magicUsersFile.lastModified();
+            containerLog.debug("Updated the magic user file last modified time stamp to " + m_magicUsersLastModified);
         } catch (FileNotFoundException e) {
-            //this.log.error("Could not find the magic users file", e);
+            containerLog.error("Could not find the magic users file", e);
         } catch (IOException e) {
-            //this.log.error("Could not read the magic users file", e);
+            containerLog.error("Could not read the magic users file", e);
         } catch (Exception e) {
-            //this.log.error("Unexpected exception parsing users.xml file", e);
+            containerLog.error("Unexpected exception parsing users.xml file", e);
         }
         
         initialized = true;
@@ -250,7 +248,7 @@ public class OpenNMSTomcatRealm extends RealmBase {
      * Return the Container with which this Realm has been associated.
      */
     public Container getContainer() {
-        return (this.container);
+        return container;
     }
 
     /**
@@ -260,8 +258,9 @@ public class OpenNMSTomcatRealm extends RealmBase {
      */
     public void setContainer(Container container) {
         this.container = container;
-
-        //this.log.debug("Initialized with container: " + this.container.getName() + " (" + this.container.getInfo() + ")");
+        containerLog.info("Initialized with container: "
+                           + this.container.getName()
+                           + " (" + this.container.getInfo() + ")");
     }
 
 
@@ -271,7 +270,7 @@ public class OpenNMSTomcatRealm extends RealmBase {
      * <code>&lt;description&gt;/&lt;version&gt;</code>.
      */
     public String getInfo() {
-        return (this.info);
+        return (m_info);
     }
 
 
@@ -290,22 +289,22 @@ public class OpenNMSTomcatRealm extends RealmBase {
         }
 
         //check everytime to see if the users.xml file has changed
-        if (this.isParseNecessary()) {
-            this.parse();
+        if (isParseNecessary()) {
+            parse();
         }
 
-        OpenNMSPrincipal principal = (OpenNMSPrincipal) this.principals.get(username);
+        OpenNMSPrincipal principal = (OpenNMSPrincipal) m_principals.get(username);
 
         if (principal != null && !principal.comparePasswords(credentials)) {
             principal = null;
 
-            //this.log.info("Wrong password for " + username);
+            containerLog.info("Wrong password for " + username);
         }
 
         if (principal == null) {
-            //this.log.info("Could not authenticate " + username);
+            containerLog.info("Could not authenticate " + username);
         } else {
-            //this.log.info("Authenticated " + username);
+            containerLog.info("Authenticated " + username);
         }
 
         return (principal);
@@ -369,7 +368,7 @@ public class OpenNMSTomcatRealm extends RealmBase {
         if (Authentication.USER_ROLE.equals(role)) {
             hasrole = true;            
         } else {
-            List userList = (List) this.magicRoleMapping.get(role);
+            List userList = (List) m_magicRoleMapping.get(role);
 
             if (userList != null && userList.contains(principal.getName())) {
                 hasrole = true;
@@ -386,7 +385,7 @@ public class OpenNMSTomcatRealm extends RealmBase {
      *            The listener to add
      */
     public void addPropertyChangeListener(PropertyChangeListener listener) {
-        this.propertyChangeSupport.addPropertyChangeListener(listener);
+        m_propertyChangeSupport.addPropertyChangeListener(listener);
     }
 
     /**
@@ -396,11 +395,11 @@ public class OpenNMSTomcatRealm extends RealmBase {
      *            The listener to remove
      */
     public void removePropertyChangeListener(PropertyChangeListener listener) {
-        this.propertyChangeSupport.removePropertyChangeListener(listener);
+        m_propertyChangeSupport.removePropertyChangeListener(listener);
     }
 
     protected String getName() {
-        return name;
+        return m_name;
     }
 
     protected String getPassword(String s) {
@@ -408,7 +407,7 @@ public class OpenNMSTomcatRealm extends RealmBase {
     }
 
     protected Principal getPrincipal(String userName) {
-        return (OpenNMSPrincipal) this.principals.get(userName);
+        return (OpenNMSPrincipal) m_principals.get(userName);
     }
 
 
@@ -423,7 +422,7 @@ public class OpenNMSTomcatRealm extends RealmBase {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
 
-        //this.log.warn("userFile attribute used, but is deprecated.  Please use homeDir attribute instead.");
+        containerLog.warn("userFile attribute used, but is deprecated.  Please use homeDir attribute instead.");
     }
 
     /**
@@ -439,10 +438,10 @@ public class OpenNMSTomcatRealm extends RealmBase {
         Vault.setHomeDir(homeDir);
 
         // configure the files to the given home dir
-        this.magicUsersFile = new File(homeDir + File.separator + "etc" + File.separator + ConfigFileConstants.getFileName(ConfigFileConstants.MAGIC_USERS_CONF_FILE_NAME));
+        m_magicUsersFile = new File(homeDir + File.separator + "etc" + File.separator + ConfigFileConstants.getFileName(ConfigFileConstants.MAGIC_USERS_CONF_FILE_NAME));
 
-        //this.log.debug("HomeDir=" + homeDir);
-        //this.log.debug("MagicUsersFile=" + this.magicUsersFile);
+        containerLog.debug("HomeDir=" + homeDir);
+        containerLog.debug("MagicUsersFile=" + m_magicUsersFile);
     }
 
     /**
@@ -461,17 +460,20 @@ public class OpenNMSTomcatRealm extends RealmBase {
     protected boolean isParseNecessary() {
         boolean necessary = false;
         
-        if (!initialized) return true;
+        if (!initialized) {
+            return true;
+	}
 
         if (UserFactory.getInstance().isUpdateNeeded()) {
             necessary = true;
         }
 
-        if (this.magicUsersFile != null && this.magicUsersFile.lastModified() != this.magicUsersLastModified) {
+        if (m_magicUsersFile != null
+            && m_magicUsersFile.lastModified() != m_magicUsersLastModified) {
             necessary = true;
         }
 
-        return (necessary);
+        return necessary;
     }
 
     /**
@@ -485,7 +487,7 @@ public class OpenNMSTomcatRealm extends RealmBase {
 
         // read the file
         Properties props = new Properties();
-        props.load(new FileInputStream(this.magicUsersFile));
+        props.load(new FileInputStream(m_magicUsersFile));
 
         // look up users and their passwords
         String[] users = BundleLists.parseBundleList(props.getProperty("users"));
@@ -522,16 +524,14 @@ public class OpenNMSTomcatRealm extends RealmBase {
         try {
             //StandardServer server = (StandardServer) ServerFactory.getServer();
             //Context context = server.getGlobalNamingContext();
-            this.parse();
-            //database = (UserDatabase) context.lookup(resourceName);
+            parse();
+            //database = (UserDatabase) context.lookup(m_resourceName);
         } catch (Throwable e) {
-            e.printStackTrace();
-            //log(sm.getString("userDatabaseRealm.lookup"), e);
-            principals = null;
+            containerLog.info("error parsing configuration file", e);
+            m_principals = null;
         }
-        if (principals == null) {
-            throw new LifecycleException
-                    (sm.getString("openNMSTomcatRealm.noPrincipals"));
+        if (m_principals == null) {
+            throw new LifecycleException("no principals found");
         }
 
         // Perform normal superclass initialization
@@ -552,7 +552,92 @@ public class OpenNMSTomcatRealm extends RealmBase {
         super.stop();
 
         // Release reference to our user database
-        principals = null;
+        m_principals = null;
 
+    }
+
+    public class OurLogger implements org.apache.commons.logging.Log {
+        public void debug(Object message) {
+            log(message);
+        }
+
+        public void debug(Object message, Throwable t) {
+            log(message, t);
+        }
+
+        public void error(Object message) {
+            log(message);
+        }
+
+        public void error(Object message, Throwable t) {
+            log(message, t);
+        }
+
+        public void fatal(Object message) {
+            log(message);
+        }
+
+        public void fatal(Object message, Throwable t) {
+            log(message, t);
+        }
+
+        public void info(Object message) {
+            log(message);
+        }
+
+        public void info(Object message, Throwable t) {
+            log(message, t);
+        }
+
+        public void trace(Object message) {
+            log(message);
+        }
+
+        public void trace(Object message, Throwable t) {
+            log(message, t);
+        }
+
+        public void warn(Object message) {
+            log(message);
+        }
+
+        public void warn(Object message, Throwable t) {
+            log(message, t);
+        }
+
+        public boolean isDebugEnabled() {
+            return true;
+        }
+
+        public boolean isErrorEnabled() {
+            return true;
+        }
+
+        public boolean isFatalEnabled() {
+            return true;
+        }
+
+        public boolean isInfoEnabled() {
+            return true;
+        }
+
+        public boolean isTraceEnabled() {
+            return true;
+        }
+
+        public boolean isWarnEnabled() {
+            return true;
+        }
+
+        private void log(Object message) {
+            log(message, null);
+        }
+
+        private void log(Object message, Throwable e) {
+            System.err.println(message);
+            if (e != null) {
+                e.printStackTrace();
+            }
+        }
     }
 }
