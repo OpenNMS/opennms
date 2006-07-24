@@ -77,4 +77,9 @@ public class MonitoredServiceDaoHibernate extends AbstractDaoHibernate  implemen
 		throw new RuntimeException("Not yet implemented!");
 	}
 
+	public OnmsMonitoredService get(int nodeId, String ipAddr, int ifIndex, int serviceId) {
+		// TODO Implement this
+		throw new RuntimeException("Not yet implemented!");
+	}
+
 }

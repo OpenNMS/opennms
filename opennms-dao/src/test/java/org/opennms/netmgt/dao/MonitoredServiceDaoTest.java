@@ -51,5 +51,14 @@ public class MonitoredServiceDaoTest extends AbstractDaoTestCase {
     	//assertEquals("SNMP", svc.getServiceType().getName());
     	
     }
+    
+    public void testGetByCompositeId() {
+    	OnmsMonitoredService monSvc = getMonitoredServiceDao().get(1, "192.168.1.1", "SNMP");
+    	assertNotNull(monSvc);
+    	
+    	OnmsMonitoredService monSvc2 = getMonitoredServiceDao().get(1, "192.168.1.1", monSvc.getIfIndex(), monSvc.getServiceId());
+    	assertNotNull(monSvc2);
+    	
+    }
 
 }
