@@ -138,7 +138,11 @@
     
             <tr>
               <td class="availnode" rowspan="<%=svcs.length+1%>"><a href="element/interface.jsp?node=<%=nodeId%>&intf=<%=ipAddr%>"><%=ipAddr%></a></td>
+              <% if (svcs.length < 1) { %>
+              <td colspan=2 class="availunmanaged">  Not Monitored </td>
+              <% } else { %>
               <td class="<%=CategoryUtil.getCategoryClass(this.normalThreshold, this.warningThreshold, intfValue)%>" colspan="2"><%=CategoryUtil.formatValue(intfValue)%>%</td>
+              <% } %>
             </tr>
     
             <% for( int j=0; j < svcs.length; j++ ) { %>

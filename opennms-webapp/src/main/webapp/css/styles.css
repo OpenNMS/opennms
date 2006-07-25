@@ -279,7 +279,7 @@ table.wdth600
 td.standardheader
 {
 	background-color: #999999;
-	border: 2pt solid black;
+	border: 1pt solid black;
 	font-weight: bold;
 	padding: 2px;
 }
@@ -287,7 +287,7 @@ td.standardheader
 td.standardheaderplain
 {
 	background-color: #999999;
-	border: 2pt solid black;
+	border: 1pt solid black;
 	padding: 2px;
 }
 
@@ -303,20 +303,20 @@ td.standardwarning
 
 td.standardbold
 {
-	border: 2pt solid black;
+	border: 1pt solid black;
 	padding: 2px;
 	font-weight: bold;
 }
 
 td.standard
 {
-	border: 2pt solid black;
+	border: 1pt solid black;
 	padding: 2px;
 }
 
 td.standardmorepadding
 {
-	border: 2pt solid black;
+	border: 1pt solid black;
 	padding: 1px 3px 1px 3px;
 }
 
@@ -357,7 +357,7 @@ td.availnode
         text-align: left;
         vertical-align: top;
         width: 25%;
-	border: 2pt solid black;
+	border: 1pt solid black;
 	padding: 2px;
 }
 
@@ -366,7 +366,7 @@ td.availunmanaged
 	background-color: #cccccc;
 	font-weight: bold;
         text-align: right;
-	border: 2pt solid black;
+	border: 1pt solid black;
 	padding: 2px;
 }
 
@@ -375,7 +375,7 @@ td.availgood
 	background-color: green;
 	font-weight: bold;
         text-align: right;
-	border: 2pt solid black;
+	border: 1pt solid black;
 	padding: 2px;
 }
 
@@ -384,7 +384,7 @@ td.availwarn
 	background-color: #ffff33;
 	font-weight: bold;
         text-align: right;
-	border: 2pt solid black;
+	border: 1pt solid black;
 	padding: 2px;
 }
 
@@ -393,7 +393,7 @@ td.availcrit
 	background-color: #ff3333;
 	font-weight: bold;
         text-align: right;
-	border: 2pt solid black;
+	border: 1pt solid black;
 	padding: 2px;
 }
 
@@ -410,49 +410,49 @@ td.availcrit
 #include-eventlist td.sev_indeterminate
 {
         background-color: lightblue;
-	border: 2pt solid black;
+	border: 1pt solid black;
 	padding: 2px;
 }
 
 #include-eventlist td.sev_cleared
 {
         background-color: white;
-	border: 2pt solid black;
+	border: 1pt solid black;
 	padding: 2px;
 }
 
 #include-eventlist td.sev_normal
 {
         background-color: green;
-	border: 2pt solid black;
+	border: 1pt solid black;
 	padding: 2px;
 }
 
 #include-eventlist td.sev_warning
 {
         background-color: cyan;
-	border: 2pt solid black;
+	border: 1pt solid black;
 	padding: 2px;
 }
 
 #include-eventlist td.sev_minor
 {
         background-color: yellow;
-	border: 2pt solid black;
+	border: 1pt solid black;
 	padding: 2px;
 }
 
 #include-eventlist td.sev_major
 {
         background-color: orange;
-	border: 2pt solid black;
+	border: 1pt solid black;
 	padding: 2px;
 }
 
 #include-eventlist td.sev_critical
 {
         background-color: red;
-	border: 2pt solid black;
+	border: 1pt solid black;
 	padding: 2px;
 }
 
@@ -910,3 +910,334 @@ li.spacer
 	background-color: black;
 	margin-top: 1em;
 }
+BODY{
+background-color:#ffffff; 
+color : #333333; 
+font-family : Verdana, Arial, Helvetica, sans-serif; 
+font-size : 8pt;
+}
+TD{
+color : #000000; 
+font-family : Verdana, Arial, Helvetica, sans-serif; 
+font-size : 8pt;
+}
+
+TD.matrix {
+padding:4px;
+}
+
+A{
+font-family : Verdana, Arial, Helvetica, sans-serif;
+color:#cc0000;
+text-decoration:underline;
+}
+A:hover{
+color:#ff0000;
+text-decoration:none;
+}
+
+A.tab{
+font-family : Verdana, Arial, Helvetica, sans-serif;
+color:#000000;
+text-decoration:none;
+}
+A.tab:hover{
+color:#ffffff;
+text-decoration:none;
+}
+
+A.op{
+font-family : Verdana, Arial, Helvetica, sans-serif;
+font-size: 10pt;
+font-weight: bold;
+color:#A8B3BB;
+text-decoration:none;
+}
+A.op:hover{
+color:#b50026;
+}
+
+A.bizrow {
+cursor:hand;
+color:#000000;
+text-decoration:none;
+}
+A.bizrow {
+cursor:hand;
+color:#000000;
+text-decoration:none;
+background-color:white;
+}
+
+INPUT {
+font-family : Verdana, Arial, Helvetica, sans-serif;
+font-size : 7pt; 
+text-decoration : none;
+color:#000000;
+padding: 0px;
+margin: 0px;
+}
+
+INPUT.pqBox {
+border: 1px solid #990000;
+background-color:#E0E0E0;
+}
+
+INPUT.ooBox {
+border: 1px solid #A4ACB1;
+background-color:#ffffff;
+}
+
+INPUT.of {
+border: 1px solid #A4ACB1;
+background-color:#ffffff;
+margin: 0px 6px 0px 0px;
+width:150px;
+}
+
+INPUT.ofRadio {
+padding: 0px 0px 10px 0px;
+margin: 2px 6px 0px 0px;
+}
+
+INPUT.ofCheck {
+padding: 0px 0px 10px 0px;
+margin: 2px 6px 0px 0px;
+}
+
+INPUT.pqBtn {
+font-family : Arial, Verdana, Helvetica, sans-serif;
+font-size : 10pt;
+font-weight:bold;
+}
+
+SELECT {
+font-family : Verdana, Arial, Helvetica, sans-serif;
+background-color:#ffffff;
+font-size : 7pt; 
+text-decoration : none;
+color:#000000;
+padding: 0px;
+margin: 0px;
+}
+
+SELECT.front {
+font-family : Verdana, Arial, Helvetica, sans-serif;
+background-color:#ffffff;
+font-size : 7pt; 
+text-decoration : none;
+color:#000000;
+padding: 0px;
+margin: 0px;
+height: 18px;
+}
+
+SELECT.channels {
+font-family : Verdana, Arial, Helvetica, sans-serif;
+background-color:#ffffff;
+font-size : 7pt; 
+text-decoration : none;
+color:#000000;
+padding: 0px;
+margin: 0px;
+height: 18px;
+width:152px;
+}
+
+TEXTAREA {
+font-family : Verdana, Arial, Helvetica, sans-serif;
+border: 1px solid #A4ACB1;
+background-color:#ffffff;
+font-size:7pt;
+padding:4px;
+color:#000000;
+}
+
+B {
+font-weight : bold;
+} 
+I {
+font-style : italic; 
+} 
+PRE {
+font-family : courier new; 
+} 
+U {
+text-decoration : underline;
+}
+SUP {
+font-size:7pt;
+}
+UL {
+}
+LI {
+list-style-image: url(/_gfx/bullet.gif);
+}
+LI.redcheck {
+list-style-image: url(/_gfx/bullet_redcheck.gif);
+}
+LI.blackcheck {
+list-style-image: url(/_gfx/bullet_blackcheck.gif);
+}
+
+.pageTitle {
+color : #000000;
+font-family : Arial, Verdana, Helvetica, sans-serif; 
+font-size : 13pt; 
+font-weight : bold;
+padding: 0px 0px 10px 0px;
+}
+
+.hdr {
+color : #444444;
+font-size : 9pt; 
+font-weight : bold;
+padding-top : 18px;
+padding-bottom : 6px; 
+}
+
+.ofSectionTtl {
+color : #444444;
+font-family : Arial, Verdana, Helvetica, sans-serif; 
+font-size : 10pt; 
+font-weight : bold;
+padding: 0px 0px 8px 0px;
+}
+
+.ofSection {
+padding: 6px 6px 6px 6px;
+margin: 12px 0px 0px 0px;
+background-color: #efefef;
+border:1px solid #bbbbbb;
+width:100%;
+}
+
+.ofDetails {
+border:1px dotted #bbbbbb;
+background-color: #ffffff;
+padding:8px;
+width:240px;
+color: #006699;
+}
+
+.tbHdr {
+color : #000000;
+font-family : Arial, Verdana, Helvetica, sans-serif;
+font-size : 8pt;
+font-weight : bold;
+text-decoration : none;
+}
+
+.product {
+color : #000000;
+font-family : Arial, Verdana, Helvetica, sans-serif;
+font-size : 9pt;
+font-weight : bold;
+text-decoration : none;
+padding : 4px 4px 4px 0px;
+}
+
+.toolBtn {
+border: 1px dashed #777;
+background-color:#ffffff;
+font-size : 7pt; 
+cursor:hand;
+}
+
+.sm {
+font-size : 7pt; 
+text-decoration : none;
+}
+
+.legal {
+font-size : 7pt; 
+text-decoration : none;
+line-height: 13pt;
+}
+
+.devNote {
+background-color:#ffffcc;
+font-size : 7pt; 
+text-decoration : none;
+}
+
+
+.promoTtl {
+        color:#333;
+        font-weight:bold;
+}
+
+.menuopt {
+background-color:#ffffff;
+color:#000000;
+cursor:hand;
+}
+
+.navT {
+color:#cc0000;
+text-decoration:none;
+}
+
+/* ------- t2 ----- */
+.t2 {
+padding:3px 6px 3px 9px;
+color:blue;
+} 
+.t2c {
+background-color:#d5d5d5;
+color:#000000;
+padding:3px 6px 3px 9px;
+}
+
+/* ------- t3 ----- */ 
+.t3 {
+padding:3px 6px 3px 18px;
+color:#cc0000;
+} 
+.t3c {
+background-color:#d5d5d5;
+color:#000000;
+padding:3px 6px 3px 18px;
+} 
+
+/* ------- t4 ----- */ 
+.t4 {
+padding:3px 6px 3px 30px;
+color:#cc0000;
+} 
+.t4c {
+background-color:#d5d5d5;
+color:#000000;
+padding:3px 6px 3px 30px;
+}  
+
+/* Color the unvisited and visited links the same blue */
+A:link    { color: #0000cc }
+A:active  { color: #ff0000 }
+A:visited { color: #0000cc }
+
+/* I don't specify the margins here because Netscape 4.x ignores them. */
+
+TD.footer
+{
+        background:    #c9dfc9;
+}
+
+
+
+/* Widget Box Body */
+.widget-box
+{
+    background : #cccccc;    
+}
+
+
+/*
+ * value in a widget-box that serves as the fieldname for the value to its right 
+ */
+.widget-box-fieldname
+{
+    background : #999999; 
+
+}
+

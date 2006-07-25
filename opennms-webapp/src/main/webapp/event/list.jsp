@@ -185,14 +185,16 @@
       <li>
       <a href="javascript: void window.open('<%=org.opennms.web.Util.calculateUrlBase(request)%>/event/severity.jsp','', 'fullscreen=no,toolbar=no,status=no,menubar=no,scrollbars=no,resizable=yes,directories=no,location=no,width=525,height=158')" title="Open a window explaining the event severities">Severity Legend</a>      </li>
       
-      <% if( parms.ackType == EventFactory.AcknowledgeType.UNACKNOWLEDGED ) { %> 
-        <li>
-	<a href="javascript: void document.acknowledge_by_filter_form.submit()" onclick="return confirm('Are you sure you want to acknowledge all events in the current search including those not shown on your screen?  (<%=eventCount%> total events)')" title="Acknowledge all events that match the current search constraints, even those not shown on the screen">Acknowledge entire search</a>
-	</li>
-      <% } else { %>
-        <li>
-	<a href="javascript: void document.acknowledge_by_filter_form.submit()" onclick="return confirm('Are you sure you want to unacknowledge all events in the current search including those not shown on your screen)?  (<%=eventCount%> total events)')" title="Unacknowledge all events that match the current search constraints, even those not shown on the screen">Unacknowledge entire search</a>
-	</li>
+      <% if( !(request.isUserInRole( Authentication.READONLY_ROLE ))) { %>
+        <% if( parms.ackType == EventFactory.AcknowledgeType.UNACKNOWLEDGED ) { %> 
+          <li>
+	  <a href="javascript: void document.acknowledge_by_filter_form.submit()" onclick="return confirm('Are you sure you want to acknowledge all events in the current search including those not shown on your screen?  (<%=eventCount%> total events)')" title="Acknowledge all events that match the current search constraints, even those not shown on the screen">Acknowledge entire search</a>
+	  </li>
+        <% } else { %>
+          <li>
+	  <a href="javascript: void document.acknowledge_by_filter_form.submit()" onclick="return confirm('Are you sure you want to unacknowledge all events in the current search including those not shown on your screen)?  (<%=eventCount%> total events)')" title="Unacknowledge all events that match the current search constraints, even those not shown on the screen">Unacknowledge entire search</a>
+	  </li>
+        <% } %>
       <% } %>
       </ul>
       </div>
@@ -272,18 +274,22 @@
 
     <div class="spacer"><!-- --></div>
 
-    <form action="event/acknowledge" method="POST" name="acknowledge_form">
-      <input type="hidden" name="redirectParms" value="<%=request.getQueryString()%>" />
-      <input type="hidden" name="action" value="<%=action%>" />
-      <%=org.opennms.web.Util.makeHiddenTags(request)%>
+    <% if( !(request.isUserInRole( Authentication.READONLY_ROLE ))) { %>
+      <form action="event/acknowledge" method="POST" name="acknowledge_form">
+        <input type="hidden" name="redirectParms" value="<%=request.getQueryString()%>" />
+        <input type="hidden" name="action" value="<%=action%>" />
+        <%=org.opennms.web.Util.makeHiddenTags(request)%>
+    <% } %>
 
       <table>
       <tbody>
         <tr class="eventlist-head">
-          <% if ( parms.ackType == EventFactory.AcknowledgeType.UNACKNOWLEDGED ) { %>
-          <td width="1%"><b>Ack</b></td>
-          <% } else { %>
-          <td width="1%"><b>UnAck</b></td>
+          <% if( !(request.isUserInRole( Authentication.READONLY_ROLE ))) { %>
+            <% if ( parms.ackType == EventFactory.AcknowledgeType.UNACKNOWLEDGED ) { %>
+            <td width="1%"><b>Ack</b></td>
+            <% } else { %>
+            <td width="1%"><b>UnAck</b></td>
+            <% } %>
           <% } %>
           <td width="1%"> <%=this.makeSortLink( parms, EventFactory.SortStyle.ID,        EventFactory.SortStyle.REVERSE_ID,        "id",        "ID" )%></td>
           <td width="10%"><%=this.makeSortLink( parms, EventFactory.SortStyle.SEVERITY,  EventFactory.SortStyle.REVERSE_SEVERITY,  "severity",  "Severity"  )%></td>
@@ -295,11 +301,13 @@
         </tr>      
       <% for( int i=0; i < events.length; i++ ) { %>        
         <tr valign="top" class="<%=(i%2 == 0) ? "eventlist-odd" : "eventlist-even"%>">
-          <td valign="top" rowspan="3" bgcolor="<%=EventUtil.getSeverityColor(events[i].getSeverity())%>">
-            <nobr>
-              <input type="checkbox" name="event" value="<%=events[i].getId()%>" /> 
-            </nobr>
-          </td>
+          <% if( !(request.isUserInRole( Authentication.READONLY_ROLE ))) { %>
+            <td valign="top" rowspan="3" bgcolor="<%=EventUtil.getSeverityColor(events[i].getSeverity())%>">
+              <nobr>
+                <input type="checkbox" name="event" value="<%=events[i].getId()%>" /> 
+              </nobr>
+            </td>
+          <% } %>
           <td valign="top" rowspan="3" bgcolor="<%=EventUtil.getSeverityColor(events[i].getSeverity())%>">
             <a href="event/detail.jsp?id=<%=events[i].getId()%>"><%=events[i].getId()%></a>
           </td>
@@ -419,14 +427,16 @@
         <tr>
           <td colspan="2"><%=events.length%> events</td>
           <td colspan="6">
-          <% if( parms.ackType == EventFactory.AcknowledgeType.UNACKNOWLEDGED ) { %>
-            <input type="button" value="Acknowledge Events" onClick="submitForm('acknowledge')"/>
-            <input TYPE="button" VALUE="Select All" onClick="checkAllCheckboxes()"/>
-            <input TYPE="reset" />
-          <% } else if( parms.ackType == EventFactory.AcknowledgeType.ACKNOWLEDGED ) { %>
-            <input type="button" value="Unacknowledge Events" onClick="submitForm('unacknowledge')"/>
-            <input TYPE="button" VALUE="Select All" onClick="checkAllCheckboxes()"/>
-            <input TYPE="reset" />
+          <% if( !(request.isUserInRole( Authentication.READONLY_ROLE ))) { %>
+            <% if( parms.ackType == EventFactory.AcknowledgeType.UNACKNOWLEDGED ) { %>
+              <input type="button" value="Acknowledge Events" onClick="submitForm('acknowledge')"/>
+              <input TYPE="button" VALUE="Select All" onClick="checkAllCheckboxes()"/>
+              <input TYPE="reset" />
+            <% } else if( parms.ackType == EventFactory.AcknowledgeType.ACKNOWLEDGED ) { %>
+              <input type="button" value="Unacknowledge Events" onClick="submitForm('unacknowledge')"/>
+              <input TYPE="button" VALUE="Select All" onClick="checkAllCheckboxes()"/>
+              <input TYPE="reset" />
+            <% } %>
           <% } %>
           </td>
         </tr>

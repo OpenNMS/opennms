@@ -21,6 +21,7 @@
 	contentType="text/html"
 	session="true"
 	import="java.text.DateFormat,
+	        java.text.SimpleDateFormat,
 		java.util.Date,
 		org.opennms.netmgt.config.NotifdConfigFactory
 		"
@@ -29,7 +30,7 @@
 
 <%!
     static DateFormat dateFormatter = DateFormat.getDateInstance( DateFormat.MEDIUM );
-    static DateFormat timeFormatter = DateFormat.getTimeInstance( DateFormat.SHORT ); 
+    static SimpleDateFormat timeFormatter = new SimpleDateFormat("H:mm z");
     
     public void init() throws ServletException {
         try {

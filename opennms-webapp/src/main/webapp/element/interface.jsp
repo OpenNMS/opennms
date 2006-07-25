@@ -49,6 +49,7 @@
 		org.opennms.netmgt.config.PollerConfig,
 		org.opennms.web.element.*,
 		java.util.*,
+                org.opennms.web.authenticate.Authentication,
 		org.opennms.web.event.*,
 		org.opennms.web.performance.*,
 		org.opennms.netmgt.utils.IfLabel,
@@ -248,9 +249,11 @@ function doDelete() {
 	 </li>
          <% } %>
          
-	<li>
-        <a href="element/rescan.jsp?node=<%=nodeId%>&ipaddr=<%=ipAddr%>">Rescan</a>      
-        </li>
+        <% if( !(request.isUserInRole( Authentication.READONLY_ROLE ))) { %>
+	  <li>
+            <a href="element/rescan.jsp?node=<%=nodeId%>&ipaddr=<%=ipAddr%>">Rescan</a>      
+          </li>
+         <% } %>
 
         <% if (request.isUserInRole("OpenNMS Administrator") && hasSNMPData(intf_db) && "P".equals(intf_db.getIsSnmpPrimary())) { %>
 	 <li>

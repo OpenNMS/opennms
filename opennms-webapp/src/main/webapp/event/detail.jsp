@@ -42,7 +42,9 @@
 <%@page language="java"
 	contentType="text/html"
 	session="true"
-	import="org.opennms.web.event.*"
+	import="org.opennms.web.event.*,
+                org.opennms.web.authenticate.Authentication"
+
 %>
 
 <%
@@ -190,11 +192,14 @@
       </table>
       
       <br/>
-      <form method="post" action="event/acknowledge">
-        <input type="hidden" name="action" value="<%=action%>" />
-        <input type="hidden" name="event" value="<%=event.getId()%>"/>
-        <input type="hidden" name="redirect" value="<%=request.getContextPath() + request.getServletPath() + "?" + request.getQueryString()%>" />
-        <input type="submit" value="<%=buttonName%>"/>
-      </form>
+
+      <% if( !(request.isUserInRole( Authentication.READONLY_ROLE ))) { %>
+        <form method="post" action="event/acknowledge">
+          <input type="hidden" name="action" value="<%=action%>" />
+          <input type="hidden" name="event" value="<%=event.getId()%>"/>
+          <input type="hidden" name="redirect" value="<%=request.getContextPath() + request.getServletPath() + "?" + request.getQueryString()%>" />
+          <input type="submit" value="<%=buttonName%>"/>
+        </form>
+      <% } %>
       
 <jsp:include page="/includes/footer.jsp" flush="false" />

@@ -183,9 +183,15 @@ class Snmp4JValue implements SnmpValue {
         case SMIConstants.SYNTAX_TIMETICKS:
         case SMIConstants.SYNTAX_UNSIGNED_INTEGER32:
             return ((UnsignedInteger32)m_value).getValue();
+        case SMIConstants.SYNTAX_OCTET_STRING:
+            return (convertStringToLong());
         default:
             return Integer.parseInt(m_value.toString());
         }
+    }
+
+    private long convertStringToLong() {
+        return Float.valueOf(m_value.toString()).longValue();
     }
 
     public String toDisplayString() {

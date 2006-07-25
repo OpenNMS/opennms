@@ -40,6 +40,8 @@ package org.opennms.netmgt.collectd;
 
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
@@ -83,30 +85,35 @@ public final class SNMPCollectorEntry extends AbstractSnmpStore {
         return ThreadCategory.getInstance(getClass());
     }
     
-    private AttributeType findAttributeTypeForOid(SnmpObjId base) {
+    private List findAttributeTypeForOid(SnmpObjId base, SnmpInstId inst) {
+        List matching = new LinkedList();
         for (Iterator it = m_attrList.iterator(); it.hasNext();) {
             AttributeType attrType = (AttributeType)it.next();
-            if (base.equals(attrType.getSnmpObjId()))
-                return attrType;
+            if (attrType.matches(base, inst)) {
+                matching.add(attrType);
+            }
         }
-        return null;
+        return matching;
     }
 
 
     public void storeResult(SnmpObjId base, SnmpInstId inst, SnmpValue val) {
         String key = base.append(inst).toString();
         putValue(key, val);
-        AttributeType attrType = findAttributeTypeForOid(base);
-        if (attrType == null) throw new IllegalArgumentException("Received result for unexpected oid ["+base+"].["+inst+"]");
+        List attrTypes = findAttributeTypeForOid(base, inst);
+        if (attrTypes.isEmpty()) throw new IllegalArgumentException("Received result for unexpected oid ["+base+"].["+inst+"]");
         
 
-        if (attrType.getInstance().equals(MibObject.INSTANCE_IFINDEX))
-            putIfIndex(inst.toInt());
-        log().debug("storeResult: added value for "+attrType.getAlias()+": ["+base+"].["+inst+"] = "+val);
+        for (Iterator iter = attrTypes.iterator(); iter.hasNext();) {
+            AttributeType attrType = (AttributeType) iter.next();
 
-        
-        attrType.storeResult(m_collectionSet, this, base, inst, val);
+            if (attrType.getInstance().equals(MibObject.INSTANCE_IFINDEX))
+                putIfIndex(inst.toInt());
+            log().debug("storeResult: added value for "+attrType.getAlias()+": ["+base+"].["+inst+"] = "+val);
 
+
+            attrType.storeResult(m_collectionSet, this, base, inst, val);
+        }
     }
 
 

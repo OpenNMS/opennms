@@ -64,8 +64,8 @@ your distribution.
   <!--compiler options-->
   <property name="compiler.debug" value="true"/>
   <property name="compiler.optimize" value="true"/>
-  <property name="compiler.source.version" value="1.4"/>
-  <property name="compiler.target.version" value="1.4"/>
+  <property name="compiler.source.version" value="1.5"/>
+  <property name="compiler.target.version" value="1.5"/>
   <!-- XXX This should be true, but will have to set it false for now -->
   <property name="compiler.deprecation" value="false"/>
 
@@ -228,7 +228,7 @@ your distribution.
     <pathelement path="${packaged.lib.dir}/xercesImpl-2.6.2.jar"/>
     <pathelement path="${packaged.lib.dir}/xml-apis-2.6.2.jar"/>
     <pathelement path="${packaged.lib.dir}/xmlrpc-1.2-b1.jar"/>
-    <pathelement path="${packaged.lib.dir}/jrobin-1.4.0.jar"/>
+    <pathelement path="${packaged.lib.dir}/jrobin-1.5.4.jar"/>
     <pathelement path="${packaged.lib.dir}/mailapi.jar"/>
     <pathelement path="${packaged.lib.dir}/smtp.jar"/>
     <pathelement path="${packaged.lib.dir}/jradius-client.jar"/>
@@ -668,7 +668,6 @@ your distribution.
   <target name="java.check">
     <condition property="java.versionokay">
       <or>
-        <contains string="${java.vm.version}" substring="1.4."/>
     	<contains string="${java.vm.version}" substring="1.5."/>
       </or>
     </condition>
@@ -676,7 +675,7 @@ your distribution.
     <fail unless="java.versionokay">
       Your Java version (${java.vm.version}) is not supported.  The
       build system is currently designed and tested to work with Java
-      versions 1.4 and 1.5.  You can try to work around this error by
+      version 1.5.  You can try to work around this error by
       modifying the java.check target in the build.xml file.
     </fail>
   </target>

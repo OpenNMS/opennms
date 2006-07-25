@@ -32,173 +32,154 @@
 # Don't put Java or any of the packages that Java might depend on in the
 # requires line.  See bug #1144.
 
-%if "%{platform}" == "linux-i386-centos-3"
+%if "%{platform}" == "linux-centos-3"
 %define	initdir		/etc
 %define psql_service	rhdb
 %define requires	postgresql-server >= 7.2
-%define webapp_requires tomcat4 >= 4.1.18
 %define release_pkg     %{release}_centos3
 %define platform_match	true
 %endif
 
-%if "%{platform}" == "linux-i386-centos-4"
+%if "%{platform}" == "linux-centos-4"
 %define initdir         /etc
 %define psql_service    rhdb
 %define requires        postgresql-server >= 7.2
-%define webapp_requires tomcat4 >= 4.1.18
 %define release_pkg     %{release}_centos4
 %define platform_match  true
 %endif
 
-%if "%{platform}" == "linux-i386-fedora-1"
+%if "%{platform}" == "linux-fedora-1"
 %define	initdir		/etc
 %define psql_service	postgresql
 %define requires	postgresql-server >= 7.2
-%define webapp_requires tomcat4 >= 4.1.18
 %define release_pkg     %{release}_fc1
 %define platform_match	true
 %endif
 
-%if "%{platform}" == "linux-i386-fedora-2"
+%if "%{platform}" == "linux-fedora-2"
 %define	initdir		/etc
 %define psql_service	postgresql
 %define requires	postgresql-server >= 7.2
-%define webapp_requires tomcat4 >= 4.1.18
 %define release_pkg     %{release}_fc2
 %define platform_match	true
 %endif
 
-%if "%{platform}" == "linux-i386-fedora-3"
+%if "%{platform}" == "linux-fedora-3"
 %define	initdir		/etc
 %define psql_service	postgresql
 %define requires	postgresql-server >= 7.2
-%define webapp_requires tomcat4 >= 4.1.18
 %define release_pkg     %{release}_fc3
 %define platform_match	true
 %endif
 
-%if "%{platform}" == "linux-i386-fedora-4"
+%if "%{platform}" == "linux-fedora-4"
 %define initdir         /etc
 %define psql_service    postgresql
 %define requires        postgresql-server >= 7.2
-%define webapp_requires tomcat4 >= 4.1.18
 %define release_pkg     %{release}_fc4
 %define platform_match  true
 %endif
 
-%if "%{platform}" == "linux-i386-mandrake-7"
+%if "%{platform}" == "linux-mandrake-7"
 %define	initdir		/etc
 %define psql_service	postgresql
 %define requires	postgresql-server >= 7.2
-%define webapp_requires tomcat4 >= 4.1.18
 %define release_pkg     %{release}_mdk7
 %define platform_match	true
 %endif
 
-%if "%{platform}" == "linux-i386-mandrake-8"
+%if "%{platform}" == "linux-mandrake-8"
 %define	initdir		/etc
 %define psql_service	postgresql
 %define requires	postgresql-server >= 7.2
-%define webapp_requires tomcat4 >= 4.1.18
 %define release_pkg     %{release}_mdk8
 %define platform_match	true
 %endif
 
-%if "%{platform}" == "linux-i386-mandrake-90"
+%if "%{platform}" == "linux-mandrake-90"
 %define	initdir		/etc
 %define psql_service	postgresql
 %define requires	postgresql-server >= 7.2
-%define webapp_requires tomcat4 >= 4.1.18
 %define release_pkg     %{release}_mdk90
 %define platform_match	true
 %endif
 
-%if "%{platform}" == "linux-i386-mandrake-92"
+%if "%{platform}" == "linux-mandrake-92"
 %define	initdir		/etc
 %define psql_service	postgresql
 %define requires	postgresql-server >= 7.2, postgresql-pl >= 7.2
-%define webapp_requires tomcat4 >= 4.1.18
 %define release_pkg     %{release}_mdk92
 %define platform_match	true
 %endif
 
-%if "%{platform}" == "linux-i386-mandrake-10"
+%if "%{platform}" == "linux-mandrake-10"
 %define	initdir		/etc
 %define psql_service	postgresql
 %define requires	postgresql-server >= 7.2, postgresql-pl >= 7.2
-%define webapp_requires tomcat4 >= 4.1.18
 %define release_pkg     %{release}_mdk10
 %define platform_match	true
 %endif
 
-%if "%{platform}" == "linux-i386-redhat-7"
+%if "%{platform}" == "linux-redhat-7"
 %define	initdir		/etc
 %define psql_service	postgresql
 %define requires        postgresql-server >= 7.2
-%define webapp_requires tomcat4 >= 4.1.18
 %define release_pkg     %{release}_rhl7
 %define platform_match	true
 %endif
 
-%if "%{platform}" == "linux-i386-redhat-8"
+%if "%{platform}" == "linux-redhat-8"
 %define	initdir		/etc
 %define psql_service	postgresql
 %define requires	postgresql-server >= 7.2
-%define webapp_requires tomcat4 >= 4.1.18
 %define release_pkg     %{release}_rhl8
 %define platform_match	true
 %endif
 
-%if "%{platform}" == "linux-i386-redhat-9"
+%if "%{platform}" == "linux-redhat-9"
 %define	initdir		/etc
 %define psql_service	postgresql
 %define requires	postgresql-server >= 7.2
-%define webapp_requires tomcat4 >= 4.1.18
 %define release_pkg     %{release}_rhl9
 %define platform_match	true
 %endif
 
-%if "%{platform}" == "linux-i386-rhel-3"
+%if "%{platform}" == "linux-rhel-3"
 %define	initdir		/etc
 %define psql_service	rhdb
 %define requires	postgresql-server >= 7.2
-%define webapp_requires tomcat4 >= 4.1.18
 %define release_pkg     %{release}_rhel3
 %define platform_match	true
 %endif
 
-%if "%{platform}" == "linux-i386-rhel-4"
+%if "%{platform}" == "linux-rhel-4"
 %define	initdir		/etc
 %define psql_service	rhdb
 %define requires	postgresql-server >= 7.2
-%define webapp_requires tomcat4 >= 4.1.18
 %define release_pkg     %{release}_rhel4
 %define platform_match	true
 %endif
 
-%if "%{platform}" == "linux-i386-suse-7"
+%if "%{platform}" == "linux-suse-7"
 %define	initdir		/etc/rc.d
 %define psql_service	postgres
 %define requires        postgres >= 7.2
-%define webapp_requires tomcat >= 4.1.18, tomcat < 5
 %define release_pkg     %{release}_suse7
 %define platform_match	true
 %endif
 
-%if "%{platform}" == "linux-i386-suse-8"
+%if "%{platform}" == "linux-suse-8"
 %define	initdir		/etc
 %define psql_service	postgresql
 %define requires	postgresql >= 7.2, postgresql-server >= 7.2
-%define webapp_requires tomcat >= 4.1.18, tomcat < 5
 %define release_pkg     %{release}_suse8
 %define platform_match	true
 %endif
 
-%if "%{platform}" == "linux-i386-suse-9"
+%if "%{platform}" == "linux-suse-9"
 %define	initdir		/etc
 %define psql_service	postgresql
 %define requires	postgresql >= 7.2, postgresql-server >= 7.2
-%define webapp_requires tomcat >= 4.1.18, tomcat < 5
 %define release_pkg     %{release}_suse9
 %define platform_match	true
 %endif
@@ -256,7 +237,7 @@ for OpenNMS.
 %package webapp
 Summary:	Web interface servlet for the OpenNMS network management platform
 Group:		Applications/System
-Requires:	rrdtool, %{name} = %{version}-%{release}, %{webapp_requires}
+Requires:	rrdtool, %{name} = %{version}-%{release}
 
 %description webapp
 The web UI for OpenNMS.

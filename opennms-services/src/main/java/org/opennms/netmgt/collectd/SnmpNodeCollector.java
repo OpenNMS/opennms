@@ -93,8 +93,8 @@ public class SnmpNodeCollector extends AggregateTracker {
         super(AttributeType.getCollectionTrackers(objList));
         
         m_primaryIf = address.getHostAddress();
-        m_collectorEntry = new SNMPCollectorEntry(objList, m_collectionSet);
         m_collectionSet = collectionSet;
+        m_collectorEntry = new SNMPCollectorEntry(objList, m_collectionSet);
 
 
     }

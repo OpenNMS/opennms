@@ -123,7 +123,11 @@
       <td class="availunmanaged"><%=ElementUtil.getInterfaceStatusString(intf)%></td>
 
 <% } else { %>
+     <% if(services.length < 1) { %>
+              <td colspan=2 class="availunmanaged">  Not Monitored </td>
+     <% } else { %>
       <td class="<%=CategoryUtil.getCategoryClass(this.normalThreshold, this.warningThreshold, overallRtcValue)%>"><%=CategoryUtil.formatValue(overallRtcValue)%>%</td>
+     <% } %>
 
   </tr>
 
