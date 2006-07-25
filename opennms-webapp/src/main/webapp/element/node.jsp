@@ -253,16 +253,18 @@
 	  </li>
         <% } %>
         
-	<li>
-        <a href="element/rescan.jsp?node=<%=nodeId%>">Rescan</a>      
-	</li>
+        <% if( !(request.isUserInRole( Authentication.READONLY_ROLE ))) { %> 
+	  <li>
+            <a href="element/rescan.jsp?node=<%=nodeId%>">Rescan</a>      
+	  </li>
+        <% } %>
         <% if( request.isUserInRole( Authentication.ADMIN_ROLE )) { %> 
 	  <li>
           <a href="admin/nodemanagement/index.jsp?node=<%=nodeId%>">Admin</a>
 	  </li>
         <% } %>
 
-           <% if ( isSnmp && request.isUserInRole("OpenNMS Administrator"))  { %>
+           <% if ( isSnmp && request.isUserInRole( Authentication.ADMIN_ROLE ))  { %>
               <% for( int i=0; i < intfs.length; i++ ) { %>
                 <% if( "P".equals( intfs[i].getIsSnmpPrimary() )) { %>
 		      <li>

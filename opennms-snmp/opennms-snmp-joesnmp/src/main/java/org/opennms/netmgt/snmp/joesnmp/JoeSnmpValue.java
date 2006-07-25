@@ -171,10 +171,19 @@ class JoeSnmpValue implements SnmpValue {
         case SnmpSMI.SMI_TIMETICKS:
         case SnmpSMI.SMI_UNSIGNED32:
             return ((SnmpUInt32)m_value).getValue();
+        case SnmpSMI.SMI_STRING:
+	    return (convertStringToLong());
         default:
             return Long.parseLong(m_value.toString());
         }
     }
+
+
+    private long convertStringToLong() {
+        return Double.valueOf(m_value.toString()).longValue();
+    }
+
+
     
     public int getType() {
         return m_value.typeId();

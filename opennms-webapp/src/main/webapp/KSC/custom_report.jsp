@@ -55,6 +55,7 @@
     // Get Form Variables
     Report report = this.reportFactory.getWorkingReport();
     int report_index = this.reportFactory.getWorkingReportIndex();      
+    String number_graphs[] = {"1", "2", "3", "4", "5", "6"};
 %>
 
 

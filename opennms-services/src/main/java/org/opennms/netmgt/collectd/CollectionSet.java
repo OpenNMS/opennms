@@ -83,7 +83,6 @@ public class CollectionSet implements Collectable {
 
     private CollectionAgent m_agent;
     private OnmsSnmpCollection m_snmpCollection;
-    private boolean m_rescanTriggered;
     private SnmpIfCollector m_ifCollector;
     private CollectionSet.IfNumberTracker m_ifNumber;
     private SnmpNodeCollector m_nodeCollector;
@@ -201,14 +200,6 @@ public class CollectionSet implements Collectable {
         visitor.completeCollectionSet(this);
     }
     
-    public void triggerRescan() {
-        m_rescanTriggered = true;
-    }
-
-    public boolean rescanTriggered() {
-        return m_rescanTriggered;
-    }
-
     CollectionTracker getTracker() {
         List trackers = new ArrayList(3);
        
@@ -306,10 +297,6 @@ public class CollectionSet implements Collectable {
     }
     
     public boolean rescanNeeded() {
-        if (rescanTriggered()) {
-            log().debug("Sending rescan event for "+getCollectionAgent()+" because it was triggered by a missing resource");
-            return true;
-        }
         
         final RescanNeeded rescanNeeded = new RescanNeeded();
         visit(new ResourceVisitor() {

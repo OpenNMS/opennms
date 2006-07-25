@@ -82,6 +82,7 @@ maintained
 		<invoke at="status" pass="0" method="status"/>
 		<invoke at="stop" pass="0" method="stop"/>
 	</service>
+<!--
 	<service>
 <!-- Matt, working on this one now -->
 		<name>OpenNMS:Name=Syslogd</name>
@@ -91,6 +92,7 @@ maintained
 		<invoke at="status" pass="0" method="status"/>
 		<invoke at="stop" pass="0" method="stop"/>
 	</service>
+-->
 	<service>
 		<name>OpenNMS:Name=Dhcpd</name>
 		<class-name>org.opennms.netmgt.dhcpd.jmx.Dhcpd</class-name>

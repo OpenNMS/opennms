@@ -53,6 +53,7 @@
 	contentType="text/html"
 	session="true"
 	import="org.opennms.web.event.*,
+		org.opennms.web.authenticate.Authentication,
 		org.opennms.web.MissingParameterException
 	"
 %>
@@ -162,9 +163,11 @@
 
 <div id="include-eventlist">
 
-<form action="event/acknowledge" method="POST" name="acknowledge_form">
-<input type="hidden" name="redirect" value="<%=request.getContextPath() + request.getServletPath() + "?" + request.getQueryString()%>" />
-<input type="hidden" name="action" value="<%=org.opennms.web.event.AcknowledgeEventServlet.ACKNOWLEDGE_ACTION%>" />
+<% if( !(request.isUserInRole( Authentication.READONLY_ROLE ))) { %>
+    <form action="event/acknowledge" method="POST" name="acknowledge_form">
+    <input type="hidden" name="redirect" value="<%=request.getContextPath() + request.getServletPath() + "?" + request.getQueryString()%>" />
+    <input type="hidden" name="action" value="<%=org.opennms.web.event.AcknowledgeEventServlet.ACKNOWLEDGE_ACTION%>" />
+<% } %>
 
 <table class="standardfirst">
      <tr>
@@ -176,12 +179,14 @@
        int severity = events[i].getSeverity();
 %>
      <tr>
-       <td class="standard">
-         <nobr>
-           <input type="checkbox" name="event" value="<%=events[i].getId()%>" />
-           <a href="event/detail.jsp?id=<%=events[i].getId()%>"><%=events[i].getId()%></a>
-         </nobr>
-       </td>
+       <% if( !(request.isUserInRole( Authentication.READONLY_ROLE ))) { %>
+           <td class="standard">
+             <nobr>
+               <input type="checkbox" name="event" value="<%=events[i].getId()%>" />
+               <a href="event/detail.jsp?id=<%=events[i].getId()%>"><%=events[i].getId()%></a>
+             </nobr>
+           </td>
+       <% } %>
        <td class="standard"><%=org.opennms.netmgt.EventConstants.formatToUIString(events[i].getTime())%></td>
        <td class="<%=EventUtil.getSeverityClass(severity)%>"><%=EventUtil.getSeverityLabel(severity)%></td>
        <td class="standard"><%=events[i].getLogMessage()%></td>
@@ -190,10 +195,12 @@
 
      <tr>
        <td class="standard" colspan="2">
-         <nobr>
-           <input type="button" value="Acknowledge" onclick="submitAck()">
-           <input TYPE="reset" />
-         </nobr>
+         <% if( !(request.isUserInRole( Authentication.READONLY_ROLE ))) { %>
+           <nobr>
+             <input type="button" value="Acknowledge" onclick="submitAck()">
+             <input TYPE="reset" />
+           </nobr>
+         <% } %>
        </td>
 
 <% if( eventCount > events.length ) { %>

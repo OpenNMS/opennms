@@ -35,6 +35,8 @@
       <attribute name="show_timespan_button" type="boolean" use="optional"/>
 
       <attribute name="show_graphtype_button" type="boolean" use="optional"/>
+
+      <attribute name="graphs_per_page" type="integer" use="optional"/>
     </complexType>
   </element>
 

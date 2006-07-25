@@ -69,6 +69,7 @@ public class AttributeGroup {
     }
 
     public void visit(CollectionSetVisitor visitor) {
+        log().debug("Visiting Group "+this);
         visitor.visitGroup(this);
         
         for (Iterator iter = getAttributes().iterator(); iter.hasNext();) {

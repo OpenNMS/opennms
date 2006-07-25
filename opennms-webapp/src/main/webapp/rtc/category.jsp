@@ -114,7 +114,38 @@
   <jsp:param name="breadcrumb" value="Category"/>
 </jsp:include>
 
-      <h3><%=category.getName()%></h3>
+        <table>
+          <tr>
+      <td><h3><%=category.getName()%></h3></td>
+      <td>&nbsp;</td>
+      <td>&nbsp;</td>
+      <td>&nbsp;</td>
+
+      <FORM NAME="showoutages">
+        <% String showoutages = request.getParameter("showoutages"); %>
+
+        <%  
+        if(showoutages == null ) {
+           showoutages = "avail";
+        } %>
+
+
+            <td align="center">
+              <input type="radio" name="showout" <%=(showoutages.equals("all") ? "checked" : "")%>
+               onclick="top.location = '/opennms/rtc/category.jsp?category=<%=category.getName()%>&showoutages=all'" ></input>All<br>
+            </td>
+            <td align="center">
+              <input type="radio" name="showout" <%=(showoutages.equals("outages") ? "checked" : "")%>
+               onclick="top.location = '/opennms/rtc/category.jsp?category=<%=category.getName()%>&showoutages=outages'" ></input>Outages<br>
+            </td>
+            <td align="center">
+              <input type="radio" name="showout" <%=(showoutages.equals("avail") ? "checked" : "")%>
+               onclick="top.location = '/opennms/rtc/category.jsp?category=<%=category.getName()%>&showoutages=avail'" ></input>Availability<br>
+            </td>
+          </tr>
+        </table>
+        </FORM>
+
       <% if( category.getComment() != null ) { %>      
         <p><%=category.getComment()%></p>
       <% } %>
@@ -129,6 +160,9 @@
         </tr>
       
         <%  
+	    int valuecnt = 0;
+	    int outagecnt = 0;
+
             while( nameIterator.hasNext() ) {
                 String nodeLabel = (String)nameIterator.next();
                 Node node = (Node)nodeMap.get(nodeLabel);
@@ -146,13 +180,33 @@
                 
                     String color = CategoryUtil.getCategoryColor( category, value );
                     String outageColor = CategoryUtil.getCategoryColor( category, servicePercentage );
+
+		    if ( showoutages.equals("all") | (showoutages.equals("outages") & serviceDownCount > 0 ) | (showoutages.equals("avail") & value < 100 ) ) {
         %>
                     <tr>
                       <td class="standard"><a href="element/node.jsp?node=<%=node.getNodeid()%>"><%=nodeLabel%></a></td>
                       <td class="standard" BGCOLOR="<%=outageColor%>" align="right"><%=serviceDownCount%> of <%=serviceCount%></td>
                       <td class="standard" BGCOLOR="<%=color%>" ALIGN="right" WIDTH="30%"><b><%=CategoryUtil.formatValue(value)%>%</b></td>
                     </tr>
+            	    <%  } 
+		    if (value < 100 )
+		        ++valuecnt;
+		    if (serviceDownCount > 0 )
+		        ++outagecnt;
+		    %>
             <%  } %>
+        <%  } %>
+
+	<% if ( showoutages.equals("outages") & outagecnt == 0 ) { %>
+		<tr><td colspan=3>
+		<b>There are currently no outages in this Category.</b>
+		</td></tr>
+        <%  } %>
+
+	<% if ( showoutages.equals("avail") & valuecnt == 0 ) { %>
+		<tr><td colspan=3>
+		<b>All services in this Category are at 100%.</b>
+		</td></tr>
         <%  } %>
         
       <tr>

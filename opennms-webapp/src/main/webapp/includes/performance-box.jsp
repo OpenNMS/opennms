@@ -78,7 +78,7 @@
       <form method="get" action="performance/addIntfFromNode" >
         <input type="hidden" name="endUrl" value="performance/addReportsToUrl" />
         <input type="hidden" name="relativetime" value="lastday" />
-              <font size="-1">Choose a node to query</font>
+              Choose a node to query
               <br/>
 
               <select style="width: 100%;" name="node" size="1">

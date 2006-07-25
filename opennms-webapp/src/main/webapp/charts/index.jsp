@@ -1,3 +1,5 @@
+<%--
+
 //
 // This file is part of the OpenNMS(R) Application.
 //
@@ -8,7 +10,9 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
-// Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
+// 2006 Jun 08: Made a Charts tab
+//
+// Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -30,32 +34,36 @@
 //      http://www.opennms.com/
 //
 
-package org.opennms.web.authenticate;
+--%>
 
-import org.apache.log4j.Category;
+<%@page language="java"
+        contentType="text/html; charset=UTF-8"
+            pageEncoding="UTF-8"
+%>
 
-/**
- * An uninstantiatable class that provides a servlet container-independent
- * interface to the authentication system and a list of useful constants.
- * 
- * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- */
-public final class Authentication extends Object {
-    /** The Log4J category for logging web authentication messages. */
-    public static Category log = Category.getInstance("OpenNMS.WEB.AUTH");
+<jsp:include page="/includes/header.jsp" flush="false">
+  <jsp:param name="title" value="Web Console" />
+</jsp:include>
 
-    /** The name of the role defined for users in the web.xml file. */
-    public static final String USER_ROLE = "OpenNMS User";
+<%@ page import="org.opennms.netmgt.charts.ChartUtils" %>
+<%@ page import="java.util.Iterator" %>
+<%@ page import="org.opennms.netmgt.config.charts.BarChart" %>
 
-    /** The name of the role defined for administrators in the web.xml file. */
-    public static final String ADMIN_ROLE = "OpenNMS Administrator";
+<%--Align images in the center of the page --%>
 
-    /** The name of the role defined for read-only users in the web.xml file. */
-    public static final String READONLY_ROLE = "OpenNMS Read-Only User";
-
-    /** Private, empty constructor so this class cannot be instantiated. */
-    private Authentication() {
-    }
-
+<div id="include-charts">
+<%--Get collection of charts --%>
+<%
+Iterator it = ChartUtils.getChartCollectionIterator();
+while (it.hasNext()) {
+    BarChart chartConfig = (BarChart)it.next();
+    String chartName = chartConfig.getName();
+%>
+        <img src="charts?chart-name=<%=chartName %>" alt="<%=chartName %>" />
+<%
 }
+%>
+
+</div>
+
+<jsp:include page="/includes/footer.jsp" flush="false" />

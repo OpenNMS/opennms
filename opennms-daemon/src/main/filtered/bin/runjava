@@ -110,7 +110,7 @@ printHelp() {
 #
 javaCheck() {
     ret="`$JP -version 2>&1 | grep '^java version' | sed 's/^java version \"//;s/\".*//'`"
-    if echo "$ret" | egrep '^1\.[4-9]\.' > /dev/null; then
+    if echo "$ret" | egrep '^1\.[5-9]\.' > /dev/null; then
 	# Check for GNU gcj, which has bugs as of 2006-03-08 that break OpenNMS
 	if $JP -version 2>&1 | egrep '^gcj' > /dev/null; then
 	    tell "$JP is GNU gcj, which is not supported"
@@ -267,7 +267,7 @@ checkConfiguredJava() {
 
     if [ $? -ne 0 ]; then
 	warn "error: bad version for configured Java runtime environment"
-	warn "\"$JP -version\" does not report that is version 1.4+"
+	warn "\"$JP -version\" does not report that is version 1.5+"
 	warn "$mantra"
 
 	return 1

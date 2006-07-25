@@ -118,6 +118,8 @@ final public class GpMonitor extends IPv4LatencyMonitor {
 
         int retry = ParameterMap.getKeyedInteger(parameters, "retry", DEFAULT_RETRY);
         int timeout = ParameterMap.getKeyedInteger(parameters, "timeout", DEFAULT_TIMEOUT);
+        String hoption = ParameterMap.getKeyedString(parameters, "hoption", "--hostname");
+        String toption = ParameterMap.getKeyedString(parameters, "toption", "--timeout");
         //
         // convert timeout to seconds for ExecRunner
         //
@@ -162,12 +164,17 @@ final public class GpMonitor extends IPv4LatencyMonitor {
                 long sentTime = System.currentTimeMillis();
 
                 int exitStatus = 100;
+
+		// Some scripts, such as Nagios check scripts, look for -H and -t versus --hostname and 
+		// --timeout. If the optional parameter option-type is set to short, then the former
+		// will be used.
+
                 ExecRunner er = new ExecRunner();
                 er.setMaxRunTimeSecs(timeout);
                 if (args == null)
-                    exitStatus = er.exec(script + " --hostname " + ipv4Addr.getHostAddress() + " --timeout " + timeout);
+                    exitStatus = er.exec(script + " " + hoption + " " + ipv4Addr.getHostAddress() + " " + toption + " " + timeout);
                 else
-                    exitStatus = er.exec(script + " --hostname " + ipv4Addr.getHostAddress() + " --timeout " + timeout + " " + args);
+                    exitStatus = er.exec(script + " " + hoption + " " + ipv4Addr.getHostAddress() + " " + toption + " " + timeout + " " + args);
                 if (exitStatus != 0) {
                     log.debug(script + " failed with exit code " + exitStatus);
                     serviceStatus = SERVICE_UNAVAILABLE;

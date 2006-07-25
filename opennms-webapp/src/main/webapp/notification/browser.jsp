@@ -46,6 +46,7 @@
 	contentType="text/html"
 	session="true"
 	import="org.opennms.web.notification.*,
+                org.opennms.web.authenticate.Authentication,
 		org.opennms.web.element.*,
 		java.util.*,
 		java.sql.SQLException,
@@ -230,7 +231,7 @@
 
       <tr>
         <td colspan="5">
-        <% if( parms.ackType == NoticeFactory.AcknowledgeType.UNACKNOWLEDGED ) { %>
+        <% if( parms.ackType == NoticeFactory.AcknowledgeType.UNACKNOWLEDGED &&  !(request.isUserInRole( Authentication.READONLY_ROLE ))) { %>
           <input type="button" value="Acknowledge Notices" onClick="submitAcknowledge()"/>
           <input TYPE="button" VALUE="Select All" onClick="checkAllCheckboxes()"/>
           <input TYPE="reset" />
@@ -342,7 +343,7 @@
         <tr>
           <td colspan="2"><%=notices.length%> notices</td>
           <td colspan="5">
-          <% if( parms.ackType == NoticeFactory.AcknowledgeType.UNACKNOWLEDGED ) { %>
+          <% if( parms.ackType == NoticeFactory.AcknowledgeType.UNACKNOWLEDGED &&  !(request.isUserInRole( Authentication.READONLY_ROLE ))) { %>
             <input type="button" value="Acknowledge Notices" onClick="submitAcknowledge()"/>
             <input TYPE="button" VALUE="Select All" onClick="checkAllCheckboxes()"/>
             <input TYPE="reset" />

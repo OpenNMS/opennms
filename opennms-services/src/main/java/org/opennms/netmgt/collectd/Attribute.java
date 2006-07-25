@@ -61,6 +61,7 @@ public class Attribute {
     }
 
     public void visit(CollectionSetVisitor visitor) {
+        log().debug("Visiting attribute "+this);
         visitor.visitAttribute(this);
         visitor.completeAttribute(this);
     }

@@ -142,7 +142,7 @@ public abstract class AttributeType {
     }
 
     public int hashCode() {
-        return m_mibObj.hashCode();
+        return getAlias().hashCode();
     }
     
     public Category log() {
@@ -151,6 +151,15 @@ public abstract class AttributeType {
 
     public String getGroupIfType() {
         return m_groupType.getIfType();
+    }
+
+    public boolean matches(SnmpObjId base, SnmpInstId inst) {
+        if (!base.equals(getSnmpObjId())) return false;
+        
+        if (getInstance().equals(MibObject.INSTANCE_IFINDEX))
+            return true;
+        else 
+            return getInstance().equals(inst.toString());
     }
 
 

@@ -1040,7 +1040,7 @@ create sequence vulnNxtId minvalue 1;
 
 --# Sequence for the id column in the categories table
 --#          sequence, column, table
---# install: catNxtId id   categories
+--# install: catNxtId categoryid   categories
 create sequence catNxtId minvalue 1;
 
 --# Sequence for the id column in the usersNotified table
