@@ -111,8 +111,10 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
 		}
 		
 		public static CollectionType get(String code) {
+			if (code == null)
+				return NO_COLLECT;
 			code = code.trim();
-			if (code == null || code.length() < 1)
+			if (code.length() < 1)
 				return NO_COLLECT;
 			else if (code.length() > 1)
 				throw new IllegalArgumentException("Cannot convert string "+code+" to a collType");
