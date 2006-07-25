@@ -808,6 +808,12 @@ public class Installer {
 				continue;
 			}
 
+		
+			if (table.equals("usersNotified") && column.equals("id")) {	
+//			m_out.print("Skipping usersNotified.id");
+				continue;
+                        }
+
 			String query = "SELECT count(" + table + "." + column + ") FROM "
 					+ table + " "
 					+ getForeignConstraintWhere(table, column, ftable, fcolumn);
@@ -2097,6 +2103,9 @@ public class Installer {
 				} else if (newColumn.getName().equals("eventid")
 						&& table.equals("notifications")) {
 					columnChange.setNullReplace(new Integer(0));
+				} else if (newColumn.getName().equals("id")
+						&& table.equals("usersnotified")) {
+					columnChange.setNullReplace(new Integer(0));
 				} else if (oldColumn == null) {
 					String message = "Column " + newColumn.getName()
 							+ " in new table has NOT NULL "
@@ -2305,8 +2314,10 @@ public class Installer {
 					obj = null;
 				}
 
-                // MH - Need to look at this for UserNotifiedID
 				if (table.equals("outages") && name.equals("outageid")) {
+					obj = new Integer(current_row + 1);
+				}
+				if (table.equals("usersnotified") && name.equals("id")) {
 					obj = new Integer(current_row + 1);
 				}
 				if (obj == null && change.isNullReplace()) {
