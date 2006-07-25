@@ -126,8 +126,9 @@
       <artifactId>jfreechart</artifactId>
       <version>1.0.1</version>
     </dependency>
+    <!-- XXX used by the new "webapp-ng"/"secret" stuff directly -->
     <dependency>
-      <groupId>jrobin</groupId>
+      <groupId>org.jrobin</groupId>
       <artifactId>jrobin</artifactId>
     </dependency>
     <dependency>

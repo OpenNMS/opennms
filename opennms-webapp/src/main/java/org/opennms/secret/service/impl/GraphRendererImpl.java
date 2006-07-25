@@ -29,21 +29,18 @@ public class GraphRendererImpl implements GraphRenderer {
 	//   public static String tmpDir="/tmp/";    // path must end with slash
 	
 	public ByteArrayInputStream getPNG(GraphDefinition gdef) throws IOException, RrdException {
-		RrdGraph graph = getRrdGraph(gdef);
-		
-		return new ByteArrayInputStream(graph.getPNGBytes()); // INPUT STREAM
+		RrdGraph graph = getRrdGraph(gdef, "PNG");
+		return new ByteArrayInputStream(graph.getRrdGraphInfo().getBytes());
 	}
 
 	public ByteArrayInputStream getJPEG(GraphDefinition gdef) throws IOException, RrdException {
-		RrdGraph graph = getRrdGraph(gdef);
-		
-		return new ByteArrayInputStream(graph.getJPEGBytes(1.0f)); // INPUT STREAM
+		RrdGraph graph = getRrdGraph(gdef, "JPEG");
+		return new ByteArrayInputStream(graph.getRrdGraphInfo().getBytes());
 	}
 
 	public ByteArrayInputStream getGIF(GraphDefinition gdef) throws IOException, RrdException {
-		RrdGraph graph = getRrdGraph(gdef);
-		
-		return new ByteArrayInputStream(graph.getGIFBytes()); // INPUT STREAM
+		RrdGraph graph = getRrdGraph(gdef, "GIF");
+		return new ByteArrayInputStream(graph.getRrdGraphInfo().getBytes());
 	}
 
 
@@ -52,9 +49,11 @@ public class GraphRendererImpl implements GraphRenderer {
 	 * @return
 	 * @throws RrdException
 	 */
-	private RrdGraph getRrdGraph(GraphDefinition gdef) throws RrdException {
+	private RrdGraph getRrdGraph(GraphDefinition gdef, String imageFormat) throws IOException, RrdException {
 		RrdGraphDef graphDef = new RrdGraphDef();
 		graphDef = getRrdGraphDef(gdef);
+                graphDef.setImageFormat(imageFormat);
+                graphDef.setImageQuality(1.0f);
 		RrdGraph graph = new RrdGraph(graphDef);
 		return graph;
 	}
@@ -72,9 +71,11 @@ public class GraphRendererImpl implements GraphRenderer {
 		
 		try {
 			RrdGraphDef graphDef = getRrdGraphDef(gdef);
+                	graphDef.setImageFormat("PNG");
+	                graphDef.setImageQuality(1.0f);
 			RrdGraph graph = new RrdGraph(graphDef);
 			
-			return new ByteArrayInputStream(graph.getPNGBytes()); // INPUT STREAM
+			return new ByteArrayInputStream(graph.getRrdGraphInfo().getBytes());
 			
 		} catch (Exception e) {
 			System.err.println("ErrorGraphRenderImpl - problem creating graph ");
@@ -92,7 +93,8 @@ public class GraphRendererImpl implements GraphRenderer {
 	 */
 	private RrdGraphDef getRrdGraphDef(GraphDefinition gdef) throws RrdException {
 //		RrdGraphDef graphDef = new RrdGraphDef(gdef.getStartTime() / 1000, gdef.getEndTime() / 1000);
-        RrdGraphDef graphDef = new RrdGraphDef(1086793506L, 1086879506L);
+	        RrdGraphDef graphDef = new RrdGraphDef();
+		graphDef.setTimeSpan(1086793506L, 1086879506L);
 		graphDef.setTitle(gdef.getGraphTitle());
 		
 		LinkedList elist = gdef.getGraphDataElements();
