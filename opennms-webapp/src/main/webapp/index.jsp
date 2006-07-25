@@ -153,6 +153,5 @@
   <div class="spacer"><!-- --></div>
   <br/>
 
-<jsp:include page="/includes/charts.jsp" flush="false" />
 
 <jsp:include page="/includes/footer.jsp" flush="false" />
