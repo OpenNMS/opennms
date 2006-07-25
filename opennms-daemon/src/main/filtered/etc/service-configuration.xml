@@ -84,7 +84,6 @@ maintained
 	</service>
 <!--
 	<service>
-<!-- Matt, working on this one now -->
 		<name>OpenNMS:Name=Syslogd</name>
 		<class-name>org.opennms.netmgt.syslogd.jmx.Syslogd</class-name>
 		<invoke at="start" pass="0" method="init"/>

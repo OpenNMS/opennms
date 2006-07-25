@@ -21,7 +21,7 @@
 		   "Node List"));
         navBar.add(new NavBarEntry("element", "element/index.jsp", "Search"));
         navBar.add(new NavBarEntry("outages", "outage/index.jsp", "Outages"));
-        navBar.add(new NavBarEntry("pathOutage", "pathOutage/index.jsp", "Path Outages"));
+	//navBar.add(new NavBarEntry("pathOutage", "pathOutage/index.jsp", "Path Outages"));
         navBar.add(new NavBarEntry("event", "event/index.jsp", "Events"));
         navBar.add(new NavBarEntry("alarm", "alarm/index.jsp", "Alarms"));
         navBar.add(new NavBarEntry("notification", "notification/index.jsp",
@@ -29,6 +29,7 @@
         navBar.add(new NavBarEntry("asset", "asset/index.jsp", "Assets"));
         //navBar.add(new NavBarEntry("security", "security.jsp", "Security"));
         navBar.add(new NavBarEntry("report", "report/index.jsp", "Reports"));
+        navBar.add(new NavBarEntry("chart", "charts/index.jsp", "Charts"));
         if (mapEnableFile.exists()) {
           navBar.add(new NavBarEntry("map", "map/index.jsp", "Map"));
         }
