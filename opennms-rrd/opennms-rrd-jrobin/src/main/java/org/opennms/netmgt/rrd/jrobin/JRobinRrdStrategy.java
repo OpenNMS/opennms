@@ -413,15 +413,17 @@ public class JRobinRrdStrategy implements RrdStrategy {
                     String definition = arg.substring("GPRINT:".length());
                     String gprint[] = tokenize(definition, ":", true);
                     String format = gprint[2];
-                    format = format.replaceAll("%(\\d*\\.\\d*)lf", "@$1");
-                    format = format.replaceAll("%s", "@s");
-                    format = format.replaceAll("%%", "%");
-                    log.debug("gprint: oldformat = " + gprint[2] + " newformat = " + format);
+                    //format = format.replaceAll("%(\\d*\\.\\d*)lf", "@$1");
+                    //format = format.replaceAll("%s", "@s");
+                    //format = format.replaceAll("%%", "%");
+                    //log.debug("gprint: oldformat = " + gprint[2] + " newformat = " + format);
+                    format = format.replaceAll("\\n", "\n");
                     graphDef.gprint(gprint[0], gprint[1], format);
 
                 } else if (arg.startsWith("COMMENT:")) {
                     String comments[] = tokenize(arg, ":", true);
-                    graphDef.comment(comments[1]);
+                    String format = comments[1].replaceAll("\\n", "\n");
+                    graphDef.comment(format);
                 } else if (arg.startsWith("AREA:")) {
                     String definition = arg.substring("AREA:".length());
                     String area[] = tokenize(definition, ":", true);
@@ -438,16 +440,20 @@ public class JRobinRrdStrategy implements RrdStrategy {
                     log.warn("JRobin: Unrecognized graph argument: " + arg);
                 }
             }
-            graphDef.setTimePeriod(start, end);
-            graphDef.setGridRange(lowerLimit, upperLimit, rigid);
-            graphDef.setDefaultFont(new Font("Monospaced", Font.PLAIN, 10));
-            graphDef.setTitleFont(new Font("Monospaced", Font.PLAIN, 12));
+            graphDef.setTimeSpan(start, end);
+            graphDef.setMinValue(lowerLimit);
+            graphDef.setMaxValue(upperLimit);
+            graphDef.setRigid(rigid);
+            graphDef.setHeight(height);
+            graphDef.setWidth(width);
+            graphDef.setSmallFont(new Font("Monospaced", Font.PLAIN, 10));
+            graphDef.setLargeFont(new Font("Monospaced", Font.PLAIN, 12));
 
             log.debug("JRobin Finished tokenizing checking: start time: " + start + "; end time: " + end);
 
-            RrdGraph graph = new RrdGraph(graphDef, false);
+            RrdGraph graph = new RrdGraph(graphDef);
 
-            byte[] bytes = graph.getPNGBytes(width, height);
+            byte[] bytes = graph.getRrdGraphInfo().getBytes();
 
             tempIn = new ByteArrayInputStream(bytes);
 
@@ -490,39 +496,41 @@ public class JRobinRrdStrategy implements RrdStrategy {
         Color color = getColor(colorHex);
 
         // These are the documented RRD color tags
+	try {
         if (colorTag.equals("BACK")) {
-            graphDef.setBackColor(color);
+            graphDef.setColor("BACK", color);
         }
         else if (colorTag.equals("CANVAS")) {
-            graphDef.setCanvasColor(color);
+            graphDef.setColor("CANVAS", color);
         }
         else if (colorTag.equals("SHADEA")) {
-            graphDef.setImageBorder(color, 1);
+            graphDef.setColor("SHADEA", color);
         }
         else if (colorTag.equals("SHADEB")) {
-            Category log = ThreadCategory.getInstance(getClass());
-            log.debug("parseGraphColor: JRobin does not support SHADEB");
+            graphDef.setColor("SHADEB", color);
         }
         else if (colorTag.equals("GRID")) {
-            graphDef.setMinorGridColor(color);
+            graphDef.setColor("GRID", color);
         }
         else if (colorTag.equals("MGRID")) {
-            graphDef.setMajorGridColor(color);
+            graphDef.setColor("MGRID", color);
         }
         else if (colorTag.equals("FONT")) {
-            graphDef.setDefaultFontColor(color);
-            graphDef.setTitleFontColor(color);
+            graphDef.setColor("FONT", color);
         }
         else if (colorTag.equals("FRAME")) {
-            graphDef.setFrameColor(color);
-            graphDef.setAxisColor(color);
+            graphDef.setColor("FRAME", color);
         }
         else if (colorTag.equals("ARROW")) {
-            graphDef.setArrowColor(color);
+            graphDef.setColor("ARROW", color);
         }
         else {
-            throw new IllegalArgumentException
+            throw new org.jrobin.core.RrdException
                  ("Unknown color tag " + colorTag);
+        }
+        } catch (Exception e) {
+	    Category log = ThreadCategory.getInstance(getClass());
+            log.error("JRobin:exception occurred creating graph", e);
         }
     }
 
