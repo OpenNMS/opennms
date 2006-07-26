@@ -994,6 +994,64 @@ create index pathoutage_nodeid_idx on pathOutage(nodeID);
 create index pathoutage_criticalpathip on pathOutage(criticalPathIp);
 create index pathoutage_criticalpathservicename_idx on pathOutage(criticalPathServiceName);
 
+--########################################################################
+--# demandPolls Table - contains a list of requested polls
+--#
+--# This table contains the following information:
+--#
+--#  id                      : Unique identifier of the demand poll
+--#  requestTime             : the time the user requested the poll
+--#  user                    : the user that requested the poll
+--#  description             : ?
+--#
+--########################################################################
+create table demandPolls (
+	id			integer ,
+	requestTime	timestamp without time zone,
+	username	varchar,
+	description varchar,
+	
+	constraint demandpoll_pkey primary key (id)
+	
+);
+
+create index demandpoll_request_time on demandPolls(requestTime);
+	
+--########################################################################
+--# pollResults Table - contains a list of requested polls
+--#
+--# This table contains the following information:
+--#
+--#  id                      : Unique identifier of the demand poll
+--#  pollId                  : the demandPollId
+--#  nodeId                  : node id of the polled service
+--#  ipAddr                  : the ip address of the polled service
+--#  ifIndex                 : the ifIndex of the polled service's interface
+--#  serviceId				 : the serviceid of the polled service
+--#  statusCode				 : the status code of the pollstatus returned by the monitor
+--#  statusName				 : the status name of the pollstaus returnd by the monitor
+--#  reason				     : the reason of the pollstatus returned by the monitor
+--#
+--########################################################################
+create table pollResults (
+	id			integer,
+	pollId      integer,
+	nodeId		integer,
+	ipAddr		varchar,
+	ifIndex		integer,
+	serviceId	integer,
+	statusCode	integer,
+	statusName	varchar,
+	reason		varchar,
+	
+	constraint pollresult_pkey primary key (id),
+	constraint fk_demandPollId foreign key (pollID) references demandPolls (id) ON DELETE CASCADE
+
+);
+
+create index pollresults_poll_id on pollResults(pollId);
+create index pollresults_service on pollResults(nodeId, ipAddr, ifIndex, serviceId);
+
 
 --##################################################################
 --# The following commands set up automatic sequencing functionality
@@ -1047,6 +1105,16 @@ create sequence catNxtId minvalue 1;
 --#          sequence, column, table
 --# install: userNotifNxtId id   usersNotified
 create sequence userNotifNxtId minvalue 1;
+
+--# Sequence for the id column in the demandPolls table
+--#          sequence, column, table
+--# install: demandPollsNxtId id   demandPolls
+create sequence demandPollNxtId minvalue 1;
+
+--# Sequence for the id column in the pollResults table
+--#          sequence, column, table
+--# install: pollResultsNxtId id   pollResults
+create sequence pollResultNxtId minvalue 1;
 
 --##################################################################
 --# The following command adds the initial loopback poller entry to
