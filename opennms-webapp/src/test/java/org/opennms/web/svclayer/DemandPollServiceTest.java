@@ -106,7 +106,7 @@ public class DemandPollServiceTest extends TestCase {
 		verify(m_pollerService);
 
 		assertNotNull("Null is an invalid response from pollMonitoredService", result);
-		assertEquals("Expected Id to be set by dao", expectedResultId, result.getId());
+		assertEquals("Expected Id to be set by dao", expectedResultId, result.getId().intValue());
 		
 	}
 	
