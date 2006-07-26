@@ -46,81 +46,88 @@ import org.springframework.jdbc.object.MappingSqlQuery;
 
 public class OutageMappingQuery extends MappingSqlQuery {
 
-    public OutageMappingQuery(DataSource ds, String clause) {
-        super(ds, "SELECT " + 
-        		"outages.outageID as outages_outageID, " + 
-        		"outages.svcLostEventID as outages_svcLostEventID, " + 
-        		"outages.svcRegainedEventID as outages_svcRegainedEventID, " + 
-        		"outages.nodeID as outages_nodeID, " + 
-        		"outages.ipAddr as outages_ipAddr, " + 
-        		"outages.serviceID as outages_serviceID, " +
-                "ifservices.ifIndex as outages_ifIndex, " + 
-        		"outages.ifLostService as outages_ifLostService, " + 
-        		"outages.ifRegainedService as outages_ifRegainedService " +clause);
-    }
-    
-    public DataSource getDataSource() {
-        return getJdbcTemplate().getDataSource();
-    }
+	public OutageMappingQuery(DataSource ds, String clause) {
+		super(ds, "SELECT " + "outages.outageID as outages_outageID, "
+				+ "outages.svcLostEventID as outages_svcLostEventID, "
+				+ "outages.svcRegainedEventID as outages_svcRegainedEventID, "
+				+ "outages.nodeID as outages_nodeID, "
+				+ "outages.ipAddr as outages_ipAddr, "
+				+ "outages.serviceID as outages_serviceID, "
+				+ "ifservices.ifIndex as outages_ifIndex, "
+				+ "outages.ifLostService as outages_ifLostService, "
+				+ "outages.ifRegainedService as outages_ifRegainedService, "
+				+ "outages.suppressTime as outages_suppressTime, "
+				+ "outages.suppressedBy as outages_suppressedBy " + clause);
+	}
 
-    public Object mapRow(ResultSet rs, int rowNumber) throws SQLException {
-        final Integer id = (Integer) rs.getObject("outages_outageID");
+	public DataSource getDataSource() {
+		return getJdbcTemplate().getDataSource();
+	}
 
-        LazyOutage outage = (LazyOutage)Cache.obtain(OnmsOutage.class, id);
-        outage.setLoaded(true);
-        
-        Integer nodeId = new Integer(rs.getInt("outages_nodeID"));
-        String ipAddr = rs.getString("outages_ipAddr");
-        Integer serviceId = new Integer(rs.getInt("outages_serviceID"));
-        Integer ifIndex = (Integer)rs.getObject("outages_ifIndex");
+	public Object mapRow(ResultSet rs, int rowNumber) throws SQLException {
+		final Integer id = (Integer) rs.getObject("outages_outageID");
 
-        MonitoredServiceId monSvcId = new MonitoredServiceId(nodeId, ipAddr, ifIndex, serviceId);
-        OnmsMonitoredService monSvc = (OnmsMonitoredService)Cache.obtain(OnmsMonitoredService.class, monSvcId);
-        outage.setMonitoredService(monSvc);
+		LazyOutage outage = (LazyOutage) Cache.obtain(OnmsOutage.class, id);
+		outage.setLoaded(true);
 
-        Integer lostEventId = new Integer(rs.getInt("outages_svcLostEventID"));
-        OnmsEvent lostEvent = (OnmsEvent)Cache.obtain(OnmsEvent.class, lostEventId);
-        outage.setEventBySvcLostEvent(lostEvent);
+		Integer nodeId = new Integer(rs.getInt("outages_nodeID"));
+		String ipAddr = rs.getString("outages_ipAddr");
+		Integer serviceId = new Integer(rs.getInt("outages_serviceID"));
+		Integer ifIndex = (Integer) rs.getObject("outages_ifIndex");
 
-        Integer regainedEventId = (Integer)rs.getObject("outages_svcRegainedEventID");
-        OnmsEvent regainedEvent = (regainedEventId == null ? null : (OnmsEvent)Cache.obtain(OnmsEvent.class, regainedEventId));        
-        outage.setEventBySvcRegainedEvent(regainedEvent);
-        
-        outage.setIfLostService(rs.getTimestamp("outages_ifLostService"));
-        outage.setIfRegainedService(rs.getTimestamp("outages_ifRegainedService"));    	
-        
-        outage.setDirty(false);
-        return outage;
-    }
-    
-    public OnmsOutage findUnique() {
-        return findUnique((Object[])null);
-    }
-    
-    public OnmsOutage findUnique(Object obj) {
-        return findUnique(new Object[] { obj });
-    }
+		MonitoredServiceId monSvcId = new MonitoredServiceId(nodeId, ipAddr,
+				ifIndex, serviceId);
+		OnmsMonitoredService monSvc = (OnmsMonitoredService) Cache.obtain(
+				OnmsMonitoredService.class, monSvcId);
+		outage.setMonitoredService(monSvc);
 
-    public OnmsOutage findUnique(Object[] objs) {
-        List events = execute(objs);
-        if (events.size() > 0)
-            return (OnmsOutage) events.get(0);
-        else
-            return null;
-    }
-    
-    public Set findSet() {
-        return findSet((Object[])null);
-    }
-    
-    public Set findSet(Object obj) {
-        return findSet(new Object[] { obj });
-    }
-    
-    public Set findSet(Object[] objs) {
-        List events = execute(objs);
-        Set results = new JdbcSet(events);
-        return results;
-    }
-        
+		Integer lostEventId = new Integer(rs.getInt("outages_svcLostEventID"));
+		OnmsEvent lostEvent = (OnmsEvent) Cache.obtain(OnmsEvent.class,
+				lostEventId);
+		outage.setEventBySvcLostEvent(lostEvent);
+
+		Integer regainedEventId = (Integer) rs
+				.getObject("outages_svcRegainedEventID");
+		OnmsEvent regainedEvent = (regainedEventId == null ? null
+				: (OnmsEvent) Cache.obtain(OnmsEvent.class, regainedEventId));
+		outage.setEventBySvcRegainedEvent(regainedEvent);
+
+		outage.setIfLostService(rs.getTimestamp("outages_ifLostService"));
+		outage.setIfRegainedService(rs
+				.getTimestamp("outages_ifRegainedService"));
+
+		outage.setDirty(false);
+		return outage;
+	}
+
+	public OnmsOutage findUnique() {
+		return findUnique((Object[]) null);
+	}
+
+	public OnmsOutage findUnique(Object obj) {
+		return findUnique(new Object[] { obj });
+	}
+
+	public OnmsOutage findUnique(Object[] objs) {
+		List events = execute(objs);
+		if (events.size() > 0)
+			return (OnmsOutage) events.get(0);
+		else
+			return null;
+	}
+
+	public Set findSet() {
+		return findSet((Object[]) null);
+	}
+
+	public Set findSet(Object obj) {
+		return findSet(new Object[] { obj });
+	}
+
+	public Set findSet(Object[] objs) {
+		List events = execute(objs);
+		Set results = new JdbcSet(events);
+		return results;
+	}
+
 }

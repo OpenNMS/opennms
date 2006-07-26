@@ -66,6 +66,10 @@ public class OnmsOutage implements Serializable {
 
     /** persistent field */
     private OnmsMonitoredService m_monitoredService;
+    
+    private Date m_suppressTime;
+    
+    private String m_suppressedBy;
 
     /** full constructor */
     public OnmsOutage(Date ifLostService, Date ifRegainedService, OnmsEvent eventBySvcRegainedEvent, OnmsEvent eventBySvcLostEvent, OnmsMonitoredService monitoredService) {
@@ -170,6 +174,22 @@ public class OnmsOutage implements Serializable {
         m_monitoredService = monitoredService;
     }
 
+    public Date getSuppressTime(){
+    	return m_suppressTime;
+    }
+    
+    public void setSuppressTime(Date timeToSuppress){
+    	m_suppressTime = timeToSuppress;
+    }
+    
+    public String getSuppressedBy(){
+    	return m_suppressedBy;
+    }
+    
+    public void setSuppressedBy(String suppressorMan){
+    	m_suppressedBy = suppressorMan;
+    }
+    
     public String toString() {
         return new ToStringCreator(this)
             .append("outageId", getId())

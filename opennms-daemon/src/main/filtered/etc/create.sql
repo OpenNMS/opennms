@@ -544,6 +544,8 @@ create index events_alarmid_idx on events(alarmID);
 --#  serviceID         : Unique integer identifier of service/poller package
 --#  ifLostService     : Time of lost service event
 --#  ifRegainedService : Time of regained service event
+--#  suppressTime 	   : Time to suppress the outage
+--#  suppressedBy	   : The suppressor
 --#
 --########################################################################
 
@@ -556,6 +558,8 @@ create table outages (
 	serviceID		integer,
 	ifLostService		timestamp without time zone not null,
 	ifRegainedService	timestamp without time zone,
+    suppressTime    	timestamp without time zone,
+    suppressedBy		varchar,
 
 	constraint pk_outageID primary key (outageID),
 	constraint fk_eventID1 foreign key (svcLostEventID) references events (eventID) ON DELETE CASCADE,

@@ -41,10 +41,10 @@ public class OutageSave extends OutageSaveOrUpdate {
     // PARAMETERS IN OutageSaveOrUpdate
     private static final String insertStmt = "insert into outages (" +
     "svcLostEventID, svcRegainedEventID, nodeID, ipAddr, " + 
-    "serviceID, ifLostService, ifRegainedService, outageID) " + 
+    "serviceID, ifLostService, ifRegainedService, suppressTime, suppressedBy, outageID) " + 
     "values (" + 
     "?, ?, ?, ?, " + 
-    "?, ?, ?, ? )";
+    "?, ?, ?, ? , ?, ?)";
     
 
     public OutageSave(DataSource ds) {

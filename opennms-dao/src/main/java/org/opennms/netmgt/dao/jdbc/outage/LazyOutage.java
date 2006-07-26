@@ -42,10 +42,13 @@ import org.opennms.netmgt.model.OnmsOutage;
 public class LazyOutage extends OnmsOutage {
 
 	private static final long serialVersionUID = -8549615324373817847L;
+
 	private boolean m_loaded;
+
 	private boolean m_dirty;
+
 	private DataSource m_dataSource;
-	
+
 	public LazyOutage(DataSource dataSource) {
 		m_dataSource = dataSource;
 	}
@@ -53,7 +56,7 @@ public class LazyOutage extends OnmsOutage {
 	public void setLoaded(boolean loaded) {
 		m_loaded = loaded;
 	}
-	
+
 	public boolean getLoaded() {
 		return m_loaded;
 	}
@@ -68,64 +71,93 @@ public class LazyOutage extends OnmsOutage {
 
 	public String toString() {
 		load();
-		setDirty(true);
+
 		return super.toString();
 	}
 
-    private void load() {
+	private void load() {
 		if (!m_loaded) {
 			new FindByOutageId(m_dataSource).findUnique(getId());
 		}
 	}
 
-    public OnmsEvent getEventBySvcLostEvent() {
-        load();
-        return super.getEventBySvcLostEvent();
-    }
+	public OnmsEvent getEventBySvcLostEvent() {
+		load();
+		return super.getEventBySvcLostEvent();
+	}
 
-    public OnmsEvent getEventBySvcRegainedEvent() {
-        load();
-        return super.getEventBySvcRegainedEvent();
-    }
+	public OnmsEvent getEventBySvcRegainedEvent() {
+		load();
+		return super.getEventBySvcRegainedEvent();
+	}
 
-    public Date getIfLostService() {
-        load();
-        return super.getIfLostService();
-    }
+	public Date getIfLostService() {
+		load();
+		return super.getIfLostService();
+	}
 
-    public Date getIfRegainedService() {
-        load();
-        return super.getIfRegainedService();
-    }
+	public Date getIfRegainedService() {
+		load();
+		return super.getIfRegainedService();
+	}
 
-    public OnmsMonitoredService getMonitoredService() {
-        load();
-        return super.getMonitoredService();
-    }
+	public OnmsMonitoredService getMonitoredService() {
+		load();
+		return super.getMonitoredService();
+	}
 
-    public void setEventBySvcLostEvent(OnmsEvent eventBySvcLostEvent) {
-        load();
-        super.setEventBySvcLostEvent(eventBySvcLostEvent);
-    }
+	@Override
+	public String getSuppressedBy() {
+		load();
+		return super.getSuppressedBy();
+	}
 
-    public void setEventBySvcRegainedEvent(OnmsEvent eventBySvcRegainedEvent) {
-        load();
-        super.setEventBySvcRegainedEvent(eventBySvcRegainedEvent);
-    }
+	@Override
+	public Date getSuppressTime() {
+		load();
+		return super.getSuppressTime();
+	}
 
-    public void setIfLostService(Date ifLostService) {
-        load();
-        super.setIfLostService(ifLostService);
-    }
+	public void setEventBySvcLostEvent(OnmsEvent eventBySvcLostEvent) {
+		load();
+		setDirty(true);
+		super.setEventBySvcLostEvent(eventBySvcLostEvent);
+	}
 
-    public void setIfRegainedService(Date ifRegainedService) {
-        load();
-        super.setIfRegainedService(ifRegainedService);
-    }
+	public void setEventBySvcRegainedEvent(OnmsEvent eventBySvcRegainedEvent) {
+		load();
+		setDirty(true);
+		super.setEventBySvcRegainedEvent(eventBySvcRegainedEvent);
+	}
 
-    public void setMonitoredService(OnmsMonitoredService monitoredService) {
-        load();
-        super.setMonitoredService(monitoredService);
-    }
+	public void setIfLostService(Date ifLostService) {
+		load();
+		setDirty(true);
+		super.setIfLostService(ifLostService);
+	}
+
+	public void setIfRegainedService(Date ifRegainedService) {
+		load();
+		setDirty(true);
+		super.setIfRegainedService(ifRegainedService);
+	}
+
+	public void setMonitoredService(OnmsMonitoredService monitoredService) {
+		load();
+		setDirty(true);
+		super.setMonitoredService(monitoredService);
+	}
+
+	public void setSuppressTime(Date timeToSuppress) {
+		load();
+		setDirty(true);
+		super.setSuppressTime(timeToSuppress);
+	}
+
+	public void setSuppressedBy(String suppressorMan) {
+		load();
+		setDirty(true);
+		super.setSuppressedBy(suppressorMan);
+	}
 
 }
