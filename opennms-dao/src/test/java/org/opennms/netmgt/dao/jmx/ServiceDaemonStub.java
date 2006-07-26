@@ -5,13 +5,13 @@ package org.opennms.netmgt.dao.jmx;
 
 import org.opennms.netmgt.model.ServiceDaemon;
 
-public class ServiceDaemonStub implements  ServiceDaemonStubMBean {
+public class ServiceDaemonStub implements ServiceDaemonStubMBean {
 	
 	private boolean startCalled = false;
 	private String statusStr = "UNDEFINED";
 	private String name;
 
-	public ServiceDaemonStub(String name){
+	public ServiceDaemonStub(String name) {
 		this.name = name;
 	}
 	public String status() {
@@ -45,7 +45,7 @@ public class ServiceDaemonStub implements  ServiceDaemonStubMBean {
 		statusStr = "Started";
 	}
 
-	public boolean getStartCalled(){
+	public boolean getStartCalled() {
 		return startCalled;
 	}
 	
