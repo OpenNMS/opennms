@@ -38,6 +38,9 @@ import javax.sql.DataSource;
 import org.opennms.netmgt.dao.OutageDao;
 import org.opennms.netmgt.dao.jdbc.outage.FindAllOutages;
 import org.opennms.netmgt.dao.jdbc.outage.FindByOutageId;
+import org.opennms.netmgt.dao.jdbc.outage.FindCurrentOutages;
+import org.opennms.netmgt.dao.jdbc.outage.FindOpenAndResolvedOutages;
+import org.opennms.netmgt.dao.jdbc.outage.FindSuppressedOutages;
 import org.opennms.netmgt.dao.jdbc.outage.LazyOutage;
 import org.opennms.netmgt.dao.jdbc.outage.OutageSave;
 import org.opennms.netmgt.dao.jdbc.outage.OutageUpdate;
@@ -157,6 +160,44 @@ public class OutageDaoJdbc extends AbstractDaoJdbc implements OutageDao {
             return new FindByOutageId(getDataSource()).findUnique(id);
         else
             return (OnmsOutage)Cache.retrieve(OnmsOutage.class, id);
+    }
+
+    public Integer currentOutageCount() {
+        return getJdbcTemplate().queryForInt("select distinct count(outages.iflostservice) from outages, node, ipinterface, ifservices " + "where outages.ifregainedservice is null " + "and node.nodeid = outages.nodeid and ipinterface.nodeid = outages.nodeid and ifservices.nodeid = outages.nodeid " + "and ipinterface.ipaddr = outages.ipaddr and ifservices.ipaddr = outages.ipaddr " + "and ifservices.serviceid = outages.serviceid " + "and node.nodeType != 'D' and ipinterface.ismanaged != 'D' and ifservices.status != 'D' " + " and suppresstime is null or suppresstime < now() ");
+    }
+
+    public Integer currentSuppressedOutageCount() {
+        return getJdbcTemplate().queryForInt("select distinct count(outages.iflostservice) from outages, node, ipinterface, ifservices " + "where outages.ifregainedservice is null " + "and node.nodeid = outages.nodeid and ipinterface.nodeid = outages.nodeid and ifservices.nodeid = outages.nodeid " + "and ipinterface.ipaddr = outages.ipaddr and ifservices.ipaddr = outages.ipaddr " + "and ifservices.serviceid = outages.serviceid " + "and node.nodeType != 'D' and ipinterface.ismanaged != 'D' and ifservices.status != 'D' " + " and suppresstime > now() ");
+    }
+
+    public Collection current() {
+        
+        return new FindCurrentOutages(getDataSource()).findSet();        
+        
+    }
+
+    public Collection currentOutages() {
+        return new FindCurrentOutages(getDataSource()).findSet();   
+    }
+
+    public Collection suppressedOutages() {
+        return new FindSuppressedOutages(getDataSource()).findSet();
+    }
+
+    public Collection openAndResolvedOutages() {
+       return new FindOpenAndResolvedOutages(getDataSource()).findSet();
+    }
+
+    public Collection<OnmsOutage> currentOutages(Integer offset, Integer limit) {
+        return new FindCurrentOutages(getDataSource(), offset, limit).findSet();
+    }
+
+    public Collection<OnmsOutage> suppressedOutages(Integer offset, Integer limit) {
+        return new FindSuppressedOutages(getDataSource(), offset, limit).findSet();
+    }
+
+    public Collection<OnmsOutage> findAll(Integer offset, Integer limit) {
+        return new FindAllOutages(getDataSource(), offset, limit).findSet();
     }
 
 

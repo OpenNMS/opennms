@@ -65,11 +65,17 @@ public class Outage {
     protected Integer lostServiceNotificationId;
 
     protected String lostServiceNotificationAcknowledgedBy;
+    
+    //JOED
+    
+    protected Date suppressTime;
+        
+    protected String suppressedBy;
 
     protected Outage() {
     }
 
-    protected Outage(int outageId, int nodeId, String nodeLabel, String ipAddress, String hostname, int serviceId, String serviceName, Date lostServiceTime, Date regainedServiceTime, Integer lostServiceEventId, Integer regainedServiceEventId, Integer lostServiceNotificationId, String lostServiceNotificationAcknowledgedBy) {
+    protected Outage(int outageId, int nodeId, String nodeLabel, String ipAddress, String hostname, int serviceId, String serviceName, Date lostServiceTime, Date regainedServiceTime, Integer lostServiceEventId, Integer regainedServiceEventId, Integer lostServiceNotificationId, String lostServiceNotificationAcknowledgedBy, Date suppressTime, String suppressedBy) {
         this.outageId = outageId;
         this.nodeId = nodeId;
         this.nodeLabel = nodeLabel;
@@ -83,6 +89,8 @@ public class Outage {
         this.regainedServiceEventId = regainedServiceEventId;
         this.lostServiceNotificationId = lostServiceNotificationId;
         this.lostServiceNotificationAcknowledgedBy = lostServiceNotificationAcknowledgedBy;
+        this.suppressTime = suppressTime;
+        this.suppressedBy = suppressedBy;  
     }
 
     public int getId() {
@@ -145,6 +153,14 @@ public class Outage {
         return this.lostServiceNotificationAcknowledgedBy;
     }
 
+    public Date getSuppressTime() {
+        return this.suppressTime;
+    }
+    
+    public String getSuppressedBy() {
+        return this.suppressedBy;
+    }
+    
     /**
      * @deprecated Please use
      *             {@link #getLostServiceTime getLostServiceTimeInstead}
