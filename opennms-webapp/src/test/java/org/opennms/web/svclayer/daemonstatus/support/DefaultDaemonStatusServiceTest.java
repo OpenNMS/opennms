@@ -43,7 +43,7 @@ public class DefaultDaemonStatusServiceTest extends TestCase {
 		ServiceInfo sinfo2 = new ServiceInfo("notifd", "Started");
 		info2Return.put("notifd", sinfo2);
 
-		ServiceDaemonStub dstub = new ServiceDaemonStub();
+		ServiceDaemonStub dstub = new ServiceDaemonStub("notifd");
 		expect(daemonStatusDao.getServiceHandle("notifd")).andReturn(dstub);
 		expect(daemonStatusDao.getCurrentDaemonStatus()).andReturn(info2Return); // expecting
 												                                 // this
