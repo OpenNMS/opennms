@@ -6,6 +6,10 @@
 		   <specific>2.4</specific>
 		   <specific>2.11</specific>
 	</vendor>
+	<vendor vendor_name="Nortel" sysoidRootMask=".1.3.6.1.4.1.45.3" class-name="org.opennms.netmgt.linkd.snmp.RapidCityVlanPortTable">
+		   <specific>61.1</specific>
+	</vendor>
+
 	<vendor vendor_name="Intel" sysoidRootMask=".1.3.6.1.4.1.343.5" class-name="org.opennms.netmgt.linkd.snmp.IntelVlanPortTable">
 		   <specific>1.5</specific>
 	</vendor>
