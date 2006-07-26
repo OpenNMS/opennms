@@ -427,7 +427,8 @@ public final class SnmpCollection implements ReadyRunnable {
 							+ getVlanTable().size() + " VLAN entries ");
 
 				if (m_vlanClass
-						.equals("org.opennms.netmgt.linkd.snmp.HpVlanPortTable")) {
+						.equals("org.opennms.netmgt.linkd.snmp.HpVlanPortTable") || m_vlanClass
+						.equals("org.opennms.netmgt.linkd.snmp.RapidCityVlanPortTable")) {
 					SnmpVlanCollection snmpvlancollection = new SnmpVlanCollection(
 							m_agentConfig);
 					snmpvlancollection.run();
