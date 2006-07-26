@@ -56,7 +56,7 @@ import org.opennms.netmgt.snmp.SnmpObjId;
  * 
  * 
  */
-final class NamedSnmpVar implements Collectable {
+public final class NamedSnmpVar implements Collectable {
     /**
      * String which contains the Class name of the expected SNMP data type for
      * the object.
@@ -134,7 +134,7 @@ final class NamedSnmpVar implements Collectable {
      * @param oid
      *            The object identifier for the instance.
      */
-    NamedSnmpVar(String type, String alias, String oid) {
+    public NamedSnmpVar(String type, String alias, String oid) {
         m_type = type;
         m_typeClass = null;
         m_name = alias;
@@ -159,7 +159,7 @@ final class NamedSnmpVar implements Collectable {
      *            The column entry for its table.
      * 
      */
-    NamedSnmpVar(String type, String alias, String oid, int column) {
+    public NamedSnmpVar(String type, String alias, String oid, int column) {
         m_type = type;
         m_typeClass = null;
         m_name = alias;
@@ -172,7 +172,7 @@ final class NamedSnmpVar implements Collectable {
      * Returns the class name stored in m_type which represents the expected
      * SNMP data type of the object.
      */
-    String getType() {
+    public String getType() {
         return m_type;
     }
 
@@ -182,7 +182,7 @@ final class NamedSnmpVar implements Collectable {
      * @exception java.lang.ClassNotFoundException
      *                Thrown from this method if forName() fails.
      */
-    Class getTypeClass() throws ClassNotFoundException {
+    public Class getTypeClass() throws ClassNotFoundException {
         if (m_typeClass == null) {
             m_typeClass = Class.forName(m_type);
         }
@@ -192,7 +192,7 @@ final class NamedSnmpVar implements Collectable {
     /**
      * Returns the alias for the object identifier.
      */
-    String getAlias() {
+    public String getAlias() {
         return m_name;
     }
 
@@ -210,7 +210,7 @@ final class NamedSnmpVar implements Collectable {
     /**
      * Returns true if this instance is part of a table.
      */
-    boolean isTableEntry() {
+    public boolean isTableEntry() {
         return m_isTabular;
     }
     
@@ -223,11 +223,11 @@ final class NamedSnmpVar implements Collectable {
      * Returns the column of the table this instance is in. If the instance is
      * not part of a table then the return code is not defined.
      */
-    int getColumn() {
+    public int getColumn() {
         return m_column;
     }
 
-    static CollectionTracker[] getTrackersFor(NamedSnmpVar[] columns) {
+    public static CollectionTracker[] getTrackersFor(NamedSnmpVar[] columns) {
         CollectionTracker[] trackers = new CollectionTracker[columns.length];
         for(int i = 0; i < columns.length; i++)
             trackers[i] = columns[i].getCollectionTracker();

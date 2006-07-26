@@ -1,0 +1,86 @@
+<?xml version="1.0"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema"
+	targetNamespace="http://xmlns.opennms.org/xsd/config/linkd">
+
+	<element name="linkd-configuration">
+		<complexType>
+			<sequence>
+				<!--- vlan section to get Vlan info from varius vendors -->
+				<element ref="vlans" minOccurs="1" maxOccurs="1"/>
+			</sequence>
+			<!--- the initial sleep time in msec before starting collection -->
+			<attribute name="initial_sleep_time" type="long" use="required"/>
+			<!--- Time interval in msec to poll snmp device on a node -->
+			<attribute name="snmp_poll_interval" type="long" use="required"/>
+			<!--- Time interval in msec from snmp collection to start link discovery -->
+			<attribute name="discovery_link_interval" type="long" use="required"/>
+			<!--- the max number of threads used for polling snmp devices-->
+			<attribute name="threads" type="int" use="required"/>
+		</complexType>
+	</element>
+	<element name="vlans">
+		<complexType>
+			<sequence>
+				<!--- for every vendor get vlan oid to get vlan on device -->
+				<element ref="vendor" minOccurs="1" maxOccurs="unbounded"/>
+			</sequence>
+		</complexType>
+	</element>
+
+	<element name="vendor">
+		<complexType>
+			<sequence>
+				<!--- specific sysoid submask node to be polled to get vlan -->
+				<element name="specific" type="string" minOccurs="1" maxOccurs="unbounded"/>
+				
+				<!--- the range of sysoid submask nodes to be polled to get vlan-->
+				<element ref="include-range" minOccurs="0" maxOccurs="unbounded"/>
+
+				<!--- the range of sysoid submask nodes to be excluded from the polling to get vlan-->
+				<element ref="exclude-range" minOccurs="0" maxOccurs="unbounded"/>
+				
+			</sequence>
+
+			<!--- the vendor name identifier -->
+			<attribute name="vendor_name" type="string" use="required"/>
+
+			<!--- the vendor sysoid root identifier -->
+			<attribute name="sysoidRootMask" type="string" use="required"/>
+			
+			<!-- Java class name of the plugin capable of getting Vlans on switches -->
+			<attribute name="class-name" type="string" use="required"/>
+
+		</complexType>
+	</element>
+	
+	<!--- a range of addresses to be polled - if the starting address is greater than
+	      the ending address, they are simply swapped
+	-->
+	<element name="include-range">
+		<complexType>
+			<sequence>
+				<!--- starting address of the range -->
+				<element name="begin" type="string" minOccurs="1" maxOccurs="1"/>
+
+				<!--- ending address of the range -->
+				<element name="end" type="string" minOccurs="1" maxOccurs="1"/>
+			</sequence>
+
+		</complexType>
+	</element>
+
+	<!--- the range of addresses to be excluded from the polling -->
+	<element name="exclude-range">
+		<complexType>
+			<sequence>
+				<!--- starting address of the range -->
+				<element name="begin" type="string" minOccurs="1" maxOccurs="1"/>
+
+				<!--- ending address of the range -->
+				<element name="end" type="string" minOccurs="1" maxOccurs="1"/>
+			</sequence>
+		</complexType>
+	</element>
+	
+
+</schema>

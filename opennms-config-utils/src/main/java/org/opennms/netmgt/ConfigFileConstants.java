@@ -363,6 +363,10 @@ public final class ConfigFileConstants {
      */
     public static final int NOTIFY_REPORT;
 
+    /**
+     * The Linkd discovery configuration file
+     */
+    public static final int LINKD_CONFIG_FILE_NAME;
     //
     // End XSL files used by reports
     //
@@ -475,9 +479,11 @@ public final class ConfigFileConstants {
 
         SYSLOGD_CONFIG_FILE_NAME = 58;
         
+        LINKD_CONFIG_FILE_NAME = 59;
+        
         // Allocate and build the mapping of identifiers to names
         //
-        FILE_ID_TO_NAME = new String[59];
+        FILE_ID_TO_NAME = new String[60];
 
         FILE_ID_TO_NAME[DB_CONFIG_FILE_NAME] = "opennms-database.xml";
         FILE_ID_TO_NAME[JMS_CONFIG_FILE_NAME] = "opennms-jms.xml";
@@ -558,6 +564,8 @@ public final class ConfigFileConstants {
         FILE_ID_TO_NAME[TRANSLATOR_CONFIG_FILE_NAME] = "translator-configuration.xml";
 
         FILE_ID_TO_NAME[SYSLOGD_CONFIG_FILE_NAME] = "syslogd-configuration.xml";
+
+        FILE_ID_TO_NAME[LINKD_CONFIG_FILE_NAME] = "linkd-configuration.xml";
     }
 
     /**
