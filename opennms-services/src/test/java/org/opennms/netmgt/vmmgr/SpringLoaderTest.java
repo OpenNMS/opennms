@@ -36,7 +36,7 @@ import junit.framework.TestCase;
 
 import org.opennms.core.fiber.Fiber;
 import org.opennms.netmgt.Registry;
-import org.opennms.netmgt.daemon.ServiceDaemon;
+import org.opennms.netmgt.model.ServiceDaemon;
 
 public class SpringLoaderTest extends TestCase {
 

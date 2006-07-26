@@ -38,7 +38,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.opennms.netmgt.daemon.ServiceDaemon;
+import org.opennms.netmgt.model.ServiceDaemon;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
