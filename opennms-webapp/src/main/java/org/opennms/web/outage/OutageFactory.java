@@ -141,12 +141,17 @@ public class OutageFactory extends Object {
         public static final int _RESOLVED = 2;
 
         public static final int _BOTH = 3;
+        
+        public static final int _SUPPRESSED = 4;
 
         public static final OutageType CURRENT = new OutageType("CURRENT", _CURRENT);
 
         public static final OutageType RESOLVED = new OutageType("RESOLVED", _RESOLVED);
-
+        
         public static final OutageType BOTH = new OutageType("BOTH", _BOTH);
+        
+        public static final OutageType SUPPRESSED = new OutageType("SUPPRESSED", _SUPPRESSED);
+        
 
         protected String name;
 
@@ -677,16 +682,22 @@ public class OutageFactory extends Object {
 
         switch (outType.getId()) {
         case OutageType._CURRENT:
-            clause = " IFREGAINEDSERVICE IS NULL";
+            clause = " IFREGAINEDSERVICE IS NULL AND SUPPRESSTIME IS NULL ";
             break;
 
         case OutageType._RESOLVED:
-            clause = " IFREGAINEDSERVICE IS NOT NULL";
+            clause = " IFREGAINEDSERVICE IS NOT NULL AND SUPPRESSTIME IS NULL ";
+            break;
+            
+        case OutageType._SUPPRESSED:
+            clause = " ((SUPPRESSEDTIME IS NOT NULL) AND (SUPPRESSTIME > NOW())) AND IFREGAINEDSERVICE IS NULL";
             break;
 
         case OutageType._BOTH:
-            clause = " TRUE"; // will return both!
+            clause = " TRUE AND SUPPRESSTIME IS NULL "; // will return both!
             break;
+            
+        
 
         default:
             throw new IllegalArgumentException("Unknown OutageFactory.OutageType: " + outType.getName());

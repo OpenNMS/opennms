@@ -50,7 +50,7 @@ public class JdbcSet extends AbstractSet {
         m_entries.addAll(c);
     }
     
-    protected JdbcSet() {
+    public JdbcSet() {
     	
     }
     

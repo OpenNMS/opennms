@@ -77,6 +77,28 @@ public class OutageFilterServlet extends HttpServlet {
                 sortStyle = (OutageFactory.SortStyle) temp;
             }
         }
+        
+        // JOED
+        
+ // handle the suppress parameter
+        
+        String outageSuppressTimeString = request.getParameter("suppressTime");
+        if (outageSuppressTimeString != null){
+            // timetosuppress
+            
+        } 
+          
+        // handle the suppresstime parameter
+        
+        String outageIdString = request.getParameter("outageID");        
+        if (outageIdString != null) {
+            // Outage we are going to suppress
+        }
+        
+        String outageSupressedByString = request.getParameter("suppressedBy");
+        if (outageSupressedByString != null) {
+            
+        }
 
         // handle the acknowledgement type parameter
         String outTypeString = request.getParameter("outtype");

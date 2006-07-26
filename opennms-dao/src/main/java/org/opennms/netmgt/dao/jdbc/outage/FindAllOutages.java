@@ -37,7 +37,16 @@ import javax.sql.DataSource;
 public class FindAllOutages extends OutageMappingQuery {
 
     public FindAllOutages(DataSource ds) {
-        super(ds, "FROM outages as outages, ifservices as ifservices WHERE outages.nodeID = ifservices.nodeID and outages.ipAddr = ifservices.ipAddr and outages.serviceID = ifservices.serviceID");
+        super(ds, "from outages " + "left outer join notifications on (outages.svclosteventid=notifications.eventid), node, ipinterface, ifservices, service " + "where ifregainedservice is null " + "and (node.nodeid=outages.nodeid and ipinterface.ipaddr=outages.ipaddr and ifservices.serviceid=outages.serviceid) " + "and node.nodeType != 'D' and ipinterface.isManaged != 'D' and ifservices.status != 'D' " + "and outages.serviceid=service.serviceid " + " and suppresstime is null or suppresstime < now() " + "order by nodelabel, ipaddr, serviceName");
+        
+        
+        compile();
+    }
+    
+    public FindAllOutages(DataSource ds, Integer offset, Integer limit) {
+        super(ds, "from outages " + "left outer join notifications on (outages.svclosteventid=notifications.eventid), node, ipinterface, ifservices, service " + "where ifregainedservice is null " + "and (node.nodeid=outages.nodeid and ipinterface.ipaddr=outages.ipaddr and ifservices.serviceid=outages.serviceid) " + "and node.nodeType != 'D' and ipinterface.isManaged != 'D' and ifservices.status != 'D' " + "and outages.serviceid=service.serviceid " + " and suppresstime is null or suppresstime < now() " + "order by nodelabel, ipaddr, serviceName" + " OFFSET " + offset + " LIMIT " + limit);
+        
+        
         compile();
     }
     
