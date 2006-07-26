@@ -30,6 +30,12 @@
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
+      <artifactId>opennms-joesnmp</artifactId>
+      <version>1.3.2-SNAPSHOT</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
       <artifactId>opennms-snmp-api</artifactId>
       <scope>compile</scope>
     </dependency>
