@@ -34,11 +34,12 @@ package org.opennms.netmgt.collectd;
 
 import java.io.File;
 import java.util.Collection;
+import java.util.Iterator;
 
 
 public class AliasedResource extends CollectionResource {
     
-    private IfInfo m_ifInfo;
+	private IfInfo m_ifInfo;
     private String m_ifAliasComment;
     private String m_domain;
 
@@ -95,5 +96,18 @@ public class AliasedResource extends CollectionResource {
     protected int getType() {
         return getIfInfo().getType();
     }
+
+    @Override
+	public void visit(CollectionSetVisitor visitor) {
+		visitor.visitResource(this);
+		
+		for (Iterator it = getGroups().iterator(); it.hasNext();) {
+		    AttributeGroup group = (AttributeGroup) it.next();
+		    AttributeGroup aliased = new AliasedGroup(this, group);
+		    group.visit(visitor);
+		}
+		
+		visitor.completeResource(this);
+	}
 
 }

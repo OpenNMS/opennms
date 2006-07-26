@@ -104,7 +104,7 @@ public abstract class CollectionResource {
         visitor.completeResource(this);
     }
 
-    private Collection getGroups() {
+    protected Collection getGroups() {
         return m_groups.values();
     }
 

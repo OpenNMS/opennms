@@ -57,11 +57,15 @@ public class IfAliasResourceType extends ResourceType {
         if (resource == null) {
             IfInfo ifInfo = (IfInfo)m_ifResourceType.findResource(inst);
             
-            log().info("Creating an aliased resource for "+ifInfo);
+            if(ifInfo == null) {
+            	log().info("Not creating an aliased resource for ifInfo = null");
+            } else {
+                log().info("Creating an aliased resource for "+ifInfo);
             
-            resource = new AliasedResource(this, m_params.getDomain(), ifInfo, m_params.getIfAliasComment());
+                resource = new AliasedResource(this, m_params.getDomain(), ifInfo, m_params.getIfAliasComment());
             
-            m_aliasedIfs.put(key, resource);
+                m_aliasedIfs.put(key, resource);
+            }
         }
         return resource;
     }
