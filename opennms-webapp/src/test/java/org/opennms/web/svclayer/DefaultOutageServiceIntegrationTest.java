@@ -8,7 +8,7 @@ import org.springframework.test.AbstractTransactionalDataSourceSpringContextTest
 public class DefaultOutageServiceIntegrationTest extends
 		AbstractTransactionalDataSourceSpringContextTests {
 
-	private static final int RANGE_LIMIT = 10;
+	private static final int RANGE_LIMIT = 5;
 	private OutageService outageService;
 	
 	public void setOutageService(OutageService outageService) {
@@ -21,10 +21,23 @@ public class DefaultOutageServiceIntegrationTest extends
 				"org/opennms/web/svclayer/applicationContextOutage-web.xml" };
 	}
 
-	public void testGet10Outages() {
+	public void testGetRangeOutages() {
 		Collection<OnmsOutage> outages = outageService.getCurrenOutagesByRange(1,RANGE_LIMIT);
 		assertFalse("Collection should not be emtpy", outages.isEmpty());
-		assertEquals("Collection should be of size" +RANGE_LIMIT, 10, outages.size());
+		assertEquals("Collection should be of size " + RANGE_LIMIT, RANGE_LIMIT, outages.size());
+	}
+	
+	// More tests should be defined for these
+	
+	public void testGetSupressedOutages() {
+		Collection<OnmsOutage> outages = outageService.getSuppressedOutages();
+		assertTrue("Collection should be emtpy ", outages.isEmpty());
+		
+	}
+	
+	public void testNoOfSuppressedOutages(){
+		Integer outages = outageService.getSuppressedOutageCount();
+		assertTrue("We should find suppressed messages ", outages == 0);
 	}
 
 }

@@ -41,34 +41,41 @@ import org.springframework.jdbc.object.SqlUpdate;
 
 public class OutageSaveOrUpdate extends SqlUpdate {
 
-    public OutageSaveOrUpdate(DataSource ds, String updateStmt) {
-        setDataSource(ds);
-        setSql(updateStmt);
-        
-        // assumes that the update and insert statements have the same parms in the same order
-        declareParameter(new SqlParameter(Types.INTEGER));  //svcLostEventID
-        declareParameter(new SqlParameter(Types.INTEGER));  //svcRegainedEventID
-        declareParameter(new SqlParameter(Types.INTEGER));  //nodeID
-        declareParameter(new SqlParameter(Types.VARCHAR));  //ipaddr
-        declareParameter(new SqlParameter(Types.INTEGER));  //serviceID
-        declareParameter(new SqlParameter(Types.TIMESTAMP));  //ifLostService
-        declareParameter(new SqlParameter(Types.TIMESTAMP));  //ifRegainedService
-        declareParameter(new SqlParameter(Types.INTEGER));  //OutageID
-        compile();
-    }
-    
-    public int persist(OnmsOutage outage) {
-        Object[] parms = new Object[] {
-                outage.getEventBySvcLostEvent().getId(),
-                (outage.getEventBySvcRegainedEvent() == null ? null : outage.getEventBySvcRegainedEvent().getId()),
-                outage.getMonitoredService().getNodeId(),
-                outage.getMonitoredService().getIpAddress(),
-                outage.getMonitoredService().getServiceId(),
-                outage.getIfLostService(),
-                outage.getIfRegainedService(),
-                outage.getId()
-        };         
-        return update(parms);
-    }    
+	public OutageSaveOrUpdate(DataSource ds, String updateStmt) {
+		setDataSource(ds);
+		setSql(updateStmt);
+
+		// assumes that the update and insert statements have the same parms in
+		// the same order
+		declareParameter(new SqlParameter(Types.INTEGER)); // svcLostEventID
+		declareParameter(new SqlParameter(Types.INTEGER)); // svcRegainedEventID
+		declareParameter(new SqlParameter(Types.INTEGER)); // nodeID
+		declareParameter(new SqlParameter(Types.VARCHAR)); // ipaddr
+		declareParameter(new SqlParameter(Types.INTEGER)); // serviceID
+		declareParameter(new SqlParameter(Types.TIMESTAMP)); // ifLostService
+		declareParameter(new SqlParameter(Types.TIMESTAMP)); // ifRegainedService
+		declareParameter(new SqlParameter(Types.TIMESTAMP)); // SuppressTime
+		declareParameter(new SqlParameter(Types.VARCHAR)); // SuppressorMan
+		declareParameter(new SqlParameter(Types.INTEGER)); // OutageID
+		
+		compile();
+	}
+
+	public int persist(OnmsOutage outage) {
+		Object[] parms = new Object[] {
+				outage.getEventBySvcLostEvent().getId(),
+				(outage.getEventBySvcRegainedEvent() == null ? null : outage
+						.getEventBySvcRegainedEvent().getId()),
+				outage.getMonitoredService().getNodeId(),
+				outage.getMonitoredService().getIpAddress(),
+				outage.getMonitoredService().getServiceId(),
+				outage.getIfLostService(), outage.getIfRegainedService(),
+				outage.getSuppressTime(),
+				outage.getSuppressedBy(),
+				outage.getId()
+				
+		};
+		return update(parms);
+	}
 
 }
