@@ -35,6 +35,7 @@ package org.opennms.netmgt.collectd;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.log4j.Category;
@@ -163,7 +164,10 @@ public class CollectionSet implements Collectable {
      * @deprecated Use {@link org.opennms.netmgt.collectd.IfResourceType#getCombinedInterfaceAttributes()} instead
      */
     List getCombinedInterfaceAttributes() {
-        return getIfResourceType().getCombinedInterfaceAttributes();
+    	List attributes = new LinkedList();
+    	attributes.addAll(getIfResourceType().getCombinedInterfaceAttributes());
+    	attributes.addAll(getIfAliasResourceType().getAttributeTypes());
+    	return attributes;
     }
 
     /**
@@ -371,6 +375,10 @@ public class CollectionSet implements Collectable {
 
     private IfResourceType getIfResourceType() {
         return m_snmpCollection.getIfResourceType(getCollectionAgent());
+    }
+    
+    private IfAliasResourceType getIfAliasResourceType() {
+    	return m_snmpCollection.getIfAliasResourceType(getCollectionAgent());
     }
 
  
