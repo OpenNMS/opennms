@@ -725,11 +725,11 @@ public class Installer {
 
 	}
 
-	public void checkOldTables() throws Exception {
+	public void checkOldTables() throws SQLException, BackupTablesFoundException {
 		Statement st = m_dbconnection.createStatement();
 		ResultSet rs = st.executeQuery("SELECT relname FROM pg_class "
 				+ "WHERE relkind = 'r' AND " + "relname LIKE '%_old_%'");
-		LinkedList oldTables = new LinkedList();
+		LinkedList<String> oldTables = new LinkedList<String>();
 
 		m_out.print("- checking database for old backup tables... ");
 
@@ -746,14 +746,14 @@ public class Installer {
 			return;
 		}
 
+		/*
 		String oldTableList = join("\n\t", (String[]) oldTables
 				.toArray(new String[0]));
+				*/
 
-		throw new Exception("One or more backup tables from a previous "
-				+ "install still exists--aborting installation.  "
-				+ "You either need to remove them or rename them "
-				+ "so they do not contain the string '_old_'.  "
-				+ "Backup tables: \n\t" + oldTableList);
+		throw new BackupTablesFoundException(oldTables);
+		
+				//+ "Backup tables: \n\t" + oldTableList);
 	}
 
 	public String[][] getForeignKeyConstraints() throws Exception {

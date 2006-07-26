@@ -5,11 +5,14 @@
 package org.opennms.install;
 
 import java.io.ByteArrayOutputStream;
-import java.io.StringReader;
+import java.io.File;
 import java.io.PrintStream;
-
+import java.io.StringReader;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.LinkedList;
+
+import org.opennms.test.ThrowableAnticipator;
 
 import junit.framework.TestCase;
 
@@ -26,6 +29,8 @@ public class InstallerDBTest extends TestCase {
         if (!isDBTestEnabled()) {
             return;
         }
+        
+        //System.out.println(new File("").getAbsolutePath());
 
         m_testDatabase = "opennms_test_" + System.currentTimeMillis();
 
@@ -37,7 +42,8 @@ public class InstallerDBTest extends TestCase {
         m_installer.m_pg_url = "jdbc:postgresql://localhost:5432/";
         m_installer.m_pg_user = "postgres";
         m_installer.m_pg_pass = "";
-        m_installer.m_create_sql = "etc/create.sql";
+        // XXX this makes bad assumptions that are not true with Maven 2.
+        m_installer.m_create_sql = "../opennms-daemon/src/main/filtered/etc/create.sql";
         m_installer.m_fix_constraint = true;
         m_installer.m_fix_constraint_name = s_constraint;
 
@@ -90,16 +96,20 @@ public class InstallerDBTest extends TestCase {
      * Call Installer.checkOldTables, which should *not* throw an exception
      * because we have not created a table matching "_old_".
      */
-    public void testBug1006NoOldTables() throws SQLException {
+    public void testBug1006NoOldTables() {
         if (!isDBTestEnabled()) {
             return;
         }
 
+        ThrowableAnticipator ta = new ThrowableAnticipator();
+        
         try {
             m_installer.checkOldTables();
-        } catch (Exception e) {
-            fail(e.toString());
+        } catch (Throwable t) {
+            ta.throwableReceived(t);
         }
+        
+        ta.verifyAnticipated();
     }
 
     /**
@@ -112,26 +122,35 @@ public class InstallerDBTest extends TestCase {
             return;
         }
 
-        final String errorSubstring = "One or more backup tables from a previous install still exists";
+//        final String errorSubstring = "One or more backup tables from a previous install still exists";
 
         String table = "testBug1006_old_" + System.currentTimeMillis();
 
         Statement st = m_installer.m_dbconnection.createStatement();
         st.execute("CREATE TABLE " + table + " ( foo integer )");
         st.close();
-
+        
+        ThrowableAnticipator ta = new ThrowableAnticipator();
+        LinkedList<String> l = new LinkedList<String>();
+        l.add(table);
+        ta.anticipate(new BackupTablesFoundException(l));
+    	
         try {
             m_installer.checkOldTables();
-        } catch (Exception e) {
+        } catch (Throwable t) {
+        	ta.throwableReceived(t);
+        	/*
             if (e.getMessage().indexOf(errorSubstring) >= 0) {
                 // We received the error we expected.
                 return;
             } else {
                 fail("Received an unexpected Exception: " + e.toString());
             }
+            */
         }
 
-        fail("Did not receive expected exception: " + errorSubstring);
+        ta.verifyAnticipated();
+        //fail("Did not receive expected exception: " + errorSubstring);
     }
 
     public void executeSQL(String[] commands) throws SQLException {
@@ -376,34 +395,25 @@ public class InstallerDBTest extends TestCase {
             boolean fixConstraint) throws Exception {
         final String errorSubstring = "Table events contains " + badRows
                 + " rows (out of 2) that violate new constraint "
-                + s_constraint;
+                + s_constraint + ".  See the install guide for details on how to correct this problem.";
 
         setupBug931((badRows != 0) || fixConstraint, dropForeignTable);
 
         if (fixConstraint) {
             m_installer.fixConstraint();
         }
+        
+        ThrowableAnticipator ta = new ThrowableAnticipator();
+        if (badRows > 0) {
+        	ta.anticipate(new Exception(errorSubstring));
+        }
 
         try {
             m_installer.checkConstraints();
-        } catch (Exception e) {
-            if (badRows == 0) {
-                fail("Received an unexpected exception: " + e.toString());
-            } else {
-                if (e.getMessage().indexOf(errorSubstring) >= 0) {
-                    // Received expected error, so the test is successful.
-                    return;
-                } else {
-                    fail("Expected an exception matching \""
-                         + errorSubstring
-                         + "\", but instead received an unexpected Exception: "
-                         + e.toString());
-                }
-            }
+        } catch (Throwable t) {
+        	ta.throwableReceived(t);
         }
-
-        if (badRows != 0) {
-            fail("Did not receive expected exception: " + errorSubstring);
-        }
+        
+        ta.verifyAnticipated();
     }
 }

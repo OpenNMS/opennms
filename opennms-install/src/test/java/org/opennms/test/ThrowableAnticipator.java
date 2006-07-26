@@ -18,7 +18,7 @@ public class ThrowableAnticipator extends Assert {
      * Create a new anticipator with default failFast setting of true. 
      */
     public ThrowableAnticipator() {
-        init();
+        this(true);
     }
     
     /**
