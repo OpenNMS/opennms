@@ -144,22 +144,22 @@ public class Installer {
 
 	boolean m_fix_constraint_remove_rows = false;
 
-	HashMap m_seqmapping = null;
+	HashMap<String,String[]> m_seqmapping = null;
 
-	LinkedList m_tables = null;
+	LinkedList<String> m_tables = null;
 
-	LinkedList m_sequences = null;
+	LinkedList<String> m_sequences = null;
 
 	// LinkedList m_cfunctions = new LinkedList(); // Unused, not in create.sql
 	// LinkedList m_functions = new LinkedList(); // Unused, not in create.sql
 	// LinkedList m_languages = new LinkedList(); // Unused, not in create.sql
-	LinkedList m_indexes = new LinkedList();
+	LinkedList<String> m_indexes = new LinkedList<String>();
 
-	HashMap m_inserts = new HashMap();
+	HashMap<String,List<String>> m_inserts = new HashMap<String,List<String>>();
 
-	HashSet m_drops = new HashSet();
+	HashSet<String> m_drops = new HashSet<String>();
 
-	HashSet m_changed = new HashSet();
+	HashSet<String> m_changed = new HashSet<String>();
 
 	float m_pg_version;
 
@@ -353,7 +353,7 @@ public class Installer {
 	}
 
 	public void parseArguments(String[] argv) throws Exception {
-		LinkedList args = new LinkedList();
+		LinkedList<String> args = new LinkedList<String>();
 
 		for (int i = 0; i < argv.length; i++) {
 			StringBuffer b = new StringBuffer(argv[i]);
@@ -494,11 +494,11 @@ public class Installer {
 		BufferedReader r = new BufferedReader(reader);
 		String line;
 
-		m_tables = new LinkedList();
-		m_seqmapping = new HashMap();
-		m_sequences = new LinkedList();
+		m_tables = new LinkedList<String>();
+		m_seqmapping = new HashMap<String,String[]>();
+		m_sequences = new LinkedList<String>();
 		
-		LinkedList sql_l = new LinkedList();
+		LinkedList<String> sql_l = new LinkedList<String>();
 
 		Pattern seqmappingPattern = Pattern.compile("\\s*--#\\s+install:\\s*"
 				+ "(\\S+)\\s+(\\S+)\\s+" + "(\\S+)\\s*.*");
@@ -581,9 +581,9 @@ public class Installer {
 			if (m.matches()) {
 				String table = m.group(1);
 				if (!m_inserts.containsKey(table)) {
-					m_inserts.put(table, new LinkedList());
+					m_inserts.put(table, new LinkedList<String>());
 				}
-				((LinkedList) m_inserts.get(table)).add(line);
+				m_inserts.get(table).add(line);
 
 				continue;
 			}
@@ -591,9 +591,9 @@ public class Installer {
 			if (line.toLowerCase().startsWith("select setval ")) {
 				String table = "select_setval";
 				if (!m_inserts.containsKey(table)) {
-					m_inserts.put(table, new LinkedList());
+					m_inserts.put(table, new LinkedList<String>());
 				}
-				((LinkedList) m_inserts.get(table)).add(line);
+				m_inserts.get(table).add(line);
 
 				sql_l.add(line);
 				continue;
@@ -757,7 +757,7 @@ public class Installer {
 	}
 
 	public String[][] getForeignKeyConstraints() throws Exception {
-		LinkedList constraints = new LinkedList();
+		LinkedList<String[]> constraints = new LinkedList<String[]>();
 
 		/*
 		 * Iterate over each constraint on every column in every table and build
@@ -1125,7 +1125,7 @@ public class Installer {
 
 		Statement st = m_dbconnection.createStatement();
 		ResultSet rs;
-		HashMap m = new HashMap();
+		HashMap<String,Integer> m = new HashMap<String,Integer>();
 
 		rs = st.executeQuery("SELECT oid,typname,typlen FROM pg_type");
 
@@ -1402,7 +1402,7 @@ public class Installer {
 		File[] list = new File(m_sql_dir).listFiles(sqlFilter);
 
 		for (int i = 0; i < list.length; i++) {
-			LinkedList drop = new LinkedList();
+			LinkedList<String> drop = new LinkedList<String>();
 			StringBuffer create = new StringBuffer();
 			String line;
 
@@ -1785,7 +1785,7 @@ public class Installer {
 
 	public List getTableColumnsFromSQL(String table) throws Exception {
 		String create = getTableFromSQL(table);
-		LinkedList columns = new LinkedList();
+		LinkedList<Column> columns = new LinkedList<Column>();
 		boolean parens = false;
 		StringBuffer accumulator = new StringBuffer();
 
@@ -1862,7 +1862,7 @@ public class Installer {
 	public List getTableColumnsFromDB(String table) throws Exception {
 		Statement st = m_dbconnection.createStatement();
 		ResultSet rs;
-		LinkedList r = new LinkedList();
+		LinkedList<Column> r = new LinkedList<Column>();
 
 		if (!tableExists(table)) {
 			return r;
@@ -2012,9 +2012,9 @@ public class Installer {
 				}
 
 				boolean found = false;
-				ListIterator i = c.getConstraints().listIterator();
+				ListIterator<Constraint> i = c.getConstraints().listIterator();
 				while (i.hasNext()) {
-					Constraint constraint_o = (Constraint) i.next();
+					Constraint constraint_o = i.next();
 					if (constraint.equals(constraint_o, true)) {
 						found = true;
 						if (constraint.getForeignDelType().equals("c")) {
@@ -2048,7 +2048,7 @@ public class Installer {
 	public void changeTable(String table, List oldColumns, List newColumns)
 			throws Exception {
 		Statement st = m_dbconnection.createStatement();
-		TreeMap columnChanges = new TreeMap();
+		TreeMap<String, ColumnChange> columnChanges = new TreeMap<String, ColumnChange>();
 		String[] oldColumnNames = new String[oldColumns.size()];
 
 		int i;
@@ -2216,7 +2216,7 @@ public class Installer {
 	}
 
 	public void transformData(String table, String oldTable,
-			TreeMap columnChanges, String[] oldColumnNames)
+			TreeMap<String, ColumnChange> columnChanges, String[] oldColumnNames)
 			throws SQLException, ParseException, Exception {
 		Statement st = m_dbconnection.createStatement();
 		Iterator j;
@@ -2229,8 +2229,7 @@ public class Installer {
 		String[] questionMarks = new String[columns.length];
 
 		for (i = 0; i < oldColumnNames.length; i++) {
-			ColumnChange c = (ColumnChange) columnChanges
-					.get(oldColumnNames[i]);
+			ColumnChange c = columnChanges.get(oldColumnNames[i]);
 			if (c != null) {
 				c.setSelectIndex(i + 1);
 			}
@@ -2238,7 +2237,7 @@ public class Installer {
 
 		for (i = 0; i < columns.length; i++) {
 			questionMarks[i] = "?";
-			ColumnChange c = (ColumnChange) columnChanges.get(columns[i]);
+			ColumnChange c = columnChanges.get(columns[i]);
 			c.setPrepareIndex(i + 1);
 			c.setColumnType(((Column) c.getColumn()).getColumnSqlType());
 		}
