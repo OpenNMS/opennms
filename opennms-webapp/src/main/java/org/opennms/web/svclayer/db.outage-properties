@@ -1,0 +1,4 @@
+driverClassName=org.postgresql.Driver
+url=jdbc:postgresql://internal.opennms.com:15432/opennms
+username=opennms
+password=opennms
