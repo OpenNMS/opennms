@@ -35,7 +35,6 @@ import java.sql.Types;
 
 import javax.sql.DataSource;
 
-import org.opennms.netmgt.model.OnmsOutage;
 import org.opennms.netmgt.model.PollResult;
 import org.springframework.jdbc.core.SqlParameter;
 import org.springframework.jdbc.object.SqlUpdate;
