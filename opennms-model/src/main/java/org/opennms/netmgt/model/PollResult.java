@@ -4,7 +4,8 @@ package org.opennms.netmgt.model;
 
 public class PollResult {
 	
-	private int m_id;
+	private Integer m_id;
+	private DemandPoll m_demandPoll;
 	private OnmsMonitoredService m_monitoredService;
 	private PollStatus m_status;
 	
@@ -16,7 +17,7 @@ public class PollResult {
 		m_id = id;
 	}
 	
-	public int getId() {
+	public Integer getId() {
 		return m_id;
 	}
 
@@ -39,7 +40,13 @@ public class PollResult {
 	public void setStatus(PollStatus status) {
 		m_status = status;
 	}
-	
-	
+
+	public DemandPoll getDemandPoll() {
+		return m_demandPoll;
+	}
+
+	public void setDemandPoll(DemandPoll poll) {
+		this.m_demandPoll = poll;
+	}	
 
 }
