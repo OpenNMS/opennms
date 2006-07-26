@@ -42,7 +42,7 @@ public class InstallerDBTest extends TestCase {
         m_installer.m_pg_url = "jdbc:postgresql://localhost:5432/";
         m_installer.m_pg_user = "postgres";
         m_installer.m_pg_pass = "";
-        // XXX this makes bad assumptions that are not true with Maven 2.
+        // XXX this makes bad assumptions that are not always true with Maven 2.
         m_installer.m_create_sql = "../opennms-daemon/src/main/filtered/etc/create.sql";
         m_installer.m_fix_constraint = true;
         m_installer.m_fix_constraint_name = s_constraint;

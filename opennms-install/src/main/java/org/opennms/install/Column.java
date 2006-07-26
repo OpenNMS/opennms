@@ -42,7 +42,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Column {
-    private LinkedList m_constraints = new LinkedList();
+    private LinkedList<Constraint> m_constraints = new LinkedList<Constraint>();
 
     private String m_name = null;
 
@@ -109,11 +109,11 @@ public class Column {
     public Column() {
     }
 
-    public List getConstraints() {
+    public List<Constraint> getConstraints() {
         return m_constraints;
     }
 
-    public Iterator getConstraintIterator() {
+    public Iterator<Constraint> getConstraintIterator() {
         return m_constraints.iterator();
     }
 
