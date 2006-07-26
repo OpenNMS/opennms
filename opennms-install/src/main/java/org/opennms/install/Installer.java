@@ -746,14 +746,7 @@ public class Installer {
 			return;
 		}
 
-		/*
-		String oldTableList = join("\n\t", (String[]) oldTables
-				.toArray(new String[0]));
-				*/
-
 		throw new BackupTablesFoundException(oldTables);
-		
-				//+ "Backup tables: \n\t" + oldTableList);
 	}
 
 	public String[][] getForeignKeyConstraints() throws Exception {
