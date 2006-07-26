@@ -190,18 +190,18 @@ public class Column {
         parseColumnType(col_type.trim().toLowerCase());
     }
 
-    public void parseColumnType(String col_type) throws Exception {
+    public void parseColumnType(String columnType) throws Exception {
         int start, end;
         String type, size = null;
 
-        start = col_type.indexOf('(');
-        end = col_type.indexOf(')');
+        start = columnType.indexOf('(');
+        end = columnType.indexOf(')');
 
         if (start != -1 && end != -1) {
-            type = col_type.substring(0, start);
-            size = col_type.substring(start + 1, end).replaceAll(",\\d+", "");
+            type = columnType.substring(0, start);
+            size = columnType.substring(start + 1, end).replaceAll(",\\d+", "");
         } else {
-            type = col_type;
+            type = columnType;
         }
 
         this.setType(normalizeColumnType(type, size != null));
@@ -285,7 +285,7 @@ public class Column {
             return 4;
         } else if (type.equals("bigint") || type.equals("timestamp") || type.equals("timestamptz")) {
             return 8;
-        } else if (type.equals("double precision") || type.equals("real") || type.equals("text")) {
+        } else if (type.equals("double precision") || type.equals("real") || type.equals("text") || type.equals("character varying")) {
             return -1;
         } else {
             throw new Exception("do not know the type size for " + "column type \"" + type + "\"");
