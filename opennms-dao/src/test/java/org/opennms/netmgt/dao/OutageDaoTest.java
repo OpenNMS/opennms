@@ -31,6 +31,8 @@
 //
 package org.opennms.netmgt.dao;
 
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
 
 import org.opennms.netmgt.model.OnmsEvent;
@@ -39,6 +41,7 @@ import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsOutage;
 import org.opennms.netmgt.model.OnmsServiceType;
+import org.opennms.netmgt.model.ServiceSelector;
 
 /**
  * @author mhuot
@@ -58,6 +61,7 @@ public class OutageDaoTest extends AbstractDaoTestCase {
         OnmsNode node = new OnmsNode(getDistPollerDao().load("localhost"));
         OnmsIpInterface ipInterface = new OnmsIpInterface("172.16.1.1", node);
         OnmsServiceType serviceType = getServiceTypeDao().findByName("ICMP");
+        assertNotNull(serviceType);
         outage.setMonitoredService(new OnmsMonitoredService(ipInterface, serviceType));
         getNodeDao().save(node);
         getOutageDao().save(outage);
@@ -66,6 +70,13 @@ public class OutageDaoTest extends AbstractDaoTestCase {
         assertEquals("ICMP", outage.getMonitoredService().getServiceType().getName());
 //        outage.setEventBySvcRegainedEvent();
         
+    }
+    
+    public void testGetMatchingOutages() {
+    	String[] svcs = new String[] { "SNMP" };
+    	ServiceSelector selector = new ServiceSelector("ipAddr IPLIKE 192.168.1.1", Arrays.asList(svcs));
+    	Collection<OnmsOutage> outages = getOutageDao().matchingCurrentOutages(selector);
+    	assertEquals(1, outages.size());
     }
 
 }

@@ -249,4 +249,8 @@ public class OnmsMonitoredService extends OnmsEntity implements Serializable {
 		visitor.visitMonitoredServiceComplete(this);
 	}
 
+	public String getServiceName() {
+		return getServiceType().getName();
+	}
+
 }
