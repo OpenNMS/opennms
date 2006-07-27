@@ -1,6 +1,6 @@
 package org.opennms.web.svclayer.catstatus.dao;
 
-import org.opennms.netmgt.config.views.Category;
+import org.opennms.netmgt.config.categories.Category;
 
 
 
