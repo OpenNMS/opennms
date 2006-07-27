@@ -202,8 +202,7 @@ public class OutageDaoJdbc extends AbstractDaoJdbc implements OutageDao {
     }
 
 	public Collection<OnmsOutage> matchingCurrentOutages(ServiceSelector selector) {
-		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException("not yet implemented");
 	}
 
 
