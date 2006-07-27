@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 
-<web-app xmlns="http://java.sun.com/xml/ns/j2ee"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd" 
-         version="2.4">
+<!DOCTYPE web-app
+    PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
+    "http://java.sun.com/dtd/web-app_2_3.dtd">
 
+
+<web-app>
   <display-name>opennms</display-name>
   <!-- Set this for JRobin graphs and Availablity Reporting -->
   <context-param>
@@ -35,22 +36,22 @@
 
   <!-- RTC Subscription parameters -->  
   <context-param>
-    <description>test</description>
     <param-name>opennms.rtc-client.http-post.username</param-name>
     <param-value>rtc</param-value>
+    <description>The username the RTC uses when authenticating itself in an HTTP POST.</description>
   </context-param>
   <context-param>
-    <description>The password the RTC uses when authenticating itself in an HTTP POST.</description>
     <param-name>opennms.rtc-client.http-post.password</param-name>
     <param-value>rtc</param-value>
+    <description>The password the RTC uses when authenticating itself in an HTTP POST.</description>
   </context-param>
   <context-param>
+    <param-name>opennms.rtc-client.http-post.base-url</param-name>
+    <param-value>http://localhost:8080/opennms/rtc/post</param-value>
     <description>
       The base of a URL that RTC clients use when creating a RTC subscription URL. 
       IMPORTANT: This URL must NOT contain a slash at the end.       
     </description>
-    <param-name>opennms.rtc-client.http-post.base-url</param-name>
-    <param-value>http://localhost:8080/opennms/rtc/post</param-value>
   </context-param>
 
 <!--
@@ -72,24 +73,24 @@
 -->
 
   <filter>
-    <description>Adds the refresh HTTP header to a servlet's or JSP's output so it will be automatically reloaded.</description>
     <filter-name>AddRefreshHeader-300</filter-name>
+    <description>Adds the refresh HTTP header to a servlet's or JSP's output so it will be automatically reloaded.</description>
     <filter-class>org.opennms.web.AddRefreshHeaderFilter</filter-class>
     <init-param>
-      <description>This parameter specifies how often to refresh the page.</description>
       <param-name>seconds</param-name>
       <param-value>300</param-value>
+      <description>This parameter specifies how often to refresh the page.</description>
     </init-param>
   </filter>
 
   <filter>
-    <description>Adds the refresh HTTP header to a servlet's or JSP's output so it will be automatically reloaded.</description>
     <filter-name>AddRefreshHeader-120</filter-name>
+    <description>Adds the refresh HTTP header to a servlet's or JSP's output so it will be automatically reloaded.</description>
     <filter-class>org.opennms.web.AddRefreshHeaderFilter</filter-class>
     <init-param>
-      <description>This parameter specifies how often to refresh the page.</description>
       <param-name>seconds</param-name>
       <param-value>120</param-value>
+      <description>This parameter specifies how often to refresh the page.</description>
     </init-param>
   </filter>
 
@@ -181,9 +182,9 @@
     <servlet-name>addIntfToPerfUrl</servlet-name>
     <servlet-class>org.opennms.web.performance.AddInterfaceToURLServlet</servlet-class>
     <init-param>
-      <description>Redirect to this sibling URL when more than one RRD matches a node.</description>      
       <param-name>chooseInterfaceUrl</param-name>
       <param-value>performance/chooseinterface.jsp</param-value>
+      <description>Redirect to this sibling URL when more than one RRD matches a node.</description>      
     </init-param>
   </servlet>  
 
@@ -213,9 +214,9 @@
     <servlet-name>rt-addIntfToPerfUrl</servlet-name>
     <servlet-class>org.opennms.web.response.AddInterfaceToURLServlet</servlet-class>
     <init-param>
-      <description>Redirect to this sibling URL when more than one RRD matches a node.</description>
       <param-name>rt-chooseInterfaceUrl</param-name>
       <param-value>response/chooseinterface.jsp</param-value>
+      <description>Redirect to this sibling URL when more than one RRD matches a node.</description>
     </init-param>
   </servlet>
 
@@ -246,79 +247,79 @@
       <param-value>etc/SVGAvailReport.xsl</param-value>
     </init-param>
     <init-param>
-      <description>Redirect to this sibling URL on success.</description>
       <param-name>redirect.success</param-name>
       <param-value>reportgenerating.jsp</param-value>
+      <description>Redirect to this sibling URL on success.</description>
     </init-param>
     <init-param>
-      <description>Redirect to this sibling URL on failure.</description>
       <param-name>redirect.failure</param-name>
       <param-value>reportfailed.jsp</param-value>
+      <description>Redirect to this sibling URL on failure.</description>
     </init-param>
     <init-param>
-      <description>Redirect to this sibling URL if the user doesn't have an email address setup.</description>
       <param-name>redirect.noEmail</param-name>
       <param-value>noemail.jsp</param-value>
+      <description>Redirect to this sibling URL if the user doesn't have an email address setup.</description>
     </init-param>
     <init-param>
-      <description>Use this script to generate an Availability report on the command line.</description>
       <param-name>script.generateReport</param-name>
       <param-value>${opennms.bin.dir}/report.sh</param-value>
+      <description>Use this script to generate an Availability report on the command line.</description>
     </init-param>
     <init-param>
-      <description>Use this script to mail a file to a user from the command line.</description>
       <param-name>script.mailReport</param-name>
       <param-value>${opennms.bin.dir}/webreport.pl</param-value>
+      <description>Use this script to mail a file to a user from the command line.</description>
     </init-param>
     <init-param>
-      <description>Set this to false to use the JavaMailer class instead of the script set in script.mailReport.</description>
       <param-name>script.useScript</param-name>
       <param-value>false</param-value>
+      <description>Set this to false to use the JavaMailer class instead of the script set in script.mailReport.</description>
     </init-param>
   </servlet>
   <servlet>
     <servlet-name>acknowledgeEvent</servlet-name>
     <servlet-class>org.opennms.web.event.AcknowledgeEventServlet</servlet-class>
     <init-param>
-      <description>Redirect to this sibling URL on success.</description>
       <param-name>redirect.success</param-name>
       <param-value>list</param-value>
+      <description>Redirect to this sibling URL on success.</description>
     </init-param>
   </servlet>
   <servlet>
     <servlet-name>acknowledgeEventByFilter</servlet-name>
     <servlet-class>org.opennms.web.event.AcknowledgeEventByFilterServlet</servlet-class>
     <init-param>
-      <description>Redirect to this sibling URL on success.</description>
       <param-name>redirect.success</param-name>
       <param-value>list</param-value>
+      <description>Redirect to this sibling URL on success.</description>
     </init-param>
   </servlet>
   <servlet>
     <servlet-name>acknowledgeAlarm</servlet-name>
     <servlet-class>org.opennms.web.alarm.AcknowledgeAlarmServlet</servlet-class>
     <init-param>
-      <description>Redirect to this sibling URL on success.</description>
       <param-name>redirect.success</param-name>
       <param-value>list</param-value>
+      <description>Redirect to this sibling URL on success.</description>
     </init-param>
   </servlet>
   <servlet>
     <servlet-name>acknowledgeAlarmByFilter</servlet-name>
     <servlet-class>org.opennms.web.alarm.AcknowledgeAlarmByFilterServlet</servlet-class>
     <init-param>
-      <description>Redirect to this sibling URL on success.</description>
       <param-name>redirect.success</param-name>
       <param-value>list</param-value>
+      <description>Redirect to this sibling URL on success.</description>
     </init-param>
   </servlet>
   <servlet>
     <servlet-name>acknowledgeNotice</servlet-name>
     <servlet-class>org.opennms.web.notification.AcknowledgeNoticeServlet</servlet-class>
     <init-param>
-      <description>Redirect to this sibling URL on success.</description>
       <param-name>redirect.success</param-name>
       <param-value>browse</param-value>
+      <description>Redirect to this sibling URL on success.</description>
     </init-param>
   </servlet>
   
@@ -326,9 +327,9 @@
     <servlet-name>importAssets</servlet-name>
     <servlet-class>org.opennms.web.asset.ImportAssetsServlet</servlet-class>
     <init-param>
-      <description>Redirect to this sibling URL on success.</description>
       <param-name>redirect.success</param-name>
       <param-value>../../asset/nodelist.jsp?column=address1&amp;searchvalue=</param-value>
+      <description>Redirect to this sibling URL on success.</description>
     </init-param>
   </servlet>
   <servlet>
@@ -339,9 +340,9 @@
     <servlet-name>modifyAsset</servlet-name>
     <servlet-class>org.opennms.web.asset.ModifyAssetServlet</servlet-class>
     <init-param>
-      <description>Redirect to this sibling URL on success.</description>
       <param-name>redirect.success</param-name>
       <param-value>list</param-value>
+      <description>Redirect to this sibling URL on success.</description>
     </init-param>
   </servlet>
   <servlet>
@@ -352,9 +353,9 @@
     <servlet-name>queryEvent</servlet-name>
     <servlet-class>org.opennms.web.event.EventQueryServlet</servlet-class>
     <init-param>
-      <description>Redirect to this sibling URL after changing the parameter set.</description>
       <param-name>redirect.url</param-name>
       <param-value>list</param-value>
+      <description>Redirect to this sibling URL after changing the parameter set.</description>
     </init-param>    
   </servlet>
   <servlet>
@@ -365,9 +366,9 @@
     <servlet-name>queryAlarm</servlet-name>
     <servlet-class>org.opennms.web.alarm.AlarmQueryServlet</servlet-class>
     <init-param>
-      <description>Redirect to this sibling URL after changing the parameter set.</description>
       <param-name>redirect.url</param-name>
       <param-value>list</param-value>
+      <description>Redirect to this sibling URL after changing the parameter set.</description>
     </init-param>    
   </servlet>
   <servlet>
@@ -537,9 +538,9 @@
     <servlet-name>deleteEvent</servlet-name>
     <servlet-class>org.opennms.web.eventconf.DeleteEventServlet</servlet-class>
     <init-param>
-      <description>Redirect to this sibling URL on success.</description>
       <param-name>redirect.success</param-name>
       <param-value>index.jsp</param-value>
+      <description>Redirect to this sibling URL on success.</description>
     </init-param>
   </servlet>
   
@@ -760,9 +761,9 @@
     <servlet-name>pollerConfig</servlet-name>
     <servlet-class>org.opennms.web.admin.pollerConfig.PollerConfigServlet</servlet-class>
     <init-param>
-      <description>Redirect to this sibling URL on success.</description>
       <param-name>redirect.success</param-name>
       <param-value>finishPollerConfig.jsp</param-value>
+      <description>Redirect to this sibling URL on success.</description>
     </init-param>
   </servlet>
   <servlet>
@@ -775,9 +776,9 @@
     <servlet-name>addPollerConfig</servlet-name>
     <servlet-class>org.opennms.web.admin.pollerConfig.AddPollerConfigServlet</servlet-class>
     <init-param>
-      <description>Redirect to this sibling URL on success.</description>
       <param-name>redirect.success</param-name>
       <param-value>index.jsp</param-value>
+      <description>Redirect to this sibling URL on success.</description>
     </init-param>
   </servlet>
 
@@ -800,14 +801,14 @@
     <servlet-name>sendMail</servlet-name>
     <servlet-class>org.opennms.web.mail.MailerServlet</servlet-class>
     <init-param>
-      <description>Redirect to this sibling URL on success.</description>
       <param-name>redirect.success</param-name>
       <param-value>../help/index.jsp</param-value>
+      <description>Redirect to this sibling URL on success.</description>
     </init-param>
     <init-param>
-      <description>Redirect to this sibling URL on success.</description>
       <param-name>mail.program</param-name>
       <param-value>/bin/mail</param-value>
+      <description>Redirect to this sibling URL on success.</description>
     </init-param>    
   </servlet>
 
@@ -1434,18 +1435,18 @@
     <exception-type>java.lang.Throwable</exception-type>
     <location>/errors/unknownexception.jsp</location>
   </error-page>  
+  
 
-  <jsp-config>
-    <taglib>
-      <taglib-uri>http://java.sun.com/jstl/core</taglib-uri>
-      <taglib-location>/WEB-INF/c.tld</taglib-location>
-    </taglib>
+  <taglib>
+    <taglib-uri>http://java.sun.com/jstl/core</taglib-uri>
+    <taglib-location>/WEB-INF/c.tld</taglib-location>
+  </taglib>
 
-    <taglib>
-      <taglib-uri>http://java.sun.com/jstl/core_rt</taglib-uri>
-      <taglib-location>/WEB-INF/c-rt.tld</taglib-location>
-    </taglib>
-  </jsp-config>
+  <taglib>
+    <taglib-uri>http://java.sun.com/jstl/core_rt</taglib-uri>
+    <taglib-location>/WEB-INF/c-rt.tld</taglib-location>
+  </taglib>
+
 
   <!-- Note: The order of these security-constraints is significant! -->
   <security-constraint>
