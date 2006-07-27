@@ -1435,6 +1435,18 @@
     <location>/errors/unknownexception.jsp</location>
   </error-page>  
 
+  <jsp-config>
+    <taglib>
+      <taglib-uri>http://java.sun.com/jstl/core</taglib-uri>
+      <taglib-location>/WEB-INF/c.tld</taglib-location>
+    </taglib>
+
+    <taglib>
+      <taglib-uri>http://java.sun.com/jstl/core_rt</taglib-uri>
+      <taglib-location>/WEB-INF/c-rt.tld</taglib-location>
+    </taglib>
+  </jsp-config>
+
   <!-- Note: The order of these security-constraints is significant! -->
   <security-constraint>
     <web-resource-collection>
