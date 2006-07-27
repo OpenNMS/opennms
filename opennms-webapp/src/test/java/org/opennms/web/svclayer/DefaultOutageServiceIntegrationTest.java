@@ -10,7 +10,11 @@ public class DefaultOutageServiceIntegrationTest extends
 
 	private static final int RANGE_LIMIT = 5;
 	private OutageService outageService;
-	
+
+	/**
+	 * This get autowired by the base class
+	 * @param outageService
+	 */
 	public void setOutageService(OutageService outageService) {
 		this.outageService = outageService;
 	}

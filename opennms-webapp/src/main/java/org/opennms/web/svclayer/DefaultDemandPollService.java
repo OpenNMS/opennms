@@ -6,7 +6,6 @@ import org.opennms.netmgt.dao.DemandPollDao;
 import org.opennms.netmgt.dao.MonitoredServiceDao;
 import org.opennms.netmgt.model.DemandPoll;
 import org.opennms.netmgt.model.OnmsMonitoredService;
-import org.opennms.netmgt.utils.EventProxyException;
 import org.opennms.web.services.PollerService;
 
 public class DefaultDemandPollService implements DemandPollService {
@@ -35,12 +34,15 @@ public class DefaultDemandPollService implements DemandPollService {
 		
 		OnmsMonitoredService monSvc = m_monitoredServiceDao.get(nodeId, ipAddr, ifIndex, serviceId);
 		
+		if (monSvc == null) {
+			throw new RuntimeException("Service doesn't exist: "+monSvc);
+		}
 		m_pollerService.poll(monSvc, demandPoll.getId());
 		return demandPoll;
 	}
 
-	public DemandPoll getUpdatedResults(int resultId) {
-		return m_demandPollDao.get(resultId);
+	public DemandPoll getUpdatedResults(int pollId) {
+		return m_demandPollDao.get(pollId);
 	}
 
 }
