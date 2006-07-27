@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+
+<!-- Suppress Outage Service Beans -->
+  <bean id="outageService" class="org.opennms.web.svclayer.DefaultOutageService">
+    <property name="dao" ref="outageDao" />
+  </bean>
+
+<!-- Demand Poll Service Beans -->
+  <bean id="eventProxy" class="org.opennms.netmgt.utils.TcpEventProxy">
+    <!-- <constructor-arg index="1" type="String" value="127.0.0.1" />
+      <constructor-arg index="2" type="int" value="5817" /> -->
+  </bean>
+
+  <bean id="pollerApi" class="org.opennms.web.services.DefaultPollerService">
+    <property name="eventProxy" ref="eventProxy"></property>
+  </bean>
+
+  <bean id="demandPollService" class="org.opennms.web.svclayer.DefaultDemandPollService">
+    <property name="demandPollDao" ref="demandPollDao" />
+    <property name="monitoredServiceDao" ref="monitoredServiceDao" />
+    <property name="pollerAPI" ref="pollerApi" />
+  </bean>
+
+
+</beans>
