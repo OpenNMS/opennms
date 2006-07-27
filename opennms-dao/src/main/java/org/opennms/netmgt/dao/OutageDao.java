@@ -32,9 +32,9 @@
 package org.opennms.netmgt.dao;
 
 import java.util.Collection;
-import java.util.Set;
 
 import org.opennms.netmgt.model.OnmsOutage;
+import org.opennms.netmgt.model.ServiceSelector;
 
 
 public interface OutageDao extends OnmsDao {
@@ -47,17 +47,19 @@ public interface OutageDao extends OnmsDao {
 
     public abstract void saveOrUpdate(OnmsOutage outage);
 
-    public abstract Collection findAll();
+    public abstract Collection<OnmsOutage> findAll();
 
     public abstract Integer currentOutageCount();
 
     public abstract Integer currentSuppressedOutageCount();
 
-    public abstract Collection currentOutages();
+    public abstract Collection<OnmsOutage> currentOutages();
     
-    public abstract Collection suppressedOutages();
+    public abstract Collection<OnmsOutage> matchingCurrentOutages(ServiceSelector selector);
+    
+    public abstract Collection<OnmsOutage> suppressedOutages();
 
-    public abstract Collection openAndResolvedOutages();
+    public abstract Collection<OnmsOutage> openAndResolvedOutages();
 
     public abstract Collection<OnmsOutage> currentOutages(Integer offset, Integer limit);
 

@@ -116,17 +116,18 @@ public class OutageMappingQuery extends MappingSqlQuery {
 			return null;
 	}
 
-	public Set findSet() {
+	public Set<OnmsOutage> findSet() {
 		return findSet((Object[]) null);
 	}
 
-	public Set findSet(Object obj) {
+	public Set<OnmsOutage> findSet(Object obj) {
 		return findSet(new Object[] { obj });
 	}
 
-	public Set findSet(Object[] objs) {
+	@SuppressWarnings("unchecked")
+	public Set<OnmsOutage> findSet(Object[] objs) {
 		List events = execute(objs);
-		Set results = new JdbcSet(events);
+		Set<OnmsOutage> results = new JdbcSet(events);
 		return results;
 	}
 
