@@ -1820,7 +1820,7 @@ public class Installer {
 						column.parse(accumulator.toString());
 						columns.add(column);
 					} catch (Exception e) {
-						throw new Exception("While parsing table entry for column " + column.getName() + " of " + table + ": " + e.getMessage(), e);
+						throw new Exception("While parsing table entry for column " + column.getName() + " of " + table + ".  Chained: " + e.getMessage(), e);
 					}
 				}
 
