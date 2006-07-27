@@ -12,7 +12,10 @@
 		<property name="suffix" value=".jsp" />
 	</bean>
 
-
+	<bean name="/catstatus.htm" class="org.opennms.web.controller.CategoryStatusController">
+ 
+    </bean>
+    
 	<bean name="/daemonstatus.htm" class="org.opennms.web.controller.DaemonStatusController">
 	  <property name="daemonStatusService" ref="daemonStatusService" />
 	  <property name="commandName" value="daemonStatuses" />
