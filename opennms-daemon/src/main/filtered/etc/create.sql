@@ -52,6 +52,7 @@ drop table serviceMap cascade;
 drop table pathOutage cascade;
 drop table demandPolls cascade;
 drop table pollResults cascade;
+drop table reportLocator cascade;
 drop sequence catNxtId;
 drop sequence nodeNxtId;
 drop sequence serviceNxtId;
@@ -63,6 +64,24 @@ drop sequence userNotifNxtId;
 drop sequence demandPollNxtId;
 drop sequence pollResultNxtId;
 drop sequence vulnNxtId;
+drop sequence reportNxtId;
+
+--# Begin quartz persistence 
+
+drop table qrtz_job_listeners;
+drop table qrtz_trigger_listeners;
+drop table qrtz_fired_triggers;
+drop table qrtz_paused_trigger_grps;
+drop table qrtz_scheduler_state;
+drop table qrtz_locks;
+drop table qrtz_simple_triggers;
+drop table qrtz_cron_triggers;
+drop table qrtz_blob_triggers;
+drop table qrtz_triggers;
+drop table qrtz_job_details;
+drop table qrtz_calendars;
+
+--# End quartz persistence
 
 --########################################################################
 --# serverMap table - Contains a list of IP Addresses mapped to
@@ -1593,3 +1612,178 @@ create index element_mapid_elementid on element(mapId,elementId);
 --#          sequence,   column, table
 --# install: mapNxtId mapid map
 create sequence mapNxtId minvalue 1;
+
+--########################################################################
+--#
+--# reportLocator table     -- This table contains a record of availability
+--#                            reports and their location on disk
+--#					
+--# This table provides the following information:
+--#
+--#  id                	: Unique integer identifier for the report
+--#  categoryName		: Name of the report category
+--#  runDate			: Date report sheduled to run
+--#  format				: format of the report (calenda etc).
+--#  type				: output type of the file (SVG/PDF/HTML)
+--#  location			: where on disk we put the report
+--#	 Available			: Have we run the report yet or not?
+--#
+--########################################################################
+
+create table reportLocator (
+    reportId	 		integer not null,
+    reportCategory		varchar(256) not null,
+	reportDate			date not null,
+    reportFormat		varchar(256) not null,
+    reportType			varchar(256) not null,
+    reportLocation		varchar(256) not null,
+	reportAvailable		bool not null
+);
+
+create sequence reportNxtId minvalue 1;
+
+--# Begin Quartz persistence tables
+
+CREATE TABLE qrtz_job_details
+  (
+    JOB_NAME  VARCHAR(80) NOT NULL,
+    JOB_GROUP VARCHAR(80) NOT NULL,
+    DESCRIPTION VARCHAR(120) NULL,
+    JOB_CLASS_NAME   VARCHAR(128) NOT NULL,
+    IS_DURABLE BOOL NOT NULL,
+    IS_VOLATILE BOOL NOT NULL,
+    IS_STATEFUL BOOL NOT NULL,
+    REQUESTS_RECOVERY BOOL NOT NULL,
+    JOB_DATA BYTEA NULL,
+    PRIMARY KEY (JOB_NAME,JOB_GROUP)
+);
+
+CREATE TABLE qrtz_job_listeners
+  (
+    JOB_NAME  VARCHAR(80) NOT NULL,
+    JOB_GROUP VARCHAR(80) NOT NULL,
+    JOB_LISTENER VARCHAR(80) NOT NULL,
+    PRIMARY KEY (JOB_NAME,JOB_GROUP,JOB_LISTENER),
+    FOREIGN KEY (JOB_NAME,JOB_GROUP)
+        REFERENCES QRTZ_JOB_DETAILS(JOB_NAME,JOB_GROUP)
+);
+
+CREATE TABLE qrtz_triggers
+  (
+    TRIGGER_NAME VARCHAR(80) NOT NULL,
+    TRIGGER_GROUP VARCHAR(80) NOT NULL,
+    JOB_NAME  VARCHAR(80) NOT NULL,
+    JOB_GROUP VARCHAR(80) NOT NULL,
+    IS_VOLATILE BOOL NOT NULL,
+    DESCRIPTION VARCHAR(120) NULL,
+    NEXT_FIRE_TIME BIGINT NULL,
+    PREV_FIRE_TIME BIGINT NULL,
+    TRIGGER_STATE VARCHAR(16) NOT NULL,
+    TRIGGER_TYPE VARCHAR(8) NOT NULL,
+    START_TIME BIGINT NOT NULL,
+    END_TIME BIGINT NULL,
+    CALENDAR_NAME VARCHAR(80) NULL,
+    MISFIRE_INSTR SMALLINT NULL,
+    JOB_DATA BYTEA NULL,
+    PRIMARY KEY (TRIGGER_NAME,TRIGGER_GROUP),
+    FOREIGN KEY (JOB_NAME,JOB_GROUP)
+        REFERENCES QRTZ_JOB_DETAILS(JOB_NAME,JOB_GROUP)
+);
+
+CREATE TABLE qrtz_simple_triggers
+  (
+    TRIGGER_NAME VARCHAR(80) NOT NULL,
+    TRIGGER_GROUP VARCHAR(80) NOT NULL,
+    REPEAT_COUNT BIGINT NOT NULL,
+    REPEAT_INTERVAL BIGINT NOT NULL,
+    TIMES_TRIGGERED BIGINT NOT NULL,
+    PRIMARY KEY (TRIGGER_NAME,TRIGGER_GROUP),
+    FOREIGN KEY (TRIGGER_NAME,TRIGGER_GROUP)
+        REFERENCES QRTZ_TRIGGERS(TRIGGER_NAME,TRIGGER_GROUP)
+);
+
+CREATE TABLE qrtz_cron_triggers
+  (
+    TRIGGER_NAME VARCHAR(80) NOT NULL,
+    TRIGGER_GROUP VARCHAR(80) NOT NULL,
+    CRON_EXPRESSION VARCHAR(80) NOT NULL,
+    TIME_ZONE_ID VARCHAR(80),
+    PRIMARY KEY (TRIGGER_NAME,TRIGGER_GROUP),
+    FOREIGN KEY (TRIGGER_NAME,TRIGGER_GROUP)
+        REFERENCES QRTZ_TRIGGERS(TRIGGER_NAME,TRIGGER_GROUP)
+);
+
+CREATE TABLE qrtz_blob_triggers
+  (
+    TRIGGER_NAME VARCHAR(80) NOT NULL,
+    TRIGGER_GROUP VARCHAR(80) NOT NULL,
+    BLOB_DATA BYTEA NULL,
+    PRIMARY KEY (TRIGGER_NAME,TRIGGER_GROUP),
+    FOREIGN KEY (TRIGGER_NAME,TRIGGER_GROUP)
+        REFERENCES QRTZ_TRIGGERS(TRIGGER_NAME,TRIGGER_GROUP)
+);
+
+CREATE TABLE qrtz_trigger_listeners
+  (
+    TRIGGER_NAME  VARCHAR(80) NOT NULL,
+    TRIGGER_GROUP VARCHAR(80) NOT NULL,
+    TRIGGER_LISTENER VARCHAR(80) NOT NULL,
+    PRIMARY KEY (TRIGGER_NAME,TRIGGER_GROUP,TRIGGER_LISTENER),
+    FOREIGN KEY (TRIGGER_NAME,TRIGGER_GROUP)
+        REFERENCES QRTZ_TRIGGERS(TRIGGER_NAME,TRIGGER_GROUP)
+);
+
+
+CREATE TABLE qrtz_calendars
+  (
+    CALENDAR_NAME  VARCHAR(80) NOT NULL,
+    CALENDAR BYTEA NOT NULL,
+    PRIMARY KEY (CALENDAR_NAME)
+);
+
+
+CREATE TABLE qrtz_paused_trigger_grps
+  (
+    TRIGGER_GROUP  VARCHAR(80) NOT NULL,
+    PRIMARY KEY (TRIGGER_GROUP)
+);
+
+CREATE TABLE qrtz_fired_triggers
+  (
+    ENTRY_ID VARCHAR(95) NOT NULL,
+    TRIGGER_NAME VARCHAR(80) NOT NULL,
+    TRIGGER_GROUP VARCHAR(80) NOT NULL,
+    IS_VOLATILE BOOL NOT NULL,
+    INSTANCE_NAME VARCHAR(80) NOT NULL,
+    FIRED_TIME BIGINT NOT NULL,
+    STATE VARCHAR(16) NOT NULL,
+    JOB_NAME VARCHAR(80) NULL,
+    JOB_GROUP VARCHAR(80) NULL,
+    IS_STATEFUL BOOL NULL,
+    REQUESTS_RECOVERY BOOL NULL,
+    PRIMARY KEY (ENTRY_ID)
+);
+
+CREATE TABLE qrtz_scheduler_state
+  (
+    INSTANCE_NAME VARCHAR(80) NOT NULL,
+    LAST_CHECKIN_TIME BIGINT NOT NULL,
+    CHECKIN_INTERVAL BIGINT NOT NULL,
+    RECOVERER VARCHAR(80) NULL,
+    PRIMARY KEY (INSTANCE_NAME)
+);
+
+CREATE TABLE qrtz_locks
+  (
+    LOCK_NAME  VARCHAR(40) NOT NULL,
+    PRIMARY KEY (LOCK_NAME)
+);
+
+
+INSERT INTO qrtz_locks values('TRIGGER_ACCESS');
+INSERT INTO qrtz_locks values('JOB_ACCESS');
+INSERT INTO qrtz_locks values('CALENDAR_ACCESS');
+INSERT INTO qrtz_locks values('STATE_ACCESS');
+INSERT INTO qrtz_locks values('MISFIRE_ACCESS');
+
+--# End Quartz persistence tables
