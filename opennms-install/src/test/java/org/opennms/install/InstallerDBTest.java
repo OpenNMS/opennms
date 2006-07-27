@@ -5,11 +5,14 @@
 package org.opennms.install;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.PrintStream;
 import java.io.StringReader;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 
 import org.opennms.test.ThrowableAnticipator;
 
@@ -28,8 +31,6 @@ public class InstallerDBTest extends TestCase {
         if (!isDBTestEnabled()) {
             return;
         }
-        
-        //System.out.println(new File("").getAbsolutePath());
 
         m_testDatabase = "opennms_test_" + System.currentTimeMillis();
 
@@ -90,6 +91,16 @@ public class InstallerDBTest extends TestCase {
         st.execute("DROP DATABASE " + m_testDatabase);
         st.close();
     }
+    
+    // XXX this should be an integration test
+    public void testParseCreateSQL() throws Exception {
+		Iterator i = m_installer.m_tables.iterator();
+		while (i.hasNext()) {
+			String table = ((String) i.next()).toLowerCase();
+			m_installer.getTableColumnsFromSQL(table);
+		}
+    }
+
 
     /**
      * Call Installer.checkOldTables, which should *not* throw an exception
@@ -138,18 +149,9 @@ public class InstallerDBTest extends TestCase {
             m_installer.checkOldTables();
         } catch (Throwable t) {
         	ta.throwableReceived(t);
-        	/*
-            if (e.getMessage().indexOf(errorSubstring) >= 0) {
-                // We received the error we expected.
-                return;
-            } else {
-                fail("Received an unexpected Exception: " + e.toString());
-            }
-            */
         }
 
         ta.verifyAnticipated();
-        //fail("Did not receive expected exception: " + errorSubstring);
     }
 
     public void executeSQL(String[] commands) throws SQLException {
@@ -276,7 +278,7 @@ public class InstallerDBTest extends TestCase {
 
         String constraint = "fk_nodeid1";
         doTestBogusConstraint(constraint, "Constraint " + constraint
-                + " is on table " + "ipinterface, but table does not exist");
+                + " is on table " + "ipinterface, but table does not exist (so fixing this constraint does nothing).");
     }
 
     public void testBogusConstraintColumn() throws Exception {
@@ -287,7 +289,7 @@ public class InstallerDBTest extends TestCase {
         String constraint = "fk_dpname";
         doTestBogusConstraint(constraint, "Constraint " + constraint
                 + " is on column "
-                + "dpname of table node, but column does not " + "exist");
+                + "dpname of table node, but column does not " + "exist (so fixing this constraint does nothing).");
     }
     
     public void testConstraintAfterConstrainedColumn() throws Exception {
@@ -347,47 +349,41 @@ public class InstallerDBTest extends TestCase {
             "                    dpAdminState         integer,\n" +
             "                    dpRunState        integer,\n" +
             "                                constraint pk_dpName primary key (dpNameBogus) );\n";
-        String errorSubstring = "constraint does not reference a column in the table: constraint pk_dpname primary key (dpnamebogus)";
 
         if (!isDBTestEnabled()) {
             return;
         }
         
+        ThrowableAnticipator ta = new ThrowableAnticipator();
+        ta.anticipate(new Exception("constraint does not reference a column in the table: constraint pk_dpname primary key (dpNameBogus)"));
+                
         m_installer.readTables(new StringReader(s_create_sql));
         try {
             m_installer.getTableColumnsFromSQL("distpoller");
-        } catch (Exception e) {
-            if (e.getMessage().indexOf(errorSubstring) >= 0) {
-                // Received expected error, so the test is successful.
-                return;
-            } else {
-                fail("Expected an exception matching \"" + errorSubstring
-                        + "\", but instead received an unexpected Exception: "
-                        + e.toString());
-            }
+        } catch (Throwable t) {
+        	ta.throwableReceived(t);
         }
         
-        fail("Did not receive expected exception: " + errorSubstring);
+        ta.verifyAnticipated();
     }
 
-    public void doTestBogusConstraint(String constraint, String errorSubstring)
+    public void doTestBogusConstraint(String constraint, String exceptionMessage)
             throws Exception {
         m_installer.m_fix_constraint_name = constraint;
 
         setupBug931(false, false);
 
+        ThrowableAnticipator ta = new ThrowableAnticipator();
+        ta.anticipate(new Exception(exceptionMessage));
+        //"constraint does not reference a column in the table: constraint pk_dpname primary key (dpNameBogus)"));
+                
         try {
             m_installer.fixConstraint();
-        } catch (Exception e) {
-            if (e.getMessage().indexOf(errorSubstring) >= 0) {
-                // Received expected error, so the test is successful.
-                return;
-            } else {
-                fail("Expected an exception matching \"" + errorSubstring
-                        + "\", but instead received an unexpected Exception: "
-                        + e.toString());
-            }
+        } catch (Throwable t) {
+        	ta.throwableReceived(t);
         }
+        
+        ta.verifyAnticipated();
     }
 
     public void doTestBug931(boolean dropForeignTable, int badRows,
@@ -414,5 +410,62 @@ public class InstallerDBTest extends TestCase {
         }
         
         ta.verifyAnticipated();
+    }
+
+    public void testPrimaryKeyMultipleColumns() throws Exception {
+    	final String createSQL = 
+    		"create table element (\n"
+    		+ "    mapId           integer not null,\n"
+    		+ "    elementId       integer not null,\n"
+    		+ "    constraint pk_element primary key (mapId, elementId)\n"
+    		+ ");";
+    	
+        if (!isDBTestEnabled()) {
+            return;
+        }
+        
+        ThrowableAnticipator ta = new ThrowableAnticipator();
+        ta.anticipate(new IllegalStateException("constraint with multiple constrained columns"));
+              
+        m_installer.readTables(new StringReader(createSQL));
+//        List<Column> columns = null;
+        try {
+            m_installer.getTableColumnsFromSQL("element");
+        } catch (Throwable t) {
+        	ta.throwableReceived(t);
+        }
+        ta.verifyAnticipated();
+        
+        /*
+        boolean foundColumn = false;
+        boolean foundConstraint = false;
+        for (Iterator<Column> i = columns.iterator(); i.hasNext(); ) {
+        	Column column = i.next();
+        	if (column.getName().equals("mapid")) {
+        		foundColumn = true;
+        		
+        		List<Constraint> constraints = column.getConstraints();
+        		for (Iterator<Constraint> j = constraints.iterator(); j.hasNext(); ) {
+        			Constraint constraint = j.next();
+        			if (constraint.getName().equals("pk_element")) {
+        				foundConstraint = true;
+        				List<String> constrained = constraint.getColumns();
+        				for (Iterator<String> k = constrained.iterator(); k.hasNext(); ) {
+        					String c = k.next();
+        					System.out.println("constrained: " + c);
+        				}
+        			}
+        		}
+        		
+                if (!foundConstraint) {
+                	fail("Did not find constraint pk_element in column mapid in SQL");
+                }
+        	}
+        }
+        
+        if (!foundColumn) {
+        	fail("Did not find column mapid in SQL column list");
+        }
+        */
     }
 }
