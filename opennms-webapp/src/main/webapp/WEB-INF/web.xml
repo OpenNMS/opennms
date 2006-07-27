@@ -51,7 +51,25 @@
       IMPORTANT: This URL must NOT contain a slash at the end.       
     </description>
   </context-param>
+
+<!--
+  <context-param>
+    <param-name>contextConfigLocation</param-name>
+    <param-value>/WEB-INF/applicationContext-acegi-security.xml</param-value>
+  </context-param>
+-->
   
+<!--
+  <filter>
+    <filter-name>Acegi Filter Chain Proxy</filter-name>
+    <filter-class>org.acegisecurity.util.FilterToBeanProxy</filter-class>
+    <init-param>
+      <param-name>targetClass</param-name>
+      <param-value>org.acegisecurity.util.FilterChainProxy</param-value>
+    </init-param>
+  </filter>
+-->
+
   <filter>
     <filter-name>AddRefreshHeader-300</filter-name>
     <description>Adds the refresh HTTP header to a servlet's or JSP's output so it will be automatically reloaded.</description>
@@ -73,6 +91,13 @@
       <description>This parameter specifies how often to refresh the page.</description>
     </init-param>
   </filter>
+
+<!--
+  <filter-mapping>
+    <filter-name>Aegi Filter Chain Proxy</filter-name>
+    <url-pattern>/*</url-pattern>
+  </filter-mapping>
+-->
 
   <filter-mapping>
     <filter-name>AddRefreshHeader-300</filter-name>
