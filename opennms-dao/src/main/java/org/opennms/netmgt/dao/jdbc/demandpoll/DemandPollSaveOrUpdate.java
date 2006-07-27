@@ -57,7 +57,7 @@ public class DemandPollSaveOrUpdate extends SqlUpdate {
     public int persist(DemandPoll poll) {
         Object[] parms = new Object[] {
                 poll.getRequestTime(),           // requestTime
-                poll.getUser(),                 // user
+                poll.getUserName(),                 // user
                 poll.getDescription(),          // description
                 poll.getId(),                   // id
         };

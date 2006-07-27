@@ -48,7 +48,7 @@ import org.springframework.jdbc.object.MappingSqlQuery;
 public class DemandPollMappingQuery extends MappingSqlQuery {
 
     public DemandPollMappingQuery(DataSource ds, String clause) {
-        super(ds, "SELECT p.id as id, p.requestTime as requestTime, p.user as user, p.description as description "+clause);
+        super(ds, "SELECT p.id as id, p.requestTime as requestTime, p.userName as userName, p.description as description "+clause);
     }
     
     public DataSource getDataSource() {
@@ -62,7 +62,7 @@ public class DemandPollMappingQuery extends MappingSqlQuery {
         poll.setLoaded(true);
         
         poll.setRequestTime(rs.getTime("requestTime"));
-        poll.setUser(rs.getString("user"));
+        poll.setUserName(rs.getString("userName"));
         poll.setDescription(rs.getString("description"));
         
         LazySet.Loader pollLoader = new LazySet.Loader() {

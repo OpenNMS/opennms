@@ -40,7 +40,7 @@ import org.springframework.jdbc.core.SqlParameter;
 public class FindByPollResult extends DemandPollMappingQuery {
 
 	public FindByPollResult(DataSource ds) {
-		super(ds, "from demandpolls as d, pullresults as p where p.pollId = d.id and p.id = ?");
+		super(ds, "from demandpolls as d, pollresults as p where p.pollId = d.id and p.id = ?");
 		declareParameter(new SqlParameter("id", Types.INTEGER));
 		compile();
 	}

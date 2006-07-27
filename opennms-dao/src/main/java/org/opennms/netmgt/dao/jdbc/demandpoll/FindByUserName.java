@@ -37,10 +37,10 @@ import javax.sql.DataSource;
 
 import org.springframework.jdbc.core.SqlParameter;
 
-public class FindByUser extends DemandPollMappingQuery {
+public class FindByUserName extends DemandPollMappingQuery {
 
-	public FindByUser(DataSource ds) {
-		super(ds, "from demandpolls as dp where dp.user = ?");
+	public FindByUserName(DataSource ds) {
+		super(ds, "from demandpolls as dp where dp.userName = ?");
 		declareParameter(new SqlParameter("user", Types.VARCHAR));
 		compile();
 	}
