@@ -50,7 +50,7 @@ public class Column {
 
     private int m_size = 0;
 
-    private boolean m_notnull = false;
+    private boolean m_notNull = false;
 
     public boolean equals(Object other_o) {
         Column other = (Column) other_o;
@@ -67,7 +67,7 @@ public class Column {
         if (m_type != null && other.getType() != null && !m_type.equals(other.getType())) {
             return false;
         }
-        if (m_size != other.getSize() || m_notnull != other.isNotNull()) {
+        if (m_size != other.getSize() || m_notNull != other.isNotNull()) {
             return false;
         }
         if (!m_constraints.equals(other.getConstraints())) {
@@ -77,7 +77,7 @@ public class Column {
     }
 
     public int hashCode() {
-        return m_name.hashCode() + m_type.hashCode() + new Integer(m_size).hashCode() + new Boolean(m_notnull).hashCode() + m_constraints.hashCode();
+        return m_name.hashCode() + m_type.hashCode() + new Integer(m_size).hashCode() + new Boolean(m_notNull).hashCode() + m_constraints.hashCode();
     }
 
     public String toString() {
@@ -96,7 +96,7 @@ public class Column {
             b.append(")");
         }
 
-        if (m_notnull) {
+        if (m_notNull) {
             b.append(" NOT NULL");
         }
         for (Iterator i = m_constraints.iterator(); i.hasNext();) {
@@ -133,11 +133,11 @@ public class Column {
     }
 
     public boolean isNotNull() {
-        return m_notnull;
+        return m_notNull;
     }
 
-    public void setNotNull(boolean notnull) {
-        m_notnull = notnull;
+    public void setNotNull(boolean notNull) {
+        m_notNull = notNull;
     }
 
     public int getSize() {
@@ -161,7 +161,7 @@ public class Column {
 
         m = Pattern.compile("(?i)(.*)\\bnot null\\b(.*)").matcher(column);
         if (m.matches()) {
-            m_notnull = true;
+            m_notNull = true;
             column = m.group(1) + m.group(2);
         }
 
@@ -285,7 +285,7 @@ public class Column {
             return 4;
         } else if (type.equals("bigint") || type.equals("timestamp") || type.equals("timestamptz")) {
             return 8;
-        } else if (type.equals("double precision") || type.equals("real") || type.equals("text") || type.equals("character varying")) {
+        } else if (type.equals("double precision") || type.equals("real") || type.equals("text")) {
             return -1;
         } else {
             throw new Exception("do not know the type size for " + "column type \"" + type + "\"");

@@ -1776,7 +1776,7 @@ public class Installer {
 				+ "language\\s+['\"]?(\\S+)['\"]?\\s+(.+?);", 1, 2, "language");
 	}
 
-	public List getTableColumnsFromSQL(String table) throws Exception {
+	public List<Column> getTableColumnsFromSQL(String table) throws Exception {
 		String create = getTableFromSQL(table);
 		LinkedList<Column> columns = new LinkedList<Column>();
 		boolean parens = false;
@@ -1800,7 +1800,14 @@ public class Installer {
 
 				if (a.toLowerCase().startsWith("constraint ")) {
 					Constraint constraint = new Constraint(a);
-					Column constrained = findColumn(columns, constraint.getColumn());
+					List<String> cc = constraint.getColumns();
+					if (cc.size() == 0) {
+						throw new IllegalStateException("constraint with no constrained columns");
+					}
+					if (cc.size() > 1) {
+						throw new IllegalStateException("constraint with multiple constrained columns");
+					}
+					Column constrained = findColumn(columns, cc.get(0));
 					if (constrained == null) {
 						throw new Exception("constraint does not "
 								+ "reference a column in the table: "
@@ -1809,8 +1816,12 @@ public class Installer {
 					constrained.addConstraint(constraint);
 				} else {
 					Column column = new Column();
-					column.parse(accumulator.toString());
-					columns.add(column);
+					try {
+						column.parse(accumulator.toString());
+						columns.add(column);
+					} catch (Exception e) {
+						throw new Exception("While parsing table entry for column " + column.getName() + " of " + table + ": " + e.getMessage(), e);
+					}
 				}
 
 				accumulator = new StringBuffer();
@@ -1861,18 +1872,26 @@ public class Installer {
 			return r;
 		}
 
-		String query = "SELECT " + "        attname, "
-				+ "        format_type(atttypid, atttypmod), "
-				+ "        attnotnull " + "FROM " + "        pg_attribute "
-				+ "WHERE " + "        attrelid = "
-				+ "                (SELECT oid FROM pg_class WHERE relname = '"
-				+ table.toLowerCase() + "') AND " + "        attnum > 0 ";
+		String query = "SELECT "
+			+ "        attname, "
+			+ "        format_type(atttypid, atttypmod), "
+			+ "        attnotnull "
+			+ "FROM "
+			+ "        pg_attribute "
+			+ "WHERE "
+			+ "        attrelid = "
+			+ "                (SELECT oid FROM pg_class WHERE relname = '"
+								+ table.toLowerCase()
+								+ "') AND "
+			+ "        attnum > 0";
 
 		if (m_pg_version >= 7.3) {
-			query = query + "AND attisdropped = false ";
+			query = query + " AND attisdropped = false";
 		}
 
-		query = query + "ORDER BY " + "        attnum";
+		query = query
+			+ " ORDER BY "
+			+ "        attnum";
 
 		rs = st.executeQuery(query);
 
@@ -1890,18 +1909,27 @@ public class Installer {
 			// we have at most one constrained column and at most one
 			// referenced foreign column (which is correct with the current
 			// database layout.
-			query = "SELECT " + "       c.conname, " + "	c.contype, "
-					+ "	c.confdeltype, " + "	a.attname, " + "	d.relname, "
-					+ "	b.attname " + "FROM " + "	pg_class d RIGHT JOIN "
-					+ "	  (pg_attribute b RIGHT JOIN "
-					+ "	    (pg_constraint c JOIN pg_attribute a "
-					+ "	      ON c.conrelid = a.attrelid AND "
-					+ "	         a.attnum = c.conkey[1]) "
-					+ "	    ON c.confrelid = b.attrelid AND "
-					+ "	       b.attnum = c.confkey[1]) "
-					+ "	  ON b.attrelid = d.oid " + "WHERE " + "	a.attrelid = "
-					+ "         (SELECT oid FROM pg_class WHERE relname = '"
-					+ table.toLowerCase() + "');";
+			query = "SELECT "
+				+ " c.conname, "
+				+ "	c.contype, "
+				+ "	c.confdeltype, "
+				+ "	a.attname, "
+				+ "	d.relname, "
+				+ "	b.attname "
+				+ "FROM "
+				+ "	pg_class d RIGHT JOIN "
+				+ "	  (pg_attribute b RIGHT JOIN "
+				+ "	    (pg_constraint c JOIN pg_attribute a "
+				+ "	      ON c.conrelid = a.attrelid AND "
+				+ "	         a.attnum = c.conkey[1]) "
+				+ "	    ON c.confrelid = b.attrelid AND "
+				+ "	       b.attnum = c.confkey[1]) "
+				+ "	  ON b.attrelid = d.oid "
+				+ "WHERE "
+				+ "	a.attrelid = "
+				+ "         (SELECT oid FROM pg_class WHERE relname = '"
+								+ table.toLowerCase()
+				+ "');";
 
 			rs = st.executeQuery(query);
 
@@ -1920,10 +1948,18 @@ public class Installer {
 							+ rs.getString(1) + "\"");
 				}
 
-				Column c = findColumn(r, constraint.getColumn());
+				List<String> cc = constraint.getColumns();
+				if (cc.size() == 0) {
+					throw new IllegalStateException("constraint with no constrained columns");
+				}
+				if (cc.size() > 1) {
+					throw new IllegalStateException("constraint with multiple constrained columns");
+				}
+				Column c = findColumn(r, cc.get(0));
 				if (c == null) {
+					// XXX HACK!
 					throw new Exception("Got a constraint for column \""
-							+ constraint.getColumn() + "\" of table " + table
+							+ constraint.getColumns().get(0) + "\" of table " + table
 							+ ", but could not find column.  " + "Constraint: "
 							+ constraint);
 				}
@@ -1931,26 +1967,39 @@ public class Installer {
 				c.addConstraint(constraint);
 			}
 		} else {
-			query = "SELECT " + "        c.relname, " + "        a.attname "
-					+ "FROM " + "        pg_index i, " + "        pg_class c, "
-					+ "        pg_attribute a " + "WHERE "
-					+ "        i.indrelid = "
-					+ "          (SELECT oid FROM pg_class WHERE relname = '"
-					+ table.toLowerCase() + "') AND "
-					+ "        i.indisprimary = 't' AND "
-					+ "        i.indrelid = a.attrelid AND "
-					+ "        i.indkey[0] = a.attnum AND "
-					+ "        i.indexrelid = c.relfilenode";
+			query = "SELECT "
+				+ "        c.relname, "
+				+ "        a.attname "
+				+ "FROM "
+				+ "        pg_index i, "
+				+ "        pg_class c, "
+				+ "        pg_attribute a "
+				+ "WHERE "
+				+ "        i.indrelid = "
+				+ "          (SELECT oid FROM pg_class WHERE relname = '"
+								+ table.toLowerCase()
+								+ "') AND "
+				+ "        i.indisprimary = 't' AND "
+				+ "        i.indrelid = a.attrelid AND "
+				+ "        i.indkey[0] = a.attnum AND "
+				+ "        i.indexrelid = c.relfilenode";
 
 			rs = st.executeQuery(query);
 			while (rs.next()) {
 				Constraint constraint = new Constraint(rs.getString(1), rs
 						.getString(2));
 
-				Column c = findColumn(r, constraint.getColumn());
+				List<String> cc = constraint.getColumns();
+				if (cc.size() == 0) {
+					throw new IllegalStateException("constraint with no constrained columns");
+				}
+				if (cc.size() > 1) {
+					throw new IllegalStateException("constraint with multiple constrained columns");
+				}
+				Column c = findColumn(r, cc.get(0));
 				if (c == null) {
 					throw new Exception("Got a constraint for column \""
-							+ constraint.getColumn() + "\" of table " + table
+							+ constraint.getColumns().get(0) + "\" of table " + table
 							+ ", but could not find column.  " + "Constraint: "
 							+ constraint);
 				}
@@ -1996,10 +2045,17 @@ public class Installer {
 						args[4], args[2], args[5], (rs.getInt(3) == fkey) ? "a"
 								: "c");
 
-				Column c = findColumn(r, constraint.getColumn());
+				List<String> cc = constraint.getColumns();
+				if (cc.size() == 0) {
+					throw new IllegalStateException("constraint with no constrained columns");
+				}
+				if (cc.size() > 1) {
+					throw new IllegalStateException("constraint with multiple constrained columns");
+				}
+				Column c = findColumn(r, cc.get(0));
 				if (c == null) {
 					throw new Exception("Got a constraint for column \""
-							+ constraint.getColumn() + "\" of table " + table
+							+ constraint.getColumns().get(0) + "\" of table " + table
 							+ ", but could not find column.  " + "Constraint: "
 							+ constraint);
 				}
