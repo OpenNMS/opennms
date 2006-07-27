@@ -78,7 +78,12 @@ final class SnmpVlanCollection implements ReadyRunnable {
 	/**
 	 * The vlan index used to collect the SNMP information
 	 */
-	public String m_vlan = "0";
+	public String m_vlan;
+
+	/**
+	 * The vlan name of vlan collection
+	 */
+	public String m_vlan_name;
 
 	/**
 	 * The Dot1DBridge.dot1dbase map
@@ -118,7 +123,7 @@ final class SnmpVlanCollection implements ReadyRunnable {
 		
 		m_agentConfig = agentConfig;
 		m_address = m_agentConfig.getAddress();
-		if (m_agentConfig.getReadCommunity().indexOf("@") >= 0) m_vlan = m_agentConfig.getReadCommunity().split("@")[1];
+		//if (m_agentConfig.getReadCommunity().indexOf("@") >= 0) m_vlan = m_agentConfig.getReadCommunity().split("@")[1];
 		m_dot1dbase = null;
 		m_dot1dbaseTable = null;
 		m_dot1dstp = null;
@@ -320,5 +325,15 @@ final class SnmpVlanCollection implements ReadyRunnable {
 
 	public boolean isReady() {
 		return true;
+	}
+
+	public void setVlan(String m_vlan) {
+		this.m_vlan = m_vlan;
+	}
+	public String getVlanName() {
+		return m_vlan_name;
+	}
+	public void setVlanName(String m_vlan_name) {
+		this.m_vlan_name = m_vlan_name;
 	}
 	}

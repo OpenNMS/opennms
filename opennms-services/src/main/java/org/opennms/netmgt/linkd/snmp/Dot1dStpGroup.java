@@ -324,11 +324,15 @@ public final class Dot1dStpGroup extends AggregateTracker {
     }
 
     public int getStpProtocolSpecification(){
-    	return m_store.getInt32(STP_PROTOCOL_SPEC);
+    	Integer stpProtocolSpecification = m_store.getInt32(STP_PROTOCOL_SPEC);
+    	if (stpProtocolSpecification == null) return -1;
+    	return stpProtocolSpecification;
     }
 	
     public int getStpPriority(){
-    	return m_store.getInt32(STP_PRIORITY);
+    	Integer stpPriority = m_store.getInt32(STP_PRIORITY);
+    	if (stpPriority == null ) return -1;
+    	return stpPriority;
     }
 
     public SnmpValue getStpTimeSinceLastTopologyChange(){
@@ -344,39 +348,58 @@ public final class Dot1dStpGroup extends AggregateTracker {
     }
     
     public int getStpRootCost(){
-    	return m_store.getInt32(STP_ROOT_COST);
+    	Integer stpRootCost = m_store.getInt32(STP_ROOT_COST); 
+    	if (stpRootCost == null) return -1;
+    	return stpRootCost;
     }
 
     public int getStpRootPort(){
-    	return m_store.getInt32(STP_ROOT_PORT);
+    	Integer stpRootPort = m_store.getInt32(STP_ROOT_PORT);
+    	if (stpRootPort == null) return -1;
+    	return stpRootPort;
     }
 
     public int getStpMaxAge(){
-    	return m_store.getInt32(STP_MAX_AGE);
+    	Integer stpMaxAge = m_store.getInt32(STP_MAX_AGE);
+    	if (stpMaxAge == null )return -1;
+    	return stpMaxAge;
     }
 
     public int getStpHelloTime(){
-    	return m_store.getInt32(STP_HELLO_TIME);
+    	Integer stpHelloTime = m_store.getInt32(STP_HELLO_TIME); 
+    	if (stpHelloTime == null) return -1;
+    	return stpHelloTime;
     }
 
     public int getStpHoldTime(){
-    	return m_store.getInt32(STP_HOLD_TIME);
+    	Integer stpHoldTime = m_store.getInt32(STP_HOLD_TIME); 
+    	if (stpHoldTime == null) return -1;
+    	return stpHoldTime;
     }
 
     public int getStpForwardDelay(){
-    	return m_store.getInt32(STP_FORW_DELAY);
+ 
+    	Integer stpForwardDelay = m_store.getInt32(STP_FORW_DELAY);
+    	if (stpForwardDelay == null) return -1;
+    	return stpForwardDelay;
     }
 
     public int getStpBridgeMaxAge(){
-    	return m_store.getInt32(STP_BRDG_MAX_AGE);
+    	Integer stpBridgeMaxAge = m_store.getInt32(STP_BRDG_MAX_AGE);
+    	if (stpBridgeMaxAge == null )return -1;
+    	return stpBridgeMaxAge;
     }
 
     public int getStpBridgeHelloTime(){
-    	return m_store.getInt32(STP_BRDG_HELLO_TIME);
+    	Integer stpBridgeHelloTime = m_store.getInt32(STP_BRDG_HELLO_TIME);
+    	if (stpBridgeHelloTime == null )return -1;
+    	return stpBridgeHelloTime;
     }
 
     public int getStpBridgeForwardDelay(){
-    	return m_store.getInt32(STP_BRDG_FORW_DELAY);
+    	Integer stpBridgeForwardDelay = m_store.getInt32(STP_BRDG_FORW_DELAY);
+    	if (stpBridgeForwardDelay == null )return -1;
+    	return stpBridgeForwardDelay;
     }
 
 }

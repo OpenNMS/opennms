@@ -69,7 +69,7 @@ implements VlanCollectorEntry {
 	public final static String VLAN_FORBIDDENEGRESSPORTS = "dot1qVlanStaticForbiddenEgressPorts";
 	public final static String VLAN_STATICUNTAGGEDPORTS = "dot1qVlanStaticUntaggedPorts";
 
-	private static String VLAN_INDEX_OID="";
+	private static String VLAN_INDEX_OID=".1.3.6.1.2.1.17.7.1.4.3.1.0";
 	private static String VLAN_NAME_OID=".1.3.6.1.2.1.17.7.1.4.3.1.1";
 	
 	private boolean hasVlanIndex = false;
@@ -88,20 +88,23 @@ implements VlanCollectorEntry {
 	 * is class wide data, but will be used by each instance.</P>
 	 */
 	static {
-		hpVlan_elemList = new NamedSnmpVar[5];
+		hpVlan_elemList = new NamedSnmpVar[6];
 		int ndx = 0;
 
-		hpVlan_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPOCTETSTRING,
-				VLAN_NAME,".1.3.6.1.2.1.17.7.1.4.3.1.1",1);
+		hpVlan_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPINT32,
+				VLAN_INDEX,VLAN_INDEX_OID,1);
 
 		hpVlan_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPOCTETSTRING,
-				VLAN_STATICEGRESSPORTS, ".1.3.6.1.2.1.17.7.1.4.3.1.2", 2);
+				VLAN_NAME,VLAN_NAME_OID,2);
+
+		hpVlan_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPOCTETSTRING,
+				VLAN_STATICEGRESSPORTS, ".1.3.6.1.2.1.17.7.1.4.3.1.2", 4);
 		
 		hpVlan_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPOCTETSTRING,
-				VLAN_FORBIDDENEGRESSPORTS, ".1.3.6.1.2.1.17.7.1.4.3.1.3", 3);
+				VLAN_FORBIDDENEGRESSPORTS, ".1.3.6.1.2.1.17.7.1.4.3.1.3", 5);
 		
 		hpVlan_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPOCTETSTRING,
-				VLAN_STATICUNTAGGEDPORTS, ".1.3.6.1.2.1.17.7.1.4.3.1.4", 4);
+				VLAN_STATICUNTAGGEDPORTS, ".1.3.6.1.2.1.17.7.1.4.3.1.4", 6);
 		
 		hpVlan_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPINT32,
 				VLAN_STATUS, ".1.3.6.1.2.1.17.7.1.4.3.1.5", 5);
@@ -139,8 +142,6 @@ implements VlanCollectorEntry {
 			int vlanid = inst.getLastSubId();
 			super.storeResult(new SnmpObjId(VLAN_INDEX_OID), inst, 
 						SnmpUtils.getValueFactory().getInt32(vlanid));
-			super.storeResult(new SnmpObjId(VLAN_NAME_OID), inst, 
-						SnmpUtils.getValueFactory().getOctetString("default".getBytes()));
 			hasVlanIndex = true;
 		}
 		super.storeResult(base, inst, val);

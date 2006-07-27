@@ -173,10 +173,14 @@ public final class Dot1dBaseGroup extends AggregateTracker
     }
     
     public int getNumberOfPorts() {
-    	return m_store.getInt32(BASE_NUM_PORTS);
+    	Integer nop = m_store.getInt32(BASE_NUM_PORTS);
+    	if (nop == null) return -1;
+    	return nop;
     }
 
     public int getBridgeType() {
-    	return m_store.getInt32(BASE_NUM_TYPE);
+    	Integer type = m_store.getInt32(BASE_NUM_TYPE);
+    	if (type == null) return -1;
+    	return type;
     }
 }

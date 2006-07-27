@@ -454,7 +454,7 @@ final class DiscoveryLink implements ReadyRunnable {
 						// 14). The less significant twelve bits is the Port
 						//Number expressed as an unsigned binary number. The
 						// value 0 is not used as a Port Number.
-						//NOTE—The number of bits that are considered to be
+						//NOTEï¿½The number of bits that are considered to be
 						// part of the Port Number (12 bits) differs from the
 						// 1998 and prior
 						//versions of this standard (formerly, the priority
@@ -480,7 +480,6 @@ final class DiscoveryLink implements ReadyRunnable {
 
 						LinkableNode designatedNode = getNodeFromMacIdentifierOfBridgeNode(stpPortDesignatedBridge
 								.substring(4));
-						int designatednodeid = designatedNode.getNodeId();
 
 						if (designatedNode == null) {
 							log
@@ -489,6 +488,8 @@ final class DiscoveryLink implements ReadyRunnable {
 											+ " . Nothing to save to db");
 							continue; // no saving info if no nodeid
 						}
+						int designatednodeid = designatedNode.getNodeId();
+
 						if (log.isDebugEnabled())
 							log.debug("run: found designated nodeid "
 									+ designatednodeid);
