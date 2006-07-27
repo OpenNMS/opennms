@@ -22,7 +22,8 @@ public class DefaultOutageServiceIntegrationTest extends
 	@Override
 	protected String[] getConfigLocations() {
 		return new String[] {
-				"org/opennms/web/svclayer/applicationContextOutage-web.xml" };
+				"META-INF/opennms/applicationContext-dao.xml",
+				"org/opennms/web/svclayer/applicationContext-svclayer.xml" };
 	}
 
 	public void testGetRangeOutages() {
