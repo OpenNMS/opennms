@@ -1392,7 +1392,7 @@
 
   <servlet-mapping>
         <servlet-name>dispatcher</servlet-name>
-        <url-pattern>/dispatch/*</url-pattern>
+        <url-pattern>*.htm</url-pattern>
   </servlet-mapping>
 
   <error-page>

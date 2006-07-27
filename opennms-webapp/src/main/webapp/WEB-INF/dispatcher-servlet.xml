@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+	<bean class="org.springframework.web.servlet.handler.BeanNameUrlHandlerMapping">
+	</bean>
+	
+	<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="viewClass" value="org.springframework.web.servlet.view.JstlView" />
+		<property name="prefix" value="/WEB-INF/jsp/" />
+		<property name="suffix" value=".jsp" />
+	</bean>
+
+<!-- Examples
+	<bean name="/nodes.htm" class="org.opennms.controller.NodeController">
+	  <property name="entityService" ref="entityService" />
+	</bean>	
+	
+	<bean name="/interfaces.htm" class="org.opennms.controller.InterfaceController">
+	  <property name="entityService" ref="entityService" />
+	</bean>
+
+	<bean name="/node-edit.htm" class="org.opennms.controller.NodeEditController">
+	  <property name="entityService" ref="entityService" />
+	  <property name="commandName" value="node" />
+	  <property name="formView" value="node-edit" />
+	  <property name="successView" value="processed" />
+	</bean>
+-->	
+</beans>	
