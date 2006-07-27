@@ -58,6 +58,7 @@ drop sequence alarmsNxtId;
 drop sequence outageNxtId;
 drop sequence notifyNxtId;
 drop sequence userNotifNxtId;
+drop sequence demandPollNxtId;
 drop sequence vulnNxtId;
 
 --########################################################################
@@ -1010,7 +1011,7 @@ create index pathoutage_criticalpathservicename_idx on pathOutage(criticalPathSe
 --#
 --########################################################################
 create table demandPolls (
-	id			integer ,
+	id			integer,
 	requestTime	timestamp without time zone,
 	username	varchar,
 	description varchar,
@@ -1026,15 +1027,15 @@ create index demandpoll_request_time on demandPolls(requestTime);
 --#
 --# This table contains the following information:
 --#
---#  id                      : Unique identifier of the demand poll
---#  pollId                  : the demandPollId
---#  nodeId                  : node id of the polled service
---#  ipAddr                  : the ip address of the polled service
---#  ifIndex                 : the ifIndex of the polled service's interface
---#  serviceId				 : the serviceid of the polled service
---#  statusCode				 : the status code of the pollstatus returned by the monitor
---#  statusName				 : the status name of the pollstaus returnd by the monitor
---#  reason				     : the reason of the pollstatus returned by the monitor
+--#  id			: unique identifier of the demand poll
+--#  pollId		: unique identifier of this specific service poll
+--#  nodeId		: node id of the polled service
+--#  ipAddr		: ip address of the polled service
+--#  ifIndex		: ifIndex of the polled service's interface
+--#  serviceId		: serviceid of the polled service
+--#  statusCode		: status code of the pollstatus returned by the monitor
+--#  statusName		: status name of the pollstaus returnd by the monitor
+--#  reason		: the reason of the pollstatus returned by the monitor
 --#
 --########################################################################
 create table pollResults (
@@ -1061,7 +1062,7 @@ create index pollresults_service on pollResults(nodeId, ipAddr, ifIndex, service
 --# The following commands set up automatic sequencing functionality
 --# for fields which require this.
 --#
---# DO NOT forget to add an "install" comment so that install.pl
+--# DO NOT forget to add an "install" comment so that the installer
 --# knows to fix and renumber the sequences if need be
 --##################################################################
 
@@ -1112,12 +1113,12 @@ create sequence userNotifNxtId minvalue 1;
 
 --# Sequence for the id column in the demandPolls table
 --#          sequence, column, table
---# install: demandPollsNxtId id   demandPolls
+--# install: demandPollNxtId id   demandPolls
 create sequence demandPollNxtId minvalue 1;
 
 --# Sequence for the id column in the pollResults table
 --#          sequence, column, table
---# install: pollResultsNxtId id   pollResults
+--# install: pollResultNxtId id   pollResults
 create sequence pollResultNxtId minvalue 1;
 
 --##################################################################
@@ -1181,19 +1182,19 @@ drop sequence mapNxtId;
 --########################################################################
 
 create table atinterface (
-    nodeid	   integer not null,
-    ipAddr	   varchar(16) not null,
-    atPhysAddr	   varchar(12) not null,
-    status	   char(1) not null,
-    sourceNodeid   integer not null,
-    ifindex	   integer not null,
-    lastPollTime timestamp not null,
+	nodeid		integer not null,
+	ipAddr		varchar(16) not null,
+	atPhysAddr	varchar(12) not null,
+	status		char(1) not null,
+	sourceNodeid	integer not null,
+	ifindex		integer not null,
+	lastPollTime	timestamp not null,
     
-    constraint fk_ia_nodeID1 foreign key (nodeid) references node
+	constraint fk_ia_nodeID1 foreign key (nodeid) references node
 );
 
 --# this doesn't wor with installer 
-alter table atinterface add constraint pk_atinterface primary key (nodeid,ipAddr,atPhysAddr);
+--#alter table atinterface add constraint pk_atinterface primary key (nodeid,ipAddr,atPhysAddr);
 
 create index atinterface_nodeid_idx on atinterface USING HASH(nodeid) ;
 create index atinterface_node_ipaddr_idx on atinterface(nodeid,ipaddr);
@@ -1212,7 +1213,7 @@ create index atinterface_atphysaddr_idx on atinterface(atphysaddr);
 --#  baseBridgeAddress        : The MAC address used by this bridge when it must
 --#                             be referred to in a unique fashion.
 --#  baseNumPorts             : The number of ports controlled by the bridge entity.
---#  baseType				  : Indicates what type of bridging this bridge can
+--#  baseType		: Indicates what type of bridging this bridge can
 --#                             perform.
 --#						        '1' unknown
 --#						        '2' transparent-only
@@ -1263,8 +1264,9 @@ create table stpnode (
 );
 
 --# this doesn't wor with installer 
-alter table stpnode add constraint pk_stpnode primary key (nodeid,basevlan);
+--#alter table stpnode add constraint pk_stpnode primary key (nodeid,basevlan);
 
+create index stpnode_nodeIdBaseVlan_idx on stpnode(nodeid,basevlan);
 create index stpnode_baseBridgeAddress_idx on stpnode(baseBridgeAddress);
 create index stpnode_stpdesignatedroot_idx on stpnode(stpdesignatedroot);
 
@@ -1332,8 +1334,9 @@ create table stpinterface (
 );
 
 --# this doesn't wor with installer 
-alter table stpinterface add constraint pk_stpinterface primary key (nodeid,bridgeport,stpvlan);
+--#alter table stpinterface add constraint pk_stpinterface primary key (nodeid,bridgeport,stpvlan);
 
+create index stpinterface_node_bridgeport_stpvlan on stpinterface(nodeid,bridgeport,stpvlan);
 create index stpinterface_node_ifindex_idx on stpinterface(nodeid,ifindex);
 create index stpinterface_node_idx on stpinterface(nodeid);
 create index stpinterface_stpvlan_idx on stpinterface(stpvlan);
@@ -1421,8 +1424,9 @@ create table iprouteinterface (
 );
 
 --# this doesn't wor with installer 
-alter table iprouteinterface add constraint pk_iprouteinterface primary key (nodeid,routedest);
+--#alter table iprouteinterface add constraint pk_iprouteinterface primary key (nodeid,routedest);
 
+create index iprouteinterface_node_routedest_idx on iprouteinterface(nodeid,routedest);
 create index iprouteinterface_node_ifdex_idx on iprouteinterface(nodeid,routeifindex);
 create index iprouteinterface_rnh_idx on iprouteinterface(routenexthop);
 
@@ -1460,7 +1464,7 @@ create table datalinkinterface (
 	constraint fk_ia_nodeID6 foreign key (nodeparentid) references node (nodeid)
 );
 --# this doesn't work with installer 
-alter table datalinkinterface add constraint pk_datalinkinterface primary key (nodeid,ifindex);
+--#alter table datalinkinterface add constraint pk_datalinkinterface primary key (nodeid,ifindex);
 
 create index dlint_node_idx on datalinkinterface(nodeid);
 create index dlint_node_ifindex_idx on datalinkinterface(nodeid,ifindex);
@@ -1576,9 +1580,11 @@ create table element (
 	constraint fk_mapID foreign key (mapId) references map on delete cascade
 );
 
+create index element_mapid_elementid on element(mapId,elementId);
+
 --# These don't work with installer
-alter table element add	constraint pk_element primary key (mapId,elementId);
-alter table element add constraint elementid check (elementid <> 0);
+--#alter table element add	constraint pk_element primary key (mapId,elementId);
+--#alter table element add constraint elementid check (elementid <> 0);
 
 --# Sequence for the eventID column in the events table
 --#          sequence,   column, table
