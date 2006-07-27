@@ -32,6 +32,10 @@
 package org.opennms.netmgt.dao.jdbc;
 
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
 
 import javax.sql.DataSource;
 
@@ -44,6 +48,8 @@ import org.opennms.netmgt.dao.jdbc.outage.FindSuppressedOutages;
 import org.opennms.netmgt.dao.jdbc.outage.LazyOutage;
 import org.opennms.netmgt.dao.jdbc.outage.OutageSave;
 import org.opennms.netmgt.dao.jdbc.outage.OutageUpdate;
+import org.opennms.netmgt.filter.Filter;
+import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsOutage;
 import org.opennms.netmgt.model.ServiceSelector;
 
@@ -201,9 +207,28 @@ public class OutageDaoJdbc extends AbstractDaoJdbc implements OutageDao {
         return new FindAllOutages(getDataSource(), offset, limit).findSet();
     }
 
+    @SuppressWarnings("unchecked")
 	public Collection<OnmsOutage> matchingCurrentOutages(ServiceSelector selector) {
-return null;		
-	}
+    	Filter filter = new Filter();
+    	Set<String> matchingIps = new HashSet<String>(filter.getIPList(selector.getFilterRule()));
+    	Set<String> matchingSvcs = new HashSet<String>(selector.getServiceNames());
+    	
+    	List<OnmsOutage> matchingOutages = new LinkedList<OnmsOutage>();
+    	Collection<OnmsOutage> outages = currentOutages();
+		for (OnmsOutage outage : outages) {
+    		OnmsMonitoredService svc = outage.getMonitoredService();
+    		if (matchingSvcs.contains(svc.getServiceName()) &&
+    			matchingIps.contains(svc.getIpAddress())) {
+    			
+    			matchingOutages.add(outage);
+    		}
+			
+		}
+    	
+    	
+    	return matchingOutages;
+    }
+    
 
 
 }

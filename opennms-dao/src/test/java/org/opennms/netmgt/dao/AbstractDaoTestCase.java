@@ -32,6 +32,7 @@
 package org.opennms.netmgt.dao;
 
 import java.beans.PropertyVetoException;
+import java.util.Date;
 import java.util.Map;
 
 import javax.sql.DataSource;
@@ -42,6 +43,9 @@ import junit.framework.TestCase;
 import org.hsqldb.jdbc.jdbcDataSource;
 import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsDistPoller;
+import org.opennms.netmgt.model.OnmsEvent;
+import org.opennms.netmgt.model.OnmsMonitoredService;
+import org.opennms.netmgt.model.OnmsOutage;
 import org.opennms.netmgt.model.OnmsServiceType;
 import org.postgresql.ds.PGSimpleDataSource;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -416,6 +420,25 @@ public class AbstractDaoTestCase extends TestCase {
         builder.addInterface("10.1.2.3", -1).setIsManaged("M").setIsSnmpPrimary("N").setIpStatus(1);
         builder.addService(getServiceType("ICMP"));
         getNodeDao().save(builder.getCurrentNode());
+        
+        OnmsEvent event = new OnmsEvent();
+        event.setDistPoller(distPoller);
+        event.setEventUei("uei.opennms.org/test");
+        event.setEventTime(new Date());
+        event.setEventSource("test");
+        event.setEventCreateTime(new Date());
+        event.setEventSeverity(1);
+        event.setEventLog("Y");
+        event.setEventDisplay("Y");
+        getEventDao().save(event);
+       
+        OnmsMonitoredService svc = getMonitoredServiceDao().get(1, "192.168.1.1", "SNMP");
+        OnmsOutage resolved = new OnmsOutage(new Date(), new Date(), event, event, svc);
+        getOutageDao().save(resolved);
+        
+        OnmsOutage unresolved = new OnmsOutage(new Date(), event, svc);
+        getOutageDao().save(unresolved);
+        
 
     }
 
