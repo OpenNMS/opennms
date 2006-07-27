@@ -50,7 +50,6 @@ public class DefaultCategoryStatusService implements CategoryStatusService {
 		return statusSections;
 	}
 
-
 	private StatusSection createSection(Section section) {
 		StatusSection statusSection = new StatusSection();
 		
@@ -88,9 +87,13 @@ public class DefaultCategoryStatusService implements CategoryStatusService {
 			OnmsServiceType serviceType = monitoredService.getServiceType();
 			OnmsIpInterface ipInterface = monitoredService.getIpInterface();
 
-			categoryBuilder.addOutageService(monitoredService.getNodeId(), ipInterface.getId(), ipInterface.getIpAddress(), ipInterface.getNode().getLabel(), monitoredService.getServiceType().getName());
+			categoryBuilder.addOutageService(
+					monitoredService.getNodeId(), 
+					ipInterface.getId(), 
+					ipInterface.getIpAddress(), 
+					ipInterface.getNode().getLabel(), 
+					serviceType.getName());
 		
-			
 		}
 		
 		for (StatusNode node : categoryBuilder.getNodes()) {
@@ -103,8 +106,7 @@ public class DefaultCategoryStatusService implements CategoryStatusService {
 		
 	}
 
-	
-	
+		
 	public void setViewDisplayDao(ViewDisplayDao viewDisplayDao){	
 		m_viewdisplaydao = viewDisplayDao;
 	}

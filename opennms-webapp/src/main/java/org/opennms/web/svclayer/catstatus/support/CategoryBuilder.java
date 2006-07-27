@@ -12,7 +12,7 @@ import org.opennms.web.svclayer.catstatus.model.StatusService;
 
 public class CategoryBuilder {
 	
-	private Map m_nodemap = new HashMap();
+	private Map <Integer,StatusNode>m_nodemap = new HashMap();
 	private Map m_nodeandinterfacemap = new HashMap();
 	
 	
@@ -37,7 +37,7 @@ public class CategoryBuilder {
 						StatusInterface m_interface = new StatusInterface();
 						m_interface.setIpAddress(ipAddress);
 						statusNode.addIpInterface(m_interface);	
-						m_nodeandinterfacemap.put(nodeId + ":" + interfaceId, null);
+						m_nodeandinterfacemap.put(nodeId + ":" + interfaceId, m_interface);
 					}
 		return this;
 	}
@@ -55,8 +55,8 @@ public class CategoryBuilder {
 	}
 	
 	public Collection<StatusNode> getNodes() { 
-		
-		return m_nodemap.values();
+		Collection <StatusNode> nodes = m_nodemap.values();
+		return nodes;
 		
 	}
 	
