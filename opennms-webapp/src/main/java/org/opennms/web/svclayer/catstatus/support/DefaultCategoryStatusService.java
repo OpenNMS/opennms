@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import org.opennms.netmgt.config.views.Category;
+import org.opennms.netmgt.config.categories.Category;
 import org.opennms.netmgt.config.viewsdisplay.Section;
 import org.opennms.netmgt.config.viewsdisplay.View;
 import org.opennms.netmgt.dao.OutageDao;
@@ -77,7 +77,7 @@ public class DefaultCategoryStatusService implements CategoryStatusService {
 		StatusCategory statusCategory = new StatusCategory();
 		Category categoryDetail =  m_categorydao.getCategoryByLabel(category);
 		
-		statusCategory.setComment(categoryDetail.getCategoryComment());	
+		//statusCategory.setComment(categoryDetail.getCategoryComment());	
 		statusCategory.setLabel(category);
 		
 		ServiceSelector selector = new ServiceSelector(categoryDetail.getRule(),categoryDetail.getServiceCollection());
