@@ -1013,8 +1013,8 @@ create index pathoutage_criticalpathservicename_idx on pathOutage(criticalPathSe
 create table demandPolls (
 	id			integer,
 	requestTime	timestamp without time zone,
-	username	varchar,
-	description varchar,
+	username	varchar(32),
+	description varchar(128),
 	
 	constraint demandpoll_pkey primary key (id)
 	
@@ -1042,12 +1042,12 @@ create table pollResults (
 	id			integer,
 	pollId      integer,
 	nodeId		integer,
-	ipAddr		varchar,
+	ipAddr		varchar(16),
 	ifIndex		integer,
 	serviceId	integer,
 	statusCode	integer,
-	statusName	varchar,
-	reason		varchar,
+	statusName	varchar(32),
+	reason		varchar(128),
 	
 	constraint pollresult_pkey primary key (id),
 	constraint fk_demandPollId foreign key (pollID) references demandPolls (id) ON DELETE CASCADE
