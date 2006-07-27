@@ -7,7 +7,7 @@ public class DemandPoll {
 	
 	private Integer m_id;
 	private Date m_requestTime;
-	private String m_user;
+	private String m_userName;
 	private String m_description;
 	private Set<PollResult> m_pollResults;
 	
@@ -46,11 +46,11 @@ public class DemandPoll {
 	public void setRequestTime(Date requestTime) {
 		m_requestTime = requestTime;
 	}
-	public String getUser() {
-		return m_user;
+	public String getUserName() {
+		return m_userName;
 	}
-	public void setUser(String user) {
-		m_user = user;
+	public void setUserName(String user) {
+		m_userName = user;
 	}
 	
 }
