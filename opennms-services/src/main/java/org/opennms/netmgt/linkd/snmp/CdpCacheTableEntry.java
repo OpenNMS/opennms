@@ -291,8 +291,8 @@ public final class CdpCacheTableEntry extends SnmpTableEntry {
 		 *  
 		 */
 
-		cdpCache_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPOBJECTID,
-				CDP_SYSOBJID, ".1.3.6.1.4.1.9.9.23.1.2.1.1.18", 18);
+//		cdpCache_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPOBJECTID,
+//				CDP_SYSOBJID, ".1.3.6.1.4.1.9.9.23.1.2.1.1.18", 18);
 
 		/**
 		 * <P>An indication of the type of address contained in the
