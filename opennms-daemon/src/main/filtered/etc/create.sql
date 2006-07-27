@@ -50,6 +50,8 @@ drop table vulnPlugins cascade;
 drop table serverMap cascade;
 drop table serviceMap cascade;
 drop table pathOutage cascade;
+drop table demandPolls cascade;
+drop table pollResults cascade;
 drop sequence catNxtId;
 drop sequence nodeNxtId;
 drop sequence serviceNxtId;
@@ -59,6 +61,7 @@ drop sequence outageNxtId;
 drop sequence notifyNxtId;
 drop sequence userNotifNxtId;
 drop sequence demandPollNxtId;
+drop sequence pollResultNxtId;
 drop sequence vulnNxtId;
 
 --########################################################################
@@ -559,8 +562,8 @@ create table outages (
 	serviceID		integer,
 	ifLostService		timestamp without time zone not null,
 	ifRegainedService	timestamp without time zone,
-    suppressTime    	timestamp without time zone,
-    suppressedBy		varchar,
+	suppressTime    	timestamp without time zone,
+	suppressedBy		varchar(256),
 
 	constraint pk_outageID primary key (outageID),
 	constraint fk_eventID1 foreign key (svcLostEventID) references events (eventID) ON DELETE CASCADE,
