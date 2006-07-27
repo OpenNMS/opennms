@@ -12,6 +12,13 @@
 		<property name="suffix" value=".jsp" />
 	</bean>
 
+
+	<bean name="/daemonstatus.htm" class="org.opennms.web.controller.DaemonStatusController">
+	  <property name="daemonStatusService" ref="daemonStatusService" />
+	  <property name="commandName" value="daemonStatuses" />
+	  <property name="successView" value="daemonstatus" />
+	</bean>
+
 <!-- Examples
 	<bean name="/nodes.htm" class="org.opennms.controller.NodeController">
 	  <property name="entityService" ref="entityService" />
