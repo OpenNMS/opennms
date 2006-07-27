@@ -67,7 +67,15 @@
 	<bean id="distPollerDao" class="org.opennms.netmgt.dao.jdbc.DistPollerDaoJdbc">
 		<property name="dataSource" ref="dataSource" />
 	</bean>
-	
+
+    <bean id="demandPollFactory" class="org.opennms.netmgt.dao.jdbc.demandpoll.DemandPollFactory">
+      <property name="dataSource" ref="dataSource" />
+    </bean>
+
+  <bean id="demandPollDao" class="org.opennms.netmgt.dao.jdbc.DemandPollDaoJdbc">
+  	<property name="dataSource" ref="dataSource" />
+  </bean>
+
   <bean id="eventFactory" class="org.opennms.netmgt.dao.jdbc.event.EventFactory">
   	<property name="dataSource" ref="dataSource" />
   </bean>
