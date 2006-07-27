@@ -171,10 +171,12 @@ public class PollResultDaoJdbc extends AbstractDaoJdbc implements PollResultDao 
     }
     
     public void saveResultsForPoll(DemandPoll poll) {
-        for (Iterator it = poll.getPollResults().iterator(); it.hasNext();) {
-            PollResult result = (PollResult) it.next();
-            doSave(result);
-        }
+    	if (poll.getPollResults() != null) {
+    		for (Iterator it = poll.getPollResults().iterator(); it.hasNext();) {
+    			PollResult result = (PollResult) it.next();
+    			doSave(result);
+    		}
+    	}
     }
     
     public void delete(PollResult result) {

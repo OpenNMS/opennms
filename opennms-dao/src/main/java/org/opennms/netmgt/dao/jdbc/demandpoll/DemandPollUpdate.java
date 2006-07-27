@@ -39,7 +39,7 @@ public class DemandPollUpdate extends DemandPollSaveOrUpdate {
 
     // DO NOT CHANGE THIS STATEMENT UNLESS YOU CHANGE THE INSERT STATEMENT AND THE
     // PARAMETERS IN NodeSaveOrUpdate
-    private static final String updateStmt = "update demandpolls set requestTime = ?, user = ?, description = ?, id = ?";
+    private static final String updateStmt = "update demandpolls set requestTime = ?, userName = ?, description = ?, id = ?";
 
     public DemandPollUpdate(DataSource ds) {
         super(ds, updateStmt);

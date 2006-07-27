@@ -58,9 +58,9 @@ public class LazyDemandPoll extends DemandPoll {
 	}
 
 	@Override
-	public String getUser() {
+	public String getUserName() {
 		load();
-		return super.getUser();
+		return super.getUserName();
 	}
 
 	@Override

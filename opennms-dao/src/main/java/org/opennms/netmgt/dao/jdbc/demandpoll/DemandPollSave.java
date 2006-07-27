@@ -40,7 +40,7 @@ public class DemandPollSave extends DemandPollSaveOrUpdate {
     // DO NOT CHANGE THIS STATEMENT UNLESS YOU CHANGE THE UPDATE STATEMENT AND THE
     // PARAMETERS IN NodeSaveOrUpdate
     private static final String insertStmt =
-        "insert into demandpolls (requestTime, user, description, id) values (?, ?, ?, ?)";
+        "insert into demandpolls (requestTime, userName, description, id) values (?, ?, ?, ?)";
 
     public DemandPollSave(DataSource ds) {
         super(ds, insertStmt);
