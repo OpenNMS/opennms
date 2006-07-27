@@ -45,6 +45,7 @@ import org.opennms.netmgt.dao.jdbc.outage.LazyOutage;
 import org.opennms.netmgt.dao.jdbc.outage.OutageSave;
 import org.opennms.netmgt.dao.jdbc.outage.OutageUpdate;
 import org.opennms.netmgt.model.OnmsOutage;
+import org.opennms.netmgt.model.ServiceSelector;
 
 /**
  * @author mhuot
@@ -147,7 +148,7 @@ public class OutageDaoJdbc extends AbstractDaoJdbc implements OutageDao {
     /* (non-Javadoc)
      * @see org.opennms.netmgt.dao.OutageDao#findAll()
      */
-    public Collection findAll() {
+    public Collection<OnmsOutage> findAll() {
         return new FindAllOutages(getDataSource()).findSet();
 	}
 
@@ -176,15 +177,15 @@ public class OutageDaoJdbc extends AbstractDaoJdbc implements OutageDao {
         
     }
 
-    public Collection currentOutages() {
+    public Collection<OnmsOutage> currentOutages() {
         return new FindCurrentOutages(getDataSource()).findSet();   
     }
 
-    public Collection suppressedOutages() {
+    public Collection<OnmsOutage> suppressedOutages() {
         return new FindSuppressedOutages(getDataSource()).findSet();
     }
 
-    public Collection openAndResolvedOutages() {
+    public Collection<OnmsOutage> openAndResolvedOutages() {
        return new FindOpenAndResolvedOutages(getDataSource()).findSet();
     }
 
@@ -199,6 +200,11 @@ public class OutageDaoJdbc extends AbstractDaoJdbc implements OutageDao {
     public Collection<OnmsOutage> findAll(Integer offset, Integer limit) {
         return new FindAllOutages(getDataSource(), offset, limit).findSet();
     }
+
+	public Collection<OnmsOutage> matchingCurrentOutages(ServiceSelector selector) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 
 }
