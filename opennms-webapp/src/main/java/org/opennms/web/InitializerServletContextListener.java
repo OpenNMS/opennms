@@ -47,6 +47,7 @@ import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.servlet.ServletException;
 
+import org.opennms.netmgt.utils.EventProxyException;
 import org.opennms.web.category.CategoryList;
 import org.opennms.web.category.RTCPostSubscriber;
 
@@ -125,21 +126,29 @@ public class InitializerServletContextListener implements ServletContextListener
                     return;
                 }
             } catch (Exception e) {
-                m_context.log("[RTCPostSubscriberTimerTask] Error checking " + "if OpenNMS is disconnected", e);
+                m_context.log("[RTCPostSubscriberTimerTask] Error checking "
+                    + "if OpenNMS is disconnected", e);
                 return;
             }
 
-            m_context.log("[RTCPostSubscriberTimerTask] OpenNMS is " + "disconnected -- attempting RTC POST subscription");
+            m_context.log("[RTCPostSubscriberTimerTask] OpenNMS is "
+                + "disconnected -- attempting RTC POST subscription");
 
             try {
                 RTCPostSubscriber.subscribeAll("WebConsoleView");
                 m_context.log("[RTCPostSubscriberTimerTask] RTC POST " + "subscription event sent successfully");
-            } catch (Exception e) {
-                if (UndeclaredThrowableException.class.isInstance(e) && e.getCause() != null && ConnectException.class.isInstance(e.getCause())) {
-                    m_context.log("[RTCPostSubscriberTimerTask] RTC POST " + "failed due to ConnectException: " + e.getCause().toString());
+            } catch (EventProxyException e) {
+                if (e.getCause() instanceof ConnectException) {
+                    m_context.log("[RTCPostSubscriberTimerTask] RTC POST "
+                        + "failed due to ConnectException: "
+                        + e.getCause().toString());
                 } else {
-                    m_context.log("[RTCPostSubscriberTimerTask] Error " + "subscribing to RTC POSTs", e);
+                    m_context.log("[RTCPostSubscriberTimerTask] Error "
+                        + "subscribing to RTC POSTs", e);
                 }
+            } catch (Exception e) {
+                m_context.log("[RTCPostSubscriberTimerTask] Error "
+                    + "subscribing to RTC POSTs", e);
             }
         }
     }
