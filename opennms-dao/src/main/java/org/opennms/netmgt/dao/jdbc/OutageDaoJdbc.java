@@ -202,7 +202,7 @@ public class OutageDaoJdbc extends AbstractDaoJdbc implements OutageDao {
     }
 
 	public Collection<OnmsOutage> matchingCurrentOutages(ServiceSelector selector) {
-		throw new UnsupportedOperationException("not yet implemented");
+return null;		
 	}
 
 
