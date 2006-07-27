@@ -5,14 +5,12 @@
 package org.opennms.install;
 
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.PrintStream;
 import java.io.StringReader;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.List;
 
 import org.opennms.test.ThrowableAnticipator;
 
@@ -355,7 +353,7 @@ public class InstallerDBTest extends TestCase {
         }
         
         ThrowableAnticipator ta = new ThrowableAnticipator();
-        ta.anticipate(new Exception("constraint does not reference a column in the table: constraint pk_dpname primary key (dpNameBogus)"));
+        ta.anticipate(new Exception("constraint does not reference a column in the table: constraint pk_dpname primary key (dpnamebogus)"));
                 
         m_installer.readTables(new StringReader(s_create_sql));
         try {
@@ -375,7 +373,6 @@ public class InstallerDBTest extends TestCase {
 
         ThrowableAnticipator ta = new ThrowableAnticipator();
         ta.anticipate(new Exception(exceptionMessage));
-        //"constraint does not reference a column in the table: constraint pk_dpname primary key (dpNameBogus)"));
                 
         try {
             m_installer.fixConstraint();

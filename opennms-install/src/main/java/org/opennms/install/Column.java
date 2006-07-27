@@ -208,7 +208,12 @@ public class Column {
         if (size != null) {
             this.setSize(Integer.parseInt(size));
         } else {
-            this.setSize(columnTypeSize(this.getType()));
+        	try {
+        		this.setSize(columnTypeSize(this.getType()));
+        	} catch (Exception e) {
+        		throw new Exception("Could not determine size for column " + getName() + ".  Chained: " + e.getMessage(), e);
+        	}
+        	
         }
     }
 

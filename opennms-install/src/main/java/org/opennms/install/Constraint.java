@@ -93,7 +93,10 @@ public class Constraint {
     }
     
     public void setColumns(List<String> columns) {
-    	m_columns = columns;
+    	m_columns = new ArrayList<String>(columns.size());
+    	for (String i : columns) {
+    		m_columns.add(i.toLowerCase());
+    	}
     }
 
     public List<String> getColumns() {
