@@ -96,6 +96,11 @@ public final class TcpEventProxy implements EventProxy {
         this(target, s_default_port);
     }
 
+    public TcpEventProxy(String address, int port) throws UnknownHostException {
+    	m_port = port;
+    	m_target = InetAddress.getByName(address);
+    }
+    
     public TcpEventProxy(InetAddress target, int port) {
         m_port = port;
         m_target = target;
