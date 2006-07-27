@@ -432,7 +432,7 @@ public class DbEventWriter implements Runnable {
 						dbConn, atnodeid, ipaddress.getHostAddress());
 				if (atInterfaceEntry == null) {
 					atInterfaceEntry = DbAtInterfaceEntry.create(atnodeid,
-							ipaddress.toString());
+							ipaddress.getHostAddress());
 				}
 				// update object
 
@@ -458,7 +458,10 @@ public class DbEventWriter implements Runnable {
 
 				if (cdpAddrType != 1)
 					continue;
-				InetAddress cdpTargetIpAddr = cdpEntry.getIPAddress(CdpCacheTableEntry.CDP_ADDRESS);
+				String cdptargetipaddress = cdpEntry.getHexString(CdpCacheTableEntry.CDP_ADDRESS);
+
+				byte[] bytes = cdptargetipaddress.getBytes();
+				InetAddress cdpTargetIpAddr = InetAddress.getByAddress(bytes);
 				
 				int cdpIfIndex = cdpEntry.getInt32(CdpCacheTableEntry.CDP_IFINDEX);
 
@@ -471,7 +474,7 @@ public class DbEventWriter implements Runnable {
 				cdpIface.setCdpTargetIpAddr(cdpTargetIpAddr);
 				
 				cdpIface.setCdpTargetIfIndex(getIfIndexFromSnmpInterfaceIfName(
-						dbConn, targetCdpNodeId, cdpTargetDevicePort.toString()));
+						dbConn, targetCdpNodeId, cdpTargetDevicePort));
 
 				cdpInterfaces.add(cdpIface);
 			}
@@ -510,11 +513,11 @@ public class DbEventWriter implements Runnable {
 
 				// save info to DB
 				DbIpRouteInterfaceEntry iprouteInterfaceEntry = DbIpRouteInterfaceEntry
-						.get(dbConn, nodeid, routedest.toString());
+						.get(dbConn, nodeid, routedest.getHostAddress());
 				if (iprouteInterfaceEntry == null) {
 					// Create a new entry
 					iprouteInterfaceEntry = DbIpRouteInterfaceEntry.create(
-							m_node.getNodeId(), routedest.toString());
+							m_node.getNodeId(), routedest.getHostAddress());
 				}
 				// update object
 				iprouteInterfaceEntry.updateRouteMask(routemask.getHostAddress());
@@ -554,13 +557,12 @@ public class DbEventWriter implements Runnable {
 						.next();
 
 				String vlanindex = snmpVlanColl.getVlanIndex();
-				Integer vlan = new Integer(vlanindex);
-				String vlanname = m_snmpcoll.getVlanName(
-						vlanindex);
+				int vlan = Integer.parseInt(vlanindex);
+				String vlanname = snmpVlanColl.getVlanName();
 				if (log.isDebugEnabled())
 					log
 							.debug("store: saving SnmpVlanCollection entries in DB for VLAN "
-									+ vlanname + " index " + vlan);
+									+ vlanname + " index " + vlanindex);
 
 				if (snmpVlanColl.hasDot1dBase()) {
 					if (log.isDebugEnabled())
@@ -579,11 +581,11 @@ public class DbEventWriter implements Runnable {
 					} else {
 						m_node.addBridgeIdentifier(baseBridgeAddress,vlanindex);
 						DbStpNodeEntry dbStpNodeEntry = DbStpNodeEntry.get(dbConn,
-							m_node.getNodeId(), vlan.intValue());
+							m_node.getNodeId(), vlan);
 						if (dbStpNodeEntry == null) {
 							// Create a new entry
 							dbStpNodeEntry = DbStpNodeEntry.create(m_node
-								.getNodeId(), vlan.intValue());
+								.getNodeId(), vlan);
 						}
 						// update object
 
@@ -637,12 +639,11 @@ public class DbEventWriter implements Runnable {
 							
 								DbStpInterfaceEntry dbStpIntEntry = DbStpInterfaceEntry
 									.get(dbConn, m_node.getNodeId(),
-											baseport, vlan
-													.intValue());
+											baseport, vlan);
 								if (dbStpIntEntry == null) {
 								// Create a new entry
 									dbStpIntEntry = DbStpInterfaceEntry.create(
-										m_node.getNodeId(), baseport, vlan.intValue());
+										m_node.getNodeId(), baseport, vlan);
 								}
 								dbStpIntEntry.updateIfIndex(ifindex);
 
@@ -667,7 +668,7 @@ public class DbEventWriter implements Runnable {
 								int stpport = dot1dstpptentry.getInt32(Dot1dStpPortTableEntry.STP_PORT);
 								DbStpInterfaceEntry dbStpIntEntry = DbStpInterfaceEntry
 									.get(dbConn, m_node.getNodeId(),
-											stpport, vlan.intValue());
+											stpport, vlan);
 								if (dbStpIntEntry == null) {
 								// Cannot create the object becouse must exists the dot1dbase
 								// object!!!!!

@@ -93,7 +93,7 @@ public class Linkd implements PausableFiber {
 		// Initialize the Capsd configuration factory.
 		//
 		try {
-			CapsdConfigFactory.reload();
+			CapsdConfigFactory.init();
 		} catch (MarshalException ex) {
 			log.error("Failed to load Capsd configuration", ex);
 			throw new UndeclaredThrowableException(ex);
