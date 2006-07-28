@@ -29,25 +29,26 @@ public class CategoryBuilder {
 		return this;
 	}
 	
-	public CategoryBuilder addInterface(int nodeId, int interfaceId, String ipAddress, String nodeLabel){
+	public CategoryBuilder addInterface(int nodeId, String interfaceIp, String ipAddress, String nodeLabel){
 					
-					if(!m_nodeandinterfacemap.containsKey(nodeId + ":" + interfaceId )){
+					if(!m_nodeandinterfacemap.containsKey(nodeId + ":" + interfaceIp )){
 						addNode(nodeId,nodeLabel);	
 						StatusNode statusNode = (StatusNode) m_nodemap.get(nodeId);
 						StatusInterface m_interface = new StatusInterface();
 						m_interface.setIpAddress(ipAddress);
 						statusNode.addIpInterface(m_interface);	
-						m_nodeandinterfacemap.put(nodeId + ":" + interfaceId, m_interface);
+						m_nodeandinterfacemap.put(nodeId + ":" + interfaceIp, m_interface);
 					}
 		return this;
 	}
 	
-	public CategoryBuilder addOutageService(int nodeId, int interfaceId, String ipAddress, String nodeLabel, String service){
+	public CategoryBuilder addOutageService(int nodeId, String interfaceIp, String ipAddress, String nodeLabel, String service){
 	
 		StatusService m_statusservice = new StatusService();
 		StatusInterface m_interface;
-		addInterface(nodeId,interfaceId,ipAddress,nodeLabel);
-		m_interface = (StatusInterface) m_nodeandinterfacemap.get(nodeId + ":" + interfaceId);
+		addInterface(nodeId,interfaceIp,ipAddress,nodeLabel);
+		m_interface = (StatusInterface) m_nodeandinterfacemap.get(nodeId + ":" + interfaceIp);
+		m_statusservice.setName(service);
 		m_interface.addService(m_statusservice);
 			
 		

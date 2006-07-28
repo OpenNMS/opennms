@@ -5,9 +5,11 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import org.opennms.netmgt.config.categories.Category;
+import org.opennms.netmgt.config.service.Service;
 import org.opennms.netmgt.config.viewsdisplay.Section;
 import org.opennms.netmgt.config.viewsdisplay.View;
 import org.opennms.netmgt.dao.OutageDao;
@@ -79,6 +81,7 @@ public class DefaultCategoryStatusService implements CategoryStatusService {
 		//statusCategory.setComment(categoryDetail.getCategoryComment());	
 		statusCategory.setLabel(category);
 		
+				
 		ServiceSelector selector = new ServiceSelector(categoryDetail.getRule(),categoryDetail.getServiceCollection());
 		outages = m_outagedao.matchingCurrentOutages(selector);
 		
@@ -87,9 +90,10 @@ public class DefaultCategoryStatusService implements CategoryStatusService {
 			OnmsServiceType serviceType = monitoredService.getServiceType();
 			OnmsIpInterface ipInterface = monitoredService.getIpInterface();
 
+			
 			categoryBuilder.addOutageService(
 					monitoredService.getNodeId(), 
-					ipInterface.getId(), 
+					ipInterface.getIpAddress(), 
 					ipInterface.getIpAddress(), 
 					ipInterface.getNode().getLabel(), 
 					serviceType.getName());
@@ -99,7 +103,7 @@ public class DefaultCategoryStatusService implements CategoryStatusService {
 		for (StatusNode node : categoryBuilder.getNodes()) {
 			statusCategory.addNode(node);
 		}
-		
+
 		return statusCategory;
 	
 		
