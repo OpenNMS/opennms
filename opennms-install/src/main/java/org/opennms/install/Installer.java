@@ -290,9 +290,9 @@ public class Installer {
 	}
 
     public void createConfiguredFile() throws IOException {
-	File f = new File(m_opennms_home + File.separator + "etc" +
-			  File.separator + "configured");
-	f.createNewFile();
+    	File f = new File(m_opennms_home + File.separator + "etc" +
+    			File.separator + "configured");
+    	f.createNewFile();
     }
 
 	public void printHeader() {
@@ -793,9 +793,9 @@ public class Installer {
 
 		
 			if (table.equals("usersNotified") && column.equals("id")) {	
-//			m_out.print("Skipping usersNotified.id");
+//				m_out.print("Skipping usersNotified.id");
 				continue;
-                        }
+            }
 
 			String query = "SELECT count(" + table + "." + column + ") FROM "
 					+ table + " "
@@ -1780,9 +1780,11 @@ public class Installer {
 					if (cc.size() == 0) {
 						throw new IllegalStateException("constraint with no constrained columns");
 					}
+					/*
 					if (cc.size() > 1) {
 						throw new IllegalStateException("constraint with multiple constrained columns");
 					}
+					*/
 					Column constrained = findColumn(columns, cc.get(0));
 					if (constrained == null) {
 						throw new Exception("constraint does not "
@@ -1839,7 +1841,7 @@ public class Installer {
 		return (findColumn(getTableColumnsFromDB(table), column) != null);
 	}
 
-	public List getTableColumnsFromDB(String table) throws Exception {
+	public List<Column> getTableColumnsFromDB(String table) throws Exception {
 		Statement st = m_dbconnection.createStatement();
 		ResultSet rs;
 		LinkedList<Column> r = new LinkedList<Column>();
@@ -2001,16 +2003,26 @@ public class Installer {
 			}
 			fdel = rs.getInt(1);
 
-			query = "SELECT " + "        tgconstrname, " + "        tgargs, "
-					+ "        tgfoid " + "FROM " + "        pg_trigger "
-					+ "WHERE " + "        ( " + "          tgrelid = "
-					+ "            (SELECT oid FROM pg_class WHERE relname = '"
-					+ table.toLowerCase() + "') AND " + "            tgfoid = "
-					+ fkey + " " + "        ) OR ( "
-					+ "          tgconstrrelid = "
-					+ "            (SELECT oid FROM pg_class WHERE relname = '"
-					+ table.toLowerCase() + "') AND " + "            tgfoid = "
-					+ fdel + " " + "        ) ";
+			query = "SELECT "
+				+ "        tgconstrname, "
+				+ "        tgargs, "
+				+ "        tgfoid "
+				+ "FROM "
+				+ "        pg_trigger "
+				+ "WHERE "
+				+ "        ( "
+				+ "          tgrelid = "
+				+ "            (SELECT oid FROM pg_class WHERE relname = '"
+								+ table.toLowerCase()
+								+ "') AND "
+				+ "            tgfoid = " + fkey+ " "
+				+ "        ) OR ( "
+				+ "          tgconstrrelid = "
+				+ "            (SELECT oid FROM pg_class WHERE relname = '"
+								+ table.toLowerCase()
+								+ "') AND "
+				+ "            tgfoid = " + fdel + " "
+				+ "        ) ";
 			rs = st.executeQuery(query);
 
 			while (rs.next()) {
