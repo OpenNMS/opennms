@@ -31,6 +31,8 @@ import org.opennms.netmgt.linkd.snmp.Dot1dStpPortTableEntry;
 import org.opennms.netmgt.linkd.snmp.Dot1dTpFdbTableEntry;
 import org.opennms.netmgt.linkd.snmp.IpNetToMediaTableEntry;
 import org.opennms.netmgt.linkd.snmp.IpRouteTableEntry;
+import org.opennms.netmgt.snmp.SnmpUtils;
+import org.opennms.netmgt.snmp.SnmpValue;
 
 /**
  * <P>
@@ -459,9 +461,21 @@ public class DbEventWriter implements Runnable {
 				if (cdpAddrType != 1)
 					continue;
 				String cdptargetipaddress = cdpEntry.getHexString(CdpCacheTableEntry.CDP_ADDRESS);
+					log.warn(" cdp address is " + cdptargetipaddress);
 
-				byte[] bytes = cdptargetipaddress.getBytes();
+					
+				log.warn(" cdp address is " + cdptargetipaddress);
+
+				String hexDigits = cdptargetipaddress.trim().toLowerCase();
+				long ipAddr = Long.parseLong(hexDigits, 16);
+				byte[] bytes = new byte[4];
+				bytes[0] = (byte) (ipAddr & 0xff);
+				bytes[1] = (byte) ((ipAddr >> 8) & 0xff);
+				bytes[2] = (byte) ((ipAddr >> 16) & 0xff);
+				bytes[3] = (byte) ((ipAddr >> 24) & 0xff);
+				                         
 				InetAddress cdpTargetIpAddr = InetAddress.getByAddress(bytes);
+				log.warn(" cdp address after pasing " + cdpTargetIpAddr.getHostAddress());
 				
 				int cdpIfIndex = cdpEntry.getInt32(CdpCacheTableEntry.CDP_IFINDEX);
 
