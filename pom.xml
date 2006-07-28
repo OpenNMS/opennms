@@ -407,10 +407,6 @@ opennms.home = ${opennms.home}
         <build.rrd.include.dir>/usr/include</build.rrd.include.dir>
         <build.rrd.lib.dir>/usr/lib</build.rrd.lib.dir>
 	<build.postgresql.include.dir>/usr/include/postgresql</build.postgresql.include.dir>
-	<install.jni.dir>/usr/lib/jni</install.jni.dir>
-	<install.postgresql.dir>/usr/lib/postgresql/lib/opennms</install.postgresql.dir>
-	<install.webapps.dir>${install.dir}/webapp</install.webapps.dir>
-	<install.etc.dir>/etc/</install.etc.dir>
       </properties>
     </profile>
     
