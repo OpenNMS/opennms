@@ -1,5 +1,6 @@
 package org.opennms.web.svclayer.daemonstatus;
 
+import java.util.Collection;
 import java.util.Map;
 
 import org.opennms.netmgt.dao.ServiceInfo;
@@ -10,6 +11,7 @@ public interface DaemonStatusService {
 
 	@Transactional(readOnly = true)
 	Map<String, ServiceInfo> getCurrentDaemonStatus();
+	Collection<ServiceInfo> getCurrentDaemonStatusColl();
 
 	Map<String, ServiceInfo> startDaemon(String service);
 
