@@ -81,6 +81,9 @@ public class OnmsAlarm implements Serializable {
 
     /** persistent field */
     private Date m_firstEventTime;
+    
+    /** persistent field */
+    private Date m_lastEventTime;
 
     /** nullable persistent field */
     private String m_description;
@@ -511,6 +514,14 @@ public class OnmsAlarm implements Serializable {
         return new ToStringCreator(this)
             .append("alarmid", getId())
             .toString();
+    }
+
+    public Date getLastEventTime() {
+        return m_lastEventTime;
+    }
+
+    public void setLastEventTime(Date lastEventTime) {
+        m_lastEventTime = lastEventTime;
     }
 
 }
