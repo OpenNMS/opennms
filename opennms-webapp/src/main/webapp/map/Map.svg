@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="iso-8859-1" standalone='no'?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 20001102//EN"
+"http://www.w3.org/TR/2000/CR-SVG-20001102/DTD/svg-20001102.dtd">
+<svg  onload="load(evt);/*hideAll(evt);*/"  xmlns:xlink="http://www.w3.org/1999/xlink" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg-20000303-stylable" enableZoomAndPanControls="false">
+ 	<script type="text/ecmascript" xlink:href="Point2D.js"/>
+ 	<script type="text/ecmascript" xlink:href="SVGElement.js"/>
+ 	<!--script type="text/ecmascript" xlink:href="Debug.js"/-->
+ 	<script type="text/ecmascript" xlink:href="MapEventProcessor.js"/>
+ 	<script type="text/ecmascript" xlink:href="Link.js"/>
+ 	<script type="text/ecmascript" xlink:href="Semaphore.js"/>
+ 	<script type="text/ecmascript" xlink:href="Label.js"/>
+ 	<script type="text/ecmascript" xlink:href="MapElement.js"/>
+ 	<script type="text/ecmascript" xlink:href="Map.js"/>	
+ 	<script type="text/ecmascript" xlink:href="MapElemPositioning.js"/>
+ 	<script type="text/ecmascript" xlink:href="ApplicationMap.js"/>
+ 	<script type="text/ecmascript" xlink:href="menu.js"/>	
+ 	<script type="text/ecmascript" xlink:href="pick_color.js"/>
+	<script type="text/ecmascript"  xlink:href="zoom_pan.js"/>
+	
+	<script type="text/ecmascript"><![CDATA[
+		// ************** LOAD AND INITIALIZE THE MAP ********************
+		function load(evt)
+		{
+		//reference to svgdocument of the map (the global variable mapSvgDocument must be defined 
+		//into the page that contains the visualization of the maps applications
+		mapSvgDocument=htmldocument.embeds[0].getSVGDocument();
+		menuSvgDocument=htmldocument.embeds[1].getSVGDocument();
+		map = new Map("#"+DEFAULT_BG_COLOR, "", "Background", htmldocument.embeds[0].width, htmldocument.embeds[0].height, 0, 0);
+		var node = mapSvgDocument.getElementById("Application");
+		node.appendChild(map.getSvgNode());
+		node = map.getSvgNode();
+		InitApplication();
+		}
+	]]></script>
+	
+	<script type="text/ecmascript"><![CDATA[
+	var begin;
+	var actual;
+	var reloadseconds=0;
+	var secondsSinceBegin=0; 
+	function startRefreshNodesTime() { 
+		begin=(new Date()).getTime();
+		countdown(); 
+	} 
+
+	function countdown() {
+		//refreshNodesIntervalInSec=3600;
+		actual= (new Date()).getTime();
+		secondsSinceBegin=(actual-begin)/1000;
+		reloadseconds=Math.round(refreshNodesIntervalInSec-secondsSinceBegin);
+		if (refreshNodesIntervalInSec>=secondsSinceBegin) 
+			{ var timer=setTimeout("countdown()",1000);
+			  window.status="Next Nodes Refresh: "+((reloadseconds-(reloadseconds%60))/(60))+ "'."+(reloadseconds%60)+"''";
+			} else 
+			{
+			 window.status="";
+			 RefreshNodes();
+			 } 
+		}	
+	]]></script>
+	
+	<svg id="ApplicationSvg" width="100%" height="100%">
+	
+			<svg width="100%" height="100%">
+				<g id="Application">
+				</g>
+			</svg>	
+	</svg>
+</svg>
+
+
