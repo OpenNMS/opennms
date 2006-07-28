@@ -90,6 +90,10 @@ public class SnmpUtils {
         return getStrategy().getBulk(agentConfig, oids);
     }
     
+    public static boolean set(SnmpAgentConfig agentConfig, SnmpObjId oid, SnmpValue value) {
+    	return true;
+    }
+    
     public static Properties getConfig() {
         return (sm_config == null ? System.getProperties() : sm_config);
     }
