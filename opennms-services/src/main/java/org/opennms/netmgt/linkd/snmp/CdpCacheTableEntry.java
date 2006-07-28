@@ -36,6 +36,10 @@ package org.opennms.netmgt.linkd.snmp;
 
 import org.opennms.netmgt.capsd.snmp.NamedSnmpVar;
 import org.opennms.netmgt.capsd.snmp.SnmpTableEntry;
+import org.opennms.netmgt.snmp.SnmpInstId;
+import org.opennms.netmgt.snmp.SnmpObjId;
+import org.opennms.netmgt.snmp.SnmpUtils;
+import org.opennms.netmgt.snmp.SnmpValue;
 
 /**
  *<P>The CdpCacheTableEntry class is designed to hold all the MIB-II
@@ -94,6 +98,8 @@ public final class CdpCacheTableEntry extends SnmpTableEntry {
 	 */
 	public static NamedSnmpVar[] cdpCache_elemList = null;
 
+	private boolean hasIfIndex = false;
+	private final static String CDP_IFINDEX_OID = ".1.3.6.1.4.1.9.9.23.1.2.1.1.1";
 	/**
 	 * <P>Initialize the element list for the class. This
 	 * is class wide data, but will be used by each instance.</P>
@@ -114,7 +120,7 @@ public final class CdpCacheTableEntry extends SnmpTableEntry {
 		 */
 
 		cdpCache_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPINT32,
-				CDP_IFINDEX, ".1.3.6.1.4.1.9.9.23.1.2.1.1.1", 1);
+				CDP_IFINDEX, CDP_IFINDEX_OID, 1);
 
 		/**
 		 * <P>A unique value for each device from which CDP messages
@@ -379,6 +385,18 @@ public final class CdpCacheTableEntry extends SnmpTableEntry {
 
 	public CdpCacheTableEntry() {
 		super(cdpCache_elemList);
+	}
+
+
+	@Override
+	public void storeResult(SnmpObjId base, SnmpInstId inst, SnmpValue val) {
+		if (!hasIfIndex) {
+			int ifindex = inst.getLastSubId();
+			super.storeResult(new SnmpObjId(CDP_IFINDEX_OID), inst, 
+						SnmpUtils.getValueFactory().getInt32(ifindex));
+			hasIfIndex = true;
+		}
+		super.storeResult(base, inst, val);
 	}
 
 
