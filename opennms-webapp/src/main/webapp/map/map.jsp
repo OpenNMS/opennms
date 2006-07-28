@@ -47,9 +47,9 @@
    int mapheight=Integer.parseInt(dim[1]);
    HttpSession sess = request.getSession(true);
    sess.setAttribute("refreshTime",refresh);
-   if(mapToOpen!=null)
-   	sess.setAttribute("mapToOpen",new Integer(mapToOpen));
-   else sess.removeAttribute("mapToOpen");
+   if(mapToOpen==null || mapToOpen.equals(""))
+	   sess.removeAttribute("mapToOpen");
+   else sess.setAttribute("mapToOpen",new Integer(mapToOpen));
 %>
 <html>
 <head>

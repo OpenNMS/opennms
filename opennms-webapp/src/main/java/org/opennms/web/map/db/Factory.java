@@ -29,6 +29,7 @@ import java.sql.*;
 import org.opennms.core.resource.Vault;
 import org.opennms.web.asset.AssetModel;
 import org.opennms.web.map.MapsException;
+import org.opennms.web.map.config.MapPropertiesFactory;
 import org.opennms.web.map.view.VElement;
 
 /**
@@ -43,6 +44,7 @@ public class Factory {
   }
 
   public static String getIconName(int elementId, String type, Connection conn)throws SQLException{
+/*
   	if (type.equals(VElement.MAP_TYPE )) return "map";
     final String sqlQuery = "SELECT displaycategory FROM assets WHERE nodeid = ?";
 
@@ -60,10 +62,12 @@ public class Factory {
 		return "unspecified";
 	}
     return iconName;
+*/
+	return "unspecified";
   }
   
   public static String getIconName(int elementId, String type)throws SQLException{
-  	if (type.equals(VElement.MAP_TYPE )) return "map";
+  	/*if (type.equals(VElement.MAP_TYPE )) return "map";
     final String sqlQuery = "SELECT displaycategory FROM assets WHERE nodeid = ?";
     Connection dbConn = Vault.getDbConnection();
     
@@ -77,10 +81,14 @@ public class Factory {
     rs.close();
     statement.close();
     Vault.releaseDbConnection(dbConn);
-    if(iconName==null || iconName.equals("")){
-		return "unspecified";
-	}
-    return iconName;
+//FIXME workaround to test why it is not working
+    return "unspecified";
+    //if(iconName==null || iconName.equals("")){
+	//	return "unspecified";
+	//}
+    //return iconName;*/
+	return "unspecified";
+
   }
   
   public static int countMaps(int mapId) throws SQLException {
