@@ -8,6 +8,10 @@
     <property name="dao" ref="outageDao" />
   </bean>
 
+  <bean id="categoryDao" class="org.opennms.web.svclayer.catstatus.dao.support.DefaultCategoryDao" />
+  <bean id="viewDisplayDao" class="org.opennms.web.svclayer.catstatus.dao.support.DefaultViewDisplayDao" />
+
+
 <!-- Demand Poll Service Beans -->
   <bean id="eventProxy" class="org.opennms.netmgt.utils.TcpEventProxy">
     <!-- <constructor-arg index="1" type="String" value="127.0.0.1" />
@@ -35,5 +39,12 @@
   <bean id="daemonStatusService" class="org.opennms.web.svclayer.daemonstatus.support.DefaultDaemonStatusService">
     <property name="daemonStatusDao" ref="daemonStatusDao" />
   </bean>
+
+   <bean id="categoryStatusService" class="org.opennms.web.svclayer.catstatus.support.DefaultCategoryStatusService">
+    <property name="categoryDao" ref="categoryDao" />
+    <property name="outageDao"  ref="outageDao" />
+    <property name="viewDisplayDao" ref ="viewDisplayDao"/>
+  </bean>
+
   
 </beans>
