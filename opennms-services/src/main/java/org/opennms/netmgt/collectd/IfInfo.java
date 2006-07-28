@@ -86,8 +86,11 @@ final class IfInfo extends DbCollectionResource {
     }
 
     String getNewIfAlias() {
-        return getEntry().getValueForBase(SnmpCollector.IFALIAS_OID);
-    }
+    // FIXME: This should not be null
+    	if (getEntry() == null)
+    	return getCurrentIfAlias();
+     return getEntry().getValueForBase(SnmpCollector.IFALIAS_OID);
+   }
 
     String getCurrentIfAlias() {
         return m_snmpIface.getIfAlias();
