@@ -103,6 +103,10 @@
   </filter-mapping>
   <filter-mapping>
     <filter-name>AddRefreshHeader-300</filter-name>
+    <url-pattern>/element/linkednode.jsp</url-pattern>
+  </filter-mapping>
+  <filter-mapping>
+    <filter-name>AddRefreshHeader-300</filter-name>
     <url-pattern>/element/interface.jsp</url-pattern>
   </filter-mapping>
   <filter-mapping>
@@ -804,6 +808,12 @@
     <servlet-class>org.opennms.web.element.NodeRescanServlet</servlet-class>
   </servlet>
 
+  <!-- Servlet to set snmp interface up or down -->
+  <servlet>
+     <servlet-name>ManageSnmpIntf</servlet-name>
+    <servlet-class>org.opennms.web.element.ManageSnmpIntfServlet</servlet-class>
+  </servlet>
+
   <servlet>
     <servlet-name>filterOutage</servlet-name>
     <servlet-class>org.opennms.web.outage.OutageFilterServlet</servlet-class>
@@ -832,6 +842,52 @@
   	<servlet-class>org.opennms.web.admin.schedule.ScheduleEditorServlet</servlet-class>
   </servlet>
   
+  <!-- ********************* servlet for map management ****************** -->
+  <servlet>
+     <servlet-name>InitMapsApplication</servlet-name>
+    <servlet-class>org.opennms.web.map.InitMapsApplicationServlet</servlet-class>
+  </servlet>
+
+  <servlet>
+     <servlet-name>SaveMap</servlet-name>
+    <servlet-class>org.opennms.web.map.SaveMapServlet</servlet-class>
+  </servlet>
+  <servlet>
+     <servlet-name>LoadMaps</servlet-name>
+    <servlet-class>org.opennms.web.map.LoadMapsServlet</servlet-class>
+  </servlet>
+  <servlet>
+     <servlet-name>DeleteMap</servlet-name>
+    <servlet-class>org.opennms.web.map.DeleteMapServlet</servlet-class>
+  </servlet>
+
+  <servlet>
+     <servlet-name>LoadNodes</servlet-name>
+    <servlet-class>org.opennms.web.map.LoadNodesServlet</servlet-class>
+  </servlet>
+
+  <servlet>
+     <servlet-name>LoadCurrentNodes</servlet-name>
+    <servlet-class>org.opennms.web.map.LoadCurrentNodesServlet</servlet-class>
+  </servlet>
+
+  <servlet>
+     <servlet-name>LoadInfos</servlet-name>
+    <servlet-class>org.opennms.web.map.LoadInfosServlet</servlet-class>
+  </servlet>
+
+  <servlet>
+     <servlet-name>OpenMap</servlet-name>
+    <servlet-class>org.opennms.web.map.OpenMapServlet</servlet-class>
+  </servlet>  
+  
+  
+  <servlet>
+     <servlet-name>AddMapAsNode</servlet-name>
+    <servlet-class>org.opennms.web.map.AddMapAsNodeServlet</servlet-class>
+  </servlet>  
+
+
   <servlet>
   	<servlet-name>purdyChart</servlet-name>
   	<servlet-class>org.opennms.web.graph.PurdyChartServlet</servlet-class>
@@ -869,6 +925,52 @@
       <url-pattern>*.py</url-pattern>
   </servlet-mapping>
   <!-- python servlet for testing purposes -->
+
+  <!-- ******************* servlet for map management ******************--> 
+  <servlet-mapping>
+    <servlet-name>InitMapsApplication</servlet-name>
+    <url-pattern>/map/InitMapsApplication</url-pattern>
+  </servlet-mapping>
+
+  <servlet-mapping>
+    <servlet-name>SaveMap</servlet-name>
+    <url-pattern>/map/SaveMap</url-pattern>
+  </servlet-mapping>
+  
+  <servlet-mapping>
+    <servlet-name>LoadMaps</servlet-name>
+    <url-pattern>/map/LoadMaps</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>DeleteMap</servlet-name>
+    <url-pattern>/map/DeleteMap</url-pattern>
+  </servlet-mapping>
+
+
+  <servlet-mapping>
+    <servlet-name>LoadNodes</servlet-name>
+    <url-pattern>/map/LoadNodes</url-pattern>
+  </servlet-mapping>
+
+ <servlet-mapping>
+    <servlet-name>LoadCurrentNodes</servlet-name>
+    <url-pattern>/map/LoadCurrentNodes</url-pattern>
+  </servlet-mapping>
+
+  <servlet-mapping>
+    <servlet-name>LoadInfos</servlet-name>
+    <url-pattern>/map/LoadInfos</url-pattern>
+  </servlet-mapping>
+  
+  <servlet-mapping>
+    <servlet-name>OpenMap</servlet-name>
+    <url-pattern>/map/OpenMap</url-pattern>
+  </servlet-mapping>
+
+  <servlet-mapping>
+    <servlet-name>AddMapAsNode</servlet-name>
+    <url-pattern>/map/AddMapAsNode</url-pattern>
+  </servlet-mapping>
 
   <!-- desktop graph servlet mapping -->
   <!-- desktop survey report servlet mapping -->  
@@ -1353,6 +1455,12 @@
     <servlet-name>nodeRescan</servlet-name>
     <url-pattern>/element/rescan</url-pattern>
   </servlet-mapping>
+  
+   <servlet-mapping>
+    <servlet-name>ManageSnmpIntf</servlet-name>
+    <url-pattern>/element/ManageSnmpIntf</url-pattern>
+  </servlet-mapping>
+  
   <servlet-mapping>
     <servlet-name>filterOutage</servlet-name>
     <url-pattern>/outage/list</url-pattern>

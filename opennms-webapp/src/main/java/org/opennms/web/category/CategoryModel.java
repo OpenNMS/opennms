@@ -42,7 +42,10 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
@@ -218,6 +221,75 @@ public class CategoryModel extends Object {
 
         return avail;
     }
+    
+    /**
+     * Return the availability percentage for all managed services on the given
+     * nodes for the last 24 hours. If there are no managed services on these
+     * nodes, then a value of -1 is returned.
+     */
+    public Map getNodeAvailability(Set nodeIds) throws SQLException {
+        Calendar cal = new GregorianCalendar();
+        Date now = cal.getTime();
+        cal.add(Calendar.DATE, -1);
+        Date yesterday = cal.getTime();
+
+        return this.getNodeAvailability(nodeIds, yesterday, now);
+    }    
+    /**
+     * Return the availability percentage for all managed services on the given
+     * nodes from the given start time until the given end time. If there are no
+     * managed services on these nodes, then a value of -1 is returned.
+     */
+    public Map getNodeAvailability(Set nodeIds, Date start, Date end) throws SQLException {
+    	if(nodeIds==null || nodeIds.size()==0){
+    		throw new IllegalArgumentException("Cannot take nodeIds null or with length 0.");
+    	}
+        if (start == null || end == null) {
+            throw new IllegalArgumentException("Cannot take null parameters.");
+        }
+
+        if (end.before(start)) {
+            throw new IllegalArgumentException("Cannot have an end time before the start time.");
+        }
+
+        if (end.equals(start)) {
+            throw new IllegalArgumentException("Cannot have an end time equal to the start time.");
+        }
+
+        double avail = -1;
+        int nodeid = 0;
+        Map retMap = new TreeMap();
+        Connection conn = Vault.getDbConnection();
+
+        try {
+        	StringBuffer sb = new StringBuffer("select nodeid, getManagePercentAvailNodeWindow(nodeid, ?, ?)  from node where nodeid in (");
+        	Iterator it = nodeIds.iterator();
+        	while(it.hasNext()){
+        		sb.append(it.next());
+        		if(it.hasNext()){
+        			sb.append(", ");
+        		}
+        	}
+        	sb.append(")");
+            PreparedStatement stmt = conn.prepareStatement(sb.toString());
+            
+            // yes, these are supposed to be backwards, the end time first
+            stmt.setTimestamp(1, new Timestamp(end.getTime()));
+            stmt.setTimestamp(2, new Timestamp(start.getTime()));
+
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+            	nodeid = rs.getInt(1);
+                avail = rs.getDouble(2);
+                retMap.put(new Integer(nodeid), new Double(avail));
+            }
+        } finally {
+            Vault.releaseDbConnection(conn);
+        }
+
+        return retMap;
+    }    
 
     /**
      * Return the availability percentage for all managed services on the given
