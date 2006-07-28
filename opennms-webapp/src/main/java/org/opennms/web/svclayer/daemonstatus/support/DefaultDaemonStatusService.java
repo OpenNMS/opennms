@@ -1,10 +1,11 @@
 package org.opennms.web.svclayer.daemonstatus.support;
 
+import java.util.Collection;
 import java.util.Map;
 
-import org.opennms.netmgt.model.ServiceDaemon;
 import org.opennms.netmgt.dao.DaemonStatusDao;
 import org.opennms.netmgt.dao.ServiceInfo;
+import org.opennms.netmgt.model.ServiceDaemon;
 import org.opennms.web.svclayer.daemonstatus.DaemonStatusService;
 
 public class DefaultDaemonStatusService implements DaemonStatusService {
@@ -19,6 +20,12 @@ public class DefaultDaemonStatusService implements DaemonStatusService {
 		// TODO Auto-generated method stub
 		Map<String, ServiceInfo> info = daemonStatusDao.getCurrentDaemonStatus();
         return info;
+	}
+	
+	public Collection<ServiceInfo> getCurrentDaemonStatusColl() {
+		// TODO Auto-generated method stub
+		return daemonStatusDao.getCurrentDaemonStatus().values();
+        
 	}
 
 	public Map<String, ServiceInfo> performOperationOnDaemons(String operation, String[] daemons) {

@@ -23,6 +23,17 @@
     <property name="monitoredServiceDao" ref="monitoredServiceDao" />
     <property name="pollerAPI" ref="pollerApi" />
   </bean>
+   
+  <bean id="mbeanServer" class="org.springframework.jmx.support.MBeanServerFactoryBean">
+    <property name="locateExistingServerIfPossible" value="true"/>
+  </bean>
 
-
+  <bean id="daemonStatusDao" class="org.opennms.netmgt.dao.jmx.JmxDaemonStatusDao">
+    <property name="mbeanServer" ref="mbeanServer" />
+  </bean>
+  
+  <bean id="daemonStatusService" class="org.opennms.web.svclayer.daemonstatus.support.DefaultDaemonStatusService">
+    <property name="daemonStatusDao" ref="daemonStatusDao" />
+  </bean>
+  
 </beans>

@@ -1,5 +1,6 @@
 package org.opennms.netmgt.dao.jmx;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -51,7 +52,12 @@ public class JmxDaemonStatusDao implements DaemonStatusDao {
 		// Map the name of the service to ServiceInfo...
 		return serviceInfo;
 	}
-
+	
+	public Collection<ServiceInfo> getCurrentDaemonStatusColl() {
+		// TODO Auto-generated method stub
+		return this.getCurrentDaemonStatus().values();
+	}
+	
 	public ServiceDaemon getServiceHandle(String service) {
 		Set<ObjectName> mBeanNames;
 		try {
