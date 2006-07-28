@@ -244,6 +244,8 @@ public class Column {
             return Types.TIMESTAMP;
         } else if (m_type.equals("timestamptz")) {
             return Types.TIMESTAMP;
+        } else if (m_type.equals("bytea")) {
+            return Types.VARBINARY;
         } else {
             throw new Exception("Do not have a Java SQL type for \"" + m_type + "\"");
         }
@@ -276,6 +278,8 @@ public class Column {
             return "timestamp";
         } else if (column.equals("timestamptz") || column.equals("timestamp with time zone")) {
             return "timestamptz";
+        } else if (column.equals("bytea")) {
+            return "bytea";
         } else {
             throw new Exception("cannot parse column type: " + column);
         }
@@ -290,7 +294,7 @@ public class Column {
             return 4;
         } else if (type.equals("bigint") || type.equals("timestamp") || type.equals("timestamptz")) {
             return 8;
-        } else if (type.equals("double precision") || type.equals("real") || type.equals("text")) {
+        } else if (type.equals("double precision") || type.equals("real") || type.equals("text") || type.equals("bytea")) {
             return -1;
         } else {
             throw new Exception("do not know the type size for " + "column type \"" + type + "\"");

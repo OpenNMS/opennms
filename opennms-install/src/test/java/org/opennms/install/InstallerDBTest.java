@@ -11,6 +11,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 
 import org.opennms.test.ThrowableAnticipator;
 
@@ -165,9 +166,7 @@ public class InstallerDBTest extends TestCase {
     }
 
     public void executeSQL(String command) throws SQLException {
-        String[] commands = new String[1];
-        commands[0] = command;
-        executeSQL(commands);
+        executeSQL(new String[] { command });
     }
 
     public void setupBug931(boolean breakConstraint, boolean dropForeignTable)
@@ -409,7 +408,7 @@ public class InstallerDBTest extends TestCase {
         ta.verifyAnticipated();
     }
 
-    public void testPrimaryKeyMultipleColumns() throws Exception {
+    public void testParsePrimaryKeyMultipleColumns() throws Exception {
     	final String createSQL = 
     		"create table element (\n"
     		+ "    mapId           integer not null,\n"
@@ -422,18 +421,17 @@ public class InstallerDBTest extends TestCase {
         }
         
         ThrowableAnticipator ta = new ThrowableAnticipator();
-        ta.anticipate(new IllegalStateException("constraint with multiple constrained columns"));
+//        ta.anticipate(new IllegalStateException("constraint with multiple constrained columns"));
               
         m_installer.readTables(new StringReader(createSQL));
-//        List<Column> columns = null;
+        List<Column> columns = null;
         try {
-            m_installer.getTableColumnsFromSQL("element");
+            columns = m_installer.getTableColumnsFromSQL("element");
         } catch (Throwable t) {
         	ta.throwableReceived(t);
         }
         ta.verifyAnticipated();
         
-        /*
         boolean foundColumn = false;
         boolean foundConstraint = false;
         for (Iterator<Column> i = columns.iterator(); i.hasNext(); ) {
@@ -463,6 +461,47 @@ public class InstallerDBTest extends TestCase {
         if (!foundColumn) {
         	fail("Did not find column mapid in SQL column list");
         }
-        */
     }
+    
+    public void testInsertMultipleColumns() throws SQLException {
+    	String command = "CREATE TABLE qrtz_job_details (\n"
+    		+ "  JOB_NAME  VARCHAR(80) NOT NULL,\n"
+    		+ "  JOB_GROUP VARCHAR(80) NOT NULL,\n"
+    		+ "  CONSTRAINT pk_qrtz_job_details PRIMARY KEY (JOB_NAME,JOB_GROUP)\n"
+    		+ ")";
+    	executeSQL(command);
+    }
+    
+    public void testInsertMultipleColumnsGetFromDB() throws Exception {
+    	String command = "CREATE TABLE qrtz_job_details (\n"
+    		+ "  JOB_NAME  VARCHAR(80) NOT NULL,\n"
+    		+ "  JOB_GROUP VARCHAR(80) NOT NULL,\n"
+    		+ "  CONSTRAINT pk_qrtz_job_details PRIMARY KEY (JOB_NAME,JOB_GROUP)\n"
+    		+ ")";
+    	executeSQL(command);
+    	
+    	List<Column> columns = m_installer.getTableColumnsFromDB("qrtz_job_details");
+    	for (Column i : columns) {
+    		System.out.println("column: " + i);
+    	}
+    }
+
+
+    /*
+    public void testPrimaryKeyMultipleColumnsA() throws Exception {
+    	final String createSQL = 
+    		"create table element (\n"
+    		+ "    mapId           integer not null,\n"
+    		+ "    elementId       integer not null,\n"
+    		+ "    constraint pk_element primary key (mapId, elementId)\n"
+    		+ ");";
+    	
+        if (!isDBTestEnabled()) {
+            return;
+        }
+        
+        m_installer.readTables(new StringReader(createSQL));
+        m_installer.getTableColumnsFromSQL("element");
+    }
+    */
 }

@@ -28,15 +28,13 @@ public class InstallerWebappTest extends TestCase {
 
     private File m_tomcat_conf_dir;
 
-    private File m_opennmsXml;
-
     public void setUp() throws IOException {
         m_anticipator = new FileAnticipator();
         File dist = m_anticipator.tempDir("dist");
         File dist_webapps = m_anticipator.tempDir(dist, "webapps");
         File opennms_webapp = m_anticipator.tempDir(dist_webapps, "opennms");
-	File meta_inf = m_anticipator.tempDir(opennms_webapp, "META-INF");
-        File opennms_xml = m_anticipator.tempFile(meta_inf, "opennms.xml");
+        File meta_inf = m_anticipator.tempDir(opennms_webapp, "META-INF");
+        m_anticipator.tempFile(meta_inf, "context.xml");
 
         File web_inf = m_anticipator.tempDir(opennms_webapp, "WEB-INF");
         File lib = m_anticipator.tempDir(web_inf, "lib");
@@ -64,10 +62,8 @@ public class InstallerWebappTest extends TestCase {
         m_installer = new Installer();
         m_installer.m_out = new PrintStream(new ByteArrayOutputStream());
         // m_installer.m_out = System.out;
-        m_installer.m_tomcat_serverlibs = "log4j.jar:castor-0.9.3.9.jar:castor-0.9.3.9-xml.jar:opennms_core.jar:opennms_services.jar:opennms_web.jar";
         m_installer.m_install_servletdir = opennms_webapp.getAbsolutePath();
         m_installer.m_webappdir = m_tomcat_webapps.getAbsolutePath();
-        m_installer.m_tomcatserverlibdir = tomcat_lib.getAbsolutePath();
     }
 
     public void tearDown() throws Exception {
