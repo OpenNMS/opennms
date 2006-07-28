@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import org.opennms.netmgt.dao.AvailabilityReportLocatorDao;
+import org.opennms.netmgt.model.AvailabilityReportLocator;
 
 import junit.framework.TestCase;
 import static org.easymock.EasyMock.*;
@@ -38,6 +39,24 @@ public class AvailabilityReportLocatorServiceTest extends TestCase {
 		
 		// verify that all calls matched
 		verify(availabilityReportLocatorDao);
+	}
+	
+	public void testAdd() {
+		
+		AvailabilityReportLocator locator = new AvailabilityReportLocator();
+		
+//		record expected calls
+		availabilityReportLocatorDao.save(locator);
+		
+		// tell mock to match up actual call to expected calls
+		replay(availabilityReportLocatorDao);
+		
+		// call service method that makes call to mock
+		locatorService.addReport(locator);
+		
+		// verify that all calls matched
+		verify(availabilityReportLocatorDao);
+		
 	}
 	
 	public void testLocateReports() {
