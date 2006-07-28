@@ -599,7 +599,8 @@ public class Manager {
 		try {
 			m = Factory.getAllMapsMenu();
 		    if (m == null) {
-		        throw new MapNotFoundException("No Maps found.");
+			return new MapMenu[0];
+		        //throw new MapNotFoundException("No Maps found.");
 		    }
 		} catch (SQLException se) {
 			throw new MapsManagementException("Factory: unable to get all maps"

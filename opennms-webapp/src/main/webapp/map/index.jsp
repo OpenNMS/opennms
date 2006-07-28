@@ -156,7 +156,7 @@
                 </select></td>
           </tr>
           
-          <%if(!request.isUserInRole(Authentication.ADMIN_ROLE)){%>
+          <%if( !request.isUserInRole(Authentication.ADMIN_ROLE)) {%>
           <tr>
             <td>Open Map:</td>
             <td><select name="mapToOpen">
