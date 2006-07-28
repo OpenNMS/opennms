@@ -41,7 +41,6 @@ import org.opennms.netmgt.dao.jdbc.JdbcSet;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsEvent;
-import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsServiceType;
 import org.springframework.jdbc.object.MappingSqlQuery;
@@ -136,9 +135,9 @@ public class AlarmMappingQuery extends MappingSqlQuery {
     }
 
     public OnmsAlarm findUnique(Object[] objs) {
-        List events = execute(objs);
-        if (events.size() > 0)
-            return (OnmsAlarm) events.get(0);
+        List alarms = execute(objs);
+        if (alarms.size() > 0)
+            return (OnmsAlarm) alarms.get(0);
         else
             return null;
     }
