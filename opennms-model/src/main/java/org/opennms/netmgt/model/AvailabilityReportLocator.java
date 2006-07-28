@@ -24,9 +24,13 @@ public class AvailabilityReportLocator {
 	
 	/** Name of the category for report (not the object) */
 	
-	private String m_categoryName;
+	private String m_category;
 	
+	/** has the report been run yet? */
 	
+	private Boolean m_available;
+	
+	//* getters and setters */
 	
 	public String getLocation() {
 		return m_location;
@@ -60,12 +64,12 @@ public class AvailabilityReportLocator {
 		m_date = date;
 	}
 	
-	public String getCategoryName() {
-		return m_categoryName;
+	public String getCategory() {
+		return m_category;
 	}
 	
-	public void setCategoryName(String categoryName) {
-		m_categoryName = categoryName;
+	public void setCategory(String category) {
+		m_category = category;
 	}
 
 	public Integer getId() {
@@ -74,6 +78,14 @@ public class AvailabilityReportLocator {
 
 	public void setId(Integer id) {
 		m_id = id;
+	}
+	
+	public Boolean getAvailable() {
+		return m_available;
+	}
+	
+	public void setAvailable(Boolean available) {
+		m_available = available;
 	}
 	
 	
