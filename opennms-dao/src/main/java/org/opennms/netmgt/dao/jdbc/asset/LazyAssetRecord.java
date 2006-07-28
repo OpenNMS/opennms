@@ -248,6 +248,32 @@ public class LazyAssetRecord extends OnmsAssetRecord {
 		load();
 		return super.getZip();
 	}
+    
+    @Override
+    public String getManagedObjectInstance() {
+       load();
+       return super.getManagedObjectInstance();
+    }
+    
+    @Override
+    public void setManagedObjectInstance(String moi) {
+        load();
+        setDirty(true);
+        super.setManagedObjectInstance(moi);
+    }
+    
+    @Override
+    public String getManagedObjectType() {
+        load();
+        return super.getManagedObjectType();
+    }
+    
+    @Override
+    public void setManagedObjectType(String mot) {
+        load();
+        setDirty(true);
+        super.setManagedObjectType(mot);
+    }
 
 	public void setAddress1(String address1) {
 		load();
@@ -482,7 +508,7 @@ public class LazyAssetRecord extends OnmsAssetRecord {
 		setDirty(true);
 		super.setZip(zip);
 	}
-
+    
 	public String toString() {
 		load();
 		setDirty(true);

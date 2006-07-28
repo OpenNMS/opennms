@@ -84,6 +84,8 @@ public class AssetRecordSaveOrUpdate extends SqlUpdate {
         declareParameter(new SqlParameter("pollerCategory", Types.VARCHAR));       // pollerCategory   varchar(64),
         declareParameter(new SqlParameter("thresholdCategory", Types.VARCHAR));    // thresholdCategory   varchar(64),
         declareParameter(new SqlParameter("comment", Types.VARCHAR));              // comment         varchar(1024),
+        declareParameter(new SqlParameter("managedObjectInstance", Types.VARCHAR));              // comment         varchar(1024),
+        declareParameter(new SqlParameter("managedObjectType", Types.VARCHAR));              // comment         varchar(1024),
         declareParameter(new SqlParameter("nodeID", Types.INTEGER));               // nodeID          integer,
 
         compile();
@@ -130,6 +132,8 @@ public class AssetRecordSaveOrUpdate extends SqlUpdate {
                 asset.getPollerCategory(),          // pollerCategory   varchar(64),
                 asset.getThresholdCategory(),       // thresholdCategory   varchar(64),
                 asset.getComment(),                 // comment         varchar(1024),
+                asset.getManagedObjectInstance(),   // comment         varchar(256),
+                asset.getManagedObjectType(),       // comment         varchar(256),
                 asset.getNode().getId()             // nodeID          integer,
 
         };

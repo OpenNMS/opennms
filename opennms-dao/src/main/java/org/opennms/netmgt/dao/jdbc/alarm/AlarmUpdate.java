@@ -45,6 +45,7 @@ public class AlarmUpdate extends AlarmSaveOrUpdate {
 	    "lastEventID = ?, firstEventTime = ?, lastEventTime = ?, description = ?, logMsg = ?, \n" + 
 	    "operInstruct = ?, tticketID = ?, tticketState = ?, mouseOverText = ?, suppressedUntil = ?, \n" + 
 	    "suppressedUser = ?, suppressedTime = ?, alarmAckUser = ?, alarmAckTime = ?, clearUei = ?, \n" +
+        "managedObjectInstance = ?, managedObjectType = ?, applicationDN = ?, ossPrimaryKey = ? \n" +
 	    "where alarmid = ?";
 
     public AlarmUpdate(DataSource ds) {
