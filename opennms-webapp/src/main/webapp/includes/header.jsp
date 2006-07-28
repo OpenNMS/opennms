@@ -120,6 +120,8 @@
             <c:out value="${date}"/><br/>
             <c:out value="${time}"/>
           </span><!-- /headerdate -->
+	  <br/>
+          <span style="font-size: 8px;"><a href="logoff.jsp">Logout</a></span>
       </td>
      </tr>
     </table>
