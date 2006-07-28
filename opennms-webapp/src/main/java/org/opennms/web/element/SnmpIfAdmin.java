@@ -6,8 +6,11 @@
  */
 package org.opennms.web.element;
 
-import org.opennms.netmgt.utils.SnmpResponseHandler;
-import org.opennms.protocols.snmp.*;
+import org.opennms.netmgt.snmp.SnmpAgentConfig;
+import org.opennms.netmgt.snmp.SnmpObjId;
+import org.opennms.netmgt.snmp.SnmpUtils;
+import org.opennms.netmgt.snmp.SnmpValue;
+
 import java.net.*;
 import java.sql.SQLException;
 
@@ -20,9 +23,8 @@ import java.sql.SQLException;
  * commenti
  */
 public class SnmpIfAdmin {
-    SnmpSession m_session = null;
 
-    SnmpPeer m_snmpPeer = null;
+    SnmpAgentConfig m_agent = null;
 
     int nodeid = -1;
 
@@ -47,10 +49,9 @@ public class SnmpIfAdmin {
      * @throws SocketException
      * @throws Exception
      */
-    public SnmpIfAdmin(int nodeid, SnmpPeer snmpPeer) throws SocketException {
-        m_snmpPeer = snmpPeer;
+    public SnmpIfAdmin(int nodeid, SnmpAgentConfig agent) throws SocketException {
+        m_agent = agent;
         this.nodeid = nodeid;
-        openSession();
     }
 
     /**
@@ -65,28 +66,8 @@ public class SnmpIfAdmin {
     public SnmpIfAdmin(int nodeid, InetAddress inetAddress, String community)
             throws SocketException, Exception {
         this.nodeid = nodeid;
-        m_snmpPeer = new SnmpPeer(inetAddress);
-        m_snmpPeer.getParameters().setWriteCommunity(community);
-        openSession();
-    }
-
-    /**
-     * @throws SocketException
-     * @throws Exception
-     */
-    private void openSession() throws SocketException {
-        try {
-            m_session = new SnmpSession(m_snmpPeer);
-        } catch (SocketException e) {
-            if (m_session != null) {
-                try {
-                    m_session.close();
-                } catch (Exception ex) {
-                    // to log
-                }
-            }
-            throw e;
-        }
+        m_agent = new SnmpAgentConfig(inetAddress);
+        m_agent.setWriteCommunity(community);
     }
 
     /**
@@ -101,21 +82,19 @@ public class SnmpIfAdmin {
      * @throws SnmpBadConversionException
      *             Throw if returned code is not an integer
      */
-    public boolean setIfAdminUp(int ifindex) throws SnmpBadConversionException,
-            SQLException {
+    public boolean setIfAdminUp(int ifindex) throws SQLException {
         return setIfAdmin(ifindex, UP);
     }
 
-    public boolean setIfAdminDown(int ifindex)
-            throws SnmpBadConversionException, SQLException {
+    public boolean setIfAdminDown(int ifindex) throws SQLException {
         return setIfAdmin(ifindex, DOWN);
     }
 
-    public boolean isIfAdminStatusUp() throws SnmpBadConversionException {
+    public boolean isIfAdminStatusUp() {
         return (getIfAdminStatus(UP) == UP);
     }
 
-    public boolean isIfAdminStatusDown() throws SnmpBadConversionException {
+    public boolean isIfAdminStatusDown() {
         return (getIfAdminStatus(DOWN) == DOWN);
     }
 
@@ -131,35 +110,12 @@ public class SnmpIfAdmin {
      * @throws SnmpBadConversionException
      *             Throw if returned code is not an integer
      */
-    public int getIfAdminStatus(int ifindex) throws SnmpBadConversionException {
-        SnmpResponseHandler handler = new SnmpResponseHandler();
-        SnmpPduPacket out = new SnmpPduRequest(SnmpPduPacket.GET,
-                new SnmpVarBind[] { new SnmpVarBind(new SnmpObjectId(
-                        snmpObjectId + "." + ifindex)) });
-        SnmpPduPacket.nextSequence();
-        synchronized (handler) {
-            m_session.send(out, handler);
-            try {
-                handler.wait((long) (m_snmpPeer.getRetries() + 1)
-                        * (long) m_snmpPeer.getTimeout());
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-            }
-        }
-        int status = NULL;
+    public int getIfAdminStatus(int ifindex) {
 
-        if (handler.getResult() != null) {
-            String ifCountStr = handler.getResult().getValue().toString();
-            try {
-                status = Integer.parseInt(ifCountStr);
-            } catch (NumberFormatException nfE) {
-                throw new SnmpBadConversionException(
-                        "Retrieval of interface admin status failed for "
-                                + m_snmpPeer.getPeer().getHostAddress());
-            }
-        }
+        SnmpObjId oid = SnmpObjId.get(snmpObjectId + "." +ifindex);
+        SnmpValue status = SnmpUtils.get(m_agent, oid);
 
-        return status;
+        return status.toInt();
     }
 
     /**
@@ -174,24 +130,6 @@ public class SnmpIfAdmin {
      */
     public static String getReadableAdminStatus(int value) {
         return m_value[value];
-    }
-
-    /**
-     * <p>
-     * Close snmp session
-     * </p>
-     * 
-     * @param ifindex
-     *            interface index to get
-     * 
-     * @return The status of interface in human format
-     */
-    public void close() {
-        try {
-            m_session.close();
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-        }
     }
 
     private void setIfAdminStatusInDB(int ifindex, int value)
@@ -230,71 +168,23 @@ public class SnmpIfAdmin {
      * @throws SnmpBadConversionException
      *             Throw if returned code is not an integer
      */
-    public boolean setIfAdmin(int ifindex, int value) throws SQLException,
-            SnmpBadConversionException, IllegalArgumentException {
-        int status = NULL;
+    public boolean setIfAdmin(int ifindex, int value) throws SQLException {
 
         if (value != UP && value != DOWN)
             throw new IllegalArgumentException("Value not valid");
-        
-        boolean returnValue = false;
-        SnmpResponseHandler handler = new SnmpResponseHandler();
-        SnmpPduPacket out = new SnmpPduRequest(SnmpPduPacket.SET,
-                new SnmpVarBind[] { new SnmpVarBind(new SnmpObjectId(
-                        snmpObjectId + "." + ifindex), new SnmpInt32(value)) });
 
-        synchronized (handler) {
-            m_session.send(out, handler);
-            try {
-                handler.wait((long) (m_snmpPeer.getRetries() + 1)
-                        * (long) m_snmpPeer.getTimeout());
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-            }
-        }
+        SnmpObjId oid = SnmpObjId.get(snmpObjectId + "." +ifindex);
+        SnmpValue val = SnmpUtils.getValueFactory().getInt32(value);
+        boolean status = SnmpUtils.set(m_agent, oid,val);
 
-        if (handler.getResult() != null) {
-            String ifCountStr = handler.getResult().getValue().toString();
-            try {
-                status = Integer.parseInt(ifCountStr);
-            } catch (NumberFormatException nfE) {
-                throw new SnmpBadConversionException(
-                        "Retrieval of interface admin status failed for "
-                                + m_snmpPeer.getPeer().getHostAddress());
-            }
-        }
-        returnValue = (status == value);
-
-        if (returnValue)
+        if (status)
             setIfAdminStatusInDB(ifindex, value);
 
-        return (returnValue);
+        return (status);
     }
 
     public static boolean isValidState(int status) {
         return (status == UP && status == DOWN);
     }
 
-    public static void main(String[] args) {
-        try {
-            int nodeid = 36;
-            InetAddress[] inet = InetAddress.getAllByName("10.3.2.217");
-            SnmpIfAdmin a = new SnmpIfAdmin(nodeid, inet[0], "private");
-            System.out.println("Get");
-            int ifindex = 23;
-            int value = a.getIfAdminStatus(ifindex);
-            System.out.println(value);
-            System.out.println(SnmpIfAdmin.getReadableAdminStatus(value));
-            System.out.println("Cut");
-            if (a.setIfAdminDown(ifindex)) {
-                System.out.println("Admin status interface set to down");
-                if (a.setIfAdminUp(ifindex))
-                    System.out.println("Admin status interface set up");
-            } else
-                System.out.println("Set status operation interface failed");
-            a.close();
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-        }
-    }
 }

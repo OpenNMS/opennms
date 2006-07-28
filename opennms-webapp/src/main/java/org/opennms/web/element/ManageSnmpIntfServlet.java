@@ -17,8 +17,6 @@ import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.utils.IPSorter;
-import org.opennms.protocols.snmp.SnmpBadConversionException;
-import org.opennms.protocols.snmp.SnmpPeer;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -109,10 +107,8 @@ public final class ManageSnmpIntfServlet extends HttpServlet {
             InetAddress[] inetAddress = InetAddress.getAllByName(snmpIp);
             SnmpAgentConfig agent = SnmpPeerFactory.getInstance().getAgentConfig(inetAddress[0]);
             
-            SnmpPeer m_snmpPeer = new SnmpPeer(inetAddress[0]);
-            m_snmpPeer.getParameters().setWriteCommunity(agent.getWriteCommunity());
-            log.debug("ManageSnmpIntfServlet.doPost: peer parameters - WRITE COMMUNITY " + m_snmpPeer.getParameters().getWriteCommunity());
-            SnmpIfAdmin snmpIfAdmin = new SnmpIfAdmin(nodeId, m_snmpPeer);
+            log.debug("ManageSnmpIntfServlet.doPost: agent SNMP version/write community " + agent.getVersion()+"/"+agent.getWriteCommunity());
+            SnmpIfAdmin snmpIfAdmin = new SnmpIfAdmin(nodeId, agent);
             if (snmpIfAdmin.setIfAdmin(intfId, status)) {
                 log.debug("ManageSnmpIntfServlet.doPost: snmpIAdmin return OK ");
             } else {
@@ -125,8 +121,6 @@ public final class ManageSnmpIntfServlet extends HttpServlet {
         } catch (UnknownHostException e) {
             throw new ServletException(e);
         } catch (IOException e) {
-            throw new ServletException(e);
-        } catch (SnmpBadConversionException e) {
             throw new ServletException(e);
         }
     }
