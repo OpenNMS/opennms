@@ -44,13 +44,15 @@ public class AlarmSave extends AlarmSaveOrUpdate {
     "reductionKey, alarmType, counter, severity, lastEventID, " + 
     "firstEventTime, lastEventTime, description, logMsg, operInstruct, " + 
     "tticketID, tticketState, mouseOverText, suppressedUntil, suppressedUser, " + 
-    "suppressedTime, alarmAckUser, alarmAckTime, clearUei, alarmID" + 
+    "suppressedTime, alarmAckUser, alarmAckTime, clearUei, managedObjectInstance, managedObjectType, " +
+    "applicationDN, ossPrimaryKey, alarmID" + 
     ") values (" + 
-    "?, ?, ?, ?, ?,\n" + 
-    "?, ?, ?, ?, ?,\n" + 
-    "?, ?, ?, ?, ?,\n" + 
-    "?, ?, ?, ?, ?,\n" + 
-    "?, ?, ?, ?, ?)";
+    "?, ?, ?, ?, ?, " + 
+    "?, ?, ?, ?, ?, " + 
+    "?, ?, ?, ?, ?, " + 
+    "?, ?, ?, ?, ?, " + 
+    "?, ?, ?, ?, ?, ?, " +
+    "?, ?, ?)";
     
 
     public AlarmSave(DataSource ds) {
@@ -60,6 +62,5 @@ public class AlarmSave extends AlarmSaveOrUpdate {
     public int doInsert(OnmsAlarm alarm) {
         return persist(alarm);
     }
-
     
 }

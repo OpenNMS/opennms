@@ -73,6 +73,10 @@ public class AlarmMappingQuery extends MappingSqlQuery {
         		"a.alarmAckUser as alarmAckUser, " + 
         		"a.alarmAckTime as alarmAckTime, " + 
         		"a.clearUei as clearUei, " +
+                "a.managedObjectInstace as managedObjectInstace, " +
+                "a.managedObjectType as managedObjectType, " +
+                "a.applicationDN as applicationDN, " +
+                "a.ossPrimaryKey as ossPrimaryKey, " +
 			"a.alarmID as alarmID " +clause);
     }
     
@@ -121,6 +125,7 @@ public class AlarmMappingQuery extends MappingSqlQuery {
         alarm.setTTicketId(rs.getString("tticketId"));
         alarm.setTTicketState(new Integer(rs.getInt("tticketState")));
         alarm.setUei(rs.getString("eventUei"));
+        alarm.setOssPrimaryKey(rs.getString("ossPrimaryKey"));
         
         alarm.setDirty(false);
         return alarm;

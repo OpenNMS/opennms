@@ -70,6 +70,10 @@ public class AlarmSaveOrUpdate extends SqlUpdate {
         declareParameter(new SqlParameter(Types.VARCHAR));  //alarmAckUser
         declareParameter(new SqlParameter(Types.TIMESTAMP));  //alarmAckTime
         declareParameter(new SqlParameter(Types.VARCHAR));  //clearUei
+        declareParameter(new SqlParameter(Types.VARCHAR));  //managedObjectInstance
+        declareParameter(new SqlParameter(Types.VARCHAR));  //managedObjectType
+        declareParameter(new SqlParameter(Types.VARCHAR));  //applicationDN
+        declareParameter(new SqlParameter(Types.VARCHAR));  //ossPrimaryKey
         declareParameter(new SqlParameter(Types.INTEGER));  //alarmID
         compile();
     }
@@ -100,6 +104,10 @@ public class AlarmSaveOrUpdate extends SqlUpdate {
         		alarm.getAlarmAckUser(), //alarmAckUser
         		alarm.getAlarmAckTime(), //alarmAckTime
         		alarm.getClearUei(), //clearUei        
+                alarm.getManagedObjectInstance(), //managedObjectInstance        
+                alarm.getManagedObjectType(), //managedObjectType
+                alarm.getApplicationDN(), //applicationDN
+                alarm.getOssPrimaryKey(), //ossPrimaryKey
         		alarm.getId()}; //alarmID
         return update(parms);
     }    

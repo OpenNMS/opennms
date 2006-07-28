@@ -94,9 +94,12 @@ public class AssetRecordDaoJdbc extends AbstractDaoJdbc implements AssetRecordDa
             "pollerCategory, " +
             "thresholdCategory, " +
             "comment, " +
+            "mangedObjectInstance, " +
+            "mangedObjectType , " +
+            "" +
             "nodeID" +
             ") values " +
-            "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         
         public Save(DataSource ds) {
@@ -155,6 +158,8 @@ public class AssetRecordDaoJdbc extends AbstractDaoJdbc implements AssetRecordDa
             "pollerCategory = ?, " +
             "thresholdCategory = ?, " +
             "comment = ? " +
+            "mangedObjectInstace, " +
+            "mangedObjectType, " +
             "where nodeID = ?";
 
         public Update(DataSource ds) {
@@ -233,7 +238,6 @@ public class AssetRecordDaoJdbc extends AbstractDaoJdbc implements AssetRecordDa
 		}
 		return true;
 	}
-    
-   
+
 
 }

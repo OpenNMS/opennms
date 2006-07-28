@@ -71,7 +71,9 @@ public class AssetMappingQuery extends MappingSqlQuery {
                 "assets.notifyCategory as assets_notifyCategory, " +
                 "assets.pollerCategory as assets_pollerCategory, " +
                 "assets.thresholdCategory as assets_thresholdCategory, " +
-                "assets.comment as assets_comment "+clause);
+                "assets.comment as assets_comment, " +
+                "assets.managedObjectInstace as managedObjectType , " +
+                "assets.managedObjectType as managedObjectType "+clause);
         
     }
     
@@ -122,6 +124,8 @@ public class AssetMappingQuery extends MappingSqlQuery {
         asset.setPollerCategory(rs.getString("assets_pollerCategory"));
         asset.setThresholdCategory(rs.getString("assets_thresholdCategory"));
         asset.setComment(rs.getString("assets_comment"));
+        asset.setManagedObjectInstance("managedObjectInstance");
+        asset.setManagedObjectType("managedObjectType");
         asset.setDirty(false);
         return asset;
     }
