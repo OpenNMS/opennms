@@ -169,6 +169,10 @@ public class OnmsAssetRecord implements Serializable {
     /** persistent field */
     private OnmsNode m_node;
 
+    private String m_managedObjectType;
+
+    private String m_managedObjectInstance;
+
     /** default constructor */
     public OnmsAssetRecord() {
     }
@@ -784,6 +788,22 @@ public class OnmsAssetRecord implements Serializable {
 
     public void setComment(String comment) {
         m_comment = comment;
+    }
+    
+    public String getManagedObjectType() {
+        return m_managedObjectType;
+    }
+    
+    public void setManagedObjectType(String mot) {
+        m_managedObjectType = mot;
+    }
+    
+    public String getManagedObjectInstance() {
+        return m_managedObjectInstance;
+    }
+    
+    public void setManagedObjectInstance(String moi) {
+        m_managedObjectType = moi;
     }
     
     public Serializable getSerializableId() {
