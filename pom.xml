@@ -266,7 +266,6 @@ opennms.home = ${opennms.home}
     <install.database.bindir>/usr/bin</install.database.bindir>
     <install.rrdtool.bin>/usr/bin/rrdtool</install.rrdtool.bin>
     <install.perl.bin>/usr/bin/perl</install.perl.bin>
-    <install.tomcat.serverlibs>log4j-1.2.7.jar:castor-0.9.6.jar:oro-2.0.8.jar:opennms-config-1.3.2-SNAPSHOT.jar:opennms-config-utils-1.3.2-SNAPSHOT.jar:opennms-dao-1.3.2-SNAPSHOT.jar:opennms-filter-1.3.2-SNAPSHOT.jar:opennms-icmp-api-1.3.2-SNAPSHOT.jar:opennms-joesnmp-1.3.2-SNAPSHOT.jar:opennms-model-1.3.2-SNAPSHOT.jar:opennms-reporting-1.3.2-SNAPSHOT.jar:opennms-rrd-api-1.3.2-SNAPSHOT.jar:opennms-rrd-jrobin-1.3.2-SNAPSHOT.jar:opennms-rrdtool-api-1.3.2-SNAPSHOT.jar:opennms-services-1.3.2-SNAPSHOT.jar:opennms-snmp-api-1.3.2-SNAPSHOT.jar:opennms-snmp-joesnmp-1.3.2-SNAPSHOT.jar:opennms-snmp-snmp4j-1.3.2-SNAPSHOT.jar:opennms-tomcat-1.3.2-SNAPSHOT.jar:opennms-util-1.3.2-SNAPSHOT.jar:commons-logging-1.0.4.jar</install.tomcat.serverlibs>
   
     <!-- platform specific -->
     <build.soext>${platform.shlib}</build.soext>

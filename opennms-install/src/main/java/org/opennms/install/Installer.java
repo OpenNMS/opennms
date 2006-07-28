@@ -134,8 +134,6 @@ public class Installer {
 
 	String m_webappdir = null;
 
-	String m_tomcatserverlibdir = null;
-
 	String m_install_servletdir = null;
 
 	String m_tomcat_serverlibs = null;
@@ -429,11 +427,6 @@ public class Installer {
 					case 'w':
 						i++;
 						m_webappdir = getNextArg(argv, i, 'w');
-						break;
-
-					case 'W':
-						i++;
-						m_tomcatserverlibdir = getNextArg(argv, i, 'W');
 						break;
 
 					case 'x':
@@ -1334,9 +1327,6 @@ public class Installer {
 			verifyFileExists(true, m_webappdir,
 					"Top-level web application directory", "-w option");
 
-			verifyFileExists(true, m_tomcatserverlibdir,
-					"Tomcat server library directory", "-W option");
-
 			verifyFileExists(true, m_install_servletdir,
 					"OpenNMS servlet directory", "install.servlet.dir property");
 		}
@@ -1545,15 +1535,6 @@ public class Installer {
 			        + "META-INF" + File.separator + "context.xml",
 				m_webappdir + File.separator + "opennms.xml",
 				"web application context", false);
-
-		for (int i = 0; i < jars.length; i++) {
-			String source = m_install_servletdir +
-				File.separator + "WEB-INF" + File.separator + "lib" +
-				File.separator + jars[i];
-			String destination = m_tomcatserverlibdir + File.separator
-					+ jars[i];
-			installLink(source, destination, "jar file " + jars[i], false);
-		}
 
 		m_out.println("- Installing OpenNMS webapp... DONE");
 	}
@@ -2462,8 +2443,6 @@ public class Installer {
 				+ "[-T <tomcat4.conf>]");
 		m_out.println("                                "
 				+ "[-w <tomcat webapps directory>");
-		m_out.println("                                "
-				+ "[-W <tomcat server/lib directory>]");
 		m_out.println("                                " + "[-C <constraint>]");
 		m_out.println("");
 		m_out.println(m_required_options);
@@ -2474,7 +2453,7 @@ public class Installer {
 		m_out.println("   -i    insert data into the database");
 		m_out.println("   -s    update iplike postgres function");
 		m_out.println("   -U    upgrade database to unicode, if needed");
-		m_out.println("   -y    install web application (see -w and -W)");
+		m_out.println("   -y    install web application (see -w)");
 		m_out.println("");
 		m_out.println("   -u    username of the PostgreSQL "
 				+ "administrator (default: \"" + m_pg_user + "\")");
@@ -2485,8 +2464,6 @@ public class Installer {
 		m_out.println("");
 		m_out.println("   -T    location of tomcat.conf");
 		m_out.println("   -w    location of tomcat's webapps directory");
-		m_out.println("   -W    location of tomcat's server/lib "
-						+ "directory");
 		m_out.println("");
 		m_out.println("   -r    run as an RPM install (does nothing)");
 		m_out.println("   -x    turn on debugging for database data "
