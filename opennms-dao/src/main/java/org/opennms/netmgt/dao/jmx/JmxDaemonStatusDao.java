@@ -50,6 +50,8 @@ public class JmxDaemonStatusDao implements DaemonStatusDao {
 		}
 
 		// Map the name of the service to ServiceInfo...
+		// for testing adding a dummy service info node...
+		serviceInfo.put("test", new ServiceInfo("test", "started"));
 		return serviceInfo;
 	}
 	
