@@ -10,7 +10,7 @@
         <include>org.opennms:opennms-webapp</include>
       </includes>
       <binaries>
-        <outputDirectory>${install.webapps.dir}</outputDirectory>
+        <outputDirectory>${install.servlet.dir}</outputDirectory>
         <unpack>true</unpack>
       </binaries>
     </moduleSet>
