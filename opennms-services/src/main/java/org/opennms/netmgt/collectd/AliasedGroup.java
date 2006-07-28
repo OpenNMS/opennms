@@ -3,6 +3,9 @@ package org.opennms.netmgt.collectd;
 import java.util.Collection;
 import java.util.Iterator;
 
+import org.apache.log4j.Category;
+import org.opennms.core.utils.ThreadCategory;
+
 public class AliasedGroup extends AttributeGroup {
 	
 	AttributeGroup m_group;
@@ -43,13 +46,19 @@ public class AliasedGroup extends AttributeGroup {
 	public String toString() {
 		return m_group.toString();
 	}
+	
+	Category log(){
+		return ThreadCategory.getInstance(getClass());
+	}
 
 	public void visit(CollectionSetVisitor visitor) {
 		visitor.visitGroup(this);
 		
+		log().debug("YYY: Entering visit");
 		for (Iterator iter = getAttributes().iterator(); iter.hasNext();) {
 		    Attribute attr = (Attribute) iter.next();
-		    Attribute aliased = new Attribute(getResource(), attr.getAttributeType(), attr.getValue());
+		    AliasedAttribute aliased = new AliasedAttribute(getResource(), attr);
+		    log().debug("YYY: visiting at aliased  = " + aliased);
 		    aliased.visit(visitor);
 		}
 		
