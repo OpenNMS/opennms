@@ -104,10 +104,14 @@ public class AliasedResource extends CollectionResource {
 		for (Iterator it = getGroups().iterator(); it.hasNext();) {
 		    AttributeGroup group = (AttributeGroup) it.next();
 		    AttributeGroup aliased = new AliasedGroup(this, group);
-		    group.visit(visitor);
+		    aliased.visit(visitor);
 		}
 		
 		visitor.completeResource(this);
+	}
+
+	public Collection getGroups() {
+		return getIfInfo().getGroups();
 	}
 
 }
