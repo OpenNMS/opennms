@@ -23,10 +23,10 @@
           </c:forEach>
           <tr>
             <td colspan="3">
-               <input type="submit" value="stop" />
-               <input type="submit" value="start" />
-               <input type="submit" value="restart" />
-               <input type="submit" value="refresh" />
+               <input type="submit" value="stop" name="operation"/>
+               <input type="submit" value="start" name="operation"/>
+               <input type="submit" value="restart" name="operation"/>
+               <input type="submit" value="refresh" name="operation"/>
             </td>
           </tr>
         </table>
