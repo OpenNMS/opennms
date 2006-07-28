@@ -87,7 +87,7 @@ public class AlarmSaveOrUpdate extends SqlUpdate {
         		alarm.getSeverity(), //severity
         		alarm.getLastEvent().getId(), //lastEventID
         		alarm.getFirstEventTime(), //firstEventTime
-        		alarm.getFirstEventTime(), //lastEventTime
+        		alarm.getLastEventTime(), //lastEventTime
         		alarm.getDescription(), //description
         		alarm.getLogMsg(), //logMsg
         		alarm.getOperInstruct(), //operInstruct
