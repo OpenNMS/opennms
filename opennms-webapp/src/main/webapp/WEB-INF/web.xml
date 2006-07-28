@@ -912,13 +912,11 @@
       </init-param>
   </servlet>
 
-<!--
   <servlet>
         <servlet-name>dispatcher</servlet-name>
         <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
   </servlet>
--->
 
   <servlet-mapping>
       <servlet-name>PyServlet</servlet-name>
@@ -1487,12 +1485,10 @@
     <url-pattern>/graph/domainResults</url-pattern>
   </servlet-mapping>
 
-<!--
   <servlet-mapping>
         <servlet-name>dispatcher</servlet-name>
         <url-pattern>*.htm</url-pattern>
   </servlet-mapping>
--->
 
   <error-page>
     <exception-type>org.opennms.web.category.CategoryNotFoundException</exception-type>
