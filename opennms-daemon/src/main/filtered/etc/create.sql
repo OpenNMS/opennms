@@ -949,6 +949,7 @@ create table assets (
 	constraint fk_nodeID5 foreign key (nodeID) references node ON DELETE CASCADE
 );
 
+create index assets_nodeid_idx on assets(nodeid);
 CREATE INDEX assets_an_idx ON assets(assetNumber);
 
 --########################################################################
