@@ -14,37 +14,37 @@
     </fileSet>
     <fileSet>
       <directory>target/classes/bin</directory>
-      <outputDirectory>bin</outputDirectory>
+      <outputDirectory>${install.bin.dir}</outputDirectory>
       <lineEnding>unix</lineEnding>
       <fileMode>0755</fileMode>
     </fileSet>
     <fileSet>
       <directory>target/classes/etc</directory>
-      <outputDirectory>etc</outputDirectory>
+      <outputDirectory>${install.etc.dir}</outputDirectory>
     </fileSet>
     <fileSet>
       <directory>target/classes/contrib</directory>
-      <outputDirectory>contrib</outputDirectory>
+      <outputDirectory>${install.contrib.dir}</outputDirectory>
     </fileSet>
   </fileSets>
   <dependencySets>
     <dependencySet>
        <outputFileNameMapping>opennms_bootstrap.jar</outputFileNameMapping>
-       <outputDirectory>lib</outputDirectory>
+       <outputDirectory>${install.dir}/lib</outputDirectory>
        <includes>
          <include>org.opennms:opennms-bootstrap</include>
        </includes>
     </dependencySet>
     <dependencySet>
        <outputFileNameMapping>opennms_install.jar</outputFileNameMapping>
-       <outputDirectory>lib</outputDirectory>
+       <outputDirectory>${install.dir}/lib</outputDirectory>
        <includes>
          <include>org.opennms:opennms-install</include>
        </includes>
     </dependencySet>
     <dependencySet>
        <outputFileNameMapping>libjicmp.${extension}</outputFileNameMapping>
-       <outputDirectory>lib</outputDirectory>
+       <outputDirectory>${install.jni.dir}</outputDirectory>
        <!-- all the platforms need to be listed until the IncludesArtifactFiler supports wildcards -->
        <includes>
          <include>org.opennms:opennms-icmp-jni-macosx</include>
@@ -55,7 +55,7 @@
     </dependencySet>
     <dependencySet>
        <outputFileNameMapping>libjrrd.${extension}</outputFileNameMapping>
-       <outputDirectory>lib</outputDirectory>
+       <outputDirectory>${install.jni.dir}</outputDirectory>
        <!-- all the platforms need to be listed until the IncludesArtifactFiler supports wildcards -->
        <includes>
          <include>org.opennms:opennms-rrdtool-jni-macosx</include>
@@ -66,7 +66,7 @@
     </dependencySet>
     <dependencySet>
        <outputFileNameMapping>iplike.${extension}</outputFileNameMapping>
-       <outputDirectory>lib</outputDirectory>
+       <outputDirectory>${install.postgresql.dir}</outputDirectory>
        <!-- all the platforms need to be listed until the IncludesArtifactFiler supports wildcards -->
        <includes>
          <include>org.opennms:opennms-iplike-macosx</include>
@@ -76,7 +76,7 @@
        </includes>
     </dependencySet>
     <dependencySet>
-      <outputDirectory>lib</outputDirectory>
+      <outputDirectory>${install.dir}/lib</outputDirectory>
       <excludes>
          <exclude>org.opennms:opennms-bootstrap</exclude>
          <exclude>org.opennms:opennms-install</exclude>
