@@ -136,8 +136,6 @@ public class Installer {
 
 	String m_install_servletdir = null;
 
-	String m_tomcat_serverlibs = null;
-
 	String m_fix_constraint_name = null;
 
 	boolean m_fix_constraint_remove_rows = false;
@@ -330,7 +328,6 @@ public class Installer {
 		m_pg_bindir = fetchProperty("install.database.bindir");
 		m_sql_dir = fetchProperty("install.etc.dir");
 		m_install_servletdir = fetchProperty("install.servlet.dir");
-		m_tomcat_serverlibs = fetchProperty("install.tomcat.serverlibs");
 
 		String soext = fetchProperty("build.soext");
 		String pg_iplike_dir = fetchProperty("install.postgresql.dir");
@@ -1527,8 +1524,6 @@ public class Installer {
 	}
 
 	public void installWebApp() throws Exception {
-		String[] jars = m_tomcat_serverlibs.split(File.pathSeparator);
-
 		m_out.println("- Install OpenNMS webapp... ");
 
 		installLink(m_install_servletdir + File.separator
