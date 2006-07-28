@@ -848,14 +848,20 @@ create table alarms (
 	suppressedTime		TIMESTAMP WITHOUT TIME ZONE,
 	alarmAckUser			VARCHAR(256),
 	alarmAckTime			TIMESTAMP WITHOUT TIME ZONE,
-	clearUei				VARCHAR(256)
+	clearUei				VARCHAR(256),
+	managedObjectInstance	VARCHAR(512),
+	managedObjectType		VARCHAR(512),
+	applicationDN			VARCHAR(512),
+	ossPrimaryKey			VARCHAR(512)
+	
 );
 
 CREATE INDEX alarm_uei_idx ON alarms(eventUei);
 CREATE INDEX alarm_nodeid_idx ON alarms(nodeID);
 CREATE UNIQUE INDEX alarm_reductionkey_idx ON alarms(reductionKey);
 CREATE INDEX alarm_reduction2_idx ON alarms(alarmID, eventUei, dpName, nodeID, serviceID, reductionKey);
-
+CREATE INDEX alarm_app_dn ON assets(applicationDN);
+CREATE INDEX alarm_oss_primary_key ON alarms(ossPrimaryKey);
 
 --# This constraint not understood by installer
 --#        CONSTRAINT pk_usersNotified PRIMARY KEY (userID,notifyID) );
@@ -945,6 +951,8 @@ create table assets (
         pollerCategory   varchar(64),
         thresholdCategory   varchar(64),
         comment         varchar(1024),
+        managedObjectInstance varchar(512),
+        managedObjectType varchar(512)
 
 	constraint fk_nodeID5 foreign key (nodeID) references node ON DELETE CASCADE
 );
