@@ -1640,6 +1640,9 @@ create table reportLocator (
 	reportAvailable		bool not null
 );
 
+--# Sequence for the reportId column in the reportLocator table
+--#          sequence,   column, table
+--# install: reportNxtId reportId reportLocator
 create sequence reportNxtId minvalue 1;
 
 --# Begin Quartz persistence tables
