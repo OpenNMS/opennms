@@ -124,8 +124,19 @@ public class OnmsAlarm implements Serializable {
     /** persistent field */
     private org.opennms.netmgt.model.OnmsEvent m_lastEvent;
 
+    /** persistent field */
+    private String m_managedObjectInstance;
+    
+    /** persistent field */
+    private String m_managedObjectType;
+    
+    /** persistent field */
+    private String m_applicationDN;
+
+    private String m_ossPrimaryKey;
+
     /** full constructor */
-    public OnmsAlarm(Integer alarmid, String eventuei, OnmsDistPoller distPoller, OnmsNode node, String ipaddr, OnmsServiceType serviceType, String reductionkey, Integer alarmtype, Integer counter, Integer severity, Date firsteventtime, String description, String logmsg, String operinstruct, String tticketid, Integer tticketstate, String mouseovertext, Date suppresseduntil, String suppresseduser, Date suppressedtime, String alarmackuser, Date alarmacktime, String clearuei, org.opennms.netmgt.model.OnmsEvent event) {
+    public OnmsAlarm(Integer alarmid, String eventuei, OnmsDistPoller distPoller, OnmsNode node, String ipaddr, OnmsServiceType serviceType, String reductionkey, Integer alarmtype, Integer counter, Integer severity, Date firsteventtime, String description, String logmsg, String operinstruct, String tticketid, Integer tticketstate, String mouseovertext, Date suppresseduntil, String suppresseduser, Date suppressedtime, String alarmackuser, Date alarmacktime, String clearuei, String managedObjectInstance, String managedObjectType, org.opennms.netmgt.model.OnmsEvent event) {
         this.m_id = alarmid;
         this.m_uei = eventuei;
         this.m_distPoller = distPoller;
@@ -150,6 +161,7 @@ public class OnmsAlarm implements Serializable {
         this.m_alarmAckTime = alarmacktime;
         this.m_clearUei = clearuei;
         this.m_lastEvent = event;
+        this.m_managedObjectInstance = managedObjectInstance;
     }
 
     /** default constructor */
@@ -522,6 +534,38 @@ public class OnmsAlarm implements Serializable {
 
     public void setLastEventTime(Date lastEventTime) {
         m_lastEventTime = lastEventTime;
+    }
+
+    public String getApplicationDN() {
+        return m_applicationDN;
+    }
+
+    public void setApplicationDN(String applicationDN) {
+        m_applicationDN = applicationDN;
+    }
+
+    public String getManagedObjectInstance() {
+        return m_managedObjectInstance;
+    }
+
+    public void setManagedObjectInstance(String managedObjectInstance) {
+        m_managedObjectInstance = managedObjectInstance;
+    }
+
+    public String getManagedObjectType() {
+        return m_managedObjectType;
+    }
+
+    public void setManagedObjectType(String managedObjectType) {
+        m_managedObjectType = managedObjectType;
+    }
+
+    public String getOssPrimaryKey() {
+        return m_ossPrimaryKey;
+    }
+    
+    public void setOssPrimaryKey(String key) {
+        m_ossPrimaryKey = key;
     }
 
 }
