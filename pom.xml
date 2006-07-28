@@ -812,7 +812,7 @@ opennms.home = ${opennms.home}
       <dependency>
         <groupId>log4j</groupId>
         <artifactId>log4j</artifactId>
-        <version>1.2.7</version>
+        <version>1.2.9</version>
       </dependency>
       <dependency>
         <groupId>mx4j</groupId>
