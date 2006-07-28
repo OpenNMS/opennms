@@ -2,6 +2,7 @@ package org.opennms.report.availability;
 
 import java.util.Collection;
 import org.opennms.netmgt.dao.AvailabilityReportLocatorDao;
+import org.opennms.netmgt.model.AvailabilityReportLocator;
 
 public class AvailabilityReportLocatorService implements ReportLocatorService {
 
@@ -25,5 +26,10 @@ public class AvailabilityReportLocatorService implements ReportLocatorService {
 		// TODO This is actually meant to delete reports, not just remove them
 		availabilityReportLocatorDao.delete(id);
 	}
+	
+	public void addReport(AvailabilityReportLocator locator) {
+		availabilityReportLocatorDao.save(locator);
+	}
 
+	
 }
