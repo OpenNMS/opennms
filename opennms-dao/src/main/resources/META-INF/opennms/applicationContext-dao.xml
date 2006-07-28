@@ -148,6 +148,10 @@
   	<property name="dataSource" ref="dataSource" />
   </bean>
   
+  <bean id="availabilityReportLocatorDao" class="org.opennms.netmgt.dao.AvailabilityReportLocatorJdbc">
+    <property name="dataSource" ref="dataSource" />
+  </bean>
+  
   
   
 
