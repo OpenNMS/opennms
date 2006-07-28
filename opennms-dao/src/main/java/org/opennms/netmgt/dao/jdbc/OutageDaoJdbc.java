@@ -217,7 +217,7 @@ public class OutageDaoJdbc extends AbstractDaoJdbc implements OutageDao {
     	Collection<OnmsOutage> outages = currentOutages();
 		for (OnmsOutage outage : outages) {
     		OnmsMonitoredService svc = outage.getMonitoredService();
-    		if (matchingSvcs.contains(svc.getServiceName()) &&
+    		if ((matchingSvcs.contains(svc.getServiceName()) || matchingSvcs.isEmpty()) &&
     			matchingIps.contains(svc.getIpAddress())) {
     			
     			matchingOutages.add(outage);
