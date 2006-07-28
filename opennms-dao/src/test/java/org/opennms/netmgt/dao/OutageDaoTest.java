@@ -33,6 +33,7 @@ package org.opennms.netmgt.dao;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 
 import org.opennms.netmgt.model.OnmsEvent;
@@ -75,6 +76,12 @@ public class OutageDaoTest extends AbstractDaoTestCase {
     public void testGetMatchingOutages() {
     	String[] svcs = new String[] { "SNMP" };
     	ServiceSelector selector = new ServiceSelector("ipAddr IPLIKE 192.168.1.1", Arrays.asList(svcs));
+    	Collection<OnmsOutage> outages = getOutageDao().matchingCurrentOutages(selector);
+    	assertEquals(1, outages.size());
+    }
+    
+    public void testGetMatchingOutagesWithEmptyServiceList() {
+    	ServiceSelector selector = new ServiceSelector("ipAddr IPLIKE 192.168.1.1", Collections.EMPTY_LIST);
     	Collection<OnmsOutage> outages = getOutageDao().matchingCurrentOutages(selector);
     	assertEquals(1, outages.size());
     }
