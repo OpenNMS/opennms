@@ -76,6 +76,7 @@
     <url>http://svn.sourceforge.net/viewcvs.cgi/opennms/opennms/trunk</url>
   </scm>
   <modules>
+    <module>opennms-test</module>
     <module>opennms-util</module>
     <module>opennms-bootstrap</module>
     <module>opennms-joesnmp</module>
@@ -621,6 +622,11 @@ opennms.home = ${opennms.home}
       <dependency>
         <groupId>org.opennms</groupId>
         <artifactId>opennms-snmp-snmp4j</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms</groupId>
+        <artifactId>opennms-test</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
