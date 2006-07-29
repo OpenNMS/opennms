@@ -1172,19 +1172,16 @@
 		<severity>Warning</severity>
 	</event>
 	<event>
-		<uei>uei.opennms.org/nodes/assetInfoChanged</uei>
-		<event-label>OpenNMS-defined node event: assetInfoChanged</event-label>
-		<descr>
-			&lt;p&gt;The Asset info for node %nodeid% (%nodelabel%)
-			has been changed via the webUI.&lt;/p&gt;
-		</descr>
-		<logmsg dest='logndisplay'>
-			&lt;p&gt;The Asset info for node %nodeid% (%nodelabel%)
-			has been changed via the webUI.&lt;/p&gt;
-		</logmsg>
-		<severity>Normal</severity>
+	  <uei>uei.opennms.org/threshold/highThresholdRearmed</uei>
+	  <event-label>OpenNMS-defined threshold event: highThresholdRearmed</event-label>
+	  <descr>
+	    &lt;p&gt;High threshold has been rearmed for %service% datasource %parm[ds]% on interface %interface%, parms: %parm[all]%&lt;/p&gt; &lt;p&gt;By default, OpenNMS watches some key parameters on devices in your network and will alert you with an event if
+	    certain conditions arise. For example, if the CPU utilization on your Cisco router maintains an inordinately high percentage of utilization for an extended period, an event will be generated. These thresholds are determined and configured based on vendor
+	    recommendations, tempered with real-world experience in working deployments.&lt;/p&gt; &lt;p&gt;This specific event indicates that a high threshold was exceeded but then dropped below the rearm threshold..&lt;/p&gt;
+	  </descr>
+	  <logmsg dest='logndisplay'>High threshold rearmed for %service% datasource %parm[ds]% on interface %interface%, parms: %parm[all]%</logmsg>
+	  <severity>Normal</severity>
 	</event>
-	
 	<event>
 		<uei>uei.opennms.org/services/passiveServiceStatus</uei>
 		<event-label>OpenNMS-defined service event: passiveServiceStatus</event-label>
@@ -1199,6 +1196,17 @@
 		<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%service%" alarm-type="1" auto-clean="false" />
 -->
 	</event>
+  <event>
+    <uei>uei.opennms.org/internal/demandPollService</uei>
+    <event-label>OpenNMS-defined node event: DemandPoll</event-label>
+    <descr>
+      &lt;p&gt;The Demand Poll requested on %nodeid% (%nodelabel%)
+    </descr>
+    <logmsg dest='logndisplay'>
+      &lt;p&gt;The Demand Poll requested on %nodeid% (%nodelabel%).&lt;/p&gt;
+    </logmsg>
+    <severity>Normal</severity>
+  </event>
 	<event>
 		<mask>
 			<maskelement>
