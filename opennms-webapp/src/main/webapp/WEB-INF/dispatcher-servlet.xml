@@ -23,6 +23,19 @@
 	  <property name="successView" value="daemonstatus" />
 	</bean>
 
+     <bean name="/displayCurrentOutages.htm"
+                class="org.opennms.web.controller.OutageCurrentController">
+                <property name="outageService" ref="outageService" />
+    </bean>
+
+        <!--
+                <property name="formView" value="displayCurrentOutages" />
+                <property name="successView" value="displayCurrentOutages" />
+                <property name="commandName"><value>outageService</value></property>
+                <property name="commandClass"><value>org.opennms.web.controller.OutageCurrentController</value></property>
+        -->
+    
+  
   
 <!-- Examples
 	<bean name="/nodes.htm" class="org.opennms.controller.NodeController">
