@@ -1,5 +1,7 @@
 package org.opennms.web.services;
 
+import java.util.Date;
+
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.capsd.EventUtils;
 import org.opennms.netmgt.model.OnmsMonitoredService;
@@ -24,6 +26,9 @@ public class DefaultPollerService implements PollerService {
 		demandPollEvent.setInterface(monSvc.getIpAddress());
 		demandPollEvent.setIfIndex(Integer.toString(monSvc.getIfIndex()));
 		demandPollEvent.setService(monSvc.getServiceType().getName());
+        demandPollEvent.setCreationTime(EventConstants.formatToString(new Date()));
+        demandPollEvent.setTime(demandPollEvent.getCreationTime());
+        demandPollEvent.setSource("PollerService");
 		
 		EventUtils.addParam(demandPollEvent, EventConstants.PARM_DEMAND_POLL_ID, pollResultId);
 
