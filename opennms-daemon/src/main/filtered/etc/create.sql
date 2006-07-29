@@ -952,7 +952,7 @@ create table assets (
         thresholdCategory   varchar(64),
         comment         varchar(1024),
         managedObjectInstance varchar(512),
-        managedObjectType varchar(512)
+        managedObjectType varchar(512),
 
 	constraint fk_nodeID5 foreign key (nodeID) references node ON DELETE CASCADE
 );
