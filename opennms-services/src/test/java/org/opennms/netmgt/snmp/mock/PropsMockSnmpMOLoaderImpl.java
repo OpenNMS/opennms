@@ -9,9 +9,14 @@ import java.util.Properties;
 import org.snmp4j.agent.ManagedObject;
 import org.snmp4j.agent.mo.MOAccessImpl;
 import org.snmp4j.agent.mo.MOScalar;
+import org.snmp4j.smi.Counter32;
+import org.snmp4j.smi.Counter64;
+import org.snmp4j.smi.Gauge32;
 import org.snmp4j.smi.Integer32;
 import org.snmp4j.smi.OID;
 import org.snmp4j.smi.OctetString;
+import org.snmp4j.smi.TimeTicks;
+import org.snmp4j.smi.Variable;
 
 public class PropsMockSnmpMOLoaderImpl implements MockSnmpMOLoader {
 
@@ -46,22 +51,29 @@ public class PropsMockSnmpMOLoaderImpl implements MockSnmpMOLoader {
 		String moTypeStr = valStr.substring(0, valStr.indexOf(":"));
 		String moValStr = valStr.substring(valStr.indexOf(":") + 2);
 		ManagedObject newMO;
+		Variable newVar;
 		if (moTypeStr.equals("STRING")) {
-			newMO = new MOScalar(moOID, MOAccessImpl.ACCESS_READ_ONLY, new OctetString(moValStr));
+			newVar = new OctetString(moValStr);
 		} else if (moTypeStr.equals("Hex-STRING")) {
-			newMO = new MOScalar(moOID, MOAccessImpl.ACCESS_READ_ONLY, OctetString.fromHexString(moValStr));
-		} else if (moTypeStr.equals("INTEGER") || moTypeStr.equals("Gauge32") || moTypeStr.equals("Counter32")) {
-			newMO = new MOScalar(moOID, MOAccessImpl.ACCESS_READ_ONLY, new Integer32(Integer.parseInt(moValStr)));			
+			newVar = OctetString.fromHexString(moValStr);
+		} else if (moTypeStr.equals("INTEGER")) {
+			newVar = new Integer32(Integer.parseInt(moValStr));
+		} else if (moTypeStr.equals("Gauge32")) {
+			newVar = new Gauge32(Integer.parseInt(moValStr));
+		} else if (moTypeStr.equals("Counter32")) {
+			newVar = new Counter32(Integer.parseInt(moValStr));
+		} else if (moTypeStr.equals("Counter64")) {
+			newVar = new Counter64(Long.parseLong(moValStr));
 		} else if (moTypeStr.equals("TimeTicks")) {
 			Integer ticksInt = Integer.parseInt( moValStr.substring( moValStr.indexOf("(") + 1, moValStr.indexOf(")") ) );
-			newMO = new MOScalar(moOID, MOAccessImpl.ACCESS_READ_ONLY, new Integer32(ticksInt));
+			newVar = new TimeTicks(ticksInt);
 		} else if (moTypeStr.equals("OID")) {
-			newMO = new MOScalar(moOID, MOAccessImpl.ACCESS_READ_ONLY, new OID(moValStr));
+			newVar = new OID(moValStr);
 		} else {
 			// Punt, assume it's a String
-			newMO = new MOScalar(moOID, MOAccessImpl.ACCESS_READ_ONLY, new OctetString(moValStr)); 
+			newVar = new OctetString(moValStr);
 		}
+		newMO = new MOScalar(moOID, MOAccessImpl.ACCESS_READ_ONLY, newVar);
 		return newMO;
 	}
-	
 }
