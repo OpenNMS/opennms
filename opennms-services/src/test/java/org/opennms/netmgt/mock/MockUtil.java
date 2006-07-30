@@ -93,6 +93,13 @@ public class MockUtil {
         return createServiceEvent(source, EventConstants.SERVICE_RESPONSIVE_EVENT_UEI, svc, null);
     }
     
+	public static Event createDemandPollServiceEvent(String source, MockService svc, int demandPollId) {
+		Event event = createServiceEvent(source, EventConstants.DEMAND_POLL_SERVICE_EVENT_UEI, svc, null);
+		addEventParm(event, EventConstants.PARM_DEMAND_POLL_ID, demandPollId);
+		return event;
+	}
+
+    
     public static Event createNodeGainedServiceEvent(String source, MockService svc) {
         return createServiceEvent(source, EventConstants.NODE_GAINED_SERVICE_EVENT_UEI, svc, null);
     }
@@ -265,6 +272,7 @@ public class MockUtil {
         if (MockUtil.printEnabled())
             System.err.println(string);
     }
+
 
 
 }

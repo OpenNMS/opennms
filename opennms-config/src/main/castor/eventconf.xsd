@@ -513,7 +513,7 @@
       <attribute name="reduction-key" type="string" use="required" />
       <attribute name="alarm-type" type="positiveInteger" use="required" />
       <attribute name="clear-uei" type="string" use="optional" />
-      <attribute name="auto-clean" type="boolean" use="optional" default="tue" />
+      <attribute name="auto-clean" type="boolean" use="optional" default="true" />
     </complexType>
   </element>
 

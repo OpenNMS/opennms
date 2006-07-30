@@ -15,10 +15,6 @@ public class DemandPoll {
 		
 	}
 	
-	public DemandPoll(Integer id) {
-		m_id = id;
-	}
-	
 	public String getDescription() {
 		return m_description;
 	}

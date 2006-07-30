@@ -115,7 +115,6 @@
           }
       }
   </script>
-  </head>
 
 <h3 align="center"> Customized Report - Graph Definition </h3>
 

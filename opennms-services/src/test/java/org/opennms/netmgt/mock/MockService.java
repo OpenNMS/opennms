@@ -223,4 +223,8 @@ public class MockService extends MockElement implements MonitoredService {
         return getInterface().getAddress();    
     }
 
+	public Event createDemandPollEvent(int demandPollId) {
+		return MockUtil.createDemandPollServiceEvent("Test", this, demandPollId);
+	}
+
 }

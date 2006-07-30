@@ -266,9 +266,7 @@
               
                             <img src="graph/graph.png?type=performance&props=<%=nodeId%>/strings.properties&report=<%=display_graph.getName()%>&start=<%=start%>&end=<%=end%>&<%=rrdParm%>&<%=externalValuesParm%>"/>
                         </td>
-		    <% if (((i+1)%report_graphsperline == 0)){ %>
-                    </tr>
-		    <% } else if ((i+1) == graph_count) { %>
+		    <% if (((i+1)%report_graphsperline == 0) || (i+1) == graph_count){ %>
                     </tr>
 		    <% } %>
                 <% }  //end for loop %> 

@@ -187,7 +187,7 @@
     <%  NoticeSentTo sentTo = (NoticeSentTo)sentToList.get(i); %>
 
     <tr>
-      <td class="standard"><%=sentTo.getUserId()%></a></td>
+      <td class="standard"><%=sentTo.getUserId()%></td>
 
       <td class="standard"><%=org.opennms.netmgt.EventConstants.formatToUIString(sentTo.getTime())%></td>
 

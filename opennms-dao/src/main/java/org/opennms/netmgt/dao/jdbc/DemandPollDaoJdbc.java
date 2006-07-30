@@ -46,14 +46,22 @@ import org.opennms.netmgt.dao.jdbc.demandpoll.LazyDemandPoll;
 import org.opennms.netmgt.model.DemandPoll;
 
 public class DemandPollDaoJdbc extends AbstractDaoJdbc implements DemandPollDao {
+	
+	private String m_allocateIdStmt = "SELECT nextval('demandPollNxtId')"; 
     
     public DemandPollDaoJdbc() {
         super();
     }
     
+    
+    
     public DemandPollDaoJdbc(DataSource ds) {
         super(ds);
     }
+    
+    public void setAllocateIdStmt(String allocateIdStmt) {
+		m_allocateIdStmt = allocateIdStmt;
+	}
     
     public int countAll() {
         return getJdbcTemplate().queryForInt("select count(*) from demandpoll");
@@ -123,7 +131,7 @@ public class DemandPollDaoJdbc extends AbstractDaoJdbc implements DemandPollDao 
     }
 
 	private Integer allocateId() {
-        return new Integer(getJdbcTemplate().queryForInt("SELECT nextval('demandPollNxtId')"));
+        return new Integer(getJdbcTemplate().queryForInt(m_allocateIdStmt));
     }
 
     private void cascadeSaveAssociations(DemandPoll poll) {
