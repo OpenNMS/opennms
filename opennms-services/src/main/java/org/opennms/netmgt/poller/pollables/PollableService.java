@@ -53,7 +53,20 @@ import org.opennms.netmgt.xml.event.Event;
  */
 public class PollableService extends PollableElement implements ReadyRunnable, MonitoredService {
 
-    private String m_svcName;
+    private final class PollRunner implements Runnable {
+    	
+    	private PollStatus m_pollStatus;
+		public void run() {
+		    doPoll();
+		    getNode().processStatusChange(new Date());
+		    m_pollStatus = getStatus();
+		}
+		public PollStatus getPollStatus() {
+			return m_pollStatus;
+		}
+	}
+
+	private String m_svcName;
     private PollConfig m_pollConfig;
     private IPv4NetworkInterface m_netInterface;
     private PollStatus m_oldStatus;
@@ -150,13 +163,13 @@ public class PollableService extends PollableElement implements ReadyRunnable, M
     /**
      * @return the top changed element whose status changes needs to be processed
      */
-    public void doPoll() {
+    public PollStatus doPoll() {
         if (getContext().isNodeProcessingEnabled()) {
-            getParent().doPoll(this);
+            return getParent().doPoll(this);
         }
         else {
             resetStatusChanged();
-            poll();
+            return poll();
         }
     }
     
@@ -262,31 +275,40 @@ public class PollableService extends PollableElement implements ReadyRunnable, M
      * @see java.lang.Runnable#run()
      */
     public void run() {
-        Category log = ThreadCategory.getInstance(PollableService.class);
-        long startDate = System.currentTimeMillis();
-        log.debug("Start Scheduled Poll of service "+this);
+        doRun(500);
+    }
+    
+    public PollStatus doRun() {
+    	return doRun(0);
+    }
+
+	private PollStatus doRun(int timeout) {
+		long startDate = System.currentTimeMillis();
+        log().debug("Start Scheduled Poll of service "+this);
+        PollStatus status;
         if (getContext().isNodeProcessingEnabled()) {
-            Runnable r = new Runnable() {
-                public void run() {
-                    doPoll();
-                    getNode().processStatusChange(new Date());
-                }
-            };
+            PollRunner r = new PollRunner();
             try {
-                withTreeLock(r, 500);
+				withTreeLock(r, timeout);
             } catch (LockUnavailable e) {
-                log.info("Postponing poll for "+this+" because "+e);
+                log().info("Postponing poll for "+this+" because "+e);
                 throw new PostponeNecessary("LockUnavailable postpone poll");
             }
+            status = r.getPollStatus();
         }
         else {
             doPoll();
             processStatusChange(new Date());
+            status = getStatus();
         }
-        if (log.isDebugEnabled())
-            log.debug("Finish Scheduled Poll of service "+this+", started at "+new Date(startDate));
-        
-    }
+        if (log().isDebugEnabled())
+            log().debug("Finish Scheduled Poll of service "+this+", started at "+new Date(startDate));
+        return status;
+	}
+
+	private Category log() {
+		return ThreadCategory.getInstance(PollableService.class);
+	}
 
     public void delete() {
         Runnable r = new Runnable() {

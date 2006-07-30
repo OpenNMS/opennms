@@ -53,7 +53,9 @@ import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.capsd.EventUtils;
+import org.opennms.netmgt.capsd.InsufficientInformationException;
 import org.opennms.netmgt.config.PollerConfig;
+import org.opennms.netmgt.dao.DemandPollDao;
 import org.opennms.netmgt.eventd.EventIpcManager;
 import org.opennms.netmgt.eventd.EventListener;
 import org.opennms.netmgt.poller.pollables.PollableInterface;
@@ -75,6 +77,9 @@ import org.opennms.netmgt.xml.event.Value;
 final class PollerEventProcessor implements EventListener {
 
     private Poller m_poller;
+	private DemandPollDao m_demandPollDao;
+	
+	
 
     /**
      * Create message selector to set to the subscription
@@ -630,6 +635,19 @@ final class PollerEventProcessor implements EventListener {
         } // end single event proces
 
     } // end onEvent()
+    
+    private void demandPollServiceHandler(Event e) throws InsufficientInformationException {
+    	EventUtils.checkNodeId(e);
+    	EventUtils.checkInterface(e);
+    	EventUtils.checkService(e);
+    	EventUtils.requireParm(e, EventConstants.PARM_DEMAND_POLL_ID);
+    	
+    	
+    	m_demandPollDao.get(EventUtils.getIntParm(e, EventConstants.PARM_DEMAND_POLL_ID, -1));
+    	
+    	
+    	
+    }
 
     private void scheduledOutagesChangeHandler(Category log) {
         try {

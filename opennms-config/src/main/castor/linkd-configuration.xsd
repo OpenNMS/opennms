@@ -1,12 +1,13 @@
 <?xml version="1.0"?>
 <schema xmlns="http://www.w3.org/2001/XMLSchema"
+    xmlns:this="http://xmlns.opennms.org/xsd/config/linkd"
 	targetNamespace="http://xmlns.opennms.org/xsd/config/linkd">
 
 	<element name="linkd-configuration">
 		<complexType>
 			<sequence>
 				<!--- vlan section to get Vlan info from varius vendors -->
-				<element ref="vlans" minOccurs="1" maxOccurs="1"/>
+				<element ref="this:vlans" minOccurs="1" maxOccurs="1"/>
 			</sequence>
 			<!--- the initial sleep time in msec before starting collection -->
 			<attribute name="initial_sleep_time" type="long" use="required"/>
@@ -22,7 +23,7 @@
 		<complexType>
 			<sequence>
 				<!--- for every vendor get vlan oid to get vlan on device -->
-				<element ref="vendor" minOccurs="1" maxOccurs="unbounded"/>
+				<element ref="this:vendor" minOccurs="1" maxOccurs="unbounded"/>
 			</sequence>
 		</complexType>
 	</element>
@@ -34,10 +35,10 @@
 				<element name="specific" type="string" minOccurs="1" maxOccurs="unbounded"/>
 				
 				<!--- the range of sysoid submask nodes to be polled to get vlan-->
-				<element ref="include-range" minOccurs="0" maxOccurs="unbounded"/>
+				<element ref="this:include-range" minOccurs="0" maxOccurs="unbounded"/>
 
 				<!--- the range of sysoid submask nodes to be excluded from the polling to get vlan-->
-				<element ref="exclude-range" minOccurs="0" maxOccurs="unbounded"/>
+				<element ref="this:exclude-range" minOccurs="0" maxOccurs="unbounded"/>
 				
 			</sequence>
 
