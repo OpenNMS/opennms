@@ -125,6 +125,9 @@ public class AlarmMappingQuery extends MappingSqlQuery {
         alarm.setTTicketId(rs.getString("tticketId"));
         alarm.setTTicketState(new Integer(rs.getInt("tticketState")));
         alarm.setUei(rs.getString("eventUei"));
+        alarm.setManagedObjectInstance(rs.getString("managedObjectInstance"));
+        alarm.setManagedObjectType(rs.getString("managedObjectType"));
+        alarm.setApplicationDN(rs.getString("applicationDN"));
         alarm.setOssPrimaryKey(rs.getString("ossPrimaryKey"));
         
         alarm.setDirty(false);
