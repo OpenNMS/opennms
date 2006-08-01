@@ -86,8 +86,8 @@ public class AssetRecordDaoJdbc extends AbstractDaoJdbc implements AssetRecordDa
             "dateInstalled, " +
             "lease, " +
             "leaseExpires, " +
-            "supportPhone," +
-            " maintContract, " +
+            "supportPhone, " +
+            "maintContract, " +
             "maintContractExpires, " +
             "displayCategory, " +
             "notifyCategory, " +
@@ -96,11 +96,13 @@ public class AssetRecordDaoJdbc extends AbstractDaoJdbc implements AssetRecordDa
             "comment, " +
             "mangedObjectInstance, " +
             "mangedObjectType , " +
-            "" +
             "nodeID" +
             ") values " +
-            "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-
+            "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?," +
+            " ?, ?, ?, ?, ?, ?, ?, ?, ?, ?," +
+            " ?, ?, ?, ?, ?, ?, ?, ?, ?, ?," +
+            " ?, ?, ?, ?, ?, ?, ?, ?, ?, ?," +
+            " ?, ?)";
         
         public Save(DataSource ds) {
             super(ds, insertStmt);
@@ -157,9 +159,9 @@ public class AssetRecordDaoJdbc extends AbstractDaoJdbc implements AssetRecordDa
             "notifyCategory = ?, " +
             "pollerCategory = ?, " +
             "thresholdCategory = ?, " +
-            "comment = ? " +
-            "mangedObjectInstace, " +
-            "mangedObjectType, " +
+            "comment = ?, " +
+            "mangedObjectInstance = ?, " +
+            "mangedObjectType = ?, " +
             "where nodeID = ?";
 
         public Update(DataSource ds) {
