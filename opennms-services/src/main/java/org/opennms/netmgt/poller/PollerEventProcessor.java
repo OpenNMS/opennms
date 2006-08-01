@@ -164,8 +164,11 @@ final class PollerEventProcessor implements EventListener {
         // resumePollingService
         ueiList.add(EventConstants.RESUME_POLLING_SERVICE_EVENT_UEI);
 	
-	// scheduled outage configuration change
-	ueiList.add(EventConstants.SCHEDOUTAGES_CHANGED_EVENT_UEI);
+        // scheduled outage configuration change
+        ueiList.add(EventConstants.SCHEDOUTAGES_CHANGED_EVENT_UEI);
+        
+        // demand poll
+        ueiList.add(EventConstants.DEMAND_POLL_SERVICE_EVENT_UEI);
 
         // Subscribe to eventd
         getEventManager().addEventListener(this, ueiList);
