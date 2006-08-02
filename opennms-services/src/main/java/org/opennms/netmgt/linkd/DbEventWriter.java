@@ -471,13 +471,17 @@ public class DbEventWriter implements Runnable {
 				bytes[0] = (byte) ((ipAddr >> 24) & 0xff);
 				                         
 				InetAddress cdpTargetIpAddr = InetAddress.getByAddress(bytes);
-				if (log.isDebugEnabled())	log.debug(" cdp address after pasing " + cdpTargetIpAddr.getHostAddress());
+				if (log.isDebugEnabled())	log.debug(" cdp address after parsing " + cdpTargetIpAddr.getHostAddress());
 				
 				int cdpIfIndex = cdpEntry.getInt32(CdpCacheTableEntry.CDP_IFINDEX);
+				if (log.isDebugEnabled())	log.debug(" cdp ifindex is " + cdpIfIndex);
 
 				String cdpTargetDevicePort = cdpEntry.getHexString(CdpCacheTableEntry.CDP_DEVICEPORT);
+				if (log.isDebugEnabled())	log.debug(" cdp Target deive port name is " + cdpTargetDevicePort);
+
 
 				CdpInterface cdpIface = new CdpInterface(cdpIfIndex);
+
 				int targetCdpNodeId = getNodeidFromIp(dbConn, cdpTargetIpAddr);
 
 				cdpIface.setCdpTargetNodeId(targetCdpNodeId);

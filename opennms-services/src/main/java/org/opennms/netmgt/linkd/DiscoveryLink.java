@@ -216,6 +216,7 @@ final class DiscoveryLink implements ReadyRunnable {
 					}
 
 					int cdpIfIndex = cdpIface.getCdpIfIndex();
+					
 					if (cdpIfIndex < 0) {
 						log.warn("run: found not valid CDP IfIndex "
 								+ cdpIfIndex + " . Skipping");
@@ -223,6 +224,7 @@ final class DiscoveryLink implements ReadyRunnable {
 					}
 
 					int cdpDestIfindex = cdpIface.getCdpTargetIfIndex();
+					
 					if (cdpDestIfindex < 0) {
 						log
 								.warn("run: found not valid CDP destination IfIndex "
