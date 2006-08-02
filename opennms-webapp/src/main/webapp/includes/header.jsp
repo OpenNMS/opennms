@@ -121,7 +121,7 @@
             <c:out value="${time}"/>
           </span><!-- /headerdate -->
 	  <br/>
-          <span style="font-size: 8px;"><a href="logoff.jsp">Logout</a></span>
+          <span style="font-size: 8px;"><a href="j_acegi_logout">Logout</a></span>
       </td>
      </tr>
     </table>
