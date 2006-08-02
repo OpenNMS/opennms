@@ -803,7 +803,7 @@ public class OnmsAssetRecord implements Serializable {
     }
     
     public void setManagedObjectInstance(String moi) {
-        m_managedObjectType = moi;
+        m_managedObjectInstance = moi;
     }
     
     public Serializable getSerializableId() {
