@@ -73,7 +73,7 @@ public class AlarmMappingQuery extends MappingSqlQuery {
         		"a.alarmAckUser as alarmAckUser, " + 
         		"a.alarmAckTime as alarmAckTime, " + 
         		"a.clearUei as clearUei, " +
-                "a.managedObjectInstace as managedObjectInstace, " +
+                "a.managedObjectInstance as managedObjectInstance, " +    // changed
                 "a.managedObjectType as managedObjectType, " +
                 "a.applicationDN as applicationDN, " +
                 "a.ossPrimaryKey as ossPrimaryKey, " +
@@ -113,6 +113,7 @@ public class AlarmMappingQuery extends MappingSqlQuery {
         alarm.setCounter(new Integer(rs.getInt("counter")));
         alarm.setDescription(rs.getString("description"));
         alarm.setFirstEventTime(rs.getTimestamp("firstEventTime"));
+        alarm.setLastEventTime(rs.getTimestamp("lastEventTime"));    // added 
         alarm.setIpAddr(rs.getString("ipAddr"));
         alarm.setLogMsg(rs.getString("logMsg"));
         alarm.setMouseOverText(rs.getString("mouseOverText"));
