@@ -46,13 +46,13 @@ public final class Authentication extends Object {
     public static Category log = Category.getInstance("OpenNMS.WEB.AUTH");
 
     /** The name of the role defined for users in the web.xml file. */
-    public static final String USER_ROLE = "OpenNMS User";
+    public static final String USER_ROLE = "ROLE_USER";
 
     /** The name of the role defined for administrators in the web.xml file. */
-    public static final String ADMIN_ROLE = "OpenNMS Administrator";
+    public static final String ADMIN_ROLE = "ROLE_ADMIN";
 
     /** The name of the role defined for read-only users in the web.xml file. */
-    public static final String READONLY_ROLE = "OpenNMS Read-Only User";
+    public static final String READONLY_ROLE = "ROLE_READONLY";
 
     /** Private, empty constructor so this class cannot be instantiated. */
     private Authentication() {

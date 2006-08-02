@@ -57,8 +57,10 @@
 <bean id="inMemoryDaoImpl" class="org.acegisecurity.userdetails.memory.InMemoryDaoImpl">
   <property name="userMap">
     <value>
-      admin=admin,ROLE_USER
-      rtc=rtc,ROLE_USER
+      admin=admin,ROLE_ADMIN
+      rtc=rtc,ROLE_RTC
+      user=user,ROLE_USER
+      readonly=readonly,ROLE_READONLY
     </value>
   </property>
 </bean>        
@@ -91,16 +93,14 @@
       <value>
         CONVERT_URL_TO_LOWERCASE_BEFORE_COMPARISON
         PATTERN_TYPE_APACHE_ANT
-        /logoff.jsp=ROLE_ANONYMOUS,ROLE_USER
-        /acegilogin.jsp*=ROLE_ANONYMOUS,ROLE_USER
-        /**=ROLE_USER
+        /logoff.jsp=ROLE_ANONYMOUS,ROLE_ADMIN,ROLE_USER,ROLE_READONLY
+        /acegilogin.jsp*=ROLE_ANONYMOUS,ROLE_ADMIN,ROLE_USER,ROLE_READONLY
+        /admin/**=ROLE_ADMIN
+        /rtc/post/**=ROLE_RTC
+        /**=ROLE_ADMIN,ROLE_USER,ROLE_READONLY
       </value>
     </property>
   </bean>
-<!--
-        /index.jsp=ROLE_ANONYMOUS,ROLE_USER
-        /hello.htm=ROLE_ANONYMOUS,ROLE_USER
--->
 
 <bean id="exceptionTranslationFilter" class="org.acegisecurity.ui.ExceptionTranslationFilter">
   <property name="authenticationEntryPoint"><ref local="authenticationProcessingFilterEntryPoint"/></property>
