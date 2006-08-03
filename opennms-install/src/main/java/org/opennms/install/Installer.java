@@ -1307,7 +1307,7 @@ public class Installer {
 
 		if (m_install_webapp) {
 			verifyFileExists(true, m_webappdir,
-					"Top-level web application directory", "-w option");
+					"Tomcat context directory", "-w option");
 
 			verifyFileExists(true, m_install_servletdir,
 					"OpenNMS servlet directory", "install.servlet.dir property");
@@ -2369,7 +2369,7 @@ public class Installer {
 		m_out.println("                                "
 				+ "[-T <tomcat4.conf>]");
 		m_out.println("                                "
-				+ "[-w <tomcat webapps directory>");
+				+ "[-w <tomcat context directory>");
 		m_out.println("                                " + "[-C <constraint>]");
 		m_out.println("");
 		m_out.println(m_required_options);
@@ -2390,7 +2390,8 @@ public class Installer {
 				+ "exist");
 		m_out.println("");
 		m_out.println("   -T    location of tomcat.conf");
-		m_out.println("   -w    location of tomcat's webapps directory");
+		m_out.println("   -w    location of tomcat's contcxt directory");
+		m_out.println("         (usually under conf/Catalina/localhost)");
 		m_out.println("");
 		m_out.println("   -r    run as an RPM install (does nothing)");
 		m_out.println("   -x    turn on debugging for database data "
