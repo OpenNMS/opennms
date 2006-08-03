@@ -4,7 +4,11 @@
 
 package org.opennms.install;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.io.StringReader;
 import java.sql.SQLException;
@@ -23,6 +27,7 @@ public class InstallerDBTest extends TestCase {
     private static final String s_runProperty = "mock.rundbtests";
 
     private String m_testDatabase;
+    private boolean m_leaveDatabase = false;
 
     private Installer m_installer;
 
@@ -41,10 +46,13 @@ public class InstallerDBTest extends TestCase {
         m_installer.m_pg_url = "jdbc:postgresql://localhost:5432/";
         m_installer.m_pg_user = "postgres";
         m_installer.m_pg_pass = "";
+        m_installer.m_user = "opennms";
         // XXX this makes bad assumptions that are not always true with Maven 2.
         m_installer.m_create_sql = "../opennms-daemon/src/main/filtered/etc/create.sql";
         m_installer.m_fix_constraint = true;
         m_installer.m_fix_constraint_name = s_constraint;
+        
+        m_installer.m_debug = false;
 
         // Create test database.
         m_installer.databaseConnect("template1");
@@ -86,9 +94,13 @@ public class InstallerDBTest extends TestCase {
     }
 
     public void destroyDatabase() throws SQLException {
-        Statement st = m_installer.m_dbconnection.createStatement();
-        st.execute("DROP DATABASE " + m_testDatabase);
-        st.close();
+        if (m_leaveDatabase) {
+        	System.err.println("Not dropping database '" + m_testDatabase + "'");
+        } else {
+            Statement st = m_installer.m_dbconnection.createStatement();
+            st.execute("DROP DATABASE " + m_testDatabase);
+            st.close();
+        }
     }
     
     // XXX this should be an integration test
@@ -96,9 +108,50 @@ public class InstallerDBTest extends TestCase {
 		Iterator i = m_installer.m_tables.iterator();
 		while (i.hasNext()) {
 			String table = ((String) i.next()).toLowerCase();
-			m_installer.getTableColumnsFromSQL(table);
+			m_installer.getTableFromSQL(table);
 		}
     }
+    
+    // XXX this should be an integration test
+    public void testCreateTables() throws Exception {
+    	if (!isDBTestEnabled()) {
+            return;
+        }
+
+    	m_installer.createTables();
+    }
+    
+    // XXX this should be an integration test
+    public void testCreateTablesTwice() throws Exception {
+    	if (!isDBTestEnabled()) {
+            return;
+        }
+
+    	m_installer.createTables();
+    	
+    	// Create a new ByteArrayOutputStream so we can look for UPTODATE for every table
+    	ByteArrayOutputStream out = new ByteArrayOutputStream();
+        m_installer.m_out = new PrintStream(out);
+    	m_installer.createTables();
+    	
+    	ByteArrayInputStream in = new ByteArrayInputStream(out.toByteArray());
+    	BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+    	
+    	String line;
+    	while ((line = reader.readLine()) != null) {
+    		if (line.matches("- creating tables\\.\\.\\.")) {
+    			continue;
+    		}
+    		if (line.matches("  - checking table \"\\S+\"\\.\\.\\. UPTODATE")) {
+    			continue;
+    		}
+    		if (line.matches("- creating tables\\.\\.\\. DONE")) {
+    			continue;
+    		}
+    		fail("Unexpected line output by createTables(): \"" + line + "\"");
+    	}
+    }
+
 
 
     /**
@@ -290,6 +343,10 @@ public class InstallerDBTest extends TestCase {
     }
     
     public void testConstraintAfterConstrainedColumn() throws Exception {
+        if (!isDBTestEnabled()) {
+            return;
+        }
+
         String s_create_sql =
             "            create table distPoller (\n" +
             "                    dpName            varchar(12),\n" +
@@ -302,16 +359,16 @@ public class InstallerDBTest extends TestCase {
             "                    dpLastPackagePush    timestamp without time zone,\n" +
             "                    dpAdminState         integer,\n" +
             "                    dpRunState        integer );\n";
-
-        if (!isDBTestEnabled()) {
-            return;
-        }
         
         m_installer.readTables(new StringReader(s_create_sql));
         m_installer.getTableColumnsFromSQL("distpoller");
     }
     
     public void testConstraintAtEndOfTable() throws Exception {
+        if (!isDBTestEnabled()) {
+            return;
+        }
+        
         String s_create_sql =
             "            create table distPoller (\n" +
             "                    dpName            varchar(12),\n" +
@@ -325,15 +382,15 @@ public class InstallerDBTest extends TestCase {
             "                    dpRunState        integer,\n" +
             "                                constraint pk_dpName primary key (dpName) );\n";
 
-        if (!isDBTestEnabled()) {
-            return;
-        }
-        
         m_installer.readTables(new StringReader(s_create_sql));
         m_installer.getTableColumnsFromSQL("distpoller");
     }
     
     public void testConstraintOnBogusColumn() throws Exception {
+        if (!isDBTestEnabled()) {
+            return;
+        }
+        
         String s_create_sql =
             "            create table distPoller (\n" +
             "                    dpName            varchar(12),\n" +
@@ -347,12 +404,8 @@ public class InstallerDBTest extends TestCase {
             "                    dpRunState        integer,\n" +
             "                                constraint pk_dpName primary key (dpNameBogus) );\n";
 
-        if (!isDBTestEnabled()) {
-            return;
-        }
-        
         ThrowableAnticipator ta = new ThrowableAnticipator();
-        ta.anticipate(new Exception("constraint does not reference a column in the table: constraint pk_dpname primary key (dpnamebogus)"));
+        ta.anticipate(new Exception("constraint pk_dpname references column \"dpnamebogus\", which is not a column in the table distpoller"));
                 
         m_installer.readTables(new StringReader(s_create_sql));
         try {
@@ -409,61 +462,44 @@ public class InstallerDBTest extends TestCase {
     }
 
     public void testParsePrimaryKeyMultipleColumns() throws Exception {
+    	if (!isDBTestEnabled()) {
+            return;
+        }
+
+        // Make sure that every table, column, and key ID has at least one upper case character
     	final String createSQL = 
-    		"create table element (\n"
-    		+ "    mapId           integer not null,\n"
-    		+ "    elementId       integer not null,\n"
-    		+ "    constraint pk_element primary key (mapId, elementId)\n"
+    		"create table Element (\n"
+    		+ "    mapId           integer,\n"
+    		+ "    elementId       integer,\n"
+    		+ "    somethingElse       varchar(80),\n"
+    		+ "    constraint pk_Element primary key (mapId, elementId)\n"
     		+ ");";
-    	
+
+        m_installer.readTables(new StringReader(createSQL));
+        Table table = m_installer.getTableFromSQL("element");
+        
+        List<Column> columns = table.getColumns();
+        assertNotNull("column list is not null", columns);
+        assertEquals("column count", 3, columns.size());
+        assertEquals("column zero toString()", "mapid integer(4) NOT NULL", columns.get(0).toString());
+        assertEquals("column one toString()", "elementid integer(4) NOT NULL", columns.get(1).toString());
+        assertEquals("column two toString()", "somethingelse character varying(80)", columns.get(2).toString());
+        
+        List<Constraint> foo = table.getConstraints();
+
+        assertNotNull("constraint list is not null", foo);
+        assertEquals("constraint count is one", 1, foo.size());
+        Constraint f = foo.get(0);
+        assertNotNull("constraint zero is not null", f);
+        assertEquals("constraint getTable()", "element", f.getTable());
+        assertEquals("constraint zero toString()", "constraint pk_element primary key (mapid, elementid)", f.toString());
+    }
+    
+    public void testInsertMultipleColumns() throws SQLException {
         if (!isDBTestEnabled()) {
             return;
         }
         
-        ThrowableAnticipator ta = new ThrowableAnticipator();
-//        ta.anticipate(new IllegalStateException("constraint with multiple constrained columns"));
-              
-        m_installer.readTables(new StringReader(createSQL));
-        List<Column> columns = null;
-        try {
-            columns = m_installer.getTableColumnsFromSQL("element");
-        } catch (Throwable t) {
-        	ta.throwableReceived(t);
-        }
-        ta.verifyAnticipated();
-        
-        boolean foundColumn = false;
-        boolean foundConstraint = false;
-        for (Iterator<Column> i = columns.iterator(); i.hasNext(); ) {
-        	Column column = i.next();
-        	if (column.getName().equals("mapid")) {
-        		foundColumn = true;
-        		
-        		List<Constraint> constraints = column.getConstraints();
-        		for (Iterator<Constraint> j = constraints.iterator(); j.hasNext(); ) {
-        			Constraint constraint = j.next();
-        			if (constraint.getName().equals("pk_element")) {
-        				foundConstraint = true;
-        				List<String> constrained = constraint.getColumns();
-        				for (Iterator<String> k = constrained.iterator(); k.hasNext(); ) {
-        					String c = k.next();
-        					System.out.println("constrained: " + c);
-        				}
-        			}
-        		}
-        		
-                if (!foundConstraint) {
-                	fail("Did not find constraint pk_element in column mapid in SQL");
-                }
-        	}
-        }
-        
-        if (!foundColumn) {
-        	fail("Did not find column mapid in SQL column list");
-        }
-    }
-    
-    public void testInsertMultipleColumns() throws SQLException {
     	String command = "CREATE TABLE qrtz_job_details (\n"
     		+ "  JOB_NAME  VARCHAR(80) NOT NULL,\n"
     		+ "  JOB_GROUP VARCHAR(80) NOT NULL,\n"
@@ -473,6 +509,10 @@ public class InstallerDBTest extends TestCase {
     }
     
     public void testInsertMultipleColumnsGetFromDB() throws Exception {
+        if (!isDBTestEnabled()) {
+            return;
+        }
+        
     	String command = "CREATE TABLE qrtz_job_details (\n"
     		+ "  JOB_NAME  VARCHAR(80) NOT NULL,\n"
     		+ "  JOB_GROUP VARCHAR(80) NOT NULL,\n"
@@ -480,28 +520,70 @@ public class InstallerDBTest extends TestCase {
     		+ ")";
     	executeSQL(command);
     	
-    	List<Column> columns = m_installer.getTableColumnsFromDB("qrtz_job_details");
-    	for (Column i : columns) {
-    		System.out.println("column: " + i);
-    	}
+    	m_installer.getTableColumnsFromDB("qrtz_job_details");
     }
-
-
-    /*
-    public void testPrimaryKeyMultipleColumnsA() throws Exception {
-    	final String createSQL = 
-    		"create table element (\n"
-    		+ "    mapId           integer not null,\n"
-    		+ "    elementId       integer not null,\n"
-    		+ "    constraint pk_element primary key (mapId, elementId)\n"
-    		+ ");";
-    	
+    
+    public void testInsertMultipleColumnsGetFromDBCompare() throws Exception {
         if (!isDBTestEnabled()) {
             return;
         }
         
-        m_installer.readTables(new StringReader(createSQL));
-        m_installer.getTableColumnsFromSQL("element");
+    	String command = "CREATE TABLE qrtz_job_details (\n"
+    		+ "  JOB_NAME  VARCHAR(80) NOT NULL,\n"
+    		+ "  JOB_GROUP VARCHAR(80) NOT NULL,\n"
+    		+ "  CONSTRAINT pk_qrtz_job_details PRIMARY KEY (JOB_NAME,JOB_GROUP)\n"
+    		+ ")";
+    	executeSQL(command);
+
+    	Table table = m_installer.getTableFromDB("qrtz_job_details");
+    	assertNotNull("table not null", table);
+    	
+    	List<Constraint> constraints = table.getConstraints();
+    	assertNotNull("constraints not null", constraints);
+    	assertEquals("constraints size equals one", 1, constraints.size());
+    	assertEquals("constraint zero toString()", "constraint pk_qrtz_job_details primary key (job_name, job_group)",
+    			constraints.get(0).toString());
     }
-    */
+    
+    public void testGetColumnsFromDB() throws Exception {
+        if (!isDBTestEnabled()) {
+            return;
+        }
+        
+    	String command = "CREATE TABLE qrtz_job_details (\n"
+    		+ "  JOB_NAME  VARCHAR(80) NOT NULL,\n"
+    		+ "  JOB_GROUP VARCHAR(80) NOT NULL,\n"
+    		+ "  CONSTRAINT pk_qrtz_job_details PRIMARY KEY (JOB_NAME,JOB_GROUP)\n"
+    		+ ")";
+    	executeSQL(command);
+
+    	List<Column> columns = m_installer.getColumnsFromDB("qrtz_job_details");
+    	assertNotNull("column list not null", columns);
+    	assertEquals("column list size", 2, columns.size());
+    	assertEquals("column zero toString()", "job_name character varying(80) NOT NULL", columns.get(0).toString());
+    	assertEquals("column one toString()", "job_group character varying(80) NOT NULL", columns.get(1).toString());
+    }
+    
+    
+    public void testGetConstraintsFromDB() throws Exception {
+        if (!isDBTestEnabled()) {
+            return;
+        }
+        
+    	String command = "CREATE TABLE qrtz_job_details (\n"
+    		+ "  JOB_NAME  VARCHAR(80) NOT NULL,\n"
+    		+ "  JOB_GROUP VARCHAR(80) NOT NULL,\n"
+    		+ "  CONSTRAINT pk_qrtz_job_details PRIMARY KEY (JOB_NAME,JOB_GROUP)\n"
+    		+ ")";
+    	executeSQL(command);
+
+    	List<Column> columns = m_installer.getColumnsFromDB("qrtz_job_details");
+    	assertNotNull("column list not null", columns);
+    	List<Constraint> constraints = m_installer.getConstraintsFromDB("qrtz_job_details");
+    	assertNotNull("constraint list not null", constraints);
+    	assertEquals("constraint list size", 1, constraints.size());
+    	assertEquals("constraint zero toString()", "constraint pk_qrtz_job_details primary key (job_name, job_group)",
+    			constraints.get(0).toString());
+    }
+    
 }

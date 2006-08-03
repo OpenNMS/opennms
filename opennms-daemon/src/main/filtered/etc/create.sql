@@ -860,7 +860,7 @@ CREATE INDEX alarm_uei_idx ON alarms(eventUei);
 CREATE INDEX alarm_nodeid_idx ON alarms(nodeID);
 CREATE UNIQUE INDEX alarm_reductionkey_idx ON alarms(reductionKey);
 CREATE INDEX alarm_reduction2_idx ON alarms(alarmID, eventUei, dpName, nodeID, serviceID, reductionKey);
-CREATE INDEX alarm_app_dn ON assets(applicationDN);
+CREATE INDEX alarm_app_dn ON alarms(applicationDN);
 CREATE INDEX alarm_oss_primary_key ON alarms(ossPrimaryKey);
 
 --# This constraint not understood by installer
@@ -1666,11 +1666,10 @@ CREATE TABLE qrtz_job_details
     IS_VOLATILE BOOL NOT NULL,
     IS_STATEFUL BOOL NOT NULL,
     REQUESTS_RECOVERY BOOL NOT NULL,
-    JOB_DATA BYTEA NOT NULL
-);
+    JOB_DATA BYTEA NOT NULL,
 
---#    PRIMARY KEY (JOB_NAME,JOB_GROUP)
-create unique index qrtz_job_details_idx on qrtz_job_details(job_name, job_group);
+    constraint qrtz_job_details_pkey PRIMARY KEY (JOB_NAME,JOB_GROUP)
+);
 
 CREATE TABLE qrtz_job_listeners
   (
@@ -1678,17 +1677,11 @@ CREATE TABLE qrtz_job_listeners
     JOB_GROUP VARCHAR(80) NOT NULL,
     JOB_LISTENER VARCHAR(80) NOT NULL,
 
-    constraint fk_qrtz_job_listeners1 FOREIGN KEY (JOB_NAME)
-        REFERENCES QRTZ_JOB_DETAILS (JOB_NAME),
-    constraint fk_qrtz_job_listeners2 FOREIGN KEY (JOB_GROUP)
-        REFERENCES QRTZ_JOB_DETAILS (JOB_GROUP)
+    constraint pk_qrtz_job_listeners PRIMARY KEY (JOB_NAME,JOB_GROUP,JOB_LISTENER),
+    constraint fk_qrtz_job_listeners FOREIGN KEY (JOB_NAME,JOB_GROUP)
+        REFERENCES QRTZ_JOB_DETAILS (JOB_NAME,JOB_GROUP)
 );
 
---#    constraint pk_qrtz_job_listeners PRIMARY KEY (JOB_NAME,JOB_GROUP,JOB_LISTENER),
-create unique index qrtz_job_listeners_idx on qrtz_job_listeners(job_name, job_group);
-
---#    FOREIGN KEY (JOB_NAME,JOB_GROUP)
---#        REFERENCES QRTZ_JOB_DETAILS(JOB_NAME,JOB_GROUP)
 
 CREATE TABLE qrtz_triggers
   (
@@ -1708,17 +1701,10 @@ CREATE TABLE qrtz_triggers
     MISFIRE_INSTR SMALLINT,
     JOB_DATA BYTEA,
 
-    constraint fk_qrtz_triggers1 FOREIGN KEY (JOB_NAME)
-        REFERENCES QRTZ_JOB_DETAILS (JOB_NAME),
-    constraint fk_qrtz_triggers2 FOREIGN KEY (JOB_GROUP)
-        REFERENCES QRTZ_JOB_DETAILS (JOB_GROUP)
+    constraint pk_qrtz_triggers PRIMARY KEY (TRIGGER_NAME,TRIGGER_GROUP),
+    constraint fk_qrtz_triggers FOREIGN KEY (JOB_NAME,JOB_GROUP)
+        REFERENCES QRTZ_JOB_DETAILS (JOB_NAME,JOB_GROUP)
 );
-
---#    PRIMARY KEY (TRIGGER_NAME,TRIGGER_GROUP),
-create unique index qrtz_triggers_idx on qrtz_triggers(trigger_name, trigger_group);
-
---#    FOREIGN KEY (JOB_NAME,JOB_GROUP)
---#        REFERENCES QRTZ_JOB_DETAILS(JOB_NAME,JOB_GROUP)
 
 CREATE TABLE qrtz_simple_triggers
   (
@@ -1728,17 +1714,11 @@ CREATE TABLE qrtz_simple_triggers
     REPEAT_INTERVAL BIGINT NOT NULL,
     TIMES_TRIGGERED BIGINT NOT NULL,
 
-    constraint fk_qrtz_simple_triggers1 FOREIGN KEY (TRIGGER_NAME)
-        REFERENCES QRTZ_TRIGGERS (TRIGGER_NAME),
-    constraint fk_qrtz_simple_triggers2 FOREIGN KEY (TRIGGER_GROUP)
-        REFERENCES QRTZ_TRIGGERS (TRIGGER_GROUP)
+    constraint pk_qrtz_simple_triggers PRIMARY KEY (TRIGGER_NAME,TRIGGER_GROUP),
+    constraint fk_qrtz_simple_triggers FOREIGN KEY (TRIGGER_NAME,TRIGGER_GROUP)
+        REFERENCES QRTZ_TRIGGERS (TRIGGER_NAME,TRIGGER_GROUP)
 );
 
---#    PRIMARY KEY (TRIGGER_NAME,TRIGGER_GROUP),
-create unique index qrtz_simple_triggers_idx on qrtz_simple_triggers (TRIGGER_NAME,TRIGGER_GROUP);
-
---#    FOREIGN KEY (TRIGGER_NAME,TRIGGER_GROUP)
---#        REFERENCES QRTZ_TRIGGERS(TRIGGER_NAME,TRIGGER_GROUP)
 
 CREATE TABLE qrtz_cron_triggers
   (
@@ -1747,17 +1727,11 @@ CREATE TABLE qrtz_cron_triggers
     CRON_EXPRESSION VARCHAR(80) NOT NULL,
     TIME_ZONE_ID VARCHAR(80),
 
-    constraint fk_qrtz_cron_triggers1 FOREIGN KEY (TRIGGER_NAME)
-        REFERENCES QRTZ_TRIGGERS (TRIGGER_NAME),
-    constraint fk_qrtz_cron_triggers1 FOREIGN KEY (TRIGGER_GROUP)
-        REFERENCES QRTZ_TRIGGERS (TRIGGER_GROUP)
+    constraint pk_qrtz_cron_triggers PRIMARY KEY (TRIGGER_NAME,TRIGGER_GROUP),
+    constraint fk_qrtz_cron_triggers FOREIGN KEY (TRIGGER_NAME,TRIGGER_GROUP)
+        REFERENCES QRTZ_TRIGGERS (TRIGGER_NAME,TRIGGER_GROUP)
 );
 
---#    PRIMARY KEY (TRIGGER_NAME,TRIGGER_GROUP),
-create unique index qrtz_cron_triggers_idx on qrtz_cron_triggers (TRIGGER_NAME,TRIGGER_GROUP);
-
---#    FOREIGN KEY (TRIGGER_NAME,TRIGGER_GROUP)
---#        REFERENCES QRTZ_TRIGGERS(TRIGGER_NAME,TRIGGER_GROUP)
 
 CREATE TABLE qrtz_blob_triggers
   (
@@ -1765,17 +1739,10 @@ CREATE TABLE qrtz_blob_triggers
     TRIGGER_GROUP VARCHAR(80) NOT NULL,
     BLOB_DATA BYTEA,
 
-    constraint fk_qrtz_blob_triggers1 FOREIGN KEY (TRIGGER_NAME)
-        REFERENCES QRTZ_TRIGGERS (TRIGGER_NAME),
-    constraint fk_qrtz_blob_triggers2 FOREIGN KEY (TRIGGER_GROUP)
-        REFERENCES QRTZ_TRIGGERS (TRIGGER_GROUP)
+    constraint pk_qrtz_blob_triggers PRIMARY KEY (TRIGGER_NAME,TRIGGER_GROUP),
+    constraint fk_qrtz_blob_triggers FOREIGN KEY (TRIGGER_NAME,TRIGGER_GROUP)
+        REFERENCES QRTZ_TRIGGERS (TRIGGER_NAME,TRIGGER_GROUP)
 );
-
---#    PRIMARY KEY (TRIGGER_NAME,TRIGGER_GROUP),
-create unique index qrtz_blob_triggers_idx on qrtz_blob_triggers (TRIGGER_NAME,TRIGGER_GROUP);
-
---#    FOREIGN KEY (TRIGGER_NAME,TRIGGER_GROUP)
---#        REFERENCES QRTZ_TRIGGERS(TRIGGER_NAME,TRIGGER_GROUP)
 
 CREATE TABLE qrtz_trigger_listeners
   (
@@ -1783,17 +1750,10 @@ CREATE TABLE qrtz_trigger_listeners
     TRIGGER_GROUP VARCHAR(80) NOT NULL,
     TRIGGER_LISTENER VARCHAR(80) NOT NULL,
 
-    constraint fk_qrtz_trigger_listeners1 FOREIGN KEY (TRIGGER_NAME)
-        REFERENCES QRTZ_TRIGGERS (TRIGGER_NAME),
-    constraint fk_qrtz_trigger_listeners2 FOREIGN KEY (TRIGGER_GROUP)
-        REFERENCES QRTZ_TRIGGERS (TRIGGER_GROUP)
+    constraint pk_qrtz_trigger_listeners PRIMARY KEY (TRIGGER_NAME,TRIGGER_GROUP,TRIGGER_LISTENER),
+    constraint fk_qrtz_trigger_listeners FOREIGN KEY (TRIGGER_NAME,TRIGGER_GROUP)
+        REFERENCES QRTZ_TRIGGERS (TRIGGER_NAME,TRIGGER_GROUP)
 );
-
---#    PRIMARY KEY (TRIGGER_NAME,TRIGGER_GROUP,TRIGGER_LISTENER),
-create unique index qrtz_trigger_listeners_idx on qrtz_trigger_listeners (TRIGGER_NAME,TRIGGER_GROUP);
-
---#    FOREIGN KEY (TRIGGER_NAME,TRIGGER_GROUP)
---#        REFERENCES QRTZ_TRIGGERS(TRIGGER_NAME,TRIGGER_GROUP)
 
 
 CREATE TABLE qrtz_calendars
