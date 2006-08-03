@@ -56,6 +56,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -78,7 +79,7 @@ import org.opennms.core.utils.ProcessExec;
  */
 
 public class Installer {
-	static final float POSTGRES_MIN_VERSION = 7.2f;
+	static final float POSTGRES_MIN_VERSION = 7.3f;
 
 	static final String s_version = "$Id$";
 
@@ -159,7 +160,7 @@ public class Installer {
 
 	float m_pg_version;
 
-	String m_cascade = "";
+	String m_cascade = " CASCADE";
 
 	String m_sql;
 
@@ -649,9 +650,12 @@ public class Installer {
 					+ POSTGRES_MIN_VERSION);
 		}
 
+		// doesn't matter since we now require 7.3
+		/*
 		if (m_pg_version >= 7.3) {
 			m_cascade = " CASCADE";
 		}
+		*/
 
 		m_out.println(Float.toString(m_pg_version));
 		m_out.println("  - Full version string: " + versionString);
@@ -739,52 +743,33 @@ public class Installer {
 		throw new BackupTablesFoundException(oldTables);
 	}
 
-	public String[][] getForeignKeyConstraints() throws Exception {
-		LinkedList<String[]> constraints = new LinkedList<String[]>();
+	public List<Constraint> getForeignKeyConstraints() throws Exception {
+		LinkedList<Constraint> constraints = new LinkedList<Constraint>();
 
-		/*
-		 * Iterate over each constraint on every column in every table and build
-		 * a list of foreign key constraints with the details that we care
-		 * about.
-		 */
-		Iterator i = m_tables.iterator();
-		while (i.hasNext()) {
-			String table = ((String) i.next()).toLowerCase();
-			List newColumns = getTableColumnsFromSQL(table);
-			Iterator j = newColumns.iterator();
-			while (j.hasNext()) {
-				Column column = (Column) j.next();
-				Iterator k = column.getConstraintIterator();
-				while (k.hasNext()) {
-					Constraint constraint = (Constraint) k.next();
-					if (constraint.getType() == Constraint.FOREIGN_KEY) {
-						String[] c = new String[5];
-						c[0] = constraint.getName();
-						c[1] = table;
-						c[2] = column.getName();
-						c[3] = constraint.getForeignTable();
-						c[4] = constraint.getForeignColumn();
-						constraints.add(c);
-					}
+		for (String table : m_tables) {
+			String tableLower = table.toLowerCase();
+			for (Constraint constraint : getTableFromSQL(tableLower).getConstraints()) {
+				if (constraint.getType() == Constraint.FOREIGN_KEY) {
+					constraints.add(constraint);
 				}
 			}
 		}
 
-		return (String[][]) constraints.toArray(new String[0][0]);
+		return constraints;
 	}
 
 	public void checkConstraints() throws Exception {
-		String[][] constraints = getForeignKeyConstraints();
+		List<Constraint> constraints = getForeignKeyConstraints();
 
 		m_out.print("- checking for rows that violate constraints... ");
 
 		Statement st = m_dbconnection.createStatement();
-		for (int a = 0; a < constraints.length; a++) {
-			String name = constraints[a][0];
-			String table = constraints[a][1];
-			String column = constraints[a][2];
-			String ftable = constraints[a][3];
-			String fcolumn = constraints[a][4];
+		for (Constraint constraint : constraints) {
+			String name = constraint.getName();
+			String table = constraint.getTable();
+			String column = constraint.getColumns().get(0);
+			String ftable = constraint.getForeignTable();
+			String fcolumn = constraint.getForeignColumns().get(0);
 
 			if (!tableExists(table) || !tableColumnExists(table, column)) {
 				// The constrained table or column does not exist
@@ -839,15 +824,15 @@ public class Installer {
 	}
 
 	public void fixConstraint() throws Exception {
-		String[][] constraints = getForeignKeyConstraints();
-		String[] constraint = null;
+		List<Constraint> constraints = getForeignKeyConstraints();
+		Constraint constraint = null;
 
 		m_out.print("- fixing rows that violate constraint "
 				+ m_fix_constraint_name + "... ");
 
-		for (int a = 0; a < constraints.length; a++) {
-			if (m_fix_constraint_name.equals(constraints[a][0])) {
-				constraint = constraints[a];
+		for (Constraint c : constraints) {
+			if (m_fix_constraint_name.equals(c.getName())) {
+				constraint = c;
 				break;
 			}
 		}
@@ -857,10 +842,10 @@ public class Installer {
 					+ m_fix_constraint_name + " in the database.");
 		}
 
-		String table = constraint[1];
-		String column = constraint[2];
-		String ftable = constraint[3];
-		String fcolumn = constraint[4];
+		String table = constraint.getTable();
+		String column = constraint.getColumns().get(0);
+		String ftable = constraint.getForeignTable();
+		String fcolumn = constraint.getForeignColumns().get(0);
 
 		if (!tableExists(table)) {
 			throw new Exception("Constraint " + m_fix_constraint_name
@@ -1015,55 +1000,55 @@ public class Installer {
 		m_out.println("- creating tables...");
 
 		while (i.hasNext()) {
-			String table = (String) i.next();
+			String tableName = (String) i.next();
 
 			if (m_force) {
-				table = table.toLowerCase();
+				tableName = tableName.toLowerCase();
 
-				String create = getTableFromSQL(table);
+				String create = getTableCreateFromSQL(tableName);
 
 				boolean remove;
 
 				rs = st.executeQuery("SELECT relname FROM pg_class "
-						+ "WHERE relname = '" + table + "'");
+						+ "WHERE relname = '" + tableName + "'");
 
 				remove = rs.next();
 
 				m_out.print("  - removing old table... ");
 				if (remove) {
-					st.execute("DROP TABLE " + table + m_cascade);
+					st.execute("DROP TABLE " + tableName + m_cascade);
 					m_out.println("REMOVED");
 				} else {
 					m_out.println("CLEAN");
 				}
 
-				m_out.print("  - creating table \"" + table + "\"... ");
-				st.execute("CREATE TABLE " + table + " (" + create + ")");
+				m_out.print("  - creating table \"" + tableName + "\"... ");
+				st.execute("CREATE TABLE " + tableName + " (" + create + ")");
 				m_out.println("CREATED");
 
 				m_out.print("  - giving \"" + m_user + "\" permissions on \""
-						+ table + "\"... ");
-				st.execute("GRANT ALL ON " + table + " TO " + m_user);
+						+ tableName + "\"... ");
+				st.execute("GRANT ALL ON " + tableName + " TO " + m_user);
 				m_out.println("GRANTED");
 			} else {
-				m_out.print("  - checking table \"" + table + "\"... ");
+				m_out.print("  - checking table \"" + tableName + "\"... ");
 
-				table = table.toLowerCase();
+				tableName = tableName.toLowerCase();
 
-				List newColumns = getTableColumnsFromSQL(table);
-				List oldColumns = getTableColumnsFromDB(table);
+				Table newTable = getTableFromSQL(tableName);
+				Table oldTable = getTableFromDB(tableName);
 
-				if (newColumns.equals(oldColumns)) {
+				if (newTable.equals(oldTable)) {
 					m_out.println("UPTODATE");
 				} else {
-					if (oldColumns.size() == 0) {
-						String create = getTableFromSQL(table);
-						st.execute("CREATE TABLE " + table + " (" + create
+					if (oldTable == null) {
+						String create = getTableCreateFromSQL(tableName);
+						st.execute("CREATE TABLE " + tableName + " (" + create
 								+ ")");
-						st.execute("GRANT ALL ON " + table + " TO " + m_user);
+						st.execute("GRANT ALL ON " + tableName + " TO " + m_user);
 						m_out.println("CREATED");
 					} else {
-						changeTable(table, oldColumns, newColumns);
+						changeTable(tableName, oldTable, newTable);
 					}
 				}
 			}
@@ -1731,7 +1716,7 @@ public class Installer {
 				+ "\"");
 	}
 
-	public String getTableFromSQL(String table) throws Exception {
+	public String getTableCreateFromSQL(String table) throws Exception {
 		return getXFromSQL(table, "(?i)\\bcreate table\\s+['\"]?(\\S+)['\"]?"
 				+ "\\s+\\((.+?)\\);", 1, 2, "table");
 	}
@@ -1752,12 +1737,20 @@ public class Installer {
 				+ "language\\s+['\"]?(\\S+)['\"]?\\s+(.+?);", 1, 2, "language");
 	}
 
-	public List<Column> getTableColumnsFromSQL(String table) throws Exception {
-		String create = getTableFromSQL(table);
+	public List<Column> getTableColumnsFromSQL(String tableName) throws Exception {
+		return getTableFromSQL(tableName).getColumns();
+	}
+	
+	public Table getTableFromSQL(String tableName) throws Exception {
+		Table table = new Table();
+		
 		LinkedList<Column> columns = new LinkedList<Column>();
+		LinkedList<Constraint> constraints = new LinkedList<Constraint>();
+
 		boolean parens = false;
 		StringBuffer accumulator = new StringBuffer();
 
+		String create = getTableCreateFromSQL(tableName);
 		for (int i = 0; i <= create.length(); i++) {
 			char c = ' ';
 
@@ -1775,23 +1768,22 @@ public class Installer {
 				String a = accumulator.toString().trim();
 
 				if (a.toLowerCase().startsWith("constraint ")) {
-					Constraint constraint = new Constraint(a);
-					List<String> cc = constraint.getColumns();
-					if (cc.size() == 0) {
+					Constraint constraint = new Constraint(tableName, a);
+					List<String> constraintColumns = constraint.getColumns();
+					if (constraintColumns.size() == 0) {
 						throw new IllegalStateException("constraint with no constrained columns");
 					}
-					/*
-					if (cc.size() > 1) {
-						throw new IllegalStateException("constraint with multiple constrained columns");
+
+					for (String constrainedName : constraintColumns) {
+						Column constrained = findColumn(columns, constrainedName);
+						if (constrained == null) {
+							throw new Exception("constraint " + constraint.getName()
+									+ " references column \"" + constrainedName
+									+ "\", which is not a column in the table "
+									+ tableName);
+						}
 					}
-					*/
-					Column constrained = findColumn(columns, cc.get(0));
-					if (constrained == null) {
-						throw new Exception("constraint does not "
-								+ "reference a column in the table: "
-								+ constraint);
-					}
-					constrained.addConstraint(constraint);
+					constraints.add(constraint);
 				} else {
 					Column column = new Column();
 					try {
@@ -1807,8 +1799,13 @@ public class Installer {
 				accumulator.append(c);
 			}
 		}
-
-		return columns;
+		
+		table.setName(tableName);
+		table.setColumns(columns);
+		table.setConstraints(constraints);
+		table.setNotNullOnPrimaryKeyColumns();
+		
+		return table;
 	}
 
 	public static String cleanText(List list) {
@@ -1841,15 +1838,21 @@ public class Installer {
 		return (findColumn(getTableColumnsFromDB(table), column) != null);
 	}
 
-	public List<Column> getTableColumnsFromDB(String table) throws Exception {
+	public List<Column> getTableColumnsFromDB(String tableName) throws Exception {
+		Table table = getTableFromDB(tableName);
+		if (table == null) {
+			return null;
+		}
+		return table.getColumns(); 
+	}
+	
+
+	public List<Column> getColumnsFromDB(String tableName) throws Exception {
+		LinkedList<Column> columns = new LinkedList<Column>();
+		
 		Statement st = m_dbconnection.createStatement();
 		ResultSet rs;
-		LinkedList<Column> r = new LinkedList<Column>();
-
-		if (!tableExists(table)) {
-			return r;
-		}
-
+		
 		String query = "SELECT "
 			+ "        attname, "
 			+ "        format_type(atttypid, atttypmod), "
@@ -1859,7 +1862,7 @@ public class Installer {
 			+ "WHERE "
 			+ "        attrelid = "
 			+ "                (SELECT oid FROM pg_class WHERE relname = '"
-								+ table.toLowerCase()
+								+ tableName.toLowerCase()
 								+ "') AND "
 			+ "        attnum > 0";
 
@@ -1879,211 +1882,119 @@ public class Installer {
 			c.parseColumnType(rs.getString(2));
 			c.setNotNull(rs.getBoolean(3));
 
-			r.add(c);
+			columns.add(c);
 		}
+		
+		rs.close();
+		st.close();
+		
+		return columns;
 
-		if (m_pg_version > 7.3) {
-			// XXX the [1] on conkey and confkey is a hack and assumes that
-			// we have at most one constrained column and at most one
-			// referenced foreign column (which is correct with the current
-			// database layout.
-			query = "SELECT "
-				+ " c.conname, "
-				+ "	c.contype, "
-				+ "	c.confdeltype, "
-				+ "	a.attname, "
-				+ "	d.relname, "
-				+ "	b.attname "
-				+ "FROM "
-				+ "	pg_class d RIGHT JOIN "
-				+ "	  (pg_attribute b RIGHT JOIN "
-				+ "	    (pg_constraint c JOIN pg_attribute a "
-				+ "	      ON c.conrelid = a.attrelid AND "
-				+ "	         a.attnum = c.conkey[1]) "
-				+ "	    ON c.confrelid = b.attrelid AND "
-				+ "	       b.attnum = c.confkey[1]) "
-				+ "	  ON b.attrelid = d.oid "
-				+ "WHERE "
-				+ "	a.attrelid = "
-				+ "         (SELECT oid FROM pg_class WHERE relname = '"
-								+ table.toLowerCase()
-				+ "');";
-
-			rs = st.executeQuery(query);
-
-			while (rs.next()) {
-				Constraint constraint;
-				if (rs.getString(2).equals("p")) {
-					constraint = new Constraint(rs.getString(1), rs
-							.getString(4));
-				} else if (rs.getString(2).equals("f")) {
-					constraint = new Constraint(rs.getString(1), rs
-							.getString(4), rs.getString(5), rs.getString(6), rs
-							.getString(3));
-				} else {
-					throw new Exception("Do not support constraint type \""
-							+ rs.getString(2) + "\" in constraint \""
-							+ rs.getString(1) + "\"");
-				}
-
-				List<String> cc = constraint.getColumns();
-				if (cc.size() == 0) {
-					throw new IllegalStateException("constraint with no constrained columns");
-				}
-				if (cc.size() > 1) {
-					throw new IllegalStateException("constraint with multiple constrained columns");
-				}
-				Column c = findColumn(r, cc.get(0));
-				if (c == null) {
-					// XXX HACK!
-					throw new Exception("Got a constraint for column \""
-							+ constraint.getColumns().get(0) + "\" of table " + table
-							+ ", but could not find column.  " + "Constraint: "
-							+ constraint);
-				}
-
-				c.addConstraint(constraint);
-			}
-		} else {
-			query = "SELECT "
-				+ "        c.relname, "
-				+ "        a.attname "
-				+ "FROM "
-				+ "        pg_index i, "
-				+ "        pg_class c, "
-				+ "        pg_attribute a "
-				+ "WHERE "
-				+ "        i.indrelid = "
-				+ "          (SELECT oid FROM pg_class WHERE relname = '"
-								+ table.toLowerCase()
-								+ "') AND "
-				+ "        i.indisprimary = 't' AND "
-				+ "        i.indrelid = a.attrelid AND "
-				+ "        i.indkey[0] = a.attnum AND "
-				+ "        i.indexrelid = c.relfilenode";
-
-			rs = st.executeQuery(query);
-			while (rs.next()) {
-				Constraint constraint = new Constraint(rs.getString(1), rs
-						.getString(2));
-
-				List<String> cc = constraint.getColumns();
-				if (cc.size() == 0) {
-					throw new IllegalStateException("constraint with no constrained columns");
-				}
-				if (cc.size() > 1) {
-					throw new IllegalStateException("constraint with multiple constrained columns");
-				}
-				Column c = findColumn(r, cc.get(0));
-				if (c == null) {
-					throw new Exception("Got a constraint for column \""
-							+ constraint.getColumns().get(0) + "\" of table " + table
-							+ ", but could not find column.  " + "Constraint: "
-							+ constraint);
-				}
-
-				c.addConstraint(constraint);
-			}
-
-			int fkey, fdel;
-
-			query = "SELECT oid FROM pg_proc WHERE proname = "
-					+ "          'RI_FKey_check_ins'";
-			rs = st.executeQuery(query);
-			if (!rs.next()) {
-				throw new Exception("Could not get OID for RI_FKey_check_ins");
-			}
-			fkey = rs.getInt(1);
-
-			query = "SELECT oid FROM pg_proc WHERE proname = "
-					+ "          'RI_FKey_cascade_del'";
-			rs = st.executeQuery(query);
-			if (!rs.next()) {
-				throw new Exception("Could not get OID for RI_FKey_cascade_del");
-			}
-			fdel = rs.getInt(1);
-
-			query = "SELECT "
-				+ "        tgconstrname, "
-				+ "        tgargs, "
-				+ "        tgfoid "
-				+ "FROM "
-				+ "        pg_trigger "
-				+ "WHERE "
-				+ "        ( "
-				+ "          tgrelid = "
-				+ "            (SELECT oid FROM pg_class WHERE relname = '"
-								+ table.toLowerCase()
-								+ "') AND "
-				+ "            tgfoid = " + fkey+ " "
-				+ "        ) OR ( "
-				+ "          tgconstrrelid = "
-				+ "            (SELECT oid FROM pg_class WHERE relname = '"
-								+ table.toLowerCase()
-								+ "') AND "
-				+ "            tgfoid = " + fdel + " "
-				+ "        ) ";
-			rs = st.executeQuery(query);
-
-			while (rs.next()) {
-//				String name = rs.getString(1);
-				String[] args = new String(rs.getBytes(2)).split("\000");
-
-				Constraint constraint = new Constraint(rs.getString(1),
-						args[4], args[2], args[5], (rs.getInt(3) == fkey) ? "a"
-								: "c");
-
-				List<String> cc = constraint.getColumns();
-				if (cc.size() == 0) {
-					throw new IllegalStateException("constraint with no constrained columns");
-				}
-				if (cc.size() > 1) {
-					throw new IllegalStateException("constraint with multiple constrained columns");
-				}
-				Column c = findColumn(r, cc.get(0));
-				if (c == null) {
-					throw new Exception("Got a constraint for column \""
-							+ constraint.getColumns().get(0) + "\" of table " + table
-							+ ", but could not find column.  " + "Constraint: "
-							+ constraint);
-				}
-
-				boolean found = false;
-				ListIterator<Constraint> i = c.getConstraints().listIterator();
-				while (i.hasNext()) {
-					Constraint constraint_o = i.next();
-					if (constraint.equals(constraint_o, true)) {
-						found = true;
-						if (constraint.getForeignDelType().equals("c")) {
-							i.set(constraint);
-						}
-					}
-				}
-
-				if (!found) {
-					c.addConstraint(constraint);
-				}
-			}
-		}
-
-		return r;
 	}
 
-	/*
-	 * XXX unused public static String[] split(String s, String split) { int i,
-	 * j; LinkedList l = new LinkedList();
-	 * 
-	 * i = 0;
-	 * 
-	 * while ((j = s.indexOf(split, i)) != -1) { l.add(s.substring(i, j)); i = j +
-	 * split.length(); }
-	 * 
-	 * if (i < s.length()) { l.add(s.substring(i)); } return (String[])
-	 * l.toArray(new String[0]); }
-	 */
+	
+	public Table getTableFromDB(String tableName) throws Exception {
+		if (!tableExists(tableName)) {
+			return null;
+		}
+		
+		Table table = new Table();
+		table.setName(tableName.toLowerCase());
+		
+		List<Column> columns = getColumnsFromDB(tableName);
+		List<Constraint> constraints = getConstraintsFromDB(tableName);
 
-	public void changeTable(String table, List oldColumns, List newColumns)
+		table.setColumns(columns);
+		table.setConstraints(constraints);
+		return table;
+	}
+	
+
+	public List<Constraint> getConstraintsFromDB(String tableName) throws SQLException, Exception {
+		Statement st = m_dbconnection.createStatement();
+		ResultSet rs;
+		
+		LinkedList<Constraint> constraints = new LinkedList<Constraint>();
+
+		String query = "SELECT c.oid, c.conname, c.contype, c.conrelid, c.confrelid, a.relname, c.confdeltype from pg_class a right join pg_constraint c on c.confrelid = a.oid where c.conrelid = (select oid from pg_class where relname = '" + tableName.toLowerCase() + "') order by c.oid";
+
+		rs = st.executeQuery(query);
+
+		while (rs.next()) {
+			int oid = rs.getInt(1);
+			String name = rs.getString(2);
+			String type = rs.getString(3);
+			int conrelid = rs.getInt(4);
+			int confrelid = rs.getInt(5);
+			String ftable = rs.getString(6);
+			String foreignDelType = rs.getString(7);
+			
+			Constraint constraint;
+			if ("p".equals(type)) {
+				List<String> columns = getConstrainedColumnsFromDBForConstraint(oid, conrelid);
+				constraint = new Constraint(tableName.toLowerCase(), name, columns);
+			} else if ("f".equals(type)) {
+				List<String> columns = getConstrainedColumnsFromDBForConstraint(oid, conrelid);
+				List<String> fcolumns = getForeignColumnsFromDBForConstraint(oid, confrelid);
+				constraint = new Constraint(tableName.toLowerCase(), name,
+						columns, ftable, fcolumns, foreignDelType);
+			} else {
+				throw new Exception("Do not support constraint type \""
+						+ type + "\" in constraint \""
+						+ name + "\"");
+			}
+			
+			constraints.add(constraint);
+		}
+
+
+		return constraints;
+	}
+
+	private List<String> getConstrainedColumnsFromDBForConstraint(int oid, int conrelid) throws Exception {
+		Statement st = m_dbconnection.createStatement();
+		ResultSet rs;
+		
+		LinkedList<String> columns = new LinkedList<String>();
+
+		String query = "select a.attname from pg_attribute a, pg_constraint c where a.attrelid = c.conrelid and a.attnum = ANY (c.conkey) and c.oid = " + oid + " and a.attrelid = " + conrelid;
+		rs = st.executeQuery(query);
+
+		while (rs.next()) {
+			columns.add(rs.getString(1));
+		}
+		
+		rs.close();
+		st.close();
+
+		return columns;
+	}
+	
+
+	private List<String> getForeignColumnsFromDBForConstraint(int oid, int confrelid) throws Exception {
+		Statement st = m_dbconnection.createStatement();
+		ResultSet rs;
+		
+		LinkedList<String> columns = new LinkedList<String>();
+
+		String query = "select a.attname from pg_attribute a, pg_constraint c where a.attrelid = c.confrelid and a.attnum = ANY (c.confkey) and c.oid = " + oid + " and a.attrelid = " + confrelid;
+		rs = st.executeQuery(query);
+
+		while (rs.next()) {
+			columns.add(rs.getString(1));
+		}
+		
+		rs.close();
+		st.close();
+
+		return columns;
+	}
+
+	public void changeTable(String table, Table oldTable, Table newTable)
 			throws Exception {
+		List<Column> oldColumns = oldTable.getColumns();
+		List<Column> newColumns = newTable.getColumns();
+		
 		Statement st = m_dbconnection.createStatement();
 		TreeMap<String, ColumnChange> columnChanges = new TreeMap<String, ColumnChange>();
 		String[] oldColumnNames = new String[oldColumns.size()];
@@ -2095,14 +2006,23 @@ public class Installer {
 			return;
 		}
 		m_changed.add(table);
-
+		
 		m_out.println("SCHEMA DOES NOT MATCH");
 		m_out.println("    - differences:");
+		m_out.println("wheee!!!! " + (newColumns.equals(oldColumns)));
+		m_out.println("wheee!!!! " + (newTable.getConstraints().equals(oldTable.getConstraints())));
+		for (Constraint newConstraint : newTable.getConstraints()) {
+			m_out.println("new constraint: " + newConstraint.getTable() + ": " + newConstraint);
+		}
+		for (Constraint oldConstraint : oldTable.getConstraints()) {
+			m_out.println("old constraint: " + oldConstraint.getTable() + ": " + oldConstraint);
+		}
 
-		// XXX This doesn't check for old column rows that don't exist
-		// in newColumns.
-		for (j = newColumns.iterator(); j.hasNext();) {
-			Column newColumn = (Column) j.next();
+		/*
+		 * XXX This doesn't check for old column rows that don't exist
+		 * in newColumns.
+		 */
+		for (Column newColumn : newColumns) {
 			Column oldColumn = findColumn(oldColumns, newColumn.getName());
 
 			if (oldColumn == null || !newColumn.equals(oldColumn)) {
@@ -2206,7 +2126,7 @@ public class Installer {
 			st.execute("DROP TABLE " + table + m_cascade);
 
 			m_out.print("    - creating new '" + table + "' table... ");
-			st.execute("CREATE TABLE " + table + "(" + getTableFromSQL(table)
+			st.execute("CREATE TABLE " + table + "(" + getTableCreateFromSQL(table)
 					+ ")");
 			m_out.println("done");
 
@@ -2513,6 +2433,23 @@ public class Installer {
 
 		return sb.toString();
 	}
+	
+	public static String join(String sep, List<String> list) {
+		StringBuffer sb = new StringBuffer();
+		
+		Iterator i = list.iterator();
+
+		if (i.hasNext()) {
+			sb.append(i.next());
+		}
+
+		while (i.hasNext()) {
+			sb.append(sep + i.next());
+		}
+
+		return sb.toString();
+	}
+
 
     public String checkServerVersion() throws IOException {
         File catalinaHome = new File(m_webappdir).getParentFile();

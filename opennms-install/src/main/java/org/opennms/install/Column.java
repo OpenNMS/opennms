@@ -42,7 +42,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Column {
-    private LinkedList<Constraint> m_constraints = new LinkedList<Constraint>();
+//    private LinkedList<Constraint> m_constraints = new LinkedList<Constraint>();
 
     private String m_name = null;
 
@@ -70,14 +70,17 @@ public class Column {
         if (m_size != other.getSize() || m_notNull != other.isNotNull()) {
             return false;
         }
+        /*
         if (!m_constraints.equals(other.getConstraints())) {
             return false;
         }
+        */
         return true;
     }
 
     public int hashCode() {
-        return m_name.hashCode() + m_type.hashCode() + new Integer(m_size).hashCode() + new Boolean(m_notNull).hashCode() + m_constraints.hashCode();
+//        return m_name.hashCode() + m_type.hashCode() + new Integer(m_size).hashCode() + new Boolean(m_notNull).hashCode() + m_constraints.hashCode();
+        return m_name.hashCode() + m_type.hashCode() + new Integer(m_size).hashCode() + new Boolean(m_notNull).hashCode();
     }
 
     public String toString() {
@@ -99,9 +102,11 @@ public class Column {
         if (m_notNull) {
             b.append(" NOT NULL");
         }
+        /*
         for (Iterator i = m_constraints.iterator(); i.hasNext();) {
             b.append(",\n" + (Constraint) i.next());
         }
+        */
 
         return b.toString();
     }
@@ -109,6 +114,7 @@ public class Column {
     public Column() {
     }
 
+    /*
     public List<Constraint> getConstraints() {
         return m_constraints;
     }
@@ -123,6 +129,7 @@ public class Column {
             setNotNull(true);
         }
     }
+    */
 
     public String getName() {
         return m_name;

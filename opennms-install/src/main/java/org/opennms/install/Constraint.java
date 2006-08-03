@@ -48,31 +48,45 @@ public class Constraint {
     private String m_name;
 
     private int m_type;
+    
+    private String m_table;
 
     private List<String> m_columns;
 
     private String m_ftable;
 
-    private String m_fcolumn;
+    private List<String> m_fcolumns;
 
     private String m_fdeltype;
 
-    public Constraint(String constraint) throws Exception {
+    public Constraint(String table, String constraint) throws Exception {
         this.parse(constraint);
+        this.setTable(table);
     }
 
-    public Constraint(String name, String column) {
+    /*
+    public Constraint(String table, String name, String column) {
+        setTable(table);
         setName(name);
         setType(PRIMARY_KEY);
         setColumn(column);
     }
+    */
+    
+    public Constraint(String table, String name, List<String> columns) {
+        setTable(table);
+        setName(name);
+        setType(PRIMARY_KEY);
+        setColumns(columns);
+    }
 
-    public Constraint(String name, String column, String ftable, String fcolumn, String fdeltype) throws Exception {
+    public Constraint(String table, String name, List<String> columns, String ftable, List<String> fcolumns, String fdeltype) throws Exception {
+        setTable(table);
         setName(name);
         setType(FOREIGN_KEY);
-        setColumn(column);
+        setColumns(columns);
         setForeignTable(ftable);
-        setForeignColumn(fcolumn);
+        setForeignColumns(fcolumns);
         setForeignDelType(fdeltype);
     }
 
@@ -92,6 +106,22 @@ public class Constraint {
         m_type = type;
     }
     
+    public boolean isPrimaryKeyConstraint() {
+    	return m_type == PRIMARY_KEY;
+    }
+    
+    public boolean isForeignKeyConstraint() {
+    	return m_type == FOREIGN_KEY;
+    }
+    
+	public String getTable() {
+		return m_table;
+	}
+
+	public void setTable(String table) {
+		m_table = table;
+	}
+    
     public void setColumns(List<String> columns) {
     	m_columns = new ArrayList<String>(columns.size());
     	for (String i : columns) {
@@ -104,7 +134,7 @@ public class Constraint {
     }
 
     public void setColumn(String column) {
-    	List<String> columns = new ArrayList<String>();
+    	List<String> columns = new ArrayList<String>(1);
         columns.add(column.toLowerCase());
         setColumns(columns);
     }
@@ -117,12 +147,22 @@ public class Constraint {
         m_ftable = ftable.toLowerCase();
     }
 
-    public String getForeignColumn() {
-        return m_fcolumn;
+    public List<String> getForeignColumns() {
+        return m_fcolumns;
     }
 
     public void setForeignColumn(String fcolumn) {
-        m_fcolumn = fcolumn.toLowerCase();
+    	List<String> fcolumns = new ArrayList<String>(1);
+    	fcolumns.add(fcolumn.toLowerCase());
+        setForeignColumns(fcolumns);
+    }
+
+    public void setForeignColumns(List<String> fcolumns) {
+    	List<String> newFcolumns = new ArrayList<String>(fcolumns.size());
+    	for (String fcolumn : fcolumns) {
+    		newFcolumns.add(fcolumn.toLowerCase());
+    	}
+        m_fcolumns = newFcolumns;
     }
 
     public String getForeignDelType() {
@@ -149,7 +189,7 @@ public class Constraint {
             if (m_columns.size() == 0) {
             	throw new IllegalStateException("Primary key has zero constrained columns... not allowed!");
             }
-            b.append(Installer.join(", ", m_columns.toArray(new String[0])));
+            b.append(Installer.join(", ", m_columns));
             break;
 
         case FOREIGN_KEY:
@@ -157,11 +197,7 @@ public class Constraint {
             if (m_columns.size() == 0) {
             	throw new IllegalStateException("Foreign key has zero constrained columns... not allowed!");
             }
-            if (m_columns.size() > 1) {
-            	throw new IllegalStateException("Foreign key has multiple constrained columns... not allowed!");
-
-            }
-            b.append(m_columns.get(0));
+            b.append(Installer.join(", ", m_columns));
             break;
         }
         
@@ -171,7 +207,7 @@ public class Constraint {
             b.append(" references ");
             b.append(m_ftable);
             b.append(" (");
-            b.append(m_fcolumn);
+            b.append(Installer.join(", ", m_fcolumns));
             b.append(")");
         }
 
@@ -182,11 +218,11 @@ public class Constraint {
         return b.toString();
     }
 
-    public void parse(String constraint) throws Exception {
+    private void parse(String constraintSQL) throws Exception {
         Matcher m;
 
         m = Pattern.compile("(?i)constraint (\\S+) "
-        		+ "primary key \\((.*)\\)").matcher(constraint);
+        		+ "primary key \\((.*)\\)").matcher(constraintSQL);
         if (m.matches()) {
             setName(m.group(1));
             setType(PRIMARY_KEY);
@@ -195,24 +231,27 @@ public class Constraint {
             return;
         }
 
-        m = Pattern.compile("(?i)constraint (\\S+) "
-			    + "foreign key \\((\\S+)\\) "
-			    + "references ([^\\s\\(\\)]+)"
-			    + "(?: \\((\\S+)\\))?"
-			    + "(\\s+on\\s+delete\\s+cascade)?").matcher(constraint);
+        m = Pattern.compile("(?i)constraint (\\S+)\\s+"
+			    + "foreign key\\s+\\(([^\\(\\)]+)\\)\\s+"
+			    + "references\\s+(\\S+)"
+			    + "(?:\\s+\\(([^\\(\\)]+)\\))?"
+			    + "(\\s+on\\s+delete\\s+cascade)?").matcher(constraintSQL);
         if (!m.matches()) {
-            throw new Exception("Cannot parse constraint: " + constraint);
+            throw new Exception("Cannot parse constraint: " + constraintSQL);
         }
         	
         setName(m.group(1));
         setType(FOREIGN_KEY);
-        setColumn(m.group(2));
+        String[] columns = m.group(2).split("\\s*,\\s*");
+        setColumns(Arrays.asList(columns));
         setForeignTable(m.group(3));
+        String[] foreignColumns;
         if (m.group(4) == null) {
-        	setForeignColumn(m.group(2));
+            foreignColumns = m.group(2).split("\\s*,\\s*");
         } else {
-        	setForeignColumn(m.group(4));
+            foreignColumns = m.group(4).split("\\s*,\\s*");
         }
+        setForeignColumns(Arrays.asList(foreignColumns));
         if (m.group(5) == null) {
         	setForeignDelType("a");
         } else {
@@ -237,6 +276,13 @@ public class Constraint {
         if (m_type != other.getType()) {
             return false;
         }
+        
+        if ((m_table == null && other.getTable() != null) || (m_table != null && other.getTable() == null)) {
+            return false;
+        }
+        if (m_table != null && other.getTable() != null && !m_table.equals(other.getTable())) {
+            return false;
+        }
 
         if ((m_columns == null && other.getColumns() != null) || (m_columns != null && other.getColumns() == null)) {
             return false;
@@ -252,10 +298,10 @@ public class Constraint {
             return false;
         }
 
-        if ((m_fcolumn == null && other.getForeignColumn() != null) || (m_fcolumn != null && other.getForeignColumn() == null)) {
+        if ((m_fcolumns == null && other.getForeignColumns() != null) || (m_fcolumns != null && other.getForeignColumns() == null)) {
             return false;
         }
-        if (m_fcolumn != null && other.getForeignColumn() != null && !m_fcolumn.equals(other.getForeignColumn())) {
+        if (m_fcolumns != null && other.getForeignColumns() != null && !m_fcolumns.equals(other.getForeignColumns())) {
             return false;
         }
 
@@ -272,6 +318,7 @@ public class Constraint {
     }
 
     public int hashCode() {
-        return m_name.hashCode() + new Integer(m_type).hashCode() + m_columns.hashCode() + m_ftable.hashCode() + m_fcolumn.hashCode() + m_fdeltype.hashCode();
+        return m_name.hashCode() + new Integer(m_type).hashCode() + m_columns.hashCode() + m_ftable.hashCode() + m_fcolumns.hashCode() + m_fdeltype.hashCode();
     }
+
 }
