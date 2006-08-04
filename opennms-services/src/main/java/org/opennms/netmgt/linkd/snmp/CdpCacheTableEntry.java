@@ -99,6 +99,7 @@ public final class CdpCacheTableEntry extends SnmpTableEntry {
 	public static NamedSnmpVar[] cdpCache_elemList = null;
 
 	private boolean hasIfIndex = false;
+
 	private final static String CDP_IFINDEX_OID = ".1.3.6.1.4.1.9.9.23.1.2.1.1.1";
 	/**
 	 * <P>Initialize the element list for the class. This
