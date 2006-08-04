@@ -1879,7 +1879,12 @@ public class Installer {
 		while (rs.next()) {
 			Column c = new Column();
 			c.setName(rs.getString(1));
-			c.parseColumnType(rs.getString(2));
+			String columnType = rs.getString(2); 
+			try {
+				c.parseColumnType(columnType);
+			} catch (Exception e) {
+				throw new Exception("Error parsing column type '" + columnType + "' for column '" + rs.getString(1) + "' in table '" + tableName + "'.  Nested: " + e.getMessage(), e);
+			}
 			c.setNotNull(rs.getBoolean(3));
 
 			columns.add(c);
