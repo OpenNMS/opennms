@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- JNLP File for SwingSet2 Demo Application -->
+<jnlp
+  spec="1.5+"
+  codebase="file:/Users/brozow/svn/trunk/opennms-webstart/target/jnlp"
+  href="app.jnlp">
+  <information>
+    <title>OpenNMS Remote Poller</title>
+    <vendor>The OpenNMS Group</vendor>
+    <shortcut online="false">
+      <desktop/>
+      <menu submenu="My Corporation Apps"/>
+    </shortcut>
+  </information>
+  <!-- security>
+      <all-permissions/>
+  </security -->
+  <resources>
+    <j2se version="1.5+"/>
+    $dependencies
+  </resources>
+  <application-desc main-class="$mainClass"/>
+</jnlp> 

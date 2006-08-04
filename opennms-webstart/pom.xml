@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project>
+  <parent>
+    <artifactId>opennms</artifactId>
+    <groupId>org.opennms</groupId>
+    <version>1.3.2-SNAPSHOT</version>
+  </parent>
+  <modelVersion>4.0.0</modelVersion>
+  <artifactId>opennms-webstart</artifactId>
+  <packaging>jar</packaging>
+  <name>OpenNMS WebStart Remote Poller</name>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>webstart-maven-plugin</artifactId>
+        <executions>
+           <execution>
+              <goals>
+                 <goal>jnlp</goal>
+              </goals>
+           </execution>
+        </executions>
+        <configuration>
+           <outputDirectory>${project.build.director}/classes/webstart</outputDirectory>
+
+           <!-- transitive dependencies filter -->
+           <!-- dependencies-->
+             <!-- Note that only groupId and artifactId must be specified here. because of a limitation of the Include/ExcludesArtifactFilter -->
+             <!-- includes>
+                <include>commons-logging:commons-logging</include>
+                <include>commons-cli:commons-cli</include>
+             <includes -->
+             <!-- excludes>
+                <exclude></exclude>
+             <excludes-->
+           <!-- /dependencies-->
+
+           <!-- JNLP generation -->
+           <jnlp>
+             <!-- default values -->
+             <!--resources>${project.basedir}/src/main/jnlp</resources-->
+             <!--inputTemplateResourcePath>${project.basedir}</inputTemplateResourcePath-->
+             <!--inputTemplate>src/jnlp/template.vm</inputTemplate--> <!-- relative to inputTemplateResourcePath -->
+             <outputFile>app.jnlp</outputFile> <!-- defaults to launch.jnlp -->
+
+             <!-- used to automatically identify the jar containing the main class. -->
+             <!-- this is perhaps going to change -->
+             <mainClass>org.opennms.webstart.Main</mainClass>
+           </jnlp>
+
+
+           <!-- SIGNING -->
+           <!-- defining this will automatically sign the jar and its dependencies, if necessary -->
+           <!-- sign>
+             <keystore></keystore>
+             <keypass></keypass>
+             <storepass></storepass>
+             <storetype></storetype>
+             <alias></alias>
+             <validity></validity>
+
+             <dnameCn></dnameCn>
+             <dnameOu></dnameOu>
+             <dnameO></dnameO>
+             <dnameL></dnameL>
+             <dnameSt></dnameSt>
+             <dnameC></dnameC>
+
+             <verify>true</verify>
+           </sign-->
+
+           <!-- KEYSTORE MANGEMENT -->
+           <!-- keystore>
+             <delete>true</delete>
+             <gen>true</gen>      
+           </keystore-->
+
+           <!-- BUILDING PROCESS -->
+           <!--usejnlpservlet>true</usejnlpservlet--> <!-- not yet supported -->
+
+           <!-- should we have some more configurations here? E.g. compression level (aka packing effort) -->
+           <!-- not yet implemented -->
+           <pack200>false</pack200>
+           <gzip>true</gzip> <!-- default force when pack200 false, true when pack200 selected ?? -->
+
+           <!-- misc -->
+           <!-- if there are multiple apps, do we need to mark one as default? (app/ redirects to app/default.jnlp in jnlp servlet ??)-->
+           <!-- -->
+
+           <!--install>false</install--> <!-- not yet supported -->
+           <verbose>true</verbose>
+
+        </configuration>
+      </plugin>
+    </plugins>
+
+  </build>
+  <dependencies>
+    <!--
+         Sort dependencies by groupId then artifactId, but put dependencies
+         with a groupId of org.opennms first.
+      -->
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-dao</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-model</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-mock</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.acegisecurity</groupId>
+      <artifactId>acegi-security</artifactId>
+      <version>1.0.1</version>
+    </dependency>
+  </dependencies>
+</project>

@@ -93,6 +93,7 @@
     <module>opennms-services</module>
     <module>opennms-import</module>
     <module>opennms-reporting</module>
+    <module>opennms-webstart</module>
     <module>opennms-webapp</module>
     <module>opennms-tomcat</module>
     <module>opennms-tomcat-assembly</module>
@@ -959,14 +960,6 @@ opennms.home = ${opennms.home}
       <name>OpenNMS Repository</name>
       <url>http://repo.opennms.org/snapshots</url>
     </repository>
-<!--
-    <repository>
-      <snapshots />
-      <id>codehaus-shapshots</id>
-      <name>Maven/Codehaus Snapshot Repository</name>
-      <url>http://snapshots.maven.codehaus.org/maven2</url>
-    </repository>
--->
   </repositories>
   <pluginRepositories>
     <pluginRepository>
@@ -979,7 +972,14 @@ opennms.home = ${opennms.home}
     <pluginRepository>
       <releases />
       <snapshots />
-      <id>codehaus-shapshots</id>
+      <id>codehaus-snapshots</id>
+      <name>Maven/Codehaus Snapshot Repository</name>
+      <url>http://snapshots.repository.codehaus.org</url>
+    </pluginRepository>
+    <pluginRepository>
+      <releases />
+      <snapshots />
+      <id>codehaus-snapshots-old</id>
       <name>Maven/Codehaus Snapshot Repository</name>
       <url>http://snapshots.maven.codehaus.org/maven2</url>
     </pluginRepository>
