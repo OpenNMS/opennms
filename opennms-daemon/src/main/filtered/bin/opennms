@@ -216,7 +216,7 @@ doStart(){
     fi
 
     ##########################################################################
-    # Run opennms.sh with the "-t" option to enable the Java Platform Debugging
+    # Run opennms with the "-t" option to enable the Java Platform Debugging
     # Architecture. This will open a server socket on port 8001 that can be
     # connected to by a remote java debugger. A good choice is JSwat which can 
     # be found at http://www.bluemarsh.com
@@ -309,7 +309,7 @@ doCheck() {
     fi
 
     echo "OpenNMS is not running... Restarting" >&2
-    $OPENNMS_HOME/bin/opennms.sh start
+    $OPENNMS_HOME/bin/opennms start
 
     exit 1
 }
@@ -590,8 +590,8 @@ case "$COMMAND" in
     restart)
         ## Stop the service and regardless of whether it was
         ## running or not, start it again.
-	$OPENNMS_HOME/bin/opennms.sh stop
-	$OPENNMS_HOME/bin/opennms.sh start
+	$OPENNMS_HOME/bin/opennms stop
+	$OPENNMS_HOME/bin/opennms start
 	ret=$?
 
 	if [ -f /etc/SuSE-release ]; then
