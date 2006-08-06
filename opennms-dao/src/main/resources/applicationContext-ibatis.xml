@@ -2,10 +2,30 @@
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.springframework.org/schema/beans
 	http://www.springframework.org/schema/beans/spring-beans.xsd">
 
+	<!--  Data source Bean -->
+	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource"
+		destroy-method="close">
+		<property name="driverClassName">
+			<value>org.postgresql.Driver</value>
+		</property>
+		<property name="url">
+			<value>jdbc:postgresql://localhost/test</value>
+		</property>
+		<property name="username">
+			<value>postgres</value>
+		</property>
+	</bean>
+	
+	<!-- SqlMap setup for iBATIS Database Layer -->
 	<bean id="sqlMapClient" class="org.springframework.orm.ibatis.SqlMapClientFactoryBean">
 		<property name="configLocation" >
     		<value>sqlMapConfig.xml</value>
 		</property>
  	</bean>
-  
+
+	<bean id="pathOutage" class="org.opennms.netmgt.dao.ibatis.pathoutage.SqlMapClientTestDao">
+		<property name="dataSource"><ref local="dataSource"/></property>
+		<property name="sqlMapClient"><ref local="sqlMapClient"/></property>
+	</bean>  
+	
 </beans>

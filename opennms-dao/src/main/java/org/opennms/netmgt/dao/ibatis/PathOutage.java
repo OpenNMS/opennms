@@ -1,6 +1,6 @@
-package org.opennms.netmgt.dao.ibatis.pathoutage;
+package org.opennms.netmgt.dao.ibatis;
 
-public class PathOutageDomainObject {
+public class PathOutage {
 	private int nodeId;
 	private String criticalPathIp;
 	private String criticalPathServiceName;

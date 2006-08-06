@@ -2,7 +2,7 @@
 <!DOCTYE sqlMap PUBLIC "~//iBATTIS.com/DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
 
 <sqlMap>
-	<typeAlias type="org.opennms.netmgt.dao.ibatis.pathoutage.PathOutageDomainObject" />
+	<typeAlias type="org.opennms.netmgt.dao.ibatis.PathOutage" />
 	
 	<resultMap class="pathOutage" id="result">
 		<result property="nodeId" column="nodeID"/>
@@ -11,6 +11,6 @@
 	</resultMap>
 	
 	<select id="getAllPathOutages" resultMap="result">
-		select * from pathOutages
+		select * from pathOutage
 	</select>
 </sqlMap>
