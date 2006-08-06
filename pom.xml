@@ -760,9 +760,19 @@ opennms.home = ${opennms.home}
         <version>1.1</version>
       </dependency>
       <dependency>
+        <groupId>javax.jnlp</groupId>
+        <artifactId>jnlp</artifactId>
+        <version>1.5.0</version>
+      </dependency>
+      <dependency>
         <groupId>javax.mail</groupId>
         <artifactId>mail</artifactId>
         <version>1.4</version>
+      </dependency>
+      <dependency>
+        <groupId>javax.samples.jnlp</groupId>
+        <artifactId>jnlp-servlet</artifactId>
+        <version>1.6.0</version>
       </dependency>
       <dependency>
         <groupId>javax.servlet</groupId>

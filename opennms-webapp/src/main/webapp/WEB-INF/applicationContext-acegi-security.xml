@@ -97,6 +97,7 @@
         /acegilogin.jsp*=ROLE_ANONYMOUS,ROLE_ADMIN,ROLE_USER,ROLE_READONLY
         /admin/**=ROLE_ADMIN
         /rtc/post/**=ROLE_RTC
+        /webstart/**=ROLE_ANONYMOUS,ROLE_ADMIN,ROLE_USER,ROLE_READONLY
         /**=ROLE_ADMIN,ROLE_USER,ROLE_READONLY
       </value>
     </property>
