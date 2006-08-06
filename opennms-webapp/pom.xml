@@ -173,6 +173,11 @@
       <scope>test</scope>
     </dependency>
     <dependency>
+      <groupId>javax.samples.jnlp</groupId>
+      <artifactId>jnlp-servlet</artifactId>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
       <groupId>javax.servlet</groupId>
       <artifactId>jstl</artifactId>
       <scope>runtime</scope>

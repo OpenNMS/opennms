@@ -135,6 +135,12 @@
         <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
   </listener>
 
+   <!-- WebStart servlet -->
+   <servlet>
+      <servlet-name>JnlpDownloadServlet</servlet-name>
+      <servlet-class>jnlp.sample.servlet.JnlpDownloadServlet</servlet-class>
+   </servlet>
+
   <!-- desktop survey report servlet -->  
 
   <servlet>
@@ -917,6 +923,13 @@
         <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
   </servlet>
+
+ <!-- WebStart Servlet mapping -->
+     <servlet-mapping>
+        <servlet-name>JnlpDownloadServlet</servlet-name>
+        <url-pattern>/webstart/*</url-pattern>
+     </servlet-mapping>
+
 
   <servlet-mapping>
       <servlet-name>PyServlet</servlet-name>

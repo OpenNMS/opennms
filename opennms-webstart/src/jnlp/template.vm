@@ -2,8 +2,8 @@
 <!-- JNLP File for SwingSet2 Demo Application -->
 <jnlp
   spec="1.5+"
-  codebase="file:/Users/brozow/svn/trunk/opennms-webstart/target/jnlp"
-  href="app.jnlp">
+  codebase="$$codebase"
+  href="$$name">
   <information>
     <title>OpenNMS Remote Poller</title>
     <vendor>The OpenNMS Group</vendor>
