@@ -53,7 +53,7 @@
 	contentType="text/html"
 	session="true"
 	import="org.opennms.web.event.*,
-		org.opennms.web.authenticate.Authentication,
+		org.opennms.web.acegisecurity.Authentication,
 		org.opennms.web.MissingParameterException
 	"
 %>

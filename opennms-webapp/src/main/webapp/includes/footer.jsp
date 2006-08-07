@@ -20,7 +20,7 @@
 	contentType="text/html"
 	session="true"
 	import="java.io.File,
-		org.opennms.web.authenticate.Authentication,
+		org.opennms.web.acegisecurity.Authentication,
 		org.opennms.core.resource.Vault"
 %>
 

@@ -46,7 +46,7 @@
 	session="true"
 	import="org.opennms.web.element.*,
 		java.util.*,
-		org.opennms.web.authenticate.Authentication,
+		org.opennms.web.acegisecurity.Authentication,
 		org.opennms.web.event.*,
 		java.net.*,
 		org.opennms.netmgt.utils.IPSorter,

@@ -48,7 +48,7 @@
 	import="org.opennms.web.alarm.*,
 		java.util.*,
 		java.sql.SQLException,
-		org.opennms.web.authenticate.Authentication,
+		org.opennms.web.acegisecurity.Authentication,
 		org.opennms.web.alarm.filter.*
 		"
 %>

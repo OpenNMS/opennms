@@ -93,7 +93,6 @@
       document.getInterfaces.submit();
   }
 </script>
-</head>
 
 <form method="post" name="getInterfaces"
       action="admin/nodemanagement/getInterfaces">

@@ -49,7 +49,7 @@
 		org.opennms.netmgt.config.PollerConfig,
 		org.opennms.web.element.*,
 		java.util.*,
-                org.opennms.web.authenticate.Authentication,
+                org.opennms.web.acegisecurity.Authentication,
 		org.opennms.web.event.*,
 		org.opennms.web.performance.*,
 		org.opennms.netmgt.utils.IfLabel,

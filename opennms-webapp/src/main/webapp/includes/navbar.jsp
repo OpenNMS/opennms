@@ -3,7 +3,7 @@
 	import="java.io.File,
 		java.util.LinkedList,
 		org.opennms.core.resource.Vault,
-		org.opennms.web.authenticate.Authentication,
+		org.opennms.web.acegisecurity.Authentication,
                 org.opennms.web.navigate.NavBarEntry
  		"
 %>
