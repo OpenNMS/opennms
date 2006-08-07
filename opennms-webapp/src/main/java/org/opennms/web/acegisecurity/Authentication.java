@@ -30,7 +30,9 @@
 //      http://www.opennms.com/
 //
 
-package org.opennms.web.authenticate;
+package org.opennms.web.acegisecurity;
+
+import java.util.HashMap;
 
 import org.apache.log4j.Category;
 
@@ -54,8 +56,24 @@ public final class Authentication extends Object {
     /** The name of the role defined for read-only users in the web.xml file. */
     public static final String READONLY_ROLE = "ROLE_READONLY";
 
+    /** The name of the role defined for RTC posts in the web.xml file. */
+    public static final String RTC_ROLE = "ROLE_RTC";
+    
+    private static HashMap<String, String> m_oldToNewMap = new HashMap<String, String>();
+    
+    static {
+    	m_oldToNewMap.put("OpenNMS RTC Daemon", RTC_ROLE);
+    	m_oldToNewMap.put("OpenNMS Administrator", ADMIN_ROLE);
+    	m_oldToNewMap.put("OpenNMS Read-Only User", RTC_ROLE);
+    	// There is no entry for USER_ROLE, because all authenticated people are users
+    }
+
     /** Private, empty constructor so this class cannot be instantiated. */
     private Authentication() {
+    }
+    
+    public static String getAcegiRoleFromOldRoleName(String oldRole) {
+    	return m_oldToNewMap.get(oldRole);
     }
 
 }

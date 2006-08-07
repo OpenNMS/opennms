@@ -46,7 +46,7 @@
 	contentType="text/html"
 	session="true"
 	import="org.opennms.web.notification.*,
-                org.opennms.web.authenticate.Authentication,
+                org.opennms.web.acegisecurity.Authentication,
 		org.opennms.web.element.*,
 		java.util.*,
 		java.sql.SQLException,

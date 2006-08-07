@@ -49,7 +49,7 @@
 	import="org.opennms.web.event.*,
 		java.util.*,
 		java.sql.SQLException,
-		org.opennms.web.authenticate.Authentication,
+		org.opennms.web.acegisecurity.Authentication,
 		org.opennms.web.event.filter.*
 	"
 %>

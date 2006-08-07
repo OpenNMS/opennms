@@ -44,7 +44,7 @@
 	import="org.opennms.web.outage.*,
 		java.util.*,
 		java.sql.SQLException,
-		org.opennms.web.authenticate.Authentication,
+		org.opennms.web.acegisecurity.Authentication,
 		org.opennms.web.outage.filter.*,
 		org.opennms.web.element.ElementUtil,
 		java.text.DateFormat

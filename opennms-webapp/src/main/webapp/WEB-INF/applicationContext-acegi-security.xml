@@ -24,7 +24,7 @@
    </bean>
 
    <bean id="rememberMeServices" class="org.acegisecurity.ui.rememberme.TokenBasedRememberMeServices">
-      <property name="userDetailsService"><ref local="inMemoryDaoImpl"/></property>
+      <property name="userDetailsService"><ref local="openNMSUserDaoImpl"/></property>
       <property name="key"><value>springRocks</value></property>
    </bean>
    
@@ -34,7 +34,7 @@
    
 
    <bean id="logoutFilter" class="org.acegisecurity.ui.logout.LogoutFilter">
-      <constructor-arg value="/index.jsp"/> <!-- URL redirected to after logout -->
+      <constructor-arg value="/logoff.jsp"/> <!-- URL redirected to after logout -->
       <constructor-arg>
          <list>
               <ref bean="rememberMeServices"/>
@@ -53,7 +53,26 @@
          </list>
       </property>
    </bean>
+   
+ <bean id="userDao" class="org.opennms.web.acegisecurity.UserDaoImpl">
+  <property name="usersConfigurationFile" value="${opennms.home}/etc/users.xml"/>
+  <property name="magicUsersConfigurationFile" value="${opennms.home}/etc/magic-users.properties"/>
+ </bean>
 
+ <bean id="openNMSUserDaoImpl" class="org.opennms.web.acegisecurity.OpenNMSUserDaoImpl">
+  <property name="userDao"><ref bean="userDao"/></property>
+ </bean>
+
+ <bean id="upperCaseMd5PasswordEncoder" class="org.opennms.web.acegisecurity.UpperCaseMd5PasswordEncoder"/>
+
+<!--
+ <bean id="daoAuthenticationProvider" class="org.acegisecurity.providers.dao.DaoAuthenticationProvider">
+  <property name="userDetailsService"><ref bean="openNMSUserDaoImpl"/></property>
+  <property name="passwordEncoder"><ref bean="upperCaseMd5PasswordEncoder"/></property>
+ </bean>        
+ -->
+
+<!--
 <bean id="inMemoryDaoImpl" class="org.acegisecurity.userdetails.memory.InMemoryDaoImpl">
   <property name="userMap">
     <value>
@@ -63,16 +82,13 @@
       readonly=readonly,ROLE_READONLY
     </value>
   </property>
-</bean>        
+</bean>   
+-->     
 
-<bean id="daoAuthenticationProvider" class="org.acegisecurity.providers.dao.DaoAuthenticationProvider">
-  <property name="userDetailsService"><ref bean="inMemoryDaoImpl"/></property>
-<!--
-  <property name="saltSource"><ref bean="saltSource"/></property>
-  <property name="passwordEncoder"><ref bean="passwordEncoder"/></property>
--->
-</bean>        
-
+  <bean id="daoAuthenticationProvider" class="org.acegisecurity.providers.dao.DaoAuthenticationProvider">
+    <property name="userDetailsService"><ref bean="openNMSUserDaoImpl"/></property>
+    <property name="passwordEncoder"><ref bean="upperCaseMd5PasswordEncoder"/></property>
+  </bean>        
 
    <bean id="roleVoter" class="org.acegisecurity.vote.RoleVoter"/>
 
@@ -93,12 +109,17 @@
       <value>
         CONVERT_URL_TO_LOWERCASE_BEFORE_COMPARISON
         PATTERN_TYPE_APACHE_ANT
-        /logoff.jsp=ROLE_ANONYMOUS,ROLE_ADMIN,ROLE_USER,ROLE_READONLY
-        /acegilogin.jsp*=ROLE_ANONYMOUS,ROLE_ADMIN,ROLE_USER,ROLE_READONLY
+        /logoff.jsp=ROLE_ANONYMOUS,ROLE_USER
+        /acegilogin.jsp*=ROLE_ANONYMOUS,ROLE_USER
+        /css/styles.css=ROLE_ANONYMOUS,ROLE_USER
+        /js/pngfix.js=ROLE_ANONYMOUS,ROLE_USER
+        /js/global.js=ROLE_ANONYMOUS,ROLE_USER
+        /images/logo.png=ROLE_ANONYMOUS,ROLE_USER
+        /images/logo-background.gif=ROLE_ANONYMOUS,ROLE_USER
         /admin/**=ROLE_ADMIN
         /rtc/post/**=ROLE_RTC
-        /webstart/**=ROLE_ANONYMOUS,ROLE_ADMIN,ROLE_USER,ROLE_READONLY
-        /**=ROLE_ADMIN,ROLE_USER,ROLE_READONLY
+        /webstart/**=ROLE_ANONYMOUS,ROLE_USER
+        /**=ROLE_USER
       </value>
     </property>
   </bean>

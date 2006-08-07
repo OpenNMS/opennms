@@ -1,10 +1,14 @@
-<p>
-Denied
-</p>
+<%@ taglib prefix='c' uri='http://java.sun.com/jstl/core' %>
+<%@ page import="org.acegisecurity.ui.AbstractProcessingFilter" %>
+<%@ page import="org.acegisecurity.ui.webapp.AuthenticationProcessingFilter" %>
+<%@ page import="org.acegisecurity.AuthenticationException" %>
 
-<%-- XXX this is totally wrong... using an absolute reference to /opennms --%>
+<jsp:include page="/includes/header.jsp" flush="false">
+  <jsp:param name="title" value="Access denied" />
+</jsp:include>
 
-<p>
-You might want to try <a href="/opennms/j_acegi_logout">logging out</a> and then
-logging in as a different user.
-</p>
+<h2>Access denied</h2>
+
+You do not have permission to access this page.
+
+<jsp:include page="/includes/footer.jsp" flush="false"/>

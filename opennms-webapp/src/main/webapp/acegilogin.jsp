@@ -3,26 +3,10 @@
 <%@ page import="org.acegisecurity.ui.webapp.AuthenticationProcessingFilter" %>
 <%@ page import="org.acegisecurity.AuthenticationException" %>
 
-<html>
-  <head>
-    <title>Login</title>
-  </head>
-
-  <body>
-    <h1>Login</h1>
-
-<!--
-	<P>Valid users:
-	<P>
-	<P>username <b>marissa</b>, password <b>koala</b>
-	<P>username <b>dianne</b>, password <b>emu</b>
-	<p>username <b>scott</b>, password <b>wombat</b>
-	<p>username <b>peter</b>, password <b>opal</b> (user disabled)
-	<p>username <b>bill</b>, password <b>wombat</b>
-	<p>username <b>bob</b>, password <b>wombat</b>
-	<p>username <b>jane</b>, password <b>wombat</b>
-	<p>
--->
+<jsp:include page="/includes/header.jsp" flush="false">
+  <jsp:param name="title" value="Login" />
+  <jsp:param name="nonavbar" value="true" />
+</jsp:include>
 	
     <%-- this form-login-page form is also used as the 
          form-error-page to ask for a login again.
@@ -46,5 +30,6 @@
 
     </form>
 
-  </body>
-</html>
+<jsp:include page="/includes/footer.jsp" flush="false">
+  <jsp:param name="quiet" value="true" />
+</jsp:include>

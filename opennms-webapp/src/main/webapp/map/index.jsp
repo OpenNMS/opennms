@@ -34,7 +34,7 @@
 
 --> 
 
-<%@page language="java" contentType="text/html" session="true" import="org.opennms.web.map.db.MapMenu,org.opennms.web.map.view.*, org.opennms.web.authenticate.Authentication"%>
+<%@page language="java" contentType="text/html" session="true" import="org.opennms.web.map.db.MapMenu,org.opennms.web.map.view.*, org.opennms.web.acegisecurity.Authentication"%>
 
 <html>
 <head>
