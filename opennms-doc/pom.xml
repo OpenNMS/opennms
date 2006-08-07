@@ -1,0 +1,54 @@
+<?xml version="1.0"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.opennms</groupId>
+    <artifactId>opennms</artifactId>
+    <version>1.3.2-SNAPSHOT</version>
+  </parent>
+  <artifactId>opennms-doc</artifactId>
+  <packaging>pom</packaging>
+  <name>OpenNMS Documentation</name>
+  <description>Various Guides for using OpenNMS</description>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.opennms</groupId>
+        <artifactId>opennms-docbook-plugin</artifactId>
+        <dependencies>
+          <dependency>
+            <groupId>org.docbook</groupId>
+            <artifactId>docbook-xml</artifactId>
+            <version>4.4</version>
+            <scope>runtime</scope>
+          </dependency>
+        </dependencies>
+        <configuration>
+          <entities>
+            <entity>
+              <name>version</name>
+              <value>${version}</value>
+            </entity>
+            <entity>
+              <name>project</name>
+              <value>${project.name}</value>
+            </entity>
+          </entities>
+          <paperType>A4</paperType>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+  <repositories>
+    <repository>
+      <id>agile-repo</id>
+      <url>http://agilejava.com/maven</url>
+    </repository>
+  </repositories>
+  <pluginRepositories>
+    <pluginRepository>
+      <id>agile-repo</id>
+      <url>http://agilejava.com/maven</url>
+    </pluginRepository>
+  </pluginRepositories>
+</project>
