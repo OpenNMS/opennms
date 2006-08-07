@@ -92,6 +92,14 @@
 %>
 
 
+<jsp:include page="/includes/header.jsp" flush="false" >
+  <jsp:param name="title" value="Event List" />
+  <jsp:param name="headTitle" value="List" />
+  <jsp:param name="headTitle" value="Events" />
+  <jsp:param name="breadcrumb" value="<a href= 'event/index.jsp' title='Events System Page'>Events</a>" />
+  <jsp:param name="breadcrumb" value="List" />
+</jsp:include>
+
   <script language="Javascript" type="text/javascript">
     function checkAllCheckboxes() {
        if( document.acknowledge_form.event.length ) {  
@@ -162,14 +170,6 @@
 
   </script>
 
-
-<jsp:include page="/includes/header.jsp" flush="false" >
-  <jsp:param name="title" value="Event List" />
-  <jsp:param name="headTitle" value="List" />
-  <jsp:param name="headTitle" value="Events" />
-  <jsp:param name="breadcrumb" value="<a href= 'event/index.jsp' title='Events System Page'>Events</a>" />
-  <jsp:param name="breadcrumb" value="List" />
-</jsp:include>
 
 <div id="eventlist">
 
