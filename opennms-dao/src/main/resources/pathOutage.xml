@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYE sqlMap PUBLIC "~//iBATTIS.com/DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
-
+<!DOCTYPE sqlMap 
+          PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" 
+          "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
 <sqlMap>
-	<typeAlias type="org.opennms.netmgt.dao.ibatis.PathOutage" />
+	<typeAlias alias ="pathOutage" type="org.opennms.netmgt.dao.ibatis.PathOutage" />
 	
 	<resultMap class="pathOutage" id="result">
 		<result property="nodeId" column="nodeID"/>
