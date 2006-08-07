@@ -114,14 +114,18 @@
     <table style="height: 100%; padding: 4px;">
      <tr>
       <td valign="center" align="right">
+        <c:if test="${!empty pageContext.request.remoteUser}">
           [<c:out value="${pageContext.request.remoteUser}"/>]<br/>
           Notices <c:out value="${noticeStatus}" escapeXml="false"/><br/>
+        </c:if>
           <span id="headerdate">
             <c:out value="${date}"/><br/>
             <c:out value="${time}"/>
           </span><!-- /headerdate -->
+        <c:if test="${!empty pageContext.request.remoteUser}">
 	  <br/>
           <span style="font-size: 8px;"><a href="j_acegi_logout">Logout</a></span>
+        </c:if>
       </td>
      </tr>
     </table>
@@ -132,8 +136,9 @@
   </div><!-- /headertop -->
 
 
+  <c:if test="${param.nonavbar != 'true'}">
 
-<div id="headernavbar">
+     <div id="headernavbar">
           <div id="headernavbarleft">
             <a href="index.jsp">Home</a> 
 	    <c:forEach var="breadcrumb" items="${paramValues.breadcrumb}">
@@ -146,7 +151,8 @@
           <div id="headernavbarright">
             <jsp:include page="/includes/navbar.jsp" flush="false"/>
           </div>
-</div>
+    </div>
+  </c:if>
 
   <div class="spacer"><!-- --></div>
 
