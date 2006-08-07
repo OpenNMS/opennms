@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
-"../../../docs/dtd/docbookx.dtd" [
-<!ENTITY __legalese SYSTEM "../common/legalese.xml">
-<!ENTITY __preface SYSTEM "../common/preface.xml">
-<!ENTITY __chapter1__dwwdzyh8 SYSTEM "chapter1.xml">
-<!ENTITY __chapter2__dwwe0ple SYSTEM "chapter2.xml">
-<!ENTITY __chapter3__dx0bh6rf SYSTEM "chapter3.xml">
-<!ENTITY __chapter4 SYSTEM "chapter4.xml">
-<!ENTITY __chapter5 SYSTEM "chapter5.xml">
-<!ENTITY __chapter6 SYSTEM "chapter6.xml">
+<!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+"http://www.oasis-open.org/docbook/xml/4.4/docbookx.dtd" [
+<!ENTITY __legalese SYSTEM "common/legalese.xml">
+<!ENTITY __preface SYSTEM "common/preface.xml">
+<!ENTITY __chapter1__dwwdzyh8 SYSTEM "install/chapter1.xml">
+<!ENTITY __chapter2__dwwe0ple SYSTEM "install/chapter2.xml">
+<!ENTITY __chapter3__dx0bh6rf SYSTEM "install/chapter3.xml">
+<!ENTITY __chapter4 SYSTEM "install/chapter4.xml">
+<!ENTITY __chapter5 SYSTEM "install/chapter5.xml">
+<!ENTITY __chapter6 SYSTEM "install/chapter6.xml">
 ]>
 <book>
   <title><trademark class="registered">OpenNMS</trademark> Installation

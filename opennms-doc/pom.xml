@@ -15,6 +15,15 @@
       <plugin>
         <groupId>org.opennms</groupId>
         <artifactId>opennms-docbook-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>generate-html</id>
+            <phase>package</phase>
+            <goals>
+              <goal>generate-html</goal>
+            </goals>
+          </execution>
+        </executions>
         <dependencies>
           <dependency>
             <groupId>org.docbook</groupId>

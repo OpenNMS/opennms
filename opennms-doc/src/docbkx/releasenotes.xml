@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
-"../../../docs/dtd/docbookx.dtd" [
-<!ENTITY __legalese SYSTEM "../common/legalese.xml">
-<!ENTITY __preface SYSTEM "../common/preface.xml">
-<!ENTITY __chap1__ SYSTEM "./chap1.xml">
-<!ENTITY __chap2__ SYSTEM "./chap2.xml">
-<!ENTITY __chap3__ SYSTEM "./chap3.xml">
-<!ENTITY __chap4__ SYSTEM "./chap4.xml">
+<!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+"http://www.oasis-open.org/docbook/xml/4.4/docbookx.dtd" [
+<!ENTITY __legalese SYSTEM "common/legalese.xml">
+<!ENTITY __preface SYSTEM "common/preface.xml">
+<!ENTITY __chap1__ SYSTEM "releasenotes/chap1.xml">
+<!ENTITY __chap2__ SYSTEM "releasenotes/chap2.xml">
+<!ENTITY __chap3__ SYSTEM "releasenotes/chap3.xml">
+<!ENTITY __chap4__ SYSTEM "releasenotes/chap4.xml">
 ]>
 <book>
   <title><trademark class="registered">OpenNMS</trademark>
