@@ -1,3 +1,0 @@
-#!/bin/sh
-
-[ -f build.sh ] && sh build.sh "$@"
