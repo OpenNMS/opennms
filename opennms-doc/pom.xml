@@ -13,7 +13,7 @@
   <build>
     <plugins>
       <plugin>
-        <groupId>org.opennms</groupId>
+        <groupId>org.opennms.maven.plugins</groupId>
         <artifactId>opennms-docbook-plugin</artifactId>
         <executions>
           <execution>
