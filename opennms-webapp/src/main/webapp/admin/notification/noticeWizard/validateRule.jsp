@@ -126,7 +126,6 @@
           </tr>
           <%=buildInterfaceTable(newRule, services, notServices)%>
         </table>
-        <table 
         <table width="100%" cellspacing="2" cellpadding="2" border="0">
          <tr> 
           <td>
