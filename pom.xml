@@ -95,8 +95,6 @@
     <module>opennms-reporting</module>
     <module>opennms-webstart</module>
     <module>opennms-webapp</module>
-    <module>opennms-tomcat</module>
-    <module>opennms-tomcat-assembly</module>
     <module>opennms-daemon</module>
     <module>opennms-doc</module>
   </modules>
