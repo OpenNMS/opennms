@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+"http://www.oasis-open.org/docbook/xml/4.4/docbookx.dtd" [
+	<!ENTITY bookinfo SYSTEM "adminref/bookinfo.xml">
+	<!ENTITY preface SYSTEM "common/preface-old.xml">
+	<!ENTITY chap1 SYSTEM "adminref/chap1.xml">
+	<!ENTITY chap2 SYSTEM "adminref/chap2.xml">
+]>
+<book id="book">
+	&bookinfo;&preface;&chap1;&chap2;
+</book>
