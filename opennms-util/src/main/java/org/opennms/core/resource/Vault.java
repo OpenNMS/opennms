@@ -219,7 +219,7 @@ public class Vault extends Object {
      * <P>
      * Once the list of files is recovered, each file is visited and loaded into
      * the system properties. If any file cannot be loaded due to an I/O error
-     * then it is skipped as a whole. No partial key sets are laoded into the
+     * then it is skipped as a whole. No partial key sets are loaded into the
      * system properties. Also, this method will not overwrite an existing key
      * in the currently loaded properties.
      * </P>
