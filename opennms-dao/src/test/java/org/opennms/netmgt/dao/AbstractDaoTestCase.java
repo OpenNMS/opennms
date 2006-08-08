@@ -433,7 +433,8 @@ public class AbstractDaoTestCase extends TestCase {
         getEventDao().save(event);
        
         OnmsMonitoredService svc = getMonitoredServiceDao().get(1, "192.168.1.1", "SNMP");
-        OnmsOutage resolved = new OnmsOutage(new Date(), new Date(), event, event, svc);
+        //JOED - LOOK This over
+        OnmsOutage resolved = new OnmsOutage(new Date(), new Date(), event, event, svc, null, getName(), getName());
         getOutageDao().save(resolved);
         
         OnmsOutage unresolved = new OnmsOutage(new Date(), event, svc);
