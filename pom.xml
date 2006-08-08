@@ -200,7 +200,7 @@ opennms.home = ${opennms.home}
           </dependency>
         </dependencies>
 
-        <!-- common configuration shared by all executions -->
+        <!- NESTED COMMENT common configuration shared by all executions NESTED COMMENT ->
         <configuration>
            <username>opennms</username>
            <password>opennms</password>
@@ -217,13 +217,13 @@ opennms.home = ${opennms.home}
               <goal>execute</goal>
             </goals>
             <configuration>
-              <!-- need another database to drop the targeted one -->
+              <!- NESTED COMMENT need another database to drop the targeted one NESTED COMMENT ->
               <user>postgres</user>
               <password></password>
               <url>jdbc:postgresql://localhost:5432/template1</url>
               <autocommit>true</autocommit>
-              <sqlCommand>set ON_ERROR_STOP FALSE;drop database test</sqlCommand>
-              <!-- ignore error when database is not avaiable -->
+              <sqlCommand>drop database test</sqlCommand>
+              <!- NESTED COMMENT ignore error when database is not avaiable NESTED COMMENT ->
               <onError>continue</onError>
             </configuration>
           </execution>
@@ -238,7 +238,6 @@ opennms.home = ${opennms.home}
               <url>jdbc:postgresql://localhost:5432/template1</url>
               <user>postgres</user>
               <password></password>
-              <!-- no transaction -->
               <autocommit>true</autocommit>
               <sqlCommand>create database test</sqlCommand>
             </configuration>
@@ -275,7 +274,6 @@ opennms.home = ${opennms.home}
             </configuration>
           </execution>
 
-          <!-- drop db after test -->
           <execution>
             <id>drop-db-after-test</id>
             <phase>test</phase>
