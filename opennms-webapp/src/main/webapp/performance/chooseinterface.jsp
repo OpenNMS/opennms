@@ -12,6 +12,7 @@
 //
 // Modifications:
 //
+// 2006 Aug 08: Fix minor spelling error - dj@opennms.org
 // 2003 Feb 07: Fixed URLEncoder issues.
 // 2002 Nov 26: Fixed breadcrumbs issue.
 // 
@@ -79,7 +80,7 @@
     } else if (domain != null) {
         intfs = this.model.getQueryableInterfacesForDomain(domain);
     } else {
-        throw new MissingParameterException("nodei or domain", requiredParameters);
+        throw new MissingParameterException("node or domain", requiredParameters);
     }
     
     Collections.sort(intfs);        
