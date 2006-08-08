@@ -31,6 +31,7 @@
 //
 package org.opennms.netmgt.dao.jdbc.outage;
 
+import java.net.InetAddress;
 import java.util.Date;
 
 import javax.sql.DataSource;
@@ -118,6 +119,26 @@ public class LazyOutage extends OnmsOutage {
 		return super.getSuppressTime();
 	}
 
+	@Override
+	public Integer getServiceId() {
+		load();
+		return super.getServiceId();
+	}
+
+	@Override
+	public String getIpAddr() {
+		load();
+		return super.getIpAddr();
+	}
+	
+	public void setIpAddr(String ipAddr) {
+		load();
+		setDirty(true);
+		super.setIpAddr(ipAddr);
+	}
+
+
+	
 	public void setEventBySvcLostEvent(OnmsEvent eventBySvcLostEvent) {
 		load();
 		setDirty(true);
@@ -158,6 +179,20 @@ public class LazyOutage extends OnmsOutage {
 		load();
 		setDirty(true);
 		super.setSuppressedBy(suppressorMan);
+	}
+
+	public void setServiceId(Integer serviceId) {
+		load();
+		setDirty(true);
+		super.setServiceId(serviceId);
+		
+	}
+
+	public void setNodeId(Integer nodeId) {
+		load();
+		setDirty(true);
+		super.setServiceId(nodeId);
+		
 	}
 
 }

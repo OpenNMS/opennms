@@ -71,7 +71,7 @@ public class OutageMappingQuery extends MappingSqlQuery {
 		outage.setLoaded(true);
 
 		Integer nodeId = new Integer(rs.getInt("outages_nodeID"));
-		String ipAddr = rs.getString("outages_ipAddr");
+		String ipAddr =  new String (rs.getString("outages_ipAddr"));
 		Integer serviceId = new Integer(rs.getInt("outages_serviceID"));
 		Integer ifIndex = (Integer) rs.getObject("outages_ifIndex");
 
@@ -95,6 +95,16 @@ public class OutageMappingQuery extends MappingSqlQuery {
 		outage.setIfLostService(rs.getTimestamp("outages_ifLostService"));
 		outage.setIfRegainedService(rs
 				.getTimestamp("outages_ifRegainedService"));
+		
+		outage.setIpAddr(rs.getString("outages_ipAddr"));
+		
+		outage.setSuppressedBy(rs.getString("outages_suppressedBy"));
+		
+		outage.setSuppressTime(rs.getTimestamp("outages_suppressTime"));
+		
+		outage.setServiceId(rs.getInt("outages_serviceid"));
+		
+		outage.setNodeId(rs.getInt("outages_nodeid"));
 
 		outage.setDirty(false);
 		return outage;
