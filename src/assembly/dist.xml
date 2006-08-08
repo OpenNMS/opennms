@@ -16,6 +16,15 @@
     </moduleSet>
     <moduleSet>
       <includes>
+        <include>org.opennms:opennms-doc</include>
+      </includes>
+      <binaries>
+        <outputDirectory>/</outputDirectory>
+        <unpack>true</unpack>
+      </binaries>      
+    </moduleSet>
+    <moduleSet>
+      <includes>
         <include>org.opennms:opennms-daemon</include>
       </includes>
       <binaries>
