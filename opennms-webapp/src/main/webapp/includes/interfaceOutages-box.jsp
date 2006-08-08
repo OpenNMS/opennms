@@ -85,7 +85,7 @@
 
 <% if(outages.length == 0) { %>
   <tr>
-    <td class="standardheaderplain" colspan="4">There have been no outages on this interface in the last 24 hours.</b></td>
+    <td class="standardheaderplain" colspan="4">There have been no outages on this interface in the last 24 hours.</td>
   </tr>
 <% } else { %>
   <tr> 
