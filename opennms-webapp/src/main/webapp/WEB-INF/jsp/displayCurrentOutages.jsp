@@ -59,101 +59,20 @@
 </head>
 <body>
 
-<c:forEach items="${outages}" var="outageId">
-	<c:out value="${outageId}" />
-	<br>
+<H1> WANK! </H1>
+
+
+<c:forEach items="${outages}" var="id">
+    <c:out value="${id}" /><br>
+	<c:out value="${id.id}" /><br>
+	<c:out value="${id.ifLostService}" /><br>
+    <c:out value="${id.ifRegainedService}" /><br>
+    <c:out value="${id.nodeId}" /><br>
+    <c:out value="${id.serviceId}" /><br>
+    
+	
 	<br>
 </c:forEach>
-
-
-
-<a href="outage/list" title="See all outages in the outage browser">View
-All Outages</a>
-<%--&nbsp;&nbsp;&nbsp; <a href="outage/advsearch.jsp" 
-title="More advanced searching and sorting options">Advanced Search</a>--%>
-&nbsp;&nbsp;&nbsp;
-<a href="outage/list?outtype=1"
-	title="A more powerful way of looking at outages">Query Current
-Outages</a>
-
-<h3>Current Outages</h3>
-
-<table class="standardfirst">
-
-	<tr>
-		<td class="standardheader" WIDTH="5%">ID</td>
-		<td class="standardheader">Node</td>
-		<td class="standardheader" WIDTH="15%">Interface</td>
-		<td class="standardheader" width="10%">Service&nbsp;Down</td>
-		<td class="standardheader" WIDTH="30%">Time&nbsp;Down</td>
-		<td class="standardheader" WIDTH="10%">Suppress&nbsp;</td>
-		<td class="standardheader" WIDTH="10%">&nbsp;</td>
-	</tr>
-	
-	<tr valign="top"
-		 "BGCOLOR="#cccccc" >
-		
-<c:forEach items="${outages}" var="outageId">
-		
-		<td class="standard"><a href="outage/detail.jsp?id="><c:out value="outageId"/></a></td>
-		<%
-		if (intfIndex == 0 && svcIndex == 0) {
-		%>
-		<td class="standard" rowspan="<%=serviceCnt%>"><a
-			name="node<%=nodeId%>" /><a HREF="element/node.jsp?node=<%=nodeId%>"
-			title="General information about this node"><%=outage.getNodeLabel()%></a></td>
-		<%
-		}
-		%>
-
-		<%
-		if (svcIndex == 0) {
-		%>
-		<td class="standard" rowspan="<%=svcList.size()%>"><a
-			HREF="element/interface.jsp?node=<%=nodeId%>&intf=<%=ipAddr%>"
-			title="General information about this interface"><%=ipAddr%></a> <%=!ipAddr.equals(outage
-													.getHostname()) ? "("
-											+ outage.getHostname() + ")" : ""%></td>
-		<%
-		}
-		%>
-
-		<td class="standard"><a
-			HREF="element/service.jsp?node=<%=nodeId%>&intf=<%=ipAddr%>&service=<%=outage.getServiceId()%>"><%=outage.getServiceName()%></a></td>
-		<td class="standard"><%=org.opennms.netmgt.EventConstants
-												.formatToUIString(outage
-														.getTimeDown())%></td>
-
-		<td class="standard">
-
-		<FORM action="outage/current" method="GET" NAME="suppressed">
-
-		// Hidden tag contains the OutageID <input type="hidden"
-			name="outageId" value="<%=outageId%>" /> <SELECT NAME="suppressTime">
-			<OPTION VALUE="15">15 Minutes
-			<OPTION VALUE="30">30 Minutes
-			<OPTION VALUE="60">1 Hour
-			<OPTION VALUE="120">2 Hours
-			<OPTION VALUE="480">8 Hours
-			<OPTION VALUE="1440">24 Hours
-			<OPTION VALUE="4320">3 days
-			<OPTION VALUE="0">Until Re-Enabled
-		</SELECT>
-		</td>
-		<td><input type="submit" value="Submit" />
-		</FORM>
-		</td>
-
-
-	</tr>
-	
-
-	<tr>
-		<td class="standardheader" colspan="7"><%=outages.length%> total
-		services down on <%=interfaceCount%> interfaces of <%=nodeCount%>
-		nodes</td>
-	</tr>
-</table>
 
 <jsp:include page="/includes/footer.jsp" flush="false" />
 

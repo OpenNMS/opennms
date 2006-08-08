@@ -103,6 +103,7 @@ public void testCurrentByRange () {
       Collection<OnmsOutage> expectedOutages = new JdbcSet();
       OnmsOutage expectedCurrent =  new OnmsOutage();
       expectedCurrent.setId(1);
+    
       expectedOutages.add(expectedCurrent);
       
       expect(outageDao.currentOutages(1,1)).andReturn(expectedOutages);

@@ -1,13 +1,19 @@
 package org.opennms.web.controller;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.opennms.netmgt.model.OnmsIpInterface;
+import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsOutage;
+import org.opennms.netmgt.model.OnmsServiceType;
+import org.opennms.netmgt.model.ServiceSelector;
 import org.opennms.web.svclayer.OutageService;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
@@ -18,7 +24,7 @@ public class OutageCurrentController extends AbstractController {
 
 	OutageService m_outageService;
 
-	Collection<OnmsOutage> outages;
+	Collection<OnmsOutage> foundOutages;
 
 	// private OutageService outageService;
 	// BEAN Setter
@@ -35,14 +41,15 @@ public class OutageCurrentController extends AbstractController {
 		Integer offset = 1;
 		Integer limit = 50;
 
-		outages = m_outageService.getCurrenOutagesByRange(offset, limit);
+		foundOutages = m_outageService.getCurrenOutagesByRange(offset, limit);
 
-		Map myModel = new HashMap();
+		Map<String, Object> myModel = new HashMap<String, Object>();
 		String now = (new java.util.Date()).toString();
-
 		myModel.put("now", now);
-		myModel.put("outages", outages);
-
+		
+		
+		
+		myModel.put("outages",foundOutages);
 		return new ModelAndView("displayCurrentOutages", myModel);
 	}
 
