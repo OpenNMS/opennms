@@ -187,6 +187,109 @@ opennms.home = ${opennms.home}
           </includes>          
         </configuration>
       </plugin>
+<!--
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>sql-maven-plugin</artifactId>
+        <inherited>false</inherited>
+        <dependencies>
+          <dependency>
+            <groupId>postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>8.1-404.jdbc3</version>
+          </dependency>
+        </dependencies>
+
+        <!-- common configuration shared by all executions -->
+        <configuration>
+           <username>opennms</username>
+           <password>opennms</password>
+           <url>jdbc:postgresql://localhost:5432/test</url>
+           <driver>org.postgresql.Driver</driver>
+        </configuration>
+
+        <executions>
+
+          <execution>
+            <id>drop-db-before-test-if-any</id>
+            <phase>process-test-resources</phase>
+            <goals>
+              <goal>execute</goal>
+            </goals>
+            <configuration>
+              <!-- need another database to drop the targeted one -->
+              <user>postgres</user>
+              <password></password>
+              <url>jdbc:postgresql://localhost:5432/template1</url>
+              <autocommit>true</autocommit>
+              <sqlCommand>set ON_ERROR_STOP FALSE;drop database test</sqlCommand>
+              <!-- ignore error when database is not avaiable -->
+              <onError>continue</onError>
+            </configuration>
+          </execution>
+
+          <execution>
+            <id>create-db</id>
+            <phase>process-test-resources</phase>
+            <goals>
+              <goal>execute</goal>
+            </goals>
+            <configuration>
+              <url>jdbc:postgresql://localhost:5432/template1</url>
+              <user>postgres</user>
+              <password></password>
+              <!-- no transaction -->
+              <autocommit>true</autocommit>
+              <sqlCommand>create database test</sqlCommand>
+            </configuration>
+          </execution>
+
+          <execution>
+            <id>create-schema</id>
+            <phase>process-test-resources</phase>
+            <goals>
+              <goal>execute</goal>
+            </goals>
+            <configuration>
+              <autocommit>true</autocommit>
+              <onError>continue</onError>
+              <srcFiles>
+                <srcFile>opennms-daemon/src/main/filtered/etc/create.sql</srcFile>
+              </srcFiles>
+            </configuration>
+          </execution>
+
+          <execution>
+            <id>create-data</id>
+            <phase>process-test-resources</phase>
+            <goals>
+              <goal>execute</goal>
+            </goals>
+            <configuration>
+              <fileset>
+                <basedir>${basedir}</basedir>
+                <srcFiles>
+                  <srcFile>src/test/resources/test-data.sql</srcFile>
+                </srcFiles>
+              </fileset>
+            </configuration>
+          </execution>
+
+          <!-- drop db after test -->
+          <execution>
+            <id>drop-db-after-test</id>
+            <phase>test</phase>
+            <goals>
+              <goal>execute</goal>
+            </goals>
+            <configuration>
+              <autocommit>true</autocommit>
+              <sqlCommand>drop database test</sqlCommand>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+-->
       <plugin>
         <inherited>false</inherited>
         <artifactId>maven-assembly-plugin</artifactId>

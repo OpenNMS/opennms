@@ -1,12 +1,5 @@
-#Wed Jul 19 16:10:38 EDT 2006
-org.eclipse.jdt.core.compiler.debug.localVariable=generate
-org.eclipse.jdt.core.compiler.compliance=1.5
-org.eclipse.jdt.core.compiler.codegen.unusedLocal=preserve
-org.eclipse.jdt.core.compiler.debug.sourceFile=generate
+#Tue Aug 08 07:47:32 CDT 2006
 org.eclipse.jdt.core.compiler.codegen.targetPlatform=1.5
-org.eclipse.jdt.core.compiler.problem.enumIdentifier=warning
-org.eclipse.jdt.core.compiler.debug.lineNumber=generate
 eclipse.preferences.version=1
-org.eclipse.jdt.core.compiler.codegen.inlineJsrBytecode=disabled
 org.eclipse.jdt.core.compiler.source=1.5
-org.eclipse.jdt.core.compiler.problem.assertIdentifier=warning
+org.eclipse.jdt.core.compiler.compliance=1.5
