@@ -59,7 +59,7 @@
 </head>
 <body>
 
-<H1> WANK! </H1>
+<H1> Outputting Outage Data (Finally) </H1>
 
 
 <c:forEach items="${outages}" var="id">
