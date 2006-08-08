@@ -1,0 +1,13 @@
+<assembly>
+  <id>daemon</id>
+  <formats>
+    <format>tgz</format>
+  </formats>
+  <includeBaseDirectory>false</includeBaseDirectory>
+  <fileSets>
+    <fileSet>
+      <directory>target/docbkx/html</directory>
+      <outputDirectory>docs</outputDirectory>
+    </fileSet>
+  </fileSets>
+</assembly>

@@ -7,7 +7,7 @@
     <version>1.3.2-SNAPSHOT</version>
   </parent>
   <artifactId>opennms-doc</artifactId>
-  <packaging>pom</packaging>
+  <packaging>tgz</packaging>
   <name>OpenNMS Documentation</name>
   <description>Various Guides for using OpenNMS</description>
   <build>
@@ -18,7 +18,7 @@
         <executions>
           <execution>
             <id>generate-html</id>
-            <phase>package</phase>
+            <phase>generate-sources</phase>
             <goals>
               <goal>generate-html</goal>
             </goals>
@@ -44,6 +44,17 @@
             </entity>
           </entities>
           <paperType>A4</paperType>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.opennms.maven.plugins</groupId>
+        <artifactId>tgz-maven-plugin</artifactId>
+        <extensions>true</extensions>
+        <configuration>
+          <descriptors>
+            <descriptor>src/assembly/doc.xml</descriptor>
+          </descriptors>
+          <appendAssemblyId>false</appendAssemblyId>
         </configuration>
       </plugin>
     </plugins>
