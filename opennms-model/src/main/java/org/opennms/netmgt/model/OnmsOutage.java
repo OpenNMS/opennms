@@ -32,6 +32,7 @@
 package org.opennms.netmgt.model;
 
 import java.io.Serializable;
+import java.net.InetAddress;
 import java.util.Date;
 
 import org.springframework.core.style.ToStringCreator;
@@ -67,17 +68,35 @@ public class OnmsOutage implements Serializable {
     /** persistent field */
     private OnmsMonitoredService m_monitoredService;
     
+    /** persistent field */
     private Date m_suppressTime;
     
+    /** persistent field */
     private String m_suppressedBy;
+    
+    /** persistent field */
+    private String m_ipaddr;
+    
+    private String m_node;
+    
+    /** persistent field */
+    private Integer m_serviceId;
+    
+    /** persistent field */
+    private Integer  m_nodeid;
+    
 
     /** full constructor */
-    public OnmsOutage(Date ifLostService, Date ifRegainedService, OnmsEvent eventBySvcRegainedEvent, OnmsEvent eventBySvcLostEvent, OnmsMonitoredService monitoredService) {
+    public OnmsOutage(Date ifLostService, Date ifRegainedService, OnmsEvent eventBySvcRegainedEvent, OnmsEvent eventBySvcLostEvent, OnmsMonitoredService monitoredService, Date suppressTime, String suppressedBy, String ipaddr) {
         m_ifLostService = ifLostService;
         m_ifRegainedService = ifRegainedService;
         m_eventBySvcRegainedEvent = eventBySvcRegainedEvent;
         m_eventBySvcLostEvent = eventBySvcLostEvent;
         m_monitoredService = monitoredService;
+        m_suppressTime = suppressTime;
+        m_suppressedBy = suppressedBy;
+        m_ipaddr = ipaddr;
+        
     }
 
     /** default constructor */
@@ -127,6 +146,8 @@ public class OnmsOutage implements Serializable {
     public Date getIfRegainedService() {
         return m_ifRegainedService;
     }
+    
+
 
     public void setIfRegainedService(Date ifRegainedService) {
         m_ifRegainedService = ifRegainedService;
@@ -190,12 +211,43 @@ public class OnmsOutage implements Serializable {
     	m_suppressedBy = suppressorMan;
     }
     
+    public String getIpAddr() {
+    	 return m_ipaddr ;
+    }
+    
+    public Integer getServiceId() {
+    	return m_serviceId ;
+    }
+    
+    public Integer getNodeId(){
+    	return m_nodeid;
+    }
+    
     public String toString() {
         return new ToStringCreator(this)
             .append("outageId", getId())
             .append("ifLostService", getIfLostService())
             .append("ifRegainedService", getIfRegainedService())
+            .append("suppressedBy", getSuppressedBy())
+            .append("suppressTime", getSuppressTime())
+            .append("ipAddr", getIpAddr())
+            .append("serviceid", getServiceId())
+            .append("nodeid",getNodeId())
             .toString();
     }
+
+	public void setIpAddr(String ipAddr) {
+		m_ipaddr = ipAddr;
+		
+	}
+
+	public void setServiceId(Integer serviceId) {
+		m_serviceId = serviceId;
+		
+	}
+	
+	public void setNodeId(Integer nodeid){
+		m_nodeid = nodeid;
+	}
 
 }
