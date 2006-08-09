@@ -128,6 +128,15 @@ public class NodeDaoHibernate extends AbstractDaoHibernate implements NodeDao {
 	public Collection findByLabel(String label) {
 		return find("from OnmsNode as n where n.label = ?", label);
 	}
+
+    public Collection<OnmsNode> findAllByVarCharAssetColumn(String columnName, String columnValue) {
+        return find("from OnmsNode as n where n.assetRecord."+columnName+" = ?", columnValue);
+    }
+
+    public Collection<OnmsNode> findAllByVarCharAssetColumnCategoryList(String ColumnName, String ColumnValue, Collection<String> categoryNames) {
+        // TODO Auto-generated method stub
+        return null;
+    }
 	
 
     

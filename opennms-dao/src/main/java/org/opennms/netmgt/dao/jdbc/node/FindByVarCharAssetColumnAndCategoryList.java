@@ -29,45 +29,39 @@
 //     http://www.opennms.org/
 //     http://www.opennms.com/
 //
-package org.opennms.netmgt.dao;
+package org.opennms.netmgt.dao.jdbc.node;
 
+import java.sql.Types;
 import java.util.Collection;
-import java.util.Set;
+import java.util.Iterator;
 
-import org.opennms.netmgt.model.OnmsDistPoller;
-import org.opennms.netmgt.model.OnmsNode;
+import javax.sql.DataSource;
 
-public interface NodeDao extends OnmsDao {
-	
-    public abstract void delete(OnmsNode node);
-    
-    public abstract Collection findAll();
+import org.springframework.jdbc.core.SqlParameter;
 
-    public abstract OnmsNode findByAssetNumber(String string);
-    
-    public abstract Collection findByLabel(String label);
-    
-    public abstract Set findNodes(OnmsDistPoller dp);
-    
-    public abstract OnmsNode get(int id);
-	
-	public abstract OnmsNode get(Integer id);
-    
-    public abstract OnmsNode getHierarchy(Integer id);
-    
-    public abstract OnmsNode load(int id);
+public class FindByVarCharAssetColumnAndCategoryList extends NodeMappingQuery {
 
-    public abstract OnmsNode load(Integer id);
-
-    public abstract void save(OnmsNode node);
-
-    public abstract void saveOrUpdate(OnmsNode node);
-
-	public abstract void update(OnmsNode node);
+    public FindByVarCharAssetColumnAndCategoryList(DataSource ds, String columnName, Collection<String> categoryNames) {
+        super(ds, "from node as n join assets a on (a.nodeid = n.nodeid) " +
+                "join category_node cn on (cn.nodeid = n.nodeid) " +
+                "join categories c on (c.categoryid = cn.categoryid) " +
+                "where c.categoryName in ("+convertCollectionToDelimitedString(categoryNames)+ ")" +
+                "and a."+columnName+" = ?");
+        declareParameter(new SqlParameter(columnName, Types.VARCHAR));
+        compile();
+    }
     
-    public abstract Collection<OnmsNode> findAllByVarCharAssetColumn(String columnName, String columnValue);
-    
-    public abstract Collection<OnmsNode> findAllByVarCharAssetColumnCategoryList(String ColumnName, String columnValue,
-            Collection<String> categoryNames);
-    
+    private static String convertCollectionToDelimitedString(Collection<String> col) {
+        StringBuffer sb = null;
+        
+        for (Iterator it = col.iterator(); it.hasNext();) {
+            String colStr = (String) it.next();
+            sb.append(colStr);
+            if (it.hasNext()) {
+                sb.append(',');
+            }
+        }
+        return sb.toString();
+    }
+
 }
