@@ -460,4 +460,15 @@ public class OnmsNode extends OnmsEntity implements Serializable {
     	getSnmpInterfaces().add(snmpIface);
 	}
 
+    public boolean isDown() {
+        boolean down = true;
+        for (Iterator it = m_ipInterfaces.iterator(); it.hasNext();) {
+            OnmsIpInterface ipIf = (OnmsIpInterface) it.next();
+            if (!ipIf.isDown()) {
+                return !down;
+            }
+        }
+        return down;
+    }
+
 }
