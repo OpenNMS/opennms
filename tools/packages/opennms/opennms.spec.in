@@ -1,29 +1,32 @@
 #
 #  $Id$
 #
-%{!?version:%define version @product.version@}
-%{!?plain_release:%define plain_release @product.release.stamp@}
-%{!?release:%define release %{plain_release}}
-%{!?releasenumber:%define releasenumber @product.release@}
-%{!?instprefix:%define instprefix @rpm.install.dir@}
-%{!?packagedir:%define packagedir @ant.project.name@-%version-%{releasenumber}}
-%{!?dbuser:%define dbuser @rpm.database.user@}
-%{!?dbpass:%define dbpass @rpm.database.password@}
-%{!?dbname:%define dbname @rpm.database.name@}
+# The version used to be passed from build.xml. It's hardcoded here
+%{!?version:%define version 1.3.2}
+# The release number is set to 0 unless overridden
+%{!?releasenumber:%define releasenumber 0}
+# The install prefix is equal to $OPENMS_HOME
+%{!?instprefix:%define instprefix /opt/OpenNMS}
+# I think this is the directory where the package will be built
+%{!?packagedir:%define packagedir opennms-%version-%{releasenumber}}
+# This is where the OPENNMS_HOME variable will be set on the remote 
+# operating system. Not sure this is needed anymore.
 %{!?profiledir:%define profiledir /etc/profile.d}
+# This is where the "share" directory will link on RPM-based systems
 %{!?sharedir:%define sharedir /var/opennms}
+# This is where the "logs" directory will link on RPM-based systems
 %{!?logdir:%define logdir /var/log/opennms}
-%{!?pidfile:%define pidfile /var/run/opennms.pid}
-%{!?pglibdir:%define pglibdir %instprefix/lib}
-%{!?tomcatserverlibs:%define tomcatserverlibs @install.tomcat.serverlibs@}
+# Where the OpenNMS webapp lives
 %{!?webappsdir:%define webappsdir %instprefix/webapps}
+# The directory for the OpenNMS webapp
 %{!?servletdir:%define servletdir %webappsdir/opennms}
+# Where OpenNMS binaries live
+%{!?bindir:%define bindir %instprefix/bin}
 
 # build type modifiers
-%{!?standalone:%define standalone 1}
 %{!?builddocs:%define builddocs 1}
-%{!?buildtests:%define buildtests @rpm.buildtests@}
-%{!?platform:%define platform @rpm.platform@}
+%{!?buildtests:%define buildtests 0}
+%{!?platform:%define platform linux-centos-4}
 
 %define debug_package %{nil}
 
@@ -36,7 +39,7 @@
 %define	initdir		/etc
 %define psql_service	rhdb
 %define requires	postgresql-server >= 7.2
-%define release_pkg     %{release}_centos3
+%define release_pkg     %{rreleasenumber}_centos3
 %define platform_match	true
 %endif
 
@@ -44,7 +47,7 @@
 %define initdir         /etc
 %define psql_service    rhdb
 %define requires        postgresql-server >= 7.2
-%define release_pkg     %{release}_centos4
+%define release_pkg     %{releasenumber}_centos4
 %define platform_match  true
 %endif
 
@@ -52,7 +55,7 @@
 %define	initdir		/etc
 %define psql_service	postgresql
 %define requires	postgresql-server >= 7.2
-%define release_pkg     %{release}_fc1
+%define release_pkg     %{releasenumber}_fc1
 %define platform_match	true
 %endif
 
@@ -60,7 +63,7 @@
 %define	initdir		/etc
 %define psql_service	postgresql
 %define requires	postgresql-server >= 7.2
-%define release_pkg     %{release}_fc2
+%define release_pkg     %{releasenumber}_fc2
 %define platform_match	true
 %endif
 
@@ -68,7 +71,7 @@
 %define	initdir		/etc
 %define psql_service	postgresql
 %define requires	postgresql-server >= 7.2
-%define release_pkg     %{release}_fc3
+%define release_pkg     %{releasenumber}_fc3
 %define platform_match	true
 %endif
 
@@ -76,7 +79,7 @@
 %define initdir         /etc
 %define psql_service    postgresql
 %define requires        postgresql-server >= 7.2
-%define release_pkg     %{release}_fc4
+%define release_pkg     %{releasenumber}_fc4
 %define platform_match  true
 %endif
 
@@ -84,7 +87,7 @@
 %define	initdir		/etc
 %define psql_service	postgresql
 %define requires	postgresql-server >= 7.2
-%define release_pkg     %{release}_mdk7
+%define release_pkg     %{releasenumber}_mdk7
 %define platform_match	true
 %endif
 
@@ -92,7 +95,7 @@
 %define	initdir		/etc
 %define psql_service	postgresql
 %define requires	postgresql-server >= 7.2
-%define release_pkg     %{release}_mdk8
+%define release_pkg     %{releasenumber}_mdk8
 %define platform_match	true
 %endif
 
@@ -100,7 +103,7 @@
 %define	initdir		/etc
 %define psql_service	postgresql
 %define requires	postgresql-server >= 7.2
-%define release_pkg     %{release}_mdk90
+%define release_pkg     %{releasenumber}_mdk90
 %define platform_match	true
 %endif
 
@@ -108,7 +111,7 @@
 %define	initdir		/etc
 %define psql_service	postgresql
 %define requires	postgresql-server >= 7.2, postgresql-pl >= 7.2
-%define release_pkg     %{release}_mdk92
+%define release_pkg     %{releasenumber}_mdk92
 %define platform_match	true
 %endif
 
@@ -116,7 +119,7 @@
 %define	initdir		/etc
 %define psql_service	postgresql
 %define requires	postgresql-server >= 7.2, postgresql-pl >= 7.2
-%define release_pkg     %{release}_mdk10
+%define release_pkg     %{releasenumber}_mdk10
 %define platform_match	true
 %endif
 
@@ -124,7 +127,7 @@
 %define	initdir		/etc
 %define psql_service	postgresql
 %define requires        postgresql-server >= 7.2
-%define release_pkg     %{release}_rhl7
+%define release_pkg     %{releasenumber}_rhl7
 %define platform_match	true
 %endif
 
@@ -132,7 +135,7 @@
 %define	initdir		/etc
 %define psql_service	postgresql
 %define requires	postgresql-server >= 7.2
-%define release_pkg     %{release}_rhl8
+%define release_pkg     %{releasenumber}_rhl8
 %define platform_match	true
 %endif
 
@@ -140,7 +143,7 @@
 %define	initdir		/etc
 %define psql_service	postgresql
 %define requires	postgresql-server >= 7.2
-%define release_pkg     %{release}_rhl9
+%define release_pkg     %{releasenumber}_rhl9
 %define platform_match	true
 %endif
 
@@ -148,7 +151,7 @@
 %define	initdir		/etc
 %define psql_service	rhdb
 %define requires	postgresql-server >= 7.2
-%define release_pkg     %{release}_rhel3
+%define release_pkg     %{releasenumber}_rhel3
 %define platform_match	true
 %endif
 
@@ -156,7 +159,7 @@
 %define	initdir		/etc
 %define psql_service	rhdb
 %define requires	postgresql-server >= 7.2
-%define release_pkg     %{release}_rhel4
+%define release_pkg     %{releasenumber}_rhel4
 %define platform_match	true
 %endif
 
@@ -164,7 +167,7 @@
 %define	initdir		/etc/rc.d
 %define psql_service	postgres
 %define requires        postgres >= 7.2
-%define release_pkg     %{release}_suse7
+%define release_pkg     %{releasenumber}_suse7
 %define platform_match	true
 %endif
 
@@ -172,7 +175,7 @@
 %define	initdir		/etc
 %define psql_service	postgresql
 %define requires	postgresql >= 7.2, postgresql-server >= 7.2
-%define release_pkg     %{release}_suse8
+%define release_pkg     %{releasenumber}_suse8
 %define platform_match	true
 %endif
 
@@ -180,7 +183,7 @@
 %define	initdir		/etc
 %define psql_service	postgresql
 %define requires	postgresql >= 7.2, postgresql-server >= 7.2
-%define release_pkg     %{release}_suse9
+%define release_pkg     %{releasenumber}_suse9
 %define platform_match	true
 %endif
 
@@ -204,15 +207,14 @@
 %define buildtests	0
 %endif
 
-Name:			@ant.project.name@
+Name:			opennms
 Summary:		Enterprise-grade network management platform
-#Serial:			1
 Release:		%release_pkg
 Version:		%version
 License:		LGPL/GPL
 Group:			Applications/System
 
-Source:			%{name}-source-%{version}-%{plain_release}.tar.gz
+Source:			%{name}-source-%{version}-%{releasenumber}.tar.gz
 URL:			https://sourceforge.net/project/showfiles.php?group_id=4141
 BuildRoot:		%{_tmppath}/%{name}-%{version}-root
 
@@ -222,7 +224,7 @@ Requires:		rrdtool, curl, %{requires}
 
 %description
 OpenNMS is an enterprise-grade network management package.
-This is the 1.2 stable tree.
+This is the 1.3 unstable tree.
 
 %if "%builddocs" == "1"
 %package docs
@@ -237,19 +239,15 @@ for OpenNMS.
 %package webapp
 Summary:	Web interface servlet for the OpenNMS network management platform
 Group:		Applications/System
-Requires:	rrdtool, %{name} = %{version}-%{release}
+Requires:	rrdtool, opennms = %{version}-%{release_pkg}
 
 %description webapp
 The web UI for OpenNMS.
 
 %prep
 
-%if %{standalone}
-tar -xvzf $RPM_SOURCE_DIR/%{name}-source-%{version}-%{plain_release}.tar.gz -C $RPM_BUILD_DIR
+tar -xvzf $RPM_SOURCE_DIR/%{name}-source-%{version}-%{releasenumber}.tar.gz -C $RPM_BUILD_DIR
 %define setupdir %{packagedir}/source
-%else
-%define setupdir @root.source@
-%endif
 
 %setup -D -T -n %setupdir
 
@@ -283,27 +281,22 @@ if [ x"%{builddocs}" = x"1" ]; then
 fi
 
 echo "=== RUNNING INSTALL ==="
-sh ./build.sh $COMPILER_FLAG -Dinstall.prefix=$RPM_BUILD_ROOT \
-    -Dinstall.dir=%{instprefix} -Dinstall.init.dir=%{initdir}/init.d \
-    -Dinstall.webapps.dir=%{webappsdir} -Dinstall.servlet.dir=%{servletdir} \
-    -Dinstall.share.dir=%{sharedir} -Dinstall.postgresql.dir=%{pglibdir} \
-    -Dinstall.postgresql.service=%{psql_service} \
-    -Dinstall.logs.dir=%{logdir} -Dinstall.pid.file=%{pidfile} \
-    -Dfilter.overwrite="yes" -Disrpm="true" -Dproduct.snapshot=%{snapshot} \
-    -Dproduct.release=%{releasenumber} \
-    $EXTRA_TARGETS install || exit $?
+
+sh ./build.sh -Ddist.name=$RPM_BUILD_ROOT \
+    -Dopennms.home=%{instprefix} install assembly:attached
+
 echo "=== INSTALL COMPLETED ==="
 
-mkdir -p $RPM_BUILD_ROOT%{instprefix}
-mkdir -p $RPM_BUILD_ROOT%{instprefix}/etc
-mkdir -p $RPM_BUILD_ROOT%{instprefix}/contrib
+echo "=== UNTAR BUILD ==="
 
-mkdir -p $RPM_BUILD_ROOT%{_bindir}
-cat > $RPM_BUILD_ROOT%{_bindir}/opennms <<EOF
-#!/bin/sh -
+mkdir -p $RPM_BUILD_ROOT/opt/OpenNMS
 
-exec %{instprefix}/bin/opennms.sh "\$@"
-EOF
+tar zxvf $RPM_BUILD_DIR/%{name}-%{version}-%{releasenumber}/source/target$RPM_BUILD_ROOT.tar.gz -C $RPM_BUILD_ROOT/opt/OpenNMS
+
+echo "=== UNTAR BUILD COMPLETED ==="
+
+mkdir -p $RPM_BUILD_ROOT/var/opennms
+mkdir -p $RPM_BUILD_ROOT/var/log/opennms
 
 ### XXX is this needed?  (Most of) the current scripts don't use OPENNMS_HOME.
 ### /etc/profile.d
@@ -322,10 +315,9 @@ export OPENNMS_HOME PATH
 END
 
 %if "%builddocs" == "1"
-### /usr/share/doc/%{name}-%{version}
 
 mkdir -p $RPM_BUILD_ROOT%{_docdir}/%{name}-%{version}
-cp -pr work/docs/* $RPM_BUILD_ROOT%{_docdir}/%{name}-%{version}/
+cp -pr $RPM_BUILD_DIR/%{name}-%{version}-%{releasenumber}/source/opennms-doc/target/docbkx/html/* $RPM_BUILD_ROOT%{_docdir}/%{name}-%{version}/
 rm -rf $RPM_BUILD_ROOT%{instprefix}/docs
 ln -sf %{_docdir}/%{name}-%{version} $RPM_BUILD_ROOT%{instprefix}/docs
 cp CHANGELOG README* $RPM_BUILD_ROOT%{instprefix}/etc/
@@ -364,11 +356,9 @@ rm -rf $RPM_BUILD_ROOT
 
 %files -f %{_tmppath}/files.etc
 %defattr(664 root root 775)
-%attr(755,root,root)	%{initdir}/init.d/*
 %attr(755,root,root)	%{profiledir}/%{name}.sh
-%attr(755,root,root)	%{_bindir}/*
-%attr(755,root,root)	%{instprefix}/bin
-			%{instprefix}/contrib
+%attr(755,root,root)	%{bindir}/*
+%attr(755,root,root)	%{instprefix}/contrib
 %if "%builddocs" == "1"
 %attr(755,root,root)	%{instprefix}/docs
 %endif
