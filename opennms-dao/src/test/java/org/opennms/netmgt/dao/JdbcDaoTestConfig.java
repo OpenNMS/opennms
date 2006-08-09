@@ -31,7 +31,10 @@
 //
 package org.opennms.netmgt.dao;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
 
 import javax.sql.DataSource;
 
@@ -51,20 +54,6 @@ import org.opennms.netmgt.dao.jdbc.OutageDaoJdbc;
 import org.opennms.netmgt.dao.jdbc.ServiceTypeDaoJdbc;
 import org.opennms.netmgt.dao.jdbc.SnmpInterfaceDaoJdbc;
 import org.opennms.netmgt.dao.jdbc.UserNotificationDaoJdbc;
-import org.opennms.netmgt.dao.jdbc.agent.AgentFactory;
-import org.opennms.netmgt.dao.jdbc.alarm.AlarmFactory;
-import org.opennms.netmgt.dao.jdbc.asset.AssetRecordFactory;
-import org.opennms.netmgt.dao.jdbc.category.CategoryFactory;
-import org.opennms.netmgt.dao.jdbc.distpoller.DistPollerFactory;
-import org.opennms.netmgt.dao.jdbc.event.EventFactory;
-import org.opennms.netmgt.dao.jdbc.ipif.IpInterfaceFactory;
-import org.opennms.netmgt.dao.jdbc.monsvc.MonitoredServiceFactory;
-import org.opennms.netmgt.dao.jdbc.node.NodeFactory;
-import org.opennms.netmgt.dao.jdbc.notification.NotificationFactory;
-import org.opennms.netmgt.dao.jdbc.outage.OutageFactory;
-import org.opennms.netmgt.dao.jdbc.snmpif.SnmpInterfaceFactory;
-import org.opennms.netmgt.dao.jdbc.svctype.ServiceTypeFactory;
-import org.opennms.netmgt.dao.jdbc.usernotification.UserNotificationFactory;
 import org.opennms.netmgt.model.OnmsDistPoller;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
@@ -79,6 +68,28 @@ public class JdbcDaoTestConfig extends DaoTestConfig {
     protected PlatformTransactionManager setUp(DB db, boolean createDb) throws Exception {
         m_createDb = createDb;
         
+        class ReaderEater extends Thread {
+            BufferedReader m_reader;
+
+            ReaderEater(BufferedReader r) {
+                m_reader = r;
+            }
+            
+            public BufferedReader getReader() {
+                return m_reader;
+            }
+
+            public void run() {
+                try {
+                    while (m_reader.readLine() != null) {
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();  
+                }
+            }
+        }
+
+        
         if (createDb) {
         	
         	Resource resource = new ClassPathResource("create.sql");
@@ -90,8 +101,16 @@ public class JdbcDaoTestConfig extends DaoTestConfig {
 
             System.err.println("Executing: "+cmd);
             Process p = Runtime.getRuntime().exec(cmd);
+            ReaderEater inputEater = new ReaderEater(new BufferedReader(new InputStreamReader(p.getInputStream())));
+            ReaderEater errorEater = new ReaderEater(new BufferedReader(new InputStreamReader(p.getErrorStream())));
+            inputEater.start();
+            errorEater.start();
             p.waitFor();
+            inputEater.getReader().close();
+            errorEater.getReader().close();
+            
             System.err.println("Got an exitValue of "+p.exitValue());
+            p.destroy();
         }
                 
         //m_dataSource = db.getDataSource();

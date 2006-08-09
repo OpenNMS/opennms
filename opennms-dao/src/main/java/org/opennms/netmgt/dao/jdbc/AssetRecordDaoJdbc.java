@@ -94,8 +94,8 @@ public class AssetRecordDaoJdbc extends AbstractDaoJdbc implements AssetRecordDa
             "pollerCategory, " +
             "thresholdCategory, " +
             "comment, " +
-            "mangedObjectInstance, " +
-            "mangedObjectType , " +
+            "managedObjectInstance, " +
+            "managedObjectType , " +
             "nodeID" +
             ") values " +
             "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?," +
