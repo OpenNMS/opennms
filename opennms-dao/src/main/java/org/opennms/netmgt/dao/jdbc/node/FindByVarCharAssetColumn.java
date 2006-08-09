@@ -29,45 +29,20 @@
 //     http://www.opennms.org/
 //     http://www.opennms.com/
 //
-package org.opennms.netmgt.dao;
+package org.opennms.netmgt.dao.jdbc.node;
 
-import java.util.Collection;
-import java.util.Set;
+import java.sql.Types;
 
-import org.opennms.netmgt.model.OnmsDistPoller;
-import org.opennms.netmgt.model.OnmsNode;
+import javax.sql.DataSource;
 
-public interface NodeDao extends OnmsDao {
-	
-    public abstract void delete(OnmsNode node);
-    
-    public abstract Collection findAll();
+import org.springframework.jdbc.core.SqlParameter;
 
-    public abstract OnmsNode findByAssetNumber(String string);
-    
-    public abstract Collection findByLabel(String label);
-    
-    public abstract Set findNodes(OnmsDistPoller dp);
-    
-    public abstract OnmsNode get(int id);
-	
-	public abstract OnmsNode get(Integer id);
-    
-    public abstract OnmsNode getHierarchy(Integer id);
-    
-    public abstract OnmsNode load(int id);
+public class FindByVarCharAssetColumn extends NodeMappingQuery {
 
-    public abstract OnmsNode load(Integer id);
+    public FindByVarCharAssetColumn(DataSource ds, String columnName) {
+        super(ds, "from node as n join assets a on (a.nodeid = n.nodeid) where a."+columnName+" = ?");
+        declareParameter(new SqlParameter(columnName, Types.VARCHAR));
+        compile();
+    }
 
-    public abstract void save(OnmsNode node);
-
-    public abstract void saveOrUpdate(OnmsNode node);
-
-	public abstract void update(OnmsNode node);
-    
-    public abstract Collection<OnmsNode> findAllByVarCharAssetColumn(String columnName, String columnValue);
-    
-    public abstract Collection<OnmsNode> findAllByVarCharAssetColumnCategoryList(String ColumnName, String columnValue,
-            Collection<String> categoryNames);
-    
 }

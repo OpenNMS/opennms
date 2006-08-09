@@ -43,6 +43,8 @@ import org.opennms.netmgt.dao.jdbc.node.FindByAssetNumber;
 import org.opennms.netmgt.dao.jdbc.node.FindByDpName;
 import org.opennms.netmgt.dao.jdbc.node.FindByNodeId;
 import org.opennms.netmgt.dao.jdbc.node.FindByNodeLabel;
+import org.opennms.netmgt.dao.jdbc.node.FindByVarCharAssetColumn;
+import org.opennms.netmgt.dao.jdbc.node.FindByVarCharAssetColumnAndCategoryList;
 import org.opennms.netmgt.dao.jdbc.node.LazyNode;
 import org.opennms.netmgt.dao.jdbc.node.NodeDelete;
 import org.opennms.netmgt.dao.jdbc.node.NodeSave;
@@ -205,5 +207,13 @@ public class NodeDaoJdbc extends AbstractDaoJdbc implements NodeDao {
 	public Collection findByLabel(String label) {
 		return new FindByNodeLabel(getDataSource()).execute(label);
 	}
+
+    public Collection<OnmsNode> findAllByVarCharAssetColumn(String columnName, String columnValue) {
+        return new FindByVarCharAssetColumn(getDataSource(), columnName).execute(columnValue);
+    }
+
+    public Collection<OnmsNode> findAllByVarCharAssetColumnCategoryList(String columnName, String columnValue, Collection<String> categoryNames) {
+        return new FindByVarCharAssetColumnAndCategoryList(getDataSource(), columnName, categoryNames).execute(columnValue);
+    }
 
 }
