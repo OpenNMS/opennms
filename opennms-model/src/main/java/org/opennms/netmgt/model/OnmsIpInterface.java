@@ -344,4 +344,15 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
 		return addr;
 	}
 
+    public boolean isDown() {
+        boolean down = true;
+        for (Iterator it = m_monitoredServices.iterator(); it.hasNext();) {
+            OnmsMonitoredService svc = (OnmsMonitoredService) it.next();
+            if (!svc.isDown()) {
+                return !down;
+            }
+        }
+        return down;
+    }
+
 }

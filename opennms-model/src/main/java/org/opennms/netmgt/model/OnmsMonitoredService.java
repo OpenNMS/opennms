@@ -253,4 +253,19 @@ public class OnmsMonitoredService extends OnmsEntity implements Serializable {
 		return getServiceType().getName();
 	}
 
+    
+    //BIG O'LE HONKING TODO HERE!
+    /*
+     * Need to be able to get access to the outages for this service.
+     * This will always indicate down until fixed.
+     */
+    public boolean isDown() {
+        boolean down = true;
+        if (getStatus() != "A") {
+            return !down;
+        }
+        
+        return down;
+    }
+
 }
