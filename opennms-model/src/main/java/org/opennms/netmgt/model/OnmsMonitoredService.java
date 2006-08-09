@@ -33,6 +33,7 @@ package org.opennms.netmgt.model;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.Set;
 
 import org.springframework.core.style.ToStringCreator;
 
@@ -66,6 +67,19 @@ public class OnmsMonitoredService extends OnmsEntity implements Serializable {
     private OnmsServiceType m_serviceType;
 
     private OnmsIpInterface m_ipInterface;
+    
+    /*
+     * This is a set only because we want it to be lazy
+     * and we need a better query language (i.e. HQL)
+     * to make this work.  In this case, the Set size
+     * will always be 1 or empty because there can only
+     * be one outage at a time on a service.
+     * 
+     * With distributed monitoring, there will probably
+     * be a model change were one service can be represented
+     * by more than one outage.
+     */
+    private Set<OnmsOutage> m_currentOutages;
 
     public OnmsMonitoredService() {
     }
@@ -253,19 +267,21 @@ public class OnmsMonitoredService extends OnmsEntity implements Serializable {
 		return getServiceType().getName();
 	}
 
-    
-    //BIG O'LE HONKING TODO HERE!
-    /*
-     * Need to be able to get access to the outages for this service.
-     * This will always indicate down until fixed.
-     */
     public boolean isDown() {
         boolean down = true;
-        if (getStatus() != "A") {
+        if (getStatus() != "A" && m_currentOutages.isEmpty()) {
             return !down;
         }
         
         return down;
+    }
+
+    public Set<OnmsOutage> getCurrentOutages() {
+        return m_currentOutages;
+    }
+
+    public void setCurrentOutages(Set<OnmsOutage> currentOutages) {
+        m_currentOutages = currentOutages;
     }
 
 }
