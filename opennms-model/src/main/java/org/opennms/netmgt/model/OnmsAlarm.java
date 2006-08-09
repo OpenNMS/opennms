@@ -520,6 +520,7 @@ public class OnmsAlarm implements Serializable {
 
     public void setLastEvent(org.opennms.netmgt.model.OnmsEvent event) {
         this.m_lastEvent = event;
+        this.m_lastEventTime = event.getEventTime();
     }
 
     public String toString() {
