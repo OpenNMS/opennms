@@ -40,6 +40,8 @@ import javax.sql.DataSource;
 
 import org.opennms.netmgt.dao.jdbc.Cache;
 import org.opennms.netmgt.dao.jdbc.JdbcSet;
+import org.opennms.netmgt.dao.jdbc.LazySet;
+import org.opennms.netmgt.dao.jdbc.outage.FindCurrentOutages;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.springframework.jdbc.object.MappingSqlQuery;
 
@@ -70,7 +72,7 @@ public class MonitoredServiceMappingQuery extends MappingSqlQuery {
         Integer ifIndex = (Integer)rs.getObject("ifservices_ifIndex");     //ifIndex                 integer,
         Integer serviceId = (Integer)rs.getObject("ifservices_serviceId"); //serviceID               integer,
         
-        MonitoredServiceId id = new MonitoredServiceId(nodeId, ipAddr, ifIndex, serviceId);
+        final MonitoredServiceId id = new MonitoredServiceId(nodeId, ipAddr, ifIndex, serviceId);
     	
         LazyMonitoredService svc = (LazyMonitoredService)Cache.obtain(OnmsMonitoredService.class, id);
         svc.setLoaded(true);
@@ -81,6 +83,17 @@ public class MonitoredServiceMappingQuery extends MappingSqlQuery {
         svc.setSource(rs.getString("ifservices_source"));                  //source                  char(1),
         svc.setNotify(rs.getString("ifservices_notify"));                  //notify                  char(1),
         svc.setDirty(false);
+        
+        LazySet.Loader outageLoader = new LazySet.Loader() {
+
+            public Set load() {
+                return new FindCurrentOutages(getDataSource(), id).findSet();
+            }
+            
+        };
+        
+        svc.setCurrentOutages(new LazySet(outageLoader));
+        
         return svc;
     }
     
