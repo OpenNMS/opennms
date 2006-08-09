@@ -10,6 +10,7 @@
 //
 // Modifications:
 // 
+// 2006 Aug 08: Bug #1547: Fix for FROM clause missing entry for node table. - dj@opennms.org
 // 2004 Jan 06: Added support for Display, Notify, Poller, and Threshold categories
 // 2003 Feb 05: Added ORDER BY to SQL statement.
 //
@@ -221,12 +222,17 @@ public class AssetModel extends Object {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
 
+        if (!isColumnValid(columnName)) {
+            throw new IllegalArgumentException("Column \"" + columnName
+                + "\" is not a valid column name");
+        }
+
         MatchingAsset[] assets = new MatchingAsset[0];
         Connection conn = Vault.getDbConnection();
         Vector vector = new Vector();
 
         try {
-            PreparedStatement stmt = conn.prepareStatement("SELECT NODEID, NODE.NODELABEL, " + columnName + " FROM ASSETS WHERE LOWER(" + columnName + ") LIKE ? AND ASSETS.NODEID=NODE.NODEID ORDER BY NODE.NODELABEL");
+            PreparedStatement stmt = conn.prepareStatement("SELECT ASSETS.NODEID, NODE.NODELABEL, ASSETS." + columnName + " FROM ASSETS, NODE WHERE LOWER(ASSETS." + columnName + ") LIKE ? AND ASSETS.NODEID=NODE.NODEID ORDER BY NODE.NODELABEL");
             stmt.setString(1, "%" + searchText.toLowerCase() + "%");
 
             ResultSet rs = stmt.executeQuery();
@@ -322,15 +328,29 @@ public class AssetModel extends Object {
         return assets;
     }
 
-    public String[][] getColumns() {
-        return (this.columns);
+    public static String[][] getColumns() {
+        return (s_columns);
+    }
+
+    public static boolean isColumnValid(String column) {
+        if (column == null) {
+            throw new IllegalArgumentException("column cannot be null");
+        }
+
+        for (int i = 0; i < s_columns.length; i++) {
+            if (column.equals(s_columns[i][1])) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
      * Hard-coded (for now) list of human-readable asset columns and the
      * corresponding database column.
      */
-    protected String[][] columns = new String[][] { new String[] { "Address 1", "address1" }, new String[] { "Address 2", "address2" }, new String[] { "Asset Number", "assetNumber" }, new String[] { "Building", "building" }, new String[] { "Circuit ID", "circuitId" }, new String[] { "City", "city" }, new String[] { "Comments", "comment" }, new String[] { "Date Installed", "dateInstalled" }, new String[] { "Department", "department" }, new String[] { "Description", "description" }, new String[] { "Display Category", "displayCategory" }, new String[] { "Division", "division" }, new String[] { "Floor", "floor" }, new String[] { "Lease", "lease" }, new String[] { "Lease Expires", "leaseExpires" }, new String[] { "Maint Contract", "maintContract" },
+    private static final String[][] s_columns = new String[][] { new String[] { "Address 1", "address1" }, new String[] { "Address 2", "address2" }, new String[] { "Asset Number", "assetNumber" }, new String[] { "Building", "building" }, new String[] { "Circuit ID", "circuitId" }, new String[] { "City", "city" }, new String[] { "Comments", "comment" }, new String[] { "Date Installed", "dateInstalled" }, new String[] { "Department", "department" }, new String[] { "Description", "description" }, new String[] { "Display Category", "displayCategory" }, new String[] { "Division", "division" }, new String[] { "Floor", "floor" }, new String[] { "Lease", "lease" }, new String[] { "Lease Expires", "leaseExpires" }, new String[] { "Maint Contract", "maintContract" },
             new String[] { "Maint Contract Expires", "maintContractExpires" }, new String[] { "Maint Phone", "supportPhone" }, new String[] { "Manufacturer", "manufacturer" }, new String[] { "Model Number", "modelNumber" }, new String[] { "Notification Category", "notifyCategory" }, new String[] { "Operating System", "operatingSystem" }, new String[] { "Port", "port" }, new String[] { "Poller Category", "pollerCategory" }, new String[] { "Rack", "rack" }, new String[] { "Region", "region" }, new String[] { "Room", "room" }, new String[] { "Serial Number", "serialNumber" }, new String[] { "Slot", "slot" }, new String[] { "State", "state" }, new String[] { "Threshold Category", "thresholdCategory" }, new String[] { "User Last Modified", "userLastModified" },
             new String[] { "Vendor", "vendor" }, new String[] { "Vendor Asset Number", "vendorAssetNumber" }, new String[] { "Vendor Fax", "vendorFax" }, new String[] { "Vendor Phone", "vendorPhone" }, new String[] { "ZIP Code", "zip" } };
 }
