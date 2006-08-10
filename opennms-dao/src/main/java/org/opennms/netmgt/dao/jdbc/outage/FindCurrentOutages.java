@@ -54,9 +54,9 @@ public class FindCurrentOutages extends OutageMappingQuery {
     }
     
     public FindCurrentOutages(DataSource ds, MonitoredServiceId svcId) {
-        super(ds,"FROM outages as outages " +
+        super(ds,"FROM outages as outages, ifservices as ifservices " +
                 "WHERE outages.nodeID = "+svcId.getNodeId() +
-                        " and outages.ipAddr = "+svcId.getIpAddr()+
+                        " and outages.ipAddr = '"+svcId.getIpAddr()+"'"+
                         " and outages.serviceID = "+svcId.getServiceId()+
                         " and outages.ifRegainedService is null");
         compile();

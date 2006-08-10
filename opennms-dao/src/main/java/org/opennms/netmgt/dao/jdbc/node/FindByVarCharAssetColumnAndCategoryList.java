@@ -52,11 +52,13 @@ public class FindByVarCharAssetColumnAndCategoryList extends NodeMappingQuery {
     }
     
     private static String convertCollectionToDelimitedString(Collection<String> col) {
-        StringBuffer sb = null;
+        StringBuffer sb = new StringBuffer("");
         
         for (Iterator it = col.iterator(); it.hasNext();) {
             String colStr = (String) it.next();
+            sb.append('\'');
             sb.append(colStr);
+            sb.append('\'');
             if (it.hasNext()) {
                 sb.append(',');
             }
