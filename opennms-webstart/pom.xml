@@ -39,6 +39,7 @@
 
            <!-- SIGNING this will move to a profile since it is setup specific -->
            <!-- defining this will automatically sign the jar and its dependencies, if necessary -->
+<!--
            <sign>
              <keystore>${user.dir}/temp-store.ks</keystore>
              <keypass>opennms</keypass>
@@ -54,12 +55,15 @@
 
              <verify>true</verify>
            </sign>
+-->
 
            <!-- KEYSTORE MANGEMENT -->
+<!--
            <keystore>
              <delete>true</delete>
              <gen>true</gen>      
            </keystore>
+-->
 
            <!-- BUILDING PROCESS -->
            <!--usejnlpservlet>true</usejnlpservlet--> <!-- not yet supported -->
