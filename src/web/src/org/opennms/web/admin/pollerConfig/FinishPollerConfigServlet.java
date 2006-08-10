@@ -37,12 +37,15 @@
 package org.opennms.web.admin.pollerConfig;
 
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.opennms.core.resource.Vault;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.utils.EventProxy;
 import org.opennms.netmgt.utils.TcpEventProxy;
@@ -65,7 +68,7 @@ public class FinishPollerConfigServlet extends HttpServlet {
         newEvent.setTime(EventConstants.formatToString(new java.util.Date()));
 
         try {
-            EventProxy eventProxy = new TcpEventProxy();
+            EventProxy eventProxy = Vault.createEventProxy();
             if (eventProxy != null) {
                 eventProxy.send(newEvent);
             } else {
@@ -78,4 +81,5 @@ public class FinishPollerConfigServlet extends HttpServlet {
         // forward the request for proper display
         response.sendRedirect("../index.jsp");
     }
+
 }

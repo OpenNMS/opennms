@@ -40,6 +40,8 @@ package org.opennms.web.admin.nodeManagement;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -329,10 +331,11 @@ public class ManageNodesServlet extends HttpServlet {
      */
     private void sendEvent(Event event) throws ServletException {
         try {
-            EventProxy eventProxy = new TcpEventProxy();
+            EventProxy eventProxy = Vault.createEventProxy();
             eventProxy.send(event);
         } catch (Exception e) {
             throw new ServletException("Could not send event " + event.getUei(), e);
         }
     }
+
 }

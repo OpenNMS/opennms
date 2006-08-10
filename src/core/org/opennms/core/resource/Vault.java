@@ -40,6 +40,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Iterator;
@@ -48,6 +50,8 @@ import java.util.Properties;
 import java.util.StringTokenizer;
 
 import org.opennms.core.resource.db.DbConnectionFactory;
+import org.opennms.netmgt.utils.EventProxy;
+import org.opennms.netmgt.utils.TcpEventProxy;
 
 /**
  * The Vault handles policies for allocating/deallocating scarce resources and
@@ -268,6 +272,30 @@ public class Vault extends Object {
 
         return loadedOK;
     }
+    
+    public static EventProxy createEventProxy() {
+        /*
+         * Rather than defaulting to localhost all the time, give an option in web.xml
+         */
+        String proxyHostName = getProperty("opennms.rtc.event.proxy.host") == null ? "localhost" : getProperty("opennms.rtc.event.proxy.host");
+        String proxyHostPort = getProperty("opennms.rtc.event.proxy.port") == null ? "5817" : getProperty("opennms.rtc.event.proxy.port");
+        InetAddress proxyAddr = null;
+        EventProxy proxy = null;
+        
+        try {
+            proxyAddr = InetAddress.getByName(proxyHostName);
+        } catch (UnknownHostException e) {
+            proxyAddr = null;
+        }
+
+        if (proxyAddr == null) {
+            proxy = new TcpEventProxy();
+        } else {
+            proxy = new TcpEventProxy(proxyAddr, Integer.parseInt(proxyHostPort));
+        }
+        return proxy;
+    }
+
 
 } // end Vault class.
 

@@ -36,6 +36,7 @@
 
 package org.opennms.web.admin.nodeManagement;
 
+import org.opennms.core.resource.Vault;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.utils.EventProxy;
 import org.opennms.netmgt.utils.TcpEventProxy;
@@ -45,6 +46,8 @@ import org.opennms.netmgt.xml.event.Parms;
 import org.opennms.netmgt.xml.event.Value;
 
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -105,7 +108,7 @@ public class SnmpConfigServlet extends HttpServlet {
         eventParms.addParm(eventParm);
 
         try {
-            EventProxy eventProxy = new TcpEventProxy();
+            EventProxy eventProxy = Vault.createEventProxy();
             if (eventProxy != null) {
                 eventProxy.send(newEvent);
             } else {

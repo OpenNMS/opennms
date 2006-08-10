@@ -71,7 +71,32 @@ public class RTCPostSubscriber extends Object {
     protected static Category s_log = ThreadCategory.getInstance("RTC");
 
     public RTCPostSubscriber() throws IOException, MarshalException, ValidationException {
-        m_proxy = new TcpEventProxy();
+        m_proxy = createEventProxy();
+    }
+
+    private EventProxy createEventProxy() {
+        /*
+         * Rather than defaulting to localhost all the time, give an option in web.xml
+         */
+        String proxyHostName = Vault.getProperty("opennms.rtc.event.proxy.host") == null ? "localhost" : Vault.getProperty("opennms.rtc.event.proxy.host");
+        String proxyHostPort = Vault.getProperty("opennms.rtc.event.proxy.port") == null ? "5817" : Vault.getProperty("opennms.rtc.event.proxy.port");
+        InetAddress proxyAddr = null;
+        EventProxy proxy = null;
+        
+        try {
+            proxyAddr = InetAddress.getByName(proxyHostName);
+        } catch (UnknownHostException e) {
+            proxyAddr = null;
+        }
+
+        if (proxyAddr == null) {
+            proxy = new TcpEventProxy();
+        } else {
+            proxy = new TcpEventProxy(proxyAddr, Integer.parseInt(proxyHostPort));
+        }
+        
+        return proxy;
+
     }
 
     public static void sendSubscribeEvent(EventProxy proxy, String url, String username, String password, String categoryName) throws IllegalArgumentException, EventProxyException {
@@ -179,25 +204,6 @@ public class RTCPostSubscriber extends Object {
 
         m_username = Vault.getProperty("opennms.rtc-client.http-post.username");
         m_password = Vault.getProperty("opennms.rtc-client.http-post.password");
-        
-        /*
-         * Rather than defaulting to localhost all the time, give an option in web.xml
-         */
-        String proxyHostName = Vault.getProperty("opennms.rtc.event.proxy.host") == null ? "localhost" : Vault.getProperty("opennms.rtc.event.proxy.host");
-        String proxyHostPort = Vault.getProperty("opennms.rtc.event.proxy.port") == null ? "5817" : Vault.getProperty("opennms.rtc.event.proxy.port");
-        InetAddress proxyAddr = null;
-        try {
-            proxyAddr = InetAddress.getByName(proxyHostName);
-        } catch (UnknownHostException e) {
-            s_log.warn("initFromRtcPropertyFile: Couldn't use host: "+proxyHostName+" specified in web.xml.",e);
-        }
-
-        if (proxyAddr == null) {
-            m_proxy = new TcpEventProxy();
-        } else {
-            m_proxy = new TcpEventProxy(proxyAddr, Integer.parseInt(proxyHostPort));
-        }
-        
         String baseUrl = Vault.getProperty("opennms.rtc-client.http-post.base-url");
 
         if (baseUrl.endsWith("/")) {

@@ -34,6 +34,8 @@
 package org.opennms.web.admin.nodeManagement;
 
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -41,6 +43,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.opennms.core.resource.Vault;
 import org.opennms.netmgt.capsd.EventUtils;
 import org.opennms.netmgt.utils.EventProxy;
 import org.opennms.netmgt.utils.TcpEventProxy;
@@ -82,7 +85,7 @@ public class DeleteInterfaceServlet extends HttpServlet {
 
     private void sendEvent(Event event) throws ServletException {
         try {
-            EventProxy eventProxy = new TcpEventProxy();
+            EventProxy eventProxy = Vault.createEventProxy();
             eventProxy.send(event);
         } catch (Exception e) {
             throw new ServletException("Could not send event " + event.getUei(), e);

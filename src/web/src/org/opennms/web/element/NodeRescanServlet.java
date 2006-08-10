@@ -39,6 +39,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.opennms.core.resource.Vault;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.utils.EventProxy;
 import org.opennms.netmgt.utils.TcpEventProxy;
@@ -55,7 +56,7 @@ public class NodeRescanServlet extends HttpServlet {
 
     public void init() throws ServletException {
         try {
-            this.proxy = new TcpEventProxy();
+            this.proxy = Vault.createEventProxy();
         } catch (Exception e) {
             throw new ServletException("Exception", e);
         }

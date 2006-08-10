@@ -52,6 +52,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.opennms.core.resource.Vault;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.DatabaseConnectionFactory;
 import org.opennms.netmgt.utils.EventProxy;
@@ -118,7 +119,7 @@ public class AddNewInterfaceServlet extends HttpServlet {
         event.setTime(EventConstants.formatToString(new java.util.Date()));
 
         try {
-            EventProxy eventProxy = new TcpEventProxy();
+            EventProxy eventProxy = Vault.createEventProxy();
             eventProxy.send(event);
         } catch (Exception e) {
             throw new ServletException("Could not send event " + event.getUei(), e);
