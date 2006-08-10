@@ -55,11 +55,7 @@ import com.mchange.v2.c3p0.ComboPooledDataSource;
 
 public class C3P0ConnectionFactory implements DataSource {
     
-    /*
-     * Just hacked for now to get model-import working in OpenNMS
-     * TODO: fix this with a properties file or such
-     */
-    private static final int DEFAULT_AQUIRE_INCREMENT = 5;
+/*    private static final int DEFAULT_AQUIRE_INCREMENT = 5;
     private static final int DEFAULT_RETRY_ATTEMPTS = 1;
     private static final int DEFAULT_RETRY_DELAY = 0;  //TODO: need to learn this one
     private static final boolean DEFAULT_AUTOCOMMIT_ON_CLOSE = false;
@@ -85,7 +81,7 @@ public class C3P0ConnectionFactory implements DataSource {
     private static final boolean DEFAULT_SET_TEST_CONNECTION_ON_CHECKIN = false;
     private static final boolean DEFAULT_SET_TEST_CONNECTION_ON_CHECKOUT = false;
     private static final boolean DEFAULT_USES_TRADITIONAL_REFLECTIVE_PROXIES = false;
-    
+*/    
     private ComboPooledDataSource m_pool;
     private String m_user;
     private String m_password;
