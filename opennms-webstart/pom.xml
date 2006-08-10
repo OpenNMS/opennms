@@ -24,18 +24,6 @@
         <configuration>
            <outputDirectory>${project.build.director}/classes/webstart</outputDirectory>
 
-           <!-- transitive dependencies filter -->
-           <!-- dependencies-->
-             <!-- Note that only groupId and artifactId must be specified here. because of a limitation of the Include/ExcludesArtifactFilter -->
-             <!-- includes>
-                <include>commons-logging:commons-logging</include>
-                <include>commons-cli:commons-cli</include>
-             <includes -->
-             <!-- excludes>
-                <exclude></exclude>
-             <excludes-->
-           <!-- /dependencies-->
-
            <!-- JNLP generation -->
            <jnlp>
              <!-- default values -->
@@ -49,32 +37,29 @@
              <mainClass>org.opennms.webstart.Main</mainClass>
            </jnlp>
 
-
-           <!-- SIGNING -->
+           <!-- SIGNING this will move to a profile since it is setup specific -->
            <!-- defining this will automatically sign the jar and its dependencies, if necessary -->
-           <!-- sign>
-             <keystore></keystore>
-             <keypass></keypass>
-             <storepass></storepass>
+           <sign>
+             <keystore>${user.dir}/temp-store.ks</keystore>
+             <keypass>opennms</keypass>
+             <storepass>opennms</storepass>
              <storetype></storetype>
-             <alias></alias>
+             <alias>opennms-webstart-key</alias>
              <validity></validity>
 
-             <dnameCn></dnameCn>
-             <dnameOu></dnameOu>
-             <dnameO></dnameO>
-             <dnameL></dnameL>
-             <dnameSt></dnameSt>
-             <dnameC></dnameC>
+             <dnameCn>The OpenNMS Group</dnameCn>
+             <dnameL>Pittsboro</dnameL>
+             <dnameSt>North Carolina</dnameSt>
+             <dnameC>US</dnameC>
 
              <verify>true</verify>
-           </sign-->
+           </sign>
 
            <!-- KEYSTORE MANGEMENT -->
-           <!-- keystore>
+           <keystore>
              <delete>true</delete>
              <gen>true</gen>      
-           </keystore-->
+           </keystore>
 
            <!-- BUILDING PROCESS -->
            <!--usejnlpservlet>true</usejnlpservlet--> <!-- not yet supported -->
@@ -84,12 +69,8 @@
            <pack200>false</pack200>
            <gzip>true</gzip> <!-- default force when pack200 false, true when pack200 selected ?? -->
 
-           <!-- misc -->
-           <!-- if there are multiple apps, do we need to mark one as default? (app/ redirects to app/default.jnlp in jnlp servlet ??)-->
-           <!-- -->
-
            <!--install>false</install--> <!-- not yet supported -->
-           <verbose>true</verbose>
+           <verbose>false</verbose>
 
         </configuration>
       </plugin>
