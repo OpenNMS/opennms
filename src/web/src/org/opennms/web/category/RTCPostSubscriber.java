@@ -34,6 +34,8 @@ package org.opennms.web.category;
 
 import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
@@ -66,7 +68,7 @@ public class RTCPostSubscriber extends Object {
 
     protected String m_password;
 
-    protected static Category log = ThreadCategory.getInstance("RTC");
+    protected static Category s_log = ThreadCategory.getInstance("RTC");
 
     public RTCPostSubscriber() throws IOException, MarshalException, ValidationException {
         m_proxy = new TcpEventProxy();
@@ -121,7 +123,7 @@ public class RTCPostSubscriber extends Object {
 
         proxy.send(event);
 
-        log.info("Subscription requested for " + username + " to " + url);
+        s_log.info("Subscription requested for " + username + " to " + url);
     }
 
     public static void sendUnsubscribeEvent(EventProxy proxy, String url) throws IllegalArgumentException, EventProxyException {
@@ -148,7 +150,7 @@ public class RTCPostSubscriber extends Object {
 
         proxy.send(event);
 
-        log.info("Unsubscription sent for " + url);
+        s_log.info("Unsubscription sent for " + url);
     }
 
     public String subscribe(String categoryName) throws IllegalArgumentException, EventProxyException {
@@ -177,6 +179,25 @@ public class RTCPostSubscriber extends Object {
 
         m_username = Vault.getProperty("opennms.rtc-client.http-post.username");
         m_password = Vault.getProperty("opennms.rtc-client.http-post.password");
+        
+        /*
+         * Rather than defaulting to localhost all the time, give an option in web.xml
+         */
+        String proxyHostName = Vault.getProperty("opennms.rtc.event.proxy.host") == null ? "localhost" : Vault.getProperty("opennms.rtc.event.proxy.host");
+        String proxyHostPort = Vault.getProperty("opennms.rtc.event.proxy.port") == null ? "5817" : Vault.getProperty("opennms.rtc.event.proxy.port");
+        InetAddress proxyAddr = null;
+        try {
+            proxyAddr = InetAddress.getByName(proxyHostName);
+        } catch (UnknownHostException e) {
+            s_log.warn("initFromRtcPropertyFile: Couldn't use host: "+proxyHostName+" specified in web.xml.",e);
+        }
+
+        if (proxyAddr == null) {
+            m_proxy = new TcpEventProxy();
+        } else {
+            m_proxy = new TcpEventProxy(proxyAddr, Integer.parseInt(proxyHostPort));
+        }
+        
         String baseUrl = Vault.getProperty("opennms.rtc-client.http-post.base-url");
 
         if (baseUrl.endsWith("/")) {
@@ -185,7 +206,7 @@ public class RTCPostSubscriber extends Object {
             m_url = baseUrl + "/" + Util.encode(categoryName);
         }
 
-        log.debug("RTCPostSubscriber initialized: url=" + m_url + ", user=" + m_username);
+        s_log.debug("RTCPostSubscriber initialized: url=" + m_url + ", user=" + m_username);
     }
 
     public static void subscribeAll(String viewName) throws IOException, MarshalException, ValidationException, EventProxyException {
@@ -211,7 +232,7 @@ public class RTCPostSubscriber extends Object {
 
                 for (int j = 0; j < categories.length; j++) {
                     subscriber.subscribe(categories[j]);
-                    log.info("Sent subscription event to RTC for " + "category: " + categories[j]);
+                    s_log.info("Sent subscription event to RTC for " + "category: " + categories[j]);
                 }
             }
 
