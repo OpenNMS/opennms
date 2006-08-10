@@ -74,7 +74,7 @@ public class DefaultAggregateStatusServiceTest extends TestCase {
         aggregateSvc.setNodeDao(m_nodeDao);
         
         OnmsNode node = new OnmsNode();
-        Collection<OnmsNode> nodes = new ArrayList();
+        Collection<OnmsNode> nodes = new ArrayList<OnmsNode>();
         nodes.add(node);
         
         for (AggregateStatusDefinition def : defs) {
