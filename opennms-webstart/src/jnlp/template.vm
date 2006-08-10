@@ -12,9 +12,9 @@
       <menu submenu="My Corporation Apps"/>
     </shortcut>
   </information>
-  <!-- security>
+  <security>
       <all-permissions/>
-  </security -->
+  </security>
   <resources>
     <j2se version="1.5+"/>
     $dependencies
