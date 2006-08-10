@@ -68,5 +68,9 @@ public class AggregateStatusDefinition {
         m_categories = categories;
     }
     
+    @Override
+    public String toString() {
+        return m_aggrStatusLabel;
+    }
     
 }

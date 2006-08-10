@@ -67,5 +67,16 @@ public class AggregateStatus {
     public void setTotalEntityCount(Integer totalEntityCount) {
         m_totalEntityCount = totalEntityCount;
     }
+    
+    @Override
+    public String toString() {
+        StringBuffer sb = new StringBuffer(m_label);
+        sb.append(": ");
+        sb.append(m_downEntityCount);
+        sb.append(" down of ");
+        sb.append(m_totalEntityCount);
+        sb.append(" total.");
+        return m_label;
+    }
 
 }

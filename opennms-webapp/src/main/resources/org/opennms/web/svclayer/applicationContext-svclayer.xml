@@ -3,16 +3,24 @@
 	http://www.springframework.org/schema/beans/spring-beans.xsd">
 
 
-<!-- Suppress Outage Service Beans -->
+<!-- Aggregate Status beans -->
+  <bean id="aggregateStatusService" class="org.opennms.web.svclayer.support.DefaultAggregateStatusService" >
+  	<property name="nodeDao" ref="nodeDao" />
+  </bean>
+
+
+<!-- Suppress Outage Service beans -->
   <bean id="outageService" class="org.opennms.web.svclayer.DefaultOutageService">
     <property name="dao" ref="outageDao" />
   </bean>
 
+
+<!-- Category Status View beans (note: categoryDao is different that than the DAO for the categories table -->
   <bean id="categoryDao" class="org.opennms.web.svclayer.catstatus.dao.support.DefaultCategoryDao" />
   <bean id="viewDisplayDao" class="org.opennms.web.svclayer.catstatus.dao.support.DefaultViewDisplayDao" />
 
 
-<!-- Demand Poll Service Beans -->
+<!-- Demand Poll Service beans -->
   <bean id="eventProxy" class="org.opennms.netmgt.utils.TcpEventProxy">
     <!-- <constructor-arg index="1" type="String" value="127.0.0.1" />
       <constructor-arg index="2" type="int" value="5817" /> -->
@@ -27,7 +35,9 @@
     <property name="monitoredServiceDao" ref="monitoredServiceDao" />
     <property name="pollerAPI" ref="pollerApi" />
   </bean>
-   
+
+
+<!-- Daemon Status Service beans -->   
   <bean id="mbeanServer" class="org.springframework.jmx.support.MBeanServerFactoryBean">
     <property name="locateExistingServerIfPossible" value="true"/>
   </bean>
@@ -40,6 +50,7 @@
     <property name="daemonStatusDao" ref="daemonStatusDao" />
   </bean>
 
+<!-- Category Service Status beans -->
    <bean id="categoryStatusService" class="org.opennms.web.svclayer.catstatus.support.DefaultCategoryStatusService">
     <property name="categoryDao" ref="categoryDao" />
     <property name="outageDao"  ref="outageDao" />
