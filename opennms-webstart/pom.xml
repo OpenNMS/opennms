@@ -37,33 +37,29 @@
              <mainClass>org.opennms.webstart.Main</mainClass>
            </jnlp>
 
-           <!-- SIGNING this will move to a profile since it is setup specific -->
+           <!-- SIGNING in THIS way is 'fake' REAL signing will move to a profile since it is setup specific -->
            <!-- defining this will automatically sign the jar and its dependencies, if necessary -->
-<!--
            <sign>
-             <keystore>${user.dir}/temp-store.ks</keystore>
+             <keystore>${project.build.directory}/build-generated-keystore.ks</keystore>
              <keypass>opennms</keypass>
              <storepass>opennms</storepass>
-             <storetype></storetype>
+             <!-- storetype></storetype -->
              <alias>opennms-webstart-key</alias>
              <validity></validity>
 
-             <dnameCn>The OpenNMS Group</dnameCn>
+             <dnameCn>A random user</dnameCn>
              <dnameL>Pittsboro</dnameL>
              <dnameSt>North Carolina</dnameSt>
              <dnameC>US</dnameC>
 
              <verify>true</verify>
            </sign>
--->
 
            <!-- KEYSTORE MANGEMENT -->
-<!--
            <keystore>
              <delete>true</delete>
              <gen>true</gen>      
            </keystore>
--->
 
            <!-- BUILDING PROCESS -->
            <!--usejnlpservlet>true</usejnlpservlet--> <!-- not yet supported -->

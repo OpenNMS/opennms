@@ -1090,6 +1090,7 @@ opennms.home = ${opennms.home}
       <name>Maven/Codehaus Snapshot Repository</name>
       <url>http://snapshots.repository.codehaus.org</url>
     </pluginRepository>
+<!--
     <pluginRepository>
       <releases />
       <snapshots />
@@ -1097,7 +1098,6 @@ opennms.home = ${opennms.home}
       <name>Maven/Codehaus Snapshot Repository</name>
       <url>http://snapshots.maven.codehaus.org/maven2</url>
     </pluginRepository>
-<!--
     <pluginRepository>
       <snapshots />
       <id>apache.snapshots</id>
