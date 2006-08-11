@@ -41,9 +41,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.utils.EventProxy;
-import org.opennms.netmgt.utils.TcpEventProxy;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.web.MissingParameterException;
+import org.opennms.web.Util;
 
 /**
  * 
@@ -51,11 +51,15 @@ import org.opennms.web.MissingParameterException;
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
 public class NodeRescanServlet extends HttpServlet {
+    /**
+     * 
+     */
+    private static final long serialVersionUID = -3183139374532183137L;
     protected EventProxy proxy;
 
     public void init() throws ServletException {
         try {
-            this.proxy = new TcpEventProxy();
+            this.proxy = Util.createEventProxy();
         } catch (Exception e) {
             throw new ServletException("Exception", e);
         }

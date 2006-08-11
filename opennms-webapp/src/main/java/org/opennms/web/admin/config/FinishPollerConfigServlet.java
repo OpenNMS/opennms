@@ -42,8 +42,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.utils.EventProxy;
-import org.opennms.netmgt.utils.TcpEventProxy;
 import org.opennms.netmgt.xml.event.Event;
+import org.opennms.web.Util;
 
 /**
  * A servlet that handles signaling that the poller config has been updated
@@ -52,6 +52,11 @@ import org.opennms.netmgt.xml.event.Event;
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
 public class FinishPollerConfigServlet extends HttpServlet {
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 6189971565495296081L;
+
     public void init() throws ServletException {
     }
 
@@ -62,7 +67,7 @@ public class FinishPollerConfigServlet extends HttpServlet {
         newEvent.setTime(EventConstants.formatToString(new java.util.Date()));
 
         try {
-            EventProxy eventProxy = new TcpEventProxy();
+            EventProxy eventProxy = Util.createEventProxy();
             if (eventProxy != null) {
                 eventProxy.send(newEvent);
             } else {

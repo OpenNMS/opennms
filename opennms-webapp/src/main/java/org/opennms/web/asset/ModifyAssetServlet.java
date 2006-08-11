@@ -46,11 +46,15 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.opennms.netmgt.capsd.EventUtils;
 import org.opennms.netmgt.utils.EventProxy;
-import org.opennms.netmgt.utils.TcpEventProxy;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.web.MissingParameterException;
+import org.opennms.web.Util;
 
 public class ModifyAssetServlet extends HttpServlet {
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 9203659232262966182L;
     protected AssetModel model;
 
     public void init() throws ServletException {
@@ -151,8 +155,7 @@ public class ModifyAssetServlet extends HttpServlet {
 
     private void sendEvent(Event event) throws ServletException {
         try {
-            EventProxy eventProxy = new TcpEventProxy();
-            eventProxy.send(event);
+            Util.createEventProxy().send(event);
         } catch (Exception e) {
             throw new ServletException("Could not send event " + event.getUei(), e);
         }

@@ -48,7 +48,10 @@ public class DefaultAggregateServiceIntegrationTest extends AbstractTransactiona
         definition = new AggregateStatusDefinition("BCPC", new ArrayList<String>(Arrays.asList(new String[]{ "DEV_BCPC" })));
         defs.add(definition);
         
-        aggrStati = m_aggregateService.createAggregateStatusUsingBuilding("HAT102706", defs);
+        String assetColumn = "building";
+        String buildingName = "HAT102706";
+        
+        aggrStati = m_aggregateService.createAggregateStatusUsingAssetColumn(assetColumn, buildingName, defs);
         
         AggregateStatus status;
         status = (AggregateStatus)((ArrayList)aggrStati).get(0);

@@ -59,8 +59,8 @@ import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.NotificationFactory;
 import org.opennms.netmgt.utils.EventProxy;
-import org.opennms.netmgt.utils.TcpEventProxy;
 import org.opennms.netmgt.xml.event.Event;
+import org.opennms.web.Util;
 
 /**
  * A servlet that handles managing or unmanaging interfaces and services on a
@@ -70,6 +70,11 @@ import org.opennms.netmgt.xml.event.Event;
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
 public class ManageNodesServlet extends HttpServlet {
+    /**
+     * 
+     */
+    private static final long serialVersionUID = -4938417809629844445L;
+
     private static final String UPDATE_INTERFACE = "UPDATE ipinterface SET isManaged = ? WHERE ipaddr IN (?)";
 
     private static final String UPDATE_SERVICE = "UPDATE ifservices SET status = ? WHERE ipaddr = ? AND nodeID = ? AND serviceid = ?";
@@ -329,8 +334,7 @@ public class ManageNodesServlet extends HttpServlet {
      */
     private void sendEvent(Event event) throws ServletException {
         try {
-            EventProxy eventProxy = new TcpEventProxy();
-            eventProxy.send(event);
+            Util.createEventProxy().send(event);
         } catch (Exception e) {
             throw new ServletException("Could not send event " + event.getUei(), e);
         }
