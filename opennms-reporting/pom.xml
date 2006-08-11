@@ -46,11 +46,6 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-filter</artifactId>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
       <groupId>castor</groupId>
       <artifactId>castor</artifactId>
       <scope>compile</scope>
