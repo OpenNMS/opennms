@@ -47,11 +47,29 @@ import org.opennms.web.svclayer.AggregateStatusColor;
 import org.opennms.web.svclayer.AggregateStatusDefinition;
 import org.opennms.web.svclayer.AggregateStatusService;
 
+/**
+ * This service layer class creates a collection that represents the current
+ * status of devices per site (a column from the asset table such as building,
+ * floor, etc.)  The status per site is broken down into rows of categories from
+ * the categories table.
+ * 
+ * example:
+ * 
+ *              site: HQBLDB
+ * 
+ *  |Routers/Switches |   1 of  20 |
+ *  |Servers          |   0 of 200 |
+ *  |Hubs/APs         |   5 of  30 |
+ *  
+ *  
+ * @author david hustace
+ *
+ */
 public class DefaultAggregateStatusService implements AggregateStatusService {
     
     private NodeDao m_nodeDao;
 
-    public Collection<AggregateStatus> createAggregateStatusUsingBuilding(
+    public Collection<AggregateStatus> createAggregateStatusUsingAssetColumn(String assetColumn,
             String building, Collection<AggregateStatusDefinition> categoryGrouping) {
         
         /*
@@ -67,7 +85,7 @@ public class DefaultAggregateStatusService implements AggregateStatusService {
             AggregateStatus status = new AggregateStatus();
             status.setLabel(statusDef.getAggrStatusLabel());
             
-            Collection<OnmsNode> nodes = m_nodeDao.findAllByVarCharAssetColumnCategoryList("building", building, statusDef.getCategories());
+            Collection<OnmsNode> nodes = m_nodeDao.findAllByVarCharAssetColumnCategoryList(assetColumn, building, statusDef.getCategories());
             
             status.setDownEntityCount(computeDownCount(nodes));
             status.setTotalEntityCount(nodes.size());

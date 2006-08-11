@@ -34,7 +34,12 @@ package org.opennms.web.svclayer;
 
 import java.awt.Color;
 
-
+/**
+ * Use this class to aggregate status to be presented in a view.
+ * 
+ * @author david hustace
+ *
+ */
 public class AggregateStatus {
     
     private String m_label;
@@ -76,7 +81,7 @@ public class AggregateStatus {
         sb.append(" down of ");
         sb.append(m_totalEntityCount);
         sb.append(" total.");
-        return m_label;
+        return sb.toString();
     }
 
 }
