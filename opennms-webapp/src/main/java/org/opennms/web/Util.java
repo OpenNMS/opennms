@@ -34,8 +34,10 @@
 
 package org.opennms.web;
 
+import java.net.InetAddress;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -46,6 +48,9 @@ import java.util.TreeMap;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.opennms.core.resource.Vault;
+import org.opennms.netmgt.utils.EventProxy;
+import org.opennms.netmgt.utils.TcpEventProxy;
 import org.opennms.web.element.NetworkElementFactory;
 
 /**
@@ -498,5 +503,29 @@ public abstract class Util extends Object {
     public static String htmlify(String input) {
         return (input == null ? null : input.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;"));
     }
+    
+    public static EventProxy createEventProxy() {
+        /*
+         * Rather than defaulting to localhost all the time, give an option in web.xml
+         */
+        String proxyHostName = Vault.getProperty("opennms.rtc.event.proxy.host") == null ? "localhost" : Vault.getProperty("opennms.rtc.event.proxy.host");
+        String proxyHostPort = Vault.getProperty("opennms.rtc.event.proxy.port") == null ? "5817" : Vault.getProperty("opennms.rtc.event.proxy.port");
+        InetAddress proxyAddr = null;
+        EventProxy proxy = null;
+
+        try {
+            proxyAddr = InetAddress.getByName(proxyHostName);
+        } catch (UnknownHostException e) {
+            proxyAddr = null;
+        }
+
+        if (proxyAddr == null) {
+            proxy = new TcpEventProxy();
+        } else {
+            proxy = new TcpEventProxy(proxyAddr, Integer.parseInt(proxyHostPort));
+        }
+        return proxy;
+    }
+
 
 }

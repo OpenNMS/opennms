@@ -44,8 +44,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.opennms.netmgt.capsd.EventUtils;
 import org.opennms.netmgt.utils.EventProxy;
-import org.opennms.netmgt.utils.TcpEventProxy;
 import org.opennms.netmgt.xml.event.Event;
+import org.opennms.web.Util;
 import org.opennms.web.element.NetworkElementFactory;
 import org.opennms.web.element.Service;
 
@@ -56,6 +56,11 @@ import org.opennms.web.element.Service;
  * Preferences - Java - Code Style - Code Templates
  */
 public class DeleteServiceServlet extends HttpServlet {
+
+    /**
+     * 
+     */
+    private static final long serialVersionUID = -8169359759001371089L;
 
     /*
      * (non-Javadoc)
@@ -115,8 +120,7 @@ public class DeleteServiceServlet extends HttpServlet {
 
     private void sendEvent(Event event) throws ServletException {
         try {
-            EventProxy eventProxy = new TcpEventProxy();
-            eventProxy.send(event);
+            Util.createEventProxy().send(event);
         } catch (Exception e) {
             throw new ServletException("Could not send event " + event.getUei(), e);
         }

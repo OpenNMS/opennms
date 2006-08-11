@@ -44,12 +44,12 @@ import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.utils.EventProxy;
 import org.opennms.netmgt.utils.EventProxyException;
 import org.opennms.netmgt.utils.NodeLabel;
-import org.opennms.netmgt.utils.TcpEventProxy;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.Parms;
 import org.opennms.netmgt.xml.event.Value;
 import org.opennms.web.MissingParameterException;
+import org.opennms.web.Util;
 
 /**
  * Changes the label of a node, throws an event signalling that change, and then
@@ -60,11 +60,15 @@ import org.opennms.web.MissingParameterException;
  */
 public class NodeLabelChangeServlet extends HttpServlet {
 
+    /**
+     * 
+     */
+    private static final long serialVersionUID = -7766362068448931124L;
     protected EventProxy proxy;
 
     public void init() throws ServletException {
         try {
-            this.proxy = new TcpEventProxy();
+            this.proxy = Util.createEventProxy();
         } catch (Exception e) {
             throw new ServletException("JMS Exception", e);
         }

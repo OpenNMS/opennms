@@ -65,6 +65,7 @@ import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.Parms;
 import org.opennms.netmgt.xml.event.Value;
+import org.opennms.web.Util;
 
 /**
  * A servlet that handles deleting nodes from the database
@@ -200,8 +201,7 @@ public class DeleteNodesServlet extends HttpServlet {
 
     private void sendEvent(Event event) throws ServletException {
         try {
-            EventProxy eventProxy = new TcpEventProxy();
-            eventProxy.send(event);
+            Util.createEventProxy().send(event);
         } catch (Exception e) {
             throw new ServletException("Could not send event " + event.getUei(), e);
         }

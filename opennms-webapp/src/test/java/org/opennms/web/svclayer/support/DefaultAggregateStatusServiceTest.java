@@ -82,7 +82,7 @@ public class DefaultAggregateStatusServiceTest extends TestCase {
         }
         replay(m_nodeDao);
         
-        aggrStati = aggregateSvc.createAggregateStatusUsingBuilding("HQ", defs);
+        aggrStati = aggregateSvc.createAggregateStatusUsingAssetColumn("building", "HQ", defs);
         verify(m_nodeDao);
         
         assertNotNull(aggrStati);

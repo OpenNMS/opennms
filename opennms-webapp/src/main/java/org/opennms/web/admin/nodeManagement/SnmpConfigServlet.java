@@ -36,14 +36,6 @@
 
 package org.opennms.web.admin.nodeManagement;
 
-import org.opennms.netmgt.EventConstants;
-import org.opennms.netmgt.utils.EventProxy;
-import org.opennms.netmgt.utils.TcpEventProxy;
-import org.opennms.netmgt.xml.event.Event;
-import org.opennms.netmgt.xml.event.Parm;
-import org.opennms.netmgt.xml.event.Parms;
-import org.opennms.netmgt.xml.event.Value;
-
 import java.io.IOException;
 
 import javax.servlet.RequestDispatcher;
@@ -53,6 +45,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
+import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.utils.EventProxy;
+import org.opennms.netmgt.xml.event.Event;
+import org.opennms.netmgt.xml.event.Parm;
+import org.opennms.netmgt.xml.event.Parms;
+import org.opennms.netmgt.xml.event.Value;
+import org.opennms.web.Util;
 
 /**
  * A servlet that handles configuring SNMP
@@ -62,6 +61,10 @@ import org.apache.log4j.Logger;
  */
 public class SnmpConfigServlet extends HttpServlet {
 
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 2824294300141467193L;
     /** Log4j. */
     private final static Logger log =
         Logger.getLogger(SnmpConfigServlet.class);
@@ -105,7 +108,7 @@ public class SnmpConfigServlet extends HttpServlet {
         eventParms.addParm(eventParm);
 
         try {
-            EventProxy eventProxy = new TcpEventProxy();
+            EventProxy eventProxy = Util.createEventProxy();
             if (eventProxy != null) {
                 eventProxy.send(newEvent);
             } else {

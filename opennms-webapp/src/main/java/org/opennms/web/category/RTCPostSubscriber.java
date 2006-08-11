@@ -45,7 +45,6 @@ import org.opennms.netmgt.config.viewsdisplay.Section;
 import org.opennms.netmgt.config.viewsdisplay.View;
 import org.opennms.netmgt.utils.EventProxy;
 import org.opennms.netmgt.utils.EventProxyException;
-import org.opennms.netmgt.utils.TcpEventProxy;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.Parms;
@@ -68,7 +67,7 @@ public class RTCPostSubscriber extends Object {
     protected static Category log = ThreadCategory.getInstance("RTC");
 
     public RTCPostSubscriber() throws IOException, MarshalException, ValidationException {
-        m_proxy = new TcpEventProxy();
+        m_proxy = Util.createEventProxy();
     }
 
     public static void sendSubscribeEvent(EventProxy proxy, String url, String username, String password, String categoryName) throws IllegalArgumentException, EventProxyException {

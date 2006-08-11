@@ -57,6 +57,7 @@ import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.utils.EventProxy;
 import org.opennms.netmgt.utils.TcpEventProxy;
 import org.opennms.netmgt.xml.event.Event;
+import org.opennms.web.Util;
 
 /**
  * A servlet that handles adding a new interface
@@ -118,8 +119,7 @@ public class AddNewInterfaceServlet extends HttpServlet {
         event.setTime(EventConstants.formatToString(new java.util.Date()));
 
         try {
-            EventProxy eventProxy = new TcpEventProxy();
-            eventProxy.send(event);
+            Util.createEventProxy().send(event);
         } catch (Exception e) {
             throw new ServletException("Could not send event " + event.getUei(), e);
         }
