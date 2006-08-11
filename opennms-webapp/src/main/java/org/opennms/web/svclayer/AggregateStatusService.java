@@ -38,7 +38,7 @@ public interface AggregateStatusService {
     
     /**
      * This method returns method returns a collection of aggregated status of nodes for each
-     * device category.  In this case the building column in the assets table is used as "site"
+     * device category.  In this case a column in the assets table is used as "site"
      * for which to select devices.  The devices are aggregated by the list of categories specified
      * in categoryGrouping.
      * 
@@ -46,6 +46,6 @@ public interface AggregateStatusService {
      * @param categories
      * @return
      */
-    Collection<AggregateStatus> createAggregateStatusUsingBuilding(String building, Collection<AggregateStatusDefinition> categories);
+    Collection<AggregateStatus> createAggregateStatusUsingAssetColumn(String assetColumn, String building, Collection<AggregateStatusDefinition> categories);
 
 }
