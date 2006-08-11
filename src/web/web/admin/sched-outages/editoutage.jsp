@@ -1,4 +1,13 @@
-<%@page language="java" contentType="text/html" session="true" import="java.util.*,org.opennms.netmgt.config.*,org.opennms.netmgt.config.poller.*,org.opennms.web.element.*,org.opennms.netmgt.EventConstants,org.opennms.netmgt.xml.event.Event,org.opennms.netmgt.utils.*,java.net.*,java.io.*" %>
+<%@page language="java" contentType="text/html" session="true" 
+  import="java.util.*,
+  org.opennms.core.resource.Vault,
+  org.opennms.netmgt.config.*,
+  org.opennms.netmgt.config.poller.*,
+  org.opennms.web.element.*,
+  org.opennms.netmgt.EventConstants,
+  org.opennms.netmgt.xml.event.Event,
+  org.opennms.netmgt.utils.*,java.net.*,
+  java.io.*" %>
 <%!
 //A singleton instance of a "Match-any" interface, which can be used for generic tests/removals etc.
 private static org.opennms.netmgt.config.poller.Interface matchAnyInterface;
@@ -18,8 +27,7 @@ public void sendOutagesChangedEvent() throws ServletException {
 	
 	event.setTime(EventConstants.formatToString(new java.util.Date()));
 	try {
-		EventProxy eventProxy = new TcpEventProxy();
-		eventProxy.send(event);
+		Vault.createEventProxy().send(event);
 	} catch (Exception e) {
 		throw new ServletException("Could not send event " + event.getUei(), e);
 	}
@@ -93,7 +101,8 @@ shortDayNames.put("31","31st");
 		if(theOutage==null) {
 			//No name, and no outage in the session.  Give up
 			%> No outage name parameter, nor outage stored in the session.  Cannot edit!<BR>
-			</body></html>
+			</body>
+</html>
 			<%
 			return;
 			

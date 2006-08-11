@@ -1,4 +1,14 @@
-<%@page language="java" contentType="text/html" session="true" import="java.util.*,org.opennms.netmgt.config.*,org.opennms.netmgt.config.poller.*,org.opennms.web.element.*,org.opennms.netmgt.EventConstants,org.opennms.netmgt.xml.event.Event,java.net.*,java.io.*,org.opennms.netmgt.utils.*" %>
+<%@page language="java" contentType="text/html" session="true" 
+  import="java.util.*,
+  org.opennms.core.resource.Vault,
+  org.opennms.netmgt.config.*,
+  org.opennms.netmgt.config.poller.*,
+  org.opennms.web.element.*,
+  org.opennms.netmgt.EventConstants,
+  org.opennms.netmgt.xml.event.Event,
+  java.net.*,
+  java.io.*,
+  org.opennms.netmgt.utils.*" %>
 <%!
 public void sendOutagesChangedEvent() throws ServletException {
         Event event = new Event();
@@ -12,8 +22,7 @@ public void sendOutagesChangedEvent() throws ServletException {
 
         event.setTime(EventConstants.formatToString(new java.util.Date()));
         try {
-                EventProxy eventProxy = new TcpEventProxy();
-                eventProxy.send(event);
+            Vault.createEventProxy().send(event);
         } catch (Exception e) {
                 throw new ServletException("Could not send event " + event.getUei(), e);
         }

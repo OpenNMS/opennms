@@ -39,8 +39,13 @@
 
 -->
 
-<%@page language="java" contentType="text/html" session="true" import="org.opennms.netmgt.EventConstants,org.opennms.netmgt.xml.event.Event,org.opennms.web.element.*,org.opennms.web.*,org.opennms.netmgt.utils.*" %>
-
+<%@page language="java" contentType="text/html" session="true" 
+  import="org.opennms.netmgt.EventConstants,
+  org.opennms.core.resource.Vault,
+  org.opennms.netmgt.xml.event.Event,
+  org.opennms.web.element.*,
+  org.opennms.web.*,
+  org.opennms.netmgt.utils.*" %>
 <%!
     private void sendSNMPRestartEvent(int nodeid, String primeInt) throws ServletException {
         Event snmpRestart = new Event();
@@ -51,8 +56,7 @@
         snmpRestart.setTime(EventConstants.formatToString(new java.util.Date()));
 
         try {
-                EventProxy eventProxy = new TcpEventProxy();
-                eventProxy.send(snmpRestart);
+                Vault.createEventProxy().send(snmpRestart);
         } catch (Exception e) {
                 throw new ServletException("Could not send event " + snmpRestart.getUei(), e);
         }
