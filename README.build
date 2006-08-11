@@ -1,28 +1,3 @@
-==============================================================================
-Using The New New Build System For Fun And Profit
-==============================================================================
+See the instructions at http://opennms.org/index.php/Building_OpenNMS
 
-Run ./build.sh with no arguments to get a list of the major build targets.
 
-All of the things that affect where your build is installed or how it is built
-are in the build.xml file.  Do not edit build.xml to change properties.
-Instead, see the section below on changing build properties.
-
-Changing Build Properties
--------------------------
-
-You can change build properties one of two ways:
-
-  1) Command line: add an argument of the form "-Dproperty.name=value" when
-     you call build.sh.  The argument should be *before* the target you
-     want to run.  For example:
-	sh build.sh -Drpm.platform=linux-i386-fedora-1 rpm
-
-  2) Create a build.properties file in the same directory as build.xml and
-     add the property there.  For example, add the following line:
-	rpm.platform=linux-i386-fedora-1
-
-Note that the first method is temporary--you will have to use it every time
-you run build.sh.  The second is permanent, and will persist across builds
-without additional work (that is, it's permanent until you remove or comment
-out the property setting from the file or delete the file altogether).

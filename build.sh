@@ -44,8 +44,5 @@ if [ $VERBOSE -gt 0 ]; then
     set -x
 fi
 
-#exec ${JAVA_HOME:+"${JAVA_HOME}/bin/"}java $ANT_OPTS -mx256m \
-#    -jar devlib/ant/lib/ant-launcher.jar "$@"
-
 export MAVEN_OPTS=-Xmx512m
-$PREFIX/devlib/maven-2.0.4/bin/mvn -Droot.dir=$PREFIX -Dmaven.test.skip=true "$@"
+$PREFIX/maven-2.0.4/bin/mvn -Droot.dir=$PREFIX -Dmaven.test.skip=true "$@"
