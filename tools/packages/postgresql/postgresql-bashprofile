@@ -1,5 +1,0 @@
-PGLIB=/usr/lib/pgsql
-PGDATA=/var/lib/pgsql/data
-[ -f $PGDATA/../initdb.i18n ] &&  source $PGDATA/../initdb.i18n
-export PGLIB PGDATA
-
