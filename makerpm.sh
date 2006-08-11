@@ -55,7 +55,7 @@ tar zcvf /usr/src/redhat/SOURCES/opennms-source-$VERSION-$RELEASE.tar.gz -C /tmp
 
 echo "=== Building RPMs ==="
 
-rpmbuild -ba --define "'platform $PLATFORM'" --define "'version $VERSION'" --define "'releasenumber $RELEASE'" tools/packages/opennms/opennms.spec.in 
+rpmbuild -ba --define "platform $PLATFORM" --define "version $VERSION" --define "releasenumber $RELEASE" tools/packages/opennms/opennms.spec.in 
 
 echo "=== RPM Build Complete ==="
 
