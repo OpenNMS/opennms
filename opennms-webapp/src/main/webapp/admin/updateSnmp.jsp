@@ -46,6 +46,7 @@
 		org.opennms.netmgt.xml.event.Event,
 		org.opennms.web.element.*,
 		org.opennms.web.*,
+		org.opennms.web.Util,
 		org.opennms.netmgt.utils.*
 	"
 %>
@@ -60,8 +61,7 @@
         snmpRestart.setTime(EventConstants.formatToString(new java.util.Date()));
 
         try {
-                EventProxy eventProxy = new TcpEventProxy();
-                eventProxy.send(snmpRestart);
+                Util.createEventProxy().send(snmpRestart);
         } catch (Exception e) {
                 throw new ServletException("Could not send event " + snmpRestart.getUei(), e);
         }

@@ -9,6 +9,7 @@
 		org.opennms.netmgt.EventConstants,
 		org.opennms.netmgt.xml.event.Event,
 		org.opennms.netmgt.utils.*,
+		org.opennms.web.Util,
 		java.net.*,
 		java.io.*
 	"
@@ -33,8 +34,7 @@ public void sendOutagesChangedEvent() throws ServletException {
 	
 	event.setTime(EventConstants.formatToString(new java.util.Date()));
 	try {
-		EventProxy eventProxy = new TcpEventProxy();
-		eventProxy.send(event);
+		Util.createEventProxy().send(event);
 	} catch (Exception e) {
 		throw new ServletException("Could not send event " + event.getUei(), e);
 	}
@@ -108,7 +108,7 @@ shortDayNames.put("31","31st");
 		if(theOutage==null) {
 			//No name, and no outage in the session.  Give up
 			%>
-			<html><body> 
+            <html><body> 
 			No outage name parameter, nor outage stored in the session.  Cannot edit!<BR/>
 			</body></html>
 			<%

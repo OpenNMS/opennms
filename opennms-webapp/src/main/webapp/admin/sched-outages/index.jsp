@@ -8,6 +8,7 @@
 		org.opennms.web.element.*,
 		org.opennms.netmgt.EventConstants,
 		org.opennms.netmgt.xml.event.Event,
+		org.opennms.web.Util,
 		java.net.*,
 		java.io.*,
 		org.opennms.netmgt.utils.*
@@ -27,8 +28,7 @@ public void sendOutagesChangedEvent() throws ServletException {
 
         event.setTime(EventConstants.formatToString(new java.util.Date()));
         try {
-                EventProxy eventProxy = new TcpEventProxy();
-                eventProxy.send(event);
+                Util.createEventProxy().send(event);
         } catch (Exception e) {
                 throw new ServletException("Could not send event " + event.getUei(), e);
         }
