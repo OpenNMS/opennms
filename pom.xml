@@ -84,7 +84,6 @@
     <module>opennms-model</module>
     <module>opennms-config-utils</module>
     <module>opennms-dao</module>
-    <module>opennms-filter</module>
     <module>opennms-icmp</module>
     <module>opennms-rrd</module>
     <module>opennms-iplike</module>
@@ -652,11 +651,6 @@ opennms.home = ${opennms.home}
       <dependency>
         <groupId>org.opennms</groupId>
         <artifactId>opennms-daemon</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms</groupId>
-        <artifactId>opennms-filter</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
