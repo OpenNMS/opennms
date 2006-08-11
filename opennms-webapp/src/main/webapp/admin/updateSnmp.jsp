@@ -44,11 +44,8 @@
 	session="true"
 	import="org.opennms.netmgt.EventConstants,
 		org.opennms.netmgt.xml.event.Event,
-		org.opennms.web.element.*,
 		org.opennms.web.*,
-		org.opennms.web.Util,
-		org.opennms.netmgt.utils.*
-	"
+		org.opennms.web.Util"
 %>
 
 <%!
