@@ -247,7 +247,7 @@ final class Poller {
             m_outs.reset();
             m_outs.flush();
         } catch (IOException ex) {
-            log.error("IO Exception during socket connection establishment with DHCP client daemon.", ex);
+            log.info("IO Exception during socket connection establishment with DHCP client daemon.", ex);
             if (m_connection != null) {
                 try {
                     m_ins.close();
