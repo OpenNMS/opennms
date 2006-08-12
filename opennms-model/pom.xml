@@ -7,6 +7,21 @@
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-model</artifactId>
   <name>OpenNMS Data Model Components</name>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>castor-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
   <dependencies>
     <dependency>
       <groupId>org.opennms</groupId>
@@ -19,6 +34,15 @@
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>castor</groupId>
+      <artifactId>castor</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>oro</groupId>
+      <artifactId>oro</artifactId>
+      <scope>runtime</scope>
     </dependency>
   </dependencies>
 </project>
