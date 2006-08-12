@@ -35,8 +35,6 @@
 package org.opennms.web.admin.nodeManagement;
 
 /**
- * A servlet that stores service information
- * 
  * @author <A HREF="mailto:jason@opennms.org">Jason Johns </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
