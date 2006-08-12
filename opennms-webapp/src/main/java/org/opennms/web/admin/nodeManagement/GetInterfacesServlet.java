@@ -122,41 +122,40 @@ public class GetInterfacesServlet extends HttpServlet {
         try {
             connection = DataSourceFactory.getInstance().getConnection();
 
-            PreparedStatement interfaceSelect = connection.prepareStatement(INTERFACE_QUERY);
-            interfaceSelect.setInt(1, nodeId);
+            PreparedStatement ifaceStmt = connection.prepareStatement(INTERFACE_QUERY);
+            ifaceStmt.setInt(1, nodeId);
 
-            ResultSet interfaceSet = interfaceSelect.executeQuery();
-            while (interfaceSet.next()) {
+            ResultSet ifaceResults = ifaceStmt.executeQuery();
+            while (ifaceResults.next()) {
                 lineCount++;
                 ManagedInterface newInterface = new ManagedInterface();
-                allInterfaces.add(newInterface);
                 newInterface.setNodeid(nodeId);
-                newInterface.setAddress(interfaceSet.getString(1));
-                newInterface.setStatus(interfaceSet.getString(2));
+                newInterface.setAddress(ifaceResults.getString(1));
+                newInterface.setStatus(ifaceResults.getString(2));
+                allInterfaces.add(newInterface);
 
-                PreparedStatement serviceSelect = connection.prepareStatement(SERVICE_QUERY);
-                serviceSelect.setInt(1, nodeId);
-                serviceSelect.setString(2, newInterface.getAddress());
+                PreparedStatement svcStmt = connection.prepareStatement(SERVICE_QUERY);
+                svcStmt.setInt(1, nodeId);
+                svcStmt.setString(2, newInterface.getAddress());
 
-                ResultSet serviceSet = serviceSelect.executeQuery();
-                while (serviceSet.next()) {
+                ResultSet svcResults = svcStmt.executeQuery();
+                while (svcResults.next()) {
                     lineCount++;
                     ManagedService newService = new ManagedService();
-                    newService.setId(serviceSet.getInt(1));
-                    newService.setName(serviceSet.getString(2));
-                    newService.setStatus(serviceSet.getString(3));
+                    newService.setId(svcResults.getInt(1));
+                    newService.setName(svcResults.getString(2));
+                    newService.setStatus(svcResults.getString(3));
                     newInterface.addService(newService);
                 }
-                serviceSelect.close();
+                svcResults.close();
+                svcStmt.close();
             }
-            interfaceSelect.close();
+            ifaceResults.close();
+            ifaceStmt.close();
             userSession.setAttribute("lineItems.nodemanagement", new Integer(lineCount));
         } finally {
             if (connection != null) {
-                try {
                     connection.close();
-                } catch (SQLException e) {
-                }
             }
         }
         return allInterfaces;

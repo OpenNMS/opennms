@@ -63,8 +63,8 @@ import org.opennms.netmgt.config.DataSourceFactory;
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
 public class GetNodesServlet extends HttpServlet {
-    // private static final String NODE_QUERY =
-    // "SELECT nodeid, nodelabel FROM node ORDER BY nodelabel, nodeid";
+
+    private static final long serialVersionUID = 9083494959783285766L;
 
     private static final String INTERFACE_QUERY = "SELECT nodeid, ipaddr, isManaged FROM ipinterface WHERE ismanaged in ('M','A','U','F') AND ipaddr <> '0.0.0.0' ORDER BY nodeid, inet(ipaddr)";
 
@@ -100,66 +100,45 @@ public class GetNodesServlet extends HttpServlet {
 
         try {
             connection = DataSourceFactory.getInstance().getConnection();
+            PreparedStatement ifaceStmt = connection.prepareStatement(INTERFACE_QUERY);
+            ResultSet ifaceResults = ifaceStmt.executeQuery();
 
-            // Statement stmt = connection.createStatement();
-            // ResultSet nodeSet = stmt.executeQuery(NODE_QUERY);
-
-            // if (nodeSet != null)
-            // {
-            // Iterate through the result and build the array list
-            // while (nodeSet.next ())
-            // {
-            // ManagedNode newNode = new ManagedNode();
-            // newNode.setNodeID(nodeSet.getInt(1));
-            // newNode.setNodeLabel(nodeSet.getString(2));
-            // allNodes.add(newNode);
-
-            PreparedStatement interfaceSelect = connection.prepareStatement(INTERFACE_QUERY);
-            // interfaceSelect.setInt(1, newNode.getNodeID());
-
-            ResultSet interfaceSet = interfaceSelect.executeQuery();
-
-            if (interfaceSet != null) {
-                while (interfaceSet.next()) {
+            if (ifaceResults != null) {
+                while (ifaceResults.next()) {
                     lineCount++;
                     ManagedInterface newInterface = new ManagedInterface();
                     allNodes.add(newInterface);
-                    newInterface.setNodeid(interfaceSet.getInt(1));
-                    newInterface.setAddress(interfaceSet.getString(2));
+                    newInterface.setNodeid(ifaceResults.getInt(1));
+                    newInterface.setAddress(ifaceResults.getString(2));
 
-                    newInterface.setStatus(interfaceSet.getString(3));
-                    // newNode.addInterface(newInterface);
+                    newInterface.setStatus(ifaceResults.getString(3));
 
-                    PreparedStatement serviceSelect = connection.prepareStatement(SERVICE_QUERY);
-                    serviceSelect.setInt(1, newInterface.getNodeid());
-                    serviceSelect.setString(2, newInterface.getAddress());
+                    PreparedStatement svcStmt = connection.prepareStatement(SERVICE_QUERY);
+                    svcStmt.setInt(1, newInterface.getNodeid());
+                    svcStmt.setString(2, newInterface.getAddress());
 
-                    ResultSet serviceSet = serviceSelect.executeQuery();
+                    ResultSet svcResults = svcStmt.executeQuery();
 
-                    if (serviceSet != null) {
-                        while (serviceSet.next()) {
+                    if (svcResults != null) {
+                        while (svcResults.next()) {
                             lineCount++;
                             ManagedService newService = new ManagedService();
-                            newService.setId(serviceSet.getInt(1));
-                            newService.setName(serviceSet.getString(2));
-                            newService.setStatus(serviceSet.getString(3));
+                            newService.setId(svcResults.getInt(1));
+                            newService.setName(svcResults.getString(2));
+                            newService.setStatus(svcResults.getString(3));
                             newInterface.addService(newService);
                         }
                     }
-                    serviceSelect.close();
+                    svcResults.close();
+                    svcStmt.close();
                 }
             }
-            interfaceSelect.close();
-            // }
-            // }
+            ifaceResults.close();
+            ifaceStmt.close();
             userSession.setAttribute("lineItems.manage.jsp", new Integer(lineCount));
-            // nodeSet.close();
         } finally {
             if (connection != null) {
-                try {
-                    connection.close();
-                } catch (SQLException e) {
-                }
+                connection.close();
             }
         }
 
