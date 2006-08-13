@@ -38,13 +38,15 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Set;
 
+import org.opennms.netmgt.dao.AggregateStatusViewDao;
 import org.opennms.netmgt.dao.NodeDao;
+import org.opennms.netmgt.model.AggregateStatusDefinition;
+import org.opennms.netmgt.model.AggregateStatusView;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.web.svclayer.AggregateStatus;
 import org.opennms.web.svclayer.AggregateStatusColor;
-import org.opennms.web.svclayer.AggregateStatusDefinition;
 import org.opennms.web.svclayer.AggregateStatusService;
 
 /**
@@ -68,9 +70,26 @@ import org.opennms.web.svclayer.AggregateStatusService;
 public class DefaultAggregateStatusService implements AggregateStatusService {
     
     private NodeDao m_nodeDao;
+    private AggregateStatusViewDao m_statusViewDao;
+
+    public Collection<AggregateStatus> createAggregateStatusView(String statusViewName) {
+        AggregateStatusView statusView = m_statusViewDao.find(statusViewName);
+        return createAggreateStatus(statusView);
+    }
+    
+    public Collection<AggregateStatus> createAggreateStatus(AggregateStatusView statusView) {
+        return createAggregateStatus(statusView.getTableName(), statusView.getColumnName(), statusView.getColumnValue(), statusView.getStatusDefinitions());
+    }
+
+    private Collection<AggregateStatus> createAggregateStatus(String tableName, String columnName, String columnValue, Collection<AggregateStatusDefinition> statusDefinitions) {
+        if (tableName != null && !tableName.equalsIgnoreCase("assets")) {
+            throw new UnsupportedOperationException("This service currently only implmented for aggregation on asset columns.");
+        }
+        return createAggregateStatusUsingAssetColumn(columnName, columnValue, statusDefinitions);
+    }
 
     public Collection<AggregateStatus> createAggregateStatusUsingAssetColumn(String assetColumn,
-            String building, Collection<AggregateStatusDefinition> categoryGrouping) {
+            String columnValue, Collection<AggregateStatusDefinition> categoryGrouping) {
         
         /*
          * We'll return this collection populated with all the aggregated statuss for the
@@ -85,7 +104,7 @@ public class DefaultAggregateStatusService implements AggregateStatusService {
             AggregateStatus status = new AggregateStatus();
             status.setLabel(statusDef.getAggrStatusLabel());
             
-            Collection<OnmsNode> nodes = m_nodeDao.findAllByVarCharAssetColumnCategoryList(assetColumn, building, statusDef.getCategories());
+            Collection<OnmsNode> nodes = m_nodeDao.findAllByVarCharAssetColumnCategoryList(assetColumn, columnValue, statusDef.getCategories());
             
             status.setDownEntityCount(computeDownCount(nodes));
             status.setTotalEntityCount(nodes.size());
@@ -143,7 +162,5 @@ public class DefaultAggregateStatusService implements AggregateStatusService {
     public void setNodeDao(NodeDao nodeDao) {
         m_nodeDao = nodeDao;
     }
-    
-    
 
 }

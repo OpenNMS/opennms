@@ -34,6 +34,16 @@ package org.opennms.web.svclayer;
 
 import java.util.Collection;
 
+import org.opennms.netmgt.model.AggregateStatusDefinition;
+
+/**
+ * Service layer API for the use cases that require the monitoed status of
+ * OpenNMS entities (i.e. OnmsNode) to be aggregated with status information
+ * that provides color and numberic indicators of status.
+ * 
+ * @author david
+ *
+ */
 public interface AggregateStatusService {
     
     /**
@@ -42,10 +52,12 @@ public interface AggregateStatusService {
      * for which to select devices.  The devices are aggregated by the list of categories specified
      * in categoryGrouping.
      * 
-     * @param building
+     * @param columnValue
      * @param categories
      * @return
      */
-    Collection<AggregateStatus> createAggregateStatusUsingAssetColumn(String assetColumn, String building, Collection<AggregateStatusDefinition> categories);
+    Collection<AggregateStatus> createAggregateStatusUsingAssetColumn(String assetColumn, String columnValue, Collection<AggregateStatusDefinition> categories);
+    
+    Collection<AggregateStatus> createAggregateStatusView(String statusViewName);
 
 }

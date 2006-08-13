@@ -35,7 +35,7 @@ package org.opennms.web.svclayer;
 import java.awt.Color;
 
 /**
- * Use this class to aggregate status to be presented in a view.
+ * Use this class to aggregate status to be presented in a view layer technology.
  * 
  * @author david hustace
  *
