@@ -53,6 +53,10 @@ drop table pathOutage cascade;
 drop table demandPolls cascade;
 drop table pollResults cascade;
 drop table reportLocator cascade;
+drop category_statusdef cascade;
+drop statusview_statusdef cascade;
+drop aggregate_status_definitions cascade;
+drop table aggregate_status_views cascasde;
 drop sequence catNxtId;
 drop sequence nodeNxtId;
 drop sequence serviceNxtId;
@@ -65,6 +69,7 @@ drop sequence demandPollNxtId;
 drop sequence pollResultNxtId;
 drop sequence vulnNxtId;
 drop sequence reportNxtId;
+drop sequence opennmsNxtId;  --# should be used for all sequences, eventually
 
 --# Begin quartz persistence 
 
@@ -1002,6 +1007,102 @@ CREATE INDEX catid_idx on category_node(categoryId);
 CREATE INDEX catnode_idx on category_node(nodeId);
 
 --########################################################################
+--#
+--# aggregate_status_views table - parent table for defining a view of aggregate statuses
+--#
+--# This table contains the following columns:
+--#
+--#  id			 : The view id.
+--#  name		 : Unique name of this view.
+--#  tableName   : Name of the table containing the column for which a where clause will
+--#                be assigned to select nodes from the node table (typical implementation
+--#                is the assets table.
+--#  columnName  : Column to be used in the where clause for the selection of nodes for which
+--#                to represent the aggregated status based on categories listed in a status def.
+--#  columnValue : The value used in the where clause described above.
+--#
+--########################################################################
+
+CREATE TABLE aggregate_status_views (
+	id					INTEGER NOT NULL,
+	name				VARCHAR(64) NOT NULL,
+	tableName			VARCHAR(64),
+	columnName			VARCHAR(64),
+	columnValue			VARCHAR(128),
+	
+	CONSTRAINT asv_pkey PRIMARY KEY (id)
+);
+CREATE UNIQUE INDEX status_view_name_idx ON aggregate_status_views(name);
+
+
+--########################################################################
+--#
+--#  aggregate_status_definitions table - table for persisting the name of
+--#      a status definition and used as a parent table for relating the
+--#      categories to be used in the aggregated status.  Also joined with
+--#      the aggregate_status_views table for determining the which status
+--#      defs to be shown in a view.
+--#
+--#  This table contains the following columns:
+--#
+--#  id           : The status def id.
+--#  name         : The unique name give a status def.
+--#
+--########################################################################
+
+CREATE TABLE aggregate_status_definitions (
+	id					INTEGER NOT NULL,
+	name				VARCHAR(64) NOT NULL,
+	
+	CONSTRAINT asd_pkey PRIMARY KEY (id)
+);
+CREATE UNIQUE INDEX status_def_name_idx ON aggreate_status_definitions(name);
+
+
+--########################################################################
+--#
+--#  category_statusdef - table for defining many-to-many relations from a
+--#    category to a status def.  A category can be assigned to one or more
+--#    status defs and a status def can be assigned one or more categories.
+--#
+--#  This table contains the following columns:
+--#
+--#  categoryId  : The id of a category from the categories table.
+--#  statusDefId : The id of a status definition.
+--#
+--########################################################################
+
+CREATE TABLE category_statusdef (
+	categoryId			INTEGER NOT NULL,
+	statusDefId			INTEGER NOT NULL,
+	
+	CONSTRAINT categoryid_fkey FOREIGN KEY (categoryId) REFERENCES categories (categoryId) ON DELETE CASCADE,
+	CONSTRAINT statusdef_fkey FOREIGN KEY (statusDefId) REFERENCES aggregate_status_definitions (id) ON DELETE CASCADE
+);
+
+--########################################################################
+--#
+--#  statusview_statusdef - table for defining many-to-many relations from a
+--#    status def to a status view.  A status def can be assigned to one or
+--#    more status views and a status view can be assigned on or more status
+--#    defs.
+--#
+--#  This table contains the following columns:
+--#
+--#  statusViewId  : The id of a status view.
+--#  statusDefId   : The id of a status def.
+--#
+--########################################################################
+
+CREATE TABLE statusview_statusdef (
+	statusViewId		INTEGER NOT NULL,
+	statusDefId			INTEGER NOT NULL,
+	
+	CONSTRAINT statusviewid_fkey FOREIGN KEY (statusViewId) REFERENCES aggregate_status_views (id) ON DELETE CASCADE,
+	CONSTRAINT statusdefid_fkey FOREIGN KEY (statusDefId) REFERENCES aggregate_status_definitions (id) ON DELETE CASCADE
+);
+
+--########################################################################
 --# pathOutage Table - Contains the critical path IP address and service
 --#                    associated with each node for suppressing nodeDown
 --#                    notifications
@@ -1096,6 +1197,12 @@ create index pollresults_service on pollResults(nodeId, ipAddr, ifIndex, service
 --# DO NOT forget to add an "install" comment so that the installer
 --# knows to fix and renumber the sequences if need be
 --##################################################################
+
+--# Sequence for the nodeID column in the aggregate_status_views and the
+--# aggregate_status_definitions tables (eventually all tables, perhaps)
+--#          sequence, column, table
+--# install: opennmsNxtId id   aggregate_status_views
+create sequence opennmsNxtId minvalue 1;
 
 --# Sequence for the nodeID column in the node table
 --#          sequence, column, table
