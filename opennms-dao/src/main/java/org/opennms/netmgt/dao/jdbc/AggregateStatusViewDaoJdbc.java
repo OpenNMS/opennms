@@ -60,8 +60,8 @@ public class AggregateStatusViewDaoJdbc extends JdbcDaoSupport implements Aggreg
 
     private static final String STATUS_VIEW_DEF_MAPPING_TABLE = "statusview_statusdef";
     private static final String CATEGORY_DEF_MAPPING_TABLE = "category_statusdef";
-    private static String AGGREATE_STATUS_VIEWS_TABLE = "aggregate_status_views";
-    private static String AGGREGATE_STATUS_DEFINITIONS_TABLE = "aggregate_status_definitions";
+    private static final String AGGREATE_STATUS_VIEWS_TABLE = "aggregate_status_views";
+    private static final String AGGREGATE_STATUS_DEFINITIONS_TABLE = "aggregate_status_definitions";
     
     
     /**
@@ -78,7 +78,7 @@ public class AggregateStatusViewDaoJdbc extends JdbcDaoSupport implements Aggreg
      * @param statusViewName
      * @return <code>AggreateStatusView</code> Object
      */
-    public AggregateStatusView find(String statusViewName) {
+    public AggregateStatusView find(final String statusViewName) {
         
         return (AggregateStatusView)getJdbcTemplate().queryForObject("select * " +
                 "  from "+AGGREATE_STATUS_VIEWS_TABLE+
@@ -119,7 +119,7 @@ public class AggregateStatusViewDaoJdbc extends JdbcDaoSupport implements Aggreg
      * @param viewId
      * @return
      */
-    private Collection<AggregateStatusDefinition> loadStatusDefs(Integer viewId) {
+    private Collection<AggregateStatusDefinition> loadStatusDefs(final Integer viewId) {
 
         final RowMapper statusDefMapper = new RowMapper() {
 
@@ -137,7 +137,7 @@ public class AggregateStatusViewDaoJdbc extends JdbcDaoSupport implements Aggreg
                 " where svsd.statusViewId = "+viewId, statusDefMapper);
     }
     
-    private Collection<String> loadStatusDefCategories(Integer statusDefId) {
+    private Collection<String> loadStatusDefCategories(final Integer statusDefId) {
 
         final RowMapper rowMapper = new RowMapper() {
 
