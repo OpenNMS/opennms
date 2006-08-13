@@ -1,11 +1,10 @@
 package org.opennms.netmgt.dao;
 
 import java.io.File;
-import java.io.IOException;
 
 import junit.framework.TestCase;
 
-import org.opennms.netmgt.dao.ibatis.PathOutage;
+import org.opennms.netmgt.model.PathOutage;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 

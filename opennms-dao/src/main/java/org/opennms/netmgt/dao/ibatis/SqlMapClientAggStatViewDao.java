@@ -30,18 +30,46 @@
 //     http://www.opennms.com/
 //
 
-package org.opennms.netmgt.dao;
+package org.opennms.netmgt.dao.ibatis;
 
 import java.util.List;
 
-import org.opennms.netmgt.model.PathOutage;
+import org.opennms.netmgt.dao.AggregateStatusViewDao;
+import org.opennms.netmgt.model.AggregateStatusView;
+import org.springframework.orm.ibatis.support.SqlMapClientDaoSupport;
 
-public interface PathOutageDao {
-	public List getAll();
-	
-	public void save(PathOutage pathOutage);
-	
-	public void delete(int pathOutageId);
-	
-//	public PathOutage getById(int pathOutageId);
+public class SqlMapClientAggStatViewDao extends SqlMapClientDaoSupport
+		implements AggregateStatusViewDao {
+
+//	@Override
+//	protected void checkDaoConfig() throws IllegalArgumentException {
+//		// TODO Auto-generated method stub
+//
+//	}
+
+	public void delete(AggregateStatusView view) {
+		// TODO Auto-generated method stub
+
+	}
+
+	public AggregateStatusView find(String statusViewName) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public List getAll() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public AggregateStatusView getByName(String statusViewName) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public void save(AggregateStatusView view) {
+		// TODO Auto-generated method stub
+
+	}
+
 }
