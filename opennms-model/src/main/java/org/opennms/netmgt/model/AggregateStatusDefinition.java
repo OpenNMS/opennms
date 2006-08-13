@@ -46,6 +46,7 @@ public class AggregateStatusDefinition {
     private String m_aggrStatusLabel;
     private Collection<String> m_categories;
     private Integer m_id;
+    private String m_name;
     
     public AggregateStatusDefinition() {
         
@@ -88,5 +89,13 @@ public class AggregateStatusDefinition {
     public void setId(Integer id) {
         m_id = id;
     }
+
+	public String getName() {
+		return m_name;
+	}
+
+	public void setName(String name) {
+		m_name = name;
+	}
     
 }
