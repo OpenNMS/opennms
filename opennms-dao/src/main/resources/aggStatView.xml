@@ -14,6 +14,18 @@
 	</resultMap>
 	
 	<select id="getAggStatViews" resultMap="result">
-		select * from aggreagate_status_views
+		select * from aggregate_status_views
+	</select>
+	
+	<select id="countAll" resultMap="result">
+		select count(*) from aggregate_status_views
+	</select>
+	
+	<select id="getByID" resultMap="result">
+		select * from aggregate_status_views where id=#value#
+	</select>
+
+	<select id="getByName" resultMap="result">
+		select * from aggregate_status_views where name=#value#
 	</select>
 </sqlMap>

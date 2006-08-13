@@ -9,7 +9,7 @@
 			<value>org.postgresql.Driver</value>
 		</property>
 		<property name="url">
-			<value>jdbc:postgresql://localhost/test</value>
+			<value>jdbc:postgresql:test</value>
 		</property>
 		<property name="username">
 			<value>postgres</value>
@@ -23,7 +23,7 @@
 		</property>
  	</bean>
 
-	<bean id="pathOutage" class="org.opennms.netmgt.dao.ibatis.pathoutage.SqlMapClientTestDao">
+	<bean id="pathOutage" class="org.opennms.netmgt.dao.ibatis.SqlMapClientPathOutageDao">
 		<property name="dataSource"><ref local="dataSource"/></property>
 		<property name="sqlMapClient"><ref local="sqlMapClient"/></property>
 	</bean>  

@@ -30,42 +30,46 @@
 //     http://www.opennms.com/
 //
 
-package org.opennms.netmgt.dao.ibatis;
+package org.opennms.netmgt.dao;
 
+import java.util.Iterator;
 import java.util.List;
 
-import org.opennms.netmgt.dao.AggregateStatusViewDao;
 import org.opennms.netmgt.model.AggregateStatusView;
-import org.springframework.orm.ibatis.support.SqlMapClientDaoSupport;
+import org.springframework.test.AbstractDependencyInjectionSpringContextTests;
 
-public class SqlMapClientAggStatViewDao extends SqlMapClientDaoSupport
-		implements AggregateStatusViewDao {
+public class AggStatViewDaoTest extends
+		AbstractDependencyInjectionSpringContextTests {
 
-//	@Override
-//	protected void checkDaoConfig() throws IllegalArgumentException {
-//		// TODO Auto-generated method stub
-//
-//	}
+	AggregateStatusViewDao m_dao;
 
-	public void delete(AggregateStatusView view) {
-		// TODO Auto-generated method stub
-
+	public AggregateStatusViewDao getDao() {
+		return m_dao;
 	}
 
-	public List getAll() {
-		return getSqlMapClientTemplate().queryForList("getAggStatViews", null);
+	public void setDao(AggregateStatusViewDao dao) {
+		m_dao = dao;
 	}
 	
-	public void save(AggregateStatusView view) {
-		// TODO Auto-generated method stub
+	@Override
+	protected String[] getConfigLocations() {
+		return new String[] {
+                "applicationContext-ibatis.xml"
+        		};
+	}
+	
+	public void testGetAll() {
+		List views = m_dao.getAll();
 
+		assertFalse("Expected some data in the table aggregate_status_view", views.isEmpty());
+		
+	}
+	
+	public void testGetOne() {
+		AggregateStatusView view = m_dao.find("test2 name");
+		
+		assertEquals(2, view.getId().intValue());
 	}
 
-	public AggregateStatusView find(String name) {
-		return (AggregateStatusView)getSqlMapClientTemplate().queryForObject("getByName", name);
-	}
-
-	public AggregateStatusView find(int id) {
-		return (AggregateStatusView)getSqlMapClientTemplate().queryForObject("getByID", id);
-	}
+	
 }
