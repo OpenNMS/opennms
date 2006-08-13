@@ -968,6 +968,21 @@ opennms.home = ${opennms.home}
 -->
       </dependency>
       <dependency>
+        <groupId>com.ibatis</groupId>
+        <artifactId>ibatis2-common</artifactId>
+        <version>2.1.6.589</version>
+      </dependency>
+      <dependency>
+        <groupId>com.ibatis</groupId>
+        <artifactId>ibatis2-dao</artifactId>
+        <version>2.1.6.589</version>
+      </dependency>
+      <dependency>
+        <groupId>com.ibatis</groupId>
+        <artifactId>ibatis2-sqlmap</artifactId>
+        <version>2.1.6.589</version>
+      </dependency>
+      <dependency>
         <groupId>org.samba.jcifs</groupId>
         <artifactId>jcifs</artifactId>
         <version>1.2.6</version>
