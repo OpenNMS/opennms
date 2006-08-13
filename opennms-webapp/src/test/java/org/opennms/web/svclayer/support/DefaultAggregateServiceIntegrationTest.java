@@ -36,9 +36,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 
+import org.opennms.netmgt.model.AggregateStatusDefinition;
 import org.opennms.web.svclayer.AggregateStatus;
 import org.opennms.web.svclayer.AggregateStatusColor;
-import org.opennms.web.svclayer.AggregateStatusDefinition;
 import org.opennms.web.svclayer.AggregateStatusService;
 import org.springframework.test.AbstractTransactionalDataSourceSpringContextTests;
 

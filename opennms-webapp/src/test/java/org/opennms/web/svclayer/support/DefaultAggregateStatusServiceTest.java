@@ -42,9 +42,9 @@ import static org.easymock.EasyMock.replay;
 import static org.easymock.EasyMock.verify;
 
 import org.opennms.netmgt.dao.NodeDao;
+import org.opennms.netmgt.model.AggregateStatusDefinition;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.web.svclayer.AggregateStatus;
-import org.opennms.web.svclayer.AggregateStatusDefinition;
 
 import junit.framework.TestCase;
 
