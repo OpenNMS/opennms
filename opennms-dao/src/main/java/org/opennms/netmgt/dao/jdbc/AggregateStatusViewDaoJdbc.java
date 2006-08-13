@@ -35,6 +35,7 @@ package org.opennms.netmgt.dao.jdbc;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.List;
 
 import org.opennms.netmgt.dao.AggregateStatusViewDao;
 import org.opennms.netmgt.model.AggregateStatusDefinition;
@@ -152,5 +153,29 @@ public class AggregateStatusViewDaoJdbc extends JdbcDaoSupport implements Aggreg
                 "join "+CATEGORY_DEF_MAPPING_TABLE+" csd on (csd.categoryId = c.categoryId) " +
                 "where csd.statusDefId = "+statusDefId, rowMapper);
     }
+
+
+	public void delete(AggregateStatusView view) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	public List getAll() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
+	public AggregateStatusView getByName(String statusViewName) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
+	public void save(AggregateStatusView view) {
+		// TODO Auto-generated method stub
+		
+	}
 
 }

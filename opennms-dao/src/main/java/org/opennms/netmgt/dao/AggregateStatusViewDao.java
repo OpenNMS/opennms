@@ -32,6 +32,8 @@
 
 package org.opennms.netmgt.dao;
 
+import java.util.List;
+
 import org.opennms.netmgt.model.AggregateStatusView;
 
 /**
@@ -43,6 +45,15 @@ import org.opennms.netmgt.model.AggregateStatusView;
  */
 public interface AggregateStatusViewDao  {
     
+	public List getAll();
+	
+	public void save(AggregateStatusView view);
+	
+	public void delete(AggregateStatusView view);
+
     AggregateStatusView find(String statusViewName);
+
+    AggregateStatusView getByName(String statusViewName);  //Unsure if there will need ot be other get's if not
+    													   // then find should be sufficient
 
 }

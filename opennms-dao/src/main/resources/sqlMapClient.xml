@@ -5,4 +5,5 @@
 
 <sqlMapConfig>
 	<sqlMap resource = "pathOutage.xml" />
+	<sqlMap resource = "aggStatView.xml" />
 </sqlMapConfig>
