@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap 
+          PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" 
+          "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap>
+	<typeAlias alias ="aggStatDef" type="org.opennms.netmgt.model.AggregateStatusDefinition" />
+	
+	<resultMap class="aggStatDef" id="result">
+		<result property="id" column="id"/>
+		<result property="name" column="name"/>
+	</resultMap>
+	
+	<select id="getAggStatDefs" resultMap="result">
+		select * from aggregate_status_definitions
+	</select>
+
+<!-- 	
+	<select id="countAll" resultMap="result">
+		select count(*) from aggregate_status_definitions
+	</select>
+	 -->
+	<select id="getByDefID" resultMap="result">
+		select * from aggregate_status_definitions where id=#value#
+	</select>
+
+	<select id="getByDefName" resultMap="result">
+		select * from aggregate_status_definitions where name=#value#
+	</select>
+</sqlMap>

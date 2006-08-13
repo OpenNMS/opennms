@@ -30,58 +30,27 @@
 //     http://www.opennms.com/
 //
 
-package org.opennms.netmgt.dao.ibatis;
+package org.opennms.netmgt.dao;
 
 import java.util.List;
 
-import org.opennms.netmgt.dao.AggregateStatusViewDao;
-import org.opennms.netmgt.model.AggregateStatusView;
-import org.springframework.orm.ibatis.support.SqlMapClientDaoSupport;
+import org.opennms.netmgt.model.AggregateStatusDefinition;
 
-public class SqlMapClientAggStatViewDao extends SqlMapClientDaoSupport
-		implements AggregateStatusViewDao {
-
-//	@Override
-//	protected void checkDaoConfig() throws IllegalArgumentException {
-//		// TODO Auto-generated method stub
-//
-//	}
-
-	public void delete(AggregateStatusView view) {
-		// TODO Auto-generated method stub
-
-	}
-
-	public List getAll() {
-		return getSqlMapClientTemplate().queryForList("getAggStatViews", null);
-	}
+/**
+ * DAO for accessing persisted configration of a view that defines
+ * a collection of aggregate status definitions.
+ * 
+ * @author david
+ *
+ */
+public interface AggregateStatusDefinitionDao  {
+    
+	public List getAll();
 	
-	public void save(AggregateStatusView view) {
-		if (view.getId() == 0) {
-			insert(view);
-		} else {
-			update(view);
-		}
-
-	}
-
-	public AggregateStatusView find(String name) {
-		return (AggregateStatusView)getSqlMapClientTemplate().queryForObject("getAggStatViewByName", name);
-	}
-
-	public AggregateStatusView find(int id) {
-		return (AggregateStatusView)getSqlMapClientTemplate().queryForObject("getAggStatViewByID", id);
-	}
+	public void save(AggregateStatusDefinition view);
 	
-	public void insert(AggregateStatusView view) {
-		getSqlMapClientTemplate().insert("insertAggStatView", view);
-	}
-	
-	public void delete(int id) {
-		getSqlMapClientTemplate().delete("deleteAggStatView", new Integer(id));
-	}
+	public void delete(AggregateStatusDefinition view);
 
-	public void update(AggregateStatusView view) {
-		getSqlMapClientTemplate().update("updateAggStatView", view);
-	}
+    AggregateStatusDefinition find(String name);
+
 }

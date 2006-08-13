@@ -34,54 +34,36 @@ package org.opennms.netmgt.dao.ibatis;
 
 import java.util.List;
 
-import org.opennms.netmgt.dao.AggregateStatusViewDao;
+import org.opennms.netmgt.dao.AggregateStatusDefinitionDao;
+import org.opennms.netmgt.model.AggregateStatusDefinition;
 import org.opennms.netmgt.model.AggregateStatusView;
 import org.springframework.orm.ibatis.support.SqlMapClientDaoSupport;
 
-public class SqlMapClientAggStatViewDao extends SqlMapClientDaoSupport
-		implements AggregateStatusViewDao {
+public class SqlMapClientAddStatDefDao extends SqlMapClientDaoSupport implements
+		AggregateStatusDefinitionDao {
 
-//	@Override
-//	protected void checkDaoConfig() throws IllegalArgumentException {
-//		// TODO Auto-generated method stub
-//
-//	}
-
-	public void delete(AggregateStatusView view) {
+	public void delete(AggregateStatusDefinition view) {
 		// TODO Auto-generated method stub
 
 	}
 
+	public AggregateStatusDefinition find(String name) {
+		return (AggregateStatusDefinition)getSqlMapClientTemplate().queryForObject("getByName", name);
+
+	}
+
+	public AggregateStatusDefinition find(int id) {
+		return (AggregateStatusDefinition)getSqlMapClientTemplate().queryForObject("getByID", id);
+
+	}
+
 	public List getAll() {
-		return getSqlMapClientTemplate().queryForList("getAggStatViews", null);
+		return getSqlMapClientTemplate().queryForList("getAggStatDefs", null);
 	}
-	
-	public void save(AggregateStatusView view) {
-		if (view.getId() == 0) {
-			insert(view);
-		} else {
-			update(view);
-		}
+
+	public void save(AggregateStatusDefinition view) {
+		// TODO Auto-generated method stub
 
 	}
 
-	public AggregateStatusView find(String name) {
-		return (AggregateStatusView)getSqlMapClientTemplate().queryForObject("getAggStatViewByName", name);
-	}
-
-	public AggregateStatusView find(int id) {
-		return (AggregateStatusView)getSqlMapClientTemplate().queryForObject("getAggStatViewByID", id);
-	}
-	
-	public void insert(AggregateStatusView view) {
-		getSqlMapClientTemplate().insert("insertAggStatView", view);
-	}
-	
-	public void delete(int id) {
-		getSqlMapClientTemplate().delete("deleteAggStatView", new Integer(id));
-	}
-
-	public void update(AggregateStatusView view) {
-		getSqlMapClientTemplate().update("updateAggStatView", view);
-	}
 }

@@ -32,9 +32,6 @@
 
 package org.opennms.netmgt.dao;
 
-import java.util.Iterator;
-import java.util.List;
-
 import org.opennms.netmgt.model.AggregateStatusView;
 import org.springframework.test.AbstractDependencyInjectionSpringContextTests;
 
@@ -57,19 +54,32 @@ public class AggStatViewDaoTest extends
                 "applicationContext-ibatis.xml"
         		};
 	}
-	
-	public void testGetAll() {
-		List views = m_dao.getAll();
 
-		assertFalse("Expected some data in the table aggregate_status_view", views.isEmpty());
+	public void testDeleteInsertSave() {
+		String randomName = "junit test "+ Math.random();
+		AggregateStatusView view = new AggregateStatusView();
+		view.setName(randomName);
+		view.setTableName("junit test table name");
+		view.setColumnName("junit test column name");
+		view.setColumnValue("junit test column value");
+		
+		m_dao.insert(view);
+		AggregateStatusView retrievedView = m_dao.find(randomName);
+		assertEquals(view.getTableName(), retrievedView.getTableName());
+		
+		m_dao.delete(retrievedView.getId());
+		retrievedView = m_dao.find(randomName);
+		assertNull("Expected a null view because we should have just deleted it" +
+				" from the table", retrievedView);
+		
+		m_dao.insert(view);
+		retrievedView = m_dao.find(randomName);
+		int newId = retrievedView.getId();
+		retrievedView.setName("Modified " + randomName);
+		m_dao.save(retrievedView);
+		retrievedView = m_dao.find(newId);
+		assertEquals("Modified " + randomName, retrievedView.getName());
 		
 	}
-	
-	public void testGetOne() {
-		AggregateStatusView view = m_dao.find("test2 name");
-		
-		assertEquals(2, view.getId().intValue());
-	}
-
 	
 }

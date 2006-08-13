@@ -49,8 +49,14 @@ public interface AggregateStatusViewDao  {
 	
 	public void save(AggregateStatusView view);
 	
-	public void delete(AggregateStatusView view);
+	public void update(AggregateStatusView view);
+	
+	public void delete(int id);
 
     AggregateStatusView find(String name);
+    
+    public void insert(AggregateStatusView view);
+
+	AggregateStatusView find(int newId);
 
 }
