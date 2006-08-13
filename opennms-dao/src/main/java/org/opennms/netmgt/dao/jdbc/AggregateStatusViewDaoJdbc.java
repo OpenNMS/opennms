@@ -155,12 +155,6 @@ public class AggregateStatusViewDaoJdbc extends JdbcDaoSupport implements Aggreg
     }
 
 
-	public void delete(AggregateStatusView view) {
-		// TODO Auto-generated method stub
-		
-	}
-
-
 	public List getAll() {
 		// TODO Auto-generated method stub
 		return null;
@@ -174,6 +168,24 @@ public class AggregateStatusViewDaoJdbc extends JdbcDaoSupport implements Aggreg
 
 
 	public void save(AggregateStatusView view) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	public void insert(AggregateStatusView view) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	public void delete(int id) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	public void update(AggregateStatusView view) {
 		// TODO Auto-generated method stub
 		
 	}
