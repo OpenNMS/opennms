@@ -51,9 +51,6 @@ public interface AggregateStatusViewDao  {
 	
 	public void delete(AggregateStatusView view);
 
-    AggregateStatusView find(String statusViewName);
-
-    AggregateStatusView getByName(String statusViewName);  //Unsure if there will need ot be other get's if not
-    													   // then find should be sufficient
+    AggregateStatusView find(String name);
 
 }

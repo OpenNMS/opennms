@@ -11,6 +11,21 @@ public class AggregateStatusView {
     private String m_columnValue;
     private Collection<AggregateStatusDefinition> m_statusDefinitions;
     
+	public String toString() {
+		StringBuffer result = new StringBuffer(50);
+		result.append("AggregateStatusView { id: ");
+		result.append(m_id);
+		result.append(", name: ");
+		result.append(m_name);
+		result.append(", tableName: ");
+		result.append(m_tableName);
+		result.append(", columndName: ");
+		result.append(m_columnName);
+		result.append(", columnValue: ");
+		result.append(m_columnValue);
+		result.append(" }");
+		return result.toString();
+	}
     
     /*
      * Getters/Setters
