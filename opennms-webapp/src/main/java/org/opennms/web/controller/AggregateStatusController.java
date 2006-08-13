@@ -1,7 +1,5 @@
 package org.opennms.web.controller;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 
 import javax.servlet.http.HttpServletRequest;
