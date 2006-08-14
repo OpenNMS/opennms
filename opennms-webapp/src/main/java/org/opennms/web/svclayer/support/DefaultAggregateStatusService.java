@@ -73,7 +73,7 @@ public class DefaultAggregateStatusService implements AggregateStatusService {
     private AggregateStatusViewDao m_statusViewDao;
 
     public Collection<AggregateStatus> createAggregateStatusView(String statusViewName) {
-        AggregateStatusView statusView = m_statusViewDao.find(null);
+        AggregateStatusView statusView = m_statusViewDao.find(statusViewName);
         return createAggreateStatus(statusView);
     }
     
