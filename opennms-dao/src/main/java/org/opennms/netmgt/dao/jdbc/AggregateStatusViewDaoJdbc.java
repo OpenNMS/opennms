@@ -126,6 +126,7 @@ public class AggregateStatusViewDaoJdbc extends JdbcDaoSupport implements Aggreg
 
             public Object mapRow(ResultSet rs, int index) throws SQLException {
                 AggregateStatusDefinition statusDef = new AggregateStatusDefinition();
+                statusDef.setId(rs.getInt("id"));
                 statusDef.setAggrStatusLabel(rs.getString("name"));
                 statusDef.setCategories(loadStatusDefCategories(statusDef.getId()));
                 return statusDef;
