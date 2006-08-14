@@ -6,6 +6,7 @@
 <!-- Aggregate Status beans -->
   <bean id="aggregateStatusService" class="org.opennms.web.svclayer.support.DefaultAggregateStatusService" >
   	<property name="nodeDao" ref="nodeDao" />
+    <property name="statusViewDao" ref="aggregateStatusViewDao" />
   </bean>
 
 
