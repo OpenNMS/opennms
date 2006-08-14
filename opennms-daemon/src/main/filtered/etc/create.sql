@@ -1056,7 +1056,7 @@ CREATE TABLE aggregate_status_definitions (
 	
 	CONSTRAINT asd_pkey PRIMARY KEY (id)
 );
-CREATE UNIQUE INDEX status_def_name_idx ON aggreate_status_definitions(name);
+CREATE UNIQUE INDEX status_def_name_idx ON aggregate_status_definitions(name);
 
 
 --########################################################################

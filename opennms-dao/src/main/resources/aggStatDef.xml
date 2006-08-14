@@ -14,16 +14,27 @@
 		select * from aggregate_status_definitions
 	</select>
 
-<!-- 	
-	<select id="countAll" resultMap="result">
-		select count(*) from aggregate_status_definitions
-	</select>
-	 -->
-	<select id="getByDefID" resultMap="result">
+	<select id="getAggStatDefByID" resultMap="result">
 		select * from aggregate_status_definitions where id=#value#
 	</select>
 
-	<select id="getByDefName" resultMap="result">
+	<select id="getAggStatDefByName" resultMap="result">
 		select * from aggregate_status_definitions where name=#value#
 	</select>
+	
+	<insert id="insertAggStatDef" parameterClass="aggStatDef">
+		<selectKey keyProperty="id" resultClass="int">
+			select nextval('opennmsNxtId')
+		</selectKey>
+		insert into aggregate_status_definitions (id, name) values (#id#, #name#)
+	</insert>
+	
+	<update id="updateAggStatDef" parameterClass="aggStatDef">
+		update aggregate_status_definitions set name=#name# where id=#id#
+	</update>
+	
+	<delete id="deleteAggStatDef" parameterClass="int">
+		delete from aggregate_status_definitions where id=#id#
+	</delete>
+	
 </sqlMap>
