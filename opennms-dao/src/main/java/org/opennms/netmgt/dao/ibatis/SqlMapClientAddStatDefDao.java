@@ -36,24 +36,22 @@ import java.util.List;
 
 import org.opennms.netmgt.dao.AggregateStatusDefinitionDao;
 import org.opennms.netmgt.model.AggregateStatusDefinition;
-import org.opennms.netmgt.model.AggregateStatusView;
 import org.springframework.orm.ibatis.support.SqlMapClientDaoSupport;
 
 public class SqlMapClientAddStatDefDao extends SqlMapClientDaoSupport implements
 		AggregateStatusDefinitionDao {
 
 	public void delete(AggregateStatusDefinition view) {
-		// TODO Auto-generated method stub
-
+		
 	}
 
 	public AggregateStatusDefinition find(String name) {
-		return (AggregateStatusDefinition)getSqlMapClientTemplate().queryForObject("getByName", name);
+		return (AggregateStatusDefinition)getSqlMapClientTemplate().queryForObject("getAggStatDefByName", name);
 
 	}
 
 	public AggregateStatusDefinition find(int id) {
-		return (AggregateStatusDefinition)getSqlMapClientTemplate().queryForObject("getByID", id);
+		return (AggregateStatusDefinition)getSqlMapClientTemplate().queryForObject("getAggStatDefByID", id);
 
 	}
 
@@ -62,8 +60,19 @@ public class SqlMapClientAddStatDefDao extends SqlMapClientDaoSupport implements
 	}
 
 	public void save(AggregateStatusDefinition view) {
-		// TODO Auto-generated method stub
+		if (view.getId() == 0) {
+			insert(view);
+		} else {
+			update(view);
+		}
+	}
 
+	public void insert(AggregateStatusDefinition view) {
+		
+	}
+
+	public void update(AggregateStatusDefinition view) {
+		
 	}
 
 }

@@ -45,7 +45,7 @@ public class AggregateStatusDefinition {
     
     private String m_aggrStatusLabel;
     private Collection<String> m_categories;
-    private Integer m_id;
+    private int m_id;
     private String m_name;
     
     public AggregateStatusDefinition() {

@@ -30,57 +30,53 @@
 //     http://www.opennms.com/
 //
 
-package org.opennms.netmgt.dao.ibatis;
+package org.opennms.netmgt.dao;
 
-import java.util.List;
+import org.opennms.netmgt.model.AggregateStatusDefinition;
+import org.springframework.test.AbstractDependencyInjectionSpringContextTests;
 
-import org.opennms.netmgt.dao.AggregateStatusViewDao;
-import org.opennms.netmgt.model.AggregateStatusView;
-import org.springframework.orm.ibatis.support.SqlMapClientDaoSupport;
+public class AggStatDefDaoTest extends
+		AbstractDependencyInjectionSpringContextTests {
 
-public class SqlMapClientAggStatViewDao extends SqlMapClientDaoSupport
-		implements AggregateStatusViewDao {
+	AggregateStatusDefinitionDao m_dao;
 
-//	@Override
-//	protected void checkDaoConfig() throws IllegalArgumentException {
-//		// TODO Auto-generated method stub
-//
-//	}
+	public AggregateStatusDefinitionDao getDao() {
+		return m_dao;
+	}
 
-//	public void delete(AggregateStatusView view) {
-//		
-//	}
-
-	public List getAll() {
-		return getSqlMapClientTemplate().queryForList("getAggStatViews", null);
+	public void setDao(AggregateStatusDefinitionDao dao) {
+		m_dao = dao;
 	}
 	
-	public void save(AggregateStatusView view) {
-		if (view.getId() == 0) {
-			insert(view);
-		} else {
-			update(view);
-		}
-
+	@Override
+	protected String[] getConfigLocations() {
+		return new String[] {
+                "applicationContext-ibatis.xml"
+        		};
 	}
 
-	public AggregateStatusView find(String name) {
-		return (AggregateStatusView)getSqlMapClientTemplate().queryForObject("getAggStatViewByName", name);
-	}
-
-	public AggregateStatusView find(int id) {
-		return (AggregateStatusView)getSqlMapClientTemplate().queryForObject("getAggStatViewByID", id);
+	public void xxtestDeleteInsertSave() {
+		String randomName = "junit test "+ Math.random();
+		AggregateStatusDefinition def = new AggregateStatusDefinition();
+		def.setName(randomName);
+		
+		m_dao.insert(def);
+		AggregateStatusDefinition retrievedDef = m_dao.find(randomName);
+		assertEquals(def.getName(), retrievedDef.getName());
+		
+		m_dao.delete(def);
+		retrievedDef = m_dao.find(randomName);
+		assertNull("Expected a null view because we should have just deleted it" +
+				" from the table", retrievedDef);
+		
+		m_dao.insert(def);
+		retrievedDef = m_dao.find(randomName);
+		int newId = retrievedDef.getId();
+		retrievedDef.setName("Modified " + randomName);
+		m_dao.save(retrievedDef);
+		retrievedDef = m_dao.find(newId);
+		assertEquals("Modified " + randomName, retrievedDef.getName());
+		
 	}
 	
-	public void insert(AggregateStatusView view) {
-		getSqlMapClientTemplate().insert("insertAggStatView", view);
-	}
-	
-	public void delete(int id) {
-		getSqlMapClientTemplate().delete("deleteAggStatView", new Integer(id));
-	}
-
-	public void update(AggregateStatusView view) {
-		getSqlMapClientTemplate().update("updateAggStatView", view);
-	}
 }
