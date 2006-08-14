@@ -38,7 +38,7 @@ import org.opennms.netmgt.dao.AggregateStatusDefinitionDao;
 import org.opennms.netmgt.model.AggregateStatusDefinition;
 import org.springframework.orm.ibatis.support.SqlMapClientDaoSupport;
 
-public class SqlMapClientAddStatDefDao extends SqlMapClientDaoSupport implements
+public class SqlMapClientAggStatDefDao extends SqlMapClientDaoSupport implements
 		AggregateStatusDefinitionDao {
 
 	public void delete(AggregateStatusDefinition view) {
