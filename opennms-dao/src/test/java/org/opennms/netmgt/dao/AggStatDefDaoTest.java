@@ -33,10 +33,10 @@
 package org.opennms.netmgt.dao;
 
 import org.opennms.netmgt.model.AggregateStatusDefinition;
-import org.springframework.test.AbstractDependencyInjectionSpringContextTests;
+import org.springframework.test.AbstractTransactionalDataSourceSpringContextTests;
 
 public class AggStatDefDaoTest extends
-		AbstractDependencyInjectionSpringContextTests {
+		AbstractTransactionalDataSourceSpringContextTests {
 
 	AggregateStatusDefinitionDao m_dao;
 
@@ -55,13 +55,14 @@ public class AggStatDefDaoTest extends
         		};
 	}
 
-	public void xxtestDeleteInsertSave() {
+	public void testDeleteInsertSave() {
 		String randomName = "junit test "+ Math.random();
 		AggregateStatusDefinition def = new AggregateStatusDefinition();
 		def.setName(randomName);
 		
 		m_dao.insert(def);
 		AggregateStatusDefinition retrievedDef = m_dao.find(randomName);
+		assertNotNull("Did not retrieve the definition with a name of " + randomName, retrievedDef);
 		assertEquals(def.getName(), retrievedDef.getName());
 		
 		m_dao.delete(def);
