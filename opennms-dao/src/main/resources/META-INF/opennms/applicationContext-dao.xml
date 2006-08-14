@@ -152,7 +152,10 @@
     <property name="dataSource" ref="dataSource" />
   </bean>
   
-  
+  <bean id="aggregateStatusViewDao" class="org.opennms.netmgt.dao.jdbc.AggregateStatusViewDaoJdbc" >
+    <!-- This class extends JdbcDaoSupport where this property needs to be set -->
+    <property name="dataSource" ref="dataSource" />
+  </bean>
   
 
 </beans>
