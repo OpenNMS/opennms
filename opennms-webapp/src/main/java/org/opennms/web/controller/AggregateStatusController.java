@@ -54,19 +54,23 @@ public class AggregateStatusController extends AbstractController {
 
     private static final int FIVE_MINUTES = 5*60;
     
-    private static AggregateStatusService m_aggrSvc;
+    private static AggregateStatusService m_service;
 
     public AggregateStatusController() {
         setSupportedMethods(new String[] {METHOD_GET});
         setCacheSeconds(FIVE_MINUTES);
     }
     
+    public void setService(AggregateStatusService svc) {
+        m_service = svc;
+    }
+    
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest req, HttpServletResponse resp) throws Exception {
-        ModelAndView mav = new ModelAndView("aggregateStatuses");
+        ModelAndView mav = new ModelAndView("aggregateStatus");
         String statusView = req.getParameter("statusView");
-        Collection<AggregateStatus> aggrStati = m_aggrSvc.createAggregateStatusView(statusView);
-        mav.addObject("statuses", aggrStati);
+        Collection<AggregateStatus> aggrStati = m_service.createAggregateStatusView(statusView);
+        mav.addObject("stati", aggrStati);
         return mav;
     }
 
