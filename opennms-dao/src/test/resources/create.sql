@@ -50,6 +50,13 @@ drop table vulnPlugins cascade;
 drop table serverMap cascade;
 drop table serviceMap cascade;
 drop table pathOutage cascade;
+drop table demandPolls cascade;
+drop table pollResults cascade;
+drop table reportLocator cascade;
+drop category_statusdef cascade;
+drop statusview_statusdef cascade;
+drop aggregate_status_definitions cascade;
+drop table aggregate_status_views cascasde;
 drop sequence catNxtId;
 drop sequence nodeNxtId;
 drop sequence serviceNxtId;
@@ -59,7 +66,27 @@ drop sequence outageNxtId;
 drop sequence notifyNxtId;
 drop sequence userNotifNxtId;
 drop sequence demandPollNxtId;
+drop sequence pollResultNxtId;
 drop sequence vulnNxtId;
+drop sequence reportNxtId;
+drop sequence opennmsNxtId;  --# should be used for all sequences, eventually
+
+--# Begin quartz persistence 
+
+drop table qrtz_job_listeners;
+drop table qrtz_trigger_listeners;
+drop table qrtz_fired_triggers;
+drop table qrtz_paused_trigger_grps;
+drop table qrtz_scheduler_state;
+drop table qrtz_locks;
+drop table qrtz_simple_triggers;
+drop table qrtz_cron_triggers;
+drop table qrtz_blob_triggers;
+drop table qrtz_triggers;
+drop table qrtz_job_details;
+drop table qrtz_calendars;
+
+--# End quartz persistence
 
 --########################################################################
 --# serverMap table - Contains a list of IP Addresses mapped to
@@ -559,8 +586,8 @@ create table outages (
 	serviceID		integer,
 	ifLostService		timestamp without time zone not null,
 	ifRegainedService	timestamp without time zone,
-    suppressTime    	timestamp without time zone,
-    suppressedBy		varchar,
+	suppressTime    	timestamp without time zone,
+	suppressedBy		varchar(256),
 
 	constraint pk_outageID primary key (outageID),
 	constraint fk_eventID1 foreign key (svcLostEventID) references events (eventID) ON DELETE CASCADE,
@@ -826,14 +853,20 @@ create table alarms (
 	suppressedTime		TIMESTAMP WITHOUT TIME ZONE,
 	alarmAckUser			VARCHAR(256),
 	alarmAckTime			TIMESTAMP WITHOUT TIME ZONE,
-	clearUei				VARCHAR(256)
+	clearUei				VARCHAR(256),
+	managedObjectInstance	VARCHAR(512),
+	managedObjectType		VARCHAR(512),
+	applicationDN			VARCHAR(512),
+	ossPrimaryKey			VARCHAR(512)
+	
 );
 
 CREATE INDEX alarm_uei_idx ON alarms(eventUei);
 CREATE INDEX alarm_nodeid_idx ON alarms(nodeID);
 CREATE UNIQUE INDEX alarm_reductionkey_idx ON alarms(reductionKey);
 CREATE INDEX alarm_reduction2_idx ON alarms(alarmID, eventUei, dpName, nodeID, serviceID, reductionKey);
-
+CREATE INDEX alarm_app_dn ON alarms(applicationDN);
+CREATE INDEX alarm_oss_primary_key ON alarms(ossPrimaryKey);
 
 --# This constraint not understood by installer
 --#        CONSTRAINT pk_usersNotified PRIMARY KEY (userID,notifyID) );
@@ -923,10 +956,13 @@ create table assets (
         pollerCategory   varchar(64),
         thresholdCategory   varchar(64),
         comment         varchar(1024),
+        managedObjectInstance varchar(512),
+        managedObjectType varchar(512),
 
 	constraint fk_nodeID5 foreign key (nodeID) references node ON DELETE CASCADE
 );
 
+create index assets_nodeid_idx on assets(nodeid);
 CREATE INDEX assets_an_idx ON assets(assetNumber);
 
 --########################################################################
@@ -969,6 +1005,102 @@ create table category_node (
 
 CREATE INDEX catid_idx on category_node(categoryId);
 CREATE INDEX catnode_idx on category_node(nodeId);
+
+--########################################################################
+--#
+--# aggregate_status_views table - parent table for defining a view of aggregate statuses
+--#
+--# This table contains the following columns:
+--#
+--#  id			 : The view id.
+--#  name		 : Unique name of this view.
+--#  tableName   : Name of the table containing the column for which a where clause will
+--#                be assigned to select nodes from the node table (typical implementation
+--#                is the assets table.
+--#  columnName  : Column to be used in the where clause for the selection of nodes for which
+--#                to represent the aggregated status based on categories listed in a status def.
+--#  columnValue : The value used in the where clause described above.
+--#
+--########################################################################
+
+CREATE TABLE aggregate_status_views (
+	id					INTEGER NOT NULL,
+	name				VARCHAR(64) NOT NULL,
+	tableName			VARCHAR(64),
+	columnName			VARCHAR(64),
+	columnValue			VARCHAR(128),
+	
+	CONSTRAINT asv_pkey PRIMARY KEY (id)
+);
+CREATE UNIQUE INDEX status_view_name_idx ON aggregate_status_views(name);
+
+
+--########################################################################
+--#
+--#  aggregate_status_definitions table - table for persisting the name of
+--#      a status definition and used as a parent table for relating the
+--#      categories to be used in the aggregated status.  Also joined with
+--#      the aggregate_status_views table for determining the which status
+--#      defs to be shown in a view.
+--#
+--#  This table contains the following columns:
+--#
+--#  id           : The status def id.
+--#  name         : The unique name give a status def.
+--#
+--########################################################################
+
+CREATE TABLE aggregate_status_definitions (
+	id					INTEGER NOT NULL,
+	name				VARCHAR(64) NOT NULL,
+	
+	CONSTRAINT asd_pkey PRIMARY KEY (id)
+);
+CREATE UNIQUE INDEX status_def_name_idx ON aggregate_status_definitions(name);
+
+
+--########################################################################
+--#
+--#  category_statusdef - table for defining many-to-many relations from a
+--#    category to a status def.  A category can be assigned to one or more
+--#    status defs and a status def can be assigned one or more categories.
+--#
+--#  This table contains the following columns:
+--#
+--#  categoryId  : The id of a category from the categories table.
+--#  statusDefId : The id of a status definition.
+--#
+--########################################################################
+
+CREATE TABLE category_statusdef (
+	categoryId			INTEGER NOT NULL,
+	statusDefId			INTEGER NOT NULL,
+	
+	CONSTRAINT categoryid_fkey FOREIGN KEY (categoryId) REFERENCES categories (categoryId) ON DELETE CASCADE,
+	CONSTRAINT statusdef_fkey FOREIGN KEY (statusDefId) REFERENCES aggregate_status_definitions (id) ON DELETE CASCADE
+);
+
+--########################################################################
+--#
+--#  statusview_statusdef - table for defining many-to-many relations from a
+--#    status def to a status view.  A status def can be assigned to one or
+--#    more status views and a status view can be assigned on or more status
+--#    defs.
+--#
+--#  This table contains the following columns:
+--#
+--#  statusViewId  : The id of a status view.
+--#  statusDefId   : The id of a status def.
+--#
+--########################################################################
+
+CREATE TABLE statusview_statusdef (
+	statusViewId		INTEGER NOT NULL,
+	statusDefId			INTEGER NOT NULL,
+	
+	CONSTRAINT statusviewid_fkey FOREIGN KEY (statusViewId) REFERENCES aggregate_status_views (id) ON DELETE CASCADE,
+	CONSTRAINT statusdefid_fkey FOREIGN KEY (statusDefId) REFERENCES aggregate_status_definitions (id) ON DELETE CASCADE
+);
 
 --########################################################################
 --# pathOutage Table - Contains the critical path IP address and service
@@ -1065,6 +1197,12 @@ create index pollresults_service on pollResults(nodeId, ipAddr, ifIndex, service
 --# DO NOT forget to add an "install" comment so that the installer
 --# knows to fix and renumber the sequences if need be
 --##################################################################
+
+--# Sequence for the nodeID column in the aggregate_status_views and the
+--# aggregate_status_definitions tables (eventually all tables, perhaps)
+--#          sequence, column, table
+--# install: opennmsNxtId id   aggregate_status_views
+create sequence opennmsNxtId minvalue 1;
 
 --# Sequence for the nodeID column in the node table
 --#          sequence, column, table
@@ -1590,3 +1728,191 @@ create index element_mapid_elementid on element(mapId,elementId);
 --#          sequence,   column, table
 --# install: mapNxtId mapid map
 create sequence mapNxtId minvalue 1;
+
+--########################################################################
+--#
+--# reportLocator table     -- This table contains a record of availability
+--#                            reports and their location on disk
+--#					
+--# This table provides the following information:
+--#
+--#  id                	: Unique integer identifier for the report
+--#  categoryName		: Name of the report category
+--#  runDate			: Date report sheduled to run
+--#  format				: format of the report (calenda etc).
+--#  type				: output type of the file (SVG/PDF/HTML)
+--#  location			: where on disk we put the report
+--#	 Available			: Have we run the report yet or not?
+--#
+--########################################################################
+
+create table reportLocator (
+    reportId	 		integer not null,
+    reportCategory		varchar(256) not null,
+	reportDate			timestamp without time zone not null,
+    reportFormat		varchar(256) not null,
+    reportType			varchar(256) not null,
+    reportLocation		varchar(256) not null,
+	reportAvailable		bool not null
+);
+
+--# Sequence for the reportId column in the reportLocator table
+--#          sequence,   column, table
+--# install: reportNxtId reportId reportLocator
+create sequence reportNxtId minvalue 1;
+
+--# Begin Quartz persistence tables
+
+CREATE TABLE qrtz_job_details
+  (
+    JOB_NAME  VARCHAR(80) NOT NULL,
+    JOB_GROUP VARCHAR(80) NOT NULL,
+    DESCRIPTION VARCHAR(120) NULL,
+    JOB_CLASS_NAME   VARCHAR(128) NOT NULL,
+    IS_DURABLE BOOL NOT NULL,
+    IS_VOLATILE BOOL NOT NULL,
+    IS_STATEFUL BOOL NOT NULL,
+    REQUESTS_RECOVERY BOOL NOT NULL,
+    JOB_DATA BYTEA NOT NULL,
+
+    constraint qrtz_job_details_pkey PRIMARY KEY (JOB_NAME,JOB_GROUP)
+);
+
+CREATE TABLE qrtz_job_listeners
+  (
+    JOB_NAME  VARCHAR(80) NOT NULL,
+    JOB_GROUP VARCHAR(80) NOT NULL,
+    JOB_LISTENER VARCHAR(80) NOT NULL,
+
+    constraint pk_qrtz_job_listeners PRIMARY KEY (JOB_NAME,JOB_GROUP,JOB_LISTENER),
+    constraint fk_qrtz_job_listeners FOREIGN KEY (JOB_NAME,JOB_GROUP)
+        REFERENCES QRTZ_JOB_DETAILS (JOB_NAME,JOB_GROUP)
+);
+
+
+CREATE TABLE qrtz_triggers
+  (
+    TRIGGER_NAME VARCHAR(80) NOT NULL,
+    TRIGGER_GROUP VARCHAR(80) NOT NULL,
+    JOB_NAME  VARCHAR(80) NOT NULL,
+    JOB_GROUP VARCHAR(80) NOT NULL,
+    IS_VOLATILE BOOL NOT NULL,
+    DESCRIPTION VARCHAR(120),
+    NEXT_FIRE_TIME BIGINT,
+    PREV_FIRE_TIME BIGINT,
+    TRIGGER_STATE VARCHAR(16) NOT NULL,
+    TRIGGER_TYPE VARCHAR(8) NOT NULL,
+    START_TIME BIGINT NOT NULL,
+    END_TIME BIGINT,
+    CALENDAR_NAME VARCHAR(80),
+    MISFIRE_INSTR SMALLINT,
+    JOB_DATA BYTEA,
+
+    constraint pk_qrtz_triggers PRIMARY KEY (TRIGGER_NAME,TRIGGER_GROUP),
+    constraint fk_qrtz_triggers FOREIGN KEY (JOB_NAME,JOB_GROUP)
+        REFERENCES QRTZ_JOB_DETAILS (JOB_NAME,JOB_GROUP)
+);
+
+CREATE TABLE qrtz_simple_triggers
+  (
+    TRIGGER_NAME VARCHAR(80) NOT NULL,
+    TRIGGER_GROUP VARCHAR(80) NOT NULL,
+    REPEAT_COUNT BIGINT NOT NULL,
+    REPEAT_INTERVAL BIGINT NOT NULL,
+    TIMES_TRIGGERED BIGINT NOT NULL,
+
+    constraint pk_qrtz_simple_triggers PRIMARY KEY (TRIGGER_NAME,TRIGGER_GROUP),
+    constraint fk_qrtz_simple_triggers FOREIGN KEY (TRIGGER_NAME,TRIGGER_GROUP)
+        REFERENCES QRTZ_TRIGGERS (TRIGGER_NAME,TRIGGER_GROUP)
+);
+
+
+CREATE TABLE qrtz_cron_triggers
+  (
+    TRIGGER_NAME VARCHAR(80) NOT NULL,
+    TRIGGER_GROUP VARCHAR(80) NOT NULL,
+    CRON_EXPRESSION VARCHAR(80) NOT NULL,
+    TIME_ZONE_ID VARCHAR(80),
+
+    constraint pk_qrtz_cron_triggers PRIMARY KEY (TRIGGER_NAME,TRIGGER_GROUP),
+    constraint fk_qrtz_cron_triggers FOREIGN KEY (TRIGGER_NAME,TRIGGER_GROUP)
+        REFERENCES QRTZ_TRIGGERS (TRIGGER_NAME,TRIGGER_GROUP)
+);
+
+
+CREATE TABLE qrtz_blob_triggers
+  (
+    TRIGGER_NAME VARCHAR(80) NOT NULL,
+    TRIGGER_GROUP VARCHAR(80) NOT NULL,
+    BLOB_DATA BYTEA,
+
+    constraint pk_qrtz_blob_triggers PRIMARY KEY (TRIGGER_NAME,TRIGGER_GROUP),
+    constraint fk_qrtz_blob_triggers FOREIGN KEY (TRIGGER_NAME,TRIGGER_GROUP)
+        REFERENCES QRTZ_TRIGGERS (TRIGGER_NAME,TRIGGER_GROUP)
+);
+
+CREATE TABLE qrtz_trigger_listeners
+  (
+    TRIGGER_NAME  VARCHAR(80) NOT NULL,
+    TRIGGER_GROUP VARCHAR(80) NOT NULL,
+    TRIGGER_LISTENER VARCHAR(80) NOT NULL,
+
+    constraint pk_qrtz_trigger_listeners PRIMARY KEY (TRIGGER_NAME,TRIGGER_GROUP,TRIGGER_LISTENER),
+    constraint fk_qrtz_trigger_listeners FOREIGN KEY (TRIGGER_NAME,TRIGGER_GROUP)
+        REFERENCES QRTZ_TRIGGERS (TRIGGER_NAME,TRIGGER_GROUP)
+);
+
+
+CREATE TABLE qrtz_calendars
+  (
+    CALENDAR_NAME  VARCHAR(80) NOT NULL,
+    CALENDAR BYTEA NOT NULL,
+    constraint pk_qrtz_calendars PRIMARY KEY (CALENDAR_NAME)
+);
+
+
+CREATE TABLE qrtz_paused_trigger_grps
+  (
+    TRIGGER_GROUP  VARCHAR(80) NOT NULL,
+    constraint pk_qrtz_paused_trigger_grps PRIMARY KEY (TRIGGER_GROUP)
+);
+
+CREATE TABLE qrtz_fired_triggers
+  (
+    ENTRY_ID VARCHAR(95) NOT NULL,
+    TRIGGER_NAME VARCHAR(80) NOT NULL,
+    TRIGGER_GROUP VARCHAR(80) NOT NULL,
+    IS_VOLATILE BOOL NOT NULL,
+    INSTANCE_NAME VARCHAR(80) NOT NULL,
+    FIRED_TIME BIGINT NOT NULL,
+    STATE VARCHAR(16) NOT NULL,
+    JOB_NAME VARCHAR(80),
+    JOB_GROUP VARCHAR(80),
+    IS_STATEFUL BOOL,
+    REQUESTS_RECOVERY BOOL,
+    constraint pk_qrtz_fired_triggers PRIMARY KEY (ENTRY_ID)
+);
+
+CREATE TABLE qrtz_scheduler_state
+  (
+    INSTANCE_NAME VARCHAR(80) NOT NULL,
+    LAST_CHECKIN_TIME BIGINT NOT NULL,
+    CHECKIN_INTERVAL BIGINT NOT NULL,
+    RECOVERER VARCHAR(80),
+    constraint pk_qrtz_scheduler_state PRIMARY KEY (INSTANCE_NAME)
+);
+
+CREATE TABLE qrtz_locks
+  (
+    LOCK_NAME  VARCHAR(40) NOT NULL,
+    constraint pk_qrtz_locks PRIMARY KEY (LOCK_NAME)
+);
+
+
+INSERT INTO qrtz_locks values('TRIGGER_ACCESS');
+INSERT INTO qrtz_locks values('JOB_ACCESS');
+INSERT INTO qrtz_locks values('CALENDAR_ACCESS');
+INSERT INTO qrtz_locks values('STATE_ACCESS');
+INSERT INTO qrtz_locks values('MISFIRE_ACCESS');
+
+--# End Quartz persistence tables
