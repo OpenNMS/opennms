@@ -134,7 +134,7 @@ public class AggregateStatusViewDaoJdbc extends JdbcDaoSupport implements Aggreg
         };
         
         return getJdbcTemplate().query("select * from "+AGGREGATE_STATUS_DEFINITIONS_TABLE+" asd " +
-                "join "+STATUS_VIEW_DEF_MAPPING_TABLE+"+ svsd on (svsd.statusDefId = asd.id) "  +
+                "join "+STATUS_VIEW_DEF_MAPPING_TABLE+" svsd on (svsd.statusDefId = asd.id) "  +
                 " where svsd.statusViewId = "+viewId, statusDefMapper);
     }
     
