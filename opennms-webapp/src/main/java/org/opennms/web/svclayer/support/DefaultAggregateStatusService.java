@@ -162,5 +162,9 @@ public class DefaultAggregateStatusService implements AggregateStatusService {
     public void setNodeDao(NodeDao nodeDao) {
         m_nodeDao = nodeDao;
     }
+    
+    public void setStatusViewDao(AggregateStatusViewDao dao) {
+        m_statusViewDao = dao;
+    }
 
 }
