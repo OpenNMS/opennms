@@ -63,6 +63,14 @@ public class DefaultAggregateServiceIntegrationTest extends AbstractTransactiona
                 "org/opennms/web/svclayer/applicationContext-svclayer.xml" };
     }
     
+    public void testCreateAggregateStatusUsingViewName() {
+        String viewName = "HAT102706";
+        Collection<AggregateStatus> aggrStati = m_aggregateService.createAggregateStatusView(viewName);
+        assertNotNull(aggrStati);
+        assertFalse(aggrStati.size() == 0);
+        
+    }
+    
     public void testCreateAggregateStatusUsingBuilding() {
         
         Collection<AggregateStatus> aggrStati;
