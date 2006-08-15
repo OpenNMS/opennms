@@ -63,7 +63,7 @@ public class AggregateStatusView {
 		result.append(m_name);
 		result.append(", tableName: ");
 		result.append(m_tableName);
-		result.append(", columndName: ");
+		result.append(", columnName: ");
 		result.append(m_columnName);
 		result.append(", columnValue: ");
 		result.append(m_columnValue);
