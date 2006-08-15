@@ -41,38 +41,38 @@ import org.springframework.orm.ibatis.support.SqlMapClientDaoSupport;
 public class SqlMapClientAggStatDefDao extends SqlMapClientDaoSupport implements
 		AggregateStatusDefinitionDao {
 
-	public void delete(AggregateStatusDefinition view) {
-		
+	public void delete(AggregateStatusDefinition def) {
+		getSqlMapClientTemplate().delete("AggStatDef.delete", new Integer(def.getId()));
 	}
 
 	public AggregateStatusDefinition find(String name) {
-		return (AggregateStatusDefinition)getSqlMapClientTemplate().queryForObject("getAggStatDefByName", name);
+		return (AggregateStatusDefinition)getSqlMapClientTemplate().queryForObject("AggStatDef.getByName", name);
 
 	}
 
 	public AggregateStatusDefinition find(int id) {
-		return (AggregateStatusDefinition)getSqlMapClientTemplate().queryForObject("getAggStatDefByID", id);
+		return (AggregateStatusDefinition)getSqlMapClientTemplate().queryForObject("AggStatDef.getByID", id);
 
 	}
 
 	public List getAll() {
-		return getSqlMapClientTemplate().queryForList("getAggStatDefs", null);
+		return getSqlMapClientTemplate().queryForList("AggStatDef.getAll", null);
 	}
 
-	public void save(AggregateStatusDefinition view) {
-		if (view.getId() == 0) {
-			insert(view);
+	public void save(AggregateStatusDefinition def) {
+		if (def.getId() == 0) {
+			insert(def);
 		} else {
-			update(view);
+			update(def);
 		}
 	}
 
-	public void insert(AggregateStatusDefinition view) {
-		
+	public void insert(AggregateStatusDefinition def) {
+		getSqlMapClientTemplate().insert("AggStatDef.insert", def);
 	}
 
-	public void update(AggregateStatusDefinition view) {
-		
+	public void update(AggregateStatusDefinition def) {
+		getSqlMapClientTemplate().update("AggStatDef.update", def);
 	}
 
 }
