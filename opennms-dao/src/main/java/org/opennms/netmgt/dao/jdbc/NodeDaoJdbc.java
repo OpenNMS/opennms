@@ -33,10 +33,13 @@ package org.opennms.netmgt.dao.jdbc;
 
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 import javax.sql.DataSource;
 
+import org.apache.log4j.Category;
+import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.dao.jdbc.node.FindAll;
 import org.opennms.netmgt.dao.jdbc.node.FindByAssetNumber;
@@ -208,12 +211,41 @@ public class NodeDaoJdbc extends AbstractDaoJdbc implements NodeDao {
 		return new FindByNodeLabel(getDataSource()).execute(label);
 	}
 
+    /**
+     * This method searches for nodes matching a column in the assets table. 
+     * Note: this implmentation requires that the column type be of type VARCHAR.
+     * 
+     * @param columnName is VARCHAR column in assets table used in where clause
+     * @param columnValue is the value used for matching <code>columnName</code>
+     * @return Collection of nodes.
+     */
     public Collection<OnmsNode> findAllByVarCharAssetColumn(String columnName, String columnValue) {
-        return new FindByVarCharAssetColumn(getDataSource(), columnName).execute(columnValue);
+        log().debug("findAllByVarCharAssetColumn: beginning find.");
+        List nodes = new FindByVarCharAssetColumn(getDataSource(), columnName).execute(columnValue);
+        log().debug("findAllByVarCharAssetColumn: find complete. Nodes found: "+nodes.size());
+        return nodes;
     }
 
+    /**
+     * This method searches for nodes matching a column in the assets table and also having been
+     * assigned to a category in the cateories table.  Note: this implmentation requires that
+     * the column type be of type VARCHAR.
+     * 
+     * @param columnName is VARCHAR column in assets table used in where clause
+     * @param columnValue is the value used for matching <code>columnName</code>
+     * @param categoryNames is a collection of names from categories
+     *  table assigned to the node via category_node table
+     * @return Collection of nodes.
+     */
     public Collection<OnmsNode> findAllByVarCharAssetColumnCategoryList(String columnName, String columnValue, Collection<String> categoryNames) {
-        return new FindByVarCharAssetColumnAndCategoryList(getDataSource(), columnName, categoryNames).execute(columnValue);
+        log().debug("findAllByVarCharAssetColumnCategoryList: beginning find.");
+        List nodes = new FindByVarCharAssetColumnAndCategoryList(getDataSource(), columnName, categoryNames).execute(columnValue);
+        log().debug("findAllByVarCharAssetColumnCateoryList: find complete. Nodes found: "+nodes.size());
+        return nodes;
+    }
+    
+    private Category log() {
+        return ThreadCategory.getInstance(getClass());
     }
 
 }
