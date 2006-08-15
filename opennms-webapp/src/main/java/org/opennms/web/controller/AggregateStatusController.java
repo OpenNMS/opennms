@@ -37,6 +37,7 @@ import java.util.Collection;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.opennms.netmgt.model.AggregateStatusView;
 import org.opennms.web.svclayer.AggregateStatus;
 import org.opennms.web.svclayer.AggregateStatusService;
 import org.springframework.web.servlet.ModelAndView;
@@ -69,7 +70,9 @@ public class AggregateStatusController extends AbstractController {
     protected ModelAndView handleRequestInternal(HttpServletRequest req, HttpServletResponse resp) throws Exception {
         ModelAndView mav = new ModelAndView("aggregateStatus");
         String statusView = req.getParameter("statusView");
-        Collection<AggregateStatus> aggrStati = m_service.createAggregateStatusView(statusView);
+        AggregateStatusView view = m_service.createAggregateStatusView(statusView);
+        Collection<AggregateStatus> aggrStati = m_service.createAggreateStatuses(view);
+        mav.addObject("view", view);
         mav.addObject("stati", aggrStati);
         return mav;
     }

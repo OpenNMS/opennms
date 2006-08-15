@@ -72,12 +72,12 @@ public class DefaultAggregateStatusService implements AggregateStatusService {
     private NodeDao m_nodeDao;
     private AggregateStatusViewDao m_statusViewDao;
 
-    public Collection<AggregateStatus> createAggregateStatusView(String statusViewName) {
+    public AggregateStatusView createAggregateStatusView(String statusViewName) {
         AggregateStatusView statusView = m_statusViewDao.find(statusViewName);
-        return createAggreateStatus(statusView);
+        return statusView;
     }
     
-    public Collection<AggregateStatus> createAggreateStatus(AggregateStatusView statusView) {
+    public Collection<AggregateStatus> createAggreateStatuses(AggregateStatusView statusView) {
         return createAggregateStatus(statusView.getTableName(), statusView.getColumnName(), statusView.getColumnValue(), statusView.getStatusDefinitions());
     }
 
