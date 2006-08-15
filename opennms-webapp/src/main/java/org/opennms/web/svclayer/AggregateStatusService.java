@@ -35,6 +35,7 @@ package org.opennms.web.svclayer;
 import java.util.Collection;
 
 import org.opennms.netmgt.model.AggregateStatusDefinition;
+import org.opennms.netmgt.model.AggregateStatusView;
 
 /**
  * Service layer API for the use cases that require the monitoed status of
@@ -58,6 +59,8 @@ public interface AggregateStatusService {
      */
     Collection<AggregateStatus> createAggregateStatusUsingAssetColumn(String assetColumn, String columnValue, Collection<AggregateStatusDefinition> categories);
     
-    Collection<AggregateStatus> createAggregateStatusView(String statusViewName);
+    AggregateStatusView createAggregateStatusView(String statusViewName);
+    
+    Collection<AggregateStatus> createAggreateStatuses(AggregateStatusView statusView);
 
 }

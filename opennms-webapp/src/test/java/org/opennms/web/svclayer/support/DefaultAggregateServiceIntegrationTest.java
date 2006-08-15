@@ -37,6 +37,7 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import org.opennms.netmgt.model.AggregateStatusDefinition;
+import org.opennms.netmgt.model.AggregateStatusView;
 import org.opennms.web.svclayer.AggregateStatus;
 import org.opennms.web.svclayer.AggregateStatusColor;
 import org.opennms.web.svclayer.AggregateStatusService;
@@ -65,7 +66,9 @@ public class DefaultAggregateServiceIntegrationTest extends AbstractTransactiona
     
     public void testCreateAggregateStatusUsingViewName() {
         String viewName = "HAT102706";
-        Collection<AggregateStatus> aggrStati = m_aggregateService.createAggregateStatusView(viewName);
+        AggregateStatusView view = m_aggregateService.createAggregateStatusView(viewName);
+        
+        Collection<AggregateStatus> aggrStati = m_aggregateService.createAggreateStatuses(view);
         assertNotNull(aggrStati);
         assertFalse(aggrStati.size() == 0);
         
@@ -109,7 +112,6 @@ public class DefaultAggregateServiceIntegrationTest extends AbstractTransactiona
         
         status = (AggregateStatus)((ArrayList)aggrStati).get(4);
         assertEquals(status.getColor(), AggregateStatusColor.ALL_NODES_UP);
-
 
     }
 
