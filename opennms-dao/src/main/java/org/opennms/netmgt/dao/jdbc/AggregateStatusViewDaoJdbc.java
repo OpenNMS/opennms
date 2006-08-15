@@ -37,6 +37,8 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.List;
 
+import org.apache.log4j.Category;
+import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.dao.AggregateStatusViewDao;
 import org.opennms.netmgt.model.AggregateStatusDefinition;
 import org.opennms.netmgt.model.AggregateStatusView;
@@ -76,16 +78,21 @@ public class AggregateStatusViewDaoJdbc extends JdbcDaoSupport implements Aggreg
     
     /**
      * Get the status view configuration by view name
-     * @param statusViewName
+     * @param viewName
      * @return <code>AggreateStatusView</code> Object
      */
-    public AggregateStatusView find(final String statusViewName) {
-        
-        return (AggregateStatusView)getJdbcTemplate().queryForObject("select * " +
-                "  from "+AGGREATE_STATUS_VIEWS_TABLE+
-                " where name = '"+statusViewName+"'", statusViewMapper);
+    public AggregateStatusView find(final String viewName) {
+        log().debug("find (viewName): begin finding aggregate status view.");
+        AggregateStatusView view = (AggregateStatusView)getJdbcTemplate().queryForObject("select * " +
+                        "  from "+AGGREATE_STATUS_VIEWS_TABLE+
+                        " where name = '"+viewName+"'", statusViewMapper);
+        log().debug("find: completed finding aggregate staus view.  View found: "+view);
+        return view;
     }
     
+    private Category log() {
+        return ThreadCategory.getInstance(getClass());
+    }
     
     /**
      * Get the status view configuration by view ID
@@ -93,10 +100,12 @@ public class AggregateStatusViewDaoJdbc extends JdbcDaoSupport implements Aggreg
      * @return <code>AggreateStatusView</code> Object
      */
     public AggregateStatusView find(final int viewId) {
-        
-        return (AggregateStatusView)getJdbcTemplate().queryForObject("select *" +
-                "  from "+AGGREATE_STATUS_VIEWS_TABLE+
-                " where id = "+Integer.toString(viewId), statusViewMapper);
+        log().debug("find (int): begin finding aggregate status view.");
+        AggregateStatusView view = (AggregateStatusView)getJdbcTemplate().queryForObject("select *" +
+                        "  from "+AGGREATE_STATUS_VIEWS_TABLE+
+                        " where id = "+Integer.toString(viewId), statusViewMapper);
+        log().debug("find: completed finding aggregate staus view.  View found: "+view);
+        return view;
     }
 
     
