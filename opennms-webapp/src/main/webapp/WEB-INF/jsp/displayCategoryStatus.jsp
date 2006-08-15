@@ -115,11 +115,11 @@ body {
                 	            <div class="nodes">
                     	            <c:forEach items="${category.nodes}" var="node">
                         	            <div class="node">
-                            	            <div class="nodeHeading"><c:out value="${node.llabel}" /></div>
+                            	            <div class="nodeHeading"><c:out value="${node.label}" /></div>
                                 	        <div class="interfaces">
                                     	        <c:forEach items="${node.ipInterfaces}" var="ipinterface">
                                         	        <div class="interface">
-                                            	        <div class="interfaceLael"><c:out value="${ipinterface.ipAddress}" /></div>                                                    <div class="services">
+                                            	        <div class="interfaceLabel"><c:out value="${ipinterface.ipAddress}" /></div>                                                    <div class="services">
                                                 	        <c:forEach items="${ipinterface.services}" var="service">
                                                     	        <div class="service"><c:out value="${service.name}" /></div>
                                                         	</c:forEach>
