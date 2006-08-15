@@ -2,7 +2,7 @@
 <!DOCTYPE sqlMap 
           PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" 
           "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
-<sqlMap>
+<sqlMap namespace="AggStatView">
 	<typeAlias alias ="aggStatView" type="org.opennms.netmgt.model.AggregateStatusView" />
 	
 	<resultMap class="aggStatView" id="result">
@@ -13,34 +13,34 @@
 		<result property="columnValue" column="columnValue"/>
 	</resultMap>
 	
-	<select id="getAggStatViews" resultMap="result">
+	<select id="getAll" resultMap="result">
 		select * from aggregate_status_views
 	</select>
 	
-	<select id="countAllAggStatViews" resultMap="result">
+	<select id="countAll" resultMap="result">
 		select count(*) from aggregate_status_views
 	</select>
 	
-	<select id="getAggStatViewByID" resultMap="result">
+	<select id="getByID" resultMap="result">
 		select * from aggregate_status_views where id=#value#
 	</select>
 
-	<select id="getAggStatViewByName" resultMap="result">
+	<select id="getByName" resultMap="result">
 		select * from aggregate_status_views where name=#value#
 	</select>
 
-	<insert id="insertAggStatView" parameterClass="aggStatView">
+	<insert id="insert" parameterClass="aggStatView">
 		<selectKey keyProperty="id" resultClass="int">
 			select nextval('opennmsNxtId')
 		</selectKey>
 		insert into aggregate_status_views (id, name, tableName, columnName, columnValue) values (#id#, #name#, #tableName#, #columnName#, #columnValue#)
 	</insert>
 	
-	<update id="updateAggStatView" parameterClass="aggStatView">
+	<update id="update" parameterClass="aggStatView">
 		update aggregate_status_views set name=#name#, tableName=#tableName#, columnName=#columnName#, columnValue=#columnValue# where id=#id#
 	</update>
 	
-	<delete id="deleteAggStatView" parameterClass="int">
+	<delete id="delete" parameterClass="int">
 		delete from aggregate_status_views where id=#id#
 	</delete>
 	

@@ -52,7 +52,7 @@ public class SqlMapClientAggStatViewDao extends SqlMapClientDaoSupport
 //	}
 
 	public List getAll() {
-		return getSqlMapClientTemplate().queryForList("getAggStatViews", null);
+		return getSqlMapClientTemplate().queryForList("AggStatView.getAll", null);
 	}
 	
 	public void save(AggregateStatusView view) {
@@ -65,22 +65,22 @@ public class SqlMapClientAggStatViewDao extends SqlMapClientDaoSupport
 	}
 
 	public AggregateStatusView find(String name) {
-		return (AggregateStatusView)getSqlMapClientTemplate().queryForObject("getAggStatViewByName", name);
+		return (AggregateStatusView)getSqlMapClientTemplate().queryForObject("AggStatView.getByName", name);
 	}
 
 	public AggregateStatusView find(int id) {
-		return (AggregateStatusView)getSqlMapClientTemplate().queryForObject("getAggStatViewByID", id);
+		return (AggregateStatusView)getSqlMapClientTemplate().queryForObject("AggStatView.getByID", id);
 	}
 	
 	public void insert(AggregateStatusView view) {
-		getSqlMapClientTemplate().insert("insertAggStatView", view);
+		getSqlMapClientTemplate().insert("AggStatView.insert", view);
 	}
 	
 	public void delete(int id) {
-		getSqlMapClientTemplate().delete("deleteAggStatView", new Integer(id));
+		getSqlMapClientTemplate().delete("AggStatView.delete", new Integer(id));
 	}
 
 	public void update(AggregateStatusView view) {
-		getSqlMapClientTemplate().update("updateAggStatView", view);
+		getSqlMapClientTemplate().update("AggStatView.update", view);
 	}
 }

@@ -47,15 +47,15 @@ public interface AggregateStatusDefinitionDao  {
     
 	public List getAll();
 	
-	public void save(AggregateStatusDefinition view);
+	public void save(AggregateStatusDefinition def);
 	
-	public void update(AggregateStatusDefinition view);
+	public void update(AggregateStatusDefinition def);
 	
-	public void delete(AggregateStatusDefinition view);
+	public void delete(AggregateStatusDefinition def);
 
     AggregateStatusDefinition find(String name);
     
-    public void insert(AggregateStatusDefinition view);
+    public void insert(AggregateStatusDefinition def);
 
 	AggregateStatusDefinition find(int newId);
 }

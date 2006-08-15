@@ -4,7 +4,8 @@
           "http://ibatis.apache.org/dtd/sql-map-config-2.dtd">
 
 <sqlMapConfig>
-	<sqlMap resource = "pathOutage.xml" />
-	<sqlMap resource = "aggStatView.xml" />
-	<sqlMap resource = "aggStatDef.xml" />
+	<settings useStatementNamespaces="true"/>
+	<sqlMap resource = "META-INF/opennms/pathOutage.xml" />
+	<sqlMap resource = "META-INF/opennms/aggStatView.xml" />
+	<sqlMap resource = "META-INF/opennms/aggStatDef.xml" />
 </sqlMapConfig>

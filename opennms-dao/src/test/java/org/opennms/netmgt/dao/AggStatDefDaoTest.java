@@ -51,7 +51,7 @@ public class AggStatDefDaoTest extends
 	@Override
 	protected String[] getConfigLocations() {
 		return new String[] {
-                "applicationContext-ibatis.xml"
+                "classpath:/META-INF/opennms/applicationContext-dao.xml"
         		};
 	}
 

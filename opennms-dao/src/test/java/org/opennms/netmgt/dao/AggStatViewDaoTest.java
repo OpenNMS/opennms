@@ -33,10 +33,10 @@
 package org.opennms.netmgt.dao;
 
 import org.opennms.netmgt.model.AggregateStatusView;
-import org.springframework.test.AbstractDependencyInjectionSpringContextTests;
+import org.springframework.test.AbstractTransactionalDataSourceSpringContextTests;
 
 public class AggStatViewDaoTest extends
-		AbstractDependencyInjectionSpringContextTests {
+		AbstractTransactionalDataSourceSpringContextTests {
 
 	AggregateStatusViewDao m_dao;
 
@@ -51,7 +51,7 @@ public class AggStatViewDaoTest extends
 	@Override
 	protected String[] getConfigLocations() {
 		return new String[] {
-                "applicationContext-ibatis.xml"
+                "classpath:/META-INF/opennms/applicationContext-dao.xml"
         		};
 	}
 
