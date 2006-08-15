@@ -34,7 +34,7 @@
 
              <!-- used to automatically identify the jar containing the main class. -->
              <!-- this is perhaps going to change -->
-             <mainClass>org.opennms.webstart.Main</mainClass>
+             <mainClass>org.opennms.netmgt.poller.remote.Main</mainClass>
            </jnlp>
 
            <!-- SIGNING in THIS way is 'fake' REAL signing will move to a profile since it is setup specific -->
@@ -74,6 +74,18 @@
 
         </configuration>
       </plugin>
+      <plugin>
+        <groupId>org.opennms.maven.plugins</groupId>
+        <artifactId>opennms-groovyc-plugin</artifactId>
+        <executions>
+          <execution>
+          <goals>
+            <goal>compile</goal>
+            <goal>test-compile</goal>
+          </goals>
+        </execution>
+        </executions>
+      </plugin>
     </plugins>
 
   </build>
@@ -100,9 +112,9 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.acegisecurity</groupId>
-      <artifactId>acegi-security</artifactId>
-      <version>1.0.1</version>
+      <groupId>groovy</groupId>
+      <artifactId>groovy-all</artifactId>
+      <version>1.0-jsr-05</version>    
     </dependency>
   </dependencies>
 </project>
