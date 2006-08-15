@@ -45,22 +45,22 @@ public class FindByVarCharAssetColumnAndCategoryList extends NodeMappingQuery {
         super(ds, "from node as n join assets a on (a.nodeid = n.nodeid) " +
                 "join category_node cn on (cn.nodeid = n.nodeid) " +
                 "join categories c on (c.categoryid = cn.categoryid) " +
-                "where c.categoryName in ("+convertCollectionToDelimitedString(categoryNames)+ ")" +
+                "where c.categoryName in ("+convertCollectionToDelimitedString(categoryNames, '\'', ',')+ ")" +
                 "and a."+columnName+" = ?");
         declareParameter(new SqlParameter(columnName, Types.VARCHAR));
         compile();
     }
     
-    private static String convertCollectionToDelimitedString(Collection<String> col) {
+    private static String convertCollectionToDelimitedString(Collection<String> col, char delimiter, char separator) {
         StringBuffer sb = new StringBuffer("");
         
         for (Iterator it = col.iterator(); it.hasNext();) {
             String colStr = (String) it.next();
-            sb.append('\'');
+            sb.append(delimiter);
             sb.append(colStr);
-            sb.append('\'');
+            sb.append(delimiter);
             if (it.hasNext()) {
-                sb.append(',');
+                sb.append(separator);
             }
         }
         return sb.toString();
