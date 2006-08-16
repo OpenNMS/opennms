@@ -318,7 +318,7 @@ opennms.home = ${opennms.home}
       <plugin>
         <artifactId>maven-pmd-plugin</artifactId>
          <configuration>
-            <targetjdk>1.4</targetjdk>
+            <targetjdk>1.5</targetjdk>
             <rulesets>
                <ruleset>/rulesets/basic.xml</ruleset>
                <ruleset>/rulesets/controversial.xml</ruleset>
