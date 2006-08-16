@@ -734,7 +734,7 @@ for(int i=0; i<outageTimes.length; i++) {
 
 <tr><td colspan=4><hr></td></tr>
 <tr><td colspan="4">
-<b>Applies to:<br/>
+<b>Applies to:</b><br/>
 <table border="1">
 <tr><td colspan="2">Notifications</td><td><input type="checkbox" <%=(enabledOutages.contains("notifications"))?"checked":""%> name="notifications"></td></tr>
 <%
