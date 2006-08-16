@@ -39,14 +39,9 @@
 
 <div id="prefooter"></div>
 
-<div id="footer">        
-  <jsp:include page="/includes/navbar.jsp" flush="false"/>
+<div id="footer">
+<p>OpenNMS <a href="help/about.jsp">Copyright</a> &copy; 2002-2006 <a href="http://www.opennms.com/">The OpenNMS Group, Inc.</a> OpenNMS&reg; is a registered trademark of <a href="http://www.opennms.com">The OpenNMS Group, Inc.</a></p>
 </div>
-
-<div id="copyright">
-OpenNMS <a href="help/about.jsp">Copyright</a> &copy; 2002-2006 <a href="http://www.opennms.com/">The OpenNMS Group, Inc.</a> OpenNMS&reg; is a registered trademark of <a href="http://www.opennms.com">The OpenNMS Group, Inc.</a>
-</div>
-
 </c:otherwise>
 </c:choose>
 

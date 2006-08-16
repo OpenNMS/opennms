@@ -67,14 +67,9 @@
     OpenNMS Web Console
   </title>
   <base href="<%=org.opennms.web.Util.calculateUrlBase( request )%>" />
-  <link rel="stylesheet" type="text/css" href="css/styles.css"/>
+  <link rel="stylesheet" type="text/css" href="css/styles.css" media="screen" />
   <script type="text/javascript" src="js/global.js"></script>
 </head>
-
-<!--[if lt IE 7.]>
-<script defer type="text/javascript" src="js/pngfix.js"></script>
-<![endif]-->
-
 <body>
 
 <c:choose>
@@ -85,50 +80,26 @@
 <c:otherwise>
 
 <!-- Header -->
-
-<%--
-
-<!-- Start of new box stuff -->
-<div class="rbroundbox">
- <div class="rbtop">
-  <div></div>
- </div>
-
- <div class="rbcontent">
-  <!-- <p> -->
---%>
-
 <div id="header">
-
 
   <div id="headertop">
    <div id="headerlogo">
-    <a href="index.jsp"><img src="images/logo.png" alt="OpenNMS Web Console Home"/></a>
+    <h1><a href="index.jsp"><img src="images/logo.png" alt="OpenNMS Web Console Home"/></a></h1>
    </div><!-- /headerlogo -->
   
-   <div id="headertitle">
-    <c:out value="${param.title}"/>
-   </div><!-- /headertitle -->
-  
    <div id="headerinfo">
-    <table style="height: 100%; padding: 4px;">
-     <tr>
-      <td valign="center" align="right">
+		<h2><c:out value="${param.title}"/></h2>
+		<p align="right">User:
         <c:if test="${!empty pageContext.request.remoteUser}">
-          [<c:out value="${pageContext.request.remoteUser}"/>]<br/>
-          Notices <c:out value="${noticeStatus}" escapeXml="false"/><br/>
+          <strong><c:out value="${pageContext.request.remoteUser}"/></strong> (Notices <c:out value="${noticeStatus}" escapeXml="false"/>)
         </c:if>
-          <span id="headerdate">
-            <c:out value="${date}"/><br/>
-            <c:out value="${time}"/>
-          </span><!-- /headerdate -->
-        <c:if test="${!empty pageContext.request.remoteUser}">
-	  <br/>
-          <span style="font-size: 8px;"><a href="j_acegi_logout">Logout</a></span>
+		 <c:if test="${!empty pageContext.request.remoteUser}">
+			- <a href="j_acegi_logout">Log out</a>
         </c:if>
-      </td>
-     </tr>
-    </table>
+			<br />
+        <c:out value="${date}"/> &nbsp; <c:out value="${time}"/>
+       
+		</p>
    </div><!-- /headerinfo -->
   
    <div class="spacer"><!-- --></div>
@@ -140,12 +111,7 @@
 
      <div id="headernavbar">
           <div id="headernavbarleft">
-            <a href="index.jsp">Home</a> 
-	    <c:forEach var="breadcrumb" items="${paramValues.breadcrumb}">
-	      <c:if test="${breadcrumb != ''}">
-                &gt; <c:out value="${breadcrumb}" escapeXml="false"/>
-	      </c:if>
-	    </c:forEach>
+
 	  </div>
 
           <div id="headernavbarright">
@@ -157,24 +123,16 @@
   <div class="spacer"><!-- --></div>
 
 </div>
-
-
-<%--
-  <!-- End of new header -->
-  <!-- </p> -->
- </div><!-- /rbcontent -->
-
- <div class="rbbot">
-  <div></div>
- </div>
-</div><!-- /rbroundbox -->
-
---%>
-
-
 </c:otherwise>
 </c:choose>
 
 <!-- Body -->
 <div id="content">
-
+<c:if test="${param.nonavbar != 'true'}">	
+   <h2><a href="index.jsp">Home</a>
+   <c:forEach var="breadcrumb" items="${paramValues.breadcrumb}">
+     <c:if test="${breadcrumb != ''}">
+           / <c:out value="${breadcrumb}" escapeXml="false"/>
+     </c:if>
+   </c:forEach></h2>
+</c:if>
