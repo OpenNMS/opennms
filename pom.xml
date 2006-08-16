@@ -840,6 +840,21 @@ opennms.home = ${opennms.home}
         <version>1.6.1</version>
       </dependency>
       <dependency>
+        <groupId>com.ibatis</groupId>
+        <artifactId>ibatis2-common</artifactId>
+        <version>2.1.6.589</version>
+      </dependency>
+      <dependency>
+        <groupId>com.ibatis</groupId>
+        <artifactId>ibatis2-dao</artifactId>
+        <version>2.1.6.589</version>
+      </dependency>
+      <dependency>
+        <groupId>com.ibatis</groupId>
+        <artifactId>ibatis2-sqlmap</artifactId>
+        <version>2.1.6.589</version>
+      </dependency>
+      <dependency>
         <groupId>jakarta-regexp</groupId>
         <artifactId>jakarta-regexp</artifactId>
         <version>1.4</version>
@@ -963,21 +978,6 @@ opennms.home = ${opennms.home}
           </exclusion>
         </exclusions>
 -->
-      </dependency>
-      <dependency>
-        <groupId>com.ibatis</groupId>
-        <artifactId>ibatis2-common</artifactId>
-        <version>2.1.6.589</version>
-      </dependency>
-      <dependency>
-        <groupId>com.ibatis</groupId>
-        <artifactId>ibatis2-dao</artifactId>
-        <version>2.1.6.589</version>
-      </dependency>
-      <dependency>
-        <groupId>com.ibatis</groupId>
-        <artifactId>ibatis2-sqlmap</artifactId>
-        <version>2.1.6.589</version>
       </dependency>
       <dependency>
         <groupId>org.samba.jcifs</groupId>
