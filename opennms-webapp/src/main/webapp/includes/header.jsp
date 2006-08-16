@@ -89,14 +89,12 @@
   
    <div id="headerinfo">
 		<h2><c:out value="${param.title}"/></h2>
-		<p align="right">User:
+		<p align="right">
         <c:if test="${!empty pageContext.request.remoteUser}">
-          <strong><c:out value="${pageContext.request.remoteUser}"/></strong> (Notices <c:out value="${noticeStatus}" escapeXml="false"/>)
+          User: <strong><c:out value="${pageContext.request.remoteUser}"/></strong> (Notices <c:out value="${noticeStatus}" escapeXml="false"/>)
+          - <a href="j_acegi_logout">Log out</a>
+		  <br />
         </c:if>
-		 <c:if test="${!empty pageContext.request.remoteUser}">
-			- <a href="j_acegi_logout">Log out</a>
-        </c:if>
-			<br />
         <c:out value="${date}"/> &nbsp; <c:out value="${time}"/>
        
 		</p>
