@@ -52,30 +52,21 @@
 
   <div style="width: 40%; float: left;">
       <h3>Event Queries</h3>
-      
+      <div class="boxWrapper">
       <jsp:include page="/event/querypanel.jsp" flush="false" />
-
-      <p><a href="event/list" title="View all outstanding events">View all events</a></p>
-      <p><a href="event/advsearch.jsp" title="More advanced searching and sorting options">Advanced Search</a></p>
-
-      <p>      
-        <table width="50%" border="0" cellpadding="2" cellspacing="0" >
-          <tr>
-            <td colspan="2">Get&nbsp;details&nbsp;for&nbsp;Event&nbsp;ID:</td>
-          </tr>
-          <tr>
+      <p><a href="event/list" title="View all outstanding events">View all events</a>, <a href="event/advsearch.jsp" title="More advanced searching and sorting options">Advanced Search</a></p>
+      <p>Get details for Event ID:
             <form action="event/detail.jsp" method="GET">          
-              <td><input type="TEXT" NAME="id" /></td>
-              <td><input type="submit" value="Search"/></td>                
+              <input type="TEXT" NAME="id" />
+              <input type="submit" value="Search"/>                
             </form>
-          </tr>                    
-        </table>
       </p>
+		</div>
   </div>
       
-  <div style="width: 60%; float: left;">
+  <div style="width: 55%; float: right; margin-left:15px;">
       <h3>Outstanding and acknowledged events</h3>
-
+		<div class="boxWrapper">
       <p>Events can be <em>acknowledged</em>, or removed from the view of other users, by
         selecting the event in the <em>Ack</em> check box and clicking the <em>Acknowledge
         Selected Events</em> at the bottom of the page.  Acknowledging an event gives
@@ -93,6 +84,7 @@
         description, type the identifier into the <em>Get details for Event ID</em> box and
         hit <b>[Enter]</b>.  You will then go to the appropriate details page.
       </p>
+		</div>
   </div>
-
+	<div style="clear:both;"></div>
 <jsp:include page="/includes/footer.jsp" flush="false"/>
