@@ -20,14 +20,14 @@ import org.opennms.netmgt.utils.IPSorter;
 
 public class CollectdPackage {
 	private Package m_pkg;
-	private List m_ipList;
-	private List m_includeURLs;
+	private List<String> m_ipList;
+	private List<IncludeURL> m_includeURLs;
 	
 	
 	public CollectdPackage(Package pkg, String localServer, boolean verifyServer) {
 		m_pkg = pkg;
 		
-		m_includeURLs = new LinkedList();
+		m_includeURLs = new LinkedList<IncludeURL>();
 		
 		createIpList(localServer, verifyServer);
 		
@@ -129,11 +129,11 @@ public class CollectdPackage {
 		return has_range_exclude;
 	}
 
-	public void putIpList(List ipList) {
+	public void putIpList(List<String> ipList) {
 		m_ipList = ipList;
 	}
 
-	public List getIpList() {
+	public List<String> getIpList() {
 		return m_ipList;
 	}
 
@@ -141,7 +141,7 @@ public class CollectdPackage {
 		boolean filterPassed = false;
 	
 		// get list of IPs in this package
-		List ipList = getIpList();
+		List<String> ipList = getIpList();
 		if (ipList != null && ipList.size() > 0) {
 			filterPassed = ipList.contains(iface);
 		} else {
@@ -159,7 +159,7 @@ public class CollectdPackage {
 		return ThreadCategory.getInstance(getClass());
 	}
 
-	public List getIncludeURLs() {
+	public List<IncludeURL> getIncludeURLs() {
 		return m_includeURLs;
 	}
 
@@ -243,7 +243,7 @@ public class CollectdPackage {
 			log.debug("createPackageIpMap: package is " + pkg.getName()
 					+ ". filer rules are  " + filterRules);
 		try {
-			List ipList = Filter.getMatchingIps(filterRules);
+			List<String> ipList = Filter.getMatchingIps(filterRules);
 			if (ipList.size() > 0) {
 				putIpList(ipList);
 			}

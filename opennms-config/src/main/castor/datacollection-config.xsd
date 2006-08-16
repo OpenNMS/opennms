@@ -49,6 +49,12 @@
           </annotation>
         </element>
 
+        <element maxOccurs="unbounded" minOccurs="0" ref="dc:resourceType">
+          <annotation>
+            <documentation>Custom resource types</documentation>
+          </annotation>
+        </element>
+
         <element maxOccurs="1" minOccurs="1" ref="dc:groups">
           <annotation>
             <documentation>MIB object groups</documentation>
@@ -119,6 +125,79 @@
           <documentation>step size for the RRD</documentation>
         </annotation>
       </attribute>
+    </complexType>
+  </element>
+
+  <element name="resourceType">
+    <annotation>
+      <documentation>a custom resource type</documentation>
+    </annotation>
+
+
+    <complexType>
+      <sequence>
+        <element maxOccurs="1" minOccurs="1" name="persistenceSelectorStrategy">
+          <annotation>
+            <documentation>Selects a PersistenceSelectorStrategy that decides which data is persisted and which is not.</documentation>
+          </annotation>
+          <complexType>
+            <sequence>
+              <element maxOccurs="unbounded" minOccurs="0" ref="dc:parameter">
+                <annotation>
+                  <documentation>list of parameters to pass to the strategy
+                  for strategy-specific configuration information</documentation>
+                </annotation>
+              </element>
+            </sequence>
+
+            <attribute name="class" type="string" use="required">
+	          <annotation>
+	            <documentation>Java class name of the class that implements the PersistenceSelectorStrategy.</documentation>
+	          </annotation>
+	        </attribute>
+	      </complexType>
+        </element>
+
+        <element maxOccurs="1" minOccurs="1" name="storageStrategy">
+          <annotation>
+            <documentation>Selects a StorageStrategy that decides where data is stored.</documentation>
+          </annotation>
+          <complexType>
+            <sequence>
+              <element maxOccurs="unbounded" minOccurs="0" ref="dc:parameter">
+                <annotation>
+                  <documentation>list of parameters to pass to the strategy
+                  for strategy-specific configuration information</documentation>
+                </annotation>
+              </element>
+            </sequence>
+          
+            <attribute name="class" type="string" use="required">
+	          <annotation>
+	            <documentation>Java class name of the class that implements the StorageStrategy.</documentation>
+	          </annotation>
+	        </attribute>
+	      </complexType>
+        </element>
+      </sequence>
+
+      <attribute name="name" type="string" use="required">
+        <annotation>
+          <documentation>resource type name</documentation>
+        </annotation>
+      </attribute>
+    </complexType>
+  </element>
+  
+  <element name="parameter">
+    <annotation>
+      <documentation>Parameters to be used for configuration this strategy.</documentation>
+    </annotation>
+
+    <complexType>
+      <attribute name="key" type="string" use="required"/>
+
+      <attribute name="value" type="string" use="required"/>
     </complexType>
   </element>
 

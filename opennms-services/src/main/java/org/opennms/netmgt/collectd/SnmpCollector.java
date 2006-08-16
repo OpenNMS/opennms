@@ -12,7 +12,8 @@
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
 // Modifications:
-// 
+//
+// 2006 Aug 15: Make error messages more descriptive - dj@opennms.org
 // 2005 Jan 03: Added support for lame SNMP hosts
 // 2003 Oct 20: Added minval and maxval code for mibObj RRDs
 // 2003 Jan 31: Cleaned up some unused imports.
@@ -267,17 +268,14 @@ public class SnmpCollector implements ServiceCollector {
     }
 
     private void logInitialRrdPath() {
-        if (log().isDebugEnabled()) {
-			log().debug(
-					"initialize: SNMP RRD file repository path: " + m_rrdPath);
-		}
+    	log().debug("logInitialRrdPath: SNMP RRD file repository path: " + m_rrdPath);
     }
 
 	private void initializeRrdInterface() {
 		try {
 			RrdUtils.initialize();
 		} catch (RrdException e) {
-			log().error("initialize: Unable to initialize RrdUtils", e);
+			log().error("initializeRrdInterface: Unable to initialize RrdUtils", e);
 			throw new RuntimeException("Unable to initialize RrdUtils", e);
 		}
 	}
@@ -286,22 +284,22 @@ public class SnmpCollector implements ServiceCollector {
 		try {
 			DataSourceFactory.init();
 		} catch (IOException e) {
-			log().fatal("initialize: IOException getting database connection", e);
+			log().fatal("initDatabaseConnectionFactory: IOException getting database connection", e);
 			throw new UndeclaredThrowableException(e);
 		} catch (MarshalException e) {
-			log().fatal("initialize: Marshall Exception getting database connection", e);
+			log().fatal("initDatabaseConnectionFactory: Marshall Exception getting database connection", e);
 			throw new UndeclaredThrowableException(e);
 		} catch (ValidationException e) {
-			log().fatal("initialize: Validation Exception getting database connection", e);
+			log().fatal("initDatabaseConnectionFactory: Validation Exception getting database connection", e);
 			throw new UndeclaredThrowableException(e);
 		} catch (SQLException e) {
-			log().fatal("initialize: Failed getting connection to the database.", e);
+			log().fatal("initDatabaseConnectionFactory: Failed getting connection to the database.", e);
 			throw new UndeclaredThrowableException(e);
 		} catch (PropertyVetoException e) {
-			log().fatal("initialize: Failed getting connection to the database.", e);
+			log().fatal("initDatabaseConnectionFactory: Failed getting connection to the database.", e);
 			throw new UndeclaredThrowableException(e);
 		} catch (ClassNotFoundException e) {
-			log().fatal("initialize: Failed loading database driver.", e);
+			log().fatal("initDatabaseConnectionFactory: Failed loading database driver.", e);
 			throw new UndeclaredThrowableException(e);
 		}
 	}
@@ -310,13 +308,13 @@ public class SnmpCollector implements ServiceCollector {
 		try {
 			DataCollectionConfigFactory.init();
 		} catch (MarshalException e) {
-			log().fatal("initialize: Failed to load data collection configuration", e);
+			log().fatal("initDataCollectionConfig: Failed to load data collection configuration", e);
 			throw new UndeclaredThrowableException(e);
 		} catch (ValidationException e) {
-			log().fatal("initialize: Failed to load data collection configuration", e);
+			log().fatal("initDataCollectionConfig: Failed to load data collection configuration", e);
 			throw new UndeclaredThrowableException(e);
 		} catch (IOException e) {
-			log().fatal("initialize: Failed to load data collection configuration", e);
+			log().fatal("initDataCollectionConfig: Failed to load data collection configuration", e);
 			throw new UndeclaredThrowableException(e);
 		}
 	}
@@ -325,13 +323,13 @@ public class SnmpCollector implements ServiceCollector {
 		try {
 			SnmpPeerFactory.init();
 		} catch (MarshalException e) {
-			log().fatal("initialize: Failed to load SNMP configuration", e);
+			log().fatal("initSnmpPeerFactory: Failed to load SNMP configuration", e);
 			throw new UndeclaredThrowableException(e);
 		} catch (ValidationException e) {
-			log().fatal("initialize: Failed to load SNMP configuration", e);
+			log().fatal("initSnmpPeerFactory: Failed to load SNMP configuration", e);
 			throw new UndeclaredThrowableException(e);
 		} catch (IOException e) {
-			log().fatal("initialize: Failed to load SNMP configuration", e);
+			log().fatal("initSnmpPeerFactory: Failed to load SNMP configuration", e);
 			throw new UndeclaredThrowableException(e);
 		}
 	}
@@ -389,7 +387,7 @@ public class SnmpCollector implements ServiceCollector {
 
 	        OnmsSnmpCollection snmpCollection = new OnmsSnmpCollection(params);
 
-
+	        
 	        CollectionSet collectionSet = snmpCollection.createCollectionSet(agent);
             if (!collectionSet.hasDataToCollect())
                 logNoDataToCollect(agent);

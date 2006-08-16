@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2006 Aug 15: Throw more specific exceptions in the static initializer - dj@opennms.org
 // 2006 Apr 25: Added setNodeMappingTranslation()
 // 2003 Aug 01: Created a proper Join for rules. Bug #752
 // 2003 Jan 31: Cleaned up some unused imports.
@@ -150,11 +151,11 @@ public class SQLTranslation extends DepthFirstAdapter {
         try {
             DatabaseSchemaConfigFactory.init();
         } catch (MarshalException ex) {
-            throw new UndeclaredThrowableException(ex);
+        	throw new UndeclaredThrowableException(ex, "Failed to initialize DatabaseSchemaConfigFactory: " + ex.getMessage());
         } catch (ValidationException ex) {
-            throw new UndeclaredThrowableException(ex);
+        	throw new UndeclaredThrowableException(ex, "Failed to initialize DatabaseSchemaConfigFactory: " + ex.getMessage());
         } catch (IOException ex) {
-            throw new UndeclaredThrowableException(ex);
+        	throw new UndeclaredThrowableException(ex, "Failed to initialize DatabaseSchemaConfigFactory: " + ex.getMessage());
         }
     }
 

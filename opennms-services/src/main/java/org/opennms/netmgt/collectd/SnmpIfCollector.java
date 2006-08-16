@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2006 Aug 15: Add toString() method. - dj@opennms.org
 // 2003 Jan 31: Cleaned up some unused imports.
 //
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -82,6 +83,27 @@ public class SnmpIfCollector extends AggregateTracker {
     private List m_objList;
 
     private CollectionSet m_collectionSet;
+    
+    public String toString() {
+    	StringBuffer buffer = new StringBuffer();
+    	
+    	buffer.append(getClass().getName());
+    	buffer.append("@");
+    	buffer.append(Integer.toHexString(hashCode()));
+    	
+    	buffer.append(": Primary Interface: " + m_primaryIf);
+    	buffer.append(", object list: " + m_objList);
+    	buffer.append(", CollectionSet: ");
+    	if (m_collectionSet == null) {
+    		buffer.append("(null)");
+    	} else {
+    		buffer.append(m_collectionSet.getClass().getName());
+    		buffer.append("@");
+        	buffer.append(Integer.toHexString(m_collectionSet.hashCode()));
+    	}
+    	
+    	return buffer.toString();
+    }
 
 	/**
      * The class constructor is used to initialize the collector and send out

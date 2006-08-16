@@ -8,6 +8,9 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+// 2006 Aug 15: Formatting, use generics for collections. 
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -35,7 +38,6 @@ package org.opennms.netmgt.collectd;
 import java.io.File;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 import org.apache.log4j.Category;
@@ -47,7 +49,7 @@ public abstract class CollectionResource {
     
     private ResourceType m_resourceType;
 
-    private Map m_groups = new HashMap();
+    private Map<AttributeGroupType, AttributeGroup> m_groups = new HashMap<AttributeGroupType, AttributeGroup>();
 
     public CollectionResource(ResourceType def) {
         m_resourceType = def;
@@ -59,7 +61,7 @@ public abstract class CollectionResource {
 
     public abstract CollectionAgent getCollectionAgent();
 
-    public abstract Collection getAttributeTypes();
+    public abstract Collection<AttributeType> getAttributeTypes();
     
     public abstract boolean shouldPersist(ServiceParameters params);
 
@@ -71,7 +73,9 @@ public abstract class CollectionResource {
         return ThreadCategory.getInstance(getClass());
     }
 
-    public boolean rescanNeeded() { return false; }
+    public boolean rescanNeeded() {
+    	return false;
+    }
     
     public void setAttributeValue(AttributeType type, SnmpValue val) {
         Attribute attr = new Attribute(this, type, val);
@@ -85,7 +89,7 @@ public abstract class CollectionResource {
     }
 
     private AttributeGroup getGroup(AttributeGroupType groupType) {
-        AttributeGroup group = (AttributeGroup)m_groups.get(groupType);
+        AttributeGroup group = m_groups.get(groupType);
         if (group == null) {
             group = new AttributeGroup(this, groupType);
             m_groups.put(groupType, group);
@@ -96,15 +100,14 @@ public abstract class CollectionResource {
     public void visit(CollectionSetVisitor visitor) {
         visitor.visitResource(this);
         
-        for (Iterator it = getGroups().iterator(); it.hasNext();) {
-            AttributeGroup group = (AttributeGroup) it.next();
+        for (AttributeGroup group : getGroups()) {
             group.visit(visitor);
         }
         
         visitor.completeResource(this);
     }
 
-    protected Collection getGroups() {
+    protected Collection<AttributeGroup> getGroups() {
         return m_groups.values();
     }
 

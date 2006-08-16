@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2006 Aug 15: Be explicit about method visibility. - dj@opennms.org
 // 2003 Jan 31: Cleaned up some unused imports.
 //
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -111,7 +112,7 @@ final class CollectableService implements ReadyRunnable {
      *            Service name
      * 
      */
-    CollectableService(OnmsIpInterface iface, CollectionSpecification spec, Scheduler scheduler, SchedulingCompletedFlag schedulingCompletedFlag) {
+    protected CollectableService(OnmsIpInterface iface, CollectionSpecification spec, Scheduler scheduler, SchedulingCompletedFlag schedulingCompletedFlag) {
         m_agent = new CollectionAgent(iface);
         m_spec = spec;
         m_scheduler = scheduler;

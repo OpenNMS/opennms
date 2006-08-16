@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2006 Aug 15: Remove unused imports, put initialize in a try/finally block. - dj@opennms.org
 // 2004 Dec 21: Changed determination of primary SNMP interface
 // 2003 Nov 11: Merged changes from Rackspace project
 // 2003 Jan 31: Cleaned up some unused imports.
@@ -47,8 +48,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringWriter;
-import java.net.InetAddress;
-import java.util.List;
 
 import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
@@ -58,7 +57,6 @@ import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.ConfigFileConstants;
 import org.opennms.netmgt.config.collectd.CollectdConfiguration;
-import org.opennms.netmgt.config.collectd.Package;
 
 /**
  * @author <a href="mailto:jamesz@opennms.com">James Zuo</a>
@@ -137,9 +135,11 @@ public class CollectdConfigFactory {
 			MarshalException, ValidationException {
 		InputStreamReader rdr = new InputStreamReader(new FileInputStream(configFile));
 		
-		initialize(rdr, localServer, verifyServer);
-		
-		rdr.close();
+		try {
+			initialize(rdr, localServer, verifyServer);
+		} finally {
+			rdr.close();
+		}
 	}
 
 	/**

@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2006 Aug 15: Remove unused imports, call init() on config factories, not reload(), use generics for some collections, clean up log messages. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -35,13 +39,9 @@ package org.opennms.netmgt.collectd;
 import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
 
 import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
@@ -50,8 +50,6 @@ import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.CollectdConfig;
 import org.opennms.netmgt.config.CollectdConfigFactory;
 import org.opennms.netmgt.config.CollectdPackage;
-import org.opennms.netmgt.config.collectd.CollectdConfiguration;
-import org.opennms.netmgt.config.collectd.Package;
 import org.opennms.netmgt.dao.CollectorConfigDao;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
@@ -89,15 +87,16 @@ public class CollectorConfigDaoImpl implements CollectorConfigDao {
 	private void loadConfigFactory() {
 	    // Load collectd configuration file
 	    try {
-	        CollectdConfigFactory.reload();
+	    	// XXX was reload(); this doesn't work well from unit tests, however
+	        CollectdConfigFactory.init();
 	    } catch (MarshalException ex) {
-	        log().fatal("init: Failed to load collectd configuration", ex);
+	        log().fatal("loadConfigFactory: Failed to load collectd configuration", ex);
 	        throw new UndeclaredThrowableException(ex);
 	    } catch (ValidationException ex) {
-	        log().fatal("init: Failed to load collectd configuration", ex);
+	        log().fatal("loadConfigFactory: Failed to load collectd configuration", ex);
 	        throw new UndeclaredThrowableException(ex);
 	    } catch (IOException ex) {
-	        log().fatal("init: Failed to load collectd configuration", ex);
+	        log().fatal("loadConfigFactory: Failed to load collectd configuration", ex);
 	        throw new UndeclaredThrowableException(ex);
 	    }
 	}
@@ -122,8 +121,8 @@ public class CollectorConfigDaoImpl implements CollectorConfigDao {
 		return getConfig().getThreads();
 	}
 
-	public Collection getSpecificationsForInterface(OnmsIpInterface iface, String svcName) {
-		Collection matchingPkgs = new LinkedList();
+	public Collection<CollectionSpecification> getSpecificationsForInterface(OnmsIpInterface iface, String svcName) {
+		Collection<CollectionSpecification> matchingPkgs = new LinkedList<CollectionSpecification>();
 
         CollectdConfigFactory cCfgFactory = CollectdConfigFactory.getInstance();
         

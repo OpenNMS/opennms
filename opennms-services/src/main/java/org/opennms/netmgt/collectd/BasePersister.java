@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2006 Aug 15: Format the code a little bit - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -124,7 +128,7 @@ public class BasePersister extends AbstractCollectionSetVisitor implements Persi
     }
 
     public void persistNumericAttribute(Attribute attribute) {
-        log().debug("Persisting "+attribute);
+    	log().debug("Persisting "+attribute);
         m_builder.setAttributeValue(attribute.getAttributeType(), attribute.getNumericValue());
     }
 
@@ -201,8 +205,9 @@ public class BasePersister extends AbstractCollectionSetVisitor implements Persi
     protected boolean shouldPersist() { return top(); }
 
     protected void storeAttribute(Attribute attribute) {
-        if (shouldPersist())
+        if (shouldPersist()) {
             attribute.storeAttribute(this);
+        }
     }
     
     private boolean top() {

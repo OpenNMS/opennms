@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2006 Aug 15: Javadoc, formatting, improve an error message. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -43,6 +47,14 @@ import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpValue;
 
+/**
+ * Represents an OID to be collected (it might be specific or an indexed object).
+ * Also specific to a collection (e.g.: "default"), resource type (e.g.: node or
+ * interface), and attribute group (data collection group name, e.g.: "mib2-interfaces").
+ * This is extended to create concreate classes that represent specific types of data
+ * to be stored such as numeric data ({@link (NumericAttributeType)}) or string data
+ * ({@link (StringAttributeType)}).
+ */
 public abstract class AttributeType {
     
     private MibObject m_mibObj;
@@ -82,7 +94,7 @@ public abstract class AttributeType {
         if (StringAttributeType.supportsType(mibObj.getType()))
             return new StringAttributeType(resourceType, collectionName, mibObj, groupType);
         
-        throw new IllegalArgumentException("Unable to create attribute type from "+mibObj);
+        throw new IllegalArgumentException("No support exists for AttributeType '" + mibObj.getType() + "' for MIB object: "+ mibObj);
     }
     
     public AttributeGroupType getGroupType() {
@@ -154,12 +166,15 @@ public abstract class AttributeType {
     }
 
     public boolean matches(SnmpObjId base, SnmpInstId inst) {
-        if (!base.equals(getSnmpObjId())) return false;
+        if (!base.equals(getSnmpObjId())) {
+        	return false;
+        }
         
-        if (getInstance().equals(MibObject.INSTANCE_IFINDEX))
+        if (getInstance().equals(MibObject.INSTANCE_IFINDEX) || m_mibObj.getResourceType() != null) {
             return true;
-        else 
+        } else { 
             return getInstance().equals(inst.toString());
+        }
     }
 
 

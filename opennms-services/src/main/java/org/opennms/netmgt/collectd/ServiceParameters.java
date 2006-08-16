@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2006 Aug 15: Change log message to be more intuitive, IMHO. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -84,12 +88,11 @@ public class ServiceParameters {
     }
 
     void logIfAliasConfig() {
-        	log().debug("domain:storeByNodeID:storeByIfAlias:"
-            				+ "storFlagOverride:ifAliasComment = "
-            				+ getDomain() + ":" + getStoreByNodeID() + ":"
-            				+ getStoreByIfAlias() + ":"
-            				+ getStorFlagOverride() + ":"
-            				+ getIfAliasComment());
+    	log().debug("domain: " + getDomain() + ", "
+    			+ "storeByNodeID: " + getStoreByNodeID() + ", "
+    			+ "storeByIfAlias: " + getStoreByIfAlias() + ", "
+				+ "storFlagOverride: " + getStorFlagOverride() + ", "
+				+ "ifAliasComment: " + getIfAliasComment());
     }
 
     private Category log() {

@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2006 Aug 15: Use generics for collections, add a log message. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -34,7 +38,6 @@ package org.opennms.netmgt.collectd;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -49,16 +52,16 @@ import org.opennms.netmgt.snmp.SnmpInstId;
 
 public class IfResourceType extends DbResourceType {
 
-    private TreeMap m_ifMap;
+    private TreeMap<Integer, IfInfo> m_ifMap;
 
     public IfResourceType(CollectionAgent agent, OnmsSnmpCollection snmpCollection) {
         super(agent, snmpCollection);
-        m_ifMap = new TreeMap();
+        m_ifMap = new TreeMap<Integer, IfInfo>();
         addKnownIfResources();
 
     }
     
-    private Map getIfMap() {
+    private Map<Integer, IfInfo> getIfMap() {
         return m_ifMap;
     }
 
@@ -89,30 +92,31 @@ public class IfResourceType extends DbResourceType {
     
     	Set snmpIfs = node.getSnmpInterfaces();
     	
+    	if (snmpIfs.size() == 0) {
+    		log().debug("no known SNMP interfaces for node " + node);
+    	}
+    	
     	for (Iterator it = snmpIfs.iterator(); it.hasNext();) {
     		OnmsSnmpInterface snmpIface = (OnmsSnmpInterface) it.next();
     		logInitializeSnmpIface(snmpIface);
     		addSnmpInterface(snmpIface);
-    		
     	}
-    	
     }
 
     IfInfo getIfInfo(int ifIndex) {
-        return (IfInfo) getIfMap().get(new Integer(ifIndex));
+        return getIfMap().get(new Integer(ifIndex));
     }
 
-    public Collection getIfInfos() {
+    public Collection<IfInfo> getIfInfos() {
         return getIfMap().values();
     }
 
-    List getCombinedInterfaceAttributes() {
-        Set attributes = new LinkedHashSet();
-        for (Iterator it = getIfInfos().iterator(); it.hasNext();) {
-            CollectionResource ifInfo = (CollectionResource) it.next();
+    List<AttributeType> getCombinedInterfaceAttributes() {
+        Set<AttributeType> attributes = new LinkedHashSet<AttributeType>();
+        for (CollectionResource ifInfo : getIfInfos()) {
             attributes.addAll(ifInfo.getAttributeTypes());
         }
-        return new ArrayList(attributes);
+        return new ArrayList<AttributeType>(attributes);
     }
 
     public int getType() {
@@ -123,8 +127,8 @@ public class IfResourceType extends DbResourceType {
         return getIfInfo(inst.toInt());
     }
 
-    public Collection getResources() {
+    public Collection<IfInfo> getResources() {
         return m_ifMap.values();
     }
-
+    
 }

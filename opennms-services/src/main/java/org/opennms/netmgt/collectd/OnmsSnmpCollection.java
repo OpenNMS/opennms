@@ -8,6 +8,9 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+// 2006 Aug 15: Javadocs, generic index resource type support, use generics for collections
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -46,12 +49,20 @@ import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.DataCollectionConfigFactory;
 import org.opennms.netmgt.model.OnmsIpInterface.CollectionType;
 
+/**
+ * Represents SNMP collection data for a single collection period.
+ * It is particularly used to create a CollectionSet for a specific
+ * remote agent with {@link #createCollectionSet} and to provide
+ * data to CollectionSet and other classes that are created during
+ * collection.
+ */
 public class OnmsSnmpCollection {
     
     private ServiceParameters m_params;
     private NodeResourceType m_nodeResourceType;
     private IfResourceType m_ifResourceType;
     private IfAliasResourceType m_ifAliasResourceType;
+	private Map<String, ResourceType> m_genericIndexResourceTypes;
     
     public OnmsSnmpCollection(ServiceParameters params) {
         m_params = params;
@@ -110,22 +121,22 @@ public class OnmsSnmpCollection {
     }
     
 
-    public Collection getAttributeTypes(CollectionAgent agent, int ifType) {
+    public Collection<AttributeType> getAttributeTypes(CollectionAgent agent, int ifType) {
         String sysObjectId = agent.getSysObjectId();
         String hostAddress = agent.getHostAddress();
-        List oidList = DataCollectionConfigFactory.getInstance().getMibObjectList(getName(), sysObjectId, hostAddress, ifType);
+        List<MibObject> oidList = DataCollectionConfigFactory.getInstance().getMibObjectList(getName(), sysObjectId, hostAddress, ifType);
         
         Map groupTypes = new HashMap();
         
-        List typeList = new LinkedList();
-        for (Iterator it = oidList.iterator(); it.hasNext();) {
-            MibObject mibObject = (MibObject) it.next();
+        List<AttributeType> typeList = new LinkedList<AttributeType>();
+        for (MibObject mibObject : oidList) {
             String instanceName = mibObject.getInstance();
             AttributeGroupType groupType = getGroup(groupTypes, mibObject);
             AttributeType attrType = AttributeType.create(getResourceType(agent, instanceName), getName(), mibObject, groupType);
             groupType.addAttributeType(attrType);
             typeList.add(attrType);
         }
+        log().debug("getAttributeTypes(" + agent + ", " + ifType + "): " + typeList);
         return typeList;
     }
 
@@ -139,9 +150,10 @@ public class OnmsSnmpCollection {
     }
 
     public ResourceType getResourceType(CollectionAgent agent, String instanceName) {
-        
-        if ("ifIndex".equals(instanceName)) {
+    	if (MibObject.INSTANCE_IFINDEX.equals(instanceName)) {
             return getIfResourceType(agent);
+    	} else if (getGenericIndexResourceType(agent, instanceName) != null) {
+    		return getGenericIndexResourceType(agent, instanceName);
         } else {
             return getNodeResourceType(agent);
         }
@@ -168,11 +180,29 @@ public class OnmsSnmpCollection {
         
     }
     
+    private Map<String, ResourceType> getGenericIndexResourceTypes(CollectionAgent agent) {
+    	if (m_genericIndexResourceTypes == null) {
+    		Collection<org.opennms.netmgt.config.datacollection.ResourceType> configuredResourceTypes =
+    			DataCollectionConfigFactory.getInstance().getConfiguredResourceTypes().values();
+    		Map<String,ResourceType> resourceTypes = new HashMap<String,ResourceType>();
+    		for (org.opennms.netmgt.config.datacollection.ResourceType configuredResourceType : configuredResourceTypes) {
+    			resourceTypes.put(configuredResourceType.getName(), new GenericIndexResourceType(agent, this, configuredResourceType));
+    		}
+    		m_genericIndexResourceTypes = resourceTypes;
+    	}
+    	return m_genericIndexResourceTypes;
+	}
+    
+    private ResourceType getGenericIndexResourceType(CollectionAgent agent, String name) {
+    	return getGenericIndexResourceTypes(agent).get(name);
+    }
+    
     private Collection getResourceTypes(CollectionAgent agent) {
         HashSet set = new HashSet(3);
         set.add(getNodeResourceType(agent));
         set.add(getIfResourceType(agent));
         set.add(getIfAliasResourceType(agent));
+        set.addAll(getGenericIndexResourceTypes(agent).values());
         return set;
     }
     

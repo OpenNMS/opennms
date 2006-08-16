@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2006 Aug 15: Fix a spelling mistake in a log message. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -81,7 +85,7 @@ public class NumericAttributeType extends AttributeType {
            log().warn(
                    "buildDataSourceList: Mib object name/alias '"
                    + getAlias()
-                   + "' exceeds 19 char maximum for RRD data source names, truncatin g.");
+                   + "' exceeds 19 char maximum for RRD data source names, truncating.");
    }
 
 

@@ -6,7 +6,6 @@ import java.net.BindException;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import org.apache.log4j.BasicConfigurator;
 import org.snmp4j.TransportMapping;
 import org.snmp4j.agent.BaseAgent;
 import org.snmp4j.agent.CommandProcessor;
@@ -58,6 +57,7 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
 	protected String m_address;
 	private File m_moFile;
 	private boolean m_running;
+	private boolean m_stopped;
 
 	/*
 	 * Creates the mock agent with files to read and store the boot counter,
@@ -82,6 +82,41 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
 		agent.setThreadPool(ThreadPool.create("RequestPool", 4));
 	}
 	
+	public static MockSnmpAgent createAgentAndRun(File moFile, String bindAddress) throws InterruptedException {
+		MockSnmpAgent agent = new MockSnmpAgent(new File("/dev/null"), new File("/dev/null"), moFile, bindAddress);
+		Thread thread = new Thread(agent);
+		thread.start();
+
+		try {
+			while (!agent.isRunning() && thread.isAlive()) {
+				Thread.sleep(100);
+			} 
+		} catch (InterruptedException e) {
+			agent.shutDownAndWait();
+			throw e;
+		}
+		
+		if (!thread.isAlive()) {
+			agent.m_running = false;
+			agent.m_stopped = true;
+			throw new IllegalStateException("agent failed to start--check logs");
+		}
+		
+		return agent;
+	}
+	
+	public void shutDownAndWait() throws InterruptedException {
+		if (!isRunning()) {
+			return;
+		}
+		
+		shutDown();
+		
+		while (!isStopped()) {
+			Thread.sleep(100);
+		} 
+	}
+	
 	/*
 	 * Starts the <code>MockSnmpAgent</code> running.  Meant to be called from the
 	 * <code>start</code> method of class <code>Thread</code>, but could also be
@@ -91,8 +126,8 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
 	 * @author Jeff Gehlbach
 	 * @version 1.0
 	 */
+	// XXX fix catch blocks
 	public void run() {
-		BasicConfigurator.configure();
 		try {
 			init();
 			loadConfig(ImportModes.UPDATE_CREATE);
@@ -113,6 +148,16 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
 				break;
 			}
 		}
+		
+		try {
+			for (TransportMapping transportMapping : transportMappings) {
+				transportMapping.close();
+			}
+		} catch (Throwable t) {
+			t.printStackTrace();
+		}
+		
+		m_stopped = true;
 	}
 	
 	/*
@@ -120,6 +165,15 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
 	 */
 	public void shutDown() {
 		m_running = false;
+		m_stopped = false;
+	}
+	
+	public boolean isRunning() {
+		return m_running;
+	}
+	
+	public boolean isStopped() {
+		return m_stopped;
 	}
 	
 	@Override

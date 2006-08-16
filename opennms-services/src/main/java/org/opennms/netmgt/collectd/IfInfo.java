@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2006 Aug 15: Formatting. - dj@opennms.org
+//
 // Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -86,11 +90,12 @@ final class IfInfo extends DbCollectionResource {
     }
 
     String getNewIfAlias() {
-    // FIXME: This should not be null
-    	if (getEntry() == null)
-    	return getCurrentIfAlias();
-     return getEntry().getValueForBase(SnmpCollector.IFALIAS_OID);
-   }
+    	// FIXME: This should not be null
+    	if (getEntry() == null) {
+    		return getCurrentIfAlias();
+    	}
+    	return getEntry().getValueForBase(SnmpCollector.IFALIAS_OID);
+    }
 
     String getCurrentIfAlias() {
         return m_snmpIface.getIfAlias();

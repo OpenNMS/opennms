@@ -19,11 +19,18 @@ import org.opennms.netmgt.config.collectd.Collector;
 import org.opennms.netmgt.config.collectd.Package;
 
 public class CollectdConfig {
-	CollectdConfiguration m_config;
-	Collection m_packages;
-	Map m_collectors = new HashMap(4);
+	private CollectdConfiguration m_config;
+	private Collection<CollectdPackage> m_packages;
+	private Map<String,ServiceCollector> m_collectors = new HashMap<String,ServiceCollector>(4);
 	
-	CollectdConfig(CollectdConfiguration config, String localServer, boolean verifyServer) {
+	/**
+	 * Convenience object for CollectdConfiguration.
+	 * 
+	 * @param config collectd configuration object
+	 * @param localServer local server name from opennms-server.xml
+	 * @param verifyServer verify server option from opennms-server.xml
+	 */
+	protected CollectdConfig(CollectdConfiguration config, String localServer, boolean verifyServer) {
 		m_config = config;
 		
 		instantiateCollectors();
@@ -35,7 +42,7 @@ public class CollectdConfig {
 	}
 
 	private void createPackageObjects(String localServer, boolean verifyServer) {
-		m_packages = new LinkedList();
+		m_packages = new LinkedList<CollectdPackage>();
 		Enumeration pkgEnum = m_config.enumeratePackage();
 		while (pkgEnum.hasMoreElements()) {
 			Package pkg = (Package) pkgEnum.nextElement();
@@ -47,7 +54,7 @@ public class CollectdConfig {
 		return m_config;
 	}
 
-	public Collection getPackages() {
+	public Collection<CollectdPackage> getPackages() {
 		return m_packages;
 	}
 
@@ -60,15 +67,15 @@ public class CollectdConfig {
 	}
 	
 	public ServiceCollector getServiceCollector(String svcName) {
-		return (ServiceCollector)m_collectors.get(svcName);
+		return m_collectors.get(svcName);
 	}
 
-	public Set getCollectorNames() {
+	public Set<String> getCollectorNames() {
 		return m_collectors.keySet();
 	}
 
 	private void instantiateCollectors() {
-        log().debug("init: Loading collectors");
+        log().debug("instantiateCollectors: Loading collectors");
 
 		/*
 	     * Load up an instance of each collector from the config
@@ -81,7 +88,7 @@ public class CollectdConfig {
 	        String svcName = collector.getService();
 			try {
 	            if (log().isDebugEnabled()) {
-	                log().debug("init: Loading collector " 
+	                log().debug("instantiateCollectors: Loading collector " 
 	                          + svcName + ", classname "
 	                          + collector.getClassName());
 	            }
@@ -94,7 +101,7 @@ public class CollectdConfig {
 	
 	            setServiceCollector(svcName, sc);
 	        } catch (Throwable t) {
-	        	log().warn("init: Failed to load collector "
+	        	log().warn("instantiateCollectors: Failed to load collector "
 	        			+ collector.getClassName() + " for service "
 	        			+ svcName, t);
 	        }
@@ -114,7 +121,7 @@ public class CollectdConfig {
 	 * @param localServer TODO
 	 * @param verifyServer TODO
 	 */
-	void createPackageIpListMap(String localServer, boolean verifyServer) {
+	protected void createPackageIpListMap(String localServer, boolean verifyServer) {
 	
 		// Multiple threads maybe asking for the m_pkgIpMap field so create
 		// with temp map then assign when finished.
@@ -129,7 +136,7 @@ public class CollectdConfig {
 	 * @param localServer TODO
 	 * @param verifyServer TODO
 	 */
-	void initialize(String localServer, boolean verifyServer)  {
+	protected void initialize(String localServer, boolean verifyServer)  {
 		createPackageIpListMap(localServer, verifyServer);
 		
 	}

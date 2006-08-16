@@ -7,6 +7,7 @@ import junit.framework.TestCase;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
+import org.opennms.test.ThrowableAnticipator;
 
 public class DataCollectionConfigFactoryTest extends TestCase {
 
@@ -64,12 +65,38 @@ public class DataCollectionConfigFactoryTest extends TestCase {
             "   </snmp-collection>\n" + 
             "</datacollection-config>\n" + 
             "";
+
+    private String m_brocadeXmlFragment = 
+    "       <resourceType name=\"brocadeIndex\">\n" +
+    "         <persistenceSelectorStrategy class=\"foo\"/>\n" +
+    "         <storageStrategy class=\"foo\"/>\n" +
+    "       </resourceType>\n";
+
     
     public void testSetInstance() throws MarshalException, ValidationException, IOException {
         DataCollectionConfigFactory.setInstance(new DataCollectionConfigFactory(new StringReader(m_xml)));
         DataCollectionConfigFactory.init();
         assertEquals(10, DataCollectionConfigFactory.getInstance().getMaxVarsPerPdu("default"));
         assertEquals("/wonka/rrd/snmp", DataCollectionConfigFactory.getInstance().getRrdPath());
+    }
+    
+    public void testValidResourceType() throws MarshalException, ValidationException, IOException {
+    	String modifiedXml = m_xml.replaceFirst("ifIndex", "brocadeIndex").replaceFirst("<groups", m_brocadeXmlFragment + "<groups");
+    	
+    	DataCollectionConfigFactory.setInstance(new DataCollectionConfigFactory(new StringReader(modifiedXml)));
+    }
+    
+    public void testInvalidResourceType() throws MarshalException, ValidationException, IOException {
+    	String modifiedXml = m_xml.replaceFirst("ifIndex", "brocadeIndex");
+    	ThrowableAnticipator ta = new ThrowableAnticipator();
+    	ta.anticipate(new IllegalArgumentException("instance 'brocadeIndex' invalid in mibObj definition for OID '.1.3.6.1.2.1.2.2.1.10' in collection 'default' for group 'mib2-interfaces'.  Allowable instance values: any positive number, 'ifIndex', or any of the configured resourceTypes: (none)"));
+    	
+    	try {
+    		DataCollectionConfigFactory.setInstance(new DataCollectionConfigFactory(new StringReader(modifiedXml)));
+    	} catch (Throwable t) {
+    		ta.throwableReceived(t);
+    	}
+        ta.verifyAnticipated();
     }
 
 //    public void testInit() {

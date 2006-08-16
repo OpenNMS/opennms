@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2006 Aug 15: Convert some of the collections to use Java 5 generics - dj@opennms.org
 // 2006 Apr 25: Add method getNodeMap to return nodeIds and nodeLabels
 // 2003 Aug 01: Created a proper Join for rules. Bug #752
 // 2003 Apr 24: Allowed for null rules.
@@ -255,9 +256,9 @@ public class Filter {
      *                if a rule is syntactically incorrect or failed in
      *                executing the SQL statement
      */
-    public List getIPList(String rule) throws FilterParseException {
+    public List<String> getIPList(String rule) throws FilterParseException {
         Category log = ThreadCategory.getInstance(getClass());
-        List resultList = new ArrayList();
+        List<String> resultList = new ArrayList<String>();
         String sqlString = null;
 
         // parse the rule
@@ -460,9 +461,8 @@ public class Filter {
         getSQLStatement();
     }
 
-	public static List getMatchingIps(String filterRules) {
+	public static List<String> getMatchingIps(String filterRules) {
 		Filter filter = new Filter();
-		List ipList = filter.getIPList(filterRules);
-		return ipList;
+		return filter.getIPList(filterRules);
 	}
 }
