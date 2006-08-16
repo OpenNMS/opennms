@@ -116,6 +116,10 @@
         /js/global.js=ROLE_ANONYMOUS,ROLE_USER
         /images/logo.png=ROLE_ANONYMOUS,ROLE_USER
         /images/logo-background.gif=ROLE_ANONYMOUS,ROLE_USER
+        /images/headingbg.png=ROLE_ANONYMOUS,ROLE_USER
+        /images/mainbg.png=ROLE_ANONYMOUS,ROLE_USER
+        /images/headerbg.png=ROLE_ANONYMOUS,ROLE_USER
+        /images/footerbg.png=ROLE_ANONYMOUS,ROLE_USER
         /admin/**=ROLE_ADMIN
         /rtc/post/**=ROLE_RTC
         /webstart/**=ROLE_ANONYMOUS,ROLE_USER
