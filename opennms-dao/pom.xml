@@ -75,8 +75,6 @@
     <dependency>
       <groupId>com.ibatis</groupId>
       <artifactId>ibatis2-sqlmap</artifactId>
-      <scope>test</scope>
-        <version>2.1.6.589</version>
     </dependency>
     <dependency>
       <groupId>postgresql</groupId>
