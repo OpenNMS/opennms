@@ -284,9 +284,9 @@ public class PollablesTest extends TestCase {
                     Number svcLostEventId = (Number)rs.getObject("svcLostEventId");
                     //MockUtil.println("svcLostEventId for "+svc+" is "+svcLostEventId);
                     if (svcLostEventId == null) 
-                        svc.updateStatus(PollStatus.STATUS_UP);
+                        svc.updateStatus(PollStatus.up());
                     else {
-                        svc.updateStatus(PollStatus.STATUS_DOWN);
+                        svc.updateStatus(PollStatus.down());
                     
                         Date date = rs.getTimestamp("ifLostService");
                         PollEvent cause = new DbPollEvent(svcLostEventId.intValue(), date);
@@ -674,13 +674,13 @@ public class PollablesTest extends TestCase {
     public void testStatus() throws Exception {
         PollableVisitor updater = new PollableVisitorAdaptor() {
             public void visitElement(PollableElement e) {
-                e.updateStatus(PollStatus.STATUS_DOWN);
+                e.updateStatus(PollStatus.down());
             }
         };
         m_network.visit(updater);
         PollableVisitor downChecker = new PollableVisitorAdaptor() {
             public void visitElement(PollableElement e) {
-                assertEquals(PollStatus.STATUS_DOWN, e.getStatus());
+                assertEquals(PollStatus.down(), e.getStatus());
                 assertEquals(true, e.isStatusChanged());
             }
         };
@@ -693,7 +693,7 @@ public class PollablesTest extends TestCase {
         };
         m_network.visit(statusChangedChecker);
         
-        pDot1Icmp.updateStatus(PollStatus.STATUS_UP);
+        pDot1Icmp.updateStatus(PollStatus.up());
         m_network.recalculateStatus();
         
         PollableVisitor upChecker = new PollableVisitorAdaptor() {
@@ -722,19 +722,19 @@ public class PollablesTest extends TestCase {
     public void testInterfaceStatus() throws Exception {
         
         
-        pDot2Smtp.updateStatus(PollStatus.STATUS_DOWN);
+        pDot2Smtp.updateStatus(PollStatus.down());
         m_network.recalculateStatus();
         
         assertDown(pDot2Smtp);
         assertUp(pDot2Smtp.getInterface());
         
-        pDot2Smtp.updateStatus(PollStatus.STATUS_UP);
+        pDot2Smtp.updateStatus(PollStatus.up());
         m_network.recalculateStatus();
         
         assertUp(pDot2Smtp);
         assertUp(pDot2Smtp.getInterface());
         
-        pDot2Icmp.updateStatus(PollStatus.STATUS_DOWN);
+        pDot2Icmp.updateStatus(PollStatus.down());
         m_network.recalculateStatus();
         
         assertDown(pDot2Icmp);
@@ -757,8 +757,8 @@ public class PollablesTest extends TestCase {
 
     public void testPropagateUnresponsive() throws Exception {
 
-        pDot1Smtp.updateStatus(PollStatus.STATUS_UNRESPONSIVE);
-        pDot1Icmp.updateStatus(PollStatus.STATUS_UNRESPONSIVE);
+        pDot1Smtp.updateStatus(PollStatus.unresponsive());
+        pDot1Icmp.updateStatus(PollStatus.unresponsive());
         m_network.recalculateStatus();
         
         assertUp(pDot1);
@@ -943,8 +943,8 @@ public class PollablesTest extends TestCase {
 
         mDot1.bringDown();
 
-        pDot1.updateStatus(PollStatus.STATUS_DOWN);
-        pDot1Icmp.updateStatus(PollStatus.STATUS_DOWN);
+        pDot1.updateStatus(PollStatus.down());
+        pDot1Icmp.updateStatus(PollStatus.down());
         
         m_network.recalculateStatus();
         m_network.resetStatusChanged();
@@ -970,8 +970,8 @@ public class PollablesTest extends TestCase {
 
         mDot1.bringDown();
 
-        pDot1.updateStatus(PollStatus.STATUS_DOWN);
-        pDot1Icmp.updateStatus(PollStatus.STATUS_DOWN);
+        pDot1.updateStatus(PollStatus.down());
+        pDot1Icmp.updateStatus(PollStatus.down());
         pDot1.setCause(new DbPollEvent(1, new Date()));
 
         m_network.recalculateStatus();
@@ -1020,9 +1020,9 @@ public class PollablesTest extends TestCase {
 
         mDot1.bringDown();
 
-        pDot1.updateStatus(PollStatus.STATUS_DOWN);
-        pDot1Icmp.updateStatus(PollStatus.STATUS_DOWN);
-        pDot1Smtp.updateStatus(PollStatus.STATUS_DOWN);
+        pDot1.updateStatus(PollStatus.down());
+        pDot1Icmp.updateStatus(PollStatus.down());
+        pDot1Smtp.updateStatus(PollStatus.down());
         
         m_network.recalculateStatus();
         m_network.resetStatusChanged();
@@ -1072,9 +1072,9 @@ public class PollablesTest extends TestCase {
 
         mDot1.bringDown();
 
-        pDot1.updateStatus(PollStatus.STATUS_DOWN);
-        pDot1Icmp.updateStatus(PollStatus.STATUS_DOWN);
-        pDot1Smtp.updateStatus(PollStatus.STATUS_DOWN);
+        pDot1.updateStatus(PollStatus.down());
+        pDot1Icmp.updateStatus(PollStatus.down());
+        pDot1Smtp.updateStatus(PollStatus.down());
         
         m_network.recalculateStatus();
         m_network.resetStatusChanged();
@@ -1465,7 +1465,7 @@ public class PollablesTest extends TestCase {
         PollableServiceConfig pollConfig = new PollableServiceConfig(pDot1Smtp, m_pollerConfig, m_pollerConfig, pkg, m_timer);
         
         m_timer.setCurrentTime(1000L);
-        pDot1Smtp.updateStatus(PollStatus.STATUS_DOWN);
+        pDot1Smtp.updateStatus(PollStatus.down());
         assertEquals(1000, pDot1Smtp.getStatusChangeTime());
         assertDown(pDot1Smtp);
         pDot1.resetStatusChanged();
@@ -2144,10 +2144,10 @@ public class PollablesTest extends TestCase {
     }
 
     private void assertUp(PollableElement elem) {
-        assertEquals(PollStatus.STATUS_UP, elem.getStatus());
+        assertEquals(PollStatus.up(), elem.getStatus());
     }
     private void assertDown(PollableElement elem) {
-        assertEquals(PollStatus.STATUS_DOWN, elem.getStatus());
+        assertEquals(PollStatus.down(), elem.getStatus());
     }
 
 }

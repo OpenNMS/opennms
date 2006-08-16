@@ -106,9 +106,9 @@ abstract public class MockContainer extends MockElement {
         while (it.hasNext()) {
             MockElement element = (MockElement) it.next();
             if (element.getPollStatus().isUp())
-                return PollStatus.STATUS_UP;
+                return PollStatus.up();
         }
-        return PollStatus.STATUS_DOWN;
+        return PollStatus.down();
     }
 
     // FIXME: make a generic poll listener

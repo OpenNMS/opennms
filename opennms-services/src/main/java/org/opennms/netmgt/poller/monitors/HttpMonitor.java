@@ -319,7 +319,7 @@ public class HttpMonitor extends IPv4LatencyMonitor {
         //
         // return the status of the service
         //
-        return PollStatus.getPollStatus(serviceStatus, reason);
+        return PollStatus.get(serviceStatus, reason, responseTime);
     }
 
     protected Socket wrapSocket(Socket socket) throws IOException {

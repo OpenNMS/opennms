@@ -54,17 +54,17 @@ public class PassiveServiceMonitorTest extends PassiveStatusKeeperTest {
     public void testPoll() throws UnknownHostException {
         
         PassiveStatusKeeper psk = PassiveStatusKeeper.getInstance();
-        psk.setStatus("localhost", "127.0.0.1", "my-passive-service", PollStatus.getPollStatus(PollStatus.SERVICE_UNAVAILABLE, "testing failure"));
+        psk.setStatus("localhost", "127.0.0.1", "my-passive-service", PollStatus.get(PollStatus.SERVICE_UNAVAILABLE, "testing failure"));
         
         ServiceMonitor sm = new PassiveServiceMonitor();
         
         MonitoredService ms = createMonitoredService(1, "localhost", "127.0.0.1", "my-passive-service");
         PollStatus ps = sm.poll(ms, new HashMap(), new org.opennms.netmgt.config.poller.Package());
-        assertEquals(PollStatus.STATUS_DOWN, ps);
+        assertEquals(PollStatus.down(), ps);
 
-        psk.setStatus("localhost", "127.0.0.1", "my-passive-service", PollStatus.getPollStatus(PollStatus.SERVICE_AVAILABLE, "testing failure"));
+        psk.setStatus("localhost", "127.0.0.1", "my-passive-service", PollStatus.get(PollStatus.SERVICE_AVAILABLE, "testing failure"));
         ps = sm.poll(ms, new HashMap(), new org.opennms.netmgt.config.poller.Package());
-        assertEquals(PollStatus.STATUS_UP, ps);
+        assertEquals(PollStatus.up(), ps);
     }
 
     private PollableService createMonitoredService(int nodeId, String nodeLabel, String ipAddr, String serviceName) throws UnknownHostException {

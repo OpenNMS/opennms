@@ -849,7 +849,7 @@ public class PollerTest extends TestCase {
     }
     
     private void anticipateUp(MockElement element, boolean force) {
-        if (force || !element.getPollStatus().equals(PollStatus.STATUS_UP)) {
+        if (force || !element.getPollStatus().equals(PollStatus.up())) {
             Event event = element.createUpEvent();
             m_anticipator.anticipateEvent(event);
             m_outageAnticipator.anticipateOutageClosed(element, event);
@@ -861,7 +861,7 @@ public class PollerTest extends TestCase {
     }
     
     private void anticipateDown(MockElement element, boolean force) {
-        if (force || !element.getPollStatus().equals(PollStatus.STATUS_DOWN)) {
+        if (force || !element.getPollStatus().equals(PollStatus.down())) {
             Event event = element.createDownEvent();
             m_anticipator.anticipateEvent(event);
             m_outageAnticipator.anticipateOutageOpened(element, event);

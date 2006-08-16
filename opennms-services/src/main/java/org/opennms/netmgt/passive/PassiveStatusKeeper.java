@@ -99,7 +99,7 @@ public class PassiveStatusKeeper extends AbstractServiceDaemon implements EventL
             public void processRow(ResultSet rs) throws SQLException {
                
                 PassiveStatusKey key = new PassiveStatusKey(rs.getString("nodeLabel"), rs.getString("ipAddr"), rs.getString("serviceName"));
-                m_statusTable.put(key, PollStatus.STATUS_DOWN);
+                m_statusTable.put(key, PollStatus.down());
             }
         
         };
@@ -141,8 +141,8 @@ public class PassiveStatusKeeper extends AbstractServiceDaemon implements EventL
 
     public PollStatus getStatus(String nodeLabel, String ipAddr, String svcName) {
         //FIXME: Throw a log or exception here if this method is called and the this class hasn't been initialized
-        PollStatus status = (PollStatus) (m_statusTable == null ? PollStatus.STATUS_UNKNOWN : m_statusTable.get(new PassiveStatusKey(nodeLabel, ipAddr, svcName)));
-        return (status == null ? PollStatus.STATUS_UP : status);
+        PollStatus status = (PollStatus) (m_statusTable == null ? PollStatus.unknown() : m_statusTable.get(new PassiveStatusKey(nodeLabel, ipAddr, svcName)));
+        return (status == null ? PollStatus.up() : status);
     }
 
     private void createMessageSelectorAndSubscribe() {
@@ -170,7 +170,7 @@ public class PassiveStatusKeeper extends AbstractServiceDaemon implements EventL
     				EventUtils.getParm(e, EventConstants.PARM_PASSIVE_NODE_LABEL),
     				EventUtils.getParm(e, EventConstants.PARM_PASSIVE_IPADDR),
     				EventUtils.getParm(e, EventConstants.PARM_PASSIVE_SERVICE_NAME),
-    				PollStatus.decodePollStatus(EventUtils.getParm(e, EventConstants.PARM_PASSIVE_SERVICE_STATUS))
+    				PollStatus.decode(EventUtils.getParm(e, EventConstants.PARM_PASSIVE_SERVICE_STATUS))
     				);
     		
 	}

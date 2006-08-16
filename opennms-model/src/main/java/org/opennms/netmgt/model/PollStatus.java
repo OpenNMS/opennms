@@ -42,17 +42,18 @@ public class PollStatus {
      * Status of the pollable object.
      */
 
-    public static final PollStatus STATUS_UP = new PollStatus(PollStatus.SERVICE_AVAILABLE, "Up");
+    //public static final PollStatus STATUS_UP = new PollStatus(PollStatus.SERVICE_AVAILABLE, "Up");
 
-    public static final PollStatus STATUS_DOWN = new PollStatus(PollStatus.SERVICE_UNAVAILABLE, "Down");
+//    public static final PollStatus STATUS_DOWN = new PollStatus(PollStatus.SERVICE_UNAVAILABLE, "Down");
     
-    public static final PollStatus STATUS_UNRESPONSIVE = new PollStatus(PollStatus.SERVICE_UNRESPONSIVE, "Unresponsive");
+//    public static final PollStatus STATUS_UNRESPONSIVE = new PollStatus(PollStatus.SERVICE_UNRESPONSIVE, "Unresponsive");
     
-    public static final PollStatus STATUS_UNKNOWN = new PollStatus(PollStatus.SERVICE_UNKNOWN, "Unknown");
+//    public static final PollStatus STATUS_UNKNOWN = new PollStatus(PollStatus.SERVICE_UNKNOWN, "Unknown");
+	
     
     int m_statusCode;
-    String m_statusName;
     String m_reason;
+    long m_responseTime = -1L;
 
 	/**
 	 * <P>
@@ -84,58 +85,70 @@ public class PollStatus {
 	 * The constant the defines a status is unknown. Used mostly internally
 	 */
 	public static final int SERVICE_UNKNOWN = 0;
+	
+	private static final String[] s_statusNames = {
+		"Unknown",
+		"Up",
+		"Down",
+		"Unresponsive"
+	};
     
-    public static PollStatus getPollStatus(int status) {
-        switch (status) {
-        case PollStatus.SERVICE_AVAILABLE:
-            return STATUS_UP;
-        case PollStatus.SERVICE_UNRESPONSIVE:
-            return STATUS_UNRESPONSIVE;
-        case PollStatus.SERVICE_UNAVAILABLE:
-        default:
-            return STATUS_DOWN;
-        }
+    public static PollStatus decode(String statusName) {
+    	for (int statusCode = 0; statusCode < s_statusNames.length; statusCode++) {
+			if (s_statusNames[statusCode].equals(statusName)) {
+				return new PollStatus(statusCode);
+			}
+		}
+    	return new PollStatus(SERVICE_UNKNOWN);
     }
     
-    public static PollStatus decodePollStatus(String statusName) {
-        if (STATUS_UP.getStatusName().equalsIgnoreCase(statusName))
-            return STATUS_UP;
-        if (STATUS_DOWN.getStatusName().equalsIgnoreCase(statusName))
-            return STATUS_DOWN;
-        if (STATUS_UNRESPONSIVE.getStatusName().equalsIgnoreCase(statusName))
-            return STATUS_UNRESPONSIVE;
-        if (STATUS_UNKNOWN.getStatusName().equalsIgnoreCase(statusName))
-            return STATUS_UNKNOWN;
-        return STATUS_UNKNOWN;
+    public static PollStatus get(int status, String reason) {
+        return get(status, reason, -1L);
     }
     
-    public static PollStatus getPollStatus(int status, String reason) {
-        return new PollStatus(getPollStatus(status), reason);
+    public static PollStatus get(int status, String reason, long responseTime) {
+    	return new PollStatus(status, reason, responseTime);
     }
     
-    public static PollStatus getPollStatus(PollStatus status, String reason) {
-        return new PollStatus(status, reason);
+    private PollStatus(int statusCode) {
+        this(statusCode, null, -1L);
     }
     
-    public static PollStatus decodePollStatus(String statusName, String reason) {
-        return new PollStatus(decodePollStatus(statusName), reason);
-    }
-    
-    private PollStatus(PollStatus s, String reason) {
-        this(s.getStatusCode(), s.getStatusName(), reason);
-    }
-
-    private PollStatus(int statusCode, String statusName) {
-        this(statusCode, statusName, null);
-    }
-    
-    private PollStatus(int statusCode, String statusName, String reason) {
+    private PollStatus(int statusCode, String reason, long responseTime) {
         m_statusCode = statusCode;
-        m_statusName = statusName;
         m_reason = reason;
+        m_responseTime = responseTime;
     }
     
-    public boolean equals(Object o) {
+    public static PollStatus up() {
+    	return up(-1L);
+    }
+    
+    public static PollStatus up(long responseTime) {
+    	return new PollStatus(SERVICE_AVAILABLE, null, responseTime);
+    }
+    
+    public static PollStatus unknown() {
+    	return new PollStatus(SERVICE_UNKNOWN, null, -1L);
+    }
+    
+    public static PollStatus unresponsive() {
+    	return unresponsive(null);
+    }
+    
+    public static PollStatus unresponsive(String reason) {
+    	return new PollStatus(SERVICE_UNRESPONSIVE, reason, -1L);
+    }
+    
+    public static PollStatus down() {
+    	return down(null);
+    }
+    
+	public static PollStatus down(String reason) {
+		return new PollStatus(SERVICE_UNAVAILABLE, reason, -1L);
+	}
+
+	public boolean equals(Object o) {
         if (o instanceof PollStatus) {
             return m_statusCode == ((PollStatus)o).m_statusCode;
         }
@@ -151,35 +164,28 @@ public class PollStatus {
     }
     
     public boolean isDown() {
-        return this.equals(STATUS_DOWN);
+        return this.m_statusCode == SERVICE_UNAVAILABLE;
     }
     
     public String toString() {
-        return m_statusName;
+        return getStatusName();
     }
 
     public String getReason() {
         return m_reason;
     }
 
-    public void setReason(String reason) {
-        m_reason = reason;
+    public long getResponseTime() {
+    	return m_responseTime;
     }
-
+    
     public int getStatusCode() {
         return m_statusCode;
     }
 
-    public void setStatusCode(int statusCode) {
-        m_statusCode = statusCode;
-    }
-
     public String getStatusName() {
-        return m_statusName;
+        return s_statusNames[m_statusCode];
     }
 
-    public void setStatusName(String statusName) {
-        m_statusName = statusName;
-    }
 
 }

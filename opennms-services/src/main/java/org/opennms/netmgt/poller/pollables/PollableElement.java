@@ -46,7 +46,7 @@ import org.opennms.netmgt.xml.event.Event;
 abstract public class PollableElement {
     
     private PollableContainer m_parent;
-    private PollStatus m_status = PollStatus.STATUS_UNKNOWN;
+    private PollStatus m_status = PollStatus.unknown();
     private boolean m_statusChanged = false;
     private PollEvent m_cause;
     private boolean m_deleted;

@@ -155,11 +155,11 @@ abstract public class PollableContainer extends PollableElement {
     public void recalculateStatus() {
         Runnable r = new Runnable() {
             public void run() {
-                SimpleIter iter = new SimpleIter(PollStatus.STATUS_DOWN) {
+                SimpleIter iter = new SimpleIter(PollStatus.down()) {
                     public void forEachElement(PollableElement elem) {
                         elem.recalculateStatus();
                         if (elem.getStatus().isUp())
-                            setResult(PollStatus.STATUS_UP);
+                            setResult(PollStatus.up());
                     }
                 };
                 forEachMember(iter);
@@ -218,7 +218,7 @@ abstract public class PollableContainer extends PollableElement {
             public void forEachElement(PollableElement elem) {
                 if (elem != member) {
                     if (elem.poll().isUp())
-                        setResult(PollStatus.STATUS_UP);
+                        setResult(PollStatus.up());
                 }
             }
         };
@@ -227,10 +227,10 @@ abstract public class PollableContainer extends PollableElement {
     }
     
     public PollStatus getMemberStatus() {
-        SimpleIter iter = new SimpleIter(PollStatus.STATUS_DOWN) {
+        SimpleIter iter = new SimpleIter(PollStatus.down()) {
             public void forEachElement(PollableElement elem) {
                 if (elem.getStatus().isUp())
-                    setResult(PollStatus.STATUS_UP);
+                    setResult(PollStatus.up());
             }
             
         };
@@ -240,7 +240,7 @@ abstract public class PollableContainer extends PollableElement {
     
     public PollStatus poll() {
         PollableElement leaf = selectPollElement();
-        if (leaf == null) return PollStatus.STATUS_UP;
+        if (leaf == null) return PollStatus.up();
         return poll(leaf);
     }
 

@@ -56,17 +56,17 @@ abstract public class MockElement {
 
     // test
     public void bringDown() {
-        setServicePollStatus(PollStatus.STATUS_DOWN);
+        setServicePollStatus(PollStatus.down());
     }
 
     // test
     public void bringUp() {
-        setServicePollStatus(PollStatus.STATUS_UP);
+        setServicePollStatus(PollStatus.up());
     }
     
     // test
     public void bringUnresponsive() {
-        setServicePollStatus(PollStatus.STATUS_UNRESPONSIVE);
+        setServicePollStatus(PollStatus.unresponsive());
     }
 
     // impl

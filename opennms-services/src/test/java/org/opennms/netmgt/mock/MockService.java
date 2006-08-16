@@ -71,7 +71,7 @@ public class MockService extends MockElement implements MonitoredService {
         super(iface);
         m_svcName = svcName;
         m_serviceId = serviceId;
-        m_pollStatus = PollStatus.STATUS_UP;
+        m_pollStatus = PollStatus.up();
         m_pollCount = 0;
 
     }
