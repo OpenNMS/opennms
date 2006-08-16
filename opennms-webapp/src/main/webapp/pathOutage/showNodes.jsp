@@ -12,6 +12,7 @@
 //
 // Modifications:
 //
+// 2006 Aug 15: HTML fix from bug #1558. - dj@opennms.org
 // 2006 Apr 25: improved speed and appearance
 // 2006 Apr 17: Created file
 //
@@ -65,7 +66,7 @@
           <td class="standardbold" bgcolor="<%= pthData[3]%>" colspan="4" align="center">Node List for Critical Path <%= critIp %> <%= critSvc %></td>
           </tr>
           <tr>
-          <td class="standard" colspan="4">&nbsp</td>
+          <td class="standard" colspan="4">&nbsp;</td>
           </tr>
 
           <tr>

@@ -10,6 +10,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2006 Aug 15: HTML fixes from bug #1558. - dj@opennms.org
+//
 // Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -118,10 +122,10 @@
 
           <tr>
             <td valign="top">
-              <input type="checkbox" name="useaftertime" value="1">Alarms After:</input>
+              <input type="checkbox" name="useaftertime" value="1"/>Alarms After:
             </td>
             <td valign="top">
-              <input type="checkbox" name="usebeforetime" value="1">Alarms Before:</input>
+              <input type="checkbox" name="usebeforetime" value="1"/>Alarms Before:
             </td>
           </tr>
           <tr>

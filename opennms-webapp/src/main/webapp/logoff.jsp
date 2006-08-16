@@ -10,7 +10,7 @@
 
 You have been logged off.
 
-You may <a href="acegilogin.jsp"> log in again.
+You may <a href="acegilogin.jsp"> log in again</a>.
 
 <jsp:include page="/includes/footer.jsp" flush="false">
   <jsp:param name="quiet" value="true" />

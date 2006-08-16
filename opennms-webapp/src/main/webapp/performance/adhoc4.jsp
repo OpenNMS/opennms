@@ -12,6 +12,7 @@
 //
 // Modifications:
 //
+// 2006 Aug 15: Fix bad HTML tag from bug #1558. - dj@opennms.org
 // 2003 Feb 07: Fixed URLEncoder issues.
 // 2002 Nov 26: Fixed breadcrumbs issue.
 // 
@@ -168,7 +169,7 @@
   <br/>
 
   <strong>From:</strong> <%=startPretty%> <br/>
-  <strong<To:</strong> <%=endPretty%>
+  <strong>To:</strong> <%=endPretty%>
 
   <br/>
   <br/>

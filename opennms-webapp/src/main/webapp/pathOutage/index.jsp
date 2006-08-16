@@ -11,6 +11,7 @@
 //
 // Modifications:
 //
+// 2006 Aug 15: HTML fix from bug #1558. - dj@opennms.org
 // 2006 Apr 17: File created
 //
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -69,7 +70,7 @@
                 <td class="standardbold" bgcolor="<%= pthData[3] %>" colspan="4" align="center">Default Critical Path = <%= dcpip %> ICMP</td>
 	        </tr>
 	        <tr>
-                <td class="standard" colspan="4" align="center">&nbsp</td>
+                <td class="standard" colspan="4" align="center">&nbsp;</td>
 	        </tr>
             <% } %>
 	    <tr>

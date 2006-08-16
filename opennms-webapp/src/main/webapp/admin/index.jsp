@@ -12,6 +12,7 @@
 //
 // Modifications:
 //
+// 2006 Aug 15: Fix HTML issues per bug #1558. - dj@opennms.org
 // 2003 Feb 07: Fixed URLEncoder issues.
 // 2002 Nov 26: Fixed breadcrumbs issue.
 // 2002 Sep 24: Added a "select" option for SNMP data and a config page.
@@ -180,8 +181,8 @@
               </td>
             <% } %>
             <td>
-              <input type="radio" name="status" value="on" <%=(status.equals("On") ? "checked" : "")%>> ON</input><br>
-              <input type="radio" name="status" value="off" <%=(status.equals("Off") ? "checked" : "")%>> OFF</input>
+              <input type="radio" name="status" value="on" <%=(status.equals("On") ? "checked" : "")%>/> ON<br/>
+              <input type="radio" name="status" value="off" <%=(status.equals("Off") ? "checked" : "")%>/> OFF
             </td>
             <td>
               <input type="submit" value="Update Status">
