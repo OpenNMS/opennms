@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2006 Aug 15: Formatting, rganize imports, use generics for Collections, resource type support, validate instance values. - dj@opennms.org
 // 2003 Oct 20: Added minval and maxval parameters to mibObj for RRDs.
 // 2003 Jan 31: Cleaned up some unused imports.
 //
@@ -45,11 +46,14 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.regex.Pattern;
 
 import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
@@ -62,6 +66,7 @@ import org.opennms.netmgt.config.datacollection.DatacollectionConfig;
 import org.opennms.netmgt.config.datacollection.Group;
 import org.opennms.netmgt.config.datacollection.Groups;
 import org.opennms.netmgt.config.datacollection.MibObj;
+import org.opennms.netmgt.config.datacollection.ResourceType;
 import org.opennms.netmgt.config.datacollection.SnmpCollection;
 import org.opennms.netmgt.config.datacollection.SystemDef;
 import org.opennms.netmgt.config.datacollection.SystemDefChoice;
@@ -80,6 +85,8 @@ import org.opennms.netmgt.config.datacollection.SystemDefChoice;
  * 
  */
 public final class DataCollectionConfigFactory implements DataCollectionConfig {
+	private static final Pattern s_digitsPattern = Pattern.compile("\\d+"); 
+	
     /**
      * The singleton instance of this factory
      */
@@ -98,12 +105,14 @@ public final class DataCollectionConfigFactory implements DataCollectionConfig {
     /**
      * Map of group maps indexed by SNMP collection name.
      */
-    private Map m_collectionGroupMap;
+    private Map<String,Map<String,Group>> m_collectionGroupMap;
 
     /**
      * Map of SnmpCollection objects indexed by data collection name
      */
-    private Map m_collectionMap;
+    private Map<String,SnmpCollection> m_collectionMap;
+
+	private Map<String, ResourceType> m_configuredResourceTypes;
 
     /**
      * Private constructor
@@ -128,9 +137,79 @@ public final class DataCollectionConfigFactory implements DataCollectionConfig {
     private void marshal(Reader rdr) throws MarshalException, ValidationException {
         m_config = (DatacollectionConfig) Unmarshaller.unmarshal(DatacollectionConfig.class, rdr);        
         buildCollectionMap();
+        processConfiguredResourceTypes();
+        validateResourceTypes();
+    }
+    
+    public Map<String,ResourceType> getConfiguredResourceTypes() {
+    	return m_configuredResourceTypes;
+    }
+    
+    public void processConfiguredResourceTypes() {
+    	Map<String,ResourceType> map = new HashMap<String,ResourceType>();
+    	Collection<SnmpCollection> snmpCollections = m_config.getSnmpCollectionCollection();
+		for (SnmpCollection collection : snmpCollections) {
+			Collection<ResourceType> resourceTypes = collection.getResourceTypeCollection();
+			for (ResourceType resourceType : resourceTypes) {
+				map.put(resourceType.getName(), resourceType);
+			}
+		}
+    	m_configuredResourceTypes = map;
+    }
+    
+    private static String join(String separator, Collection<String> collection) {
+    	StringBuffer buffer = new StringBuffer();
+    	
+    	Iterator<String> iterator = collection.iterator();
+    	if (iterator.hasNext()) {
+    		buffer.append(iterator.next());
+    	}
+    	
+    	while (iterator.hasNext()) {
+    		buffer.append(separator);
+    		buffer.append(iterator.next());
+    	}
+    	
+    	return buffer.toString();
     }
 
-    public static void setInstance(DataCollectionConfig instance) {
+    private void validateResourceTypes() {
+    	Set<String> allowedResourceTypes = getConfiguredResourceTypes().keySet();
+    	String configuredString;
+    	if (allowedResourceTypes.size() == 0) {
+    		configuredString = "(none)";
+    	} else {
+    		configuredString = join(", ", allowedResourceTypes);
+    	}
+    	
+    	String allowableValues = "any positive number, 'ifIndex', or any of the configured resourceTypes: " + configuredString;
+		Collection<SnmpCollection> snmpCollections = m_config.getSnmpCollectionCollection();
+		for (SnmpCollection collection : snmpCollections) {
+			Collection<Group> groups = collection.getGroups().getGroupCollection();
+			for (Group group : groups) {
+				Collection<MibObj> mibObjs = group.getMibObjCollection();
+				for (MibObj mibObj : mibObjs) {
+					String instance = mibObj.getInstance();
+					if (instance == null) {
+						continue;
+					}
+					if (s_digitsPattern.matcher(instance).matches()) {
+						continue;
+					}
+					if (MibObject.INSTANCE_IFINDEX.equals(instance)) {
+						continue;
+					}
+					if (allowedResourceTypes.contains(instance)) {
+						continue;
+					}
+					// XXX this should be a better exception
+					throw new IllegalArgumentException("instance '" + instance + "' invalid in mibObj definition for OID '" + mibObj.getOid() + "' in collection '" + collection.getName() + "' for group '" + group.getName() + "'.  Allowable instance values: " + allowableValues);
+				}
+			}
+		}
+	}
+
+	public static void setInstance(DataCollectionConfig instance) {
         m_singleton = instance;
         m_loaded = true;
     }
@@ -211,21 +290,21 @@ public final class DataCollectionConfigFactory implements DataCollectionConfig {
      * 
      * @return a list of MIB objects
      */
-    public List getMibObjectList(String cName, String aSysoid, String anAddress, int ifType) {
+    public List<MibObject> getMibObjectList(String cName, String aSysoid, String anAddress, int ifType) {
         if (log().isDebugEnabled())
             log().debug("getMibObjectList: collection: " + cName + " sysoid: " + aSysoid + " address: " + anAddress + " ifType: " + ifType);
 
         if (aSysoid == null) {
             if (log().isDebugEnabled())
                 log().debug("getMibObjectList: aSysoid parameter is NULL...");
-            return new ArrayList();
+            return new ArrayList<MibObject>();
         }
 
         // Retrieve the appropriate Collection object
         // 
         SnmpCollection collection = (SnmpCollection) m_collectionMap.get(cName);
         if (collection == null) {
-            return new ArrayList();
+            return new ArrayList<MibObject>();
         }
 
         // 
@@ -263,7 +342,7 @@ public final class DataCollectionConfigFactory implements DataCollectionConfig {
         // NOTE: A SystemDef object which contains an empty IP list and
         // an empty Mask list matches ALL IP addresses (default is INCLUDE).
         //
-        List systemList = new ArrayList();
+        List<SystemDef> systemList = new ArrayList<SystemDef>();
         Enumeration e = collection.getSystems().enumerateSystemDef();
 
         SystemDef system = null;
@@ -360,7 +439,7 @@ public final class DataCollectionConfigFactory implements DataCollectionConfig {
 
         // Next build list of Mib objects to collect from the list of matching
         // SystemDefs
-        List mibObjectList = new ArrayList();
+        List<MibObject> mibObjectList = new ArrayList<MibObject>();
 
         Iterator i = systemList.iterator();
         while (i.hasNext()) {
@@ -401,7 +480,7 @@ public final class DataCollectionConfigFactory implements DataCollectionConfig {
      * @param mibObjectList
      *            List of MibObject objects being built.
      */
-    private void processGroupName(String cName, String groupName, int ifType, List mibObjectList) {
+    private void processGroupName(String cName, String groupName, int ifType, List<MibObject> mibObjectList) {
         Category log = log();
 
         // Using the collector name retrieve the group map
@@ -417,18 +496,16 @@ public final class DataCollectionConfigFactory implements DataCollectionConfig {
             return;
         }
 
-        if (log.isDebugEnabled())
+        if (log.isDebugEnabled()) {
             log.debug("processGroupName:  processing group: " + groupName + " groupIfType: " + group.getIfType() + " ifType: " + ifType);
+        }
 
         // Process any sub-groups contained within this group
         List groupNameList = (List) group.getIncludeGroupCollection();
         Iterator i = groupNameList.iterator();
         while (i.hasNext()) {
-            processGroupName(cName, (String) i.next(), ifType, mibObjectList); // Recursive
-                                                                                // call
-                                                                                // to
-                                                                                // process
-                                                                                // sub-groups
+            // Recursive call to process sub-groups
+            processGroupName(cName, (String) i.next(), ifType, mibObjectList);
         }
 
         // Add this group's objects to the object list provided
@@ -521,8 +598,9 @@ public final class DataCollectionConfigFactory implements DataCollectionConfig {
         }
 
         if (addGroupObjects) {
-            if (log.isDebugEnabled())
+            if (log.isDebugEnabled()) {
                 log.debug("processGroupName: OIDs from group '" + group.getName() + ":" + group.getIfType() + "' are included for ifType: " + ifType);
+            }
             List objectList = (List) group.getMibObjCollection();
             processObjectList(groupName, groupIfType, objectList, mibObjectList);
         } else {
@@ -543,7 +621,7 @@ public final class DataCollectionConfigFactory implements DataCollectionConfig {
      * @param mibObjectList
      *            List of MibObject objects currently being built
      */
-    static void processObjectList(String groupName, String groupIfType, List objectList, List mibObjectList) {
+    private void processObjectList(String groupName, String groupIfType, List objectList, List<MibObject> mibObjectList) {
         Iterator i = objectList.iterator();
         while (i.hasNext()) {
             MibObj mibObj = (MibObj) i.next();
@@ -558,6 +636,11 @@ public final class DataCollectionConfigFactory implements DataCollectionConfig {
             aMibObject.setInstance(mibObj.getInstance());
             aMibObject.setMaxval(mibObj.getMaxval());
             aMibObject.setMinval(mibObj.getMinval());
+            
+            ResourceType resourceType = getConfiguredResourceTypes().get(mibObj.getInstance());
+            if (resourceType != null) {
+            	aMibObject.setResourceType(resourceType);
+            }
 
             // Add the MIB object provided it isn't already in the list
             if (!mibObjectList.contains(aMibObject)) {
@@ -680,8 +763,8 @@ public final class DataCollectionConfigFactory implements DataCollectionConfig {
         // This is parsed and built at initialization for
         // faster processing at run-timne.
         // 
-        m_collectionMap = new HashMap();
-        m_collectionGroupMap = new HashMap();
+        m_collectionMap = new HashMap<String,SnmpCollection>();
+        m_collectionGroupMap = new HashMap<String,Map<String,Group>>();
 
         java.util.Collection collections = m_config.getSnmpCollectionCollection();
         Iterator citer = collections.iterator();
@@ -689,7 +772,7 @@ public final class DataCollectionConfigFactory implements DataCollectionConfig {
             SnmpCollection collection = (SnmpCollection) citer.next();
 
             // Build group map for this collection
-            Map groupMap = new HashMap();
+            Map<String,Group> groupMap = new HashMap<String,Group>();
 
             Groups groups = collection.getGroups();
             java.util.Collection groupList = groups.getGroupCollection();

@@ -8,6 +8,11 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2006 Aug 15: Use generic for collection - dj@opennms.org
+//
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -44,7 +49,7 @@ public abstract class DbCollectionResource extends CollectionResource {
         m_agent = agent;
     }
 
-    public Collection getAttributeTypes() {
+    public Collection<AttributeType> getAttributeTypes() {
         return getResourceType().getAttributeTypes();
     }
 

@@ -6,12 +6,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.opennms.netmgt.collectd.AttributeType;
-import org.opennms.netmgt.collectd.CollectionAgent;
 import org.opennms.netmgt.collectd.MibObject;
-import org.opennms.netmgt.collectd.OnmsSnmpCollection;
 import org.opennms.netmgt.collectd.SnmpCollector;
 import org.opennms.netmgt.config.DataCollectionConfig;
+import org.opennms.netmgt.config.datacollection.ResourceType;
 import org.opennms.netmgt.snmp.SnmpCollectorTestCase;
 
 public class MockDataCollectionConfig implements DataCollectionConfig {
@@ -71,22 +69,22 @@ public class MockDataCollectionConfig implements DataCollectionConfig {
     
     };
     
-    private List m_attrList;
+    private List<MibObject> m_attrList;
     private Map m_attrMap;
 
     
     
     public MockDataCollectionConfig() {
-        setAttrList(new ArrayList());
+        setAttrList(new ArrayList<MibObject>());
         setAttrMap(new TreeMap());
         addInitialAttributeTypes();
     }
 
-    public void setAttrList(List attrList) {
+    public void setAttrList(List<MibObject> attrList) {
         m_attrList = attrList;
     }
 
-    public List getAttrList() {
+    public List<MibObject> getAttrList() {
         return m_attrList;
     }
 
@@ -162,8 +160,12 @@ public class MockDataCollectionConfig implements DataCollectionConfig {
         return 300;
     }
 
-    public List getMibObjectList(String cName, String aSysoid, String anAddress, int ifType) {
+    public List<MibObject> getMibObjectList(String cName, String aSysoid, String anAddress, int ifType) {
         return getAttrList();
     }
+
+	public Map<String,ResourceType> getConfiguredResourceTypes() {
+		return Collections.EMPTY_MAP;
+	}
 
 }

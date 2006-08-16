@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2006 Aug 15: Remove old, incorrect comment.  Fix up log message. - dj@opennms.org
 // 2004 Dec 27: Changed SQL_RETRIEVE_INTERFACES to omit interfaces that have been
 //              marked as deleted.
 // 2004 Feb 12: Rebuild the package to ip list mapping while a new discoveried interface
@@ -136,8 +137,7 @@ public final class Collectd extends AbstractServiceDaemon implements EventListen
 	}
 
 	private void installMessageSelectors() {
-		// Create the JMS selector for the ueis this service is interested in
-		//
+		// Add the EventListeners for the UEIs in which this service is interested
 		List ueiList = new ArrayList();
 
 		// nodeGainedService
@@ -259,7 +259,7 @@ public final class Collectd extends AbstractServiceDaemon implements EventListen
     }
 
 	private void scheduleInterfacesWithService(String svcName) {
-		log().debug("scheduleExistingInterfaces: svcName = " + svcName);
+		log().debug("scheduleInterfacesWithService: svcName = " + svcName);
 
 		Collection ifsWithServices = getIpInterfaceDao().findByServiceType(svcName);
 		for (Iterator it = ifsWithServices.iterator(); it.hasNext();) {

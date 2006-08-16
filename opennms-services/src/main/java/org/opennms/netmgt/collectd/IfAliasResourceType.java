@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2006 Aug 15: Use generics for collections.
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -70,7 +74,7 @@ public class IfAliasResourceType extends ResourceType {
         return resource;
     }
 
-    public Collection getAttributeTypes() {
+    public Collection<AttributeType> getAttributeTypes() {
         MibObject ifAliasMibObject = new MibObject();
         ifAliasMibObject.setOid(".1.3.6.1.2.1.31.1.1.1.18");
         ifAliasMibObject.setAlias("ifAlias");

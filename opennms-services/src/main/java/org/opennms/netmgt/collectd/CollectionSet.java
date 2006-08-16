@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2006 Aug 15: Formatting, use generics for collections, be explicit about method visibility, add support for generic indexes. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -40,6 +44,7 @@ import java.util.List;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.config.DataCollectionConfigFactory;
 import org.opennms.netmgt.snmp.AggregateTracker;
 import org.opennms.netmgt.snmp.Collectable;
 import org.opennms.netmgt.snmp.CollectionTracker;
@@ -80,6 +85,19 @@ public class CollectionSet implements Collectable {
     	public int getIfNumber() {
     		return m_ifNumber;
     	}
+    	
+        public String toString() {
+        	StringBuffer buffer = new StringBuffer();
+        	
+        	buffer.append(getClass().getName());
+        	buffer.append("@");
+        	buffer.append(Integer.toHexString(hashCode()));
+        	
+        	buffer.append(": ifNumber: " + m_ifNumber);
+        	
+        	return buffer.toString();
+        }
+
     }
 
     private CollectionAgent m_agent;
@@ -87,6 +105,32 @@ public class CollectionSet implements Collectable {
     private SnmpIfCollector m_ifCollector;
     private CollectionSet.IfNumberTracker m_ifNumber;
     private SnmpNodeCollector m_nodeCollector;
+    
+    public String toString() {
+    	StringBuffer buffer = new StringBuffer();
+
+    	buffer.append("CollectionAgent: ");
+    	buffer.append(m_agent);
+    	buffer.append("\n");
+    	
+    	buffer.append("OnmsSnmpCollection: ");
+    	buffer.append(m_snmpCollection);
+    	buffer.append("\n");
+    	
+    	buffer.append("SnmpIfCollector: ");
+    	buffer.append(m_ifCollector);
+    	buffer.append("\n");
+    	
+    	buffer.append("IfNumberTracker: ");
+    	buffer.append(m_ifNumber);
+    	buffer.append("\n");
+    	
+    	buffer.append("SnmpNodeCollector: ");
+    	buffer.append(m_nodeCollector);
+    	buffer.append("\n");
+    	
+    	return buffer.toString();
+    }
 	
 	public CollectionSet(CollectionAgent agent, OnmsSnmpCollection snmpCollection) {
 		m_agent = agent;
@@ -163,14 +207,36 @@ public class CollectionSet implements Collectable {
     /**
      * @deprecated Use {@link org.opennms.netmgt.collectd.IfResourceType#getCombinedInterfaceAttributes()} instead
      */
-    List getCombinedInterfaceAttributes() {
-    	List attributes = new LinkedList();
+    List<AttributeType> getCombinedInterfaceAttributes() {
+    	List<AttributeType> attributes = new LinkedList<AttributeType>();
+
     	attributes.addAll(getIfResourceType().getCombinedInterfaceAttributes());
     	attributes.addAll(getIfAliasResourceType().getAttributeTypes());
+    	attributes.addAll(getGenericIndexAttributeTypes());
+
     	return attributes;
     }
+    
+    protected Collection<AttributeType> getGenericIndexAttributeTypes() {
+    	Collection<AttributeType> attributeTypes = new LinkedList<AttributeType>();
+    	Collection<ResourceType> resourceTypes = getGenericIndexResourceTypes();
+    	for (ResourceType resourceType : resourceTypes) {
+    		attributeTypes.addAll(resourceType.getAttributeTypes());
+    	}
+    	return attributeTypes;
+    }
 
-    /**
+    private Collection<ResourceType> getGenericIndexResourceTypes() {
+    	Collection<org.opennms.netmgt.config.datacollection.ResourceType> configuredResourceTypes =
+    		DataCollectionConfigFactory.getInstance().getConfiguredResourceTypes().values();
+    	List<ResourceType> resourceTypes = new LinkedList<ResourceType>();
+    	for (org.opennms.netmgt.config.datacollection.ResourceType configuredResourceType : configuredResourceTypes) {
+    		resourceTypes.add(new GenericIndexResourceType(m_agent, m_snmpCollection, configuredResourceType));
+    	}
+    	return resourceTypes;
+	}
+
+	/**
      * @deprecated Use {@link org.opennms.netmgt.collectd.IfResourceType#getIfInfos()} instead
      */
     public Collection getIfInfos() {
@@ -220,7 +286,7 @@ public class CollectionSet implements Collectable {
         return new AggregateTracker(trackers);
     }
 
-    SnmpWalker createWalker() {
+    protected SnmpWalker createWalker() {
         CollectionAgent agent = getCollectionAgent();
         return SnmpUtils.createWalker(getAgentConfig(), "SnmpCollectors for " + agent.getHostAddress(), getTracker());
     }
@@ -251,6 +317,7 @@ public class CollectionSet implements Collectable {
     }
 
     void collect() throws CollectionWarning {
+    	// XXX Should we have a call to hasDataToCollect here?
         try {
     
             // now collect the data
@@ -323,8 +390,9 @@ public class CollectionSet implements Collectable {
         SnmpAgentConfig agentConfig = getCollectionAgent().getAgentConfig();
         agentConfig.setMaxVarsPerPdu(computeMaxVarsPerPdu(agentConfig));
         int snmpPort = m_snmpCollection.getSnmpPort();
-        if (snmpPort > -1)
+        if (snmpPort > -1) {
             agentConfig.setPort(snmpPort);
+        }
         return agentConfig;
     }
 
@@ -359,10 +427,11 @@ public class CollectionSet implements Collectable {
     }
 
     private BasePersister createPersister(ServiceParameters params) {
-        if (Boolean.getBoolean("rrd.storeByGroup"))
+        if (Boolean.getBoolean("rrd.storeByGroup")) {
             return new GroupPersister(params);
-        else
+        } else {
             return new OneToOnePersister(params);
+        }
     }
 
     private boolean ifCountHasChanged(CollectionAgent agent) {

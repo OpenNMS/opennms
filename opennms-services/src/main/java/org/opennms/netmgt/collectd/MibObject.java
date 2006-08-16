@@ -10,6 +10,7 @@
 //
 // Modifications:
 // 
+// 2006 Aug 15: Formatting, resource type support. - dj@opennms.org
 // 2003 Oct 20: Added minval and maxval code for mibObj RRDs
 // 2003 Jan 31: Cleaned up some unused imports.
 //
@@ -42,6 +43,7 @@ package org.opennms.netmgt.collectd;
 import java.util.Iterator;
 import java.util.List;
 
+import org.opennms.netmgt.config.datacollection.ResourceType;
 import org.opennms.netmgt.snmp.Collectable;
 import org.opennms.netmgt.snmp.CollectionTracker;
 import org.opennms.netmgt.snmp.ColumnTracker;
@@ -102,6 +104,8 @@ public class MibObject implements Collectable {
     private String m_groupName;
 
     private String m_groupIfType;
+
+	private ResourceType m_resourceType;
 
     /**
      * Reserved instance keywords.
@@ -285,15 +289,19 @@ public class MibObject implements Collectable {
             return false;
         }
 
-        if (m_oid.equals(aMibObject.getOid()))
-            if (m_instance.equals(aMibObject.getInstance()))
+        if (m_oid.equals(aMibObject.getOid())) {
+            if (m_instance.equals(aMibObject.getInstance())) {
                 //
                 // 'alias' and 'type', values are optional so we need to check
                 // for null
                 //
-                if ((m_alias == null && aMibObject.getInstance() == null) || m_alias.equals(aMibObject.getAlias()))
-                    if ((m_type == null && aMibObject.getType() == null) || m_type.equals(aMibObject.getType()))
+                if ((m_alias == null && aMibObject.getInstance() == null) || m_alias.equals(aMibObject.getAlias())) {
+                    if ((m_type == null && aMibObject.getType() == null) || m_type.equals(aMibObject.getType())) {
                         return true;
+                    }
+                }
+            }
+        }
 
         return false;
 
@@ -325,9 +333,12 @@ public class MibObject implements Collectable {
     }
     
     public CollectionTracker getCollectionTracker() {
-        return "ifIndex".equals(getInstance()) 
-            ? (CollectionTracker)new ColumnTracker(SnmpObjId.get(getOid())) 
-            : (CollectionTracker)new InstanceListTracker(SnmpObjId.get(getOid()), getInstance());
+    	if (INSTANCE_IFINDEX.equals(getInstance()) || getResourceType() != null) {
+            return (CollectionTracker) new ColumnTracker(SnmpObjId.get(getOid()));
+    	} else {
+            return (CollectionTracker) new InstanceListTracker(SnmpObjId.get(getOid()), getInstance());
+    		
+    	}
     }
 
     public static CollectionTracker[] getCollectionTrackers(List objList) {
@@ -357,6 +368,14 @@ public class MibObject implements Collectable {
     public String getGroupIfType() {
         return m_groupIfType;
     }
+
+	public void setResourceType(ResourceType resourceType) {
+		m_resourceType = resourceType;
+	}
+	
+	public ResourceType getResourceType() {
+		return m_resourceType;
+	}
 
 
 }

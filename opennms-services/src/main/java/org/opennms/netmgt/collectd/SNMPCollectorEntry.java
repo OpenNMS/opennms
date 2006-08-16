@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2006 Aug 15: Formatting. - dj@opennms.org
 // 2003 Jan 31: Cleaned up some unused imports.
 //
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -101,18 +102,19 @@ public final class SNMPCollectorEntry extends AbstractSnmpStore {
         String key = base.append(inst).toString();
         putValue(key, val);
         List attrTypes = findAttributeTypeForOid(base, inst);
-        if (attrTypes.isEmpty()) throw new IllegalArgumentException("Received result for unexpected oid ["+base+"].["+inst+"]");
+        if (attrTypes.isEmpty()) {
+        	throw new IllegalArgumentException("Received result for unexpected oid ["+base+"].["+inst+"]");
+        }
         
 
         for (Iterator iter = attrTypes.iterator(); iter.hasNext();) {
             AttributeType attrType = (AttributeType) iter.next();
 
-            if (attrType.getInstance().equals(MibObject.INSTANCE_IFINDEX))
+            if (attrType.getInstance().equals(MibObject.INSTANCE_IFINDEX)) {
                 putIfIndex(inst.toInt());
-            log().debug("storeResult: added value for "+attrType.getAlias()+": ["+base+"].["+inst+"] = "+val);
-
-
+            }
             attrType.storeResult(m_collectionSet, this, base, inst, val);
+            log().debug("storeResult: added value for "+attrType.getAlias()+": ["+base+"].["+inst+"] = "+val);
         }
     }
 
@@ -120,20 +122,23 @@ public final class SNMPCollectorEntry extends AbstractSnmpStore {
     String getValueForBase(String baseOid) {
     
         String instance = String.valueOf(getIfIndex()); 
-        if (instance == null || instance.equals("")) 
+        if (instance == null || instance.equals("")) {
             return null;
+        }
         
     
         String fullOid = baseOid + "." + instance;
     
         String snmpVar = getDisplayString(fullOid);
-        if (snmpVar == null)
+        if (snmpVar == null) {
             return null;
+        }
     
         snmpVar.trim();
     
-        if (snmpVar.equals(""))
+        if (snmpVar.equals("")) {
             return null;
+        }
     
         return snmpVar;
     
