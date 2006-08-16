@@ -1,5 +1,9 @@
 1.3.1 to 1.3.2
 ----------------------------------------------------------------------
+- HTML fixes in the webUI per bug #1558.  Thanks Marc C Poulin
+  <opennms@jawfish.com>!
+- Data collection on arbitrary SNMP indexes is now supported.  See
+  bug #504.
 - Alarms now remove old events by default.  Use "auto-clean" attribute
   in eventconf files.  Files eventconf.xml and Standard.events.xml have
   been modified with this optional attribute.  Adjust to your requirements.
