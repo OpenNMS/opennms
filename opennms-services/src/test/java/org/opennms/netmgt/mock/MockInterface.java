@@ -102,7 +102,7 @@ public class MockInterface extends MockContainer {
         final String critSvcName = getNetwork().getCriticalService();
         final MockService critSvc = getService(critSvcName);
         class IFStatusCalculator extends MockVisitorAdapter {
-            PollStatus status = PollStatus.STATUS_DOWN;
+            PollStatus status = PollStatus.down();
 
             public PollStatus getStatus() {
                 return status;
@@ -111,7 +111,7 @@ public class MockInterface extends MockContainer {
             public void visitService(MockService svc) {
                 if (critSvc == null || critSvc.equals(svc)) {
                     if (svc.getPollStatus().isUp())
-                        status = PollStatus.STATUS_UP;
+                        status = PollStatus.up();
                 }
             }
 

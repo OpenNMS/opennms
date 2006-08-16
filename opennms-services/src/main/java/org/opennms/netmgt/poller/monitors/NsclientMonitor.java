@@ -172,7 +172,7 @@ public class NsclientMonitor extends IPv4LatencyMonitor {
                 reason = "NsclientException: " + e.getMessage();
             }
         } // end for(;;)
-        return PollStatus.getPollStatus(serviceStatus, reason);
+        return PollStatus.get(serviceStatus, reason, responseTime);
 
     }
 }

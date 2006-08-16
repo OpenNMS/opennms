@@ -207,8 +207,8 @@ public class MockNetworkTest extends TestCase {
         m_pollerConfig.populatePackage(m_network);
         m_pollerConfig.setPollInterval("ICMP", 500L);
         
-        m_upChecker = new StatusChecker(PollStatus.STATUS_UP);
-        m_downChecker = new StatusChecker(PollStatus.STATUS_DOWN);
+        m_upChecker = new StatusChecker(PollStatus.up());
+        m_downChecker = new StatusChecker(PollStatus.down());
 
     }
 
@@ -443,17 +443,17 @@ public class MockNetworkTest extends TestCase {
     public void testPollStatus() {
         MockNode node = m_network.getNode(1);
         MockInterface iface = m_network.getInterface(1, "192.168.1.2");
-        assertEquals(PollStatus.STATUS_UP, node.getPollStatus());
-        assertEquals(PollStatus.STATUS_UP, iface.getPollStatus());
+        assertEquals(PollStatus.up(), node.getPollStatus());
+        assertEquals(PollStatus.up(), iface.getPollStatus());
         node.bringDown();
-        assertEquals(PollStatus.STATUS_DOWN, node.getPollStatus());
-        assertEquals(PollStatus.STATUS_DOWN, iface.getPollStatus());
+        assertEquals(PollStatus.down(), node.getPollStatus());
+        assertEquals(PollStatus.down(), iface.getPollStatus());
         iface.bringUp();
-        assertEquals(PollStatus.STATUS_UP, node.getPollStatus());
-        assertEquals(PollStatus.STATUS_UP, iface.getPollStatus());
+        assertEquals(PollStatus.up(), node.getPollStatus());
+        assertEquals(PollStatus.up(), iface.getPollStatus());
         node.bringUp();
-        assertEquals(PollStatus.STATUS_UP, node.getPollStatus());
-        assertEquals(PollStatus.STATUS_UP, iface.getPollStatus());
+        assertEquals(PollStatus.up(), node.getPollStatus());
+        assertEquals(PollStatus.up(), iface.getPollStatus());
     }
 
     public void testQueryManager() throws Exception {

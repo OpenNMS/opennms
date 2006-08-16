@@ -117,7 +117,7 @@ public class PollableInterface extends PollableContainer {
         PollableService criticalSvc = getCriticalService();
         if (criticalSvc != null) {
             criticalSvc.recalculateStatus();
-            updateStatus(criticalSvc.getStatus().isUp() ? PollStatus.STATUS_UP : PollStatus.STATUS_DOWN);
+            updateStatus(criticalSvc.getStatus().isUp() ? PollStatus.up() : PollStatus.down());
         } else {
             super.recalculateStatus();
         }
@@ -141,7 +141,7 @@ public class PollableInterface extends PollableContainer {
         if (getStatus().isUp() || critSvc == null || elem == critSvc)
             return super.poll(elem);
     
-        return PollStatus.STATUS_DOWN;
+        return PollStatus.down();
     }
     
     public PollStatus pollRemainingMembers(PollableElement member) {
@@ -152,7 +152,7 @@ public class PollableInterface extends PollableContainer {
             if (member != critSvc)
                 critSvc.poll();
 
-            return critSvc.getStatus().isUp() ? PollStatus.STATUS_UP : PollStatus.STATUS_DOWN;
+            return critSvc.getStatus().isUp() ? PollStatus.up() : PollStatus.down();
         }
         
         if (getContext().isPollingAllIfCritServiceUndefined())

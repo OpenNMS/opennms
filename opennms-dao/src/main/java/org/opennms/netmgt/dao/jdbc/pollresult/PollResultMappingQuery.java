@@ -82,10 +82,10 @@ public class PollResultMappingQuery extends MappingSqlQuery {
         OnmsMonitoredService monSvc = (OnmsMonitoredService)Cache.obtain(OnmsMonitoredService.class, monSvcId);
         result.setMonitoredService(monSvc);
         
+        // TODO add responseTime to pollResults table
         Integer statusCode = (Integer)rs.getObject("statusCode");
-        PollStatus status = PollStatus.getPollStatus(statusCode);
-        status.setStatusName((String)rs.getObject("statusCode"));
-        status.setReason((String)rs.getObject("reason"));
+        String reason = rs.getString("reason");
+        PollStatus status = PollStatus.get(statusCode, reason);
         
         result.setStatus(status);     
         

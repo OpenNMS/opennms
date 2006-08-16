@@ -295,7 +295,7 @@ final public class NrpeMonitor extends IPv4LatencyMonitor {
         //
         // return the status of the service
         //
-		return PollStatus.getPollStatus(serviceStatus, reason);
+		return PollStatus.get(serviceStatus, reason, responseTime);
     }
 
 }

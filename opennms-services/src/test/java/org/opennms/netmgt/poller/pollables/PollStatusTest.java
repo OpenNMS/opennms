@@ -67,13 +67,13 @@ public class PollStatusTest extends TestCase {
     public void testPollStatus() {
         
         //Compare construction via constant
-        PollStatus statusDown1 = PollStatus.STATUS_DOWN;
-        PollStatus statusDown2 = PollStatus.STATUS_DOWN;
+        PollStatus statusDown1 = PollStatus.down("test down 1");
+        PollStatus statusDown2 = PollStatus.down("test down 2");
         
         assertTrue(statusDown1 == statusDown2);
         assertTrue(statusDown1.equals(statusDown2));
         
-        statusDown2 = PollStatus.getPollStatus(PollStatus.SERVICE_UNAVAILABLE, null);
+        statusDown2 = PollStatus.get(PollStatus.SERVICE_UNAVAILABLE, null);
         assertFalse(statusDown1 == statusDown2);
         assertTrue(statusDown1.equals(statusDown2));
         

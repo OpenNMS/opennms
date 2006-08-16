@@ -213,7 +213,7 @@ public class PassiveStatusKeeperTest extends MockObjectTestCase {
 //	}
 
     public void testSetStatus() {
-        testSetStatus("localhost", "127.0.0.1", "PSV", PollStatus.STATUS_UP);
+        testSetStatus("localhost", "127.0.0.1", "PSV", PollStatus.up());
         
     }
 
@@ -223,9 +223,9 @@ public class PassiveStatusKeeperTest extends MockObjectTestCase {
     }
     
     public void testRestart() {
-        testSetStatus("localhost", "127.0.0.1", "PSV", PollStatus.STATUS_UP);
+        testSetStatus("localhost", "127.0.0.1", "PSV", PollStatus.up());
 
-        testSetStatus("localhost", "127.0.0.1", "PSV2", PollStatus.STATUS_DOWN);
+        testSetStatus("localhost", "127.0.0.1", "PSV2", PollStatus.down());
         
         MockService svc = m_network.getService(100, "127.0.0.1", "PSV2");
         Event downEvent = svc.createDownEvent();
@@ -241,8 +241,8 @@ public class PassiveStatusKeeperTest extends MockObjectTestCase {
         m_psk.init();
         m_psk.start();
         
-        assertEquals(PollStatus.STATUS_UP, PassiveStatusKeeper.getInstance().getStatus("localhost", "127.0.0.1", "PSV"));
-        assertEquals(PollStatus.STATUS_DOWN, PassiveStatusKeeper.getInstance().getStatus("localhost", "127.0.0.1", "PSV2"));
+        assertEquals(PollStatus.up(), PassiveStatusKeeper.getInstance().getStatus("localhost", "127.0.0.1", "PSV"));
+        assertEquals(PollStatus.down(), PassiveStatusKeeper.getInstance().getStatus("localhost", "127.0.0.1", "PSV2"));
     }
     
     public void testDownPassiveStatus() throws InterruptedException, UnknownHostException {

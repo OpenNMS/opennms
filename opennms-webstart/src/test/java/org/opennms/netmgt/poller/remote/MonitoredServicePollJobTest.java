@@ -1,6 +1,7 @@
 package org.opennms.netmgt.poller.remote;
 
 import java.text.ParseException;
+import java.util.Date;
 
 import junit.framework.TestCase;
 
@@ -13,6 +14,7 @@ import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
+import org.quartz.spi.TriggerFiredBundle;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 
 public class MonitoredServicePollJobTest extends TestCase {
@@ -72,5 +74,32 @@ public class MonitoredServicePollJobTest extends TestCase {
 		assertTrue(MonitorServicePollJobChecker.callCount < 5);
 		
 	}
+	
+	public void testPoll2() throws Exception {
+		
+		OnmsNode node = new OnmsNode();
+		node.setId(1);
+		OnmsIpInterface iface = new OnmsIpInterface("192.168.1.1", node);
+		OnmsServiceType svcType = new OnmsServiceType("HTTP");
+		OnmsMonitoredService svc = new OnmsMonitoredService(iface, svcType);
+		
+		ServicePollConfiguration svcPollConfig = new ServicePollConfiguration(svc, 100);
+
+		MonitorServicePollDetails pollDetails = new MonitorServicePollDetails(svcPollConfig);
+		pollDetails.setJobClass(MonitorServicePollJobChecker.class);
+		
+		TriggerFiredBundle bundle = new TriggerFiredBundle(pollDetails, pollDetails.getTrigger(), null, false, new Date(), new Date(), null, new Date());
+		
+		MonitoredServicePollJob pollJob = new MonitoredServicePollJob();
+		
+		JobExecutionContext context = new JobExecutionContext(m_scheduler, bundle, pollJob);
+
+		pollJob.execute(context);
+		
+		assertNotNull(svcPollConfig.getPollModel().getCurrentStatus());
+		
+		
+	}
+
 
 }

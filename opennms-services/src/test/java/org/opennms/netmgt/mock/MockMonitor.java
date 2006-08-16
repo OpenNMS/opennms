@@ -72,10 +72,11 @@ public class MockMonitor implements ServiceMonitor {
             if (svc == null) {
                 MockUtil.println("Invalid Poll: " + ipAddr + "/" + m_svcName);
                 m_network.receivedInvalidPoll(ipAddr, m_svcName);
-                return PollStatus.STATUS_UNKNOWN;
+                return PollStatus.unknown();
             } else {
                 MockUtil.println("Poll: [" + svc.getInterface().getNode().getLabel() + "/" + ipAddr + "/" + m_svcName + "]");
-                return PollStatus.getPollStatus(svc.poll(pkg), "Test status for "+svc);
+                PollStatus pollStatus = svc.poll(pkg);
+				return PollStatus.get(pollStatus.getStatusCode(), "Test status for "+svc+" reason: "+pollStatus.getReason());
             }
         }
     }

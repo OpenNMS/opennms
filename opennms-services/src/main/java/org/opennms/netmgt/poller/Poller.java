@@ -402,9 +402,9 @@ public class Poller extends AbstractServiceDaemon {
         
         
         if (svcLostEventId == null) 
-            svc.updateStatus(PollStatus.STATUS_UP);
+            svc.updateStatus(PollStatus.up());
         else {
-            svc.updateStatus(PollStatus.STATUS_DOWN);
+            svc.updateStatus(PollStatus.down());
             
             InitCause causeSetter = new InitCause();
             PollEvent cause = new DbPollEvent(svcLostEventId.intValue(), date);
