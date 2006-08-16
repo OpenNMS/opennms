@@ -55,31 +55,21 @@
 <%
     OutageSummary[] summaries = this.model.getCurrentOutageSummaries();
 %>
-
-<table class="standardfirst">
-  <tr>
-     <td class="standardheader"><a href="outage/current.jsp">Nodes with Outages</a></td>
-  </tr>
-
-<% for( int i=0; i < ROW_COUNT; i++ ) { %>
-  <% if( i < summaries.length ) { %>
-    <% OutageSummary summary = summaries[i];
-       String nodeLabel = summary.getNodeLabel();
-       int nodeId = summary.getNodeId();
-    %>
-    <tr>
-      <td class="standard"><a href="element/node.jsp?node=<%=nodeId%>"><nobr><%=nodeLabel%></nobr></a></td>
-    </tr>
-  <% } else { %>
-    <tr><td class="standard">&nbsp;</td></tr>
-  <% } %>
-<% } %>
-
-<% if( summaries.length > ROW_COUNT ) { %>
-  <tr>
-    <td class="standard">
-      <a HREF="outage/index.jsp"><%=summaries.length - ROW_COUNT%> more</a>
-    </td>
-  </tr>
-<% } %>
-</table>      
+<!-- includes/servicesdown-box.jsp -->
+<h3><a href="outage/current.jsp">Nodes with Outages</a></h3>
+<div class="boxWrapper">
+	<ul class="plain">
+	<% for( int i=0; i < ROW_COUNT; i++ ) { %>
+	  <% if( i < summaries.length ) { %>
+	    <% OutageSummary summary = summaries[i];
+	       String nodeLabel = summary.getNodeLabel();
+	       int nodeId = summary.getNodeId();
+	    %>
+	    <li><a href="element/node.jsp?node=<%=nodeId%>"><%=nodeLabel%></a></li>
+	  <% } %>
+	<% } %>
+	</ul>
+	<% if( summaries.length > ROW_COUNT ) { %>
+	<p><a HREF="outage/index.jsp"><%=summaries.length - ROW_COUNT%> more</a></p>
+	<% } %>      
+</div>

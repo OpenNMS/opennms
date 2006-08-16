@@ -84,40 +84,21 @@
 
 <%-- Start the HTML Page Definition here --%>
 
-<!--
-<table width="100%" border="1" cellspacing="0" cellpadding="2" id="ksc" bordercolor="black" bgcolor="#cccccc">
-  <tr>
-    <td bgcolor="#999999" ><b><a href="KSC/index.jsp">KSC Reports</a></b></td>
-  </tr>
--->
-<table class="standard" id="ksc">
-  <tr>
-    <td class="standardheader"><a href="KSC/index.jsp">KSC Reports</a></td>
-  </tr>
-  
-  <tr>
+<h3><a href="KSC/index.jsp">KSC Reports</a></h3>
+<div class="boxWrapper">
     <td class="standardmorepadding">
       <form method="get" name="choose_report" action="KSC/form_proc_main.jsp">
          <input type="hidden" name="report_action" value="View">
 	    <% if (report_array.length < 1) { %>
-	      <br/>
-	      No KSC reports defined
+	      <p>No KSC reports defined</p>
 	    <% } else { %>
-    		<font size="-1">Choose a report to view</font>
-                <br/>
-
-                    <select style="width: 100%;" name="report" size="1">
-                            <% for( int i=0; i < r_count; i++ ) { %>
-                                <option value="<%=i%>"> <%=report_array[i].getTitle()%>  </option>
-                            <% } %>
-                    </select>
-                <br/>              
-
-              <input type="submit" value="Execute Query" />
+    		<p>Choose a <label for="KSCReport">report to view</label>:</p>
+         <select style="width: 100%;" name="report" id="KSCReport">
+         <% for( int i=0; i < r_count; i++ ) { %>
+             <option value="<%=i%>"> <%=report_array[i].getTitle()%></option>
+         <% } %>
+			</select>
+			<input type="submit" value="Execute Query" />
 		<% } %>
-      </form>
-    
-    </td>
-  </tr>
-  
-</table>
+	</form>
+</div>

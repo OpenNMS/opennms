@@ -67,32 +67,22 @@
     PerformanceModel.QueryableNode[] nodes = this.model.getQueryableNodes();
 %>
 
-<table class="standard">
-  <tr>
-    <td class="standardheader"><a href="performance/index.jsp">Performance</a></td>
-  </tr>
-
-  <tr> 
-    <td class="standardmorepadding">
+<h3><a href="performance/index.jsp">Performance</a></h3>
+<div class="boxWrapper">
 <%  if( nodes != null && nodes.length > 0 ) { %>
       <form method="get" action="performance/addIntfFromNode" >
         <input type="hidden" name="endUrl" value="performance/addReportsToUrl" />
         <input type="hidden" name="relativetime" value="lastday" />
-              Choose a node to query
-              <br/>
-
-              <select style="width: 100%;" name="node" size="1">
+              <p>Choose a <label for="node">node to query</label>:</p>
+              <select style="width: 100%;" name="node" id="node">
                 <% for( int i=0; i < nodes.length; i++ ) { %>
                    <option value="<%=nodes[i].getNodeId()%>"><%=nodes[i].getNodeLabel()%></option>
                 <% } %>
               </select>
               <br/>
-
               <input type="submit" value="Execute Query" />
       </form>
 <% } else { %>
-      No performance data has been gathered yet
+      <p>No performance data has been gathered yet</p>
 <% }  %>
-    </td>
-  </tr>        
-</table>
+</div>

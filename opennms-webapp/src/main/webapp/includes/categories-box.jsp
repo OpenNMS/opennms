@@ -74,6 +74,17 @@
 	boolean opennmsDisconnect =
 		m_category_list.isDisconnected(earliestUpdate);
 %>
+<%	if (opennmsDisconnect) { %>
+	    <h3>OpenNMS Disconnect -- is the OpenNMS daemon running? - 
+		Last update:
+<%=		(earliestUpdate > 0 ?
+			 new Date(earliestUpdate).toString() :
+			 "one or more categories have never been updated.") %>
+	      </h3>
+<%	} else { %>
+	    <h3>Percentage change over past 24 hours</h3>
+<%	} %>
+
 
         <table class="standardfirst">
 
@@ -81,13 +92,16 @@
 	for (Iterator i = categoryData.keySet().iterator(); i.hasNext(); ) {
 	    String sectionName = (String) i.next();
 %>
-
-	    <tr>
-	    <td class="standardheader" width="50%"><%= sectionName %></td>
-	    <td class="standardheader" width="20%" align="right">Outages</td>
-	    <td class="standardheader" width="30%" align="right">24hr Avail</td>
-	    </tr>
-	    
+	<thead>
+		<col />
+		<col width="20%" />
+		<col width="30%" />
+		<tr>
+			<th><%= sectionName %></th>
+			<th align="right">Outages</th>
+			<th align="right">Availability</th>
+		</tr>
+	</thead>
 <%
  	    List categories = (List) categoryData.get(sectionName);
 
@@ -95,49 +109,24 @@
 		Category category = (Category) j.next();
 		String categoryName = category.getName();
 %>
-
-		<tr>
-
+	<tr>
 		<td class="standard"><a href="<%= response.encodeURL(
 				"rtc/category.jsp?category=" +
 			    	URLEncoder.encode(categoryName, "UTF-8")) %>"
-		       title="<%= category.getTitle() %>"
-		    ><%= categoryName %></a></td>
-		<td class="standard" bgcolor="<%= (opennmsDisconnect ? "lightblue" :
-			       category.getOutageColor()) %>"
+		       title="<%= category.getTitle() %>"><%= categoryName %></a></td>
+		<td class="standard" style="background-color: <%= (opennmsDisconnect ? "lightblue" :
+			       category.getOutageColor()) %>;"
 	            align="right"
-		    title="Updated: <%= category.getLastUpdated() %>"
-		><%= category.getOutageText() %></td>
-		<td class="standard" bgcolor="<%= (opennmsDisconnect ? "lightblue" :
-			      category.getAvailColor()) %>"
+		    title="Updated: <%= category.getLastUpdated() %>"><%= category.getOutageText() %></td>
+		<td class="standard" style="background-color: <%= (opennmsDisconnect ? "lightblue" :
+			      category.getAvailColor()) %>;"
 		    align="right" 
-		    title="Updated: <%= category.getLastUpdated() %>"
-		><b><%= category.getAvailText() %></b></td>
-		
-		</tr>
+		    title="Updated: <%= category.getLastUpdated() %>"><%= category.getAvailText() %></td>
+	</tr>
 <%
 	    }
 	}
 %>
-    
-	<tr>
-
-<%	if (opennmsDisconnect) { %>
-	    <td class="standardheader" colspan="3">
-	      <font color="#bb1111">
-	        OpenNMS Disconnect -- is the OpenNMS daemon running?
-		<br/>
-		Last update:
-<%=		(earliestUpdate > 0 ?
-			 new Date(earliestUpdate).toString() :
-			 "one or more categories have never been updated.") %>
-	      </font>
-            </td>
-<%	} else { %>
-	    <td class="standardheaderplain" colspan="3">Percentage over last 24 hours</td>
-<%	} %>
-
-	</tr>
 	</table>
 
 

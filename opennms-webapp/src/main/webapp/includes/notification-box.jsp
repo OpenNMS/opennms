@@ -54,34 +54,22 @@
     protected NotificationModel model = new NotificationModel();
     protected java.text.ChoiceFormat formatter = new java.text.ChoiceFormat( "0#No outstanding notices|1#1 outstanding notice|2#{0} outstanding notices" );
 %>
-
-<table class="standardfirst">
-  <tr>
-    <td class="standardheader"><a href="notification/index.jsp">Notification</a></td>
-  </tr>
-
-        <tr>
-          <td class="standard">
-            <a href="notification/browse?acktype=unack&filter=<%= java.net.URLEncoder.encode("user="+request.getRemoteUser()) %>">Check Your Notices</a>
-            <br/>
-
-            <%
-                int count = this.model.getOutstandingNoticeCount(request.getRemoteUser());
-                String format = this.formatter.format( count );
-                out.println( java.text.MessageFormat.format( format, new Object[] { new Integer(count) } ));
-             %>
-	    <br/>
-
-            <a href="notification/browse?acktype=unack">Check All Open Notices</a>
-            <br/>
-
-            <%
-                count = this.model.getOutstandingNoticeCount();
-                format = this.formatter.format( count );
-                out.println( java.text.MessageFormat.format( format, new Object[] { new Integer(count) } ));
-             %>
-            <br/>
-	    <a href="roles">Check On-Call Schedule</a>
-    </td>
-  </tr>
-</table>
+<h3><a href="notification/index.jsp">Notification</a></h3>
+<div class="boxWrapper">
+	<ul class="plain">
+		<li><strong>You</strong>: <%
+				int count = this.model.getOutstandingNoticeCount(request.getRemoteUser());
+				String format = this.formatter.format( count );
+				out.println( java.text.MessageFormat.format( format, new Object[] { new Integer(count) } ));
+			%>
+			(<a href="notification/browse?acktype=unack&filter=<%= java.net.URLEncoder.encode("user="+request.getRemoteUser()) %>">Check</a>)</li>
+		<li><strong>All</strong>: 
+			<%
+				count = this.model.getOutstandingNoticeCount();
+				format = this.formatter.format( count );
+				out.println( java.text.MessageFormat.format( format, new Object[] { new Integer(count) } ));
+			%>
+			(<a href="notification/browse?acktype=unack">Check</a>)</li>
+		<li><a href="roles">On-Call Schedule</a></li>
+	</ul>
+</div>

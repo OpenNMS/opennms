@@ -71,33 +71,21 @@
     ResponseTimeModel.QueryableNode[] nodes = this.model.getQueryableNodes();
 %>
 
-<table class="standard">
-  <tr>
-    <td class="standardheader"><a href="response/index.jsp">Response Time</a></td>
-  </tr>
-
-  <tr> 
-    <td class="standardmorepadding">
-<%  if( nodes != null && nodes.length > 0 ) { %>
-      <form method="get" action="response/addIntfFromNode" >
-        <input type="hidden" name="endUrl" value="response/addReportsToUrl" />
-        <input type="hidden" name="relativetime" value="lastday" />
-
-              Choose a node to query
-              <br/>
-
-              <select style="width: 100%;" name="node" size="1">
-                <% for( int i=0; i < nodes.length; i++ ) { %>
-                   <option value="<%=nodes[i].getNodeId()%>"><%=nodes[i].getNodeLabel()%></option>
-                <% } %>
-              </select>
-              <br/>
-
-              <input type="submit" value="Execute Query" />
-      </form>
-<% } else { %>
-      No response time data has been gathered yet
-<% }  %>
-    </td>
-  </tr>        
-</table>
+<h3><a href="response/index.jsp">Response Time</a></h3>
+<div class="boxWrapper">
+	<%  if( nodes != null && nodes.length > 0 ) { %>
+	      <form method="get" action="response/addIntfFromNode" >
+	        <input type="hidden" name="endUrl" value="response/addReportsToUrl" />
+	        <input type="hidden" name="relativetime" value="lastday" />
+	              <p>Choose a <label for="reponseNode">node to query</label>:</p>
+	              <select style="width: 100%;" name="responseNode">
+	                <% for( int i=0; i < nodes.length; i++ ) { %>
+	                   <option value="<%=nodes[i].getNodeId()%>"><%=nodes[i].getNodeLabel()%></option>
+	                <% } %>
+	              </select>
+	              <input type="submit" value="Execute Query" />
+	      </form>
+	<% } else { %>
+	      <p>No response time data has been gathered yet</p>
+	<% }  %>
+</div>
