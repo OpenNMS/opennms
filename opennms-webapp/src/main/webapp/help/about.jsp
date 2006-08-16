@@ -97,9 +97,9 @@
     <td class="standard"><%=request.getHeader( "User-Agent" )%></td>
   </tr>    
 </table>
-
+<hr />
 <h3>License and Copyright</h3>
-      
+<div class="boxWrapper">
 <p>
   The <a href="http://www.opennms.org/">OpenNMS&reg;</a> software, as
   distributed here, is copyright &copy; 2002-2004
@@ -107,16 +107,13 @@
   <a href="http://www.opennms.org/">OpenNMS&reg;</a> is a registered
   trademark of <a href="http://www.opennms.com">The OpenNMS Group, Inc.</a>
 </p>
-
 <p>
   OpenNMS is a derivative work, containing both original code, included
   code and modified code that was published under the GNU General Public
   License. Please see the source for detailed copyright notices, but some
   notable copyright owners are listed below:
 </p>
-
-<p>
-  <ul>
+<ul>
     <li>Original code base for OpenNMS version 1.0.0 Copyright &copy; 1999-2001
       <a href="http://www.oculan.com/">Oculan Corporation</a>.</li>
     <li>Mapping code Copyright &copy; 2003
@@ -124,8 +121,6 @@
     <li>ScriptD code Copyright &copy; 2003
       <a href="http://www.tavve.com">Tavve Software Company</a>.</li>
   </ul>
-</p>
-
 <p>
   This program is free software; you can redistribute it and/or
   modify it under the terms of the 
@@ -147,32 +142,21 @@
 <p>
   You should have received a copy of the
   <a href="http://www.gnu.org/copyleft/gpl.html">GNU General Public License</a>
-  along with this program; if not, write to the 
-  <blockquote>
-    Free Software Foundation, Inc.<br/>
+  along with this program; if not, write to the</p>
+    <p>Free Software Foundation, Inc.<br/>
     59 Temple Place - Suite 330<br/>
-    Boston, MA  02111-1307, USA<br/>
-  </blockquote>
-</p>
-
+    Boston, MA  02111-1307, USA</p>
+</div>
+<hr />
 <h3>OSI Certified Open Source Software</h3>
-
-<div style="float: left;">
-  <img src="images/osi-certified.png"/>
-</div>
-
-<div style="float: left;">
-  This software is OSI Certified Open Source Software.
-
-  <br/>
-
+<div class="boxWrapper">
+<img src="images/osi-certified.png" style="float: left;"/>
+<p>This software is OSI Certified Open Source Software.<br/>
   OSI Certified is a certification mark of the Open Source Initiative.
+</p>
+<div style="clear:both;"></div>
 </div>
-
-<div class="spacer"><!-- --></div>
-
-<br/>
-
+<hr />
 <h3>Supporting Applications</h3>
 
 	<table>

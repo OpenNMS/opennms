@@ -49,30 +49,31 @@ session="true"
   <jsp:param name="breadcrumb" value="Help" />
 </jsp:include>
 
-  <div style="width: 40%; float: left;">
-      <h3>Local Resources</h3>
-      <p><a href="help/about.jsp">About the OpenNMS Web Console</a></p>
 
+      <h3>Local Resources</h3>
+		<div class="boxWrapper">
+			<p><a href="help/about.jsp">About the OpenNMS Web Console</a></p>
+		</div>
+		<hr />
       <h3>Internet Resources</h3>
+		<div class="boxWrapper">
       <p><a href="http://faq.opennms.org">Frequently Asked Questions</a></p>
       <p><a href="http://docs.opennms.org">Online Documentation</a></p>
-  </div>
-
-  <div style="width: 60%; float: left;">
+		</div>
+		<hr />
       <h3>Helpful Resources</h3>
-    
+    	<div class="boxWrapper">
       <p>
         <em>Local resources</em> contain help and are located within your own OpenNMS system.
         <em>Internet resources</em> are external web pages (exits from your OpenNMS Web Console)
         that have information relevant to your OpenNMS system.
       </p>
-      
+      <hr />
       <p>
         Browse the <em>Frequently Asked Questions</em> to find
         answers to common questions or read up on network management the OpenNMS way in the 
         <em>Online Documentation</em>.  Check out important attributes of your OpenNMS system
         on the <em>About page</em>.
       </p>
-  </div>
-
+		</div>
 <jsp:include page="/includes/footer.jsp" flush="false"/>
