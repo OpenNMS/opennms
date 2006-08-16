@@ -42,116 +42,45 @@
 <%@page language="java" contentType="text/html" session="true"  %>
 
 <jsp:include page="/includes/header.jsp" flush="false">
-  <jsp:param name="title" value="Web Console" />
+	<jsp:param name="title" value="Web Console" />
 </jsp:include>
 
     <!-- Column 1 of Body -->  
     <div id="index-contentleft">
-
       <!-- Services down box -->
-<%--
-  <div class="rbroundbox">
-	<div class="rbtop"><div></div></div>
-		<div class="rbcontent"><p>
---%>
 		<jsp:include page="/includes/servicesdown-box.jsp" flush="false" />
-<%--
-                </p>
-		</div><!-- /rbcontent -->
-	<div class="rbbot"><div></div></div>
-</div><!-- /rbroundbox -->    
---%>
-
+		<hr />
     </div>
 
-    <!-- Middle Column -->
-    <div id="index-contentmiddle">
-      <!-- category box(es) -->    
-<%--
-<div class="rbroundbox">
-	<div class="rbtop"><div></div></div>
-		<div class="rbcontent"><p>
---%>
+	<!-- Middle Column -->
+	<div id="index-contentmiddle">
+		<!-- category box(es) -->    
 		<jsp:include page="/includes/categories-box.jsp" flush="false" />
-<%--
-                </p>
-		</div><!-- /rbcontent -->
-	<div class="rbbot"><div></div></div>
-</div><!-- /rbroundbox -->    
---%>
-
-               
-    </div>
-
-      <!--desktop query box -->  
-
-    <!-- Column 3 of Body -->  
-    <div id="index-contentright">
-      <!-- notification box -->    
-<%--
-      <div class="rbroundbox">
-	<div class="rbtop"><div></div></div>
-		<div class="rbcontent"><p>
---%>
+		<hr />
+	</div>
+	<!--desktop query box --> 
+    <!-- Column 3 of Body -->
+	<div id="index-contentright">
+		<!-- notification box -->    
 		<jsp:include page="/includes/notification-box.jsp" flush="false" />
-<%--
-                </p>
-		</div><!-- /rbcontent -->
-	<div class="rbbot"><div></div></div>
-      </div><!-- /rbroundbox -->    
---%>
-
-      <!-- Performance box -->    
-<%--
-      <div class="rbroundbox">
-	<div class="rbtop"><div></div></div>
-		<div class="rbcontent"><p>
---%>
-		 <jsp:include page="/includes/performance-box.jsp" flush="false" />
-<%--
-                </p>
-		</div><!-- /rbcontent -->
-	<div class="rbbot"><div></div></div>
-      </div><!-- /rbroundbox -->        
---%>
-
-      <!-- Response Time box -->    
-<%--
-      <div class="rbroundbox">
-	<div class="rbtop"><div></div></div>
-		<div class="rbcontent"><p>
---%>
+		<hr />
+		<!-- Performance box -->    
+		<jsp:include page="/includes/performance-box.jsp" flush="false" />
+		<hr />
+		<!-- Response Time box -->    
 		<jsp:include page="/includes/response-box.jsp" flush="false" />
-<%--
-                </p>
-		</div><!-- /rbcontent -->
-	<div class="rbbot"><div></div></div>
-      </div><!-- /rbroundbox -->        
---%>
-          
-      <!-- KSC Reports box -->    
-<%--
-      <div class="rbroundbox">
-	<div class="rbtop"><div></div></div>
-		<div class="rbcontent"><p>
---%>
+		<hr />
+		<!-- KSC Reports box -->    
 		<jsp:include page="/includes/ksc-box.jsp" flush="false" />
-<%--
-                </p>
-		</div><!-- /rbcontent -->
-	<div class="rbbot"><div></div></div>
-      </div><!-- /rbroundbox -->          
---%>
- 
-      <%--
-      <!-- security box -->    
-        Commenting out the security box include until it is functional
-        <jsp:include page="/includes/security-box.jsp" flush="false" />
-      --%>
-    </div>
-
-  <div class="spacer"><!-- --></div>
-  <br/>
+		<hr />
+		<%--
+		<!-- security box -->    
+		Commenting out the security box include until it is functional
+		<jsp:include page="/includes/security-box.jsp" flush="false" />
+		--%>
+	</div>
+	<div class="spacer"><!-- --></div>
+	<br/>
 
 
 <jsp:include page="/includes/footer.jsp" flush="false" />
