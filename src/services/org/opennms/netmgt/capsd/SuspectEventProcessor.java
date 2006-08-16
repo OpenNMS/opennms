@@ -263,8 +263,9 @@ final class SuspectEventProcessor implements Runnable {
         // node?
         //
         int nodeID = -1;
+        ResultSet rs = null;
         try {
-            ResultSet rs = stmt.executeQuery();
+            rs = stmt.executeQuery();
             if (rs.next()) {
                 nodeID = rs.getInt(1);
                 if (log.isDebugEnabled())
@@ -275,9 +276,13 @@ final class SuspectEventProcessor implements Runnable {
             throw sqlE;
         } finally {
             try {
-                stmt.close(); // automatically closes the result set as well
+                //we're seeing problems with this so what does it hurt to close it anyway?// automatically closes the result set as well
+                if (rs != null) rs.close();
             } catch (Exception e) {
+                log.error("getExistingNodeEntry: exception cleaning up jdbc connections: "+e);
                 // Ignore
+            } finally {
+                if (stmt != null) stmt.close();
             }
         }
 
@@ -288,7 +293,7 @@ final class SuspectEventProcessor implements Runnable {
             stmt = dbc.prepareStatement(SQL_RETRIEVE_IPINTERFACES_ON_NODEID);
             stmt.setInt(1, nodeID);
 
-            ResultSet rs = stmt.executeQuery();
+            rs = stmt.executeQuery();
             while (rs.next()) {
                 String ipaddr = rs.getString(1);
                 if (!ipaddr.equals("0.0.0.0"))
@@ -298,9 +303,10 @@ final class SuspectEventProcessor implements Runnable {
             throw sqlE;
         } finally {
             try {
-                stmt.close(); // automatically closes the result set as well
+                rs.close();
+                stmt.close();
             } catch (Exception e) {
-                // Ignore
+                log.error("getExistingNodeEntry: exception thrown cleaning up jdbc connections: "+e);
             }
         }
 
@@ -1333,21 +1339,22 @@ final class SuspectEventProcessor implements Runnable {
                         while(iter.hasNext()) {
                             InetAddress addr = (InetAddress) iter.next();
                             if (CollectdConfigFactory.getInstance().lookupInterfaceServicePair(addr.getHostAddress(), "SNMP") || CollectdConfigFactory.getInstance().lookupInterfaceServicePair(addr.getHostAddress(), "SNMPv1") || CollectdConfigFactory.getInstance().lookupInterfaceServicePair(addr.getHostAddress(), "SNMPv2")) {
-                                PreparedStatement stmt = dbc.prepareStatement("UPDATE ipInterface SET isSnmpPrimary='S' WHERE nodeId=? AND ipAddr=? AND isManaged!='D'");
+                                PreparedStatement stmt = null;
+                                try {
+                                stmt = dbc.prepareStatement("UPDATE ipInterface SET isSnmpPrimary='S' WHERE nodeId=? AND ipAddr=? AND isManaged!='D'");
                                 stmt.setInt(1, entryNode.getNodeId());
                                 stmt.setString(2, addr.getHostAddress());
 
                                 // Execute statement
-                                try {
                                     stmt.executeUpdate();
                                     log.debug("updated " + addr.getHostAddress() + " to secondary.");
                                 } catch (SQLException sqlE) {
                                     throw sqlE;
                                 } finally {
                                     try {
-                                        stmt.close();
+                                        if (stmt != null) stmt.close();
                                     } catch (Exception e) {
-                                        // Ignore
+                                        log.error("run: Error processing update: "+e);
                                     }
                                 }
                             }
@@ -1402,7 +1409,7 @@ final class SuspectEventProcessor implements Runnable {
                             dbc.close();
                         } catch (SQLException e) {
                             if (log.isInfoEnabled())
-                                log.info("run: an sql exception occured closing the database connection", e);
+                                log.error("run: an sql exception occured closing the database connection", e);
                         }
                     }
                     dbc = null;
@@ -1480,10 +1487,10 @@ final class SuspectEventProcessor implements Runnable {
             throw sqlE;
         } finally {
             try {
-                stmt.close(); // automatically closes the result set as well
-            } catch (Exception e) {
-                // Ignore
-            }
+                if (rs != null) rs.close();
+            } finally {
+                if (stmt != null) rs.close();
+            } 
         }
 
         return priSnmpAddrs;
@@ -1531,28 +1538,24 @@ final class SuspectEventProcessor implements Runnable {
 	    // still need to set it to 'P' in the table
 
             // Prepare SQL statement
-            PreparedStatement stmt = dbc.prepareStatement("UPDATE ipInterface SET isSnmpPrimary='P' WHERE nodeId=? AND ipaddr=? AND isManaged!='D'");
+            PreparedStatement stmt = null;
+            try {
+            stmt = dbc.prepareStatement("UPDATE ipInterface SET isSnmpPrimary='P' WHERE nodeId=? AND ipaddr=? AND isManaged!='D'");
             stmt.setInt(1, node.getNodeId());
             stmt.setString(2, newPrimarySnmpIf.getHostAddress());
 
             // Execute statement
-            try {
-                stmt.executeUpdate();
-                if (log.isDebugEnabled())
-                    log.debug("setPrimarySnmpInterface: completed update of new primary interface to PRIMARY.");
+            stmt.executeUpdate();
+            if (log.isDebugEnabled())
+            log.debug("setPrimarySnmpInterface: completed update of new primary interface to PRIMARY.");
             } catch (SQLException sqlE) {
                 throw sqlE;
             } finally {
-                try {
-                    stmt.close();
-                } catch (Exception e) {
-                    // Ignore
-                }
+                if(stmt != null) stmt.close();
             }
 
             return;
         }
-
 
         // Set primary SNMP interface 'isSnmpPrimary' field to 'P' for primary
         //
@@ -1564,23 +1567,20 @@ final class SuspectEventProcessor implements Runnable {
             //
 
             // Prepare SQL statement
-            PreparedStatement stmt = dbc.prepareStatement("UPDATE ipInterface SET isSnmpPrimary='P' WHERE nodeId=? AND ipaddr=? AND isManaged!='D'");
-            stmt.setInt(1, node.getNodeId());
-            stmt.setString(2, newPrimarySnmpIf.getHostAddress());
-
-            // Execute statement
+            PreparedStatement stmt = null;
             try {
+                stmt = dbc.prepareStatement("UPDATE ipInterface SET isSnmpPrimary='P' WHERE nodeId=? AND ipaddr=? AND isManaged!='D'");
+                stmt.setInt(1, node.getNodeId());
+                stmt.setString(2, newPrimarySnmpIf.getHostAddress());
+
+                // Execute statement
                 stmt.executeUpdate();
                 if (log.isDebugEnabled())
                     log.debug("setPrimarySnmpInterface: completed update of new primary interface to PRIMARY.");
             } catch (SQLException sqlE) {
                 throw sqlE;
             } finally {
-                try {
-                    stmt.close();
-                } catch (Exception e) {
-                    // Ignore
-                }
+                if (stmt != null) stmt.close();
             }
         }
     }

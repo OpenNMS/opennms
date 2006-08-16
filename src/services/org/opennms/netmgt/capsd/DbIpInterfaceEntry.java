@@ -248,37 +248,42 @@ public final class DbIpInterfaceEntry {
         // create the Prepared statment and then
         // start setting the result values
         //
-        PreparedStatement stmt = c.prepareStatement(names.toString());
-        names = null;
+        PreparedStatement stmt = null;
+        
+        try {
+            stmt = c.prepareStatement(names.toString());
+            names = null;
 
-        int ndx = 1;
-        stmt.setInt(ndx++, m_nodeId);
-        stmt.setString(ndx++, m_ipAddr.getHostAddress());
+            int ndx = 1;
+            stmt.setInt(ndx++, m_nodeId);
+            stmt.setString(ndx++, m_ipAddr.getHostAddress());
 
-        if ((m_changed & CHANGED_IFINDEX) == CHANGED_IFINDEX)
-            stmt.setInt(ndx++, m_ifIndex);
+            if ((m_changed & CHANGED_IFINDEX) == CHANGED_IFINDEX)
+                stmt.setInt(ndx++, m_ifIndex);
 
-        if ((m_changed & CHANGED_HOSTNAME) == CHANGED_HOSTNAME)
-            stmt.setString(ndx++, m_hostname);
+            if ((m_changed & CHANGED_HOSTNAME) == CHANGED_HOSTNAME)
+                stmt.setString(ndx++, m_hostname);
 
-        if ((m_changed & CHANGED_MANAGED) == CHANGED_MANAGED)
-            stmt.setString(ndx++, new String(new char[] { m_managedState }));
+            if ((m_changed & CHANGED_MANAGED) == CHANGED_MANAGED)
+                stmt.setString(ndx++, new String(new char[] { m_managedState }));
 
-        if ((m_changed & CHANGED_STATUS) == CHANGED_STATUS)
-            stmt.setInt(ndx++, m_status);
+            if ((m_changed & CHANGED_STATUS) == CHANGED_STATUS)
+                stmt.setInt(ndx++, m_status);
 
-        if ((m_changed & CHANGED_POLLTIME) == CHANGED_POLLTIME) {
-            stmt.setTimestamp(ndx++, m_lastPoll);
+            if ((m_changed & CHANGED_POLLTIME) == CHANGED_POLLTIME) {
+                stmt.setTimestamp(ndx++, m_lastPoll);
+            }
+
+            if ((m_changed & CHANGED_PRIMARY) == CHANGED_PRIMARY)
+                stmt.setString(ndx++, new String(new char[] { m_primaryState }));
+
+            // Run the insert
+            //
+            int rc = stmt.executeUpdate();
+            log.debug("DbIpInterfaceEntry.insert: SQL update result = " + rc);
+        } finally {
+            if (stmt !=null) stmt.close();
         }
-
-        if ((m_changed & CHANGED_PRIMARY) == CHANGED_PRIMARY)
-            stmt.setString(ndx++, new String(new char[] { m_primaryState }));
-
-        // Run the insert
-        //
-        int rc = stmt.executeUpdate();
-        log.debug("DbIpInterfaceEntry.insert: SQL update result = " + rc);
-        stmt.close();
 
         // clear the mask and mark as backed
         // by the database
@@ -349,66 +354,72 @@ public final class DbIpInterfaceEntry {
         // create the Prepared statment and then
         // start setting the result values
         //
-        PreparedStatement stmt = c.prepareStatement(sqlText.toString());
-        sqlText = null;
 
-        int ndx = 1;
-        if ((m_changed & CHANGED_IFINDEX) == CHANGED_IFINDEX) {
-            if (m_ifIndex == -1)
-                stmt.setNull(ndx++, Types.INTEGER);
-            else
-                stmt.setInt(ndx++, m_ifIndex);
+        PreparedStatement stmt = null;
+        try {
+            stmt = c.prepareStatement(sqlText.toString());
+            sqlText = null;
+
+            int ndx = 1;
+            if ((m_changed & CHANGED_IFINDEX) == CHANGED_IFINDEX) {
+                if (m_ifIndex == -1)
+                    stmt.setNull(ndx++, Types.INTEGER);
+                else
+                    stmt.setInt(ndx++, m_ifIndex);
+            }
+
+            if ((m_changed & CHANGED_HOSTNAME) == CHANGED_HOSTNAME) {
+                if (m_hostname != null)
+                    stmt.setString(ndx++, m_hostname);
+                else
+                    stmt.setNull(ndx++, Types.VARCHAR);
+            }
+
+            if ((m_changed & CHANGED_MANAGED) == CHANGED_MANAGED) {
+                if (m_managedState == STATE_UNKNOWN)
+                    stmt.setNull(ndx++, Types.CHAR);
+                else
+                    stmt.setString(ndx++, new String(new char[] { m_managedState }));
+            }
+
+            if ((m_changed & CHANGED_STATUS) == CHANGED_STATUS) {
+                if (m_status == -1)
+                    stmt.setNull(ndx++, Types.INTEGER);
+                else
+                    stmt.setInt(ndx++, m_status);
+            }
+
+            if ((m_changed & CHANGED_POLLTIME) == CHANGED_POLLTIME) {
+                if (m_lastPoll != null) {
+                    stmt.setTimestamp(ndx++, m_lastPoll);
+                } else
+                    stmt.setNull(ndx++, Types.TIMESTAMP);
+            }
+
+            if ((m_changed & CHANGED_PRIMARY) == CHANGED_PRIMARY) {
+                if (m_primaryState == SNMP_UNKNOWN)
+                    stmt.setNull(ndx++, Types.CHAR);
+                else
+                    stmt.setString(ndx++, new String(new char[] { m_primaryState }));
+            }
+
+            stmt.setInt(ndx++, m_nodeId);
+            stmt.setString(ndx++, m_ipAddr.getHostAddress());
+
+            if (m_useIfIndexAsKey) {
+                if (m_ifIndex == -1)
+                    stmt.setNull(ndx++, Types.INTEGER);
+                else
+                    stmt.setInt(ndx++, m_ifIndex);
+            }
+            // Run the insert
+            //
+            int rc = stmt.executeUpdate();
+            log.debug("DbIpInterfaceEntry.update: update result = " + rc);
+
+        } finally {
+            if (stmt != null) stmt.close();
         }
-
-        if ((m_changed & CHANGED_HOSTNAME) == CHANGED_HOSTNAME) {
-            if (m_hostname != null)
-                stmt.setString(ndx++, m_hostname);
-            else
-                stmt.setNull(ndx++, Types.VARCHAR);
-        }
-
-        if ((m_changed & CHANGED_MANAGED) == CHANGED_MANAGED) {
-            if (m_managedState == STATE_UNKNOWN)
-                stmt.setNull(ndx++, Types.CHAR);
-            else
-                stmt.setString(ndx++, new String(new char[] { m_managedState }));
-        }
-
-        if ((m_changed & CHANGED_STATUS) == CHANGED_STATUS) {
-            if (m_status == -1)
-                stmt.setNull(ndx++, Types.INTEGER);
-            else
-                stmt.setInt(ndx++, m_status);
-        }
-
-        if ((m_changed & CHANGED_POLLTIME) == CHANGED_POLLTIME) {
-            if (m_lastPoll != null) {
-                stmt.setTimestamp(ndx++, m_lastPoll);
-            } else
-                stmt.setNull(ndx++, Types.TIMESTAMP);
-        }
-
-        if ((m_changed & CHANGED_PRIMARY) == CHANGED_PRIMARY) {
-            if (m_primaryState == SNMP_UNKNOWN)
-                stmt.setNull(ndx++, Types.CHAR);
-            else
-                stmt.setString(ndx++, new String(new char[] { m_primaryState }));
-        }
-
-        stmt.setInt(ndx++, m_nodeId);
-        stmt.setString(ndx++, m_ipAddr.getHostAddress());
-
-        if (m_useIfIndexAsKey) {
-            if (m_ifIndex == -1)
-                stmt.setNull(ndx++, Types.INTEGER);
-            else
-                stmt.setInt(ndx++, m_ifIndex);
-        }
-        // Run the insert
-        //
-        int rc = stmt.executeUpdate();
-        log.debug("DbIpInterfaceEntry.update: update result = " + rc);
-        stmt.close();
 
         // clear the mask and mark as backed
         // by the database

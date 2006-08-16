@@ -646,13 +646,14 @@ public final class CapsdConfigFactory {
         PreparedStatement loadStmt = conn.prepareStatement(SVCTBL_LOAD_SQL);
         PreparedStatement delFromOutagesStmt = null;
         PreparedStatement delFromIfServicesStmt = null;
+        ResultSet rs = null;
 
         try {
             // go ahead and load the table first if it
             // can be loaded.
             //
             List serviceNames = new ArrayList();
-            ResultSet rs = loadStmt.executeQuery();
+            rs = loadStmt.executeQuery();
             while (rs.next()) {
                 Integer id = new Integer(rs.getInt(1));
                 String name = rs.getString(2);
@@ -729,16 +730,12 @@ public final class CapsdConfigFactory {
                 }
             }
         } finally {
-            if (insStmt != null)
-                insStmt.close();
-            if (nxtStmt != null)
-                nxtStmt.close();
-            if (loadStmt != null)
-                loadStmt.close();
-            if (delFromOutagesStmt != null)
-                delFromOutagesStmt.close();
-            if (delFromIfServicesStmt != null)
-                delFromIfServicesStmt.close();
+            if (rs != null) rs.close();
+            if (insStmt != null) insStmt.close();
+            if (nxtStmt != null) nxtStmt.close();
+            if (loadStmt != null) loadStmt.close();
+            if (delFromOutagesStmt != null) delFromOutagesStmt.close();
+            if (delFromIfServicesStmt != null) delFromIfServicesStmt.close();
         }
     }
 
@@ -801,16 +798,15 @@ public final class CapsdConfigFactory {
 
         // prepare the SQL statement to query the database
         PreparedStatement ipRetStmt = null;
-
-        if (verifyServer) {
-            ipRetStmt = conn.prepareStatement(SQL_DB_RETRIEVE_IP_INTERFACE_IN_LOCAL_SERVER);
-            ipRetStmt.setString(1, localServer);
-        } else
-            ipRetStmt = conn.prepareStatement(SQL_DB_RETRIEVE_IP_INTERFACE);
-
-        ArrayList ifList = new ArrayList();
         ResultSet result = null;
+        ArrayList ifList = new ArrayList();
         try {
+            if (verifyServer) {
+                ipRetStmt = conn.prepareStatement(SQL_DB_RETRIEVE_IP_INTERFACE_IN_LOCAL_SERVER);
+                ipRetStmt.setString(1, localServer);
+            } else
+                ipRetStmt = conn.prepareStatement(SQL_DB_RETRIEVE_IP_INTERFACE);
+
             // run the statement
             result = ipRetStmt.executeQuery();
 
@@ -836,21 +832,32 @@ public final class CapsdConfigFactory {
                 ifList.add(new LightWeightIfEntry(nodeId, LightWeightIfEntry.NULL_IFINDEX, address, managedState, DbIpInterfaceEntry.SNMP_UNKNOWN, LightWeightIfEntry.NULL_IFTYPE));
             }
         } finally {
-            result.close();
-            ipRetStmt.close();
+            try {
+                if (result != null) result.close();
+            } finally {
+                if (ipRetStmt != null) ipRetStmt.close();
+            }
         }
 
         // For efficiency, prepare the SQL statements in advance
-        PreparedStatement ifUpdateStmt = conn.prepareStatement(SQL_DB_UPDATE_IP_INTERFACE);
-        PreparedStatement allSvcUpdateStmt = conn.prepareStatement(SQL_DB_UPDATE_ALL_SERVICES_FOR_NIP);
+        PreparedStatement ifUpdateStmt = null;
+        PreparedStatement allSvcUpdateStmt = null;
 
-        PreparedStatement svcRetStmt = conn.prepareStatement(SQL_DB_RETRIEVE_IF_SERVICES);
-        PreparedStatement svcUpdateStmt = conn.prepareStatement(SQL_DB_UPDATE_SERVICE_FOR_NIP);
+        PreparedStatement svcRetStmt = null;
+        PreparedStatement svcUpdateStmt = null;
 
         // get a handle to the PollerConfigFactory
-        PollerConfigFactory pollerCfgFactory = PollerConfigFactory.getInstance();
+        PollerConfigFactory pollerCfgFactory = null;
 
         try {
+            ifUpdateStmt = conn.prepareStatement(SQL_DB_UPDATE_IP_INTERFACE);
+            allSvcUpdateStmt = conn.prepareStatement(SQL_DB_UPDATE_ALL_SERVICES_FOR_NIP);
+
+            svcRetStmt = conn.prepareStatement(SQL_DB_RETRIEVE_IF_SERVICES);
+            svcUpdateStmt = conn.prepareStatement(SQL_DB_UPDATE_SERVICE_FOR_NIP);
+
+            // get a handle to the PollerConfigFactory
+            pollerCfgFactory = PollerConfigFactory.getInstance();
             // Loop through interface list and determine if there has been a
             // change in
             // the managed status of the interface based on the newly loaded
@@ -1001,10 +1008,10 @@ public final class CapsdConfigFactory {
         } finally {
             // Close the prepared statements...
             try {
-                ifUpdateStmt.close();
-                allSvcUpdateStmt.close();
-                svcRetStmt.close();
-                svcUpdateStmt.close();
+                if (ifUpdateStmt != null) ifUpdateStmt.close();
+                if (allSvcUpdateStmt !=null) allSvcUpdateStmt.close();
+                if (svcRetStmt != null) svcRetStmt.close();
+                if (svcUpdateStmt != null) svcUpdateStmt.close();
             } catch (Exception e) {
                 if (log.isDebugEnabled()) {
                     log.debug("Exception while closing prepared statements", e);
@@ -1109,12 +1116,8 @@ public final class CapsdConfigFactory {
                 }
             }
         } finally {
-            try {
-                result.close();
-                ipRetStmt.close();
-            } catch (Exception e) {
-                // Ignore
-            }
+            if (result != null) result.close();
+            if (ipRetStmt != null) ipRetStmt.close();
         }
 
         // Iterate over the nodes in the map and determine what the primary SNMP
@@ -1235,11 +1238,7 @@ public final class CapsdConfigFactory {
                         // run the statement
                         updateStmt.executeUpdate();
                     } finally {
-                        try {
-                            updateStmt.close();
-                        } catch (Exception e) {
-                            // Ignore
-                        }
+                        if (updateStmt != null) updateStmt.close();
                     }
                 }
             }
@@ -1644,6 +1643,9 @@ public final class CapsdConfigFactory {
 
         boolean result = false;
 
+        PreparedStatement s = null;
+        ResultSet rs = null;
+        
         if (log.isDebugEnabled())
             log.debug("isInterfaceInDB: attempting to lookup interface " + ifAddress.getHostAddress() + " in the database.");
 
@@ -1651,18 +1653,22 @@ public final class CapsdConfigFactory {
         //
         // dbConn.setReadOnly(true);
 
-        PreparedStatement s = dbConn.prepareStatement(RETRIEVE_IPADDR_SQL);
-        s.setString(1, ifAddress.getHostAddress());
-
-        ResultSet rs = s.executeQuery();
-        if (rs.next())
-            result = true;
-
-        // Close result set and statement
-        //
-        rs.close();
-        s.close();
-
+        try {
+            s = dbConn.prepareStatement(RETRIEVE_IPADDR_SQL);
+            s.setString(1, ifAddress.getHostAddress());
+            rs = s.executeQuery();
+            if (rs.next()) {
+                result = true;
+            }
+        } catch (SQLException e) {
+            log.error("isInterfaceInDB: jdbc error: "+e);
+        } finally {
+            try {
+                if (rs != null) rs.close();
+            } finally {
+                if (s != null) s.close();
+            }
+        }
         return result;
     }
 
@@ -1683,22 +1689,29 @@ public final class CapsdConfigFactory {
         if (ifIndex != -1)
             qs.append(" AND ifindex=?");
 
-        PreparedStatement s = dbConn.prepareStatement(qs.toString());
-        s.setString(1, ifAddress.getHostAddress());
-
-        if (ifIndex != -1)
-            s.setInt(2, ifIndex);
-
-        ResultSet rs = s.executeQuery();
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
         int nodeid = -1;
-        if (rs.next()) {
-            nodeid = rs.getInt(1);
-        }
+        
+        try {
+            stmt = dbConn.prepareStatement(qs.toString());
+            stmt.setString(1, ifAddress.getHostAddress());
 
-        // Close result set and statement
-        //
-        rs.close();
-        s.close();
+            if (ifIndex != -1)
+                stmt.setInt(2, ifIndex);
+
+            rs = stmt.executeQuery();
+            if (rs.next()) {
+                nodeid = rs.getInt(1);
+            }
+
+        } finally {
+            try {
+                if (rs != null) rs.close();
+            } finally {
+                if (stmt != null) rs.close();
+            }
+        }
 
         return nodeid;
     }
