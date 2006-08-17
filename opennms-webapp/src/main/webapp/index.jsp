@@ -82,5 +82,4 @@
 	<div class="spacer"><!-- --></div>
 	<br/>
 
-
 <jsp:include page="/includes/footer.jsp" flush="false" />
