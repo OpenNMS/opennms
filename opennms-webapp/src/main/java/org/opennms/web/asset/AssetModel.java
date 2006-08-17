@@ -222,11 +222,14 @@ public class AssetModel extends Object {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
 
-        if (!isColumnValid(columnName)) {
+        //TODO: delete this test soon.
+        //the category column is used in the search and but is not in the
+        //s_columns static var.  This breaks the WebUI.
+/*        if (!isColumnValid(columnName)) {
             throw new IllegalArgumentException("Column \"" + columnName
                 + "\" is not a valid column name");
         }
-
+*/
         MatchingAsset[] assets = new MatchingAsset[0];
         Connection conn = Vault.getDbConnection();
         Vector vector = new Vector();
@@ -332,7 +335,8 @@ public class AssetModel extends Object {
         return (s_columns);
     }
 
-    public static boolean isColumnValid(String column) {
+    //TODO: no one is calling this now... delete soon.
+    private static boolean isColumnValid(String column) {
         if (column == null) {
             throw new IllegalArgumentException("column cannot be null");
         }
@@ -350,7 +354,41 @@ public class AssetModel extends Object {
      * Hard-coded (for now) list of human-readable asset columns and the
      * corresponding database column.
      */
-    private static final String[][] s_columns = new String[][] { new String[] { "Address 1", "address1" }, new String[] { "Address 2", "address2" }, new String[] { "Asset Number", "assetNumber" }, new String[] { "Building", "building" }, new String[] { "Circuit ID", "circuitId" }, new String[] { "City", "city" }, new String[] { "Comments", "comment" }, new String[] { "Date Installed", "dateInstalled" }, new String[] { "Department", "department" }, new String[] { "Description", "description" }, new String[] { "Display Category", "displayCategory" }, new String[] { "Division", "division" }, new String[] { "Floor", "floor" }, new String[] { "Lease", "lease" }, new String[] { "Lease Expires", "leaseExpires" }, new String[] { "Maint Contract", "maintContract" },
-            new String[] { "Maint Contract Expires", "maintContractExpires" }, new String[] { "Maint Phone", "supportPhone" }, new String[] { "Manufacturer", "manufacturer" }, new String[] { "Model Number", "modelNumber" }, new String[] { "Notification Category", "notifyCategory" }, new String[] { "Operating System", "operatingSystem" }, new String[] { "Port", "port" }, new String[] { "Poller Category", "pollerCategory" }, new String[] { "Rack", "rack" }, new String[] { "Region", "region" }, new String[] { "Room", "room" }, new String[] { "Serial Number", "serialNumber" }, new String[] { "Slot", "slot" }, new String[] { "State", "state" }, new String[] { "Threshold Category", "thresholdCategory" }, new String[] { "User Last Modified", "userLastModified" },
-            new String[] { "Vendor", "vendor" }, new String[] { "Vendor Asset Number", "vendorAssetNumber" }, new String[] { "Vendor Fax", "vendorFax" }, new String[] { "Vendor Phone", "vendorPhone" }, new String[] { "ZIP Code", "zip" } };
+    private static final String[][] s_columns = new String[][] { new String[] { "Address 1", "address1" },
+        new String[] { "Address 2", "address2" }, 
+        new String[] { "Asset Number", "assetNumber" }, 
+        new String[] { "Building", "building" }, 
+        new String[] { "Circuit ID", "circuitId" }, 
+        new String[] { "City", "city" }, 
+        new String[] { "Comments", "comment" }, 
+        new String[] { "Date Installed", "dateInstalled" }, 
+        new String[] { "Department", "department" }, 
+        new String[] { "Description", "description" }, 
+        new String[] { "Display Category", "displayCategory" }, 
+        new String[] { "Division", "division" }, 
+        new String[] { "Floor", "floor" }, 
+        new String[] { "Lease", "lease" }, 
+        new String[] { "Lease Expires", "leaseExpires" }, 
+        new String[] { "Maint Contract", "maintContract" },
+        new String[] { "Maint Contract Expires", "maintContractExpires" }, 
+        new String[] { "Maint Phone", "supportPhone" }, 
+        new String[] { "Manufacturer", "manufacturer" }, 
+        new String[] { "Model Number", "modelNumber" }, 
+        new String[] { "Notification Category", "notifyCategory" }, 
+        new String[] { "Operating System", "operatingSystem" }, 
+        new String[] { "Port", "port" }, 
+        new String[] { "Poller Category", "pollerCategory" }, 
+        new String[] { "Rack", "rack" }, 
+        new String[] { "Region", "region" }, 
+        new String[] { "Room", "room" }, 
+        new String[] { "Serial Number", "serialNumber" }, 
+        new String[] { "Slot", "slot" }, 
+        new String[] { "State", "state" }, 
+        new String[] { "Threshold Category", "thresholdCategory" }, 
+        new String[] { "User Last Modified", "userLastModified" },
+        new String[] { "Vendor", "vendor" }, 
+        new String[] { "Vendor Asset Number", "vendorAssetNumber" }, 
+        new String[] { "Vendor Fax", "vendorFax" }, 
+        new String[] { "Vendor Phone", "vendorPhone" }, 
+        new String[] { "ZIP Code", "zip" } };
 }
