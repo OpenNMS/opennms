@@ -7,11 +7,11 @@
 
     <bean name="scheduler" class="org.springframework.scheduling.quartz.SchedulerFactoryBean" />
     
-    <bean name="pollService" class="org.opennms.netmgt.poller.remote.TestPollService">
+    <bean name="pollService" class="org.opennms.netmgt.poller.remote.DemoPollService">
        <constructor-arg value="13" />
     </bean>
     
-    <bean name="pollerConfiguration" class="org.opennms.netmgt.poller.remote.TestPollerConfiguration" />
+    <bean name="pollerConfiguration" class="org.opennms.netmgt.poller.remote.DemoPollerConfiguration" />
     
     <bean name="polledServicesModel" class="org.opennms.netmgt.poller.remote.DefaultPolledServicesModel">
       <property name="pollerConfiguration" ref="pollerConfiguration" />

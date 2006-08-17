@@ -6,22 +6,22 @@ package org.opennms.netmgt.poller.remote;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.PollStatus;
 
-class TestPollService implements PollService {
+class DemoPollService implements PollService {
 	
 	private int m_repetitions;
 	private int m_pollCount;
 	private PollStatus m_currentStatus;
 
-	public TestPollService(int repetitions, PollStatus initialStatus) {
+	public DemoPollService(int repetitions, PollStatus initialStatus) {
 		m_repetitions = repetitions;
 		m_currentStatus = initialStatus;
 	}
 	
-	public TestPollService(int repetitions) {
+	public DemoPollService(int repetitions) {
 		this(repetitions, PollStatus.up());
 	}
 	
-	public TestPollService() {
+	public DemoPollService() {
 		this(2);
 	}
 
