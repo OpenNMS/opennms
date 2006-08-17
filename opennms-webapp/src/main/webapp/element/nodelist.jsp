@@ -87,11 +87,11 @@
 <% } else { %>
   <h3>Discovered Nodes</h3>
 <% } %>
-
+	<div class="boxWrapper">
   <% if (nodes.length > 0) { %>
     <!-- left column -->
-    <div style="float: left; width=45%;">
-      <ul>
+    <div style="float: left; width:45%;">
+      <ul class="plain">
       <% if (isIfAliasSearch) { %>
         <% for (int i=0; i < lastIn1stColumn; i++) { %>
           <li><a href="element/node.jsp?node=<%=nodes[i].getNodeId()%>"><%=nodes[i].getLabel()%></a>
@@ -134,8 +134,8 @@
 
 
     <!-- right column -->
-    <div style="float: left; width=45%;">
-      <ul>
+    <div style="float: left; width:45%;">
+      <ul class="plain">
       <% if (isIfAliasSearch) { %>
         <% for (int i=lastIn1stColumn; i < nodes.length; i++) { %>
           <li><a href="element/node.jsp?node=<%=nodes[i].getNodeId()%>"><%=nodes[i].getLabel()%></a>
@@ -178,15 +178,16 @@
   <% } else { %>
       None found.
   <% } %>
-
+	<hr />
+</div>
 <div class="spacer"><!-- --></div>
+<p>
 <% if (listInterfaces) { %>
   <%=nodes.length%> Nodes, <%=interfaceCount%> Interfaces
 <% } else { %>
   <%=nodes.length%> Nodes
 <% } %>
 
-&nbsp;&nbsp;&nbsp;&nbsp;
 
 <c:url var="thisURL" value="element/nodelist.jsp">
   <c:if test="${param.nodename != null}">
@@ -214,5 +215,5 @@
 	<a href="<c:out value='${thisURL}'/>">Hide interfaces</a>
   </c:otherwise>
 </c:choose>
-
+</p>
 <jsp:include page="/includes/footer.jsp" flush="false"/>

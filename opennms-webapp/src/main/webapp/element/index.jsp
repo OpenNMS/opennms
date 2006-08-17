@@ -69,75 +69,52 @@
   <jsp:param name="breadcrumb" value="Search" />
 </jsp:include>
 
-  <div style="width: 40%; float: left;">
-
+  <div class="TwoColLeft">
       <h3>Search for Nodes</h3>
-
-      <p>
-        <table width="50%" border="0" cellpadding="2" cellspacing="0" >
-          <tr>
-            <td colspan="2">Name containing:</td>
-          </tr>
-          <tr>
-            <form action="element/nodelist.jsp" method="GET">          
+		<div class="boxWrapper">
+            <form action="element/nodelist.jsp" method="GET">
+					<p align="right">Name containing:          
               <input type="hidden" name="listInterfaces" value=""/>
-              <td><input type="text" name="nodename" /></td>
-              <td><input type="submit" value="Search"/></td>                
+              <input type="text" name="nodename" />
+              <input type="submit" value="Search"/></p>                
             </form>
-          </tr>
-          
-          <tr>
-            <td colspan="2">TCP/IP Address like:</td>
-          </tr>
-          <tr>
-            <form action="element/nodelist.jsp" method="GET">          
+
+            <form action="element/nodelist.jsp" method="GET">
+					<p align="right">TCP/IP Address like:          
               <input type="hidden" name="listInterfaces" value=""/>
-              <td><input type="text" name="iplike" value="*.*.*.*" /></td>
-              <td><input type="submit" value="Search"/></td>                
+              <input type="text" name="iplike" value="*.*.*.*" />
+              <input type="submit" value="Search"/></p>                
             </form>
-          </tr>
 
-          <tr>
-            <td colspan="2">IfAlias containing:</td>
-          </tr>
-          <tr>
-            <form action="element/nodelist.jsp" method="GET">          
-              <input type="hidden" name="listInterfaces" value=""/>
-              <td><input type="text" name="ifAlias" /></td>
-              <td><input type="submit" value="Search"/></td>                
+            <form action="element/nodelist.jsp" method="GET">
+					<p align="right">IfAlias containing:          
+						<input type="hidden" name="listInterfaces" value=""/>
+						<input type="text" name="ifAlias" />
+						<input type="submit" value="Search"/></p>                
             </form>
-          </tr>
 
-          <tr>
-            <td colspan="2">Providing service:</td>
-          </tr>
-          <tr>
-            <form action="element/nodelist.jsp" method="GET">          
-              <input type="hidden" name="listInterfaces" value=""/>
-              <td>
-                <select name="service" size="1">
-                  <% while( serviceNameIterator.hasNext() ) { %>
-                    <% String name = (String)serviceNameIterator.next(); %> 
-                    <option value="<%=serviceNameMap.get(name)%>"><%=name%></option>
-                  <% } %>          
-                </select>
-              </td>
-              <td><input type="submit" value="Search"/></td>                
+            <form action="element/nodelist.jsp" method="GET">
+					<p align="right">Providing service:          
+						<input type="hidden" name="listInterfaces" value=""/>
+						<select name="service" size="1">
+						  <% while( serviceNameIterator.hasNext() ) { %>
+						    <% String name = (String)serviceNameIterator.next(); %> 
+						    <option value="<%=serviceNameMap.get(name)%>"><%=name%></option>
+						  <% } %>          
+						</select>
+						<input type="submit" value="Search"/></p>                
             </form>
-          </tr>          
-        </table>
-      </p>
-
-      <p>
-        <a href="element/nodelist.jsp">List all nodes</a><br/>
-        <a href="element/nodelist.jsp?listInterfaces">List all nodes and their interfaces</a><br/>
-      </p>
-
-      <h3>Search Asset Information</h3>
-      <p>
+			<ul class="plain">
+				<li><a href="element/nodelist.jsp">All nodes</a></li>
+				<li><a href="element/nodelist.jsp?listInterfaces">All nodes and their interfaces</a></li>
+			</ul>
+		</div>
+		
+		<h3>Search Asset Information</h3>
+		<div class="boxWrapper">
         <%-- category --%>
         <form action="asset/nodelist.jsp" method="GET">
-          Assets by category: <br>
+          <p align="right">Category: 
           <input type="hidden" name="column" value="category" />
           <select name="searchvalue" size="1">
             <% for( int i=0; i < Asset.CATEGORIES.length; i++ ) { %>
@@ -145,40 +122,29 @@
             <% } %>
           </select>
           <input type="submit" value="Search" />
+			</p>
         </form>
-
+		
         <form action="asset/nodelist.jsp" method="GET">
-          <table width="50%" cellspacing="0" cellpadding="2" border="0">
-            <tr>
-              <td>Asset Field:</td>
-              <td>Containing Text:</td>
-            </tr>
-            <tr>
-              <td>
-                <select name="column" size="1">
-                  <% for( int i=0; i < this.columns.length; i++ ) { %>
-                    <option value="<%=this.columns[i][1]%>"><%=this.columns[i][0]%></option>
-                  <% } %>
-                </select>
-              </td>
-              <td>
-                <input type="text" name="searchvalue" />
-              </td>
-            </tr>
-            <tr>
-              <td colspan="2"><input type="submit" value="Search" /></td>
-            </tr>
-          </table>
+          <p align="right">Field:
+				<select name="column" size="1">
+				  <% for( int i=0; i < this.columns.length; i++ ) { %>
+				    <option value="<%=this.columns[i][1]%>"><%=this.columns[i][0]%></option>
+				  <% } %>
+				</select><br />
+				Containing text: <input type="text" name="searchvalue" />
+				<input type="submit" value="Search" /></p>
         </form>
-
-        <a href="asset/nodelist.jsp?column=<%=this.columns[0][1]%>&searchvalue=">List all nodes with asset info</a>
-      </p>
+		<ul class="plain">
+			<li><a href="asset/nodelist.jsp?column=<%=this.columns[0][1]%>&searchvalue=">All nodes with asset info</a></li>
+      </ul>
+		</div>
   </div>
 
 
-  <div style="width: 60%; float: left;">
+  <div class="TwoColRight">
       <h3>Search Options</h3>
-      
+     <div class="boxWrapper"> 
       <p>Searching by name is a case-insensitive, inclusive search. For example,
         searching on <em>serv</em> would find any of <em>serv</em>, <em>Service</em>, 
         <em>Reserved</em>, <em>NTSERV</em>, <em>UserVortex</em>, etc. The underscore
@@ -223,6 +189,7 @@
       <p>Also note that you can quickly search for all nodes which have asset
         information assigned by clicking the <em>List all nodes with asset info</em> link.
       </p>
+		</div>
   </div>
-
+<hr />
 <jsp:include page="/includes/footer.jsp" flush="false"/>
