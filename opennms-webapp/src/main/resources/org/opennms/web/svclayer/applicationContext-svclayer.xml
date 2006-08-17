@@ -11,7 +11,7 @@
 
 
 <!-- Suppress Outage Service beans -->
-  <bean id="outageService" class="org.opennms.web.svclayer.DefaultOutageService">
+  <bean id="outageService" class="org.opennms.web.svclayer.outage.DefaultOutageService">
     <property name="dao" ref="outageDao" />
   </bean>
 
