@@ -90,7 +90,9 @@ public class AliasedResource extends CollectionResource {
     }
 
     public boolean shouldPersist(ServiceParameters serviceParameters) {
-        return (serviceParameters.aliasesEnabled() && getAliasDir() != null) && (isScheduledForCollection() || serviceParameters.forceStoreByAlias(getAliasDir()));
+        boolean shdPrsist = (serviceParameters.aliasesEnabled() && getAliasDir() != null && !getAliasDir().equals("")) && (isScheduledForCollection() || serviceParameters.forceStoreByAlias(getAliasDir()));
+        log().debug("shouldPersist = " + shdPrsist);
+        return shdPrsist;
     }
 
     protected int getType() {
