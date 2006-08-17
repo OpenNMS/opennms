@@ -61,7 +61,7 @@ public interface OutageDao extends OnmsDao {
 
     public abstract Collection<OnmsOutage> openAndResolvedOutages();
 
-    public abstract Collection<OnmsOutage> currentOutages(Integer offset, Integer limit);
+    public abstract Collection<OnmsOutage> currentOutages(Integer offset, Integer limit, String orderBy, String direction);
 
     public abstract Collection<OnmsOutage> suppressedOutages(Integer offset, Integer limit);
 
