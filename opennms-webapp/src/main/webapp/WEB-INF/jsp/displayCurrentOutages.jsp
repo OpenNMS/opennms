@@ -2,49 +2,8 @@
 	pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jstl/fmt" prefix="fmt"%>
-
-<%--
-
-//
-// This file is part of the OpenNMS(R) Application.
-//
-// OpenNMS(R) is Copyright (C) 2002-2003 The OpenNMS Group, Inc.  All rights reserved.
-// OpenNMS(R) is a derivative work, containing both original code, included code and modified
-// code that was published under the GNU General Public License. Copyrights for modified 
-// and included code are below.
-//
-// OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
-//
-// Modifications:
-//
-// 2003 Feb 07: Fixed URLEncoder issues.
-// 2002 Nov 26: Fixed breadcrumbs issue.
-// 
-// Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
-//
-// This program is free software; you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation; either version 2 of the License, or
-// (at your option) any later version.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-//
-// For more information contact:
-//      OpenNMS Licensing       <license@opennms.org>
-//      http://www.opennms.org/
-//      http://www.opennms.com/
-//
-
---%>
-
-
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
+<%@ taglib uri="/tld/extremecomponents" prefix="ec"%>
 
 <jsp:include page="/includes/header.jsp" flush="false">
 	<jsp:param name="title" value="Current Outages" />
@@ -56,26 +15,83 @@
 <html>
 <head>
 <title>Current Outages</title>
+
 </head>
 <body>
 
-<H1> Outputting Outage Data (Finally) </H1>
+<link rel="stylesheet" type="text/css"
+	href="<c:url value="/css/styles.css"/>">
+<link rel="stylesheet" type="text/css"
+	href="<c:url value="/css/extremecomponents.css"/>">
 
+<p>Now : <c:out value="${now}" /></p>
+<p>Start : <c:out value="${begin}" /></p>
+<p>End : <c:out value="${end}" /></p>
+<p>Rows : <c:out value="${rows}" /></p>
+<p>Page : <c:out value="${page}" /></p>
+<p>Page : <c:out value="${context}" /></p>
+<p>The whole shit <c:out value="${mymodel}" /></p>
 
-<c:forEach items="${outages}" var="id">
-    <c:out value="${id}" /><br>
-	<c:out value="${id.id}" /><br>
-	<c:out value="${id.ifLostService}" /><br>
-    <c:out value="${id.ifRegainedService}" /><br>
-    <c:out value="${id.nodeId}" /><br>
-    <c:out value="${id.serviceId}" /><br>
-    
+<center><ec:table items="tabledata" var="tabledata"
+	action="${pageContext.request.contextPath}/displayCurrentOutages.htm"
+	filterable="false" showExports="true"
+	imagePath="${pageContext.request.contextPath}/images/table/compact/*.gif"
+	title="Current Outages"
+	retrieveRowsCallback="limit" 
+	filterRowsCallback="limit"
+	sortRowsCallback="limit" 
+	rowsDisplayed="75" 
+	tableId="tabledata"
 	
-	<br>
-</c:forEach>
+	>
+	
+	<ec:exportPdf fileName="CurrentOutages.pdf" tooltip="Export PDF"
+		headerColor="black" headerBackgroundColor="#b6c2da"
+		headerTitle="Current Outages" />
+	<ec:exportXls fileName="output.xls" tooltip="Export Excel" />
+	<ec:row highlightRow="false">
+		<ec:column property="id">
+			<a href="outage/detail.jsp?id=${tabledata.id}">${tabledata.id}</a>
+		</ec:column>
+		<ec:column property="node">
+			<a href="element/node.jsp?node=${tabledata.nodeid}">${tabledata.node}</a>
+			&nbsp;
+			<a
+				href="${pageContext.request.contextPath}/displayCurrentOutages.htm?ec_f_node=${tabledata.node}&ec_f_a=fa">[+]</a>
+			<a
+				href="${pageContext.request.contextPath}/displayCurrentOutages.htm?ec_f_node=">[-]</a>
+
+
+		</ec:column>
+		<ec:column property="interface">
+			<a
+				href="element/interface.jsp?node=${tabledata.nodeid}&intf=${tabledata.interface}">${tabledata.interface}</a>
+				&nbsp;
+			<a
+				href="${pageContext.request.contextPath}/displayCurrentOutages.htm?ec_f_interface=${tabledata.interface}&ec_f_a=fa">[+]</a>
+			<a
+				href="${pageContext.request.contextPath}/displayCurrentOutages.htm?ec_f_interface=">[-]</a>
+		</ec:column>
+		<ec:column property="service">
+			<a
+				href="element/service.jsp?node=${tabledata.nodeid}&intf=${tabledata.interface }&service=${tabledata.serviceid }">${tabledata.service}</a>
+				&nbsp;
+			<a
+				href="${pageContext.request.contextPath}/displayCurrentOutages.htm?ec_f_service=${tabledata.service}&ec_f_a=fa">[+]</a>
+			<a
+				href="${pageContext.request.contextPath}/displayCurrentOutages.htm?ec_f_node=">[-]</a>
+		</ec:column>
+		<ec:column property="down" cell="date" format="MM-dd-yyyy hh:mm:ss"
+			parse="yyyy-MM-dd" />
+
+		<ec:column property="up" cell="date" format="MM-dd-yyyy hh:mm:ss"
+			parse="yyyy-MM-dd"
+			interceptor="org.opennms.web.svclayer.outage.RedCell" />
+
+	</ec:row>
+</ec:table></center>
 
 <jsp:include page="/includes/footer.jsp" flush="false" />
-
 </body>
 </html>
 

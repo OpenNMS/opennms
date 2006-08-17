@@ -132,6 +132,15 @@
     <url-pattern>/event/list</url-pattern>
   </filter-mapping>
 
+<filter>
+  <filter-name>eXtremeExport</filter-name>
+  <filter-class>org.extremecomponents.table.filter.ExportFilter</filter-class>
+</filter>
+<filter-mapping>
+  <filter-name>eXtremeExport</filter-name>
+  <url-pattern>/*</url-pattern>
+</filter-mapping>
+
   <listener>
     <!-- This listener handles our custom startup/shutdown behavior. -->
     <listener-class>org.opennms.web.InitializerServletContextListener</listener-class>
@@ -1564,5 +1573,10 @@
     <taglib-uri>http://java.sun.com/jstl/core_rt</taglib-uri>
     <taglib-location>/WEB-INF/c-rt.tld</taglib-location>
   </taglib>
+  
+  <taglib>
+   <taglib-uri>/tld/extremecomponents</taglib-uri>
+   <taglib-location>/WEB-INF/extremecomponents.tld</taglib-location>
+</taglib>
 
 </web-app>

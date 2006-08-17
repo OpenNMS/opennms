@@ -1,57 +1,76 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
-  <bean class="org.springframework.web.servlet.handler.BeanNameUrlHandlerMapping"></bean>
+	<bean
+		class="org.springframework.web.servlet.handler.BeanNameUrlHandlerMapping">
+	</bean>
 
-  <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
-    <property name="viewClass" value="org.springframework.web.servlet.view.JstlView" />
-    <property name="prefix" value="/WEB-INF/jsp/" />
-    <property name="suffix" value=".jsp" />
-  </bean>
+	<bean
+		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="viewClass"
+			value="org.springframework.web.servlet.view.JstlView" />
+		<property name="prefix" value="/WEB-INF/jsp/" />
+		<property name="suffix" value=".jsp" />
+	</bean>
 
-  <bean name="/aggregateStatus.htm" class="org.opennms.web.controller.AggregateStatusController" >
-    <property name="service" ref="aggregateStatusService" />
-  </bean>
+	<bean name="/aggregateStatus.htm"
+		class="org.opennms.web.controller.AggregateStatusController">
+		<property name="service" ref="aggregateStatusService" />
+	</bean>
 
-  <bean name="/catstatus.htm" class="org.opennms.web.controller.CategoryStatusController">
-    <property name="categoryStatusService" ref="categoryStatusService" />
-  </bean>
+	<bean name="/catstatus.htm"
+		class="org.opennms.web.controller.CategoryStatusController">
+		<property name="categoryStatusService"
+			ref="categoryStatusService" />
+	</bean>
 
-  <bean name="/daemonstatus.htm" class="org.opennms.web.controller.DaemonStatusController">
-    <property name="daemonStatusService" ref="daemonStatusService" />
-    <property name="commandName" value="toModify" />
-    <property name="commandClass" value="org.opennms.web.controller.DaemonStatusBinder" />
-    <property name="successView" value="daemonstatus" />
-  </bean>
+	<bean name="/daemonstatus.htm"
+		class="org.opennms.web.controller.DaemonStatusController">
+		<property name="daemonStatusService" ref="daemonStatusService" />
+		<property name="commandName" value="toModify" />
+		<property name="commandClass"
+			value="org.opennms.web.controller.DaemonStatusBinder" />
+		<property name="successView" value="daemonstatus" />
+	</bean>
 
-  <bean name="/displayCurrentOutages.htm" class="org.opennms.web.controller.OutageCurrentController">
-    <property name="outageService" ref="outageService" />
-  </bean>
-
-  <!--
-    <property name="formView" value="displayCurrentOutages" />
-    <property name="successView" value="displayCurrentOutages" />
-    <property name="commandName"><value>outageService</value></property>
-    <property name="commandClass"><value>org.opennms.web.controller.OutageCurrentController</value></property>
-  -->
-
-
-
-  <!-- Examples
-    <bean name="/nodes.htm" class="org.opennms.controller.NodeController">
-    <property name="entityService" ref="entityService" />
-    </bean>	
+	<bean name="/displayCurrentOutages.htm"
+		class="org.opennms.web.controller.OutageCurrentController">
+		<property name="outageService" ref="outageService" />
+		<property name="displayCurrentOutages">
+			<value>displayCurrentOutages</value>
+        </property>
+        <property name="defaultRowsDisplayed">
+        <value>75</value>
+        </property>
+	</bean>
+ 
+ 
     
-    <bean name="/interfaces.htm" class="org.opennms.controller.InterfaceController">
-    <property name="entityService" ref="entityService" />
-    </bean>
-    
-    <bean name="/node-edit.htm" class="org.opennms.controller.NodeEditController">
-    <property name="entityService" ref="entityService" />
-    <property name="commandName" value="node" />
-    <property name="formView" value="node-edit" />
-    <property name="successView" value="processed" />
-    </bean>
-  -->
+	<!--
+		<property name="formView" value="displayCurrentOutages" />
+		<property name="successView" value="displayCurrentOutages" />
+		<property name="commandName"><value>outageService</value></property>
+		<property name="commandClass"><value>org.opennms.web.controller.OutageCurrentController</value></property>
+	-->
+
+
+
+	<!-- Examples
+		<bean name="/nodes.htm" class="org.opennms.controller.NodeController">
+		<property name="entityService" ref="entityService" />
+		</bean>	
+		
+		<bean name="/interfaces.htm" class="org.opennms.controller.InterfaceController">
+		<property name="entityService" ref="entityService" />
+		</bean>
+		
+		<bean name="/node-edit.htm" class="org.opennms.controller.NodeEditController">
+		<property name="entityService" ref="entityService" />
+		<property name="commandName" value="node" />
+		<property name="formView" value="node-edit" />
+		<property name="successView" value="processed" />
+		</bean>
+	-->
 </beans>
