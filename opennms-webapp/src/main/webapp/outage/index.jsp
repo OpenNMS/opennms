@@ -51,30 +51,28 @@
   <jsp:param name="breadcrumb" value="Outages" />  
 </jsp:include>
 
-  <div style="width: 40%; float: left;">
+  <div class="TwoColLeft">
       <h3>Outage Menu</h3>    
-
-      <p><a href="outage/current.jsp">View current outages</a></p>
-      <p><a href="outage/list">View all outages</a></p>
-      
-      <p>
+		<div class="boxWrapper">
         <form method="GET" action="outage/detail.jsp" >
-          Get&nbsp;details&nbsp;for&nbsp;Outage&nbsp;ID:<br />
-          <input type="text" name="id" />
-          <input type="submit" value="Search" />
-        </form>      
-      </p>
+          <p align="right">Outage ID:
+				<input type="text" name="id" />
+				<input type="submit" value="Get details" /></p>
+        </form>
+			<ul class="plain">
+				<li><a href="outage/current.jsp">Current outages</a></li>
+				<li><a href="outage/list">All outages</a></li>
+			</ul>
+      </div>
   </div>
-
-  <div style="width: 60%; float: left;">
+  <div class="TwoColRight">
       <h3>Outages and Service Level Availability</h3>
-
-      <p>
-        Outages are tracked by OpenNMS by polling services that have been
-        discovered.  If the service does not respond to the poll, a service outage
-        is created and service level availbility levels are impacted.  Service 
-        outages created notifications. 
-      </p>     
+		<div class="boxWrapper">
+			<p>Outages are tracked by OpenNMS by polling services that have been
+			discovered.  If the service does not respond to the poll, a service outage
+			is created and service level availbility levels are impacted.  Service 
+			outages created notifications.</p>
+		</div>
   </div>
-                                     
+  <hr />                                   
 <jsp:include page="/includes/footer.jsp" flush="false" />
