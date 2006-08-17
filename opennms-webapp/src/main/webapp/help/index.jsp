@@ -49,18 +49,24 @@ session="true"
   <jsp:param name="breadcrumb" value="Help" />
 </jsp:include>
 
-
+<div class="TwoColLeft">
       <h3>Local Resources</h3>
 		<div class="boxWrapper">
-			<p><a href="help/about.jsp">About the OpenNMS Web Console</a></p>
+		  <ul class="plain">
+			  <li><a href="help/about.jsp">About the OpenNMS Web Console</a></li>
+			</ul>
 		</div>
 		<hr />
       <h3>Internet Resources</h3>
 		<div class="boxWrapper">
-      <p><a href="http://faq.opennms.org">Frequently Asked Questions</a></p>
-      <p><a href="http://docs.opennms.org">Online Documentation</a></p>
+		  <ul class="plain">
+        <li><a href="http://faq.opennms.org">Frequently Asked Questions</a></li>
+        <li><a href="http://docs.opennms.org">Online Documentation</a></li>
+      </ul>
 		</div>
-		<hr />
+    <hr />
+  </div>
+    <div class="TwoColRight">
       <h3>Helpful Resources</h3>
     	<div class="boxWrapper">
       <p>
@@ -76,4 +82,6 @@ session="true"
         on the <em>About page</em>.
       </p>
 		</div>
+	</div>
+ <hr />
 <jsp:include page="/includes/footer.jsp" flush="false"/>
