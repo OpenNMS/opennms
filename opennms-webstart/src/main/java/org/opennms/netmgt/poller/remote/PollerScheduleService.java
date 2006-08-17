@@ -1,9 +1,18 @@
 package org.opennms.netmgt.poller.remote;
 
-import java.text.ParseException;
+import javax.swing.table.TableModel;
+
+import org.quartz.Scheduler;
+
 
 public interface PollerScheduleService {
 	
-	MonitorServicePollDetails[] getServicePollDetails() throws ParseException;
+	// use case 1: view schedule
+	TableModel getScheduleTableModel();
+
+	// use case 2: schedule services
+	void scheduleServicePolls(Scheduler scheduler) throws Exception;
+	
+	
 
 }

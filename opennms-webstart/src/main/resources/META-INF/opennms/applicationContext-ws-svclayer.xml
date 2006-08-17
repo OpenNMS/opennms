@@ -1,12 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:lang="http://www.springframework.org/schema/lang"
 	   xsi:schemaLocation=
 	   "http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
 	   http://www.springframework.org/schema/lang http://www.springframework.org/schema/lang/spring-lang.xsd">
       
 
-	
+    <bean name="scheduler" class="org.springframework.scheduling.quartz.SchedulerFactoryBean" />
+    
+    <bean name="pollService" class="org.opennms.netmgt.poller.remote.TestPollService">
+       <constructor-arg value="1" />
+    </bean>
+    
+    <bean name="pollerConfiguration" class="org.opennms.netmgt.poller.remote.TestPollerConfiguration" />
+
+	<bean name="poller" class="org.opennms.netmgt.poller.remote.Poller">
+	  <property name="pollerName" value="poller" />
+	  <property name="scheduler" ref="scheduler" />
+	  <property name="pollService" ref="pollService" />	
+	  <property name="pollerConfiguration" ref="pollerConfiguration" />	
+	  <property name="initialSpreadTime" value="3000" />
+	</bean>
 
        
     
