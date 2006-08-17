@@ -77,8 +77,8 @@
 	      <form method="get" action="response/addIntfFromNode" >
 	        <input type="hidden" name="endUrl" value="response/addReportsToUrl" />
 	        <input type="hidden" name="relativetime" value="lastday" />
-	              <p>Choose a <label for="reponseNode">node to query</label>:</p>
-	              <select style="width: 100%;" name="responseNode">
+	              <p>Choose a <label for="node">node to query</label>:</p>
+	              <select style="width: 100%;" name="node">
 	                <% for( int i=0; i < nodes.length; i++ ) { %>
 	                   <option value="<%=nodes[i].getNodeId()%>"><%=nodes[i].getNodeLabel()%></option>
 	                <% } %>
