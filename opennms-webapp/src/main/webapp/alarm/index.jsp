@@ -50,32 +50,25 @@
   <jsp:param name="breadcrumb" value="Alarms" />
 </jsp:include>
 
-  <div style="width: 40%; float: left">
+  <div class="TwoColLeft">
       <h3>Alarm Queries</h3>
-      
-      <jsp:include page="/alarm/querypanel.jsp" flush="false" />
-
-      <p><a href="alarm/list" title="View all outstanding alarms">View all alarms</a></p>
-      <p><a href="alarm/advsearch.jsp" title="More advanced searching and sorting options">Advanced Search</a></p>
-
-      <p>      
-        <table width="50%" border="0" cellpadding="2" cellspacing="0" >
-          <tr>
-            <td colspan="2">Get&nbsp;details&nbsp;for&nbsp;Alarm&nbsp;ID:</td>
-          </tr>
-          <tr>
-            <form action="alarm/detail.jsp" method="GET">          
-              <td><input type="TEXT" NAME="id" /></td>
-              <td><input type="submit" value="Search"/></td>                
-            </form>
-          </tr>                    
-        </table>
-      </p>
+      <div class="boxWrapper">
+        <jsp:include page="/alarm/querypanel.jsp" flush="false" />
+        <form action="alarm/detail.jsp" method="GET">
+          <p align="right">Alarm ID:          
+            <input type="TEXT" NAME="id" />
+            <input type="submit" value="Get details"/></p>                
+        </form>
+        <ul class="plain">
+          <li><a href="alarm/list" title="View all outstanding alarms">All alarms</a></li>
+          <li><a href="alarm/advsearch.jsp" title="More advanced searching and sorting options">Advanced Search</a></li>
+        </ul>  
+      </div>
   </div>
 
-  <div style="width: 60%; float: left">
-      <h3>Outstanding and acknowledged alarms</h3>
-
+  <div class="TwoColRight">
+    <h3>Outstanding and acknowledged alarms</h3>
+    <div class="boxWrapper">
       <p>Alarms can be <em>acknowledged</em>, or removed from the view of other users, by
         selecting the alarm in the <em>Ack</em> check box and clicking the <em>Acknowledge
         Selected Alarms</em> at the bottom of the page.  Acknowledging an alarm gives
@@ -93,6 +86,7 @@
         description, type the identifier into the <em>Get details for Alarm ID</em> box and
         hit <b>[Enter]</b>.  You will then go to the appropriate details page.
       </p>
+    </div>
   </div>
-
+  <hr />
 <jsp:include page="/includes/footer.jsp" flush="false"/>
