@@ -131,36 +131,26 @@
   <input type="hidden"/>
 </form>
 
-  <div style="width: 40%; float: left;">
-      <h3>Admin Options</h3>
-
-      <p>
-        <a href="admin/userGroupView/index.jsp">Configure Users, Groups and Roles</a>
-        <!-- <p>
-          <a HREF="admin/eventconf/list.jsp">Configure Events</a> -->
-      <p>
-        <a HREF="admin/notification/index.jsp">Configure Notifications</a>
-      <p>
-        <a HREF="javascript:submitPost()">Manage and Unmanage Interfaces and Services</a>
-      <p>
-        <a HREF="javascript:snmpManagePost()">Configure SNMP Data Collection per Interface</a>
-      <p>
-        <a HREF="javascript:snmpConfigPost()">Configure SNMP Community Names by IP</a>
-      <p>
-        <a HREF="javascript:addInterfacePost()">Add Interface</a>
-      <p>
-        <a HREF="javascript:deletePost()">Delete Nodes</a>
-      <p>
-        <a HREF="admin/pollerConfig/index.jsp">Configure Pollers</a>
-      <p>
-        <a HREF="admin/asset/index.jsp">Import and Export Asset Information</a>
-      <p>
-        <a HREF="admin/sched-outages/index.jsp">Scheduled Outages</a>
-      <p>
-
+  <div class="TwoColLeft">
+    <h3>Options</h3>
+    <div class="boxWrapper">
+      <ul class="plain">  
+        <li><a href="admin/userGroupView/index.jsp">Configure Users, Groups and Roles</a></li>
+        <!-- <a HREF="admin/eventconf/list.jsp">Configure Events</a> -->
+        <li><a HREF="admin/notification/index.jsp">Configure Notifications</a></li>
+        <li><a HREF="javascript:submitPost()">Manage and Unmanage Interfaces and Services</a></li>
+        <li><a HREF="javascript:snmpManagePost()">Configure SNMP Data Collection per Interface</a></li>
+        <li><a HREF="javascript:snmpConfigPost()">Configure SNMP Community Names by IP</a></li>
+        <li><a HREF="javascript:addInterfacePost()">Add Interface</a></li>
+        <li><a HREF="javascript:deletePost()">Delete Nodes</a></li>
+        <li><a HREF="admin/pollerConfig/index.jsp">Configure Pollers</a></li>
+        <li><a HREF="admin/asset/index.jsp">Import and Export Asset Information</a></li>
+        <li><a HREF="admin/sched-outages/index.jsp">Scheduled Outages</a></li>
+      </ul>
       <!-- security link -->
-      
-      <FORM METHOD="POST" NAME="notificationStatus" ACTION="admin/updateNotificationStatus">
+    </div>
+    <div class="boxWrapper">
+      <form method="post" name="notificationStatus" action="admin/updateNotificationStatus">
         <%String status = "Unknown";
          try
           {
@@ -168,39 +158,21 @@
             status = NotifdConfigFactory.getInstance().getPrettyStatus();
           } catch (Exception e) { /*if factory can't be initialized, status is already 'Unknown'*/ }
         %>
-        <table>
-          <tr>
-            <td colspan="3">
-              <b>Notification Status</b>
-            </td>
-          </tr>
-          <tr>
+          <p align="right">Notification Status:
             <%if (status.equals("Unknown")) { %>
-              <td>
-                <font color="FF0000">Unknown</font>&nbsp;&nbsp;&nbsp;
-              </td>
+              Unknown<br />
             <% } %>
-            <td>
-              <input type="radio" name="status" value="on" <%=(status.equals("On") ? "checked" : "")%>/> ON<br/>
-              <input type="radio" name="status" value="off" <%=(status.equals("Off") ? "checked" : "")%>/> OFF
-            </td>
-            <td>
-              <input type="submit" value="Update Status">
-            </td>
-            <%if (!status.equals("Unknown")) { %>
-              <td>
-                &nbsp;
-              </td>
-            <% } %>
-          </tr>
-        </table>
-        </FORM>
-        </p>
+              <input type="radio" name="status" id="on" value="on" <%=(status.equals("On") ? "checked" : "")%>/> <label for="on">On</label>&nbsp;&nbsp;&nbsp;
+              <input type="radio" name="status" id="off" value="off" <%=(status.equals("Off") ? "checked" : "")%>/> <label for="off">Off</label>
+              <input type="submit" value="Update" />
+            </p>
+        </form>
+      </div>
   </div>
       
-  <div style="width: 60%; float: left;">
+  <div class="TwoColRight">
       <h3>Option Descriptions</h3>
-
+      <div class="boxWrapper">
         <p><b>Configure Users and Groups</b> allows you, the Administrator, to add, modify or delete
             existing users.   If adding or modifying users, be prepared with user
             IDs, passwords, notification contact information (pager numbers and/or
@@ -265,6 +237,7 @@
             corner of every OpenNMS screen with either a <em>Notices On</em> or <em>Notices
             Off</em> banner.  
         </p>
+      </div>
   </div>
-
+  <hr />
 <jsp:include page="/includes/footer.jsp" flush="false"/>
