@@ -50,21 +50,24 @@
   <jsp:param name="breadcrumb" value="Events" />
 </jsp:include>
 
-  <div style="width: 40%; float: left;">
+  <div class="TwoColLeft">
       <h3>Event Queries</h3>
       <div class="boxWrapper">
       <jsp:include page="/event/querypanel.jsp" flush="false" />
-      <p><a href="event/list" title="View all outstanding events">View all events</a>, <a href="event/advsearch.jsp" title="More advanced searching and sorting options">Advanced Search</a></p>
-      <p>Get details for Event ID:
-            <form action="event/detail.jsp" method="GET">          
-              <input type="TEXT" NAME="id" />
-              <input type="submit" value="Search"/>                
-            </form>
-      </p>
+			<form action="event/detail.jsp" method="GET">
+				<p align="right">Event ID:          
+					<input type="text" name="id" />
+					<input type="submit" value="Get details"/></p>               
+			</form>
+			
+			<ul class="plain">
+				<li><a href="event/list" title="View all outstanding events">All events</a></li>
+				<li><a href="event/advsearch.jsp" title="More advanced searching and sorting options">Advanced Search</a></li>
+			</ul>
 		</div>
   </div>
       
-  <div style="width: 55%; float: right; margin-left:15px;">
+  <div class="TwoColRight">
       <h3>Outstanding and acknowledged events</h3>
 		<div class="boxWrapper">
       <p>Events can be <em>acknowledged</em>, or removed from the view of other users, by
@@ -86,5 +89,5 @@
       </p>
 		</div>
   </div>
-	<div style="clear:both;"></div>
+	<hr />
 <jsp:include page="/includes/footer.jsp" flush="false"/>
