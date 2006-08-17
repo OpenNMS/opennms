@@ -58,47 +58,43 @@
   <jsp:param name="breadcrumb" value="Reports" />
 </jsp:include>
 
-  <div style="width: 40%; float: left;">
-            <h3>Reports</h3>
-
-            <!-- Performance Reports -->    
-            <p><a href="performance/index.jsp">Performance Reports</a></p>
-
-            <!-- KSC Performance Reports, Node Reports, Domain Reports -->
-            <p><a href="KSC/index.jsp">KSC Performance Reports, Node Reports, Domain Reports</a></p>
-
-            <!-- Availability Report -->
-            <p><a href="availability/index.jsp">Availability Reports</a></p>
-
-            <!-- Response Time Report -->
-            <p><a href="response/index.jsp">Response Time Reports</a></p>
-            <!-- more reports will follow -->
+  <div class="TwoColLeft">
+    <h3>Reports</h3>
+    <div class="boxWrapper">
+      <ul class="plain">
+        <li><a href="performance/index.jsp">Performance</a></li>
+        <li><a href="KSC/index.jsp">KSC Performance, Nodes, Domain</a></li>
+        <li><a href="availability/index.jsp">Availability</a></li>
+        <li><a href="response/index.jsp">Response Times</a></li>
+      </ul>
+    </div>
+  <!-- more reports will follow -->
   </div>
 
-  <div style="width: 60%; float: left;">
-            <h3>Descriptions</h3>
-            
-            <p><b>Performance Reports</b> provide a way to easily 
-                visualize the critical SNMP data collected from managed nodes throughout
-                your network.  
-            </p>
+  <div class="TwoColRight">
+    <h3>Descriptions</h3>
+    <div class="boxWrapper">
+      <p><b>Performance Reports</b> provide a way to easily 
+          visualize the critical SNMP data collected from managed nodes throughout
+          your network.  
+      </p>
+      <p><b>Key SNMP Customized (KSC) Performance Reports and Node Reports</b>
+          KSC reports allow the user to create and view SNMP performance data using prefabricated graph types.
+          The reports provide a great deal of flexibility in timespans and graphtypes. KSC report configurations may be saved allowing
+          the user to define key reports that may be referred to at future dates.  Node reports show SNMP data for all
+          SNMP interfaces on a node. Node reports may be loaded into the customizer and saved as a KSC report.
+      </p>
 
-            <p><b>Key SNMP Customized (KSC) Performance Reports and Node Reports</b>
-                KSC reports allow the user to create and view SNMP performance data using prefabricated graph types.
-                The reports provide a great deal of flexibility in timespans and graphtypes. KSC report configurations may be saved allowing
-                the user to define key reports that may be referred to at future dates.  Node reports show SNMP data for all
-                SNMP interfaces on a node. Node reports may be loaded into the customizer and saved as a KSC report.
-            </p>
+      <p><b>Availability Reports</b> provide graphical or numeric
+          view of your service level metrics for the current
+          month-to-date, previous month, and last twelve months by categories.
+      </p>
     
-            <p><b>Availability Reports</b> provide graphical or numeric
-                view of your service level metrics for the current
-                month-to-date, previous month, and last twelve months by categories.
-            </p>
-            
-            <p><b>Response Time Reports</b> provide a way to easily 
-                visualize the response time data collected from managed nodes throughout
-                your network.  
-            </p>
+      <p><b>Response Time Reports</b> provide a way to easily 
+          visualize the response time data collected from managed nodes throughout
+          your network.  
+      </p>
+    </div>
   </div>
-
+  <hr />
 <jsp:include page="/includes/footer.jsp" flush="false"/>
