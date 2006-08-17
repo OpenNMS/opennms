@@ -51,61 +51,57 @@
   <jsp:param name="breadcrumb" value="Notification" />
 </jsp:include>
 
-  <div style="width: 40%; float: left;">
+  <div class="TwoColLeft">
       <h3>Notification queries</h3>
-
-      <p>
-        <a HREF="notification/browse?acktype=unack&filter=<%= java.net.URLEncoder.encode("user="+request.getRemoteUser()) %>">Check your outstanding notices</a>
-      </p>
-      <p>
-        <a HREF="notification/browse?acktype=unack">View all outstanding notices</a>
-      </p>
-      <p>
-        <a HREF="notification/browse?acktype=ack">View all acknowledged notices</a>
-      </p>
-      
-      <form METHOD="GET" ACTION="notification/list.jsp" >
-        Check&nbsp;notices&nbsp;for&nbsp;user<br>
-        <input type="TEXT" NAME="username" />
-        <input type="submit" value="Search" />
-      </form>
-      <form METHOD="GET" ACTION="notification/detail.jsp" >
-        Get&nbsp;notice&nbsp;detail<br>
-        <input type="TEXT" NAME="notice" />
-        <input type="submit" value="Search" />        
-      </form>
+      <div class="boxWrapper">
+        <form method="get" action="notification/list.jsp" >
+          <p align="right">User:
+          <input type="text" name="username" />
+          <input type="submit" value="Check notices" /></p>
+        </form>
+        <form method="get" action="notification/detail.jsp" >
+          <p align="right">Notice:
+          <input type="text" name="notice" />
+          <input type="submit" value="Get details" /></p>       
+        </form>
+        <ul class="plain">
+          <li><a href="notification/browse?acktype=unack&filter=<%= java.net.URLEncoder.encode("user="+request.getRemoteUser()) %>">Your outstanding notices</a></li>
+          <li><a href="notification/browse?acktype=unack">All outstanding notices</a></li>
+          <li><a href="notification/browse?acktype=ack">All acknowledged notices</a></li>
+        </ul>
+      </div>
   </div>
 
-  <div style="width: 60%; float: left;">
-        <h3>Outstanding and Acknowledged Notices</h3>
-
-        <p>When important events are detected by OpenNMS, users may 
-            receive a <em>notice</em>, a descriptive message sent automatically
-            to a pager, an email address, or both. In order to
-            receive notices, the user must have their notification information 
-            configured in their user profile (see your Administrator for assistance), 
-            notices must be <em>on</em> (see the upper right corner of this window), 
-            and an important event must be received.
+  <div class="TwoColRight">
+    <h3>Outstanding and Acknowledged Notices</h3>
+    <div class="boxWrapper">
+      <p>When important events are detected by OpenNMS, users may 
+        receive a <em>notice</em>, a descriptive message sent automatically
+        to a pager, an email address, or both. In order to
+        receive notices, the user must have their notification information 
+        configured in their user profile (see your Administrator for assistance), 
+        notices must be <em>on</em> (see the upper right corner of this window), 
+        and an important event must be received.
       </p>
 
-        <p>From this panel, you may <strong>Check your outstanding notices</strong>, 
-            which displays all unacknowledged notices sent to your user ID,
-            <strong>View all outstanding notices</strong>, which displays all unacknowledged 
-            notices for all users, or <strong>View all acknowledged notices</strong>, 
-            which provides a summary of all notices sent and acknowledged for all users.
+      <p>From this panel, you may <strong>Check your outstanding notices</strong>, 
+        which displays all unacknowledged notices sent to your user ID,
+        <strong>View all outstanding notices</strong>, which displays all unacknowledged 
+        notices for all users, or <strong>View all acknowledged notices</strong>, 
+        which provides a summary of all notices sent and acknowledged for all users.
       </p>
 
-        <p>You may also search for notices associated with a specific user ID 
-            by entering that user ID in the <strong>Check notices for user</strong>
-            text box. And finally, you can jump immediately to a page with details
-            specific to a given notice identifier by entering that numeric 
-            identifier in the <strong>Get notice detail</strong> text box. 
-            Note that this is particularly useful if you are using a numeric 
-            paging service and receive the numeric notice identifier as part of the page.
-        </p>
-            
-        <h3>Notification Escalation</h3>                
-            
+      <p>You may also search for notices associated with a specific user ID 
+        by entering that user ID in the <strong>Check notices for user</strong>
+        text box. And finally, you can jump immediately to a page with details
+        specific to a given notice identifier by entering that numeric 
+        identifier in the <strong>Get notice detail</strong> text box. 
+        Note that this is particularly useful if you are using a numeric 
+        paging service and receive the numeric notice identifier as part of the page.
+      </p>
+    </div>
+    <h3>Notification Escalation</h3>
+    <div class="boxWrapper">
         <p>Once a notice is sent, it is considered <em>outstanding</em> until 
             someone <em>acknowledge</em>s receipt of the notice via the OpenNMS
             Notification interface.&nbsp; If the event that 
@@ -121,6 +117,7 @@
             where all members of that group will be notified at once with no 
             15 minute escalation interval.
         </p>
+      </div>
   </div>
-
+  <hr />
 <jsp:include page="/includes/footer.jsp" flush="false"/>
