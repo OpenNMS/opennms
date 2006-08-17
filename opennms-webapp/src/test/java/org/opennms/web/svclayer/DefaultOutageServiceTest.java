@@ -1,20 +1,18 @@
 package org.opennms.web.svclayer;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Set;
-
-import junit.framework.TestCase;
 import static org.easymock.EasyMock.createMock;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.replay;
 import static org.easymock.EasyMock.verify;
 
-import org.hibernate.mapping.Map;
+import java.util.Collection;
+import java.util.Set;
+
+import junit.framework.TestCase;
+
 import org.opennms.netmgt.dao.OutageDao;
 import org.opennms.netmgt.dao.jdbc.JdbcSet;
 import org.opennms.netmgt.model.OnmsOutage;
-import org.opennms.web.svclayer.outage.CurrentOutagesView;
 import org.opennms.web.svclayer.outage.DefaultOutageService;
 
 public class DefaultOutageServiceTest extends TestCase {
@@ -110,10 +108,10 @@ public void testCurrentByRange () {
     
       expectedOutages.add(expectedCurrent);
       
-      expect(outageDao.currentOutages(1,1)).andReturn(expectedOutages);
+      expect(outageDao.currentOutages(1,1,"iflostservice","asc")).andReturn(expectedOutages);
       replay(outageDao);
       
-      Set suppressed = (Set) outageService.getCurrentOutagesByRange(1, 1);
+      Set suppressed = (Set) outageService.getCurrentOutagesByRange(1, 1, "iflostservice","asc");
       verify(outageDao);
       assertTrue("Current Outages", suppressed.equals(expectedOutages));
       
