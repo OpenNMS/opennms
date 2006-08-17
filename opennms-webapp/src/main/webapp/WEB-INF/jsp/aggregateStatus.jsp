@@ -21,7 +21,7 @@
 
 <h1> Aggregated Status </h1>
 
-<h2><c:out value="${view.label}" /></h2> <br>
+<h2><c:out value="${view.name}" /></h2> <br>
 
 <c:forEach items="${stati}" var="status">
     <c:out value="${status.label}" />
