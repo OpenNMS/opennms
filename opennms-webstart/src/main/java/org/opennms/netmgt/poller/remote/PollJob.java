@@ -1,6 +1,5 @@
 package org.opennms.netmgt.poller.remote;
 
-import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.PollStatus;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -8,37 +7,26 @@ import org.springframework.scheduling.quartz.QuartzJobBean;
 
 public class PollJob extends QuartzJobBean {
 	
-	private String pollId;
+	private PolledService m_polledService;
 	private PollService m_pollService;
-	private OnmsMonitoredService m_monitoredService;
-	private PollObserver m_pollObserver;
+	private PolledServicesModel m_polledServicesModel;
 	
 
 	protected void executeInternal(JobExecutionContext context) throws JobExecutionException {
-		
-		pollStarted();
-		PollStatus pollStatus = m_pollService.poll(m_monitoredService);
-		pollCompleted(pollStatus);
+		System.err.println("Polling "+m_polledService.getId());
+		PollStatus pollStatus = m_pollService.poll(m_polledService.getMonitoredService());
+		m_polledServicesModel.updateServiceStatus(m_polledService.getId(), pollStatus, context.getFireTime());
+
 	}
 
 
-	private void pollCompleted(PollStatus pollStatus) {
-		m_pollObserver.pollCompleted(pollId, pollStatus);
+	public void setPolledService(PolledService polledService) {
+		m_polledService = polledService;
 	}
 
 
-	private void pollStarted() {
-		m_pollObserver.pollStarted(pollId);
-	}
-
-
-	public void setMonitoredService(OnmsMonitoredService monitoredService) {
-		m_monitoredService = monitoredService;
-	}
-
-
-	public void setPollObserver(PollObserver pollObserver) {
-		m_pollObserver = pollObserver;
+	public void setPolledServicesModel(PolledServicesModel polledServicesModel) {
+		m_polledServicesModel = polledServicesModel;
 	}
 
 
@@ -47,8 +35,5 @@ public class PollJob extends QuartzJobBean {
 	}
 
 
-	public void setPollId(String pollId) {
-		this.pollId = pollId;
-	}
 
 }

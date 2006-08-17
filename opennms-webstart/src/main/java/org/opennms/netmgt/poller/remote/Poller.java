@@ -2,6 +2,8 @@ package org.opennms.netmgt.poller.remote;
 
 import java.util.Date;
 
+import org.apache.log4j.Category;
+import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.model.PollStatus;
 import org.quartz.Scheduler;
 import org.quartz.Trigger;
@@ -10,26 +12,21 @@ import org.springframework.util.Assert;
 
 public class Poller implements InitializingBean, PollObserver {
 	
-	private PollerConfiguration m_pollerConfiguration;
 	private PollService m_pollService;
+	private PolledServicesModel m_polledServicesModel;
 	private Scheduler m_scheduler;
-	private String m_pollerName;
 	private long m_initialSpreadTime = 300000L;
 	
-	public void setPollerConfiguration(PollerConfiguration pollerConfiguration) {
-		m_pollerConfiguration = pollerConfiguration;
-	}
-
 	public void setPollService(PollService pollService) {
 		m_pollService = pollService;
+	}
+	
+	public void setPolledServicesModel(PolledServicesModel polledServicesModel) {
+		m_polledServicesModel = polledServicesModel;
 	}
 
 	public void setScheduler(Scheduler scheduler) {
 		m_scheduler = scheduler;
-	}
-	
-	public void setPollerName(String pollerName) {
-		m_pollerName = pollerName;
 	}
 	
 	public void setInitialSpreadTime(long initialSpreadTime) {
@@ -40,31 +37,38 @@ public class Poller implements InitializingBean, PollObserver {
 	public void afterPropertiesSet() throws Exception {
 		assertNotNull(m_scheduler, "scheduler");
 		assertNotNull(m_pollService, "pollService");
-		assertNotNull(m_pollerConfiguration, "pollerConfiguration");
-		assertNotNull(m_pollerName, "pollerName");
+		assertNotNull(m_polledServicesModel, "polledServicesModel");
 		
-		scheduleServicePolls();
+		schedulePolls();
 
 	}
 	
-	private void scheduleServicePolls() throws Exception {
+	private void schedulePolls() throws Exception {
 		
-		ServicePollConfiguration[] svcPollConfigs = m_pollerConfiguration.getConfigurationForPoller(m_pollerName);
+		PolledService[] polledServices = m_polledServicesModel.getPolledServices();
+
+		if (polledServices == null || polledServices.length == 0) {
+			log().warn("No polling scheduled.");
+			return;
+		}
 
 		long startTime = System.currentTimeMillis();
-		long scheduleSpacing = m_initialSpreadTime / svcPollConfigs.length;
+		long scheduleSpacing = m_initialSpreadTime / polledServices.length;
 		
-		for (int i = 0; i < svcPollConfigs.length; i++) {
-			ServicePollConfiguration svcPollConfig = svcPollConfigs[i];
+		for (int i = 0; i < polledServices.length; i++) {
+			PolledService polledService = polledServices[i];
 			
-			Trigger pollTrigger = new PollModelTrigger(svcPollConfig.getId(), svcPollConfig.getPollModel());
-			pollTrigger.setStartTime(new Date(startTime));
+			Date initialPollTime = new Date(startTime);
 			
-			PollJobDetail jobDetail = new PollJobDetail(svcPollConfig.getId(), PollJob.class);
-			jobDetail.setMonitoredService(svcPollConfig.getMonitoredService());
-			jobDetail.setPollId(svcPollConfig.getId());
+			m_polledServicesModel.setInitialPollTime(polledService.getId(), initialPollTime);
+			
+			Trigger pollTrigger = new PolledServiceTrigger(polledService.getId(), polledService);
+			pollTrigger.setStartTime(initialPollTime);
+			
+			PollJobDetail jobDetail = new PollJobDetail(polledService.getId(), PollJob.class);
+			jobDetail.setPolledService(polledService);
+			jobDetail.setPolledServicesModel(m_polledServicesModel);
 			jobDetail.setPollService(m_pollService);
-			jobDetail.setPollObserver(this);
 			
 			m_scheduler.scheduleJob(jobDetail, pollTrigger);
 			
@@ -74,8 +78,12 @@ public class Poller implements InitializingBean, PollObserver {
 		
 	}
 
+	private Category log() {
+		return ThreadCategory.getInstance(getClass());
+	}
+
 	private void assertNotNull(Object propertyValue, String propertyName) {
-		Assert.notNull(propertyValue, propertyName+" must be set for instances of "+Poller.class);
+		Assert.state(propertyValue != null, propertyName+" must be set for instances of "+Poller.class);
 	}
 
 	public void pollCompleted(String pollId, PollStatus pollStatus) {

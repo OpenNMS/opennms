@@ -18,29 +18,32 @@ public class PollerTest extends TestCase {
 		
 		Scheduler scheduler = createMock(Scheduler.class);
 		PollService pollService = createNiceMock(PollService.class);
-		PollerConfiguration pollerConfiguration = createMock(PollerConfiguration.class);
+		PolledServicesModel polledServicesModel = createMock(PolledServicesModel.class);
 		
 		OnmsMonitoredService svc = getMonitoredService();
 		
-		ServicePollConfiguration servicePollConfiguration = new ServicePollConfiguration(svc, 300000);
-		ServicePollConfiguration[] svcPollConfigs = new ServicePollConfiguration[] {
-				servicePollConfiguration
+		PollConfiguration pollConfig = new PollConfiguration(svc, 300000);
+		
+		PolledService polledService = new PolledService("id", pollConfig.getMonitoredService(), pollConfig.getPollModel());
+		
+		PolledService[] polledServices = new PolledService[] {
+				polledService
 		};
 
-		expect(pollerConfiguration.getConfigurationForPoller("poller")).andReturn(svcPollConfigs);
-		expect(scheduler.scheduleJob(isA(PollJobDetail.class), isA(PollModelTrigger.class))).andReturn(new Date());
+		expect(polledServicesModel.getPolledServices()).andReturn(polledServices);
+		polledServicesModel.setInitialPollTime(eq("id"), isA(Date.class));
+		expect(scheduler.scheduleJob(isA(PollJobDetail.class), isA(PolledServiceTrigger.class))).andReturn(new Date());
 		
-		replay(scheduler, pollService, pollerConfiguration);
+		replay(scheduler, pollService, polledServicesModel);
 		
 		Poller poller = new Poller();
 		poller.setScheduler(scheduler);
 		poller.setPollService(pollService);
-		poller.setPollerConfiguration(pollerConfiguration);
-		poller.setPollerName("poller");
+		poller.setPolledServicesModel(polledServicesModel);
 		
 		poller.afterPropertiesSet();
 		
-		verify(scheduler, pollService, pollerConfiguration);
+		verify(scheduler, pollService, polledServicesModel);
 		
 	}
 	
