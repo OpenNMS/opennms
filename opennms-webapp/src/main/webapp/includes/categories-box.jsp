@@ -86,16 +86,12 @@
 <%	} %>
 
 
-        <table class="standardfirst">
-
+<table>
 <%
 	for (Iterator i = categoryData.keySet().iterator(); i.hasNext(); ) {
 	    String sectionName = (String) i.next();
 %>
 	<thead>
-		<col />
-		<col width="20%" />
-		<col width="30%" />
 		<tr>
 			<th><%= sectionName %></th>
 			<th align="right">Outages</th>
@@ -110,15 +106,15 @@
 		String categoryName = category.getName();
 %>
 	<tr>
-		<td class="standard"><a href="<%= response.encodeURL(
+		<td><a href="<%= response.encodeURL(
 				"rtc/category.jsp?category=" +
 			    	URLEncoder.encode(categoryName, "UTF-8")) %>"
 		       title="<%= category.getTitle() %>"><%= categoryName %></a></td>
-		<td class="standard" style="background-color: <%= (opennmsDisconnect ? "lightblue" :
+		<td style="background-color: <%= (opennmsDisconnect ? "lightblue" :
 			       category.getOutageColor()) %>;"
 	            align="right"
 		    title="Updated: <%= category.getLastUpdated() %>"><%= category.getOutageText() %></td>
-		<td class="standard" style="background-color: <%= (opennmsDisconnect ? "lightblue" :
+		<td style="background-color: <%= (opennmsDisconnect ? "lightblue" :
 			      category.getAvailColor()) %>;"
 		    align="right" 
 		    title="Updated: <%= category.getLastUpdated() %>"><%= category.getAvailText() %></td>
@@ -127,6 +123,6 @@
 	    }
 	}
 %>
-	</table>
+</table>
 
 
