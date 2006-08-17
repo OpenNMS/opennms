@@ -1,15 +1,8 @@
 package org.opennms.netmgt.poller.remote;
 
 import java.text.ParseException;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.opennms.netmgt.model.OnmsMonitoredService;
-import org.quartz.Calendar;
-import org.quartz.JobDetail;
-import org.quartz.JobExecutionContext;
-import org.quartz.JobExecutionException;
 import org.quartz.Trigger;
 import org.springframework.scheduling.quartz.JobDetailBean;
 import org.springframework.scheduling.quartz.SimpleTriggerBean;
@@ -18,10 +11,11 @@ public class MonitorServicePollDetails extends JobDetailBean {
 
 	private static final long serialVersionUID = -6317676727942162470L;
 	
-	public MonitorServicePollDetails(ServicePollConfiguration svcPollConfiguration) throws ParseException {
+	public MonitorServicePollDetails(ServicePollConfiguration svcPollConfiguration, PollService pollService) throws ParseException {
 		super();
 
 		setServicePollConfiguration(svcPollConfiguration);
+		setPollService(pollService);
 		setMonitoredService(svcPollConfiguration.getMonitoredService());
 		
 		setName("detailsFor:"+getServiceName());
@@ -33,9 +27,14 @@ public class MonitorServicePollDetails extends JobDetailBean {
 		
 	}
 	
+	private void setPollService(PollService pollService) {
+		getJobDataMap().put("pollService", pollService);
+	}
+	
 	private void setServicePollConfiguration(ServicePollConfiguration svcPollConfiguration) {
 		getJobDataMap().put("servicePollConfiguration", svcPollConfiguration);
 	}
+	
 	
 	public ServicePollConfiguration getServicePollConfiguration() {
 		return (ServicePollConfiguration)getJobDataMap().get("servicePollConfiguration");

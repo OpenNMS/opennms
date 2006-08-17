@@ -29,4 +29,8 @@ public class ServicePollConfiguration {
 		m_pollModel = pollModel;
 	}
 
+	public String getId() {
+		return m_monitoredService.getNodeId()+":"+m_monitoredService.getIpAddress()+":"+m_monitoredService.getServiceName();
+	}
+
 }

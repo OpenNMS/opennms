@@ -1,5 +1,7 @@
 package org.opennms.netmgt.poller.remote;
 
+import java.util.Date;
+
 import org.opennms.netmgt.model.PollStatus;
 
 public class OnmsPollModel {
@@ -8,7 +10,7 @@ public class OnmsPollModel {
 	
 	private PollStatus m_currentStatus;
 	
-	private long m_lastPollTime;
+	private Date m_lastPollTime;
 
 	public PollStatus getCurrentStatus() {
 		return m_currentStatus;
@@ -18,11 +20,11 @@ public class OnmsPollModel {
 		m_currentStatus = currentStatus;
 	}
 
-	public long getLastPollTime() {
+	public Date getLastPollTime() {
 		return m_lastPollTime;
 	}
 
-	public void setLastPollTime(long lastPollTime) {
+	public void setLastPollTime(Date lastPollTime) {
 		m_lastPollTime = lastPollTime;
 	}
 
