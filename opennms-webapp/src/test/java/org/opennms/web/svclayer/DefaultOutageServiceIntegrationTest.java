@@ -35,6 +35,7 @@ package org.opennms.web.svclayer;
 import java.util.Collection;
 
 import org.opennms.netmgt.model.OnmsOutage;
+import org.opennms.web.svclayer.outage.OutageService;
 import org.springframework.test.AbstractTransactionalDataSourceSpringContextTests;
 
 public class DefaultOutageServiceIntegrationTest extends
@@ -59,7 +60,7 @@ public class DefaultOutageServiceIntegrationTest extends
 	}
 
 	public void testGetRangeOutages() {
-		Collection<OnmsOutage> outages = outageService.getCurrenOutagesByRange(1,RANGE_LIMIT);
+		Collection<OnmsOutage> outages = outageService.getCurrentOutagesByRange(1,RANGE_LIMIT);
 		assertFalse("Collection should not be emtpy", outages.isEmpty());
 		assertEquals("Collection should be of size " + RANGE_LIMIT, RANGE_LIMIT, outages.size());
 	}

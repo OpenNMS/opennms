@@ -10,9 +10,12 @@ import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.replay;
 import static org.easymock.EasyMock.verify;
 
+import org.hibernate.mapping.Map;
 import org.opennms.netmgt.dao.OutageDao;
 import org.opennms.netmgt.dao.jdbc.JdbcSet;
 import org.opennms.netmgt.model.OnmsOutage;
+import org.opennms.web.svclayer.outage.CurrentOutagesView;
+import org.opennms.web.svclayer.outage.DefaultOutageService;
 
 public class DefaultOutageServiceTest extends TestCase {
 
@@ -38,6 +41,7 @@ public class DefaultOutageServiceTest extends TestCase {
                 .equals(new Integer(1)));
 
     }
+    
 
     public void testSuppressedOutageCount() {
 
@@ -109,7 +113,7 @@ public void testCurrentByRange () {
       expect(outageDao.currentOutages(1,1)).andReturn(expectedOutages);
       replay(outageDao);
       
-      Set suppressed = (Set) outageService.getCurrenOutagesByRange(1, 1);
+      Set suppressed = (Set) outageService.getCurrentOutagesByRange(1, 1);
       verify(outageDao);
       assertTrue("Current Outages", suppressed.equals(expectedOutages));
       
