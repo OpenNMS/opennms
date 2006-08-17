@@ -145,6 +145,11 @@
       <groupId>commons-io</groupId>
       <artifactId>commons-io</artifactId>
     </dependency>
+    <dependency>
+      <groupId>commons-lang</groupId>
+      <artifactId>commons-lang</artifactId>
+    </dependency>
+
     <!-- XXX this is a dependency for opennms-services, but if I build just
          this project, the version is incorrect and it resolves to a broken
          release candidate version (1.0.0-rc1) instead of 1.0.1, which is in
@@ -228,6 +233,21 @@
     <dependency>
       <groupId>org.acegisecurity</groupId>
       <artifactId>acegi-security</artifactId>
+      <version>1.0.1</version>
+    </dependency>
+      <dependency>
+      <groupId>displaytag</groupId>
+      <artifactId>displaytag</artifactId>
+      <version>1.1</version>
+    </dependency>
+     <dependency>
+      <groupId>displaytag</groupId>
+      <artifactId>displaytag-export-poi</artifactId>
+      <version>1.1</version>
+    </dependency>
+    <dependency>
+      <groupId>org.extremecomponents</groupId>
+      <artifactId>extremecomponents</artifactId>
       <version>1.0.1</version>
     </dependency>
   </dependencies>
