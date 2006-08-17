@@ -41,6 +41,7 @@ hr {
 	margin: 0;
 	padding: 0;
 	height: 0;
+	clear: both;
 }
 h1 {
 	margin: 0;
@@ -72,12 +73,26 @@ ul.plain {
 	padding:0px;
 }
 ul.plain li { 
-	line-height:1.3em;
+	line-height:1.6em;
 }
 div.boxWrapper {
 	background-color: #FFF;
 	border: 1px solid #999;
-	padding: 5px 7px;
+	border-top: 0;
+	padding: 6px 9px;
+}
+
+/* Layouts */
+div.TwoColLeft {
+	width: 40%;
+	float: left;
+	position: relative;
+	margin-right: 2%;
+}
+div.TwoColRight {
+	width: 58%;
+	float: left;
+	position: relative;
 }
 
 
@@ -220,15 +235,27 @@ div.boxWrapper {
 
 div.standard
 {
-        clear: both;
-        padding: 0.1em 1.0em 0.75em 0.75em;
+	clear: both;
+	padding: 0.1em 1.0em 0.75em 0.75em;
 }
 
 table {
-	width: 100%;
 	border-collapse: collapse;
-	border: 0;
+	width: 100%;
 	margin-top: 0;
+}
+th {
+	border:1px solid #999;
+	padding: 5px 6px;
+	background-color: #444;
+	font-weight: bold;
+	text-align: left;
+	color: #FFF;
+}
+td {
+	border: 1px solid #999;
+	padding: 5px 7px;
+	background-color: #FFF;
 }
 
 table.wdth600 { 
@@ -237,7 +264,7 @@ table.wdth600 {
 
 td.standardnavlinks
 {
-        width: 25%;
+	width: 25%;
 }
 
 td.standardwarning
@@ -249,22 +276,11 @@ td.standardwarning
 	font-weight: bold;
 }
 
-td {
-	border: 1px solid #999;
-	padding: 5px 6px;
-	background-color: #FFF;
-}
+
 td.status1 {
 	background-color: #C7DBAF;
 }
-th {
-	border:1px solid #999;
-	padding: 5px 6px;
-	background-color: #444;
-	font-weight: bold;
-	text-align: left;
-	color: #FFF;
-}
+
 
 #nodelist table
 { 
@@ -477,7 +493,7 @@ div.center
 	float: left;
 }
 
-#contentleft td
+hr#contentleft td
 {
         padding: 2px;
 }
