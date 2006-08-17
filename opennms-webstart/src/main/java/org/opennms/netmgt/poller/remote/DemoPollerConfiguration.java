@@ -7,7 +7,7 @@ import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsServiceType;
 
-public class TestPollerConfiguration implements PollerConfiguration {
+public class DemoPollerConfiguration implements PollerConfiguration {
 	
 	public PollConfiguration[] getConfigurationForPoller() {
 		
