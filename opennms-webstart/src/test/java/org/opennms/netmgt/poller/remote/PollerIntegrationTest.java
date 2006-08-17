@@ -1,5 +1,9 @@
 package org.opennms.netmgt.poller.remote;
 
+import java.beans.BeanInfo;
+import java.beans.EventSetDescriptor;
+import java.beans.Introspector;
+
 import org.springframework.test.AbstractDependencyInjectionSpringContextTests;
 
 public class PollerIntegrationTest extends
@@ -16,7 +20,16 @@ public class PollerIntegrationTest extends
 	}
 	
 	public void testPoller() throws Exception {
-		Thread.sleep(100000);
+		
+		BeanInfo info = Introspector.getBeanInfo(DefaultPolledServicesModel.class);
+		EventSetDescriptor[] eventSetDescriptors = info.getEventSetDescriptors();
+		System.err.println("Num esd's = "+eventSetDescriptors.length);
+		
+		for (int i = 0; i < eventSetDescriptors.length; i++) {
+			EventSetDescriptor esd = eventSetDescriptors[i];
+			System.err.println("esd = "+esd);
+		}
+		Thread.sleep(10000);
 	}
 
 }

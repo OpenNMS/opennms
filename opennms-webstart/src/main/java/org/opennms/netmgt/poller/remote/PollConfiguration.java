@@ -2,12 +2,12 @@ package org.opennms.netmgt.poller.remote;
 
 import org.opennms.netmgt.model.OnmsMonitoredService;
 
-public class ServicePollConfiguration {
+public class PollConfiguration {
 	
 	private OnmsMonitoredService m_monitoredService;
 	private OnmsPollModel m_pollModel;
 	
-	public ServicePollConfiguration(OnmsMonitoredService monitoredService, long pollInterval) {
+	public PollConfiguration(OnmsMonitoredService monitoredService, long pollInterval) {
 		m_monitoredService = monitoredService;
 		m_pollModel = new OnmsPollModel();
 		m_pollModel.setPollInterval(pollInterval);

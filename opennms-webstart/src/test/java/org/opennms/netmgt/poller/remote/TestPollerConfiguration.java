@@ -9,7 +9,7 @@ import org.opennms.netmgt.model.OnmsServiceType;
 
 public class TestPollerConfiguration implements PollerConfiguration {
 	
-	public ServicePollConfiguration[] getConfigurationForPoller(String poller) {
+	public PollConfiguration[] getConfigurationForPoller() {
 		
 		OnmsServiceType http = new OnmsServiceType("HTTP");
 		
@@ -19,14 +19,14 @@ public class TestPollerConfiguration implements PollerConfiguration {
 		NetworkBuilder m_builder = new NetworkBuilder(distPoller);
 		m_builder.addNode("Google");
 		m_builder.addInterface("64.233.161.99");
-		serviceConfigs.add(new ServicePollConfiguration(m_builder.addService(http), 3000));
+		serviceConfigs.add(new PollConfiguration(m_builder.addService(http), 3000));
 		m_builder.addInterface("64.233.161.104");
-		serviceConfigs.add(new ServicePollConfiguration(m_builder.addService(http), 3000));
+		serviceConfigs.add(new PollConfiguration(m_builder.addService(http), 3000));
 		m_builder.addNode("OpenNMS");
 		m_builder.addInterface("209.61.128.9");
-		serviceConfigs.add(new ServicePollConfiguration(m_builder.addService(http), 3000));
+		serviceConfigs.add(new PollConfiguration(m_builder.addService(http), 3000));
 		
-		return (ServicePollConfiguration[]) serviceConfigs.toArray(new ServicePollConfiguration[serviceConfigs.size()]);
+		return (PollConfiguration[]) serviceConfigs.toArray(new PollConfiguration[serviceConfigs.size()]);
 	}
 
 }

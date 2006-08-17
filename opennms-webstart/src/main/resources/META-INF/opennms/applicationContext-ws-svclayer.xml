@@ -8,21 +8,21 @@
     <bean name="scheduler" class="org.springframework.scheduling.quartz.SchedulerFactoryBean" />
     
     <bean name="pollService" class="org.opennms.netmgt.poller.remote.TestPollService">
-       <constructor-arg value="1" />
+       <constructor-arg value="13" />
     </bean>
     
     <bean name="pollerConfiguration" class="org.opennms.netmgt.poller.remote.TestPollerConfiguration" />
+    
+    <bean name="polledServicesModel" class="org.opennms.netmgt.poller.remote.DefaultPolledServicesModel">
+      <property name="pollerConfiguration" ref="pollerConfiguration" />
+    </bean>
 
 	<bean name="poller" class="org.opennms.netmgt.poller.remote.Poller">
-	  <property name="pollerName" value="poller" />
 	  <property name="scheduler" ref="scheduler" />
-	  <property name="pollService" ref="pollService" />	
-	  <property name="pollerConfiguration" ref="pollerConfiguration" />	
+	  <property name="pollService" ref="pollService" />
+	  <property name="polledServicesModel" ref="polledServicesModel" />	
 	  <property name="initialSpreadTime" value="3000" />
+	  
 	</bean>
-
-       
-    
-     
 
 </beans>

@@ -6,12 +6,12 @@
 	   http://www.springframework.org/schema/lang http://www.springframework.org/schema/lang/spring-lang.xsd">
       
 
-	
+	  <bean id="tableModel" class="org.opennms.groovy.poller.remote.PolledServicesTableModelFactoryBean">
+        <property name="polledServicesModel" ref="polledServicesModel" />
+	  </bean>
 
       <bean id="pollerView" class="org.opennms.groovy.poller.remote.GroovyPollerView">
+         <property name="tableModel" ref="tableModel"/>
       </bean>
       
-    
-     
-
 </beans>

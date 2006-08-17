@@ -1,6 +1,5 @@
 package org.opennms.netmgt.poller.remote;
 
-import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.quartz.JobDetail;
 import org.quartz.Scheduler;
 
@@ -16,16 +15,12 @@ public class PollJobDetail extends JobDetail {
 		getJobDataMap().put("pollService", pollService);
 	}
 	
-	public void setPollObserver(PollObserver pollObserver) {
-		getJobDataMap().put("pollObserver", pollObserver);
+	public void setPolledService(PolledService polledService) {
+		getJobDataMap().put("polledService", polledService);
 	}
 	
-	public void setMonitoredService(OnmsMonitoredService monitoredService) {
-		getJobDataMap().put("monitoredService", monitoredService);
-	}
-	
-	public void setPollId(String pollId) {
-		getJobDataMap().put("pollId", pollId);
+	public void setPolledServicesModel(PolledServicesModel polledServicesModel) {
+		getJobDataMap().put("polledServicesModel", polledServicesModel);
 	}
 	
 }
