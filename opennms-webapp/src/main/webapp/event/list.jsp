@@ -208,11 +208,7 @@
         <%=org.opennms.web.Util.makeHiddenTags(request)%>
       </form>      
 
-<!--      
-      <table width="100%" border="0" cellspacing="2" cellpadding="0" >
-        <tr>
-          <td width="50%" valign="top">
--->
+
 	<div id="contentleft">
             <jsp:include page="/includes/event-querypanel.jsp" flush="false" />
           
@@ -226,13 +222,6 @@
               </jsp:include>
             <% } %>          
 	 </div>
-
-<!--
-          </td>
-          
-          <td width="50%" valign="top">          
--->
-
 	<div id="contentright">
             <% if( parms.filters.size() > 0 || parms.ackType == EventFactory.AcknowledgeType.UNACKNOWLEDGED || parms.ackType == EventFactory.AcknowledgeType.ACKNOWLEDGED ) { %>
               <% int length = parms.filters.size(); %>
@@ -282,7 +271,7 @@
     <% } %>
 
       <table>
-      <tbody>
+
         <tr class="eventlist-head">
           <% if( !(request.isUserInRole( Authentication.READONLY_ROLE ))) { %>
             <% if ( parms.ackType == EventFactory.AcknowledgeType.UNACKNOWLEDGED ) { %>
@@ -440,7 +429,6 @@
           <% } %>
           </td>
         </tr>
-      </tbody>
       </table>
       </form>
 

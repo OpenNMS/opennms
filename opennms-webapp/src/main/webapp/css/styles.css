@@ -112,21 +112,15 @@ div.TwoColRight {
 }
 
 #eventlist tr.eventlist-head {
-	font-size: 10px;
-	font-family: Verdana, Arial, Helvetica, sans-serif; 
 	background-color: #999999;
 }
 
 #eventlist tr.eventlist-odd
 {
-	font-size: 10px;
-	font-family: Verdana, Arial, Helvetica, sans-serif; 
 	background-color: white;
 }
 #eventlist tr.eventlist-even
 {
-	font-size: 10px;
-	font-family: Verdana, Arial, Helvetica, sans-serif; 
 	background-color: #cccccc;
 }
 
