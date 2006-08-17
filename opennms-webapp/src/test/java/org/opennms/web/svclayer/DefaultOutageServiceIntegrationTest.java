@@ -60,7 +60,7 @@ public class DefaultOutageServiceIntegrationTest extends
 	}
 
 	public void testGetRangeOutages() {
-		Collection<OnmsOutage> outages = outageService.getCurrentOutagesByRange(1,RANGE_LIMIT);
+		Collection<OnmsOutage> outages = outageService.getCurrentOutagesByRange(1,RANGE_LIMIT,"iflostservice","asc");
 		assertFalse("Collection should not be emtpy", outages.isEmpty());
 		assertEquals("Collection should be of size " + RANGE_LIMIT, RANGE_LIMIT, outages.size());
 	}
