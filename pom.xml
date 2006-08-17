@@ -822,13 +822,16 @@ opennms.home = ${opennms.home}
         <version>2.2</version>
         <scope>test</scope>
       </dependency>
-      
+      <dependency>
+        <groupId>org.extremecomponents</groupId>
+        <artifactId>extremecomponents</artifactId>
+        <version>1.0.1</version>
+      </dependency>
       <dependency>
         <groupId>groovy</groupId>
         <artifactId>groovy</artifactId>
         <version>1.0-jsr-06</version>    
       </dependency>
-      
       <dependency>
         <groupId>hsqldb</groupId>
         <artifactId>hsqldb</artifactId>
