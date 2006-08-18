@@ -4,6 +4,7 @@ import java.beans.PropertyChangeEvent;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.ListIterator;
+import java.util.Map;
 
 import javax.swing.event.EventListenerList;
 
@@ -36,10 +37,11 @@ public class DefaultPolledServicesModel implements PolledServicesModel,  Initial
 			PollConfiguration configuration = pollConfiguration[i];
 			
 			OnmsMonitoredService monSvc = configuration.getMonitoredService();
+			Map monConfig = configuration.getMonitorConfiguration();
 			OnmsPollModel pollModel = configuration.getPollModel();
 			String polledServiceId = i+":"+monSvc.getNodeId()+":"+monSvc.getIpAddress()+":"+monSvc.getServiceName();
 			
-			PolledService polledService = new PolledService(polledServiceId, monSvc, pollModel);
+			PolledService polledService = new PolledService(polledServiceId, monSvc, monConfig, pollModel);
 			
 			polledServices[i] = polledService;
 			
