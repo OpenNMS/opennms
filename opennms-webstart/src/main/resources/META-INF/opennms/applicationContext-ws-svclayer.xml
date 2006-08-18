@@ -3,16 +3,24 @@
 	   xsi:schemaLocation=
 	   "http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
 	   http://www.springframework.org/schema/lang http://www.springframework.org/schema/lang/spring-lang.xsd">
-      
+
 
     <bean name="scheduler" class="org.springframework.scheduling.quartz.SchedulerFactoryBean" />
     
-    <bean name="pollService" class="org.opennms.netmgt.poller.remote.DemoPollService">
-       <constructor-arg value="13" />
+    <bean name="HTTP" class="org.opennms.netmgt.poller.remote.ServiceMonitorFactoryBean">
+      <property name="monitorClass" value="org.opennms.netmgt.poller.monitors.HttpMonitor" />
     </bean>
-    
+
+    <bean name="pollService" class="org.opennms.netmgt.poller.remote.DefaultPollService">
+      <property name="monitors">
+        <map>
+	      <entry key="HTTP"><ref bean="HTTP"/></entry>
+        </map>
+      </property>
+    </bean>
+
     <bean name="pollerConfiguration" class="org.opennms.netmgt.poller.remote.DemoPollerConfiguration" />
-    
+
     <bean name="polledServicesModel" class="org.opennms.netmgt.poller.remote.DefaultPolledServicesModel">
       <property name="pollerConfiguration" ref="pollerConfiguration" />
     </bean>
@@ -20,9 +28,8 @@
 	<bean name="poller" class="org.opennms.netmgt.poller.remote.Poller">
 	  <property name="scheduler" ref="scheduler" />
 	  <property name="pollService" ref="pollService" />
-	  <property name="polledServicesModel" ref="polledServicesModel" />	
 	  <property name="initialSpreadTime" value="3000" />
-	  
+	  <property name="polledServicesModel" ref="polledServicesModel" />
 	</bean>
 
 </beans>

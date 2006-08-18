@@ -1,6 +1,7 @@
 package org.opennms.netmgt.poller.remote;
 
 import java.util.Date;
+import java.util.Map;
 
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.PollStatus;
@@ -9,15 +10,17 @@ public class PolledService {
 	
 	private String m_id;
 	private OnmsMonitoredService m_monitoredService;
+	private Map m_monitorConfiguration;
 	private Date m_lastPollTime;
 	private Date m_nextPollTime;
 	private Date m_lastStatusChange;
 	private PollStatus m_currentStatus = PollStatus.unknown();
 	private OnmsPollModel m_pollModel;
 	
-	public PolledService(String id, OnmsMonitoredService monitoredService, OnmsPollModel pollModel) {
+	public PolledService(String id, OnmsMonitoredService monitoredService, Map monitorConfiguration, OnmsPollModel pollModel) {
 		m_id = id;
 		m_monitoredService = monitoredService;
+		m_monitorConfiguration = monitorConfiguration;
 		m_pollModel = pollModel;
 	}
 	
@@ -76,6 +79,10 @@ public class PolledService {
 		m_currentStatus = newStatus;
 		m_lastPollTime = pollTime;
 		
+	}
+
+	public Map getMonitorConfiguration() {
+		return m_monitorConfiguration;
 	}
 	
 	

@@ -14,11 +14,11 @@ public class PollJob extends QuartzJobBean {
 
 	protected void executeInternal(JobExecutionContext context) throws JobExecutionException {
 		System.err.println("Polling "+m_polledService.getId());
-		PollStatus pollStatus = m_pollService.poll(m_polledService.getMonitoredService());
+		PollStatus pollStatus = m_pollService.poll(m_polledService.getMonitoredService(), m_polledService.getMonitorConfiguration());
 		m_polledServicesModel.updateServiceStatus(m_polledService.getId(), pollStatus, context.getFireTime());
 
 	}
-
+	
 
 	public void setPolledService(PolledService polledService) {
 		m_polledService = polledService;

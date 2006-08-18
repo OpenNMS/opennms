@@ -3,6 +3,7 @@ package org.opennms.netmgt.poller.remote;
 import static org.easymock.EasyMock.*;
 
 import java.util.Date;
+import java.util.HashMap;
 
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
@@ -22,9 +23,9 @@ public class PollerTest extends TestCase {
 		
 		OnmsMonitoredService svc = getMonitoredService();
 		
-		PollConfiguration pollConfig = new PollConfiguration(svc, 300000);
+		PollConfiguration pollConfig = new PollConfiguration(svc, new HashMap(), 300000);
 		
-		PolledService polledService = new PolledService("id", pollConfig.getMonitoredService(), pollConfig.getPollModel());
+		PolledService polledService = new PolledService("id", pollConfig.getMonitoredService(), pollConfig.getMonitorConfiguration(), pollConfig.getPollModel());
 		
 		PolledService[] polledServices = new PolledService[] {
 				polledService
