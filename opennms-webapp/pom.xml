@@ -114,6 +114,10 @@
       <artifactId>opennms-snmp-api</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-util</artifactId>
+    </dependency>
+    <dependency>
       <groupId>batik</groupId>
       <artifactId>batik-dom</artifactId>
     </dependency>
