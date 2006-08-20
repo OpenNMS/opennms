@@ -10,11 +10,6 @@
   <dependencies>
     <dependency>
       <groupId>org.opennms</groupId>
-      <artifactId>opennms-util</artifactId>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
       <artifactId>opennms-config</artifactId>
       <scope>compile</scope>
     </dependency>
@@ -68,6 +63,11 @@
       <groupId>org.opennms</groupId>
       <artifactId>opennms-test</artifactId>
       <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-util</artifactId>
+      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>net.sf.jradius</groupId>
