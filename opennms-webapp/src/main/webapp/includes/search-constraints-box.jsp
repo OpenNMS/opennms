@@ -10,6 +10,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2006 Aug 17: fix some HTML. - dj@opennms.org
+//
 // Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -56,10 +60,10 @@
 %>
 
 <!-- acknowledged/outstanding row -->
-<p>
-  <form action="outage/list" method="GET" name="outage_search_constraints_box_outtype_form">
-    <%=Util.makeHiddenTags(request, new String[] {"outtype"})%>
+<form action="outage/list" method="GET" name="outage_search_constraints_box_outtype_form">
+  <%=Util.makeHiddenTags(request, new String[] {"outtype"})%>
     
+  <p>
     Outage type:
     <select name="outtype" size="1" onChange="javascript: document.outage_search_constraints_box_outtype_form.submit()">
       <option value="<%=OutageUtil.getOutageTypeString(OutageFactory.OutageType.CURRENT)%>" <%=(parms.outageType == OutageFactory.OutageType.CURRENT) ? "selected=\"1\"" : ""%>>
@@ -74,8 +78,8 @@
         Both Current &amp; Resolved
       </option>
     </select>        
-  </form>    
-</p>
+  </p> 
+</form>    
 
 <% if( length > 0 ) { %>
   <p>
