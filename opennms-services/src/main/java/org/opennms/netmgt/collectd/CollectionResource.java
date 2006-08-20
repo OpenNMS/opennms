@@ -84,7 +84,8 @@ public abstract class CollectionResource {
 
     private void addAttribute(Attribute attr) {
         AttributeGroup group = getGroup(attr.getAttributeType().getGroupType());
-        log().debug("Adding attribute "+attr+" to group "+group);
+        log().debug("Adding attribute " + attr.getClass().getName() + ": "
+                    + attr + " to group " + group);
         group.addAttribute(attr);
     }
 

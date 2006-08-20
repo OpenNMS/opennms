@@ -36,6 +36,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.TreeMap;
 
 import org.opennms.core.utils.StringUtils;
@@ -48,7 +49,7 @@ public class PersistOperationBuilder {
     private RrdRepository m_repository;
     private String m_rrdName;
     private CollectionResource m_resource;
-    private TreeMap m_declarations = new TreeMap(new ByNameComparator());
+    private Map<AttributeType, String> m_declarations = new TreeMap<AttributeType, String>(new ByNameComparator());
     
     /**
      * RRDTool defined Data Source Types NOTE: "DERIVE" and "ABSOLUTE" not
@@ -122,7 +123,7 @@ public class PersistOperationBuilder {
     }
 
     private List getDataSources() {
-        List dataSources = new ArrayList(m_declarations.size());
+        List<RrdDataSource> dataSources = new ArrayList<RrdDataSource>(m_declarations.size());
         for (Iterator it = m_declarations.keySet().iterator(); it.hasNext();) {
             AttributeType attrType = (AttributeType)it.next();
             RrdDataSource rrdDataSource = new RrdDataSource(StringUtils.truncate(attrType.getName(), PersistOperationBuilder.MAX_DS_NAME_LENGTH), PersistOperationBuilder.mapType(attrType.getType()), getRepository().getHeartBeat(), "U", "U");

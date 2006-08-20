@@ -35,6 +35,7 @@ package org.opennms.web.performance;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -47,11 +48,11 @@ import org.opennms.web.Util;
 import org.opennms.web.graph.PrefabGraph;
 
 public class AddReportsToUrlServlet extends HttpServlet {
-    protected PerformanceModel model;
+    protected PerformanceModel m_model;
 
     public void init() throws ServletException {
         try {
-            this.model = new PerformanceModel(Vault.getHomeDir());
+            m_model = new PerformanceModel(Vault.getHomeDir());
         } catch (Exception e) {
             throw new ServletException("Could not initialize the PerformanceModel", e);
         }
@@ -61,11 +62,24 @@ public class AddReportsToUrlServlet extends HttpServlet {
         // required parameter node
         String nodeIdString = request.getParameter("node");
         if (nodeIdString == null) {
-            throw new MissingParameterException("node", new String[] { "node" });
+            throw new MissingParameterException("node", new String[] { "node", "resourceType" });
+        }
+        
+        String resourceType = request.getParameter("resourceType");
+        if (nodeIdString == null) {
+            throw new MissingParameterException("resourceType", new String[] { "node", "resourceType" });
         }
 
-        // optional parameter intf
-        String intf = request.getParameter("intf");
+        // optional parameter resource
+        String resourceName = request.getParameter("resource");
+        if (resourceName == null) {
+            resourceName = "";
+        }
+        
+        int nodeId = Integer.parseInt(nodeIdString);
+        
+        GraphResource resource = m_model.getResourceForNodeResourceResourceType(nodeId, resourceName, resourceType);
+        Set<GraphAttribute> attributes = resource.getAttributes();
 
         // In this block of code, it is possible to end up with an empty
         // list of queries. This will result in a somewhat cryptic
@@ -74,12 +88,7 @@ public class AddReportsToUrlServlet extends HttpServlet {
 
         PrefabGraph[] queries = null;
 
-        if (intf == null) {
-            queries = this.model.getQueries(nodeIdString);
-        } else {
-            boolean showNodeQueries = false;
-            queries = this.model.getQueries(nodeIdString, intf, showNodeQueries);
-        }
+        queries = m_model.getQueriesByResourceTypeAttributes(resourceType, attributes);
 
         String[] queryNames = new String[queries.length];
 
@@ -90,6 +99,7 @@ public class AddReportsToUrlServlet extends HttpServlet {
         Map additions = new HashMap();
         additions.put("reports", queryNames);
         additions.put("type", "performance");
+        additions.put("resourceType", resourceType);
         String queryString = Util.makeQueryString(request, additions);
 
         response.sendRedirect(Util.calculateUrlBase(request) + "graph/results?"

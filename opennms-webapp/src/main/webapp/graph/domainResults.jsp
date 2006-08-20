@@ -99,7 +99,7 @@ if ("org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy".equals(strategy_name)) {
   </h3>
 
   <c:if test="${empty param.zoom}">
-    <%@ include file="/WEB-INF/jspf/relativetimeformforDomain.jspf" %>
+    <%@ include file="/WEB-INF/jspf/relativetimeform.jspf" %>
   </c:if>
 
   <h3>Interface <c:out value="${param.name}"/> Data</h3>

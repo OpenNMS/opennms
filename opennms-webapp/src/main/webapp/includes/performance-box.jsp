@@ -58,7 +58,7 @@
             this.model = new PerformanceModel( org.opennms.core.resource.Vault.getHomeDir() );
         }
         catch( Exception e ) {
-            throw new ServletException( "Could not initialize the PerformanceModel", e );
+            throw new ServletException( "Could not initialize the PerformanceModel.  Nested exception: " + e.getClass().getName() + ": " + e.getMessage(), e );
         }
     }
 %>
@@ -69,8 +69,9 @@
 
 <h3><a href="performance/index.jsp">Performance</a></h3>
 <div class="boxWrapper">
+
 <%  if( nodes != null && nodes.length > 0 ) { %>
-      <form method="get" action="performance/addIntfFromNode" >
+      <form method="GET" action="performance/addIntfFromNode" >
         <input type="hidden" name="endUrl" value="performance/addReportsToUrl" />
         <input type="hidden" name="relativetime" value="lastday" />
               <p>Choose a <label for="node">node to query</label>:</p>

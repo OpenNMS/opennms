@@ -297,12 +297,12 @@ public abstract class GraphModelAbstract implements GraphModel {
     }
 
 
-    public List getDataSourceList(String nodeId) {
+    public List<String> getDataSourceList(String nodeId) {
         if (nodeId == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
 
-        List dataSources = new LinkedList();
+        List<String> dataSources = new LinkedList<String>();
         File nodeDir = new File(getRrdDirectory(), nodeId);
         int suffixLength = RrdFileConstants.RRD_SUFFIX.length();
 
@@ -459,14 +459,14 @@ public abstract class GraphModelAbstract implements GraphModel {
     public abstract List getDataSourceList(String nodeId, String intf,
 					   boolean includeNodeQueries);
 
-    public List getDataSourcesInDirectory(File directory) {
+    public List<String> getDataSourcesInDirectory(File directory) {
         int suffixLength = RrdFileConstants.RRD_SUFFIX.length();
 
         // get the interface data sources
         File[] files =
 	    directory.listFiles(RrdFileConstants.RRD_FILENAME_FILTER);
 
-	ArrayList dataSources = new ArrayList(files.length);
+	ArrayList<String> dataSources = new ArrayList<String>(files.length);
         for (int i = 0; i < files.length; i++) {
             String fileName = files[i].getName();
             String dsName =

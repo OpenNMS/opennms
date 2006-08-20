@@ -109,6 +109,9 @@ public class AddInterfaceToURLServlet extends HttpServlet {
             // information otherwise the given nodeid would never have
             // been chooseable from the UI, so we'll just send request
             // on to only graph the node information
+            HashMap additions = new HashMap();
+            additions.put("resource", "");
+            additions.put("resourceType", "node");
             String queryString = Util.makeQueryString(request, ignores);
 
             // this is a servlet context-relative URL (ie external URL), so
@@ -119,7 +122,7 @@ public class AddInterfaceToURLServlet extends HttpServlet {
         }
 
         case 1: {
-          if(this.model.getQueries(Integer.parseInt(nodeId)).length > 0) {
+          if (this.model.getQueries(Integer.parseInt(nodeId)).length > 0) {
             // redirect to the chooseInterfaceUrl
             String queryString = Util.makeQueryString(request);
             response.sendRedirect(Util.calculateUrlBase(request)
@@ -130,7 +133,8 @@ public class AddInterfaceToURLServlet extends HttpServlet {
           } else {
             // add the interface, and redirect to end url
             HashMap additions = new HashMap();
-            additions.put("intf", intfs.get(0));
+            additions.put("resource", intfs.get(0));
+            additions.put("resourceType", "interface");
 
             String queryString = Util.makeQueryString(request, additions, ignores);
 

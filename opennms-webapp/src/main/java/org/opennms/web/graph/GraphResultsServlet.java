@@ -45,9 +45,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.opennms.core.resource.Vault;
+import org.opennms.web.element.NetworkElementFactory;
+import org.opennms.web.performance.GraphResource;
+import org.opennms.web.performance.GraphResourceType;
 import org.opennms.web.performance.PerformanceModel;
 import org.opennms.web.response.ResponseTimeModel;
 import org.opennms.web.MissingParameterException;
+import org.springframework.jdbc.support.SQLErrorCodeSQLExceptionTranslator;
 
 /**
  * Changes the label of a node, throws an event signalling that change, and then
@@ -95,8 +99,9 @@ public class GraphResultsServlet extends HttpServlet {
 	String[] reports = request.getParameterValues("reports");
 	int nodeId = -1;
 	String nodeIdString = request.getParameter("node");
-	String intf = request.getParameter("intf");
-	String domain = request.getParameter("domain");
+	String resource = request.getParameter("resource");
+        String domain = request.getParameter("domain");
+        String resourceType = request.getParameter("resourceType");
 	GraphModel model;
         String view;
 
@@ -104,16 +109,18 @@ public class GraphResultsServlet extends HttpServlet {
 	    model = m_performanceModel;
 	    view = "/performance/results.jsp";
 
-	    String[] requiredParameters = new String[] { "reports", "node" };
-
-	    // required parameter reports - If no reports were passed in,
-	    // going to choosereportanddate  will allow the user to choose,
-	    // or tell the user if there are no reports available.
+	    String[] requiredParameters = new String[] { "reports",
+                    "node", "resourceType", "resource" };
+	    /*
+             * If no reports were passed in, we are going to
+             * choosereportanddate.jsp, which will allow the user to choose
+             * which report, or tell the user if there are no reports available.
+	     */
 	    if (reports == null) {
                 view = "/performance/choosereportanddate.jsp";
 	    }
 
-	    // required parameter node
+
 	    if (nodeIdString == null) {
 		throw new MissingParameterException("node",
 						    requiredParameters);
@@ -124,47 +131,61 @@ public class GraphResultsServlet extends HttpServlet {
 		throw new ServletException("Could not parse node parameter "
 					   + "into an integer", e);
 	    }
+            if (resourceType == null) {
+                throw new MissingParameterException("resourceType",
+                                                    requiredParameters);
+            }
 
-	    // optional parameter intf
+            if (resource == null) {
+                throw new MissingParameterException("resource",
+                                                    requiredParameters);
+            }
+            
+            GraphResourceType rt =
+                m_performanceModel.getResourceTypeByName(resourceType);
+            graphResults.setResourceTypeLabel(rt.getLabel());
 
+            GraphResource r =
+                m_performanceModel.getResourceForNodeResourceResourceType(nodeId,
+                                                                          resource,
+                                                                          resourceType);
+            graphResults.setResourceLabel(r.getLabel());
 	} else if ("performance".equals(graphType) && domain != null) {
-
 	    model = m_performanceModel;
 	    view = "/performance/domainResults.jsp";
 
-	    String[] requiredParameters = new String[] { "reports", "domain", "intf"};
+	    String[] requiredParameters = new String[] { "reports", "domain",
+                    "resource" };
 
-	    // required parameter reports
 	    if (reports == null) {
 		throw new MissingParameterException("reports",
 						    requiredParameters);
 	    }
 
-	    // required parameter domain
 	    if (domain == null) {
 		throw new MissingParameterException("domain",
 						    requiredParameters);
 	    }
 
-	    // required parameter intf
-	    if (intf == null) {
-		throw new MissingParameterException("intf",
+	    if (resource == null) {
+		throw new MissingParameterException("resource",
 						    requiredParameters);
 	    }
+            
+            graphResults.setResourceTypeLabel("Interface");
+            graphResults.setResourceLabel(resource);
 	} else if ("response".equals(graphType)) {
 	    model = m_responseTimeModel;
 	    view = "/response/results.jsp";
 
 	    String[] requiredParameters = new String[] { "reports", "node",
-							 "intf" };
+							 "resource" };
 
-	    // required parameter reports
 	    if (reports == null) {
 		throw new MissingParameterException("reports",
 						    requiredParameters);
 	    }
 
-	    // required parameter node
 	    if (nodeIdString == null) {
 		throw new MissingParameterException("node",
 						    requiredParameters);
@@ -173,13 +194,17 @@ public class GraphResultsServlet extends HttpServlet {
 		nodeId = Integer.parseInt(nodeIdString);
 	    } catch (NumberFormatException e) {
 		throw new ServletException("Could not parse node parameter "
-					   + "into an integer", e);
+					   + "into an integer: "
+                                           + e.getMessage(), e);
 	    }
 
-	    // required parameter intf
-	    if (intf == null) {
-                throw new MissingParameterException("intf", requiredParameters);
+	    if (resource == null) {
+                throw new MissingParameterException("resource",
+                                                    requiredParameters);
 	    }
+            
+            graphResults.setResourceTypeLabel("Interface");
+            graphResults.setResourceLabel(resource);
 	} else {
 	    throw new ServletException("Unsupported graph type \"" + graphType
 				       + "\"");
@@ -258,13 +283,21 @@ public class GraphResultsServlet extends HttpServlet {
 	Date endDate   = new Date(Long.parseLong(end));
 
 	graphResults.setModel(model);
-	if(nodeIdString != null && nodeId > -1) {
+	if (nodeIdString != null && nodeId > -1) {
 	    graphResults.setNodeId(nodeId);
+	    try {
+                graphResults.setNodeLabel(NetworkElementFactory.getNodeLabel(nodeId));
+            } catch (SQLException e) {
+                SQLErrorCodeSQLExceptionTranslator translator =
+                    new SQLErrorCodeSQLExceptionTranslator();
+                throw translator.translate("Getting node label for node " + nodeId, null, e);
+            }
         }
-	if(domain != null) {
+	if (domain != null) {
 	    graphResults.setDomain(domain);
         }
-	graphResults.setIntf(intf);
+        graphResults.setResourceType(resourceType);
+        graphResults.setResource(resource);
 	graphResults.setReports(reports);
 	graphResults.setStart(startDate);
 	graphResults.setEnd(endDate);
@@ -276,7 +309,7 @@ public class GraphResultsServlet extends HttpServlet {
         } else if (domain != null) {
             graphResults.initializeDomainGraphs();
         }
-
+        
 	request.setAttribute("results", graphResults);
 
         // forward the request for proper display

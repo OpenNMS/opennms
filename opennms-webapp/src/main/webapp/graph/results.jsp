@@ -102,9 +102,9 @@ if ("org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy".equals(strategy_name)) {
 <div id="graph-results">
   <h3>
     Node: <a href="element/node.jsp?node=<c:out value="${results.nodeId}"/>"><c:out value="${results.nodeLabel}"/></a>
-    <c:if test="${!empty results.intf}">
+    <c:if test="${!empty results.resource}">
       <br/>
-      Interface: <c:out value="${results.humanReadableNameForIfLabel}"/>
+      <c:out value="${results.resourceTypeLabel}"/>: <c:out value="${results.resourceLabel}"/>
     </c:if>
   </h3>
 
@@ -128,12 +128,12 @@ if ("org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy".equals(strategy_name)) {
 	  #why {position: static; width: auto}
 	</style>
 
-        <img id='zoomGraphImage' src="<c:out value="${results.graphs[0].graphURL}"/>&amp;props=<c:out value="${results.nodeId}"/>/strings.properties&amp;type=<c:out value="${param.type}"/>&amp;node=<c:out value="${results.nodeId}"/>&amp;intf=<c:out value="${results.intf}"/>"/>
+        <img id='zoomGraphImage' src="<c:out value="${results.graphs[0].graphURL}"/>&amp;props=<c:out value="${results.nodeId}"/>/strings.properties&amp;"/>
     </c:when>
 
-    <c:when test="${!empty results.graphs}">
+    <c:when test="${!empty results.graphs}"> 
       <c:forEach var="graph" items="${results.graphs}">
-	<a href="graph/results?zoom=true&type=<c:out value="${param.type}"/>&intf=<c:out value="${graph.intf}"/>&amp;node=<c:out value="${graph.nodeId}"/>&amp;reports=<c:out value="${graph.name}"/>&amp;start=<c:out value="${graph.start.time}"/>&amp;end=<c:out value="${graph.end.time}"/>&amp;props=<c:out value="${results.nodeId}"/>/strings.properties">
+	<a href="graph/results?zoom=true&type=<c:out value="${param.type}"/>&resourceType=<c:out value="${graph.resourceType}"/>&resource=<c:out value="${graph.resource}"/>&amp;node=<c:out value="${graph.nodeId}"/>&amp;reports=<c:out value="${graph.name}"/>&amp;start=<c:out value="${graph.start.time}"/>&amp;end=<c:out value="${graph.end.time}"/>&amp;props=<c:out value="${results.nodeId}"/>/strings.properties">
           <img src="<c:out value="${graph.graphURL}"/>&amp;props=<c:out value="${results.nodeId}"/>/strings.properties"/>
 	</a>
 	<br/>
@@ -152,15 +152,40 @@ if ("org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy".equals(strategy_name)) {
   <c:import url="/includes/bookmark.jsp"/>
 </div>
 
+<c:set var="reportList"></c:set>
+<c:forEach var="report" items="${results.reports}">
+  <c:set var="reportList"><c:out value="${reportList}" escapeXml="false"/>&reports=<c:out value="${report}"/></c:set>
+</c:forEach>
+
 <script type="text/javascript">
+
+/*
+ * This is used by the relative time form to reload the page with a new time
+ * period.
+ */
 function goRelativeTime(relativeTime) {
       setLocation('graph/results'
         + '?type=<c:out value="${param.type}"/>'
         + '&relativetime=' + relativeTime
-        + '&intf=<c:out value="${requestScope.results.intf}"/>'
+        + '&resourceType=<c:out value="${requestScope.results.resourceType}"/>'
+        + '&resource=<c:out value="${requestScope.results.resource}"/>'
         + '&node=<c:out value="${requestScope.results.nodeId}"/>'
         + '<c:out value="${reportList}" escapeXml="false"/>');
 }
+
+/*
+ * This is used by the zoom page to reload the page with a new time period.
+ */
+function reloadPage(newGraphStart, newGraphEnd) {
+      setLocation('graph/results'
+        + '?type=<c:out value="${param.type}"/>'
+        + '&resourceType=<c:out value="${requestScope.results.resourceType}"/>'
+        + '&resource=<c:out value="${requestScope.results.resource}"/>'
+        + '&node=<c:out value="${requestScope.results.nodeId}"/>'
+        + '<c:out value="${reportList}" escapeXml="false"/>'
+	    + "&zoom=true&start=" + newGraphStart + "&end=" + newGraphEnd);
+}
+
 </script>
 
 <c:if test="${!empty param.zoom}">

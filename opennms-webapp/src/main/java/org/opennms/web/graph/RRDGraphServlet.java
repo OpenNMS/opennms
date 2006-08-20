@@ -319,22 +319,7 @@ public class RRDGraphServlet extends HttpServlet {
         translationMap.put(RE.simplePatternToFullRegularExpression("{endTime}"), endTimeString);
         translationMap.put(RE.simplePatternToFullRegularExpression("{diffTime}"), diffTimeString);
         
-        Properties externalProperties = new Properties();
-        if (propertiesFile != null) {
-            FileInputStream fileInputStream = null;
-            try {
-                fileInputStream = new FileInputStream(workDir + File.separator + propertiesFile);
-                externalProperties.load(fileInputStream);
-            } catch (Exception e1) {
-                this.log("createPrefabGraph: Error loading properties file: "+propertiesFile, e1);
-            } finally {
-                try {
-                    if (fileInputStream != null) fileInputStream.close();
-                } catch (Exception e) {
-                    this.log("createPrefabGraph: Error closing properties file: "+propertiesFile, e);    }      
-            }
-        }
-        
+        Properties externalProperties = loadExternalProperties(workDir, propertiesFile);
         
         // names of values specified outside of the RRD data (external values)
         String[] externalValues = graph.getExternalValues();
@@ -385,6 +370,46 @@ public class RRDGraphServlet extends HttpServlet {
         
         return command;
     }
+
+    public Properties loadExternalProperties(File workDir, String propertiesFile) {
+    	Properties externalProperties = new Properties();
+    	
+    	if (propertiesFile == null) {
+    		return externalProperties;
+    	}
+    	
+    	File file = new File(workDir, propertiesFile);
+    	if (!file.exists()) {
+    		log("loadExternalProperties: Properties file does not exist: " + file.getAbsolutePath());
+    		return externalProperties;
+    	}
+    	
+    	FileInputStream fileInputStream = null;
+    	try {
+    		fileInputStream = new FileInputStream(file);
+    	} catch (Exception e) {
+    		log("createPrefabGraph: Error opening properties file: "+propertiesFile, e);
+    		return externalProperties;
+    	}
+
+   		try {
+			externalProperties.load(fileInputStream);
+		} catch (IOException e) {
+    		log("createPrefabGraph: Error loading properties file: "+propertiesFile, e);
+		} finally {
+            try {
+                if (fileInputStream != null) {
+                	fileInputStream.close();
+                }
+            } catch (Exception e) {
+                this.log("createPrefabGraph: Error closing properties file: "+propertiesFile, e);
+            }      
+        }
+    		
+    	return externalProperties;
+    }
+    
+
 
     public String getCommandAdhoc(GraphTypeConfig config,
 			          HttpServletRequest request,

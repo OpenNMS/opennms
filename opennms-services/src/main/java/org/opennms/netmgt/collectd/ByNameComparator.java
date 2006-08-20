@@ -34,11 +34,8 @@ package org.opennms.netmgt.collectd;
 
 import java.util.Comparator;
 
-final class ByNameComparator implements Comparator {
-
-    public int compare(Object arg0, Object arg1) {
-        AttributeType type0 = (AttributeType)arg0;
-        AttributeType type1 = (AttributeType)arg1;
+public final class ByNameComparator implements Comparator<AttributeType> {
+    public int compare(AttributeType type0, AttributeType type1) {
         return type0.getName().compareTo(type1.getName());
     }
     
@@ -46,6 +43,7 @@ final class ByNameComparator implements Comparator {
         return o instanceof ByNameComparator;
     }
     
-    public int hashCode() { return 0; }
-    
+    public int hashCode() {
+        return 0;
+    }
 }

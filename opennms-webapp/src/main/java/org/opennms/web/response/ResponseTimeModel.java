@@ -251,4 +251,14 @@ public class ResponseTimeModel extends GraphModelAbstract {
 		throws SQLException {
 	return getHumanReadableNameForIfLabel(nodeId, ifLabel, false);
     }
+
+    public String getRelativePathForAttribute(String resourceType, int nodeId, String resource, String attribute) {
+        StringBuffer buffer = new StringBuffer();
+        buffer.append(resource);
+        buffer.append(File.separator);
+        buffer.append(attribute);
+        buffer.append(RrdFileConstants.RRD_SUFFIX);
+        return buffer.toString();
+
+    }
 }
