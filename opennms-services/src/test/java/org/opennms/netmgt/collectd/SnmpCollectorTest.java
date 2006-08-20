@@ -28,6 +28,7 @@ import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.rrd.RrdConfig;
 import org.opennms.netmgt.snmp.mock.MockSnmpAgent;
+import org.opennms.test.ConfigurationTestUtils;
 
 import junit.framework.TestCase;
 
@@ -90,7 +91,7 @@ public class SnmpCollectorTest extends TestCase {
 		
         initializeAgent();
 		
-		Reader dataCollectionConfig = getReaderForFile("/org/opennms/netmgt/config/datacollection-config.xml");
+		Reader dataCollectionConfig = ConfigurationTestUtils.getReaderForResource(this, "/org/opennms/netmgt/config/datacollection-config.xml");
 		initialize(new StringReader(m_snmpConfig), dataCollectionConfig);
 		dataCollectionConfig.close();
 
@@ -128,7 +129,7 @@ public class SnmpCollectorTest extends TestCase {
 
         initializeAgent("target/test-classes/org/opennms/netmgt/snmp/brocadeTestData1.properties");
 
-		Reader dataCollectionConfig = getReaderForFile("/org/opennms/netmgt/config/datacollection-brocade-config.xml");
+		Reader dataCollectionConfig = ConfigurationTestUtils.getReaderForResource(this, "/org/opennms/netmgt/config/datacollection-brocade-config.xml");
 		initialize(new StringReader(m_snmpConfig), dataCollectionConfig);
 		dataCollectionConfig.close();
 
@@ -162,7 +163,7 @@ public class SnmpCollectorTest extends TestCase {
 		SnmpPeerFactory.setInstance(new SnmpPeerFactory(snmpConfig));
 		DataCollectionConfigFactory.setInstance(new DataCollectionConfigFactory(dataCollectionConfig));
 		
-        Reader rdr = getReaderForFile("/org/opennms/netmgt/config/test-database-schema.xml");
+        Reader rdr = ConfigurationTestUtils.getReaderForResource(this, "/org/opennms/netmgt/config/test-database-schema.xml");
         DatabaseSchemaConfigFactory.setInstance(new DatabaseSchemaConfigFactory(rdr));
         rdr.close();
 		
@@ -171,8 +172,8 @@ public class SnmpCollectorTest extends TestCase {
 	}
 
 	public void initialize() throws IOException, MarshalException, ValidationException {
-		Reader snmpConfig = getReaderForFile("/org/opennms/netmgt/config/snmp-config.xml");
-		Reader dataCollectionConfig = getReaderForFile("/org/opennms/netmgt/config/datacollection-config.xml");
+		Reader snmpConfig = ConfigurationTestUtils.getReaderForResource(this, "/org/opennms/netmgt/config/snmp-config.xml");
+		Reader dataCollectionConfig = ConfigurationTestUtils.getReaderForResource(this, "/org/opennms/netmgt/config/datacollection-config.xml");
 		
 		initialize(snmpConfig, dataCollectionConfig);
 		
@@ -189,12 +190,4 @@ public class SnmpCollectorTest extends TestCase {
     private void initializeAgent() throws InterruptedException {
     	initializeAgent("target/test-classes/org/opennms/netmgt/snmp/mock/loadSnmpDataTest.properties");
     }
-
-
-	public Reader getReaderForFile(String fileName) {
-		InputStream is = getClass().getResourceAsStream(fileName);
-		assertNotNull("could not get file resource '" + fileName + "'", is);
-		return new InputStreamReader(is);
-	}
-
 }
