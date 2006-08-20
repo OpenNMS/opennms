@@ -1,4 +1,4 @@
-package org.opennms.web.svclayer;
+package org.opennms.web.svclayer.support;
 
 import java.util.Date;
 
@@ -7,6 +7,7 @@ import org.opennms.netmgt.dao.MonitoredServiceDao;
 import org.opennms.netmgt.model.DemandPoll;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.web.services.PollerService;
+import org.opennms.web.svclayer.DemandPollService;
 
 public class DefaultDemandPollService implements DemandPollService {
 	

@@ -19,6 +19,7 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.utils.EventProxyException;
 import org.opennms.web.services.PollerService;
+import org.opennms.web.svclayer.support.DefaultDemandPollService;
 
 public class DemandPollServiceTest extends TestCase {
 	

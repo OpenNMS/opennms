@@ -106,19 +106,22 @@
 		String categoryName = category.getName();
 %>
 	<tr>
-		<td><a href="<%= response.encodeURL(
-				"rtc/category.jsp?category=" +
-			    	URLEncoder.encode(categoryName, "UTF-8")) %>"
-		       title="<%= category.getTitle() %>"><%= categoryName %></a></td>
-		<td style="background-color: <%= (opennmsDisconnect ? "lightblue" :
-			       category.getOutageColor()) %>;"
-	            align="right"
-		    title="Updated: <%= category.getLastUpdated() %>"><%= category.getOutageText() %></td>
-		<td style="background-color: <%= (opennmsDisconnect ? "lightblue" :
-			      category.getAvailColor()) %>;"
+		<td>
+		  <a href="<%= response.encodeURL("rtc/category.jsp?category=" + URLEncoder.encode(categoryName, "UTF-8")) %>"
+		     title="<%= category.getTitle() %>">
+		     <%= categoryName %>
+		  </a>
+		</td>
+		<td style="background-color: <%= (opennmsDisconnect ? "lightblue" : category.getOutageColor()) %>;"
+	        align="right"
+		    title="Updated: <%= category.getLastUpdated() %>"><%= category.getOutageText() %>
+		</td>
+		<td style="background-color: <%= (opennmsDisconnect ? "lightblue" : category.getAvailColor()) %>;"
 		    align="right" 
-		    title="Updated: <%= category.getLastUpdated() %>"><%= category.getAvailText() %></td>
+		    title="Updated: <%= category.getLastUpdated() %>"><%= category.getAvailText() %>
+		</td>
 	</tr>
+	
 <%
 	    }
 	}
