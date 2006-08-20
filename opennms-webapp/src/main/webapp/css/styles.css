@@ -238,6 +238,11 @@ table {
 	width: 100%;
 	margin-top: 0;
 }
+aggr.status.table {
+	border-collapse: collapse;
+	width: 33%;
+	margin-top 0;
+}
 th {
 	border:1px solid #999;
 	padding: 5px 6px;
@@ -355,21 +360,21 @@ td.availcrit
 
 #include-eventlist td.sev_normal
 {
-        background-color: green;
+    background-color: green;
 	border: 2pt solid black;
 	padding: 2px;
 }
 
 #include-eventlist td.sev_warning
 {
-        background-color: cyan;
+    background-color: cyan;
 	border: 2pt solid black;
 	padding: 2px;
 }
 
 #include-eventlist td.sev_minor
 {
-        background-color: yellow;
+    background-color: yellow;
 	border: 2pt solid black;
 	padding: 2px;
 }

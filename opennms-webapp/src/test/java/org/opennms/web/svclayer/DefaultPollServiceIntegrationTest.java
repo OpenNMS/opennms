@@ -4,6 +4,7 @@ import static org.easymock.EasyMock.createMock;
 
 import org.opennms.netmgt.model.DemandPoll;
 import org.opennms.web.services.PollerService;
+import org.opennms.web.svclayer.support.DefaultDemandPollService;
 import org.springframework.test.AbstractTransactionalDataSourceSpringContextTests;
 import org.springframework.transaction.annotation.Transactional;
 

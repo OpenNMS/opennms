@@ -31,7 +31,7 @@
     <property name="eventProxy" ref="eventProxy"></property>
   </bean>
 
-  <bean id="demandPollService" class="org.opennms.web.svclayer.DefaultDemandPollService">
+  <bean id="demandPollService" class="org.opennms.web.svclayer.support.DefaultDemandPollService">
     <property name="demandPollDao" ref="demandPollDao" />
     <property name="monitoredServiceDao" ref="monitoredServiceDao" />
     <property name="pollerAPI" ref="pollerApi" />
