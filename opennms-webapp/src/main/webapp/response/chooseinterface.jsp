@@ -95,10 +95,10 @@
       function validateRRD()
       {
           var isChecked = false
-          for( i = 0; i < document.report.intf.length; i++ )
+          for( i = 0; i < document.report.resource.length; i++ )
           {
               //make sure something is checked before proceeding
-              if (document.report.intf[i].selected)
+              if (document.report.resource[i].selected)
               {
                   isChecked=true;
               }
@@ -130,7 +130,7 @@
     Please choose the interface that you wish to query.
   </p>
 
-  <select name="intf" size="10">
+  <select name="resource" size="10">
     <% for(int i=0; i < intfs.size(); i++) { %>
       <option value="<%=intfs.get(i)%>" <%=(i==0) ? "selected" : ""%>><%=intfs.get(i)%></option>
     <% } %>

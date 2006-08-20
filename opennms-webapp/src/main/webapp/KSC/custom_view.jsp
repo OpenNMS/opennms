@@ -168,7 +168,7 @@
 
 <h3 align="center"><%=report.getTitle()%></h3>
 <% if (report_type.equals("node") && this.model.getQueries(r_index).length > 0) { %>
-  <h3 align="center"><a href="performance/addReportsToUrl?node=<%=report_index%>&relativetime=lastday">Show Node-level Performance Data</a></h3>
+  <h3 align="center"><a href="performance/addReportsToUrl?node=<%=report_index%>&resourceType=node&resource=&relativetime=lastday">Show Node-level Performance Data</a></h3>
 <% } %>
 
 <% int graph_count = report.getGraphCount(); %>
@@ -254,12 +254,12 @@
                                 <%=NetworkElementFactory.getNodeLabel(nodeId)%></a><br>
                                 <% if(intf != null) { %>
                                     Interface: <%=this.model.getHumanReadableNameForIfLabel(nodeId, intf)%><br>
-				    <a href="performance/choosereportanddate.jsp?node=<%=nodeId%>&intf=<%=intf%>">Detail</a>
+				    <a href="performance/choosereportanddate.jsp?node=<%=nodeId%>&resourceType=interface&resource=<%=intf%>">Detail</a>
                                 <% } %>
                             <%} else {%>
                                 Domain: <%=curr_domain%><br>
                                 Interface: <a href="element/nodelist.jsp?listInterfaces&ifAlias=<%=intf%>"><%=intf%></a><br>
-				<a href="performance/choosereportanddate.jsp?domain=<%=curr_domain%>&intf=<%=intf%>">Detail</a>
+				<a href="performance/choosereportanddate.jsp?domain=<%=curr_domain%>&resourceType=interface&resource=<%=intf%>">Detail</a>
                             <%}%>
 			    </td></tr></table>
                         <br/>

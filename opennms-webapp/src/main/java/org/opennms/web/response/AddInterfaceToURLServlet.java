@@ -115,7 +115,7 @@ public class AddInterfaceToURLServlet extends HttpServlet {
         case 1: {
             // add the interface, and redirect to end url
             HashMap additions = new HashMap();
-            additions.put("intf", intfs.get(0));
+            additions.put("resource", intfs.get(0));
 
             String queryString = Util.makeQueryString(request, additions, ignores);
 

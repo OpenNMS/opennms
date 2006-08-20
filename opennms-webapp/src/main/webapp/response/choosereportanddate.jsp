@@ -64,7 +64,7 @@
 %>
 
 <%
-    String[] requiredParameters = new String[] { "node", "intf" };
+    String[] requiredParameters = new String[] { "node", "resource" };
 
     // required parameter node
     String nodeIdString = request.getParameter("node");
@@ -73,16 +73,16 @@
     }
 
     // required parameter intf
-    String intf = request.getParameter("intf");    
-    if (intf == null) {
-        throw new MissingParameterException("intf", requiredParameters);
+    String resource = request.getParameter("resource");    
+    if (resource == null) {
+        throw new MissingParameterException("resource", requiredParameters);
     }
 
     int nodeId = Integer.parseInt(nodeIdString);
 
     boolean includeNodeQueries = true;
     PrefabGraph[] graphs =
-	this.model.getQueries(nodeId, intf, includeNodeQueries);    
+	this.model.getQueries(nodeId, resource, includeNodeQueries);    
 
     /*
      * Order the graphs by their order in the properties file.

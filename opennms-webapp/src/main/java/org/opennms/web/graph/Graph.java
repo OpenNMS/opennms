@@ -17,26 +17,29 @@ public class Graph implements Comparable {
     private PrefabGraph m_graph = null;
     private int m_nodeId = -1;
     private String m_domain = null;
-    private String m_intf = null;
+    private String m_resource = null;
     private Date m_start = null;
     private Date m_end = null;
+    private String m_resourceType;
 
-    public Graph(GraphModel model, PrefabGraph graph, int nodeId, String intf,
-		Date start, Date end) {
+    public Graph(GraphModel model, PrefabGraph graph, int nodeId, String resource,
+		String resourceType, Date start, Date end) {
 	m_model = model;
 	m_graph = graph;
 	m_nodeId = nodeId;
-	m_intf = intf;
+        m_resource = resource;
+        m_resourceType = resourceType;
 	m_start = start;
 	m_end = end;
     }
 
-    public Graph(GraphModel model, PrefabGraph graph, String domain, String intf,
-		Date start, Date end) {
+    public Graph(GraphModel model, PrefabGraph graph, String domain, String resource,
+		String resourceType, Date start, Date end) {
 	m_model = model;
 	m_graph = graph;
 	m_domain = domain;
-	m_intf = intf;
+	m_resource = resource;
+        m_resourceType = resourceType;
 	m_start = start;
 	m_end = end;
     }
@@ -49,8 +52,12 @@ public class Graph implements Comparable {
         return m_domain;
     }
 
-    public String getIntf() {
-        return m_intf;
+    public String getResource() {
+        return m_resource;
+    }
+
+    public String getResourceType() {
+        return m_resourceType;
     }
 
     public Date getStart() {
@@ -91,6 +98,7 @@ public class Graph implements Comparable {
     }
 
     /** intf can be null */
+    /*
     private String[] getRRDNames(boolean encodeNodeIdInRRDParm) {
         String[] columns = m_graph.getColumns();
         String[] rrds = new String[columns.length];
@@ -108,23 +116,29 @@ public class Graph implements Comparable {
                 }
                 buffer.append(File.separator);
             }
+            
+            if (!"node".equals(getResourceType()) && !"interface".equals(getResourceType())) {
+                buffer.append(getResourceType());
+                buffer.append(File.separator);
+            }
 
-            boolean addInterface = false;
-            if (m_intf != null) {
+            if (m_resource != null) {
+                boolean addInterface = false;
                 if (!encodeNodeIdInRRDParm) {
                     // Response time graph, it's always interface specific
                     addInterface = true;
-                } else if (PerformanceModel.INTERFACE_GRAPH_TYPE.equals(m_graph.getType())) {
+//                  } else if (PerformanceModel.INTERFACE_GRAPH_TYPE.equals(m_graph.getType())) {
+                  } else if (!PerformanceModel.NODE_GRAPH_TYPE.equals(m_graph.getType())) {
                     // Performance graph where type == interface
                     addInterface = true;
                 }
 
                 if (addInterface) {
-                    buffer.append(m_intf);
+                    buffer.append(m_resource);
                     buffer.append(File.separator);
                 }
             }
-
+            
             buffer.append(columns[i]);
             buffer.append(RrdFileConstants.RRD_SUFFIX);
 
@@ -133,10 +147,25 @@ public class Graph implements Comparable {
 
         return rrds;
     }
+    */
+    
+    private String[] getRRDNames() {
+        String[] columns = m_graph.getColumns();
+        String[] rrds = new String[columns.length];
+
+        for (int i=0; i < columns.length; i++) {
+            rrds[i] = m_model.getRelativePathForAttribute(m_resourceType, m_nodeId, m_resource, columns[i]);
+        }
+
+        return rrds;
+    }
 
     private String getRRDParmString() throws UnsupportedEncodingException {
-	int node;
+        /*
         String[] rrds = getRRDNames(m_model.encodeNodeIdInRRDParm());
+        */
+        
+        String[] rrds = getRRDNames();
 	return encodeRRDNamesAsParmString(rrds);
     }
 
@@ -198,7 +227,7 @@ public class Graph implements Comparable {
     private String getIfSpeed() throws SQLException {
         String speed = null;
         
-        Map intfInfo = IfLabel.getInterfaceInfoFromIfLabel(m_nodeId, m_intf);
+        Map intfInfo = IfLabel.getInterfaceInfoFromIfLabel(m_nodeId, m_resource);
 
         // if the extended information was found correctly
         if (intfInfo != null) {

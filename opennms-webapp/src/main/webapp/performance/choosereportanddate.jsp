@@ -73,20 +73,20 @@
         throw new MissingParameterException("node or domain");
     }
 
-    // optional parameter intf
-    String intf = request.getParameter("intf");    
+    // optional parameter resource
+    String resource = request.getParameter("resource");    
     
     PrefabGraph[] graphs = null;
 
     // FIXME: getQueries throws an exception if nodeId doesn't have snmp data!
     // This doesn't seem to be an issue any more, at least from performance reports
-    if((intf == null) && (nodeIdString != null )) {
+    if((resource == null || resource.length() == 0) && (nodeIdString != null )) {
         graphs = this.model.getQueries(Integer.parseInt(nodeIdString));
     } else if (nodeIdString != null ) {
         boolean includeNodeQueries = false;
-	graphs = this.model.getQueries(Integer.parseInt(nodeIdString), intf, includeNodeQueries);
+		graphs = this.model.getQueries(Integer.parseInt(nodeIdString), resource, includeNodeQueries);
     } else {
-        graphs = this.model.getQueriesForDomain(domain, intf);
+        graphs = this.model.getQueriesForDomain(domain, resource);
     }
 
     /*
@@ -148,8 +148,8 @@
 <% } %>
   <input type="hidden" name="type" value="performance"/>
   <%=Util.makeHiddenTags(request)%>
-  <% if(intf == null) { %>
-    <input type="hidden" name="intf" value="" />
+  <% if(resource == null) { %>
+    <input type="hidden" name="resource" value="" />
   <% } %>
 
   <div style="width: 40%; float: left;">

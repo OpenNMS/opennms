@@ -199,7 +199,7 @@
     <servlet-class>org.opennms.web.performance.AddInterfaceToURLServlet</servlet-class>
     <init-param>
       <param-name>chooseInterfaceUrl</param-name>
-      <param-value>performance/chooseinterface.jsp</param-value>
+      <param-value>performance/chooseresource.jsp</param-value>
       <description>Redirect to this sibling URL when more than one RRD matches a node.</description>      
     </init-param>
   </servlet>  

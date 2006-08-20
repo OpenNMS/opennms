@@ -593,23 +593,7 @@ function onMouseUpEvent(e) {
 		newGraphEnd = graphEnd + Timespan * 2;
 		newGraphStart = graphStart - Timespan * 2;
 
-		var urlBase = cURLBase;
-//		var localGraphId = gUrlObj.getUrlParameterValue("local_graph_id");
-//		var rraId = gUrlObj.getUrlParameterValue("rra_id");
-//		var graphWidth = gUrlObj.getUrlParameterValue("graph_width");
-//		var graphHeight = gUrlObj.getUrlParameterValue("graph_height");
-//		var viewType = gUrlObj.getUrlParameterValue("view_type");
-//		var titleFontSize = gUrlObj.getUrlParameterValue("title_font_size");
-//
-//		open(urlBase + "&local_graph_id=" + localGraphId + "&rra_id=" + rraId + "&view_type=" + viewType + "&graph_start=" + newGraphStart + "&graph_end=" + newGraphEnd + "&graph_height=" + graphHeight + "&graph_width=" + graphWidth + "&title_font_size=" + titleFontSize, "_self");
-
-		var type = gUrlObj.getUrlParameterValue("type");
-		var reports = gUrlObj.getUrlParameterValue("report");
-		var intf = gUrlObj.getUrlParameterValue("intf");
-		var node = gUrlObj.getUrlParameterValue("node");
-
-//		open(urlBase + "zoom=true&type=" + type + "&intf=" + intf + "&node=" + node + "&reports=" + reports + "&start=" + newGraphStart + "&end=" + newGraphEnd, "_self");
-		setLocation(urlBase + "zoom=true&type=" + type + "&intf=" + intf + "&node=" + node + "&reports=" + reports + "&start=" + newGraphStart + "&end=" + newGraphEnd);
+		reloadPage(newGraphStart, newGraphEnd);
 	}
 
 	// zoom in action
@@ -658,28 +642,30 @@ function onMouseUpEvent(e) {
 				newGraphEnd = Math.round(graphEnd - (gZoomGraphObj.zoomBoxWidth - maxX) * OnePixel);
 				newGraphStart = Math.round(graphStart + minX * OnePixel);
 
-				//  var urlBase = gUrlObj.getUrlBase();
-				var urlBase = cURLBase;
-//				var localGraphId = gUrlObj.getUrlParameterValue("local_graph_id");
-//				var rraId = gUrlObj.getUrlParameterValue("rra_id");
-//				var graphWidth = gUrlObj.getUrlParameterValue("graph_width");
-//				var graphHeight = gUrlObj.getUrlParameterValue("graph_height");
-//				var viewType = gUrlObj.getUrlParameterValue("view_type");
-//				var titleFontSize = gUrlObj.getUrlParameterValue("title_font_size");
-//
-//				open(urlBase + "&local_graph_id=" + localGraphId + "&rra_id=" + rraId + "&view_type=" + viewType + "&graph_start=" + newGraphStart + "&graph_end=" + newGraphEnd + "&graph_height=" + graphHeight + "&graph_width=" + graphWidth + "&title_font_size=" + titleFontSize, "_self");
-
-				var type = gUrlObj.getUrlParameterValue("type");
-				var reports = gUrlObj.getUrlParameterValue("report");
-				var intf = gUrlObj.getUrlParameterValue("intf");
-				var node = gUrlObj.getUrlParameterValue("node");
-
-//				open(urlBase + "zoom=true&type=" + type + "&intf=" + intf + "&node=" + node + "&reports=" + reports + "&start=" + newGraphStart + "&end=" + newGraphEnd, "_self");
-				setLocation(urlBase + "zoom=true&type=" + type + "&intf=" + intf + "&node=" + node + "&reports=" + reports + "&start=" + newGraphStart + "&end=" + newGraphEnd);
+				reloadPage(newGraphStart, newGraphEnd);
 			}
 		}
 	}
 }
+
+/*+++++++++++++++++++++++++++++  reloadPage +++++++++++++++++++++++++++++++++*/
+
+/*
+function reloadPage(newGraphStart, newGraphEnd) {
+	var urlBase = cURLBase;
+	
+	var type = gUrlObj.getUrlParameterValue("type");
+	var reports = gUrlObj.getUrlParameterValue("report");
+	var resource = gUrlObj.getUrlParameterValue("resource");
+	var node = gUrlObj.getUrlParameterValue("node");
+	var resourceType = gUrlObj.getUrlParameterValue("resourceType");
+
+	setLocation(urlBase + "zoom=true&type=" + type + "&resource=" + resource
+			    + "&node=" + node + "&resourceType=" + resourceType
+			    + "&reports=" + reports
+			    + "&start=" + newGraphStart + "&end=" + newGraphEnd);
+}
+*/
 
 /*+++++++++++++++++++++++++++  windowOnResizeEvent  +++++++++++++++++++++++++*/
 

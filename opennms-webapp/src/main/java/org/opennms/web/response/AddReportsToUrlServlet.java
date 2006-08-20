@@ -68,7 +68,7 @@ public class AddReportsToUrlServlet extends HttpServlet {
             throw new MissingParameterException("node", new String[] { "node" });
         }
 
-        String intf = request.getParameter("intf");
+        String resource = request.getParameter("resource");
 
         // In this block of code, it is possible to end up with an empty
         // list of queries. This will result in a somewhat cryptic
@@ -77,11 +77,11 @@ public class AddReportsToUrlServlet extends HttpServlet {
 
         PrefabGraph[] queries = null;
 
-        if (intf == null) {
+        if (resource == null) {
             queries = this.model.getQueries(nodeIdString);
         } else {
             boolean showNodeQueries = true;
-            queries = this.model.getQueries(nodeIdString, intf, showNodeQueries);
+            queries = this.model.getQueries(nodeIdString, resource, showNodeQueries);
         }
 
         String[] queryNames = new String[queries.length];

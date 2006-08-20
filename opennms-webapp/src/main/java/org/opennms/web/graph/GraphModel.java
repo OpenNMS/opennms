@@ -7,7 +7,9 @@ public interface GraphModel {
 
     public String getHumanReadableNameForIfLabel(int nodeId, String intf) throws SQLException;
 
-    public boolean encodeNodeIdInRRDParm();
+//    public boolean encodeNodeIdInRRDParm();
+    public String getRelativePathForAttribute(String resourceType,
+            int nodeId, String resource, String attribute);
 
     public String getType();
 }
