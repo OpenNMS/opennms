@@ -18,7 +18,7 @@
         <executions>
           <execution>
             <id>generate-html</id>
-            <phase>package</phase>
+            <phase>compile</phase>
             <goals>
               <goal>generate-html</goal>
             </goals>
