@@ -50,7 +50,9 @@ public class FindCurrentOutages extends OutageMappingQuery {
      */
     
     public FindCurrentOutages(DataSource ds, Integer offset, Integer limit, String orderBy, String direction) {
-           	 super(ds,"FROM outages as outages, ifservices as ifservices WHERE outages.nodeID = ifservices.nodeID and outages.ipAddr = ifservices.ipAddr and outages.serviceID = ifservices.serviceID  and outages.ifRegainedService is null and (supresstime is null or suppresstime < now()) order by  " + orderBy + " " + direction + " OFFSET " + offset + " LIMIT " + limit );
+           	 super(ds,"FROM outages as outages, ifservices as ifservices WHERE outages.nodeID = ifservices.nodeID and outages.ipAddr = ifservices.ipAddr and outages.serviceID = ifservices.serviceID  and (outages.ifRegainedService is null and  outages.suppresstime is null or outages.suppresstime < now()) order by  " + orderBy + " " + direction + " LIMIT + " + limit + " OFFSET " + offset  );
+    
+ 
     }
     
     public FindCurrentOutages(DataSource ds, MonitoredServiceId svcId) {
@@ -61,5 +63,10 @@ public class FindCurrentOutages extends OutageMappingQuery {
                         " and outages.ifRegainedService is null");
         compile();
     }
+
+	public FindCurrentOutages(DataSource ds, String orderBy) {
+		super(ds,"FROM outages as outages, ifservices as ifservices WHERE outages.nodeID = ifservices.nodeID and outages.ipAddr = ifservices.ipAddr and outages.serviceID = ifservices.serviceID  and (outages.ifRegainedService is null and  outages.suppresstime is null or outages.suppresstime < now()) order by  " + orderBy + " "   );
+	    
+	}
 
 }
