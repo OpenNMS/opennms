@@ -52,12 +52,12 @@
 
 		<ec:column property="ipaddr" alias="Interface">
 			<a
-				href="element/interface.jsp?node=${tabledata.nodeid}&intf=${tabledata.interface}">${tabledata.ipaddr}</a>
+				href="element/interface.jsp?node=${tabledata.nodeid}&intf=${tabledata.ipaddr}">${tabledata.ipaddr}</a>
 		</ec:column>
 
 		<ec:column property="serviceid" alias="Service">
 			<a
-				href="element/service.jsp?node=${tabledata.nodeid}&intf=${tabledata.interface }&service=${tabledata.serviceid }">${tabledata.service}
+				href="element/service.jsp?node=${tabledata.nodeid}&intf=${tabledata.ipaddr}&service=${tabledata.serviceid }">${tabledata.service}
 			</a>
 		</ec:column>
 
