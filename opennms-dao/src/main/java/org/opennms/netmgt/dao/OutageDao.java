@@ -67,4 +67,6 @@ public interface OutageDao extends OnmsDao {
 
     public abstract Collection<OnmsOutage> findAll(Integer offset, Integer limit);
 
+	public abstract Collection<OnmsOutage> currentOutages(String orderBy);
+
 }

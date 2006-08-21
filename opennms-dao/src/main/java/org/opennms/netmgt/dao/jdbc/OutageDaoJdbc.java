@@ -195,6 +195,8 @@ public class OutageDaoJdbc extends AbstractDaoJdbc implements OutageDao {
        return new FindOpenAndResolvedOutages(getDataSource()).findSet();
     }
 
+    
+    
     public Collection<OnmsOutage> currentOutages(Integer offset, Integer limit, String orderBy, String direction) {
         return new FindCurrentOutages(getDataSource(), offset, limit, orderBy, direction).findSet();
     }
@@ -228,5 +230,9 @@ public class OutageDaoJdbc extends AbstractDaoJdbc implements OutageDao {
     	
     	return matchingOutages;
     }
+
+	public Collection<OnmsOutage> currentOutages(String orderBy) {
+		  return new FindCurrentOutages(getDataSource(), orderBy).findSet();
+	}
 
 }

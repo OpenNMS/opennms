@@ -42,7 +42,7 @@ public class OutageUpdate extends OutageSaveOrUpdate {
     private static final String updateStmt = "update outages set " +
     "svcLostEventID = ?, svcRegainedEventID = ?, nodeID = ?, ipAddr = ?, " + 
     "serviceID = ?, ifLostService = ?, ifRegainedService = ?, " + 
-    "supressTime = ? , supressedBy = ? " +
+    "suppressTime = ? , suppressedBy = ? " +
     "where outageID = ?";
 
     public OutageUpdate(DataSource ds) {
