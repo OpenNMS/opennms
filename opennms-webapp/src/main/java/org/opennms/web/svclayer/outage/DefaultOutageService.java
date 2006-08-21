@@ -9,9 +9,6 @@ import org.opennms.netmgt.model.OnmsOutage;
 public class DefaultOutageService implements OutageService {
 
 	private OutageDao m_dao;
-	private Object successView;
-	private Object defaultRowsDisplayed;
-	private OutageService outageService;
 
 	public DefaultOutageService() {
 
@@ -35,6 +32,10 @@ public class DefaultOutageService implements OutageService {
 
 	public Collection<OnmsOutage> getCurrentOutages() {
 		return m_dao.currentOutages();
+	}
+
+	public Collection<OnmsOutage> getCurrentOutagesOrdered(String orderBy) {
+		return m_dao.currentOutages(orderBy);
 	}
 
 	public Collection<OnmsOutage> getCurrentOutagesForNode(int nodeId) {
@@ -109,8 +110,18 @@ public class DefaultOutageService implements OutageService {
 
 	}
 
+	public Collection<OnmsOutage> getCurrentOutages(String ordering) {
+		return m_dao.currentOutages(ordering);
+	}
+
+	public OnmsOutage load(Integer outageid) {
+		return m_dao.load(outageid);
+	}
+
+	public void update(OnmsOutage outage) {
+		this.m_dao.update(outage);
+	}
+
 	
-
-
 
 }

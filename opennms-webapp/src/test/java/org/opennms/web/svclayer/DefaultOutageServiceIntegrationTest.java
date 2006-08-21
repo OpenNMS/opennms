@@ -33,6 +33,7 @@
 package org.opennms.web.svclayer;
 
 import java.util.Collection;
+import java.util.Date;
 
 import org.opennms.netmgt.model.OnmsOutage;
 import org.opennms.web.svclayer.outage.OutageService;
@@ -73,9 +74,30 @@ public class DefaultOutageServiceIntegrationTest extends
 		
 	}
 	
+	
+	public void testloadOneOutage() {
+			OnmsOutage outage = outageService.load(1);
+			assertTrue("We loaded one outage ",outage.getId().equals(1));
+	}
+	
 	public void testNoOfSuppressedOutages(){
 		Integer outages = outageService.getSuppressedOutageCount();
 		assertTrue("We should find suppressed messages ", outages == 0);
 	}
 
+	public void testSuppression() {
+		Date now = new Date();
+		
+		Date time = now;
+		//Load Outage manipulate and save it.
+		OnmsOutage myOutage = outageService.load(new Integer(1));
+		assertTrue("Loaded the outage ", myOutage.getId().equals(new Integer(1)));
+		myOutage.setSuppressTime(time);
+		outageService.update(myOutage);
+		OnmsOutage fixedOutage = outageService.load(new Integer(1));
+		
+			
+	}
+	
+	
 }

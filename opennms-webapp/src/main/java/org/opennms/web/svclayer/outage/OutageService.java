@@ -1,11 +1,13 @@
 package org.opennms.web.svclayer.outage;
 
 import java.util.Collection;
+import java.util.Date;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.opennms.netmgt.model.OnmsOutage;
-
-import java.sql.SQLException;
-import java.util.Date;
 
 public interface OutageService {
 
@@ -41,6 +43,13 @@ public interface OutageService {
     
     Collection<OnmsOutage>  getOutagesForService(int nodeId, String ipAddr, int serviceId,
             Date time) ;
+
+	Collection<OnmsOutage> getCurrentOutages(String ordering);
+
+	OnmsOutage load(Integer outageid);
+	
+	void update(OnmsOutage Outage);
+
 
     // This we may have to define 
     /*
