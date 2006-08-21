@@ -220,6 +220,9 @@ public final class HttpUtils extends Object {
             String authString = new String(Base64.encodeBase64(authBytes));
             conn.setRequestProperty("Authorization", "Basic " + authString);
         }
+        
+        // set the mime type
+        conn.setRequestProperty("Content-type", "text/xml; charset=\"utf-8\"");
 
         // get the out-going HTTP connection
         OutputStreamWriter ostream = new OutputStreamWriter(conn.getOutputStream(), "US-ASCII");
