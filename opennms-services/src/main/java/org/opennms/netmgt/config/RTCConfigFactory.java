@@ -8,6 +8,11 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2006 Aug 22: Add public constructor using a Reader for input, add a
+//              setInstance method, and organize imports. - dj@opennms.org
+//
 // Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -35,10 +40,9 @@
 package org.opennms.netmgt.config;
 
 import java.io.File;
-import java.io.FileInputStream;
+import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.Reader;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Unmarshaller;
@@ -156,11 +160,23 @@ public final class RTCConfigFactory {
      *                Thrown if the contents do not match the required schema.
      */
     private RTCConfigFactory(String configFile) throws IOException, MarshalException, ValidationException {
-        InputStream cfgIn = new FileInputStream(configFile);
+        FileReader reader = new FileReader(configFile);
+        marshal(reader);
+        reader.close();
 
-        m_config = (RTCConfiguration) Unmarshaller.unmarshal(RTCConfiguration.class, new InputStreamReader(cfgIn));
-        cfgIn.close();
+    }
+    
+    public RTCConfigFactory(Reader reader) throws IOException, MarshalException, ValidationException {
+        marshal(reader);
+    }
 
+    private void marshal(Reader reader) throws MarshalException, ValidationException {
+        m_config = (RTCConfiguration) Unmarshaller.unmarshal(RTCConfiguration.class, reader);
+    }
+    
+    public static void setInstance(RTCConfigFactory instance) {
+        m_singleton = instance;
+        m_loaded = true;
     }
 
     /**
@@ -183,9 +199,7 @@ public final class RTCConfigFactory {
 
         File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.RTC_CONFIG_FILE_NAME);
 
-        m_singleton = new RTCConfigFactory(cfgFile.getPath());
-
-        m_loaded = true;
+        setInstance(new RTCConfigFactory(cfgFile.getPath()));
     }
 
     /**

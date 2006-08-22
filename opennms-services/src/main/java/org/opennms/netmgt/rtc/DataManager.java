@@ -10,6 +10,8 @@
 //
 // Modifications:
 //
+// 2006 Aug 22: Use generics for Collections, call init() on factory, not
+//              reload. - dj@opennms.org
 // 2004 Oct 07: Added code to support RTC rescan on asset update
 // 2004 Sep 08: Cleaned up the rescan node method.
 // 2004 Mar 17: Fixed a number of bugs with added and deleting services within RTC.
@@ -199,7 +201,7 @@ public class DataManager extends Object {
 	/**
      * The RTC categories
      */
-    private Map m_categories;
+    private Map<String, RTCCategory> m_categories;
 
     /**
      * map keyed using the RTCNodeKey or nodeid or nodeid/ip
@@ -267,7 +269,7 @@ public class DataManager extends Object {
     private void createCategoriesMap() {
         CatFactory cFactory = null;
         try {
-            CategoryFactory.reload();
+            CategoryFactory.init();
             cFactory = CategoryFactory.getInstance();
 
         } catch (IOException ex) {
@@ -281,7 +283,7 @@ public class DataManager extends Object {
             throw new UndeclaredThrowableException(ex);
         }
 
-        m_categories = new HashMap();
+        m_categories = new HashMap<String, RTCCategory>();
 
         Enumeration enumCG = cFactory.getConfig().enumerateCategorygroup();
         while (enumCG.hasMoreElements()) {
@@ -754,10 +756,10 @@ public class DataManager extends Object {
      */
     public synchronized void interfaceReparented(String ip, long oldNodeId, long newNodeId) {
         // get all RTCNodes with the ip/oldNodeId
-    	List nodesList = m_map.getRTCNodes(oldNodeId, ip);
-        ListIterator listIter = new LinkedList(nodesList).listIterator();
+    	List<RTCNode> nodesList = m_map.getRTCNodes(oldNodeId, ip);
+        ListIterator<RTCNode> listIter = new LinkedList<RTCNode>(nodesList).listIterator();
         while (listIter.hasNext()) {
-            RTCNode rtcN = (RTCNode) listIter.next();
+            RTCNode rtcN = listIter.next();
 
             // remove the node with the oldnode id from the map
             m_map.delete(rtcN);
@@ -774,7 +776,7 @@ public class DataManager extends Object {
             while (catIter.hasNext()) {
                 String catlabel = (String) catIter.next();
 
-                RTCCategory rtcCat = (RTCCategory) m_categories.get(catlabel);
+                RTCCategory rtcCat = m_categories.get(catlabel);
                 rtcCat.deleteNode(oldNodeId);
                 rtcCat.addNode(newNodeId);
             }
@@ -855,7 +857,7 @@ public class DataManager extends Object {
     /**
      * @return the categories
      */
-    public synchronized Map getCategories() {
+    public synchronized Map<String, RTCCategory> getCategories() {
         return m_categories;
     }
 

@@ -8,6 +8,9 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2006 Aug 22: Use generics for Collections, add setDataManager. - dj@opennms.org
 // Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -47,6 +50,7 @@ import org.opennms.core.concurrent.RunnableConsumerThreadPool;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.RTCConfigFactory;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
+import org.opennms.netmgt.rtc.datablock.RTCCategory;
 
 /**
  * Maintains calculations for categories.
@@ -657,7 +661,7 @@ public final class RTCManager extends AbstractServiceDaemon {
      * 
      * @return the categories
      */
-    public static Map getCategories() {
+    public static Map<String, RTCCategory> getCategories() {
         return m_dataMgr.getCategories();
     }
 
@@ -668,6 +672,13 @@ public final class RTCManager extends AbstractServiceDaemon {
      */
     public static DataManager getDataManager() {
         return m_dataMgr;
+    }
+
+    /**
+     * Sets the data manager.
+     */
+    public static void setDataManager(DataManager dataMgr) {
+        m_dataMgr = dataMgr;
     }
 
     /**

@@ -1,0 +1,98 @@
+<catinfo>
+    <header>
+        <rev>1.3</rev>
+        <created>Wednesday, February 6, 2002 10:10:00 AM EST</created>
+        <mstation>checkers</mstation>
+    </header>
+    <categorygroup>
+        <name>WebConsole</name>
+        <comment>Service Level Availability by Functional Group</comment>
+        <common>
+            <rule><![CDATA[ipaddr IPLIKE *.*.*.*]]></rule>
+        </common>
+        <categories>
+            <category>
+                <label><![CDATA[Overall Service Availability]]></label>
+                <comment>This category reflects availability of all services currently being monitored by OpenNMS.</comment>
+                <normal>99.99</normal>
+                <warning>97</warning>
+                <rule><![CDATA[ipaddr IPLIKE *.*.*.*]]></rule>
+            </category>
+            <category>
+                <label><![CDATA[Network Interfaces]]></label>
+                <comment>This category reflects the ability to 'ping' managed devices and SNMP agents.  'Ping', using the ICMP protocol, tests a devices network connectivity/availability.</comment>
+                <normal>99.99</normal>
+                <warning>97</warning>
+                <service>ICMP</service>
+                <service>SNMP</service>
+                <rule><![CDATA[(isICMP | isSNMP) & (ipaddr != "0.0.0.0")]]></rule>
+            </category>
+            <category>
+                <label><![CDATA[Email Servers]]></label>
+                <comment>This category includes all managed interfaces which are running an Email service, including SMTP, POP3, or IMAP.  This will include MS Exchange servers running these protocols.</comment>
+                <normal>99.99</normal>
+                <warning>97</warning>
+                <service>SMTP</service>
+                <service>POP3</service>
+                <service>IMAP</service>
+                <rule><![CDATA[isSMTP | isPOP3 | isIMAP]]></rule>
+            </category>
+            <category>
+                <label><![CDATA[Web Servers]]></label>
+                <comment>This category includes all managed interfaces which are running an HTTP (Web) server on port 80 or other common ports.</comment>
+                <normal>99.99</normal>
+                <warning>97</warning>
+                <service>HTTP</service>
+                <service>HTTPS</service>
+                <service>HTTP-8000</service>
+                <service>HTTP-8080</service>
+                <rule><![CDATA[isHTTP | isHTTPS | isHTTP-8000 | isHTTP-8080]]></rule>
+            </category>
+            <category>
+                <label><![CDATA[JMX Servers]]></label>
+                <comment>This category includes all managed interfaces which are running JMX servers.</comment>
+                <normal>99.99</normal>
+                <warning>97</warning>
+                <service>JBoss4</service>
+                <service>JBoss32</service>
+                <service>JVM</service>
+                <rule><![CDATA[isJBoss4 | isJBoss32 | isJVM]]></rule>
+            </category>
+            <category>
+                <label><![CDATA[DNS & DHCP Servers]]></label>
+                <comment>This category includes all managed interfaces which are running either DNS (name resolution) servers or DHCP servers.</comment>
+                <normal>99.99</normal>
+                <warning>97</warning>
+                <service>DNS</service>
+                <service>DHCP</service>
+                <rule><![CDATA[isDNS | isDHCP]]></rule>
+            </category>
+            <category>
+                <label><![CDATA[Database Servers]]></label>
+                <comment>This category includes all managed interfaces which are currently running PostgreSQL or MySQL database servers.</comment>
+                <normal>99.99</normal>
+                <warning>97</warning>
+                <service>Postgres</service>
+                <service>MySQL</service>
+                <rule><![CDATA[isPostgres | isMySQL]]></rule>
+            </category>
+            <category>
+                <label><![CDATA[Other Servers]]></label>
+                <comment>This category includes all managed interfaces which are running FTP (file transfer protocol) servers or SSH (secure shell) servers.</comment>
+                <normal>99.99</normal>
+                <warning>97</warning>
+                <service>FTP</service>
+                <service>SSH</service>
+                <rule><![CDATA[isFTP | isSSH]]></rule>
+            </category>
+            <category>
+                <label><![CDATA[Internet Connectivity]]></label>
+                <comment>This category reflects the ability to 'ping' the router at the ISP-end of your Internet connection.</comment>
+                <normal>99.99</normal>
+                <warning>97</warning>
+                <service>ICMP</service>
+                <rule><![CDATA[ipaddr IPLIKE 0.0.0.0]]></rule>
+            </category>
+        </categories>
+    </categorygroup>
+</catinfo>
