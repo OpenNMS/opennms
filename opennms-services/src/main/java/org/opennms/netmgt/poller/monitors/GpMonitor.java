@@ -44,7 +44,9 @@ import java.net.InetAddress;
 import java.util.Map;
 
 import org.apache.log4j.Category;
+import org.apache.log4j.Level;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.NetworkInterface;
 import org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException;
@@ -102,7 +104,7 @@ final public class GpMonitor extends IPv4LatencyMonitor {
      * @throws java.lang.RuntimeException
      *             Thrown if the interface experiences error during the poll.
      */
-    public int checkStatus(MonitoredService svc, Map parameters, org.opennms.netmgt.config.poller.Package pkg) {
+    public PollStatus poll(MonitoredService svc, Map parameters, org.opennms.netmgt.config.poller.Package pkg) {
         NetworkInterface iface = svc.getNetInterface();
 
         //
@@ -156,10 +158,10 @@ final public class GpMonitor extends IPv4LatencyMonitor {
 
         // Give it a whirl
         //
-        int serviceStatus = SERVICE_UNAVAILABLE;
+        PollStatus serviceStatus = PollStatus.unavailable();
         long responseTime = -1;
 
-        for (int attempts = 0; attempts <= retry && serviceStatus != SERVICE_AVAILABLE; attempts++) {
+        for (int attempts = 0; attempts <= retry && !serviceStatus.isAvailable(); attempts++) {
             try {
                 long sentTime = System.currentTimeMillis();
 
@@ -175,13 +177,18 @@ final public class GpMonitor extends IPv4LatencyMonitor {
                     exitStatus = er.exec(script + " " + hoption + " " + ipv4Addr.getHostAddress() + " " + toption + " " + timeout);
                 else
                     exitStatus = er.exec(script + " " + hoption + " " + ipv4Addr.getHostAddress() + " " + toption + " " + timeout + " " + args);
+                
+                responseTime = System.currentTimeMillis() - sentTime;
+                
                 if (exitStatus != 0) {
-                    log.debug(script + " failed with exit code " + exitStatus);
-                    serviceStatus = SERVICE_UNAVAILABLE;
+                	
+                	serviceStatus = logDown(Level.DEBUG, script + " failed with exit code " + exitStatus);
+
                 }
                 if (er.isMaxRunTimeExceeded()) {
-                    log.debug(script + " failed. Timeout exceeded");
-                    serviceStatus = SERVICE_UNAVAILABLE;
+                	
+                	serviceStatus = logDown(Level.DEBUG, script + " failed. Timeout exceeded");
+
                 } else {
                     if (exitStatus == 0) {
                         String scriptoutput = "";
@@ -194,16 +201,19 @@ final public class GpMonitor extends IPv4LatencyMonitor {
                             log.debug(script + " returned no output");
                         if (!scripterror.equals(""))
                             log.debug(script + " error = " + scripterror);
-                        if (strBannerMatch == null || strBannerMatch.equals("*"))
-                            serviceStatus = SERVICE_AVAILABLE;
-                        else {
+                        if (strBannerMatch == null || strBannerMatch.equals("*")) {
+                        	
+                            serviceStatus = PollStatus.available(responseTime);
+                            
+                        } else {
                             if (scriptoutput.indexOf(strBannerMatch) > -1) {
-                                serviceStatus = SERVICE_AVAILABLE;
-                            } else
-                                serviceStatus = SERVICE_UNRESPONSIVE;
+                                serviceStatus = PollStatus.available(responseTime);
+                            } else {
+                                serviceStatus = PollStatus.unavailable(script + "banner not contained in output banner='"+strBannerMatch+"' output='"+scriptoutput+"'");
+                            }
                         }
-                        if (serviceStatus == SERVICE_AVAILABLE) {
-                            responseTime = System.currentTimeMillis() - sentTime;
+                        // BEGIN RRD
+                        if (serviceStatus.isAvailable()) {
                             if (log.isDebugEnabled()) {
                                 log.debug("poll: responseTime = " + responseTime + "ms");
                             }
@@ -211,18 +221,22 @@ final public class GpMonitor extends IPv4LatencyMonitor {
                                 this.updateRRD(rrdPath, ipv4Addr, dsName, responseTime, pkg);
                             }
                         }
+                        // END RRD
                     }
                 }
 
             } catch (ArrayIndexOutOfBoundsException e) {
-                e.fillInStackTrace();
-                log.debug(script + " ArrayIndexOutOfBoundsException");
+            	
+            	serviceStatus = logDown(Level.DEBUG, script + " ArrayIndexOutOfBoundsException", e);
+            	
             } catch (IOException e) {
-                e.fillInStackTrace();
-                log.debug("IOException occurred. Check for proper operation of " + script);
+            	
+            	serviceStatus = logDown(Level.DEBUG, "IOException occurred. Check for proper operation of " + script, e);
+            	
             } catch (Exception e) {
-                e.fillInStackTrace();
-                log.debug(script + "Exception occurred");
+            	
+            	serviceStatus = logDown(Level.DEBUG, script + "Exception occurred", e);
+            	
             }
         }
 

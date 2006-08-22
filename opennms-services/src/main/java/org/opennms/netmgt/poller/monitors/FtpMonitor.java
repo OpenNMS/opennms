@@ -58,13 +58,14 @@ import java.util.Map;
 import java.util.StringTokenizer;
 
 import org.apache.log4j.Category;
+import org.apache.log4j.Level;
 import org.apache.regexp.RE;
 import org.apache.regexp.RESyntaxException;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.NetworkInterface;
 import org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException;
-import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.utils.ParameterMap;
 
 /**
@@ -150,7 +151,7 @@ final public class FtpMonitor extends IPv4LatencyMonitor {
      *         should be supressed.
      * 
      */
-    public int checkStatus(MonitoredService svc, Map parameters, org.opennms.netmgt.config.poller.Package pkg) {
+    public PollStatus poll(MonitoredService svc, Map parameters, org.opennms.netmgt.config.poller.Package pkg) {
         NetworkInterface iface = svc.getNetInterface();
 
         // check the interface type
@@ -186,9 +187,9 @@ final public class FtpMonitor extends IPv4LatencyMonitor {
         if (log.isDebugEnabled())
             log.debug("FtpMonitor.poll: Polling interface: " + ipv4Addr.getHostAddress() + " timeout: " + timeout + " retry: " + retry);
 
-        int serviceStatus = ServiceMonitor.SERVICE_UNAVAILABLE;
+        PollStatus serviceStatus = PollStatus.unavailable();
         long responseTime = -1;
-        for (int attempts = 0; attempts <= retry && serviceStatus != ServiceMonitor.SERVICE_AVAILABLE; attempts++) {
+        for (int attempts = 0; attempts <= retry && !serviceStatus.isAvailable(); attempts++) {
             Socket socket = null;
             try {
                 //
@@ -202,7 +203,7 @@ final public class FtpMonitor extends IPv4LatencyMonitor {
 
                 log.debug("FtpMonitor: connected to host: " + ipv4Addr + " on port: " + port);
                 // We're connected, so upgrade status to unresponsive
-                serviceStatus = SERVICE_UNRESPONSIVE;
+                serviceStatus = PollStatus.unresponsive();
 
                 BufferedReader lineRdr = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
@@ -378,7 +379,9 @@ final public class FtpMonitor extends IPv4LatencyMonitor {
                         //
 
                         if (rc >= 200 && rc <= 299) {
-                            serviceStatus = ServiceMonitor.SERVICE_AVAILABLE;
+                            serviceStatus = PollStatus.available(responseTime);
+                            
+                            // BEGIN RRD
                             // Store response time in RRD
                             if (responseTime >= 0 && rrdPath != null) {
                                 try {
@@ -387,6 +390,7 @@ final public class FtpMonitor extends IPv4LatencyMonitor {
                                     log.debug("There was a problem writing the RRD:" + rex);
                                 }
                             }
+                            // END RRD
                         }
                         // Special Case: Also want to accept the following ERROR
                         // message
@@ -399,7 +403,8 @@ final public class FtpMonitor extends IPv4LatencyMonitor {
                         // first."
                         //
                         else if (rc == 530 && ( response.indexOf(FTP_ERROR_530_TEXT) != -1 ) ||( response.indexOf(FTP_ERROR_530_TEXT2) != -1 ) ) {
-                            serviceStatus = ServiceMonitor.SERVICE_AVAILABLE;
+                            serviceStatus = PollStatus.available(responseTime);
+                            // BEGIN RRD
                             // Store response time in RRD
                             if (responseTime >= 0 && rrdPath != null) {
                                 try {
@@ -408,6 +413,7 @@ final public class FtpMonitor extends IPv4LatencyMonitor {
                                     log.debug("There was a problem writing the RRD:" + rex);
                                 }
                             }
+                            // END RRD
                         }
                         // Special Case: Also want to accept the following ERROR
                         // message
@@ -418,7 +424,9 @@ final public class FtpMonitor extends IPv4LatencyMonitor {
                         // "425 Session is disconnected."
                         //
                         else if (rc == 425 && response.indexOf(FTP_ERROR_425_TEXT) != -1) {
-                            serviceStatus = ServiceMonitor.SERVICE_AVAILABLE;
+                            serviceStatus = PollStatus.available(responseTime);
+                            
+                            // BEGIN RRD
                             // Store response time in RRD
                             if (responseTime >= 0 && rrdPath != null) {
                                 try {
@@ -427,6 +435,7 @@ final public class FtpMonitor extends IPv4LatencyMonitor {
                                     log.debug("There was a problem writing the RRD:" + rex);
                                 }
                             }
+                            // END RRD
                         }
                     }
                 }
@@ -434,28 +443,30 @@ final public class FtpMonitor extends IPv4LatencyMonitor {
                 // If we get this far and the status has not been set
                 // to available, then something didn't verify during
                 // the banner checking or login/QUIT command process.
-                if (serviceStatus != ServiceMonitor.SERVICE_AVAILABLE) {
-                    serviceStatus = ServiceMonitor.SERVICE_UNAVAILABLE;
+                if (!serviceStatus.isAvailable()) {
+                    serviceStatus = PollStatus.unavailable();
                 }
             } catch (NumberFormatException e) {
-                // Ignore
-                e.fillInStackTrace();
-                log.info("FtpMonitor.poll: NumberFormatException while polling address: " + ipv4Addr, e);
+            	
+            	serviceStatus = logDown(Level.DEBUG, "NumberFormatException while polling address: " + ipv4Addr, e);
+            	
             } catch (NoRouteToHostException e) {
-                e.fillInStackTrace();
-                log.warn("FtpMonitor.poll: No route to host exception for address: " + ipv4Addr, e);
-                break; // Break out of for(;;)
+            	
+            	serviceStatus = logDown(Level.WARN, "No route to host exception for address: " + ipv4Addr, e);
+
+            	break; // Break out of for(;;)
             } catch (InterruptedIOException e) {
-                // Ignore
-                log.debug("FtpMonitor: did not connect to host within timeout: " + timeout + " attempt: " + attempts);
+            	
+            	serviceStatus = logDown(Level.DEBUG, "did not connect to host within timeout: " + timeout + " attempt: " + attempts);
+
             } catch (ConnectException e) {
-                // Connection refused. Continue to retry.
-                e.fillInStackTrace();
-                log.debug("FtpMonitor.poll: Connection exception for address: " + ipv4Addr, e);
+            	
+            	serviceStatus = logDown(Level.DEBUG, "Connection exception for address: " + ipv4Addr, e);
+            	
             } catch (IOException e) {
-                // Ignore
-                e.fillInStackTrace();
-                log.debug("FtpMonitor.poll: IOException while polling address: " + ipv4Addr, e);
+            	
+            	serviceStatus = logDown(Level.DEBUG, "IOException while polling address: " + ipv4Addr, e);
+            	
             } finally {
                 try {
                     // Close the socket

@@ -56,12 +56,9 @@ import java.net.NoRouteToHostException;
 import java.net.Socket;
 import java.util.Map;
 
-import org.apache.log4j.Category;
-import org.opennms.core.utils.ThreadCategory;
+import org.apache.log4j.Level;
+import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.MonitoredService;
-import org.opennms.netmgt.poller.NetworkInterface;
-import org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException;
-import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.utils.ParameterMap;
 
 /**
@@ -113,51 +110,39 @@ final public class CitrixMonitor extends IPv4LatencyMonitor {
      *         should be supressed.
      * 
      */
-    public int checkStatus(MonitoredService svc, Map parameters, org.opennms.netmgt.config.poller.Package pkg) {
-        NetworkInterface iface = svc.getNetInterface();
-        
-        // check the interface type
-        //
-        if (iface.getType() != NetworkInterface.TYPE_IPV4)
-            throw new NetworkInterfaceNotSupportedException("Unsupported interface type, only TYPE_IPV4 currently supported");
+    public PollStatus poll(MonitoredService svc, Map parameters, org.opennms.netmgt.config.poller.Package pkg) {
 
         // Get the category logger
         //
-        Category log = ThreadCategory.getInstance(getClass());
-
         // get the parameters
         //
         int retry = ParameterMap.getKeyedInteger(parameters, "retry", DEFAULT_RETRY);
         int port = ParameterMap.getKeyedInteger(parameters, "port", DEFAULT_PORT);
         int timeout = ParameterMap.getKeyedInteger(parameters, "timeout", DEFAULT_TIMEOUT);
         String rrdPath = ParameterMap.getKeyedString(parameters, "rrd-repository", null);
-        String dsName = ParameterMap.getKeyedString(parameters, "ds-name", null);
+        String dsName = ParameterMap.getKeyedString(parameters, "ds-name", DEFAULT_DSNAME);
 
         if (rrdPath == null) {
-            log.info("poll: RRD repository not specified in parameters, latency data will not be stored.");
-        }
-        if (dsName == null) {
-            dsName = DEFAULT_DSNAME;
+            log().info("poll: RRD repository not specified in parameters, latency data will not be stored.");
         }
 
         // don't let the user set the timeout to 0, an infinite loop will occur
-        // if the server
-        // is down
+        // if the server is down
         if (timeout == 0)
             timeout = 10;
 
         // Extract the address
         //
-        InetAddress ipv4Addr = (InetAddress) iface.getAddress();
+        InetAddress ipv4Addr = (InetAddress) svc.getAddress();
         String host = ipv4Addr.getHostAddress();
 
-        if (log.isDebugEnabled())
-            log.debug("CitrixMonitor.poll: Polling interface: " + host + " timeout: " + timeout + " retry: " + retry);
+        if (log().isDebugEnabled())
+            log().debug("CitrixMonitor.poll: Polling interface: " + host + " timeout: " + timeout + " retry: " + retry);
 
-        int serviceStatus = ServiceMonitor.SERVICE_UNAVAILABLE;
+        PollStatus serviceStatus = PollStatus.unavailable();
         long responseTime = -1;
 
-        for (int attempts = 0; attempts <= retry && serviceStatus != ServiceMonitor.SERVICE_AVAILABLE; attempts++) {
+        for (int attempts = 0; attempts <= retry && !serviceStatus.isAvailable(); attempts++) {
             Socket socket = null;
             try {
                 // create a connected socket
@@ -167,7 +152,7 @@ final public class CitrixMonitor extends IPv4LatencyMonitor {
                 socket = new Socket();
                 socket.connect(new InetSocketAddress(ipv4Addr, port), timeout);
                 socket.setSoTimeout(timeout);
-                log.debug("CitrixMonitor: connected to host: " + host + " on port: " + port);
+                log().debug("CitrixMonitor: connected to host: " + host + " on port: " + port);
 
                 // We're connected, so upgrade status to unresponsive
 
@@ -180,43 +165,47 @@ final public class CitrixMonitor extends IPv4LatencyMonitor {
                 // Not an infinite loop...socket timeout will break this out
                 // of the loop if "ICA" string is never read.
                 //
-                while (serviceStatus != ServiceMonitor.SERVICE_AVAILABLE) {
+                while (!serviceStatus.isAvailable()) {
                     buffer.append((char) reader.read());
                     if (buffer.toString().indexOf("ICA") > -1) {
-                        serviceStatus = ServiceMonitor.SERVICE_AVAILABLE;
                         responseTime = System.currentTimeMillis() - sentTime;
+                        serviceStatus = PollStatus.available(responseTime);
+                        
+                        // BEGIN RRD
                         if (responseTime >= 0 && rrdPath != null) {
                             try {
                                 this.updateRRD(rrdPath, ipv4Addr, dsName, responseTime, pkg);
                             } catch (RuntimeException rex) {
-                                log.debug("There was a problem writing the RRD:" + rex);
+                                log().debug("There was a problem writing the RRD:" + rex);
                             }
                         }
+                        // END RRD
                     } else {
-                        serviceStatus = ServiceMonitor.SERVICE_UNAVAILABLE;
+                        serviceStatus = PollStatus.unavailable("magic cookie 'ICA' missing from service greeting.");
                     }
                 }
-            } catch (ConnectException cE) {
+            } catch (ConnectException e) {
+
                 // Connection refused!! Continue to retry.
-                //
-                cE.fillInStackTrace();
-                log.debug("CitrixPlugin: connection refused by host " + host, cE);
-                serviceStatus = ServiceMonitor.SERVICE_UNAVAILABLE;
+            	serviceStatus = logDown(Level.DEBUG, "Connection refused by host "+host, e);
+            	
             } catch (NoRouteToHostException e) {
-                // No route to host!! No need to perform retries.
-                e.fillInStackTrace();
-                log.info("CitrixPlugin: Unable to test host " + host + ", no route available", e);
-                serviceStatus = ServiceMonitor.SERVICE_UNAVAILABLE;
-                break;
+
+            	// No route to host!! No need to perform retries.
+                return logDown(Level.INFO, "Unable to test host " + host + ", no route available", e);
+            
             } catch (InterruptedIOException e) {
-                log.debug("CitrixMonitor: did not connect to host within timeout: " + timeout + " attempt: " + attempts);
-                serviceStatus = ServiceMonitor.SERVICE_UNAVAILABLE;
+            	
+            	serviceStatus = logDown(Level.DEBUG, "did not connect to host within timeout: " + timeout + " attempt: " + attempts);
+                		
             } catch (IOException e) {
-                log.info("CitrixPlugin: Error communicating with host " + host, e);
-                serviceStatus = ServiceMonitor.SERVICE_UNAVAILABLE;
+            	
+            	serviceStatus = logDown(Level.INFO, "Error communicating with host " + host, e);
+                
             } catch (Throwable t) {
-                log.warn("CitrixPlugin: Undeclared throwable exception caught contacting host " + host, t);
-                serviceStatus = ServiceMonitor.SERVICE_UNAVAILABLE;
+
+                serviceStatus = logDown(Level.WARN, "Undeclared throwable exception caught contacting host " + host, t);
+                
             } finally {
                 try {
                     if (socket != null) {

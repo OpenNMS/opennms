@@ -125,6 +125,14 @@ public class PollStatus {
     }
     
     public static PollStatus up(long responseTime) {
+    	return available(responseTime);
+    }
+    
+    public static PollStatus available() {
+    	return available(-1L);
+    }
+    
+    public static PollStatus available(long responseTime) {
     	return new PollStatus(SERVICE_AVAILABLE, null, responseTime);
     }
     
@@ -144,7 +152,15 @@ public class PollStatus {
     	return down(null);
     }
     
+    public static PollStatus unavailable() {
+    	return unavailable(null);
+    }
+    
 	public static PollStatus down(String reason) {
+		return unavailable(reason);
+	}
+	
+	public static PollStatus unavailable(String reason) {
 		return new PollStatus(SERVICE_UNAVAILABLE, reason, -1L);
 	}
 
@@ -163,6 +179,18 @@ public class PollStatus {
         return !isDown();
     }
     
+    public boolean isAvailable() {
+    	return this.m_statusCode == SERVICE_AVAILABLE;
+    }
+    
+    public boolean isUnresponsive() {
+    	return this.m_statusCode == SERVICE_UNRESPONSIVE;
+    }
+    
+    public boolean isUnavailable() {
+    	return this.m_statusCode == SERVICE_UNAVAILABLE;
+    }
+    
     public boolean isDown() {
         return this.m_statusCode == SERVICE_UNAVAILABLE;
     }
@@ -174,9 +202,17 @@ public class PollStatus {
     public String getReason() {
         return m_reason;
     }
+    
+    public void setReason(String reason) {
+    	m_reason = reason;
+    }
 
     public long getResponseTime() {
     	return m_responseTime;
+    }
+    
+    public void setResponseTime(long responseTime) {
+    	m_responseTime = responseTime;
     }
     
     public int getStatusCode() {

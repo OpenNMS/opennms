@@ -43,13 +43,11 @@ import java.util.Map;
 
 import jcifs.netbios.NbtAddress;
 
-import org.apache.log4j.Category;
-import org.apache.log4j.Priority;
-import org.opennms.core.utils.ThreadCategory;
+import org.apache.log4j.Level;
+import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.NetworkInterface;
 import org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException;
-import org.opennms.netmgt.poller.ServiceMonitor;
 
 /**
  * <P>
@@ -102,7 +100,7 @@ final public class SmbMonitor extends IPv4Monitor {
      *         should be supressed.
      * 
      */
-    public int checkStatus(MonitoredService svc, Map parameters, org.opennms.netmgt.config.poller.Package pkg) {
+    public PollStatus poll(MonitoredService svc, Map parameters, org.opennms.netmgt.config.poller.Package pkg) {
         NetworkInterface iface = svc.getNetInterface();
 
         // Get interface address from NetworkInterface
@@ -110,11 +108,6 @@ final public class SmbMonitor extends IPv4Monitor {
         if (iface.getType() != NetworkInterface.TYPE_IPV4)
             throw new NetworkInterfaceNotSupportedException("Unsupported interface type, only TYPE_IPV4 currently supported");
 
-        // get the logger
-        //
-        Category log = ThreadCategory.getInstance(getClass());
-
-        //
         /*
          * TODO: Use it or loose it.
          * Commented out because it is not currently used in this monitor
@@ -129,7 +122,7 @@ final public class SmbMonitor extends IPv4Monitor {
 
         // Default is a failed status
         //
-        int serviceStatus = ServiceMonitor.SERVICE_UNAVAILABLE;
+        PollStatus serviceStatus = PollStatus.unavailable();
 
         // Attempt to retrieve NetBIOS name of this interface in order
         // to determine if SMB is supported.
@@ -143,17 +136,14 @@ final public class SmbMonitor extends IPv4Monitor {
             nbtAddr = NbtAddress.getByName(ipv4Addr.getHostAddress());
             
             if (!nbtAddr.getHostName().equals(ipv4Addr.getHostAddress()))
-                serviceStatus = ServiceMonitor.SERVICE_AVAILABLE;
+                serviceStatus = PollStatus.available();
 
         } catch (UnknownHostException uhE) {
-            if (log.isDebugEnabled())
-                log.debug("poll: Unknown host exception generated for " + ipv4Addr.toString() + ", reason: " + uhE.getLocalizedMessage());
+        	serviceStatus = logDown(Level.DEBUG, "Unknown host exception generated for " + ipv4Addr.toString() + ", reason: " + uhE.getLocalizedMessage());
         } catch (RuntimeException rE) {
-            if (log.isEnabledFor(Priority.ERROR))
-                log.error("poll: Unexpected runtime exception", rE);
+        	serviceStatus = logDown(Level.ERROR, "Unexpected runtime exception", rE);
         } catch (Exception e) {
-            if (log.isEnabledFor(Priority.ERROR))
-                log.error("poll: Unexpected exception", e);
+        	serviceStatus = logDown(Level.DEBUG, "Unexpected exception", e);
         }
 
         //

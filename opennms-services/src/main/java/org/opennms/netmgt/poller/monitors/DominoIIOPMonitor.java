@@ -55,8 +55,10 @@ import java.net.Socket;
 import java.util.Map;
 
 import org.apache.log4j.Category;
+import org.apache.log4j.Level;
 import org.apache.log4j.Priority;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.NetworkInterface;
 import org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException;
@@ -120,7 +122,7 @@ final public class DominoIIOPMonitor extends IPv4Monitor {
      * @throws java.lang.RuntimeException
      *             Thrown if the interface experiences errors during the poll.
      */
-    public int checkStatus(MonitoredService svc, Map parameters, org.opennms.netmgt.config.poller.Package pkg) {
+    public PollStatus poll(MonitoredService svc, Map parameters, org.opennms.netmgt.config.poller.Package unused) {
         NetworkInterface iface = svc.getNetInterface();
 
         //
@@ -149,83 +151,57 @@ final public class DominoIIOPMonitor extends IPv4Monitor {
         if (log.isDebugEnabled())
             log.debug("poll: address = " + ipv4Addr.getHostAddress() + ", port = " + port + ", timeout = " + timeout + ", retry = " + retry);
 
-        int serviceStatus = SERVICE_UNAVAILABLE;
-
-        // THIS SHOULD WORK BUT IT DOESN'T, AND I DON'T KNOW WHY, SO WE HAVE TO
-        // DO IT THE HARD
-        // WAY...
-        /*
-         * Session session = NotesFactory.createSession(hostname);
-         */
 
         // Lets first try to the the IOR via HTTP, if we can't get that then any
-        // other process
-        // that can
+        // other process that can
         // do it the right way won't be able to connect anyway
         //
         try {
             retrieveIORText(ipv4Addr.getHostAddress(), IORport);
-        } catch (FileNotFoundException e) {
-            // This is an expected exception
-            //
-            if (log.isDebugEnabled())
-                log.debug("DominoIIOPMonitor: failed to get the corba IOR from " + ipv4Addr, e);
-            return serviceStatus;
+        } catch (Exception e) {
+            return logDown(Level.DEBUG, "failed to get the corba IOR from " + ipv4Addr, e);
         }
-
-        catch (Exception e) {
-            if (log.isDebugEnabled())
-                log.debug("DominoIIOPMonitor: failed to get the corba IOR from " + ipv4Addr, e);
-            return serviceStatus;
-        }
-
-        /*
-         * THIS IS THE WAY WE SHOULD BE CONNECTING TO THE DOMINO IIOP STUFF, BUT
-         * SINCE IT 'NO WORKY' LEAVE IT OUT
-         */
-        /*
-         * // Initialize the ORB in NCSO.jar. java.util.Properties ibm_props =
-         * new java.util.Properties(); ibm_props.put("org.omg.CORBA.ORBClass",
-         * "com.ibm.CORBA.iiop.ORB"); org.omg.CORBA.ORB ibm_orb =
-         * org.omg.CORBA.ORB.init(args, ibm_props); // Bind to initial object
-         * using IOR org.omg.CORBA.Object ibm_obj =
-         * ibm_orb.string_to_object(IOR); lotus.domino.corba.IObjectServer
-         * rObjectServer =
-         * lotus.domino.corba.IObjectServerHelper.narrow(ibm_obj);
-         */
 
         // SO LETS DO IT THE OLD FASHIONED WAY
-        for (int attempts = 0; attempts <= retry && serviceStatus != SERVICE_AVAILABLE; attempts++) {
+        String failureReason = null; 
+        
+        for (int attempts = 0; attempts <= retry; attempts++) {
             Socket socket = null;
             try {
                 //
                 // create a connected socket
                 //
+            	long startTime = System.currentTimeMillis();
                 socket = new Socket();
                 socket.connect(new InetSocketAddress(ipv4Addr, port), timeout);
                 socket.setSoTimeout(timeout);
+                long endTime = System.currentTimeMillis();
                 log.debug("DominoIIOPMonitor: connected to host: " + ipv4Addr + " on port: " + port);
 
                 // got here so its up...
-                serviceStatus = SERVICE_AVAILABLE;
+                return PollStatus.up(endTime - startTime);
             } catch (NoRouteToHostException e) {
                 e.fillInStackTrace();
-                if (log.isEnabledFor(Priority.WARN))
-                    log.warn("DominoIIOPMonitor: No route to host exception for address " + ipv4Addr.getHostAddress(), e);
-                break; // Break out of for(;;)
+                log.warn("DominoIIOPMonitor: No route to host exception for address " + ipv4Addr.getHostAddress(), e);
+                
+                return PollStatus.unavailable("No route to host exception for address " + ipv4Addr.getHostAddress());
             } catch (InterruptedIOException e) {
-                log.debug("DominoIIOPMonitor: did not connect to host within timeout: " + timeout + " attempt: " + attempts);
+            	failureReason = "did not connect to host within timeout: " + timeout + " attempt: " + attempts;
+                log.debug("DominoIIOPMonitor: "+failureReason);
             } catch (ConnectException e) {
                 // Connection refused. Continue to retry.
                 //
                 e.fillInStackTrace();
+                failureReason = "Connection exception for address: " + ipv4Addr+" : "+e.getMessage();
                 if (log.isDebugEnabled())
-                    log.debug("DominoIIOPMonitor: Connection exception for address: " + ipv4Addr, e);
+                    log.debug("DominoIIOPMonitor: "+failureReason, e);
             } catch (IOException e) {
                 // Ignore
                 e.fillInStackTrace();
+                failureReason = "IOException while polling address: " + ipv4Addr+" : "+e.getMessage();
                 if (log.isDebugEnabled())
-                    log.debug("DominoIIOPMonitor: IOException while polling address: " + ipv4Addr, e);
+                    log.debug("DominoIIOPMonitor: "+failureReason, e);
+                
             } finally {
                 try {
                     // Close the socket
@@ -242,7 +218,7 @@ final public class DominoIIOPMonitor extends IPv4Monitor {
         //
         // return the status of the service
         //
-        return serviceStatus;
+        return PollStatus.unavailable(failureReason);
     }
 
     /**

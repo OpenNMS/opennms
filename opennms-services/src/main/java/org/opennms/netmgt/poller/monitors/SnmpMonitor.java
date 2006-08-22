@@ -45,16 +45,14 @@ import java.lang.reflect.UndeclaredThrowableException;
 import java.net.InetAddress;
 import java.util.Map;
 
-import org.apache.log4j.Category;
-import org.apache.log4j.Priority;
+import org.apache.log4j.Level;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.config.SnmpPeerFactory;
+import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.NetworkInterface;
-import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpUtils;
@@ -126,25 +124,18 @@ final public class SnmpMonitor extends SnmpMonitorStrategy {
      * 
      */
     public void initialize(PollerConfig pollerConfig, Map parameters) {
-        // Log4j category
-        //
-        Category log = ThreadCategory.getInstance(getClass());
-
         // Initialize the SnmpPeerFactory
         //
         try {
             SnmpPeerFactory.init();
         } catch (MarshalException ex) {
-            if (log.isEnabledFor(Priority.FATAL))
-                log.fatal("initialize: Failed to load SNMP configuration", ex);
+        	log().fatal("initialize: Failed to load SNMP configuration", ex);
             throw new UndeclaredThrowableException(ex);
         } catch (ValidationException ex) {
-            if (log.isEnabledFor(Priority.FATAL))
-                log.fatal("initialize: Failed to load SNMP configuration", ex);
+        	log().fatal("initialize: Failed to load SNMP configuration", ex);
             throw new UndeclaredThrowableException(ex);
         } catch (IOException ex) {
-            if (log.isEnabledFor(Priority.FATAL))
-                log.fatal("initialize: Failed to load SNMP configuration", ex);
+        	log().fatal("initialize: Failed to load SNMP configuration", ex);
             throw new UndeclaredThrowableException(ex);
         }
 
@@ -166,8 +157,6 @@ final public class SnmpMonitor extends SnmpMonitorStrategy {
         NetworkInterface iface = svc.getNetInterface();
         // Log4j category
         //
-        Category log = ThreadCategory.getInstance(getClass());
-
         // Get interface address from NetworkInterface
         //
         super.initialize(svc);
@@ -175,18 +164,18 @@ final public class SnmpMonitor extends SnmpMonitorStrategy {
         InetAddress ipAddr = (InetAddress) iface.getAddress();
 
         SnmpAgentConfig agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(ipAddr);
-        if (log.isDebugEnabled()) {
-            log.debug("initialize: SnmpAgentConfig address: " + agentConfig);
+        if (log().isDebugEnabled()) {
+            log().debug("initialize: SnmpAgentConfig address: " + agentConfig);
         }
 
         // Add the snmp config object as an attribute of the interface
         //
-        if (log.isDebugEnabled())
-            log.debug("initialize: setting SNMP peer attribute for interface " + ipAddr.getHostAddress());
+        if (log().isDebugEnabled())
+            log().debug("initialize: setting SNMP peer attribute for interface " + ipAddr.getHostAddress());
 
         iface.setAttribute(SNMP_AGENTCONFIG_KEY, agentConfig);
 
-        log.debug("initialize: interface: " + agentConfig.getAddress() + " initialized.");
+        log().debug("initialize: interface: " + agentConfig.getAddress() + " initialized.");
 
         return;
     }
@@ -208,14 +197,10 @@ final public class SnmpMonitor extends SnmpMonitorStrategy {
      * @exception RuntimeException
      *                Thrown for any uncrecoverable errors.
      */
-    public int checkStatus(MonitoredService svc, Map parameters, org.opennms.netmgt.config.poller.Package pkg) {
+    public PollStatus poll(MonitoredService svc, Map parameters, org.opennms.netmgt.config.poller.Package pkg) {
         NetworkInterface iface = svc.getNetInterface();
 
-        // Log4j category
-        //
-        Category log = ThreadCategory.getInstance(getClass());
-
-        int status = ServiceMonitor.SERVICE_UNAVAILABLE;
+        PollStatus status = PollStatus.unavailable();
         InetAddress ipaddr = (InetAddress) iface.getAddress();
 
         // Retrieve this interface's SNMP peer object
@@ -239,36 +224,32 @@ final public class SnmpMonitor extends SnmpMonitorStrategy {
         agentConfig.setRetries(retries);
         agentConfig.setPort(port);
 
-        if (log.isDebugEnabled())
-            log.debug("poll: service= SNMP address= " + agentConfig);
+        if (log().isDebugEnabled())
+            log().debug("poll: service= SNMP address= " + agentConfig);
 
         // Establish SNMP session with interface
         //
         try {
-            if (log.isDebugEnabled()) {
-                log.debug("SnmpMonitor.poll: SnmpAgentConfig address: " +agentConfig);
+            if (log().isDebugEnabled()) {
+                log().debug("SnmpMonitor.poll: SnmpAgentConfig address: " +agentConfig);
             }
             SnmpObjId snmpObjectId = new SnmpObjId(oid);
             
             SnmpValue result = SnmpUtils.get(agentConfig, snmpObjectId);
 
             if (result != null) {
-                log.debug("poll: SNMP poll succeeded, addr=" + ipaddr.getHostAddress() + " oid=" + oid + " value=" + result);
-                status = (meetsCriteria(result, operator, operand) ? ServiceMonitor.SERVICE_AVAILABLE : ServiceMonitor.SERVICE_UNAVAILABLE);
+                log().debug("poll: SNMP poll succeeded, addr=" + ipaddr.getHostAddress() + " oid=" + oid + " value=" + result);
+                status = (meetsCriteria(result, operator, operand) ? PollStatus.available() : PollStatus.unavailable());
             } else {
-                log.debug("poll: SNMP poll failed, addr=" + ipaddr.getHostAddress() + " oid=" + oid);
-                status = ServiceMonitor.SERVICE_UNAVAILABLE;
+            	status = logDown(Level.DEBUG, "SNMP poll failed, addr=" + ipaddr.getHostAddress() + " oid=" + oid);
             }
             
         } catch (NumberFormatException e) {
-            log.error("Number operator used on a non-number " + e.getMessage());
-            status = ServiceMonitor.SERVICE_UNAVAILABLE;
+        	status = logDown(Level.ERROR, "Number operator used on a non-number " + e.getMessage());
         } catch (IllegalArgumentException e) {
-            log.error("Invalid Snmp Criteria: " + e.getMessage());
-            status = ServiceMonitor.SERVICE_UNAVAILABLE;
+        	status = logDown(Level.ERROR, "Invalid Snmp Criteria: " + e.getMessage());
         } catch (Throwable t) {
-            log.warn("poll: Unexpected exception during SNMP poll of interface " + ipaddr.getHostAddress(), t);
-            status = ServiceMonitor.SERVICE_UNAVAILABLE;
+        	status = logDown(Level.WARN, "Unexpected exception during SNMP poll of interface " + ipaddr.getHostAddress(), t);
         }
 
         return status;

@@ -61,15 +61,12 @@ import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.TreeMap;
 
-import org.apache.log4j.Category;
 import org.opennms.core.utils.Base64;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.NetworkInterface;
 import org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException;
-import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.utils.ParameterMap;
 
 /**
@@ -137,18 +134,18 @@ public class HttpMonitor extends IPv4LatencyMonitor {
 
         // Cycle through the port list
         //
-        int serviceStatus = ServiceMonitor.SERVICE_UNAVAILABLE;
+        int serviceStatus = PollStatus.SERVICE_UNAVAILABLE;
         String reason = null;
         int currentPort = -1;
         long responseTime = -1;
-        for (int portIndex = 0; portIndex < getPorts(parameters).length && serviceStatus != ServiceMonitor.SERVICE_AVAILABLE; portIndex++) {
+        for (int portIndex = 0; portIndex < getPorts(parameters).length && serviceStatus != PollStatus.SERVICE_AVAILABLE; portIndex++) {
             currentPort = getPorts(parameters)[portIndex];
 
             if (log().isDebugEnabled()) {
                 log().debug("Port = " + currentPort + ", Address = " + getIpv4Addr(iface) + ", Timeout = " + getTimeout(parameters) + ", Retry = " + getRetries(parameters));
             }
 
-            for (int attempts = 0; attempts <= getRetries(parameters) && serviceStatus != ServiceMonitor.SERVICE_AVAILABLE; attempts++) {
+            for (int attempts = 0; attempts <= getRetries(parameters) && serviceStatus != PollStatus.SERVICE_AVAILABLE; attempts++) {
                 Socket socket = null;
                 try {
                     socket = createSocket(iface, parameters, currentPort);
@@ -157,7 +154,7 @@ public class HttpMonitor extends IPv4LatencyMonitor {
                     log().debug("HttpMonitor: connected to host: " + getIpv4Addr(iface) + " on port: " + currentPort);
 
                     // We're connected, so upgrade status to unresponsive
-                    serviceStatus = SERVICE_UNRESPONSIVE;
+                    serviceStatus = PollStatus.SERVICE_UNRESPONSIVE;
 
                     //
                     // Issue HTTP 'GET' command and check the return code in the response
@@ -191,9 +188,9 @@ public class HttpMonitor extends IPv4LatencyMonitor {
                         }
                         
                         if (SnmpPeerFactory.matchNumericListOrRange(String.valueOf(serverResponseValue), getResponse(parameters))) {
-                            serviceStatus = ServiceMonitor.SERVICE_AVAILABLE;
+                            serviceStatus = PollStatus.SERVICE_AVAILABLE;
                         } else {
-                            serviceStatus = ServiceMonitor.SERVICE_UNAVAILABLE;
+                            serviceStatus = PollStatus.SERVICE_UNAVAILABLE;
                             StringBuffer sb = new StringBuffer();
                             sb.append("HTTP response value: ");
                             sb.append(serverResponseValue);
@@ -204,7 +201,7 @@ public class HttpMonitor extends IPv4LatencyMonitor {
                         }
                     }
 
-                    if (serviceStatus == ServiceMonitor.SERVICE_AVAILABLE && getResponseText(parameters) != null && getResponseText(parameters).length() > 0) {
+                    if (serviceStatus == PollStatus.SERVICE_AVAILABLE && getResponseText(parameters) != null && getResponseText(parameters).length() > 0) {
                         // This loop will rip through the rest of the Response Header
                         //
                         do {
@@ -243,7 +240,7 @@ public class HttpMonitor extends IPv4LatencyMonitor {
                         // Set the status back to failed
                         //
                         if (!bResponseTextFound) {
-                            serviceStatus = ServiceMonitor.SERVICE_UNAVAILABLE;
+                            serviceStatus = PollStatus.SERVICE_UNAVAILABLE;
                             reason = "Matching text: ["+getResponseText(parameters)+"] not found in body of HTTP response";
                         }
                     }
@@ -287,7 +284,7 @@ public class HttpMonitor extends IPv4LatencyMonitor {
         // will contain a comma delimited list of the port(s) which were
         // tried if the service is UNAVAILABLE
         //
-        if (serviceStatus == ServiceMonitor.SERVICE_UNAVAILABLE) {
+        if (serviceStatus == PollStatus.SERVICE_UNAVAILABLE) {
             //
             // Build port string
             //
@@ -303,9 +300,10 @@ public class HttpMonitor extends IPv4LatencyMonitor {
             parameters.put("qualifier", testedPorts.toString());
             reason += "/Ports: "+testedPorts.toString();
             log().debug("checkStatus: Reason: \""+reason+"\"");
-        } else if (serviceStatus == ServiceMonitor.SERVICE_AVAILABLE) {
+        } else if (serviceStatus == PollStatus.SERVICE_AVAILABLE) {
             parameters.put("qualifier", Integer.toString(currentPort));
 
+            // RRD BEGIN
             // Store response time in RRD
             if (responseTime >= 0 && getRrdPath(parameters) != null) {
                 try {
@@ -314,6 +312,8 @@ public class HttpMonitor extends IPv4LatencyMonitor {
                     log().debug("There was a problem writing the RRD:" + rex);
                 }
             }
+            // RRD END
+          
         }
 
         //
@@ -443,10 +443,6 @@ public class HttpMonitor extends IPv4LatencyMonitor {
 
     private String getRrdPath(Map parameters) {
         return ParameterMap.getKeyedString(parameters, "rrd-repository", null);
-    }
-
-    protected Category log() {
-        return ThreadCategory.getInstance(getClass());
     }
 
     private String getUrl(Map parameters) {
