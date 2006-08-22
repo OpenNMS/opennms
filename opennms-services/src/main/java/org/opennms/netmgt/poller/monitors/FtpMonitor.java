@@ -79,7 +79,7 @@ import org.opennms.netmgt.utils.ParameterMap;
  * 
  * 
  */
-final public class FtpMonitor extends IPv4LatencyMonitor {
+final public class FtpMonitor extends IPv4Monitor {
 
     /**
      * Default FTP port.
@@ -170,15 +170,6 @@ final public class FtpMonitor extends IPv4LatencyMonitor {
         int timeout = ParameterMap.getKeyedInteger(parameters, "timeout", DEFAULT_TIMEOUT);
         String userid = ParameterMap.getKeyedString(parameters, "userid", null);
         String password = ParameterMap.getKeyedString(parameters, "password", null);
-        String rrdPath = ParameterMap.getKeyedString(parameters, "rrd-repository", null);
-        String dsName = ParameterMap.getKeyedString(parameters, "ds-name", null);
-
-        if (rrdPath == null) {
-            log.info("poll: RRD repository not specified in parameters, latency data will not be stored.");
-        }
-        if (dsName == null) {
-            dsName = DEFAULT_DSNAME;
-        }
 
         // Extract the address
         //
@@ -380,17 +371,6 @@ final public class FtpMonitor extends IPv4LatencyMonitor {
 
                         if (rc >= 200 && rc <= 299) {
                             serviceStatus = PollStatus.available(responseTime);
-                            
-                            // BEGIN RRD
-                            // Store response time in RRD
-                            if (responseTime >= 0 && rrdPath != null) {
-                                try {
-                                    this.updateRRD(rrdPath, ipv4Addr, dsName, responseTime, pkg);
-                                } catch (RuntimeException rex) {
-                                    log.debug("There was a problem writing the RRD:" + rex);
-                                }
-                            }
-                            // END RRD
                         }
                         // Special Case: Also want to accept the following ERROR
                         // message
@@ -404,16 +384,6 @@ final public class FtpMonitor extends IPv4LatencyMonitor {
                         //
                         else if (rc == 530 && ( response.indexOf(FTP_ERROR_530_TEXT) != -1 ) ||( response.indexOf(FTP_ERROR_530_TEXT2) != -1 ) ) {
                             serviceStatus = PollStatus.available(responseTime);
-                            // BEGIN RRD
-                            // Store response time in RRD
-                            if (responseTime >= 0 && rrdPath != null) {
-                                try {
-                                    this.updateRRD(rrdPath, ipv4Addr, dsName, responseTime, pkg);
-                                } catch (RuntimeException rex) {
-                                    log.debug("There was a problem writing the RRD:" + rex);
-                                }
-                            }
-                            // END RRD
                         }
                         // Special Case: Also want to accept the following ERROR
                         // message
@@ -425,17 +395,6 @@ final public class FtpMonitor extends IPv4LatencyMonitor {
                         //
                         else if (rc == 425 && response.indexOf(FTP_ERROR_425_TEXT) != -1) {
                             serviceStatus = PollStatus.available(responseTime);
-                            
-                            // BEGIN RRD
-                            // Store response time in RRD
-                            if (responseTime >= 0 && rrdPath != null) {
-                                try {
-                                    this.updateRRD(rrdPath, ipv4Addr, dsName, responseTime, pkg);
-                                } catch (RuntimeException rex) {
-                                    log.debug("There was a problem writing the RRD:" + rex);
-                                }
-                            }
-                            // END RRD
                         }
                     }
                 }

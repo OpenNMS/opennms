@@ -81,7 +81,7 @@ import org.opennms.netmgt.utils.ParameterMap;
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  * 
  */
-final public class SmtpMonitor extends IPv4LatencyMonitor {
+final public class SmtpMonitor extends IPv4Monitor {
 
     /**
      * Default SMTP port.
@@ -174,15 +174,6 @@ final public class SmtpMonitor extends IPv4LatencyMonitor {
         int retry = ParameterMap.getKeyedInteger(parameters, "retry", DEFAULT_RETRY);
         int timeout = ParameterMap.getKeyedInteger(parameters, "timeout", DEFAULT_TIMEOUT);
         int port = ParameterMap.getKeyedInteger(parameters, "port", DEFAULT_PORT);
-        String rrdPath = ParameterMap.getKeyedString(parameters, "rrd-repository", null);
-        String dsName = ParameterMap.getKeyedString(parameters, "ds-name", null);
-
-        if (rrdPath == null) {
-            log.info("poll: RRD repository not specified in parameters, latency data will not be stored.");
-        }
-        if (dsName == null) {
-            dsName = DEFAULT_DSNAME;
-        }
 
         // Get interface address from NetworkInterface
         //
@@ -331,14 +322,6 @@ final public class SmtpMonitor extends IPv4LatencyMonitor {
 
                         if (rc == 221) {
                             serviceStatus = PollStatus.available(responseTime);
-                            // Store response time in RRD
-                            if (responseTime >= 0 && rrdPath != null) {
-                                try {
-                                    this.updateRRD(rrdPath, ipv4Addr, dsName, responseTime, pkg);
-                                } catch (RuntimeException rex) {
-                                    log.debug("There was a problem writing the RRD:" + rex);
-                                }
-                            }
                         }
                     }
                 }

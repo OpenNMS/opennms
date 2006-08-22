@@ -79,7 +79,7 @@ import org.opennms.netmgt.utils.ParameterMap;
  * @author <A HREF="mailto:mike@opennms.org">Mike </A>
  *  
  */
-public class HttpMonitor extends IPv4LatencyMonitor {
+public class HttpMonitor extends IPv4Monitor {
 
     /**
      * Default HTTP ports.
@@ -125,10 +125,6 @@ public class HttpMonitor extends IPv4LatencyMonitor {
         if (iface.getType() != NetworkInterface.TYPE_IPV4)
                 throw new NetworkInterfaceNotSupportedException("Unsupported interface type, only TYPE_IPV4 currently supported");
 
-        String dsName = getDsName(parameters);
-        if (getRrdPath(parameters) == null) {
-            log().info("poll: RRD repository not specified in parameters, latency data will not be stored.");
-        }
 
         String cmd = buildCommand(iface, parameters);
 
@@ -302,18 +298,6 @@ public class HttpMonitor extends IPv4LatencyMonitor {
             log().debug("checkStatus: Reason: \""+reason+"\"");
         } else if (serviceStatus == PollStatus.SERVICE_AVAILABLE) {
             parameters.put("qualifier", Integer.toString(currentPort));
-
-            // RRD BEGIN
-            // Store response time in RRD
-            if (responseTime >= 0 && getRrdPath(parameters) != null) {
-                try {
-                    this.updateRRD(getRrdPath(parameters), getIpv4Addr(iface), dsName, responseTime, pkg);
-                } catch (RuntimeException rex) {
-                    log().debug("There was a problem writing the RRD:" + rex);
-                }
-            }
-            // RRD END
-          
         }
 
         //
@@ -321,6 +305,8 @@ public class HttpMonitor extends IPv4LatencyMonitor {
         //
         return PollStatus.get(serviceStatus, reason, responseTime);
     }
+    
+    
 
     protected Socket wrapSocket(Socket socket) throws IOException {
         return socket;
@@ -435,14 +421,6 @@ public class HttpMonitor extends IPv4LatencyMonitor {
 
     private String getResponse(Map parameters) {
         return ParameterMap.getKeyedString(parameters, "response", getDefaultResponseRange(getUrl(parameters)));
-    }
-
-    private String getDsName(Map parameters) {
-        return ParameterMap.getKeyedString(parameters, "ds-name", DEFAULT_DSNAME);
-    }
-
-    private String getRrdPath(Map parameters) {
-        return ParameterMap.getKeyedString(parameters, "rrd-repository", null);
     }
 
     private String getUrl(Map parameters) {

@@ -75,7 +75,7 @@ import org.opennms.protocols.icmp.IcmpSocket;
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  * 
  */
-final public class IcmpMonitor extends IPv4LatencyMonitor {
+final public class IcmpMonitor extends IPv4Monitor {
     /**
      * Default retries.
      */
@@ -281,15 +281,6 @@ final public class IcmpMonitor extends IPv4LatencyMonitor {
         //
         int retry = ParameterMap.getKeyedInteger(parameters, "retry", DEFAULT_RETRY);
         int timeout = ParameterMap.getKeyedInteger(parameters, "timeout", DEFAULT_TIMEOUT);
-        String rrdPath = ParameterMap.getKeyedString(parameters, "rrd-repository", null);
-        String dsName = ParameterMap.getKeyedString(parameters, "ds-name", null);
-
-        if (rrdPath == null) {
-            log.info("poll: RRD repository not specified in parameters, latency data will not be stored.");
-        }
-        if (dsName == null) {
-            dsName = DEFAULT_DSNAME;
-        }
 
         // Find an appropritate thread id
         //
@@ -347,15 +338,6 @@ final public class IcmpMonitor extends IPv4LatencyMonitor {
                 long rtt = replyPkt.getPingRTT();
                 serviceStatus.setResponseTime(rtt);
                 log.debug("Ping round trip time for " + ipv4Addr + ": " + rtt + "us");
-
-                // Store round-trip-time in RRD database
-                if (rtt >= 0 && rrdPath != null) {
-                    try {
-                        this.updateRRD(rrdPath, ipv4Addr, dsName, rtt, pkg);
-                    } catch (RuntimeException rex) {
-                        log.debug("There was a problem writing the RRD:" + rex);
-                    }
-                }
             }
         }
 

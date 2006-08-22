@@ -66,7 +66,7 @@ import org.opennms.protocols.ntp.NtpMessage;
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  * 
  */
-final public class NtpMonitor extends IPv4LatencyMonitor {
+final public class NtpMonitor extends IPv4Monitor {
     /**
      * Default NTP port.
      */
@@ -123,15 +123,6 @@ final public class NtpMonitor extends IPv4LatencyMonitor {
         int retry = ParameterMap.getKeyedInteger(parameters, "retry", DEFAULT_RETRY);
         int port = ParameterMap.getKeyedInteger(parameters, "port", DEFAULT_PORT);
         int timeout = ParameterMap.getKeyedInteger(parameters, "timeout", DEFAULT_TIMEOUT);
-        String rrdPath = ParameterMap.getKeyedString(parameters, "rrd-repository", null);
-        String dsName = ParameterMap.getKeyedString(parameters, "ds-name", null);
-
-        if (rrdPath == null) {
-            log.info("poll: RRD repository not specified in parameters, latency data will not be stored.");
-        }
-        if (dsName == null) {
-            dsName = DEFAULT_DSNAME;
-        }
 
         // get the address and NTP address request
         //
@@ -190,19 +181,6 @@ final public class NtpMonitor extends IPv4LatencyMonitor {
         } finally {
             if (socket != null)
                 socket.close();
-        }
-
-        // Store response time if available
-        //
-        if (serviceStatus.isAvailable()) {
-            // Store response time in RRD
-            if (responseTime >= 0 && rrdPath != null) {
-                try {
-                    this.updateRRD(rrdPath, ipv4Addr, dsName, responseTime, pkg);
-                } catch (RuntimeException rex) {
-                    log.debug("There was a problem writing the RRD:" + rex);
-                }
-            }
         }
 
         // 

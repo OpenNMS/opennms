@@ -69,7 +69,7 @@ import org.opennms.netmgt.utils.ParameterMap;
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  * 
  */
-final public class DhcpMonitor extends IPv4LatencyMonitor {
+final public class DhcpMonitor extends IPv4Monitor {
     /**
      * Default retries.
      */
@@ -110,16 +110,6 @@ final public class DhcpMonitor extends IPv4LatencyMonitor {
         //
         int retry = ParameterMap.getKeyedInteger(parameters, "retry", DEFAULT_RETRY);
         int timeout = ParameterMap.getKeyedInteger(parameters, "timeout", DEFAULT_TIMEOUT);
-        String rrdPath = ParameterMap.getKeyedString(parameters, "rrd-repository", null);
-        String dsName = ParameterMap.getKeyedString(parameters, "ds-name", null);
-
-        if (rrdPath == null) {
-            log.info("poll: RRD repository not specified in parameters, latency data will not be stored.");
-        }
-
-        if (dsName == null) {
-            dsName = DEFAULT_DSNAME;
-        }
 
         // Get interface address from NetworkInterface
         //
@@ -143,21 +133,6 @@ final public class DhcpMonitor extends IPv4LatencyMonitor {
             ioE.fillInStackTrace();
             serviceStatus = logDown(Level.WARN, "An I/O exception occured during DHCP discovery", ioE);
         }
-
-        // Store response time if available
-        //
-        // BEGIN RRD
-        if (serviceStatus.isAvailable()) {
-            // Store response time in RRD
-            if (responseTime >= 0 && rrdPath != null) {
-                try {
-                    this.updateRRD(rrdPath, ipv4Addr, dsName, responseTime, pkg);
-                } catch (RuntimeException rex) {
-                    log.debug("There was a problem writing the RRD:" + rex);
-                }
-            }
-        }
-        // END RRD
 
         //
         // return the status of the service

@@ -72,7 +72,7 @@ import org.opennms.netmgt.utils.ParameterMap;
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  * 
  */
-final public class NrpeMonitor extends IPv4LatencyMonitor {
+final public class NrpeMonitor extends IPv4Monitor {
 
     /**
      * Default port.
@@ -134,15 +134,6 @@ final public class NrpeMonitor extends IPv4LatencyMonitor {
         int padding = ParameterMap.getKeyedInteger(parameters, "padding", NrpePacket.DEFAULT_PADDING);
         int retry = ParameterMap.getKeyedInteger(parameters, "retry", DEFAULT_RETRY);
         int timeout = ParameterMap.getKeyedInteger(parameters, "timeout", DEFAULT_TIMEOUT);
-        String rrdPath = ParameterMap.getKeyedString(parameters, "rrd-repository", null);
-        String dsName = ParameterMap.getKeyedString(parameters, "ds-name", null);
-
-        if (rrdPath == null) {
-            log.info("poll: RRD repository not specified in parameters, latency data will not be stored.");
-        }
-        if (dsName == null) {
-            dsName = DEFAULT_DSNAME;
-        }
 
 		/*
         // Port
@@ -233,14 +224,6 @@ final public class NrpeMonitor extends IPv4LatencyMonitor {
                 responseTime = System.currentTimeMillis() - sentTime;
 				if (response.getResultCode() == 0) {
                     serviceStatus = PollStatus.SERVICE_AVAILABLE;
-                    // Store response time in RRD
-                    if (responseTime >= 0 && rrdPath != null) {
-                        try {
-                            this.updateRRD(rrdPath, ipv4Addr, dsName, responseTime, pkg);
-                        } catch (RuntimeException rex) {
-                            log.debug("There was a problem writing the RRD:" + rex);
-                        }
-                    }
                 } else {
                     serviceStatus = PollStatus.SERVICE_UNAVAILABLE;
 					reason = "NRPE command returned code " + response.getResultCode() +

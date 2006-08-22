@@ -72,7 +72,7 @@ import org.opennms.netmgt.utils.ParameterMap;
  *         Added retry logic, input validations to poller.
  * @since 0.1
  */
-public class JDBCMonitor extends IPv4LatencyMonitor {
+public class JDBCMonitor extends IPv4Monitor {
 	/**
 	 * Number of miliseconds to wait before timing out a database login using
 	 * JDBC Hint: 1 minute is 6000 miliseconds.
@@ -213,12 +213,6 @@ public class JDBCMonitor extends IPv4LatencyMonitor {
 		int timeout = ParameterMap.getKeyedInteger(parameters, "timeout", DEFAULT_TIMEOUT);
 		String db_user = ParameterMap.getKeyedString(parameters, "user", DBTools.DEFAULT_DATABASE_USER);
 		String db_pass = ParameterMap.getKeyedString(parameters, "password", DBTools.DEFAULT_DATABASE_PASSWORD);
-		String rrdPath = ParameterMap.getKeyedString(parameters, "rrd-repository", null);
-		String dsName = ParameterMap.getKeyedString(parameters, "ds-name", DEFAULT_DSNAME);
-
-		if (rrdPath == null) {
-			log().info("poll: RRD repository not specified in parameters, latency data will not be stored.");
-		}
 
 		Properties props = new Properties();
 		props.setProperty("user", db_user);
@@ -247,14 +241,6 @@ public class JDBCMonitor extends IPv4LatencyMonitor {
 						log().debug("JDBC service is AVAILABLE on: " + ipv4Addr.getCanonicalHostName());
 						log().debug("poll: responseTime= " + responseTime + "ms");
 
-						// Update response time
-						if (responseTime >= 0 && rrdPath != null) {
-							try {
-								this.updateRRD(rrdPath, ipv4Addr, dsName, responseTime, pkg);
-							} catch (Exception ex) {
-								log().debug("There was a problem writing the RRD", ex);
-							}
-						}
 						break;
 					}
 				} // end if con

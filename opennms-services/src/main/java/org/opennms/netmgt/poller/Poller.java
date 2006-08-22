@@ -52,13 +52,12 @@ import java.sql.Timestamp;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 import javax.sql.DataSource;
 
 import org.apache.log4j.Category;
-import org.apache.log4j.Priority;
+import org.apache.log4j.Level;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.capsd.plugins.IcmpPlugin;
@@ -227,7 +226,7 @@ public class Poller extends AbstractServiceDaemon {
 
             m_scheduler.start();
         } catch (RuntimeException e) {
-            if (log().isEnabledFor(Priority.FATAL))
+            if (log().isEnabledFor(Level.FATAL))
                 log().fatal("start: Failed to start scheduler", e);
             throw e;
         }
@@ -237,15 +236,15 @@ public class Poller extends AbstractServiceDaemon {
 		m_scheduler.stop();
         m_receiver.close();
 
-        Iterator iter = getServiceMonitors().values().iterator();
-        while (iter.hasNext()) {
-            ServiceMonitor sm = (ServiceMonitor) iter.next();
-            sm.release();
-        }
+        releaseServiceMonitors();
         m_scheduler = null;
 	}
 
-    protected void onPause() {
+	private void releaseServiceMonitors() {
+		getPollerConfig().releaseAllServiceMonitors();
+	}
+
+	protected void onPause() {
 		m_scheduler.pause();
 	}
 
@@ -505,13 +504,6 @@ public class Poller extends AbstractServiceDaemon {
 
     public void setEventManager(EventIpcManager eventMgr) {
         m_eventMgr = eventMgr;
-    }
-
-    /**
-     * @return Returns the m_svcMonitors.
-     */
-    private Map getServiceMonitors() {
-        return getPollerConfig().getServiceMonitors();
     }
 
     /**

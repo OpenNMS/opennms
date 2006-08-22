@@ -429,5 +429,10 @@ public class MockPollerConfig extends PollOutagesConfigManager implements Poller
 		return false;
 	}
 
+	public void releaseAllServiceMonitors() {
+		// TODO Auto-generated method stub
+		
+	}
+
 
 }

@@ -79,7 +79,7 @@ import org.opennms.netmgt.utils.ParameterMap;
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  * 
  */
-final public class Pop3Monitor extends IPv4LatencyMonitor {
+final public class Pop3Monitor extends IPv4Monitor {
 
     /**
      * Default POP3 port.
@@ -136,15 +136,6 @@ final public class Pop3Monitor extends IPv4LatencyMonitor {
         int retry = ParameterMap.getKeyedInteger(parameters, "retry", DEFAULT_RETRY);
         int port = ParameterMap.getKeyedInteger(parameters, "port", DEFAULT_PORT);
         int timeout = ParameterMap.getKeyedInteger(parameters, "timeout", DEFAULT_TIMEOUT) + 1;
-        String rrdPath = ParameterMap.getKeyedString(parameters, "rrd-repository", null);
-        String dsName = ParameterMap.getKeyedString(parameters, "ds-name", null);
-
-        if (rrdPath == null) {
-            log.info("poll: RRD repository not specified in parameters, latency data will not be stored.");
-        }
-        if (dsName == null) {
-            dsName = DEFAULT_DSNAME;
-        }
 
         InetAddress ipv4Addr = (InetAddress) iface.getAddress();
 
@@ -199,14 +190,6 @@ final public class Pop3Monitor extends IPv4LatencyMonitor {
                     t = new StringTokenizer(rdr.readLine());
                     if (t.nextToken().equals("+OK")) {
                         serviceStatus = PollStatus.available(responseTime);
-                        // Store response time in RRD
-                        if (responseTime >= 0 && rrdPath != null) {
-                            try {
-                                this.updateRRD(rrdPath, ipv4Addr, dsName, responseTime, pkg);
-                            } catch (RuntimeException rex) {
-                                log.debug("There was a problem writing the RRD:" + rex);
-                            }
-                        }
                     }
                 }
 

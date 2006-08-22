@@ -49,7 +49,7 @@ import org.opennms.protocols.jmx.connectors.ConnectionWrapper;
  * @author <A HREF="mailto:mike@opennms.org">Mike Jamison </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
-public abstract class JMXMonitor extends IPv4LatencyMonitor {
+public abstract class JMXMonitor extends IPv4Monitor {
 
     public abstract ConnectionWrapper getMBeanServerConnection(Map parameterMap, InetAddress address);
     
@@ -76,8 +76,6 @@ public abstract class JMXMonitor extends IPv4LatencyMonitor {
         try {
             
             int    retry     = ParameterMap.getKeyedInteger(map, "retry",            3);
-            String rrdPath   = ParameterMap.getKeyedString(map,  "rrd-repository",   null);
-                   dsName    = ParameterMap.getKeyedString(map,  "ds-name",          "jmx");
 
             long t0 = 0;
             for (int attempts=0; attempts <= retry && !serviceStatus.isAvailable(); attempts++)    {
@@ -103,9 +101,6 @@ public abstract class JMXMonitor extends IPv4LatencyMonitor {
 
                          serviceStatus = PollStatus.available(responseTime);
 
-                         if (responseTime >= 0 && rrdPath != null) {
-                             this.updateRRD(rrdPath, ipv4Addr, dsName, responseTime, pkg);
-                         }
                      }
                     
                      break;

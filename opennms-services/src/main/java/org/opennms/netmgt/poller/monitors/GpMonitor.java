@@ -67,7 +67,7 @@ import org.opennms.netmgt.utils.ParameterMap;
  * @author <A HREF="mailto:ayres@net.orst.edu">Bill Ayres </A>
  * 
  */
-final public class GpMonitor extends IPv4LatencyMonitor {
+final public class GpMonitor extends IPv4Monitor {
     /**
      * Default retries.
      */
@@ -129,12 +129,6 @@ final public class GpMonitor extends IPv4LatencyMonitor {
             timeout = 1;
         else
             timeout = timeout / 1000;
-        String rrdPath = ParameterMap.getKeyedString(parameters, "rrd-repository", null);
-        String dsName = ParameterMap.getKeyedString(parameters, "ds-name", null);
-
-        if (rrdPath == null || dsName == null) {
-            log.info("poll: RRD repository and/or ds-name not specified in parameters, latency data will not be stored.");
-        }
 
         String args = ParameterMap.getKeyedString(parameters, "args", null);
 
@@ -212,16 +206,6 @@ final public class GpMonitor extends IPv4LatencyMonitor {
                                 serviceStatus = PollStatus.unavailable(script + "banner not contained in output banner='"+strBannerMatch+"' output='"+scriptoutput+"'");
                             }
                         }
-                        // BEGIN RRD
-                        if (serviceStatus.isAvailable()) {
-                            if (log.isDebugEnabled()) {
-                                log.debug("poll: responseTime = " + responseTime + "ms");
-                            }
-                            if (responseTime >= 0 && rrdPath != null && dsName != null) {
-                                this.updateRRD(rrdPath, ipv4Addr, dsName, responseTime, pkg);
-                            }
-                        }
-                        // END RRD
                     }
                 }
 

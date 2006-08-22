@@ -25,7 +25,7 @@ import org.opennms.netmgt.poller.nsclient.NsclientManager;
  * @author <A HREF="mailto:matt.raykowski@gmail.com">Matt Raykowski</A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
-public class NsclientMonitor extends IPv4LatencyMonitor {
+public class NsclientMonitor extends IPv4Monitor {
     /**
      * Default retries.
      */
@@ -98,19 +98,6 @@ public class NsclientMonitor extends IPv4LatencyMonitor {
         int timeout = ParameterMap.getKeyedInteger(parameters, "timeout",
                                                    DEFAULT_TIMEOUT);
 
-        // Response Graph related parameters.
-        String rrdPath = ParameterMap.getKeyedString(parameters,
-                                                     "rrd-repository", null);
-        String dsName = ParameterMap.getKeyedString(parameters, "ds-name",
-                                                    null);
-
-        // Validate the graph-related values.
-        if (rrdPath == null) {
-            log.info("poll: RRD repository not specified in parameters, latency data will not be stored.");
-        }
-        if (dsName == null) {
-            dsName = DEFAULT_DSNAME;
-        }
 
         // Get the address we're going to poll.
         InetAddress ipv4Addr = (InetAddress) iface.getAddress();
@@ -150,17 +137,6 @@ public class NsclientMonitor extends IPv4LatencyMonitor {
                 if (response.getResultCode() == NsclientPacket.RES_STATE_OK) {
                     serviceStatus = PollStatus.SERVICE_AVAILABLE;
                     reason = response.getResponse();
-
-                    // Store response time in RRD
-                    if (responseTime >= 0 && rrdPath != null) {
-                        try {
-                            this.updateRRD(rrdPath, ipv4Addr, dsName,
-                                           responseTime, pkg);
-                        } catch (RuntimeException rex) {
-                            log.debug("There was a problem writing the RRD:"
-                                    + rex);
-                        }
-                    }
                 } else if (response.getResultCode() == NsclientPacket.RES_STATE_CRIT) {
                     serviceStatus = PollStatus.SERVICE_UNAVAILABLE;
                     reason = response.getResponse();
