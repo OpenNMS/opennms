@@ -1,6 +1,9 @@
 /*
  Modifications:
 
+ 2006 Aug 22: A few CSS tweaks - Note that we're overriding font size and margin within
+              tables to make things a bit more readable. In general we should be removing HTML
+              from event descriptions - need to fix this
  2006 Apr 25: Added table.wdth600
  2005 Oct 01: More CSS work. -- DJ Gregor  
  2005 Sep 30: Hacked up heavily to use CSS for layout and markup.  Some code
@@ -257,8 +260,9 @@ td {
 	background-color: #FFF;
 }
 
-td td {
+td td, td p {
 	font-size: 100%;
+	margin: 0;
 }
 
 table.wdth600 { 
