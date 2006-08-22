@@ -257,6 +257,10 @@ td {
 	background-color: #FFF;
 }
 
+td td {
+	font-size: 100%;
+}
+
 table.wdth600 { 
 	width: 600px;
 }
@@ -289,26 +293,14 @@ td.status1 {
 
 #nodelist td
 {
-        padding: 2px;
 	width: 50%;
-}
-
-td.availnode
-{ 
-        text-align: left;
-        vertical-align: top;
-        width: 25%;
-	border: 2pt solid black;
-	padding: 2px;
 }
 
 td.availunmanaged
 {
-	background-color: #cccccc;
+	background-color: #CCC;
 	font-weight: bold;
         text-align: right;
-	border: 2pt solid black;
-	padding: 2px;
 }
 
 td.availgood
@@ -316,8 +308,6 @@ td.availgood
 	background-color: green;
 	font-weight: bold;
         text-align: right;
-	border: 2pt solid black;
-	padding: 2px;
 }
 
 td.availwarn
@@ -325,8 +315,6 @@ td.availwarn
 	background-color: #ffff33;
 	font-weight: bold;
         text-align: right;
-	border: 2pt solid black;
-	padding: 2px;
 }
 
 td.availcrit
@@ -334,8 +322,6 @@ td.availcrit
 	background-color: #ff3333;
 	font-weight: bold;
         text-align: right;
-	border: 2pt solid black;
-	padding: 2px;
 }
 
 #eventlist
@@ -347,49 +333,42 @@ td.availcrit
 #include-eventlist td.sev_indeterminate
 {
 	background-color: lightblue;
-	border: 2pt solid black;
 	padding: 2px;
 }
 
 #include-eventlist td.sev_cleared
 {
 	background-color: white;
-	border: 2pt solid black;
 	padding: 2px;
 }
 
 #include-eventlist td.sev_normal
 {
     background-color: green;
-	border: 2pt solid black;
 	padding: 2px;
 }
 
 #include-eventlist td.sev_warning
 {
     background-color: cyan;
-	border: 2pt solid black;
 	padding: 2px;
 }
 
 #include-eventlist td.sev_minor
 {
     background-color: yellow;
-	border: 2pt solid black;
 	padding: 2px;
 }
 
 #include-eventlist td.sev_major
 {
         background-color: orange;
-	border: 2pt solid black;
 	padding: 2px;
 }
 
 #include-eventlist td.sev_critical
 {
         background-color: red;
-	border: 2pt solid black;
 	padding: 2px;
 }
 
