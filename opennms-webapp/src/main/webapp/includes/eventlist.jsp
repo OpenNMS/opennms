@@ -169,10 +169,8 @@
     <input type="hidden" name="action" value="<%=org.opennms.web.event.AcknowledgeEventServlet.ACKNOWLEDGE_ACTION%>" />
 <% } %>
 
+<h3><%=header%></h3>
 <table class="standardfirst">
-     <tr>
-       <td class="standardheader" colspan="4"><%=header%></td>
-     </tr>
 
 <%
    for( int i=0; i < events.length; i++ ) {
