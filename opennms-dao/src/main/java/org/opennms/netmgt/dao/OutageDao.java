@@ -69,4 +69,8 @@ public interface OutageDao extends OnmsDao {
 
 	public abstract Collection<OnmsOutage> currentOutages(String orderBy);
 
+	public abstract Collection<OnmsOutage> getOutagesByRange(Integer offset, Integer limit, String order, String direction);
+
+	public abstract Integer outageCount();
+
 }
