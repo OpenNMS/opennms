@@ -68,7 +68,7 @@ import org.opennms.netmgt.utils.ParameterMap;
  *
  */
 
-final public class RadiusAuthMonitor extends IPv4LatencyMonitor {
+final public class RadiusAuthMonitor extends IPv4Monitor {
     /**
      * Number of miliseconds to wait before timing out a radius AUTH request
      */
@@ -176,17 +176,9 @@ final public class RadiusAuthMonitor extends IPv4LatencyMonitor {
         String password = ParameterMap.getKeyedString(parameters, "password", DEFAULT_PASSWORD);
         String secret = ParameterMap.getKeyedString(parameters, "secret", DEFAULT_SECRET);
         String authType = ParameterMap.getKeyedString(parameters, "authtype", DEFAULT_AUTH_TYPE);
-        String rrdPath = ParameterMap.getKeyedString(parameters, "rrd-repository", null);
-        String dsName = ParameterMap.getKeyedString(parameters, "ds-name", null);
 
 	InetAddress ipv4Addr = (InetAddress) iface.getAddress();
 
-        if (rrdPath == null) {
-            log.info("poll: RRD repository not specified in parameters, latency data will not be stored.");
-        }
-        if (dsName == null) {
-            dsName = DEFAULT_DSNAME;
-        }
 
         RadiusClient rc = null;
         try {
@@ -224,14 +216,6 @@ final public class RadiusAuthMonitor extends IPv4LatencyMonitor {
                     if (log.isDebugEnabled()) {
                         log.debug(getClass().getName() + ": Radius service is AVAILABLE on: " + ipv4Addr.getCanonicalHostName());
                         log.debug("poll: responseTime= " + responseTime + "ms");
-                    }
-                    // Update response time
-                    if (responseTime >= 0 && rrdPath != null) {
-                        try {
-                            this.updateRRD(rrdPath, ipv4Addr, dsName, responseTime, pkg);
-                        } catch (RuntimeException rex) {
-                            log.debug("There was a problem writing the RRD:" + rex);
-                        }
                     }
                     break;
                 }

@@ -63,6 +63,7 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
     private Package m_pkg;
     private Timer m_timer;
     private Service m_configService;
+	private ServiceMonitor m_serviceMonitor;
 
     public PollableServiceConfig(PollableService svc, PollerConfig pollerConfig, PollOutagesConfig pollOutagesConfig, Package pkg, Timer timer) {
         m_service = svc;
@@ -72,7 +73,7 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
         m_timer = timer;
         m_configService = findService(pkg);
         
-        ServiceMonitor monitor = m_pollerConfig.getServiceMonitor(m_service.getSvcName());
+        ServiceMonitor monitor = getServiceMonitor();
         monitor.initialize(m_service);
     }
 
@@ -94,12 +95,21 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
     }
 
     public PollStatus poll() {
-        ServiceMonitor monitor = m_pollerConfig.getServiceMonitor(m_service.getSvcName());
+        ServiceMonitor monitor = getServiceMonitor();
         ThreadCategory.getInstance(getClass()).debug("Polling "+m_service+" using pkg "+m_pkg.getName());
         PollStatus result = monitor.poll(m_service, getParameters(), m_pkg);
         ThreadCategory.getInstance(getClass()).debug("Finish polling "+m_service+" using pkg "+m_pkg.getName()+" result ="+result);
         return result;
     }
+
+	private ServiceMonitor getServiceMonitor() {
+		if (m_serviceMonitor == null) {
+			ServiceMonitor monitor = m_pollerConfig.getServiceMonitor(m_service.getSvcName());
+			m_serviceMonitor = new LatencyStoringServiceMonitorAdaptor(monitor, m_pollerConfig, m_pkg);
+			
+		}
+		return m_serviceMonitor;
+	}
     
         /**
     * Uses the existing package name to try and re-obtain the package from the poller config factory.

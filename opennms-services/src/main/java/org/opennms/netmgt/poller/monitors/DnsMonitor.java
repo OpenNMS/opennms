@@ -53,9 +53,7 @@ import java.net.NoRouteToHostException;
 import java.net.UnknownHostException;
 import java.util.Map;
 
-import org.apache.log4j.Category;
 import org.apache.log4j.Level;
-import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.NetworkInterface;
@@ -75,7 +73,7 @@ import org.opennms.protocols.dns.DNSAddressRequest;
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  * 
  */
-final public class DnsMonitor extends IPv4LatencyMonitor {
+final public class DnsMonitor extends IPv4Monitor {
     /**
      * Default DNS port.
      */
@@ -123,24 +121,11 @@ final public class DnsMonitor extends IPv4LatencyMonitor {
         if (iface.getType() != NetworkInterface.TYPE_IPV4)
             throw new NetworkInterfaceNotSupportedException("Unsupported interface type, only TYPE_IPV4 currently supported");
 
-        // get the log
-        //
-        Category log = ThreadCategory.getInstance(getClass());
-
         // get the parameters
         //
         int retry = ParameterMap.getKeyedInteger(parameters, "retry", DEFAULT_RETRY);
         int port = ParameterMap.getKeyedInteger(parameters, "port", DEFAULT_PORT);
         int timeout = ParameterMap.getKeyedInteger(parameters, "timeout", DEFAULT_TIMEOUT);
-        String rrdPath = ParameterMap.getKeyedString(parameters, "rrd-repository", null);
-        String dsName = ParameterMap.getKeyedString(parameters, "ds-name", null);
-
-        if (rrdPath == null) {
-            log.info("poll: RRD repository not specified in parameters, latency data will not be stored.");
-        }
-        if (dsName == null) {
-            dsName = DEFAULT_DSNAME;
-        }
 
         // Host to lookup?
         //
@@ -213,22 +198,6 @@ final public class DnsMonitor extends IPv4LatencyMonitor {
             if (socket != null)
                 socket.close();
         }
-
-        // BEGIN RRD
-        // Store response time if available
-        //
-        if (serviceStatus.isUp()) {
-            // Store response time in RRD
-            if (responseTime >= 0 && rrdPath != null) {
-                try {
-                    this.updateRRD(rrdPath, ipv4Addr, dsName, responseTime, pkg);
-                } catch (RuntimeException rex) {
-                    log.debug("There was a problem writing the RRD:" + rex);
-                }
-            }
-        }
-        
-        // END RRD
 
         // 
         //

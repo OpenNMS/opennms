@@ -42,11 +42,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
 import org.apache.log4j.Category;
+import org.apache.log4j.Level;
 import org.apache.log4j.Priority;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Marshaller;
@@ -749,7 +751,7 @@ abstract public class PollerConfigManager implements PollerConfig {
     
                 m_svcMonitors.put(monitor.getService(), sm);
             } catch (Throwable t) {
-                if (log.isEnabledFor(Priority.WARN)) {
+                if (log.isEnabledFor(Level.WARN)) {
                     log.warn("start: Failed to load monitor " + monitor.getClassName() + " for service " + monitor.getService(), t);
                 }
             }
@@ -767,6 +769,14 @@ abstract public class PollerConfigManager implements PollerConfig {
     public String getNextOutageIdSql() {
         return m_config.getNextOutageId();
     }
+
+	public void releaseAllServiceMonitors() {
+		Iterator iter = getServiceMonitors().values().iterator();
+	    while (iter.hasNext()) {
+	        ServiceMonitor sm = (ServiceMonitor) iter.next();
+	        sm.release();
+	    }
+	}
 
 
 }

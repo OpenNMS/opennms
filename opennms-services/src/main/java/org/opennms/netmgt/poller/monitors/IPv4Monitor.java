@@ -91,7 +91,6 @@ abstract public class IPv4Monitor implements ServiceMonitor {
      * 
      */
     public void initialize(PollerConfig pollerConfig, Map parameters) {
-        return;
     }
 
     /**
@@ -114,7 +113,6 @@ abstract public class IPv4Monitor implements ServiceMonitor {
      * 
      */
     public void release() {
-        return;
     }
 
     /**
@@ -145,7 +143,7 @@ abstract public class IPv4Monitor implements ServiceMonitor {
 
         if (!(iface.getAddress() instanceof InetAddress))
             throw new NetworkInterfaceNotSupportedException("Address type not supported");
-        return;
+
     }
 
     /**
@@ -167,7 +165,6 @@ abstract public class IPv4Monitor implements ServiceMonitor {
      *                interface from being monitored.
      */
     public void release(MonitoredService svc) {
-        return;
     }
     
     abstract public PollStatus poll(MonitoredService svc, Map parameters, Package pkg);

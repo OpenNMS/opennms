@@ -73,7 +73,7 @@ import org.opennms.netmgt.utils.ParameterMap;
  * 
  * 
  */
-final public class CitrixMonitor extends IPv4LatencyMonitor {
+final public class CitrixMonitor extends IPv4Monitor {
 
     /**
      * Default FTP port.
@@ -119,12 +119,7 @@ final public class CitrixMonitor extends IPv4LatencyMonitor {
         int retry = ParameterMap.getKeyedInteger(parameters, "retry", DEFAULT_RETRY);
         int port = ParameterMap.getKeyedInteger(parameters, "port", DEFAULT_PORT);
         int timeout = ParameterMap.getKeyedInteger(parameters, "timeout", DEFAULT_TIMEOUT);
-        String rrdPath = ParameterMap.getKeyedString(parameters, "rrd-repository", null);
-        String dsName = ParameterMap.getKeyedString(parameters, "ds-name", DEFAULT_DSNAME);
 
-        if (rrdPath == null) {
-            log().info("poll: RRD repository not specified in parameters, latency data will not be stored.");
-        }
 
         // don't let the user set the timeout to 0, an infinite loop will occur
         // if the server is down
@@ -170,16 +165,6 @@ final public class CitrixMonitor extends IPv4LatencyMonitor {
                     if (buffer.toString().indexOf("ICA") > -1) {
                         responseTime = System.currentTimeMillis() - sentTime;
                         serviceStatus = PollStatus.available(responseTime);
-                        
-                        // BEGIN RRD
-                        if (responseTime >= 0 && rrdPath != null) {
-                            try {
-                                this.updateRRD(rrdPath, ipv4Addr, dsName, responseTime, pkg);
-                            } catch (RuntimeException rex) {
-                                log().debug("There was a problem writing the RRD:" + rex);
-                            }
-                        }
-                        // END RRD
                     } else {
                         serviceStatus = PollStatus.unavailable("magic cookie 'ICA' missing from service greeting.");
                     }

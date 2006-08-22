@@ -260,6 +260,8 @@ public interface PollerConfig {
     public int getThreads();
 
     public Map getServiceMonitors();
+    
+    public void releaseAllServiceMonitors();
 
     public ServiceMonitor getServiceMonitor(String svcName);
     
