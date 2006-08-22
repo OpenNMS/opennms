@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2006 Aug 22: Use generics for Collections, clean up error messages. - dj@opennms.org
 // 2003 Jan 31: Cleaned up some unused imports.
 // 2002 Oct 24: Replaced references to HashTable with HashMap.
 //
@@ -80,13 +81,13 @@ final class DataSender implements Fiber {
     /**
      * The category map
      */
-    private Map m_categories;
+    private Map<String,RTCCategory> m_categories;
 
     /**
      * The listeners like the webui that send a URL to which the data is to be
      * sent
      */
-    private Map m_catUrlMap;
+    private Map<String, List<HttpPostInfo>> m_catUrlMap;
 
     /**
      * The data sender thread pool
@@ -155,11 +156,11 @@ final class DataSender implements Fiber {
      * @param numSenders
      *            The number of senders.
      */
-    public DataSender(Map categories, int numSenders) {
+    public DataSender(Map<String, RTCCategory> categories, int numSenders) {
         m_categories = categories;
 
         // create the category url map
-        m_catUrlMap = new HashMap();
+        m_catUrlMap = new HashMap<String, List<HttpPostInfo>>();
 
         // create and start the data sender pool
         m_dsrPool = new RunnableConsumerThreadPool("DataSenderPool", 0.6f, 1.0f, numSenders);
@@ -255,10 +256,10 @@ final class DataSender implements Fiber {
         }
 
         // Add the URL to the list for the specified category
-        List urlList = (List) m_catUrlMap.get(catlabel);
+        List<HttpPostInfo> urlList = m_catUrlMap.get(catlabel);
         if (urlList == null) {
             // create one
-            urlList = new ArrayList();
+            urlList = new ArrayList<HttpPostInfo>();
             urlList.add(postInfo);
             m_catUrlMap.put(catlabel, urlList);
         } else {
@@ -446,18 +447,18 @@ final class DataSender implements Fiber {
 
                         postInfo.clearErrors();
 
-                    } catch (IOException hioE) {
-                        log.warn("DataSender: unable to send data for category: " + catlabel, hioE);
+                    } catch (IOException e) {
+                        log.warn("DataSender: unable to send data for category: " + catlabel + " due to " + e.getClass().getName() + ": " + e.getMessage(), e);
                         postInfo.incrementErrors();
                         setCurrentThreadPriority(Thread.NORM_PRIORITY);
                     } catch (java.lang.OutOfMemoryError e) {
-                        log.warn("DataSender: unable to send data for category: " + catlabel, e);
+                        log.warn("DataSender: unable to send data for category: " + catlabel + " due to " + e.getClass().getName() + ": " + e.getMessage(), e);
                         setCurrentThreadPriority(Thread.NORM_PRIORITY);
                     } catch (RuntimeException e) {
-                        log.warn("DataSender: unable to send data for category: " + catlabel, e);
+                        log.warn("DataSender: unable to send data for category: " + catlabel + " due to " + e.getClass().getName() + ": " + e.getMessage(), e);
                         setCurrentThreadPriority(Thread.NORM_PRIORITY);
                     } catch (Throwable t) {
-                        log.warn("DataSender: unable to send data for category: " + catlabel, t);
+                        log.warn("DataSender: unable to send data for category: " + catlabel + " due to " + t.getClass().getName() + ": " + t.getMessage(), t);
                         setCurrentThreadPriority(Thread.NORM_PRIORITY);
                     }
 

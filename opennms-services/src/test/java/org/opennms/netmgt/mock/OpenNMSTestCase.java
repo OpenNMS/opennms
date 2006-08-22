@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2006 Aug 22: Move anticipator verify code into runTest(). - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -1437,13 +1441,18 @@ public class OpenNMSTestCase extends TestCase {
         }
 
     }
+    
+    @Override
+    public void runTest() throws Throwable {
+        super.runTest();
+        MockLogAppender.assertNoWarningsOrGreater();
+        MockUtil.println("------------ End Test "+getName()+" --------------------------");
+    }
 
     protected void tearDown() throws Exception {
         if(m_runSupers) {
             if (isStartEventd()) m_eventd.stop();
         }
-        MockLogAppender.assertNoWarningsOrGreater();
-        MockUtil.println("------------ End Test "+getName()+" --------------------------");
 
         super.tearDown();
     }

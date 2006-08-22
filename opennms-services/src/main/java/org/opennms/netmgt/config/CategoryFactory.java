@@ -8,6 +8,12 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2006 Aug 22: Add public constructor using a Reader for input, add a
+//              setInstance method, and organize imports. - dj@opennms.org
+//
+//
 // Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -35,10 +41,9 @@
 package org.opennms.netmgt.config;
 
 import java.io.File;
-import java.io.FileInputStream;
+import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.Reader;
 import java.util.Enumeration;
 
 import org.exolab.castor.xml.MarshalException;
@@ -90,10 +95,18 @@ public final class CategoryFactory implements CatFactory{
      * 
      */
     private CategoryFactory(String configFile) throws IOException, MarshalException, ValidationException {
-        InputStream cfgIn = new FileInputStream(configFile);
+        Reader reader = new FileReader(configFile);
+        marshal(reader);
+        reader.close();
+    }
+    
+    public CategoryFactory(Reader reader) throws IOException, MarshalException, ValidationException {
+        marshal(reader);
+    }
 
-        m_config = (Catinfo) Unmarshaller.unmarshal(Catinfo.class, new InputStreamReader(cfgIn));
-        cfgIn.close();
+    
+    private void marshal(Reader reader) throws MarshalException, ValidationException {
+        m_config = (Catinfo) Unmarshaller.unmarshal(Catinfo.class, reader);
     }
 
     /**
@@ -115,10 +128,7 @@ public final class CategoryFactory implements CatFactory{
         }
 
         File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.CATEGORIES_CONF_FILE_NAME);
-
-        m_singleton = new CategoryFactory(cfgFile.getPath());
-
-        m_loaded = true;
+        setInstance(new CategoryFactory(cfgFile.getPath()));
     }
 
     /**
