@@ -44,7 +44,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Category;
-import org.apache.log4j.Priority;
+import org.apache.log4j.Level;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.poller.MonitoredService;
@@ -106,7 +106,7 @@ abstract public class IPv4LatencyMonitor extends IPv4Monitor {
         try {
             RrdUtils.initialize();
         } catch (RrdException e) {
-            if (log.isEnabledFor(Priority.ERROR))
+            if (log.isEnabledFor(Level.ERROR))
                 log.error("initialize: Unable to initialize RrdUtils", e);
             throw new RuntimeException("Unable to initialize RrdUtils", e);
         }
@@ -221,7 +221,7 @@ abstract public class IPv4LatencyMonitor extends IPv4Monitor {
             RrdUtils.updateRRD(addr.getHostAddress(), path, dsName, Long.toString(value));
 
         } catch (RrdException e) {
-            if (log.isEnabledFor(Priority.ERROR)) {
+            if (log.isEnabledFor(Level.ERROR)) {
                 String msg = e.getMessage();
                 log.error(msg);
                 throw new RuntimeException(msg, e);

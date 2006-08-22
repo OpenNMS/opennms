@@ -41,6 +41,9 @@ package org.opennms.netmgt.poller.monitors;
 import java.net.InetAddress;
 import java.util.Map;
 
+import org.apache.log4j.Category;
+import org.apache.log4j.Level;
+import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.model.PollStatus;
@@ -48,6 +51,7 @@ import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.NetworkInterface;
 import org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException;
 import org.opennms.netmgt.poller.ServiceMonitor;
+import org.springframework.util.ClassUtils;
 
 /**
  * <p>
@@ -166,16 +170,25 @@ abstract public class IPv4Monitor implements ServiceMonitor {
         return;
     }
     
-    /**
-     * @param svc TODO
-     * @deprecated implement poll instead and provide a reason in your status
-     */
-    public int checkStatus(MonitoredService svc, Map parameters, Package pkg) {
-        return ServiceMonitor.SERVICE_UNKNOWN;
-    }
-    
-    public PollStatus poll(MonitoredService svc, Map parameters, Package pkg) {
-        String reason = "Reasons not yet supported by "+getClass().getName()+". Please help us by submitting a patch! See HttpMonitor for an example.";
-        return PollStatus.get(checkStatus(svc, parameters, pkg), reason);
-    }
+    abstract public PollStatus poll(MonitoredService svc, Map parameters, Package pkg);
+
+	protected Category log() {
+		return ThreadCategory.getInstance(getClass());
+	}
+
+	protected PollStatus logDown(Level level, String reason) {
+		return logDown(level, reason, null);
+	}
+
+	protected PollStatus logDown(Level level, String reason, Throwable e) {
+		String className = ClassUtils.getShortName(getClass());
+	    log().debug(className+": "+reason, e);
+	    return PollStatus.unavailable(reason);
+	}
+	
+	protected PollStatus logUp(Level level, long responseTime, String logMsg) {
+		String className = ClassUtils.getShortName(getClass());
+	    log().debug(className+": "+logMsg);
+	    return PollStatus.available(responseTime);
+	}
 }

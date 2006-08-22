@@ -53,13 +53,13 @@ import java.util.TreeMap;
 import org.apache.log4j.Category;
 import org.opennms.core.queue.FifoQueueImpl;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.ping.Packet;
 import org.opennms.netmgt.ping.Reply;
 import org.opennms.netmgt.ping.ReplyReceiver;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.NetworkInterface;
 import org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException;
-import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.utils.ParameterMap;
 import org.opennms.protocols.icmp.IcmpSocket;
 
@@ -267,7 +267,7 @@ final public class IcmpMonitor extends IPv4LatencyMonitor {
      *         should be supressed.
      * 
      */
-    public int checkStatus(MonitoredService svc, Map parameters, org.opennms.netmgt.config.poller.Package pkg) {
+    public PollStatus poll(MonitoredService svc, Map parameters, org.opennms.netmgt.config.poller.Package pkg) {
         NetworkInterface iface = svc.getNetInterface();
 
         // Get interface address from NetworkInterface
@@ -306,7 +306,7 @@ final public class IcmpMonitor extends IPv4LatencyMonitor {
         }
         DatagramPacket pkt = getDatagram(ipv4Addr, tid);
 
-        int serviceStatus = ServiceMonitor.SERVICE_UNAVAILABLE;
+        PollStatus serviceStatus = PollStatus.unavailable();
         for (int attempts = 0; attempts <= retry && !reply.isSignaled(); ++attempts) {
             // Send the datagram and wait
             //
@@ -339,12 +339,13 @@ final public class IcmpMonitor extends IPv4LatencyMonitor {
 
 
         if (reply.isSignaled()) {
-            serviceStatus = ServiceMonitor.SERVICE_AVAILABLE;
+            serviceStatus = PollStatus.available();
 
             // Determine round-trip-time for the ping packet
             Packet replyPkt = reply.getPacket();
             if (replyPkt != null) {
                 long rtt = replyPkt.getPingRTT();
+                serviceStatus.setResponseTime(rtt);
                 log.debug("Ping round trip time for " + ipv4Addr + ": " + rtt + "us");
 
                 // Store round-trip-time in RRD database

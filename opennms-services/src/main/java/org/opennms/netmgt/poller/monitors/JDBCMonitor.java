@@ -49,10 +49,10 @@ import java.sql.Statement;
 import java.util.Map;
 import java.util.Properties;
 
-import org.apache.log4j.Category;
-import org.opennms.core.utils.ThreadCategory;
+import org.apache.log4j.Level;
 import org.opennms.netmgt.DBTools;
 import org.opennms.netmgt.config.PollerConfig;
+import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.NetworkInterface;
 import org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException;
@@ -90,10 +90,6 @@ public class JDBCMonitor extends IPv4LatencyMonitor {
 
 	public JDBCMonitor() throws ClassNotFoundException, InstantiationException, IllegalAccessException {
 		log().info("JDBCmonitor class loaded");
-	}
-
-	protected Category log() {
-		return ThreadCategory.getInstance(getClass());
 	}
 
 	/**
@@ -173,7 +169,6 @@ public class JDBCMonitor extends IPv4LatencyMonitor {
 	 * @throws java.lang.RuntimeException
 	 *             Thrown if an unrecoverable error occurs that prevents the
 	 *             interface from being monitored.
-	 * @see org.opennms.netmgt.poller.ServiceMonitor#SURPRESS_EVENT_MASK
 	 * @see org.opennms.netmgt.poller.ServiceMonitor#SERVICE_AVAILABLE
 	 * @see org.opennms.netmgt.poller.ServiceMonitor#SERVICE_UNAVAILABLE
 	 * @see org.opennms.netmgt.poller.ServiceMonitor#SERVICE_UNRESPONSIVE
@@ -181,11 +176,11 @@ public class JDBCMonitor extends IPv4LatencyMonitor {
 	 *      href="http://manuals.sybase.com/onlinebooks/group-jc/jcg0550e/prjdbc/@Generic__BookTextView/9332;pt=1016#X">Error
 	 *      codes for JConnect </a>
 	 */
-	public int checkStatus(MonitoredService svc, Map parameters, org.opennms.netmgt.config.poller.Package pkg) {
+	public PollStatus poll(MonitoredService svc, Map parameters, org.opennms.netmgt.config.poller.Package pkg) {
 		NetworkInterface iface = svc.getNetInterface();
 
 		// Assume that the service is down
-		int status = SERVICE_UNAVAILABLE;
+		PollStatus status = PollStatus.unavailable();
 		Driver driver = null;
 		Connection con = null;
 		Statement statement = null;
@@ -236,7 +231,7 @@ public class JDBCMonitor extends IPv4LatencyMonitor {
 				con = driver.connect(url, props);
 
 				// We are connected, upgrade the status to unresponsive
-				status = SERVICE_UNRESPONSIVE;
+				status = PollStatus.unresponsive();
 
 				if (con != null) {
 					log().debug("JDBC Connection Established");
@@ -245,9 +240,9 @@ public class JDBCMonitor extends IPv4LatencyMonitor {
 
 					status = checkDatabaseStatus(con, parameters);
 
-					if (status == SERVICE_AVAILABLE) {
+					if (status.isAvailable()) {
 						long responseTime = System.currentTimeMillis() - sentTime;
-						status = SERVICE_AVAILABLE;
+						status = PollStatus.available(responseTime);
 
 						log().debug("JDBC service is AVAILABLE on: " + ipv4Addr.getCanonicalHostName());
 						log().debug("poll: responseTime= " + responseTime + "ms");
@@ -264,7 +259,9 @@ public class JDBCMonitor extends IPv4LatencyMonitor {
 					}
 				} // end if con
 			} catch (SQLException sqlEx) {
-				log().info("JDBC service is not responding on: " + ipv4Addr.getCanonicalHostName() + ", " + sqlEx.getSQLState() + ", " + sqlEx.toString(), sqlEx);
+				
+				status = logDown(Level.INFO, "JDBC service is not responding on: " + ipv4Addr.getCanonicalHostName() + ", " + sqlEx.getSQLState() + ", " + sqlEx.toString(), sqlEx);
+
 			} finally {
 				closeResultSet(resultset);
 				closeStmt(statement);
@@ -301,14 +298,14 @@ public class JDBCMonitor extends IPv4LatencyMonitor {
 		}
 	}
 
-	public int checkDatabaseStatus( Connection con, Map parameters )
+	public PollStatus checkDatabaseStatus( Connection con, Map parameters )
 	{
-		int status = SERVICE_UNAVAILABLE;
+		PollStatus status = PollStatus.unavailable("Unable to retrieve database catalogs");
 		ResultSet resultset = null;
 		try
 		{
 			// We are connected, upgrade the status to unresponsive
-			status = SERVICE_UNRESPONSIVE;
+			status = PollStatus.unresponsive();
 
 			DatabaseMetaData metadata = con.getMetaData();
 			resultset = metadata.getCatalogs();
@@ -320,13 +317,12 @@ public class JDBCMonitor extends IPv4LatencyMonitor {
 			// The query worked, assume than the server is ok
 			if (resultset != null)
 			{
-				status = SERVICE_AVAILABLE;
+				status = PollStatus.available();
 			}
 		}
 		catch (SQLException sqlEx)
 		{
-			log().info("JDBC service failed to retrieve metadata: " + sqlEx.getSQLState() + ", " + sqlEx.toString());
-			log().debug("Exception for failed JDBC request is ", sqlEx);
+			status = logDown(Level.DEBUG, "JDBC service failed to retrieve metadata: " + sqlEx.getSQLState() + ", " + sqlEx.toString(), sqlEx);
 		}
 		finally
 		{

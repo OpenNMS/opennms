@@ -52,8 +52,9 @@ import java.net.Socket;
 import java.util.Map;
 
 import org.apache.log4j.Category;
-import org.apache.log4j.Priority;
+import org.apache.log4j.Level;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.NetworkInterface;
 import org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException;
@@ -110,7 +111,7 @@ final public class SshMonitor extends IPv4LatencyMonitor {
      * @throws java.lang.RuntimeException
      *             Thrown if the interface experiences errors during the poll.
      */
-    public int checkStatus(MonitoredService svc, Map parameters, org.opennms.netmgt.config.poller.Package pkg) {
+    public PollStatus poll(MonitoredService svc, Map parameters, org.opennms.netmgt.config.poller.Package pkg) {
         NetworkInterface iface = svc.getNetInterface();
 
         //
@@ -156,10 +157,10 @@ final public class SshMonitor extends IPv4LatencyMonitor {
 
         // Give it a whirl
         //
-        int serviceStatus = SERVICE_UNAVAILABLE;
+        PollStatus serviceStatus = PollStatus.unavailable();
         long responseTime = -1;
 
-        for (int attempts = 0; attempts <= retry && serviceStatus != SERVICE_AVAILABLE; attempts++) {
+        for (int attempts = 0; attempts <= retry && !serviceStatus.isAvailable(); attempts++) {
             Socket socket = null;
             try {
                 //
@@ -173,10 +174,10 @@ final public class SshMonitor extends IPv4LatencyMonitor {
                 log.debug("SshMonitor: connected to host: " + ipv4Addr + " on port: " + port);
 
                 // We're connected, so upgrade status to unresponsive
-                serviceStatus = SERVICE_UNRESPONSIVE;
+                serviceStatus = PollStatus.unresponsive();
 
                 if (strBannerMatch == null || strBannerMatch.equals("*")) {
-                    serviceStatus = SERVICE_AVAILABLE;
+                    serviceStatus = PollStatus.available();
                     break;
                 }
 
@@ -197,7 +198,7 @@ final public class SshMonitor extends IPv4LatencyMonitor {
                 }
 
                 if (response.indexOf(strBannerMatch) > -1) {
-                    serviceStatus = SERVICE_AVAILABLE;
+                    serviceStatus = PollStatus.available(responseTime);
                     // send the identifier string
                     //
                     String cmd = "SSH-1.99-OpenNMS_1.1\r\n";
@@ -219,25 +220,16 @@ final public class SshMonitor extends IPv4LatencyMonitor {
                         }
                     }
                 } else
-                    serviceStatus = SERVICE_UNAVAILABLE;
+                    serviceStatus = PollStatus.unavailable();
             } catch (NoRouteToHostException e) {
-                e.fillInStackTrace();
-                if (log.isEnabledFor(Priority.WARN))
-                    log.warn("poll: No route to host exception for address " + ipv4Addr.getHostAddress(), e);
+            	serviceStatus = logDown(Level.WARN, "No route to host exception for address " + ipv4Addr.getHostAddress(), e);
                 break; // Break out of for(;;)
             } catch (InterruptedIOException e) {
-                log.debug("SshMonitor: did not connect to host within timeout: " + timeout + " attempt: " + attempts);
+            	serviceStatus = logDown(Level.DEBUG, "did not connect to host within timeout: " + timeout + " attempt: " + attempts);
             } catch (ConnectException e) {
-                // Connection refused. Continue to retry.
-                //
-                e.fillInStackTrace();
-                if (log.isDebugEnabled())
-                    log.debug("poll: Connection exception for address: " + ipv4Addr, e);
+            	serviceStatus = logDown(Level.DEBUG, "Connection exception for address: " + ipv4Addr, e);
             } catch (IOException e) {
-                // Ignore
-                e.fillInStackTrace();
-                if (log.isDebugEnabled())
-                    log.debug("poll: IOException while polling address: " + ipv4Addr, e);
+            	serviceStatus = logDown(Level.DEBUG, "IOException while polling address: " + ipv4Addr, e);
             } finally {
                 try {
                     // Close the socket

@@ -48,7 +48,7 @@ import java.net.Socket;
 import java.util.Map;
 
 import org.apache.log4j.Category;
-import org.apache.log4j.Priority;
+import org.apache.log4j.Level;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.MonitoredService;
@@ -168,10 +168,10 @@ final public class NrpeMonitor extends IPv4LatencyMonitor {
 
         // Give it a whirl
         //
-        int serviceStatus = SERVICE_UNAVAILABLE;
+        int serviceStatus = PollStatus.SERVICE_UNAVAILABLE;
         long responseTime = -1;
 
-        for (int attempts = 0; attempts <= retry && serviceStatus != SERVICE_AVAILABLE; attempts++) {
+        for (int attempts = 0; attempts <= retry && serviceStatus != PollStatus.SERVICE_AVAILABLE; attempts++) {
             Socket socket = null;
             try {
                 //
@@ -185,7 +185,7 @@ final public class NrpeMonitor extends IPv4LatencyMonitor {
                 log.debug("NrpeMonitor: connected to host: " + ipv4Addr + " on port: " + port);
 
                 // We're connected, so upgrade status to unresponsive
-                serviceStatus = SERVICE_UNRESPONSIVE;
+                serviceStatus = PollStatus.SERVICE_UNRESPONSIVE;
 				reason = "Connected, but no response received";
 
 				NrpePacket p = new NrpePacket(NrpePacket.QUERY_PACKET, (short) 0,
@@ -232,7 +232,7 @@ final public class NrpeMonitor extends IPv4LatencyMonitor {
 				NrpePacket response = NrpePacket.receivePacket(socket.getInputStream(), padding);
                 responseTime = System.currentTimeMillis() - sentTime;
 				if (response.getResultCode() == 0) {
-                    serviceStatus = SERVICE_AVAILABLE;
+                    serviceStatus = PollStatus.SERVICE_AVAILABLE;
                     // Store response time in RRD
                     if (responseTime >= 0 && rrdPath != null) {
                         try {
@@ -242,13 +242,13 @@ final public class NrpeMonitor extends IPv4LatencyMonitor {
                         }
                     }
                 } else {
-                    serviceStatus = SERVICE_UNAVAILABLE;
+                    serviceStatus = PollStatus.SERVICE_UNAVAILABLE;
 					reason = "NRPE command returned code " + response.getResultCode() +
 						" and message: " + response.getBuffer();
                 }
             } catch (NoRouteToHostException e) {
 				reason = "No route to host exception for address " + ipv4Addr.getHostAddress();
-                if (log.isEnabledFor(Priority.WARN)) {
+                if (log.isEnabledFor(Level.WARN)) {
 	                e.fillInStackTrace();
                     log.warn("poll: " + reason, e);
                 }

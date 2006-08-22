@@ -46,12 +46,13 @@ import java.net.InetAddress;
 import java.util.Map;
 
 import org.apache.log4j.Category;
+import org.apache.log4j.Level;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.dhcpd.Dhcpd;
+import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.NetworkInterface;
 import org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException;
-import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.utils.ParameterMap;
 
 /**
@@ -93,7 +94,7 @@ final public class DhcpMonitor extends IPv4LatencyMonitor {
      *         should be supressed.
      * 
      */
-    public int checkStatus(MonitoredService svc, Map parameters, org.opennms.netmgt.config.poller.Package pkg) {
+    public PollStatus poll(MonitoredService svc, Map parameters, org.opennms.netmgt.config.poller.Package pkg) {
         NetworkInterface iface = svc.getNetInterface();
 
         // Get interface address from NetworkInterface
@@ -127,7 +128,7 @@ final public class DhcpMonitor extends IPv4LatencyMonitor {
         if (log.isDebugEnabled())
             log.debug("DhcpMonitor.poll: address: " + ipv4Addr + " timeout: " + timeout + " retry: " + retry);
 
-        int serviceStatus = ServiceMonitor.SERVICE_UNAVAILABLE;
+        PollStatus serviceStatus = PollStatus.unavailable();
         long responseTime = -1;
         try {
             // Dhcpd.isServer() returns the response time in milliseconds
@@ -136,16 +137,17 @@ final public class DhcpMonitor extends IPv4LatencyMonitor {
             // 
             responseTime = Dhcpd.isServer(ipv4Addr, (long) timeout, retry);
             if (responseTime >= 0) {
-                serviceStatus = ServiceMonitor.SERVICE_AVAILABLE;
+                serviceStatus = PollStatus.available(responseTime);
             }
         } catch (IOException ioE) {
             ioE.fillInStackTrace();
-            log.warn("DhcpMonitor.poll: An I/O exception occured during DHCP discovery", ioE);
+            serviceStatus = logDown(Level.WARN, "An I/O exception occured during DHCP discovery", ioE);
         }
 
         // Store response time if available
         //
-        if (serviceStatus == ServiceMonitor.SERVICE_AVAILABLE) {
+        // BEGIN RRD
+        if (serviceStatus.isAvailable()) {
             // Store response time in RRD
             if (responseTime >= 0 && rrdPath != null) {
                 try {
@@ -155,6 +157,7 @@ final public class DhcpMonitor extends IPv4LatencyMonitor {
                 }
             }
         }
+        // END RRD
 
         //
         // return the status of the service

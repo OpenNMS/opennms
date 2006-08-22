@@ -63,7 +63,7 @@ public class NsclientMonitor extends IPv4LatencyMonitor {
         // Holds the response reason.
         String reason = null;
         // Used to exit the retry loop early, if possible.
-        int serviceStatus = SERVICE_UNRESPONSIVE;
+        int serviceStatus = PollStatus.SERVICE_UNRESPONSIVE;
         // This will hold the data the server sends back.
         NsclientPacket response = null;
         // Used to track how long the request took.
@@ -116,7 +116,7 @@ public class NsclientMonitor extends IPv4LatencyMonitor {
         InetAddress ipv4Addr = (InetAddress) iface.getAddress();
 
         for (int attempts = 0; attempts <= retry
-                && serviceStatus != SERVICE_AVAILABLE; attempts++) {
+                && serviceStatus != PollStatus.SERVICE_AVAILABLE; attempts++) {
             try {
                 // Get the time, so we can keep track of how long the request
                 // took.
@@ -148,7 +148,7 @@ public class NsclientMonitor extends IPv4LatencyMonitor {
                 }
 
                 if (response.getResultCode() == NsclientPacket.RES_STATE_OK) {
-                    serviceStatus = SERVICE_AVAILABLE;
+                    serviceStatus = PollStatus.SERVICE_AVAILABLE;
                     reason = response.getResponse();
 
                     // Store response time in RRD
@@ -162,7 +162,7 @@ public class NsclientMonitor extends IPv4LatencyMonitor {
                         }
                     }
                 } else if (response.getResultCode() == NsclientPacket.RES_STATE_CRIT) {
-                    serviceStatus = SERVICE_UNAVAILABLE;
+                    serviceStatus = PollStatus.SERVICE_UNAVAILABLE;
                     reason = response.getResponse();
                 }
 

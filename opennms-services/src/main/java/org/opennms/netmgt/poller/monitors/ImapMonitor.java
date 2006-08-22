@@ -57,11 +57,12 @@ import java.net.Socket;
 import java.util.Map;
 
 import org.apache.log4j.Category;
+import org.apache.log4j.Level;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.NetworkInterface;
 import org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException;
-import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.utils.ParameterMap;
 
 /**
@@ -143,7 +144,7 @@ final public class ImapMonitor extends IPv4LatencyMonitor {
      *         should be supressed.
      * 
      */
-    public int checkStatus(MonitoredService svc, Map parameters, org.opennms.netmgt.config.poller.Package pkg) {
+    public PollStatus poll(MonitoredService svc, Map parameters, org.opennms.netmgt.config.poller.Package pkg) {
         NetworkInterface iface = svc.getNetInterface();
 
         // Get interface address from NetworkInterface
@@ -177,10 +178,10 @@ final public class ImapMonitor extends IPv4LatencyMonitor {
         if (log.isDebugEnabled())
             log.debug("ImapMonitor.poll: address: " + ipv4Addr + " port: " + port + " timeout: " + timeout + " retry: " + retry);
 
-        int serviceStatus = ServiceMonitor.SERVICE_UNAVAILABLE;
+        PollStatus serviceStatus = PollStatus.unavailable();
         long responseTime = -1;
 
-        for (int attempts = 0; attempts <= retry && serviceStatus != ServiceMonitor.SERVICE_AVAILABLE; attempts++) {
+        for (int attempts = 0; attempts <= retry && !serviceStatus.isAvailable(); attempts++) {
             Socket socket = null;
             try {
                 //
@@ -193,8 +194,8 @@ final public class ImapMonitor extends IPv4LatencyMonitor {
                 socket.setSoTimeout(timeout);
 
                 // We're connected, so upgrade status to unresponsive
-                serviceStatus = SERVICE_UNRESPONSIVE;
-
+                serviceStatus = PollStatus.unresponsive();
+                
                 BufferedReader rdr = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
                 //
@@ -221,7 +222,9 @@ final public class ImapMonitor extends IPv4LatencyMonitor {
                     if (response != null && response.startsWith(IMAP_BYE_RESPONSE_PREFIX)) {
                         response = rdr.readLine();
                         if (response != null && response.startsWith(IMAP_LOGOUT_RESPONSE_PREFIX)) {
-                            serviceStatus = ServiceMonitor.SERVICE_AVAILABLE;
+                            serviceStatus = PollStatus.available(responseTime);
+                            
+                            // RRD BEGIN
                             // Store response time in RRD
                             if (responseTime >= 0 && rrdPath != null) {
                                 try {
@@ -230,6 +233,7 @@ final public class ImapMonitor extends IPv4LatencyMonitor {
                                     log.debug("There was a problem writing the RRD:" + rex);
                                 }
                             }
+                            // RRD END
                         }
                     }
                 }
@@ -237,25 +241,21 @@ final public class ImapMonitor extends IPv4LatencyMonitor {
                 // If we get this far and the status has not been set
                 // to available, then something didn't verify during
                 // the banner checking or logout process.
-                if (serviceStatus != ServiceMonitor.SERVICE_AVAILABLE) {
-                    serviceStatus = ServiceMonitor.SERVICE_UNAVAILABLE;
+                if (!serviceStatus.isAvailable()) {
+                    serviceStatus = PollStatus.unavailable();
                 }
 
             } catch (NoRouteToHostException e) {
-                e.fillInStackTrace();
-                log.warn("ImapMonitor.poll: No route to host exception for address: " + ipv4Addr, e);
+            	
+            	serviceStatus = logDown(Level.WARN,"No route to host exception for address: " + ipv4Addr, e);
                 break; // Break out of for(;;)
             } catch (ConnectException e) {
                 // Connection refused. Continue to retry.
-                //
-                e.fillInStackTrace();
-                log.debug("ImapMonitor.poll: Connection exception for address: " + ipv4Addr, e);
+            	serviceStatus = logDown(Level.DEBUG, "Connection exception for address: " + ipv4Addr, e);
             } catch (InterruptedIOException e) {
-                log.debug("ImapMonitor: did not connect to host within timeout: " + timeout + " attempt: " + attempts);
+            	serviceStatus = logDown(Level.DEBUG, "did not connect to host within timeout: " + timeout + " attempt: " + attempts);
             } catch (IOException e) {
-                // Ignore
-                e.fillInStackTrace();
-                log.debug("ImapMonitor.poll: IOException while polling address: " + ipv4Addr, e);
+            	serviceStatus = logDown(Level.DEBUG, "IOException while polling address: " + ipv4Addr, e);
             } finally {
                 try {
                     // Close the socket

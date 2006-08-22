@@ -59,14 +59,14 @@ import java.util.Map;
 import java.util.StringTokenizer;
 
 import org.apache.log4j.Category;
-import org.apache.log4j.Priority;
+import org.apache.log4j.Level;
 import org.apache.regexp.RE;
 import org.apache.regexp.RESyntaxException;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.NetworkInterface;
 import org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException;
-import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.utils.ParameterMap;
 
 /**
@@ -159,7 +159,7 @@ final public class SmtpMonitor extends IPv4LatencyMonitor {
      *         should be supressed.
      * 
      */
-    public int checkStatus(MonitoredService svc, Map parameters, org.opennms.netmgt.config.poller.Package pkg) {
+    public PollStatus poll(MonitoredService svc, Map parameters, org.opennms.netmgt.config.poller.Package pkg) {
         NetworkInterface iface = svc.getNetInterface();
 
         // Get interface address from NetworkInterface
@@ -191,10 +191,10 @@ final public class SmtpMonitor extends IPv4LatencyMonitor {
         if (log.isDebugEnabled())
             log.debug("poll: address = " + ipv4Addr.getHostAddress() + ", port = " + port + ", timeout = " + timeout + ", retry = " + retry);
 
-        int serviceStatus = ServiceMonitor.SERVICE_UNAVAILABLE;
+        PollStatus serviceStatus = PollStatus.unavailable();
         long responseTime = -1;
 
-        for (int attempts = 0; attempts <= retry && serviceStatus != ServiceMonitor.SERVICE_AVAILABLE; attempts++) {
+        for (int attempts = 0; attempts <= retry && !serviceStatus.isAvailable(); attempts++) {
             Socket socket = null;
             try {
                 // create a connected socket
@@ -208,7 +208,7 @@ final public class SmtpMonitor extends IPv4LatencyMonitor {
                 log.debug("SmtpMonitor: connected to host: " + ipv4Addr + " on port: " + port);
 
                 // We're connected, so upgrade status to unresponsive
-                serviceStatus = SERVICE_UNRESPONSIVE;
+                serviceStatus = PollStatus.unresponsive();
 
                 BufferedReader rdr = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
@@ -330,7 +330,7 @@ final public class SmtpMonitor extends IPv4LatencyMonitor {
                         rc = Integer.parseInt(t.nextToken());
 
                         if (rc == 221) {
-                            serviceStatus = ServiceMonitor.SERVICE_AVAILABLE;
+                            serviceStatus = PollStatus.available(responseTime);
                             // Store response time in RRD
                             if (responseTime >= 0 && rrdPath != null) {
                                 try {
@@ -346,32 +346,20 @@ final public class SmtpMonitor extends IPv4LatencyMonitor {
                 // If we get this far and the status has not been set
                 // to available, then something didn't verify during
                 // the banner checking or HELO/QUIT comand process.
-                if (serviceStatus != ServiceMonitor.SERVICE_AVAILABLE) {
-                    serviceStatus = ServiceMonitor.SERVICE_UNAVAILABLE;
+                if (!serviceStatus.isAvailable()) {
+                    serviceStatus = PollStatus.unavailable();
                 }
             } catch (NumberFormatException e) {
-                // Ignore
-                e.fillInStackTrace();
-                if (log.isDebugEnabled())
-                    log.debug("poll: NumberFormatException while polling address " + ipv4Addr.getHostAddress(), e);
+            	serviceStatus = logDown(Level.DEBUG, "NumberFormatException while polling address " + ipv4Addr.getHostAddress(), e);
             } catch (NoRouteToHostException e) {
-                e.fillInStackTrace();
-                if (log.isEnabledFor(Priority.WARN))
-                    log.warn("poll: No route to host exception for address " + ipv4Addr.getHostAddress(), e);
+            	serviceStatus = logDown(Level.DEBUG, "No route to host exception for address " + ipv4Addr.getHostAddress(), e);
                 break; // Break out of for(;;)
             } catch (InterruptedIOException e) {
-                log.debug("SmtpMonitor: did not connect to host within timeout: " + timeout + " attempt: " + attempts);
+            	serviceStatus = logDown(Level.DEBUG, "did not connect to host within timeout: " + timeout + " attempt: " + attempts);
             } catch (ConnectException e) {
-                // Connection refused. Continue to retry.
-                //
-                e.fillInStackTrace();
-                if (log.isDebugEnabled())
-                    log.debug("poll: Connection exception for address " + ipv4Addr.getHostAddress(), e);
+            	serviceStatus = logDown(Level.DEBUG, "Connection exception for address " + ipv4Addr.getHostAddress(), e);
             } catch (IOException e) {
-                // Ignore
-                e.fillInStackTrace();
-                if (log.isDebugEnabled())
-                    log.debug("poll: IOException while polling address " + ipv4Addr.getHostAddress(), e);
+            	serviceStatus = logDown(Level.DEBUG, "IOException while polling address " + ipv4Addr.getHostAddress(), e);
             } finally {
                 try {
                     // Close the socket

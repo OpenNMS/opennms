@@ -48,7 +48,9 @@ import net.sourceforge.jradiusclient.exception.RadiusException;
 import net.sourceforge.jradiusclient.util.ChapUtil;
 
 import org.apache.log4j.Category;
+import org.apache.log4j.Level;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.NetworkInterface;
 import org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException;
@@ -144,19 +146,18 @@ final public class RadiusAuthMonitor extends IPv4LatencyMonitor {
      *
      * @return int An status code that shows the status of the service
      *
-     * @see org.opennms.netmgt.poller.ServiceMonitor#SURPRESS_EVENT_MASK
      * @see org.opennms.netmgt.poller.ServiceMonitor#SERVICE_AVAILABLE
      * @see org.opennms.netmgt.poller.ServiceMonitor#SERVICE_UNAVAILABLE
      * @see org.opennms.netmgt.poller.ServiceMonitor#SERVICE_UNRESPONSIVE
      *
      */
-    public int checkStatus(MonitoredService svc, Map parameters, org.opennms.netmgt.config.poller.Package pkg) {
+    public PollStatus poll(MonitoredService svc, Map parameters, org.opennms.netmgt.config.poller.Package pkg) {
         NetworkInterface iface = svc.getNetInterface();
 
         Category log = ThreadCategory.getInstance(getClass());
 
         // Asume that the service is down
-        int status = SERVICE_UNAVAILABLE;
+        PollStatus status = PollStatus.unavailable();
 
         if (iface.getType() != NetworkInterface.TYPE_IPV4) {
             log.error(getClass().getName() + ": Unsupported interface type, only TYPE_IPV4 currently supported");
@@ -191,11 +192,9 @@ final public class RadiusAuthMonitor extends IPv4LatencyMonitor {
         try {
             rc = new RadiusClient(ipv4Addr.getCanonicalHostName(), authport ,acctport, secret, timeout);
         } catch(RadiusException rex) {
-            log.error(getClass().getName() + ": Radius Exception: " + rex.getMessage());
-            return status;
+        	return logDown(Level.ERROR, "Radius Exception: " + rex.getMessage());
         } catch(InvalidParameterException ivpex) {
-            log.error(getClass().getName() + ": Radius parameter exception: " + ivpex.getMessage());
-            return status;
+        	return logDown(Level.ERROR, "Radius parameter exception: " + ivpex.getMessage());
         }
 
 
@@ -203,6 +202,7 @@ final public class RadiusAuthMonitor extends IPv4LatencyMonitor {
             try {
                 long responseTime = -1;
                 long sentTime = System.currentTimeMillis();
+                
                 ChapUtil chapUtil = new ChapUtil();
                 RadiusPacket accessRequest = new RadiusPacket(RadiusPacket.ACCESS_REQUEST);
                 RadiusAttribute userNameAttribute;
@@ -217,9 +217,10 @@ final public class RadiusAuthMonitor extends IPv4LatencyMonitor {
                     accessRequest.setAttribute(new RadiusAttribute(RadiusAttributeValues.USER_PASSWORD,password.getBytes()));
                 }
                 RadiusPacket accessResponse = rc.authenticate(accessRequest);
+                
                 if ( accessResponse.getPacketType() == RadiusPacket.ACCESS_ACCEPT ){
                     responseTime = System.currentTimeMillis() - sentTime;
-                    status = SERVICE_AVAILABLE;
+                    status = PollStatus.available(responseTime);
                     if (log.isDebugEnabled()) {
                         log.debug(getClass().getName() + ": Radius service is AVAILABLE on: " + ipv4Addr.getCanonicalHostName());
                         log.debug("poll: responseTime= " + responseTime + "ms");
@@ -235,9 +236,9 @@ final public class RadiusAuthMonitor extends IPv4LatencyMonitor {
                     break;
                 }
             } catch (InvalidParameterException ivpex){
-                log.error(getClass().getName() + ": Invalid Radius Parameter: " + ivpex);
+            	status = logDown(Level.ERROR, "Invalid Radius Parameter: " + ivpex);
             } catch (RadiusException radex){
-                log.error(getClass().getName() + ": Radius Exception : " + radex);
+            	status = logDown(Level.ERROR, "Radius Exception : " + radex);
 	    }
         }
         return status;

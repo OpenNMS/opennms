@@ -73,58 +73,6 @@ import org.opennms.netmgt.model.PollStatus;
 public interface ServiceMonitor {
 	
 	/**
-	 * <P>
-	 * The constant that defines a service that is up but is most likely
-	 * suffering due to excessive load or latency issues and because of that has
-	 * not responded within the configured timeout period.
-	 * </P>
-	 */
-	public static final int SERVICE_UNRESPONSIVE = PollStatus.SERVICE_UNRESPONSIVE;
-
-	/**
-	 * <P>
-	 * The constant that defines a service that is not working normally and
-	 * should be scheduled using the downtime models.
-	 * </P>
-	 */
-	public static final int SERVICE_UNAVAILABLE = PollStatus.SERVICE_UNAVAILABLE;
-
-	/**
-	 * <P>
-	 * The constant that defines a service as being in a normal state. If this
-	 * is returned by the poll() method then the framework will re-schedule the
-	 * service for its next poll using the standard uptime interval
-	 * </P>
-	 */
-	public static final int SERVICE_AVAILABLE = PollStatus.SERVICE_AVAILABLE;
-	
-
-	/**
-	 * The constant the defines a status is unknown. Used mostly internally
-	 */
-	public static final int SERVICE_UNKNOWN = PollStatus.SERVICE_UNKNOWN;
-
-    /**
-     * <P>
-     * The status mask is used to mask off the bits that apply to scheduling
-     * information only. The other bits of the status return information are
-     * used to encode special processing instructions to the poller framework.
-     * </P>
-     */
-    public static final int SERVICE_STATUS_MASK = 0xff;
-
-    /**
-     * <P>
-     * This constants defines the mask that can be bitwise anded with the status
-     * return from the poll() method to determine if a status event should be
-     * surpressed. By default the framework will generate an event when the
-     * status transitions from up to down or vice versa. If the mask bit is set
-     * then the framework should not generate a transitional event.
-     * </P>
-     */
-    public static final int SURPRESS_EVENT_MASK = 0x100;
-
-    /**
      * <P>
      * This method is called after the framework creates an instance of the
      * plug-in. The framework passes the object a proxy object that can be used
@@ -243,7 +191,6 @@ public interface ServiceMonitor {
      *                Thrown if an unrecoverable error occurs that prevents the
      *                interface from being monitored.
      * 
-     * @see #SURPRESS_EVENT_MASK
      * @see PollStatus#SERVICE_AVAILABLE
      * @see PollStatus#SERVICE_UNAVAILABLE
      */

@@ -57,9 +57,8 @@ import java.net.NoRouteToHostException;
 import java.net.Socket;
 import java.util.Map;
 
-import org.apache.log4j.Category;
-import org.apache.log4j.Priority;
-import org.opennms.core.utils.ThreadCategory;
+import org.apache.log4j.Level;
+import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.NetworkInterface;
 import org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException;
@@ -116,13 +115,12 @@ final public class TcpMonitor extends IPv4LatencyMonitor {
      * @throws java.lang.RuntimeException
      *             Thrown if the interface experiences errors during the poll.
      */
-    public int checkStatus(MonitoredService svc, Map parameters, org.opennms.netmgt.config.poller.Package pkg) {
+    public PollStatus poll(MonitoredService svc, Map parameters, org.opennms.netmgt.config.poller.Package pkg) {
         NetworkInterface iface = svc.getNetInterface();
 
         //
         // Process parameters
         //
-        Category log = ThreadCategory.getInstance(getClass());
 
         //
         // Get interface address from NetworkInterface
@@ -136,7 +134,7 @@ final public class TcpMonitor extends IPv4LatencyMonitor {
         String dsName = ParameterMap.getKeyedString(parameters, "ds-name", null);
 
         if (rrdPath == null) {
-            log.info("poll: RRD repository not specified in parameters, latency data will not be stored.");
+            log().info("poll: RRD repository not specified in parameters, latency data will not be stored.");
         }
         if (dsName == null) {
             dsName = DEFAULT_DSNAME;
@@ -157,15 +155,15 @@ final public class TcpMonitor extends IPv4LatencyMonitor {
         //
         InetAddress ipv4Addr = (InetAddress) iface.getAddress();
 
-        if (log.isDebugEnabled())
-            log.debug("poll: address = " + ipv4Addr.getHostAddress() + ", port = " + port + ", timeout = " + timeout + ", retry = " + retry);
+        if (log().isDebugEnabled())
+            log().debug("poll: address = " + ipv4Addr.getHostAddress() + ", port = " + port + ", timeout = " + timeout + ", retry = " + retry);
 
         // Give it a whirl
         //
-        int serviceStatus = SERVICE_UNAVAILABLE;
+        PollStatus serviceStatus = PollStatus.unavailable();
         long responseTime = -1;
 
-        for (int attempts = 0; attempts <= retry && serviceStatus != SERVICE_AVAILABLE; attempts++) {
+        for (int attempts = 0; attempts <= retry && !serviceStatus.isAvailable(); attempts++) {
             Socket socket = null;
             try {
                 //
@@ -176,19 +174,19 @@ final public class TcpMonitor extends IPv4LatencyMonitor {
                 socket = new Socket();
                 socket.connect(new InetSocketAddress(ipv4Addr, port), timeout);
                 socket.setSoTimeout(timeout);
-                log.debug("TcpMonitor: connected to host: " + ipv4Addr + " on port: " + port);
+                log().debug("TcpMonitor: connected to host: " + ipv4Addr + " on port: " + port);
 
                 // We're connected, so upgrade status to unresponsive
-                serviceStatus = SERVICE_UNRESPONSIVE;
+                serviceStatus = PollStatus.unresponsive();
 
                 if (strBannerMatch == null || strBannerMatch.length() == 0 || strBannerMatch.equals("*")) {
-                    serviceStatus = SERVICE_AVAILABLE;
+                    serviceStatus = PollStatus.available(System.currentTimeMillis()-sentTime);
                     // Store response time in RRD
                     if (responseTime >= 0 && rrdPath != null) {
                         try {
                             this.updateRRD(rrdPath, ipv4Addr, dsName, responseTime, pkg);
                         } catch (RuntimeException rex) {
-                            log.debug("There was a problem writing the RRD:" + rex);
+                            log().debug("There was a problem writing the RRD:" + rex);
                         }
                     }
                     break;
@@ -205,41 +203,32 @@ final public class TcpMonitor extends IPv4LatencyMonitor {
 
                 if (response == null)
                     continue;
-                if (log.isDebugEnabled()) {
-                    log.debug("poll: banner = " + response);
-                    log.debug("poll: responseTime= " + responseTime + "ms");
+                if (log().isDebugEnabled()) {
+                    log().debug("poll: banner = " + response);
+                    log().debug("poll: responseTime= " + responseTime + "ms");
                 }
 
                 if (response.indexOf(strBannerMatch) > -1) {
-                    serviceStatus = SERVICE_AVAILABLE;
+                    serviceStatus = PollStatus.available(responseTime);
                     // Store response time in RRD
                     if (responseTime >= 0 && rrdPath != null) {
                         try {
                             this.updateRRD(rrdPath, ipv4Addr, dsName, responseTime, pkg);
                         } catch (RuntimeException rex) {
-                            log.debug("There was a problem writing the RRD:" + rex);
+                            log().debug("There was a problem writing the RRD:" + rex);
                         }
                     }
                 } else
-                    serviceStatus = SERVICE_UNAVAILABLE;
+                    serviceStatus = PollStatus.unavailable("Banner: '"+response+"' does not contain match string '"+strBannerMatch+"'");
             } catch (NoRouteToHostException e) {
-                e.fillInStackTrace();
-                if (log.isEnabledFor(Priority.WARN))
-                    log.warn("poll: No route to host exception for address " + ipv4Addr.getHostAddress(), e);
+            	serviceStatus = logDown(Level.WARN, "No route to host exception for address " + ipv4Addr.getHostAddress(), e);
                 break; // Break out of for(;;)
             } catch (InterruptedIOException e) {
-                log.debug("TcpMonitor: did not connect to host within timeout: " + timeout + " attempt: " + attempts);
+            	serviceStatus = logDown(Level.DEBUG, "did not connect to host within timeout: " + timeout + " attempt: " + attempts);
             } catch (ConnectException e) {
-                // Connection refused. Continue to retry.
-                //
-                e.fillInStackTrace();
-                if (log.isDebugEnabled())
-                    log.debug("poll: Connection exception for address: " + ipv4Addr, e);
+            	serviceStatus = logDown(Level.DEBUG, "Connection exception for address: " + ipv4Addr, e);
             } catch (IOException e) {
-                // Ignore
-                e.fillInStackTrace();
-                if (log.isDebugEnabled())
-                    log.debug("poll: IOException while polling address: " + ipv4Addr, e);
+            	serviceStatus = logDown(Level.DEBUG, "IOException while polling address: " + ipv4Addr, e);
             } finally {
                 try {
                     // Close the socket
@@ -247,8 +236,8 @@ final public class TcpMonitor extends IPv4LatencyMonitor {
                         socket.close();
                 } catch (IOException e) {
                     e.fillInStackTrace();
-                    if (log.isDebugEnabled())
-                        log.debug("poll: Error closing socket.", e);
+                    if (log().isDebugEnabled())
+                        log().debug("poll: Error closing socket.", e);
                 }
             }
         }

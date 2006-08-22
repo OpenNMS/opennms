@@ -52,11 +52,10 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.Map;
 
-import org.apache.log4j.Category;
-import org.opennms.core.utils.ThreadCategory;
+import org.apache.log4j.Level;
+import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.NetworkInterface;
-import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.utils.ParameterMap;
 
 import com.novell.ldap.LDAPConnection;
@@ -136,11 +135,10 @@ final public class LdapMonitor extends IPv4Monitor {
      * @throws java.lang.RuntimeException
      *             Thrown if the interface experiences errors during the poll.
      */
-    public int checkStatus(MonitoredService svc, Map parameters, org.opennms.netmgt.config.poller.Package pkg) {
+    public PollStatus poll(MonitoredService svc, Map parameters, org.opennms.netmgt.config.poller.Package pkg) {
         NetworkInterface iface = svc.getNetInterface();
 
-        Category log = ThreadCategory.getInstance(getClass());
-        int serviceStatus = ServiceMonitor.SERVICE_UNAVAILABLE;
+        PollStatus serviceStatus = PollStatus.unavailable();
 
         // get the parameters
         //
@@ -174,10 +172,10 @@ final public class LdapMonitor extends IPv4Monitor {
             socket = new Socket();
             socket.connect(new InetSocketAddress((InetAddress) iface.getAddress(), ldapPort), timeout);
             socket.setSoTimeout(timeout);
-            log.debug("LdapMonitor: connected to host: " + address + " on port: " + ldapPort);
+            log().debug("LdapMonitor: connected to host: " + address + " on port: " + ldapPort);
 
             // We're connected, so upgrade status to unresponsive
-            serviceStatus = SERVICE_UNRESPONSIVE;
+            serviceStatus = PollStatus.unresponsive();
 
             if (socket != null)
                 socket.close();
@@ -185,15 +183,15 @@ final public class LdapMonitor extends IPv4Monitor {
             // lets detect the service
             LDAPConnection lc = new LDAPConnection(new TimeoutLDAPSocket(timeout));
 
-            for (int attempts = 1; attempts <= retries && serviceStatus != ServiceMonitor.SERVICE_AVAILABLE; attempts++) {
-                log.debug("polling LDAP on " + address + ", attempt " + attempts + " of " + (retries == 0 ? "1" : retries + ""));
+            for (int attempts = 1; attempts <= retries && !serviceStatus.isAvailable(); attempts++) {
+                log().debug("polling LDAP on " + address + ", attempt " + attempts + " of " + (retries == 0 ? "1" : retries + ""));
 
                 // connect to the ldap server
                 try {
                     lc.connect(address, ldapPort);
-                    log.debug("connected to LDAP server " + address + " on port " + ldapPort);
+                    log().debug("connected to LDAP server " + address + " on port " + ldapPort);
                 } catch (LDAPException e) {
-                    log.debug("could not connect to LDAP server " + address + " on port " + ldapPort);
+                	serviceStatus = logDown(Level.DEBUG, "could not connect to LDAP server " + address + " on port " + ldapPort);
                     continue;
                 }
 
@@ -201,15 +199,15 @@ final public class LdapMonitor extends IPv4Monitor {
                 if (ldapDn != null && password != null) {
                     try {
                         lc.bind(ldapVersion, ldapDn, password.getBytes());
-                        log.debug("bound to LDAP server version " + ldapVersion + " with distinguished name " + ldapDn);
+                        log().debug("bound to LDAP server version " + ldapVersion + " with distinguished name " + ldapDn);
                     } catch (LDAPException e) {
                         try {
                             lc.disconnect();
                         } catch (LDAPException ex) {
-                            log.debug(ex);
+                            log().debug(ex);
                         }
 
-                        log.debug("could not bind to LDAP server version " + ldapVersion + " with distinguished name " + ldapDn);
+                        serviceStatus = logDown(Level.DEBUG, "could not bind to LDAP server version " + ldapVersion + " with distinguished name " + ldapDn);
                         continue;
                     }
                 }
@@ -219,50 +217,45 @@ final public class LdapMonitor extends IPv4Monitor {
                 String attrs[] = { LDAPConnection.NO_ATTRS };
                 int searchScope = LDAPConnection.SCOPE_ONE;
 
-                log.debug("running search " + searchFilter + " from " + searchBase);
+                log().debug("running search " + searchFilter + " from " + searchBase);
                 LDAPSearchResults results = null;
 
                 try {
                     results = lc.search(searchBase, searchScope, searchFilter, attrs, attributeOnly);
 
                     if (results != null && results.hasMore()) {
-                        log.debug("search yielded results");
-                        serviceStatus = ServiceMonitor.SERVICE_AVAILABLE;
+                        log().debug("search yielded results");
+                        serviceStatus = PollStatus.available();
                     } else {
-                        log.debug("no results found from search");
-                        serviceStatus = ServiceMonitor.SERVICE_UNAVAILABLE;
+                        log().debug("no results found from search");
+                        serviceStatus = PollStatus.unavailable();
                     }
                 } catch (LDAPException e) {
                     try {
                         lc.disconnect();
                     } catch (LDAPException ex) {
-                        log.debug(ex);
+                        log().debug(ex);
                     }
 
-                    log.debug("could not perform search " + searchFilter + " from " + searchBase);
+                    serviceStatus = logDown(Level.DEBUG, "could not perform search " + searchFilter + " from " + searchBase);
                     continue;
                 }
 
                 try {
                     lc.disconnect();
-                    log.debug("disconected from LDAP server " + address + " on port ");
+                    log().debug("disconected from LDAP server " + address + " on port ");
                 } catch (LDAPException e) {
-                    log.debug(e);
+                    log().debug(e);
                 }
             }
         } catch (ConnectException e) {
-            // Connection refused!! No need to perform retries.
-            //
-            e.fillInStackTrace();
-            log.debug(getClass().getName() + ": connection refused to host " + address, e);
+        	serviceStatus = logDown(Level.DEBUG, "connection refused to host " + address, e);
         } catch (NoRouteToHostException e) {
-            // No route to host!! No need to perform retries.
-            e.fillInStackTrace();
-            log.warn(getClass().getName() + ": No route to host " + address, e);
+        	serviceStatus = logDown(Level.WARN, "No route to host " + address, e);
         } catch (InterruptedIOException e) {
-            log.debug("LdapMonitor: did not connect to host within timeout: " + timeout);
+        	serviceStatus = logDown(Level.DEBUG, "did not connect to host within timeout: " + timeout);
         } catch (Throwable t) {
-            log.warn(getClass().getName() + ": An undeclared throwable exception caught contacting host " + address, t);
+        	serviceStatus = logDown(Level.WARN, "An undeclared throwable exception caught contacting host " + address, t);
         }
 
         return serviceStatus;

@@ -32,15 +32,13 @@
 
 package org.opennms.netmgt.poller.monitors;
 
-import java.net.InetAddress;
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.SQLException;
 import java.sql.CallableStatement;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.Map;
 
-import org.apache.log4j.Category;
-import org.opennms.netmgt.config.PollerConfig;
+import org.apache.log4j.Level;
+import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.utils.ParameterMap;
 
 /**
@@ -65,10 +63,10 @@ final public class JDBCStoredProcedureMonitor extends JDBCMonitor
    public JDBCStoredProcedureMonitor() throws ClassNotFoundException, InstantiationException, IllegalAccessException {
    }
 
-   public int checkStatus(Connection con, Map parameters)
+   public PollStatus checkDatabaseStatus(Connection con, Map parameters)
    {
 	   
-      int status = SERVICE_UNAVAILABLE;
+      PollStatus status = PollStatus.unavailable();
       CallableStatement cs = null;
       try
       {
@@ -91,12 +89,12 @@ final public class JDBCStoredProcedureMonitor extends JDBCMonitor
          // If the query worked, assume than the server is ok
          if (bPass)
          {
-            status = SERVICE_AVAILABLE;
+            status = PollStatus.available();
          }
       }
       catch (SQLException sqlEx)
       {
-            log().debug(getClass().getName() + ": JDBC stored procedure call not functional: " + sqlEx.getSQLState() + ", " + sqlEx.toString(), sqlEx);
+            status = logDown(Level.DEBUG, "JDBC stored procedure call not functional: " + sqlEx.getSQLState() + ", " + sqlEx.toString(), sqlEx);
       }
       finally
       {

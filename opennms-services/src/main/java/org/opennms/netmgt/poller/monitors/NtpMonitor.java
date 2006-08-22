@@ -45,11 +45,12 @@ import java.net.NoRouteToHostException;
 import java.util.Map;
 
 import org.apache.log4j.Category;
+import org.apache.log4j.Level;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.NetworkInterface;
 import org.opennms.netmgt.poller.NetworkInterfaceNotSupportedException;
-import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.utils.ParameterMap;
 import org.opennms.protocols.ntp.NtpMessage;
 
@@ -104,7 +105,7 @@ final public class NtpMonitor extends IPv4LatencyMonitor {
      *         should be supressed.
      * 
      */
-    public int checkStatus(MonitoredService svc, Map parameters, org.opennms.netmgt.config.poller.Package pkg) {
+    public PollStatus poll(MonitoredService svc, Map parameters, org.opennms.netmgt.config.poller.Package pkg) {
         NetworkInterface iface = svc.getNetInterface();
 
         //
@@ -136,7 +137,7 @@ final public class NtpMonitor extends IPv4LatencyMonitor {
         //
         InetAddress ipv4Addr = (InetAddress) iface.getAddress();
 
-        int serviceStatus = ServiceMonitor.SERVICE_UNAVAILABLE;
+        PollStatus serviceStatus = PollStatus.unavailable();
         DatagramSocket socket = null;
         long responseTime = -1;
         try {
@@ -144,7 +145,7 @@ final public class NtpMonitor extends IPv4LatencyMonitor {
             socket.setSoTimeout(timeout); // will force the
             // InterruptedIOException
 
-            for (int attempts = 0; attempts <= retry && serviceStatus != SERVICE_AVAILABLE; attempts++) {
+            for (int attempts = 0; attempts <= retry && !serviceStatus.isAvailable(); attempts++) {
                 try {
                     // Send NTP request
                     //
@@ -169,22 +170,23 @@ final public class NtpMonitor extends IPv4LatencyMonitor {
                     if (log.isDebugEnabled())
                         log.debug("poll: valid NTP request received the local clock offset is " + localClockOffset + ", responseTime= " + responseTime + "ms");
                     log.debug("poll: NTP message : " + msg.toString());
-                    serviceStatus = ServiceMonitor.SERVICE_AVAILABLE;
+                    serviceStatus = PollStatus.available(responseTime);
                 } catch (InterruptedIOException ex) {
                     // Ignore, no response received.
                 }
             }
         } catch (NoRouteToHostException e) {
-            e.fillInStackTrace();
-            log.debug("No route to host exception for address: " + ipv4Addr, e);
+        	
+        	serviceStatus = logDown(Level.DEBUG, "No route to host exception for address: " + ipv4Addr, e);
+        	
         } catch (ConnectException e) {
-            // Connection refused. Continue to retry.
-            //
-            e.fillInStackTrace();
-            log.debug("Connection exception for address: " + ipv4Addr, e);
+        	
+        	serviceStatus = logDown(Level.DEBUG, "Connection exception for address: " + ipv4Addr, e);
+        	
         } catch (IOException ex) {
-            ex.fillInStackTrace();
-            log.info("IOException while polling address: " + ipv4Addr, ex);
+        	
+        	serviceStatus = logDown(Level.INFO, "IOException while polling address: " + ipv4Addr, ex);
+        	
         } finally {
             if (socket != null)
                 socket.close();
@@ -192,7 +194,7 @@ final public class NtpMonitor extends IPv4LatencyMonitor {
 
         // Store response time if available
         //
-        if (serviceStatus == ServiceMonitor.SERVICE_AVAILABLE) {
+        if (serviceStatus.isAvailable()) {
             // Store response time in RRD
             if (responseTime >= 0 && rrdPath != null) {
                 try {
