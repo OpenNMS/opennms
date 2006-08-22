@@ -31,12 +31,17 @@
 	action="${pageContext.request.contextPath}/displayCurrentOutages.htm"
 	filterable="false"
 	imagePath="${pageContext.request.contextPath}/images/table/compact/*.gif"
-	title="Current Outages" filterRowsCallback="limit"
-	sortRowsCallback="limit" rowsDisplayed="1000" tableId="tabledata"
+	title="Current Outages" 
+	retrieveRowsCallback="limit"
+	filterRowsCallback="limit" 
+	sortRowsCallback="limit" 
+	rowsDisplayed="25"
+	tableId="tabledata"
 	form="outageForm"
 	view="org.opennms.web.svclayer.etable.FixedRowCompact"
-	showExports="false" showStatusBar="false" autoIncludeParameters="false"
-	showPagination="false">
+	showExports="false" showStatusBar="true" 
+	autoIncludeParameters="false"
+	>
 
 	<ec:exportPdf fileName="CurrentOutages.pdf" tooltip="Export PDF"
 		headerColor="black" headerBackgroundColor="#b6c2da"
@@ -61,9 +66,7 @@
 			</a>
 		</ec:column>
 
-
-
-		<ec:column property="iflostservice" alias="Time Down" cell="date"
+		<ec:column property="iflostservice" alias="Down" cell="date"
 			format="MM-dd-yyyy hh:mm:ss" parse="yyyy-MM-dd" />
 		<ec:column property="outageid" alias="ID">
 			<a href="outage/detail.jsp?id=${tabledata.outageid}">${tabledata.outageid}</a>
