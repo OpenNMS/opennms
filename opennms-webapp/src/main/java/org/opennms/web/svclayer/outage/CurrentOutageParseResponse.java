@@ -35,7 +35,9 @@ public class CurrentOutageParseResponse {
 	                String parameterValue = request.getParameter(parameterName);
 	                if (parameterValue.equals(SuppressOutageCheckBoxConstants.SELECTED)) {
 	                    if (!outages.contains(OutageId)) {
-	                        m_suppress.suppress(Integer.parseInt(OutageId), request.getParameter("suppresstime_" + OutageId),outageService);
+	                        m_suppress.suppress(Integer.parseInt(OutageId), request.getParameter("suppresstime_" + OutageId),
+	                        	outageService, request.getRemoteUser().toString());
+	                        
 	                        myOutages.remove(OutageId);
 	                    }
 	            

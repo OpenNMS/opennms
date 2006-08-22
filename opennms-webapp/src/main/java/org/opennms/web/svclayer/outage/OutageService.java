@@ -15,6 +15,8 @@ public interface OutageService {
     
     Collection<OnmsOutage> getCurrentOutagesByRange(Integer Offset, Integer Limit, String Order, String Direction);
 
+    Collection<OnmsOutage> getOutagesByRange(Integer Offset, Integer Limit, String Order, String Direction);
+    
     Collection<OnmsOutage> getSuppressedOutages();
 
     Integer getCurrentOutageCount() ;
@@ -49,8 +51,8 @@ public interface OutageService {
 	OnmsOutage load(Integer outageid);
 	
 	void update(OnmsOutage Outage);
-
-
+	
+	Integer getOutageCount() ;
     // This we may have to define 
     /*
     OutageSummary[] getCurrentOutageSummaries() ;

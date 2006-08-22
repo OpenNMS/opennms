@@ -6,24 +6,20 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.opennms.netmgt.model.OnmsOutage;
 
-
 public class SuppressOutages {
-	
+
 	private static Integer LONG_TIME = new Integer(100);
 
 	private static final Log log = LogFactory.getLog(SuppressOutages.class);
-	
-	public void suppress(Integer outageid, String time, OutageService outageService) {
-		
-		System.out.println("Params I received : " + outageid + " " + time);
-		//("Suppress: " + outageid + " Time: " + time );
-		
+
+	public void suppress(Integer outageid, String time,OutageService outageService, String suppressor) {
+
 		OnmsOutage outage = (OnmsOutage) outageService.load(outageid);
 		GregorianCalendar suppress = new GregorianCalendar();
 
-		if (time.equals("-1")){
+		if (time.equals("-1")) {
 			// Suppress forever
-			suppress.add(GregorianCalendar.YEAR, LONG_TIME );
+			suppress.add(GregorianCalendar.YEAR, LONG_TIME);
 
 		} else if (time == "") {
 			// Just ignore this for now.
@@ -36,10 +32,9 @@ public class SuppressOutages {
 
 		if (time != "") {
 
-			System.out.println("Time for suppress : " + suppress.getTime().toString());
 			outage.setSuppressTime(suppress.getTime());
+			outage.setSuppressedBy(suppressor);
 			outageService.update(outage);
-		
 
 		}
 	}

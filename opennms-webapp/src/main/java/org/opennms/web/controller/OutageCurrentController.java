@@ -74,7 +74,7 @@ public class OutageCurrentController extends AbstractController {
 	// private OutageService outageService;
 	// BEAN Setter
 
-	//private static final int ROW_LIMIT = 25;
+	private static final int ROW_LIMIT = 25;
 
 	public void setOutageService(OutageService service) {
 		m_outageService = service;
@@ -97,16 +97,50 @@ public class OutageCurrentController extends AbstractController {
 		myModel.put("request", limit.toString());
 
 		myModel.put("all_params", request.getParameterNames().toString());
-		
-		if (limit.getSort().getProperty() == null) {
-			foundOutages = m_outageService.getCurrentOutages(" outages.nodeid asc");
-	
-		} else {
-			foundOutages = m_outageService.getCurrentOutages(" outages." +  limit
-					.getSort().getProperty() + " " + limit.getSort().getSortOrder());
+		if (limit.getPage() == 1) {
+			// no offset set
+			myModel.put("rowStart", 0);
+			context.setRequestAttribute("rowStart", 0);
+			context.setRequestAttribute("rowEnd", ROW_LIMIT);
+			myModel.put("rowEnd", ROW_LIMIT);
+
+			if (limit.getSort().getProperty() == null) {
+				foundOutages = m_outageService.getCurrentOutagesByRange(0,
+						ROW_LIMIT, "outages.nodeid", "asc");
+
+			} else {
+				foundOutages = m_outageService.getCurrentOutagesByRange(0,
+						ROW_LIMIT, "outages.nodeid,outages." + limit.getSort().getProperty(), limit
+								.getSort().getSortOrder());
+
 			}
-		
-		
+			myModel.put("begin", 0);
+			myModel.put("end", ROW_LIMIT);
+
+		} else {
+			
+			Integer rowstart = null;
+			Integer rowend = null;
+			
+				
+				//quirky situation... - as we started on 0 (zero)
+				rowstart = ((limit.getPage() * ROW_LIMIT +1 ) - ROW_LIMIT);
+				rowend = ( ROW_LIMIT);
+				myModel.put("begin", rowstart);
+				myModel.put("end", rowend);
+			
+			if (limit.getSort().getProperty() == null) {
+				foundOutages = m_outageService.getCurrentOutagesByRange(
+						rowstart, rowend, "outages.nodeid", "asc");
+
+			} else {
+
+				foundOutages = m_outageService.getCurrentOutagesByRange(rowstart,
+						rowend, "outages.nodeid,outages." + limit.getSort().getProperty() + " ", limit
+								.getSort().getSortOrder());
+
+			}
+		}
 		
 		// Pretty smart to build the collection after any suppressions..... 
 		Collection theTable = m_cview.theTable(foundOutages);
@@ -115,7 +149,6 @@ public class OutageCurrentController extends AbstractController {
 		myModel.put("totalRows", totalRows);
 		
 		myModel.put("selected_outages", CurrentOutageParseResponse.findSelectedOutagesIDs(request,m_outageService));
-		
 		return new ModelAndView("displayCurrentOutages", myModel);
 	}
 
