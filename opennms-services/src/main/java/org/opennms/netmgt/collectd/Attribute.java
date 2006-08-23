@@ -107,11 +107,21 @@ public class Attribute {
     }
 
     String getNumericValue() {
-        String val = (getValue() == null ? null : Long.toString(getValue().toLong()));
-        if (val == null) {
-            log().info("No data collected for attribute "+this+". Skipping");
-        }
-        return val;
+    		String val = null;
+    		if (getValue() == null) {
+    			val = null;
+    		} else {
+    			try {
+    				val = Long.toString(getValue().toLong());
+    			} catch(NumberFormatException e) {
+    				log().warn("Unable to process data received for attribute " + this + " maybe this is not a number? See bug 1473 for more information. Skipping.");
+    			}
+    		}
+    		if (val == null) {
+    			log().info("No data collected for attribute "+this+". Skipping");
+    		}
+    		return val;
     }
+
 
 }
