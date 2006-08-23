@@ -8,7 +8,7 @@ import java.util.StringTokenizer;
 
 import javax.servlet.http.HttpServletRequest;
 
-public class AllOutagesFilters {
+public class OutagesFilteringView {
 
 	// String whoooha = "select 1154363839::int4::abstime;";
 

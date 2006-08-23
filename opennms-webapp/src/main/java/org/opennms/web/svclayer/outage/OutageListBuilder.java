@@ -15,7 +15,7 @@ import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsOutage;
 import org.opennms.netmgt.model.OnmsServiceType;
 
-public class CurrentOutageService {
+public class OutageListBuilder {
 
 	public List theTable(Collection<OnmsOutage> foundOutages) {
 

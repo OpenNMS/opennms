@@ -47,7 +47,7 @@ import org.extremecomponents.table.limit.TableLimit;
 import org.extremecomponents.table.limit.TableLimitFactory;
 import org.opennms.netmgt.model.OnmsOutage;
 import org.opennms.web.svclayer.outage.CurrentOutageParseResponse;
-import org.opennms.web.svclayer.outage.CurrentOutageService;
+import org.opennms.web.svclayer.outage.OutageListBuilder;
 import org.opennms.web.svclayer.outage.OutageService;
 import org.opennms.web.svclayer.outage.SuppressOutages;
 import org.springframework.web.servlet.ModelAndView;
@@ -57,7 +57,7 @@ public class OutageSuppressedController extends AbstractController {
 
 	OutageService m_outageService;
 
-	CurrentOutageService m_cview = new CurrentOutageService();
+	OutageListBuilder m_cview = new OutageListBuilder();
 
 	Collection<OnmsOutage> foundOutages;
 
