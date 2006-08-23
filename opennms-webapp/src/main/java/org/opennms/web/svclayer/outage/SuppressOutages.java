@@ -32,7 +32,11 @@ public class SuppressOutages {
 
 		if (time != "") {
 
+			if (time == "-2") {
+				outage.setSuppressTime(null);
+			} else {
 			outage.setSuppressTime(suppress.getTime());
+			}
 			outage.setSuppressedBy(suppressor);
 			outageService.update(outage);
 

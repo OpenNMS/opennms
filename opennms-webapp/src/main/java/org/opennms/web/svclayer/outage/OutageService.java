@@ -13,6 +13,8 @@ public interface OutageService {
 
     Collection<OnmsOutage> getOutagesByRange(Integer Offset, Integer Limit, String Order, String Direction, String Filter);
     
+    Collection<OnmsOutage> getSuppressedOutagesByRange(Integer Offset, Integer Limit, String Order, String Direction);    
+    
     Collection<OnmsOutage> getSuppressedOutages();
 
     Integer getCurrentOutageCount() ;
