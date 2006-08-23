@@ -3,7 +3,7 @@
         status="off"
         pages-sent="SELECT * FROM notifications"
         next-notif-id="SELECT nextval('notifynxtid')"
-        next-user-notif-id="SELECT netval('userNotifNxtId')"
+        next-user-notif-id="SELECT nextval('userNotifNxtId')"
         next-group-id="SELECT nextval('notifygrpid')"
         service-id-sql="SELECT serviceID from service where serviceName = ?"
         outstanding-notices-sql="SELECT notifyid FROM notifications where notifyId = ? AND respondTime is not null"
