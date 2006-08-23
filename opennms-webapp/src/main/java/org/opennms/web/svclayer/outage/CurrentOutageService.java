@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import org.opennms.netmgt.model.OnmsIpInterface;
@@ -19,7 +20,9 @@ public class CurrentOutageService {
 	public List theTable(Collection<OnmsOutage> foundOutages) {
 
 		List theTable = new LinkedList();
-		SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+		Locale locale = Locale.getDefault();
+		SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss",locale);
+		
 
 		for (Iterator iter = foundOutages.iterator(); iter.hasNext();) {
 			OnmsOutage outage = (OnmsOutage) iter.next();
@@ -55,12 +58,21 @@ public class CurrentOutageService {
 
 			if (outage.getIfLostService() != null) {
 				outagerow
-						.put("iflostservice", (Date) outage.getIfLostService());
+						.put("iflostservice", formatter.format( outage.getIfLostService()));
+						
+						// Long format for searches
+				
+						outagerow.put("iflostservicelong",(Long)outage.getIfLostService().getTime());
+				
+						// Format the date-output.
+				
 			}
 
 			if (outage.getIfRegainedService() != null) {
-				outagerow.put("ifregainedservice", (Date) outage
-						.getIfRegainedService());
+				outagerow.put("ifregainedservice", formatter.format( outage
+						.getIfRegainedService()));
+				
+				outagerow.put("ifregainedservicelong", (Long)outage.getIfRegainedService().getTime());
 			}
 
 			if (outage.getSuppressTime() != null) {
