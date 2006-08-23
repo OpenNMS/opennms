@@ -36,8 +36,7 @@ public class ColumnTracker extends CollectionTracker {
     private SnmpObjId m_base;
     private SnmpObjId m_last;
     private boolean m_finished = false;
-    // TODO: fix spelling
-    private int m_maxRepititions = 10;
+    private int m_maxRepetitions = 10;
 
     public ColumnTracker(SnmpObjId base) {
         m_base = base;
@@ -54,8 +53,7 @@ public class ColumnTracker extends CollectionTracker {
         
         pduBuilder.addOid(m_last);
         pduBuilder.setNonRepeaters(0);
-        // TODO: fix spelling
-        pduBuilder.setMaxRepetitions(getMaxRepititions());
+        pduBuilder.setMaxRepetitions(getMaxRepetitions());
         
         ResponseProcessor rp = new ResponseProcessor() {
 
@@ -93,12 +91,12 @@ public class ColumnTracker extends CollectionTracker {
         return rp;
     }
 
-    public int getMaxRepititions() {
-        return m_maxRepititions;
+    public int getMaxRepetitions() {
+        return m_maxRepetitions;
     }
     
-    public void setMaxRepititions(int maxRepititions) {
-        m_maxRepititions = maxRepititions;
+    public void setMaxRepetitions(int maxRepetitions) {
+        m_maxRepetitions = maxRepetitions;
     }
 
     protected void receivedEndOfMib() {
