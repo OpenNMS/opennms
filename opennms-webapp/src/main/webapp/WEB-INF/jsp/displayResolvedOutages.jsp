@@ -1,30 +1,168 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"	pageEncoding="UTF-8"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+	pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jstl/fmt" prefix="fmt"%>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
+<%@ taglib uri="/tld/extremecomponents" prefix="ec"%>
+
+<jsp:include page="/includes/header.jsp" flush="false">
+	<jsp:param name="title" value="Resolved Outages" />
+	<jsp:param name="headTitle" value="Outages" />
+	<jsp:param name="breadcrumb" value="All resolved outages by OutageId" />
+</jsp:include>
+
+
 
 <html>
 <head>
-<title><fmt:message key="title" /></title>
+<title>All Outages</title>
+
+
 </head>
 <body>
 
+<link rel="stylesheet" type="text/css"
+	href="<c:url value="/css/styles.css"/>">
+<link rel="stylesheet" type="text/css"
+	href="<c:url value="/css/extremecomponents.css"/>">
 
-<h1><fmt:message key="now" /></h1>
+<center><ec:table items="tabledata" var="tabledata"
+	action="${pageContext.request.contextPath}/displayResolvedOutages.htm?${pageContext.request.queryString}"
+	filterable="false"
+	imagePath="${pageContext.request.contextPath}/images/table/compact/*.gif"
+	title="Resolved Outages" showExports="false" retrieveRowsCallback="limit"
+	filterRowsCallback="limit" sortRowsCallback="limit" rowsDisplayed="25"
+	tableId="tabledata" autoIncludeParameters="false"
+	view="org.opennms.web.svclayer.etable.FixedRowCompact">
 
-<b> That was the whole collection </b>
+	<ec:exportPdf fileName="CurrentOutages.pdf" tooltip="Export PDF"
+		headerColor="black" headerBackgroundColor="#b6c2da"
+		headerTitle="Current Outages" />
+	<ec:exportXls fileName="output.xls" tooltip="Export Excel" />
+	<ec:row highlightRow="false">
+		<ec:column property="outageid" alias="ID" >
+			<a href="outage/detail.jsp?id=${tabledata.outageid}">${tabledata.outageid}</a>
+		</ec:column>
+		<ec:column property="nodeid" alias="Node">
 
-<c:out value="${status.errorMessage}" />
+			<a href="element/node.jsp?node=${tabledata.nodeid}">${tabledata.node}</a>
+			&nbsp;
+			
+			<c:choose>
+				<c:when test='${suffix == null}'>
+					<a
+						href="${pageContext.request.contextPath}/displayResolvedOutages.htm?nodeid=${tabledata.nodeid}">[+]</a>
+					<a
+						href="${pageContext.request.contextPath}/displayResolvedOutages.htm?not_nodeid=${tabledata.nodeid}">[-]</a>
+				</c:when>
 
-The time is now <br>
+				<c:otherwise>
+					<a
+						href="${pageContext.request.contextPath}/displayResolvedOutages.htm?${suffix}&nodeid=${tabledata.nodeid}">[+]</a>
+					<a
+						href="${pageContext.request.contextPath}/displayResolvedOutages.htm?${suffix}&not_nodeid=${tabledata.nodeid}">[-]</a>
+				</c:otherwise>
+			</c:choose>
 
-<c:out value="${now}" />
+		</ec:column>
+		<ec:column property="ipaddr" alias="Interface">
+			<a
+				href="element/interface.jsp?node=${tabledata.nodeid}&intf=${tabledata.interfaceid}">${tabledata.ipaddr}</a>
+				&nbsp;
+				
+			<c:choose>
+				<c:when test='${suffix == null}'>
+					<a
+						href="${pageContext.request.contextPath}/displayResolvedOutages.htm?ipaddr=${tabledata.ipaddr}">[+]</a>
+					<a
+						href="${pageContext.request.contextPath}/displayResolvedOutages.htm?not_ipaddr=${tabledata.ipaddr}">[-]</a>
+				</c:when>
+				<c:otherwise>
+					<a
+						href="${pageContext.request.contextPath}/displayResolvedOutages.htm?${suffix}&ipaddr=${tabledata.ipaddr}">[+]</a>
+					<a
+						href="${pageContext.request.contextPath}/displayResolvedOutages.htm?${suffix}&not_ipaddr=${tabledata.ipaddr}">[-]</a>
+				</c:otherwise>
+			</c:choose>
 
-<c:forEach items="${outages}" var="outageId">
-	<c:out value="${outageId}" />
-	<br>
-	<br>
-</c:forEach>
+		</ec:column>
+		<ec:column property="serviceid" alias="Service">
+			<a
+				href="element/service.jsp?node=${tabledata.nodeid}&intf=${tabledata.interface }&service=${tabledata.serviceid }">${tabledata.service}</a>
+				&nbsp;
 
+			<c:choose>
+				<c:when test='${suffix == null}'>
+					<a
+						href="${pageContext.request.contextPath}/displayResolvedOutages.htm?serviceid=${tabledata.serviceid}">[+]</a>
+					<a
+						href="${pageContext.request.contextPath}/displayResolvedOutages.htm?not_serviceid=${tabledata.serviceid}">[-]</a>
+				</c:when>
+				<c:otherwise>
+					<a
+						href="${pageContext.request.contextPath}/displayResolvedOutages.htm?${suffix}&serviceid=${tabledata.serviceid}">[+]</a>
+					<a
+						href="${pageContext.request.contextPath}/displayResolvedOutages.htm?${suffix}&not_serviceid=${tabledata.serviceid}">[-]</a>
+				</c:otherwise>
+			</c:choose>
+		</ec:column>
+
+		<ec:column property="iflostservice" alias="Down">
+			
+			${tabledata.iflostservice}
+			&nbsp;
+			
+			<c:choose>
+				<c:when test='${suffix == null}'>
+					<a
+						href="${pageContext.request.contextPath}/displayResolvedOutages.htm?bigger_iflostservice=${tabledata.iflostservicelong}">&lt;</a>
+					<a
+						href="${pageContext.request.contextPath}/displayResolvedOutages.htm?smaller_iflostservice=${tabledata.iflostservicelong}">&gt;</a>
+				</c:when>
+				<c:otherwise>
+					<a
+						href="${pageContext.request.contextPath}/displayResolvedOutages.htm?${suffix}&bigger_iflostservice=${tabledata.iflostservicelong}">&lt;</a>
+					<a
+						href="${pageContext.request.contextPath}/displayResolvedOutages.htm?${suffix}&smaller_iflostservice=${tabledata.iflostservicelong}">&gt;</a>
+				</c:otherwise>
+			</c:choose>
+
+
+		</ec:column>
+
+
+		<ec:column property="ifregainedservice" format="MM-dd-yyyy hh:mm:ss"
+			parse="yyyy-MM-dd" alias="Regained"
+			interceptor="org.opennms.web.svclayer.outage.RedCell">
+
+				${tabledata.ifregainedservice}
+				&nbsp;
+				
+			<c:if test='${tabledata.ifregainedservice ne null}'>
+
+				<c:choose>
+					<c:when test='${suffix == null}'>
+						<a
+							href="${pageContext.request.contextPath}/displayResolvedOutages.htm?bigger_ifregainedservice=${tabledata.ifregainedservicelong}">&lt;</a>
+						<a
+							href="${pageContext.request.contextPath}/displayResolvedOutages.htm?smaller_ifregainedservice=${tabledata.ifregainedservicelong}">&gt;</a>
+					</c:when>
+					<c:otherwise>
+						<a
+							href="${pageContext.request.contextPath}/displayResolvedOutages.htm?${suffix}&bigger_ifregainedservice=${tabledata.ifregainedservicelong}">&lt;</a>
+						<a
+							href="${pageContext.request.contextPath}/displayResolvedOutages.htm?${suffix}&smaller_ifregainedservice=${tabledata.ifregainedservicelong}">&gt;</a>
+					</c:otherwise>
+				</c:choose>
+
+			</c:if>
+
+		</ec:column>
+
+	</ec:row>
+</ec:table></center>
+
+<jsp:include page="/includes/footer.jsp" flush="false" />
 </body>
 </html>
 

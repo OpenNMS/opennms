@@ -46,8 +46,8 @@ import org.extremecomponents.table.limit.LimitFactory;
 import org.extremecomponents.table.limit.TableLimit;
 import org.extremecomponents.table.limit.TableLimitFactory;
 import org.opennms.netmgt.model.OnmsOutage;
-import org.opennms.web.svclayer.outage.AllOutagesFilters;
-import org.opennms.web.svclayer.outage.CurrentOutageService;
+import org.opennms.web.svclayer.outage.OutagesFilteringView;
+import org.opennms.web.svclayer.outage.OutageListBuilder;
 import org.opennms.web.svclayer.outage.OutageService;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.UrlFilenameViewController;
@@ -56,7 +56,7 @@ public class OutageAllController extends UrlFilenameViewController {
 
 	OutageService m_outageService;
 
-	CurrentOutageService m_cview = new CurrentOutageService();
+	OutageListBuilder m_cview = new OutageListBuilder();
 
 	Collection<OnmsOutage> foundOutages;
 
@@ -86,7 +86,7 @@ public class OutageAllController extends UrlFilenameViewController {
 		LimitFactory limitFactory = new TableLimitFactory(context, "tabledata");
 		Limit limit = new TableLimit(limitFactory);
 		
-		AllOutagesFilters m_filterService = new AllOutagesFilters();
+		OutagesFilteringView m_filterService = new OutagesFilteringView();
 
 		String searchFilter = m_filterService.filterQuery(request);
 		

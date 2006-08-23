@@ -53,6 +53,10 @@ public interface OutageService {
 	Integer getOutageCount() ;
 	
 	Integer outageCountFiltered(String Filter);
+
+	Collection<OnmsOutage> getResolvedOutagesByRange(Integer Offset, Integer Limit, String Order, String Direction, String Filter);
+
+	Integer outageResolvedCountFiltered(String searchFilter);
 	
     // This we may have to define 
     /*

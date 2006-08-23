@@ -46,14 +46,13 @@ import org.extremecomponents.table.limit.LimitFactory;
 import org.extremecomponents.table.limit.TableLimit;
 import org.extremecomponents.table.limit.TableLimitFactory;
 import org.opennms.netmgt.model.OnmsOutage;
-import org.opennms.web.svclayer.outage.CurrentOutageParseResponse;
+import org.opennms.web.svclayer.outage.OutagesFilteringView;
 import org.opennms.web.svclayer.outage.OutageListBuilder;
 import org.opennms.web.svclayer.outage.OutageService;
-import org.opennms.web.svclayer.outage.SuppressOutages;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.AbstractController;
+import org.springframework.web.servlet.mvc.UrlFilenameViewController;
 
-public class OutageCurrentController extends AbstractController {
+public class OutageResolvedController extends UrlFilenameViewController {
 
 	OutageService m_outageService;
 
@@ -62,8 +61,6 @@ public class OutageCurrentController extends AbstractController {
 	Collection<OnmsOutage> foundOutages;
 
 	Collection<OnmsOutage> viewOutages;
-	
-	SuppressOutages m_suppress = new SuppressOutages();
 
 	private String successView;
 
@@ -83,20 +80,25 @@ public class OutageCurrentController extends AbstractController {
 	// public Map referenceData(HttpServletRequest request) throws Exception {
 	@Override
 	protected ModelAndView handleRequestInternal(HttpServletRequest request,
-			HttpServletResponse reply) throws Exception {
+			HttpServletResponse reply) {
 
 		Context context = new HttpServletRequestContext(request);
 		LimitFactory limitFactory = new TableLimitFactory(context, "tabledata");
 		Limit limit = new TableLimit(limitFactory);
+		
+		OutagesFilteringView m_filterService = new OutagesFilteringView();
 
-		CurrentOutageParseResponse.findSelectedOutagesIDs(request,m_outageService);
+		String searchFilter = m_filterService.filterQuery(request);
 		
 		Map<String, Object> myModel = new HashMap<String, Object>();
-		Integer totalRows = m_outageService.getCurrentOutageCount();
-	
-		myModel.put("request", limit.toString());
-
-		myModel.put("all_params", request.getParameterNames().toString());
+		
+		if (searchFilter.equals("")) {
+			searchFilter = " AND 1=1 ";
+		}
+		
+		Integer totalRows = m_outageService.outageResolvedCountFiltered(searchFilter);
+		limit.setRowAttributes(totalRows, ROW_LIMIT);
+		
 		if (limit.getPage() == 1) {
 			// no offset set
 			myModel.put("rowStart", 0);
@@ -105,13 +107,13 @@ public class OutageCurrentController extends AbstractController {
 			myModel.put("rowEnd", ROW_LIMIT);
 
 			if (limit.getSort().getProperty() == null) {
-				foundOutages = m_outageService.getCurrentOutagesByRange(0,
-						ROW_LIMIT, "outages.nodeid", "asc");
+				foundOutages = m_outageService.getResolvedOutagesByRange(0,
+						ROW_LIMIT, "iflostservice", "asc", searchFilter);
 
 			} else {
-				foundOutages = m_outageService.getCurrentOutagesByRange(0,
-						ROW_LIMIT, "outages.nodeid,outages." + limit.getSort().getProperty(), limit
-								.getSort().getSortOrder());
+				foundOutages = m_outageService.getResolvedOutagesByRange(0,
+						ROW_LIMIT, "outages." + limit.getSort().getProperty(), limit
+								.getSort().getSortOrder(), searchFilter);
 
 			}
 			myModel.put("begin", 0);
@@ -130,33 +132,36 @@ public class OutageCurrentController extends AbstractController {
 				myModel.put("end", rowend);
 			
 			if (limit.getSort().getProperty() == null) {
-				foundOutages = m_outageService.getCurrentOutagesByRange(
-						rowstart, rowend, "outages.nodeid", "asc");
+				foundOutages = m_outageService.getResolvedOutagesByRange(
+						rowstart, rowend, "iflostservice", "asc",searchFilter);
 
 			} else {
 
-				foundOutages = m_outageService.getCurrentOutagesByRange(rowstart,
-						rowend, "outages.nodeid,outages." + limit.getSort().getProperty() + " ", limit
-								.getSort().getSortOrder());
+				foundOutages = m_outageService.getResolvedOutagesByRange(rowstart,
+						rowend, "outages." + limit.getSort().getProperty() + ",outageid", limit
+								.getSort().getSortOrder(),searchFilter);
 
 			}
 		}
-		
-		// Pretty smart to build the collection after any suppressions..... 
+
 		Collection theTable = m_cview.theTable(foundOutages);
-		 
+		
+		myModel.put("searchfilter",searchFilter);
 		myModel.put("tabledata", theTable);
 		myModel.put("totalRows", totalRows);
+		myModel.put("suffix",request.getQueryString());
 		
-		myModel.put("selected_outages", CurrentOutageParseResponse.findSelectedOutagesIDs(request,m_outageService));
-		return new ModelAndView("displayCurrentOutages", myModel);
+				
+		
+
+		return new ModelAndView("displayResolvedOutages" + getSuffix(), myModel);
 	}
 
 	public void setSuccessView(String successView) {
 		this.successView = successView;
 	}
 
-	public void setdisplayCurrentOutages(String successView) {
+	public void setdisplayResolvedOutages(String successView) {
 		this.successView = successView;
 	}
 
