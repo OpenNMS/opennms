@@ -54,6 +54,13 @@
         </property>
 	</bean>
  
+    <bean name="/displaySuppressedOutages.htm"
+		class="org.opennms.web.controller.OutageSuppressedController">
+		<property name="outageService" ref="outageService" />
+		<property name="displaySuppressedOutages">
+			<value>displaySuppressedOutages</value>
+        </property>
+	</bean>
  
  
     

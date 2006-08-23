@@ -138,4 +138,8 @@ public class DefaultOutageService implements OutageService {
 		return m_dao.outageCountFiltered(filter);
 	}
 
+	public Collection<OnmsOutage> getSuppressedOutagesByRange(Integer Offset, Integer Limit, String Order, String Direction) {
+		return m_dao.suppressedOutages(Offset, Limit, Order, Direction);
+	}
+
 }
