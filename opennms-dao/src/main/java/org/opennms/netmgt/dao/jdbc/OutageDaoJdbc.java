@@ -44,6 +44,7 @@ import org.opennms.netmgt.dao.jdbc.outage.FindAllOutages;
 import org.opennms.netmgt.dao.jdbc.outage.FindByOutageId;
 import org.opennms.netmgt.dao.jdbc.outage.FindCurrentOutages;
 import org.opennms.netmgt.dao.jdbc.outage.FindOpenAndResolvedOutages;
+import org.opennms.netmgt.dao.jdbc.outage.FindResolvedOutages;
 import org.opennms.netmgt.dao.jdbc.outage.FindSuppressedOutages;
 import org.opennms.netmgt.dao.jdbc.outage.LazyOutage;
 import org.opennms.netmgt.dao.jdbc.outage.OutageSave;
@@ -253,6 +254,14 @@ public class OutageDaoJdbc extends AbstractDaoJdbc implements OutageDao {
 
 	public Collection<OnmsOutage> suppressedOutages(Integer offset, Integer limit, String order, String direction) {
 		 return new FindSuppressedOutages(getDataSource(), offset, limit, order, direction).findSet(); 
+	}
+
+	public Collection<OnmsOutage> getResolvedOutagesByRange(Integer offset, Integer limit, String order, String direction, String filter) {
+			return new FindResolvedOutages(getDataSource(),offset, limit, order, direction, filter).findSet();
+	}
+
+	public Integer outageResolvedCountFiltered(String filter) {
+			return getJdbcTemplate().queryForInt("select distinct count(outages.iflostservice) from outages, node, ipinterface, ifservices " + "where " + " node.nodeid = outages.nodeid and ipinterface.nodeid = outages.nodeid and ifservices.nodeid = outages.nodeid " + "and ipinterface.ipaddr = outages.ipaddr and ifservices.ipaddr = outages.ipaddr " + "and ifservices.serviceid = outages.serviceid " + "and node.nodeType != 'D' and ipinterface.ismanaged != 'D' and ifservices.status != 'D' " + " and ifregainedservice > 1 and (suppresstime is null or suppresstime < now() ) " + filter);
 	}
 
 }
