@@ -47,12 +47,13 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.opennms.netmgt.rrd.RrdConfig;
 import org.opennms.netmgt.rrd.RrdDataSource;
 import org.opennms.netmgt.rrd.RrdStrategy;
 import org.opennms.netmgt.rrd.RrdUtils;
 
 class RrdStresser {
-
+	
     static int currFileNum = 0;
 
     static int[] dataPosition = null;
@@ -96,8 +97,6 @@ class RrdStresser {
     static final int UPDATES_PER_OPEN = Integer.getInteger("stresstest.updatesperopen", 1).intValue();
 
     static Date updateStart = null;
-
-    static final boolean USE_JNI = "true".equals(System.getProperty("stresstest.usejni", "false"));
 
     static final boolean USE_QUEUE = "true".equals(System.getProperty("stresstest.usequeue", "true"));
 
@@ -177,6 +176,9 @@ class RrdStresser {
     }
 
     public static void main(final String[] args) throws Exception {
+    	
+    	System.setProperty("org.opennms.rrd.strategyClass", "org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy");
+    	
         printHeader();
         print("Starting demo at " + new Date());
 
@@ -258,7 +260,6 @@ class RrdStresser {
         System.out.println("* The stress test takes about one hour to complete on a 1.6GHz     *");
         System.out.println("* computer with 256MB of RAM.                                      *");
         System.out.println("********************************************************************");
-        System.out.println("useJni = " + USE_JNI);
         System.out.println("modulus = " + MODULUS);
         System.out.println("fileCount = " + FILE_COUNT);
         System.out.println("zeroFiles = " + ZERO_FILES);
@@ -295,6 +296,7 @@ class RrdStresser {
     }
 
     private static void rrdInitialize() throws Exception {
+    	RrdConfig.setProperties(System.getProperties());
     	RrdUtils.initialize();
     	rrd = RrdUtils.getStrategy();
     }

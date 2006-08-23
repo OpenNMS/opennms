@@ -7,6 +7,36 @@
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-rrd-stresser</artifactId>
   <name>OpenNMS RRD Stress Tester</name>
+  <build>
+    <plugins>
+      <plugin>
+        <inherited>false</inherited>
+        <artifactId>maven-assembly-plugin</artifactId> 
+        <version>2.1</version>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>attached</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <archive>
+            <manifest>
+              <mainClass>org.opennms.tools.rrd.RrdStresser</mainClass>
+            </manifest>
+          </archive>
+          <descriptorRefs>
+            <descriptorRef>jar-with-dependencies</descriptorRef>
+          </descriptorRefs>
+          <!-- appendAssemblyId>false</appendAssemblyId -->
+          <tarLongFileMode>gnu</tarLongFileMode>
+           
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
   <dependencies>
     <dependency>
       <groupId>org.opennms</groupId>
@@ -20,6 +50,7 @@
       <version>1.3.2-SNAPSHOT</version>
       <scope>runtime</scope>
     </dependency>
+<!--
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-rrdtool-api</artifactId>
@@ -28,10 +59,11 @@
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
-      <artifactId>opennms-rrdtool-jni-macosx</artifactId>
-      <type>jnilib</type>
+      <artifactId>opennms-rrdtool-jni-${platform}</artifactId>
+      <type>${platform.jni}</type>
       <version>1.3.2-SNAPSHOT</version>
       <scope>runtime</scope>
     </dependency>
+-->
   </dependencies>
 </project>
