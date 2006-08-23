@@ -45,6 +45,15 @@
         <value>75</value>
         </property>
 	</bean>
+	
+	<bean name="/displayAllOutages.htm"
+		class="org.opennms.web.controller.OutageAllController">
+		<property name="outageService" ref="outageService" />
+		<property name="displayAllOutages">
+			<value>displayAllOutages</value>
+        </property>
+	</bean>
+ 
  
  
     

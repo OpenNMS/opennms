@@ -126,11 +126,16 @@ public class DefaultOutageService implements OutageService {
 		return m_dao.getOutagesByRange(Offset, Limit,Order,Direction);
 	}
 
+	public Collection<OnmsOutage> getOutagesByRange(Integer Offset, Integer Limit, String Order, String Direction, String filter) {
+		return m_dao.getOutagesByRange(Offset, Limit,Order,Direction, filter);
+	}
+	
 	public Integer getOutageCount() {
 		return m_dao.outageCount();
 	}
-	
 
-	
+	public Integer outageCountFiltered(String filter) {
+		return m_dao.outageCountFiltered(filter);
+	}
 
 }
