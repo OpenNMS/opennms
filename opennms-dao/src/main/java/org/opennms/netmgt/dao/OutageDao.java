@@ -77,4 +77,6 @@ public interface OutageDao extends OnmsDao {
 	
 	public abstract Integer outageCountFiltered(String filter);
 
+	public abstract Collection<OnmsOutage> suppressedOutages(Integer offset, Integer limit, String order, String direction);
+
 }

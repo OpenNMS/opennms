@@ -14,4 +14,9 @@ public class FindSuppressedOutages  extends OutageMappingQuery {
         compile();
     }
 
+	public FindSuppressedOutages(DataSource ds, Integer offset, Integer limit, String order, String direction) {
+		super(ds,"FROM outages as outages, ifservices as ifservices WHERE outages.nodeID = ifservices.nodeID and outages.ipAddr = ifservices.ipAddr and outages.serviceID = ifservices.serviceID  and (outages.ifRegainedService is null and outages.suppresstime > now())  order by  " + order + " " + direction + " LIMIT + " + limit + " OFFSET " + offset);
+        compile();
+        }
+
 }
