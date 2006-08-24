@@ -8,6 +8,8 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// 2006 Aug 24: Fix MissingParameterExceptions and always return the list of
+//              required parameters. - dj@opennms.org
 // 2006 May 30: added a way to choose the date to run the availability reports.
 //
 // Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -137,31 +139,50 @@ public class AvailabilityServlet extends HttpServlet {
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String view = request.getParameter("view");
         String format = request.getParameter("format");
-		String monthFormat = request.getParameter("monthformat");
+	String monthFormat = request.getParameter("monthformat");
         String category = request.getParameter("category");
         String username = request.getRemoteUser();
         String startMonth = request.getParameter("startMonth");
         String startDate = request.getParameter("startDate");
         String startYear = request.getParameter("startYear");
 
+        String[] requiredParameters = new String[] {
+                "view",
+                "format",
+                "category",
+                "startMonth",
+                "startDate",
+                "startYear"
+        };
         if (view == null) {
-            throw new MissingParameterException("view");
+            throw new MissingParameterException("view", requiredParameters);
         }
 
         if (format == null) {
-            throw new MissingParameterException("format");
+            throw new MissingParameterException("format", requiredParameters);
         }
 
         if (category == null) {
-            throw new MissingParameterException("category");
+            throw new MissingParameterException("category", requiredParameters);
         }
 
         if (username == null) {
             username = "";
         }
 
-        if ((startMonth == null) || (startYear == null) || (startDate == null )) {
-            throw new MissingParameterException("Missing date parameter.");
+        if (startMonth == null) {
+            throw new MissingParameterException("startMonth",
+                                                requiredParameters);
+        }
+
+        if (startYear == null) {
+            throw new MissingParameterException("startYear",
+                                                requiredParameters);
+        }
+
+        if (startDate == null) {
+            throw new MissingParameterException("startDate",
+                                                requiredParameters);
         }
 
 
