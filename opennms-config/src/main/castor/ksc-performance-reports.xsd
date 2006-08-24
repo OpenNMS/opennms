@@ -36,7 +36,8 @@
 
       <attribute name="show_graphtype_button" type="boolean" use="optional"/>
 
-      <attribute name="graphs_per_page" type="integer" use="optional"/>
+      <attribute name="graphs_per_line" type="integer" use="optional"/>
+
     </complexType>
   </element>
 
@@ -53,6 +54,8 @@
       <attribute name="timespan" type="string" use="required"/>
 
       <attribute name="graphtype" type="string" use="required"/>
+
+      <attribute name="extlink" type="string" use="optional"/>
     </complexType>
   </element>
 </schema>
