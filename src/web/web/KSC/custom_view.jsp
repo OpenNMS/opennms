@@ -218,7 +218,7 @@
                         <% } %>
                             <img src="snmp/performance/graph.png?props=<%=nodeId%>/strings.properties&report=<%=display_graph.getName()%>&start=<%=start%>&end=<%=end%>&<%=rrdParm%>&<%=externalValuesParm%>"/>
 			<%if(current_graph.getExtlink() != null) { %>
-			    </ag
+			    </a>
                         <% } %>
                         </td>
                     <% if (((i+1)%report_graphsperline == 0)){ %>
