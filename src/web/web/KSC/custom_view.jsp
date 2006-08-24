@@ -86,6 +86,13 @@
         graph_options = this.model.getQueries (Integer.parseInt(graph.getNodeId()), graph.getInterfaceId(), includeNodeQueries);
         Arrays.sort(graph_options);
     }
+
+    // Get number of graphs per line
+    int report_graphsperline = 1;
+    if (report.getGraphs_per_line() > 0) {
+        int report_graphsperline = report.getGraphs_per_line();
+    }
+
 %>
 
 
@@ -168,16 +175,13 @@
                        String externalValuesParm = this.encodeExternalValuesAsParmString(nodeId, intf, display_graph); 
                 %>
             
+                    <% if ((i == 0) || (i%report_graphsperline == 0)) { %>
                     <tr>
-                        <td align="right">
-                            <h3> <%=current_graph.getTitle()%> <br>
-                                Node: <a href="element/node.jsp?node=<%=nodeId%>">
-                                <%=NetworkElementFactory.getNodeLabel(nodeId)%></a><br>
-                                <% if(intf != null ) { %>
-                                    Interface: <%=this.model.getHumanReadableNameForIfLabel(nodeId, intf)%>
-                                <% } %>
-                            </h3>
-
+                    <% } %>
+                        <td align="center">
+			    <table>
+                            <tr><td>
+                            <b> <%=current_graph.getTitle()%> <br/></b>
                             <%-- gather start/stop time information --%>
                             <%
                                 String display_timespan = null;
@@ -198,14 +202,33 @@
 
                             <b>From</b> <%=startPretty%> <br>
                             <b>To</b> <%=endPretty%>
-                        </td>
-              
-                        <td align="left">
+                            </td><td>
+                            <%if(nodeId > 0) {%>
+                                Node: <a href="element/node.jsp?node=<%=nodeId%>">
+                                <%=NetworkElementFactory.getNodeLabel(nodeId)%></a><br>
+                                <% if(intf != null) { %>
+                                    Interface: <%=this.model.getHumanReadableNameForIfLabel(nodeId, intf)%><br>
+                                    <a href="performance/choosereportanddate.jsp?node=<%=nodeId%>&intf=<%=intf%>">Detail</a>
+                                <% } %>
+                            <%}%>
+                            </td></tr></table>
+                        <br/>
+			<%if(current_graph.GetExtlink() != null { %>
+			    <a href="<%=current_graph.GetExtlink()%>">
+                        <% } %>
                             <img src="snmp/performance/graph.png?props=<%=nodeId%>/strings.properties&report=<%=display_graph.getName()%>&start=<%=start%>&end=<%=end%>&<%=rrdParm%>&<%=externalValuesParm%>"/>
+			<%if(current_graph.GetExtlink() != null { %>
+			    </a>
+                        <% } %>
                         </td>
+                    <% if (((i+1)%report_graphsperline == 0)){ %>
                     </tr>
+                    <% } else if ((i+1) == graph_count) { %>
+                    </tr>
+                    <% } %>
                 <% }  //end for loop %> 
             </table>  
+
             </td> 
         </tr>
 
