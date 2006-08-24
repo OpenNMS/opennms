@@ -43,7 +43,7 @@ public class XMPPNotificationManager {
 
 	private int xmppPort;
 
-	private Boolean useSSL = false;
+	private boolean useSSL = false;
 
 	private HashMap rooms;
 
