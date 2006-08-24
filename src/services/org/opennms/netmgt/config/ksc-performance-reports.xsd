@@ -29,7 +29,7 @@
 			<attribute name="interfaceId" type="string" use="required"/>
 			<attribute name="timespan" type="string" use="required"/>
 			<attribute name="graphtype" type="string" use="required"/>
-			<attribute name="extlink" type="string" use="required"/>
+			<attribute name="extlink" type="string" use="optional"/>
 		</complexType>
 	</element>
 

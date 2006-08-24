@@ -90,7 +90,7 @@
     // Get number of graphs per line
     int report_graphsperline = 1;
     if (report.getGraphs_per_line() > 0) {
-        int report_graphsperline = report.getGraphs_per_line();
+        report_graphsperline = report.getGraphs_per_line();
     }
 
 %>
@@ -213,12 +213,12 @@
                             <%}%>
                             </td></tr></table>
                         <br/>
-			<%if(current_graph.GetExtlink() != null { %>
-			    <a href="<%=current_graph.GetExtlink()%>">
+			<%if(current_graph.getExtlink() != null) { %>
+			    <a href="<%=current_graph.getExtlink()%>">
                         <% } %>
                             <img src="snmp/performance/graph.png?props=<%=nodeId%>/strings.properties&report=<%=display_graph.getName()%>&start=<%=start%>&end=<%=end%>&<%=rrdParm%>&<%=externalValuesParm%>"/>
-			<%if(current_graph.GetExtlink() != null { %>
-			    </a>
+			<%if(current_graph.getExtlink() != null) { %>
+			    </ag
                         <% } %>
                         </td>
                     <% if (((i+1)%report_graphsperline == 0)){ %>
