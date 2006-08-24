@@ -32,7 +32,6 @@
 package org.opennms.netmgt.model;
 
 import java.io.Serializable;
-import java.net.InetAddress;
 import java.util.Date;
 
 import org.springframework.core.style.ToStringCreator;
@@ -76,8 +75,6 @@ public class OnmsOutage implements Serializable {
     
     /** persistent field */
     private String m_ipaddr;
-    
-    private String m_node;
     
     /** persistent field */
     private Integer m_serviceId;

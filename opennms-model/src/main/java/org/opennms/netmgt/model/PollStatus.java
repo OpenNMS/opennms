@@ -51,6 +51,7 @@ public class PollStatus {
 //    public static final PollStatus STATUS_UNKNOWN = new PollStatus(PollStatus.SERVICE_UNKNOWN, "Unknown");
 	
     
+	long m_timestamp = System.currentTimeMillis();
     int m_statusCode;
     String m_reason;
     long m_responseTime = -1L;
