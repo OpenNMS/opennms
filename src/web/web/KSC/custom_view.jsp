@@ -208,18 +208,18 @@
                                 <%=NetworkElementFactory.getNodeLabel(nodeId)%></a><br>
                                 <% if(intf != null) { %>
                                     Interface: <%=this.model.getHumanReadableNameForIfLabel(nodeId, intf)%><br>
-                                    <a href="performance/choosereportanddate.jsp?node=<%=nodeId%>&intf=<%=intf%>">Detail</a>
+                                    <%if(current_graph.getExtlink() != null) { %>
+                                        <a href="<%=current_graph.getExtlink()%>">Details</a>
+                                    <% } else { %>
+                                        <a href="performance/choosereportanddate.jsp?node=<%=nodeId%>&intf=<%=intf%>">Detail</a>
+                                    <% } %>
                                 <% } %>
                             <%}%>
                             </td></tr></table>
                         <br/>
-			<%if(current_graph.getExtlink() != null) { %>
-			    <a href="<%=current_graph.getExtlink()%>">
-                        <% } %>
+			    <a href="/opennms/performance/zoom.jsp?intf=<%=intf%>&node=<%=nodeId%>&reports=<%=display_graph.getName()%>&start=<%=start%>&end=<%=end%>">
                             <img src="snmp/performance/graph.png?props=<%=nodeId%>/strings.properties&report=<%=display_graph.getName()%>&start=<%=start%>&end=<%=end%>&<%=rrdParm%>&<%=externalValuesParm%>"/>
-			<%if(current_graph.getExtlink() != null) { %>
 			    </a>
-                        <% } %>
                         </td>
                     <% if (((i+1)%report_graphsperline == 0)){ %>
                     </tr>
