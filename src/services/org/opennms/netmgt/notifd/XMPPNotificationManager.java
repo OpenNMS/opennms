@@ -31,7 +31,7 @@ public class XMPPNotificationManager {
 
 	private static final String XMPP_RESOURCE = "notifd";
 
-	private static final Integer XMPP_PORT = 5222;
+	private static final int XMPP_PORT = 5222;
 
 	private static XMPPConnection xmpp = null;
 
@@ -78,7 +78,7 @@ public class XMPPNotificationManager {
 			xmppUser = this.props.getProperty("xmpp.user");
 			xmppPassword = this.props.getProperty("xmpp.pass");
 			if (this.props.containsKey("xmpp.port")) {
-				xmppPort = Integer.valueOf(this.props.getProperty("xmpp.port"));
+				xmppPort = Integer.valueOf(this.props.getProperty("xmpp.port")).intValue();
 			} else {
 				xmppPort = XMPP_PORT;
 			}
