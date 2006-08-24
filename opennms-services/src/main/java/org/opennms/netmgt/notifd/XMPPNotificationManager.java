@@ -13,6 +13,7 @@ import org.jivesoftware.smack.GroupChat;
 import org.jivesoftware.smack.SSLXMPPConnection;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
+import org.jivesoftware.smack.ConnectionConfiguration;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.ConfigFileConstants;
 
@@ -31,9 +32,13 @@ public class XMPPNotificationManager {
 
 	private static final String XMPP_RESOURCE = "notifd";
 
-	private static final Integer XMPP_PORT = 5222;
+	private static final String TRUST_STORE_PASSWORD = "changeit";
+
+	private static final int XMPP_PORT = 5222;
 
 	private static XMPPConnection xmpp = null;
+
+	private static ConnectionConfiguration xmppConfig = null; 
 
 	private String xmppServer;
 
@@ -42,8 +47,6 @@ public class XMPPNotificationManager {
 	private String xmppPassword;
 
 	private int xmppPort;
-
-	private Boolean useSSL = false;
 
 	private HashMap rooms;
 
@@ -78,39 +81,64 @@ public class XMPPNotificationManager {
 			xmppUser = this.props.getProperty("xmpp.user");
 			xmppPassword = this.props.getProperty("xmpp.pass");
 			if (this.props.containsKey("xmpp.port")) {
-				xmppPort = Integer.valueOf(this.props.getProperty("xmpp.port"));
+				xmppPort = Integer.valueOf(this.props.getProperty("xmpp.port")).intValue();
 			} else {
 				xmppPort = XMPP_PORT;
 			}
-			if (this.props.containsKey("xmpp.useSSL")
-					& this.props.getProperty("xmpp.useSSL").equals("true"))
-				useSSL = true;
-			else
-				useSSL = false;
+		        xmppConfig = new ConnectionConfiguration(xmppServer, xmppPort);
+			if (this.props.containsKey("xmpp.TLSEnabled")
+					&& this.props.getProperty("xmpp.TLSEnabled").equals("true")) {
+				xmppConfig.setTLSEnabled(true);
+				log().debug("XMPPManager Enabling TLS");
+			} else {
+				xmppConfig.setTLSEnabled(false);
+			}
+			if (this.props.containsKey("xmpp.selfSignedCertificateEnabled")
+					&& this.props.getProperty("xmpp.selfSignedCertificateEnabled").equals("true")) {
+				xmppConfig.setSelfSignedCertificateEnabled(true);
+				log().debug("XMPPManager Enabling self-signed certificates");
+			} else {
+				xmppConfig.setSelfSignedCertificateEnabled(false);
+			}
+			if (this.props.containsKey("xmpp.truststorePassword")) {
+				xmppConfig.setTruststorePassword(this.props.getProperty("xmpp.truststorePassword"));
+				log().debug("XMPPManager set non-default truststore password");
+			} else {
+				log().debug("XMPPManager set default truststore password");
+				xmppConfig.setTruststorePassword(TRUST_STORE_PASSWORD);
+			}
+			if (this.props.containsKey("xmpp.debuggerEnabled") 
+					&& this.props.getProperty("xmpp.debuggerEnabled").equals("true")) {
+				xmppConfig.setDebuggerEnabled(true);
+				log().debug("XMPPManager set debugger enabled");
+			} else {
+				xmppConfig.setDebuggerEnabled(false);
+				log().debug("XMPPManager set debugger disabled");
+			}
+			xmppConfig.setSASLAuthenticationEnabled(true);
+			log().debug("XMPP Manager connection config: " + xmppConfig.toString());
+			log().debug("never get here");
 		} catch (Exception e) {
-			log().error(e.getMessage());
+			log().error("XMPP Manager couldn't configure connection : ", e);
 		}
+
+		// dump some settings:
+
+
 
 		// Connect to xmpp server
 
 		try {
-			if (useSSL) {
-				// This will only work with later versions of the smack library
-				log().debug("Attempting Legacy SSL XMPP Connection to " + xmppServer + ":" + xmppPort);
-				xmpp = new SSLXMPPConnection(xmppServer,xmppPort);
-			}
-			else {
-				log().debug("Attempting vanilla XMPP Connection to " + xmppServer + ":" + xmppPort);
-				xmpp = new XMPPConnection(xmppServer,xmppPort);
-			}
+			log().debug("Attempting vanilla XMPP Connection to " + xmppServer + ":" + xmppPort);
+			xmpp = new XMPPConnection(xmppConfig);
 			if (xmpp.isConnected()) {
 				log().debug("XMPP Manager successfully connected");
-				// Oh dear, this is all in a later version of the library
-				/* if (xmpp.isSecureConnection()) 
+				// Following requires a later version of the library
+				if (xmpp.isSecureConnection()) 
 					log().debug("XMPP Manager successfully nogotiated a secure connection");
 				if (xmpp.isUsingTLS()) 
 					log().debug("XMPP Manager successfully nogotiated a TLS connection");
-				log().debug("XMPP Manager Connected"); */
+				log().debug("XMPP Manager Connected"); 
 				login();
 				// Add connection listener
 				xmpp.addConnectionListener(conlistener);
@@ -142,9 +170,9 @@ public class XMPPNotificationManager {
 	private void login() {
 		try {
 			if (xmpp.isConnected()) {
+				log().debug("XMPP Manager logging in");
 				xmpp.login(xmppUser, xmppPassword, XMPP_RESOURCE);
 				rooms = new HashMap();
-				log().debug("XMPP Manager logged in");
 			} else
 				log().debug("XMPP Manager unable to login: Not connected to XMPP server");
 		} catch (Exception e) {
