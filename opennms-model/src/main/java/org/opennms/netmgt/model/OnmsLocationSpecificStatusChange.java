@@ -2,9 +2,18 @@ package org.opennms.netmgt.model;
 
 public class OnmsLocationSpecificStatusChange {
 	
+	private Integer m_id;
 	private OnmsLocationMonitor m_locationMonitor;
 	private OnmsMonitoredService m_monitoredService;
 	private PollStatus m_newStatus;
+	
+	public Integer getId() {
+		return m_id;
+	}
+	
+	public void setId(Integer id) {
+		m_id = id;
+	}
 	
 	public OnmsLocationMonitor getLocationMonitor() {
 		return m_locationMonitor;
