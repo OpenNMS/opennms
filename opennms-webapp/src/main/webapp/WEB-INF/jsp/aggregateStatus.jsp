@@ -35,7 +35,7 @@
     <c:forEach items="${stati}" var="status">
       <tr>
         <td><c:out value="${status.label}" /></td>
-        <td><c:out value="${status.downEntityCount}" /> of <c:out value="${status.totalEntityCount}" /></td>
+        <td class="${status.status}"><c:out value="${status.downEntityCount}" /> of <c:out value="${status.totalEntityCount}" /></td>
       </tr>
     </c:forEach>
   </table>

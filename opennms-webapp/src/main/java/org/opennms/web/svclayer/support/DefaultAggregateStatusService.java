@@ -32,7 +32,6 @@
 
 package org.opennms.web.svclayer.support;
 
-import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -46,7 +45,6 @@ import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.web.svclayer.AggregateStatus;
-import org.opennms.web.svclayer.AggregateStatusColor;
 import org.opennms.web.svclayer.AggregateStatusService;
 
 /**
@@ -111,13 +109,13 @@ public class DefaultAggregateStatusService implements AggregateStatusService {
             
             Collection<OnmsNode> nodes = m_nodeDao.findAllByVarCharAssetColumnCategoryList(assetColumn, columnValue, statusDef.getCategories());
             
-            for (OnmsNode node : nodes) {
-                m_nodeDao.getHierarchy(node.getId());
-            }
+//            for (OnmsNode node : nodes) {
+//                m_nodeDao.getHierarchy(node.getId());
+//            }
             
             status.setDownEntityCount(computeDownCount(nodes));
             status.setTotalEntityCount(nodes.size());
-            status.setColor(computeColor(nodes, status));
+            status.setStatus(computeStatus(nodes, status));
             stati.add(status);
         }
         
@@ -125,12 +123,12 @@ public class DefaultAggregateStatusService implements AggregateStatusService {
     }
     
     
-    private Color computeColor(Collection<OnmsNode> nodes, AggregateStatus status) {
+    private String computeStatus(Collection<OnmsNode> nodes, AggregateStatus status) {
         
-        Color color = AggregateStatusColor.ALL_NODES_UP;
+        String color = AggregateStatus.ALL_NODES_UP;
         
         if (status.getDownEntityCount() >= 1) {
-            color = AggregateStatusColor.NODES_ARE_DOWN;
+            color = AggregateStatus.NODES_ARE_DOWN;
             return color;
         }
         
@@ -143,7 +141,7 @@ public class DefaultAggregateStatusService implements AggregateStatusService {
                 for (Iterator svcIter = svcs.iterator(); svcIter.hasNext();) {
                     OnmsMonitoredService svc = (OnmsMonitoredService) svcIter.next();
                     if (svc.isDown()) {
-                        color = AggregateStatusColor.ONE_SERVICE_DOWN;
+                        color = AggregateStatus.ONE_SERVICE_DOWN;
                         return color;  //quick exit this mess
                     }
                 }

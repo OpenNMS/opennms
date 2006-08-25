@@ -40,7 +40,6 @@ import java.util.Iterator;
 import org.opennms.netmgt.model.AggregateStatusDefinition;
 import org.opennms.netmgt.model.AggregateStatusView;
 import org.opennms.web.svclayer.AggregateStatus;
-import org.opennms.web.svclayer.AggregateStatusColor;
 import org.opennms.web.svclayer.AggregateStatusService;
 import org.springframework.test.AbstractTransactionalDataSourceSpringContextTests;
 
@@ -107,20 +106,20 @@ public class DefaultAggregateServiceIntegrationTest extends AbstractTransactiona
         
         AggregateStatus status;
         status = (AggregateStatus)((ArrayList)aggrStati).get(0);
-        assertEquals(status.getColor(), AggregateStatusColor.NODES_ARE_DOWN);
+        assertEquals(status.getStatus(), AggregateStatus.NODES_ARE_DOWN);
         
         status = (AggregateStatus)((ArrayList)aggrStati).get(1);
-        assertEquals(status.getColor(), AggregateStatusColor.ALL_NODES_UP);
+        assertEquals(status.getStatus(), AggregateStatus.ALL_NODES_UP);
         
         status = (AggregateStatus)((ArrayList)aggrStati).get(2);
-        assertEquals(status.getColor(), AggregateStatusColor.NODES_ARE_DOWN);
+        assertEquals(status.getStatus(), AggregateStatus.NODES_ARE_DOWN);
 
         status = (AggregateStatus)((ArrayList)aggrStati).get(3);
-        assertEquals(status.getColor(), AggregateStatusColor.NODES_ARE_DOWN);
+        assertEquals(status.getStatus(), AggregateStatus.NODES_ARE_DOWN);
         assertEquals(new Integer(6), status.getDownEntityCount());
         
         status = (AggregateStatus)((ArrayList)aggrStati).get(4);
-        assertEquals(status.getColor(), AggregateStatusColor.ALL_NODES_UP);
+        assertEquals(status.getStatus(), AggregateStatus.ALL_NODES_UP);
 
     }
 
