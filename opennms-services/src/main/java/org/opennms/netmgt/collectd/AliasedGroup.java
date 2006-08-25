@@ -54,11 +54,10 @@ public class AliasedGroup extends AttributeGroup {
 	public void visit(CollectionSetVisitor visitor) {
 		visitor.visitGroup(this);
 		
-		log().debug("YYY: Entering visit");
 		for (Iterator iter = getAttributes().iterator(); iter.hasNext();) {
 		    Attribute attr = (Attribute) iter.next();
 		    AliasedAttribute aliased = new AliasedAttribute(getResource(), attr);
-		    log().debug("YYY: visiting at aliased  = " + aliased);
+		    log().debug("visiting at aliased  = " + aliased);
 		    aliased.visit(visitor);
 		}
 		
