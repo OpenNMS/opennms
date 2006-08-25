@@ -38,16 +38,15 @@ import java.util.Set;
 
 import javax.sql.DataSource;
 
-import org.opennms.netmgt.dao.jdbc.Cache;
 import org.opennms.netmgt.dao.jdbc.JdbcSet;
-import org.opennms.netmgt.dao.jdbc.LazySet;
-import org.opennms.netmgt.dao.jdbc.outage.FindCurrentOutages;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.springframework.jdbc.object.MappingSqlQuery;
 
 public class MonitoredServiceMappingQuery extends MappingSqlQuery {
 
-    public MonitoredServiceMappingQuery(DataSource ds, String clause) {
+    private MonitoredServiceMapper m_monSvcMapper;
+
+	public MonitoredServiceMappingQuery(DataSource ds, String clause) {
         super(ds, "SELECT " +
         		"ifservices.nodeid as ifservices_nodeid, " +
         		"ifservices.ipAddr as ifservices_ipAddr, " +
@@ -60,44 +59,19 @@ public class MonitoredServiceMappingQuery extends MappingSqlQuery {
         		"ifservices.source as ifservices_source, " +
         		"ifservices.notify as ifservices_notify " +
         		clause);
+        m_monSvcMapper = new MonitoredServiceMapperWithLazyRelatives(ds);
     }
+	
     
     public DataSource getDataSource() {
         return getJdbcTemplate().getDataSource();
     }
 
     public Object mapRow(ResultSet rs, int rowNumber) throws SQLException {
-        Integer nodeId = (Integer)rs.getObject("ifservices_nodeid");       //nodeID                  integer,        
-        String ipAddr  = rs.getString("ifservices_ipAddr");                //ipAddr                  varchar(16) not null,
-        Integer ifIndex = (Integer)rs.getObject("ifservices_ifIndex");     //ifIndex                 integer,
-        Integer serviceId = (Integer)rs.getObject("ifservices_serviceId"); //serviceID               integer,
-        
-        final MonitoredServiceId id = new MonitoredServiceId(nodeId, ipAddr, ifIndex, serviceId);
-    	
-        LazyMonitoredService svc = (LazyMonitoredService)Cache.obtain(OnmsMonitoredService.class, id);
-        svc.setLoaded(true);
-        svc.setLastGood(rs.getTimestamp("ifservices_lastGood"));           //lastGood                timestamp without time zone,
-        svc.setLastFail(rs.getTimestamp("ifservices_lastFail"));           //lastFail                timestamp without time zone,
-        svc.setQualifier(rs.getString("ifservices_qualifier"));            //qualifier               char(16),
-        svc.setStatus(rs.getString("ifservices_status"));                  //status                  char(1),
-        svc.setSource(rs.getString("ifservices_source"));                  //source                  char(1),
-        svc.setNotify(rs.getString("ifservices_notify"));                  //notify                  char(1),
-        svc.setDirty(false);
-        
-        LazySet.Loader outageLoader = new LazySet.Loader() {
-
-            public Set load() {
-                return new FindCurrentOutages(getDataSource(), id).findSet();
-            }
-            
-        };
-        
-        svc.setCurrentOutages(new LazySet(outageLoader));
-        
-        return svc;
+        return m_monSvcMapper.mapRow(rs, rowNumber);
     }
-    
-    public OnmsMonitoredService findUnique() {
+
+	public OnmsMonitoredService findUnique() {
         return findUnique((Object[])null);
     }
     

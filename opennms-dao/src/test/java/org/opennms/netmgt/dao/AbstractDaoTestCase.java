@@ -45,6 +45,7 @@ import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsMonitoredService;
+import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsOutage;
 import org.opennms.netmgt.model.OnmsServiceType;
 import org.postgresql.ds.PGSimpleDataSource;
@@ -209,6 +210,7 @@ public class AbstractDaoTestCase extends TestCase {
     protected boolean m_populate = true;
     protected boolean m_runTestsInTransaction = true;
     private boolean m_createDb = true;
+	protected OnmsNode m_node1;
 
     public boolean isRunTestsInTransaction() {
         return m_runTestsInTransaction;
@@ -350,7 +352,8 @@ public class AbstractDaoTestCase extends TestCase {
         getDistPollerDao().save(distPoller);
         
         NetworkBuilder builder = new NetworkBuilder(distPoller);
-        builder.addNode("node1").getAssetRecord().setAssetNumber("imported:"+"1");
+        m_node1 = builder.addNode("node1");
+		m_node1.getAssetRecord().setAssetNumber("imported:"+"1");
         builder.addInterface("192.168.1.1", 1).setIsManaged("M").setIsSnmpPrimary("P").setIpStatus(1);
         builder.addSnmpInterface("192.168.1.1", 1).setIfSpeed(10000000);
         builder.addService(getServiceType("ICMP"));
