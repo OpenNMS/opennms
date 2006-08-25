@@ -133,7 +133,12 @@ public abstract class AttributeType {
     
     public void storeResult(CollectionSet collectionSet, SNMPCollectorEntry entry, SnmpObjId base, SnmpInstId inst, SnmpValue val) {
         log().debug("Setting attribute: "+this+".["+inst+"] = '"+val+"'");
-        CollectionResource resource = m_resourceType.findResource(inst);
+        CollectionResource resource = null;
+        if(this.getAlias().equals("ifAlias")) {
+            resource = m_resourceType.findAliasedResource(inst, val.toString());
+        } else {
+            resource = m_resourceType.findResource(inst);
+        }
         if (resource == null) {
             collectionSet.notifyIfNotFound(this, base, inst, val);
         } else {

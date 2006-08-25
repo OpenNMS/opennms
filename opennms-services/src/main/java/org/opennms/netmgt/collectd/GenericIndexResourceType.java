@@ -64,6 +64,13 @@ public class GenericIndexResourceType extends ResourceType {
 		return m_resourceMap.get(inst);
 	}
 
+        public CollectionResource findAliasedResource(SnmpInstId inst, String ifAlias) {
+        // This is here for completeness but it should not get called from here.
+        // findResource should be called instead
+            log().debug("findAliasedResource: Should not get called from GenericIndexResourceType");
+            return null;
+        }
+
 	@Override
 	public Collection<AttributeType> getAttributeTypes() {
         return getCollection().getAttributeTypes(getAgent(), DataCollectionConfigFactory.ALL_IF_ATTRIBUTES);

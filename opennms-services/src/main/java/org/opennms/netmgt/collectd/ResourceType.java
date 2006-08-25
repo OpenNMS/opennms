@@ -70,6 +70,8 @@ public abstract class ResourceType {
     }
 
     public abstract CollectionResource findResource(SnmpInstId inst);
+
+    public abstract CollectionResource findAliasedResource(SnmpInstId inst, String ifAlias);
     
     public abstract Collection getResources();
     

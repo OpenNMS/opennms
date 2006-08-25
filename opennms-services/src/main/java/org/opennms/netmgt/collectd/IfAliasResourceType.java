@@ -56,6 +56,12 @@ public class IfAliasResourceType extends ResourceType {
     }
 
     public CollectionResource findResource(SnmpInstId inst) {
+        // This is here for completeness but it should not get called here.
+        // findAliasedResource should be called instead
+        log().debug("findResource: Should not get called from IfAliasResourceType");
+        return null;
+    }
+    public CollectionResource findAliasedResource(SnmpInstId inst, String ifAlias) {
         Integer key = new Integer(inst.toInt());
         AliasedResource resource = (AliasedResource) m_aliasedIfs.get(key);
         if (resource == null) {
@@ -66,7 +72,7 @@ public class IfAliasResourceType extends ResourceType {
             } else {
                 log().info("Creating an aliased resource for "+ifInfo);
             
-                resource = new AliasedResource(this, m_params.getDomain(), ifInfo, m_params.getIfAliasComment());
+                resource = new AliasedResource(this, m_params.getDomain(), ifInfo, m_params.getIfAliasComment(), ifAlias);
             
                 m_aliasedIfs.put(key, resource);
             }

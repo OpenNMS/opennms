@@ -127,6 +127,13 @@ public class IfResourceType extends DbResourceType {
         return getIfInfo(inst.toInt());
     }
 
+    public CollectionResource findAliasedResource(SnmpInstId inst, String ifAlias) {
+        // This is here for completeness but it should not get called from here.
+        // findResource should be called instead
+        log().debug("findAliasedResource: Should not get called from IfResourceType");
+        return null;
+    }
+
     public Collection<IfInfo> getResources() {
         return m_ifMap.values();
     }
