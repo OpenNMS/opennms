@@ -33,6 +33,7 @@ package org.opennms.netmgt.dao.jdbc;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -70,10 +71,105 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsOutage;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.SqlParameter;
+import org.springframework.util.StringUtils;
 
 public class NodeDaoJdbc extends AbstractDaoJdbc implements NodeDao {
     
-    public NodeDaoJdbc() {
+    public static class NodeHierarchyMapper implements RowMapper {
+    	
+    	private DataSource m_dataSource;
+
+		public NodeHierarchyMapper(DataSource ds) {
+    		m_dataSource = ds;
+    	}
+		
+		public String getColumns() {
+	    	return 
+	    	"node.nodeid as nodeid, " +
+	    	"node.dpName as dpName, " +
+	    	"node.nodeCreateTime as nodeCreateTime, " +
+	    	"node.nodeParentID as nodeParentID, " +
+	    	"node.nodeType as nodeType, " +
+	    	"node.nodeSysOid as nodeSysOid, " +
+	    	"node.nodeSysName as nodeSysName, " +
+	    	"node.nodeSysDescription as nodeSysDescription, " +
+	    	"node.nodeSysLocation as nodeSysLocation, " +
+	    	"node.nodeSysContact as nodeSysContact, " +
+	    	"node.nodeLabel as nodeLabel, " +
+	    	"node.nodeLabelSource as nodeLabelSource, " +
+	    	"node.nodeNetBiosName as nodeNetBiosName, " +
+	    	"node.nodeDomainName as nodeDomainName, " +
+	    	"node.operatingSystem as operatingSystem, " +
+	    	"node.lastCapsdPoll as lastCapsdPoll, " +
+			"ipInterface.nodeID as ipInterface_nodeID, " +
+			"ipInterface.ipAddr as ipInterface_ipAddr, " +
+			"ipInterface.ifIndex as ipInterface_ifIndex, " +
+			"ipInterface.ipHostname as ipInterface_ipHostname, " +
+			"ipInterface.isManaged as ipInterface_isManaged, " +
+			"ipInterface.ipStatus as ipInterface_ipStatus, " +
+			"ipInterface.ipLastCapsdPoll as ipInterface_ipLastCapsdPoll, " +
+			"ipInterface.isSnmpPrimary as ipInterface_isSnmpPrimary, " +
+			"ifservices.nodeid as ifservices_nodeid, " +
+			"ifservices.ipAddr as ifservices_ipAddr, " +
+			"ifservices.ifIndex as ifservices_ifIndex, " +
+			"ifservices.serviceId as ifservices_serviceId, " +
+			"ifservices.lastGood as ifservices_lastGood, " +
+			"ifservices.lastFail as ifservices_lastFail, " +
+			"ifservices.qualifier as ifservices_qualifier, " +
+			"ifservices.status as ifservices_status, " +
+			"ifservices.source as ifservices_source, " +
+			"ifservices.notify as ifservices_notify, " +
+			"outages.outageID as outages_outageID, " +
+			"outages.svcLostEventID as outages_svcLostEventID, " +
+			"outages.svcRegainedEventID as outages_svcRegainedEventID, " +
+			"outages.nodeID as outages_nodeID, " +
+			"outages.ipAddr as outages_ipAddr, " +
+			"outages.serviceID as outages_serviceID, " +
+			"ifservices.ifIndex as outages_ifIndex, " +
+			"outages.ifLostService as outages_ifLostService, " +
+			"outages.ifRegainedService as outages_ifRegainedService, " +
+			"outages.suppressTime as outages_suppressTime, " +
+			"outages.suppressedBy as outages_suppressedBy ";
+
+		}
+		
+		// we use the lazy mapper to that the other relationships that we are using
+		// are filling in in a lazy way
+		NodeMapper nodeMapper = new NodeMapperWithLazyRelatives(m_dataSource) {
+		
+			@Override
+			protected void setIpInterfaces(OnmsNode node) {
+		        node.setIpInterfaces(new LinkedHashSet<OnmsIpInterface>());
+		    }
+			
+		};
+
+		IpInterfaceMapper ifMapper = new IpInterfaceMapper();
+
+		MonitoredServiceMapper monSvcMapper = new MonitoredServiceMapper();
+
+		OutageMapper outageMapper = new OutageMapper();
+
+		public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
+			OnmsNode node = nodeMapper.mapNode(rs, rowNum);
+			OnmsIpInterface iface = ifMapper.mapInterface(rs, rowNum);
+			if (iface != null) {
+				node.getIpInterfaces().add(iface);
+				OnmsMonitoredService monSvc = (OnmsMonitoredService)monSvcMapper.mapRow(rs, rowNum);
+				if (monSvc != null) {
+					iface.getMonitoredServices().add(monSvc);
+					OnmsOutage outage = (OnmsOutage)outageMapper.mapRow(rs, rowNum);
+					if (outage != null) {
+						monSvc.getCurrentOutages().add(outage);
+					}
+				}
+			}
+			return node;
+		}
+	}
+
+	public NodeDaoJdbc() {
         super();
     }
     
@@ -117,92 +213,17 @@ public class NodeDaoJdbc extends AbstractDaoJdbc implements NodeDao {
     @SuppressWarnings("unchecked")
 	public OnmsNode getHierarchy(Integer id) {
     	
+    	NodeHierarchyMapper rowMapper = new NodeHierarchyMapper(getDataSource());
+    	
+
     	final String hierarchyQuery = "SELECT " +
-    	"node.nodeid as nodeid, " +
-    	"node.dpName as dpName, " +
-    	"node.nodeCreateTime as nodeCreateTime, " +
-    	"node.nodeParentID as nodeParentID, " +
-    	"node.nodeType as nodeType, " +
-    	"node.nodeSysOid as nodeSysOid, " +
-    	"node.nodeSysName as nodeSysName, " +
-    	"node.nodeSysDescription as nodeSysDescription, " +
-    	"node.nodeSysLocation as nodeSysLocation, " +
-    	"node.nodeSysContact as nodeSysContact, " +
-    	"node.nodeLabel as nodeLabel, " +
-    	"node.nodeLabelSource as nodeLabelSource, " +
-    	"node.nodeNetBiosName as nodeNetBiosName, " +
-    	"node.nodeDomainName as nodeDomainName, " +
-    	"node.operatingSystem as operatingSystem, " +
-    	"node.lastCapsdPoll as lastCapsdPoll, " +
-		"ipInterface.nodeID as ipInterface_nodeID, " +
-		"ipInterface.ipAddr as ipInterface_ipAddr, " +
-		"ipInterface.ifIndex as ipInterface_ifIndex, " +
-		"ipInterface.ipHostname as ipInterface_ipHostname, " +
-		"ipInterface.isManaged as ipInterface_isManaged, " +
-		"ipInterface.ipStatus as ipInterface_ipStatus, " +
-		"ipInterface.ipLastCapsdPoll as ipInterface_ipLastCapsdPoll, " +
-		"ipInterface.isSnmpPrimary as ipInterface_isSnmpPrimary, " +
-		"ifservices.nodeid as ifservices_nodeid, " +
-		"ifservices.ipAddr as ifservices_ipAddr, " +
-		"ifservices.ifIndex as ifservices_ifIndex, " +
-		"ifservices.serviceId as ifservices_serviceId, " +
-		"ifservices.lastGood as ifservices_lastGood, " +
-		"ifservices.lastFail as ifservices_lastFail, " +
-		"ifservices.qualifier as ifservices_qualifier, " +
-		"ifservices.status as ifservices_status, " +
-		"ifservices.source as ifservices_source, " +
-		"ifservices.notify as ifservices_notify, " +
-		"outages.outageID as outages_outageID, " +
-		"outages.svcLostEventID as outages_svcLostEventID, " +
-		"outages.svcRegainedEventID as outages_svcRegainedEventID, " +
-		"outages.nodeID as outages_nodeID, " +
-		"outages.ipAddr as outages_ipAddr, " +
-		"outages.serviceID as outages_serviceID, " +
-		"ifservices.ifIndex as outages_ifIndex, " +
-		"outages.ifLostService as outages_ifLostService, " +
-		"outages.ifRegainedService as outages_ifRegainedService, " +
-		"outages.suppressTime as outages_suppressTime, " +
-		"outages.suppressedBy as outages_suppressedBy " +
+    	rowMapper.getColumns() +
     	"FROM node " +
     	"LEFT JOIN ipInterface ON (node.nodeId = ipInterface.nodeId) " +
     	"LEFT JOIN ifservices ON (ipInterface.nodeId = ifservices.nodeId AND ipInterface.ipAddr = ifservices.ipAddr) " +
     	"LEFT JOIN outages ON (ifServices.nodeId = outages.nodeId AND ifServices.ipAddr = outages.ipAddr AND ifServices.serviceID = outages.serviceId AND outages.ifRegainedService is null) " +
     	"WHERE node.nodeId = ?" +
     	"";
-    	
-    	RowMapper rowMapper = new RowMapper() {
-    		// we use the lazy mapper to that the other relationships that we are using
-    		// are filling in in a lazy way
-    		NodeMapper nodeMapper = new NodeMapperWithLazyRelatives(getDataSource()) {
-
-				@Override
-				protected void setIpInterfaces(OnmsNode node) {
-                    node.setIpInterfaces(new LinkedHashSet<OnmsIpInterface>());
-                }
-    			
-    		};
-    		IpInterfaceMapper ifMapper = new IpInterfaceMapper();
-    		MonitoredServiceMapper monSvcMapper = new MonitoredServiceMapper();
-    		OutageMapper outageMapper = new OutageMapper();
-
-			public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
-				OnmsNode node = nodeMapper.mapNode(rs, rowNum);
-				OnmsIpInterface iface = ifMapper.mapInterface(rs, rowNum);
-				if (iface != null) {
-					node.getIpInterfaces().add(iface);
-					OnmsMonitoredService monSvc = (OnmsMonitoredService)monSvcMapper.mapRow(rs, rowNum);
-					if (monSvc != null) {
-						iface.getMonitoredServices().add(monSvc);
-						OnmsOutage outage = (OnmsOutage)outageMapper.mapRow(rs, rowNum);
-						if (outage != null) {
-							monSvc.getCurrentOutages().add(outage);
-						}
-					}
-				}
-				return node;
-			}
-    		
-    	};
     	
     	Set<OnmsNode> nodes = new HashSet<OnmsNode>(getJdbcTemplate().query(hierarchyQuery, new Object[] { id }, rowMapper));
     	if (nodes.isEmpty())
@@ -349,8 +370,26 @@ public class NodeDaoJdbc extends AbstractDaoJdbc implements NodeDao {
      */
     public Collection<OnmsNode> findAllByVarCharAssetColumnCategoryList(String columnName, String columnValue, Collection<String> categoryNames) {
         log().debug("findAllByVarCharAssetColumnCategoryList: beginning find.");
-        List<OnmsNode> nodes = new FindByVarCharAssetColumnAndCategoryList(getDataSource(), columnName, categoryNames).execute(columnValue);
-        log().debug("findAllByVarCharAssetColumnCateoryList: find complete. Nodes found: "+nodes.size());
+        
+    	NodeHierarchyMapper rowMapper = new NodeHierarchyMapper(getDataSource());
+    	
+
+    	final String hierarchyQuery = "SELECT " +
+    	rowMapper.getColumns() +
+    	"FROM node " +
+    	"JOIN assets ON (node.nodeid = assets.nodeid) " +
+    	"JOIN category_node ON (node.nodeid = category_node.nodeid) " +
+    	"JOIN categories ON (category_node.categoryid = category.categoryid) " +
+    	"LEFT JOIN ipInterface ON (node.nodeId = ipInterface.nodeId) " +
+    	"LEFT JOIN ifservices ON (ipInterface.nodeId = ifservices.nodeId AND ipInterface.ipAddr = ifservices.ipAddr) " +
+    	"LEFT JOIN outages ON (ifServices.nodeId = outages.nodeId AND ifServices.ipAddr = outages.ipAddr AND ifServices.serviceID = outages.serviceId AND outages.ifRegainedService is null) " +
+    	"WHERE assets." + columnName +" = ? " +
+    	"AMD categories.categoryName in ("+StringUtils.collectionToDelimitedString(categoryNames, ",", "'", "'")+")" +
+    	"";
+    	
+    	Set<OnmsNode> nodes = new HashSet<OnmsNode>(getJdbcTemplate().query(hierarchyQuery, new Object[] { columnValue }, rowMapper));
+
+    	log().debug("findAllByVarCharAssetColumnCateoryList: find complete. Nodes found: "+nodes.size());
         return nodes;
     }
     
