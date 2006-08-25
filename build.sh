@@ -44,5 +44,5 @@ if [ $VERBOSE -gt 0 ]; then
     set -x
 fi
 
-export MAVEN_OPTS=-Xmx512m
+MAVEN_OPTS=-Xmx512m export MAVEN_OPTS
 $PREFIX/maven-2.0.4/bin/mvn -Droot.dir=$PREFIX -Dmaven.test.skip=true "$@"
