@@ -2,6 +2,7 @@ package org.opennms.netmgt.dao.jdbc.ipif;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.LinkedHashSet;
 
 
 import org.opennms.netmgt.dao.jdbc.Cache;
@@ -45,7 +46,7 @@ public class IpInterfaceMapper implements RowMapper {
 	}
 
 	protected void setMonitoredServices(OnmsIpInterface iface) {
-		// we don't do anything by default!
+        iface.setMonitoredServices(new LinkedHashSet());
 	}
 
 }

@@ -2,9 +2,11 @@ package org.opennms.netmgt.dao.jdbc.monsvc;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.LinkedHashSet;
 
 import org.opennms.netmgt.dao.jdbc.Cache;
 import org.opennms.netmgt.model.OnmsMonitoredService;
+import org.opennms.netmgt.model.OnmsOutage;
 import org.springframework.jdbc.core.RowMapper;
 
 public class MonitoredServiceMapper implements RowMapper {
@@ -41,7 +43,7 @@ public class MonitoredServiceMapper implements RowMapper {
 	}
 
 	protected void setCurrentOutages(OnmsMonitoredService svc) {
-		// We don't do anything here by default
+        svc.setCurrentOutages(new LinkedHashSet<OnmsOutage>());
 	}
 
 }
