@@ -33,6 +33,7 @@ package org.opennms.netmgt.model;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 import org.springframework.core.style.ToStringCreator;
@@ -79,7 +80,7 @@ public class OnmsMonitoredService extends OnmsEntity implements Serializable {
      * be a model change were one service can be represented
      * by more than one outage.
      */
-    private Set<OnmsOutage> m_currentOutages;
+    private Set<OnmsOutage> m_currentOutages = new LinkedHashSet<OnmsOutage>();
 
     public OnmsMonitoredService() {
     }

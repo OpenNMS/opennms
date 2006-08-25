@@ -103,12 +103,12 @@ public class OnmsNode extends OnmsEntity implements Serializable {
     private OnmsAssetRecord m_assetRecord;
 
     /** persistent field */
-    private Set m_ipInterfaces = new LinkedHashSet();
+    private Set<OnmsIpInterface> m_ipInterfaces = new LinkedHashSet<OnmsIpInterface>();
 
     /** persistent field */
-    private Set m_snmpInterfaces = new LinkedHashSet();
+    private Set<OnmsSnmpInterface> m_snmpInterfaces = new LinkedHashSet<OnmsSnmpInterface>();
     
-    private Set m_categories = new LinkedHashSet();
+    private Set<OnmsCategory> m_categories = new LinkedHashSet<OnmsCategory>();
 
     public OnmsNode() {
         this(null);
@@ -391,11 +391,11 @@ public class OnmsNode extends OnmsEntity implements Serializable {
      * hibernate.collection-one-to-many class="org.opennms.netmgt.model.OnmsIpInterface"
      *         
      */
-    public Set getIpInterfaces() {
+    public Set<OnmsIpInterface> getIpInterfaces() {
         return m_ipInterfaces;
     }
 
-    public void setIpInterfaces(Set ipinterfaces) {
+    public void setIpInterfaces(Set<OnmsIpInterface> ipinterfaces) {
         m_ipInterfaces = ipinterfaces;
     }
     
@@ -416,19 +416,19 @@ public class OnmsNode extends OnmsEntity implements Serializable {
      * hibernate.collection-one-to-many class="org.opennms.netmgt.model.OnmsSnmpInterface"
 
      */
-    public Set getSnmpInterfaces() {
+    public Set<OnmsSnmpInterface> getSnmpInterfaces() {
         return m_snmpInterfaces;
     }
 
-    public void setSnmpInterfaces(Set snmpinterfaces) {
+    public void setSnmpInterfaces(Set<OnmsSnmpInterface> snmpinterfaces) {
         m_snmpInterfaces = snmpinterfaces;
     }
     
-    public Set getCategories() {
+    public Set<OnmsCategory> getCategories() {
         return m_categories;
     }
     
-    public void setCategories(Set categories) {
+    public void setCategories(Set<OnmsCategory> categories) {
         m_categories = categories;
     }
 
