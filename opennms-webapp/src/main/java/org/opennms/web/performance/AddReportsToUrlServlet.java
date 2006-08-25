@@ -52,22 +52,29 @@ public class AddReportsToUrlServlet extends HttpServlet {
 
     public void init() throws ServletException {
         try {
-            m_model = new PerformanceModel(Vault.getHomeDir());
+            PerformanceModelFactory.init();
+            m_model = PerformanceModelFactory.getInstance().getConfig();
         } catch (Exception e) {
-            throw new ServletException("Could not initialize the PerformanceModel", e);
+            throw new ServletException("Could not initialize the PerformanceModel.  Nested exception: " + e.getClass().getName() + ": " + e.getMessage(), e);
         }
     }
 
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        String[] requiredParameters = new String[] {
+                "node",
+                "resourceType"
+        };
+        
         // required parameter node
         String nodeIdString = request.getParameter("node");
-        if (nodeIdString == null) {
-            throw new MissingParameterException("node", new String[] { "node", "resourceType" });
+        if (nodeIdString == null) {;
+            throw new MissingParameterException("node", requiredParameters);
         }
         
         String resourceType = request.getParameter("resourceType");
-        if (nodeIdString == null) {
-            throw new MissingParameterException("resourceType", new String[] { "node", "resourceType" });
+        if (resourceType == null) {
+            throw new MissingParameterException("resourceType",
+                                                requiredParameters);
         }
 
         // optional parameter resource
