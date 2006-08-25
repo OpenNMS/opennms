@@ -11,6 +11,7 @@
 //
 // Modifications:
 //
+// 2006 Aug 25: Small HTML fix. - dj@opennms.org
 // 2006 Aug 15: HTML fix from bug #1558. - dj@opennms.org
 // 2006 Apr 17: File created
 //
@@ -84,6 +85,7 @@
             while( iter2.hasNext() ) {
                 String[] pth = (String[])iter2.next();
                 pthData = PathOutageFactory.getCriticalPathData(pth[0], pth[1]); %>
+                <tr>
                 <% if((pthData[0] == null) || (pthData[0].equals(""))) { %>
                     <td class="standardmorepadding">(interface not in DB)</td>
                 <% } else if (pthData[0].indexOf("nodes have this IP") > -1) { %>
