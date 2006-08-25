@@ -370,24 +370,30 @@ public class NodeDaoJdbc extends AbstractDaoJdbc implements NodeDao {
      */
     public Collection<OnmsNode> findAllByVarCharAssetColumnCategoryList(String columnName, String columnValue, Collection<String> categoryNames) {
         log().debug("findAllByVarCharAssetColumnCategoryList: beginning find.");
-        
-    	NodeHierarchyMapper rowMapper = new NodeHierarchyMapper(getDataSource());
-    	
+        List<OnmsNode> nodes = new FindByVarCharAssetColumnAndCategoryList(getDataSource(), columnName, categoryNames).execute(columnValue);
 
-    	final String hierarchyQuery = "SELECT " +
-    	rowMapper.getColumns() +
-    	"FROM node " +
-    	"JOIN assets ON (node.nodeid = assets.nodeid) " +
-    	"JOIN category_node ON (node.nodeid = category_node.nodeid) " +
-    	"JOIN categories ON (category_node.categoryid = category.categoryid) " +
-    	"LEFT JOIN ipInterface ON (node.nodeId = ipInterface.nodeId) " +
-    	"LEFT JOIN ifservices ON (ipInterface.nodeId = ifservices.nodeId AND ipInterface.ipAddr = ifservices.ipAddr) " +
-    	"LEFT JOIN outages ON (ifServices.nodeId = outages.nodeId AND ifServices.ipAddr = outages.ipAddr AND ifServices.serviceID = outages.serviceId AND outages.ifRegainedService is null) " +
-    	"WHERE assets." + columnName +" = ? " +
-    	"AMD categories.categoryName in ("+StringUtils.collectionToDelimitedString(categoryNames, ",", "'", "'")+")" +
-    	"";
-    	
-    	Set<OnmsNode> nodes = new HashSet<OnmsNode>(getJdbcTemplate().query(hierarchyQuery, new Object[] { columnValue }, rowMapper));
+        for (OnmsNode node : nodes) {
+			getHierarchy(node.getId());
+		}
+        
+// Turns out its faster just go thru and load the hierarchy of each node... go figure!        
+//    	NodeHierarchyMapper rowMapper = new NodeHierarchyMapper(getDataSource());
+//    	
+//
+//    	final String hierarchyQuery = "SELECT " +
+//    	rowMapper.getColumns() +
+//    	"FROM node " +
+//    	"JOIN assets ON (node.nodeid = assets.nodeid) " +
+//    	"JOIN category_node ON (node.nodeid = category_node.nodeid) " +
+//    	"JOIN categories ON (category_node.categoryid = category.categoryid) " +
+//    	"LEFT JOIN ipInterface ON (node.nodeId = ipInterface.nodeId) " +
+//    	"LEFT JOIN ifservices ON (ipInterface.nodeId = ifservices.nodeId AND ipInterface.ipAddr = ifservices.ipAddr) " +
+//    	"LEFT JOIN outages ON (ifServices.nodeId = outages.nodeId AND ifServices.ipAddr = outages.ipAddr AND ifServices.serviceID = outages.serviceId AND outages.ifRegainedService is null) " +
+//    	"WHERE assets." + columnName +" = ? " +
+//    	"AMD categories.categoryName in ("+StringUtils.collectionToDelimitedString(categoryNames, ",", "'", "'")+")" +
+//    	"";
+//    	
+//    	Set<OnmsNode> nodes = new HashSet<OnmsNode>(getJdbcTemplate().query(hierarchyQuery, new Object[] { columnValue }, rowMapper));
 
     	log().debug("findAllByVarCharAssetColumnCateoryList: find complete. Nodes found: "+nodes.size());
         return nodes;
