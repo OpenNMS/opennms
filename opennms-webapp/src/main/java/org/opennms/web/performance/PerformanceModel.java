@@ -10,7 +10,9 @@
 //
 // Modifications:
 //
-// 02 Oct 2005: Use File.separator to join file path components instead of "/". -- DJ Gregor
+// 2006 Aug 24: Better error messages and allow config to be passed in via an
+//              InputStream. - dj@opennms.org
+// 2005 Oct 02: Use File.separator to join file path components instead of "/". -- DJ Gregor
 //
 //
 // Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -40,6 +42,8 @@ package org.opennms.web.performance;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.Reader;
 import java.lang.Integer;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.sql.Connection;
@@ -107,6 +111,11 @@ public class PerformanceModel extends GraphModelAbstract {
      */
     public PerformanceModel(String homeDir) throws IOException {
 	loadProperties(homeDir, RRDTOOL_GRAPH_PROPERTIES_FILENAME);
+        initResourceTypes();
+    }
+
+    public PerformanceModel(InputStream in) throws IOException {
+        loadProperties(in);
         initResourceTypes();
     }
 
@@ -307,7 +316,7 @@ public class PerformanceModel extends GraphModelAbstract {
         File rrdDirectory = getRrdDirectory();
         
         if (verify && !rrdDirectory.isDirectory()) {
-            throw new IllegalArgumentException("RRD directory does not exist");
+            throw new IllegalArgumentException("RRD directory does not exist: " + rrdDirectory.getAbsolutePath());
         }
         
         return rrdDirectory;
@@ -317,11 +326,11 @@ public class PerformanceModel extends GraphModelAbstract {
         return getNodeDirectory(Integer.toString(nodeId), verify);
     }
     
-    public File getNodeDirectory(String nodeId, boolean verify) {
+    public File getNodeDirectory(String nodeId, boolean verify) throws ObjectRetrievalFailureException {
         File nodeDirectory = new File(getRrdDirectory(verify), nodeId);
 
         if (verify && !nodeDirectory.isDirectory()) {
-            throw new IllegalArgumentException("No node directory exists for node " + nodeId + ": " + nodeDirectory);
+            throw new ObjectRetrievalFailureException(File.class, "No node directory exists for node " + nodeId + ": " + nodeDirectory);
         }
         
         return nodeDirectory;
@@ -458,10 +467,6 @@ public class PerformanceModel extends GraphModelAbstract {
     
     public List<GraphResource> getResourcesForNodeResourceType(int nodeId, String resourceTypeName) {
         GraphResourceType resourceType = getResourceTypeByName(resourceTypeName);
-
-        if (!resourceType.isResourceTypeOnNode(nodeId)) {
-            throw new ObjectRetrievalFailureException(GraphResourceType.class, resourceTypeName, "Resource type is not on node " + nodeId, null);
-        }
 
         return resourceType.getResourcesForNode(nodeId);
     }
