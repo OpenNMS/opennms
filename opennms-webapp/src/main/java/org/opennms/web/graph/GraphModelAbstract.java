@@ -5,6 +5,7 @@ import org.apache.log4j.Category;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -40,23 +41,26 @@ public abstract class GraphModelAbstract implements GraphModel {
     }
 
     protected void loadProperties(String file) throws IOException {
-
-        Properties m_properties;
-        m_properties = new java.util.Properties();
-	FileInputStream propertiesStream = new FileInputStream(file);
-        m_properties.load(propertiesStream);
+	FileInputStream in = new FileInputStream(file);
+        loadProperties(in);
+        in.close();
+    }
+    
+    protected void loadProperties(InputStream in) throws IOException {
+        Properties properties = new java.util.Properties();
+        properties.load(in);
 
         m_rrdDirectory =
-	    new File(m_properties.getProperty("command.input.dir"));
+	    new File(properties.getProperty("command.input.dir"));
 
-        if(m_properties.getProperty("default.report") != null) {	
+        if (properties.getProperty("default.report") != null) {	
             m_defaultReport =
-	        new String(m_properties.getProperty("default.report"));
+	        new String(properties.getProperty("default.report"));
         } else {
             m_defaultReport = new String("none");
         }	    
 
-        m_reportMap = PrefabGraph.getPrefabGraphDefinitions(m_properties);
+        m_reportMap = PrefabGraph.getPrefabGraphDefinitions(properties);
     }
 
     public File getRrdDirectory() {
