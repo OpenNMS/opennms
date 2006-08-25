@@ -385,12 +385,12 @@ public class NodeDaoJdbc extends AbstractDaoJdbc implements NodeDao {
 //    	"FROM node " +
 //    	"JOIN assets ON (node.nodeid = assets.nodeid) " +
 //    	"JOIN category_node ON (node.nodeid = category_node.nodeid) " +
-//    	"JOIN categories ON (category_node.categoryid = category.categoryid) " +
+//    	"JOIN categories ON (category_node.categoryid = categories.categoryid) " +
 //    	"LEFT JOIN ipInterface ON (node.nodeId = ipInterface.nodeId) " +
 //    	"LEFT JOIN ifservices ON (ipInterface.nodeId = ifservices.nodeId AND ipInterface.ipAddr = ifservices.ipAddr) " +
 //    	"LEFT JOIN outages ON (ifServices.nodeId = outages.nodeId AND ifServices.ipAddr = outages.ipAddr AND ifServices.serviceID = outages.serviceId AND outages.ifRegainedService is null) " +
 //    	"WHERE assets." + columnName +" = ? " +
-//    	"AMD categories.categoryName in ("+StringUtils.collectionToDelimitedString(categoryNames, ",", "'", "'")+")" +
+//    	"AND categories.categoryName in ("+StringUtils.collectionToDelimitedString(categoryNames, ",", "'", "'")+")" +
 //    	"";
 //    	
 //    	Set<OnmsNode> nodes = new HashSet<OnmsNode>(getJdbcTemplate().query(hierarchyQuery, new Object[] { columnValue }, rowMapper));
