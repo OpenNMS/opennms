@@ -12,6 +12,7 @@
 //
 // Modifications:
 //
+// 2006 Aug 25: End <td> tags with </td> instead of </th>. - dj@opennms.org
 // 2003 Feb 07: Fixed URLEncoder issues.
 // 2002 Nov 26: Fixed breadcrumbs issue.
 // 
@@ -118,12 +119,12 @@
 <table class="standard">
   <tr>
     <% if( editable ) { %>
-      <td class="standardheader"width="5%">Ack</th>
+      <td class="standardheader"width="5%">Ack</td>
     <% } %>
-    <td class="standardheader" width="5%">Notice</th>
-    <td class="standardheader" width="5%">Event ID</th>
-    <td class="standardheader" width="25%">Time Sent</th>
-    <td class="standardheader">Message</th>
+    <td class="standardheader" width="5%">Notice</td>
+    <td class="standardheader" width="5%">Event ID</td>
+    <td class="standardheader" width="25%">Time Sent</td>
+    <td class="standardheader">Message</td>
   </tr>
 
   <% for( int i = 0; i < notices.length; i++ ) { %>
