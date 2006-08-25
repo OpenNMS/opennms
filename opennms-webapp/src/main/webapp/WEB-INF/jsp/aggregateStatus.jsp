@@ -19,15 +19,28 @@
 
 <body>
 
-<h1> Aggregated Status </h1>
+<h1 align="center">Site Status</h1>
+
+<div id="index-contentmiddle">
 
 <h2><c:out value="${view.name}" /></h2> <br>
 
-<c:forEach items="${stati}" var="status">
-    <c:out value="${status.label}" />
-    <c:out value="${status.downEntityCount}" /> of 
-    <c:out value="${status.totalEntityCount}" /> <br>
-</c:forEach>
+  <table>
+    <thead>
+      <tr>
+        <th>Device Type</th>
+        <th align="center">Down/Up</th>
+      </tr>
+    </thead>
+    <c:forEach items="${stati}" var="status">
+      <tr>
+        <td><c:out value="${status.label}" /></td>
+        <td><c:out value="${status.downEntityCount}" /> of <c:out value="${status.totalEntityCount}" /></td>
+      </tr>
+    </c:forEach>
+  </table>
+
+</div>
 
 </body>
 <jsp:include page="/includes/footer.jsp" flush="false" />

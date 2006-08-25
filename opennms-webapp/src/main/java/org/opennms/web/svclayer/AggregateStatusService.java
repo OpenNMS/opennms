@@ -63,4 +63,6 @@ public interface AggregateStatusService {
     
     Collection<AggregateStatus> createAggreateStatuses(AggregateStatusView statusView);
 
+    Collection<AggregateStatus> createAggreateStatuses(AggregateStatusView statusView, String statusSite);
+
 }

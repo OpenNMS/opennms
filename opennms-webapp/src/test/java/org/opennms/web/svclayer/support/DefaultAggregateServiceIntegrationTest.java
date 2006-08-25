@@ -35,6 +35,7 @@ package org.opennms.web.svclayer.support;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Iterator;
 
 import org.opennms.netmgt.model.AggregateStatusDefinition;
 import org.opennms.netmgt.model.AggregateStatusView;
@@ -69,6 +70,14 @@ public class DefaultAggregateServiceIntegrationTest extends AbstractTransactiona
         AggregateStatusView view = m_aggregateService.createAggregateStatusView(viewName);
         
         Collection<AggregateStatus> aggrStati = m_aggregateService.createAggreateStatuses(view);
+        
+        long entityCnt = 0;
+        for (Iterator it = aggrStati.iterator(); it.hasNext();) {
+            AggregateStatus status = (AggregateStatus) it.next();
+            entityCnt += status.getTotalEntityCount();
+        }
+        System.out.println("Total nodes in status view: "+entityCnt);
+        
         assertNotNull(aggrStati);
         assertFalse(aggrStati.size() == 0);
         

@@ -81,6 +81,11 @@ public class DefaultAggregateStatusService implements AggregateStatusService {
         return createAggregateStatus(statusView.getTableName(), statusView.getColumnName(), statusView.getColumnValue(), statusView.getStatusDefinitions());
     }
 
+    //Overloaded method that overrides the column value in the defined view
+    public Collection<AggregateStatus> createAggreateStatuses(AggregateStatusView statusView, String statusSite) {
+        return createAggregateStatus(statusView.getTableName(), statusView.getColumnName(), statusSite, statusView.getStatusDefinitions());
+    }
+
     private Collection<AggregateStatus> createAggregateStatus(String tableName, String columnName, String columnValue, Collection<AggregateStatusDefinition> statusDefinitions) {
         if (tableName != null && !tableName.equalsIgnoreCase("assets")) {
             throw new UnsupportedOperationException("This service currently only implmented for aggregation on asset columns.");
@@ -105,6 +110,10 @@ public class DefaultAggregateStatusService implements AggregateStatusService {
             status.setLabel(statusDef.getAggrStatusLabel());
             
             Collection<OnmsNode> nodes = m_nodeDao.findAllByVarCharAssetColumnCategoryList(assetColumn, columnValue, statusDef.getCategories());
+            
+            for (OnmsNode node : nodes) {
+                m_nodeDao.getHierarchy(node.getId());
+            }
             
             status.setDownEntityCount(computeDownCount(nodes));
             status.setTotalEntityCount(nodes.size());
