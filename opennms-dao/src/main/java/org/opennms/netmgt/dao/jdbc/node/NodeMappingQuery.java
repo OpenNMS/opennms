@@ -38,20 +38,34 @@ import java.util.Set;
 
 import javax.sql.DataSource;
 
-import org.opennms.netmgt.dao.jdbc.Cache;
 import org.opennms.netmgt.dao.jdbc.JdbcSet;
-import org.opennms.netmgt.dao.jdbc.LazySet;
-import org.opennms.netmgt.dao.jdbc.category.FindCategoriesByNode;
-import org.opennms.netmgt.dao.jdbc.ipif.FindByNode;
-import org.opennms.netmgt.model.OnmsAssetRecord;
-import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsNode;
 import org.springframework.jdbc.object.MappingSqlQuery;
 
 public class NodeMappingQuery extends MappingSqlQuery {
-
+	
+	NodeMapper m_nodeMapper;
+	
     public NodeMappingQuery(DataSource ds, String clause) {
-        super(ds, "SELECT n.nodeid as nodeid, n.dpName as dpName, n.nodeCreateTime as nodeCreateTime, n.nodeParentID as nodeParentID, n.nodeType as nodeType, n.nodeSysOid as nodeSysOid, n.nodeSysName as nodeSysName, n.nodeSysDescription as nodeSysDescription, n.nodeSysLocation as nodeSysLocation, n.nodeSysContact as nodeSysContact, n.nodeLabel as nodeLabel, n.nodeLabelSource as nodeLabelSource, n.nodeNetBiosName as nodeNetBiosName, n.nodeDomainName as nodeDomainName, n.operatingSystem as operatingSystem, n.lastCapsdPoll as lastCapsdPoll "+clause);
+        super(ds, "SELECT " +
+        		"n.nodeid as nodeid, " +
+        		"n.dpName as dpName, " +
+        		"n.nodeCreateTime as nodeCreateTime, " +
+        		"n.nodeParentID as nodeParentID, " +
+        		"n.nodeType as nodeType, " +
+        		"n.nodeSysOid as nodeSysOid, " +
+        		"n.nodeSysName as nodeSysName, " +
+        		"n.nodeSysDescription as nodeSysDescription, " +
+        		"n.nodeSysLocation as nodeSysLocation, " +
+        		"n.nodeSysContact as nodeSysContact, " +
+        		"n.nodeLabel as nodeLabel, " +
+        		"n.nodeLabelSource as nodeLabelSource, " +
+        		"n.nodeNetBiosName as nodeNetBiosName, " +
+        		"n.nodeDomainName as nodeDomainName, " +
+        		"n.operatingSystem as operatingSystem, " +
+        		"n.lastCapsdPoll as lastCapsdPoll " +
+        		clause);
+        m_nodeMapper = new NodeMapperWithLazyRelatives(ds);
     }
     
     public DataSource getDataSource() {
@@ -59,70 +73,10 @@ public class NodeMappingQuery extends MappingSqlQuery {
     }
 
     public Object mapRow(ResultSet rs, int rowNumber) throws SQLException {
-        final Integer id = (Integer) rs.getObject("nodeid");
-
-        LazyNode node = (LazyNode)Cache.obtain(OnmsNode.class, id);
-        node.setLoaded(true);
-        
-        String dpName = rs.getString("dpName");
-        OnmsDistPoller distPoller = (OnmsDistPoller)Cache.obtain(OnmsDistPoller.class, dpName);
-
-        node.setDistPoller(distPoller);
-        
-        OnmsAssetRecord asset = (OnmsAssetRecord)Cache.obtain(OnmsAssetRecord.class, id);
-        node.setAssetRecord(asset);
-        
-        Integer parentId = (Integer)rs.getObject("nodeParentID");
-        if (parentId == null) {
-        	node.setParent(null);
-        } else {
-        	OnmsNode parent = (OnmsNode)Cache.obtain(OnmsNode.class, parentId);
-        	node.setParent(parent);
-        }
-
-        node.setCreateTime(rs.getTime("nodeCreateTime"));
-        node.setType(rs.getString("nodeType"));
-        node.setSysObjectId(rs.getString("nodeSysOid"));
-        node.setSysName(rs.getString("nodeSysName"));
-        node.setSysDescription((rs.getString("nodeSysDescription")));
-        node.setSysLocation(rs.getString("nodeSysLocation"));
-        node.setSysContact(rs.getString("nodeSysContact"));
-        node.setLabel(rs.getString("nodeLabel"));
-        node.setLabelSource(rs.getString("nodeLabelSource"));
-        node.setNetBiosName(rs.getString("nodeNetBiosName"));
-        node.setNetBiosDomain(rs.getString("nodeDomainName"));;
-        node.setOperatingSystem(rs.getString("operatingSystem"));
-        node.setLastCapsdPoll(rs.getTime("lastCapsdPoll"));
-        
-        LazySet.Loader ifLoader = new LazySet.Loader() {
-
-			public Set load() {
-				return new FindByNode(getDataSource()).findSet(id);
-			}
-        	
-        };
-        
-        node.setIpInterfaces(new LazySet(ifLoader));
-        
-        LazySet.Loader catLoader = new LazySet.Loader() {
-            public Set load() {
-                return new FindCategoriesByNode(getDataSource()).findSet(id);
-            }
-        };
-        node.setCategories(new LazySet(catLoader));
-        
-        LazySet.Loader snmpIfLoader = new LazySet.Loader() {
-        	public Set load() {
-        		return new org.opennms.netmgt.dao.jdbc.snmpif.FindByNode(getDataSource()).findSet(id);
-        	}
-        };
-        node.setSnmpInterfaces(new LazySet(snmpIfLoader));
-        
-        node.setDirty(false);
-        return node;
+        return m_nodeMapper.mapRow(rs, rowNumber);
     }
-    
-    public OnmsNode findUnique() {
+
+	public OnmsNode findUnique() {
         return findUnique((Object[])null);
     }
     

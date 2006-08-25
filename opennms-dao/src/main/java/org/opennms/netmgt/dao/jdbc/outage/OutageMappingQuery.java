@@ -36,18 +36,17 @@ import java.util.Set;
 
 import javax.sql.DataSource;
 
-import org.opennms.netmgt.dao.jdbc.Cache;
 import org.opennms.netmgt.dao.jdbc.JdbcSet;
-import org.opennms.netmgt.dao.jdbc.monsvc.MonitoredServiceId;
-import org.opennms.netmgt.model.OnmsEvent;
-import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsOutage;
 import org.springframework.jdbc.object.MappingSqlQuery;
 
 public class OutageMappingQuery extends MappingSqlQuery {
 
+	private OutageMapper m_outageMapper;
+
 	public OutageMappingQuery(DataSource ds, String clause) {
-		super(ds, "SELECT " + "outages.outageID as outages_outageID, "
+		super(ds, "SELECT " 
+				+ "outages.outageID as outages_outageID, "
 				+ "outages.svcLostEventID as outages_svcLostEventID, "
 				+ "outages.svcRegainedEventID as outages_svcRegainedEventID, "
 				+ "outages.nodeID as outages_nodeID, "
@@ -57,7 +56,9 @@ public class OutageMappingQuery extends MappingSqlQuery {
 				+ "outages.ifLostService as outages_ifLostService, "
 				+ "outages.ifRegainedService as outages_ifRegainedService, "
 				+ "outages.suppressTime as outages_suppressTime, "
-				+ "outages.suppressedBy as outages_suppressedBy " + clause);
+				+ "outages.suppressedBy as outages_suppressedBy "
+				+ clause);
+		m_outageMapper = new OutageMapper();
 	}
 
 	public DataSource getDataSource() {
@@ -65,49 +66,7 @@ public class OutageMappingQuery extends MappingSqlQuery {
 	}
 
 	public Object mapRow(ResultSet rs, int rowNumber) throws SQLException {
-		final Integer id = (Integer) rs.getObject("outages_outageID");
-
-		LazyOutage outage = (LazyOutage) Cache.obtain(OnmsOutage.class, id);
-		outage.setLoaded(true);
-
-		Integer nodeId = new Integer(rs.getInt("outages_nodeID"));
-		String ipAddr =  new String (rs.getString("outages_ipAddr"));
-		Integer serviceId = new Integer(rs.getInt("outages_serviceID"));
-		Integer ifIndex = (Integer) rs.getObject("outages_ifIndex");
-
-		MonitoredServiceId monSvcId = new MonitoredServiceId(nodeId, ipAddr,
-				ifIndex, serviceId);
-		OnmsMonitoredService monSvc = (OnmsMonitoredService) Cache.obtain(
-				OnmsMonitoredService.class, monSvcId);
-		outage.setMonitoredService(monSvc);
-
-		Integer lostEventId = new Integer(rs.getInt("outages_svcLostEventID"));
-		OnmsEvent lostEvent = (OnmsEvent) Cache.obtain(OnmsEvent.class,
-				lostEventId);
-		outage.setEventBySvcLostEvent(lostEvent);
-
-		Integer regainedEventId = (Integer) rs
-				.getObject("outages_svcRegainedEventID");
-		OnmsEvent regainedEvent = (regainedEventId == null ? null
-				: (OnmsEvent) Cache.obtain(OnmsEvent.class, regainedEventId));
-		outage.setEventBySvcRegainedEvent(regainedEvent);
-
-		outage.setIfLostService(rs.getTimestamp("outages_ifLostService"));
-		outage.setIfRegainedService(rs
-				.getTimestamp("outages_ifRegainedService"));
-		
-		outage.setIpAddr(rs.getString("outages_ipAddr"));
-		
-		outage.setSuppressedBy(rs.getString("outages_suppressedBy"));
-		
-		outage.setSuppressTime(rs.getTimestamp("outages_suppressTime"));
-		
-		outage.setServiceId(rs.getInt("outages_serviceid"));
-		
-		outage.setNodeId(rs.getInt("outages_nodeid"));
-
-		outage.setDirty(false);
-		return outage;
+		return m_outageMapper.mapRow(rs, rowNumber);
 	}
 
 	public OnmsOutage findUnique() {

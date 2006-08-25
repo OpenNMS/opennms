@@ -38,18 +38,32 @@ import java.util.Set;
 
 import javax.sql.DataSource;
 
-import org.opennms.netmgt.dao.jdbc.Cache;
 import org.opennms.netmgt.dao.jdbc.JdbcSet;
 import org.opennms.netmgt.dao.jdbc.LazySet;
 import org.opennms.netmgt.dao.jdbc.monsvc.FindByInterfaceWithIfIndex;
 import org.opennms.netmgt.dao.jdbc.monsvc.FindByInterfaceWithNulIfIndex;
 import org.opennms.netmgt.model.OnmsIpInterface;
-import org.opennms.netmgt.model.OnmsIpInterface.CollectionType;
 import org.springframework.jdbc.object.MappingSqlQuery;
 
 public class IpInterfaceMappingQuery extends MappingSqlQuery {
 
-    public IpInterfaceMappingQuery(DataSource ds, String clause) {
+    private IpInterfaceMapper m_ipInterfaceMapper = new IpInterfaceMapper() {
+    	protected void setMonitoredServices(OnmsIpInterface iface) {
+    		final IpInterfaceId key = new IpInterfaceId(iface);
+    		LazySet.Loader svcLoader = new LazySet.Loader() {
+    			public Set load() {
+    				if (key.getIfIndex() == null)
+    					return new FindByInterfaceWithNulIfIndex(getDataSource()).findSet(new Object[] { key.getNodeId(), key.getIpAddr() });
+    				else
+    					return new FindByInterfaceWithIfIndex(getDataSource()).findSet(new Object[] { key.getNodeId(), key.getIpAddr(), key.getIfIndex()});
+    			}
+    		};
+    		iface.setMonitoredServices(new LazySet(svcLoader));
+    	}
+    	
+    };
+
+	public IpInterfaceMappingQuery(DataSource ds, String clause) {
         super(ds, "SELECT " +
         		"ipInterface.nodeID as ipInterface_nodeID, " +
         		"ipInterface.ipAddr as ipInterface_ipAddr, " +
@@ -67,36 +81,10 @@ public class IpInterfaceMappingQuery extends MappingSqlQuery {
     }
 
    public Object mapRow(ResultSet rs, int rowNumber) throws SQLException {
-    	
-    	Integer nodeId = (Integer)rs.getObject("ipInterface_nodeID");  //nodeID                  integer,
-    	String ipAddr = rs.getString("ipInterface_ipAddr");            //ipAddr                  varchar(16) not null,
-		Integer ifIndex = (Integer)rs.getObject("ipInterface_ifIndex");//ifIndex                 integer,
-		
-		final IpInterfaceId key = new IpInterfaceId(nodeId, ipAddr, ifIndex);
-    	
-    	LazyIpInterface iface = (LazyIpInterface)Cache.obtain(OnmsIpInterface.class, key);
-    	iface.setLoaded(true);
-        iface.setIpHostName(rs.getString("ipInterface_ipHostname"));              //ipHostname              varchar(256),
-        iface.setIsManaged(rs.getString("ipInterface_isManaged"));                //isManaged               char(1),
-        iface.setIpStatus(((Integer)rs.getObject("ipInterface_ipStatus")));       //ipStatus                integer,
-        iface.setIpLastCapsdPoll(rs.getTimestamp("ipInterface_ipLastCapsdPoll")); //ipLastCapsdPoll         timestamp without time zone,
-        iface.setIsSnmpPrimary(CollectionType.get(rs.getString("ipInterface_isSnmpPrimary")));        //isSnmpPrimary           char(1),
-        
-        LazySet.Loader svcLoader = new LazySet.Loader() {
-			public Set load() {
-				if (key.getIfIndex() == null)
-					return new FindByInterfaceWithNulIfIndex(getDataSource()).findSet(new Object[] { key.getNodeId(), key.getIpAddr() });
-				else
-					return new FindByInterfaceWithIfIndex(getDataSource()).findSet(new Object[] { key.getNodeId(), key.getIpAddr(), key.getIfIndex()});
-			}
-        };
-        iface.setMonitoredServices(new LazySet(svcLoader));
-        iface.setDirty(false);
-        return iface;
+    	return m_ipInterfaceMapper.mapRow(rs, rowNumber);
     }
-    
 
-    public OnmsIpInterface findUnique() {
+public OnmsIpInterface findUnique() {
         return findUnique((Object[])null);
     }
     
