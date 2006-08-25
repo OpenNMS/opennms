@@ -59,6 +59,13 @@ public class NodeResourceType extends DbResourceType {
         return m_nodeInfo;
     }
 
+    public CollectionResource findAliasedResource(SnmpInstId inst, String ifAlias) {
+    // This is here for completeness but it should not get called from here.
+    // findResource should be called instead
+        log().debug("findAliasedResource: Should not get called from NodeResourceType");
+        return null;
+    }
+
     public Collection getResources() {
         return Collections.singleton(m_nodeInfo);
     }

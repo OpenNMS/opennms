@@ -42,12 +42,14 @@ public class AliasedResource extends CollectionResource {
 	private IfInfo m_ifInfo;
     private String m_ifAliasComment;
     private String m_domain;
+    private String m_ifAlias;
 
-    public AliasedResource(ResourceType resourceType, String domain, IfInfo ifInfo, String ifAliasComment) {
+    public AliasedResource(ResourceType resourceType, String domain, IfInfo ifInfo, String ifAliasComment, String ifAlias) {
         super(resourceType);
         m_domain = domain;
         m_ifInfo = ifInfo;
         m_ifAliasComment = ifAliasComment;
+        m_ifAlias = ifAlias;
     }
     
     public IfInfo getIfInfo() {
@@ -59,7 +61,7 @@ public class AliasedResource extends CollectionResource {
     }
 
     String getAliasDir() {
-        return getIfInfo().getAliasDir(m_ifAliasComment);
+        return getIfInfo().getAliasDir(m_ifAlias, m_ifAliasComment);
     }
 
     public String getDomain() {
@@ -82,7 +84,11 @@ public class AliasedResource extends CollectionResource {
     }
 
     public boolean rescanNeeded() {
-        return getIfInfo().currentAliasIsOutOfDate();
+        boolean outOfDate = getIfInfo().currentAliasIsOutOfDate(m_ifAlias);
+        if(outOfDate) {
+            getIfInfo().setIfAlias(m_ifAlias);
+        }
+        return outOfDate;
     }
 
     public boolean isScheduledForCollection() {

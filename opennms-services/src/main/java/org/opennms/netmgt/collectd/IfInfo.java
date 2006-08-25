@@ -89,6 +89,14 @@ final class IfInfo extends DbCollectionResource {
         return m_entry;
     }
 
+    public void setIfAlias(String ifAlias) {
+        m_snmpIface.setIfAlias(ifAlias);
+    }
+
+    /**
+     ** @deprecated
+     **/
+
     String getNewIfAlias() {
     	// FIXME: This should not be null
     	if (getEntry() == null) {
@@ -101,41 +109,41 @@ final class IfInfo extends DbCollectionResource {
         return m_snmpIface.getIfAlias();
     }
 
-    boolean currentAliasIsOutOfDate() {
-        return getNewIfAlias() != null && !getNewIfAlias().equals(getCurrentIfAlias());
+    boolean currentAliasIsOutOfDate(String ifAlias) {
+        log().debug("currentAliasIsOutOfDate: ifAlias from collection = " + ifAlias + ", current ifAlias = " + getCurrentIfAlias());
+        return ifAlias != null && !ifAlias.equals(getCurrentIfAlias());
     }
 
-    void logAlias() {
+    void logAlias(String ifAlias) {
         Category log = log();
         if (log.isDebugEnabled()) {
-            log.debug("getRRDIfAlias: ifAlias = " + getNewIfAlias());
+            log.debug("Alias for RRD directory name = " + ifAlias);
         }
     }
 
-    String getAliasDir(String ifAliasComment) {
-        String aliasVal = getNewIfAlias();
-        if (aliasVal != null) {
+    String getAliasDir(String ifAlias, String ifAliasComment) {
+        if (ifAlias != null) {
             if (ifAliasComment != null) {
-        		int si = aliasVal.indexOf(ifAliasComment);
+        		int si = ifAlias.indexOf(ifAliasComment);
         		if (si > -1) {
-        			aliasVal = aliasVal.substring(0, si).trim();
+        			ifAlias = ifAlias.substring(0, si).trim();
         		}
         	}
-        	if (aliasVal != null) {
-        		aliasVal = AlphaNumeric.parseAndReplaceExcept(aliasVal,
+        	if (ifAlias != null) {
+        		ifAlias = AlphaNumeric.parseAndReplaceExcept(ifAlias,
         				SnmpCollector.nonAnRepl, SnmpCollector.AnReplEx);
         	}
         }
         
-        logAlias();
+        logAlias(ifAlias);
     
-        return aliasVal;
+        return ifAlias;
     }
 
-    void logForceRescan() {
+    void logForceRescan(String ifAlias) {
         
         if (log().isDebugEnabled()) {
-        	log().debug("Forcing rescan.  IfAlias " + getNewIfAlias()
+        	log().debug("Forcing rescan.  IfAlias " + ifAlias
         					+ " for index " + getIndex()
         					+ " does not match DB value: "
                             + getCurrentIfAlias());
@@ -176,7 +184,9 @@ final class IfInfo extends DbCollectionResource {
 
     public boolean shouldPersist(ServiceParameters serviceParameters) {
         
-        return shouldStore(serviceParameters) && (isScheduledForCollection() || serviceParameters.forceStoreByAlias(getNewIfAlias()));
+        boolean shdprsist = shouldStore(serviceParameters) && (isScheduledForCollection() || serviceParameters.forceStoreByAlias(getCurrentIfAlias()));
+        log().debug("shouldPersist = " + shdprsist);
+        return shdprsist;
     }
 
 } // end class
