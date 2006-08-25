@@ -70,8 +70,14 @@ public class AggregateStatusController extends AbstractController {
     protected ModelAndView handleRequestInternal(HttpServletRequest req, HttpServletResponse resp) throws Exception {
         ModelAndView mav = new ModelAndView("aggregateStatus");
         String statusView = req.getParameter("statusView");
+        String statusSite = req.getParameter("statusSite");
         AggregateStatusView view = m_service.createAggregateStatusView(statusView);
-        Collection<AggregateStatus> aggrStati = m_service.createAggreateStatuses(view);
+        Collection<AggregateStatus> aggrStati;
+        if (statusSite == null) {
+            aggrStati = m_service.createAggreateStatuses(view);
+        } else {
+            aggrStati = m_service.createAggreateStatuses(view, statusSite);
+        }
         mav.addObject("view", view);
         mav.addObject("stati", aggrStati);
         return mav;
