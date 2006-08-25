@@ -151,8 +151,13 @@ public class SnmpIfCollector extends AggregateTracker {
     }
 
     protected void storeResult(SnmpObjId base, SnmpInstId inst, SnmpValue val) {
+        if(base.toString().equals(SnmpCollector.IFALIAS_OID) && (val.isNull() || val.toDisplayString() == null || val.toDisplayString().equals(""))) {
+            log().debug("Skipping storeResult. Null or zero length ifAlias");
+            return;
+        }
         SNMPCollectorEntry entry = (SNMPCollectorEntry)m_results.get(inst);
         if (entry == null) {
+            log().debug("Creating new SNMPCollectorEntry entry");
             entry = new SNMPCollectorEntry(m_objList, m_collectionSet);
             m_results.put(inst, entry);
         }
