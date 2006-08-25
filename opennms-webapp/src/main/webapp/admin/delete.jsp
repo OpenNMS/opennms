@@ -198,7 +198,7 @@
       <!--see if there is a second column to draw-->
       <% if (midNodeIndex < nodes.size()) { %>
 	<div id="contentright">
-          <table class="standardfirst"
+          <table class="standardfirst">
             <tr>
               <td class="standardheader" width="5%" align="center">Delete?</td>
               <td class="standardheader" width="5%" align="center">Data?</td>
