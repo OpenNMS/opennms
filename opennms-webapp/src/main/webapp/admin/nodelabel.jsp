@@ -102,28 +102,30 @@
 <p>
   You can either specify a name or allow the system to automatically
   select the name.          
-
-        <form action="admin/nodeLabelChange" method="post">
-          <input type="hidden" name="node" value="<%=nodeId%>" />
-
-	  <strong>User Defined</strong><br/>
-	  <input type="radio" name="labeltype" value="user" <%=(currentLabel.getSource() == NodeLabel.SOURCE_USERDEFINED) ? "checked" : ""%> />
-          <input type="text" name="userlabel" value="<%=currentLabel.getLabel()%>" maxlength="255" size="32"/>
-
-	  <br/>
-	  <br/>
-
-	  <strong>Automatic</strong><br/>
-          <input type="radio" name="labeltype" value="auto" <%=(currentLabel.getSource() != NodeLabel.SOURCE_USERDEFINED) ? "checked" : ""%> />
-          <%=autoLabel.getLabel()%> (<%=typeMap.get(new Character(autoLabel.getSource()))%>)
-
-	  <br/>
-  	  <br/>
-
-
-          <input type="submit" value="Change Label" />
-          <input type="reset" />
-        </form>
 </p>
+
+  <form action="admin/nodeLabelChange" method="post">
+    <input type="hidden" name="node" value="<%=nodeId%>" />
+
+  <strong>User Defined</strong>
+  <br>
+  <input type="radio" name="labeltype" value="user" <%=(currentLabel.getSource() == NodeLabel.SOURCE_USERDEFINED) ? "checked" : ""%> />
+  <input type="text" name="userlabel" value="<%=currentLabel.getLabel()%>" maxlength="255" size="32"/>
+
+  <br>
+  <br>
+
+  <strong>Automatic</strong>
+  <br>
+  <input type="radio" name="labeltype" value="auto" <%=(currentLabel.getSource() != NodeLabel.SOURCE_USERDEFINED) ? "checked" : ""%> />
+
+    <%=autoLabel.getLabel()%> (<%=typeMap.get(new Character(autoLabel.getSource()))%>)
+
+  <br>
+  <br>
+
+  <input type="submit" value="Change Label" />
+  <input type="reset" />
+  </form>
 
 <jsp:include page="/includes/footer.jsp" flush="false" />
