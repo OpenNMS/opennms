@@ -36,6 +36,7 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -176,8 +177,8 @@ public class NodeDaoJdbc extends AbstractDaoJdbc implements NodeDao {
 
 				@Override
 				protected void setIpInterfaces(OnmsNode node) {
-					// we override this to do nothing and just fill in the set with the rest of the query
-				}
+                    node.setIpInterfaces(new LinkedHashSet<OnmsIpInterface>());
+                }
     			
     		};
     		IpInterfaceMapper ifMapper = new IpInterfaceMapper();
