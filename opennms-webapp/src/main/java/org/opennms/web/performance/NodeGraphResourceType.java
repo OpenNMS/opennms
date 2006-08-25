@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Set;
 
 import org.opennms.netmgt.utils.RrdFileConstants;
+import org.springframework.dao.DataAccessException;
+import org.springframework.orm.ObjectRetrievalFailureException;
 
 public class NodeGraphResourceType implements GraphResourceType {
 
@@ -37,6 +39,16 @@ public class NodeGraphResourceType implements GraphResourceType {
     public List<GraphResource> getResourcesForNode(int nodeId) {
         ArrayList<GraphResource> graphResources =
             new ArrayList<GraphResource>();
+
+        /*
+         * Verify that the node directory exists so we can throw a good
+         * error message if not.
+         */
+        try {
+            m_performanceModel.getNodeDirectory(nodeId, true);
+        } catch (DataAccessException e) {
+            throw new ObjectRetrievalFailureException("The '" + getName() + "' resource type does not exist on this node.  Nested exception is: " + e.getClass().getName() + ": " + e.getMessage(), e);
+        }
         
         List<String> dataSources =
             m_performanceModel.getDataSourceList(Integer.toString(nodeId));
