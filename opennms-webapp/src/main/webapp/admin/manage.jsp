@@ -236,7 +236,6 @@
             <%=buildManageTableRows(nodes, midNodeIndex, nodes.size())%>
                
           </table>
-        </td>
 	</div>
         <% } /*end if */ %>
 
