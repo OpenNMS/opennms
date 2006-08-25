@@ -34,6 +34,7 @@ package org.opennms.web.svclayer;
 
 import java.awt.Color;
 
+
 /**
  * Use this class to aggregate status to be presented in a view layer technology.
  * 
@@ -45,14 +46,17 @@ public class AggregateStatus {
     private String m_label;
     private Integer m_totalEntityCount;
     private Integer m_downEntityCount;
-    private Color m_color;
+    private String m_status;
     
+    public static final String NODES_ARE_DOWN = "status-critical";
+    public static final String ONE_SERVICE_DOWN = "status-warning";
+    public static final String ALL_NODES_UP = "status-normal";
     
-    public Color getColor() {
-        return m_color;
+    public String getStatus() {
+        return m_status;
     }
-    public void setColor(Color color) {
-        m_color = color;
+    public void setStatus(String color) {
+        m_status = color;
     }
     public Integer getDownEntityCount() {
         return m_downEntityCount;
