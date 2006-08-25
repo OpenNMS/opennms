@@ -12,6 +12,7 @@
 //
 // Modifications:
 //
+// 2006 Aug 24: List the node/domain. - dj@opennms.org
 // 2006 Aug 08: Fix minor spelling error - dj@opennms.org
 // 2003 Feb 07: Fixed URLEncoder issues.
 // 2002 Nov 26: Fixed breadcrumbs issue.
@@ -46,7 +47,8 @@
 	import="java.util.*,
 		org.opennms.web.*,
 		org.opennms.web.performance.*,
-		org.opennms.netmgt.config.DataCollectionConfigFactory
+		org.opennms.netmgt.config.DataCollectionConfigFactory,
+		org.opennms.web.element.NetworkElementFactory
 	"
 %>
 <%@ taglib uri="http://java.sun.com/jstl/core" prefix="c" %>
@@ -82,11 +84,17 @@
     if (nodeId != null) {
 		request.setAttribute("resources",
 		                     this.model.getResourceForNode(Integer.parseInt(nodeId)));
-		request.setAttribute("elementType", "node");
+		request.setAttribute("topLevelResourceLabel", NetworkElementFactory.getNodeLabel(Integer.parseInt(nodeId)));
+		request.setAttribute("topLevelResourceLink", "element/node.jsp?node=" + nodeId);
+		request.setAttribute("topLevelResourceType", "node");
+		request.setAttribute("topLevelResourceTypeLabel", "Node");
     } else if (domain != null) {
 		request.setAttribute("resources",
 	    	                 this.model.getResourceForDomain(domain));
-		request.setAttribute("elementType", "domain");
+		request.setAttribute("topLevelResourceLabel", domain);
+		request.setAttribute("topLevelResourceLink", "performance/chooseresource.jsp?domain=" + domain + "&relativetime=lastday&endUrl=performance%2FaddReportsToUrl");
+		request.setAttribute("topLevelResourceType", "domain");
+		request.setAttribute("topLevelResourceTypeLabel", "Domain");
     } else {
         throw new MissingParameterException("node or domain", requiredParameters);
     }
@@ -133,10 +141,16 @@
 	</c:when>
 	
 	<c:otherwise>
-      <h3>Choose a Resource to Query</h3>
+	  <h2>
+        <c:out value="${topLevelResourceTypeLabel}"/>: <a href="<c:out value="${topLevelResourceLink}"/>"><c:out value="${topLevelResourceLabel}"/></a>
+	  </h2>
+	  
+      <h3>
+        Choose a Resource to Query
+      </h3>
 
       <p>
-        The <c:out value="${elementType}"/>
+        The <c:out value="${topLevelResourceType}"/>
         that you have chosen has performance data for multiple resources.
         Please choose the resource that you wish to query.
       </p>
