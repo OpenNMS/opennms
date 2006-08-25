@@ -12,6 +12,8 @@
 //
 // Modifications:
 //
+// 2006 Aug 25: We don't need to show any of the form if there isn't anything
+//              to choose. - dj@opennms.org
 // 2003 Feb 07: Fixed URLEncoder issues.
 // 2002 Nov 26: Fixed breadcrumbs issue.
 // 2002 Oct 24: Corrected AM/PM ordering.
@@ -141,87 +143,92 @@
 
 <h3>Network Performance Data</h3>
 
-<% if (nodeIdString != null ) { %>
-  <form method="get" name="report" action="graph/results">
-<% } else { %>
-  <form method="get" name="report" action="graph/domainResults">
-<% } %>
-  <input type="hidden" name="type" value="performance"/>
-  <%=Util.makeHiddenTags(request)%>
-  <% if(resource == null) { %>
-    <input type="hidden" name="resource" value="" />
-  <% } %>
 
-  <div style="width: 40%; float: left;">
+<% if (graphs.length == 0) { %>
+  <div>
     <p>
-      <% if (graphs.length > 0) { %>
+      No standard reports being collected for this node or interface.
+    </p>
+  </div>
+<% } else { %>
+  <% if (nodeIdString != null ) { %>
+    <form method="get" name="report" action="graph/results">
+  <% } else { %>
+    <form method="get" name="report" action="graph/domainResults">
+  <% } %>
+    <input type="hidden" name="type" value="performance"/>
+    <%=Util.makeHiddenTags(request)%>
+    <% if(resource == null) { %>
+      <input type="hidden" name="resource" value="" />
+    <% } %>
+
+    <div style="width: 40%; float: left;">
+      <p>
         Please choose one or more of the following queries to perform on
         the node or interface.
-      <% } else { %>
-        No standard reports being collected for this node or interface.
-      <% } %>
-    </p>
+      </p>
 
-    <p>
-      <select name="reports" multiple="multiple" size="10">
-        <% for( int i = 0; i < graphs.length; i++ ) { %>
-          <option VALUE=<%=graphs[i].getName()%>><%=graphs[i].getTitle()%></option>
+      <p>
+        <select name="reports" multiple="multiple" size="10">
+          <% for( int i = 0; i < graphs.length; i++ ) { %>
+            <option VALUE=<%=graphs[i].getName()%>><%=graphs[i].getTitle()%></option>
+          <% } %>
+        </select>
+      </p>
+    </div>
+
+    <div style="width: 60%; float: left;">
+      Query Start Time<br/>
+
+      <select name="startMonth" size="1">
+        <% for( int i = 0; i < 12; i++ ) { %>
+          <option value="<%=i%>" <% if( yesterday.get( Calendar.MONTH ) == i ) out.print("selected ");%>><%=months[i]%></option>
         <% } %>
       </select>
-    </p>
-  </div>
 
-  <div style="width: 60%; float: left;">
-    Query Start Time<br/>
+      <input type="text" name="startDate" size="4" maxlength="2" value="<%=yesterday.get( Calendar.DATE )%>" />
+      <input type="text" name="startYear" size="6" maxlength="4" value="<%=yesterday.get( Calendar.YEAR )%>" />
 
-    <select name="startMonth" size="1">
-      <% for( int i = 0; i < 12; i++ ) { %>
-        <option value="<%=i%>" <% if( yesterday.get( Calendar.MONTH ) == i ) out.print("selected ");%>><%=months[i]%></option>
-      <% } %>
-    </select>
+      <select name="startHour" size="1">
+        <% int yesterdayHour = yesterday.get( Calendar.HOUR_OF_DAY ); %>
+        <% for( int i = 1; i < 25; i++ ) { %>
+          <option value="<%=i%>" <% if( yesterdayHour == i ) out.print( "selected " ); %>>
+            <%=(i<13) ? i : i-12%>&nbsp;<%=(i<12 | i>23) ? "AM" : "PM"%>
+          </option>
+        <% } %>
+      </select>
 
-    <input type="text" name="startDate" size="4" maxlength="2" value="<%=yesterday.get( Calendar.DATE )%>" />
-    <input type="text" name="startYear" size="6" maxlength="4" value="<%=yesterday.get( Calendar.YEAR )%>" />
+      <br/>
+      <br/>
 
-    <select name="startHour" size="1">
-      <% int yesterdayHour = yesterday.get( Calendar.HOUR_OF_DAY ); %>
-      <% for( int i = 1; i < 25; i++ ) { %>
-        <option value="<%=i%>" <% if( yesterdayHour == i ) out.print( "selected " ); %>>
-          <%=(i<13) ? i : i-12%>&nbsp;<%=(i<12 | i>23) ? "AM" : "PM"%>
-        </option>
-      <% } %>
-    </select>
+      Query End Time<br/>
 
+      <select name="endMonth" size="1">
+        <% for( int i = 0; i < 12; i++ ) { %>
+          <option value="<%=i%>" <% if( now.get( Calendar.MONTH ) == i ) out.print("selected ");%>><%=months[i]%></option>
+        <% } %>
+      </select>
+
+      <input type="text" name="endDate" size="4" maxlength="2" value="<%=now.get( Calendar.DATE )%>" />
+      <input type="text" name="endYear" size="6" maxlength="4" value="<%=now.get( Calendar.YEAR )%>" />
+
+      <select name="endHour" size="1">
+        <% int nowHour = now.get( Calendar.HOUR_OF_DAY ); %>
+        <% for( int i = 1; i < 25; i++ ) { %>
+          <option value="<%=i%>" <% if( nowHour == i ) out.print( "selected " ); %>>
+            <%=(i<13) ? i : i-12%>&nbsp;<%=(i<12 | i>23) ? "AM" : "PM"%>
+          </option>
+        <% } %>
+      </select>
+    </div>
+
+    <div class="spacer"><!-- --></div>
     <br/>
-    <br/>
 
-    Query End Time<br/>
-
-    <select name="endMonth" size="1">
-      <% for( int i = 0; i < 12; i++ ) { %>
-        <option value="<%=i%>" <% if( now.get( Calendar.MONTH ) == i ) out.print("selected ");%>><%=months[i]%></option>
-      <% } %>
-    </select>
-
-    <input type="text" name="endDate" size="4" maxlength="2" value="<%=now.get( Calendar.DATE )%>" />
-    <input type="text" name="endYear" size="6" maxlength="4" value="<%=now.get( Calendar.YEAR )%>" />
-
-    <select name="endHour" size="1">
-      <% int nowHour = now.get( Calendar.HOUR_OF_DAY ); %>
-      <% for( int i = 1; i < 25; i++ ) { %>
-        <option value="<%=i%>" <% if( nowHour == i ) out.print( "selected " ); %>>
-          <%=(i<13) ? i : i-12%>&nbsp;<%=(i<12 | i>23) ? "AM" : "PM"%>
-        </option>
-      <% } %>
-    </select>
-  </div>
-
-  <div class="spacer"><!-- --></div>
-  <br/>
-
-   <input type="button" value="Submit" onclick="submitForm()"/>
-   <input type="reset" />
-</form>
+     <input type="button" value="Submit" onclick="submitForm()"/>
+     <input type="reset" />
+  </form>
+<% } %>
 
 <jsp:include page="/includes/footer.jsp" flush="false" />
 
