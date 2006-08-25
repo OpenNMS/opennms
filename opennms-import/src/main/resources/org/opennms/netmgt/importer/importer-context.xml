@@ -9,6 +9,14 @@
     </property>
   </bean>
   
+  <bean id="eventIpcManager-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+    <property name="staticMethod"><value>org.opennms.netmgt.eventd.EventIpcManagerFactory.init</value></property>
+  </bean>
+  
+  <bean id="eventManager" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" depends-on="eventIpcManager-init">
+    <property name="staticMethod"><value>org.opennms.netmgt.eventd.EventIpcManagerFactory.getIpcManager</value></property>
+  </bean>
+
   <bean id="modelImporter" class="org.opennms.netmgt.importer.ImporterService">
     <property name="importResource" value="${importer.importURL}"/>
     <property name="eventManager" ref="eventManager"/>
