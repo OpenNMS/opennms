@@ -610,6 +610,51 @@ opennms.home = ${opennms.home}
         <build.postgresql.lib.dir>/usr/local/pgsql/lib</build.postgresql.lib.dir>
       </properties>
     </profile>
+
+    <profile>
+      <id>solaris</id>
+      <activation>
+      	<file>
+	  <exists>/var/sadm/pkg/SUNWloc/pkginfo</exists>
+	</file>
+      </activation>
+      <properties>
+    	<platform>solaris</platform>
+	<platform.shlib>so</platform.shlib>
+	<platform.jni>so</platform.jni>
+	<install.dir>/opt/OpenNMS</install.dir>
+	<build.jni.compiler.arg>-I${JAVA_HOME}/include -I${JAVA_HOME}/include/solaris</build.jni.compiler.arg>
+      </properties>
+    </profile>
+
+    <profile>
+      <id>solaris-postgres8</id>
+      <activation>
+      	<file>
+	  <exists>/usr/local/pgsql/lib/libpq.so.3.2</exists>
+	</file>
+      </activation>
+
+      <properties>
+	<build.postgresql.include.dir>/usr/local/pgsql/include/server</build.postgresql.include.dir>
+	<build.postgresql.lib.dir>/usr/local/pgsql/lib</build.postgresql.lib.dir>
+      </properties>
+    </profile>
+
+    <profile>
+      <id>solaris-postgres8-rrdtool1.0.49</id>
+      <activation>
+      	<file>
+	  <exists>/usr/local/rrdtool-1.0.49</exists>
+	</file>
+      </activation>
+
+      <properties>
+	<build.rrd.include.dir>/usr/local/rrdtool-1.0.49/include</build.rrd.include.dir>
+	<build.rrd.lib.dir>/usr/local/rrdtool-1.0.49/lib</build.rrd.lib.dir>
+      </properties>
+    </profile>
+
   </profiles>
 
   <dependencies>
