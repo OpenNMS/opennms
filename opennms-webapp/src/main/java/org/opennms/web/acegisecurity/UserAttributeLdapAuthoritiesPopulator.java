@@ -1,5 +1,8 @@
 package org.opennms.web.acegisecurity;
 
+import java.util.LinkedList;
+import java.util.List;
+
 import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
 import javax.naming.directory.Attribute;
@@ -30,9 +33,6 @@ public class UserAttributeLdapAuthoritiesPopulator implements LdapAuthoritiesPop
     }
 
     public GrantedAuthority[] getGrantedAuthorities(LdapUserDetails userDetails) throws LdapDataAccessException {
-        GrantedAuthority[] defaultAuthorities = new GrantedAuthority[] { new GrantedAuthorityImpl("ROLE_USER") };
-        // new GrantedAuthority[0];
-        
         Assert.notNull(userDetails, "UserDetails can not be null");
 
         Attributes attributes = userDetails.getAttributes();
@@ -40,21 +40,38 @@ public class UserAttributeLdapAuthoritiesPopulator implements LdapAuthoritiesPop
         
         Attribute attribute = attributes.get(m_userAttribute);
         if (attribute == null) {
-            s_logger.info("User '" + userDetails.getDn() + "' does not have '" + m_userAttribute + "'.  Returning [ROLE_USER].");
-            return defaultAuthorities;
+            s_logger.info("User '" + userDetails.getDn() + "' does not have '" + m_userAttribute + "'.  Returning empty list.");
+            return new GrantedAuthority[0];
         }
         
+        List<GrantedAuthority> authorities = new LinkedList<GrantedAuthority>();
         try {
             NamingEnumeration enumeration = attribute.getAll();
             while (enumeration.hasMore()) {
                 Object o = enumeration.next();
-                s_logger.info("got attribute value for user '" + userDetails.getDn() + "': '" + o + "'");
+                s_logger.debug("Got '" + m_userAttribute + "' value for user '" + userDetails.getDn() + "': '" + o + "'");
+
+                String s;
+                if (o == null) {
+                    s = null;
+                } else {
+                    s = o.toString();
+                }
+                if ("OpenNMS User".equals(s)) {
+                    authorities.add(new GrantedAuthorityImpl("ROLE_USER"));
+                } else if ("OpenNMS Administrator".equals(s)) {
+                    authorities.add(new GrantedAuthorityImpl("ROLE_ADMIN"));
+                } else if ("OpenNMS RTC".equals(s)) {
+                    authorities.add(new GrantedAuthorityImpl("ROLE_RTC"));
+                } else {
+                    authorities.add(new GrantedAuthorityImpl(s));
+                }
             }
         } catch (NamingException e) {
-            s_logger.info("got namingexception: " + e.getMessage(), e);
+            s_logger.info("Received NamingException: " + e.getMessage(), e);
+            throw new LdapDataAccessException("Received naming exception while iterating through values for '" + m_userAttribute + "' attribute.", e);
         }
         
-        s_logger.info("Returning default of [ROLE_USER] for '" + userDetails.getDn() + "'");
-        return defaultAuthorities;
+        return authorities.toArray(new GrantedAuthority[0]);
     }
 }
