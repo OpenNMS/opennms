@@ -18,24 +18,24 @@
 </jsp:include>
 
 <body>
-
 <h1 align="center">Site Status</h1>
 
 <div id="index-contentmiddle">
 
-<h2><c:out value="${view.name}" /></h2> <br>
+
+<h2 align="center" ><c:out value="${view.columnValue}" /></h2> <br>
 
   <table>
     <thead>
       <tr>
         <th>Device Type</th>
-        <th align="center">Down/Up</th>
+        <th align="center">Nodes Down</th>
       </tr>
     </thead>
     <c:forEach items="${stati}" var="status">
       <tr>
         <td><c:out value="${status.label}" /></td>
-        <td class="${status.status}"><c:out value="${status.downEntityCount}" /> of <c:out value="${status.totalEntityCount}" /></td>
+        <td class="${status.status}" ><c:out value="${status.downEntityCount}" /> of <c:out value="${status.totalEntityCount}" /></td>
       </tr>
     </c:forEach>
   </table>
