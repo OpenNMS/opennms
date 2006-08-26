@@ -23,13 +23,13 @@
 <div id="index-contentmiddle">
 
 
-<h2 align="center" ><c:out value="${view.columnValue}" /></h2> <br>
+<h3> <c:out value="${view.columnValue}" /></h3>
 
   <table>
     <thead>
       <tr>
         <th>Device Type</th>
-        <th align="center">Nodes Down</th>
+        <th>Nodes Down</th>
       </tr>
     </thead>
     <c:forEach items="${stati}" var="status">
