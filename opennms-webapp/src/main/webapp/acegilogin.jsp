@@ -21,7 +21,9 @@
     <form action="<c:url value='j_acegi_security_check'/>" method="POST">
         <p>User: <input type='text' name='j_username' <c:if test="${not empty param.login_error}">value='<%= session.getAttribute(AuthenticationProcessingFilter.ACEGI_SECURITY_LAST_USERNAME_KEY) %>'</c:if> /><br /> 
            Password: <input type='password' name='j_password'></p>
+<!--
         <p><input type="checkbox" name="_acegi_security_remember_me"> Don't ask for my password for two weeks</p>
+-->
 			<input name="reset" type="reset" value="Reset" />
 			<input name="Get in" type="submit" value="Get in" />
     </form>
