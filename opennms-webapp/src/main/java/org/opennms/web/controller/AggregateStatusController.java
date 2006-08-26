@@ -77,6 +77,8 @@ public class AggregateStatusController extends AbstractController {
             aggrStati = m_service.createAggreateStatuses(view);
         } else {
             aggrStati = m_service.createAggreateStatuses(view, statusSite);
+            //Don't persist this, convenience for display only.
+            view.setColumnValue(statusSite);
         }
         mav.addObject("view", view);
         mav.addObject("stati", aggrStati);

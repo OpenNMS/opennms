@@ -516,6 +516,21 @@ hr#contentleft td
 	background-repeat: repeat-x;
 }
 
+.status-critical {
+    background-color: red;
+    text-align: center
+}
+
+.status-warning {
+    background-color: yellow;
+    text-align: center
+}
+
+.status-normal {
+    background-color: green;
+    text-align: center
+}
+
 #copyright
 {
 	text-align: center;
