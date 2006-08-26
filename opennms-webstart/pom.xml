@@ -86,6 +86,36 @@
         </execution>
         </executions>
       </plugin>
+     <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>add-groovy-source</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>add-source</goal>
+            </goals>
+            <configuration>
+              <sources>
+                <source>src/main/groovy</source>
+              </sources>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <artifactId>maven-eclipse-plugin</artifactId>
+        <configuration>
+          <additionalBuildcommands>
+            <buildcommand>org.codehaus.groovy.eclipse.groovyBuilder</buildcommand>
+          </additionalBuildcommands> 
+          <additionalProjectnatures>
+            <projectnature>org.codehaus.groovy.eclipse.groovyNature</projectnature>
+          </additionalProjectnatures>
+        </configuration>
+      </plugin>
     </plugins>
 
   </build>
