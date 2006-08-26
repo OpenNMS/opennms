@@ -73,7 +73,7 @@ public class PolledService {
 	}
 	
 	public void updateStatus(PollStatus newStatus, Date pollTime) {
-		if (!m_currentStatus.equals(newStatus)) {
+		if (m_currentStatus == null || !m_currentStatus.equals(newStatus)) {
 			m_lastStatusChange = pollTime;
 		}
 		m_currentStatus = newStatus;
