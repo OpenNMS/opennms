@@ -403,6 +403,7 @@ create table ifServices (
 	constraint fk_serviceID1 foreign key (serviceID) references service ON DELETE CASCADE
 );
 
+create index ifservices_nodeid_ipaddr_svc on ifservices(nodeID, ipAddr, serviceId);
 create index ifservices_nodeid_ipaddr_status on ifservices(nodeID, ipAddr, status);
 create index ifservices_nodeid_status on ifservices(nodeid, status);
 create index ifservices_nodeid_idx on ifservices(nodeID);
@@ -596,6 +597,7 @@ create table outages (
 	constraint fk_serviceID2 foreign key (serviceID) references service (serviceID) ON DELETE CASCADE
 );
 
+create index outages_nodeid_ipaddr_svc_idx on outages(nodeID, ipAddr, serviceId);
 create index outages_svclostid_idx on outages(svcLostEventID);
 create index outages_svcregainedid_idx on outages(svcRegainedEventID);
 create index outages_nodeid_idx on outages(nodeID);
