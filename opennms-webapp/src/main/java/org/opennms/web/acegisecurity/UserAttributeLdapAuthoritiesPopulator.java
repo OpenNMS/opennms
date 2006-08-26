@@ -22,14 +22,16 @@ public class UserAttributeLdapAuthoritiesPopulator implements LdapAuthoritiesPop
     
     private static final Log s_logger = LogFactory.getLog(UserAttributeLdapAuthoritiesPopulator.class);
 
-    private InitialDirContextFactory m_initialDirContextFactory;
     private String m_userAttribute;
 
-    public UserAttributeLdapAuthoritiesPopulator(InitialDirContextFactory initialDirContextFactory, String userAttribute) {
-        Assert.notNull(initialDirContextFactory, "InitialDirContextFactory can not be null");
+    public UserAttributeLdapAuthoritiesPopulator(String userAttribute) {
         Assert.notNull(userAttribute, "UserAttribute can not be null");
-        m_initialDirContextFactory = initialDirContextFactory;
         m_userAttribute = userAttribute;
+    }
+
+    @Deprecated
+    public UserAttributeLdapAuthoritiesPopulator(InitialDirContextFactory initialDirContextFactory, String userAttribute) {
+        this(userAttribute);
     }
 
     public GrantedAuthority[] getGrantedAuthorities(LdapUserDetails userDetails) throws LdapDataAccessException {
@@ -40,7 +42,9 @@ public class UserAttributeLdapAuthoritiesPopulator implements LdapAuthoritiesPop
         
         Attribute attribute = attributes.get(m_userAttribute);
         if (attribute == null) {
-            s_logger.info("User '" + userDetails.getDn() + "' does not have '" + m_userAttribute + "'.  Returning empty list.");
+            if (s_logger.isInfoEnabled()) {
+                s_logger.info("User '" + userDetails.getDn() + "' does not have attribute '" + m_userAttribute + "'.  Returning empty GrantedAuthority list.");
+            }
             return new GrantedAuthority[0];
         }
         
@@ -49,29 +53,40 @@ public class UserAttributeLdapAuthoritiesPopulator implements LdapAuthoritiesPop
             NamingEnumeration enumeration = attribute.getAll();
             while (enumeration.hasMore()) {
                 Object o = enumeration.next();
-                s_logger.debug("Got '" + m_userAttribute + "' value for user '" + userDetails.getDn() + "': '" + o + "'");
-
-                String s;
-                if (o == null) {
-                    s = null;
-                } else {
-                    s = o.toString();
+                if (s_logger.isDebugEnabled()) {
+                    s_logger.debug("Got '" + m_userAttribute + "' value for user '" + userDetails.getDn() + "': '" + o + "'");
                 }
+
+                if (o == null) {
+                    continue;
+                }
+                String s = o.toString();
+
                 if ("OpenNMS User".equals(s)) {
-                    authorities.add(new GrantedAuthorityImpl("ROLE_USER"));
+                    addAuthority(userDetails, authorities, "ROLE_USER");
                 } else if ("OpenNMS Administrator".equals(s)) {
-                    authorities.add(new GrantedAuthorityImpl("ROLE_ADMIN"));
-                } else if ("OpenNMS RTC".equals(s)) {
-                    authorities.add(new GrantedAuthorityImpl("ROLE_RTC"));
+                    addAuthority(userDetails, authorities, "ROLE_ADMIN");
+                } else if ("OpenNMS RTC Daemon".equals(s)) {
+                    addAuthority(userDetails, authorities, "ROLE_RTC");
                 } else {
-                    authorities.add(new GrantedAuthorityImpl(s));
+                    addAuthority(userDetails, authorities, s);
                 }
             }
         } catch (NamingException e) {
-            s_logger.info("Received NamingException: " + e.getMessage(), e);
+            if (s_logger.isWarnEnabled()) {
+                s_logger.warn("Received NamingException: " + e.getMessage(), e);
+            }
             throw new LdapDataAccessException("Received naming exception while iterating through values for '" + m_userAttribute + "' attribute.", e);
         }
         
         return authorities.toArray(new GrantedAuthority[0]);
+    }
+
+    private void addAuthority(LdapUserDetails userDetails, List<GrantedAuthority> authorities, String authority) {
+        if (s_logger.isDebugEnabled()) {
+            s_logger.debug("Adding authority '" + authority + "' to user '" + userDetails.getDn() + "'");
+        }
+
+        authorities.add(new GrantedAuthorityImpl(authority));
     }
 }
