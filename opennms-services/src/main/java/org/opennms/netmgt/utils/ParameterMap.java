@@ -136,4 +136,36 @@ public class ParameterMap extends Object {
         }
         return value;
     }
+
+    /**
+     * This method is used to lookup a specific key in the map. If the mapped
+     * value is a string it is converted to a boolean and the original string
+     * value is replaced in the map. The converted value is returned to the
+     * caller. If the value cannot be converted then the default value is stored
+     * in the map. If the specified key does not exist in the map then the
+     * default value is returned.
+     *
+     * @return The bool value associated with the key.
+     */
+    public static boolean getKeyedBoolean(Map map, String key, boolean defValue) {
+        boolean value = defValue;
+        Object oValue = map.get(key);
+
+               if (oValue != null && oValue instanceof String) {
+                       oValue = new Boolean((String) oValue);
+               }
+
+        if (oValue != null && oValue instanceof Boolean) {
+            try {
+                value = ((Boolean) oValue).booleanValue();
+            } catch (NumberFormatException ne) {
+                value = defValue;
+               ThreadCategory.getInstance(ParameterMap.class).info("getBoolByKey: Failed to convert value " + oValue + " for key " + key);
+            }
+            map.put(key, new Boolean(value));
+        } else if (oValue != null) {
+            value = ((Boolean) oValue).booleanValue();
+        }
+        return value;
+    }
 }

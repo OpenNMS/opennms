@@ -84,6 +84,13 @@ public class ConnectionConfig {
             return ParameterMap.getKeyedInteger(m_qualifiers, key, defaultVal);
     }
 
+    public boolean getKeyedBoolean(String key, boolean defaultVal) {
+        if (m_qualifiers == null)
+            return defaultVal;
+        else
+            return ParameterMap.getKeyedBoolean(m_qualifiers, key, defaultVal);
+    }
+
     public String getKeyedString(String key, String defaultVal) {
         if (m_qualifiers == null)
             return defaultVal;

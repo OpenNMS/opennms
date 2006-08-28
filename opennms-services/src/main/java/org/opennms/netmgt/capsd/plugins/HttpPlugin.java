@@ -232,8 +232,8 @@ public class HttpPlugin extends AbstractTcpPlugin {
             if (response.toString() != null && response.toString().indexOf(m_responseString) > -1) 
             {
                 if (m_checkReturnCode) {
-		    int maxRetCode = 399;
-		    if (DEFAULT_URL.equals(config.getKeyedString("url", DEFAULT_URL)))
+		    int maxRetCode = config.getKeyedInteger("max-ret-code", 399);
+		    if ( (DEFAULT_URL.equals(config.getKeyedString("url", DEFAULT_URL))) || (config.getKeyedBoolean("check-return-code", true) == false) )
 		    {
 			maxRetCode = 600;
 		    }	
