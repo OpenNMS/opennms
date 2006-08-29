@@ -923,6 +923,11 @@ opennms.home = ${opennms.home}
         <version>1.4</version>
       </dependency>
       <dependency>
+        <groupId>javax.persistence</groupId>
+        <artifactId>persistence-api</artifactId>
+        <version>1.0</version>     
+      </dependency>
+      <dependency>
         <groupId>javax.samples.jnlp</groupId>
         <artifactId>jnlp-servlet</artifactId>
         <version>1.6.0</version>
@@ -1022,15 +1027,18 @@ opennms.home = ${opennms.home}
       <dependency>
         <groupId>org.hibernate</groupId>
         <artifactId>hibernate</artifactId>
-        <version>3.0.5</version>
-<!--
+        <version>3.2.0.cr2</version>
+      </dependency>
+      <dependency>
+        <groupId>org.hibernate</groupId>
+        <artifactId>hibernate-annotations</artifactId>
+        <version>3.2.0.cr1</version>
         <exclusions>
           <exclusion>
-            <groupId>javax.transaction</groupId>
-            <artifactId>jta</artifactId>
+            <groupId>javax.persistence</groupId>
+            <artifactId>ejb</artifactId>
           </exclusion>
         </exclusions>
--->
       </dependency>
       <dependency>
         <groupId>org.samba.jcifs</groupId>
