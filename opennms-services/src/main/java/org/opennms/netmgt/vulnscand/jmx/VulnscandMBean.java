@@ -33,6 +33,9 @@
 package org.opennms.netmgt.vulnscand.jmx;
 
 public interface VulnscandMBean {
+	
+	public void init();
+	
     public void start();
 
     public void stop();

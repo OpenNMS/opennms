@@ -250,7 +250,6 @@ class NessusScan implements Runnable {
             PreparedStatement stmt = conn.prepareStatement(SELECT_ALL_VULNERABILITIES);
 
             stmt.setString(1, config.targetAddress.getHostAddress());
-
             ResultSet openVulnerabilitiesRS = stmt.executeQuery();
 
             while (openVulnerabilitiesRS.next()) {
@@ -424,7 +423,9 @@ class NessusScan implements Runnable {
              * care about command strings getting too long (which
              * you would use the LONG_ATTACK directive for).
              */
-            out.write((NTP_CLIENT_ENTITY + NTP_SEP + "NEW_ATTACK" + NTP_SEP + config.targetAddress.toString() + NTP_SEP + NTP_CLIENT_ENTITY + "\n").getBytes());
+            
+            out.write((NTP_CLIENT_ENTITY + NTP_SEP + "NEW_ATTACK" + NTP_SEP + config.targetAddress.toString().replaceAll("/", "") + NTP_SEP + NTP_CLIENT_ENTITY + "\n").getBytes());
+//            out.write((NTP_CLIENT_ENTITY + NTP_SEP + "NEW_ATTACK" + NTP_SEP + config.targetAddress.toString() + NTP_SEP + NTP_CLIENT_ENTITY + "\n").getBytes());
 
             log.debug("Sent NEW_ATTACK directive against target: " + config.targetAddress.toString());
 

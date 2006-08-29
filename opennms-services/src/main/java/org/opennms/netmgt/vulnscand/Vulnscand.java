@@ -219,8 +219,10 @@ public class Vulnscand extends AbstractServiceDaemon {
             throw new UndeclaredThrowableException(sqlE);
         } catch (Throwable t) {
             log().error("Failed to initialize the rescan scheduler.", t);
-            throw new UndeclaredThrowableException(t);
+            //throw new UndeclaredThrowableException(t);
         }
+    
+        
         m_scheduler.start();
 
         // Create an event receiver.
