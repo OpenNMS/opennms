@@ -10,6 +10,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.io.StringReader;
+import java.net.URL;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Iterator;
@@ -18,6 +20,7 @@ import java.util.List;
 
 import org.opennms.test.ThrowableAnticipator;
 
+import junit.framework.AssertionFailedError;
 import junit.framework.TestCase;
 
 public class InstallerDBTest extends TestCase {
@@ -47,9 +50,15 @@ public class InstallerDBTest extends TestCase {
         m_installer.m_pg_user = "postgres";
         m_installer.m_pg_pass = "";
         m_installer.m_user = "opennms";
+        
         // XXX this makes bad assumptions that are not always true with Maven
         // 2.
-        m_installer.m_create_sql = "../opennms-daemon/src/main/filtered/etc/create.sql";
+        //m_installer.m_create_sql = "../opennms-daemon/src/main/filtered/etc/create.sql";
+        
+        URL sql = getClass().getResource("/create.sql");
+        assertNotNull("Could not find create.sql", sql);
+        m_installer.m_create_sql = sql.getFile();
+        
         m_installer.m_fix_constraint = true;
         m_installer.m_fix_constraint_name = s_constraint;
 
@@ -79,14 +88,14 @@ public class InstallerDBTest extends TestCase {
          * doesn't seem to notice immediately that we have disconnected. Yeah,
          * it's a hack.
          */
-        Thread.sleep(1000);
+        Thread.sleep(100);
 
         m_installer.databaseConnect("template1");
         destroyDatabase();
         m_installer.databaseDisconnect();
 
         // Sleep again. Man, I hate this.
-        Thread.sleep(1000);
+        Thread.sleep(100);
     }
 
     public boolean isDBTestEnabled() {
@@ -106,7 +115,7 @@ public class InstallerDBTest extends TestCase {
     }
 
     // XXX this should be an integration test
-    public void testParseCreateSQL() throws Exception {
+    public void testParseSQLTables() throws Exception {
         Iterator i = m_installer.m_tables.iterator();
         while (i.hasNext()) {
             String table = ((String) i.next()).toLowerCase();
@@ -209,19 +218,40 @@ public class InstallerDBTest extends TestCase {
         ta.verifyAnticipated();
     }
 
-    public void executeSQL(String[] commands) throws SQLException {
+    public void executeSQL(String[] commands) {
         if (!isDBTestEnabled()) {
             return;
         }
 
-        Statement st = m_installer.m_dbconnection.createStatement();
-        for (int i = 0; i < commands.length; i++) {
-            st.execute(commands[i]);
+        Statement st = null;;
+        try {
+            st = m_installer.m_dbconnection.createStatement();
+        } catch (SQLException e) {
+            fail("Could not create statement", e);
         }
-        st.close();
+        
+        for (String command : commands) {
+            try {
+                st.execute(command);
+            } catch (SQLException e) {
+                fail("Could not execute statement: '" + command + "'", e);
+            }
+        }
+        try {
+            st.close();
+        } catch (SQLException e) {
+            fail("Could not close database connection", e);
+        }
+    }
+    
+    public void fail(String message, Throwable t) throws AssertionFailedError {
+        AssertionFailedError e = new AssertionFailedError(message + ": "
+                                                          + t.getMessage());
+        e.initCause(t);
+        throw e;
     }
 
-    public void executeSQL(String command) throws SQLException {
+    public void executeSQL(String command) {
         executeSQL(new String[] { command });
     }
 
@@ -607,5 +637,236 @@ public class InstallerDBTest extends TestCase {
                      "constraint pk_qrtz_job_details primary key (job_name, job_group)",
                      constraints.get(0).toString());
     }
+    
+    public void testSetEventSource() throws Exception {
+        if (!isDBTestEnabled()) {
+            return;
+        }
+        
+        addTableFromSQL("distpoller");
+        addTableFromSQL("node");
+        addTableFromSQLWithReplacements("events", new String[][] {
+                new String[] { "eventSource\\s+varchar\\(\\d+\\) not null,", "" }
+            });
+        
+        executeSQL("INSERT INTO events (eventID, eventUei, eventTime, eventDpName, eventCreateTime, eventSeverity, eventLog, eventDisplay) "
+                   + "VALUES ( 1, 'uei.opennms.org/eatmyshorts', now(), 'Duh', now(), 1, 'n', 'n' )");
 
+        m_installer.createTables();
+        
+
+        Statement st = m_installer.m_dbconnection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT eventsource from events");
+        int count = 0;
+        while (rs.next()) {
+            assertEquals("expected events eventsrource", "OpenNMS.Eventd", rs.getString(1));
+            count++;
+        }
+        assertEquals("expected column count", 1, count);
+    
+    }
+    
+    public void testSetOutageId() throws Exception {
+        if (!isDBTestEnabled()) {
+            return;
+        }
+        
+        addTableFromSQL("distpoller");
+        addTableFromSQL("node");
+        addTableFromSQL("ipinterface");
+        addTableFromSQL("service");
+        addTableFromSQL("ifservices");
+        addTableFromSQL("events");
+        addTableFromSQLWithReplacements("outages", new String[][] {
+                new String[] { "outageID\\s+integer not null,", "" },
+                new String[] { "constraint pk_outageID primary key \\(outageID\\),", "" }
+            });
+        
+        executeSQL("INSERT INTO outages (ipAddr, ifLostService) "
+                   + "VALUES ( '1.2.3.4', now() )");
+
+        m_installer.createTables();
+        
+        Statement st = m_installer.m_dbconnection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT outageid from outages");
+        int count = 0;
+        for (int expected = 1; rs.next(); expected++) {
+            assertEquals("expected outages outageid", expected, rs.getInt(1));
+            count++;
+        }
+        assertEquals("expected column count", 1, count);
+
+    }
+    
+    public void testSetOutagesSvcRegainedEventId() throws Exception {
+        if (!isDBTestEnabled()) {
+            return;
+        }
+        
+        addTableFromSQL("distpoller");
+        addTableFromSQL("node");
+        addTableFromSQL("ipinterface");
+        addTableFromSQL("service");
+        addTableFromSQL("ifservices");
+        addTableFromSQL("events");
+        addTableFromSQL("outages");
+        
+        executeSQL("INSERT INTO outages (outageID, ipAddr, ifLostService) "
+                   + "VALUES ( 1, '1.2.3.4', now() )");
+
+        m_installer.createTables();
+        
+        Statement st = m_installer.m_dbconnection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT svcregainedeventid from outages");
+        int count = 0;
+        while (rs.next()) {
+            assertEquals("expected outages svcregainedeventid", 0, rs.getInt(1));
+            count++;
+        }
+        assertEquals("expected column count", 1, count);
+
+    }
+    
+    public void testSetNotificationsEventId() throws Exception {
+        if (!isDBTestEnabled()) {
+            return;
+        }
+        
+        addTableFromSQL("distpoller");
+        addTableFromSQL("node");
+        addTableFromSQL("ipinterface");
+        addTableFromSQL("service");
+        addTableFromSQL("ifservices");
+        addTableFromSQL("events");
+        addTableFromSQLWithReplacements("notifications", new String[][] {
+                new String[] { "eventID\\s+integer,", "" },
+                new String[] { ",\\s+constraint fk_eventID3 foreign key \\(eventID\\) references events \\(eventID\\) ON DELETE CASCADE", "" }
+            });
+        
+        executeSQL("INSERT INTO notifications (textMsg, notifyID, eventUEI) "
+                   + "VALUES ('DJ broke it... it is always his fault', 1, "
+                   + "'We ain\\\'t got no UEIs here, no sir.')");
+
+        m_installer.createTables();
+        
+        Statement st = m_installer.m_dbconnection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT eventID from notifications");
+        int count = 0;
+        while (rs.next()) {
+            assertEquals("expected notifications eventID", 0, rs.getInt(1));
+            count++;
+        }
+        assertEquals("expected column count", 1, count);
+    }
+
+    
+    public void testSetUsersNotifiedId() throws Exception {
+        if (!isDBTestEnabled()) {
+            return;
+        }
+        
+        addTableFromSQL("distpoller");
+        addTableFromSQL("node");
+        addTableFromSQL("ipinterface");
+        addTableFromSQL("service");
+        addTableFromSQL("ifservices");
+        addTableFromSQL("events");
+        addTableFromSQL("notifications");
+        addTableFromSQLWithReplacements("usersnotified", new String[][] {
+                new String[] { "id\\s+integer not null, ", "" },
+                new String[] { "constraint pk_userNotificationID primary key \\(id\\),", "" }
+            });
+        
+        executeSQL("INSERT INTO usersNotified (userID) "
+                   + "VALUES ('DJ... it is always his fault')");
+
+        m_installer.createTables();
+        
+        Statement st = m_installer.m_dbconnection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT id from usersnotified");
+        int count = 0;
+        for (int expected = 1; rs.next(); expected++) {
+            assertEquals("expected usersNotified id", expected, rs.getInt(1));
+            count++;
+        }
+        assertEquals("expected column count", 1, count);
+    }
+
+    public void testUpdateFoo() throws Exception {
+        if (!isDBTestEnabled()) {
+            return;
+        }
+        
+        addTableFromSQL("distPoller");
+        addTableFromSQL("node");
+      
+        // No ID column
+        addTableFromSQLWithReplacements("ipinterface", new String[][] {
+                new String[] { "id\\s+integer,", "" },
+                new String[] { "constraint pk_ipInterface_id primary key \\(id\\),", "" }
+                });
+        
+        addTableFromSQL("service");
+        
+        // No ID or ipInterfaceID column
+        addTableFromSQLWithReplacements("ifservices", new String[][] {
+                new String[] { "id\\s+integer,", "" },
+                new String[] { "constraint pk_ifServices_id primary key \\(id\\),", "" },
+                new String[] { "ipInterfaceID\\s+integer not null,", "" },
+                new String[] { "constraint fk_ipInterfaceID foreign key \\(id\\) references ipInterface ON DELETE CASCADE,", "" }
+                });
+
+        executeSQL("INSERT INTO node (nodeId, nodeCreateTime) VALUES ( 1, now() )");
+        executeSQL("INSERT INTO ipInterface (nodeId, ipAddr, ifIndex) VALUES ( 1, '1.2.3.4', null )");
+        executeSQL("INSERT INTO ipInterface (nodeId, ipAddr, ifIndex) VALUES ( 1, '1.2.3.9', 1 )");
+        executeSQL("INSERT INTO service (serviceID, serviceName) VALUES ( 1, 'COFFEE-READY' )");
+        executeSQL("INSERT INTO ifServices (nodeID, ipAddr, ifIndex, serviceID) VALUES ( 1, '1.2.3.4', null, 1)");
+        executeSQL("INSERT INTO ifServices (nodeID, ipAddr, ifIndex, serviceID) VALUES ( 1, '1.2.3.9', 1, 1)");
+        
+        m_installer.createTables();
+        
+        Statement st = m_installer.m_dbconnection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT id from ipInterface");
+        int count = 0;
+        for (int expected = 1; rs.next(); expected++) {
+            assertEquals("expected ipInterface id", expected, rs.getInt(1));
+            count++;
+        }
+        assertEquals("expected column count", 2, count);
+
+        rs = st.executeQuery("SELECT id, ipInterfaceID from ifServices");
+        count = 0;
+        for (int expected = 1; rs.next(); expected++) {
+            assertEquals("expected ifServices id", expected, rs.getInt(1));
+            assertEquals("expected ifServices ipInterfaceId", expected, rs.getInt(2));
+            count++;
+        }
+        assertEquals("expected column count", 2, count);
+    }
+    
+    public void addTableFromSQL(String tableName) {
+        String partialSQL = null;
+        try {
+            partialSQL = m_installer.getTableCreateFromSQL(tableName);
+        } catch (Exception e) {
+            fail("Could not get SQL for table '" + tableName + "'", e);
+        }
+        
+        executeSQL("CREATE TABLE " + tableName + " ( " + partialSQL + " )");
+    }
+    
+    public void addTableFromSQLWithReplacements(String tableName, String[][] replacements) {
+        String partialSQL = null;
+        try {
+            partialSQL = m_installer.getTableCreateFromSQL(tableName);
+        } catch (Exception e) {
+            fail("Could not get SQL for table '" + tableName + "'", e);
+        }
+        
+        for (String[] replacement : replacements) {
+            partialSQL = partialSQL.replaceAll(replacement[0], replacement[1]);
+        }
+
+        executeSQL("CREATE TABLE " + tableName + " ( " + partialSQL + " )");
+    }
 }
