@@ -53,10 +53,19 @@ drop table pathOutage cascade;
 drop table demandPolls cascade;
 drop table pollResults cascade;
 drop table reportLocator cascade;
-drop category_statusdef cascade;
-drop statusview_statusdef cascade;
-drop aggregate_status_definitions cascade;
-drop table aggregate_status_views cascasde;
+drop table category_statusdef cascade;
+drop table statusview_statusdef cascade;
+drop table aggregate_status_definitions cascade;
+drop table aggregate_status_views cascade;
+drop table atinterface cascade;
+drop table stpnode cascade;
+drop table stpinterface cascade;
+drop table iprouteinterface cascade;
+drop table datalinkinterface cascade;
+drop table inventory cascade;
+drop table element cascade;
+drop table map cascade;
+
 drop sequence catNxtId;
 drop sequence nodeNxtId;
 drop sequence serviceNxtId;
@@ -69,6 +78,7 @@ drop sequence demandPollNxtId;
 drop sequence pollResultNxtId;
 drop sequence vulnNxtId;
 drop sequence reportNxtId;
+drop sequence mapNxtId;
 drop sequence opennmsNxtId;  --# should be used for all sequences, eventually
 
 --# Begin quartz persistence 
@@ -87,6 +97,78 @@ drop table qrtz_job_details;
 drop table qrtz_calendars;
 
 --# End quartz persistence
+
+
+
+--##################################################################
+--# The following commands set up automatic sequencing functionality
+--# for fields which require this.
+--#
+--# DO NOT forget to add an "install" comment so that the installer
+--# knows to fix and renumber the sequences if need be
+--##################################################################
+
+--# Sequence for the nodeID column in the aggregate_status_views and the
+--# aggregate_status_definitions tables (eventually all tables, perhaps)
+--#          sequence, column, table
+--# install: opennmsNxtId id   aggregate_status_views
+create sequence opennmsNxtId minvalue 1;
+
+--# Sequence for the nodeID column in the node table
+--#          sequence, column, table
+--# install: nodeNxtId nodeID   node
+create sequence nodeNxtId minvalue 1;
+
+--# Sequence for the serviceID column in the service table
+--#          sequence,    column,   table
+--# install: serviceNxtId serviceID service
+create sequence serviceNxtId minvalue 1;
+
+--# Sequence for the eventID column in the events table
+--#          sequence,   column, table
+--# install: eventsNxtId eventID events
+create sequence eventsNxtId minvalue 1;
+
+--# Sequence for the alarmId column in the alarms table
+--#          sequence,   column, table
+--# install: alarmsNxtId alarmId alarms
+create sequence alarmsNxtId minvalue 1;
+
+--# Sequence for the outageID column in the outages table
+--#          sequence,   column,  table
+--# install: outageNxtId outageID outages
+create sequence outageNxtId minvalue 1;
+
+--# Sequence for the notifyID column in the notification table
+--#          sequence,   column,  table
+--# install: notifyNxtId notifyID notifications
+create sequence notifyNxtId minvalue 1;
+
+--# Sequence for the vulnerabilityID column in the vulnerabilities table
+--#          sequence, column,         table
+--# install: vulnNxtId vulnerabilityID vulnerabilities
+create sequence vulnNxtId minvalue 1;
+
+--# Sequence for the id column in the categories table
+--#          sequence, column, table
+--# install: catNxtId categoryid   categories
+create sequence catNxtId minvalue 1;
+
+--# Sequence for the id column in the usersNotified table
+--#          sequence, column, table
+--# install: userNotifNxtId id   usersNotified
+create sequence userNotifNxtId minvalue 1;
+
+--# Sequence for the id column in the demandPolls table
+--#          sequence, column, table
+--# install: demandPollNxtId id   demandPolls
+create sequence demandPollNxtId minvalue 1;
+
+--# Sequence for the id column in the pollResults table
+--#          sequence, column, table
+--# install: pollResultNxtId id   pollResults
+create sequence pollResultNxtId minvalue 1;
+
 
 --########################################################################
 --# serverMap table - Contains a list of IP Addresses mapped to
@@ -222,64 +304,6 @@ create table node (
 create index node_id_type_idx on node(nodeID, nodeType);
 create index node_label_idx on node(nodeLabel);
 
---########################################################################
---# ipInterface Table - Contains information on interfaces which support
---#                     TCP/IP as well as current status information.
---#                     ipAddr is integer, to support easier filtering.
---#
---# This table contains the following information:
---#
---#  nodeID          : Unique identifier of the node that "owns" this interface
---#  ipAddr          : IP Address associated with this interface
---#  ifIndex	     : SNMP index of interface, used to uniquely identify
---# 		       unnumbered interfaces.
---#
---# NOTE: The combination of nodeID, ipAddr, and ifIndex must be unique,
---# and this must be enforced programmatically.
---#
---#  ipHostname      : IP Hostname associated with this interface
---#  isManaged       : Character used as a boolean flag
---#                     'M' - Managed
---#                     'A' - Alias
---#                     'D' - Deleted
---#                     'U' - Unmanaged
---#			'F' - Forced Unmanaged (via the user interface)
---#                     'N' - Not polled as part of any package
---#  ipStatus        : If interface supports SNMP this field will
---#                    hold a numeric representation of interface's
---#                    operational status (same as 'snmpIfOperStatus'
---#                    field in the snmpInterface table).
---#                      1 = Up, 2 = Down, 3 = Testing
---#  ipLastCapsdPoll : Date and time of last poll by capsd
---#  isSnmpPrimary   : Character used as a boolean flag
---#                      'P' - Primary SNMP
---#                      'S' - Secondary SNMP
---#                      'N' - Not eligible (does not support SNMP or
---#                               or has no ifIndex)
---#
---########################################################################
-
-create table ipInterface (
-    id              integer,
-	nodeID			integer,
-	ipAddr			varchar(16) not null,
-	ifIndex			integer,
-	ipHostname		varchar(256),
-	isManaged		char(1),
-	ipStatus		integer,
-	ipLastCapsdPoll		timestamp without time zone,
-	isSnmpPrimary           char(1),
-
-    constraint pk_ipInterface_id primary key (id),
-	constraint fk_nodeID1 foreign key (nodeID) references node ON DELETE CASCADE
-);
-
-create index ipinterface_nodeid_ipaddr_ismanaged_idx on ipInterface(nodeID, ipAddr, isManaged);
-create index ipinterface_ipaddr_ismanaged_idx on ipInterface(ipAddr, isManaged);
-create index ipinterface_ipaddr_idx on ipInterface(ipAddr);
-create index ipinterface_nodeid_ismanaged_idx on ipInterface(ipAddr);
-create index ipinterface_nodeid_idx on ipInterface(nodeID);
-
 --#########################################################################
 --# snmpInterface Table - Augments the ipInterface table with information
 --#                       available from IP interfaces which also support
@@ -320,6 +344,7 @@ create index ipinterface_nodeid_idx on ipInterface(nodeID);
 --########################################################################
 
 create table snmpInterface (
+    id				INTEGER DEFAULT nextval('opennmsNxtId') NOT NULL,
 	nodeID			integer,
 	ipAddr			varchar(16) not null,
 	snmpIpAdEntNetMask	varchar(16),
@@ -333,12 +358,73 @@ create table snmpInterface (
 	snmpIfOperStatus	integer,
 	snmpIfAlias		varchar(256),
 
+    CONSTRAINT snmpinterface_pkey primary key (id),
 	constraint fk_nodeID2 foreign key (nodeID) references node ON DELETE CASCADE
 );
 
 create index snmpinterface_nodeid_ifindex_idx on snmpinterface(nodeID, snmpIfIndex);
-create index snmpinterface_nodeid_idx on snmpinterface(nodeID);
+--create index snmpinterface_nodeid_idx on snmpinterface(nodeID);
 create index snmpinterface_ipaddr_idx on snmpinterface(ipaddr);
+
+--########################################################################
+--# ipInterface Table - Contains information on interfaces which support
+--#                     TCP/IP as well as current status information.
+--#                     ipAddr is integer, to support easier filtering.
+--#
+--# This table contains the following information:
+--#
+--#  nodeID          : Unique identifier of the node that "owns" this interface
+--#  ipAddr          : IP Address associated with this interface
+--#  ifIndex	     : SNMP index of interface, used to uniquely identify
+--# 		       unnumbered interfaces.
+--#
+--# NOTE: The combination of nodeID, ipAddr, and ifIndex must be unique,
+--# and this must be enforced programmatically.
+--#
+--#  ipHostname      : IP Hostname associated with this interface
+--#  isManaged       : Character used as a boolean flag
+--#                     'M' - Managed
+--#                     'A' - Alias
+--#                     'D' - Deleted
+--#                     'U' - Unmanaged
+--#			'F' - Forced Unmanaged (via the user interface)
+--#                     'N' - Not polled as part of any package
+--#  ipStatus        : If interface supports SNMP this field will
+--#                    hold a numeric representation of interface's
+--#                    operational status (same as 'snmpIfOperStatus'
+--#                    field in the snmpInterface table).
+--#                      1 = Up, 2 = Down, 3 = Testing
+--#  ipLastCapsdPoll : Date and time of last poll by capsd
+--#  isSnmpPrimary   : Character used as a boolean flag
+--#                      'P' - Primary SNMP
+--#                      'S' - Secondary SNMP
+--#                      'N' - Not eligible (does not support SNMP or
+--#                               or has no ifIndex)
+--#
+--########################################################################
+
+create table ipInterface (
+    id              INTEGER DEFAULT nextval('opennmsNxtId') NOT NULL,
+	nodeID			integer,
+	ipAddr			varchar(16) not null,
+	ifIndex			integer,
+	ipHostname		varchar(256),
+	isManaged		char(1),
+	ipStatus		integer,
+	ipLastCapsdPoll timestamp without time zone,
+	isSnmpPrimary   char(1),
+	snmpInterfaceId	integer not null,
+
+	CONSTRAINT ipinterface_pkey PRIMARY KEY (id),
+	CONSTRAINT snmpinterface_fkey1 FOREIGN KEY (snmpInterfaceId) REFERENCES snmpInterface (id),
+	constraint fk_nodeID1 foreign key (nodeID) references node ON DELETE CASCADE
+);
+
+create index ipinterface_nodeid_ipaddr_ismanaged_idx on ipInterface (nodeID, ipAddr, isManaged);
+create index ipinterface_ipaddr_ismanaged_idx on ipInterface (ipAddr, isManaged);
+create index ipinterface_ipaddr_idx on ipInterface (ipAddr);
+create index ipinterface_nodeid_ismanaged_idx on ipInterface (ipAddr);
+--create index ipinterface_nodeid_idx on ipInterface (nodeID);
 
 --########################################################################
 --# service Table - Contains a name<->number mapping for services
@@ -390,8 +476,7 @@ create table service (
 --########################################################################
 
 create table ifServices (
-    id              integer,
-    ipInterfaceID   integer not null,
+    id				INTEGER default nextval('opennmsNxtId') NOT NULL,
 	nodeID			integer,
 	ipAddr			varchar(16) not null,
 	ifIndex			integer,
@@ -399,20 +484,22 @@ create table ifServices (
 	lastGood		timestamp without time zone,
 	lastFail		timestamp without time zone,
 	qualifier		char(16),
-	status         		char(1),
+	status         	char(1),
 	source			char(1),
-	notify                  char(1),
+	notify          char(1),
+	ipInterfaceId	INTEGER,
 
-	constraint pk_ifServices_id primary key (id),
-	constraint fk_ipInterfaceID foreign key (id) references ipInterface ON DELETE CASCADE,
+	CONSTRAINT ifservices_pkey PRIMARY KEY (id), 
+	CONSTRAINT ipinterface_fkey FOREIGN KEY (ipInterfaceId) REFERENCES ipInterface (id) ON DELETE CASCADE,
 	constraint fk_nodeID3 foreign key (nodeID) references node ON DELETE CASCADE,
 	constraint fk_serviceID1 foreign key (serviceID) references service ON DELETE CASCADE
 );
 
+create index ifservices_nodeid_ipaddr_svc on ifservices(nodeID, ipAddr, serviceId);
 create index ifservices_nodeid_ipaddr_status on ifservices(nodeID, ipAddr, status);
 create index ifservices_nodeid_status on ifservices(nodeid, status);
-create index ifservices_nodeid_idx on ifservices(nodeID);
-create index ifservices_serviceid_idx on ifservices(serviceID);
+--create index ifservices_nodeid_idx on ifservices(nodeID);
+--create index ifservices_serviceid_idx on ifservices(serviceID);
 create index ifservices_nodeid_serviceid_idx on ifservices(nodeID, serviceID);
 
 --##################################################################
@@ -594,19 +681,22 @@ create table outages (
 	ifRegainedService	timestamp without time zone,
 	suppressTime    	timestamp without time zone,
 	suppressedBy		varchar(256),
+	ifServiceId		INTEGER,
 
 	constraint pk_outageID primary key (outageID),
 	constraint fk_eventID1 foreign key (svcLostEventID) references events (eventID) ON DELETE CASCADE,
 	constraint fk_eventID2 foreign key (svcRegainedEventID) references events (eventID) ON DELETE CASCADE,
 	constraint fk_nodeID4 foreign key (nodeID) references node (nodeID) ON DELETE CASCADE,
-	constraint fk_serviceID2 foreign key (serviceID) references service (serviceID) ON DELETE CASCADE
+	constraint fk_serviceID2 foreign key (serviceID) references service (serviceID) ON DELETE CASCADE,
+	CONSTRAINT ifServices_fkey1 FOREIGN KEY (ifServiceId) REFERENCES ifServices (id) ON DELETE CASCADE
 );
 
-create index outages_svclostid_idx on outages(svcLostEventID);
-create index outages_svcregainedid_idx on outages(svcRegainedEventID);
-create index outages_nodeid_idx on outages(nodeID);
+create index outages_nodeid_ipaddr_svc_idx on outages(nodeID, ipAddr, serviceId);
+--create index outages_svclostid_idx on outages(svcLostEventID);
+--create index outages_svcregainedid_idx on outages(svcRegainedEventID);
+--create index outages_nodeid_idx on outages(nodeID);
+--create index outages_serviceid_idx on outages(serviceID);
 create index outages_ipaddr_idx on outages(ipaddr);
-create index outages_serviceid_idx on outages(serviceID);
 create index outages_regainedservice_idx on outages(ifRegainedService);
 
 --########################################################################
@@ -1197,80 +1287,6 @@ create index pollresults_service on pollResults(nodeId, ipAddr, ifIndex, service
 
 
 --##################################################################
---# The following commands set up automatic sequencing functionality
---# for fields which require this.
---#
---# DO NOT forget to add an "install" comment so that the installer
---# knows to fix and renumber the sequences if need be
---##################################################################
-
---# Sequence for the nodeID column in the aggregate_status_views and the
---# aggregate_status_definitions tables (eventually all tables, perhaps)
---#          sequence, column, table
---# install: opennmsNxtId id   aggregate_status_views
-create sequence opennmsNxtId minvalue 1;
-
---# Sequence for the nodeID column in the node table
---#          sequence, column, table
---# install: nodeNxtId nodeID   node
-create sequence nodeNxtId minvalue 1;
-
---# Sequence for the serviceID column in the service table
---#          sequence,    column,   table
---# install: serviceNxtId serviceID service
-create sequence serviceNxtId minvalue 1;
-
---# Sequence for the eventID column in the events table
---#          sequence,   column, table
---# install: eventsNxtId eventID events
-create sequence eventsNxtId minvalue 1;
-
---# Sequence for the alarmId column in the alarms table
---#          sequence,   column, table
---# install: alarmsNxtId alarmId alarms
-create sequence alarmsNxtId minvalue 1;
-
---# Sequence for the outageID column in the outages table
---#          sequence,   column,  table
---# install: outageNxtId outageID outages
-create sequence outageNxtId minvalue 1;
-
---# Sequence for the notifyID column in the notification table
---#          sequence,   column,  table
---# install: notifyNxtId notifyID notifications
-create sequence notifyNxtId minvalue 1;
-
---# Sequence for the vulnerabilityID column in the vulnerabilities table
---#          sequence, column,         table
---# install: vulnNxtId vulnerabilityID vulnerabilities
-create sequence vulnNxtId minvalue 1;
-
---# Sequence for the id column in the categories table
---#          sequence, column, table
---# install: catNxtId categoryid   categories
-create sequence catNxtId minvalue 1;
-
---# Sequence for the id column in the usersNotified table
---#          sequence, column, table
---# install: userNotifNxtId id   usersNotified
-create sequence userNotifNxtId minvalue 1;
-
---# Sequence for the id column in the demandPolls table
---#          sequence, column, table
---# install: demandPollNxtId id   demandPolls
-create sequence demandPollNxtId minvalue 1;
-
---# Sequence for the id column in the pollResults table
---#          sequence, column, table
---# install: pollResultNxtId id   pollResults
-create sequence pollResultNxtId minvalue 1;
-
---# Sequence for the id column in the ipInterface table
---#          sequence, column, table
---# install: ipInterfaceNxtId id   ipInterface
-create sequence ipInterfaceNxtId minvalue 1;
-
---##################################################################
 --# The following command adds the initial loopback poller entry to
 --# the 'distPoller' table.
 --##################################################################
@@ -1292,17 +1308,6 @@ insert into distPoller (dpName, dpIP, dpComment, dpDiscLimit, dpLastNodePull, dp
 --# per la tabella atinterface, 
 --#
 --########################################################################
-
-drop table atinterface cascade;
-drop table stpnode cascade;
-drop table stpinterface cascade;
-drop table iprouteinterface cascade;
-drop table datalinkinterface cascade;
-drop table inventory cascade;
-drop table element cascade;
-drop table map cascade;
-
-drop sequence mapNxtId;
 
 --########################################################################
 --#
