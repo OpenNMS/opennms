@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2006 Aug 29: Fixed the case when SNMPv1 data is gathered that doesn't exist and there isn't any more to gather. - dj@opennms.org 
 // 2003 Jan 31: Cleaned up some unused imports.
 //
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -439,13 +440,21 @@ public class SnmpNodeCollector implements SnmpHandler {
                             m_objList.remove((m_errorIndex - 1) + m_oidListIndex);
 
                             if (log.isDebugEnabled())
-                                log.debug("snmpReceivedPDU: Removing failing varbind and resending request...");
+                                log.debug("snmpReceivedPDU: Removing failing varbind and resending request (if any varbinds are left)...");
 
-                            // Rebuild the request PDU and resend
-                            //
-                            SnmpPduPacket nxtpdu = getNextPdu(m_primaryIf);
-                            doNotify = false;
-                            session.send(nxtpdu, this);
+                            // Have all objects been collected?
+                            if (m_oidListIndex < m_objList.size()) {
+                                // Build next request PDU and send it to the agent
+                                //
+                                if (log.isDebugEnabled())
+                                    log.debug("snmpReceivedPDU: more to collect...sending next request, oidListIndex=" + m_oidListIndex + " totalObjects=" + m_objList.size());
+                                SnmpPduPacket nxtpdu = getNextPdu(m_primaryIf);
+                                doNotify = false;
+                                session.send(nxtpdu, this);
+                            } else {
+                                if (log.isDebugEnabled())
+                                    log.debug("snmpReceivedPDU: collection completed!!");
+                            }
                         }
                     }
                 }
@@ -505,7 +514,6 @@ public class SnmpNodeCollector implements SnmpHandler {
                         SnmpPduPacket nxtpdu = getNextPdu(m_primaryIf);
                         doNotify = false;
                         session.send(nxtpdu, this);
-                        doNotify = false;
                     } else {
                         if (log.isDebugEnabled())
                             log.debug("snmpReceivedPDU: collection completed!!");
