@@ -33,6 +33,12 @@
 package org.opennms.netmgt.vulnscand.jmx;
 
 public class Vulnscand implements VulnscandMBean {
+	
+	public void init() {
+        org.opennms.netmgt.vulnscand.Vulnscand.getInstance().init();
+    }
+
+	
     public void start() {
         org.opennms.netmgt.vulnscand.Vulnscand.getInstance().start();
     }

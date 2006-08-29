@@ -73,7 +73,10 @@ public class NessusParser {
     private static RE indeterminate = null;
 
     // private static RE cleared = null; // Not applicable
+    private static RE informational = null;
+
     private static RE normal = null;
+    private static RE normal2 = null;
 
     private static RE warning = null;
 
@@ -131,13 +134,15 @@ public class NessusParser {
             cveString = new RE("[:space:]*[Cc][Vv][Ee][:space:]*:[:space:]*([^;]*)");
 
             // Risk factor string
-            riskFactor = new RE("[:space:]*[Rr]isk[:space:]*[Ff]actor[:space:]*:[:space:]*([^;]*)");
-
-            normal = new RE("([Nn]one)");
-            warning = new RE("([Ll]ow)");
-            minor = new RE("([Mm]edium)");
-            major = new RE("([Hh]igh)");
-            critical = new RE("([Cc]ritical)|([Ss]erious)");
+            riskFactor =  new RE("[:space:]*[Rr]isk[:space:]*[Ff]actor[:space:]*:([:space:]|;)*([^;{1,2}]*)");
+		          //Risk factor :;;None
+	    informational = new RE("([Ii]nfo)");
+            normal =      new RE("([Nn]one)");
+            normal2 =      new RE("(;;[Nn]one)");
+            warning =     new RE("([Ll]ow)");
+            minor =       new RE("([Mm]edium)");
+            major = 	  new RE("([Hh]igh)");
+            critical =    new RE("([Cc]ritical)|([Ss]erious)");
 
             // Duplicate, trailing <br /> tags
             tooManyBreaks = new RE("(<br />){3,}");
@@ -161,6 +166,7 @@ public class NessusParser {
     public static NessusParser getInstance() {
         if (instance == null) {
             instance = new NessusParser();
+
         }
         return instance;
     }
@@ -216,9 +222,19 @@ public class NessusParser {
 
         // Get the risk factor
         if (riskFactor.match(descr)) {
-            risk = riskFactor.getParen(1).trim();
+            risk = riskFactor.getParen(2).trim();
+	    String risk2 = descr;
 
+	    log.debug("Descr Parsed: " + risk);
+	    log.debug("Descr Parsed: " + risk2);
+	    
+	    if (informational.match(risk)) {
+                retval.severity = Constants.SEV_NORMAL;
+            }
             if (normal.match(risk)) {
+                retval.severity = Constants.SEV_NORMAL;
+            }
+            if (normal2.match(risk)) {
                 retval.severity = Constants.SEV_NORMAL;
             }
             if (warning.match(risk)) {
