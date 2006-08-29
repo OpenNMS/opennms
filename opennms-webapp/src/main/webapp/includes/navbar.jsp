@@ -1,6 +1,5 @@
 <%@page language="java" contentType="text/html"
-	import="java.io.File,
-		java.util.LinkedList,org.opennms.core.resource.Vault,org.opennms.web.acegisecurity.Authentication,org.opennms.web.navigate.NavBarEntry"%>
+	import="java.io.File,java.util.LinkedList,org.opennms.core.resource.Vault,org.opennms.web.acegisecurity.Authentication,org.opennms.web.navigate.NavBarEntry"%>
 <%@ taglib uri="http://java.sun.com/jstl/core" prefix="c"%>
 
 <%
@@ -40,7 +39,7 @@
                                            "Reports"));
                 navBar.add(new NavBarEntry("chart", "charts/index.jsp",
                                            "Charts"));
-                if (mapEnableFile.exists()) {
+                if (vulnEnableFile.exists()) {
                     navBar.add(new NavBarEntry("vulnerability",
                                                "vulnerability/index.jsp",
                                                "Vulnerabilities"));
