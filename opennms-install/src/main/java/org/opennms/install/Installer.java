@@ -174,10 +174,42 @@ public class Installer {
     Connection m_dbconnection;
 
     Map m_dbtypes = null;
+    
+    Map<String, ColumnChangeReplacement> m_columnReplacements = new HashMap<String, ColumnChangeReplacement>();
 
     String m_required_options = "At least one of -d, -i, -s, -U, -y, "
             + "-C, or -T is required.";
+    
+    public Installer() {
+        AutoIntegerIdMapStore ipInterfaceId =
+            new AutoIntegerIdMapStore(1, new String[] {"nodeid", "ipaddr", "ifindex" });
+        m_columnReplacements.put("ipinterface.id", ipInterfaceId);
+        
+        AutoIntegerIdMapStore ifServicesId =
+            new AutoIntegerIdMapStore(1, new String[] {"nodeid", "ipaddr", "ifindex", "serviceid" });
+        m_columnReplacements.put("ifservices.id", ifServicesId);
+        
+        MapStoreIdGetter ifServicesIpInterfaceId =
+            new MapStoreIdGetter(ipInterfaceId, new String[] {"nodeid", "ipaddr", "ifindex" });
+        m_columnReplacements.put("ifservices.ipinterfaceid", ifServicesIpInterfaceId);
+        
+        m_columnReplacements.put("events.eventsource",
+                                 new EventSourceReplacement());
+        
+        m_columnReplacements.put("outages.outageid",
+                                 new AutoInteger(1));
+        
+        m_columnReplacements.put("outages.svcregainedeventid",
+                                 new FixedIntegerReplacement(0));
+        
+        m_columnReplacements.put("notifications.eventid",
+                                 new FixedIntegerReplacement(0));
+        
+        m_columnReplacements.put("usersnotified.id",
+                                 new AutoInteger(1));
 
+    }
+    
     public void install(String[] argv) throws Exception {
         printHeader();
         loadProperties();
@@ -1059,7 +1091,14 @@ public class Installer {
                                 + m_user);
                         m_out.println("CREATED");
                     } else {
-                        changeTable(tableName, oldTable, newTable);
+                        try {
+                            changeTable(tableName, oldTable, newTable);
+                        } catch (Exception e) {
+                            throw new Exception("Error changing table '"
+                                                + tableName
+                                                + "'.  Nested exception: "
+                                                + e.getMessage(), e);
+                        }
                     }
                 }
             }
@@ -2047,9 +2086,6 @@ public class Installer {
 
         m_out.println("SCHEMA DOES NOT MATCH");
         m_out.println("    - differences:");
-        m_out.println("wheee!!!! " + (newColumns.equals(oldColumns)));
-        m_out.println("wheee!!!! "
-                + (newTable.getConstraints().equals(oldTable.getConstraints())));
         for (Constraint newConstraint : newTable.getConstraints()) {
             m_out.println("new constraint: " + newConstraint.getTable()
                     + ": " + newConstraint);
@@ -2092,17 +2128,8 @@ public class Installer {
              * exist before or it did NOT have the NOT NULL constraint before.
              */
             if (newColumn.isNotNull()) {
-                if (newColumn.getName().equals("eventsource")) {
-                    columnChange.setNullReplace("OpenNMS.Eventd");
-                } else if (newColumn.getName().equals("svcregainedeventid")
-                        && table.equals("outages")) {
-                    columnChange.setNullReplace(new Integer(0));
-                } else if (newColumn.getName().equals("eventid")
-                        && table.equals("notifications")) {
-                    columnChange.setNullReplace(new Integer(0));
-                } else if (newColumn.getName().equals("id")
-                        && table.equals("usersnotified")) {
-                    columnChange.setNullReplace(new Integer(0));
+                if (m_columnReplacements.containsKey(table + "." + newColumn.getName())) {
+                    columnChange.setNullReplace(m_columnReplacements.get(table + "." + newColumn.getName()));
                 } else if (oldColumn == null) {
                     String message = "Column " + newColumn.getName()
                             + " in new table has NOT NULL "
@@ -2211,6 +2238,13 @@ public class Installer {
         m_out.println("    - completed updating table... ");
     }
 
+    /*
+     * Note: every column has a ColumnChange record for it, which lists
+     * the column name, a null replacement, if any, and the indexes for
+     * selected rows (for using in ResultSet.getXXX()) and prepared rows
+     * (PreparedStatement.setObject()).
+     * Monkey.  Make monkey dance.
+     */
     public void transformData(String table, String oldTable,
             TreeMap<String, ColumnChange> columnChanges,
             String[] oldColumnNames) throws SQLException, ParseException,
@@ -2221,8 +2255,7 @@ public class Installer {
 
         st.setFetchSize(s_fetch_size);
 
-        String[] columns = (String[]) columnChanges.keySet().toArray(
-                                                                     new String[0]);
+        String[] columns = columnChanges.keySet().toArray(new String[0]);
         String[] questionMarks = new String[columns.length];
 
         for (i = 0; i < oldColumnNames.length; i++) {
@@ -2310,14 +2343,19 @@ public class Installer {
                     obj = null;
                 }
 
+                /*
                 if (table.equals("outages") && name.equals("outageid")) {
                     obj = new Integer(current_row + 1);
                 }
                 if (table.equals("usersnotified") && name.equals("id")) {
                     obj = new Integer(current_row + 1);
                 }
+                */
                 if (obj == null && change.isNullReplace()) {
                     obj = change.getNullReplace();
+                    if (obj instanceof ColumnChangeReplacement) {
+                        obj = ((ColumnChangeReplacement) obj).getColumnReplacement(rs, columnChanges);
+                    }
                     if (m_debug) {
                         m_out.println("      - " + name
                                 + " was NULL but is a "
@@ -2495,6 +2533,25 @@ public class Installer {
 
         return sb.toString();
     }
+    
+    public static String join(String sep, Object[] array) {
+        StringBuffer sb = new StringBuffer();
+
+        if (array.length > 0) {
+            sb.append(array[0].toString());
+        }
+
+        for (int i = 1; i < array.length; i++) {
+            if (array[i] == null) {
+                sb.append(sep + "(null)");
+            } else {
+                sb.append(sep + array[i].toString());
+            }
+        }
+
+        return sb.toString();
+    }
+
 
     public String checkServerVersion() throws IOException {
         File catalinaHome = new File(m_webappdir).getParentFile();
@@ -2535,5 +2592,162 @@ public class Installer {
 
         in.close();
         return null;
+    }
+    
+    public class AutoInteger implements ColumnChangeReplacement {
+        private int m_value;
+        
+        public AutoInteger(int initialValue) {
+            m_value = initialValue;
+        }
+        
+        public int getInt() {
+            return m_value++;
+        }
+        
+        public Integer getColumnReplacement(ResultSet rs, Map<String, ColumnChange> columnChanges) {
+            return getInt();
+        }
+    }
+    
+    public class AutoIntegerIdMapStore implements ColumnChangeReplacement {
+        private int m_value;
+        private String[] m_indexColumns;
+        private Map<MultiColumnKey, Integer> m_idMap =
+            new HashMap<MultiColumnKey, Integer>();
+        
+        public AutoIntegerIdMapStore(int initialValue, String[] indexColumns) {
+            m_value = initialValue;
+            m_indexColumns = indexColumns;
+        }
+        
+        public Integer getColumnReplacement(ResultSet rs, Map<String, ColumnChange> columnChanges) throws SQLException {
+            MultiColumnKey key = getKeyForColumns(rs, columnChanges, m_indexColumns);
+            Integer newInteger = m_value++;
+            m_idMap.put(key, newInteger);
+            return newInteger;
+        }
+        
+        public Integer getIntegerForColumns(ResultSet rs, Map<String, ColumnChange> columnChanges, String[] columns) throws SQLException {
+            MultiColumnKey key = getKeyForColumns(rs, columnChanges, columns);
+
+            Integer oldInteger = m_idMap.get(key);
+            if (oldInteger == null) {
+                throw new IllegalArgumentException("No entry in the map for " + key);
+            }
+            
+            return oldInteger;
+        }
+        
+        private MultiColumnKey getKeyForColumns(ResultSet rs, Map<String, ColumnChange> columnChanges, String[] columns) throws SQLException {
+            Object[] objects = new Object[columns.length];
+            for (int i = 0; i < columns.length; i++) { 
+                String indexColumn = columns[i];
+                
+                ColumnChange columnChange = columnChanges.get(indexColumn);
+                if (columnChange == null) {
+                    throw new IllegalArgumentException("No ColumnChange entry for '" + indexColumn + "'");
+                }
+                
+                int index = columnChange.getSelectIndex();
+                if (index == 0) {
+                    throw new IllegalArgumentException("ColumnChange entry for '" + indexColumn + "' has no select index");
+                }
+                
+                objects[i] = rs.getObject(index);
+            }
+
+            return new MultiColumnKey(objects);
+        }
+        
+        public class MultiColumnKey {
+            private Object[] m_keys;
+            
+            public MultiColumnKey(Object[] keys) {
+                m_keys = keys;
+            }
+            
+            @Override
+            public boolean equals(Object otherObject) {
+                if (!(otherObject instanceof MultiColumnKey)) {
+                    return false;
+                }
+                MultiColumnKey other = (MultiColumnKey) otherObject;
+                
+                if (m_keys.length != other.m_keys.length) {
+                    return false;
+                }
+                
+                for (int i = 0; i < m_keys.length; i++) {
+                    if (m_keys[i] == null && other.m_keys[i] == null) {
+                        continue;
+                    }
+                    if (m_keys[i] == null || other.m_keys[i] == null) {
+                        return false;
+                    }
+                    if (!m_keys[i].equals(other.m_keys[i])) {
+                        return false;
+                    }
+                }
+                
+                return true;
+            }
+            
+            @Override
+            public String toString() {
+                return join(", ", m_keys);
+            }
+            
+            @Override
+            public int hashCode() {
+                int value = 1;
+                for (Object o : m_keys) {
+                    if (o != null) {
+                        // not the other way around, since 1 ^ anything == 1
+                        value = o.hashCode() ^ value;
+                    }
+                }
+                return value;
+            }
+        }
+    }
+    
+    public class MapStoreIdGetter implements ColumnChangeReplacement {
+        private AutoIntegerIdMapStore m_storeFoo;
+        private String[] m_indexColumns;
+        
+        public MapStoreIdGetter(AutoIntegerIdMapStore storeFoo, String[] columns) {
+            m_storeFoo = storeFoo;
+            m_indexColumns = columns;
+        }
+
+        public Object getColumnReplacement(ResultSet rs, Map<String, ColumnChange> columnChanges) throws SQLException {
+            return m_storeFoo.getIntegerForColumns(rs, columnChanges, m_indexColumns);
+        }
+        
+    }
+    
+    public class EventSourceReplacement implements ColumnChangeReplacement {
+        private static final String m_replacement = "OpenNMS.Eventd";
+        
+        public EventSourceReplacement() {
+            // we do nothing!
+        }
+
+        public Object getColumnReplacement(ResultSet rs, Map<String, ColumnChange> columnChanges) throws SQLException {
+            return m_replacement;
+        }
+    }
+    
+    public class FixedIntegerReplacement implements ColumnChangeReplacement {
+        private Integer m_replacement;
+        
+        public FixedIntegerReplacement(int value) {
+            m_replacement = value;
+        }
+
+        public Object getColumnReplacement(ResultSet rs, Map<String, ColumnChange> columnChanges) throws SQLException {
+            return m_replacement;
+        }
     }
 }
