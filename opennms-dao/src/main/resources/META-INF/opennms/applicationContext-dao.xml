@@ -19,10 +19,34 @@
 		</property>
 	</bean>
 	
-  <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
-    <property name="dataSource" ref="dataSource" />
+	<bean id="sessionFactory" class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">
+		<property name="dataSource">
+			<ref bean="dataSource" />
+		</property>
+		<property name="annotatedClasses">
+			<list>
+				<value>org.opennms.netmgt.model.AggregateStatusDefinition</value>
+			</list>
+		</property>
+		<!--  property name="schemaUpdate" value="true">
+		</property -->
+		<property name="annotatedPackages">
+			<list>
+				<value>org.opennms.netmgt.model</value>
+			</list>
+		</property>
+		<property name="hibernateProperties">
+			<value>
+				hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect
+				hibernate.show_sql=true
+			</value>
+		</property>
+	</bean>
+
+  <bean id="transactionManager" class="org.springframework.orm.hibernate3.HibernateTransactionManager">
+    <property name="sessionFactory" ref="sessionFactory" />
   </bean>
-	
+
   <bean id="transactionTemplate" class="org.springframework.transaction.support.TransactionTemplate">
     <property name="transactionManager" ref="transactionManager" />
   </bean>
