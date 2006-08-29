@@ -53,10 +53,19 @@ drop table pathOutage cascade;
 drop table demandPolls cascade;
 drop table pollResults cascade;
 drop table reportLocator cascade;
-drop category_statusdef cascade;
-drop statusview_statusdef cascade;
-drop aggregate_status_definitions cascade;
-drop table aggregate_status_views cascasde;
+drop table category_statusdef cascade;
+drop table statusview_statusdef cascade;
+drop table aggregate_status_definitions cascade;
+drop table aggregate_status_views cascade;
+drop table atinterface cascade;
+drop table stpnode cascade;
+drop table stpinterface cascade;
+drop table iprouteinterface cascade;
+drop table datalinkinterface cascade;
+drop table inventory cascade;
+drop table element cascade;
+drop table map cascade;
+
 drop sequence catNxtId;
 drop sequence nodeNxtId;
 drop sequence serviceNxtId;
@@ -69,6 +78,7 @@ drop sequence demandPollNxtId;
 drop sequence pollResultNxtId;
 drop sequence vulnNxtId;
 drop sequence reportNxtId;
+drop sequence mapNxtId;
 drop sequence opennmsNxtId;  --# should be used for all sequences, eventually
 
 --# Begin quartz persistence 
@@ -87,6 +97,78 @@ drop table qrtz_job_details;
 drop table qrtz_calendars;
 
 --# End quartz persistence
+
+
+
+--##################################################################
+--# The following commands set up automatic sequencing functionality
+--# for fields which require this.
+--#
+--# DO NOT forget to add an "install" comment so that the installer
+--# knows to fix and renumber the sequences if need be
+--##################################################################
+
+--# Sequence for the nodeID column in the aggregate_status_views and the
+--# aggregate_status_definitions tables (eventually all tables, perhaps)
+--#          sequence, column, table
+--# install: opennmsNxtId id   aggregate_status_views
+create sequence opennmsNxtId minvalue 1;
+
+--# Sequence for the nodeID column in the node table
+--#          sequence, column, table
+--# install: nodeNxtId nodeID   node
+create sequence nodeNxtId minvalue 1;
+
+--# Sequence for the serviceID column in the service table
+--#          sequence,    column,   table
+--# install: serviceNxtId serviceID service
+create sequence serviceNxtId minvalue 1;
+
+--# Sequence for the eventID column in the events table
+--#          sequence,   column, table
+--# install: eventsNxtId eventID events
+create sequence eventsNxtId minvalue 1;
+
+--# Sequence for the alarmId column in the alarms table
+--#          sequence,   column, table
+--# install: alarmsNxtId alarmId alarms
+create sequence alarmsNxtId minvalue 1;
+
+--# Sequence for the outageID column in the outages table
+--#          sequence,   column,  table
+--# install: outageNxtId outageID outages
+create sequence outageNxtId minvalue 1;
+
+--# Sequence for the notifyID column in the notification table
+--#          sequence,   column,  table
+--# install: notifyNxtId notifyID notifications
+create sequence notifyNxtId minvalue 1;
+
+--# Sequence for the vulnerabilityID column in the vulnerabilities table
+--#          sequence, column,         table
+--# install: vulnNxtId vulnerabilityID vulnerabilities
+create sequence vulnNxtId minvalue 1;
+
+--# Sequence for the id column in the categories table
+--#          sequence, column, table
+--# install: catNxtId categoryid   categories
+create sequence catNxtId minvalue 1;
+
+--# Sequence for the id column in the usersNotified table
+--#          sequence, column, table
+--# install: userNotifNxtId id   usersNotified
+create sequence userNotifNxtId minvalue 1;
+
+--# Sequence for the id column in the demandPolls table
+--#          sequence, column, table
+--# install: demandPollNxtId id   demandPolls
+create sequence demandPollNxtId minvalue 1;
+
+--# Sequence for the id column in the pollResults table
+--#          sequence, column, table
+--# install: pollResultNxtId id   pollResults
+create sequence pollResultNxtId minvalue 1;
+
 
 --########################################################################
 --# serverMap table - Contains a list of IP Addresses mapped to
@@ -276,7 +358,7 @@ create table snmpInterface (
 	snmpIfOperStatus	integer,
 	snmpIfAlias		varchar(256),
 
-    CONSTRAINT snmpinterface_pkey (id);
+    CONSTRAINT snmpinterface_pkey primary key (id),
 	constraint fk_nodeID2 foreign key (nodeID) references node ON DELETE CASCADE
 );
 
@@ -394,7 +476,7 @@ create table service (
 --########################################################################
 
 create table ifServices (
-    id				INTEGER nextval('opennmsNxtId') NOT NULL,
+    id				INTEGER default nextval('opennmsNxtId') NOT NULL,
 	nodeID			integer,
 	ipAddr			varchar(16) not null,
 	ifIndex			integer,
@@ -407,7 +489,7 @@ create table ifServices (
 	notify          char(1),
 	ipInterfaceId	INTEGER,
 
-	CONSTRAINT ifservices_pkey PRIMARY KEY (id);
+	CONSTRAINT ifservices_pkey PRIMARY KEY (id), 
 	CONSTRAINT ipinterface_fkey FOREIGN KEY (ipInterfaceId) REFERENCES ipInterface (id) ON DELETE CASCADE,
 	constraint fk_nodeID3 foreign key (nodeID) references node ON DELETE CASCADE,
 	constraint fk_serviceID1 foreign key (serviceID) references service ON DELETE CASCADE
@@ -1205,75 +1287,6 @@ create index pollresults_service on pollResults(nodeId, ipAddr, ifIndex, service
 
 
 --##################################################################
---# The following commands set up automatic sequencing functionality
---# for fields which require this.
---#
---# DO NOT forget to add an "install" comment so that the installer
---# knows to fix and renumber the sequences if need be
---##################################################################
-
---# Sequence for the nodeID column in the aggregate_status_views and the
---# aggregate_status_definitions tables (eventually all tables, perhaps)
---#          sequence, column, table
---# install: opennmsNxtId id   aggregate_status_views
-create sequence opennmsNxtId minvalue 1;
-
---# Sequence for the nodeID column in the node table
---#          sequence, column, table
---# install: nodeNxtId nodeID   node
-create sequence nodeNxtId minvalue 1;
-
---# Sequence for the serviceID column in the service table
---#          sequence,    column,   table
---# install: serviceNxtId serviceID service
-create sequence serviceNxtId minvalue 1;
-
---# Sequence for the eventID column in the events table
---#          sequence,   column, table
---# install: eventsNxtId eventID events
-create sequence eventsNxtId minvalue 1;
-
---# Sequence for the alarmId column in the alarms table
---#          sequence,   column, table
---# install: alarmsNxtId alarmId alarms
-create sequence alarmsNxtId minvalue 1;
-
---# Sequence for the outageID column in the outages table
---#          sequence,   column,  table
---# install: outageNxtId outageID outages
-create sequence outageNxtId minvalue 1;
-
---# Sequence for the notifyID column in the notification table
---#          sequence,   column,  table
---# install: notifyNxtId notifyID notifications
-create sequence notifyNxtId minvalue 1;
-
---# Sequence for the vulnerabilityID column in the vulnerabilities table
---#          sequence, column,         table
---# install: vulnNxtId vulnerabilityID vulnerabilities
-create sequence vulnNxtId minvalue 1;
-
---# Sequence for the id column in the categories table
---#          sequence, column, table
---# install: catNxtId categoryid   categories
-create sequence catNxtId minvalue 1;
-
---# Sequence for the id column in the usersNotified table
---#          sequence, column, table
---# install: userNotifNxtId id   usersNotified
-create sequence userNotifNxtId minvalue 1;
-
---# Sequence for the id column in the demandPolls table
---#          sequence, column, table
---# install: demandPollNxtId id   demandPolls
-create sequence demandPollNxtId minvalue 1;
-
---# Sequence for the id column in the pollResults table
---#          sequence, column, table
---# install: pollResultNxtId id   pollResults
-create sequence pollResultNxtId minvalue 1;
-
---##################################################################
 --# The following command adds the initial loopback poller entry to
 --# the 'distPoller' table.
 --##################################################################
@@ -1295,17 +1308,6 @@ insert into distPoller (dpName, dpIP, dpComment, dpDiscLimit, dpLastNodePull, dp
 --# per la tabella atinterface, 
 --#
 --########################################################################
-
-drop table atinterface cascade;
-drop table stpnode cascade;
-drop table stpinterface cascade;
-drop table iprouteinterface cascade;
-drop table datalinkinterface cascade;
-drop table inventory cascade;
-drop table element cascade;
-drop table map cascade;
-
-drop sequence mapNxtId;
 
 --########################################################################
 --#
