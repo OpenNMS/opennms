@@ -71,7 +71,7 @@
 <div class="boxWrapper">
 
 <%  if( nodes != null && nodes.length > 0 ) { %>
-      <form method="GET" action="performance/addIntfFromNode" >
+      <form method="GET" action="performance/chooseresource.jsp" >
         <input type="hidden" name="endUrl" value="performance/addReportsToUrl" />
         <input type="hidden" name="relativetime" value="lastday" />
               <p>Choose a <label for="node">node to query</label>:</p>
