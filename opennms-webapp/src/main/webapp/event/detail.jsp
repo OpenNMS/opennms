@@ -97,7 +97,7 @@
       <table class="standardfirst">
         <tr>
           <td class="standardheader" width="10%">Severity</td>
-          <td class="standard" bgcolor="<%=EventUtil.getSeverityColor(event.getSeverity())%>"><%=EventUtil.getSeverityLabel(event.getSeverity())%></td>
+          <td class="standard" style="background-color: <%=EventUtil.getSeverityColor(event.getSeverity())%>"><%=EventUtil.getSeverityLabel(event.getSeverity())%></td>
           <td class="standardheader" width="10%">Node</td>
           <td class="standard">
             <% if( event.getNodeId() > 0 ) { %>
