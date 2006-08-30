@@ -34,14 +34,26 @@ package org.opennms.netmgt.model;
 import java.io.Serializable;
 import java.util.Date;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+
 import org.springframework.core.style.ToStringCreator;
 
 
 /** 
- *        @hibernate.class
- *         table="outages"
+ * @hibernate.class table="outages"
  *     
 */
+@Entity
+@Table(name="outages")
 public class OnmsOutage implements Serializable {
 
     /**
@@ -107,10 +119,10 @@ public class OnmsOutage implements Serializable {
         m_monitoredService = monitoredService;
     }
 
-    /** 
-     * @hibernate.id generator-class="assigned" type="java.lang.Integer" column="outageId"
-     * @hibernate.generator-param name="sequence" value="outageNxtId"
-     */
+    @Id
+    @Column(name="outageId")
+    @SequenceGenerator(name="outageSequence", sequenceName="outageNxtId")
+    @GeneratedValue(generator="outageSequence")
     public Integer getId() {
         return m_id;
     }
@@ -119,13 +131,9 @@ public class OnmsOutage implements Serializable {
         m_id = outageId;
     }
 
-    /** 
-     *            @hibernate.property
-     *             column="ifLostService"
-     *             length="8"
-     *             not-null="true"
-     *         
-     */
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="ifLostService", nullable=false)
     public Date getIfLostService() {
         return m_ifLostService;
     }
@@ -134,28 +142,20 @@ public class OnmsOutage implements Serializable {
         m_ifLostService = ifLostService;
     }
 
-    /** 
-     *            @hibernate.property
-     *             column="ifRegainedService"
-     *             length="8"
-     *         
-     */
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="ifRegainedService")
     public Date getIfRegainedService() {
         return m_ifRegainedService;
     }
     
-
-
     public void setIfRegainedService(Date ifRegainedService) {
         m_ifRegainedService = ifRegainedService;
     }
 
-    /** 
-     *            @hibernate.many-to-one
-     *             not-null="true"
-     *            @hibernate.column name="svcregainedeventid"         
-     *         
-     */
+    
+    @ManyToOne
+    @JoinColumn(name="svcRegainedEventId")
     public OnmsEvent getEventBySvcRegainedEvent() {
         return m_eventBySvcRegainedEvent;
     }
