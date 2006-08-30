@@ -207,18 +207,21 @@ public class Installer {
         m_columnReplacements.put("outages.outageid",
                                  new AutoInteger(1));
         
-        m_columnReplacements.put("snmpinterface.nodeid", new ColumnChangeReplacement() {
-            public Object getColumnReplacement(ResultSet rs, Map<String, ColumnChange> columnChanges) throws SQLException {
-                throw new IllegalArgumentException("The nodeId column in the snmpInterface table should never be null, but the entry for this row does have a null nodeId.  It needs to be removed or udpated to reflect a valid nodeId.");
-            }
-        });
+        m_columnReplacements.put("snmpinterface.nodeid", new RowHasBogusData("snmpInterface", "nodeId"));
         
-        m_columnReplacements.put("ipinterface.ipaddr", new ColumnChangeReplacement() {
-            public Object getColumnReplacement(ResultSet rs, Map<String, ColumnChange> columnChanges) throws SQLException {
-                throw new IllegalArgumentException("The ipAddr column in the ipInterface table should never be null, but the entry for this row does have a null ipAddr.  It needs to be removed or udpated to reflect a valid ipAddr.");
-            }
-        });
+        m_columnReplacements.put("snmpinterface.snmpifindex", new RowHasBogusData("snmpInterface", "snmpIfIndex"));
 
+        m_columnReplacements.put("ipinterface.nodeid", new RowHasBogusData("ipInterface", "nodeId"));
+
+        m_columnReplacements.put("ipinterface.ipaddr", new RowHasBogusData("ipInterface", "ipAddr"));
+
+        m_columnReplacements.put("ifservices.nodeid", new RowHasBogusData("ifservices", "nodeId"));
+
+        m_columnReplacements.put("ifservices.serviceid", new RowHasBogusData("ifservices", "serviceId"));
+
+        m_columnReplacements.put("outages.nodeid", new RowHasBogusData("outages", "nodeId"));
+        
+        m_columnReplacements.put("outages.serviceid", new RowHasBogusData("outages", "serviceId"));
         
         /*
          * This is totally bogus.  outages.svcregainedeventid is a foreign
@@ -2798,6 +2801,30 @@ public class Installer {
 
         public Object getColumnReplacement(ResultSet rs, Map<String, ColumnChange> columnChanges) throws SQLException {
             return m_replacement;
+        }
+    }
+    
+    public class RowHasBogusData implements ColumnChangeReplacement {
+        private String m_table;
+        private String m_column;
+        
+        public RowHasBogusData(String table, String column) {
+            m_table = table;
+            m_column = column;
+        }
+        
+        public Object getColumnReplacement(ResultSet rs, Map<String, ColumnChange> columnChanges) throws SQLException {
+            throw new IllegalArgumentException("The '" + m_column
+                                               + "' column in the '"
+                                               + m_table
+                                               + "' table should never be "
+                                               + "null, but the entry for this "
+                                               + "row does have a null '"
+                                               + m_column + "'column.  "
+                                               + "It needs to be "
+                                               + "removed or udpated to "
+                                               + "reflect a valid '"
+                                               + m_column + "' column.");
         }
     }
 
