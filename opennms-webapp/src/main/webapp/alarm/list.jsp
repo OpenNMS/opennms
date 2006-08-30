@@ -174,15 +174,22 @@
 
       <!-- menu -->
       <div id="linkbar">
+      <ul>
+      <li>
       <a href="<%=this.makeLink( parms, new ArrayList())%>" title="Remove all search constraints" >View all alarms</a>
+      </li>
+      <li>
       &nbsp;&nbsp;&nbsp;<a href="alarm/advsearch.jsp" title="More advanced searching and sorting options">Advanced Search</a>      
       &nbsp;&nbsp;&nbsp;<a href="javascript: void window.open('<%=org.opennms.web.Util.calculateUrlBase(request)%>/alarm/severity.jsp','', 'fullscreen=no,toolbar=no,status=no,menubar=no,scrollbars=no,resizable=yes,directories=no,location=no,width=525,height=158')" title="Open a window explaining the alarm severities">Severity Legend</a>      
-      
+      </li>
+      <li>
       <% if( parms.ackType == AlarmFactory.AcknowledgeType.UNACKNOWLEDGED ) { %> 
         &nbsp;&nbsp;&nbsp;<a href="javascript: void document.acknowledge_by_filter_form.submit()" onclick="return confirm('Are you sure you want to acknowledge all alarms in the current search including those not shown on your screen?  (<%=alarmCount%> total alarms)')" title="Acknowledge all alarms that match the current search constraints, even those not shown on the screen">Acknowledge entire search</a>
       <% } else { %>
         &nbsp;&nbsp;&nbsp;<a href="javascript: void document.acknowledge_by_filter_form.submit()" onclick="return confirm('Are you sure you want to unacknowledge all alarms in the current search including those not shown on your screen)?  (<%=alarmCount%> total alarms)')" title="Unacknowledge all alarms that match the current search constraints, even those not shown on the screen">Unacknowledge entire search</a>               
       <% } %>
+      </li>
+      </ul>
       </div>
       <!-- end menu -->      
 
@@ -280,16 +287,16 @@
         </tr>
       <% for( int i=0; i < alarms.length; i++ ) { %>        
         <tr valign="top" class="<%=(i%2 == 0) ? "eventlist-odd" : "eventlist-even"%>">
-          <td valign="top" rowspan="3" bgcolor="<%=AlarmUtil.getSeverityColor(alarms[i].getSeverity())%>">
+          <td valign="top" rowspan="3" style="background-color: <%=AlarmUtil.getSeverityColor(alarms[i].getSeverity())%>">
             <nobr>
               <input type="checkbox" name="alarm" value="<%=alarms[i].getId()%>" /> 
             </nobr>
           </td>
-          <td valign="top" rowspan="3" bgcolor="<%=AlarmUtil.getSeverityColor(alarms[i].getSeverity())%>">
+          <td valign="top" rowspan="3" style="background-color: <%=AlarmUtil.getSeverityColor(alarms[i].getSeverity())%>">
             <a href="alarm/detail.jsp?id=<%=alarms[i].getId()%>"><%=alarms[i].getId()%></a>
           </td>
           
-          <td valign="top" rowspan="3" bgcolor="<%=AlarmUtil.getSeverityColor(alarms[i].getSeverity())%>">
+          <td valign="top" rowspan="3" style="background-color: <%=AlarmUtil.getSeverityColor(alarms[i].getSeverity())%>">
             <%=AlarmUtil.getSeverityLabel(alarms[i].getSeverity())%>
             
             <% org.opennms.web.alarm.filter.Filter severityFilter = new SeverityFilter(alarms[i].getSeverity()); %>      

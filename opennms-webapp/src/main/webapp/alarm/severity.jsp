@@ -45,20 +45,20 @@
 </jsp:include>
 
 			<table>
-				<tr><td bgcolor="red"><b>Critical</b></td><td>This alarm means numerous devices on the 
+				<tr><td style="background-color: red"><b>Critical</b></td><td>This alarm means numerous devices on the 
 				network are affected by the alarm. Everyone who can should stop what they are doing and 
 				focus on fixing the problem.</td></tr>
-				<tr><td bgcolor="orange"><b>Major</b></td><td>A device is completely down or in danger 
+				<tr><td style="background-color: orange"><b>Major</b></td><td>A device is completely down or in danger 
 				of going down. Attention needs to be paid to this problem immediately.</td></tr>
-				<tr><td bgcolor="yellow"><b>Minor</b></td><td>A part of a device (a service, and interface, 
+				<tr><td style="background-color: yellow"><b>Minor</b></td><td>A part of a device (a service, and interface, 
 				a power supply, etc.) has stopped functioning. The device needs attention.</td></tr>
-				<tr><td bgcolor="cyan"><b>Warning</b></td><td>An alarm has occurred that may require 
+				<tr><td style="background-color: cyan"><b>Warning</b></td><td>An alarm has occurred that may require 
 				action. This severity can also be used to indicate a condition that should be noted 
 				(logged) but does not require direct action.</td></tr>
-				<tr><td bgcolor="green"><b>Normal</b></td><td>Informational message. No action required.</td></tr>
-				<tr><td bgcolor="white"><b>Cleared</b></td><td>This alarm indicates that a prior error 
+				<tr><td style="background-color: green"><b>Normal</b></td><td>Informational message. No action required.</td></tr>
+				<tr><td style="background-color: white"><b>Cleared</b></td><td>This alarm indicates that a prior error 
 				condition has been corrected and service is restored</td></tr>
-				<tr><td bgcolor="lightblue"><b>Indeterminate</b></td><td>No Severity could be associated with this alarm.</td></tr>
+				<tr><td style="background-color: lightblue"><b>Indeterminate</b></td><td>No Severity could be associated with this alarm.</td></tr>
 			</table>
 
 <jsp:include page="/includes/footer.jsp" flush="false" >
