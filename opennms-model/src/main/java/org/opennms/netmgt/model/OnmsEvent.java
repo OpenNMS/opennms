@@ -42,6 +42,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
@@ -161,13 +162,13 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	private org.opennms.netmgt.model.OnmsNode m_node;
 
 	/** persistent field */
-	private Set m_notifications;
+	private Set<OnmsNotification> m_notifications;
 
 	/** persistent field */
-	private Set m_outagesBySvcRegainedEventId;
+	private Set<OnmsOutage> m_outagesBySvcRegainedEventId;
 
 	/** persistent field */
-	private Set m_outagesBySvclostEventId;
+	private Set<OnmsOutage> m_outagesBySvclostEventId;
 
 	/** full constructor */
 	public OnmsEvent(Integer eventid, String eventuei, Date eventtime,
@@ -183,8 +184,8 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 			String eventforward, String eventmouseovertext, String eventlog,
 			String eventdisplay, String eventackuser, Date eventacktime,
 			OnmsAlarm alarm, org.opennms.netmgt.model.OnmsNode node,
-			Set notifications, Set outagesBySvcregainedeventid,
-			Set outagesBySvclosteventid) {
+			Set<OnmsNotification> notifications, Set<OnmsOutage> outagesBySvcregainedeventid,
+			Set<OnmsOutage> outagesBySvclosteventid) {
 		m_eventId = eventid;
 		m_eventUei = eventuei;
 		m_eventTime = eventtime;
@@ -232,8 +233,8 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	public OnmsEvent(Integer eventid, String eventuei, Date eventtime,
 			String eventsource, OnmsDistPoller distPoller, Date eventcreatetime,
 			Integer eventseverity, String eventlog, String eventdisplay,
-			org.opennms.netmgt.model.OnmsNode node, Set notifications,
-			Set outagesBySvcregainedeventid, Set outagesBySvclosteventid,
+			org.opennms.netmgt.model.OnmsNode node, Set<OnmsNotification> notifications,
+			Set<OnmsOutage> outagesBySvcregainedeventid, Set<OnmsOutage> outagesBySvclosteventid,
 			Set alarms) {
 		m_eventId = eventid;
 		m_eventUei = eventuei;
@@ -350,10 +351,7 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 		m_eventSnmp = eventsnmp;
 	}
 
-	/**
-	 * @hibernate.property column="eventparms" length="1024"
-	 * 
-	 */
+	@Column(name="eventParms", length=1024)
 	public String getEventParms() {
 		return m_eventParms;
 	}
@@ -362,10 +360,8 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 		m_eventParms = eventparms;
 	}
 
-	/**
-	 * @hibernate.property column="eventcreatetime" length="8" not-null="true"
-	 * 
-	 */
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name="eventCreateTime", nullable=false)
 	public Date getEventCreateTime() {
 		return m_eventCreateTime;
 	}
@@ -374,10 +370,7 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 		m_eventCreateTime = eventcreatetime;
 	}
 
-	/**
-	 * @hibernate.property column="eventdescr" length="4000"
-	 * 
-	 */
+	@Column(name="eventDescr", length=4000)
 	public String getEventDescr() {
 		return m_eventDescr;
 	}
@@ -386,10 +379,7 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 		m_eventDescr = eventdescr;
 	}
 
-	/**
-	 * @hibernate.property column="eventloggroup" length="32"
-	 * 
-	 */
+	@Column(name="eventLogGroup", length=32)
 	public String getEventLogGroup() {
 		return m_eventLogGroup;
 	}
@@ -398,10 +388,7 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 		m_eventLogGroup = eventloggroup;
 	}
 
-	/**
-	 * @hibernate.property column="eventlogmsg" length="256"
-	 * 
-	 */
+	@Column(name="eventLogMsg", length=256)
 	public String getEventLogMsg() {
 		return m_eventLogMsg;
 	}
@@ -410,10 +397,7 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 		m_eventLogMsg = eventlogmsg;
 	}
 
-	/**
-	 * @hibernate.property column="eventseverity" length="4" not-null="true"
-	 * 
-	 */
+	@Column(name="eventSeverity", nullable=false)
 	public Integer getEventSeverity() {
 		return m_eventSeverity;
 	}
@@ -422,10 +406,7 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 		m_eventSeverity = severity;
 	}
 
-	/**
-	 * @hibernate.property column="eventpathoutage" length="1024"
-	 * 
-	 */
+	@Column(name="eventPathOutage", length=1024)
 	public String getEventPathOutage() {
 		return m_eventPathOutage;
 	}
@@ -434,10 +415,7 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 		m_eventPathOutage = eventpathoutage;
 	}
 
-	/**
-	 * @hibernate.property column="eventcorrelation" length="1024"
-	 * 
-	 */
+	@Column(name="eventCorrelation", length=1024)
 	public String getEventCorrelation() {
 		return m_eventCorrelation;
 	}
@@ -446,10 +424,7 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 		m_eventCorrelation = eventcorrelation;
 	}
 
-	/**
-	 * @hibernate.property column="eventsuppressedcount" length="4"
-	 * 
-	 */
+	@Column(name="eventSuppressedCount")
 	public Integer getEventSuppressedCount() {
 		return m_eventSuppressedCount;
 	}
@@ -458,10 +433,7 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 		m_eventSuppressedCount = eventsuppressedcount;
 	}
 
-	/**
-	 * @hibernate.property column="eventoperinstruct" length="1024"
-	 * 
-	 */
+	@Column(name="eventOperInstruct", length=1024)
 	public String getEventOperInstruct() {
 		return m_eventOperInstruct;
 	}
@@ -470,10 +442,7 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 		m_eventOperInstruct = eventoperinstruct;
 	}
 
-	/**
-	 * @hibernate.property column="eventautoaction" length="256"
-	 * 
-	 */
+	@Column(name="eventAutoAction", length=256)
 	public String getEventAutoAction() {
 		return m_eventAutoAction;
 	}
@@ -482,10 +451,7 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 		m_eventAutoAction = eventautoaction;
 	}
 
-	/**
-	 * @hibernate.property column="eventoperaction" length="256"
-	 * 
-	 */
+	@Column(name="eventOperAction", length=256)
 	public String getEventOperAction() {
 		return m_eventOperAction;
 	}
@@ -494,10 +460,7 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 		m_eventOperAction = eventoperaction;
 	}
 
-	/**
-	 * @hibernate.property column="eventoperactionmenutext" length="64"
-	 * 
-	 */
+	@Column(name="eventOperActionMenuText", length=64)
 	public String getEventOperActionMenuText() {
 		return m_eventOperActionMenuText;
 	}
@@ -506,10 +469,7 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 		m_eventOperActionMenuText = eventOperActionMenuText;
 	}
 
-	/**
-	 * @hibernate.property column="eventnotification" length="128"
-	 * 
-	 */
+	@Column(name="eventNotification", length=128)
 	public String getEventNotification() {
 		return m_eventNotification;
 	}
@@ -518,10 +478,7 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 		m_eventNotification = eventnotification;
 	}
 
-	/**
-	 * @hibernate.property column="eventtticket" length="128"
-	 * 
-	 */
+	@Column(name="eventTTicket", length=128)
 	public String getEventTTicket() {
 		return m_eventTTicket;
 	}
@@ -530,10 +487,7 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 		m_eventTTicket = eventtticket;
 	}
 
-	/**
-	 * @hibernate.property column="eventtticketstate" length="4"
-	 * 
-	 */
+	@Column(name="eventTTicketState")
 	public Integer getEventTTicketState() {
 		return m_eventTTicketState;
 	}
@@ -542,10 +496,7 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 		m_eventTTicketState = eventtticketstate;
 	}
 
-	/**
-	 * @hibernate.property column="eventforward" length="256"
-	 * 
-	 */
+	@Column(name="eventForward", length=256)
 	public String getEventForward() {
 		return m_eventForward;
 	}
@@ -554,10 +505,7 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 		m_eventForward = eventforward;
 	}
 
-	/**
-	 * @hibernate.property column="eventmouseovertext" length="64"
-	 * 
-	 */
+	@Column(name="eventMouseOverText", length=64)
 	public String getEventMouseOverText() {
 		return m_eventMouseOverText;
 	}
@@ -567,9 +515,9 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	}
 
 	/**
-	 * @hibernate.property column="eventlog" length="1" not-null="true"
-	 * 
+	 * TODO: Make this an Enum
 	 */
+	@Column(name="eventLog", length=1, nullable=false)
 	public String getEventLog() {
 		return m_eventLog;
 	}
@@ -579,9 +527,10 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	}
 
 	/**
-	 * @hibernate.property column="eventdisplay" length="1" not-null="true"
+	 * TODO: make this an Enum
 	 * 
 	 */
+	@Column(name="eventDisplay", length=1, nullable=false)
 	public String getEventDisplay() {
 		return m_eventDisplay;
 	}
@@ -590,10 +539,7 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 		m_eventDisplay = eventdisplay;
 	}
 
-	/**
-	 * @hibernate.property column="eventackuser" length="256"
-	 * 
-	 */
+	@Column(name="eventAckUser", length=256)
 	public String getEventAckUser() {
 		return m_eventAckUser;
 	}
@@ -602,10 +548,8 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 		m_eventAckUser = eventackuser;
 	}
 
-	/**
-	 * @hibernate.property column="eventacktime" length="8"
-	 * 
-	 */
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name="eventAckTime")
 	public Date getEventAckTime() {
 		return m_eventAckTime;
 	}
@@ -614,10 +558,8 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 		m_eventAckTime = eventacktime;
 	}
 
-	/**
-	 * @hibernate.property column="alarmid" length="4"
-	 * 
-	 */
+	@ManyToOne
+	@JoinColumn(name="alarmId")
 	public OnmsAlarm getAlarm() {
 		return m_alarm;
 	}
@@ -626,70 +568,40 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 		m_alarm = alarm;
 	}
 
-	/**
-	 * @hibernate.many-to-one not-null="true"
-	 * @hibernate.column name="nodeid"
-	 * 
-	 */
-	public org.opennms.netmgt.model.OnmsNode getNode() {
+	@ManyToOne(fetch=FetchType.LAZY)
+	@JoinColumn(name="nodeId")
+	public OnmsNode getNode() {
 		return m_node;
 	}
 
-	public void setNode(org.opennms.netmgt.model.OnmsNode node) {
+	public void setNode(OnmsNode node) {
 		m_node = node;
 	}
 
-	/**
-	 * @hibernate.set lazy="true" inverse="true" cascade="none"
-	 * @hibernate.key column="eventid"
-	 * @hibernate.one-to-many class="org.opennms.netmgt.model.OnmsNotification"
-	 * 
-	 * old XDoclet1 Tags hibernate.collection-key column="eventid"
-	 * hibernate.collection-one-to-many
-	 * class="org.opennms.netmgt.model.OnmsNotification"
-	 * 
-	 */
-	public Set getNotifications() {
+	@OneToMany(mappedBy="event", fetch=FetchType.LAZY)
+	public Set<OnmsNotification> getNotifications() {
 		return m_notifications;
 	}
 
-	public void setNotifications(Set notifications) {
+	public void setNotifications(Set<OnmsNotification> notifications) {
 		m_notifications = notifications;
 	}
 
-	/**
-	 * @hibernate.set lazy="true" inverse="true" cascade="none"
-	 * @hibernate.key column="svcregainedeventid"
-	 * @hibernate.one-to-many class="org.opennms.netmgt.model.OnmsOutage"
-	 * 
-	 * old XDoclet1 Tags hibernate.collection-key column="svcregainedeventid"
-	 * hibernate.collection-one-to-many
-	 * class="org.opennms.netmgt.model.OnmsOutage"
-	 * 
-	 */
-	public Set getOutagesBySvcRegainedEventId() {
+	@OneToMany(mappedBy="eventBySvcRegainedEvent", fetch=FetchType.LAZY)
+	public Set<OnmsOutage> getOutagesBySvcRegainedEventId() {
 		return m_outagesBySvcRegainedEventId;
 	}
 
-	public void setOutagesBySvcRegainedEventId(Set outagesBySvcregainedeventid) {
+	public void setOutagesBySvcRegainedEventId(Set<OnmsOutage> outagesBySvcregainedeventid) {
 		m_outagesBySvcRegainedEventId = outagesBySvcregainedeventid;
 	}
 
-	/**
-	 * @hibernate.set lazy="true" inverse="true" cascade="none"
-	 * @hibernate.key column="svclosteventid"
-	 * @hibernate.one-to-many class="org.opennms.netmgt.model.OnmsOutage"
-	 * 
-	 * old XDoclet1 Tags hibernate.collection-key column="svclosteventid"
-	 * hibernate.collection-one-to-many
-	 * class="org.opennms.netmgt.model.OnmsOutage"
-	 * 
-	 */
-	public Set getOutagesBySvclostEventId() {
+	@OneToMany(mappedBy="eventBySvcLostEvent", fetch=FetchType.LAZY)
+	public Set<OnmsOutage> getOutagesBySvclostEventId() {
 		return m_outagesBySvclostEventId;
 	}
 
-	public void setOutagesBySvclostEventId(Set outagesBySvclosteventid) {
+	public void setOutagesBySvclostEventId(Set<OnmsOutage> outagesBySvclosteventid) {
 		m_outagesBySvclostEventId = outagesBySvclosteventid;
 	}
 
