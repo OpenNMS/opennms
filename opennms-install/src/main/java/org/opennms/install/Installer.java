@@ -2824,7 +2824,7 @@ public class Installer {
                                                + "It needs to be "
                                                + "removed or udpated to "
                                                + "reflect a valid '"
-                                               + m_column + "' column.");
+                                               + m_column + "' value.");
         }
     }
 
