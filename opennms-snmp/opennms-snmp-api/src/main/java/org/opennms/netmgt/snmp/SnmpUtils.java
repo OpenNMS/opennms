@@ -31,6 +31,8 @@
 //
 package org.opennms.netmgt.snmp;
 
+import java.util.List;
+import java.util.ArrayList;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.util.Properties;
@@ -96,6 +98,24 @@ public class SnmpUtils {
     
     public static Properties getConfig() {
         return (sm_config == null ? System.getProperties() : sm_config);
+    }
+
+    public static List getColumns(SnmpAgentConfig agentConfig, String name, SnmpObjId oid) 
+	throws InterruptedException {
+
+        final List results = new ArrayList();
+        
+        SnmpWalker walker=SnmpUtils.createWalker(agentConfig, name, new ColumnTracker(oid) {
+   
+            @Override
+            protected void storeResult(SnmpObjId base, SnmpInstId inst, SnmpValue val) {
+                results.add(val);
+            }
+           
+        });
+	walker.start();
+	walker.waitFor();
+        return results;
     }
     
     public static void setConfig(Properties config) {
