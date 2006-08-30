@@ -181,16 +181,24 @@ public class Installer {
             + "-C, or -T is required.";
     
     public Installer() {
+        AutoIntegerIdMapStore snmpInterfaceId =
+            new AutoIntegerIdMapStore(1, new String[] { "nodeid", "ipaddr", "snmpifindex" });
+        m_columnReplacements.put("snmpinterface.id", snmpInterfaceId);
+        
         AutoIntegerIdMapStore ipInterfaceId =
-            new AutoIntegerIdMapStore(1, new String[] {"nodeid", "ipaddr", "ifindex" });
+            new AutoIntegerIdMapStore(1, new String[] { "nodeid", "ipaddr", "ifindex" });
         m_columnReplacements.put("ipinterface.id", ipInterfaceId);
+
+        MapStoreIdGetter IpInterfaceSnmpInterfaceId =
+            new MapStoreIdGetter(snmpInterfaceId, new String[] { "nodeid", "ipaddr", "ifindex" }, true);
+        m_columnReplacements.put("ipinterface.snmpinterfaceid", IpInterfaceSnmpInterfaceId);
         
         AutoIntegerIdMapStore ifServicesId =
-            new AutoIntegerIdMapStore(1, new String[] {"nodeid", "ipaddr", "ifindex", "serviceid" });
+            new AutoIntegerIdMapStore(1, new String[] { "nodeid", "ipaddr", "ifindex", "serviceid" });
         m_columnReplacements.put("ifservices.id", ifServicesId);
         
         MapStoreIdGetter ifServicesIpInterfaceId =
-            new MapStoreIdGetter(ipInterfaceId, new String[] {"nodeid", "ipaddr", "ifindex" });
+            new MapStoreIdGetter(ipInterfaceId, new String[] { "nodeid", "ipaddr", "ifindex" }, false);
         m_columnReplacements.put("ifservices.ipinterfaceid", ifServicesIpInterfaceId);
         
         m_columnReplacements.put("events.eventsource",
@@ -199,11 +207,37 @@ public class Installer {
         m_columnReplacements.put("outages.outageid",
                                  new AutoInteger(1));
         
+        m_columnReplacements.put("snmpinterface.nodeid", new ColumnChangeReplacement() {
+            public Object getColumnReplacement(ResultSet rs, Map<String, ColumnChange> columnChanges) throws SQLException {
+                throw new IllegalArgumentException("The nodeId column in the snmpInterface table should never be null, but the entry for this row does have a null nodeId.  It needs to be removed or udpated to reflect a valid nodeId.");
+            }
+        });
+        
+        m_columnReplacements.put("ipinterface.ipaddr", new ColumnChangeReplacement() {
+            public Object getColumnReplacement(ResultSet rs, Map<String, ColumnChange> columnChanges) throws SQLException {
+                throw new IllegalArgumentException("The ipAddr column in the ipInterface table should never be null, but the entry for this row does have a null ipAddr.  It needs to be removed or udpated to reflect a valid ipAddr.");
+            }
+        });
+
+        
+        /*
+         * This is totally bogus.  outages.svcregainedeventid is a foreign
+         * key that points at events.eventid, and a fixed replacement of zero
+         * will break, because there should never be an event with an ID of
+         * zero.  I don't think it ever got executed before due to the
+         * null replacement only being performed if a column was marked as
+         * NOT NULL.
+         */
+        /*
         m_columnReplacements.put("outages.svcregainedeventid",
                                  new FixedIntegerReplacement(0));
+                                 */
         
+        // Disabled for the same reason as above
+        /*
         m_columnReplacements.put("notifications.eventid",
                                  new FixedIntegerReplacement(0));
+                                 */
         
         m_columnReplacements.put("usersnotified.id",
                                  new AutoInteger(1));
@@ -273,8 +307,8 @@ public class Installer {
             if (!m_skip_constraints) {
                 checkConstraints();
             }
-            createTables();
             createSequences();
+            createTables();
             createIndexes();
             // createFunctions(m_cfunctions); // Unused, not in create.sql
             // createLanguages(); // Unused, not in create.sql
@@ -979,56 +1013,30 @@ public class Installer {
                 throw new Exception("Cannot find sequence mapping for "
                         + sequence);
             }
-            // String[] mapping = (String[]) m_seqmapping.get(sequence);
         }
 
         i = m_sequences.iterator();
         while (i.hasNext()) {
             String sequence = (String) i.next();
-            String[] mapping = (String[]) m_seqmapping.get(sequence);
+//            String[] mapping = (String[]) m_seqmapping.get(sequence);
             int minvalue = 1;
-            boolean remove;
+            boolean alreadyExists;
 
-            m_out.print("  - checking \"" + sequence + "\" minimum value... ");
-
-            try {
-                rs = st.executeQuery("SELECT MAX(" + mapping[0]
-                        + ") AS max FROM " + mapping[1]);
-
-                if (rs.next()) {
-                    minvalue = rs.getInt(1) + 1;
-                }
-            } catch (SQLException e) {
-                /*
-                 * SQL Status codes: 42P01: ERROR: relation "%s" does not
-                 * exist 42703: ERROR: column "%s" does not exist
-                 */
-                if (e.toString().indexOf("does not exist") == -1
-                        || (!"42P01".equals(e.getSQLState()) && !"42703".equals(e.getSQLState()))) {
-                    throw e;
-                }
-            }
-
-            m_out.println(Integer.toString(minvalue));
-
-            m_out.print("  - removing sequence \"" + sequence + "\"... ");
+            m_out.print("  - checking \"" + sequence + "\" sequence... ");
 
             rs = st.executeQuery("SELECT relname FROM pg_class "
                     + "WHERE relname = '" + sequence.toLowerCase() + "'");
-
-            remove = rs.next();
-            if (remove) {
-                st.execute("DROP SEQUENCE " + sequence);
-                m_out.println("REMOVED");
+            alreadyExists = rs.next();
+            if (alreadyExists) {
+                m_out.println("ALREADY EXISTS");
             } else {
-                m_out.println("CLEAN");
+                m_out.println("DOES NOT EXIST");
+                m_out.print("    - creating sequence \"" + sequence + "\"... ");
+                st.execute("CREATE SEQUENCE " + sequence + " minvalue "
+                           + minvalue);
+                st.execute("GRANT ALL on " + sequence + " TO " + m_user);
+                m_out.println("OK");
             }
-
-            m_out.print("  - creating sequence \"" + sequence + "\"... ");
-            st.execute("CREATE SEQUENCE " + sequence + " minvalue "
-                    + minvalue);
-            st.execute("GRANT ALL on " + sequence + " TO " + m_user);
-            m_out.println("OK");
         }
 
         m_out.println("- creating sequences... DONE");
@@ -1407,8 +1415,8 @@ public class Installer {
 
         FileFilter sqlFilter = new FileFilter() {
             public boolean accept(File pathname) {
-                return (pathname.getName().startsWith("get") && pathname.getName().endsWith(
-                                                                                            ".sql"));
+                return (pathname.getName().startsWith("get") && pathname.getName().endsWith(".sql"))
+                     || pathname.getName().endsWith("Trigger.sql");
             }
         };
 
@@ -1439,53 +1447,86 @@ public class Installer {
             r.close();
 
             Matcher m = Pattern.compile(
-                                        "(?is)\\bCREATE FUNCTION\\s+"
-                                                + "(\\w+)\\s*\\((.+?)\\)\\s+"
+                                        "(?is)\\b(CREATE(?: OR REPLACE)? FUNCTION\\s+"
+                                                + "(\\w+)\\s*\\((.*?)\\)\\s+"
                                                 + "RETURNS\\s+(\\S+)\\s+AS\\s+"
-                                                + "(.+? language ['\"]?\\w+['\"]?);").matcher(
+                                                + "(.+? language ['\"]?\\w+['\"]?);)").matcher(
                                                                                               create.toString());
 
             if (!m.find()) {
-                throw new Exception("Could match \"" + m.pattern().pattern()
+                throw new Exception("Couldn't match \"" + m.pattern().pattern()
                         + "\" in string \"" + create + "\"");
             }
-            String function = m.group(1);
-            String columns = m.group(2);
-            String returns = m.group(3);
-            // String rest = m.group(4);
+            String createSql = m.group(1);
+            String function = m.group(2);
+            String columns = m.group(3);
+            String returns = m.group(4);
+            // String rest = m.group(5);
 
             if (functionExists(function, columns, returns)) {
                 if (m_force) {
                     st.execute("DROP FUNCTION " + function + "(" + columns
                             + ")");
-                    st.execute(create.toString());
+                    st.execute(createSql);
                     m_out.print("OK (dropped and re-added)");
                 } else {
                     m_out.print("EXISTS");
                 }
             } else {
-                st.execute(create.toString());
+                st.execute(createSql);
                 m_out.print("OK");
             }
+
+            Pattern p = Pattern.compile("(?i)"
+                                        + "(CREATE TRIGGER (\\S+)\\s+"
+                                        + "BEFORE INSERT OR UPDATE\\s+"
+                                        + "ON (\\S+) FOR EACH ROW\\s+"
+                                        + "EXECUTE PROCEDURE (\\S+)\\(\\));");
+            m = p.matcher(create.toString());
+            if (m.find()) {
+                String triggerSql = m.group(1);
+                String triggerName = m.group(2);
+                String triggerTable = m.group(3);
+                String triggerProc = m.group(4);
+                
+                m_out.print("    - checking trigger '" + triggerName + "' ...");
+                
+                if (triggerExists(triggerName, triggerTable, triggerProc)) {
+                    m_out.println("EXISTS");
+                } else {
+                    st.execute(triggerSql);
+                    m_out.println("ADDED");
+                }
+            }
+
         }
         m_out.println("");
+        
     }
 
     public boolean functionExists(String function, String columns,
             String returnType) throws Exception {
         Map types = getTypesFromDB();
 
-        String[] splitColumns = columns.split(",");
-        int[] columnTypes = new int[splitColumns.length];
-        Column c;
-        for (int j = 0; j < splitColumns.length; j++) {
-            c = new Column();
-            c.parseColumnType(splitColumns[j]);
-            columnTypes[j] = ((Integer) types.get(c.getType())).intValue();
+        int[] columnTypes = new int[0];
+        columns = columns.trim();
+        if (columns.length() > 0) {
+            String[] splitColumns = columns.split("\\s*,\\s*");
+            columnTypes = new int[splitColumns.length];
+            Column c;
+            for (int j = 0; j < splitColumns.length; j++) {
+                c = new Column();
+                c.parseColumnType(splitColumns[j]);
+                columnTypes[j] = ((Integer) types.get(c.getType())).intValue();
+            }
         }
 
-        c = new Column();
-        c.parseColumnType(returnType);
+        Column c = new Column();
+        try {
+            c.parseColumnType(returnType);
+        } catch (Exception e) {
+            throw new Exception("Could not parse column type '" + returnType + "' for function '" + function + "'.  Nested exception: " + e.getMessage(), e);
+        }
         int retType = ((Integer) types.get(c.getType())).intValue();
 
         return functionExists(function, columnTypes, retType);
@@ -1826,7 +1867,12 @@ public class Installer {
                 String a = accumulator.toString().trim();
 
                 if (a.toLowerCase().startsWith("constraint ")) {
-                    Constraint constraint = new Constraint(tableName, a);
+                    Constraint constraint;
+                    try {
+                        constraint = new Constraint(tableName, a);
+                    } catch (Exception e) {
+                        throw new Exception("Could not parse constraint for table '" + tableName + "'.  Nested exception: " + e.getMessage(), e);
+                    }
                     List<String> constraintColumns = constraint.getColumns();
                     if (constraintColumns.size() == 0) {
                         throw new IllegalStateException(
@@ -1853,7 +1899,7 @@ public class Installer {
                         column.parse(accumulator.toString());
                         columns.add(column);
                     } catch (Exception e) {
-                        throw new Exception("Could not parse table " + table
+                        throw new Exception("Could not parse table " + tableName
                                 + ".  Chained: " + e.getMessage(), e);
                     }
                 }
@@ -2127,10 +2173,11 @@ public class Installer {
              * if there is not a null replacement and the column either didn't
              * exist before or it did NOT have the NOT NULL constraint before.
              */
-            if (newColumn.isNotNull()) {
-                if (m_columnReplacements.containsKey(table + "." + newColumn.getName())) {
-                    columnChange.setNullReplace(m_columnReplacements.get(table + "." + newColumn.getName()));
-                } else if (oldColumn == null) {
+            if (m_columnReplacements.containsKey(table + "." + newColumn.getName())) {
+                columnChange.setNullReplace(m_columnReplacements.get(table + "." + newColumn.getName()));
+            }
+            if (newColumn.isNotNull() && columnChange.getNullReplace() == null) {
+                if (oldColumn == null) {
                     String message = "Column " + newColumn.getName()
                             + " in new table has NOT NULL "
                             + "constraint, however this column "
@@ -2628,11 +2675,11 @@ public class Installer {
             return newInteger;
         }
         
-        public Integer getIntegerForColumns(ResultSet rs, Map<String, ColumnChange> columnChanges, String[] columns) throws SQLException {
+        public Integer getIntegerForColumns(ResultSet rs, Map<String, ColumnChange> columnChanges, String[] columns, boolean noMatchOkay) throws SQLException {
             MultiColumnKey key = getKeyForColumns(rs, columnChanges, columns);
 
             Integer oldInteger = m_idMap.get(key);
-            if (oldInteger == null) {
+            if (oldInteger == null && !noMatchOkay) {
                 throw new IllegalArgumentException("No entry in the map for " + key);
             }
             
@@ -2715,14 +2762,17 @@ public class Installer {
     public class MapStoreIdGetter implements ColumnChangeReplacement {
         private AutoIntegerIdMapStore m_storeFoo;
         private String[] m_indexColumns;
+        private boolean m_noMatchOkay;
         
-        public MapStoreIdGetter(AutoIntegerIdMapStore storeFoo, String[] columns) {
+        public MapStoreIdGetter(AutoIntegerIdMapStore storeFoo,
+                String[] columns, boolean noMatchOkay) {
             m_storeFoo = storeFoo;
             m_indexColumns = columns;
+            m_noMatchOkay = noMatchOkay;
         }
 
         public Object getColumnReplacement(ResultSet rs, Map<String, ColumnChange> columnChanges) throws SQLException {
-            return m_storeFoo.getIntegerForColumns(rs, columnChanges, m_indexColumns);
+            return m_storeFoo.getIntegerForColumns(rs, columnChanges, m_indexColumns, m_noMatchOkay);
         }
         
     }
@@ -2749,5 +2799,19 @@ public class Installer {
         public Object getColumnReplacement(ResultSet rs, Map<String, ColumnChange> columnChanges) throws SQLException {
             return m_replacement;
         }
+    }
+
+    public boolean triggerExists(String name, String table,
+            String storedProcedure) throws Exception {
+        
+        Statement st = m_dbconnection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT oid FROM pg_trigger WHERE tgname = '"
+                                       + name.toLowerCase()
+                                       + "' AND tgrelid = (SELECT oid FROM pg_class WHERE relname = '"
+                                       + table.toLowerCase()
+                                       + "' ) AND tgfoid = (SELECT oid FROM pg_proc WHERE proname = '"
+                                       + storedProcedure.toLowerCase() + "')");
+        
+        return rs.next();
     }
 }
