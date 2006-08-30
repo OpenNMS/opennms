@@ -345,7 +345,7 @@ create index node_label_idx on node(nodeLabel);
 
 create table snmpInterface (
     id				INTEGER DEFAULT nextval('opennmsNxtId') NOT NULL,
-	nodeID			integer,
+	nodeID			integer not null,
 	ipAddr			varchar(16) not null,
 	snmpIpAdEntNetMask	varchar(16),
 	snmpPhysAddr		char(12),
@@ -413,7 +413,7 @@ create table ipInterface (
 	ipStatus		integer,
 	ipLastCapsdPoll timestamp without time zone,
 	isSnmpPrimary   char(1),
-	snmpInterfaceId	integer not null,
+	snmpInterfaceId	integer,
 
 	CONSTRAINT ipinterface_pkey PRIMARY KEY (id),
 	CONSTRAINT snmpinterface_fkey1 FOREIGN KEY (snmpInterfaceId) REFERENCES snmpInterface (id),
@@ -476,7 +476,7 @@ create table service (
 --########################################################################
 
 create table ifServices (
-    id				INTEGER default nextval('opennmsNxtId') NOT NULL,
+    id				integer default nextval('opennmsNxtId') NOT NULL,
 	nodeID			integer,
 	ipAddr			varchar(16) not null,
 	ifIndex			integer,
@@ -487,7 +487,7 @@ create table ifServices (
 	status         	char(1),
 	source			char(1),
 	notify          char(1),
-	ipInterfaceId	INTEGER,
+	ipInterfaceId	integer not null,
 
 	CONSTRAINT ifservices_pkey PRIMARY KEY (id), 
 	CONSTRAINT ipinterface_fkey FOREIGN KEY (ipInterfaceId) REFERENCES ipInterface (id) ON DELETE CASCADE,
