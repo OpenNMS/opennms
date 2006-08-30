@@ -281,6 +281,8 @@ public class Column {
             return "numeric";
         } else if (column.equals("text")) {
             return "text";
+        } else if (column.equals("trigger")) {
+            return "trigger";
         } else if (column.equals("timestamp") || column.equals("timestamp without time zone")) {
             return "timestamp";
         } else if (column.equals("timestamptz") || column.equals("timestamp with time zone")) {
@@ -288,7 +290,7 @@ public class Column {
         } else if (column.equals("bytea")) {
             return "bytea";
         } else {
-            throw new Exception("cannot parse column type: " + column);
+            throw new Exception("cannot parse column type: '" + column + "'");
         }
     }
 
@@ -301,7 +303,7 @@ public class Column {
             return 4;
         } else if (type.equals("bigint") || type.equals("timestamp") || type.equals("timestamptz")) {
             return 8;
-        } else if (type.equals("double precision") || type.equals("real") || type.equals("text") || type.equals("bytea")) {
+        } else if (type.equals("double precision") || type.equals("real") || type.equals("text") || type.equals("bytea") || type.equals("trigger")) {
             return -1;
         } else {
             throw new Exception("do not know the type size for " + "column type \"" + type + "\"");

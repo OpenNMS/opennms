@@ -17,6 +17,8 @@ import java.sql.Statement;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.opennms.test.ThrowableAnticipator;
 
@@ -51,13 +53,15 @@ public class InstallerDBTest extends TestCase {
         m_installer.m_pg_pass = "";
         m_installer.m_user = "opennms";
         
-        // XXX this makes bad assumptions that are not always true with Maven
-        // 2.
-        //m_installer.m_create_sql = "../opennms-daemon/src/main/filtered/etc/create.sql";
+        m_installer.m_create_sql = "../opennms-daemon/src/main/filtered/etc/create.sql";
         
+        /*
         URL sql = getClass().getResource("/create.sql");
         assertNotNull("Could not find create.sql", sql);
         m_installer.m_create_sql = sql.getFile();
+        */
+        
+        m_installer.m_sql_dir = "../opennms-daemon/src/main/filtered/etc";
         
         m_installer.m_fix_constraint = true;
         m_installer.m_fix_constraint_name = s_constraint;
@@ -124,11 +128,21 @@ public class InstallerDBTest extends TestCase {
     }
 
     // XXX this should be an integration test
+    public void testCreateSequences() throws Exception {
+        if (!isDBTestEnabled()) {
+            return;
+        }
+
+        m_installer.createSequences();
+    }
+    
+    // XXX this should be an integration test
     public void testCreateTables() throws Exception {
         if (!isDBTestEnabled()) {
             return;
         }
 
+        m_installer.createSequences();
         m_installer.createTables();
     }
 
@@ -138,10 +152,23 @@ public class InstallerDBTest extends TestCase {
             return;
         }
 
+        // First pass.
+        m_installer.createSequences();
         m_installer.createTables();
+        
+        /*
+         * Second pass.
+         * We don't care about the output from this, so we clear the
+         * ByteArrayOutputStream after we call createSequences().
+         * It's important to test the sequence part, and do it first,
+         * because the tables depend on sequences for their ID column.
+         */ 
+        m_installer.createSequences();
 
-        // Create a new ByteArrayOutputStream so we can look for UPTODATE for
-        // every table
+        /*
+         * Create a new ByteArrayOutputStream so we can look for UPTODATE for
+         * every table
+         */
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         m_installer.m_out = new PrintStream(out);
         m_installer.createTables();
@@ -632,8 +659,7 @@ public class InstallerDBTest extends TestCase {
         List<Constraint> constraints = m_installer.getConstraintsFromDB("qrtz_job_details");
         assertNotNull("constraint list not null", constraints);
         assertEquals("constraint list size", 1, constraints.size());
-        assertEquals(
-                     "constraint zero toString()",
+        assertEquals("constraint zero toString()",
                      "constraint pk_qrtz_job_details primary key (job_name, job_group)",
                      constraints.get(0).toString());
     }
@@ -642,6 +668,8 @@ public class InstallerDBTest extends TestCase {
         if (!isDBTestEnabled()) {
             return;
         }
+
+        m_installer.createSequences();
         
         addTableFromSQL("distpoller");
         addTableFromSQL("node");
@@ -653,7 +681,6 @@ public class InstallerDBTest extends TestCase {
                    + "VALUES ( 1, 'uei.opennms.org/eatmyshorts', now(), 'Duh', now(), 1, 'n', 'n' )");
 
         m_installer.createTables();
-        
 
         Statement st = m_installer.m_dbconnection.createStatement();
         ResultSet rs = st.executeQuery("SELECT eventsource from events");
@@ -671,8 +698,11 @@ public class InstallerDBTest extends TestCase {
             return;
         }
         
+        m_installer.createSequences();
+
         addTableFromSQL("distpoller");
         addTableFromSQL("node");
+        addTableFromSQL("snmpinterface");
         addTableFromSQL("ipinterface");
         addTableFromSQL("service");
         addTableFromSQL("ifservices");
@@ -703,8 +733,11 @@ public class InstallerDBTest extends TestCase {
             return;
         }
         
+        m_installer.createSequences();
+
         addTableFromSQL("distpoller");
         addTableFromSQL("node");
+        addTableFromSQL("snmpinterface");
         addTableFromSQL("ipinterface");
         addTableFromSQL("service");
         addTableFromSQL("ifservices");
@@ -732,8 +765,11 @@ public class InstallerDBTest extends TestCase {
             return;
         }
         
+        m_installer.createSequences();
+        
         addTableFromSQL("distpoller");
         addTableFromSQL("node");
+        addTableFromSQL("snmpinterface");
         addTableFromSQL("ipinterface");
         addTableFromSQL("service");
         addTableFromSQL("ifservices");
@@ -764,9 +800,12 @@ public class InstallerDBTest extends TestCase {
         if (!isDBTestEnabled()) {
             return;
         }
-        
+
+        m_installer.createSequences();
+
         addTableFromSQL("distpoller");
         addTableFromSQL("node");
+        addTableFromSQL("snmpinterface");
         addTableFromSQL("ipinterface");
         addTableFromSQL("service");
         addTableFromSQL("ifservices");
@@ -791,29 +830,232 @@ public class InstallerDBTest extends TestCase {
         }
         assertEquals("expected column count", 1, count);
     }
+    
+    public void testSetSnmpInterfaceId() throws Exception {
+        if (!isDBTestEnabled()) {
+            return;
+        }
+
+        m_installer.createSequences();
+
+        addTableFromSQL("distpoller");
+        addTableFromSQL("node");
+        addTableFromSQLWithReplacements("snmpinterface", new String[][] {
+                new String[] { "(?i)id\\s+INTEGER DEFAULT nextval\\('opennmsNxtId'\\) NOT NULL,", "" },
+                new String[] { "(?i)CONSTRAINT snmpinterface_pkey primary key \\(id\\),", "" }
+            });
+        
+        executeSQL("INSERT INTO node (nodeId, nodeCreateTime) VALUES ( 1, now() )");
+        executeSQL("INSERT INTO snmpInterface (nodeId, ipAddr) VALUES (1, '1.2.3.4')");
+
+        m_installer.createTables();
+        
+        Statement st = m_installer.m_dbconnection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT id from snmpInterface");
+        int count = 0;
+        for (int expected = 1; rs.next(); expected++) {
+            assertEquals("expected usersNotified id", expected, rs.getInt(1));
+            count++;
+        }
+        assertEquals("expected column count", 1, count);
+        
+    }
+    
+    public void testCatchSnmpInterfaceNullNodeIdColumn() throws Exception {
+        if (!isDBTestEnabled()) {
+            return;
+        }
+
+        m_installer.createSequences();
+
+        addTableFromSQL("distpoller");
+        addTableFromSQL("node");
+        addTableFromSQLWithReplacements("snmpinterface", new String[][] {
+                new String[] { "(?i)nodeID\\s+integer not null,", "nodeId integer," }
+            });
+        
+        executeSQL("INSERT INTO node (nodeId, nodeCreateTime) VALUES ( 1, now() )");
+        executeSQL("INSERT INTO snmpInterface (nodeId, ipAddr) VALUES ( 1, '1.2.3.4' )");
+
+        m_installer.createTables();
+        
+        Statement st = m_installer.m_dbconnection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT id from snmpInterface");
+        int count = 0;
+        for (int expected = 1; rs.next(); expected++) {
+            assertEquals("expected usersNotified id", expected, rs.getInt(1));
+            count++;
+        }
+        assertEquals("expected column count", 1, count);
+        
+    }
+
+    public void testCatchSnmpInterfaceHasNullNodeIdValue() throws Exception {
+        if (!isDBTestEnabled()) {
+            return;
+        }
+
+        m_installer.createSequences();
+
+        addTableFromSQL("distpoller");
+        addTableFromSQL("node");
+        addTableFromSQLWithReplacements("snmpinterface", new String[][] {
+                new String[] { "(?i)nodeID\\s+integer not null,", "nodeId integer," }
+            });
+        
+        executeSQL("INSERT INTO node (nodeId, nodeCreateTime) VALUES ( 1, now() )");
+        executeSQL("INSERT INTO snmpInterface (nodeId, ipAddr) VALUES ( null, '1.2.3.4' )");
+
+        ThrowableAnticipator ta = new ThrowableAnticipator();
+        ta.anticipate(new Exception("Error changing table 'snmpinterface'.  Nested exception: The nodeId column in the snmpInterface table should never be null, but the entry for this row does have a null nodeId.  It needs to be removed or udpated to reflect a valid nodeId."));
+        try {
+            m_installer.createTables();
+        } catch (Throwable t) {
+            ta.throwableReceived(t);
+        }
+        
+        ta.verifyAnticipated();
+    }
+
+    
+    public void testCatchIpInterfaceNullIpAddrColumn() throws Exception {
+        if (!isDBTestEnabled()) {
+            return;
+        }
+
+        m_installer.createSequences();
+
+        addTableFromSQL("distpoller");
+        addTableFromSQL("node");
+        addTableFromSQL("snmpinterface");
+        addTableFromSQLWithReplacements("ipinterface", new String[][] {
+                new String[] { "(?i)ipAddr\\s+varchar\\(16\\) not null,", "ipAddr varchar(16)," }
+            });
+        
+        executeSQL("INSERT INTO node (nodeId, nodeCreateTime) VALUES ( 1, now() )");
+        executeSQL("INSERT INTO snmpInterface (nodeId, ipAddr) VALUES ( 1, '1.2.3.4' )");
+        executeSQL("INSERT INTO ipInterface (nodeId, ipAddr, ifIndex) VALUES ( 1, '1.2.3.4', null )");
+        executeSQL("INSERT INTO ipInterface (nodeId, ipAddr, ifIndex) VALUES ( 1, '1.2.3.9', 1 )");
+
+        m_installer.createTables();
+        
+        Statement st = m_installer.m_dbconnection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT id from snmpInterface");
+        int count = 0;
+        for (int expected = 1; rs.next(); expected++) {
+            assertEquals("expected usersNotified id", expected, rs.getInt(1));
+            count++;
+        }
+        assertEquals("expected column count", 1, count);
+        
+    }
+
+    public void testCatchIpInterfaceHasNullIpAddrValue() throws Exception {
+        if (!isDBTestEnabled()) {
+            return;
+        }
+
+        m_installer.createSequences();
+
+        addTableFromSQL("distpoller");
+        addTableFromSQL("node");
+        addTableFromSQL("snmpinterface");
+        addTableFromSQLWithReplacements("ipinterface", new String[][] {
+                new String[] { "(?i)ipAddr\\s+varchar\\(16\\) not null,", "ipAddr varchar(16)," }
+            });
+        
+        executeSQL("INSERT INTO node (nodeId, nodeCreateTime) VALUES ( 1, now() )");
+        executeSQL("INSERT INTO snmpInterface (nodeId, ipAddr) VALUES ( 1, '1.2.3.4' )");
+        executeSQL("INSERT INTO ipInterface (nodeId, ipAddr, ifIndex) VALUES ( 1, null, null )");
+        executeSQL("INSERT INTO ipInterface (nodeId, ipAddr, ifIndex) VALUES ( 1, null, 1 )");
+
+        ThrowableAnticipator ta = new ThrowableAnticipator();
+        ta.anticipate(new Exception("Error changing table 'ipinterface'.  Nested exception: The ipAddr column in the ipInterface table should never be null, but the entry for this row does have a null ipAddr.  It needs to be removed or udpated to reflect a valid ipAddr."));
+        try {
+            m_installer.createTables();
+        } catch (Throwable t) {
+            ta.throwableReceived(t);
+        }
+        
+        ta.verifyAnticipated();
+    }
+
+    public void testUpdateFoo2() throws Exception {
+        if (!isDBTestEnabled()) {
+            return;
+        }
+        
+        m_installer.createSequences();
+        for (int i = 0; i < 10; i++) {
+            executeSQL("SELECT nextval('opennmsNxtId');");
+        }
+        
+        addTableFromSQL("distPoller");
+        addTableFromSQL("node");
+        
+        
+        //addTableFromSQL("snmpinterface");
+        // No ID column
+        addTableFromSQLWithReplacements("snmpinterface", new String[][] {
+                new String[] { "(?i)id\\s+INTEGER DEFAULT nextval\\('opennmsNxtId'\\) NOT NULL,", "" },
+                new String[] { "(?i)CONSTRAINT snmpinterface_pkey primary key \\(id\\),", "" }
+            });
+      
+        // No snmpInterfaceID column
+        addTableFromSQLWithReplacements("ipinterface", new String[][] {
+                new String[] { "(?i)snmpInterfaceId\\s+integer,", "" },
+                new String[] { "(?i)CONSTRAINT snmpinterface_fkey1 FOREIGN KEY \\(snmpInterfaceId\\) REFERENCES snmpInterface \\(id\\),", "" }
+                });
+        
+        executeSQL("INSERT INTO node (nodeId, nodeCreateTime) VALUES ( 1, now() )");
+        executeSQL("INSERT INTO snmpInterface (nodeId, ipAddr, snmpIfIndex) VALUES ( 1, '1.2.3.4', null)");
+        executeSQL("INSERT INTO ipInterface (nodeId, ipAddr, ifIndex) VALUES ( 1, '1.2.3.4', null )");
+        executeSQL("INSERT INTO ipInterface (nodeId, ipAddr, ifIndex) VALUES ( 1, '1.2.3.9', 1 )");
+        
+        m_installer.createTables();
+        
+        Statement st = m_installer.m_dbconnection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT snmpInterfaceID from ipInterface");
+        
+        assertTrue("Could not ResultSet.next() to first result entry", rs.next());
+        int got = rs.getInt(1);
+        assertFalse("first result should not be null, but was null", rs.wasNull());
+        assertEquals("ipInterface snmpInterfaceId", 1, got);
+        
+        assertTrue("Could not ResultSet.next() to second result entry", rs.next());
+        assertFalse("second result should be null, but wasn't null", rs.wasNull());
+
+        assertFalse("Too many entries", rs.next());
+    }
 
     public void testUpdateFoo() throws Exception {
         if (!isDBTestEnabled()) {
             return;
         }
         
+        m_installer.createSequences();
+        for (int i = 0; i < 10; i++) {
+            executeSQL("SELECT nextval('opennmsNxtId');");
+        }
+        
         addTableFromSQL("distPoller");
         addTableFromSQL("node");
+        addTableFromSQL("snmpinterface");
       
         // No ID column
         addTableFromSQLWithReplacements("ipinterface", new String[][] {
-                new String[] { "id\\s+integer,", "" },
-                new String[] { "constraint pk_ipInterface_id primary key \\(id\\),", "" }
+                new String[] { "(?i)id\\s+integer default nextval\\('opennmsNxtId'\\) not null,", "" },
+                new String[] { "(?i)constraint ipinterface_pkey primary key \\(id\\),", "" }
                 });
         
         addTableFromSQL("service");
         
         // No ID or ipInterfaceID column
         addTableFromSQLWithReplacements("ifservices", new String[][] {
-                new String[] { "id\\s+integer,", "" },
-                new String[] { "constraint pk_ifServices_id primary key \\(id\\),", "" },
-                new String[] { "ipInterfaceID\\s+integer not null,", "" },
-                new String[] { "constraint fk_ipInterfaceID foreign key \\(id\\) references ipInterface ON DELETE CASCADE,", "" }
+                new String[] { "(?i)id\\s+integer default nextval\\('opennmsNxtId'\\) not null,", "" },
+                new String[] { "(?i)constraint ifServices_pkey primary key \\(id\\),", "" },
+                new String[] { "(?i)ipInterfaceID\\s+integer not null,", "" },
+                new String[] { "(?i)constraint ipinterface_fkey foreign key \\(ipInterfaceId\\) references ipInterface \\(id\\) ON DELETE CASCADE,", "" }
                 });
 
         executeSQL("INSERT INTO node (nodeId, nodeCreateTime) VALUES ( 1, now() )");
@@ -844,6 +1086,273 @@ public class InstallerDBTest extends TestCase {
         assertEquals("expected column count", 2, count);
     }
     
+    public void testAddStoredProcedures() throws Exception {
+        if (!isDBTestEnabled()) {
+            return;
+        }
+
+        m_installer.createSequences();
+        m_installer.createTables();
+
+        m_installer.updatePlPgsql();
+        
+        m_installer.addStoredProcedures();
+        
+        for (String function : new String[] { "getIfServiceId",
+                "getIpInterfaceId", "getSnmpInterfaceId"} ) {
+            assertTrue("Function '" + function + "' does not exist",
+                       m_installer.functionExists(function, "", "trigger"));
+        }
+
+        assertTrue("Trigger setIfServiceIdInOutage does not exist",
+                   m_installer.triggerExists("setIfServiceIdInOutage",
+                                             "outages",
+                                             "getIfServiceId"));
+
+        assertTrue("Trigger setIpInterfaceIdInIfService does not exist",
+                   m_installer.triggerExists("setIpInterfaceIdInIfService",
+                                             "ifServices",
+                                             "getIpInterfaceId"));
+
+        assertTrue("Trigger setSnmpInterfaceIdInIpInterface does not exist",
+                   m_installer.triggerExists("setSnmpInterfaceIdInIpInterface",
+                                             "ipInterface",
+                                             "getSnmpInterfaceId"));
+    }
+    
+    public void testAddStoredProceduresTwice() throws Exception {
+        if (!isDBTestEnabled()) {
+            return;
+        }
+
+        m_installer.createSequences();
+        m_installer.createTables();
+
+        m_installer.updatePlPgsql();
+
+        m_installer.addStoredProcedures();
+        m_installer.addStoredProcedures();
+
+        for (String function : new String[] { "getIfServiceId",
+                "getIpInterfaceId", "getSnmpInterfaceId"} ) {
+            assertTrue("Function '" + function + "' does not exist",
+                       m_installer.functionExists(function, "", "trigger"));
+        }
+    }
+
+    public void testTriggerSetSnmpInterfaceIdInIpInterface() throws Exception {
+        if (!isDBTestEnabled()) {
+            return;
+        }
+
+        m_installer.createSequences();
+        m_installer.createTables();
+
+        m_installer.updatePlPgsql();
+        
+        m_installer.addStoredProcedures();
+        
+        executeSQL("INSERT INTO node (nodeId, nodeCreateTime) VALUES ( 1, now() )");
+        executeSQL("INSERT INTO snmpInterface (nodeId, ipAddr, snmpIfIndex) VALUES ( 1, '1.2.3.4', 1)");
+        executeSQL("INSERT INTO ipInterface (nodeId, ipAddr, ifIndex) VALUES ( 1, '1.2.3.4', 1 )");
+
+        Statement st = m_installer.m_dbconnection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT id, snmpInterfaceID from ipInterface");
+        assertTrue("could not advance to read first row in ResultSet", rs.next());
+        assertEquals("expected ipInterface id", 2, rs.getInt(1));
+        int id = rs.getInt(2);
+        assertFalse("expected ipInterface snmpInterfaceId to be non-null", rs.wasNull());
+        assertEquals("expected ipInterface snmpInterfaceId to be the same", 1, id);
+        assertFalse("ResultSet contains more than one row", rs.next());
+    }
+    
+    public void testTriggerSetSnmpInterfaceIdInIpInterfaceNoSnmpInterfaceEntry() throws Exception {
+        if (!isDBTestEnabled()) {
+            return;
+        }
+
+        m_installer.createSequences();
+        m_installer.createTables();
+
+        m_installer.updatePlPgsql();
+        
+        m_installer.addStoredProcedures();
+        
+        executeSQL("INSERT INTO node (nodeId, nodeCreateTime) VALUES ( 1, now() )");
+        executeSQL("INSERT INTO ipInterface (nodeId, ipAddr, ifIndex) VALUES ( 1, '1.2.3.4', 1 )");
+
+        Statement st = m_installer.m_dbconnection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT id, snmpInterfaceID from ipInterface");
+        assertTrue("could not advance to read first row in ResultSet", rs.next());
+        assertEquals("expected ipInterface id", 2, rs.getInt(1));
+        int id = rs.getInt(2);
+        assertTrue("expected ipInterface snmpInterfaceId to be null, but was " + id, rs.wasNull());
+        assertFalse("ResultSet contains more than one row", rs.next());
+    }
+
+    public void testTriggerSetSnmpInterfaceIdInIpInterfaceNullIfIndex() throws Exception {
+        if (!isDBTestEnabled()) {
+            return;
+        }
+
+        m_installer.createSequences();
+        m_installer.createTables();
+
+        m_installer.updatePlPgsql();
+        
+        m_installer.addStoredProcedures();
+        
+        executeSQL("INSERT INTO node (nodeId, nodeCreateTime) VALUES ( 1, now() )");
+        executeSQL("INSERT INTO snmpInterface (nodeId, ipAddr, snmpIfIndex) VALUES ( 1, '1.2.3.4', null)");
+        executeSQL("INSERT INTO ipInterface (nodeId, ipAddr, ifIndex) VALUES ( 1, '1.2.3.4', null )");
+
+        Statement st = m_installer.m_dbconnection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT id, snmpInterfaceID from ipInterface");
+        assertTrue("could not advance to read first row in ResultSet", rs.next());
+        assertEquals("expected ipInterface id", 2, rs.getInt(1));
+        int id = rs.getInt(2);
+        assertFalse("expected ipInterface snmpInterfaceId to be non-null", rs.wasNull());
+        assertEquals("expected ipInterface snmpInterfaceId to be the same", 1, id);
+
+        assertEquals("expected ipInterface snmpInterfaceId", 1, rs.getInt(2));
+        assertFalse("ResultSet contains more than one row", rs.next());
+    }
+    
+    public void testTriggerSetIpInterfaceIdInIfService() throws Exception {
+        if (!isDBTestEnabled()) {
+            return;
+        }
+
+        m_installer.createSequences();
+        m_installer.createTables();
+
+        m_installer.updatePlPgsql();
+        
+        m_installer.addStoredProcedures();
+        
+        executeSQL("INSERT INTO node (nodeId, nodeCreateTime) VALUES ( 1, now() )");
+        executeSQL("INSERT INTO snmpInterface (nodeId, ipAddr, snmpIfIndex) VALUES ( 1, '1.2.3.4', 1 )");
+        executeSQL("INSERT INTO ipInterface (nodeId, ipAddr, ifIndex) VALUES ( 1, '1.2.3.4', 1 )");
+        executeSQL("INSERT INTO service (serviceID, serviceName) VALUES ( 1, 'COFFEE-READY' )");
+        executeSQL("INSERT INTO ifServices (nodeID, ipAddr, ifIndex, serviceID) VALUES ( 1, '1.2.3.4', 1, 1)");
+
+        Statement st = m_installer.m_dbconnection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT id, ipInterfaceID from ifServices");
+        assertTrue("could not advance to read first row in ResultSet", rs.next());
+        assertEquals("expected ifServices id", 3, rs.getInt(1));
+        assertEquals("expected ifServices ipInterfaceId", 2, rs.getInt(2));
+        assertFalse("ResultSet contains more than one row", rs.next());
+    }
+    
+    public void testTriggerSetIpInterfaceIdInIfServiceNullIfIndex() throws Exception {
+        if (!isDBTestEnabled()) {
+            return;
+        }
+
+        m_installer.createSequences();
+        m_installer.createTables();
+
+        m_installer.updatePlPgsql();
+        
+        m_installer.addStoredProcedures();
+        
+        executeSQL("INSERT INTO node (nodeId, nodeCreateTime) VALUES ( 1, now() )");
+        executeSQL("INSERT INTO snmpInterface (nodeId, ipAddr, snmpIfIndex) VALUES ( 1, '1.2.3.4', null )");
+        executeSQL("INSERT INTO ipInterface (nodeId, ipAddr, ifIndex) VALUES ( 1, '1.2.3.4', null )");
+        executeSQL("INSERT INTO service (serviceID, serviceName) VALUES ( 1, 'COFFEE-READY' )");
+        executeSQL("INSERT INTO ifServices (nodeID, ipAddr, ifIndex, serviceID) VALUES ( 1, '1.2.3.4', null, 1)");
+
+        Statement st = m_installer.m_dbconnection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT id, ipInterfaceID from ifServices");
+        assertTrue("could not advance to read first row in ResultSet", rs.next());
+        assertEquals("expected ifServices id", 3, rs.getInt(1));
+        assertEquals("expected ifServices ipInterfaceId", 2, rs.getInt(2));
+        assertFalse("ResultSet contains more than one row", rs.next());
+    }
+    
+    public void testTriggerSetIfServiceIdInOutage() throws Exception {
+        if (!isDBTestEnabled()) {
+            return;
+        }
+
+        m_installer.createSequences();
+        m_installer.createTables();
+
+        m_installer.updatePlPgsql();
+        
+        m_installer.addStoredProcedures();
+        
+        executeSQL("INSERT INTO node (nodeId, nodeCreateTime) VALUES ( 1, now() )");
+        executeSQL("INSERT INTO snmpInterface (nodeId, ipAddr, snmpIfIndex) VALUES ( 1, '1.2.3.4', 1 )");
+        executeSQL("INSERT INTO ipInterface (nodeId, ipAddr, ifIndex) VALUES ( 1, '1.2.3.4', 1 )");
+        executeSQL("INSERT INTO service (serviceID, serviceName) VALUES ( 1, 'COFFEE-READY' )");
+        executeSQL("INSERT INTO ifServices (nodeID, ipAddr, ifIndex, serviceID) VALUES ( 1, '1.2.3.4', 1, 1)");
+        executeSQL("INSERT INTO outages (outageId, nodeId, ipAddr, ifLostService, serviceID ) "
+                   + "VALUES ( nextval('outageNxtId'), 1, '1.2.3.4', now(), 1 )");
+
+        Statement st = m_installer.m_dbconnection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT outageId, ifServiceId from outages");
+        assertTrue("could not advance to read first row in ResultSet", rs.next());
+        assertEquals("expected outages outageId", 1, rs.getInt(1));
+        assertEquals("expected outages ifServiceId", 3, rs.getInt(2));
+        assertFalse("ResultSet contains more than one row", rs.next());
+    }
+    
+    public void testTriggerSetIfServiceIdInOutageNullNodeId() throws Exception {
+        if (!isDBTestEnabled()) {
+            return;
+        }
+
+        m_installer.createSequences();
+        m_installer.createTables();
+
+        m_installer.updatePlPgsql();
+        
+        m_installer.addStoredProcedures();
+        
+        executeSQL("INSERT INTO node (nodeId, nodeCreateTime) VALUES ( 1, now() )");
+        executeSQL("INSERT INTO snmpInterface (nodeId, ipAddr, snmpIfIndex) VALUES ( 1, '1.2.3.4', 1 )");
+        executeSQL("INSERT INTO ipInterface (nodeId, ipAddr, ifIndex) VALUES ( 1, '1.2.3.4', 1 )");
+        executeSQL("INSERT INTO service (serviceID, serviceName) VALUES ( 1, 'COFFEE-READY' )");
+        executeSQL("INSERT INTO ifServices (nodeID, ipAddr, ifIndex, serviceID) VALUES ( 1, '1.2.3.4', 1, 1)");
+        executeSQL("INSERT INTO outages (outageId, ipAddr, ifLostService, serviceID ) "
+                   + "VALUES ( nextval('outageNxtId'), '1.2.3.4', now(), 1 )");
+
+        Statement st = m_installer.m_dbconnection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT outageId, ifServiceId from outages");
+        assertTrue("could not advance to read first row in ResultSet", rs.next());
+        assertEquals("expected outages outageId", 1, rs.getInt(1));
+        assertEquals("expected outages ifServiceId", 3, rs.getInt(2));
+        assertFalse("ResultSet contains more than one row", rs.next());
+    }
+    
+    public void testTriggerSetIfServiceIdInOutageNullServiceId() throws Exception {
+        if (!isDBTestEnabled()) {
+            return;
+        }
+
+        m_installer.createSequences();
+        m_installer.createTables();
+
+        m_installer.updatePlPgsql();
+        
+        m_installer.addStoredProcedures();
+        
+        executeSQL("INSERT INTO node (nodeId, nodeCreateTime) VALUES ( 1, now() )");
+        executeSQL("INSERT INTO ipInterface (nodeId, ipAddr, ifIndex) VALUES ( 1, '1.2.3.4', null )");
+        executeSQL("INSERT INTO service (serviceID, serviceName) VALUES ( 1, 'COFFEE-READY' )");
+        executeSQL("INSERT INTO ifServices (nodeID, ipAddr, ifIndex, serviceID) VALUES ( 1, '1.2.3.4', null, 1)");
+        executeSQL("INSERT INTO outages (outageId, ipAddr, ifLostService, serviceID ) "
+                   + "VALUES ( nextval('outageNxtId'), '1.2.3.4', now(), null )");
+
+        Statement st = m_installer.m_dbconnection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT outageId, ifServiceId from outages");
+        assertTrue("could not advance to read first row in ResultSet", rs.next());
+        assertEquals("expected outages outageId", 1, rs.getInt(1));
+        assertEquals("expected outages ifServiceId", 1, rs.getInt(2));
+        assertFalse("ResultSet contains more than one row", rs.next());
+    }
+    
     public void addTableFromSQL(String tableName) {
         String partialSQL = null;
         try {
@@ -864,9 +1373,28 @@ public class InstallerDBTest extends TestCase {
         }
         
         for (String[] replacement : replacements) {
-            partialSQL = partialSQL.replaceAll(replacement[0], replacement[1]);
+            Pattern p = Pattern.compile(replacement[0]);
+            Matcher m = p.matcher(partialSQL);
+            if (!m.find()) {
+                StringBuffer error = new StringBuffer();
+                error.append("Could not find a match for pattern '"
+                             + p.toString() + "'");
+                if (containsUnescapedParens(p.toString())) {
+                    error.append(" (pattern contains unescaped parenthesis--"
+                                 + "should they be backslash escaped?)");
+                }
+                error.append(" in string '" + partialSQL + "'.");
+                fail(error.toString());
+            }
+            partialSQL = partialSQL.replaceFirst(replacement[0], replacement[1]);
         }
 
         executeSQL("CREATE TABLE " + tableName + " ( " + partialSQL + " )");
+    }
+    
+    public boolean containsUnescapedParens(String str) {
+        Pattern p = Pattern.compile("[^\\\\]\\(");
+        Matcher m = p.matcher(str);
+        return m.find();
     }
 }
