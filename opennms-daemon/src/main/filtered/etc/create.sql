@@ -318,7 +318,9 @@ create index node_label_idx on node(nodeLabel);
 --#  snmpPhysAddr       : SNMP MIB-2 ifTable.ifEntry.ifPhysAddress
 --#                       Value is interface's MAC Address
 --#  snmpIfIndex        : SNMP MIB-2 ifTable.ifEntry.ifIndex
---#                       Value is interface's arbitrarily assigned index.
+--#                       Value is interface's arbitrarily assigned index,
+--#                       or -100 if we can query the agent, but we can't find
+--#                       this IP address in the ifTable.
 --#  snmpIfDescr        : SNMP MIB-2 ifTable.ifEntry.ifDescr
 --#                       Value is interface's manufacturer/product name/version
 --#  snmpIfType         : SNMP MIB-2 ifTable.ifEntry.ifType
@@ -349,7 +351,7 @@ create table snmpInterface (
 	ipAddr			varchar(16) not null,
 	snmpIpAdEntNetMask	varchar(16),
 	snmpPhysAddr		char(12),
-	snmpIfIndex		integer,
+	snmpIfIndex		integer not null,
 	snmpIfDescr		varchar(256),
 	snmpIfType		integer,
 	snmpIfName		varchar(32),
@@ -376,7 +378,9 @@ create index snmpinterface_ipaddr_idx on snmpinterface(ipaddr);
 --#  nodeID          : Unique identifier of the node that "owns" this interface
 --#  ipAddr          : IP Address associated with this interface
 --#  ifIndex	     : SNMP index of interface, used to uniquely identify
---# 		       unnumbered interfaces.
+--# 		           unnumbered interfaces, or null if there is no mapping to
+--#                    snmpInterface table.  Can be -100 if old code added an
+--#                    snmpInterface table entry but no SNMP data could be gathered.
 --#
 --# NOTE: The combination of nodeID, ipAddr, and ifIndex must be unique,
 --# and this must be enforced programmatically.
@@ -405,7 +409,7 @@ create index snmpinterface_ipaddr_idx on snmpinterface(ipaddr);
 
 create table ipInterface (
     id              INTEGER DEFAULT nextval('opennmsNxtId') NOT NULL,
-	nodeID			integer,
+	nodeID			integer not null,
 	ipAddr			varchar(16) not null,
 	ifIndex			integer,
 	ipHostname		varchar(256),
@@ -452,12 +456,12 @@ create table service (
 --#
 --#  nodeID    : Unique integer identifier for node
 --#  ipAddr    : IP Address of node's interface
---#  ifIndex   : SNMP ifIndex, if available
+--#  ifIndex   : SNMP ifIndex, if available, null otherwise
 --#  serviceID : Unique integer identifier of service/poller package
 --#  lastGood  : Date and time of last successful poll by this poller package
 --#  lastFail  : Date and time of last failed poll by this poller package
 --#  qualifier : Service qualifier.  May be used to distinguish two
---#		 services which have the same serviceID.  For example, in the
+--#		         services which have the same serviceID.  For example, in the
 --#              case of the HTTP service a qualifier might be the specific
 --#              port on which the HTTP server was found.
 --#  status    : Flag indicating the status of the service.
@@ -477,10 +481,10 @@ create table service (
 
 create table ifServices (
     id				integer default nextval('opennmsNxtId') NOT NULL,
-	nodeID			integer,
+	nodeID			integer not null,
 	ipAddr			varchar(16) not null,
 	ifIndex			integer,
-	serviceID		integer,
+	serviceID		integer not null,
 	lastGood		timestamp without time zone,
 	lastFail		timestamp without time zone,
 	qualifier		char(16),
@@ -674,14 +678,14 @@ create table outages (
 	outageID		integer not null,
 	svcLostEventID		integer,
 	svcRegainedEventID	integer,
-	nodeID			integer,
+	nodeID			integer not null,
 	ipAddr			varchar(16) not null,
-	serviceID		integer,
+	serviceID		integer not null,
 	ifLostService		timestamp without time zone not null,
 	ifRegainedService	timestamp without time zone,
 	suppressTime    	timestamp without time zone,
 	suppressedBy		varchar(256),
-	ifServiceId		INTEGER,
+	ifServiceId		INTEGER not null,
 
 	constraint pk_outageID primary key (outageID),
 	constraint fk_eventID1 foreign key (svcLostEventID) references events (eventID) ON DELETE CASCADE,
