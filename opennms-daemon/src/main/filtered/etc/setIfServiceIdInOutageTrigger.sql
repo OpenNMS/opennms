@@ -11,7 +11,7 @@ BEGIN
        WHERE (ifsvc.nodeid = NEW.nodeid AND ifsvc.ipAddr = NEW.ipAddr AND ifsvc.serviceid = NEW.serviceid);
        
        IF NOT FOUND THEN
-          RAISE EXCEPTION \'Invalid Service.\';
+          RAISE EXCEPTION ''Outages Trigger Exception: No service found for... nodeid: %  ipaddr: %  serviceid: %'', NEW.nodeid, NEW.ipAddr, NEW.serviceid;
        END IF;
   END IF;
   RETURN NEW;

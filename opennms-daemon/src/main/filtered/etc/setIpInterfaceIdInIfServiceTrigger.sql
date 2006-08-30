@@ -11,7 +11,7 @@ BEGIN
        WHERE (ipif.nodeid = NEW.nodeid AND ipif.ipAddr = NEW.ipAddr AND ipif.ifIndex = NEW.ifIndex);
        
        IF NOT FOUND THEN
-          RAISE EXCEPTION \'Invalid Interface\';
+          RAISE EXCEPTION ''IfServices Trigger Exception: No IpInterface found for... nodeid: %  ipaddr: %  ifindex: %'', NEW.nodeid, NEW.ipAddr, NEW.ifIndex;
        END IF;
   END IF;
   RETURN NEW;
