@@ -36,6 +36,16 @@ import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+
 import org.apache.log4j.Category;
 import org.opennms.core.utils.AlphaNumeric;
 import org.opennms.core.utils.ThreadCategory;
@@ -43,11 +53,8 @@ import org.opennms.netmgt.model.OnmsIpInterface.CollectionType;
 import org.springframework.core.style.ToStringCreator;
 
 
-/** 
- *        @hibernate.class
- *         table="snmpinterface"
- *     
-*/
+@Entity
+@Table(name="snmpInterface")
 public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
 
     /**
@@ -109,11 +116,10 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
     
     /**
      * Unique identifier for snmpInterface.
-     * 
-     * @hibernate.id generator-class="native" column="id"
-     * @hibernate.generator-param name="sequence" value="snmpIfNxtId"
-     *         
      */
+    @Id
+    @SequenceGenerator(name="opennmsSequence", sequenceName="opennmsNxtId")
+    @GeneratedValue(generator="opennmsSequence")    
     public Integer getId() {
         return m_id;
     }
@@ -123,12 +129,11 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
     }
 
 
-    /** 
-     *                @hibernate.property
-     *                 column="ipaddr"
-     *                 length="16"
-     *             
+    /*
+     * TODO this doesn't belong on SnmpInterface
+     * 
      */
+    @Column(name="ipAddr", length=16)
     public String getIpAddress() {
         return m_ipAddr;
     }
@@ -137,12 +142,10 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
         m_ipAddr = ipaddr;
     }
 
-    /** 
-     *                @hibernate.property
-     *                 column="snmpipadentnetmask"
-     *                 length="16"
-     *             
+    /*
+     * TODO this doesn't belong on SnmpInterface
      */
+    @Column(name="snmpIpAdEntNetMask", length=16)
     public String getNetMask() {
         return m_netMask;
     }
@@ -151,12 +154,7 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
         m_netMask = snmpipadentnetmask;
     }
 
-    /** 
-     *                @hibernate.property
-     *                 column="snmpphysaddr"
-     *                 length="12"
-     *             
-     */
+    @Column(name="snmpPhysAddr", length=12)
     public String getPhysAddr() {
         return m_physAddr;
     }
@@ -165,12 +163,7 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
         m_physAddr = snmpphysaddr;
     }
 
-    /** 
-     *                @hibernate.property
-     *                 column="snmpifindex"
-     *                 length="4"
-     *             
-     */
+    @Column(name="snmpIfIndex")
     public Integer getIfIndex() {
         return m_ifIndex;
     }
@@ -179,12 +172,7 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
         m_ifIndex = snmpifindex;
     }
 
-    /** 
-     *                @hibernate.property
-     *                 column="snmpifdescr"
-     *                 length="256"
-     *             
-     */
+    @Column(name="snmpIfDescr", length=256)
     public String getIfDescr() {
         return m_ifDescr;
     }
@@ -193,12 +181,7 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
         m_ifDescr = snmpifdescr;
     }
 
-    /** 
-     *                @hibernate.property
-     *                 column="snmpiftype"
-     *                 length="4"
-     *             
-     */
+    @Column(name="snmpIfType")
     public Integer getIfType() {
         return m_ifType;
     }
@@ -207,12 +190,7 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
         m_ifType = snmpiftype;
     }
 
-    /** 
-     *                @hibernate.property
-     *                 column="snmpifname"
-     *                 length="32"
-     *             
-     */
+    @Column(name="snmpIfName", length=32)
     public String getIfName() {
         return m_ifName;
     }
@@ -221,12 +199,7 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
         m_ifName = snmpifname;
     }
 
-    /** 
-     *                @hibernate.property
-     *                 column="snmpifspeed"
-     *                 length="4"
-     *             
-     */
+    @Column(name="snmpIfSpeed")
     public Long getIfSpeed() {
         return m_ifSpeed;
     }
@@ -235,12 +208,7 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
         m_ifSpeed = snmpifspeed;
     }
 
-    /** 
-     *                @hibernate.property
-     *                 column="snmpifadminstatus"
-     *                 length="4"
-     *             
-     */
+    @Column(name="snmpIfAdminStatus")
     public Integer getIfAdminStatus() {
         return m_ifAdminStatus;
     }
@@ -249,12 +217,7 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
         m_ifAdminStatus = snmpifadminstatus;
     }
 
-    /** 
-     *                @hibernate.property
-     *                 column="snmpifoperstatus"
-     *                 length="4"
-     *             
-     */
+    @Column(name="snmpIfOperStatus")
     public Integer getIfOperStatus() {
         return m_ifOperStatus;
     }
@@ -263,12 +226,7 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
         m_ifOperStatus = snmpifoperstatus;
     }
 
-    /** 
-     *                @hibernate.property
-     *                 column="snmpifalias"
-     *                 length="256"
-     *             
-     */
+    @Column(name="snmpIfAlias", length=256)
     public String getIfAlias() {
         return m_ifAlias;
     }
@@ -277,12 +235,8 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
         m_ifAlias = snmpifalias;
     }
 
-    /** 
-     *            @hibernate.many-to-one
-     *             not-null="true"
-     *            @hibernate.column name="nodeid"         
-     *         
-     */
+    @ManyToOne(optional=false)
+    @JoinColumn(name="nodeId")
     public OnmsNode getNode() {
         return m_node;
     }
@@ -312,6 +266,7 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
 		visitor.visitSnmpInterfaceComplete(this);
 	}
 
+	@Transient
 	public Set getIpInterfaces() {
 		
 		Set ifsForSnmpIface = new LinkedHashSet();
@@ -323,6 +278,7 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
 		return ifsForSnmpIface;
 	}
 
+	@Transient
 	public CollectionType getCollectionType() {
 		CollectionType maxCollType = CollectionType.NO_COLLECT;
 		for (Iterator it = getIpInterfaces().iterator(); it.hasNext();) {

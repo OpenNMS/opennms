@@ -73,13 +73,22 @@ public class MonitoredServiceDaoHibernate extends AbstractDaoHibernate  implemen
 	}
 
 	public OnmsMonitoredService get(int nodeId, String ipAddress, String svcName) {
-		// TODO Implement this
-		throw new RuntimeException("Not yet implemented!");
-	}
+		return (OnmsMonitoredService)findUnique("from OnmsMonitoredService as svc " +
+				    "where svc.ipInterface.node.id = ? and svc.ipInterface.ipAddress = ? and svc.serviceType.name = ?",
+				   nodeId, ipAddress, svcName);
+
+//		return (OnmsMonitoredService)findUnique("from OnmsMonitoredService as svc " +
+//			    "join svc.serviceType as svcType " +
+//				"join svc.ipInterface as iface " +
+//				"join iface.node as node " +
+//			   "where node.id = ? and iface.ipAddress = ? and svc.serviceType.name = ?", 
+//			   nodeId, ipAddress, svcName);
+}
 
 	public OnmsMonitoredService get(int nodeId, String ipAddr, int ifIndex, int serviceId) {
-		// TODO Implement this
-		throw new RuntimeException("Not yet implemented!");
+		return (OnmsMonitoredService)findUnique("from OnmsMonitoredService as svc " +
+			    "where svc.ipInterface.node.id = ? and svc.ipInterface.ipAddress = ? and svc.ipInterface.ifIndex = ? and svc.serviceType.id = ?",
+			   nodeId, ipAddr, ifIndex, serviceId);
 	}
 
 }

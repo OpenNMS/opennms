@@ -33,6 +33,13 @@ package org.opennms.netmgt.model;
 
 import java.io.Serializable;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
+
 import org.springframework.core.style.ToStringCreator;
 
 
@@ -40,6 +47,8 @@ import org.springframework.core.style.ToStringCreator;
  * @hibernate.class table="service"
  *     
 */
+@Entity
+@Table(name="service")
 public class OnmsServiceType implements Serializable {
 
     private static final long serialVersionUID = -459218937667452586L;
@@ -59,10 +68,10 @@ public class OnmsServiceType implements Serializable {
     public OnmsServiceType() {
     }
 
-    /** 
-     * @hibernate.id generator-class="native" column="serviceid"
-     * @hibernate.generator-param name="sequence" value="serviceNxtId"
-     */
+    @Id
+    @Column(name="serviceId")
+    @SequenceGenerator(name="serviceTypeSequence", sequenceName="serviceNxtId")
+    @GeneratedValue(generator="serviceTypeSequence")
     public Integer getId() {
         return m_id;
     }
@@ -71,10 +80,7 @@ public class OnmsServiceType implements Serializable {
         m_id = serviceid;
     }
 
-    /** 
-     * @hibernate.property column="servicename" unique="true" not-null="true"
-     *         
-     */
+    @Column(name="serviceName", nullable=false, unique=true, length=32)
     public String getName() {
         return m_name;
     }

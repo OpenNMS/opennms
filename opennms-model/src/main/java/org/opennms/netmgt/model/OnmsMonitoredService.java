@@ -36,14 +36,23 @@ import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import javax.persistence.Transient;
+
 import org.springframework.core.style.ToStringCreator;
 
 
-/** 
- *        @hibernate.class
- *         table="ifservices"
- *     
-*/
+@Entity
+@Table(name="ifServices")
 public class OnmsMonitoredService extends OnmsEntity implements Serializable {
 
     /**
@@ -94,11 +103,10 @@ public class OnmsMonitoredService extends OnmsEntity implements Serializable {
     
     /**
      * Unique identifier for ifServivce.
-     * 
-     * @hibernate.id generator-class="native" column="id"
-     * @hibernate.generator-param name="sequence" value="ifSvcNxtId"
-     *         
      */
+    @Id
+    @SequenceGenerator(name="opennmsSequence", sequenceName="opennmsNxtId")
+    @GeneratedValue(generator="opennmsSequence")    
     public Integer getId() {
         return m_id;
     }
@@ -107,30 +115,26 @@ public class OnmsMonitoredService extends OnmsEntity implements Serializable {
         m_id = id;
     }
     
-    /**
-     *  
-     * @hibernate.property column="ipAddr" length="16"
-     */
+    @Column(name="ipAddr", length=16)
     public String getIpAddress() {
         return m_ipInterface.getIpAddress();
     }
+    
+    public void setIpAddress(String ipAddress) {
+    	
+    }
 
-    /** 
-     *                @hibernate.property
-     *                 column="ifindex"
-     *                 length="4"
-     *             
-     */
+    @Column(name="ifIndex")
     public Integer getIfIndex() {
         return m_ipInterface.getIfIndex();
     }
+    
+    public void setIfIndex(Integer ifIndex) {
+    	
+    }
 
-    /** 
-     *                @hibernate.property
-     *                 column="lastgood"
-     *                 length="8"
-     *             
-     */
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="lastGood")
     public Date getLastGood() {
         return m_lastGood;
     }
@@ -139,12 +143,8 @@ public class OnmsMonitoredService extends OnmsEntity implements Serializable {
         m_lastGood = lastgood;
     }
 
-    /** 
-     *                @hibernate.property
-     *                 column="lastfail"
-     *                 length="8"
-     *             
-     */
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="lastFail")
     public Date getLastFail() {
         return m_lastFail;
     }
@@ -153,12 +153,7 @@ public class OnmsMonitoredService extends OnmsEntity implements Serializable {
         m_lastFail = lastfail;
     }
 
-    /** 
-     *                @hibernate.property
-     *                 column="qualifier"
-     *                 length="16"
-     *             
-     */
+    @Column(name="qualifier", length=16)
     public String getQualifier() {
         return m_qualifier;
     }
@@ -167,12 +162,7 @@ public class OnmsMonitoredService extends OnmsEntity implements Serializable {
         m_qualifier = qualifier;
     }
 
-    /** 
-     *                @hibernate.property
-     *                 column="status"
-     *                 length="1"
-     *             
-     */
+    @Column(name="status", length=1)
     public String getStatus() {
         return m_status;
     }
@@ -181,12 +171,7 @@ public class OnmsMonitoredService extends OnmsEntity implements Serializable {
         m_status = status;
     }
 
-    /** 
-     *                @hibernate.property
-     *                 column="source"
-     *                 length="1"
-     *             
-     */
+    @Column(name="source", length=1)
     public String getSource() {
         return m_source;
     }
@@ -195,12 +180,7 @@ public class OnmsMonitoredService extends OnmsEntity implements Serializable {
         m_source = source;
     }
 
-    /** 
-     *                @hibernate.property
-     *                 column="notify"
-     *                 length="1"
-     *             
-     */
+    @Column(name="notify", length=1)
     public String getNotify() {
         return m_notify;
     }
@@ -209,10 +189,8 @@ public class OnmsMonitoredService extends OnmsEntity implements Serializable {
         m_notify = notify;
     }
     
-    /**
-     * @hibernate.many-to-one not-null="true"
-     * @hibernate.column name="ipIfId" 
-     */
+    @ManyToOne(optional=false)
+    @JoinColumn(name="ipInterfaceId")
     public OnmsIpInterface getIpInterface() {
         return m_ipInterface;
     }
@@ -221,19 +199,17 @@ public class OnmsMonitoredService extends OnmsEntity implements Serializable {
         m_ipInterface = ipInterface;
     }
 
-    /** 
-     *            @hibernate.property column="nodeid"       
-     *         
-     */
+    @Column(name="nodeid")
     public Integer getNodeId() {
         return m_ipInterface.getNode().getId();
     }
+    
+    public void setNodeId(Integer nodeId) {
+    	
+    }
 
-    /** 
-     * @hibernate.many-to-one not-null="true"
-     * @hibernate.column name="serviceid"         
-     *         
-     */
+    @ManyToOne(optional=false)
+    @JoinColumn(name="serviceId")
     public OnmsServiceType getServiceType() {
         return m_serviceType;
     }
@@ -255,19 +231,24 @@ public class OnmsMonitoredService extends OnmsEntity implements Serializable {
             .toString();
     }
 
+    @Transient
     public Integer getServiceId() {
         return getServiceType().getId();
     }
+    
+    
 
 	public void visit(EntityVisitor visitor) {
 		visitor.visitMonitoredService(this);
 		visitor.visitMonitoredServiceComplete(this);
 	}
 
+	@Transient
 	public String getServiceName() {
 		return getServiceType().getName();
 	}
 
+	@Transient
     public boolean isDown() {
         boolean down = true;
         if (getStatus() != "A" && m_currentOutages.isEmpty()) {
@@ -277,6 +258,7 @@ public class OnmsMonitoredService extends OnmsEntity implements Serializable {
         return down;
     }
 
+    @Transient
     public Set<OnmsOutage> getCurrentOutages() {
         return m_currentOutages;
     }

@@ -35,12 +35,22 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.Set;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+
 import org.springframework.core.style.ToStringCreator;
 
-/**
- * @hibernate.class table="events"
- * 
- */
+@Entity
+@Table(name="events")
 public class OnmsEvent extends OnmsEntity implements Serializable {
 
 	/**
@@ -245,6 +255,9 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	 *               column="eventid"
 	 * @hibernate.generator-param name="sequence" value="eventsNxtId"
 	 */
+    @Id
+    @SequenceGenerator(name="eventSequence", sequenceName="eventsNxtId")
+    @GeneratedValue(generator="eventSequence")    
 	public Integer getId() {
 		return m_eventId;
 	}
@@ -253,10 +266,7 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 		m_eventId = eventid;
 	}
 
-	/**
-	 * @hibernate.property column="eventuei" length="256" not-null="true"
-	 * 
-	 */
+	@Column(name="eventUei", length=256, nullable=false)
 	public String getEventUei() {
 		return m_eventUei;
 	}
@@ -265,10 +275,8 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 		m_eventUei = eventuei;
 	}
 
-	/**
-	 * @hibernate.property column="eventtime" length="8" not-null="true"
-	 * 
-	 */
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name="eventTime", nullable=false)
 	public Date getEventTime() {
 		return m_eventTime;
 	}
@@ -277,10 +285,7 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 		m_eventTime = eventtime;
 	}
 
-	/**
-	 * @hibernate.property column="eventhost" length="256"
-	 * 
-	 */
+	@Column(name="eventHost", length=256)
 	public String getEventHost() {
 		return m_eventHost;
 	}
@@ -289,10 +294,7 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 		m_eventHost = eventhost;
 	}
 
-	/**
-	 * @hibernate.property column="eventsource" length="128" not-null="true"
-	 * 
-	 */
+	@Column(name="eventSource", length=128, nullable=false)
 	public String getEventSource() {
 		return m_eventSource;
 	}
@@ -301,10 +303,7 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 		m_eventSource = eventsource;
 	}
 
-	/**
-	 * @hibernate.property column="ipaddr" length="16"
-	 * 
-	 */
+	@Column(name="ipAddr", length=16)
 	public String getIpAddr() {
 		return m_ipAddr;
 	}
@@ -313,10 +312,8 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 		m_ipAddr = ipaddr;
 	}
 
-	/**
-	 * @hibernate.property column="eventdpname" length="12" not-null="true"
-	 * 
-	 */
+	@ManyToOne(fetch=FetchType.LAZY)
+	@JoinColumn(name="eventDpName", nullable=false)
 	public OnmsDistPoller getDistPoller() {
 		return m_distPoller;
 	}
@@ -325,10 +322,7 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 		m_distPoller = distPoller;
 	}
 
-	/**
-	 * @hibernate.property column="eventsnmphost" length="256"
-	 * 
-	 */
+	@Column(name="eventSnmpHost", length=256)
 	public String getEventSnmpHost() {
 		return m_eventSnmpHost;
 	}
@@ -337,10 +331,8 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 		m_eventSnmpHost = eventsnmphost;
 	}
 
-	/**
-	 * @hibernate.property column="serviceid" length="4"
-	 * 
-	 */
+	@ManyToOne(fetch=FetchType.LAZY)
+	@JoinColumn(name="serviceId", nullable=true)
 	public OnmsServiceType getServiceType() {
 		return m_serviceType;
 	}
@@ -349,10 +341,7 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 		m_serviceType = serviceType;
 	}
 
-	/**
-	 * @hibernate.property column="eventsnmp" length="256"
-	 * 
-	 */
+	@Column(name="eventSnmp", length=256)
 	public String getEventSnmp() {
 		return m_eventSnmp;
 	}

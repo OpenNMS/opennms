@@ -37,6 +37,25 @@ import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.PrimaryKeyJoinColumn;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import javax.persistence.Transient;
+
 import org.springframework.core.style.ToStringCreator;
 
 
@@ -47,6 +66,8 @@ import org.springframework.core.style.ToStringCreator;
  * @hibernate.class table="node"
  *     
 */
+@Entity
+@Table(name="node")
 public class OnmsNode extends OnmsEntity implements Serializable {
 
     private static final long serialVersionUID = -5736397583719151493L;
@@ -123,10 +144,11 @@ public class OnmsNode extends OnmsEntity implements Serializable {
     /**
      * Unique identifier for node.
      * 
-     * @hibernate.id generator-class="native" column="nodeid"
-     * @hibernate.generator-param name="sequence" value="nodeNxtId"
-     *         
      */
+    @Id
+    @Column(name="nodeId")
+    @SequenceGenerator(name="nodeSequence", sequenceName="nodeNxtId")
+    @GeneratedValue(generator="nodeSequence")
     public Integer getId() {
         return m_id;
     }
@@ -141,6 +163,8 @@ public class OnmsNode extends OnmsEntity implements Serializable {
      * @hibernate.property column="nodecreatetime" length="8" not-null="true"
      *         
      */
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="nodeCreateTime", nullable=false)
     public Date getCreateTime() {
         return m_createTime;
     }
@@ -154,12 +178,9 @@ public class OnmsNode extends OnmsEntity implements Serializable {
      * that should be reflected as a subcomponent or "child", this field reflects 
      * the nodeID of the chassis/physical node/"parent" device.
      * 
-     * Currently unused.
-     * 
-     * @hibernate.property column="nodeparentid"
-     * 
-     *         
      */
+    @ManyToOne
+    @JoinColumn(name="nodeParentID")
     public OnmsNode getParent() {
         return m_parent;
     }
@@ -178,9 +199,8 @@ public class OnmsNode extends OnmsEntity implements Serializable {
      * 
      * TODO: Eventually this will be deprecated and deleted nodes will actually be deleted.
      * 
-     * @hibernate.property column="nodetype" length="1"
-     *         
      */
+    @Column(name="nodeType", length=1)
     public String getType() {
         return m_type;
     }
@@ -191,10 +211,8 @@ public class OnmsNode extends OnmsEntity implements Serializable {
 
     /** 
      * SNMP MIB-2 system.sysObjectID.0
-     * 
-     * @hibernate.property column="nodesysoid" length="256"
-     *         
      */
+    @Column(name="nodeSysOID", length=256)
     public String getSysObjectId() {
         return m_sysObjectId;
     }
@@ -206,9 +224,8 @@ public class OnmsNode extends OnmsEntity implements Serializable {
     /** 
      * SNMP MIB-2 system.sysName.0
      * 
-     * @hibernate.property column="nodesysname" length="256"
-     *         
      */
+    @Column(name="nodeSysName", length=256)
     public String getSysName() {
         return m_sysName;
     }
@@ -219,10 +236,8 @@ public class OnmsNode extends OnmsEntity implements Serializable {
 
     /** 
      * SNMP MIB-2 system.sysDescr.0
-     * 
-     * @hibernate.property column="nodesysdescription" length="256"
-     *         
      */
+    @Column(name="nodeSysDescription", length=256)
     public String getSysDescription() {
         return m_sysDescription;
     }
@@ -233,10 +248,8 @@ public class OnmsNode extends OnmsEntity implements Serializable {
 
     /** 
      * SNMP MIB-2 system.sysLocation.0
-     * 
-     * @hibernate.property column="nodesyslocation" length="256"
-     *         
      */
+    @Column(name="nodeSysLocation", length=256)
     public String getSysLocation() {
         return m_sysLocation;
     }
@@ -247,10 +260,8 @@ public class OnmsNode extends OnmsEntity implements Serializable {
 
     /** 
      * SNMP MIB-2 system.sysContact.0
-     * 
-     * @hibernate.property column="nodesyscontact" length="256"
-     *         
      */
+    @Column(name="nodeSysContact", length=256)
     public String getSysContact() {
         return m_sysContact;
     }
@@ -261,10 +272,8 @@ public class OnmsNode extends OnmsEntity implements Serializable {
 
     /** 
      * User-friendly name associated with the node.
-     * 
-     * @hibernate.property column="nodelabel" length="256"
-     *         
      */
+    @Column(name="nodeLabel", length=256)
     public String getLabel() {
         return m_label;
     }
@@ -281,10 +290,8 @@ public class OnmsNode extends OnmsEntity implements Serializable {
      * - 'A' = IP address
      * 
      * TODO: change this to an enum
-     * 
-     * @hibernate.property column="nodelabelsource" length="1"
-     *         
      */
+    @Column(name="nodeLabelSource", length=1)
     public String getLabelSource() {
         return m_labelSource;
     }
@@ -295,10 +302,8 @@ public class OnmsNode extends OnmsEntity implements Serializable {
 
     /** 
      * NetBIOS workstation name associated with the node.
-     * 
-     * @hibernate.property column="nodenetbiosname" length="16"
-     *         
      */
+    @Column(name="nodeNetBIOSName", length=16)
     public String getNetBiosName() {
         return m_netBiosName;
     }
@@ -309,10 +314,8 @@ public class OnmsNode extends OnmsEntity implements Serializable {
 
     /**
      * NetBIOS damain name associated with the node.
-     *  
-     * @hibernate.property column="nodedomainname" length="16"
-     *         
      */
+    @Column(name="nodeDomainName", length=16)
     public String getNetBiosDomain() {
         return m_netBiosDomain;
     }
@@ -323,10 +326,8 @@ public class OnmsNode extends OnmsEntity implements Serializable {
 
     /** 
      * Operating system running on the node.
-     * 
-     * @hibernate.property column="operatingsystem" length="64"
-     *         
      */
+    @Column(name="operatingSystem", length=64)
     public String getOperatingSystem() {
         return m_operatingSystem;
     }
@@ -337,10 +338,9 @@ public class OnmsNode extends OnmsEntity implements Serializable {
 
     /** 
      * Date and time of last Capsd scan.
-     * 
-     * @hibernate.property column="lastcapsdpoll" length="8"
-     *         
      */
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="lastCapsdPoll")
     public Date getLastCapsdPoll() {
         return m_lastCapsdPoll;
     }
@@ -352,10 +352,9 @@ public class OnmsNode extends OnmsEntity implements Serializable {
     /**
      * Distributed Poller responsible for this node
      * 
-     * @hibernate.many-to-one not-null="true"
-     * @hibernate.column name="dpname"         
-     *         
      */
+    @ManyToOne(fetch=FetchType.LAZY)
+    @JoinColumn(name="dpName")
     public OnmsDistPoller getDistPoller() {
         return m_distPoller;
     }
@@ -366,10 +365,8 @@ public class OnmsNode extends OnmsEntity implements Serializable {
     
     /** 
      * The assert record associated with this node
-     *  
-     * @hibernate.one-to-one lazy="true" cascade="all" property-ref="node"
-     *         
      */
+    @OneToOne(mappedBy="node", cascade = CascadeType.ALL, fetch=FetchType.LAZY)
     public OnmsAssetRecord getAssetRecord() {
         return m_assetRecord;
     }
@@ -382,15 +379,8 @@ public class OnmsNode extends OnmsEntity implements Serializable {
     /** 
      * The interfaces on this node
      * 
-     * @hibernate.set lazy="true" inverse="true" cascade="all-delete-orphan"
-     * @hibernate.key column="nodeid"
-     * @hibernate.one-to-many class="org.opennms.netmgt.model.OnmsIpInterface"
-     * 
-     * old XDoclet1 Tags
-     * hibernate.collection-key column="nodeid"
-     * hibernate.collection-one-to-many class="org.opennms.netmgt.model.OnmsIpInterface"
-     *         
      */
+    @OneToMany(mappedBy="node", cascade=CascadeType.ALL)
     public Set<OnmsIpInterface> getIpInterfaces() {
         return m_ipInterfaces;
     }
@@ -407,15 +397,8 @@ public class OnmsNode extends OnmsEntity implements Serializable {
     /**
      * The information from the SNMP interfaces/ipAddrTables for the node
      *  
-     * @hibernate.set lazy="true" inverse="true" cascade="all-delete-orphan"
-     * @hibernate.key column="nodeid"
-     * @hibernate.one-to-many class="org.opennms.netmgt.model.OnmsSnmpInterface"
-     * 
-     * old XDoclet1 Tags
-     * hibernate.collection-key column="nodeid"
-     * hibernate.collection-one-to-many class="org.opennms.netmgt.model.OnmsSnmpInterface"
-
      */
+    @OneToMany(mappedBy="node", cascade=CascadeType.ALL)
     public Set<OnmsSnmpInterface> getSnmpInterfaces() {
         return m_snmpInterfaces;
     }
@@ -424,6 +407,12 @@ public class OnmsNode extends OnmsEntity implements Serializable {
         m_snmpInterfaces = snmpinterfaces;
     }
     
+    @ManyToMany(cascade={CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinTable(
+    		name="category_node",
+    		joinColumns={@JoinColumn(name="nodeId")},
+    		inverseJoinColumns={@JoinColumn(name="categoryId")}
+    )
     public Set<OnmsCategory> getCategories() {
         return m_categories;
     }
@@ -460,6 +449,7 @@ public class OnmsNode extends OnmsEntity implements Serializable {
     	getSnmpInterfaces().add(snmpIface);
 	}
 
+	@Transient
     public boolean isDown() {
         boolean down = true;
         for (Iterator it = m_ipInterfaces.iterator(); it.hasNext();) {

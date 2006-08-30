@@ -34,6 +34,18 @@ package org.opennms.netmgt.model;
 import java.io.Serializable;
 import java.util.Date;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
+import javax.persistence.PrimaryKeyJoinColumn;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+
 import org.springframework.core.style.ToStringCreator;
 
 
@@ -43,6 +55,9 @@ import org.springframework.core.style.ToStringCreator;
  * @hibernate.class table="assets"
  *     
  */
+@Entity
+@Table(name="assets")
+@PrimaryKeyJoinColumn()
 public class OnmsAssetRecord implements Serializable {
 
     private static final long serialVersionUID = 509128305684814487L;
@@ -177,13 +192,9 @@ public class OnmsAssetRecord implements Serializable {
     public OnmsAssetRecord() {
     }
 
-    /**
-     * Unique identifier for snmpInterface.
-     * 
-     * @hibernate.id generator-class="native" column="id"
-     * @hibernate.generator-param name="sequence" value="assetNxtId"
-     *         
-     */
+    @Id
+    @SequenceGenerator(name="opennmsSequence", sequenceName="opennmsNxtId")
+    @GeneratedValue(generator="opennmsSequence")    
     public Integer getId() {
         return m_id;
     }
@@ -194,9 +205,9 @@ public class OnmsAssetRecord implements Serializable {
 
     /** 
      * The node this asset information belongs to.
-     * 
-     * @hibernate.many-to-one column="nodeId" outer-join="false" not-null="true" unique="true"
      */
+    @OneToOne
+    @JoinColumn(name="nodeId")
     public OnmsNode getNode() {
         return m_node;
     }
@@ -214,11 +225,9 @@ public class OnmsAssetRecord implements Serializable {
     /** 
 --# category         : A broad idea of what this asset does (examples are
 --#                    desktop, printer, server, infrastructure, etc.).
-     *                @hibernate.property
-     *                 column="category"
-     *                 length="64"
      *             
      */
+    @Column(name="category", length=64)
     public String getCategory() {
         return m_category;
     }
@@ -229,11 +238,8 @@ public class OnmsAssetRecord implements Serializable {
 
     /** 
 --# manufacturer     : Name of the manufacturer of this asset.
-     *                @hibernate.property
-     *                 column="manufacturer"
-     *                 length="64"
-     *             
      */
+    @Column(name="manufacturer", length=64)
     public String getManufacturer() {
         return m_manufacturer;
     }
@@ -244,11 +250,8 @@ public class OnmsAssetRecord implements Serializable {
 
     /** 
 --# vendor           : Vendor from whom this asset was purchased.
-     *                @hibernate.property
-     *                 column="vendor"
-     *                 length="64"
-     *             
      */
+    @Column(name="vendor", length=64)
     public String getVendor() {
         return m_vendor;
     }
@@ -259,11 +262,8 @@ public class OnmsAssetRecord implements Serializable {
 
     /** 
 --# modelNumber      : The model number of this asset.
-     *                @hibernate.property
-     *                 column="modelnumber"
-     *                 length="64"
-     *             
      */
+    @Column(name="modelNumber", length=64)
     public String getModelNumber() {
         return m_modelNumber;
     }
@@ -274,11 +274,9 @@ public class OnmsAssetRecord implements Serializable {
 
     /** 
 --# serialNumber     : The serial number of this asset.
-     *                @hibernate.property
-     *                 column="serialnumber"
-     *                 length="64"
      *             
      */
+    @Column(name="serialNumber", length=64)
     public String getSerialNumber() {
         return m_serialNumber;
     }
@@ -289,11 +287,8 @@ public class OnmsAssetRecord implements Serializable {
 
     /** 
 --# description      : A free-form description.
-     *                @hibernate.property
-     *                 column="description"
-     *                 length="128"
-     *             
      */
+    @Column(name="description", length=128)
     public String getDescription() {
         return m_description;
     }
@@ -304,11 +299,8 @@ public class OnmsAssetRecord implements Serializable {
 
     /** 
 --# circuitId        : The electrical/network circuit this asset connects to.
-     *                @hibernate.property
-     *                 column="circuitid"
-     *                 length="64"
-     *             
      */
+    @Column(name="circuitId", length=64)
     public String getCircuitId() {
         return m_circuitId;
     }
@@ -319,11 +311,9 @@ public class OnmsAssetRecord implements Serializable {
 
     /** 
 --# assetNumber      : A business-specified asset number.
-     *                @hibernate.property
-     *                 column="assetnumber"
-     *                 length="64"
      *             
      */
+    @Column(name="assetNumber", length=64)
     public String getAssetNumber() {
         return m_assetNumber;
     }
@@ -334,11 +324,9 @@ public class OnmsAssetRecord implements Serializable {
 
     /** 
 --# operatingSystem  : The operating system, if any.
-     *                @hibernate.property
-     *                 column="operatingsystem"
-     *                 length="64"
      *             
      */
+    @Column(name="operatingSystem", length=64)
     public String getOperatingSystem() {
         return m_operatingSystem;
     }
@@ -349,11 +337,9 @@ public class OnmsAssetRecord implements Serializable {
 
     /** 
 --# rack             : For servers, the rack it is installed in.
-     *                @hibernate.property
-     *                 column="rack"
-     *                 length="64"
      *             
      */
+    @Column(name="rack", length=64)
     public String getRack() {
         return m_rack;
     }
@@ -364,11 +350,9 @@ public class OnmsAssetRecord implements Serializable {
 
     /** 
 --# slot             : For servers, the slot in the rack it is installed in.
-     *                @hibernate.property
-     *                 column="slot"
-     *                 length="64"
      *             
      */
+    @Column(name="slot", length=64)
     public String getSlot() {
         return m_slot;
     }
@@ -379,11 +363,9 @@ public class OnmsAssetRecord implements Serializable {
 
     /** 
 --# port             : For servers, the port in the slot it is installed in.
-     *                @hibernate.property
-     *                 column="port"
-     *                 length="64"
      *             
      */
+    @Column(name="port", length=64)
     public String getPort() {
         return m_port;
     }
@@ -394,11 +376,9 @@ public class OnmsAssetRecord implements Serializable {
 
     /** 
 --# region           : A broad geographical or organizational area.
-     *                @hibernate.property
-     *                 column="region"
-     *                 length="64"
      *             
      */
+    @Column(name="region", length=64)
     public String getRegion() {
         return m_region;
     }
@@ -409,11 +389,9 @@ public class OnmsAssetRecord implements Serializable {
 
     /** 
 --# division         : A broad geographical or organizational area.
-     *                @hibernate.property
-     *                 column="division"
-     *                 length="64"
      *             
      */
+    @Column(name="division", length=64)
     public String getDivision() {
         return m_division;
     }
@@ -424,11 +402,9 @@ public class OnmsAssetRecord implements Serializable {
 
     /** 
 --# department       : The department this asset belongs to.
-     *                @hibernate.property
-     *                 column="department"
-     *                 length="64"
      *             
      */
+    @Column(name="department", length=64)
     public String getDepartment() {
         return m_department;
     }
@@ -439,11 +415,9 @@ public class OnmsAssetRecord implements Serializable {
 
     /** 
 --# address1         : Address of geographical location of asset, line 1.
-     *                @hibernate.property
-     *                 column="address1"
-     *                 length="256"
      *             
      */
+    @Column(name="address1", length=256)
     public String getAddress1() {
         return m_address1;
     }
@@ -454,11 +428,9 @@ public class OnmsAssetRecord implements Serializable {
 
     /** 
 --# address2         : Address of geographical location of asset, line 2.
-     *                @hibernate.property
-     *                 column="address2"
-     *                 length="256"
      *             
      */
+    @Column(name="address2", length=256)
     public String getAddress2() {
         return m_address2;
     }
@@ -469,11 +441,9 @@ public class OnmsAssetRecord implements Serializable {
 
     /** 
 --# city             : The city where this asset resides.
-     *                @hibernate.property
-     *                 column="city"
-     *                 length="64"
      *             
      */
+    @Column(name="city", length=64)
     public String getCity() {
         return m_city;
     }
@@ -484,11 +454,9 @@ public class OnmsAssetRecord implements Serializable {
 
     /** 
 --# state            : The state where this asset resides.
-     *                @hibernate.property
-     *                 column="state"
-     *                 length="64"
      *             
      */
+    @Column(name="state", length=64)
     public String getState() {
         return m_state;
     }
@@ -499,11 +467,9 @@ public class OnmsAssetRecord implements Serializable {
 
     /** 
 --# zip              : The zip code where this asset resides.
-     *                @hibernate.property
-     *                 column="zip"
-     *                 length="64"
      *             
      */
+    @Column(name="zip", length=64)
     public String getZip() {
         return m_zip;
     }
@@ -514,11 +480,9 @@ public class OnmsAssetRecord implements Serializable {
 
     /** 
 --# building         : The building where this asset resides.
-     *                @hibernate.property
-     *                 column="building"
-     *                 length="64"
      *             
      */
+    @Column(name="building", length=64)
     public String getBuilding() {
         return m_building;
     }
@@ -529,11 +493,9 @@ public class OnmsAssetRecord implements Serializable {
 
     /** 
 --# floor            : The floor of the building where this asset resides.
-     *                @hibernate.property
-     *                 column="floor"
-     *                 length="64"
      *             
      */
+    @Column(name="floor", length=64)
     public String getFloor() {
         return m_floor;
     }
@@ -544,11 +506,9 @@ public class OnmsAssetRecord implements Serializable {
 
     /** 
 --# room             : The room where this asset resides.
-     *                @hibernate.property
-     *                 column="room"
-     *                 length="64"
      *             
      */
+    @Column(name="room", length=64)
     public String getRoom() {
         return m_room;
     }
@@ -559,11 +519,9 @@ public class OnmsAssetRecord implements Serializable {
 
     /** 
 --# vendorPhone      : A contact number for the vendor.
-     *                @hibernate.property
-     *                 column="vendorphone"
-     *                 length="64"
      *             
      */
+    @Column(name="vendorPhone", length=64)
     public String getVendorPhone() {
         return m_vendorPhone;
     }
@@ -574,11 +532,9 @@ public class OnmsAssetRecord implements Serializable {
 
     /** 
 --# vendorFax        : A fax number for the vendor.
-     *                @hibernate.property
-     *                 column="vendorfax"
-     *                 length="64"
      *             
      */
+    @Column(name="vendorFax", length=64)
     public String getVendorFax() {
         return m_vendorFax;
     }
@@ -587,12 +543,7 @@ public class OnmsAssetRecord implements Serializable {
         m_vendorFax = vendorfax;
     }
 
-    /** 
-     *                @hibernate.property
-     *                 column="vendorassetnumber"
-     *                 length="64"
-     *             
-     */
+    @Column(name="vendorAssetNumber", length=64)
     public String getVendorAssetNumber() {
         return m_vendorAssetNumber;
     }
@@ -603,11 +554,9 @@ public class OnmsAssetRecord implements Serializable {
 
     /** 
 --# userLastModified : The last user who modified this record.
-     *                @hibernate.property
-     *                 column="userlastmodified"
-     *                 length="20"
      *             
      */
+    @Column(name="userLastModified", length=20)
     public String getLastModifiedBy() {
         return m_lastModifiedBy;
     }
@@ -618,11 +567,10 @@ public class OnmsAssetRecord implements Serializable {
 
     /** 
 --# lastModifiedDate : The last time this record was modified.
-     *                @hibernate.property
-     *                 column="lastmodifieddate"
-     *                 length="8"
      *             
      */
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="lastModifiedDate")
     public Date getLastModifiedDate() {
         return m_lastModifiedDate;
     }
@@ -633,11 +581,9 @@ public class OnmsAssetRecord implements Serializable {
 
     /** 
 --# dateInstalled    : The date the asset was installed.
-     *                @hibernate.property
-     *                 column="dateinstalled"
-     *                 length="64"
      *             
      */
+    @Column(name="dateInstalled", length=64)
     public String getDateInstalled() {
         return m_dateInstalled;
     }
@@ -648,11 +594,9 @@ public class OnmsAssetRecord implements Serializable {
 
     /** 
 --# lease            : The lease number of this asset.
-     *                @hibernate.property
-     *                 column="lease"
-     *                 length="64"
      *             
      */
+    @Column(name="lease", length=64)
     public String getLease() {
         return m_lease;
     }
@@ -663,11 +607,9 @@ public class OnmsAssetRecord implements Serializable {
 
     /** 
 --# leaseExpires     : The date the lease expires for this asset.
-     *                @hibernate.property
-     *                 column="leaseexpires"
-     *                 length="64"
      *             
      */
+    @Column(name="leaseExpires", length=64)
     public String getLeaseExpires() {
         return m_leaseExpires;
     }
@@ -678,11 +620,9 @@ public class OnmsAssetRecord implements Serializable {
 
     /** 
 --# supportPhone     : A support phone number for this asset.
-     *                @hibernate.property
-     *                 column="supportphone"
-     *                 length="64"
      *             
      */
+    @Column(name="supportPhone", length=64)
     public String getSupportPhone() {
         return m_supportPhone;
     }
@@ -693,11 +633,9 @@ public class OnmsAssetRecord implements Serializable {
 
     /** 
 --# maintContract    : The maintenance contract number for this asset.
-     *                @hibernate.property
-     *                 column="maintcontract"
-     *                 length="64"
      *             
      */
+    @Column(name="maintContract", length=64)
     public String getMaintContractNumber() {
         return m_maintContractNumber;
     }
@@ -706,12 +644,7 @@ public class OnmsAssetRecord implements Serializable {
         m_maintContractNumber = maintcontract;
     }
 
-    /** 
-     *                @hibernate.property
-     *                 column="maintcontractexpires"
-     *                 length="64"
-     *             
-     */
+    @Column(name="maintContractExpires", length=64)
     public String getMaintContractExpiration() {
         return m_maintContractExpiration;
     }
@@ -720,12 +653,7 @@ public class OnmsAssetRecord implements Serializable {
         m_maintContractExpiration = maintcontractexpires;
     }
 
-    /** 
-     *                @hibernate.property
-     *                 column="displaycategory"
-     *                 length="64"
-     *             
-     */
+    @Column(name="displayCategory", length=64)
     public String getDisplayCategory() {
         return m_displayCategory;
     }
@@ -734,12 +662,7 @@ public class OnmsAssetRecord implements Serializable {
         m_displayCategory = displaycategory;
     }
 
-    /** 
-     *                @hibernate.property
-     *                 column="notifycategory"
-     *                 length="64"
-     *             
-     */
+    @Column(name="notifyCategory", length=64)
     public String getNotifyCategory() {
         return m_notifyCategory;
     }
@@ -748,12 +671,7 @@ public class OnmsAssetRecord implements Serializable {
         m_notifyCategory = notifycategory;
     }
 
-    /** 
-     *                @hibernate.property
-     *                 column="pollercategory"
-     *                 length="64"
-     *             
-     */
+    @Column(name="pollerCategory", length=64)
     public String getPollerCategory() {
         return m_pollerCategory;
     }
@@ -762,12 +680,7 @@ public class OnmsAssetRecord implements Serializable {
         m_pollerCategory = pollercategory;
     }
 
-    /** 
-     *                @hibernate.property
-     *                 column="thresholdcategory"
-     *                 length="64"
-     *             
-     */
+    @Column(name="thresholdCategory", length=64)
     public String getThresholdCategory() {
         return m_thresholdCategory;
     }
@@ -776,12 +689,7 @@ public class OnmsAssetRecord implements Serializable {
         m_thresholdCategory = thresholdcategory;
     }
 
-    /** 
-     *                @hibernate.property
-     *                 column="comment"
-     *                 length="1024"
-     *             
-     */
+    @Column(name="comment", length=1024)
     public String getComment() {
         return m_comment;
     }
@@ -790,6 +698,7 @@ public class OnmsAssetRecord implements Serializable {
         m_comment = comment;
     }
     
+    @Column(name="managedObjectType", length=512)
     public String getManagedObjectType() {
         return m_managedObjectType;
     }
@@ -798,6 +707,7 @@ public class OnmsAssetRecord implements Serializable {
         m_managedObjectType = mot;
     }
     
+    @Column(name="managedObjectInstance", length=512)
     public String getManagedObjectInstance() {
         return m_managedObjectInstance;
     }
@@ -806,10 +716,6 @@ public class OnmsAssetRecord implements Serializable {
         m_managedObjectInstance = moi;
     }
     
-    public Serializable getSerializableId() {
-        return getId();
-    }
-
     public String toString() {
         return new ToStringCreator(this)
             .append("category", getCategory())

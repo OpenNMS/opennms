@@ -144,6 +144,7 @@ public class AbstractDaoTestCase extends TestCase {
         private DataSource getAdminDataSource() {
             PGSimpleDataSource dataSource = new PGSimpleDataSource();
             dataSource.setServerName("localhost");
+            dataSource.setDatabaseName("template1");
             dataSource.setUser("opennms");
             dataSource.setPassword("opennms");
 
@@ -233,13 +234,13 @@ public class AbstractDaoTestCase extends TestCase {
         DB db = new PostgresqlDB();
         //m_db = new HSQLDB();
         
-//        if (isCreateDb()) {
-//            db.dropDatabase();
-//            db.createDatabase();
-//        }
+        if (isCreateDb()) {
+            db.dropDatabase();
+            db.createDatabase();
+        }
         
-        //m_testConfig = new HibernateDaoTestConfig();
-        m_testConfig = new JdbcDaoTestConfig();
+        m_testConfig = new HibernateDaoTestConfig();
+        //m_testConfig = new JdbcDaoTestConfig();
         PlatformTransactionManager m_transMgr = m_testConfig.setUp(db, isCreateDb());
 
         m_transTemplate = new TransactionTemplate();
@@ -328,9 +329,6 @@ public class AbstractDaoTestCase extends TestCase {
     }
     protected EventDao getEventDao() {
     	return m_testConfig.getEventDao();
-    }
-    protected AgentDao getAgentDao() {
-    	return m_testConfig.getAgentDao();
     }
     protected AlarmDao getAlarmDao() {
         return m_testConfig.getAlarmDao();
@@ -424,24 +422,24 @@ public class AbstractDaoTestCase extends TestCase {
         builder.addService(getServiceType("ICMP"));
         getNodeDao().save(builder.getCurrentNode());
         
-        OnmsEvent event = new OnmsEvent();
-        event.setDistPoller(distPoller);
-        event.setEventUei("uei.opennms.org/test");
-        event.setEventTime(new Date());
-        event.setEventSource("test");
-        event.setEventCreateTime(new Date());
-        event.setEventSeverity(1);
-        event.setEventLog("Y");
-        event.setEventDisplay("Y");
-        getEventDao().save(event);
-       
-        OnmsMonitoredService svc = getMonitoredServiceDao().get(1, "192.168.1.1", "SNMP");
-        //JOED - LOOK This over
-        OnmsOutage resolved = new OnmsOutage(new Date(), new Date(), event, event, svc, null, getName(), getName());
-        getOutageDao().save(resolved);
-        
-        OnmsOutage unresolved = new OnmsOutage(new Date(), event, svc);
-        getOutageDao().save(unresolved);
+//        OnmsEvent event = new OnmsEvent();
+//        event.setDistPoller(distPoller);
+//        event.setEventUei("uei.opennms.org/test");
+//        event.setEventTime(new Date());
+//        event.setEventSource("test");
+//        event.setEventCreateTime(new Date());
+//        event.setEventSeverity(1);
+//        event.setEventLog("Y");
+//        event.setEventDisplay("Y");
+//        getEventDao().save(event);
+//       
+//        OnmsMonitoredService svc = getMonitoredServiceDao().get(1, "192.168.1.1", "SNMP");
+//        //JOED - LOOK This over
+//        OnmsOutage resolved = new OnmsOutage(new Date(), new Date(), event, event, svc, null, getName(), getName());
+//        getOutageDao().save(resolved);
+//        
+//        OnmsOutage unresolved = new OnmsOutage(new Date(), event, svc);
+//        getOutageDao().save(unresolved);
         
 
     }
