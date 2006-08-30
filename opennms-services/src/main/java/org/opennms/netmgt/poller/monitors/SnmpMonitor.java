@@ -41,6 +41,7 @@
 package org.opennms.netmgt.poller.monitors;
 
 import java.io.IOException;
+import java.util.List;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.net.InetAddress;
 import java.util.Map;
@@ -217,6 +218,7 @@ final public class SnmpMonitor extends SnmpMonitorStrategy {
         String oid = ParameterMap.getKeyedString(parameters, "oid", DEFAULT_OBJECT_IDENTIFIER);
         String operator = ParameterMap.getKeyedString(parameters, "operator", null);
         String operand = ParameterMap.getKeyedString(parameters, "operand", null);
+        String walkstr = ParameterMap.getKeyedString(parameters, "walk", "false");
 
         // set timeout and retries on SNMP peer object
         //
@@ -234,14 +236,32 @@ final public class SnmpMonitor extends SnmpMonitorStrategy {
                 log().debug("SnmpMonitor.poll: SnmpAgentConfig address: " +agentConfig);
             }
             SnmpObjId snmpObjectId = new SnmpObjId(oid);
-            
-            SnmpValue result = SnmpUtils.get(agentConfig, snmpObjectId);
+        
+	    if ("true".equals(walkstr)) {
+		List<SnmpValue> results = SnmpUtils.getColumns(agentConfig, "snmpPoller", snmpObjectId);
+                for(SnmpValue result : results) {
 
-            if (result != null) {
-                log().debug("poll: SNMP poll succeeded, addr=" + ipaddr.getHostAddress() + " oid=" + oid + " value=" + result);
-                status = (meetsCriteria(result, operator, operand) ? PollStatus.available() : PollStatus.unavailable());
+                if (result != null) {
+                    log().debug("poll: SNMPwalk poll succeeded, addr=" + ipaddr.getHostAddress() + " oid=" + oid + " value=" + result);
+                    if (meetsCriteria(result, operator, operand)) {
+                        status = PollStatus.available();
+                    }
+                } else {
+            	    status = logDown(Level.DEBUG, "SNMP poll failed, addr=" + ipaddr.getHostAddress() + " oid=" + oid);
+		    return status;
+                    }
+                }
+
             } else {
-            	status = logDown(Level.DEBUG, "SNMP poll failed, addr=" + ipaddr.getHostAddress() + " oid=" + oid);
+	    
+                SnmpValue result = SnmpUtils.get(agentConfig, snmpObjectId);
+
+                if (result != null) {
+                    log().debug("poll: SNMP poll succeeded, addr=" + ipaddr.getHostAddress() + " oid=" + oid + " value=" + result);
+                    status = (meetsCriteria(result, operator, operand) ? PollStatus.available() : PollStatus.unavailable());
+                } else {
+                	status = logDown(Level.DEBUG, "SNMP poll failed, addr=" + ipaddr.getHostAddress() + " oid=" + oid);
+                }
             }
             
         } catch (NumberFormatException e) {
