@@ -291,17 +291,18 @@
       <% for( int i=0; i < events.length; i++ ) { %>        
         <tr valign="top" class="<%=(i%2 == 0) ? "eventlist-odd" : "eventlist-even"%>">
           <% if( !(request.isUserInRole( Authentication.READONLY_ROLE ))) { %>
-            <td valign="top" rowspan="3" bgcolor="<%=EventUtil.getSeverityColor(events[i].getSeverity())%>">
+          <td valign="top" rowspan="3" style="background-color: <%=EventUtil.getSeverityColor(events[i].getSeverity())%>"> 
               <nobr>
                 <input type="checkbox" name="event" value="<%=events[i].getId()%>" /> 
               </nobr>
             </td>
           <% } %>
-          <td valign="top" rowspan="3" bgcolor="<%=EventUtil.getSeverityColor(events[i].getSeverity())%>">
+
+          <td valign="top" rowspan="3" style="background-color: <%=EventUtil.getSeverityColor(events[i].getSeverity())%>"> 
             <a href="event/detail.jsp?id=<%=events[i].getId()%>"><%=events[i].getId()%></a>
           </td>
           
-          <td valign="top" rowspan="3" bgcolor="<%=EventUtil.getSeverityColor(events[i].getSeverity())%>">
+          <td valign="top" rowspan="3" style="background-color: <%=EventUtil.getSeverityColor(events[i].getSeverity())%>"> 
             <%=EventUtil.getSeverityLabel(events[i].getSeverity())%>
             
             <% org.opennms.web.event.filter.Filter severityFilter = new SeverityFilter(events[i].getSeverity()); %>      
