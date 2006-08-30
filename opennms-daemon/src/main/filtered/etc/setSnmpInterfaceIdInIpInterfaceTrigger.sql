@@ -1,9 +1,9 @@
 --First step to refactoring ipInterface, snmpInterface tables to have actual IDs
 --This trigger puts IpInterface IDs in the IfServices table
 
-DROP TRIGGER setSnmpInterfaceIdInIpInterfaceTrigger ON ipInterface;
+DROP TRIGGER setSnmpInterfaceIdInIpInterface ON ipInterface;
 
-CREATE OR REPLACE FUNCTION getSnmpInterfaceId() RETURNS trigger AS $SnmpIpInterfaceId$
+CREATE OR REPLACE FUNCTION getSnmpInterfaceId() RETURNS trigger AS '
 BEGIN
   IF NEW.snmpInterfaceId IS NULL AND NEW.ifIndex IS NOT NULL THEN
      SELECT snmpif.id INTO NEW.snmpInterfaceId
@@ -11,14 +11,14 @@ BEGIN
        WHERE (snmpif.nodeid = NEW.nodeid AND snmpif.ipAddr = NEW.ipAddr AND snmpif.snmpIfIndex = NEW.ifIndex);
        
        IF NOT FOUND THEN
-          RAISE EXCEPTION 'Invalid SNMP Interface';
+          RAISE EXCEPTION \'Invalid SNMP Interface\';
        END IF;
   END IF;
   RETURN NEW;
 END;
-$SnmpIpInterfaceId$ LANGUAGE 'plpgsql';
+' LANGUAGE 'plpgsql';
 
-CREATE TRIGGER setSnmpInterfaceIdInIpInterfaceTrigger 
+CREATE TRIGGER setSnmpInterfaceIdInIpInterface
    BEFORE INSERT OR UPDATE
    ON ipInterface FOR EACH ROW
    EXECUTE PROCEDURE getSnmpInterfaceId();

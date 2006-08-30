@@ -3,7 +3,7 @@
 
 DROP TRIGGER setIfServiceIdInOutage ON outages;
 
-CREATE OR REPLACE FUNCTION getIfServiceId() RETURNS trigger AS $verifyIfServiceId$
+CREATE OR REPLACE FUNCTION getIfServiceId() RETURNS trigger AS '
 BEGIN
   IF NEW.ifServiceId IS NULL THEN
      SELECT ifsvc.id INTO NEW.ifserviceid
@@ -11,12 +11,12 @@ BEGIN
        WHERE (ifsvc.nodeid = NEW.nodeid AND ifsvc.ipAddr = NEW.ipAddr AND ifsvc.serviceid = NEW.serviceid);
        
        IF NOT FOUND THEN
-          RAISE EXCEPTION 'Invalid Service.';
+          RAISE EXCEPTION \'Invalid Service.\';
        END IF;
   END IF;
   RETURN NEW;
 END;
-$verifyIfServiceId$ LANGUAGE 'plpgsql';
+' LANGUAGE 'plpgsql';
 
 CREATE TRIGGER setIfServiceIdInOutage
    BEFORE INSERT OR UPDATE
