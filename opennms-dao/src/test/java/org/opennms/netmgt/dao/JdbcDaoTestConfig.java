@@ -39,7 +39,6 @@ import java.io.InputStreamReader;
 import javax.sql.DataSource;
 
 import org.opennms.netmgt.dao.AbstractDaoTestCase.DB;
-import org.opennms.netmgt.dao.jdbc.AgentDaoJdbc;
 import org.opennms.netmgt.dao.jdbc.AlarmDaoJdbc;
 import org.opennms.netmgt.dao.jdbc.AssetRecordDaoJdbc;
 import org.opennms.netmgt.dao.jdbc.Cache;
@@ -160,10 +159,6 @@ public class JdbcDaoTestConfig extends DaoTestConfig {
     protected OutageDao createOutageDao() {
         return new OutageDaoJdbc(m_dataSource);
     }
-
-	protected AgentDao createAgentDao() {
-		return new AgentDaoJdbc(m_dataSource);
-	}
 
     protected EventDao createEventDao() {
         return new EventDaoJdbc(m_dataSource);

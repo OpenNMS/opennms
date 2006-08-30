@@ -79,7 +79,7 @@ public class AssetRecordDaoHibernate extends AbstractDaoHibernate implements Ass
     }
 
     public int countAll() {
-        return ((Integer)findUnique("select count(*) from OnmsAssetRecord")).intValue();
+        return ((Number)findUnique("select count(*) from OnmsAssetRecord")).intValue();
     }
 
 }

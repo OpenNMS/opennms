@@ -39,6 +39,22 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Embeddable;
+import javax.persistence.Embedded;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import javax.persistence.Transient;
+
 import org.springframework.core.style.ToStringCreator;
 
 
@@ -47,12 +63,30 @@ import org.springframework.core.style.ToStringCreator;
  *         table="ipinterface"
  *     
 */
+@Entity
+@Table(name="ipInterface")
 public class OnmsIpInterface extends OnmsEntity implements Serializable {
 	
-	public static class CollectionType implements Comparable {
+	
+	@Embeddable
+	public static class CollectionType implements Comparable, Serializable {
+		private static final long serialVersionUID = 3684486716941692804L;
 		private static final char[] s_order = {'N', 'C', 'S', 'P' };
 		char m_collType;
+		
+		private CollectionType() {
+		}
+		
 		private CollectionType(char collType) {
+			m_collType = collType;
+		}
+		
+		@Column(name="isSnmpPrimary")
+		public char getCharCode() {
+			return m_collType;
+		}
+		
+		public void setCharCode(char collType) {
 			m_collType = collType;
 		}
 		
@@ -106,7 +140,7 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
 			case 'C': return COLLECT;
 			case 'N': return NO_COLLECT;
 			default:
-				throw new IllegalArgumentException("Connot create collType from code "+code);
+				throw new IllegalArgumentException("Cannot create collType from code "+code);
 			}
 		}
 		
@@ -150,7 +184,7 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
 
     private OnmsNode m_node;
     
-    private Set m_monitoredServices = new HashSet();
+    private Set<OnmsMonitoredService> m_monitoredServices = new HashSet<OnmsMonitoredService>();
     
     public OnmsIpInterface() {
     }
@@ -164,11 +198,10 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
     
     /**
      * Unique identifier for ipInterface.
-     * 
-     * @hibernate.id generator-class="native" column="id"
-     * @hibernate.generator-param name="sequence" value="ipIfNxtId"
-     *         
      */
+    @Id
+    @SequenceGenerator(name="opennmsSequence", sequenceName="opennmsNxtId")
+    @GeneratedValue(generator="opennmsSequence")    
     public Integer getId() {
         return m_id;
     }
@@ -179,12 +212,7 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
 
 
     
-    /** 
-     *                @hibernate.property
-     *                 column="ipaddr"
-     *                 length="16"
-     *             
-     */
+    @Column(name="ipAddr", length=16)
     public String getIpAddress() {
         return this.m_ipAddress;
     }
@@ -193,11 +221,7 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
         this.m_ipAddress = ipaddr;
     }
     
-    /** 
-     *                @hibernate.property
-     *                 column="ifindex"
-     *             
-     */
+    @Column(name="ifIndex")
     public Integer getIfIndex() {
         return this.m_ifIndex;
     }
@@ -206,12 +230,7 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
         this.m_ifIndex = ifindex;
     }
 
-    /** 
-     *                @hibernate.property
-     *                 column="iphostname"
-     *                 length="256"
-     *             
-     */
+    @Column(name="ipHostName", length=256)
     public String getIpHostName() {
         return this.m_ipHostName;
     }
@@ -220,12 +239,7 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
         this.m_ipHostName = iphostname;
     }
 
-    /** 
-     *                @hibernate.property
-     *                 column="ismanaged"
-     *                 length="1"
-     *             
-     */
+    @Column(name="isManaged", length=1)
     public String getIsManaged() {
         return this.m_isManaged;
     }
@@ -234,12 +248,7 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
         this.m_isManaged = ismanaged;
     }
 
-    /** 
-     *                @hibernate.property
-     *                 column="ipstatus"
-     *                 length="4"
-     *             
-     */
+    @Column(name="ipStatus")
     public Integer getIpStatus() {
         return this.m_ipStatus;
     }
@@ -248,12 +257,8 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
         this.m_ipStatus = ipstatus;
     }
 
-    /** 
-     *                @hibernate.property
-     *                 column="iplastcapsdpoll"
-     *                 length="8"
-     *             
-     */
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="ipLastCapsdPoll")
     public Date getIpLastCapsdPoll() {
         return this.m_ipLastCapsdPoll;
     }
@@ -262,12 +267,7 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
         this.m_ipLastCapsdPoll = iplastcapsdpoll;
     }
 
-    /** 
-     *                @hibernate.property
-     *                 column="issnmpprimary"
-     *                 length="1"
-     *             
-     */
+    @Column(name="isSnmpPrimary", length=1)
     public CollectionType getIsSnmpPrimary() {
         return this.m_isSnmpPrimary;
     }
@@ -276,13 +276,9 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
         this.m_isSnmpPrimary = issnmpprimary;
     }
 
-    /** 
-     *            @hibernate.many-to-one
-     *             not-null="true"
-     *            @hibernate.column name="nodeid"         
-     *         
-     */
-    public org.opennms.netmgt.model.OnmsNode getNode() {
+    @ManyToOne(optional=false)
+    @JoinColumn(name="nodeId")
+    public OnmsNode getNode() {
         return this.m_node;
     }
 
@@ -298,11 +294,12 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
      * @hibernate.one-to-many class="org.opennms.netmgt.model.OnmsMonitoredService"
      * 
      */
-    public Set getMonitoredServices() {
+    @OneToMany(mappedBy="ipInterface", cascade=CascadeType.ALL)
+    public Set<OnmsMonitoredService> getMonitoredServices() {
         return m_monitoredServices ;
     }
 
-    public void setMonitoredServices(Set ifServices) {
+    public void setMonitoredServices(Set<OnmsMonitoredService> ifServices) {
         m_monitoredServices = ifServices;
     }
 
@@ -329,6 +326,7 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
 		visitor.visitIpInterfaceComplete(this);
 	}
 
+	@Transient
 	public InetAddress getInetAddress() {
 		String ipAddr = getIpAddress();
 		if (ipAddr == null) return null;
@@ -344,6 +342,7 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
 		return addr;
 	}
 
+	@Transient
     public boolean isDown() {
         boolean down = true;
         for (Iterator it = m_monitoredServices.iterator(); it.hasNext();) {

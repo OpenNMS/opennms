@@ -49,7 +49,7 @@ import sun.print.PSPrinterJob.EPSPrinter;
 public class NodeDaoTest extends AbstractDaoTestCase {
     
     public void testSave() {
-        OnmsDistPoller distPoller = new OnmsDistPoller("localhost", "127.0.0.1");
+        OnmsDistPoller distPoller = getDistPollerDao().get("localhost");
         OnmsNode node = new OnmsNode(distPoller);
         node.setLabel("MyFirstNode");
         getNodeDao().save(node);

@@ -35,6 +35,7 @@ import java.sql.SQLException;
 import java.util.Collection;
 
 import org.hibernate.HibernateException;
+import org.hibernate.Query;
 import org.hibernate.Session;
 import org.opennms.netmgt.dao.OnmsDao;
 import org.springframework.orm.hibernate3.HibernateCallback;
@@ -75,14 +76,31 @@ public abstract class AbstractDaoHibernate extends HibernateDaoSupport implement
             
         });
     }
-
-    protected Object findUnique(final String query, final Object id) {
+    
+    protected Object findUnique(final String queryString, final Object... args) {
         return getHibernateTemplate().execute(new HibernateCallback() {
             
             public Object doInHibernate(Session session) throws HibernateException, SQLException {
-                return session.createQuery(query)
-                            .setParameter(0, id)
-                            .uniqueResult();
+            	Query query = session.createQuery(queryString);
+            	for (int i = 0; i < args.length; i++) {
+					query.setParameter(i, args[i]);
+				}
+                return query.uniqueResult();
+            }
+            
+        });
+    }
+
+    @SuppressWarnings("unchecked")
+	protected <T> T findUnique(Class<T> clazz, final String queryString, final Object... args) {
+        return (T)getHibernateTemplate().execute(new HibernateCallback() {
+            
+            public Object doInHibernate(Session session) throws HibernateException, SQLException {
+            	Query query = session.createQuery(queryString);
+            	for (int i = 0; i < args.length; i++) {
+					query.setParameter(i, args[i]);
+				}
+                return query.uniqueResult();
             }
             
         });

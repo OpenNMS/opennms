@@ -31,7 +31,10 @@
 //
 package org.opennms.netmgt.dao;
 
+import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.Properties;
 
 import javax.sql.DataSource;
@@ -44,29 +47,82 @@ import org.opennms.netmgt.dao.hibernate.IpInterfaceDaoHibernate;
 import org.opennms.netmgt.dao.hibernate.MonitoredServiceDaoHibernate;
 import org.opennms.netmgt.dao.hibernate.NodeDaoHibernate;
 import org.opennms.netmgt.dao.hibernate.ServiceTypeDaoHibernate;
+import org.opennms.netmgt.dao.jdbc.Cache;
+import org.opennms.netmgt.dao.jdbc.EventDaoJdbc;
+import org.opennms.netmgt.model.OnmsAssetRecord;
+import org.opennms.netmgt.model.OnmsCategory;
+import org.opennms.netmgt.model.OnmsDistPoller;
+import org.opennms.netmgt.model.OnmsIpInterface;
+import org.opennms.netmgt.model.OnmsMonitoredService;
+import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.OnmsServiceType;
+import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.orm.hibernate3.HibernateTransactionManager;
 import org.springframework.orm.hibernate3.LocalSessionFactoryBean;
+import org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean;
 import org.springframework.transaction.PlatformTransactionManager;
 
 public class HibernateDaoTestConfig extends DaoTestConfig {
 
     private LocalSessionFactoryBean m_lsfb;
+    private DataSource m_dataSource;
     private boolean m_lsfbInitialized;
     private SessionFactory m_factory;
-    private boolean m_usePool = true;
+    private boolean m_usePool = false;
+    private boolean m_createDb = false;
     
-    protected PlatformTransactionManager setUp(DB db, boolean createDb) throws IOException {
+    class ReaderEater extends Thread {
+        BufferedReader m_reader;
 
-        DataSource dataSource;
-        if (isUsePool()) {
-            dataSource = db.getPoolingDataSource();
-        } else {
-            dataSource = db.getDataSource();
+        ReaderEater(BufferedReader r) {
+            m_reader = r;
         }
-        setLsfb(new LocalSessionFactoryBean());
-        getLsfb().setDataSource(dataSource);
+        
+        public BufferedReader getReader() {
+            return m_reader;
+        }
+
+        public void run() {
+            try {
+                while (m_reader.readLine() != null) {
+                }
+            } catch (IOException e) {
+                e.printStackTrace();  
+            }
+        }
+    }
+
+    
+    protected PlatformTransactionManager setUp(DB db, boolean createDb) throws Exception {
+    	m_createDb = createDb;
+        if (isUsePool()) {
+            m_dataSource = db.getPoolingDataSource();
+        } else {
+            m_dataSource = db.getDataSource();
+        }
+        
+        Class[] annotatedClasses = {
+        	OnmsDistPoller.class,
+        	OnmsNode.class,
+        	OnmsAssetRecord.class,
+        	OnmsIpInterface.class,
+        	OnmsSnmpInterface.class,
+        	OnmsMonitoredService.class,
+        	OnmsCategory.class,
+        	OnmsServiceType.class
+        };
+        
+        String[] annotatedPackages = {
+        		"com.opennms.netmgt.model"
+        };
+        
+        AnnotationSessionFactoryBean sfb = new AnnotationSessionFactoryBean();
+        sfb.setAnnotatedClasses(annotatedClasses);
+        sfb.setAnnotatedPackages(annotatedPackages);
+		setLsfb(sfb);
+        getLsfb().setDataSource(m_dataSource);
         Properties props = new Properties();
         props.put("hibernate.dialect", db.getHibernateDialect());
         props.put("hibernate.show_sql", "true");
@@ -77,9 +133,9 @@ public class HibernateDaoTestConfig extends DaoTestConfig {
         props.put("hibernate.c3p0.timeout", "1800");
         props.put("hibernate.pool_size", "0");
         
-        //props.put("hibernate.format_sql", "true");
+        props.put("hibernate.format_sql", "true");
         //props.put("hibernate.cache.use_query_cache", "true");
-        //props.put("hibernate.jdbc.batch_size", "0");
+        props.put("hibernate.jdbc.batch_size", "0");
         //props.put("hibernate.hbm2ddl.auto", "create-drop");
         getLsfb().setHibernateProperties(props);
         Resource modelDir = new ClassPathResource("org/opennms/netmgt/model");
@@ -93,10 +149,37 @@ public class HibernateDaoTestConfig extends DaoTestConfig {
         
         setFactory((SessionFactory)getLsfb().getObject());
         
-        if (createDb) {
-            //m_lsfb.createDatabaseSchema();
-            getLsfb().updateDatabaseSchema();
+//        if (createDb) {
+//            //m_lsfb.createDatabaseSchema();
+//            getLsfb().updateDatabaseSchema();
+//        }
+        
+       if (createDb) {
+        	
+        	Resource resource = new ClassPathResource("create.sql");
+        	File createSql = resource.getFile();
+        	
+            String cmd = System.getProperty("psql.command", "psql") ;
+            System.err.println("psql.command = "+cmd);
+            cmd = cmd+" test -U opennms -f "+createSql.getAbsolutePath();
+
+            System.err.println("Executing: "+cmd);
+            Process p = Runtime.getRuntime().exec(cmd);
+            ReaderEater inputEater = new ReaderEater(new BufferedReader(new InputStreamReader(p.getInputStream())));
+            ReaderEater errorEater = new ReaderEater(new BufferedReader(new InputStreamReader(p.getErrorStream())));
+            inputEater.start();
+            errorEater.start();
+            p.waitFor();
+            inputEater.getReader().close();
+            errorEater.getReader().close();
+            
+            System.err.println("Got an exitValue of "+p.exitValue());
+            p.destroy();
         }
+        
+        // initialize the JDBC DAOs until we get them all converted
+        Cache.registerFactories(m_dataSource);
+
     
         HibernateTransactionManager m_transMgr = new HibernateTransactionManager();
         m_transMgr.setSessionFactory(getFactory());
@@ -117,8 +200,10 @@ public class HibernateDaoTestConfig extends DaoTestConfig {
     }
 
     protected void tearDown() {
-        if (m_lsfbInitialized)
+        if (m_lsfbInitialized) {
+        	m_factory.close();
             getLsfb().destroy();
+        }
     }
 
     protected LocalSessionFactoryBean getLsfb() {
@@ -182,13 +267,9 @@ public class HibernateDaoTestConfig extends DaoTestConfig {
     }
 
 	protected EventDao createEventDao() {
-        throw new RuntimeException("EventDao is not yet implemented in hibernate!");
+        return new EventDaoJdbc(m_dataSource);
 	}
 	
-	protected AgentDao createAgentDao() {
-        throw new RuntimeException("AgentDao is not yet implemented in hibernate!");
-	}
-
     protected AlarmDao createAlarmDao() {
         throw new RuntimeException("AlarmDao is not yet implemented in hibernate");
     }
@@ -200,6 +281,14 @@ public class HibernateDaoTestConfig extends DaoTestConfig {
     protected UserNotificationDao createUserNotificationDao() {
         throw new RuntimeException("UserNotificationDao is not yet implemented in hibernate");
     }
+
+	@Override
+	public void prePopulate() {
+        if (!m_createDb) return;
+        OnmsDistPoller distPoller = getDistPollerDao().get("localhost");
+        if (distPoller == null) return;
+        getDistPollerDao().delete(distPoller); 
+	}
     
 
 }

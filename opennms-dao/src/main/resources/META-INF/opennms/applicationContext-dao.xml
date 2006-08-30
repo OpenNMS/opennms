@@ -25,7 +25,14 @@
 		</property>
 		<property name="annotatedClasses">
 			<list>
-				<value>org.opennms.netmgt.model.AggregateStatusDefinition</value>
+				<value>org.opennms.netmgt.model.OnmsDistPoller</value>
+				<value>org.opennms.netmgt.model.OnmsAssetRecord</value>
+				<value>org.opennms.netmgt.model.OnmsNode</value>
+				<value>org.opennms.netmgt.model.OnmsIpInterface</value>
+				<value>org.opennms.netmgt.model.OnmsSnmpInterface</value>
+				<value>org.opennms.netmgt.model.OnmsMonitoredService</value>
+				<value>org.opennms.netmgt.model.OnmsCategory</value>
+				<value>org.opennms.netmgt.model.OnmsServiceType</value>
 			</list>
 		</property>
 		<!--  property name="schemaUpdate" value="true">
@@ -51,15 +58,6 @@
     <property name="transactionManager" ref="transactionManager" />
   </bean>
 	
-	
-  <bean id="agentFactory" class="org.opennms.netmgt.dao.jdbc.agent.AgentFactory">
-  	<property name="dataSource" ref="dataSource"/>
-  </bean>
-  
-  <bean id="agentDao" class="org.opennms.netmgt.dao.jdbc.AgentDaoJdbc">
-  	<property name="dataSource" ref="dataSource"/>
-  </bean>
-
   <bean id="alarmFactory" class="org.opennms.netmgt.dao.jdbc.alarm.AlarmFactory">
   	<property name="dataSource" ref="dataSource" />
   </bean>
@@ -88,8 +86,12 @@
       <property name="dataSource" ref="dataSource" />
     </bean>
     
-	<bean id="distPollerDao" class="org.opennms.netmgt.dao.jdbc.DistPollerDaoJdbc">
+	<!-- bean id="distPollerDao" class="org.opennms.netmgt.dao.jdbc.DistPollerDaoJdbc">
 		<property name="dataSource" ref="dataSource" />
+	</bean -->
+
+	<bean id="distPollerDao" class="org.opennms.netmgt.dao.hibernate.DistPollerDaoHibernate">
+		<property name="sessionFactory" ref="sessionFactory" />
 	</bean>
 
     <bean id="demandPollFactory" class="org.opennms.netmgt.dao.jdbc.demandpoll.DemandPollFactory">

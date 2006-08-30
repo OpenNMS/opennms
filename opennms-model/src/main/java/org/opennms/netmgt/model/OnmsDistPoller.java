@@ -35,15 +35,22 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+
 import org.springframework.core.style.ToStringCreator;
 
 
 /** 
  * Represents an OpenNMS Distributed Poller
  * 
- * @hibernate.class table="distpoller"
- *     
 */
+@Entity
+@Table(name="distPoller")
 public class OnmsDistPoller implements Serializable {
 
     private static final long serialVersionUID = -1094353783612066524L;
@@ -87,10 +94,8 @@ public class OnmsDistPoller implements Serializable {
     /** 
      * A human-readable name for each system.
      * Typically, the system's hostname (not fully qualified).
-     * 
-     * @hibernate.id generator-class="assigned" column="dpname" length="12"
-     *         
      */
+    @Id @Column(name="dpName")
     public String getName() {
         return m_name;
     }
@@ -101,10 +106,8 @@ public class OnmsDistPoller implements Serializable {
 
     /**
      * IP address of the distributed poller.
-     *  
-     * @hibernate.property column="dpip" length="16" not-null="true"
-     *         
      */
+    @Column(name="dpIP", nullable=false, length=16)
     public String getIpAddress() {
         return m_ipAddress;
     }
@@ -115,10 +118,8 @@ public class OnmsDistPoller implements Serializable {
 
     /** 
      * A free form text field providing a desciption of the distrubted poller
-     * 
-     * @hibernate.property column="dpcomment" length="256"
-     *         
      */
+    @Column(name="dpComment", length=256)
     public String getComment() {
         return m_comment;
     }
@@ -130,10 +131,8 @@ public class OnmsDistPoller implements Serializable {
     /** 
      * Numeric representation of percentage of interface speed available to discovery
      * process.  See documentation for "bandwidth troll"
-     * 
-     * @hibernate.property column="dpdisclimit" length="5"
-     *         
      */
+    @Column(name="dpDiscLimit", length=5, scale=2)
     public BigDecimal getDiscoveryLimit() {
         return m_discoveryLimit;
     }
@@ -144,10 +143,8 @@ public class OnmsDistPoller implements Serializable {
 
     /**
      * Time of last pull of new nodes from the DP
-     * 
-     * @hibernate.property column="dplastnodepull" length="8"
-     *         
      */
+    @Temporal(TemporalType.TIMESTAMP) @Column(name="dpLastNodePull")
     public Date getLastNodePull() {
         return m_lastNodePull;
     }
@@ -158,10 +155,8 @@ public class OnmsDistPoller implements Serializable {
 
     /**
      * Time of last pull of events from the DP
-     * 
-     * @hibernate.property column="dplasteventpull" length="8"
-     *         
      */
+    @Temporal(TemporalType.TIMESTAMP) @Column(name="dpLastEventPull")
     public Date getLastEventPull() {
         return m_lastEventPull;
     }
@@ -172,10 +167,8 @@ public class OnmsDistPoller implements Serializable {
 
     /** 
      * Time of last push of Package (config) to the DP
-     *
-     * @hibernate.property column="dplastpackagepush" length="8"
-     *         
      */
+    @Temporal(TemporalType.TIMESTAMP) @Column(name="dpLastPackagePush")
     public Date getLastPackagePush() {
         return m_lastPackagePush;
     }
@@ -186,10 +179,8 @@ public class OnmsDistPoller implements Serializable {
 
     /** 
      * Reflects desired state for this distributed poller. 1 = Up, 0 = Down
-     * 
-     * @hibernate.property column="dpadminstate" length="4"
-     *         
      */
+    @Column(name="dpAdminState")
     public Integer getAdminState() {
         return m_adminState;
     }
@@ -201,10 +192,8 @@ public class OnmsDistPoller implements Serializable {
     /**
      * Reflects the current perceived state of the distributed 
      * poller.  1 = Up, 0 = Down
-     * 
-     * @hibernate.property column="dprunstate" length="4"
-     *         
      */
+    @Column(name="dpRunState")
     public Integer getRunState() {
         return m_runState;
     }

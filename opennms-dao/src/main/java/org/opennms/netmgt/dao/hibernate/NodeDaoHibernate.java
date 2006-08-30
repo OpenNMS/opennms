@@ -79,8 +79,9 @@ public class NodeDaoHibernate extends AbstractDaoHibernate implements NodeDao {
     public Set findNodes(final OnmsDistPoller distPoller) {
         return (Set)getHibernateTemplate().execute(new HibernateCallback() {
 
-            public Object doInHibernate(Session session) throws HibernateException, SQLException {
-                return new HashSet(session.createQuery("from OnmsNode where distPoller = ?")
+            @SuppressWarnings("unchecked")
+			public Object doInHibernate(Session session) throws HibernateException, SQLException {
+                return new HashSet<OnmsNode>(session.createQuery("from OnmsNode where distPoller = ?")
                                         .setEntity(0, distPoller)
                                         .list());
             }
@@ -113,23 +114,27 @@ public class NodeDaoHibernate extends AbstractDaoHibernate implements NodeDao {
     }
 
     public OnmsNode getHierarchy(Integer id) {
-        return (OnmsNode)findUnique("from OnmsNode as n " +
-                                    "join fetch n.assetRecord " +
-                                    "join fetch n.ipInterfaces " +
-                                    "join fetch n.ipInterfaces.monitoredServices " +
-                                    "join fetch n.ipInterfaces.monitoredServices.serviceType " +
+//    	return get(id);
+        return (OnmsNode)findUnique("select distinct n from OnmsNode as n " +
+                                    "left join fetch n.assetRecord "	 +	
+                                    "left join fetch n.ipInterfaces as iface " +
+                                    "left join fetch iface.monitoredServices as monSvc " +
+                                    "left join fetch monSvc.serviceType " +
                                     "where n.id = ?", id);
+    	
     }
 
 	public OnmsNode findByAssetNumber(String assetNumber) {
 		return (OnmsNode)findUnique("from OnmsNode as n where n.assetRecord.assetNumber = ?", assetNumber);
 	}
 
-	public Collection findByLabel(String label) {
+	@SuppressWarnings("unchecked")
+	public Collection<OnmsNode> findByLabel(String label) {
 		return find("from OnmsNode as n where n.label = ?", label);
 	}
 
-    public Collection<OnmsNode> findAllByVarCharAssetColumn(String columnName, String columnValue) {
+    @SuppressWarnings("unchecked")
+	public Collection<OnmsNode> findAllByVarCharAssetColumn(String columnName, String columnValue) {
         return find("from OnmsNode as n where n.assetRecord."+columnName+" = ?", columnValue);
     }
 

@@ -194,11 +194,6 @@ public class LazyAssetRecord extends OnmsAssetRecord {
 		return super.getRoom();
 	}
 
-	public Serializable getSerializableId() {
-		load();
-		return super.getSerializableId();
-	}
-
 	public String getSerialNumber() {
 		load();
 		return super.getSerialNumber();

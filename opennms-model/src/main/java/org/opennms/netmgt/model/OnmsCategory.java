@@ -33,13 +33,18 @@ package org.opennms.netmgt.model;
 
 import java.io.Serializable;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
+
 import org.springframework.core.style.ToStringCreator;
 
 
-/** 
- * @hibernate.class table="categories"
- *     
-*/
+@Entity
+@Table(name="categories")
 public class OnmsCategory implements Serializable {
 
     private static final long serialVersionUID = 4694348093332239377L;
@@ -67,10 +72,9 @@ public class OnmsCategory implements Serializable {
         setName(name);
     }
 
-    /** 
-     * @hibernate.id generator-class="native" column="categoryId"
-     * @hibernate.generator-param name="sequence" value="custCatNxtId"
-     */
+    @Id
+    @SequenceGenerator(name="categorySequence", sequenceName="catNxtId")
+    @GeneratedValue(generator="categorySequence")
     public Integer getId() {
         return m_id;
     }
@@ -79,10 +83,7 @@ public class OnmsCategory implements Serializable {
         m_id = id;
     }
 
-    /** 
-     * @hibernate.property column="categoryName" unique="true" not-null="true"
-     *         
-     */
+    @Column(name="categoryName", unique=true, nullable=false)
     public String getName() {
         return m_name;
     }
@@ -90,10 +91,7 @@ public class OnmsCategory implements Serializable {
         m_name = name;
     }
 
-    /** 
-     * @hibernate.property column="categoryDescription" unique="false" not-null="false"
-     *         
-     */
+    @Column(name="categoryDescription")
 	public String getDescription() {
 		return m_description;
 	}
