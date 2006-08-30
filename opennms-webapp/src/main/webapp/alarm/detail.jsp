@@ -95,7 +95,7 @@
       <table class="standardfirst">
         <tr>
           <td class="standardheader" width="10%">Severity</td>
-          <td class="standard" bgcolor="<%=AlarmUtil.getSeverityColor(alarm.getSeverity())%>"><%=AlarmUtil.getSeverityLabel(alarm.getSeverity())%></td>
+          <td class="standard" style="background-color: <%=AlarmUtil.getSeverityColor(alarm.getSeverity())%>"><%=AlarmUtil.getSeverityLabel(alarm.getSeverity())%></td>
           <td class="standardheader" width="10%">Node</td>
           <td class="standard">
             <% if( alarm.getNodeId() > 0 ) { %>
