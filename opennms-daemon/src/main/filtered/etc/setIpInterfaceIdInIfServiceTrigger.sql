@@ -8,7 +8,7 @@ BEGIN
   IF NEW.ipInterfaceId IS NULL THEN
      SELECT ipif.id INTO NEW.ipInterfaceId
        FROM ipinterface ipif
-       WHERE (ipif.nodeid = NEW.nodeid AND ipif.ipAddr = NEW.ipAddr AND (ipif.ifIndex = NEW.ifIndex OR NEW.ifIndex IS NULL));
+       WHERE (ipif.nodeid = NEW.nodeid AND ipif.ipAddr = NEW.ipAddr AND (ipif.ifIndex = NEW.ifIndex OR (ipif.ifIndex IS NULL AND NEW.ifIndex IS NULL)));
        
        IF NOT FOUND THEN
           RAISE EXCEPTION ''IfServices Trigger Exception: No IpInterface found for... nodeid: %  ipaddr: %  ifindex: %'', NEW.nodeid, NEW.ipAddr, NEW.ifIndex;
