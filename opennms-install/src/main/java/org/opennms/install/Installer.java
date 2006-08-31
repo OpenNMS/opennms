@@ -194,7 +194,7 @@ public class Installer {
         m_columnReplacements.put("ipinterface.snmpinterfaceid", IpInterfaceSnmpInterfaceId);
         
         AutoIntegerIdMapStore ifServicesId =
-            new AutoIntegerIdMapStore(1, new String[] { "nodeid", "ipaddr", "ifindex", "serviceid" });
+            new AutoIntegerIdMapStore(1, new String[] { "nodeid", "ipaddr", "serviceid" });
         m_columnReplacements.put("ifservices.id", ifServicesId);
         
         MapStoreIdGetter ifServicesIpInterfaceId =
@@ -202,7 +202,7 @@ public class Installer {
         m_columnReplacements.put("ifservices.ipinterfaceid", ifServicesIpInterfaceId);
         
         MapStoreIdGetter outagesifServiceId =
-            new MapStoreIdGetter(ifServicesId, new String[] { "nodeid", "ipaddr", "ifindex", "serviceid" }, false);
+            new MapStoreIdGetter(ifServicesId, new String[] { "nodeid", "ipaddr", "serviceid" }, false);
         m_columnReplacements.put("outages.ifserviceid", outagesifServiceId);
         
         m_columnReplacements.put("events.eventsource",
