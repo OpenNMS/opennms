@@ -96,7 +96,7 @@ public class AlarmSaveOrUpdate extends SqlUpdate {
         		alarm.getLogMsg(), //logMsg
         		alarm.getOperInstruct(), //operInstruct
         		alarm.getTTicketId(), //tticketID
-        		alarm.getTTicketId(), //tticketState
+        		alarm.getTTicketState(), //tticketState
         		alarm.getMouseOverText(), //mouseOverText
         		alarm.getSuppressedUntil(), //suppressedUntil
         		alarm.getSuppressedUser(), //suppressedUser
