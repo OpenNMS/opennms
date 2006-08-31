@@ -244,8 +244,7 @@ public class RrdUtils {
 
         String updateVal = Long.toString(time) + ":" + val;
 
-        if (log().isDebugEnabled())
-            log().debug("updateRRD:updating RRD file: " + rrdFile + " with value: " + updateVal);
+            log().info("updateRRD:updating RRD file: " + rrdFile + " with value: " + updateVal);
 
         Object rrd = null;
         try {
