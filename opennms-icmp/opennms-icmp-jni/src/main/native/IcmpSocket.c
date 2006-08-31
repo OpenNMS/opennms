@@ -274,29 +274,6 @@ unsigned short checksum(register unsigned short *p, register int sz)
 }
 
 /**
- * Opens a new raw socket that is set to send
- * and receive the ICMP protocol. The protocol
- * for 'icmp' is looked up using the function
- * getprotobyname() and passed to the newly 
- * constructed socket.
- * 
- * If the socket fails to open then a negative
- * number will be returned to the caller.
- *
- */
-static int openIcmpSocket()
-{
-	int			fd = -1;
-	struct protoent * 	proto = getprotobyname("icmp");
-	if(proto != (struct protoent *)NULL)
-	{
-		fd = socket(AF_INET, SOCK_RAW, proto->p_proto);
-	}
-
-	return fd;
-}
-
-/**
  * This method is used to lookup the instances java.io.FileDescriptor
  * object and it's internal integer descriptor. This hidden integer
  * is used to store the opened ICMP socket handle that was 
@@ -546,6 +523,15 @@ end_inet:
 }
 
 /*
+ * Opens a new raw socket that is set to send
+ * and receive the ICMP protocol. The protocol
+ * for 'icmp' is looked up using the function
+ * getprotobyname() and passed to the newly 
+ * constructed socket.
+ *
+ * An exception is thrown if either of the
+ * getprotobyname() or the socket() calls fail.
+ *
  * Class:     org_opennms_protocols_icmp_IcmpSocket
  * Method:    initSocket
  * Signature: ()V
@@ -553,7 +539,22 @@ end_inet:
 JNIEXPORT void JNICALL
 Java_org_opennms_protocols_icmp_IcmpSocket_initSocket (JNIEnv *env, jobject instance)
 {
-	int icmp_fd = openIcmpSocket();
+	struct protoent *proto;
+
+        proto = getprotobyname("icmp");
+	if (proto == (struct protoent *) NULL) {
+		char	errBuf[128];	/* for exceptions */
+		int	savedErrno  = errno;
+		jclass  ioException = (*env)->FindClass(env, "java/net/SocketException");
+		if(ioException != NULL)
+		{
+			sprintf(errBuf, "Could not get protocol entry for 'icmp'.  The getprotobyname(\"icmp\") system call returned NULL.");
+			(*env)->ThrowNew(env, ioException, (char *)errBuf);
+		}
+                return;
+        }
+
+	int icmp_fd = socket(AF_INET, SOCK_RAW, proto->p_proto);
 	if(icmp_fd < 0)
 	{
 		char	errBuf[128];	/* for exceptions */
@@ -564,11 +565,10 @@ Java_org_opennms_protocols_icmp_IcmpSocket_initSocket (JNIEnv *env, jobject inst
 			sprintf(errBuf, "System error creating ICMP socket (%d, %s)", savedErrno, strerror(savedErrno));
 			(*env)->ThrowNew(env, ioException, (char *)errBuf);
 		}
+                return;
 	}
-	else
-	{
-		setIcmpFd(env, instance, icmp_fd);
-	}
+
+	setIcmpFd(env, instance, icmp_fd);
 	return;
 }
 	
