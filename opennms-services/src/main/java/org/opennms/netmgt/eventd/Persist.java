@@ -470,10 +470,10 @@ class Persist {
         
         // Column 4, nodeID
         int nodeid = (int) event.getNodeid();
-        m_insStmt.setInt(4, event.hasNodeid() ? nodeid : -1);
+        m_insStmt.setObject(4, event.hasNodeid() ? new Integer(nodeid) : null);
         
         // Column 5, ipaddr
-        m_insStmt.setString(5, (event.getInterface() != null ? event.getInterface() : "0.0.0.0"));
+        m_insStmt.setString(5, event.getInterface());
         
         //Column 6, serviceId
         //
@@ -487,7 +487,7 @@ class Persist {
                 log.warn("AlarmWriter.insertAlarm: Error converting service name \"" + event.getService() + "\" to an integer identifier, storing -1", sqlE);
             }
         }
-        m_insStmt.setInt(6, svcId);
+        m_insStmt.setObject(6, (svcId == -1 ? null : new Integer(svcId)));
 
         //Column 7, reductionKey
         m_insStmt.setString(7, event.getAlarmData().getReductionKey());
