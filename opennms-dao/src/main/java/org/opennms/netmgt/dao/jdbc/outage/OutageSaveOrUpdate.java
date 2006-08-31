@@ -63,9 +63,9 @@ public class OutageSaveOrUpdate extends SqlUpdate {
 
 	public int persist(OnmsOutage outage) {
 		Object[] parms = new Object[] {
-				outage.getEventBySvcLostEvent().getId(),
-				(outage.getEventBySvcRegainedEvent() == null ? null : outage
-						.getEventBySvcRegainedEvent().getId()),
+				outage.getServiceLostEvent().getId(),
+				(outage.getServiceRegainedEvent() == null ? null : outage
+						.getServiceRegainedEvent().getId()),
 				outage.getMonitoredService().getNodeId(),
 				outage.getMonitoredService().getIpAddress(),
 				outage.getMonitoredService().getServiceId(),

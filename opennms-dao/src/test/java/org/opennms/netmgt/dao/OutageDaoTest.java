@@ -57,7 +57,7 @@ public class OutageDaoTest extends AbstractDaoTestCase {
     
     public void testSave() {
         OnmsOutage outage = new OnmsOutage();
-        outage.setEventBySvcLostEvent(new OnmsEvent());
+        outage.setServiceLostEvent(new OnmsEvent());
         outage.setIfLostService(new Date());
         OnmsNode node = new OnmsNode(getDistPollerDao().load("localhost"));
         OnmsIpInterface ipInterface = new OnmsIpInterface("172.16.1.1", node);

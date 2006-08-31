@@ -39,24 +39,18 @@ public class OutageMapper implements RowMapper {
 		
 		Integer lostEventId = new Integer(rs.getInt("outages_svcLostEventID"));
 		OnmsEvent lostEvent = (OnmsEvent) Cache.obtain(OnmsEvent.class, lostEventId);
-		outage.setEventBySvcLostEvent(lostEvent);
+		outage.setServiceLostEvent(lostEvent);
 		
 		Integer regainedEventId = (Integer) rs.getObject("outages_svcRegainedEventID");
 		OnmsEvent regainedEvent = (regainedEventId == null ? null : (OnmsEvent) Cache.obtain(OnmsEvent.class, regainedEventId));
-		outage.setEventBySvcRegainedEvent(regainedEvent);
+		outage.setServiceRegainedEvent(regainedEvent);
 		
 		outage.setIfLostService(rs.getTimestamp("outages_ifLostService"));
 		outage.setIfRegainedService(rs.getTimestamp("outages_ifRegainedService"));
 		
-		outage.setIpAddr(rs.getString("outages_ipAddr"));
-		
 		outage.setSuppressedBy(rs.getString("outages_suppressedBy"));
 		
 		outage.setSuppressTime(rs.getTimestamp("outages_suppressTime"));
-		
-		outage.setServiceId(rs.getInt("outages_serviceid"));
-		
-		outage.setNodeId(rs.getInt("outages_nodeid"));
 		
 		outage.setDirty(false);
 		return outage;
