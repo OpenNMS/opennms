@@ -35,6 +35,10 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.Set;
 
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+
 import org.springframework.core.style.ToStringCreator;
 
 
@@ -264,11 +268,13 @@ public class OnmsNotification extends OnmsEntity implements Serializable {
      *            @hibernate.column name="eventid"         
      *         
      */
-    public org.opennms.netmgt.model.OnmsEvent getEvent() {
+    @ManyToOne(fetch=FetchType.LAZY)
+    @JoinColumn(name="eventId", nullable=false)
+    public OnmsEvent getEvent() {
         return m_event;
     }
 
-    public void setEvent(org.opennms.netmgt.model.OnmsEvent event) {
+    public void setEvent(OnmsEvent event) {
         m_event = event;
     }
 
