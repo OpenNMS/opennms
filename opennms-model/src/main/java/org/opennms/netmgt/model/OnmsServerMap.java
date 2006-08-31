@@ -33,14 +33,18 @@ package org.opennms.netmgt.model;
 
 import java.io.Serializable;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
+
 import org.springframework.core.style.ToStringCreator;
 
 
-/** 
- *        @hibernate.class
- *         table="servermap"
- *     
-*/
+@Entity
+@Table(name="servermap")
 public class OnmsServerMap extends OnmsEntity implements Serializable {
 
     /**
@@ -66,12 +70,11 @@ public class OnmsServerMap extends OnmsEntity implements Serializable {
     public OnmsServerMap() {
     }
 
-    /**
-     * 
-     * @hibernate.id generator-class="native" column="id"
-     * @hibernate.generator-param name="sequence" value="svrMapNxtId"
-     *         
-     */
+    
+    @Id
+    @Column(name="id")
+    @SequenceGenerator(name="serverMapSequence", sequenceName="svrMapNxtId")
+    @GeneratedValue(generator="outageSequence")
     public Integer getId() {
         return m_id;
     }
@@ -80,26 +83,18 @@ public class OnmsServerMap extends OnmsEntity implements Serializable {
         m_id = id;
     }
 
-    /** 
-     *                @hibernate.property
-     *                 column="ipAddr"
-     *                 length="16"
-     *             
-     */
-    public String getIpAddr() {
+    
+    @Column(name="ipAddr", length=16)
+    public String getIpAddress() {
         return m_ipAddr;
     }
 
-    public void setIpAddr(String ipAddr) {
+    public void setIpAddress(String ipAddr) {
         m_ipAddr = ipAddr;
     }
 
-    /** 
-     *                @hibernate.property
-     *                 column="serverName"
-     *                 length="64"
-     *             
-     */
+    
+    @Column(name="serverName", length=64)
     public String getServerName() {
         return m_serverName;
     }
@@ -110,7 +105,7 @@ public class OnmsServerMap extends OnmsEntity implements Serializable {
 
     public String toString() {
         return new ToStringCreator(this)
-            .append("ipAddr", getIpAddr())
+            .append("ipAddr", getIpAddress())
             .append("serverName", getServerName())
             .toString();
     }
