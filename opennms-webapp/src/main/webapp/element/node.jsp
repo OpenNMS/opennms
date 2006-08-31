@@ -253,7 +253,7 @@
 	  </li>
         <% } %>
         
-        <% if( !(request.isUserInRole( Authentication.READONLY_ROLE ))) { %> 
+        <% if( request.isUserInRole( Authentication.ADMIN_ROLE )) { %> 
 	  <li>
             <a href="element/rescan.jsp?node=<%=nodeId%>">Rescan</a>      
 	  </li>
