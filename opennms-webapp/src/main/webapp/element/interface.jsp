@@ -249,7 +249,7 @@ function doDelete() {
 	 </li>
          <% } %>
          
-        <% if( !(request.isUserInRole( Authentication.READONLY_ROLE ))) { %>
+        <% if (request.isUserInRole("OpenNMS Administrator")) { %>
 	  <li>
             <a href="element/rescan.jsp?node=<%=nodeId%>&ipaddr=<%=ipAddr%>">Rescan</a>      
           </li>
