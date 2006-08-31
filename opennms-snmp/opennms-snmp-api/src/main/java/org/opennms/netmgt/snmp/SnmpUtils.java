@@ -33,6 +33,8 @@ package org.opennms.netmgt.snmp;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Map;
+import java.util.LinkedHashMap;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.util.Properties;
@@ -110,6 +112,24 @@ public class SnmpUtils {
             @Override
             protected void storeResult(SnmpObjId base, SnmpInstId inst, SnmpValue val) {
                 results.add(val);
+            }
+           
+        });
+	walker.start();
+	walker.waitFor();
+        return results;
+    }
+    
+    public static Map getOidValues(SnmpAgentConfig agentConfig, String name, SnmpObjId oid) 
+	throws InterruptedException {
+
+        final Map results = new LinkedHashMap();
+        
+        SnmpWalker walker=SnmpUtils.createWalker(agentConfig, name, new ColumnTracker(oid) {
+   
+            @Override
+            protected void storeResult(SnmpObjId base, SnmpInstId inst, SnmpValue val) {
+                results.put(inst, val);
             }
            
         });
