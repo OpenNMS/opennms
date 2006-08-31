@@ -201,6 +201,10 @@ public class Installer {
             new MapStoreIdGetter(ipInterfaceId, new String[] { "nodeid", "ipaddr", "ifindex" }, false);
         m_columnReplacements.put("ifservices.ipinterfaceid", ifServicesIpInterfaceId);
         
+        MapStoreIdGetter outagesifServiceId =
+            new MapStoreIdGetter(ifServicesId, new String[] { "nodeid", "ipaddr", "ifindex", "serviceid" }, false);
+        m_columnReplacements.put("outages.ifserviceid", outagesifServiceId);
+        
         m_columnReplacements.put("events.eventsource",
                                  new EventSourceReplacement());
         
@@ -216,6 +220,8 @@ public class Installer {
         m_columnReplacements.put("ipinterface.ipaddr", new RowHasBogusData("ipInterface", "ipAddr"));
 
         m_columnReplacements.put("ifservices.nodeid", new RowHasBogusData("ifservices", "nodeId"));
+
+        m_columnReplacements.put("ifservices.ipaddr", new RowHasBogusData("ifservices", "ipaddr"));
 
         m_columnReplacements.put("ifservices.serviceid", new RowHasBogusData("ifservices", "serviceId"));
 

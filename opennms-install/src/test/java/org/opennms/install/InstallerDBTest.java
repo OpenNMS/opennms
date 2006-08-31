@@ -10,7 +10,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.io.StringReader;
-import java.net.URL;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -914,10 +913,10 @@ public class InstallerDBTest extends TestCase {
             });
         
         executeSQL("INSERT INTO node (nodeId, nodeCreateTime) VALUES ( 1, now() )");
-        executeSQL("INSERT INTO snmpInterface (nodeId, ipAddr) VALUES ( null, '1.2.3.4' )");
+        executeSQL("INSERT INTO snmpInterface (nodeId, ipAddr, snmpIfIndex) VALUES ( null, '1.2.3.4', 1 )");
 
         ThrowableAnticipator ta = new ThrowableAnticipator();
-        ta.anticipate(new Exception("Error changing table 'snmpinterface'.  Nested exception: The nodeId column in the snmpInterface table should never be null, but the entry for this row does have a null nodeId.  It needs to be removed or udpated to reflect a valid nodeId."));
+        ta.anticipate(new Exception("Error changing table 'snmpinterface'.  Nested exception: The 'nodeId' column in the 'snmpInterface' table should never be null, but the entry for this row does have a null 'nodeId'column.  It needs to be removed or udpated to reflect a valid 'nodeId' value."));
         try {
             m_installer.createTables();
         } catch (Throwable t) {
@@ -943,21 +942,9 @@ public class InstallerDBTest extends TestCase {
             });
         
         executeSQL("INSERT INTO node (nodeId, nodeCreateTime) VALUES ( 1, now() )");
-        executeSQL("INSERT INTO snmpInterface (nodeId, ipAddr) VALUES ( 1, '1.2.3.4' )");
         executeSQL("INSERT INTO ipInterface (nodeId, ipAddr, ifIndex) VALUES ( 1, '1.2.3.4', null )");
-        executeSQL("INSERT INTO ipInterface (nodeId, ipAddr, ifIndex) VALUES ( 1, '1.2.3.9', 1 )");
 
         m_installer.createTables();
-        
-        Statement st = m_installer.m_dbconnection.createStatement();
-        ResultSet rs = st.executeQuery("SELECT id from snmpInterface");
-        int count = 0;
-        for (int expected = 1; rs.next(); expected++) {
-            assertEquals("expected usersNotified id", expected, rs.getInt(1));
-            count++;
-        }
-        assertEquals("expected column count", 1, count);
-        
     }
 
     public void testCatchIpInterfaceHasNullIpAddrValueOnUpgrade() throws Exception {
@@ -975,12 +962,11 @@ public class InstallerDBTest extends TestCase {
             });
         
         executeSQL("INSERT INTO node (nodeId, nodeCreateTime) VALUES ( 1, now() )");
-        executeSQL("INSERT INTO snmpInterface (nodeId, ipAddr) VALUES ( 1, '1.2.3.4' )");
-        executeSQL("INSERT INTO ipInterface (nodeId, ipAddr, ifIndex) VALUES ( 1, null, null )");
+        executeSQL("INSERT INTO snmpInterface (nodeId, ipAddr, snmpIfIndex) VALUES ( 1, '1.2.3.4', 1 )");
         executeSQL("INSERT INTO ipInterface (nodeId, ipAddr, ifIndex) VALUES ( 1, null, 1 )");
 
         ThrowableAnticipator ta = new ThrowableAnticipator();
-        ta.anticipate(new Exception("Error changing table 'ipinterface'.  Nested exception: The ipAddr column in the ipInterface table should never be null, but the entry for this row does have a null ipAddr.  It needs to be removed or udpated to reflect a valid ipAddr."));
+        ta.anticipate(new Exception("Error changing table 'ipinterface'.  Nested exception: The 'ipAddr' column in the 'ipInterface' table should never be null, but the entry for this row does have a null 'ipAddr'column.  It needs to be removed or udpated to reflect a valid 'ipAddr' value."));
         try {
             m_installer.createTables();
         } catch (Throwable t) {
@@ -1016,9 +1002,10 @@ public class InstallerDBTest extends TestCase {
                 });
         
         executeSQL("INSERT INTO node (nodeId, nodeCreateTime) VALUES ( 1, now() )");
-        executeSQL("INSERT INTO snmpInterface (nodeId, ipAddr, snmpIfIndex) VALUES ( 1, '1.2.3.4', null)");
-        executeSQL("INSERT INTO ipInterface (nodeId, ipAddr, ifIndex) VALUES ( 1, '1.2.3.4', null )");
-        executeSQL("INSERT INTO ipInterface (nodeId, ipAddr, ifIndex) VALUES ( 1, '1.2.3.9', 1 )");
+        executeSQL("INSERT INTO node (nodeId, nodeCreateTime) VALUES ( 2, now() )");
+        executeSQL("INSERT INTO snmpInterface (nodeId, ipAddr, snmpIfIndex) VALUES ( 1, '1.2.3.4', 1)");
+        executeSQL("INSERT INTO ipInterface (nodeId, ipAddr, ifIndex) VALUES ( 1, '1.2.3.4', 1 )");
+        executeSQL("INSERT INTO ipInterface (nodeId, ipAddr, ifIndex) VALUES ( 2, '1.2.3.9', null )");
         
         m_installer.createTables();
         
@@ -1453,7 +1440,7 @@ public class InstallerDBTest extends TestCase {
         executeSQL("INSERT INTO ifServices (nodeID, ipAddr, ifIndex, serviceID) VALUES ( 1, '1.2.3.4', 1, 1)");
         
         ThrowableAnticipator ta = new ThrowableAnticipator();
-        ta.anticipate(new AssertionFailedError("Could not execute statement: 'INSERT INTO outages (outageId, nodeId, ipAddr, ifLostService, serviceID ) VALUES ( nextval('outageNxtId'), null, '1.2.3.4', now(), null )': ERROR: Outages Trigger Exception: No service found for... nodeid: 1  ipaddr: <NULL>  serviceid: 1"));
+        ta.anticipate(new AssertionFailedError("Could not execute statement: 'INSERT INTO outages (outageId, nodeId, ipAddr, ifLostService, serviceID ) VALUES ( nextval('outageNxtId'), null, '1.2.3.4', now(), 1 )': ERROR: Outages Trigger Exception: No service found for... nodeid: <NULL>  ipaddr: 1.2.3.4  serviceid: 1"));
         try {
             executeSQL("INSERT INTO outages (outageId, nodeId, ipAddr, ifLostService, serviceID ) "
                        + "VALUES ( nextval('outageNxtId'), null, '1.2.3.4', now(), 1 )");
@@ -1581,6 +1568,25 @@ public class InstallerDBTest extends TestCase {
         m_installer.createTables();
     }
     
+    public void testIfServicesIpAddrColumnConvertToNotNull() throws Exception {
+        if (!isDBTestEnabled()) {
+            return;
+        }
+        
+        m_installer.createSequences();
+
+        addTableFromSQL("distpoller");
+        addTableFromSQL("node");
+        addTableFromSQL("snmpinterface");
+        addTableFromSQL("ipinterface");
+        addTableFromSQL("service");
+        addTableFromSQLWithReplacements("ifservices", new String[][] {
+                new String[] { "(?i)ipAddr\\s+varchar\\(16\\) not null,", "ipAddr varchar(16)," }
+            });
+
+        m_installer.createTables();
+    }
+    
     public void testIfServicesServiceIdColumnConvertToNotNull() throws Exception {
         if (!isDBTestEnabled()) {
             return;
@@ -1601,7 +1607,6 @@ public class InstallerDBTest extends TestCase {
     }
 
     
-
     public void testOutagesNodeIdColumnConvertToNotNull() throws Exception {
         if (!isDBTestEnabled()) {
             return;
@@ -1644,6 +1649,30 @@ public class InstallerDBTest extends TestCase {
 
         m_installer.createTables();
     }
+
+
+    public void testOutagesIfServiceIdColumnConvertToNotNull() throws Exception {
+        if (!isDBTestEnabled()) {
+            return;
+        }
+        
+        m_installer.createSequences();
+
+        addTableFromSQL("distpoller");
+        addTableFromSQL("node");
+        addTableFromSQL("snmpinterface");
+        addTableFromSQL("ipinterface");
+        addTableFromSQL("service");
+        addTableFromSQL("ifservices");
+        addTableFromSQL("events");
+        addTableFromSQLWithReplacements("outages", new String[][] {
+                new String[] { "(?i)ifServiceID\\s+integer not null,", "ifServiceId integer," }
+            });
+
+        m_installer.createTables();
+    }
+
+    
 
     
     public void addTableFromSQL(String tableName) {
