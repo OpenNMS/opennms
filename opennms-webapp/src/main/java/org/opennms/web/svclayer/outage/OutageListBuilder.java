@@ -47,7 +47,7 @@ public class OutageListBuilder {
 			outagerow.put("interfaceid", ipInterface.getId());
 			outagerow.put("service", serviceType.getName());
 			outagerow.put("serviceid", serviceType.getId());
-			outagerow.put("eventid", outage.getEventBySvcLostEvent().getId());
+			outagerow.put("eventid", outage.getServiceLostEvent().getId());
 
 			
 			

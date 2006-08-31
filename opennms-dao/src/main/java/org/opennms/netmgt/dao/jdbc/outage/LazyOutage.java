@@ -31,7 +31,6 @@
 //
 package org.opennms.netmgt.dao.jdbc.outage;
 
-import java.net.InetAddress;
 import java.util.Date;
 
 import javax.sql.DataSource;
@@ -82,26 +81,31 @@ public class LazyOutage extends OnmsOutage {
 		}
 	}
 
-	public OnmsEvent getEventBySvcLostEvent() {
+	@Override
+	public OnmsEvent getServiceLostEvent() {
 		load();
-		return super.getEventBySvcLostEvent();
+		return super.getServiceLostEvent();
 	}
 
-	public OnmsEvent getEventBySvcRegainedEvent() {
+	@Override
+	public OnmsEvent getServiceRegainedEvent() {
 		load();
-		return super.getEventBySvcRegainedEvent();
+		return super.getServiceRegainedEvent();
 	}
 
+	@Override
 	public Date getIfLostService() {
 		load();
 		return super.getIfLostService();
 	}
 
+	@Override
 	public Date getIfRegainedService() {
 		load();
 		return super.getIfRegainedService();
 	}
 
+	@Override
 	public OnmsMonitoredService getMonitoredService() {
 		load();
 		return super.getMonitoredService();
@@ -126,73 +130,59 @@ public class LazyOutage extends OnmsOutage {
 	}
 
 	@Override
-	public String getIpAddr() {
+	public String getIpAddress() {
 		load();
-		return super.getIpAddr();
+		return super.getIpAddress();
 	}
 	
-	public void setIpAddr(String ipAddr) {
+	@Override
+	public void setServiceLostEvent(OnmsEvent eventBySvcLostEvent) {
 		load();
 		setDirty(true);
-		super.setIpAddr(ipAddr);
+		super.setServiceLostEvent(eventBySvcLostEvent);
 	}
 
-
-	
-	public void setEventBySvcLostEvent(OnmsEvent eventBySvcLostEvent) {
+	@Override
+	public void setServiceRegainedEvent(OnmsEvent eventBySvcRegainedEvent) {
 		load();
 		setDirty(true);
-		super.setEventBySvcLostEvent(eventBySvcLostEvent);
+		super.setServiceRegainedEvent(eventBySvcRegainedEvent);
 	}
 
-	public void setEventBySvcRegainedEvent(OnmsEvent eventBySvcRegainedEvent) {
-		load();
-		setDirty(true);
-		super.setEventBySvcRegainedEvent(eventBySvcRegainedEvent);
-	}
-
+	@Override
 	public void setIfLostService(Date ifLostService) {
 		load();
 		setDirty(true);
 		super.setIfLostService(ifLostService);
 	}
 
+	@Override
 	public void setIfRegainedService(Date ifRegainedService) {
 		load();
 		setDirty(true);
 		super.setIfRegainedService(ifRegainedService);
 	}
 
+	@Override
 	public void setMonitoredService(OnmsMonitoredService monitoredService) {
 		load();
 		setDirty(true);
 		super.setMonitoredService(monitoredService);
 	}
 
+	@Override
 	public void setSuppressTime(Date timeToSuppress) {
 		load();
 		setDirty(true);
 		super.setSuppressTime(timeToSuppress);
 	}
 
+	@Override
 	public void setSuppressedBy(String suppressorMan) {
 		load();
 		setDirty(true);
 		super.setSuppressedBy(suppressorMan);
 	}
 
-	public void setServiceId(Integer serviceId) {
-		load();
-		setDirty(true);
-		super.setServiceId(serviceId);
-		
-	}
-
-	public void setNodeId(Integer nodeId) {
-		load();
-		setDirty(true);
-		super.setServiceId(nodeId);
-		
-	}
 
 }

@@ -44,6 +44,7 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 
 import org.springframework.core.style.ToStringCreator;
 
@@ -71,10 +72,10 @@ public class OnmsOutage implements Serializable {
     private Date m_ifRegainedService;
 
     /** persistent field */
-    private OnmsEvent m_eventBySvcRegainedEvent;
+    private OnmsEvent m_serviceRegainedEvent;
 
     /** persistent field */
-    private OnmsEvent m_eventBySvcLostEvent;
+    private OnmsEvent m_serviceLostEvent;
 
     /** persistent field */
     private OnmsMonitoredService m_monitoredService;
@@ -85,26 +86,15 @@ public class OnmsOutage implements Serializable {
     /** persistent field */
     private String m_suppressedBy;
     
-    /** persistent field */
-    private String m_ipaddr;
-    
-    /** persistent field */
-    private Integer m_serviceId;
-    
-    /** persistent field */
-    private Integer  m_nodeid;
-    
-
     /** full constructor */
-    public OnmsOutage(Date ifLostService, Date ifRegainedService, OnmsEvent eventBySvcRegainedEvent, OnmsEvent eventBySvcLostEvent, OnmsMonitoredService monitoredService, Date suppressTime, String suppressedBy, String ipaddr) {
+    public OnmsOutage(Date ifLostService, Date ifRegainedService, OnmsEvent eventBySvcRegainedEvent, OnmsEvent eventBySvcLostEvent, OnmsMonitoredService monitoredService, Date suppressTime, String suppressedBy) {
         m_ifLostService = ifLostService;
         m_ifRegainedService = ifRegainedService;
-        m_eventBySvcRegainedEvent = eventBySvcRegainedEvent;
-        m_eventBySvcLostEvent = eventBySvcLostEvent;
+        m_serviceRegainedEvent = eventBySvcRegainedEvent;
+        m_serviceLostEvent = eventBySvcLostEvent;
         m_monitoredService = monitoredService;
         m_suppressTime = suppressTime;
         m_suppressedBy = suppressedBy;
-        m_ipaddr = ipaddr;
         
     }
 
@@ -115,7 +105,7 @@ public class OnmsOutage implements Serializable {
     /** minimal constructor */
     public OnmsOutage(Date ifLostService, OnmsEvent eventBySvcLostEvent, OnmsMonitoredService monitoredService) {
         m_ifLostService = ifLostService;
-        m_eventBySvcLostEvent = eventBySvcLostEvent;
+        m_serviceLostEvent = eventBySvcLostEvent;
         m_monitoredService = monitoredService;
     }
 
@@ -132,6 +122,17 @@ public class OnmsOutage implements Serializable {
     }
 
 
+    @ManyToOne
+    @JoinColumn(name="ifserviceId")
+    public OnmsMonitoredService getMonitoredService() {
+        return m_monitoredService;
+    }
+
+    public void setMonitoredService(OnmsMonitoredService monitoredService) {
+        m_monitoredService = monitoredService;
+    }
+
+    
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="ifLostService", nullable=false)
     public Date getIfLostService() {
@@ -140,6 +141,17 @@ public class OnmsOutage implements Serializable {
 
     public void setIfLostService(Date ifLostService) {
         m_ifLostService = ifLostService;
+    }
+
+
+    @ManyToOne
+    @JoinColumn(name="svcLostEventId")
+    public OnmsEvent getServiceLostEvent() {
+        return m_serviceLostEvent;
+    }
+
+    public void setServiceLostEvent(OnmsEvent svcLostEvent) {
+        m_serviceLostEvent = svcLostEvent;
     }
 
 
@@ -156,36 +168,14 @@ public class OnmsOutage implements Serializable {
     
     @ManyToOne
     @JoinColumn(name="svcRegainedEventId")
-    public OnmsEvent getEventBySvcRegainedEvent() {
-        return m_eventBySvcRegainedEvent;
+    public OnmsEvent getServiceRegainedEvent() {
+        return m_serviceRegainedEvent;
     }
 
-    public void setEventBySvcRegainedEvent(OnmsEvent eventBySvcRegainedEvent) {
-        m_eventBySvcRegainedEvent = eventBySvcRegainedEvent;
+    public void setServiceRegainedEvent(OnmsEvent svcRegainedEvent) {
+        m_serviceRegainedEvent = svcRegainedEvent;
     }
 
-    @ManyToOne
-    @JoinColumn(name="svcLostEventId")
-    public OnmsEvent getEventBySvcLostEvent() {
-        return m_eventBySvcLostEvent;
-    }
-
-    public void setEventBySvcLostEvent(OnmsEvent eventBySvcLostEvent) {
-        m_eventBySvcLostEvent = eventBySvcLostEvent;
-    }
-
-
-    @ManyToOne
-    @JoinColumn(name="ifserviceId")
-    public OnmsMonitoredService getMonitoredService() {
-        return m_monitoredService;
-    }
-
-    public void setMonitoredService(OnmsMonitoredService monitoredService) {
-        m_monitoredService = monitoredService;
-    }
-
-    
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="suppressTime")
     public Date getSuppressTime(){
@@ -207,41 +197,21 @@ public class OnmsOutage implements Serializable {
     }
     
     
-    //TODO: This column should go away
-    @Column(name="nodeid")
+    @Transient
     public Integer getNodeId(){
-        return m_nodeid;
-    }
-    
-    public void setNodeId(Integer nodeid){
-        m_nodeid = nodeid;
+    	return getMonitoredService().getNodeId();
     }
 
-
-    //TODO: This column should go away
-    @Column(name="ipAddr", length=16)
+    @Transient
     public String getIpAddress() {
-    	 return m_ipaddr ;
-    }
-    
-    public void setIpAddress(String ipAddr) {
-        m_ipaddr = ipAddr;
-        
+    	return getMonitoredService().getIpAddress();
     }
 
-    
-    //TODO: This column should go away
-    @Column(name="serviceId")
+    @Transient
     public Integer getServiceId() {
-    	return m_serviceId ;
+    	return getMonitoredService().getServiceId();
     }
     
-    public void setServiceId(Integer serviceId) {
-        m_serviceId = serviceId;
-        
-    }
-    
-
     public String toString() {
         return new ToStringCreator(this)
             .append("outageId", getId())

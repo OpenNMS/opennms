@@ -165,10 +165,10 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	private Set<OnmsNotification> m_notifications;
 
 	/** persistent field */
-	private Set<OnmsOutage> m_outagesBySvcRegainedEventId;
+	private Set<OnmsOutage> m_associatedServiceRegainedOutages;
 
 	/** persistent field */
-	private Set<OnmsOutage> m_outagesBySvclostEventId;
+	private Set<OnmsOutage> m_associatedServiceLostOutages;
 
 	/** full constructor */
 	public OnmsEvent(Integer eventid, String eventuei, Date eventtime,
@@ -221,8 +221,8 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 		m_alarm = alarm;
 		m_node = node;
 		m_notifications = notifications;
-		m_outagesBySvcRegainedEventId = outagesBySvcregainedeventid;
-		m_outagesBySvclostEventId = outagesBySvclosteventid;
+		m_associatedServiceRegainedOutages = outagesBySvcregainedeventid;
+		m_associatedServiceLostOutages = outagesBySvclosteventid;
 	}
 
 	/** default constructor */
@@ -247,15 +247,10 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 		m_eventDisplay = eventdisplay;
 		m_node = node;
 		m_notifications = notifications;
-		m_outagesBySvcRegainedEventId = outagesBySvcregainedeventid;
-		m_outagesBySvclostEventId = outagesBySvclosteventid;
+		m_associatedServiceRegainedOutages = outagesBySvcregainedeventid;
+		m_associatedServiceLostOutages = outagesBySvclosteventid;
 	}
 
-	/**
-	 * @hibernate.id generator-class="assigned" type="java.lang.Integer"
-	 *               column="eventid"
-	 * @hibernate.generator-param name="sequence" value="eventsNxtId"
-	 */
     @Id
     @SequenceGenerator(name="eventSequence", sequenceName="eventsNxtId")
     @GeneratedValue(generator="eventSequence")    
@@ -587,22 +582,22 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 		m_notifications = notifications;
 	}
 
-	@OneToMany(mappedBy="eventBySvcRegainedEvent", fetch=FetchType.LAZY)
-	public Set<OnmsOutage> getOutagesBySvcRegainedEventId() {
-		return m_outagesBySvcRegainedEventId;
+	@OneToMany(mappedBy="serviceRegainedEvent", fetch=FetchType.LAZY)
+	public Set<OnmsOutage> getAssociatedServiceRegainedOutages() {
+		return m_associatedServiceRegainedOutages;
 	}
 
-	public void setOutagesBySvcRegainedEventId(Set<OnmsOutage> outagesBySvcregainedeventid) {
-		m_outagesBySvcRegainedEventId = outagesBySvcregainedeventid;
+	public void setAssociatedServiceRegainedOutages(Set<OnmsOutage> outagesBySvcregainedeventid) {
+		m_associatedServiceRegainedOutages = outagesBySvcregainedeventid;
 	}
 
-	@OneToMany(mappedBy="eventBySvcLostEvent", fetch=FetchType.LAZY)
-	public Set<OnmsOutage> getOutagesBySvclostEventId() {
-		return m_outagesBySvclostEventId;
+	@OneToMany(mappedBy="serviceLostEvent", fetch=FetchType.LAZY)
+	public Set<OnmsOutage> getAssociatedServiceLostOutages() {
+		return m_associatedServiceLostOutages;
 	}
 
-	public void setOutagesBySvclostEventId(Set<OnmsOutage> outagesBySvclosteventid) {
-		m_outagesBySvclostEventId = outagesBySvclosteventid;
+	public void setAssociatedServiceLostOutages(Set<OnmsOutage> outagesBySvclosteventid) {
+		m_associatedServiceLostOutages = outagesBySvclosteventid;
 	}
 
 	public String toString() {
