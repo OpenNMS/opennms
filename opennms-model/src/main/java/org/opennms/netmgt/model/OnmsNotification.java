@@ -35,18 +35,24 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.Set;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 import org.springframework.core.style.ToStringCreator;
 
 
-/** 
- *        @hibernate.class
- *         table="notifications"
- *     
-*/
+@Entity
+@Table(name="notifications")
 public class OnmsNotification extends OnmsEntity implements Serializable {
 
     /**
@@ -123,10 +129,10 @@ public class OnmsNotification extends OnmsEntity implements Serializable {
         m_usersNotified = usersNotified;
     }
 
-    /** 
-     * @hibernate.id generator-class="native" type="java.lang.Integer" column="notifyid"
-     * @hibernate.generator-param name="sequence" value="notifyNxtId"
-     */
+    
+    @Id
+    @SequenceGenerator(name="notifySequence", sequenceName="notifyNxtId")
+    @GeneratedValue(generator="notifySequence")
     public Integer getNotifyId() {
         return m_notifyId;
     }
@@ -135,13 +141,8 @@ public class OnmsNotification extends OnmsEntity implements Serializable {
         m_notifyId = notifyid;
     }
 
-    /** 
-     *            @hibernate.property
-     *             column="textmsg"
-     *             length="4000"
-     *             not-null="true"
-     *         
-     */
+    
+    @Column(name="textMsg", length=4000, nullable=false)
     public String getTextMsg() {
         return m_textMsg;
     }
@@ -149,13 +150,9 @@ public class OnmsNotification extends OnmsEntity implements Serializable {
     public void setTextMsg(String textmsg) {
         m_textMsg = textmsg;
     }
+    
 
-    /** 
-     *            @hibernate.property
-     *             column="subject"
-     *             length="256"
-     *         
-     */
+    @Column(name="subject", length=256)
     public String getSubject() {
         return m_subject;
     }
@@ -163,13 +160,9 @@ public class OnmsNotification extends OnmsEntity implements Serializable {
     public void setSubject(String subject) {
         m_subject = subject;
     }
+    
 
-    /** 
-     *            @hibernate.property
-     *             column="numericmsg"
-     *             length="256"
-     *         
-     */
+    @Column(name="numericMsg", length=256)
     public String getNumericMsg() {
         return m_numericMsg;
     }
@@ -184,6 +177,8 @@ public class OnmsNotification extends OnmsEntity implements Serializable {
      *             length="8"
      *         
      */
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="pageTime")
     public Date getPageTime() {
         return m_pageTime;
     }
@@ -192,12 +187,9 @@ public class OnmsNotification extends OnmsEntity implements Serializable {
         m_pageTime = pagetime;
     }
 
-    /** 
-     *            @hibernate.property
-     *             column="respondtime"
-     *             length="8"
-     *         
-     */
+    
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="respondTime")
     public Date getRespondTime() {
         return m_respondTime;
     }
@@ -206,12 +198,8 @@ public class OnmsNotification extends OnmsEntity implements Serializable {
         m_respondTime = respondtime;
     }
 
-    /** 
-     *            @hibernate.property
-     *             column="answeredby"
-     *             length="256"
-     *         
-     */
+    
+    @Column(name="answeredBy", length=256)
     public String getAnsweredBy() {
         return m_answeredBy;
     }
@@ -220,12 +208,8 @@ public class OnmsNotification extends OnmsEntity implements Serializable {
         m_answeredBy = answeredby;
     }
 
-    /** 
-     *            @hibernate.property
-     *             column="interfaceid"
-     *             length="16"
-     *         
-     */
+    @ManyToOne
+    @JoinColumn(name="ipInterfaceId")
     public OnmsIpInterface getInterface() {
         return m_interface;
     }
@@ -234,12 +218,9 @@ public class OnmsNotification extends OnmsEntity implements Serializable {
         m_interface = interfaceId;
     }
 
-    /** 
-     *            @hibernate.property
-     *             column="serviceid"
-     *             length="4"
-     *         
-     */
+    
+    @ManyToOne
+    @JoinColumn(name="serviceId")
     public OnmsServiceType getServiceType() {
         return m_serviceType;
     }
@@ -248,12 +229,8 @@ public class OnmsNotification extends OnmsEntity implements Serializable {
         m_serviceType = serviceType;
     }
 
-    /** 
-     *            @hibernate.property
-     *             column="queueid"
-     *             length="256"
-     *         
-     */
+
+    @Column(name="queueId", length=256)
     public String getQueueId() {
         return m_queueId;
     }
@@ -262,28 +239,20 @@ public class OnmsNotification extends OnmsEntity implements Serializable {
         m_queueId = queueid;
     }
 
-    /** 
-     *            @hibernate.many-to-one
-     *             not-null="true"
-     *            @hibernate.column name="eventid"         
-     *         
-     */
+
     @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="eventId", nullable=false)
     public OnmsEvent getEvent() {
         return m_event;
     }
 
-    public void setEvent(OnmsEvent event) {
+    public void setEvent(org.opennms.netmgt.model.OnmsEvent event) {
         m_event = event;
     }
 
-    /** 
-     *            @hibernate.many-to-one
-     *             not-null="true"
-     *            @hibernate.column name="nodeid"         
-     *         
-     */
+
+    @ManyToOne
+    @JoinColumn(name="nodeId", nullable=false)
     public org.opennms.netmgt.model.OnmsNode getNode() {
         return m_node;
     }
@@ -309,6 +278,8 @@ public class OnmsNotification extends OnmsEntity implements Serializable {
      *             class="org.opennms.netmgt.model.OnmsUserNotification"
      *         
      */
+    @OneToMany(fetch=FetchType.LAZY)
+    @JoinColumn(name="notifyId")
     public Set getUsersNotified() {
         return m_usersNotified;
     }
