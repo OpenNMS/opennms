@@ -10,6 +10,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.io.StringReader;
+import java.net.URL;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -188,6 +189,29 @@ public class InstallerDBTest extends TestCase {
             }
             fail("Unexpected line output by createTables(): \"" + line + "\"");
         }
+    }
+    
+    public void testUpgradeRevision3952ToCurrent() throws Exception {
+        if (!isDBTestEnabled()) {
+            return;
+        }
+        
+        String newCreate = m_installer.m_create_sql;
+        
+        URL sql = getClass().getResource("/create.sql-revision-3952");
+        assertNotNull("Could not find create.sql", sql);
+        m_installer.m_create_sql = sql.getFile();
+            
+        // First pass.
+        m_installer.createSequences();
+        m_installer.createTables();
+        
+        m_installer.m_create_sql = newCreate;
+        
+        // Second pass.
+        m_installer.createSequences();
+        m_installer.createTables();
+        
     }
 
     /**
@@ -1080,7 +1104,75 @@ public class InstallerDBTest extends TestCase {
         }
         assertEquals("expected column count", 2, count);
     }
-    
+
+
+    public void testOutagesForeignKeyIfServiceIdOnUpgrade() throws Exception {
+        if (!isDBTestEnabled()) {
+            return;
+        }
+        
+        m_installer.createSequences();
+        for (int i = 0; i < 10; i++) {
+            executeSQL("SELECT nextval('opennmsNxtId');");
+        }
+        
+        addTableFromSQL("distPoller");
+        addTableFromSQL("node");
+        addTableFromSQL("snmpinterface");
+        addTableFromSQL("ipinterface");
+      
+        /*
+        // No ID column
+        addTableFromSQLWithReplacements("ipinterface", new String[][] {
+                new String[] { "(?i)id\\s+integer default nextval\\('opennmsNxtId'\\) not null,", "" },
+                new String[] { "(?i)constraint ipinterface_pkey primary key \\(id\\),", "" }
+                });
+                */
+        
+        addTableFromSQL("events");
+        
+        addTableFromSQL("service");
+        
+        // No ID column
+        addTableFromSQLWithReplacements("ifservices", new String[][] {
+                new String[] { "(?i)id\\s+integer default nextval\\('opennmsNxtId'\\) not null,", "" },
+                new String[] { "(?i)constraint ifServices_pkey primary key \\(id\\),", "" }
+                });
+        
+        // No ifServiceId column
+        addTableFromSQLWithReplacements("outages", new String[][] {
+                new String[] { "(?i)ifServiceId\\s+INTEGER not null,", "" },
+                new String[] { "(?i),\\s+CONSTRAINT ifServices_fkey1 FOREIGN KEY \\(ifServiceId\\) REFERENCES ifServices \\(id\\) ON DELETE CASCADE", "" }
+                });
+        
+        executeSQL("INSERT INTO node (nodeId, nodeCreateTime) VALUES ( 1, now() )");
+        executeSQL("INSERT INTO snmpInterface (id, nodeId, ipAddr, snmpIfIndex) VALUES ( 1, 1, '1.2.3.4', 1 )");
+        executeSQL("INSERT INTO ipInterface (id, nodeId, ipAddr, ifIndex, snmpInterfaceId ) VALUES ( 1, 1, '1.2.3.4', 1, 1 )");
+        executeSQL("INSERT INTO service (serviceID, serviceName) VALUES ( 1, 'COFFEE-READY' )");
+        executeSQL("INSERT INTO ifServices (nodeID, ipAddr, ifIndex, serviceID, ipInterfaceId) VALUES ( 1, '1.2.3.4', 1, 1, 1)");
+        executeSQL("INSERT INTO outages (outageId, nodeId, ipAddr, ifLostService, serviceID ) "
+                   + "VALUES ( nextval('outageNxtId'), 1, '1.2.3.4', now(), 1 )");
+
+        m_installer.createTables();
+        
+        Statement st = m_installer.m_dbconnection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT id from ifServices");
+        int count = 0;
+        for (int expected = 1; rs.next(); expected++) {
+            assertEquals("ifServices id", expected, rs.getInt(1));
+            count++;
+        }
+        assertEquals("column count", 1, count);
+
+        rs = st.executeQuery("SELECT ifServiceId from outages");
+        count = 0;
+        for (int expected = 1; rs.next(); expected++) {
+            assertEquals("outages ifServiceId", expected, rs.getInt(1));
+            count++;
+        }
+        assertEquals("expected column count", 1, count);
+    }
+
     public void testAddStoredProcedures() throws Exception {
         if (!isDBTestEnabled()) {
             return;
