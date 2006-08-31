@@ -164,12 +164,8 @@ public class OnmsOutage implements Serializable {
         m_eventBySvcRegainedEvent = eventBySvcRegainedEvent;
     }
 
-    /** 
-     *            @hibernate.many-to-one
-     *             not-null="true"
-     *            @hibernate.column name="svclosteventid"         
-     *         
-     */
+    @ManyToOne
+    @JoinColumn(name="svcLostEventId")
     public OnmsEvent getEventBySvcLostEvent() {
         return m_eventBySvcLostEvent;
     }
@@ -178,12 +174,9 @@ public class OnmsOutage implements Serializable {
         m_eventBySvcLostEvent = eventBySvcLostEvent;
     }
 
-    /** 
-     *            @hibernate.many-to-one
-     *             not-null="true"
-     *            @hibernate.column name="monitoredServiceid"         
-     *         
-     */
+
+    @ManyToOne
+    @JoinColumn(name="ifserviceId")
     public OnmsMonitoredService getMonitoredService() {
         return m_monitoredService;
     }
@@ -192,6 +185,9 @@ public class OnmsOutage implements Serializable {
         m_monitoredService = monitoredService;
     }
 
+    
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="suppressTime")
     public Date getSuppressTime(){
     	return m_suppressTime;
     }
@@ -200,6 +196,8 @@ public class OnmsOutage implements Serializable {
     	m_suppressTime = timeToSuppress;
     }
     
+    
+    @Column(name="suppressedBy")
     public String getSuppressedBy(){
     	return m_suppressedBy;
     }
@@ -208,18 +206,42 @@ public class OnmsOutage implements Serializable {
     	m_suppressedBy = suppressorMan;
     }
     
-    public String getIpAddr() {
+    
+    //TODO: This column should go away
+    @Column(name="nodeid")
+    public Integer getNodeId(){
+        return m_nodeid;
+    }
+    
+    public void setNodeId(Integer nodeid){
+        m_nodeid = nodeid;
+    }
+
+
+    //TODO: This column should go away
+    @Column(name="ipAddr", length=16)
+    public String getIpAddress() {
     	 return m_ipaddr ;
     }
     
+    public void setIpAddress(String ipAddr) {
+        m_ipaddr = ipAddr;
+        
+    }
+
+    
+    //TODO: This column should go away
+    @Column(name="serviceId")
     public Integer getServiceId() {
     	return m_serviceId ;
     }
     
-    public Integer getNodeId(){
-    	return m_nodeid;
+    public void setServiceId(Integer serviceId) {
+        m_serviceId = serviceId;
+        
     }
     
+
     public String toString() {
         return new ToStringCreator(this)
             .append("outageId", getId())
@@ -227,24 +249,10 @@ public class OnmsOutage implements Serializable {
             .append("ifRegainedService", getIfRegainedService())
             .append("suppressedBy", getSuppressedBy())
             .append("suppressTime", getSuppressTime())
-            .append("ipAddr", getIpAddr())
+            .append("ipAddr", getIpAddress())
             .append("serviceid", getServiceId())
             .append("nodeid",getNodeId())
             .toString();
     }
-
-	public void setIpAddr(String ipAddr) {
-		m_ipaddr = ipAddr;
-		
-	}
-
-	public void setServiceId(Integer serviceId) {
-		m_serviceId = serviceId;
-		
-	}
-	
-	public void setNodeId(Integer nodeid){
-		m_nodeid = nodeid;
-	}
 
 }
