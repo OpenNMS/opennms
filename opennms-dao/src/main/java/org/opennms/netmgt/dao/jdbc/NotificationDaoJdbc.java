@@ -189,4 +189,9 @@ public class NotificationDaoJdbc extends AbstractDaoJdbc implements Notification
             update(notification);
     }
 
+
+	public void delete(OnmsNotification entity) {
+		getJdbcTemplate().update("delete from notifications where notifications.notifyId = ?", new Object[] { new Integer(entity.getNotifyId())});
+	}
+
 }

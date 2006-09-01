@@ -125,4 +125,8 @@ public class ServiceTypeDaoJdbc extends AbstractDaoJdbc implements ServiceTypeDa
         return new Integer(getJdbcTemplate().queryForInt("SELECT nextval('serviceNxtId')"));
     }
 
+	public void delete(OnmsServiceType entity) {
+		getJdbcTemplate().update("delete from services where services.serviceId = ?", new Object[] { new Integer(entity.getId())});
+	}
+
 }

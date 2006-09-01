@@ -44,23 +44,12 @@ import org.opennms.netmgt.model.OnmsNode;
  * @author David Hustace
  *
  */
-public interface IpInterfaceDao extends OnmsDao {
-    
-    public abstract OnmsIpInterface load(Long id);
-
-    public abstract OnmsIpInterface get(Long id);
+public interface IpInterfaceDao extends OnmsDao<OnmsIpInterface, Integer> {
     
 	public abstract OnmsIpInterface get(OnmsNode node, String ipAddress);
 
-	public abstract Collection findByIpAddress(String ipAddress);
+	public abstract Collection<OnmsIpInterface> findByIpAddress(String ipAddress);
 	
-	public abstract Collection findByServiceType(String svcName);
-
-    public abstract void save(OnmsIpInterface iface);
-
-    public abstract void update(OnmsIpInterface iface);
-
-    public abstract Collection findAll();
-
+	public abstract Collection<OnmsIpInterface> findByServiceType(String svcName);
 
 }

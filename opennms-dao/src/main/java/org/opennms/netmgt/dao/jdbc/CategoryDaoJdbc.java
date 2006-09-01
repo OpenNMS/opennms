@@ -135,4 +135,13 @@ public class CategoryDaoJdbc extends AbstractDaoJdbc implements CategoryDao {
         return new FindByName(getDataSource()).findUnique(name);
     }
 
+	public void delete(OnmsCategory entity) {
+		getJdbcTemplate().update("delete from categoryies where category.categoryid = ?", new Object[] { new Integer(entity.getId())});
+	}
+
+	public OnmsCategory get(Integer id) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

@@ -42,44 +42,22 @@ import org.opennms.netmgt.model.OnmsNode;
  * @author david
  *
  */
-public class IpInterfaceDaoHibernate extends AbstractDaoHibernate  implements IpInterfaceDao {
+public class IpInterfaceDaoHibernate extends AbstractDaoHibernate<OnmsIpInterface, Integer>  implements IpInterfaceDao {
 
-    public OnmsIpInterface load(Long id) {
-        return (OnmsIpInterface)getHibernateTemplate().load(OnmsIpInterface.class, id);
-    }
-
-    public OnmsIpInterface get(Long id) {
-        return (OnmsIpInterface)getHibernateTemplate().get(OnmsIpInterface.class, id);
-    }
-
-	public OnmsIpInterface get(OnmsNode node, String ipAddress) {
-		// TODO: Implement this!
-		throw new RuntimeException("Not implemented!");
+    public IpInterfaceDaoHibernate() {
+		super(OnmsIpInterface.class);
 	}
 
-    public void save(OnmsIpInterface iface) {
-        getHibernateTemplate().save(iface);
+	public OnmsIpInterface get(OnmsNode node, String ipAddress) {
+		return findUnique("from OnmsIpInterface as ipIf where ipIf.node = ? and ipIf.ipAddress = ?", node, ipAddress);
+	}
+
+    public Collection<OnmsIpInterface> findByIpAddress(String ipAddress) {
+        return find("from OnmsIpInterface ipIf where ipIf.ipAddress = ?", ipAddress);
     }
 
-    public void update(OnmsIpInterface iface) {
-        getHibernateTemplate().update(iface);
-    }
-
-    public Collection findAll() {
-        return getHibernateTemplate().loadAll(OnmsIpInterface.class);
-    }
-
-    public Collection findByIpAddress(String ipAddress) {
-        return getHibernateTemplate().find("from OnmsIpInterface ipIf where ipIf.ipAddress = ?", ipAddress);
-    }
-
-    public int countAll() {
-        return ((Integer)findUnique("select count(*) from OnmsIpInterface")).intValue();
-    }
-
-	public Collection findByServiceType(String svcName) {
-		// TODO: Implement this!
-		throw new RuntimeException("Not implemented!");
+	public Collection<OnmsIpInterface> findByServiceType(String svcName) {
+		return find("select distinct ipIf from OnmsIpInterface as ipIf join ipIf.monitoredService as monSvc where monSvc.serviceType.name = ?", svcName);
 	}
 
 }

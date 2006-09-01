@@ -33,7 +33,6 @@
 
 package org.opennms.netmgt.dao.hibernate;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -42,44 +41,25 @@ import java.util.Map;
 import org.opennms.netmgt.dao.AssetRecordDao;
 import org.opennms.netmgt.model.OnmsAssetRecord;
 
-public class AssetRecordDaoHibernate extends AbstractDaoHibernate implements AssetRecordDao {
+public class AssetRecordDaoHibernate extends AbstractDaoHibernate<OnmsAssetRecord, Integer> implements AssetRecordDao {
 
-    public OnmsAssetRecord load(Integer id) {
-        return (OnmsAssetRecord) getHibernateTemplate().load(OnmsAssetRecord.class, id);
-    }
-
-    public OnmsAssetRecord get(Integer id) {
-        return (OnmsAssetRecord) getHibernateTemplate().load(OnmsAssetRecord.class, id);
-    }
+    public AssetRecordDaoHibernate() {
+		super(OnmsAssetRecord.class);
+	}
 
     public OnmsAssetRecord findByNodeId(Integer id) {
         return (OnmsAssetRecord)findUnique("from OnmsAssetRecord rec where rec.nodeId = ?", id);
     }
 
-    public void save(OnmsAssetRecord asset) {
-        getHibernateTemplate().save(asset);
-    }
-
-    public void update(OnmsAssetRecord asset) {
-        getHibernateTemplate().update(asset);
-    }
-
-    public Map findImportedAssetNumbersToNodeIds(String foreignSource) {
+    public Map<String, Integer> findImportedAssetNumbersToNodeIds(String foreignSource) {
         List assetNumbers = getHibernateTemplate().find("select a.node.id, a.assetNumber from OnmsAssetRecord a where a.assetNumber like '"+foreignSource+"%'");
-        Map assetNumberMap = new HashMap();
+        Map<String, Integer> assetNumberMap = new HashMap<String, Integer>();
         for (Iterator it = assetNumbers.iterator(); it.hasNext();) {
             Object[] an = (Object[]) it.next();
-            assetNumberMap.put(an[1], an[0]);
+            assetNumberMap.put((String)an[1], (Integer)an[0]);
         }
         return assetNumberMap;
     }
 
-    public Collection findAll() {
-        return getHibernateTemplate().loadAll(OnmsAssetRecord.class);
-    }
-
-    public int countAll() {
-        return ((Number)findUnique("select count(*) from OnmsAssetRecord")).intValue();
-    }
 
 }

@@ -181,4 +181,9 @@ public class UserNotificationDaoJdbc extends AbstractDaoJdbc implements UserNoti
             update(userNotif);
     }
 
+
+	public void delete(OnmsUserNotification entity) {
+		throw new UnsupportedOperationException("not yet implemented");
+	}
+
 }

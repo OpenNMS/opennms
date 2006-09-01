@@ -277,4 +277,12 @@ public class SnmpInterfaceDaoJdbc extends AbstractDaoJdbc implements
 		set.reset();
 	}
 
+	public OnmsSnmpInterface get(Integer id) {
+		throw new UnsupportedOperationException("not yet implemented");
+	}
+
+	public OnmsSnmpInterface load(Integer id) {
+		throw new UnsupportedOperationException("not yet implemented");
+	}
+
 }

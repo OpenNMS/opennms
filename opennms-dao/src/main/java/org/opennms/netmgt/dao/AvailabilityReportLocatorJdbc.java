@@ -16,7 +16,7 @@ public class AvailabilityReportLocatorJdbc extends SimpleJdbcDaoSupport implemen
 		getJdbcTemplate().update("DELETE from reportlocator WHERE reportId = ?", new Object[] { new Integer(id) });
 	}
 
-	public Collection findAll() {
+	public Collection<AvailabilityReportLocator> findAll() {
 		
 		return getSimpleJdbcTemplate().query("SELECT * FROM reportlocator", new ParameterizedRowMapper<AvailabilityReportLocator>() {
 			
@@ -36,7 +36,7 @@ public class AvailabilityReportLocatorJdbc extends SimpleJdbcDaoSupport implemen
 
 	}
 
-	public Collection findByCategory(String categoryName) {
+	public Collection<AvailabilityReportLocator> findByCategory(String categoryName) {
 		
 		return getSimpleJdbcTemplate().query("SELECT * FROM reportlocator WHERE categoryName = "+categoryName, new ParameterizedRowMapper<AvailabilityReportLocator>() {
 			
@@ -132,6 +132,14 @@ public class AvailabilityReportLocatorJdbc extends SimpleJdbcDaoSupport implemen
 	private Integer allocateId() {
 		return new Integer(getJdbcTemplate().queryForInt("SELECT nextval('reportNxtId')"));
 		}
+
+	public void delete(AvailabilityReportLocator entity) {
+		delete(entity.getId());
+	}
+
+	public AvailabilityReportLocator load(Integer id) {
+		return get(id);
+	}
 
 
 }

@@ -33,8 +33,6 @@
 
 package org.opennms.netmgt.dao;
 
-import java.util.Collection;
-
 import org.opennms.netmgt.model.DemandPoll;
 import org.opennms.netmgt.model.PollResult;
 
@@ -43,18 +41,8 @@ import org.opennms.netmgt.model.PollResult;
  * @author David Hustace
  *
  */
-public interface PollResultDao extends OnmsDao {
+public interface PollResultDao extends OnmsDao<PollResult, Integer> {
     
-    public abstract PollResult load(Long id);
-
-    public abstract PollResult get(Long id);
-    
-    public abstract void save(PollResult result);
-
-    public abstract void update(PollResult result);
-
-    public abstract Collection findAll();
-
 	public abstract void saveOrUpdateResultsForPoll(DemandPoll poll);
 
 }

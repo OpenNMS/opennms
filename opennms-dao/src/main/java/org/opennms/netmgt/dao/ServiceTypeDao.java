@@ -31,22 +31,10 @@
 //
 package org.opennms.netmgt.dao;
 
-import java.util.Collection;
-
 import org.opennms.netmgt.model.OnmsServiceType;
 
-public interface ServiceTypeDao extends OnmsDao {
+public interface ServiceTypeDao extends OnmsDao<OnmsServiceType, Integer> {
     
-    public abstract OnmsServiceType load(Integer id);
-
-    public abstract OnmsServiceType get(Integer id);
-
     public abstract OnmsServiceType findByName(String name);
 
-    public abstract void save(OnmsServiceType serviceType);
-
-    public abstract void update(OnmsServiceType serviceType);
-
-    public abstract Collection findAll();
-    
 }

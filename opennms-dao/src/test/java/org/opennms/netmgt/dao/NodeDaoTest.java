@@ -32,6 +32,7 @@
 package org.opennms.netmgt.dao;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.Set;
@@ -68,7 +69,7 @@ public class NodeDaoTest extends AbstractDaoTestCase {
         OnmsDistPoller dp = getDistPoller();
         assertSame(distPoller, dp);
         System.out.println("AFTER GET");
-        Set nodes = getNodeDao().findNodes(dp);
+        Collection<OnmsNode> nodes = getNodeDao().findNodes(dp);
         assertEquals(7, nodes.size());
         System.out.println("AFTER GETNODES");
         for (Iterator it = nodes.iterator(); it.hasNext();) {

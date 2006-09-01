@@ -31,6 +31,7 @@
 //
 package org.opennms.netmgt.dao.hibernate;
 
+import java.io.Serializable;
 import java.sql.SQLException;
 import java.util.Collection;
 
@@ -41,9 +42,16 @@ import org.opennms.netmgt.dao.OnmsDao;
 import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 
-public abstract class AbstractDaoHibernate extends HibernateDaoSupport implements OnmsDao {
+public abstract class AbstractDaoHibernate<T, K extends Serializable> extends HibernateDaoSupport implements OnmsDao<T, K> {
+	
+	Class<T> m_entityClass;
+	
+	public AbstractDaoHibernate(Class<T> entityClass) {
+		m_entityClass = entityClass;
+	}
+	
 
-    public Object initialize(Object obj) {
+    public T initialize(T obj) {
         getHibernateTemplate().initialize(obj);
         return obj;
     }
@@ -56,54 +64,94 @@ public abstract class AbstractDaoHibernate extends HibernateDaoSupport implement
         getHibernateTemplate().clear();
     }
     
-    public Collection find(String query) {
+    public void evict(T entity) {
+        getHibernateTemplate().evict(entity);
+    }
+    
+    public void merge(T entity) {
+        getHibernateTemplate().merge(entity);
+    }
+    
+    @SuppressWarnings("unchecked")
+	public Collection<T> find(String query) {
         return getHibernateTemplate().find(query);
     }
     
-    public Collection find(String query, Object value) {
-        return getHibernateTemplate().find(query, value);
+    @SuppressWarnings("unchecked")
+	public Collection<T> find(String query, Object... values) {
+        return getHibernateTemplate().find(query, values);
     }
     
-    abstract public int countAll();
-
-    public Object findUnique(final String query) {
-        return getHibernateTemplate().execute(new HibernateCallback() {
-    
+    protected int queryInt(final String query) {
+        Object result = getHibernateTemplate().execute(new HibernateCallback() {
+		    
             public Object doInHibernate(Session session) throws HibernateException, SQLException {
                 return session.createQuery(query)
                             .uniqueResult();
             }
             
         });
-    }
-    
-    protected Object findUnique(final String queryString, final Object... args) {
-        return getHibernateTemplate().execute(new HibernateCallback() {
-            
-            public Object doInHibernate(Session session) throws HibernateException, SQLException {
-            	Query query = session.createQuery(queryString);
-            	for (int i = 0; i < args.length; i++) {
-					query.setParameter(i, args[i]);
-				}
-                return query.uniqueResult();
-            }
-            
-        });
+        return ((Integer)result).intValue();
     }
 
-    @SuppressWarnings("unchecked")
-	protected <T> T findUnique(Class<T> clazz, final String queryString, final Object... args) {
-        return (T)getHibernateTemplate().execute(new HibernateCallback() {
-            
-            public Object doInHibernate(Session session) throws HibernateException, SQLException {
-            	Query query = session.createQuery(queryString);
-            	for (int i = 0; i < args.length; i++) {
-					query.setParameter(i, args[i]);
-				}
-                return query.uniqueResult();
-            }
-            
-        });
+    protected T findUnique(final String query) {
+        Object result = getHibernateTemplate().execute(new HibernateCallback() {
+		    
+		            public Object doInHibernate(Session session) throws HibernateException, SQLException {
+		                return session.createQuery(query)
+		                            .uniqueResult();
+		            }
+		            
+		        });
+		return m_entityClass.cast(result);
     }
+    
+    protected T findUnique(final String queryString, final Object... args) {
+        Object result = getHibernateTemplate().execute(new HibernateCallback() {
+		            
+		            public Object doInHibernate(Session session) throws HibernateException, SQLException {
+		            	Query query = session.createQuery(queryString);
+		            	for (int i = 0; i < args.length; i++) {
+							query.setParameter(i, args[i]);
+						}
+		                return query.uniqueResult();
+		            }
+		            
+		        });
+		return m_entityClass.cast(result);
+    }
+    
+    public int countAll() {
+    	return queryInt("select count(*) from "+m_entityClass.getName());
+    }
+    
+	public void delete(T entity) {
+		getHibernateTemplate().delete(entity);
+	}
+
+	@SuppressWarnings("unchecked")
+	public Collection<T> findAll() {
+		return getHibernateTemplate().loadAll(m_entityClass);
+	}
+
+	public T get(K id) {
+		return m_entityClass.cast(getHibernateTemplate().get(m_entityClass, id));
+	}
+
+	public T load(K id) {
+		return m_entityClass.cast(getHibernateTemplate().load(m_entityClass, id));
+	}
+
+	public void save(T entity) {
+		getHibernateTemplate().save(entity);
+	}
+
+	public void saveOrUpdate(T entity) {
+		getHibernateTemplate().saveOrUpdate(entity);
+	}
+
+	public void update(T entity) {
+		getHibernateTemplate().update(entity);
+	}
 
 }
