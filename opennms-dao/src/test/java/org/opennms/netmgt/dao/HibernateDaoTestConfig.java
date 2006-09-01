@@ -61,6 +61,7 @@ import org.opennms.netmgt.model.OnmsNotification;
 import org.opennms.netmgt.model.OnmsOutage;
 import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
+import org.opennms.netmgt.model.OnmsUserNotification;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.orm.hibernate3.HibernateTransactionManager;
@@ -120,6 +121,7 @@ public class HibernateDaoTestConfig extends DaoTestConfig {
         	OnmsEvent.class,
         	OnmsAlarm.class,
         	OnmsNotification.class,
+        	OnmsUserNotification.class,
         };
         
         String[] annotatedPackages = {

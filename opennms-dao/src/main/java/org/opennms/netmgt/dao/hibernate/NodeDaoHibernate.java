@@ -33,94 +33,35 @@
 
 package org.opennms.netmgt.dao.hibernate;
 
-import java.sql.SQLException;
 import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
 
-import org.hibernate.HibernateException;
-import org.hibernate.Session;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsNode;
-import org.springframework.orm.hibernate3.HibernateCallback;
 
 /**
  * @author Ted Kazmark
  * @author David Hustace
  *
  */
-public class NodeDaoHibernate extends AbstractDaoHibernate implements NodeDao {
+public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer> implements NodeDao {
 
-    public void save(OnmsNode node) {
-        getHibernateTemplate().save(node);
-    }
+    public NodeDaoHibernate() {
+		super(OnmsNode.class);
+	}
 
-    public OnmsNode load(Integer id) {
-        return (OnmsNode)getHibernateTemplate().load(OnmsNode.class, id);
-    }
-    
-    public OnmsNode load(int id) {
-        return load(new Integer(id));
-    }
-
-    public OnmsNode get(Integer id) {
-        return (OnmsNode)getHibernateTemplate().get(OnmsNode.class, id);
-    }
-    
-    public OnmsNode get(int id) {
-        return get(new Integer(id));
-    }
-
-    public Collection findAll() {
-        return getHibernateTemplate().loadAll(OnmsNode.class);
-    }
-    
-    public Set findNodes(final OnmsDistPoller distPoller) {
-        return (Set)getHibernateTemplate().execute(new HibernateCallback() {
-
-            @SuppressWarnings("unchecked")
-			public Object doInHibernate(Session session) throws HibernateException, SQLException {
-                return new HashSet<OnmsNode>(session.createQuery("from OnmsNode where distPoller = ?")
-                                        .setEntity(0, distPoller)
-                                        .list());
-            }
-            
-        });
-    }
-
-    public void evict(OnmsNode node) {
-        getHibernateTemplate().evict(node);
-    }
-    
-    public void merge(OnmsNode node) {
-        getHibernateTemplate().merge(node);
-    }
-
-    public int countAll() {
-        return ((Integer)findUnique("select count(*) from OnmsNode")).intValue();
-    }
-
-    public void saveOrUpdate(OnmsNode node) {
-        getHibernateTemplate().saveOrUpdate(node);
-    }
-
-    public void delete(OnmsNode node) {
-        getHibernateTemplate().delete(node);
-    }
-
-    public void update(OnmsNode node) {
-        getHibernateTemplate().update(node);
+    public Collection<OnmsNode> findNodes(final OnmsDistPoller distPoller) {
+    	return find("from OnmsNode where distPoller = ?", distPoller);
     }
 
     public OnmsNode getHierarchy(Integer id) {
-//    	return get(id);
-        return (OnmsNode)findUnique("select distinct n from OnmsNode as n " +
-                                    "left join fetch n.assetRecord "	 +	
-                                    "left join fetch n.ipInterfaces as iface " +
-                                    "left join fetch iface.monitoredServices as monSvc " +
-                                    "left join fetch monSvc.serviceType " +
-                                    "where n.id = ?", id);
+        return findUnique("select distinct n from OnmsNode as n " +
+                          "left join fetch n.assetRecord "	 +	
+                          "left join fetch n.ipInterfaces as iface " +
+                          "left join fetch iface.monitoredServices as monSvc " +
+                          "left join fetch monSvc.serviceType " +
+                          "left join fetch monSvc.currentOutages " +
+                          "where n.id = ?", id);
     	
     }
 
@@ -128,21 +69,17 @@ public class NodeDaoHibernate extends AbstractDaoHibernate implements NodeDao {
 		return (OnmsNode)findUnique("from OnmsNode as n where n.assetRecord.assetNumber = ?", assetNumber);
 	}
 
-	@SuppressWarnings("unchecked")
 	public Collection<OnmsNode> findByLabel(String label) {
 		return find("from OnmsNode as n where n.label = ?", label);
 	}
 
-    @SuppressWarnings("unchecked")
 	public Collection<OnmsNode> findAllByVarCharAssetColumn(String columnName, String columnValue) {
         return find("from OnmsNode as n where n.assetRecord."+columnName+" = ?", columnValue);
     }
 
     public Collection<OnmsNode> findAllByVarCharAssetColumnCategoryList(String ColumnName, String ColumnValue, Collection<String> categoryNames) {
-        // TODO Auto-generated method stub
-        return null;
+    	throw new UnsupportedOperationException("not yet implemented");
     }
-	
 
     
 }

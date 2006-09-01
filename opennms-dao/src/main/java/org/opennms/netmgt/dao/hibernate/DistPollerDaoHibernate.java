@@ -31,43 +31,15 @@
 //
 package org.opennms.netmgt.dao.hibernate;
 
-import java.util.Collection;
-
 import org.opennms.netmgt.dao.DistPollerDao;
 import org.opennms.netmgt.model.OnmsDistPoller;
 
-public class DistPollerDaoHibernate extends AbstractDaoHibernate implements DistPollerDao {
+public class DistPollerDaoHibernate extends AbstractDaoHibernate<OnmsDistPoller, String> implements DistPollerDao {
 
-    public OnmsDistPoller load(String name) {
-        return (OnmsDistPoller) getHibernateTemplate().load(OnmsDistPoller.class, name);
-    }
+    public DistPollerDaoHibernate() {
+		super(OnmsDistPoller.class);
+	}
 
-    public OnmsDistPoller get(String name) {
-        return (OnmsDistPoller) getHibernateTemplate().get(OnmsDistPoller.class, name);
-    }
 
-    public void save(OnmsDistPoller distPoller) {
-        getHibernateTemplate().save(distPoller);
-    }
-
-    public void update(OnmsDistPoller distPoller) {
-        getHibernateTemplate().update(distPoller);
-    }
-
-    public void saveOrUpdate(OnmsDistPoller distPoller) {
-        getHibernateTemplate().saveOrUpdate(distPoller);
-    }
-
-    public Collection findAll() {
-        return getHibernateTemplate().loadAll(OnmsDistPoller.class);
-    }
-
-    public int countAll() {
-        return ((Integer)findUnique("select count(*) from OnmsDistPoller")).intValue();
-    }
-    
-    public void delete(OnmsDistPoller distPoller) {
-        getHibernateTemplate().delete(distPoller); // this is SOO easy
-    }
 
 }

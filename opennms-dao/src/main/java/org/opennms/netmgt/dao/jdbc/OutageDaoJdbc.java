@@ -264,4 +264,8 @@ public class OutageDaoJdbc extends AbstractDaoJdbc implements OutageDao {
 			return getJdbcTemplate().queryForInt("select distinct count(outages.iflostservice) from outages, node, ipinterface, ifservices " + "where " + " node.nodeid = outages.nodeid and ipinterface.nodeid = outages.nodeid and ifservices.nodeid = outages.nodeid " + "and ipinterface.ipaddr = outages.ipaddr and ifservices.ipaddr = outages.ipaddr " + "and ifservices.serviceid = outages.serviceid " + "and node.nodeType != 'D' and ipinterface.ismanaged != 'D' and ifservices.status != 'D' " + " and ifregainedservice > 1 and (suppresstime is null or suppresstime < now() ) " + filter);
 	}
 
+	public void delete(OnmsOutage entity) {
+		getJdbcTemplate().update("delete from outages where outages.id = ?", new Object[] { new Integer(entity.getId())});
+	}
+
 }

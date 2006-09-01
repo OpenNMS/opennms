@@ -33,23 +33,14 @@
 
 package org.opennms.netmgt.dao;
 
-import java.util.Collection;
 import java.util.Map;
 
 import org.opennms.netmgt.model.OnmsAssetRecord;
 
-public interface AssetRecordDao extends OnmsDao {
-    
-	public abstract OnmsAssetRecord load(Integer id);
-
-    public abstract OnmsAssetRecord get(Integer id);
+public interface AssetRecordDao extends OnmsDao<OnmsAssetRecord, Integer> {
     
     public abstract OnmsAssetRecord findByNodeId(Integer id);
 
-    public abstract void save(OnmsAssetRecord asset);
-
-    public abstract void update(OnmsAssetRecord asset);
-    
     /**
      * Used to retrieve a tuple of the relation of nodeid to assetNumber.
      * The assetNumber column is intended to be used for storing the id of
@@ -58,9 +49,7 @@ public interface AssetRecordDao extends OnmsDao {
      * @return a <code>Map</code> containing nodeid keys and assetNumber
      *         values.
      */
-    public abstract Map findImportedAssetNumbersToNodeIds(String foreignSource);
+    public abstract Map<String, Integer> findImportedAssetNumbersToNodeIds(String foreignSource);
 
-    public abstract Collection findAll();
-    
 
 }

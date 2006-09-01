@@ -43,16 +43,6 @@ import org.opennms.netmgt.model.OnmsSnmpInterface;
  * @author David Hustace
  *
  */
-public interface SnmpInterfaceDao extends OnmsDao {
+public interface SnmpInterfaceDao extends OnmsDao<OnmsSnmpInterface, Integer> {
     
-    public abstract OnmsSnmpInterface load(Long id);
-
-    public abstract OnmsSnmpInterface get(Long id);
-    
-    public abstract void save(OnmsSnmpInterface iface);
-
-    public abstract void update(OnmsSnmpInterface iface);
-
-    public abstract Collection findAll();
-
 }

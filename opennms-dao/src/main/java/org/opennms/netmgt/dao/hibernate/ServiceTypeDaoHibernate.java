@@ -31,52 +31,16 @@
 //
 package org.opennms.netmgt.dao.hibernate;
 
-import java.sql.SQLException;
-import java.util.Collection;
-
-import org.hibernate.HibernateException;
-import org.hibernate.Session;
 import org.opennms.netmgt.dao.ServiceTypeDao;
 import org.opennms.netmgt.model.OnmsServiceType;
-import org.springframework.orm.hibernate3.HibernateCallback;
 
-public class ServiceTypeDaoHibernate extends AbstractDaoHibernate implements ServiceTypeDao {
+public class ServiceTypeDaoHibernate extends AbstractDaoHibernate<OnmsServiceType, Integer> implements ServiceTypeDao {
 
-    public OnmsServiceType load(Integer id) {
-        return (OnmsServiceType)getHibernateTemplate().load(OnmsServiceType.class, id);
-    }
-
-    public OnmsServiceType get(Integer id) {
-        return (OnmsServiceType)getHibernateTemplate().get(OnmsServiceType.class, id);
-    }
+    public ServiceTypeDaoHibernate() {
+		super(OnmsServiceType.class);
+	}
 
     public OnmsServiceType findByName(final String name) {
-        return (OnmsServiceType)getHibernateTemplate().execute(new HibernateCallback() {
-
-            public Object doInHibernate(Session session) throws HibernateException, SQLException {
-                return session.createQuery("from OnmsServiceType as svcType where svcType.name = ?")
-                            .setString(0, name)
-                            .setCacheable(true)
-                            .uniqueResult();
-            }
-            
-        });
+    	return findUnique("from OnmsServiceType as svcType where svcType.name = ?", name);
     }
-
-    public void save(OnmsServiceType serviceType) {
-        getHibernateTemplate().save(serviceType);
-    }
-
-    public void update(OnmsServiceType serviceType) {
-        getHibernateTemplate().update(serviceType);
-    }
-
-    public Collection findAll() {
-        return getHibernateTemplate().loadAll(OnmsServiceType.class);
-    }
-
-    public int countAll() {
-        return ((Integer)findUnique("select count(*) from OnmsServiceType")).intValue();
-    }
-
 }

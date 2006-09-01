@@ -31,34 +31,8 @@
 //
 package org.opennms.netmgt.dao;
 
-import java.util.Collection;
-
 import org.opennms.netmgt.model.OnmsDistPoller;
 
-public interface DistPollerDao extends OnmsDao {
-    
-    /**
-     * Loads the specified distPoller or throws an exception if it is not found
-     * @param name the name of the dist poller
-     * @return OnmsDistPoller
-     */
-    public abstract OnmsDistPoller load(String name);
-
-    /**
-     * Loads the specified distPoller or returns null of not found
-     * @param name the name of the dist poller
-     * @return OnmsDistPoller
-     */
-    public abstract OnmsDistPoller get(String name);
-
-    public abstract void save(OnmsDistPoller distPoller);
-
-    public abstract void update(OnmsDistPoller distPoller);
-
-    public abstract void saveOrUpdate(OnmsDistPoller distPoller);
-
-    public abstract Collection findAll();
-
-    public abstract void delete(OnmsDistPoller distPoller);
+public interface DistPollerDao extends OnmsDao<OnmsDistPoller, String> {
     
 }

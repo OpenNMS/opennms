@@ -52,8 +52,6 @@ import org.opennms.netmgt.config.CollectdConfigFactory;
 import org.opennms.netmgt.config.CollectdPackage;
 import org.opennms.netmgt.dao.CollectorConfigDao;
 import org.opennms.netmgt.model.OnmsIpInterface;
-import org.opennms.netmgt.model.OnmsMonitoredService;
-import org.opennms.netmgt.model.OnmsPackage;
 
 public class CollectorConfigDaoImpl implements CollectorConfigDao {
 	
@@ -69,21 +67,6 @@ public class CollectorConfigDaoImpl implements CollectorConfigDao {
 		m_scheduledOutagesDao = scheduledOutagesDao;
 	}
 
-	public OnmsPackage load(String name) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public OnmsPackage get(String name) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public OnmsPackage findPackageForService(OnmsMonitoredService svc) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	
 	private void loadConfigFactory() {
 	    // Load collectd configuration file
 	    try {

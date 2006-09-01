@@ -31,22 +31,10 @@
 
 package org.opennms.netmgt.dao;
 
-import java.util.Collection;
-
 import org.opennms.netmgt.model.OnmsCategory;
 
-public interface CategoryDao extends OnmsDao {
+public interface CategoryDao extends OnmsDao<OnmsCategory, Integer> {
 	
-	public abstract OnmsCategory load(Integer id);
-	
-	public abstract void save(OnmsCategory category);
-	
-	public abstract void update(OnmsCategory category);
-    
-    public abstract void saveOrUpdate(OnmsCategory category);
-    
-	public abstract Collection findAll();
-
     public abstract OnmsCategory findByName(String name);
 
 }

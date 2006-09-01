@@ -42,15 +42,12 @@ import org.opennms.netmgt.model.OnmsMonitoredService;
  * @author David Hustace
  *
  */
-public interface MonitoredServiceDao extends OnmsDao {
+public interface MonitoredServiceDao extends OnmsDao<OnmsMonitoredService, Integer> {
     
-    public abstract OnmsMonitoredService load(Long id);
-    public abstract OnmsMonitoredService get(Long id);
-	public abstract OnmsMonitoredService get(int nodeId, String ipAddr, int ifIndex, int serviceId);
-	public abstract OnmsMonitoredService get(int nodeId, String ipAddress, String svcName);
-    public abstract void save(OnmsMonitoredService svc);
-    public abstract void update(OnmsMonitoredService svc);
-    public abstract Collection findByType(String typeName);
-    public abstract Collection findAll();
+	public abstract OnmsMonitoredService get(Integer nodeId, String ipAddr, Integer ifIndex, Integer serviceId);
+
+	public abstract OnmsMonitoredService get(Integer nodeId, String ipAddress, String svcName);
+
+    public abstract Collection<OnmsMonitoredService> findByType(String typeName);
 
 }

@@ -37,17 +37,7 @@ import org.opennms.netmgt.model.OnmsOutage;
 import org.opennms.netmgt.model.ServiceSelector;
 
 
-public interface OutageDao extends OnmsDao {
-
-    public abstract OnmsOutage load(Integer id);
-
-    public abstract void save(OnmsOutage outage);
-
-    public abstract void update(OnmsOutage outage);
-
-    public abstract void saveOrUpdate(OnmsOutage outage);
-
-    public abstract Collection<OnmsOutage> findAll();
+public interface OutageDao extends OnmsDao<OnmsOutage, Integer> {
 
     public abstract Integer currentOutageCount();
 

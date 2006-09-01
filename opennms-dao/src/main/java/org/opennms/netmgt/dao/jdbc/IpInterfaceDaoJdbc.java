@@ -91,11 +91,11 @@ public class IpInterfaceDaoJdbc extends AbstractDaoJdbc implements IpInterfaceDa
         
     }
 
-    public Collection findAll() {
+    public Collection<OnmsIpInterface> findAll() {
         return new FindAll(getDataSource()).findSet();
     }
 
-    public Collection findByIpAddress(String ipAddress) {
+    public Collection<OnmsIpInterface> findByIpAddress(String ipAddress) {
         return new FindByIpInterface(getDataSource()).execute(ipAddress);
     }
 
@@ -103,7 +103,7 @@ public class IpInterfaceDaoJdbc extends AbstractDaoJdbc implements IpInterfaceDa
         return new FindByNode(getDataSource()).findSet(node.getId());
     }
     
-	public Collection findByServiceType(String svcName) {
+	public Collection<OnmsIpInterface> findByServiceType(String svcName) {
 		return new FindByServiceType(getDataSource()).findSet(svcName);
 	}
 
@@ -126,11 +126,11 @@ public class IpInterfaceDaoJdbc extends AbstractDaoJdbc implements IpInterfaceDa
 	}
 
 
-    public OnmsIpInterface get(Long id) {
+    public OnmsIpInterface get(Integer id) {
         throw new RuntimeException("cannot lookup interface by a single int id yet!");
     }
 
-    public OnmsIpInterface load(Long id) {
+    public OnmsIpInterface load(Integer id) {
         throw new RuntimeException("cannot lookup interface by a single int id yet!");
     }
     
@@ -283,5 +283,6 @@ public class IpInterfaceDaoJdbc extends AbstractDaoJdbc implements IpInterfaceDa
         
         set.reset();
     }
+
 
 }

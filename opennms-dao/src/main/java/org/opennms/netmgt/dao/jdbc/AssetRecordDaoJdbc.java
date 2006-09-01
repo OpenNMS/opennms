@@ -242,4 +242,17 @@ public class AssetRecordDaoJdbc extends AbstractDaoJdbc implements AssetRecordDa
 	}
 
 
+	public void delete(OnmsAssetRecord entity) {
+		getJdbcTemplate().update("delete from assets where assets.nodeId = ?", new Object[] { new Integer(entity.getNode().getId())});
+	}
+
+
+	public void saveOrUpdate(OnmsAssetRecord entity) {
+		if (entity.getId() == null)
+			save(entity);
+		else
+			update(entity);
+	}
+
+
 }

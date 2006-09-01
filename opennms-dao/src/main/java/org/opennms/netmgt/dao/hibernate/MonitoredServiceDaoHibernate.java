@@ -37,56 +37,28 @@ import java.util.Collection;
 
 import org.opennms.netmgt.dao.MonitoredServiceDao;
 import org.opennms.netmgt.model.OnmsMonitoredService;
-import org.opennms.netmgt.model.OnmsServiceType;
 /**
  * @author david
  *
  */
-public class MonitoredServiceDaoHibernate extends AbstractDaoHibernate  implements MonitoredServiceDao {
+public class MonitoredServiceDaoHibernate extends AbstractDaoHibernate<OnmsMonitoredService, Integer>  implements MonitoredServiceDao {
 
-    public OnmsMonitoredService load(Long id) {
-        return (OnmsMonitoredService)getHibernateTemplate().load(OnmsMonitoredService.class, id);
-    }
-
-    public OnmsMonitoredService get(Long id) {
-        return (OnmsMonitoredService)getHibernateTemplate().get(OnmsMonitoredService.class, id);
-    }
-
-    public void save(OnmsMonitoredService svc) {
-        getHibernateTemplate().save(svc);
-    }
-
-    public void update(OnmsMonitoredService svc) {
-        getHibernateTemplate().update(svc);
-    }
-
-    public Collection findAll() {
-        return getHibernateTemplate().loadAll(OnmsMonitoredService.class);
-    }
-
-    public int countAll() {
-        return ((Integer)findUnique("select count(*) from OnmsMonitoredService")).intValue();
-    }
-
-	public Collection findByType(String type) {
-		return getHibernateTemplate().find("from OnmsMonitoredService svc where svc.serviceType.name = ?", type);
+    public MonitoredServiceDaoHibernate() {
+		super(OnmsMonitoredService.class);
 	}
 
-	public OnmsMonitoredService get(int nodeId, String ipAddress, String svcName) {
-		return (OnmsMonitoredService)findUnique("from OnmsMonitoredService as svc " +
+	public Collection<OnmsMonitoredService> findByType(String type) {
+		return find("from OnmsMonitoredService svc where svc.serviceType.name = ?", type);
+	}
+
+	public OnmsMonitoredService get(Integer nodeId, String ipAddress, String svcName) {
+		return findUnique("from OnmsMonitoredService as svc " +
 				    "where svc.ipInterface.node.id = ? and svc.ipInterface.ipAddress = ? and svc.serviceType.name = ?",
 				   nodeId, ipAddress, svcName);
+	}
 
-//		return (OnmsMonitoredService)findUnique("from OnmsMonitoredService as svc " +
-//			    "join svc.serviceType as svcType " +
-//				"join svc.ipInterface as iface " +
-//				"join iface.node as node " +
-//			   "where node.id = ? and iface.ipAddress = ? and svc.serviceType.name = ?", 
-//			   nodeId, ipAddress, svcName);
-}
-
-	public OnmsMonitoredService get(int nodeId, String ipAddr, int ifIndex, int serviceId) {
-		return (OnmsMonitoredService)findUnique("from OnmsMonitoredService as svc " +
+	public OnmsMonitoredService get(Integer nodeId, String ipAddr, Integer ifIndex, Integer serviceId) {
+		return findUnique("from OnmsMonitoredService as svc " +
 			    "where svc.ipInterface.node.id = ? and svc.ipInterface.ipAddress = ? and svc.ipInterface.ifIndex = ? and svc.serviceType.id = ?",
 			   nodeId, ipAddr, ifIndex, serviceId);
 	}

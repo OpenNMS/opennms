@@ -66,7 +66,7 @@ public class MonitoredServiceDaoJdbc extends AbstractDaoJdbc implements Monitore
         return getJdbcTemplate().queryForInt("select count(*) from ifservices");
     }
 
-    private void delete(OnmsMonitoredService svc) {
+    public void delete(OnmsMonitoredService svc) {
         if (svc.getIfIndex() == null) {
             Object[] parms = new Object[] { svc.getNodeId(), svc.getIpAddress(), svc.getServiceId() };
             getJdbcTemplate().update("delete from ifServices where nodeId = ? and ipAddr = ? and serviceId = ? and ifIndex is null", parms);
@@ -158,12 +158,12 @@ public class MonitoredServiceDaoJdbc extends AbstractDaoJdbc implements Monitore
         return count > 0;
     }
     
-	public OnmsMonitoredService get(int nodeId, String ipAddress, String svcName) {
+	public OnmsMonitoredService get(Integer nodeId, String ipAddress, String svcName) {
 		return (new FindByNodeIpAddrSvcName(getDataSource())).
 			findUnique(new Object[] {new Integer(nodeId), ipAddress, svcName});
 	}
 
-	public OnmsMonitoredService get(int nodeId, String ipAddr, int ifIndex, int serviceId) {
+	public OnmsMonitoredService get(Integer nodeId, String ipAddr, Integer ifIndex, Integer serviceId) {
 		MonitoredServiceId id = new MonitoredServiceId(nodeId, ipAddr, ifIndex, serviceId);
 		return FindById.get(getDataSource(), id).find(id);
 	}
@@ -192,7 +192,7 @@ public class MonitoredServiceDaoJdbc extends AbstractDaoJdbc implements Monitore
     public void flush() {
     }
     
-    public OnmsMonitoredService get(Long id) {
+    public OnmsMonitoredService get(Integer id) {
         throw new RuntimeException("we are not able to locate ifservices by a single id yet!");
     }
 
@@ -204,7 +204,7 @@ public class MonitoredServiceDaoJdbc extends AbstractDaoJdbc implements Monitore
     	return true;
 	}
 
-    public OnmsMonitoredService load(Long id) {
+    public OnmsMonitoredService load(Integer id) {
         throw new RuntimeException("we are not able to locate ifservices by a single id yet!");
     }
 
