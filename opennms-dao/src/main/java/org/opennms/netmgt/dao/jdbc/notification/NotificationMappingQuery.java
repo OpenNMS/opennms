@@ -84,6 +84,8 @@ public class NotificationMappingQuery extends MappingSqlQuery {
         OnmsNode node = (OnmsNode)Cache.obtain(OnmsNode.class, nodeId);
         notification.setNode(node);
         
+        notification.setIpAddress(rs.getString("interfaceID"));
+        
         Integer eventId = new Integer(rs.getInt("eventID"));
         OnmsEvent event = (OnmsEvent)Cache.obtain(OnmsEvent.class, eventId);
         notification.setEvent(event);

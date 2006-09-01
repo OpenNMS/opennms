@@ -33,6 +33,7 @@ package org.opennms.netmgt.model;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.Column;
@@ -47,17 +48,15 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 
 import org.springframework.core.style.ToStringCreator;
 
 
 @Entity
 @Table(name="notifications")
-public class OnmsNotification extends OnmsEntity implements Serializable {
+public class OnmsNotification {
 
-    /**
-     * 
-     */
     private static final long serialVersionUID = -1162549324168290004L;
 
     /** identifier field */
@@ -82,25 +81,24 @@ public class OnmsNotification extends OnmsEntity implements Serializable {
     private String m_answeredBy;
 
     /** nullable persistent field */
-    private OnmsIpInterface m_interface;
-
-    /** nullable persistent field */
     private OnmsServiceType m_serviceType;
 
     /** nullable persistent field */
     private String m_queueId;
 
     /** persistent field */
-    private org.opennms.netmgt.model.OnmsEvent m_event;
+    private OnmsEvent m_event;
 
     /** persistent field */
-    private org.opennms.netmgt.model.OnmsNode m_node;
+    private OnmsNode m_node;
 
     /** persistent field */
-    private Set m_usersNotified;
+    private Set<OnmsUserNotification> m_usersNotified = new HashSet<OnmsUserNotification>();
+
+	private String m_ipAddress;
 
     /** full constructor */
-    public OnmsNotification(Integer notifyId, String textMsg, String subject, String numericMsg, Date pageTime, Date respondTime, String answeredBy, OnmsIpInterface ipInterface, OnmsServiceType serviceType, String queueId, org.opennms.netmgt.model.OnmsEvent event, org.opennms.netmgt.model.OnmsNode node, Set usersNotified) {
+    public OnmsNotification(Integer notifyId, String textMsg, String subject, String numericMsg, Date pageTime, Date respondTime, String answeredBy, String ipAddress, OnmsServiceType serviceType, String queueId, OnmsEvent event, OnmsNode node, Set<OnmsUserNotification> usersNotified) {
         m_notifyId = notifyId;
         m_textMsg = textMsg;
         m_subject = subject;
@@ -108,7 +106,7 @@ public class OnmsNotification extends OnmsEntity implements Serializable {
         m_pageTime = pageTime;
         m_respondTime = respondTime;
         m_answeredBy = answeredBy;
-        m_interface = ipInterface;
+        m_ipAddress = ipAddress;
         m_serviceType = serviceType;
         m_queueId = queueId;
         m_event = event;
@@ -121,7 +119,7 @@ public class OnmsNotification extends OnmsEntity implements Serializable {
     }
 
     /** minimal constructor */
-    public OnmsNotification(Integer notifyId, String textMsg, org.opennms.netmgt.model.OnmsEvent event, org.opennms.netmgt.model.OnmsNode node, Set usersNotified) {
+    public OnmsNotification(Integer notifyId, String textMsg, OnmsEvent event, OnmsNode node, Set<OnmsUserNotification> usersNotified) {
         m_notifyId = notifyId;
         m_textMsg = textMsg;
         m_event = event;
@@ -171,12 +169,6 @@ public class OnmsNotification extends OnmsEntity implements Serializable {
         m_numericMsg = numericmsg;
     }
 
-    /** 
-     *            @hibernate.property
-     *             column="pagetime"
-     *             length="8"
-     *         
-     */
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="pageTime")
     public Date getPageTime() {
@@ -207,18 +199,16 @@ public class OnmsNotification extends OnmsEntity implements Serializable {
     public void setAnsweredBy(String answeredby) {
         m_answeredBy = answeredby;
     }
-
-    @ManyToOne
-    @JoinColumn(name="ipInterfaceId")
-    public OnmsIpInterface getInterface() {
-        return m_interface;
-    }
-
-    public void setInterface(OnmsIpInterface interfaceId) {
-        m_interface = interfaceId;
-    }
-
     
+    @Column(name="interfaceId", length=16)
+    public String getIpAddress() {
+    	return m_ipAddress;
+    }
+    
+    public void setIpAddress(String ipAddress) {
+    	m_ipAddress = ipAddress;
+    }
+
     @ManyToOne
     @JoinColumn(name="serviceId")
     public OnmsServiceType getServiceType() {
@@ -246,18 +236,18 @@ public class OnmsNotification extends OnmsEntity implements Serializable {
         return m_event;
     }
 
-    public void setEvent(org.opennms.netmgt.model.OnmsEvent event) {
+    public void setEvent(OnmsEvent event) {
         m_event = event;
     }
 
 
     @ManyToOne
     @JoinColumn(name="nodeId", nullable=false)
-    public org.opennms.netmgt.model.OnmsNode getNode() {
+    public OnmsNode getNode() {
         return m_node;
     }
 
-    public void setNode(org.opennms.netmgt.model.OnmsNode node) {
+    public void setNode(OnmsNode node) {
         m_node = node;
     }
 
@@ -278,13 +268,12 @@ public class OnmsNotification extends OnmsEntity implements Serializable {
      *             class="org.opennms.netmgt.model.OnmsUserNotification"
      *         
      */
-    @OneToMany(fetch=FetchType.LAZY)
-    @JoinColumn(name="notifyId")
-    public Set getUsersNotified() {
+    @OneToMany(mappedBy="notification", fetch=FetchType.LAZY)
+    public Set<OnmsUserNotification> getUsersNotified() {
         return m_usersNotified;
     }
 
-    public void setUsersNotified(Set usersnotifieds) {
+    public void setUsersNotified(Set<OnmsUserNotification> usersnotifieds) {
         m_usersNotified = usersnotifieds;
     }
 
@@ -293,9 +282,5 @@ public class OnmsNotification extends OnmsEntity implements Serializable {
             .append("notifyid", getNotifyId())
             .toString();
     }
-
-	public void visit(EntityVisitor visitor) {
-		throw new RuntimeException("visitor method not implemented");
-	}
 
 }

@@ -33,6 +33,12 @@
 				<value>org.opennms.netmgt.model.OnmsMonitoredService</value>
 				<value>org.opennms.netmgt.model.OnmsCategory</value>
 				<value>org.opennms.netmgt.model.OnmsServiceType</value>
+				<value>org.opennms.netmgt.model.OnmsOutage</value>
+	        	<value>org.opennms.netmgt.model.OnmsEvent</value>
+        	    <value>org.opennms.netmgt.model.OnmsAlarm</value>
+                <value>org.opennms.netmgt.model.OnmsNotification</value>
+                <value>org.opennms.netmgt.model.OnmsUserNotification</value>
+				
 			</list>
 		</property>
 		<!--  property name="schemaUpdate" value="true">
@@ -46,6 +52,7 @@
 			<value>
 				hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect
 				hibernate.show_sql=true
+				hibernate.format_sql=true
 			</value>
 		</property>
 	</bean>

@@ -138,9 +138,5 @@ public class LazyUserNotification extends OnmsUserNotification {
         super.setUserId(userId);
     }
 
-    public void visit(EntityVisitor visitor) {
-        load();
-        super.visit(visitor);
-    }
 
 }

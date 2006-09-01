@@ -38,16 +38,19 @@ import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
+import org.hibernate.annotations.Where;
 import org.springframework.core.style.ToStringCreator;
 
 
@@ -115,24 +118,16 @@ public class OnmsMonitoredService extends OnmsEntity implements Serializable {
         m_id = id;
     }
     
-    @Column(name="ipAddr", length=16)
+    @Transient
     public String getIpAddress() {
         return m_ipInterface.getIpAddress();
     }
     
-    public void setIpAddress(String ipAddress) {
-    	
-    }
-
-    @Column(name="ifIndex")
+    @Transient
     public Integer getIfIndex() {
         return m_ipInterface.getIfIndex();
     }
     
-    public void setIfIndex(Integer ifIndex) {
-    	
-    }
-
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="lastGood")
     public Date getLastGood() {
@@ -189,7 +184,7 @@ public class OnmsMonitoredService extends OnmsEntity implements Serializable {
         m_notify = notify;
     }
     
-    @ManyToOne(optional=false)
+    @ManyToOne(optional=false, fetch=FetchType.LAZY)
     @JoinColumn(name="ipInterfaceId")
     public OnmsIpInterface getIpInterface() {
         return m_ipInterface;
@@ -199,15 +194,11 @@ public class OnmsMonitoredService extends OnmsEntity implements Serializable {
         m_ipInterface = ipInterface;
     }
 
-    @Column(name="nodeid")
+    @Transient
     public Integer getNodeId() {
         return m_ipInterface.getNode().getId();
     }
     
-    public void setNodeId(Integer nodeId) {
-    	
-    }
-
     @ManyToOne(optional=false)
     @JoinColumn(name="serviceId")
     public OnmsServiceType getServiceType() {
@@ -258,7 +249,8 @@ public class OnmsMonitoredService extends OnmsEntity implements Serializable {
         return down;
     }
 
-    @Transient
+    @OneToMany(mappedBy="monitoredService", fetch=FetchType.LAZY)
+    @Where(clause="ifRegainedService is null")
     public Set<OnmsOutage> getCurrentOutages() {
         return m_currentOutages;
     }

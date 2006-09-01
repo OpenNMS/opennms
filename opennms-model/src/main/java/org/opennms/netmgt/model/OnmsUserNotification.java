@@ -34,19 +34,25 @@ package org.opennms.netmgt.model;
 import java.io.Serializable;
 import java.util.Date;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+
 import org.springframework.core.style.ToStringCreator;
 
 
-/** 
- *        @hibernate.class
- *         table="usersnotified"
- *     
-*/
-public class OnmsUserNotification extends OnmsEntity implements Serializable {
+@Entity
+@Table(name="usersNotified")
+public class OnmsUserNotification implements Serializable {
 
-    /**
-     * 
-     */
     private static final long serialVersionUID = -1750912427062821742L;
     
     private Integer m_id;
@@ -84,12 +90,18 @@ public class OnmsUserNotification extends OnmsEntity implements Serializable {
     public OnmsUserNotification() {
     }
     
-    /** 
-     *                @hibernate.property
-     *                 column="userId"
-     *                 length="256"
-     *             
-     */
+    @Id
+    @SequenceGenerator(name="userNotificationSequence", sequenceName="userNotifNxtId")
+    @GeneratedValue(generator="userNotificationSequence")
+    public Integer getId() {
+        return m_id;
+    }
+
+    public void setId(Integer id) {
+        m_id = id;
+    }
+    
+    @Column(name="userId", length=256)
     public String getUserId() {
         return m_userId;
     }
@@ -98,12 +110,8 @@ public class OnmsUserNotification extends OnmsEntity implements Serializable {
         m_userId = userId;
     }
 
-    /** 
-     *                @hibernate.property
-     *                 column="notifyTime"
-     *                 length="8"
-     *             
-     */
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="notifyTime")
     public Date getNotifyTime() {
         return m_notifyTime;
     }
@@ -112,12 +120,7 @@ public class OnmsUserNotification extends OnmsEntity implements Serializable {
         m_notifyTime = notifyTime;
     }
 
-    /** 
-     *                @hibernate.property
-     *                 column="media"
-     *                 length="32"
-     *             
-     */
+    @Column(name="media", length=32)
     public String getMedia() {
         return m_media;
     }
@@ -126,12 +129,7 @@ public class OnmsUserNotification extends OnmsEntity implements Serializable {
         m_media = media;
     }
 
-    /** 
-     *                @hibernate.property
-     *                 column="contactInfo"
-     *                 length="64"
-     *             
-     */
+    @Column(name="contactInfo", length=64)
     public String getContactInfo() {
         return m_contactInfo;
     }
@@ -140,12 +138,7 @@ public class OnmsUserNotification extends OnmsEntity implements Serializable {
         m_contactInfo = contactInfo;
     }
 
-    /** 
-     *                @hibernate.property
-     *                 column="autoNotify"
-     *                 length="1"
-     *             
-     */
+    @Column(name="autoNotify", length=1)
     public String getAutoNotify() {
         return m_autoNotify;
     }
@@ -154,12 +147,8 @@ public class OnmsUserNotification extends OnmsEntity implements Serializable {
         m_autoNotify = autoNotify;
     }
 
-    /** 
-     *            @hibernate.many-to-one
-     *             not-null="true"
-     *            @hibernate.column name="notifyid"         
-     *         
-     */
+    @ManyToOne(fetch=FetchType.LAZY, optional=false)
+    @JoinColumn(name="notifyId")
     public OnmsNotification getNotification() {
         return m_notification;
     }
@@ -179,23 +168,5 @@ public class OnmsUserNotification extends OnmsEntity implements Serializable {
             .toString();
     }
 
-	public void visit(EntityVisitor visitor) {
-		// TODO Auto-generated method stub
-		throw new RuntimeException("visitor method not implemented");
-
-	}
-
-	/**
-	 * @hibernate.id generator-class="assigned" type="java.lang.Integer"
-	 *               column="id"
-	 * @hibernate.generator-param name="sequence" value="userNotifNxtId"
-	 */
-    public Integer getId() {
-        return m_id;
-    }
-
-    public void setId(Integer id) {
-        m_id = id;
-    }
 
 }

@@ -37,7 +37,6 @@ import java.util.Set;
 import javax.sql.DataSource;
 
 import org.opennms.netmgt.model.OnmsEvent;
-import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsNotification;
 import org.opennms.netmgt.model.OnmsServiceType;
@@ -71,7 +70,6 @@ public class LazyNotification extends OnmsNotification {
 
 	public String toString() {
 		load();
-		setDirty(true);
 		return super.toString();
 	}
 
@@ -81,124 +79,160 @@ public class LazyNotification extends OnmsNotification {
 		}
 	}
 
+    @Override
     public String getAnsweredBy() {
         load();
         return super.getAnsweredBy();
     }
 
+    @Override
     public OnmsEvent getEvent() {
         load();
         return super.getEvent();
     }
 
-    public OnmsIpInterface getInterface() {
+    @Override
+    public String getIpAddress() {
         load();
-        return super.getInterface();
+        return super.getIpAddress();
     }
 
+    @Override
     public OnmsNode getNode() {
         load();
         return super.getNode();
     }
 
+    @Override
     public String getNumericMsg() {
         load();
         return super.getNumericMsg();
     }
 
+    @Override
     public Date getPageTime() {
         load();
         return super.getPageTime();
     }
 
+    @Override
     public String getQueueId() {
         load();
         return super.getQueueId();
     }
 
+    @Override
     public Date getRespondTime() {
         load();
         return super.getRespondTime();
     }
 
+    @Override
     public OnmsServiceType getServiceType() {
         load();
         return super.getServiceType();
     }
 
+    @Override
     public String getSubject() {
         load();
         return super.getSubject();
     }
 
+    @Override
     public String getTextMsg() {
         load();
         return super.getTextMsg();
     }
 
+    @Override
     public Set getUsersNotified() {
         load();
         return super.getUsersNotified();
     }
 
+    @Override
     public void setAnsweredBy(String answeredby) {
         load();
+		setDirty(true);
         super.setAnsweredBy(answeredby);
     }
 
+    @Override
     public void setEvent(OnmsEvent event) {
         load();
+		setDirty(true);
         super.setEvent(event);
     }
 
-    public void setInterface(OnmsIpInterface interfaceId) {
+    @Override
+    public void setIpAddress(String ipAddress) {
         load();
-        super.setInterface(interfaceId);
+		setDirty(true);
+        super.setIpAddress(ipAddress);
     }
 
+    @Override
     public void setNode(OnmsNode node) {
         load();
+		setDirty(true);
         super.setNode(node);
     }
 
+    @Override
     public void setNumericMsg(String numericmsg) {
         load();
+		setDirty(true);
         super.setNumericMsg(numericmsg);
     }
 
+    @Override
     public void setPageTime(Date pagetime) {
         load();
+		setDirty(true);
         super.setPageTime(pagetime);
     }
 
+    @Override
     public void setQueueId(String queueid) {
         load();
+		setDirty(true);
         super.setQueueId(queueid);
     }
 
+    @Override
     public void setRespondTime(Date respondtime) {
         load();
+		setDirty(true);
         super.setRespondTime(respondtime);
     }
 
+    @Override
     public void setServiceType(OnmsServiceType serviceType) {
         load();
+		setDirty(true);
         super.setServiceType(serviceType);
     }
 
+    @Override
     public void setSubject(String subject) {
         load();
+		setDirty(true);
         super.setSubject(subject);
     }
 
+    @Override
     public void setTextMsg(String textmsg) {
         load();
+		setDirty(true);
         super.setTextMsg(textmsg);
     }
 
+    @Override
     public void setUsersNotified(Set usersnotifieds) {
         load();
-        super.setUsersNotified(usersnotifieds);
+		setDirty(true);
+		super.setUsersNotified(usersnotifieds);
     }
 
 }

@@ -252,6 +252,7 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	}
 
     @Id
+    @Column(name="eventId")
     @SequenceGenerator(name="eventSequence", sequenceName="eventsNxtId")
     @GeneratedValue(generator="eventSequence")    
 	public Integer getId() {
@@ -553,7 +554,7 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 		m_eventAckTime = eventacktime;
 	}
 
-	@ManyToOne
+	@ManyToOne(fetch=FetchType.LAZY)
 	@JoinColumn(name="alarmId")
 	public OnmsAlarm getAlarm() {
 		return m_alarm;

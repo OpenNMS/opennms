@@ -73,6 +73,7 @@ public class OnmsCategory implements Serializable {
     }
 
     @Id
+    @Column(name="categoryid")
     @SequenceGenerator(name="categorySequence", sequenceName="catNxtId")
     @GeneratedValue(generator="categorySequence")
     public Integer getId() {
