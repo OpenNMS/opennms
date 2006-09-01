@@ -27,7 +27,7 @@ BEGIN
   -- This usually happens with the Hibernate DAOs decide to change the snmpinterfaceid represented
   -- by the ipinterface.
   --
-  ELSIF NEW.ipInterfaceId != OLD.ipInterfaceId
+  ELSIF NEW.snmpInterfaceId != OLD.snmpInterfaceId
   THEN
      SELECT snmpif.nodeId, snmpif.ipAddr, snmpif.ifIndex INTO NEW.nodeId, NEW.ipAddr, NEW.ifIndex
        FROM snmpinterface snmpif
