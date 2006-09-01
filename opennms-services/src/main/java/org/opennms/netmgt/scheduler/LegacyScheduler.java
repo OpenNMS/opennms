@@ -324,8 +324,7 @@ public class LegacyScheduler implements Runnable, PausableFiber, Scheduler {
         m_worker.start();
         m_status = STARTING;
 
-        if (log.isDebugEnabled())
-            log.debug("start: scheduler started");
+        log.info("start: scheduler started");
     }
 
     /* (non-Javadoc)
@@ -341,8 +340,7 @@ public class LegacyScheduler implements Runnable, PausableFiber, Scheduler {
         m_worker.interrupt();
         m_runner.stop();
 
-        if (log.isDebugEnabled())
-            log.debug("stop: scheduler stopped");
+        log.info("stop: scheduler stopped");
     }
 
     /* (non-Javadoc)
