@@ -36,6 +36,7 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -144,7 +145,7 @@ public class OnmsOutage implements Serializable {
     }
 
 
-    @ManyToOne
+    @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="svcLostEventId")
     public OnmsEvent getServiceLostEvent() {
         return m_serviceLostEvent;
@@ -166,7 +167,7 @@ public class OnmsOutage implements Serializable {
     }
 
     
-    @ManyToOne
+    @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="svcRegainedEventId")
     public OnmsEvent getServiceRegainedEvent() {
         return m_serviceRegainedEvent;

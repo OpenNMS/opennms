@@ -34,14 +34,23 @@ package org.opennms.netmgt.model;
 import java.io.Serializable;
 import java.util.Date;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+
 import org.springframework.core.style.ToStringCreator;
 
 
-/** 
- *        @hibernate.class
- *         table="alarms"
- *     
-*/
+@Entity
+@Table(name="alarms")
 public class OnmsAlarm implements Serializable {
 
     /**
@@ -179,13 +188,10 @@ public class OnmsAlarm implements Serializable {
         this.m_lastEvent = event;
     }
 
-    /** 
-     *            @hibernate.id
-     *             generator-class="assigned"
-     *             type="java.lang.Integer"
-     *             column="alarmid"
-     *         
-     */
+    @Id
+    @SequenceGenerator(name="alarmSequence", sequenceName="alarmsNxtId")
+    @GeneratedValue(generator="alarmSequence")    
+    @Column(name="alarmId")
     public Integer getId() {
         return this.m_id;
     }
@@ -194,13 +200,7 @@ public class OnmsAlarm implements Serializable {
         this.m_id = alarmid;
     }
 
-    /** 
-     *            @hibernate.property
-     *             column="eventuei"
-     *             length="256"
-     *             not-null="true"
-     *         
-     */
+    @Column(name="eventUEI", length=256, nullable=false)
     public String getUei() {
         return this.m_uei;
     }
@@ -216,6 +216,8 @@ public class OnmsAlarm implements Serializable {
      *             not-null="true"
      *         
      */
+    @ManyToOne(fetch=FetchType.LAZY)
+    @JoinColumn(name="dpName")
     public OnmsDistPoller getDistPoller() {
         return this.m_distPoller;
     }
@@ -224,12 +226,9 @@ public class OnmsAlarm implements Serializable {
         this.m_distPoller = distPoller;
     }
 
-    /** 
-     *            @hibernate.property
-     *             column="nodeid"
-     *             length="4"
-     *         
-     */
+    // TODO change this to an Entity anre remove nodeid, ipaddr, serviceid
+    @ManyToOne(fetch=FetchType.LAZY)
+    @JoinColumn(name="nodeId")
     public OnmsNode getNode() {
         return this.m_node;
     }
@@ -238,12 +237,7 @@ public class OnmsAlarm implements Serializable {
         this.m_node = node;
     }
 
-    /** 
-     *            @hibernate.property
-     *             column="ipaddr"
-     *             length="16"
-     *         
-     */
+    @Column(name="ipaddr", length=16)
     public String getIpAddr() {
         return this.m_ipAddr;
     }
@@ -252,12 +246,8 @@ public class OnmsAlarm implements Serializable {
         this.m_ipAddr = ipaddr;
     }
 
-    /** 
-     *            @hibernate.property
-     *             column="serviceid"
-     *             length="4"
-     *         
-     */
+    @ManyToOne
+    @JoinColumn(name="serviceid")
     public OnmsServiceType getServiceType() {
         return this.m_serviceType;
     }
@@ -266,13 +256,7 @@ public class OnmsAlarm implements Serializable {
         this.m_serviceType = service;
     }
 
-    /** 
-     *            @hibernate.property
-     *             column="reductionkey"
-     *             unique="true"
-     *             length="256"
-     *         
-     */
+    @Column(name="reductionKey", unique=true, length=256)
     public String getReductionKey() {
         return this.m_reductionKey;
     }
@@ -281,12 +265,7 @@ public class OnmsAlarm implements Serializable {
         this.m_reductionKey = reductionkey;
     }
 
-    /** 
-     *            @hibernate.property
-     *             column="alarmtype"
-     *             length="4"
-     *         
-     */
+    @Column(name="alarmType")
     public Integer getAlarmType() {
         return this.m_alarmType;
     }
@@ -295,13 +274,7 @@ public class OnmsAlarm implements Serializable {
         this.m_alarmType = alarmtype;
     }
 
-    /** 
-     *            @hibernate.property
-     *             column="counter"
-     *             length="4"
-     *             not-null="true"
-     *         
-     */
+    @Column(name="counter", nullable=false)
     public Integer getCounter() {
         return this.m_counter;
     }
@@ -310,13 +283,7 @@ public class OnmsAlarm implements Serializable {
         this.m_counter = counter;
     }
 
-    /** 
-     *            @hibernate.property
-     *             column="severity"
-     *             length="4"
-     *             not-null="true"
-     *         
-     */
+    @Column(name="severity", nullable=false)
     public Integer getSeverity() {
         return this.m_severity;
     }
@@ -325,13 +292,8 @@ public class OnmsAlarm implements Serializable {
         this.m_severity = severity;
     }
 
-    /** 
-     *            @hibernate.property
-     *             column="firsteventtime"
-     *             length="8"
-     *             not-null="true"
-     *         
-     */
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="firstEventTime", nullable=false)
     public Date getFirstEventTime() {
         return this.m_firstEventTime;
     }
@@ -340,12 +302,7 @@ public class OnmsAlarm implements Serializable {
         this.m_firstEventTime = firsteventtime;
     }
 
-    /** 
-     *            @hibernate.property
-     *             column="description"
-     *             length="4000"
-     *         
-     */
+    @Column(name="description", length=4000)
     public String getDescription() {
         return this.m_description;
     }
@@ -354,12 +311,7 @@ public class OnmsAlarm implements Serializable {
         this.m_description = description;
     }
 
-    /** 
-     *            @hibernate.property
-     *             column="logmsg"
-     *             length="256"
-     *         
-     */
+    @Column(name="logmsg", length=256)
     public String getLogMsg() {
         return this.m_logMsg;
     }
@@ -368,12 +320,7 @@ public class OnmsAlarm implements Serializable {
         this.m_logMsg = logmsg;
     }
 
-    /** 
-     *            @hibernate.property
-     *             column="operinstruct"
-     *             length="1024"
-     *         
-     */
+    @Column(name="operinstruct", length=1024)
     public String getOperInstruct() {
         return this.m_operInstruct;
     }
@@ -382,12 +329,7 @@ public class OnmsAlarm implements Serializable {
         this.m_operInstruct = operinstruct;
     }
 
-    /** 
-     *            @hibernate.property
-     *             column="tticketid"
-     *             length="128"
-     *         
-     */
+    @Column(name="tticketId", length=128)
     public String getTTicketId() {
         return this.m_tTicketId;
     }
@@ -396,12 +338,7 @@ public class OnmsAlarm implements Serializable {
         this.m_tTicketId = tticketid;
     }
 
-    /** 
-     *            @hibernate.property
-     *             column="tticketstate"
-     *             length="4"
-     *         
-     */
+    @Column(name="tticketState")
     public Integer getTTicketState() {
         return this.m_tTicketState;
     }
@@ -410,12 +347,7 @@ public class OnmsAlarm implements Serializable {
         this.m_tTicketState = tticketstate;
     }
 
-    /** 
-     *            @hibernate.property
-     *             column="mouseovertext"
-     *             length="64"
-     *         
-     */
+    @Column(name="mouseOverText", length=64)
     public String getMouseOverText() {
         return this.m_mouseOverText;
     }
@@ -424,12 +356,8 @@ public class OnmsAlarm implements Serializable {
         this.m_mouseOverText = mouseovertext;
     }
 
-    /** 
-     *            @hibernate.property
-     *             column="suppresseduntil"
-     *             length="8"
-     *         
-     */
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="suppressedUntil")
     public Date getSuppressedUntil() {
         return this.m_suppressedUntil;
     }
@@ -438,12 +366,7 @@ public class OnmsAlarm implements Serializable {
         this.m_suppressedUntil = suppresseduntil;
     }
 
-    /** 
-     *            @hibernate.property
-     *             column="suppresseduser"
-     *             length="256"
-     *         
-     */
+    @Column(name="suppressedUser", length=256)
     public String getSuppressedUser() {
         return this.m_suppressedUser;
     }
@@ -452,12 +375,8 @@ public class OnmsAlarm implements Serializable {
         this.m_suppressedUser = suppresseduser;
     }
 
-    /** 
-     *            @hibernate.property
-     *             column="suppressedtime"
-     *             length="8"
-     *         
-     */
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="suppressedTime")
     public Date getSuppressedTime() {
         return this.m_suppressedTime;
     }
@@ -466,12 +385,7 @@ public class OnmsAlarm implements Serializable {
         this.m_suppressedTime = suppressedtime;
     }
 
-    /** 
-     *            @hibernate.property
-     *             column="alarmackuser"
-     *             length="256"
-     *         
-     */
+    @Column(name="alarmAckUser", length=256)
     public String getAlarmAckUser() {
         return this.m_alarmAckUser;
     }
@@ -480,12 +394,8 @@ public class OnmsAlarm implements Serializable {
         this.m_alarmAckUser = alarmackuser;
     }
 
-    /** 
-     *            @hibernate.property
-     *             column="alarmacktime"
-     *             length="8"
-     *         
-     */
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="alarmAckTime")
     public Date getAlarmAckTime() {
         return this.m_alarmAckTime;
     }
@@ -494,12 +404,7 @@ public class OnmsAlarm implements Serializable {
         this.m_alarmAckTime = alarmacktime;
     }
 
-    /** 
-     *            @hibernate.property
-     *             column="clearuei"
-     *             length="256"
-     *         
-     */
+    @Column(name="clearUEI", length=256)
     public String getClearUei() {
         return this.m_clearUei;
     }
@@ -508,17 +413,13 @@ public class OnmsAlarm implements Serializable {
         this.m_clearUei = clearuei;
     }
 
-    /** 
-     *            @hibernate.many-to-one
-     *             not-null="true"
-     *            @hibernate.column name="lasteventid"         
-     *         
-     */
-    public org.opennms.netmgt.model.OnmsEvent getLastEvent() {
+    @ManyToOne(fetch=FetchType.LAZY, optional=false)
+    @JoinColumn(name="lastEventId")
+    public OnmsEvent getLastEvent() {
         return this.m_lastEvent;
     }
 
-    public void setLastEvent(org.opennms.netmgt.model.OnmsEvent event) {
+    public void setLastEvent(OnmsEvent event) {
         this.m_lastEvent = event;
         this.m_lastEventTime = event.getEventTime();
     }
@@ -529,6 +430,8 @@ public class OnmsAlarm implements Serializable {
             .toString();
     }
 
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name="lastEventTime")
     public Date getLastEventTime() {
         return m_lastEventTime;
     }
@@ -536,7 +439,9 @@ public class OnmsAlarm implements Serializable {
     public void setLastEventTime(Date lastEventTime) {
         m_lastEventTime = lastEventTime;
     }
+    
 
+    @Column(name="applicationDN", length=512)
     public String getApplicationDN() {
         return m_applicationDN;
     }
@@ -545,6 +450,7 @@ public class OnmsAlarm implements Serializable {
         m_applicationDN = applicationDN;
     }
 
+    @Column(name="managedObjectInstance", length=512)
     public String getManagedObjectInstance() {
         return m_managedObjectInstance;
     }
@@ -553,6 +459,7 @@ public class OnmsAlarm implements Serializable {
         m_managedObjectInstance = managedObjectInstance;
     }
 
+    @Column(name="managedObjectType", length=512)
     public String getManagedObjectType() {
         return m_managedObjectType;
     }
@@ -561,6 +468,7 @@ public class OnmsAlarm implements Serializable {
         m_managedObjectType = managedObjectType;
     }
 
+    @Column(name="ossPrimaryKey", length=512)
     public String getOssPrimaryKey() {
         return m_ossPrimaryKey;
     }

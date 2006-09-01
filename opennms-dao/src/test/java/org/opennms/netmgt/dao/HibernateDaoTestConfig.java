@@ -49,12 +49,16 @@ import org.opennms.netmgt.dao.hibernate.NodeDaoHibernate;
 import org.opennms.netmgt.dao.hibernate.ServiceTypeDaoHibernate;
 import org.opennms.netmgt.dao.jdbc.Cache;
 import org.opennms.netmgt.dao.jdbc.EventDaoJdbc;
+import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsAssetRecord;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsDistPoller;
+import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.OnmsNotification;
+import org.opennms.netmgt.model.OnmsOutage;
 import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.springframework.core.io.ClassPathResource;
@@ -111,7 +115,11 @@ public class HibernateDaoTestConfig extends DaoTestConfig {
         	OnmsSnmpInterface.class,
         	OnmsMonitoredService.class,
         	OnmsCategory.class,
-        	OnmsServiceType.class
+        	OnmsServiceType.class,
+        	OnmsOutage.class,
+        	OnmsEvent.class,
+        	OnmsAlarm.class,
+        	OnmsNotification.class,
         };
         
         String[] annotatedPackages = {
@@ -138,8 +146,6 @@ public class HibernateDaoTestConfig extends DaoTestConfig {
         props.put("hibernate.jdbc.batch_size", "0");
         //props.put("hibernate.hbm2ddl.auto", "create-drop");
         getLsfb().setHibernateProperties(props);
-        Resource modelDir = new ClassPathResource("org/opennms/netmgt/model");
-        getLsfb().setMappingDirectoryLocations(new Resource[] { modelDir });
         
         //m_lsfb.setEventListeners(null);
         

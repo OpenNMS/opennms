@@ -38,6 +38,7 @@ import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -235,7 +236,7 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
         m_ifAlias = snmpifalias;
     }
 
-    @ManyToOne(optional=false)
+    @ManyToOne(optional=false, fetch=FetchType.LAZY)
     @JoinColumn(name="nodeId")
     public OnmsNode getNode() {
         return m_node;

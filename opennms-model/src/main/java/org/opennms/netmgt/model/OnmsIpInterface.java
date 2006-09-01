@@ -44,6 +44,7 @@ import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -276,7 +277,7 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
         this.m_isSnmpPrimary = issnmpprimary;
     }
 
-    @ManyToOne(optional=false)
+    @ManyToOne(optional=false, fetch=FetchType.LAZY)
     @JoinColumn(name="nodeId")
     public OnmsNode getNode() {
         return this.m_node;

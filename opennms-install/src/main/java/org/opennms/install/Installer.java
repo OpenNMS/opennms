@@ -250,6 +250,8 @@ public class Installer {
         
         m_columnReplacements.put("usersnotified.id",
                                  new AutoInteger(1));
+        
+        m_columnReplacements.put("assets.id", new AutoInteger(1));
 
     }
     

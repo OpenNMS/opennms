@@ -179,7 +179,7 @@ public class OnmsNode extends OnmsEntity implements Serializable {
      * the nodeID of the chassis/physical node/"parent" device.
      * 
      */
-    @ManyToOne
+    @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="nodeParentID")
     public OnmsNode getParent() {
         return m_parent;
@@ -366,7 +366,7 @@ public class OnmsNode extends OnmsEntity implements Serializable {
     /** 
      * The assert record associated with this node
      */
-    @OneToOne(mappedBy="node", cascade = CascadeType.ALL, fetch=FetchType.LAZY)
+    @OneToOne(mappedBy="node", cascade = CascadeType.ALL)
     public OnmsAssetRecord getAssetRecord() {
         return m_assetRecord;
     }

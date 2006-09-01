@@ -44,6 +44,10 @@
       <artifactId>persistence-api</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.hibernate</groupId>
+      <artifactId>hibernate-annotations</artifactId>
+    </dependency>
+    <dependency>
       <groupId>oro</groupId>
       <artifactId>oro</artifactId>
       <scope>runtime</scope>
