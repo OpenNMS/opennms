@@ -365,7 +365,7 @@ create table snmpInterface (
 );
 
 create index snmpinterface_nodeid_ifindex_idx on snmpinterface(nodeID, snmpIfIndex);
---create index snmpinterface_nodeid_idx on snmpinterface(nodeID);
+create index snmpinterface_nodeid_idx on snmpinterface(nodeID);
 create index snmpinterface_ipaddr_idx on snmpinterface(ipaddr);
 
 --########################################################################
@@ -420,7 +420,7 @@ create table ipInterface (
 	snmpInterfaceId	integer,
 
 	CONSTRAINT ipinterface_pkey PRIMARY KEY (id),
-	CONSTRAINT snmpinterface_fkey1 FOREIGN KEY (snmpInterfaceId) REFERENCES snmpInterface (id),
+	CONSTRAINT snmpinterface_fkey1 FOREIGN KEY (snmpInterfaceId) REFERENCES snmpInterface (id) ON DELETE CASCADE,
 	constraint fk_nodeID1 foreign key (nodeID) references node ON DELETE CASCADE
 );
 
@@ -428,7 +428,7 @@ create index ipinterface_nodeid_ipaddr_ismanaged_idx on ipInterface (nodeID, ipA
 create index ipinterface_ipaddr_ismanaged_idx on ipInterface (ipAddr, isManaged);
 create index ipinterface_ipaddr_idx on ipInterface (ipAddr);
 create index ipinterface_nodeid_ismanaged_idx on ipInterface (ipAddr);
---create index ipinterface_nodeid_idx on ipInterface (nodeID);
+create index ipinterface_nodeid_idx on ipInterface (nodeID);
 
 --########################################################################
 --# service Table - Contains a name<->number mapping for services
@@ -502,8 +502,8 @@ create table ifServices (
 create index ifservices_nodeid_ipaddr_svc on ifservices(nodeID, ipAddr, serviceId);
 create index ifservices_nodeid_ipaddr_status on ifservices(nodeID, ipAddr, status);
 create index ifservices_nodeid_status on ifservices(nodeid, status);
---create index ifservices_nodeid_idx on ifservices(nodeID);
---create index ifservices_serviceid_idx on ifservices(serviceID);
+create index ifservices_nodeid_idx on ifservices(nodeID);
+create index ifservices_serviceid_idx on ifservices(serviceID);
 create index ifservices_nodeid_serviceid_idx on ifservices(nodeID, serviceID);
 
 --##################################################################
@@ -696,10 +696,10 @@ create table outages (
 );
 
 create index outages_nodeid_ipaddr_svc_idx on outages(nodeID, ipAddr, serviceId);
---create index outages_svclostid_idx on outages(svcLostEventID);
---create index outages_svcregainedid_idx on outages(svcRegainedEventID);
---create index outages_nodeid_idx on outages(nodeID);
---create index outages_serviceid_idx on outages(serviceID);
+create index outages_svclostid_idx on outages(svcLostEventID);
+create index outages_svcregainedid_idx on outages(svcRegainedEventID);
+create index outages_nodeid_idx on outages(nodeID);
+create index outages_serviceid_idx on outages(serviceID);
 create index outages_ipaddr_idx on outages(ipaddr);
 create index outages_regainedservice_idx on outages(ifRegainedService);
 
