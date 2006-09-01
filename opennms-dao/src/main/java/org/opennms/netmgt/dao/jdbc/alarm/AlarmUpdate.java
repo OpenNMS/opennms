@@ -39,7 +39,7 @@ public class AlarmUpdate extends AlarmSaveOrUpdate {
 
     // DO NOT CHANGE THIS STATEMENT UNLESS YOU CHANGE THE INSERT STATEMENT AND THE
     // PARAMETERS IN AlarmSaveOrUpdate
-    private static final String updateStmt = "update events set " +
+    private static final String updateStmt = "update alarms set " +
 	    "eventUei = ?, dpName = ?, nodeID = ?, ipaddr = ?, \n" + 
 	    "serviceID = ?, reductionKey = ?, alarmType = ?, counter = ?, severity = ?, \n" + 
 	    "lastEventID = ?, firstEventTime = ?, lastEventTime = ?, description = ?, logMsg = ?, \n" + 
