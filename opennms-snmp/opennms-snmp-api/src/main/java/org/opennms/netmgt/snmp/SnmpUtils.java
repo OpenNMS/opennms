@@ -102,10 +102,10 @@ public class SnmpUtils {
         return (sm_config == null ? System.getProperties() : sm_config);
     }
 
-    public static List getColumns(SnmpAgentConfig agentConfig, String name, SnmpObjId oid) 
+    public static List<SnmpValue> getColumns(SnmpAgentConfig agentConfig, String name, SnmpObjId oid) 
 	throws InterruptedException {
 
-        final List results = new ArrayList();
+        final List<SnmpValue> results = new ArrayList<SnmpValue>();
         
         SnmpWalker walker=SnmpUtils.createWalker(agentConfig, name, new ColumnTracker(oid) {
    
@@ -120,10 +120,10 @@ public class SnmpUtils {
         return results;
     }
     
-    public static Map getOidValues(SnmpAgentConfig agentConfig, String name, SnmpObjId oid) 
+    public static Map<SnmpInstId, SnmpValue> getOidValues(SnmpAgentConfig agentConfig, String name, SnmpObjId oid) 
 	throws InterruptedException {
 
-        final Map results = new LinkedHashMap();
+        final Map<SnmpInstId, SnmpValue> results = new LinkedHashMap<SnmpInstId, SnmpValue>();
         
         SnmpWalker walker=SnmpUtils.createWalker(agentConfig, name, new ColumnTracker(oid) {
    
