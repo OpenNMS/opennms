@@ -88,7 +88,7 @@ public class ServiceParameters {
     }
 
     void logIfAliasConfig() {
-    	log().debug("domain: " + getDomain() + ", "
+    	log().info("domain: " + getDomain() + ", "
     			+ "storeByNodeID: " + getStoreByNodeID() + ", "
     			+ "storeByIfAlias: " + getStoreByIfAlias() + ", "
 				+ "storFlagOverride: " + getStorFlagOverride() + ", "
@@ -100,7 +100,7 @@ public class ServiceParameters {
     }
 
     boolean forceStoreByAlias(String alias) {
-        return overrideStorageFlag() && ((alias != null));
+        return overrideStorageFlag() && alias != null && !alias.equals("");
     }
 
     String getCollectionName() {

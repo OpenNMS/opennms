@@ -169,7 +169,7 @@ public abstract class AbstractServiceDaemon implements ServiceDaemon, Initializi
 
 			setStatus(RUNNING);
 
-			log().debug(getName()+" started.");
+			log().info(getName()+" started.");
 		} finally {
 			ThreadCategory.setPrefix(prefix);
 		}
@@ -191,7 +191,7 @@ public abstract class AbstractServiceDaemon implements ServiceDaemon, Initializi
 
 			setStatus(STOPPED);
 
-			log().debug(getName()+" stopped.");
+			log().info(getName()+" stopped.");
 		} finally {
 			ThreadCategory.setPrefix(prefix);
 		}

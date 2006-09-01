@@ -306,8 +306,7 @@ final class CollectableService implements ReadyRunnable {
 	private int doCollection() {
 		// Perform SNMP data collection
 		//
-		if (log().isDebugEnabled())
-			log().debug("run: starting new collection for " + getHostAddress());
+		log().info("run: starting new collection for " + getHostAddress());
 
 		int status = ServiceCollector.COLLECTION_FAILED;
 		try {

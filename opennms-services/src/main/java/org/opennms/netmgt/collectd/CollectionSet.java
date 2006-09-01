@@ -301,11 +301,9 @@ public class CollectionSet implements Collectable {
     }
 
     void logFinishedWalker() {
-        if (log().isDebugEnabled()) {
-            log().debug(
-        			"collect: node SNMP query for address "
-        					+ getCollectionAgent().getHostAddress() + " complete.");
-        }
+        log().info(
+        		"collect: node SNMP query for address "
+        				+ getCollectionAgent().getHostAddress() + " complete.");
     }
 
     void verifySuccessfulWalk(SnmpWalker walker) throws CollectionWarning {

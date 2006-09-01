@@ -180,7 +180,7 @@ public class JoeSnmpWalker extends SnmpWalker {
     }
 
     public void start() {
-        log().debug("Walking "+getName()+" for "+getAddress()+" using version "+SnmpSMI.getVersionString(getVersion()));
+        log().info("Walking "+getName()+" for "+getAddress()+" using version "+SnmpSMI.getVersionString(getVersion()));
         super.start();
     }
 
