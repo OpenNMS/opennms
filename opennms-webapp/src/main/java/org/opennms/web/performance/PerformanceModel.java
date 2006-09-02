@@ -542,8 +542,8 @@ public class PerformanceModel extends GraphModelAbstract {
         return availQueries;
     }
 
-    public String getRelativePathForAttribute(String resourceType, int nodeId, String resource, String attribute) {
+    public String getRelativePathForAttribute(String resourceType, String resourceParent, String resource, String attribute) {
         GraphResourceType rt = getResourceTypeByName(resourceType);
-        return rt.getRelativePathForAttribute(nodeId, resource, attribute);
+        return rt.getRelativePathForAttribute(resourceParent, resource, attribute);
     }
 }

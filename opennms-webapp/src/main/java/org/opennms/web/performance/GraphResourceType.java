@@ -8,7 +8,7 @@ public interface GraphResourceType {
     public String getLabel();
     public boolean isResourceTypeOnNode(int nodeId);
     public List<GraphResource> getResourcesForNode(int nodeId);
-    public String getRelativePathForAttribute(int nodeId, String resource, String attribute);
+    public String getRelativePathForAttribute(String resourceParent, String resource, String attribute);
     public boolean isResourceTypeOnDomain(String domain);
     public List<GraphResource> getResourcesForDomain(String domain);
 }

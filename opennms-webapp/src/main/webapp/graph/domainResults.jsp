@@ -95,7 +95,7 @@ if ("org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy".equals(strategy_name)) {
 <div id="graph-results">
   <h3>
     Domain: <c:out value="${results.domain}"/><br/>
-    Interface: <c:out value="${results.intf}"/>
+    Interface: <c:out value="${results.resource}"/>
   </h3>
 
   <c:if test="${empty param.zoom}">
@@ -118,12 +118,14 @@ if ("org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy".equals(strategy_name)) {
         #why {position: static; width: auto}
       </style>
 
-      <img id='zoomGraphImage' src="<c:out value="${results.graphs[0].graphURL}"/>&amp;props=<c:out value="${results.domain}"/>/strings.properties&amp;type=<c:out value="${param.type}"/>&amp;domain=<c:out value="${results.domain}"/>&amp;intf=<c:out value="${results.intf}"/>"/>
+      <img id='zoomGraphImage' src="<c:out value="${results.graphs[0].graphURL}"/>&amp;props=<c:out value="${results.domain}"/>/strings.properties&amp;"/>
     </c:when>
 
     <c:when test="${!empty results.graphs}">
       <c:forEach var="graph" items="${results.graphs}">
-	<a href="graph/domainResults?zoom=true&type=<c:out value="${param.type}"/>&intf=<c:out value="${graph.intf}"/>&amp;domain=<c:out value="${graph.domain}"/>&amp;reports=<c:out value="${graph.name}"/>&amp;start=<c:out value="${graph.start.time}"/>&amp;end=<c:out value="${graph.end.time}"/>&amp;props=<c:out value="${results.domain}"/>/strings.properties">
+
+        <a href="graph/domainResults?zoom=true&type=<c:out value="${param.type}"/>&resourceType=<c:out value="${graph.resourceType}"/>&amp;resource=<c:out value="${graph.resource}"/>&amp;domain=<c:out value="${graph.domain}"/>&amp;reports=<c:out value="${graph.name}"/>&amp;start=<c:out value="${graph.start.time}"/>&amp;end=<c:out value="${graph.end.time}"/>&amp;props=<c:out value="${results.domain}"/>/strings.properties">
+
           <img src="<c:out value="${graph.graphURL}"/>&amp;props=<c:out value="${results.domain}"/>/strings.properties"/>
 	</a>
 	<br/>
@@ -136,25 +138,45 @@ if ("org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy".equals(strategy_name)) {
   </c:choose>
 
   <c:if test="${empty param.zoom}">
-    <%@ include file="/WEB-INF/jspf/relativetimeformforDomain.jspf" %>
+    <%@ include file="/WEB-INF/jspf/relativetimeform.jspf" %>
   </c:if>
 
   <c:import url="/includes/bookmark.jsp"/>
 </div>
+
+<c:set var="reportList"></c:set>
+<c:forEach var="report" items="${results.reports}">
+  <c:set var="reportList"><c:out value="${reportList}" escapeXml="false"/>&reports=<c:out value="${report}"/></c:set>
+</c:forEach>
 
 <script type="text/javascript">
 function goRelativeTime(relativeTime) {
       setLocation('graph/domainResults'
         + '?type=<c:out value="${param.type}"/>'
         + '&relativetime=' + relativeTime
-        + '&intf=<c:out value="${requestScope.results.intf}"/>'
+        + '&resourceType=<c:out value="${requestScope.results.resourceType}"/>'
+        + '&resource=<c:out value="${requestScope.results.resource}"/>'
         + '&domain=<c:out value="${requestScope.results.domain}"/>'
         + '<c:out value="${reportList}" escapeXml="false"/>');
 }
+
+/*
+ * This is used by the zoom page to reload the page with a new time period.
+ */
+function reloadPage(newGraphStart, newGraphEnd) {
+      setLocation('graph/domainResults'
+        + '?type=<c:out value="${param.type}"/>'
+        + '&resourceType=<c:out value="${requestScope.results.resourceType}"/>'
+        + '&resource=<c:out value="${requestScope.results.resource}"/>'
+        + '&domain=<c:out value="${requestScope.results.domain}"/>'
+        + '<c:out value="${reportList}" escapeXml="false"/>'
+           + "&zoom=true&start=" + newGraphStart + "&end=" + newGraphEnd);
+}
+
 </script>
 
 <c:if test="${!empty param.zoom}">
-  <script type="text/javascript" src="js/domainZoom.js"></script>
+  <script type="text/javascript" src="js/zoom.js"></script>
 </c:if>
 
 <jsp:include page="/includes/footer.jsp" flush="false" />

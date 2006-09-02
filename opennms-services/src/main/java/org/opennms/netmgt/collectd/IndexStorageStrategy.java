@@ -7,10 +7,10 @@ import org.opennms.netmgt.utils.RrdFileConstants;
 public class IndexStorageStrategy implements StorageStrategy {
     private String m_resourceTypeName;
 
-    public String getRelativePathForAttribute(int nodeId, String resource,
+    public String getRelativePathForAttribute(String resourceParent, String resource,
             String attribute) {
         StringBuffer buffer = new StringBuffer();
-        buffer.append(nodeId);
+        buffer.append(resourceParent);
         buffer.append(File.separator);
         buffer.append(m_resourceTypeName);
         buffer.append(File.separator);

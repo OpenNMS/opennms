@@ -66,9 +66,9 @@ public class NodeGraphResourceType implements GraphResourceType {
         return graphResources;
     }
 
-    public String getRelativePathForAttribute(int nodeId, String resource, String attribute) {
+    public String getRelativePathForAttribute(String resourceParent, String resource, String attribute) {
         StringBuffer buffer = new StringBuffer();
-        buffer.append(nodeId);
+        buffer.append(resourceParent);
         buffer.append(File.separator);
         buffer.append(attribute);
         buffer.append(RrdFileConstants.RRD_SUFFIX);
