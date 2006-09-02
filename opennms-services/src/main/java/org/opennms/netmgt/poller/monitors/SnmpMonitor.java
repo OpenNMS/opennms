@@ -80,13 +80,6 @@ final public class SnmpMonitor extends SnmpMonitorStrategy {
     private static final String SERVICE_NAME = "SNMP";
 
     /**
-     * <P>
-     * The default port on which the host is checked to see if it supports SNMP.
-     * </P>
-     */
-    private static int DEFAULT_PORT = 161;
-
-    /**
      * Default object to collect if "oid" property not available.
      */
     private static final String DEFAULT_OBJECT_IDENTIFIER = ".1.3.6.1.2.1.1.2.0"; // MIB-II
@@ -207,14 +200,10 @@ final public class SnmpMonitor extends SnmpMonitorStrategy {
         // Retrieve this interface's SNMP peer object
         //
         SnmpAgentConfig agentConfig = (SnmpAgentConfig) iface.getAttribute(SNMP_AGENTCONFIG_KEY);
-        if (agentConfig == null)
-            throw new RuntimeException("SnmpAgentConfig object not available for interface " + ipaddr);
+        if (agentConfig == null) throw new RuntimeException("SnmpAgentConfig object not available for interface " + ipaddr);
 
         // Get configuration parameters
         //
-        int timeout = ParameterMap.getKeyedInteger(parameters, "timeout", agentConfig.getTimeout());
-        int retries = ParameterMap.getKeyedInteger(parameters, "retries", agentConfig.getRetries());
-        int port = ParameterMap.getKeyedInteger(parameters, "port", DEFAULT_PORT);
         String oid = ParameterMap.getKeyedString(parameters, "oid", DEFAULT_OBJECT_IDENTIFIER);
         String operator = ParameterMap.getKeyedString(parameters, "operator", null);
         String operand = ParameterMap.getKeyedString(parameters, "operand", null);
@@ -222,12 +211,11 @@ final public class SnmpMonitor extends SnmpMonitorStrategy {
 
         // set timeout and retries on SNMP peer object
         //
-        agentConfig.setTimeout(timeout);
-        agentConfig.setRetries(retries);
-        agentConfig.setPort(port);
+        agentConfig.setTimeout(ParameterMap.getKeyedInteger(parameters, "timeout", agentConfig.getTimeout()));
+        agentConfig.setRetries(ParameterMap.getKeyedInteger(parameters, "retries", agentConfig.getRetries()));
+        agentConfig.setPort(ParameterMap.getKeyedInteger(parameters, "port", agentConfig.getPort()));
 
-        if (log().isDebugEnabled())
-            log().debug("poll: service= SNMP address= " + agentConfig);
+        if (log().isDebugEnabled()) log().debug("poll: service= SNMP address= " + agentConfig);
 
         // Establish SNMP session with interface
         //
@@ -236,40 +224,40 @@ final public class SnmpMonitor extends SnmpMonitorStrategy {
                 log().debug("SnmpMonitor.poll: SnmpAgentConfig address: " +agentConfig);
             }
             SnmpObjId snmpObjectId = new SnmpObjId(oid);
-        
-	    if ("true".equals(walkstr)) {
-		List<SnmpValue> results = SnmpUtils.getColumns(agentConfig, "snmpPoller", snmpObjectId);
+
+            if ("true".equals(walkstr)) {
+                List<SnmpValue> results = SnmpUtils.getColumns(agentConfig, "snmpPoller", snmpObjectId);
                 for(SnmpValue result : results) {
 
-                if (result != null) {
-                    log().debug("poll: SNMPwalk poll succeeded, addr=" + ipaddr.getHostAddress() + " oid=" + oid + " value=" + result);
-                    if (meetsCriteria(result, operator, operand)) {
-                        status = PollStatus.available();
-                    }
-                } else {
-            	    status = logDown(Level.DEBUG, "SNMP poll failed, addr=" + ipaddr.getHostAddress() + " oid=" + oid);
-		    return status;
+                    if (result != null) {
+                        log().debug("poll: SNMPwalk poll succeeded, addr=" + ipaddr.getHostAddress() + " oid=" + oid + " value=" + result);
+                        if (meetsCriteria(result, operator, operand)) {
+                            status = PollStatus.available();
+                        }
+                    } else {
+                        status = logDown(Level.DEBUG, "SNMP poll failed, addr=" + ipaddr.getHostAddress() + " oid=" + oid);
+                        return status;
                     }
                 }
 
             } else {
-	    
+
                 SnmpValue result = SnmpUtils.get(agentConfig, snmpObjectId);
 
                 if (result != null) {
                     log().debug("poll: SNMP poll succeeded, addr=" + ipaddr.getHostAddress() + " oid=" + oid + " value=" + result);
                     status = (meetsCriteria(result, operator, operand) ? PollStatus.available() : PollStatus.unavailable());
                 } else {
-                	status = logDown(Level.DEBUG, "SNMP poll failed, addr=" + ipaddr.getHostAddress() + " oid=" + oid);
+                    status = logDown(Level.DEBUG, "SNMP poll failed, addr=" + ipaddr.getHostAddress() + " oid=" + oid);
                 }
             }
-            
+
         } catch (NumberFormatException e) {
-        	status = logDown(Level.ERROR, "Number operator used on a non-number " + e.getMessage());
+            status = logDown(Level.ERROR, "Number operator used on a non-number " + e.getMessage());
         } catch (IllegalArgumentException e) {
-        	status = logDown(Level.ERROR, "Invalid Snmp Criteria: " + e.getMessage());
+            status = logDown(Level.ERROR, "Invalid Snmp Criteria: " + e.getMessage());
         } catch (Throwable t) {
-        	status = logDown(Level.WARN, "Unexpected exception during SNMP poll of interface " + ipaddr.getHostAddress(), t);
+            status = logDown(Level.WARN, "Unexpected exception during SNMP poll of interface " + ipaddr.getHostAddress(), t);
         }
 
         return status;
