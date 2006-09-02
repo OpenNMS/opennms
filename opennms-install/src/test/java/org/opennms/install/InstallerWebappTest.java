@@ -10,6 +10,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.io.PrintWriter;
+import java.sql.SQLException;
 import java.util.ListIterator;
 import java.util.LinkedList;
 
@@ -28,7 +29,7 @@ public class InstallerWebappTest extends TestCase {
 
     private File m_tomcat_conf_dir;
 
-    public void setUp() throws IOException {
+    public void setUp() throws IOException, SQLException {
         m_anticipator = new FileAnticipator();
         File dist = m_anticipator.tempDir("dist");
         File dist_webapps = m_anticipator.tempDir(dist, "webapps");
