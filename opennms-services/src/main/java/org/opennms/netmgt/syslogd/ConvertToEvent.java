@@ -44,12 +44,13 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
-import org.opennms.core.utils.AlphaNumeric;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Log;
@@ -57,23 +58,17 @@ import org.opennms.netmgt.xml.event.Logmsg;
 import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.Parms;
 import org.opennms.netmgt.xml.event.Value;
-import org.opennms.netmgt.syslogd.SyslogDefs;
-import org.opennms.netmgt.syslogd.SyslogdIPMgr;
 
 /**
- * 
  * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
  * @author <a href="http://www.oculan.com">Oculan Corporation </a>
- * 
  */
 
 // This routine do the majority of the Syslogd's work
 // Improvements most likely are to be made.
-
 final class ConvertToEvent {
-    
+
     static final String LOG4J_CATEGORY = "OpenNMS.Syslogd";
-    
 
     private static String m_localAddr;
 
@@ -83,7 +78,7 @@ final class ConvertToEvent {
      * The received XML event, decoded using the US-ASCII encoding.
      */
     private String m_eventXML;
-    
+
     private static Event e;
 
     /**
@@ -107,7 +102,6 @@ final class ConvertToEvent {
      */
     private List m_ackEvents;
 
-
     private Event m_event;
 
     /**
@@ -120,27 +114,26 @@ final class ConvertToEvent {
     }
 
     /**
-     * Constructs a new event encapsulation instance based upon the information
-     * passed to the method. The passed datagram data is decoded into a string
-     * using the <tt>US-ASCII</tt> character encoding.
+     * Constructs a new event encapsulation instance based upon the
+     * information passed to the method. The passed datagram data is decoded
+     * into a string using the <tt>US-ASCII</tt> character encoding.
      * 
      * @param packet
      *            The datagram received from the remote agent.
-     * 
      * @throws java.io.UnsupportedEncodingException
      *             Thrown if the data buffer cannot be decoded using the
      *             US-ASCII encoding.
      */
-    static ConvertToEvent make(DatagramPacket packet) throws UnsupportedEncodingException {
-       return make(packet.getAddress(), packet.getPort(), packet.getData(), packet.getLength());
+    static ConvertToEvent make(DatagramPacket packet)
+            throws UnsupportedEncodingException {
+        return make(packet.getAddress(), packet.getPort(), packet.getData(),
+                    packet.getLength());
     }
 
-
-
     /**
-     * Constructs a new event encapsulation instance based upon the information
-     * passed to the method. The passed byte array is decoded into a string
-     * using the <tt>US-ASCII</tt> character encoding.
+     * Constructs a new event encapsulation instance based upon the
+     * information passed to the method. The passed byte array is decoded into
+     * a string using the <tt>US-ASCII</tt> character encoding.
      * 
      * @param addr
      *            The remote agent's address.
@@ -150,46 +143,42 @@ final class ConvertToEvent {
      *            The XML data in US-ASCII encoding.
      * @param len
      *            The length of the XML data in the buffer.
-     * 
      * @throws java.io.UnsupportedEncodingException
      *             Thrown if the data buffer cannot be decoded using the
      *             US-ASCII encoding.
      */
-    static ConvertToEvent make(InetAddress addr, int port, byte[] data, int len) throws UnsupportedEncodingException {
-        
+    static ConvertToEvent make(InetAddress addr, int port, byte[] data,
+            int len) throws UnsupportedEncodingException {
+
         ConvertToEvent e = new ConvertToEvent();
-       
+
         e.m_sender = addr;
         e.m_port = port;
         e.m_eventXML = new String(data, 0, len, "US-ASCII");
         e.m_ackEvents = new ArrayList(16);
         e.m_log = null;
-        
-       
+
         m_logPrefix = org.opennms.netmgt.syslogd.Syslogd.LOG4J_CATEGORY;
-        ThreadCategory.setPrefix(m_logPrefix);       
+        ThreadCategory.setPrefix(m_logPrefix);
         ThreadCategory.setPrefix(LOG4J_CATEGORY);
         Category log = ThreadCategory.getInstance();
-        
+
         log.debug("In the make part of UdpReceivedSyslog " + e.toString());
-        
-        
-        
+
         // Build a basic event out of the syslog message
-        
+
         Event event = new Event();
         event.setSource("syslogd");
-        
-        
+
         // Set nodeId
-        
-        long nodeId = SyslogdIPMgr.getNodeId(addr.toString().replaceAll("/",""));
-        //log.debug("Nodeid via SyslogdIPMgr " + SyslogdIPMgr.getNodeId(addr.toString().replaceAll("/","")));
-        
+
+        long nodeId = SyslogdIPMgr.getNodeId(addr.toString().replaceAll("/",
+                                                                        ""));
+        // log.debug("Nodeid via SyslogdIPMgr " +
+        // SyslogdIPMgr.getNodeId(addr.toString().replaceAll("/","")));
+
         if (nodeId != -1)
             event.setNodeid(nodeId);
-        
-        
 
         // Set event host
         //
@@ -199,19 +188,17 @@ final class ConvertToEvent {
             event.setHost("unresolved.host");
             log.warn("Failed to resolve local hostname", uhE);
         }
-        
-        
-        event.setInterface(addr.toString().replaceAll("/",""));
-        
-        
+
+        event.setInterface(addr.toString().replaceAll("/", ""));
+
         event.setTime(org.opennms.netmgt.EventConstants.formatToString(new java.util.Date()));
         Logmsg logmsg = new Logmsg();
         logmsg.setDest("logndisplay");
-        
+
         String message = new String(data, 0, len, "US-ASCII");
-        
-        //log.debug("The parsed message... " + message );
-        
+
+        // log.debug("The parsed message... " + message );
+
         int lbIdx = message.indexOf('<');
         int rbIdx = message.indexOf('>');
 
@@ -226,19 +213,19 @@ final class ConvertToEvent {
             priCode = Integer.parseInt(priStr);
         } catch (NumberFormatException ex) {
             log.debug("ERROR Bad priority code '" + priStr + "'");
-            
+
         }
 
         int facility = SyslogDefs.extractFacility(priCode);
         int priority = SyslogDefs.extractPriority(priCode);
-        
+
         String priorityTxt = SyslogDefs.getPriorityName(priority);
-        //event.setSeverity(priorityTxt);
-        
+        // event.setSeverity(priorityTxt);
+
         String facilityTxt = SyslogDefs.getFacilityName(facility);
-        
-        
-        event.setUei("uei.opennms.org/syslogd/" +facilityTxt + "/" + priorityTxt);
+
+        event.setUei("uei.opennms.org/syslogd/" + facilityTxt + "/"
+                + priorityTxt);
 
         // message = message.substring(rbIdx + 1, (message.length() - 1));
 
@@ -273,6 +260,25 @@ final class ConvertToEvent {
             message = message.substring(16);
         }
 
+        // Looking for forwarded messages
+        Pattern bsdForward = Pattern.compile("^Forwarded from (\\d+\\.\\d+\\.\\d+\\.\\d+): (.*)");
+        Matcher m = bsdForward.matcher(message);
+
+        if ((m = bsdForward.matcher(message)).matches()) {
+
+            nodeId = SyslogdIPMgr.getNodeId(m.group(1).toString().replaceAll(
+                                                                             "/",
+                                                                             ""));
+
+            if (nodeId != -1)
+                event.setNodeid(nodeId);
+            // Clean up for further processing....
+            event.setInterface(m.group(1));
+            message = m.group(2);
+            log.debug("Forwarded message: " + message);
+
+        }
+
         lbIdx = message.indexOf('[');
         rbIdx = message.indexOf(']');
         int colonIdx = message.indexOf(':');
@@ -299,15 +305,15 @@ final class ConvertToEvent {
             processName = message.substring(0, colonIdx);
             message = message.substring(colonIdx + 2);
         }
-        
-        //log.debug(processName +"," + processId + " " + timestamp + " " + message);
-      
-        
-        //Using parms provides configurability.
-        logmsg.setContent(message );
+
+        // log.debug(processName +"," + processId + " " + timestamp + " " +
+        // message);
+
+        // Using parms provides configurability.
+        logmsg.setContent(message);
         event.setLogmsg(logmsg);
-        
-//      Add appropriate parms
+
+        // Add appropriate parms
         Parms eventParms = new Parms();
         Parm eventParm = null;
         Value parmValue = null;
@@ -318,21 +324,21 @@ final class ConvertToEvent {
         parmValue.setContent((message));
         eventParm.setValue(parmValue);
         eventParms.addParm(eventParm);
-        
+
         eventParm = new Parm();
         eventParm.setParmName("severity");
         parmValue = new Value();
         parmValue.setContent("" + priorityTxt);
         eventParm.setValue(parmValue);
         eventParms.addParm(eventParm);
-        
+
         eventParm = new Parm();
         eventParm.setParmName("timestamp");
         parmValue = new Value();
         parmValue.setContent(timestamp);
         eventParm.setValue(parmValue);
         eventParms.addParm(eventParm);
-        
+
         eventParm = new Parm();
         eventParm.setParmName("process");
         parmValue = new Value();
@@ -341,28 +347,32 @@ final class ConvertToEvent {
         eventParms.addParm(eventParm);
         
         eventParm = new Parm();
+        eventParm.setParmName("service");
+        parmValue = new Value();
+        parmValue.setContent("" + facilityTxt);
+        eventParm.setValue(parmValue);
+        eventParms.addParm(eventParm);
+
+        eventParm = new Parm();
         eventParm.setParmName("processid");
         parmValue = new Value();
         parmValue.setContent("" + processId);
         eventParm.setValue(parmValue);
         eventParms.addParm(eventParm);
-        
-        
-        //Good thing(tm)
+
+        // Good thing(tm)
         event.setParms(eventParms);
 
-        
-        //log.debug("Returning from SyslogToEvent " + event.toString());
+        // log.debug("Returning from SyslogToEvent " + event.toString());
         e.m_event = event;
         return e;
     }
 
     /**
-     * Decodes the XML package from the remote agent. If an error occurs or the
-     * datagram had malformed XML then an exception is generated.
+     * Decodes the XML package from the remote agent. If an error occurs or
+     * the datagram had malformed XML then an exception is generated.
      * 
      * @return The toplevel <code>Log</code> element of the XML document.
-     * 
      * @throws org.exolab.castor.xml.ValidationException
      *             Throws if the documents data does not match the defined XML
      *             Schema Definition.
@@ -416,20 +426,20 @@ final class ConvertToEvent {
     public List getAckedEvents() {
         return m_ackEvents;
     }
-    
-    public Event getEvent(){
+
+    public Event getEvent() {
         return m_event;
     }
 
     /**
      * Returns true if the instance matches the object based upon the remote
-     * agent's address &amp; port. If the passed instance is from the same agent
-     * then it is considered equal.
+     * agent's address &amp; port. If the passed instance is from the same
+     * agent then it is considered equal.
      * 
      * @param o
      *            instance of the class to compare.
-     * 
-     * @return Returns true if the objects are logically equal, false otherwise.
+     * @return Returns true if the objects are logically equal, false
+     *         otherwise.
      */
     public boolean equals(Object o) {
         if (o != null && o instanceof ConvertToEvent) {
@@ -441,8 +451,8 @@ final class ConvertToEvent {
 
     /**
      * Returns the hash code of the instance. The hash code is computed by
-     * taking the bitwise XOR of the port and the agent's internet address hash
-     * code.
+     * taking the bitwise XOR of the port and the agent's internet address
+     * hash code.
      * 
      * @return The 32-bit has code for the instance.
      */
