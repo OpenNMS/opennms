@@ -2,6 +2,7 @@ package org.opennms.web.graph;
 
 import java.io.File;
 import java.io.UnsupportedEncodingException;
+import java.lang.Integer;
 import java.net.URLEncoder;
 import java.sql.SQLException;
 import java.util.Date;
@@ -91,6 +92,8 @@ public class Graph implements Comparable {
 	if (m_model.getType() == "performance") {
             if (m_nodeId > -1) {
 	        url = url + "&" + m_nodeId + "/strings.properties";
+            } else if (m_domain != null) {
+	        url = url + "&" + m_domain + "/strings.properties";
             }
 	}
 
@@ -154,7 +157,11 @@ public class Graph implements Comparable {
         String[] rrds = new String[columns.length];
 
         for (int i=0; i < columns.length; i++) {
-            rrds[i] = m_model.getRelativePathForAttribute(m_resourceType, m_nodeId, m_resource, columns[i]);
+            if(m_nodeId > -1) {
+                rrds[i] = m_model.getRelativePathForAttribute(m_resourceType, Integer.toString(m_nodeId), m_resource, columns[i]);
+            } else {
+                rrds[i] = m_model.getRelativePathForAttribute(m_resourceType, m_domain, m_resource, columns[i]);
+            }
         }
 
         return rrds;

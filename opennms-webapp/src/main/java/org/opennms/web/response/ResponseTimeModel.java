@@ -252,7 +252,7 @@ public class ResponseTimeModel extends GraphModelAbstract {
 	return getHumanReadableNameForIfLabel(nodeId, ifLabel, false);
     }
 
-    public String getRelativePathForAttribute(String resourceType, int nodeId, String resource, String attribute) {
+    public String getRelativePathForAttribute(String resourceType, String resourceParent, String resource, String attribute) {
         StringBuffer buffer = new StringBuffer();
         buffer.append(resource);
         buffer.append(File.separator);

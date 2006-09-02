@@ -9,7 +9,7 @@ public interface GraphModel {
 
 //    public boolean encodeNodeIdInRRDParm();
     public String getRelativePathForAttribute(String resourceType,
-            int nodeId, String resource, String attribute);
+            String resourceParent, String resource, String attribute);
 
     public String getType();
 }

@@ -146,8 +146,8 @@ public class AttributeLoader implements LazySet.Loader {
 }
 
 
-public String getRelativePathForAttribute(int nodeId, String resource, String attribute) {
-    return m_storageStrategy.getRelativePathForAttribute(nodeId, resource, attribute);
+public String getRelativePathForAttribute(String resourceParent, String resource, String attribute) {
+    return m_storageStrategy.getRelativePathForAttribute(resourceParent, resource, attribute);
 }
     
     /**

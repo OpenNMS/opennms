@@ -93,9 +93,9 @@ public class InterfaceGraphResourceType implements GraphResourceType {
         
     }
 
-    public String getRelativePathForAttribute(int nodeId, String resource, String attribute) {
+    public String getRelativePathForAttribute(String resourceParent, String resource, String attribute) {
         StringBuffer buffer = new StringBuffer();
-        buffer.append(nodeId);
+        buffer.append(resourceParent);
         buffer.append(File.separator);
         buffer.append(resource);
         buffer.append(File.separator);
