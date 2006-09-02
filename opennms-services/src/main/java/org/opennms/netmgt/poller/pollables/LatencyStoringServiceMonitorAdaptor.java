@@ -33,9 +33,11 @@ public class LatencyStoringServiceMonitorAdaptor implements ServiceMonitor {
 	}
 
 	public void initialize(PollerConfig config, Map parameters) {
+		m_serviceMonitor.initialize(config, parameters);
 	}
 
 	public void initialize(MonitoredService svc) {
+		m_serviceMonitor.initialize(svc);
 	}
 
 	public PollStatus poll(MonitoredService svc, Map parameters, Package pkg) {
@@ -134,9 +136,11 @@ public class LatencyStoringServiceMonitorAdaptor implements ServiceMonitor {
 	}
 
 	public void release() {
+		m_serviceMonitor.release();
 	}
 
 	public void release(MonitoredService svc) {
+		m_serviceMonitor.release(svc);
 	}
 
 }
