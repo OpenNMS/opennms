@@ -68,7 +68,7 @@
 
             <% if (dcpip != null && !dcpip.equals("")) { %>
 	        <tr>
-                <td class="standardbold" bgcolor="<%= pthData[3] %>" colspan="4" align="center">Default Critical Path = <%= dcpip %> ICMP</td>
+                <td class="standardbold" style="background-color: <%= pthData[3] %>" colspan="4" align="center">Default Critical Path = <%= dcpip %> ICMP</td>
 	        </tr>
 	        <tr>
                 <td class="standard" colspan="4" align="center">&nbsp;</td>
@@ -94,7 +94,7 @@
                     <td class="standardmorepadding"><a href="element/node.jsp?node=<%= pthData[1] %>"><%= pthData[0] %></a></td>
                 <% } %>
                 <td class="standardmorepadding"><%= pth[0] %></td>
-                <td class="standard" bgcolor="<%= pthData[3] %>" align="center"><%= pth[1] %></td>
+                <td class="standard" style="background-color: <%= pthData[3] %>" align="center"><%= pth[1] %></td>
                 <td class="standard" align="center"><a href="pathOutage/showNodes.jsp?critIp=<%= pth[0] %>&critSvc=<%= pth[1] %>"><%= pthData[2] %></a></td>
                 </tr>
 

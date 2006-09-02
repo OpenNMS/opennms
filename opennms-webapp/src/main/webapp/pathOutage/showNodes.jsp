@@ -63,7 +63,7 @@
       <br>
       <table class="wdth600">
           <tr>
-          <td class="standardbold" bgcolor="<%= pthData[3]%>" colspan="4" align="center">Node List for Critical Path <%= critIp %> <%= critSvc %></td>
+          <td class="standardbold" style="background-color: <%= pthData[3]%>" colspan="4" align="center">Node List for Critical Path <%= critIp %> <%= critSvc %></td>
           </tr>
           <tr>
           <td class="standard" colspan="4">&nbsp;</td>
@@ -82,7 +82,7 @@
                   String labelColor[] = PathOutageFactory.getLabelAndStatus(nodeid, conn); %>
                   <tr>
                   <td class="standard"><a href="element/node.jsp?node=<%= nodeid %>"><%= labelColor[0] %></a></td>
-                  <td class="standard" bgcolor="<%= labelColor[1] %>"><%= labelColor[2] %></td>
+                  <td class="standard" style="background-color: <%= labelColor[1] %>"><%= labelColor[2] %></td>
                   </tr>
               <% } %>
           <% } finally {
