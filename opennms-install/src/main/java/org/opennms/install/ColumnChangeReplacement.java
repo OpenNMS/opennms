@@ -6,4 +6,5 @@ import java.util.Map;
 
 public interface ColumnChangeReplacement {
     public Object getColumnReplacement(ResultSet rs, Map<String, ColumnChange> columnChanges) throws SQLException;
+    public boolean addColumnIfColumnIsNew();
 }

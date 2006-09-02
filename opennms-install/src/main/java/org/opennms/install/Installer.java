@@ -179,31 +179,22 @@ public class Installer {
 
     String m_required_options = "At least one of -d, -i, -s, -U, -y, "
             + "-C, or -T is required.";
-    
-    public Installer() {
-        AutoIntegerIdMapStore snmpInterfaceId =
-            new AutoIntegerIdMapStore(1, new String[] { "nodeid", "ipaddr", "snmpifindex" });
-        m_columnReplacements.put("snmpinterface.id", snmpInterfaceId);
-        
-        AutoIntegerIdMapStore ipInterfaceId =
-            new AutoIntegerIdMapStore(1, new String[] { "nodeid", "ipaddr", "ifindex" });
-        m_columnReplacements.put("ipinterface.id", ipInterfaceId);
 
-        MapStoreIdGetter IpInterfaceSnmpInterfaceId =
-            new MapStoreIdGetter(snmpInterfaceId, new String[] { "nodeid", "ipaddr", "ifindex" }, true);
-        m_columnReplacements.put("ipinterface.snmpinterfaceid", IpInterfaceSnmpInterfaceId);
-        
-        AutoIntegerIdMapStore ifServicesId =
-            new AutoIntegerIdMapStore(1, new String[] { "nodeid", "ipaddr", "serviceid" });
-        m_columnReplacements.put("ifservices.id", ifServicesId);
-        
-        MapStoreIdGetter ifServicesIpInterfaceId =
-            new MapStoreIdGetter(ipInterfaceId, new String[] { "nodeid", "ipaddr", "ifindex" }, false);
-        m_columnReplacements.put("ifservices.ipinterfaceid", ifServicesIpInterfaceId);
-        
-        MapStoreIdGetter outagesifServiceId =
-            new MapStoreIdGetter(ifServicesId, new String[] { "nodeid", "ipaddr", "serviceid" }, false);
-        m_columnReplacements.put("outages.ifserviceid", outagesifServiceId);
+    protected TriggerDao m_triggerDao;
+    
+    public Installer() throws SQLException {
+        // The DEFAULT value for these columns will take care of these primary keys
+        m_columnReplacements.put("snmpinterface.id", new DoNotAddColumn());
+        m_columnReplacements.put("ipinterface.id", new DoNotAddColumn());
+        m_columnReplacements.put("ifservices.id", new DoNotAddColumn());
+        m_columnReplacements.put("assets.id", new DoNotAddColumn());
+
+        // Triggers will take care of these surrogate foreign keys
+        m_columnReplacements.put("ipinterface.snmpinterfaceid",
+                                 new DoNotAddColumn());
+        m_columnReplacements.put("ifservices.ipinterfaceid",
+                                 new DoNotAddColumn());
+        m_columnReplacements.put("outages.ifserviceid", new DoNotAddColumn());
         
         m_columnReplacements.put("events.eventsource",
                                  new EventSourceReplacement());
@@ -211,23 +202,35 @@ public class Installer {
         m_columnReplacements.put("outages.outageid",
                                  new AutoInteger(1));
         
-        m_columnReplacements.put("snmpinterface.nodeid", new RowHasBogusData("snmpInterface", "nodeId"));
+        m_columnReplacements.put("snmpinterface.nodeid",
+                                 new RowHasBogusData("snmpInterface",
+                                                     "nodeId"));
         
-        m_columnReplacements.put("snmpinterface.snmpifindex", new RowHasBogusData("snmpInterface", "snmpIfIndex"));
+        m_columnReplacements.put("snmpinterface.snmpifindex",
+                                 new RowHasBogusData("snmpInterface",
+                                                     "snmpIfIndex"));
 
-        m_columnReplacements.put("ipinterface.nodeid", new RowHasBogusData("ipInterface", "nodeId"));
+        m_columnReplacements.put("ipinterface.nodeid",
+                                 new RowHasBogusData("ipInterface", "nodeId"));
 
-        m_columnReplacements.put("ipinterface.ipaddr", new RowHasBogusData("ipInterface", "ipAddr"));
+        m_columnReplacements.put("ipinterface.ipaddr",
+                                 new RowHasBogusData("ipInterface", "ipAddr"));
 
-        m_columnReplacements.put("ifservices.nodeid", new RowHasBogusData("ifservices", "nodeId"));
+        m_columnReplacements.put("ifservices.nodeid",
+                                 new RowHasBogusData("ifservices", "nodeId"));
 
-        m_columnReplacements.put("ifservices.ipaddr", new RowHasBogusData("ifservices", "ipaddr"));
+        m_columnReplacements.put("ifservices.ipaddr",
+                                 new RowHasBogusData("ifservices", "ipaddr"));
 
-        m_columnReplacements.put("ifservices.serviceid", new RowHasBogusData("ifservices", "serviceId"));
+        m_columnReplacements.put("ifservices.serviceid",
+                                 new RowHasBogusData("ifservices",
+                                                     "serviceId"));
 
-        m_columnReplacements.put("outages.nodeid", new RowHasBogusData("outages", "nodeId"));
+        m_columnReplacements.put("outages.nodeid",
+                                 new RowHasBogusData("outages", "nodeId"));
         
-        m_columnReplacements.put("outages.serviceid", new RowHasBogusData("outages", "serviceId"));
+        m_columnReplacements.put("outages.serviceid",
+                                 new RowHasBogusData("outages", "serviceId"));
         
         /*
          * This is totally bogus.  outages.svcregainedeventid is a foreign
@@ -249,10 +252,8 @@ public class Installer {
                                  */
         
         m_columnReplacements.put("usersnotified.id",
-                                 new AutoInteger(1));
+                                 new NextValReplacement("userNotifNxtId"));
         
-        m_columnReplacements.put("assets.id", new AutoInteger(1));
-
     }
     
     public void install(String[] argv) throws Exception {
@@ -319,6 +320,14 @@ public class Installer {
                 checkConstraints();
             }
             createSequences();
+
+            // XXX should we be using createFunctions and createLanguages
+            // instead?
+            updatePlPgsql();
+
+            // XXX should we be using createFunctions instead?
+            addStoredProcedures();
+
             createTables();
             createIndexes();
             // createFunctions(m_cfunctions); // Unused, not in create.sql
@@ -346,15 +355,6 @@ public class Installer {
 
         if (m_update_iplike) {
             updateIplike();
-        }
-
-        if (m_update_database) {
-            // XXX should we be using createFunctions and createLanguages
-            // instead?
-            updatePlPgsql();
-
-            // XXX should we be using createFunctions instead?
-            addStoredProcedures();
         }
 
         if (m_update_database || m_update_iplike || m_update_unicode
@@ -1086,6 +1086,8 @@ public class Installer {
                 m_out.print("  - creating table \"" + tableName + "\"... ");
                 st.execute("CREATE TABLE " + tableName + " (" + create + ")");
                 m_out.println("CREATED");
+                
+                addTriggersForTable(tableName);
 
                 m_out.print("  - giving \"" + m_user + "\" permissions on \""
                         + tableName + "\"... ");
@@ -1106,6 +1108,7 @@ public class Installer {
                         String create = getTableCreateFromSQL(tableName);
                         st.execute("CREATE TABLE " + tableName + " ("
                                 + create + ")");
+                        addTriggersForTable(tableName);
                         st.execute("GRANT ALL ON " + tableName + " TO "
                                 + m_user);
                         m_out.println("CREATED");
@@ -1124,6 +1127,20 @@ public class Installer {
         }
 
         m_out.println("- creating tables... DONE");
+    }
+    
+    public void addTriggersForTable(String table) throws SQLException {
+        List<Trigger> triggers =
+            m_triggerDao.getTriggersForTable(table);
+        for (Trigger trigger : triggers) {
+            m_out.print("    - checking trigger '" + trigger.getName()
+                        + "' on this table... ");
+            if (!trigger.isOnDatabase(m_dbconnection)) {
+                trigger.addToDatabase(m_dbconnection);
+            }
+            m_out.println("DONE");
+        }
+
     }
 
     public void createIndexes() throws Exception {
@@ -1420,6 +1437,8 @@ public class Installer {
     }
 
     public void addStoredProcedures() throws Exception {
+        m_triggerDao = new TriggerDao();
+
         Statement st = m_dbconnection.createStatement();
 
         m_out.print("- adding stored procedures... ");
@@ -1448,7 +1467,8 @@ public class Installer {
                     continue;
                 }
 
-                if (line.toLowerCase().startsWith("drop function")) {
+                if (line.toLowerCase().startsWith("drop function")
+                    || line.toLowerCase().startsWith("drop trigger")) {
                     drop.add(line);
                 } else {
                     create.append(line);
@@ -1456,17 +1476,29 @@ public class Installer {
                 }
             }
             r.close();
+            
+            /*
+             * Find the trigger first, because if there is a trigger that
+             * uses this stored procedure on this table, we'll need to drop
+             * it first.
+             */
+            Trigger t = Trigger.findTriggerInString(create.toString());
+            if (t != null) {
+                m_triggerDao.add(t);
+            }
 
-            Matcher m = Pattern.compile(
-                                        "(?is)\\b(CREATE(?: OR REPLACE)? FUNCTION\\s+"
+            Matcher m = Pattern.compile("(?is)\\b(CREATE(?: OR REPLACE)? FUNCTION\\s+"
                                                 + "(\\w+)\\s*\\((.*?)\\)\\s+"
                                                 + "RETURNS\\s+(\\S+)\\s+AS\\s+"
                                                 + "(.+? language ['\"]?\\w+['\"]?);)").matcher(
                                                                                               create.toString());
 
             if (!m.find()) {
-                throw new Exception("Couldn't match \"" + m.pattern().pattern()
-                        + "\" in string \"" + create + "\"");
+                throw new Exception("For stored procedure in file '"
+                                    + list[i].getName()
+                                    + "' couldn't match \""
+                                    + m.pattern().pattern()
+                                    + "\" in string \"" + create + "\"");
             }
             String createSql = m.group(1);
             String function = m.group(2);
@@ -1474,45 +1506,21 @@ public class Installer {
             String returns = m.group(4);
             // String rest = m.group(5);
 
+            
             if (functionExists(function, columns, returns)) {
-                if (m_force) {
-                    st.execute("DROP FUNCTION " + function + "(" + columns
-                            + ")");
-                    st.execute(createSql);
-                    m_out.print("OK (dropped and re-added)");
-                } else {
-                    m_out.print("EXISTS");
+                if (t != null && t.isOnDatabase(m_dbconnection)) {
+                    t.removeFromDatabase(m_dbconnection);
+                    
                 }
+                st.execute("DROP FUNCTION " + function + "(" + columns + ")");
+                st.execute(createSql);
+                m_out.print("OK (dropped and re-added)");
             } else {
                 st.execute(createSql);
                 m_out.print("OK");
             }
-
-            Pattern p = Pattern.compile("(?i)"
-                                        + "(CREATE TRIGGER (\\S+)\\s+"
-                                        + "BEFORE INSERT OR UPDATE\\s+"
-                                        + "ON (\\S+) FOR EACH ROW\\s+"
-                                        + "EXECUTE PROCEDURE (\\S+)\\(\\));");
-            m = p.matcher(create.toString());
-            if (m.find()) {
-                String triggerSql = m.group(1);
-                String triggerName = m.group(2);
-                String triggerTable = m.group(3);
-                String triggerProc = m.group(4);
-                
-                m_out.print("    - checking trigger '" + triggerName + "' ...");
-                
-                if (triggerExists(triggerName, triggerTable, triggerProc)) {
-                    m_out.println("EXISTS");
-                } else {
-                    st.execute(triggerSql);
-                    m_out.println("ADDED");
-                }
-            }
-
         }
         m_out.println("");
-        
     }
 
     public boolean functionExists(String function, String columns,
@@ -2185,15 +2193,15 @@ public class Installer {
              * exist before or it did NOT have the NOT NULL constraint before.
              */
             if (m_columnReplacements.containsKey(table + "." + newColumn.getName())) {
-                columnChange.setNullReplace(m_columnReplacements.get(table + "." + newColumn.getName()));
+                columnChange.setColumnReplacement(m_columnReplacements.get(table + "." + newColumn.getName()));
             }
-            if (newColumn.isNotNull() && columnChange.getNullReplace() == null) {
+            if (newColumn.isNotNull() && columnChange.getColumnReplacement() == null) {
                 if (oldColumn == null) {
                     String message = "Column " + newColumn.getName()
                             + " in new table has NOT NULL "
                             + "constraint, however this column "
                             + "did not exist before and there is "
-                            + "no null replacement for this " + "column";
+                            + "no change replacement for this column";
                     if (m_ignore_notnull) {
                         m_out.println(message + ".  Ignoring due to '-N'");
                     } else {
@@ -2205,7 +2213,7 @@ public class Installer {
                             + "constraint, however this column "
                             + "did not have the NOT NULL "
                             + "constraint before and there is "
-                            + "no null replacement for this " + "column";
+                            + "no change replacement for this column";
                     if (m_ignore_notnull) {
                         m_out.println(message + ".  Ignoring due to '-N'");
                     } else {
@@ -2253,6 +2261,8 @@ public class Installer {
             st.execute("CREATE TABLE " + table + "("
                     + getTableCreateFromSQL(table) + ")");
             m_out.println("done");
+            
+            addTriggersForTable(table);
 
             transformData(table, tmpTable, columnChanges, oldColumnNames);
 
@@ -2308,13 +2318,12 @@ public class Installer {
             String[] oldColumnNames) throws SQLException, ParseException,
             Exception {
         Statement st = m_dbconnection.createStatement();
-        Iterator j;
         int i;
 
         st.setFetchSize(s_fetch_size);
 
-        String[] columns = columnChanges.keySet().toArray(new String[0]);
-        String[] questionMarks = new String[columns.length];
+//        String[] columns = columnChanges.keySet().toArray(new String[0]);
+//        String[] questionMarks = new String[columns.length];
 
         for (i = 0; i < oldColumnNames.length; i++) {
             ColumnChange c = columnChanges.get(oldColumnNames[i]);
@@ -2322,13 +2331,28 @@ public class Installer {
                 c.setSelectIndex(i + 1);
             }
         }
+        
+        LinkedList<String> insertColumns = new LinkedList<String>();
+        LinkedList<String> questionMarks = new LinkedList<String>();
+        for (ColumnChange c : columnChanges.values()) {
+            c.setColumnType(c.getColumn().getColumnSqlType());
+            
+            ColumnChangeReplacement r = c.getColumnReplacement();
+            if (r == null || r.addColumnIfColumnIsNew()) {
+                insertColumns.add(c.getColumn().getName());
+                questionMarks.add("?");
+                c.setPrepareIndex(questionMarks.size());
+            }
+        }
 
+        /*
         for (i = 0; i < columns.length; i++) {
             questionMarks[i] = "?";
             ColumnChange c = columnChanges.get(columns[i]);
             c.setPrepareIndex(i + 1);
             c.setColumnType(((Column) c.getColumn()).getColumnSqlType());
         }
+        */
 
         /*
          * Pull everything in from the old table and filter it to update the
@@ -2357,34 +2381,37 @@ public class Installer {
         }
         select = m_dbconnection.prepareStatement(dbcmd);
         select.setFetchSize(s_fetch_size);
-        // error = "Unable to prepare select from temp";
 
-        dbcmd = "INSERT INTO " + table + " (" + join(", ", columns)
+        dbcmd = "INSERT INTO " + table + " (" + join(", ", insertColumns)
                 + ") values (" + join(", ", questionMarks) + ")";
         if (m_debug) {
             m_out.println("    - performing insert: " + dbcmd);
         }
         insert = m_dbconnection.prepareStatement(dbcmd);
-        // error = "Unable to prepare insert into " + table);
 
         rs = select.executeQuery();
         m_dbconnection.setAutoCommit(false);
 
-        String name;
-        ColumnChange change;
+//        ColumnChange change;
         Object obj;
-        SimpleDateFormat dateParser = new SimpleDateFormat(
-                                                           "dd-MMM-yyyy HH:mm:ss");
-        SimpleDateFormat dateFormatter = new SimpleDateFormat(
-                                                              "yyyy-MM-dd HH:mm:ss");
+        SimpleDateFormat dateParser = new SimpleDateFormat("dd-MMM-yyyy HH:mm:ss");
+        SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         char spin[] = { '/', '-', '\\', '|' };
 
         int current_row = 0;
 
         while (rs.next()) {
-            for (j = columnChanges.keySet().iterator(); j.hasNext();) {
-                name = (String) j.next();
-                change = (ColumnChange) columnChanges.get(name);
+            /*
+            for (String name : columnChanges.keySet()) {
+                ColumnChange change = columnChanges.get(name);
+                */
+            for (ColumnChange change : columnChanges.values()) {
+                String name = change.getColumn().getName();
+                
+                if (change.hasColumnReplacement()
+                        && !change.getColumnReplacement().addColumnIfColumnIsNew()) {
+                    continue;
+                }
 
                 if (change.getSelectIndex() > 0) {
                     obj = rs.getObject(change.getSelectIndex());
@@ -2401,19 +2428,10 @@ public class Installer {
                     obj = null;
                 }
 
-                /*
-                if (table.equals("outages") && name.equals("outageid")) {
-                    obj = new Integer(current_row + 1);
-                }
-                if (table.equals("usersnotified") && name.equals("id")) {
-                    obj = new Integer(current_row + 1);
-                }
-                */
-                if (obj == null && change.isNullReplace()) {
-                    obj = change.getNullReplace();
-                    if (obj instanceof ColumnChangeReplacement) {
-                        obj = ((ColumnChangeReplacement) obj).getColumnReplacement(rs, columnChanges);
-                    }
+                if (obj == null && change.hasColumnReplacement()) {
+                    ColumnChangeReplacement replacement =
+                        change.getColumnReplacement();
+                    obj = replacement.getColumnReplacement(rs, columnChanges);
                     if (m_debug) {
                         m_out.println("      - " + name
                                 + " was NULL but is a "
@@ -2666,6 +2684,10 @@ public class Installer {
         public Integer getColumnReplacement(ResultSet rs, Map<String, ColumnChange> columnChanges) {
             return getInt();
         }
+
+        public boolean addColumnIfColumnIsNew() {
+            return true;
+        }
     }
     
     public class AutoIntegerIdMapStore implements ColumnChangeReplacement {
@@ -2684,6 +2706,10 @@ public class Installer {
             Integer newInteger = m_value++;
             m_idMap.put(key, newInteger);
             return newInteger;
+        }
+        
+        public boolean addColumnIfColumnIsNew() {
+            return true;
         }
         
         public Integer getIntegerForColumns(ResultSet rs, Map<String, ColumnChange> columnChanges, String[] columns, boolean noMatchOkay) throws SQLException {
@@ -2786,6 +2812,9 @@ public class Installer {
             return m_storeFoo.getIntegerForColumns(rs, columnChanges, m_indexColumns, m_noMatchOkay);
         }
         
+        public boolean addColumnIfColumnIsNew() {
+            return true;
+        }
     }
     
     public class EventSourceReplacement implements ColumnChangeReplacement {
@@ -2798,6 +2827,10 @@ public class Installer {
         public Object getColumnReplacement(ResultSet rs, Map<String, ColumnChange> columnChanges) throws SQLException {
             return m_replacement;
         }
+        
+        public boolean addColumnIfColumnIsNew() {
+            return true;
+        }
     }
     
     public class FixedIntegerReplacement implements ColumnChangeReplacement {
@@ -2809,6 +2842,10 @@ public class Installer {
 
         public Object getColumnReplacement(ResultSet rs, Map<String, ColumnChange> columnChanges) throws SQLException {
             return m_replacement;
+        }
+        
+        public boolean addColumnIfColumnIsNew() {
+            return true;
         }
     }
     
@@ -2834,8 +2871,76 @@ public class Installer {
                                                + "reflect a valid '"
                                                + m_column + "' value.");
         }
-    }
 
+        public boolean addColumnIfColumnIsNew() {
+            return true;
+        }
+    }
+    
+    public class NullReplacement implements ColumnChangeReplacement {
+        public NullReplacement() {
+            // do nothing
+        }
+        
+        public Object getColumnReplacement(ResultSet rs, Map<String, ColumnChange> columnChanges) throws SQLException {
+            return null;
+        }
+        
+        public boolean addColumnIfColumnIsNew() {
+            return true;
+        }
+    }
+    
+    public class DoNotAddColumn implements ColumnChangeReplacement {
+        public Object getColumnReplacement(ResultSet rs, Map<String, ColumnChange> columnChanges) throws SQLException {
+            return null;
+        }
+
+        public boolean addColumnIfColumnIsNew() {
+            return false;
+        }
+
+    }
+    
+    public class NextValReplacement implements ColumnChangeReplacement {
+        String m_sequence;
+        PreparedStatement m_statement;
+        
+        public NextValReplacement(String sequence) throws SQLException {
+            m_sequence = sequence;
+        }
+        
+        private PreparedStatement getStatement() throws SQLException {
+            if (m_statement == null) {
+                m_statement = m_dbconnection.prepareStatement("SELECT nextval('" + m_sequence + "')");
+            }
+            return m_statement;
+        }
+        
+        public Integer getColumnReplacement(ResultSet rs, Map<String, ColumnChange> columnChanges) throws SQLException {
+            ResultSet r = getStatement().executeQuery();
+            
+            if (!r.next()) {
+                r.close();
+                throw new SQLException("Query for next value of sequence did not return any rows.");
+            }
+            
+            int i = r.getInt(1);
+            r.close();
+            return i;
+        }
+        
+        public boolean addColumnIfColumnIsNew() {
+            return true;
+        }
+        
+        protected void finalize() throws SQLException {
+            if (m_statement != null) {
+                m_statement.close();
+            }
+        }
+    }
+    
     public boolean triggerExists(String name, String table,
             String storedProcedure) throws Exception {
         

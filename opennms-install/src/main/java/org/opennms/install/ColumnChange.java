@@ -37,7 +37,7 @@ package org.opennms.install;
 public class ColumnChange {
     private Column m_column = null;
 
-    private Object m_nullReplace = null;
+    private ColumnChangeReplacement m_columnReplacement = null;
 
     private boolean m_upgradeTimestamp = false;
 
@@ -55,16 +55,16 @@ public class ColumnChange {
         m_column = column;
     }
 
-    public Object getNullReplace() {
-        return m_nullReplace;
+    public ColumnChangeReplacement getColumnReplacement() {
+        return m_columnReplacement;
     }
 
-    public boolean isNullReplace() {
-        return (m_nullReplace != null);
+    public boolean hasColumnReplacement() {
+        return (m_columnReplacement != null);
     }
 
-    public void setNullReplace(Object nullReplace) {
-        m_nullReplace = nullReplace;
+    public void setColumnReplacement(ColumnChangeReplacement columnReplacement) {
+        m_columnReplacement = columnReplacement;
     }
 
     public boolean isUpgradeTimestamp() {

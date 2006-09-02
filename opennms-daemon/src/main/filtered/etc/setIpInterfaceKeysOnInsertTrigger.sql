@@ -44,7 +44,7 @@ BEGIN
       THEN
          RAISE EXCEPTION ''IfServices Trigger Exception: No ipinterface found for ipInterfaceId: %'', NEW.ipInterfaceId;
       ELSE
-         RAISE EXCEPTION ''IfServices Trigger Notice: IpInterface found for ipInterfaceId: %'', NEW.ipInterfaceId;
+         RAISE NOTICE ''IfServices Trigger Notice: IpInterface found for ipInterfaceId: %'', NEW.ipInterfaceId;
       END IF;
   END IF;
   RETURN NEW;
