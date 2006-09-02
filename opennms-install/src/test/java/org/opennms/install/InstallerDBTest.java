@@ -278,8 +278,8 @@ public class InstallerDBTest extends TestCase {
                    + "VALUES ( nextval('outageNxtId'), 1, '1.2.3.5', now(), 1 )");
         executeSQL("INSERT INTO outages ( outageId, nodeId, ipAddr, ifLostService, serviceID ) "
                    + "VALUES ( nextval('outageNxtId'), 1, '1.2.3.6', now(), 1 )");
-        executeSQL("INSERT INTO outages ( outageId, nodeId, ipAddr, ifLostService, serviceID ) "
-                   + "VALUES ( nextval('outageNxtId'), 1, '1.2.3.6', now(), 2 )");
+//        executeSQL("INSERT INTO outages ( outageId, nodeId, ipAddr, ifLostService, serviceID ) "
+//                   + "VALUES ( nextval('outageNxtId'), 1, '1.2.3.6', now(), 2 )");
 
 
         m_installer.m_create_sql = newCreate;
