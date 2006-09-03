@@ -9,11 +9,11 @@ public interface OutageService {
 
     Collection<OnmsOutage> getCurrentOutages();
     
-    Collection<OnmsOutage> getCurrentOutagesByRange(Integer Offset, Integer Limit, String Order, String Direction);
+    Collection<OnmsOutage> getCurrentOutagesByRange(Integer offset, Integer oimit, String orderProperty, String direction);
 
-    Collection<OnmsOutage> getOutagesByRange(Integer Offset, Integer Limit, String Order, String Direction, String Filter);
+    Collection<OnmsOutage> getOutagesByRange(Integer offset, Integer limit, String orderProperty, String direction, String filter);
     
-    Collection<OnmsOutage> getSuppressedOutagesByRange(Integer Offset, Integer Limit, String Order, String Direction);    
+    Collection<OnmsOutage> getSuppressedOutagesByRange(Integer offset, Integer limit, String orderProperty, String direction);    
     
     Collection<OnmsOutage> getSuppressedOutages();
 
@@ -35,26 +35,23 @@ public interface OutageService {
     Collection<OnmsOutage> getOutagesForInterface(int nodeId, String ipInterface)
             ;
 
-    Collection<OnmsOutage> getOutagesForInterface(int nodeId, String ipAddr,
-            Date time) ;
+    Collection<OnmsOutage> getOutagesForInterface(int nodeId, String ipAddr, Date time) ;
 
-    Collection<OnmsOutage> getOutagesForService(int nodeId, String ipInterface,
-            int serviceId) ;
+    Collection<OnmsOutage> getOutagesForService(int nodeId, String ipInterface, int serviceId) ;
     
-    Collection<OnmsOutage>  getOutagesForService(int nodeId, String ipAddr, int serviceId,
-            Date time) ;
+    Collection<OnmsOutage>  getOutagesForService(int nodeId, String ipAddr, int serviceId, Date time) ;
 
-	Collection<OnmsOutage> getCurrentOutages(String ordering);
+	Collection<OnmsOutage> getCurrentOutages(String orderProperty);
 
 	OnmsOutage load(Integer outageid);
 	
-	void update(OnmsOutage Outage);
+	void update(OnmsOutage outage);
 	
 	Integer getOutageCount() ;
 	
-	Integer outageCountFiltered(String Filter);
+	Integer outageCountFiltered(String filter);
 
-	Collection<OnmsOutage> getResolvedOutagesByRange(Integer Offset, Integer Limit, String Order, String Direction, String Filter);
+	Collection<OnmsOutage> getResolvedOutagesByRange(Integer offset, Integer limit, String orderProperty, String direction, String filter);
 
 	Integer outageResolvedCountFiltered(String searchFilter);
 	
