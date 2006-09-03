@@ -4,9 +4,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -22,15 +20,6 @@ public class Index {
             Pattern.compile("(?i)create\\s+(unique\\s+)?"
                             + "index\\s+(\\S+)\\s+"
                             + "on\\s+([^)]+)\\s*\\(([^)]+)\\)");
-                              
-        /*
-        Pattern.compile("(?i)"
-                        + "(CREATE TRIGGER (\\S+)\\s+"
-                        + "BEFORE (?:INSERT|UPDATE|INSERT OR UPDATE)\\s+"
-                        + "ON (\\S+) FOR EACH ROW\\s+"
-                        + "EXECUTE PROCEDURE (\\S+)\\(\\));");
-                        */
-
 
     public Index(String name, String table, List<String> columns,
             boolean unique) {
