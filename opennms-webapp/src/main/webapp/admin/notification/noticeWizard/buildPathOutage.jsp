@@ -112,13 +112,12 @@
                commas are used for list demarcation.
             </p>
             <p>The following examples are all valid and yield the set of addresses from
-	       192.168.0.0 through 192.168.3.255.
+	       192.168.0.0 through 192.168.3.255.</p>
                <ul>
                   <li>192.168.0-3.*
                   <li>192.168.0-3.0-255
                   <li>192.168.0,1,2,3.*
                </ul>
-            </p>
 	    <p>To Use a rule based on TCP/IP addresses as described above, enter<BR><BR>
 	       IPADDR IPLIKE *.*.*.*<BR><BR>in the Current Rule box below, substituting your
 	       desired address fields for *.*.*.*.
