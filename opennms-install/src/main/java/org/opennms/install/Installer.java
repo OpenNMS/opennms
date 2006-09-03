@@ -182,6 +182,8 @@ public class Installer {
 
     protected TriggerDao m_triggerDao;
     
+    protected IndexDao m_indexDao;
+    
     public Installer() throws SQLException {
         // The DEFAULT value for these columns will take care of these primary keys
         m_columnReplacements.put("snmpinterface.id", new DoNotAddColumn());
@@ -329,7 +331,7 @@ public class Installer {
             addStoredProcedures();
 
             createTables();
-            createIndexes();
+            //createIndexes();
             // createFunctions(m_cfunctions); // Unused, not in create.sql
             // createLanguages(); // Unused, not in create.sql
             // createFunctions(m_functions); // Unused, not in create.sql
@@ -567,6 +569,7 @@ public class Installer {
         m_tables = new LinkedList<String>();
         m_seqmapping = new HashMap<String, String[]>();
         m_sequences = new LinkedList<String>();
+        m_indexDao = new IndexDao();
 
         LinkedList<String> sql_l = new LinkedList<String>();
 
@@ -627,17 +630,21 @@ public class Installer {
                          * m_languages.add(m.group(1));
                          */
                     } else if (type.toLowerCase().matches(".*\\bindex\\b.*")) {
+                        /*
                         m = Pattern.compile(
                                             "(?i)\\s*create\\s+(?:unique )?"
                                                     + "index\\s+[\"']?([\\w_]+)"
                                                     + "[\"']?.*").matcher(
                                                                           line);
-                        if (!m.matches()) {
+                                                                          */
+                        Index i = Index.findIndexInString(line);
+                        if (i == null) {
                             throw new Exception("Could not match name and "
                                     + "type of the index " + "in this"
                                     + "line: " + line);
                         }
-                        m_indexes.add(m.group(1));
+                        m_indexDao.add(i);
+                        //m_indexes.add(m.group(1));
                     } else {
                         throw new Exception("Unknown CREATE encountered: "
                                 + "CREATE " + type + " " + name);
@@ -845,94 +852,128 @@ public class Installer {
 
         m_out.print("- checking for rows that violate constraints... ");
 
-        Statement st = m_dbconnection.createStatement();
         for (Constraint constraint : constraints) {
-            String name = constraint.getName();
-            String table = constraint.getTable();
-            String column = constraint.getColumns().get(0);
-            String ftable = constraint.getForeignTable();
-            String fcolumn = constraint.getForeignColumns().get(0);
-
-            if (!tableExists(table) || !tableColumnExists(table, column)) {
-                // The constrained table or column does not exist
-                continue;
-            }
-
-            if (table.equals("usersNotified") && column.equals("id")) {
-                // m_out.print("Skipping usersNotified.id");
-                continue;
-            }
-
-            String query = "SELECT count("
-                    + table
-                    + "."
-                    + column
-                    + ") FROM "
-                    + table
-                    + " "
-                    + getForeignConstraintWhere(table, column, ftable,
-                                                fcolumn);
-
-            ResultSet rs = st.executeQuery(query);
-
-            rs.next();
-            int count = rs.getInt(1);
-            rs.close();
-
-            if (count != 0) {
-                rs = st.executeQuery("SELECT count(*) FROM " + table);
-                rs.next();
-                int total = rs.getInt(1);
-                rs.close();
-                st.close();
-
-                throw new Exception("Table " + table + " contains " + count
-                        + " rows " + "(out of " + total
-                        + ") that violate new constraint " + name + ".  "
-                        + "See the install guide for details "
-                        + "on how to correct this problem.");
-            }
+            checkConstraint(constraint);
         }
-        st.close();
 
         m_out.println("NONE");
     }
+    
+    public void checkConstraint(Constraint constraint) throws Exception {
+        String name = constraint.getName();
+        String table = constraint.getTable();
+        List<String> columns = constraint.getColumns();
+        String ftable = constraint.getForeignTable();
+        List<String> fcolumns = constraint.getForeignColumns();
 
-    public String getForeignConstraintWhere(String table, String column,
-            String ftable, String fcolumn) throws Exception {
-        if (tableExists(ftable) && tableColumnExists(ftable, fcolumn)) {
-            return "WHERE NOT EXISTS (SELECT " + ftable + "." + fcolumn
-                    + " FROM " + ftable + " WHERE " + ftable + "." + fcolumn
-                    + " = " + table + "." + column + ") AND " + table + "."
-                    + column + " IS NOT NULL";
-        } else {
-            return "WHERE " + table + "." + column + " IS NOT NULL";
+        if (!tableExists(table)) {
+            // The constrained table does not exist
+            return;
         }
+        for (String column : columns) {
+            if (!tableColumnExists(table, column)) {
+                // This constrained column does not exist
+                return;
+            }
+        }
+
+        // XXX Not sure if it's okay to leave this out
+        /*
+         * if (table.equals("usersNotified") && column.equals("id")) { //
+         * m_out.print("Skipping usersNotified.id"); continue; }
+         */
+
+        String query = "SELECT count(*) FROM " + table + " WHERE "
+                + getForeignConstraintWhere(table, columns, ftable, fcolumns);
+
+        Statement st = m_dbconnection.createStatement();
+        ResultSet rs = st.executeQuery(query);
+
+        rs.next();
+        int count = rs.getInt(1);
+        rs.close();
+
+        if (count != 0) {
+            rs = st.executeQuery("SELECT count(*) FROM " + table);
+            rs.next();
+            int total = rs.getInt(1);
+            rs.close();
+            st.close();
+
+            throw new Exception("Table " + table + " contains " + count
+                    + " rows " + "(out of " + total
+                    + ") that violate new constraint " + name + ".  "
+                    + "See the install guide for details "
+                    + "on how to correct this problem.");
+        }
+
+        st.close();
+
     }
+
+    public String getForeignConstraintWhere(String table, List<String> columns,
+            String ftable, List<String> fcolumns) throws Exception {
+        String notNulls = notNullWhereClause(table, columns);
+ 
+        if (!tableExists(ftable)) {
+            return notNulls;
+        }
+        for (String fcolumn : fcolumns) {
+            if (!tableColumnExists(ftable, fcolumn)) {
+                return notNulls;
+            }
+        }
+
+        return notNulls + " AND ( "
+            + join(", ", tableColumnList(table, columns))
+            + " ) NOT IN (SELECT "
+            + join(", ", tableColumnList(ftable, fcolumns))
+            + " FROM " + ftable + ")";
+    }
+
+    public String notNullWhereClause(String table, List<String> columns) {
+        List<String> isNotNulls = new ArrayList<String>(columns.size());
+        
+        for (String column : columns) {
+            isNotNulls.add(table + "." + column + " IS NOT NULL");
+        }
+        
+        return join(" AND ", isNotNulls);
+    }
+    
+    public List<String> tableColumnList(String table, List<String> columns) {
+        List<String> tableColumns = new ArrayList<String>(columns.size());
+        
+        for (String column : columns) {
+            tableColumns.add(table + "." + column);
+        }
+        
+        return tableColumns;
+    }
+
 
     public void fixConstraint() throws Exception {
         List<Constraint> constraints = getForeignKeyConstraints();
-        Constraint constraint = null;
 
         m_out.print("- fixing rows that violate constraint "
                 + m_fix_constraint_name + "... ");
 
         for (Constraint c : constraints) {
             if (m_fix_constraint_name.equals(c.getName())) {
-                constraint = c;
-                break;
+                m_out.println(fixConstraint(c));
+                return;
             }
         }
 
-        if (constraint == null) {
-            throw new Exception("Did not find constraint "
-                    + m_fix_constraint_name + " in the database.");
-        }
-
+        throw new Exception("Did not find constraint "
+                            + m_fix_constraint_name + " in the database.");
+    }
+    
+    public String fixConstraint(Constraint constraint) throws Exception {
         String table = constraint.getTable();
-        String column = constraint.getColumns().get(0);
+        List<String> columns = constraint.getColumns();
         String ftable = constraint.getForeignTable();
-        String fcolumn = constraint.getForeignColumns().get(0);
+        List<String> fcolumns = constraint.getForeignColumns();
 
         if (!tableExists(table)) {
             throw new Exception("Constraint " + m_fix_constraint_name
@@ -941,32 +982,41 @@ public class Installer {
                     + "nothing).");
         }
 
-        if (!tableColumnExists(table, column)) {
-            throw new Exception("Constraint " + m_fix_constraint_name
-                    + " is on column " + column + " of table " + table
-                    + ", but column does "
-                    + "not exist (so fixing this constraint does "
-                    + "nothing).");
+        for (String column : columns) {
+            if (!tableColumnExists(table, column)) {
+                throw new Exception("Constraint " + m_fix_constraint_name
+                                    + " constrains column " + column
+                                    + " of table " + table
+                                    + ", but column does "
+                                    + "not exist (so fixing this constraint "
+                                    + "does nothing).");
+            }
         }
 
-        String where = getForeignConstraintWhere(table, column, ftable,
-                                                 fcolumn);
+        String where = getForeignConstraintWhere(table, columns, ftable,
+                                                 fcolumns);
 
         String query;
         String change_text;
 
         if (m_fix_constraint_remove_rows) {
-            query = "DELETE FROM " + table + " " + where;
+            query = "DELETE FROM " + table + " WHERE " + where;
             change_text = "DELETED";
         } else {
-            query = "UPDATE " + table + " SET " + column + " = NULL " + where;
+            List<String> sets = new ArrayList<String>(columns.size());
+            for (String column : columns) {
+                sets.add("SET " + column + " = NULL");
+            }
+            
+            query = "UPDATE " + table + " " + join(", ", sets) + " "
+                + "WHERE " + where;
             change_text = "UPDATED";
         }
 
         Statement st = m_dbconnection.createStatement();
         int num = st.executeUpdate(query);
 
-        m_out.println(change_text + " " + num + (num == 1 ? " ROW" : " ROWS"));
+        return change_text + " " + num + (num == 1 ? " ROW" : " ROWS");
     }
 
     public boolean databaseUserExists() throws SQLException {
@@ -1056,13 +1106,10 @@ public class Installer {
     public void createTables() throws Exception {
         Statement st = m_dbconnection.createStatement();
         ResultSet rs;
-        Iterator i = m_tables.iterator();
 
         m_out.println("- creating tables...");
 
-        while (i.hasNext()) {
-            String tableName = (String) i.next();
-
+        for (String tableName : m_tables) {
             if (m_force) {
                 tableName = tableName.toLowerCase();
 
@@ -1086,7 +1133,8 @@ public class Installer {
                 m_out.print("  - creating table \"" + tableName + "\"... ");
                 st.execute("CREATE TABLE " + tableName + " (" + create + ")");
                 m_out.println("CREATED");
-                
+
+                addIndexesForTable(tableName);
                 addTriggersForTable(tableName);
 
                 m_out.print("  - giving \"" + m_user + "\" permissions on \""
@@ -1108,6 +1156,8 @@ public class Installer {
                         String create = getTableCreateFromSQL(tableName);
                         st.execute("CREATE TABLE " + tableName + " ("
                                 + create + ")");
+                        
+                        addIndexesForTable(tableName);
                         addTriggersForTable(tableName);
                         st.execute("GRANT ALL ON " + tableName + " TO "
                                 + m_user);
@@ -1140,6 +1190,19 @@ public class Installer {
             }
             m_out.println("DONE");
         }
+    }
+    
+    public void addIndexesForTable(String table) throws SQLException {
+        List<Index> indexes =
+            m_indexDao.getIndexesForTable(table);
+        for (Index index : indexes) {
+            m_out.print("    - checking index '" + index.getName()
+                        + "' on this table... ");
+            if (!index.isOnDatabase(m_dbconnection)) {
+                index.addToDatabase(m_dbconnection);
+            }
+            m_out.println("DONE");
+        }
 
     }
 
@@ -1149,9 +1212,7 @@ public class Installer {
 
         m_out.println("- creating indexes...");
 
-        Iterator i = m_indexes.iterator();
-        while (i.hasNext()) {
-            String index = (String) i.next();
+        for (String index : m_indexes) {
             boolean exists;
 
             m_out.print("  - creating index \"" + index + "\"... ");
@@ -2048,7 +2109,10 @@ public class Installer {
 
         LinkedList<Constraint> constraints = new LinkedList<Constraint>();
 
-        String query = "SELECT c.oid, c.conname, c.contype, c.conrelid, c.confrelid, a.relname, c.confdeltype from pg_class a right join pg_constraint c on c.confrelid = a.oid where c.conrelid = (select oid from pg_class where relname = '"
+        String query = "SELECT c.oid, c.conname, c.contype, c.conrelid, "
+            + "c.confrelid, a.relname, c.confupdtype, c.confdeltype from pg_class a "
+            + "right join pg_constraint c on c.confrelid = a.oid "
+            + "where c.conrelid = (select oid from pg_class where relname = '"
                 + tableName.toLowerCase() + "') order by c.oid";
 
         rs = st.executeQuery(query);
@@ -2060,8 +2124,9 @@ public class Installer {
             int conrelid = rs.getInt(4);
             int confrelid = rs.getInt(5);
             String ftable = rs.getString(6);
-            String foreignDelType = rs.getString(7);
-
+            String foreignUpdType = rs.getString(7);
+            String foreignDelType = rs.getString(8);
+  
             Constraint constraint;
             if ("p".equals(type)) {
                 List<String> columns = getConstrainedColumnsFromDBForConstraint(
@@ -2078,7 +2143,7 @@ public class Installer {
                                                                              confrelid);
                 constraint = new Constraint(tableName.toLowerCase(), name,
                                             columns, ftable, fcolumns,
-                                            foreignDelType);
+                                            foreignUpdType, foreignDelType);
             } else {
                 throw new Exception("Do not support constraint type \""
                         + type + "\" in constraint \"" + name + "\"");
@@ -2262,6 +2327,7 @@ public class Installer {
                     + getTableCreateFromSQL(table) + ")");
             m_out.println("done");
             
+            addIndexesForTable(table);
             addTriggersForTable(table);
 
             transformData(table, tmpTable, columnChanges, oldColumnNames);
