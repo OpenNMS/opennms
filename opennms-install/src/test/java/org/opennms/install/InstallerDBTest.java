@@ -22,6 +22,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.opennms.test.ThrowableAnticipator;
+import org.postgresql.util.PSQLException;
 
 import junit.framework.AssertionFailedError;
 import junit.framework.TestCase;
@@ -263,6 +264,7 @@ public class InstallerDBTest extends TestCase {
         // Data
         executeSQL("INSERT INTO node ( nodeId, nodeCreateTime) VALUES ( 1, now() )");
         executeSQL("INSERT INTO snmpInterface ( nodeId, ipAddr, snmpIfIndex) VALUES ( 1, '1.2.3.4', 1 )");
+        executeSQL("INSERT INTO snmpInterface ( nodeId, ipAddr, snmpIfIndex) VALUES ( 1, '1.2.3.6', -100 )");
         executeSQL("INSERT INTO ipInterface ( nodeId, ipAddr, ifIndex ) VALUES ( 1, '1.2.3.4', 1 )");
         executeSQL("INSERT INTO ipInterface ( nodeId, ipAddr, ifIndex ) VALUES ( 1, '1.2.3.5', null )");
         executeSQL("INSERT INTO ipInterface ( nodeId, ipAddr, ifIndex ) VALUES ( 1, '1.2.3.6', -100 )");
@@ -507,7 +509,7 @@ public class InstallerDBTest extends TestCase {
 
         String constraint = "fk_dpname";
         doTestBogusConstraint(constraint, "Constraint " + constraint
-                + " is on column "
+                + " constrains column "
                 + "dpname of table node, but column does not "
                 + "exist (so fixing this constraint does nothing).");
     }
@@ -554,6 +556,88 @@ public class InstallerDBTest extends TestCase {
         m_installer.getTableColumnsFromSQL("distpoller");
     }
 
+    public void testConstraintIpInterfaceSnmpInterfaceValidData() throws Exception {
+        if (!isDBTestEnabled()) {
+            return;
+        }
+        
+        String newCreate = m_installer.m_create_sql;
+
+        URL sql = getClass().getResource("/create.sql-revision-3952");
+        assertNotNull("Could not find create.sql", sql);
+        m_installer.m_create_sql = sql.getFile();
+        m_installer.readTables();
+
+        // First pass.
+        m_installer.createSequences();
+        m_installer.m_triggerDao = new TriggerDao();
+        //m_installer.updatePlPgsql();
+        //m_installer.addStoredProcedures();
+
+        m_installer.createTables();
+        
+        // Data
+        executeSQL("INSERT INTO node ( nodeId, nodeCreateTime) VALUES ( 1, now() )");
+        executeSQL("INSERT INTO snmpInterface ( nodeId, ipAddr, snmpIfIndex) VALUES ( 1, '1.2.3.4', 1 )");
+        executeSQL("INSERT INTO snmpInterface ( nodeId, ipAddr, snmpIfIndex) VALUES ( 1, '1.2.3.6', -100 )");
+        executeSQL("INSERT INTO ipInterface ( nodeId, ipAddr, ifIndex ) VALUES ( 1, '1.2.3.4', 1 )");
+        executeSQL("INSERT INTO ipInterface ( nodeId, ipAddr, ifIndex ) VALUES ( 1, '1.2.3.5', null )");
+        executeSQL("INSERT INTO ipInterface ( nodeId, ipAddr, ifIndex ) VALUES ( 1, '1.2.3.6', -100 )");
+
+        m_installer.m_create_sql = newCreate;
+        m_installer.readTables();
+
+        // Second pass.
+        m_installer.checkConstraints();
+        /*
+        m_installer.createSequences();
+        m_installer.updatePlPgsql();
+        m_installer.addStoredProcedures();
+
+        m_installer.createTables();
+        */
+    }
+    public void testConstraintIpInterfaceSnmpInterfaceInvalidData() throws Exception {
+        if (!isDBTestEnabled()) {
+            return;
+        }
+        
+        String newCreate = m_installer.m_create_sql;
+
+        URL sql = getClass().getResource("/create.sql-revision-3952");
+        assertNotNull("Could not find create.sql", sql);
+        m_installer.m_create_sql = sql.getFile();
+        m_installer.readTables();
+
+        // First pass.
+        m_installer.createSequences();
+        m_installer.m_triggerDao = new TriggerDao();
+        //m_installer.updatePlPgsql();
+        //m_installer.addStoredProcedures();
+
+        m_installer.createTables();
+        
+        // Data
+        executeSQL("INSERT INTO node ( nodeId, nodeCreateTime) VALUES ( 1, now() )");
+        executeSQL("INSERT INTO snmpInterface ( nodeId, ipAddr, snmpIfIndex) VALUES ( 1, '1.2.3.4', 1 )");
+        executeSQL("INSERT INTO ipInterface ( nodeId, ipAddr, ifIndex ) VALUES ( 1, '1.2.3.4', 1 )");
+        executeSQL("INSERT INTO ipInterface ( nodeId, ipAddr, ifIndex ) VALUES ( 1, '1.2.3.5', null )");
+//        executeSQL("INSERT INTO ipInterface ( nodeId, ipAddr, ifIndex ) VALUES ( 1, '1.2.3.6', -100 )");
+
+        m_installer.m_create_sql = newCreate;
+        m_installer.readTables();
+
+        // Second pass.
+        m_installer.checkConstraints();
+        /*
+        m_installer.createSequences();
+        m_installer.updatePlPgsql();
+        m_installer.addStoredProcedures();
+
+        m_installer.createTables();
+        */
+    }
+    
     public void testConstraintOnBogusColumn() throws Exception {
         if (!isDBTestEnabled()) {
             return;
@@ -584,6 +668,7 @@ public class InstallerDBTest extends TestCase {
 
         ta.verifyAnticipated();
     }
+
 
     public void doTestBogusConstraint(String constraint,
             String exceptionMessage) throws Exception {
@@ -630,12 +715,81 @@ public class InstallerDBTest extends TestCase {
 
         ta.verifyAnticipated();
     }
+    
+    public void testParseConstraintWithOnUpdateCascade() throws Exception {
+        // Make sure that every table, column, and key ID has at least one
+        // upper case character
+        final String createSQL =
+            "create table a (\n"
+                + "    a1           integer,\n"
+                + "    constraint pk_a primary key (a1)\n"
+                + ");\n"
+                + "create table b (\n"
+                + "    b1           integer,\n"
+                + "    constraint fk_a foreign key (b1) references a (a1) "
+                        + "on update cascade\n"
+                + ");\n";
 
-    public void testParsePrimaryKeyMultipleColumns() throws Exception {
+        m_installer.readTables(new StringReader(createSQL));
+        Table a = m_installer.getTableFromSQL("a");
+        Table b = m_installer.getTableFromSQL("b");
+
+        /*
+        List<Column> columns = table.getColumns();
+        assertNotNull("column list is not null", columns);
+        assertEquals("column count", 3, columns.size());
+        assertEquals("column zero toString()", "mapid integer(4) NOT NULL",
+                     columns.get(0).toString());
+        assertEquals("column one toString()",
+                     "elementid integer(4) NOT NULL",
+                     columns.get(1).toString());
+        assertEquals("column two toString()",
+                     "somethingelse character varying(80)",
+                     columns.get(2).toString());
+
+        List<Constraint> foo = table.getConstraints();
+
+        assertNotNull("constraint list is not null", foo);
+        assertEquals("constraint count is one", 1, foo.size());
+        Constraint f = foo.get(0);
+        assertNotNull("constraint zero is not null", f);
+        assertEquals("constraint getTable()", "element", f.getTable());
+        assertEquals("constraint zero toString()",
+                     "constraint pk_element primary key (mapid, elementid)",
+                     f.toString());
+        */
+    }
+
+    public void testGetFromDbConstraintWithOnUpdateCascade() throws Exception {
         if (!isDBTestEnabled()) {
             return;
         }
 
+        final String createSQL =
+            "create table a (\n"
+                + "    a1           integer,\n"
+                + "    constraint pk_a primary key (a1)\n"
+                + ");\n"
+                + "create table b (\n"
+                + "    b1           integer,\n"
+                + "    constraint fk_a foreign key (b1) references a (a1) "
+                        + "on update cascade\n"
+                + ");\n";
+
+        executeSQL(createSQL);
+
+        List<Column> columns = m_installer.getColumnsFromDB("b");
+        assertNotNull("column list not null", columns);
+        List<Constraint> constraints = m_installer.getConstraintsFromDB("b");
+        assertNotNull("constraint list not null", constraints);
+        assertEquals("constraint list size", 1, constraints.size());
+        assertEquals("constraint zero toString()",
+                     "constraint fk_a foreign key (b1) references a (a1) "
+                     + "on update cascade",
+                     constraints.get(0).toString());
+    }
+
+    public void testParsePrimaryKeyMultipleColumns() throws Exception {
         // Make sure that every table, column, and key ID has at least one
         // upper case character
         final String createSQL = "create table Element (\n"
@@ -887,47 +1041,6 @@ public class InstallerDBTest extends TestCase {
         }
         assertEquals("expected column count", 1, count);
 
-    }
-
-    public void testSetNotificationsEventIdOnUpgrade() throws Exception {
-        if (!isDBTestEnabled()) {
-            return;
-        }
-
-        m_installer.createSequences();
-        m_installer.updatePlPgsql();
-        m_installer.addStoredProcedures();
-
-        addTableFromSQL("distpoller");
-        addTableFromSQL("node");
-        addTableFromSQL("snmpinterface");
-        addTableFromSQL("ipinterface");
-        addTableFromSQL("service");
-        addTableFromSQL("ifservices");
-        addTableFromSQL("events");
-        addTableFromSQLWithReplacements("notifications",
-                                        new String[][] {
-                                                new String[] {
-                                                        "eventID\\s+integer,",
-                                                        "" },
-                                                new String[] {
-                                                        ",\\s+constraint fk_eventID3 foreign key \\(eventID\\) references events \\(eventID\\) ON DELETE CASCADE",
-                                                        "" } }, true);
-
-        executeSQL("INSERT INTO notifications (textMsg, notifyID, eventUEI) "
-                + "VALUES ('DJ broke it... it is always his fault', 1, "
-                + "'We ain\\\'t got no UEIs here, no sir.')");
-
-        m_installer.createTables();
-
-        Statement st = m_installer.m_dbconnection.createStatement();
-        ResultSet rs = st.executeQuery("SELECT eventID from notifications");
-        int count = 0;
-        while (rs.next()) {
-            assertEquals("expected notifications eventID", 0, rs.getInt(1));
-            count++;
-        }
-        assertEquals("expected column count", 1, count);
     }
 
     public void testSetUsersNotifiedIdOnUpgrade() throws Exception {
@@ -1235,7 +1348,7 @@ public class InstallerDBTest extends TestCase {
                                                         "(?i)snmpInterfaceId\\s+integer,",
                                                         "" },
                                                 new String[] {
-                                                        "(?i)CONSTRAINT snmpinterface_fkey1 FOREIGN KEY \\(snmpInterfaceId\\) REFERENCES snmpInterface \\(id\\) ON DELETE CASCADE,",
+                                                        "(?i)CONSTRAINT snmpinterface_fkey2 FOREIGN KEY \\(snmpInterfaceId\\) REFERENCES snmpInterface \\(id\\) ON DELETE CASCADE,",
                                                         "" } });
 
         // addTableFromSQL("ipinterface");
@@ -1285,7 +1398,7 @@ public class InstallerDBTest extends TestCase {
                                                         "(?i)snmpInterfaceId\\s+integer,",
                                                         "" },
                                                 new String[] {
-                                                        "(?i)CONSTRAINT snmpinterface_fkey1 FOREIGN KEY \\(snmpInterfaceId\\) REFERENCES snmpInterface \\(id\\) ON DELETE CASCADE,",
+                                                        "(?i)CONSTRAINT snmpinterface_fkey2 FOREIGN KEY \\(snmpInterfaceId\\) REFERENCES snmpInterface \\(id\\) ON DELETE CASCADE,",
                                                         "" } }, false);
 
         addTableFromSQL("service");
@@ -1395,41 +1508,37 @@ public class InstallerDBTest extends TestCase {
 
         executeSQL("INSERT INTO node (nodeId, nodeCreateTime) VALUES ( 1, now() )");
         executeSQL("INSERT INTO ipInterface (nodeId, ipAddr, ifIndex) VALUES ( 1, '1.2.3.4', null )");
-        executeSQL("INSERT INTO ipInterface (nodeId, ipAddr, ifIndex) VALUES ( 1, '1.2.3.9', 1 )");
         executeSQL("INSERT INTO service (serviceID, serviceName) VALUES ( 1, 'COFFEE-READY' )");
         executeSQL("INSERT INTO ifServices (nodeID, ipAddr, ifIndex, serviceID) VALUES ( 1, '1.2.3.4', null, 1)");
-        executeSQL("INSERT INTO ifServices (nodeID, ipAddr, ifIndex, serviceID) VALUES ( 1, '1.2.3.9', 1, 1)");
 
         m_installer.createTables();
 
         Statement st = m_installer.m_dbconnection.createStatement();
         ResultSet rs = st.executeQuery("SELECT id from ipInterface");
-        int count = 0;
-        for (int expected = 1; rs.next(); expected++) {
-            rs.getInt(1);
-            assertFalse("ipInterface.id should not be null", rs.wasNull());
-            // Don't care about what it is, just that it's not null
-            // assertEquals("ipInterface id", expected, rs.getInt(1));
-            count++;
-        }
-        assertEquals("expected column count", 2, count);
+
+        assertTrue("could not advance results to first row", rs.next());
+        rs.getInt(1);
+        assertFalse("ipInterface.id should not be null", rs.wasNull());
+        // Don't care about what it is, just that it's not null
+        // assertEquals("ipInterface id", expected, rs.getInt(1));
+        assertFalse("too many rows: only expecting one", rs.next());
+        
 
         rs = st.executeQuery("SELECT id, ipInterfaceID from ifServices");
-        count = 0;
-        for (int expected = 1; rs.next(); expected++) {
-            rs.getInt(1);
-            assertFalse("ifServices.id should not be null", rs.wasNull());
-            rs.getInt(2);
-            assertFalse("ifServices.interfaceId should not be null",
-                        rs.wasNull());
-            
-            // Don't care about the actual values, just that they are not null
-            // assertEquals("ifServices id", expected, rs.getInt(1));
-            // assertEquals("ifServices ipInterfaceId", expected,
-            //             rs.getInt(2));
-            count++;
-        }
-        assertEquals("expected column count", 2, count);
+
+        assertTrue("could not advance results to first row", rs.next());
+
+        rs.getInt(1);
+        assertFalse("ifServices.id should not be null", rs.wasNull());
+        rs.getInt(2);
+        assertFalse("ifServices.interfaceId should not be null",
+                    rs.wasNull());
+        
+        // Don't care about the actual values, just that they are not null
+        // assertEquals("ifServices id", expected, rs.getInt(1));
+        // assertEquals("ifServices ipInterfaceId", expected,
+        //             rs.getInt(2));
+        assertFalse("too many rows: only expecting one", rs.next());
     }
 
     public void testOutagesForeignKeyIfServiceIdOnUpgrade() throws Exception {
@@ -1585,7 +1694,7 @@ public class InstallerDBTest extends TestCase {
         executeSQL("INSERT INTO node (nodeId, nodeCreateTime) VALUES ( 1, now() )");
 
         ThrowableAnticipator ta = new ThrowableAnticipator();
-        ta.anticipate(new AssertionFailedError("Could not execute statement: 'INSERT INTO ipInterface (nodeId, ipAddr, ifIndex) VALUES ( 1, '1.2.3.4', 1 )': ERROR: IpInterface Trigger Exception: No SnmpInterface found for... nodeid: 1  ipaddr: 1.2.3.4  ifindex: 1"));
+        ta.anticipate(new AssertionFailedError("Could not execute statement: 'INSERT INTO ipInterface (nodeId, ipAddr, ifIndex) VALUES ( 1, '1.2.3.4', 1 )': ERROR: insert or update on table \"ipinterface\" violates foreign key constraint \"snmpinterface_fkey1\"\n  Detail: Key (nodeid,ifindex)=(1,1) is not present in table \"snmpinterface\"."));
         try {
             executeSQL("INSERT INTO ipInterface (nodeId, ipAddr, ifIndex) VALUES ( 1, '1.2.3.4', 1 )");
         } catch (Throwable t) {
@@ -1662,8 +1771,16 @@ public class InstallerDBTest extends TestCase {
         m_installer.createTables();
 
         executeSQL("INSERT INTO node (nodeId, nodeCreateTime) VALUES ( 1, now() )");
-        executeSQL("INSERT INTO ipInterface (nodeId, ipAddr, ifIndex) VALUES ( 1, '1.2.3.4', 0 )");
+        ThrowableAnticipator ta = new ThrowableAnticipator();
+        ta.anticipate(new AssertionFailedError("Could not execute statement: 'INSERT INTO ipInterface (nodeId, ipAddr, ifIndex) VALUES ( 1, '1.2.3.4', 0 )': ERROR: insert or update on table \"ipinterface\" violates foreign key constraint \"snmpinterface_fkey1\"\n  Detail: Key (nodeid,ifindex)=(1,0) is not present in table \"snmpinterface\"."));
+        try {
+            executeSQL("INSERT INTO ipInterface (nodeId, ipAddr, ifIndex) VALUES ( 1, '1.2.3.4', 0 )");
+        } catch (Throwable t) {
+            ta.throwableReceived(t);
+        }
+        ta.verifyAnticipated();
 
+        /*
         Statement st = m_installer.m_dbconnection.createStatement();
         ResultSet rs = st.executeQuery("SELECT id, snmpInterfaceID from ipInterface");
         assertTrue("could not advance to read first row in ResultSet",
@@ -1674,12 +1791,14 @@ public class InstallerDBTest extends TestCase {
         assertTrue("expected ipInterface snmpInterfaceId to be null (got "
                 + id + ")", rs.wasNull());
         assertFalse("ResultSet contains more than one row", rs.next());
+        */
     }
 
     /**
      * Test adding an entry to ipInterface with an ifIndex < 1 where an
      * entry exists in snmpInterface for the same ifIndex.  The relationship
-     * *should not* be setup.
+     * *should* be setup (previously, it would not have been set up for this
+     * case).
      */
     public void testTriggerSetSnmpInterfaceIdInIpInterfaceLessThanOneIfIndexWithSnmpInterface()
             throws Exception {
@@ -1702,9 +1821,14 @@ public class InstallerDBTest extends TestCase {
         assertTrue("could not advance to read first row in results",
                    rs.next());
 
-        int id = rs.getInt(1);
-        assertTrue("ipInterface.snmpInterfaceId should be null (was " + id
-                + ")", rs.wasNull());
+        // We now expect the trigger to setup the relationship for any value
+        //int id = rs.getInt(1);
+        //assertTrue("ipInterface.snmpInterfaceId should be null (was " + id
+        //        + ")", rs.wasNull());
+        
+        rs.getInt(1);
+        assertFalse("ipInterface.snmpInterfaceId should not be null",
+                    rs.wasNull());
         assertFalse("results contains more than one row", rs.next());
     }
 
@@ -2221,6 +2345,9 @@ public class InstallerDBTest extends TestCase {
             return;
         }
         
+        m_installer.addIndexesForTable(table);
+        m_installer.addTriggersForTable(table);
+        /*
         List<Trigger> triggers =
             m_installer.m_triggerDao.getTriggersForTable(table);
         for (Trigger trigger : triggers) {
@@ -2230,6 +2357,7 @@ public class InstallerDBTest extends TestCase {
             trigger.addToDatabase(m_installer.m_dbconnection);
             m_installer.m_out.println("DONE");
         }
+        */
     }
 
     public boolean containsUnescapedParens(String str) {

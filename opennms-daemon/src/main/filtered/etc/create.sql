@@ -364,7 +364,7 @@ create table snmpInterface (
 	constraint fk_nodeID2 foreign key (nodeID) references node ON DELETE CASCADE
 );
 
-create index snmpinterface_nodeid_ifindex_idx on snmpinterface(nodeID, snmpIfIndex);
+create unique index snmpinterface_nodeid_ifindex_idx on snmpinterface(nodeID, snmpIfIndex);
 create index snmpinterface_nodeid_idx on snmpinterface(nodeID);
 create index snmpinterface_ipaddr_idx on snmpinterface(ipaddr);
 
@@ -420,7 +420,8 @@ create table ipInterface (
 	snmpInterfaceId	integer,
 
 	CONSTRAINT ipinterface_pkey PRIMARY KEY (id),
-	CONSTRAINT snmpinterface_fkey1 FOREIGN KEY (snmpInterfaceId) REFERENCES snmpInterface (id) ON DELETE CASCADE,
+	CONSTRAINT snmpinterface_fkey1 FOREIGN KEY (nodeID, ifIndex) REFERENCES snmpInterface (nodeID, snmpIfIndex) ON DELETE CASCADE,
+	CONSTRAINT snmpinterface_fkey2 FOREIGN KEY (snmpInterfaceId) REFERENCES snmpInterface (id) ON DELETE CASCADE,
 	constraint fk_nodeID1 foreign key (nodeID) references node ON DELETE CASCADE
 );
 
@@ -498,6 +499,7 @@ create table ifServices (
 	constraint fk_nodeID3 foreign key (nodeID) references node ON DELETE CASCADE,
 	constraint fk_serviceID1 foreign key (serviceID) references service ON DELETE CASCADE
 );
+--#	CONSTRAINT ipinterface_fkey1 FOREIGN KEY (nodeID,ipAddr) REFERENCES ipInterface (nodeID, ipAddr) ON DELETE CASCADE,
 
 create index ifservices_nodeid_ipaddr_svc on ifservices(nodeID, ipAddr, serviceId);
 create index ifservices_nodeid_ipaddr_status on ifservices(nodeID, ipAddr, status);

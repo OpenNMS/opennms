@@ -59,6 +59,8 @@ public class Constraint {
 
     private String m_fdeltype;
 
+    private String m_fupdtype;
+
     public Constraint(String table, String constraint) throws Exception {
         this.parse(constraint);
         this.setTable(table);
@@ -80,14 +82,23 @@ public class Constraint {
         setColumns(columns);
     }
 
-    public Constraint(String table, String name, List<String> columns, String ftable, List<String> fcolumns, String fdeltype) throws Exception {
+    public Constraint(String table, String name, List<String> columns, String ftable, List<String> fcolumns, String fupdtype, String fdeltype) throws Exception {
         setTable(table);
         setName(name);
         setType(FOREIGN_KEY);
         setColumns(columns);
         setForeignTable(ftable);
         setForeignColumns(fcolumns);
+        setForeignUpdType(fupdtype);
         setForeignDelType(fdeltype);
+    }
+
+    public void setForeignUpdType(String fupdtype) {
+        m_fupdtype = fupdtype;
+    }
+    
+    public String getForeignUpdType() {
+        return m_fupdtype;
     }
 
     public String getName() {
@@ -215,6 +226,10 @@ public class Constraint {
             b.append(" on delete cascade");
         }
 
+        if ("c".equals(m_fupdtype)) {
+            b.append(" on update cascade");
+        }
+
         return b.toString();
     }
 
@@ -235,7 +250,8 @@ public class Constraint {
 			    + "foreign key\\s+\\(([^\\(\\)]+)\\)\\s+"
 			    + "references\\s+(\\S+)"
 			    + "(?:\\s+\\(([^\\(\\)]+)\\))?"
-			    + "(\\s+on\\s+delete\\s+cascade)?").matcher(constraintSQL);
+			    + "(\\s+on\\s+delete\\s+cascade)?"
+                            + "(\\s+on\\s+update\\s+cascade)?").matcher(constraintSQL);
         if (!m.matches()) {
             throw new Exception("Cannot parse constraint: " + constraintSQL);
         }
@@ -253,9 +269,14 @@ public class Constraint {
         }
         setForeignColumns(Arrays.asList(foreignColumns));
         if (m.group(5) == null) {
-        	setForeignDelType("a");
+            setForeignDelType("a");
         } else {
-        	setForeignDelType("c");
+            setForeignDelType("c");
+        }
+        if (m.group(6) == null) {
+            setForeignUpdType("a");
+        } else {
+            setForeignUpdType("c");
         }
     }
 
@@ -310,6 +331,12 @@ public class Constraint {
                 return false;
             }
             if (m_fdeltype != null && other.m_fdeltype != null && !m_fdeltype.equals(other.getForeignDelType())) {
+                return false;
+            }
+            if ((m_fupdtype == null && other.getForeignUpdType() != null) || (m_fupdtype != null && other.getForeignUpdType() == null)) {
+                return false;
+            }
+            if (m_fupdtype != null && other.m_fupdtype != null && !m_fupdtype.equals(other.getForeignUpdType())) {
                 return false;
             }
         }
