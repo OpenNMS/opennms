@@ -570,12 +570,14 @@ public abstract class NotificationManager {
      * This method inserts a row into the notifications table in the database.
      * This row indicates that the page has been sent out.
      * @param queueID
+     * @throws SQLException, InterruptedException 
      */
-    public void insertNotice(int notifyId, Map params, String queueID) throws SQLException {
+    public void insertNotice(int notifyId, Map params, String queueID) throws SQLException, InterruptedException {
         Connection connection = null;
+        PreparedStatement statement = null;
         try {
             connection = getConnection();
-            PreparedStatement statement = connection.prepareStatement("INSERT INTO notifications (textmsg, numericmsg, notifyid, pagetime, nodeid, interfaceid, serviceid, eventid, eventuei, subject, queueID) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+            statement = connection.prepareStatement("INSERT INTO notifications (textmsg, numericmsg, notifyid, pagetime, nodeid, interfaceid, serviceid, eventid, eventuei, subject, queueID) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
     
             // notifications textMsg field
             statement.setString(1, (String) params.get(NotificationManager.PARAM_TEXT_MSG));
@@ -625,14 +627,28 @@ public abstract class NotificationManager {
             // the queue this will be sent on
             statement.setString(11, queueID);
     
-            statement.executeUpdate();
-            statement.close();
-        } finally {
-            if (connection != null) {
+            //try again incase their is a race condition
+            int attempts = 0;
+            while (attempts <= 1) {
+                attempts++;
                 try {
-                    connection.close();
+                    statement.executeUpdate();
                 } catch (SQLException e) {
+                    if (attempts > 1) {
+                        throw e;
+                    } else {
+                        Thread.sleep(100);
+                    }
                 }
+            }
+            
+            statement.close();
+            
+        } finally {
+            try {
+                if (statement != null) statement.close();
+            } finally {
+                if (connection != null) connection.close();
             }
         }
     }

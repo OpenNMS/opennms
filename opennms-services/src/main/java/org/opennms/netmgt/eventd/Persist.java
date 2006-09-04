@@ -293,13 +293,18 @@ class Persist {
         // talk to the database and get the identifer
         //
         m_getSvcIdStmt.setString(1, name);
-        ResultSet rset = m_getSvcIdStmt.executeQuery();
-        if (rset.next()) {
-            id = rset.getInt(1);
-        }
+        ResultSet rset = null;
+        try {
+            rset = m_getSvcIdStmt.executeQuery();
+            if (rset.next()) {
+                id = rset.getInt(1);
+            }
 
-        // close result set
-        rset.close();
+        } catch (SQLException e) {
+            throw e;
+        } finally {
+            rset.close();
+        }
 
         // inform persistd about the new find
         //
@@ -337,14 +342,19 @@ class Persist {
         String hostname = hostip;
 
         m_getHostNameStmt.setString(1, hostip);
-        ResultSet rset = m_getHostNameStmt.executeQuery();
-        if (rset.next()) {
-            hostname = rset.getString(1);
-        }
+        ResultSet rset = null;
+        
+        try {
+            rset = m_getHostNameStmt.executeQuery();
+            if (rset.next()) {
+                hostname = rset.getString(1);
+            }
 
-        // close and free the result set
-        //
-        rset.close();
+        } catch (SQLException e) {
+            throw e;
+        } finally {
+            rset.close();
+        }
 
         // hostname can be null - if it is, return the ip
         //
@@ -411,12 +421,19 @@ class Persist {
 
         m_reductionQuery.setString(1, event.getAlarmData().getReductionKey());
 
-        ResultSet rs = m_reductionQuery.executeQuery();
-        int alarmId = -1;
-        while (rs.next()) {
-            alarmId = rs.getInt(1);
+        ResultSet rs = null;
+        int alarmId;
+        try {
+            rs = m_reductionQuery.executeQuery();
+            alarmId = -1;
+            while (rs.next()) {
+                alarmId = rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            throw e;
+        } finally {
+            rs.close();
         }
-        
         return alarmId;
     }
     
@@ -868,14 +885,19 @@ class Persist {
     
     private int getNextId() throws SQLException {
         int id;
-        // Get the next id from sequence specified in 
-        ResultSet rs = m_getNextIdStmt.executeQuery();
-        rs.next();
-        id = rs.getInt(1);
-        rs.close();
+        // Get the next id from sequence specified in
+        ResultSet rs = null;
+        try {
+            rs = m_getNextIdStmt.executeQuery();
+            rs.next();
+            id = rs.getInt(1);
+        } catch (SQLException e) {
+            throw e;
+        } finally {
+            rs.close();
+        }
         rs = null;
         return id;
     }
-
 
 }
