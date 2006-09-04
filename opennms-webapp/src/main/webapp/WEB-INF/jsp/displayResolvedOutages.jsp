@@ -67,7 +67,7 @@
 		</ec:column>
 		<ec:column property="ipaddr" alias="Interface">
 			<a
-				href="element/interface.jsp?node=${tabledata.nodeid}&intf=${tabledata.interfaceid}">${tabledata.ipaddr}</a>
+				href="element/interface.jsp?node=${tabledata.nodeid}&intf=${tabledata.ipaddr}">${tabledata.ipaddr}</a>
 				&nbsp;
 				
 			<c:choose>
@@ -88,7 +88,7 @@
 		</ec:column>
 		<ec:column property="serviceid" alias="Service">
 			<a
-				href="element/service.jsp?node=${tabledata.nodeid}&intf=${tabledata.interface }&service=${tabledata.serviceid }">${tabledata.service}</a>
+				href="element/service.jsp?node=${tabledata.nodeid}&intf=${tabledata.ipaddr }&service=${tabledata.serviceid }">${tabledata.service}</a>
 				&nbsp;
 
 			<c:choose>
