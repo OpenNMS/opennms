@@ -569,9 +569,9 @@ final class SuspectEventProcessor implements Runnable {
         // now update if necessary
         org.opennms.netmgt.config.poller.Package ipPkg =
             getPackageForNewInterface(dbc, ifaddr, ipIfEntry, addrUnmanaged);
-
-        int ifIndex = getIfIndexForNewInterface(dbc, ifaddr, collector,
-                                                ipIfEntry);
+        
+        int ifIndex = addSnmpInterfaces(dbc, ifaddr, nodeId, collector,
+                                        ipIfEntry);
 
         // Add supported protocols
         addSupportedProtocols(node, ifaddr,
@@ -589,6 +589,38 @@ final class SuspectEventProcessor implements Runnable {
 
         getSubInterfacesForNewInterface(dbc, node, ifaddr, collector, now,
                                         nodeId, ifIndex);
+    }
+
+    private int addSnmpInterfaces(Connection dbc, InetAddress ifaddr, int nodeId, IfCollector collector, DbIpInterfaceEntry ipIfEntry) throws SQLException {
+        Category log = ThreadCategory.getInstance(getClass());
+
+        IfSnmpCollector snmpc = collector.getSnmpCollector();
+
+        boolean addedSnmpInterfaceEntry =
+            addSubSnmpInterfaces(dbc, ifaddr, nodeId, snmpc);
+        
+        int ifIndex = getIfIndexForNewInterface(dbc, ifaddr, collector,
+                                                ipIfEntry);
+        
+        if (ifIndex == CapsdConfigFactory.LAME_SNMP_HOST_IFINDEX
+                || !addedSnmpInterfaceEntry) {
+            DbSnmpInterfaceEntry snmpEntry =
+                DbSnmpInterfaceEntry.create(nodeId, ifIndex);
+            // IP address
+            snmpEntry.setIfAddress(ifaddr);
+            snmpEntry.store(dbc);
+        }
+        
+        if (ifIndex != -1) {
+            if (log.isDebugEnabled()) {
+                log.debug("SuspectEventProcessor: setting ifindex for "
+                        + ifaddr + " to " + ifIndex);
+            }
+            ipIfEntry.setIfIndex(ifIndex);
+        }
+        ipIfEntry.store(dbc);
+        
+        return ifIndex;
     }
 
     private org.opennms.netmgt.config.poller.Package getPackageForNewInterface(
@@ -669,13 +701,6 @@ final class SuspectEventProcessor implements Runnable {
                         + ifaddr + " Assume this is a lame SNMP host");
             }
         }
-        if (ifIndex != -1) {
-            if (log.isDebugEnabled()) {
-                log.debug("SuspectEventProcessor: setting ifindex for "
-                        + ifaddr + " to " + ifIndex);
-            }
-            ipIfEntry.setIfIndex(ifIndex);
-        }
         ipIfEntry.store(dbc);
 
         return ifIndex;
@@ -701,19 +726,6 @@ final class SuspectEventProcessor implements Runnable {
         
         // Now add any non-IP interfaces
         addSubNonIpInterfaces(dbc, collector, now, nodeId, snmpc);
-
-        // last thing to do is add all the snmp interface information
-        boolean addedSnmpInterfaceEntry =
-            addSubSnmpInterfaces(dbc, ifaddr, nodeId, snmpc);
-
-        if (ifIndex == CapsdConfigFactory.LAME_SNMP_HOST_IFINDEX
-                || !addedSnmpInterfaceEntry) {
-            DbSnmpInterfaceEntry snmpEntry =
-                DbSnmpInterfaceEntry.create(nodeId, ifIndex);
-            // IP address
-            snmpEntry.setIfAddress(ifaddr);
-            snmpEntry.store(dbc);
-        }
     }
 
 
@@ -826,7 +838,7 @@ final class SuspectEventProcessor implements Runnable {
             return;
         }
 
-        Iterator iter = ((List) collector.getNonIpInterfaces()).iterator();
+        Iterator iter = collector.getNonIpInterfaces().iterator();
         while (iter.hasNext()) {
             Integer ifindex = (Integer) iter.next();
 
