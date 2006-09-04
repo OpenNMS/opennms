@@ -497,6 +497,8 @@ public final class BroadcastEventProcessor implements EventListener {
                         } catch (SQLException e) {
                             log.error("Failed to enter notification into database, exiting this notification", e);
                             return;
+                        } catch (InterruptedException e) {
+                            log.error("ScheduleNoticesForEvent: Error sleeping thread.", e);
                         }
 
                         long startTime = System.currentTimeMillis() + TimeConverter.convertToMillis(initialDelay);
