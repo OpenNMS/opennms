@@ -501,7 +501,7 @@ create table ifServices (
 );
 --#	CONSTRAINT ipinterface_fkey1 FOREIGN KEY (nodeID,ipAddr) REFERENCES ipInterface (nodeID, ipAddr) ON DELETE CASCADE,
 
-create index ifservices_nodeid_ipaddr_svc on ifservices(nodeID, ipAddr, serviceId);
+create unique index ifservices_nodeid_ipaddr_svc_unique on ifservices(nodeID, ipAddr, serviceId);
 create index ifservices_nodeid_ipaddr_status on ifservices(nodeID, ipAddr, status);
 create index ifservices_nodeid_status on ifservices(nodeid, status);
 create index ifservices_nodeid_idx on ifservices(nodeID);
@@ -694,7 +694,8 @@ create table outages (
 	constraint fk_eventID2 foreign key (svcRegainedEventID) references events (eventID) ON DELETE CASCADE,
 	constraint fk_nodeID4 foreign key (nodeID) references node (nodeID) ON DELETE CASCADE,
 	constraint fk_serviceID2 foreign key (serviceID) references service (serviceID) ON DELETE CASCADE,
-	CONSTRAINT ifServices_fkey1 FOREIGN KEY (ifServiceId) REFERENCES ifServices (id) ON DELETE CASCADE
+	CONSTRAINT ifServices_fkey1 FOREIGN KEY (nodeId, ipAddr, serviceId) REFERENCES ifServices (nodeId, ipAddr, serviceId) ON DELETE CASCADE,
+	CONSTRAINT ifServices_fkey2 FOREIGN KEY (ifServiceId) REFERENCES ifServices (id) ON DELETE CASCADE
 );
 
 create index outages_nodeid_ipaddr_svc_idx on outages(nodeID, ipAddr, serviceId);
