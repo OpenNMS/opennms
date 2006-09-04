@@ -1005,10 +1005,10 @@ public class Installer {
         } else {
             List<String> sets = new ArrayList<String>(columns.size());
             for (String column : columns) {
-                sets.add("SET " + column + " = NULL");
+                sets.add(column + " = NULL");
             }
             
-            query = "UPDATE " + table + " " + join(", ", sets) + " "
+            query = "UPDATE " + table + " SET " + join(", ", sets) + " "
                 + "WHERE " + where;
             change_text = "UPDATED";
         }
@@ -1151,11 +1151,14 @@ public class Installer {
 
                 if (newTable.equals(oldTable)) {
                     m_out.println("UPTODATE");
+                    addIndexesForTable(tableName);
+                    addTriggersForTable(tableName);
                 } else {
                     if (oldTable == null) {
                         String create = getTableCreateFromSQL(tableName);
-                        st.execute("CREATE TABLE " + tableName + " ("
-                                + create + ")");
+                        String createSql = "CREATE TABLE " + tableName + " ("
+                            + create + ")"; 
+                        st.execute(createSql);
                         
                         addIndexesForTable(tableName);
                         addTriggersForTable(tableName);
@@ -1181,7 +1184,7 @@ public class Installer {
     
     public void addTriggersForTable(String table) throws SQLException {
         List<Trigger> triggers =
-            m_triggerDao.getTriggersForTable(table);
+            m_triggerDao.getTriggersForTable(table.toLowerCase());
         for (Trigger trigger : triggers) {
             m_out.print("    - checking trigger '" + trigger.getName()
                         + "' on this table... ");
@@ -1194,7 +1197,7 @@ public class Installer {
     
     public void addIndexesForTable(String table) throws SQLException {
         List<Index> indexes =
-            m_indexDao.getIndexesForTable(table);
+            m_indexDao.getIndexesForTable(table.toLowerCase());
         for (Index index : indexes) {
             m_out.print("    - checking index '" + index.getName()
                         + "' on this table... ");
