@@ -58,11 +58,6 @@ import javax.persistence.Transient;
 import org.springframework.core.style.ToStringCreator;
 
 
-/** 
- *        @hibernate.class
- *         table="ipinterface"
- *     
-*/
 @Entity
 @Table(name="ipInterface")
 public class OnmsIpInterface extends OnmsEntity implements Serializable {
@@ -287,12 +282,7 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
     }
     
     /** 
-     * The interfaces on this node
-     * 
-     * @hibernate.set lazy="true" inverse="true" cascade="all-delete-orphan"
-     * @hibernate.key column="ipIfId"
-     * @hibernate.one-to-many class="org.opennms.netmgt.model.OnmsMonitoredService"
-     * 
+     * The services on this node
      */
     @OneToMany(mappedBy="ipInterface", cascade=CascadeType.ALL)
     public Set<OnmsMonitoredService> getMonitoredServices() {
