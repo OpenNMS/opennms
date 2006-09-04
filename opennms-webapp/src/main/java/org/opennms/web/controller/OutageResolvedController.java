@@ -32,141 +32,50 @@ package org.opennms.web.controller;
 //  http://www.opennms.com/
 //
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.extremecomponents.table.context.Context;
-import org.extremecomponents.table.context.HttpServletRequestContext;
-import org.extremecomponents.table.limit.Limit;
-import org.extremecomponents.table.limit.LimitFactory;
-import org.extremecomponents.table.limit.TableLimit;
-import org.extremecomponents.table.limit.TableLimitFactory;
-import org.opennms.netmgt.model.OnmsOutage;
-import org.opennms.web.svclayer.outage.OutagesFilteringView;
-import org.opennms.web.svclayer.outage.OutageListBuilder;
 import org.opennms.web.svclayer.outage.OutageService;
+import org.opennms.web.svclayer.outage.OutageTable;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.UrlFilenameViewController;
 
 public class OutageResolvedController extends UrlFilenameViewController {
+    
+        private String successView;
 
-	OutageService m_outageService;
+        private int defaultRowsDisplayed;
+        
+        private OutageService m_outageService ;
+        
+        private OutageTable m_outageTable = new OutageTable();
+        
+        public void setOutageService(OutageService service) {
+                m_outageService = service;
+        }
 
-	OutageListBuilder m_cview = new OutageListBuilder();
+        
+        protected ModelAndView handleRequestInternal(HttpServletRequest request,
+                HttpServletResponse reply) {
+            
+            
+            return new ModelAndView("displayResolvedOutages" + getSuffix(),
+                                    m_outageTable.getResolvedOutageTable(request, reply,m_outageService));
+            
+        }
+        
+        
 
-	Collection<OnmsOutage> foundOutages;
+        public void setSuccessView(String successView) {
+                this.successView = successView;
+        }
 
-	Collection<OnmsOutage> viewOutages;
+        public void setdisplayResolvedOutages(String successView) {
+                this.successView = successView;
+        }
 
-	private String successView;
-
-	private int defaultRowsDisplayed;
-
-	private Object outageService;
-
-	// private OutageService outageService;
-	// BEAN Setter
-
-	private static final int ROW_LIMIT = 25;
-
-	public void setOutageService(OutageService service) {
-		m_outageService = service;
-	}
-
-	// public Map referenceData(HttpServletRequest request) throws Exception {
-	@Override
-	protected ModelAndView handleRequestInternal(HttpServletRequest request,
-			HttpServletResponse reply) {
-
-		Context context = new HttpServletRequestContext(request);
-		LimitFactory limitFactory = new TableLimitFactory(context, "tabledata");
-		Limit limit = new TableLimit(limitFactory);
-		
-		OutagesFilteringView m_filterService = new OutagesFilteringView();
-
-		String searchFilter = m_filterService.filterQuery(request);
-		
-		Map<String, Object> myModel = new HashMap<String, Object>();
-		
-		if (searchFilter.equals("")) {
-			searchFilter = " AND 1=1 ";
-		}
-		
-		Integer totalRows = m_outageService.outageResolvedCountFiltered(searchFilter);
-		limit.setRowAttributes(totalRows, ROW_LIMIT);
-		
-		if (limit.getPage() == 1) {
-			// no offset set
-			myModel.put("rowStart", 0);
-			context.setRequestAttribute("rowStart", 0);
-			context.setRequestAttribute("rowEnd", ROW_LIMIT);
-			myModel.put("rowEnd", ROW_LIMIT);
-
-			if (limit.getSort().getProperty() == null) {
-				foundOutages = m_outageService.getResolvedOutagesByRange(0,
-						ROW_LIMIT, "iflostservice", "asc", searchFilter);
-
-			} else {
-				foundOutages = m_outageService.getResolvedOutagesByRange(0,
-						ROW_LIMIT, "outages." + limit.getSort().getProperty(), limit
-								.getSort().getSortOrder(), searchFilter);
-
-			}
-			myModel.put("begin", 0);
-			myModel.put("end", ROW_LIMIT);
-
-		} else {
-			
-			Integer rowstart = null;
-			Integer rowend = null;
-			
-				
-				//quirky situation... - as we started on 0 (zero)
-				rowstart = ((limit.getPage() * ROW_LIMIT +1 ) - ROW_LIMIT);
-				rowend = ( ROW_LIMIT);
-				myModel.put("begin", rowstart);
-				myModel.put("end", rowend);
-			
-			if (limit.getSort().getProperty() == null) {
-				foundOutages = m_outageService.getResolvedOutagesByRange(
-						rowstart, rowend, "iflostservice", "asc",searchFilter);
-
-			} else {
-
-				foundOutages = m_outageService.getResolvedOutagesByRange(rowstart,
-						rowend, "outages." + limit.getSort().getProperty() + ",outageid", limit
-								.getSort().getSortOrder(),searchFilter);
-
-			}
-		}
-
-		Collection theTable = m_cview.theTable(foundOutages);
-		
-		myModel.put("searchfilter",searchFilter);
-		myModel.put("tabledata", theTable);
-		myModel.put("totalRows", totalRows);
-		myModel.put("suffix",request.getQueryString());
-		
-				
-		
-
-		return new ModelAndView("displayResolvedOutages" + getSuffix(), myModel);
-	}
-
-	public void setSuccessView(String successView) {
-		this.successView = successView;
-	}
-
-	public void setdisplayResolvedOutages(String successView) {
-		this.successView = successView;
-	}
-
-	public void setDefaultRowsDisplayed(int defaultRowsDisplayed) {
-		this.defaultRowsDisplayed = defaultRowsDisplayed;
-	}
+        public void setDefaultRowsDisplayed(int defaultRowsDisplayed) {
+                this.defaultRowsDisplayed = defaultRowsDisplayed;
+        }
 
 }
