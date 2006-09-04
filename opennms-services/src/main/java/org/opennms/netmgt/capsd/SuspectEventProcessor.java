@@ -1,9 +1,12 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2002-2005 The OpenNMS Group, Inc.  All rights reserved.
-// OpenNMS(R) is a derivative work, containing both original code, included code and modified
-// code that was published under the GNU General Public License. Copyrights for modified 
+// OpenNMS(R) is Copyright (C) 2002-2005 The OpenNMS Group, Inc. All rights
+// reserved.
+// OpenNMS(R) is a derivative work, containing both original code, included
+// code and modified
+// code that was published under the GNU General Public License. Copyrights
+// for modified
 // and included code are below.
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -11,26 +14,31 @@
 // Modifications:
 //
 // 2005 Mar 25: Fixed bug 1178 regarding designation of secondary SNMP
-//              interfaces, as well as a few other minor bugs discovered
-//              in testing the bug fix.
+// interfaces, as well as a few other minor bugs discovered
+// in testing the bug fix.
 // 2004 Dec 27: Updated code to determine primary SNMP interface to select
-//              an interface from collectd-configuration.xml first, and if
-//              none found, then from all interfaces on the node. In either
-//              case, a loopback interface is preferred if available.
+// an interface from collectd-configuration.xml first, and if
+// none found, then from all interfaces on the node. In either
+// case, a loopback interface is preferred if available.
 // 2004 Apr 01: Fixed case where sysObjectId is null for suspect device
-// 2004 Feb 12: Rebuild collectd package agaist IP List map when determining primary
-//              interface.
+// 2004 Feb 12: Rebuild collectd package agaist IP List map when determining
+// primary
+// interface.
 // 2003 Nov 11: Merged changes from Rackspace project
-// 2003 Sep 09: Modifications to allow OpenNMS to handle duplicate IP addresses.
-// 2003 Mar 18: Fixed null pointer exceptions from some poorly written SNMP agents.
+// 2003 Sep 09: Modifications to allow OpenNMS to handle duplicate IP
+// addresses.
+// 2003 Mar 18: Fixed null pointer exceptions from some poorly written SNMP
+// agents.
 // 2003 Jan 31: Cleaned up some unused imports.
-// 2002 Oct 03: Added the ability to discover non 127.*.*.* loopback interfaces
-//		and to use that for the primary SNMP interface, if possible.
+// 2002 Oct 03: Added the ability to discover non 127.*.*.* loopback
+// interfaces
+// and to use that for the primary SNMP interface, if possible.
 // 2002 Aug 01: Modified the code to label nodes based first on DNS, then SMB,
-//		SNMP and finally IP Address. If available, the SNMP primary
-//		interface will be used.
+// SNMP and finally IP Address. If available, the SNMP primary
+// interface will be used.
 //
-// Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
+// Original code base Copyright (C) 1999-2001 Oculan Corp. All rights
+// reserved.
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -39,17 +47,17 @@
 //
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.                                                            
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 //       
-// For more information contact: 
-//      OpenNMS Licensing       <license@opennms.org>
-//      http://www.opennms.org/
-//      http://www.opennms.com/
+// For more information contact:
+// OpenNMS Licensing <license@opennms.org>
+// http://www.opennms.org/
+// http://www.opennms.com/
 //
 // Tab Size = 8
 //
@@ -91,9 +99,10 @@ import org.opennms.netmgt.xml.event.Value;
 
 /**
  * This class is designed to scan/capability check a suspect interface, update
- * the database based on the information collected from the device, and generate
- * events necessary to notify the other OpenNMS services. The constructor takes
- * a string which is the IP address of the interface to be scanned.
+ * the database based on the information collected from the device, and
+ * generate events necessary to notify the other OpenNMS services. The
+ * constructor takes a string which is the IP address of the interface to be
+ * scanned.
  * 
  * @author <a href="mailto:jamesz@opennms.com">James Zuo </a>
  * @author <a href="mailto:mike@opennms.org">Mike Davidson </a>
@@ -130,7 +139,8 @@ final class SuspectEventProcessor implements Runnable {
         // Check the arguments
         //
         if (ifAddress == null) {
-            throw new IllegalArgumentException("The interface address cannot be null");
+            throw new IllegalArgumentException(
+                                               "The interface address cannot be null");
         }
 
         m_suspectIf = ifAddress;
@@ -150,24 +160,26 @@ final class SuspectEventProcessor implements Runnable {
      *            Connection to the database.
      * @param collector
      *            Interface collector object
-     * 
-     * @return dbNodeEntry Returns null if a node does not already exist in the
-     *         database, otherwise returns the DbNodeEntry object for the node
-     *         under which the current interface/IP address should be added.
-     * 
+     * @return dbNodeEntry Returns null if a node does not already exist in
+     *         the database, otherwise returns the DbNodeEntry object for the
+     *         node under which the current interface/IP address should be
+     *         added.
      * @throws SQLException
      *             Thrown if an error occurs retrieving the parent nodeid from
      *             the database.
      */
-    private DbNodeEntry getExistingNodeEntry(java.sql.Connection dbc, IfCollector collector) throws SQLException {
+    private DbNodeEntry getExistingNodeEntry(java.sql.Connection dbc,
+            IfCollector collector) throws SQLException {
         Category log = ThreadCategory.getInstance(getClass());
 
         if (log.isDebugEnabled())
-            log.debug("getExistingNodeEntry: checking for current target: " + collector.getTarget());
+            log.debug("getExistingNodeEntry: checking for current target: "
+                    + collector.getTarget());
 
         // Do we have any additional interface information collected via SNMP?
         // If not simply return, there is nothing to check
-        if (!collector.hasSnmpCollection() || collector.getSnmpCollector().failed())
+        if (!collector.hasSnmpCollection()
+                || collector.getSnmpCollector().failed())
             return null;
 
         // Next verify that ifTable and ipAddrTable entries were collected
@@ -185,10 +197,12 @@ final class SuspectEventProcessor implements Runnable {
             return null;
 
         // SQL statement prefix
-        StringBuffer sqlBuffer = new StringBuffer(SQL_RETRIEVE_INTERFACE_NODEID_PREFIX);
+        StringBuffer sqlBuffer = new StringBuffer(
+                                                  SQL_RETRIEVE_INTERFACE_NODEID_PREFIX);
         boolean firstAddress = true;
 
-        // Loop through the interface table entries and see if any already exist
+        // Loop through the interface table entries and see if any already
+        // exist
         // in the database.
         Iterator iter = ifTable.getEntries().iterator();
         List ipaddrsOfNewNode = new ArrayList();
@@ -213,9 +227,12 @@ final class SuspectEventProcessor implements Runnable {
             //
             // Get ALL IP Addresses for this ifIndex
             //
-            List ipAddrs = IpAddrTable.getIpAddresses(ipAddrTable.getEntries(), ifIndex);
+            List ipAddrs = IpAddrTable.getIpAddresses(
+                                                      ipAddrTable.getEntries(),
+                                                      ifIndex);
             if (log.isDebugEnabled())
-                log.debug("getExistingNodeEntry: number of interfaces retrieved for ifIndex " + ifIndex + " is: " + ipAddrs.size());
+                log.debug("getExistingNodeEntry: number of interfaces retrieved for ifIndex "
+                        + ifIndex + " is: " + ipAddrs.size());
             // 
             // Get ifType for this interface
             //
@@ -231,16 +248,23 @@ final class SuspectEventProcessor implements Runnable {
                 InetAddress ipAddress = (InetAddress) aiter.next();
 
                 // 
-                // Skip interface if no IP address or if IP address is "0.0.0.0"
+                // Skip interface if no IP address or if IP address is
+                // "0.0.0.0"
                 // or if this interface is of type loopback
-                if (ipAddress == null || ipAddress.getHostAddress().equals("0.0.0.0") || ipAddress.getHostAddress().startsWith("127."))
+                if (ipAddress == null
+                        || ipAddress.getHostAddress().equals("0.0.0.0")
+                        || ipAddress.getHostAddress().startsWith("127."))
                     continue;
 
                 if (firstAddress) {
-                    sqlBuffer.append("ipaddr='").append(ipAddress.getHostAddress()).append("'");
+                    sqlBuffer.append("ipaddr='").append(
+                                                        ipAddress.getHostAddress()).append(
+                                                                                           "'");
                     firstAddress = false;
                 } else
-                    sqlBuffer.append(" OR ipaddr='").append(ipAddress.getHostAddress()).append("'");
+                    sqlBuffer.append(" OR ipaddr='").append(
+                                                            ipAddress.getHostAddress()).append(
+                                                                                               "'");
 
                 ipaddrsOfNewNode.add(ipAddress.getHostAddress());
             }
@@ -254,7 +278,8 @@ final class SuspectEventProcessor implements Runnable {
         // Prepare the db statement in advance
         //
         if (log.isDebugEnabled())
-            log.debug("getExistingNodeEntry: issuing SQL command: " + sqlBuffer.toString());
+            log.debug("getExistingNodeEntry: issuing SQL command: "
+                    + sqlBuffer.toString());
 
         PreparedStatement stmt = dbc.prepareStatement(sqlBuffer.toString());
 
@@ -267,7 +292,8 @@ final class SuspectEventProcessor implements Runnable {
             if (rs.next()) {
                 nodeID = rs.getInt(1);
                 if (log.isDebugEnabled())
-                    log.debug("getExistingNodeEntry: target " + collector.getTarget().getHostAddress() + nodeID);
+                    log.debug("getExistingNodeEntry: target "
+                            + collector.getTarget().getHostAddress() + nodeID);
                 rs = null;
             }
         } catch (SQLException sqlE) {
@@ -305,10 +331,12 @@ final class SuspectEventProcessor implements Runnable {
 
         if (ipaddrsOfNewNode.containsAll(ipaddrsOfOldNode)) {
             if (log.isDebugEnabled())
-                log.debug("getExistingNodeEntry: found one of the addrs under existing node: " + nodeID);
+                log.debug("getExistingNodeEntry: found one of the addrs under existing node: "
+                        + nodeID);
             return DbNodeEntry.get(nodeID);
         } else {
-            String dupIpaddr = getDuplicateIpaddress(ipaddrsOfOldNode, ipaddrsOfNewNode);
+            String dupIpaddr = getDuplicateIpaddress(ipaddrsOfOldNode,
+                                                     ipaddrsOfNewNode);
             createAndSendDuplicateIpaddressEvent(nodeID, dupIpaddr);
             return null;
         }
@@ -316,16 +344,14 @@ final class SuspectEventProcessor implements Runnable {
 
     /**
      * This method is used to verify if there is a same ipaddress existing in
-     * two sets of ipaddresses, and return the first ipaddress that is the same
-     * in both sets as a string.
+     * two sets of ipaddresses, and return the first ipaddress that is the
+     * same in both sets as a string.
      * 
      * @param ipListA
      *            a collection of ip addresses.
      * @param ipListB
      *            a collection of ip addresses.
-     * 
      * @return the first ipaddress exists in both ipaddress lists.
-     * 
      */
     private String getDuplicateIpaddress(List ipListA, List ipListB) {
         Category log = ThreadCategory.getInstance(getClass());
@@ -338,7 +364,8 @@ final class SuspectEventProcessor implements Runnable {
             ipaddr = (String) iter.next();
             if (ipListB.contains(ipaddr)) {
                 if (log.isDebugEnabled())
-                    log.debug("getDuplicateIpaddress: get duplicate ip address: " + ipaddr);
+                    log.debug("getDuplicateIpaddress: get duplicate ip address: "
+                            + ipaddr);
                 break;
             } else
                 ipaddr = null;
@@ -356,14 +383,13 @@ final class SuspectEventProcessor implements Runnable {
      * @param collector
      *            Interface collector containing SMB and SNMP info collected
      *            from the remote device.
-     * 
-     * @return DbNodeEntry object associated with the newly inserted node table
-     *         entry.
-     * 
+     * @return DbNodeEntry object associated with the newly inserted node
+     *         table entry.
      * @throws SQLException
      *             if an error occurs inserting the new node.
      */
-    private DbNodeEntry createNode(Connection dbc, InetAddress ifaddr, IfCollector collector) throws SQLException {
+    private DbNodeEntry createNode(Connection dbc, InetAddress ifaddr,
+            IfCollector collector) throws SQLException {
         Category log = ThreadCategory.getInstance(getClass());
 
         // Determine primary interface for the node. Primary interface
@@ -401,12 +427,16 @@ final class SuspectEventProcessor implements Runnable {
                 if (sysObjectId != null)
                     entryNode.setSystemOID(sysObjectId);
                 else
-                    log.warn("SuspectEventProcessor: " + ifaddr.getHostAddress() + " has NO sysObjectId!!!!");
+                    log.warn("SuspectEventProcessor: "
+                            + ifaddr.getHostAddress()
+                            + " has NO sysObjectId!!!!");
 
                 // sysName
                 String str = sysgrp.getSysName();
                 if (log.isDebugEnabled())
-                    log.debug("SuspectEventProcessor: " + ifaddr.getHostAddress() + " has sysName: " + str);
+                    log.debug("SuspectEventProcessor: "
+                            + ifaddr.getHostAddress() + " has sysName: "
+                            + str);
 
                 if (str != null && str.length() > 0) {
                     entryNode.setSystemName(str);
@@ -423,21 +453,27 @@ final class SuspectEventProcessor implements Runnable {
                 // sysDescription
                 str = sysgrp.getSysDescr();
                 if (log.isDebugEnabled())
-                    log.debug("SuspectEventProcessor: " + ifaddr.getHostAddress() + " has sysDescription: " + str);
+                    log.debug("SuspectEventProcessor: "
+                            + ifaddr.getHostAddress()
+                            + " has sysDescription: " + str);
                 if (str != null && str.length() > 0)
                     entryNode.setSystemDescription(str);
 
                 // sysLocation
                 str = sysgrp.getSysLocation();
                 if (log.isDebugEnabled())
-                    log.debug("SuspectEventProcessor: " + ifaddr.getHostAddress() + " has sysLocation: " + str);
+                    log.debug("SuspectEventProcessor: "
+                            + ifaddr.getHostAddress() + " has sysLocation: "
+                            + str);
                 if (str != null && str.length() > 0)
                     entryNode.setSystemLocation(str);
 
                 // sysContact
                 str = sysgrp.getSysContact();
                 if (log.isDebugEnabled())
-                    log.debug("SuspectEventProcessor: " + ifaddr.getHostAddress() + " has sysContact: " + str);
+                    log.debug("SuspectEventProcessor: "
+                            + ifaddr.getHostAddress() + " has sysContact: "
+                            + str);
                 if (str != null && str.length() > 0)
                     entryNode.setSystemContact(str);
             }
@@ -448,7 +484,8 @@ final class SuspectEventProcessor implements Runnable {
         if (smbc != null) {
             // Netbios Name and Domain
             // Note: only override if the label source is not HOSTNAME
-            if (smbc.getNbtName() != null && entryNode.getLabelSource() != DbNodeEntry.LABEL_SOURCE_HOSTNAME) {
+            if (smbc.getNbtName() != null
+                    && entryNode.getLabelSource() != DbNodeEntry.LABEL_SOURCE_HOSTNAME) {
                 entryNode.setLabel(smbc.getNbtName());
                 entryNode.setLabelSource(DbNodeEntry.LABEL_SOURCE_NETBIOS);
                 entryNode.setNetBIOSName(entryNode.getLabel());
@@ -468,15 +505,15 @@ final class SuspectEventProcessor implements Runnable {
     }
 
     /**
-     * This method is responsble for inserting new entries into the ipInterface
-     * table for each interface found to be associated with the suspect
-     * interface during the capabilities scan.
+     * This method is responsble for inserting new entries into the
+     * ipInterface table for each interface found to be associated with the
+     * suspect interface during the capabilities scan.
      * 
      * @param dbc
      *            Database connection.
      * @param node
-     *            DbNodeEntry object representing the suspect interface's parent
-     *            node table entry
+     *            DbNodeEntry object representing the suspect interface's
+     *            parent node table entry
      * @param useExistingNode
      *            False if a new node was created for the suspect interface.
      *            True if an existing node entry was found under which the the
@@ -486,12 +523,13 @@ final class SuspectEventProcessor implements Runnable {
      * @param collector
      *            Interface collector containing SMB and SNMP info collected
      *            from the remote device.
-     * 
      * @throws SQLException
      *             if an error occurs adding interfaces to the ipInterface
      *             table.
      */
-    private void addInterfaces(Connection dbc, DbNodeEntry node, boolean useExistingNode, InetAddress ifaddr, IfCollector collector) throws SQLException {
+    private void addInterfaces(Connection dbc, DbNodeEntry node,
+            boolean useExistingNode, InetAddress ifaddr, IfCollector collector)
+            throws SQLException {
         Category log = ThreadCategory.getInstance(getClass());
 
         CapsdConfig cFactory = CapsdConfigFactory.getInstance();
@@ -501,22 +539,19 @@ final class SuspectEventProcessor implements Runnable {
 
         int nodeId = node.getNodeId();
 
-        DbIpInterfaceEntry ipIfEntry = DbIpInterfaceEntry.create(nodeId, ifaddr);
+        DbIpInterfaceEntry ipIfEntry = DbIpInterfaceEntry.create(nodeId,
+                                                                 ifaddr);
         ipIfEntry.setLastPoll(now);
         ipIfEntry.setHostname(ifaddr.getHostName());
 
         /*
-         * NOTE: (reference internal bug# 201)
-         * If the ip is 'managed', it might still be 'not polled' based
-         * on the poller configuration
-         *
-         * The package filter evaluation requires that the ip be in the
-         * database - at this point the ip is NOT in db, so insert as active
-         * and update afterward
-         *
-         * Try to avoid re-evaluating the ip against filters for
-         * each service, try to get the first package here and use
-         * that for service evaluation
+         * NOTE: (reference internal bug# 201) If the ip is 'managed', it
+         * might still be 'not polled' based on the poller configuration The
+         * package filter evaluation requires that the ip be in the database -
+         * at this point the ip is NOT in db, so insert as active and update
+         * afterward Try to avoid re-evaluating the ip against filters for
+         * each service, try to get the first package here and use that for
+         * service evaluation
          */
         boolean addrUnmanaged = cFactory.isAddressUnmanaged(ifaddr);
         if (addrUnmanaged) {
@@ -532,333 +567,426 @@ final class SuspectEventProcessor implements Runnable {
         ipIfEntry.store(dbc);
 
         // now update if necessary
-        org.opennms.netmgt.config.poller.Package ipPkg = null;
-        if (!addrUnmanaged) {
-            /*
-             * The newly discoveried IP addr is not in the Package IPList
-             * Mapping yet, so rebuild the list.
-             */
-            PollerConfigFactory.getInstance().rebuildPackageIpListMap();
+        org.opennms.netmgt.config.poller.Package ipPkg =
+            getPackageForNewInterface(dbc, ifaddr, ipIfEntry, addrUnmanaged);
 
-            boolean ipToBePolled = false;
-            ipPkg = pollerCfgFactory.getFirstPackageMatch(ifaddr.getHostAddress());
-            if (ipPkg != null) {
-                ipToBePolled = true;
-            }
-
-            log.debug("addInterfaces: " + ifaddr + " is to be polled = " + ipToBePolled);
-
-            if (!ipToBePolled) {
-                // update ismanaged to 'N' in ipinterface
-                ipIfEntry.setManagedState(DbIpInterfaceEntry.STATE_NOT_POLLED);
-                ipIfEntry.store(dbc);
-            }
-        }
-
-        int ifIndex = -1;
-        IfSnmpCollector snmpc = null;
-        if (collector.hasSnmpCollection()) {
-            snmpc = collector.getSnmpCollector();
-            /*
-             * Just set primary state to not eligible for now. The primary SNMP
-             * interface won't be selected until after all interfaces have
-             * been inserted into the database. This is because the interface
-             * must already be in the database for filter rule evaluation to
-             * succeed.
-             */
-
-            ipIfEntry.setPrimaryState(DbIpInterfaceEntry.SNMP_NOT_ELIGIBLE);
-            if (snmpc.hasIpAddrTable() && (ifIndex = snmpc.getIfIndex(ifaddr)) != -1) {
-                if (snmpc.hasIfTable()) {
-                    int status = snmpc.getAdminStatus(ifIndex);
-                    if (status != -1) {
-                        ipIfEntry.setStatus(status);
-                    }
-                }
-            } else {
-                /*
-                 * Address does not have a valid ifIndex associated with it
-                 * Assume there is no ipAddrTable and set ifIndex equal to
-                 * CapsdConfigFactory.LAME_SNMP_HOST_IFINDEX
-                 */
-                ifIndex = CapsdConfigFactory.LAME_SNMP_HOST_IFINDEX;
-                if (log.isDebugEnabled()) {
-                    log.debug("SuspectEventProcessor: no valid ifIndex for " + ifaddr + " Assume this is a lame SNMP host");
-                }
-            }
-            if (ifIndex != -1) {
-                if (log.isDebugEnabled()) {
-                    log.debug("SuspectEventProcessor: setting ifindex for " + ifaddr + " to " + ifIndex);
-                }
-                ipIfEntry.setIfIndex(ifIndex);
-            }
-            ipIfEntry.store(dbc);
-        }
+        int ifIndex = getIfIndexForNewInterface(dbc, ifaddr, collector,
+                                                ipIfEntry);
 
         // Add supported protocols
-        addSupportedProtocols(node, ifaddr, collector.getSupportedProtocols(), addrUnmanaged, ifIndex, ipPkg);
+        addSupportedProtocols(node, ifaddr,
+                              collector.getSupportedProtocols(),
+                              addrUnmanaged, ifIndex, ipPkg);
 
         /*
-         * If the useExistingNode flag is true, then we're done. The
-         * interface is most likely an alias and the subinterfaces
-         * collected via SNMP should already be in the database.
+         * If the useExistingNode flag is true, then we're done. The interface
+         * is most likely an alias and the subinterfaces collected via SNMP
+         * should already be in the database.
          */
         if (useExistingNode == true) {
             return;
         }
 
-        if (snmpc != null) {
-            boolean forceSnmpInterfaceEntry = true;
+        getSubInterfacesForNewInterface(dbc, node, ifaddr, collector, now,
+                                        nodeId, ifIndex);
+    }
 
-            // Made it this far...lets add the sub interfaces
-            if (snmpc.hasIpAddrTable()) {
-                Map extraTargets = collector.getAdditionalTargets();
-                Iterator iter = extraTargets.keySet().iterator();
-                while (iter.hasNext()) {
-                    InetAddress xifaddr = (InetAddress) iter.next();
+    private org.opennms.netmgt.config.poller.Package getPackageForNewInterface(
+            Connection dbc, InetAddress ifaddr, DbIpInterfaceEntry ipIfEntry,
+            boolean addrUnmanaged) throws SQLException {
+        if (addrUnmanaged) {
+            return null;
+        }
 
-                    if (log.isDebugEnabled())
-                        log.debug("addInterfaces: adding interface " + xifaddr.getHostAddress());
+        Category log = ThreadCategory.getInstance(getClass());
+        PollerConfig pollerCfgFactory = PollerConfigFactory.getInstance();
 
-                    DbIpInterfaceEntry xipIfEntry = DbIpInterfaceEntry.create(nodeId, xifaddr);
-                    xipIfEntry.setLastPoll(now);
-                    xipIfEntry.setHostname(xifaddr.getHostName());
+        org.opennms.netmgt.config.poller.Package ipPkg = null;
 
-                    /*
-                     * NOTE: (reference internal bug# 201)
-                     * If the ip is 'managed', it might still be 'not polled'
-                     * based on the poller configuration.
-                     *
-                     * The package filter evaluation requires that the ip be in
-                     * the database - at this point the ip is NOT in db, so
-                     * insert as active and update afterward.
-                     *
-                     * Try to avoid re-evaluating the ip against filters for
-                     * each service, try to get the first package here and use
-                     * that for service evaluation.
-                     */
-                    boolean xaddrUnmanaged = cFactory.isAddressUnmanaged(xifaddr);
-                    if (xaddrUnmanaged) {
-                        xipIfEntry.setManagedState(DbIpInterfaceEntry.STATE_UNMANAGED);
-                    } else {
-                        xipIfEntry.setManagedState(DbIpInterfaceEntry.STATE_MANAGED);
-                    }
-                    
-                    /*
-                     * Just set primary state to not eligible for now. The
-                     * primary SNMP interface won't be selected until after
-                     * all interfaces have been inserted into the database.
-                     * This is because the interface must already be in
-                     * the database for filter rule evaluation to succeed.
-                     */
-                    xipIfEntry.setPrimaryState(DbIpInterfaceEntry.SNMP_NOT_ELIGIBLE);
-                    int xifIndex = -1;
-                    if ((xifIndex = snmpc.getIfIndex(xifaddr)) != -1) {
-                        xipIfEntry.setIfIndex(xifIndex);
-                        int status = snmpc.getAdminStatus(xifIndex);
-                        if (status != -1) {
-                            xipIfEntry.setStatus(status);
-                        }
+        /*
+         * The newly discoveried IP addr is not in the Package IPList Mapping
+         * yet, so rebuild the list.
+         */
+        pollerCfgFactory.rebuildPackageIpListMap();
 
-                        if (!supportsSnmp((List) extraTargets.get(xifaddr))) {
-                            log.debug("addInterfaces: Interface doesn't support SNMP. " + xifaddr.getHostAddress() + " set to not eligible");
-                        }
-                    } else {
-                        // No ifIndex found so set primary state to NOT_ELIGIBLE
-                        log.debug("addInterfaces: No ifIndex found. " + xifaddr.getHostAddress() + " set to not eligible");
-                    }
+        boolean ipToBePolled = false;
+        ipPkg = pollerCfgFactory.getFirstPackageMatch(ifaddr.getHostAddress());
+        if (ipPkg != null) {
+            ipToBePolled = true;
+        }
 
-                    xipIfEntry.store(dbc);
+        if (log.isDebugEnabled()) {
+            log.debug("addInterfaces: " + ifaddr + " is to be polled = "
+                    + ipToBePolled);
+        }
 
-                    // now update if necessary
-                    org.opennms.netmgt.config.poller.Package xipPkg = null;
-                    if (!xaddrUnmanaged) {
-                        // The newly discoveried IP addr is not in the Package
-                        // IPList
-                        // Mapping yet, so rebuild the list.
-                        //
-                        PollerConfigFactory.getInstance().rebuildPackageIpListMap();
+        if (!ipToBePolled) {
+            // update ismanaged to 'N' in ipinterface
+            ipIfEntry.setManagedState(DbIpInterfaceEntry.STATE_NOT_POLLED);
+            ipIfEntry.store(dbc);
+        }
 
-                        boolean xipToBePolled = false;
-                        xipPkg = pollerCfgFactory.getFirstPackageMatch(xifaddr.getHostAddress());
-                        if (xipPkg != null) {
-                            xipToBePolled = true;
-                        }
+        return ipPkg;
+    }
 
-                        if (!xipToBePolled) {
-                            // update ismanaged to 'N' in ipinterface
-                            xipIfEntry.setManagedState(DbIpInterfaceEntry.STATE_NOT_POLLED);
-                            xipIfEntry.store(dbc);
-                        }
-                    }
+    private int getIfIndexForNewInterface(Connection dbc, InetAddress ifaddr,
+            IfCollector collector, DbIpInterfaceEntry ipIfEntry)
+            throws SQLException {
+        if (!collector.hasSnmpCollection()) {
+            return -1;
+        }
 
-                    // add the supported protocols
-                    addSupportedProtocols(node, xifaddr, (List) extraTargets.get(xifaddr), xaddrUnmanaged, xifIndex, xipPkg);
-                } // end while()
-                // Now add any non-IP interfaces
-                //
-                if (collector.hasNonIpInterfaces()) {
-                    iter = ((List) collector.getNonIpInterfaces()).iterator();
-                    while (iter.hasNext()) {
-                        Integer ifindex = (Integer) iter.next();
+        Category log = ThreadCategory.getInstance(getClass());
+        IfSnmpCollector snmpc = collector.getSnmpCollector();
 
-                        DbIpInterfaceEntry xipIfEntry = null;
-                        try {
-                            xipIfEntry = DbIpInterfaceEntry.create(nodeId, InetAddress.getByName("0.0.0.0"));
-                        } catch (UnknownHostException e) {
-                            continue;
-                        }
-                        xipIfEntry.setLastPoll(now);
-                        xipIfEntry.setManagedState(DbIpInterfaceEntry.STATE_UNMANAGED);
+        int ifIndex = -1;
 
-                        xipIfEntry.setIfIndex(ifindex.intValue());
-                        
-                        int status = snmpc.getAdminStatus(ifindex.intValue());
-                        if (status != -1) {
-                            xipIfEntry.setStatus(status);
-                        }
+        /*
+         * Just set primary state to not eligible for now. The primary SNMP
+         * interface won't be selected until after all interfaces have been
+         * inserted into the database. This is because the interface must
+         * already be in the database for filter rule evaluation to succeed.
+         */
+        ipIfEntry.setPrimaryState(DbIpInterfaceEntry.SNMP_NOT_ELIGIBLE);
 
-                        xipIfEntry.setPrimaryState(DbIpInterfaceEntry.SNMP_NOT_ELIGIBLE);
-
-                        xipIfEntry.store(dbc);
-                    }
-                }
-            }
-
-            // last thing to do is add all the snmp interface information
-            //
+        if (snmpc.hasIpAddrTable()
+                && (ifIndex = snmpc.getIfIndex(ifaddr)) != -1) {
             if (snmpc.hasIfTable()) {
-                IfTable ift = snmpc.getIfTable();
-                Iterator ifiter = ift.getEntries().iterator();
-                while (ifiter.hasNext()) {
-                    IfTableEntry ifte = (IfTableEntry) ifiter.next();
-
-                    // index
-                    //
-                    int xifIndex = -1;
-                    Integer sint = ifte.getIfIndex();
-                    if (sint != null) {
-                        xifIndex = sint.intValue();
-                    } else {
-                        continue;
-                    }
-
-                    /*
-                     * address
-                     *
-                     * WARNING: IfSnmpCollector.getIfAddressAndMask() ONLY returns
-                     * the FIRST IP address and mask for a given interface as
-                     * specified in the ipAddrTable.
-                     */
-                    InetAddress[] aaddrs = null;
-                    if (snmpc.hasIpAddrTable()) {
-                        aaddrs = snmpc.getIfAddressAndMask(sint.intValue());
-                    }
-                    if (aaddrs == null) {
-                        // Must be non-IP interface, set ifAddress to '0.0.0.0' and
-                        // Mask to null
-                        aaddrs = new InetAddress[2];
-                        try {
-                            aaddrs[0] = InetAddress.getByName("0.0.0.0");
-                        } catch (UnknownHostException e) {
-                            continue;
-                        }
-                        aaddrs[1] = null;
-                    }
-
-                    // Retrieve ifType so we can check for loopback
-                    sint = ifte.getIfType();
-                    // FIXME: What if sint is null?
-                    int ifType = sint.intValue();
-
-                    // Skip loopback interfaces
-                    if (aaddrs[0].getHostAddress().startsWith("127.")) {
-                        continue;
-                    }
-
-                    DbSnmpInterfaceEntry snmpEntry = DbSnmpInterfaceEntry.create(nodeId, xifIndex);
-
-                    // IP address
-                    snmpEntry.setIfAddress(aaddrs[0]);
-                    if(aaddrs[0].equals(ifaddr)) {
-                        forceSnmpInterfaceEntry = false;
-                    }
-
-                    // netmask
-                    if (aaddrs[1] != null) {
-                        snmpEntry.setNetmask(aaddrs[1]);
-                    }
-
-                    // description
-                    String str = ifte.getIfDescr();
-                    if (log.isDebugEnabled()) {
-                        log.debug("SuspectEventProcessor: " + aaddrs[0].getHostAddress() + " has ifDescription: " + str);
-                    }
-                    if (str != null && str.length() > 0) {
-                        snmpEntry.setDescription(str);
-                    }
-
-                    // physical address
-                    String physAddr = ifte.getPhysAddr();
-                        
-                    if (log.isDebugEnabled()) {
-                        log.debug("SuspectEventProcessor: " + aaddrs[0].getHostAddress() + " has physical address: -" + physAddr + "-");
-                    }
-                    
-                    if (physAddr != null && physAddr.length() == 12) {
-                        snmpEntry.setPhysicalAddress(physAddr);
-                    }
-                    
-
-                    // type
-                    snmpEntry.setType(ifType);
-
-                    // speed
-                    Long uint = ifte.getIfSpeed();
-                    if (uint == null) {
-                        snmpEntry.setSpeed(0);
-                    } else {
-                        snmpEntry.setSpeed(uint.longValue());
-                    }
-
-                    // admin status
-                    sint = ifte.getIfAdminStatus();
-                    if (sint == null) {
-                        snmpEntry.setAdminStatus(0);
-                    } else {
-                        snmpEntry.setAdminStatus(sint.intValue());
-                    }
-
-                    // oper status
-                    sint = ifte.getIfOperStatus();
-                    if (sint == null) {
-                        snmpEntry.setOperationalStatus(0);
-                    } else {
-                        snmpEntry.setOperationalStatus(sint.intValue());
-                    }
-
-                    // name (from interface extensions table)
-                    String ifName = snmpc.getIfName(xifIndex);
-                    if (ifName != null && ifName.length() > 0) {
-                        snmpEntry.setName(ifName);
-                    }
-
-                    // alias (from interface extensions table)
-                    String ifAlias = snmpc.getIfAlias(xifIndex);
-                    if (ifAlias != null && ifAlias.length() > 0) {
-                        snmpEntry.setAlias(ifAlias);
-                    }
-
-                    snmpEntry.store(dbc);
+                int status = snmpc.getAdminStatus(ifIndex);
+                if (status != -1) {
+                    ipIfEntry.setStatus(status);
                 }
             }
-            if (ifIndex == CapsdConfigFactory.LAME_SNMP_HOST_IFINDEX || forceSnmpInterfaceEntry) {
-                DbSnmpInterfaceEntry snmpEntry = DbSnmpInterfaceEntry.create(nodeId, ifIndex);
-                // IP address
-                snmpEntry.setIfAddress(ifaddr);
-                snmpEntry.store(dbc);
+        } else {
+            /*
+             * Address does not have a valid ifIndex associated with it Assume
+             * there is no ipAddrTable and set ifIndex equal to
+             * CapsdConfigFactory.LAME_SNMP_HOST_IFINDEX
+             */
+            ifIndex = CapsdConfigFactory.LAME_SNMP_HOST_IFINDEX;
+            if (log.isDebugEnabled()) {
+                log.debug("SuspectEventProcessor: no valid ifIndex for "
+                        + ifaddr + " Assume this is a lame SNMP host");
             }
         }
+        if (ifIndex != -1) {
+            if (log.isDebugEnabled()) {
+                log.debug("SuspectEventProcessor: setting ifindex for "
+                        + ifaddr + " to " + ifIndex);
+            }
+            ipIfEntry.setIfIndex(ifIndex);
+        }
+        ipIfEntry.store(dbc);
+
+        return ifIndex;
+    }
+
+    private void getSubInterfacesForNewInterface(Connection dbc,
+            DbNodeEntry node, InetAddress ifaddr, IfCollector collector,
+            Date now, int nodeId, int ifIndex) throws SQLException {
+        if (!collector.hasSnmpCollection()) {
+            return;
+        }
+
+        Category log = ThreadCategory.getInstance(getClass());
+
+        CapsdConfig cFactory = CapsdConfigFactory.getInstance();
+        PollerConfig pollerCfgFactory = PollerConfigFactory.getInstance();
+        
+        IfSnmpCollector snmpc = collector.getSnmpCollector();
+
+        // Made it this far...lets add the IP sub-interfaces
+        addSubIpInterfaces(dbc, node, collector, now, nodeId, log, cFactory,
+                           pollerCfgFactory, snmpc);
+        
+        // Now add any non-IP interfaces
+        addSubNonIpInterfaces(dbc, collector, now, nodeId, snmpc);
+
+        // last thing to do is add all the snmp interface information
+        boolean addedSnmpInterfaceEntry =
+            addSubSnmpInterfaces(dbc, ifaddr, nodeId, snmpc);
+
+        if (ifIndex == CapsdConfigFactory.LAME_SNMP_HOST_IFINDEX
+                || !addedSnmpInterfaceEntry) {
+            DbSnmpInterfaceEntry snmpEntry =
+                DbSnmpInterfaceEntry.create(nodeId, ifIndex);
+            // IP address
+            snmpEntry.setIfAddress(ifaddr);
+            snmpEntry.store(dbc);
+        }
+    }
+
+
+    private void addSubIpInterfaces(Connection dbc, DbNodeEntry node,
+            IfCollector collector, Date now, int nodeId, Category log,
+            CapsdConfig cFactory, PollerConfig pollerCfgFactory,
+            IfSnmpCollector snmpc) throws SQLException {
+        if (!snmpc.hasIpAddrTable()) {
+            return;
+        }
+        
+        Map extraTargets = collector.getAdditionalTargets();
+        Iterator iter = extraTargets.keySet().iterator();
+        while (iter.hasNext()) {
+            InetAddress xifaddr = (InetAddress) iter.next();
+
+            if (log.isDebugEnabled()) {
+                log.debug("addInterfaces: adding interface "
+                        + xifaddr.getHostAddress());
+            }
+
+            DbIpInterfaceEntry xipIfEntry = DbIpInterfaceEntry.create(nodeId,
+                                                                      xifaddr);
+            xipIfEntry.setLastPoll(now);
+            xipIfEntry.setHostname(xifaddr.getHostName());
+
+            /*
+             * NOTE: (reference internal bug# 201) If the ip is 'managed', it
+             * might still be 'not polled' based on the poller configuration.
+             * The package filter evaluation requires that the ip be in the
+             * database - at this point the ip is NOT in db, so insert as
+             * active and update afterward. Try to avoid re-evaluating the ip
+             * against filters for each service, try to get the first package
+             * here and use that for service evaluation.
+             */
+            boolean xaddrUnmanaged = cFactory.isAddressUnmanaged(xifaddr);
+            if (xaddrUnmanaged) {
+                xipIfEntry.setManagedState(DbIpInterfaceEntry.STATE_UNMANAGED);
+            } else {
+                xipIfEntry.setManagedState(DbIpInterfaceEntry.STATE_MANAGED);
+            }
+
+            /*
+             * Just set primary state to not eligible for now. The primary
+             * SNMP interface won't be selected until after all interfaces
+             * have been inserted into the database. This is because the
+             * interface must already be in the database for filter rule
+             * evaluation to succeed.
+             */
+            xipIfEntry.setPrimaryState(DbIpInterfaceEntry.SNMP_NOT_ELIGIBLE);
+            int xifIndex = -1;
+            if ((xifIndex = snmpc.getIfIndex(xifaddr)) != -1) {
+                xipIfEntry.setIfIndex(xifIndex);
+                int status = snmpc.getAdminStatus(xifIndex);
+                if (status != -1) {
+                    xipIfEntry.setStatus(status);
+                }
+
+                if (!supportsSnmp((List) extraTargets.get(xifaddr))) {
+                    log.debug("addInterfaces: Interface doesn't support SNMP. "
+                            + xifaddr.getHostAddress()
+                            + " set to not eligible");
+                }
+            } else {
+                /*
+                 * No ifIndex found so set primary state to NOT_ELIGIBLE
+                 */
+                log.debug("addInterfaces: No ifIndex found. "
+                        + xifaddr.getHostAddress() + " set to not eligible");
+            }
+
+            xipIfEntry.store(dbc);
+
+            // now update if necessary
+            org.opennms.netmgt.config.poller.Package xipPkg = null;
+            if (!xaddrUnmanaged) {
+                // The newly discoveried IP addr is not in the Package
+                // IPList
+                // Mapping yet, so rebuild the list.
+                //
+                PollerConfigFactory.getInstance().rebuildPackageIpListMap();
+
+                boolean xipToBePolled = false;
+                xipPkg = pollerCfgFactory.getFirstPackageMatch(xifaddr.getHostAddress());
+                if (xipPkg != null) {
+                    xipToBePolled = true;
+                }
+
+                if (!xipToBePolled) {
+                    // update ismanaged to 'N' in ipinterface
+                    xipIfEntry.setManagedState(DbIpInterfaceEntry.STATE_NOT_POLLED);
+                    xipIfEntry.store(dbc);
+                }
+            }
+
+            // add the supported protocols
+            addSupportedProtocols(node, xifaddr,
+                                  (List) extraTargets.get(xifaddr),
+                                  xaddrUnmanaged, xifIndex, xipPkg);
+        }
+    }
+
+    private void addSubNonIpInterfaces(Connection dbc, IfCollector collector,
+            Date now, int nodeId, IfSnmpCollector snmpc) throws SQLException {
+        if (!snmpc.hasIpAddrTable()) {
+            return;
+        }
+
+        if (!collector.hasNonIpInterfaces()) {
+            return;
+        }
+
+        Iterator iter = ((List) collector.getNonIpInterfaces()).iterator();
+        while (iter.hasNext()) {
+            Integer ifindex = (Integer) iter.next();
+
+            DbIpInterfaceEntry xipIfEntry = null;
+            try {
+                xipIfEntry =
+                    DbIpInterfaceEntry.create(nodeId,
+                                              InetAddress.getByName("0.0.0.0"));
+            } catch (UnknownHostException e) {
+                continue;
+            }
+            xipIfEntry.setLastPoll(now);
+            xipIfEntry.setManagedState(DbIpInterfaceEntry.STATE_UNMANAGED);
+
+            xipIfEntry.setIfIndex(ifindex.intValue());
+
+            int status = snmpc.getAdminStatus(ifindex.intValue());
+            if (status != -1) {
+                xipIfEntry.setStatus(status);
+            }
+
+            xipIfEntry.setPrimaryState(DbIpInterfaceEntry.SNMP_NOT_ELIGIBLE);
+
+            xipIfEntry.store(dbc);
+        }
+    }
+    
+    private boolean addSubSnmpInterfaces(Connection dbc, InetAddress ifaddr,
+            int nodeId, IfSnmpCollector snmpc)
+            throws SQLException {
+        if (!snmpc.hasIfTable()) {
+            return false;
+        }
+
+        Category log = ThreadCategory.getInstance(getClass());
+        
+        boolean addedSnmpInterfaceEntry = false;
+
+        List<IfTableEntry> ifTableEntries = snmpc.getIfTable().getEntries();
+        for (IfTableEntry ifte : ifTableEntries) {
+            // index
+            Integer sint = ifte.getIfIndex();
+            if (sint == null) {
+                continue;
+            }
+            int xifIndex = sint.intValue();
+
+            /*
+             * address WARNING: IfSnmpCollector.getIfAddressAndMask() ONLY
+             * returns the FIRST IP address and mask for a given interface as
+             * specified in the ipAddrTable.
+             */
+            InetAddress[] aaddrs = null;
+            if (snmpc.hasIpAddrTable()) {
+                aaddrs = snmpc.getIfAddressAndMask(sint.intValue());
+            }
+            if (aaddrs == null) {
+                /*
+                 * Must be non-IP interface, set ifAddress to
+                 * '0.0.0.0' and mask to null
+                 */
+                aaddrs = new InetAddress[2];
+                try {
+                    aaddrs[0] = InetAddress.getByName("0.0.0.0");
+                } catch (UnknownHostException e) {
+                    continue;
+                }
+                aaddrs[1] = null;
+            }
+
+            // Retrieve ifType so we can check for loopback
+            sint = ifte.getIfType();
+            // FIXME: What if sint is null?
+            int ifType = sint.intValue();
+
+            // Skip loopback interfaces
+            if (aaddrs[0].getHostAddress().startsWith("127.")) {
+                continue;
+            }
+
+            DbSnmpInterfaceEntry snmpEntry =
+                DbSnmpInterfaceEntry.create(nodeId, xifIndex);
+
+            // IP address
+            snmpEntry.setIfAddress(aaddrs[0]);
+            if (aaddrs[0].equals(ifaddr)) {
+                addedSnmpInterfaceEntry = true;
+            }
+
+            // netmask
+            if (aaddrs[1] != null) {
+                snmpEntry.setNetmask(aaddrs[1]);
+            }
+
+            // description
+            String str = ifte.getIfDescr();
+            if (log.isDebugEnabled()) {
+                log.debug("SuspectEventProcessor: "
+                        + aaddrs[0].getHostAddress() + " has ifDescription: "
+                        + str);
+            }
+            if (str != null && str.length() > 0) {
+                snmpEntry.setDescription(str);
+            }
+
+            // physical address
+            String physAddr = ifte.getPhysAddr();
+
+            if (log.isDebugEnabled()) {
+                log.debug("SuspectEventProcessor: "
+                        + aaddrs[0].getHostAddress()
+                        + " has physical address: -" + physAddr + "-");
+            }
+
+            if (physAddr != null && physAddr.length() == 12) {
+                snmpEntry.setPhysicalAddress(physAddr);
+            }
+
+            // type
+            snmpEntry.setType(ifType);
+
+            // speed
+            Long uint = ifte.getIfSpeed();
+            if (uint == null) {
+                snmpEntry.setSpeed(0);
+            } else {
+                snmpEntry.setSpeed(uint.longValue());
+            }
+
+            // admin status
+            sint = ifte.getIfAdminStatus();
+            if (sint == null) {
+                snmpEntry.setAdminStatus(0);
+            } else {
+                snmpEntry.setAdminStatus(sint.intValue());
+            }
+
+            // oper status
+            sint = ifte.getIfOperStatus();
+            if (sint == null) {
+                snmpEntry.setOperationalStatus(0);
+            } else {
+                snmpEntry.setOperationalStatus(sint.intValue());
+            }
+
+            // name (from interface extensions table)
+            String ifName = snmpc.getIfName(xifIndex);
+            if (ifName != null && ifName.length() > 0) {
+                snmpEntry.setName(ifName);
+            }
+
+            // alias (from interface extensions table)
+            String ifAlias = snmpc.getIfAlias(xifIndex);
+            if (ifAlias != null && ifAlias.length() > 0) {
+                snmpEntry.setAlias(ifAlias);
+            }
+
+            snmpEntry.store(dbc);
+        }
+        return addedSnmpInterfaceEntry;
     }
 
     /**
@@ -878,15 +1006,19 @@ final class SuspectEventProcessor implements Runnable {
      *            Interface index or -1 if index is not known
      * @param ipPkg
      *            Poller package to which the interface belongs
-     * 
      * @throws SQLException
      *             if an error occurs adding interfaces to the ipInterface
      *             table.
      */
-    private void addSupportedProtocols(DbNodeEntry node, InetAddress ifaddr, List protocols, boolean addrUnmanaged, int ifIndex, org.opennms.netmgt.config.poller.Package ipPkg) throws SQLException {
+    private void addSupportedProtocols(DbNodeEntry node, InetAddress ifaddr,
+            List protocols, boolean addrUnmanaged, int ifIndex,
+            org.opennms.netmgt.config.poller.Package ipPkg)
+            throws SQLException {
         Category log = ThreadCategory.getInstance(getClass());
-        if(ifaddr.getHostAddress().equals("0.0.0.0")) {
-            log.debug("addSupportedProtocols: node " + node.getNodeId() + ": Cant add ip services for non-ip interface. Just return.");
+        if (ifaddr.getHostAddress().equals("0.0.0.0")) {
+            log.debug("addSupportedProtocols: node "
+                    + node.getNodeId()
+                    + ": Cant add ip services for non-ip interface. Just return.");
             return;
         }
 
@@ -900,9 +1032,13 @@ final class SuspectEventProcessor implements Runnable {
         Iterator iproto = protocols.iterator();
         while (iproto.hasNext()) {
             IfCollector.SupportedProtocol p = (IfCollector.SupportedProtocol) iproto.next();
-            Number sid = (Number) CapsdConfigFactory.getInstance().getServiceIdentifier(p.getProtocolName());
+            Number sid = (Number) CapsdConfigFactory.getInstance().getServiceIdentifier(
+                                                                                        p.getProtocolName());
 
-            DbIfServiceEntry ifSvcEntry = DbIfServiceEntry.create(node.getNodeId(), ifaddr, sid.intValue());
+            DbIfServiceEntry ifSvcEntry = DbIfServiceEntry.create(
+                                                                  node.getNodeId(),
+                                                                  ifaddr,
+                                                                  sid.intValue());
 
             // now fill in the entry
             //
@@ -911,9 +1047,13 @@ final class SuspectEventProcessor implements Runnable {
             else {
                 boolean svcToBePolled = false;
                 if (ipPkg != null) {
-                    svcToBePolled = PollerConfigFactory.getInstance().isPolled(p.getProtocolName(), ipPkg);
+                    svcToBePolled = PollerConfigFactory.getInstance().isPolled(
+                                                                               p.getProtocolName(),
+                                                                               ipPkg);
                     if (!svcToBePolled)
-                        svcToBePolled = PollerConfigFactory.getInstance().isPolled(ifaddr.getHostAddress(), p.getProtocolName());
+                        svcToBePolled = PollerConfigFactory.getInstance().isPolled(
+                                                                                   ifaddr.getHostAddress(),
+                                                                                   p.getProtocolName());
                 }
 
                 if (svcToBePolled)
@@ -925,7 +1065,8 @@ final class SuspectEventProcessor implements Runnable {
             // Set qualifier if available. Currently the qualifier field
             // is used to store the port at which the protocol was found.
             //
-            if (p.getQualifiers() != null && p.getQualifiers().get("port") != null) {
+            if (p.getQualifiers() != null
+                    && p.getQualifiers().get("port") != null) {
                 try {
                     Integer port = (Integer) p.getQualifiers().get("port");
                     ifSvcEntry.setQualifier(port.toString());
@@ -948,7 +1089,6 @@ final class SuspectEventProcessor implements Runnable {
      * 
      * @param supportedProtocols
      *            List of supported protocol objects.
-     * 
      * @return TRUE if service "SNMP" is present in the list, FALSE otherwise
      */
     static boolean supportsSnmp(List supportedProtocols) {
@@ -969,9 +1109,8 @@ final class SuspectEventProcessor implements Runnable {
      *            IP address
      * @param snmpc
      *            SNMP collection
-     * 
-     * @return TRUE if an ifIndex value was found in the SNMP collection for the
-     *         provided IP address, FALSE otherwise.
+     * @return TRUE if an ifIndex value was found in the SNMP collection for
+     *         the provided IP address, FALSE otherwise.
      */
     static boolean hasIfIndex(InetAddress ipaddr, IfSnmpCollector snmpc) {
         int ifIndex = -1;
@@ -980,7 +1119,8 @@ final class SuspectEventProcessor implements Runnable {
 
         Category log = ThreadCategory.getInstance(Capsd.class);
         if (log.isDebugEnabled())
-            log.debug("hasIfIndex: ipAddress: " + ipaddr.getHostAddress() + " has ifIndex: " + ifIndex);
+            log.debug("hasIfIndex: ipAddress: " + ipaddr.getHostAddress()
+                    + " has ifIndex: " + ifIndex);
         if (ifIndex == -1)
             return false;
         else
@@ -995,9 +1135,8 @@ final class SuspectEventProcessor implements Runnable {
      *            IP address
      * @param snmpc
      *            SNMP collection
-     * 
-     * @return TRUE if an ifIndex value was found in the SNMP collection for the
-     *         provided IP address, FALSE otherwise.
+     * @return TRUE if an ifIndex value was found in the SNMP collection for
+     *         the provided IP address, FALSE otherwise.
      */
     static int getIfType(InetAddress ipaddr, IfSnmpCollector snmpc) {
         int ifIndex = snmpc.getIfIndex(ipaddr);
@@ -1005,18 +1144,18 @@ final class SuspectEventProcessor implements Runnable {
 
         Category log = ThreadCategory.getInstance(Capsd.class);
         if (log.isDebugEnabled())
-            log.debug("getIfType: ipAddress: " + ipaddr.getHostAddress() + " has ifIndex: " + ifIndex + " and ifType: " + ifType);
+            log.debug("getIfType: ipAddress: " + ipaddr.getHostAddress()
+                    + " has ifIndex: " + ifIndex + " and ifType: " + ifType);
         return ifType;
     }
 
     /**
      * Utility method which compares two InetAddress objects based on the
      * provided method (MIN/MAX) and returns the InetAddress which is to be
-     * considered the primary interface.
-     * 
-     * NOTE: In order for an interface to be considered primary it must be
-     * managed. This method will return null if the 'oldPrimary' address is null
-     * and the 'currentIf' address is unmanaged.
+     * considered the primary interface. NOTE: In order for an interface to be
+     * considered primary it must be managed. This method will return null if
+     * the 'oldPrimary' address is null and the 'currentIf' address is
+     * unmanaged.
      * 
      * @param currentIf
      *            Interface with which to compare the 'oldPrimary' address.
@@ -1025,14 +1164,16 @@ final class SuspectEventProcessor implements Runnable {
      *            address.
      * @param method
      *            Comparison method to be used (either "min" or "max")
-     * 
-     * @return InetAddress object of the primary interface based on the provided
-     *         method or null if neither address is eligible to be primary.
+     * @return InetAddress object of the primary interface based on the
+     *         provided method or null if neither address is eligible to be
+     *         primary.
      */
-    static InetAddress compareAndSelectPrimary(InetAddress currentIf, InetAddress oldPrimary, String method) {
+    static InetAddress compareAndSelectPrimary(InetAddress currentIf,
+            InetAddress oldPrimary, String method) {
         InetAddress newPrimary = null;
         if (oldPrimary == null) {
-            if (!CapsdConfigFactory.getInstance().isAddressUnmanaged(currentIf))
+            if (!CapsdConfigFactory.getInstance().isAddressUnmanaged(
+                                                                     currentIf))
                 return currentIf;
             else
                 return oldPrimary;
@@ -1046,7 +1187,8 @@ final class SuspectEventProcessor implements Runnable {
             if (current < primary) {
                 // Replace the primary interface with the current
                 // interface only if the current interface is managed!
-                if (!CapsdConfigFactory.getInstance().isAddressUnmanaged(currentIf))
+                if (!CapsdConfigFactory.getInstance().isAddressUnmanaged(
+                                                                         currentIf))
                     newPrimary = currentIf;
             }
         } else {
@@ -1054,7 +1196,8 @@ final class SuspectEventProcessor implements Runnable {
             if (current > primary) {
                 // Replace the primary interface with the current
                 // interface only if the current interface is managed!
-                if (!CapsdConfigFactory.getInstance().isAddressUnmanaged(currentIf))
+                if (!CapsdConfigFactory.getInstance().isAddressUnmanaged(
+                                                                         currentIf))
                     newPrimary = currentIf;
             }
         }
@@ -1066,16 +1209,14 @@ final class SuspectEventProcessor implements Runnable {
     }
 
     /**
-     * Builds a list of InetAddress objects representing each of the interfaces
-     * from the IfCollector object which support SNMP and have a valid ifIndex
-     * and is a loopback interface.
-     * 
-     * This is in order to allow a non-127.*.*.* loopback address to be chosen
-     * as the primary SNMP interface.
+     * Builds a list of InetAddress objects representing each of the
+     * interfaces from the IfCollector object which support SNMP and have a
+     * valid ifIndex and is a loopback interface. This is in order to allow a
+     * non-127.*.*.* loopback address to be chosen as the primary SNMP
+     * interface.
      * 
      * @param collector
      *            IfCollector object containing SNMP and SMB info.
-     * 
      * @return List of InetAddress objects.
      */
     private static List buildLBSnmpAddressList(IfCollector collector) {
@@ -1086,7 +1227,8 @@ final class SuspectEventProcessor implements Runnable {
         // Verify that SNMP info is available
         if (collector.getSnmpCollector() == null) {
             if (log.isDebugEnabled())
-                log.debug("buildLBSnmpAddressList: no SNMP info for " + collector.getTarget());
+                log.debug("buildLBSnmpAddressList: no SNMP info for "
+                        + collector.getTarget());
             return addresses;
         }
 
@@ -1094,7 +1236,8 @@ final class SuspectEventProcessor implements Runnable {
         // successfully collected.
         IfSnmpCollector snmpc = collector.getSnmpCollector();
         if (!snmpc.hasIfTable() || !snmpc.hasIpAddrTable()) {
-            log.info("buildLBSnmpAddressList: missing SNMP info for " + collector.getTarget());
+            log.info("buildLBSnmpAddressList: missing SNMP info for "
+                    + collector.getTarget());
             return addresses;
         }
 
@@ -1107,9 +1250,13 @@ final class SuspectEventProcessor implements Runnable {
         // Add eligible target.
         //
         InetAddress ipAddr = collector.getTarget();
-        if (supportsSnmp(collector.getSupportedProtocols()) && hasIfIndex(ipAddr, snmpc) && getIfType(ipAddr, snmpc) == 24) {
+        if (supportsSnmp(collector.getSupportedProtocols())
+                && hasIfIndex(ipAddr, snmpc)
+                && getIfType(ipAddr, snmpc) == 24) {
             if (log.isDebugEnabled())
-                log.debug("buildLBSnmpAddressList: adding target interface " + ipAddr.getHostAddress() + " temporarily marked as primary!");
+                log.debug("buildLBSnmpAddressList: adding target interface "
+                        + ipAddr.getHostAddress()
+                        + " temporarily marked as primary!");
             addresses.add(ipAddr);
         }
 
@@ -1123,9 +1270,12 @@ final class SuspectEventProcessor implements Runnable {
 
                 // Test current subtarget.
                 // 
-                if (supportsSnmp((List) extraTargets.get(currIf)) && getIfType(currIf, snmpc) == 24) {
+                if (supportsSnmp((List) extraTargets.get(currIf))
+                        && getIfType(currIf, snmpc) == 24) {
                     if (log.isDebugEnabled())
-                        log.debug("buildLBSnmpAddressList: adding subtarget interface " + currIf.getHostAddress() + " temporarily marked as primary!");
+                        log.debug("buildLBSnmpAddressList: adding subtarget interface "
+                                + currIf.getHostAddress()
+                                + " temporarily marked as primary!");
                     addresses.add(currIf);
                 }
             } // end while()
@@ -1135,12 +1285,12 @@ final class SuspectEventProcessor implements Runnable {
     }
 
     /**
-     * Builds a list of InetAddress objects representing each of the interfaces
-     * from the IfCollector object which support SNMP and have a valid ifIndex.
+     * Builds a list of InetAddress objects representing each of the
+     * interfaces from the IfCollector object which support SNMP and have a
+     * valid ifIndex.
      * 
      * @param collector
      *            IfCollector object containing SNMP and SMB info.
-     * 
      * @return List of InetAddress objects.
      */
     private static List buildSnmpAddressList(IfCollector collector) {
@@ -1151,7 +1301,8 @@ final class SuspectEventProcessor implements Runnable {
         // Verify that SNMP info is available
         if (collector.getSnmpCollector() == null) {
             if (log.isDebugEnabled())
-                log.debug("buildSnmpAddressList: no SNMP info for " + collector.getTarget());
+                log.debug("buildSnmpAddressList: no SNMP info for "
+                        + collector.getTarget());
             return addresses;
         }
 
@@ -1159,7 +1310,8 @@ final class SuspectEventProcessor implements Runnable {
         // successfully collected.
         IfSnmpCollector snmpc = collector.getSnmpCollector();
         if (!snmpc.hasIfTable() || !snmpc.hasIpAddrTable()) {
-            log.info("buildSnmpAddressList: missing SNMP info for " + collector.getTarget());
+            log.info("buildSnmpAddressList: missing SNMP info for "
+                    + collector.getTarget());
             return addresses;
         }
 
@@ -1172,9 +1324,12 @@ final class SuspectEventProcessor implements Runnable {
         // Add eligible target.
         //
         InetAddress ipAddr = collector.getTarget();
-        if (supportsSnmp(collector.getSupportedProtocols()) && hasIfIndex(ipAddr, snmpc)) {
+        if (supportsSnmp(collector.getSupportedProtocols())
+                && hasIfIndex(ipAddr, snmpc)) {
             if (log.isDebugEnabled())
-                log.debug("buildSnmpAddressList: adding target interface " + ipAddr.getHostAddress() + " temporarily marked as primary!");
+                log.debug("buildSnmpAddressList: adding target interface "
+                        + ipAddr.getHostAddress()
+                        + " temporarily marked as primary!");
             addresses.add(ipAddr);
         }
 
@@ -1188,9 +1343,12 @@ final class SuspectEventProcessor implements Runnable {
 
                 // Test current subtarget.
                 // 
-                if (supportsSnmp((List) extraTargets.get(currIf)) && hasIfIndex(currIf, snmpc)) {
+                if (supportsSnmp((List) extraTargets.get(currIf))
+                        && hasIfIndex(currIf, snmpc)) {
                     if (log.isDebugEnabled())
-                        log.debug("buildSnmpAddressList: adding subtarget interface " + currIf.getHostAddress() + " temporarily marked as primary!");
+                        log.debug("buildSnmpAddressList: adding subtarget interface "
+                                + currIf.getHostAddress()
+                                + " temporarily marked as primary!");
                     addresses.add(currIf);
                 }
             } // end while()
@@ -1205,16 +1363,16 @@ final class SuspectEventProcessor implements Runnable {
      * 
      * @param collector
      *            IfCollector object containing SNMP and SMB info.
-     * 
-     * @return InetAddress object of the primary SNMP interface or null if none
-     *         of the node's interfaces are eligible.
+     * @return InetAddress object of the primary SNMP interface or null if
+     *         none of the node's interfaces are eligible.
      */
     private InetAddress determinePrimaryInterface(IfCollector collector) {
         Category log = ThreadCategory.getInstance(getClass());
 
         InetAddress primaryIf = null;
 
-        // For now hard-coding primary interface address selection method to MIN
+        // For now hard-coding primary interface address selection method to
+        // MIN
         String method = SELECT_METHOD_MIN;
 
         // Initially set the target interface as primary
@@ -1234,7 +1392,8 @@ final class SuspectEventProcessor implements Runnable {
 
         if (log.isDebugEnabled())
             if (primaryIf != null)
-                log.debug("determinePrimaryInterface: selected primary interface: " + primaryIf.getHostAddress());
+                log.debug("determinePrimaryInterface: selected primary interface: "
+                        + primaryIf.getHostAddress());
             else
                 log.debug("determinePrimaryInterface: no primary interface found");
         return primaryIf;
@@ -1254,14 +1413,17 @@ final class SuspectEventProcessor implements Runnable {
         try {
             ifaddr = InetAddress.getByName(m_suspectIf);
         } catch (UnknownHostException e) {
-            log.warn("SuspectEventProcessor: Failed to convert interface address " + m_suspectIf + " to InetAddress", e);
+            log.warn(
+                     "SuspectEventProcessor: Failed to convert interface address "
+                             + m_suspectIf + " to InetAddress", e);
             return;
         }
 
         // collect the information
         //
         if (log.isDebugEnabled())
-            log.debug("SuspectEventProcessor: running collection for " + ifaddr.getHostAddress());
+            log.debug("SuspectEventProcessor: running collection for "
+                    + ifaddr.getHostAddress());
 
         IfCollector collector = new IfCollector(ifaddr, true);
         collector.run();
@@ -1308,13 +1470,16 @@ final class SuspectEventProcessor implements Runnable {
                             useExistingNode = true;
                         }
 
-                        // Get old primary SNMP interface(s) (if one or more exists)
+                        // Get old primary SNMP interface(s) (if one or more
+                        // exists)
                         //
-                        List oldPriIfs = getPrimarySnmpInterfaceFromDb(dbc, entryNode);
+                        List oldPriIfs = getPrimarySnmpInterfaceFromDb(dbc,
+                                                                       entryNode);
 
                         // Add interfaces
                         //
-                        addInterfaces(dbc, entryNode, useExistingNode, ifaddr, collector);
+                        addInterfaces(dbc, entryNode, useExistingNode,
+                                      ifaddr, collector);
 
                         // Now that all interfaces have been added to the
                         // database we can update the 'primarySnmpInterface'
@@ -1322,20 +1487,26 @@ final class SuspectEventProcessor implements Runnable {
                         // the IP address must already be in the database
                         // to evaluate against a filter rule.
                         //
-                        // Determine primary SNMP interface from the lists of possible addresses
-                        // in this order: loopback interfaces in collectd-configuration.xml,
-                        // other interfaces in collectd-configuration.xml, loopback interfaces,
+                        // Determine primary SNMP interface from the lists of
+                        // possible addresses
+                        // in this order: loopback interfaces in
+                        // collectd-configuration.xml,
+                        // other interfaces in collectd-configuration.xml,
+                        // loopback interfaces,
                         // other interfaces
                         //
                         boolean strict = true;
                         CollectdConfigFactory.getInstance().rebuildPackageIpListMap();
                         List lbAddressList = buildLBSnmpAddressList(collector);
                         List addressList = buildSnmpAddressList(collector);
-                        // first set the value of issnmpprimary for secondaries
+                        // first set the value of issnmpprimary for
+                        // secondaries
                         Iterator iter = addressList.iterator();
-                        while(iter.hasNext()) {
+                        while (iter.hasNext()) {
                             InetAddress addr = (InetAddress) iter.next();
-                            if (CollectdConfigFactory.getInstance().isServiceCollectionEnabled(addr.getHostAddress(), "SNMP")) {
+                            if (CollectdConfigFactory.getInstance().isServiceCollectionEnabled(
+                                                                                               addr.getHostAddress(),
+                                                                                               "SNMP")) {
                                 PreparedStatement stmt = dbc.prepareStatement("UPDATE ipInterface SET isSnmpPrimary='S' WHERE nodeId=? AND ipAddr=? AND isManaged!='D'");
                                 stmt.setInt(1, entryNode.getNodeId());
                                 stmt.setString(2, addr.getHostAddress());
@@ -1343,7 +1514,9 @@ final class SuspectEventProcessor implements Runnable {
                                 // Execute statement
                                 try {
                                     stmt.executeUpdate();
-                                    log.debug("updated " + addr.getHostAddress() + " to secondary.");
+                                    log.debug("updated "
+                                            + addr.getHostAddress()
+                                            + " to secondary.");
                                 } catch (SQLException sqlE) {
                                     throw sqlE;
                                 } finally {
@@ -1358,47 +1531,68 @@ final class SuspectEventProcessor implements Runnable {
                         String psiType = null;
                         if (lbAddressList != null) {
                             CollectdConfigFactory r = CollectdConfigFactory.getInstance();
-							newSnmpPrimaryIf = CapsdConfigFactory.getInstance().determinePrimarySnmpInterface(lbAddressList, strict);
-                            psiType = ConfigFileConstants.getFileName(ConfigFileConstants.COLLECTD_CONFIG_FILE_NAME) + " loopback addresses";
+                            newSnmpPrimaryIf = CapsdConfigFactory.getInstance().determinePrimarySnmpInterface(
+                                                                                                              lbAddressList,
+                                                                                                              strict);
+                            psiType = ConfigFileConstants.getFileName(ConfigFileConstants.COLLECTD_CONFIG_FILE_NAME)
+                                    + " loopback addresses";
                         }
-                        if(newSnmpPrimaryIf == null) {
+                        if (newSnmpPrimaryIf == null) {
                             CollectdConfigFactory r = CollectdConfigFactory.getInstance();
-							newSnmpPrimaryIf = CapsdConfigFactory.getInstance().determinePrimarySnmpInterface(addressList, strict);
-                            psiType = ConfigFileConstants.getFileName(ConfigFileConstants.COLLECTD_CONFIG_FILE_NAME) + " addresses";
+                            newSnmpPrimaryIf = CapsdConfigFactory.getInstance().determinePrimarySnmpInterface(
+                                                                                                              addressList,
+                                                                                                              strict);
+                            psiType = ConfigFileConstants.getFileName(ConfigFileConstants.COLLECTD_CONFIG_FILE_NAME)
+                                    + " addresses";
                         }
                         strict = false;
-                        if((newSnmpPrimaryIf == null) && (lbAddressList != null)){
+                        if ((newSnmpPrimaryIf == null)
+                                && (lbAddressList != null)) {
                             CollectdConfigFactory r = CollectdConfigFactory.getInstance();
-							newSnmpPrimaryIf = CapsdConfigFactory.getInstance().determinePrimarySnmpInterface(lbAddressList, strict);
+                            newSnmpPrimaryIf = CapsdConfigFactory.getInstance().determinePrimarySnmpInterface(
+                                                                                                              lbAddressList,
+                                                                                                              strict);
                             psiType = "DB loopback addresses";
                         }
-                        if(newSnmpPrimaryIf == null) {
+                        if (newSnmpPrimaryIf == null) {
                             CollectdConfigFactory r = CollectdConfigFactory.getInstance();
-							newSnmpPrimaryIf = CapsdConfigFactory.getInstance().determinePrimarySnmpInterface(addressList, strict);
+                            newSnmpPrimaryIf = CapsdConfigFactory.getInstance().determinePrimarySnmpInterface(
+                                                                                                              addressList,
+                                                                                                              strict);
                             psiType = "DB addresses";
                         }
-                        if (collector.hasSnmpCollection() &&newSnmpPrimaryIf == null) {
+                        if (collector.hasSnmpCollection()
+                                && newSnmpPrimaryIf == null) {
                             newSnmpPrimaryIf = ifaddr;
                             psiType = "New suspect ip address";
                         }
 
                         if (log.isDebugEnabled()) {
-                            if(newSnmpPrimaryIf == null) {
+                            if (newSnmpPrimaryIf == null) {
                                 log.debug("No primary SNMP interface found");
                             } else {
-                                log.debug("primary SNMP interface is: " + newSnmpPrimaryIf + ", selected from " + psiType);
+                                log.debug("primary SNMP interface is: "
+                                        + newSnmpPrimaryIf
+                                        + ", selected from " + psiType);
                             }
-                        }  
-                        // iterate over list of old primaries. There should only be
-                        // one or none, but in case there are more, this will clear
+                        }
+                        // iterate over list of old primaries. There should
+                        // only be
+                        // one or none, but in case there are more, this will
+                        // clear
                         // out the extras.
                         Iterator opiter = oldPriIfs.iterator();
                         if (opiter.hasNext()) {
                             while (opiter.hasNext()) {
-                                setPrimarySnmpInterface(dbc, entryNode, newSnmpPrimaryIf, (InetAddress) opiter.next());
-                            } 
+                                setPrimarySnmpInterface(
+                                                        dbc,
+                                                        entryNode,
+                                                        newSnmpPrimaryIf,
+                                                        (InetAddress) opiter.next());
+                            }
                         } else {
-                            setPrimarySnmpInterface(dbc, entryNode, newSnmpPrimaryIf, null);
+                            setPrimarySnmpInterface(dbc, entryNode,
+                                                    newSnmpPrimaryIf, null);
                         }
                         // Update
                         updateCompleted = true;
@@ -1409,7 +1603,9 @@ final class SuspectEventProcessor implements Runnable {
                             dbc.close();
                         } catch (SQLException e) {
                             if (log.isInfoEnabled())
-                                log.info("run: an sql exception occured closing the database connection", e);
+                                log.info(
+                                         "run: an sql exception occured closing the database connection",
+                                         e);
                         }
                     }
                     dbc = null;
@@ -1430,35 +1626,39 @@ final class SuspectEventProcessor implements Runnable {
             sendInterfaceEvents(entryNode, useExistingNode, ifaddr, collector);
 
             if (useExistingNode) {
-                generateSnmpDataCollectionEvents(entryNode, oldSnmpPrimaryIf, newSnmpPrimaryIf);
+                generateSnmpDataCollectionEvents(entryNode, oldSnmpPrimaryIf,
+                                                 newSnmpPrimaryIf);
             }
 
         }
 
         if (log.isDebugEnabled())
-            log.debug("SuspectEventProcessor for " + m_suspectIf + " completed.");
+            log.debug("SuspectEventProcessor for " + m_suspectIf
+                    + " completed.");
     } // end run
 
     /**
-     * Returns a list of InetAddress object(s) of the primary SNMP interface(s)
-     * (if one or more exists).
+     * Returns a list of InetAddress object(s) of the primary SNMP
+     * interface(s) (if one or more exists).
      * 
      * @param dbc
      *            Database connection.
      * @param node
      *            DbNodeEntry object representing the interface's parent node
      *            table entry
-     * 
      * @throws SQLException
      *             if an error occurs updating the ipInterface table
-     * @return List of Old SNMP primary interface addresses (usually just one).
+     * @return List of Old SNMP primary interface addresses (usually just
+     *         one).
      */
-    static List getPrimarySnmpInterfaceFromDb(Connection dbc, DbNodeEntry node) throws SQLException {
+    static List getPrimarySnmpInterfaceFromDb(Connection dbc, DbNodeEntry node)
+            throws SQLException {
         Category log = ThreadCategory.getInstance(SuspectEventProcessor.class);
 
         List priSnmpAddrs = new ArrayList();
 
-        log.debug("getPrimarySnmpInterfaceFromDb: retrieving primary snmp interface(s) from DB for node " + node.getNodeId());
+        log.debug("getPrimarySnmpInterfaceFromDb: retrieving primary snmp interface(s) from DB for node "
+                + node.getNodeId());
         InetAddress oldPrimarySnmpIf = null;
 
         // Prepare SQL statement
@@ -1471,13 +1671,16 @@ final class SuspectEventProcessor implements Runnable {
             rs = stmt.executeQuery();
             while (rs.next()) {
                 String oldPrimaryAddr = rs.getString(1);
-                log.debug("getPrimarySnmpInterfaceFromDb: String oldPrimaryAddr = " + oldPrimaryAddr);
+                log.debug("getPrimarySnmpInterfaceFromDb: String oldPrimaryAddr = "
+                        + oldPrimaryAddr);
                 if (oldPrimaryAddr != null) {
                     try {
                         oldPrimarySnmpIf = InetAddress.getByName(oldPrimaryAddr);
-                        log.debug("getPrimarySnmpInterfaceFromDb: old primary Snmp interface is " + oldPrimarySnmpIf.getHostAddress());
+                        log.debug("getPrimarySnmpInterfaceFromDb: old primary Snmp interface is "
+                                + oldPrimarySnmpIf.getHostAddress());
                     } catch (UnknownHostException e) {
-                        log.warn("Failed converting IP address " + oldPrimaryAddr);
+                        log.warn("Failed converting IP address "
+                                + oldPrimaryAddr);
                     }
                     priSnmpAddrs.add(oldPrimarySnmpIf);
                 }
@@ -1504,18 +1707,18 @@ final class SuspectEventProcessor implements Runnable {
      * @param dbc
      *            Database connection.
      * @param node
-     *            DbNodeEntry object representing the suspect interface's parent
-     *            node table entry
+     *            DbNodeEntry object representing the suspect interface's
+     *            parent node table entry
      * @param newPrimarySnmpIf
      *            New primary SNMP interface.
      * @param oldPrimarySnmpIf
      *            Old primary SNMP interface.
-     * 
      * @throws SQLException
      *             if an error occurs updating the ipInterface table
-     * 
      */
-    static void setPrimarySnmpInterface(Connection dbc, DbNodeEntry node, InetAddress newPrimarySnmpIf, InetAddress oldPrimarySnmpIf) throws SQLException {
+    static void setPrimarySnmpInterface(Connection dbc, DbNodeEntry node,
+            InetAddress newPrimarySnmpIf, InetAddress oldPrimarySnmpIf)
+            throws SQLException {
         Category log = ThreadCategory.getInstance(SuspectEventProcessor.class);
 
         if (newPrimarySnmpIf == null) {
@@ -1524,23 +1727,25 @@ final class SuspectEventProcessor implements Runnable {
             return;
         } else {
             if (log.isDebugEnabled())
-                log.debug("setPrimarySnmpInterface: newSnmpPrimary = " + newPrimarySnmpIf);
+                log.debug("setPrimarySnmpInterface: newSnmpPrimary = "
+                        + newPrimarySnmpIf);
         }
 
         // Verify that old and new primary interfaces are different
         //
-        if (oldPrimarySnmpIf != null && oldPrimarySnmpIf.equals(newPrimarySnmpIf)) {
+        if (oldPrimarySnmpIf != null
+                && oldPrimarySnmpIf.equals(newPrimarySnmpIf)) {
             // Old and new primary interfaces are the same
             if (log.isDebugEnabled())
                 log.debug("setPrimarySnmpInterface: Old and new primary interfaces are the same");
         }
 
-
         // Set primary SNMP interface 'isSnmpPrimary' field to 'P' for primary
         //
         if (newPrimarySnmpIf != null) {
             if (log.isDebugEnabled())
-                log.debug("setPrimarySnmpInterface:  Updating primary SNMP interface " + newPrimarySnmpIf.getHostAddress());
+                log.debug("setPrimarySnmpInterface:  Updating primary SNMP interface "
+                        + newPrimarySnmpIf.getHostAddress());
 
             // Update the appropriate entry in the 'ipInterface' table
             //
@@ -1569,9 +1774,9 @@ final class SuspectEventProcessor implements Runnable {
 
     /**
      * Determines if any SNMP data collection related events need to be
-     * generated based upon the results of the current rescan. If necessary will
-     * generate one of the following events: 'reinitializePrimarySnmpInterface'
-     * 'primarySnmpInterfaceChanged'
+     * generated based upon the results of the current rescan. If necessary
+     * will generate one of the following events:
+     * 'reinitializePrimarySnmpInterface' 'primarySnmpInterfaceChanged'
      * 
      * @param nodeEntry
      *            DbNodeEntry object of the node being rescanned.
@@ -1580,7 +1785,8 @@ final class SuspectEventProcessor implements Runnable {
      * @param newPrimary
      *            New primary SNMP interface
      */
-    private void generateSnmpDataCollectionEvents(DbNodeEntry nodeEntry, InetAddress oldPrimary, InetAddress newPrimary) {
+    private void generateSnmpDataCollectionEvents(DbNodeEntry nodeEntry,
+            InetAddress oldPrimary, InetAddress newPrimary) {
         Category log = ThreadCategory.getInstance(getClass());
 
         // Sanity check -- should not happen
@@ -1590,7 +1796,9 @@ final class SuspectEventProcessor implements Runnable {
 
         // Sanity check -- should not happen
         else if (oldPrimary != null && newPrimary == null) {
-            log.warn("generateSnmpDataCollectionEvents: old primary (" + oldPrimary.getHostAddress() + ") is not null but new primary is null!");
+            log.warn("generateSnmpDataCollectionEvents: old primary ("
+                    + oldPrimary.getHostAddress()
+                    + ") is not null but new primary is null!");
         }
 
         // Just added the primary SNMP interface to the node, the
@@ -1600,7 +1808,10 @@ final class SuspectEventProcessor implements Runnable {
         // additional events are required.
         else if (oldPrimary == null && newPrimary != null) {
             if (log.isDebugEnabled())
-                log.debug("generateSnmpDataCollectionEvents: identified " + newPrimary.getHostAddress() + " as the primary SNMP interface for node " + nodeEntry.getNodeId());
+                log.debug("generateSnmpDataCollectionEvents: identified "
+                        + newPrimary.getHostAddress()
+                        + " as the primary SNMP interface for node "
+                        + nodeEntry.getNodeId());
         }
 
         // A PrimarySnmpInterfaceChanged event is generated if the scan
@@ -1609,10 +1820,16 @@ final class SuspectEventProcessor implements Runnable {
         //
         else if (!oldPrimary.equals(newPrimary)) {
             if (log.isDebugEnabled()) {
-                log.debug("generateSnmpDataCollectionEvents: primary SNMP interface has changed.  Was: " + oldPrimary.getHostAddress() + " Is: " + newPrimary.getHostAddress());
+                log.debug("generateSnmpDataCollectionEvents: primary SNMP interface has changed.  Was: "
+                        + oldPrimary.getHostAddress()
+                        + " Is: "
+                        + newPrimary.getHostAddress());
             }
 
-            createAndSendPrimarySnmpInterfaceChangedEvent(nodeEntry.getNodeId(), newPrimary, oldPrimary);
+            createAndSendPrimarySnmpInterfaceChangedEvent(
+                                                          nodeEntry.getNodeId(),
+                                                          newPrimary,
+                                                          oldPrimary);
         }
 
         // The primary SNMP interface did not change but the Capsd scan just
@@ -1625,8 +1842,11 @@ final class SuspectEventProcessor implements Runnable {
         // in the database.
         else {
             if (log.isDebugEnabled())
-                log.debug("generateSnmpDataCollectionEvents: Generating reinitializeSnmpInterface event for interface " + newPrimary.getHostAddress());
-            createAndSendReinitializePrimarySnmpInterfaceEvent(nodeEntry.getNodeId(), newPrimary);
+                log.debug("generateSnmpDataCollectionEvents: Generating reinitializeSnmpInterface event for interface "
+                        + newPrimary.getHostAddress());
+            createAndSendReinitializePrimarySnmpInterfaceEvent(
+                                                               nodeEntry.getNodeId(),
+                                                               newPrimary);
         }
     }
 
@@ -1641,7 +1861,8 @@ final class SuspectEventProcessor implements Runnable {
      * @param oldPrimaryIf
      *            old primary SNMP interface address
      */
-    private void createAndSendPrimarySnmpInterfaceChangedEvent(int nodeId, InetAddress newPrimaryIf, InetAddress oldPrimaryIf) {
+    private void createAndSendPrimarySnmpInterfaceChangedEvent(int nodeId,
+            InetAddress newPrimaryIf, InetAddress oldPrimaryIf) {
         Category log = ThreadCategory.getInstance(getClass());
 
         String oldPrimaryAddr = null;
@@ -1653,7 +1874,11 @@ final class SuspectEventProcessor implements Runnable {
             newPrimaryAddr = newPrimaryIf.getHostAddress();
 
         if (log.isDebugEnabled())
-            log.debug("createAndSendPrimarySnmpInterfaceChangedEvent: nodeId: " + nodeId + " oldPrimarySnmpIf: '" + oldPrimaryAddr + "' newPrimarySnmpIf: '" + newPrimaryAddr + "'");
+            log.debug("createAndSendPrimarySnmpInterfaceChangedEvent: nodeId: "
+                    + nodeId
+                    + " oldPrimarySnmpIf: '"
+                    + oldPrimaryAddr
+                    + "' newPrimarySnmpIf: '" + newPrimaryAddr + "'");
 
         Event newEvent = new Event();
 
@@ -1704,9 +1929,12 @@ final class SuspectEventProcessor implements Runnable {
             EventIpcManagerFactory.getIpcManager().sendNow(newEvent);
 
             if (log.isDebugEnabled())
-                log.debug("createAndSendPrimarySnmpInterfaceChangedEvent: successfully sent primarySnmpInterfaceChanged event for nodeID: " + nodeId);
+                log.debug("createAndSendPrimarySnmpInterfaceChangedEvent: successfully sent primarySnmpInterfaceChanged event for nodeID: "
+                        + nodeId);
         } catch (Throwable t) {
-            log.warn("run: unexpected throwable exception caught during send to middleware", t);
+            log.warn(
+                     "run: unexpected throwable exception caught during send to middleware",
+                     t);
         }
     }
 
@@ -1719,11 +1947,13 @@ final class SuspectEventProcessor implements Runnable {
      * @param primarySnmpIf
      *            Primary SNMP interface address.
      */
-    private void createAndSendReinitializePrimarySnmpInterfaceEvent(int nodeId, InetAddress primarySnmpIf) {
+    private void createAndSendReinitializePrimarySnmpInterfaceEvent(
+            int nodeId, InetAddress primarySnmpIf) {
         Category log = ThreadCategory.getInstance(getClass());
 
         if (log.isDebugEnabled())
-            log.debug("reinitializePrimarySnmpInterface: nodeId: " + nodeId + " interface: " + primarySnmpIf.getHostAddress());
+            log.debug("reinitializePrimarySnmpInterface: nodeId: " + nodeId
+                    + " interface: " + primarySnmpIf.getHostAddress());
 
         Event newEvent = new Event();
 
@@ -1744,26 +1974,31 @@ final class SuspectEventProcessor implements Runnable {
             EventIpcManagerFactory.getIpcManager().sendNow(newEvent);
 
             if (log.isDebugEnabled())
-                log.debug("createAndSendReinitializePrimarySnmpInterfaceEvent: successfully sent reinitializePrimarySnmpInterface event for nodeID: " + nodeId);
+                log.debug("createAndSendReinitializePrimarySnmpInterfaceEvent: successfully sent reinitializePrimarySnmpInterface event for nodeID: "
+                        + nodeId);
         } catch (Throwable t) {
-            log.warn("run: unexpected throwable exception caught during send to middleware", t);
+            log.warn(
+                     "run: unexpected throwable exception caught during send to middleware",
+                     t);
         }
     }
 
     /**
-     * This method is responsible for creating all the necessary interface-level
-     * events for the node and sending them to Eventd.
+     * This method is responsible for creating all the necessary
+     * interface-level events for the node and sending them to Eventd.
      * 
      * @param node
      *            DbNodeEntry object for the parent node.
      * @param useExistingNode
-     *            TRUE if existing node was used, FALSE if new node was created.
+     *            TRUE if existing node was used, FALSE if new node was
+     *            created.
      * @param ifaddr
      *            Target interface address
      * @param collector
      *            Interface collector containing SNMP and SMB info.
      */
-    private void sendInterfaceEvents(DbNodeEntry node, boolean useExistingNode, InetAddress ifaddr, IfCollector collector) {
+    private void sendInterfaceEvents(DbNodeEntry node,
+            boolean useExistingNode, InetAddress ifaddr, IfCollector collector) {
         Category log = ThreadCategory.getInstance(getClass());
 
         // Go ahead and send events for the target interface
@@ -1772,19 +2007,23 @@ final class SuspectEventProcessor implements Runnable {
         // nodeGainedInterface
         //
         if (log.isDebugEnabled())
-            log.debug("sendInterfaceEvents: sending node gained interface event for " + ifaddr.getHostAddress());
+            log.debug("sendInterfaceEvents: sending node gained interface event for "
+                    + ifaddr.getHostAddress());
 
         createAndSendNodeGainedInterfaceEvent(node.getNodeId(), ifaddr);
 
         // nodeGainedService
         //
-        log.debug("sendInterfaceEvents: processing supported services for " + ifaddr.getHostAddress());
+        log.debug("sendInterfaceEvents: processing supported services for "
+                + ifaddr.getHostAddress());
         Iterator iproto = collector.getSupportedProtocols().iterator();
         while (iproto.hasNext()) {
             IfCollector.SupportedProtocol p = (IfCollector.SupportedProtocol) iproto.next();
             if (log.isDebugEnabled())
-                log.debug("sendInterfaceEvents: sending event for service: " + p.getProtocolName());
-            createAndSendNodeGainedServiceEvent(node, ifaddr, p.getProtocolName(), null);
+                log.debug("sendInterfaceEvents: sending event for service: "
+                        + p.getProtocolName());
+            createAndSendNodeGainedServiceEvent(node, ifaddr,
+                                                p.getProtocolName(), null);
         }
 
         // If the useExistingNode flag is set to TRUE we're done, none of the
@@ -1795,7 +2034,8 @@ final class SuspectEventProcessor implements Runnable {
 
         // If SNMP info available send events for sub-targets
         //
-        if (collector.hasSnmpCollection() && !collector.getSnmpCollector().failed()) {
+        if (collector.hasSnmpCollection()
+                && !collector.getSnmpCollector().failed()) {
             Map extraTargets = collector.getAdditionalTargets();
             Iterator iter = extraTargets.keySet().iterator();
             while (iter.hasNext()) {
@@ -1803,17 +2043,23 @@ final class SuspectEventProcessor implements Runnable {
 
                 // nodeGainedInterface
                 //
-                createAndSendNodeGainedInterfaceEvent(node.getNodeId(), xifaddr);
+                createAndSendNodeGainedInterfaceEvent(node.getNodeId(),
+                                                      xifaddr);
 
                 // nodeGainedService
                 //
                 List supportedProtocols = (List) extraTargets.get(xifaddr);
-                log.debug("interface " + xifaddr + " supports " + supportedProtocols.size() + " protocols.");
+                log.debug("interface " + xifaddr + " supports "
+                        + supportedProtocols.size() + " protocols.");
                 if (supportedProtocols != null) {
                     iproto = supportedProtocols.iterator();
                     while (iproto.hasNext()) {
                         IfCollector.SupportedProtocol p = (IfCollector.SupportedProtocol) iproto.next();
-                        createAndSendNodeGainedServiceEvent(node, xifaddr, p.getProtocolName(), null);
+                        createAndSendNodeGainedServiceEvent(
+                                                            node,
+                                                            xifaddr,
+                                                            p.getProtocolName(),
+                                                            null);
                     }
                 }
             }
@@ -1881,9 +2127,12 @@ final class SuspectEventProcessor implements Runnable {
             EventIpcManagerFactory.getIpcManager().sendNow(newEvent);
 
             if (log.isDebugEnabled())
-                log.debug("createAndSendNodeAddedEvent: successfully sent NodeAdded event for nodeID: " + nodeEntry.getNodeId());
+                log.debug("createAndSendNodeAddedEvent: successfully sent NodeAdded event for nodeID: "
+                        + nodeEntry.getNodeId());
         } catch (Throwable t) {
-            log.warn("run: unexpected throwable exception caught during send to middleware", t);
+            log.warn(
+                     "run: unexpected throwable exception caught during send to middleware",
+                     t);
         }
 
     }
@@ -1897,7 +2146,8 @@ final class SuspectEventProcessor implements Runnable {
      * @param ipAddr
      *            Interface's IP address
      */
-    private void createAndSendDuplicateIpaddressEvent(int nodeId, String ipAddr) {
+    private void createAndSendDuplicateIpaddressEvent(int nodeId,
+            String ipAddr) {
         Category log = ThreadCategory.getInstance(getClass());
 
         // create the event to be sent
@@ -1945,9 +2195,12 @@ final class SuspectEventProcessor implements Runnable {
             EventIpcManagerFactory.getIpcManager().sendNow(newEvent);
 
             if (log.isDebugEnabled())
-                log.debug("createAndSendDuplicateIpaddressEvent: successfully sent duplicateIPAddress event for interface: " + ipAddr);
+                log.debug("createAndSendDuplicateIpaddressEvent: successfully sent duplicateIPAddress event for interface: "
+                        + ipAddr);
         } catch (Throwable t) {
-            log.warn("run: unexpected throwable exception caught during send to middleware", t);
+            log.warn(
+                     "run: unexpected throwable exception caught during send to middleware",
+                     t);
         }
     }
 
@@ -1960,7 +2213,8 @@ final class SuspectEventProcessor implements Runnable {
      * @param ipAddr
      *            Interface's IP address
      */
-    private void createAndSendNodeGainedInterfaceEvent(int nodeId, InetAddress ipAddr) {
+    private void createAndSendNodeGainedInterfaceEvent(int nodeId,
+            InetAddress ipAddr) {
         Category log = ThreadCategory.getInstance(getClass());
 
         // create the event to be sent
@@ -2007,15 +2261,18 @@ final class SuspectEventProcessor implements Runnable {
             EventIpcManagerFactory.getIpcManager().sendNow(newEvent);
 
             if (log.isDebugEnabled())
-                log.debug("createAndSendNodeGainedInterfaceEvent: successfully sent NodeGainedInterface event for interface: " + ipAddr.getHostAddress());
+                log.debug("createAndSendNodeGainedInterfaceEvent: successfully sent NodeGainedInterface event for interface: "
+                        + ipAddr.getHostAddress());
         } catch (Throwable t) {
-            log.warn("run: unexpected throwable exception caught during send to middleware", t);
+            log.warn(
+                     "run: unexpected throwable exception caught during send to middleware",
+                     t);
         }
     }
 
     /**
-     * This method is responsible for creating and sending a 'nodeGainedService'
-     * event to Eventd
+     * This method is responsible for creating and sending a
+     * 'nodeGainedService' event to Eventd
      * 
      * @param nodeEntry
      *            Interface's parent node identifier.
@@ -2024,10 +2281,11 @@ final class SuspectEventProcessor implements Runnable {
      * @param svcName
      *            Service name
      * @param qualifier
-     *            Service qualifier (typically the port on which the service was
-     *            found)
+     *            Service qualifier (typically the port on which the service
+     *            was found)
      */
-    private void createAndSendNodeGainedServiceEvent(DbNodeEntry nodeEntry, InetAddress ipAddr, String svcName, String qualifier) {
+    private void createAndSendNodeGainedServiceEvent(DbNodeEntry nodeEntry,
+            InetAddress ipAddr, String svcName, String qualifier) {
         Category log = ThreadCategory.getInstance(getClass());
 
         // create the event to be sent
@@ -2115,9 +2373,14 @@ final class SuspectEventProcessor implements Runnable {
             EventIpcManagerFactory.getIpcManager().sendNow(newEvent);
 
             if (log.isDebugEnabled())
-                log.debug("createAndSendNodeGainedServiceEvent: successfully sent NodeGainedService event for interface: " + ipAddr.getHostAddress() + " and service: " + svcName);
+                log.debug("createAndSendNodeGainedServiceEvent: successfully sent NodeGainedService event for interface: "
+                        + ipAddr.getHostAddress()
+                        + " and service: "
+                        + svcName);
         } catch (Throwable t) {
-            log.warn("run: unexpected throwable exception caught during send to middleware", t);
+            log.warn(
+                     "run: unexpected throwable exception caught during send to middleware",
+                     t);
         }
     }
 
