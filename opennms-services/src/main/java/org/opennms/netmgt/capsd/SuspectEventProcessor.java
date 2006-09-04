@@ -126,11 +126,12 @@ final class SuspectEventProcessor implements Runnable {
      * @param ifAddress
      *            Suspect interface address.
      */
-    SuspectEventProcessor(String ifAddress) {
+    protected SuspectEventProcessor(String ifAddress) {
         // Check the arguments
         //
-        if (ifAddress == null)
+        if (ifAddress == null) {
             throw new IllegalArgumentException("The interface address cannot be null");
+        }
 
         m_suspectIf = ifAddress;
     }
@@ -491,7 +492,6 @@ final class SuspectEventProcessor implements Runnable {
      *             table.
      */
     private void addInterfaces(Connection dbc, DbNodeEntry node, boolean useExistingNode, InetAddress ifaddr, IfCollector collector) throws SQLException {
-        
         Category log = ThreadCategory.getInstance(getClass());
 
         CapsdConfig cFactory = CapsdConfigFactory.getInstance();
@@ -505,19 +505,19 @@ final class SuspectEventProcessor implements Runnable {
         ipIfEntry.setLastPoll(now);
         ipIfEntry.setHostname(ifaddr.getHostName());
 
-        // NOTE: (reference internal bug# 201)
-        // If the ip is 'managed', it might still be 'not polled' based
-        // on the poller configuration
-        //
-        // The package filter evaluation requires that the ip be in the
-        // database - at this point the ip is NOT in db, so insert as active
-        // and update afterward
-        //
-        // Try to avoid re-evaluating the ip against filters for
-        // each service, try to get the first package here and use
-        // that for service evaluation
-        //
-
+        /*
+         * NOTE: (reference internal bug# 201)
+         * If the ip is 'managed', it might still be 'not polled' based
+         * on the poller configuration
+         *
+         * The package filter evaluation requires that the ip be in the
+         * database - at this point the ip is NOT in db, so insert as active
+         * and update afterward
+         *
+         * Try to avoid re-evaluating the ip against filters for
+         * each service, try to get the first package here and use
+         * that for service evaluation
+         */
         boolean addrUnmanaged = cFactory.isAddressUnmanaged(ifaddr);
         if (addrUnmanaged) {
             log.debug("addInterfaces: " + ifaddr + " is unmanaged");
@@ -534,15 +534,17 @@ final class SuspectEventProcessor implements Runnable {
         // now update if necessary
         org.opennms.netmgt.config.poller.Package ipPkg = null;
         if (!addrUnmanaged) {
-            // The newly discoveried IP addr is not in the Package IPList
-            // Mapping yet, so rebuild the list.
-            //
+            /*
+             * The newly discoveried IP addr is not in the Package IPList
+             * Mapping yet, so rebuild the list.
+             */
             PollerConfigFactory.getInstance().rebuildPackageIpListMap();
 
             boolean ipToBePolled = false;
             ipPkg = pollerCfgFactory.getFirstPackageMatch(ifaddr.getHostAddress());
-            if (ipPkg != null)
+            if (ipPkg != null) {
                 ipToBePolled = true;
+            }
 
             log.debug("addInterfaces: " + ifaddr + " is to be polled = " + ipToBePolled);
 
@@ -557,50 +559,58 @@ final class SuspectEventProcessor implements Runnable {
         IfSnmpCollector snmpc = null;
         if (collector.hasSnmpCollection()) {
             snmpc = collector.getSnmpCollector();
-            // Just set primary state to not eligible for now. The primary SNMP
-            // interface won't be selected until after all interfaces have
-            // been inserted into the database. This is because the interface
-            // must already be in the database for filter rule evaluation to
-            // succeed.
+            /*
+             * Just set primary state to not eligible for now. The primary SNMP
+             * interface won't be selected until after all interfaces have
+             * been inserted into the database. This is because the interface
+             * must already be in the database for filter rule evaluation to
+             * succeed.
+             */
 
             ipIfEntry.setPrimaryState(DbIpInterfaceEntry.SNMP_NOT_ELIGIBLE);
             if (snmpc.hasIpAddrTable() && (ifIndex = snmpc.getIfIndex(ifaddr)) != -1) {
                 if (snmpc.hasIfTable()) {
                     int status = snmpc.getAdminStatus(ifIndex);
-                    if (status != -1)
+                    if (status != -1) {
                         ipIfEntry.setStatus(status);
+                    }
                 }
             } else {
-                // Address does not have a valid ifIndex associated with it
-                // Assume there is no ipAddrTable and set ifIndex equal to
-                // CapsdConfigFactory.LAME_SNMP_HOST_IFINDEX
+                /*
+                 * Address does not have a valid ifIndex associated with it
+                 * Assume there is no ipAddrTable and set ifIndex equal to
+                 * CapsdConfigFactory.LAME_SNMP_HOST_IFINDEX
+                 */
                 ifIndex = CapsdConfigFactory.LAME_SNMP_HOST_IFINDEX;
-                if (log.isDebugEnabled())
+                if (log.isDebugEnabled()) {
                     log.debug("SuspectEventProcessor: no valid ifIndex for " + ifaddr + " Assume this is a lame SNMP host");
+                }
             }
-            if (ifIndex != -1)
-                if (log.isDebugEnabled())
+            if (ifIndex != -1) {
+                if (log.isDebugEnabled()) {
                     log.debug("SuspectEventProcessor: setting ifindex for " + ifaddr + " to " + ifIndex);
+                }
                 ipIfEntry.setIfIndex(ifIndex);
+            }
             ipIfEntry.store(dbc);
         }
 
         // Add supported protocols
         addSupportedProtocols(node, ifaddr, collector.getSupportedProtocols(), addrUnmanaged, ifIndex, ipPkg);
 
-        // If the useExistingNode flag is true, then we're done. The
-        // interface is most likely an alias and the subinterfaces
-        // collected via SNMP should already be in the database.
-        //
-        if (useExistingNode == true)
+        /*
+         * If the useExistingNode flag is true, then we're done. The
+         * interface is most likely an alias and the subinterfaces
+         * collected via SNMP should already be in the database.
+         */
+        if (useExistingNode == true) {
             return;
+        }
 
         if (snmpc != null) {
-
             boolean forceSnmpInterfaceEntry = true;
 
             // Made it this far...lets add the sub interfaces
-            // 
             if (snmpc.hasIpAddrTable()) {
                 Map extraTargets = collector.getAdditionalTargets();
                 Iterator iter = extraTargets.keySet().iterator();
@@ -614,37 +624,41 @@ final class SuspectEventProcessor implements Runnable {
                     xipIfEntry.setLastPoll(now);
                     xipIfEntry.setHostname(xifaddr.getHostName());
 
-                    // NOTE: (reference internal bug# 201)
-                    // If the ip is 'managed', it might still be 'not polled' based
-                    // on the poller configuration
-                    //
-                    // The package filter evaluation requires that the ip be in the
-                    // database - at this point the ip is NOT in db, so insert as
-                    // active
-                    // and update afterward
-                    //
-                    // Try to avoid re-evaluating the ip against filters for
-                    // each service, try to get the first package here and use
-                    // that for service evaluation
-                    //
+                    /*
+                     * NOTE: (reference internal bug# 201)
+                     * If the ip is 'managed', it might still be 'not polled'
+                     * based on the poller configuration.
+                     *
+                     * The package filter evaluation requires that the ip be in
+                     * the database - at this point the ip is NOT in db, so
+                     * insert as active and update afterward.
+                     *
+                     * Try to avoid re-evaluating the ip against filters for
+                     * each service, try to get the first package here and use
+                     * that for service evaluation.
+                     */
                     boolean xaddrUnmanaged = cFactory.isAddressUnmanaged(xifaddr);
-                    if (xaddrUnmanaged)
+                    if (xaddrUnmanaged) {
                         xipIfEntry.setManagedState(DbIpInterfaceEntry.STATE_UNMANAGED);
-                    else
+                    } else {
                         xipIfEntry.setManagedState(DbIpInterfaceEntry.STATE_MANAGED);
-                    // Just set primary state to not eligible for now. The
-                    // primary SNMP interface won't be selected until after
-                    // all interfaces have been inserted into the database.
-                    // This is because the interface must already be in
-                    // the database for filter rule evaluation to succeed.
-
+                    }
+                    
+                    /*
+                     * Just set primary state to not eligible for now. The
+                     * primary SNMP interface won't be selected until after
+                     * all interfaces have been inserted into the database.
+                     * This is because the interface must already be in
+                     * the database for filter rule evaluation to succeed.
+                     */
                     xipIfEntry.setPrimaryState(DbIpInterfaceEntry.SNMP_NOT_ELIGIBLE);
                     int xifIndex = -1;
                     if ((xifIndex = snmpc.getIfIndex(xifaddr)) != -1) {
                         xipIfEntry.setIfIndex(xifIndex);
                         int status = snmpc.getAdminStatus(xifIndex);
-                        if (status != -1)
+                        if (status != -1) {
                             xipIfEntry.setStatus(status);
+                        }
 
                         if (!supportsSnmp((List) extraTargets.get(xifaddr))) {
                             log.debug("addInterfaces: Interface doesn't support SNMP. " + xifaddr.getHostAddress() + " set to not eligible");
@@ -667,8 +681,9 @@ final class SuspectEventProcessor implements Runnable {
 
                         boolean xipToBePolled = false;
                         xipPkg = pollerCfgFactory.getFirstPackageMatch(xifaddr.getHostAddress());
-                        if (xipPkg != null)
+                        if (xipPkg != null) {
                             xipToBePolled = true;
+                        }
 
                         if (!xipToBePolled) {
                             // update ismanaged to 'N' in ipinterface
@@ -699,8 +714,9 @@ final class SuspectEventProcessor implements Runnable {
                         xipIfEntry.setIfIndex(ifindex.intValue());
                         
                         int status = snmpc.getAdminStatus(ifindex.intValue());
-                        if (status != -1)
+                        if (status != -1) {
                             xipIfEntry.setStatus(status);
+                        }
 
                         xipIfEntry.setPrimaryState(DbIpInterfaceEntry.SNMP_NOT_ELIGIBLE);
 
@@ -721,21 +737,23 @@ final class SuspectEventProcessor implements Runnable {
                     //
                     int xifIndex = -1;
                     Integer sint = ifte.getIfIndex();
-                    if (sint != null)
+                    if (sint != null) {
                         xifIndex = sint.intValue();
-                    else
+                    } else {
                         continue;
+                    }
 
-                    // address
-                    //
-                    // WARNING: IfSnmpCollector.getIfAddressAndMask() ONLY returns
-                    // the FIRST IP address and mask for a given interface as
-                    // specified
-                    // in the ipAddrTable.
-                    //
+                    /*
+                     * address
+                     *
+                     * WARNING: IfSnmpCollector.getIfAddressAndMask() ONLY returns
+                     * the FIRST IP address and mask for a given interface as
+                     * specified in the ipAddrTable.
+                     */
                     InetAddress[] aaddrs = null;
-                    if (snmpc.hasIpAddrTable())
+                    if (snmpc.hasIpAddrTable()) {
                         aaddrs = snmpc.getIfAddressAndMask(sint.intValue());
+                    }
                     if (aaddrs == null) {
                         // Must be non-IP interface, set ifAddress to '0.0.0.0' and
                         // Mask to null
@@ -749,39 +767,43 @@ final class SuspectEventProcessor implements Runnable {
                     }
 
                     // Retrieve ifType so we can check for loopback
-                    //
                     sint = ifte.getIfType();
-                    // FIXME: What if sint is null
+                    // FIXME: What if sint is null?
                     int ifType = sint.intValue();
 
                     // Skip loopback interfaces
-                    //
-                    if (aaddrs[0].getHostAddress().startsWith("127."))
+                    if (aaddrs[0].getHostAddress().startsWith("127.")) {
                         continue;
+                    }
 
                     DbSnmpInterfaceEntry snmpEntry = DbSnmpInterfaceEntry.create(nodeId, xifIndex);
 
                     // IP address
                     snmpEntry.setIfAddress(aaddrs[0]);
-                    if(aaddrs[0].equals(ifaddr))
+                    if(aaddrs[0].equals(ifaddr)) {
                         forceSnmpInterfaceEntry = false;
+                    }
 
                     // netmask
-                    if (aaddrs[1] != null)
+                    if (aaddrs[1] != null) {
                         snmpEntry.setNetmask(aaddrs[1]);
+                    }
 
                     // description
                     String str = ifte.getIfDescr();
-                    if (log.isDebugEnabled())
+                    if (log.isDebugEnabled()) {
                         log.debug("SuspectEventProcessor: " + aaddrs[0].getHostAddress() + " has ifDescription: " + str);
-                    if (str != null && str.length() > 0)
+                    }
+                    if (str != null && str.length() > 0) {
                         snmpEntry.setDescription(str);
+                    }
 
                     // physical address
                     String physAddr = ifte.getPhysAddr();
                         
-                    if (log.isDebugEnabled())
+                    if (log.isDebugEnabled()) {
                         log.debug("SuspectEventProcessor: " + aaddrs[0].getHostAddress() + " has physical address: -" + physAddr + "-");
+                    }
                     
                     if (physAddr != null && physAddr.length() == 12) {
                         snmpEntry.setPhysicalAddress(physAddr);
@@ -817,18 +839,20 @@ final class SuspectEventProcessor implements Runnable {
 
                     // name (from interface extensions table)
                     String ifName = snmpc.getIfName(xifIndex);
-                    if (ifName != null && ifName.length() > 0)
+                    if (ifName != null && ifName.length() > 0) {
                         snmpEntry.setName(ifName);
+                    }
 
                     // alias (from interface extensions table)
                     String ifAlias = snmpc.getIfAlias(xifIndex);
-                    if (ifAlias != null && ifAlias.length() > 0)
+                    if (ifAlias != null && ifAlias.length() > 0) {
                         snmpEntry.setAlias(ifAlias);
+                    }
 
                     snmpEntry.store(dbc);
                 }
             }
-            if(ifIndex == CapsdConfigFactory.LAME_SNMP_HOST_IFINDEX || forceSnmpInterfaceEntry) {
+            if (ifIndex == CapsdConfigFactory.LAME_SNMP_HOST_IFINDEX || forceSnmpInterfaceEntry) {
                 DbSnmpInterfaceEntry snmpEntry = DbSnmpInterfaceEntry.create(nodeId, ifIndex);
                 // IP address
                 snmpEntry.setIfAddress(ifaddr);
