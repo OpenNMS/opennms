@@ -596,8 +596,9 @@ final class SuspectEventProcessor implements Runnable {
 
         IfSnmpCollector snmpc = collector.getSnmpCollector();
 
+        
         boolean addedSnmpInterfaceEntry =
-            addSubSnmpInterfaces(dbc, ifaddr, nodeId, snmpc);
+            addSubSnmpInterfaces(dbc, ifaddr, nodeId, collector);
         
         int ifIndex = getIfIndexForNewInterface(dbc, ifaddr, collector,
                                                 ipIfEntry);
@@ -867,8 +868,14 @@ final class SuspectEventProcessor implements Runnable {
     }
     
     private boolean addSubSnmpInterfaces(Connection dbc, InetAddress ifaddr,
-            int nodeId, IfSnmpCollector snmpc)
+            int nodeId, IfCollector collector)
             throws SQLException {
+        if (!collector.hasSnmpCollection()) {
+            return false;
+        }
+        
+        IfSnmpCollector snmpc = collector.getSnmpCollector();
+
         if (!snmpc.hasIfTable()) {
             return false;
         }
