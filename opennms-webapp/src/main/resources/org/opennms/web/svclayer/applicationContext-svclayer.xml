@@ -16,6 +16,12 @@
   </bean>
 
 
+  <bean id="outageTable" class="org.opennms.web.svclayer.outage.OutageTable">
+
+  </bean>
+
+
+
 <!-- Category Status View beans (note: categoryDao is different that than the DAO for the categories table -->
   <bean id="categoryDao" class="org.opennms.web.svclayer.catstatus.dao.support.DefaultCategoryDao" />
   <bean id="viewDisplayDao" class="org.opennms.web.svclayer.catstatus.dao.support.DefaultViewDisplayDao" />
