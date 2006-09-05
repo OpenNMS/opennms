@@ -7,7 +7,7 @@
 		<property name="staticMethod"><value>org.opennms.netmgt.config.DataSourceFactory.init</value></property>
 	</bean>
 
-	<bean id="dataSource" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+	<bean id="dataSource" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean" depends-on="init-datasource-factory">
 		<property name="staticMethod"><value>org.opennms.netmgt.config.DataSourceFactory.getInstance</value></property>
 	</bean>
 	
