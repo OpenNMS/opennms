@@ -297,7 +297,7 @@
           &nbsp;&nbsp;&nbsp;<a href="admin/nodemanagement/index.jsp?node=<%=nodeId%>">Admin</a>
         <% } %>
 
-           <% if ( isSnmp && request.isUserInRole("OpenNMS Administrator"))  { %>
+           <% if ( isSnmp && request.isUserInRole( Authentication.ADMIN_ROLE ))  { %>
               <% for( int i=0; i < intfs.length; i++ ) { %>
                 <% if( "P".equals( intfs[i].getIsSnmpPrimary() )) { %>
                       &nbsp;&nbsp;&nbsp;<a href="admin/updateSnmp.jsp?node=<%=nodeId%>&ipaddr=<%=intfs[i].getIpAddress()%>">Update SNMP</a>

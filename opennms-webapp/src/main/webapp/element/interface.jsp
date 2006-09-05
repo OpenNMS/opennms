@@ -179,7 +179,7 @@
   <jsp:param name="breadcrumb" value="Interface" />
 </jsp:include>
 
-<% if (request.isUserInRole("OpenNMS Administrator")) { %>
+<% if (request.isUserInRole( Authentication.ADMIN_ROLE )) { %>
 
 <script type="text/javascript" >
 function doDelete() {
@@ -195,7 +195,7 @@ function doDelete() {
 
       <h2>Interface: <%=intf_db.getIpAddress()%> <%=intf_db.getIpAddress().equals(intf_db.getHostname()) ? "" : "(" + intf_db.getHostname() + ")"%></h2>
 
-        <% if (request.isUserInRole("OpenNMS Administrator")) { %>
+        <% if (request.isUserInRole( Authentication.ADMIN_ROLE )) { %>
       <form method="post" name="delete" action="admin/deleteInterface">
       <input type="hidden" name="node" value="<%=nodeId%>"/>
       <input type="hidden" name="ifindex" value="<%=(ifindexString == null ? "" : ifindexString)%>"/>
@@ -243,19 +243,19 @@ function doDelete() {
           <% } %>
         <% } %>
         
-        <% if (request.isUserInRole("OpenNMS Administrator")) { %>
+        <% if (request.isUserInRole( Authentication.ADMIN_ROLE )) { %>
 	 <li>
          <a href="admin/deleteInterface" onClick="return doDelete()">Delete</a>
 	 </li>
          <% } %>
          
-        <% if (request.isUserInRole("OpenNMS Administrator")) { %>
+        <% if (request.isUserInRole( Authentication.ADMIN_ROLE )) { %>
 	  <li>
             <a href="element/rescan.jsp?node=<%=nodeId%>&ipaddr=<%=ipAddr%>">Rescan</a>      
           </li>
          <% } %>
 
-        <% if (request.isUserInRole("OpenNMS Administrator") && hasSNMPData(intf_db) && "P".equals(intf_db.getIsSnmpPrimary())) { %>
+        <% if (request.isUserInRole( Authentication.ADMIN_ROLE ) && hasSNMPData(intf_db) && "P".equals(intf_db.getIsSnmpPrimary())) { %>
 	 <li>
          <a href="admin/updateSnmp.jsp?node=<%=nodeId%>&ipaddr=<%=ipAddr%>">Update SNMP</a>
 	 </li>
@@ -263,7 +263,7 @@ function doDelete() {
       </ul>
       </div>
 
-      <% if (request.isUserInRole("OpenNMS Administrator")) { %>
+      <% if (request.isUserInRole( Authentication.ADMIN_ROLE )) { %>
       </form>
       <% } %>
 
@@ -282,7 +282,7 @@ function doDelete() {
                 <td class="standard">Polling Status</td>
                 <td class="standard"><%=ElementUtil.getInterfaceStatusString(intf_db)%></td>
               </tr>
-              <% if(ElementUtil.getInterfaceStatusString(intf_db).equals("Managed") && request.isUserInRole("OpenNMS Administrator")) {
+              <% if(ElementUtil.getInterfaceStatusString(intf_db).equals("Managed") && request.isUserInRole( Authentication.ADMIN_ROLE )) {
                   List inPkgs = pollerCfgFactory.getAllPackageMatches(ipAddr);
                   Iterator pkgiter = inPkgs.iterator();
                   while (pkgiter.hasNext()) { %>
