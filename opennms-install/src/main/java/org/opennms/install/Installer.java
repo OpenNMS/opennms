@@ -850,13 +850,16 @@ public class Installer {
     public void checkConstraints() throws Exception {
         List<Constraint> constraints = getForeignKeyConstraints();
 
-        m_out.print("- checking for rows that violate constraints... ");
+        m_out.println("- checking for rows that violate constraints...");
 
         for (Constraint constraint : constraints) {
+            m_out.print("  - checking for rows that violate constraint '"
+                        + constraint.getName() + "'... ");
             checkConstraint(constraint);
+            m_out.println("DONE");
         }
-
-        m_out.println("NONE");
+        
+        m_out.println("- checking for rows that violate constraints... DONE");
     }
     
     public void checkConstraint(Constraint constraint) throws Exception {
