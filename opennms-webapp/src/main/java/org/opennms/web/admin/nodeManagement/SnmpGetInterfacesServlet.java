@@ -63,7 +63,7 @@ import org.opennms.netmgt.config.DataSourceFactory;
  */
 public class SnmpGetInterfacesServlet extends HttpServlet {
 
-    private static final String INTERFACE_QUERY = "SELECT ipinterface.nodeid, ipinterface.ipaddr, ipinterface.ifindex, ipinterface.iphostname, ipinterface.issnmpprimary, snmpinterface.snmpifdescr, snmpinterface.snmpiftype, snmpinterface.snmpifname, snmpinterface.snmpifalias FROM ipinterface, snmpinterface WHERE ipinterface.nodeid=snmpinterface.nodeid AND ipinterface.ifindex=snmpinterface.snmpifindex AND ipinterface.nodeid=?;";
+    private static final String INTERFACE_QUERY = "SELECT ipinterface.nodeid, ipinterface.ipaddr, ipinterface.ifindex, ipinterface.iphostname, ipinterface.issnmpprimary, snmpinterface.snmpifdescr, snmpinterface.snmpiftype, snmpinterface.snmpifname, snmpinterface.snmpifalias FROM ipinterface, snmpinterface WHERE ipinterface.nodeid=snmpinterface.nodeid AND ipinterface.ifindex=snmpinterface.snmpifindex AND ipinterface.ipaddr=snmpinterface.ipaddr AND ipinterface.nodeid=?;";
 
     public void init() throws ServletException {
         try {
