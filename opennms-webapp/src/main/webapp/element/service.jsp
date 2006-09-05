@@ -44,6 +44,7 @@
 	import="org.opennms.web.element.*,
 		org.opennms.web.category.*,
 		java.util.*,
+		org.opennms.web.acegisecurity.Authentication,
 		org.opennms.web.event.*
 	"
 %>
@@ -100,7 +101,7 @@
   <jsp:param name="breadcrumb" value="Service" />
 </jsp:include>
        
-<% if (request.isUserInRole("OpenNMS Administrator")) { %>
+<% if (request.isUserInRole( Authentication.ADMIN_ROLE )) { %>
 
 <script language="Javascript" type="text/javascript" >
 function doDelete() {
@@ -116,7 +117,7 @@ function doDelete() {
 
       <h2><%=service_db.getServiceName()%> service on <%=service_db.getIpAddress()%></h2>
 
-         <% if (request.isUserInRole("OpenNMS Administrator")) { %>
+         <% if (request.isUserInRole( Authentication.ADMIN_ROLE )) { %>
          <form method="POST" name="delete" action="admin/deleteService">
          <input type="hidden" name="node" value="<%=nodeId%>">
          <input type="hidden" name="intf" value="<%=ipAddr%>">
@@ -125,12 +126,12 @@ function doDelete() {
       <p>
          <a href="<%=eventUrl%>">View Events</a>
          
-         <% if (request.isUserInRole("OpenNMS Administrator")) { %>
+         <% if (request.isUserInRole( Authentication.ADMIN_ROLE )) { %>
          &nbsp;&nbsp;&nbsp;<a href="admin/deleteService" onClick="return doDelete()">Delete</a>
          <% } %>
       </p>
  
-         <% if (request.isUserInRole("OpenNMS Administrator")) { %>
+         <% if (request.isUserInRole( Authentication.ADMIN_ROLE )) { %>
          </form>
          <% } %>
 
