@@ -2,21 +2,13 @@
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans
         http://www.springframework.org/schema/beans/spring-beans.xsd">
-
-	<bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
-		<property name="driverClassName" value="org.postgresql.Driver" />
-		<property name="url" value="jdbc:postgresql://localhost:5432/opennms" />
-		<property name="username" value="opennms" />
-		<property name="password" value="opennms" />
+        
+	<bean id="init-datasource-factory" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+		<property name="staticMethod"><value>org.opennms.netmgt.config.DataSourceFactory.init</value></property>
 	</bean>
-	
-	<bean id="setup-datasource-factory" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-		<property name="staticMethod"><value>org.opennms.netmgt.config.DataSourceFactory.setInstance</value></property>
-		<property name="arguments">
-		  <list>
-		    <ref bean="dataSource"/>
-		  </list>
-		</property>
+
+	<bean id="dataSource" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+		<property name="staticMethod"><value>org.opennms.netmgt.config.DataSourceFactory.getInstance</value></property>
 	</bean>
 	
 	<bean id="sessionFactory" class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">
@@ -93,14 +85,14 @@
       <property name="dataSource" ref="dataSource" />
     </bean>
     
-	<!-- bean id="distPollerDao" class="org.opennms.netmgt.dao.jdbc.DistPollerDaoJdbc">
+	<bean id="distPollerDao" class="org.opennms.netmgt.dao.jdbc.DistPollerDaoJdbc">
 		<property name="dataSource" ref="dataSource" />
-	</bean -->
-
+	</bean>
+<!-- 
 	<bean id="distPollerDao" class="org.opennms.netmgt.dao.hibernate.DistPollerDaoHibernate">
 		<property name="sessionFactory" ref="sessionFactory" />
 	</bean>
-
+-->
     <bean id="demandPollFactory" class="org.opennms.netmgt.dao.jdbc.demandpoll.DemandPollFactory">
       <property name="dataSource" ref="dataSource" />
     </bean>
@@ -205,9 +197,5 @@
 		<property name="sqlMapClient"><ref local="sqlMapClient"/></property>
 	</bean>  
  -->	
-	<bean id="aggregateStatusDefinitionDao" class="org.opennms.netmgt.dao.ibatis.SqlMapClientAggStatDefDao">
-		<property name="dataSource"><ref local="dataSource"/></property>
-		<property name="sqlMapClient"><ref local="sqlMapClient"/></property>
-	</bean> 	
 
 </beans>
