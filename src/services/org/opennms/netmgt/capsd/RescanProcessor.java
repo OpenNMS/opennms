@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2006 Sep 05: Applied patch from bug 1573.
 // 2005 Mar 25: Fixed bug 1178 regarding designation of secondary SNMP
 //              interfaces, as well as a few other minor bugs discovered
 //              in testing the bug fix.
@@ -1305,8 +1306,8 @@ final class RescanProcessor implements Runnable {
                     ifSvcEntry.setStatus(DbIfServiceEntry.STATUS_UNMANAGED);
                 else {
                     boolean svcToBePolled = false;
+                    ipPkg = pollerCfgFactory.getFirstPackageMatch(ifaddr.getHostAddress());
                     if (ipPkg != null) {
-                        ipPkg = pollerCfgFactory.getFirstPackageMatch(ifaddr.getHostAddress());
                         svcToBePolled = pollerCfgFactory.isPolled(p.getProtocolName(), ipPkg);
 
                         if (!svcToBePolled)
@@ -1316,7 +1317,10 @@ final class RescanProcessor implements Runnable {
                     if (svcToBePolled)
                         ifSvcEntry.setStatus(DbIfServiceEntry.STATUS_ACTIVE);
                     else
+                    {
                         ifSvcEntry.setStatus(DbIfServiceEntry.STATUS_NOT_POLLED);
+                        log.debug("updateServiceInfo: node " + node.getNodeId() + ": Setting status to NOT_POLLED");
+                    }
                 }
 
                 // Set qualifier if available. Currently the qualifier field
@@ -1326,7 +1330,7 @@ final class RescanProcessor implements Runnable {
                     try {
                         Integer port = (Integer) p.getQualifiers().get("port");
                         if (log.isDebugEnabled())
-                            log.debug("updateIfServices: got a port qualifier: " + port + " for service: " + p.getProtocolName());
+                            log.debug("updateServiceInfo: got a port qualifier: " + port + " for service: " + p.getProtocolName());
                         ifSvcEntry.setQualifier(port.toString());
                     } catch (ClassCastException ccE) {
                         // Do nothing
@@ -1923,7 +1927,10 @@ final class RescanProcessor implements Runnable {
                 if (svcToBePolled)
                     ifSvcEntry.setStatus(DbIfServiceEntry.STATUS_ACTIVE);
                 else
+                {
                     ifSvcEntry.setStatus(DbIfServiceEntry.STATUS_NOT_POLLED);
+                    log.debug("addSupportedProtocols: node " + node.getNodeId() + ": Setting status to NOT_POLLED");
+                }
             }
 
             // Set qualifier if available. Currently the qualifier field
