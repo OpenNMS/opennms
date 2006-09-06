@@ -110,22 +110,17 @@
 
 <div id="availability-box">
 
-<table class="standard">
+<table>
   <tr>
-    <td class="standardheader">Overall Availability</td>
+    <td>Availability (last 24 hours)</td>
 
 <% if( overallRtcValue < 0 ) { %>
-      <td class="availunmanaged">Unmanaged</td>
+      <td colspan="2" class="availunmanaged">Unmanaged</td>
 <% } else { %>
-      <td class="<%=CategoryUtil.getCategoryClass(this.normalThreshold, this.warningThreshold, overallRtcValue)%>"><%=CategoryUtil.formatValue(overallRtcValue)%>%</td>
+      <td colspan="2" class="<%=CategoryUtil.getCategoryClass(this.normalThreshold, this.warningThreshold, overallRtcValue)%>"><%=CategoryUtil.formatValue(overallRtcValue)%>%</td>
 
   </tr>
-
-  <tr>
-    <td class="standard" colspan="2">
-<!--      <table class="inner"> -->
-      <table class="standardfirst">
-        <% Interface[] availIntfs = this.getInterfaces(nodeId); %>
+       <% Interface[] availIntfs = this.getInterfaces(nodeId); %>
            
         <% for( int i=0; i < availIntfs.length; i++ ) { %>
           <% Interface intf = availIntfs[i]; %>
@@ -151,12 +146,12 @@
               <% if( service.isManaged() ) { %>
                 <% double svcValue = this.model.getServiceAvailability(nodeId, ipAddr, service.getServiceId()); %>
                 <tr>
-                  <td class="standard"><a href="element/service.jsp?node=<%=nodeId%>&intf=<%=ipAddr%>&service=<%=service.getServiceId()%>"><%=service.getServiceName()%></a></td>
+                  <td><a href="element/service.jsp?node=<%=nodeId%>&intf=<%=ipAddr%>&service=<%=service.getServiceId()%>"><%=service.getServiceName()%></a></td>
                   <td class="<%=CategoryUtil.getCategoryClass(this.normalThreshold, this.warningThreshold, svcValue)%>"><%=CategoryUtil.formatValue(svcValue)%>%</td>
                 </tr>
               <% } else { %>
                 <tr>
-                  <td class="standard"><a href="element/service.jsp?node=<%=nodeId%>&intf=<%=ipAddr%>&service=<%=service.getServiceId()%>"><%=service.getServiceName()%></a></td>
+                  <td><a href="element/service.jsp?node=<%=nodeId%>&intf=<%=ipAddr%>&service=<%=service.getServiceId()%>"><%=service.getServiceName()%></a></td>
                   <td class="availunmanaged"><%=ElementUtil.getServiceStatusString(service)%></td>
                 </tr>
               <% } %>
@@ -175,11 +170,8 @@
             <% } %>
           <% } %>
         <% } %>
-      </table>
-    </td>
-  </tr>
   <tr>
-    <td class="standardheaderplain" colspan="2">Percentage over last 24 hours</td> <%-- next iteration, read this from same properties file that sets up for RTCVCM --%></td>
+<%-- next iteration, read this from same properties file that sets up for RTCVCM --%>
 <% } %>
   </tr>   
 </table>   
