@@ -170,24 +170,24 @@
 <% } %>
 
 <h3><%=header%></h3>
-<table class="standardfirst">
+<table class="standard">
 
 <%
    for( int i=0; i < events.length; i++ ) {
        int severity = events[i].getSeverity();
 %>
-     <tr>
+     <tr class="<%=EventUtil.getSeverityLabel(events[i].getSeverity())%>">
        <% if( !(request.isUserInRole( Authentication.READONLY_ROLE ))) { %>
-           <td class="standard">
+           <td class="divider">
              <nobr>
                <input type="checkbox" name="event" value="<%=events[i].getId()%>" />
                <a href="event/detail.jsp?id=<%=events[i].getId()%>"><%=events[i].getId()%></a>
              </nobr>
            </td>
        <% } %>
-       <td class="standard"><%=org.opennms.netmgt.EventConstants.formatToUIString(events[i].getTime())%></td>
-       <td class="<%=EventUtil.getSeverityClass(severity)%>"><%=EventUtil.getSeverityLabel(severity)%></td>
-       <td class="standard"><%=events[i].getLogMessage()%></td>
+       <td class="divider"><%=org.opennms.netmgt.EventConstants.formatToUIString(events[i].getTime())%></td>
+       <td class="divider"><%=EventUtil.getSeverityLabel(severity)%></td>
+       <td class="divider"><%=events[i].getLogMessage()%></td>
      </tr>
 <% } %>
 

@@ -82,7 +82,7 @@ div.boxWrapper {
 	background-color: #FFF;
 	border: 1px solid #999;
 	border-top: 0;
-	padding: 6px 9px;
+	padding: 4px 6px;
 }
 
 /* Layouts */
@@ -248,15 +248,22 @@ aggr.status.table {
 }
 th {
 	border:1px solid #999;
-	padding: 5px 6px;
+	padding: 4px 5px;
 	background-color: #444;
 	font-weight: bold;
 	text-align: left;
 	color: #FFF;
 }
+th a {
+	text-decoration: underline;
+	color: #FFF;
+}
+th a:hover {
+	color: #CCC;
+}
 td {
 	border: 1px solid #999;
-	padding: 5px 7px;
+	padding: 4px 5px;
 	background-color: #FFF;
 }
 
@@ -536,3 +543,37 @@ hr#contentleft td
 	text-align: center;
 	padding: 3px;
 }
+
+/* Status Colouring */
+td.bright {
+	color: #FFF;
+}
+
+tr.Critical td { background-color: #F5CDCD; }
+tr.Critical td.divider { border-top: 2px solid #CC0000 !important; }
+tr.Critical td.bright { background-color: #CC0000; }
+
+tr.Major td { background-color: #FFD7CD; }
+tr.Major td.divider { border-top: 2px solid #FF3300 !important; }
+tr.Major td.bright { background-color: #FF3300; }
+
+tr.Minor td { background-color: #FFEBCD; }
+tr.Minor td.divider { border-top: 2px solid #FF9900 !important; }
+tr.Minor td.bright { background-color: #FF9900; }
+
+tr.Warning td { background-color: #FFF5CD; }
+tr.Warning td.divider { border-top: 2px solid #FFCC00 !important; }
+tr.Warning td.bright { background-color: #FFCC00; }
+
+tr.Indeterminate td { background-color: #EBEBCD; }
+tr.Indeterminate td.divider { border-top: 2px solid #999900 !important; }
+tr.Indeterminate td.bright { background-color: #999900; }
+
+tr.Normal td { background-color: #D7E1CD; }
+tr.Normal td.divider { border-top: 2px solid #336600 !important; }
+tr.Normal td.bright { background-color: #336600; }
+
+
+tr.Cleared td { background-color: #FFF; }
+tr.Cleared td.divider { border-top: 2px solid #FFF !important; }
+tr.Cleared td.bright { background-color: #FFF; }

@@ -176,24 +176,15 @@
       <!-- menu -->
       <div id="linkbar">
       <ul>
-      <li>
-      <a href="<%=this.makeLink( parms, new ArrayList())%>" title="Remove all search constraints" >View all events</a>
-      </li>
-      <li>
-      <a href="event/advsearch.jsp" title="More advanced searching and sorting options">Advanced Search</a>      
-      </li>
-      <li>
-      <a href="javascript: void window.open('<%=org.opennms.web.Util.calculateUrlBase(request)%>/event/severity.jsp','', 'fullscreen=no,toolbar=no,status=no,menubar=no,scrollbars=no,resizable=yes,directories=no,location=no,width=525,height=158')" title="Open a window explaining the event severities">Severity Legend</a>      </li>
+        <li><a href="<%=this.makeLink( parms, new ArrayList())%>" title="Remove all search constraints" >View all events</a></li>
+        <li><a href="event/advsearch.jsp" title="More advanced searching and sorting options">Advanced Search</a></li>
+        <li><a href="javascript: void window.open('<%=org.opennms.web.Util.calculateUrlBase(request)%>/event/severity.jsp','', 'fullscreen=no,toolbar=no,status=no,menubar=no,scrollbars=no,resizable=yes,directories=no,location=no,width=525,height=158')" title="Open a window explaining the event severities">Severity Legend</a></li>
       
       <% if( !(request.isUserInRole( Authentication.READONLY_ROLE ))) { %>
         <% if( parms.ackType == EventFactory.AcknowledgeType.UNACKNOWLEDGED ) { %> 
-          <li>
-	  <a href="javascript: void document.acknowledge_by_filter_form.submit()" onclick="return confirm('Are you sure you want to acknowledge all events in the current search including those not shown on your screen?  (<%=eventCount%> total events)')" title="Acknowledge all events that match the current search constraints, even those not shown on the screen">Acknowledge entire search</a>
-	  </li>
+        <li><a href="javascript: void document.acknowledge_by_filter_form.submit()" onclick="return confirm('Are you sure you want to acknowledge all events in the current search including those not shown on your screen?  (<%=eventCount%> total events)')" title="Acknowledge all events that match the current search constraints, even those not shown on the screen">Acknowledge entire search</a></li>
         <% } else { %>
-          <li>
-	  <a href="javascript: void document.acknowledge_by_filter_form.submit()" onclick="return confirm('Are you sure you want to unacknowledge all events in the current search including those not shown on your screen)?  (<%=eventCount%> total events)')" title="Unacknowledge all events that match the current search constraints, even those not shown on the screen">Unacknowledge entire search</a>
-	  </li>
+        <li><a href="javascript: void document.acknowledge_by_filter_form.submit()" onclick="return confirm('Are you sure you want to unacknowledge all events in the current search including those not shown on your screen)?  (<%=eventCount%> total events)')" title="Unacknowledge all events that match the current search constraints, even those not shown on the screen">Unacknowledge entire search</a></li>
         <% } %>
       <% } %>
       </ul>
@@ -209,8 +200,7 @@
       </form>      
 
 
-	<div id="contentleft">
-            <jsp:include page="/includes/event-querypanel.jsp" flush="false" />
+      <jsp:include page="/includes/event-querypanel.jsp" flush="false" />
           
             <% if( eventCount > 0 ) { %>
               <% String baseUrl = this.makeLink(parms); %>
@@ -221,16 +211,14 @@
                 <jsp:param name="multiple" value="<%=parms.multiple%>"   />
               </jsp:include>
             <% } %>          
-	 </div>
-	<div id="contentright">
+
             <% if( parms.filters.size() > 0 || parms.ackType == EventFactory.AcknowledgeType.UNACKNOWLEDGED || parms.ackType == EventFactory.AcknowledgeType.ACKNOWLEDGED ) { %>
               <% int length = parms.filters.size(); %>
 
               <p>Current search constraints:
                 <ol>                  
                   <% if( parms.ackType == EventFactory.AcknowledgeType.UNACKNOWLEDGED ) { %>
-                    <li>
-                      event is outstanding
+                    <li>event is outstanding
                       &nbsp;&nbsp;
                       <a href="<%=this.makeLink(parms, EventFactory.AcknowledgeType.ACKNOWLEDGED)%>" title="Show acknowledged events"><nobr>[Show acknowledged]</nobr></a>
                     </li>
@@ -254,14 +242,6 @@
                 </ol>
               </p>           
             <% } %>
-	  </div>
-<!--
-          </td>
-        </tr>
-    </table>
--->
-
-    <div class="spacer"><!-- --></div>
 
     <% if( !(request.isUserInRole( Authentication.READONLY_ROLE ))) { %>
       <form action="event/acknowledge" method="POST" name="acknowledge_form">
@@ -271,40 +251,40 @@
     <% } %>
 
       <table>
-
-        <tr class="eventlist-head">
+        <thead>
+        <tr>
           <% if( !(request.isUserInRole( Authentication.READONLY_ROLE ))) { %>
             <% if ( parms.ackType == EventFactory.AcknowledgeType.UNACKNOWLEDGED ) { %>
-            <td width="1%"><b>Ack</b></td>
+            <th width="1%">Ack</th>
             <% } else { %>
-            <td width="1%"><b>UnAck</b></td>
+            <th width="1%">UnAck</th>
             <% } %>
+          <% } else { %>
+            <th width="1%">&nbsp;</th>
           <% } %>
-          <td width="1%"> <%=this.makeSortLink( parms, EventFactory.SortStyle.ID,        EventFactory.SortStyle.REVERSE_ID,        "id",        "ID" )%></td>
-          <td width="10%"><%=this.makeSortLink( parms, EventFactory.SortStyle.SEVERITY,  EventFactory.SortStyle.REVERSE_SEVERITY,  "severity",  "Severity"  )%></td>
-          <td width="19%"><%=this.makeSortLink( parms, EventFactory.SortStyle.TIME,      EventFactory.SortStyle.REVERSE_TIME,      "time",      "Time"      )%></td>
-          <td width="25%"><%=this.makeSortLink( parms, EventFactory.SortStyle.NODE,      EventFactory.SortStyle.REVERSE_NODE,      "node",      "Node"      )%></td>
-          <td width="16%"><%=this.makeSortLink( parms, EventFactory.SortStyle.INTERFACE, EventFactory.SortStyle.REVERSE_INTERFACE, "interface", "Interface" )%></td>
-          <td width="15%"><%=this.makeSortLink( parms, EventFactory.SortStyle.SERVICE,   EventFactory.SortStyle.REVERSE_SERVICE,   "service",   "Service"   )%></td>
-          <td width="10%"><b>Ackd</b></td>
-        </tr>      
+          <th width="1%"> <%=this.makeSortLink( parms, EventFactory.SortStyle.ID,        EventFactory.SortStyle.REVERSE_ID,        "id",        "ID" )%></th>
+          <th width="10%"><%=this.makeSortLink( parms, EventFactory.SortStyle.SEVERITY,  EventFactory.SortStyle.REVERSE_SEVERITY,  "severity",  "Severity"  )%></th>
+          <th width="19%"><%=this.makeSortLink( parms, EventFactory.SortStyle.TIME,      EventFactory.SortStyle.REVERSE_TIME,      "time",      "Time"      )%></th>
+          <th width="25%"><%=this.makeSortLink( parms, EventFactory.SortStyle.NODE,      EventFactory.SortStyle.REVERSE_NODE,      "node",      "Node"      )%></th>
+          <th width="16%"><%=this.makeSortLink( parms, EventFactory.SortStyle.INTERFACE, EventFactory.SortStyle.REVERSE_INTERFACE, "interface", "Interface" )%></th>
+          <th width="15%"><%=this.makeSortLink( parms, EventFactory.SortStyle.SERVICE,   EventFactory.SortStyle.REVERSE_SERVICE,   "service",   "Service"   )%></th>
+          <th width="10%">Ackd</th>
+        </tr>
+        </thead>     
       <% for( int i=0; i < events.length; i++ ) { %>        
-        <tr valign="top" class="<%=(i%2 == 0) ? "eventlist-odd" : "eventlist-even"%>">
+        <tr valign="top" class="<%=EventUtil.getSeverityLabel(events[i].getSeverity())%>">
           <% if( !(request.isUserInRole( Authentication.READONLY_ROLE ))) { %>
-          <td valign="top" rowspan="3" style="background-color: <%=EventUtil.getSeverityColor(events[i].getSeverity())%>"> 
-              <nobr>
+          <td valign="top" rowspan="3" class="bright">
                 <input type="checkbox" name="event" value="<%=events[i].getId()%>" /> 
-              </nobr>
             </td>
-          <% } %>
+            <% } else { %>
+              <td class="bright">&nbsp;</td>
+            <% } %>
 
-          <td valign="top" rowspan="3" style="background-color: <%=EventUtil.getSeverityColor(events[i].getSeverity())%>"> 
-            <a href="event/detail.jsp?id=<%=events[i].getId()%>"><%=events[i].getId()%></a>
-          </td>
+          <td valign="top" rowspan="3" class="divider"><a href="event/detail.jsp?id=<%=events[i].getId()%>"><%=events[i].getId()%></a></td>
           
-          <td valign="top" rowspan="3" style="background-color: <%=EventUtil.getSeverityColor(events[i].getSeverity())%>"> 
-            <%=EventUtil.getSeverityLabel(events[i].getSeverity())%>
-            
+          <td valign="top" rowspan="3" class="divider"> 
+            <strong><%=EventUtil.getSeverityLabel(events[i].getSeverity())%></strong>
             <% org.opennms.web.event.filter.Filter severityFilter = new SeverityFilter(events[i].getSeverity()); %>      
             <% if( !parms.filters.contains( severityFilter )) { %>
               <nobr>
@@ -313,14 +293,14 @@
               </nobr>
             <% } %>
           </td>
-          <td>
+          <td class="divider">
             <nobr><%=org.opennms.netmgt.EventConstants.formatToUIString(events[i].getTime())%></nobr>
             <nobr>
               <a href="<%=this.makeLink( parms, new AfterDateFilter(events[i].getTime()), true)%>"  class="filterLink" title="Only show events occurring after this one"><%=addAfterDateFilterString%></a>            
               <a href="<%=this.makeLink( parms, new BeforeDateFilter(events[i].getTime()), true)%>" class="filterLink" title="Only show events occurring before this one"><%=addBeforeDateFilterString%></a>
             </nobr>
           </td>
-          <td>
+          <td class="divider">
 	    <% if(events[i].getNodeId() != 0 && events[i].getNodeLabel()!= null ) { %>
               <% org.opennms.web.event.filter.Filter nodeFilter = new NodeFilter(events[i].getNodeId()); %>             
               <% String[] labels = this.getNodeLabels( events[i].getNodeLabel() ); %>
@@ -336,7 +316,7 @@
               &nbsp;
             <% } %>
           </td>
-          <td>
+          <td class="divider">
             <% if(events[i].getIpAddress() != null ) { %>
               <% org.opennms.web.event.filter.Filter intfFilter = new InterfaceFilter(events[i].getIpAddress()); %>
               <% if( events[i].getNodeId() != 0 ) { %>
@@ -354,7 +334,7 @@
               &nbsp;
             <% } %>
           </td>
-          <td>
+          <td class="divider">
             <% if(events[i].getServiceName() != null) { %>
               <% org.opennms.web.event.filter.Filter serviceFilter = new ServiceFilter(events[i].getServiceId()); %>
               <% if( events[i].getNodeId() != 0 && events[i].getIpAddress() != null ) { %>
@@ -372,7 +352,7 @@
               &nbsp;
             <% } %>
           </td>          
-          <td>
+          <td class="divider">
             <% if (events[i].isAcknowledged()) { %>
               <% org.opennms.web.event.filter.Filter acknByFilter = new AcknowledgedByFilter(events[i].getAcknowledgeUser()); %>      
               <%=events[i].getAcknowledgeUser()%>
@@ -388,7 +368,7 @@
           </td>
         </tr>
         
-        <tr valign="top" class="<%=(i%2 == 0) ? "eventlist-odd" : "eventlist-even"%>">
+        <tr valign="top" class="<%=EventUtil.getSeverityLabel(events[i].getSeverity())%>">
           <td colspan="4">
             <% if(events[i].getUei() != null) { %>
               <% org.opennms.web.event.filter.Filter exactUEIFilter = new ExactUEIFilter(events[i].getUei()); %>
@@ -408,15 +388,14 @@
           </td>
         </tr>
        
-        <tr valign="top" class="<%=(i%2 == 0) ? "eventlist-odd" : "eventlist-even"%>">
+        <tr valign="top" class="<%=EventUtil.getSeverityLabel(events[i].getSeverity())%>">
           <td colspan="5"><%=events[i].getLogMessage()%></td>
         </tr>
        
       <% } /*end for*/%>
-      
-        <tr>
-          <td colspan="2"><%=events.length%> events</td>
-          <td colspan="6">
+      </table>
+        
+        <p><%=events.length%> events
           <% if( !(request.isUserInRole( Authentication.READONLY_ROLE ))) { %>
             <% if( parms.ackType == EventFactory.AcknowledgeType.UNACKNOWLEDGED ) { %>
               <input type="button" value="Acknowledge Events" onClick="submitForm('acknowledge')"/>
@@ -428,9 +407,7 @@
               <input TYPE="reset" />
             <% } %>
           <% } %>
-          </td>
-        </tr>
-      </table>
+        </p>
       </form>
 
       <%--<br>
@@ -475,10 +452,8 @@
           buffer.append( "\">" );   
       }
 
-      buffer.append( "<font color=\"black\"><b>" );
       buffer.append( title );
-      buffer.append( "</b></font></a>" );
-      buffer.append( "</nobr>" );
+      buffer.append( "</a>" );
 
       return( buffer.toString() );
     }
