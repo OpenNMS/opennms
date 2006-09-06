@@ -35,7 +35,7 @@ public class DefaultOutageService implements OutageService {
 	}
 
 	public Collection<OnmsOutage> getCurrentOutagesOrdered(String orderBy) {
-		return m_dao.currentOutages(orderBy);
+		throw new UnsupportedOperationException("not implemented.. Invalid ");
 	}
 
 	public Collection<OnmsOutage> getCurrentOutagesForNode(int nodeId) {
@@ -83,35 +83,35 @@ public class DefaultOutageService implements OutageService {
 	}
 
 	public Integer getSuppressedOutageCount() {
-		return m_dao.currentSuppressedOutageCount();
+		throw new UnsupportedOperationException("not implemented since switch to hibernate");
 	}
 
 	public Collection<OnmsOutage> getSuppressedOutages() {
-		return m_dao.suppressedOutages();
+		throw new UnsupportedOperationException("not implemented since switch to hibernate");
 	}
 
 	public Collection<OnmsOutage> getOpenAndResolved() {
-		return m_dao.openAndResolvedOutages();
+		throw new UnsupportedOperationException("not implemented since switch to hibernate");
 	}
 
-	public Collection<OnmsOutage> getCurrentOutagesByRange(Integer Offset,
-			Integer Limit, String orderBy, String direction) {
-		return m_dao.currentOutages(Offset, Limit, orderBy, direction);
+	public Collection<OnmsOutage> getCurrentOutagesByRange(Integer offset,
+			Integer limit, String orderProperty, String direction) {
+		throw new UnsupportedOperationException("not implemented since switch to hibernate");
 	}
 
 	public Collection<OnmsOutage> getSuppressedOutagesByRange(Integer Offset,
 			Integer Limit) {
-		return m_dao.suppressedOutages(Offset, Limit);
+		throw new UnsupportedOperationException("not implemented since switch to hibernate");
 	}
 
 	public Collection<OnmsOutage> getOpenAndResolved(Integer Offset,
 			Integer Limit) {
-		return m_dao.findAll(Offset, Limit);
+		throw new UnsupportedOperationException("not implemented since switch to hibernate");
 
 	}
 
 	public Collection<OnmsOutage> getCurrentOutages(String ordering) {
-		return m_dao.currentOutages(ordering);
+		throw new UnsupportedOperationException("not implemented.. Invalid ");
 	}
 
 	public OnmsOutage load(Integer outageid) {
@@ -122,31 +122,32 @@ public class DefaultOutageService implements OutageService {
 		this.m_dao.update(outage);
 	}
 
-	public Collection<OnmsOutage> getOutagesByRange(Integer Offset, Integer Limit, String Order, String Direction) {
-		return m_dao.getOutagesByRange(Offset, Limit,Order,Direction);
+	public Collection<OnmsOutage> getOutagesByRange(Integer offset, Integer limit, String orderProperty, String direction) {
+		throw new UnsupportedOperationException("not implemented since switch to hibernate");
 	}
 
-	public Collection<OnmsOutage> getOutagesByRange(Integer Offset, Integer Limit, String Order, String Direction, String filter) {
-		return m_dao.getOutagesByRange(Offset, Limit,Order,Direction, filter);
+	public Collection<OnmsOutage> getOutagesByRange(Integer offset, Integer limit, String orderProperty, String direction, String filter) {
+		throw new UnsupportedOperationException("not implemented since switch to hibernate");
 	}
 	
 	public Integer getOutageCount() {
-		return m_dao.outageCount();
+		return m_dao.countAll();
 	}
 
 	public Integer outageCountFiltered(String filter) {
-		return m_dao.outageCountFiltered(filter);
+		throw new UnsupportedOperationException("not implemented since switch to hibernate");
 	}
 
-	public Collection<OnmsOutage> getSuppressedOutagesByRange(Integer Offset, Integer Limit, String Order, String Direction) {
-		return m_dao.suppressedOutages(Offset, Limit, Order, Direction);
+	public Collection<OnmsOutage> getSuppressedOutagesByRange(Integer offset, Integer limit, String orderProperty, String direction) {
+		throw new UnsupportedOperationException("not implemented since switch to hibernate");
 	}
 
-	public Collection<OnmsOutage> getResolvedOutagesByRange(Integer Offset, Integer Limit, String Order, String Direction, String Filter) {
-		return m_dao.getResolvedOutagesByRange(Offset, Limit,Order,Direction, Filter);	}
+	public Collection<OnmsOutage> getResolvedOutagesByRange(Integer offset, Integer limit, String orderProperty, String direction, String filter) {
+		throw new UnsupportedOperationException("not implemented since switch to hibernate");
+	}
 
 	public Integer outageResolvedCountFiltered(String searchFilter) {
-		return m_dao.outageResolvedCountFiltered(searchFilter);
+		throw new UnsupportedOperationException("not implemented since switch to hibernate");
 	}
 
 }

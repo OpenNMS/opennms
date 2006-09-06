@@ -30,6 +30,8 @@
         	    <value>org.opennms.netmgt.model.OnmsAlarm</value>
                 <value>org.opennms.netmgt.model.OnmsNotification</value>
                 <value>org.opennms.netmgt.model.OnmsUserNotification</value>
+                <value>org.opennms.netmgt.model.AggregateStatusView</value>
+                <value>org.opennms.netmgt.model.AggregateStatusDefinition</value>
 				
 			</list>
 		</property>
@@ -57,145 +59,68 @@
     <property name="transactionManager" ref="transactionManager" />
   </bean>
 	
-  <bean id="alarmFactory" class="org.opennms.netmgt.dao.jdbc.alarm.AlarmFactory">
-  	<property name="dataSource" ref="dataSource" />
+  <bean id="alarmDao" class="org.opennms.netmgt.dao.hibernate.AlarmDaoHibernate">
+  	<property name="sessionFactory" ref="sessionFactory" />
   </bean>
 
-  <bean id="alarmDao" class="org.opennms.netmgt.dao.jdbc.AlarmDaoJdbc">
-  	<property name="dataSource" ref="dataSource" />
-  </bean>
-
-  <bean id="assetRecordFactory" class="org.opennms.netmgt.dao.jdbc.asset.AssetRecordFactory">
-  	<property name="dataSource" ref="dataSource" />
-  </bean>
-
-  <bean id="assetRecordDao" class="org.opennms.netmgt.dao.jdbc.AssetRecordDaoJdbc">
-  	<property name="dataSource" ref="dataSource" />
+  <bean id="assetRecordDao" class="org.opennms.netmgt.dao.hibernate.AssetRecordDaoHibernate">
+  	<property name="sessionFactory" ref="sessionFactory" />
   </bean>
   
-  <bean id="categoryFactory" class="org.opennms.netmgt.dao.jdbc.category.CategoryFactory">
-  	<property name="dataSource" ref="dataSource" />
+  <bean id="categoryDao" class="org.opennms.netmgt.dao.hibernate.CategoryDaoHibernate">
+  	<property name="sessionFactory" ref="sessionFactory" />
   </bean>
 
-  <bean id="categoryDao" class="org.opennms.netmgt.dao.jdbc.CategoryDaoJdbc">
-  	<property name="dataSource" ref="dataSource" />
-  </bean>
-
-    <bean id="distPollerFactory" class="org.opennms.netmgt.dao.jdbc.distpoller.DistPollerFactory">
-      <property name="dataSource" ref="dataSource" />
-    </bean>
-    
-	<bean id="distPollerDao" class="org.opennms.netmgt.dao.jdbc.DistPollerDaoJdbc">
-		<property name="dataSource" ref="dataSource" />
-	</bean>
-<!-- 
 	<bean id="distPollerDao" class="org.opennms.netmgt.dao.hibernate.DistPollerDaoHibernate">
 		<property name="sessionFactory" ref="sessionFactory" />
 	</bean>
--->
-    <bean id="demandPollFactory" class="org.opennms.netmgt.dao.jdbc.demandpoll.DemandPollFactory">
-      <property name="dataSource" ref="dataSource" />
-    </bean>
 
-  <bean id="demandPollDao" class="org.opennms.netmgt.dao.jdbc.DemandPollDaoJdbc">
-  	<property name="dataSource" ref="dataSource" />
+  <bean id="demandPollDao" class="org.opennms.netmgt.dao.hibernate.DemandPollDaoHibernate">
+  	<property name="sessionFactory" ref="sessionFactory" />
   </bean>
 
-  <bean id="eventFactory" class="org.opennms.netmgt.dao.jdbc.event.EventFactory">
-  	<property name="dataSource" ref="dataSource" />
+  <bean id="eventDao" class="org.opennms.netmgt.dao.hibernate.EventDaoHibernate">
+  	<property name="sessionFactory" ref="sessionFactory" />
   </bean>
 
-  <bean id="eventDao" class="org.opennms.netmgt.dao.jdbc.EventDaoJdbc">
-  	<property name="dataSource" ref="dataSource" />
-  </bean>
-
-  <bean id="ipInterfaceFactory" class="org.opennms.netmgt.dao.jdbc.ipif.IpInterfaceFactory">
-  	<property name="dataSource" ref="dataSource" />
-  </bean>
-
-  <bean id="ipInterfaceDao" class="org.opennms.netmgt.dao.jdbc.IpInterfaceDaoJdbc">
-  	<property name="dataSource" ref="dataSource" />
+  <bean id="ipInterfaceDao" class="org.opennms.netmgt.dao.hibernate.IpInterfaceDaoHibernate">
+  	<property name="sessionFactory" ref="sessionFactory" />
   </bean>
   
-  <bean id="monitoredServiceFactory" class="org.opennms.netmgt.dao.jdbc.monsvc.MonitoredServiceFactory">
-  	<property name="dataSource" ref="dataSource" />
-  </bean>
-
-  <bean id="monitoredServiceDao" class="org.opennms.netmgt.dao.jdbc.MonitoredServiceDaoJdbc">
-  	<property name="dataSource" ref="dataSource" />
+  <bean id="monitoredServiceDao" class="org.opennms.netmgt.dao.hibernate.MonitoredServiceDaoHibernate">
+  	<property name="sessionFactory" ref="sessionFactory" />
   </bean>
   
-  <bean id="nodeFactory" class="org.opennms.netmgt.dao.jdbc.node.NodeFactory">
-  	<property name="dataSource" ref="dataSource" />
-  </bean>
-
-  <bean id="nodeDao" class="org.opennms.netmgt.dao.jdbc.NodeDaoJdbc">
-  	<property name="dataSource" ref="dataSource" />
+  <bean id="nodeDao" class="org.opennms.netmgt.dao.hibernate.NodeDaoHibernate">
+  	<property name="sessionFactory" ref="sessionFactory" />
   </bean>
   
-  <bean id="notificationFactory" class="org.opennms.netmgt.dao.jdbc.notification.NotificationFactory">
-  	<property name="dataSource" ref="dataSource" />
-  </bean>
-
-  <bean id="notifiactionDao" class="org.opennms.netmgt.dao.jdbc.NotificationDaoJdbc">
-  	<property name="dataSource" ref="dataSource" />
+  <bean id="notificationDao" class="org.opennms.netmgt.dao.hibernate.NotificationDaoHibernate">
+  	<property name="sessionFactory" ref="sessionFactory" />
   </bean>
   
-  <bean id="outageFactory" class="org.opennms.netmgt.dao.jdbc.outage.OutageFactory">
-  	<property name="dataSource" ref="dataSource" />
+  <bean id="outageDao" class="org.opennms.netmgt.dao.hibernate.OutageDaoHibernate">
+  	<property name="sessionFactory" ref="sessionFactory" />
   </bean>
   
-  <bean id="outageDao" class="org.opennms.netmgt.dao.jdbc.OutageDaoJdbc">
-  	<property name="dataSource" ref="dataSource" />
+  <bean id="serviceTypeDao" class="org.opennms.netmgt.dao.hibernate.ServiceTypeDaoHibernate">
+  	<property name="sessionFactory" ref="sessionFactory" />
   </bean>
   
-  <bean id="serviceTypeFactory" class="org.opennms.netmgt.dao.jdbc.svctype.ServiceTypeFactory">
-  	<property name="dataSource" ref="dataSource" />
+  <bean id="snmpInterfaceDao" class="org.opennms.netmgt.dao.hibernate.SnmpInterfaceDaoHibernate">
+  	<property name="sessionFactory" ref="sessionFactory" />
   </bean>
 
-  <bean id="serviceTypeDao" class="org.opennms.netmgt.dao.jdbc.ServiceTypeDaoJdbc">
-  	<property name="dataSource" ref="dataSource" />
+  <bean id="userNotificationDao" class="org.opennms.netmgt.dao.hibernate.UserNotificationDaoHibernate">
+  	<property name="sessionFactory" ref="sessionFactory" />
   </bean>
   
-  <bean id="snmpInterfaceFactory" class="org.opennms.netmgt.dao.jdbc.snmpif.SnmpInterfaceFactory">
-  	<property name="dataSource" ref="dataSource" />
-  </bean>
-
-  <bean id="snmpInterfaceDao" class="org.opennms.netmgt.dao.jdbc.SnmpInterfaceDaoJdbc">
-  	<property name="dataSource" ref="dataSource" />
-  </bean>
-
-  <bean id="userNotificationFactory" class="org.opennms.netmgt.dao.jdbc.usernotification.UserNotificationFactory">
-  	<property name="dataSource" ref="dataSource" />
-  </bean>
-
-  <bean id="userNotificationDao" class="org.opennms.netmgt.dao.jdbc.UserNotificationDaoJdbc">
-  	<property name="dataSource" ref="dataSource" />
+  <bean id="availabilityReportLocatorDao" class="org.opennms.netmgt.dao.hibernate.AvailabilityReportLocatorDaoHibernate">
+  	<property name="sessionFactory" ref="sessionFactory" />
   </bean>
   
-  <bean id="availabilityReportLocatorDao" class="org.opennms.netmgt.dao.AvailabilityReportLocatorJdbc">
-    <property name="dataSource" ref="dataSource" />
+  <bean id="aggregateStatusViewDao" class="org.opennms.netmgt.dao.hibernate.AggregateStatusViewDaoHibernate" >
+  	<property name="sessionFactory" ref="sessionFactory" />
   </bean>
-  
-  <bean id="aggregateStatusViewDao" class="org.opennms.netmgt.dao.jdbc.AggregateStatusViewDaoJdbc" >
-    <property name="dataSource" ref="dataSource" />
-  </bean>
-  	<!-- SqlMap setup for iBATIS Database Layer -->
-	<bean id="sqlMapClient" class="org.springframework.orm.ibatis.SqlMapClientFactoryBean">
-		<property name="configLocation" >
-    		<value>classpath:/META-INF/opennms/sqlMapConfig.xml</value>
-		</property>
- 	</bean>
-
-	<bean id="pathOutageDao" class="org.opennms.netmgt.dao.ibatis.SqlMapClientPathOutageDao">
-		<property name="dataSource"><ref local="dataSource"/></property>
-		<property name="sqlMapClient"><ref local="sqlMapClient"/></property>
-	</bean>  
-<!-- 
-	<bean id="aggregateStatusViewDao" class="org.opennms.netmgt.dao.ibatis.SqlMapClientAggStatViewDao">
-		<property name="dataSource"><ref local="dataSource"/></property>
-		<property name="sqlMapClient"><ref local="sqlMapClient"/></property>
-	</bean>  
- -->	
 
 </beans>

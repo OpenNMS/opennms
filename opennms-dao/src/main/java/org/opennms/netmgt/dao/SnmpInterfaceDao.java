@@ -33,8 +33,6 @@
 
 package org.opennms.netmgt.dao;
 
-import java.util.Collection;
-
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 
 

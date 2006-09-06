@@ -34,6 +34,15 @@ package org.opennms.netmgt.model;
 
 import java.util.Collection;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
+
 /**
  * Really a container class for persisting arrangements of status definitions
  * created by the user.
@@ -43,6 +52,8 @@ import java.util.Collection;
  * @author david
  *
  */
+@Entity
+@Table(name="aggregate_status_views")
 public class AggregateStatusView {
     
     private Integer m_id;
@@ -51,6 +62,63 @@ public class AggregateStatusView {
     private String m_columnName;
     private String m_columnValue;
     private Collection<AggregateStatusDefinition> m_statusDefinitions;
+    
+    @Id
+    @SequenceGenerator(name="opennmsSequence", sequenceName="opennmsNxtId")
+    @GeneratedValue(generator="opennmsSequence")    
+    public Integer getId() {
+        return m_id;
+    }
+    
+    public void setId(Integer id) {
+        m_id = id;
+    }
+    
+    public String getName() {
+        return m_name;
+    }
+
+    public void setName(String name) {
+        m_name = name;
+    }
+
+    public String getTableName() {
+        return m_tableName;
+    }
+
+    public void setTableName(String tableName) {
+        m_tableName = tableName;
+    }
+    
+    public String getColumnName() {
+        return m_columnName;
+    }
+    
+    public void setColumnName(String columnName) {
+        m_columnName = columnName;
+    }
+    
+    public String getColumnValue() {
+        return m_columnValue;
+    }
+    
+    public void setColumnValue(String columnValue) {
+        m_columnValue = columnValue;
+    }
+    
+    @ManyToMany
+    @JoinTable(
+    		name ="statusview_statusdef",
+    		joinColumns = {@JoinColumn(name="statusViewId")},
+    		inverseJoinColumns = {@JoinColumn(name="statusDefId")}
+    )
+    public Collection<AggregateStatusDefinition> getStatusDefinitions() {
+        return m_statusDefinitions;
+    }
+    public void setStatusDefinitions(Collection<AggregateStatusDefinition> statusDefinitions) {
+        m_statusDefinitions = statusDefinitions;
+    }
+    
     
     /**
      * Good for debug logs and viewing in a debugger.
@@ -70,46 +138,6 @@ public class AggregateStatusView {
 		result.append(" }");
 		return result.toString();
 	}
-    
-    /*
-     * Getters/Setters
-     */
-    public String getColumnName() {
-        return m_columnName;
-    }
-    public void setColumnName(String columnName) {
-        m_columnName = columnName;
-    }
-    public String getColumnValue() {
-        return m_columnValue;
-    }
-    public void setColumnValue(String columnValue) {
-        m_columnValue = columnValue;
-    }
-    public Integer getId() {
-        return m_id;
-    }
-    public void setId(Integer id) {
-        m_id = id;
-    }
-    public String getName() {
-        return m_name;
-    }
-    public void setName(String name) {
-        m_name = name;
-    }
-    public Collection<AggregateStatusDefinition> getStatusDefinitions() {
-        return m_statusDefinitions;
-    }
-    public void setStatusDefinitions(Collection<AggregateStatusDefinition> statusDefinitions) {
-        m_statusDefinitions = statusDefinitions;
-    }
-    public String getTableName() {
-        return m_tableName;
-    }
-    public void setTableName(String tableName) {
-        m_tableName = tableName;
-    }
     
 
 }

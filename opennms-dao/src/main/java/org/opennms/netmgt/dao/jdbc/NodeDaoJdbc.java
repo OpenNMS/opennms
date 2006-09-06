@@ -368,9 +368,9 @@ public class NodeDaoJdbc extends AbstractDaoJdbc implements NodeDao {
      *  table assigned to the node via category_node table
      * @return Collection of nodes.
      */
-    public Collection<OnmsNode> findAllByVarCharAssetColumnCategoryList(String columnName, String columnValue, Collection<String> categoryNames) {
+    public Collection<OnmsNode> findAllByVarCharAssetColumnCategoryList(String columnName, String columnValue, Collection<OnmsCategory> categories) {
         log().debug("findAllByVarCharAssetColumnCategoryList: beginning find.");
-        List<OnmsNode> nodes = new FindByVarCharAssetColumnAndCategoryList(getDataSource(), columnName, categoryNames).execute(columnValue);
+        List<OnmsNode> nodes = new FindByVarCharAssetColumnAndCategoryList(getDataSource(), columnName, categories).execute(columnValue);
 
         for (OnmsNode node : nodes) {
 			getHierarchy(node.getId());

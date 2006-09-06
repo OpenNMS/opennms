@@ -41,36 +41,11 @@ public interface OutageDao extends OnmsDao<OnmsOutage, Integer> {
 
     public abstract Integer currentOutageCount();
 
-    public abstract Integer currentSuppressedOutageCount();
-
     public abstract Collection<OnmsOutage> currentOutages();
     
     public abstract Collection<OnmsOutage> matchingCurrentOutages(ServiceSelector selector);
     
-    public abstract Collection<OnmsOutage> suppressedOutages();
-
-    public abstract Collection<OnmsOutage> openAndResolvedOutages();
-
-    public abstract Collection<OnmsOutage> currentOutages(Integer offset, Integer limit, String orderBy, String direction);
-
-    public abstract Collection<OnmsOutage> suppressedOutages(Integer offset, Integer limit);
-
     public abstract Collection<OnmsOutage> findAll(Integer offset, Integer limit);
 
-	public abstract Collection<OnmsOutage> currentOutages(String orderBy);
-
-	public abstract Collection<OnmsOutage> getOutagesByRange(Integer offset, Integer limit, String order, String direction);
-	
-	public abstract Collection<OnmsOutage> getOutagesByRange(Integer offset, Integer limit, String order, String direction, String filter);
-
-	public abstract Integer outageCount();
-	
-	public abstract Integer outageCountFiltered(String filter);
-
-	public abstract Collection<OnmsOutage> suppressedOutages(Integer offset, Integer limit, String order, String direction);
-
-	public abstract Collection<OnmsOutage> getResolvedOutagesByRange(Integer offset, Integer limit, String order, String direction, String filter);
-
-	public abstract Integer outageResolvedCountFiltered(String searchFilter);
 
 }

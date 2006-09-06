@@ -7,6 +7,10 @@ import static org.easymock.EasyMock.getCurrentArguments;
 import static org.easymock.EasyMock.isA;
 import static org.easymock.EasyMock.replay;
 import static org.easymock.EasyMock.verify;
+
+import java.util.Collection;
+import java.util.Collections;
+
 import junit.framework.TestCase;
 
 import org.easymock.IAnswer;
@@ -53,15 +57,54 @@ public class DemandPollServiceTest extends TestCase {
 			return m_id;
 		}
 
-		public void save(DemandPoll poll) {
-			poll.setId(m_id);
-			m_demandPoll = poll;
+		public void clear() {
 		}
 
-		public DemandPoll get(int resultId) {
-			if (resultId == m_id)
+		public int countAll() {
+			return (m_demandPoll == null ? 0 : 1);
+		}
+
+		public void delete(DemandPoll entity) {
+			if (entity.getId() == m_demandPoll.getId())
+				m_demandPoll = null;
+		}
+
+		public Collection<DemandPoll> findAll() {
+			return Collections.singletonList(m_demandPoll);
+		}
+
+		public void flush() {
+		}
+
+		public DemandPoll get(Integer id) {
+			if (id.intValue() == m_id)
 				return m_demandPoll;
 			return null;
+		}
+
+		public DemandPoll load(Integer id) {
+			return get(id);
+		}
+
+		public void saveOrUpdate(DemandPoll entity) {
+			if (entity.getId() == null)
+				save(entity);
+			else
+				update(entity);
+		}
+
+		public void update(DemandPoll entity) {
+			if (entity.getId().intValue() == m_id)
+				m_demandPoll = entity;
+		}
+
+		public void save(DemandPoll entity) {
+			if (entity.getId() == null) {
+				entity.setId(m_id);
+				m_demandPoll = entity;
+			} else {
+				throw new RuntimeException("Can't save an entity that already has an id");
+			}
 		}
 		
 		

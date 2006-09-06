@@ -422,24 +422,23 @@ public class AbstractDaoTestCase extends TestCase {
         builder.addService(getServiceType("ICMP"));
         getNodeDao().save(builder.getCurrentNode());
         
-//        OnmsEvent event = new OnmsEvent();
-//        event.setDistPoller(distPoller);
-//        event.setEventUei("uei.opennms.org/test");
-//        event.setEventTime(new Date());
-//        event.setEventSource("test");
-//        event.setEventCreateTime(new Date());
-//        event.setEventSeverity(1);
-//        event.setEventLog("Y");
-//        event.setEventDisplay("Y");
-//        getEventDao().save(event);
-//       
-//        OnmsMonitoredService svc = getMonitoredServiceDao().get(1, "192.168.1.1", "SNMP");
-//        //JOED - LOOK This over
-//        OnmsOutage resolved = new OnmsOutage(new Date(), new Date(), event, event, svc, null, getName(), getName());
-//        getOutageDao().save(resolved);
-//        
-//        OnmsOutage unresolved = new OnmsOutage(new Date(), event, svc);
-//        getOutageDao().save(unresolved);
+        OnmsEvent event = new OnmsEvent();
+        event.setDistPoller(distPoller);
+        event.setEventUei("uei.opennms.org/test");
+        event.setEventTime(new Date());
+        event.setEventSource("test");
+        event.setEventCreateTime(new Date());
+        event.setEventSeverity(1);
+        event.setEventLog("Y");
+        event.setEventDisplay("Y");
+        getEventDao().save(event);
+       
+        OnmsMonitoredService svc = getMonitoredServiceDao().get(1, "192.168.1.1", "SNMP");
+        OnmsOutage resolved = new OnmsOutage(new Date(), new Date(), event, event, svc, null, null);
+        getOutageDao().save(resolved);
+        
+        OnmsOutage unresolved = new OnmsOutage(new Date(), event, svc);
+        getOutageDao().save(unresolved);
         
 
     }

@@ -43,6 +43,7 @@ import static org.easymock.EasyMock.verify;
 
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.model.AggregateStatusDefinition;
+import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.web.svclayer.AggregateStatus;
 
@@ -63,11 +64,12 @@ public class DefaultAggregateStatusServiceTest extends TestCase {
         Collection<AggregateStatusDefinition> defs = new ArrayList<AggregateStatusDefinition>();
         
         AggregateStatusDefinition definition = 
-            new AggregateStatusDefinition("Routers/Switches", new ArrayList<String>(Arrays.asList(new String[]{ "routers", "switches" })));
+            new AggregateStatusDefinition("Routers/Switches", Arrays.asList(new OnmsCategory[]{ new OnmsCategory("routers"), new OnmsCategory("switches") }));
         defs.add(definition);
         
         definition = 
-            new AggregateStatusDefinition("Servers", new ArrayList<String>(Arrays.asList(new String[]{ "servers" })));
+            new AggregateStatusDefinition("Servers", Arrays.asList(new OnmsCategory[]{ new OnmsCategory("servers") }));
+            
         defs.add(definition);
         
         DefaultAggregateStatusService aggregateSvc = new DefaultAggregateStatusService();

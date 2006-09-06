@@ -31,7 +31,6 @@
 //
 package org.opennms.netmgt.dao;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -44,8 +43,6 @@ import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
-
-import sun.print.PSPrinterJob.EPSPrinter;
 
 public class NodeDaoTest extends AbstractDaoTestCase {
     

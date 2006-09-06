@@ -33,6 +33,7 @@ package org.opennms.netmgt.dao;
 
 import java.util.Collection;
 
+import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsNode;
 
@@ -49,6 +50,6 @@ public interface NodeDao extends OnmsDao<OnmsNode, Integer> {
     public abstract Collection<OnmsNode> findAllByVarCharAssetColumn(String columnName, String columnValue);
     
     public abstract Collection<OnmsNode> findAllByVarCharAssetColumnCategoryList(String columnName, String columnValue,
-            Collection<String> categoryNames);
+            Collection<OnmsCategory> categories);
     
 }

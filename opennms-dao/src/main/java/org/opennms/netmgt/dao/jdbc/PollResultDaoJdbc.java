@@ -37,7 +37,6 @@ import java.util.Set;
 
 import javax.sql.DataSource;
 
-import org.opennms.netmgt.dao.PollResultDao;
 import org.opennms.netmgt.dao.jdbc.pollresult.FindAll;
 import org.opennms.netmgt.dao.jdbc.pollresult.FindById;
 import org.opennms.netmgt.dao.jdbc.pollresult.LazyPollResult;
@@ -51,7 +50,7 @@ import org.opennms.netmgt.model.PollResult;
  * @author david@opennms.org
  *
  */
-public class PollResultDaoJdbc extends AbstractDaoJdbc implements PollResultDao {
+public class PollResultDaoJdbc extends AbstractDaoJdbc {
 
     public PollResultDaoJdbc() {
             super();

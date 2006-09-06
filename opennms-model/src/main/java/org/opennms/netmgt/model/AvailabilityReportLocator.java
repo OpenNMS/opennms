@@ -2,6 +2,7 @@ package org.opennms.netmgt.model;
 
 import java.util.Date;
 
+
 public class AvailabilityReportLocator {
 
 	private Integer m_id;

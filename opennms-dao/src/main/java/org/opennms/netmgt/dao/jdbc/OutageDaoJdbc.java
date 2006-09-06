@@ -68,10 +68,6 @@ public class OutageDaoJdbc extends AbstractDaoJdbc implements OutageDao {
             super(ds);
     }
     
-    public OnmsOutage load(int id) {
-        return load(new Integer(id));
-    }
-
     /* (non-Javadoc)
      * @see org.opennms.netmgt.dao.OutageDao#load(java.lang.Integer)
      */
@@ -202,8 +198,8 @@ public class OutageDaoJdbc extends AbstractDaoJdbc implements OutageDao {
 
     
     
-    public Collection<OnmsOutage> currentOutages(Integer offset, Integer limit, String orderBy, String direction) {
-        return new FindCurrentOutages(getDataSource(), offset, limit, orderBy, direction).findSet();
+    public Collection<OnmsOutage> currentOutages(Integer offset, Integer limit, String orderBy, boolean ascending) {
+        return new FindCurrentOutages(getDataSource(), offset, limit, orderBy, (ascending ? "asc" : "desc")).findSet();
     }
 
     public Collection<OnmsOutage> suppressedOutages(Integer offset, Integer limit) {
@@ -240,24 +236,24 @@ public class OutageDaoJdbc extends AbstractDaoJdbc implements OutageDao {
 		  return new FindCurrentOutages(getDataSource(), orderBy).findSet();
 	}
 	
-	public Collection<OnmsOutage> getOutagesByRange(Integer offset, Integer limit, String order, String direction) {
-		return new FindAllOutages(getDataSource(),offset, limit, order, direction).findSet();
+	public Collection<OnmsOutage> getOutagesByRange(Integer offset, Integer limit, String order, boolean ascending) {
+		return new FindAllOutages(getDataSource(),offset, limit, order, (ascending ? "asc" : "desc")).findSet();
 	}
 
-	public Collection<OnmsOutage> getOutagesByRange(Integer offset, Integer limit, String order, String direction, String filter) {
-			return new FindAllOutages(getDataSource(),offset, limit, order, direction, filter).findSet();
+	public Collection<OnmsOutage> getOutagesByRange(Integer offset, Integer limit, String order, boolean ascending, String filter) {
+			return new FindAllOutages(getDataSource(),offset, limit, order, (ascending ? "asc" : "desc"), filter).findSet();
 	}
 
 	public Integer outageCountFiltered(String filter) {
         return getJdbcTemplate().queryForInt("select distinct count(outages.iflostservice) from outages, node, ipinterface, ifservices " + "where " + " node.nodeid = outages.nodeid and ipinterface.nodeid = outages.nodeid and ifservices.nodeid = outages.nodeid " + "and ipinterface.ipaddr = outages.ipaddr and ifservices.ipaddr = outages.ipaddr " + "and ifservices.serviceid = outages.serviceid " + "and node.nodeType != 'D' and ipinterface.ismanaged != 'D' and ifservices.status != 'D' " + " and (suppresstime is null or suppresstime < now()) " + filter);
     }
 
-	public Collection<OnmsOutage> suppressedOutages(Integer offset, Integer limit, String order, String direction) {
-		 return new FindSuppressedOutages(getDataSource(), offset, limit, order, direction).findSet(); 
+	public Collection<OnmsOutage> suppressedOutages(Integer offset, Integer limit, String order, boolean ascending) {
+		 return new FindSuppressedOutages(getDataSource(), offset, limit, order, (ascending ? "asc" : "desc")).findSet(); 
 	}
 
-	public Collection<OnmsOutage> getResolvedOutagesByRange(Integer offset, Integer limit, String order, String direction, String filter) {
-			return new FindResolvedOutages(getDataSource(),offset, limit, order, direction, filter).findSet();
+	public Collection<OnmsOutage> getResolvedOutagesByRange(Integer offset, Integer limit, String order, boolean ascending, String filter) {
+			return new FindResolvedOutages(getDataSource(),offset, limit, order, (ascending ? "asc" : "desc"), filter).findSet();
 	}
 
 	public Integer outageResolvedCountFiltered(String filter) {

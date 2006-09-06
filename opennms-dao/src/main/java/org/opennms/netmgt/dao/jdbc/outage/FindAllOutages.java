@@ -33,6 +33,8 @@ package org.opennms.netmgt.dao.jdbc.outage;
 
 import javax.sql.DataSource;
 
+import org.hibernate.criterion.Criterion;
+
 
 public class FindAllOutages extends OutageMappingQuery {
 

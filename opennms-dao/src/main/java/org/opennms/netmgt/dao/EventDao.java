@@ -35,8 +35,4 @@ import org.opennms.netmgt.model.OnmsEvent;
 
 public interface EventDao extends OnmsDao<OnmsEvent, Integer> {
 	
-    public abstract OnmsEvent get(int id);
-	
-    public abstract OnmsEvent load(int id);
-    
 }

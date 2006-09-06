@@ -34,6 +34,16 @@ package org.opennms.netmgt.model;
 
 import java.util.Collection;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
+
 /**
  * This class defines how the AggregateStatus object is to be
  * created and it's properties are to be populated.
@@ -41,47 +51,30 @@ import java.util.Collection;
  * @author david
  *
  */
+@Entity
+@Table(name="aggregate_status_definitions")
 public class AggregateStatusDefinition {
     
-    private String m_aggrStatusLabel;
-    private Collection<String> m_categories;
     private int m_id;
     private String m_name;
+    private Collection<OnmsCategory> m_categories;
     
     public AggregateStatusDefinition() {
         
     }
     
-    public AggregateStatusDefinition(String aggrStatus, Collection<String> categories) {
+    public AggregateStatusDefinition(String aggrStatus, Collection<OnmsCategory> categories) {
         if (aggrStatus == null || categories == null || categories.isEmpty()) {
             throw new IllegalArgumentException("Invalid arguments");
         }
         
-        m_aggrStatusLabel = aggrStatus;
+        m_name = aggrStatus;
         m_categories = categories;
     }
 
-    public String getAggrStatusLabel() {
-        return m_aggrStatusLabel;
-    }
-
-    public void setAggrStatusLabel(String aggrStatusLabel) {
-        m_aggrStatusLabel = aggrStatusLabel;
-    }
-
-    public Collection<String> getCategories() {
-        return m_categories;
-    }
-
-    public void setCategories(Collection<String> categories) {
-        m_categories = categories;
-    }
-    
-    @Override
-    public String toString() {
-        return m_aggrStatusLabel;
-    }
-
+    @Id
+    @SequenceGenerator(name="opennmsSequence", sequenceName="opennmsNxtId")
+    @GeneratedValue(generator="opennmsSequence")    
     public Integer getId() {
         return m_id;
     }
@@ -90,6 +83,7 @@ public class AggregateStatusDefinition {
         m_id = id;
     }
 
+    @Column(name="name")
 	public String getName() {
 		return m_name;
 	}
@@ -98,4 +92,24 @@ public class AggregateStatusDefinition {
 		m_name = name;
 	}
     
+
+	@ManyToMany
+	@JoinTable(
+			name="category_statusdef",
+			joinColumns = { @JoinColumn(name="statusDefId") },
+			inverseJoinColumns = { @JoinColumn(name="categoryId") }
+		)
+	public Collection<OnmsCategory> getCategories() {
+        return m_categories;
+    }
+
+    public void setCategories(Collection<OnmsCategory> categories) {
+        m_categories = categories;
+    }
+    
+    @Override
+    public String toString() {
+        return getName();
+    }
+
 }

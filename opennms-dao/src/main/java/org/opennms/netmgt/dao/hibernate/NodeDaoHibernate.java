@@ -33,11 +33,19 @@
 
 package org.opennms.netmgt.dao.hibernate;
 
+import java.sql.SQLException;
 import java.util.Collection;
 
+import org.hibernate.HibernateException;
+import org.hibernate.Session;
+import org.hibernate.criterion.Projection;
+import org.hibernate.criterion.Projections;
+import org.hibernate.criterion.Restrictions;
 import org.opennms.netmgt.dao.NodeDao;
+import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsNode;
+import org.springframework.orm.hibernate3.HibernateCallback;
 
 /**
  * @author Ted Kazmark
@@ -77,8 +85,16 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer> im
         return find("from OnmsNode as n where n.assetRecord."+columnName+" = ?", columnValue);
     }
 
-    public Collection<OnmsNode> findAllByVarCharAssetColumnCategoryList(String ColumnName, String ColumnValue, Collection<String> categoryNames) {
-    	throw new UnsupportedOperationException("not yet implemented");
+	public Collection<OnmsNode> findAllByVarCharAssetColumnCategoryList(String columnName, String columnValue, Collection<OnmsCategory> categories) {
+        return find("select distinct n from OnmsNode as n " +
+        		"join n.categories c " +
+                "left join fetch n.assetRecord "	 +	
+                "left join fetch n.ipInterfaces as iface " +
+                "left join fetch iface.monitoredServices as monSvc " +
+                "left join fetch monSvc.serviceType " +
+                "left join fetch monSvc.currentOutages " +
+                "where n.assetRecord."+columnName+" = ? " +
+                "and c in ?", columnValue, categories);
     }
 
     

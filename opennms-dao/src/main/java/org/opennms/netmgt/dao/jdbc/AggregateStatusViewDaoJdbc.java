@@ -40,8 +40,10 @@ import java.util.List;
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.dao.AggregateStatusViewDao;
+import org.opennms.netmgt.dao.CategoryDao;
 import org.opennms.netmgt.model.AggregateStatusDefinition;
 import org.opennms.netmgt.model.AggregateStatusView;
+import org.opennms.netmgt.model.OnmsCategory;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.support.JdbcDaoSupport;
 
@@ -66,6 +68,14 @@ public class AggregateStatusViewDaoJdbc extends JdbcDaoSupport implements Aggreg
     private static final String AGGREATE_STATUS_VIEWS_TABLE = "aggregate_status_views";
     private static final String AGGREGATE_STATUS_DEFINITIONS_TABLE = "aggregate_status_definitions";
     
+    private CategoryDao m_categoryDao = null;
+    
+    private CategoryDao getCategoryDao() {
+    	if (m_categoryDao == null) {
+    		m_categoryDao = new CategoryDaoJdbc(getDataSource());
+    	}
+    	return m_categoryDao;
+    }
     
     /**
      * 
@@ -75,13 +85,12 @@ public class AggregateStatusViewDaoJdbc extends JdbcDaoSupport implements Aggreg
         return getJdbcTemplate().queryForInt("select count(*) from "+AGGREATE_STATUS_VIEWS_TABLE);
     }
     
-    
     /**
      * Get the status view configuration by view name
      * @param viewName
      * @return <code>AggreateStatusView</code> Object
      */
-    public AggregateStatusView find(final String viewName) {
+    public AggregateStatusView findByName(final String viewName) {
         log().debug("find (viewName): begin finding aggregate status view.");
         AggregateStatusView view = (AggregateStatusView)getJdbcTemplate().queryForObject("select * " +
                         "  from "+AGGREATE_STATUS_VIEWS_TABLE+
@@ -99,7 +108,7 @@ public class AggregateStatusViewDaoJdbc extends JdbcDaoSupport implements Aggreg
      * @param statusViewName
      * @return <code>AggreateStatusView</code> Object
      */
-    public AggregateStatusView find(final int viewId) {
+    public AggregateStatusView get(Integer viewId) {
         log().debug("find (int): begin finding aggregate status view.");
         AggregateStatusView view = (AggregateStatusView)getJdbcTemplate().queryForObject("select *" +
                         "  from "+AGGREATE_STATUS_VIEWS_TABLE+
@@ -136,7 +145,7 @@ public class AggregateStatusViewDaoJdbc extends JdbcDaoSupport implements Aggreg
             public Object mapRow(ResultSet rs, int index) throws SQLException {
                 AggregateStatusDefinition statusDef = new AggregateStatusDefinition();
                 statusDef.setId(rs.getInt("id"));
-                statusDef.setAggrStatusLabel(rs.getString("name"));
+                statusDef.setName(rs.getString("name"));
                 statusDef.setCategories(loadStatusDefCategories(statusDef.getId()));
                 return statusDef;
             }
@@ -148,56 +157,70 @@ public class AggregateStatusViewDaoJdbc extends JdbcDaoSupport implements Aggreg
                 " where svsd.statusViewId = "+viewId, statusDefMapper);
     }
     
-    private Collection<String> loadStatusDefCategories(final Integer statusDefId) {
+    private Collection<OnmsCategory> loadStatusDefCategories(final Integer statusDefId) {
 
         final RowMapper rowMapper = new RowMapper() {
 
             public Object mapRow(ResultSet rs, int index) throws SQLException {
-                String category = rs.getString("category");
-                return category;
+                int categoryId = rs.getInt("category");
+                return getCategoryDao().get(categoryId);
             }
 
         };
         
-        return getJdbcTemplate().query("select c.categoryName as category from categories c " +
+        return (Collection<OnmsCategory>)getJdbcTemplate().query("select c.categoryId as category from categories c " +
                 "join "+CATEGORY_DEF_MAPPING_TABLE+" csd on (csd.categoryId = c.categoryId) " +
                 "where csd.statusDefId = "+statusDefId, rowMapper);
     }
 
 
-	public List getAll() {
-		// TODO Auto-generated method stub
-		return null;
+	public List findAll() {
+		throw new UnsupportedOperationException("not yet implemented!");
 	}
 
 
 	public AggregateStatusView getByName(String statusViewName) {
-		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException("not yet implemented!");
+	}
+
+
+	public void saveOrUpdate(AggregateStatusView view) {
+		throw new UnsupportedOperationException("not yet implemented!");
 	}
 
 
 	public void save(AggregateStatusView view) {
-		// TODO Auto-generated method stub
-		
-	}
-
-
-	public void insert(AggregateStatusView view) {
-		// TODO Auto-generated method stub
-		
+		throw new UnsupportedOperationException("not yet implemented!");
 	}
 
 
 	public void delete(int id) {
-		// TODO Auto-generated method stub
-		
+		throw new UnsupportedOperationException("not yet implemented!");
 	}
 
 
 	public void update(AggregateStatusView view) {
-		// TODO Auto-generated method stub
-		
+		throw new UnsupportedOperationException("not yet implemented!");
+	}
+
+
+	public void clear() {
+		throw new UnsupportedOperationException("not yet implemented!");
+	}
+
+
+	public void delete(AggregateStatusView entity) {
+		delete(entity.getId());
+	}
+
+
+	public void flush() {
+		throw new UnsupportedOperationException("not yet implemented!");
+	}
+
+
+	public AggregateStatusView load(Integer id) {
+		return get(id);
 	}
 
 }

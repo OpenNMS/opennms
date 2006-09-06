@@ -39,6 +39,7 @@ import java.util.Iterator;
 
 import org.opennms.netmgt.model.AggregateStatusDefinition;
 import org.opennms.netmgt.model.AggregateStatusView;
+import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.web.svclayer.AggregateStatus;
 import org.opennms.web.svclayer.AggregateStatusService;
 import org.springframework.test.AbstractTransactionalDataSourceSpringContextTests;
@@ -88,15 +89,15 @@ public class DefaultAggregateServiceIntegrationTest extends AbstractTransactiona
         Collection<AggregateStatusDefinition> defs = new ArrayList<AggregateStatusDefinition>();
         
         AggregateStatusDefinition definition;
-        definition = new AggregateStatusDefinition("LB/Router", new ArrayList<String>(Arrays.asList(new String[]{ "DEV_ROUTER", "DEV_LOADBAL" })));
+        definition = new AggregateStatusDefinition("LB/Router", Arrays.asList(new OnmsCategory[]{ new OnmsCategory("DEV_ROUTER"), new OnmsCategory("DEV_LOADBAL") }));
         defs.add(definition);        
-        definition = new AggregateStatusDefinition("Access Controller", new ArrayList<String>(Arrays.asList(new String[]{ "DEV_AC" })));
+        definition = new AggregateStatusDefinition("Access Controller", Arrays.asList(new OnmsCategory[]{ new OnmsCategory("DEV_AC") }));
         defs.add(definition);
-        definition = new AggregateStatusDefinition("Switches", new ArrayList<String>(Arrays.asList(new String[]{ "DEV_SWITCH" })));
+        definition = new AggregateStatusDefinition("Switches", Arrays.asList(new OnmsCategory[]{ new OnmsCategory("DEV_SWITCH") }));
         defs.add(definition);
-        definition = new AggregateStatusDefinition("Access Points", new ArrayList<String>(Arrays.asList(new String[]{ "DEV_AP" })));
+        definition = new AggregateStatusDefinition("Access Points", Arrays.asList(new OnmsCategory[]{ new OnmsCategory("DEV_AP") }));
         defs.add(definition);
-        definition = new AggregateStatusDefinition("BCPC", new ArrayList<String>(Arrays.asList(new String[]{ "DEV_BCPC" })));
+        definition = new AggregateStatusDefinition("BCPC", Arrays.asList(new OnmsCategory[]{ new OnmsCategory("DEV_BCPC") }));
         defs.add(definition);
         
         String assetColumn = "building";

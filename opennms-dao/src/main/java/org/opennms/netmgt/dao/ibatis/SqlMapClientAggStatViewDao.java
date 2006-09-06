@@ -32,7 +32,7 @@
 
 package org.opennms.netmgt.dao.ibatis;
 
-import java.util.List;
+import java.util.Collection;
 
 import org.opennms.netmgt.dao.AggregateStatusViewDao;
 import org.opennms.netmgt.model.AggregateStatusView;
@@ -51,28 +51,29 @@ public class SqlMapClientAggStatViewDao extends SqlMapClientDaoSupport
 //		
 //	}
 
-	public List getAll() {
+	@SuppressWarnings("unchecked")
+	public Collection<AggregateStatusView> findAll() {
 		return getSqlMapClientTemplate().queryForList("AggStatView.getAll", null);
 	}
 	
-	public void save(AggregateStatusView view) {
+	public void saveOrUpdate(AggregateStatusView view) {
 		if (view.getId() == 0) {
-			insert(view);
+			save(view);
 		} else {
 			update(view);
 		}
 
 	}
 
-	public AggregateStatusView find(String name) {
+	public AggregateStatusView findByName(String name) {
 		return (AggregateStatusView)getSqlMapClientTemplate().queryForObject("AggStatView.getByName", name);
 	}
 
-	public AggregateStatusView find(int id) {
+	public AggregateStatusView get(Integer id) {
 		return (AggregateStatusView)getSqlMapClientTemplate().queryForObject("AggStatView.getByID", id);
 	}
 	
-	public void insert(AggregateStatusView view) {
+	public void save(AggregateStatusView view) {
 		getSqlMapClientTemplate().insert("AggStatView.insert", view);
 	}
 	
@@ -82,5 +83,27 @@ public class SqlMapClientAggStatViewDao extends SqlMapClientDaoSupport
 
 	public void update(AggregateStatusView view) {
 		getSqlMapClientTemplate().update("AggStatView.update", view);
+	}
+
+	public void clear() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public int countAll() {
+		throw new UnsupportedOperationException("not yet implemented!");
+	}
+
+	public void delete(AggregateStatusView entity) {
+		delete(entity.getId());
+	}
+
+	public void flush() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public AggregateStatusView load(Integer id) {
+		return get(id);
 	}
 }

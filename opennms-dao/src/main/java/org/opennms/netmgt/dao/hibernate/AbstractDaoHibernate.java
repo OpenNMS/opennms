@@ -91,7 +91,7 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> extends Hi
             }
             
         });
-        return ((Integer)result).intValue();
+        return ((Number)result).intValue();
     }
 
     protected T findUnique(final String query) {
