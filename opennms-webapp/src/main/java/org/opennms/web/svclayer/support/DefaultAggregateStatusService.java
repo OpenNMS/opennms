@@ -71,7 +71,7 @@ public class DefaultAggregateStatusService implements AggregateStatusService {
     private AggregateStatusViewDao m_statusViewDao;
 
     public AggregateStatusView createAggregateStatusView(String statusViewName) {
-        AggregateStatusView statusView = m_statusViewDao.find(statusViewName);
+        AggregateStatusView statusView = m_statusViewDao.findByName(statusViewName);
         return statusView;
     }
     
@@ -105,7 +105,7 @@ public class DefaultAggregateStatusService implements AggregateStatusService {
          */
         for (AggregateStatusDefinition statusDef : categoryGrouping) {
             AggregateStatus status = new AggregateStatus();
-            status.setLabel(statusDef.getAggrStatusLabel());
+            status.setLabel(statusDef.getName());
             
             Collection<OnmsNode> nodes = m_nodeDao.findAllByVarCharAssetColumnCategoryList(assetColumn, columnValue, statusDef.getCategories());
             

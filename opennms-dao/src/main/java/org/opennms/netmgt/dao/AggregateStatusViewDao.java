@@ -32,8 +32,6 @@
 
 package org.opennms.netmgt.dao;
 
-import java.util.List;
-
 import org.opennms.netmgt.model.AggregateStatusView;
 
 /**
@@ -43,20 +41,8 @@ import org.opennms.netmgt.model.AggregateStatusView;
  * @author david
  *
  */
-public interface AggregateStatusViewDao  {
+public interface AggregateStatusViewDao extends OnmsDao<AggregateStatusView, Integer> {
     
-	public List getAll();
-	
-	public void save(AggregateStatusView view);
-	
-	public void update(AggregateStatusView view);
-	
-	public void delete(int id);
-
-    AggregateStatusView find(String name);
+    AggregateStatusView findByName(String name);
     
-    public void insert(AggregateStatusView view);
-
-	AggregateStatusView find(int newId);
-
 }

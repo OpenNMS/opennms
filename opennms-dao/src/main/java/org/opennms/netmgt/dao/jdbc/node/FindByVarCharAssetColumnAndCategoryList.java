@@ -37,11 +37,12 @@ import java.util.Iterator;
 
 import javax.sql.DataSource;
 
+import org.opennms.netmgt.model.OnmsCategory;
 import org.springframework.jdbc.core.SqlParameter;
 
 public class FindByVarCharAssetColumnAndCategoryList extends NodeMappingQuery {
 
-    public FindByVarCharAssetColumnAndCategoryList(DataSource ds, String columnName, Collection<String> categoryNames) {
+    public FindByVarCharAssetColumnAndCategoryList(DataSource ds, String columnName, Collection<OnmsCategory> categoryNames) {
         super(ds, "from node as n join assets a on (a.nodeid = n.nodeid) " +
                 "join category_node cn on (cn.nodeid = n.nodeid) " +
                 "join categories c on (c.categoryid = cn.categoryid) " +
@@ -51,13 +52,13 @@ public class FindByVarCharAssetColumnAndCategoryList extends NodeMappingQuery {
         compile();
     }
     
-    private static String convertCollectionToDelimitedString(Collection<String> col, char delimiter, char separator) {
+    private static String convertCollectionToDelimitedString(Collection<OnmsCategory> col, char delimiter, char separator) {
         StringBuffer sb = new StringBuffer("");
         
         for (Iterator it = col.iterator(); it.hasNext();) {
-            String colStr = (String) it.next();
+            OnmsCategory category = (OnmsCategory) it.next();
             sb.append(delimiter);
-            sb.append(colStr);
+            sb.append(category.getName());
             sb.append(delimiter);
             if (it.hasNext()) {
                 sb.append(separator);

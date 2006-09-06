@@ -41,14 +41,20 @@ import javax.sql.DataSource;
 
 import org.hibernate.SessionFactory;
 import org.opennms.netmgt.dao.AbstractDaoTestCase.DB;
+import org.opennms.netmgt.dao.hibernate.AlarmDaoHibernate;
 import org.opennms.netmgt.dao.hibernate.AssetRecordDaoHibernate;
+import org.opennms.netmgt.dao.hibernate.CategoryDaoHibernate;
 import org.opennms.netmgt.dao.hibernate.DistPollerDaoHibernate;
+import org.opennms.netmgt.dao.hibernate.EventDaoHibernate;
 import org.opennms.netmgt.dao.hibernate.IpInterfaceDaoHibernate;
 import org.opennms.netmgt.dao.hibernate.MonitoredServiceDaoHibernate;
 import org.opennms.netmgt.dao.hibernate.NodeDaoHibernate;
+import org.opennms.netmgt.dao.hibernate.NotificationDaoHibernate;
+import org.opennms.netmgt.dao.hibernate.OutageDaoHibernate;
 import org.opennms.netmgt.dao.hibernate.ServiceTypeDaoHibernate;
+import org.opennms.netmgt.dao.hibernate.SnmpInterfaceDaoHibernate;
+import org.opennms.netmgt.dao.hibernate.UserNotificationDaoHibernate;
 import org.opennms.netmgt.dao.jdbc.Cache;
-import org.opennms.netmgt.dao.jdbc.EventDaoJdbc;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsAssetRecord;
 import org.opennms.netmgt.model.OnmsCategory;
@@ -263,31 +269,46 @@ public class HibernateDaoTestConfig extends DaoTestConfig {
     }
 
     protected CategoryDao createCategoryDao() {
-        throw new RuntimeException("CategoryDao is not yet implemented in hibernate!");
+    	CategoryDaoHibernate catDao = new CategoryDaoHibernate();
+    	catDao.setSessionFactory(getFactory());
+    	return catDao;
     }
 
 	protected SnmpInterfaceDao createSnmpInterfaceDao() {
-        throw new RuntimeException("SnmpInterfaceDao is not yet implemented in hibernate!");
+		SnmpInterfaceDaoHibernate snmpDao = new SnmpInterfaceDaoHibernate();
+		snmpDao.setSessionFactory(getFactory());
+		return snmpDao;
 	}
 
     protected OutageDao createOutageDao() {
-        throw new RuntimeException("OutageDao is not yet implemented in hibernate!");
+    	OutageDaoHibernate outageDao = new OutageDaoHibernate();
+    	outageDao.setSessionFactory(getFactory());
+    	return outageDao;
     }
 
 	protected EventDao createEventDao() {
-        return new EventDaoJdbc(m_dataSource);
+		EventDaoHibernate eventDao = new EventDaoHibernate();
+		eventDao.setSessionFactory(getFactory());
+		return eventDao;
+		
 	}
 	
     protected AlarmDao createAlarmDao() {
-        throw new RuntimeException("AlarmDao is not yet implemented in hibernate");
+        AlarmDaoHibernate alarmDao = new AlarmDaoHibernate();
+        alarmDao.setSessionFactory(getFactory());
+        return alarmDao;
     }
 
     protected NotificationDao createNotificationDao() {
-        throw new RuntimeException("NotificationDao is not yet implemented in hibernate");
+    	NotificationDaoHibernate notificationDao = new NotificationDaoHibernate();
+    	notificationDao.setSessionFactory(getFactory());
+    	return notificationDao;
     }
 
     protected UserNotificationDao createUserNotificationDao() {
-        throw new RuntimeException("UserNotificationDao is not yet implemented in hibernate");
+    	UserNotificationDaoHibernate userNotifDao = new UserNotificationDaoHibernate();
+    	userNotifDao.setSessionFactory(getFactory());
+    	return userNotifDao;
     }
 
 	@Override

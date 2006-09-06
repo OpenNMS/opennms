@@ -63,21 +63,21 @@ public class AggStatViewDaoTest extends
 		view.setColumnName("junit test column name");
 		view.setColumnValue("junit test column value");
 		
-		m_dao.insert(view);
-		AggregateStatusView retrievedView = m_dao.find(randomName);
+		m_dao.save(view);
+		AggregateStatusView retrievedView = m_dao.findByName(randomName);
 		assertEquals(view.getTableName(), retrievedView.getTableName());
 		
-		m_dao.delete(retrievedView.getId());
-		retrievedView = m_dao.find(randomName);
+		m_dao.delete(retrievedView);
+		retrievedView = m_dao.findByName(randomName);
 		assertNull("Expected a null view because we should have just deleted it" +
 				" from the table", retrievedView);
 		
-		m_dao.insert(view);
-		retrievedView = m_dao.find(randomName);
+		m_dao.save(view);
+		retrievedView = m_dao.findByName(randomName);
 		int newId = retrievedView.getId();
 		retrievedView.setName("Modified " + randomName);
-		m_dao.save(retrievedView);
-		retrievedView = m_dao.find(newId);
+		m_dao.saveOrUpdate(retrievedView);
+		retrievedView = m_dao.get(newId);
 		assertEquals("Modified " + randomName, retrievedView.getName());
 		
 	}

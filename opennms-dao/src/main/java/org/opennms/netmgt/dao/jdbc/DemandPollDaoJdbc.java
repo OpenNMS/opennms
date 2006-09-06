@@ -36,7 +36,6 @@ import java.util.Collection;
 import javax.sql.DataSource;
 
 import org.opennms.netmgt.dao.DemandPollDao;
-import org.opennms.netmgt.dao.PollResultDao;
 import org.opennms.netmgt.dao.jdbc.demandpoll.DemandPollDelete;
 import org.opennms.netmgt.dao.jdbc.demandpoll.DemandPollSave;
 import org.opennms.netmgt.dao.jdbc.demandpoll.DemandPollUpdate;
@@ -76,10 +75,6 @@ public class DemandPollDaoJdbc extends AbstractDaoJdbc implements DemandPollDao 
 
     public Collection findAll() {
         return new FindAll(getDataSource()).findSet();
-    }
-
-    public DemandPoll get(int id) {
-        return get(new Integer(id));
     }
 
     public DemandPoll get(Integer id) {
@@ -142,7 +137,7 @@ public class DemandPollDaoJdbc extends AbstractDaoJdbc implements DemandPollDao 
         getPollResultDao().saveOrUpdateResultsForPoll(poll);
     }
     
-    private PollResultDao getPollResultDao() {
+    private PollResultDaoJdbc getPollResultDao() {
     	return new PollResultDaoJdbc(getDataSource());
     }
 
@@ -157,5 +152,8 @@ public class DemandPollDaoJdbc extends AbstractDaoJdbc implements DemandPollDao 
     private DemandPollUpdate getDemandPollUpdater() {
         return new DemandPollUpdate(getDataSource());
     }
+
+	public void flush() {
+	}
 
 }

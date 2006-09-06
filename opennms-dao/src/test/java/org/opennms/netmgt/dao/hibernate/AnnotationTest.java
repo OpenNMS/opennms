@@ -1,9 +1,13 @@
 package org.opennms.netmgt.dao.hibernate;
 
+import java.sql.SQLException;
 import java.util.Collection;
 
+import org.hibernate.HibernateException;
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.opennms.netmgt.dao.BaseDaoTestCase;
+import org.opennms.netmgt.model.AggregateStatusView;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsAssetRecord;
 import org.opennms.netmgt.model.OnmsCategory;
@@ -17,6 +21,7 @@ import org.opennms.netmgt.model.OnmsOutage;
 import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.OnmsUserNotification;
+import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 
 public class AnnotationTest extends BaseDaoTestCase {
@@ -88,6 +93,7 @@ public class AnnotationTest extends BaseDaoTestCase {
 			}
 			
 		});
+		
 	}
 	
 	public void testIpInterfaces() {
@@ -214,6 +220,10 @@ public class AnnotationTest extends BaseDaoTestCase {
 	
 	public void testUsersNotified() {
 		assertLoadAll(OnmsUserNotification.class, new NullChecker<OnmsUserNotification>());
+	}
+	
+	public void testAggregateStatusView() {
+		assertLoadAll(AggregateStatusView.class, new NullChecker<AggregateStatusView>());
 	}
 
 	private <T> void assertLoadAll(Class<T> annotatedClass, Checker<T> checker) {
