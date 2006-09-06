@@ -44,6 +44,7 @@ import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.net.InetAddress;
 import java.util.Map;
+import java.util.HashMap;
 
 import org.apache.log4j.Level;
 import org.exolab.castor.xml.MarshalException;
@@ -63,7 +64,8 @@ import org.opennms.netmgt.utils.ParameterMap;
 /**
  * <P>
  * This class is designed to be used by the service poller framework to test the
- * status of PERC raid controllers on Dell Servers. The class implements
+ * status of PERC raid controllers on Dell Servers running Dell OpenManage Storage Manager. 
+ * The class implements
  * the ServiceMonitor interface that allows it to be used along with other
  * plug-ins by the service poller framework.
  * </P>
@@ -72,21 +74,22 @@ import org.opennms.netmgt.utils.ParameterMap;
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  * 
  */
-final public class PercMonitor extends SnmpMonitorStrategy {
+final public class OmsaStorageMonitor extends SnmpMonitorStrategy {
     /**
      * Name of monitored service.
      */
-    private static final String SERVICE_NAME = "PERC";
+    private static final String SERVICE_NAME = "OMSAStorageMonitor";
 
     /**
      * The base OID for the logical device status information
      */
-    private static final String LOGICAL_BASE_OID = ".1.3.6.1.4.1.3582.1.1.2.1.3";
+    private static final String LOGICAL_BASE_OID = ".1.3.6.1.4.1.674.10893.1.20.140.1.1.19"; 
+
 
     /**
      * The base OID for the physical device status information
      */
-    private static final String PHYSICAL_BASE_OID = ".1.3.6.1.4.1.3582.1.1.3.1.4";
+    private static final String PHYSICAL_BASE_OID = ".1.3.6.1.4.1.674.10893.1.20.130.4.1.23";
 
     /**
      * Interface attribute key used to store the interface's SnmpAgentConfig
@@ -96,7 +99,7 @@ final public class PercMonitor extends SnmpMonitorStrategy {
 
     /**
      * <P>
-     * Returns the name of the service that the plug-in monitors ("SNMP").
+     * Returns the name of the service that the plug-in monitors ("OMSAStorageMonitor").
      * </P>
      * 
      * @return The service that the plug-in monitors.
@@ -213,11 +216,27 @@ final public class PercMonitor extends SnmpMonitorStrategy {
 
         if (log().isDebugEnabled()) log().debug("poll: service= SNMP address= " + agentConfig);
 
+
+        // Create a hash map of available statuses for both physical and
+        // logical disks
+        HashMap percStatusMap = new HashMap();
+
+        percStatusMap.put("1","Other");
+        percStatusMap.put("2","Unknown");
+        percStatusMap.put("3","OK");
+        percStatusMap.put("4","Non-Critical");
+        percStatusMap.put("5","Critical");
+        percStatusMap.put("6","Non-Recoverable");
+
+        // Create a variable to hold the state
+        String state;
+
+        
         // Establish SNMP session with interface
         //
         try {
             if (log().isDebugEnabled()) {
-                log().debug("PercMonitor.poll: SnmpAgentConfig address: " +agentConfig);
+                log().debug("OmsaStorageMonitor.poll: SnmpAgentConfig address: " +agentConfig);
             }
             SnmpObjId snmpObjectId = new SnmpObjId(PHYSICAL_BASE_OID);
 
@@ -226,31 +245,43 @@ final public class PercMonitor extends SnmpMonitorStrategy {
             Map<SnmpInstId, SnmpValue> results = SnmpUtils.getOidValues(agentConfig, "percPoller", snmpObjectId);
 
             if(results.size() == 0) {
-                log().debug("SNMP poll failed: no physical results, addr=" + ipaddr.getHostAddress() + " oid=" + snmpObjectId);
+                log().debug("SNMP poll failed: no results, addr=" + ipaddr.getHostAddress() + " oid=" + snmpObjectId);
                 return status;
             }
 
             for (Map.Entry<SnmpInstId, SnmpValue> e : results.entrySet()) { 
 
-                log().debug("poll: SNMPwalk poll succeeded, addr=" + ipaddr.getHostAddress() + " oid=" + snmpObjectId + " instance=" + e.getKey() + " value=" + e.getValue());
-
-                // Test each value returned to make sure it doesn't equal 4
-                // 				   1=>'ready',
-                //                                 3=>'online',
-                //                                 4=>'failed',
-                //                                 5=>'rebuild',
-                //                                 6=>'hotspare',
-                //                                 20=>'nondisk'
-
-                if (meetsCriteria(e.getValue(), "!=", "4")) {
+                state = (String) percStatusMap.get(e.getValue());
+                log().debug("poll: SNMPwalk poll succeeded, addr=" + ipaddr.getHostAddress() + " oid=" + snmpObjectId + " instance=" + e.getKey() + " value=" + state);
+		/*
+		Name
+			arrayDiskRollUpStatus
+		Object ID
+			1.3.6.1.4.1.674.10893.1.20.130.4.1.23
+		Description
+			Severity of the array disk state. This is the combined status of the array disk and its components. Possible values:
+			1: Other
+			2: Unknown
+			3: OK
+			4: Non-critical
+			5: Critical
+			6: Non-recoverable
+		*/
+                
+                
+		// If disk is not "OK" based on the above generate an error
+                if (meetsCriteria(e.getValue(), "=", "3")) {
                     status = PollStatus.available();
+                    state = (String) percStatusMap.get(e.getValue());
+                    log().debug("poll: SNMP physical poll succeeded, addr=" + ipaddr.getHostAddress() + " oid=" + snmpObjectId + " instance=" + e.getKey() + " value=" + state);
                 } else {
-                    status = logDown(Level.DEBUG, "SNMP physical poll failed, addr=" + ipaddr.getHostAddress() + " oid=" + snmpObjectId + " instance=" + e.getKey() + " value=" + e.getValue());
+                    state = (String) percStatusMap.get(e.getValue());
+                    status = logDown(Level.DEBUG, "SNMP physical poll failed, addr=" + ipaddr.getHostAddress() + " oid=" + snmpObjectId + " instance=" + e.getKey() + " value=" + state);
                     return status;
                 }
             }
 
-            // If we get here, that means all of the physical drives returned a value not equal to "4"
+            // If we get here, that means all of the physical drives returned a value not equal to "5"
             // Now we need to check logical drives
 
             SnmpObjId snmpLogObjectId = new SnmpObjId(LOGICAL_BASE_OID);
@@ -265,20 +296,32 @@ final public class PercMonitor extends SnmpMonitorStrategy {
             }
 
             for (Map.Entry<SnmpInstId, SnmpValue> e : lresults.entrySet()) { 
+                state = (String) percStatusMap.get(e.getValue());
+                log().debug("poll: SNMPwalk poll succeeded, addr=" + ipaddr.getHostAddress() + " oid=" + snmpLogObjectId + " instance=" + e.getKey() + " value=" + state);
+		
+		/*
+		Name
+			virtualDiskRollUpStatus
+		Object ID
+			1.3.6.1.4.1.674.10893.1.20.140.1.1.19
+		Description
+			Severity of the virtual disk state. This is the combined status of the virtual disk and its components. Possible values:
+			1: Other
+			2: Unknown
+			3: OK
+			4: Non-critical
+			5: Critical
+			6: Non-recoverable
+		*/
 
-                log().debug("poll: SNMPwalk poll succeeded, addr=" + ipaddr.getHostAddress() + " oid=" + snmpLogObjectId + " instance=" + e.getKey() + " value=" + e.getValue());
-
-                // Test each value returned to make sure it equals 2
-                //                0=>'offline',
-                //                1=>'degraded',
-                //                2=>'optimal',
-                //                3=>'initialize',
-                //                4=>'checkconsistency'
-
-                if (meetsCriteria(e.getValue(), "=", "2")) {
+                if (meetsCriteria(e.getValue(), "=", "3")) {
                     status = PollStatus.available();
+                    state = (String) percStatusMap.get(e.getValue());
+                    log().debug("poll: SNMP physical poll succeeded, addr=" + ipaddr.getHostAddress() + " oid=" + snmpObjectId + " instance=" + e.getKey() + " value=" + state);
                 } else {
-                    status = logDown(Level.DEBUG, "SNMP logical poll failed, addr=" + ipaddr.getHostAddress() + " oid=" + snmpLogObjectId + " instance=" + e.getKey() + " value=" + e.getValue());
+
+                    state = (String) percStatusMap.get(e.getValue());
+                    status = logDown(Level.DEBUG, "SNMP logical disk poll failed, addr=" + ipaddr.getHostAddress() + " oid=" + snmpLogObjectId + " instance=" + e.getKey() + " value=" + state);
                     return status;
                 }
             }
