@@ -280,44 +280,26 @@
 
 
 
-	<div id="contentleft">
+	<div class="TwoColLeft">
             <!-- general info box -->
-            <table class="standardfirst">
-              <tr>
-                <td class="standardheader" colspan="2">General</td> 
-              </tr>
-              <tr> 
-                <td class="standard">Status</td>
-                <td class="standard"><%=(this.getStatusString(node_db.getNodeType())!=null ? this.getStatusString(node_db.getNodeType()) : "Unknown")%></td>
-              </tr>
-            </table>
-
+						<h3>General (Status: <%=(this.getStatusString(node_db.getNodeType())!=null ? this.getStatusString(node_db.getNodeType()) : "Unknown")%>)</h3>
             <!-- Availability box -->
-            <jsp:include page="/includes/nodeAvailability-box.jsp" flush="false" />
-
+            	<jsp:include page="/includes/nodeAvailability-box.jsp" flush="false" />
+							<hr />
             <!-- Asset box, if info available --> 
             <% if( asset != null ) { %>
-	      <table class="standard">
-                <tr>
-                  <td class="standardheader" colspan="2">Asset Information</td>
-                </tr>
-                <tr>
-                  <td class="standard" width="10%">Description:</td>
-                  <td class="standard"><%=(asset.getDescription() == null) ? "&nbsp;" : asset.getDescription()%></td>
-                </tr>
-                <tr>
-                  <td class="standard" width="10%">Comments:</td>
-                  <td class="standard"><%=(asset.getComments() == null) ? "&nbsp;" : asset.getComments()%></td>
-                </tr>
-              </table>  
+							<h3>Asset Information</h3>
+							<div class="boxWrapper">
+								<p>Description: <%=(asset.getDescription() == null) ? "&nbsp;" : asset.getDescription()%></p>
+								<p>Comments: <%=(asset.getComments() == null) ? "&nbsp;" : asset.getComments()%></p>
+							</div>
+							<hr />
             <% } %>
 
             <!-- SNMP box, if info available --> 
             <% if( node_db.getNodeSysId() != null ) { %>
+				<h3>SNMP Attributes</h3>
 	      <table class="standard">
-	      <tr>
-                  <td class="standardheader" colspan="2">SNMP Attributes</td>
-                </tr>
                 <tr>
 		  <!-- XXX should get rid of width... replace with a class? -->
                   <td class="standard" width="10%">Name:</td>
@@ -339,37 +321,29 @@
                   <td class="standard" valign="top" width="10%">Description:</td>
                   <td class="standard" valign="top"><%=(node_db.getNodeSysDescr() == null) ? "&nbsp;" : node_db.getNodeSysDescr()%> </td>
                 </tr>
-              </table>  
+              </table>
+  						<hr />
             <% } %>
             
             <!-- Interface box -->
-	      <table class="standard">
-	      <tr>
-                <td class="standardheader">Interfaces</td> 
-              </tr>
+	      <h3>Interfaces</h3>
+				<div class="boxWrapper">
+					<ul class="plain">
               <% for( int i=0; i < intfs.length; i++ ) { %>
                 <% if( "0.0.0.0".equals( intfs[i].getIpAddress() )) { %>
-                  <tr>
-                    <td class="standard">
-                      <a href="element/interface.jsp?node=<%=nodeId%>&intf=<%=intfs[i].getIpAddress()%>&ifindex=<%=intfs[i].getIfIndex()%>">Non-IP</a>
-                      <%=" (ifIndex: "+intfs[i].getIfIndex()+"-"+intfs[i].getSnmpIfDescription()+")"%>
-                    </td>
-                  </tr>
+                  <li><a href="element/interface.jsp?node=<%=nodeId%>&intf=<%=intfs[i].getIpAddress()%>&ifindex=<%=intfs[i].getIfIndex()%>">Non-IP</a>
+                      <%=" (ifIndex: "+intfs[i].getIfIndex()+"-"+intfs[i].getSnmpIfDescription()+")"%></li>
                 <% } else { %>  
-                  <tr>
-                    <td class="standard">
-                      <a href="element/interface.jsp?node=<%=nodeId%>&intf=<%=intfs[i].getIpAddress()%>"><%=intfs[i].getIpAddress()%></a>
-                      <%=intfs[i].getIpAddress().equals(intfs[i].getHostname()) ? "" : "(" + intfs[i].getHostname() + ")"%>
-                    </td>
-                  </tr>
+                  <li><a href="element/interface.jsp?node=<%=nodeId%>&intf=<%=intfs[i].getIpAddress()%>"><%=intfs[i].getIpAddress()%></a>
+                      <%=intfs[i].getIpAddress().equals(intfs[i].getHostname()) ? "" : "(" + intfs[i].getHostname() + ")"%></li>
                 <% } %>
               <% } %>
-            </table>
-
+					</ul>
+				</div>
 	</div>
 
 
-	<div id="contentright">
+	<div class="TwoColRight">
 
             <!-- events list  box -->
             <% String eventHeader = "<a href='event/list?filter=" + URLEncoder.encode("node=" + nodeId) + "'>Recent Events</a>"; %>
@@ -385,7 +359,7 @@
             <!-- Recent outages box -->
             <jsp:include page="/includes/nodeOutages-box.jsp" flush="false" />
        </div>
-
+<hr />
 <jsp:include page="/includes/footer.jsp" flush="false" />
 
 <%!
