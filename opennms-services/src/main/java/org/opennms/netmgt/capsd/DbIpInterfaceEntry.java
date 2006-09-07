@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2006 Sep 07: Format code. - dj@opennms.org
 // 2005 Jan 03: Minor change to support ifindex for lame snmp hosts
 // 2003 Jan 31: Cleaned up some unused imports.
 //
