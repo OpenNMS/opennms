@@ -93,27 +93,27 @@
 </jsp:include>
 
       <h3>Event <%=event.getId()%></h3>
- 
-      <table class="standardfirst">
-        <tr>
-          <td class="standardheader" width="10%">Severity</td>
-          <td class="standard" style="background-color: <%=EventUtil.getSeverityColor(event.getSeverity())%>"><%=EventUtil.getSeverityLabel(event.getSeverity())%></td>
-          <td class="standardheader" width="10%">Node</td>
-          <td class="standard">
+
+      <table>
+        <tr class="<%=EventUtil.getSeverityLabel(event.getSeverity())%>">
+          <td class="divider" width="10%">Severity</td>
+          <td class="divider"><%=EventUtil.getSeverityLabel(event.getSeverity())%></td>
+          <td class="divider" width="10%">Node</td>
+          <td class="divider">
             <% if( event.getNodeId() > 0 ) { %>
               <a href="element/node.jsp?node=<%=event.getNodeId()%>"><%=event.getNodeLabel()%></a>
             <% } else {%>
               &nbsp;
             <% } %>
           </td>
-          <td class="standardheader" width="10%">Acknowledged&nbsp;By</td>
-          <td class="standard"><%=event.getAcknowledgeUser()!=null ? event.getAcknowledgeUser() : "&nbsp"%></td>
+          <td class="divider" width="10%">Acknowledged&nbsp;By</td>
+          <td class="divider"><%=event.getAcknowledgeUser()!=null ? event.getAcknowledgeUser() : "&nbsp"%></td>
         </tr>
-        <tr>
-          <td class="standardheader">Time</td>
-          <td class="standard"><%=org.opennms.netmgt.EventConstants.formatToUIString(event.getTime())%></td>
-          <td class="standardheader">Interface</td>
-          <td class="standard">
+        <tr  class="<%=EventUtil.getSeverityLabel(event.getSeverity())%>">
+          <td>Time</td>
+          <td><%=org.opennms.netmgt.EventConstants.formatToUIString(event.getTime())%></td>
+          <td>Interface</td>
+          <td>
             <% if( event.getIpAddress() != null ) { %>
               <% if( event.getNodeId() > 0 ) { %>
                 <a href="element/interface.jsp?node=<%=event.getNodeId()%>&intf=<%=event.getIpAddress()%>"><%=event.getIpAddress()%></a>
@@ -124,12 +124,12 @@
               &nbsp;
             <% } %>
           </td>
-          <td class="standardheader">Time&nbsp;Acknowledged</td>
-          <td class="standard"><%=event.getAcknowledgeTime()!=null ? org.opennms.netmgt.EventConstants.formatToUIString(event.getAcknowledgeTime()) : "&nbsp"%></td>
+          <td>Time&nbsp;Acknowledged</td>
+          <td><%=event.getAcknowledgeTime()!=null ? org.opennms.netmgt.EventConstants.formatToUIString(event.getAcknowledgeTime()) : "&nbsp"%></td>
         </tr>
-        <tr>
-          <td class="standardheader">Service</td>
-          <td class="standard">
+        <tr class="<%=EventUtil.getSeverityLabel(event.getSeverity())%>">
+          <td>Service</td>
+          <td>
             <% if( event.getServiceName() != null ) { %>
               <% if( event.getIpAddress() != null && event.getNodeId() > 0 ) { %>
                 <a href="element/service.jsp?node=<%=event.getNodeId()%>&intf=<%=event.getIpAddress()%>&service=<%=event.getServiceId()%>"><%=event.getServiceName()%></a>
@@ -140,48 +140,47 @@
               &nbsp;
             <% } %>
           </td>
-          <td class="standard" colspan="4">&nbsp;</td>
+          <td colspan="4">&nbsp;</td>
           </tr> 
-          <tr>
-          	<td class="standardheader">UEI</td>
-                <td class="standard">
+          <tr class="<%=EventUtil.getSeverityLabel(event.getSeverity())%>">
+          	<td>UEI</td>
+                <td>
           	<% if( event.getUei() != null ) { %>
           	      <%=event.getUei()%>
           	<% } else {%>
                 	&nbsp;
           	<% } %>
                 </td>
-                <td class="standard" colspan="4">&nbsp;</td>
+                <td colspan="4">&nbsp;</td>
         </tr>
       </table>
 
       <br>
             
-      <table class="standard">
-        <tr>
-          <td class="standardheader">Log Message</td>
+      <table>
+        <tr class="<%=EventUtil.getSeverityLabel(event.getSeverity())%>">
+          <td>Log Message</td>
         </tr>
-        <tr>
-          <td class="standard"><%=event.getLogMessage()%></td>
+        <tr class="<%=EventUtil.getSeverityLabel(event.getSeverity())%>">
+          <td><%=event.getLogMessage()%></td>
         </tr>
       </table>
 
-      <table class="standard">
-        <tr>
-          <td class="standardheader">Description</td>
+      <table>
+        <tr class="<%=EventUtil.getSeverityLabel(event.getSeverity())%>">
+          <td>Description</td>
         </tr>
-        <tr>
-          <td class="standard"><%=event.getDescription()%></td>
+        <tr class="<%=EventUtil.getSeverityLabel(event.getSeverity())%>">
+          <td><%=event.getDescription()%></td>
         </tr>
       </table>
       
-      <table class="standard">
-        <tr>
-          <td class="standardheader">Operator Instructions</td>
+      <table>
+        <tr class="<%=EventUtil.getSeverityLabel(event.getSeverity())%>">
+          <td>Operator Instructions</td>
         </tr>
-	
-        <tr>
-          <td class="standard">
+        <tr class="<%=EventUtil.getSeverityLabel(event.getSeverity())%>">
+          <td>
 	    <%if (event.getOperatorInstruction()==null) { %>
               No instructions available
             <% } else { %>
