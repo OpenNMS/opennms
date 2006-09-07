@@ -184,9 +184,7 @@ public final class DbIpInterfaceEntry {
 
     private static final int CHANGED_PRIMARY = 1 << 5;
 
-    // Indicates that the ifIndex is to be used as database key
-    // for this entry.
-    //
+    // Indicates that the ifIndex is to be used as database key for this entry
     private boolean m_useIfIndexAsKey;
 
     /**
@@ -200,14 +198,16 @@ public final class DbIpInterfaceEntry {
      *             Thrown if an error occurs with the connection
      */
     private void insert(Connection c) throws SQLException {
-        if (m_fromDb)
-            throw new IllegalStateException("The record already exists in the database");
+        if (m_fromDb) {
+            throw new IllegalStateException("The record already exists in the "
+                                            + "database");
+        }
 
         Category log = ThreadCategory.getInstance(getClass());
 
         // first extract the next node identifier
-        //
-        StringBuffer names = new StringBuffer("INSERT INTO ipInterface (nodeID,ipAddr");
+        StringBuffer names = new StringBuffer("INSERT INTO ipInterface "
+                                              + "(nodeID,ipAddr");
         StringBuffer values = new StringBuffer("?,?");
 
         if ((m_changed & CHANGED_IFINDEX) == CHANGED_IFINDEX) {
@@ -241,11 +241,10 @@ public final class DbIpInterfaceEntry {
         }
 
         names.append(") VALUES (").append(values).append(')');
-        log.debug("DbIpInterfaceEntry.insert: SQL insert statment = " + names.toString());
+        log.debug("DbIpInterfaceEntry.insert: SQL insert statment = "
+                  + names.toString());
 
-        // create the Prepared statment and then
-        // start setting the result values
-        //
+        // create the Prepared statment and then start setting the result values
         PreparedStatement stmt = c.prepareStatement(names.toString());
         names = null;
 
@@ -253,34 +252,36 @@ public final class DbIpInterfaceEntry {
         stmt.setInt(ndx++, m_nodeId);
         stmt.setString(ndx++, m_ipAddr.getHostAddress());
 
-        if ((m_changed & CHANGED_IFINDEX) == CHANGED_IFINDEX)
+        if ((m_changed & CHANGED_IFINDEX) == CHANGED_IFINDEX) {
             stmt.setInt(ndx++, m_ifIndex);
+        }
 
-        if ((m_changed & CHANGED_HOSTNAME) == CHANGED_HOSTNAME)
+        if ((m_changed & CHANGED_HOSTNAME) == CHANGED_HOSTNAME) {
             stmt.setString(ndx++, m_hostname);
+        }
 
-        if ((m_changed & CHANGED_MANAGED) == CHANGED_MANAGED)
+        if ((m_changed & CHANGED_MANAGED) == CHANGED_MANAGED) {
             stmt.setString(ndx++, new String(new char[] { m_managedState }));
+        }
 
-        if ((m_changed & CHANGED_STATUS) == CHANGED_STATUS)
+        if ((m_changed & CHANGED_STATUS) == CHANGED_STATUS) {
             stmt.setInt(ndx++, m_status);
+        }
 
         if ((m_changed & CHANGED_POLLTIME) == CHANGED_POLLTIME) {
             stmt.setTimestamp(ndx++, m_lastPoll);
         }
 
-        if ((m_changed & CHANGED_PRIMARY) == CHANGED_PRIMARY)
+        if ((m_changed & CHANGED_PRIMARY) == CHANGED_PRIMARY) {
             stmt.setString(ndx++, new String(new char[] { m_primaryState }));
+        }
 
         // Run the insert
-        //
         int rc = stmt.executeUpdate();
         log.debug("DbIpInterfaceEntry.insert: SQL update result = " + rc);
         stmt.close();
 
-        // clear the mask and mark as backed
-        // by the database
-        //
+        // clear the mask and mark as backed by the database
         m_fromDb = true;
         m_changed = 0;
     }
@@ -295,13 +296,14 @@ public final class DbIpInterfaceEntry {
      *             Thrown if an error occurs with the connection
      */
     private void update(Connection c) throws SQLException {
-        if (!m_fromDb)
-            throw new IllegalStateException("The record does not exists in the database");
+        if (!m_fromDb) {
+            throw new IllegalStateException("The record does not exists in the "
+                                            + "database");
+        }
 
         Category log = ThreadCategory.getInstance(getClass());
 
         // first extract the next node identifier
-        //
         StringBuffer sqlText = new StringBuffer("UPDATE ipInterface SET ");
 
         char comma = ' ';
@@ -342,75 +344,79 @@ public final class DbIpInterfaceEntry {
         }
         sqlText.append(" AND isManaged <> 'D'");
 
-        log.debug("DbIpInterfaceEntry.update: SQL update statment = " + sqlText.toString());
+        log.debug("DbIpInterfaceEntry.update: SQL update statment = "
+                  + sqlText.toString());
 
-        // create the Prepared statment and then
-        // start setting the result values
-        //
+        // create the Prepared statment and then start setting the result values
         PreparedStatement stmt = c.prepareStatement(sqlText.toString());
         sqlText = null;
 
         int ndx = 1;
         if ((m_changed & CHANGED_IFINDEX) == CHANGED_IFINDEX) {
-            if (m_ifIndex == -1)
+            if (m_ifIndex == -1) {
                 stmt.setNull(ndx++, Types.INTEGER);
-            else
+            } else {
                 stmt.setInt(ndx++, m_ifIndex);
+            }
         }
 
         if ((m_changed & CHANGED_HOSTNAME) == CHANGED_HOSTNAME) {
-            if (m_hostname != null)
+            if (m_hostname != null) {
                 stmt.setString(ndx++, m_hostname);
-            else
+            } else {
                 stmt.setNull(ndx++, Types.VARCHAR);
+            }
         }
 
         if ((m_changed & CHANGED_MANAGED) == CHANGED_MANAGED) {
-            if (m_managedState == STATE_UNKNOWN)
+            if (m_managedState == STATE_UNKNOWN) {
                 stmt.setNull(ndx++, Types.CHAR);
-            else
+            } else {
                 stmt.setString(ndx++, new String(new char[] { m_managedState }));
+            }
         }
 
         if ((m_changed & CHANGED_STATUS) == CHANGED_STATUS) {
-            if (m_status == -1)
+            if (m_status == -1) {
                 stmt.setNull(ndx++, Types.INTEGER);
-            else
+            } else {
                 stmt.setInt(ndx++, m_status);
+            }
         }
 
         if ((m_changed & CHANGED_POLLTIME) == CHANGED_POLLTIME) {
             if (m_lastPoll != null) {
                 stmt.setTimestamp(ndx++, m_lastPoll);
-            } else
+            } else {
                 stmt.setNull(ndx++, Types.TIMESTAMP);
+            }
         }
 
         if ((m_changed & CHANGED_PRIMARY) == CHANGED_PRIMARY) {
-            if (m_primaryState == SNMP_UNKNOWN)
+            if (m_primaryState == SNMP_UNKNOWN) {
                 stmt.setNull(ndx++, Types.CHAR);
-            else
+            } else {
                 stmt.setString(ndx++, new String(new char[] { m_primaryState }));
+            }
         }
 
         stmt.setInt(ndx++, m_nodeId);
         stmt.setString(ndx++, m_ipAddr.getHostAddress());
 
         if (m_useIfIndexAsKey) {
-            if (m_ifIndex == -1)
+            if (m_ifIndex == -1) {
                 stmt.setNull(ndx++, Types.INTEGER);
-            else
+            } else {
                 stmt.setInt(ndx++, m_ifIndex);
+            }
         }
+        
         // Run the insert
-        //
         int rc = stmt.executeUpdate();
         log.debug("DbIpInterfaceEntry.update: update result = " + rc);
         stmt.close();
 
-        // clear the mask and mark as backed
-        // by the database
-        //
+        // clear the mask and mark as backed by the database
         m_changed = 0;
     }
 
@@ -426,12 +432,12 @@ public final class DbIpInterfaceEntry {
      *             Thrown if an error occurs with the connection
      */
     private boolean load(Connection c) throws SQLException {
-        if (!m_fromDb)
-            throw new IllegalStateException("The record does not exists in the database");
+        if (!m_fromDb) {
+            throw new IllegalStateException("The record does not exists in the "
+                                            + "database");
+        }
 
-        // create the Prepared statment and then
-        // start setting the result values
-        //
+        // create the Prepared statment and then start setting the query values
         PreparedStatement stmt = null;
         if (m_useIfIndexAsKey) {
             stmt = c.prepareStatement(SQL_LOAD_REC_IFINDEX);
@@ -444,8 +450,7 @@ public final class DbIpInterfaceEntry {
             stmt.setString(2, m_ipAddr.getHostAddress());
         }
 
-        // Run the insert
-        //
+        // Execute the query
         ResultSet rset = stmt.executeQuery();
         if (!rset.next()) {
             rset.close();
@@ -453,54 +458,50 @@ public final class DbIpInterfaceEntry {
             return false;
         }
 
-        // extract the values.
-        //
+        // extract the values
         int ndx = 1;
 
         // get the ifIndex
-        //
         m_ifIndex = rset.getInt(ndx++);
-        if (rset.wasNull())
+        if (rset.wasNull()) {
             m_ifIndex = -1;
+        }
 
         // get the hostname
-        //
         m_hostname = rset.getString(ndx++);
-        if (rset.wasNull())
+        if (rset.wasNull()) {
             m_hostname = null;
+        }
 
         // get the managed status
-        //
         String str = rset.getString(ndx++);
-        if (str != null && rset.wasNull() == false)
+        if (str != null && rset.wasNull() == false) {
             m_managedState = str.charAt(0);
-        else
+        } else {
             m_managedState = STATE_UNKNOWN;
+        }
 
         // get the status
-        //
         m_status = rset.getInt(ndx++);
-        if (rset.wasNull())
+        if (rset.wasNull()) {
             m_status = -1;
+        }
 
         // get the time
-        //
         m_lastPoll = rset.getTimestamp(ndx++);
 
         // get the snmp primary state
-        //
         str = rset.getString(ndx++);
-        if (str != null && rset.wasNull() == false)
+        if (str != null && rset.wasNull() == false) {
             m_primaryState = str.charAt(0);
-        else
+        } else {
             m_primaryState = STATE_UNKNOWN;
+        }
 
         rset.close();
         stmt.close();
 
-        // clear the mask and mark as backed
-        // by the database
-        //
+        // clear the mask and mark as backed by the database
         m_changed = 0;
         return true;
     }
@@ -510,7 +511,8 @@ public final class DbIpInterfaceEntry {
      * 
      */
     private DbIpInterfaceEntry() {
-        throw new UnsupportedOperationException("Default constructor not supported!");
+        throw new UnsupportedOperationException("Default constructor not "
+                                                + "supported!");
     }
 
     /**
@@ -551,7 +553,8 @@ public final class DbIpInterfaceEntry {
      *            True if the interface already exists.
      * 
      */
-    private DbIpInterfaceEntry(int nid, InetAddress address, int ifIndex, boolean exists) {
+    private DbIpInterfaceEntry(int nid, InetAddress address, int ifIndex,
+            boolean exists) {
         m_fromDb = exists;
         m_nodeId = nid;
         m_ipAddr = address;
@@ -668,10 +671,11 @@ public final class DbIpInterfaceEntry {
     }
 
     boolean hasIfIndexChanged() {
-        if ((m_changed & CHANGED_IFINDEX) == CHANGED_IFINDEX)
+        if ((m_changed & CHANGED_IFINDEX) == CHANGED_IFINDEX) {
             return true;
-        else
+        } else {
             return false;
+        }
     }
 
     boolean updateIfIndex(int newIfIndex) {
@@ -701,28 +705,32 @@ public final class DbIpInterfaceEntry {
     }
 
     boolean hasHostnameChanged() {
-        if ((m_changed & CHANGED_HOSTNAME) == CHANGED_HOSTNAME)
+        if ((m_changed & CHANGED_HOSTNAME) == CHANGED_HOSTNAME) {
             return true;
-        else
+        } else {
             return false;
+        }
     }
 
     boolean updateHostname(String newHostname) {
         boolean doUpdate = false;
         if (newHostname != null && m_hostname != null) {
-            if (!newHostname.equals(m_hostname))
+            if (!newHostname.equals(m_hostname)) {
                 doUpdate = true;
+            }
         } else if (newHostname == null && m_hostname == null) {
             // do nothing
-        } else
+        } else {
             // one is null the other isn't, do the update
             doUpdate = true;
+        }
 
         if (doUpdate) {
             setHostname(newHostname);
             return true;
-        } else
+        } else {
             return false;
+        }
     }
 
     /**
@@ -744,18 +752,20 @@ public final class DbIpInterfaceEntry {
     }
 
     boolean hasManagedStateChanged() {
-        if ((m_changed & CHANGED_MANAGED) == CHANGED_MANAGED)
+        if ((m_changed & CHANGED_MANAGED) == CHANGED_MANAGED) {
             return true;
-        else
+        } else {
             return false;
+        }
     }
 
     boolean updateManagedState(char newManagedState) {
         if (newManagedState != m_managedState) {
             setManagedState(newManagedState);
             return true;
-        } else
+        } else {
             return false;
+        }
     }
 
     /**
@@ -778,18 +788,20 @@ public final class DbIpInterfaceEntry {
     }
 
     boolean hasStatusChanged() {
-        if ((m_changed & CHANGED_STATUS) == CHANGED_STATUS)
+        if ((m_changed & CHANGED_STATUS) == CHANGED_STATUS) {
             return true;
-        else
+        } else {
             return false;
+        }
     }
 
     boolean updateStatus(int newStatus) {
         if (newStatus != -1 && newStatus != m_status) {
             setStatus(newStatus);
             return true;
-        } else
+        } else {
             return false;
+        }
     }
 
     /**
@@ -811,18 +823,20 @@ public final class DbIpInterfaceEntry {
     }
 
     boolean hasPrimaryStateChanged() {
-        if ((m_changed & CHANGED_PRIMARY) == CHANGED_PRIMARY)
+        if ((m_changed & CHANGED_PRIMARY) == CHANGED_PRIMARY) {
             return true;
-        else
+        } else {
             return false;
+        }
     }
 
     boolean updatePrimaryState(char newPrimaryState) {
         if (newPrimaryState != SNMP_UNKNOWN && newPrimaryState != m_primaryState) {
             setPrimaryState(newPrimaryState);
             return true;
-        } else
+        } else {
             return false;
+        }
     }
 
     /**
@@ -837,12 +851,14 @@ public final class DbIpInterfaceEntry {
             try {
                 db = DataSourceFactory.getInstance().getConnection();
                 store(db);
-                if (db.getAutoCommit() == false)
+                if (db.getAutoCommit() == false) {
                     db.commit();
+                }
             } finally {
                 try {
-                    if (db != null)
+                    if (db != null) {
                         db.close();
+                    }
                 } catch (SQLException e) {
                     ThreadCategory.getInstance(getClass()).warn("Exception closing JDBC connection", e);
                 }
@@ -862,10 +878,11 @@ public final class DbIpInterfaceEntry {
      */
     void store(Connection db) throws SQLException {
         if (m_changed != 0 || m_fromDb == false) {
-            if (m_fromDb)
+            if (m_fromDb) {
                 update(db);
-            else
+            } else {
                 insert(db);
+            }
         }
     }
 
@@ -878,8 +895,9 @@ public final class DbIpInterfaceEntry {
             entries = getServices(db);
         } finally {
             try {
-                if (db != null)
+                if (db != null) {
                     db.close();
+                }
             } catch (SQLException e) {
                 ThreadCategory.getInstance(getClass()).warn("Exception closing JDBC connection", e);
             }
@@ -894,20 +912,22 @@ public final class DbIpInterfaceEntry {
         stmt.setString(2, m_ipAddr.getHostAddress());
 
         ResultSet rset = stmt.executeQuery();
-        List l = new ArrayList();
+        List<DbIfServiceEntry> l = new ArrayList<DbIfServiceEntry>();
 
         while (rset.next()) {
             int sid = rset.getInt(1);
-            DbIfServiceEntry entry = DbIfServiceEntry.get(db, m_nodeId, m_ipAddr, sid);
-            if (entry != null)
+            DbIfServiceEntry entry = DbIfServiceEntry.get(db, m_nodeId,
+                                                          m_ipAddr, sid);
+            if (entry != null) {
                 l.add(entry);
+            }
         }
 
         rset.close();
         stmt.close();
 
         DbIfServiceEntry[] entries = new DbIfServiceEntry[l.size()];
-        return (DbIfServiceEntry[]) l.toArray(entries);
+        return l.toArray(entries);
     }
 
     /**
@@ -982,8 +1002,9 @@ public final class DbIpInterfaceEntry {
             return get(db, nid, addr);
         } finally {
             try {
-                if (db != null)
+                if (db != null) {
                     db.close();
+                }
             } catch (SQLException e) {
                 ThreadCategory.getInstance(DbIpInterfaceEntry.class).warn("Exception closing JDBC connection", e);
             }
@@ -1012,8 +1033,9 @@ public final class DbIpInterfaceEntry {
             return get(db, nid, addr, ifIndex);
         } finally {
             try {
-                if (db != null)
+                if (db != null) {
                     db.close();
+                }
             } catch (SQLException e) {
                 ThreadCategory.getInstance(DbIpInterfaceEntry.class).warn("Exception closing JDBC connection", e);
             }
@@ -1035,10 +1057,12 @@ public final class DbIpInterfaceEntry {
      * @return The loaded entry or null if one could not be found.
      * 
      */
-    static DbIpInterfaceEntry get(Connection db, int nid, InetAddress addr) throws SQLException {
+    static DbIpInterfaceEntry get(Connection db, int nid, InetAddress addr)
+    throws SQLException {
         DbIpInterfaceEntry entry = new DbIpInterfaceEntry(nid, addr, true);
-        if (!entry.load(db))
+        if (!entry.load(db)) {
             entry = null;
+        }
         return entry;
     }
 
@@ -1059,10 +1083,13 @@ public final class DbIpInterfaceEntry {
      * @return The loaded entry or null if one could not be found.
      * 
      */
-    static DbIpInterfaceEntry get(Connection db, int nid, InetAddress addr, int ifIndex) throws SQLException {
-        DbIpInterfaceEntry entry = new DbIpInterfaceEntry(nid, addr, ifIndex, true);
-        if (!entry.load(db))
+    static DbIpInterfaceEntry get(Connection db, int nid, InetAddress addr,
+            int ifIndex) throws SQLException {
+        DbIpInterfaceEntry entry = new DbIpInterfaceEntry(nid, addr, ifIndex,
+                                                          true);
+        if (!entry.load(db)) {
             entry = null;
+        }
         return entry;
     }
 
@@ -1097,8 +1124,9 @@ public final class DbIpInterfaceEntry {
             System.out.println(entry.toString());
 
             DbIfServiceEntry[] services = entry.getServices();
-            for (int i = 0; i < services.length; i++)
+            for (int i = 0; i < services.length; i++) {
                 System.out.println(services[i].toString());
+            }
         } catch (Throwable t) {
             t.printStackTrace();
         }
