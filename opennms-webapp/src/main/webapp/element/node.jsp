@@ -345,6 +345,11 @@
 
 	<div class="TwoColRight">
 
+            <!-- notification box -->
+            <jsp:include page="/includes/notification-box.jsp" flush="false" >
+              <jsp:param name="node" value="<%=nodeId%>" />
+            </jsp:include>
+
             <!-- events list  box -->
             <% String eventHeader = "<a href='event/list?filter=" + URLEncoder.encode("node=" + nodeId) + "'>Recent Events</a>"; %>
             <% String moreEventsUrl = "event/list?filter=" + URLEncoder.encode("node=" + nodeId); %>
