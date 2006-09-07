@@ -3124,6 +3124,10 @@ public class Installer {
             }
             
             String query = index.getIndexUniquenessQuery();
+            if (query == null) {
+                continue;
+            }
+            
             String countQuery = query.replaceFirst("(?i)\\s(\\S+)\\s+FROM",
                 " count(\\1) FROM");
             

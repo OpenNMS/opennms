@@ -126,11 +126,24 @@ public class Index {
         return m_columns;
     }
 
-    public String getIndexUniquenessQuery() {
+    public String getIndexUniquenessQuery() throws Exception {
         List<String> whereComponents =
-            new ArrayList<String>(getColumns().size());
+            new ArrayList<String>(getColumns().size() + 1);
         for (String column : getColumns()) {
             whereComponents.add("a." + column + " = b." + column);
+        }
+        
+        String lowerTable = getTable().toLowerCase();
+        if ("snmpinterface".equals(lowerTable)) {
+            whereComponents.add("a.ipAddr != b.ipAddr");
+        } else if ("ifservices".equals(lowerTable)) {
+            whereComponents.add("a.lastGood != b.lastGood");
+        } else {
+            return null;
+            /*
+            throw new Exception("table '" + lowerTable + "' not supported "
+                                + "at this time");
+                                */
         }
         return "SELECT DISTINCT a.* FROM "
             + getTable() + " a, " + getTable() + " b WHERE "
