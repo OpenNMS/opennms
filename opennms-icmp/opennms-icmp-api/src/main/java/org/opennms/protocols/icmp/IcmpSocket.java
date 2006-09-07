@@ -209,7 +209,7 @@ public final class IcmpSocket {
         }
     }
 
-    private static class Stuff implements Runnable {
+    public static class Stuff implements Runnable {
         private IcmpSocket m_socket;
 	private short m_icmpId;
 
