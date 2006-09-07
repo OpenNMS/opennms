@@ -50,6 +50,17 @@
 
 <%@page language="java" contentType="text/html" session="true" import="org.opennms.web.notification.*" %>
 
+<%
+    //optional parameter: node
+    String nodeIdString = request.getParameter("node");
+
+    String nodeFilter = "";
+
+    if( nodeIdString != null ) {
+        nodeFilter = "&filter=node%3D" + nodeIdString;
+    }
+%>
+
 <%!
     protected NotificationModel model = new NotificationModel();
     protected java.text.ChoiceFormat formatter = new java.text.ChoiceFormat( "0#No outstanding notices|1#1 outstanding notice|2#{0} outstanding notices" );
@@ -57,19 +68,25 @@
 <h3><a href="notification/index.jsp">Notification</a></h3>
 <div class="boxWrapper">
 	<ul class="plain">
-		<li><strong>You</strong>: <%
+		<% if( nodeIdString == null ) { %>
+			<li><strong>You</strong>: <%
 				int count = this.model.getOutstandingNoticeCount(request.getRemoteUser());
 				String format = this.formatter.format( count );
 				out.println( java.text.MessageFormat.format( format, new Object[] { new Integer(count) } ));
-			%>
-			(<a href="notification/browse?acktype=unack&filter=<%= java.net.URLEncoder.encode("user="+request.getRemoteUser()) %>">Check</a>)</li>
-		<li><strong>All</strong>: 
-			<%
+				%>
+				(<a href="notification/browse?acktype=unack&filter=<%= java.net.URLEncoder.encode("user="+request.getRemoteUser()) %>">Check</a>)</li>
+			<li><strong>All</strong>: <%
 				count = this.model.getOutstandingNoticeCount();
 				format = this.formatter.format( count );
 				out.println( java.text.MessageFormat.format( format, new Object[] { new Integer(count) } ));
-			%>
-			(<a href="notification/browse?acktype=unack">Check</a>)</li>
-		<li><a href="roles">On-Call Schedule</a></li>
+				%>
+				(<a href="notification/browse?acktype=unack">Check</a>)</li>
+			<li><a href="roles">On-Call Schedule</a></li>
+		<% } else { %>
+			<li><strong>You: Outstanding</strong>: 
+				(<a href="notification/browse?acktype=unack<%=nodeFilter%>&filter=<%= java.net.URLEncoder.encode("user="+request.getRemoteUser()) %>">Check</a>)</li>
+			<li><strong>You: Acknowledged</strong>: 
+				(<a href="notification/browse?acktype=ack<%=nodeFilter%>&filter=<%= java.net.URLEncoder.encode("user="+request.getRemoteUser()) %>">Check</a>)</li>
+		<% } %>
 	</ul>
 </div>
