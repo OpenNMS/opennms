@@ -259,44 +259,46 @@
       <%=org.opennms.web.Util.makeHiddenTags(request)%>
 
       <table>
-        <tr class="eventlist-head">
+	<thead>
+	<tr>
           <% if ( parms.ackType == AlarmFactory.AcknowledgeType.UNACKNOWLEDGED ) { %>
-          <td width="1%"><b>Ack</b></td>
+          <th width="1%"><b>Ack</b></th>
           <% } else { %>
-          <td width="1%"><b>UnAck</b></td>
+          <th width="1%"><b>UnAck</b></th>
           <% } %>
-          <td width="1%"> <%=this.makeSortLink( parms, AlarmFactory.SortStyle.ID,        AlarmFactory.SortStyle.REVERSE_ID,        "id",        "ID" )%></td>
-          <td width="10%"><%=this.makeSortLink( parms, AlarmFactory.SortStyle.SEVERITY,  AlarmFactory.SortStyle.REVERSE_SEVERITY,  "severity",  "Severity"  )%></td>
-          <td width="22%"><%=this.makeSortLink( parms, AlarmFactory.SortStyle.NODE,      AlarmFactory.SortStyle.REVERSE_NODE,      "node",      "Node"      )%></td>
-          <td width="15%"><%=this.makeSortLink( parms, AlarmFactory.SortStyle.INTERFACE, AlarmFactory.SortStyle.REVERSE_INTERFACE, "interface", "Interface" )%></td>
-          <td width="12%"><%=this.makeSortLink( parms, AlarmFactory.SortStyle.SERVICE,   AlarmFactory.SortStyle.REVERSE_SERVICE,   "service",   "Service"   )%></td>
-          <td width="5%"><%=this.makeSortLink( parms, AlarmFactory.SortStyle.COUNT,  AlarmFactory.SortStyle.REVERSE_COUNT,  "count",  "Count"  )%></td>
-          <td width="17%"><%=this.makeSortLink( parms, AlarmFactory.SortStyle.LASTEVENTTIME,  AlarmFactory.SortStyle.REVERSE_LASTEVENTTIME,  "lasteventtime",  "Last Event Time"  )%></td>
-          <td width="17%"><%=this.makeSortLink( parms, AlarmFactory.SortStyle.FIRSTEVENTTIME,  AlarmFactory.SortStyle.REVERSE_FIRSTEVENTTIME,  "firsteventtime",  "First Event Time"  )%></td>
+          <th width="1%"> <%=this.makeSortLink( parms, AlarmFactory.SortStyle.ID,        AlarmFactory.SortStyle.REVERSE_ID,        "id",        "ID" )%></th>
+          <th width="10%"><%=this.makeSortLink( parms, AlarmFactory.SortStyle.SEVERITY,  AlarmFactory.SortStyle.REVERSE_SEVERITY,  "severity",  "Severity"  )%></th>
+          <th width="22%"><%=this.makeSortLink( parms, AlarmFactory.SortStyle.NODE,      AlarmFactory.SortStyle.REVERSE_NODE,      "node",      "Node"      )%></th>
+          <th width="15%"><%=this.makeSortLink( parms, AlarmFactory.SortStyle.INTERFACE, AlarmFactory.SortStyle.REVERSE_INTERFACE, "interface", "Interface" )%></th>
+          <th width="12%"><%=this.makeSortLink( parms, AlarmFactory.SortStyle.SERVICE,   AlarmFactory.SortStyle.REVERSE_SERVICE,   "service",   "Service"   )%></th>
+          <th width="5%"><%=this.makeSortLink( parms, AlarmFactory.SortStyle.COUNT,  AlarmFactory.SortStyle.REVERSE_COUNT,  "count",  "Count"  )%></th>
+          <th width="17%"><%=this.makeSortLink( parms, AlarmFactory.SortStyle.LASTEVENTTIME,  AlarmFactory.SortStyle.REVERSE_LASTEVENTTIME,  "lasteventtime",  "Last Event Time"  )%></th>
+          <th width="17%"><%=this.makeSortLink( parms, AlarmFactory.SortStyle.FIRSTEVENTTIME,  AlarmFactory.SortStyle.REVERSE_FIRSTEVENTTIME,  "firsteventtime",  "First Event Time"  )%></th>
         </tr>
-        <tr class="eventlist-head">
-	  <td>&nbsp;</td>
-	  <td>&nbsp;</td>
-	  <td>&nbsp;</td>
-          <td><b>Ackd</b></td>
-          <td><b>Ackd Time</b></td>
-	  <td><b>UEI</b></td>
-	  <td>&nbsp;</td>
-	  <td>&nbsp;</td>
-	  <td>&nbsp;</td>
+        <tr>
+	  <th>&nbsp;</th>
+	  <th>&nbsp;</th>
+	  <th>&nbsp;</th>
+          <th><b>Ackd</b></th>
+          <th><b>Ackd Time</b></th>
+	  <th><b>UEI</b></th>
+	  <th>&nbsp;</th>
+	  <th>&nbsp;</th>
+	  <th>&nbsp;</th>
         </tr>
+	</thead>
       <% for( int i=0; i < alarms.length; i++ ) { %>        
-        <tr valign="top" class="<%=(i%2 == 0) ? "eventlist-odd" : "eventlist-even"%>">
-          <td valign="top" rowspan="3" style="background-color: <%=AlarmUtil.getSeverityColor(alarms[i].getSeverity())%>">
+        <tr valign="top" class="<%=AlarmUtil.getSeverityLabel(alarms[i].getSeverity())%>">
+          <td class="bright" valign="top" rowspan="3">
             <nobr>
               <input type="checkbox" name="alarm" value="<%=alarms[i].getId()%>" /> 
             </nobr>
           </td>
-          <td valign="top" rowspan="3" style="background-color: <%=AlarmUtil.getSeverityColor(alarms[i].getSeverity())%>">
+          <td class="divider" valign="top" rowspan="3">
             <a href="alarm/detail.jsp?id=<%=alarms[i].getId()%>"><%=alarms[i].getId()%></a>
           </td>
           
-          <td valign="top" rowspan="3" style="background-color: <%=AlarmUtil.getSeverityColor(alarms[i].getSeverity())%>">
+          <td class="divider" valign="top" rowspan="3">
             <%=AlarmUtil.getSeverityLabel(alarms[i].getSeverity())%>
             
             <% org.opennms.web.alarm.filter.Filter severityFilter = new SeverityFilter(alarms[i].getSeverity()); %>      
@@ -307,7 +309,7 @@
               </nobr>
             <% } %>
           </td>
-          <td>
+          <td class="divider">
 	    <% if(alarms[i].getNodeId() != 0 && alarms[i].getNodeLabel()!= null ) { %>
               <% org.opennms.web.alarm.filter.Filter nodeFilter = new NodeFilter(alarms[i].getNodeId()); %>             
               <% String[] labels = this.getNodeLabels( alarms[i].getNodeLabel() ); %>
@@ -323,7 +325,7 @@
               &nbsp;
             <% } %>
           </td>
-          <td>
+          <td class="divider">
             <% if(alarms[i].getIpAddress() != null ) { %>
               <% org.opennms.web.alarm.filter.Filter intfFilter = new InterfaceFilter(alarms[i].getIpAddress()); %>
               <% if( alarms[i].getNodeId() != 0 ) { %>
@@ -341,7 +343,7 @@
               &nbsp;
             <% } %>
           </td>
-          <td>
+          <td class="divider">
             <% if(alarms[i].getServiceName() != null) { %>
               <% org.opennms.web.alarm.filter.Filter serviceFilter = new ServiceFilter(alarms[i].getServiceId()); %>
               <% if( alarms[i].getNodeId() != 0 && alarms[i].getIpAddress() != null ) { %>
@@ -359,7 +361,7 @@
               &nbsp;
             <% } %>
           </td>          
-          <td valign="top" rowspan="1" >
+          <td class="divider" valign="top" rowspan="1" >
 	    <% if(alarms[i].getId() > 0 ) { %>
               <% org.opennms.web.alarm.filter.Filter exactUeiFilter = new ExactUEIFilter(alarms[i].getUei()); %>             
                 <nobr>
@@ -369,14 +371,14 @@
             <%=alarms[i].getCount()%>
             <% } %>
           </td>
-          <td>
+          <td class="divider">
             <nobr><%=org.opennms.netmgt.EventConstants.formatToUIString(alarms[i].getLastEventTime())%></nobr>
             <nobr>
               <a href="<%=this.makeLink( parms, new AfterLastEventTimeFilter(alarms[i].getLastEventTime()), true)%>"  class="filterLink" title="Only show alarms occurring after this one"><%=addAfterDateFilterString%></a>            
               <a href="<%=this.makeLink( parms, new BeforeLastEventTimeFilter(alarms[i].getLastEventTime()), true)%>" class="filterLink" title="Only show alarms occurring before this one"><%=addBeforeDateFilterString%></a>
             </nobr>
           </td>
-          <td>
+          <td class="divider">
             <nobr><%=org.opennms.netmgt.EventConstants.formatToUIString(alarms[i].getFirstEventTime())%></nobr>
             <nobr>
               <a href="<%=this.makeLink( parms, new AfterFirstEventTimeFilter(alarms[i].getFirstEventTime()), true)%>"  class="filterLink" title="Only show alarms occurring after this one"><%=addAfterDateFilterString%></a>            
@@ -384,7 +386,7 @@
             </nobr>
           </td>
 	</tr>
-        <tr valign="top" class="<%=(i%2 == 0) ? "eventlist-odd" : "eventlist-even"%>">
+        <tr valign="top" class="<%=AlarmUtil.getSeverityLabel(alarms[i].getSeverity())%>">
           <td>
             <% if (alarms[i].isAcknowledged()) { %>
               <% org.opennms.web.alarm.filter.Filter acknByFilter = new AcknowledgedByFilter(alarms[i].getAcknowledgeUser()); %>      
@@ -419,7 +421,7 @@
           </td>
 	   <td>&nbsp;</td>
         </tr>
-        <tr valign="top" class="<%=(i%2 == 0) ? "eventlist-odd" : "eventlist-even"%>">
+        <tr class="<%=AlarmUtil.getSeverityLabel(alarms[i].getSeverity())%>" valign="top">
           <td valign="top" colspan="6"><%=alarms[i].getLogMessage()%></td>
         </tr>
        
@@ -483,10 +485,9 @@
           buffer.append( "\">" );   
       }
 
-      buffer.append( "<font color=\"black\"><b>" );
       buffer.append( title );
-      buffer.append( "</b></font></a>" );
-      buffer.append( "</nobr>" );
+      buffer.append( "</a>" );
+
 
       return( buffer.toString() );
     }
