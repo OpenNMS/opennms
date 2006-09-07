@@ -1555,7 +1555,7 @@ public final class RescanProcessor implements Runnable {
                 ifSvcEntry.setSource(DbIfServiceEntry.SOURCE_PLUGIN);
                 ifSvcEntry.setNotify(DbIfServiceEntry.NOTIFY_ON);
 
-                if (ifIndex > 0) {
+                if (ifIndex != -1) {
                     ifSvcEntry.setIfIndex(ifIndex);
                 }
 
