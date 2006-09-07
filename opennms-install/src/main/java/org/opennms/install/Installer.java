@@ -60,6 +60,7 @@ import java.sql.Statement;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -322,6 +323,7 @@ public class Installer {
             checkOldTables();
             if (!m_skip_constraints) {
                 checkConstraints();
+                checkIndexUniqueness();
             }
             createSequences();
 
@@ -888,11 +890,11 @@ public class Installer {
          * m_out.print("Skipping usersNotified.id"); continue; }
          */
 
-        String query = "SELECT count(*) FROM " + table + " WHERE "
+        String partialQuery = "FROM " + table + " WHERE "
                 + getForeignConstraintWhere(table, columns, ftable, fcolumns);
 
         Statement st = m_dbconnection.createStatement();
-        ResultSet rs = st.executeQuery(query);
+        ResultSet rs = st.executeQuery("SELECT count(*) " + partialQuery);
 
         rs.next();
         int count = rs.getInt(1);
@@ -909,7 +911,10 @@ public class Installer {
                     + " rows " + "(out of " + total
                     + ") that violate new constraint " + name + ".  "
                     + "See the install guide for details "
-                    + "on how to correct this problem.");
+                    + "on how to correct this problem.  You can execute this "
+                    + "SQL query to see a list of the rows that violate the "
+                    + "constraint:\n"
+                    + "SELECT * " + partialQuery);
         }
 
         st.close();
@@ -3103,5 +3108,45 @@ public class Installer {
             }
         }
 
+    }
+
+    public void checkIndexUniqueness() throws Exception {
+        Collection<Index> indexes = m_indexDao.getAllIndexes();
+
+        Statement st = m_dbconnection.createStatement();
+
+        for (Index index: indexes) {
+            if (!index.isUnique()) {
+                continue;
+            }
+            if (!tableExists(index.getTable())) {
+                continue;
+            }
+            
+            String query = index.getIndexUniquenessQuery();
+            String countQuery = query.replaceFirst("(?i)\\s(\\S+)\\s+FROM",
+                " count(\\1) FROM");
+            
+            ResultSet rs = st.executeQuery(countQuery);
+
+            rs.next();
+            int count = rs.getInt(1);
+            rs.close();
+
+            if (count > 0) {
+                st.close();
+                throw new Exception("Unique index '" +  index.getName() + "' "
+                                    + "cannot be added to table '" +
+                                    index.getTable() + "' because " + count
+                                    + " rows are not unique.  See the "
+                                    + "install guide for details on how to "
+                                    + "correct this problem.  You can use the "
+                                    + "following SQL to see which rows are not "
+                                    + "unique:\n"
+                                    + query);
+            }
+        }
+        
+        st.close();
     }
 }

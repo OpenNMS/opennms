@@ -1,5 +1,6 @@
 package org.opennms.install;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -42,5 +43,9 @@ public class IndexDao {
             return new LinkedList<Index>();
         }
         return m_tableMap.get(lowerName);
+    }
+    
+    public Collection<Index> getAllIndexes() {
+        return m_nameMap.values();
     }
 }
