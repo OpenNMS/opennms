@@ -92,26 +92,26 @@
 
       <h3>Alarm <%=alarm.getId()%></h3>
  
-      <table class="standardfirst">
-        <tr>
-          <td class="standardheader" width="10%">Severity</td>
-          <td class="standard" style="background-color: <%=AlarmUtil.getSeverityColor(alarm.getSeverity())%>"><%=AlarmUtil.getSeverityLabel(alarm.getSeverity())%></td>
-          <td class="standardheader" width="10%">Node</td>
-          <td class="standard">
+      <table>
+        <tr class="<%=AlarmUtil.getSeverityLabel(alarm.getSeverity())%>">
+          <td class="divider" width="10%">Severity</td>
+          <td class="divider"><%=AlarmUtil.getSeverityLabel(alarm.getSeverity())%></td>
+          <td class="divider" width="10%">Node</td>
+          <td class="divider">
             <% if( alarm.getNodeId() > 0 ) { %>
               <a href="element/node.jsp?node=<%=alarm.getNodeId()%>"><%=alarm.getNodeLabel()%></a>
             <% } else {%>
               &nbsp;
             <% } %>
           </td>
-          <td class="standardheader" width="10%">Acknowledged&nbsp;By</td>
-          <td class="standard"><%=alarm.getAcknowledgeUser()!=null ? alarm.getAcknowledgeUser() : "&nbsp"%></td>
+          <td class="divider" width="10%">Acknowledged&nbsp;By</td>
+          <td class="divider"><%=alarm.getAcknowledgeUser()!=null ? alarm.getAcknowledgeUser() : "&nbsp"%></td>
         </tr>
-        <tr>
-          <td class="standardheader">Last Event</td>
-          <td class="standard"><%=org.opennms.netmgt.EventConstants.formatToUIString(alarm.getLastEventTime())%></td>
-          <td class="standardheader">Interface</td>
-          <td class="standard">
+        <tr class="<%=AlarmUtil.getSeverityLabel(alarm.getSeverity())%>">
+          <td>Last Event</td>
+          <td><%=org.opennms.netmgt.EventConstants.formatToUIString(alarm.getLastEventTime())%></td>
+          <td>Interface</td>
+          <td>
             <% if( alarm.getIpAddress() != null ) { %>
               <% if( alarm.getNodeId() > 0 ) { %>
                 <a href="element/interface.jsp?node=<%=alarm.getNodeId()%>&intf=<%=alarm.getIpAddress()%>"><%=alarm.getIpAddress()%></a>
@@ -122,14 +122,14 @@
               &nbsp;
             <% } %>
           </td>
-          <td class="standardheader">Time&nbsp;Acknowledged</td>
-          <td class="standard"><%=alarm.getAcknowledgeTime()!=null ? org.opennms.netmgt.EventConstants.formatToUIString(alarm.getAcknowledgeTime()) : "&nbsp"%></td>
+          <td>Time&nbsp;Acknowledged</td>
+          <td><%=alarm.getAcknowledgeTime()!=null ? org.opennms.netmgt.EventConstants.formatToUIString(alarm.getAcknowledgeTime()) : "&nbsp"%></td>
         </tr>
-        <tr>
-          <td class="standardheader">First Event</td>
-          <td class="standard"><%=org.opennms.netmgt.EventConstants.formatToUIString(alarm.getFirstEventTime())%></td>
-          <td class="standardheader">Service</td>
-          <td class="standard" colspan="3">
+        <tr class="<%=AlarmUtil.getSeverityLabel(alarm.getSeverity())%>">
+          <td>First Event</td>
+          <td><%=org.opennms.netmgt.EventConstants.formatToUIString(alarm.getFirstEventTime())%></td>
+          <td>Service</td>
+          <td colspan="3">
             <% if( alarm.getServiceName() != null ) { %>
               <% if( alarm.getIpAddress() != null && alarm.getNodeId() > 0 ) { %>
                 <a href="element/service.jsp?node=<%=alarm.getNodeId()%>&intf=<%=alarm.getIpAddress()%>&service=<%=alarm.getServiceId()%>"><%=alarm.getServiceName()%></a>
@@ -141,11 +141,11 @@
             <% } %>
           </td>
           </tr> 
-          <tr>
-          	<td class="standardheader">Count</td>
-	        <td class="standard"><%=alarm.getCount()%></td>
-          	<td class="standardheader">UEI</td>
-          	<td class="standard" colspan="3">
+          <tr class="<%=AlarmUtil.getSeverityLabel(alarm.getSeverity())%>">
+          	<td>Count</td>
+	        <td><%=alarm.getCount()%></td>
+          	<td>UEI</td>
+          	<td colspan="3">
           	<% if( alarm.getUei() != null ) { %>
           	      <%=alarm.getUei()%>
           	<% } else {%>
@@ -153,9 +153,9 @@
           	<% } %>
 		</td>
         </tr>
-        <tr>
-          	<td class="standardheader">Reduct. Key</td>
-          	<td class="standard" colspan="5">
+        <tr class="<%=AlarmUtil.getSeverityLabel(alarm.getSeverity())%>">
+          	<td>Reduct. Key</td>
+          	<td colspan="5">
           	<% if( alarm.getReductionKey() != null ) { %>
           	      <%=alarm.getReductionKey()%>
           	<% } else {%>
@@ -165,30 +165,31 @@
         </tr>
       </table>
 
-      <table class="standard">
-          <td class="standardheader">Log Message</td>
+      <table>
+	<tr class="<%=AlarmUtil.getSeverityLabel(alarm.getSeverity())%>">
+          <td>Log Message</td>
         </tr>
-        <tr>
-          <td class="standard"><%=alarm.getLogMessage()%></td>
+	<tr class="<%=AlarmUtil.getSeverityLabel(alarm.getSeverity())%>">
+          <td><%=alarm.getLogMessage()%></td>
         </tr>
       </table>
 
-      <table class="standard">
-        <tr>
-          <td class="standardheader">Description</td>
+      <table>
+	<tr class="<%=AlarmUtil.getSeverityLabel(alarm.getSeverity())%>">
+          <td>Description</td>
         </tr>
-        <tr>
-          <td class="standard"><%=alarm.getDescription()%></td>
+	<tr class="<%=AlarmUtil.getSeverityLabel(alarm.getSeverity())%>">
+          <td><%=alarm.getDescription()%></td>
         </tr>
       </table>
       
       
-      <table class="standard">
-        <tr>
-          <td class="standardheader">Operator Instructions</td>
+      <table>
+	<tr class="<%=AlarmUtil.getSeverityLabel(alarm.getSeverity())%>">
+          <td>Operator Instructions</td>
         </tr>
 	
-        <tr>
+	<tr class="<%=AlarmUtil.getSeverityLabel(alarm.getSeverity())%>">
           <td class="standard">
 	    <%if (alarm.getOperatorInstruction()==null) { %>
               No instructions available
