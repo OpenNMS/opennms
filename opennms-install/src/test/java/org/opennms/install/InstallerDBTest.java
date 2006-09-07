@@ -2245,16 +2245,23 @@ public class InstallerDBTest extends TemporaryDatabaseTestCase {
         
         executeSQL("INSERT INTO node ( nodeId, nodeCreateTime ) "
                    + "VALUES ( 1, now() )");
+
+        /*
         executeSQL("INSERT INTO snmpInterface ( nodeID, ipAddr, snmpIfIndex ) "
                    + "VALUES ( 1, '0.0.0.0', 1 )");
         executeSQL("INSERT INTO snmpInterface ( nodeID, ipAddr, snmpIfIndex ) "
                    + "VALUES ( 1, '0.0.0.0', 1 )");
+                   */
+        executeSQL("INSERT INTO snmpInterface ( nodeID, ipAddr, snmpIfIndex ) "
+                   + "VALUES ( 1, '0.0.0.1', 1 )");
+        executeSQL("INSERT INTO snmpInterface ( nodeID, ipAddr, snmpIfIndex ) "
+                   + "VALUES ( 1, '0.0.0.2', 1 )");
         
         ThrowableAnticipator ta = new ThrowableAnticipator();
         ta.anticipate(new Exception("Unique index "
                                     + "'snmpinterface_nodeid_ifindex_idx' "
                                     + "cannot be added to table "
-                                    + "'snmpinterface' because 4 rows are not "
+                                    + "'snmpinterface' because 2 rows are not "
                                     + "unique.  See the install guide for "
                                     + "details on how to correct this "
                                     + "problem.  You can use the following SQL "
@@ -2262,7 +2269,8 @@ public class InstallerDBTest extends TemporaryDatabaseTestCase {
                                     + "SELECT DISTINCT a.* FROM snmpinterface "
                                     + "a, snmpinterface b WHERE a.nodeID = "
                                     + "b.nodeID AND a.snmpIfIndex = "
-                                    + "b.snmpIfIndex"));
+                                    + "b.snmpIfIndex "
+                                    + "AND a.ipAddr != b.ipAddr"));
         try {
             m_installer.checkIndexUniqueness();
         } catch (Throwable t) {
