@@ -50,6 +50,7 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.Reader;
+import java.net.DatagramPacket;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -64,7 +65,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Map;
 import java.util.Properties;
 import java.util.TreeMap;
@@ -72,6 +72,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.opennms.core.utils.ProcessExec;
+import org.opennms.protocols.icmp.IcmpSocket;
 
 /*
  * Big To-dos: - Fix all of the XXX items (some coding, some discussion) -
@@ -83,7 +84,8 @@ import org.opennms.core.utils.ProcessExec;
 public class Installer {
     static final float POSTGRES_MIN_VERSION = 7.3f;
 
-    static final String s_version = "$Id$";
+    static final String s_version =
+        "$Id$";
 
     static final int s_fetch_size = 1024;
 
@@ -3025,5 +3027,81 @@ public class Installer {
                                        + storedProcedure.toLowerCase() + "')");
         
         return rs.next();
+    }
+
+    public void pingLocalhost() throws IOException {
+        String host = "127.0.0.1";
+
+        IcmpSocket m_socket = null;
+
+        try {
+                m_socket = new IcmpSocket();
+        } catch (UnsatisfiedLinkError e) {
+                m_out.println("UnsatisfiedLinkError while creating an "
+                              + "IcmpSocket.  Most likely failed to load "
+                              + "libjicmp.so.  Try setting the property "
+                              + "'opennms.library.jicmp' to point at the "
+                              + "full path name of the libjicmp.so shared "
+                              + "library "
+                              + "(e.g. 'java -Dopennms.library.jicmp=/some/path/libjicmp.so ...')");
+                throw e;
+        } catch (NoClassDefFoundError e) {
+                m_out.println("NoClassDefFoundError while creating an "
+                              + "IcmpSocket.  Most likely failed to load "
+                              + "libjicmp.so.");
+                throw e;
+        } catch (IOException e) {
+                m_out.println("IOException while creating an "
+                              + "IcmpSocket.");
+                throw e;
+        }
+
+        java.net.InetAddress addr = null;
+        try {
+            addr = java.net.InetAddress.getByName(host);
+        } catch (java.net.UnknownHostException e) {
+            m_out.println("UnknownHostException when looking up "
+                           + host + ".");
+            throw e;
+
+        }
+
+        m_out.println("PING " + host + " (" + addr.getHostAddress()
+                      + "): 56 data bytes");
+
+        short m_icmpId = 2;
+
+        IcmpSocket.Stuff s = new IcmpSocket.Stuff(m_socket, m_icmpId);
+        Thread t = new Thread(s);
+        t.start();
+
+        int count = 3;
+        for (long attempt = 0; attempt < count; attempt++) {
+            // build a packet
+            org.opennms.netmgt.ping.Packet pingPkt =
+                new org.opennms.netmgt.ping.Packet(attempt);
+            pingPkt.setIdentity(m_icmpId);
+            pingPkt.computeChecksum();
+        
+            // convert it to a datagram to be sent
+            byte[] buf = pingPkt.toBytes();
+            DatagramPacket sendPkt =
+                new DatagramPacket(buf, buf.length, addr, 0);
+            buf = null;
+            pingPkt = null;
+
+            try {
+                m_socket.send(sendPkt);
+            } catch (IOException e) {
+                m_out.println("IOException received when sending packet.");
+                throw e;
+            }
+            try {
+                Thread.currentThread().sleep(1000);
+            } catch (InterruptedException e) {
+                // do nothing
+            }
+        }
+
     }
 }
