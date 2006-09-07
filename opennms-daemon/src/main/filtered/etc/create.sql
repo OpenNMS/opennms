@@ -292,7 +292,7 @@ create table node (
 	nodeSysContact	varchar(256),
 	nodeLabel	varchar(256),
 	nodeLabelSource	char(1),
-        nodeNetBIOSName varchar(16),
+	nodeNetBIOSName varchar(16),
 	nodeDomainName  varchar(16),
 	operatingSystem varchar(64),
 	lastCapsdPoll   timestamp without time zone,
