@@ -22,34 +22,26 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.opennms.test.ThrowableAnticipator;
-import org.postgresql.util.PSQLException;
 
 import junit.framework.AssertionFailedError;
-import junit.framework.TestCase;
 
-public class InstallerDBTest extends TestCase {
+public class InstallerDBTest extends TemporaryDatabaseTestCase {
     private static final String s_constraint = "fk_nodeid6";
-
-    private static final String s_runProperty = "mock.rundbtests";
-
-    private String m_testDatabase;
-
-    private boolean m_leaveDatabase = false;
 
     private Installer m_installer;
 
     protected void setUp() throws Exception {
-        m_testDatabase = "opennms_test_" + System.currentTimeMillis();
-
+        super.setUp();
+        
         m_installer = new Installer();
 
         // Create a ByteArrayOutputSteam to effectively throw away output.
         m_installer.m_out = new PrintStream(new ByteArrayOutputStream());
-        m_installer.m_database = m_testDatabase;
-        m_installer.m_pg_driver = "org.postgresql.Driver";
-        m_installer.m_pg_url = "jdbc:postgresql://localhost:5432/";
-        m_installer.m_pg_user = "postgres";
-        m_installer.m_pg_pass = "";
+        m_installer.m_database = getTestDatabase();
+        m_installer.m_pg_driver = getDriver();
+        m_installer.m_pg_url = getUrl();
+        m_installer.m_pg_user = getAdminUser();
+        m_installer.m_pg_pass = getAdminPassword();
         m_installer.m_user = "opennms";
 
         m_installer.m_create_sql =
@@ -70,7 +62,10 @@ public class InstallerDBTest extends TestCase {
 
         // Read in the table definitions
         m_installer.readTables();
+        
+        m_installer.m_dbconnection = getDbConnection();
 
+        /*
         if (!isDBTestEnabled()) {
             return;
         }
@@ -82,50 +77,11 @@ public class InstallerDBTest extends TestCase {
 
         // Connect to test database.
         m_installer.databaseConnect(m_testDatabase);
+        */
     }
 
     public void tearDown() throws Exception {
-        if (!isDBTestEnabled()) {
-            return;
-        }
-
-        m_installer.databaseDisconnect();
-
-        /*
-         * Sleep after disconnecting from the database because PostgreSQL
-         * doesn't seem to notice immediately that we have disconnected. Yeah,
-         * it's a hack.
-         */
-        Thread.sleep(100);
-
-        m_installer.databaseConnect("template1");
-        destroyDatabase();
-        m_installer.databaseDisconnect();
-
-        // Sleep again. Man, I hate this.
-        Thread.sleep(100);
-    }
-
-    public boolean isDBTestEnabled() {
-        String property = System.getProperty(s_runProperty);
-        boolean enabled = "true".equals(property);
-        if (!enabled) {
-            System.out.println("Test '" + getName() + "' disabled.  Set '"
-                               + s_runProperty
-                               + "' property to 'true' to enable.");
-        }
-        return enabled;
-    }
-
-    public void destroyDatabase() throws SQLException {
-        if (m_leaveDatabase) {
-            System.err.println("Not dropping database '" + m_testDatabase
-                    + "' for test '" + getName() + "'");
-        } else {
-            Statement st = m_installer.m_dbconnection.createStatement();
-            st.execute("DROP DATABASE " + m_testDatabase);
-            st.close();
-        }
+        super.tearDown();
     }
 
     // XXX this should be an integration test
@@ -202,6 +158,12 @@ public class InstallerDBTest extends TestCase {
                 continue;
             }
             if (line.matches("    - checking trigger '\\S+' on this table\\.\\.\\. DONE")) {
+                continue;
+            }
+            if (line.matches("    - checking trigger '\\S+' on this table\\.\\.\\. DONE")) {
+                continue;
+            }
+            if (line.matches("    - checking index '\\S+' on this table\\.\\.\\. DONE")) {
                 continue;
             }
             if (line.matches("- creating tables\\.\\.\\. DONE")) {
@@ -349,44 +311,6 @@ public class InstallerDBTest extends TestCase {
         }
 
         ta.verifyAnticipated();
-    }
-
-    public void executeSQL(String[] commands) {
-        if (!isDBTestEnabled()) {
-            return;
-        }
-
-        Statement st = null;
-        ;
-        try {
-            st = m_installer.m_dbconnection.createStatement();
-        } catch (SQLException e) {
-            fail("Could not create statement", e);
-        }
-
-        for (String command : commands) {
-            try {
-                st.execute(command);
-            } catch (SQLException e) {
-                fail("Could not execute statement: '" + command + "'", e);
-            }
-        }
-        try {
-            st.close();
-        } catch (SQLException e) {
-            fail("Could not close database connection", e);
-        }
-    }
-
-    public void fail(String message, Throwable t) throws AssertionFailedError {
-        AssertionFailedError e = new AssertionFailedError(message + ": "
-                + t.getMessage());
-        e.initCause(t);
-        throw e;
-    }
-
-    public void executeSQL(String command) {
-        executeSQL(new String[] { command });
     }
 
     public void setupBug931(boolean breakConstraint, boolean dropForeignTable)
@@ -690,11 +614,27 @@ public class InstallerDBTest extends TestCase {
 
     public void doTestBug931(boolean dropForeignTable, int badRows,
             boolean fixConstraint) throws Exception {
-        final String errorSubstring = "Table events contains "
+        final String errorSubstring;
+        if (dropForeignTable) {
+            errorSubstring = "Table events contains "
                 + badRows
                 + " rows (out of 2) that violate new constraint "
                 + s_constraint
-                + ".  See the install guide for details on how to correct this problem.";
+                + ".  See the install guide for details on how to correct this "
+                + "problem.  You can execute this SQL query to see a list of "
+                + "the rows that violate the constraint:\n"
+                + "SELECT * FROM events WHERE events.nodeid IS NOT NULL";
+        } else {
+            errorSubstring = "Table events contains "
+                + badRows
+                + " rows (out of 2) that violate new constraint "
+                + s_constraint
+                + ".  See the install guide for details on how to correct this "
+                + "problem.  You can execute this SQL query to see a list of "
+                + "the rows that violate the constraint:\n"
+                + "SELECT * FROM events WHERE events.nodeid IS NOT NULL "
+                + "AND ( events.nodeid ) NOT IN (SELECT node.nodeid FROM node)";
+        }
 
         setupBug931((badRows != 0) || fixConstraint, dropForeignTable);
 
@@ -1419,7 +1359,6 @@ public class InstallerDBTest extends TestCase {
 
         Statement st;
         ResultSet rs;
-        int id;
 
         st = m_installer.m_dbconnection.createStatement();
         rs = st.executeQuery("SELECT id from snmpInterface ORDER BY nodeId");
@@ -1584,7 +1523,7 @@ public class InstallerDBTest extends TestCase {
                                                         "(?i)ifServiceId\\s+INTEGER not null,",
                                                         "" },
                                                 new String[] {
-                                                        "(?i),\\s+CONSTRAINT ifServices_fkey1 FOREIGN KEY \\(ifServiceId\\) REFERENCES ifServices \\(id\\) ON DELETE CASCADE",
+                                                        "(?i),\\s+CONSTRAINT ifServices_fkey2 FOREIGN KEY \\(ifServiceId\\) REFERENCES ifServices \\(id\\) ON DELETE CASCADE",
                                                         "" } }, false);
 
         executeSQL("INSERT INTO node (nodeId, nodeCreateTime) VALUES ( 1, now() )");
@@ -2289,6 +2228,130 @@ public class InstallerDBTest extends TestCase {
 
         m_installer.createTables();
     }
+    
+    public void testSnmpInterfaceNonUniqueKeys() throws Exception {
+        if (!isDBTestEnabled()) {
+            return;
+        }
+
+        m_installer.createSequences();
+        m_installer.updatePlPgsql();
+        m_installer.addStoredProcedures();
+
+        addTableFromSQL("distpoller");
+        addTableFromSQL("node");
+        addTableFromSQL("snmpinterface");
+        executeSQL("drop index snmpinterface_nodeid_ifindex_idx");
+        
+        executeSQL("INSERT INTO node ( nodeId, nodeCreateTime ) "
+                   + "VALUES ( 1, now() )");
+        executeSQL("INSERT INTO snmpInterface ( nodeID, ipAddr, snmpIfIndex ) "
+                   + "VALUES ( 1, '0.0.0.0', 1 )");
+        executeSQL("INSERT INTO snmpInterface ( nodeID, ipAddr, snmpIfIndex ) "
+                   + "VALUES ( 1, '0.0.0.0', 1 )");
+        
+        ThrowableAnticipator ta = new ThrowableAnticipator();
+        ta.anticipate(new Exception("Unique index "
+                                    + "'snmpinterface_nodeid_ifindex_idx' "
+                                    + "cannot be added to table "
+                                    + "'snmpinterface' because 4 rows are not "
+                                    + "unique.  See the install guide for "
+                                    + "details on how to correct this "
+                                    + "problem.  You can use the following SQL "
+                                    + "to see which rows are not unique:\n"
+                                    + "SELECT DISTINCT a.* FROM snmpinterface "
+                                    + "a, snmpinterface b WHERE a.nodeID = "
+                                    + "b.nodeID AND a.snmpIfIndex = "
+                                    + "b.snmpIfIndex"));
+        try {
+            m_installer.checkIndexUniqueness();
+        } catch (Throwable t) {
+            ta.throwableReceived(t);
+        }
+        ta.verifyAnticipated();
+    }
+    
+    public void testIpInterfaceNonUniqueKeys() throws Exception {
+        if (!isDBTestEnabled()) {
+            return;
+        }
+
+        m_installer.createSequences();
+        m_installer.updatePlPgsql();
+        m_installer.addStoredProcedures();
+
+        addTableFromSQL("distpoller");
+        addTableFromSQL("node");
+        addTableFromSQL("snmpinterface");
+        addTableFromSQL("ipinterface");
+        executeSQL("drop index ipinterface_nodeid_ipaddr_where_idx");
+        
+        executeSQL("INSERT INTO snmpInterface ( nodeID, snmpIfIndex ) "
+                   + "VALUES ( 1, 1 )");
+        executeSQL("INSERT INTO snmpInterface ( nodeID, snmpIfIndex ) "
+                   + "VALUES ( 1, 1 )");
+
+        
+        ThrowableAnticipator ta = new ThrowableAnticipator();
+        ta.anticipate(new Exception("Unique index "
+                                    + "'snmpinterface_nodeid_ifindex_idx' "
+                                    + "cannot be added to table "
+                                    + "'ipinterface' because 4 rows are not "
+                                    + "unique.  See the install guide for "
+                                    + "details on how to correct this "
+                                    + "problem.  You can use the following SQL "
+                                    + "to see which rows are not unique:\n"
+                                    + "SELECT DISTINCT a.* FROM snmpinterface "
+                                    + "a, snmpinterface b WHERE a.nodeID = "
+                                    + "b.nodeID AND a.snmpIfIndex = "
+                                    + "b.snmpIfIndex"));
+        try {
+            m_installer.checkIndexUniqueness();
+        } catch (Throwable t) {
+            ta.throwableReceived(t);
+        }
+        ta.verifyAnticipated();
+
+    }
+    
+    public void testOutagesNonUniqueKeys() throws Exception {
+        if (!isDBTestEnabled()) {
+            return;
+        }
+
+        m_installer.createSequences();
+        m_installer.updatePlPgsql();
+        m_installer.addStoredProcedures();
+
+        addTableFromSQL("outages");
+        executeSQL("drop index snmpinterface_nodeid_ifindex_idx");
+        
+        executeSQL("INSERT INTO snmpInterface ( nodeID, snmpIfIndex ) "
+                   + "VALUES ( 1, 1 )");
+        executeSQL("INSERT INTO snmpInterface ( nodeID, snmpIfIndex ) "
+                   + "VALUES ( 1, 1 )");
+
+        
+        ThrowableAnticipator ta = new ThrowableAnticipator();
+        ta.anticipate(new Exception("Unique index "
+                                    + "'snmpinterface_nodeid_ifindex_idx' "
+                                    + "cannot be added to table "
+                                    + "'outages' because 4 rows are not "
+                                    + "unique.  See the install guide for "
+                                    + "details on how to correct this "
+                                    + "problem.  You can use the following SQL "
+                                    + "to see which rows are not unique:\n"
+                                    + "SELECT DISTINCT a.* FROM snmpinterface "
+                                    + "a, snmpinterface b WHERE a.nodeID = "
+                                    + "b.nodeID AND a.snmpIfIndex = "
+                                    + "b.snmpIfIndex"));
+        try {
+            m_installer.checkIndexUniqueness();
+        } catch (Throwable t) {
+            ta.throwableReceived(t);
+        }
+        ta.verifyAnticipated();
+    }
 
     public void addTableFromSQL(String tableName) throws SQLException {
         String partialSQL = null;
@@ -2347,17 +2410,6 @@ public class InstallerDBTest extends TestCase {
         
         m_installer.addIndexesForTable(table);
         m_installer.addTriggersForTable(table);
-        /*
-        List<Trigger> triggers =
-            m_installer.m_triggerDao.getTriggersForTable(table);
-        for (Trigger trigger : triggers) {
-            m_installer.m_out.print("    - checking trigger '"
-                                    + trigger.getName()
-                                    + " on this table... ");
-            trigger.addToDatabase(m_installer.m_dbconnection);
-            m_installer.m_out.println("DONE");
-        }
-        */
     }
 
     public boolean containsUnescapedParens(String str) {
@@ -2427,7 +2479,6 @@ public class InstallerDBTest extends TestCase {
         m_installer.addStoredProcedures();
         
         m_installer.createTables();
-
 
         return true;
     }
