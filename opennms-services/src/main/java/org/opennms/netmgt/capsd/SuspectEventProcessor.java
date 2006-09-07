@@ -533,7 +533,6 @@ final class SuspectEventProcessor implements Runnable {
         Category log = ThreadCategory.getInstance(getClass());
 
         CapsdConfig cFactory = CapsdConfigFactory.getInstance();
-        PollerConfig pollerCfgFactory = PollerConfigFactory.getInstance();
 
         Date now = new Date();
 
@@ -591,12 +590,11 @@ final class SuspectEventProcessor implements Runnable {
                                         nodeId, ifIndex);
     }
 
-    private int addSnmpInterfaces(Connection dbc, InetAddress ifaddr, int nodeId, IfCollector collector, DbIpInterfaceEntry ipIfEntry) throws SQLException {
+    private int addSnmpInterfaces(Connection dbc, InetAddress ifaddr,
+            int nodeId, IfCollector collector, DbIpInterfaceEntry ipIfEntry)
+    throws SQLException {
         Category log = ThreadCategory.getInstance(getClass());
 
-        IfSnmpCollector snmpc = collector.getSnmpCollector();
-
-        
         boolean addedSnmpInterfaceEntry =
             addSubSnmpInterfaces(dbc, ifaddr, nodeId, collector);
         
@@ -610,15 +608,14 @@ final class SuspectEventProcessor implements Runnable {
             // IP address
             snmpEntry.setIfAddress(ifaddr);
             snmpEntry.store(dbc);
-        }
-        
-        if (ifIndex != -1) {
+
             if (log.isDebugEnabled()) {
                 log.debug("SuspectEventProcessor: setting ifindex for "
                         + ifaddr + " to " + ifIndex);
             }
             ipIfEntry.setIfIndex(ifIndex);
         }
+        
         ipIfEntry.store(dbc);
         
         return ifIndex;
@@ -779,6 +776,13 @@ final class SuspectEventProcessor implements Runnable {
             xipIfEntry.setPrimaryState(DbIpInterfaceEntry.SNMP_NOT_ELIGIBLE);
             int xifIndex = -1;
             if ((xifIndex = snmpc.getIfIndex(xifaddr)) != -1) {
+                /*
+                 * XXX I'm not sure if it is always safe to call setIfIndex
+                 * here.  We should only do it if an snmpInterface entry
+                 * was previously created for this ifIndex.  It was likely done
+                 * by addSnmpInterfaces, but I have't checked to make sure that
+                 * all cases are covered. - dj@opennms.org 
+                 */
                 xipIfEntry.setIfIndex(xifIndex);
                 int status = snmpc.getAdminStatus(xifIndex);
                 if (status != -1) {
@@ -854,6 +858,13 @@ final class SuspectEventProcessor implements Runnable {
             xipIfEntry.setLastPoll(now);
             xipIfEntry.setManagedState(DbIpInterfaceEntry.STATE_UNMANAGED);
 
+            /*
+             * XXX I'm not sure if it is always safe to call setIfIndex
+             * here.  We should only do it if an snmpInterface entry
+             * was previously created for this ifIndex.  It was likely done
+             * by addSnmpInterfaces, but I have't checked to make sure that
+             * all cases are covered. - dj@opennms.org 
+             */
             xipIfEntry.setIfIndex(ifindex.intValue());
 
             int status = snmpc.getAdminStatus(ifindex.intValue());
