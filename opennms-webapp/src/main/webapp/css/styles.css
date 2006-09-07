@@ -573,7 +573,6 @@ tr.Normal td { background-color: #D7E1CD; }
 tr.Normal td.divider { border-top: 2px solid #336600 !important; }
 tr.Normal td.bright { background-color: #336600; }
 
-
-tr.Cleared td { background-color: #FFF; }
-tr.Cleared td.divider { border-top: 2px solid #FFF !important; }
-tr.Cleared td.bright { background-color: #FFF; }
+tr.Cleared td { background-color: #EEE; }
+tr.Cleared td.divider { border-top: 2px solid #999 !important; }
+tr.Cleared td.bright { background-color: #999; }
