@@ -58,7 +58,17 @@ public class ThrowableAnticipatorTest extends TestCase {
         
         fail("Did not receive expected AssertionFailedError.");
     }
-
+    
+    public void testThrowableReceivedIgnoreMessage() {
+        m_anticipator.anticipate(new Exception(ThrowableAnticipator.IGNORE_MESSAGE));
+        try {
+            m_anticipator.throwableReceived(new Exception("something random"));
+        } catch (AssertionFailedError e) {
+            fail("Received unexpected AssertionFailedError: " + e);
+        } catch (Throwable t) {
+            fail("Received unexpected Throwable: " + t);
+        }
+    }
     public void testThrowableReceived() {
         m_anticipator.anticipate(m_throwable);
         m_anticipator.throwableReceived(m_throwable);
