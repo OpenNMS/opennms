@@ -229,7 +229,7 @@ final public class OmsaStorageMonitor extends SnmpMonitorStrategy {
         percStatusMap.put(6,"Non-Recoverable");
 
         // Create a variable to hold the state
-        String state = null;
+        String state;
 
         
         // Establish SNMP session with interface
@@ -251,7 +251,7 @@ final public class OmsaStorageMonitor extends SnmpMonitorStrategy {
 
             for (Map.Entry<SnmpInstId, SnmpValue> e : results.entrySet()) { 
 
-                state = percStatusMap.get(e.getValue());
+                state = (String) percStatusMap.get(e.getValue().toInt());
                 log().debug("poll: SNMPwalk poll succeeded, addr=" + ipaddr.getHostAddress() + " oid=" + snmpObjectId + " instance=" + e.getKey() + " value=" + state);
 		/*
 		Name
@@ -272,10 +272,10 @@ final public class OmsaStorageMonitor extends SnmpMonitorStrategy {
 		// If disk is not "OK" based on the above generate an error
                 if (meetsCriteria(e.getValue(), "=", "3")) {
                     status = PollStatus.available();
-                    state = percStatusMap.get(e.getValue());
+                    state = (String) percStatusMap.get(e.getValue().toInt());
                     log().debug("poll: SNMP physical poll succeeded, addr=" + ipaddr.getHostAddress() + " oid=" + snmpObjectId + " instance=" + e.getKey() + " value=" + state);
                 } else {
-                    state = percStatusMap.get(e.getValue());
+                    state = (String) percStatusMap.get(e.getValue().toInt());
                     status = logDown(Level.DEBUG, "SNMP physical poll failed, addr=" + ipaddr.getHostAddress() + " oid=" + snmpObjectId + " instance=" + e.getKey() + " value=" + state);
                     return status;
                 }
@@ -296,7 +296,7 @@ final public class OmsaStorageMonitor extends SnmpMonitorStrategy {
             }
 
             for (Map.Entry<SnmpInstId, SnmpValue> e : lresults.entrySet()) { 
-                state = percStatusMap.get(e.getValue());
+                state = (String) percStatusMap.get(e.getValue().toInt());
                 log().debug("poll: SNMPwalk poll succeeded, addr=" + ipaddr.getHostAddress() + " oid=" + snmpLogObjectId + " instance=" + e.getKey() + " value=" + state);
 		
 		/*
@@ -316,11 +316,11 @@ final public class OmsaStorageMonitor extends SnmpMonitorStrategy {
 
                 if (meetsCriteria(e.getValue(), "=", "3")) {
                     status = PollStatus.available();
-                    state = percStatusMap.get(e.getValue());
+                    state = (String) percStatusMap.get(e.getValue().toInt());
                     log().debug("poll: SNMP physical poll succeeded, addr=" + ipaddr.getHostAddress() + " oid=" + snmpObjectId + " instance=" + e.getKey() + " value=" + state);
                 } else {
 
-                    state = percStatusMap.get(e.getValue());
+                   state = (String) percStatusMap.get(e.getValue().toInt()); 
                     status = logDown(Level.DEBUG, "SNMP logical disk poll failed, addr=" + ipaddr.getHostAddress() + " oid=" + snmpLogObjectId + " instance=" + e.getKey() + " value=" + state);
                     return status;
                 }
