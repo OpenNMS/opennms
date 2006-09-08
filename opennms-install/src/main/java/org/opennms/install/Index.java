@@ -17,19 +17,26 @@ public class Index {
     private String m_using;
     private List<String> m_columns;
     private boolean m_unique;
+    private String m_where;
 
     private static Pattern m_pattern =
-            Pattern.compile("(?i)create\\s+(unique\\s+)?"
-                            + "index\\s+(\\S+)\\s+"
-                            + "on\\s+(\\S+)(?:\\s+USING (\\S+))?\\s*\\(([^)]+)\\)");
+            Pattern.compile("(?i)create"
+                            + "(\\s+unique)?"
+                            + "\\s+index\\s+(\\S+)"
+                            + "\\s+on\\s+(\\S+)"
+                            + "(?:\\s+USING\\s+(\\S+))?"
+                            + "\\s*\\(([^)]+)\\)"
+                            + "(?:\\s+WHERE\\s+(.*?))?"
+                            + "\\s*(?:;|$)");
 
     public Index(String name, String table, String using, List<String> columns,
-            boolean unique) {
+            boolean unique, String where) {
         m_name = name;
         m_table = table;
         m_using = using;
         m_columns = columns;
         m_unique = unique;
+        m_where = where;
     }
     
     public static Index findIndexInString(String create) {
@@ -43,10 +50,12 @@ public class Index {
         String table = m.group(3);
         String using = m.group(4);
         String columnList = m.group(5);
+        String where = m.group(6);
         
         String[] columns = columnList.split("\\s*,\\s*");
 
-        return new Index(name, table, using, Arrays.asList(columns), unique);
+        return new Index(name, table, using, Arrays.asList(columns), unique,
+                         where);
     }
     
     public boolean isOnDatabase(Connection connection) throws SQLException {
@@ -105,6 +114,10 @@ public class Index {
         sql.append(" ( ");
         sql.append(Installer.join(", ", m_columns));
         sql.append(" )");
+        if (m_where != null) {
+            sql.append(" WHERE ");
+            sql.append(m_where);
+        }
         
         return sql.toString();
     }
@@ -127,12 +140,33 @@ public class Index {
     }
 
     public String getIndexUniquenessQuery() throws Exception {
+        String firstColumn = getColumns().get(0);
+        String columnList = Installer.join(", ", getColumns());
+        
+        /*
+         * E.g. select * from foo where (a, b) in (select a, b from foo
+         *      group by a, b having count(a) > 1 order by a, b);
+         */
+        StringBuffer sql = new StringBuffer();
+        sql.append("SELECT * FROM " + getTable() + " WHERE ( "
+                   + columnList + " ) IN ( SELECT "  + columnList + " FROM "
+                   + getTable() + " GROUP BY " + columnList + " HAVING count("
+                   + firstColumn + ") > 1");
+        if (m_where != null) {
+            sql.append(" AND ( " + m_where + " )");
+        }
+        sql.append(" ORDER BY " + columnList + " ) "
+                   + "ORDER BY " + columnList);
+        
+        return sql.toString();
+
+        /*
         List<String> whereComponents =
-            new ArrayList<String>(getColumns().size() + 1);
+            new ArrayList<String>(getColumns().size() + 2);
         for (String column : getColumns()) {
             whereComponents.add("a." + column + " = b." + column);
         }
-        
+
         String lowerTable = getTable().toLowerCase();
         if ("snmpinterface".equals(lowerTable)) {
             whereComponents.add("a.ipAddr != b.ipAddr");
@@ -140,14 +174,15 @@ public class Index {
             whereComponents.add("a.lastGood != b.lastGood");
         } else {
             return null;
-            /*
-            throw new Exception("table '" + lowerTable + "' not supported "
-                                + "at this time");
-                                */
+        }
+        
+        if (m_where != null) {
+            whereComponents.add("( " + m_where + " )");
         }
         return "SELECT DISTINCT a.* FROM "
             + getTable() + " a, " + getTable() + " b WHERE "
             + Installer.join(" AND ", whereComponents);
+            */
     }
 
 }
