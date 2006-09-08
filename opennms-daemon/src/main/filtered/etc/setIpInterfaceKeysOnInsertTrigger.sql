@@ -8,6 +8,12 @@ DROP TRIGGER setIpInterfaceKeysOnInsertTrigger ON ifServices;
 CREATE OR REPLACE FUNCTION setIpInterfaceKeysOnInsert() RETURNS trigger AS '
 BEGIN
 
+  -- ifServices must have an IP address that is *not* 0.0.0.0
+  IF NEW.ipAddr IS NOT NULL AND NEW.ipAddr = ''0.0.0.0''
+  THEN
+    RAISE EXCEPTION ''IfServices Trigger Exception, Condition 0: ipAddr of 0.0.0.0 is not allowed in ifServices table'';
+  END IF;
+  
   --
   -- (Insert with old style foreign key)
   -- This condition keeps the ipInterfaceId inSync with the composite foreign key of nodeid, ipaddr, ifindex
@@ -18,13 +24,13 @@ BEGIN
   THEN
      SELECT ipif.id INTO NEW.ipInterfaceId
        FROM ipinterface ipif
-       WHERE (ipif.nodeid = NEW.nodeid AND ipif.ipAddr = NEW.ipAddr AND (ipif.ifIndex = NEW.ifIndex OR (ipif.ifIndex IS NULL AND NEW.ifIndex IS NULL)));
+       WHERE (ipif.nodeid = NEW.nodeid AND ipif.ipAddr = NEW.ipAddr AND ipif.ipAddr != ''0.0.0.0'');
        
        IF NOT FOUND 
        THEN
-          RAISE EXCEPTION ''IfServices Trigger Exception, Condition 1: No IpInterface found for... nodeid: %  ipaddr: %  ifindex: %'', NEW.nodeid, NEW.ipAddr, NEW.ifIndex;
+          RAISE EXCEPTION ''IfServices Trigger Exception, Condition 1: No IpInterface found for... nodeid: %  ipaddr: %'', NEW.nodeid, NEW.ipAddr;
        ELSE
-          RAISE NOTICE ''IfServices Trigger Success, Condition 1: IpInterface found for... nodeid: %  ipaddr: %  ifindex: %'', NEW.nodeid, NEW.ipAddr, NEW.ifIndex;
+          RAISE NOTICE ''IfServices Trigger Success, Condition 1: IpInterface found for... nodeid: %  ipaddr: %  ipInterfaceId: %'', NEW.nodeid, NEW.ipAddr, NEW.ipInterfaceId;
        END IF;
        
   --
@@ -34,7 +40,7 @@ BEGIN
   -- the composite key columns
   --
 
-  ELSIF NEW.ipInterfaceId IS NOT NULL AND (NEW.nodeId IS NULL OR NEW.ipAddr IS NULL OR NEW.ifIndex IS NULL)
+  ELSIF NEW.ipInterfaceId IS NOT NULL AND (NEW.nodeId IS NULL OR NEW.ipAddr IS NULL)
   THEN
      SELECT ipif.nodeid, ipif.ipAddr, ipif.ifIndex INTO NEW.nodeid, NEW.ipAddr, NEW.ifIndex
        FROM ipinterface ipif
@@ -45,6 +51,11 @@ BEGIN
          RAISE EXCEPTION ''IfServices Trigger Exception: No ipinterface found for ipInterfaceId: %'', NEW.ipInterfaceId;
       ELSE
          RAISE NOTICE ''IfServices Trigger Notice: IpInterface found for ipInterfaceId: %'', NEW.ipInterfaceId;
+      END IF;
+      
+      IF NEW.ipAddr = ''0.0.0.0''
+      THEN
+         RAISE EXCEPTION ''IfServices Trigger Exception, Condition 5: IpInterface found for ipInterfaceId: % has 0.0.0.0 ipAddr'', NEW.ipInterfaceId;
       END IF;
   END IF;
   RETURN NEW;
