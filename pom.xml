@@ -105,6 +105,11 @@
         <artifactId>castor-maven-plugin</artifactId>
         <version>1.0.1-SNAPSHOT</version>
       </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>native-maven-plugin</artifactId>
+        <version>1.0-alpha-1</version>
+      </plugin>
     </plugins>
   </pluginManagement>
    <plugins>
