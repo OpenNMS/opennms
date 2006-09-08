@@ -10,6 +10,9 @@ import junit.framework.Assert;
 import junit.framework.AssertionFailedError;
 
 public class ThrowableAnticipator extends Assert {
+    public final static String IGNORE_MESSAGE =
+        "*** ThrowableAnticipator ignore Throwable.getMessage() ***";
+    
     private List m_anticipated;
     private List m_unanticipated;
     private boolean m_failFast;
@@ -67,7 +70,8 @@ public class ThrowableAnticipator extends Assert {
         for (Iterator i = m_anticipated.iterator(); i.hasNext(); ) {
             Throwable our = (Throwable) i.next();
             if (t.getClass().isAssignableFrom(our.getClass())) {
-                if ((t.getMessage() == null && our.getMessage() == null)
+                if (IGNORE_MESSAGE.equals(our.getMessage())
+                        || (t.getMessage() == null && our.getMessage() == null)
                         || (t.getMessage() != null
                                 && t.getMessage().equals(our.getMessage()))) {
                     m_anticipated.remove(our);
