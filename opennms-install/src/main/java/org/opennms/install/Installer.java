@@ -644,8 +644,8 @@ public class Installer {
                         Index i = Index.findIndexInString(line);
                         if (i == null) {
                             throw new Exception("Could not match name and "
-                                    + "type of the index " + "in this"
-                                    + "line: " + line);
+                                    + "type of the index " + "in this line: "
+                                    + line);
                         }
                         m_indexDao.add(i);
                         //m_indexes.add(m.group(1));
@@ -3129,7 +3129,7 @@ public class Installer {
             }
             
             String countQuery = query.replaceFirst("(?i)\\s(\\S+)\\s+FROM",
-                " count(\\1) FROM");
+                " count(\\1) FROM").replaceFirst("(?i)\\s*ORDER\\s+BY\\s+[^()]+$", "");
             
             ResultSet rs = st.executeQuery(countQuery);
 
