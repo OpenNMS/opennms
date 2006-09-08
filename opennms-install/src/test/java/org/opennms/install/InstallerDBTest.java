@@ -1585,441 +1585,6 @@ public class InstallerDBTest extends TemporaryDatabaseTestCase {
         verifyTriggers(true);
     }
 
-    public void testTriggerSetSnmpInterfaceIdInIpInterface() throws Exception {
-        if (!isDBTestEnabled()) {
-            return;
-        }
-
-        m_installer.createSequences();
-        m_installer.updatePlPgsql();
-        m_installer.addStoredProcedures();
-
-        m_installer.createTables();
-
-        executeSQL("INSERT INTO node (nodeId, nodeCreateTime) VALUES ( 1, now() )");
-        executeSQL("INSERT INTO snmpInterface (nodeId, ipAddr, snmpIfIndex) VALUES ( 1, '1.2.3.4', 1)");
-        executeSQL("INSERT INTO ipInterface (nodeId, ipAddr, ifIndex) VALUES ( 1, '1.2.3.4', 1 )");
-
-        Statement st = m_installer.m_dbconnection.createStatement();
-        ResultSet rs = st.executeQuery("SELECT id, snmpInterfaceID from ipInterface");
-        assertTrue("could not advance to read first row in ResultSet",
-                   rs.next());
-        assertEquals("expected ipInterface id", 2, rs.getInt(1));
-
-        int id = rs.getInt(2);
-        assertFalse("expected ipInterface snmpInterfaceId to be non-null",
-                    rs.wasNull());
-        assertEquals("expected ipInterface snmpInterfaceId to be the same",
-                     1, id);
-        assertFalse("ResultSet contains more than one row", rs.next());
-    }
-
-    /**
-     * Test adding an entry to ipInterface with an ifIndex >= 1 that *does not*
-     * point to an entry in snmpInterface.  This should be an error.
-     */
-    public void testTriggerSetSnmpInterfaceIdInIpInterfaceNoSnmpInterfaceEntry()
-            throws Exception {
-        if (!isDBTestEnabled()) {
-            return;
-        }
-
-        m_installer.createSequences();
-        m_installer.updatePlPgsql();
-        m_installer.addStoredProcedures();
-
-        m_installer.createTables();
-
-        executeSQL("INSERT INTO node (nodeId, nodeCreateTime) VALUES ( 1, now() )");
-
-        ThrowableAnticipator ta = new ThrowableAnticipator();
-        ta.anticipate(new AssertionFailedError("Could not execute statement: 'INSERT INTO ipInterface (nodeId, ipAddr, ifIndex) VALUES ( 1, '1.2.3.4', 1 )': ERROR: insert or update on table \"ipinterface\" violates foreign key constraint \"snmpinterface_fkey1\"\n  Detail: Key (nodeid,ifindex)=(1,1) is not present in table \"snmpinterface\"."));
-        try {
-            executeSQL("INSERT INTO ipInterface (nodeId, ipAddr, ifIndex) VALUES ( 1, '1.2.3.4', 1 )");
-        } catch (Throwable t) {
-            ta.throwableReceived(t);
-        }
-        ta.verifyAnticipated();
-    }
-
-    public void testTriggerSetSnmpInterfaceIdInIpInterfaceNullIfIndex()
-            throws Exception {
-        if (!isDBTestEnabled()) {
-            return;
-        }
-
-        m_installer.createSequences();
-        m_installer.updatePlPgsql();
-        m_installer.addStoredProcedures();
-
-        m_installer.createTables();
-
-        executeSQL("INSERT INTO node (nodeId, nodeCreateTime) VALUES ( 1, now() )");
-        executeSQL("INSERT INTO snmpInterface (nodeId, ipAddr, snmpIfIndex) VALUES ( 1, '1.2.3.4', 1)");
-        executeSQL("INSERT INTO ipInterface (nodeId, ipAddr, ifIndex) VALUES ( 1, '1.2.3.4', null )");
-
-        Statement st = m_installer.m_dbconnection.createStatement();
-        ResultSet rs = st.executeQuery("SELECT id, snmpInterfaceID from ipInterface");
-        assertTrue("could not advance to read first row in ResultSet",
-                   rs.next());
-        assertEquals("ipInterface id", 2, rs.getInt(1));
-
-        int id = rs.getInt(2);
-        assertTrue("ipInterface snmpInterfaceId to be null (was " + id + ")",
-                   rs.wasNull());
-        assertFalse("ResultSet contains more than one row", rs.next());
-    }
-
-    public void testTriggerSetSnmpInterfaceIdInIpInterfaceNullIfIndexNoSnmpInterface()
-            throws Exception {
-        if (!isDBTestEnabled()) {
-            return;
-        }
-
-        m_installer.createSequences();
-        m_installer.updatePlPgsql();
-        m_installer.addStoredProcedures();
-
-        m_installer.createTables();
-
-        executeSQL("INSERT INTO node (nodeId, nodeCreateTime) VALUES ( 1, now() )");
-        executeSQL("INSERT INTO ipInterface (nodeId, ipAddr, ifIndex) VALUES ( 1, '1.2.3.4', null )");
-
-        Statement st = m_installer.m_dbconnection.createStatement();
-        ResultSet rs = st.executeQuery("SELECT id, snmpInterfaceID from ipInterface");
-        assertTrue("could not advance to read first row in ResultSet",
-                   rs.next());
-        assertEquals("ipInterface id", 1, rs.getInt(1));
-
-        int id = rs.getInt(2);
-        assertTrue("ipInterface snmpInterfaceId to be null (was " + id + ")",
-                   rs.wasNull());
-        assertFalse("ResultSet contains more than one row", rs.next());
-    }
-
-    public void testTriggerSetSnmpInterfaceIdInIpInterfaceLessThanOneIfIndex()
-            throws Exception {
-        if (!isDBTestEnabled()) {
-            return;
-        }
-
-        m_installer.createSequences();
-        m_installer.updatePlPgsql();
-        m_installer.addStoredProcedures();
-
-        m_installer.createTables();
-
-        executeSQL("INSERT INTO node (nodeId, nodeCreateTime) VALUES ( 1, now() )");
-        ThrowableAnticipator ta = new ThrowableAnticipator();
-        ta.anticipate(new AssertionFailedError("Could not execute statement: 'INSERT INTO ipInterface (nodeId, ipAddr, ifIndex) VALUES ( 1, '1.2.3.4', 0 )': ERROR: insert or update on table \"ipinterface\" violates foreign key constraint \"snmpinterface_fkey1\"\n  Detail: Key (nodeid,ifindex)=(1,0) is not present in table \"snmpinterface\"."));
-        try {
-            executeSQL("INSERT INTO ipInterface (nodeId, ipAddr, ifIndex) VALUES ( 1, '1.2.3.4', 0 )");
-        } catch (Throwable t) {
-            ta.throwableReceived(t);
-        }
-        ta.verifyAnticipated();
-
-        /*
-        Statement st = m_installer.m_dbconnection.createStatement();
-        ResultSet rs = st.executeQuery("SELECT id, snmpInterfaceID from ipInterface");
-        assertTrue("could not advance to read first row in ResultSet",
-                   rs.next());
-        assertEquals("expected ipInterface id", 1, rs.getInt(1));
-
-        int id = rs.getInt(2);
-        assertTrue("expected ipInterface snmpInterfaceId to be null (got "
-                + id + ")", rs.wasNull());
-        assertFalse("ResultSet contains more than one row", rs.next());
-        */
-    }
-
-    /**
-     * Test adding an entry to ipInterface with an ifIndex < 1 where an
-     * entry exists in snmpInterface for the same ifIndex.  The relationship
-     * *should* be setup (previously, it would not have been set up for this
-     * case).
-     */
-    public void testTriggerSetSnmpInterfaceIdInIpInterfaceLessThanOneIfIndexWithSnmpInterface()
-            throws Exception {
-        if (!isDBTestEnabled()) {
-            return;
-        }
-
-        m_installer.createSequences();
-        m_installer.updatePlPgsql();
-        m_installer.addStoredProcedures();
-        
-        m_installer.createTables();
-
-        executeSQL("INSERT INTO node (nodeId, nodeCreateTime) VALUES ( 1, now() )");
-        executeSQL("INSERT INTO snmpInterface (nodeId, ipAddr, snmpIfIndex) VALUES ( 1, '1.2.3.4', 0)");
-        executeSQL("INSERT INTO ipInterface (nodeId, ipAddr, ifIndex) VALUES ( 1, '1.2.3.4', 0 )");
-
-        Statement st = m_installer.m_dbconnection.createStatement();
-        ResultSet rs = st.executeQuery("SELECT snmpInterfaceID from ipInterface");
-        assertTrue("could not advance to read first row in results",
-                   rs.next());
-
-        // We now expect the trigger to setup the relationship for any value
-        //int id = rs.getInt(1);
-        //assertTrue("ipInterface.snmpInterfaceId should be null (was " + id
-        //        + ")", rs.wasNull());
-        
-        rs.getInt(1);
-        assertFalse("ipInterface.snmpInterfaceId should not be null",
-                    rs.wasNull());
-        assertFalse("results contains more than one row", rs.next());
-    }
-
-    public void testTriggerSetIpInterfaceIdInIfService() throws Exception {
-        if (!isDBTestEnabled()) {
-            return;
-        }
-
-        m_installer.createSequences();
-        m_installer.updatePlPgsql();
-        m_installer.addStoredProcedures();
-
-        m_installer.createTables();
-
-        executeSQL("INSERT INTO node (nodeId, nodeCreateTime) VALUES ( 1, now() )");
-        executeSQL("INSERT INTO snmpInterface (nodeId, ipAddr, snmpIfIndex) VALUES ( 1, '1.2.3.4', 1 )");
-        executeSQL("INSERT INTO ipInterface (nodeId, ipAddr, ifIndex) VALUES ( 1, '1.2.3.4', 1 )");
-        executeSQL("INSERT INTO service (serviceID, serviceName) VALUES ( 1, 'COFFEE-READY' )");
-        executeSQL("INSERT INTO ifServices (nodeID, ipAddr, ifIndex, serviceID) VALUES ( 1, '1.2.3.4', 1, 1)");
-
-        Statement st = m_installer.m_dbconnection.createStatement();
-        ResultSet rs = st.executeQuery("SELECT id, ipInterfaceID from ifServices");
-        assertTrue("could not advance to read first row in ResultSet",
-                   rs.next());
-        assertEquals("expected ifServices id", 3, rs.getInt(1));
-        assertEquals("expected ifServices ipInterfaceId", 2, rs.getInt(2));
-        assertFalse("ResultSet contains more than one row", rs.next());
-    }
-
-    public void testTriggerSetIpInterfaceIdInIfServiceNullIfIndexBoth()
-            throws Exception {
-        if (!isDBTestEnabled()) {
-            return;
-        }
-
-        m_installer.createSequences();
-        m_installer.updatePlPgsql();
-        m_installer.addStoredProcedures();
-
-        m_installer.createTables();
-
-        executeSQL("INSERT INTO node (nodeId, nodeCreateTime) VALUES ( 1, now() )");
-        executeSQL("INSERT INTO ipInterface (nodeId, ipAddr, ifIndex) VALUES ( 1, '1.2.3.4', null )");
-        executeSQL("INSERT INTO service (serviceID, serviceName) VALUES ( 1, 'COFFEE-READY' )");
-        executeSQL("INSERT INTO ifServices (nodeID, ipAddr, ifIndex, serviceID) VALUES ( 1, '1.2.3.4', null, 1)");
-
-        Statement st = m_installer.m_dbconnection.createStatement();
-        ResultSet rs = st.executeQuery("SELECT id, ipInterfaceID from ifServices");
-        assertTrue("could not advance to read first row in ResultSet",
-                   rs.next());
-        assertEquals("expected ifServices id", 2, rs.getInt(1));
-        assertEquals("expected ifServices ipInterfaceId", 1, rs.getInt(2));
-        assertFalse("ResultSet contains more than one row", rs.next());
-    }
-
-    public void testTriggerSetIpInterfaceIdInIfServiceNullIfIndexInIfServices()
-            throws Exception {
-        if (!isDBTestEnabled()) {
-            return;
-        }
-
-        m_installer.createSequences();
-        m_installer.updatePlPgsql();
-        m_installer.addStoredProcedures();
-
-        m_installer.createTables();
-
-        executeSQL("INSERT INTO node (nodeId, nodeCreateTime) VALUES ( 1, now() )");
-        executeSQL("INSERT INTO snmpInterface (nodeId, ipAddr, snmpIfIndex) VALUES ( 1, '1.2.3.4', 1)");
-        executeSQL("INSERT INTO ipInterface (nodeId, ipAddr, ifIndex) VALUES ( 1, '1.2.3.4', 1 )");
-        executeSQL("INSERT INTO service (serviceID, serviceName) VALUES ( 1, 'COFFEE-READY' )");
-
-        ThrowableAnticipator ta = new ThrowableAnticipator();
-        ta.anticipate(new AssertionFailedError("Could not execute statement: 'INSERT INTO ifServices (nodeID, ipAddr, ifIndex, serviceID) VALUES ( 1, '1.2.3.4', null, 1)': ERROR: IfServices Trigger Exception, Condition 1: No IpInterface found for... nodeid: 1  ipaddr: 1.2.3.4  ifindex: <NULL>"));
-        try {
-            executeSQL("INSERT INTO ifServices (nodeID, ipAddr, ifIndex, serviceID) VALUES ( 1, '1.2.3.4', null, 1)");
-        } catch (Throwable t) {
-            ta.throwableReceived(t);
-        }
-        ta.verifyAnticipated();
-    }
-
-    public void testTriggerSetIpInterfaceIdInIfServiceNullIfIndexInIpInterface()
-            throws Exception {
-        if (!isDBTestEnabled()) {
-            return;
-        }
-
-        m_installer.createSequences();
-        m_installer.updatePlPgsql();
-        m_installer.addStoredProcedures();
-
-        m_installer.createTables();
-
-        executeSQL("INSERT INTO node (nodeId, nodeCreateTime) VALUES ( 1, now() )");
-        executeSQL("INSERT INTO ipInterface (nodeId, ipAddr, ifIndex) VALUES ( 1, '1.2.3.4', null )");
-        executeSQL("INSERT INTO service (serviceID, serviceName) VALUES ( 1, 'COFFEE-READY' )");
-
-        ThrowableAnticipator ta = new ThrowableAnticipator();
-        ta.anticipate(new AssertionFailedError("Could not execute statement: 'INSERT INTO ifServices (nodeID, ipAddr, ifIndex, serviceID) VALUES ( 1, '1.2.3.4', 1, 1)': ERROR: IfServices Trigger Exception, Condition 1: No IpInterface found for... nodeid: 1  ipaddr: 1.2.3.4  ifindex: 1"));
-        try {
-            executeSQL("INSERT INTO ifServices (nodeID, ipAddr, ifIndex, serviceID) VALUES ( 1, '1.2.3.4', 1, 1)");
-        } catch (Throwable t) {
-            ta.throwableReceived(t);
-        }
-        ta.verifyAnticipated();
-    }
-    
-    public void testTriggerSetIpInterfaceKeysOnInsertTriggerIpInterfaceIdNotNull() throws Exception {
-        if (!isDBTestEnabled()) {
-            return;
-        }
-
-        m_installer.createSequences();
-        m_installer.updatePlPgsql();
-        m_installer.addStoredProcedures();
-
-        m_installer.createTables();
-
-        executeSQL("INSERT INTO node (nodeId, nodeCreateTime) VALUES ( 1, now() )");
-        executeSQL("INSERT INTO ipInterface (nodeId, ipAddr, ifIndex) VALUES ( 1, '1.2.3.4', null )");
-        executeSQL("INSERT INTO service (serviceID, serviceName) VALUES ( 1, 'COFFEE-READY' )");
-
-        Statement st = m_installer.m_dbconnection.createStatement();
-        ResultSet rs = st.executeQuery("SELECT id from ipInterface");
-        assertTrue("could not advance to read first results row from ipInterface",
-                   rs.next());
-        int ipInterfaceId = rs.getInt(1);
-
-        executeSQL("INSERT INTO ifServices (ipInterfaceId, serviceID) VALUES ( "
-                   + ipInterfaceId + ", 1)");
-
-        st = m_installer.m_dbconnection.createStatement();
-        rs = st.executeQuery("SELECT id, ipInterfaceID from ifServices");
-        assertTrue("could not advance to read first row in ResultSet",
-                   rs.next());
-        rs.getInt(1);
-        assertFalse("ifServices.id should be non-null", rs.wasNull());
-        // Don't care about the id
-        //assertEquals("ifServices.id", 2, rs.getInt(1));
-        assertEquals("ifServices.ipInterfaceId", ipInterfaceId, rs.getInt(2));
-        assertFalse("ResultSet contains more than one row", rs.next());
-    }
-
-
-    public void testTriggerSetIfServiceIdInOutage() throws Exception {
-        if (!isDBTestEnabled()) {
-            return;
-        }
-
-        m_installer.createSequences();
-        m_installer.updatePlPgsql();
-        m_installer.addStoredProcedures();
-
-        m_installer.createTables();
-
-        executeSQL("INSERT INTO node (nodeId, nodeCreateTime) VALUES ( 1, now() )");
-        executeSQL("INSERT INTO snmpInterface (nodeId, ipAddr, snmpIfIndex) VALUES ( 1, '1.2.3.4', 1 )");
-        executeSQL("INSERT INTO ipInterface (nodeId, ipAddr, ifIndex) VALUES ( 1, '1.2.3.4', 1 )");
-        executeSQL("INSERT INTO service (serviceID, serviceName) VALUES ( 1, 'COFFEE-READY' )");
-        executeSQL("INSERT INTO ifServices (nodeID, ipAddr, ifIndex, serviceID) VALUES ( 1, '1.2.3.4', 1, 1)");
-        executeSQL("INSERT INTO outages (outageId, nodeId, ipAddr, ifLostService, serviceID ) "
-                + "VALUES ( nextval('outageNxtId'), 1, '1.2.3.4', now(), 1 )");
-
-        Statement st = m_installer.m_dbconnection.createStatement();
-        ResultSet rs = st.executeQuery("SELECT outageId, ifServiceId from outages");
-        assertTrue("could not advance to read first row in ResultSet",
-                   rs.next());
-        assertEquals("expected outages outageId", 1, rs.getInt(1));
-        assertEquals("expected outages ifServiceId", 3, rs.getInt(2));
-        assertFalse("ResultSet contains more than one row", rs.next());
-    }
-
-    public void testTriggerSetIfServiceIdInOutageNullNodeId()
-            throws Exception {
-        if (!isDBTestEnabled()) {
-            return;
-        }
-
-        m_installer.createSequences();
-        m_installer.updatePlPgsql();
-        m_installer.addStoredProcedures();
-        
-        m_installer.createTables();
-
-        executeSQL("INSERT INTO node (nodeId, nodeCreateTime) VALUES ( 1, now() )");
-        executeSQL("INSERT INTO snmpInterface (nodeId, ipAddr, snmpIfIndex) VALUES ( 1, '1.2.3.4', 1 )");
-        executeSQL("INSERT INTO ipInterface (nodeId, ipAddr, ifIndex) VALUES ( 1, '1.2.3.4', 1 )");
-        executeSQL("INSERT INTO service (serviceID, serviceName) VALUES ( 1, 'COFFEE-READY' )");
-        executeSQL("INSERT INTO ifServices (nodeID, ipAddr, ifIndex, serviceID) VALUES ( 1, '1.2.3.4', 1, 1)");
-
-        ThrowableAnticipator ta = new ThrowableAnticipator();
-        ta.anticipate(new AssertionFailedError("Could not execute statement: 'INSERT INTO outages (outageId, nodeId, ipAddr, ifLostService, serviceID ) VALUES ( nextval('outageNxtId'), null, '1.2.3.4', now(), 1 )': ERROR: Outages Trigger Exception, Condition 1: No service found for... nodeid: <NULL>  ipaddr: 1.2.3.4  serviceid: 1"));
-        try {
-            executeSQL("INSERT INTO outages (outageId, nodeId, ipAddr, ifLostService, serviceID ) "
-                    + "VALUES ( nextval('outageNxtId'), null, '1.2.3.4', now(), 1 )");
-        } catch (Throwable t) {
-            ta.throwableReceived(t);
-        }
-
-        ta.verifyAnticipated();
-
-        /*
-         * Statement st = m_installer.m_dbconnection.createStatement();
-         * ResultSet rs = st.executeQuery("SELECT outageId, ifServiceId from
-         * outages"); assertTrue("could not advance to read first row in
-         * ResultSet", rs.next()); assertEquals("expected outages outageId",
-         * 1, rs.getInt(1)); assertEquals("expected outages ifServiceId", 3,
-         * rs.getInt(2)); assertFalse("ResultSet contains more than one row",
-         * rs.next());
-         */
-    }
-
-    public void testTriggerSetIfServiceIdInOutageNullServiceId()
-            throws Exception {
-        if (!isDBTestEnabled()) {
-            return;
-        }
-
-        m_installer.createSequences();
-        m_installer.updatePlPgsql();
-        m_installer.addStoredProcedures();
-        
-        m_installer.createTables();
-
-        executeSQL("INSERT INTO node (nodeId, nodeCreateTime) VALUES ( 1, now() )");
-        executeSQL("INSERT INTO ipInterface (nodeId, ipAddr, ifIndex) VALUES ( 1, '1.2.3.4', null )");
-        executeSQL("INSERT INTO service (serviceID, serviceName) VALUES ( 1, 'COFFEE-READY' )");
-        executeSQL("INSERT INTO ifServices (nodeID, ipAddr, ifIndex, serviceID) VALUES ( 1, '1.2.3.4', null, 1)");
-
-        ThrowableAnticipator ta = new ThrowableAnticipator();
-        ta.anticipate(new AssertionFailedError("Could not execute statement: 'INSERT INTO outages (outageId, nodeId, ipAddr, ifLostService, serviceID ) VALUES ( nextval('outageNxtId'), 1, '1.2.3.4', now(), null )': ERROR: Outages Trigger Exception, Condition 1: No service found for... nodeid: 1  ipaddr: 1.2.3.4  serviceid: <NULL>"));
-        try {
-            executeSQL("INSERT INTO outages (outageId, nodeId, ipAddr, ifLostService, serviceID ) "
-                    + "VALUES ( nextval('outageNxtId'), 1, '1.2.3.4', now(), null )");
-        } catch (Throwable t) {
-            ta.throwableReceived(t);
-        }
-
-        ta.verifyAnticipated();
-
-        /*
-         * Statement st = m_installer.m_dbconnection.createStatement();
-         * ResultSet rs = st.executeQuery("SELECT outageId, ifServiceId from
-         * outages"); assertTrue("could not advance to read first row in
-         * ResultSet", rs.next()); assertEquals("expected outages outageId",
-         * 1, rs.getInt(1)); assertEquals("expected outages ifServiceId", 1,
-         * rs.getInt(2)); assertFalse("ResultSet contains more than one row",
-         * rs.next());
-         */
-    }
-
     public void testSnmpInterfaceNodeIdColumnConvertToNotNull()
             throws Exception {
         if (!isDBTestEnabled()) {
@@ -2246,12 +1811,13 @@ public class InstallerDBTest extends TemporaryDatabaseTestCase {
         executeSQL("INSERT INTO node ( nodeId, nodeCreateTime ) "
                    + "VALUES ( 1, now() )");
 
-        /*
+        // One test with identical entries
         executeSQL("INSERT INTO snmpInterface ( nodeID, ipAddr, snmpIfIndex ) "
                    + "VALUES ( 1, '0.0.0.0', 1 )");
         executeSQL("INSERT INTO snmpInterface ( nodeID, ipAddr, snmpIfIndex ) "
                    + "VALUES ( 1, '0.0.0.0', 1 )");
-                   */
+        
+        // One with different different IPs
         executeSQL("INSERT INTO snmpInterface ( nodeID, ipAddr, snmpIfIndex ) "
                    + "VALUES ( 1, '0.0.0.1', 1 )");
         executeSQL("INSERT INTO snmpInterface ( nodeID, ipAddr, snmpIfIndex ) "
@@ -2261,16 +1827,18 @@ public class InstallerDBTest extends TemporaryDatabaseTestCase {
         ta.anticipate(new Exception("Unique index "
                                     + "'snmpinterface_nodeid_ifindex_idx' "
                                     + "cannot be added to table "
-                                    + "'snmpinterface' because 2 rows are not "
+                                    + "'snmpinterface' because 4 rows are not "
                                     + "unique.  See the install guide for "
                                     + "details on how to correct this "
                                     + "problem.  You can use the following SQL "
                                     + "to see which rows are not unique:\n"
-                                    + "SELECT DISTINCT a.* FROM snmpinterface "
-                                    + "a, snmpinterface b WHERE a.nodeID = "
-                                    + "b.nodeID AND a.snmpIfIndex = "
-                                    + "b.snmpIfIndex "
-                                    + "AND a.ipAddr != b.ipAddr"));
+                                    + "SELECT * FROM snmpinterface WHERE ( "
+                                    + "nodeID, snmpIfIndex ) IN ( SELECT "
+                                    + "nodeID, snmpIfIndex FROM snmpinterface "
+                                    + "GROUP BY nodeID, snmpIfIndex HAVING "
+                                    + "count(nodeID) > 1 ORDER BY nodeID, "
+                                    + "snmpIfIndex ) ORDER BY nodeID, "
+                                    + "snmpIfIndex"));
         try {
             m_installer.checkIndexUniqueness();
         } catch (Throwable t) {
@@ -2292,27 +1860,58 @@ public class InstallerDBTest extends TemporaryDatabaseTestCase {
         addTableFromSQL("node");
         addTableFromSQL("snmpinterface");
         addTableFromSQL("ipinterface");
-        executeSQL("drop index ipinterface_nodeid_ipaddr_where_idx");
+        executeSQL("drop index ipinterface_nodeid_ipaddr_notzero_idx");
         
-        executeSQL("INSERT INTO snmpInterface ( nodeID, snmpIfIndex ) "
-                   + "VALUES ( 1, 1 )");
-        executeSQL("INSERT INTO snmpInterface ( nodeID, snmpIfIndex ) "
-                   + "VALUES ( 1, 1 )");
+        executeSQL("INSERT INTO node ( nodeId, nodeCreateTime ) "
+                   + "VALUES ( 1, now() )");
+        executeSQL("INSERT INTO node ( nodeId, nodeCreateTime ) "
+                   + "VALUES ( 2, now() )");
+        executeSQL("INSERT INTO node ( nodeId, nodeCreateTime ) "
+                   + "VALUES ( 3, now() )");
+        executeSQL("INSERT INTO snmpInterface ( nodeID, ipAddr, snmpIfIndex ) "
+                   + "VALUES ( 1, '0.0.0.0', 1 )");
+        executeSQL("INSERT INTO snmpInterface ( nodeID, ipAddr, snmpIfIndex ) "
+                   + "VALUES ( 1, '0.0.0.0', 2 )");
+        executeSQL("INSERT INTO snmpInterface ( nodeID, ipAddr, snmpIfIndex ) "
+                   + "VALUES ( 3, '1.1.1.1', 1 )");
+        executeSQL("INSERT INTO snmpInterface ( nodeID, ipAddr, snmpIfIndex ) "
+                   + "VALUES ( 3, '1.1.1.1', 2 )");
+        
+        // These aren't dups because their ipaddr = 0.0.0.0
+        executeSQL("INSERT INTO ipInterface ( nodeID, ipAddr, ifIndex ) "
+                   + "VALUES ( 1, '0.0.0.0', 1 )");
+        executeSQL("INSERT INTO ipInterface ( nodeID, ipAddr, ifIndex ) "
+                   + "VALUES ( 1, '0.0.0.0', 2 )");
+
+        // dups with ifIndex = null (which we don't care about)
+        executeSQL("INSERT INTO ipInterface ( nodeID, ipAddr, ifIndex ) "
+                   + "VALUES ( 2, '1.1.1.1', null )");
+        executeSQL("INSERT INTO ipInterface ( nodeID, ipAddr, ifIndex ) "
+                   + "VALUES ( 2, '1.1.1.1', null )");
+        
+        // dups with ifIndex != null (which we also don't care about)
+        executeSQL("INSERT INTO ipInterface ( nodeID, ipAddr, ifIndex ) "
+                   + "VALUES ( 3, '1.1.1.1', 1 )");
+        executeSQL("INSERT INTO ipInterface ( nodeID, ipAddr, ifIndex ) "
+                   + "VALUES ( 3, '1.1.1.1', 2 )");
 
         
         ThrowableAnticipator ta = new ThrowableAnticipator();
         ta.anticipate(new Exception("Unique index "
-                                    + "'snmpinterface_nodeid_ifindex_idx' "
+                                    + "'ipinterface_nodeid_ipaddr_notzero_idx' "
                                     + "cannot be added to table "
-                                    + "'ipinterface' because 4 rows are not "
+                                    + "'ipInterface' because 4 rows are not "
                                     + "unique.  See the install guide for "
                                     + "details on how to correct this "
                                     + "problem.  You can use the following SQL "
                                     + "to see which rows are not unique:\n"
-                                    + "SELECT DISTINCT a.* FROM snmpinterface "
-                                    + "a, snmpinterface b WHERE a.nodeID = "
-                                    + "b.nodeID AND a.snmpIfIndex = "
-                                    + "b.snmpIfIndex"));
+                                    + "SELECT * FROM ipInterface WHERE ( "
+                                    + "nodeID, ipAddr ) IN ( SELECT nodeID, "
+                                    + "ipAddr FROM ipInterface GROUP BY "
+                                    + "nodeID, ipAddr HAVING count(nodeID) > 1 "
+                                    + "AND ( ipAddr != '0.0.0.0' ) ORDER BY "
+                                    + "nodeID, ipAddr ) ORDER BY nodeID, "
+                                    + "ipAddr"));
         try {
             m_installer.checkIndexUniqueness();
         } catch (Throwable t) {
@@ -2322,7 +1921,7 @@ public class InstallerDBTest extends TemporaryDatabaseTestCase {
 
     }
     
-    public void testOutagesNonUniqueKeys() throws Exception {
+    public void testIfServicesNonUniqueKeys() throws Exception {
         if (!isDBTestEnabled()) {
             return;
         }
@@ -2331,34 +1930,98 @@ public class InstallerDBTest extends TemporaryDatabaseTestCase {
         m_installer.updatePlPgsql();
         m_installer.addStoredProcedures();
 
-        addTableFromSQL("outages");
-        executeSQL("drop index snmpinterface_nodeid_ifindex_idx");
+        addTableFromSQL("distpoller");
+        addTableFromSQL("node");
+        addTableFromSQL("snmpinterface");
+        addTableFromSQL("ipinterface");
+        addTableFromSQL("events");
+        addTableFromSQL("service");
+        addTableFromSQL("ifservices");
+        executeSQL("drop index ifservices_nodeid_ipaddr_svc_unique");
         
-        executeSQL("INSERT INTO snmpInterface ( nodeID, snmpIfIndex ) "
-                   + "VALUES ( 1, 1 )");
-        executeSQL("INSERT INTO snmpInterface ( nodeID, snmpIfIndex ) "
-                   + "VALUES ( 1, 1 )");
+        executeSQL("INSERT INTO node ( nodeId, nodeCreateTime ) "
+                   + "VALUES ( 1, now() )");
+        executeSQL("INSERT INTO node ( nodeId, nodeCreateTime ) "
+                   + "VALUES ( 2, now() )");
+        executeSQL("INSERT INTO node ( nodeId, nodeCreateTime ) "
+                   + "VALUES ( 3, now() )");
+        executeSQL("INSERT INTO snmpInterface ( nodeID, ipAddr, snmpIfIndex ) "
+                   + "VALUES ( 1, '0.0.0.0', 1 )");
+        executeSQL("INSERT INTO snmpInterface ( nodeID, ipAddr, snmpIfIndex ) "
+                   + "VALUES ( 1, '0.0.0.0', 2 )");
+        executeSQL("INSERT INTO snmpInterface ( nodeID, ipAddr, snmpIfIndex ) "
+                   + "VALUES ( 3, '1.1.1.1', 1 )");
+        executeSQL("INSERT INTO snmpInterface ( nodeID, ipAddr, snmpIfIndex ) "
+                   + "VALUES ( 3, '1.1.1.1', 2 )");
+        
+        // These aren't dups because their ipaddr = 0.0.0.0
+        executeSQL("INSERT INTO ipInterface ( nodeID, ipAddr, ifIndex ) "
+                   + "VALUES ( 1, '0.0.0.0', 1 )");
+        executeSQL("INSERT INTO ipInterface ( nodeID, ipAddr, ifIndex ) "
+                   + "VALUES ( 1, '0.0.0.0', 2 )");
+
+        // dups with ifIndex = null (which we don't care about)
+        executeSQL("INSERT INTO ipInterface ( nodeID, ipAddr, ifIndex ) "
+                   + "VALUES ( 2, '1.1.1.1', null )");
+        //executeSQL("INSERT INTO ipInterface ( nodeID, ipAddr, ifIndex ) "
+        //         + "VALUES ( 2, '1.1.1.1', null )");
+        
+        // dups with ifIndex != null (which we also don't care about)
+        executeSQL("INSERT INTO ipInterface ( nodeID, ipAddr, ifIndex ) "
+                   + "VALUES ( 3, '1.1.1.1', 1 )");
+        //executeSQL("INSERT INTO ipInterface ( nodeID, ipAddr, ifIndex ) "
+        //           + "VALUES ( 3, '1.1.1.1', 2 )");
+
+        executeSQL("INSERT INTO service ( serviceID, serviceName ) "
+                   + "VALUES ( 1, 'COFFEE-READY' )");
+        executeSQL("INSERT INTO service ( serviceID, serviceName ) "
+                   + "VALUES ( 2, 'TEA-READY' )");
+        executeSQL("INSERT INTO service ( serviceID, serviceName ) "
+                   + "VALUES ( 3, 'SODA-ICE-COLD' )");
+        
+        
+//        executeSQL("INSERT INTO ifServices ( nodeID, ipAddr, ifIndex, serviceID ) VALUES ( 1, '0.0.0.0', 1, 1 )");
+        
+        executeSQL("INSERT INTO ifServices ( nodeID, ipAddr, ifIndex, serviceID ) VALUES ( 2, '1.1.1.1', null, 1 )");
+        executeSQL("INSERT INTO ifServices ( nodeID, ipAddr, ifIndex, serviceID ) VALUES ( 2, '1.1.1.1', null, 2 )");
+        
+        executeSQL("INSERT INTO ifServices ( nodeID, ipAddr, ifIndex, serviceID ) VALUES ( 2, '1.1.1.1', null, 3 )");
+        executeSQL("INSERT INTO ifServices ( nodeID, ipAddr, ifIndex, serviceID ) VALUES ( 2, '1.1.1.1', null, 3 )");
+        
+        executeSQL("INSERT INTO ifServices ( nodeID, ipAddr, ifIndex, serviceID ) VALUES ( 3, '1.1.1.1', null, 3 )");
+        executeSQL("INSERT INTO ifServices ( nodeID, ipAddr, ifIndex, serviceID ) VALUES ( 3, '1.1.1.1', -100, 3 )");
+
 
         
         ThrowableAnticipator ta = new ThrowableAnticipator();
-        ta.anticipate(new Exception("Unique index "
-                                    + "'snmpinterface_nodeid_ifindex_idx' "
-                                    + "cannot be added to table "
-                                    + "'outages' because 4 rows are not "
-                                    + "unique.  See the install guide for "
-                                    + "details on how to correct this "
-                                    + "problem.  You can use the following SQL "
-                                    + "to see which rows are not unique:\n"
-                                    + "SELECT DISTINCT a.* FROM snmpinterface "
-                                    + "a, snmpinterface b WHERE a.nodeID = "
-                                    + "b.nodeID AND a.snmpIfIndex = "
-                                    + "b.snmpIfIndex"));
+        ta.anticipate(new Exception("Unique index 'ifservices_nodeid_ipaddr_svc_unique' cannot be added to table 'ifservices' because 4 rows are not unique.  See the install guide for details on how to correct this problem.  You can use the following SQL to see which rows are not unique:\n"
+                                    + "SELECT * FROM ifservices WHERE ( nodeID, ipAddr, serviceId ) IN ( SELECT nodeID, ipAddr, serviceId FROM ifservices GROUP BY nodeID, ipAddr, serviceId HAVING count(nodeID) > 1 ORDER BY nodeID, ipAddr, serviceId ) ORDER BY nodeID, ipAddr, serviceId"));
         try {
             m_installer.checkIndexUniqueness();
         } catch (Throwable t) {
             ta.throwableReceived(t);
         }
         ta.verifyAnticipated();
+    }
+    
+    public void testBug1574() throws Exception {
+        if (!isDBTestEnabled()) {
+            return;
+        }
+
+        m_installer.createSequences();
+        m_installer.updatePlPgsql();
+        m_installer.addStoredProcedures();
+
+        addTableFromSQL("distpoller");
+        addTableFromSQL("node");
+        
+        addTableFromSQL("snmpinterface");
+        executeSQL("drop index snmpinterface_nodeid_ifindex_unique_idx");
+        executeSQL("create index snmpinterface_nodeid_ifindex_idx on snmpinterface(nodeID, snmpIfIndex)");
+        m_installer.addIndexesForTable("snmpinterface");
+        
+        addTableFromSQL("ipinterface");
     }
 
     public void addTableFromSQL(String tableName) throws SQLException {
