@@ -1,4 +1,4 @@
-package org.opennms.web.svclayer.catstatus.dao.support;
+package org.opennms.web.svclayer.dao.support;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -7,7 +7,7 @@ import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.config.CategoryFactory;
 import org.opennms.netmgt.config.categories.Category;
-import org.opennms.web.svclayer.catstatus.dao.CategoryConfigDao;
+import org.opennms.web.svclayer.dao.CategoryConfigDao;
 import org.springframework.dao.DataRetrievalFailureException;
 
 public class DefaultCategoryConfigDao implements CategoryConfigDao {

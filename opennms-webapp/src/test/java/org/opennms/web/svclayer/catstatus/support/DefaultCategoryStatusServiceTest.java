@@ -54,11 +54,11 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsOutage;
 import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.ServiceSelector;
-import org.opennms.web.svclayer.catstatus.dao.CategoryConfigDao;
-import org.opennms.web.svclayer.catstatus.dao.ViewDisplayDao;
 import org.opennms.web.svclayer.catstatus.model.StatusCategory;
 import org.opennms.web.svclayer.catstatus.model.StatusNode;
 import org.opennms.web.svclayer.catstatus.model.StatusSection;
+import org.opennms.web.svclayer.dao.CategoryConfigDao;
+import org.opennms.web.svclayer.dao.ViewDisplayDao;
 
 
 public class DefaultCategoryStatusServiceTest extends TestCase {

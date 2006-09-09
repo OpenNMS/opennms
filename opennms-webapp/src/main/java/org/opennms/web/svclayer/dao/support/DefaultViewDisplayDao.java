@@ -1,4 +1,4 @@
-package org.opennms.web.svclayer.catstatus.dao.support;
+package org.opennms.web.svclayer.dao.support;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -7,7 +7,7 @@ import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.config.ViewsDisplayFactory;
 import org.opennms.netmgt.config.viewsdisplay.View;
-import org.opennms.web.svclayer.catstatus.dao.ViewDisplayDao;
+import org.opennms.web.svclayer.dao.ViewDisplayDao;
 import org.springframework.dao.DataRetrievalFailureException;
 
 

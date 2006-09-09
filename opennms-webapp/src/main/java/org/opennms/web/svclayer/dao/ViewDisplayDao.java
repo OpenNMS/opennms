@@ -1,4 +1,4 @@
-package org.opennms.web.svclayer.catstatus.dao;
+package org.opennms.web.svclayer.dao;
 
 import org.opennms.netmgt.config.viewsdisplay.View;
 

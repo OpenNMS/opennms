@@ -28,8 +28,8 @@
 
 
 <!-- Category Status View beans (note: categoryConfigDao is different that the DAO for the categories table -->
-  <bean id="categoryConfigDao" class="org.opennms.web.svclayer.catstatus.dao.support.DefaultCategoryConfigDao" />
-  <bean id="viewDisplayDao" class="org.opennms.web.svclayer.catstatus.dao.support.DefaultViewDisplayDao" />
+  <bean id="categoryConfigDao" class="org.opennms.web.svclayer.dao.support.DefaultCategoryConfigDao" />
+  <bean id="viewDisplayDao" class="org.opennms.web.svclayer.dao.support.DefaultViewDisplayDao" />
   
   <bean id="categoryDao" class="org.opennms.netmgt.dao.hibernate.CategoryDaoHibernate">
   	<property name="sessionFactory" ref="sessionFactory" />
