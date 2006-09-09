@@ -32,7 +32,7 @@
 
 package org.opennms.netmgt.model;
 
-import java.util.Collection;
+import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -63,7 +63,7 @@ public class AggregateStatusView {
     private String m_tableName;
     private String m_columnName;
     private String m_columnValue;
-    private Collection<AggregateStatusDefinition> m_statusDefinitions;
+    private Set<AggregateStatusDefinition> m_statusDefinitions;
     
     @Id
     @SequenceGenerator(name="opennmsSequence", sequenceName="opennmsNxtId")
@@ -114,10 +114,10 @@ public class AggregateStatusView {
     		joinColumns = {@JoinColumn(name="statusViewId")},
     		inverseJoinColumns = {@JoinColumn(name="statusDefId")}
     )
-    public Collection<AggregateStatusDefinition> getStatusDefinitions() {
+    public Set<AggregateStatusDefinition> getStatusDefinitions() {
         return m_statusDefinitions;
     }
-    public void setStatusDefinitions(Collection<AggregateStatusDefinition> statusDefinitions) {
+    public void setStatusDefinitions(Set<AggregateStatusDefinition> statusDefinitions) {
         m_statusDefinitions = statusDefinitions;
     }
     

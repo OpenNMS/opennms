@@ -32,7 +32,7 @@
 
 package org.opennms.netmgt.model;
 
-import java.util.Collection;
+import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -58,13 +58,13 @@ public class AggregateStatusDefinition {
     
     private int m_id;
     private String m_name;
-    private Collection<OnmsCategory> m_categories;
+    private Set<OnmsCategory> m_categories;
     
     public AggregateStatusDefinition() {
         
     }
     
-    public AggregateStatusDefinition(String aggrStatus, Collection<OnmsCategory> categories) {
+    public AggregateStatusDefinition(String aggrStatus, Set<OnmsCategory> categories) {
         if (aggrStatus == null || categories == null || categories.isEmpty()) {
             throw new IllegalArgumentException("Invalid arguments");
         }
@@ -100,11 +100,11 @@ public class AggregateStatusDefinition {
 			joinColumns = { @JoinColumn(name="statusDefId") },
 			inverseJoinColumns = { @JoinColumn(name="categoryId") }
 		)
-	public Collection<OnmsCategory> getCategories() {
+	public Set<OnmsCategory> getCategories() {
         return m_categories;
     }
 
-    public void setCategories(Collection<OnmsCategory> categories) {
+    public void setCategories(Set<OnmsCategory> categories) {
         m_categories = categories;
     }
     
