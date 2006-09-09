@@ -77,7 +77,8 @@ public class DefaultSurveillanceService implements SurveillanceService {
          */
         final SurveillanceTable statusTable = new SurveillanceTable(rows.getRowDefCount(), columns.getColumnDefCount());
         
-        List<String> catNames = new ArrayList<String>();
+        List<String> rowCatNames = new ArrayList<String>();
+        List<String> colCatNames = new ArrayList<String>();
         List rowDefs = rows.getRowDefCollection();
         List columnDefs = columns.getColumnDefCollection();
 
@@ -88,18 +89,19 @@ public class DefaultSurveillanceService implements SurveillanceService {
         for (Iterator rowDefIter = rowDefs.iterator(); rowDefIter.hasNext();) {
             RowDef rowDef = (RowDef) rowDefIter.next();
             statusTable.setRowHeader(rowDef.getRow()-1, rowDef.getLabel());
+            rowCatNames.addAll(rowDef.getCategoryCollection());
+
             for (Iterator colDefIter = columnDefs.iterator(); colDefIter.hasNext();) {
                 ColumnDef colDef = (ColumnDef) colDefIter.next();
-                catNames.addAll(colDef.getCategoryCollection());
-                catNames.addAll(rowDef.getCategoryCollection());
+                colCatNames.addAll(colDef.getCategoryCollection());
 
                 statusTable.setColumnHeader(colDef.getCol()-1, colDef.getLabel());
-                statusTable.setStatus(rowDef.getRow()-1, colDef.getCol()-1, createAggregateStatus(createCategories(catNames)));
+                statusTable.setStatus(rowDef.getRow()-1, colDef.getCol()-1, createAggregateStatus(createCategories(rowCatNames), createCategories(colCatNames)));
 
-                catNames.removeAll(colDef.getCategoryCollection());
+                colCatNames.removeAll(colDef.getCategoryCollection());
             }
             
-            catNames.removeAll(rowDef.getCategoryCollection());
+            rowCatNames.removeAll(rowDef.getCategoryCollection());
         }
         
         return statusTable;
@@ -119,11 +121,10 @@ public class DefaultSurveillanceService implements SurveillanceService {
         return categories;
     }
 
-    private AggregateStatus createAggregateStatus(Collection<OnmsCategory> categories) {
+    private AggregateStatus createAggregateStatus(Collection<OnmsCategory> rowCatNames, Collection<OnmsCategory> colCatNames) {
         AggregateStatus status;
-        Collection<OnmsNode> nodes = m_nodeDao.findAllByCategoryList(categories);
+        Collection<OnmsNode> nodes = m_nodeDao.findAllByCategoryLists(rowCatNames, colCatNames);
         status = new AggregateStatus();
-        status.setLabel("Routers/High");
         status.setDownEntityCount(computeDownCount(nodes));
         status.setDownEntityCount(nodes.size());
         status.setStatus(computeStatus(nodes, status));
