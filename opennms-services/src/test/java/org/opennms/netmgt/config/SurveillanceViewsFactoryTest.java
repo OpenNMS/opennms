@@ -73,6 +73,9 @@ public class SurveillanceViewsFactoryTest extends TestCase {
 		 View view = m_factory.getView(viewName);
 		assertNotNull(view);
 		assertEquals(viewName, view.getName());
+        
+        assertEquals(3, view.getRows().getRowDefCount());
+        assertEquals(3, view.getColumns().getColumnDefCount());
 	}
 
 }
