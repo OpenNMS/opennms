@@ -7,12 +7,12 @@ import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.config.CategoryFactory;
 import org.opennms.netmgt.config.categories.Category;
-import org.opennms.web.svclayer.catstatus.dao.CategoryDao;
+import org.opennms.web.svclayer.catstatus.dao.CategoryConfigDao;
 import org.springframework.dao.DataRetrievalFailureException;
 
-public class DefaultCategoryDao implements CategoryDao {
+public class DefaultCategoryConfigDao implements CategoryConfigDao {
 	
-	public DefaultCategoryDao() {
+	public DefaultCategoryConfigDao() {
 		try {
 			CategoryFactory.init();
 		} catch (MarshalException e) {
