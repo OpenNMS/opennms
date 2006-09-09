@@ -34,8 +34,9 @@ package org.opennms.netmgt.dao.jdbc;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
@@ -138,7 +139,8 @@ public class AggregateStatusViewDaoJdbc extends JdbcDaoSupport implements Aggreg
      * @param viewId
      * @return
      */
-    private Collection<AggregateStatusDefinition> loadStatusDefs(final Integer viewId) {
+    @SuppressWarnings("unchecked")
+	private Set<AggregateStatusDefinition> loadStatusDefs(final Integer viewId) {
 
         final RowMapper statusDefMapper = new RowMapper() {
 
@@ -152,12 +154,13 @@ public class AggregateStatusViewDaoJdbc extends JdbcDaoSupport implements Aggreg
 
         };
         
-        return getJdbcTemplate().query("select * from "+AGGREGATE_STATUS_DEFINITIONS_TABLE+" asd " +
+        return new LinkedHashSet<AggregateStatusDefinition>(getJdbcTemplate().query("select * from "+AGGREGATE_STATUS_DEFINITIONS_TABLE+" asd " +
                 "join "+STATUS_VIEW_DEF_MAPPING_TABLE+" svsd on (svsd.statusDefId = asd.id) "  +
-                " where svsd.statusViewId = "+viewId, statusDefMapper);
+                " where svsd.statusViewId = "+viewId, statusDefMapper));
     }
     
-    private Collection<OnmsCategory> loadStatusDefCategories(final Integer statusDefId) {
+    @SuppressWarnings("unchecked")
+	private Set<OnmsCategory> loadStatusDefCategories(final Integer statusDefId) {
 
         final RowMapper rowMapper = new RowMapper() {
 
@@ -168,13 +171,13 @@ public class AggregateStatusViewDaoJdbc extends JdbcDaoSupport implements Aggreg
 
         };
         
-        return (Collection<OnmsCategory>)getJdbcTemplate().query("select c.categoryId as category from categories c " +
+        return new LinkedHashSet<OnmsCategory>(getJdbcTemplate().query("select c.categoryId as category from categories c " +
                 "join "+CATEGORY_DEF_MAPPING_TABLE+" csd on (csd.categoryId = c.categoryId) " +
-                "where csd.statusDefId = "+statusDefId, rowMapper);
+                "where csd.statusDefId = "+statusDefId, rowMapper));
     }
 
 
-	public List findAll() {
+	public List<AggregateStatusView> findAll() {
 		throw new UnsupportedOperationException("not yet implemented!");
 	}
 

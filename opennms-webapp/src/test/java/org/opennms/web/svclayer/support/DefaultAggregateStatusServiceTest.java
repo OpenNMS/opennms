@@ -35,6 +35,7 @@ package org.opennms.web.svclayer.support;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
 
 import static org.easymock.EasyMock.createMock;
 import static org.easymock.EasyMock.expect;
@@ -61,14 +62,14 @@ public class DefaultAggregateStatusServiceTest extends TestCase {
     public void testCreateAggregateStatusUsingBuilding() {
         
         Collection<AggregateStatus> aggrStati;
-        Collection<AggregateStatusDefinition> defs = new ArrayList<AggregateStatusDefinition>();
+        Collection<AggregateStatusDefinition> defs = new HashSet<AggregateStatusDefinition>();
         
         AggregateStatusDefinition definition = 
-            new AggregateStatusDefinition("Routers/Switches", Arrays.asList(new OnmsCategory[]{ new OnmsCategory("routers"), new OnmsCategory("switches") }));
+            new AggregateStatusDefinition("Routers/Switches", new HashSet<OnmsCategory>(Arrays.asList(new OnmsCategory[]{ new OnmsCategory("routers"), new OnmsCategory("switches") })));
         defs.add(definition);
         
         definition = 
-            new AggregateStatusDefinition("Servers", Arrays.asList(new OnmsCategory[]{ new OnmsCategory("servers") }));
+            new AggregateStatusDefinition("Servers", new HashSet<OnmsCategory>(Arrays.asList(new OnmsCategory[]{ new OnmsCategory("servers") })));
             
         defs.add(definition);
         
