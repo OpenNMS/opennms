@@ -19,6 +19,11 @@
 		class="org.opennms.web.controller.AggregateStatusController">
 		<property name="service" ref="aggregateStatusService" />
 	</bean>
+  
+    <bean name="/surveillanceView.htm"
+          class="org.opennms.web.controller.SurveillanceViewController">
+      <property name="service" ref="surveillanceService" />
+    </bean>
 
 	<bean name="/catstatus.htm"
 		class="org.opennms.web.controller.CategoryStatusController">
