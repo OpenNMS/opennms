@@ -32,7 +32,6 @@
 
 package org.opennms.web.svclayer;
 
-import java.awt.Color;
 
 
 /**
