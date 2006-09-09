@@ -53,5 +53,7 @@ public interface NodeDao extends OnmsDao<OnmsNode, Integer> {
             Collection<OnmsCategory> categories);
     
     Collection<OnmsNode> findAllByCategoryList(Collection<OnmsCategory> categories);
+
+    Collection<OnmsNode> findAllByCategoryLists(Collection<OnmsCategory> rowCatNames, Collection<OnmsCategory> colCatNames);
     
 }

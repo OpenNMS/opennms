@@ -408,4 +408,8 @@ public class NodeDaoJdbc extends AbstractDaoJdbc implements NodeDao {
        throw new UnsupportedOperationException("This method not implemented in JDBC Dao");
     }
 
+    public Collection<OnmsNode> findAllByCategoryLists(Collection<OnmsCategory> rowCatNames, Collection<OnmsCategory> colCatNames) {
+        throw new UnsupportedOperationException("This method not implemented in JDBC Dao");
+    }
+
 }
