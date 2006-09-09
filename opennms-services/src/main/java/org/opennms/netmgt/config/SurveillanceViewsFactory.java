@@ -42,7 +42,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.Collection;
@@ -163,5 +162,21 @@ public class SurveillanceViewsFactory {
                 this.reload();
             }
         }
+    }
+
+    public synchronized static SurveillanceViewConfiguration getConfig() {
+        return m_config;
+    }
+
+    public synchronized static void setConfig(SurveillanceViewConfiguration m_config) {
+        SurveillanceViewsFactory.m_config = m_config;
+    }
+
+    public synchronized static Map<String, View> getViewsMap() {
+        return m_viewsMap;
+    }
+
+    public synchronized static void setViewsMap(Map<String, View> map) {
+        m_viewsMap = map;
     }
 }
