@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" 
+        targetNamespace="http://xmlns.opennms.org/xsd/config/surveillance-views"
+        xmlns:this="http://xmlns.opennms.org/xsd/config/surveillance-views" 
+        xmlns:tns="http://www.opennms.org/surveillance-views">
+        
+  <element name="surveillance-view-configuration">
+    <annotation><documentation>Level element containing surveillance view definitions</documentation></annotation>
+    <complexType>
+      <sequence>
+        <element name="views">
+          <complexType>
+            <sequence>
+              <element ref="this:view" minOccurs="1" maxOccurs="unbounded"></element>
+            </sequence>
+          </complexType>
+        </element>
+      </sequence>
+      <attribute name="default-view" type="string" use="optional" default="default"/>
+    </complexType>
+  </element>
+  
+  <element name="view">
+    <complexType>
+      <sequence>
+        <element ref="this:rows" minOccurs="1" maxOccurs="1" />
+        <element ref="this:columns" minOccurs="1" maxOccurs="1" />
+      </sequence>
+      <attribute name="name" type="string" use="required"/>
+    </complexType>
+  </element>
+  
+  <element name="rows" >
+    <complexType>
+      <sequence>
+        <element ref="this:row-def" minOccurs="1" maxOccurs="unbounded" />
+      </sequence>
+    </complexType>
+  </element>
+  
+  <element name="columns" >
+    <complexType>
+      <sequence>
+        <element ref="this:column-def" minOccurs="1" maxOccurs="unbounded" />
+      </sequence>
+    </complexType>
+  </element>
+  
+  <element name="row-def">
+    <complexType>
+      <sequence>
+        <element ref="this:category" minOccurs="1" maxOccurs="unbounded"></element>
+      </sequence>
+      <attribute name="row" type="positiveInteger" use="required" />
+      <attribute name="label" type="string" use="required" />
+    </complexType>
+  </element>
+  
+  <element name="column-def">
+    <complexType>
+      <sequence>
+        <element ref="this:category" minOccurs="1" maxOccurs="unbounded"></element>
+      </sequence>
+      <attribute name="col" type="positiveInteger" use="required" />
+      <attribute name="label" type="string" use="required" />
+    </complexType>
+  </element>
+  
+  <element name="category">
+    <annotation>
+      <documentation>
+        This element is used to specify OpenNMS specific categories. Note: currently, these categories are defined in a separate configuration file and are
+        related directly to monitored services. I have separated out this element so that it can be refereneced by other entities (nodes, interfaces, etc.)
+        however, they will be ignored until the domain model is changed and the service layer is adapted for this behavior.
+      </documentation>
+    </annotation>
+    <complexType>
+      <attribute name="name" type="string" use="required" />
+    </complexType>
+  </element>
+
+</schema>
