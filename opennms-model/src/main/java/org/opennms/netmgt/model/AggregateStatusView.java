@@ -34,7 +34,9 @@ package org.opennms.netmgt.model;
 
 import java.util.Collection;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -106,7 +108,7 @@ public class AggregateStatusView {
         m_columnValue = columnValue;
     }
     
-    @ManyToMany
+    @ManyToMany(fetch=FetchType.EAGER, cascade=CascadeType.ALL)
     @JoinTable(
     		name ="statusview_statusdef",
     		joinColumns = {@JoinColumn(name="statusViewId")},
