@@ -2,6 +2,11 @@
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.springframework.org/schema/beans
 	http://www.springframework.org/schema/beans/spring-beans.xsd">
 
+<!-- Surveillance View beans -->
+  <bean id="surveillanceService" class="org.opennms.web.svclayer.support.DefaultSurveillanceService" >
+    <property name="nodeDao" ref="nodeDao" />
+    <property name="categoryDao" ref="categoryDao" />
+  </bean>
 
 <!-- Aggregate Status beans -->
   <bean id="aggregateStatusService" class="org.opennms.web.svclayer.support.DefaultAggregateStatusService" >
@@ -22,9 +27,13 @@
 
 
 
-<!-- Category Status View beans (note: categoryDao is different that than the DAO for the categories table -->
-  <bean id="categoryDao" class="org.opennms.web.svclayer.catstatus.dao.support.DefaultCategoryDao" />
+<!-- Category Status View beans (note: categoryConfigDao is different that the DAO for the categories table -->
+  <bean id="categoryConfigDao" class="org.opennms.web.svclayer.catstatus.dao.support.DefaultCategoryConfigDao" />
   <bean id="viewDisplayDao" class="org.opennms.web.svclayer.catstatus.dao.support.DefaultViewDisplayDao" />
+  
+  <bean id="categoryDao" class="org.opennms.netmgt.dao.hibernate.CategoryDaoHibernate">
+  	<property name="sessionFactory" ref="sessionFactory" />
+  </bean>
 
 
 <!-- Demand Poll Service beans -->
@@ -59,7 +68,7 @@
 
 <!-- Category Service Status beans -->
    <bean id="categoryStatusService" class="org.opennms.web.svclayer.catstatus.support.DefaultCategoryStatusService">
-    <property name="categoryDao" ref="categoryDao" />
+    <property name="categoryConfigDao" ref="categoryConfigDao" />
     <property name="outageDao"  ref="outageDao" />
     <property name="viewDisplayDao" ref ="viewDisplayDao"/>
   </bean>

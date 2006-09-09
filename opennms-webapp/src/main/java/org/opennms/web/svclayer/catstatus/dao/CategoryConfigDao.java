@@ -4,7 +4,7 @@ import org.opennms.netmgt.config.categories.Category;
 
 
 
-public interface CategoryDao {
+public interface CategoryConfigDao {
 
 	public Category getCategoryByLabel(String label);
 		

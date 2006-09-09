@@ -54,7 +54,7 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsOutage;
 import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.ServiceSelector;
-import org.opennms.web.svclayer.catstatus.dao.CategoryDao;
+import org.opennms.web.svclayer.catstatus.dao.CategoryConfigDao;
 import org.opennms.web.svclayer.catstatus.dao.ViewDisplayDao;
 import org.opennms.web.svclayer.catstatus.model.StatusCategory;
 import org.opennms.web.svclayer.catstatus.model.StatusNode;
@@ -65,13 +65,13 @@ public class DefaultCategoryStatusServiceTest extends TestCase {
 
 	private DefaultCategoryStatusService categoryStatusService;
 	private ViewDisplayDao viewDisplayDao;
-	private CategoryDao categoryDao;
+	private CategoryConfigDao categoryDao;
 	private OutageDao outageDao;
 	
 	protected void setUp() throws Exception {
 		super.setUp();
 		viewDisplayDao = createMock(ViewDisplayDao.class);
-		categoryDao = createMock(CategoryDao.class);
+		categoryDao = createMock(CategoryConfigDao.class);
 		outageDao = createMock(OutageDao.class);
 		categoryStatusService = new DefaultCategoryStatusService();	 
 		categoryStatusService.setViewDisplayDao(viewDisplayDao);
