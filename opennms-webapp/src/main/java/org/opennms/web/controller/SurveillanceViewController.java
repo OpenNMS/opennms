@@ -30,55 +30,37 @@
 //     http://www.opennms.com/
 //
 
-package org.opennms.web.svclayer;
+package org.opennms.web.controller;
 
-public class SurveillanceTable {
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.opennms.web.svclayer.SurveillanceService;
+import org.opennms.web.svclayer.SurveillanceTable;
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.AbstractController;
+
+public class SurveillanceViewController extends AbstractController {
     
-    String m_label = null;
-    AggregateStatus[][] m_statusTable = null;
-    String[] m_rowHeaders = null;
-    String[] m_columnHeaders = null;
+    private static final int FIVE_MINUTES = 5*60;
+    private static SurveillanceService m_service;
     
-    public SurveillanceTable() {
-        
-    }
-    
-    public SurveillanceTable(int rows, int columns) {
-        m_statusTable = new AggregateStatus[rows][columns];
-        m_rowHeaders = new String[rows];
-        m_columnHeaders = new String[columns];
-    }
-    
-    public void setStatus(int row, int col, AggregateStatus status) {
-        m_statusTable[row][col] = status;
-    }
-    
-    public void setRowHeader(int row, String header) {
-        m_rowHeaders[row] = header;
-    }
-    
-    public void setColumnHeader(int col, String header) {
-        m_columnHeaders[col] = header;
+    public SurveillanceViewController() {
+        setSupportedMethods(new String[] {METHOD_GET});
+        setCacheSeconds(FIVE_MINUTES);
     }
 
-    public String[] getColumnHeaders() {
-        return m_columnHeaders;
+    public void setService(SurveillanceService svc) {
+        m_service = svc;
     }
 
-    public String[] getRowHeaders() {
-        return m_rowHeaders;
+    @Override
+    protected ModelAndView handleRequestInternal(HttpServletRequest req, HttpServletResponse resp) throws Exception {
+        ModelAndView mav = new ModelAndView("surveillanceView");
+        String viewName = req.getParameter("viewName");
+        SurveillanceTable table = m_service.createSurveillanceTable(viewName);
+        mav.addObject("table", table);
+        return mav;
     }
 
-    public String getLabel() {
-        return m_label;
-    }
-
-    public void setLabel(String label) {
-        m_label = label;
-    }
-
-    public AggregateStatus[][] getStatusTable() {
-        return m_statusTable;
-    }
-    
 }
