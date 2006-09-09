@@ -330,6 +330,10 @@ public final class ConfigFileConstants {
      */
     public static final int OPENNMS_SERVER_CONFIG_FILE_NAME;
 
+    /**
+     * The opennms server config file
+     */
+    public static final int SURVEILLANCE_VIEWS_FILE_NAME;
     //
     // End other config files
     //
@@ -488,9 +492,11 @@ public final class ConfigFileConstants {
         LINKD_CONFIG_FILE_NAME = 59;
         
         MAP_PROPERTIES_FILE_NAME = 60;
+        
+        SURVEILLANCE_VIEWS_FILE_NAME = 61;
         // Allocate and build the mapping of identifiers to names
         //
-        FILE_ID_TO_NAME = new String[61];
+        FILE_ID_TO_NAME = new String[62];
 
         FILE_ID_TO_NAME[DB_CONFIG_FILE_NAME] = "opennms-database.xml";
         FILE_ID_TO_NAME[JMS_CONFIG_FILE_NAME] = "opennms-jms.xml";
@@ -561,20 +567,14 @@ public final class ConfigFileConstants {
         FILE_ID_TO_NAME[RRD_CONFIG_FILE_NAME] = "rrd-configuration.properties";
         FILE_ID_TO_NAME[JAVA_MAIL_CONFIG_FILE_NAME] = "javamail-configuration.properties";
         FILE_ID_TO_NAME[VACUUMD_CONFIG_FILE_NAME] = "vacuumd-configuration.xml";
-
         FILE_ID_TO_NAME[XMPP_CONFIG_FILE_NAME] = "xmpp-configuration.properties";
-        
         FILE_ID_TO_NAME[CHART_CONFIG_FILE_NAME] = "chart-configuration.xml";
-
         FILE_ID_TO_NAME[JMX_DATA_COLLECTION_CONF_FILE_NAME] = "jmx-datacollection-config.xml";
-        
         FILE_ID_TO_NAME[TRANSLATOR_CONFIG_FILE_NAME] = "translator-configuration.xml";
-
         FILE_ID_TO_NAME[SYSLOGD_CONFIG_FILE_NAME] = "syslogd-configuration.xml";
-
         FILE_ID_TO_NAME[LINKD_CONFIG_FILE_NAME] = "linkd-configuration.xml";
-        
-		FILE_ID_TO_NAME[MAP_PROPERTIES_FILE_NAME]           = "map.properties";
+		FILE_ID_TO_NAME[MAP_PROPERTIES_FILE_NAME] = "map.properties";
+        FILE_ID_TO_NAME[SURVEILLANCE_VIEWS_FILE_NAME] = "surveillance-views.xml";
     }
 
     /**
