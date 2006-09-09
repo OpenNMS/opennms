@@ -97,5 +97,15 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer> im
                 "and c in ?", columnValue, categories);
     }
 
+    public Collection<OnmsNode> findAllByCategoryList(Collection<OnmsCategory> categories) {
+        return find("select distinct n from OnmsNode as n " +
+                "join n.categories c " +
+                "left join fetch n.assetRecord "     +  
+                "left join fetch n.ipInterfaces as iface " +
+                "left join fetch iface.monitoredServices as monSvc " +
+                "left join fetch monSvc.serviceType " +
+                "left join fetch monSvc.currentOutages " +
+                "where c in ?", categories);
+    }
     
 }

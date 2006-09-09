@@ -403,4 +403,9 @@ public class NodeDaoJdbc extends AbstractDaoJdbc implements NodeDao {
         return ThreadCategory.getInstance(getClass());
     }
 
+    public Collection<OnmsNode> findAllByCategoryList(Collection<OnmsCategory> categories) {
+        
+       throw new UnsupportedOperationException("This method not implemented in JDBC Dao");
+    }
+
 }
