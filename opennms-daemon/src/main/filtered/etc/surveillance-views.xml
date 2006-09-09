@@ -2,7 +2,7 @@
 <surveillance-view-configuration 
   xmlns:this="http://www.opennms.org/xsd/config/surveillance-views" 
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-  xsi:schemaLocation="http://www.opennms.org/xsd/config/surveillance-views.xsd ">
+  xsi:schemaLocation="http://www.opennms.org/xsd/config/surveillance-views http://www.opennms.org/xsd/config/surveillance-views.xsd ">
   <views default-view="default" >
     <view name="default" >
       <rows>
