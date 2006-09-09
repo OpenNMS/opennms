@@ -108,7 +108,7 @@ public class DefaultCategoryStatusService implements CategoryStatusService {
 		m_viewDisplayDao = viewDisplayDao;
 	}
 
-	public void setCategoryDao(CategoryConfigDao categoryDao){
+	public void setCategoryConfigDao(CategoryConfigDao categoryDao){
 		m_categoryConfigDao = categoryDao;
 		
 	}
