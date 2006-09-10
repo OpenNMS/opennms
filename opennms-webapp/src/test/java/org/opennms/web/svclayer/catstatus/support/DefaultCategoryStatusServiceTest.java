@@ -75,7 +75,7 @@ public class DefaultCategoryStatusServiceTest extends TestCase {
 		outageDao = createMock(OutageDao.class);
 		categoryStatusService = new DefaultCategoryStatusService();	 
 		categoryStatusService.setViewDisplayDao(viewDisplayDao);
-		categoryStatusService.setCategoryDao(categoryDao);
+		categoryStatusService.setCategoryConfigDao(categoryDao);
 		categoryStatusService.setOutageDao(outageDao);
 	}
 
