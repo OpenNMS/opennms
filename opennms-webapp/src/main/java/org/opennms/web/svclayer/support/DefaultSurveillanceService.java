@@ -148,9 +148,15 @@ public class DefaultSurveillanceService implements SurveillanceService {
         AggregateStatus status;
         Collection<OnmsNode> nodes = m_nodeDao.findAllByCategoryLists(rowCatNames, colCatNames);
         status = new AggregateStatus();
-        status.setDownEntityCount(computeDownCount(nodes));
-        status.setDownEntityCount(nodes.size());
-        status.setStatus(computeStatus(nodes, status));
+        if (nodes == null || nodes.isEmpty()) {
+            status.setDownEntityCount(0);
+            status.setTotalEntityCount(0);
+            status.setStatus(AggregateStatus.ALL_NODES_UP);
+        } else {
+            status.setDownEntityCount(computeDownCount(nodes));
+            status.setTotalEntityCount(nodes.size());
+            status.setStatus(computeStatus(nodes, status));
+        }
         return status;
     }
 
