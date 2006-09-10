@@ -76,6 +76,7 @@ public class DefaultSurveillanceService implements SurveillanceService {
          * Initialize a status table 
          */
         final SurveillanceTable statusTable = new SurveillanceTable(rows.getRowDefCount(), columns.getColumnDefCount());
+        statusTable.setLabel(view.getName());
         
         List<String> rowCatNames = new ArrayList<String>();
         List<String> colCatNames = new ArrayList<String>();
