@@ -38,6 +38,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import org.opennms.netmgt.config.surveillanceViews.Category;
 import org.opennms.netmgt.config.surveillanceViews.ColumnDef;
 import org.opennms.netmgt.config.surveillanceViews.Columns;
 import org.opennms.netmgt.config.surveillanceViews.RowDef;
@@ -65,6 +66,10 @@ public class DefaultSurveillanceService implements SurveillanceService {
         return createSurveillanceTable("default");
     }
 
+    /**
+     * Creates a custom table object containing intersected rows and
+     * columns and categories.
+     */
     public SurveillanceTable createSurveillanceTable(String surveillanceViewName) {
 
         View view = m_surveillanceConfigDao.getView(surveillanceViewName);
@@ -78,8 +83,8 @@ public class DefaultSurveillanceService implements SurveillanceService {
         final SurveillanceTable statusTable = new SurveillanceTable(rows.getRowDefCount(), columns.getColumnDefCount());
         statusTable.setLabel(view.getName());
         
-        List<String> rowCatNames = new ArrayList<String>();
-        List<String> colCatNames = new ArrayList<String>();
+        List<Category> viewRowCats = new ArrayList<Category>();
+        List<Category> viewColCats = new ArrayList<Category>();
         List rowDefs = rows.getRowDefCollection();
         List columnDefs = columns.getColumnDefCollection();
 
@@ -90,29 +95,46 @@ public class DefaultSurveillanceService implements SurveillanceService {
         for (Iterator rowDefIter = rowDefs.iterator(); rowDefIter.hasNext();) {
             RowDef rowDef = (RowDef) rowDefIter.next();
             statusTable.setRowHeader(rowDef.getRow()-1, rowDef.getLabel());
-            rowCatNames.addAll(rowDef.getCategoryCollection());
+            viewRowCats.addAll(rowDef.getCategoryCollection());
 
             for (Iterator colDefIter = columnDefs.iterator(); colDefIter.hasNext();) {
                 ColumnDef colDef = (ColumnDef) colDefIter.next();
-                colCatNames.addAll(colDef.getCategoryCollection());
+                viewColCats.addAll(colDef.getCategoryCollection());
 
                 statusTable.setColumnHeader(colDef.getCol()-1, colDef.getLabel());
-                statusTable.setStatus(rowDef.getRow()-1, colDef.getCol()-1, createAggregateStatus(createCategories(rowCatNames), createCategories(colCatNames)));
+                statusTable.setStatus(rowDef.getRow()-1, colDef.getCol()-1, createAggregateStatus(createCategories(viewRowCats), createCategories(viewColCats)));
 
-                colCatNames.removeAll(colDef.getCategoryCollection());
+                viewColCats.removeAll(colDef.getCategoryCollection());
             }
             
-            rowCatNames.removeAll(rowDef.getCategoryCollection());
+            viewRowCats.removeAll(rowDef.getCategoryCollection());
         }
         
         return statusTable;
     }
 
-    public Collection<OnmsCategory> createCategories(List<String> catNames) {
-        Collection<OnmsCategory> categories = createCategoryNameCollection(catNames);
-        return categories;
+    /**
+     * This method takes list of configured surveillance view categories
+     * and returns a list of OnmsCategories
+     * @param viewRowCats
+     * @return
+     */
+    private Collection<OnmsCategory> createCategories(List<Category> viewRowCats) {
+        List<String> catNames = new ArrayList<String>();
+        for (Category category : viewRowCats) {
+            catNames.add(category.getName());
+        }
+        
+        return createCategoryNameCollection(catNames);
     }
 
+    /**
+     * This method takes a list of category names and returns a
+     * list of OnmsCategories
+     * 
+     * @param categoryNames
+     * @return
+     */
     private Collection<OnmsCategory> createCategoryNameCollection(List<String> categoryNames) {
         
         Collection<OnmsCategory> categories = new ArrayList<OnmsCategory>();
