@@ -7,24 +7,24 @@
     <view name="default" >
       <rows>
         <row-def row="1" label="High Priority" >
-          <category name="high"/>
+          <category name="IMP_high"/>
         </row-def>
         <row-def row="2" label="Mid Priority" >
-          <category name="mid" />
+          <category name="IMP_mid" />
         </row-def>
         <row-def row="3" label="Low Priority" >
-          <category name="low" />
+          <category name="IMP_low" />
         </row-def>
       </rows>
       <columns>
         <column-def col="1" label="Routers" >
-          <category name="Routers" />
+          <category name="DEV_ROUTER" />
         </column-def>
-        <column-def col="2" label="Swtiches" >
-          <category name="Switches" />
+        <column-def col="2" label="AC" >
+          <category name="DEV_AC" />
         </column-def>
-        <column-def col="3" label="Servers" >
-          <category name="Servers" />
+        <column-def col="3" label="Switches" >
+          <category name="DEV_SWITCH" />
         </column-def>
       </columns>
     </view>
