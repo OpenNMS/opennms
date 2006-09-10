@@ -897,7 +897,14 @@ public class Installer {
         
 
         Statement st = m_dbconnection.createStatement();
-        ResultSet rs = st.executeQuery("SELECT count(*) " + partialQuery);
+        ResultSet rs;
+        String query = "SELECT count(*) " + partialQuery; 
+        try {
+            rs = st.executeQuery(query);
+        } catch (SQLException e) {
+            throw new Exception("Failed to execute query '" + query + "'.  "
+                                + "Nested exception: " + e.getMessage(), e);
+        }
 
         rs.next();
         int count = rs.getInt(1);
@@ -924,20 +931,36 @@ public class Installer {
 
     }
 
-	private String getJoinForRowsThatFailConstraint(String table, List<String> columns, String ftable, List<String> fcolumns) {
-		String partialQuery = "FROM " + table + " LEFT JOIN " + ftable + " ON (";
-        for(int i = 0; i < columns.size(); i++) {
-        	String column = columns.get(i);
-        	String fcolumn = fcolumns.get(i);
-        	if (i != 0) {
-        		partialQuery += " AND ";
-        	}
-        	
-        	partialQuery += table+'.'+column+" = "+ftable+'.'+fcolumn;
+    private String getJoinForRowsThatFailConstraint(String table, List<String> columns, String ftable, List<String> fcolumns) throws Exception {
+        String notNulls = notNullWhereClause(table, columns);
+        String noForeign = "FROM " + table + " WHERE " + notNulls;
+        
+        if (!tableExists(ftable)) {
+            return noForeign;
         }
-        partialQuery += ") WHERE "+ftable+'.'+fcolumns.get(0)+" is NULL AND "+notNullWhereClause(table, columns);
-		return partialQuery;
-	}
+        
+        for (String fcolumn : fcolumns) {
+            if (!tableColumnExists(ftable, fcolumn)) {
+                return noForeign;
+            }
+        }
+
+        
+        String partialQuery = "FROM " + table + " LEFT JOIN " + ftable + " ON (";
+        for (int i = 0; i < columns.size(); i++) {
+            String column = columns.get(i);
+            String fcolumn = fcolumns.get(i);
+            if (i != 0) {
+                partialQuery += " AND ";
+            }
+        	
+            partialQuery += table+'.'+column+" = "+ftable+'.'+fcolumn;
+        }
+        
+        partialQuery += ") WHERE "+ftable+'.'+fcolumns.get(0)+" is NULL AND "+ notNulls;
+        
+        return partialQuery;
+    }
 
     public String getForeignConstraintWhere(String table, List<String> columns,
             String ftable, List<String> fcolumns) throws Exception {

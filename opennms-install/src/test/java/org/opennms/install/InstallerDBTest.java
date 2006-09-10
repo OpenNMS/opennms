@@ -632,8 +632,9 @@ public class InstallerDBTest extends TemporaryDatabaseTestCase {
                 + ".  See the install guide for details on how to correct this "
                 + "problem.  You can execute this SQL query to see a list of "
                 + "the rows that violate the constraint:\n"
-                + "SELECT * FROM events WHERE events.nodeid IS NOT NULL "
-                + "AND ( events.nodeid ) NOT IN (SELECT node.nodeid FROM node)";
+                + "SELECT * FROM events LEFT JOIN node ON (events.nodeid = "
+                + "node.nodeid) WHERE node.nodeid is NULL AND events.nodeid "
+                + "IS NOT NULL";
         }
 
         setupBug931((badRows != 0) || fixConstraint, dropForeignTable);
