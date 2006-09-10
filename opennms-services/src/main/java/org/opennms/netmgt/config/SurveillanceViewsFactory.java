@@ -49,9 +49,11 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.apache.log4j.Category;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
+import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.ConfigFileConstants;
 import org.opennms.netmgt.config.surveillanceViews.SurveillanceViewConfiguration;
 import org.opennms.netmgt.config.surveillanceViews.View;
@@ -89,7 +91,8 @@ public class SurveillanceViewsFactory {
         initialize(rdr);
     }
 
-    private void initialize(Reader rdr) throws MarshalException, ValidationException {        
+    private void initialize(Reader rdr) throws MarshalException, ValidationException {
+        log().debug("initialize: initializing surveillance views factory.");
         m_config = (SurveillanceViewConfiguration) Unmarshaller.unmarshal(SurveillanceViewConfiguration.class, rdr);
 
         m_viewsMap = new HashMap<String, View>();
@@ -178,5 +181,9 @@ public class SurveillanceViewsFactory {
 
     public synchronized static void setViewsMap(Map<String, View> map) {
         m_viewsMap = map;
+    }
+    
+    private Category log() {
+        return ThreadCategory.getInstance();
     }
 }
