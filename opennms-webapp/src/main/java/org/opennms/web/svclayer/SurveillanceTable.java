@@ -120,8 +120,12 @@ public class SurveillanceTable {
      */
     public List<AggregateStatus> getColumnOrderedRow(AggregateStatus[] row) {
         List<AggregateStatus> orderedRow = new LinkedList<AggregateStatus>();
-        for(AggregateStatus s : row) {
-            orderedRow.add(s);
+        /*
+         * we received an array (1 row) of aggregate status columns, loop over
+         * the array in order and add each status to the list.
+         */
+        for (int i = 0; i < row.length; i++) {
+            orderedRow.add(row[i]);
         }
         return orderedRow;
     }
@@ -134,8 +138,13 @@ public class SurveillanceTable {
      */
     public List<AggregateStatus> getColumnOrderedRow(int row) {
         List<AggregateStatus> orderedRow = new LinkedList<AggregateStatus>();
-        for(AggregateStatus s : m_statusTable[row]) {
-            orderedRow.add(s);
+        /*
+         * we received a row index into the status table to retrieve an array (1 row)
+         * of aggregate status columns, loop over
+         * the array in order and add each status to the list.
+         */
+        for (int i = 0; i < m_statusTable[row].length; i++) {
+            orderedRow.add(m_statusTable[row][i]);
         }
         return orderedRow;
     }
