@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2006 Sep 10: Support unit/integration testing. - dj@opennms.org
 // 2003 Jan 31: Cleaned up some unused imports.
 //
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
@@ -39,11 +40,10 @@
 package org.opennms.netmgt.config;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.Reader;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -58,33 +58,41 @@ import org.opennms.netmgt.config.viewsdisplay.Viewinfo;
 
 public class ViewsDisplayFactory {
     /** The singleton instance. */
-    private static ViewsDisplayFactory instance;
+    private static ViewsDisplayFactory m_instance;
 
     /** File path of groups.xml. */
-    protected File viewsDisplayFile;
+    protected File m_viewsDisplayFile;
 
     /** Boolean indicating if the init() method has been called. */
     protected boolean initialized = false;
 
     /** Timestamp of the viewDisplay file, used to know when to reload from disk. */
-    protected long lastModified;
+    protected long m_lastModified;
 
     /** Map of view objects by name. */
-    protected Map viewsMap;
+    protected Map<String,View> m_viewsMap;
 
     /**
      * Empty private constructor so this class cannot be instantiated outside
      * itself.
+     * @throws IOException 
+     * @throws FileNotFoundException 
+     * @throws ValidationException 
+     * @throws MarshalException 
      */
-    private ViewsDisplayFactory() {
+    private ViewsDisplayFactory() throws MarshalException, ValidationException, FileNotFoundException, IOException {
+        reload();
+    }
+
+    public ViewsDisplayFactory(String file) throws MarshalException, ValidationException, FileNotFoundException, IOException {
+        setViewsDisplayFile(new File(file));
+        reload();
     }
 
     /** Be sure to call this method before calling getInstance(). */
     public static synchronized void init() throws IOException, FileNotFoundException, MarshalException, ValidationException {
-        if (instance == null) {
-            instance = new ViewsDisplayFactory();
-            instance.reload();
-            instance.initialized = true;
+        if (m_instance == null) {
+            setInstance(new ViewsDisplayFactory());
         }
     }
 
@@ -97,32 +105,57 @@ public class ViewsDisplayFactory {
      *             if init has not been called
      */
     public static synchronized ViewsDisplayFactory getInstance() {
-        if (instance == null) {
+        if (m_instance == null) {
             throw new IllegalStateException("You must call ViewDisplay.init() before calling getInstance().");
         }
 
-        return instance;
+        return m_instance;
     }
 
     /**
      * Parses the viewsdisplay.xml via the Castor classes
      */
     public synchronized void reload() throws IOException, FileNotFoundException, MarshalException, ValidationException {
-        this.viewsDisplayFile = ConfigFileConstants.getFile(ConfigFileConstants.VIEWS_DISPLAY_CONF_FILE_NAME);
-
-        InputStream configIn = new FileInputStream(viewsDisplayFile);
-        this.lastModified = viewsDisplayFile.lastModified();
-
-        Viewinfo viewInfo = (Viewinfo) Unmarshaller.unmarshal(Viewinfo.class, new InputStreamReader(configIn));
-        this.viewsMap = new HashMap();
+        Reader reader = getReader();
+        try {
+            unmarshal(reader);
+        } finally {
+            reader.close();
+        }
+    }
+    
+    private void unmarshal(Reader reader) throws MarshalException, ValidationException {
+        Viewinfo viewInfo = (Viewinfo) Unmarshaller.unmarshal(Viewinfo.class, reader);
+        Map<String, View> viewsMap = new HashMap<String,View>();
 
         Collection viewList = viewInfo.getViewCollection();
         Iterator i = viewList.iterator();
 
         while (i.hasNext()) {
             View view = (View) i.next();
-            this.viewsMap.put(view.getViewName(), view);
+            viewsMap.put(view.getViewName(), view);
         }
+        
+        m_viewsMap = viewsMap;
+    }
+    
+    private Reader getReader() throws IOException, FileNotFoundException {
+        File viewsDisplayFile = getViewsDisplayFile();
+
+        Reader reader = new FileReader(viewsDisplayFile);
+        m_lastModified = m_viewsDisplayFile.lastModified();
+        return reader;
+    }
+    
+    public void setViewsDisplayFile(File viewsDisplayFile) {
+        m_viewsDisplayFile = viewsDisplayFile;
+    }
+
+    public File getViewsDisplayFile() throws IOException {
+        if (m_viewsDisplayFile == null) {
+            m_viewsDisplayFile = ConfigFileConstants.getFile(ConfigFileConstants.VIEWS_DISPLAY_CONF_FILE_NAME);
+        }
+        return m_viewsDisplayFile;
     }
 
     /** Can be null */
@@ -131,9 +164,9 @@ public class ViewsDisplayFactory {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
 
-        this.updateFromFile();
+        updateFromFile();
 
-        View view = (View) this.viewsMap.get(viewName);
+        View view = m_viewsMap.get(viewName);
 
         return view;
     }
@@ -143,8 +176,13 @@ public class ViewsDisplayFactory {
      * read it.
      */
     protected void updateFromFile() throws IOException, MarshalException, ValidationException {
-        if (this.lastModified != this.viewsDisplayFile.lastModified()) {
-            this.reload();
+        if (m_lastModified != m_viewsDisplayFile.lastModified()) {
+            reload();
         }
+    }
+
+    public static void setInstance(ViewsDisplayFactory instance) {
+        m_instance = instance;
+        m_instance.initialized = true;
     }
 }
