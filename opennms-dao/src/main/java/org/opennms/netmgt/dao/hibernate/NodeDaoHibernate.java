@@ -87,7 +87,7 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer> im
                 "left join fetch monSvc.serviceType " +
                 "left join fetch monSvc.currentOutages " +
                 "where n.assetRecord."+columnName+" = ? " +
-                "and c in ?", columnValue, categories);
+                "and c in ( ? )", columnValue, categories);
     }
 
     public Collection<OnmsNode> findAllByCategoryList(Collection<OnmsCategory> categories) {
@@ -98,7 +98,7 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer> im
                 "left join fetch iface.monitoredServices as monSvc " +
                 "left join fetch monSvc.serviceType " +
                 "left join fetch monSvc.currentOutages " +
-                "where c in ?", categories);
+                "where c in ( ? )", categories);
     }
 
     public Collection<OnmsNode> findAllByCategoryLists(Collection<OnmsCategory> rowCatNames, Collection<OnmsCategory> colCatNames) {
