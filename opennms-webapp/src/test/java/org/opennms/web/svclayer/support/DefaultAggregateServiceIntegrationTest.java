@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2006 Sep 10: Don't require config files to be in /opt/OpenNMS/etc. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -32,12 +36,23 @@
 
 package org.opennms.web.svclayer.support;
 
+import java.beans.PropertyVetoException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 
+import org.exolab.castor.xml.MarshalException;
+import org.exolab.castor.xml.ValidationException;
+import org.opennms.netmgt.config.C3P0ConnectionFactory;
+import org.opennms.netmgt.config.CategoryFactory;
+import org.opennms.netmgt.config.DataSourceFactory;
+import org.opennms.netmgt.config.SurveillanceViewsFactory;
+import org.opennms.netmgt.config.ViewsDisplayFactory;
 import org.opennms.netmgt.model.AggregateStatusDefinition;
 import org.opennms.netmgt.model.AggregateStatusView;
 import org.opennms.netmgt.model.OnmsCategory;
@@ -49,6 +64,16 @@ public class DefaultAggregateServiceIntegrationTest extends AbstractTransactiona
     
     private AggregateStatusService m_aggregateService;
     
+    public DefaultAggregateServiceIntegrationTest() throws MarshalException, ValidationException, IOException, PropertyVetoException, SQLException {
+        SurveillanceViewsFactory.setInstance(new SurveillanceViewsFactory("../opennms-daemon/src/main/filtered/etc/surveillance-views.xml"));
+        /*
+         * Note: I'm using the opennms-database.xml file in target/classes/etc
+         * so that it has been filtered first.
+         */
+        DataSourceFactory.setInstance(new C3P0ConnectionFactory("../opennms-daemon/target/classes/etc/opennms-database.xml"));
+        CategoryFactory.setInstance(new CategoryFactory(new FileReader("../opennms-daemon/src/main/filtered/etc/categories.xml")));
+        ViewsDisplayFactory.setInstance(new ViewsDisplayFactory("../opennms-daemon/src/main/filtered/etc/viewsdisplay.xml"));
+    }
     
     /**
      * This parm gets autowired from the application context by TDSCT (the base class for this test)
