@@ -78,11 +78,11 @@ public class AggregateStatus {
     
     @Override
     public String toString() {
-        StringBuffer sb = new StringBuffer(m_label);
+        StringBuffer sb = new StringBuffer(m_label == null ? "null" : m_label);
         sb.append(": ");
-        sb.append(m_downEntityCount);
+        sb.append(m_downEntityCount == null ? -1 : m_downEntityCount);
         sb.append(" down of ");
-        sb.append(m_totalEntityCount);
+        sb.append(m_totalEntityCount == null ? -1 : m_totalEntityCount);
         sb.append(" total.");
         return sb.toString();
     }
