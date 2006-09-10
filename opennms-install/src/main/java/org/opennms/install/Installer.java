@@ -890,8 +890,11 @@ public class Installer {
          * m_out.print("Skipping usersNotified.id"); continue; }
          */
 
-        String partialQuery = "FROM " + table + " WHERE "
-                + getForeignConstraintWhere(table, columns, ftable, fcolumns);
+//        String partialQuery = "FROM " + table + " WHERE "
+//                + getForeignConstraintWhere(table, columns, ftable, fcolumns);
+        
+        String partialQuery = getJoinForRowsThatFailConstraint(table, columns, ftable, fcolumns);
+        
 
         Statement st = m_dbconnection.createStatement();
         ResultSet rs = st.executeQuery("SELECT count(*) " + partialQuery);
@@ -920,6 +923,21 @@ public class Installer {
         st.close();
 
     }
+
+	private String getJoinForRowsThatFailConstraint(String table, List<String> columns, String ftable, List<String> fcolumns) {
+		String partialQuery = "FROM " + table + " LEFT JOIN " + ftable + " ON (";
+        for(int i = 0; i < columns.size(); i++) {
+        	String column = columns.get(i);
+        	String fcolumn = fcolumns.get(i);
+        	if (i != 0) {
+        		partialQuery += " AND ";
+        	}
+        	
+        	partialQuery += table+'.'+column+" = "+ftable+'.'+fcolumn;
+        }
+        partialQuery += ") WHERE "+ftable+'.'+fcolumns.get(0)+" is NULL AND "+notNullWhereClause(table, columns);
+		return partialQuery;
+	}
 
     public String getForeignConstraintWhere(String table, List<String> columns,
             String ftable, List<String> fcolumns) throws Exception {
@@ -1003,8 +1021,19 @@ public class Installer {
             }
         }
 
-        String where = getForeignConstraintWhere(table, columns, ftable,
-                                                 fcolumns);
+//        String where = getForeignConstraintWhere(table, columns, ftable,
+//                                                 fcolumns);
+        
+        String tuple = "";
+        for(int i = 0; i < columns.size(); i++) {
+        	if (i != 0) {
+        		tuple += ", ";
+        	}
+        	tuple += table+'.'+columns.get(i);
+        }
+        
+        String where = "( "+ tuple + ") IN ( SELECT " + tuple + " " +
+        	getJoinForRowsThatFailConstraint(table, columns, ftable, fcolumns) +")";
 
         String query;
         String change_text;
