@@ -8,6 +8,10 @@
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
+// Modifications:
+//
+// 2006 Sep 10: Catch some null arguments that might cause problems. - dj@opennms.org
+//
 // Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -76,11 +80,17 @@ public class DefaultAggregateStatusService implements AggregateStatusService {
     }
     
     public Collection<AggregateStatus> createAggreateStatuses(AggregateStatusView statusView) {
+        if (statusView == null) {
+            throw new IllegalArgumentException("statusView argument cannot be null");
+        }
         return createAggregateStatus(statusView.getTableName(), statusView.getColumnName(), statusView.getColumnValue(), statusView.getStatusDefinitions());
     }
 
     //Overloaded method that overrides the column value in the defined view
     public Collection<AggregateStatus> createAggreateStatuses(AggregateStatusView statusView, String statusSite) {
+        if (statusView == null) {
+            throw new IllegalArgumentException("statusView argument cannot be null");
+        }
         return createAggregateStatus(statusView.getTableName(), statusView.getColumnName(), statusSite, statusView.getStatusDefinitions());
     }
 
