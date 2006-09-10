@@ -29,7 +29,6 @@
 //   http://www.opennms.org/
 //   http://www.opennms.com/
 //
-// Tab Size = 8
 
 package org.opennms.netmgt.dao.hibernate;
 
