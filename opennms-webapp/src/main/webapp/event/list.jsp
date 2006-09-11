@@ -171,14 +171,12 @@
   </script>
 
 
-<div id="eventlist">
-
       <!-- menu -->
       <div id="linkbar">
       <ul>
         <li><a href="<%=this.makeLink( parms, new ArrayList())%>" title="Remove all search constraints" >View all events</a></li>
         <li><a href="event/advsearch.jsp" title="More advanced searching and sorting options">Advanced Search</a></li>
-        <li><a href="javascript: void window.open('<%=org.opennms.web.Util.calculateUrlBase(request)%>/event/severity.jsp','', 'fullscreen=no,toolbar=no,status=no,menubar=no,scrollbars=no,resizable=yes,directories=no,location=no,width=525,height=158')" title="Open a window explaining the event severities">Severity Legend</a></li>
+        <li><a href="<%=org.opennms.web.Util.calculateUrlBase(request)%>/event/severity.jsp">Severity Legend</a></li>
       
       <% if( !(request.isUserInRole( Authentication.READONLY_ROLE ))) { %>
         <% if( parms.ackType == EventFactory.AcknowledgeType.UNACKNOWLEDGED ) { %> 
@@ -212,36 +210,17 @@
               </jsp:include>
             <% } %>          
 
-            <% if( parms.filters.size() > 0 || parms.ackType == EventFactory.AcknowledgeType.UNACKNOWLEDGED || parms.ackType == EventFactory.AcknowledgeType.ACKNOWLEDGED ) { %>
-              <% int length = parms.filters.size(); %>
+            <% if( parms.filters.size() > 0 || parms.ackType == EventFactory.AcknowledgeType.UNACKNOWLEDGED || parms.ackType == EventFactory.AcknowledgeType.ACKNOWLEDGED ) { %>               <% int length = parms.filters.size(); %>
 
-              <p>Current search constraints:
-                <ol>                  
+              <p>Search constraints:
                   <% if( parms.ackType == EventFactory.AcknowledgeType.UNACKNOWLEDGED ) { %>
-                    <li>event is outstanding
-                      &nbsp;&nbsp;
-                      <a href="<%=this.makeLink(parms, EventFactory.AcknowledgeType.ACKNOWLEDGED)%>" title="Show acknowledged events"><nobr>[Show acknowledged]</nobr></a>
-                    </li>
-                  <% } else if( parms.ackType == EventFactory.AcknowledgeType.ACKNOWLEDGED ) { %>
-                    <li>
-                      event is acknowledged
-                      &nbsp;&nbsp;
-                      <a href="<%=this.makeLink(parms, EventFactory.AcknowledgeType.UNACKNOWLEDGED)%>" title="Show outstanding events"><nobr>[Show outstanding]</nobr></a>
-                    </li>
-                  <% } %>            
-                
-                  <% for( int i=0; i < length; i++ ) { %>
-                    <% org.opennms.web.event.filter.Filter filter = (org.opennms.web.event.filter.Filter)parms.filters.get(i); %>
-                    
-                    <li>
-                      <%=filter.getTextDescription()%>
-                      &nbsp;&nbsp;
-                      <a href="<%=this.makeLink( parms, filter, false)%>" title="Remove filter">[Remove]</a>
-                    </li>                    
-                  <% } %>
-                </ol>
-              </p>           
+                  <span class="filter">Event(s) outstanding <a href="<%=this.makeLink(parms, EventFactory.AcknowledgeType.ACKNOWLEDGED)%>" title="Show acknowledged event(s)">[-]</a></span>                   <% } else if( parms.ackType == EventFactory.AcknowledgeType.ACKNOWLEDGED ) { %>
+                  <span class="filter">Event(s) acknowledged <a href="<%=this.makeLink(parms, EventFactory.AcknowledgeType.UNACKNOWLEDGED)%>" title="Show outstanding event(s)">[-]</a></span>                   <% } %>
+                                                                        <% for( int i=0; i < length; i++ ) { %>
+                                                                          <% org.opennms.web.event.filter.Filter filter = (org.opennms.web.event.filter.Filter)parms.filters.get(i); %>                                                                             &nbsp; <span class="filter"><%=filter.getTextDescription()%> <a href="<%=this.makeLink( parms, filter, false)%>" title="Remove filter">[-]</a></span>                                                                         <% } %>
+              </p>
             <% } %>
+
 
     <% if( !(request.isUserInRole( Authentication.READONLY_ROLE ))) { %>
       <form action="event/acknowledge" method="POST" name="acknowledge_form">
@@ -249,6 +228,7 @@
         <input type="hidden" name="action" value="<%=action%>" />
         <%=org.opennms.web.Util.makeHiddenTags(request)%>
     <% } %>
+                <jsp:include page="/includes/key.jsp" flush="false" />
 
       <table>
         <thead>
@@ -274,16 +254,16 @@
       <% for( int i=0; i < events.length; i++ ) { %>        
         <tr valign="top" class="<%=EventUtil.getSeverityLabel(events[i].getSeverity())%>">
           <% if( !(request.isUserInRole( Authentication.READONLY_ROLE ))) { %>
-          <td valign="top" rowspan="3" class="bright">
+          <td valign="top" rowspan="3" class="divider">
                 <input type="checkbox" name="event" value="<%=events[i].getId()%>" /> 
             </td>
             <% } else { %>
-              <td class="bright">&nbsp;</td>
+              <td class="divider">&nbsp;</td>
             <% } %>
 
           <td valign="top" rowspan="3" class="divider"><a href="event/detail.jsp?id=<%=events[i].getId()%>"><%=events[i].getId()%></a></td>
           
-          <td valign="top" rowspan="3" class="divider"> 
+          <td valign="top" rowspan="3" class="divider bright"> 
             <strong><%=EventUtil.getSeverityLabel(events[i].getSeverity())%></strong>
             <% org.opennms.web.event.filter.Filter severityFilter = new SeverityFilter(events[i].getSeverity()); %>      
             <% if( !parms.filters.contains( severityFilter )) { %>
@@ -351,7 +331,7 @@
             <% } else { %>
               &nbsp;
             <% } %>
-          </td>          
+          </td>
           <td class="divider">
             <% if (events[i].isAcknowledged()) { %>
               <% org.opennms.web.event.filter.Filter acknByFilter = new AcknowledgedByFilter(events[i].getAcknowledgeUser()); %>      
@@ -382,7 +362,7 @@
             <% } else { %>
               &nbsp;
             <% } %>
-          </td>          
+          </td>
           <td valign="top">
             <%=events[i].isAcknowledged() ? org.opennms.netmgt.EventConstants.formatToUIString(events[i].getAcknowledgeTime()) : "&nbsp;"%>
           </td>
@@ -415,7 +395,6 @@
         <a HREF="admin/events.jsp" title="Acknowledge or Unacknowledge All Events">[Acknowledge or Unacknowledge All Events]</a>
       <% } %>--%>
 
-</div>
 
 <jsp:include page="/includes/bookmark.jsp" flush="false" />
 
