@@ -6,7 +6,7 @@ public class ProgressMonitor {
 	private int m_phase = 0;
 	private String m_phaseLabel = "Loading";
 	private Object m_result = null;
-	private Exception m_exception = null;
+	private Throwable m_throwable = null;
 
 	public int getPhaseCount() {
 		return m_phaseCount;
@@ -44,15 +44,15 @@ public class ProgressMonitor {
 	}
 
 	public boolean isError() {
-		return m_exception != null;
+		return m_throwable != null;
 	}
 	
-	public Exception getException() {
-		return m_exception;
+	public Throwable getThrowable() {
+		return m_throwable;
 	}
 
-	public void errorOccurred(Exception e) {
-		m_exception = e;
+	public void errorOccurred(Throwable t) {
+		m_throwable = t;
 	}
 
 	
