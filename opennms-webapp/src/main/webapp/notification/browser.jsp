@@ -178,7 +178,7 @@
     }
     
 </script>
-
+<!-- notification/browser.jsp -->
 <% if( parms.ackType == NoticeFactory.AcknowledgeType.UNACKNOWLEDGED ) { %>
   <p>
     Currently showing only <strong>outstanding</strong> notices.
@@ -192,107 +192,88 @@
 <% } %>
       
 <% if( noticeCount > 0 ) { %>      
-  <p>
-    <%=(parms.multiple==0)?1:parms.multiple*parms.limit%>-<%=((parms.multiple+1)*parms.limit < noticeCount)?((parms.multiple+1)*parms.limit):noticeCount%> of <%=noticeCount%>.
-    <a href="<%=this.makeLink(parms)%>&multiple=<%=parms.multiple+1%>">Next</a>&nbsp;
+  <p class="pager">Results: 
+    (<%=(parms.multiple==0)?1:parms.multiple*parms.limit%>-<%=((parms.multiple+1)*parms.limit < noticeCount)?((parms.multiple+1)*parms.limit):noticeCount%> of <%=noticeCount%>)
+		<span>
     <% int linkcnt = (int)Math.ceil( noticeCount/(float)parms.limit ); %>
     <% for( int i=0; i < linkcnt; i++ ) { %>
       <% if( parms.multiple == i ) { %>
-        <%=i+1%>
+        <strong><%=i+1%></strong>&nbsp;
       <% } else { %>
         <a href="<%=this.makeLink(parms)%>&multiple=<%=i%>"><%=i+1%></a>&nbsp;
       <% } %>
     <% } %>
+		<a href="<%=this.makeLink(parms)%>&multiple=<%=parms.multiple+1%>">Next</a>
+		</span>
   </p>
 <% } %>
 
 <% if( parms.filters.size() > 0 ) { %>
   <% int length = parms.filters.size(); %>
   <p>
-    Current active filters:
-    <ol>
+    Applied filters:
       <% for( int i = 0; i < length; i++ ) { %>
-        <% NoticeFactory.Filter filter = (NoticeFactory.Filter)parms.filters.get(i); %>
-        <li>
-	  <strong><%=filter.getTextDescription()%></strong>
-          <a href="<%=this.makeLink( parms, filter, false)%>" title="Remove filter">[Remove]</a>
-	</li>
+		<span class="filter"><% NoticeFactory.Filter filter = (NoticeFactory.Filter)parms.filters.get(i); %>
+				<%=filter.getTextDescription()%> <a href="<%=this.makeLink( parms, filter, false)%>" title="Remove filter">[-]</a></span> &nbsp; 
       <% } %>
-    </ol>
-
-    <a href="<%=this.makeLink( parms, new ArrayList())%>" title="Remove all filters">[Remove All Filters]</a>
+    &mdash; <a href="<%=this.makeLink( parms, new ArrayList())%>" title="Remove all filters">[Remove all]</a>
   </p>
 <% } %>
-
-      <table width="100%" cellspacing="1" cellpadding="2" border="0" bordercolor="black">
+	<jsp:include page="/includes/key.jsp" flush="false" />
         <form action="notification/acknowledge" method="post" name="acknowledge_form">
           <input type="hidden" name="redirectParms" value="<%=request.getQueryString()%>" />
-          <%=org.opennms.web.Util.makeHiddenTags(request)%>
-
-      <tr>
-        <td colspan="5">
-        <% if( parms.ackType == NoticeFactory.AcknowledgeType.UNACKNOWLEDGED &&  !(request.isUserInRole( Authentication.READONLY_ROLE ))) { %>
-          <input type="button" value="Acknowledge Notices" onClick="submitAcknowledge()"/>
-          <input TYPE="button" VALUE="Select All" onClick="checkAllCheckboxes()"/>
-          <input TYPE="reset" />
+          <%=org.opennms.web.Util.makeHiddenTags(request)%>        
+				<% if( parms.ackType == NoticeFactory.AcknowledgeType.UNACKNOWLEDGED &&  !(request.isUserInRole( Authentication.READONLY_ROLE ))) { %>
+          <p><input TYPE="reset" />
+						<input TYPE="button" VALUE="Select All" onClick="checkAllCheckboxes()"/>
+						<input type="button" value="Acknowledge Notices" onClick="submitAcknowledge()"/>
+          </p>
         <% } %>
-      </tr>
-      <tr><td> &nbsp;</td></tr>
-          
-      <% for( int i=0; i < notices.length; i++ ) { %>
-        <% if( i%5 == 0 ) { %>
-        <tr bgcolor="#999999">
-          <% if( parms.ackType == NoticeFactory.AcknowledgeType.UNACKNOWLEDGED ) { %>
-            <td width="5%"><b>Ack</b></td>
-          <% } %>
-          <td width="5%"> <%=this.makeSortLink( parms, NoticeFactory.SortStyle.ID,          NoticeFactory.SortStyle.REVERSE_ID,          "id",          "ID"           )%></td>
-          <td width="5%"><b>Event ID</b></td>
-          <td width="10%"><%=this.makeSortLink( parms, NoticeFactory.SortStyle.PAGETIME,    NoticeFactory.SortStyle.REVERSE_PAGETIME,    "pagetime",    "Sent Time"    )%></td>
-          <td width="10%"><%=this.makeSortLink( parms, NoticeFactory.SortStyle.RESPONDER,   NoticeFactory.SortStyle.REVERSE_RESPONDER,   "asweredby",   "Responder"    )%></td>
-          <td width="10%"><%=this.makeSortLink( parms, NoticeFactory.SortStyle.RESPONDTIME, NoticeFactory.SortStyle.REVERSE_RESPONDTIME, "respondtime", "Respond Time" )%></td>  
-          <td width="25%"><%=this.makeSortLink( parms, NoticeFactory.SortStyle.NODE,        NoticeFactory.SortStyle.REVERSE_NODE,        "node",        "Node"         )%></td>
-          <td width="15%"><%=this.makeSortLink( parms, NoticeFactory.SortStyle.INTERFACE,   NoticeFactory.SortStyle.REVERSE_INTERFACE,   "interface",   "Interface"    )%></td>
-          <td width="10%"><%=this.makeSortLink( parms, NoticeFactory.SortStyle.SERVICE,     NoticeFactory.SortStyle.REVERSE_SERVICE,     "service",     "Service"      )%></td>
+      <table>
+			<thead>
+			  <tr>
+          <th class="noWrap"><%=this.makeSortLink( parms, NoticeFactory.SortStyle.ID,NoticeFactory.SortStyle.REVERSE_ID,     "id",          "ID"           )%></th>
+          <th class="noWrap">Event ID</th>
+          <th>Severity</th>
+          <th><%=this.makeSortLink( parms, NoticeFactory.SortStyle.PAGETIME,    NoticeFactory.SortStyle.REVERSE_PAGETIME,    "pagetime",    "Sent Time"    )%></th>
+          <th><%=this.makeSortLink( parms, NoticeFactory.SortStyle.RESPONDER,   NoticeFactory.SortStyle.REVERSE_RESPONDER,   "asweredby",   "Responder"    )%></th>
+          <th><%=this.makeSortLink( parms, NoticeFactory.SortStyle.RESPONDTIME, NoticeFactory.SortStyle.REVERSE_RESPONDTIME, "respondtime", "Respond Time" )%></th>  
+          <th><%=this.makeSortLink( parms, NoticeFactory.SortStyle.NODE,        NoticeFactory.SortStyle.REVERSE_NODE,        "node",        "Node"         )%></th>
+          <th><%=this.makeSortLink( parms, NoticeFactory.SortStyle.INTERFACE,   NoticeFactory.SortStyle.REVERSE_INTERFACE,   "interface",   "Interface"    )%></th>
+          <th><%=this.makeSortLink( parms, NoticeFactory.SortStyle.SERVICE,     NoticeFactory.SortStyle.REVERSE_SERVICE,     "service",     "Service"      )%></th>
         </tr>
-        <% } /*end if*/%>
-        <tr>
-          <% if( parms.ackType == NoticeFactory.AcknowledgeType.UNACKNOWLEDGED ) { %>
-          <td valign="top" rowspan="2">
-            <nobr>
-              <input type="checkbox" name="notices" value="<%=notices[i].getId()%>" /> 
-            </nobr>
-          </td>
-          <% } %>
-          <td bgcolor="<%=getBgColor(notices[i])%>" valign="top" rowspan="2" >
-            <a href="notification/detail.jsp?notice=<%=notices[i].getId()%>"><%=notices[i].getId()%></a>
-          </td>
-          <td>
+      </thead>
+
+      <% for( int i=0; i < notices.length; i++ ) { 
+        Event event = EventFactory.getEvent( notices[i].getEventId() );
+        String eventSeverity = EventUtil.getSeverityLabel(event.getSeverity());%>
+        <tr class="<%=eventSeverity%>">
+          <td class="divider noWrap" rowspan="2"><% if((parms.ackType == NoticeFactory.AcknowledgeType.UNACKNOWLEDGED ) && 
+		!(request.isUserInRole( Authentication.READONLY_ROLE ))) { %>
+            <input type="checkbox" name="notices" value="<%=notices[i].getId()%>" />
+          <% } %> 
+						<a href="notification/detail.jsp?notice=<%=notices[i].getId()%>"><%=notices[i].getId()%></a></td>
+          <td class="divider" rowspan="2">
             <% if ( NoticeFactory.canDisplayEvent(notices[i].getEventId()) ) { %>
             <a href="event/detail.jsp?id=<%=notices[i].getEventId()%>"><%=notices[i].getEventId()%></a>
-            <% } else { %>
-                &nbsp;
             <% } %>
           </td>
-          <td><nobr><%=org.opennms.netmgt.EventConstants.formatToUIString(notices[i].getTimeSent())%></nobr></td>
-          <td valign="top">
-            <% NoticeFactory.Filter responderFilter = new NoticeFactory.ResponderFilter(notices[i].getResponder()); %>      
+          <td class="bright divider" rowspan="2"><%=eventSeverity%></td>
+          <td class="divider"><%=org.opennms.netmgt.EventConstants.formatToUIString(notices[i].getTimeSent())%></td>
+          <td class="divider"><% NoticeFactory.Filter responderFilter = new NoticeFactory.ResponderFilter(notices[i].getResponder()); %>      
             <% if(notices[i].getResponder()!=null) {%>
               <%=notices[i].getResponder()%>
               <% if( !parms.filters.contains( responderFilter )) { %>
                 <a href="<%=this.makeLink( parms, responderFilter, true)%>" class="filterLink" title="Show only notices with this responder"><%=addPositiveFilterString%></a>
               <% } %>
-            <% } else { %>
-              &nbsp;
             <% } %>
           </td>
-          <td><nobr>
+          <td class="divider">
             <%if (notices[i].getTimeReplied()!=null) { %>
               <%=org.opennms.netmgt.EventConstants.formatToUIString(notices[i].getTimeReplied())%>
-            <% } else { %>
-              &nbsp;
             <% } %>
-            </nobr></td>
-          <td>
+					</td>
+          <td class="divider">
             <% if(notices[i].getNodeId() != 0 ) { %>
               <% NoticeFactory.Filter nodeFilter = new NoticeFactory.NodeFilter(notices[i].getNodeId()); %>
               <% String[] labels = this.getNodeLabels( notices[i].getNodeId(), nodeLabelMap ); %>
@@ -300,11 +281,9 @@
               <% if( !parms.filters.contains(nodeFilter) ) { %>
                 <a href="<%=this.makeLink( parms, nodeFilter, true)%>" class="filterLink" title="Show only notices on this node"><%=addPositiveFilterString%></a>
               <% } %>
-            <% } else { %>
-              &nbsp;
             <% } %>
           </td>
-          <td>
+          <td class="divider">
             <% if(notices[i].getIpAddress() != null ) { %>
               <% NoticeFactory.Filter intfFilter = new NoticeFactory.InterfaceFilter(notices[i].getIpAddress()); %>
               <% if( notices[i].getNodeId() != 0 ) { %>
@@ -315,11 +294,9 @@
               <% if( !parms.filters.contains(intfFilter) ) { %>
                 <a href="<%=this.makeLink( parms, intfFilter, true)%>" class="filterLink" title="Show only notices on this IP address"><%=addPositiveFilterString%></a>
               <% } %>
-            <% } else { %>
-              &nbsp;
             <% } %>
           </td>
-          <td>
+          <td class="divider">
             <% if(notices[i].getServiceName() != null) { %>
               <% NoticeFactory.Filter serviceFilter = new NoticeFactory.ServiceFilter(notices[i].getServiceId()); %>
               <% if( notices[i].getNodeId() != 0 && notices[i].getIpAddress() != null ) { %>
@@ -330,38 +307,25 @@
               <% if( !parms.filters.contains( serviceFilter )) { %>
                 <a href="<%=this.makeLink( parms, serviceFilter, true)%>" class="filterLink" title="Show only notices with this service type"><%=addPositiveFilterString%></a>
               <% } %>
-            <% } else { %>
-              &nbsp;
             <% } %>
           </td>
         </tr>
-        <tr bgcolor="#cccccc">
-          <td colspan="7"><%=notices[i].getTextMessage()%></td>          
+        <tr class="<%=eventSeverity%>">
+          <td colspan="6"><%=notices[i].getTextMessage()%></td> 
         </tr>
       <% } /*end for*/%>
-
-        <tr>
-          <td colspan="2"><%=notices.length%> notices</td>
-          <td colspan="5">
-          <% if( parms.ackType == NoticeFactory.AcknowledgeType.UNACKNOWLEDGED &&  !(request.isUserInRole( Authentication.READONLY_ROLE ))) { %>
-            <input type="button" value="Acknowledge Notices" onClick="submitAcknowledge()"/>
-            <input TYPE="button" VALUE="Select All" onClick="checkAllCheckboxes()"/>
-            <input TYPE="reset" />
-          <% } else { %>
-            &nbsp;
-          <% } %>
-          </td>
-          <td>
-            <% if( noticeCount > 0 ) { %>
-            <a href="<%=this.makeLink(parms)%>&multiple=<%=parms.multiple+1%>">Next</a>&nbsp;
-            <% } else { %>
-              &nbsp;
-            <% } %>
-          </td>
-        </tr>
-        </form>
       </table>
+      <p><%=notices.length%> notices</p>
 
+        <% if( parms.ackType == NoticeFactory.AcknowledgeType.UNACKNOWLEDGED &&  !(request.isUserInRole( Authentication.READONLY_ROLE ))) { %>
+      <p><input TYPE="reset" />
+				<input TYPE="button" VALUE="Select All" onClick="checkAllCheckboxes()"/>
+				<input type="button" value="Acknowledge Notices" onClick="submitAcknowledge()"/></p>
+        <% } %>
+			<% if( noticeCount > 0 ) { %>
+			<p align="right"><a href="<%=this.makeLink(parms)%>&multiple=<%=parms.multiple+1%>">Next</a></p>
+			<% } %>
+		</form>
 <jsp:include page="/includes/footer.jsp" flush="false" />
 
 
@@ -393,9 +357,8 @@
           buffer.append( "\">" );   
       }
 
-      buffer.append( "<font color=\"black\"><b>" );
       buffer.append( title );
-      buffer.append( "</b></font></a>" );
+      buffer.append( "</a>" );
 
       return( buffer.toString() );
     }
