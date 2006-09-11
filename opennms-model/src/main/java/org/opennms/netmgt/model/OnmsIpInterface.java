@@ -299,7 +299,7 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
     /**
      * The SnmpInterface associated with this interface if any
      */
-    @ManyToOne(optional=true, fetch=FetchType.LAZY)
+    @ManyToOne(optional=true, fetch=FetchType.EAGER)
     @JoinColumn(name="snmpInterfaceId")
     public OnmsSnmpInterface getSnmpInterface() {
     	return m_snmpInterface;
