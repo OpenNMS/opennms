@@ -39,6 +39,8 @@ package org.opennms.netmgt.dao.hibernate;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 
@@ -101,24 +103,6 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer>
     public Collection<OnmsNode> findAllByVarCharAssetColumnCategoryList(
             String columnName, String columnValue,
             Collection<OnmsCategory> categories) {
-    	List<String> categoryNames = new ArrayList<String>();
-    	for (OnmsCategory category : categories) {
-			categoryNames.add(category.getName());
-		}
-    	String nameList = StringUtils.collectionToDelimitedString(categoryNames, ", ", "'", "'");
-    	
-    	
-//    	getHibernateTemplate().execute(new HibernateCallback() {
-//
-//			public Object doInHibernate(Session session) throws HibernateException, SQLException {
-//				
-//				session.createCriteria(OnmsNode.class, "n")
-//					.createCriteria("categories", "c", Criteria.INNER_JOIN)
-//					.createCriteria(associationPath, alias, joinType)
-//					
-//			}
-//    		
-//    	});
     	
         return find("select distinct n from OnmsNode as n "
         		+ "join n.categories as c "
@@ -128,8 +112,16 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer>
                 + "left join fetch monSvc.serviceType "
                 + "left join fetch monSvc.currentOutages "
                 + "where n.assetRecord." + columnName + " = ? "
-                + "and c.name in ("+nameList+")", columnValue);
+                + "and c.name in ("+categoryListToNameList(categories)+")", columnValue);
     }
+
+	private String categoryListToNameList(Collection<OnmsCategory> categories) {
+		List<String> categoryNames = new ArrayList<String>();
+    	for (OnmsCategory category : categories) {
+			categoryNames.add(category.getName());
+		}
+		return StringUtils.collectionToDelimitedString(categoryNames, ", ", "'", "'");
+	}
 
     public Collection<OnmsNode> findAllByCategoryList(
             Collection<OnmsCategory> categories) {
@@ -139,17 +131,17 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer>
                 + "left join fetch iface.monitoredServices as monSvc "
                 + "left join fetch monSvc.serviceType "
                 + "left join fetch monSvc.currentOutages "
-                + "where c in ( ? )", categories);
+                + "where c.name in ("+categoryListToNameList(categories)+")");
     }
 
     public Collection<OnmsNode> findAllByCategoryLists( Collection<OnmsCategory> rowCatNames, Collection<OnmsCategory> colCatNames) {
-        return find("select distinct n from OnmsNode as n "
-                + "join n.categories c " + "left join fetch n.assetRecord "
-                + "left join fetch n.ipInterfaces as iface "
-                + "left join fetch iface.monitoredServices as monSvc "
-                + "left join fetch monSvc.serviceType "
-                + "left join fetch monSvc.currentOutages "
-                + "where c.name in ( ? )", rowCatNames);
+    	
+    	HashSet<OnmsNode> rowNodes = new HashSet<OnmsNode>(findAllByCategoryList(rowCatNames));
+    	HashSet<OnmsNode> colNodes = new HashSet<OnmsNode>(findAllByCategoryList(colCatNames));
+    	
+    	HashSet<OnmsNode> results = new HashSet<OnmsNode>(rowNodes);
+    	results.retainAll(colNodes);
+    	
+    	return results;
     }
-
 }
