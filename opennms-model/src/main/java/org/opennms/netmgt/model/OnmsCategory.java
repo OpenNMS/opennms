@@ -122,13 +122,13 @@ public class OnmsCategory implements Serializable {
     public boolean equals(Object obj) {
         if (obj instanceof OnmsCategory) {
             OnmsCategory t = (OnmsCategory)obj;
-            return m_id.equals(t.m_id);
+            return m_name.equals(t.m_name);
         }
         return false;
     }
 
     public int hashCode() {
-        return m_id.intValue();
+        return m_name.hashCode();
     }
 
 }
