@@ -73,6 +73,7 @@ public class DefaultAggregateStatusService implements AggregateStatusService {
     
     private NodeDao m_nodeDao;
     private AggregateStatusViewDao m_statusViewDao;
+    private OnmsNode m_foundDownNode;
 
     public AggregateStatusView createAggregateStatusView(String statusViewName) {
         AggregateStatusView statusView = m_statusViewDao.findByName(statusViewName);
@@ -115,7 +116,6 @@ public class DefaultAggregateStatusService implements AggregateStatusService {
          */
         for (AggregateStatusDefinition statusDef : categoryGrouping) {
             AggregateStatus status = new AggregateStatus();
-            status.setLabel(statusDef.getName());
             
             Collection<OnmsNode> nodes = m_nodeDao.findAllByVarCharAssetColumnCategoryList(assetColumn, columnValue, statusDef.getCategories());
             
@@ -126,13 +126,28 @@ public class DefaultAggregateStatusService implements AggregateStatusService {
             status.setDownEntityCount(computeDownCount(nodes));
             status.setTotalEntityCount(nodes.size());
             status.setStatus(computeStatus(nodes, status));
+            
+            status.setLabel((m_foundDownNode == null ? statusDef.getName(): createNodePageUrl(statusDef.getName())));
+            m_foundDownNode = null; //what a hack  make the model (as in MAV) better
+            
             stati.add(status);
         }
         
         return stati;
     }
     
-    
+    /*
+     * This creates a relative url to the node page and sets the node parameter
+     * FIXME: this code should move to the jsp after the status table is enhanced to support
+     * this requirement.
+     */
+    private String createNodePageUrl(String label) {
+        if (m_foundDownNode != null) {
+            label = "<a href=\"element/node.jsp?node="+m_foundDownNode.getId()+"\">"+label+"</a>";
+        }
+        return label;
+    }
+
     private String computeStatus(Collection<OnmsNode> nodes, AggregateStatus status) {
         
         String color = AggregateStatus.ALL_NODES_UP;
@@ -166,6 +181,12 @@ public class DefaultAggregateStatusService implements AggregateStatusService {
         
         for (OnmsNode node : nodes) {
             if (node.isDown()) {
+
+                //FIXME: this is a hack to meet a requirement to build a URL
+                //that takes you do a node page when a node is down in this
+                //status class.
+                m_foundDownNode = node;
+                
                 totalNodesDown += 1;
             }
         }
