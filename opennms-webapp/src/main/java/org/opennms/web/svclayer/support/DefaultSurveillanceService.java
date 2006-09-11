@@ -60,6 +60,7 @@ public class DefaultSurveillanceService implements SurveillanceService {
     private NodeDao m_nodeDao;
     private CategoryDao m_categoryDao;
     private SurveillanceViewConfigDao m_surveillanceConfigDao;
+    private OnmsNode m_foundDownNode;
     
     
     public SurveillanceTable createSurveillanceTable() {
@@ -94,15 +95,21 @@ public class DefaultSurveillanceService implements SurveillanceService {
          */
         for (Iterator rowDefIter = rowDefs.iterator(); rowDefIter.hasNext();) {
             RowDef rowDef = (RowDef) rowDefIter.next();
-            statusTable.setRowHeader(rowDef.getRow()-1, rowDef.getLabel());
+            final int row = rowDef.getRow()-1;
+            statusTable.setRowHeader(row, rowDef.getLabel());
             viewRowCats.addAll(rowDef.getCategoryCollection());
 
             for (Iterator colDefIter = columnDefs.iterator(); colDefIter.hasNext();) {
                 ColumnDef colDef = (ColumnDef) colDefIter.next();
                 viewColCats.addAll(colDef.getCategoryCollection());
 
-                statusTable.setColumnHeader(colDef.getCol()-1, colDef.getLabel());
-                statusTable.setStatus(rowDef.getRow()-1, colDef.getCol()-1, createAggregateStatus(createCategories(viewRowCats), createCategories(viewColCats)));
+                final int col = colDef.getCol()-1;
+                statusTable.setColumnHeader(col, colDef.getLabel());
+                statusTable.setStatus(row, col, createAggregateStatus(createCategories(viewRowCats), createCategories(viewColCats)));
+
+                if (statusTable.getStatus(row, col).getDownEntityCount() > 0) {
+                    statusTable.setRowHeader(row, createNodePageUrl(rowDef.getLabel()));
+                }
 
                 viewColCats.removeAll(colDef.getCategoryCollection());
             }
@@ -111,6 +118,18 @@ public class DefaultSurveillanceService implements SurveillanceService {
         }
         
         return statusTable;
+    }
+
+    /*
+     * This creates a relative url to the node page and sets the node parameter
+     * FIXME: this code should move to the jsp after the status table is enhanced to support
+     * this requirement.
+     */
+    private String createNodePageUrl(String label) {
+        if (m_foundDownNode != null) {
+            label = "<a href=\"element/node.jsp?node="+m_foundDownNode.getId()+"\">"+label+"</a>";
+        }
+        return label;
     }
 
     /**
@@ -193,6 +212,11 @@ public class DefaultSurveillanceService implements SurveillanceService {
         
         for (OnmsNode node : nodes) {
             if (node.isDown()) {
+                
+                //FIXME: this is a hack to meet a requirement to build a URL
+                //that takes you do a node page when a node is down in this
+                //status class.
+                m_foundDownNode = node;
                 totalNodesDown += 1;
             }
         }
