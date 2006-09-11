@@ -14,6 +14,7 @@ public class SimpleWebTable {
 	public static class Cell {
 		private Object m_content;
 		private String m_styleClass;
+		private String m_link;
 		public Cell() {}
 		public Cell(Object content, String styleClass) {
 			m_content = content;
@@ -30,6 +31,13 @@ public class SimpleWebTable {
 		}
 		public void setStyleClass(String styleClass) {
 			m_styleClass = styleClass;
+		}
+		public String getLink() {
+			return m_link;
+		}
+		
+		public void setLink(String link) {
+			m_link = link;
 		}
 	}
 	
