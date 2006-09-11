@@ -156,7 +156,6 @@ public class Installer {
     // create.sql
     // LinkedList m_functions = new LinkedList(); // Unused, not in create.sql
     // LinkedList m_languages = new LinkedList(); // Unused, not in create.sql
-    LinkedList<String> m_indexes = new LinkedList<String>();
 
     HashMap<String, List<String>> m_inserts = new HashMap<String, List<String>>();
 
@@ -618,29 +617,24 @@ public class Installer {
                         m_tables.add(name);
                     } else if (type.toLowerCase().indexOf("sequence") != -1) {
                         m_sequences.add(name);
-                        /*
-                         * -- Not used, nothing in create.sql to get us here }
-                         * else if (type.toLowerCase().indexOf("function") !=
-                         * -1) { if (type.toLowerCase().indexOf("language
-                         * 'c'") != -1) { m_cfunctions.add(name); } else {
-                         * m_functions.add(name); } } else if
-                         * (type.toLowerCase().indexOf("trusted") != -1) { m =
-                         * Pattern.compile("(?i)\\s*create\\s+trutsed " +
-                         * "procedural language\\s+[\"']?" +
-                         * "(\\w+)[\"']?.*").matcher(line); if (!m.matches()) {
-                         * throw new Exception("Could not match name and " +
-                         * "type of the trusted " + "procedural language in
-                         * this" + "line: " + line); }
-                         * m_languages.add(m.group(1));
-                         */
+                    } else if (type.toLowerCase().indexOf("function") != -1) {
+                        if (type.toLowerCase().indexOf("language 'c'") != -1) {
+                            //m_cfunctions.add(name);
+                        } else {
+                            //m_functions.add(name);
+                        }
+                    } else if (type.toLowerCase().indexOf("trusted") != -1) {
+                        m = Pattern.compile("(?i)\\s*create\\s+trusted "
+                                            + "procedural language\\s+[\"']?"
+                                            + "(\\w+)[\"']?.*").matcher(line);
+                        if (!m.matches()) {
+                            throw new Exception("Could not match name and "
+                                                + "type of the trusted "
+                                                + "procedural language in "
+                                                + "this line: " + line);
+                        }
+                        //m_languages.add(m.group(1));
                     } else if (type.toLowerCase().matches(".*\\bindex\\b.*")) {
-                        /*
-                        m = Pattern.compile(
-                                            "(?i)\\s*create\\s+(?:unique )?"
-                                                    + "index\\s+[\"']?([\\w_]+)"
-                                                    + "[\"']?.*").matcher(
-                                                                          line);
-                                                                          */
                         Index i = Index.findIndexInString(line);
                         if (i == null) {
                             throw new Exception("Could not match name and "
@@ -648,7 +642,6 @@ public class Installer {
                                     + line);
                         }
                         m_indexDao.add(i);
-                        //m_indexes.add(m.group(1));
                     } else {
                         throw new Exception("Unknown CREATE encountered: "
                                 + "CREATE " + type + " " + name);
@@ -1269,33 +1262,6 @@ public class Installer {
             m_out.println("DONE");
         }
 
-    }
-
-    public void createIndexes() throws Exception {
-        Statement st = m_dbconnection.createStatement();
-        ResultSet rs;
-
-        m_out.println("- creating indexes...");
-
-        for (String index : m_indexes) {
-            boolean exists;
-
-            m_out.print("  - creating index \"" + index + "\"... ");
-
-            rs = st.executeQuery("SELECT relname FROM pg_class "
-                    + "WHERE relname = '" + index.toLowerCase() + "'");
-
-            exists = rs.next();
-
-            if (exists) {
-                m_out.println("EXISTS");
-            } else {
-                st.execute(getIndexFromSQL(index));
-                m_out.println("OK");
-            }
-        }
-
-        m_out.println("- creating indexes... DONE");
     }
 
     public Map getTypesFromDB() throws SQLException {
