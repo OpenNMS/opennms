@@ -82,17 +82,11 @@
 </form>    
 
 <% if( length > 0 ) { %>
-  <p>
-    <ol>    
+  <p>Search contraints: 
       <% for(int i=0; i < length; i++) { %>
         <% Filter filter = (Filter)parms.filters.get(i); %> 
-        
-        <li>
-          <%=filter.getTextDescription()%>
-          <a href="<%=OutageUtil.makeLink(request, parms, filter, false)%>">Remove</a>
-        </li>
-      <% } %>
-    </ol>    
+        &nbsp; <span class="filter"><%=filter.getTextDescription()%> <a href="<%=OutageUtil.makeLink(request, parms, filter, false)%>">[-]</a></span>
+      <% } %>   
   </p>    
 <% } %>  
 

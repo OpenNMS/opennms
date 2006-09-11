@@ -108,19 +108,19 @@
     endIndex = (endIndex > highestPossibleIndex) ? highestPossibleIndex : endIndex;    
 %>
 
-<p>
-  Results <%=startResult%>-<%=endResult%> of <%=count%>
-  <br>
-
+<p class="pager">
+  Results: (<%=startResult%>-<%=endResult%> of <%=count%>)
+	
   <% if( count > limit ) { %>  
-    <% if( multiple > 0 ) { %>
+    <span>
+<% if( multiple > 0 ) { %>
       <a href="<%=baseUrl%>&<%=multipleName%>=0&<%=limitName%>=<%=limit%>">First</a>&nbsp;  
       <a href="<%=baseUrl%>&<%=multipleName%>=<%=multiple-1%>&<%=limitName%>=<%=limit%>">Previous</a>&nbsp;  
     <% } %>
     
     <% for( int i=startIndex; i <= endIndex; i++ ) { %>
       <% if( multiple == i ) { %>
-         <%=i+1%>
+         <strong><%=i+1%></strong>
       <% } else { %>
         <a href="<%=baseUrl%>&<%=multipleName%>=<%=i%>&<%=limitName%>=<%=limit%>"><%=i+1%></a>
       <% } %>
@@ -131,7 +131,7 @@
       <a href="<%=baseUrl%>&<%=multipleName%>=<%=multiple+1%>&<%=limitName%>=<%=limit%>">Next</a>&nbsp;
       <a href="<%=baseUrl%>&<%=multipleName%>=<%=highestPossibleIndex%>&<%=limitName%>=<%=limit%>">Last</a>
     <% } %>
-   <% } %>
-      
+		</span>
+   <% } %>      
 </p>
 
