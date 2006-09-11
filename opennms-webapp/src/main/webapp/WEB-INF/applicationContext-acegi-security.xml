@@ -112,6 +112,7 @@
         /logoff.jsp=ROLE_ANONYMOUS,ROLE_USER
         /acegilogin.jsp*=ROLE_ANONYMOUS,ROLE_USER
         /css/styles.css=ROLE_ANONYMOUS,ROLE_USER
+        /css/print.css=ROLE_ANONYMOUS,ROLE_USER
         /js/pngfix.js=ROLE_ANONYMOUS,ROLE_USER
         /js/global.js=ROLE_ANONYMOUS,ROLE_USER
         /images/logo.png=ROLE_ANONYMOUS,ROLE_USER
