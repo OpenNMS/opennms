@@ -54,10 +54,8 @@
     }
     pageContext.setAttribute("noticeStatus", noticeStatus);
 %>
-
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html>
 <head>
   <title>
@@ -66,8 +64,10 @@
     </c:forEach>
     OpenNMS Web Console
   </title>
+  <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
   <base href="<%=org.opennms.web.Util.calculateUrlBase( request )%>" />
   <link rel="stylesheet" type="text/css" href="css/styles.css" media="screen" />
+	<link rel="stylesheet" type="text/css" href="css/print.css" media="print" />
   <script type="text/javascript" src="js/global.js"></script>
 </head>
 <body>
@@ -81,41 +81,23 @@
 
 <!-- Header -->
 <div id="header">
-
-  <div id="headertop">
-   <div id="headerlogo">
-    <h1><a href="index.jsp"><img src="images/logo.png" alt="OpenNMS Web Console Home"/></a></h1>
-   </div><!-- /headerlogo -->
-  
-   <div id="headerinfo">
+	<h1 id="headerlogo"><a href="index.jsp"><img src="images/logo.png" alt="OpenNMS Web Console Home"/></a></h1>  
+	<div id="headerinfo">
 		<h2><c:out value="${param.title}"/></h2>
 		<p align="right">
-        <c:if test="${!empty pageContext.request.remoteUser}">
-          User: <strong><c:out value="${pageContext.request.remoteUser}"/></strong> (Notices <c:out value="${noticeStatus}" escapeXml="false"/>)
-          - <a href="j_acegi_logout">Log out</a>
-		  <br />
-        </c:if>
-        <c:out value="${date}"/> &nbsp; <c:out value="${time}"/>
-       
+			<c:if test="${!empty pageContext.request.remoteUser}">
+				User: <strong><c:out value="${pageContext.request.remoteUser}"/></strong> (Notices <c:out value="${noticeStatus}" escapeXml="false"/>)
+				- <a href="j_acegi_logout">Log out</a>
+				<br />
+			</c:if>
+			<c:out value="${date}"/> &nbsp; <c:out value="${time}"/>
 		</p>
-   </div><!-- /headerinfo -->
-  
-   <div class="spacer"><!-- --></div>
-  
-  </div><!-- /headertop -->
-
-
+	</div>
+   <hr />
   <c:if test="${param.nonavbar != 'true'}">
-
-     <div id="headernavbar">
-          <div id="headernavbarleft">
-
-	  </div>
-
-          <div id="headernavbarright">
-            <jsp:include page="/includes/navbar.jsp" flush="false"/>
-          </div>
-    </div>
+		<div id="headernavbarright">
+			<jsp:include page="/includes/navbar.jsp" flush="false"/>
+		</div>
   </c:if>
 
   <div class="spacer"><!-- --></div>

@@ -76,30 +76,19 @@ function Blank_TextField_Validator()
 </script>
 
 <form name="alarm_search" action="alarm/query" method="get" onsubmit="return Blank_TextField_Validator()">
-  <table border="0" cellpadding="2" cellspacing="0">
-    <tr>
-      <td>Alarm Text:</td>
-      <td>Time:</td>                  
-      <td>&nbsp;</td>
-    </tr>
-    <tr>
-      <td><input type="text" name="msgmatchany" /></td>
-      <td>
-        <select name="relativetime" size="1">
-          <option value="0" selected><%=AlarmUtil.ANY_RELATIVE_TIMES_OPTION%></option>
-          <option value="1">Last hour</option>
-          <option value="2">Last 4 hours</option>
-          <option value="3">Last 8 hours</option>
-          <option value="4">Last 12 hours</option>
-          <option value="5">Last day</option>
-          <option value="6">Last week</option>
-          <option value="7">Last month</option>                
-        </select>
-      </td>
-      <td><input type="submit" value="Search" /></td>            
-    </tr>
-  </table>
-</form>
+	<p><label for="msgmatchany">Alarm Text</label>: <input type="text" id="msgmatchany" name="msgmatchany" /> &nbsp; <label for="relativetime">Time</label>:
+		<select id="relativetime" name="relativetime">
+			<option value="0" selected><%=AlarmUtil.ANY_RELATIVE_TIMES_OPTION%></option>
+			<option value="1">Last hour</option>
+			<option value="2">Last 4 hours</option>
+			<option value="3">Last 8 hours</option>
+			<option value="4">Last 12 hours</option>
+			<option value="5">Last day</option>
+			<option value="6">Last week</option>
+			<option value="7">Last month</option>                
+		</select>
+		<input type="submit" value="Search" /></p>            
+	</form>
 
 
 

@@ -186,7 +186,7 @@
            </td>
        <% } %>
        <td class="divider"><%=org.opennms.netmgt.EventConstants.formatToUIString(events[i].getTime())%></td>
-       <td class="divider"><%=EventUtil.getSeverityLabel(severity)%></td>
+       <td class="divider bright"><%=EventUtil.getSeverityLabel(severity)%></td>
        <td class="divider"><%=events[i].getLogMessage()%></td>
      </tr>
 <% } %>

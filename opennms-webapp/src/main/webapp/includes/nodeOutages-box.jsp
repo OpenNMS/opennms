@@ -73,39 +73,38 @@
     Outage[] outages = this.model.getOutagesForNode(nodeId, yesterday);
 %>
 
-<table class="standard">
-
 <% if(outages.length == 0) { %>
-  <tr>
     <!-- XXX should this be header, instead? -->
-    <td class="standardheaderplain" colspan="5">There have been no outages on this node in the last 24 hours.</td>
-  </tr>
+    <p>There have been no outages on this node in the last 24 hours.</p>
 <% } else { %>
   <tr> 
     <!-- XXX should this be header, instead? -->
-    <td class="standardheader" colspan="5">Recent Outages</td>
-  </tr>
-
+    <h3>Recent Outages</h3>
+<table>
   <tr>
-    <td class="standardheader">Interface</td>
-    <td class="standardheader">Service</td>
-    <td class="standardheader">Lost</td>
-    <td class="standardheader">Regained</td>
-    <td class="standardheader">Outage ID</td>
+    <th>Interface</th>
+    <th>Service</th>
+    <th>Lost</th>
+    <th>Regained</th>
+    <th>Outage ID</th>
   </tr>
 
   <% for( int i=0; i < outages.length; i++ ) { %>
-     <tr>
-      <td class="standard"><a href="element/interface.jsp?node=<%=nodeId%>&intf=<%=outages[i].getIpAddress()%>"><%=outages[i].getIpAddress()%></a></td>
-      <td class="standard"><a href="element/service.jsp?node=<%=nodeId%>&intf=<%=outages[i].getIpAddress()%>&service=<%=outages[i].getServiceId()%>"><%=outages[i].getServiceName()%></a></td>
-      <td class="standard"><%=org.opennms.netmgt.EventConstants.formatToUIString(outages[i].getLostServiceTime())%></td>
+		<% if( outages[i].getRegainedServiceTime() == null ) { %>
+      <tr class="Critical">
+    <% } else { %>
+      <tr class="Cleared">      
+    <% } %>
+      <td class="divider"><a href="element/interface.jsp?node=<%=nodeId%>&intf=<%=outages[i].getIpAddress()%>"><%=outages[i].getIpAddress()%></a></td>
+      <td class="divider"><a href="element/service.jsp?node=<%=nodeId%>&intf=<%=outages[i].getIpAddress()%>&service=<%=outages[i].getServiceId()%>"><%=outages[i].getServiceName()%></a></td>
+      <td class="divider"><%=org.opennms.netmgt.EventConstants.formatToUIString(outages[i].getLostServiceTime())%></td>
       
       <% if( outages[i].getRegainedServiceTime() == null ) { %>
-        <td class="standard" bgcolor="red"><b>DOWN</b></td>
+        <td class="divider bright"><b>DOWN</b></td>
       <% } else { %>
-        <td class="standard"><%=org.opennms.netmgt.EventConstants.formatToUIString(outages[i].getRegainedServiceTime())%></td>      
+        <td class="divider bright"><%=org.opennms.netmgt.EventConstants.formatToUIString(outages[i].getRegainedServiceTime())%></td>      
       <% } %>
-      <td class="standard"><a href="outage/detail.jsp?id=<%=outages[i].getId()%>"><%=outages[i].getId()%></a></td>       
+      <td class="divider"><a href="outage/detail.jsp?id=<%=outages[i].getId()%>"><%=outages[i].getId()%></a></td>       
     </tr>
   <% } %>
 <% } %>
