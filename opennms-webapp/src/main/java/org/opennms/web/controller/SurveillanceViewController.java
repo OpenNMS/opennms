@@ -71,7 +71,8 @@ public class SurveillanceViewController extends AbstractController {
 		
 		if (progressMonitor.isError()) {
 			session.removeAttribute(progressMonitorKey);
-			throw progressMonitor.getException();
+                        Throwable t = progressMonitor.getThrowable();
+			throw new Exception("SurveillanceView Builder Thread threw exception: [" + t.getClass().getName() + "] " + t.getMessage(), t);
 		}
     	
     	if (progressMonitor.isFinished()) {
@@ -94,8 +95,8 @@ public class SurveillanceViewController extends AbstractController {
 			public void run() {
 				try {
 					m_service.createSurveillanceTable(viewName, monitor);
-				} catch (Exception e) {
-					monitor.errorOccurred(e);
+				} catch (Throwable t) {
+					monitor.errorOccurred(t);
 				}
 			}
 			
