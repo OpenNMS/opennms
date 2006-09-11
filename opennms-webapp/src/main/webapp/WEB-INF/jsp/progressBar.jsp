@@ -21,14 +21,19 @@ response.setDateHeader("Expires", startTime);
 	<jsp:param name="headTitle" value="Progress" />
 </jsp:include>
 
+<c:set var="label" value="${progress.phaseLabel}"/>
+<c:set var="percentage">
+	<fmt:formatNumber maxFractionDigits="0" value="${progress.phase / progress.phaseCount * 100}"/>
+</c:set>
+
   <div align="center">
-    <c:out value="${progress.phaseLabel}"/>...
+    <c:out value="${label}"/>...
     
     <div style="width: 400px; height: 30px; border-size: 1px; border-style: ridge;">
       <div style="width: 400px; height: 30px; position: relative; text-align: center; line-height: 30px; z-index: 2">
-        <fmt:formatNumber maxFractionDigits="0" value="${progress.phase / progress.phaseCount * 100}"/>%
+        <c:out value="${percentage}"/>%
       </div>
-      <div style="position: relative; top: -30px; z-index: 1; float: left; width: <c:out value="${progress.phase / progress.phaseCount * 100}"/>%; height: 30px; background-color: green;">
+      <div style="position: relative; top: -30px; z-index: 1; float: left; width: <c:out value="${percentage}"/>%; height: 30px; background-color: green;">
       </div>
     </div>
   </div>
