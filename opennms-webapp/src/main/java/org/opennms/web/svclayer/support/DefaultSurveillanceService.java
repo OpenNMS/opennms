@@ -81,7 +81,7 @@ public class DefaultSurveillanceService implements SurveillanceService {
         final Rows rows = view.getRows();
         final Columns columns = view.getColumns();
         
-        progressMonitor.setPhaseCount(rows.getRowDefCount()+columns.getColumnDefCount()+1);
+        progressMonitor.setPhaseCount(rows.getRowDefCount()+columns.getColumnDefCount()+2);
         
         /*
          * Initialize a status table 
@@ -144,7 +144,7 @@ public class DefaultSurveillanceService implements SurveillanceService {
                 if (statusTable.getStatus(rowDef.getRow()-1, colDef.getCol()-1).getDownEntityCount() > 0) {
                     String link = createNodePageUrl(rowDef.getLabel());
 					statusTable.setRowHeader(rowDef.getRow()-1, link);
-                    rowLabel.setContent(link);
+					rowLabel.setLink(link);
                     m_foundDownNode = null; //what a hack
                 }
             }
@@ -168,7 +168,7 @@ public class DefaultSurveillanceService implements SurveillanceService {
      */
     private String createNodePageUrl(String label) {
         if (m_foundDownNode != null) {
-            label = "<a href=\"element/node.jsp?node="+m_foundDownNode.getId()+"\">"+label+"</a>";
+            label = "element/node.jsp?node="+m_foundDownNode.getId();
         }
         return label;
     }

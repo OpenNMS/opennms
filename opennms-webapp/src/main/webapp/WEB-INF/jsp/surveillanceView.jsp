@@ -29,7 +29,14 @@
     <tr>
       <c:forEach items="${row}" var="cell">
         <td class="<c:out value='${cell.styleClass}'/>">
-           <c:out value="${cell.content}"/>
+          <c:choose>
+            <c:when test="${! empty cell.link}">
+	            <a href="<c:out value='${cell.link}'/>"><c:out value="${cell.content}"/></a>
+            </c:when>
+            <c:otherwise>
+ 				 <c:out value="${cell.content}"/>
+            </c:otherwise>
+          </c:choose>
         </td>
       </c:forEach>
     </tr>
