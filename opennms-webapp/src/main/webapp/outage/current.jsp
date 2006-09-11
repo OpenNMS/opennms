@@ -112,22 +112,23 @@
 
       interfaceCount++;
       nodeCount++;
-  %>           
-
-        <a href="outage/list" title="See all outages in the outage browser" >View All Outages</a>
-        <%--&nbsp;&nbsp;&nbsp; <a href="outage/advsearch.jsp" title="More advanced searching and sorting options">Advanced Search</a>--%>
-        &nbsp;&nbsp;&nbsp; <a href="outage/list?outtype=<%=OutageFactory.OutageType._CURRENT%>" title="A more powerful way of looking at outages">Query Current Outages</a>
-        
-        <h3>Current Outages</h3>
-        
-        <table class="standardfirst">
-          <tr>
-            <td class="standardheader">Node</td>
-            <td class="standardheader" WIDTH="15%">Interface</td>
-            <td class="standardheader" width="10%">Service&nbsp;Down</td>
-            <td class="standardheader" WIDTH="30%">Time&nbsp;Down</td>
-            <td class="standardheader" WIDTH="10%">Outage&nbsp;ID</td>
-          </tr>
+  %>
+	<div id="linkbar">
+		<ul>
+			<li><a href="outage/list" title="See all outages in the outage browser" >View All Outages</a></li>
+			<%--<li><a href="outage/advsearch.jsp" title="More advanced searching and sorting options">Advanced Search</a></li>--%>
+			<li><a href="outage/list?outtype=<%=OutageFactory.OutageType._CURRENT%>" title="A more powerful way of looking at outages">Query Current Outages</a></li>
+		</ul>
+	</div>
+	<h3>Current Outages</h3>
+	<table>
+		<tr>
+			<th>Node</th>
+			<th>Interface</th>
+			<th>Service&nbsp;Down</th>
+			<th>Time&nbsp;Down</th>
+			<th>Outage&nbsp;ID</th>
+		</tr>
 
           <% for( int nodeIndex=0; nodeIndex < nodeList.size(); nodeIndex++ ) { %>
             <%
@@ -146,29 +147,24 @@
 		    int outageId = outage.getId();
                 %>                 
 
-                <tr valign="top" <% if( nodeIndex%2 == 0 ) out.print( "BGCOLOR=\"#cccccc\""); %>>
+                <tr>
                   <% if( intfIndex==0 && svcIndex == 0) { %>
-                    <td class="standard" rowspan="<%=serviceCnt%>"><a name="node<%=nodeId%>"/><a HREF="element/node.jsp?node=<%=nodeId%>" title="General information about this node"><%=outage.getNodeLabel()%></a></td>
+                    <td rowspan="<%=serviceCnt%>"><a name="node<%=nodeId%>"/><a HREF="element/node.jsp?node=<%=nodeId%>" title="General information about this node"><%=outage.getNodeLabel()%></a></td>
                   <% } %>
 
                   <% if( svcIndex==0 ) { %>
-                    <td class="standard" rowspan="<%=svcList.size()%>"><a HREF="element/interface.jsp?node=<%=nodeId%>&intf=<%=ipAddr%>" title="General information about this interface"><%=ipAddr%></a> <%=!ipAddr.equals(outage.getHostname()) ? "(" + outage.getHostname() + ")" : ""%></td>
+                    <td rowspan="<%=svcList.size()%>"><a HREF="element/interface.jsp?node=<%=nodeId%>&intf=<%=ipAddr%>" title="General information about this interface"><%=ipAddr%></a> <%=!ipAddr.equals(outage.getHostname()) ? "(" + outage.getHostname() + ")" : ""%></td>
                   <% } %>
                     
-                  <td class="standard"><a HREF="element/service.jsp?node=<%=nodeId%>&intf=<%=ipAddr%>&service=<%=outage.getServiceId()%>"><%=outage.getServiceName()%></a></td>
-                  <td class="standard"><%=org.opennms.netmgt.EventConstants.formatToUIString(outage.getTimeDown())%></td>
-                  <td class="standard"><a href="outage/detail.jsp?id=<%=outageId%>"><%=outageId%></a></td>
+                  <td><a href="element/service.jsp?node=<%=nodeId%>&intf=<%=ipAddr%>&service=<%=outage.getServiceId()%>"><%=outage.getServiceName()%></a></td>
+                  <td><%=org.opennms.netmgt.EventConstants.formatToUIString(outage.getTimeDown())%></td>
+                  <td><a href="outage/detail.jsp?id=<%=outageId%>"><%=outageId%></a></td>
                 </tr>
               <% } /* endfor service */ %>
             <% } /*endfor interface */ %>
           <% } /*endfor node */ %>
-        
-          <tr>
-            <td class="standardheader" colspan="5"> 
-              <%=outages.length%> total services down on <%=interfaceCount%> interfaces of <%=nodeCount%> nodes
-            </td>
-          </tr>
         </table>
+				<p><%=outages.length%> total services down on <%=interfaceCount%> interfaces of <%=nodeCount%> nodes</p>
 <% } %>
 
 <jsp:include page="/includes/footer.jsp" flush="false"/>
