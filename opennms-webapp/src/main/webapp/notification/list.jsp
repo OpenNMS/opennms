@@ -44,7 +44,9 @@
 	contentType="text/html"
 	session="true"
 	import="org.opennms.web.notification.*,
-        	org.opennms.web.MissingParameterException
+		org.opennms.web.event.*,
+        	org.opennms.web.MissingParameterException,
+		org.opennms.web.acegisecurity.Authentication
 	"
 %>
 
@@ -60,8 +62,6 @@
         throw new MissingParameterException( "username" );
     }
 
-    //allow all users to acknowlege notices even if they don't own them
-    boolean editable = true; //request.getRemoteUser().equals( username );
     Notification[] notices = this.model.getOutstandingNotices( username );   
 %>
 
@@ -110,64 +110,59 @@
 
 <h3>Notifications for <%=username%> </h3>
 
-<% if( editable ) { %>
+<% if( !(request.isUserInRole( Authentication.READONLY_ROLE )) ) { %>
   <form method="post" action="notification/acknowledge.jsp" name="acknowledge_form" >
     <input type="hidden" name="notifUser" value="<%=username%>">
     <input type="hidden" name="curUser" value="<%=request.getRemoteUser()%>">
 <% } %>
 
-<table class="standard">
-  <tr>
-    <% if( editable ) { %>
-      <td class="standardheader"width="5%">Ack</td>
-    <% } %>
-    <td class="standardheader" width="5%">Notice</td>
-    <td class="standardheader" width="5%">Event ID</td>
-    <td class="standardheader" width="25%">Time Sent</td>
-    <td class="standardheader">Message</td>
-  </tr>
-
-  <% for( int i = 0; i < notices.length; i++ ) { %>
-<%--
-  TODO: Implement even/odd row shading
-    <tr <% if( i%2 == 0 ) out.print( "BGCOLOR=\"#cccccc\""); %> valign="top">
---%>
+<table>
+  <thead>
     <tr>
+      <% if( !(request.isUserInRole( Authentication.READONLY_ROLE ))) { %>
+        <th width="5%">Ack</td>
+      <% } %>
+      <th width="5%">Notice</td>
+      <th width="5%">Event ID</td>
+      <th width="5%">Event Severity</td>
+      <th width="25%">Time Sent</td>
+      <th>Message</td>
+    </tr>
+  </thead>
+
+  <% for( int i = 0; i < notices.length; i++ ) { 
+       Event event = EventFactory.getEvent( notices[i].getEventId() );
+       String eventSeverity = EventUtil.getSeverityLabel(event.getSeverity());%>
+
+    <tr class="<%=eventSeverity%>">
       <!--all users can acknowlege any notice -->          
-      <% if( editable ) { %>
-        <td class="standard">
+      <% if( !(request.isUserInRole( Authentication.READONLY_ROLE )) ) { %>
+        <td>
           <input type="checkbox" name="notices" value="<%=notices[i].getId()%>" />
         </td>
       <% } %>
-      <td class="standard"><a href="notification/detail.jsp?notice=<%=notices[i].getId()%>"><%=notices[i].getId()%></a></td>
-      <td class="standard"><a href="event/detail.jsp?id=<%=notices[i].getEventId()%>"><%=notices[i].getEventId()%></a></td>
-      <td class="standard"><%=notices[i].getTimeSent()%></td>            
-      <td class="standard"><%=notices[i].getTextMessage()%></td>
+      <td><a href="notification/detail.jsp?notice=<%=notices[i].getId()%>"><%=notices[i].getId()%></a></td>
+      <td><a href="event/detail.jsp?id=<%=notices[i].getEventId()%>"><%=notices[i].getEventId()%></a></td>
+      <td class="bright"><%=eventSeverity%></td>
+      <td class="noWrap"><%=notices[i].getTimeSent()%></td>            
+      <td><%=notices[i].getTextMessage()%></td>
     </tr>
   <% } %>
 </table>
 
 <br>
 
-<% if( editable ) { %>
+<% if( !(request.isUserInRole( Authentication.READONLY_ROLE )) ) { %>
   <input TYPE="button" VALUE="Acknowledge" onClick="submitChecked()"/>
   <input TYPE="button" VALUE="Acknowledge All" onClick="checkAllCheckboxes()"/>
   <input TYPE="reset" />
 
   <p>
-    <font size="-1">       
-      Check the boxes next to the notices you are acknowledging and then
-      click the <em>Acknowledge</em> button.  
-
-      <br/>
-
-      Or to acknowledge all the listed notices, click the
-      <em>Acknowledge All</em> button.
-
-      <br/>
-
-      Or click the <em>Reset</em> button to clear all selections.
-    </font>
+    Check the boxes next to the notices you are acknowledging and then click the <em>Acknowledge</em> button.  
+    <br>
+    Or to acknowledge all the listed notices, click the <em>Acknowledge All</em> button.
+    <br>
+    Or click the <em>Reset</em> button to clear all selections.
   </p>
 
 </form>
