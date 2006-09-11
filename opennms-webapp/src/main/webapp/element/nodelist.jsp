@@ -90,7 +90,7 @@
 	<div class="boxWrapper">
   <% if (nodes.length > 0) { %>
     <!-- left column -->
-    <div style="float: left; width:45%;">
+    <div class="col">
       <ul class="plain">
       <% if (isIfAliasSearch) { %>
         <% for (int i=0; i < lastIn1stColumn; i++) { %>
@@ -106,7 +106,7 @@
                 <% } else { %>
                   <li> <%=interfaces[j].getIpAddress()%>
                 <% } %>
-                <a href="element/interface.jsp?node=<%=interfaces[j].getNodeId()%>&intf=<%=interfaces[j].getIpAddress()%>&ifindex=<%=interfaces[j].getSnmpIfIndex()%>"><%=interfaces[j].getSnmpIfAlias()%></a>
+                <a href="element/interface.jsp?node=<%=interfaces[j].getNodeId()%>&intf=<%=interfaces[j].getIpAddress()%>&ifindex=<%=interfaces[j].getSnmpIfIndex()%>"><%=interfaces[j].getSnmpIfAlias()%></a></li>
               <% } %>
             <% } %>
             </ul>
@@ -122,11 +122,12 @@
               <% if (!"0.0.0.0".equals(interfaces[j].getIpAddress())) { 
                  interfaceCount++;
                 %>
-                <li> <a href="element/interface.jsp?node=<%=interfaces[j].getNodeId()%>&intf=<%=interfaces[j].getIpAddress()%>"><%=interfaces[j].getIpAddress()%></a>
+                <li> <a href="element/interface.jsp?node=<%=interfaces[j].getNodeId()%>&intf=<%=interfaces[j].getIpAddress()%>"><%=interfaces[j].getIpAddress()%></a></li>
               <% } %>
             <% } %>
           </ul>		    
           <% } %>
+					</li>
         <% } %>
       <% } %>
       </ul>
@@ -134,7 +135,7 @@
 
 
     <!-- right column -->
-    <div style="float: left; width:45%;">
+    <div class="col">
       <ul class="plain">
       <% if (isIfAliasSearch) { %>
         <% for (int i=lastIn1stColumn; i < nodes.length; i++) { %>
@@ -150,10 +151,11 @@
                 <% } else { %>
                   <li> <%=interfaces[j].getIpAddress()%>
                 <% } %>
-                <a href="element/interface.jsp?node=<%=interfaces[j].getNodeId()%>&intf=<%=interfaces[j].getIpAddress()%>&ifindex=<%=interfaces[j].getSnmpIfIndex()%>"><%=interfaces[j].getSnmpIfAlias()%></a>
+                <a href="element/interface.jsp?node=<%=interfaces[j].getNodeId()%>&intf=<%=interfaces[j].getIpAddress()%>&ifindex=<%=interfaces[j].getSnmpIfIndex()%>"><%=interfaces[j].getSnmpIfAlias()%></a></li>
               <% } %>
             <% } %>
 	    </ul>
+		</li>
           <% } %>
         <% } %>
       <% } else { %>
@@ -166,10 +168,11 @@
                 <% if (!"0.0.0.0".equals(interfaces[j].getIpAddress())) { 
                   interfaceCount++;
                   %>
-                  <li> <a href="element/interface.jsp?node=<%=interfaces[j].getNodeId()%>&intf=<%=interfaces[j].getIpAddress()%>"><%=interfaces[j].getIpAddress()%></a>
+                  <li> <a href="element/interface.jsp?node=<%=interfaces[j].getNodeId()%>&intf=<%=interfaces[j].getIpAddress()%>"><%=interfaces[j].getIpAddress()%></a><li>
                 <% } %>
               <% } %>
             </ul>
+						</li>
           <% } %>
         <% } %>
       <% } %>
