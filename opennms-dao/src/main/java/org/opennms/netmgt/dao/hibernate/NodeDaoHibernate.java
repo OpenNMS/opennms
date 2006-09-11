@@ -36,12 +36,24 @@
 
 package org.opennms.netmgt.dao.hibernate;
 
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
 
+import org.hibernate.Criteria;
+import org.hibernate.HibernateException;
+import org.hibernate.Session;
+import org.hibernate.criterion.Criterion;
+import org.hibernate.criterion.Expression;
+import org.hibernate.criterion.Restrictions;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsNode;
+import org.springframework.orm.hibernate3.HibernateCallback;
+import org.springframework.util.StringUtils;
 
 /**
  * @author Ted Kazmark
@@ -89,14 +101,34 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer>
     public Collection<OnmsNode> findAllByVarCharAssetColumnCategoryList(
             String columnName, String columnValue,
             Collection<OnmsCategory> categories) {
+    	List<String> categoryNames = new ArrayList<String>();
+    	for (OnmsCategory category : categories) {
+			categoryNames.add(category.getName());
+		}
+    	String nameList = StringUtils.collectionToDelimitedString(categoryNames, ", ", "'", "'");
+    	
+    	
+//    	getHibernateTemplate().execute(new HibernateCallback() {
+//
+//			public Object doInHibernate(Session session) throws HibernateException, SQLException {
+//				
+//				session.createCriteria(OnmsNode.class, "n")
+//					.createCriteria("categories", "c", Criteria.INNER_JOIN)
+//					.createCriteria(associationPath, alias, joinType)
+//					
+//			}
+//    		
+//    	});
+    	
         return find("select distinct n from OnmsNode as n "
-                + "join n.categories c " + "left join fetch n.assetRecord "
+        		+ "join n.categories as c "
+                + "left join fetch n.assetRecord "
                 + "left join fetch n.ipInterfaces as iface "
                 + "left join fetch iface.monitoredServices as monSvc "
                 + "left join fetch monSvc.serviceType "
                 + "left join fetch monSvc.currentOutages "
                 + "where n.assetRecord." + columnName + " = ? "
-                + "and c in ( ? )", columnValue, categories);
+                + "and c.name in ("+nameList+")", columnValue);
     }
 
     public Collection<OnmsNode> findAllByCategoryList(
