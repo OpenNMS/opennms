@@ -64,13 +64,22 @@ public class DefaultAggregateServiceIntegrationTest extends AbstractTransactiona
     
     private AggregateStatusService m_aggregateService;
     
+    /*
+     *  This is a total hack and should be moved into a Spring bean file
+     *  for integration testing.
+     */
     public DefaultAggregateServiceIntegrationTest() throws MarshalException, ValidationException, IOException, PropertyVetoException, SQLException {
-        SurveillanceViewsFactory.setInstance(new SurveillanceViewsFactory("../opennms-daemon/src/main/filtered/etc/surveillance-views.xml"));
         /*
          * Note: I'm using the opennms-database.xml file in target/classes/etc
-         * so that it has been filtered first.
+         * so that it has been filtered first.  You'll have to make sure that
+         * you've done an "install" in opennms-daemon or the top-level,
+         * or at least a "compile".
+         * 
+         * E.g.: ( cd opennms-daemon && ../build.sh compile )
          */
         DataSourceFactory.setInstance(new C3P0ConnectionFactory("../opennms-daemon/target/classes/etc/opennms-database.xml"));
+
+        SurveillanceViewsFactory.setInstance(new SurveillanceViewsFactory("../opennms-daemon/src/main/filtered/etc/surveillance-views.xml"));
         CategoryFactory.setInstance(new CategoryFactory(new FileReader("../opennms-daemon/src/main/filtered/etc/categories.xml")));
         ViewsDisplayFactory.setInstance(new ViewsDisplayFactory("../opennms-daemon/src/main/filtered/etc/viewsdisplay.xml"));
     }
