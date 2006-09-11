@@ -32,10 +32,15 @@
 
 package org.opennms.web.svclayer;
 
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+
+import org.opennms.netmgt.model.OnmsNode;
 
 /**
  * This class manages a table of AggregateStatus values.
@@ -47,6 +52,8 @@ public class SurveillanceTable {
     
     String m_label = null;
     AggregateStatus[][] m_statusTable = null;
+    Set<OnmsNode>[] m_rowNodes = null;
+    Set<OnmsNode>[] m_columnNodes = null;
     String[] m_rowHeaders = null;
     String[] m_columnHeaders = null;
     
@@ -56,6 +63,8 @@ public class SurveillanceTable {
     
     public SurveillanceTable(int rows, int columns) {
         m_statusTable = new AggregateStatus[rows][columns];
+        m_rowNodes = new HashSet[rows];
+        m_columnNodes = new HashSet[columns];
         m_rowHeaders = new String[rows];
         m_columnHeaders = new String[columns];
     }
@@ -197,6 +206,48 @@ public class SurveillanceTable {
         return headerList;
     }
 
+    public Set<OnmsNode>[] getRowNodes() {
+        return m_rowNodes;
+    }
 
+    public void setRowNodes(Set<OnmsNode>[] rowNodes) {
+        m_rowNodes = rowNodes;
+    }
+
+    public void setRowHeaders(String[] rowHeaders) {
+        m_rowHeaders = rowHeaders;
+    }
+
+    public Set<OnmsNode>[] getColumnNodes() {
+        return m_columnNodes;
+    }
+
+    public void setColumnNodes(Set<OnmsNode>[] columnNodes) {
+        m_columnNodes = columnNodes;
+    }
+
+    public void setColumnHeaders(String[] columnHeaders) {
+        m_columnHeaders = columnHeaders;
+    }
+
+    public void setStatusTable(AggregateStatus[][] statusTable) {
+        m_statusTable = statusTable;
+    }
+
+    public Set<OnmsNode> getNodesForRow(int row) {
+        return m_rowNodes[row];
+    }
+    
+    public void setNodesForRow(int row, Collection<OnmsNode>nodes) {
+        m_rowNodes[row] = new HashSet<OnmsNode>(nodes);        
+    }
+
+    public Set<OnmsNode> getNodesForColumn(int col) {
+        return m_columnNodes[col];
+    }
+    
+    public void setNodesForColumn(int col, Collection<OnmsNode> columnNodes) {
+        m_columnNodes[col] = new HashSet<OnmsNode>(columnNodes);
+    }
     
 }

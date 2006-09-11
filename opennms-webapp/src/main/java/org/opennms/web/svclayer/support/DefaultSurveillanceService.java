@@ -34,6 +34,7 @@ package org.opennms.web.svclayer.support;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -93,32 +94,44 @@ public class DefaultSurveillanceService implements SurveillanceService {
          * Iterate of the requested view's configuration (row's and columns) and set an aggreated status into each table
          * cell.
          */
+        
         for (Iterator rowDefIter = rowDefs.iterator(); rowDefIter.hasNext();) {
             RowDef rowDef = (RowDef) rowDefIter.next();
-            final int row = rowDef.getRow()-1;
-            statusTable.setRowHeader(row, rowDef.getLabel());
+            statusTable.setRowHeader(rowDef.getRow()-1, rowDef.getLabel());
             viewRowCats.addAll(rowDef.getCategoryCollection());
-
-            for (Iterator colDefIter = columnDefs.iterator(); colDefIter.hasNext();) {
-                ColumnDef colDef = (ColumnDef) colDefIter.next();
-                viewColCats.addAll(colDef.getCategoryCollection());
-
-                final int col = colDef.getCol()-1;
-                statusTable.setColumnHeader(col, colDef.getLabel());
-                statusTable.setStatus(row, col, createAggregateStatus(createCategories(viewRowCats), createCategories(viewColCats)));
-
-                if (statusTable.getStatus(row, col).getDownEntityCount() > 0) {
-                    statusTable.setRowHeader(row, createNodePageUrl(rowDef.getLabel()));
-                    m_foundDownNode = null; //what a hack
-                }
-
-                viewColCats.removeAll(colDef.getCategoryCollection());
-            }
-            
+            statusTable.setNodesForRow(rowDef.getRow()-1, createNodes(viewRowCats));
             viewRowCats.removeAll(rowDef.getCategoryCollection());
         }
-        
+
+        for (Iterator colDefIter = columnDefs.iterator(); colDefIter.hasNext();) {
+            ColumnDef colDef = (ColumnDef) colDefIter.next();
+            viewColCats.addAll(colDef.getCategoryCollection());
+            statusTable.setNodesForColumn(colDef.getCol()-1, createNodes(viewColCats));
+            statusTable.setColumnHeader(colDef.getCol()-1, colDef.getLabel());
+            viewColCats.removeAll(colDef.getCategoryCollection());
+        }
+
+        for (Iterator rowDefIter = rowDefs.iterator(); rowDefIter.hasNext();) {
+            RowDef rowDef = (RowDef) rowDefIter.next();
+            for (Iterator colDefIter = columnDefs.iterator(); colDefIter.hasNext();) {
+                ColumnDef colDef = (ColumnDef) colDefIter.next();
+                final Set<OnmsNode> intersectNodes = new HashSet<OnmsNode>(statusTable.getNodesForRow(rowDef.getRow()-1));
+                intersectNodes.retainAll(statusTable.getNodesForColumn(colDef.getCol()-1));
+                statusTable.setStatus(rowDef.getRow()-1, colDef.getCol()-1, createAggregateStatus(intersectNodes));
+
+                if (statusTable.getStatus(rowDef.getRow()-1, colDef.getCol()-1).getDownEntityCount() > 0) {
+                    statusTable.setRowHeader(rowDef.getRow()-1, createNodePageUrl(rowDef.getLabel()));
+                    m_foundDownNode = null; //what a hack
+                }
+            }
+                
+        }
         return statusTable;
+    }
+
+    private Collection<OnmsNode> createNodes(List<Category> viewCats) {
+        
+        return m_nodeDao.findAllByCategoryList(createCategories(viewCats));
     }
 
     /*
@@ -136,12 +149,12 @@ public class DefaultSurveillanceService implements SurveillanceService {
     /**
      * This method takes list of configured surveillance view categories
      * and returns a list of OnmsCategories
-     * @param viewRowCats
+     * @param viewCats
      * @return
      */
-    private Collection<OnmsCategory> createCategories(List<Category> viewRowCats) {
+    private Collection<OnmsCategory> createCategories(List<Category> viewCats) {
         List<String> catNames = new ArrayList<String>();
-        for (Category category : viewRowCats) {
+        for (Category category : viewCats) {
             catNames.add(category.getName());
         }
         
@@ -164,9 +177,8 @@ public class DefaultSurveillanceService implements SurveillanceService {
         return categories;
     }
 
-    private AggregateStatus createAggregateStatus(Collection<OnmsCategory> rowCatNames, Collection<OnmsCategory> colCatNames) {
+    private AggregateStatus createAggregateStatus(Set<OnmsNode> nodes) {
         AggregateStatus status;
-        Collection<OnmsNode> nodes = m_nodeDao.findAllByCategoryLists(rowCatNames, colCatNames);
         status = new AggregateStatus();
         if (nodes == null || nodes.isEmpty()) {
             status.setDownEntityCount(0);
