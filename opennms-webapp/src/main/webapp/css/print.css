@@ -1,0 +1,10 @@
+body {
+	font-family: "lucida grande", verdana, sans-serif;
+}
+#header, #footer, .pager, .key, input  {
+	display: none;
+}
+p, li, td, th  { font-size:small; }
+table { width:100%; border-collapse:collapse; }
+td { border:1px solid black; }
+th { text-align:left; }
