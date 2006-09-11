@@ -65,6 +65,9 @@
     OpenNMS Web Console
   </title>
   <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+  <c:forEach var="meta" items="${paramValues.meta}">
+    <c:out value="${meta}" escapeXml="false"/>
+  </c:forEach>
   <base href="<%=org.opennms.web.Util.calculateUrlBase( request )%>" />
   <link rel="stylesheet" type="text/css" href="css/styles.css" media="screen" />
 	<link rel="stylesheet" type="text/css" href="css/print.css" media="print" />
