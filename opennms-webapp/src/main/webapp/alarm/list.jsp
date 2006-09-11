@@ -170,23 +170,18 @@
 
   </script>
 
-  <div id="eventlist">
 
       <!-- menu -->
       <div id="linkbar">
       <ul>
-      <li>
-      <a href="<%=this.makeLink( parms, new ArrayList())%>" title="Remove all search constraints" >View all alarms</a>
-      </li>
-      <li>
-      &nbsp;&nbsp;&nbsp;<a href="alarm/advsearch.jsp" title="More advanced searching and sorting options">Advanced Search</a>      
-      &nbsp;&nbsp;&nbsp;<a href="javascript: void window.open('<%=org.opennms.web.Util.calculateUrlBase(request)%>/alarm/severity.jsp','', 'fullscreen=no,toolbar=no,status=no,menubar=no,scrollbars=no,resizable=yes,directories=no,location=no,width=525,height=158')" title="Open a window explaining the alarm severities">Severity Legend</a>      
-      </li>
+      <li><a href="<%=this.makeLink( parms, new ArrayList())%>" title="Remove all search constraints" >View all alarms</a></li>
+      <li><a href="alarm/advsearch.jsp" title="More advanced searching and sorting options">Advanced Search</a></li>
+      <li><a href="javascript: void window.open('<%=org.opennms.web.Util.calculateUrlBase(request)%>/alarm/severity.jsp','', 'fullscreen=no,toolbar=no,status=no,menubar=no,scrollbars=no,resizable=yes,directories=no,location=no,width=525,height=158')" title="Open a window explaining the alarm severities">Severity Legend</a></li>
       <li>
       <% if( parms.ackType == AlarmFactory.AcknowledgeType.UNACKNOWLEDGED ) { %> 
-        &nbsp;&nbsp;&nbsp;<a href="javascript: void document.acknowledge_by_filter_form.submit()" onclick="return confirm('Are you sure you want to acknowledge all alarms in the current search including those not shown on your screen?  (<%=alarmCount%> total alarms)')" title="Acknowledge all alarms that match the current search constraints, even those not shown on the screen">Acknowledge entire search</a>
+        <a href="javascript: void document.acknowledge_by_filter_form.submit()" onclick="return confirm('Are you sure you want to acknowledge all alarms in the current search including those not shown on your screen?  (<%=alarmCount%> total alarms)')" title="Acknowledge all alarms that match the current search constraints, even those not shown on the screen">Acknowledge entire search</a>
       <% } else { %>
-        &nbsp;&nbsp;&nbsp;<a href="javascript: void document.acknowledge_by_filter_form.submit()" onclick="return confirm('Are you sure you want to unacknowledge all alarms in the current search including those not shown on your screen)?  (<%=alarmCount%> total alarms)')" title="Unacknowledge all alarms that match the current search constraints, even those not shown on the screen">Unacknowledge entire search</a>               
+        <a href="javascript: void document.acknowledge_by_filter_form.submit()" onclick="return confirm('Are you sure you want to unacknowledge all alarms in the current search including those not shown on your screen)?  (<%=alarmCount%> total alarms)')" title="Unacknowledge all alarms that match the current search constraints, even those not shown on the screen">Unacknowledge entire search</a>               
       <% } %>
       </li>
       </ul>
@@ -200,7 +195,7 @@
         <%=org.opennms.web.Util.makeHiddenTags(request)%>
       </form>      
 
-        <div id="contentleft">
+
 
             <jsp:include page="/includes/alarm-querypanel.jsp" flush="false" />
           
@@ -213,83 +208,50 @@
                 <jsp:param name="multiple" value="<%=parms.multiple%>"   />
               </jsp:include>
             <% } %>          
-         </div>
 
-          
-        <div id="contentright">
 
             <% if( parms.filters.size() > 0 || parms.ackType == AlarmFactory.AcknowledgeType.UNACKNOWLEDGED || parms.ackType == AlarmFactory.AcknowledgeType.ACKNOWLEDGED ) { %>
               <% int length = parms.filters.size(); %>
-
-              <p>Current search constraints:
-                <ol>                  
+              <p>Search constraints:
                   <% if( parms.ackType == AlarmFactory.AcknowledgeType.UNACKNOWLEDGED ) { %>
-                    <li>
-                      alarm is outstanding
-                      &nbsp;&nbsp;
-                      <a href="<%=this.makeLink(parms, AlarmFactory.AcknowledgeType.ACKNOWLEDGED)%>" title="Show acknowledged alarms"><nobr>[Show acknowledged]</nobr></a>
-                    </li>
+                    <span class="filter">alarm is outstanding <a href="<%=this.makeLink(parms, AlarmFactory.AcknowledgeType.ACKNOWLEDGED)%>" title="Show acknowledged alarms">[-]</a></span>
                   <% } else if( parms.ackType == AlarmFactory.AcknowledgeType.ACKNOWLEDGED ) { %>
-                    <li>
-                      alarm is acknowledged
-                      &nbsp;&nbsp;
-                      <a href="<%=this.makeLink(parms, AlarmFactory.AcknowledgeType.UNACKNOWLEDGED)%>" title="Show outstanding alarms"><nobr>[Show outstanding]</nobr></a>
-                    </li>
+                    <span class="filter">alarm is acknowledged <a href="<%=this.makeLink(parms, AlarmFactory.AcknowledgeType.UNACKNOWLEDGED)%>" title="Show outstanding alarms">[-]</a></span>
                   <% } %>            
                 
                   <% for( int i=0; i < length; i++ ) { %>
                     <% org.opennms.web.alarm.filter.Filter filter = (org.opennms.web.alarm.filter.Filter)parms.filters.get(i); %>
-                    
-                    <li>
-                      <%=filter.getTextDescription()%>
-                      &nbsp;&nbsp;
-                      <a href="<%=this.makeLink( parms, filter, false)%>" title="Remove filter">[Remove]</a>
-                    </li>                    
+                    &nbsp; <span class="filter"><%=filter.getTextDescription()%> <a href="<%=this.makeLink( parms, filter, false)%>" title="Remove filter">[-]</a></span>
                   <% } %>
-                </ol>
               </p>           
             <% } %>
-          </div>
-
-    <div class="spacer"><!-- --></div>
 
     <form action="alarm/acknowledge" method="POST" name="acknowledge_form">
       <input type="hidden" name="redirectParms" value="<%=request.getQueryString()%>" />
       <input type="hidden" name="action" value="<%=action%>" />
       <%=org.opennms.web.Util.makeHiddenTags(request)%>
-
+			<jsp:include page="/includes/key.jsp" flush="false" />
       <table>
-	<thead>
-	<tr>
-          <% if ( parms.ackType == AlarmFactory.AcknowledgeType.UNACKNOWLEDGED ) { %>
-          <th width="1%"><b>Ack</b></th>
-          <% } else { %>
-          <th width="1%"><b>UnAck</b></th>
-          <% } %>
-          <th width="1%"> <%=this.makeSortLink( parms, AlarmFactory.SortStyle.ID,        AlarmFactory.SortStyle.REVERSE_ID,        "id",        "ID" )%></th>
-          <th width="10%"><%=this.makeSortLink( parms, AlarmFactory.SortStyle.SEVERITY,  AlarmFactory.SortStyle.REVERSE_SEVERITY,  "severity",  "Severity"  )%></th>
-          <th width="22%"><%=this.makeSortLink( parms, AlarmFactory.SortStyle.NODE,      AlarmFactory.SortStyle.REVERSE_NODE,      "node",      "Node"      )%></th>
-          <th width="15%"><%=this.makeSortLink( parms, AlarmFactory.SortStyle.INTERFACE, AlarmFactory.SortStyle.REVERSE_INTERFACE, "interface", "Interface" )%></th>
-          <th width="12%"><%=this.makeSortLink( parms, AlarmFactory.SortStyle.SERVICE,   AlarmFactory.SortStyle.REVERSE_SERVICE,   "service",   "Service"   )%></th>
-          <th width="5%"><%=this.makeSortLink( parms, AlarmFactory.SortStyle.COUNT,  AlarmFactory.SortStyle.REVERSE_COUNT,  "count",  "Count"  )%></th>
-          <th width="17%"><%=this.makeSortLink( parms, AlarmFactory.SortStyle.LASTEVENTTIME,  AlarmFactory.SortStyle.REVERSE_LASTEVENTTIME,  "lasteventtime",  "Last Event Time"  )%></th>
-          <th width="17%"><%=this.makeSortLink( parms, AlarmFactory.SortStyle.FIRSTEVENTTIME,  AlarmFactory.SortStyle.REVERSE_FIRSTEVENTTIME,  "firsteventtime",  "First Event Time"  )%></th>
-        </tr>
-        <tr>
-	  <th>&nbsp;</th>
-	  <th>&nbsp;</th>
-	  <th>&nbsp;</th>
-          <th><b>Ackd</b></th>
-          <th><b>Ackd Time</b></th>
-	  <th><b>UEI</b></th>
-	  <th>&nbsp;</th>
-	  <th>&nbsp;</th>
-	  <th>&nbsp;</th>
-        </tr>
-	</thead>
+				<thead>
+					<tr>
+						<% if ( parms.ackType == AlarmFactory.AcknowledgeType.UNACKNOWLEDGED ) { %>
+							<th width="1%">Ack</th>
+							<% } else { %>
+								<th width="1%">UnAck</th>
+								<% } %>
+								<th width="1%"> <%=this.makeSortLink( parms, AlarmFactory.SortStyle.ID,        AlarmFactory.SortStyle.REVERSE_ID,        "id",        "ID" )%></th>
+								<th width="10%"><%=this.makeSortLink( parms, AlarmFactory.SortStyle.SEVERITY,  AlarmFactory.SortStyle.REVERSE_SEVERITY,  "severity",  "Severity"  )%></th>
+								<th width="22%"><%=this.makeSortLink( parms, AlarmFactory.SortStyle.NODE,      AlarmFactory.SortStyle.REVERSE_NODE,      "node",      "Node"      )%></th>
+								<th width="15%"><%=this.makeSortLink( parms, AlarmFactory.SortStyle.INTERFACE, AlarmFactory.SortStyle.REVERSE_INTERFACE, "interface", "Interface" )%></th>
+								<th width="12%"><%=this.makeSortLink( parms, AlarmFactory.SortStyle.SERVICE,   AlarmFactory.SortStyle.REVERSE_SERVICE,   "service",   "Service"   )%></th>
+								<th width="5%"><%=this.makeSortLink( parms, AlarmFactory.SortStyle.COUNT,  AlarmFactory.SortStyle.REVERSE_COUNT,  "count",  "Count"  )%></th>
+								<th width="17%"><%=this.makeSortLink( parms, AlarmFactory.SortStyle.LASTEVENTTIME,  AlarmFactory.SortStyle.REVERSE_LASTEVENTTIME,  "lasteventtime",  "Last Event Time"  )%></th>
+								<th width="17%"><%=this.makeSortLink( parms, AlarmFactory.SortStyle.FIRSTEVENTTIME,  AlarmFactory.SortStyle.REVERSE_FIRSTEVENTTIME,  "firsteventtime",  "First Event Time"  )%></th>
+							</tr>
+						</thead>
       <% for( int i=0; i < alarms.length; i++ ) { %>        
-        <tr valign="top" class="<%=AlarmUtil.getSeverityLabel(alarms[i].getSeverity())%>">
-          <td class="bright" valign="top" rowspan="3">
+        <tr class="<%=AlarmUtil.getSeverityLabel(alarms[i].getSeverity())%>">
+          <td class="divider" valign="top" rowspan="3">
             <nobr>
               <input type="checkbox" name="alarm" value="<%=alarms[i].getId()%>" /> 
             </nobr>
@@ -298,7 +260,7 @@
             <a href="alarm/detail.jsp?id=<%=alarms[i].getId()%>"><%=alarms[i].getId()%></a>
           </td>
           
-          <td class="divider" valign="top" rowspan="3">
+          <td class="divider bright" valign="top" rowspan="3">
             <%=AlarmUtil.getSeverityLabel(alarms[i].getSeverity())%>
             
             <% org.opennms.web.alarm.filter.Filter severityFilter = new SeverityFilter(alarms[i].getSeverity()); %>      
@@ -357,8 +319,6 @@
                   <a href="<%=this.makeLink( parms, new NegativeServiceFilter(alarms[i].getServiceId()), true)%>" class="filterLink" title="Do not show alarms for this service"><%=addNegativeFilterString%></a>
                 </nobr>
               <% } %>                            
-            <% } else { %>
-              &nbsp;
             <% } %>
           </td>          
           <td class="divider" valign="top" rowspan="1" >
@@ -386,8 +346,8 @@
             </nobr>
           </td>
 	</tr>
-        <tr valign="top" class="<%=AlarmUtil.getSeverityLabel(alarms[i].getSeverity())%>">
-          <td>
+        <tr class="<%=AlarmUtil.getSeverityLabel(alarms[i].getSeverity())%>">
+          <td>Ackd:
             <% if (alarms[i].isAcknowledged()) { %>
               <% org.opennms.web.alarm.filter.Filter acknByFilter = new AcknowledgedByFilter(alarms[i].getAcknowledgeUser()); %>      
               <%=alarms[i].getAcknowledgeUser()%>
@@ -402,13 +362,13 @@
             <% } %>
           </td>
         
-          <td valign="top">
-            <%=alarms[i].isAcknowledged() ? org.opennms.netmgt.EventConstants.formatToUIString(alarms[i].getAcknowledgeTime()) : "&nbsp;"%>
+          <td colspan="2">
+            Ackd Time: <%=alarms[i].isAcknowledged() ? org.opennms.netmgt.EventConstants.formatToUIString(alarms[i].getAcknowledgeTime()) : "&nbsp;"%>
           </td>
-	  <td colspan=3>
+	  			<td colspan="3">
             <% if(alarms[i].getUei() != null) { %>
               <% org.opennms.web.alarm.filter.Filter exactUEIFilter = new ExactUEIFilter(alarms[i].getUei()); %>
-                <%=alarms[i].getUei()%>
+                UEI: <%=alarms[i].getUei()%>
               <% if( !parms.filters.contains( exactUEIFilter )) { %>
                 <nobr>
                   <a href="<%=this.makeLink( parms, exactUEIFilter, true)%>" class="filterLink" title="Show only events with this UEI"><%=addPositiveFilterString%></a>
@@ -419,29 +379,26 @@
               &nbsp;
             <% } %>
           </td>
-	   <td>&nbsp;</td>
         </tr>
         <tr class="<%=AlarmUtil.getSeverityLabel(alarms[i].getSeverity())%>" valign="top">
           <td valign="top" colspan="6"><%=alarms[i].getLogMessage()%></td>
         </tr>
        
       <% } /*end for*/%>
-      
-        <tr>
-          <td colspan="3"><%=alarms.length%> alarms</td>
-          <td colspan="6">
-          <% if( parms.ackType == AlarmFactory.AcknowledgeType.UNACKNOWLEDGED ) { %>
-            <input type="button" value="Acknowledge Alarms" onClick="submitForm('acknowledge')"/>
-            <input TYPE="button" VALUE="Select All" onClick="checkAllCheckboxes()"/>
-            <input TYPE="reset" />
-          <% } else if( parms.ackType == AlarmFactory.AcknowledgeType.ACKNOWLEDGED ) { %>
-            <input type="button" value="Unacknowledge Alarms" onClick="submitForm('unacknowledge')"/>
-            <input TYPE="button" VALUE="Select All" onClick="checkAllCheckboxes()"/>
-            <input TYPE="reset" />
-          <% } %>
-          </td>
-        </tr>
+
       </table>
+			<hr />
+			 <p><%=alarms.length%> alarms &nbsp;
+        <% if( parms.ackType == AlarmFactory.AcknowledgeType.UNACKNOWLEDGED ) { %>
+          <input TYPE="reset" />
+          <input TYPE="button" VALUE="Select All" onClick="checkAllCheckboxes()"/>
+          <input type="button" value="Acknowledge Alarms" onClick="submitForm('acknowledge')"/>
+        <% } else if( parms.ackType == AlarmFactory.AcknowledgeType.ACKNOWLEDGED ) { %>
+          <input TYPE="reset" />
+          <input TYPE="button" VALUE="Select All" onClick="checkAllCheckboxes()"/>
+          <input type="button" value="Unacknowledge Alarms" onClick="submitForm('unacknowledge')"/>
+        <% } %>
+        </p>
       </form>
 
       <%--<br>
@@ -449,7 +406,7 @@
         <a HREF="admin/alarms.jsp" title="Acknowledge or Unacknowledge All Alarms">[Acknowledge or Unacknowledge All Alarms]</a>
       <% } %>--%>
 
-  </div> <!-- id="eventlist" -->
+ <!-- id="eventlist" -->
 
 <jsp:include page="/includes/bookmark.jsp" flush="false" />
 <jsp:include page="/includes/footer.jsp" flush="false" />
