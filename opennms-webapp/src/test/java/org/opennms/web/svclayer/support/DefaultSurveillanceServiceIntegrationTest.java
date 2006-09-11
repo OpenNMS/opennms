@@ -32,6 +32,13 @@
 
 package org.opennms.web.svclayer.support;
 
+import java.io.FileReader;
+
+import org.opennms.netmgt.config.C3P0ConnectionFactory;
+import org.opennms.netmgt.config.CategoryFactory;
+import org.opennms.netmgt.config.DataSourceFactory;
+import org.opennms.netmgt.config.SurveillanceViewsFactory;
+import org.opennms.netmgt.config.ViewsDisplayFactory;
 import org.opennms.web.svclayer.SurveillanceService;
 import org.opennms.web.svclayer.SurveillanceTable;
 import org.springframework.test.AbstractTransactionalDataSourceSpringContextTests;
@@ -39,6 +46,20 @@ import org.springframework.test.AbstractTransactionalDataSourceSpringContextTest
 public class DefaultSurveillanceServiceIntegrationTest extends AbstractTransactionalDataSourceSpringContextTests {
     
     private SurveillanceService m_surveillanceService;
+    
+    
+    
+    public DefaultSurveillanceServiceIntegrationTest() throws Exception {
+        SurveillanceViewsFactory.setInstance(new SurveillanceViewsFactory("../opennms-daemon/src/main/filtered/etc/surveillance-views.xml"));
+        /*
+         * Note: I'm using the opennms-database.xml file in target/classes/etc
+         * so that it has been filtered first.
+         */
+        DataSourceFactory.setInstance(new C3P0ConnectionFactory("../opennms-daemon/target/classes/etc/opennms-database.xml"));
+        CategoryFactory.setInstance(new CategoryFactory(new FileReader("../opennms-daemon/src/main/filtered/etc/categories.xml")));
+        ViewsDisplayFactory.setInstance(new ViewsDisplayFactory("../opennms-daemon/src/main/filtered/etc/viewsdisplay.xml"));
+
+    }
     
     
     /**
