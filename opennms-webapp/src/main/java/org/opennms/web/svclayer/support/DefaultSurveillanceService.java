@@ -109,6 +109,7 @@ public class DefaultSurveillanceService implements SurveillanceService {
 
                 if (statusTable.getStatus(row, col).getDownEntityCount() > 0) {
                     statusTable.setRowHeader(row, createNodePageUrl(rowDef.getLabel()));
+                    m_foundDownNode = null; //what a hack
                 }
 
                 viewColCats.removeAll(colDef.getCategoryCollection());
@@ -217,6 +218,7 @@ public class DefaultSurveillanceService implements SurveillanceService {
                 //that takes you do a node page when a node is down in this
                 //status class.
                 m_foundDownNode = node;
+                
                 totalNodesDown += 1;
             }
         }
