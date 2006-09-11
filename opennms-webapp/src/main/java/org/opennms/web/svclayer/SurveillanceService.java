@@ -32,6 +32,8 @@
 
 package org.opennms.web.svclayer;
 
+import org.springframework.transaction.annotation.Transactional;
+
 /**
  * Class designed for gathering Aggreate Status of nodes to be displayed
  * in a cross sectional view of categories.  This service provides the objects
@@ -40,6 +42,8 @@ package org.opennms.web.svclayer;
  * @author david
  *
  */
+
+@Transactional(readOnly=true)
 public interface SurveillanceService {
 
     SurveillanceTable createSurveillanceTable(String surveillanceViewName);
