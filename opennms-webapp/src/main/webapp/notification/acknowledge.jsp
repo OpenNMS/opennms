@@ -43,6 +43,7 @@
 	contentType="text/html"
 	session="true"
 	import="org.opennms.web.notification.*,
+		org.opennms.web.event.*,
 		org.opennms.web.element.*,
 		org.opennms.web.MissingParameterException
 	"
@@ -101,22 +102,25 @@
   <% } %>
 </ul>
 
-<% for( int i = 0; i < notices.length; i++ ) { %>
+<% for( int i = 0; i < notices.length; i++ ) {
+  Event event = EventFactory.getEvent( notices[i].getEventId() );
+  String eventSeverity = EventUtil.getSeverityLabel(event.getSeverity());%>
+
   <h4>Notice <%=notices[i].getId()%> Summary</h4>
-  <table class="standard">
-    <tr>
-      <td class="standardheader" width="15%">Notice ID</td>
-      <td class="standard" width="15%"> <a href="notification/detail.jsp?notice=<%=notices[i].getId()%>"><%=notices[i].getId()%></a></td>
-      <td class="standardheader" width="15%">Event ID</td>
-      <td class="standard" width="15%"> <a href="event/detail.jsp?id=<%=notices[i].getEventId()%>"><%=notices[i].getEventId()%></a></td>
-      <td class="standardheader" width="15%">Sent</td>
-      <td class="standard" width="15%"> <%=notices[i].getTimeSent()%> </td>
+  <table>
+    <tr class="<%=eventSeverity%>">
+      <td width="15%">Notice ID</td>
+      <td width="15%"> <a href="notification/detail.jsp?notice=<%=notices[i].getId()%>"><%=notices[i].getId()%></a></td>
+      <td width="15%">Event ID</td>
+      <td width="15%"> <a href="event/detail.jsp?id=<%=notices[i].getEventId()%>"><%=notices[i].getEventId()%></a></td>
+      <td width="15%">Sent</td>
+      <td width="15%"> <%=notices[i].getTimeSent()%> </td>
     </tr>
 
-    <tr>
-      <td class="standardheader" width="15%">Interface</td>
+    <tr class="<%=eventSeverity%>">
+      <td width="15%">Interface</td>
 
-      <td class="standard" width="15%"> 
+      <td width="15%"> 
         <%if (NetworkElementFactory.getNodeLabel(notices[i].getNodeId())!=null && notices[i].getIpAddress()!=null) { %>
           <a href="element/interface.jsp?node=<%=notices[i].getNodeId()%>&intf=<%=notices[i].getIpAddress()%>"><%=notices[i].getIpAddress()%></a>
         <% } else if (notices[i].getIpAddress()!=null) { %>
@@ -126,9 +130,9 @@
         <% } %>
       </td>
 
-      <td class="standardheader" width="15%">Service</td>
+      <td width="15%">Service</td>
 
-      <td class="standard" width="15%"> 
+      <td width="15%"> 
         <%if (NetworkElementFactory.getNodeLabel(notices[i].getNodeId())!=null && notices[i].getIpAddress()!=null && notices[i].getServiceName()!=null) { %>
           <a href="element/service.jsp?node=<%=notices[i].getNodeId()%>&intf=<%=notices[i].getIpAddress()%>&service=<%=notices[i].getServiceId()%>"><%=notices[i].getServiceName()%></a>
         <% } else if (notices[i].getServiceName()!=null) { %>
@@ -138,22 +142,22 @@
         <% } %>
       </td>
           
-      <td class="standardheader" width="15%">Acknowledged</td>
+      <td width="15%">Acknowledged</td>
 
-      <td class="standard" width="15%"> <%=notices[i].getTimeReplied()%> </td>
+      <td width="15%"> <%=notices[i].getTimeReplied()%> </td>
     </tr>
 
     <%if (notices[i].getNumericMessage() != null) { %>
-      <tr>
-        <td colspan="6" class="standard">
+      <tr class="<%=eventSeverity%>">
+        <td colspan="6">
           <%=notices[i].getNumericMessage()%>
         </td>
       <tr>
     <% } %>
 
     <%if (notices[i].getTextMessage() != null) { %>
-      <tr>
-        <td colspan="6" class="standard">
+      <tr class="<%=eventSeverity%>">
+        <td colspan="6">
           <%=notices[i].getTextMessage()%>
         </td>
       </tr>
