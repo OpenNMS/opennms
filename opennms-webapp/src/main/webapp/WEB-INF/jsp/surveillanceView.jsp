@@ -3,8 +3,6 @@
 <%@ taglib uri="http://java.sun.com/jstl/fmt" prefix="fmt"%>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 
-<%@page import="java.util.Collection"%>
-<%@page import="org.opennms.web.svclayer.SurveillanceTable"%>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
@@ -20,6 +18,33 @@
 <h1 align="center">Surveillance View</h1>
 
 <div id="index-contentmiddle">
+
+<h2>New Table</h2>
+
+<h3> <c:out value="${webTable.title}" /> </h3>
+
+<table>
+
+  <tr>
+  <c:forEach items="${webTable.columnHeaders}" var="headerCell">
+    <th class="<c:out value='${headerCell.styleClass}'/>">
+      <c:out value="${headerCell.content}"/>
+    </th>
+  </c:forEach>
+  </tr>
+  
+  <c:forEach items="${webTable.rows}" var="row">
+    <tr>
+      <c:forEach items="${row}" var="cell">
+        <td class="<c:out value='${cell.styleClass}'/>">
+           <c:out value="${cell.content}"/>
+        </td>
+      </c:forEach>
+    </tr>
+  </c:forEach>
+</table>
+
+<h2>Old Table</h2>
 
 <h3> <c:out value="${table.label}" /></h3>
 
