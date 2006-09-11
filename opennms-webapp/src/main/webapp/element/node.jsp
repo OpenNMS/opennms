@@ -360,7 +360,7 @@
               <jsp:param name="header" value="<%=eventHeader%>" />
               <jsp:param name="moreUrl" value="<%=moreEventsUrl%>" />
             </jsp:include>
-            
+            <hr />
             <!-- Recent outages box -->
             <jsp:include page="/includes/nodeOutages-box.jsp" flush="false" />
        </div>
