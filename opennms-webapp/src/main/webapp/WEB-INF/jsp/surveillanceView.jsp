@@ -30,7 +30,7 @@
     <thead>
       <tr>
         <th>Nodes Down</th>
-        <c:forEach items="{$table.columnHeaderList}" var="header">
+        <c:forEach items="${table.columnHeaderList}" var="header">
           <th><c:out value="${header}" /></th>
         </c:forEach>
       </tr>
@@ -38,10 +38,10 @@
     
     <!-- print the rows -->
     
-    <c:forEach items="{table.rowHeaderList}" var="header">
+    <c:forEach items="${table.rowHeaderList}" var="header">
       <tr>
         <td><c:out value="${header}" /></td>
-          <c:forEach items="{$table.columnOrderedRowsWithHeaders}" var="statusMap">
+          <c:forEach items="${table.columnOrderedRowsWithHeaders}" var="statusMap">
             <td class="<c:out value="${statusMap[$header].status}" />" >
               <c:out value="${statusMap[$header].downEntityCount}" /> of <c:out value="${statusMap[$header].totalEntityCount}" /> 
             </td>
