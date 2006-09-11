@@ -98,7 +98,11 @@ drop table qrtz_calendars;
 
 --# End quartz persistence
 
+CREATE FUNCTION plpgsql_call_handler () 
+    RETURNS OPAQUE AS '$libdir/plpgsql.so' LANGUAGE 'c';
 
+CREATE TRUSTED PROCEDURAL LANGUAGE 'plpgsql' 
+    HANDLER plpgsql_call_handler LANCOMPILER 'PL/pgSQL';
 
 --##################################################################
 --# The following commands set up automatic sequencing functionality
