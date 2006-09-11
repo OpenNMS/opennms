@@ -180,6 +180,8 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
     private OnmsNode m_node;
     
     private Set<OnmsMonitoredService> m_monitoredServices = new HashSet<OnmsMonitoredService>();
+
+	private OnmsSnmpInterface m_snmpInterface;
     
     public OnmsIpInterface() {
     }
@@ -291,6 +293,21 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
 
     public void setMonitoredServices(Set<OnmsMonitoredService> ifServices) {
         m_monitoredServices = ifServices;
+    }
+    
+    
+    /**
+     * The SnmpInterface associated with this interface if any
+     */
+    @ManyToOne(optional=true, fetch=FetchType.LAZY)
+    @JoinColumn(name="snmpInterfaceId")
+    public OnmsSnmpInterface getSnmpInterface() {
+    	return m_snmpInterface;
+    }
+    
+    
+    public void setSnmpInterface(OnmsSnmpInterface snmpInterface) {
+    	m_snmpInterface = snmpInterface;
     }
 
     public String toString() {
