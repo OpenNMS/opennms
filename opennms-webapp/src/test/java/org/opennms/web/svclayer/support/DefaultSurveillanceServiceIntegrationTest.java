@@ -39,6 +39,7 @@ import org.opennms.netmgt.config.CategoryFactory;
 import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.config.SurveillanceViewsFactory;
 import org.opennms.netmgt.config.ViewsDisplayFactory;
+import org.opennms.web.svclayer.ProgressMonitor;
 import org.opennms.web.svclayer.SurveillanceService;
 import org.opennms.web.svclayer.SurveillanceTable;
 import org.springframework.test.AbstractTransactionalDataSourceSpringContextTests;
@@ -80,7 +81,25 @@ public class DefaultSurveillanceServiceIntegrationTest extends AbstractTransacti
     
     public void testCreateSurveillanceServiceTableUsingViewName() {
         String viewName = "default";
-        SurveillanceTable table = m_surveillanceService.createSurveillanceTable(viewName);
+        SurveillanceTable table = m_surveillanceService.createSurveillanceTable(viewName, new ProgressMonitor() {
+
+			public void beginNextPhase(String string) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			public void finished() {
+				// TODO Auto-generated method stub
+				
+			}
+
+			public void setPhaseCount(int i) {
+				// TODO Auto-generated method stub
+				
+			}
+        	
+        });
+        
         
         assertEquals("default", table.getLabel());
     }
