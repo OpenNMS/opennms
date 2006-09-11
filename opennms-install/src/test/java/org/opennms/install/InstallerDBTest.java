@@ -1807,7 +1807,7 @@ public class InstallerDBTest extends TemporaryDatabaseTestCase {
         addTableFromSQL("distpoller");
         addTableFromSQL("node");
         addTableFromSQL("snmpinterface");
-        executeSQL("drop index snmpinterface_nodeid_ifindex_idx");
+        executeSQL("drop index snmpinterface_nodeid_ifindex_unique_idx");
         
         executeSQL("INSERT INTO node ( nodeId, nodeCreateTime ) "
                    + "VALUES ( 1, now() )");
@@ -1826,7 +1826,7 @@ public class InstallerDBTest extends TemporaryDatabaseTestCase {
         
         ThrowableAnticipator ta = new ThrowableAnticipator();
         ta.anticipate(new Exception("Unique index "
-                                    + "'snmpinterface_nodeid_ifindex_idx' "
+                                    + "'snmpinterface_nodeid_ifindex_unique_idx' "
                                     + "cannot be added to table "
                                     + "'snmpinterface' because 4 rows are not "
                                     + "unique.  See the install guide for "
