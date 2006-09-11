@@ -4,6 +4,7 @@
 <jsp:include page="/includes/header.jsp" flush="false">
 	<jsp:param name="title" value="<c:out vlaue="${phaseLabel}"/>" />
 	<jsp:param name="headTitle" value="<c:out value="${phaseLabel}"/>" />
+	<jsp:param name="meta" value="<meta http-equiv='refresh' content='3'/>" />
 </jsp:include>
 
 <div id="index-contentmiddle">
