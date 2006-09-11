@@ -173,7 +173,7 @@ public class SurveillanceTable {
         return m_columnHeaders;
     }
     
-    public List getColHeaderList() {
+    public List getColumnHeaderList() {
         return asLinkedList(m_columnHeaders);
     }
 

@@ -46,7 +46,7 @@
 			<value>
 				hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect
 				hibernate.show_sql=true
-				hibernate.format_sql=true
+				<!-- hibernate.format_sql=true -->
 			</value>
 		</property>
 	</bean>

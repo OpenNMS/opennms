@@ -32,8 +32,8 @@
 package org.opennms.netmgt.model;
 
 import java.io.Serializable;
+import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedHashSet;
 import java.util.Set;
 
 import javax.persistence.Column;
@@ -43,6 +43,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
@@ -99,6 +100,8 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
     private String m_ifAlias;
 
     private OnmsNode m_node;
+
+	private Set<OnmsIpInterface> m_ipInterfaces = new HashSet<OnmsIpInterface>();
 
     public OnmsSnmpInterface(String ipAddr, int ifIndex, OnmsNode node) {
     	this(ipAddr, new Integer(ifIndex), node);
@@ -267,17 +270,14 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
 		visitor.visitSnmpInterfaceComplete(this);
 	}
 
-	@Transient
-	public Set getIpInterfaces() {
-		
-		Set ifsForSnmpIface = new LinkedHashSet();
-		for (Iterator it = getNode().getIpInterfaces().iterator(); it.hasNext();) {
-			OnmsIpInterface	iface = (OnmsIpInterface) it.next();		
-			if (getIfIndex().equals(iface.getIfIndex()))
-				ifsForSnmpIface.add(iface);
-		}
-		return ifsForSnmpIface;
+    @OneToMany(mappedBy="snmpInterface", fetch=FetchType.LAZY)
+	public Set<OnmsIpInterface> getIpInterfaces() {
+    	return m_ipInterfaces;
 	}
+    
+    public void setIpInterfaces(Set<OnmsIpInterface> ipInterfaces) {
+    	m_ipInterfaces = ipInterfaces;
+    }
 
 	@Transient
 	public CollectionType getCollectionType() {
