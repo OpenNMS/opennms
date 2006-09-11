@@ -8,10 +8,10 @@
 </jsp:include>
 
   <div align="center">
-    <c:out value="${param.phaseLabel}"/>...
+    <c:out value="${progress.phaseLabel}"/>...
 
     <div style="width: 400px; height: 30px; border-size: 1px; border-style: ridge;">
-      <div align="left" style="float: left; width: <c:out value="${param.phase / param.phaseCount * 100}"/>%; height: 30px; background-color: green;"></div>
+      <div align="left" style="float: left; width: <c:out value="${progress.phase / progress.phaseCount * 100}"/>%; height: 30px; background-color: green;"></div>
     </div>
   </div>
 

@@ -46,5 +46,5 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly=true)
 public interface SurveillanceService {
 
-    SurveillanceTable createSurveillanceTable(String surveillanceViewName);
+    SurveillanceTable createSurveillanceTable(String surveillanceViewName, ProgressMonitor progressMonitor);
 }

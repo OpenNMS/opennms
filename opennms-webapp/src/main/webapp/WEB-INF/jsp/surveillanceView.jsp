@@ -13,8 +13,6 @@
 
 <div id="index-contentmiddle">
 
-<h2>New Table</h2>
-
 <h3> <c:out value="${webTable.title}" /> </h3>
 
 <table>
@@ -38,37 +36,6 @@
   </c:forEach>
 </table>
 
-<h2>Old Table</h2>
-
-<h3> <c:out value="${table.label}" /></h3>
-
-  <table>
-  
-    <!--  column headers -->
-    
-    <thead>
-      <tr>
-        <th>Nodes Down</th>
-        <c:forEach items="${table.columnHeaderList}" var="header">
-          <th><c:out value="${header}" /></th>
-        </c:forEach>
-      </tr>
-    </thead>
-    
-    <!-- print the rows -->
-    
-    <c:forEach items="${table.rowHeaderList}" var="header">
-      <tr>
-        <td><c:out value="${header}" /></td>
-          <c:forEach items="${table.columnOrderedRowsWithHeaders}" var="statusMap">
-            <td class="<c:out value="${statusMap[$header].status}" />" >
-              <c:out value="${statusMap[$header].downEntityCount}" /> of <c:out value="${statusMap[$header].totalEntityCount}" /> 
-            </td>
-          </c:forEach>
-      </tr>
-    </c:forEach>
-    
-  </table>
 </div>
 
 <jsp:include page="/includes/footer.jsp" flush="false" />

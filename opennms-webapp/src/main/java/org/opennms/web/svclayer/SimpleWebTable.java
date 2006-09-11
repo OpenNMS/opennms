@@ -11,7 +11,7 @@ import java.util.List;
  */
 public class SimpleWebTable {
 	
-	public class Cell {
+	public static class Cell {
 		private Object m_content;
 		private String m_styleClass;
 		public Cell() {}
@@ -55,9 +55,10 @@ public class SimpleWebTable {
 		m_title  = title;
 	}
 	
-	public void addColumn(Object headerContent, String headerStyle) {
+	public Cell addColumn(Object headerContent, String headerStyle) {
 		Cell headerCell = new Cell(headerContent, headerStyle);
 		m_columnHeaders.add(headerCell);
+		return headerCell;
 	}
 	
 	public void newRow() {
@@ -66,11 +67,13 @@ public class SimpleWebTable {
 		m_currentRow = row;
 	}
 	
-	public void addCell(Object cellContent, String cellStyle) {
+	public Cell addCell(Object cellContent, String cellStyle) {
 		if (m_currentRow == null)
 			throw new IllegalStateException("make sure you call newRow before trying to add any cells to the table!");
 		
-		m_currentRow.add(new Cell(cellContent, cellStyle));
+		Cell cell = new Cell(cellContent, cellStyle);
+		m_currentRow.add(cell);
+		return cell;
 		
 		
 	}

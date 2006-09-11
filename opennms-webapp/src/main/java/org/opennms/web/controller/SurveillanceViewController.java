@@ -34,7 +34,9 @@ package org.opennms.web.controller;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
+import org.opennms.web.svclayer.ProgressMonitor;
 import org.opennms.web.svclayer.SurveillanceService;
 import org.opennms.web.svclayer.SurveillanceTable;
 import org.springframework.web.servlet.ModelAndView;
@@ -44,6 +46,7 @@ public class SurveillanceViewController extends AbstractController {
     
     private static final int FIVE_MINUTES = 5*60;
     private static SurveillanceService m_service;
+	private ProgressMonitor m_progressMonitor;
     
     public SurveillanceViewController() {
         setSupportedMethods(new String[] {METHOD_GET});
@@ -53,15 +56,53 @@ public class SurveillanceViewController extends AbstractController {
     public void setService(SurveillanceService svc) {
         m_service = svc;
     }
-
+    
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest req, HttpServletResponse resp) throws Exception {
-        ModelAndView mav = new ModelAndView("surveillanceView");
-        String viewName = req.getParameter("viewName");
-        SurveillanceTable table = m_service.createSurveillanceTable(viewName);
-        mav.addObject("table", table);
-        mav.addObject("webTable", table.getWebTable());
-        return mav;
+    	
+    	final String progressMonitorKey = "serveillanceViewProgressMonitor";
+
+    	HttpSession session = req.getSession();
+		ProgressMonitor progressMonitor = (ProgressMonitor) session.getAttribute(progressMonitorKey);
+		if (progressMonitor == null) {
+			progressMonitor = createProgressMonitor(req.getParameter("viewName"));
+			session.setAttribute(progressMonitorKey, progressMonitor);
+		}
+		
+		if (progressMonitor.isError()) {
+			session.removeAttribute(progressMonitorKey);
+			throw progressMonitor.getException();
+		}
+    	
+    	if (progressMonitor.isFinished()) {
+			session.removeAttribute(progressMonitorKey);
+    		SurveillanceTable table = (SurveillanceTable)progressMonitor.getResult();
+    		return new ModelAndView("surveillanceView", "webTable", table.getWebTable());
+    	}
+    	
+    	return new ModelAndView("progressBar", "progress", progressMonitor);
+    		
     }
+
+	private ProgressMonitor createProgressMonitor(final String viewName) {
+		ProgressMonitor progressMonitor;
+		final ProgressMonitor monitor = new ProgressMonitor();
+		
+		
+		Thread bgRunner = new Thread("SurveillanceView Builder") {
+			
+			public void run() {
+				try {
+					m_service.createSurveillanceTable(viewName, monitor);
+				} catch (Exception e) {
+					monitor.errorOccurred(e);
+				}
+			}
+			
+		};
+		bgRunner.start();
+		progressMonitor = monitor;
+		return progressMonitor;
+	}
 
 }

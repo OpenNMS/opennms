@@ -52,6 +52,7 @@ import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.web.svclayer.AggregateStatus;
+import org.opennms.web.svclayer.ProgressMonitor;
 import org.opennms.web.svclayer.SimpleWebTable;
 import org.opennms.web.svclayer.SurveillanceService;
 import org.opennms.web.svclayer.SurveillanceTable;
@@ -66,19 +67,21 @@ public class DefaultSurveillanceService implements SurveillanceService {
     
     
     public SurveillanceTable createSurveillanceTable() {
-        return createSurveillanceTable("default");
+        return createSurveillanceTable("default", null);
     }
 
     /**
      * Creates a custom table object containing intersected rows and
      * columns and categories.
      */
-    public SurveillanceTable createSurveillanceTable(String surveillanceViewName) {
+    public SurveillanceTable createSurveillanceTable(String surveillanceViewName, ProgressMonitor progressMonitor) {
 
         View view = m_surveillanceConfigDao.getView(surveillanceViewName);
         
         final Rows rows = view.getRows();
         final Columns columns = view.getColumns();
+        
+        progressMonitor.setPhaseCount(rows.getRowDefCount()+columns.getColumnDefCount()+1);
         
         /*
          * Initialize a status table 
@@ -89,7 +92,7 @@ public class DefaultSurveillanceService implements SurveillanceService {
         webTable.setTitle(view.getName());
         statusTable.setWebTable(webTable);
         
-        webTable.addColumn("Nodes", "simpleWebTableHeader");
+        webTable.addColumn("Nodes Down", "simpleWebTableHeader");
         
         List<Category> viewRowCats = new ArrayList<Category>();
         List<Category> viewColCats = new ArrayList<Category>();
@@ -103,6 +106,7 @@ public class DefaultSurveillanceService implements SurveillanceService {
         
         for (Iterator rowDefIter = rowDefs.iterator(); rowDefIter.hasNext();) {
             RowDef rowDef = (RowDef) rowDefIter.next();
+        	progressMonitor.beginNextPhase("Loading Nodes for "+rowDef.getLabel());
             statusTable.setRowHeader(rowDef.getRow()-1, rowDef.getLabel());
             viewRowCats.addAll(rowDef.getCategoryCollection());
             statusTable.setNodesForRow(rowDef.getRow()-1, createNodes(viewRowCats));
@@ -111,6 +115,7 @@ public class DefaultSurveillanceService implements SurveillanceService {
 
         for (Iterator colDefIter = columnDefs.iterator(); colDefIter.hasNext();) {
             ColumnDef colDef = (ColumnDef) colDefIter.next();
+        	progressMonitor.beginNextPhase("Loading Nodes for "+colDef.getLabel());
             viewColCats.addAll(colDef.getCategoryCollection());
             statusTable.setNodesForColumn(colDef.getCol()-1, createNodes(viewColCats));
             statusTable.setColumnHeader(colDef.getCol()-1, colDef.getLabel());
@@ -118,12 +123,14 @@ public class DefaultSurveillanceService implements SurveillanceService {
             
             webTable.addColumn(colDef.getLabel(), "simpleWebTableHeader");
         }
+        
+        progressMonitor.beginNextPhase("Calculating Status Values");
 
         for (Iterator rowDefIter = rowDefs.iterator(); rowDefIter.hasNext();) {
             RowDef rowDef = (RowDef) rowDefIter.next();
             
             webTable.newRow();
-            webTable.addCell(rowDef.getLabel(), "simpleWebTableRowLabel");
+            SimpleWebTable.Cell rowLabel = webTable.addCell(rowDef.getLabel(), "simpleWebTableRowLabel");
             
             for (Iterator colDefIter = columnDefs.iterator(); colDefIter.hasNext();) {
                 ColumnDef colDef = (ColumnDef) colDefIter.next();
@@ -135,12 +142,17 @@ public class DefaultSurveillanceService implements SurveillanceService {
 				webTable.addCell(aggStatus.getDownEntityCount()+" of "+aggStatus.getTotalEntityCount(), aggStatus.getStatus());
 
                 if (statusTable.getStatus(rowDef.getRow()-1, colDef.getCol()-1).getDownEntityCount() > 0) {
-                    statusTable.setRowHeader(rowDef.getRow()-1, createNodePageUrl(rowDef.getLabel()));
+                    String link = createNodePageUrl(rowDef.getLabel());
+					statusTable.setRowHeader(rowDef.getRow()-1, link);
+                    rowLabel.setContent(link);
                     m_foundDownNode = null; //what a hack
                 }
             }
                 
         }
+        
+        progressMonitor.finished(statusTable);
+        
         return statusTable;
     }
 
