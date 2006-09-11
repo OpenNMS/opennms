@@ -52,6 +52,7 @@ import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.web.svclayer.AggregateStatus;
+import org.opennms.web.svclayer.SimpleWebTable;
 import org.opennms.web.svclayer.SurveillanceService;
 import org.opennms.web.svclayer.SurveillanceTable;
 import org.opennms.web.svclayer.dao.SurveillanceViewConfigDao;
@@ -83,7 +84,12 @@ public class DefaultSurveillanceService implements SurveillanceService {
          * Initialize a status table 
          */
         final SurveillanceTable statusTable = new SurveillanceTable(rows.getRowDefCount(), columns.getColumnDefCount());
+        SimpleWebTable webTable = new SimpleWebTable();
         statusTable.setLabel(view.getName());
+        webTable.setTitle(view.getName());
+        statusTable.setWebTable(webTable);
+        
+        webTable.addColumn("Nodes", "simpleWebTableHeader");
         
         List<Category> viewRowCats = new ArrayList<Category>();
         List<Category> viewColCats = new ArrayList<Category>();
@@ -109,15 +115,24 @@ public class DefaultSurveillanceService implements SurveillanceService {
             statusTable.setNodesForColumn(colDef.getCol()-1, createNodes(viewColCats));
             statusTable.setColumnHeader(colDef.getCol()-1, colDef.getLabel());
             viewColCats.removeAll(colDef.getCategoryCollection());
+            
+            webTable.addColumn(colDef.getLabel(), "simpleWebTableHeader");
         }
 
         for (Iterator rowDefIter = rowDefs.iterator(); rowDefIter.hasNext();) {
             RowDef rowDef = (RowDef) rowDefIter.next();
+            
+            webTable.newRow();
+            webTable.addCell(rowDef.getLabel(), "simpleWebTableRowLabel");
+            
             for (Iterator colDefIter = columnDefs.iterator(); colDefIter.hasNext();) {
                 ColumnDef colDef = (ColumnDef) colDefIter.next();
                 final Set<OnmsNode> intersectNodes = new HashSet<OnmsNode>(statusTable.getNodesForRow(rowDef.getRow()-1));
                 intersectNodes.retainAll(statusTable.getNodesForColumn(colDef.getCol()-1));
-                statusTable.setStatus(rowDef.getRow()-1, colDef.getCol()-1, createAggregateStatus(intersectNodes));
+                AggregateStatus aggStatus = createAggregateStatus(intersectNodes);
+				statusTable.setStatus(rowDef.getRow()-1, colDef.getCol()-1, aggStatus);
+				
+				webTable.addCell(aggStatus.getDownEntityCount()+" of "+aggStatus.getTotalEntityCount(), aggStatus.getStatus());
 
                 if (statusTable.getStatus(rowDef.getRow()-1, colDef.getCol()-1).getDownEntityCount() > 0) {
                     statusTable.setRowHeader(rowDef.getRow()-1, createNodePageUrl(rowDef.getLabel()));

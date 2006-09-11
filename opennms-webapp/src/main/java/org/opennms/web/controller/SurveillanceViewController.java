@@ -60,6 +60,7 @@ public class SurveillanceViewController extends AbstractController {
         String viewName = req.getParameter("viewName");
         SurveillanceTable table = m_service.createSurveillanceTable(viewName);
         mav.addObject("table", table);
+        mav.addObject("webTable", table.getWebTable());
         return mav;
     }
 

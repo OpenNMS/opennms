@@ -56,6 +56,7 @@ public class SurveillanceTable {
     Set<OnmsNode>[] m_columnNodes = null;
     String[] m_rowHeaders = null;
     String[] m_columnHeaders = null;
+	private SimpleWebTable m_webTable;
     
     public SurveillanceTable() {
         
@@ -67,6 +68,14 @@ public class SurveillanceTable {
         m_columnNodes = new HashSet[columns];
         m_rowHeaders = new String[rows];
         m_columnHeaders = new String[columns];
+    }
+    
+    public void setWebTable(SimpleWebTable webTable) {
+    	m_webTable = webTable;
+    }
+    
+    public SimpleWebTable getWebTable() {
+    	return m_webTable;
     }
     
     public void setStatus(int row, int col, AggregateStatus status) {
