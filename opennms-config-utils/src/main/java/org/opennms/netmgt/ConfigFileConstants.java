@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2006 Sep 10: Better error reporting, some code formatting. - dj@opennms.org
 // 2003 Nov 11: Merged changes from Rackspace project
 // 2003 Sep 03: Minor opennms-server changes
 // 2003 Aug 29: Added a server-config file
@@ -625,11 +626,9 @@ public final class ConfigFileConstants {
      */
     public static final File getFile(int id) throws IOException {
         // Recover the home directory from the system properties.
-        //
         String home = getHome();
 
         // Check to make sure that the home directory exists
-        //
         File fhome = new File(home);
         if (!fhome.exists()) {
             log().warn("getFile: The specified home directory does not exist");
@@ -639,9 +638,14 @@ public final class ConfigFileConstants {
         String rfile = getFileName(id);
         File frfile = new File(home + File.separator + "etc" + File.separator + rfile);
         if (!frfile.exists()) {
-            frfile = new File(home + File.separator + rfile);
-            if (!frfile.exists()) {
-                throw new FileNotFoundException("The requested file could not be found");
+            File frfileNoEtc = new File(home + File.separator + rfile);
+            if (!frfileNoEtc.exists()) {
+                throw new FileNotFoundException("The requested file '" + rfile
+                                                + "' could not be found at '"
+                                                + frfile.getAbsolutePath()
+                                                + "' or '"
+                                                + frfileNoEtc.getAbsolutePath()
+                                                + "'");
             }
         }
 
@@ -694,9 +698,14 @@ public final class ConfigFileConstants {
 
         File frfile = new File(home + File.separator + "etc" + File.separator + fname);
         if (!frfile.exists()) {
-            frfile = new File(home + File.separator + fname);
-            if (!frfile.exists()) {
-                throw new FileNotFoundException("The requested file could not be found");
+            File frfileNoEtc = new File(home + File.separator + fname);
+            if (!frfileNoEtc.exists()) {
+                throw new FileNotFoundException("The requested file '" + fname
+                                                + "' could not be found at '"
+                                                + frfile.getAbsolutePath()
+                                                + "' or '"
+                                                + frfileNoEtc.getAbsolutePath()
+                                                + "'");
             }
         }
 
