@@ -1019,6 +1019,39 @@ opennms.home = ${opennms.home}
         <artifactId>jldap</artifactId>
         <version>2005.10.03</version>
       </dependency>
+
+      <!--
+           As of Acegi Security 1.0.1 as released in the Maven 2 repository,
+           version 1.2.7 of the various Spring projects listed below are
+           dependencies of org.acegisecurity:acegi-security.  We use
+           Spring 2, so we need to exclude thse dependencies of
+           Acegi Security and make sure that the bits of OpenNMS that use
+           Acegi Security have dependencies for the Spring 2 versions of
+           these dependencies (remoting, jdbc, support, and mock).
+	-->
+      <dependency>
+        <groupId>org.acegisecurity</groupId>
+        <artifactId>acegi-security</artifactId>
+        <version>1.0.1</version>
+        <exclusions>
+          <exclusion>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-remoting</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-jdbc</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-support</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-mock</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
       <dependency>
         <groupId>org.dhcp.jdhcp</groupId>
         <artifactId>jdhcp</artifactId>
@@ -1088,6 +1121,21 @@ opennms.home = ${opennms.home}
           </exclusion>
         </exclusions>
 -->
+      </dependency>
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-remoting</artifactId>
+        <version>2.0-m4</version>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-jdbc</artifactId>
+        <version>2.0-m4</version>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-support</artifactId>
+        <version>2.0-m4</version>
       </dependency>
       <dependency>
         <groupId>oro</groupId>

@@ -216,9 +216,41 @@
       <groupId>org.springframework</groupId>
       <artifactId>spring-hibernate3</artifactId>
     </dependency>
+    <!--
+         This is a dependency of Acegi Security that we need to depend on
+         because we are excluding the Spring 1.x dependency of this project
+         from org.acegisecurity:acegi-security.
+      -->
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-mock</artifactId>
+    </dependency>
+    <!--
+         This is a dependency of Acegi Security that we need to depend on
+         because we are excluding the Spring 1.x dependency of this project
+         from org.acegisecurity:acegi-security.
+      -->
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-remoting</artifactId>
+    </dependency>
+    <!--
+         This is a dependency of Acegi Security that we need to depend on
+         because we are excluding the Spring 1.x dependency of this project
+         from org.acegisecurity:acegi-security.
+      -->
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-jdbc</artifactId>
+    </dependency>
+    <!--
+         This is a dependency of Acegi Security that we need to depend on
+         because we are excluding the Spring 1.x dependency of this project
+         from org.acegisecurity:acegi-security.
+      -->
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-support</artifactId>
     </dependency>
     <dependency>
       <groupId>postgresql</groupId>
@@ -241,7 +273,6 @@
     <dependency>
       <groupId>org.acegisecurity</groupId>
       <artifactId>acegi-security</artifactId>
-      <version>1.0.1</version>
     </dependency>
   </dependencies>
 </project>
