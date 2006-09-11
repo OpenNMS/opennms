@@ -11,10 +11,10 @@
     <c:out value="${progress.phaseLabel}"/>...
     
     <div style="width: 400px; height: 30px; border-size: 1px; border-style: ridge;">
-      <div style="width: 400px; height: 30px; position: relative; text-align: center; line-height: 30px; z-index: 1">
+      <div style="width: 400px; height: 30px; position: relative; text-align: center; line-height: 30px; z-index: 2">
         <c:out value="${progress.phase / progress.phaseCount * 100}"/>%
       </div>
-      <div style="position: relative; top: -30px; z-index: 2; float: left; width: <c:out value="${progress.phase / progress.phaseCount * 100}"/>%; height: 30px; background-color: green;">
+      <div style="position: relative; top: -30px; z-index: 1; float: left; width: <c:out value="${progress.phase / progress.phaseCount * 100}"/>%; height: 30px; background-color: green;">
       </div>
     </div>
   </div>
