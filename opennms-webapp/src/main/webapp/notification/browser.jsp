@@ -191,21 +191,16 @@
   </p>
 <% } %>
       
-<% if( noticeCount > 0 ) { %>      
-  <p class="pager">Results: 
-    (<%=(parms.multiple==0)?1:parms.multiple*parms.limit%>-<%=((parms.multiple+1)*parms.limit < noticeCount)?((parms.multiple+1)*parms.limit):noticeCount%> of <%=noticeCount%>)
-		<span>
-    <% int linkcnt = (int)Math.ceil( noticeCount/(float)parms.limit ); %>
-    <% for( int i=0; i < linkcnt; i++ ) { %>
-      <% if( parms.multiple == i ) { %>
-        <strong><%=i+1%></strong>&nbsp;
-      <% } else { %>
-        <a href="<%=this.makeLink(parms)%>&multiple=<%=i%>"><%=i+1%></a>&nbsp;
-      <% } %>
-    <% } %>
-		<a href="<%=this.makeLink(parms)%>&multiple=<%=parms.multiple+1%>">Next</a>
-		</span>
-  </p>
+<!-- JS - attempt to use common pager for event and notice -->
+
+<% if( noticeCount > 0 ) { %>
+  <% String baseUrl = this.makeLink(parms); %>
+  <jsp:include page="/includes/resultsIndex.jsp" flush="false" >
+    <jsp:param name="count"    value="<%=noticeCount%>" />
+    <jsp:param name="baseurl"  value="<%=baseUrl%>"    />
+    <jsp:param name="limit"    value="<%=parms.limit%>"      />
+    <jsp:param name="multiple" value="<%=parms.multiple%>"   />
+  </jsp:include>
 <% } %>
 
 <% if( parms.filters.size() > 0 ) { %>
@@ -223,12 +218,12 @@
         <form action="notification/acknowledge" method="post" name="acknowledge_form">
           <input type="hidden" name="redirectParms" value="<%=request.getQueryString()%>" />
           <%=org.opennms.web.Util.makeHiddenTags(request)%>        
-				<% if( parms.ackType == NoticeFactory.AcknowledgeType.UNACKNOWLEDGED &&  !(request.isUserInRole( Authentication.READONLY_ROLE ))) { %>
+	<!--			<% if( parms.ackType == NoticeFactory.AcknowledgeType.UNACKNOWLEDGED &&  !(request.isUserInRole( Authentication.READONLY_ROLE ))) { %>
           <p><input TYPE="reset" />
 						<input TYPE="button" VALUE="Select All" onClick="checkAllCheckboxes()"/>
 						<input type="button" value="Acknowledge Notices" onClick="submitAcknowledge()"/>
           </p>
-        <% } %>
+        <% } %> -->
       <table>
 			<thead>
 			  <tr>
@@ -315,16 +310,17 @@
         </tr>
       <% } /*end for*/%>
       </table>
-      <p><%=notices.length%> notices</p>
+      <p><%=notices.length%> notices &nbsp;
 
         <% if( parms.ackType == NoticeFactory.AcknowledgeType.UNACKNOWLEDGED &&  !(request.isUserInRole( Authentication.READONLY_ROLE ))) { %>
-      <p><input TYPE="reset" />
+      <input TYPE="reset" />
 				<input TYPE="button" VALUE="Select All" onClick="checkAllCheckboxes()"/>
 				<input type="button" value="Acknowledge Notices" onClick="submitAcknowledge()"/></p>
         <% } %>
-			<% if( noticeCount > 0 ) { %>
+	</p>
+	<!--		<% if( noticeCount > 0 ) { %>
 			<p align="right"><a href="<%=this.makeLink(parms)%>&multiple=<%=parms.multiple+1%>">Next</a></p>
-			<% } %>
+			<% } %> -->
 		</form>
 <jsp:include page="/includes/footer.jsp" flush="false" />
 
