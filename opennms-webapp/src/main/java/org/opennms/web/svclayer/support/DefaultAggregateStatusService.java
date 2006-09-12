@@ -38,6 +38,7 @@ package org.opennms.web.svclayer.support;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
@@ -155,7 +156,6 @@ public class DefaultAggregateStatusService implements AggregateStatusService {
          * Iterate over the status definitions and create aggregated statuss
          */
         for (AggregateStatusDefinition statusDef : categoryGrouping) {
-            AggregateStatus status = new AggregateStatus();
             
             Collection<OnmsNode> nodes = m_nodeDao.findAllByVarCharAssetColumnCategoryList(assetColumn, columnValue, statusDef.getCategories());
             
@@ -163,9 +163,8 @@ public class DefaultAggregateStatusService implements AggregateStatusService {
 //                m_nodeDao.getHierarchy(node.getId());
 //            }
             
-            status.setDownEntityCount(computeDownCount(nodes));
-            status.setTotalEntityCount(nodes.size());
-            status.setStatus(computeStatus(nodes, status));
+            
+            AggregateStatus status = new AggregateStatus(new HashSet<OnmsNode>(nodes));
             
             status.setLabel((m_foundDownNode == null ? statusDef.getName(): createNodePageUrl(statusDef.getName())));
             m_foundDownNode = null; //what a hack  make the model (as in MAV) better
