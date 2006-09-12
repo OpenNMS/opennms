@@ -9,11 +9,7 @@
 	<jsp:param name="breadcrumb" value="Surveillance" />
 </jsp:include>
 
-<h1 align="center">Surveillance View</h1>
-
-<div id="index-contentmiddle">
-
-<h3> <c:out value="${webTable.title}" /> </h3>
+<h3>Surveillance View: <c:out value="${webTable.title}" /></h3>
 
 <table>
 
@@ -42,7 +38,5 @@
     </tr>
   </c:forEach>
 </table>
-
-</div>
 
 <jsp:include page="/includes/footer.jsp" flush="false" />
