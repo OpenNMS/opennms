@@ -126,7 +126,7 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer>
     public Collection<OnmsNode> findAllByCategoryList(
             Collection<OnmsCategory> categories) {
         return find("select distinct n from OnmsNode as n "
-                + "join n.categories c " + "left join fetch n.assetRecord "
+                + "join n.categories c " 
                 + "left join fetch n.ipInterfaces as iface "
                 + "left join fetch iface.monitoredServices as monSvc "
                 + "left join fetch monSvc.serviceType "
