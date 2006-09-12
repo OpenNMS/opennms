@@ -142,11 +142,6 @@ public class LazyIpInterface extends OnmsIpInterface {
 		m_dirty = dirty;
 	}
 
-	public void setIfIndex(Integer ifindex) {
-		setDirty(true);
-		super.setIfIndex(ifindex);
-	}
-
 	public void setIpAddress(String ipaddr) {
 		setDirty(true);
 		super.setIpAddress(ipaddr);

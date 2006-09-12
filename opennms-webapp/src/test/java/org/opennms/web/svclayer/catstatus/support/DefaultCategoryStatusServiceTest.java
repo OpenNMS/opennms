@@ -53,6 +53,7 @@ import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsOutage;
 import org.opennms.netmgt.model.OnmsServiceType;
+import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.ServiceSelector;
 import org.opennms.web.svclayer.catstatus.model.StatusCategory;
 import org.opennms.web.svclayer.catstatus.model.StatusNode;
@@ -121,8 +122,9 @@ public class DefaultCategoryStatusServiceTest extends TestCase {
 		OnmsNode node = new OnmsNode();
 		node.setId(1);
 		node.setLabel("superLabel");
+		OnmsSnmpInterface snmpIface = new OnmsSnmpInterface("192.168.1.1", 1, node);
 		OnmsIpInterface iface = new OnmsIpInterface("192.168.1.1", node);
-		iface.setIfIndex(1);
+		iface.setSnmpInterface(snmpIface);
 		//iface.setId(9);
 		OnmsMonitoredService monSvc = new OnmsMonitoredService(iface, svcType);
 

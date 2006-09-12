@@ -21,6 +21,7 @@ import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsServiceType;
+import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.utils.EventProxyException;
 import org.opennms.web.services.PollerService;
 import org.opennms.web.svclayer.support.DefaultDemandPollService;
@@ -131,8 +132,9 @@ public class DemandPollServiceTest extends TestCase {
 		svcType.setName("HTTP");
 		OnmsNode node = new OnmsNode();
 		node.setId(1);
+		OnmsSnmpInterface snmpIface = new OnmsSnmpInterface("192.168.1.1", 1, node);
 		OnmsIpInterface iface = new OnmsIpInterface("192.168.1.1", node);
-		iface.setIfIndex(1);
+		iface.setSnmpInterface(snmpIface);
 		OnmsMonitoredService monSvc = new OnmsMonitoredService(iface, svcType);
 
 		expect(m_monitoredServiceDao.get(1, "192.168.1.1", 1, 3)).andReturn(monSvc);

@@ -179,8 +179,8 @@ public class UpdateOperation extends AbstractSaveOrUpdateOperation {
             
             if (isSnmpDataForInterfacesUpToDate()) {
 
-            	if (!nullSafeEquals(iface.getIfIndex(), imported.getIfIndex())) {
-            		iface.setIfIndex(imported.getIfIndex());
+            	if (!nullSafeEquals(iface.getSnmpInterface(), imported.getSnmpInterface())) {
+            		iface.setSnmpInterface(imported.getSnmpInterface());
             	}
             	
             }
