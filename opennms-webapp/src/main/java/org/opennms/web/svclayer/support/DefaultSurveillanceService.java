@@ -130,7 +130,7 @@ public class DefaultSurveillanceService implements SurveillanceService {
             RowDef rowDef = (RowDef) rowDefIter.next();
             
             webTable.newRow();
-            SimpleWebTable.Cell rowLabel = webTable.addCell(rowDef.getLabel(), "simpleWebTableRowLabel");
+            webTable.addCell(rowDef.getLabel(), "simpleWebTableRowLabel");
             
             for (Iterator colDefIter = columnDefs.iterator(); colDefIter.hasNext();) {
                 ColumnDef colDef = (ColumnDef) colDefIter.next();
@@ -139,19 +139,19 @@ public class DefaultSurveillanceService implements SurveillanceService {
                 AggregateStatus aggStatus = createAggregateStatus(intersectNodes);
 				statusTable.setStatus(rowDef.getRow()-1, colDef.getCol()-1, aggStatus);
 				
-				webTable.addCell(aggStatus.getDownEntityCount()+" of "+aggStatus.getTotalEntityCount(), aggStatus.getStatus());
+				SimpleWebTable.Cell cell = webTable.addCell(aggStatus.getDownEntityCount()+" of "+aggStatus.getTotalEntityCount(), aggStatus.getStatus());
 
                 if (statusTable.getStatus(rowDef.getRow()-1, colDef.getCol()-1).getDownEntityCount() > 0) {
                     String link = createNodePageUrl(rowDef.getLabel());
 					statusTable.setRowHeader(rowDef.getRow()-1, link);
-					rowLabel.setLink(link);
+					cell.setLink(link);
                     m_foundDownNode = null; //what a hack
                 }
             }
                 
         }
         
-        progressMonitor.finished(statusTable);
+        progressMonitor.finished(webTable);
         
         return statusTable;
     }
