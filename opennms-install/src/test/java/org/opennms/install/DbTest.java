@@ -9,6 +9,9 @@ public class DbTest extends TemporaryDatabaseTestCase {
     protected void tearDown() throws Exception {
         super.tearDown();
     }
+
+    public void testBogus() {
+    }
     
     /**
      * Sadly, this doesn't work.  The unique index required on columns that are
