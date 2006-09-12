@@ -40,17 +40,21 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
-import org.opennms.netmgt.dao.AggregateStatusViewDao;
+import org.opennms.netmgt.config.siteStatusViews.Category;
+import org.opennms.netmgt.config.siteStatusViews.RowDef;
+import org.opennms.netmgt.config.siteStatusViews.View;
+import org.opennms.netmgt.dao.CategoryDao;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.model.AggregateStatusDefinition;
 import org.opennms.netmgt.model.AggregateStatusView;
-import org.opennms.netmgt.model.OnmsIpInterface;
-import org.opennms.netmgt.model.OnmsMonitoredService;
+import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.web.svclayer.AggregateStatus;
-import org.opennms.web.svclayer.AggregateStatusService;
+import org.opennms.web.svclayer.SiteStatusViewService;
+import org.opennms.web.svclayer.dao.SiteStatusViewConfigDao;
 
 /**
  * This service layer class creates a collection that represents the current
@@ -70,40 +74,71 @@ import org.opennms.web.svclayer.AggregateStatusService;
  * @author david hustace
  *
  */
-public class DefaultAggregateStatusService implements AggregateStatusService {
+public class DefaultSiteStatusViewService implements SiteStatusViewService {
     
     private NodeDao m_nodeDao;
-    private AggregateStatusViewDao m_statusViewDao;
+    private CategoryDao m_categoryDao;
+    private SiteStatusViewConfigDao m_siteStatusViewConfigDao;
     private OnmsNode m_foundDownNode;
 
+    
     
     /**
      * Use the node id to find the value assciated with column defined in the view.  The view defines a column
      * and column value to be used by default.  This method determines the column value using the value associated
      * with the asset record for the given nodeid.
      * 
-     * @see org.opennms.web.svclayer.AggregateStatusService#createAggregateStatusesUsingNodeId(int, java.lang.String)
+     * @see org.opennms.web.svclayer.SiteStatusViewService#createAggregateStatusesUsingNodeId(int, java.lang.String)
      */
     public Collection<AggregateStatus> createAggregateStatusesUsingNodeId(int nodeId, String viewName) {
-        
-        viewName = (viewName == null ? "building" : viewName);
+
         OnmsNode node = m_nodeDao.load(nodeId);
         
         //TODO this is a hack.  need to use reflection to get the right column instead of building.
-        return createAggreateStatuses(m_statusViewDao.findByName(viewName), node.getAssetRecord().getBuilding());
-
+        return createAggreateStatuses(createAggregateStatusView(viewName), node.getAssetRecord().getBuilding());
     }
 
     /**
      * This creator looks up a configured status view by name and calls the creator that 
      * accepts the AggregateStatusView model object.
      * 
-     * @see org.opennms.web.svclayer.AggregateStatusService#createAggregateStatusView(java.lang.String)
+     * @see org.opennms.web.svclayer.SiteStatusViewService#createAggregateStatusView(java.lang.String)
      */
     public AggregateStatusView createAggregateStatusView(String statusViewName) {
-        statusViewName = (statusViewName == null ? "building" : statusViewName);
         
-        AggregateStatusView statusView = m_statusViewDao.findByName(statusViewName);
+        AggregateStatusView statusView = new AggregateStatusView();
+        View view = m_siteStatusViewConfigDao.getView(statusViewName);
+        
+        statusViewName = (statusViewName == null ? m_siteStatusViewConfigDao.getDefaultView().getName() : statusViewName);
+
+        statusView.setName(statusViewName);
+        statusView.setColumnName(view.getColumnName());
+        statusView.setColumnValue(view.getColumnValue());
+        statusView.setTableName(view.getTableName());
+        
+        Set<AggregateStatusDefinition> statusDefs = new LinkedHashSet<AggregateStatusDefinition>();
+        final ArrayList rowDefs = m_siteStatusViewConfigDao.getView(statusViewName).getRows().getRowDefCollection();
+        for (Iterator it = rowDefs.iterator(); it.hasNext();) {
+            RowDef rowDef = (RowDef) it.next();
+            AggregateStatusDefinition def = new AggregateStatusDefinition();
+            def.setName(rowDef.getLabel());
+            
+            Set<OnmsCategory> categories = new LinkedHashSet<OnmsCategory>();
+            
+            for (Iterator catIter = rowDef.getCategoryCollection().iterator(); catIter.hasNext();) {
+                Category cat = (Category) catIter.next();
+                OnmsCategory category = m_categoryDao.findByName(cat.getName());
+                
+                if (category == null) {
+                    throw new IllegalArgumentException("Site status configured category not found: "+cat.getName());
+                }
+                
+                categories.add(category);
+            }
+            def.setCategories(categories);
+        }
+        
+        statusView.setStatusDefinitions(statusDefs);
         return statusView;
     }
 
@@ -112,7 +147,7 @@ public class DefaultAggregateStatusService implements AggregateStatusService {
      * Creates the collection of aggregated statuses by calling the creator with data filled from 
      * the passed in AggregateStatusView model object.
 
-     * @see org.opennms.web.svclayer.AggregateStatusService#createAggreateStatuses(org.opennms.netmgt.model.AggregateStatusView)
+     * @see org.opennms.web.svclayer.SiteStatusViewService#createAggreateStatuses(org.opennms.netmgt.model.AggregateStatusView)
      */
     public Collection<AggregateStatus> createAggreateStatuses(AggregateStatusView statusView) {
         if (statusView == null) {
@@ -126,7 +161,7 @@ public class DefaultAggregateStatusService implements AggregateStatusService {
      * This creator is used when wanting to use a different value than the defined column value defined
      * for the requested view.
      * 
-     * @see org.opennms.web.svclayer.AggregateStatusService#createAggreateStatuses(org.opennms.netmgt.model.AggregateStatusView, java.lang.String)
+     * @see org.opennms.web.svclayer.SiteStatusViewService#createAggreateStatuses(org.opennms.netmgt.model.AggregateStatusView, java.lang.String)
      */
     public Collection<AggregateStatus> createAggreateStatuses(AggregateStatusView statusView, String statusSite) {
         if (statusView == null) {
@@ -187,51 +222,6 @@ public class DefaultAggregateStatusService implements AggregateStatusService {
         return label;
     }
 
-    private String computeStatus(Collection<OnmsNode> nodes, AggregateStatus status) {
-        
-        String color = AggregateStatus.ALL_NODES_UP;
-        
-        if (status.getDownEntityCount() >= 1) {
-            color = AggregateStatus.NODES_ARE_DOWN;
-            return color;
-        }
-        
-        for (Iterator it = nodes.iterator(); it.hasNext();) {
-            OnmsNode node = (OnmsNode) it.next();
-            Set<OnmsIpInterface> ifs = node.getIpInterfaces();
-            for (Iterator ifIter = ifs.iterator(); ifIter.hasNext();) {
-                OnmsIpInterface ipIf = (OnmsIpInterface) ifIter.next();
-                Set<OnmsMonitoredService> svcs = ipIf.getMonitoredServices();
-                for (Iterator svcIter = svcs.iterator(); svcIter.hasNext();) {
-                    OnmsMonitoredService svc = (OnmsMonitoredService) svcIter.next();
-                    if (svc.isDown()) {
-                        color = AggregateStatus.ONE_SERVICE_DOWN;
-                        return color;  //quick exit this mess
-                    }
-                }
-            }
-        }
-        return color;
-    }
-
-    
-    private Integer computeDownCount(Collection<OnmsNode> nodes) {
-        int totalNodesDown = 0;
-        
-        for (OnmsNode node : nodes) {
-            if (node.isDown()) {
-
-                //FIXME: this is a hack to meet a requirement to build a URL
-                //that takes you do a node page when a node is down in this
-                //status class.
-                m_foundDownNode = node;
-                
-                totalNodesDown += 1;
-            }
-        }
-        return new Integer(totalNodesDown);
-    }
-
     public NodeDao getNodeDao() {
         return m_nodeDao;
     }
@@ -240,8 +230,12 @@ public class DefaultAggregateStatusService implements AggregateStatusService {
         m_nodeDao = nodeDao;
     }
     
-    public void setStatusViewDao(AggregateStatusViewDao dao) {
-        m_statusViewDao = dao;
+    public void setCategoryDao(CategoryDao dao) {
+        m_categoryDao = dao;
+    }
+    
+    public void setSiteStatusViewConfigDao(SiteStatusViewConfigDao dao) {
+        m_siteStatusViewConfigDao = dao;
     }
 
 }

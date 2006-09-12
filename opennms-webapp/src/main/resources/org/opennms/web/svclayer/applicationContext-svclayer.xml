@@ -10,6 +10,7 @@
     
 
   <!-- Surveillance View beans -->
+  <bean id="surveillanceViewConfigDao" class="org.opennms.web.svclayer.dao.support.DefaultSurveillanceViewConfigDao" />
   <bean id="surveillanceService" class="org.opennms.web.svclayer.support.DefaultSurveillanceService" >
     <property name="nodeDao" ref="nodeDao" />
     <property name="categoryDao" ref="categoryDao" />
@@ -17,10 +18,12 @@
     
   </bean>
 
-<!-- Aggregate Status beans -->
-  <bean id="aggregateStatusService" class="org.opennms.web.svclayer.support.DefaultAggregateStatusService" >
+<!-- Site Status beans -->
+  <bean id="siteStatusViewConfigDao" class="org.opennms.web.svclayer.dao.support.DefaultSiteStatusViewConfigDao" />
+  <bean id="siteStatusViewService" class="org.opennms.web.svclayer.support.DefaultSiteStatusViewService" >
   	<property name="nodeDao" ref="nodeDao" />
-    <property name="statusViewDao" ref="aggregateStatusViewDao" />
+    <property name="categoryDao" ref="categoryDao" />
+    <property name="siteStatusViewConfigDao" ref="siteStatusViewConfigDao" />
   </bean>
 
 
@@ -44,7 +47,6 @@
   	<property name="sessionFactory" ref="sessionFactory" />
   </bean>
   
-  <bean id="surveillanceViewConfigDao" class="org.opennms.web.svclayer.dao.support.DefaultSurveillanceViewConfigDao" />
 
 
 <!-- Demand Poll Service beans -->

@@ -50,7 +50,7 @@ import org.opennms.web.svclayer.AggregateStatus;
 
 import junit.framework.TestCase;
 
-public class DefaultAggregateStatusServiceTest extends TestCase {
+public class DefaultSiteStatusServiceTest extends TestCase {
     
     private NodeDao m_nodeDao;
     
@@ -72,7 +72,7 @@ public class DefaultAggregateStatusServiceTest extends TestCase {
             
         defs.add(definition);
         
-        DefaultAggregateStatusService aggregateSvc = new DefaultAggregateStatusService();
+        DefaultSiteStatusViewService aggregateSvc = new DefaultSiteStatusViewService();
         aggregateSvc.setNodeDao(m_nodeDao);
         
         OnmsNode node = new OnmsNode();
@@ -106,7 +106,7 @@ public class DefaultAggregateStatusServiceTest extends TestCase {
             
         defs.add(definition);
         
-        DefaultAggregateStatusService aggregateSvc = new DefaultAggregateStatusService();
+        DefaultSiteStatusViewService aggregateSvc = new DefaultSiteStatusViewService();
         aggregateSvc.setNodeDao(m_nodeDao);
         
         OnmsNode node = new OnmsNode();

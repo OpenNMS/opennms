@@ -16,9 +16,14 @@
 	</bean>
 
 	<bean name="/aggregateStatus.htm"
-		class="org.opennms.web.controller.AggregateStatusController">
-		<property name="service" ref="aggregateStatusService" />
+		class="org.opennms.web.controller.SiteStatusViewController">
+		<property name="service" ref="siteStatusViewService" />
 	</bean>
+  
+  <bean name="/siteStatusView.htm"
+    class="org.opennms.web.controller.SiteStatusViewController">
+    <property name="service" ref="siteStatusViewService" />
+  </bean>
   
     <bean name="/surveillanceView.htm"
           class="org.opennms.web.controller.SurveillanceViewController">
