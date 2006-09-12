@@ -49,6 +49,7 @@ import org.opennms.netmgt.mock.MockDataCollectionConfig;
 import org.opennms.netmgt.mock.OpenNMSTestCase;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.OnmsIpInterface.CollectionType;
 import org.opennms.netmgt.snmp.mock.TestAgent;
 
@@ -236,11 +237,13 @@ public class SnmpCollectorTestCase extends OpenNMSTestCase {
     protected void createAgent(int ifIndex, CollectionType ifCollType) {
         OnmsNode m_node = new OnmsNode();
         m_node.setSysObjectId(".1.2.3.4.5.6.7");
+        
+        OnmsSnmpInterface snmpIface = new OnmsSnmpInterface(myLocalHost(), ifIndex, m_node);
     
     	OnmsIpInterface m_iface = new OnmsIpInterface();
         m_iface.setIpAddress(myLocalHost());
-    	m_iface.setIfIndex(new Integer(ifIndex));
     	m_iface.setIsSnmpPrimary(ifCollType);
+    	m_iface.setSnmpInterface(snmpIface);
     	m_node.addIpInterface(m_iface);
         m_agent = new CollectionAgent(m_iface);
     }
