@@ -75,7 +75,7 @@ public class AggregateStatusController extends AbstractController {
         AggregateStatusView view = m_service.createAggregateStatusView(statusView);
         Collection<AggregateStatus> aggrStati;
         
-        if (Integer.parseInt(nodeId) > 0) {
+        if (nodeId != null && Integer.parseInt(nodeId) > 0) {
             aggrStati = m_service.createAggregateStatusesUsingNodeId(Integer.parseInt(nodeId), statusView);
         } else if (statusSite == null) {
             aggrStati = m_service.createAggreateStatuses(view);
