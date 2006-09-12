@@ -217,16 +217,22 @@
       <div id="linkbar">
       <ul>
         <li>
-        <a href="event/list?filter=node%3D<%=nodeId%>">View Events</a>
-	</li>
-	<li>
-        <a href="asset/modify.jsp?node=<%=nodeId%>">Asset Info</a>
-	</li>
-         
+          <a href="event/list?filter=node%3D<%=nodeId%>">View Events</a>
+	    </li>
+        <li>
+         <a href="asset/modify.jsp?node=<%=nodeId%>">Asset Info</a>
+        </li>
+ 
+        <% if(this.model.getAsset(nodeId).getBuilding() != null) { %>
+          <li>
+            <a href="aggregateStatus.htm?statusView=building%&statusSite=<%=this.model.getAsset(nodeId).getBuilding()%>">Site Status</a>
+          </li>
+        <% } %>
+        
         <% if( telnetIp != null ) { %>
-	  <li>
-          <a href="telnet://<%=telnetIp%>">Telnet</a>
-	  </li>
+          <li>
+            <a href="telnet://<%=telnetIp%>">Telnet</a>
+          </li>
         <% } %>
 
         <% if( httpIp != null ) { %>
