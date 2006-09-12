@@ -44,15 +44,8 @@ import org.springframework.web.servlet.mvc.AbstractController;
 
 public class SurveillanceViewController extends AbstractController {
     
-    private static final int FIVE_MINUTES = 5*60;
     private static SurveillanceService m_service;
-	private ProgressMonitor m_progressMonitor;
     
-    public SurveillanceViewController() {
-        setSupportedMethods(new String[] {METHOD_GET});
-        setCacheSeconds(FIVE_MINUTES);
-    }
-
     public void setService(SurveillanceService svc) {
         m_service = svc;
     }
