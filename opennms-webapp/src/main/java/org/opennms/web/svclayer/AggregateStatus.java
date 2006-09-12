@@ -55,9 +55,9 @@ public class AggregateStatus {
     private Integer m_downEntityCount;
     private String m_status;
     
-    public static final String NODES_ARE_DOWN = "status-critical";
-    public static final String ONE_SERVICE_DOWN = "status-warning";
-    public static final String ALL_NODES_UP = "status-normal";
+    public static final String NODES_ARE_DOWN = "Critical";
+    public static final String ONE_SERVICE_DOWN = "Warning";
+    public static final String ALL_NODES_UP = "Normal";
     
     public AggregateStatus(Set<OnmsNode> nodes) {
     	computeStatusValues(nodes);
