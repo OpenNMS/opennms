@@ -32,22 +32,19 @@
 
 package org.opennms.web.svclayer.support;
 
+import static org.easymock.EasyMock.createMock;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import junit.framework.TestCase;
+
 import org.opennms.netmgt.dao.CategoryDao;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.model.OnmsCategory;
+import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.web.svclayer.dao.SurveillanceViewConfigDao;
-
-import static org.easymock.EasyMock.createMock;
-import static org.easymock.EasyMock.expect;
-import static org.easymock.EasyMock.replay;
-import static org.easymock.EasyMock.verify;
-
-
-import junit.framework.TestCase;
 
 public class DefaultSurveillanceServiceTest extends TestCase {
     
@@ -86,5 +83,20 @@ public class DefaultSurveillanceServiceTest extends TestCase {
         }
         return categories;
     }
+    
+    public void testUrlMaker() {
+        System.err.println(createNodePageUrl("1 of 10"));
+        
+    }
+    
+    private String createNodePageUrl(String label) {
+        OnmsNode m_foundDownNode = new OnmsNode();
+        m_foundDownNode.setId(1);
+        if (m_foundDownNode != null) {
+            label = "<a href=\"element/node.jsp?node="+m_foundDownNode.getId()+"\">"+label+"</a>";
+        }
+        return label;
+    }
+
 
 }

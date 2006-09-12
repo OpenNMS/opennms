@@ -71,15 +71,20 @@ public class AggregateStatusController extends AbstractController {
         ModelAndView mav = new ModelAndView("aggregateStatus");
         String statusView = req.getParameter("statusView");
         String statusSite = req.getParameter("statusSite");
+        String nodeId = req.getParameter("nodeid");
         AggregateStatusView view = m_service.createAggregateStatusView(statusView);
         Collection<AggregateStatus> aggrStati;
-        if (statusSite == null) {
+        
+        if (Integer.parseInt(nodeId) > 0) {
+            aggrStati = m_service.createAggregateStatusesUsingNodeId(Integer.parseInt(nodeId), statusView);
+        } else if (statusSite == null) {
             aggrStati = m_service.createAggreateStatuses(view);
         } else {
             aggrStati = m_service.createAggreateStatuses(view, statusSite);
             //Don't persist this, convenience for display only.
             view.setColumnValue(statusSite);
         }
+        
         mav.addObject("view", view);
         mav.addObject("stati", aggrStati);
         return mav;

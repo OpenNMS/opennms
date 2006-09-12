@@ -59,6 +59,39 @@ public class DefaultAggregateStatusServiceTest extends TestCase {
         m_nodeDao = createMock(NodeDao.class);
     }
     
+    public void testCreateAggregateStatusUsingNodeId() {
+        Collection<AggregateStatus> aggrStati;
+        Collection<AggregateStatusDefinition> defs = new HashSet<AggregateStatusDefinition>();
+        
+        AggregateStatusDefinition definition = 
+            new AggregateStatusDefinition("Routers/Switches", new HashSet<OnmsCategory>(Arrays.asList(new OnmsCategory[]{ new OnmsCategory("routers"), new OnmsCategory("switches") })));
+        defs.add(definition);
+        
+        definition = 
+            new AggregateStatusDefinition("Servers", new HashSet<OnmsCategory>(Arrays.asList(new OnmsCategory[]{ new OnmsCategory("servers") })));
+            
+        defs.add(definition);
+        
+        DefaultAggregateStatusService aggregateSvc = new DefaultAggregateStatusService();
+        aggregateSvc.setNodeDao(m_nodeDao);
+        
+        OnmsNode node = new OnmsNode();
+        node.setId(1);
+        node.getAssetRecord().setBuilding("HQ");
+        Collection<OnmsNode> nodes = new ArrayList<OnmsNode>();
+        nodes.add(node);
+        
+        for (AggregateStatusDefinition def : defs) {
+            expect(m_nodeDao.findAllByVarCharAssetColumnCategoryList("building", "HQ", def.getCategories())).andReturn(nodes);
+        }
+        replay(m_nodeDao);
+        
+        aggrStati = aggregateSvc.createAggregateStatusesUsingNodeId(node.getId(), "building");
+        verify(m_nodeDao);
+        
+        assertNotNull(aggrStati);
+    }
+    
     public void testCreateAggregateStatusUsingBuilding() {
         
         Collection<AggregateStatus> aggrStati;

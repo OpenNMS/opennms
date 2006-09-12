@@ -54,15 +54,17 @@ public interface AggregateStatusService {
      * in categoryGrouping.
      * 
      * @param columnValue
-     * @param categories
+     * @param defs
      * @return
      */
-    Collection<AggregateStatus> createAggregateStatusUsingAssetColumn(String assetColumn, String columnValue, Collection<AggregateStatusDefinition> categories);
+    Collection<AggregateStatus> createAggregateStatusUsingAssetColumn(String assetColumn, String columnValue, Collection<AggregateStatusDefinition> defs);
     
     AggregateStatusView createAggregateStatusView(String statusViewName);
     
     Collection<AggregateStatus> createAggreateStatuses(AggregateStatusView statusView);
 
     Collection<AggregateStatus> createAggreateStatuses(AggregateStatusView statusView, String statusSite);
+    
+    Collection<AggregateStatus> createAggregateStatusesUsingNodeId(int nodeId, String viewName);
 
 }
