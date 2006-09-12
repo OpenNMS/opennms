@@ -43,5 +43,9 @@ public class SnmpInterfaceBuilder {
 		m_snmpIf.setIfSpeed(new Long(ifSpeed));
 		return this;
 	}
+        
+        public OnmsSnmpInterface getSnmpInterface() {
+            return m_snmpIf;
+        }
 
 }

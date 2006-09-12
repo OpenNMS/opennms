@@ -51,9 +51,10 @@ public class NetworkBuilder {
 		return m_currentNode;
 	}
 
-    public OnmsIpInterface addInterface(String ipAddr) {
+    public InterfaceBuilder addInterface(String ipAddr) {
 		m_currentIf = new OnmsIpInterface(ipAddr, m_currentNode);
-        return m_currentIf;
+//        return m_currentIf;
+        return new InterfaceBuilder(m_currentIf);
 	}
 
     public class InterfaceBuilder {
@@ -82,13 +83,46 @@ public class NetworkBuilder {
 			m_iface.setIpStatus(new Integer(ipStatus));
 			return this;
 		}
+                
+                public SnmpInterfaceBuilder addSnmpInterface(String ipAddr, int ifIndex) {
+                        OnmsSnmpInterface snmpIf = new OnmsSnmpInterface(ipAddr, ifIndex, m_currentNode);
+                        m_iface.setSnmpInterface(snmpIf);
+                        return new SnmpInterfaceBuilder(snmpIf);
+
+                }
 	}
 
-    public InterfaceBuilder addInterface(String ipAddr, int ifIndex) {
+    
+    /*
+    public InterfaceBuilder addInterface(String ipAddr) {
         m_currentIf = new OnmsIpInterface(ipAddr, m_currentNode);
-        m_currentIf.setIfIndex(new Integer(ifIndex));
+        if (ifIndex == -1) {
+            m_currentIf.setIfIndex(null);
+        } else {
+            m_currentIf.setIfIndex(new Integer(ifIndex));
+        }
         return new InterfaceBuilder(m_currentIf);
     }
+    */
+
+    /*
+    public InterfaceBuilder addInterface(String ipAddr, int ifIndex) {
+        m_currentIf = new OnmsIpInterface(ipAddr, m_currentNode);
+        if (ifIndex == -1) {
+            m_currentIf.setIfIndex(null);
+        } else {
+            m_currentIf.setIfIndex(new Integer(ifIndex));
+        }
+        return new InterfaceBuilder(m_currentIf);
+    }
+    */
+    
+    public InterfaceBuilder addInterface(String ipAddr, OnmsSnmpInterface snmpInterface) {
+        m_currentIf = new OnmsIpInterface(ipAddr, m_currentNode);
+        m_currentIf.setSnmpInterface(snmpInterface);
+        return new InterfaceBuilder(m_currentIf);
+    }
+
     
 	public SnmpInterfaceBuilder addSnmpInterface(String ipAddr, int ifIndex) {
 		OnmsSnmpInterface snmpIf = new OnmsSnmpInterface(ipAddr, ifIndex, m_currentNode);

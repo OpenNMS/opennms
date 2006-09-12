@@ -218,13 +218,22 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
         this.m_ipAddress = ipaddr;
     }
     
-    @Column(name="ifIndex")
+    //@Column(name="ifIndex")
+    @Transient
     public Integer getIfIndex() {
-        return this.m_ifIndex;
+        if (m_snmpInterface == null) {
+            return null;
+        }
+        return m_snmpInterface.getIfIndex();
+        //return this.m_ifIndex;
     }
 
     public void setIfIndex(Integer ifindex) {
-        this.m_ifIndex = ifindex;
+        if (m_snmpInterface == null) {
+            throw new IllegalStateException("Cannot set ifIndex if snmpInterface relation isn't setup");
+        }
+        m_snmpInterface.setIfIndex(ifindex);
+        //this.m_ifIndex = ifindex;
     }
 
     @Column(name="ipHostName", length=256)
