@@ -122,9 +122,10 @@
   <bean id="availabilityReportLocatorDao" class="org.opennms.netmgt.dao.hibernate.AvailabilityReportLocatorDaoHibernate">
   	<property name="sessionFactory" ref="sessionFactory" />
   </bean>
-  
+
+<!-- deprecating  
   <bean id="aggregateStatusViewDao" class="org.opennms.netmgt.dao.hibernate.AggregateStatusViewDaoHibernate" >
   	<property name="sessionFactory" ref="sessionFactory" />
   </bean>
-
+--> 
 </beans>
