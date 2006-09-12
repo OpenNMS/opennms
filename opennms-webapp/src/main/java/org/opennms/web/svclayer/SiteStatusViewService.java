@@ -45,7 +45,7 @@ import org.opennms.netmgt.model.AggregateStatusView;
  * @author david
  *
  */
-public interface AggregateStatusService {
+public interface SiteStatusViewService {
     
     /**
      * This method returns method returns a collection of aggregated status of nodes for each

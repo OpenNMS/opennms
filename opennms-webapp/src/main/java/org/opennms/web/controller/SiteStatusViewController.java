@@ -39,7 +39,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.opennms.netmgt.model.AggregateStatusView;
 import org.opennms.web.svclayer.AggregateStatus;
-import org.opennms.web.svclayer.AggregateStatusService;
+import org.opennms.web.svclayer.SiteStatusViewService;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
 
@@ -51,18 +51,18 @@ import org.springframework.web.servlet.mvc.AbstractController;
  * @author david
  *
  */
-public class AggregateStatusController extends AbstractController {
+public class SiteStatusViewController extends AbstractController {
 
     private static final int FIVE_MINUTES = 5*60;
     
-    private static AggregateStatusService m_service;
+    private static SiteStatusViewService m_service;
 
-    public AggregateStatusController() {
+    public SiteStatusViewController() {
         setSupportedMethods(new String[] {METHOD_GET});
         setCacheSeconds(FIVE_MINUTES);
     }
     
-    public void setService(AggregateStatusService svc) {
+    public void setService(SiteStatusViewService svc) {
         m_service = svc;
     }
     

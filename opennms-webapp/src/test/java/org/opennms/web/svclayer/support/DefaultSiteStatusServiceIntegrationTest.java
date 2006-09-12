@@ -57,18 +57,18 @@ import org.opennms.netmgt.model.AggregateStatusDefinition;
 import org.opennms.netmgt.model.AggregateStatusView;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.web.svclayer.AggregateStatus;
-import org.opennms.web.svclayer.AggregateStatusService;
+import org.opennms.web.svclayer.SiteStatusViewService;
 import org.springframework.test.AbstractTransactionalDataSourceSpringContextTests;
 
-public class DefaultAggregateServiceIntegrationTest extends AbstractTransactionalDataSourceSpringContextTests {
+public class DefaultSiteStatusServiceIntegrationTest extends AbstractTransactionalDataSourceSpringContextTests {
     
-    private AggregateStatusService m_aggregateService;
+    private SiteStatusViewService m_aggregateService;
     
     /*
      *  This is a total hack and should be moved into a Spring bean file
      *  for integration testing.
      */
-    public DefaultAggregateServiceIntegrationTest() throws MarshalException, ValidationException, IOException, PropertyVetoException, SQLException {
+    public DefaultSiteStatusServiceIntegrationTest() throws MarshalException, ValidationException, IOException, PropertyVetoException, SQLException {
         /*
          * Note: I'm using the opennms-database.xml file in target/classes/etc
          * so that it has been filtered first.  You'll have to make sure that
@@ -89,7 +89,7 @@ public class DefaultAggregateServiceIntegrationTest extends AbstractTransactiona
      * pretty cool Spring Framework trickery
      * @param svc
      */
-    public void setAggregateStatusService(AggregateStatusService svc) {
+    public void setAggregateStatusService(SiteStatusViewService svc) {
         m_aggregateService = svc;
     }
 
