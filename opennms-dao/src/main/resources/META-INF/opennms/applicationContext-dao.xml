@@ -46,8 +46,12 @@
 			<value>
 				hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect
 				hibernate.show_sql=true
+		        hibernate.cache.use_second_level_cache=false
+        		hibernate.cache=false
+        		hibernate.cache.use_query_cache=true
+        		hibernate.jdbc.batch_size=0	
 				<!-- hibernate.format_sql=true -->
-			</value>
+        	</value>
 		</property>
 	</bean>
 
