@@ -22,9 +22,9 @@
   </tr>
   
   <c:forEach items="${webTable.rows}" var="row">
-    <tr>
+    <tr class="CellStatus">
       <c:forEach items="${row}" var="cell">
-        <td class="<c:out value='${cell.styleClass}'/>">
+        <td class="<c:out value='${cell.styleClass}'/> divider">
           <c:choose>
             <c:when test="${! empty cell.link}">
 	            <a href="<c:out value='${cell.link}'/>"><c:out value="${cell.content}"/></a>

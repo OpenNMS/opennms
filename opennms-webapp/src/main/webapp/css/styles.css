@@ -574,18 +574,57 @@ tr.Cleared td { background-color: #EEE; }
 tr.Cleared td.divider { border-top: 2px solid #999 !important; }
 tr.Cleared td.bright { background-image: url(../images/bgCleared.png); }
 
-
-.status-critical {
-    background-color: red;
-    text-align: center
+tr.CellStatus td {
+	padding-left: 20px;
+	background-position: top left;
+	background-repeat: repeat-y;
 }
 
-.status-warning {
-    background-color: yellow;
-    text-align: center
+tr.CellStatus td.Critical
+{
+	background-color: #F5CDCD; 
+	border-top: 2px solid #CC0000 !important;
+	background-image: url(../images/bgCritical.png);
 }
 
-.status-normal {
-    background-color: green;
-    text-align: center
+tr.CellStatus td.Major
+{
+	background-color: #FFD7CD; 
+	border-top: 2px solid #FF3300 !important;
+	background-image: url(../images/bgMajor.png);
+}
+
+tr.CellStatus td.Minor
+{
+	background-color: #FFEBCD; 
+	border-top: 2px solid #FF9900 !important;
+	background-image: url(../images/bgMinor.png);
+}
+
+tr.CellStatus td.Warning
+{
+	background-color: #FFF5CD; 
+	border-top: 2px solid #FFCC00 !important;
+	background-image: url(../images/bgWarning.png);
+}
+
+tr.CellStatus td.Indeterminate
+{
+	background-color: #EBEBCD; 
+	border-top: 2px solid #999000 !important;
+	background-image: url(../images/bgIndeterminate.png);
+}
+
+tr.CellStatus td.Normal
+{
+	background-color: #D7E1CD; 
+	border-top: 2px solid #336600 !important;
+	background-image: url(../images/bgNormal.png);
+}
+
+tr.CellStatus td.Cleared
+{
+	background-color: #EEE; 
+	border-top: 2px solid #999 !important;
+	background-image: url(../images/bgCleared.png);
 }
