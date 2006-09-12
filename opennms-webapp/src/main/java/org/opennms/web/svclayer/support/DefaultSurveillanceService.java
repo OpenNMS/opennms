@@ -34,9 +34,11 @@ package org.opennms.web.svclayer.support;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.opennms.netmgt.config.surveillanceViews.Category;
@@ -48,8 +50,6 @@ import org.opennms.netmgt.config.surveillanceViews.View;
 import org.opennms.netmgt.dao.CategoryDao;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.model.OnmsCategory;
-import org.opennms.netmgt.model.OnmsIpInterface;
-import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.web.svclayer.AggregateStatus;
 import org.opennms.web.svclayer.ProgressMonitor;
@@ -65,18 +65,86 @@ public class DefaultSurveillanceService implements SurveillanceService {
     private SurveillanceViewConfigDao m_surveillanceConfigDao;
     private OnmsNode m_foundDownNode;
     
+    class CellStatusStrategy {
+
+		Collection<OnmsNode> getNodesInCategories(Set<OnmsCategory> categories) {
+			return m_nodeDao.findAllByCategoryList(categories);
+		}
+    	
+    }
     
-    public SurveillanceTable createSurveillanceTable() {
+    public SimpleWebTable createSurveillanceTable() {
         return createSurveillanceTable("default", null);
+    }
+    
+    public class SurveillanceView {
+        private SurveillanceViewConfigDao m_surveillanceConfigDao;
+        private CategoryDao m_categoryDao;
+        private String m_viewName;
+        private View m_view;
+        
+        public SurveillanceView(String viewName, SurveillanceViewConfigDao surveillanceConfigDao, CategoryDao categoryDao) {
+        	m_surveillanceConfigDao = surveillanceConfigDao;
+        	m_categoryDao = categoryDao;
+        	m_viewName = viewName;
+        	m_view = m_surveillanceConfigDao.getView(viewName);
+        }
+        
+        public int getRowCount() {
+        	return m_view.getRows().getRowDefCount();
+        }
+        
+        public int getColumnCount() {
+        	return m_view.getColumns().getColumnDefCount();
+        }
+        
+        @SuppressWarnings("unchecked")
+		public Set<OnmsCategory> getCategoriesForRow(int rowIndex) {
+        	return getOnmsCategoriesFromViewCategories(getRowDef(rowIndex).getCategoryCollection());
+        }
+
+		private RowDef getRowDef(int rowIndex) {
+			return m_view.getRows().getRowDef(rowIndex);
+		}
+        
+        @SuppressWarnings("unchecked")
+		public Set<OnmsCategory> getCategoriesForColumn(int colIndex) {
+        	return getOnmsCategoriesFromViewCategories(getColumnDef(colIndex).getCategoryCollection());
+        }
+
+		private ColumnDef getColumnDef(int colIndex) {
+			return m_view.getColumns().getColumnDef(colIndex);
+		}
+        
+        private Set<OnmsCategory> getOnmsCategoriesFromViewCategories(Collection<Category> viewCats) {
+            Set<OnmsCategory> categories = new HashSet<OnmsCategory>();
+            for (Category viewCat : viewCats) {
+            	
+                categories.add(m_categoryDao.findByName(viewCat.getName()));
+            }
+            
+            return categories;
+        }
+        
+        public String getRowLabel(int rowIndex) {
+        	return getRowDef(rowIndex).getLabel();
+        }
+        
+        public String getColumnLabel(int colIndex) {
+        	return getColumnDef(colIndex).getLabel();
+        }
+        
     }
 
     /**
      * Creates a custom table object containing intersected rows and
      * columns and categories.
      */
-    public SurveillanceTable createSurveillanceTable(String surveillanceViewName, ProgressMonitor progressMonitor) {
+    public SimpleWebTable createSurveillanceTable(String surveillanceViewName, ProgressMonitor progressMonitor) {
 
         View view = m_surveillanceConfigDao.getView(surveillanceViewName);
+        
+        SurveillanceView sView = new SurveillanceView(surveillanceViewName, m_surveillanceConfigDao, m_categoryDao);
         
         final Rows rows = view.getRows();
         final Columns columns = view.getColumns();
@@ -86,184 +154,107 @@ public class DefaultSurveillanceService implements SurveillanceService {
         /*
          * Initialize a status table 
          */
-        final SurveillanceTable statusTable = new SurveillanceTable(rows.getRowDefCount(), columns.getColumnDefCount());
         SimpleWebTable webTable = new SimpleWebTable();
-        statusTable.setLabel(view.getName());
         webTable.setTitle(view.getName());
-        statusTable.setWebTable(webTable);
         
         webTable.addColumn("Nodes Down", "simpleWebTableHeader");
         
-        List<Category> viewRowCats = new ArrayList<Category>();
-        List<Category> viewColCats = new ArrayList<Category>();
-        List rowDefs = rows.getRowDefCollection();
-        List columnDefs = columns.getColumnDefCollection();
-
-        /*
-         * Iterate of the requested view's configuration (row's and columns) and set an aggreated status into each table
-         * cell.
-         */
+        // set up the column headings
+        for(int colIndex = 0; colIndex < sView.getColumnCount(); colIndex++) {
+            webTable.addColumn(sView.getColumnLabel(colIndex), "simpleWebTableHeader");
+        }
         
-        for (Iterator rowDefIter = rowDefs.iterator(); rowDefIter.hasNext();) {
-            RowDef rowDef = (RowDef) rowDefIter.next();
-        	progressMonitor.beginNextPhase("Loading Nodes for "+rowDef.getLabel());
-            statusTable.setRowHeader(rowDef.getRow()-1, rowDef.getLabel());
-            viewRowCats.addAll(rowDef.getCategoryCollection());
-            statusTable.setNodesForRow(rowDef.getRow()-1, createNodes(viewRowCats));
-            viewRowCats.removeAll(rowDef.getCategoryCollection());
-        }
 
-        for (Iterator colDefIter = columnDefs.iterator(); colDefIter.hasNext();) {
-            ColumnDef colDef = (ColumnDef) colDefIter.next();
-        	progressMonitor.beginNextPhase("Loading Nodes for "+colDef.getLabel());
-            viewColCats.addAll(colDef.getCategoryCollection());
-            statusTable.setNodesForColumn(colDef.getCol()-1, createNodes(viewColCats));
-            statusTable.setColumnHeader(colDef.getCol()-1, colDef.getLabel());
-            viewColCats.removeAll(colDef.getCategoryCollection());
-            
-            webTable.addColumn(colDef.getLabel(), "simpleWebTableHeader");
-        }
+        // build the set of nodes for each cell
+        
+        CellStatusStrategy strategy = new CellStatusStrategy();
+        
+        AggregateStatus[][] cellStatus = calculateCellStatus(sView, progressMonitor, strategy);
         
         progressMonitor.beginNextPhase("Calculating Status Values");
-
-        for (Iterator rowDefIter = rowDefs.iterator(); rowDefIter.hasNext();) {
-            RowDef rowDef = (RowDef) rowDefIter.next();
+        
+        for(int rowIndex = 0; rowIndex < sView.getRowCount(); rowIndex++) {
             
             webTable.newRow();
-            webTable.addCell(rowDef.getLabel(), "simpleWebTableRowLabel");
+            webTable.addCell(sView.getRowLabel(rowIndex), "simpleWebTableRowLabel");
             
-            for (Iterator colDefIter = columnDefs.iterator(); colDefIter.hasNext();) {
-                ColumnDef colDef = (ColumnDef) colDefIter.next();
-                final Set<OnmsNode> intersectNodes = new HashSet<OnmsNode>(statusTable.getNodesForRow(rowDef.getRow()-1));
-                intersectNodes.retainAll(statusTable.getNodesForColumn(colDef.getCol()-1));
-                AggregateStatus aggStatus = createAggregateStatus(intersectNodes);
-				statusTable.setStatus(rowDef.getRow()-1, colDef.getCol()-1, aggStatus);
+
+            for(int colIndex = 0; colIndex < sView.getColumnCount(); colIndex++) {
+
+				AggregateStatus aggStatus = cellStatus[rowIndex][colIndex];
 				
 				SimpleWebTable.Cell cell = webTable.addCell(aggStatus.getDownEntityCount()+" of "+aggStatus.getTotalEntityCount(), aggStatus.getStatus());
 
-                if (statusTable.getStatus(rowDef.getRow()-1, colDef.getCol()-1).getDownEntityCount() > 0) {
-                    String link = createNodePageUrl(rowDef.getLabel());
-					statusTable.setRowHeader(rowDef.getRow()-1, link);
-					cell.setLink(link);
+                if (aggStatus.getDownEntityCount() > 0) {
+					cell.setLink(createNodePageUrl(aggStatus));
                     m_foundDownNode = null; //what a hack
                 }
             }
                 
         }
-        
         progressMonitor.finished(webTable);
         
-        return statusTable;
+        return webTable;
     }
 
-    private Collection<OnmsNode> createNodes(List<Category> viewCats) {
+	private AggregateStatus[][] calculateCellStatus(SurveillanceView sView, ProgressMonitor progressMonitor, CellStatusStrategy strategy) {
+		
+        List<Collection<OnmsNode>> nodesByRowIndex = new ArrayList<Collection<OnmsNode>>();
+        List<Collection<OnmsNode>> nodesByColIndex = new ArrayList<Collection<OnmsNode>>();
+
+        /*
+         * Iterate of the requested view's configuration (row's and columns) and set an aggreated status into each table
+         * cell.
+         */
+        for(int rowIndex = 0; rowIndex < sView.getRowCount(); rowIndex++) {
+        	progressMonitor.beginNextPhase("Loading Nodes for "+sView.getRowLabel(rowIndex));
+            Collection<OnmsNode> nodesForRow = strategy.getNodesInCategories(sView.getCategoriesForRow(rowIndex));
+            nodesByRowIndex.add(rowIndex, nodesForRow);
+        }
+
+        for(int colIndex = 0; colIndex < sView.getColumnCount(); colIndex++) {
+        	progressMonitor.beginNextPhase("Loading Nodes for "+sView.getColumnLabel(colIndex));
+            Collection<OnmsNode> nodesForCol = strategy.getNodesInCategories(sView.getCategoriesForColumn(colIndex));
+            nodesByColIndex.add(colIndex, nodesForCol);
+        }
         
-        return m_nodeDao.findAllByCategoryList(createCategories(viewCats));
-    }
+        AggregateStatus[][] cellStatus = new AggregateStatus[sView.getRowCount()][sView.getColumnCount()];
 
-    /*
+        
+        progressMonitor.beginNextPhase("Intersecting Rows and Columns");
+        
+        for(int rowIndex = 0; rowIndex < sView.getRowCount(); rowIndex++) {
+            
+            Collection<OnmsNode> nodesForRow = nodesByRowIndex.get(rowIndex);
+
+            for(int colIndex = 0; colIndex < sView.getColumnCount(); colIndex++) {
+
+            	Collection<OnmsNode> nodesForCol = nodesByColIndex.get(colIndex);
+
+                Set<OnmsNode> cellNodes = new HashSet<OnmsNode>(nodesForRow);
+				cellNodes.retainAll(nodesForCol);
+				
+				cellStatus[rowIndex][colIndex] = new AggregateStatus(cellNodes);
+				
+				
+                
+            }
+                
+        }
+		return cellStatus;
+	}
+
+	/*
      * This creates a relative url to the node page and sets the node parameter
      * FIXME: this code should move to the jsp after the status table is enhanced to support
      * this requirement.
      */
-    private String createNodePageUrl(String label) {
-        if (m_foundDownNode != null) {
-            label = "element/node.jsp?node="+m_foundDownNode.getId();
+    private String createNodePageUrl(AggregateStatus aggStatus) {
+    	if (m_foundDownNode != null) {
+            return "element/node.jsp?node="+m_foundDownNode.getId();
         }
-        return label;
+        return null;
     }
-
-    /**
-     * This method takes list of configured surveillance view categories
-     * and returns a list of OnmsCategories
-     * @param viewCats
-     * @return
-     */
-    private Collection<OnmsCategory> createCategories(List<Category> viewCats) {
-        List<String> catNames = new ArrayList<String>();
-        for (Category category : viewCats) {
-            catNames.add(category.getName());
-        }
-        
-        return createCategoryNameCollection(catNames);
-    }
-
-    /**
-     * This method takes a list of category names and returns a
-     * list of OnmsCategories
-     * 
-     * @param categoryNames
-     * @return
-     */
-    private Collection<OnmsCategory> createCategoryNameCollection(List<String> categoryNames) {
-        
-        Collection<OnmsCategory> categories = new ArrayList<OnmsCategory>();
-        for (String catName : categoryNames) {
-            categories.add(m_categoryDao.findByName(catName));
-        }
-        return categories;
-    }
-
-    private AggregateStatus createAggregateStatus(Set<OnmsNode> nodes) {
-        AggregateStatus status;
-        status = new AggregateStatus();
-        if (nodes == null || nodes.isEmpty()) {
-            status.setDownEntityCount(0);
-            status.setTotalEntityCount(0);
-            status.setStatus(AggregateStatus.ALL_NODES_UP);
-        } else {
-            status.setDownEntityCount(computeDownCount(nodes));
-            status.setTotalEntityCount(nodes.size());
-            status.setStatus(computeStatus(nodes, status));
-        }
-        return status;
-    }
-
-    private String computeStatus(Collection<OnmsNode> nodes, AggregateStatus status) {
-        
-        String color = AggregateStatus.ALL_NODES_UP;
-        
-        if (status.getDownEntityCount() >= 1) {
-            color = AggregateStatus.NODES_ARE_DOWN;
-            return color;
-        }
-        
-        for (Iterator it = nodes.iterator(); it.hasNext();) {
-            OnmsNode node = (OnmsNode) it.next();
-            Set<OnmsIpInterface> ifs = node.getIpInterfaces();
-            for (Iterator ifIter = ifs.iterator(); ifIter.hasNext();) {
-                OnmsIpInterface ipIf = (OnmsIpInterface) ifIter.next();
-                Set<OnmsMonitoredService> svcs = ipIf.getMonitoredServices();
-                for (Iterator svcIter = svcs.iterator(); svcIter.hasNext();) {
-                    OnmsMonitoredService svc = (OnmsMonitoredService) svcIter.next();
-                    if (svc.isDown()) {
-                        color = AggregateStatus.ONE_SERVICE_DOWN;
-                        return color;  //quick exit this mess
-                    }
-                }
-            }
-        }
-        return color;
-    }
-    
-    
-    private Integer computeDownCount(Collection<OnmsNode> nodes) {
-        int totalNodesDown = 0;
-        
-        for (OnmsNode node : nodes) {
-            if (node.isDown()) {
-                
-                //FIXME: this is a hack to meet a requirement to build a URL
-                //that takes you do a node page when a node is down in this
-                //status class.
-                m_foundDownNode = node;
-                
-                totalNodesDown += 1;
-            }
-        }
-        return new Integer(totalNodesDown);
-    }
-
 
     public NodeDao getNodeDao() {
         return m_nodeDao;
