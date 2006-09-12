@@ -33,8 +33,12 @@ package org.opennms.netmgt.dao;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileFilter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Properties;
 
 import javax.sql.DataSource;
@@ -85,6 +89,7 @@ public class HibernateDaoTestConfig extends DaoTestConfig {
     private boolean m_createDb = false;
     
     class ReaderEater extends Thread {
+        boolean eat = true;
         BufferedReader m_reader;
 
         ReaderEater(BufferedReader r) {
@@ -97,7 +102,11 @@ public class HibernateDaoTestConfig extends DaoTestConfig {
 
         public void run() {
             try {
-                while (m_reader.readLine() != null) {
+                String s;
+                while ((s = m_reader.readLine()) != null) {
+                    if (!eat) {
+                        System.out.println(s);
+                    }
                 }
             } catch (IOException e) {
                 e.printStackTrace();  
@@ -150,6 +159,8 @@ public class HibernateDaoTestConfig extends DaoTestConfig {
         props.put("hibernate.pool_size", "0");
         
         props.put("hibernate.format_sql", "true");
+        props.put("hibernate.cache.use_second_level_cache", "false");
+        props.put("hibernate.cache", "false");
         //props.put("hibernate.cache.use_query_cache", "true");
         props.put("hibernate.jdbc.batch_size", "0");
         //props.put("hibernate.hbm2ddl.auto", "create-drop");
@@ -168,27 +179,44 @@ public class HibernateDaoTestConfig extends DaoTestConfig {
 //            getLsfb().updateDatabaseSchema();
 //        }
         
-       if (createDb) {
-        	
-        	Resource resource = new ClassPathResource("create.sql");
-        	File createSql = resource.getFile();
-        	
-            String cmd = System.getProperty("psql.command", "psql") ;
-            System.err.println("psql.command = "+cmd);
-            cmd = cmd+" test -U opennms -f "+createSql.getAbsolutePath();
 
-            System.err.println("Executing: "+cmd);
-            Process p = Runtime.getRuntime().exec(cmd);
-            ReaderEater inputEater = new ReaderEater(new BufferedReader(new InputStreamReader(p.getInputStream())));
-            ReaderEater errorEater = new ReaderEater(new BufferedReader(new InputStreamReader(p.getErrorStream())));
-            inputEater.start();
-            errorEater.start();
-            p.waitFor();
-            inputEater.getReader().close();
-            errorEater.getReader().close();
+        List<File> sqlFiles = new LinkedList<File>();
+        sqlFiles.add(new File("../opennms-daemon/src/main/filtered/etc/create.sql"));
+
+        FileFilter sqlFilter = new FileFilter() {
+            public boolean accept(File pathname) {
+                return (pathname.getName().startsWith("get") && pathname.getName().endsWith(".sql"))
+                     || pathname.getName().endsWith("Trigger.sql");
+            }
+        };
+
+        File[] list = new File("../opennms-daemon/src/main/filtered/etc").listFiles(sqlFilter);
+        sqlFiles.addAll(Arrays.asList(list));
+        
+        /*
+        Resource resource = new ClassPathResource("create.sql");
+        File createSql = resource.getFile();
+             */
+
+        if (createDb) {
+           for (File sqlFile : sqlFiles) {
+               String cmd = System.getProperty("psql.command", "psql") ;
+               System.err.println("psql.command = " + cmd);
+               cmd = cmd+" test -U opennms -f " + sqlFile.getAbsolutePath();
+
+               System.err.println("Executing: " + cmd);
+               Process p = Runtime.getRuntime().exec(cmd);
+               ReaderEater inputEater = new ReaderEater(new BufferedReader(new InputStreamReader(p.getInputStream())));
+               ReaderEater errorEater = new ReaderEater(new BufferedReader(new InputStreamReader(p.getErrorStream())));
+               inputEater.start();
+               errorEater.start();
+               p.waitFor();
+               inputEater.getReader().close();
+               errorEater.getReader().close();
             
-            System.err.println("Got an exitValue of "+p.exitValue());
-            p.destroy();
+               System.err.println("Got an exitValue of "+p.exitValue());
+               p.destroy();
+           }
         }
         
         // initialize the JDBC DAOs until we get them all converted

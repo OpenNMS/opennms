@@ -32,6 +32,7 @@
 package org.opennms.netmgt.dao;
 
 import java.beans.PropertyVetoException;
+import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.Date;
 import java.util.Map;
 
@@ -76,6 +77,25 @@ public class AbstractDaoTestCase extends TestCase {
             }
             return null;
         }
+    }
+    
+    private class StoreExceptionUncaughtExceptionHandler
+        implements UncaughtExceptionHandler {
+        
+        private Throwable m_throwable = null;
+
+        public void uncaughtException(Thread t, Throwable e) {
+            m_throwable = e;
+        }
+        
+        public Throwable getThrowable() {
+            return m_throwable;
+        }
+        
+        public boolean hasThrown() {
+            return (m_throwable != null);
+        }
+    
     }
     
     abstract class DB {
@@ -247,8 +267,9 @@ public class AbstractDaoTestCase extends TestCase {
         m_transTemplate.setTransactionManager(m_transMgr);
         m_transTemplate.afterPropertiesSet();
 
-        if (isPopulate())
+        if (isPopulate()) {
             populateDB();
+        }
         
         System.err.println("----------- SetUp Complete for "+getName()+" ---------------------");
         
@@ -283,20 +304,35 @@ public class AbstractDaoTestCase extends TestCase {
         };
         
         Runnable doIt = new Runnable() {
-
             public void run() {
                 m_transTemplate.execute(populater);
             }
-            
         };
-        
-        // run in a separate thread so its in a separate transaction
+
         Thread t = new Thread(doIt);
+        
+        StoreExceptionUncaughtExceptionHandler eh =
+            new StoreExceptionUncaughtExceptionHandler();
+        t.setUncaughtExceptionHandler(eh);
+        
+        // run in a separate thread so it's in a separate transaction
         t.start();
         t.join();
         
-
+        if (eh.hasThrown()) {
+            fail("populateDB failed: " + eh.getThrowable().toString(),
+                 eh.getThrowable());
+        }
         
+    }
+    
+    public void fail(String message, Throwable t) {
+        AssertionFailedError e =
+            new AssertionFailedError(message + "; Nested exception is: ["
+                                     + t.getClass().getName() + "] "
+                                     + t.getMessage());
+        e.initCause(t);
+        throw e;
     }
 
     protected DistPollerDao getDistPollerDao() {
@@ -343,84 +379,93 @@ public class AbstractDaoTestCase extends TestCase {
         //OnmsDistPoller distPoller = dao.load("localhost");
 
         getServiceTypeDao().save(new OnmsServiceType("ICMP"));
+        getServiceTypeDao().flush();
         getServiceTypeDao().save(new OnmsServiceType("SNMP"));
+        getServiceTypeDao().flush();
         getServiceTypeDao().save(new OnmsServiceType("HTTP"));
+        getServiceTypeDao().flush();
         
         OnmsDistPoller distPoller = new OnmsDistPoller("localhost", "127.0.0.1");
         getDistPollerDao().save(distPoller);
+        getDistPollerDao().flush();
         
         NetworkBuilder builder = new NetworkBuilder(distPoller);
         m_node1 = builder.addNode("node1");
-		m_node1.getAssetRecord().setAssetNumber("imported:"+"1");
-        builder.addInterface("192.168.1.1", 1).setIsManaged("M").setIsSnmpPrimary("P").setIpStatus(1);
-        builder.addSnmpInterface("192.168.1.1", 1).setIfSpeed(10000000);
+	m_node1.getAssetRecord().setAssetNumber("imported:"+"1");
+        builder.addInterface("192.168.1.1").setIsManaged("M").setIsSnmpPrimary("P").setIpStatus(1).addSnmpInterface("192.168.1.1", 1).setIfSpeed(10000000);
+        getNodeDao().save(builder.getCurrentNode());
+        getNodeDao().flush();
         builder.addService(getServiceType("ICMP"));
         builder.addService(getServiceType("SNMP"));
-        builder.addInterface("192.168.1.2", 2).setIsManaged("M").setIsSnmpPrimary("S").setIpStatus(1);
-        builder.addSnmpInterface("192.168.1.2", 2).setIfSpeed(10000000);
+        builder.addInterface("192.168.1.2").setIsManaged("M").setIsSnmpPrimary("S").setIpStatus(1).addSnmpInterface("192.168.1.2", 2).setIfSpeed(10000000);
         builder.addService(getServiceType("ICMP"));
         builder.addService(getServiceType("HTTP"));
-        builder.addInterface("192.168.1.3", 3).setIsManaged("M").setIsSnmpPrimary("N").setIpStatus(1);
-        builder.addSnmpInterface("192.168.1.3", 3).setIfSpeed(10000000);
+        builder.addInterface("192.168.1.3").setIsManaged("M").setIsSnmpPrimary("N").setIpStatus(1).addSnmpInterface("192.168.1.3", 3).setIfSpeed(10000000);
         builder.addService(getServiceType("ICMP"));
         getNodeDao().save(builder.getCurrentNode());
+        getNodeDao().flush();
         
         builder.addNode("node2").getAssetRecord().setAssetNumber("imported:"+"2");
-        builder.addInterface("192.168.2.1", -1).setIsManaged("M").setIsSnmpPrimary("P").setIpStatus(1);
+        builder.addInterface("192.168.2.1").setIsManaged("M").setIsSnmpPrimary("P").setIpStatus(1);
         builder.addService(getServiceType("ICMP"));
         builder.addService(getServiceType("SNMP"));
-        builder.addInterface("192.168.2.2", -1).setIsManaged("M").setIsSnmpPrimary("S").setIpStatus(1);
+        builder.addInterface("192.168.2.2").setIsManaged("M").setIsSnmpPrimary("S").setIpStatus(1);
         builder.addService(getServiceType("ICMP"));
         builder.addService(getServiceType("HTTP"));
-        builder.addInterface("192.168.2.3", -1).setIsManaged("M").setIsSnmpPrimary("N").setIpStatus(1);
+        builder.addInterface("192.168.2.3").setIsManaged("M").setIsSnmpPrimary("N").setIpStatus(1);
         builder.addService(getServiceType("ICMP"));
         getNodeDao().save(builder.getCurrentNode());
+        getNodeDao().flush();
         
         builder.addNode("node3").getAssetRecord().setAssetNumber("imported:"+"3");
-        builder.addInterface("192.168.3.1", -1).setIsManaged("M").setIsSnmpPrimary("P").setIpStatus(1);
+        builder.addInterface("192.168.3.1").setIsManaged("M").setIsSnmpPrimary("P").setIpStatus(1);
         builder.addService(getServiceType("ICMP"));
         builder.addService(getServiceType("SNMP"));
-        builder.addInterface("192.168.3.2", -1).setIsManaged("M").setIsSnmpPrimary("S").setIpStatus(1);
+        builder.addInterface("192.168.3.2").setIsManaged("M").setIsSnmpPrimary("S").setIpStatus(1);
         builder.addService(getServiceType("ICMP"));
         builder.addService(getServiceType("HTTP"));
-        builder.addInterface("192.168.3.3", -1).setIsManaged("M").setIsSnmpPrimary("N").setIpStatus(1);
+        builder.addInterface("192.168.3.3").setIsManaged("M").setIsSnmpPrimary("N").setIpStatus(1);
         builder.addService(getServiceType("ICMP"));
         getNodeDao().save(builder.getCurrentNode());
+        getNodeDao().flush();
         
         builder.addNode("node4").getAssetRecord().setAssetNumber("imported:"+"4");
-        builder.addInterface("192.168.4.1", -1).setIsManaged("M").setIsSnmpPrimary("P").setIpStatus(1);
+        builder.addInterface("192.168.4.1").setIsManaged("M").setIsSnmpPrimary("P").setIpStatus(1);
         builder.addService(getServiceType("ICMP"));
         builder.addService(getServiceType("SNMP"));
-        builder.addInterface("192.168.4.2", -1).setIsManaged("M").setIsSnmpPrimary("S").setIpStatus(1);
+        builder.addInterface("192.168.4.2").setIsManaged("M").setIsSnmpPrimary("S").setIpStatus(1);
         builder.addService(getServiceType("ICMP"));
         builder.addService(getServiceType("HTTP"));
-        builder.addInterface("192.168.4.3", -1).setIsManaged("M").setIsSnmpPrimary("N").setIpStatus(1);
+        builder.addInterface("192.168.4.3").setIsManaged("M").setIsSnmpPrimary("N").setIpStatus(1);
         builder.addService(getServiceType("ICMP"));
         getNodeDao().save(builder.getCurrentNode());
+        getNodeDao().flush();
 
         //This node purposely doesn't have a foreignId style assetNumber
         builder.addNode("alternate-node1").getAssetRecord().setAssetNumber("5");
-        builder.addInterface("10.1.1.1", -1).setIsManaged("M").setIsSnmpPrimary("P").setIpStatus(1);
+        builder.addInterface("10.1.1.1").setIsManaged("M").setIsSnmpPrimary("P").setIpStatus(1);
         builder.addService(getServiceType("ICMP"));
         builder.addService(getServiceType("SNMP"));
-        builder.addInterface("10.1.1.2", -1).setIsManaged("M").setIsSnmpPrimary("S").setIpStatus(1);
+        builder.addInterface("10.1.1.2").setIsManaged("M").setIsSnmpPrimary("S").setIpStatus(1);
         builder.addService(getServiceType("ICMP"));
         builder.addService(getServiceType("HTTP"));
-        builder.addInterface("10.1.1.3", -1).setIsManaged("M").setIsSnmpPrimary("N").setIpStatus(1);
+        builder.addInterface("10.1.1.3").setIsManaged("M").setIsSnmpPrimary("N").setIpStatus(1);
         builder.addService(getServiceType("ICMP"));
         getNodeDao().save(builder.getCurrentNode());
+        getNodeDao().flush();
         
         //This node purposely doesn't have a assetNumber and is used by a test to check the category
         builder.addNode("alternate-node2").getAssetRecord().setDisplayCategory("category1");
-        builder.addInterface("10.1.2.1", -1).setIsManaged("M").setIsSnmpPrimary("P").setIpStatus(1);
+        builder.addInterface("10.1.2.1").setIsManaged("M").setIsSnmpPrimary("P").setIpStatus(1);
         builder.addService(getServiceType("ICMP"));
         builder.addService(getServiceType("SNMP"));
-        builder.addInterface("10.1.2.2", -1).setIsManaged("M").setIsSnmpPrimary("S").setIpStatus(1);
+        builder.addInterface("10.1.2.2").setIsManaged("M").setIsSnmpPrimary("S").setIpStatus(1);
         builder.addService(getServiceType("ICMP"));
         builder.addService(getServiceType("HTTP"));
-        builder.addInterface("10.1.2.3", -1).setIsManaged("M").setIsSnmpPrimary("N").setIpStatus(1);
+        builder.addInterface("10.1.2.3").setIsManaged("M").setIsSnmpPrimary("N").setIpStatus(1);
         builder.addService(getServiceType("ICMP"));
         getNodeDao().save(builder.getCurrentNode());
+        getNodeDao().flush();
         
         OnmsEvent event = new OnmsEvent();
         event.setDistPoller(distPoller);
@@ -432,13 +477,16 @@ public class AbstractDaoTestCase extends TestCase {
         event.setEventLog("Y");
         event.setEventDisplay("Y");
         getEventDao().save(event);
+        getEventDao().flush();
        
         OnmsMonitoredService svc = getMonitoredServiceDao().get(1, "192.168.1.1", "SNMP");
         OnmsOutage resolved = new OnmsOutage(new Date(), new Date(), event, event, svc, null, null);
         getOutageDao().save(resolved);
+        getOutageDao().flush();
         
         OnmsOutage unresolved = new OnmsOutage(new Date(), event, svc);
         getOutageDao().save(unresolved);
+        getOutageDao().flush();
         
 
     }
