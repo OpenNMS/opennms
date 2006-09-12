@@ -44,7 +44,8 @@
 	session="true"
 	import="java.util.*,
 		org.opennms.web.notification.*,
-		org.opennms.web.element.*
+		org.opennms.web.element.*,
+                org.opennms.web.event.*
 	"
 %>
 
@@ -54,6 +55,8 @@
 
 <%
     String noticeIdString = request.getParameter("notice");
+
+    String eventSeverity;
     
     int noticeID = -1;
     
@@ -70,6 +73,14 @@
     if( notice == null ) {
         throw new NoticeIdNotFoundException("An notice with this id was not found.", String.valueOf(noticeID));
     }
+
+    if (NoticeFactory.canDisplayEvent(notice.getEventId())) {
+	Event event = EventFactory.getEvent(notice.getEventId());
+	eventSeverity = EventUtil.getSeverityLabel(event.getSeverity());
+    } else {
+	eventSeverity = new String("Cleared");
+    }
+
 %>
 
 <jsp:include page="/includes/header.jsp" flush="false" >
@@ -93,22 +104,18 @@
   <% } %>
 </h3>
       
-<table class="standard">
-  <tr>
-    <td class="standardheader" width="15%">Notification Time</td>
-    <td class="standard" width="17%"><%=org.opennms.netmgt.EventConstants.formatToUIString(notice.getTimeSent())%></td>
-    <td class="standardheader" width="15%">Time&nbsp;Replied</td>
-    <td class="standard" width="17%"><%=notice.getTimeReplied()!=null ? org.opennms.netmgt.EventConstants.formatToUIString(notice.getTimeReplied()) : "&nbsp"%></td>
-    <td class="standardheader" width="15%">Responder</td>
-    <td class="standard" width="17%"><%=notice.getResponder()!=null ? notice.getResponder() : "&nbsp"%></td>
+<table>
+  <tr class="<%=eventSeverity%>">
+    <td width="15%">Notification Time</td>
+    <td width="17%"><%=org.opennms.netmgt.EventConstants.formatToUIString(notice.getTimeSent())%></td>
+    <td width="15%">Time&nbsp;Replied</td>
+    <td width="17%"><%=notice.getTimeReplied()!=null ? org.opennms.netmgt.EventConstants.formatToUIString(notice.getTimeReplied()) : "&nbsp"%></td>
+    <td width="15%">Responder</td>
+    <td width="17%"><%=notice.getResponder()!=null ? notice.getResponder() : "&nbsp"%></td>
   </tr>
-</table>
-      
-<table class="standard">
-  <tr>
-    <td class="standardheader" width="15%">Node</td>
-
-    <td class="standard" width="17%">
+  <tr class="<%=eventSeverity%>">
+    <td width="15%">Node</td>
+    <td width="17%">
       <%if (NetworkElementFactory.getNodeLabel(notice.getNodeId())!=null) { %>
         <a href="element/node.jsp?node=<%=notice.getNodeId()%>"><%=NetworkElementFactory.getNodeLabel(notice.getNodeId())%></a>
       <% } else { %>
@@ -116,9 +123,9 @@
       <% } %>
     </td>
           
-    <td class="standardheader" width="15%">Interface</td>
+    <td width="15%">Interface</td>
 
-    <td class="standard" width="17%">
+    <td width="17%">
       <%if (NetworkElementFactory.getNodeLabel(notice.getNodeId())!=null && notice.getIpAddress()!=null) { %>
         <a href="element/interface.jsp?node=<%=notice.getNodeId()%>&intf=<%=notice.getIpAddress()%>"><%=notice.getIpAddress()%></a>
       <% } else if (notice.getIpAddress()!=null) { %>
@@ -128,9 +135,9 @@
       <% } %>
     </td>
           
-    <td class="standardheader" width="15%">Service</td>
+    <td width="15%">Service</td>
 
-    <td class="standard" width="17%">
+    <td width="17%">
       <%if (NetworkElementFactory.getNodeLabel(notice.getNodeId())!=null && notice.getIpAddress()!=null && notice.getServiceName()!=null) { %>
         <a href="element/service.jsp?node=<%=notice.getNodeId()%>&intf=<%=notice.getIpAddress()%>&service=<%=notice.getServiceId()%>"><%=notice.getServiceName()%></a>
       <% } else if (notice.getServiceName()!=null) { %>
@@ -142,8 +149,8 @@
   </tr>
 
   <%if (NetworkElementFactory.getNodeLabel(notice.getNodeId())!=null) { %>
-    <tr>
-      <td class="standard" colspan="6">
+    <tr class="<%=eventSeverity%>">
+      <td colspan="6">
         <a href="outage/list?filter=node%3D<%=notice.getNodeId()%>">See outages for <%=NetworkElementFactory.getNodeLabel(notice.getNodeId())%></a>
       </td>
     </tr>
@@ -151,47 +158,49 @@
 </table>
       
 <% if (notice.getNumericMessage() != null || notice.getTextMessage() != null) { %>
-  <table class="standard">
+  <table>
     <% if (notice.getNumericMessage()!=null) { %>
-      <tr>
-        <td class="standardheader" width="10%">Numeric Message</td>
+      <tr class="<%=eventSeverity%>">
+        <td width="10%">Numeric Message</td>
       </tr>
 
-      <tr>
-        <td class="standard"><%=notice.getNumericMessage()%></td>
+      <tr class="<%=eventSeverity%>">
+        <td><%=notice.getNumericMessage()%></td>
       </tr>
     <% } %>
           
     <% if (notice.getTextMessage() != null) { %>
-      <tr>
-        <td class="standardheader" width="10%">Text Message</td>
+      <tr class="<%=eventSeverity%>">
+        <td width="10%">Text Message</td>
       </tr>
 
-      <tr>
-        <td class="standard"><%=notice.getTextMessage()%></td>
+      <tr class="<%=eventSeverity%>">
+        <td><%=notice.getTextMessage()%></td>
       </tr>
     <% } %>
   </table>
 <% } %>
       
-<table class="standard">
-  <tr>
-    <td class="standardheader">Sent To</td>
-    <td class="standardheader">Sent At</td>
-    <td class="standardheader">Media</td>
-    <td class="standardheader">Contact Info</td>
-  </tr>
+<table>
+  <thead>
+    <tr>
+      <th>Sent To</th>
+      <th>Sent At</th>
+      <th>Media</th>
+      <th>Contact Info</th>
+    </tr>
+  </thead>
   
   <% List sentToList = notice.getSentTo(); %>
   <%  for (int i=0; i < sentToList.size(); i++) { %>
     <%  NoticeSentTo sentTo = (NoticeSentTo)sentToList.get(i); %>
 
-    <tr>
-      <td class="standard"><%=sentTo.getUserId()%></td>
+    <tr class="<%=eventSeverity%>">
+      <td><%=sentTo.getUserId()%></td>
 
-      <td class="standard"><%=org.opennms.netmgt.EventConstants.formatToUIString(sentTo.getTime())%></td>
+      <td><%=org.opennms.netmgt.EventConstants.formatToUIString(sentTo.getTime())%></td>
 
-      <td class="standard">
+      <td>
         <% if (sentTo.getMedia()!=null && !sentTo.getMedia().trim().equals("")) { %>
           <%=sentTo.getMedia()%>
         <% } else { %>
@@ -199,7 +208,7 @@
         <% } %>
       </td>
 
-      <td class="standard">
+      <td>
         <% if (sentTo.getContactInfo()!=null && !sentTo.getContactInfo().trim().equals("")) { %>
           <%=sentTo.getContactInfo()%>
         <% } else { %>
