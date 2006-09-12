@@ -435,6 +435,7 @@ create index ipinterface_ipaddr_ismanaged_idx on ipInterface (ipAddr, isManaged)
 create index ipinterface_ipaddr_idx on ipInterface (ipAddr);
 create index ipinterface_nodeid_ismanaged_idx on ipInterface (ipAddr);
 create index ipinterface_nodeid_idx on ipInterface (nodeID);
+create index ipinterface_snmpInterfaceId_idx on ipInterface (snmpInterfaceId);
 
 --########################################################################
 --# service Table - Contains a name<->number mapping for services
@@ -511,6 +512,7 @@ create index ifservices_nodeid_status on ifservices(nodeid, status);
 create index ifservices_nodeid_idx on ifservices(nodeID);
 create index ifservices_serviceid_idx on ifservices(serviceID);
 create index ifservices_nodeid_serviceid_idx on ifservices(nodeID, serviceID);
+create index ifservicves_ipInterfaceId_idx on ifservices(ipInterfaceId);
 
 --##################################################################
 --# events Table -- This table provides information on the events
@@ -709,6 +711,7 @@ create index outages_nodeid_idx on outages(nodeID);
 create index outages_serviceid_idx on outages(serviceID);
 create index outages_ipaddr_idx on outages(ipaddr);
 create index outages_regainedservice_idx on outages(ifRegainedService);
+create index outages_ifServivceId_idx on outages(ifServiceId);
 
 --########################################################################
 --#
