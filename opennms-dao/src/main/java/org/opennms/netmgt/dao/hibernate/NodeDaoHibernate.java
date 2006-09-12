@@ -36,25 +36,15 @@
 
 package org.opennms.netmgt.dao.hibernate;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 
-import org.hibernate.Criteria;
-import org.hibernate.HibernateException;
-import org.hibernate.Session;
-import org.hibernate.criterion.Criterion;
-import org.hibernate.criterion.Expression;
-import org.hibernate.criterion.Restrictions;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsNode;
-import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.util.StringUtils;
 
 /**
@@ -79,7 +69,6 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer>
                                   + "left join fetch n.ipInterfaces as iface "
                                   + "left join fetch iface.monitoredServices as monSvc "
                                   + "left join fetch monSvc.serviceType "
-                                  + "left join fetch monSvc.currentOutages "
                                   + "where n.id = ?", id);
 
     }
