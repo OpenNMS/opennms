@@ -70,6 +70,53 @@ public class DefaultSurveillanceService implements SurveillanceService {
 		Collection<OnmsNode> getNodesInCategories(Set<OnmsCategory> categories) {
 			return m_nodeDao.findAllByCategoryList(categories);
 		}
+
+		AggregateStatus[][] calculateCellStatus(SurveillanceView sView, ProgressMonitor progressMonitor) {
+			
+		    List<Collection<OnmsNode>> nodesByRowIndex = new ArrayList<Collection<OnmsNode>>();
+		    List<Collection<OnmsNode>> nodesByColIndex = new ArrayList<Collection<OnmsNode>>();
+		
+		    /*
+		     * Iterate of the requested view's configuration (row's and columns) and set an aggreated status into each table
+		     * cell.
+		     */
+		    for(int rowIndex = 0; rowIndex < sView.getRowCount(); rowIndex++) {
+		    	progressMonitor.beginNextPhase("Loading Nodes for "+sView.getRowLabel(rowIndex));
+		        Collection<OnmsNode> nodesForRow = getNodesInCategories(sView.getCategoriesForRow(rowIndex));
+		        nodesByRowIndex.add(rowIndex, nodesForRow);
+		    }
+		
+		    for(int colIndex = 0; colIndex < sView.getColumnCount(); colIndex++) {
+		    	progressMonitor.beginNextPhase("Loading Nodes for "+sView.getColumnLabel(colIndex));
+		        Collection<OnmsNode> nodesForCol = getNodesInCategories(sView.getCategoriesForColumn(colIndex));
+		        nodesByColIndex.add(colIndex, nodesForCol);
+		    }
+		    
+		    AggregateStatus[][] cellStatus = new AggregateStatus[sView.getRowCount()][sView.getColumnCount()];
+		
+		    
+		    progressMonitor.beginNextPhase("Intersecting Rows and Columns");
+		    
+		    for(int rowIndex = 0; rowIndex < sView.getRowCount(); rowIndex++) {
+		        
+		        Collection<OnmsNode> nodesForRow = nodesByRowIndex.get(rowIndex);
+		
+		        for(int colIndex = 0; colIndex < sView.getColumnCount(); colIndex++) {
+		
+		        	Collection<OnmsNode> nodesForCol = nodesByColIndex.get(colIndex);
+		
+		            Set<OnmsNode> cellNodes = new HashSet<OnmsNode>(nodesForRow);
+					cellNodes.retainAll(nodesForCol);
+					
+					cellStatus[rowIndex][colIndex] = new AggregateStatus(cellNodes);
+					
+					
+		            
+		        }
+		            
+		    }
+			return cellStatus;
+		}
     	
     }
     
@@ -80,13 +127,11 @@ public class DefaultSurveillanceService implements SurveillanceService {
     public class SurveillanceView {
         private SurveillanceViewConfigDao m_surveillanceConfigDao;
         private CategoryDao m_categoryDao;
-        private String m_viewName;
         private View m_view;
         
         public SurveillanceView(String viewName, SurveillanceViewConfigDao surveillanceConfigDao, CategoryDao categoryDao) {
         	m_surveillanceConfigDao = surveillanceConfigDao;
         	m_categoryDao = categoryDao;
-        	m_viewName = viewName;
         	m_view = m_surveillanceConfigDao.getView(viewName);
         }
         
@@ -146,10 +191,7 @@ public class DefaultSurveillanceService implements SurveillanceService {
         
         SurveillanceView sView = new SurveillanceView(surveillanceViewName, m_surveillanceConfigDao, m_categoryDao);
         
-        final Rows rows = view.getRows();
-        final Columns columns = view.getColumns();
-        
-        progressMonitor.setPhaseCount(rows.getRowDefCount()+columns.getColumnDefCount()+2);
+        progressMonitor.setPhaseCount(sView.getRowCount()+sView.getColumnCount()+2);
         
         /*
          * Initialize a status table 
@@ -169,7 +211,7 @@ public class DefaultSurveillanceService implements SurveillanceService {
         
         CellStatusStrategy strategy = new CellStatusStrategy();
         
-        AggregateStatus[][] cellStatus = calculateCellStatus(sView, progressMonitor, strategy);
+        AggregateStatus[][] cellStatus = strategy.calculateCellStatus(sView, progressMonitor);
         
         progressMonitor.beginNextPhase("Calculating Status Values");
         
@@ -196,53 +238,6 @@ public class DefaultSurveillanceService implements SurveillanceService {
         
         return webTable;
     }
-
-	private AggregateStatus[][] calculateCellStatus(SurveillanceView sView, ProgressMonitor progressMonitor, CellStatusStrategy strategy) {
-		
-        List<Collection<OnmsNode>> nodesByRowIndex = new ArrayList<Collection<OnmsNode>>();
-        List<Collection<OnmsNode>> nodesByColIndex = new ArrayList<Collection<OnmsNode>>();
-
-        /*
-         * Iterate of the requested view's configuration (row's and columns) and set an aggreated status into each table
-         * cell.
-         */
-        for(int rowIndex = 0; rowIndex < sView.getRowCount(); rowIndex++) {
-        	progressMonitor.beginNextPhase("Loading Nodes for "+sView.getRowLabel(rowIndex));
-            Collection<OnmsNode> nodesForRow = strategy.getNodesInCategories(sView.getCategoriesForRow(rowIndex));
-            nodesByRowIndex.add(rowIndex, nodesForRow);
-        }
-
-        for(int colIndex = 0; colIndex < sView.getColumnCount(); colIndex++) {
-        	progressMonitor.beginNextPhase("Loading Nodes for "+sView.getColumnLabel(colIndex));
-            Collection<OnmsNode> nodesForCol = strategy.getNodesInCategories(sView.getCategoriesForColumn(colIndex));
-            nodesByColIndex.add(colIndex, nodesForCol);
-        }
-        
-        AggregateStatus[][] cellStatus = new AggregateStatus[sView.getRowCount()][sView.getColumnCount()];
-
-        
-        progressMonitor.beginNextPhase("Intersecting Rows and Columns");
-        
-        for(int rowIndex = 0; rowIndex < sView.getRowCount(); rowIndex++) {
-            
-            Collection<OnmsNode> nodesForRow = nodesByRowIndex.get(rowIndex);
-
-            for(int colIndex = 0; colIndex < sView.getColumnCount(); colIndex++) {
-
-            	Collection<OnmsNode> nodesForCol = nodesByColIndex.get(colIndex);
-
-                Set<OnmsNode> cellNodes = new HashSet<OnmsNode>(nodesForRow);
-				cellNodes.retainAll(nodesForCol);
-				
-				cellStatus[rowIndex][colIndex] = new AggregateStatus(cellNodes);
-				
-				
-                
-            }
-                
-        }
-		return cellStatus;
-	}
 
 	/*
      * This creates a relative url to the node page and sets the node parameter

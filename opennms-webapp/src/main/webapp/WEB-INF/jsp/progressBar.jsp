@@ -9,7 +9,7 @@
  */
 
 long startTime = System.currentTimeMillis();
-response.setHeader("Refresh", "3");
+response.setHeader("Refresh", "2");
 response.setHeader("Cache-Control", "no-store, private");
 response.setDateHeader("Date", startTime);
 response.setDateHeader("Expires", startTime);
