@@ -118,6 +118,11 @@ public class DefaultAggregateServiceIntegrationTest extends AbstractTransactiona
         
     }
     
+    public void testCreateAggregateStatusUsingNodeId() {
+        Collection<AggregateStatus> aggrStati = m_aggregateService.createAggregateStatusesUsingNodeId(1, "building");
+        assertNotNull(aggrStati);
+    }
+    
     public void testCreateAggregateStatusUsingBuilding() {
         
         Collection<AggregateStatus> aggrStati;

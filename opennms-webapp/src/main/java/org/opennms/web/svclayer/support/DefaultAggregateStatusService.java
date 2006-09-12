@@ -75,11 +75,44 @@ public class DefaultAggregateStatusService implements AggregateStatusService {
     private AggregateStatusViewDao m_statusViewDao;
     private OnmsNode m_foundDownNode;
 
+    
+    /**
+     * Use the node id to find the value assciated with column defined in the view.  The view defines a column
+     * and column value to be used by default.  This method determines the column value using the value associated
+     * with the asset record for the given nodeid.
+     * 
+     * @see org.opennms.web.svclayer.AggregateStatusService#createAggregateStatusesUsingNodeId(int, java.lang.String)
+     */
+    public Collection<AggregateStatus> createAggregateStatusesUsingNodeId(int nodeId, String viewName) {
+        
+        viewName = (viewName == null ? "building" : viewName);
+        OnmsNode node = m_nodeDao.load(nodeId);
+        
+        //TODO this is a hack.  need to use reflection to get the right column instead of building.
+        return createAggreateStatuses(m_statusViewDao.findByName(viewName), node.getAssetRecord().getBuilding());
+
+    }
+
+    /**
+     * This creator looks up a configured status view by name and calls the creator that 
+     * accepts the AggregateStatusView model object.
+     * 
+     * @see org.opennms.web.svclayer.AggregateStatusService#createAggregateStatusView(java.lang.String)
+     */
     public AggregateStatusView createAggregateStatusView(String statusViewName) {
+        statusViewName = (statusViewName == null ? "building" : statusViewName);
+        
         AggregateStatusView statusView = m_statusViewDao.findByName(statusViewName);
         return statusView;
     }
-    
+
+
+    /**
+     * Creates the collection of aggregated statuses by calling the creator with data filled from 
+     * the passed in AggregateStatusView model object.
+
+     * @see org.opennms.web.svclayer.AggregateStatusService#createAggreateStatuses(org.opennms.netmgt.model.AggregateStatusView)
+     */
     public Collection<AggregateStatus> createAggreateStatuses(AggregateStatusView statusView) {
         if (statusView == null) {
             throw new IllegalArgumentException("statusView argument cannot be null");
@@ -87,7 +120,13 @@ public class DefaultAggregateStatusService implements AggregateStatusService {
         return createAggregateStatus(statusView.getTableName(), statusView.getColumnName(), statusView.getColumnValue(), statusView.getStatusDefinitions());
     }
 
-    //Overloaded method that overrides the column value in the defined view
+    
+    /**
+     * This creator is used when wanting to use a different value than the defined column value defined
+     * for the requested view.
+     * 
+     * @see org.opennms.web.svclayer.AggregateStatusService#createAggreateStatuses(org.opennms.netmgt.model.AggregateStatusView, java.lang.String)
+     */
     public Collection<AggregateStatus> createAggreateStatuses(AggregateStatusView statusView, String statusSite) {
         if (statusView == null) {
             throw new IllegalArgumentException("statusView argument cannot be null");
@@ -95,6 +134,7 @@ public class DefaultAggregateStatusService implements AggregateStatusService {
         return createAggregateStatus(statusView.getTableName(), statusView.getColumnName(), statusSite, statusView.getStatusDefinitions());
     }
 
+    
     private Collection<AggregateStatus> createAggregateStatus(String tableName, String columnName, String columnValue, Collection<AggregateStatusDefinition> statusDefinitions) {
         if (tableName != null && !tableName.equalsIgnoreCase("assets")) {
             throw new UnsupportedOperationException("This service currently only implmented for aggregation on asset columns.");
