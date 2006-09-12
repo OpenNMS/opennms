@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <schema xmlns="http://www.w3.org/2001/XMLSchema" 
-        targetNamespace="http://xmlns.opennms.org/xsd/config/surveillance-views"
-        xmlns:this="http://xmlns.opennms.org/xsd/config/surveillance-views" 
-        xmlns:tns="http://www.opennms.org/surveillance-views">
+        targetNamespace="http://xmlns.opennms.org/xsd/config/site-status-views"
+        xmlns:this="http://xmlns.opennms.org/xsd/config/site-status-views" 
+        xmlns:tns="http://www.opennms.org/site-status-views">
         
-  <element name="surveillance-view-configuration">
+  <element name="site-status-view-configuration">
     <annotation><documentation>Level element containing surveillance view definitions</documentation></annotation>
     <complexType>
       <sequence>
@@ -24,9 +24,12 @@
     <complexType>
       <sequence>
         <element ref="this:rows" minOccurs="1" maxOccurs="1" />
-        <element ref="this:columns" minOccurs="1" maxOccurs="1" />
       </sequence>
       <attribute name="name" type="string" use="required"/>
+      <attribute name="table-name" type="string" use="optional" default="assets" />
+      <attribute name="column-name" type="string" use="optional" default="building" />
+      <attribute name="column-type" type="string" use="optional" default="varchar" />
+      <attribute name="column-value" type="string" use="optional" />
     </complexType>
   </element>
   
@@ -38,24 +41,7 @@
     </complexType>
   </element>
   
-  <element name="columns" >
-    <complexType>
-      <sequence>
-        <element ref="this:column-def" minOccurs="1" maxOccurs="unbounded" />
-      </sequence>
-    </complexType>
-  </element>
-  
   <element name="row-def">
-    <complexType>
-      <sequence>
-        <element ref="this:category" minOccurs="1" maxOccurs="unbounded"></element>
-      </sequence>
-      <attribute name="label" type="string" use="required" />
-    </complexType>
-  </element>
-  
-  <element name="column-def">
     <complexType>
       <sequence>
         <element ref="this:category" minOccurs="1" maxOccurs="unbounded"></element>
