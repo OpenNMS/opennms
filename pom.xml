@@ -184,6 +184,18 @@ opennms.home = ${opennms.home}
               <name>mock.debug</name>
               <value>${mock.debug}</value>
             </property>
+            <property>
+              <name>mock.rundbtests</name>
+              <value>${mock.rundbtests}</value>
+            </property>
+            <property>
+              <name>mock.runSnmpTests</name>
+              <value>${mock.runSnmpTests}</value>
+            </property>
+            <property>
+              <name>mock.snmpHost</name>
+              <value>${mock.snmpHost}</value>
+            </property>
           </systemProperties>
 	  <forkMode>pertest</forkMode>
           <includes>

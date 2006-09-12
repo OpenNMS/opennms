@@ -38,7 +38,7 @@ public class InstallerSQLTest extends TestCase {
         m_installer.readTables(new StringReader(s_bug1455CreateSQL));
         
         ThrowableAnticipator anticipator = new ThrowableAnticipator();
-        anticipator.anticipate(new Exception("Cannot parse constraint: constraint categoryid_fkey1 foreign key (categoryId) references categories(categoryId) ON DELETE CASCADE"));
+//        anticipator.anticipate(new Exception("Cannot parse constraint: constraint categoryid_fkey1 foreign key (categoryId) references categories(categoryId) ON DELETE CASCADE"));
         try {
             m_installer.getForeignKeyConstraints();
         } catch (Throwable t) {
