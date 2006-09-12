@@ -37,6 +37,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.opennms.web.svclayer.ProgressMonitor;
+import org.opennms.web.svclayer.SimpleWebTable;
 import org.opennms.web.svclayer.SurveillanceService;
 import org.opennms.web.svclayer.SurveillanceTable;
 import org.springframework.web.servlet.ModelAndView;
@@ -70,8 +71,8 @@ public class SurveillanceViewController extends AbstractController {
     	
     	if (progressMonitor.isFinished()) {
 			session.removeAttribute(progressMonitorKey);
-    		SurveillanceTable table = (SurveillanceTable)progressMonitor.getResult();
-    		return new ModelAndView("surveillanceView", "webTable", table.getWebTable());
+    		SimpleWebTable table = (SimpleWebTable)progressMonitor.getResult();
+    		return new ModelAndView("surveillanceView", "webTable", table);
     	}
     	
     	return new ModelAndView("progressBar", "progress", progressMonitor);
