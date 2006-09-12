@@ -90,12 +90,10 @@ public abstract class AbstractSaveOrUpdateOperation extends AbstractImportOperat
 			return;
 		}
 
-        Integer ifIndex = new Integer(-1);
         m_currentInterface = new OnmsIpInterface(ipAddr, m_node);
         m_currentInterface.setIsManaged(status == 3 ? "U" : "M");
         m_currentInterface.setIsSnmpPrimary(CollectionType.get(snmpPrimary));
         m_currentInterface.setIpStatus(status == 3 ? new Integer(3) : new Integer(1));
-        m_currentInterface.setIfIndex(ifIndex);
         
         if ("P".equals(snmpPrimary)) {
         	try {
@@ -161,8 +159,6 @@ public abstract class AbstractSaveOrUpdateOperation extends AbstractImportOperat
     	int ifIndex = m_collector.getIfIndex(inetAddr);
     	if (ifIndex == -1) return;
 
-    	ipIf.setIfIndex(new Integer(ifIndex));
-
     	OnmsSnmpInterface snmpIf = new OnmsSnmpInterface(ipAddr, new Integer(ifIndex), m_node);
     	snmpIf.setIfAlias(m_collector.getIfAlias(ifIndex));
     	snmpIf.setIfName(m_collector.getIfName(ifIndex));
@@ -172,6 +168,8 @@ public abstract class AbstractSaveOrUpdateOperation extends AbstractImportOperat
     	snmpIf.setIfDescr(m_collector.getIfDescr(ifIndex));
     	snmpIf.setIfSpeed(m_collector.getIfSpeed(ifIndex));
     	snmpIf.setPhysAddr(m_collector.getPhysAddr(ifIndex));
+    	
+    	ipIf.setSnmpInterface(snmpIf);
 
     	//FIXME: Improve OpenNMS to provide these values
     	// ifOperStatus

@@ -134,7 +134,7 @@ public class ImportOperationsManagerTest extends AbstractDaoTestCase {
                 NetworkBuilder builder = new NetworkBuilder(distPoller);
                 builder.addNode("node7").getAssetRecord().setAssetNumber("imported:"+"7");
                 builder.getCurrentNode().getAssetRecord().setDisplayCategory("cat7");
-                builder.addInterface("192.168.7.1", -1).setIsManaged("M").setIsSnmpPrimary("P").setIpStatus(1);
+                builder.addInterface("192.168.7.1", null).setIsManaged("M").setIsSnmpPrimary("P").setIpStatus(1);
                 builder.addService(icmp);
                 builder.addService(snmp);
                 getNodeDao().save(builder.getCurrentNode());

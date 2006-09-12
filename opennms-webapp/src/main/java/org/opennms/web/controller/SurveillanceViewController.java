@@ -53,7 +53,7 @@ public class SurveillanceViewController extends AbstractController {
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest req, HttpServletResponse resp) throws Exception {
     	
-    	final String progressMonitorKey = "serveillanceViewProgressMonitor";
+    	final String progressMonitorKey = "surveillanceViewProgressMonitor";
 
     	HttpSession session = req.getSession();
 		ProgressMonitor progressMonitor = (ProgressMonitor) session.getAttribute(progressMonitorKey);
