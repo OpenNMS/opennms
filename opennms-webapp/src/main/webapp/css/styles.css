@@ -573,3 +573,19 @@ tr.Normal td.bright { background-image: url(../images/bgNormal.png); }
 tr.Cleared td { background-color: #EEE; }
 tr.Cleared td.divider { border-top: 2px solid #999 !important; }
 tr.Cleared td.bright { background-image: url(../images/bgCleared.png); }
+
+
+.status-critical {
+    background-color: red;
+    text-align: center
+}
+
+.status-warning {
+    background-color: yellow;
+    text-align: center
+}
+
+.status-normal {
+    background-color: green;
+    text-align: center
+}
