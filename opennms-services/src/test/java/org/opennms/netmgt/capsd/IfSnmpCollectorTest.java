@@ -55,18 +55,25 @@ import org.opennms.netmgt.snmp.VersionSettingTestSuite;
 
 public class IfSnmpCollectorTest extends OpenNMSTestCase {
     private static final String s_runProperty = "mock.runSnmpTests";
+    private static final String s_hostProperty = "mock.snmpHost";
+
+    private static final InetAddress s_addr;
 
     private IfSnmpCollector m_ifSnmpc;
 
     private boolean m_hasRun = false;
 
-    private static final InetAddress s_addr;
-
     private boolean m_toldDisabled = false;
     
     static {
         try {
-            s_addr = InetAddress.getByName(InetAddress.getLocalHost().getHostAddress());
+            String property = System.getProperty(s_hostProperty);
+            if (property != null) {
+                s_addr = InetAddress.getByName(property);
+            } else {
+                s_addr = InetAddress.getLocalHost();
+                //s_addr = InetAddress.getByName(InetAddress.getLocalHost().getHostAddress());
+            }
         } catch (UnknownHostException e) {
             throw new UndeclaredThrowableException(e, "Could not lookup local host name when initializing class: " + e.getMessage());
         }
@@ -144,16 +151,10 @@ public class IfSnmpCollectorTest extends OpenNMSTestCase {
     }
 
     public final void testIfSnmpCollector() throws UnknownHostException {
-        runCollection();
-
         assertFalse(m_ifSnmpc.failed());
     }
 
     public void testFailed() throws Exception {
-        if (!shouldWeRun()) {
-            return;
-        }
-
         InetAddress addr = InetAddress.getByName("1.1.1.1");
         IfSnmpCollector ifSnmpc = new IfSnmpCollector(addr);
         ifSnmpc.run();
@@ -166,14 +167,10 @@ public class IfSnmpCollectorTest extends OpenNMSTestCase {
     }
 
     public final void testHasSystemGroup() {
-        runCollection();
-
         assertTrue(m_ifSnmpc.hasSystemGroup());
     }
 
     public final void testGetSystemGroup() throws UnknownHostException {
-        runCollection();
-
         SystemGroup sg = m_ifSnmpc.getSystemGroup();
         assertNotNull(sg);
         assertFalse(sg.failed());
@@ -181,14 +178,10 @@ public class IfSnmpCollectorTest extends OpenNMSTestCase {
     }
 
     public final void testHasIfTable() {
-        runCollection();
-
         assertTrue(m_ifSnmpc.hasIfTable());
     }
 
     public final void testGetIfTable() {
-        runCollection();
-
         IfTable ifTable = m_ifSnmpc.getIfTable();
         assertNotNull(ifTable);
         assertFalse(ifTable.failed());
@@ -196,19 +189,14 @@ public class IfSnmpCollectorTest extends OpenNMSTestCase {
     }
 
     public final void testHasIpAddrTable() {
-        runCollection();
-
         assertTrue(m_ifSnmpc.hasIpAddrTable());
     }
 
     public final void testGetIpAddrTable() throws UnknownHostException {
-        runCollection();
-
         IpAddrTable ipAddrTable = m_ifSnmpc.getIpAddrTable();
         assertNotNull(ipAddrTable);
         assertFalse(ipAddrTable.failed());
-        assertEquals(
-                     1,
+        assertEquals(1,
                      ipAddrTable.getIfIndex(InetAddress.getByName("127.0.0.1")));
         List entries = ipAddrTable.getEntries();
         List addresses = IpAddrTable.getIpAddresses(entries);
@@ -217,30 +205,22 @@ public class IfSnmpCollectorTest extends OpenNMSTestCase {
     }
 
     public final void testHasIfXTable() {
-        runCollection();
-
         assertTrue(m_ifSnmpc.hasIfXTable());
     }
 
     public final void testGetIfXTable() {
-        runCollection();
-
         IpAddrTable ipAddrTable = m_ifSnmpc.getIpAddrTable();
         assertNotNull(ipAddrTable);
         assertFalse(ipAddrTable.failed());
     }
 
     public final void testGetCollectorTargetAddress() {
-        runCollection();
-
         InetAddress target = m_ifSnmpc.getCollectorTargetAddress();
         assertNotNull(target);
         assertEquals(myLocalHost(), target.getHostAddress());
     }
 
     public final void testGetIfAddressAndMask() {
-        runCollection();
-
         InetAddress addrMask[] = m_ifSnmpc.getIfAddressAndMask(1);
         assertNotNull(addrMask);
         assertEquals("127.0.0.1", addrMask[0].getHostAddress());
@@ -248,29 +228,21 @@ public class IfSnmpCollectorTest extends OpenNMSTestCase {
     }
 
     public final void testGetAdminStatus() {
-        runCollection();
-
         int adminStatus = m_ifSnmpc.getAdminStatus(1);
         assertEquals(1, adminStatus);
     }
 
     public final void testGetIfType() {
-        runCollection();
-
         int ifType = m_ifSnmpc.getIfType(1);
         assertEquals(24, ifType);
     }
 
     public final void testGetIfIndex() throws UnknownHostException {
-        runCollection();
-
         int ifIndex = m_ifSnmpc.getIfIndex(InetAddress.getLocalHost());
         assertTrue(0 < ifIndex);
     }
 
     public final void xtestGetIfName() {
-        runCollection();
-
         if (m_ifSnmpc.hasIfXTable()) {
             String ifName = m_ifSnmpc.getIfName(1);
             assertNotNull(ifName);
@@ -278,8 +250,6 @@ public class IfSnmpCollectorTest extends OpenNMSTestCase {
     }
 
     public final void xtestGetIfAlias() {
-        runCollection();
-
         if (m_ifSnmpc.hasIfXTable()) {
             String ifAlias = m_ifSnmpc.getIfAlias(1);
             assertNotNull(ifAlias);
