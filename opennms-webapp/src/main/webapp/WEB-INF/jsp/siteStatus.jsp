@@ -19,9 +19,9 @@
       </tr>
     </thead>
     <c:forEach items="${stati}" var="status">
-      <tr>
+      <tr class="CellStatus" >
         <td><c:out value="${status.label}" /></td>
-        <td class="<c:out value='${status.status}'/>" ><c:out value="${status.downEntityCount}" /> of <c:out value="${status.totalEntityCount}" /></td>
+        <td class="<c:out value='${status.status}'/> divider" ><c:out value="${status.downEntityCount}" /> of <c:out value="${status.totalEntityCount}" /></td>
       </tr>
     </c:forEach>
   </table>
