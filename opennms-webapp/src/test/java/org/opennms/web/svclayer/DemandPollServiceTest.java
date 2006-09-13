@@ -107,6 +107,11 @@ public class DemandPollServiceTest extends TestCase {
 				throw new RuntimeException("Can't save an entity that already has an id");
 			}
 		}
+
+		public void initialize(Object obj) {
+			// TODO Auto-generated method stub
+			
+		}
 		
 		
 	}
