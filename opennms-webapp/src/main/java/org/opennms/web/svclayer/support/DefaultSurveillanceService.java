@@ -57,6 +57,9 @@ import org.opennms.web.svclayer.SimpleWebTable;
 import org.opennms.web.svclayer.SurveillanceService;
 import org.opennms.web.svclayer.SurveillanceTable;
 import org.opennms.web.svclayer.dao.SurveillanceViewConfigDao;
+import org.springframework.dao.DataAccessException;
+import org.springframework.dao.DataRetrievalFailureException;
+import org.springframework.orm.ObjectRetrievalFailureException;
 
 public class DefaultSurveillanceService implements SurveillanceService {
 
@@ -165,7 +168,10 @@ public class DefaultSurveillanceService implements SurveillanceService {
             Set<OnmsCategory> categories = new HashSet<OnmsCategory>();
             for (Category viewCat : viewCats) {
             	
-                categories.add(m_categoryDao.findByName(viewCat.getName()));
+                OnmsCategory category = m_categoryDao.findByName(viewCat.getName());
+                if (category == null)
+                	throw new ObjectRetrievalFailureException(OnmsCategory.class, viewCat.getName(), "Unable to locate OnmsCategory named: "+viewCat.getName()+" as specified in the surveillance view configuration file", null);
+				categories.add(category);
             }
             
             return categories;
