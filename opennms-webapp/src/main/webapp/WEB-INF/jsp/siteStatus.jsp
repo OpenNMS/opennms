@@ -21,7 +21,16 @@
     <c:forEach items="${stati}" var="status">
       <tr class="CellStatus" >
         <td><c:out value="${status.label}" /></td>
-        <td class="<c:out value='${status.status}'/> divider" ><c:out value="${status.downEntityCount}" /> of <c:out value="${status.totalEntityCount}" /></td>
+        <td class="<c:out value='${status.status}'/> divider" >
+          <c:choose>
+            <c:when test="${! empty status.link}">
+              <a href="<c:out value='${status.link}'/>"><c:out value="${status.downEntityCount}" /> of <c:out value="${status.totalEntityCount}" /></a>
+            </c:when>
+            <c:otherwise>
+              <c:out value="${status.downEntityCount}" /> of <c:out value="${status.totalEntityCount}" />
+            </c:otherwise>
+          </c:choose>
+        </td>
       </tr>
     </c:forEach>
   </table>

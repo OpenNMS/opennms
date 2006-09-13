@@ -51,6 +51,7 @@ public class AggregateStatus {
     private Integer m_totalEntityCount;
     private Integer m_downEntityCount;
     private String m_status;
+    private String m_link;
     
     public static final String NODES_ARE_DOWN = "Critical";
     public static final String ONE_SERVICE_DOWN = "Warning";
@@ -158,5 +159,13 @@ public class AggregateStatus {
         setStatus(statusVisitor.getStatus());
 	    return this;
 	}
+    
+    public String getLink() {
+        return m_link;
+    }
+
+    public void setLink(String link) {
+        m_link = link;
+    }
 
 }

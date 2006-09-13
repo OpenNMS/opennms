@@ -44,7 +44,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Iterator;
+import java.util.LinkedHashSet;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
@@ -133,10 +133,13 @@ public class DefaultSiteStatusServiceIntegrationTest extends AbstractTransaction
         definition = new AggregateStatusDefinition("BCPC", new HashSet<OnmsCategory>(Arrays.asList(new OnmsCategory[]{ new OnmsCategory("DEV_BCPC") })));
         defs.add(definition);
         
-        String assetColumn = "building";
-        String buildingName = "HAT102706";
+        AggregateStatusView view = new AggregateStatusView();
+        view.setName("building");
+        view.setColumnName("building");
+        view.setColumnValue("HAT102706");
+        view.setStatusDefinitions(new LinkedHashSet<AggregateStatusDefinition>(defs));
         
-        aggrStati = m_aggregateService.createAggregateStatusUsingAssetColumn(assetColumn, buildingName, defs);
+        aggrStati = m_aggregateService.createAggregateStatuses(view);
         
         AggregateStatus status;
         status = (AggregateStatus)((ArrayList)aggrStati).get(0);
