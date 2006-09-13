@@ -42,10 +42,38 @@
 <%@page language="java"
 	contentType="text/html"
 	session="true"
-	import="org.opennms.web.element.*"
+	import="java.util.ArrayList,
+			java.util.Collection,
+			java.util.LinkedList,
+			org.opennms.netmgt.model.OnmsCategory,
+			org.opennms.netmgt.model.OnmsNode,
+			org.opennms.web.element.*,
+	        org.opennms.netmgt.dao.CategoryDao,
+	        org.opennms.netmgt.dao.NodeDao,
+	        org.springframework.web.context.WebApplicationContext,
+	        org.springframework.web.context.support.WebApplicationContextUtils
+		   "
 %>
 
 <%@ taglib uri="http://java.sun.com/jstl/core" prefix="c" %>
+
+<%
+WebApplicationContext m_webAppContext = WebApplicationContextUtils.getRequiredWebApplicationContext(getServletContext());
+
+NodeDao m_nodeDao;
+try {
+    m_nodeDao = (NodeDao) m_webAppContext.getBean("nodeDao", Class.forName("org.opennms.netmgt.dao.NodeDao"));
+} catch (ClassNotFoundException e) {
+    throw new ServletException(e);
+}
+
+CategoryDao m_categoryDao;
+try {
+    m_categoryDao = (CategoryDao) m_webAppContext.getBean("categoryDao", Class.forName("org.opennms.netmgt.dao.CategoryDao"));
+} catch (ClassNotFoundException e) {
+    throw new ServletException(e);
+}
+%>
 
 <%
     Node[] nodes = null;
@@ -53,8 +81,11 @@
     String ipLikeParm = request.getParameter("iplike");
     String serviceParm = request.getParameter("service");
     String ifAliasParm = request.getParameter("ifAlias");
+    String[] categories1 = request.getParameterValues("category1");
+    String[] categories2 = request.getParameterValues("category2");
     boolean listInterfaces = (request.getParameter("listInterfaces") != null);
     boolean isIfAliasSearch = false;
+    boolean categorySearch = false;
 
     if (nameParm != null) {
         nodes = NetworkElementFactory.getNodesLike(nameParm);
@@ -66,6 +97,51 @@
     } else if (ifAliasParm != null) {
         nodes = NetworkElementFactory.getNodesWithIfAlias(ifAliasParm);
         isIfAliasSearch = true;
+    } else if (categories1 != null && categories1.length != 0
+			   && categories2 != null && categories2.length != 0) {
+        categorySearch = true;
+        nodes = NetworkElementFactory.getNodesWithCategories(m_nodeDao, m_categoryDao, categories1, categories2);
+        
+
+        /*
+        if (categories.length != 2) {
+            throw new ServletException("only support two categories at this time");
+        }
+        */
+        
+        /*
+		ArrayList<OnmsCategory> c1 = new ArrayList<OnmsCategory>(categories1.length);
+		ArrayList<OnmsCategory> c2 = new ArrayList<OnmsCategory>(categories2.length);
+		for (String category : categories1) {
+			c1.add(m_categoryDao.findByName(category));
+		}
+		for (String category : categories2) {
+			c2.add(m_categoryDao.findByName(category));
+		}
+		System.out.println("c1: " + c1.get(0));
+		System.out.println("c2: " + c2.get(0));
+//		Collection<OnmsNode> ourNodes = m_nodeDao.findAllByCategoryLists(c1, c2);
+		Collection<OnmsNode> ourNodes1 = m_nodeDao.findAllByCategoryList(c1);
+		Collection<OnmsNode> ourNodes2 = m_nodeDao.findAllByCategoryList(c2);
+		Collection<OnmsNode> ourNodes = new LinkedList<OnmsNode>();
+		for (OnmsNode n1 : ourNodes1) {
+			for (OnmsNode n2 : ourNodes2) {
+			    if (n1.getId().equals(n2.getId())) {
+			        ourNodes.add(n1);
+			    }
+		    }
+		}
+		System.out.println("got: " + ourNodes.size());
+		System.out.println("got: " + ourNodes1.size());
+		System.out.println("got: " + ourNodes2.size()); 
+		ArrayList<Node> theirNodes = new ArrayList<Node>(ourNodes.size());
+		
+		for (OnmsNode on : ourNodes) {
+		    Node n = new Node();
+		}
+		
+		nodes = theirNodes.toArray(new Node[0]);
+		*/
     } else {
         nodes = NetworkElementFactory.getAllNodes();
     }
