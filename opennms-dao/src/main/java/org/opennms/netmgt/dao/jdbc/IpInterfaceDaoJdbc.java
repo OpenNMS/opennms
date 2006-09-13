@@ -289,10 +289,6 @@ public class IpInterfaceDaoJdbc extends AbstractDaoJdbc implements IpInterfaceDa
 		return null;
 	}
 
-	public void initialize(Object obj) {
-		// TODO Auto-generated method stub
-		
-	}
 
 
 }
