@@ -44,8 +44,11 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -56,6 +59,10 @@ import org.apache.log4j.Category;
 import org.opennms.core.resource.Vault;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.dao.CategoryDao;
+import org.opennms.netmgt.dao.NodeDao;
+import org.opennms.netmgt.model.OnmsCategory;
+import org.opennms.netmgt.model.OnmsNode;
 
 /**
  * The source for all network element business objects (nodes, interfaces,
@@ -2225,6 +2232,59 @@ public class NetworkElementFactory extends Object {
         }
 
         return nodecont;
+    }
+    
+    public static Node[] getNodesWithCategories(NodeDao nodeDao, CategoryDao categoryDao, String[] categories1, String[] categories2) {
+        ArrayList<OnmsCategory> c1 = new ArrayList<OnmsCategory>(categories1.length);
+        ArrayList<OnmsCategory> c2 = new ArrayList<OnmsCategory>(categories2.length);
+        for (String category : categories1) {
+                c1.add(categoryDao.findByName(category));
+        }
+        for (String category : categories2) {
+                c2.add(categoryDao.findByName(category));
+        }
+        /*
+        System.out.println("c1: " + c1.get(0));
+        System.out.println("c2: " + c2.get(0));
+        */
+//      Collection<OnmsNode> ourNodes = nodeDao.findAllByCategoryLists(c1, c2);
+        Collection<OnmsNode> ourNodes1 = nodeDao.findAllByCategoryList(c1);
+        Collection<OnmsNode> ourNodes2 = nodeDao.findAllByCategoryList(c2);
+        Collection<OnmsNode> ourNodes = new LinkedList<OnmsNode>();
+        Set<Integer> n2id = new HashSet<Integer>(ourNodes2.size());
+        for (OnmsNode n2 : ourNodes2) {
+            n2id.add(n2.getId()); 
+        }
+        for (OnmsNode n1 : ourNodes1) {
+            if (n2id.contains(n1.getId())) {
+                ourNodes.add(n1);
+            }
+        }
+        /*
+        System.out.println("got: " + ourNodes.size());
+        System.out.println("got: " + ourNodes1.size());
+        System.out.println("got: " + ourNodes2.size());
+        */ 
+        ArrayList<Node> theirNodes = new ArrayList<Node>(ourNodes.size());
+        
+        for (OnmsNode on : ourNodes) {
+//            Node n = new Node();
+            theirNodes.add(new Node(on.getId().intValue(),
+                                    0, //on.getParent().getId().intValue(),
+                                    on.getLabel(),
+                                    null, //on.getDpname(),
+                                    on.getCreateTime().toString(),
+                                    null, // on.getNodeSysId(),
+                                    on.getSysName(),
+                                    on.getSysDescription(),
+                                    on.getSysLocation(),
+                                    on.getSysContact(),
+                                    on.getType().charAt(0),
+                                    on.getOperatingSystem()));
+
+        }
+        
+        return theirNodes.toArray(new Node[0]);
     }
 
 }
