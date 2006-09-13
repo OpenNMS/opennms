@@ -36,6 +36,7 @@ import java.util.Collection;
 
 import org.opennms.netmgt.model.AggregateStatusDefinition;
 import org.opennms.netmgt.model.AggregateStatusView;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Service layer API for the use cases that require the monitoed status of
@@ -45,6 +46,7 @@ import org.opennms.netmgt.model.AggregateStatusView;
  * @author david
  *
  */
+@Transactional(readOnly=true)
 public interface SiteStatusViewService {
     
     /**
