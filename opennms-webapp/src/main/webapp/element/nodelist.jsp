@@ -45,11 +45,13 @@
 	import="java.util.ArrayList,
 			java.util.Collection,
 			java.util.LinkedList,
+			java.util.Set,
 			org.opennms.netmgt.model.OnmsCategory,
 			org.opennms.netmgt.model.OnmsNode,
 			org.opennms.web.element.*,
 			org.opennms.web.outage.Outage,
 			org.opennms.web.outage.OutageModel,
+			org.opennms.web.svclayer.SiteStatusViewService,
 	        org.opennms.netmgt.dao.CategoryDao,
 	        org.opennms.netmgt.dao.NodeDao,
 	        org.springframework.transaction.support.TransactionTemplate,
@@ -72,6 +74,7 @@ WebApplicationContext m_webAppContext = WebApplicationContextUtils.getRequiredWe
 NodeDao m_nodeDao = (NodeDao) m_webAppContext.getBean("nodeDao", NodeDao.class);
 CategoryDao m_categoryDao = (CategoryDao) m_webAppContext.getBean("categoryDao", CategoryDao.class);
 TransactionTemplate m_transTemplate = (TransactionTemplate) m_webAppContext.getBean("transactionTemplate", TransactionTemplate.class);
+SiteStatusViewService m_siteStatusViewService = (SiteStatusViewService) m_webAppContext.getBean("siteStatusViewService", SiteStatusViewService.class);
 
 %>
 
@@ -83,11 +86,13 @@ TransactionTemplate m_transTemplate = (TransactionTemplate) m_webAppContext.getB
     String ifAliasParm = request.getParameter("ifAlias");
     String[] categories1 = request.getParameterValues("category1");
     String[] categories2 = request.getParameterValues("category2");
+    String statusViewName = request.getParameter("statusViewName");
+    String statusSite = request.getParameter("statusSite");
+    String statusRowLabel = request.getParameter("statusRowLabel");
     boolean onlyNodesWithOutages = (request.getParameter("nodesWithOutages") != null);
     boolean onlyNodesWithDownAggregateStatus = (request.getParameter("nodesWithDownAggregateStatus") != null);
     boolean listInterfaces = (request.getParameter("listInterfaces") != null);
     boolean isIfAliasSearch = false;
-    boolean categorySearch = false;
 
     if (nameParm != null) {
         nodes = NetworkElementFactory.getNodesLike(nameParm);
@@ -102,10 +107,13 @@ TransactionTemplate m_transTemplate = (TransactionTemplate) m_webAppContext.getB
     } else if (categories1 != null && categories1.length != 0
 			   && categories2 != null && categories2.length != 0) {
 	    nodes = NetworkElementFactory.getNodesWithCategories(m_transTemplate, m_nodeDao, m_categoryDao, categories1, categories2, onlyNodesWithDownAggregateStatus);
-        categorySearch = true;
     } else if (categories1 != null && categories1.length != 0) {
 		nodes = NetworkElementFactory.getNodesWithCategories(m_transTemplate, m_nodeDao, m_categoryDao, categories1, onlyNodesWithDownAggregateStatus);
-		categorySearch = true;
+    } else if (statusViewName != null && statusViewName.length() != 0
+		   && statusSite != null && statusSite.length() != 0
+		   && statusRowLabel != null && statusRowLabel.length() != 0) {
+        Set<OnmsNode> nodesDown = m_siteStatusViewService.getAggregateStatus(statusViewName, statusSite, statusRowLabel).getDownNodes();
+        nodes = NetworkElementFactory.convertOnmsNodeCollectionToNodeArray(nodesDown);
     } else {
         nodes = NetworkElementFactory.getAllNodes();
     }
@@ -127,9 +135,9 @@ TransactionTemplate m_transTemplate = (TransactionTemplate) m_webAppContext.getB
 </jsp:include>
 
 <% if (listInterfaces) { %>
-  <h3>Discovered Nodes and their Interfaces</h3>
+  <h3>Nodes and their Interfaces</h3>
 <% } else { %>
-  <h3>Discovered Nodes</h3>
+  <h3>Nodes</h3>
 <% } %>
 	<div class="boxWrapper">
   <% if (nodes.length > 0) { %>
@@ -255,11 +263,20 @@ TransactionTemplate m_transTemplate = (TransactionTemplate) m_webAppContext.getB
   <c:if test="${param.category2 != null}">
     <c:param name="category2" value="${param.category2}"/>
   </c:if>
-  <c:if test="${param.onlyNodesWithOutages != null}">
-    <c:param name="onlyNodesWithOutages" value="${param.onlyNodesWithOutages}"/>
+  <c:if test="${param.statusViewName != null}">
+    <c:param name="statusViewName" value="${param.statusViewName}"/>
   </c:if>
-  <c:if test="${param.onlyNodesWithDownAggregateStatus != null}">
-    <c:param name="onlyNodesWithDownAggregateStatus" value="${param.onlyNodesWithDownAggregateStatus}"/>
+  <c:if test="${param.statusSite != null}">
+    <c:param name="statusSite" value="${param.statusSite}"/>
+  </c:if>
+  <c:if test="${param.statusRowLabel != null}">
+    <c:param name="statusRowLabel" value="${param.statusRowLabel}"/>
+  </c:if>
+  <c:if test="${param.nodesWithOutages != null}">
+    <c:param name="nodesWithOutages" value="${param.nodesWithOutages}"/>
+  </c:if>
+  <c:if test="${param.nodesWithDownAggregateStatus != null}">
+    <c:param name="nodesWithDownAggregateStatus" value="${param.nodesWithDownAggregateStatus}"/>
   </c:if>
   <c:if test="${param.listInterfaces == null}">
     <c:param name="listInterfaces"/>
