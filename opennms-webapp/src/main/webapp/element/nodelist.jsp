@@ -71,9 +71,8 @@
 WebApplicationContext m_webAppContext = WebApplicationContextUtils.getRequiredWebApplicationContext(getServletContext());
 NodeDao m_nodeDao = (NodeDao) m_webAppContext.getBean("nodeDao", NodeDao.class);
 CategoryDao m_categoryDao = (CategoryDao) m_webAppContext.getBean("categoryDao", CategoryDao.class);
-TransactionTemplate m_transTemplate = (TransactionTemplate) m_webAppContext.getBean("transTemplate", TransactionTemplate.class);
+TransactionTemplate m_transTemplate = (TransactionTemplate) m_webAppContext.getBean("transactionTemplate", TransactionTemplate.class);
 
-}
 %>
 
 <%
@@ -103,42 +102,17 @@ TransactionTemplate m_transTemplate = (TransactionTemplate) m_webAppContext.getB
     } else if (categories1 != null && categories1.length != 0
 			   && categories2 != null && categories2.length != 0) {
 	    nodes = NetworkElementFactory.getNodesWithCategories(m_transTemplate, m_nodeDao, m_categoryDao, categories1, categories2, onlyNodesWithDownAggregateStatus);
-        /*
-        if (onlyNodesWithOutages) {
-			LinkedList<Node> newNodes = new LinkedList<Node>();
-		    for (Node n : nodes) {
-	        
-		    }
-		    nodes = newNodes.toArray(new Node[0]);
-		}
-        */
         categorySearch = true;
     } else if (categories1 != null && categories1.length != 0) {
 		nodes = NetworkElementFactory.getNodesWithCategories(m_transTemplate, m_nodeDao, m_categoryDao, categories1, onlyNodesWithDownAggregateStatus);
-		/*
-	    if (onlyNodesWithOutages) {
-		    LinkedList<Node> newNodes = new LinkedList<Node>();
-		    for (Node n : nodes) {
-		        
-		    }
-		    nodes = newNodes.toArray(new Node[0]);
-	    }
-		*/
 		categorySearch = true;
     } else {
         nodes = NetworkElementFactory.getAllNodes();
     }
 
-    /*
     if (onlyNodesWithOutages) {
 		nodes = m_outageModel.filterNodesWithCurrentOutages(nodes);
-	    LinkedList<Node> newNodes = new LinkedList<Node>();
-	    for (Node n : nodes) {
-	        
-	    }
-	    nodes = newNodes.toArray(new Node[0]);
     }
-    */
 
     int lastIn1stColumn = (int) Math.ceil(nodes.length/2.0);
     int interfaceCount = 0;
@@ -274,6 +248,18 @@ TransactionTemplate m_transTemplate = (TransactionTemplate) m_webAppContext.getB
   </c:if>
   <c:if test="${param.ifAlias != null}">
     <c:param name="ifAlias" value="${param.ifAlias}"/>
+  </c:if>
+  <c:if test="${param.category1 != null}">
+    <c:param name="category1" value="${param.category1}"/>
+  </c:if>
+  <c:if test="${param.category2 != null}">
+    <c:param name="category2" value="${param.category2}"/>
+  </c:if>
+  <c:if test="${param.onlyNodesWithOutages != null}">
+    <c:param name="onlyNodesWithOutages" value="${param.onlyNodesWithOutages}"/>
+  </c:if>
+  <c:if test="${param.onlyNodesWithDownAggregateStatus != null}">
+    <c:param name="onlyNodesWithDownAggregateStatus" value="${param.onlyNodesWithDownAggregateStatus}"/>
   </c:if>
   <c:if test="${param.listInterfaces == null}">
     <c:param name="listInterfaces"/>
