@@ -63,6 +63,7 @@ import org.opennms.netmgt.dao.CategoryDao;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.web.svclayer.AggregateStatus;
 
 /**
  * The source for all network element business objects (nodes, interfaces,
@@ -2236,13 +2237,18 @@ public class NetworkElementFactory extends Object {
     
 
 
-    public static Node[] getNodesWithCategories(NodeDao nodeDao, CategoryDao categoryDao, String[] categories1) {
+    public static Node[] getNodesWithCategories(NodeDao nodeDao, CategoryDao categoryDao, String[] categories1, boolean onlyNodesWithDownAggregateStatus) {
         ArrayList<OnmsCategory> c1 = new ArrayList<OnmsCategory>(categories1.length);
         for (String category : categories1) {
                 c1.add(categoryDao.findByName(category));
         }
         Collection<OnmsNode> ourNodes = nodeDao.findAllByCategoryList(c1);
         ArrayList<Node> theirNodes = new ArrayList<Node>(ourNodes.size());
+        
+        if (onlyNodesWithDownAggregateStatus) {
+            AggregateStatus as = new AggregateStatus(new HashSet<OnmsNode>(ourNodes));
+            ourNodes = as.getDownNodes();
+        }
         
         for (OnmsNode on : ourNodes) {
             theirNodes.add(new Node(on.getId().intValue(),
@@ -2263,7 +2269,7 @@ public class NetworkElementFactory extends Object {
         return theirNodes.toArray(new Node[0]);
     }
 
-    public static Node[] getNodesWithCategories(NodeDao nodeDao, CategoryDao categoryDao, String[] categories1, String[] categories2) {
+    public static Node[] getNodesWithCategories(NodeDao nodeDao, CategoryDao categoryDao, String[] categories1, String[] categories2, boolean onlyNodesWithDownAggregateStatus) {
         ArrayList<OnmsCategory> c1 = new ArrayList<OnmsCategory>(categories1.length);
         for (String category : categories1) {
                 c1.add(categoryDao.findByName(category));
@@ -2281,11 +2287,16 @@ public class NetworkElementFactory extends Object {
             n2id.add(n2.getId()); 
         }
 
-        Collection<OnmsNode> ourNodes = new LinkedList<OnmsNode>();
+        Set<OnmsNode> ourNodes = new HashSet<OnmsNode>();
         for (OnmsNode n1 : ourNodes1) {
             if (n2id.contains(n1.getId())) {
                 ourNodes.add(n1);
             }
+        }
+        
+        if (onlyNodesWithDownAggregateStatus) {
+            AggregateStatus as = new AggregateStatus(ourNodes);
+            ourNodes = as.getDownNodes();
         }
 
         ArrayList<Node> theirNodes = new ArrayList<Node>(ourNodes.size());
