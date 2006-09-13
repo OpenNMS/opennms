@@ -94,6 +94,7 @@ try {
     String[] categories1 = request.getParameterValues("category1");
     String[] categories2 = request.getParameterValues("category2");
     boolean onlyNodesWithOutages = (request.getParameter("nodesWithOutages") != null);
+    boolean onlyNodesWithDownAggregateStatus = (request.getParameter("nodesWithDownAggregateStatus") != null);
     boolean listInterfaces = (request.getParameter("listInterfaces") != null);
     boolean isIfAliasSearch = false;
     boolean categorySearch = false;
@@ -110,18 +111,43 @@ try {
         isIfAliasSearch = true;
     } else if (categories1 != null && categories1.length != 0
 			   && categories2 != null && categories2.length != 0) {
-        nodes = NetworkElementFactory.getNodesWithCategories(m_nodeDao, m_categoryDao, categories1, categories2);
+	    nodes = NetworkElementFactory.getNodesWithCategories(m_nodeDao, m_categoryDao, categories1, categories2, onlyNodesWithDownAggregateStatus);
+        /*
+        if (onlyNodesWithOutages) {
+			LinkedList<Node> newNodes = new LinkedList<Node>();
+		    for (Node n : nodes) {
+	        
+		    }
+		    nodes = newNodes.toArray(new Node[0]);
+		}
+        */
         categorySearch = true;
     } else if (categories1 != null && categories1.length != 0) {
-		nodes = NetworkElementFactory.getNodesWithCategories(m_nodeDao, m_categoryDao, categories1);
+		nodes = NetworkElementFactory.getNodesWithCategories(m_nodeDao, m_categoryDao, categories1, onlyNodesWithDownAggregateStatus);
+		/*
+	    if (onlyNodesWithOutages) {
+		    LinkedList<Node> newNodes = new LinkedList<Node>();
+		    for (Node n : nodes) {
+		        
+		    }
+		    nodes = newNodes.toArray(new Node[0]);
+	    }
+		*/
 		categorySearch = true;
     } else {
         nodes = NetworkElementFactory.getAllNodes();
     }
-    
+
+    /*
     if (onlyNodesWithOutages) {
 		nodes = m_outageModel.filterNodesWithCurrentOutages(nodes);
+	    LinkedList<Node> newNodes = new LinkedList<Node>();
+	    for (Node n : nodes) {
+	        
+	    }
+	    nodes = newNodes.toArray(new Node[0]);
     }
+    */
 
     int lastIn1stColumn = (int) Math.ceil(nodes.length/2.0);
     int interfaceCount = 0;
