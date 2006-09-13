@@ -44,6 +44,7 @@ import org.opennms.netmgt.dao.AbstractDaoTestCase;
 import org.opennms.netmgt.importer.operations.ImportOperationsManager;
 import org.opennms.netmgt.importer.specification.AbstractImportVisitor;
 import org.opennms.netmgt.importer.specification.SpecFile;
+import org.opennms.netmgt.mock.MockLogAppender;
 import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsIpInterface;
@@ -58,12 +59,21 @@ import org.springframework.transaction.support.TransactionCallback;
 //public class ImportOperationsManagerTest extends AbstractMockTestCase {
 public class ImportOperationsManagerTest extends AbstractDaoTestCase {
     
-	protected void setUp() throws Exception {
+    @Override
+    protected void setUp() throws Exception {
+        MockLogAppender.setupLogging();
         setRunTestsInTransaction(false);
         super.setUp();
-        
+    }
+    
+
+    @Override
+    public void runTest() throws Throwable {
+        super.runTest();
+        MockLogAppender.assertNoWarningsOrGreater();
     }
 
+    @Override
     protected void tearDown() throws Exception {
         super.tearDown();
     }
@@ -134,7 +144,7 @@ public class ImportOperationsManagerTest extends AbstractDaoTestCase {
                 NetworkBuilder builder = new NetworkBuilder(distPoller);
                 builder.addNode("node7").getAssetRecord().setAssetNumber("imported:"+"7");
                 builder.getCurrentNode().getAssetRecord().setDisplayCategory("cat7");
-                builder.addInterface("192.168.7.1", null).setIsManaged("M").setIsSnmpPrimary("P").setIpStatus(1);
+                builder.addInterface("192.168.7.1").setIsManaged("M").setIsSnmpPrimary("P").setIpStatus(1);
                 builder.addService(icmp);
                 builder.addService(snmp);
                 getNodeDao().save(builder.getCurrentNode());
