@@ -46,11 +46,13 @@ import org.opennms.netmgt.dao.CategoryDao;
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.web.Util;
 import org.opennms.web.svclayer.AggregateStatus;
 import org.opennms.web.svclayer.ProgressMonitor;
 import org.opennms.web.svclayer.SimpleWebTable;
 import org.opennms.web.svclayer.SurveillanceService;
 import org.opennms.web.svclayer.dao.SurveillanceViewConfigDao;
+import org.springframework.util.StringUtils;
 import org.springframework.orm.ObjectRetrievalFailureException;
 
 public class DefaultSurveillanceService implements SurveillanceService {
@@ -216,18 +218,20 @@ public class DefaultSurveillanceService implements SurveillanceService {
         for(int rowIndex = 0; rowIndex < sView.getRowCount(); rowIndex++) {
             
             webTable.newRow();
-            webTable.addCell(sView.getRowLabel(rowIndex), "simpleWebTableRowLabel");
-            
+            webTable.addCell(sView.getRowLabel(rowIndex),
+                             "simpleWebTableRowLabel");
+
 
             for(int colIndex = 0; colIndex < sView.getColumnCount(); colIndex++) {
 
-				AggregateStatus aggStatus = cellStatus[rowIndex][colIndex];
+                AggregateStatus aggStatus = cellStatus[rowIndex][colIndex];
 				
-				SimpleWebTable.Cell cell = webTable.addCell(aggStatus.getDownEntityCount()+" of "+aggStatus.getTotalEntityCount(), aggStatus.getStatus());
+                SimpleWebTable.Cell cell = webTable.addCell(aggStatus.getDownEntityCount()+" of "+aggStatus.getTotalEntityCount(), aggStatus.getStatus());
 
                 if (aggStatus.getDownEntityCount() > 0) {
-					cell.setLink(createNodePageUrl(aggStatus));
-                    m_foundDownNode = null; //what a hack
+                    cell.setLink(createNodePageUrl(sView, colIndex, rowIndex)); //.getColumnLabel(colIndex), sView.getRowLabel(rowIndex)));
+                    //cell.setLink(createNodePageUrl(sView.getColumnLabel(colIndex), sView.getRowLabel(rowIndex)));
+                    //m_foundDownNode = null; //what a hack
                 }
             }
                 
@@ -237,16 +241,47 @@ public class DefaultSurveillanceService implements SurveillanceService {
         return webTable;
     }
 
-	/*
+    private String createNodePageUrl(SurveillanceView view, int colIndex, int rowIndex) {
+        Set<OnmsCategory> columns = view.getCategoriesForColumn(colIndex); 
+        Set<OnmsCategory> rows = view.getCategoriesForRow(rowIndex);
+
+        List<String> params = new ArrayList<String>(columns.size() + rows.size());
+        for (OnmsCategory category : columns) {
+            params.add("category1=" + Util.encode(category.getName()));
+        }
+        for (OnmsCategory category : rows) {
+            params.add("category2=" + Util.encode(category.getName()));
+        }
+        return "element/nodelist.jsp"
+            + "?"
+            + StringUtils.collectionToDelimitedString(params, "&");
+    }
+
+    private String createNodePageUrl(String columnLabel, String rowLabel) {
+        return "element/nodelist.jsp"
+            + "?"
+            + "category1=" + columnLabel
+            + "&"
+            + "category2=" + rowLabel;
+    }
+
+    /*
      * This creates a relative url to the node page and sets the node parameter
      * FIXME: this code should move to the jsp after the status table is enhanced to support
      * this requirement.
      */
     private String createNodePageUrl(AggregateStatus aggStatus) {
-    	if (m_foundDownNode != null) {
-            return "element/node.jsp?node="+m_foundDownNode.getId();
+        return "element/nodelist.jsp"
+            + "?"
+            + "category=" + aggStatus.getLabel()
+            + "&"
+            + "category=" + aggStatus.getLabel();
+        /*
+        if (m_foundDownNode != null) {
+            return "element/node.jsp?node=" + m_foundDownNode.getId();
         }
         return null;
+        */
     }
 
     public NodeDao getNodeDao() {
