@@ -52,4 +52,5 @@ public interface IpInterfaceDao extends OnmsDao<OnmsIpInterface, Integer> {
 	
 	public abstract Collection<OnmsIpInterface> findByServiceType(String svcName);
 
+	public abstract Collection<OnmsIpInterface> findHierarchyByServiceType(String svcName);
 }

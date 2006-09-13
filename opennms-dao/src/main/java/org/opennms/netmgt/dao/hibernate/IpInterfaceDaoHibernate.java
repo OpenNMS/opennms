@@ -57,7 +57,19 @@ public class IpInterfaceDaoHibernate extends AbstractDaoHibernate<OnmsIpInterfac
     }
 
 	public Collection<OnmsIpInterface> findByServiceType(String svcName) {
-		return find("select distinct ipIf from OnmsIpInterface as ipIf join ipIf.monitoredService as monSvc where monSvc.serviceType.name = ?", svcName);
+		return find("select distinct ipIf from OnmsIpInterface as ipIf join ipIf.monitoredServices as monSvc where monSvc.serviceType.name = ?", svcName);
 	}
+	
+	public Collection<OnmsIpInterface> findHierarchyByServiceType(String svcName) {
+		return find("select distinct ipIf " +
+				"from OnmsIpInterface as ipIf " +
+				"left join fetch ipIf.node as node " +
+				"left join fetch node.assetRecord " +
+				"left join fetch ipIf.node.snmpInterfaces as snmpIf " +
+				"left join fetch snmpIf.ipInterfaces " +
+				"join ipIf.monitoredServices as monSvc " +
+				"where monSvc.serviceType.name = ?", svcName);
+	}
+
 
 }
