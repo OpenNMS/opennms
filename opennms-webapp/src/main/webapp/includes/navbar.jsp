@@ -14,7 +14,7 @@
                         + "vulnerabilities.enable";
                 File vulnEnableFile = new File(vulnEnableLocation);
 
-                LinkedList navBar = new LinkedList();
+                LinkedList<NavBarEntry> navBar = new LinkedList<NavBarEntry>();
                 navBar.add(new NavBarEntry("nodelist",
                                            "element/nodelist.jsp",
                                            "Node List"));
@@ -38,7 +38,9 @@
                 navBar.add(new NavBarEntry("report", "report/index.jsp",
                                            "Reports"));
                 navBar.add(new NavBarEntry("chart", "charts/index.jsp",
-                                           "Charts"));
+                						   "Charts"));
+                navBar.add(new NavBarEntry("surveillance", "surveillanceView.htm?viewName=default",
+                                           "Surveillance"));
                 if (vulnEnableFile.exists()) {
                     navBar.add(new NavBarEntry("vulnerability",
                                                "vulnerability/index.jsp",
