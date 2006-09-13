@@ -141,9 +141,9 @@ public class CategoryUtil extends Object {
      */
     public static String getCategoryClass(double normal, double warning,
 					  double value) {
-        String m_good = "availgood";
-        String m_warn = "availwarn";
-        String m_crit = "availcrit";
+        String m_good = "Normal";
+        String m_warn = "Warning";
+        String m_crit = "Critical";
 
         String _class = m_crit;
 
