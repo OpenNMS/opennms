@@ -242,7 +242,7 @@ public class OnmsMonitoredService extends OnmsEntity implements Serializable {
 	@Transient
     public boolean isDown() {
         boolean down = true;
-        if (getStatus() != "A" && m_currentOutages.isEmpty()) {
+        if (getStatus() != "A" || m_currentOutages.isEmpty()) {
             return !down;
         }
         
