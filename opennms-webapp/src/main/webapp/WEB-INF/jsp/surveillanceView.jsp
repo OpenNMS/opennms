@@ -27,7 +27,7 @@
         <td class="<c:out value='${cell.styleClass}'/> divider">
           <c:choose>
             <c:when test="${! empty cell.link}">
-	            <a href="<c:out value='${cell.link}'/>&nodesWithOutages"><c:out value="${cell.content}"/></a>
+	            <a href="<c:out value='${cell.link}'/>&nodesWithDownAggregateStatus"><c:out value="${cell.content}"/></a>
             </c:when>
             <c:otherwise>
  				 <c:out value="${cell.content}"/>
