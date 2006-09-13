@@ -2265,39 +2265,31 @@ public class NetworkElementFactory extends Object {
 
     public static Node[] getNodesWithCategories(NodeDao nodeDao, CategoryDao categoryDao, String[] categories1, String[] categories2) {
         ArrayList<OnmsCategory> c1 = new ArrayList<OnmsCategory>(categories1.length);
-        ArrayList<OnmsCategory> c2 = new ArrayList<OnmsCategory>(categories2.length);
         for (String category : categories1) {
                 c1.add(categoryDao.findByName(category));
         }
+        ArrayList<OnmsCategory> c2 = new ArrayList<OnmsCategory>(categories2.length);
         for (String category : categories2) {
                 c2.add(categoryDao.findByName(category));
         }
-        /*
-        System.out.println("c1: " + c1.get(0));
-        System.out.println("c2: " + c2.get(0));
-        */
-//      Collection<OnmsNode> ourNodes = nodeDao.findAllByCategoryLists(c1, c2);
+        
         Collection<OnmsNode> ourNodes1 = nodeDao.findAllByCategoryList(c1);
         Collection<OnmsNode> ourNodes2 = nodeDao.findAllByCategoryList(c2);
-        Collection<OnmsNode> ourNodes = new LinkedList<OnmsNode>();
+        
         Set<Integer> n2id = new HashSet<Integer>(ourNodes2.size());
         for (OnmsNode n2 : ourNodes2) {
             n2id.add(n2.getId()); 
         }
+
+        Collection<OnmsNode> ourNodes = new LinkedList<OnmsNode>();
         for (OnmsNode n1 : ourNodes1) {
             if (n2id.contains(n1.getId())) {
                 ourNodes.add(n1);
             }
         }
-        /*
-        System.out.println("got: " + ourNodes.size());
-        System.out.println("got: " + ourNodes1.size());
-        System.out.println("got: " + ourNodes2.size());
-        */ 
+
         ArrayList<Node> theirNodes = new ArrayList<Node>(ourNodes.size());
-        
         for (OnmsNode on : ourNodes) {
-//            Node n = new Node();
             theirNodes.add(new Node(on.getId().intValue(),
                                     0, //on.getParent().getId().intValue(),
                                     on.getLabel(),

@@ -48,6 +48,8 @@
 			org.opennms.netmgt.model.OnmsCategory,
 			org.opennms.netmgt.model.OnmsNode,
 			org.opennms.web.element.*,
+			org.opennms.web.outage.Outage,
+			org.opennms.web.outage.OutageModel,
 	        org.opennms.netmgt.dao.CategoryDao,
 	        org.opennms.netmgt.dao.NodeDao,
 	        org.springframework.web.context.WebApplicationContext,
@@ -57,22 +59,30 @@
 
 <%@ taglib uri="http://java.sun.com/jstl/core" prefix="c" %>
 
-<%
-WebApplicationContext m_webAppContext = WebApplicationContextUtils.getRequiredWebApplicationContext(getServletContext());
 
-NodeDao m_nodeDao;
+<%!  
+    protected OutageModel m_outageModel = new OutageModel();
+	
+%>
+
+<%
+
+WebApplicationContext m_webAppContext = WebApplicationContextUtils.getRequiredWebApplicationContext(getServletContext());
+NodeDao m_nodeDao; //= (NodeDao) m_webAppContext.getBean("nodeDao", Class.forName("org.opennms.netmgt.dao.NodeDao"));
+CategoryDao m_categoryDao; //= (CategoryDao) m_webAppContext.getBean("categoryDao", Class.forName("org.opennms.netmgt.dao.CategoryDao"));
+
 try {
     m_nodeDao = (NodeDao) m_webAppContext.getBean("nodeDao", Class.forName("org.opennms.netmgt.dao.NodeDao"));
 } catch (ClassNotFoundException e) {
     throw new ServletException(e);
 }
 
-CategoryDao m_categoryDao;
 try {
     m_categoryDao = (CategoryDao) m_webAppContext.getBean("categoryDao", Class.forName("org.opennms.netmgt.dao.CategoryDao"));
 } catch (ClassNotFoundException e) {
     throw new ServletException(e);
 }
+
 %>
 
 <%
@@ -83,6 +93,7 @@ try {
     String ifAliasParm = request.getParameter("ifAlias");
     String[] categories1 = request.getParameterValues("category1");
     String[] categories2 = request.getParameterValues("category2");
+    boolean onlyNodesWithOutages = (request.getParameter("nodesWithOutages") != null);
     boolean listInterfaces = (request.getParameter("listInterfaces") != null);
     boolean isIfAliasSearch = false;
     boolean categorySearch = false;
@@ -106,6 +117,10 @@ try {
 		categorySearch = true;
     } else {
         nodes = NetworkElementFactory.getAllNodes();
+    }
+    
+    if (onlyNodesWithOutages) {
+		nodes = m_outageModel.filterNodesWithCurrentOutages(nodes);
     }
 
     int lastIn1stColumn = (int) Math.ceil(nodes.length/2.0);
