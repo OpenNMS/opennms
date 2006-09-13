@@ -59,4 +59,9 @@ public class DefaultSurveillanceViewConfigDao implements SurveillanceViewConfigD
         return SurveillanceViewsFactory.getViewsMap();
     }
 
+    public View getDefaultView() {
+        String defaultView = SurveillanceViewsFactory.getConfig().getDefaultView();
+        return getView(defaultView);
+    }
+
 }
