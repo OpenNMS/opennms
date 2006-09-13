@@ -207,7 +207,7 @@ public class OnmsAssetRecord implements Serializable {
     /** 
      * The node this asset information belongs to.
      */
-    @OneToOne
+    @OneToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="nodeId")
     public OnmsNode getNode() {
         return m_node;
