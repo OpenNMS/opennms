@@ -16,10 +16,15 @@ public class SimpleWebTable {
 		private String m_styleClass;
 		private String m_link;
 		public Cell() {}
-		public Cell(Object content, String styleClass) {
-			m_content = content;
-			m_styleClass = styleClass;
-		}
+                public Cell(Object content, String styleClass) {
+                        m_content = content;
+                        m_styleClass = styleClass;
+                }
+                public Cell(Object content, String styleClass, String link) {
+                        m_content = content;
+                        m_styleClass = styleClass;
+                        m_link = link;
+                }
 		public Object getContent() {
 			return m_content;
 		}
@@ -75,15 +80,17 @@ public class SimpleWebTable {
 		m_currentRow = row;
 	}
 	
-	public Cell addCell(Object cellContent, String cellStyle) {
-		if (m_currentRow == null)
-			throw new IllegalStateException("make sure you call newRow before trying to add any cells to the table!");
-		
-		Cell cell = new Cell(cellContent, cellStyle);
-		m_currentRow.add(cell);
-		return cell;
-		
-		
-	}
-
+        public Cell addCell(Object cellContent, String cellStyle, String link) {
+            if (m_currentRow == null) {
+                throw new IllegalStateException("make sure you call newRow before trying to add any cells to the table!");
+            }
+                
+            Cell cell = new Cell(cellContent, cellStyle, link);
+            m_currentRow.add(cell);
+            return cell;
+        }
+        
+        public Cell addCell(Object cellContent, String cellStyle) {
+            return addCell(cellContent, cellStyle, null);
+        }
 }
