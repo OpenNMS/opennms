@@ -2261,24 +2261,7 @@ public class NetworkElementFactory extends Object {
             AggregateStatus as = new AggregateStatus(new HashSet<OnmsNode>(ourNodes));
             ourNodes = as.getDownNodes();
         }
-        
-        for (OnmsNode on : ourNodes) {
-            theirNodes.add(new Node(on.getId().intValue(),
-                                    0, //on.getParent().getId().intValue(),
-                                    on.getLabel(),
-                                    null, //on.getDpname(),
-                                    on.getCreateTime().toString(),
-                                    null, // on.getNodeSysId(),
-                                    on.getSysName(),
-                                    on.getSysDescription(),
-                                    on.getSysLocation(),
-                                    on.getSysContact(),
-                                    on.getType().charAt(0),
-                                    on.getOperatingSystem()));
-
-        }
-        
-        return theirNodes.toArray(new Node[0]);
+        return convertOnmsNodeCollectionToNodeArray(ourNodes);
     }
 
     public static Node[] getNodesWithCategories(TransactionTemplate transTemplate, final NodeDao nodeDao, final CategoryDao categoryDao, final String[] categories1, final String[] categories2, final boolean onlyNodesWithDownAggregateStatus) {
@@ -2320,6 +2303,10 @@ public class NetworkElementFactory extends Object {
             ourNodes = as.getDownNodes();
         }
 
+        return convertOnmsNodeCollectionToNodeArray(ourNodes);
+    }
+    
+    public static Node[] convertOnmsNodeCollectionToNodeArray(Collection<OnmsNode> ourNodes) {
         ArrayList<Node> theirNodes = new ArrayList<Node>(ourNodes.size());
         for (OnmsNode on : ourNodes) {
             theirNodes.add(new Node(on.getId().intValue(),
