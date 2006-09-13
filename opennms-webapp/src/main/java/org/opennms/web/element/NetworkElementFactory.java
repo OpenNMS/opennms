@@ -2234,6 +2234,35 @@ public class NetworkElementFactory extends Object {
         return nodecont;
     }
     
+
+
+    public static Node[] getNodesWithCategories(NodeDao nodeDao, CategoryDao categoryDao, String[] categories1) {
+        ArrayList<OnmsCategory> c1 = new ArrayList<OnmsCategory>(categories1.length);
+        for (String category : categories1) {
+                c1.add(categoryDao.findByName(category));
+        }
+        Collection<OnmsNode> ourNodes = nodeDao.findAllByCategoryList(c1);
+        ArrayList<Node> theirNodes = new ArrayList<Node>(ourNodes.size());
+        
+        for (OnmsNode on : ourNodes) {
+            theirNodes.add(new Node(on.getId().intValue(),
+                                    0, //on.getParent().getId().intValue(),
+                                    on.getLabel(),
+                                    null, //on.getDpname(),
+                                    on.getCreateTime().toString(),
+                                    null, // on.getNodeSysId(),
+                                    on.getSysName(),
+                                    on.getSysDescription(),
+                                    on.getSysLocation(),
+                                    on.getSysContact(),
+                                    on.getType().charAt(0),
+                                    on.getOperatingSystem()));
+
+        }
+        
+        return theirNodes.toArray(new Node[0]);
+    }
+
     public static Node[] getNodesWithCategories(NodeDao nodeDao, CategoryDao categoryDao, String[] categories1, String[] categories2) {
         ArrayList<OnmsCategory> c1 = new ArrayList<OnmsCategory>(categories1.length);
         ArrayList<OnmsCategory> c2 = new ArrayList<OnmsCategory>(categories2.length);
