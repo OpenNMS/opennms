@@ -138,21 +138,24 @@ function doDelete() {
 
       <div id="contentleft">
             <!-- general info box -->
-            <table class="standardfirst">
+            <h3>General</h3>
+            <table>
+            <!--
               <tr>
-                <td class="standardheader" colspan="2">General</td> 
+                <th colspan="2">General</th> 
+              </tr>
+              -->
+              <tr>
+                <td>Node</td> 
+                <td><a href="element/node.jsp?node=<%=service_db.getNodeId()%>"><%=NetworkElementFactory.getNodeLabel(service_db.getNodeId())%></a></td>
               </tr>
               <tr>
-                <td class="standard">Node</td> 
-                <td class="standard"><a href="element/node.jsp?node=<%=service_db.getNodeId()%>"><%=NetworkElementFactory.getNodeLabel(service_db.getNodeId())%></a></td>
-              </tr>
-              <tr>
-                <td class="standard">Interface</td> 
-                <td class="standard"><a href="element/interface.jsp?node=<%=service_db.getNodeId()%>&intf=<%=service_db.getIpAddress()%>"><%=service_db.getIpAddress()%></a></td>
+                <td>Interface</td> 
+                <td><a href="element/interface.jsp?node=<%=service_db.getNodeId()%>&intf=<%=service_db.getIpAddress()%>"><%=service_db.getIpAddress()%></a></td>
               </tr>              
-              <tr> 
-                <td class="standard">Polling Status</td>
-                <td class="standard"><%=ElementUtil.getServiceStatusString(service_db)%></td>
+              <tr>
+                <td>Polling Status</td>
+                <td><%=ElementUtil.getServiceStatusString(service_db)%></td>
               </tr>
             </table>
           

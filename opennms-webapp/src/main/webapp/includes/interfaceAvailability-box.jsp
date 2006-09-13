@@ -115,16 +115,17 @@
     double overallRtcValue = this.model.getInterfaceAvailability(nodeId, ipAddr);
 %>
 
+<h3>Availability</h3>
 <table class="standard">
-  <tr>
-    <td class="standardheader">Overall Availability</td>
+  <tr class="CellStatus">
+    <td>Overall Availability</td>
 
 <% if( overallRtcValue < 0 ) { %>
-      <td class="availunmanaged"><%=ElementUtil.getInterfaceStatusString(intf)%></td>
+      <td class="Indeterminate"><%=ElementUtil.getInterfaceStatusString(intf)%></td>
 
 <% } else { %>
      <% if(services.length < 1) { %>
-              <td colspan=2 class="availunmanaged">  Not Monitored </td>
+              <td colspan=2 class="Indeterminate">  Not Monitored </td>
      <% } else { %>
       <td class="<%=CategoryUtil.getCategoryClass(this.normalThreshold, this.warningThreshold, overallRtcValue)%>"><%=CategoryUtil.formatValue(overallRtcValue)%>%</td>
      <% } %>
@@ -132,23 +133,23 @@
   </tr>
 
   <tr>
-    <td class="standard" colspan="2">
+    <td colspan="2">
 <!--      <table class="inner"> -->
-      <table class="standardfirst">
+      <table>
         <% for( int i=0; i < services.length; i++ ) { %>
           <% Service service = services[i]; %>
           
           <% if( service.isManaged() ) { %>
             <% double svcValue = this.model.getServiceAvailability(nodeId, ipAddr, service.getServiceId()); %>     
 
-            <tr>
-              <td class="availnode"><a href="element/service.jsp?node=<%=nodeId%>&intf=<%=ipAddr%>&service=<%=service.getServiceId()%>"><%=service.getServiceName()%></a></td>
+            <tr class="CellStatus">
+              <td><a href="element/service.jsp?node=<%=nodeId%>&intf=<%=ipAddr%>&service=<%=service.getServiceId()%>"><%=service.getServiceName()%></a></td>
               <td class="<%=CategoryUtil.getCategoryClass(this.normalThreshold, this.warningThreshold, svcValue)%>"><%=CategoryUtil.formatValue(svcValue)%>%</td>
             </tr>
           <% } else { %>
             <tr>
-              <td class="availnode"><a href="element/service.jsp?node=<%=nodeId%>&intf=<%=ipAddr%>&service=<%=service.getServiceId()%>"><%=service.getServiceName()%></a></td>
-              <td class="availunmanaged"><%=ElementUtil.getServiceStatusString(service)%></td>
+              <td <a href="element/service.jsp?node=<%=nodeId%>&intf=<%=ipAddr%>&service=<%=service.getServiceId()%>"><%=service.getServiceName()%></a></td>
+              <td class="Indeterminate"><%=ElementUtil.getServiceStatusString(service)%></td>
 
             </tr>          
           <% } %>

@@ -269,32 +269,30 @@ function doDelete() {
 
 	<div id="contentleft">
 
+        <h3>General</h3>
             <!-- general info box -->
-	    <table class="standardfirst">
+	    <table>
               <tr>
-                <td class="standardheader" colspan="2">General</td>
-              </tr>
-              <tr>
-                <td class="standard">Node</td> 
-                <td class="standard"><a href="element/node.jsp?node=<%=intf_db.getNodeId()%>"><%=NetworkElementFactory.getNodeLabel(intf_db.getNodeId())%></a></td>
+                <td>Node</td> 
+                <td><a href="element/node.jsp?node=<%=intf_db.getNodeId()%>"><%=NetworkElementFactory.getNodeLabel(intf_db.getNodeId())%></a></td>
               </tr>
               <tr> 
-                <td class="standard">Polling Status</td>
-                <td class="standard"><%=ElementUtil.getInterfaceStatusString(intf_db)%></td>
+                <td>Polling Status</td>
+                <td><%=ElementUtil.getInterfaceStatusString(intf_db)%></td>
               </tr>
               <% if(ElementUtil.getInterfaceStatusString(intf_db).equals("Managed") && request.isUserInRole( Authentication.ADMIN_ROLE )) {
                   List inPkgs = pollerCfgFactory.getAllPackageMatches(ipAddr);
                   Iterator pkgiter = inPkgs.iterator();
                   while (pkgiter.hasNext()) { %>
                       <tr>
-                          <td class="standard">Polling Package</td>
-                          <td class="standard"><%= (String) pkgiter.next()%></td>
+                          <td>Polling Package</td>
+                          <td><%= (String) pkgiter.next()%></td>
                       </tr>
                   <% } %>
               <% } %>
               <tr>
-                <td class="standard">Interface Index</td> 
-                <td class="standard">
+                <td>Interface Index</td> 
+                <td>
                   <% int ifIndex = intf_db.getIfIndex(); %>
                   <% if( ifIndex > 0 ) {  %>
                     <%=ifIndex%>
@@ -304,12 +302,12 @@ function doDelete() {
                 </td>
               </tr>
               <tr> 
-                <td class="standard">Last Service Scan</td>
-                <td class="standard"><%=intf_db.getLastCapsdPoll()%></td>
+                <td>Last Service Scan</td>
+                <td><%=intf_db.getLastCapsdPoll()%></td>
               </tr>
               <tr>
-                <td class="standard">Physical Address</td>        
-                <td class="standard">
+                <td>Physical Address</td>        
+                <td>
                   <% String macAddr = intf_db.getPhysicalAddress(); %>
                   <% if( macAddr != null && macAddr.trim().length() > 0 ) { %>
                     <%=macAddr%>
@@ -320,25 +318,24 @@ function doDelete() {
               </tr>
             </table>
             
+
             <!-- SNMP box, if info available -->
             <% if( hasSNMPData(intf_db) ) { %>
-		  <table class="standard">
-		    <tr>
-                      <td class="standardheader" colspan="2">SNMP Attributes</td>
-                    </tr>
+              <h3>SNMP Attributes</h3>
+		  <table>
                     <tr> 
-                      <td class="standard">Subnet Mask</td>
-                      <td class="standard">
+                      <td>Subnet Mask</td>
+                      <td>
                         <%=(intf_db.getSnmpIpAdEntNetMask() == null) ? "&nbsp;" : intf_db.getSnmpIpAdEntNetMask()%>                                    
                       </td>
                     </tr>
                     <tr>
-                      <td class="standard">Interface Type</td>
-                      <td class="standard"><%=IFTYPES[intf_db.getSnmpIfType()]%></td>
+                      <td>Interface Type</td>
+                      <td><%=IFTYPES[intf_db.getSnmpIfType()]%></td>
                     </tr>
                     <tr> 
-                      <td class="standard">Status (Adm/Op)</td>
-                      <td class="standard">
+                      <td>Status (Adm/Op)</td>
+                      <td>
                         <% if( intf_db.getSnmpIfAdminStatus() < 1 || intf_db.getSnmpIfOperStatus() < 1 ) { %>
                           &nbsp;
                         <% } else { %>
@@ -347,29 +344,29 @@ function doDelete() {
                       </td>
                     </tr>
                     <tr>
-                      <td class="standard">Speed</td>        
-                      <td class="standard"><%=(intf_db.getSnmpIfSpeed() > 0) ? String.valueOf(intf_db.getSnmpIfSpeed()) : "&nbsp;"%></td>
+                      <td>Speed</td>        
+                      <td><%=(intf_db.getSnmpIfSpeed() > 0) ? String.valueOf(intf_db.getSnmpIfSpeed()) : "&nbsp;"%></td>
                     </tr>
                     <tr> 
-                      <td class="standard">Description</td>
-                      <td class="standard"><%=(intf_db.getSnmpIfDescription() == null) ? "&nbsp;" : intf_db.getSnmpIfDescription()%></td>
+                      <td>Description</td>
+                      <td><%=(intf_db.getSnmpIfDescription() == null) ? "&nbsp;" : intf_db.getSnmpIfDescription()%></td>
                     </tr>
                     <tr>
-                      <td class="standard">Alias</td>
-                      <td class="standard"><%=(intf_db.getSnmpIfAlias() == null) ? "&nbsp;" : intf_db.getSnmpIfAlias()%></td>
+                      <td>Alias</td>
+                      <td><%=(intf_db.getSnmpIfAlias() == null) ? "&nbsp;" : intf_db.getSnmpIfAlias()%></td>
                     </tr>
 
                   </table>
             <% } %>
 
             <!-- services box -->
-	    <table class="standard">
-	      <tr>
-	        <td class="standardheader">Services</td>
-              </tr>
+            
+            <h3>Services</h3>
+            
+		    <table>
               <% for( int i=0; i < services.length; i++ ) { %>
                 <tr>
-                  <td class="standard"><a href="element/service.jsp?node=<%=services[i].getNodeId()%>&intf=<%=services[i].getIpAddress()%>&service=<%=services[i].getServiceId()%>"><%=services[i].getServiceName()%></a></td>
+                  <td><a href="element/service.jsp?node=<%=services[i].getNodeId()%>&intf=<%=services[i].getIpAddress()%>&service=<%=services[i].getServiceId()%>"><%=services[i].getServiceName()%></a></td>
                 </tr>
               <% } %>
             </table>
