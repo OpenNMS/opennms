@@ -225,7 +225,7 @@
  
         <% if(this.model.getAsset(nodeId).getBuilding() != null) { %>
           <li>
-            <a href="aggregateStatus.htm?statusView=building%&statusSite=<%=this.model.getAsset(nodeId).getBuilding()%>">Site Status</a>
+            <a href="siteStatusView.htm?statusSite=<%=this.model.getAsset(nodeId).getBuilding()%>">Site Status</a>
           </li>
         <% } %>
         
