@@ -36,6 +36,8 @@ import java.util.Collection;
 
 
 public interface OnmsDao<T, K extends Serializable> {
+	
+    public abstract void initialize(Object obj);
 
     public abstract void flush();
     

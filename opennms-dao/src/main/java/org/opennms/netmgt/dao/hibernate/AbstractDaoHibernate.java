@@ -55,9 +55,8 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> extends
         m_entityClass = entityClass;
     }
 
-    public T initialize(T obj) {
+    public void initialize(Object obj) {
         getHibernateTemplate().initialize(obj);
-        return obj;
     }
 
     public void flush() {
