@@ -187,6 +187,7 @@ public class DefaultSurveillanceService implements SurveillanceService {
      */
     public SimpleWebTable createSurveillanceTable(String surveillanceViewName, ProgressMonitor progressMonitor) {
 
+        surveillanceViewName = (surveillanceViewName == null ? m_surveillanceConfigDao.getDefaultView().getName() : surveillanceViewName);
         View view = m_surveillanceConfigDao.getView(surveillanceViewName);
         
         SurveillanceView sView = new SurveillanceView(surveillanceViewName, m_surveillanceConfigDao, m_categoryDao);

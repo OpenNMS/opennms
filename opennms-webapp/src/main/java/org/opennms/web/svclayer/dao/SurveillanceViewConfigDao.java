@@ -9,4 +9,6 @@ public interface SurveillanceViewConfigDao {
     
     View getView(String viewName);
 
+    View getDefaultView();
+
 }
