@@ -43,10 +43,15 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Vector;
 
 import org.opennms.core.resource.Vault;
+import org.opennms.web.element.Node;
+import org.springframework.util.StringUtils;
 
 /**
  * As the nonvisual logic for the Services Down (Outage) servlet and JSPs, this
@@ -157,7 +162,7 @@ public class OutageModel extends Object {
         Connection conn = Vault.getDbConnection();
 
         try {
-            PreparedStatement stmt = conn.prepareStatement("SELECT DISTINCT outages.outageid, outages.iflostservice, outages.ifregainedservice, outages.nodeID, node.nodeLabel, outages.ipaddr, ipinterface.iphostname, service.servicename, outages.serviceId " + "from outages, node, ipinterface, service " + "where outages.nodeid=? " + "and node.nodeid=outages.nodeid and outages.serviceid=service.serviceid and ipinterface.ipaddr=outages.ipaddr " + "and ifregainedservice is null " + " and suppresstime is null or supresstime < now()" + "order by iflostservice desc");
+            PreparedStatement stmt = conn.prepareStatement("SELECT DISTINCT outages.outageid, outages.iflostservice, outages.ifregainedservice, outages.nodeID, node.nodeLabel, outages.ipaddr, ipinterface.iphostname, service.servicename, outages.serviceId " + "from outages, node, ipinterface, service " + "where outages.nodeid=? " + "and node.nodeid=outages.nodeid and outages.serviceid=service.serviceid and ipinterface.ipaddr=outages.ipaddr " + "and ifregainedservice is null " + " and suppresstime is null or suppresstime < now()" + "order by iflostservice desc");
             stmt.setInt(1, nodeId);
             ResultSet rs = stmt.executeQuery();
 
@@ -170,6 +175,58 @@ public class OutageModel extends Object {
         }
 
         return outages;
+    }
+    
+    public Collection<Integer> getCurrentOutagesIdsForNode(int nodeId) throws SQLException {
+        LinkedList<Integer> outageIds = new LinkedList<Integer>();
+        Connection conn = Vault.getDbConnection();
+
+        try {
+            PreparedStatement stmt = conn.prepareStatement("SELECT DISTINCT outageid from outages where nodeid=?  and ifregainedservice is null and suppresstime is null or suppresstime < now();");
+            stmt.setInt(1, nodeId);
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                outageIds.add(rs.getInt(1));
+            }
+
+            rs.close();
+            stmt.close();
+        } finally {
+            Vault.releaseDbConnection(conn);
+        }
+
+        return outageIds;
+    }
+
+    
+    public Node[] filterNodesWithCurrentOutages(Node[] nodes) throws SQLException {
+        HashMap<Integer, Node> nodeMap = new HashMap<Integer, Node>(nodes.length);
+        for (Node n : nodes) {
+            nodeMap.put(n.getNodeId(), n);
+        }
+        
+        String nodeList = StringUtils.collectionToDelimitedString(nodeMap.keySet(), ", ");
+        
+        LinkedList<Node> newNodes = new LinkedList<Node>();
+        
+        Connection conn = Vault.getDbConnection();
+
+        try {
+            PreparedStatement stmt = conn.prepareStatement("SELECT DISTINCT nodeid from outages where nodeid in ( " + nodeList + " ) and ifregainedservice is null and suppresstime is null or suppresstime < now();");
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                newNodes.add(nodeMap.get(rs.getInt(1)));
+            }
+
+            rs.close();
+            stmt.close();
+        } finally {
+            Vault.releaseDbConnection(conn);
+        }
+
+        return newNodes.toArray(new Node[0]);
     }
 
     public Outage[] getNonCurrentOutagesForNode(int nodeId) throws SQLException {
