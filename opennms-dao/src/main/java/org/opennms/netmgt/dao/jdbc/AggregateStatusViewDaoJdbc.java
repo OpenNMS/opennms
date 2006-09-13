@@ -62,7 +62,7 @@ import org.springframework.jdbc.core.support.JdbcDaoSupport;
  * @author david
  *
  */
-public class AggregateStatusViewDaoJdbc extends JdbcDaoSupport implements AggregateStatusViewDao  {
+public class AggregateStatusViewDaoJdbc extends AbstractDaoJdbc implements AggregateStatusViewDao  {
 
     private static final String STATUS_VIEW_DEF_MAPPING_TABLE = "statusview_statusdef";
     private static final String CATEGORY_DEF_MAPPING_TABLE = "category_statusdef";
