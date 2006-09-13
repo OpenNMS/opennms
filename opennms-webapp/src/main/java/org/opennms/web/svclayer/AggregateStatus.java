@@ -32,14 +32,11 @@
 
 package org.opennms.web.svclayer;
 
-import java.util.Collection;
-import java.util.Iterator;
 import java.util.Set;
 
-import org.opennms.netmgt.model.OnmsIpInterface;
+import org.opennms.netmgt.model.AbstractEntityVisitor;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
-
 
 
 /**
@@ -98,54 +95,67 @@ public class AggregateStatus {
         sb.append(" total.");
         return sb.toString();
     }
+        
+    final class AggregateStatusVisitor extends AbstractEntityVisitor {
+
+        int m_downCount = 0;
+        String m_status = AggregateStatus.ALL_NODES_UP;
+        boolean m_isCurrentNodeDown = true;
+        
+        @Override
+        public void visitNode(OnmsNode node) {
+            m_isCurrentNodeDown = true;
+        }
+        
+        @Override
+        public void visitNodeComplete(OnmsNode node) {
+            if (m_isCurrentNodeDown) {
+                m_downCount++;
+                m_status = AggregateStatus.NODES_ARE_DOWN;
+            }
+            
+        }
+        
+        @Override
+        public void visitMonitoredService(OnmsMonitoredService svc) {
+            if ("A".equals(svc.getStatus()) && !svc.getCurrentOutages().isEmpty()) {
+                if (AggregateStatus.ALL_NODES_UP.equals(m_status)) {
+                    m_status = AggregateStatus.ONE_SERVICE_DOWN;
+                }
+            } else if ("A".equals(svc.getStatus())){
+                m_isCurrentNodeDown = false;
+            }
+        }
+
+        public Integer getDownCount() {
+            return m_downCount;
+        }
+
+        public String getStatus() {
+            return m_status;
+        }
+
+        
+    }
     
+    private void visitNodes(Set<OnmsNode> nodes, AggregateStatusVisitor statusVisitor) {
+
+        if (nodes == null) {
+            return;
+        }
+        
+        for (OnmsNode node : nodes) {
+            node.visit(statusVisitor);
+        }
+    }
     
-	private String computeStatus(Collection<OnmsNode> nodes) {
-	    
-	    String color = AggregateStatus.ALL_NODES_UP;
-	    
-	    if (getDownEntityCount() >= 1) {
-	        color = AggregateStatus.NODES_ARE_DOWN;
-	        return color;
-	    }
-	    
-	    for (Iterator<OnmsNode> it = nodes.iterator(); it.hasNext();) {
-	        OnmsNode node = it.next();
-	        Set<OnmsIpInterface> ifs = node.getIpInterfaces();
-	        for (Iterator<OnmsIpInterface> ifIter = ifs.iterator(); ifIter.hasNext();) {
-	            OnmsIpInterface ipIf = ifIter.next();
-	            Set<OnmsMonitoredService> svcs = ipIf.getMonitoredServices();
-	            for (Iterator<OnmsMonitoredService> svcIter = svcs.iterator(); svcIter.hasNext();) {
-	                OnmsMonitoredService svc = svcIter.next();
-	                if (svc.isDown()) {
-	                    color = AggregateStatus.ONE_SERVICE_DOWN;
-	                    return color;  //quick exit this mess
-	                }
-	            }
-	        }
-	    }
-	    return color;
-	}
-	private Integer computeDownCount(Collection<OnmsNode> nodes) {
-	    int totalNodesDown = 0;
-	    
-	    for (OnmsNode node : nodes) {
-	        if (node.isDown()) {
-	            totalNodesDown += 1;
-	        }
-	    }
-	    return new Integer(totalNodesDown);
-	}
 	private AggregateStatus computeStatusValues(Set<OnmsNode> nodes) {
-		if (nodes == null || nodes.isEmpty()) {
-	        setDownEntityCount(0);
-	        setTotalEntityCount(0);
-	        setStatus(AggregateStatus.ALL_NODES_UP);
-	    } else {
-	        setDownEntityCount(computeDownCount(nodes));
-	        setTotalEntityCount(nodes.size());
-	        setStatus(computeStatus(nodes));
-	    }
+        AggregateStatusVisitor statusVisitor = new AggregateStatusVisitor();
+        visitNodes(nodes, statusVisitor);
+        
+        setDownEntityCount(statusVisitor.getDownCount());
+        setTotalEntityCount(nodes.size());
+        setStatus(statusVisitor.getStatus());
 	    return this;
 	}
 
