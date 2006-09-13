@@ -64,6 +64,9 @@ import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.web.svclayer.AggregateStatus;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
 
 /**
  * The source for all network element business objects (nodes, interfaces,
@@ -2237,7 +2240,16 @@ public class NetworkElementFactory extends Object {
     
 
 
-    public static Node[] getNodesWithCategories(NodeDao nodeDao, CategoryDao categoryDao, String[] categories1, boolean onlyNodesWithDownAggregateStatus) {
+    public static Node[] getNodesWithCategories(TransactionTemplate transTemplate, final NodeDao nodeDao, final CategoryDao categoryDao, final String[] categories1, final boolean onlyNodesWithDownAggregateStatus) {
+    	return (Node[])transTemplate.execute(new TransactionCallback() {
+
+			public Object doInTransaction(TransactionStatus arg0) {
+				return getNodesWithCategories(nodeDao, categoryDao, categories1, onlyNodesWithDownAggregateStatus);	
+			}
+    		
+    	});
+    }
+   public static Node[] getNodesWithCategories(NodeDao nodeDao, CategoryDao categoryDao, String[] categories1, boolean onlyNodesWithDownAggregateStatus) {
         ArrayList<OnmsCategory> c1 = new ArrayList<OnmsCategory>(categories1.length);
         for (String category : categories1) {
                 c1.add(categoryDao.findByName(category));
@@ -2269,6 +2281,15 @@ public class NetworkElementFactory extends Object {
         return theirNodes.toArray(new Node[0]);
     }
 
+    public static Node[] getNodesWithCategories(TransactionTemplate transTemplate, final NodeDao nodeDao, final CategoryDao categoryDao, final String[] categories1, final String[] categories2, final boolean onlyNodesWithDownAggregateStatus) {
+    	return (Node[])transTemplate.execute(new TransactionCallback() {
+
+			public Object doInTransaction(TransactionStatus arg0) {
+				return getNodesWithCategories(nodeDao, categoryDao, categories1, categories2, onlyNodesWithDownAggregateStatus);	
+			}
+    		
+    	});
+    }
     public static Node[] getNodesWithCategories(NodeDao nodeDao, CategoryDao categoryDao, String[] categories1, String[] categories2, boolean onlyNodesWithDownAggregateStatus) {
         ArrayList<OnmsCategory> c1 = new ArrayList<OnmsCategory>(categories1.length);
         for (String category : categories1) {

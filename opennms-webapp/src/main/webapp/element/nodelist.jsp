@@ -52,6 +52,7 @@
 			org.opennms.web.outage.OutageModel,
 	        org.opennms.netmgt.dao.CategoryDao,
 	        org.opennms.netmgt.dao.NodeDao,
+	        org.springframework.transaction.support.TransactionTemplate,
 	        org.springframework.web.context.WebApplicationContext,
 	        org.springframework.web.context.support.WebApplicationContextUtils
 		   "
@@ -68,21 +69,11 @@
 <%
 
 WebApplicationContext m_webAppContext = WebApplicationContextUtils.getRequiredWebApplicationContext(getServletContext());
-NodeDao m_nodeDao; //= (NodeDao) m_webAppContext.getBean("nodeDao", Class.forName("org.opennms.netmgt.dao.NodeDao"));
-CategoryDao m_categoryDao; //= (CategoryDao) m_webAppContext.getBean("categoryDao", Class.forName("org.opennms.netmgt.dao.CategoryDao"));
+NodeDao m_nodeDao = (NodeDao) m_webAppContext.getBean("nodeDao", NodeDao.class);
+CategoryDao m_categoryDao = (CategoryDao) m_webAppContext.getBean("categoryDao", CategoryDao.class);
+TransactionTemplate m_transTemplate = (TransactionTemplate) m_webAppContext.getBean("transTemplate", TransactionTemplate.class);
 
-try {
-    m_nodeDao = (NodeDao) m_webAppContext.getBean("nodeDao", Class.forName("org.opennms.netmgt.dao.NodeDao"));
-} catch (ClassNotFoundException e) {
-    throw new ServletException(e);
 }
-
-try {
-    m_categoryDao = (CategoryDao) m_webAppContext.getBean("categoryDao", Class.forName("org.opennms.netmgt.dao.CategoryDao"));
-} catch (ClassNotFoundException e) {
-    throw new ServletException(e);
-}
-
 %>
 
 <%
@@ -111,7 +102,7 @@ try {
         isIfAliasSearch = true;
     } else if (categories1 != null && categories1.length != 0
 			   && categories2 != null && categories2.length != 0) {
-	    nodes = NetworkElementFactory.getNodesWithCategories(m_nodeDao, m_categoryDao, categories1, categories2, onlyNodesWithDownAggregateStatus);
+	    nodes = NetworkElementFactory.getNodesWithCategories(m_transTemplate, m_nodeDao, m_categoryDao, categories1, categories2, onlyNodesWithDownAggregateStatus);
         /*
         if (onlyNodesWithOutages) {
 			LinkedList<Node> newNodes = new LinkedList<Node>();
@@ -123,7 +114,7 @@ try {
         */
         categorySearch = true;
     } else if (categories1 != null && categories1.length != 0) {
-		nodes = NetworkElementFactory.getNodesWithCategories(m_nodeDao, m_categoryDao, categories1, onlyNodesWithDownAggregateStatus);
+		nodes = NetworkElementFactory.getNodesWithCategories(m_transTemplate, m_nodeDao, m_categoryDao, categories1, onlyNodesWithDownAggregateStatus);
 		/*
 	    if (onlyNodesWithOutages) {
 		    LinkedList<Node> newNodes = new LinkedList<Node>();
