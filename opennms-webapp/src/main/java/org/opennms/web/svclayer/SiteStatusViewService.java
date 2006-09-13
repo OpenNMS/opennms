@@ -61,9 +61,9 @@ public interface SiteStatusViewService {
     
     AggregateStatusView createAggregateStatusView(String statusViewName);
     
-    Collection<AggregateStatus> createAggreateStatuses(AggregateStatusView statusView);
+    Collection<AggregateStatus> createAggregateStatuses(AggregateStatusView statusView);
 
-    Collection<AggregateStatus> createAggreateStatuses(AggregateStatusView statusView, String statusSite);
+    Collection<AggregateStatus> createAggregateStatuses(AggregateStatusView statusView, String statusSite);
     
     Collection<AggregateStatus> createAggregateStatusesUsingNodeId(int nodeId, String viewName);
 

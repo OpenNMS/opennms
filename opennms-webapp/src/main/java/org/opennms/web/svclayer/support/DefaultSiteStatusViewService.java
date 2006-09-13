@@ -95,7 +95,7 @@ public class DefaultSiteStatusViewService implements SiteStatusViewService {
         OnmsNode node = m_nodeDao.load(nodeId);
         
         //TODO this is a hack.  need to use reflection to get the right column instead of building.
-        return createAggreateStatuses(createAggregateStatusView(viewName), node.getAssetRecord().getBuilding());
+        return createAggregateStatuses(createAggregateStatusView(viewName), node.getAssetRecord().getBuilding());
     }
 
     /**
@@ -107,9 +107,10 @@ public class DefaultSiteStatusViewService implements SiteStatusViewService {
     public AggregateStatusView createAggregateStatusView(String statusViewName) {
         
         AggregateStatusView statusView = new AggregateStatusView();
+        statusViewName = (statusViewName == null ? m_siteStatusViewConfigDao.getDefaultView().getName() : statusViewName);
+        
         View view = m_siteStatusViewConfigDao.getView(statusViewName);
         
-        statusViewName = (statusViewName == null ? m_siteStatusViewConfigDao.getDefaultView().getName() : statusViewName);
 
         statusView.setName(statusViewName);
         statusView.setColumnName(view.getColumnName());
@@ -117,7 +118,9 @@ public class DefaultSiteStatusViewService implements SiteStatusViewService {
         statusView.setTableName(view.getTableName());
         
         Set<AggregateStatusDefinition> statusDefs = new LinkedHashSet<AggregateStatusDefinition>();
-        final ArrayList rowDefs = m_siteStatusViewConfigDao.getView(statusViewName).getRows().getRowDefCollection();
+        final ArrayList rowDefs = view.getRows().getRowDefCollection();
+        
+        //Loop over the defined site status rows
         for (Iterator it = rowDefs.iterator(); it.hasNext();) {
             RowDef rowDef = (RowDef) it.next();
             AggregateStatusDefinition def = new AggregateStatusDefinition();
@@ -125,6 +128,7 @@ public class DefaultSiteStatusViewService implements SiteStatusViewService {
             
             Set<OnmsCategory> categories = new LinkedHashSet<OnmsCategory>();
             
+            //Loop over the defined categories and create model categories (OnmsCategory)
             for (Iterator catIter = rowDef.getCategoryCollection().iterator(); catIter.hasNext();) {
                 Category cat = (Category) catIter.next();
                 OnmsCategory category = m_categoryDao.findByName(cat.getName());
@@ -136,6 +140,7 @@ public class DefaultSiteStatusViewService implements SiteStatusViewService {
                 categories.add(category);
             }
             def.setCategories(categories);
+            statusDefs.add(def);
         }
         
         statusView.setStatusDefinitions(statusDefs);
@@ -147,9 +152,9 @@ public class DefaultSiteStatusViewService implements SiteStatusViewService {
      * Creates the collection of aggregated statuses by calling the creator with data filled from 
      * the passed in AggregateStatusView model object.
 
-     * @see org.opennms.web.svclayer.SiteStatusViewService#createAggreateStatuses(org.opennms.netmgt.model.AggregateStatusView)
+     * @see org.opennms.web.svclayer.SiteStatusViewService#createAggregateStatuses(org.opennms.netmgt.model.AggregateStatusView)
      */
-    public Collection<AggregateStatus> createAggreateStatuses(AggregateStatusView statusView) {
+    public Collection<AggregateStatus> createAggregateStatuses(AggregateStatusView statusView) {
         if (statusView == null) {
             throw new IllegalArgumentException("statusView argument cannot be null");
         }
@@ -161,9 +166,9 @@ public class DefaultSiteStatusViewService implements SiteStatusViewService {
      * This creator is used when wanting to use a different value than the defined column value defined
      * for the requested view.
      * 
-     * @see org.opennms.web.svclayer.SiteStatusViewService#createAggreateStatuses(org.opennms.netmgt.model.AggregateStatusView, java.lang.String)
+     * @see org.opennms.web.svclayer.SiteStatusViewService#createAggregateStatuses(org.opennms.netmgt.model.AggregateStatusView, java.lang.String)
      */
-    public Collection<AggregateStatus> createAggreateStatuses(AggregateStatusView statusView, String statusSite) {
+    public Collection<AggregateStatus> createAggregateStatuses(AggregateStatusView statusView, String statusSite) {
         if (statusView == null) {
             throw new IllegalArgumentException("statusView argument cannot be null");
         }
