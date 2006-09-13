@@ -365,7 +365,7 @@ public class OnmsNode extends OnmsEntity implements Serializable {
     /** 
      * The assert record associated with this node
      */
-    @OneToOne(mappedBy="node", cascade = CascadeType.ALL)
+    @OneToOne(mappedBy="node", cascade = CascadeType.ALL, fetch=FetchType.LAZY)
     public OnmsAssetRecord getAssetRecord() {
         return m_assetRecord;
     }
