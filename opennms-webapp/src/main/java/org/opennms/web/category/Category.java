@@ -238,6 +238,24 @@ public class Category {
         }
     }
 
+    /** Returns the outage CSS class for this category. */
+    public String getOutageClass() throws IOException, MarshalException, ValidationException {
+        if (m_lastUpdated == null) {
+            return "lightblue";
+        } else {
+            return CategoryUtil.getCategoryClass(this, getServicePercentage());
+        }
+    }
+
+    /** Returns the availability CSS class for this category. */
+    public String getAvailClass() throws IOException, MarshalException, ValidationException {
+        if (m_lastUpdated == null) {
+            return "lightblue";
+        } else {
+            return CategoryUtil.getCategoryClass(this);
+        }
+    }
+
     /** Returns the outage text for this category ("X of Y" nodes down). */
     public String getOutageText() {
         if (m_lastUpdated == null) {

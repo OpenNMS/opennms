@@ -120,19 +120,19 @@ public class CategoryList {
      * in alphabetical order by category name.
      * </p>
      */
-    public List getSections(Map categoryMap) throws IOException {
+    public List<Section> getSections(Map<String, Category> categoryMap) throws IOException {
         if (m_sections != null) {
             // Just return the display rules as a list.
             return Arrays.asList(m_sections);
         }
 
-        List sectionList = null;
+        List<Section> sectionList = null;
 
         Section section = new Section();
         section.setSectionName("Category");
 
         // Put the categories in a TreeMap to sort them alphabetically.
-        TreeMap orderedMap = new TreeMap(categoryMap);
+        TreeMap<String, Category> orderedMap = new TreeMap<String, Category>(categoryMap);
 
         // Iterate over the categories, adding each to the name list.
         for (Iterator i = orderedMap.entrySet().iterator(); i.hasNext();) {
@@ -143,23 +143,21 @@ public class CategoryList {
         }
 
         // Add our one section to the sections list.
-        sectionList = new ArrayList();
+        sectionList = new ArrayList<Section>();
         sectionList.add(section);
 
         return sectionList;
     }
 
-    public Map getCategoryData() throws IOException, MarshalException, ValidationException {
+    public Map<String, List<Category>> getCategoryData() throws IOException, MarshalException, ValidationException {
 
-        Map categoryMap = m_model.getCategoryMap();
-        List sectionList = getSections(categoryMap);
+        Map<String, Category> categoryMap = m_model.getCategoryMap();
+        List<Section> sectionList = getSections(categoryMap);
 
-        Map categoryData = new LinkedHashMap();
+        Map<String, List<Category>> categoryData = new LinkedHashMap<String, List<Category>>();
 
-        for (Iterator i = sectionList.iterator(); i.hasNext();) {
-            Section section = (Section) i.next();
-
-            List categories = new LinkedList();
+        for (Section section : sectionList) {
+            List<Category> categories = new LinkedList<Category>();
 
             String[] categoryNames = section.getCategory();
 

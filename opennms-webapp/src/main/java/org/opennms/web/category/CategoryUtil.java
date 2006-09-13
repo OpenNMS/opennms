@@ -93,6 +93,17 @@ public class CategoryUtil extends Object {
 
         return getCategoryColor(category.getNormalThreshold(), category.getWarningThreshold(), category.getValue());
     }
+    
+    /**
+     * Determine the CSS class to use for a given category value and thresholds.
+     */
+    public static String getCategoryClass(Category category) throws IOException, MarshalException, ValidationException {
+        if (category == null) {
+            throw new IllegalArgumentException("Cannot take null parameters.");
+        }
+
+        return getCategoryClass(category.getNormalThreshold(), category.getWarningThreshold(), category.getValue());
+    }
 
     /**
      * Determine the color to use for a given value and the given category's
@@ -104,6 +115,18 @@ public class CategoryUtil extends Object {
         }
 
         return getCategoryColor(category.getNormalThreshold(), category.getWarningThreshold(), value);
+    }
+
+    /**
+     * Determine the CSS color to use for a given value and the given category's
+     * thresholds.
+     */
+    public static String getCategoryClass(Category category, double value) throws IOException, MarshalException, ValidationException {
+        if (category == null) {
+            throw new IllegalArgumentException("Cannot take null parameters.");
+        }
+
+        return getCategoryClass(category.getNormalThreshold(), category.getWarningThreshold(), value);
     }
 
     /**

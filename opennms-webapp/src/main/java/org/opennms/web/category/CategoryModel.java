@@ -58,36 +58,36 @@ public class CategoryModel extends Object {
     public static final String OVERALL_AVAILABILITY_CATEGORY = "Overall Service Availability";
 
     /** The singleton instance of this class. */
-    private static CategoryModel instance;
+    private static CategoryModel m_instance;
 
     /**
      * Return the <code>CategoryModel</code>.
      */
     public synchronized static CategoryModel getInstance() throws IOException, MarshalException, ValidationException {
-        if (CategoryModel.instance == null) {
-            CategoryModel.instance = new CategoryModel();
+        if (CategoryModel.m_instance == null) {
+            CategoryModel.m_instance = new CategoryModel();
         }
 
-        return (CategoryModel.instance );
+        return (CategoryModel.m_instance );
     }
 
     /** A mapping of category names to category instances. */
-    protected HashMap categories = new HashMap();
+    private HashMap<String, Category> m_categoryMap = new HashMap<String, Category>();
 
     /** A reference to the CategoryFactory to get to category definitions. */
-    protected CatFactory catFactory = null;
+    private CatFactory m_factory = null;
 
     /** The Log4J category for logging status and debug messages. */
-    protected org.apache.log4j.Category log = org.opennms.core.utils.ThreadCategory.getInstance("RTC");
+    private org.apache.log4j.Category m_log = org.opennms.core.utils.ThreadCategory.getInstance("RTC");
 
     /**
      * Create the instance of the CategoryModel.
      */
     private CategoryModel() throws IOException, MarshalException, ValidationException {
         CategoryFactory.init();
-        this.catFactory = CategoryFactory.getInstance();
+        m_factory = CategoryFactory.getInstance();
 
-        this.log.debug("The CategoryModel object was created");
+        m_log.debug("The CategoryModel object was created");
     }
 
     /**
@@ -99,14 +99,14 @@ public class CategoryModel extends Object {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
 
-        return (Category) this.categories.get(categoryName);
+        return (Category) m_categoryMap.get(categoryName);
     }
 
     /**
      * Return a mapping of category names to instances.
      */
-    public Map getCategoryMap() {
-        return (Map) this.categories.clone();
+    public Map<String, Category> getCategoryMap() {
+        return (Map<String, Category>) m_categoryMap.clone();
     }
 
     /**
@@ -118,7 +118,7 @@ public class CategoryModel extends Object {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
 
-        return this.catFactory.getNormal(categoryName);
+        return m_factory.getNormal(categoryName);
     }
 
     /**
@@ -130,7 +130,7 @@ public class CategoryModel extends Object {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
 
-        return this.catFactory.getWarning(categoryName);
+        return m_factory.getWarning(categoryName);
     }
 
     /** Look up the category definition and return the category's description. */
@@ -140,7 +140,7 @@ public class CategoryModel extends Object {
         }
 
         String comment = null;
-        org.opennms.netmgt.config.categories.Category category = this.catFactory.getCategory(categoryName);
+        org.opennms.netmgt.config.categories.Category category = m_factory.getCategory(categoryName);
 
         if (category != null) {
             comment = category.getComment();
@@ -156,14 +156,14 @@ public class CategoryModel extends Object {
         }
 
         String categoryName = rtcCategory.getCatlabel();
-        org.opennms.netmgt.config.categories.Category categoryDef = this.catFactory.getCategory(categoryName);
+        org.opennms.netmgt.config.categories.Category categoryDef = m_factory.getCategory(categoryName);
         org.opennms.web.category.Category category = new org.opennms.web.category.Category(categoryDef, rtcCategory, new Date());
 
-        synchronized (this.categories) {
-            this.categories.put(categoryName, category);
+        synchronized (m_categoryMap) {
+            m_categoryMap.put(categoryName, category);
         }
 
-        this.log.debug(categoryName + " was updated");
+        m_log.debug(categoryName + " was updated");
     }
 
     /**
@@ -177,7 +177,7 @@ public class CategoryModel extends Object {
         cal.add(Calendar.DATE, -1);
         Date yesterday = cal.getTime();
 
-        return this.getNodeAvailability(nodeId, yesterday, now);
+        return getNodeAvailability(nodeId, yesterday, now);
     }
 
     /**
@@ -233,7 +233,7 @@ public class CategoryModel extends Object {
         cal.add(Calendar.DATE, -1);
         Date yesterday = cal.getTime();
 
-        return this.getNodeAvailability(nodeIds, yesterday, now);
+        return getNodeAvailability(nodeIds, yesterday, now);
     }    
     /**
      * Return the availability percentage for all managed services on the given
@@ -306,7 +306,7 @@ public class CategoryModel extends Object {
         cal.add(Calendar.DATE, -1);
         Date yesterday = cal.getTime();
 
-        return this.getInterfaceAvailability(nodeId, ipAddr, yesterday, now);
+        return getInterfaceAvailability(nodeId, ipAddr, yesterday, now);
     }
 
     /**
@@ -367,7 +367,7 @@ public class CategoryModel extends Object {
         cal.add(Calendar.DATE, -1);
         Date yesterday = cal.getTime();
 
-        return this.getServiceAvailability(nodeId, ipAddr, serviceId, yesterday, now);
+        return getServiceAvailability(nodeId, ipAddr, serviceId, yesterday, now);
     }
 
     /**
