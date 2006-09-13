@@ -5,7 +5,7 @@
     xsi:schemaLocation="http://www.opennms.org/xsd/config/site-status-views http://www.opennms.org/xsd/config/site-status-views.xsd " 
     default-view="default">
   <views>
-    <view column-name="building" column-type="varchar" name="default" >
+    <view name="default" >
       <rows>
         <row-def label="LB/Router">
           <category name="DEV_ROUTER"/>
