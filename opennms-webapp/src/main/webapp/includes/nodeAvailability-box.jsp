@@ -111,11 +111,11 @@
 <div id="availability-box">
 
 <table>
-  <tr>
+  <tr class="CellStatus">
     <td>Availability (last 24 hours)</td>
 
 <% if( overallRtcValue < 0 ) { %>
-      <td colspan="2" class="availunmanaged">Unmanaged</td>
+      <td colspan="2" class="Indeterminate">Unmanaged</td>
 <% } else { %>
       <td colspan="2" class="<%=CategoryUtil.getCategoryClass(this.normalThreshold, this.warningThreshold, overallRtcValue)%>"><%=CategoryUtil.formatValue(overallRtcValue)%>%</td>
 
@@ -131,10 +131,10 @@
             <% double intfValue = this.model.getInterfaceAvailability(nodeId, ipAddr); %>                              
             <% Service[] svcs = this.getServices(intf); %>
     
-            <tr>
-              <td class="availnode" rowspan="<%=svcs.length+1%>"><a href="element/interface.jsp?node=<%=nodeId%>&intf=<%=ipAddr%>"><%=ipAddr%></a></td>
+            <tr class="CellStatus">
+              <td rowspan="<%=svcs.length+1%>"><a href="element/interface.jsp?node=<%=nodeId%>&intf=<%=ipAddr%>"><%=ipAddr%></a></td>
               <% if (svcs.length < 1) { %>
-              <td colspan=2 class="availunmanaged">  Not Monitored </td>
+              <td colspan=2 class="Indeterminate">  Not Monitored </td>
               <% } else { %>
               <td class="<%=CategoryUtil.getCategoryClass(this.normalThreshold, this.warningThreshold, intfValue)%>" colspan="2"><%=CategoryUtil.formatValue(intfValue)%>%</td>
               <% } %>
@@ -145,14 +145,14 @@
                        
               <% if( service.isManaged() ) { %>
                 <% double svcValue = this.model.getServiceAvailability(nodeId, ipAddr, service.getServiceId()); %>
-                <tr>
+                <tr class="CellStatus">
                   <td><a href="element/service.jsp?node=<%=nodeId%>&intf=<%=ipAddr%>&service=<%=service.getServiceId()%>"><%=service.getServiceName()%></a></td>
                   <td class="<%=CategoryUtil.getCategoryClass(this.normalThreshold, this.warningThreshold, svcValue)%>"><%=CategoryUtil.formatValue(svcValue)%>%</td>
                 </tr>
               <% } else { %>
-                <tr>
+                <tr class="CellStatus">
                   <td><a href="element/service.jsp?node=<%=nodeId%>&intf=<%=ipAddr%>&service=<%=service.getServiceId()%>"><%=service.getServiceName()%></a></td>
-                  <td class="availunmanaged"><%=ElementUtil.getServiceStatusString(service)%></td>
+                  <td class="Indeterminate"><%=ElementUtil.getServiceStatusString(service)%></td>
                 </tr>
               <% } %>
             <% } %>
@@ -161,11 +161,11 @@
             <% if("0.0.0.0".equals(ipAddr)) {
             }
             else { %>
-            <tr>
-              <td class="standard">
+            <tr class="CellStatus">
+              <td>
               <a href="element/interface.jsp?node=<%=nodeId%>&intf=<%=ipAddr%>"><%=ipAddr%></a>
               </td>
-              <td class="availunmanaged" colspan="2"><%=ElementUtil.getInterfaceStatusString(intf)%></td>
+              <td class="Indeterminate" colspan="2"><%=ElementUtil.getInterfaceStatusString(intf)%></td>
             </tr>
             <% } %>
           <% } %>
