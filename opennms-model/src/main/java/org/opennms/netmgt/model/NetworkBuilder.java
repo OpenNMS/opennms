@@ -91,31 +91,6 @@ public class NetworkBuilder {
 
                 }
 	}
-
-    
-    /*
-    public InterfaceBuilder addInterface(String ipAddr) {
-        m_currentIf = new OnmsIpInterface(ipAddr, m_currentNode);
-        if (ifIndex == -1) {
-            m_currentIf.setIfIndex(null);
-        } else {
-            m_currentIf.setIfIndex(new Integer(ifIndex));
-        }
-        return new InterfaceBuilder(m_currentIf);
-    }
-    */
-
-    /*
-    public InterfaceBuilder addInterface(String ipAddr, int ifIndex) {
-        m_currentIf = new OnmsIpInterface(ipAddr, m_currentNode);
-        if (ifIndex == -1) {
-            m_currentIf.setIfIndex(null);
-        } else {
-            m_currentIf.setIfIndex(new Integer(ifIndex));
-        }
-        return new InterfaceBuilder(m_currentIf);
-    }
-    */
     
     public InterfaceBuilder addInterface(String ipAddr, OnmsSnmpInterface snmpInterface) {
         m_currentIf = new OnmsIpInterface(ipAddr, m_currentNode);
