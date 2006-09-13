@@ -141,5 +141,10 @@ public class AvailabilityReportLocatorJdbc extends SimpleJdbcDaoSupport implemen
 		return get(id);
 	}
 
+	public void initialize(Object obj) {
+		// TODO Auto-generated method stub
+		
+	}
+
 
 }
