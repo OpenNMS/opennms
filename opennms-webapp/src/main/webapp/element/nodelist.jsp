@@ -99,49 +99,11 @@ try {
         isIfAliasSearch = true;
     } else if (categories1 != null && categories1.length != 0
 			   && categories2 != null && categories2.length != 0) {
-        categorySearch = true;
         nodes = NetworkElementFactory.getNodesWithCategories(m_nodeDao, m_categoryDao, categories1, categories2);
-        
-
-        /*
-        if (categories.length != 2) {
-            throw new ServletException("only support two categories at this time");
-        }
-        */
-        
-        /*
-		ArrayList<OnmsCategory> c1 = new ArrayList<OnmsCategory>(categories1.length);
-		ArrayList<OnmsCategory> c2 = new ArrayList<OnmsCategory>(categories2.length);
-		for (String category : categories1) {
-			c1.add(m_categoryDao.findByName(category));
-		}
-		for (String category : categories2) {
-			c2.add(m_categoryDao.findByName(category));
-		}
-		System.out.println("c1: " + c1.get(0));
-		System.out.println("c2: " + c2.get(0));
-//		Collection<OnmsNode> ourNodes = m_nodeDao.findAllByCategoryLists(c1, c2);
-		Collection<OnmsNode> ourNodes1 = m_nodeDao.findAllByCategoryList(c1);
-		Collection<OnmsNode> ourNodes2 = m_nodeDao.findAllByCategoryList(c2);
-		Collection<OnmsNode> ourNodes = new LinkedList<OnmsNode>();
-		for (OnmsNode n1 : ourNodes1) {
-			for (OnmsNode n2 : ourNodes2) {
-			    if (n1.getId().equals(n2.getId())) {
-			        ourNodes.add(n1);
-			    }
-		    }
-		}
-		System.out.println("got: " + ourNodes.size());
-		System.out.println("got: " + ourNodes1.size());
-		System.out.println("got: " + ourNodes2.size()); 
-		ArrayList<Node> theirNodes = new ArrayList<Node>(ourNodes.size());
-		
-		for (OnmsNode on : ourNodes) {
-		    Node n = new Node();
-		}
-		
-		nodes = theirNodes.toArray(new Node[0]);
-		*/
+        categorySearch = true;
+    } else if (categories1 != null && categories1.length != 0) {
+		nodes = NetworkElementFactory.getNodesWithCategories(m_nodeDao, m_categoryDao, categories1);
+		categorySearch = true;
     } else {
         nodes = NetworkElementFactory.getAllNodes();
     }
