@@ -32,6 +32,8 @@
 
 package org.opennms.web.svclayer;
 
+import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 import org.opennms.netmgt.model.AbstractEntityVisitor;
@@ -49,7 +51,7 @@ public class AggregateStatus {
     
     private String m_label;
     private Integer m_totalEntityCount;
-    private Integer m_downEntityCount;
+    private Set<OnmsNode> m_downNodes;
     private String m_status;
     private String m_link;
     
@@ -68,10 +70,13 @@ public class AggregateStatus {
         m_status = color;
     }
     public Integer getDownEntityCount() {
-        return m_downEntityCount;
+        return m_downNodes.size();
     }
-    private void setDownEntityCount(Integer downEntityCount) {
-        m_downEntityCount = downEntityCount;
+    public Set<OnmsNode> getDownNodes() {
+    	return Collections.unmodifiableSet(m_downNodes);
+    }
+    private void setDownNodes(Set<OnmsNode> downNodes) {
+    	m_downNodes = downNodes;
     }
     public String getLabel() {
         return m_label;
@@ -90,7 +95,7 @@ public class AggregateStatus {
     public String toString() {
         StringBuffer sb = new StringBuffer(m_label == null ? "null" : m_label);
         sb.append(": ");
-        sb.append(m_downEntityCount == null ? -1 : m_downEntityCount);
+        sb.append(m_downNodes == null ? -1 : m_downNodes.size());
         sb.append(" down of ");
         sb.append(m_totalEntityCount == null ? -1 : m_totalEntityCount);
         sb.append(" total.");
@@ -99,7 +104,7 @@ public class AggregateStatus {
         
     final class AggregateStatusVisitor extends AbstractEntityVisitor {
 
-        int m_downCount = 0;
+        Set<OnmsNode> m_downNodes = new LinkedHashSet<OnmsNode>();
         String m_status = AggregateStatus.ALL_NODES_UP;
         boolean m_isCurrentNodeDown = true;
         
@@ -111,7 +116,7 @@ public class AggregateStatus {
         @Override
         public void visitNodeComplete(OnmsNode node) {
             if (m_isCurrentNodeDown) {
-                m_downCount++;
+                m_downNodes.add(node);
                 m_status = AggregateStatus.NODES_ARE_DOWN;
             }
             
@@ -128,13 +133,13 @@ public class AggregateStatus {
             }
         }
 
-        public Integer getDownCount() {
-            return m_downCount;
-        }
-
         public String getStatus() {
             return m_status;
         }
+
+		public Set<OnmsNode> getDownNodes() {
+			return m_downNodes;
+		}
 
         
     }
@@ -154,7 +159,7 @@ public class AggregateStatus {
         AggregateStatusVisitor statusVisitor = new AggregateStatusVisitor();
         visitNodes(nodes, statusVisitor);
         
-        setDownEntityCount(statusVisitor.getDownCount());
+        setDownNodes(statusVisitor.getDownNodes());
         setTotalEntityCount(nodes.size());
         setStatus(statusVisitor.getStatus());
 	    return this;
