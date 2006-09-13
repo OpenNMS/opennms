@@ -51,6 +51,7 @@ import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.config.C3P0ConnectionFactory;
 import org.opennms.netmgt.config.CategoryFactory;
 import org.opennms.netmgt.config.DataSourceFactory;
+import org.opennms.netmgt.config.SiteStatusViewsFactory;
 import org.opennms.netmgt.config.SurveillanceViewsFactory;
 import org.opennms.netmgt.config.ViewsDisplayFactory;
 import org.opennms.netmgt.model.AggregateStatusDefinition;
@@ -82,6 +83,8 @@ public class DefaultSiteStatusServiceIntegrationTest extends AbstractTransaction
         SurveillanceViewsFactory.setInstance(new SurveillanceViewsFactory("../opennms-daemon/src/main/filtered/etc/surveillance-views.xml"));
         CategoryFactory.setInstance(new CategoryFactory(new FileReader("../opennms-daemon/src/main/filtered/etc/categories.xml")));
         ViewsDisplayFactory.setInstance(new ViewsDisplayFactory("../opennms-daemon/src/main/filtered/etc/viewsdisplay.xml"));
+        
+        SiteStatusViewsFactory.setInstance(new SiteStatusViewsFactory("../opennms-daemon/src/main/filtered/etc/site-status-views.xml"));
     }
     
     /**
@@ -100,22 +103,12 @@ public class DefaultSiteStatusServiceIntegrationTest extends AbstractTransaction
                 "org/opennms/web/svclayer/applicationContext-svclayer.xml" };
     }
     
-    public void testCreateAggregateStatusUsingViewName() {
-        String viewName = "HAT102706";
-        AggregateStatusView view = m_aggregateService.createAggregateStatusView(viewName);
+    public void testCreateAggregateStatusView() {
         
-        Collection<AggregateStatus> aggrStati = m_aggregateService.createAggreateStatuses(view);
+        AggregateStatusView view = m_aggregateService.createAggregateStatusView(null);
         
-        long entityCnt = 0;
-        for (Iterator it = aggrStati.iterator(); it.hasNext();) {
-            AggregateStatus status = (AggregateStatus) it.next();
-            entityCnt += status.getTotalEntityCount();
-        }
-        System.out.println("Total nodes in status view: "+entityCnt);
-        
-        assertNotNull(aggrStati);
-        assertFalse(aggrStati.size() == 0);
-        
+        assertNotNull(view);
+        assertFalse(view.getStatusDefinitions().isEmpty());
     }
     
     public void testCreateAggregateStatusUsingNodeId() {

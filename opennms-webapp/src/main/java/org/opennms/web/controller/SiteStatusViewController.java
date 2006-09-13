@@ -68,7 +68,7 @@ public class SiteStatusViewController extends AbstractController {
     
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest req, HttpServletResponse resp) throws Exception {
-        ModelAndView mav = new ModelAndView("aggregateStatus");
+        ModelAndView mav = new ModelAndView("siteStatus");
         String statusView = req.getParameter("statusView");
         String statusSite = req.getParameter("statusSite");
         String nodeId = req.getParameter("nodeid");
@@ -78,9 +78,9 @@ public class SiteStatusViewController extends AbstractController {
         if (nodeId != null && Integer.parseInt(nodeId) > 0) {
             aggrStati = m_service.createAggregateStatusesUsingNodeId(Integer.parseInt(nodeId), statusView);
         } else if (statusSite == null) {
-            aggrStati = m_service.createAggreateStatuses(view);
+            aggrStati = m_service.createAggregateStatuses(view);
         } else {
-            aggrStati = m_service.createAggreateStatuses(view, statusSite);
+            aggrStati = m_service.createAggregateStatuses(view, statusSite);
             //Don't persist this, convenience for display only.
             view.setColumnValue(statusSite);
         }
