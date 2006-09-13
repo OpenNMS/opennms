@@ -34,9 +34,18 @@ package org.opennms.netmgt.collectd.jmx;
 
 import org.opennms.netmgt.collectd.CollectorConfigDaoImpl;
 import org.opennms.netmgt.config.DataSourceFactory;
+import org.opennms.netmgt.dao.IpInterfaceDao;
+import org.opennms.netmgt.dao.MonitoredServiceDao;
+import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.dao.jdbc.IpInterfaceDaoJdbc;
 import org.opennms.netmgt.dao.jdbc.MonitoredServiceDaoJdbc;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
+import org.springframework.beans.factory.BeanFactory;
+import org.springframework.beans.factory.access.BeanFactoryLocator;
+import org.springframework.beans.factory.access.BeanFactoryReference;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.access.DefaultLocatorFactory;
+import org.springframework.transaction.support.TransactionTemplate;
 
 public class Collectd implements CollectdMBean {
 	org.opennms.netmgt.collectd.Collectd m_bean = null;
@@ -50,10 +59,19 @@ public class Collectd implements CollectdMBean {
 
 
 	public void init() {
+        BeanFactoryLocator bfl = DefaultLocatorFactory.getInstance();
+        BeanFactoryReference bf = bfl.useBeanFactory("daoContext");
+		MonitoredServiceDao monitoredServiceDao = (MonitoredServiceDao) bf.getFactory().getBean("monitoredServiceDao");
+		IpInterfaceDao ipInterfaceDao = (IpInterfaceDao) bf.getFactory().getBean("ipInterfaceDao");
+		NodeDao nodeDao = (NodeDao) bf.getFactory().getBean("nodeDao");
+		TransactionTemplate transTemplate = (TransactionTemplate) bf.getFactory().getBean("transactionTemplate");
+
 		getBean().setCollectorConfigDao(new CollectorConfigDaoImpl());
-		getBean().setMonitoredServiceDao(new MonitoredServiceDaoJdbc(DataSourceFactory.getInstance()));
-		getBean().setIpInterfaceDao(new IpInterfaceDaoJdbc(DataSourceFactory.getInstance()));
+		getBean().setMonitoredServiceDao(monitoredServiceDao);
+		getBean().setIpInterfaceDao(ipInterfaceDao);
+		getBean().setNodeDao(nodeDao);
 		getBean().setEventIpcManager(EventIpcManagerFactory.getIpcManager());
+		getBean().setTransactionTemplate(transTemplate);
 
         getBean().init();
     }

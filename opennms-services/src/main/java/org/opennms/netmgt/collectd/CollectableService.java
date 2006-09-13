@@ -51,6 +51,9 @@ import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.scheduler.ReadyRunnable;
 import org.opennms.netmgt.scheduler.Scheduler;
 import org.opennms.netmgt.xml.event.Event;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
 
 /**
  * <P>
@@ -98,6 +101,8 @@ final class CollectableService implements ReadyRunnable {
 
 	private CollectionAgent m_agent;
 
+	private TransactionTemplate m_transTemplate;
+
     /**
      * Constructs a new instance of a CollectableService object.
      * @param iface TODO
@@ -112,11 +117,12 @@ final class CollectableService implements ReadyRunnable {
      *            Service name
      * 
      */
-    protected CollectableService(OnmsIpInterface iface, CollectionSpecification spec, Scheduler scheduler, SchedulingCompletedFlag schedulingCompletedFlag) {
+    protected CollectableService(OnmsIpInterface iface, CollectionSpecification spec, Scheduler scheduler, SchedulingCompletedFlag schedulingCompletedFlag, TransactionTemplate transTemplate) {
         m_agent = new CollectionAgent(iface);
         m_spec = spec;
         m_scheduler = scheduler;
         m_schedulingCompletedFlag = schedulingCompletedFlag;
+        m_transTemplate = transTemplate;
 
         m_nodeId = iface.getNode().getId().intValue();
         m_status = ServiceCollector.COLLECTION_SUCCEEDED;
@@ -272,7 +278,7 @@ final class CollectableService implements ReadyRunnable {
         }
     	// Reschedule the service
     	//
-        m_scheduler.schedule(m_spec.getInterval(), this);
+        m_scheduler.schedule(m_spec.getInterval(), getReadyRunnable());
     }
 
 	private void updateStatus(int status) {
@@ -485,6 +491,10 @@ final class CollectableService implements ReadyRunnable {
 	private void reinitialize() {
 		m_spec.release(m_agent);
 		m_spec.initialize(m_agent);
+	}
+
+	public ReadyRunnable getReadyRunnable() {
+		return this;
 	}
 
 }

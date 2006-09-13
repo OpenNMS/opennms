@@ -2,7 +2,10 @@ package org.opennms.netmgt.importer.jmx;
 
 import org.opennms.core.fiber.Fiber;
 import org.opennms.core.utils.ThreadCategory;
+import org.springframework.beans.factory.access.BeanFactoryLocator;
+import org.springframework.beans.factory.access.BeanFactoryReference;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.access.DefaultLocatorFactory;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 public class ImporterService implements ImporterServiceMBean {
@@ -25,8 +28,13 @@ public class ImporterService implements ImporterServiceMBean {
     public void start() {
     	ThreadCategory.setPrefix(ImporterService.NAME);
         m_status = Fiber.STARTING;
-        ThreadCategory.getInstance().debug("SPRING: thread.classLoader="+Thread.currentThread().getContextClassLoader());;
-        m_context = new ClassPathXmlApplicationContext(new String[] { "/org/opennms/netmgt/importer/importer-context.xml" , "/META-INF/opennms/applicationContext-dao.xml" });
+        ThreadCategory.getInstance().debug("SPRING: thread.classLoader="+Thread.currentThread().getContextClassLoader());
+
+        BeanFactoryLocator bfl = DefaultLocatorFactory.getInstance();
+        BeanFactoryReference bf = bfl.useBeanFactory("daoContext");
+        ApplicationContext daoContext = (ApplicationContext) bf.getFactory();
+        
+        m_context = new ClassPathXmlApplicationContext(new String[] { "/org/opennms/netmgt/importer/importer-context.xml" }, daoContext);
         ThreadCategory.getInstance().debug("SPRING: context.classLoader="+m_context.getClassLoader());
         m_status = Fiber.RUNNING;
     }

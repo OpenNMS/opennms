@@ -63,6 +63,7 @@ import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.dao.CollectorConfigDao;
 import org.opennms.netmgt.dao.IpInterfaceDao;
 import org.opennms.netmgt.dao.MonitoredServiceDao;
+import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.eventd.EventIpcManager;
 import org.opennms.netmgt.eventd.EventListener;
 import org.opennms.netmgt.model.OnmsIpInterface;
@@ -75,6 +76,9 @@ import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.Parms;
 import org.opennms.netmgt.xml.event.Value;
 import org.opennms.protocols.ip.IPv4Address;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
 
 public final class Collectd extends AbstractServiceDaemon implements EventListener {
     /**
@@ -117,6 +121,10 @@ public final class Collectd extends AbstractServiceDaemon implements EventListen
 	private SchedulingCompletedFlag m_schedulingCompletedFlag = new SchedulingCompletedFlag();
 
 	private EventIpcManager m_eventIpcManager;
+
+	private TransactionTemplate m_transTemplate;
+
+	private NodeDao m_nodeDao;
 
     /**
      * Constructor.
@@ -252,16 +260,25 @@ public final class Collectd extends AbstractServiceDaemon implements EventListen
      *             if database errors encountered.
      */
     private void scheduleExistingInterfaces() throws SQLException {
-    	// Loop through collectors and schedule for each one present
-    	for (Iterator it = getCollectorConfigDao().getCollectorNames().iterator(); it.hasNext();) {
-    		scheduleInterfacesWithService((String) it.next());
-		}
+    	
+    	m_transTemplate.execute(new TransactionCallback() {
+
+			public Object doInTransaction(TransactionStatus status) {
+		    	// Loop through collectors and schedule for each one present
+		    	for (Iterator it = getCollectorConfigDao().getCollectorNames().iterator(); it.hasNext();) {
+		    		scheduleInterfacesWithService((String) it.next());
+				}
+		    	return null;
+			}
+    		
+    	});
     }
 
 	private void scheduleInterfacesWithService(String svcName) {
 		log().debug("scheduleInterfacesWithService: svcName = " + svcName);
 
-		Collection ifsWithServices = getIpInterfaceDao().findByServiceType(svcName);
+		
+		Collection ifsWithServices = getIpInterfaceDao().findHierarchyByServiceType(svcName);
 		for (Iterator it = ifsWithServices.iterator(); it.hasNext();) {
 			OnmsIpInterface iface = (OnmsIpInterface) it.next();
 			scheduleInterface(iface, svcName, true);
@@ -284,7 +301,8 @@ public final class Collectd extends AbstractServiceDaemon implements EventListen
      */
 	private void scheduleInterface(int nodeId, String ipAddress, String svcName, boolean existing) {
     	OnmsMonitoredService svc = getMonitoredServiceDao().get(nodeId, ipAddress, svcName);
-    	scheduleInterface(svc.getIpInterface(), svc.getServiceType().getName(), existing);
+    	OnmsIpInterface ipInterface = svc.getIpInterface();
+		scheduleInterface(ipInterface, svc.getServiceType().getName(), existing);
     }
     	
 	private void scheduleInterface(OnmsIpInterface iface, String svcName, boolean existing) {
@@ -324,13 +342,14 @@ public final class Collectd extends AbstractServiceDaemon implements EventListen
                  * interface,
                  * service and package pairing
                  */
-                cSvc = new CollectableService(iface, spec, getScheduler(), m_schedulingCompletedFlag);
+                
+                cSvc = new CollectableService(iface, spec, getScheduler(), m_schedulingCompletedFlag, m_transTemplate);
 
                 // Add new collectable service to the colleable service list.
                 m_collectableServices.add(cSvc);
 
                 // Schedule the collectable service for immediate collection
-                getScheduler().schedule(0, cSvc);
+                getScheduler().schedule(0, cSvc.getReadyRunnable());
 
                 if (log().isDebugEnabled()) {
                     log().debug("scheduleInterface: " + iface +'/' + svcName + " collection");
@@ -344,6 +363,16 @@ public final class Collectd extends AbstractServiceDaemon implements EventListen
             }
         } // end while more packages exist
     }
+
+	private void fullyLoadInterface(OnmsIpInterface iface) {
+		m_nodeDao.getHierarchy(iface.getNode().getId());
+		getIpInterfaceDao().initialize(iface.getNode());
+		getIpInterfaceDao().initialize(iface.getSnmpInterface());
+		getIpInterfaceDao().initialize(iface.getSnmpInterface().getIpInterfaces());
+		getIpInterfaceDao().initialize(iface.getMonitoredServices());
+		getIpInterfaceDao().initialize(iface.getNode().getSnmpInterfaces());
+		getIpInterfaceDao().initialize(iface.getNode().getIpInterfaces());
+	}
 
 	/**
      * Returns true if specified address/pkg pair is already represented in the
@@ -406,7 +435,20 @@ public final class Collectd extends AbstractServiceDaemon implements EventListen
 	 * @param processor TODO
 	 * 
 	 */
-	public void onEvent(Event event) {
+	public void onEvent(final Event event) {
+		
+		m_transTemplate.execute(new TransactionCallback() {
+
+			public Object doInTransaction(TransactionStatus status) {
+				onEventInTransaction(event);
+				return null;
+			}
+			
+		});
+
+	}
+
+	private void onEventInTransaction(Event event) {
 		// print out the uei
 		//
 		log().debug("received event, uei = " + event.getUei());
@@ -436,7 +478,6 @@ public final class Collectd extends AbstractServiceDaemon implements EventListen
 		} catch (InsufficientInformationException e) {
 			log().info(e.getMessage());
 		}
-
 	}
 
 	private void handleDupNodeDeleted(Event event) throws InsufficientInformationException {
@@ -1064,5 +1105,13 @@ public final class Collectd extends AbstractServiceDaemon implements EventListen
 
 	private IpInterfaceDao getIpInterfaceDao() {
 		return m_ifSvcDao;
+	}
+
+	public void setTransactionTemplate(TransactionTemplate transTemplate) {
+		m_transTemplate = transTemplate;
+	}
+
+	public void setNodeDao(NodeDao nodeDao) {
+		m_nodeDao = nodeDao;
 	}
 }
