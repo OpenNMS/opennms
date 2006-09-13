@@ -230,9 +230,7 @@ public class DefaultSurveillanceService implements SurveillanceService {
                 SimpleWebTable.Cell cell = webTable.addCell(aggStatus.getDownEntityCount()+" of "+aggStatus.getTotalEntityCount(), aggStatus.getStatus());
 
                 if (aggStatus.getDownEntityCount() > 0) {
-                    cell.setLink(createNodePageUrl(sView, colIndex, rowIndex)); //.getColumnLabel(colIndex), sView.getRowLabel(rowIndex)));
-                    //cell.setLink(createNodePageUrl(sView.getColumnLabel(colIndex), sView.getRowLabel(rowIndex)));
-                    //m_foundDownNode = null; //what a hack
+                    cell.setLink(createNodePageUrl(sView, colIndex, rowIndex));
                 }
             }
                 
@@ -242,6 +240,12 @@ public class DefaultSurveillanceService implements SurveillanceService {
         return webTable;
     }
 
+    /*
+     * This creates a relative url to the node list page and sets the category
+     * parameters to show the categories for this cell.
+     * FIXME: this code should move to the jsp after the status table is
+     * enhanced to support this requirement.
+     */
     private String createNodePageUrl(SurveillanceView view, int colIndex, int rowIndex) {
         Set<OnmsCategory> columns = view.getCategoriesForColumn(colIndex); 
         Set<OnmsCategory> rows = view.getCategoriesForRow(rowIndex);
@@ -256,33 +260,6 @@ public class DefaultSurveillanceService implements SurveillanceService {
         return "element/nodelist.jsp"
             + "?"
             + StringUtils.collectionToDelimitedString(params, "&");
-    }
-
-    private String createNodePageUrl(String columnLabel, String rowLabel) {
-        return "element/nodelist.jsp"
-            + "?"
-            + "category1=" + columnLabel
-            + "&"
-            + "category2=" + rowLabel;
-    }
-
-    /*
-     * This creates a relative url to the node page and sets the node parameter
-     * FIXME: this code should move to the jsp after the status table is enhanced to support
-     * this requirement.
-     */
-    private String createNodePageUrl(AggregateStatus aggStatus) {
-        return "element/nodelist.jsp"
-            + "?"
-            + "category=" + aggStatus.getLabel()
-            + "&"
-            + "category=" + aggStatus.getLabel();
-        /*
-        if (m_foundDownNode != null) {
-            return "element/node.jsp?node=" + m_foundDownNode.getId();
-        }
-        return null;
-        */
     }
 
     public NodeDao getNodeDao() {
