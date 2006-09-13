@@ -106,4 +106,9 @@ public class SqlMapClientAggStatViewDao extends SqlMapClientDaoSupport
 	public AggregateStatusView load(Integer id) {
 		return get(id);
 	}
+
+	public void initialize(Object obj) {
+		// TODO Auto-generated method stub
+		
+	}
 }

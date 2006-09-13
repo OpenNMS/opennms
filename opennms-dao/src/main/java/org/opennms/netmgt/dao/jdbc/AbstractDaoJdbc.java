@@ -59,5 +59,11 @@ public class AbstractDaoJdbc extends JdbcDaoSupport {
 		}
 		return true;
 	}
+	
+	public void initialize(Object obj) {
+		// TODO Auto-generated method stub
+		
+	}
+
 
 }

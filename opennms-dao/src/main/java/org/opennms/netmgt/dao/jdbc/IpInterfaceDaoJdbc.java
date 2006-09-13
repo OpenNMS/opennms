@@ -284,5 +284,15 @@ public class IpInterfaceDaoJdbc extends AbstractDaoJdbc implements IpInterfaceDa
         set.reset();
     }
 
+	public Collection<OnmsIpInterface> findHierarchyByServiceType(String svcName) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public void initialize(Object obj) {
+		// TODO Auto-generated method stub
+		
+	}
+
 
 }
