@@ -34,6 +34,8 @@
 
 package org.opennms.web;
 
+import java.io.UnsupportedEncodingException;
+import java.lang.reflect.UndeclaredThrowableException;
 import java.net.InetAddress;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
@@ -143,7 +145,12 @@ public abstract class Util extends Object {
      * @return encoded string
      */
     public static String encode(String string) {
-        return URLEncoder.encode(string);
+        try {
+            return URLEncoder.encode(string, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            // UTF-8 should *never* throw this
+            throw new UndeclaredThrowableException(e);
+        }
     }
 
     /**
@@ -154,7 +161,12 @@ public abstract class Util extends Object {
      * @return decoded string
      */
     public static String decode(String string) {
-        return URLDecoder.decode(string);
+        try {
+            return URLDecoder.decode(string, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            // UTF-8 should *never* throw this
+            throw new UndeclaredThrowableException(e);
+        }
     }
 
     /**
