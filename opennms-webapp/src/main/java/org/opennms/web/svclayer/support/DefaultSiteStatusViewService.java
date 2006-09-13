@@ -41,7 +41,6 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Set;
 
 import org.opennms.netmgt.config.siteStatusViews.Category;
@@ -57,7 +56,7 @@ import org.opennms.web.Util;
 import org.opennms.web.svclayer.AggregateStatus;
 import org.opennms.web.svclayer.SiteStatusViewService;
 import org.opennms.web.svclayer.dao.SiteStatusViewConfigDao;
-import org.springframework.util.StringUtils;
+import org.springframework.dao.DataRetrievalFailureException;
 
 /**
  * This service layer class creates a collection that represents the current
@@ -187,7 +186,7 @@ public class DefaultSiteStatusViewService implements SiteStatusViewService {
             status.setLabel(statusDef.getName());
             
             if (AggregateStatus.NODES_ARE_DOWN.equals(status.getStatus())) {
-                status.setLink(createNodePageUrl(statusDef, status));
+                status.setLink(createNodePageUrl(statusView, status));
             }
             
             stati.add(status);
@@ -196,14 +195,26 @@ public class DefaultSiteStatusViewService implements SiteStatusViewService {
         return stati;
     }
     
-    private String createNodePageUrl(AggregateStatusDefinition statusDef, AggregateStatus status) {
+    private String createNodePageUrl(AggregateStatusView statusView, AggregateStatus status) {
         
-        List<String> params = new ArrayList<String>(statusDef.getCategories().size());
-        Set<OnmsCategory> categories = statusDef.getCategories();
-        for (OnmsCategory category : categories) {
-            params.add("category1=" + Util.encode(category.getName()));
+        if (status.getDownEntityCount() == 1) {
+            OnmsNode node = status.getDownNodes().iterator().next();
+            StringBuffer buf = new StringBuffer("element/node.jsp?");
+            buf.append("node=");
+            buf.append(node.getId());
+            return buf.toString();
+        } else {
+            StringBuffer buf = new StringBuffer("element/nodelist.jsp?");
+            buf.append("statusViewName=");
+            buf.append(Util.encode(statusView.getName()));
+            buf.append('&');
+            buf.append("statusSite=");
+            buf.append(Util.encode(statusView.getColumnValue()));
+            buf.append('&');
+            buf.append("statusRowLabel=");
+            buf.append(Util.encode(status.getLabel()));
+            return buf.toString();
         }
-        return "element/nodelist.jsp" + "?" + StringUtils.collectionToDelimitedString(params, "&");
         
     }
     
@@ -229,6 +240,19 @@ public class DefaultSiteStatusViewService implements SiteStatusViewService {
             throw new IllegalArgumentException("statusView only currently supports asset table columns");
         }
         return createAggregateStatusUsingAssetColumn(statusView);
+    }
+
+    public AggregateStatus getAggregateStatus(String statusViewName, String statusSite, String rowLabel) {
+        
+        AggregateStatusView statusView = createAggregateStatusView(statusViewName);
+        Collection<AggregateStatus> stati = createAggregateStatuses(statusView, statusSite);
+        
+        for (AggregateStatus status : stati) {
+            if (status.getLabel().equals(rowLabel)) {
+                return status;
+            }
+        }
+        throw new DataRetrievalFailureException("Unable to locate row: "+rowLabel+" for status view: "+statusViewName);
     }
 
 }
