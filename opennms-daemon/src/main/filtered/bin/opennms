@@ -209,7 +209,7 @@ doStart(){
     esac
 
 
-    $JAVA_CMD -Dopennms.home=$OPENNMS_HOME -jar $BOOTSTRAP check
+    $JAVA_CMD -server -Dopennms.home=$OPENNMS_HOME -jar $BOOTSTRAP check
     if [ $? -ne 0 ]; then
 	echo "OpenNMS runs better if you start up the database first." >&2
 	return 1
