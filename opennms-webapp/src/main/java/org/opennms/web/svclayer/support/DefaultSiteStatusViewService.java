@@ -41,6 +41,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.opennms.netmgt.config.siteStatusViews.Category;
@@ -52,9 +53,11 @@ import org.opennms.netmgt.model.AggregateStatusDefinition;
 import org.opennms.netmgt.model.AggregateStatusView;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.web.Util;
 import org.opennms.web.svclayer.AggregateStatus;
 import org.opennms.web.svclayer.SiteStatusViewService;
 import org.opennms.web.svclayer.dao.SiteStatusViewConfigDao;
+import org.springframework.util.StringUtils;
 
 /**
  * This service layer class creates a collection that represents the current
@@ -79,25 +82,8 @@ public class DefaultSiteStatusViewService implements SiteStatusViewService {
     private NodeDao m_nodeDao;
     private CategoryDao m_categoryDao;
     private SiteStatusViewConfigDao m_siteStatusViewConfigDao;
-    private OnmsNode m_foundDownNode;
-
     
     
-    /**
-     * Use the node id to find the value assciated with column defined in the view.  The view defines a column
-     * and column value to be used by default.  This method determines the column value using the value associated
-     * with the asset record for the given nodeid.
-     * 
-     * @see org.opennms.web.svclayer.SiteStatusViewService#createAggregateStatusesUsingNodeId(int, java.lang.String)
-     */
-    public Collection<AggregateStatus> createAggregateStatusesUsingNodeId(int nodeId, String viewName) {
-
-        OnmsNode node = m_nodeDao.load(nodeId);
-        
-        //TODO this is a hack.  need to use reflection to get the right column instead of building.
-        return createAggregateStatuses(createAggregateStatusView(viewName), node.getAssetRecord().getBuilding());
-    }
-
     /**
      * This creator looks up a configured status view by name and calls the creator that 
      * accepts the AggregateStatusView model object.
@@ -149,19 +135,22 @@ public class DefaultSiteStatusViewService implements SiteStatusViewService {
 
 
     /**
-     * Creates the collection of aggregated statuses by calling the creator with data filled from 
-     * the passed in AggregateStatusView model object.
-
-     * @see org.opennms.web.svclayer.SiteStatusViewService#createAggregateStatuses(org.opennms.netmgt.model.AggregateStatusView)
+     * Use the node id to find the value assciated with column defined in the view.  The view defines a column
+     * and column value to be used by default.  This method determines the column value using the value associated
+     * with the asset record for the given nodeid.
+     * 
+     * @see org.opennms.web.svclayer.SiteStatusViewService#createAggregateStatusesUsingNodeId(int, java.lang.String)
      */
-    public Collection<AggregateStatus> createAggregateStatuses(AggregateStatusView statusView) {
-        if (statusView == null) {
-            throw new IllegalArgumentException("statusView argument cannot be null");
-        }
-        return createAggregateStatus(statusView.getTableName(), statusView.getColumnName(), statusView.getColumnValue(), statusView.getStatusDefinitions());
+    public Collection<AggregateStatus> createAggregateStatusesUsingNodeId(int nodeId, String viewName) {
+
+        OnmsNode node = m_nodeDao.load(nodeId);
+        
+        //TODO this is a hack.  need to use reflection to get the right column instead of building.
+        return createAggregateStatuses(createAggregateStatusView(viewName), node.getAssetRecord().getBuilding());
     }
 
-    
+
+
     /**
      * This creator is used when wanting to use a different value than the defined column value defined
      * for the requested view.
@@ -172,20 +161,15 @@ public class DefaultSiteStatusViewService implements SiteStatusViewService {
         if (statusView == null) {
             throw new IllegalArgumentException("statusView argument cannot be null");
         }
-        return createAggregateStatus(statusView.getTableName(), statusView.getColumnName(), statusSite, statusView.getStatusDefinitions());
+        statusView.setColumnValue(statusSite);
+        return createAggregateStatusUsingAssetColumn(statusView);
     }
 
     
-    private Collection<AggregateStatus> createAggregateStatus(String tableName, String columnName, String columnValue, Collection<AggregateStatusDefinition> statusDefinitions) {
-        if (tableName != null && !tableName.equalsIgnoreCase("assets")) {
-            throw new UnsupportedOperationException("This service currently only implmented for aggregation on asset columns.");
+    public Collection<AggregateStatus> createAggregateStatusUsingAssetColumn(AggregateStatusView statusView) {
+        if (statusView == null) {
+            throw new IllegalArgumentException("statusView argument cannot be null");
         }
-        return createAggregateStatusUsingAssetColumn(columnName, columnValue, statusDefinitions);
-    }
-
-    public Collection<AggregateStatus> createAggregateStatusUsingAssetColumn(String assetColumn,
-            String columnValue, Collection<AggregateStatusDefinition> categoryGrouping) {
-        
         /*
          * We'll return this collection populated with all the aggregated statuss for the
          * devices in the building (site) by for each group of categories.
@@ -195,19 +179,16 @@ public class DefaultSiteStatusViewService implements SiteStatusViewService {
         /*
          * Iterate over the status definitions and create aggregated statuss
          */
-        for (AggregateStatusDefinition statusDef : categoryGrouping) {
+        for (AggregateStatusDefinition statusDef : statusView.getStatusDefinitions()) {
             
-            Collection<OnmsNode> nodes = m_nodeDao.findAllByVarCharAssetColumnCategoryList(assetColumn, columnValue, statusDef.getCategories());
-            
-//            for (OnmsNode node : nodes) {
-//                m_nodeDao.getHierarchy(node.getId());
-//            }
-            
+            Collection<OnmsNode> nodes = m_nodeDao.findAllByVarCharAssetColumnCategoryList(statusView.getColumnName(), statusView.getColumnValue(), statusDef.getCategories());
             
             AggregateStatus status = new AggregateStatus(new HashSet<OnmsNode>(nodes));
+            status.setLabel(statusDef.getName());
             
-            status.setLabel((m_foundDownNode == null ? statusDef.getName(): createNodePageUrl(statusDef.getName())));
-            m_foundDownNode = null; //what a hack  make the model (as in MAV) better
+            if (AggregateStatus.NODES_ARE_DOWN.equals(status.getStatus())) {
+                status.setLink(createNodePageUrl(statusDef, status));
+            }
             
             stati.add(status);
         }
@@ -215,18 +196,17 @@ public class DefaultSiteStatusViewService implements SiteStatusViewService {
         return stati;
     }
     
-    /*
-     * This creates a relative url to the node page and sets the node parameter
-     * FIXME: this code should move to the jsp after the status table is enhanced to support
-     * this requirement.
-     */
-    private String createNodePageUrl(String label) {
-        if (m_foundDownNode != null) {
-            label = "<a href=\"element/node.jsp?node="+m_foundDownNode.getId()+"\">"+label+"</a>";
+    private String createNodePageUrl(AggregateStatusDefinition statusDef, AggregateStatus status) {
+        
+        List<String> params = new ArrayList<String>(statusDef.getCategories().size());
+        Set<OnmsCategory> categories = statusDef.getCategories();
+        for (OnmsCategory category : categories) {
+            params.add("category1=" + Util.encode(category.getName()));
         }
-        return label;
+        return "element/nodelist.jsp" + "?" + StringUtils.collectionToDelimitedString(params, "&");
+        
     }
-
+    
     public NodeDao getNodeDao() {
         return m_nodeDao;
     }
@@ -241,6 +221,14 @@ public class DefaultSiteStatusViewService implements SiteStatusViewService {
     
     public void setSiteStatusViewConfigDao(SiteStatusViewConfigDao dao) {
         m_siteStatusViewConfigDao = dao;
+    }
+
+
+    public Collection<AggregateStatus> createAggregateStatuses(AggregateStatusView statusView) {
+        if (! "assets".equalsIgnoreCase("assets")) {
+            throw new IllegalArgumentException("statusView only currently supports asset table columns");
+        }
+        return createAggregateStatusUsingAssetColumn(statusView);
     }
 
 }

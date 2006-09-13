@@ -34,7 +34,6 @@ package org.opennms.web.svclayer;
 
 import java.util.Collection;
 
-import org.opennms.netmgt.model.AggregateStatusDefinition;
 import org.opennms.netmgt.model.AggregateStatusView;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -59,8 +58,6 @@ public interface SiteStatusViewService {
      * @param defs
      * @return
      */
-    Collection<AggregateStatus> createAggregateStatusUsingAssetColumn(String assetColumn, String columnValue, Collection<AggregateStatusDefinition> defs);
-    
     AggregateStatusView createAggregateStatusView(String statusViewName);
     
     Collection<AggregateStatus> createAggregateStatuses(AggregateStatusView statusView);

@@ -36,6 +36,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 
 import static org.easymock.EasyMock.createMock;
 import static org.easymock.EasyMock.expect;
@@ -44,6 +45,7 @@ import static org.easymock.EasyMock.verify;
 
 import org.opennms.netmgt.dao.NodeDao;
 import org.opennms.netmgt.model.AggregateStatusDefinition;
+import org.opennms.netmgt.model.AggregateStatusView;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.web.svclayer.AggregateStatus;
@@ -118,7 +120,12 @@ public class DefaultSiteStatusServiceTest extends TestCase {
         }
         replay(m_nodeDao);
         
-        aggrStati = aggregateSvc.createAggregateStatusUsingAssetColumn("building", "HQ", defs);
+        AggregateStatusView view = new AggregateStatusView();
+        view.setName("building");
+        view.setColumnValue("HQ");
+        view.setTableName("assets");
+        view.setStatusDefinitions(new LinkedHashSet<AggregateStatusDefinition>(defs));
+        aggrStati = aggregateSvc.createAggregateStatusUsingAssetColumn(view);
         verify(m_nodeDao);
         
         assertNotNull(aggrStati);
