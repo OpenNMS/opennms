@@ -105,18 +105,18 @@
 		Category category = (Category) j.next();
 		String categoryName = category.getName();
 %>
-	<tr>
+	<tr class="CellStatus">
 		<td>
 		  <a href="<%= response.encodeURL("rtc/category.jsp?category=" + URLEncoder.encode(categoryName, "UTF-8")) %>"
 		     title="<%= category.getTitle() %>">
 		     <%= categoryName %>
 		  </a>
 		</td>
-		<td style="background-color: <%= (opennmsDisconnect ? "lightblue" : category.getOutageColor()) %>;"
+		<td class="<%= (opennmsDisconnect ? "Indeterminate" : category.getOutageClass()) %>"
 	        align="right"
 		    title="Updated: <%= category.getLastUpdated() %>"><%= category.getOutageText() %>
 		</td>
-		<td style="background-color: <%= (opennmsDisconnect ? "lightblue" : category.getAvailColor()) %>;"
+		<td class="<%= (opennmsDisconnect ? "Indeterminate" : category.getAvailClass()) %>"
 		    align="right" 
 		    title="Updated: <%= category.getLastUpdated() %>"><%= category.getAvailText() %>
 		</td>
