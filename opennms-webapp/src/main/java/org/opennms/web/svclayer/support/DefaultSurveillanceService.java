@@ -34,18 +34,13 @@ package org.opennms.web.svclayer.support;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.opennms.netmgt.config.surveillanceViews.Category;
 import org.opennms.netmgt.config.surveillanceViews.ColumnDef;
-import org.opennms.netmgt.config.surveillanceViews.Columns;
 import org.opennms.netmgt.config.surveillanceViews.RowDef;
-import org.opennms.netmgt.config.surveillanceViews.Rows;
 import org.opennms.netmgt.config.surveillanceViews.View;
 import org.opennms.netmgt.dao.CategoryDao;
 import org.opennms.netmgt.dao.NodeDao;
@@ -55,10 +50,7 @@ import org.opennms.web.svclayer.AggregateStatus;
 import org.opennms.web.svclayer.ProgressMonitor;
 import org.opennms.web.svclayer.SimpleWebTable;
 import org.opennms.web.svclayer.SurveillanceService;
-import org.opennms.web.svclayer.SurveillanceTable;
 import org.opennms.web.svclayer.dao.SurveillanceViewConfigDao;
-import org.springframework.dao.DataAccessException;
-import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.orm.ObjectRetrievalFailureException;
 
 public class DefaultSurveillanceService implements SurveillanceService {
