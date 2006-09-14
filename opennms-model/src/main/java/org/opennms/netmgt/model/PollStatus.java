@@ -95,12 +95,24 @@ public class PollStatus {
 	};
     
     public static PollStatus decode(String statusName) {
+    	
     	for (int statusCode = 0; statusCode < s_statusNames.length; statusCode++) {
 			if (s_statusNames[statusCode].equals(statusName)) {
 				return new PollStatus(statusCode);
 			}
 		}
     	return new PollStatus(SERVICE_UNKNOWN);
+    }
+    
+    public static PollStatus decode(String statusName, String reason) {
+    	return decode(statusName, reason, -1L);
+    }
+    
+    public static PollStatus decode(String statusName, String reason, long responseTime) {
+    	PollStatus result = decode(statusName);
+    	result.setReason(reason);
+    	result.setResponseTime(responseTime);
+    	return result;
     }
     
     public static PollStatus get(int status, String reason) {
