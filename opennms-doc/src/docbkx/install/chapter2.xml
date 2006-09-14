@@ -69,8 +69,8 @@
             </listitem>
 
             <listitem>
-              <para>Download the Java 1.4 SDK from Sun.  We suggest 1.4.2 or
-              later.  Make sure that you get the non-RPM binary package (the
+              <para>Download the Java 1.4 SDK from Sun. We suggest 1.4.2 or
+              later. Make sure that you get the non-RPM binary package (the
               "<filename>.bin</filename>" package).</para>
             </listitem>
 
@@ -116,7 +116,7 @@
       </note>
 
       <para>You will need to use Sun's Java 2 Platform, Standard Edition,
-      version 1.4 or later.  We suggest using 1.4.2 or later.  You can <ulink
+      version 1.4 or later. We suggest using 1.4.2 or later. You can <ulink
       url="http://java.sun.com/j2se/1.4.2/download.html">download it</ulink>
       from Sun's <ulink url="http://java.sun.com/">Java</ulink> website. Step
       through the licensing process and then download the proper version of
@@ -336,6 +336,21 @@ TOMCAT_USER="tomcat"
       second change you'll start seeing errors in the OpenNMS logs, and
       administration commands run in the web UI will fail because Tomcat
       cannot change the configuration files.</para>
+
+      <para>One more change that needs to be made is to allow Tomcat to access
+      more memory than the default as well as having its JVM run in "server"
+      mode. The easiest way to do this is via the
+      <varname>CATALINA_OPTS</varname> environment variable. If the Tomcat
+      software being used has a configuration file as above, it can be added
+      to that file. Otherwise it is best just to add it to
+      <filename>catalina.sh</filename>.</para>
+
+      <para><programlisting>CATALINA_OPTS="-server -Xmx1024m"</programlisting></para>
+
+      <para>The "-server" option will get passed to java, and the -Xmx option
+      allows Tomcat to access up to 1GB of memory. Of course, the assumes that
+      there is 1GB of available memory on the system. It will need to be tuned
+      to the particular server in use.</para>
     </section>
   </section>
 
@@ -359,11 +374,11 @@ TOMCAT_USER="tomcat"
 
     <note>
       <para>OpenNMS can also use JRobin for storing and graphing of
-      time-series data, however it is always built with RRDtool support.
-      For the time being, you will still need to install RRDtool to build
-      OpenNMS or to install an OpenNMS RPM package, even if you plan on
-      using JRobin (see enhancement bug 1335).  You can read more about
-      JRobin in the release notes.</para>
+      time-series data, however it is always built with RRDtool support. For
+      the time being, you will still need to install RRDtool to build OpenNMS
+      or to install an OpenNMS RPM package, even if you plan on using JRobin
+      (see enhancement bug 1335). You can read more about JRobin in the
+      release notes.</para>
     </note>
   </section>
 
