@@ -729,6 +729,7 @@ public class EventConstants {
     public final static String PARM_PASSIVE_IPADDR = "passiveIpAddr";
     public final static String PARM_PASSIVE_SERVICE_NAME = "passiveServiceName";
     public final static String PARM_PASSIVE_SERVICE_STATUS = "passiveStatus";
+    public final static String PARM_PASSIVE_REASON_CODE = "passiveReasonCode";
 
     //
     // End event parms
