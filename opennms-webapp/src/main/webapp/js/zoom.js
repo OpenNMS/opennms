@@ -274,17 +274,10 @@ function zoomGraphObjRefresh() {
 
 	// Get absolute image position relative to the overall window.
 	//
-	// start with the image's coordinates and walk through it's
-	// ancestory of elements (tables, div's, spans, etc...) until
-	// we're at the top of the display.  Along the way we add in each element's
-	// coordinates to get absolute image postion.
 	left = 0;
 	top = 0;
-	do {
-		left += imgObject.offsetLeft;
-		top += imgObject.offsetTop;
-		imgObject  = imgObject.offsetParent;
-	} while(imgObject);
+	left += imgObject.offsetLeft;
+	top += imgObject.offsetTop;
 
 	// set the images's Ix1,Iy1 and Ix2,Iy2 postions based upon results
 	this.zoomGraphLeft = left;
