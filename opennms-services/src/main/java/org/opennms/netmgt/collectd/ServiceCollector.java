@@ -34,7 +34,6 @@ package org.opennms.netmgt.collectd;
 
 import java.util.Map;
 
-import org.opennms.netmgt.poller.NetworkInterface;
 import org.opennms.netmgt.utils.EventProxy;
 
 /**
