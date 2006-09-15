@@ -122,12 +122,6 @@ public class SnmpCollector implements ServiceCollector {
 			+ "ORDER BY eventid DESC " + "LIMIT 1";
 
 	/**
-	 * Default object to collect if "oid" property not available. This is the
-	 * MIB-II System Object ID value.
-	 */
-	private static final String DEFAULT_OBJECT_IDENTIFIER = ".1.3.6.1.2.1.1.2";
-
-	/**
 	 * Object identifier used to retrieve interface count. This is the MIB-II
 	 * interfaces.ifNumber value.
 	 */
