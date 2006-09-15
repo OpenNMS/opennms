@@ -76,37 +76,51 @@
 <body>
 
 <c:choose>
-<c:when test="${param.quiet == 'true'}">
-<!-- No visual header is being displayed -->
-</c:when>
+	<c:when test="${param.quiet == 'true'}">
+	<!-- No visual header is being displayed -->
+	</c:when>
 
-<c:otherwise>
+	<c:otherwise>
 
-<!-- Header -->
-<div id="header">
-	<h1 id="headerlogo"><a href="index.jsp"><img src="images/logo.png" alt="OpenNMS Web Console Home"/></a></h1>  
-	<div id="headerinfo">
-		<h2><c:out value="${param.title}"/></h2>
-		<p align="right">
-			<c:if test="${!empty pageContext.request.remoteUser}">
-				User: <strong><c:out value="${pageContext.request.remoteUser}"/></strong> (Notices <c:out value="${noticeStatus}" escapeXml="false"/>)
-				- <a href="j_acegi_logout">Log out</a>
+	<!-- Header -->
+	<div id="header">
+		<h1 id="headerlogo"><a href="index.jsp"><img src="images/logo.png" alt="OpenNMS Web Console Home"/></a></h1>  
+		<div id="headerinfo">
+			<h2><c:out value="${param.title}"/></h2>
+			<p align="right">
+				<c:choose>
+					<c:when test="${!empty pageContext.request.remoteUser}">
+						User: <strong><c:out value="${pageContext.request.remoteUser}"/></strong> (Notices <c:out value="${noticeStatus}" escapeXml="false"/>)
+						- <a href="j_acegi_logout">Log out</a>
+					</c:when>
+					<c:otherwise>
+						User: &hellip;
+					</c:otherwise>
+				</c:choose>
 				<br />
-			</c:if>
-			<c:out value="${date}"/> &nbsp; <c:out value="${time}"/>
-		</p>
-	</div>
-   <hr />
-  <c:if test="${param.nonavbar != 'true'}">
-		<div id="headernavbarright">
-			<jsp:include page="/includes/navbar.jsp" flush="false"/>
+				<c:out value="${date}"/> &nbsp; <c:out value="${time}"/>
+			</p>
 		</div>
-  </c:if>
-
-  <div class="spacer"><!-- --></div>
-
-</div>
-</c:otherwise>
+		<hr />
+		<c:choose>
+			<c:when test="${param.nonavbar != 'true'}">
+				<div id="headernavbarright">
+					<jsp:include page="/includes/navbar.jsp" flush="false"/>
+				</div>
+			</c:when>
+			<c:otherwise>
+				<div id="headernavbarright">
+					<div class="navbar">
+						<ul>
+							<li class="last"><a href="http://www.opennms.org/index.php/FAQ">FAQs</a></li>
+						</ul>
+					</div>
+				</div>
+			</c:otherwise>
+		</c:choose>
+	  <div class="spacer"><!-- --></div>
+	</div>
+	</c:otherwise>
 </c:choose>
 
 <!-- Body -->
