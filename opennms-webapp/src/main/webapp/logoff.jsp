@@ -8,10 +8,10 @@
   <jsp:param name="nonavbar" value="true" />
 </jsp:include>
 
-You have been logged off.
+<div class="formOnly">
+	<h2>You have been logged off.</h2>
+	<p>You may <a href="acegilogin.jsp"><strong>log in</strong></a> again.</p>
+</div>
+<hr />
 
-You may <a href="acegilogin.jsp"> log in again</a>.
-
-<jsp:include page="/includes/footer.jsp" flush="false">
-  <jsp:param name="quiet" value="true" />
-</jsp:include>
+<jsp:include page="/includes/footer.jsp" flush="false" />
