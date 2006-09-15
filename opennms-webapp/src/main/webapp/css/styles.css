@@ -95,6 +95,12 @@ div.boxWrapper div.col {
 	margin:  20px auto;
 	width: 50%;
 }
+div.formOnly {
+	width:250px; 
+	text-align:right; 
+	margin:0 50px; 
+	padding:50px 0;
+}
 td div.clip {
 	margin:0; 
 	padding:0; 

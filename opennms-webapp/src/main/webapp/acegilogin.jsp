@@ -17,7 +17,7 @@
       <p>Reason: <%= ((AuthenticationException) session.getAttribute(AbstractProcessingFilter.ACEGI_SECURITY_LAST_EXCEPTION_KEY)).getMessage() %></p>
     </c:if>
 
-    <div style="width:250px; text-align:right; margin:50px;">
+    <div class="formOnly">
     <form action="<c:url value='j_acegi_security_check'/>" method="POST">
         <p>User: <input type='text' name='j_username' <c:if test="${not empty param.login_error}">value='<%= session.getAttribute(AuthenticationProcessingFilter.ACEGI_SECURITY_LAST_USERNAME_KEY) %>'</c:if> /><br /> 
            Password: <input type='password' name='j_password'></p>
