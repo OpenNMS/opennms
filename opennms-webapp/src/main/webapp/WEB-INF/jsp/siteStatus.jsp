@@ -4,9 +4,9 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 
 <jsp:include page="/includes/header.jsp" flush="false">
-	<jsp:param name="title" value="Aggregate Status Page" />
-	<jsp:param name="headTitle" value="AggregateStatus" />
-	<jsp:param name="breadcrumb" value="Aggregated Status" />
+	<jsp:param name="title" value="Site Status Page" />
+	<jsp:param name="headTitle" value="SiteStatus" />
+	<jsp:param name="breadcrumb" value="Site Status" />
 </jsp:include>
 
 <h3>Site: <c:out value="${view.columnValue}" /></h3>
