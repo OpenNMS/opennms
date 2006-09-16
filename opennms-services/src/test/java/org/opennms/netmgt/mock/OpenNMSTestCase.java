@@ -1302,8 +1302,7 @@ public class OpenNMSTestCase extends TestCase {
                 " read-community=\"public\"" +
                 " write-community=\"private\"\n" + 
                 " port=\"161\"\n" +
-                " version=\"v1\"\n" +
-                " max-request-size=\"484\">\n" +
+                " version=\"v1\">\n" +
                 "\n" +
                 "   <definition version=\""+myVersion()+"\" " +
                 "       security-name=\"opennmsUser\" \n" + 
@@ -1326,7 +1325,7 @@ public class OpenNMSTestCase extends TestCase {
                 "       <range begin=\"1.1.1.1\" end=\"1.1.1.100\"/>\n" +
                 "   </definition>\n" + 
                 "\n" + 
-                "   <definition version=\"v1\" read-community=\"rangev1\">\n" + 
+                "   <definition version=\"v1\" read-community=\"rangev1\" max-vars-per-pdu=\"55\"> \n" + 
                 "       <range begin=\"10.0.0.101\" end=\"10.0.0.200\"/>\n" +
                 "   </definition>\n" + 
                 "\n" + 
@@ -1339,7 +1338,7 @@ public class OpenNMSTestCase extends TestCase {
                 "       <specific>192.168.0.50</specific>\n" +
                 "   </definition>\n" + 
                 "\n" + 
-                "   <definition version=\"v2c\" read-community=\"ipmatch\">\n" + 
+                "   <definition version=\"v2c\" read-community=\"ipmatch\" max-vars-per-pdu=\"128\">\n" + 
                 "       <ip-match>77.5-12,15.1-255.255</ip-match>\n" +
                 "   </definition>\n" + 
                 "\n" + 
