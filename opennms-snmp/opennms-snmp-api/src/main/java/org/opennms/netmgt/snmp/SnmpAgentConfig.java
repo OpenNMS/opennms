@@ -53,7 +53,7 @@ public class SnmpAgentConfig {
     public static final int AUTH_NOPRIV = 2;
     public static final int AUTH_PRIV = 3;
     public static final String DEFAULT_READ_COMMUNITY = "public";
-    public static final int DEFAULT_MAX_VARS_PER_PDU = 50;
+    public static final int DEFAULT_MAX_VARS_PER_PDU = 10;
     public static final String DEFAULT_WRITE_COMMUNITY = "private";
     public static final int DEFAULT_SECURITY_LEVEL = NOAUTH_NOPRIV;
     public static final String DEFAULT_SECURITY_NAME = "opennmsUser";
