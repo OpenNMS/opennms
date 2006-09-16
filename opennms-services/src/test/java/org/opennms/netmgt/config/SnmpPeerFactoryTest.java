@@ -38,6 +38,7 @@ import java.io.StringReader;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
+import org.opennms.netmgt.mock.MockLogAppender;
 import org.opennms.netmgt.mock.OpenNMSTestCase;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 
@@ -47,10 +48,21 @@ public class SnmpPeerFactoryTest extends OpenNMSTestCase {
         super.setVersion(SnmpAgentConfig.VERSION2C);
         Reader rdr = new StringReader(getSnmpConfig());
         SnmpPeerFactory.setInstance(new SnmpPeerFactory(rdr));
+        MockLogAppender.setupLogging(false);
     }
     
     protected void tearDown() {
         
+    }
+    
+    public void testDefaultMaxVarsPerPdu() throws UnknownHostException {
+        SnmpAgentConfig agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName(myLocalHost()));
+        assertEquals(10, agentConfig.getMaxVarsPerPdu());
+    }
+    
+    public void testConfigureDefaultMaxVarsPerPdu() throws UnknownHostException {
+        SnmpAgentConfig agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName("10.0.0.150"));
+        assertEquals(55, agentConfig.getMaxVarsPerPdu());
     }
 
     public void testCountChar() {
@@ -96,6 +108,8 @@ public class SnmpPeerFactoryTest extends OpenNMSTestCase {
         //pattern in config is "77.5-12,15.1-255.255"
         SnmpAgentConfig agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName("77.5.5.255"));
         assertEquals("ipmatch", agentConfig.getReadCommunity());
+        assertFalse(10 == agentConfig.getMaxVarsPerPdu());
+        assertEquals(128, agentConfig.getMaxVarsPerPdu());
         
         agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName("77.15.80.255"));
         assertEquals("ipmatch", agentConfig.getReadCommunity());

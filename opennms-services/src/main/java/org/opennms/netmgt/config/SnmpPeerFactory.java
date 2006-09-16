@@ -720,8 +720,14 @@ public final class SnmpPeerFactory {
         agentConfig.setRetries(determineRetries(def));
         agentConfig.setTimeout((int)determineTimeout(def));
         agentConfig.setMaxRequestSize(determineMaxRequestSize(def));
+        agentConfig.setMaxVarsPerPdu(determineMaxVarsPerPdu(def));
     }
 
+    private int determineMaxVarsPerPdu(Definition def) {
+        return (def.getMaxVarsPerPdu() == 0 ? 
+                (m_config.getMaxVarsPerPdu() == 0 ?
+                  SnmpAgentConfig.DEFAULT_MAX_VARS_PER_PDU : m_config.getMaxVarsPerPdu()) : def.getMaxVarsPerPdu());
+    }
     /**
      * Helper method to search the snmp-config for the appropriate read
      * community string.
