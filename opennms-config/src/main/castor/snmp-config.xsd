@@ -81,10 +81,18 @@
           </restriction>
         </simpleType>
       </attribute>
+      
+      <attribute name="max-vars-per-pdu" type="int" use="optional" default="10" >
+        <annotation>
+          <documentation>
+            Number of variables to send per SNMP request.
+          </documentation>
+        </annotation>
+      </attribute>
 
       <attribute name="max-request-size" type="integer" use="optional">
         <annotation>
-          <documentation>Specifies the maximum number of variables that may be
+          <documentation>(SNMP4J specific) Specifies the maximum number of variables that may be
           encoded into an individual SNMP PDU request by Collectd. Provides a
           means to limit the size of outgoing PDU requests. Value of 0
           indicates no limit on number of PDUs which can be encoded into a
@@ -245,6 +253,14 @@
             <pattern value="(v1|v2c|v3)"/>
           </restriction>
         </simpleType>
+      </attribute>
+
+      <attribute name="max-vars-per-pdu" type="int" use="optional" default="10" >
+        <annotation>
+          <documentation>
+            Number of variables to send per SNMP request.
+          </documentation>
+        </annotation>
       </attribute>
 
       <attribute name="max-request-size" type="integer" use="optional">
