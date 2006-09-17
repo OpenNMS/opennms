@@ -143,6 +143,9 @@ public class SnmpCollector implements ServiceCollector {
 	 * permitted to pack into a single outgoing PDU. This value is intentionally
 	 * kept relatively small in order to communicate successfully with the
 	 * largest possible number of agents.
+     * 
+     * @deprecated If not configured in SNMP collector configuration, use agent's
+     * setting for defaults are now determined there.
 	 */
 	static int DEFAULT_MAX_VARS_PER_PDU = 30;
 
@@ -379,7 +382,7 @@ public class SnmpCollector implements ServiceCollector {
 	        final ServiceParameters params = new ServiceParameters(parameters);
             params.logIfAliasConfig();
 
-	        OnmsSnmpCollection snmpCollection = new OnmsSnmpCollection(params);
+	        OnmsSnmpCollection snmpCollection = new OnmsSnmpCollection(agent, params);
 
 	        
 	        CollectionSet collectionSet = snmpCollection.createCollectionSet(agent);

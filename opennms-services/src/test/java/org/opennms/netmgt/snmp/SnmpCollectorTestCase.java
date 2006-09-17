@@ -250,7 +250,7 @@ public class SnmpCollectorTestCase extends OpenNMSTestCase {
     
     protected void initializeAgent() {
         ServiceParameters params = new ServiceParameters(new HashMap());
-        OnmsSnmpCollection snmpCollection = new OnmsSnmpCollection(params);
+        OnmsSnmpCollection snmpCollection = new OnmsSnmpCollection(m_agent, params);
         m_collectionSet = snmpCollection.createCollectionSet(m_agent);
         m_agent.validateAgent();
     }
