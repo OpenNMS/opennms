@@ -63,9 +63,11 @@ public class OnmsSnmpCollection {
     private IfResourceType m_ifResourceType;
     private IfAliasResourceType m_ifAliasResourceType;
 	private Map<String, ResourceType> m_genericIndexResourceTypes;
+    private int m_maxVarsPerPdu;
     
-    public OnmsSnmpCollection(ServiceParameters params) {
+    public OnmsSnmpCollection(CollectionAgent agent, ServiceParameters params) {
         m_params = params;
+        m_maxVarsPerPdu = determineMaxVarsPerPdu(agent);
     }
 
     public String getName() {
@@ -81,18 +83,20 @@ public class OnmsSnmpCollection {
     }
 
     int getMaxVarsPerPdu() {
+        return m_maxVarsPerPdu;
+    }
+    
+    private int determineMaxVarsPerPdu(CollectionAgent agent) {
     	// Retrieve configured value for max number of vars per PDU
     	int maxVarsPerPdu = DataCollectionConfigFactory.getInstance().getMaxVarsPerPdu(getName());
     	if (maxVarsPerPdu == -1) {
-            Category log = log();
-            if (log.isEnabledFor(Priority.WARN)) {
-    			log.warn(
-    					"initialize: Configuration error, failed to "
-    							+ "retrieve max vars per pdu from collection: "
-    							+ getName());
-    		}
-    		maxVarsPerPdu = SnmpCollector.DEFAULT_MAX_VARS_PER_PDU;
-    	} 
+            log().info("determineMaxVarsPerPdu: using agent's configured value: "
+                    + agent.getMaxVarsPerPdu());
+            maxVarsPerPdu = agent.getMaxVarsPerPdu();
+        } else {
+            log().info("determineMaxVarsPerPdu: using data collection configured value: "
+                    + maxVarsPerPdu);
+        }
         return maxVarsPerPdu;
     }
 
@@ -100,10 +104,8 @@ public class OnmsSnmpCollection {
         String collectionName = getName();
     	String storageFlag = DataCollectionConfigFactory.getInstance().getSnmpStorageFlag(collectionName);
     	if (storageFlag == null) {
-            Category log = log();
-            if (log.isEnabledFor(Priority.WARN)) {
-    			log.warn(
-    					"initialize: Configuration error, failed to "
+            if (log().isEnabledFor(Priority.WARN)) {
+    			log().warn("getStorageFlag: Configuration error, failed to "
     							+ "retrieve SNMP storage flag for collection: "
     							+ collectionName);
     		}
