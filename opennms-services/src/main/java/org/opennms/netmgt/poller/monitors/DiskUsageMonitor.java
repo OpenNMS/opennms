@@ -61,50 +61,33 @@ import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.netmgt.utils.ParameterMap;
 
 /**
- * <P>
- * This class is designed to be used by the service poller framework to test the
- * status of PERC raid controllers on Dell Servers. The class implements
- * the ServiceMonitor interface that allows it to be used along with other
- * plug-ins by the service poller framework.
- * </P>
+ * <p>
+ * Check for disks via UCD-SNMP-MIB.  This should be extended to
+ * support BOTH UCD-SNMP-MIB and HOST-RESOURCES-MIB
+ * </p>
  * 
- * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * 
+ * @author <A HREF="mailto:jason.aras@gmail.com">Jason Aras</A>
  */
-final public class PercMonitor extends SnmpMonitorStrategy {
-    /**
-     * Name of monitored service.
-     */
-    private static final String SERVICE_NAME = "PERC";
 
-    /**
-     * The base OID for the logical device status information
-     */
-    private static final String LOGICAL_BASE_OID = ".1.3.6.1.4.1.3582.1.1.2.1.3";
-
-    /**
-     * The base OID for the physical device status information
-     */
-    private static final String PHYSICAL_BASE_OID = ".1.3.6.1.4.1.3582.1.1.3.1.4";
-
-    private static final String ARRAY_POSITION_BASE_OID = ".1.3.6.1.4.1.3582.1.1.3.1.5";
+final public class DiskUsageMonitor extends SnmpMonitorStrategy {
+    private static final String m_serviceName = "DISK-USAGE";
+    
+    static final String SNMP_AGENTCONFIG_KEY = "org.opennms.netmgt.snmp.SnmpAgentConfig";
+        
+    private static final String hrStorageDescr = ".1.3.6.1.2.1.25.2.3.1.3";
+    private static final String hrStorageSize  = ".1.3.6.1.2.1.25.2.3.1.5";
+    private static final String hrStorageUsed  = ".1.3.6.1.2.1.25.2.3.1.6";
+    
     
     /**
-     * Interface attribute key used to store the interface's SnmpAgentConfig
-     * object.
-     */
-    static final String SNMP_AGENTCONFIG_KEY = "org.opennms.netmgt.snmp.SnmpAgentConfig";
-
-    /**
      * <P>
-     * Returns the name of the service that the plug-in monitors ("SNMP").
+     * Returns the name of the service that the plug-in monitors ("DISK-USAGE").
      * </P>
      * 
      * @return The service that the plug-in monitors.
      */
     public String serviceName() {
-        return SERVICE_NAME;
+        return m_serviceName;
     }
 
     /**
@@ -197,76 +180,75 @@ final public class PercMonitor extends SnmpMonitorStrategy {
     public PollStatus poll(MonitoredService svc, Map parameters, org.opennms.netmgt.config.poller.Package pkg) {
         NetworkInterface iface = svc.getNetInterface();
 
-        PollStatus status = PollStatus.unavailable();
+        
+        PollStatus status = PollStatus.available();
         InetAddress ipaddr = (InetAddress) iface.getAddress();
-
-        // Retrieve this interface's SNMP peer object
-        //
+        
         SnmpAgentConfig agentConfig = (SnmpAgentConfig) iface.getAttribute(SNMP_AGENTCONFIG_KEY);
         if (agentConfig == null) throw new RuntimeException("SnmpAgentConfig object not available for interface " + ipaddr);
-
-        // Get configuration parameters
-        //
-        // set timeout and retries on SNMP peer object
-        //
+        
         agentConfig.setTimeout(ParameterMap.getKeyedInteger(parameters, "timeout", agentConfig.getTimeout()));
         agentConfig.setRetries(ParameterMap.getKeyedInteger(parameters, "retries", agentConfig.getRetries()));
         agentConfig.setPort(ParameterMap.getKeyedInteger(parameters, "port", agentConfig.getPort()));
         
-        String arrayNumber = ParameterMap.getKeyedString(parameters,"array","0.0");
-
+        String diskName = ParameterMap.getKeyedString(parameters, "disk", null);
+        Integer percentFree = ParameterMap.getKeyedInteger(parameters, "free", 15);
+        
+        log().debug("diskName=" + diskName);
+        log().debug("percentfree=" + percentFree);
+        
         if (log().isDebugEnabled()) log().debug("poll: service= SNMP address= " + agentConfig);
 
-        // Establish SNMP session with interface
-        //
+        
         try {
             if (log().isDebugEnabled()) {
-                log().debug("PercMonitor.poll: SnmpAgentConfig address: " +agentConfig);
+                log().debug("DiskUsageMonitor.poll: SnmpAgentConfig address: " +agentConfig);
             }
-            SnmpObjId snmpObjectId = new SnmpObjId(LOGICAL_BASE_OID + "." + arrayNumber);
-
-            // First walk the physical OID Tree and check the returned values 
-
-            String returnValue = new String(); 
-          
-            SnmpValue value = SnmpUtils.get(agentConfig,snmpObjectId);
+            SnmpObjId hrStorageDescrSnmpObject = new SnmpObjId(hrStorageDescr);
             
-            if (value.toInt()!=2){
-            	log().debug("PercMonitor.poll: Bad Disk Found");
-            	returnValue = "log vol(" + arrayNumber + ") degraded"; // XXX should degraded be the virtualDiskState ?
-            	// array is bad
-            	// lets find out which disks are bad in the array
-            	
-            	// first we need to fetch the arrayPosition table.
-            	SnmpObjId arrayPositionSnmpObject = new SnmpObjId(ARRAY_POSITION_BASE_OID);
-            	SnmpObjId diskStatesSnmpObject = new SnmpObjId(PHYSICAL_BASE_OID); 
-            	
-            	Map<SnmpInstId,SnmpValue> arrayDisks = SnmpUtils.getOidValues(agentConfig, "PercMonitor", arrayPositionSnmpObject);
-            	Map<SnmpInstId,SnmpValue> diskStates = SnmpUtils.getOidValues(agentConfig, "PercMonitor", diskStatesSnmpObject);
-            	
-            	for (Map.Entry<SnmpInstId, SnmpValue> disk: arrayDisks.entrySet()) {
-            		
-            		if (disk.getValue().toString().contains("A" + arrayNumber.toString() + "-")) {
-            			// this is a member of the array
-            			
-            			if ( diskStates.get(disk.getKey()).toInt() !=3 ){
-            				// this is bad disk.
-            				
-            				returnValue  += "phy drv(" + disk.getKey().toString() + ")";
-            				
-            			}
-            			
-            		}
             
-            		return PollStatus.unavailable(returnValue);
-            	}
-            	
-            	
+            
+            Map<SnmpInstId, SnmpValue> flagResults = SnmpUtils.getOidValues(agentConfig, "DiskUsagePoller", hrStorageDescrSnmpObject);
+            
+            if(flagResults.size() == 0) {
+                log().debug("SNMP poll failed: no results, addr=" + ipaddr.getHostAddress() + " oid=" + hrStorageDescrSnmpObject);
+                return PollStatus.unavailable();
             }
-        
-            status = PollStatus.available();
-            
 
+            for (Map.Entry<SnmpInstId, SnmpValue> e : flagResults.entrySet()) { 
+                log().debug("poll: SNMPwalk poll succeeded, addr=" + ipaddr.getHostAddress() + " oid=" + hrStorageDescrSnmpObject + " instance=" + e.getKey() + " value=" + e.getValue());
+                
+                if (e.getValue().toString().equals(diskName)) {
+                	log().debug("DiskUsageMonitor.poll: found disk=" + diskName);
+                	
+                	SnmpObjId hrStorageSizeSnmpObject = new SnmpObjId(hrStorageSize + "." + e.getKey().toString());
+                	SnmpObjId hrStorageUsedSnmpObject = new SnmpObjId(hrStorageUsed + "." + e.getKey().toString());
+                	
+                	
+                	SnmpValue snmpSize = SnmpUtils.get(agentConfig, hrStorageSizeSnmpObject);
+                	SnmpValue snmpUsed = SnmpUtils.get(agentConfig, hrStorageUsedSnmpObject);
+                	float calculatedPercentage = ( (( (float)snmpSize.toLong() - (float)snmpUsed.toLong() ) / (float)snmpSize.toLong() ) ) * 100;
+                
+                	log().debug("DiskUsageMonitor: calculatedPercentage=" + calculatedPercentage + " percentFree="+percentFree);
+                	
+                	if (calculatedPercentage < percentFree) {
+                	
+                		return PollStatus.unavailable(diskName + " usage high (" + (100 - (int)calculatedPercentage)  + "%)");
+                		
+                	}
+                	else {
+                		return status;
+                	}
+                }
+            
+                 
+            }
+
+            // if we get here.. it means we did not find the disk...  which means we should not be monitoring it.
+            log().debug("DiskUsageMonitor: no disks found");
+            return PollStatus.unavailable("could not find " + diskName + "in table");
+            
+            
         } catch (NumberFormatException e) {
             status = logDown(Level.ERROR, "Number operator used on a non-number " + e.getMessage());
         } catch (IllegalArgumentException e) {
