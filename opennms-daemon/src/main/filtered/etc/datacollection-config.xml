@@ -270,6 +270,10 @@
         <mibObj oid=".1.3.6.1.4.1.9.2.2.1.1.26" instance="ifIndex" alias="locIfInQueueDrops" type="gauge" />
         <mibObj oid=".1.3.6.1.4.1.9.2.2.1.1.27" instance="ifIndex" alias="locIfOutQueueDrops" type="gauge" />
       </group>
+      <group  name = "cisco-aironet-stats" ifType = "ignore">
+        <mibObj oid=".1.3.6.1.4.1.522.3.12.1.8" instance="0" alias="aironetClientAssoc" type="integer"/>
+      </group>
+
       <!-- Netapp MIBS -->
       <group name="netapp-cpu" ifType="ignore">
         <mibObj oid=".1.3.6.1.4.1.789.1.2.1.3" instance="0" alias="cpuBusyTimePct" type="INTEGER" />
@@ -1019,6 +1023,13 @@
         <collect>
           <includeGroup>cisco-cike</includeGroup>
           <includeGroup>altiga-hardware</includeGroup>
+        </collect>
+      </systemDef>
+
+      <systemDef name = "Cisco Aironet">
+        <sysoid>.1.3.6.1.4.1.9.1.380</sysoid>
+        <collect>
+          <includeGroup>cisco-aironet-stats</includeGroup>
         </collect>
       </systemDef>
 
