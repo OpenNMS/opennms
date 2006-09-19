@@ -1,13 +1,10 @@
 package org.opennms.netmgt.model;
 
-import org.springframework.core.io.Resource;
-
 public class OnmsMonitoringLocationDefinition {
 	
-	private Integer m_id;
 	private String m_area;
-	private String m_label;
-	private Resource m_pollConfiguration;
+	private String m_name;
+    private String m_pollingPackageName;
 	
 	public String getArea() {
 		return m_area;
@@ -15,26 +12,16 @@ public class OnmsMonitoringLocationDefinition {
 	public void setArea(String area) {
 		m_area = area;
 	}
-	public Integer getId() {
-		return m_id;
+	public String getName() {
+		return m_name;
 	}
-	public void setId(Integer id) {
-		m_id = id;
+	public void setName(String name) {
+		m_name = name;
 	}
-	public String getLabel() {
-		return m_label;
-	}
-	public void setLabel(String label) {
-		m_label = label;
-	}
-	public Resource getPollConfiguration() {
-		return m_pollConfiguration;
-	}
-	public void setPollConfiguration(Resource pollConfiguration) {
-		m_pollConfiguration = pollConfiguration;
-	}
-	
-	
-	
-
+    public String getPollingPackageName() {
+        return m_pollingPackageName;
+    }
+    public void setPollingPackageName(String pollingPackageName) {
+        m_pollingPackageName = pollingPackageName;
+    }
 }
