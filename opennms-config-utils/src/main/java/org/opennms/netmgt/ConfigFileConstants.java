@@ -340,6 +340,12 @@ public final class ConfigFileConstants {
      * The opennms surveillance views config file
      */
     public static final int SITE_STATUS_VIEWS_FILE_NAME;
+    
+    /**
+     * The monitoring locations config file (distributed monitoring)
+     */
+    public static final int MONITORING_LOCATIONS_FILE_NAME;
+
     //
     // End other config files
     //
@@ -502,9 +508,11 @@ public final class ConfigFileConstants {
         SURVEILLANCE_VIEWS_FILE_NAME = 61;
         
         SITE_STATUS_VIEWS_FILE_NAME = 62;
+        
+        MONITORING_LOCATIONS_FILE_NAME = 63;
         // Allocate and build the mapping of identifiers to names
         //
-        FILE_ID_TO_NAME = new String[63];
+        FILE_ID_TO_NAME = new String[64];
 
         FILE_ID_TO_NAME[DB_CONFIG_FILE_NAME] = "opennms-database.xml";
         FILE_ID_TO_NAME[JMS_CONFIG_FILE_NAME] = "opennms-jms.xml";
@@ -584,6 +592,7 @@ public final class ConfigFileConstants {
 		FILE_ID_TO_NAME[MAP_PROPERTIES_FILE_NAME] = "map.properties";
         FILE_ID_TO_NAME[SURVEILLANCE_VIEWS_FILE_NAME] = "surveillance-views.xml";
         FILE_ID_TO_NAME[SITE_STATUS_VIEWS_FILE_NAME] = "site-status-views.xml";
+        FILE_ID_TO_NAME[MONITORING_LOCATIONS_FILE_NAME] = "monitoring-locations.xml";
     }
 
     /**
