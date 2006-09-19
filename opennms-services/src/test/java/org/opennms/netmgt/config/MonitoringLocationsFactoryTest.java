@@ -36,14 +36,12 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringReader;
-import java.util.Collection;
 
 import junit.framework.TestCase;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.config.monitoringLocations.LocationDef;
-import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.mock.MockDatabase;
 import org.opennms.netmgt.mock.MockNetwork;
 
@@ -88,14 +86,8 @@ public class MonitoringLocationsFactoryTest extends TestCase {
         assertEquals(locationName, def.getLocationName());
         assertEquals("raleigh", def.getMonitoringArea());
         
-        Collection<Package> pkgs = m_pollerConfigManager.getConfiguration().getPackageCollection();
-        boolean matched = true;
-        for (Package pkg : pkgs) {
-            if (locationName.equals(pkg.getName())) {
-                matched = true;
-            }
-        }
-        assertTrue(matched);
+        assertNotNull(m_pollerConfigManager.getPackage(def.getPollingPackageName()));
+        
 	}
     
     static class TestPollerConfigManager extends PollerConfigManager {
@@ -116,5 +108,6 @@ public class MonitoringLocationsFactoryTest extends TestCase {
         public String getXml() {
             return m_xml;
         }
+        
     }
 }
