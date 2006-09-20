@@ -1,11 +1,17 @@
 package org.opennms.netmgt.dao.hibernate;
 
+import java.beans.PropertyVetoException;
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Collection;
 
+import org.exolab.castor.xml.MarshalException;
+import org.exolab.castor.xml.ValidationException;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.opennms.netmgt.config.C3P0ConnectionFactory;
+import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.dao.BaseDaoTestCase;
 import org.opennms.netmgt.model.AggregateStatusView;
 import org.opennms.netmgt.model.OnmsAlarm;
@@ -27,6 +33,16 @@ import org.springframework.orm.hibernate3.HibernateTemplate;
 public class AnnotationTest extends BaseDaoTestCase {
 	
 	private SessionFactory m_sessionFactory;
+        
+            
+           public AnnotationTest() throws MarshalException, ValidationException, IOException, PropertyVetoException, SQLException {
+                /*
+                 * Note: I'm using the opennms-database.xml file in target/classes/etc
+                 * so that it has been filtered first.
+                 */
+                DataSourceFactory.setInstance(new C3P0ConnectionFactory("../opennms-daemon/target/classes/etc/opennms-database.xml"));
+            }
+
 	
 	public void setSessionFactory(SessionFactory sessionFactory) {
 		m_sessionFactory = sessionFactory;

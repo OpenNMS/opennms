@@ -31,11 +31,26 @@
 //
 package org.opennms.netmgt.dao;
 
+import java.beans.PropertyVetoException;
+import java.io.IOException;
+import java.sql.SQLException;
 import java.util.Date;
 
+import org.exolab.castor.xml.MarshalException;
+import org.exolab.castor.xml.ValidationException;
+import org.opennms.netmgt.config.C3P0ConnectionFactory;
+import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.model.OnmsDistPoller;
 
 public class DistPollerDaoTest extends BaseDaoTestCase {
+    
+    public DistPollerDaoTest() throws MarshalException, ValidationException, IOException, PropertyVetoException, SQLException {
+        /*
+         * Note: I'm using the opennms-database.xml file in target/classes/etc
+         * so that it has been filtered first.
+         */
+        DataSourceFactory.setInstance(new C3P0ConnectionFactory("../opennms-daemon/target/classes/etc/opennms-database.xml"));
+    }
 
     public void testBogus() {
         // do nothing... we're here so JUnit doesn't complain
