@@ -32,6 +32,14 @@
 
 package org.opennms.netmgt.dao;
 
+import java.beans.PropertyVetoException;
+import java.io.IOException;
+import java.sql.SQLException;
+
+import org.exolab.castor.xml.MarshalException;
+import org.exolab.castor.xml.ValidationException;
+import org.opennms.netmgt.config.C3P0ConnectionFactory;
+import org.opennms.netmgt.config.DataSourceFactory;
 import org.opennms.netmgt.model.AggregateStatusView;
 import org.springframework.test.AbstractTransactionalDataSourceSpringContextTests;
 
@@ -39,7 +47,20 @@ public class AggStatViewDaoTest extends
 		AbstractTransactionalDataSourceSpringContextTests {
 
 	AggregateStatusViewDao m_dao;
+        
+        public AggStatViewDaoTest() throws MarshalException, ValidationException, IOException, PropertyVetoException, SQLException {
+            /*
+             * Note: I'm using the opennms-database.xml file in target/classes/etc
+             * so that it has been filtered first.
+             */
+            DataSourceFactory.setInstance(new C3P0ConnectionFactory("../opennms-daemon/target/classes/etc/opennms-database.xml"));
+        }
 
+        /*
+         * The DAO isn't currently defined in the application context file
+         * and all of the tests are disabled.
+         */
+        /*
 	public AggregateStatusViewDao getDao() {
 		return m_dao;
 	}
@@ -47,6 +68,7 @@ public class AggStatViewDaoTest extends
 	public void setDao(AggregateStatusViewDao dao) {
 		m_dao = dao;
 	}
+        */
 	
 	@Override
 	protected String[] getConfigLocations() {
