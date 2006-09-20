@@ -176,156 +176,159 @@
             </td>
         </tr>
 
-        <tr>
-             <td>
+        <% if(graph_options.length > 0) { %>
 
-                <table width="100%" border="2">
-                    <tr>
-                        <td>
-                            <h3 align="center">Sample Graph Text</h3> 
-                        </td>
-                        <td>
-                            <h3 align="center">Sample Graph Image</h3> 
-                        </td>
-                    </tr>
-		    <% String[] rrds; %>
-                    <%-- encode the RRD filenames based on the graph's required data sources --%>
-                    <% if(nodeId > 0) { %>
-                        <% rrds = this.getRRDNames(nodeId, intf, display_graph); %> 
-                    <% } else { %>
-                        <% rrds = this.getRRDNames(domain, intf, display_graph); %> 
-                    <% } %>
-                    <% String rrdParm = this.encodeRRDNamesAsParmString(rrds); %>
+            <tr>
+                 <td>
 
-                    <% String externalValuesParm = ""; %>
+                    <table width="100%" border="2">
+                        <tr>
+                            <td>
+                                <h3 align="center">Sample Graph Text</h3> 
+                            </td>
+                            <td>
+                                <h3 align="center">Sample Graph Image</h3> 
+                            </td>
+                        </tr>
+		        <% String[] rrds; %>
+                        <%-- encode the RRD filenames based on the graph's required data sources --%>
+                        <% if(nodeId > 0) { %>
+                            <% rrds = this.getRRDNames(nodeId, intf, display_graph); %> 
+                        <% } else { %>
+                            <% rrds = this.getRRDNames(domain, intf, display_graph); %> 
+                        <% } %>
+                        <% String rrdParm = this.encodeRRDNamesAsParmString(rrds); %>
+
+                        <% String externalValuesParm = ""; %>
                         
-                    <%-- handle external values, if any --%>
-                    <% if(nodeId > 0) { %>
-                        <% this.log("custom graph3: encoding external values for node " + nodeId); %>
-                        <% externalValuesParm = this.encodeExternalValuesAsParmString(nodeId, intf, display_graph); %>
-                    <% } %>
+                        <%-- handle external values, if any --%>
+                        <% if(nodeId > 0) { %>
+                            <% this.log("custom graph3: encoding external values for node " + nodeId); %>
+                            <% externalValuesParm = this.encodeExternalValuesAsParmString(nodeId, intf, display_graph); %>
+                        <% } %>
 
-                    <tr>
-                        <td align="right">
-                            Title: &nbsp; <input type="text" name="title" value="<%=sample_graph.getTitle()%>" size="40" maxlength="40"/> <br>
-                            <h3>
-                            <%if(nodeId > 0) {%>
-                                Node: <a href="element/node.jsp?node=<%=nodeId%>">
-                                <%=NetworkElementFactory.getNodeLabel(nodeId)%></a><br>
-                                <% if(intf != null && !intf.equals("")) { %>
-                                    Interface: <%=this.model.getHumanReadableNameForIfLabel(nodeId, intf)%>
-                                <% } %>
-                            <%} else {%>
-                                Domain: <%=domain%><br>
-                                Interface: <a href="element/nodelist.jsp?listInterfaces&ifAlias=<%=intf%>"><%=intf%></a><br/>
-                            <%}%>
-                            </h3>
+                        <tr>
+                            <td align="right">
+                                Title: &nbsp; <input type="text" name="title" value="<%=sample_graph.getTitle()%>" size="40" maxlength="40"/> <br>
+                                <h3>
+                                <%if(nodeId > 0) {%>
+                                    Node: <a href="element/node.jsp?node=<%=nodeId%>">
+                                    <%=NetworkElementFactory.getNodeLabel(nodeId)%></a><br>
+                                    <% if(intf != null && !intf.equals("")) { %>
+                                        Interface: <%=this.model.getHumanReadableNameForIfLabel(nodeId, intf)%>
+                                    <% } %>
+                                <%} else {%>
+                                    Domain: <%=domain%><br>
+                                    Interface: <a href="element/nodelist.jsp?listInterfaces&ifAlias=<%=intf%>"><%=intf%></a><br/>
+                                <%}%>
+                                </h3>
 
-                            <%-- gather start/stop time information --%>
-                            <%  
-                                Calendar begin_time = Calendar.getInstance();
-                                Calendar end_time = Calendar.getInstance();
-                                this.reportFactory.getBeginEndTime(sample_graph.getTimespan(), begin_time, end_time); 
-                                String start = Long.toString( begin_time.getTime().getTime() );
-                                String startPretty = new Date( Long.parseLong( start )).toString();
-                                String end = Long.toString( end_time.getTime().getTime() );
-                                String endPretty = new Date( Long.parseLong( end )).toString();
-                             %>
+                                <%-- gather start/stop time information --%>
+                                <%  
+                                    Calendar begin_time = Calendar.getInstance();
+                                    Calendar end_time = Calendar.getInstance();
+                                    this.reportFactory.getBeginEndTime(sample_graph.getTimespan(), begin_time, end_time); 
+                                    String start = Long.toString( begin_time.getTime().getTime() );
+                                    String startPretty = new Date( Long.parseLong( start )).toString();
+                                    String end = Long.toString( end_time.getTime().getTime() );
+                                    String endPretty = new Date( Long.parseLong( end )).toString();
+                                 %>
 
-                            <b>From</b> <%=startPretty%> <br>
-                            <b>To</b> <%=endPretty%>
-                        </td>
+                                <b>From</b> <%=startPretty%> <br>
+                                <b>To</b> <%=endPretty%>
+                            </td>
               
-                        <td align="left">
-                            <img src="graph/graph.png?type=performance&props=<%=nodeId%>/strings.properties&report=<%=display_graph.getName()%>&start=<%=start%>&end=<%=end%>&<%=rrdParm%>&<%=externalValuesParm%>"/>
-                        </td>
-                    </tr>
-                </table>
+                            <td align="left">
+                                <img src="graph/graph.png?type=performance&props=<%=nodeId%>/strings.properties&report=<%=display_graph.getName()%>&start=<%=start%>&end=<%=end%>&<%=rrdParm%>&<%=externalValuesParm%>"/>
+                            </td>
+                        </tr>
+                    </table>
 
-          </td>
-        </tr>
+              </td>
+            </tr>
 
-        <tr>
-            <td>
-                <table align="center">
-                    <!-- Select Timespan Input -->  
-                    <tr>
-                        <td>
-                            Graph Timespan
-                        </td>
-                        <td>
-                            <SELECT name="timespan">
-                            <% for (int i=0; i < this.reportFactory.timespan_options.length; i++) { %>
-                                <% if (this.reportFactory.timespan_options[i].equals(sample_graph.getTimespan())) { %>
-                                      <OPTION SELECTED> <%=this.reportFactory.timespan_options[i]%> 
-                                <% } else { %>                  
-                                      <OPTION> <%=this.reportFactory.timespan_options[i]%> 
+            <tr>
+                <td>
+                    <table align="center">
+                        <!-- Select Timespan Input -->  
+                        <tr>
+                            <td>
+                                Graph Timespan
+                            </td>
+                            <td>
+                                <SELECT name="timespan">
+                                <% for (int i=0; i < this.reportFactory.timespan_options.length; i++) { %>
+                                    <% if (this.reportFactory.timespan_options[i].equals(sample_graph.getTimespan())) { %>
+                                          <OPTION SELECTED> <%=this.reportFactory.timespan_options[i]%> 
+                                    <% } else { %>                  
+                                          <OPTION> <%=this.reportFactory.timespan_options[i]%> 
+                                    <% } %>                  
                                 <% } %>                  
-                            <% } %>                  
-                            </SELECT>  
-                            (This selects the relative start and stop times for the report) 
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <!-- Select Graphtype Input -->  
-                            Graph Type  
-                        </td>
-                        <td>
-                            <SELECT name="graphtype">
-                            <% for (int i=0; i < graph_options.length; i++) { %>
-                                <% if (graph_options[i].getName().equals(sample_graph.getGraphtype())) { %>
-                                        <OPTION SELECTED> <%=graph_options[i].getName() %> 
-                                <% } else { %>                  
-                                        <OPTION> <%=graph_options[i].getName() %>                   
+                                </SELECT>  
+                                (This selects the relative start and stop times for the report) 
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <!-- Select Graphtype Input -->  
+                                Graph Type  
+                            </td>
+                            <td>
+                                <SELECT name="graphtype">
+                                <% for (int i=0; i < graph_options.length; i++) { %>
+                                    <% if (graph_options[i].getName().equals(sample_graph.getGraphtype())) { %>
+                                            <OPTION SELECTED> <%=graph_options[i].getName() %> 
+                                    <% } else { %>                  
+                                            <OPTION> <%=graph_options[i].getName() %>                   
+                                    <% } %>                  
                                 <% } %>                  
-                            <% } %>                  
-                            </SELECT>   
-                            (This selects the prefabricated graph type definition to use) 
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <!-- Select Graph Index -->  
-                            Graph Index  
-                        </td>
-                        <td>
-                            <SELECT name="graphindex">
-                            <%  int max_graphs = report.getGraphCount();
-                                if (graph_index == -1)  
-                                    graph_index = max_graphs++;
-                                for (int i=0; i < max_graphs; i++) { 
-                                    if (i == graph_index) { %>
-                                        <OPTION SELECTED> <%=i+1%> 
-                                <% } else { %>                  
-                                        <OPTION> <%=i+1%>                   
+                                </SELECT>   
+                                (This selects the prefabricated graph type definition to use) 
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <!-- Select Graph Index -->  
+                                Graph Index  
+                            </td>
+                            <td>
+                                <SELECT name="graphindex">
+                                <%  int max_graphs = report.getGraphCount();
+                                    if (graph_index == -1)  
+                                        graph_index = max_graphs++;
+                                    for (int i=0; i < max_graphs; i++) { 
+                                        if (i == graph_index) { %>
+                                            <OPTION SELECTED> <%=i+1%> 
+                                    <% } else { %>                  
+                                            <OPTION> <%=i+1%>                   
+                                    <% } %>                  
                                 <% } %>                  
-                            <% } %>                  
-                            </SELECT>   
-                            (This selects the desired position in the report for the graph to be inserted) 
-                        </td>
-                    </tr>
-                </table>
-            </td>
-        </tr>
+                                </SELECT>   
+                                (This selects the desired position in the report for the graph to be inserted) 
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
 
-        <tr>
-            <td>
-                <table align="center">
-                    <tr>
-                        <td>
-                            <input type="button" value="Cancel" onclick="cancelGraph()" alt="Cancel the graph configuration"/>
-                        </td>
-                        <td>
-                            <input type="button" value="Refresh Sample View" onclick="updateGraph()" alt="Update changes to sample graph"/>
-                        </td>
-                        <td>
-                            <input type="button" value="Save" onclick="saveGraph()" alt="Save the graph configuration"/>
-                        </td>
-                    </tr>
-                </table>
-            </td>
-        </tr>
+            <tr>
+                <td>
+                    <table align="center">
+                        <tr>
+                            <td>
+                                <input type="button" value="Cancel" onclick="cancelGraph()" alt="Cancel the graph configuration"/>
+                            </td>
+                            <td>
+                                <input type="button" value="Refresh Sample View" onclick="updateGraph()" alt="Update changes to sample graph"/>
+                            </td>
+                            <td>
+                                <input type="button" value="Save" onclick="saveGraph()" alt="Save the graph configuration"/>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        <% } %>
       </table>
     </form>
     </td>
