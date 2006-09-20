@@ -29,7 +29,7 @@ import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.netmgt.utils.ParameterMap;
 
 
-final public class OMSAStorageMonitor extends SnmpMonitorStrategy {
+final public class OmsaStorageMonitor extends SnmpMonitorStrategy {
     private static final String m_serviceName = "OMSAStorage";
     
     static final String snmpAgentConfigKey = "org.opennms.netmgt.snmp.SnmpAgentConfig";
