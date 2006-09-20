@@ -36,13 +36,13 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
 import org.opennms.core.concurrent.BarrierSignaler;
-import org.opennms.netmgt.mock.MockLogAppender;
 import org.opennms.netmgt.mock.MockNode;
 import org.opennms.netmgt.mock.MockEventUtil;
 import org.opennms.netmgt.mock.OpenNMSTestCase;
 import org.opennms.netmgt.xml.event.AlarmData;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Logmsg;
+import org.opennms.test.mock.MockLogAppender;
 import org.opennms.test.mock.MockUtil;
 public class EventdTest extends OpenNMSTestCase {
     

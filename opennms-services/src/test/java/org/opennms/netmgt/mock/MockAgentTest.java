@@ -37,6 +37,7 @@ import java.util.List;
 
 import junit.framework.TestCase;
 
+import org.opennms.test.mock.MockLogAppender;
 import org.opennms.test.mock.MockUtil;
 import org.snmp4j.CommunityTarget;
 import org.snmp4j.PDU;

@@ -36,7 +36,7 @@ import java.util.Date;
 
 import org.exolab.castor.xml.Unmarshaller;
 import org.opennms.netmgt.config.groups.Schedule;
-import org.opennms.netmgt.mock.MockLogAppender;
+import org.opennms.test.mock.MockLogAppender;
 
 public class BasicScheduleUtilsTest extends IntervalTestCase {
     

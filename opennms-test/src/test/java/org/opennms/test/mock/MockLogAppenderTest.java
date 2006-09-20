@@ -29,7 +29,7 @@
 //     http://www.opennms.org/
 //     http://www.opennms.com/
 //
-package org.opennms.netmgt.mock;
+package org.opennms.test.mock;
 
 import junit.framework.AssertionFailedError;
 import junit.framework.TestCase;
@@ -38,6 +38,7 @@ import org.apache.log4j.Category;
 import org.apache.log4j.Level;
 import org.apache.log4j.spi.LoggingEvent;
 import org.opennms.core.utils.ThreadCategory;
+import org.opennms.test.mock.MockLogAppender;
 
 /**
  * @author brozow

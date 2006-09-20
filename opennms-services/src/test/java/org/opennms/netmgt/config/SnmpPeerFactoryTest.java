@@ -38,9 +38,9 @@ import java.io.StringReader;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
-import org.opennms.netmgt.mock.MockLogAppender;
 import org.opennms.netmgt.mock.OpenNMSTestCase;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
+import org.opennms.test.mock.MockLogAppender;
 
 public class SnmpPeerFactoryTest extends OpenNMSTestCase {
 

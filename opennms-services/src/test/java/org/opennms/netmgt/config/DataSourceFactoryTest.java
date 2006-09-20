@@ -4,9 +4,9 @@ import javax.sql.DataSource;
 
 import org.opennms.netmgt.mock.EventAnticipator;
 import org.opennms.netmgt.mock.MockEventIpcManager;
-import org.opennms.netmgt.mock.MockLogAppender;
 import org.opennms.netmgt.mock.OpenNMSTestCase;
 import org.opennms.netmgt.mock.OutageAnticipator;
+import org.opennms.test.mock.MockLogAppender;
 
 public class DataSourceFactoryTest extends OpenNMSTestCase {
 

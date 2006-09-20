@@ -10,7 +10,7 @@ package org.opennms.web.webtests;
 
 import java.io.File;
 
-import org.opennms.netmgt.mock.MockLogAppender;
+import org.opennms.test.mock.MockLogAppender;
 
 import net.sourceforge.jwebunit.WebTestCase;
 

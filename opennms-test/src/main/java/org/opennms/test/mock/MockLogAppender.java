@@ -33,7 +33,7 @@
 //     http://www.opennms.org/
 //     http://www.opennms.com/
 //
-package org.opennms.netmgt.mock;
+package org.opennms.test.mock;
 
 import java.util.Collections;
 import java.util.Iterator;
@@ -118,7 +118,7 @@ public class MockLogAppender extends AppenderSkeleton {
             logConfig.put("log4j.appender.CONSOLE", "org.apache.log4j.ConsoleAppender");
             logConfig.put("log4j.appender.CONSOLE.layout", "org.apache.log4j.PatternLayout");
             logConfig.put("log4j.appender.CONSOLE.layout.ConversionPattern", "%d %-5p [%t] %c: %m%n");
-            logConfig.put("log4j.appender.MOCK", "org.opennms.netmgt.mock.MockLogAppender");
+            logConfig.put("log4j.appender.MOCK", MockLogAppender.class.getName());
             logConfig.put("log4j.appender.MOCK.layout", "org.apache.log4j.PatternLayout");
             logConfig.put("log4j.appender.MOCK.layout.ConversionPattern", "%-5p [%t] %c: %m%n");
 

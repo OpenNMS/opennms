@@ -6,7 +6,7 @@ import java.net.InetAddress;
 
 import junit.framework.TestCase;
 
-import org.opennms.netmgt.mock.MockLogAppender;
+import org.opennms.test.mock.MockLogAppender;
 import org.opennms.test.mock.MockUtil;
 import org.snmp4j.CommunityTarget;
 import org.snmp4j.PDU;

@@ -38,10 +38,10 @@ import org.apache.xmlrpc.WebServer;
 import org.jmock.Mock;
 import org.jmock.MockObjectTestCase;
 import org.jmock.core.Constraint;
-import org.opennms.netmgt.mock.MockLogAppender;
 import org.opennms.spring.xmlrpc.XmlRpcProxyFactoryBean;
 import org.opennms.spring.xmlrpc.XmlRpcServiceExporter;
 import org.opennms.spring.xmlrpc.XmlRpcWebServerFactoryBean;
+import org.opennms.test.mock.MockLogAppender;
 
 /**
  * Represents a XmlRpcTest 

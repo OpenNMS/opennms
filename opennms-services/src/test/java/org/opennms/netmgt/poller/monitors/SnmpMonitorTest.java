@@ -9,9 +9,9 @@ package org.opennms.netmgt.poller.monitors;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
-import org.opennms.netmgt.mock.MockLogAppender;
 import org.opennms.netmgt.snmp.PropertySettingTestSuite;
 import org.opennms.netmgt.snmp.SnmpValue;
+import org.opennms.test.mock.MockLogAppender;
 
 /**
  * @author brozow

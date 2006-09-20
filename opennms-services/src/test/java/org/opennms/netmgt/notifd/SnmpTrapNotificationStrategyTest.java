@@ -39,7 +39,7 @@ import java.util.List;
 import junit.framework.TestCase;
 
 import org.opennms.core.utils.Argument;
-import org.opennms.netmgt.mock.MockLogAppender;
+import org.opennms.test.mock.MockLogAppender;
 public class SnmpTrapNotificationStrategyTest extends TestCase {
 
     protected void setUp() throws Exception {

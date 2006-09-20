@@ -21,10 +21,10 @@ import java.io.IOException;
 import junit.framework.TestCase;
 
 import org.apache.xmlrpc.WebServer;
-import org.opennms.netmgt.mock.MockLogAppender;
 import org.opennms.spring.xmlrpc.XmlRpcProxyFactoryBean;
 import org.opennms.spring.xmlrpc.XmlRpcServiceExporter;
 import org.opennms.spring.xmlrpc.XmlRpcWebServerFactoryBean;
+import org.opennms.test.mock.MockLogAppender;
 import org.springframework.remoting.RemoteAccessException;
 
 /**
