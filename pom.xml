@@ -352,6 +352,9 @@ opennms.home = ${opennms.home}
     <!-- turn down the default DEBUG logLevel. Override on the command line if you want -->
     <mock.logLevel>WARN</mock.logLevel>
     <mock.debug>false</mock.debug>
+    <mock.rundbtests>false</mock.rundbtests>
+    <mock.runSnmpTests>false</mock.runSnmpTests>
+    <mock.snmpHost>localhost</mock.snmpHost>
     <install.version>${project.version}</install.version>
     <opennms.home>${dist.dir}/${dist.name}</opennms.home>
     <dist.dir>${root.dir}/target</dist.dir>
