@@ -55,6 +55,10 @@ public class AggStatViewDaoTest extends
         		};
 	}
 
+        public void testBogus() {
+                // do nothing... we're here so JUnit doesn't complain
+        }
+
 	public void FIXMEtestDeleteInsertSave() {
 		String randomName = "junit test "+ Math.random();
 		AggregateStatusView view = new AggregateStatusView();

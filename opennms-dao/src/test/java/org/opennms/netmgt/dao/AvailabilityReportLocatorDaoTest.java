@@ -12,6 +12,10 @@ public class AvailabilityReportLocatorDaoTest extends BaseDaoTestCase {
 		m_availabilityReportLocatorDao = availabilityReportLocatorDao;
 	}
 	
+	public void testBogus() {
+		// do nothing... we're here so JUnit doesn't complain
+	}
+
 	public void FIXMEtestFindAll() {
 		
 		AvailabilityReportLocator locator = new AvailabilityReportLocator();

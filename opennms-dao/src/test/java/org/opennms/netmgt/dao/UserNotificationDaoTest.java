@@ -47,6 +47,10 @@ public class UserNotificationDaoTest extends AbstractDaoTestCase {
         //setPopulate(false);
         super.setUp();
     }
+
+    public void testBogus() {
+        // do nothing... we're here so JUnit doesn't complain
+    }
     
     public void FIXMEtestSaveUserNotification() {
         OnmsEvent event = new OnmsEvent();
