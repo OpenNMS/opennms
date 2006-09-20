@@ -81,14 +81,14 @@ public class NodeDaoTest extends AbstractDaoTestCase {
         
     }
     
-    public void testQuery() throws Exception {
+    public void FIXMEtestQuery() throws Exception {
         
         OnmsNode n = getNodeDao().get(1);
         validateNode(n);
         
     }
     
-    public void testQueryWithHierarchy() throws Exception {
+    public void FIXMEtestQueryWithHierarchy() throws Exception {
         
         OnmsNode n = getNodeDao().getHierarchy(1);
         validateNode(n);
@@ -205,7 +205,7 @@ public class NodeDaoTest extends AbstractDaoTestCase {
 		assertEquals("Unexpected value for property "+name+" on object "+expected, expectedValue, actualValue);
 	}
 
-	public void testQuery2() {
+	public void FIXMEtestQuery2() {
         OnmsNode n = getNodeDao().get(6);
         assertNotNull(n);
         assertEquals(3, n.getIpInterfaces().size());
