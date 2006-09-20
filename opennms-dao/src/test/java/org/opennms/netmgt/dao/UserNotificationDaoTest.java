@@ -48,7 +48,7 @@ public class UserNotificationDaoTest extends AbstractDaoTestCase {
         super.setUp();
     }
     
-    public void testSaveUserNotification() {
+    public void FIXMEtestSaveUserNotification() {
         OnmsEvent event = new OnmsEvent();
         event.setDistPoller(getDistPollerDao().load("localhost"));
         event.setEventCreateTime(new Date());
