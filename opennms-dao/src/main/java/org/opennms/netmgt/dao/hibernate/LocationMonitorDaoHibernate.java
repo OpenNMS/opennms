@@ -32,15 +32,17 @@
 
 package org.opennms.netmgt.dao.hibernate;
 
+import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.io.StringWriter;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
 import org.exolab.castor.xml.MarshalException;
+import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.config.monitoringLocations.LocationDef;
@@ -58,7 +60,7 @@ public class LocationMonitorDaoHibernate extends AbstractDaoHibernate<OnmsLocati
         LocationMonitorDao {
     
     MonitoringLocationsConfiguration m_monitoringLocationsConfiguration;
-    Resource m_moniotoringLocationConfiguration;
+    Resource m_monitoringLocationConfigResource;
 
     /**
      * Constructor that also initializes the required XML configurations
@@ -66,14 +68,71 @@ public class LocationMonitorDaoHibernate extends AbstractDaoHibernate<OnmsLocati
      * @throws MarshalException
      * @throws ValidationException
      */
-    public LocationMonitorDaoHibernate() throws IOException, MarshalException, ValidationException {
+    public LocationMonitorDaoHibernate() {
         super(OnmsLocationMonitor.class);
-        initializeConfigurations();
+        if (m_monitoringLocationConfigResource != null) {
+            initializeConfigurations();
+        }
     }
     
     @SuppressWarnings("unchecked")
     public Collection<OnmsMonitoringLocationDefinition> findAllMonitoringLocationDefinitions() {
         return m_monitoringLocationsConfiguration.getLocations().getLocationDefCollection();
+    }
+    
+    @SuppressWarnings("unchecked")
+    public void saveMonitoringLocationDefinitions(Collection<OnmsMonitoringLocationDefinition> onmsDefs) {
+        Collection<LocationDef> defs = m_monitoringLocationsConfiguration.getLocations().getLocationDefCollection();
+        for (OnmsMonitoringLocationDefinition onmsDef : onmsDefs) {
+            for (LocationDef def : defs) {
+                if (def.getLocationName().equals(onmsDef.getName())) {
+                    def.setMonitoringArea(onmsDef.getArea());
+                    def.setPollingPackageName(onmsDef.getArea());
+                }
+            }
+        }
+        saveMonitoringConfig();
+    }
+
+    @SuppressWarnings("unchecked")
+    public void saveMonitoringLocationDefinition(OnmsMonitoringLocationDefinition onmsDef) {
+        Collection<LocationDef> defs = m_monitoringLocationsConfiguration.getLocations().getLocationDefCollection();
+        for (LocationDef def : defs) {
+            if (onmsDef.getName().equals(def.getLocationName())) {
+                def.setMonitoringArea(onmsDef.getArea());
+                def.setPollingPackageName(onmsDef.getPollingPackageName());
+            }
+        }
+        saveMonitoringConfig();
+    }
+    
+    //TODO: figure out way to synchronize this
+    protected void saveMonitoringConfig() {
+        String xml = null;
+        StringWriter writer = new StringWriter();
+        try {
+            Marshaller.marshal(m_monitoringLocationsConfiguration, writer);
+            xml = writer.toString();
+            saveXml(xml);
+        } catch (MarshalException e) {
+            throw new CastorDataAccessFailureException("saveMonitoringConfig: couldn't marshal confg: \n"+
+                   (xml != null ? xml : ""), e);
+        } catch (ValidationException e) {
+            throw new CastorDataAccessFailureException("saveMonitoringConfig: couldn't validate confg: \n"+
+                    (xml != null ? xml : ""), e);
+        } catch (IOException e) {
+            throw new CastorDataAccessFailureException("saveMonitoringConfig: couldn't write confg: \n"+
+                    (xml != null ? xml : ""), e);
+        }
+    }
+    
+    protected void saveXml(String xml) throws IOException {
+        if (xml != null) {
+            FileWriter fileWriter = new FileWriter(m_monitoringLocationConfigResource.getFile());
+            fileWriter.write(xml);
+            fileWriter.flush();
+            fileWriter.close();
+        }
     }
     
     @Override
@@ -99,7 +158,7 @@ public class LocationMonitorDaoHibernate extends AbstractDaoHibernate<OnmsLocati
         final OnmsLocationMonitor monitor = super.load(id);
         return addLocationDefinition(monitor);
     }
-
+    
     /**
      * Location definitions are configured via XML, this method sets converts
      * XML configured defnitions and sets them for each location monitor in passed collection.
@@ -149,8 +208,8 @@ public class LocationMonitorDaoHibernate extends AbstractDaoHibernate<OnmsLocati
      * @throws ValidationException
      * @throws IOException
      */
-    private void initializeConfigurations() throws MarshalException, ValidationException, IOException {
-        initializeMonitoringLocationDefinitions();
+    private void initializeConfigurations() {
+        initializeMonitoringLocationDefinition();
     }
 
     /**
@@ -159,11 +218,47 @@ public class LocationMonitorDaoHibernate extends AbstractDaoHibernate<OnmsLocati
      * @throws MarshalException
      * @throws ValidationException
      */
-    private void initializeMonitoringLocationDefinitions() throws IOException, MarshalException, ValidationException {
-        final InputStream stream = m_moniotoringLocationConfiguration.getInputStream();
-        Reader rdr = new InputStreamReader(stream);
-        m_monitoringLocationsConfiguration = (MonitoringLocationsConfiguration) 
-                Unmarshaller.unmarshal(MonitoringLocationsConfiguration.class, rdr);
+    private void initializeMonitoringLocationDefinition() {
+        Reader rdr = null;
+        try {
+            rdr = new InputStreamReader(m_monitoringLocationConfigResource.getInputStream());
+            m_monitoringLocationsConfiguration = (MonitoringLocationsConfiguration) 
+            Unmarshaller.unmarshal(MonitoringLocationsConfiguration.class, rdr);
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (MarshalException e) {
+            throw new CastorDataAccessFailureException("initializeMonitoringLocationDefinition: " +
+                    "Could not marshal configuration", e);
+        } catch (ValidationException e) {
+            throw new CastorObjectRetrievalFailureException("initializeMonitoringLocationDefinition: " +
+                    "Could not marshal configuration", e);
+        } finally {
+            try {
+                rdr.close();
+            } catch (IOException e) {
+                throw new CastorDataAccessFailureException("initializeMonitoringLocatinDefintion: " +
+                        "Could not close XML stream", e);
+            }
+        }
+    }
+    
+    protected class CastorObjectRetrievalFailureException 
+    extends org.springframework.orm.ObjectRetrievalFailureException {
+        private static final long serialVersionUID = -5906087948002738350L;
+
+        public CastorObjectRetrievalFailureException(String message, Throwable throwable) {
+            super(message, throwable);
+        }
+    }
+    
+    protected class CastorDataAccessFailureException 
+    extends org.springframework.dao.DataAccessResourceFailureException {
+        private static final long serialVersionUID = -5546624359373413751L;
+        
+        public CastorDataAccessFailureException(String message, Throwable throwable) {
+            super(message, throwable);
+        }
     }
 
     @SuppressWarnings("unchecked")
@@ -193,5 +288,13 @@ public class LocationMonitorDaoHibernate extends AbstractDaoHibernate<OnmsLocati
         m_monitoringLocationsConfiguration = monitoringLocationsConfiguration;
     }
 
+    public Resource getMonitoringLocationConfigResource() {
+        return m_monitoringLocationConfigResource;
+    }
+
+    public void setMonitoringLocationConfigResource(Resource monitoringLocationResource) {
+        m_monitoringLocationConfigResource = monitoringLocationResource;
+        initializeMonitoringLocationDefinition();
+    }
 
 }
