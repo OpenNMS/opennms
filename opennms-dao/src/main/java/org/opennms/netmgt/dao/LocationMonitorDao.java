@@ -47,4 +47,8 @@ public interface LocationMonitorDao extends OnmsDao<OnmsLocationMonitor, Integer
     
     Collection<OnmsMonitoringLocationDefinition> findAllMonitoringLocationDefinitions();
     
+    void saveMonitoringLocationDefinition(OnmsMonitoringLocationDefinition def);
+    
+    void saveMonitoringLocationDefinitions(Collection<OnmsMonitoringLocationDefinition> defs);
+    
 }
