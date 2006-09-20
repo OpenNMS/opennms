@@ -13,10 +13,10 @@ import junit.framework.TestCase;
 import org.opennms.netmgt.eventd.EventConfigurationManager;
 import org.opennms.netmgt.mock.EventWrapper;
 import org.opennms.netmgt.mock.EventConfWrapper;
-import org.opennms.netmgt.mock.MockLogAppender;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Snmp;
 import org.opennms.netmgt.xml.eventconf.Logmsg;
+import org.opennms.test.mock.MockLogAppender;
 
 public class EventConfDataTest extends TestCase {
 	

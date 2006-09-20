@@ -16,8 +16,8 @@ import org.opennms.netmgt.config.JMXDataCollectionConfigFactory;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.dao.CollectorConfigDao;
 import org.opennms.netmgt.mock.MockDatabase;
-import org.opennms.netmgt.mock.MockLogAppender;
 import org.opennms.netmgt.rrd.RrdConfig;
+import org.opennms.test.mock.MockLogAppender;
 import org.opennms.test.mock.MockUtil;
 
 import junit.framework.TestCase;

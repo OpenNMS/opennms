@@ -30,6 +30,16 @@
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
+      <artifactId>opennms-config-utils</artifactId>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-dao</artifactId>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
       <artifactId>opennms-services</artifactId>
       <scope>compile</scope>
     </dependency>
@@ -42,13 +52,8 @@
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
-      <artifactId>opennms-config-utils</artifactId>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-dao</artifactId>
-      <scope>compile</scope>
+      <artifactId>opennms-test</artifactId>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>castor</groupId>

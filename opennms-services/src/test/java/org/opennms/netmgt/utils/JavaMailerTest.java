@@ -25,7 +25,7 @@ import junit.framework.TestCase;
 
 import org.apache.log4j.Category;
 import org.opennms.core.utils.ThreadCategory;
-import org.opennms.netmgt.mock.MockLogAppender;
+import org.opennms.test.mock.MockLogAppender;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 

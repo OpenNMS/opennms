@@ -13,10 +13,10 @@ import org.opennms.netmgt.config.DatabaseSchemaConfigFactory;
 import org.opennms.netmgt.config.RTCConfigFactory;
 import org.opennms.netmgt.config.categories.Category;
 import org.opennms.netmgt.filter.FilterParseException;
-import org.opennms.netmgt.mock.MockLogAppender;
 import org.opennms.netmgt.mock.OpenNMSTestCase;
 import org.opennms.netmgt.rtc.datablock.RTCCategory;
 import org.opennms.test.ConfigurationTestUtils;
+import org.opennms.test.mock.MockLogAppender;
 import org.xml.sax.SAXException;
 
 import junit.framework.TestCase;

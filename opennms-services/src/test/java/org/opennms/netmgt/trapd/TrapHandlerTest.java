@@ -16,7 +16,6 @@ import org.opennms.netmgt.eventd.EventConfigurationManager;
 import org.opennms.netmgt.mock.EventAnticipator;
 import org.opennms.netmgt.mock.EventWrapper;
 import org.opennms.netmgt.mock.MockEventIpcManager;
-import org.opennms.netmgt.mock.MockLogAppender;
 import org.opennms.netmgt.mock.MockTrapdConfig;
 import org.opennms.netmgt.snmp.PropertySettingTestSuite;
 import org.opennms.netmgt.snmp.SnmpInstId;
@@ -25,6 +24,7 @@ import org.opennms.netmgt.snmp.SnmpTrapBuilder;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpV1TrapBuilder;
 import org.opennms.netmgt.xml.event.Event;
+import org.opennms.test.mock.MockLogAppender;
 
 public class TrapHandlerTest extends TestCase {
     

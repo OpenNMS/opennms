@@ -9,12 +9,12 @@ import java.util.Properties;
 
 import org.jmock.Mock;
 import org.opennms.netmgt.config.ThresholdingConfigFactory;
-import org.opennms.netmgt.mock.MockLogAppender;
 import org.opennms.netmgt.mock.MockNetwork;
 import org.opennms.netmgt.poller.IPv4NetworkInterface;
 import org.opennms.netmgt.rrd.RrdConfig;
 import org.opennms.netmgt.rrd.RrdStrategy;
 import org.opennms.netmgt.rrd.RrdUtils;
+import org.opennms.test.mock.MockLogAppender;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 

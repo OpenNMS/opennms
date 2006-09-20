@@ -32,8 +32,8 @@
 package org.opennms.netmgt.threshd;
 
 
-import org.opennms.netmgt.mock.MockLogAppender;
 import org.opennms.netmgt.rrd.RrdUtils;
+import org.opennms.test.mock.MockLogAppender;
 
 public class LatencyThresholderTest extends ThresholderTestCase {
 

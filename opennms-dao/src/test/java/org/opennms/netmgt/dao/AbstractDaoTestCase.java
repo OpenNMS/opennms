@@ -49,6 +49,8 @@ import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsOutage;
 import org.opennms.netmgt.model.OnmsServiceType;
+import org.opennms.test.mock.MockLogAppender;
+import org.opennms.test.mock.MockUtil;
 import org.postgresql.ds.PGSimpleDataSource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -130,7 +132,8 @@ public class AbstractDaoTestCase extends TestCase {
                 JdbcTemplate template = new JdbcTemplate(getAdminDataSource());
                 template.execute("drop database test");
             } catch (Exception e) {
-                System.err.println("Error dropping Database: "+e);
+                // XXX should we re-throw?
+                MockUtil.println("Error dropping Database: "+e);
             }
                 
         }
@@ -188,7 +191,7 @@ public class AbstractDaoTestCase extends TestCase {
                 JdbcTemplate template = new JdbcTemplate(getDataSource());
                 template.execute("SHUTDOWN");
             } catch (Exception e) {
-                System.err.println("Error dropping Database: "+e);
+                MockUtil.println("Error dropping Database: "+e);
             }
 
         }
@@ -249,8 +252,11 @@ public class AbstractDaoTestCase extends TestCase {
         m_createDb = createDb;
     }
 
+    @Override
     protected void setUp() throws Exception {
-        System.err.println("----------- Begin SetUp for "+getName()+" ---------------------");
+        MockUtil.println("----------- Begin SetUp for "+getName()+" ---------------------");
+        MockLogAppender.setupLogging();
+
         DB db = new PostgresqlDB();
         //m_db = new HSQLDB();
         
@@ -271,22 +277,28 @@ public class AbstractDaoTestCase extends TestCase {
             populateDB();
         }
         
-        System.err.println("----------- SetUp Complete for "+getName()+" ---------------------");
-        
+        MockUtil.println("----------- SetUp Complete for "+getName()+" ---------------------");
     }
 
+    @Override
     protected void tearDown() throws Exception {
-        System.err.println("----------- Begin TearDown for "+getName()+" ---------------------");
+        MockUtil.println("----------- Begin TearDown for "+getName()+" ---------------------");
         m_testConfig.tearDown();
-        System.err.println("----------- TearDown Complete for "+getName()+" ---------------------");
+        MockUtil.println("----------- TearDown Complete for "+getName()+" ---------------------");
      }
 
+    
+    @Override
     protected void runTest() throws Throwable {
-         if (isRunTestsInTransaction())
-             m_transTemplate.execute(new RunTestInTransaction());
-         else
-             super.runTest();
-     }
+        if (isRunTestsInTransaction()) {
+            m_transTemplate.execute(new RunTestInTransaction());
+        } else {
+            super.runTest();
+        }
+
+        MockLogAppender.assertNoWarningsOrGreater();
+        MockUtil.println("------------ End Test "+getName()+" --------------------------");
+    }
 
     private void populateDB() throws Exception {
         

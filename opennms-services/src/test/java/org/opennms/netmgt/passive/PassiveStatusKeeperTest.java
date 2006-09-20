@@ -46,7 +46,6 @@ import org.opennms.netmgt.config.EventTranslatorConfigFactory;
 import org.opennms.netmgt.mock.EventAnticipator;
 import org.opennms.netmgt.mock.MockDatabase;
 import org.opennms.netmgt.mock.MockEventIpcManager;
-import org.opennms.netmgt.mock.MockLogAppender;
 import org.opennms.netmgt.mock.MockMonitoredService;
 import org.opennms.netmgt.mock.MockNetwork;
 import org.opennms.netmgt.mock.MockService;
@@ -60,6 +59,7 @@ import org.opennms.netmgt.xml.event.Logmsg;
 import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.Parms;
 import org.opennms.netmgt.xml.event.Value;
+import org.opennms.test.mock.MockLogAppender;
 import org.opennms.test.mock.MockUtil;
 
 public class PassiveStatusKeeperTest extends MockObjectTestCase {

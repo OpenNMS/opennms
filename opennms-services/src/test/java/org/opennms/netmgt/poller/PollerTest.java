@@ -53,7 +53,6 @@ import org.opennms.netmgt.mock.MockDatabase;
 import org.opennms.netmgt.mock.MockElement;
 import org.opennms.netmgt.mock.MockEventIpcManager;
 import org.opennms.netmgt.mock.MockInterface;
-import org.opennms.netmgt.mock.MockLogAppender;
 import org.opennms.netmgt.mock.MockNetwork;
 import org.opennms.netmgt.mock.MockNode;
 import org.opennms.netmgt.mock.MockOutageConfig;
@@ -69,6 +68,7 @@ import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.utils.Querier;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xmlrpcd.OpenNMSProvisioner;
+import org.opennms.test.mock.MockLogAppender;
 import org.opennms.test.mock.MockUtil;
 
 public class PollerTest extends TestCase {

@@ -48,9 +48,9 @@ import org.opennms.netmgt.config.UserManager;
 import org.opennms.netmgt.config.groups.Group;
 import org.opennms.netmgt.config.groups.Role;
 import org.opennms.netmgt.config.users.User;
-import org.opennms.netmgt.mock.MockLogAppender;
 import org.opennms.netmgt.notifd.mock.MockGroupManager;
 import org.opennms.netmgt.notifd.mock.MockUserManager;
+import org.opennms.test.mock.MockLogAppender;
 
 public class RolesTest extends IntervalTestCase {
     

@@ -52,13 +52,13 @@ import org.opennms.netmgt.dao.IpInterfaceDao;
 import org.opennms.netmgt.dao.MonitoredServiceDao;
 import org.opennms.netmgt.eventd.EventIpcManager;
 import org.opennms.netmgt.mock.MockDatabase;
-import org.opennms.netmgt.mock.MockLogAppender;
 import org.opennms.netmgt.mock.MockNetwork;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.poller.mock.MockScheduler;
 import org.opennms.netmgt.scheduler.Scheduler;
 import org.opennms.netmgt.utils.EventProxy;
+import org.opennms.test.mock.MockLogAppender;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 
