@@ -252,9 +252,11 @@
                             <%if(nodeId > 0) {%>
                                 Node: <a href="element/node.jsp?node=<%=nodeId%>">
                                 <%=NetworkElementFactory.getNodeLabel(nodeId)%></a><br>
-                                <% if(intf != null) { %>
+                                <% if(intf != null && !intf.equals("")) { %>
                                     Interface: <%=this.model.getHumanReadableNameForIfLabel(nodeId, intf)%><br>
 				    <a href="performance/choosereportanddate.jsp?node=<%=nodeId%>&resourceType=interface&resource=<%=intf%>">Detail</a>
+                                <% } else { %>
+				    <a href="performance/choosereportanddate.jsp?node=<%=nodeId%>&resourceType=node">Detail</a>
                                 <% } %>
                             <%} else {%>
                                 Domain: <%=curr_domain%><br>
