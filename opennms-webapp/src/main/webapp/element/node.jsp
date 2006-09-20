@@ -255,7 +255,7 @@
         
         <% if(this.perfModel.isQueryableNode(nodeId)) { %>
 	  <li>
-          <a href="performance/addIntfFromNode?endUrl=performance%2FaddReportsToUrl&node=<%=nodeId%>&relativetime=lastday">SNMP Performance</a>
+          <a href="performance/chooseresource.jsp?endUrl=performance%2FaddReportsToUrl&resourceType=node&node=<%=nodeId%>&resource=&relativetime=lastday">SNMP Performance</a>
 	  </li>
         <% } %>
         

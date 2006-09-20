@@ -230,7 +230,7 @@ function doDelete() {
               <% String ifLabel = IfLabel.getIfLabel(nodeId, ipAddr); %>
           <% if(ifLabel != null && this.perfModel.isQueryableInterface(nodeId, ifLabel)) { %>
 	    <li>
-            <a href="performance/addReportsToUrl?node=<%=nodeId%>&intf=<%=ifLabel%>&relativetime=lastday">SNMP Performance</a>
+            <a href="performance/addReportsToUrl?resourceType=interface&node=<%=nodeId%>&resource=<%=ifLabel%>&relativetime=lastday">SNMP Performance</a>
 	    </li>
           <% } %>
         <% } %>
@@ -238,7 +238,7 @@ function doDelete() {
               <% String ifLabel = IfLabel.getIfLabelfromIfIndex(nodeId, ipAddr, ifindexString); %>
           <% if(ifLabel != null && this.perfModel.isQueryableInterface(nodeId, ifLabel)) { %>
 	    <li>
-            <a href="performance/addReportsToUrl?node=<%=nodeId%>&intf=<%=ifLabel%>&relativetime=lastday">SNMP Performance</a>
+            <a href="performance/addReportsToUrl?resourceType=interface&node=<%=nodeId%>&resource=<%=ifLabel%>&relativetime=lastday">SNMP Performance</a>
 	    </li>
           <% } %>
         <% } %>
