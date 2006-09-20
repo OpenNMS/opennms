@@ -39,8 +39,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.opennms.core.utils.Argument;
-import org.opennms.netmgt.mock.MockUtil;
 import org.opennms.netmgt.notifd.NotificationStrategy;
+import org.opennms.test.mock.MockUtil;
 /**
  * @author david
  *

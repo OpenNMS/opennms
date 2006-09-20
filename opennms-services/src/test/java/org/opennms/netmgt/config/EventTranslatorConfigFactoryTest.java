@@ -12,7 +12,7 @@ import java.io.StringReader;
 import org.opennms.netmgt.mock.EventAnticipator;
 import org.opennms.netmgt.mock.MockEventIpcManager;
 import org.opennms.netmgt.mock.MockLogAppender;
-import org.opennms.netmgt.mock.MockUtil;
+import org.opennms.netmgt.mock.MockEventUtil;
 import org.opennms.netmgt.mock.OpenNMSTestCase;
 import org.opennms.netmgt.mock.OutageAnticipator;
 import org.opennms.netmgt.translator.EventTranslator;

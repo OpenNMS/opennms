@@ -26,7 +26,7 @@ import org.opennms.netmgt.mock.EventAnticipator;
 import org.opennms.netmgt.mock.MockDatabase;
 import org.opennms.netmgt.mock.MockEventIpcManager;
 import org.opennms.netmgt.mock.MockNetwork;
-import org.opennms.netmgt.mock.MockUtil;
+import org.opennms.netmgt.mock.MockEventUtil;
 import org.opennms.netmgt.poller.IPv4NetworkInterface;
 import org.opennms.netmgt.rrd.RrdConfig;
 import org.opennms.netmgt.rrd.RrdStrategy;
@@ -149,7 +149,7 @@ public class ThresholderTestCase extends MockObjectTestCase {
 
 	private void ensureEventAfterFetches(int count, String dsName, String uei) {
 	    if (uei != null) {
-	        Event event = MockUtil.createServiceEvent("Test", uei, m_network.getService(1, "192.168.1.1", "ICMP"), null);
+	        Event event = MockEventUtil.createServiceEvent("Test", uei, m_network.getService(1, "192.168.1.1", "ICMP"), null);
 	        Parms parms = new Parms();
 	        Parm parm = new Parm();
 	        parm.setParmName("ds");
@@ -184,8 +184,8 @@ public class ThresholderTestCase extends MockObjectTestCase {
 
 	private void verifyAnticipated(long millis) {
 	    // make sure the down events are received
-	    MockUtil.printEvents("Events we're still waiting for: ", m_anticipator.waitForAnticipated(millis));
-	    MockUtil.printEvents("Unanticipated: ", m_anticipator.unanticipatedEvents());
+	    MockEventUtil.printEvents("Events we're still waiting for: ", m_anticipator.waitForAnticipated(millis));
+	    MockEventUtil.printEvents("Unanticipated: ", m_anticipator.unanticipatedEvents());
 	    assertTrue("Expected events not forthcoming", m_anticipator.waitForAnticipated(0).isEmpty());
 	    sleep(200);
 	    assertEquals("Received unexpected events", 0, m_anticipator.unanticipatedEvents().size());

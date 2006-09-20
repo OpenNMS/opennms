@@ -11,9 +11,9 @@ import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 import org.opennms.netmgt.mock.MockDatabase;
 import org.opennms.netmgt.mock.MockEventIpcManager;
 import org.opennms.netmgt.mock.MockLogAppender;
-import org.opennms.netmgt.mock.MockUtil;
 import org.opennms.netmgt.rrd.RrdConfig;
 import org.opennms.netmgt.threshd.mock.MockThreshdConfigManager;
+import org.opennms.test.mock.MockUtil;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 

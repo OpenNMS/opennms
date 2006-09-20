@@ -44,7 +44,7 @@ import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.config.poller.Outages;
 import org.opennms.netmgt.mock.MockLogAppender;
-import org.opennms.netmgt.mock.MockUtil;
+import org.opennms.netmgt.mock.MockEventUtil;
 
 public class PollOutagesConfigManagerTest extends TestCase {
 

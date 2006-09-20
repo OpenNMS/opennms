@@ -50,10 +50,10 @@ import org.opennms.netmgt.config.vacuumd.Action;
 import org.opennms.netmgt.config.vacuumd.Automation;
 import org.opennms.netmgt.config.vacuumd.Trigger;
 import org.opennms.netmgt.mock.MockNode;
-import org.opennms.netmgt.mock.MockUtil;
 import org.opennms.netmgt.mock.OpenNMSTestCase;
 import org.opennms.netmgt.utils.Querier;
 import org.opennms.netmgt.utils.SingleResultQuerier;
+import org.opennms.test.mock.MockUtil;
 
 public class VacuumdTest extends OpenNMSTestCase {
 

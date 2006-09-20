@@ -16,7 +16,7 @@ public class EventWrapper {
 
     public boolean equals(Object o) {
         EventWrapper w = (EventWrapper) o;
-        return MockUtil.eventsMatch(m_event, w.m_event);
+        return MockEventUtil.eventsMatch(m_event, w.m_event);
     }
 
     public Event getEvent() {

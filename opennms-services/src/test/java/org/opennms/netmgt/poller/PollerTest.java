@@ -59,7 +59,7 @@ import org.opennms.netmgt.mock.MockNode;
 import org.opennms.netmgt.mock.MockOutageConfig;
 import org.opennms.netmgt.mock.MockPollerConfig;
 import org.opennms.netmgt.mock.MockService;
-import org.opennms.netmgt.mock.MockUtil;
+import org.opennms.netmgt.mock.MockEventUtil;
 import org.opennms.netmgt.mock.MockVisitor;
 import org.opennms.netmgt.mock.MockVisitorAdapter;
 import org.opennms.netmgt.mock.OutageAnticipator;
@@ -69,6 +69,7 @@ import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.utils.Querier;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xmlrpcd.OpenNMSProvisioner;
+import org.opennms.test.mock.MockUtil;
 
 public class PollerTest extends TestCase {
 
@@ -514,7 +515,7 @@ public class PollerTest extends TestCase {
 		MockInterface dotTwo = m_network.getInterface(1, "192.168.1.2");
 		MockInterface dotThree = m_network.getInterface(2, "192.168.1.3");
 
-		Event reparentEvent = MockUtil.createReparentEvent("Test",
+		Event reparentEvent = MockEventUtil.createReparentEvent("Test",
 				"192.168.1.2", 1, 2);
 
 		// we are going to reparent to node 2 so when we bring down its only
@@ -701,11 +702,11 @@ public class PollerTest extends TestCase {
 		MockService svc = m_network.getService(1, "192.168.1.1", "SMTP");
 		MockInterface iface = m_network.getInterface(1, "192.168.1.2");
 
-		Event svcLostEvent = MockUtil.createNodeLostServiceEvent("Test", svc);
+		Event svcLostEvent = MockEventUtil.createNodeLostServiceEvent("Test", svc);
 		m_db.writeEvent(svcLostEvent);
 		createOutages(svc, svcLostEvent);
 
-		Event ifaceDownEvent = MockUtil.createInterfaceDownEvent("Test", iface);
+		Event ifaceDownEvent = MockEventUtil.createInterfaceDownEvent("Test", iface);
 		m_db.writeEvent(ifaceDownEvent);
 		createOutages(iface, ifaceDownEvent);
 
@@ -759,7 +760,7 @@ public class PollerTest extends TestCase {
 		node2.bringDown();
 		dotTwo.bringUp();
 
-		Event reparentEvent = MockUtil.createReparentEvent("Test",
+		Event reparentEvent = MockEventUtil.createReparentEvent("Test",
 				"192.168.1.2", 1, 2);
 
 		startDaemons();
@@ -812,7 +813,7 @@ public class PollerTest extends TestCase {
 
 		MockVisitor gainSvcSender = new MockVisitorAdapter() {
 			public void visitService(MockService svc) {
-				Event event = MockUtil
+				Event event = MockEventUtil
 						.createNodeGainedServiceEvent("Test", svc);
 				m_eventMgr.sendEventToListeners(event);
 			}
@@ -866,14 +867,14 @@ public class PollerTest extends TestCase {
 		sleep(2000);
 		assertTrue(0 < svc.getPollCount());
 
-		m_eventMgr.sendEventToListeners(MockUtil
+		m_eventMgr.sendEventToListeners(MockEventUtil
 				.createSuspendPollingServiceEvent("Test", svc));
 		svc.resetPollCount();
 
 		sleep(5000);
 		assertEquals(0, svc.getPollCount());
 
-		m_eventMgr.sendEventToListeners(MockUtil
+		m_eventMgr.sendEventToListeners(MockEventUtil
 				.createResumePollingServiceEvent("Test", svc));
 
 		sleep(2000);
@@ -913,13 +914,13 @@ public class PollerTest extends TestCase {
 
 	private void verifyAnticipated(long millis, boolean checkUnanticapted) {
 		// make sure the down events are received
-		MockUtil.printEvents("Events we're still waiting for: ", m_anticipator
+		MockEventUtil.printEvents("Events we're still waiting for: ", m_anticipator
 				.waitForAnticipated(millis));
 		assertTrue("Expected events not forthcoming", m_anticipator
 				.waitForAnticipated(0).isEmpty());
 		if (checkUnanticapted) {
 			sleep(2000);
-			MockUtil.printEvents("Unanticipated: ", m_anticipator
+			MockEventUtil.printEvents("Unanticipated: ", m_anticipator
 					.unanticipatedEvents());
 			assertEquals("Received unexpected events", 0, m_anticipator
 					.unanticipatedEvents().size());

@@ -50,7 +50,7 @@ import org.opennms.netmgt.config.poller.Outage;
 import org.opennms.netmgt.config.poller.Outages;
 import org.opennms.netmgt.mock.MockDatabase;
 import org.opennms.netmgt.mock.MockNetwork;
-import org.opennms.netmgt.mock.MockUtil;
+import org.opennms.test.mock.MockUtil;
 
 import com.meterware.httpunit.BlockElement;
 import com.meterware.httpunit.WebTable;

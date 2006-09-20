@@ -184,32 +184,32 @@ public class MockService extends MockElement implements MonitoredService {
      * @return
      */
     public Event createDownEvent() {
-        return MockUtil.createNodeLostServiceEvent("Test", this, "Service Not Responding.");
+        return MockEventUtil.createNodeLostServiceEvent("Test", this, "Service Not Responding.");
     }
 
     /**
      * @return
      */
     public Event createUpEvent() {
-        return MockUtil.createNodeRegainedServiceEvent("Test", this);
+        return MockEventUtil.createNodeRegainedServiceEvent("Test", this);
     }
 
     /**
      * @return
      */
     public Event createUnresponsiveEvent() {
-        return MockUtil.createServiceUnresponsiveEvent("Test", this, String.valueOf(PollStatus.SERVICE_UNAVAILABLE));
+        return MockEventUtil.createServiceUnresponsiveEvent("Test", this, String.valueOf(PollStatus.SERVICE_UNAVAILABLE));
     }
 
     /**
      * @return
      */
     public Event createResponsiveEvent() {
-        return MockUtil.createServiceResponsiveEvent("Test", this);
+        return MockEventUtil.createServiceResponsiveEvent("Test", this);
     }
     
     public Event createDeleteEvent() {
-        return MockUtil.createServiceDeletedEvent("Test", this);
+        return MockEventUtil.createServiceDeletedEvent("Test", this);
     }
 
     public NetworkInterface getNetInterface() {
@@ -224,7 +224,7 @@ public class MockService extends MockElement implements MonitoredService {
     }
 
 	public Event createDemandPollEvent(int demandPollId) {
-		return MockUtil.createDemandPollServiceEvent("Test", this, demandPollId);
+		return MockEventUtil.createDemandPollServiceEvent("Test", this, demandPollId);
 	}
 
 }

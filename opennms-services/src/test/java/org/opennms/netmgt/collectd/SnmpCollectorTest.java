@@ -21,12 +21,12 @@ import org.opennms.netmgt.config.collectd.Service;
 import org.opennms.netmgt.mock.MockDatabase;
 import org.opennms.netmgt.mock.MockLogAppender;
 import org.opennms.netmgt.mock.MockNetwork;
-import org.opennms.netmgt.mock.MockUtil;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.rrd.RrdConfig;
 import org.opennms.netmgt.snmp.mock.MockSnmpAgent;
 import org.opennms.test.ConfigurationTestUtils;
+import org.opennms.test.mock.MockUtil;
 
 import junit.framework.TestCase;
 

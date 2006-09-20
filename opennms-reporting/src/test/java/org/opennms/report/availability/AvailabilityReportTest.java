@@ -49,7 +49,7 @@ import org.opennms.netmgt.mock.MockCategoryFactory;
 import org.opennms.netmgt.config.CategoryFactory;
 import org.opennms.netmgt.mock.MockDatabase;
 import org.opennms.netmgt.mock.MockLogAppender;
-import org.opennms.netmgt.mock.MockUtil;
+import org.opennms.netmgt.mock.MockEventUtil;
 
 public class AvailabilityReportTest extends TestCase {
 	

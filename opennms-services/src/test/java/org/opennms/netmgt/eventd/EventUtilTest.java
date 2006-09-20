@@ -36,7 +36,7 @@ package org.opennms.netmgt.eventd;
 import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.eventd.db.Constants;
 import org.opennms.netmgt.mock.MockService;
-import org.opennms.netmgt.mock.MockUtil;
+import org.opennms.netmgt.mock.MockEventUtil;
 import org.opennms.netmgt.mock.OpenNMSTestCase;
 import org.opennms.netmgt.xml.event.Event;
 
@@ -48,7 +48,7 @@ public class EventUtilTest extends OpenNMSTestCase {
     protected void setUp() throws Exception {
         super.setUp();
         m_svc = m_network.getService(1, "192.168.1.1", "SMTP");
-        m_svcLostEvent = MockUtil.createNodeLostServiceEvent("Test", m_svc);
+        m_svcLostEvent = MockEventUtil.createNodeLostServiceEvent("Test", m_svc);
     }
 
     protected void tearDown() throws Exception {
@@ -80,7 +80,7 @@ public class EventUtilTest extends OpenNMSTestCase {
         testString = EventUtil.getValueOfParm(EventUtil.TAG_SEVERITY, m_svcLostEvent);
         assertEquals("Minor", testString);
         
-        Event event = MockUtil.createNodeLostServiceEvent("Test", m_svc, "noReasonAtAll");
+        Event event = MockEventUtil.createNodeLostServiceEvent("Test", m_svc, "noReasonAtAll");
         assertEquals("noReasonAtAll", EventUtil.getNamedParmValue("parm["+EventConstants.PARM_LOSTSERVICE_REASON+"]", event));
     }
 

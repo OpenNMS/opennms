@@ -50,7 +50,7 @@ import org.opennms.netmgt.config.notifications.Notification;
 import org.opennms.netmgt.mock.MockInterface;
 import org.opennms.netmgt.mock.MockNode;
 import org.opennms.netmgt.mock.MockService;
-import org.opennms.netmgt.mock.MockUtil;
+import org.opennms.netmgt.mock.MockEventUtil;
 import org.opennms.netmgt.utils.RowProcessor;
 import org.opennms.netmgt.xml.event.Event;
 /**
@@ -72,9 +72,9 @@ public class NotifdTest extends NotificationsTestCase {
         long finished = anticipateNotificationsForGroup("High loadavg5 Threshold exceeded", "High loadavg5 Threshold exceeded on 192.168.1.1, loadavg5 with ", "InitialGroup", date, 0);
 
         MockInterface iface = m_network.getInterface(1, "192.168.1.1");
-        Event e = MockUtil.createInterfaceEvent("test", "uei.opennms.org/threshold/highThresholdExceeded", iface);
-        MockUtil.setEventTime(e, date);
-        MockUtil.addEventParm(e, "ds", "loadavg5");
+        Event e = MockEventUtil.createInterfaceEvent("test", "uei.opennms.org/threshold/highThresholdExceeded", iface);
+        MockEventUtil.setEventTime(e, date);
+        MockEventUtil.addEventParm(e, "ds", "loadavg5");
         m_eventMgr.sendEventToListeners(e);
         
         /*
@@ -98,8 +98,8 @@ public class NotifdTest extends NotificationsTestCase {
         
         long finished = anticipateNotificationsForGroup("A new interface (10.1.1.1) has been discovered and is being queued for a services scan.", "A new interface (10.1.1.1) has been discovered and is being queued for a services scan.", "InitialGroup", date, 0);
 
-        Event e = MockUtil.createNewSuspectEvent("test", "uei.opennms.org/internal/discovery/newSuspect", "10.1.1.1");
-        MockUtil.setEventTime(e, date);
+        Event e = MockEventUtil.createNewSuspectEvent("test", "uei.opennms.org/internal/discovery/newSuspect", "10.1.1.1");
+        MockEventUtil.setEventTime(e, date);
         m_eventMgr.sendEventToListeners(e);
         
         verifyAnticipated(finished, 500);
@@ -299,7 +299,7 @@ public class NotifdTest extends NotificationsTestCase {
         
         long interval = computeInterval();
 
-        Event event = MockUtil.createServiceEvent("Test", "uei.opennms.org/tests/nodeTimeTest", svc, null);
+        Event event = MockEventUtil.createServiceEvent("Test", "uei.opennms.org/tests/nodeTimeTest", svc, null);
         
         Date date = EventConstants.parseToDate(event.getTime());
         String dateString = DateFormat.getDateTimeInstance(DateFormat.FULL,
@@ -395,7 +395,7 @@ public class NotifdTest extends NotificationsTestCase {
         Date downDate = new Date();
         long finishedDowns = anticipateNotificationsForRole("notification test", "Notification Test", "oncall", downDate, 0);
 
-        m_eventMgr.sendEventToListeners(MockUtil.createNodeEvent("Test", "uei.opennms.org/test/roleTestEvent", node));
+        m_eventMgr.sendEventToListeners(MockEventUtil.createNodeEvent("Test", "uei.opennms.org/test/roleTestEvent", node));
 
         verifyAnticipated(finishedDowns, 500);
         

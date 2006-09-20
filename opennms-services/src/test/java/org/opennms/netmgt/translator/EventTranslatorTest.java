@@ -48,13 +48,14 @@ import org.opennms.netmgt.mock.MockDatabase;
 import org.opennms.netmgt.mock.MockEventIpcManager;
 import org.opennms.netmgt.mock.MockLogAppender;
 import org.opennms.netmgt.mock.MockNetwork;
-import org.opennms.netmgt.mock.MockUtil;
+import org.opennms.netmgt.mock.MockEventUtil;
 import org.opennms.netmgt.mock.OutageAnticipator;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Logmsg;
 import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.Parms;
 import org.opennms.netmgt.xml.event.Value;
+import org.opennms.test.mock.MockUtil;
 
 public class EventTranslatorTest extends MockObjectTestCase {
     
@@ -288,7 +289,7 @@ public class EventTranslatorTest extends MockObjectTestCase {
 	}
 
     private Event createEventWithParms(String uei, Parms parms) {
-		Event e = MockUtil.createEvent("Automation", uei);
+		Event e = MockEventUtil.createEvent("Automation", uei);
 		e.setHost("localhost");
         
         e.setParms(parms);

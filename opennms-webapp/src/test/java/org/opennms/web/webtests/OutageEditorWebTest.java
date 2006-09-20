@@ -56,7 +56,7 @@ import org.opennms.netmgt.mock.MockEventConfigManager;
 import org.opennms.netmgt.mock.MockEventIpcManager;
 import org.opennms.netmgt.mock.MockLogAppender;
 import org.opennms.netmgt.mock.MockNetwork;
-import org.opennms.netmgt.mock.MockUtil;
+import org.opennms.test.mock.MockUtil;
 
 import com.meterware.httpunit.WebLink;
 import com.meterware.httpunit.WebTable;
