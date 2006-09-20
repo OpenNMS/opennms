@@ -30,19 +30,20 @@
 //     http://www.opennms.com/
 //
 
-package org.opennms.netmgt.dao;
+package org.opennms.netmgt.dao.hibernate;
 
-import org.opennms.netmgt.model.AggregateStatusView;
+import org.opennms.netmgt.dao.LocationMonitorDao;
+import org.opennms.netmgt.model.OnmsLocationMonitor;
 
 /**
- * DAO for accessing persisted configration of a view that defines
- * a collection of aggregate status definitions.
- * 
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  *
  */
-public interface AggregateStatusViewDao extends OnmsDao<AggregateStatusView, Integer> {
+public class LocationMonitorDaoHibernate extends AbstractDaoHibernate<OnmsLocationMonitor, Integer> implements
+        LocationMonitorDao {
     
-    AggregateStatusView findByName(String name);
-    
+    public LocationMonitorDaoHibernate() {
+        super(OnmsLocationMonitor.class);
+    }
+
 }
