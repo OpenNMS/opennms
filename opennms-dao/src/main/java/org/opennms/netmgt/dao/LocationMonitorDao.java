@@ -32,7 +32,10 @@
 
 package org.opennms.netmgt.dao;
 
+import java.util.Collection;
+
 import org.opennms.netmgt.model.OnmsLocationMonitor;
+import org.opennms.netmgt.model.OnmsMonitoringLocationDefinition;
 
 /**
  * 
@@ -41,5 +44,7 @@ import org.opennms.netmgt.model.OnmsLocationMonitor;
  *
  */
 public interface LocationMonitorDao extends OnmsDao<OnmsLocationMonitor, Integer> {
-
+    
+    Collection<OnmsMonitoringLocationDefinition> findAllMonitoringLocationDefinitions();
+    
 }
