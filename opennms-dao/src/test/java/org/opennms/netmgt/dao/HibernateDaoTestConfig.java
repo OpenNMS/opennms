@@ -137,6 +137,9 @@ public class HibernateDaoTestConfig extends DaoTestConfig {
         	OnmsAlarm.class,
         	OnmsNotification.class,
         	OnmsUserNotification.class,
+            org.opennms.netmgt.model.AggregateStatusView.class,
+            org.opennms.netmgt.model.AggregateStatusDefinition.class,
+
         };
         
         String[] annotatedPackages = {
