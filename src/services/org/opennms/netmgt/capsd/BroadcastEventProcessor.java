@@ -2053,7 +2053,11 @@ final class BroadcastEventProcessor implements EventListener {
         Category log = ThreadCategory.getInstance(getClass());
         PreparedStatement stmt = null;
 
-        final String DB_MARK_SERVICE_DELETED = "UPDATE ifservices SET status='D' " + "WHERE ifservices.serviceID = service.serviceID " + "AND ifservices.nodeID=? AND ifservices.ipAddr=? AND service.serviceName=?";
+        final String DB_MARK_SERVICE_DELETED =
+        	"UPDATE ifservices SET status='D' "
+        	+ "FROM service "
+        	+ "WHERE ifservices.serviceID = service.serviceID "
+        	+ "AND ifservices.nodeID=? AND ifservices.ipAddr=? AND service.serviceName=?";
 
         try {
             stmt = dbConn.prepareStatement(DB_MARK_SERVICE_DELETED);
