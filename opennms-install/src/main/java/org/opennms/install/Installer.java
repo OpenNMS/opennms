@@ -1197,7 +1197,7 @@ public class Installer {
                 st.execute("GRANT ALL ON " + tableName + " TO " + m_user);
                 m_out.println("GRANTED");
             } else {
-                m_out.print("  - checking table \"" + tableName + "\"... ");
+                m_out.println("  - checking table \"" + tableName + "\"... ");
 
                 tableName = tableName.toLowerCase();
 
@@ -1205,9 +1205,10 @@ public class Installer {
                 Table oldTable = getTableFromDB(tableName);
 
                 if (newTable.equals(oldTable)) {
-                    m_out.println("UPTODATE");
                     addIndexesForTable(tableName);
                     addTriggersForTable(tableName);
+                    m_out.println("  - checking table \"" + tableName
+                                  + "\"... UPTODATE");
                 } else {
                     if (oldTable == null) {
                         String create = getTableCreateFromSQL(tableName);
@@ -1219,7 +1220,8 @@ public class Installer {
                         addTriggersForTable(tableName);
                         st.execute("GRANT ALL ON " + tableName + " TO "
                                 + m_user);
-                        m_out.println("CREATED");
+                        m_out.println("  - checking table \"" + tableName
+                                      + "\"... CREATED");
                     } else {
                         try {
                             changeTable(tableName, oldTable, newTable);
@@ -2245,7 +2247,9 @@ public class Installer {
         }
         m_changed.add(table);
 
-        m_out.println("SCHEMA DOES NOT MATCH");
+        m_out.println("  - checking table \"" + table
+                      + "\"... SCHEMA DOES NOT MATCH");
+
         m_out.println("    - differences:");
         for (Constraint newConstraint : newTable.getConstraints()) {
             m_out.println("new constraint: " + newConstraint.getTable()
@@ -2400,7 +2404,9 @@ public class Installer {
         // completed copying it, so it's outside of the try/catch block above.
         st.execute("DROP TABLE " + tmpTable);
 
-        m_out.println("    - completed updating table... ");
+
+        m_out.println("  - checking table \"" + table
+                      + "\"... COMPLETED UPDATING TABLE");
     }
 
     /*
