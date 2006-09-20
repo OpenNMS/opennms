@@ -36,6 +36,10 @@ import java.util.Date;
 import org.opennms.netmgt.model.OnmsDistPoller;
 
 public class DistPollerDaoTest extends BaseDaoTestCase {
+
+    public void testBogus() {
+        // do nothing... we're here so JUnit doesn't complain
+    }
 	
 	public void FIXMEtestCreate() {
         OnmsDistPoller distPoller = new OnmsDistPoller("otherpoller", "192.168.7.7");   

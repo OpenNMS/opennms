@@ -55,6 +55,10 @@ public class AnnotationTest extends BaseDaoTestCase {
 		}
 	}
 
+	public void testBogus() {
+		// do nothing... we're here so JUnit doesn't complain
+	}
+
 	public void FIXMEtestDistPoller() {
 		assertLoadAll(OnmsDistPoller.class, new EmptyChecker<OnmsDistPoller>() {
 

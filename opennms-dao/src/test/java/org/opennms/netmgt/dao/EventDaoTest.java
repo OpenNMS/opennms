@@ -45,6 +45,10 @@ public class EventDaoTest extends AbstractDaoTestCase {
         //setPopulate(false);
         super.setUp();
     }
+
+    public void testBogus() {
+        // do nothing... we're here so JUnit doesn't complain
+    }
     
     public void FIXMEtestSave() {
         OnmsEvent event = new OnmsEvent();
