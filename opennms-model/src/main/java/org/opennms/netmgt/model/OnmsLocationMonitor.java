@@ -6,6 +6,10 @@ public class OnmsLocationMonitor {
 	
 	private Integer m_id;
 	private String m_label;
+    
+    //needed for locating XML configured location definition and
+    //creating m_locationDefintion.
+    private String m_definitionName;
 	private OnmsMonitoringLocationDefinition m_locationDefinition;
 	private List<OnmsLocationSpecificStatusChange> m_mostRecentStatusChanges;		
 	
@@ -32,5 +36,13 @@ public class OnmsLocationMonitor {
 	public void setLocationDefinition(OnmsMonitoringLocationDefinition locationDefinition) {
 		m_locationDefinition = locationDefinition;
 	}
+
+    public String getDefinitionName() {
+        return m_definitionName;
+    }
+
+    public void setDefinitionName(String definitionName) {
+        m_definitionName = definitionName;
+    }
 
 }
