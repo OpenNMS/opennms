@@ -39,7 +39,7 @@ import java.util.List;
 
 import junit.framework.Assert;
 
-import org.opennms.netmgt.mock.MockUtil;
+import org.opennms.test.mock.MockUtil;
 
 /**
  * @author brozow

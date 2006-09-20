@@ -47,6 +47,7 @@ import org.opennms.netmgt.eventd.EventListener;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Events;
 import org.opennms.netmgt.xml.event.Log;
+import org.opennms.test.mock.MockUtil;
 
 public class MockEventIpcManager implements EventIpcManager {
 

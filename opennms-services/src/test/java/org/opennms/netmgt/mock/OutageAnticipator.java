@@ -43,6 +43,7 @@ import java.util.Set;
 
 import org.opennms.netmgt.eventd.EventListener;
 import org.opennms.netmgt.xml.event.Event;
+import org.opennms.test.mock.MockUtil;
 
 
 
@@ -250,7 +251,7 @@ public class OutageAnticipator implements EventListener {
         Collection pendingOpens = getOutageList(m_pendingOpens, e);
         for (Iterator it = pendingOpens.iterator(); it.hasNext();) {
             Outage outage = (Outage) it.next();
-            outage.setLostEvent(e.getDbid(), MockUtil.convertEventTimeIntoTimestamp(e.getTime()));
+            outage.setLostEvent(e.getDbid(), MockEventUtil.convertEventTimeIntoTimestamp(e.getTime()));
             m_expectedOutages.add(outage);
         }
         clearOutageList(m_pendingOpens, e);
@@ -267,7 +268,7 @@ public class OutageAnticipator implements EventListener {
         for (Iterator it = m_expectedOutages.iterator(); it.hasNext();) {
             Outage outage = (Outage) it.next();
             if (pendingOutage.equals(outage)) {
-                outage.setRegainedEvent(e.getDbid(), MockUtil.convertEventTimeIntoTimestamp(e.getTime()));
+                outage.setRegainedEvent(e.getDbid(), MockEventUtil.convertEventTimeIntoTimestamp(e.getTime()));
             }
         }
     }

@@ -47,11 +47,11 @@ import junit.framework.TestSuite;
 import org.opennms.netmgt.capsd.snmp.IfTable;
 import org.opennms.netmgt.capsd.snmp.IpAddrTable;
 import org.opennms.netmgt.capsd.snmp.SystemGroup;
-import org.opennms.netmgt.mock.MockUtil;
 import org.opennms.netmgt.mock.OpenNMSTestCase;
 import org.opennms.netmgt.snmp.PropertySettingTestSuite;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.VersionSettingTestSuite;
+import org.opennms.test.mock.MockUtil;
 
 public class IfSnmpCollectorTest extends OpenNMSTestCase {
     private static final String s_runProperty = "mock.runSnmpTests";

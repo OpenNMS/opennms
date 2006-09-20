@@ -45,7 +45,7 @@ import org.opennms.netmgt.config.users.User;
 import org.opennms.netmgt.config.users.Userinfo;
 import org.opennms.netmgt.config.users.Users;
 import org.opennms.netmgt.mock.MockLogAppender;
-import org.opennms.netmgt.mock.MockUtil;
+import org.opennms.test.mock.MockUtil;
 import org.opennms.web.admin.users.parsers.DutySchedule;
 
 import com.meterware.servletunit.ServletRunner;

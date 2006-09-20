@@ -136,7 +136,7 @@ abstract public class MockElement {
      */
     public Event createUpEvent(Date date) {
         Event e = createUpEvent();
-        MockUtil.setEventTime(e, date);
+        MockEventUtil.setEventTime(e, date);
         return e;
     }
 
@@ -146,7 +146,7 @@ abstract public class MockElement {
      */
     public Event createDownEvent(Date date) {
         Event e = createDownEvent();
-        MockUtil.setEventTime(e, date);
+        MockEventUtil.setEventTime(e, date);
         return e;
     }
     

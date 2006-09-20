@@ -44,12 +44,13 @@ import org.opennms.netmgt.eventd.EventListener;
 import org.opennms.netmgt.mock.MockDatabase;
 import org.opennms.netmgt.mock.MockNetwork;
 import org.opennms.netmgt.mock.MockService;
-import org.opennms.netmgt.mock.MockUtil;
+import org.opennms.netmgt.mock.MockEventUtil;
 import org.opennms.netmgt.poller.pollables.PendingPollEvent;
 import org.opennms.netmgt.poller.pollables.PollContext;
 import org.opennms.netmgt.poller.pollables.PollEvent;
 import org.opennms.netmgt.poller.pollables.PollableService;
 import org.opennms.netmgt.xml.event.Event;
+import org.opennms.test.mock.MockUtil;
 
 
 public class MockPollContext implements PollContext, EventListener {
@@ -112,7 +113,7 @@ public class MockPollContext implements PollContext, EventListener {
 
     public Event createEvent(String uei, int nodeId, InetAddress address, String svcName, Date date, String reason) {
         String eventTime = EventConstants.formatToString(date);
-        Event e = MockUtil.createEvent("Test", uei, nodeId, (address == null ? null : address.getHostAddress()), svcName, reason);
+        Event e = MockEventUtil.createEvent("Test", uei, nodeId, (address == null ? null : address.getHostAddress()), svcName, reason);
         e.setCreationTime(eventTime);
         e.setTime(eventTime);
         return e;

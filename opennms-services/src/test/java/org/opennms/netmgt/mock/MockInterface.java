@@ -153,18 +153,18 @@ public class MockInterface extends MockContainer {
      * @return
      */
     public Event createDownEvent() {
-        return MockUtil.createInterfaceDownEvent("Test", this);
+        return MockEventUtil.createInterfaceDownEvent("Test", this);
     }
 
     /**
      * @return
      */
     public Event createUpEvent() {
-        return MockUtil.createInterfaceUpEvent("Test", this);
+        return MockEventUtil.createInterfaceUpEvent("Test", this);
     }
     
     public Event createDeleteEvent() {
-        return MockUtil.createInterfaceDeletedEvent("Test", this);
+        return MockEventUtil.createInterfaceDeletedEvent("Test", this);
     }
 
 	public void setIfAlias(String ifAlias) {

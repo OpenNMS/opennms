@@ -159,7 +159,7 @@ public class MockDatabaseTest extends TestCase {
     
     public void testOutage() {
         final MockService svc = m_network.getService(1, "192.168.1.1", "ICMP");
-        Event svcLostEvent = MockUtil.createNodeLostServiceEvent("TEST", svc);
+        Event svcLostEvent = MockEventUtil.createNodeLostServiceEvent("TEST", svc);
         
         m_db.writeEvent(svcLostEvent);
         m_db.createOutage(svc, svcLostEvent);

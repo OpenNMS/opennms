@@ -47,6 +47,7 @@ import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.Parms;
 import org.opennms.netmgt.xml.event.Value;
+import org.opennms.test.mock.MockUtil;
 
 /**
  * @author brozow
@@ -54,7 +55,7 @@ import org.opennms.netmgt.xml.event.Value;
  * TODO To change the template for this generated type comment go to Window -
  * Preferences - Java - Code Style - Code Templates
  */
-public class MockUtil {
+public class MockEventUtil {
     public static void addEventParm(Event event, String parmName, int parmValue) {
         addEventParm(event, parmName, String.valueOf(parmValue));
     }
@@ -207,7 +208,7 @@ public class MockUtil {
             Date date = EventConstants.parseToDate(eventTime);
             timestamp = new Timestamp(date.getTime());
         } catch (ParseException e) {
-            ThreadCategory.getInstance(MockUtil.class).warn("Failed to convert event time " + eventTime + " to timestamp.", e);
+            ThreadCategory.getInstance(MockEventUtil.class).warn("Failed to convert event time " + eventTime + " to timestamp.", e);
     
             timestamp = new Timestamp((new Date()).getTime());
         }
@@ -240,12 +241,8 @@ public class MockUtil {
 		return true;
     }
 
-	static boolean printEnabled() {
-        return "true".equals(System.getProperty("mock.debug", "true"));
-    }
-	
-    public static void printEvent(String prefix, Event event) {
-        if (!printEnabled()) {
+	public static void printEvent(String prefix, Event event) {
+        if (!MockUtil.printEnabled()) {
 			return;
         }
         if (prefix == null) {
@@ -255,7 +252,7 @@ public class MockUtil {
     }
 
 	public static void printEvents(String prefix, Collection events) {
-        if (!printEnabled()) {
+        if (!MockUtil.printEnabled()) {
 			return;
         }
 		
@@ -263,14 +260,6 @@ public class MockUtil {
         while (it.hasNext()) {
             printEvent(prefix, (Event) it.next());
         }
-    }
-
-    /**
-     * @param string
-     */
-    public static void println(String string) {
-        if (MockUtil.printEnabled())
-            System.err.println(string);
     }
 
 

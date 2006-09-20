@@ -53,6 +53,7 @@ import org.opennms.netmgt.eventd.EventIpcManagerDefaultImpl;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 import org.opennms.netmgt.eventd.Eventd;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
+import org.opennms.test.mock.MockUtil;
 public class OpenNMSTestCase extends TestCase {
 
     /*

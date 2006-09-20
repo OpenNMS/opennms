@@ -58,7 +58,7 @@ import org.opennms.netmgt.mock.MockNetwork;
 import org.opennms.netmgt.mock.MockNode;
 import org.opennms.netmgt.mock.MockPollerConfig;
 import org.opennms.netmgt.mock.MockService;
-import org.opennms.netmgt.mock.MockUtil;
+import org.opennms.netmgt.mock.MockEventUtil;
 import org.opennms.netmgt.mock.MockVisitor;
 import org.opennms.netmgt.mock.MockVisitorAdapter;
 import org.opennms.netmgt.mock.OutageAnticipator;
@@ -70,6 +70,7 @@ import org.opennms.netmgt.scheduler.Schedule;
 import org.opennms.netmgt.scheduler.ScheduleTimer;
 import org.opennms.netmgt.utils.Querier;
 import org.opennms.netmgt.xml.event.Event;
+import org.opennms.test.mock.MockUtil;
 
 /**
  * Represents a PollablesTest 
@@ -583,7 +584,7 @@ public class PollablesTest extends TestCase {
         assertTime(4500);
         assertNotDeleted(pDot3Http);
         
-        m_anticipator.anticipateEvent(MockUtil.createServiceEvent("Test", EventConstants.DELETE_SERVICE_EVENT_UEI, mDot3Http, null));
+        m_anticipator.anticipateEvent(MockEventUtil.createServiceEvent("Test", EventConstants.DELETE_SERVICE_EVENT_UEI, mDot3Http, null));
         
         m_scheduler.next();
         
@@ -2060,9 +2061,9 @@ public class PollablesTest extends TestCase {
      */
     private void verifyAnticipated() {
         m_eventMgr.finishProcessingEvents();
-        MockUtil.printEvents("Missing Anticipated Events: ", m_anticipator.getAnticipatedEvents());
+        MockEventUtil.printEvents("Missing Anticipated Events: ", m_anticipator.getAnticipatedEvents());
         assertTrue("Expected events not forthcoming", m_anticipator.getAnticipatedEvents().isEmpty());
-        MockUtil.printEvents("Unanticipated: ", m_anticipator.unanticipatedEvents());
+        MockEventUtil.printEvents("Unanticipated: ", m_anticipator.unanticipatedEvents());
         assertEquals("Received unexpected events", 0, m_anticipator.unanticipatedEvents().size());
 
         assertEquals("Wrong number of outages opened", m_outageAnticipator.getExpectedOpens(), m_outageAnticipator.getActualOpens());

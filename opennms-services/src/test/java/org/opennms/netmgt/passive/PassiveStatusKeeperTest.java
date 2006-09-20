@@ -50,7 +50,7 @@ import org.opennms.netmgt.mock.MockLogAppender;
 import org.opennms.netmgt.mock.MockMonitoredService;
 import org.opennms.netmgt.mock.MockNetwork;
 import org.opennms.netmgt.mock.MockService;
-import org.opennms.netmgt.mock.MockUtil;
+import org.opennms.netmgt.mock.MockEventUtil;
 import org.opennms.netmgt.mock.OutageAnticipator;
 import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.ServiceMonitor;
@@ -60,6 +60,7 @@ import org.opennms.netmgt.xml.event.Logmsg;
 import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.Parms;
 import org.opennms.netmgt.xml.event.Value;
+import org.opennms.test.mock.MockUtil;
 
 public class PassiveStatusKeeperTest extends MockObjectTestCase {
     
@@ -278,7 +279,7 @@ public class PassiveStatusKeeperTest extends MockObjectTestCase {
     }
 
     private Event createEventWithParms(String uei, Parms parms) {
-		Event e = MockUtil.createEvent("Test", uei);
+		Event e = MockEventUtil.createEvent("Test", uei);
 		e.setHost("localhost");
         
         e.setParms(parms);

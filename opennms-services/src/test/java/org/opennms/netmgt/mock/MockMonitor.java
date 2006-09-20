@@ -41,6 +41,7 @@ import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.NetworkInterface;
 import org.opennms.netmgt.poller.ServiceMonitor;
+import org.opennms.test.mock.MockUtil;
 
 public class MockMonitor implements ServiceMonitor {
 

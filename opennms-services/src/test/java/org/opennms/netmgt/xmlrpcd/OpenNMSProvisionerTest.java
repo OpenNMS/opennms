@@ -55,7 +55,7 @@ import org.opennms.netmgt.config.poller.Service;
 import org.opennms.netmgt.mock.MockDatabase;
 import org.opennms.netmgt.mock.MockEventIpcManager;
 import org.opennms.netmgt.mock.MockLogAppender;
-import org.opennms.netmgt.mock.MockUtil;
+import org.opennms.netmgt.mock.MockEventUtil;
 import org.opennms.netmgt.rrd.RrdConfig;
 import org.opennms.netmgt.rrd.RrdStrategy;
 import org.opennms.netmgt.rrd.RrdUtils;
@@ -382,7 +382,7 @@ public class OpenNMSProvisionerTest extends MockObjectTestCase {
     }
     
     private void expectUpdateEvent() {
-        m_eventManager.getEventAnticipator().anticipateEvent(MockUtil.createEvent("Test", EventConstants.SCHEDOUTAGES_CHANGED_EVENT_UEI));
+        m_eventManager.getEventAnticipator().anticipateEvent(MockEventUtil.createEvent("Test", EventConstants.SCHEDOUTAGES_CHANGED_EVENT_UEI));
     }
 
     private void verifyEvents() {

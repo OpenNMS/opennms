@@ -175,7 +175,7 @@ public class MockNetworkTest extends TestCase {
     private void anticipateServiceEvents(final EventAnticipator anticipator, MockElement element, final String uei) {
         MockVisitor eventSetter = new MockVisitorAdapter() {
             public void visitService(MockService svc) {
-                Event event = MockUtil.createServiceEvent("Test", uei, svc, null);
+                Event event = MockEventUtil.createServiceEvent("Test", uei, svc, null);
                 anticipator.anticipateEvent(event);
             }
         };
@@ -262,8 +262,8 @@ public class MockNetworkTest extends TestCase {
     }
 
     public void testEventListeners() {
-        Event sentEvent = MockUtil.createEvent("Test", EventConstants.NODE_GAINED_SERVICE_EVENT_UEI, 1, "192.168.1.1", "NEW", null);
-        Event sentEvent2 = MockUtil.createEvent("Test", EventConstants.NODE_REGAINED_SERVICE_EVENT_UEI, 1, "192.168.1.1", "NEW", null);
+        Event sentEvent = MockEventUtil.createEvent("Test", EventConstants.NODE_GAINED_SERVICE_EVENT_UEI, 1, "192.168.1.1", "NEW", null);
+        Event sentEvent2 = MockEventUtil.createEvent("Test", EventConstants.NODE_REGAINED_SERVICE_EVENT_UEI, 1, "192.168.1.1", "NEW", null);
 
         class MockListener implements EventListener {
             private Event receivedEvent;
@@ -290,11 +290,11 @@ public class MockNetworkTest extends TestCase {
 
         m_eventMgr.addEventListener(listener, EventConstants.NODE_GAINED_SERVICE_EVENT_UEI);
         m_eventMgr.sendEventToListeners(sentEvent);
-        assertTrue(MockUtil.eventsMatch(sentEvent, listener.getReceivedEvent()));
+        assertTrue(MockEventUtil.eventsMatch(sentEvent, listener.getReceivedEvent()));
 
         listener.reset();
         m_eventMgr.sendEventToListeners(sentEvent2);
-        assertFalse(MockUtil.eventsMatch(sentEvent2, listener.getReceivedEvent()));
+        assertFalse(MockEventUtil.eventsMatch(sentEvent2, listener.getReceivedEvent()));
 
     }
 
@@ -336,7 +336,7 @@ public class MockNetworkTest extends TestCase {
 
         MockVisitor lostSvcSender = new MockVisitorAdapter() {
             public void visitService(MockService svc) {
-                Event event = MockUtil.createEvent("Test", EventConstants.NODE_LOST_SERVICE_EVENT_UEI, svc.getNodeId(), svc.getIpAddr(), svc.getSvcName(), String.valueOf(PollStatus.SERVICE_UNAVAILABLE));
+                Event event = MockEventUtil.createEvent("Test", EventConstants.NODE_LOST_SERVICE_EVENT_UEI, svc.getNodeId(), svc.getIpAddr(), svc.getSvcName(), String.valueOf(PollStatus.SERVICE_UNAVAILABLE));
                 m_eventMgr.sendNow(event);
             }
         };
@@ -350,7 +350,7 @@ public class MockNetworkTest extends TestCase {
 
         MockVisitor gainedSvcSender = new MockVisitorAdapter() {
             public void visitService(MockService svc) {
-                Event event = MockUtil.createEvent("Test", EventConstants.NODE_REGAINED_SERVICE_EVENT_UEI, svc.getNodeId(), svc.getIpAddr(), svc.getSvcName(), null);
+                Event event = MockEventUtil.createEvent("Test", EventConstants.NODE_REGAINED_SERVICE_EVENT_UEI, svc.getNodeId(), svc.getIpAddr(), svc.getSvcName(), null);
                 m_eventMgr.sendNow(event);
             }
         };
@@ -361,7 +361,7 @@ public class MockNetworkTest extends TestCase {
         assertEquals(0, anticipator.unanticipatedEvents().size());
 
         MockNode node = m_network.getNode(1);
-        Event nodeEvent = MockUtil.createNodeDownEvent("Test", node);
+        Event nodeEvent = MockEventUtil.createNodeDownEvent("Test", node);
 
         anticipator.reset();
         m_eventMgr.sendNow(nodeEvent);
@@ -584,9 +584,9 @@ public class MockNetworkTest extends TestCase {
 
     public void testWaitForEvent() throws Throwable {
         MockNode node = m_network.getNode(1);
-        final Event event1 = MockUtil.createNodeDownEvent("Test", node);
-        final Event event2 = MockUtil.createNodeDownEvent("Test", node);
-        final Event event3 = MockUtil.createNodeDownEvent("Test", m_network.getNode(2));
+        final Event event1 = MockEventUtil.createNodeDownEvent("Test", node);
+        final Event event2 = MockEventUtil.createNodeDownEvent("Test", node);
+        final Event event3 = MockEventUtil.createNodeDownEvent("Test", m_network.getNode(2));
 
         EventAnticipator anticipator = m_eventMgr.getEventAnticipator();
 
