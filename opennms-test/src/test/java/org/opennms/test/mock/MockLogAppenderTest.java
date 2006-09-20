@@ -155,4 +155,16 @@ public class MockLogAppenderTest extends TestCase {
 			fail("Received unexpected AssertionFailedError: " + e);
 		}
 	}
+        
+        public void testDiscardHibernateAnnotationBinderWarnings() {
+            Category log = Category.getInstance("org.hibernate.cfg.AnnotationBinder");
+            log.info("An Info message");
+            log.warn("A warn message");
+
+            try {
+                MockLogAppender.assertNotGreaterOrEqual(Level.WARN);
+            } catch (AssertionFailedError e) {
+                fail("Received unexpected AssertionFailedError: " + e);
+            }
+        }
 }
