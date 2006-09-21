@@ -34,7 +34,9 @@
 
 package org.opennms.report.availability;
 
+import java.io.FileReader;
 import java.io.IOException;
+import java.io.Reader;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.Locale;
@@ -45,6 +47,7 @@ import junit.framework.TestCase;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.config.DataSourceFactory;
+import org.opennms.netmgt.config.DatabaseSchemaConfigFactory;
 import org.opennms.netmgt.mock.MockCategoryFactory;
 import org.opennms.netmgt.config.CategoryFactory;
 import org.opennms.netmgt.mock.MockDatabase;
@@ -66,8 +69,14 @@ public class AvailabilityReportTest extends TestCase {
 		calendar.set(2005, 4, 18);
 		MockLogAppender.setupLogging();
 		m_categories = new Categories();
+                
 		m_db = new MockDatabase();
 		DataSourceFactory.setInstance(m_db);
+                
+		Reader rdr = new FileReader("../opennms-daemon/target/classes/etc/database-schema.xml");
+		DatabaseSchemaConfigFactory.setInstance(new DatabaseSchemaConfigFactory(rdr));
+		rdr.close();
+                
 		m_catFactory = new MockCategoryFactory();
 		CategoryFactory.setInstance(m_catFactory);
 		m_db.update("insert into node (nodeID, nodelabel, nodeCreateTime, nodeType) values (1,'test1.availability.opennms.org','2004-03-01 09:00:00','A')");
