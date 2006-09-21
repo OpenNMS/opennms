@@ -61,7 +61,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 
 public class AbstractDaoTestCase extends TestCase {
-
+ 
     private class RunTestInTransaction implements TransactionCallback {
         public Object doInTransaction(TransactionStatus ts) {
             try {
