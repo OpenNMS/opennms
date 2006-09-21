@@ -34,7 +34,7 @@
 
              <!-- used to automatically identify the jar containing the main class. -->
              <!-- this is perhaps going to change -->
-             <mainClass>org.opennms.netmgt.poller.remote.Main</mainClass>
+             <mainClass>org.opennms.webstart.poller.Main</mainClass>
            </jnlp>
 
            <!-- SIGNING in THIS way is 'fake' REAL signing will move to a profile since it is setup specific -->

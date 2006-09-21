@@ -1,5 +1,6 @@
-package org.opennms.netmgt.poller.remote;
+package org.opennms.webstart.poller;
 
+import org.opennms.netmgt.poller.remote.PollerView;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
