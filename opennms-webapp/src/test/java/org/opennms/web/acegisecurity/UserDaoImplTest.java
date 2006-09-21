@@ -1,5 +1,7 @@
 package org.opennms.web.acegisecurity;
 
+import java.net.URL;
+
 import org.acegisecurity.GrantedAuthority;
 import org.opennms.test.ThrowableAnticipator;
 import org.opennms.web.acegisecurity.User;
@@ -46,8 +48,7 @@ public class UserDaoImplTest extends TestCase {
 	
 	public void testGetByUsernameWithoutMagicUsersConfigFile() {
 		UserDaoImpl dao = new UserDaoImpl();
-		dao.setUsersConfigurationFile(ClassLoader.getSystemResource("org/opennms/web/acegisecurity/users.xml").getFile());
-
+                setUsersConfigurationFile(dao);
 	
 		ThrowableAnticipator ta = new ThrowableAnticipator();
 		ta.anticipate(new IllegalStateException("magicUsersConfigurationFile parameter must be set to the location of the magic-users.properties configuration file"));
@@ -62,9 +63,9 @@ public class UserDaoImplTest extends TestCase {
 
 	public void testGetByUsernameAdmin() {
 		UserDaoImpl dao = new UserDaoImpl();
-		
-		dao.setUsersConfigurationFile(ClassLoader.getSystemResource("org/opennms/web/acegisecurity/users.xml").getFile());
-		dao.setMagicUsersConfigurationFile(ClassLoader.getSystemResource("org/opennms/web/acegisecurity/magic-users.properties").getFile());
+                
+                setUsersConfigurationFile(dao);
+                setMagicUsersConfigurationFile(dao);
 		
 		User user = dao.getByUsername("admin");
 		assertNotNull("user object should not be null", user);
@@ -83,8 +84,8 @@ public class UserDaoImplTest extends TestCase {
 
 	public void testGetByUsernameBogus() {
 		UserDaoImpl dao = new UserDaoImpl();
-		dao.setUsersConfigurationFile(ClassLoader.getSystemResource("org/opennms/web/acegisecurity/users.xml").getFile());
-		dao.setMagicUsersConfigurationFile(ClassLoader.getSystemResource("org/opennms/web/acegisecurity/magic-users.properties").getFile());
+                setUsersConfigurationFile(dao);
+                setMagicUsersConfigurationFile(dao);
 		
 		User user = dao.getByUsername("bogus");
 		assertNull("user object should be null", user);
@@ -92,8 +93,8 @@ public class UserDaoImplTest extends TestCase {
 	
 	public void testGetByUsernameRtc() {
 		UserDaoImpl dao = new UserDaoImpl();
-		dao.setUsersConfigurationFile(ClassLoader.getSystemResource("org/opennms/web/acegisecurity/users.xml").getFile());
-		dao.setMagicUsersConfigurationFile(ClassLoader.getSystemResource("org/opennms/web/acegisecurity/magic-users.properties").getFile());
+                setUsersConfigurationFile(dao);
+                setMagicUsersConfigurationFile(dao);
 		
 		User user = dao.getByUsername("rtc");
 		assertNotNull("user object should not be null", user);
@@ -111,8 +112,8 @@ public class UserDaoImplTest extends TestCase {
 	
 	public void testGetByUsernameTempUser() {
 		UserDaoImpl dao = new UserDaoImpl();
-		dao.setUsersConfigurationFile(ClassLoader.getSystemResource("org/opennms/web/acegisecurity/users.xml").getFile());
-		dao.setMagicUsersConfigurationFile(ClassLoader.getSystemResource("org/opennms/web/acegisecurity/magic-users.properties").getFile());
+                setUsersConfigurationFile(dao);
+                setMagicUsersConfigurationFile(dao);
 		
 		User user = dao.getByUsername("tempuser");
 		assertNotNull("user object should not be null", user);
@@ -126,5 +127,15 @@ public class UserDaoImplTest extends TestCase {
 		assertEquals("authorities size", 1, authorities.length);
 		assertEquals("authorities 0 name", "ROLE_USER", authorities[0].getAuthority());
 	}
+        
+        private void setUsersConfigurationFile(UserDaoImpl dao) {
+            //dao.setUsersConfigurationFile(ClassLoader.getSystemResource("org/opennms/web/acegisecurity/users.xml").getFile());
+            dao.setUsersConfigurationFile("src/test/resources/org/opennms/web/acegisecurity/users.xml");
+        }
+        
+        private void setMagicUsersConfigurationFile(UserDaoImpl dao) {
+            //dao.setMagicUsersConfigurationFile(ClassLoader.getSystemResource("org/opennms/web/acegisecurity/magic-users.properties").getFile());
+            dao.setMagicUsersConfigurationFile("src/test/resources/org/opennms/web/acegisecurity/magic-users.properties");
+        }
 	
 }
