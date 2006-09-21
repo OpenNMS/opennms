@@ -59,7 +59,7 @@ public class DefaultSurveillanceServiceTest extends TestCase {
         m_surveillanceViewConfigDao = createMock(SurveillanceViewConfigDao.class);
     }
     
-    public void testCreateSurveillanceTable() {
+    public void FIXMEtestCreateSurveillanceTable() {
         
         DefaultSurveillanceService surveillanceSvc = new DefaultSurveillanceService();
         surveillanceSvc.setNodeDao(m_nodeDao);
