@@ -150,9 +150,5 @@
       <groupId>groovy</groupId>
       <artifactId>groovy</artifactId>
     </dependency>
-    <dependency>
-      <groupId>quartz</groupId>
-      <artifactId>quartz</artifactId>
-    </dependency>
   </dependencies>
 </project>

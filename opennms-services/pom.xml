@@ -204,5 +204,9 @@
       <artifactId>jldap</artifactId>
       <scope>compile</scope>
     </dependency>
+    <dependency>
+      <groupId>quartz</groupId>
+      <artifactId>quartz</artifactId>
+    </dependency>
   </dependencies>
 </project>
