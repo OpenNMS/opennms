@@ -9,19 +9,23 @@ import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.config.C3P0ConnectionFactory;
 import org.opennms.netmgt.config.DataSourceFactory;
+import org.opennms.netmgt.mock.MockDatabase;
 import org.springframework.test.AbstractTransactionalDataSourceSpringContextTests;
 import org.springframework.transaction.annotation.Transactional;
 
 public class AvailabilityReportSchedulerServiceTest extends AbstractTransactionalDataSourceSpringContextTests{
         private AvailabilityReportLocatorService m_locatorService;
         private AvailabilityReportSchedulerService m_schedulerService;
+        private MockDatabase m_db;
         
         public AvailabilityReportSchedulerServiceTest() throws MarshalException, ValidationException, IOException, PropertyVetoException, SQLException {
             /*
              * Note: I'm using the opennms-database.xml file in target/classes/etc
              * so that it has been filtered first.
              */
-            DataSourceFactory.setInstance(new C3P0ConnectionFactory("../opennms-daemon/target/classes/etc/opennms-database.xml"));
+            //DataSourceFactory.setInstance(new C3P0ConnectionFactory("../opennms-daemon/target/classes/etc/opennms-database.xml"));
+            m_db = new MockDatabase();
+            DataSourceFactory.setInstance(m_db);
         }
 	
 	@Override
@@ -30,6 +34,12 @@ public class AvailabilityReportSchedulerServiceTest extends AbstractTransactiona
 				"META-INF/opennms/applicationContext-dao.xml",
 				"org/opennms/report/svclayer/applicationContext-svclayer.xml" };
 	}
+        
+        @Override
+        protected void onTearDownAfterTransaction() throws Exception {
+            super.onTearDownAfterTransaction();
+            m_db.drop();
+        }
         
 	public void testBogus() {
 	    // this is just here so that JUnit doesn't complain about not having any tests
