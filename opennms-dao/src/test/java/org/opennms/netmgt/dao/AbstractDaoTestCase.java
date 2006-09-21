@@ -135,7 +135,11 @@ public class AbstractDaoTestCase extends TestCase {
                 // XXX should we re-throw?
                 MockUtil.println("Error dropping Database: "+e);
             }
-                
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                // ignore
+            }    
         }
 
         public DataSource getDataSource() {
