@@ -61,8 +61,8 @@ public abstract class AbstractSaveOrUpdateOperation extends AbstractImportOperat
     private OnmsIpInterface m_currentInterface;
     private ServiceTypeDao m_svcTypeDao;
     private CategoryDao m_categoryDao;
-    private static ThreadLocal m_types = new ThreadLocal();
-    private static ThreadLocal m_categories = new ThreadLocal();
+    private ThreadLocal m_types;
+    private ThreadLocal m_categories;
     
     private IfSnmpCollector m_collector;
 
@@ -329,6 +329,14 @@ public abstract class AbstractSaveOrUpdateOperation extends AbstractImportOperat
 
     public void setDistPollerDao(DistPollerDao distPollerDao) {
         m_distPollerDao = distPollerDao;
+    }
+    
+    public void setTypeCache(ThreadLocal typeCache) {
+        m_types = typeCache;
+    }
+    
+    public void setCategoryCache(ThreadLocal categoryCache) {
+        m_categories = categoryCache;
     }
 
     private Category log() {

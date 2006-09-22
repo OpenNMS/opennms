@@ -174,23 +174,7 @@ public class ImportOperationsManagerTest extends AbstractDaoTestCase {
 
     }
     
-    public void testImportToOperationsMgr() throws Exception {
-        
-        Reader rdr = new StringReader("<?xml version=\"1.0\"?>\n" + 
-                "<snmp-config port=\"161\" retry=\"0\" timeout=\"5000\"\n" + 
-                "             read-community=\"public\" \n" + 
-                "                 version=\"v1\">\n" + 
-                "\n" + 
-                "</snmp-config>");
-        
-        SnmpPeerFactory.setInstance(new SnmpPeerFactory(rdr));
-        testDoubleImport(new ClassPathResource("/tec_dump.xml"));
-        
-        Collection c = getIpInterfaceDao().findByIpAddress("172.20.1.171");
-        assertEquals(1, c.size());
-    }
-    
-    public void FIXMEtestChangeIpAddr() throws Exception {
+    public void testChangeIpAddr() throws Exception {
         
         Reader rdr = new StringReader("<?xml version=\"1.0\"?>\n" + 
                 "<snmp-config port=\"161\" retry=\"0\" timeout=\"2000\"\n" + 
@@ -208,7 +192,39 @@ public class ImportOperationsManagerTest extends AbstractDaoTestCase {
         
         assertEquals(0, getIpInterfaceDao().findByIpAddress("192.168.0.102").size());
         
+        flush();
+
     }
+
+    public void testImportToOperationsMgr() throws Exception {
+        
+        Reader rdr = new StringReader("<?xml version=\"1.0\"?>\n" + 
+                "<snmp-config port=\"161\" retry=\"0\" timeout=\"5000\"\n" + 
+                "             read-community=\"public\" \n" + 
+                "                 version=\"v1\">\n" + 
+                "\n" + 
+                "</snmp-config>");
+        
+        SnmpPeerFactory.setInstance(new SnmpPeerFactory(rdr));
+        testDoubleImport(new ClassPathResource("/tec_dump.xml"));
+        
+        Collection c = getIpInterfaceDao().findByIpAddress("172.20.1.171");
+        assertEquals(1, c.size());
+        
+        flush();
+
+    }
+
+
+    private void flush() {
+        m_transTemplate.execute(new TransactionCallback() {
+            public Object doInTransaction(TransactionStatus status) {
+                getNodeDao().flush();
+                return null;
+            }
+        });
+    }
+    
     
 
 	private void testDoubleImport(Resource specFileResource) throws ModelImportException, IOException {

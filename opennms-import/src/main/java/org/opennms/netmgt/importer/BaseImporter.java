@@ -74,6 +74,8 @@ public class BaseImporter implements ImportOperationFactory {
     private MonitoredServiceDao m_monitoredServiceDao;
     private AssetRecordDao m_assetRecordDao;
     private CategoryDao m_categoryDao;
+    private ThreadLocal m_typeCache = new ThreadLocal();
+    private ThreadLocal m_categoryCache = new ThreadLocal();
 	private int m_scanThreads = 50;
 	private int m_writeThreads = 4;
 
@@ -144,6 +146,8 @@ public class BaseImporter implements ImportOperationFactory {
         insertOperation.setDistPollerDao(m_distPollerDao);
         insertOperation.setServiceTypeDao(m_serviceTypeDao);
         insertOperation.setCategoryDao(m_categoryDao);
+        insertOperation.setTypeCache(m_typeCache);
+        insertOperation.setCategoryCache(m_categoryCache);
         return insertOperation;
         
     }
@@ -154,6 +158,8 @@ public class BaseImporter implements ImportOperationFactory {
         updateOperation.setDistPollerDao(m_distPollerDao);
         updateOperation.setServiceTypeDao(m_serviceTypeDao);
         updateOperation.setCategoryDao(m_categoryDao);
+        updateOperation.setTypeCache(m_typeCache);
+        updateOperation.setCategoryCache(m_categoryCache);
         return updateOperation;
     }
 
