@@ -182,7 +182,7 @@ public class ModelImporterTest extends AbstractDaoTestCase {
         verifyCounts(visitor);
     }
     
-    public void FIXMEtestFindQuery() throws Exception {
+    public void testFindQuery() throws Exception {
         ModelImporter mi = m_importer;        
         String specFile = "/tec_dump.xml.smalltest";
         mi.importModelFromResource(new ClassPathResource(specFile));
@@ -193,7 +193,7 @@ public class ModelImporterTest extends AbstractDaoTestCase {
         }
     }
     
-    public void FIXMEtestPopulate() throws Exception {
+    public void testPopulate() throws Exception {
         ModelImporter mi = m_importer;        
         String specFile = "/tec_dump.xml.smalltest";
         mi.importModelFromResource(new ClassPathResource(specFile));
@@ -220,7 +220,7 @@ public class ModelImporterTest extends AbstractDaoTestCase {
      * 
      * @throws ModelImportException
      */
-    public void FIXMEtestDelete() throws Exception {
+    public void testDelete() throws Exception {
         
         //Initialize the database
         ModelImporter mi = m_importer;

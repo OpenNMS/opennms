@@ -122,7 +122,7 @@ model-import.xsd" date-stamp="2005-12-27T09:12:54">
 		<category name="AP" />
 		<category name="BE" />
 		<category name="low" />
-		<interface ip-addr="" status="1" snmp-primary="P" descr="VPN interface">
+		<interface ip-addr="10.99.99.99" status="1" snmp-primary="P" descr="VPN interface">
 			<monitored-service service-name="ICMP"/>
 			<monitored-service service-name="SNMP"/>
 		</interface>
@@ -130,7 +130,7 @@ model-import.xsd" date-stamp="2005-12-27T09:12:54">
 			<monitored-service service-name="ICMP"/>
 			<monitored-service service-name="HTTP"/>
 		</interface>
-		<interface ip-addr="0.0.0.0" status="1" snmp-primary="N" descr="Gateway interface">
+		<interface ip-addr="10.111.111.111" status="1" snmp-primary="N" descr="Gateway interface">
 			<monitored-service service-name="ICMP"/>
 		</interface>
 	</node>
