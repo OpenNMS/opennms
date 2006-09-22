@@ -72,7 +72,7 @@ public class OnmsLocationMonitor {
 		m_id = id;
 	}
 	
-    @Column(name="label", length=63, nullable=false)
+    @Column(name="name", length=63, nullable=false)
 	public String getName() {
 		return m_name;
 	}
@@ -99,14 +99,13 @@ public class OnmsLocationMonitor {
         m_definitionName = definitionName;
     }
 
-//    @OneToMany(mappedBy="locationMonitorId", fetch=FetchType.LAZY)
-    public List<OnmsLocationSpecificStatusChange> getMostRecentStatusChanges() {
-        return m_mostRecentStatusChanges;
-    }
-
-    public void setMostRecentStatusChanges(
-            List<OnmsLocationSpecificStatusChange> mostRecentStatusChanges) {
-        m_mostRecentStatusChanges = mostRecentStatusChanges;
-    }
+//    public List<OnmsLocationSpecificStatusChange> getMostRecentStatusChanges() {
+//        return m_mostRecentStatusChanges;
+//    }
+//
+//    public void setMostRecentStatusChanges(
+//            List<OnmsLocationSpecificStatusChange> mostRecentStatusChanges) {
+//        m_mostRecentStatusChanges = mostRecentStatusChanges;
+//    }
 
 }

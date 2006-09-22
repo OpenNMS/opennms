@@ -32,14 +32,15 @@
 
 package org.opennms.netmgt.model;
 
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 
 @Entity
 @Table(name="location_specific_status_changes")
@@ -48,7 +49,7 @@ public class OnmsLocationSpecificStatusChange {
 	private Integer m_id;
 	private OnmsLocationMonitor m_locationMonitor;
 	private OnmsMonitoredService m_monitoredService;
-	private PollStatus m_newStatus;
+	private PollStatus m_status;
 	
     @Id
     @SequenceGenerator(name="opennmsSequence", sequenceName="opennmsNxtId")
@@ -62,6 +63,7 @@ public class OnmsLocationSpecificStatusChange {
 	}
 	
     @ManyToOne(optional=false, fetch=FetchType.EAGER)
+    @JoinColumn(name="locationMonitorId")
 	public OnmsLocationMonitor getLocationMonitor() {
 		return m_locationMonitor;
 	}
@@ -71,6 +73,7 @@ public class OnmsLocationSpecificStatusChange {
 	}
 	
     @ManyToOne(optional=false, fetch=FetchType.EAGER)
+    @JoinColumn(name="ifServiceId")
 	public OnmsMonitoredService getMonitoredService() {
 		return m_monitoredService;
 	}
@@ -78,16 +81,13 @@ public class OnmsLocationSpecificStatusChange {
 	public void setMonitoredService(OnmsMonitoredService monitoredService) {
 		m_monitoredService = monitoredService;
 	}
-	
-    @Transient
-	public PollStatus getNewStatus() {
-		return m_newStatus;
-	}
-	
-	public void setNewStatus(PollStatus newStatus) {
-		m_newStatus = newStatus;
-	}
-	
-	
 
+    @Embedded
+	public PollStatus getStatus() {
+		return m_status;
+	}
+	
+	public void setStatus(PollStatus newStatus) {
+		m_status = newStatus;
+	}
 }

@@ -31,11 +31,16 @@
 //
 package org.opennms.netmgt.model;
 
+import javax.persistence.Column;
+import javax.persistence.Embeddable;
+import javax.persistence.Transient;
+
 
 /**
  * Represents the status of a node, interface or services
  * @author brozow
  */
+@Embeddable
 public class PollStatus {
     
     /**
@@ -189,22 +194,27 @@ public class PollStatus {
         return m_statusCode;
     }
 
+    @Transient
     public boolean isUp() {
         return !isDown();
     }
     
+    @Transient
     public boolean isAvailable() {
     	return this.m_statusCode == SERVICE_AVAILABLE;
     }
     
+    @Transient
     public boolean isUnresponsive() {
     	return this.m_statusCode == SERVICE_UNRESPONSIVE;
     }
     
+    @Transient
     public boolean isUnavailable() {
     	return this.m_statusCode == SERVICE_UNAVAILABLE;
     }
     
+    @Transient
     public boolean isDown() {
         return this.m_statusCode == SERVICE_UNAVAILABLE;
     }
@@ -213,6 +223,16 @@ public class PollStatus {
         return getStatusName();
     }
 
+    @Column(name="statusTime", nullable=false)
+    public long getTimestamp() {
+        return m_timestamp;
+    }
+
+    public void setTimestamp(long timestamp) {
+        m_timestamp = timestamp;
+    }
+
+    @Column(name="statusReason", length=255, nullable=true)
     public String getReason() {
         return m_reason;
     }
@@ -221,6 +241,7 @@ public class PollStatus {
     	m_reason = reason;
     }
 
+    @Column(name="responseTime", nullable=true)
     public long getResponseTime() {
     	return m_responseTime;
     }
@@ -229,10 +250,16 @@ public class PollStatus {
     	m_responseTime = responseTime;
     }
     
+    @Column(name="statusCode", nullable=false)
     public int getStatusCode() {
         return m_statusCode;
     }
 
+    private void setStatusCode(int statusCode) {
+        m_statusCode = statusCode;
+    }
+    
+    @Transient
     public String getStatusName() {
         return s_statusNames[m_statusCode];
     }
