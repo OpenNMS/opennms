@@ -2,7 +2,23 @@
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans
         http://www.springframework.org/schema/beans/spring-beans.xsd">
-        
+
+<!-- 
+  <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+    <property name="ignoreResourceNotFound" value="true" />
+    <property name="properties" >
+      <props>
+        <prop key="opennms.etc" >${opennms.home}/etc</prop>
+      </props>
+    </property>
+    <property name="locations">
+      <list>
+        <value>file:${opennms.home}/etc/opennms.properties</value>
+        <value>classpath:opennms-test.properties</value>
+      </list>
+    </property>
+  </bean>
+-->        
 	<bean id="init-datasource-factory" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
 		<property name="staticMethod"><value>org.opennms.netmgt.config.DataSourceFactory.init</value></property>
 	</bean>
@@ -32,7 +48,9 @@
                 <value>org.opennms.netmgt.model.OnmsUserNotification</value>
                 <value>org.opennms.netmgt.model.AggregateStatusView</value>
                 <value>org.opennms.netmgt.model.AggregateStatusDefinition</value>
-				
+				<value>org.opennms.netmgt.model.OnmsLocationMonitor</value>
+                <value>org.opennms.netmgt.model.OnmsLocationSpecificStatusChange</value>
+                <value>org.opennms.netmgt.model.PollStatus</value>
 			</list>
 		</property>
 		<!--  property name="schemaUpdate" value="true">
@@ -120,6 +138,12 @@
   
   <bean id="availabilityReportLocatorDao" class="org.opennms.netmgt.dao.hibernate.AvailabilityReportLocatorDaoHibernate">
   	<property name="sessionFactory" ref="sessionFactory" />
+  </bean>
+  
+  <!-- this requires a property setting -->
+  <bean id="locationMonitorDao" class="org.opennms.netmgt.dao.hibernate.LocationMonitorDaoHibernate" >
+    <property name="sessionFactory" ref="sessionFactory"/>
+    <property name="monitoringLocationConfigResource" value="file:${opennms.home}/etc/monitoring-locations.xml" />
   </bean>
 
 <!-- deprecating  

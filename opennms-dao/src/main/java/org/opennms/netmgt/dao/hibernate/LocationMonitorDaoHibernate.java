@@ -37,6 +37,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringWriter;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -77,9 +78,30 @@ public class LocationMonitorDaoHibernate extends AbstractDaoHibernate<OnmsLocati
     
     @SuppressWarnings("unchecked")
     public Collection<OnmsMonitoringLocationDefinition> findAllMonitoringLocationDefinitions() {
-        return m_monitoringLocationsConfiguration.getLocations().getLocationDefCollection();
+        
+        Collection<OnmsMonitoringLocationDefinition> onmsDefs = new ArrayList();
+        final Collection<LocationDef> locationDefCollection = m_monitoringLocationsConfiguration.getLocations().getLocationDefCollection();
+        if (locationDefCollection != null) {
+            onmsDefs = convertDefs(locationDefCollection);
+        }
+        return onmsDefs;
     }
     
+    private Collection<OnmsMonitoringLocationDefinition> convertDefs(Collection<LocationDef> defs) {
+        Collection<OnmsMonitoringLocationDefinition> onmsDefs = new LinkedList<OnmsMonitoringLocationDefinition>();
+        for (LocationDef def : defs) {
+            OnmsMonitoringLocationDefinition onmsDef = new OnmsMonitoringLocationDefinition();
+            onmsDef.setArea(def.getMonitoringArea());
+            onmsDef.setName(def.getLocationName());
+            onmsDef.setPollingPackageName(def.getPollingPackageName());
+            onmsDefs.add(onmsDef);
+        }
+        return onmsDefs;
+    }
+    
+    /**
+     * Don't call this for now.
+     */
     @SuppressWarnings("unchecked")
     public void saveMonitoringLocationDefinitions(Collection<OnmsMonitoringLocationDefinition> onmsDefs) {
         Collection<LocationDef> defs = m_monitoringLocationsConfiguration.getLocations().getLocationDefCollection();
@@ -107,6 +129,11 @@ public class LocationMonitorDaoHibernate extends AbstractDaoHibernate<OnmsLocati
     }
     
     //TODO: figure out way to synchronize this
+    //TODO: write a castor template for the DAOs to use and do optimistic
+    //      locking.
+    /**
+     * @deprecated
+     */
     protected void saveMonitoringConfig() {
         String xml = null;
         StringWriter writer = new StringWriter();
@@ -235,7 +262,7 @@ public class LocationMonitorDaoHibernate extends AbstractDaoHibernate<OnmsLocati
                     "Could not marshal configuration", e);
         } finally {
             try {
-                rdr.close();
+                if (rdr != null) rdr.close();
             } catch (IOException e) {
                 throw new CastorDataAccessFailureException("initializeMonitoringLocatinDefintion: " +
                         "Could not close XML stream", e);
