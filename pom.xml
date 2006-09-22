@@ -675,6 +675,27 @@ opennms.home = ${opennms.home}
       </properties>
     </profile>
 
+    <profile>
+      <id>freebsd</id>
+      <activation>
+        <os>
+          <family>FreeBSD</family>
+        </os>
+      </activation>
+  
+      <properties>
+        <platform>freebsd</platform>
+        <platform.shlib>so</platform.shlib>
+        <platform.jni>so</platform.jni>
+        <install.dir>/usr/local/OpenNMS</install.dir>
+	<build.jni.compiler.arg>-I${JAVA_HOME}/include -I${JAVA_HOME}/include/freebsd</build.jni.compiler.arg>
+        <build.rrd.include.dir>/usr/local/include</build.rrd.include.dir>
+        <build.rrd.lib.dir>/usr/local/lib</build.rrd.lib.dir>
+	<build.postgresql.compiler.arg>-I/usr/local/include</build.postgresql.compiler.arg>
+        <build.postgresql.include.dir>/usr/local/include/postgresql/server</build.postgresql.include.dir>
+        <build.postgresql.lib.dir>/usr/local/lib</build.postgresql.lib.dir>
+      </properties>
+    </profile>
   </profiles>
 
   <dependencies>

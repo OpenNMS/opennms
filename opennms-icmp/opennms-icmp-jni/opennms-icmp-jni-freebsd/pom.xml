@@ -25,7 +25,7 @@
         <configuration>
           <compilerProvider>generic</compilerProvider>
           <compilerStartOptions>
-            <compilerStartOption>-fPIC -O -D__FreeBSD__ ${build.jni.compiler.arg}</compilerStartOption>
+            <compilerStartOption>-fPIC -O ${build.jni.compiler.arg}</compilerStartOption>
           </compilerStartOptions>
           <sources>
             <source>
@@ -36,7 +36,7 @@
             </source>
           </sources>
           <linkerStartOptions>
-            <linkerStartOption>-shared ${build.jni.compiler.arg} ${build.jni.linker.arg} -lc -ldl</linkerStartOption>
+            <linkerStartOption>-shared ${build.jni.compiler.arg} ${build.jni.linker.arg} -lc</linkerStartOption>
           </linkerStartOptions>
         </configuration>
       </plugin>
