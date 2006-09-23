@@ -1256,7 +1256,7 @@ CREATE TABLE location_specific_status_changes (
 
     CONSTRAINT location_specific_status_changes_pkey PRIMARY KEY (id),
     CONSTRAINT location_monitor_fkey1 FOREIGN KEY (locationMonitorId) REFERENCES location_monitors (id) ON DELETE CASCADE,
-    CONSTRAINT ifservices_fkey1 FOREIGN KEY (serviceId) REFERENCES ifservices (id) ON DELETE CASCADE
+    CONSTRAINT ifservices_fkey1 FOREIGN KEY (ifServiceId) REFERENCES ifservices (id) ON DELETE CASCADE
 );
 
 
