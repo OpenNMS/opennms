@@ -173,12 +173,47 @@ public final class BroadcastEventProcessor implements EventListener {
     public void onEvent(Event event) {
         if (event == null) return;
 
-        String status = "off";
-        long nodeid = event.getNodeid();
-        try {
-            status = getConfigManager().getNotificationStatus();
-            boolean isPathOk = true;
+        boolean notifsOn = computeNullSafeStatus();
 
+        if (notifsOn && (checkCriticalPath(event, notifsOn))) {
+            scheduleNoticesForEvent(event);
+        } else if (!notifsOn) {
+            log().debug("discarding event " + event.getUei() + ", notifd status on = " + notifsOn);
+        }
+        automaticAcknowledge(event);
+    }
+
+    /**
+     * @return false if status is not defined in configuration as "on".
+     */
+    private boolean computeNullSafeStatus() {
+        boolean status = false;
+        
+        try {
+            status = getConfigManager().getNotificationStatus() == null || 
+            !getConfigManager().getNotificationStatus().equalsIgnoreCase("on") 
+            ? false : true;
+        } catch (MarshalException e) {
+            log().error("onEvent: problem marshalling configuration", e);
+        } catch (ValidationException e) {
+            log().error("onEvent: problem validating marsharled configuraion", e);
+        } catch (IOException e) {
+            log().error("onEvent: IO problem marshalling configuration", e);
+        }
+        return status;
+    }
+
+    /**
+     * @author <a href="mailto:billayers@opennms.org">Bill Ayers</a>
+     * @param event
+     * @param notifsOn
+     * @return boolean representing whether event is not relative to a critical path
+     */
+    private boolean checkCriticalPath(Event event, boolean notifsOn) {
+        boolean isPathOk = true;
+        long nodeid = event.getNodeid();
+
+        try {
             // If this is a nodeDown event, see if the critical path was down
             if (event.getUei().equals(EventConstants.NODE_DOWN_EVENT_UEI)) {
                 String reason = EventUtils.getParm(event, EventConstants.PARM_LOSTSERVICE_REASON);
@@ -193,21 +228,12 @@ public final class BroadcastEventProcessor implements EventListener {
                     mapsToNotice = getNotificationManager().hasUei(event.getUei());
                     notifications = getNotificationManager().getNotifForEvent(event);
 
-                    if (status.equals("on") && mapsToNotice && continueWithNotice(event) && notifications != null) {
+                    if (notifsOn && mapsToNotice && continueWithNotice(event) && notifications != null) {
                         noticeSupressed = true;
                     }
                     createPathOutageEvent(nodeid, EventUtils.getParm(event, EventConstants.PARM_NODE_LABEL), cip, csvc, noticeSupressed);
                 }
             }
-
-            if (status.equals("on") && (isPathOk)) {
-                scheduleNoticesForEvent(event);
-            } else if (status.equals("off")) {
-                if (log().isDebugEnabled())
-                    log().debug("discarding event " + event.getUei() + ", notifd status = " + status);
-            }
-
-            automaticAcknowledge(event);
         } catch (MarshalException e) {
             log().error("onEvent: problem marshalling configuration", e);
         } catch (ValidationException e) {
@@ -215,10 +241,8 @@ public final class BroadcastEventProcessor implements EventListener {
         } catch (IOException e) {
             log().error("onEvent: IO problem marshalling configuration", e);
         }
-
-        //log().error("error getting notifd status, assuming status = 'off' for now: ", e);
-
-    } // end onEvent()
+        return isPathOk;
+    }
 
     private Category log() {
         return ThreadCategory.getInstance(getClass());
