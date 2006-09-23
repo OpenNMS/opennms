@@ -154,6 +154,9 @@ public class InstallerDBTest extends TemporaryDatabaseTestCase {
             if (line.matches("- creating tables\\.\\.\\.")) {
                 continue;
             }
+            if (line.matches("  - checking table \"\\S+\"\\.\\.\\. ")) {
+                continue;
+            }
             if (line.matches("  - checking table \"\\S+\"\\.\\.\\. UPTODATE")) {
                 continue;
             }
@@ -1280,10 +1283,14 @@ public class InstallerDBTest extends TemporaryDatabaseTestCase {
          * nextval\\('opennmsNxtId'\\) NOT NULL,", "" }, new String[] {
          * "(?i)CONSTRAINT snmpinterface_pkey primary key \\(id\\),", "" } });
          */
+        
 
-        // No snmpInterfaceID column
-        addTableFromSQLWithReplacements(
-                                        "ipinterface",
+        /*
+         *  No snmpInterfaceID column, and I need to kill an index that
+         *  includes that column, as well.
+         */
+        m_installer.m_indexDao.remove("ipinterface_snmpInterfaceId_idx");
+        addTableFromSQLWithReplacements("ipinterface",
                                         new String[][] {
                                                 new String[] {
                                                         "(?i)snmpInterfaceId\\s+integer,",
@@ -1291,8 +1298,6 @@ public class InstallerDBTest extends TemporaryDatabaseTestCase {
                                                 new String[] {
                                                         "(?i)CONSTRAINT snmpinterface_fkey2 FOREIGN KEY \\(snmpInterfaceId\\) REFERENCES snmpInterface \\(id\\) ON DELETE CASCADE,",
                                                         "" } });
-
-        // addTableFromSQL("ipinterface");
 
         addTableFromSQL("service");
         addTableFromSQL("ifServices");

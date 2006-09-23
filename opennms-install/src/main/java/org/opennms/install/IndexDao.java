@@ -48,4 +48,24 @@ public class IndexDao {
     public Collection<Index> getAllIndexes() {
         return m_nameMap.values();
     }
+    
+    public void remove(String indexName) {
+        String lowerName = indexName.toLowerCase();
+        
+        Index index = m_nameMap.remove(lowerName);
+        if (index == null) {
+            throw new IllegalArgumentException("Index with name of '"
+                                               + lowerName
+                                               + "' does not exist.");
+        }
+        
+        for (List<Index> indexes : m_tableMap.values()) {
+            for (Index i : indexes) {
+                if (index.equals(i)) {
+                    indexes.remove(i);
+                    return;
+                }
+            }
+        }
+    }
 }
