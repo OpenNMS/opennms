@@ -162,8 +162,8 @@
             <%if (status.equals("Unknown")) { %>
               Unknown<br />
             <% } %>
-              <input type="radio" name="status" id="on" value="on" <%=(status.equals("On") ? "checked" : "")%>/> <label for="on">On</label>&nbsp;&nbsp;&nbsp;
-              <input type="radio" name="status" id="off" value="off" <%=(status.equals("Off") ? "checked" : "")%>/> <label for="off">Off</label>
+              <input type="radio" name="status" id="on" value="on" <%=(status.equals("On") ? "checked" : "")%> /> <label for="on">On</label>&nbsp;&nbsp;&nbsp;
+              <input type="radio" name="status" id="off" value="off" <%=(status.equals("Off") ? "checked" : "")%> /> <label for="off">Off</label>
               <input type="submit" value="Update" />
             </p>
         </form>
