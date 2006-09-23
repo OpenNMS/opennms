@@ -105,15 +105,16 @@ public class HttpNotificationStrategy implements NotificationStrategy {
     }
 
     private NameValuePair[] getPosts() {
-        List args = getArgsByPrefix("post-");
+        List<Argument> args = getArgsByPrefix("post-");
         NameValuePair[] posts = new NameValuePair[args.size()];
         int cnt = 0;
         for (Iterator it = args.iterator(); it.hasNext();) {
             Argument arg = (Argument) it.next();
             String argSwitch = arg.getSwitch().substring("post-".length());
-            NameValuePair nvp = null;
-            nvp = new NameValuePair(argSwitch, arg.getValue().equals("-tm") ? getMessage() : arg.getValue());
-            posts[cnt++] = nvp;
+            if (arg.getValue() == null) {
+                arg.setValue("");
+            }
+            posts[cnt++] = new NameValuePair(argSwitch, arg.getValue().equals("-tm") ? getMessage() : arg.getValue());
         }
         return posts;
     }
@@ -129,8 +130,8 @@ public class HttpNotificationStrategy implements NotificationStrategy {
         return message;
     }
 
-    private List getArgsByPrefix(String argPrefix) {
-        List args = new ArrayList();
+    private List<Argument> getArgsByPrefix(String argPrefix) {
+        List<Argument> args = new ArrayList<Argument>();
         for (Iterator it = m_arguments.iterator(); it.hasNext();) {
             Argument arg = (Argument) it.next();
             if (arg.getSwitch().startsWith(argPrefix)) {
