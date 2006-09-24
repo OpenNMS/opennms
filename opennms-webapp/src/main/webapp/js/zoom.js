@@ -80,8 +80,6 @@ function urlObjGetUrlParameterValue(parameter) {
 	return value;
 }
 
-
-
 /*+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
 /*+++++++++++++++++++++++++++++++  mouseObj  ++++++++++++++++++++++++++++++++*/
 /*+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
@@ -149,9 +147,10 @@ function mouseObjRightButtonPressed() {
 /*+++++++++++++++++++  mouseObjGetCurrentPosition  ++++++++++++++++++++++++++*/
 
 function mouseObjGetCurrentPosition() {
-	this.currentX = this.event.clientX + document.body.scrollLeft;
-	this.currentY = this.event.clientY + document.body.scrollTop;
-// alert (this.currentX + "\n" + this.currentY);
+	divPos = pos(document.getElementById("content"));
+	this.currentX = this.event.clientX + divPos[0];
+	this.currentY = this.event.clientY - divPos[1];
+	//alert(this.currentY, "\n". this.currentX);
 }
 
 /*+++++++++++++++++  mouseObjSaveCurrentToStartPosition  ++++++++++++++++++++*/
@@ -215,32 +214,12 @@ function zoomGraphObjRefresh() {
 	//  constants
 	var cZoomBoxName = "zoomBox";
 
-//	var titleFontSize = parseInt(gUrlObj.getUrlParameterValue("title_font_size"));
-	var titleFontSize = 0;
-
-	if (titleFontSize == 0) {
-//		var cZoomBoxTopOffsetWOText = 15 - 1;
-//		var cZoomBoxTopOffsetWText = 32 - 1;
-//		var cZoomBoxRightOffset = -16;
-//		var cZoomBoxTopOffsetWOText = 31;
-//		var cZoomBoxTopOffsetWText = 0;
-//		var cZoomBoxRightOffset = -22;
-//		var cZoomBoxTopOffsetWOText = 33;
-//		var cZoomBoxTopOffsetWText = 0;
-//		var cZoomBoxRightOffset = -28;
-                var cZoomBoxTopOffsetWOText = gZoomBoxTopOffsetWOText;
-		var cZoomBoxTopOffsetWText = 0;
-                var cZoomBoxRightOffset = gZoomBoxRightOffset;
-	} else {
-		var cZoomBoxTopOffsetWOText = 10 - 1;
-		var cZoomBoxTopOffsetWText = titleFontSize + (titleFontSize * 1.6) + 10 - 1;
-		var cZoomBoxRightOffset = -28;
-	}
+	var cZoomBoxRightOffset = -16;
+	var cZoomBoxTopOffsetWText = -75;
 
 	// zone outside of Zoom box where user can move cursor to without causing odd behavior
 	var cZoomSensitiveZoneName = "zoomSensitiveZone";
 	var cZoomSensitiveZoneOffset = 0;
-//	var cZoomSensitiveZoneOffset = 30;
 
 	// variables
 	var imgObject;
@@ -274,10 +253,13 @@ function zoomGraphObjRefresh() {
 
 	// Get absolute image position relative to the overall window.
 	//
-	left = 0;
-	top = 0;
-	left += imgObject.offsetLeft;
-	top += imgObject.offsetTop;
+	imagePos = pos(document.getElementById("zoomGraphImage"));
+	//imagePos = pos(zoomGraphName);
+	//alert(imagePos[0] + "/n" + imagePos[1]);
+	left = imagePos[0];
+	top = imagePos[1];
+	//left += imgObject.offsetLeft;
+	//top += imgObject.offsetTop;
 
 	// set the images's Ix1,Iy1 and Ix2,Iy2 postions based upon results
 	this.zoomGraphLeft = left;
@@ -291,11 +273,7 @@ function zoomGraphObjRefresh() {
 	this.zoomBoxRight = this.zoomGraphRight + cZoomBoxRightOffset;
 
 	// calculate the top coordinate (rrdGAy2) of the zoom box (aka rrd Graph area)
-	if(imgAlt == "") {
-		this.zoomBoxTop = this.zoomGraphTop + cZoomBoxTopOffsetWOText;
-	} else {
-		this.zoomBoxTop = this.zoomGraphTop + cZoomBoxTopOffsetWText;
-	}
+	this.zoomBoxTop = this.zoomGraphTop + cZoomBoxTopOffsetWText;
 
 	// calculate the left hand coordinate (rrdGAx1) of the zoom box (aka rrd Graph area)
 	this.zoomBoxLeft = this.zoomBoxRight - zoomBoxWidth;
@@ -512,7 +490,7 @@ function insideZoomBox() {
 
 	var mpX = gMouseObj.currentX;
 	var mpY = gMouseObj.currentY;
-
+	//alert ("Inside box = ", szLeft, "\n" , szRight, "\n". szTop, "\n", szBottom);
 	return ((mpX >= szLeft) && (mpX <= szRight) && (mpY >= szTop) && (mpY <= szBottom));
 }
 
@@ -529,6 +507,18 @@ function initEvents() {
 		document.captureEvents(Event.MOUSEDOWN);
 		document.captureEvents(Event.MOUSEUP);
 	}
+}
+
+function pos(o)  {
+	var xy = new Array;
+	xy[0] = 0;
+	xy[1] = 0;
+	while (o.offsetParent) {
+		xy[0] += o.offsetLeft;
+		xy[1] += o.offsetTop;
+		o = o.offsetParent;
+	}
+	return xy;
 }
 
 /*+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
