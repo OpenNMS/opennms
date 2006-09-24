@@ -208,36 +208,38 @@ public abstract class GraphModelAbstract implements GraphModel {
         File[] intfDir = nodeOrDomainDir.listFiles(RrdFileConstants.INTERFACE_DIRECTORY_FILTER);
 
         // for each interface directory, get all available data sources
-        for (int j = 0; j < intfDir.length; j++) {
-            String dirName = intfDir[j].getName();
+	if(intfDir != null) {
+            for (int j = 0; j < intfDir.length; j++) {
+                String dirName = intfDir[j].getName();
 
-            //
+                //
 
-            List availDataSourceList = getDataSourceList(nodeOrDomain, dirName, includeNodeQueries, isNode);
+                List availDataSourceList = getDataSourceList(nodeOrDomain, dirName, includeNodeQueries, isNode);
 
-            // for each query, see if all the required data sources are available
-            // in the available data source list, if so, add that query to the
-            // queryCount HashMap
-            //
-            for (int i = 0; i < queries.length; i++) {
-	        String qname = queries[i].getName();
-                List requiredList = Arrays.asList(queries[i].getColumns());
+                // for each query, see if all the required data sources are available
+                // in the available data source list, if so, add that query to the
+                // queryCount HashMap
+                //
+                for (int i = 0; i < queries.length; i++) {
+	            String qname = queries[i].getName();
+                    List requiredList = Arrays.asList(queries[i].getColumns());
 
-                if (availDataSourceList.containsAll(requiredList)) {
-                    if(isNode || queries[i].getExternalValues().length == 0) {
-                        if(queryCount.containsKey(queries[i])) {
-                            int x = ( (Integer) queryCount.get(queries[i])).intValue();
-                            queryCount.put(queries[i], new Integer(x++));
-                        } else {
-                            queryCount.put(queries[i], new Integer(1));
-                        }
-                        if(( (Integer) queryCount.get(queries[i])).intValue() > mostFreqCount) {
-                            mostFreqCount = ( (Integer) queryCount.get(queries[i])).intValue();
-                            mostFreqQuery = qname;
+                    if (availDataSourceList.containsAll(requiredList)) {
+                        if(isNode || queries[i].getExternalValues().length == 0) {
+                            if(queryCount.containsKey(queries[i])) {
+                                int x = ( (Integer) queryCount.get(queries[i])).intValue();
+                                queryCount.put(queries[i], new Integer(x++));
+                            } else {
+                                queryCount.put(queries[i], new Integer(1));
+                            }
+                            if(( (Integer) queryCount.get(queries[i])).intValue() > mostFreqCount) {
+                                mostFreqCount = ( (Integer) queryCount.get(queries[i])).intValue();
+                                mostFreqQuery = qname;
+                            }
                         }
                     }
                 }
-            }
+            }	
         }	
 
         // put the queries in queryCount keySet into an array
