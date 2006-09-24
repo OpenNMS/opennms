@@ -33,6 +33,11 @@ package org.opennms.netmgt.importer;
 
 import junit.framework.TestCase;
 
+import org.opennms.netmgt.config.EventdConfigFactory;
+import org.opennms.netmgt.config.EventdConfigManager;
+import org.opennms.netmgt.eventd.EventIpcManager;
+import org.opennms.netmgt.eventd.EventIpcManagerDefaultImpl;
+import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 import org.opennms.netmgt.importer.jmx.ImporterService;
 import org.opennms.netmgt.importer.jmx.ImporterServiceMBean;
 
@@ -40,6 +45,11 @@ public class ImporterServiceTest extends TestCase {
 
     protected void setUp() throws Exception {
         super.setUp();
+        
+        EventdConfigFactory.init();
+        
+        EventIpcManager ipcMgr = new EventIpcManagerDefaultImpl(EventdConfigFactory.getInstance());
+        EventIpcManagerFactory.setIpcManager(ipcMgr);
     }
 
     protected void tearDown() throws Exception {
@@ -47,14 +57,9 @@ public class ImporterServiceTest extends TestCase {
     }
     
     
-    public void testBogus() {
-        // Empty test so JUnit doesn't complain about not having any tests to run
-    }
-    
-    public void FIXMEtestSchedule() throws Exception {
+    public void testSchedule() throws Exception {
         // set opennms.home to the src dir so it finds the model-importer.properties
-        String userDir = System.getProperty("user.dir");
-        System.setProperty("opennms.home", userDir+"/src");
+        System.setProperty("opennms.home", "src/test/opennms-home");
         ImporterServiceMBean mbean = new ImporterService();
         mbean.init();
         mbean.start();
