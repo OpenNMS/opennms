@@ -18,10 +18,6 @@ public class DbTest extends TemporaryDatabaseTestCase {
      * referenced by foreign keys cannot have a WHERE clause on it.
      */ 
     public void XXXtestConstraintWithWhere() {
-        if (!isDBTestEnabled()) {
-            return;
-        }
-        
         executeSQL("create table node (\n"
                    + "nodeID          integer not null,\n"
                    + "dpName          varchar(12),\n"

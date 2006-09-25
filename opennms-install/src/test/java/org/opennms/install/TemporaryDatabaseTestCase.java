@@ -22,8 +22,6 @@ public class TemporaryDatabaseTestCase extends TestCase {
     private String m_adminUser;
     private String m_adminPassword;
     
-    private Connection m_dbConnection;
-    
     private boolean m_toldDisabled = false;
     
     public TemporaryDatabaseTestCase() {
@@ -41,73 +39,51 @@ public class TemporaryDatabaseTestCase extends TestCase {
 
     protected void setUp() throws Exception {
         super.setUp();
-        m_testDatabase = "opennms_test_" + System.currentTimeMillis();
         
-        if (!isDBTestEnabled()) {
+        if (!areTestsEnabled()) {
             return;
         }
 
-        // Create test database.
-        databaseConnect("template1");
-        databaseAddDB(m_testDatabase);
-        databaseDisconnect();
+        m_testDatabase = "opennms_test_" + System.currentTimeMillis();
 
-        // Connect to test database.
-        databaseConnect(m_testDatabase);
+        createTestDatabase();
+
+        // Test connecting to test database.
+        Connection connection = getConnection();
+        connection.close();
     }
     
     protected void runTest() throws Throwable {
+        if (!areTestsEnabled()) {
+            return;
+        }
+
         try {
             super.runTest();
         } catch (Throwable t) {
             m_failure = true;
             throw t;
         }
-
     }
 
     protected void tearDown() throws Exception {
-
-        if (!isDBTestEnabled()) {
-            return;
+        if (areTestsEnabled()) {
+            destroyTestDatabase();
         }
-
-        databaseDisconnect();
-
-        /*
-         * Sleep after disconnecting from the database because PostgreSQL
-         * doesn't seem to notice immediately that we have disconnected. Yeah,
-         * it's a hack.
-         */
-        Thread.sleep(100);
-
-        databaseConnect("template1");
-        destroyDatabase();
-        databaseDisconnect();
-
-        // Sleep again. Man, I hate this.
-        Thread.sleep(100);
 
         super.tearDown();
-    }
-    
-    public void destroyDatabase() throws SQLException {
-        if (m_leaveDatabase || (m_leaveDatabaseOnFailure && m_failure)) {
-            System.err.println("Not dropping database '" + m_testDatabase
-                    + "' for test '" + getName() + "'");
-        } else {
-            Statement st = m_dbConnection.createStatement();
-            st.execute("DROP DATABASE " + m_testDatabase);
-            st.close();
-        }
     }
 
     public String getTestDatabase() {
         return m_testDatabase;
     }
     
-    public Connection getDbConnection() {
-        return m_dbConnection;
+    public Connection getConnection() throws Exception {
+        return databaseConnect(m_testDatabase);
+    }
+    
+    public Connection getAdminConnection() throws Exception {
+        return databaseConnect("template1");
     }
     
     public String getDriver() {
@@ -126,7 +102,7 @@ public class TemporaryDatabaseTestCase extends TestCase {
         return m_adminPassword;
     }
     
-    public boolean isDBTestEnabled() {
+    private boolean areTestsEnabled() {
         String property = System.getProperty(s_runProperty);
         boolean enabled = "true".equals(property);
         if (!enabled && !m_toldDisabled) {
@@ -138,53 +114,93 @@ public class TemporaryDatabaseTestCase extends TestCase {
         return enabled;
     }
     
-    public void databaseConnect(String database) throws Exception {
+    private Connection databaseConnect(String database) throws Exception {
         Class.forName(m_driver);
-        m_dbConnection = DriverManager.getConnection(m_url + database,
-                                                     m_adminUser, m_adminPassword);
+        return DriverManager.getConnection(m_url + database,
+                                           m_adminUser, m_adminPassword);
     }
 
-    public void databaseDisconnect() throws Exception {
-        if (m_dbConnection != null) {
-            m_dbConnection.close();
-        }
-    }
-
-    public void databaseAddDB(String database) throws Exception {
-        Statement st = m_dbConnection.createStatement();
-        st.execute("CREATE DATABASE " + database
+    private void createTestDatabase() throws Exception {
+        Connection adminConnection = getAdminConnection();
+        Statement st = adminConnection.createStatement();
+        st.execute("CREATE DATABASE " + m_testDatabase
                 + " WITH ENCODING='UNICODE'");
+        adminConnection.close();
     }
+    
+    private void destroyTestDatabase() throws Exception {
+        if (m_leaveDatabase || (m_leaveDatabaseOnFailure && m_failure)) {
+            System.err.println("Not dropping database '" + m_testDatabase
+                    + "' for test '" + getName() + "'");
+            return;
+        }
 
+        /*
+         * Sleep before destroying the test database because PostgreSQL
+         * doesn't seem to notice immediately clients have disconnected. Yeah,
+         * it's a hack.
+         */
+        Thread.sleep(100);
+
+        Connection adminConnection = getAdminConnection();
+
+        Statement st = adminConnection.createStatement();
+        st.execute("DROP DATABASE " + m_testDatabase);
+        st.close();
+
+        adminConnection.close();
+
+        /*
+         * Sleep after disconnecting from template1, otherwise creating
+         * a new test database in future tests may fail. Man, I hate this.
+         */
+        Thread.sleep(100);
+    }
 
     public void executeSQL(String command) {
         executeSQL(new String[] { command });
     }
 
     public void executeSQL(String[] commands) {
-        if (!isDBTestEnabled()) {
-            return;
-        }
-
-        Statement st = null;
-
+        Connection connection = null;
+        
         try {
-            st = getDbConnection().createStatement();
-        } catch (SQLException e) {
-            fail("Could not create statement", e);
+            connection = getConnection();
+        } catch (Exception e) {
+            fail("Could not get connection", e);
         }
+        
+        try {
+            Statement st = null;
 
-        for (String command : commands) {
             try {
-                st.execute(command);
+                st = connection.createStatement();
             } catch (SQLException e) {
-                fail("Could not execute statement: '" + command + "'", e);
+                fail("Could not create statement", e);
             }
-        }
-        try {
-            st.close();
-        } catch (SQLException e) {
-            fail("Could not close database connection", e);
+
+            for (String command : commands) {
+                try {
+                    st.execute(command);
+                } catch (SQLException e) {
+                    fail("Could not execute statement: '" + command + "'", e);
+                }
+            }
+        
+            try {
+                st.close();
+            } catch (SQLException e) {
+                fail("Could not close database connection", e);
+            }
+        } finally {
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (SQLException e) {
+                    System.out.println("Could not close connection in executeSQL");
+                    e.printStackTrace();
+                }
+            }
         }
     }
 
@@ -194,6 +210,4 @@ public class TemporaryDatabaseTestCase extends TestCase {
         e.initCause(t);
         throw e;
     }
-
-    
 }
