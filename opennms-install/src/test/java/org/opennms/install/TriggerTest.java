@@ -51,7 +51,7 @@ public class TriggerTest extends PopulatedTemporaryDatabaseTestCase {
         ta.verifyAnticipated();
     }
 
-    public void XXXtestSetSnmpInterfaceIdInIpInterfaceNullIfIndex()
+    public void FIXMEtestSetSnmpInterfaceIdInIpInterfaceNullIfIndex()
             throws Exception {
         executeSQL("INSERT INTO node (nodeId, nodeCreateTime) VALUES ( 1, now() )");
         executeSQL("INSERT INTO snmpInterface (nodeId, ipAddr, snmpIfIndex) VALUES ( 1, '1.2.3.4', 1)");
