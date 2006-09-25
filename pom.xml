@@ -677,7 +677,9 @@ opennms.home = ${opennms.home}
         <build.postgresql.lib.dir>/usr/local/lib</build.postgresql.lib.dir>
       </properties>
     </profile>
+
 -->
+ 
   </profiles>
 
   <dependencies>
