@@ -90,7 +90,7 @@
         </annotation>
       </attribute>
 
-      <attribute name="max-request-size" type="integer" use="optional">
+      <attribute name="max-request-size" type="integer" use="optional" default="65535">
         <annotation>
           <documentation>(SNMP4J specific) Specifies the maximum number of variables that may be
           encoded into an individual SNMP PDU request by Collectd. Provides a
@@ -263,7 +263,7 @@
         </annotation>
       </attribute>
 
-      <attribute name="max-request-size" type="integer" use="optional">
+      <attribute name="max-request-size" type="integer" use="optional" default="65535" >
         <annotation>
           <documentation>Specifies the maximum number of variables that may be
           encoded into an individual SNMP pdu request by Collectd. Provides a
