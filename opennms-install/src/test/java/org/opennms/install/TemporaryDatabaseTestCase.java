@@ -1,5 +1,6 @@
 package org.opennms.install;
 
+import java.lang.reflect.UndeclaredThrowableException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -16,6 +17,7 @@ public class TemporaryDatabaseTestCase extends TestCase {
     private boolean m_leaveDatabase = false;
     private boolean m_leaveDatabaseOnFailure = false;
     private boolean m_failure = false;
+    private Throwable m_throwable = null;
     
     private String m_driver;
     private String m_url;
@@ -37,6 +39,7 @@ public class TemporaryDatabaseTestCase extends TestCase {
         m_adminPassword = adminPassword;
     }
 
+    @Override
     protected void setUp() throws Exception {
         super.setUp();
         
@@ -53,6 +56,7 @@ public class TemporaryDatabaseTestCase extends TestCase {
         connection.close();
     }
     
+    @Override
     protected void runTest() throws Throwable {
         if (!areTestsEnabled()) {
             return;
@@ -62,13 +66,27 @@ public class TemporaryDatabaseTestCase extends TestCase {
             super.runTest();
         } catch (Throwable t) {
             m_failure = true;
+            m_throwable = t;
             throw t;
         }
     }
 
+    @Override
     protected void tearDown() throws Exception {
         if (areTestsEnabled()) {
-            destroyTestDatabase();
+            try {
+                destroyTestDatabase();
+            } catch (Throwable t) {
+                if (m_throwable != null) {
+                    throw new TestFailureAndTearDownErrorException(m_throwable, t);
+                } else {
+                    if (t instanceof Exception) {
+                        throw (Exception) t;
+                    } else {
+                        throw new UndeclaredThrowableException(t);
+                    }
+                }
+            }
         }
 
         super.tearDown();
@@ -209,5 +227,21 @@ public class TemporaryDatabaseTestCase extends TestCase {
                 + t.getMessage());
         e.initCause(t);
         throw e;
+    }
+    
+    public class TestFailureAndTearDownErrorException extends Exception {
+        private Throwable m_tearDownError;
+        
+        public TestFailureAndTearDownErrorException(Throwable testFailure,
+                Throwable tearDownError) {
+            super(testFailure);
+            m_tearDownError = tearDownError;
+        }
+        
+        public String toString() {
+            return super.toString()
+                + "\nAlso received error on tearDown: "
+                + m_tearDownError.toString();
+        }
     }
 }
