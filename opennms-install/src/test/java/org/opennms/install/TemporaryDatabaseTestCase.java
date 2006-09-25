@@ -167,14 +167,21 @@ public class TemporaryDatabaseTestCase extends TestCase {
             st.execute("DROP DATABASE " + m_testDatabase);
             st.close();
         } finally {
-            adminConnection.close();
-        }
+            try {
+                adminConnection.close();
+            } catch (SQLException e) {
+                System.out.println("Error closing administrative database "
+                                   + "connection after attempting ot drop "
+                                   + "test database");
+                e.printStackTrace();
+            }
 
-        /*
-         * Sleep after disconnecting from template1, otherwise creating
-         * a new test database in future tests may fail. Man, I hate this.
-         */
-        Thread.sleep(500);
+            /*
+             * Sleep after disconnecting from template1, otherwise creating
+             * a new test database in future tests may fail. Man, I hate this.
+             */
+            Thread.sleep(500);
+        }
     }
 
     public void executeSQL(String command) {
