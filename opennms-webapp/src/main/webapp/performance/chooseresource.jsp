@@ -12,6 +12,7 @@
 //
 // Modifications:
 //
+// 2006 Sep 25: Fix the domain topLevelResourceLink.
 // 2006 Aug 24: List the node/domain. - dj@opennms.org
 // 2006 Aug 08: Fix minor spelling error - dj@opennms.org
 // 2003 Feb 07: Fixed URLEncoder issues.
@@ -92,7 +93,7 @@
 		request.setAttribute("resources",
 	    	                 this.model.getResourceForDomain(domain));
 		request.setAttribute("topLevelResourceLabel", domain);
-		request.setAttribute("topLevelResourceLink", "performance/chooseresource.jsp?domain=" + domain + "&relativetime=lastday&endUrl=performance%2FaddReportsToUrl");
+		request.setAttribute("topLevelResourceLink", "performance/chooseresource.jsp?domain=" + domain + "&endUrl=performance%2Fchoosereportanddate.jsp");
 		request.setAttribute("topLevelResourceType", "domain");
 		request.setAttribute("topLevelResourceTypeLabel", "Domain");
     } else {
