@@ -69,7 +69,9 @@ public class TriggerTest extends PopulatedTemporaryDatabaseTestCase {
             assertTrue("ipInterface snmpInterfaceId to be null (was " + id + ")",
                        rs.wasNull());
             assertFalse("ResultSet contains more than one row", rs.next());
+            System.out.println("here1");
         } finally {
+            System.out.println("here2");
             connection.close();
             Thread.sleep(1000);
         }
