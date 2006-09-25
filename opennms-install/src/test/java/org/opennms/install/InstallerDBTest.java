@@ -47,12 +47,6 @@ public class InstallerDBTest extends TemporaryDatabaseTestCase {
         m_installer.m_create_sql =
             "../opennms-daemon/src/main/filtered/etc/create.sql";
 
-        /*
-         * URL sql = getClass().getResource("/create.sql");
-         * assertNotNull("Could not find create.sql", sql);
-         * m_installer.m_create_sql = sql.getFile();
-         */
-
         m_installer.m_sql_dir = "../opennms-daemon/src/main/filtered/etc";
 
         m_installer.m_fix_constraint = true;
@@ -63,24 +57,11 @@ public class InstallerDBTest extends TemporaryDatabaseTestCase {
         // Read in the table definitions
         m_installer.readTables();
         
-        m_installer.m_dbconnection = getDbConnection();
-
-        /*
-        if (!isDBTestEnabled()) {
-            return;
-        }
-
-        // Create test database.
-        m_installer.databaseConnect("template1");
-        m_installer.databaseAddDB();
-        m_installer.databaseDisconnect();
-
-        // Connect to test database.
-        m_installer.databaseConnect(m_testDatabase);
-        */
+        m_installer.m_dbconnection = getConnection();
     }
 
     public void tearDown() throws Exception {
+        m_installer.m_dbconnection.close();
         super.tearDown();
     }
 
@@ -95,19 +76,11 @@ public class InstallerDBTest extends TemporaryDatabaseTestCase {
 
     // XXX this should be an integration test
     public void testCreateSequences() throws Exception {
-        if (!isDBTestEnabled()) {
-            return;
-        }
-
         m_installer.createSequences();
     }
 
     // XXX this should be an integration test
     public void testCreateTables() throws Exception {
-        if (!isDBTestEnabled()) {
-            return;
-        }
-
         m_installer.createSequences();
         m_installer.updatePlPgsql();
         m_installer.addStoredProcedures();
@@ -117,10 +90,6 @@ public class InstallerDBTest extends TemporaryDatabaseTestCase {
 
     // XXX this should be an integration test
     public void testCreateTablesTwice() throws Exception {
-        if (!isDBTestEnabled()) {
-            return;
-        }
-
         // First pass.
         m_installer.createSequences();
         m_installer.updatePlPgsql();
@@ -177,10 +146,6 @@ public class InstallerDBTest extends TemporaryDatabaseTestCase {
     }
 
     public void testUpgradeRevision3952ToCurrent() throws Exception {
-        if (!isDBTestEnabled()) {
-            return;
-        }
-
         String newCreate = m_installer.m_create_sql;
 
         URL sql = getClass().getResource("/create.sql-revision-3952");
@@ -206,10 +171,6 @@ public class InstallerDBTest extends TemporaryDatabaseTestCase {
     }
     
     public void testUpgradeRevision3952ToCurrentWithData() throws Exception {
-        if (!isDBTestEnabled()) {
-            return;
-        }
-
         String newCreate = m_installer.m_create_sql;
 
         URL sql = getClass().getResource("/create.sql-revision-3952");
@@ -220,12 +181,8 @@ public class InstallerDBTest extends TemporaryDatabaseTestCase {
         // First pass.
         m_installer.createSequences();
         m_installer.m_triggerDao = new TriggerDao();
-        //m_installer.updatePlPgsql();
-        //m_installer.addStoredProcedures();
-
         m_installer.createTables();
-        
-        
+                
         // Data
         executeSQL("INSERT INTO node ( nodeId, nodeCreateTime) VALUES ( 1, now() )");
         executeSQL("INSERT INTO snmpInterface ( nodeId, ipAddr, snmpIfIndex) VALUES ( 1, '1.2.3.4', 1 )");
@@ -258,7 +215,6 @@ public class InstallerDBTest extends TemporaryDatabaseTestCase {
         m_installer.addStoredProcedures();
 
         m_installer.createTables();
-
     }
 
 
@@ -267,10 +223,6 @@ public class InstallerDBTest extends TemporaryDatabaseTestCase {
      * because we have not created a table matching "_old_".
      */
     public void testBug1006NoOldTables() {
-        if (!isDBTestEnabled()) {
-            return;
-        }
-
         ThrowableAnticipator ta = new ThrowableAnticipator();
 
         try {
@@ -289,10 +241,6 @@ public class InstallerDBTest extends TemporaryDatabaseTestCase {
      * and fail otherwise.
      */
     public void testBug1006HasOldTables() throws SQLException {
-        if (!isDBTestEnabled()) {
-            return;
-        }
-
         // final String errorSubstring = "One or more backup tables from a
         // previous install still exists";
 
@@ -340,86 +288,46 @@ public class InstallerDBTest extends TemporaryDatabaseTestCase {
     }
 
     public void testBug931ConstraintsOkayTwoTables() throws Exception {
-        if (!isDBTestEnabled()) {
-            return;
-        }
-
         doTestBug931(false, 0, false);
     }
 
     public void testBug931ConstraintsOkayOneTable() throws Exception {
-        if (!isDBTestEnabled()) {
-            return;
-        }
-
         doTestBug931(true, 0, false);
     }
 
     public void testBug931ConstraintsBadTwoTables() throws Exception {
-        if (!isDBTestEnabled()) {
-            return;
-        }
-
         doTestBug931(false, 1, false);
     }
 
     public void testBug931ConstraintsBadOneTable() throws Exception {
-        if (!isDBTestEnabled()) {
-            return;
-        }
-
         doTestBug931(true, 2, false);
     }
 
     public void testConstraintsFixedNullTwoTables() throws Exception {
-        if (!isDBTestEnabled()) {
-            return;
-        }
-
         doTestBug931(false, 0, true);
     }
 
     public void testConstraintsFixedNullOneTable() throws Exception {
-        if (!isDBTestEnabled()) {
-            return;
-        }
-
         doTestBug931(true, 0, true);
     }
 
     public void testConstraintsFixedDelTwoTables() throws Exception {
-        if (!isDBTestEnabled()) {
-            return;
-        }
-
         m_installer.m_fix_constraint_remove_rows = true;
         doTestBug931(false, 0, true);
     }
 
     public void testConstraintsFixedDelOneTable() throws Exception {
-        if (!isDBTestEnabled()) {
-            return;
-        }
-
         m_installer.m_fix_constraint_remove_rows = true;
         doTestBug931(true, 0, true);
     }
 
     public void testBogusConstraintName() throws Exception {
-        if (!isDBTestEnabled()) {
-            return;
-        }
-
         String constraint = "bogus_test_" + System.currentTimeMillis();
         doTestBogusConstraint(constraint, "Did not find constraint "
                 + constraint + " in the database.");
     }
 
     public void testBogusConstraintTable() throws Exception {
-        if (!isDBTestEnabled()) {
-            return;
-        }
-
         String constraint = "fk_nodeid1";
         doTestBogusConstraint(
                               constraint,
@@ -430,10 +338,6 @@ public class InstallerDBTest extends TemporaryDatabaseTestCase {
     }
 
     public void testBogusConstraintColumn() throws Exception {
-        if (!isDBTestEnabled()) {
-            return;
-        }
-
         String constraint = "fk_dpname";
         doTestBogusConstraint(constraint, "Constraint " + constraint
                 + " constrains column "
@@ -442,10 +346,6 @@ public class InstallerDBTest extends TemporaryDatabaseTestCase {
     }
 
     public void testConstraintAfterConstrainedColumn() throws Exception {
-        if (!isDBTestEnabled()) {
-            return;
-        }
-
         String s_create_sql = "            create table distPoller (\n"
                 + "                    dpName            varchar(12),\n"
                 + "                                constraint pk_dpName primary key (dpName),\n"
@@ -463,10 +363,6 @@ public class InstallerDBTest extends TemporaryDatabaseTestCase {
     }
 
     public void testConstraintAtEndOfTable() throws Exception {
-        if (!isDBTestEnabled()) {
-            return;
-        }
-
         String s_create_sql = "            create table distPoller (\n"
                 + "                    dpName            varchar(12),\n"
                 + "                    dpIP            varchar(16) not null,\n"
@@ -484,10 +380,6 @@ public class InstallerDBTest extends TemporaryDatabaseTestCase {
     }
 
     public void testConstraintIpInterfaceSnmpInterfaceValidData() throws Exception {
-        if (!isDBTestEnabled()) {
-            return;
-        }
-        
         String newCreate = m_installer.m_create_sql;
 
         URL sql = getClass().getResource("/create.sql-revision-3952");
@@ -525,10 +417,6 @@ public class InstallerDBTest extends TemporaryDatabaseTestCase {
         */
     }
     public void testConstraintIpInterfaceSnmpInterfaceInvalidData() throws Exception {
-        if (!isDBTestEnabled()) {
-            return;
-        }
-        
         String newCreate = m_installer.m_create_sql;
 
         URL sql = getClass().getResource("/create.sql-revision-3952");
@@ -566,10 +454,6 @@ public class InstallerDBTest extends TemporaryDatabaseTestCase {
     }
     
     public void testConstraintOnBogusColumn() throws Exception {
-        if (!isDBTestEnabled()) {
-            return;
-        }
-
         String s_create_sql = "            create table distPoller (\n"
                 + "                    dpName            varchar(12),\n"
                 + "                    dpIP            varchar(16) not null,\n"
@@ -705,10 +589,6 @@ public class InstallerDBTest extends TemporaryDatabaseTestCase {
     }
 
     public void testGetFromDbConstraintWithOnUpdateCascade() throws Exception {
-        if (!isDBTestEnabled()) {
-            return;
-        }
-
         final String createSQL =
             "create table a (\n"
                 + "    a1           integer,\n"
@@ -771,10 +651,6 @@ public class InstallerDBTest extends TemporaryDatabaseTestCase {
     }
 
     public void testInsertMultipleColumns() throws SQLException {
-        if (!isDBTestEnabled()) {
-            return;
-        }
-
         String command = "CREATE TABLE qrtz_job_details (\n"
                 + "  JOB_NAME  VARCHAR(80) NOT NULL,\n"
                 + "  JOB_GROUP VARCHAR(80) NOT NULL,\n"
@@ -784,10 +660,6 @@ public class InstallerDBTest extends TemporaryDatabaseTestCase {
     }
 
     public void testInsertMultipleColumnsGetFromDB() throws Exception {
-        if (!isDBTestEnabled()) {
-            return;
-        }
-
         String command = "CREATE TABLE qrtz_job_details (\n"
                 + "  JOB_NAME  VARCHAR(80) NOT NULL,\n"
                 + "  JOB_GROUP VARCHAR(80) NOT NULL,\n"
@@ -799,10 +671,6 @@ public class InstallerDBTest extends TemporaryDatabaseTestCase {
     }
 
     public void testInsertMultipleColumnsGetFromDBCompare() throws Exception {
-        if (!isDBTestEnabled()) {
-            return;
-        }
-
         String command = "CREATE TABLE qrtz_job_details (\n"
                 + "  JOB_NAME  VARCHAR(80) NOT NULL,\n"
                 + "  JOB_GROUP VARCHAR(80) NOT NULL,\n"
@@ -823,10 +691,6 @@ public class InstallerDBTest extends TemporaryDatabaseTestCase {
     }
 
     public void testGetColumnsFromDB() throws Exception {
-        if (!isDBTestEnabled()) {
-            return;
-        }
-
         String command = "CREATE TABLE qrtz_job_details (\n"
                 + "  JOB_NAME  VARCHAR(80) NOT NULL,\n"
                 + "  JOB_GROUP VARCHAR(80) NOT NULL,\n"
@@ -846,10 +710,6 @@ public class InstallerDBTest extends TemporaryDatabaseTestCase {
     }
 
     public void testGetConstraintsFromDB() throws Exception {
-        if (!isDBTestEnabled()) {
-            return;
-        }
-
         String command = "CREATE TABLE qrtz_job_details (\n"
                 + "  JOB_NAME  VARCHAR(80) NOT NULL,\n"
                 + "  JOB_GROUP VARCHAR(80) NOT NULL,\n"
@@ -869,10 +729,6 @@ public class InstallerDBTest extends TemporaryDatabaseTestCase {
     }
 
     public void testSetEventSourceOnUpgrade() throws Exception {
-        if (!isDBTestEnabled()) {
-            return;
-        }
-
         m_installer.createSequences();
         m_installer.updatePlPgsql();
         m_installer.addStoredProcedures();
@@ -902,10 +758,6 @@ public class InstallerDBTest extends TemporaryDatabaseTestCase {
     }
 
     public void XXXtestSetOutageIdOnUpgrade() throws Exception {
-        if (!isDBTestEnabled()) {
-            return;
-        }
-
         m_installer.createSequences();
         m_installer.updatePlPgsql();
         m_installer.addStoredProcedures();
@@ -948,10 +800,6 @@ public class InstallerDBTest extends TemporaryDatabaseTestCase {
     }
 
     public void j() throws Exception {
-        if (!isDBTestEnabled()) {
-            return;
-        }
-
         m_installer.createSequences();
         m_installer.updatePlPgsql();
         m_installer.addStoredProcedures();
@@ -988,10 +836,6 @@ public class InstallerDBTest extends TemporaryDatabaseTestCase {
     }
 
     public void testSetUsersNotifiedIdOnUpgrade() throws Exception {
-        if (!isDBTestEnabled()) {
-            return;
-        }
-
         m_installer.createSequences();
         m_installer.updatePlPgsql();
         m_installer.addStoredProcedures();
@@ -1030,10 +874,6 @@ public class InstallerDBTest extends TemporaryDatabaseTestCase {
     }
 
     public void testSetSnmpInterfaceIdOnUpgrade() throws Exception {
-        if (!isDBTestEnabled()) {
-            return;
-        }
-
         m_installer.createSequences();
         m_installer.updatePlPgsql();
         m_installer.addStoredProcedures();
@@ -1068,10 +908,6 @@ public class InstallerDBTest extends TemporaryDatabaseTestCase {
 
     public void testCatchSnmpInterfaceNullNodeIdColumnOnUpgrade()
             throws Exception {
-        if (!isDBTestEnabled()) {
-            return;
-        }
-
         m_installer.createSequences();
         m_installer.updatePlPgsql();
         m_installer.addStoredProcedures();
@@ -1106,10 +942,6 @@ public class InstallerDBTest extends TemporaryDatabaseTestCase {
 
     public void testCatchSnmpInterfaceHasNullNodeIdValueOnUpgrade()
             throws Exception {
-        if (!isDBTestEnabled()) {
-            return;
-        }
-
         m_installer.createSequences();
         m_installer.updatePlPgsql();
         m_installer.addStoredProcedures();
@@ -1139,13 +971,6 @@ public class InstallerDBTest extends TemporaryDatabaseTestCase {
 
     public void testCatchIpInterfaceNullIpAddrColumnOnUpgrade()
             throws Exception {
-        if (!isDBTestEnabled()) {
-            return;
-        }
-
-        Statement st;
-        ResultSet rs;
-
         m_installer.createSequences();
         m_installer.updatePlPgsql();
         m_installer.addStoredProcedures();
@@ -1167,10 +992,6 @@ public class InstallerDBTest extends TemporaryDatabaseTestCase {
 
     public void testCatchIpInterfaceHasNullIpAddrValueOnUpgrade()
             throws Exception {
-        if (!isDBTestEnabled()) {
-            return;
-        }
-
         m_installer.createSequences();
         m_installer.updatePlPgsql();
         m_installer.addStoredProcedures();
@@ -1201,10 +1022,6 @@ public class InstallerDBTest extends TemporaryDatabaseTestCase {
     }
 
     public void testAssetsIdOnUpgrade() throws Exception {
-        if (!isDBTestEnabled()) {
-            return;
-        }
-
         m_installer.createSequences();
         m_installer.updatePlPgsql();
         m_installer.addStoredProcedures();
@@ -1242,10 +1059,6 @@ public class InstallerDBTest extends TemporaryDatabaseTestCase {
     }
 
     public void testTriggersAfterUpdate() throws Exception {
-        if (!isDBTestEnabled()) {
-            return;
-        }
-
         m_installer.createSequences();
         m_installer.updatePlPgsql();
         m_installer.addStoredProcedures();
@@ -1260,10 +1073,6 @@ public class InstallerDBTest extends TemporaryDatabaseTestCase {
     }
 
     public void testTriggersAfterUpdateWithChange() throws Exception {
-        if (!isDBTestEnabled()) {
-            return;
-        }
-
         m_installer.createSequences();
         m_installer.updatePlPgsql();
         m_installer.addStoredProcedures();
@@ -1313,10 +1122,6 @@ public class InstallerDBTest extends TemporaryDatabaseTestCase {
 
     public void testIpInterfaceForeignKeySnmpInterfaceIdOnUpgrade()
             throws Exception {
-        if (!isDBTestEnabled()) {
-            return;
-        }
-
         m_installer.createSequences();
         m_installer.updatePlPgsql();
         m_installer.addStoredProcedures();
@@ -1409,10 +1214,6 @@ public class InstallerDBTest extends TemporaryDatabaseTestCase {
 
     public void testIfServicesForeignKeyIpInterfaceIdOnUpgrade()
             throws Exception {
-        if (!isDBTestEnabled()) {
-            return;
-        }
-
         m_installer.createSequences();
         m_installer.updatePlPgsql();
         m_installer.addStoredProcedures();
@@ -1487,10 +1288,6 @@ public class InstallerDBTest extends TemporaryDatabaseTestCase {
     }
 
     public void testOutagesForeignKeyIfServiceIdOnUpgrade() throws Exception {
-        if (!isDBTestEnabled()) {
-            return;
-        }
-
         m_installer.createSequences();
         m_installer.updatePlPgsql();
         m_installer.addStoredProcedures();
@@ -1561,10 +1358,6 @@ public class InstallerDBTest extends TemporaryDatabaseTestCase {
     }
 
     public void testAddStoredProcedures() throws Exception {
-        if (!isDBTestEnabled()) {
-            return;
-        }
-
         m_installer.createSequences();
         m_installer.updatePlPgsql();
         m_installer.addStoredProcedures();
@@ -1575,10 +1368,6 @@ public class InstallerDBTest extends TemporaryDatabaseTestCase {
     }
 
     public void testAddStoredProceduresTwice() throws Exception {
-        if (!isDBTestEnabled()) {
-            return;
-        }
-
         m_installer.createSequences();
         m_installer.updatePlPgsql();
         m_installer.addStoredProcedures();
@@ -1593,10 +1382,6 @@ public class InstallerDBTest extends TemporaryDatabaseTestCase {
 
     public void testSnmpInterfaceNodeIdColumnConvertToNotNull()
             throws Exception {
-        if (!isDBTestEnabled()) {
-            return;
-        }
-
         m_installer.createSequences();
         m_installer.updatePlPgsql();
         m_installer.addStoredProcedures();
@@ -1614,10 +1399,6 @@ public class InstallerDBTest extends TemporaryDatabaseTestCase {
 
     public void testSnmpInterfaceSnmpIfIndexColumnConvertToNotNull()
             throws Exception {
-        if (!isDBTestEnabled()) {
-            return;
-        }
-
         m_installer.createSequences();
         m_installer.updatePlPgsql();
         m_installer.addStoredProcedures();
@@ -1635,10 +1416,6 @@ public class InstallerDBTest extends TemporaryDatabaseTestCase {
 
     public void testIpInterfaceNodeIdColumnConvertToNotNull()
             throws Exception {
-        if (!isDBTestEnabled()) {
-            return;
-        }
-
         m_installer.createSequences();
         m_installer.updatePlPgsql();
         m_installer.addStoredProcedures();
@@ -1656,10 +1433,6 @@ public class InstallerDBTest extends TemporaryDatabaseTestCase {
     }
 
     public void testIfServicesNodeIdColumnConvertToNotNull() throws Exception {
-        if (!isDBTestEnabled()) {
-            return;
-        }
-
         m_installer.createSequences();
         m_installer.updatePlPgsql();
         m_installer.addStoredProcedures();
@@ -1679,10 +1452,6 @@ public class InstallerDBTest extends TemporaryDatabaseTestCase {
     }
 
     public void testIfServicesIpAddrColumnConvertToNotNull() throws Exception {
-        if (!isDBTestEnabled()) {
-            return;
-        }
-
         m_installer.createSequences();
         m_installer.updatePlPgsql();
         m_installer.addStoredProcedures();
@@ -1703,10 +1472,6 @@ public class InstallerDBTest extends TemporaryDatabaseTestCase {
 
     public void testIfServicesServiceIdColumnConvertToNotNull()
             throws Exception {
-        if (!isDBTestEnabled()) {
-            return;
-        }
-
         m_installer.createSequences();
         m_installer.updatePlPgsql();
         m_installer.addStoredProcedures();
@@ -1726,10 +1491,6 @@ public class InstallerDBTest extends TemporaryDatabaseTestCase {
     }
 
     public void testOutagesNodeIdColumnConvertToNotNull() throws Exception {
-        if (!isDBTestEnabled()) {
-            return;
-        }
-
         m_installer.createSequences();
         m_installer.updatePlPgsql();
         m_installer.addStoredProcedures();
@@ -1751,10 +1512,6 @@ public class InstallerDBTest extends TemporaryDatabaseTestCase {
     }
 
     public void testOutagesServiceIdColumnConvertToNotNull() throws Exception {
-        if (!isDBTestEnabled()) {
-            return;
-        }
-
         m_installer.createSequences();
         m_installer.updatePlPgsql();
         m_installer.addStoredProcedures();
@@ -1777,10 +1534,6 @@ public class InstallerDBTest extends TemporaryDatabaseTestCase {
 
     public void testOutagesIfServiceIdColumnConvertToNotNull()
             throws Exception {
-        if (!isDBTestEnabled()) {
-            return;
-        }
-
         m_installer.createSequences();
         m_installer.updatePlPgsql();
         m_installer.addStoredProcedures();
@@ -1801,10 +1554,6 @@ public class InstallerDBTest extends TemporaryDatabaseTestCase {
     }
     
     public void testSnmpInterfaceNonUniqueKeys() throws Exception {
-        if (!isDBTestEnabled()) {
-            return;
-        }
-
         m_installer.createSequences();
         m_installer.updatePlPgsql();
         m_installer.addStoredProcedures();
@@ -1854,10 +1603,6 @@ public class InstallerDBTest extends TemporaryDatabaseTestCase {
     }
     
     public void testIpInterfaceNonUniqueKeys() throws Exception {
-        if (!isDBTestEnabled()) {
-            return;
-        }
-
         m_installer.createSequences();
         m_installer.updatePlPgsql();
         m_installer.addStoredProcedures();
@@ -1928,10 +1673,6 @@ public class InstallerDBTest extends TemporaryDatabaseTestCase {
     }
     
     public void testIfServicesNonUniqueKeys() throws Exception {
-        if (!isDBTestEnabled()) {
-            return;
-        }
-
         m_installer.createSequences();
         m_installer.updatePlPgsql();
         m_installer.addStoredProcedures();
@@ -2011,10 +1752,6 @@ public class InstallerDBTest extends TemporaryDatabaseTestCase {
     }
     
     public void testBug1574() throws Exception {
-        if (!isDBTestEnabled()) {
-            return;
-        }
-
         m_installer.createSequences();
         m_installer.updatePlPgsql();
         m_installer.addStoredProcedures();
@@ -2143,20 +1880,5 @@ public class InstallerDBTest extends TemporaryDatabaseTestCase {
                 assertTriggerExists(trigger);
             }
         }
-    }
-
-
-    public boolean setUpForTriggerTest() throws Exception {
-        if (!isDBTestEnabled()) {
-            return false;
-        }
-
-        m_installer.createSequences();
-        m_installer.updatePlPgsql();
-        m_installer.addStoredProcedures();
-        
-        m_installer.createTables();
-
-        return true;
     }
 }
