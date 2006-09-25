@@ -405,30 +405,6 @@ opennms.home = ${opennms.home}
     <rpm.database.name>opennms</rpm.database.name>
     <rpm.database.password>opennms</rpm.database.password>
 
-    <!-- filters 
-      build.soext=${platform.shlib}
-      install.share.dir=${install.share.dir}
-      install.bin.dir=${install.bin.dir}
-      install.database.bindir=${install.database.bindir}
-      install.database.driver=${install.database.driver}
-      install.database.name=${install.database.name}
-      install.database.password=${install.database.password}
-      install.database.url=${install.database.url}
-      install.database.user=${install.databse.user}
-      install.dir=${install.dir}
-      install.etc.dir=${install.etc.dir}
-      install.init.dir=${install.init.dir}
-      install.logs.dir=${install.logs.dir}
-      install.manifest.classes=${install.manifest.classes}
-      install.perl.bin=${install.perl.bin}
-      install.pid.file=${install.pid.file}
-      install.postgresql.dir=${install.postgresql.dir}
-      install.postgresql.service=${install.postgresql.service}
-      install.rrdtool.bin=${install.rrdtool.bin}
-      install.servlet.dir=${install.servlet.dir}
-      install.tomcat.serverlibs=${install.tomcat.serverlibs}
-      install.webapps.dir=${install.webapps.dir}
-    -->
   </properties>
 
   <profiles>
@@ -623,7 +599,7 @@ opennms.home = ${opennms.home}
         <platform>linux</platform>
         <platform.shlib>so</platform.shlib>
         <platform.jni>so</platform.jni>
-        <install.dir>/usr/local/OpenNMS</install.dir>
+        <opennms.home>/usr/local/OpenNMS</opennms.home>
         <build.rrd.include.dir>/usr/local/rrdtool-1.2.12/include</build.rrd.include.dir>
         <build.rrd.lib.dir>/usr/local/rrdtool-1.2.12/lib</build.rrd.lib.dir>
         <build.postgresql.include.dir>/usr/local/pgsql/include/server</build.postgresql.include.dir>
@@ -642,7 +618,7 @@ opennms.home = ${opennms.home}
     	<platform>solaris</platform>
 	<platform.shlib>so</platform.shlib>
 	<platform.jni>so</platform.jni>
-	<install.dir>/opt/OpenNMS</install.dir>
+	<opennms.home>/opt/OpenNMS</opennms.home>
 	<build.jni.compiler.arg>-I${JAVA_HOME}/include -I${JAVA_HOME}/include/solaris</build.jni.compiler.arg>
       </properties>
     </profile>
@@ -675,6 +651,11 @@ opennms.home = ${opennms.home}
       </properties>
     </profile>
 
+<!--
+   The activation for this profile is broken as is activates on NON FreeBSD systems.
+   Commonly activation is done by the existence of a file that is specific to the OS.
+   I have commented this out until a more appropriate activation is found that doesn't
+   break the install on the other systems.
     <profile>
       <id>freebsd</id>
       <activation>
@@ -687,7 +668,7 @@ opennms.home = ${opennms.home}
         <platform>freebsd</platform>
         <platform.shlib>so</platform.shlib>
         <platform.jni>so</platform.jni>
-        <install.dir>/usr/local/OpenNMS</install.dir>
+        <opennms.home>/usr/local/OpenNMS</opennms.home>
 	<build.jni.compiler.arg>-I${JAVA_HOME}/include -I${JAVA_HOME}/include/freebsd</build.jni.compiler.arg>
         <build.rrd.include.dir>/usr/local/include</build.rrd.include.dir>
         <build.rrd.lib.dir>/usr/local/lib</build.rrd.lib.dir>
@@ -697,6 +678,7 @@ opennms.home = ${opennms.home}
       </properties>
     </profile>
   </profiles>
+-->
 
   <dependencies>
     <dependency>
