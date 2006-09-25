@@ -145,11 +145,15 @@ public final class SnmpPeerFactory {
 
         File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.SNMP_CONF_FILE_NAME);
 
-        ThreadCategory.getInstance(SnmpPeerFactory.class).debug("init: config file path: " + cfgFile.getPath());
+        log().debug("init: config file path: " + cfgFile.getPath());
 
         m_singleton = new SnmpPeerFactory(cfgFile.getPath());
 
         m_loaded = true;
+    }
+
+    private static Category log() {
+        return ThreadCategory.getInstance(SnmpPeerFactory.class);
     }
 
     /**
@@ -195,7 +199,7 @@ public final class SnmpPeerFactory {
      * less time iterating all these elements.
      */
     private static void optimize() throws UnknownHostException {
-        Category log = ThreadCategory.getInstance(SnmpPeerFactory.class);
+        Category log = log();
 
         // First pass: Remove empty definition elements
         for (Iterator definitionsIterator =
@@ -415,7 +419,7 @@ public final class SnmpPeerFactory {
      * the currently loaded snmp-config.xml.
      */
     public void define(InetAddress ip, String community) throws UnknownHostException {
-        Category log = ThreadCategory.getInstance(SnmpPeerFactory.class);
+        Category log = log();
 
         // Convert IP to long so that it easily compared in range elements
         int address = new IPv4Address(ip).getAddress();
@@ -721,6 +725,26 @@ public final class SnmpPeerFactory {
         agentConfig.setTimeout((int)determineTimeout(def));
         agentConfig.setMaxRequestSize(determineMaxRequestSize(def));
         agentConfig.setMaxVarsPerPdu(determineMaxVarsPerPdu(def));
+        InetAddress proxyHost = determineProxyHost(def);
+        
+        if (proxyHost != null) {
+            agentConfig.setProxyFor(agentConfig.getAddress());
+            agentConfig.setAddress(determineProxyHost(def));
+        }
+    }
+
+    private InetAddress determineProxyHost(Definition def) {
+        InetAddress inetAddr = null;
+        String address = def.getProxyHost() == null ? 
+                (m_config.getProxyHost() == null ? null : m_config.getProxyHost()) : def.getProxyHost();
+        if (address != null) {
+            try {
+                inetAddr =  InetAddress.getByName(address);
+            } catch (UnknownHostException e) {
+                log().error("determineProxyHost: Problem converting proxy host string to InetAddress", e);
+            }
+        }
+        return inetAddr;
     }
 
     private int determineMaxVarsPerPdu(Definition def) {

@@ -1320,6 +1320,10 @@ public class OpenNMSTestCase extends TestCase {
                 "       <specific>10.0.0.2</specific>\n" +
                 "   </definition>\n" + 
                 "\n" + 
+                "   <definition version=\"v1\" read-community=\"specificv1\" proxy-host=\"127.0.0.1\">\n" + 
+                "       <specific>10.0.0.3</specific>\n" +
+                "   </definition>\n" + 
+                "\n" + 
                 "   <definition version=\"v3\" " +
                 "       security-name=\"opennmsUser\" \n" + 
                 "       auth-passphrase=\"0p3nNMSv3\" >\n" +
