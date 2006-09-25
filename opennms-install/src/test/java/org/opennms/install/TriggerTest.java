@@ -37,7 +37,7 @@ public class TriggerTest extends PopulatedTemporaryDatabaseTestCase {
      * Test adding an entry to ipInterface with an ifIndex >= 1 that *does not*
      * point to an entry in snmpInterface.  This should be an error.
      */
-    public void testSetSnmpInterfaceIdInIpInterfaceNoSnmpInterfaceEntry()
+    public void XXXtestSetSnmpInterfaceIdInIpInterfaceNoSnmpInterfaceEntry()
             throws Exception {
         executeSQL("INSERT INTO node (nodeId, nodeCreateTime) VALUES ( 1, now() )");
 
