@@ -71,6 +71,7 @@ public class TriggerTest extends PopulatedTemporaryDatabaseTestCase {
             assertFalse("ResultSet contains more than one row", rs.next());
         } finally {
             connection.close();
+            Thread.sleep(1000);
         }
     }
 
