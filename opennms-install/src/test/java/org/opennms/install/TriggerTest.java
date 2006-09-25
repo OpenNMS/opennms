@@ -51,7 +51,7 @@ public class TriggerTest extends PopulatedTemporaryDatabaseTestCase {
         ta.verifyAnticipated();
     }
 
-    public void XXXtestSetSnmpInterfaceIdInIpInterfaceNullIfIndex()
+    public void testSetSnmpInterfaceIdInIpInterfaceNullIfIndex()
             throws Exception {
         executeSQL("INSERT INTO node (nodeId, nodeCreateTime) VALUES ( 1, now() )");
         executeSQL("INSERT INTO snmpInterface (nodeId, ipAddr, snmpIfIndex) VALUES ( 1, '1.2.3.4', 1)");
@@ -69,9 +69,10 @@ public class TriggerTest extends PopulatedTemporaryDatabaseTestCase {
             assertTrue("ipInterface snmpInterfaceId to be null (was " + id + ")",
                        rs.wasNull());
             assertFalse("ResultSet contains more than one row", rs.next());
+            rs.close();
+            st.close();
         } finally {
             connection.close();
-            Thread.sleep(1000);
         }
     }
 
