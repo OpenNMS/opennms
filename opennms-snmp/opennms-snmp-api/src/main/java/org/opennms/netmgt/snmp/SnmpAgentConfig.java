@@ -36,7 +36,8 @@ package org.opennms.netmgt.snmp;
 import java.net.InetAddress;
 
 /**
- * @author david
+ * @author (various previous authors not documented)
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
  *
  */
 public class SnmpAgentConfig {
@@ -78,6 +79,7 @@ public class SnmpAgentConfig {
     private String m_authProtocol;
     private String m_PrivProtocol;
     private String m_privPassPhrase;
+    private InetAddress m_proxyFor;
     
     public SnmpAgentConfig() {
         setDefaults();
@@ -116,6 +118,7 @@ public class SnmpAgentConfig {
         buff.append(", MaxVarsPerPdu: "+m_maxVarsPerPdu);
         buff.append(", Max request size: "+m_maxRequestSize);
         buff.append(", Version: "+m_version);
+        buff.append(", ProxyForAddress: "+m_proxyFor);
         if (m_version == VERSION3) {
             buff.append(", Security level: "+m_securityLevel);
             buff.append(", Security name: "+m_securityName);
@@ -268,6 +271,14 @@ public class SnmpAgentConfig {
 
     public void setPrivPassPhrase(String privPassPhrase) {
         m_privPassPhrase = privPassPhrase;
+    }
+
+    public InetAddress getProxyFor() {
+        return m_proxyFor;
+    }
+    
+    public void setProxyFor(InetAddress address) {
+        m_proxyFor = address;
     }
     
 }
