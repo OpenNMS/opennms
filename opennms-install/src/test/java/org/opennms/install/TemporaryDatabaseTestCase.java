@@ -158,15 +158,17 @@ public class TemporaryDatabaseTestCase extends TestCase {
          * doesn't seem to notice immediately clients have disconnected. Yeah,
          * it's a hack.
          */
-        Thread.sleep(500);
+        Thread.sleep(1000);
 
         Connection adminConnection = getAdminConnection();
 
-        Statement st = adminConnection.createStatement();
-        st.execute("DROP DATABASE " + m_testDatabase);
-        st.close();
-
-        adminConnection.close();
+        try {
+            Statement st = adminConnection.createStatement();
+            st.execute("DROP DATABASE " + m_testDatabase);
+            st.close();
+        } finally {
+            adminConnection.close();
+        }
 
         /*
          * Sleep after disconnecting from template1, otherwise creating
@@ -181,7 +183,8 @@ public class TemporaryDatabaseTestCase extends TestCase {
 
     public void executeSQL(String[] commands) {
         Connection connection = null;
-        
+        Statement st = null;
+
         try {
             connection = getConnection();
         } catch (Exception e) {
@@ -189,8 +192,6 @@ public class TemporaryDatabaseTestCase extends TestCase {
         }
         
         try {
-            Statement st = null;
-
             try {
                 st = connection.createStatement();
             } catch (SQLException e) {
@@ -204,13 +205,15 @@ public class TemporaryDatabaseTestCase extends TestCase {
                     fail("Could not execute statement: '" + command + "'", e);
                 }
             }
-        
-            try {
-                st.close();
-            } catch (SQLException e) {
-                fail("Could not close database connection", e);
-            }
         } finally {
+            if (st != null) {
+                try {
+                    st.close();
+                } catch (SQLException e) {
+                    System.out.println("Could not close statement in executeSQL");
+                    e.printStackTrace();
+                }
+            }
             if (connection != null) {
                 try {
                     connection.close();
