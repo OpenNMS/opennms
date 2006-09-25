@@ -158,7 +158,7 @@ public class TemporaryDatabaseTestCase extends TestCase {
          * doesn't seem to notice immediately clients have disconnected. Yeah,
          * it's a hack.
          */
-        Thread.sleep(100);
+        Thread.sleep(500);
 
         Connection adminConnection = getAdminConnection();
 
@@ -172,7 +172,7 @@ public class TemporaryDatabaseTestCase extends TestCase {
          * Sleep after disconnecting from template1, otherwise creating
          * a new test database in future tests may fail. Man, I hate this.
          */
-        Thread.sleep(100);
+        Thread.sleep(500);
     }
 
     public void executeSQL(String command) {
