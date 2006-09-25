@@ -10,6 +10,7 @@
 //
 // Modifications:
 //
+// 2006 Sep 25: fix for bug 1651
 // 2006 Aug 24: Better error messages and allow config to be passed in via an
 //              InputStream. - dj@opennms.org
 // 2005 Oct 02: Use File.separator to join file path components instead of "/". -- DJ Gregor
@@ -530,9 +531,7 @@ public class PerformanceModel extends GraphModelAbstract {
             List requiredList = Arrays.asList(query.getColumns());
 
             if (availDataSourceList.containsAll(requiredList)) {
-                if (query.getExternalValues().length == 0) {
-                    returnList.add(query);
-                }
+                returnList.add(query);
             }
         }
 
