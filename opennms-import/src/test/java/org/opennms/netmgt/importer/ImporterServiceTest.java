@@ -46,6 +46,9 @@ public class ImporterServiceTest extends TestCase {
     protected void setUp() throws Exception {
         super.setUp();
         
+        // set opennms.home to the src dir so it finds the model-importer.properties
+        System.setProperty("opennms.home", "src/test/opennms-home");
+
         EventdConfigFactory.init();
         
         EventIpcManager ipcMgr = new EventIpcManagerDefaultImpl(EventdConfigFactory.getInstance());
@@ -58,8 +61,6 @@ public class ImporterServiceTest extends TestCase {
     
     
     public void testSchedule() throws Exception {
-        // set opennms.home to the src dir so it finds the model-importer.properties
-        System.setProperty("opennms.home", "src/test/opennms-home");
         ImporterServiceMBean mbean = new ImporterService();
         mbean.init();
         mbean.start();
