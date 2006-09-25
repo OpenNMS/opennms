@@ -55,6 +55,14 @@ public class SnmpPeerFactoryTest extends OpenNMSTestCase {
         
     }
     
+    public void testDefaultMaxRequestSize() throws UnknownHostException {
+        SnmpAgentConfig agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName("10.0.0.1"));
+        assertEquals(SnmpAgentConfig.DEFAULT_MAX_REQUEST_SIZE, agentConfig.getMaxRequestSize());
+        
+        agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName("10.0.0.2"));
+        assertEquals(434, agentConfig.getMaxRequestSize());
+    }
+    
     public void testDefaultMaxVarsPerPdu() throws UnknownHostException {
         SnmpAgentConfig agentConfig = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName(myLocalHost()));
         assertEquals(10, agentConfig.getMaxVarsPerPdu());
