@@ -96,12 +96,6 @@ public class IfSnmpCollectorTest extends OpenNMSTestCase {
                                                      SnmpAgentConfig.VERSION3));
         suite.addTest(joeSuite);
 
-        /*
-         * FIXME A large number of the SNMP4j tests break on 64 bit systems
-         * with broken Net-SNMP, in particular the Net-SNMP that ships with
-         * CentOS 4.2, net-snmp-5.1.2-11.EL4.6
-         */
-        /*
         TestSuite snmp4jSuite = new PropertySettingTestSuite("SNMP4J Tests",
                                                              "org.opennms.snmp.strategyClass",
                                                              "org.opennms.netmgt.snmp.snmp4j.Snmp4JStrategy");
@@ -115,7 +109,6 @@ public class IfSnmpCollectorTest extends OpenNMSTestCase {
                                                         "SNMPv3 Tests",
                                                         SnmpAgentConfig.VERSION3));
         suite.addTest(snmp4jSuite);
-        */
 
         return suite;
     }
