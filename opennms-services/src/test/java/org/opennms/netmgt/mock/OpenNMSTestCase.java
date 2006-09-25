@@ -1316,6 +1316,10 @@ public class OpenNMSTestCase extends TestCase {
                 "       <specific>10.0.0.1</specific>\n" +
                 "   </definition>\n" + 
                 "\n" + 
+                "   <definition version=\"v1\" read-community=\"specificv1\" max-request-size=\"434\">\n" + 
+                "       <specific>10.0.0.2</specific>\n" +
+                "   </definition>\n" + 
+                "\n" + 
                 "   <definition version=\"v3\" " +
                 "       security-name=\"opennmsUser\" \n" + 
                 "       auth-passphrase=\"0p3nNMSv3\" >\n" +
