@@ -31,7 +31,6 @@
 //
 package org.opennms.netmgt.model;
 
-import java.io.Serializable;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -48,7 +47,6 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
-import javax.persistence.Transient;
 
 import org.springframework.core.style.ToStringCreator;
 
@@ -96,9 +94,17 @@ public class OnmsNotification {
     private Set<OnmsUserNotification> m_usersNotified = new HashSet<OnmsUserNotification>();
 
 	private String m_ipAddress;
+    
+    /**
+     * persistent field representing the name of the configured notification from
+     * notifications.xml
+     */
+    private String m_notifConfigName;
 
     /** full constructor */
-    public OnmsNotification(Integer notifyId, String textMsg, String subject, String numericMsg, Date pageTime, Date respondTime, String answeredBy, String ipAddress, OnmsServiceType serviceType, String queueId, OnmsEvent event, OnmsNode node, Set<OnmsUserNotification> usersNotified) {
+    public OnmsNotification(Integer notifyId, String textMsg, String subject, String numericMsg, 
+            Date pageTime, Date respondTime, String answeredBy, String ipAddress, OnmsServiceType serviceType, 
+            String queueId, OnmsEvent event, OnmsNode node, Set<OnmsUserNotification> usersNotified, String notifConfigName) {
         m_notifyId = notifyId;
         m_textMsg = textMsg;
         m_subject = subject;
@@ -112,6 +118,7 @@ public class OnmsNotification {
         m_event = event;
         m_node = node;
         m_usersNotified = usersNotified;
+        m_notifConfigName = notifConfigName;
     }
 
     /** default constructor */
@@ -281,6 +288,15 @@ public class OnmsNotification {
         return new ToStringCreator(this)
             .append("notifyid", getNotifyId())
             .toString();
+    }
+
+    public String getNotifConfigName() {
+        return m_notifConfigName;
+    }
+
+    @Column(name="notifConfigName", length=63 )
+    public void setNotifConfigName(String notifConfigName) {
+        m_notifConfigName = notifConfigName;
     }
 
 }
