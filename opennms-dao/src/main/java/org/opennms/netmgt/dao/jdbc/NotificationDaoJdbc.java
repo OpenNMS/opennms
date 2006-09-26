@@ -63,9 +63,10 @@ public class NotificationDaoJdbc extends AbstractDaoJdbc implements Notification
             "queueID, " +
             "eventID, " +
             "eventUEI, " +
+            "notifConfigName, " +
             "notifyID" +
             ") values " +
-            "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            "(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         
         public Save(DataSource ds) {
@@ -97,6 +98,7 @@ public class NotificationDaoJdbc extends AbstractDaoJdbc implements Notification
             "queueID = ?, " +
             "eventID = ?, " +
             "eventUEI = ? " +
+            "notifConfigName" +
             "where nodeID = ?";
 
         public Update(DataSource ds) {

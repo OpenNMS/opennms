@@ -59,6 +59,7 @@ public class NotificationMappingQuery extends MappingSqlQuery {
              "n.serviceID as serviceID, " +
              "n.queueID as queueID, " +
              "n.eventID as eventID, " +
+             "n.notifConfigName as notifConfigName, " +
              "n.notifyID as notifyID " + clause);
     }
     
@@ -79,6 +80,7 @@ public class NotificationMappingQuery extends MappingSqlQuery {
         notification.setRespondTime(rs.getTimestamp("respondTime"));
         notification.setAnsweredBy(rs.getString("answeredBy"));
         notification.setQueueId(rs.getString("queueID"));
+        notification.setNotifConfigName(rs.getString("notifConfigName"));
         
         Integer nodeId = new Integer(rs.getInt("nodeID"));
         OnmsNode node = (OnmsNode)Cache.obtain(OnmsNode.class, nodeId);

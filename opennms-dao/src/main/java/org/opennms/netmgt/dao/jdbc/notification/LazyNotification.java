@@ -150,6 +150,12 @@ public class LazyNotification extends OnmsNotification {
         load();
         return super.getUsersNotified();
     }
+    
+    @Override
+    public String getNotifConfigName() {
+        load();
+        return super.getNotifConfigName();
+    }
 
     @Override
     public void setAnsweredBy(String answeredby) {
@@ -234,5 +240,13 @@ public class LazyNotification extends OnmsNotification {
 		setDirty(true);
 		super.setUsersNotified(usersnotifieds);
     }
+
+    @Override
+    public void setNotifConfigName(String notifConfigName) {
+        load();
+        setDirty(true);
+        super.setNotifConfigName(notifConfigName);
+    }
+    
 
 }
