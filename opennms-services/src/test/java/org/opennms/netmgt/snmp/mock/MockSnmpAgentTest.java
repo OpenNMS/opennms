@@ -1,6 +1,5 @@
 package org.opennms.netmgt.snmp.mock;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
 
@@ -19,6 +18,7 @@ import org.snmp4j.smi.OctetString;
 import org.snmp4j.smi.UdpAddress;
 import org.snmp4j.smi.VariableBinding;
 import org.snmp4j.transport.DefaultUdpTransportMapping;
+import org.springframework.core.io.ClassPathResource;
 
 public class MockSnmpAgentTest extends TestCase {
 	
@@ -31,7 +31,7 @@ public class MockSnmpAgentTest extends TestCase {
 		MockLogAppender.setupLogging();
 
 		agt = MockSnmpAgent.createAgentAndRun(
-				new File("target/test-classes/org/opennms/netmgt/snmp/mock/loadSnmpDataTest.properties"),
+				new ClassPathResource("org/opennms/netmgt/snmp/mock/loadSnmpDataTest.properties"),
 				"127.0.0.1/1691");	// Homage to Empire
 	}
 	

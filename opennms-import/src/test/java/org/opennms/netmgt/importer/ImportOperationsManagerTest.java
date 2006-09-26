@@ -34,8 +34,6 @@
 package org.opennms.netmgt.importer;
 
 import java.io.IOException;
-import java.io.Reader;
-import java.io.StringReader;
 import java.util.Collection;
 import java.util.Map;
 
@@ -49,6 +47,7 @@ import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsServiceType;
+import org.opennms.netmgt.snmp.mock.MockSnmpAgent;
 import org.opennms.test.mock.MockLogAppender;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
@@ -59,10 +58,20 @@ import org.springframework.transaction.support.TransactionCallback;
 //public class ImportOperationsManagerTest extends AbstractMockTestCase {
 public class ImportOperationsManagerTest extends AbstractDaoTestCase {
     
+    MockSnmpAgent m_agent;
+    
     @Override
     protected void setUp() throws Exception {
+        System.setProperty("opennms.home", "src/test/opennms-home");
+
         MockLogAppender.setupLogging();
         setRunTestsInTransaction(false);
+        
+        
+        m_agent = MockSnmpAgent.createAgentAndRun(new ClassPathResource("org/opennms/netmgt/snmp/snmpTestData1.properties"), "127.0.0.1/1691");
+
+        SnmpPeerFactory.init();
+
         super.setUp();
     }
     
@@ -75,7 +84,11 @@ public class ImportOperationsManagerTest extends AbstractDaoTestCase {
 
     @Override
     protected void tearDown() throws Exception {
-        super.tearDown();
+        try {
+            super.tearDown();
+        } finally {
+            m_agent.shutDownAndWait();
+        }
     }
     
     protected ModelImporter getModelImporter() {
@@ -176,21 +189,13 @@ public class ImportOperationsManagerTest extends AbstractDaoTestCase {
     
     public void testChangeIpAddr() throws Exception {
         
-        Reader rdr = new StringReader("<?xml version=\"1.0\"?>\n" + 
-                "<snmp-config port=\"161\" retry=\"0\" timeout=\"2000\"\n" + 
-                "             read-community=\"public\" \n" + 
-                "                 version=\"v1\">\n" + 
-                "\n" + 
-                "</snmp-config>");
         
-        SnmpPeerFactory.setInstance(new SnmpPeerFactory(rdr));
+        testImportFromSpecFile(new ClassPathResource("/tec_dump.xml"), 1, 1);
+        assertEquals(1, getIpInterfaceDao().findByIpAddress("172.20.1.204").size());
         
-        testImportFromSpecFile(new ClassPathResource("/tec_dump.xml"));
-        assertEquals(1, getIpInterfaceDao().findByIpAddress("172.20.1.171").size());
+        testImportFromSpecFile(new ClassPathResource("/tec_dumpIpAddrChanged.xml"), 1, 1);
         
-        testImportFromSpecFile(new ClassPathResource("/tec_dumpIpAddrChanged.xml"));
-        
-        assertEquals(0, getIpInterfaceDao().findByIpAddress("192.168.0.102").size());
+        assertEquals(0, getIpInterfaceDao().findByIpAddress("172.20.1.204").size());
         
         flush();
 
@@ -198,17 +203,9 @@ public class ImportOperationsManagerTest extends AbstractDaoTestCase {
 
     public void testImportToOperationsMgr() throws Exception {
         
-        Reader rdr = new StringReader("<?xml version=\"1.0\"?>\n" + 
-                "<snmp-config port=\"161\" retry=\"0\" timeout=\"5000\"\n" + 
-                "             read-community=\"public\" \n" + 
-                "                 version=\"v1\">\n" + 
-                "\n" + 
-                "</snmp-config>");
-        
-        SnmpPeerFactory.setInstance(new SnmpPeerFactory(rdr));
         testDoubleImport(new ClassPathResource("/tec_dump.xml"));
         
-        Collection c = getIpInterfaceDao().findByIpAddress("172.20.1.171");
+        Collection c = getIpInterfaceDao().findByIpAddress("172.20.1.201");
         assertEquals(1, c.size());
         
         flush();
@@ -240,6 +237,10 @@ public class ImportOperationsManagerTest extends AbstractDaoTestCase {
 	}
 
     private void testImportFromSpecFile(Resource specFileResource) throws IOException, ModelImportException {
+        testImportFromSpecFile(specFileResource, 4, 50);
+    }
+    
+    private void testImportFromSpecFile(Resource specFileResource, int writeThreads, int scanThreads) throws IOException, ModelImportException {
         expectServiceTypeCreate("HTTP");
         final SpecFile specFile = new SpecFile();
         specFile.loadResource(specFileResource);
@@ -251,6 +252,8 @@ public class ImportOperationsManagerTest extends AbstractDaoTestCase {
         });
         
         final ImportOperationsManager opsMgr = new ImportOperationsManager(assetNumbers, getModelImporter());
+        opsMgr.setWriteThreads(writeThreads);
+        opsMgr.setScanThreads(scanThreads);
         opsMgr.setForeignSource(specFile.getForeignSource());
         
         m_transTemplate.execute(new TransactionCallback() {

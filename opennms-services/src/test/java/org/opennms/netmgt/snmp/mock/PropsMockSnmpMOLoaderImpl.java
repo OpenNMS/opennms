@@ -1,12 +1,18 @@
 package org.opennms.netmgt.snmp.mock;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Properties;
 
+import org.opennms.netmgt.snmp.SnmpValue;
+import org.opennms.netmgt.snmp.mock.TestSnmpValue.HexStringSnmpValue;
+import org.opennms.netmgt.snmp.mock.TestSnmpValue.IpAddressSnmpValue;
+import org.opennms.netmgt.snmp.mock.TestSnmpValue.NetworkAddressSnmpValue;
+import org.opennms.netmgt.snmp.mock.TestSnmpValue.NumberSnmpValue;
+import org.opennms.netmgt.snmp.mock.TestSnmpValue.OidSnmpValue;
+import org.opennms.netmgt.snmp.mock.TestSnmpValue.StringSnmpValue;
+import org.opennms.netmgt.snmp.mock.TestSnmpValue.TimeticksSnmpValue;
 import org.snmp4j.agent.ManagedObject;
 import org.snmp4j.agent.mo.MOAccessImpl;
 import org.snmp4j.agent.mo.MOScalar;
@@ -14,16 +20,19 @@ import org.snmp4j.smi.Counter32;
 import org.snmp4j.smi.Counter64;
 import org.snmp4j.smi.Gauge32;
 import org.snmp4j.smi.Integer32;
+import org.snmp4j.smi.IpAddress;
+import org.snmp4j.smi.Null;
 import org.snmp4j.smi.OID;
 import org.snmp4j.smi.OctetString;
 import org.snmp4j.smi.TimeTicks;
 import org.snmp4j.smi.Variable;
+import org.springframework.core.io.Resource;
 
 public class PropsMockSnmpMOLoaderImpl implements MockSnmpMOLoader {
 
-	private File m_moFile;
+	private Resource m_moFile;
 	
-	public PropsMockSnmpMOLoaderImpl(File myMoFile) {
+	public PropsMockSnmpMOLoaderImpl(Resource myMoFile) {
 		m_moFile = myMoFile;
 	}
 	
@@ -32,7 +41,7 @@ public class PropsMockSnmpMOLoaderImpl implements MockSnmpMOLoader {
 		ArrayList<ManagedObject> moList = new ArrayList<ManagedObject>();
 		
 		try {
-			moProps.load( new FileInputStream(m_moFile) );
+			moProps.load( m_moFile.getInputStream() );
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			return null;
@@ -48,37 +57,51 @@ public class PropsMockSnmpMOLoaderImpl implements MockSnmpMOLoader {
 	}
 	
 	protected static ManagedObject getMOFromPropString(String oidStr, String valStr) {
-		OID moOID = new OID(oidStr);
-		String moTypeStr = valStr.substring(0, valStr.indexOf(":"));
-		String moValStr = valStr.substring(valStr.indexOf(":") + 2);
-		ManagedObject newMO;
-		Variable newVar;
-		try {
-		if (moTypeStr.equals("STRING")) {
-			newVar = new OctetString(moValStr);
-		} else if (moTypeStr.equals("Hex-STRING")) {
-			newVar = OctetString.fromHexString(moValStr.trim());
-		} else if (moTypeStr.equals("INTEGER")) {
-			newVar = new Integer32(Integer.parseInt(moValStr));
-		} else if (moTypeStr.equals("Gauge32")) {
-			newVar = new Gauge32(Integer.parseInt(moValStr));
-		} else if (moTypeStr.equals("Counter32")) {
-			newVar = new Counter32(Long.parseLong(moValStr)); // a 32 bit counter can be > 2 ^ 31, which is > INTEGER_MAX
-		} else if (moTypeStr.equals("Counter64")) {
-			newVar = new Counter64(Long.parseLong(moValStr));
-		} else if (moTypeStr.equals("TimeTicks")) {
-			Integer ticksInt = Integer.parseInt( moValStr.substring( moValStr.indexOf("(") + 1, moValStr.indexOf(")") ) );
-			newVar = new TimeTicks(ticksInt);
-		} else if (moTypeStr.equals("OID")) {
-			newVar = new OID(moValStr);
-		} else {
-			// Punt, assume it's a String
-			newVar = new OctetString(moValStr);
-		}
-		} catch (Throwable t) {
-			throw new UndeclaredThrowableException(t, "Could not convert value '" + moValStr + "' of type '" + moTypeStr + "' to SNMP object for OID " + oidStr);
-		}
-		newMO = new MOScalar(moOID, MOAccessImpl.ACCESS_READ_ONLY, newVar);
-		return newMO;
+	    OID moOID = new OID(oidStr);
+
+	    ManagedObject newMO;
+	    Variable newVar;
+
+	    if ("\"\"".equals(valStr)) {
+	        newVar = new Null();
+	    }
+	    else {
+	        String moTypeStr = valStr.substring(0, valStr.indexOf(":"));
+	        String moValStr = valStr.substring(valStr.indexOf(":") + 2);
+
+	        try {
+
+	            if (moTypeStr.equals("STRING")) {
+	                newVar = new OctetString(moValStr);
+	            } else if (moTypeStr.equals("Hex-STRING")) {
+	                newVar = OctetString.fromHexString(moValStr.trim().replace(' ', ':'));
+	            } else if (moTypeStr.equals("INTEGER")) {
+	                newVar = new Integer32(Integer.parseInt(moValStr));
+	            } else if (moTypeStr.equals("Gauge32")) {
+	                newVar = new Gauge32(Integer.parseInt(moValStr));
+	            } else if (moTypeStr.equals("Counter32")) {
+	                newVar = new Counter32(Long.parseLong(moValStr)); // a 32 bit counter can be > 2 ^ 31, which is > INTEGER_MAX
+	            } else if (moTypeStr.equals("Counter64")) {
+	                newVar = new Counter64(Long.parseLong(moValStr));
+	            } else if (moTypeStr.equals("Timeticks")) {
+	                Integer ticksInt = Integer.parseInt( moValStr.substring( moValStr.indexOf("(") + 1, moValStr.indexOf(")") ) );
+	                newVar = new TimeTicks(ticksInt);
+	            } else if (moTypeStr.equals("OID")) {
+	                newVar = new OID(moValStr);
+                } else if (moTypeStr.equals("IpAddress")) {
+                    newVar = new IpAddress(moValStr.trim());
+                } else if (moTypeStr.equals("Network Address")) {
+                    newVar = OctetString.fromHexString(moValStr.trim());
+	            } else {
+	                // Punt, assume it's a String
+	                //newVar = new OctetString(moValStr);
+                    throw new IllegalArgumentException("Unrecognized Snmp Type "+moTypeStr);
+	            }
+	        } catch (Throwable t) {
+	            throw new UndeclaredThrowableException(t, "Could not convert value '" + moValStr + "' of type '" + moTypeStr + "' to SNMP object for OID " + oidStr);
+	        }
+	    }
+	    newMO = new MOScalar(moOID, MOAccessImpl.ACCESS_READ_ONLY, newVar);
+	    return newMO;
 	}
 }

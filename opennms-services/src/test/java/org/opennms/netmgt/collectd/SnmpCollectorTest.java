@@ -27,6 +27,8 @@ import org.opennms.netmgt.snmp.mock.MockSnmpAgent;
 import org.opennms.test.ConfigurationTestUtils;
 import org.opennms.test.mock.MockLogAppender;
 import org.opennms.test.mock.MockUtil;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
 
 import junit.framework.TestCase;
 
@@ -204,7 +206,7 @@ public class SnmpCollectorTest extends TestCase {
     }
 
     private void initializeAgent(String testData) throws InterruptedException {
-        m_agent = MockSnmpAgent.createAgentAndRun(new File(testData),
+        m_agent = MockSnmpAgent.createAgentAndRun(new FileSystemResource(testData),
                                                   "127.0.0.1/1691");
     }
 
