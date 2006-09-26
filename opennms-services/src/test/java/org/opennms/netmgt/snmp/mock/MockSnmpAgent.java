@@ -37,6 +37,7 @@ import org.snmp4j.smi.UdpAddress;
 import org.snmp4j.smi.Variable;
 import org.snmp4j.transport.DefaultUdpTransportMapping;
 import org.snmp4j.util.ThreadPool;
+import org.springframework.core.io.Resource;
 
 /*
  * The <code>MockSnmpAgent</code> class extends the SNMP4J BaseAgent
@@ -55,7 +56,7 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
 	}
 
 	protected String m_address;
-	private File m_moFile;
+	private Resource m_moFile;
 	private boolean m_running;
 	private boolean m_stopped;
 
@@ -74,7 +75,7 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
 	 * 		expects a Java properties file, which can conveniently be generated using the Net-SNMP
 	 * 		utility <code>snmpwalk</code> with the <code>-One</code> option set.
 	 */
-	public MockSnmpAgent(File bootFile, File confFile, File moFile, String bindAddress) {
+	public MockSnmpAgent(File bootFile, File confFile, Resource moFile, String bindAddress) {
 		super(bootFile, confFile,
 				new CommandProcessor(new OctetString(MPv3.createLocalEngineID())));
 		m_address = bindAddress;
@@ -82,7 +83,7 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
 		agent.setThreadPool(ThreadPool.create("RequestPool", 4));
 	}
 	
-	public static MockSnmpAgent createAgentAndRun(File moFile, String bindAddress) throws InterruptedException {
+	public static MockSnmpAgent createAgentAndRun(Resource moFile, String bindAddress) throws InterruptedException {
 		MockSnmpAgent agent = new MockSnmpAgent(new File("/dev/null"), new File("/dev/null"), moFile, bindAddress);
 		Thread thread = new Thread(agent);
 		thread.start();

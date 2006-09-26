@@ -33,11 +33,7 @@ package org.opennms.netmgt.importer;
 
 import junit.framework.TestCase;
 
-import org.opennms.netmgt.config.EventdConfigFactory;
-import org.opennms.netmgt.config.EventdConfigManager;
 import org.opennms.netmgt.config.SnmpPeerFactory;
-import org.opennms.netmgt.eventd.EventIpcManager;
-import org.opennms.netmgt.eventd.EventIpcManagerDefaultImpl;
 import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 import org.opennms.netmgt.importer.jmx.ImporterService;
 import org.opennms.netmgt.importer.jmx.ImporterServiceMBean;

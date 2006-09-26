@@ -10,13 +10,13 @@
 		<this:category name="AC"/>
 		<this:category name="UK"/>
 		<this:category name="low"/>
-		<this:interface ip-addr="172.20.1.171" status="1" snmp-primary="S" descr="VPN interface">
-			<this:monitored-service service-name="ICMP"/>
-			<this:monitored-service service-name="SNMP"/>
-		</this:interface>
-		<this:interface ip-addr="172.20.1.170" status="1" snmp-primary="P" descr="Management interface">
+		<this:interface ip-addr="172.20.1.204" status="1" snmp-primary="S" descr="VPN interface">
 			<this:monitored-service service-name="ICMP"/>
 			<this:monitored-service service-name="HTTP"/>
+		</this:interface>
+		<this:interface ip-addr="172.20.1.201" status="1" snmp-primary="P" descr="Management interface">
+			<this:monitored-service service-name="ICMP"/>
+			<this:monitored-service service-name="SNMP"/>
 		</this:interface>
 	</this:node>
 </this:model-import>

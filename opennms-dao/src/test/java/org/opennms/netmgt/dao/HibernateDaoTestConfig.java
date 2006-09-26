@@ -58,7 +58,6 @@ import org.opennms.netmgt.dao.hibernate.OutageDaoHibernate;
 import org.opennms.netmgt.dao.hibernate.ServiceTypeDaoHibernate;
 import org.opennms.netmgt.dao.hibernate.SnmpInterfaceDaoHibernate;
 import org.opennms.netmgt.dao.hibernate.UserNotificationDaoHibernate;
-import org.opennms.netmgt.dao.jdbc.Cache;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsAssetRecord;
 import org.opennms.netmgt.model.OnmsCategory;
@@ -72,8 +71,6 @@ import org.opennms.netmgt.model.OnmsOutage;
 import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.OnmsUserNotification;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
 import org.springframework.orm.hibernate3.HibernateTransactionManager;
 import org.springframework.orm.hibernate3.LocalSessionFactoryBean;
 import org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean;
@@ -153,7 +150,7 @@ public class HibernateDaoTestConfig extends DaoTestConfig {
         getLsfb().setDataSource(m_dataSource);
         Properties props = new Properties();
         props.put("hibernate.dialect", db.getHibernateDialect());
-        props.put("hibernate.show_sql", "true");
+        props.put("hibernate.show_sql", System.getProperty("hibernate.show_sql", "false"));
 
         //c3p0 settings
         props.put("hibernate.c3p0.min_size", "1");
@@ -222,10 +219,6 @@ public class HibernateDaoTestConfig extends DaoTestConfig {
            }
         }
         
-        // initialize the JDBC DAOs until we get them all converted
-        Cache.registerFactories(m_dataSource);
-
-    
         HibernateTransactionManager m_transMgr = new HibernateTransactionManager();
         m_transMgr.setSessionFactory(getFactory());
         m_transMgr.afterPropertiesSet();
