@@ -855,6 +855,7 @@ create table notifications (
        queueID		varchar(256),
        eventID      integer,
        eventUEI     varchar(256) not null,
+       notifConfigName	varchar(63),
 
        constraint pk_notifyID primary key (notifyID),
        constraint fk_nodeID7 foreign key (nodeID) references node (nodeID) ON DELETE CASCADE,
