@@ -165,8 +165,6 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
 
     private String m_ipAddress;
     
-    private Integer m_ifIndex;
-
     private String m_ipHostName;
 
     private String m_isManaged;

@@ -460,4 +460,14 @@ public class OnmsNode extends OnmsEntity implements Serializable {
         return down;
     }
 
+    @Transient
+    public OnmsSnmpInterface getSnmpInterfaceWithIfIndex(int ifIndex) {
+        for (OnmsSnmpInterface dbSnmpIface : getSnmpInterfaces()) {
+            if (dbSnmpIface.getIfIndex().equals(ifIndex)) {
+                return dbSnmpIface;
+            }
+        }
+        return null;
+    }
+
 }

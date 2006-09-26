@@ -61,8 +61,8 @@ public abstract class AbstractSaveOrUpdateOperation extends AbstractImportOperat
     private OnmsIpInterface m_currentInterface;
     private ServiceTypeDao m_svcTypeDao;
     private CategoryDao m_categoryDao;
-    private ThreadLocal m_types;
-    private ThreadLocal m_categories;
+    private ThreadLocal<HashMap<String, OnmsServiceType>> m_types;
+    private ThreadLocal<HashMap<String, OnmsCategory>> m_categories;
     
     private IfSnmpCollector m_collector;
 
@@ -223,7 +223,7 @@ public abstract class AbstractSaveOrUpdateOperation extends AbstractImportOperat
 
     private OnmsServiceType getServiceType(String serviceName) {
         preloadExistingTypes();
-        OnmsServiceType type = (OnmsServiceType)getTypes().get(serviceName);
+        OnmsServiceType type = getTypes().get(serviceName);
         if (type == null) {
             type = m_svcTypeDao.findByName(serviceName);
             
@@ -240,9 +240,9 @@ public abstract class AbstractSaveOrUpdateOperation extends AbstractImportOperat
     private void preloadExistingTypes() {
         
         if (getTypes() == null) {
-            setTypes(new HashMap());
-            for (Iterator it = m_svcTypeDao.findAll().iterator(); it.hasNext();) {
-                OnmsServiceType svcType = (OnmsServiceType) it.next();
+            setTypes(new HashMap<String, OnmsServiceType>());
+            for (Iterator<OnmsServiceType> it = m_svcTypeDao.findAll().iterator(); it.hasNext();) {
+                OnmsServiceType svcType = it.next();
                 getTypes().put(svcType.getName(), svcType);
             }
         }
@@ -250,9 +250,9 @@ public abstract class AbstractSaveOrUpdateOperation extends AbstractImportOperat
     
     private void preloadExistingCategories() {
         if (getCategories() == null) {
-            setCategories(new HashMap());
-            for(Iterator it = m_categoryDao.findAll().iterator(); it.hasNext();) {
-                OnmsCategory category = (OnmsCategory) it.next();
+            setCategories(new HashMap<String, OnmsCategory>());
+            for(Iterator<OnmsCategory> it = m_categoryDao.findAll().iterator(); it.hasNext();) {
+                OnmsCategory category = it.next();
                 getCategories().put(category.getName(), category);
             }
         }
@@ -286,29 +286,28 @@ public abstract class AbstractSaveOrUpdateOperation extends AbstractImportOperat
 
     }
 
-    protected Map getIpAddrToInterfaceMap(OnmsNode imported) {
-        Map ipAddrToIface = new HashMap();
-        for (Iterator it = imported.getIpInterfaces().iterator(); it.hasNext();) {
-            OnmsIpInterface iface = (OnmsIpInterface) it.next();
+    protected Map<String, OnmsIpInterface> getIpAddrToInterfaceMap(OnmsNode imported) {
+        Map<String, OnmsIpInterface> ipAddrToIface = new HashMap<String, OnmsIpInterface>();
+        for (OnmsIpInterface iface : imported.getIpInterfaces()) {
             ipAddrToIface.put(iface.getIpAddress(), iface);
         }
         return ipAddrToIface;
     }
 
-    private HashMap getTypes() {
-        return (HashMap)m_types.get();
+    private HashMap<String, OnmsServiceType> getTypes() {
+        return m_types.get();
     }
 
-    private void setTypes(HashMap types) {
+    private void setTypes(HashMap<String, OnmsServiceType> types) {
         m_types.set(types);
     }
 
-    private void setCategories(HashMap types) {
-        m_categories.set(types);
+    private void setCategories(HashMap<String, OnmsCategory> categories) {
+        m_categories.set(categories);
     }
 
-    private HashMap getCategories() {
-        return (HashMap)m_categories.get();
+    private HashMap<String, OnmsCategory> getCategories() {
+        return m_categories.get();
     }
 
     public CategoryDao getCategoryDao() {
@@ -331,11 +330,11 @@ public abstract class AbstractSaveOrUpdateOperation extends AbstractImportOperat
         m_distPollerDao = distPollerDao;
     }
     
-    public void setTypeCache(ThreadLocal typeCache) {
+    public void setTypeCache(ThreadLocal<HashMap<String, OnmsServiceType>> typeCache) {
         m_types = typeCache;
     }
     
-    public void setCategoryCache(ThreadLocal categoryCache) {
+    public void setCategoryCache(ThreadLocal<HashMap<String, OnmsCategory>> categoryCache) {
         m_categories = categoryCache;
     }
 
