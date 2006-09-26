@@ -38,11 +38,14 @@ import org.opennms.netmgt.eventd.EventIpcManagerFactory;
 import org.opennms.netmgt.importer.jmx.ImporterService;
 import org.opennms.netmgt.importer.jmx.ImporterServiceMBean;
 import org.opennms.netmgt.mock.MockEventIpcManager;
+import org.opennms.test.mock.MockLogAppender;
 
 public class ImporterServiceTest extends TestCase {
 
     protected void setUp() throws Exception {
         super.setUp();
+        
+        MockLogAppender.setupLogging();
         
         // set opennms.home to the src dir so it finds the model-importer.properties
         System.setProperty("opennms.home", "src/test/opennms-home");
