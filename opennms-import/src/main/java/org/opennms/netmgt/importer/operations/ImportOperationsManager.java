@@ -246,14 +246,15 @@ public class ImportOperationsManager {
 		m_stats.finishPreprocessing(oper);
 	}
 
-	protected void persistOperation(final ImportOperation oper, TransactionTemplate template, OnmsDao dao) {
+	protected void persistOperation(final ImportOperation oper, TransactionTemplate template, final OnmsDao dao) {
 		m_stats.beginPersisting(oper);
 		log().info("Persist: "+oper);
 
 		// now persiste the changes to the database
 		List events = (List)template.execute(new TransactionCallback() {
 			public Object doInTransaction(TransactionStatus status) {
-				return oper.persist();
+				List result = oper.persist();
+                return result;
 			}
 		});
 		

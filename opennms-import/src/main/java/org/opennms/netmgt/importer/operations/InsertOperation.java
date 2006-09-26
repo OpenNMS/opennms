@@ -55,7 +55,7 @@ public class InsertOperation extends AbstractSaveOrUpdateOperation {
     	EntityVisitor eventAccumlator = new AddEventVisitor(events);
 
     	getNode().visit(eventAccumlator);
-
+        
     	return events;
     }
 

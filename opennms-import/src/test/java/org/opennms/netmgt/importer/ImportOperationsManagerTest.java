@@ -195,7 +195,8 @@ public class ImportOperationsManagerTest extends AbstractDaoTestCase {
         
         testImportFromSpecFile(new ClassPathResource("/tec_dumpIpAddrChanged.xml"), 1, 1);
         
-        assertEquals(0, getIpInterfaceDao().findByIpAddress("172.20.1.204").size());
+        assertEquals("Failed to add new interface 172.20.1.202", 1, getIpInterfaceDao().findByIpAddress("172.20.1.202").size());
+        assertEquals("Failed to delete removed interface 172.20.1.204", 0, getIpInterfaceDao().findByIpAddress("172.20.1.204").size());
         
         flush();
 

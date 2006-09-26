@@ -44,6 +44,7 @@ import java.util.Set;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 
 public class UpdateOperation extends AbstractSaveOrUpdateOperation {
@@ -51,7 +52,7 @@ public class UpdateOperation extends AbstractSaveOrUpdateOperation {
     public class ServiceUpdater {
         
         private OnmsIpInterface m_iface;
-        Map m_svcTypToSvcMap;
+        Map<OnmsServiceType, OnmsMonitoredService> m_svcTypToSvcMap;
 
         public ServiceUpdater(OnmsIpInterface iface, OnmsIpInterface imported) {
             m_iface = iface;
@@ -60,7 +61,7 @@ public class UpdateOperation extends AbstractSaveOrUpdateOperation {
         }
 
         private void createSvcTypeToSvcMap(OnmsIpInterface imported) {
-            m_svcTypToSvcMap = new HashMap();
+            m_svcTypToSvcMap = new HashMap<OnmsServiceType, OnmsMonitoredService>();
             for (Iterator it = imported.getMonitoredServices().iterator(); it.hasNext();) {
                 OnmsMonitoredService svc = (OnmsMonitoredService) it.next();
                 m_svcTypToSvcMap.put(svc.getServiceType(), svc);
@@ -84,17 +85,16 @@ public class UpdateOperation extends AbstractSaveOrUpdateOperation {
         }
 
         private void addNewServices(List events) {
-            Collection newServices = getNewServices();
+            Collection<OnmsMonitoredService> newServices = getNewServices();
             System.err.println(getNode().getLabel()+" has "+newServices.size()+" new services.");
-            for (Iterator it = newServices.iterator(); it.hasNext();) {
-                OnmsMonitoredService svc = (OnmsMonitoredService) it.next();
+            for (OnmsMonitoredService svc : newServices) {
                 svc.setIpInterface(m_iface);
                 m_iface.getMonitoredServices().add(svc);
                 svc.visit(new AddEventVisitor(events));
             }
         }
 
-        private Collection getNewServices() {
+        private Collection<OnmsMonitoredService> getNewServices() {
             return m_svcTypToSvcMap.values();
         }
 
@@ -119,7 +119,7 @@ public class UpdateOperation extends AbstractSaveOrUpdateOperation {
     public class InterfaceUpdater {
         
         private OnmsNode m_node;
-        private Map m_ipAddrToImportIfs;
+        private Map<String, OnmsIpInterface> m_ipAddrToImportIfs;
 
         public InterfaceUpdater(OnmsNode node, OnmsNode imported) {
             m_node = node;
@@ -135,10 +135,6 @@ public class UpdateOperation extends AbstractSaveOrUpdateOperation {
                     it.remove();
                     iface.visit(new DeleteEventVisitor(events));
                     markAsProcessed(iface);
-                } else if (isSnmpDataForInterfacesUpToDate() && !nullSafeEquals(iface.getIfIndex(), imported.getIfIndex())) {
-                	// we just remove this here but let the imported version get added back
-                	// FIXME: for hibernate we don't need to do this since ifIndex won't be port of the key then
-                	it.remove();
                 } else {
                     update(imported, iface, events);
                     markAsProcessed(iface);
@@ -149,19 +145,20 @@ public class UpdateOperation extends AbstractSaveOrUpdateOperation {
         }
 
         private void addNewInterfaces(List events) {
-            for (Iterator it = getNewInterfaces().iterator(); it.hasNext();) {
-                OnmsIpInterface iface = (OnmsIpInterface) it.next();
-                iface.setNode(m_node);
-                m_node.getIpInterfaces().add(iface);
+            for (OnmsIpInterface iface : getNewInterfaces()) {
+                m_node.addIpInterface(iface);
+                if (iface.getIfIndex() != null) {
+                    iface.setSnmpInterface(m_node.getSnmpInterfaceWithIfIndex(iface.getIfIndex()));
+                }
                 iface.visit(new AddEventVisitor(events));
             }
         }
 
         private OnmsIpInterface getImportedVersion(OnmsIpInterface iface) {
-            return (OnmsIpInterface)m_ipAddrToImportIfs.get(iface.getIpAddress());
+            return m_ipAddrToImportIfs.get(iface.getIpAddress());
         }
 
-        private Collection getNewInterfaces() {
+        private Collection<OnmsIpInterface> getNewInterfaces() {
             return m_ipAddrToImportIfs.values();
         }
 
@@ -179,9 +176,7 @@ public class UpdateOperation extends AbstractSaveOrUpdateOperation {
             }
             
             if (isSnmpDataForInterfacesUpToDate()) {
-            	
             	updateSnmpInterface(imported, iface);
-            	
             }
             
            if (!nullSafeEquals(iface.getIpStatus(), imported.getIpStatus()))
@@ -194,75 +189,26 @@ public class UpdateOperation extends AbstractSaveOrUpdateOperation {
         }
 
 		private void updateSnmpInterface(OnmsIpInterface imported, OnmsIpInterface iface) {
-			OnmsSnmpInterface snmpIface = iface.getSnmpInterface();
-			OnmsSnmpInterface importedSnmpIface = imported.getSnmpInterface();
-				
-			// no imported snmp iface
-			if (imported == null) {
-				// WHAT DO WE DO HERE.. I think we just leave the snmp data 
-				return;
-			}
-			
-			
-			// no existing snmp iface
-			if (iface.getSnmpInterface() == null) {
-				OnmsNode node = iface.getNode();
-				// we found new snmp interface data
-				importedSnmpIface.setNode(node);
-				node.addSnmpInterface(importedSnmpIface);
-				iface.setSnmpInterface(importedSnmpIface);
-				
-				return;
-				
-			}
-			
-			if (!nullSafeEquals(snmpIface.getIfAdminStatus(), importedSnmpIface.getIfAdminStatus())) {
-				snmpIface.setIfAdminStatus(importedSnmpIface.getIfAdminStatus());
-			}
-			
-			if (!nullSafeEquals(snmpIface.getIfAlias(), importedSnmpIface.getIfAlias())) {
-				snmpIface.setIfAlias(importedSnmpIface.getIfAlias());
-			}
-			
-			
-			if (!nullSafeEquals(snmpIface.getIfDescr(), importedSnmpIface.getIfDescr())) {
-				snmpIface.setIfDescr(importedSnmpIface.getIfDescr());
-			}
-				
-			if (!nullSafeEquals(snmpIface.getIfIndex(), importedSnmpIface.getIfIndex())) {
-				snmpIface.setIfIndex(importedSnmpIface.getIfIndex());
-			}
-			
-			if (!nullSafeEquals(snmpIface.getIfName(), importedSnmpIface.getIfName())) {
-				snmpIface.setIfName(importedSnmpIface.getIfName());
-			}
-			
-			if (!nullSafeEquals(snmpIface.getIfOperStatus(), importedSnmpIface.getIfOperStatus())) {
-				snmpIface.setIfOperStatus(importedSnmpIface.getIfOperStatus());
-			}
-			
-			if (!nullSafeEquals(snmpIface.getIfSpeed(), importedSnmpIface.getIfSpeed())) {
-				snmpIface.setIfSpeed(importedSnmpIface.getIfSpeed());
-			}
-			
-			if (!nullSafeEquals(snmpIface.getIfType(), importedSnmpIface.getIfType())) {
-				snmpIface.setIfType(importedSnmpIface.getIfType());
-			}
 
-			if (!nullSafeEquals(snmpIface.getIpAddress(), importedSnmpIface.getIpAddress())) {
-				snmpIface.setIpAddress(importedSnmpIface.getIpAddress());
-			}
-			
-			if (!nullSafeEquals(snmpIface.getNetMask(), importedSnmpIface.getNetMask())) {
-				snmpIface.setNetMask(importedSnmpIface.getNetMask());
-			}
-			
-			if (!nullSafeEquals(snmpIface.getPhysAddr(), importedSnmpIface.getPhysAddr())) {
-				snmpIface.setPhysAddr(importedSnmpIface.getPhysAddr());
-			}
-			
+			if (nullSafeEquals(iface.getIfIndex(), imported.getIfIndex())) {
+                // no need to change anything
+                return;
+            }
+            
+            if (imported.getSnmpInterface() == null) {
+                // there is no longer an snmpInterface associated with the ipInterface
+                iface.setSnmpInterface(null);
+            } else {
+                // locate the snmpInterface on this node that has the new ifIndex and set it
+                // into the interface
+                OnmsSnmpInterface snmpIface = m_node.getSnmpInterfaceWithIfIndex(imported.getIfIndex());
+                iface.setSnmpInterface(snmpIface);
+            }
+            
+            
+            
 		}
-
+        
         private void updateServices(OnmsIpInterface iface, OnmsIpInterface imported, List events) {
             new ServiceUpdater(iface, imported).execute(events);
         }
@@ -272,6 +218,113 @@ public class UpdateOperation extends AbstractSaveOrUpdateOperation {
         }
 
     }
+    
+    public class SnmpInterfaceUpdater {
+        
+        OnmsNode m_dbNode;
+        Map<Integer, OnmsSnmpInterface> m_ifIndexToSnmpInterface;
+
+        public SnmpInterfaceUpdater(OnmsNode db, OnmsNode imported) {
+            m_dbNode = db;
+            m_ifIndexToSnmpInterface = mapIfIndexToSnmpInterface(imported.getSnmpInterfaces());
+        }
+
+        private Map<Integer, OnmsSnmpInterface> mapIfIndexToSnmpInterface(Set<OnmsSnmpInterface> snmpInterfaces) {
+            Map<Integer, OnmsSnmpInterface> map = new HashMap<Integer, OnmsSnmpInterface>();
+            for (OnmsSnmpInterface snmpIface : snmpInterfaces) {
+                if (snmpIface.getIfIndex() != null) {
+                    map.put(snmpIface.getIfIndex(), snmpIface);
+                }
+            }
+            return map;
+        }
+
+        public void execute() {
+            for (Iterator<OnmsSnmpInterface> it = getExistingInterfaces().iterator(); it.hasNext();) {
+                OnmsSnmpInterface iface = (OnmsSnmpInterface) it.next();
+                OnmsSnmpInterface imported = getImportedVersion(iface);
+
+                if (imported == null) {
+                    it.remove();
+                    markAsProcessed(iface);
+                } else {
+                    update(imported, iface);
+                    markAsProcessed(iface);
+                }
+
+            }
+            addNewInterfaces();
+        }
+        
+        private void update(OnmsSnmpInterface importedSnmpIface, OnmsSnmpInterface snmpIface) {
+            
+            if (!nullSafeEquals(snmpIface.getIfAdminStatus(), importedSnmpIface.getIfAdminStatus())) {
+                snmpIface.setIfAdminStatus(importedSnmpIface.getIfAdminStatus());
+            }
+            
+            if (!nullSafeEquals(snmpIface.getIfAlias(), importedSnmpIface.getIfAlias())) {
+                snmpIface.setIfAlias(importedSnmpIface.getIfAlias());
+            }
+            
+            if (!nullSafeEquals(snmpIface.getIfDescr(), importedSnmpIface.getIfDescr())) {
+                snmpIface.setIfDescr(importedSnmpIface.getIfDescr());
+            }
+                
+            if (!nullSafeEquals(snmpIface.getIfName(), importedSnmpIface.getIfName())) {
+                snmpIface.setIfName(importedSnmpIface.getIfName());
+            }
+            
+            if (!nullSafeEquals(snmpIface.getIfOperStatus(), importedSnmpIface.getIfOperStatus())) {
+                snmpIface.setIfOperStatus(importedSnmpIface.getIfOperStatus());
+            }
+            
+            if (!nullSafeEquals(snmpIface.getIfSpeed(), importedSnmpIface.getIfSpeed())) {
+                snmpIface.setIfSpeed(importedSnmpIface.getIfSpeed());
+            }
+            
+            if (!nullSafeEquals(snmpIface.getIfType(), importedSnmpIface.getIfType())) {
+                snmpIface.setIfType(importedSnmpIface.getIfType());
+            }
+
+            if (!nullSafeEquals(snmpIface.getIpAddress(), importedSnmpIface.getIpAddress())) {
+                snmpIface.setIpAddress(importedSnmpIface.getIpAddress());
+            }
+            
+            if (!nullSafeEquals(snmpIface.getNetMask(), importedSnmpIface.getNetMask())) {
+                snmpIface.setNetMask(importedSnmpIface.getNetMask());
+            }
+            
+            if (!nullSafeEquals(snmpIface.getPhysAddr(), importedSnmpIface.getPhysAddr())) {
+                snmpIface.setPhysAddr(importedSnmpIface.getPhysAddr());
+            }
+            
+        }
+
+        private void markAsProcessed(OnmsSnmpInterface iface) {
+            m_ifIndexToSnmpInterface.remove(iface.getIfIndex());
+        }
+
+        private OnmsSnmpInterface getImportedVersion(OnmsSnmpInterface iface) {
+            return m_ifIndexToSnmpInterface.get(iface.getIfIndex());
+        }
+
+        private Set<OnmsSnmpInterface> getExistingInterfaces() {
+            return m_dbNode.getSnmpInterfaces();
+       }
+        
+        private void addNewInterfaces() {
+            for (OnmsSnmpInterface snmpIface : getNewInterfaces()) {
+                m_dbNode.addSnmpInterface(snmpIface);
+            }
+        }
+
+        private Collection<OnmsSnmpInterface> getNewInterfaces() {
+            return m_ifIndexToSnmpInterface.values();
+        }
+
+
+    }
+
 
     public UpdateOperation(Integer nodeId, String foreignSource, String foreignId, String nodeLabel, String building, String city) {
 		super(nodeId, foreignSource, foreignId, nodeLabel, building, city);
@@ -313,20 +366,23 @@ public class UpdateOperation extends AbstractSaveOrUpdateOperation {
 			
 		}
 
-		updateInterfaces(db, imported, events);
+        if (isSnmpDataForInterfacesUpToDate())
+            updateSnmpInterfaces(db, imported);
+
+        updateInterfaces(db, imported, events);
 		updateCategories(db, imported);
 
-		if (isSnmpDataForInterfacesUpToDate())
-			updateSnmpInterfaces(db, imported);
-
 		getNodeDao().update(db);
+        
+        getNodeDao().flush();
+
 
 		return events;
 
 	}
 
     private void updateSnmpInterfaces(OnmsNode db, OnmsNode imported) {
-		db.setSnmpInterfaces(imported.getSnmpInterfaces());
+        new SnmpInterfaceUpdater(db, imported).execute();
 	}
 
 	private void updateCategories(OnmsNode db, OnmsNode imported) {
