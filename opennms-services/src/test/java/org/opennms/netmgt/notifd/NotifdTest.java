@@ -53,11 +53,10 @@ import org.opennms.netmgt.mock.MockService;
 import org.opennms.netmgt.mock.MockEventUtil;
 import org.opennms.netmgt.utils.RowProcessor;
 import org.opennms.netmgt.xml.event.Event;
+import org.opennms.netmgt.xml.event.Tticket;
 /**
- * @author david
+ * @author <a href="mailto:david@opennms.org">David Hustace</a>
  *
- * TODO To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Style - Code Templates
  */
 public class NotifdTest extends NotificationsTestCase {
 
@@ -232,6 +231,10 @@ public class NotifdTest extends NotificationsTestCase {
         MockNode node = m_network.getNode(1);
         
         Event downEvent = node.createDownEvent();
+        Tticket tticket = new Tticket();
+        tticket.setContent("777");
+        tticket.setState("1");
+        downEvent.setTticket(tticket);
 
         m_eventMgr.sendEventToListeners(downEvent);
         

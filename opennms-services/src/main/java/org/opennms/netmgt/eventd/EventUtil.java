@@ -62,6 +62,7 @@ import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.Parms;
 import org.opennms.netmgt.xml.event.Snmp;
+import org.opennms.netmgt.xml.event.Tticket;
 import org.opennms.netmgt.xml.event.Value;
 
 /**
@@ -199,6 +200,8 @@ public final class EventUtil {
 	 * The event mouseovertext xml tag
 	 */
 	static final String TAG_MOUSEOVERTEXT = "mouseovertext";
+
+    static final Object TAG_TTICKET_ID = "tticketid";
 
 	/**
 	 * The '%' sign used to indicate parms to be expanded
@@ -510,6 +513,9 @@ public final class EventUtil {
 			retParmVal = event.getOperinstruct();
 		} else if (parm.equals(TAG_MOUSEOVERTEXT)) {
 			retParmVal = event.getMouseovertext();
+        } else if (parm.equals(TAG_TTICKET_ID)) {
+            Tticket ticket = event.getTticket();
+            retParmVal = ticket == null ? null : ticket.getContent();
 		} else if (parm.equals(PARMS_VALUES)) {
 			retParmVal = getAllParmValues(event);
 		} else if (parm.equals(PARMS_NAMES)) {
