@@ -1,5 +1,6 @@
 1.3.1 to 1.3.2
 ----------------------------------------------------------------------
+- Add proxy-host support back into snmp-config.xml
 - Notificatiaons can now reference %tticketid% to retrieve the ticket
   number from the event.  Auto resolving events now have all configured
   notification parameters.  Adds column to notifications called 
