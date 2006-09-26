@@ -48,9 +48,11 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.sql.DataSource;
 
@@ -61,16 +63,19 @@ import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ThreadCategory;
 import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.capsd.EventUtils;
 import org.opennms.netmgt.config.common.Header;
 import org.opennms.netmgt.config.notifications.Notification;
 import org.opennms.netmgt.config.notifications.Notifications;
 import org.opennms.netmgt.config.notifications.Parameter;
+import org.opennms.netmgt.eventd.EventUtil;
 import org.opennms.netmgt.filter.Filter;
 import org.opennms.netmgt.filter.FilterParseException;
 import org.opennms.netmgt.utils.Querier;
 import org.opennms.netmgt.utils.RowProcessor;
 import org.opennms.netmgt.utils.SingleResultQuerier;
 import org.opennms.netmgt.xml.event.Event;
+import org.opennms.netmgt.xml.event.Tticket;
 
 /**
  * @author David Hustace <david@opennms.org>
@@ -133,10 +138,7 @@ public abstract class NotificationManager {
     }
     
     public Notification[] getNotifForEvent(Event event) throws IOException, MarshalException, ValidationException {
-
         update();
-        Category log = ThreadCategory.getInstance(getClass());
-    
         ArrayList notifList = new ArrayList();
         Notification[] notif = null;
         boolean matchAll = getConfigManager().getNotificationMatch();
@@ -149,12 +151,12 @@ public abstract class NotificationManager {
                 boolean parmsmatched = getConfigManager().matchNotificationParameters(event, curNotif);
 
                 if (!parmsmatched) {
-                    log.debug("Event " + event.getUei() + " did not match parameters for notice " + curNotif.getName());
+                    log().debug("Event " + event.getUei() + " did not match parameters for notice " + curNotif.getName());
                     continue;
                 }
                 notifList.add(curNotif);
 
-                log.debug("Event " + event.getUei() + " matched notice " + curNotif.getName());
+                log().debug("Event " + event.getUei() + " matched notice " + curNotif.getName());
                 
                 if (!matchAll)
                     break;
@@ -165,6 +167,10 @@ public abstract class NotificationManager {
             notif = (Notification[]) notifList.toArray(new Notification[0]);
         }
         return notif;
+    }
+
+    private Category log() {
+        return ThreadCategory.getInstance(getClass());
     }
     /**
      * @return
@@ -246,10 +252,10 @@ public abstract class NotificationManager {
             } catch (SQLException e) {
             }
         } catch (SQLException e) {
-            ThreadCategory.getInstance(getClass()).error("Filter query threw exception: " + notif.getName() + ": " + notif.getRule(), e);
+            log().error("Filter query threw exception: " + notif.getName() + ": " + notif.getRule(), e);
             return true;
         } catch (FilterParseException e) {
-            ThreadCategory.getInstance(getClass()).error("Invalid filter rule for notification " + notif.getName() + ": " + notif.getRule(), e);
+            log().error("Invalid filter rule for notification " + notif.getName() + ": " + notif.getRule(), e);
     
             // go ahead and send the notification
             return true;
@@ -355,7 +361,7 @@ public abstract class NotificationManager {
             statement.close();
             results.close();
         } catch (SQLException e) {
-            ThreadCategory.getInstance(getClass()).error("Error getting notice status: " + e.getMessage(), e);
+            log().error("Error getting notice status: " + e.getMessage(), e);
         } finally {
             if (connection != null) {
                 try {
@@ -371,7 +377,7 @@ public abstract class NotificationManager {
      * 
      */
     public Collection acknowledgeNotice(Event event, String uei, String[] matchList) throws SQLException, IOException, MarshalException, ValidationException {
-        Category log = ThreadCategory.getInstance(getClass());
+        Category log = log();
         Connection connection = null;
         Collection notifIDs = new LinkedList();
 
@@ -537,7 +543,7 @@ public abstract class NotificationManager {
      * 
      */
     public void updateNoticeWithUserInfo(String userId, int noticeId, String media, String contactInfo, String autoNotify) throws SQLException, MarshalException, ValidationException, IOException {
-        Category log = ThreadCategory.getInstance(getClass());
+        Category log = log();
         if (noticeId < 0) return;
         log.debug("updating usersnotified: ID = " + getUserNotifId()+ " User = " + userId + ", notice ID = " + noticeId + ", conctactinfo = " + contactInfo + ", media = " + media + ", autoNotify = " + autoNotify);
         Connection connection = null;
@@ -570,12 +576,15 @@ public abstract class NotificationManager {
      * This method inserts a row into the notifications table in the database.
      * This row indicates that the page has been sent out.
      * @param queueID
+     * @param notification TODO
      */
-    public void insertNotice(int notifyId, Map params, String queueID) throws SQLException {
+    public void insertNotice(int notifyId, Map params, String queueID, Notification notification) throws SQLException {
         Connection connection = null;
         try {
             connection = getConnection();
-            PreparedStatement statement = connection.prepareStatement("INSERT INTO notifications (textmsg, numericmsg, notifyid, pagetime, nodeid, interfaceid, serviceid, eventid, eventuei, subject, queueID) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+            PreparedStatement statement = connection.prepareStatement("INSERT INTO notifications (" +
+                    "textmsg, numericmsg, notifyid, pagetime, nodeid, interfaceid, serviceid, eventid, " +
+                    "eventuei, subject, queueID, notifConfigName) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
     
             // notifications textMsg field
             statement.setString(1, (String) params.get(NotificationManager.PARAM_TEXT_MSG));
@@ -624,6 +633,8 @@ public abstract class NotificationManager {
             
             // the queue this will be sent on
             statement.setString(11, queueID);
+            
+            statement.setString(12, notification.getName());
     
             statement.executeUpdate();
             statement.close();
@@ -848,20 +859,38 @@ public abstract class NotificationManager {
     /**
      * @param notifId
      */
-    public Map rebuildParamterMap(int notifId, final String resolutionPrefix) throws Exception {
-        final Map parmMap = new HashMap();
+    public Map<String, String> rebuildParamterMap(int notifId, final String resolutionPrefix) throws Exception {
+        final Map<String, String> parmMap = new HashMap<String, String>();
         Querier querier = new Querier(m_dbConnectionFactory, "select notifications.*, service.* from notifications left outer join service on notifications.serviceID = service.serviceID  where notifyId = ?") {
             public void processRow(ResultSet rs) throws SQLException {
-                parmMap.put(NotificationManager.PARAM_TEXT_MSG, resolutionPrefix+rs.getObject("textMsg"));
-                parmMap.put(NotificationManager.PARAM_NUM_MSG, rs.getObject("numericMsg"));
-                parmMap.put(NotificationManager.PARAM_SUBJECT, resolutionPrefix+rs.getObject("subject"));
-                parmMap.put(NotificationManager.PARAM_NODE, rs.getObject("nodeID").toString());
-                parmMap.put(NotificationManager.PARAM_INTERFACE, rs.getObject("interfaceID"));
-                parmMap.put(NotificationManager.PARAM_SERVICE, rs.getObject("serviceName"));
-                parmMap.put("noticeid", rs.getObject("notifyID").toString());
-                parmMap.put("eventID", rs.getObject("eventID").toString());
-                parmMap.put("eventUEI", rs.getObject("eventUEI"));
-
+                
+                /*
+                 * Note, getString on results is valid for any SQL data type except the new SQL types:
+                 *    Blog, Clob, Array, Struct, Ref
+                 * of which we have none in this table so this row processor is using getString
+                 * to correctly align with annotated types in the map.
+                 */
+                parmMap.put(NotificationManager.PARAM_TEXT_MSG, resolutionPrefix+rs.getString("textMsg"));
+                parmMap.put(NotificationManager.PARAM_NUM_MSG, rs.getString("numericMsg"));
+                parmMap.put(NotificationManager.PARAM_SUBJECT, resolutionPrefix+rs.getString("subject"));
+                parmMap.put(NotificationManager.PARAM_NODE, rs.getString("nodeID"));
+                parmMap.put(NotificationManager.PARAM_INTERFACE, rs.getString("interfaceID"));
+                parmMap.put(NotificationManager.PARAM_SERVICE, rs.getString("serviceName"));
+                parmMap.put("noticeid", rs.getString("notifyID"));
+                parmMap.put("eventID", rs.getString("eventID"));
+                parmMap.put("eventUEI", rs.getString("eventUEI"));
+                
+                Notification notification = null;
+                try {
+                    notification = getNotification(rs.getObject("notifConfigName").toString());
+                } catch (MarshalException e) {
+                } catch (ValidationException e) {
+                } catch (IOException e) {
+                }
+                
+                if (notification != null) {
+                    addNotificationParams(parmMap, notification);
+                }
             }
         };
         querier.execute(new Integer(notifId));
@@ -869,10 +898,26 @@ public abstract class NotificationManager {
     }
 
     /**
+     * Adds additional parameters defined by the user in the notificaiton
+     * configuration XML.
+     * 
+     * @param paramMap
+     * @param notification
+     */
+    @SuppressWarnings("unchecked")
+    public static void addNotificationParams(final Map<String, String> paramMap, final Notification notification) {
+        Collection<Parameter> parameters = notification.getParameterCollection();
+        
+        for (Parameter parameter : parameters) {
+            paramMap.put(parameter.getName(), parameter.getValue());
+        }
+    }
+
+    /**
      * @param notifId
      * @return
      */
-    public void forEachUserNotification(int notifId, RowProcessor rp) {
+    public void forEachUserNotification(int notifId, final RowProcessor rp) {
         Querier querier = new Querier(m_dbConnectionFactory, "select * from usersNotified where notifyId = ?", rp);
         querier.execute(new Integer(notifId));
     }
@@ -886,4 +931,60 @@ public abstract class NotificationManager {
         querier.execute(new Integer(notifId));
         return (String)querier.getResult();
     }
+    
+    public static void expandMapValues(Map<String, String> map, final Event event) {
+        Set keySet = map.keySet();
+    
+        for (Iterator it = keySet.iterator(); it.hasNext();) {
+            String key = (String) it.next();
+            String mapValue = (String)map.get(key);
+            if (mapValue == null) {
+                continue;
+            }
+            String expandedValue = EventUtil.expandParms((String)map.get(key), event);
+            map.put(key, (expandedValue != null ? expandedValue : map.get(key)));
+        }
+        
+    }
+
+    /**
+     * In the absense of DAOs and ORMs this creates an Event object from the persisted
+     * record.
+     * 
+     * @param eventid
+     * @return a populated Event object
+     */
+    public Event getEvent(int eventid) {
+        final Event event = new Event();
+        Querier querier = new Querier(m_dbConnectionFactory, "select * from events where eventid = ?", new RowProcessor() {
+
+            public void processRow(ResultSet rs) throws SQLException {
+                event.setDbid(rs.getInt("eventid"));
+                event.setUei(rs.getString("eventuei"));
+                event.setNodeid(rs.getInt("nodeid"));
+                event.setTime(rs.getString("eventtime"));
+                event.setHost(rs.getString("eventhost"));
+                event.setInterface(rs.getString("ipaddr"));
+                event.setSnmphost(rs.getString("eventsnmphost"));
+                event.setService(getServiceName(rs.getInt("serviceid")));
+                event.setCreationTime(rs.getString("eventcreatetime"));
+                event.setSeverity(rs.getString("eventseverity"));
+                event.setPathoutage(rs.getString("eventpathoutage"));
+                Tticket tticket = new Tticket();
+                tticket.setContent(rs.getString("eventtticket"));
+                tticket.setState(rs.getString("eventtticketstate"));
+                event.setTticket(tticket);
+                event.setSource(rs.getString("eventsource"));
+            }
+
+            private String getServiceName(int serviceid) {
+                SingleResultQuerier querier = new SingleResultQuerier(m_dbConnectionFactory, "select servicename from service where serviceid = ?");
+                return (String)querier.getResult();
+            }
+            
+        });
+        querier.execute(new Integer(eventid));
+        return event;
+    }
+
 }

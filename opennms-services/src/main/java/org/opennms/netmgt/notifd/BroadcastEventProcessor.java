@@ -56,7 +56,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.log4j.Category;
 import org.apache.regexp.RE;
@@ -281,7 +280,8 @@ public final class BroadcastEventProcessor implements EventListener {
         }
     }
 
-    private void sendResolvedNotifications(Collection notifIDs, Event event, String acknowledge, String[] match, String resolutionPrefix) throws Exception {
+    private void sendResolvedNotifications(Collection notifIDs, Event event, String acknowledge, 
+            String[] match, String resolutionPrefix) throws Exception {
         Category log = log();
         for (Iterator it = notifIDs.iterator(); it.hasNext();) {
             int notifId = ((Integer) it.next()).intValue();
@@ -292,12 +292,15 @@ public final class BroadcastEventProcessor implements EventListener {
                 log.debug("Conditional autoNotify for notifId " + notifId);
             }
             final boolean wasAcked = wa;
-            final Map parmMap = rebuildParameterMap(notifId, resolutionPrefix);
-
+            final Map<String, String> parmMap = rebuildParameterMap(notifId, resolutionPrefix);
+            
+            NotificationManager.expandMapValues(parmMap, 
+                    getNotificationManager().getEvent(Integer.parseInt(parmMap.get("eventID"))));
+            
             String queueID = getNotificationManager().getQueueForNotification(notifId);
 
             final Map userNotifitcations = new HashMap();
-            RowProcessor acknowledgeNotification = new RowProcessor() {
+            RowProcessor ackNotifProcessor = new RowProcessor() {
                 public void processRow(ResultSet rs) throws SQLException {
                     String userID = rs.getString("userID");
                     String contactInfo = rs.getString("contactinfo");
@@ -319,7 +322,7 @@ public final class BroadcastEventProcessor implements EventListener {
                     }
                 }
             };
-            getNotificationManager().forEachUserNotification(notifId, acknowledgeNotification);
+            getNotificationManager().forEachUserNotification(notifId, ackNotifProcessor);
 
             for (Iterator userIt = userNotifitcations.keySet().iterator(); userIt.hasNext();) {
                 String userID = (String) userIt.next();
@@ -517,7 +520,7 @@ public final class BroadcastEventProcessor implements EventListener {
                         }
 
                         try {
-                            getNotificationManager().insertNotice(noticeId, paramMap, queueID);
+                            getNotificationManager().insertNotice(noticeId, paramMap, queueID, notification);
                         } catch (SQLException e) {
                             log().error("Failed to enter notification into database, exiting this notification", e);
                             return;
@@ -642,70 +645,63 @@ public final class BroadcastEventProcessor implements EventListener {
     /**
      * 
      */
-    Map buildParameterMap(Notification notification, Event event, int noticeId) {
-        Map paramMap = new HashMap();
-        Parameter[] parameters = notification.getParameter();
-        for (int i = 0; i < parameters.length; i++) {
-            paramMap.put(parameters[i].getName(), parameters[i].getValue());
-        }
+    Map<String, String> buildParameterMap(Notification notification, Event event, int noticeId) {
+        Map<String, String> paramMap = new HashMap<String, String>();
         
-//        recursivelyExpandMapValues(paramMap);
-
+        NotificationManager.addNotificationParams(paramMap, notification);
+        
         // expand the event parameters for the messages
-        String text = (notification.getTextMessage() != null ? notification.getTextMessage() : "No text message supplied.");
-        String numeric = (notification.getNumericMessage() != null ? notification.getNumericMessage() : "111-" + noticeId);
-        String subject = (notification.getSubject() != null ? notification.getSubject() : "Notice #" + noticeId);
-
-        paramMap.put("noticeid", Integer.toString(noticeId));
-        paramMap.put(NotificationManager.PARAM_NODE, 
-                event.hasNodeid() ? String.valueOf(event.getNodeid()) : "");
-        paramMap.put(NotificationManager.PARAM_INTERFACE, event.getInterface());
-        paramMap.put(NotificationManager.PARAM_SERVICE, event.getService());
-        paramMap.put("eventID", String.valueOf(event.getDbid()));
-        paramMap.put("eventUEI", event.getUei());
-
         // call the notid expansion method before the event expansion because
         // event expansion will
         // throw away any expanion strings it doesn't recognize!
-        String textMessage = expandNotifParms(text, paramMap);
-        String numericMessage = expandNotifParms(numeric, paramMap);
-        String subjectLine = expandNotifParms(subject, paramMap);
-
-        String finalTextMessage = EventUtil.expandParms(textMessage, event);
-        if (finalTextMessage == null)
-            paramMap.put(NotificationManager.PARAM_TEXT_MSG, textMessage);
-        else
-            paramMap.put(NotificationManager.PARAM_TEXT_MSG, finalTextMessage);
-
-        String finalNumericMessage = EventUtil.expandParms(numericMessage, event);
-        if (finalNumericMessage == null)
-            paramMap.put(NotificationManager.PARAM_NUM_MSG, numericMessage);
-        else
-            paramMap.put(NotificationManager.PARAM_NUM_MSG, finalNumericMessage);
-
-        String finalSubjectLine = EventUtil.expandParms(subjectLine, event);
-        if (finalSubjectLine == null)
-            paramMap.put(NotificationManager.PARAM_SUBJECT, subjectLine);
-        else
-            paramMap.put(NotificationManager.PARAM_SUBJECT, finalSubjectLine);
+        String textMessage = expandNotifParms((nullSafeTextMsg(notification)), paramMap);
+        String numericMessage = expandNotifParms((nullSafeNumerMsg(notification, noticeId)), paramMap);
+        String subjectLine = expandNotifParms((nullSafeSubj(notification, noticeId)), paramMap);
         
-        expandMapValues(paramMap, event);
+        nullSafeExpandedPut(NotificationManager.PARAM_TEXT_MSG, textMessage, event, paramMap);
+        nullSafeExpandedPut(NotificationManager.PARAM_NUM_MSG, numericMessage, event, paramMap);
+        nullSafeExpandedPut(NotificationManager.PARAM_SUBJECT, subjectLine, event, paramMap);
+        paramMap.put(NotificationManager.PARAM_NODE, event.hasNodeid() ? String.valueOf(event.getNodeid()) : "");
+        paramMap.put(NotificationManager.PARAM_INTERFACE, event.getInterface());
+        paramMap.put(NotificationManager.PARAM_SERVICE, event.getService());
+        paramMap.put("noticeid", Integer.toString(noticeId));
+        paramMap.put("eventID", String.valueOf(event.getDbid()));
+        paramMap.put("eventUEI", event.getUei());
+
+        NotificationManager.expandMapValues(paramMap, event);
 
         return paramMap;
         
+    }
+
+    private void nullSafeExpandedPut(final String key, final String value, final Event event, Map<String, String> paramMap) {
+        String result = EventUtil.expandParms(value, event);
+        paramMap.put(key, (result == null ? value : result));
+    }
+
+    private String nullSafeSubj(Notification notification, int noticeId) {
+        return notification.getSubject() != null ? notification.getSubject() : "Notice #" + noticeId;
+    }
+
+    private String nullSafeNumerMsg(Notification notification, int noticeId) {
+        return notification.getNumericMessage() != null ? notification.getNumericMessage() : "111-" + noticeId;
+    }
+
+    private String nullSafeTextMsg(Notification notification) {
+        return notification.getTextMessage() != null ? notification.getTextMessage() : "No text message supplied.";
     }
 
     /**
      * A parameter expansion algorithm, designed to replace strings delimited by
      * percent signs '%' with a value supplied by a Map object.
      * 
-     * @param inp
+     * @param input
      *            the input string
      * @param paramMap
      *            a map that will supply the substitution values
      */
-    public static String expandNotifParms(String inp, Map paramMap) {
-        String expanded = new String(inp);
+    public static String expandNotifParms(final String input, final Map paramMap) {
+        String expanded = new String(input);
 
         if (notifdExpandRE.match(expanded)) {
             String replace = (String) paramMap.get(notifdExpandRE.getParen(1));
@@ -713,25 +709,9 @@ public final class BroadcastEventProcessor implements EventListener {
                 expanded = notifdExpandRE.subst(expanded, replace);
             }
         }
-
         return expanded;
     }
 
-    private static void expandMapValues(Map map, Event event) {
-        Set keySet = map.keySet();
-
-        for (Iterator it = keySet.iterator(); it.hasNext();) {
-            String key = (String) it.next();
-            String mapValue = (String)map.get(key);
-            if (mapValue == null) {
-                continue;
-            }
-            String expandedValue = EventUtil.expandParms((String)map.get(key), event);
-            map.put(key, (expandedValue != null ? expandedValue : map.get(key)));
-        }
-        
-    }
-    
     /**
      * 
      */
@@ -757,22 +737,14 @@ public final class BroadcastEventProcessor implements EventListener {
             
 		    NotificationTask[] tasks = null;
             
-
-
             if (m_notifd.getGroupManager().hasGroup((targetName))) {
-                
                 tasks = makeGroupTasks(startTime, params, noticeId, targetName, targets[i].getCommand(), targetSiblings, autoNotify, TimeConverter.convertToMillis(interval));
-                
             } else if (m_notifd.getUserManager().hasRole(targetName)) {
-                
                 tasks = makeRoleTasks(startTime, params, noticeId, targetName, targets[i].getCommand(), targetSiblings, autoNotify, TimeConverter.convertToMillis(interval));
-                
             } else if (m_notifd.getUserManager().hasUser(targetName)) {
-                
                 NotificationTask[] userTasks = { makeUserTask(startTime, params, noticeId, targetName, targets[i].getCommand(), targetSiblings, autoNotify) };
                 tasks = userTasks;
             } else if (targetName.indexOf("@") > -1) {
-                
                 NotificationTask[] emailTasks = { makeEmailTask(startTime, params, noticeId, targetName, targets[i].getCommand(), targetSiblings, autoNotify) };
                 tasks = emailTasks;
             }
@@ -786,11 +758,9 @@ public final class BroadcastEventProcessor implements EventListener {
                         targetSiblings.add(task);
                     }
                 }
-                
             } else {
                 log.warn("Unrecognized target '" + targetName + "' contained in destinationPaths.xml. Please check the configuration.");
             }
-            
         }
     }
 
@@ -942,7 +912,7 @@ public final class BroadcastEventProcessor implements EventListener {
      * @param i
      * @return
      */
-    public Map rebuildParameterMap(int notifId, String resolutionPrefix) throws Exception {
+    public Map<String, String> rebuildParameterMap(int notifId, String resolutionPrefix) throws Exception {
         return getNotificationManager().rebuildParamterMap(notifId, resolutionPrefix);
 
     }

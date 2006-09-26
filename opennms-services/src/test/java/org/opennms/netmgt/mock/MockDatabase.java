@@ -219,6 +219,7 @@ public class MockDatabase implements DataSource, EventWriter {
                 "       queueID      varchar(256), " +
                 "       eventID      integer," + 
                 "       eventUEI     varchar(256) not null," + 
+                "       notifConfigName varchar(63), " +
                 "                   constraint pk_notifyID primary key (notifyID)," + 
                 "                   constraint fk_nodeID7 foreign key (nodeID) references node (nodeID) ON DELETE CASCADE," + 
                 "                   constraint fk_eventID3 foreign key (eventID) references events (eventID) ON DELETE CASCADE" + 
@@ -554,9 +555,15 @@ public class MockDatabase implements DataSource, EventWriter {
                 "localhost",
                 "Y",
                 "Y",
+                e.getTticket() == null ? "" : e.getTticket().getContent(),
+                Integer.valueOf(e.getTticket() == null ? "0" : e.getTticket().getState()),
         };
         e.setDbid(eventId.intValue());
-        update("insert into events (eventId, eventSource, eventUei, eventCreateTime, eventTime, eventSeverity, nodeId, ipAddr, serviceId, eventDpName, eventLog, eventDisplay) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);", values);
+        update("insert into events (" +
+                "eventId, eventSource, eventUei, eventCreateTime, eventTime, eventSeverity, " +
+                "nodeId, ipAddr, serviceId, eventDpName, " +
+                "eventLog, eventDisplay, eventtticket, eventtticketstate) " +
+                "values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);", values);
     }
     
     public void setServiceStatus(MockService svc, char newStatus) {
