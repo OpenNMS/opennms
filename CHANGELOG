@@ -1,5 +1,10 @@
 1.3.1 to 1.3.2
 ----------------------------------------------------------------------
+- Notificatiaons can now reference %tticketid% to retrieve the ticket
+  number from the event.  Auto resolving events now have all configured
+  notification parameters.  Adds column to notifications called 
+  notifConfigName which represents the name of the configured notification
+  used to send the event.
 - HTML fixes in the webUI per bug #1558.  Thanks Marc C Poulin
   <opennms@jawfish.com>!
 - Data collection on arbitrary SNMP indexes is now supported.  See
