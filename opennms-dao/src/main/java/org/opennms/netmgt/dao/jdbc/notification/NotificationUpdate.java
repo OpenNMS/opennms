@@ -42,7 +42,7 @@ public class NotificationUpdate extends NotificationSaveOrUpdate {
     private static final String updateStmt = "update notifications set " +
 	    "testMsg = ?, numericMsg = ?, pageTime = ?, respondTime = ?, " + 
 	    "answeredBy = ?, nodeID = ?, interfaceID = ?, serviceID = ?, " + 
-	    "eventID = ?, eventUEI = ?,  notifyID = ? " +
+	    "eventID = ?, eventUEI = ?,  notifConfigName = ?, notifyID = ? " +
 	    "where alarmid = ?";
 
     public NotificationUpdate(DataSource ds) {

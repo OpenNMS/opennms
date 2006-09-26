@@ -43,11 +43,11 @@ public class NotificationSave extends NotificationSaveOrUpdate {
     private static final String insertStmt = "insert into notifications (" +
     "textMsg, subject, numericMsg, pageTime, respondTime, " + 
     "answeredBy, nodeID, interfaceID, serviceID, queueID, " +
-    "eventID, eventUEI, notifyID) " + 
+    "eventID, eventUEI, notifConfigName, notifConfigName, notifyID) " + 
     "values (" + 
     "?, ?, ?, ?, ?, " + 
     "?, ?, ?, ?, ?, " + 
-    "?, ?, ?)";
+    "?, ?, ?, ?, ?)";
     
 
     public NotificationSave(DataSource ds) {

@@ -58,6 +58,7 @@ public class NotificationSaveOrUpdate extends SqlUpdate {
         declareParameter(new SqlParameter(Types.VARCHAR));  //queueID
         declareParameter(new SqlParameter(Types.INTEGER));  //eventID
         declareParameter(new SqlParameter(Types.VARCHAR));  //eventUEI
+        declareParameter(new SqlParameter(Types.VARCHAR));  //notifConfigName
         declareParameter(new SqlParameter(Types.INTEGER));  //notifyID
         compile();
     }
@@ -76,6 +77,7 @@ public class NotificationSaveOrUpdate extends SqlUpdate {
              notification.getQueueId(), //queueID
              notification.getEvent().getId(), //eventID
              notification.getEvent().getEventUei(), //eventUEI
+             notification.getNotifConfigName(), //notifConfigName
              notification.getNotifyId()}; //notificationID
         return update(parms);
     }    
