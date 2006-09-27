@@ -47,11 +47,7 @@ public class NotificationDaoTest extends AbstractDaoTestCase {
         super.setUp();
     }
 
-    public void testBogus() {
-        // do nothing... we're here so JUnit doesn't complain
-    }
-    
-    public void FIXMEtestNotificationSave() {
+    public void testNotificationSave() {
         OnmsEvent event = new OnmsEvent();
         event.setDistPoller(getDistPollerDao().load("localhost"));
         event.setEventCreateTime(new Date());
@@ -65,12 +61,12 @@ public class NotificationDaoTest extends AbstractDaoTestCase {
         event.setEventSource("EventDaoTest");
         event.setEventTime(new Date());
         event.setEventUei("uei://org/opennms/test/NotificationDaoTest");
-        OnmsAlarm alarm = new OnmsAlarm();
-        event.setAlarm(alarm);
+//        OnmsAlarm alarm = new OnmsAlarm();
+//        event.setAlarm(alarm);
 
-        OnmsNode node = (OnmsNode) getNodeDao().findAll().iterator().next();
-        OnmsIpInterface iface = (OnmsIpInterface)node.getIpInterfaces().iterator().next();
-        OnmsMonitoredService service = (OnmsMonitoredService)iface.getMonitoredServices().iterator().next();
+        OnmsNode node = getNodeDao().findAll().iterator().next();
+        OnmsIpInterface iface = node.getIpInterfaces().iterator().next();
+        OnmsMonitoredService service = iface.getMonitoredServices().iterator().next();
         event.setNode(node);
 	    event.setServiceType(service.getServiceType());
         event.setIpAddr(iface.getIpAddress());
