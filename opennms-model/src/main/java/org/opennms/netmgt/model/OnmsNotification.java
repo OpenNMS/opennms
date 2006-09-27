@@ -73,7 +73,7 @@ public class OnmsNotification {
     private Date m_pageTime;
 
     /** nullable persistent field */
-    private Date m_respondTime;
+    private Date m_respondTime; 
 
     /** nullable persistent field */
     private String m_answeredBy;
@@ -102,9 +102,7 @@ public class OnmsNotification {
     private String m_notifConfigName;
 
     /** full constructor */
-    public OnmsNotification(Integer notifyId, String textMsg, String subject, String numericMsg, 
-            Date pageTime, Date respondTime, String answeredBy, String ipAddress, OnmsServiceType serviceType, 
-            String queueId, OnmsEvent event, OnmsNode node, Set<OnmsUserNotification> usersNotified, String notifConfigName) {
+    public OnmsNotification(Integer notifyId, String textMsg, String subject, String numericMsg, Date pageTime, Date respondTime, String answeredBy, String ipAddress, OnmsServiceType serviceType, String queueId, OnmsEvent event, OnmsNode node, Set<OnmsUserNotification> usersNotified, String notifConfigName) {
         m_notifyId = notifyId;
         m_textMsg = textMsg;
         m_subject = subject;
@@ -246,10 +244,22 @@ public class OnmsNotification {
     public void setEvent(OnmsEvent event) {
         m_event = event;
     }
-
+    
+    /*
+     * FIXME: HACK for some reason we put the eventUEI in the notificatinos table along with the eventId
+     * so we have to HACK this so we can properly write the table
+     */
+    @Column(name="eventUEI")
+    public String getEventUei() {
+        return m_event.getEventUei();
+    }
+    
+    public void setEventUei(String eventUei) {
+        // do nothing as this is a HACK
+    }
 
     @ManyToOne
-    @JoinColumn(name="nodeId", nullable=false)
+    @JoinColumn(name="nodeId")
     public OnmsNode getNode() {
         return m_node;
     }
@@ -258,23 +268,6 @@ public class OnmsNotification {
         m_node = node;
     }
 
-    /** 
-     *            @hibernate.set
-     *             lazy="true"
-     *             inverse="true"
-     *             cascade="none"
-     *            @hibernate.key
-     *             column="notifyid"
-     *            @hibernate.one-to-many
-     *             class="org.opennms.netmgt.model.OnmsUserNotification"
-     *             
-     * old XDoclet1 Tags
-     *            hibernate.collection-key
-     *             column="notifyid"
-     *            hibernate.collection-one-to-many
-     *             class="org.opennms.netmgt.model.OnmsUserNotification"
-     *         
-     */
     @OneToMany(mappedBy="notification", fetch=FetchType.LAZY)
     public Set<OnmsUserNotification> getUsersNotified() {
         return m_usersNotified;
