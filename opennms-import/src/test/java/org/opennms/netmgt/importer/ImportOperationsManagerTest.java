@@ -189,7 +189,6 @@ public class ImportOperationsManagerTest extends AbstractDaoTestCase {
     
     public void testChangeIpAddr() throws Exception {
         
-        
         testImportFromSpecFile(new ClassPathResource("/tec_dump.xml"), 1, 1);
         assertEquals(1, getIpInterfaceDao().findByIpAddress("172.20.1.204").size());
         
@@ -198,7 +197,6 @@ public class ImportOperationsManagerTest extends AbstractDaoTestCase {
         assertEquals("Failed to add new interface 172.20.1.202", 1, getIpInterfaceDao().findByIpAddress("172.20.1.202").size());
         assertEquals("Failed to delete removed interface 172.20.1.204", 0, getIpInterfaceDao().findByIpAddress("172.20.1.204").size());
         
-        flush();
 
     }
 
@@ -209,21 +207,9 @@ public class ImportOperationsManagerTest extends AbstractDaoTestCase {
         Collection c = getIpInterfaceDao().findByIpAddress("172.20.1.201");
         assertEquals(1, c.size());
         
-        flush();
 
     }
 
-
-    private void flush() {
-        m_transTemplate.execute(new TransactionCallback() {
-            public Object doInTransaction(TransactionStatus status) {
-                getNodeDao().flush();
-                return null;
-            }
-        });
-    }
-    
-    
 
 	private void testDoubleImport(Resource specFileResource) throws ModelImportException, IOException {
         
