@@ -75,6 +75,7 @@ import org.opennms.netmgt.eventd.EventIpcManager;
 import org.opennms.netmgt.eventd.EventListener;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
+import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.scheduler.LegacyScheduler;
 import org.opennms.netmgt.scheduler.ReadyRunnable;
 import org.opennms.netmgt.scheduler.Scheduler;
@@ -315,11 +316,21 @@ public final class Collectd extends AbstractServiceDaemon implements
      */
     private void scheduleInterface(int nodeId, String ipAddress,
             String svcName, boolean existing) {
-        OnmsMonitoredService svc = getMonitoredServiceDao().get(nodeId,
-                                                                ipAddress,
-                                                                svcName);
-        OnmsIpInterface ipInterface = svc.getIpInterface();
-        scheduleInterface(ipInterface, svc.getServiceType().getName(),
+        
+        OnmsNode node = m_nodeDao.getHierarchy(nodeId);
+        OnmsIpInterface iface = node.getIpInterfaceByIpAddress(ipAddress);
+        if (iface == null) {
+            log().error("Unable to find interface with address "+ipAddress+" on node "+nodeId);
+            return;
+        }
+        
+        OnmsMonitoredService svc = iface.getMonitoredServiceByServiceType(svcName);
+        if (svc == null) {
+            log().error("Unable to find service "+svcName+" on interface with address "+ipAddress+" on node "+nodeId);
+            return;
+        }
+        
+        scheduleInterface(iface, svc.getServiceType().getName(),
                           existing);
     }
 

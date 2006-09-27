@@ -476,4 +476,13 @@ public class OnmsNode extends OnmsEntity implements Serializable {
         return null;
     }
 
+    public OnmsIpInterface getIpInterfaceByIpAddress(String ipAddress) {
+        for (OnmsIpInterface iface : getIpInterfaces()) {
+            if (ipAddress.equals(iface.getIpAddress())) {
+                return iface;
+            }
+        }
+        return null;
+    }
+
 }

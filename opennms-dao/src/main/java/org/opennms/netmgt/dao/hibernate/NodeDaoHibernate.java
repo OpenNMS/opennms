@@ -66,6 +66,7 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer>
         return findUnique(
                           "select distinct n from OnmsNode as n "
                                   + "left join fetch n.assetRecord "
+                                  + "left join fetch n.snmpInterfaces as snmpIface "
                                   + "left join fetch n.ipInterfaces as iface "
                                   + "left join fetch iface.monitoredServices as monSvc "
                                   + "left join fetch monSvc.serviceType "

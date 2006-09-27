@@ -324,4 +324,8 @@ public class LocationMonitorDaoHibernate extends AbstractDaoHibernate<OnmsLocati
         initializeMonitoringLocationDefinition();
     }
 
+    public OnmsMonitoringLocationDefinition findMonitoringLocationDefinition(String monitoringLocationDefinitionName) {
+        return createEntityDef(getLocationDef(monitoringLocationDefinitionName));
+    }
+
 }

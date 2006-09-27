@@ -371,4 +371,13 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
         return down;
     }
 
+    public OnmsMonitoredService getMonitoredServiceByServiceType(String svcName) {
+        for (OnmsMonitoredService monSvc : getMonitoredServices()) {
+            if (monSvc.getServiceType().getName().equals(svcName)) {
+                return monSvc;
+            }
+        }
+        return null;
+    }
+
 }
