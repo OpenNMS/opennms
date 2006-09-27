@@ -374,9 +374,6 @@ public class UpdateOperation extends AbstractSaveOrUpdateOperation {
 
 		getNodeDao().update(db);
         
-        getNodeDao().flush();
-
-
 		return events;
 
 	}
