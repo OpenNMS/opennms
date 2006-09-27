@@ -1,23 +1,30 @@
 //
 // This file is part of the OpenNMS(R) Application.
 //
-// OpenNMS(R) is Copyright (C) 2002-2003 The OpenNMS Group, Inc.  All rights reserved.
-// OpenNMS(R) is a derivative work, containing both original code, included code and modified
-// code that was published under the GNU General Public License. Copyrights for modified 
+// OpenNMS(R) is Copyright (C) 2002-2003 The OpenNMS Group, Inc. All rights
+// reserved.
+// OpenNMS(R) is a derivative work, containing both original code, included
+// code and modified
+// code that was published under the GNU General Public License. Copyrights
+// for modified
 // and included code are below.
 //
 // OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
 //
 // Modifications:
 //
-// 2006 Aug 15: Remove old, incorrect comment.  Fix up log message. - dj@opennms.org
-// 2004 Dec 27: Changed SQL_RETRIEVE_INTERFACES to omit interfaces that have been
-//              marked as deleted.
-// 2004 Feb 12: Rebuild the package to ip list mapping while a new discoveried interface
-//              to be scheduled.
+// 2006 Aug 15: Remove old, incorrect comment. Fix up log message. -
+// dj@opennms.org
+// 2004 Dec 27: Changed SQL_RETRIEVE_INTERFACES to omit interfaces that have
+// been
+// marked as deleted.
+// 2004 Feb 12: Rebuild the package to ip list mapping while a new discoveried
+// interface
+// to be scheduled.
 // 2003 Jan 31: Cleaned up some unused imports.
 // 
-// Original code base Copyright (C) 1999-2001 Oculan Corp.  All rights reserved.
+// Original code base Copyright (C) 1999-2001 Oculan Corp. All rights
+// reserved.
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -26,17 +33,17 @@
 //
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.                                                            
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 //       
-// For more information contact: 
-//      OpenNMS Licensing       <license@opennms.org>
-//      http://www.opennms.org/
-//      http://www.opennms.com/
+// For more information contact:
+// OpenNMS Licensing <license@opennms.org>
+// http://www.opennms.org/
+// http://www.opennms.com/
 //
 
 package org.opennms.netmgt.collectd;
@@ -80,7 +87,8 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
-public final class Collectd extends AbstractServiceDaemon implements EventListener {
+public final class Collectd extends AbstractServiceDaemon implements
+        EventListener {
     /**
      * Log4j category
      */
@@ -99,99 +107,101 @@ public final class Collectd extends AbstractServiceDaemon implements EventListen
     /**
      * Indicates if scheduling of existing interfaces has been completed
      */
-	private CollectorConfigDao m_collectorConfigDao;
+    private CollectorConfigDao m_collectorConfigDao;
 
-	private MonitoredServiceDao m_monSvcDao;
+    private MonitoredServiceDao m_monSvcDao;
 
-	private IpInterfaceDao m_ifSvcDao;
-	
-	static class SchedulingCompletedFlag {
-		boolean m_schedulingCompleted = false;
-		
-		public synchronized void setSchedulingCompleted(boolean schedulingCompleted) {
-			m_schedulingCompleted = schedulingCompleted;
-		}
-		
-		public synchronized boolean isSchedulingCompleted() {
-			return m_schedulingCompleted;
-		}
-		
-	}
-	
-	private SchedulingCompletedFlag m_schedulingCompletedFlag = new SchedulingCompletedFlag();
+    private IpInterfaceDao m_ifSvcDao;
 
-	private EventIpcManager m_eventIpcManager;
+    static class SchedulingCompletedFlag {
+        boolean m_schedulingCompleted = false;
 
-	private TransactionTemplate m_transTemplate;
+        public synchronized void setSchedulingCompleted(
+                boolean schedulingCompleted) {
+            m_schedulingCompleted = schedulingCompleted;
+        }
 
-	private NodeDao m_nodeDao;
+        public synchronized boolean isSchedulingCompleted() {
+            return m_schedulingCompleted;
+        }
+
+    }
+
+    private SchedulingCompletedFlag m_schedulingCompletedFlag = new SchedulingCompletedFlag();
+
+    private EventIpcManager m_eventIpcManager;
+
+    private TransactionTemplate m_transTemplate;
+
+    private NodeDao m_nodeDao;
 
     /**
      * Constructor.
      */
     public Collectd() {
-    	super(LOG4J_CATEGORY);
-        
+        super(LOG4J_CATEGORY);
+
         m_collectableServices = Collections.synchronizedList(new LinkedList());
     }
 
-	protected void onInit() {
-		// Set the category prefix
+    protected void onInit() {
+        // Set the category prefix
         log().debug("init: Initializing collection daemon");
 
         getScheduler().schedule(0, ifScheduler());
-        
+
         installMessageSelectors();
-	}
+    }
 
-	private void installMessageSelectors() {
-		// Add the EventListeners for the UEIs in which this service is interested
-		List ueiList = new ArrayList();
+    private void installMessageSelectors() {
+        // Add the EventListeners for the UEIs in which this service is
+        // interested
+        List ueiList = new ArrayList();
 
-		// nodeGainedService
-		ueiList.add(EventConstants.NODE_GAINED_SERVICE_EVENT_UEI);
+        // nodeGainedService
+        ueiList.add(EventConstants.NODE_GAINED_SERVICE_EVENT_UEI);
 
-		// primarySnmpInterfaceChanged
-		ueiList.add(EventConstants.PRIMARY_SNMP_INTERFACE_CHANGED_EVENT_UEI);
+        // primarySnmpInterfaceChanged
+        ueiList.add(EventConstants.PRIMARY_SNMP_INTERFACE_CHANGED_EVENT_UEI);
 
-		// reinitializePrimarySnmpInterface
-		ueiList.add(EventConstants.REINITIALIZE_PRIMARY_SNMP_INTERFACE_EVENT_UEI);
+        // reinitializePrimarySnmpInterface
+        ueiList.add(EventConstants.REINITIALIZE_PRIMARY_SNMP_INTERFACE_EVENT_UEI);
 
-		// interfaceReparented
-		ueiList.add(EventConstants.INTERFACE_REPARENTED_EVENT_UEI);
+        // interfaceReparented
+        ueiList.add(EventConstants.INTERFACE_REPARENTED_EVENT_UEI);
 
-		// nodeDeleted
-		ueiList.add(EventConstants.NODE_DELETED_EVENT_UEI);
+        // nodeDeleted
+        ueiList.add(EventConstants.NODE_DELETED_EVENT_UEI);
 
-		// duplicateNodeDeleted
-		ueiList.add(EventConstants.DUP_NODE_DELETED_EVENT_UEI);
+        // duplicateNodeDeleted
+        ueiList.add(EventConstants.DUP_NODE_DELETED_EVENT_UEI);
 
-		// interfaceDeleted
-		ueiList.add(EventConstants.INTERFACE_DELETED_EVENT_UEI);
+        // interfaceDeleted
+        ueiList.add(EventConstants.INTERFACE_DELETED_EVENT_UEI);
 
-		// serviceDeleted
-		ueiList.add(EventConstants.SERVICE_DELETED_EVENT_UEI);
+        // serviceDeleted
+        ueiList.add(EventConstants.SERVICE_DELETED_EVENT_UEI);
 
-		// outageConfigurationChanged
-		ueiList.add(EventConstants.SCHEDOUTAGES_CHANGED_EVENT_UEI);
+        // outageConfigurationChanged
+        ueiList.add(EventConstants.SCHEDOUTAGES_CHANGED_EVENT_UEI);
 
-		// configureSNMP
-		ueiList.add(EventConstants.CONFIGURE_SNMP_EVENT_UEI);
+        // configureSNMP
+        ueiList.add(EventConstants.CONFIGURE_SNMP_EVENT_UEI);
 
-		getEventIpcManager().addEventListener(this, ueiList);
-	}
-	
-	public void setEventIpcManager(EventIpcManager eventIpcManager) {
-		m_eventIpcManager = eventIpcManager;
-	}
+        getEventIpcManager().addEventListener(this, ueiList);
+    }
 
-	public EventIpcManager getEventIpcManager() {
-		return m_eventIpcManager;
-	}
+    public void setEventIpcManager(EventIpcManager eventIpcManager) {
+        m_eventIpcManager = eventIpcManager;
+    }
+
+    public EventIpcManager getEventIpcManager() {
+        return m_eventIpcManager;
+    }
 
     private ReadyRunnable ifScheduler() {
         // Schedule existing interfaces for data collection
-        
+
         ReadyRunnable interfaceScheduler = new ReadyRunnable() {
 
             public boolean isReady() {
@@ -203,7 +213,9 @@ public final class Collectd extends AbstractServiceDaemon implements EventListen
                     ThreadCategory.setPrefix(LOG4J_CATEGORY);
                     scheduleExistingInterfaces();
                 } catch (SQLException e) {
-                    log().error("start: Failed to schedule existing interfaces", e);
+                    log().error(
+                                "start: Failed to schedule existing interfaces",
+                                e);
                 } finally {
                     setSchedulingCompleted(true);
                 }
@@ -212,22 +224,24 @@ public final class Collectd extends AbstractServiceDaemon implements EventListen
         };
         return interfaceScheduler;
     }
-    
+
     private void createScheduler() {
-    	
+
         // Create a scheduler
         try {
             log().debug("init: Creating collectd scheduler");
 
-            setScheduler(new LegacyScheduler("Collectd", getCollectorConfigDao().getSchedulerThreads()));
+            setScheduler(new LegacyScheduler(
+                                             "Collectd",
+                                             getCollectorConfigDao().getSchedulerThreads()));
         } catch (RuntimeException e) {
             log().fatal("init: Failed to create collectd scheduler", e);
             throw e;
         }
     }
 
-	protected void onStart() {
-		// start the scheduler
+    protected void onStart() {
+        // start the scheduler
         try {
             log().debug("start: Starting collectd scheduler");
 
@@ -236,56 +250,56 @@ public final class Collectd extends AbstractServiceDaemon implements EventListen
             log().fatal("start: Failed to start scheduler", e);
             throw e;
         }
-	}
+    }
 
     protected void onStop() {
-		getScheduler().stop();
+        getScheduler().stop();
         deinstallMessageSelectors();
 
         setScheduler(null);
-	}
+    }
 
     protected void onPause() {
-		getScheduler().pause();
-	}
+        getScheduler().pause();
+    }
 
     protected void onResume() {
         getScheduler().resume();
-	}
+    }
 
-	/**
+    /**
      * Schedule existing interfaces for data collection.
      * 
      * @throws SQLException
      *             if database errors encountered.
      */
     private void scheduleExistingInterfaces() throws SQLException {
-    	
-    	m_transTemplate.execute(new TransactionCallback() {
 
-			public Object doInTransaction(TransactionStatus status) {
-		    	// Loop through collectors and schedule for each one present
-		    	for (Iterator it = getCollectorConfigDao().getCollectorNames().iterator(); it.hasNext();) {
-		    		scheduleInterfacesWithService((String) it.next());
-				}
-		    	return null;
-			}
-    		
-    	});
+        m_transTemplate.execute(new TransactionCallback() {
+
+            public Object doInTransaction(TransactionStatus status) {
+                // Loop through collectors and schedule for each one present
+                for (Iterator it = getCollectorConfigDao().getCollectorNames().iterator(); it.hasNext();) {
+                    scheduleInterfacesWithService((String) it.next());
+                }
+                return null;
+            }
+
+        });
     }
 
-	private void scheduleInterfacesWithService(String svcName) {
-		log().debug("scheduleInterfacesWithService: svcName = " + svcName);
+    private void scheduleInterfacesWithService(String svcName) {
+        log().debug("scheduleInterfacesWithService: svcName = " + svcName);
 
-		
-		Collection ifsWithServices = getIpInterfaceDao().findHierarchyByServiceType(svcName);
-		for (Iterator it = ifsWithServices.iterator(); it.hasNext();) {
-			OnmsIpInterface iface = (OnmsIpInterface) it.next();
-			scheduleInterface(iface, svcName, true);
-		}
-	}
+        Collection ifsWithServices = getIpInterfaceDao().findHierarchyByServiceType(
+                                                                                    svcName);
+        for (Iterator it = ifsWithServices.iterator(); it.hasNext();) {
+            OnmsIpInterface iface = (OnmsIpInterface) it.next();
+            scheduleInterface(iface, svcName, true);
+        }
+    }
 
-	/**
+    /**
      * This method is responsible for scheduling the specified
      * node/address/svcname tuple for data collection.
      * 
@@ -299,18 +313,25 @@ public final class Collectd extends AbstractServiceDaemon implements EventListen
      *            True if called by scheduleExistingInterfaces(), false
      *            otheriwse
      */
-	private void scheduleInterface(int nodeId, String ipAddress, String svcName, boolean existing) {
-    	OnmsMonitoredService svc = getMonitoredServiceDao().get(nodeId, ipAddress, svcName);
-    	OnmsIpInterface ipInterface = svc.getIpInterface();
-		scheduleInterface(ipInterface, svc.getServiceType().getName(), existing);
+    private void scheduleInterface(int nodeId, String ipAddress,
+            String svcName, boolean existing) {
+        OnmsMonitoredService svc = getMonitoredServiceDao().get(nodeId,
+                                                                ipAddress,
+                                                                svcName);
+        OnmsIpInterface ipInterface = svc.getIpInterface();
+        scheduleInterface(ipInterface, svc.getServiceType().getName(),
+                          existing);
     }
-    	
-	private void scheduleInterface(OnmsIpInterface iface, String svcName, boolean existing) {
-        Collection matchingSpecs = getCollectorConfigDao().getSpecificationsForInterface(iface, svcName);
-        
+
+    private void scheduleInterface(OnmsIpInterface iface, String svcName,
+            boolean existing) {
+        Collection matchingSpecs = getCollectorConfigDao().getSpecificationsForInterface(
+                                                                                         iface,
+                                                                                         svcName);
+
         for (Iterator it = matchingSpecs.iterator(); it.hasNext();) {
-			CollectionSpecification spec = (CollectionSpecification) it.next();
-			
+            CollectionSpecification spec = (CollectionSpecification) it.next();
+
             if (existing == false) {
                 /*
                  * It is possible that both a nodeGainedService and a
@@ -321,10 +342,13 @@ public final class Collectd extends AbstractServiceDaemon implements EventListen
                  */
                 if (alreadyScheduled(iface, spec)) {
                     if (log().isDebugEnabled()) {
-                        log().debug("scheduleInterface: svc/pkgName "
-                                  + iface + '/' + spec 
-                                  + " already in collectable service list, "
-                                  + "skipping.");
+                        log().debug(
+                                    "scheduleInterface: svc/pkgName "
+                                            + iface
+                                            + '/'
+                                            + spec
+                                            + " already in collectable service list, "
+                                            + "skipping.");
                     }
                     continue;
                 }
@@ -339,11 +363,12 @@ public final class Collectd extends AbstractServiceDaemon implements EventListen
 
                 /*
                  * Create a new SnmpCollector object representing this node,
-                 * interface,
-                 * service and package pairing
+                 * interface, service and package pairing
                  */
-                
-                cSvc = new CollectableService(iface, spec, getScheduler(), m_schedulingCompletedFlag, m_transTemplate);
+
+                cSvc = new CollectableService(iface, spec, getScheduler(),
+                                              m_schedulingCompletedFlag,
+                                              m_transTemplate);
 
                 // Add new collectable service to the colleable service list.
                 m_collectableServices.add(cSvc);
@@ -352,39 +377,51 @@ public final class Collectd extends AbstractServiceDaemon implements EventListen
                 getScheduler().schedule(0, cSvc.getReadyRunnable());
 
                 if (log().isDebugEnabled()) {
-                    log().debug("scheduleInterface: " + iface +'/' + svcName + " collection");
+                    log().debug(
+                                "scheduleInterface: " + iface + '/' + svcName
+                                        + " collection");
                 }
             } catch (RuntimeException rE) {
-                log().warn("scheduleInterface: Unable to schedule " + iface +'/' + svcName + ", reason: "
-                         + rE.getMessage());
+                log().warn(
+                           "scheduleInterface: Unable to schedule " + iface
+                                   + '/' + svcName + ", reason: "
+                                   + rE.getMessage());
             } catch (Throwable t) {
-                log().error("scheduleInterface: Uncaught exception, failed to "
-                          + "schedule interface " + iface +'/' + svcName + ".", t);
+                log().error(
+                            "scheduleInterface: Uncaught exception, failed to "
+                                    + "schedule interface " + iface + '/'
+                                    + svcName + ".", t);
             }
         } // end while more packages exist
     }
 
-	private void fullyLoadInterface(OnmsIpInterface iface) {
-		m_nodeDao.getHierarchy(iface.getNode().getId());
-		getIpInterfaceDao().initialize(iface.getNode());
-		getIpInterfaceDao().initialize(iface.getSnmpInterface());
-		getIpInterfaceDao().initialize(iface.getSnmpInterface().getIpInterfaces());
-		getIpInterfaceDao().initialize(iface.getMonitoredServices());
-		getIpInterfaceDao().initialize(iface.getNode().getSnmpInterfaces());
-		getIpInterfaceDao().initialize(iface.getNode().getIpInterfaces());
-	}
+    private void fullyLoadInterface(OnmsIpInterface iface) {
+        m_nodeDao.getHierarchy(iface.getNode().getId());
+        getIpInterfaceDao().initialize(iface.getNode());
+        getIpInterfaceDao().initialize(iface.getSnmpInterface());
+        getIpInterfaceDao().initialize(
+                                       iface.getSnmpInterface().getIpInterfaces());
+        getIpInterfaceDao().initialize(iface.getMonitoredServices());
+        getIpInterfaceDao().initialize(iface.getNode().getSnmpInterfaces());
+        getIpInterfaceDao().initialize(iface.getNode().getIpInterfaces());
+    }
 
-	/**
-     * Returns true if specified address/pkg pair is already represented in the
-     * collectable services list. False otherwise.
-	 * @param iface TODO
-	 * @param spec TODO
-	 * @param svcName TODO
+    /**
+     * Returns true if specified address/pkg pair is already represented in
+     * the collectable services list. False otherwise.
+     * 
+     * @param iface
+     *            TODO
+     * @param spec
+     *            TODO
+     * @param svcName
+     *            TODO
      */
-    private boolean alreadyScheduled(OnmsIpInterface iface, CollectionSpecification spec) {
-    	String ipAddress = iface.getIpAddress();
-    	String svcName = spec.getServiceName();
-    	String pkgName = spec.getPackageName();
+    private boolean alreadyScheduled(OnmsIpInterface iface,
+            CollectionSpecification spec) {
+        String ipAddress = iface.getIpAddress();
+        String svcName = spec.getServiceName();
+        String pkgName = spec.getPackageName();
         synchronized (m_collectableServices) {
             CollectableService cSvc = null;
             Iterator iter = m_collectableServices.iterator();
@@ -392,9 +429,9 @@ public final class Collectd extends AbstractServiceDaemon implements EventListen
                 cSvc = (CollectableService) iter.next();
 
                 InetAddress addr = (InetAddress) cSvc.getAddress();
-                if (addr.getHostAddress().equals(ipAddress) 
-                    && cSvc.getPackageName().equals(pkgName)
-                    && cSvc.getServiceName().equals(svcName)) {
+                if (addr.getHostAddress().equals(ipAddress)
+                        && cSvc.getPackageName().equals(pkgName)
+                        && cSvc.getServiceName().equals(svcName)) {
                     return true;
                 }
             }
@@ -411,707 +448,741 @@ public final class Collectd extends AbstractServiceDaemon implements EventListen
         m_schedulingCompletedFlag.setSchedulingCompleted(schedulingCompleted);
     }
 
+    private void refreshServicePackages() {
+        Iterator serviceIterator = m_collectableServices.iterator();
+        while (serviceIterator.hasNext()) {
+            CollectableService thisService = (CollectableService) serviceIterator.next();
+            thisService.refreshPackage();
+        }
+    }
 
-	private void refreshServicePackages() {
-	    Iterator serviceIterator=m_collectableServices.iterator();
-	    while (serviceIterator.hasNext()) {
-	        CollectableService thisService =
-                (CollectableService) serviceIterator.next();
-	        thisService.refreshPackage();
-	    }
-	}
-	
-	private List getCollectableServices() {
-		return m_collectableServices;
-	}
+    private List getCollectableServices() {
+        return m_collectableServices;
+    }
 
-	/**
-	 * This method is invoked by the JMS topic session when a new event is
-	 * available for processing. Currently only text based messages are
-	 * processed by this callback. Each message is examined for its Universal
-	 * Event Identifier and the appropriate action is taking based on each UEI.
-	 * @param event
-	 *            The event message.
-	 * @param processor TODO
-	 * 
-	 */
-	public void onEvent(final Event event) {
-		
-		m_transTemplate.execute(new TransactionCallback() {
+    /**
+     * This method is invoked by the JMS topic session when a new event is
+     * available for processing. Currently only text based messages are
+     * processed by this callback. Each message is examined for its Universal
+     * Event Identifier and the appropriate action is taking based on each
+     * UEI.
+     * 
+     * @param event
+     *            The event message.
+     * @param processor
+     *            TODO
+     */
+    public void onEvent(final Event event) {
 
-			public Object doInTransaction(TransactionStatus status) {
-				onEventInTransaction(event);
-				return null;
-			}
-			
-		});
+        m_transTemplate.execute(new TransactionCallback() {
 
-	}
+            public Object doInTransaction(TransactionStatus status) {
+                onEventInTransaction(event);
+                return null;
+            }
 
-	private void onEventInTransaction(Event event) {
-		// print out the uei
-		//
-		log().debug("received event, uei = " + event.getUei());
-		
-		try {
-		if (event.getUei().equals(EventConstants.SCHEDOUTAGES_CHANGED_EVENT_UEI)) {
-			handleScheduledOutagesChanged(event);
-		} else if (event.getUei().equals(EventConstants.CONFIGURE_SNMP_EVENT_UEI)) {
-			handleConfigureSNMP(event);
-		} else if (event.getUei().equals(EventConstants.NODE_GAINED_SERVICE_EVENT_UEI)) {
-			handleNodeGainedService(event);
-		} else if (event.getUei().equals(EventConstants.PRIMARY_SNMP_INTERFACE_CHANGED_EVENT_UEI)) {
-			handlePrimarySnmpInterfaceChanged(event);
-		} else if (event.getUei().equals(EventConstants.REINITIALIZE_PRIMARY_SNMP_INTERFACE_EVENT_UEI)) {
-			handleReinitializePrimarySnmpInterface(event);
-		} else if (event.getUei().equals(EventConstants.INTERFACE_REPARENTED_EVENT_UEI)) {
-			handleInterfaceReparented(event);
-		} else if (event.getUei().equals(EventConstants.NODE_DELETED_EVENT_UEI)) {
-			handleNodeDeleted(event);
-		} else if (event.getUei().equals(EventConstants.DUP_NODE_DELETED_EVENT_UEI)) { 
-			handleDupNodeDeleted(event);
-		} else if (event.getUei().equals(EventConstants.INTERFACE_DELETED_EVENT_UEI)) {
-			handleInterfaceDeleted(event);
-		} else if (event.getUei().equals(EventConstants.SERVICE_DELETED_EVENT_UEI)) {
-			handleServiceDeleted(event);
-		}
-		} catch (InsufficientInformationException e) {
-			log().info(e.getMessage());
-		}
-	}
+        });
 
-	private void handleDupNodeDeleted(Event event) throws InsufficientInformationException {
-		handleNodeDeleted(event);
-	}
+    }
 
-	private void handleScheduledOutagesChanged(Event event) {
-		try {
-			log().info("Reloading Collectd config factory");
-			CollectdConfigFactory.reload();
-			refreshServicePackages();
-		} catch (Exception e) {
-			log().error("Failed to reload CollectdConfigFactory because "+e.getMessage(), e);
-		}
-	}
+    private void onEventInTransaction(Event event) {
+        // print out the uei
+        //
+        log().debug("received event, uei = " + event.getUei());
 
-	/**
-	 * </p>
-	 * Closes the current connections to the Java Message Queue if they are
-	 * still active. This call may be invoked more than once safely and may be
-	 * invoked during object finalization.
-	 * </p>
-	 * 
-	 */
-	private void deinstallMessageSelectors() {
-	    getEventIpcManager().removeEventListener(this);
-	}
+        try {
+            if (event.getUei().equals(
+                                      EventConstants.SCHEDOUTAGES_CHANGED_EVENT_UEI)) {
+                handleScheduledOutagesChanged(event);
+            } else if (event.getUei().equals(
+                                             EventConstants.CONFIGURE_SNMP_EVENT_UEI)) {
+                handleConfigureSNMP(event);
+            } else if (event.getUei().equals(
+                                             EventConstants.NODE_GAINED_SERVICE_EVENT_UEI)) {
+                handleNodeGainedService(event);
+            } else if (event.getUei().equals(
+                                             EventConstants.PRIMARY_SNMP_INTERFACE_CHANGED_EVENT_UEI)) {
+                handlePrimarySnmpInterfaceChanged(event);
+            } else if (event.getUei().equals(
+                                             EventConstants.REINITIALIZE_PRIMARY_SNMP_INTERFACE_EVENT_UEI)) {
+                handleReinitializePrimarySnmpInterface(event);
+            } else if (event.getUei().equals(
+                                             EventConstants.INTERFACE_REPARENTED_EVENT_UEI)) {
+                handleInterfaceReparented(event);
+            } else if (event.getUei().equals(
+                                             EventConstants.NODE_DELETED_EVENT_UEI)) {
+                handleNodeDeleted(event);
+            } else if (event.getUei().equals(
+                                             EventConstants.DUP_NODE_DELETED_EVENT_UEI)) {
+                handleDupNodeDeleted(event);
+            } else if (event.getUei().equals(
+                                             EventConstants.INTERFACE_DELETED_EVENT_UEI)) {
+                handleInterfaceDeleted(event);
+            } else if (event.getUei().equals(
+                                             EventConstants.SERVICE_DELETED_EVENT_UEI)) {
+                handleServiceDeleted(event);
+            }
+        } catch (InsufficientInformationException e) {
+            log().info(e.getMessage());
+        }
+    }
 
-	/**
-	 * This method is responsible for handling configureSNMP events.
-	 *
-	 * @param event The event to process.
-	 */
-	private void handleConfigureSNMP(Event event) {
-	    if (log().isDebugEnabled())
-	        log().debug("configureSNMPHandler: processing configure SNMP event...");
-	
-	    // Extract the IP adddress range and SNMP community string from the
-	    // event parms.
-	    //
-	    String firstIPAddress = null;
-	    String lastIPAddress = null;
-	    String communityString = null;
-	    Parms parms = event.getParms();
-	    if (parms != null) {
-	        String parmName = null;
-	        Value parmValue = null;
-	        String parmContent = null;
-	
-	        Enumeration parmEnum = parms.enumerateParm();
-	        while (parmEnum.hasMoreElements()) {
-	            Parm parm = (Parm) parmEnum.nextElement();
-	            parmName = parm.getParmName();
-	            parmValue = parm.getValue();
-	            if (parmValue == null)
-	                continue;
-	            else
-	                parmContent = parmValue.getContent();
-	
-	            // First IP Address
-	            if (parmName.equals(EventConstants.PARM_FIRST_IP_ADDRESS)) {
-	                firstIPAddress = parmContent;
-	            }
-	
-	            // Last IP Address (optional parameter)
-	            else if (parmName.equals(EventConstants.PARM_LAST_IP_ADDRESS)) {
-	                lastIPAddress = parmContent;
-	            }
-	
-	            // SNMP community string
-	            else if (parmName.equals(EventConstants.PARM_COMMUNITY_STRING)) {
-	                communityString = parmContent;
-	            }
-	        }
-	    }
-	
-	    if (firstIPAddress != null && !firstIPAddress.equals("")) {
-	        int begin = new IPv4Address(firstIPAddress).getAddress();
-	        int end = begin;
-	        if (lastIPAddress != null && !lastIPAddress.equals("")) {
-	            end = new IPv4Address(lastIPAddress).getAddress();
-	            if (end < begin)
-	                end = begin;
-	        }
-	
-	        SnmpPeerFactory factory = SnmpPeerFactory.getInstance();
-	
-	        for (int address = begin; address <= end; address++) {
-	            try {
-	                InetAddress ip =
-	                    InetAddress.getByAddress(new IPv4Address(address).getAddressBytes());
-	
-	                factory.define(ip, communityString);
-	            }
-	            catch (Exception e) {
-	                log().warn("configureSNMPHandler: Failed to process IP address "
-	                         + IPv4Address.addressToString(address)
-	                         + ": " + e.getMessage(), e);
-	            }
-	        }
-	
-	        try {
-	            SnmpPeerFactory.saveCurrent();
-	        }
-	        catch (Exception e) {
-	            log().warn("configureSNMPHandler: Failed to store SNMP configuration"
-	                     + ": " + e.getMessage(), e);
-	        }
-	    }
-	
-	    if (log().isDebugEnabled())
-	        log().debug("configureSNMPHandler: processing configure SNMP event for IP "
-	                  + firstIPAddress + "-" + lastIPAddress + " completed.");
-	}
+    private void handleDupNodeDeleted(Event event)
+            throws InsufficientInformationException {
+        handleNodeDeleted(event);
+    }
 
-	/**
-	 * This method is responsible for handling interfaceDeleted events.
-	 * 
-	 * @param event
-	 *            The event to process.
-	 * @throws InsufficientInformationException 
-	 * 
-	 */
-	private void handleInterfaceDeleted(Event event) throws InsufficientInformationException {
-		EventUtils.checkNodeId(event);
-		EventUtils.checkInterface(event);
+    private void handleScheduledOutagesChanged(Event event) {
+        try {
+            log().info("Reloading Collectd config factory");
+            CollectdConfigFactory.reload();
+            refreshServicePackages();
+        } catch (Exception e) {
+            log().error(
+                        "Failed to reload CollectdConfigFactory because "
+                                + e.getMessage(), e);
+        }
+    }
 
-	    Category log = log();
-	
-	    int nodeId = (int) event.getNodeid();
-	    String ipAddr = event.getInterface();
-	
-	    // Iterate over the collectable services list and mark any entries
-	    // which match the deleted nodeId/IP address pair for deletion
-	    synchronized (getCollectableServices()) {
-	        CollectableService cSvc = null;
-	        ListIterator liter = getCollectableServices().listIterator();
-	        while (liter.hasNext()) {
-	            cSvc = (CollectableService) liter.next();
-	
-	            // Only interested in entries with matching nodeId and IP
-	            // address
-	            InetAddress addr = (InetAddress) cSvc.getAddress();
-	            if (!(cSvc.getNodeId() == nodeId && addr.getHostName().equals(ipAddr)))
-	                continue;
-	
-	            synchronized (cSvc) {
-	                // Retrieve the CollectorUpdates object associated with
-	                // this CollectableService if one exists.
-	                CollectorUpdates updates = cSvc.getCollectorUpdates();
-	
-	                // Now set the update's deletion flag so the next
-	                // time it is selected for execution by the scheduler
-	                // the collection will be skipped and the service will not
-	                // be rescheduled.
-	                updates.markForDeletion();
-	            }
-	
-	            // Now safe to remove the collectable service from
-	            // the collectable services list
-	            liter.remove();
-	        }
-	    }
-	
-	    if (log.isDebugEnabled())
-	        log.debug("interfaceDeletedHandler: processing of interfaceDeleted event for " + nodeId + "/" + ipAddr + " completed.");
-	}
+    /**
+     * </p>
+     * Closes the current connections to the Java Message Queue if they are
+     * still active. This call may be invoked more than once safely and may be
+     * invoked during object finalization.
+     * </p>
+     */
+    private void deinstallMessageSelectors() {
+        getEventIpcManager().removeEventListener(this);
+    }
 
-	/**
-	 * This method is responsible for processing 'interfacReparented' events. An
-	 * 'interfaceReparented' event will have old and new nodeId parms associated
-	 * with it. All CollectableService objects in the service updates map which
-	 * match the event's interface address and the SNMP service have a
-	 * reparenting update associated with them. When the scheduler next pops one
-	 * of these services from an interval queue for collection all of the RRDs
-	 * associated with the old nodeId are moved under the new nodeId and the
-	 * nodeId of the collectable service is updated to reflect the interface's
-	 * new parent nodeId.
-	 * 
-	 * @param event
-	 *            The event to process.
-	 * @throws InsufficientInformationException 
-	 * 
-	 */
-	private void handleInterfaceReparented(Event event) throws InsufficientInformationException {
-		EventUtils.checkNodeId(event);
-		EventUtils.checkInterface(event);
+    /**
+     * This method is responsible for handling configureSNMP events.
+     * 
+     * @param event
+     *            The event to process.
+     */
+    private void handleConfigureSNMP(Event event) {
+        if (log().isDebugEnabled())
+            log().debug(
+                        "configureSNMPHandler: processing configure SNMP event...");
 
-	    Category log = log();
-	    if (log.isDebugEnabled())
-	        log.debug("interfaceReparentedHandler:  processing interfaceReparented event for " + event.getInterface());
-	
-	    // Verify that the event has an interface associated with it
-	    if (event.getInterface() == null)
-	        return;
-	
-	    // Extract the old and new nodeId's from the event parms
-	    String oldNodeIdStr = null;
-	    String newNodeIdStr = null;
-	    Parms parms = event.getParms();
-	    if (parms != null) {
-	        String parmName = null;
-	        Value parmValue = null;
-	        String parmContent = null;
-	
-	        Enumeration parmEnum = parms.enumerateParm();
-	        while (parmEnum.hasMoreElements()) {
-	            Parm parm = (Parm) parmEnum.nextElement();
-	            parmName = parm.getParmName();
-	            parmValue = parm.getValue();
-	            if (parmValue == null)
-	                continue;
-	            else
-	                parmContent = parmValue.getContent();
-	
-	            // old nodeid
-	            if (parmName.equals(EventConstants.PARM_OLD_NODEID)) {
-	                oldNodeIdStr = parmContent;
-	            }
-	
-	            // new nodeid
-	            else if (parmName.equals(EventConstants.PARM_NEW_NODEID)) {
-	                newNodeIdStr = parmContent;
-	            }
-	        }
-	    }
-	
-	    // Only proceed provided we have both an old and a new nodeId
-	    //
-	    if (oldNodeIdStr == null || newNodeIdStr == null) {
-	        log.warn("interfaceReparentedHandler: old and new nodeId parms are required, unable to process.");
-	        return;
-	    }
-	
-	    // Iterate over the CollectableService objects in the services
-	    // list looking for entries which share the same interface
-	    // address as the reparented interface. Mark any matching objects
-	    // for reparenting.
-	    //
-	    // The next time the service is scheduled for execution it
-	    // will move all of the RRDs associated
-	    // with the old nodeId under the new nodeId and update the service's
-	    // SnmpMonitor.NodeInfo attribute to reflect the new nodeId. All
-	    // subsequent collections will then be updating the appropriate RRDs.
-	    //
-	    synchronized (getCollectableServices()) {
-	        CollectableService cSvc = null;
-	        Iterator iter = getCollectableServices().iterator();
-	        while (iter.hasNext()) {
-	            cSvc = (CollectableService) iter.next();
-	
-	            InetAddress addr = (InetAddress) cSvc.getAddress();
-	            if (addr.getHostAddress().equals(event.getInterface())) {
-	                synchronized (cSvc) {
-	                    // Got a match!
-	                    if (log.isDebugEnabled())
-	                        log.debug("interfaceReparentedHandler: got a CollectableService match for " + event.getInterface());
-	
-	                    // Retrieve the CollectorUpdates object associated with
-	                    // this CollectableService.
-	                    CollectorUpdates updates = cSvc.getCollectorUpdates();
-	
-	                    // Now set the reparenting flag
-	                    updates.markForReparenting(oldNodeIdStr, newNodeIdStr);
-	                    if (log.isDebugEnabled())
-	                        log.debug("interfaceReparentedHandler: marking " + event.getInterface() + " for reparenting for service SNMP.");
-	                }
-	            }
-	        }
-	    }
-	
-	    if (log.isDebugEnabled())
-	        log.debug("interfaceReparentedHandler: processing of interfaceReparented event for interface " + event.getInterface() + " completed.");
-	}
+        // Extract the IP adddress range and SNMP community string from the
+        // event parms.
+        //
+        String firstIPAddress = null;
+        String lastIPAddress = null;
+        String communityString = null;
+        Parms parms = event.getParms();
+        if (parms != null) {
+            String parmName = null;
+            Value parmValue = null;
+            String parmContent = null;
 
-	/**
-	 * This method is responsible for handling nodeDeleted events.
-	 * 
-	 * @param event
-	 *            The event to process.
-	 * @throws InsufficientInformationException 
-	 * 
-	 */
-	private void handleNodeDeleted(Event event) throws InsufficientInformationException {
-		EventUtils.checkNodeId(event);
-		EventUtils.checkInterface(event);
+            Enumeration parmEnum = parms.enumerateParm();
+            while (parmEnum.hasMoreElements()) {
+                Parm parm = (Parm) parmEnum.nextElement();
+                parmName = parm.getParmName();
+                parmValue = parm.getValue();
+                if (parmValue == null)
+                    continue;
+                else
+                    parmContent = parmValue.getContent();
 
-	    Category log = log();
-	
-	    int nodeId = (int) event.getNodeid();
-	
-	    // Iterate over the collectable service list and mark any entries
-	    // which match the deleted nodeId for deletion.
-	    synchronized (getCollectableServices()) {
-	        CollectableService cSvc = null;
-	        ListIterator liter = getCollectableServices().listIterator();
-	        while (liter.hasNext()) {
-	            cSvc = (CollectableService) liter.next();
-	
-	            // Only interested in entries with matching nodeId
-	            if (!(cSvc.getNodeId() == nodeId))
-	                continue;
-	
-	            synchronized (cSvc) {
-	                // Retrieve the CollectorUpdates object associated
-	                // with this CollectableService.
-	                CollectorUpdates updates = cSvc.getCollectorUpdates();
-	
-	                // Now set the update's deletion flag so the next
-	                // time it is selected for execution by the scheduler
-	                // the collection will be skipped and the service will not
-	                // be rescheduled.
-	                updates.markForDeletion();
-	            }
-	
-	            // Now safe to remove the collectable service from
-	            // the collectable services list
-	            liter.remove();
-	        }
-	    }
-	
-	    if (log.isDebugEnabled())
-	        log.debug("nodeDeletedHandler: processing of nodeDeleted event for nodeid " + nodeId + " completed.");
-	}
+                // First IP Address
+                if (parmName.equals(EventConstants.PARM_FIRST_IP_ADDRESS)) {
+                    firstIPAddress = parmContent;
+                }
 
-	/**
-	 * Process the event, construct a new CollectableService object representing
-	 * the node/interface combination, and schedule the interface for
-	 * collection.
-	 * 
-	 * If any errors occur scheduling the interface no error is returned.
-	 * 
-	 * @param event
-	 *            The event to process.
-	 * @throws InsufficientInformationException 
-	 * 
-	 */
-	private void handleNodeGainedService(Event event) throws InsufficientInformationException {
-		EventUtils.checkNodeId(event);
-		EventUtils.checkInterface(event);
-		EventUtils.checkService(event);
-	    // Schedule the interface
-	    //
-	    scheduleForCollection(event);
-	}
+                // Last IP Address (optional parameter)
+                else if (parmName.equals(EventConstants.PARM_LAST_IP_ADDRESS)) {
+                    lastIPAddress = parmContent;
+                }
 
-	private void scheduleForCollection(Event event) {
-	    //This moved to here from the scheduleInterface() for better behavior during initialization
-	    CollectdConfigFactory cCfgFactory = CollectdConfigFactory.getInstance();
-	    cCfgFactory.rebuildPackageIpListMap();
-	
-	    scheduleInterface((int) event.getNodeid(), event.getInterface(), event.getService(), false);
-	}
+                // SNMP community string
+                else if (parmName.equals(EventConstants.PARM_COMMUNITY_STRING)) {
+                    communityString = parmContent;
+                }
+            }
+        }
 
-	/**
-	 * Process the 'primarySnmpInterfaceChanged' event.
-	 * 
-	 * Extract the old and new primary SNMP interface addresses from the event
-	 * parms. Any CollectableService objects located in the collectable services
-	 * list which match the IP address of the old primary interface and have a
-	 * service name of "SNMP" are flagged for deletion. This will ensure that
-	 * the old primary interface is no longer collected against.
-	 * 
-	 * Finally the new primary SNMP interface is scheduled. The packages are
-	 * examined and new CollectableService objects are created, initialized and
-	 * scheduled for collection.
-	 * 
-	 * @param event
-	 *            The event to process.
-	 * @throws InsufficientInformationException 
-	 * 
-	 */
-	private void handlePrimarySnmpInterfaceChanged(Event event) throws InsufficientInformationException {
-		EventUtils.checkNodeId(event);
-		EventUtils.checkInterface(event);
+        if (firstIPAddress != null && !firstIPAddress.equals("")) {
+            int begin = new IPv4Address(firstIPAddress).getAddress();
+            int end = begin;
+            if (lastIPAddress != null && !lastIPAddress.equals("")) {
+                end = new IPv4Address(lastIPAddress).getAddress();
+                if (end < begin)
+                    end = begin;
+            }
 
-	    Category log = log();
-	
-	    if (log.isDebugEnabled())
-	        log.debug("primarySnmpInterfaceChangedHandler:  processing primary SNMP interface changed event...");
-	
-	    // Currently only support SNMP data collection.
-	    //
-	    if (!event.getService().equals("SNMP"))
-	        return;
-	
-	    // Extract the old and new primary SNMP interface adddresses from the
-	    // event parms.
-	    //
-	    String oldPrimaryIfAddr = null;
-	    String newPrimaryIfAddr = null;
-	    Parms parms = event.getParms();
-	    if (parms != null) {
-	        String parmName = null;
-	        Value parmValue = null;
-	        String parmContent = null;
-	
-	        Enumeration parmEnum = parms.enumerateParm();
-	        while (parmEnum.hasMoreElements()) {
-	            Parm parm = (Parm) parmEnum.nextElement();
-	            parmName = parm.getParmName();
-	            parmValue = parm.getValue();
-	            if (parmValue == null)
-	                continue;
-	            else
-	                parmContent = parmValue.getContent();
-	
-	            // old primary SNMP interface (optional parameter)
-	            if (parmName.equals(EventConstants.PARM_OLD_PRIMARY_SNMP_ADDRESS)) {
-	                oldPrimaryIfAddr = parmContent;
-	            }
-	
-	            // old primary SNMP interface (optional parameter)
-	            else if (parmName.equals(EventConstants.PARM_NEW_PRIMARY_SNMP_ADDRESS)) {
-	                newPrimaryIfAddr = parmContent;
-	            }
-	        }
-	    }
-	
-	    if (oldPrimaryIfAddr != null) {
-	        // Mark the service for deletion so that it will not be rescheduled
-	        // for
-	        // collection.
-	        //
-	        // Iterate over the CollectableService objects in the service
-	        // updates map
-	        // and mark any which have the same interface address as the old
-	        // primary SNMP interface and a service name of "SNMP" for deletion.
-	        //
-	        synchronized (getCollectableServices()) {
-	            CollectableService cSvc = null;
-	            ListIterator liter = getCollectableServices().listIterator();
-	            while (liter.hasNext()) {
-	                cSvc = (CollectableService) liter.next();
-	
-	                InetAddress addr = (InetAddress) cSvc.getAddress();
-	                if (addr.getHostAddress().equals(oldPrimaryIfAddr)) {
-	                    synchronized (cSvc) {
-	                        // Got a match! Retrieve the CollectorUpdates object
-	                        // associated
-	                        // with this CollectableService.
-	                        CollectorUpdates updates = cSvc.getCollectorUpdates();
-	
-	                        // Now set the deleted flag
-	                        updates.markForDeletion();
-	                        if (log.isDebugEnabled())
-	                            log.debug("primarySnmpInterfaceChangedHandler: marking " + oldPrimaryIfAddr + " as deleted for service SNMP.");
-	                    }
-	
-	                    // Now safe to remove the collectable service from
-	                    // the collectable services list
-	                    liter.remove();
-	                }
-	            }
-	        }
-	    }
-	
-	    // Now we can schedule the new service...
-	    //
-	    scheduleForCollection(event);
-	
-	    if (log.isDebugEnabled())
-	        log.debug("primarySnmpInterfaceChangedHandler: processing of primarySnmpInterfaceChanged event for nodeid " + event.getNodeid() + " completed.");
-	}
+            SnmpPeerFactory factory = SnmpPeerFactory.getInstance();
 
-	/**
-	 * Process the event.
-	 * 
-	 * This event is generated when a managed node which supports SNMP gains a
-	 * new interface. In this situation the CollectableService object
-	 * representing the primary SNMP interface of the node must be
-	 * reinitialized.
-	 * 
-	 * The CollectableService object associated with the primary SNMP interface
-	 * for the node will be marked for reinitialization. Reinitializing the
-	 * CollectableService object consists of calling the
-	 * ServiceCollector.release() method followed by the
-	 * ServiceCollector.initialize() method which will refresh attributes such
-	 * as the interface key list and number of interfaces (both of which most
-	 * likely have changed).
-	 * 
-	 * Reinitialization will take place the next time the CollectableService is
-	 * popped from an interval queue for collection.
-	 * 
-	 * If any errors occur scheduling the service no error is returned.
-	 * 
-	 * @param event
-	 *            The event to process.
-	 * @throws InsufficientInformationException 
-	 */
-	private void handleReinitializePrimarySnmpInterface(Event event) throws InsufficientInformationException {
-		EventUtils.checkNodeId(event);
-		EventUtils.checkInterface(event);
+            for (int address = begin; address <= end; address++) {
+                try {
+                    InetAddress ip = InetAddress.getByAddress(new IPv4Address(
+                                                                              address).getAddressBytes());
 
-	    Category log = log();
-	
-	    if (event.getInterface() == null) {
-	        log.error("reinitializePrimarySnmpInterface event is missing an interface.");
-	        return;
-	    }
-	
-	    // Mark the primary SNMP interface for reinitialization in
-	    // order to update any modified attributes associated with
-	    // the collectable service..
-	    //
-	    // Iterate over the CollectableService objects in the
-	    // updates map and mark any which have the same interface
-	    // address for reinitialization
-	    //
-	    synchronized (getCollectableServices()) {
-	        Iterator iter = getCollectableServices().iterator();
-	        while (iter.hasNext()) {
-	            CollectableService cSvc = (CollectableService) iter.next();
-	
-	            InetAddress addr = (InetAddress) cSvc.getAddress();
-	            if (log.isDebugEnabled())
-	                log.debug("Comparing CollectableService ip address = " + addr.getHostAddress() + " and event ip interface = " + event.getInterface());
-	            if (addr.getHostAddress().equals(event.getInterface())) {
-	                synchronized (cSvc) {
-	                    // Got a match! Retrieve the CollectorUpdates object
-	                    // associated
-	                    // with this CollectableService.
-	                    CollectorUpdates updates = cSvc.getCollectorUpdates();
-	
-	                    // Now set the reinitialization flag
-	                    updates.markForReinitialization();
-	                    if (log.isDebugEnabled())
-	                        log.debug("reinitializePrimarySnmpInterfaceHandler: marking " + event.getInterface() + " for reinitialization for service SNMP.");
-	                }
-	            }
-	        }
-	    }
-	}
+                    factory.define(ip, communityString);
+                } catch (Exception e) {
+                    log().warn(
+                               "configureSNMPHandler: Failed to process IP address "
+                                       + IPv4Address.addressToString(address)
+                                       + ": " + e.getMessage(), e);
+                }
+            }
 
-	/**
-	 * This method is responsible for handling serviceDeleted events.
-	 * 
-	 * @param event
-	 *            The event to process.
-	 * @throws InsufficientInformationException 
-	 * 
-	 */
-	private void handleServiceDeleted(Event event) throws InsufficientInformationException {
-		EventUtils.checkNodeId(event);
-		EventUtils.checkInterface(event);
-		EventUtils.checkService(event);
+            try {
+                SnmpPeerFactory.saveCurrent();
+            } catch (Exception e) {
+                log().warn(
+                           "configureSNMPHandler: Failed to store SNMP configuration"
+                                   + ": " + e.getMessage(), e);
+            }
+        }
 
-	    Category log = log();
-	
-	    // Currently only support SNMP data collection.
-	    //
-	    if (!event.getService().equals("SNMP"))
-	        return;
-	
-	    int nodeId = (int) event.getNodeid();
-	    String ipAddr = event.getInterface();
-	    String svcName = event.getService();
-	
-	    // Iterate over the collectable services list and mark any entries
-	    // which match the nodeId/ipAddr of the deleted service
-	    // for deletion.
-	    synchronized (getCollectableServices()) {
-	        CollectableService cSvc = null;
-	        ListIterator liter = getCollectableServices().listIterator();
-	        while (liter.hasNext()) {
-	            cSvc = (CollectableService) liter.next();
-	
-	            // Only interested in entries with matching nodeId, IP address
-	            // and service
-	            InetAddress addr = (InetAddress) cSvc.getAddress();
-	            if (!(cSvc.getNodeId() == nodeId && addr.getHostName().equals(ipAddr)) && cSvc.getServiceName().equals(svcName))
-	                continue;
-	
-	            synchronized (cSvc) {
-	                // Retrieve the CollectorUpdates object associated with
-	                // this CollectableService if one exists.
-	                CollectorUpdates updates = cSvc.getCollectorUpdates();
-	
-	                // Now set the update's deletion flag so the next
-	                // time it is selected for execution by the scheduler
-	                // the collection will be skipped and the service will not
-	                // be rescheduled.
-	                updates.markForDeletion();
-	            }
-	
-	            // Now safe to remove the collectable service from
-	            // the collectable services list
-	            liter.remove();
-	        }
-	    }
-	
-	    if (log.isDebugEnabled())
-	        log.debug("serviceDeletedHandler: processing of serviceDeleted event for " + nodeId + "/" + ipAddr + "/" + svcName + " completed.");
-	}
+        if (log().isDebugEnabled())
+            log().debug(
+                        "configureSNMPHandler: processing configure SNMP event for IP "
+                                + firstIPAddress + "-" + lastIPAddress
+                                + " completed.");
+    }
 
-	public void setScheduler(Scheduler scheduler) {
-		m_scheduler = scheduler;
-	}
+    /**
+     * This method is responsible for handling interfaceDeleted events.
+     * 
+     * @param event
+     *            The event to process.
+     * @throws InsufficientInformationException
+     */
+    private void handleInterfaceDeleted(Event event)
+            throws InsufficientInformationException {
+        EventUtils.checkNodeId(event);
+        EventUtils.checkInterface(event);
 
-	private Scheduler getScheduler() {
-		if (m_scheduler == null)
-			createScheduler();
-		return m_scheduler;
-	}
+        Category log = log();
 
-	public void setCollectorConfigDao(CollectorConfigDao collectorConfigDao) {
-		m_collectorConfigDao = collectorConfigDao;
-	}
+        int nodeId = (int) event.getNodeid();
+        String ipAddr = event.getInterface();
 
-	private CollectorConfigDao getCollectorConfigDao() {
-		return m_collectorConfigDao;
-	}
+        // Iterate over the collectable services list and mark any entries
+        // which match the deleted nodeId/IP address pair for deletion
+        synchronized (getCollectableServices()) {
+            CollectableService cSvc = null;
+            ListIterator liter = getCollectableServices().listIterator();
+            while (liter.hasNext()) {
+                cSvc = (CollectableService) liter.next();
 
-	public void setMonitoredServiceDao(MonitoredServiceDao monSvcDao) {
-		m_monSvcDao = monSvcDao;
-	}
+                // Only interested in entries with matching nodeId and IP
+                // address
+                InetAddress addr = (InetAddress) cSvc.getAddress();
+                if (!(cSvc.getNodeId() == nodeId && addr.getHostName().equals(
+                                                                              ipAddr)))
+                    continue;
 
-	private MonitoredServiceDao getMonitoredServiceDao() {
-		return m_monSvcDao;
-	}
+                synchronized (cSvc) {
+                    // Retrieve the CollectorUpdates object associated with
+                    // this CollectableService if one exists.
+                    CollectorUpdates updates = cSvc.getCollectorUpdates();
 
-	public void setIpInterfaceDao(IpInterfaceDao ifSvcDao) {
-		m_ifSvcDao = ifSvcDao;
-	}
+                    // Now set the update's deletion flag so the next
+                    // time it is selected for execution by the scheduler
+                    // the collection will be skipped and the service will not
+                    // be rescheduled.
+                    updates.markForDeletion();
+                }
 
-	private IpInterfaceDao getIpInterfaceDao() {
-		return m_ifSvcDao;
-	}
+                // Now safe to remove the collectable service from
+                // the collectable services list
+                liter.remove();
+            }
+        }
 
-	public void setTransactionTemplate(TransactionTemplate transTemplate) {
-		m_transTemplate = transTemplate;
-	}
+        if (log.isDebugEnabled())
+            log.debug("interfaceDeletedHandler: processing of interfaceDeleted event for "
+                    + nodeId + "/" + ipAddr + " completed.");
+    }
 
-	public void setNodeDao(NodeDao nodeDao) {
-		m_nodeDao = nodeDao;
-	}
+    /**
+     * This method is responsible for processing 'interfacReparented' events.
+     * An 'interfaceReparented' event will have old and new nodeId parms
+     * associated with it. All CollectableService objects in the service
+     * updates map which match the event's interface address and the SNMP
+     * service have a reparenting update associated with them. When the
+     * scheduler next pops one of these services from an interval queue for
+     * collection all of the RRDs associated with the old nodeId are moved
+     * under the new nodeId and the nodeId of the collectable service is
+     * updated to reflect the interface's new parent nodeId.
+     * 
+     * @param event
+     *            The event to process.
+     * @throws InsufficientInformationException
+     */
+    private void handleInterfaceReparented(Event event)
+            throws InsufficientInformationException {
+        EventUtils.checkNodeId(event);
+        EventUtils.checkInterface(event);
+
+        Category log = log();
+        if (log.isDebugEnabled())
+            log.debug("interfaceReparentedHandler:  processing interfaceReparented event for "
+                    + event.getInterface());
+
+        // Verify that the event has an interface associated with it
+        if (event.getInterface() == null)
+            return;
+
+        // Extract the old and new nodeId's from the event parms
+        String oldNodeIdStr = null;
+        String newNodeIdStr = null;
+        Parms parms = event.getParms();
+        if (parms != null) {
+            String parmName = null;
+            Value parmValue = null;
+            String parmContent = null;
+
+            Enumeration parmEnum = parms.enumerateParm();
+            while (parmEnum.hasMoreElements()) {
+                Parm parm = (Parm) parmEnum.nextElement();
+                parmName = parm.getParmName();
+                parmValue = parm.getValue();
+                if (parmValue == null)
+                    continue;
+                else
+                    parmContent = parmValue.getContent();
+
+                // old nodeid
+                if (parmName.equals(EventConstants.PARM_OLD_NODEID)) {
+                    oldNodeIdStr = parmContent;
+                }
+
+                // new nodeid
+                else if (parmName.equals(EventConstants.PARM_NEW_NODEID)) {
+                    newNodeIdStr = parmContent;
+                }
+            }
+        }
+
+        // Only proceed provided we have both an old and a new nodeId
+        //
+        if (oldNodeIdStr == null || newNodeIdStr == null) {
+            log.warn("interfaceReparentedHandler: old and new nodeId parms are required, unable to process.");
+            return;
+        }
+
+        // Iterate over the CollectableService objects in the services
+        // list looking for entries which share the same interface
+        // address as the reparented interface. Mark any matching objects
+        // for reparenting.
+        //
+        // The next time the service is scheduled for execution it
+        // will move all of the RRDs associated
+        // with the old nodeId under the new nodeId and update the service's
+        // SnmpMonitor.NodeInfo attribute to reflect the new nodeId. All
+        // subsequent collections will then be updating the appropriate RRDs.
+        //
+        synchronized (getCollectableServices()) {
+            CollectableService cSvc = null;
+            Iterator iter = getCollectableServices().iterator();
+            while (iter.hasNext()) {
+                cSvc = (CollectableService) iter.next();
+
+                InetAddress addr = (InetAddress) cSvc.getAddress();
+                if (addr.getHostAddress().equals(event.getInterface())) {
+                    synchronized (cSvc) {
+                        // Got a match!
+                        if (log.isDebugEnabled())
+                            log.debug("interfaceReparentedHandler: got a CollectableService match for "
+                                    + event.getInterface());
+
+                        // Retrieve the CollectorUpdates object associated
+                        // with
+                        // this CollectableService.
+                        CollectorUpdates updates = cSvc.getCollectorUpdates();
+
+                        // Now set the reparenting flag
+                        updates.markForReparenting(oldNodeIdStr, newNodeIdStr);
+                        if (log.isDebugEnabled())
+                            log.debug("interfaceReparentedHandler: marking "
+                                    + event.getInterface()
+                                    + " for reparenting for service SNMP.");
+                    }
+                }
+            }
+        }
+
+        if (log.isDebugEnabled())
+            log.debug("interfaceReparentedHandler: processing of interfaceReparented event for interface "
+                    + event.getInterface() + " completed.");
+    }
+
+    /**
+     * This method is responsible for handling nodeDeleted events.
+     * 
+     * @param event
+     *            The event to process.
+     * @throws InsufficientInformationException
+     */
+    private void handleNodeDeleted(Event event)
+            throws InsufficientInformationException {
+        EventUtils.checkNodeId(event);
+        EventUtils.checkInterface(event);
+
+        Category log = log();
+
+        int nodeId = (int) event.getNodeid();
+
+        // Iterate over the collectable service list and mark any entries
+        // which match the deleted nodeId for deletion.
+        synchronized (getCollectableServices()) {
+            CollectableService cSvc = null;
+            ListIterator liter = getCollectableServices().listIterator();
+            while (liter.hasNext()) {
+                cSvc = (CollectableService) liter.next();
+
+                // Only interested in entries with matching nodeId
+                if (!(cSvc.getNodeId() == nodeId))
+                    continue;
+
+                synchronized (cSvc) {
+                    // Retrieve the CollectorUpdates object associated
+                    // with this CollectableService.
+                    CollectorUpdates updates = cSvc.getCollectorUpdates();
+
+                    // Now set the update's deletion flag so the next
+                    // time it is selected for execution by the scheduler
+                    // the collection will be skipped and the service will not
+                    // be rescheduled.
+                    updates.markForDeletion();
+                }
+
+                // Now safe to remove the collectable service from
+                // the collectable services list
+                liter.remove();
+            }
+        }
+
+        if (log.isDebugEnabled())
+            log.debug("nodeDeletedHandler: processing of nodeDeleted event for nodeid "
+                    + nodeId + " completed.");
+    }
+
+    /**
+     * Process the event, construct a new CollectableService object
+     * representing the node/interface combination, and schedule the interface
+     * for collection. If any errors occur scheduling the interface no error
+     * is returned.
+     * 
+     * @param event
+     *            The event to process.
+     * @throws InsufficientInformationException
+     */
+    private void handleNodeGainedService(Event event)
+            throws InsufficientInformationException {
+        EventUtils.checkNodeId(event);
+        EventUtils.checkInterface(event);
+        EventUtils.checkService(event);
+        // Schedule the interface
+        //
+        scheduleForCollection(event);
+    }
+
+    private void scheduleForCollection(Event event) {
+        // This moved to here from the scheduleInterface() for better behavior
+        // during initialization
+        CollectdConfigFactory cCfgFactory = CollectdConfigFactory.getInstance();
+        cCfgFactory.rebuildPackageIpListMap();
+
+        scheduleInterface((int) event.getNodeid(), event.getInterface(),
+                          event.getService(), false);
+    }
+
+    /**
+     * Process the 'primarySnmpInterfaceChanged' event. Extract the old and
+     * new primary SNMP interface addresses from the event parms. Any
+     * CollectableService objects located in the collectable services list
+     * which match the IP address of the old primary interface and have a
+     * service name of "SNMP" are flagged for deletion. This will ensure that
+     * the old primary interface is no longer collected against. Finally the
+     * new primary SNMP interface is scheduled. The packages are examined and
+     * new CollectableService objects are created, initialized and scheduled
+     * for collection.
+     * 
+     * @param event
+     *            The event to process.
+     * @throws InsufficientInformationException
+     */
+    private void handlePrimarySnmpInterfaceChanged(Event event)
+            throws InsufficientInformationException {
+        EventUtils.checkNodeId(event);
+        EventUtils.checkInterface(event);
+
+        Category log = log();
+
+        if (log.isDebugEnabled())
+            log.debug("primarySnmpInterfaceChangedHandler:  processing primary SNMP interface changed event...");
+
+        // Currently only support SNMP data collection.
+        //
+        if (!event.getService().equals("SNMP"))
+            return;
+
+        // Extract the old and new primary SNMP interface adddresses from the
+        // event parms.
+        //
+        String oldPrimaryIfAddr = null;
+        String newPrimaryIfAddr = null;
+        Parms parms = event.getParms();
+        if (parms != null) {
+            String parmName = null;
+            Value parmValue = null;
+            String parmContent = null;
+
+            Enumeration parmEnum = parms.enumerateParm();
+            while (parmEnum.hasMoreElements()) {
+                Parm parm = (Parm) parmEnum.nextElement();
+                parmName = parm.getParmName();
+                parmValue = parm.getValue();
+                if (parmValue == null)
+                    continue;
+                else
+                    parmContent = parmValue.getContent();
+
+                // old primary SNMP interface (optional parameter)
+                if (parmName.equals(EventConstants.PARM_OLD_PRIMARY_SNMP_ADDRESS)) {
+                    oldPrimaryIfAddr = parmContent;
+                }
+
+                // old primary SNMP interface (optional parameter)
+                else if (parmName.equals(EventConstants.PARM_NEW_PRIMARY_SNMP_ADDRESS)) {
+                    newPrimaryIfAddr = parmContent;
+                }
+            }
+        }
+
+        if (oldPrimaryIfAddr != null) {
+            // Mark the service for deletion so that it will not be
+            // rescheduled
+            // for
+            // collection.
+            //
+            // Iterate over the CollectableService objects in the service
+            // updates map
+            // and mark any which have the same interface address as the old
+            // primary SNMP interface and a service name of "SNMP" for
+            // deletion.
+            //
+            synchronized (getCollectableServices()) {
+                CollectableService cSvc = null;
+                ListIterator liter = getCollectableServices().listIterator();
+                while (liter.hasNext()) {
+                    cSvc = (CollectableService) liter.next();
+
+                    InetAddress addr = (InetAddress) cSvc.getAddress();
+                    if (addr.getHostAddress().equals(oldPrimaryIfAddr)) {
+                        synchronized (cSvc) {
+                            // Got a match! Retrieve the CollectorUpdates
+                            // object
+                            // associated
+                            // with this CollectableService.
+                            CollectorUpdates updates = cSvc.getCollectorUpdates();
+
+                            // Now set the deleted flag
+                            updates.markForDeletion();
+                            if (log.isDebugEnabled())
+                                log.debug("primarySnmpInterfaceChangedHandler: marking "
+                                        + oldPrimaryIfAddr
+                                        + " as deleted for service SNMP.");
+                        }
+
+                        // Now safe to remove the collectable service from
+                        // the collectable services list
+                        liter.remove();
+                    }
+                }
+            }
+        }
+
+        // Now we can schedule the new service...
+        //
+        scheduleForCollection(event);
+
+        if (log.isDebugEnabled())
+            log.debug("primarySnmpInterfaceChangedHandler: processing of primarySnmpInterfaceChanged event for nodeid "
+                    + event.getNodeid() + " completed.");
+    }
+
+    /**
+     * Process the event. This event is generated when a managed node which
+     * supports SNMP gains a new interface. In this situation the
+     * CollectableService object representing the primary SNMP interface of
+     * the node must be reinitialized. The CollectableService object
+     * associated with the primary SNMP interface for the node will be marked
+     * for reinitialization. Reinitializing the CollectableService object
+     * consists of calling the ServiceCollector.release() method followed by
+     * the ServiceCollector.initialize() method which will refresh attributes
+     * such as the interface key list and number of interfaces (both of which
+     * most likely have changed). Reinitialization will take place the next
+     * time the CollectableService is popped from an interval queue for
+     * collection. If any errors occur scheduling the service no error is
+     * returned.
+     * 
+     * @param event
+     *            The event to process.
+     * @throws InsufficientInformationException
+     */
+    private void handleReinitializePrimarySnmpInterface(Event event)
+            throws InsufficientInformationException {
+        EventUtils.checkNodeId(event);
+        EventUtils.checkInterface(event);
+
+        Category log = log();
+
+        if (event.getInterface() == null) {
+            log.error("reinitializePrimarySnmpInterface event is missing an interface.");
+            return;
+        }
+
+        // Mark the primary SNMP interface for reinitialization in
+        // order to update any modified attributes associated with
+        // the collectable service..
+        //
+        // Iterate over the CollectableService objects in the
+        // updates map and mark any which have the same interface
+        // address for reinitialization
+        //
+        synchronized (getCollectableServices()) {
+            Iterator iter = getCollectableServices().iterator();
+            while (iter.hasNext()) {
+                CollectableService cSvc = (CollectableService) iter.next();
+
+                InetAddress addr = (InetAddress) cSvc.getAddress();
+                if (log.isDebugEnabled())
+                    log.debug("Comparing CollectableService ip address = "
+                            + addr.getHostAddress()
+                            + " and event ip interface = "
+                            + event.getInterface());
+                if (addr.getHostAddress().equals(event.getInterface())) {
+                    synchronized (cSvc) {
+                        // Got a match! Retrieve the CollectorUpdates object
+                        // associated
+                        // with this CollectableService.
+                        CollectorUpdates updates = cSvc.getCollectorUpdates();
+
+                        // Now set the reinitialization flag
+                        updates.markForReinitialization();
+                        if (log.isDebugEnabled())
+                            log.debug("reinitializePrimarySnmpInterfaceHandler: marking "
+                                    + event.getInterface()
+                                    + " for reinitialization for service SNMP.");
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * This method is responsible for handling serviceDeleted events.
+     * 
+     * @param event
+     *            The event to process.
+     * @throws InsufficientInformationException 
+     * 
+     */
+    private void handleServiceDeleted(Event event)
+            throws InsufficientInformationException {
+        EventUtils.checkNodeId(event);
+        EventUtils.checkInterface(event);
+        EventUtils.checkService(event);
+
+        Category log = log();
+
+        // Currently only support SNMP data collection.
+        //
+        if (!event.getService().equals("SNMP"))
+            return;
+
+        int nodeId = (int) event.getNodeid();
+        String ipAddr = event.getInterface();
+        String svcName = event.getService();
+
+        // Iterate over the collectable services list and mark any entries
+        // which match the nodeId/ipAddr of the deleted service
+        // for deletion.
+        synchronized (getCollectableServices()) {
+            CollectableService cSvc = null;
+            ListIterator liter = getCollectableServices().listIterator();
+            while (liter.hasNext()) {
+                cSvc = (CollectableService) liter.next();
+
+                // Only interested in entries with matching nodeId, IP address
+                // and service
+                InetAddress addr = (InetAddress) cSvc.getAddress();
+                if (!(cSvc.getNodeId() == nodeId && addr.getHostName().equals(
+                                                                              ipAddr))
+                        && cSvc.getServiceName().equals(svcName))
+                    continue;
+
+                synchronized (cSvc) {
+                    // Retrieve the CollectorUpdates object associated with
+                    // this CollectableService if one exists.
+                    CollectorUpdates updates = cSvc.getCollectorUpdates();
+
+                    // Now set the update's deletion flag so the next
+                    // time it is selected for execution by the scheduler
+                    // the collection will be skipped and the service will not
+                    // be rescheduled.
+                    updates.markForDeletion();
+                }
+
+                // Now safe to remove the collectable service from
+                // the collectable services list
+                liter.remove();
+            }
+        }
+
+        if (log.isDebugEnabled())
+            log.debug("serviceDeletedHandler: processing of serviceDeleted event for "
+                    + nodeId + "/" + ipAddr + "/" + svcName + " completed.");
+    }
+
+    public void setScheduler(Scheduler scheduler) {
+        m_scheduler = scheduler;
+    }
+
+    private Scheduler getScheduler() {
+        if (m_scheduler == null)
+            createScheduler();
+        return m_scheduler;
+    }
+
+    public void setCollectorConfigDao(CollectorConfigDao collectorConfigDao) {
+        m_collectorConfigDao = collectorConfigDao;
+    }
+
+    private CollectorConfigDao getCollectorConfigDao() {
+        return m_collectorConfigDao;
+    }
+
+    public void setMonitoredServiceDao(MonitoredServiceDao monSvcDao) {
+        m_monSvcDao = monSvcDao;
+    }
+
+    private MonitoredServiceDao getMonitoredServiceDao() {
+        return m_monSvcDao;
+    }
+
+    public void setIpInterfaceDao(IpInterfaceDao ifSvcDao) {
+        m_ifSvcDao = ifSvcDao;
+    }
+
+    private IpInterfaceDao getIpInterfaceDao() {
+        return m_ifSvcDao;
+    }
+
+    public void setTransactionTemplate(TransactionTemplate transTemplate) {
+        m_transTemplate = transTemplate;
+    }
+
+    public void setNodeDao(NodeDao nodeDao) {
+        m_nodeDao = nodeDao;
+    }
 }
