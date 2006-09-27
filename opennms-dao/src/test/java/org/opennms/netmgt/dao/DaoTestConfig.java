@@ -65,6 +65,8 @@ public abstract class DaoTestConfig {
     protected abstract void tearDown();
 
     protected abstract PlatformTransactionManager setUp(DB db, boolean createDb) throws Exception;
+    
+    public abstract int dbQueryForInt(final String sql);
 
     private DistPollerDao m_dpDao;
     private NodeDao m_nodeDao;

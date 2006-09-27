@@ -182,4 +182,9 @@ public class JdbcDaoTestConfig extends DaoTestConfig {
         return new UserNotificationDaoJdbc(m_dataSource);
     }
 
+    @Override
+    public int dbQueryForInt(String sql) {
+        throw new UnsupportedOperationException("not yet implmented");
+    }
+
 }
