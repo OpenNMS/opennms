@@ -36,6 +36,7 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -43,6 +44,9 @@ import java.util.Properties;
 
 import javax.sql.DataSource;
 
+import org.hibernate.HibernateException;
+import org.hibernate.SQLQuery;
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.opennms.netmgt.dao.AbstractDaoTestCase.DB;
 import org.opennms.netmgt.dao.hibernate.AlarmDaoHibernate;
@@ -71,10 +75,15 @@ import org.opennms.netmgt.model.OnmsOutage;
 import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.OnmsUserNotification;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.orm.hibernate3.HibernateCallback;
+import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.orm.hibernate3.HibernateTransactionManager;
 import org.springframework.orm.hibernate3.LocalSessionFactoryBean;
 import org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean;
 import org.springframework.transaction.PlatformTransactionManager;
+
+import sun.rmi.runtime.GetThreadPoolAction;
 
 public class HibernateDaoTestConfig extends DaoTestConfig {
 
@@ -84,6 +93,7 @@ public class HibernateDaoTestConfig extends DaoTestConfig {
     private SessionFactory m_factory;
     private boolean m_usePool = false;
     private boolean m_createDb = false;
+
     
     class ReaderEater extends Thread {
         boolean eat = true;
@@ -173,6 +183,7 @@ public class HibernateDaoTestConfig extends DaoTestConfig {
     
         
         setFactory((SessionFactory)getLsfb().getObject());
+       
         
 //        if (createDb) {
 //            //m_lsfb.createDatabaseSchema();
@@ -222,7 +233,22 @@ public class HibernateDaoTestConfig extends DaoTestConfig {
         HibernateTransactionManager m_transMgr = new HibernateTransactionManager();
         m_transMgr.setSessionFactory(getFactory());
         m_transMgr.afterPropertiesSet();
+        
+        
         return m_transMgr;
+    }
+    
+    public int dbQueryForInt(final String sql) {
+        return ((Number)getHibernateTemplate().execute(new HibernateCallback() {
+
+            public Object doInHibernate(Session session) throws HibernateException, SQLException {
+                SQLQuery query = session.createSQLQuery(sql);
+                return query.list().get(0);
+            }
+            
+        })).intValue();
+        
+        
     }
 
     private boolean isUsePool() {
@@ -251,40 +277,53 @@ public class HibernateDaoTestConfig extends DaoTestConfig {
     protected void setLsfb(LocalSessionFactoryBean lsfb) {
         m_lsfb = lsfb;
     }
+    
+    private HibernateTemplate getHibernateTemplate() {
+        HibernateTemplate template = new HibernateTemplate(getFactory());
+        template.setFlushMode(HibernateTemplate.FLUSH_EAGER);
+        return template;
+        
+    }
 
     protected DistPollerDao createDistPollerDao() {
         DistPollerDaoHibernate dpDao = new DistPollerDaoHibernate();
-        dpDao.setSessionFactory(getFactory());
+        dpDao.setHibernateTemplate(getHibernateTemplate());
+        //dpDao.setSessionFactory(getFactory());
         return dpDao;
     }
 
     protected NodeDao createNodeDao() {
         NodeDaoHibernate nodeDao = new NodeDaoHibernate();
-        nodeDao.setSessionFactory(getFactory());
+        nodeDao.setHibernateTemplate(getHibernateTemplate());
+        //nodeDao.setSessionFactory(getFactory());
         return nodeDao;
     }
 
     protected IpInterfaceDao createIpInterfaceDao() {
         IpInterfaceDaoHibernate ifDao = new IpInterfaceDaoHibernate();
-        ifDao.setSessionFactory(getFactory());
+        ifDao.setHibernateTemplate(getHibernateTemplate());
+        //ifDao.setSessionFactory(getFactory());
         return ifDao;
     }
 
     protected MonitoredServiceDao createMonitoredServiceDao() {
         MonitoredServiceDaoHibernate monSvcDao = new MonitoredServiceDaoHibernate();
-        monSvcDao.setSessionFactory(getFactory());
+        monSvcDao.setHibernateTemplate(getHibernateTemplate());
+        //monSvcDao.setSessionFactory(getFactory());
         return monSvcDao;
     }
 
     protected ServiceTypeDao createServiceTypeDao() {
         ServiceTypeDaoHibernate svcTypeDao = new ServiceTypeDaoHibernate();
-        svcTypeDao.setSessionFactory(getFactory());
+        svcTypeDao.setHibernateTemplate(getHibernateTemplate());
+        //svcTypeDao.setSessionFactory(getFactory());
         return svcTypeDao;
     }
 
     protected AssetRecordDao createAssetRecordDao() {
         AssetRecordDaoHibernate arDao = new AssetRecordDaoHibernate();
-        arDao.setSessionFactory(getFactory());
+        arDao.setHibernateTemplate(getHibernateTemplate());
+        //arDao.setSessionFactory(getFactory());
         return arDao;
     }
 
@@ -294,44 +333,51 @@ public class HibernateDaoTestConfig extends DaoTestConfig {
 
     protected CategoryDao createCategoryDao() {
     	CategoryDaoHibernate catDao = new CategoryDaoHibernate();
-    	catDao.setSessionFactory(getFactory());
+        catDao.setHibernateTemplate(getHibernateTemplate());
+        //catDao.setSessionFactory(getFactory());
     	return catDao;
     }
 
 	protected SnmpInterfaceDao createSnmpInterfaceDao() {
 		SnmpInterfaceDaoHibernate snmpDao = new SnmpInterfaceDaoHibernate();
-		snmpDao.setSessionFactory(getFactory());
+        snmpDao.setHibernateTemplate(getHibernateTemplate());
+        //snmpDao.setSessionFactory(getFactory());
 		return snmpDao;
 	}
 
     protected OutageDao createOutageDao() {
     	OutageDaoHibernate outageDao = new OutageDaoHibernate();
-    	outageDao.setSessionFactory(getFactory());
+        outageDao.setHibernateTemplate(getHibernateTemplate());
+        //outageDao.setSessionFactory(getFactory());
     	return outageDao;
     }
 
 	protected EventDao createEventDao() {
 		EventDaoHibernate eventDao = new EventDaoHibernate();
-		eventDao.setSessionFactory(getFactory());
+        eventDao.setHibernateTemplate(getHibernateTemplate());
+        //eventDao.setSessionFactory(getFactory());
 		return eventDao;
 		
 	}
 	
     protected AlarmDao createAlarmDao() {
         AlarmDaoHibernate alarmDao = new AlarmDaoHibernate();
-        alarmDao.setSessionFactory(getFactory());
+        alarmDao.setHibernateTemplate(getHibernateTemplate());
+        //alarmDao.setSessionFactory(getFactory());
         return alarmDao;
     }
 
     protected NotificationDao createNotificationDao() {
     	NotificationDaoHibernate notificationDao = new NotificationDaoHibernate();
-    	notificationDao.setSessionFactory(getFactory());
+        notificationDao.setHibernateTemplate(getHibernateTemplate());
+        //notificationDao.setSessionFactory(getFactory());
     	return notificationDao;
     }
 
     protected UserNotificationDao createUserNotificationDao() {
     	UserNotificationDaoHibernate userNotifDao = new UserNotificationDaoHibernate();
-    	userNotifDao.setSessionFactory(getFactory());
+        userNotifDao.setHibernateTemplate(getHibernateTemplate());
+        //userNotifDao.setSessionFactory(getFactory());
     	return userNotifDao;
     }
 

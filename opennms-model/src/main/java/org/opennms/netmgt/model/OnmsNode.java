@@ -379,7 +379,10 @@ public class OnmsNode extends OnmsEntity implements Serializable {
      * The interfaces on this node
      * 
      */
-    @OneToMany(mappedBy="node", cascade=CascadeType.ALL)
+    @OneToMany(mappedBy="node")
+    @org.hibernate.annotations.Cascade( {
+        org.hibernate.annotations.CascadeType.ALL,
+        org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     public Set<OnmsIpInterface> getIpInterfaces() {
         return m_ipInterfaces;
     }
@@ -397,7 +400,10 @@ public class OnmsNode extends OnmsEntity implements Serializable {
      * The information from the SNMP interfaces/ipAddrTables for the node
      *  
      */
-    @OneToMany(mappedBy="node", cascade=CascadeType.ALL)
+    @OneToMany(mappedBy="node")
+    @org.hibernate.annotations.Cascade( {
+         org.hibernate.annotations.CascadeType.ALL,
+         org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     public Set<OnmsSnmpInterface> getSnmpInterfaces() {
         return m_snmpInterfaces;
     }

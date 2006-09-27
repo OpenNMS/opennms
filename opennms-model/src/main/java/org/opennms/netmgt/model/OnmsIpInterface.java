@@ -293,7 +293,10 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
     /** 
      * The services on this node
      */
-    @OneToMany(mappedBy="ipInterface", cascade=CascadeType.ALL)
+    @OneToMany(mappedBy="ipInterface")
+    @org.hibernate.annotations.Cascade( {
+         org.hibernate.annotations.CascadeType.ALL,
+         org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     public Set<OnmsMonitoredService> getMonitoredServices() {
         return m_monitoredServices ;
     }

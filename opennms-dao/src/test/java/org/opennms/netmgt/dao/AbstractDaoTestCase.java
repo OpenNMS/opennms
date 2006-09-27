@@ -235,10 +235,12 @@ public class AbstractDaoTestCase extends TestCase {
     protected TransactionTemplate m_transTemplate;
     DaoTestConfig m_testConfig;
     
+    protected DB m_db;
     protected boolean m_populate = true;
     protected boolean m_runTestsInTransaction = true;
     private boolean m_createDb = true;
 	protected OnmsNode m_node1;
+    private JdbcTemplate m_jdbcTemplate;
 
     public boolean isRunTestsInTransaction() {
         return m_runTestsInTransaction;
@@ -261,17 +263,17 @@ public class AbstractDaoTestCase extends TestCase {
         MockUtil.println("----------- Begin SetUp for "+getName()+" ---------------------");
         MockLogAppender.setupLogging();
 
-        DB db = new PostgresqlDB();
+        m_db = new PostgresqlDB();
         //m_db = new HSQLDB();
         
         if (isCreateDb()) {
-            db.dropDatabase();
-            db.createDatabase();
+            m_db.dropDatabase();
+            m_db.createDatabase();
         }
         
         m_testConfig = new HibernateDaoTestConfig();
         //m_testConfig = new JdbcDaoTestConfig();
-        PlatformTransactionManager m_transMgr = m_testConfig.setUp(db, isCreateDb());
+        PlatformTransactionManager m_transMgr = m_testConfig.setUp(m_db, isCreateDb());
 
         m_transTemplate = new TransactionTemplate();
         m_transTemplate.setTransactionManager(m_transMgr);
@@ -290,6 +292,10 @@ public class AbstractDaoTestCase extends TestCase {
         m_testConfig.tearDown();
         MockUtil.println("----------- TearDown Complete for "+getName()+" ---------------------");
      }
+    
+    public int dbQueryForInt(String sql) {
+        return m_testConfig.dbQueryForInt(sql);
+    }
 
     
     @Override
@@ -303,7 +309,7 @@ public class AbstractDaoTestCase extends TestCase {
         MockLogAppender.assertNoWarningsOrGreater();
         MockUtil.println("------------ End Test "+getName()+" --------------------------");
     }
-
+    
     private void populateDB() throws Exception {
         
         final DistPollerDao dao = getDistPollerDao();

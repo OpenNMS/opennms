@@ -81,14 +81,32 @@ public class NodeDaoTest extends AbstractDaoTestCase {
         
     }
     
-    public void FIXMEtestQuery() throws Exception {
+    public void testQuery() throws Exception {
         
         OnmsNode n = getNodeDao().get(1);
         validateNode(n);
         
     }
     
-    public void FIXMEtestQueryWithHierarchy() throws Exception {
+    public void testDeleteOnOrphanIpInterface() {
+        
+        int preCount = dbQueryForInt("select count(*) from ipinterface where ipinterface.nodeId = 1");
+        
+        OnmsNode n = getNodeDao().get(1);
+        Iterator it = n.getIpInterfaces().iterator();
+        it.next();
+        it.remove();
+        getNodeDao().saveOrUpdate(n);
+        getNodeDao().flush();
+        
+        int postCount = dbQueryForInt("select count(*) from ipinterface where ipinterface.nodeId = 1");
+        
+        assertEquals(preCount-1, postCount);
+        
+
+    }
+    
+    public void testQueryWithHierarchy() throws Exception {
         
         OnmsNode n = getNodeDao().getHierarchy(1);
         validateNode(n);
@@ -205,7 +223,7 @@ public class NodeDaoTest extends AbstractDaoTestCase {
 		assertEquals("Unexpected value for property "+name+" on object "+expected, expectedValue, actualValue);
 	}
 
-	public void FIXMEtestQuery2() {
+	public void testQuery2() {
         OnmsNode n = getNodeDao().get(6);
         assertNotNull(n);
         assertEquals(3, n.getIpInterfaces().size());
