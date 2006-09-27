@@ -9,6 +9,10 @@
     </property>
   </bean>
   
+  <bean id="snmpPeerFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+    <property name="staticMethod"><value>org.opennms.netmgt.config.SnmpPeerFactory.init</value></property>
+  </bean>
+  
   <bean id="eventIpcManager-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
     <property name="staticMethod"><value>org.opennms.netmgt.eventd.EventIpcManagerFactory.init</value></property>
   </bean>
@@ -17,7 +21,7 @@
     <property name="staticMethod"><value>org.opennms.netmgt.eventd.EventIpcManagerFactory.getIpcManager</value></property>
   </bean>
 
-  <bean id="modelImporter" class="org.opennms.netmgt.importer.ImporterService">
+  <bean id="modelImporter" class="org.opennms.netmgt.importer.ImporterService" depends-on="snmpPeerFactory-init">
     <property name="importResource" value="${importer.importURL}"/>
     <property name="eventManager" ref="eventManager"/>
     <property name="assetRecordDao" ref="assetRecordDao"/>

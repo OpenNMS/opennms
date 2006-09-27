@@ -50,8 +50,6 @@ public class ImporterServiceTest extends TestCase {
         // set opennms.home to the src dir so it finds the model-importer.properties
         System.setProperty("opennms.home", "src/test/opennms-home");
         
-        SnmpPeerFactory.init();
-
         EventIpcManagerFactory.setIpcManager(new MockEventIpcManager());
     }
 
