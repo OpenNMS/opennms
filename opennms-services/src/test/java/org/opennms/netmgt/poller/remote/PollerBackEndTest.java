@@ -11,6 +11,7 @@ import static org.easymock.EasyMock.verify;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 
 import junit.framework.TestCase;
 
@@ -24,10 +25,14 @@ import org.opennms.netmgt.dao.LocationMonitorDao;
 import org.opennms.netmgt.dao.MonitoredServiceDao;
 import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsDistPoller;
+import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsLocationMonitor;
+import org.opennms.netmgt.model.OnmsLocationSpecificStatusChange;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsMonitoringLocationDefinition;
+import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsServiceType;
+import org.opennms.netmgt.model.PollStatus;
 import org.opennms.netmgt.model.ServiceSelector;
 import org.opennms.netmgt.poller.remote.support.DefaultPollerBackEnd;
 
@@ -37,6 +42,18 @@ public class PollerBackEndTest extends TestCase {
     private LocationMonitorDao m_locMonDao;
     private MonitoredServiceDao m_monSvcDao;
     private PollerConfig m_pollerConfig;
+    private OnmsMonitoringLocationDefinition m_locationDefinition;
+    private Collection<OnmsMonitoringLocationDefinition> m_locations;
+    private Package m_package;
+    private Service m_httpSvcConfig;
+    private Service m_dnsSvcConfig;
+    private ServiceSelector m_serviceSelector;
+    private OnmsMonitoredService m_httpService;
+    private OnmsMonitoredService m_dnsService;
+    private OnmsLocationMonitor m_locationMonitor;
+    private OnmsMonitoredService[] m_monServices;
+    private OnmsLocationSpecificStatusChange m_httpCurrentStatus;
+    private OnmsLocationSpecificStatusChange m_dnsCurrentStatus;
     
     protected void setUp() throws Exception {
         
@@ -50,14 +67,57 @@ public class PollerBackEndTest extends TestCase {
         m_backEnd.setPollerConfig(m_pollerConfig);
         
         m_backEnd.afterPropertiesSet();
+
+        // set up some objects that can be used to mock up the tests
+        m_locationDefinition = new OnmsMonitoringLocationDefinition();
+        m_locationDefinition.setArea("Oakland");
+        m_locationDefinition.setName("OAK");
+        m_locationDefinition.setPollingPackageName("OAKPackage");
         
+        m_locations = Collections.singleton(m_locationDefinition);
+        
+        m_package = createPackage(m_locationDefinition.getPollingPackageName(), "ipaddr = '192.168.1.1'");
+        m_httpSvcConfig = addService(m_package, "HTTP", 1234, "url", "http://www.opennms.org");
+        m_dnsSvcConfig = addService(m_package, "DNS", 5678, "hostname", "www.opennms.org");
+        m_serviceSelector = new ServiceSelector(m_package.getFilter().getContent(), Arrays.asList(new String[]{ "HTTP", "DNS" }));
+
+        m_locationMonitor = new OnmsLocationMonitor();
+        m_locationMonitor.setId(1);
+        m_locationMonitor.setLocationDefinition(m_locationDefinition);
+        
+        NetworkBuilder builder = new NetworkBuilder(new OnmsDistPoller("localhost", "127.0.0.1"));
+        OnmsNode node = builder.addNode("testNode");
+        node.setId(1);
+        OnmsIpInterface iface = builder.addInterface("192.168.1.1").getInterface();
+        iface.setId(1);
+        m_httpService = builder.addService(new OnmsServiceType("HTTP"));
+        m_httpService.setId(1);
+        m_dnsService = builder.addService(new OnmsServiceType("DNS"));
+        m_dnsService.setId(2);
+        
+        
+        
+        m_monServices = new OnmsMonitoredService[] { m_httpService, m_dnsService };
+        
+        long now = System.currentTimeMillis();
+        
+        PollStatus httpResult = PollStatus.available(1000L);
+        httpResult.setTimestamp(now - 300000);
+
+        m_httpCurrentStatus = new OnmsLocationSpecificStatusChange(m_locationMonitor, m_httpService, httpResult);
+        m_httpCurrentStatus.setId(1);
+
+        PollStatus dnsResult = PollStatus.unavailable("Non responsive");
+        dnsResult.setTimestamp(now - 300000);
+
+        m_dnsCurrentStatus = new OnmsLocationSpecificStatusChange(m_locationMonitor, m_dnsService, dnsResult);
+        m_dnsCurrentStatus.setId(2);
+
     }
     
     public void testGetMonitoringLocations() {
         
-        Collection<OnmsMonitoringLocationDefinition> locations = new ArrayList<OnmsMonitoringLocationDefinition>();
-        
-        expect(m_locMonDao.findAllMonitoringLocationDefinitions()).andReturn(locations);
+        expect(m_locMonDao.findAllMonitoringLocationDefinitions()).andReturn(m_locations);
         
         replay(m_locMonDao);
         
@@ -65,18 +125,14 @@ public class PollerBackEndTest extends TestCase {
         
         verify(m_locMonDao);
         
-        assertEquals(locations, returned);
+        assertEquals(m_locations, returned);
         
     }
     
     public void testRegisterLocationMonitor() {
         
-        OnmsMonitoringLocationDefinition def = new OnmsMonitoringLocationDefinition();
-        def.setArea("Oakland");
-        def.setName("OAK");
-        
  
-        expect(m_locMonDao.findMonitoringLocationDefinition("OAK")).andReturn(def);
+        expect(m_locMonDao.findMonitoringLocationDefinition(m_locationDefinition.getName())).andReturn(m_locationDefinition);
         m_locMonDao.save(isA(OnmsLocationMonitor.class));
         expectLastCall().andAnswer(new IAnswer<Object>() {
 
@@ -90,7 +146,7 @@ public class PollerBackEndTest extends TestCase {
         
         replay(m_locMonDao);
         
-        int locationMonitorId = m_backEnd.registerLocationMonitor(def.getName());
+        int locationMonitorId = m_backEnd.registerLocationMonitor(m_locationDefinition.getName());
         
         verify(m_locMonDao);
         
@@ -100,55 +156,67 @@ public class PollerBackEndTest extends TestCase {
         
     }
     
-    public void testGetPollerConfiguration() {
+    // reportResult test variations
+    // what if we cant' find the locationMonitor with that ID
+    // what if we can't find the service with that ID
+    // what if we can't find a current status
+    // what if the new status is the same as the current status
+    // what if they are different
+    // test for saving rrd data
+    // do I send events for status changed
+    public void testStatusChangeFromUpToDown() {
         
-        String pkgName = "OAKPackage";
+        expect(m_locMonDao.get(1)).andReturn(m_locationMonitor);
+        expect(m_monSvcDao.get(1)).andReturn(m_httpService);
+        
+        expect(m_locMonDao.getMostRecentStatusChange(m_locationMonitor, m_httpService)).andReturn(m_httpCurrentStatus);
+        
+        final PollStatus newStatus = PollStatus.unavailable("Test Down");
+        
+        m_locMonDao.saveStatusChange(isA(OnmsLocationSpecificStatusChange.class));
+        expectLastCall().andAnswer(new IAnswer<Object>() {
 
-        OnmsMonitoringLocationDefinition def = new OnmsMonitoringLocationDefinition();
-        def.setArea("Oakland");
-        def.setName("OAK");
-        def.setPollingPackageName(pkgName);
-        
-        String filterRule = "ipaddr = '192.168.1.1'";
-        Package pkg = createPackage(pkgName, filterRule);
-        Service http = addService(pkg, "HTTP", 1234, "url", "http://www.opennms.org");
-        Service dns = addService(pkg, "DNS", 5678, "hostname", "www.opennms.org");
-        
-        String[] svcNames = { "HTTP", "DNS" };
-        
-        ServiceSelector selector = new ServiceSelector(filterRule, Arrays.asList(svcNames));
-        
-        OnmsMonitoredService[] monServices = new OnmsMonitoredService[2];
-        
-        NetworkBuilder builder = new NetworkBuilder(new OnmsDistPoller("localhost", "127.0.0.1"));
-        builder.addNode("testNode");
-        builder.addInterface("192.168.1.1");
-        monServices[0] = builder.addService(new OnmsServiceType("HTTP"));
-        monServices[1] = builder.addService(new OnmsServiceType("DNS"));
-        
-        OnmsLocationMonitor mon = new OnmsLocationMonitor();
-        mon.setId(1);
-        mon.setLocationDefinition(def);
-        
-        expect(m_locMonDao.get(mon.getId())).andReturn(mon);
-        
-        expect(m_pollerConfig.getPackage(pkgName)).andReturn(pkg);
-        expect(m_pollerConfig.getServiceSelectorForPackage(pkg)).andReturn(selector);
-        expect(m_pollerConfig.getServiceInPackage("HTTP", pkg)).andReturn(http);
-        expect(m_pollerConfig.getServiceInPackage("DNS", pkg)).andReturn(dns);
-        
-        expect(m_monSvcDao.findMatchingServices(selector)).andReturn(Arrays.asList(monServices));
+            public Object answer() throws Throwable {
+                OnmsLocationSpecificStatusChange statusChange = (OnmsLocationSpecificStatusChange)getCurrentArguments()[0];
+                assertEquals(m_locationMonitor, statusChange.getLocationMonitor());
+                assertEquals(m_httpService, statusChange.getMonitoredService());
+                assertEquals(newStatus.getStatusCode(), statusChange.getStatus().getStatusCode());
+                assertEquals(newStatus.getResponseTime(), statusChange.getStatus().getResponseTime());
+                assertEquals(newStatus.getReason(), statusChange.getStatus().getReason());
+                
+                return null;
+            }
+            
+        });
         
         replay(m_locMonDao, m_monSvcDao, m_pollerConfig);
         
-        PollerConfiguration config = m_backEnd.getPollerConfiguration(mon.getId());
+        m_backEnd.reportResult(1, 1, newStatus);
+        
+        verify(m_locMonDao, m_monSvcDao, m_pollerConfig);
+    }
+    
+    public void testGetPollerConfiguration() {
+        
+        expect(m_locMonDao.get(m_locationMonitor.getId())).andReturn(m_locationMonitor);
+        
+        expect(m_pollerConfig.getPackage(m_locationDefinition.getPollingPackageName())).andReturn(m_package);
+        expect(m_pollerConfig.getServiceSelectorForPackage(m_package)).andReturn(m_serviceSelector);
+        expect(m_pollerConfig.getServiceInPackage("HTTP", m_package)).andReturn(m_httpSvcConfig);
+        expect(m_pollerConfig.getServiceInPackage("DNS", m_package)).andReturn(m_dnsSvcConfig);
+        
+        expect(m_monSvcDao.findMatchingServices(m_serviceSelector)).andReturn(Arrays.asList(m_monServices));
+        
+        replay(m_locMonDao, m_monSvcDao, m_pollerConfig);
+        
+        PollerConfiguration config = m_backEnd.getPollerConfiguration(m_locationMonitor.getId());
         
         verify(m_locMonDao, m_monSvcDao, m_pollerConfig);
         
         assertNotNull(config);
         assertEquals(2, config.getConfigurationForPoller().length);
-        assertEquals(monServices[0], config.getConfigurationForPoller()[0].getMonitoredService());
-        assertEquals(monServices[1], config.getConfigurationForPoller()[1].getMonitoredService());
+        assertEquals(m_httpService, config.getConfigurationForPoller()[0].getMonitoredService());
+        assertEquals(m_dnsService, config.getConfigurationForPoller()[1].getMonitoredService());
         assertEquals(5678, config.getConfigurationForPoller()[1].getPollModel().getPollInterval());
         assertTrue(config.getConfigurationForPoller()[1].getMonitorConfiguration().containsKey("hostname"));
     }

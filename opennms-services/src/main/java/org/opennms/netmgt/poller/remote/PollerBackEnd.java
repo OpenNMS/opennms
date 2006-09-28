@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.Date;
 
 import org.opennms.netmgt.model.OnmsMonitoringLocationDefinition;
+import org.opennms.netmgt.model.PollStatus;
 
 public interface PollerBackEnd {
     
@@ -58,6 +59,12 @@ public interface PollerBackEnd {
      */
     public abstract PollerConfiguration getPollerConfiguration(int locationMonitorId);
     
-    
-
+    /**
+     * Report a poll result from the client to the server.
+     * 
+     * @param locationMonitorID the id of the location monitor that did the poll
+     * @param serviceId the id of the service that was polled
+     * @param pollStatus the result of the poll
+     */
+    public abstract void reportResult(int locationMonitorID, int serviceId, PollStatus status);
 }

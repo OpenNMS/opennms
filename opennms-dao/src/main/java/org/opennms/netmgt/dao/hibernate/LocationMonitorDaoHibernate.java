@@ -50,6 +50,8 @@ import org.opennms.netmgt.config.monitoringLocations.LocationDef;
 import org.opennms.netmgt.config.monitoringLocations.MonitoringLocationsConfiguration;
 import org.opennms.netmgt.dao.LocationMonitorDao;
 import org.opennms.netmgt.model.OnmsLocationMonitor;
+import org.opennms.netmgt.model.OnmsLocationSpecificStatusChange;
+import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsMonitoringLocationDefinition;
 import org.springframework.core.io.Resource;
 
@@ -326,6 +328,14 @@ public class LocationMonitorDaoHibernate extends AbstractDaoHibernate<OnmsLocati
 
     public OnmsMonitoringLocationDefinition findMonitoringLocationDefinition(String monitoringLocationDefinitionName) {
         return createEntityDef(getLocationDef(monitoringLocationDefinitionName));
+    }
+
+    public OnmsLocationSpecificStatusChange getMostRecentStatusChange(OnmsLocationMonitor locationMonitor, OnmsMonitoredService monSvc) {
+        throw new UnsupportedOperationException("not yet implemented");
+    }
+
+    public void saveStatusChange(OnmsLocationSpecificStatusChange statusChange) {
+        throw new UnsupportedOperationException("not yet implemented");
     }
 
 }

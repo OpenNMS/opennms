@@ -50,6 +50,16 @@ public class OnmsLocationSpecificStatusChange {
 	private OnmsLocationMonitor m_locationMonitor;
 	private OnmsMonitoredService m_monitoredService;
 	private PollStatus m_status;
+    
+    public OnmsLocationSpecificStatusChange() {
+        // this is used by hibernate to construct an object from the db
+    }
+    
+    public OnmsLocationSpecificStatusChange(OnmsLocationMonitor locationMonitor, OnmsMonitoredService monitoredService, PollStatus status) {
+        m_locationMonitor = locationMonitor;
+        m_monitoredService = monitoredService;
+        m_status = status;
+    }
 	
     @Id
     @SequenceGenerator(name="opennmsSequence", sequenceName="opennmsNxtId")
