@@ -73,7 +73,6 @@ public class SnmpAgentConfig {
     private String m_securityName;
     private String m_readCommunity;
     private int m_maxVarsPerPdu;
-    private boolean m_adapted;
     private String m_writeCommunity;
     private String m_authPassPhrase;
     private String m_authProtocol;
@@ -104,7 +103,6 @@ public class SnmpAgentConfig {
         m_privPassPhrase = DEFAULT_PRIV_PASS_PHRASE;
         m_readCommunity = DEFAULT_READ_COMMUNITY;
         m_maxVarsPerPdu = DEFAULT_MAX_VARS_PER_PDU;
-        m_adapted = false;
         m_writeCommunity = DEFAULT_WRITE_COMMUNITY;
     }
     
@@ -210,14 +208,6 @@ public class SnmpAgentConfig {
 
     public void setMaxVarsPerPdu(int maxVarsPerPdu) {
         m_maxVarsPerPdu = maxVarsPerPdu;
-    }
-
-    public void setAdapted(boolean adapted) {
-        m_adapted = adapted;
-    }
-    
-    public boolean isAdapted() {
-        return m_adapted;
     }
 
     public String getWriteCommunity() {
