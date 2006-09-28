@@ -51,6 +51,7 @@ import org.opennms.netmgt.dao.jdbc.monsvc.LazyMonitoredService;
 import org.opennms.netmgt.dao.jdbc.monsvc.MonitoredServiceId;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
+import org.opennms.netmgt.model.ServiceSelector;
 
 public class MonitoredServiceDaoJdbc extends AbstractDaoJdbc implements MonitoredServiceDao {
     
@@ -273,6 +274,10 @@ public class MonitoredServiceDaoJdbc extends AbstractDaoJdbc implements Monitore
         }
         
         set.reset();
+    }
+
+    public Collection<OnmsMonitoredService> findMatchingServices(ServiceSelector serviceSelector) {
+        throw new UnsupportedOperationException("not implemented. you shouldn't be using this dao its deprecated");
     }
 
     

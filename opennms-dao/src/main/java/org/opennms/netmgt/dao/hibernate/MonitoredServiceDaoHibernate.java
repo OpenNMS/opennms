@@ -34,9 +34,15 @@
 package org.opennms.netmgt.dao.hibernate;
 
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
 
 import org.opennms.netmgt.dao.MonitoredServiceDao;
+import org.opennms.netmgt.filter.Filter;
 import org.opennms.netmgt.model.OnmsMonitoredService;
+import org.opennms.netmgt.model.ServiceSelector;
 /**
  * @author david
  *
@@ -62,5 +68,25 @@ public class MonitoredServiceDaoHibernate extends AbstractDaoHibernate<OnmsMonit
 			    "where svc.ipInterface.node.id = ? and svc.ipInterface.ipAddress = ? and svc.ipInterface.ifIndex = ? and svc.serviceType.id = ?",
 			   nodeId, ipAddr, ifIndex, serviceId);
 	}
+
+    public Collection<OnmsMonitoredService> findMatchingServices(ServiceSelector selector) {
+        Filter filter = new Filter();
+        Set<String> matchingIps = new HashSet<String>(filter.getIPList(selector.getFilterRule()));
+        Set<String> matchingSvcs = new HashSet<String>(selector.getServiceNames());
+        
+        List<OnmsMonitoredService> matchingServices = new LinkedList<OnmsMonitoredService>();
+        Collection<OnmsMonitoredService> services = findAll();
+        for (OnmsMonitoredService svc : services) {
+            if ((matchingSvcs.contains(svc.getServiceName()) || matchingSvcs.isEmpty()) &&
+                matchingIps.contains(svc.getIpAddress())) {
+                
+                matchingServices.add(svc);
+            }
+            
+        }
+        
+        
+        return matchingServices;
+    }
 
 }
