@@ -342,8 +342,6 @@ public final class IfSnmpCollector implements Runnable {
         if (log().isDebugEnabled())
             log().debug("run: collecting for: "+m_address+" with agentConfig: "+agentConfig);
         
-        //TODO: This needs to be fixed... reported as a bug in bugzilla.
-        agentConfig.setMaxVarsPerPdu(50);
         SnmpWalker walker = SnmpUtils.createWalker(agentConfig, "system/ifTable/ifXTable/ipAddrTable", new CollectionTracker[] { m_sysGroup, m_ifTable, m_ipAddrTable, m_ifXTable});
         walker.start();
 
