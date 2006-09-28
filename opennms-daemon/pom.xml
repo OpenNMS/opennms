@@ -119,6 +119,12 @@
       <version>1.3.2-SNAPSHOT</version>
       <scope>compile</scope>
     </dependency>
+    <!-- this is a runtime depdency we need at install time -->
+    <dependency>
+      <groupId>alt.dev.jmta</groupId>
+      <artifactId>jmta</artifactId>
+      <scope>runtime</scope>
+    </dependency>
     <!-- We depend on our JDBC database driver here instead of in the above
          OpenNMS dependencies that use the database because the database is
          configured in opennms-database.xml, which is in this project.
