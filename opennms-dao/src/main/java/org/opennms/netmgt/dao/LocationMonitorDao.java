@@ -35,6 +35,8 @@ package org.opennms.netmgt.dao;
 import java.util.Collection;
 
 import org.opennms.netmgt.model.OnmsLocationMonitor;
+import org.opennms.netmgt.model.OnmsLocationSpecificStatusChange;
+import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsMonitoringLocationDefinition;
 
 /**
@@ -52,5 +54,9 @@ public interface LocationMonitorDao extends OnmsDao<OnmsLocationMonitor, Integer
     void saveMonitoringLocationDefinition(OnmsMonitoringLocationDefinition def);
     
     void saveMonitoringLocationDefinitions(Collection<OnmsMonitoringLocationDefinition> defs);
+
+    void saveStatusChange(OnmsLocationSpecificStatusChange statusChange);
+    
+    OnmsLocationSpecificStatusChange getMostRecentStatusChange(OnmsLocationMonitor locationMonitor, OnmsMonitoredService monSvc);
     
 }
