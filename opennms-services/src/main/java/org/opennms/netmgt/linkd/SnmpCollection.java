@@ -343,8 +343,6 @@ public final class SnmpCollection implements ReadyRunnable {
 	        if (log.isDebugEnabled())
 	            log.debug("run: collecting for: "+m_address+" with agentConfig: "+m_agentConfig);
 	        
-	        //TODO: This needs to be fixed... reported as a bug in bugzilla.
-	        m_agentConfig.setMaxVarsPerPdu(50);
 	        SnmpWalker walker = null;
 
 			if (m_collectVlanTable) {

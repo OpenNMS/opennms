@@ -273,7 +273,6 @@ final class SnmpVlanCollection implements ReadyRunnable {
 			m_dot1dstptable = new Dot1dStpPortTable(m_address);
 			m_dot1dtpFdbtable = new Dot1dTpFdbTable(m_address);
 	
-	        m_agentConfig.setMaxVarsPerPdu(50);
 	        SnmpWalker walker = 
 	        	SnmpUtils.createWalker(m_agentConfig, "dot1dBase/dot1dBaseTable/dot1dStp/dot1dStpTable/dot1dTpFdbTable ", 
 	        			new CollectionTracker[] { m_dot1dbase, m_dot1dbaseTable, m_dot1dstp,m_dot1dstptable,m_dot1dtpFdbtable});
