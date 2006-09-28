@@ -43,6 +43,7 @@ import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -62,6 +63,7 @@ import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.config.poller.PollerConfiguration;
 import org.opennms.netmgt.config.poller.Service;
 import org.opennms.netmgt.filter.Filter;
+import org.opennms.netmgt.model.ServiceSelector;
 import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.utils.IPSorter;
 import org.opennms.netmgt.utils.IpListFromUrl;
@@ -170,6 +172,21 @@ abstract public class PollerConfigManager implements PollerConfig {
             }
         }
         return null;
+    }
+    
+    @SuppressWarnings("unchecked")
+    public ServiceSelector getServiceSelectorForPackage(Package pkg) {
+        String filter = pkg.getFilter().getContent();
+        
+        List<String> svcNames = new LinkedList<String>();
+        
+        Enumeration<Service> pkgServices = pkg.enumerateService();
+        while(pkgServices.hasMoreElements()) {
+            svcNames.add(pkgServices.nextElement().getName());
+        }
+        
+
+        return new ServiceSelector(filter, svcNames);
     }
 
     public synchronized void addPackage(Package pkg) {
@@ -343,7 +360,7 @@ abstract public class PollerConfigManager implements PollerConfig {
         }
     }
 
-    protected List getIpList(org.opennms.netmgt.config.poller.Package pkg) {
+    public List getIpList(Package pkg) {
         Filter filter = new Filter();
         StringBuffer filterRules = new StringBuffer(pkg.getFilter().getContent());
         if (m_verifyServer) {

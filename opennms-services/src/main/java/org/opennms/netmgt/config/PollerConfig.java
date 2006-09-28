@@ -37,6 +37,7 @@
 package org.opennms.netmgt.config;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
@@ -46,6 +47,8 @@ import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.config.poller.Package;
 import org.opennms.netmgt.config.poller.PollerConfiguration;
 import org.opennms.netmgt.config.poller.Service;
+import org.opennms.netmgt.model.OnmsMonitoredService;
+import org.opennms.netmgt.model.ServiceSelector;
 import org.opennms.netmgt.poller.ServiceMonitor;
 
 /**
@@ -121,6 +124,12 @@ public interface PollerConfig {
      */
     public abstract void rebuildPackageIpListMap();
 
+    /**
+     * Determine the list of IPs the filter rule for this package allows
+     * @param pkg
+     * @return
+     */
+    public abstract List getIpList(Package pkg);
     /**
      * This method is used to determine if the named interface is included in
      * the passed package definition. If the interface belongs to the package
@@ -256,6 +265,8 @@ public interface PollerConfig {
     public Enumeration enumeratePackage();
     
     public Package getPackage(String pkgName);
+    
+    public ServiceSelector getServiceSelectorForPackage(Package pkg);
 
     public int getThreads();
 
@@ -275,4 +286,5 @@ public interface PollerConfig {
     public abstract void addMonitor(String svcName, String className);
 
     public abstract PollerConfiguration getConfiguration();
+
 }

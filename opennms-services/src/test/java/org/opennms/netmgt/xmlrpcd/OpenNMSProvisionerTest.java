@@ -35,6 +35,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.StringReader;
 import java.sql.Connection;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -55,6 +56,7 @@ import org.opennms.netmgt.config.poller.Service;
 import org.opennms.netmgt.mock.MockDatabase;
 import org.opennms.netmgt.mock.MockEventIpcManager;
 import org.opennms.netmgt.mock.MockEventUtil;
+import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.rrd.RrdConfig;
 import org.opennms.netmgt.rrd.RrdStrategy;
 import org.opennms.netmgt.rrd.RrdUtils;
@@ -189,13 +191,14 @@ public class OpenNMSProvisionerTest extends MockObjectTestCase {
             m_xml = xml;
         }
 
-        protected List getIpList(Package pkg) {
+        public List getIpList(Package pkg) {
             return Collections.EMPTY_LIST;
         }
 
         public String getXml() {
             return m_xml;
         }
+
 
     }
     
