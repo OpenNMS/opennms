@@ -37,7 +37,7 @@ import java.util.List;
 import java.util.ArrayList;
 
 import org.apache.log4j.Category;
-import org.apache.log4j.Priority;
+
 import org.exolab.castor.xml.Unmarshaller;
 import org.exolab.castor.xml.Marshaller;
 import org.exolab.castor.xml.MarshalException;
@@ -83,19 +83,19 @@ public class LinkdConfigFactory {
 	 * The HashMap that associates the snmp primary ip address to Linkable Snmp
 	 * nodes
 	 */
-	private static HashMap snmpprimaryip2nodes;
+	private static HashMap<String,LinkableNode> snmpprimaryip2nodes;
 
 	/**
 	 * The HashMap that associates the snmp primary ip address to Linkable
 	 * SnmpCollection
 	 *  
 	 */
-	private static HashMap snmpprimaryip2colls;
+	private static HashMap<String,SnmpCollection> snmpprimaryip2colls;
 
 	/**
 	 * The HashMap that associates the OIDS masks to class name
 	 */
-	private static HashMap oidMask2className;
+	private static HashMap<String,String> oidMask2className;
 
 	/**
 	 * The boolean indicating if class name where loaded
@@ -153,9 +153,9 @@ public class LinkdConfigFactory {
 			FileNotFoundException, MarshalException, ValidationException,
 			ClassNotFoundException {
 
-		snmpprimaryip2nodes = new HashMap();
-		snmpprimaryip2colls = new HashMap();
-		oidMask2className = new HashMap();
+		snmpprimaryip2nodes = new HashMap<String,LinkableNode>();
+		snmpprimaryip2colls = new HashMap<String,SnmpCollection>();
+		oidMask2className = new HashMap<String,String>();
 
 		File cfgFile = ConfigFileConstants
 				.getFile(ConfigFileConstants.LINKD_CONFIG_FILE_NAME);
@@ -269,14 +269,14 @@ public class LinkdConfigFactory {
 		return threads;
 	}
 
-	public HashMap getSnmpColls(Connection dbConn) throws SQLException,
+	public HashMap<String,SnmpCollection> getSnmpColls(Connection dbConn) throws SQLException,
 			UnknownHostException {
 		if (!hashLoaded)
 			getNodesInfo(dbConn);
 		return snmpprimaryip2colls;
 	}
 
-	public HashMap getLinkableNodes(Connection dbConn) throws SQLException,
+	public HashMap<String,LinkableNode> getLinkableNodes(Connection dbConn) throws SQLException,
 			UnknownHostException {
 		if (!hashLoaded)
 			getNodesInfo(dbConn);
@@ -315,7 +315,7 @@ public class LinkdConfigFactory {
 
 		updateFromFile();
 		oidMask2className.clear();
-		List excludedOids = new ArrayList();
+		List<String> excludedOids = new ArrayList<String>();
 
 		Vendor[] vendors = m_linkdconfiguration.getVlans().getVendor();
 		for (int i = 0; i < vendors.length; i++) {
@@ -415,7 +415,7 @@ public class LinkdConfigFactory {
 		ResultSet rs = ps.executeQuery();
 		if (log.isDebugEnabled())
 			log
-					.debug("getNodesInfo: searching snmp primary ip nodes with query: \" "
+					.debug("getNodesInfo: execute query: \" "
 							+ SQL_SELECT_SNMP_NODES + "\"");
 
 		while (rs.next()) {
@@ -445,7 +445,6 @@ public class LinkdConfigFactory {
 						log.debug("getNodesInfo: no class found to get Vlans");
 				}
 			} catch (Throwable t) {
-				if (log.isEnabledFor(Priority.ERROR))
 					log
 							.error("getNodesInfo: Failed to load vlan classes from linkd configuration file "
 									+ t);
@@ -488,7 +487,7 @@ public class LinkdConfigFactory {
 		PreparedStatement stmt = dbConn.prepareStatement(SQL_SELECT_SNMP_NODE);
 		stmt.setInt(1, nodeid);
 		if (log.isDebugEnabled())
-			log.debug("getSnmpCollection: SQL statement = " + stmt.toString());
+			log.debug("getSnmpCollection: execute '" + SQL_SELECT_SNMP_NODE + "' with nodeid ="+nodeid);
 
 		ResultSet rs = stmt.executeQuery();
 
@@ -498,7 +497,7 @@ public class LinkdConfigFactory {
 				sysoid = "-1";
 			String ipaddr = rs.getString("ipaddr");
 			if (log.isDebugEnabled())
-				log.debug("getSnmpCollection: found node element: nodeid "
+				log.debug("getSnmpCollection: found nodeid "
 						+ nodeid + " ipaddr " + ipaddr + " sysoid " + sysoid);
 
 			coll = new SnmpCollection(SnmpPeerFactory.getInstance().getAgentConfig(
@@ -517,7 +516,6 @@ public class LinkdConfigFactory {
 								.debug("getSnmpCollection: no class found to get Vlans");
 				}
 			} catch (Throwable t) {
-				if (log.isEnabledFor(Priority.ERROR))
 					log
 							.error("getSnmpCollection: Failed to load vlan classes from linkd configuration file "
 									+ t);
@@ -577,41 +575,41 @@ public class LinkdConfigFactory {
 		PreparedStatement ps = dbConn
 				.prepareStatement(SQL_UPDATE_ATINTERFACE_D);
 		i = ps.executeUpdate();
-		if (log.isEnabledFor(Priority.INFO)) {
-			log.info("updateDeletedNodes: " + SQL_UPDATE_ATINTERFACE_D
-					+ "rows: " + i);
+		if (log.isInfoEnabled()) {
+			log.info("updateDeletedNodes: execute '" + SQL_UPDATE_ATINTERFACE_D
+					+ "' updated rows: " + i);
 		}
 
 		// update stpnode
 		ps = dbConn.prepareStatement(SQL_UPDATE_STPNODE_D);
 		i = ps.executeUpdate();
-		if (log.isEnabledFor(Priority.INFO)) {
-			log.info("updateDeletedNodes: " + SQL_UPDATE_STPNODE_D + "rows: "
+		if (log.isInfoEnabled()) {
+			log.info("updateDeletedNodes: execute '" + SQL_UPDATE_STPNODE_D + "' updated rows: "
 					+ i);
 		}
 
 		// update stpinterface
 		ps = dbConn.prepareStatement(SQL_UPDATE_STPINTERFACE_D);
 		i = ps.executeUpdate();
-		if (log.isEnabledFor(Priority.INFO)) {
-			log.info("updateDeletedNodes: " + SQL_UPDATE_STPINTERFACE_D
-					+ "rows: " + i);
+		if (log.isInfoEnabled()) {
+			log.info("updateDeletedNodes: execute '" + SQL_UPDATE_STPINTERFACE_D
+					+ "' updated rows: " + i);
 		}
 
 		// update iprouteinterface
 		ps = dbConn.prepareStatement(SQL_UPDATE_IPROUTEINTERFACE_D);
 		i = ps.executeUpdate();
-		if (log.isEnabledFor(Priority.INFO)) {
-			log.info("updateDeletedNodes: " + SQL_UPDATE_IPROUTEINTERFACE_D
-					+ "rows: " + i);
+		if (log.isInfoEnabled()) {
+			log.info("updateDeletedNodes: execute '" + SQL_UPDATE_IPROUTEINTERFACE_D
+					+ "'updated rows: " + i);
 		}
 
 		// update datalinkinterface
 		ps = dbConn.prepareStatement(SQL_UPDATE_DATALINKINTERFACE_D);
 		i = ps.executeUpdate();
-		if (log.isEnabledFor(Priority.INFO)) {
-			log.info("updateDeletedNodes: " + SQL_UPDATE_DATALINKINTERFACE_D
-					+ "rows: " + i);
+		if (log.isInfoEnabled()) {
+			log.info("updateDeletedNodes: execute '" + SQL_UPDATE_DATALINKINTERFACE_D
+					+ "' updated rows: " + i);
 		}
 
 	}
@@ -634,7 +632,6 @@ public class LinkdConfigFactory {
 
 	private boolean hasClassName(String sysoid) {
 
-		String defaultClassName = null;
 		Set ks = oidMask2className.keySet();
 		Iterator ite = ks.iterator();
 		while (ite.hasNext()) {
