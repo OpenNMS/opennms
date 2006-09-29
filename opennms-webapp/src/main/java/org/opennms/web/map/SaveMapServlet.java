@@ -71,6 +71,7 @@ public class SaveMapServlet extends HttpServlet
 				+ " the query received is '" + query + "'");
 		try {
 			Manager m = new Manager();
+			m.startSession();
 			if((packetStr==null && totalPacketsStr==null) || (packetStr.equals("1")) ){
 				log.debug("SaveMap: Instantiating new elems ArrayList");
 				elems = new ArrayList();
@@ -122,6 +123,7 @@ public class SaveMapServlet extends HttpServlet
 				}
 				elems.add(ve);
 			}
+			m.endSession();
 			
 			//add elements and save if is a no-packet session or if is the last packet
 			if((packetStr==null && totalPacketsStr==null) || (packetStr.equals(totalPacketsStr))){

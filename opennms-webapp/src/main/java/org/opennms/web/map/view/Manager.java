@@ -127,6 +127,7 @@ public class Manager {
      */
     public void startSession() throws MapsManagementException {
         try {
+        	Factory.createDbConnection();
             m_dbManager.startSession();
         } catch (SQLException se) {
             throw new MapsManagementException(
@@ -142,6 +143,7 @@ public class Manager {
      */
     synchronized public void endSession() throws MapsManagementException {
         try {
+        	Factory.releaseDbConnection();
             m_dbManager.endSession();
         } catch (SQLException se) {
             throw new MapsManagementException("Manager: unable to end session."
@@ -238,7 +240,7 @@ public class Manager {
             log.debug("Ending adding links for map with id "+id);
         } catch (SQLException se) {
             throw new MapsManagementException(
-                    "Factory: unable to get map with id=" + id + "." + se);
+                    "Manager: unable to get map with id=" + id + "." + se);
         }
         return retVMap;
     }
@@ -484,19 +486,12 @@ public class Manager {
     	return Factory.getIconName(elementId, type);
     }
     
-    public String getIconName(int elementId,String type, Connection conn) throws SQLException {
-    	return Factory.getIconName(elementId, type, conn);
-    }    
 
     private String getLabel(VElement elem) throws SQLException {
     	if (elem.isMap()) return Factory.getMapName(elem.getId());
     	return NetworkElementFactory.getNodeLabel(elem.getId());
     }
     
-    private String getLabel(VElement elem, Connection conn) throws SQLException {
-    	if (elem.isMap()) return Factory.getMapName(elem.getId(), conn);
-    	return NetworkElementFactory.getNodeLabel(elem.getId());
-    }
     /**
      * Take the maps with label like the pattern in input and return them in
      * VMap[] form.
@@ -748,16 +743,7 @@ public class Manager {
         return elem;
     }
 	
-	public VElement newElement(int mapId, int elementId, String type, Connection conn) throws MapsManagementException,
-    MapNotFoundException, MapsException, SQLException {
 
-		String label = null;
-		if (type.equals(VElement.NODE_TYPE)) label = NetworkElementFactory.getNodeLabel(elementId);
-		if (type.equals(VElement.MAP_TYPE)) label = Factory.getMapName(elementId, conn);
-		String iconname = Factory.getIconName(elementId,type, conn);
-		VElement elem = new VElement(mapId,elementId,type,label,iconname);
-		return elem;
-	}
 
     /**
      * Create a new (not child) empty Submap with the identifier setted to id.
@@ -956,22 +942,23 @@ public class Manager {
 
 		int status = defaultStatusId;
 		VElement ve = null;
-		Set nodeIds = new TreeSet();
-		for(int i=0;i<mapElements.length;i++){
-			if(mapElements[i].isNode()){
-				nodeIds.add(new Integer(mapElements[i].getId()));
-			}else{
-				nodeIds.addAll(getNodeidsOnElement(mapElements[i]));
-			}
-		}
+
 		
 		java.util.Map availsMap = null;
 		if (availEnabled) {
+			Set nodeIds = new TreeSet();
+			for(int i=0;i<mapElements.length;i++){
+				if(mapElements[i].isNode()){
+					nodeIds.add(new Integer(mapElements[i].getId()));
+				}else{
+					nodeIds.addAll(getNodeidsOnElement(mapElements[i]));
+				}
+			}
 			log.debug("Getting avails for nodes of map ("+nodeIds.size()+" nodes)");
 			availsMap = cModel.getNodeAvailability(nodeIds);
 			log.debug("Avails obtained");
 		}
-		Connection conn = Vault.getDbConnection();
+
     	for(int i=0;i<mapElements.length;i++){
     		ve = (VElement) mapElements[i].clone();
     		if (log.isDebugEnabled()) 
@@ -1030,14 +1017,13 @@ public class Manager {
 			ve.setStatus(elementStatus);
 			ve.setSeverity(new BigDecimal(elementSeverity+1/2).intValue());
 			//got the label
-			ve.setLabel(getLabel(ve,conn));
+			ve.setLabel(getLabel(ve));
 
 			if (!returnChangedElem || (returnChangedElem && !ve.equalsIgnorePosition(mapElements[i]))){
 				log.debug("Adding element "+ve.getId());
 				elems.add(ve);
 			}
     	}
-    	Vault.releaseDbConnection(conn);
         return elems;
     }
 

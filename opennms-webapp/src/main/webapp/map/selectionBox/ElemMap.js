@@ -23,7 +23,7 @@ ElemMap.prototype.getInfo = function()
 {
 	// get info 	
 	var str = "<text id=\"DownInfoText\" x=\"3\" y=\"20\">Selected Map info" +
-		"<tspan x=\"3\" dy=\"30\" font-size=\"9\">Name: " + this.name + "</tspan>" +
+		"<tspan x=\"3\" dy=\"20\" font-size=\"9\">Name: " + this.name + "</tspan>" +
 		"<tspan x=\"3\" dy=\"15\" font-size=\"9\">Owner: " + this.owner + "</tspan>"+
 		"</text>";
 	return parseXML(str, svgDocument);

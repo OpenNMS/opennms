@@ -12,7 +12,7 @@ package org.opennms.web.map.config;
  * TODO To change the template for this generated type comment go to
  * Window - Preferences - Java - Code Style - Code Templates
  */
-public class Severity {
+public class Severity implements Comparable {
 	private int id;
 	private String label;
 	private String color;
@@ -29,6 +29,17 @@ public class Severity {
 		this.label = label;
 		this.color = color;
 	}
+	
+	/**
+	 * Compares the Severity to another in input by ids.
+	 */
+	public int compareTo(Object otherSev){
+		Severity othSev = (Severity) otherSev;
+		if(this.id==othSev.getId()) return 0;
+		else if(this.id<othSev.getId()) return -1;
+		else  return 1;
+	}
+	
 	public String getColor() {
 		return color;
 	}

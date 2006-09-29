@@ -60,6 +60,9 @@
 <script language="VBScript" src="<%=org.opennms.web.Util.calculateUrlBase( request )%>map/svgcheck.vbs"></script>
 <script language='javascript' src="<%=org.opennms.web.Util.calculateUrlBase( request )%>map/svgcheck.js"></script>
 
+<script language="javascript" src="map/selectionBox/helper_functions.js"></script>
+
+
 <SCRIPT language='javascript'>
 	checkAndGetSVGViewer();
 	
@@ -95,10 +98,9 @@
 <%
 	MapPropertiesFactory.init();
 	MapPropertiesFactory mpf = MapPropertiesFactory.getInstance();
-	java.util.Map statuses = mpf.getStatusesMap();
-	java.util.Iterator it = statuses.values().iterator();
-	while(it.hasNext()){
-		Status status=(Status) it.next();
+	Status[] statuses = mpf.getOrderedStatuses();
+	for(int i=0; i<statuses.length;i++){
+		Status status=statuses[i];
 		%>
 			STATUSES_TEXT[<%=status.getId()%>]="<%=status.getText()%>";
 			STATUSES_COLOR[<%=status.getId()%>]="<%=status.getColor()%>";
@@ -106,10 +108,9 @@
 		<%
 	}
 
-	java.util.Map severities = mpf.getSeveritiesMap();
-	it = severities.values().iterator();
-	while(it.hasNext()){
-		Severity severity=(Severity) it.next();
+	Severity[] severities = mpf.getOrderedSeverities();
+	for(int i=0; i<severities.length;i++){
+		Severity severity=severities[i];
 		%>
 			SEVERITIES_LABEL[<%=severity.getId()%>]="<%=severity.getLabel()%>";
 			SEVERITIES_COLOR[<%=severity.getId()%>]="<%=severity.getColor()%>";
@@ -117,10 +118,9 @@
 		<%
 	}
 
-	java.util.Map avails = mpf.getAvailabilitiesMap();
-	it = avails.values().iterator();
-	while(it.hasNext()){
-		Avail avail=(Avail) it.next();
+	Avail[] avails = mpf.getOrderedAvails();
+	for(int i=0; i<avails.length;i++){
+		Avail avail=avails[i];
 		%>
 			AVAIL_MIN[<%=avail.getId()%>]=<%=avail.getMin()%>;
 			AVAIL_COLOR[<%=avail.getId()%>]="<%=avail.getColor()%>";
@@ -153,8 +153,8 @@
 	var IMAGES_FOLDER = "images";
 	var IMAGES_BACKGROUND_FOLDER = IMAGES_FOLDER+"/background/";
 	var IMAGES_ELEMENTS_FOLDER = IMAGES_FOLDER+"/elements/";
-	var DEFAULT_ICON = "unspecified";
-	var DEFAULT_MAP_ICON = "map";
+	var DEFAULT_ICON = "<%=mpf.getDefaultNodeIcon()%>";
+	var DEFAULT_MAP_ICON = "<%=mpf.getDefaultMapIcon()%>";
 	var DEFAULT_BG_COLOR = "ffffff";
 	var NODE_TYPE = "N";
 	var MAP_TYPE= "M";
@@ -162,7 +162,8 @@
 	var NEW_MAP = -2;
 		
 	//global variable for map elements dimension setting on.
-	var mapElemDimension;	
+	//by default map element dimension is 20px (normal)	
+	var mapElemDimension=20;	
 	
 	//the map object to work on.
 	var map;
@@ -179,6 +180,12 @@
 	var currentMapId=MAP_NOT_OPENED;
 	var currentMapBackGround="#"+DEFAULT_BG_COLOR;
 	var currentMapAccess="", currentMapName="", currentMapOwner="", currentMapUserlast="", currentMapCreatetime="", currentMapLastmodtime="";
+	
+	// array containing the history of the maps opened
+	var mapHistory = new Array();
+	var mapHistoryName = new Array();
+	// the index of the current map in the history
+	var mapHistoryIndex = 0;
  	
  	// if true the current user is admin.
  	var isUserAdmin = <%=request.isUserInRole( Authentication.ADMIN_ROLE )%>;
@@ -210,8 +217,8 @@
 	//global selectionList for MAP BACKGROUND IMAGES
 	var selectedBGImageInList=0;
 	var selBGImages; 
-	var BGImages;
-	var BGImagesSorts; 
+	var BGImages=[""];
+	var BGImagesSorts=[null]; 
 	var BGImagesSortAss;
 	var myBGImagesResult;
 	
@@ -227,12 +234,42 @@
 	//global selectionList for MAP ELEMENT' ICONS
 	var selectedMEIconInList=0;
 	var selMEIcons; 
-	var MEIcons;
-	var MEIconsSorts; 
+	var MEIcons=[""];
+	var MEIconsSorts=[null]; 
 	var MEIconsSortAss;
 	var myMEIconsResult;		
+<%
+	java.util.Map icons = mpf.getIconsMap();
+	java.util.Iterator it = icons.entrySet().iterator();
+	while(it.hasNext()){
+		java.util.Map.Entry iconEntry=(java.util.Map.Entry) it.next();
+		%>
+			MEIcons.push("<%=((String)iconEntry.getKey())%>");
+			MEIconsSorts.push(IMAGES_ELEMENTS_FOLDER+"<%=((String)iconEntry.getValue())%>");
+		<%
+	}
+%>	
+<%
+	java.util.Map bgImages = mpf.getBackgroundImagesMap();
+	it = bgImages.entrySet().iterator();
+	while(it.hasNext()){
+		java.util.Map.Entry bgImageEntry=(java.util.Map.Entry) it.next();
+		%>
+			BGImages.push("<%=((String)bgImageEntry.getKey())%>");
+			BGImagesSorts.push(IMAGES_BACKGROUND_FOLDER+"<%=((String)bgImageEntry.getValue())%>");
+		<%
+	}
+%>
+
+	MapElemDim= ["smallest", "very small", "small","normal","big", "biggest"];
+	MapElemDimSorts= ["6", "10", "15", "20", "25", "30"];
 
 
+	BGImagesSortAss = assArrayPopulate(BGImages,BGImagesSorts);		
+	MapElemDimSortAss = assArrayPopulate(MapElemDim,MapElemDimSorts);	
+	MEIconsSortAss = assArrayPopulate(MEIcons,MEIconsSorts);
+	
+	
 // ************* global variables end **************	
 			
 	
@@ -253,14 +290,14 @@
 </jsp:include>
 <br>
 <% } %>
-<div  style="background-color:#c9dfc9" align="right" width="100%">
+<div  style="background-color:#EFEFEF" align="right" width="100%">
 
 <br>
 <!-- Body -->
 <p id="parentParagraph">
 <script language="JavaScript">
 emitSVG('src="map/Map.svg"  style="float: left" align="left"  height="<%=mapheight%>" width="<%=mapwidth%>" type="image/svg+xml" pluginspage="http://download.adobe.com/pub/adobe/magic/svgviewer/win/6.x/6.0x38363/en/SVGView.exe" ');
-emitSVG('src="map/Menu.svg" valign="top" height="100%" width="200" type="image/svg+xml" pluginspage="http://download.adobe.com/pub/adobe/magic/svgviewer/win/6.x/6.0x38363/en/SVGView.exe" ');
+emitSVG('src="map/Menu.svg" valign="top" height="<%=mapheight%>" width="200" type="image/svg+xml" pluginspage="http://download.adobe.com/pub/adobe/magic/svgviewer/win/6.x/6.0x38363/en/SVGView.exe" ');
 </script>
 
 </p>

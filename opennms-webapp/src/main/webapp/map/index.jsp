@@ -36,21 +36,15 @@
 
 <%@page language="java" contentType="text/html" session="true" import="org.opennms.web.map.db.MapMenu,org.opennms.web.map.view.*, org.opennms.web.acegisecurity.Authentication"%>
 
-<html>
-<head>
-  <title>Map | OpenNMS Web Console</title>
-  <base HREF="<%=org.opennms.web.Util.calculateUrlBase( request )%>" />
-  <link rel="stylesheet" type="text/css" href="includes/styles.css" />
-</head>
-<body marginwidth="0" marginheight="0" LEFTMARGIN="0" RIGHTMARGIN="0" TOPMARGIN="0">
 
 <% String breadcrumb1 = java.net.URLEncoder.encode("Map"); %>
 <jsp:include page="/includes/header.jsp" flush="false" >
   <jsp:param name="title" value="Map" />
+  <jsp:param name="headTitle" value="Map" />
   <jsp:param name="location" value="map" />  
   <jsp:param name="breadcrumb" value="<%=breadcrumb1%>" />
 </jsp:include>
-<br>
+
 <!-- Body -->
 <script language="Javascript" type="text/javascript" >
 	
@@ -102,64 +96,41 @@
 	    		  vmf.submit();
 	            }
 </script>
-<table width="100%" cellspacing="0" cellpadding="0" border="0">
-  <tr>
-    <td>&nbsp;</td>
 
-    <td valign="top">
+
+  <div class="TwoColLeft">
       <h3>Mapping</h3>    
-
-      <p>
-        <table width="50%" border="0" cellpadding="2" cellspacing="0" >
+    <div class="boxWrapper">
           <form method="POST" id="viewMapForm">
-          <!--tr>
-            <td>Map Type:</td>
-            <td><select name="type">
-                  <option value="tree">Tree-like map</option>
-                  <option value="boring">Just show the nodes</option>
-                </select></td>
-          </tr>
-          <tr>
-            <td>Map Format:</td>
-            <td><select name="format">
-                  <option value="svg">SVG</option>
-                  <option value="png">PNG Imagemap</option>
-                </select></td>
-          </tr-->
-          <tr>
-            <td>View "fullscreen":</td>
-            <td><select name="fullscreen">
+            <p align="right">View "fullscreen":
+            <select name="fullscreen">
                   <option value="y">Yes</option>
                   <option value="n" selected>No</option>
-                </select></td>
-          </tr>
-          <tr>
-            <td>Auto-refresh:</td>
-            <td><select name="refresh">
+                </select>
+            </p>
+            <p align="right">Auto-refresh:
+            <select name="refresh">
                   <option value="1">1 minute</option>
                   <option value="2">2 minutes</option>
                   <option value="3">3 minutes</option>
                   <option value="5" selected>5 minutes</option>
                   <option value="10">10 minutes</option>
                   <option value="15">15 minutes</option>
-                </select></td>
-          </tr>
-          <tr>
-            <td>Dimension:</td>
-            <td><select name="dimension">
+                </select>
+            </p>
+            <p align="right">Dimension:
+            <select name="dimension">
 		    <option value="auto" selected>Auto</option>
                   <option value="640x480">640x480</option>
                   <option value="800x600">800x600</option>
                   <option value="1024x768">1024x768</option>
                   <option value="1280x1024">1280x1024</option>
                   <option value="1600x1200">1600x1200</option>
-                </select></td>
-          </tr>
-          
+                </select>
+            </p>
           <%if( !request.isUserInRole(Authentication.ADMIN_ROLE)) {%>
-          <tr>
-            <td>Open Map:</td>
-            <td><select name="mapToOpen">
+            <p align="right">Open Map:
+	    <select name="mapToOpen">
 		  <option value="" selected></option>
 		<%
 		MapMenu[] maps = null;
@@ -179,30 +150,20 @@
       		
 			
             %>
-            </select></td>
-          </tr>          
+            </select>
+	   </p>          
           <%}%>
-          <tr>
-             <td colspan="2"><input type="button" value="View" onclick="viewMap()"/></td> 
-          </tr>
+            <p align="right">
+             <input type="button" value="View" onclick="viewMap()"/>
+ 	    </p>
           </form>
-        </table>
-      </p>      
+      </div>      
+   </div>      
 
-      <!--p>
-        <table width="50%" border="0" cellpadding="2" cellspacing="0">
-          <tr>
-            <td><a href="map/parent.jsp">Set Parent&lt;-&gt;Child Relationships</a></td>
-          </tr>
-        </table>
-      </p-->
-    </td>
 
-    <td>&nbsp;</td>
-
-    <td valign="top" width="60%" >
-      <h3>Mapping</h3>
-
+  <div class="TwoColRight">
+  <h3>Mapping</h3>
+     <div class="boxWrapper">
       <p>
          Mapping provides the management of maps representing the status (links beetwen nodes, status,
          availability ecc.) of a subset of nodes monitored by the system.
@@ -227,20 +188,13 @@
          dimensions of the map frame (with <i>Auto</i> the system choose best dimensions for your browser). 
          Note that choosing wrong dimensions you could not visualize correctly maps.
          </p>
-         <br>
-         <br>
+    </div>
 
-    </td>
-
-    <td>&nbsp;</td>
-  </tr>
-</table>                                    
+  </div>
                                      
-<br />
+<hr />
 
     <jsp:include page="/includes/footer.jsp" flush="false" >
       <jsp:param name="location" value="map" />
     </jsp:include>
 
-  </body>
-</html>

@@ -255,7 +255,7 @@ function addLegend() {
 	var cy = 30;
 	var cr = 5;
 	var dx = 0;
-	var dy = 20;
+	var dy = 13;
 
 	var ddx = 10;
 	var ddy = 3;
@@ -883,6 +883,42 @@ function viewMapInfo(){
 	mapInfo.appendChild(parseXML("<tspan x=\"3\" dy=\"20\" id=\"mapCreateTime\" font-size=\"9\">Create time: "+currentMapCreatetime+"</tspan>",menuSvgDocument));
 	mapInfo.appendChild(parseXML("<tspan x=\"3\" dy=\"20\" id=\"mapLastModTime\" font-size=\"9\">Last modified time: "+currentMapLastmodtime+"</tspan>",menuSvgDocument));
 	menuSvgDocument.getElementById("MapInfo").getStyle().setProperty('display', 'inline');
+	/*alert("mapHistoryIndex="+mapHistoryIndex);
+	for(ind in mapHistory){
+
+		alert(ind+" "+mapHistory[ind]);
+	}*/	
+	if(mapHistory.length>mapHistoryIndex+1){
+		var next = mapHistory[mapHistoryIndex+1];
+		var nextName = mapHistoryName[mapHistoryIndex+1]; 
+		//alert("nextMap id="+next+" nextName="+nextName);
+		var textContent = menuSvgDocument.createTextNode(nextName);
+		var nextText = menuSvgDocument.getElementById("nextMapName");
+		if(nextText.getFirstChild())
+			nextText.removeChild(nextText.getFirstChild());		
+		nextText.appendChild(textContent);
+		var nextAction = menuSvgDocument.getElementById("nextAction");
+		nextAction.setAttribute("onclick","openMap("+next+");");
+		menuSvgDocument.getElementById("nextGroup").getStyle().setProperty('display', 'inline');
+	}else{
+	        menuSvgDocument.getElementById("nextGroup").getStyle().setProperty('display', 'none');
+	}
+	if(mapHistoryIndex>0){
+		var prev = mapHistory[mapHistoryIndex-1];
+		var prevName = mapHistoryName[mapHistoryIndex-1]; 
+		//alert("prevMap id="+prev+" prevName="+prevName);
+		var textContent = menuSvgDocument.createTextNode(prevName);
+		var prevText = menuSvgDocument.getElementById("prevMapName");
+		if(prevText.getFirstChild())
+			prevText.removeChild(prevText.getFirstChild());
+		prevText.appendChild(textContent);
+		var prevAction = menuSvgDocument.getElementById("prevAction");
+		prevAction.setAttribute("onclick","openMap("+prev+");");		
+		menuSvgDocument.getElementById("prevGroup").getStyle().setProperty('display', 'inline');
+	}else{
+	        menuSvgDocument.getElementById("prevGroup").getStyle().setProperty('display', 'none');
+	}	
+	
 }
 
 function clearMapInfo(){

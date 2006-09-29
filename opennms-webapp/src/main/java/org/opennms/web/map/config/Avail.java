@@ -12,7 +12,7 @@ package org.opennms.web.map.config;
  * TODO To change the template for this generated type comment go to
  * Window - Preferences - Java - Code Style - Code Templates
  */
-public class Avail {
+public class Avail implements Comparable{
 	private int id;
 	private int min;
 	private String color;
@@ -23,6 +23,16 @@ public class Avail {
 		this.min = min;
 		this.color = color;
 	}
+	
+	/**
+	 * Compares the Avail to another in input by min.
+	 */
+	public int compareTo(Object otherAvail){
+		Avail othAvail = (Avail) otherAvail;
+		if(this.min==othAvail.getMin()) return 0;
+		else if(this.min<othAvail.getMin()) return -1;
+		else  return 1;
+	}	
 	
 	public String getColor() {
 		return color;

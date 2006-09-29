@@ -27,49 +27,41 @@ import java.util.*;
 import java.sql.*;
 
 import org.opennms.core.resource.Vault;
-import org.opennms.web.asset.AssetModel;
 import org.opennms.web.map.MapsException;
-import org.opennms.web.map.config.MapPropertiesFactory;
 import org.opennms.web.map.view.VElement;
 
 /**
-* @author micmas
-* 
-* TODO To change the template for this generated type comment go to Window -
-* Preferences - Java - Code Style - Code Templates
+* @author maumig/micmas
+* This class gets all Maps and Elements informations. To speed up the performances,
+* call createDbConnection() at the start of your query session and releaseDbConnection() 
+* at its end. Doing this, you avoid to create, release connections to db for a lot of queries
+* in a little time interval.  
 */
 public class Factory {
+
+  private static Connection  m_dbConnection=null;
+  
   private Factory() {
       // Blank
   }
 
-  public static String getIconName(int elementId, String type, Connection conn)throws SQLException{
-/*
-  	if (type.equals(VElement.MAP_TYPE )) return "map";
-    final String sqlQuery = "SELECT displaycategory FROM assets WHERE nodeid = ?";
-
-    PreparedStatement statement = conn.prepareStatement(sqlQuery);
-    statement.setInt(1,elementId);
-    ResultSet rs = statement.executeQuery();
-    String iconName="unspecified";
-    if(rs.next()){
-    	iconName = rs.getString(1);
-    }
-    rs.close();
-    statement.close();
-	
-    if(iconName==null || iconName.equals("")){
-		return "unspecified";
-	}
-    return iconName;
-*/
-	return "unspecified";
+  public static void createDbConnection()throws SQLException{
+  	m_dbConnection  = Vault.getDbConnection();
   }
   
+  public static void releaseDbConnection()throws SQLException{
+  	Vault.releaseDbConnection(m_dbConnection);
+  	m_dbConnection=null;
+  }
+  
+
+  
   public static String getIconName(int elementId, String type)throws SQLException{
-  	/*if (type.equals(VElement.MAP_TYPE )) return "map";
+  	if (type.equals(VElement.MAP_TYPE )) return "map";
     final String sqlQuery = "SELECT displaycategory FROM assets WHERE nodeid = ?";
-    Connection dbConn = Vault.getDbConnection();
+    Connection dbConn = m_dbConnection;
+    if(m_dbConnection==null)
+    	dbConn  = Vault.getDbConnection();
     
     PreparedStatement statement = dbConn.prepareStatement(sqlQuery);
     statement.setInt(1,elementId);
@@ -80,21 +72,22 @@ public class Factory {
     }
     rs.close();
     statement.close();
-    Vault.releaseDbConnection(dbConn);
-//FIXME workaround to test why it is not working
-    return "unspecified";
-    //if(iconName==null || iconName.equals("")){
-	//	return "unspecified";
-	//}
-    //return iconName;*/
-	return "unspecified";
-
+    
+    if(m_dbConnection==null)
+        Vault.releaseDbConnection(dbConn);
+    
+    if(iconName==null || iconName.trim().equals("")){
+		return "unspecified";
+	}
+    return iconName;
   }
   
   public static int countMaps(int mapId) throws SQLException {
       final String sqlQuery = "SELECT COUNT(*) FROM map WHERE mapid = ?";
 
-      Connection dbConn = Vault.getDbConnection();
+      Connection dbConn = m_dbConnection;
+      if(m_dbConnection==null)
+      	dbConn  = Vault.getDbConnection();
       PreparedStatement statement = dbConn.prepareStatement(sqlQuery);
       statement.setInt(1, mapId);
       ResultSet rs = statement.executeQuery();
@@ -104,7 +97,8 @@ public class Factory {
       }
       rs.close();
       statement.close();
-      Vault.releaseDbConnection(dbConn);
+      if(m_dbConnection==null)
+        Vault.releaseDbConnection(dbConn);
       return count;
   }
 
@@ -112,7 +106,9 @@ public class Factory {
   public static Element getElement(int id, int mapId) throws SQLException, MapsException {
       final String sqlQuery = "SELECT * FROM element WHERE elementid = ? AND mapid = ?";
 
-      Connection dbConn = Vault.getDbConnection();
+      Connection dbConn = m_dbConnection;
+      if(m_dbConnection==null)
+      	dbConn  = Vault.getDbConnection();
       PreparedStatement statement = dbConn.prepareStatement(sqlQuery);
       statement.setInt(1, id);
       statement.setInt(2, mapId);
@@ -120,7 +116,8 @@ public class Factory {
       Element el = rs2Element(rs);
       rs.close();
       statement.close();
-      Vault.releaseDbConnection(dbConn);
+      if(m_dbConnection==null)
+        Vault.releaseDbConnection(dbConn);
 
       return el;
   }
@@ -128,14 +125,17 @@ public class Factory {
   public static Map getMap(int id) throws SQLException {
       final String sqlQuery = "SELECT * FROM map WHERE mapId = ?";
 
-      Connection dbConn = Vault.getDbConnection();
+      Connection dbConn = m_dbConnection;
+      if(m_dbConnection==null)
+      	dbConn  = Vault.getDbConnection();
       PreparedStatement statement = dbConn.prepareStatement(sqlQuery);
       statement.setInt(1, id);
       ResultSet rs = statement.executeQuery();
       Map map = rs2Map(rs);
       rs.close();
       statement.close();
-      Vault.releaseDbConnection(dbConn);
+      if(m_dbConnection==null)
+        Vault.releaseDbConnection(dbConn);
 
       return map;
   }
@@ -143,7 +143,9 @@ public class Factory {
   public static Map[] getMaps(String mapname, String maptype) throws SQLException {
       final String sqlQuery = "SELECT * FROM map WHERE mapName= ? AND maptype = ? ";
 
-      Connection dbConn = Vault.getDbConnection();
+      Connection dbConn = m_dbConnection;
+      if(m_dbConnection==null)
+      	dbConn  = Vault.getDbConnection();
       PreparedStatement statement = dbConn.prepareStatement(sqlQuery);
       statement.setString(1, mapname);
       statement.setString(2, maptype);
@@ -160,7 +162,8 @@ public class Factory {
       rs.close();
       statement.close();
 
-      Vault.releaseDbConnection(dbConn);
+      if(m_dbConnection==null)
+        Vault.releaseDbConnection(dbConn);
 
       return el;
   }
@@ -168,7 +171,9 @@ public class Factory {
   public static String getMapName(int id) throws SQLException {
       final String sqlQuery = "SELECT mapname FROM map WHERE mapId = ?";
 
-      Connection dbConn = Vault.getDbConnection();
+      Connection dbConn = m_dbConnection;
+      if(m_dbConnection==null)
+      	dbConn  = Vault.getDbConnection();
       PreparedStatement statement = dbConn.prepareStatement(sqlQuery);
       statement.setInt(1, id);
       ResultSet rs = statement.executeQuery();
@@ -178,14 +183,41 @@ public class Factory {
       }
       rs.close();
       statement.close();
-      Vault.releaseDbConnection(dbConn);
+      if(m_dbConnection!=dbConn && dbConn!=null)
+        Vault.releaseDbConnection(dbConn);
 
       return label;
   }
   
-  public static String getMapName(int id, Connection dbConn) throws SQLException {
-    final String sqlQuery = "SELECT mapname FROM map WHERE mapId = ?";
 
+  public static String getMapElemName(int mapId, int elemId) throws SQLException {
+      final String sqlQuery = "SELECT elementlabel FROM element WHERE mapId = ? and elementid= ?";
+
+      Connection dbConn = m_dbConnection;
+      if(m_dbConnection==null)
+      	dbConn  = Vault.getDbConnection();
+      PreparedStatement statement = dbConn.prepareStatement(sqlQuery);
+      statement.setInt(1, mapId);
+      statement.setInt(2, elemId);
+      ResultSet rs = statement.executeQuery();
+      String label = null;
+      if (rs.next()) {
+      	label = rs.getString(1);
+      }
+      rs.close();
+      statement.close();
+      if(m_dbConnection!=dbConn && dbConn!=null)
+        Vault.releaseDbConnection(dbConn);
+
+      return label;
+  }  
+  
+  public static String getNodeLabel(int id) throws SQLException {
+    final String sqlQuery = "SELECT NODELABEL FROM NODE WHERE NODEID = ?";
+
+    Connection dbConn = m_dbConnection;
+    if(m_dbConnection==null)
+    	dbConn  = Vault.getDbConnection();
     PreparedStatement statement = dbConn.prepareStatement(sqlQuery);
     statement.setInt(1, id);
     ResultSet rs = statement.executeQuery();
@@ -195,14 +227,41 @@ public class Factory {
     }
     rs.close();
     statement.close();
-   
+    if(m_dbConnection!=dbConn && dbConn!=null)
+      Vault.releaseDbConnection(dbConn);
+
     return label;
-}  
+}
+  
+  public static String getIpAddress(int id) throws SQLException {
+    final String sqlQuery = "SELECT  ipaddr FROM IPINTERFACE WHERE nodeid=?  AND ipaddr!='0.0.0.0' AND ( issnmpprimary='P' OR issnmpprimary='N' )";
+
+    Connection dbConn = m_dbConnection;
+    if(m_dbConnection==null)
+    	dbConn  = Vault.getDbConnection();
+    PreparedStatement statement = dbConn.prepareStatement(sqlQuery);
+    statement.setInt(1, id);
+    ResultSet rs = statement.executeQuery();
+    String ipaddr = null;
+    if (rs.next()) {
+    	ipaddr = rs.getString(1);
+    }
+    rs.close();
+    statement.close();
+    if(m_dbConnection!=dbConn && dbConn!=null)
+      Vault.releaseDbConnection(dbConn);
+
+    return (ipaddr!=null)?ipaddr:"("+id+")";
+}
+  
+  
 
   public static Element[] getAllElements() throws SQLException, MapsException {
       final String sqlQuery = "SELECT * FROM element";
 
-      Connection dbConn = Vault.getDbConnection();
+      Connection dbConn = m_dbConnection;
+      if(m_dbConnection==null)
+      	dbConn  = Vault.getDbConnection();
       Statement statement = dbConn.createStatement();
       ResultSet rs = statement.executeQuery(sqlQuery);
       Vector elements = rs2ElementVector(rs);
@@ -210,7 +269,8 @@ public class Factory {
       el=(Element[])elements.toArray(el);
       rs.close();
       statement.close();
-      Vault.releaseDbConnection(dbConn);
+      if(m_dbConnection!=dbConn && dbConn!=null)
+      	Vault.releaseDbConnection(dbConn);
       
       return el;
   }
@@ -218,7 +278,9 @@ public class Factory {
   public static Element[] getElementsOfMap(int mapid) throws SQLException, MapsException {
       final String sqlQuery = "SELECT * FROM element WHERE mapid = ?";
 
-      Connection dbConn = Vault.getDbConnection();
+      Connection dbConn = m_dbConnection;
+      if(m_dbConnection==null)
+      	dbConn  = Vault.getDbConnection();
       PreparedStatement statement = dbConn.prepareStatement(sqlQuery);
       statement.setInt(1, mapid);
       ResultSet rs = statement.executeQuery();
@@ -230,14 +292,18 @@ public class Factory {
       }
       rs.close();
       statement.close();
-      Vault.releaseDbConnection(dbConn);
+      if(m_dbConnection!=dbConn && dbConn!=null)
+      	Vault.releaseDbConnection(dbConn);
       return el;
   }
+  
 
   public static Element[] getNodeElementsOfMap(int mapid) throws SQLException, MapsException {
       final String sqlQuery = "SELECT * FROM element WHERE mapid = ? AND elementtype = 'N' ";
 
-      Connection dbConn = Vault.getDbConnection();
+      Connection dbConn = m_dbConnection;
+      if(m_dbConnection==null)
+      	dbConn  = Vault.getDbConnection();
       PreparedStatement statement = dbConn.prepareStatement(sqlQuery);
       statement.setInt(1, mapid);
       ResultSet rs = statement.executeQuery();
@@ -249,14 +315,17 @@ public class Factory {
       }
       rs.close();
       statement.close();
-      Vault.releaseDbConnection(dbConn);
+      if(m_dbConnection!=dbConn && dbConn!=null)
+      	Vault.releaseDbConnection(dbConn);
       return el;
   }
 
   public static Element[] getMapElementsOfMap(int mapid) throws SQLException, MapsException {
       final String sqlQuery = "SELECT * FROM element WHERE mapid = ? AND elementtype = 'M' ";
 
-      Connection dbConn = Vault.getDbConnection();
+      Connection dbConn = m_dbConnection;
+      if(m_dbConnection==null)
+      	dbConn  = Vault.getDbConnection();
       PreparedStatement statement = dbConn.prepareStatement(sqlQuery);
       statement.setInt(1, mapid);
       ResultSet rs = statement.executeQuery();
@@ -268,14 +337,17 @@ public class Factory {
       }
       rs.close();
       statement.close();
-      Vault.releaseDbConnection(dbConn);
+      if(m_dbConnection!=dbConn && dbConn!=null)
+      	Vault.releaseDbConnection(dbConn);
       return el;
   }
 
   public static Element[] getAllMapMapElements() throws SQLException, MapsException {
       final String sqlQuery = "SELECT * FROM element WHERE elementtype = 'M' ";
 
-      Connection dbConn = Vault.getDbConnection();
+      Connection dbConn = m_dbConnection;
+      if(m_dbConnection==null)
+      	dbConn  = Vault.getDbConnection();
       PreparedStatement statement = dbConn.prepareStatement(sqlQuery);
       ResultSet rs = statement.executeQuery();
       Vector elements = rs2ElementVector(rs);
@@ -286,15 +358,18 @@ public class Factory {
       }
       rs.close();
       statement.close();
-      Vault.releaseDbConnection(dbConn);
+      if(m_dbConnection!=dbConn && dbConn!=null)
+      	Vault.releaseDbConnection(dbConn);
       return el;
   }
 
 	public static java.util.Map getMapsStructure() throws SQLException {
 		java.util.Map maps = new HashMap();
-	    String sqlQuery = "select elementid,mapid from element where elementtype=?";
-		Connection connection = Vault.getDbConnection();
-		PreparedStatement ps = connection.prepareStatement(sqlQuery);
+		String sqlQuery = "select elementid,mapid from element where elementtype=?";
+		Connection dbConn = m_dbConnection;
+		if(m_dbConnection==null)
+		  	dbConn  = Vault.getDbConnection();
+		PreparedStatement ps = dbConn.prepareStatement(sqlQuery);
 		ps.setString(1,Element.MAP_TYPE);
 		ResultSet rs = ps.executeQuery();
 		while(rs.next()){
@@ -309,15 +384,18 @@ public class Factory {
 			}
 			maps.put(parentId,childs);
 		}
-
+		if(m_dbConnection!=dbConn && dbConn!=null)
+		 Vault.releaseDbConnection(dbConn);
+		
 		return maps;
-	
 	}
 
   public static Element[] getAllNodeMapElements() throws SQLException, MapsException {
       final String sqlQuery = "SELECT * FROM element WHERE elementtype = 'M' ";
 
-      Connection dbConn = Vault.getDbConnection();
+      Connection dbConn = m_dbConnection;
+      if(m_dbConnection==null)
+      	dbConn  = Vault.getDbConnection();
       PreparedStatement statement = dbConn.prepareStatement(sqlQuery);
       ResultSet rs = statement.executeQuery();
       Vector elements = rs2ElementVector(rs);
@@ -328,14 +406,17 @@ public class Factory {
       }
       rs.close();
       statement.close();
-      Vault.releaseDbConnection(dbConn);
+      if(m_dbConnection!=dbConn && dbConn!=null)
+			Vault.releaseDbConnection(dbConn);
       return el;
   }
 
   public static Map[] getAllMaps() throws SQLException {
       final String sqlQuery = "SELECT * FROM map";
 
-      Connection dbConn = Vault.getDbConnection();
+      Connection dbConn = m_dbConnection;
+      if(m_dbConnection==null)
+      	dbConn  = Vault.getDbConnection();
       Statement statement = dbConn.createStatement();
       ResultSet rs = statement.executeQuery(sqlQuery);
       Vector maps = rs2MapVector(rs);
@@ -348,7 +429,8 @@ public class Factory {
       }
       rs.close();
       statement.close();
-      Vault.releaseDbConnection(dbConn);
+      if(m_dbConnection!=dbConn && dbConn!=null)
+		Vault.releaseDbConnection(dbConn);
       
       return el;
   }
@@ -356,7 +438,9 @@ public class Factory {
   public static MapMenu[] getAllMapsMenu() throws SQLException {
       final String sqlQuery = "SELECT mapid,mapname,mapowner FROM map";
 
-      Connection dbConn = Vault.getDbConnection();
+      Connection dbConn = m_dbConnection;
+      if(m_dbConnection==null)
+      	dbConn  = Vault.getDbConnection();
       Statement statement = dbConn.createStatement();
       ResultSet rs = statement.executeQuery(sqlQuery);
       Vector maps = rs2MapMenuVector(rs);
@@ -369,7 +453,8 @@ public class Factory {
       }
       rs.close();
       statement.close();
-      Vault.releaseDbConnection(dbConn);
+      if(m_dbConnection!=dbConn && dbConn!=null)
+		Vault.releaseDbConnection(dbConn);
       
       return el;
   }
@@ -377,7 +462,9 @@ public class Factory {
   public static MapMenu getMapMenu(int mapId) throws SQLException {
       final String sqlQuery = "SELECT mapid,mapname,mapowner FROM map where mapId= ?" ;
 
-      Connection dbConn = Vault.getDbConnection();
+      Connection dbConn = m_dbConnection;
+      if(m_dbConnection==null)
+      	dbConn  = Vault.getDbConnection();
       PreparedStatement statement = dbConn.prepareStatement(sqlQuery);
       statement.setInt(1,mapId);
       ResultSet rs = statement.executeQuery();
@@ -386,7 +473,8 @@ public class Factory {
       
       rs.close();
       statement.close();
-      Vault.releaseDbConnection(dbConn);
+      if(m_dbConnection!=dbConn && dbConn!=null)
+		Vault.releaseDbConnection(dbConn);
       
       return mm;
   }    
@@ -394,7 +482,9 @@ public class Factory {
   public static MapMenu[] getMapsMenuByName(String mapLabel) throws SQLException {
       final String sqlQuery = "SELECT mapid,mapname,mapowner FROM map WHERE upper( mapname ) = upper( ? )";
 
-      Connection dbConn = Vault.getDbConnection();
+      Connection dbConn = m_dbConnection;
+      if(m_dbConnection==null)
+      	dbConn  = Vault.getDbConnection();
       PreparedStatement statement = dbConn.prepareStatement(sqlQuery);
       statement.setString(1, mapLabel);
       ResultSet rs = statement.executeQuery();
@@ -406,7 +496,8 @@ public class Factory {
       }
       rs.close();
       statement.close();
-      Vault.releaseDbConnection(dbConn);
+      if(m_dbConnection!=dbConn && dbConn!=null)
+		Vault.releaseDbConnection(dbConn);
 
       return maps;
   }
@@ -415,7 +506,9 @@ public class Factory {
           throws SQLException, MapsException {
       final String sqlQuery = "SELECT * FROM element WHERE elementlabel LIKE ?";
 
-      Connection dbConn = Vault.getDbConnection();
+      Connection dbConn = m_dbConnection;
+      if(m_dbConnection==null)
+      	dbConn  = Vault.getDbConnection();
       PreparedStatement statement = dbConn.prepareStatement(sqlQuery);
       elementLabel = "%" + elementLabel + "%";
       statement.setString(1, elementLabel);
@@ -425,7 +518,8 @@ public class Factory {
       el=(Element[])elements.toArray(el);
       rs.close();
       statement.close();
-      Vault.releaseDbConnection(dbConn);
+      if(m_dbConnection!=dbConn && dbConn!=null)
+		Vault.releaseDbConnection(dbConn);
 
       return el;
   }
@@ -433,7 +527,9 @@ public class Factory {
   public static Map[] getMapsLike(String mapLabel) throws SQLException {
       final String sqlQuery = "SELECT * FROM map WHERE mapname LIKE ?";
 
-      Connection dbConn = Vault.getDbConnection();
+      Connection dbConn = m_dbConnection;
+      if(m_dbConnection==null)
+      	dbConn  = Vault.getDbConnection();
       PreparedStatement statement = dbConn.prepareStatement(sqlQuery);
       mapLabel = "%" + mapLabel + "%";
       statement.setString(1, mapLabel);
@@ -446,7 +542,8 @@ public class Factory {
       }
       rs.close();
       statement.close();
-      Vault.releaseDbConnection(dbConn);
+      if(m_dbConnection!=dbConn && dbConn!=null)
+		Vault.releaseDbConnection(dbConn);
 
       return maps;
   }
@@ -454,7 +551,9 @@ public class Factory {
   public static Map[] getMapsByName(String mapLabel) throws SQLException {
       final String sqlQuery = "SELECT * FROM map WHERE mapname = ?";
 
-      Connection dbConn = Vault.getDbConnection();
+      Connection dbConn = m_dbConnection;
+      if(m_dbConnection==null)
+      	dbConn  = Vault.getDbConnection();
       PreparedStatement statement = dbConn.prepareStatement(sqlQuery);
       statement.setString(1, mapLabel);
       ResultSet rs = statement.executeQuery();
@@ -466,7 +565,8 @@ public class Factory {
       }
       rs.close();
       statement.close();
-      Vault.releaseDbConnection(dbConn);
+      if(m_dbConnection!=dbConn && dbConn!=null)
+		Vault.releaseDbConnection(dbConn);
 
       return maps;
   }
@@ -474,8 +574,9 @@ public class Factory {
   public static Map[] getContainerMaps(int id, String type) throws SQLException {
       final String sqlQuery = "SELECT map.* FROM map INNER JOIN element ON map.mapid = element.mapid WHERE elementid = ? AND elementtype = ?";
 
-      Connection dbConn = Vault.getDbConnection();
-      dbConn = Vault.getDbConnection();
+      Connection dbConn = m_dbConnection;
+      if(m_dbConnection==null)
+      	dbConn  = Vault.getDbConnection();
       PreparedStatement statement = dbConn.prepareStatement(sqlQuery);
       statement.setInt(1, id);
       statement.setString(2, type);
@@ -485,7 +586,8 @@ public class Factory {
       maps=(Map[])el.toArray(maps);
       rs.close();
       statement.close();
-      Vault.releaseDbConnection(dbConn);
+      if(m_dbConnection!=dbConn && dbConn!=null)
+		Vault.releaseDbConnection(dbConn);
 
       return maps;
   }
@@ -497,9 +599,11 @@ public class Factory {
   }
 
   public static List getOutagedVElems() throws SQLException {
-      final String sqlQuery = "select distinct nodeid,eventuei,eventseverity from events where exists (select svclosteventid from outages where ifregainedservice is null and events.eventid = svclosteventid) order by nodeid";
+      final String sqlQuery = "select distinct nodeid,eventuei,eventseverity from events where eventid in (select svclosteventid from outages where ifregainedservice is null)  order by nodeid";
 
-      Connection dbConn = Vault.getDbConnection();
+      Connection dbConn = m_dbConnection;
+      if(m_dbConnection==null)
+      	dbConn  = Vault.getDbConnection();
       PreparedStatement statement = dbConn.prepareStatement(sqlQuery);
       ResultSet rs = statement.executeQuery();
       List elems = new ArrayList();
@@ -509,7 +613,8 @@ public class Factory {
       }
       rs.close();
       statement.close();
-      Vault.releaseDbConnection(dbConn);
+      if(m_dbConnection!=dbConn && dbConn!=null)
+		Vault.releaseDbConnection(dbConn);
       return elems;
 
   }
