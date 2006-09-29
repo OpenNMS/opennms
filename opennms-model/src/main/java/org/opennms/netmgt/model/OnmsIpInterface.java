@@ -39,7 +39,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import javax.persistence.Entity;
@@ -72,7 +71,7 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
 		private CollectionType() {
 		}
 		
-		private CollectionType(char collType) {
+		public CollectionType(char collType) {
 			m_collType = collType;
 		}
 		
